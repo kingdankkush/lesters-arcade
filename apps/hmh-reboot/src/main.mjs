@@ -23,7 +23,7 @@ import { creatureAnimationTick, liquidatorPose } from './creature-presentation.m
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
-import { createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
+import { COLLECTIBLE_EFFECTS, createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
 import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './bear-market-burner.mjs';
 import { createForkedStandardEvent } from './forked-standard-event.mjs';
@@ -129,6 +129,7 @@ import {
   HIT_SMEAR,
   DASH_FEEL,
   createEncounterFramingState,
+  createUserZoom,
   resolveDashAfterimages,
   resolveDashLandingPuff,
   resolveEncounterFramingZoom,
@@ -159,6 +160,7 @@ import {
   createRunProgression,
   getRunProgressionSnapshot,
   grantRunXp,
+  grantRunSilver,
   recordRunDefeat,
   selectRunUpgrade,
   unlockRunProgressionWeapon,
@@ -253,6 +255,7 @@ import {
   getActiveWeaponState,
   getWeaponReadabilityStatus,
   grantWeaponPickup,
+  laneDamageScale,
   nextOwnedWeaponId,
   refillWeaponLoadout,
   progressionByWeapon as buildProgressionByWeapon,
@@ -389,6 +392,38 @@ async function boot() {
     reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   });
   const touchUiEnabled = isTouchUiEnabled({ coarsePointer, width: window.innerWidth });
+  // Owner direction 2026-09-16: desktop mouse wheel zooms +10% / -30% from the
+  // readable default; phones keep the default (frame rate first).
+  const userZoom = createUserZoom();
+  // Pickup / interaction banner (owner direction 2026-09-16). Lazy so the
+  // initial bundle stays under its byte cap; events raised before the module
+  // lands are buffered and announced in order.
+  let pickupBanner = null, pickupBannerModule = null, pickupBannerRequested = false;
+  const pendingPickupAnnouncements = [];
+  const WEAPON_TITLE_BY_ID = Object.fromEntries(Object.entries(HMH_WEAPON_DEFINITIONS).map(([id, definition]) => [id, definition.displayName ?? definition.title ?? id]));
+  const humanizeEffectId = (id) => String(id).split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  const TIMED_EFFECT_TITLE_BY_ID = Object.fromEntries(Object.entries(COLLECTIBLE_EFFECTS ?? {}).map(([id, effect]) => [id, effect?.title ?? humanizeEffectId(id)]));
+  const announcePickupEvent = (event, options, tick) => {
+    if (pickupBanner && pickupBannerModule) {
+      pickupBanner.announce(pickupBannerModule.pickupBannerText(event, options), tick);
+      return;
+    }
+    pendingPickupAnnouncements.push({ event, options, tick });
+    if (pendingPickupAnnouncements.length > 8) pendingPickupAnnouncements.shift();
+    if (pickupBannerRequested) return;
+    pickupBannerRequested = true;
+    void import('./pickup-banner.mjs').then((module) => {
+      const mount = document.getElementById('hmhRebootShell') ?? document.body;
+      pickupBannerModule = module;
+      pickupBanner = module.createPickupBanner({ mount, documentRef: document });
+      for (const pending of pendingPickupAnnouncements.splice(0)) pickupBanner.announce(module.pickupBannerText(pending.event, pending.options), pending.tick);
+    }).catch(() => { pickupBannerRequested = false; });
+  };
+  // Dismemberment (owner direction 2026-09-16): explosive, lane and pellet
+  // weapons plus hazards take bodies apart; plain rounds only bleed. Mirrors
+  // shouldDismember() in gore-presentation.mjs without importing it eagerly.
+  const DISMEMBER_POLICY_TYPES = new Set(['splash', 'pierce', 'pellet']);
+  const killDismembers = (weaponId) => DISMEMBER_POLICY_TYPES.has(HMH_WEAPON_DEFINITIONS[weaponId]?.policy?.type) || /grenade|nuke|launcher/.test(String(weaponId ?? ''));
   const claimTouchOnboarding = createTouchOnboardingGate(touchUiEnabled);
   const app = new Application();
   let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
@@ -1120,7 +1155,7 @@ async function boot() {
     enemyDeathMarkers.clear();
   };
 
-  const queueEnemyDeathVisual = (enemy, tick) => {
+  const queueEnemyDeathVisual = (enemy, tick, cause = null) => {
     // A retiring body takes its hit descriptor with it: the corpse is its own
     // presentation and must not inherit a knock offset or flash.
     enemyHitFeedbackById.delete(enemy?.id);
@@ -1134,6 +1169,8 @@ async function boot() {
       tick,
       point: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 24 },
       color: ENEMY_ARCHETYPES[enemy.archetypeId]?.visual.color ?? 0xffffff,
+      dismember: cause?.dismember === true,
+      direction: cause?.direction ?? null,
     });
     pruneCorpseCapacity(enemyDeathMarkers, (oldest) => {
       worldDepthLayer.detach(oldest.graphic);
@@ -1551,6 +1588,7 @@ async function boot() {
       atmosphereTint.height = view.height;
       atmosphereTint.visible = atmosphereGrade.alpha > 0;
       const authoredPropTick = simulation?.tick ?? 0;
+      pickupBanner?.update(authoredPropTick);
       if(!silverRequested && silverDropState.dropped>0){
         silverRequested=true;
         import('./silver-drop-presentation.mjs').then(m=>m.createSilverDropPresentation({Assets,Container,Graphics,Sprite,Texture,Rectangle})).then(display=>{
@@ -2865,6 +2903,8 @@ async function boot() {
     playerDefeatController = null;
     playerHealth = 100;
     silverDropState=createSilverDropState();
+    pickupBanner?.clear();
+    userZoom.reset();
     const silverCounter=document.getElementById('hmhSilverCount');if(silverCounter)silverCounter.textContent='0';
     collectibleState = null;
     collectibleSnapshot = null;
@@ -3421,6 +3461,7 @@ async function boot() {
         if(event.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
         combatAudio.play('objective-complete',{volume:.16});
         setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated. ${OBJECTIVE_REWARDS.find(r=>r.objectiveId===event.siteId)?.rewardName ?? 'Reward'} ready nearby.`);
+        announcePickupEvent({ type: 'world:activated', name: WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name, rewardName: OBJECTIVE_REWARDS.find(r=>r.objectiveId===event.siteId)?.rewardName ?? null }, {}, tick);
       }
       for(const secret of stepWorldDesignSecrets(worldSecretState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
         recordRunMilestone(runSummaryAccumulator,{type:'secret-found',id:secret.id,tick});
@@ -3428,6 +3469,7 @@ async function boot() {
         if(secret.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
         combatAudio.play('pickup',{volume:.11});
         setAccessibleCombatStatus(`${secret.name}. ${secret.lore}`);
+        announcePickupEvent({ type: 'world:secret', name: secret.name }, {}, tick);
       }
       for(const supply of stepWorldDestructibleSupplies(worldDestructibleState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
         if(supply.reward==='heal'){const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
@@ -3571,6 +3613,8 @@ async function boot() {
       if(silverCollected>0){
         combatAudio.play('silver-collect',{volume:.10});
         const counter=document.getElementById('hmhSilverCount');if(counter)counter.textContent=String(silverDropState.collected);
+        // Owner decision 2026-09-16: silver coins count toward the run score.
+        if(runProgression)cockpit?.updateRun(grantRunSilver(runProgression,silverCollected,tick));
       }
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor,
         canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon}),
@@ -3597,6 +3641,7 @@ async function boot() {
         recordRunCollectible(runSummaryAccumulator, { effectId: event.effectId });
         const placement = collectibleState.entries.find(e=>e.placement.id===event.placementId)?.placement;
         const objectiveReward=OBJECTIVE_REWARDS.find(r=>r.id===event.placementId);
+        announcePickupEvent(event, { objectiveReward, weaponTitles: WEAPON_TITLE_BY_ID, effectTitles: TIMED_EFFECT_TITLE_BY_ID }, tick);
         if(objectiveReward)setAccessibleCombatStatus(`${objectiveReward.rewardName} collected.${objectiveReward.respawnTicks ? ` Returns in ${objectiveReward.respawnTicks/60} seconds of play.` : ""}`);
         if (event.kind === 'heal') {
           const healthBefore = playerHealth;
@@ -3686,6 +3731,9 @@ async function boot() {
           damage: shot.damage,
           policy: pierced > 0 ? { ...shot.policy, maxTargets: Math.max(1, shot.policy.maxTargets - pierced) } : shot.policy,
           excludeTargetIds: pierced > 0 ? shot.pierceHitIds : null,
+          // Lane falloff: the scale is fixed at the segment start from the
+          // distance already travelled, so it is deterministic per tick.
+          damageScale: laneDamageScale({ traveled: Math.max(0, (shot.range ?? 0) - shot.remainingRange), range: shot.range ?? 0, falloff: shot.policy?.falloff ?? null }),
         });
         return {
           ...shot,
@@ -3952,7 +4000,7 @@ async function boot() {
             knockback: WEAPON_KNOCKBACK[event.weaponId],
             point: { ...hit.point, z: hit.point.z + 22 },
           });
-          pushImpactVisual({ type: 'impact', tick, hitKind: 'target', surface: 'flesh', weaponId: event.weaponId, point: { ...hit.point, z: hit.point.z + 22 } });
+          pushImpactVisual({ type: 'impact', tick, hitKind: 'target', surface: 'flesh', weaponId: event.weaponId, direction: { x: dx / length, y: dy / length }, point: { ...hit.point, z: hit.point.z + 22 } });
         }
         combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) });
         pushCombatVisualEvent({
@@ -4092,6 +4140,7 @@ async function boot() {
             projectileTag: shot.projectileTag ?? null,
             shock: shot.shock,
             knockbackMultiplier: shot.knockbackMultiplier,
+            range: shot.range,
             remainingRange: shot.range,
           });
         }
@@ -4532,7 +4581,7 @@ async function boot() {
           if(WORLD_ENVIRONMENT_WEAPON_IDS.has(scoreEvent.weaponId)) {
             const enemy=grayboxEnemies.find(e=>e.id===scoreEvent.enemyId);
             if(enemy) {
-              queueEnemyDeathVisual(enemy,tick);
+              queueEnemyDeathVisual(enemy,tick,{dismember:true,direction:null});
               retiredEnemies=retireEnemyFromPopulation(enemyPopulation,enemy.id,{tick,reason:'defeated'}).retired || retiredEnemies;
             }
             continue;
@@ -4575,7 +4624,7 @@ async function boot() {
             weaponId: scoreEvent.weaponId,
             elite: isEliteEnemyProjection(defeatedEnemy.id),
           });
-          queueEnemyDeathVisual(defeatedEnemy, tick);
+          queueEnemyDeathVisual(defeatedEnemy, tick, { dismember: killDismembers(scoreEvent.weaponId), direction: { x: defeatedEnemy.x - actor.x, y: defeatedEnemy.y - actor.y } });
           runKills += 1;
           addSilverDrop(silverDropState,{sequence:runKills,tick,x:defeatedEnemy.x,y:defeatedEnemy.y});
           const progressionSnapshot = awardComboXp(recordRunDefeat(runProgression, {
@@ -4883,6 +4932,12 @@ async function boot() {
 
   const handleResize = () => renderWorld();
   app.canvas.addEventListener('pointerdown', () => app.canvas.focus());
+  const handleWheelZoom = (event) => {
+    if (touchUiEnabled || event.ctrlKey) return;
+    event.preventDefault();
+    userZoom.wheel(event.deltaY);
+  };
+  app.canvas.addEventListener('wheel', handleWheelZoom, { passive: false });
   // Boot focus: a player must be able to move the moment the run starts,
   // without clicking the game first (device playtest, 2026-07-31).
   window.focus?.();
@@ -5021,6 +5076,7 @@ async function boot() {
       framingZoom: framing.zoom,
       mobile: touchUiEnabled,
     });
+    if (!touchUiEnabled) camera.zoom *= userZoom.factor;
     followCameraTarget(camera, {
       ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,

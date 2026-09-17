@@ -33,8 +33,9 @@ function flightClock(){
  const post=MessagePort.prototype.postMessage;MessagePort.prototype.postMessage=function(m,...args){if(m?.protocol==='chikun-bridge/v1')__messages.push(structuredClone(m));return post.call(this,m,...args);};
 }
 // Runs inside the child frame: two fixed steps per frame, pilot decides per frame.
-function driveTo({targetTick,pilotSource}){
- const pilot=new Function('return '+pilotSource)();
+function driveTo({targetTick}){
+ const pilot=globalThis.__chikunCoursePilot;
+ if(typeof pilot!=='function')throw new Error('course pilot was not injected');
  const canvas=document.querySelector('#chikunCanvas');const started=Date.now();let frames=0;
  for(;;){
   const s=__CHIKUN_QA__.peek();
@@ -78,8 +79,10 @@ try{
  await frame.locator('#startButton').click({force:true});
  await frame.waitForFunction(()=>typeof __CHIKUN_QA__.peek==='function'&&__CHIKUN_QA__.peek()?.tick>=0,null,{polling:50});
  const pilotSource=coursePilot.toString();
+ let pilotInjected=false;
  for(const stop of stops){
-  const stat=await frame.evaluate(driveTo,{targetTick:stop.tick,pilotSource}).catch(async error=>{throw new Error(`${stop.name}: ${error.message}`);});
+  if(!pilotInjected){await frame.addScriptTag({content:`window.__chikunCoursePilot=${pilotSource};`});pilotInjected=true;}
+  const stat=await frame.evaluate(driveTo,{targetTick:stop.tick}).catch(async error=>{throw new Error(`${stop.name}: ${error.message}`);});
   await frame.evaluate(()=>__advance(1,60));
   const file=path.join(out,stop.name+'.png');await node.screenshot({path:file});
   assert.equal(stat.terminal,false,`${stop.name}: the pilot crashed (${stat.terminalReason}) at tick ${stat.tick}`);
