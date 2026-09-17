@@ -7,7 +7,8 @@ import { chikunSkyState } from '../apps/chikun/src/world.mjs';
 import { createChikunRuntime } from '../apps/portal/src/chikun-cabinet.mjs';
 
 test('prone flight clips cover input changes, passage, reactions and death', () => {
-  assert.equal(Object.keys(CHIKUN_CLIPS).length, 31);
+  assert.equal(Object.keys(CHIKUN_CLIPS).length, 32);
+  assert.equal(new Set(Object.values(CHIKUN_CLIPS).map(c=>c.sheet)).size, 31, 'the flare reuses the jump_flight sheet instead of shipping a new atlas');
   for (const clip of Object.keys(CHIKUN_CLIPS)) {
     for (const time of [-1,0,.01,.65,100,Infinity,NaN]) {
       const f = sampleChikunFrame(clip,time);

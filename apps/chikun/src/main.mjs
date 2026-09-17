@@ -110,6 +110,7 @@ let renderDt = 0;
 let idleTime = 0;
 let terminalAge = 0;
 let ragdoll = null;
+const RAGDOLL_HANDOFF_SECONDS = 0.22;
 let goreEnabled = true;
 try { goreEnabled = localStorage.getItem('chikun-gore-v1') !== 'off'; } catch {}
 loadGroundArt(); loadRagdollArt();
@@ -560,9 +561,16 @@ function drawFork(fork) {
 }
 
 function drawChikun(snapshot) {
-  if(ragdoll && phase==='game-over' && !replayPlayback && !reduceMotion()){drawChikunRagdoll(ctx,ragdoll);return;}
   const menuPosition = flightViewport.portrait ? {x: flightViewport.left + flightViewport.width / 2, y: 155, size: 280} : null;
-  if (flightCharacter.draw(ctx, snapshot, renderDt, { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) })) return;
+  const characterOptions = { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) };
+  if(ragdoll && phase==='game-over' && !replayPlayback && !reduceMotion()){
+    // Defeat handoff: the hit pose recoils for one beat while the ragdoll fades in over it.
+    const handoff = Math.min(1, terminalAge / RAGDOLL_HANDOFF_SECONDS);
+    if (handoff < 1) { ctx.save(); ctx.globalAlpha = 1 - handoff; flightCharacter.draw(ctx, snapshot, renderDt, characterOptions); ctx.restore(); }
+    drawChikunRagdoll(ctx, ragdoll, { alpha: handoff });
+    return;
+  }
+  if (flightCharacter.draw(ctx, snapshot, renderDt, characterOptions)) return;
   const bird = snapshot.chikun;
   const sprite = bird.velocityY > 1.6 ? fallSprite : coastSprite;
   const ready = sprite.complete && sprite.naturalWidth > 0;

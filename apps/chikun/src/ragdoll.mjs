@@ -30,9 +30,9 @@ export function createChikunRagdoll({x=280,y=360,velocityY=0,speed=2.4,kind='pip
 }
 const art=new Map();
 export function loadRagdollArt(){if(typeof Image==='undefined'||art.size)return Promise.resolve();return Promise.allSettled(['torso','head','armL','armR','legL','legR'].map(async name=>{const img=new Image();img.src='/assets/generated/chikun-ragdoll-v1/'+name+'.webp';try{await img.decode();art.set(name,img);}catch{}}));}
-export function drawChikunRagdoll(ctx,doll){
+export function drawChikunRagdoll(ctx,doll,{alpha=1}={}){
  if(!doll?.nodes.length)return;
- const fade=doll.age>5?Math.max(0,6-doll.age):1;ctx.save();ctx.globalAlpha=fade;
+ const fade=(doll.age>5?Math.max(0,6-doll.age):1)*Math.max(0,Math.min(1,alpha));ctx.save();ctx.globalAlpha=fade;
  for(const p of doll.blood){if(p.age>=p.life)continue;ctx.fillStyle=p.y>=688?'#781c29':'#bd293c';ctx.beginPath();ctx.ellipse(p.x,p.y,p.size*(p.y>=688?2.3:1),p.size*(p.y>=688?.45:1),0,0,Math.PI*2);ctx.fill();}
  for(const n of [...doll.nodes].reverse()){
   const img=art.get(n.name);ctx.save();ctx.translate(n.x,n.y);ctx.rotate(n.angle);
