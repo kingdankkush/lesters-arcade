@@ -291,6 +291,7 @@ import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetch
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance, summarizeVisibleLeaderboardProvenance } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
+import { createProfileSync, buildProfileDocument, mergeRemoteProfile } from './src/profile-sync-client.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
 const DEV_CABINETS_ENABLED = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('devCabinets') === '1';
@@ -1812,6 +1813,7 @@ function persistArcadeStateSoon() {
     const result = saveArcadeState(state, ARCADE_STORAGE);
     if (!result.ok) console.warn('[persist] arcade state save failed:', result.reason);
     else if (result.dropped.length) console.warn('[persist] saved without:', result.dropped.join(', '));
+    pushProfileToCloudSoon();
   }, 250);
 }
 try {
@@ -1832,6 +1834,43 @@ let connectedChainId = null;
 let walletConnector = 'none';
 let walletAuthenticated = false; // true once a SIWE signature is verified this session
 let walletAuthChallenge = null;  // the SIWE challenge we last issued
+
+// Hosted profile sync + relayed settlement (owner decisions 2026-09-16): the
+// wallet is the account and its profile follows it across devices. Every
+// call is best-effort; until the Vercel secrets exist the services answer
+// 503 and the portal keeps working from local storage exactly as before.
+const profileSync = createProfileSync({ storage: ARCADE_STORAGE });
+let profileSyncPulledFor = null;
+let profileSyncLastPushed = null;
+function currentProfileDocument() {
+  if (!connectedWallet || walletConnector !== 'injected-evm') return null;
+  const profile = state.profiles?.[connectedWallet];
+  return profile ? buildProfileDocument(profile, state.runHistory ?? []) : null;
+}
+function pushProfileToCloudSoon() {
+  if (!profileSync.hasSession(connectedWallet)) return;
+  const document = currentProfileDocument();
+  if (!document) return;
+  const json = JSON.stringify(document);
+  if (json === profileSyncLastPushed) return;
+  profileSyncLastPushed = json;
+  profileSync.push(document, { wallet: connectedWallet });
+}
+async function pullProfileFromCloud(wallet) {
+  if (!wallet || walletConnector !== 'injected-evm' || profileSyncPulledFor === wallet) return;
+  profileSyncPulledFor = wallet;
+  const pulled = await profileSync.pull(wallet);
+  if (!pulled.ok || !pulled.profile) return;
+  const profile = state.profiles?.[wallet];
+  if (!profile) return;
+  const merged = mergeRemoteProfile(profile, pulled.profile, state.runHistory ?? []);
+  for (const run of merged.missingRuns) appendRunRecord(state, run);
+  debugRuntimeLog('[Profile] Hosted profile merged:', { changed: merged.changed, runs: merged.missingRuns.length });
+  if (merged.changed) {
+    persistArcadeStateSoon();
+    render();
+  }
+}
 
 // SDK adapter: bridges the in-process HMH runtime to the arcade.* event schema.
 // Created per game session; emits real events from actual gameplay.
@@ -3007,32 +3046,53 @@ async function settleRankedRun(settlementInput, runStats = {}) {
 
   if (SETTLEMENT_LIVE && isRealWallet) {
     if (dom.combatStatus) {
-      dom.combatStatus.textContent = 'Publishing your run to LitVM… confirm the transaction in your wallet to pay the zkLTC gas.';
+      dom.combatStatus.textContent = 'Publishing your run to LitVM…';
     }
     try {
       // Trusted verifier attestation (owner direction 2026-09-16): the same
-      // origin /api/attest signs the EIP-712 VerifiedRun the contract checks.
-      // The client re-verifies that signature against the on-chain verifier
-      // before the wallet is asked to spend gas.
+      // origin signs the EIP-712 VerifiedRun the contract checks. The entry
+      // reserve already paid for settlement gas, so /api/settle submits the
+      // run FOR the player when a relayer is configured; otherwise it hands
+      // back the attestation and the player's wallet submits it, re-verified
+      // against the on-chain verifier before any gas is spent.
+      const attestPayload = {
+        gameId: settlementInput.gameId,
+        sessionId32: settlementInput.sessionKey,
+        player: settlementInput.wallet,
+        score: settlementInput.score,
+        kills: runStats.kills ?? 0,
+        maxCombo: runStats.maxCombo ?? 0,
+        survivalSeconds: runStats.survivalSeconds ?? 0,
+        bossId: runStats.bossId ?? null,
+        envelope: settlementInput.sessionEvidence,
+        runtimeId: settlementInput.runtimeId ?? null,
+        seasonId: settlementInput.seasonId ?? null,
+        achievements: settlementInput.unlockedAchievements ?? [],
+        level: settlementInput.campaignLevelNumber ?? 1,
+      };
       let attestation = settlementInput.verifierAttestation ?? null;
+      let txHash = null;
+      let relayedBy = null;
       if (!attestation) {
-        attestation = await requestVerifierAttestation({
-          gameId: settlementInput.gameId,
-          sessionId32: settlementInput.sessionKey,
-          player: settlementInput.wallet,
-          score: settlementInput.score,
-          kills: runStats.kills ?? 0,
-          maxCombo: runStats.maxCombo ?? 0,
-          survivalSeconds: runStats.survivalSeconds ?? 0,
-          bossId: runStats.bossId ?? null,
-          envelope: settlementInput.sessionEvidence,
-          runtimeId: settlementInput.runtimeId ?? null,
-          seasonId: settlementInput.seasonId ?? null,
-          achievements: settlementInput.unlockedAchievements ?? [],
-          level: settlementInput.campaignLevelNumber ?? 1,
-        });
+        try {
+          const settled = await profileSync.settle(attestPayload);
+          if (settled.relayed && settled.txHash) {
+            txHash = settled.txHash;
+            relayedBy = settled.relayer ?? 'relayer';
+          } else {
+            attestation = settled;
+          }
+        } catch (settleError) {
+          if (settleError?.code === 'session-already-settled' || settleError?.code === 'verifier-not-configured') throw settleError;
+          console.warn('[settlement] relayed settle unavailable; falling back to a player-signed submit:', settleError);
+          attestation = await requestVerifierAttestation(attestPayload);
+        }
       }
-      const { txHash } = await submitRankedSession(provider, {
+      if (!txHash) {
+        if (dom.combatStatus) {
+          dom.combatStatus.textContent = 'Publishing your run to LitVM… confirm the transaction in your wallet to pay the zkLTC gas.';
+        }
+        ({ txHash } = await submitRankedSession(provider, {
         sessionId: settlementInput.sessionId,
         sessionKey: settlementInput.sessionKey,
         envelopeHash: settlementInput.sessionEvidence.envelopeHash,
@@ -3046,16 +3106,18 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         achievements: settlementInput.unlockedAchievements ?? [],
         runtimeId: settlementInput.runtimeId ?? null,
         seasonId: settlementInput.seasonId ?? null,
-      });
+        }));
+      }
       const settlement = {
         mode: 'live',
         settled: true,
+        relayed: Boolean(relayedBy),
         wallet: settlementInput.wallet,
         gameId: settlementInput.gameId,
         sessionId: settlementInput.sessionId,
         score: settlementInput.score,
         cadenceKeys: { ...(settlementInput.cadenceKeys || {}) },
-        receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitVerifiedSession', txHash }],
+        receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitVerifiedSession', txHash, relayer: relayedBy }],
         primaryTxHash: txHash,
         settledAt: new Date().toISOString(),
         integrity,
@@ -3065,7 +3127,9 @@ async function settleRankedRun(settlementInput, runStats = {}) {
       persistArcadeStateSoon();
       const shortTx = `${txHash.slice(0, 10)}…${txHash.slice(-6)}`;
       if (dom.combatStatus) {
-        dom.combatStatus.textContent = `✓ Run published on-chain to LitVM. Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`;
+        dom.combatStatus.textContent = relayedBy
+          ? `✓ Run settled on-chain to LitVM by the settlement relayer (no wallet confirmation needed). Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`
+          : `✓ Run published on-chain to LitVM. Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`;
       }
       lastSettlementTxUrl = explorerTxUrl(txHash);
       lastSettlementError = null;
@@ -5887,6 +5951,14 @@ async function authenticateWalletSiwe(provider, address) {
     const ethers = await loadEthers();
     const ok = isValidLogin({ challenge, signature, signingAddress: address, recoverAddress: (message, sig) => ethers.verifyMessage(message, sig) });
     walletAuthenticated = ok;
+    if (ok) {
+      // Same signature, hosted session: the server re-verifies the SIWE
+      // login and hands back the token that authorises profile writes.
+      profileSync.login({ challenge, signature }).then((login) => {
+        if (login.ok) debugRuntimeLog('[Profile] Hosted session issued until', new Date(login.expiresAt).toISOString());
+        else if (!login.unavailable) console.warn('[Profile] Hosted session refused:', login.error);
+      }).catch(() => {});
+    }
     return ok;
   } catch (err) {
     console.warn('SIWE sign-in declined or failed; wallet connected as guest (ranked needs a signature).', err);
@@ -5963,6 +6035,10 @@ function showSignOutConfirmModal() {
 }
 
 function executeSignOut() {
+  profileSync.flush(connectedWallet).catch(() => {});
+  profileSync.logout();
+  profileSyncPulledFor = null;
+  profileSyncLastPushed = null;
   resetCombatAudioVoiceState();
   playSfxCue('menu-click', 0.05);
 
@@ -6178,6 +6254,7 @@ async function connectWallet() {
         persistArcadeStateSoon();
         render();
         debugRuntimeLog('[Wallet] Post-connect render complete. connectedWallet:', connectedWallet, 'officialAppStep:', officialAppStep);
+        pullProfileFromCloud(connectedWallet).catch((error) => console.warn('[Profile] Hosted profile pull failed:', error));
       } catch (renderError) {
         console.error('[Wallet] Connected but post-connect render failed:', renderError);
       }
@@ -14950,8 +15027,9 @@ function bindWalletProviderEvents(provider) {
       const changed = connectedWallet !== nextWallet.toLowerCase();
       connectedWallet = nextWallet.toLowerCase();
       walletConnector = 'injected-evm';
-      if (changed) { walletAuthenticated = false; walletAuthChallenge = null; }
+      if (changed) { walletAuthenticated = false; walletAuthChallenge = null; profileSyncPulledFor = null; profileSyncLastPushed = null; }
       connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
+      if (changed) pullProfileFromCloud(connectedWallet).catch((error) => console.warn('[Profile] Hosted profile pull failed:', error));
     } else if (walletConnector === 'injected-evm') {
       connectedWallet = null;
       connectedChainId = null;
