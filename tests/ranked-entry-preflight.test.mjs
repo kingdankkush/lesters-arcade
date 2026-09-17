@@ -19,8 +19,8 @@ function element() {
     click() { if (!this.disabled) listeners.get('click')?.(); },
   };
 }
-function subject({ status = {}, live = true, missingModal = false, pending = null } = {}) {
-  const dom = Object.fromEntries(['rankedEntryModal', 'rankedEntryWallet', 'rankedEntryNetwork', 'rankedEntryStatus', 'rankedEntryBalance', 'rankedEntryChainGuard', 'rankedEntryApprove', 'rankedEntryCancel'].map(k => [k, element()]));
+function subject({ status = {}, live = true, missingModal = false, pending = null, session = null } = {}) {
+  const dom = Object.fromEntries(['rankedEntryModal', 'rankedEntryWallet', 'rankedEntryNetwork', 'rankedEntryStatus', 'rankedEntryBalance', 'rankedEntryChainGuard', 'rankedEntryApprove', 'rankedEntryCancel', 'rankedEntryFee', 'rankedEntryReserve', 'rankedEntryTotal'].map(k => [k, element()]));
   if (missingModal) dom.rankedEntryModal = null;
   const calls = [];
   const context = {
@@ -31,6 +31,8 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     playSfxCue() {}, requestLiteForgeNetwork: async () => false,
     // 2026-09-16 native entry fee wiring (disclosed in the modal; paid only when live).
     RANKED_ENTRY_FEE_ZKLTC: '0.1', formatZkLtcWei: (wei) => `${Number(BigInt(wei) / 1_000_000_000_000_000n) / 1000} zkLTC`,
+    // Fee + settlement gas reserve rows (owner decision 2026-09-16).
+    RANKED_SETTLEMENT_GAS_RESERVE_WEI: '20000000000000000', rankedEntryTotalWei: (fee, reserve = '20000000000000000') => (BigInt(fee) + BigInt(reserve)).toString(),
     LITVM_CONTRACT_ADDRESSES: { scoreSubmissionRegistry: `0x${'ab'.repeat(20)}` }, CURRENT_RANKED_SEASON_ID: 'fixture-season',
     createCanonicalSessionIdentity: async () => ({ sessionKey: `0x${'cd'.repeat(32)}` }),
     openRankedSession: async () => { throw new Error('No entry payment in modal tests'); }, explorerTxUrl: (hash) => `https://example.invalid/tx/${hash}`,
@@ -39,7 +41,7 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     appendText: (parent, tag, text) => { const child = Object.assign(element(), { tag, textContent: text }); parent.append(child); return child; },
   };
   const request = runInNewContext(`(${main.slice(fn.start, fn.end)})`, context);
-  return { dom, calls, context, promise: request() };
+  return { dom, calls, context, promise: request(session) };
 }
 
 test('live preflight binds the selected cabinet rather than assuming a default', async () => {
@@ -90,4 +92,18 @@ test('approval cannot admit a different cabinet selected while its read was pend
   s.context.selectedGameId = 'chikun';
   s.dom.rankedEntryApprove.click();
   assert.equal(await s.promise, false);
+});
+
+test('the modal quotes fee, settlement reserve and total, then follows the contract quote once the live check passes', async () => {
+  const session = { sessionId: 'game-session-000000042', entryFeeWei: '100000000000000000', canonicalContext: {}, seed: 1, sessionNonce: 1 };
+  const preview = subject({ live: false, session });
+  assert.deepEqual([preview.dom.rankedEntryFee.textContent, preview.dom.rankedEntryReserve.textContent, preview.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.02 zkLTC', '0.12 zkLTC']);
+  preview.dom.rankedEntryCancel.click();
+  await preview.promise;
+  const live = subject({ session, status: { contractGate: { ok: true, entryFeeWei: 100000000000000000n, settlementGasReserveWei: 35000000000000000n, entryTotalWei: 135000000000000000n } } });
+  await tick(); await tick();
+  assert.deepEqual([live.dom.rankedEntryReserve.textContent, live.dom.rankedEntryTotal.textContent], ['0.035 zkLTC', '0.135 zkLTC'], 'the on-chain quote replaces the placeholder');
+  assert.equal(live.dom.rankedEntryApprove.disabled, false);
+  live.dom.rankedEntryCancel.click();
+  await live.promise;
 });
