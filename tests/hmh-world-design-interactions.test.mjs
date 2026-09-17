@@ -87,3 +87,18 @@ test('the exact runtime restart loop recloses previously opened gate navigation'
   assert.equal(context.worldDesignState.openGates.size,0);
   assert.equal(context.WORLD_BLOCKERS,LEVEL_ONE_WORLD.collisionBlockers);
 });
+
+test('every site opens exactly its own court gate once, and the gate ids are unique real colliders', () => {
+  const state=createWorldDesignState(), opened=[];
+  for(const site of WORLD_DESIGN_SITES) {
+    const before=state.openGates.size;
+    const events=hold(state,site,state.lastTick+1);
+    assert.equal(events.length,1,site.id);
+    assert.equal(events[0].gateId,site.gateId);
+    assert.equal(state.openGates.size,before+1,`${site.id} opens one gate`);
+    opened.push(site.gateId);
+    assert.ok(LEVEL_ONE_WORLD.collisionBlockers.some(b=>b.id===site.gateId),site.gateId);
+  }
+  assert.equal(new Set(opened).size,WORLD_DESIGN_SITES.length);
+  assert.equal(worldDesignActiveBlockers(state,LEVEL_ONE_WORLD.collisionBlockers).length,LEVEL_ONE_WORLD.collisionBlockers.length-WORLD_DESIGN_SITES.length);
+});

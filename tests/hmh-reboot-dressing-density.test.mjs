@@ -344,3 +344,15 @@ test('every shoulder-band scene window sees the density pass', () => {
     assert.ok(seen >= 10, `worldTour=${tour} sees only ${seen} world props`);
   }
 });
+
+test('no dressing, camp or enclosure prop stands inside a supply court', async () => {
+  const { WORLD_DESIGN_COURTS } = await import('../apps/hmh-reboot/src/world-design-encounters.mjs');
+  const layout = await import('../apps/hmh-reboot/src/authored-prop-layout.mjs');
+  const props = [
+    ...layout.buildAuthoredWorldPropPlacements({ worldId: 'forked-frontier', seed: layout.AUTHORED_DRESSING_SEED, countPerDistrict: 8 }),
+    ...layout.buildAuthoredEncampmentPlacements({ worldId: 'forked-frontier' }),
+    ...layout.buildAuthoredEnclosurePlacements({ worldId: 'forked-frontier' }),
+  ];
+  const offenders = props.filter((p) => WORLD_DESIGN_COURTS.some((c) => Math.abs(p.x - c.x) < 105 && Math.abs(p.y - c.y) < 100)).map((p) => p.id);
+  assert.deepEqual(offenders, [], `${offenders.length} props clutter a court floor`);
+});

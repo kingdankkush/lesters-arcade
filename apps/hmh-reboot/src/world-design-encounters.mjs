@@ -4,9 +4,11 @@ import { freezeDeep } from './value-guards.mjs';
 export const WORLD_DESIGN_SITES = freezeDeep([
   { id: 'relay-power', districtId: 'frontier-relay', name: 'Farmstead power station', kind: 'generator', x: 340, y: 3540, holdTicks: 90, reward: 'heal', gateId: 'relay-supply-gate', arenaId: 'relay-training-yard', color: 0x9de4b1 },
   { id: 'ravine-winch', districtId: 'rugpull-ravine', name: 'Quarry winch', kind: 'winch', x: 2990, y: 2810, holdTicks: 120, gateId: 'ravine-salvage-gate', arenaId: 'ravine-ambush-bowl', color: 0xf1bd83 },
-  { id: 'crossing-pump', districtId: 'liquidity-crossing', name: 'Reservoir pump', kind: 'pump', x: 5800, y: 4280, holdTicks: 150, reward: 'ammo', arenaId: 'crossing-lockdown', color: 0x81dce4 },
-  { id: 'hashwood-shrine', districtId: 'hashwood', name: 'Woodland sanctuary', kind: 'shrine', x: 7380, y: 3450, holdTicks: 120, reward: 'heal', arenaId: 'hashwood-clearing-arena', color: 0xc6e798 },
-  { id: 'mining-valve', districtId: 'mining-camp', name: 'Pressure relief valve', kind: 'vent', x: 9210, y: 3030, holdTicks: 90, hazard: { x: 9080, y: 2880, radius: 110, warningTicks: 90, durationTicks: 150 }, arenaId: 'mining-yard-arena', color: 0xffbe75 },
+  { id: 'crossing-pump', districtId: 'liquidity-crossing', name: 'Reservoir pump', kind: 'pump', x: 5800, y: 4280, holdTicks: 150, reward: 'ammo', gateId: 'crossing-haven-gate', arenaId: 'crossing-lockdown', color: 0x81dce4 },
+  { id: 'hashwood-shrine', districtId: 'hashwood', name: 'Woodland sanctuary', kind: 'shrine', x: 7380, y: 3450, holdTicks: 120, reward: 'heal', gateId: 'hashwood-sanctuary-gate', arenaId: 'hashwood-clearing-arena', color: 0xc6e798 },
+  // The steam vents across the trap court's mouth: the gate opens at once, but
+  // the reward is only safe once the warning ring and the burst have passed.
+  { id: 'mining-valve', districtId: 'mining-camp', name: 'Pressure relief valve', kind: 'vent', x: 9210, y: 3030, holdTicks: 90, hazard: { x: 9310, y: 2960, radius: 110, warningTicks: 90, durationTicks: 150 }, gateId: 'mining-trap-gate', arenaId: 'mining-yard-arena', color: 0xffbe75 },
   { id: 'yard-warehouse', districtId: 'liquidation-yard', name: 'Warehouse supplies', kind: 'cache', x: 10490, y: 3910, holdTicks: 180, reward: 'ammo', gateId: 'yard-service-gate', arenaId: 'liquidator-arena', color: 0xe9afd0 },
 ]);
 
@@ -32,20 +34,24 @@ export function buildWorldDesignPerimeter(bounds) {
 
 // Low fences frame optional supply courts. Opening the gate removes exactly
 // one collider; side rails remain, so the opening has a visible physical cause.
+// The gate faces its machinery; the other three sides keep their compass names.
 const courts = [
-  ['relay-supply', 'frontier-relay', 340, 3310],
-  ['ravine-salvage', 'rugpull-ravine', 2990, 2580],
-  ['yard-service', 'liquidation-yard', 10490, 3680],
+  ['relay-supply', 'frontier-relay', 340, 3310, 'south'],
+  ['ravine-salvage', 'rugpull-ravine', 2990, 2580, 'south'],
+  ['crossing-haven', 'liquidity-crossing', 6040, 4285, 'west'],
+  ['hashwood-sanctuary', 'hashwood', 7150, 3450, 'east'],
+  ['mining-trap', 'mining-camp', 9300, 2790, 'south'],
+  ['yard-service', 'liquidation-yard', 10490, 3680, 'south'],
 ];
-export const WORLD_DESIGN_COURTS = freezeDeep(courts.map(([id, districtId, x, y]) => ({id, districtId, x, y})));
+export const WORLD_DESIGN_COURTS = freezeDeep(courts.map(([id, districtId, x, y, gateSide]) => ({id, districtId, x, y, gateSide, gateId: `${id}-gate`})));
 export const WORLD_DESIGN_GATE_IDS = freezeDeep(courts.map(([id]) => `${id}-gate`));
-export const WORLD_DESIGN_COURT_BLOCKERS = freezeDeep(courts.flatMap(([id, districtId, x, y]) => [
+export const WORLD_DESIGN_COURT_BLOCKERS = freezeDeep(courts.flatMap(([id, districtId, x, y, gateSide]) => [
   ['west', x-105, y-100, x-105, y+100],
   ['east', x+105, y-100, x+105, y+100],
   ['north', x-105, y-100, x+105, y-100],
-  ['gate', x-105, y+100, x+105, y+100],
+  ['south', x-105, y+100, x+105, y+100],
 ].map(([side, ax, ay, bx, by]) => ({
-  id: `${id}-${side}`, districtId, anchor: { x: (ax+bx)/2, y: (ay+by)/2 },
+  id: `${id}-${side === gateSide ? 'gate' : side}`, districtId, anchor: { x: (ax+bx)/2, y: (ay+by)/2 },
   visualKind: 'fence', shape: { type: 'capsule', a: {x:ax,y:ay}, b: {x:bx,y:by}, radius: 12 },
   maxZ: 52, combatCover: true,
 }))));

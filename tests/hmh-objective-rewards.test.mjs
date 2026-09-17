@@ -15,9 +15,10 @@ const relay = () => OBJECTIVE_REWARDS.find(r=>r.objectiveId==='relay-power');
 const step = (s,t,point,extra={}) => stepCollectibles(s,{tick:t,player:point,...extra});
 
 test('all six machinery sites and the boss have distinct stable reward ownership',()=>{
-  assert.equal(OBJECTIVE_REWARDS.length,7);
-  assert.equal(new Set(OBJECTIVE_REWARDS.map(r=>r.id)).size,7);
-  assert.equal(new Set(OBJECTIVE_REWARDS.map(r=>r.objectiveId)).size,7);
+  assert.equal(OBJECTIVE_REWARDS.length,8);
+  assert.equal(new Set(OBJECTIVE_REWARDS.map(r=>r.id)).size,8);
+  assert.deepEqual([...new Set(OBJECTIVE_REWARDS.map(r=>r.objectiveId))].sort(),[...WORLD_DESIGN_SITES.map(s=>s.id),'liquidator-defeated'].sort());
+  for(const r of OBJECTIVE_REWARDS) assert.ok(!r.respawnTicks||[7200,10800].includes(r.respawnTicks),r.id);
 });
 test('locked court cannot grant its reward even when the player is inside',()=>{
   const s=make(),r=relay();
@@ -100,4 +101,93 @@ test('full ammunition, health and grenade inventory preserve pickups until capac
   assert.equal(canAcceptCollectible({kind:'weapon-cache',weaponId:'scatter-shotgun'},args),false);
   loadout.weapons['scatter-shotgun'].ammoInClip--;
   assert.equal(canAcceptCollectible({kind:'ammo-refill'},args),true);
+});
+
+// Remaining destinations (HMH-R02): havens and the trap follow the shipped
+// court pattern, so the same physical checks cover all six sites.
+import { createEnemyNavGrid, computeEnemyFlowField } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
+import { WORLD_DESIGN_COURTS } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
+import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, worldDesignHazardPhase } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+
+const gatedRewards = () => OBJECTIVE_REWARDS.map(r=>[r,WORLD_DESIGN_SITES.find(s=>s.id===r.objectiveId)]).filter(([,site])=>site?.gateId);
+
+test('every machinery site owns a court gate and every gated reward sits inside that court',()=>{
+  for(const site of WORLD_DESIGN_SITES) {
+    const court=WORLD_DESIGN_COURTS.find(c=>c.gateId===site.gateId);
+    assert.ok(court,`${site.id} has a court`);
+    assert.ok(world.collisionBlockers.some(b=>b.id===site.gateId),`${site.gateId} is a real collider`);
+    const rewards=OBJECTIVE_REWARDS.filter(r=>r.objectiveId===site.id);
+    assert.ok(rewards.length>=1,`${site.id} pays off`);
+    for(const r of rewards) assert.ok(Math.abs(r.x-court.x)<=69&&Math.abs(r.y-court.y)<=64,`${r.id} lies inside ${court.id}`);
+  }
+});
+
+test('no reward is reachable through a closed gate, and opening only that gate connects it to its machinery',()=>{
+  const queryGround=createLevelOneGroundQuery();
+  for(const [r,site] of gatedRewards()) {
+    const closed=createEnemyNavGrid({world,queryGround});
+    assert.equal(closed.isWalkableAt(r.x,r.y),true,`${r.id} interior is walkable`);
+    const closedField=computeEnemyFlowField({grid:closed,targetX:r.x,targetY:r.y});
+    assert.ok(closedField.distance[closed.cellAt(site.x,site.y)]<0,`${r.id} must be sealed while ${site.gateId} stands`);
+    const state=createWorldDesignState();state.openGates.add(site.gateId);
+    const open=createEnemyNavGrid({world:{...world,collisionBlockers:worldDesignActiveBlockers(state,world.collisionBlockers)},queryGround});
+    const openField=computeEnemyFlowField({grid:open,targetX:r.x,targetY:r.y});
+    assert.ok(openField.distance[open.cellAt(site.x,site.y)]>0,`${r.id} opens from ${site.id}`);
+  }
+});
+
+test('each objective cache stands clear of world obstacles with a walkable approach using the real player body',()=>{
+  const ground=createLevelOneGroundQuery();
+  const body=createCollisionBody({id:'cache-walker',kind:'player',radius:world.player.radius,minZ:0,maxZ:56});
+  for(const [r,site] of gatedRewards()) {
+    const blockers=world.collisionBlockers.filter(b=>b.id!==site.gateId);
+    const sweep=(from,to)=>resolveSweptCircleMotion({body,start:{...from,z:ground(from.x,from.y).groundZ},delta:{x:to.x-from.x,y:to.y-from.y},blockers,bounds:world.bounds});
+    const at=sweep(r,r);
+    assert.equal(at.depenetrations.length+at.contacts.length,0,`${r.id} overlaps ${at.depenetrations[0]?.blockerId??at.contacts[0]?.blockerId}`);
+    const approaches=[[84,0],[-84,0],[0,84],[0,-84]].map(([dx,dy])=>({x:r.x+dx,y:r.y+dy}));
+    assert.ok(approaches.some(from=>Math.abs(ground(from.x,from.y).groundZ-ground(r.x,r.y).groundZ)<=8&&sweep(from,r).contacts.length+sweep(from,r).depenetrations.length===0),`${r.id} has no clear approach`);
+    assert.ok(ground(r.x,r.y).groundZ>=0&&!ground(r.x,r.y).deepWater,`${r.id} is on dry ground`);
+  }
+});
+
+test('the three new destinations restock on simulation ticks with one instance and never repeat XP',()=>{
+  const s=make();
+  const byId=id=>OBJECTIVE_REWARDS.find(r=>r.id===id);
+  const pump=byId('reward:crossing-supply'),heal=byId('reward:hashwood-sanctuary'),scrypt=byId('reward:hashwood-scrypt'),trap=byId('reward:mining-trap');
+  assert.deepEqual([pump.respawnTicks,heal.respawnTicks,scrypt.respawnTicks,trap.respawnTicks],[7200,7200,7200,10800]);
+  assert.equal(step(s,1,pump).events.length,0,'pump haven is locked before the pump runs');
+  s.unlockedObjectives.add('crossing-pump');s.unlockedObjectives.add('hashwood-shrine');s.unlockedObjectives.add('mining-valve');
+  const first=step(s,2,pump).events;
+  assert.deepEqual([first.length,first[0].kind,first[0].xpGain],[1,'ammo-refill',0]);
+  assert.equal(objectiveRewardStatus(s,pump.id,3),'restocks in 120s');
+  assert.equal(step(s,7201,pump).events.length,0);
+  assert.equal(step(s,7202,pump).events[0].xpGain,0);
+  assert.equal(s.collectionCounts.get(pump.id),2);
+  // Both sanctuary caches share one owner but collect independently.
+  const shrine=step(s,7203,{x:7150,y:3450}).events.map(e=>[e.placementId,e.kind]).sort();
+  assert.deepEqual(shrine,[['reward:hashwood-sanctuary','heal'],['reward:hashwood-scrypt','grenade-supply']]);
+  assert.equal(step(s,7204,{x:7150,y:3450},{canCollect:e=>e.kind!=='heal'}).events.length,0);
+  const surge=step(s,7205,trap).events[0];
+  assert.deepEqual([surge.kind,surge.effectId,surge.expiresTick,surge.xpGain],['timed','berserk-candle',7805,0]);
+  assert.equal(objectiveRewardStatus(s,trap.id,7206),'restocks in 180s');
+  const expired=step(s,18004,trap).events;
+  assert.deepEqual(expired.map(e=>e.type),['collectible:expired'],'the surge lapses long before the trap restocks');
+  assert.equal(step(s,18005,trap).events[0].refreshed,false,'a restocked power-up after expiry is a fresh activation');
+  assert.equal(s.entries.filter(e=>e.placement.id===trap.id).length,1);
+});
+
+test('the liquidation trap vents across the court mouth after the gate opens, and never over the valve stand or the cache',()=>{
+  const site=WORLD_DESIGN_SITES.find(s=>s.id==='mining-valve'),court=WORLD_DESIGN_COURTS.find(c=>c.gateId===site.gateId),h=site.hazard;
+  const gate=world.collisionBlockers.find(b=>b.id===site.gateId),mouth={x:(gate.shape.a.x+gate.shape.b.x)/2,y:(gate.shape.a.y+gate.shape.b.y)/2};
+  assert.ok(Math.hypot(h.x-mouth.x,h.y-mouth.y)<h.radius,'steam covers the gate opening');
+  assert.ok(Math.hypot(h.x-site.x,h.y-site.y)>h.radius,'the valve stand is outside the steam');
+  const cache=OBJECTIVE_REWARDS.find(r=>r.objectiveId===site.id);
+  assert.ok(Math.hypot(h.x-cache.x,h.y-cache.y)>h.radius+world.player.radius,'the cache is outside the steam');
+  assert.equal(court.gateSide,'south');
+  const state=createWorldDesignState();const events=[];
+  for(let tick=0;tick<site.holdTicks;tick++) events.push(...stepWorldDesign(state,{tick,player:{...site,groundZ:0},queryGround:()=>({groundZ:0}),lineBlocked:()=>false}).events);
+  assert.equal(events[0].gateId,site.gateId,'the gate opens when the valve completes');
+  const done=site.holdTicks-1;
+  assert.equal(worldDesignHazardPhase(state,site,done).phase,'warning');
+  assert.equal(worldDesignHazardPhase(state,site,done+h.warningTicks+h.durationTicks).phase,'spent');
 });

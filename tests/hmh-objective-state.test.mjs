@@ -35,5 +35,5 @@ test('repeat supplies count as available at the ready tick without erasing first
   assert.equal(ready.collectedCount,1);
   assert.equal(ready.cooldownCount,0);
   assert.equal(cooling.cooldownCount,1);
-  assert.equal(ready.lockedCount,7);
+  assert.equal(ready.lockedCount,8);
 });

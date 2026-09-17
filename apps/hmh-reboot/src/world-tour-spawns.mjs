@@ -8,7 +8,9 @@ export function createWorldTourSpawns(authoredPointOfInterestPlacements) {
     // The yard's south service wall blocks shots; approach its drums from
     // the open north side. This changes only the explicit evidence tour.
     ...Object.fromEntries(WORLD_EXPLOSIVE_ZONES.map(d=>[`fuel-${d.id}`,{x:d.anchor.x,y:d.anchor.y+(d.id==='yard-tanker-row'?-130:130)}])),
-    ...Object.fromEntries(WORLD_DESIGN_SITES.map(s=>[`site-${s.id}`,{x:s.x,y:s.y+100}])),
+    // The pumphouse roof stands south of the pump, so that tour approaches
+    // from the pump-approach node on the north side instead.
+    ...Object.fromEntries(WORLD_DESIGN_SITES.map(s=>[`site-${s.id}`,{x:s.x,y:s.y+(s.id==='crossing-pump'?-100:100)}])),
     farmhouse: Object.freeze({x:650,y:1880}),
     reservoir: Object.freeze({x:5770,y:4150}),
     chapel: Object.freeze({x:11480,y:750}),

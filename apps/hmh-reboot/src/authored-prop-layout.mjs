@@ -4,6 +4,7 @@ import { seededUnit } from './deterministic-hash.mjs';
 // blockers, routes, water, arenas, set-pieces and spawn points are so it can
 // keep out of them. Nothing here is written back into the world contract.
 import { LEVEL_ONE_WORLD } from './level-one-world.mjs';
+import { WORLD_DESIGN_COURTS } from './world-design-encounters.mjs';
 export const AUTHORED_PROP_PIPELINE_ID = 'hmh-reboot-authored-props-v1';
 export const AUTHORED_PROP_ATLAS_IMAGE_URL = '/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png';
 export const AUTHORED_PROP_ATLAS_METADATA_URL = '/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json';
@@ -331,6 +332,11 @@ function placementBlocked(x, y, { landmarkRing = LANDMARK_RING, camps = AUTHORED
   }
   if (x < 40 || x > LEVEL_ONE_WORLD.bounds.maxX - 40 || y < 40 || y > LEVEL_ONE_WORLD.bounds.maxY - 40) return true;
   if (enclosureBlocked(x, y)) return true;
+  // Supply courts are reward rooms: their floor stays clear of dressing so the
+  // cache reads on its own, and nothing crowds the rails from outside.
+  for (const court of WORLD_DESIGN_COURTS) {
+    if (Math.abs(x - court.x) < 105 + PLACEMENT_CLEARANCE && Math.abs(y - court.y) < 100 + PLACEMENT_CLEARANCE) return true;
+  }
   for (const blocker of LEVEL_ONE_WORLD.collisionBlockers) {
     if (shapeClearance(blocker.shape, x, y) < PLACEMENT_CLEARANCE) return true;
   }

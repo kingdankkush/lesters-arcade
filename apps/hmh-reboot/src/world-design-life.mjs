@@ -89,8 +89,8 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       }
       if(near) {
         const actions={generator:'Restore power',winch:'Open salvage court',pump:'Start pump · supplies',shrine:'Rest · recover health',vent:'Release steam · keep clear',cache:'Open supplies'};
-        const reward=OBJECTIVE_REWARDS.find(r=>r.objectiveId===site.id);
-        const text=done?`${site.name}\n${reward?.rewardName??'Reward'} · ${objectiveRewardStatus(collectibleState,reward?.id,tick)}`:state.activating.has(site.id)?`${site.name} · activating`:`${site.name}\nApproach · ${actions[site.kind].toLowerCase()}${reward?`\nReward: ${reward.rewardName}`:''}`;
+        const rewards=OBJECTIVE_REWARDS.filter(r=>r.objectiveId===site.id);
+        const text=done?`${site.name}\n${rewards.map(r=>`${r.rewardName} · ${objectiveRewardStatus(collectibleState,r.id,tick)}`).join('\n')||'Reward · collected'}`:state.activating.has(site.id)?`${site.name} · activating`:`${site.name}\nApproach · ${actions[site.kind].toLowerCase()}${rewards.length?`\nReward: ${rewards.map(r=>r.rewardName).join(' + ')}`:''}`;
         if(lastPrompt!==text) {prompt.text=text;lastPrompt=text;}
         prompt.style.fontSize=view.width<600||view.height<500?11:13;
         const safeTop=view.height<500?125:view.width<600?266:185;

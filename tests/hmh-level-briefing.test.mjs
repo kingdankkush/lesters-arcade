@@ -141,3 +141,15 @@ test('the loading panel carries the four briefing slots and the runtime fills th
   assert.match(css, /\.hmh-startup-brief \{ display:grid;/);
   assert.match(css, /@media\(max-width:600px\)[^\n]*\.hmh-startup-brief \{ grid-template-columns:1fr;[^\n]*\.hmh-startup-brief dt \{ display:inline;/, 'phones collapse the briefing to inline labels');
 });
+
+test('briefings name the havens and the trap that their cited machinery opens', () => {
+  assert.match(LEVEL_ONE_BRIEFING.entries.hashwood.supply, /Litecoin Sanctuary/);
+  assert.match(LEVEL_ONE_BRIEFING.entries.hashwood.supply, /grenade/);
+  assert.match(LEVEL_ONE_BRIEFING.entries.mining.watch, /Liquidation Trap/);
+  assert.match(LEVEL_ONE_BRIEFING.entries.mining.watch, /steam/);
+  for (const entry of Object.values(LEVEL_ONE_BRIEFING.entries)) {
+    for (const feature of entry.features.filter((item) => item.kind === 'site')) {
+      assert.ok(WORLD_DESIGN_SITES.find((site) => site.id === feature.id)?.gateId, `${feature.id} opens a court`);
+    }
+  }
+});

@@ -5,6 +5,8 @@ import {LEVEL_ONE_WORLD} from '../apps/hmh-reboot/src/level-one-world.mjs';
 import {createCollisionBody,createStaticBlocker,resolveSweptCircleMotion} from '../apps/hmh-reboot/src/collision.mjs';
 import {traceHeightAwareLineOfSight} from '../apps/hmh-reboot/src/elevation.mjs';
 
+// The digest is a witness of the authored world: re-pinned when Level 1 gains
+// colliders (three more supply courts on 2026-09-16), never for a broad-phase change alone.
 test('movement and sight retain the full pre-optimization world collision digest',()=>{
   const hash=createHash('sha256'),blockers=LEVEL_ONE_WORLD.collisionBlockers;
   let seed=0x48130926;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
@@ -19,7 +21,7 @@ test('movement and sight retain the full pre-optimization world collision digest
     const sight=traceHeightAwareLineOfSight({from:{...start,z:start.z+34},to:{x:start.x+delta.x*6,y:start.y+delta.y*6,z:start.z+34},radius:i%3,blockers});
     hash.update(JSON.stringify({motion,sight}));
   }
-  assert.equal(hash.digest('hex'),'840cf5e7dee3a807fd3e812723c71e46a77b699d1f21ad54d9a532e2cb859ae9');
+  assert.equal(hash.digest('hex'),'0b6f50cee8751ea9261c6f962d0b6af485688ca75ff75f3c74094d519894373c');
 });
 
 test('immutable scenery is indexed locally and a new gate list gets a fresh index',async()=>{

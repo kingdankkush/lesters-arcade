@@ -4,12 +4,15 @@ export const SUPPLY_NAMES=Object.freeze({'coin-blaster':'Pistol','scatter-shotgu
 
 // First-clear weapons have no score/XP grant. Supply clocks use simulation
 // ticks, so pausing never restocks a site and restarting creates a fresh run.
+// Havens restock in 120 s; the trap's power-up in 180 s. A site may own more
+// than one cache, but every cache has exactly one owning objective.
 export const OBJECTIVE_REWARDS = freezeDeep([
   { id:'reward:relay-reserve', objectiveId:'relay-power', name:'Silver Reserve', task:'Start the farmstead generator, then enter the supply court.', rewardName:'Shotgun', assetId:'scatter-shotgun', x:340, y:3310 },
   { id:'reward:ravine-salvage', objectiveId:'ravine-winch', name:'Quarry Salvage', task:'Start the winch and enter the salvage court.', rewardName:'Railgun', assetId:'hash-rail-core', x:2990, y:2580 },
-  { id:'reward:crossing-supply', objectiveId:'crossing-pump', name:'Bridgehead Supply', task:'Start the reservoir pump, then collect supplies by the bank.', rewardName:'Ammo refill', assetId:'coin-blaster', kind:'ammo-refill', x:5820, y:4170, respawnTicks:7200 },
-  { id:'reward:hashwood-sanctuary', objectiveId:'hashwood-shrine', name:'Litecoin Sanctuary', task:'Activate the woodland sanctuary.', rewardName:'Health +30', assetId:'bonus-life', x:7380, y:3540, respawnTicks:7200 },
-  { id:'reward:mining-supply', objectiveId:'mining-valve', name:'Miner Relief', task:'Release the pressure valve, then collect supplies east of the steam.', rewardName:'Grenade +1', assetId:'nuke-liquidation', kind:'grenade-supply', x:9380, y:3030, respawnTicks:7200 },
+  { id:'reward:crossing-supply', objectiveId:'crossing-pump', name:'Liquidity Haven', task:'Start the reservoir pump, then enter the haven east of it.', rewardName:'Ammo refill', assetId:'coin-blaster', kind:'ammo-refill', x:6040, y:4285, respawnTicks:7200 },
+  { id:'reward:hashwood-sanctuary', objectiveId:'hashwood-shrine', name:'Litecoin Sanctuary', task:'Activate the woodland sanctuary, then enter the haven west of it.', rewardName:'Health +30', assetId:'bonus-life', x:7120, y:3450, respawnTicks:7200 },
+  { id:'reward:hashwood-scrypt', objectiveId:'hashwood-shrine', name:'Scrypt Cache', task:'Activate the woodland sanctuary, then enter the haven west of it.', rewardName:'Grenade +1', assetId:'nuke-liquidation', kind:'grenade-supply', x:7180, y:3450, respawnTicks:7200 },
+  { id:'reward:mining-trap', objectiveId:'mining-valve', name:'Liquidation Trap', task:'Release the pressure valve, wait out the steam, then enter the court north of it.', rewardName:'Double Damage', assetId:'berserk-candle', x:9300, y:2790, respawnTicks:10800 },
   { id:'reward:warehouse-reserve', objectiveId:'yard-warehouse', name:'Warehouse Reserve', task:'Open the warehouse service court.', rewardName:'Flamethrower', assetId:'bear-market-burner-cache', x:10490, y:3680 },
   { id:'reward:liquidator-vault', objectiveId:'liquidator-defeated', name:'Liquidator Vault', task:'Defeat the Liquidator to release the vault.', rewardName:'Arc Rifle', assetId:'lightning-ledger-cache', x:11350, y:3400 },
 ]);

@@ -6,6 +6,7 @@ import {LEVEL_ONE_WORLD} from '../apps/hmh-reboot/src/level-one-world.mjs';
 import {buildNativeBarrierPlacements, hiddenNativeBarriers, createNativeBarrierAppearance} from '../apps/hmh-reboot/src/native-barriers.mjs';
 
 import {buildWorldDesignPlacements,WORLD_DESIGN_ASSETS} from '../apps/hmh-reboot/src/world-design-layout.mjs';
+import {WORLD_DESIGN_GATE_IDS} from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 const kinds=['stone-wall','concrete-wall','concrete-barrier','wood-fence','steel-fence','rock-formation','boulders','bridge-rail'];
 const assets=new Map(kinds.flatMap(k=>[0,1,2,3,4,5,6].map(d=>[`hmh-barrier-${k}-${d}`,{}])));
 test('native barrier segments cover existing collision routes without changing authority',()=>{
@@ -28,6 +29,11 @@ test('opening one court removes only its gate segments, and missing art retains 
   const hidden=hiddenNativeBarriers(result.placements,open);
   assert.ok(hidden.length>0);assert.ok(hidden.every(id=>id.startsWith('native-barrier:relay-supply-gate:')));
   assert.equal(hiddenNativeBarriers(result.placements,new Set()).length,0);
+  for(const gateId of WORLD_DESIGN_GATE_IDS){
+    const rows=hiddenNativeBarriers(result.placements,new Set([gateId]));
+    assert.ok(rows.length>=2,`${gateId} has native gate segments`);
+    assert.ok(rows.every(id=>id.startsWith(`native-barrier:${gateId}:`)));
+  }
   assert.equal(buildNativeBarrierPlacements(LEVEL_ONE_WORLD,new Map()).blockerIds.size,0);
 });
 test('both delivery tiers bind all 56 repeatable views to the native source and recipes',()=>{

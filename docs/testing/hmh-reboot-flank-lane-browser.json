@@ -12,10 +12,10 @@
       },
       "seconds": 20,
       "status": "PASS",
-      "sampleCount": 76,
-      "ticksAdvanced": 1195,
+      "sampleCount": 77,
+      "ticksAdvanced": 502,
       "maxEnemies": 128,
-      "flankLaneSeekingPeak": 68,
+      "flankLaneSeekingPeak": 65,
       "chokepointHoldingPeak": 0,
       "failures": []
     },
@@ -27,10 +27,10 @@
       },
       "seconds": 20,
       "status": "PASS",
-      "sampleCount": 76,
-      "ticksAdvanced": 1199,
+      "sampleCount": 77,
+      "ticksAdvanced": 503,
       "maxEnemies": 128,
-      "flankLaneSeekingPeak": 69,
+      "flankLaneSeekingPeak": 65,
       "chokepointHoldingPeak": 0,
       "failures": []
     }

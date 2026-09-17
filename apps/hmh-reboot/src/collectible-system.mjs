@@ -30,7 +30,7 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
 export function createCollectibleState({ placements, objectivePlacements = [], collectionRadius = 80 } = {}) {
   if (!Array.isArray(placements) || placements.length < 10 || placements.length > 13) throw new TypeError('ten authored placements and at most three scheduled rare placements are required');
   if (!Number.isFinite(collectionRadius) || collectionRadius <= 0) throw new TypeError('collectionRadius must be positive');
-  if (!Array.isArray(objectivePlacements) || objectivePlacements.length > 7 || objectivePlacements.some(p=>!p.requiredObjective)) throw new TypeError('at most seven objective rewards are allowed');
+  if (!Array.isArray(objectivePlacements) || objectivePlacements.length > 8 || objectivePlacements.some(p=>!p.requiredObjective)) throw new TypeError('at most eight objective rewards are allowed');
   const ids = new Set();
   const entries = [...placements,...objectivePlacements].map((placement) => {
     if (!placement?.id || ids.has(placement.id)) throw new TypeError(`invalid or duplicate collectible ${String(placement?.id)}`);

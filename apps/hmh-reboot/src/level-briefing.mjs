@@ -33,7 +33,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     hashwood: {
       objective: 'Cross the beacon clearing and head east into the Mining Camp.',
       watch: 'You start inside the clearing arena; enemies close from the tree line on every side.',
-      supply: 'Head south for Double Damage. Activate the woodland sanctuary for healing and a medkit that restocks after two minutes of play.',
+      supply: 'Head south for Double Damage. Activate the woodland sanctuary to open the Litecoin Sanctuary haven: a medkit and grenade that restock.',
       features: [
         { kind: 'arena', id: 'hashwood-clearing-arena', inside: true },
         { kind: 'poi', id: 'hashwood-shrine', bearing: 'south', asset: 'berserk-candle' },
@@ -42,7 +42,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     },
     mining: {
       objective: 'Work east through the camp toward the Liquidation Yard.',
-      watch: 'The mining yard south-east is an arena, and its relief valve vents a steam hazard when run.',
+      watch: 'The mining yard south-east is an arena. Its relief valve opens the Liquidation Trap court, but vents steam across the mouth first.',
       supply: 'The Machine Gun is in the control room to the north-east.',
       features: [
         { kind: 'arena', id: 'mining-yard-arena', bearing: 'south-east' },

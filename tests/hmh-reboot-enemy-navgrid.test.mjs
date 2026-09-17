@@ -578,12 +578,14 @@ test('broad-phase rejection avoids repeated narrow-phase reads for a remote bloc
 
 test('nav broad-phase retains the established full-world walkability and directed edges byte-for-byte', () => {
   // Preserve the pre-feature witness separately from the new authored cover.
+  // Both witnesses were re-pinned on 2026-09-16 when the crossing, hashwood and
+  // mining supply courts added their rails to the authored world.
   const addedIds = new Set(WORLD_DESTRUCTIBLE_BLOCKERS.map(blocker => blocker.id));
   const originalWorld = {...LEVEL_ONE_WORLD, collisionBlockers: LEVEL_ONE_WORLD.collisionBlockers.filter(blocker => !addedIds.has(blocker.id))};
   const grid = createEnemyNavGrid({world:originalWorld,queryGround:createLevelOneGroundQuery()});
-  assert.equal(createHash('sha256').update(grid.walkable).update(grid.edges).digest('hex'),'1ce1e9b850dfad71f5b2775cfed48a93e57ec2192b793772452335520541fcb9');
+  assert.equal(createHash('sha256').update(grid.walkable).update(grid.edges).digest('hex'),'61eb9395514c69565a18edb39f14f9a0953dbccad0e06b9db77565328f78db7e');
   const current = buildGrid();
-  assert.equal(createHash('sha256').update(current.walkable).update(current.edges).digest('hex'),'9adcc303dd1910bcefda59fd98da0b70d18d65cd57b141cda385158b7ebcb3ff');
+  assert.equal(createHash('sha256').update(current.walkable).update(current.edges).digest('hex'),'a5ec8aca1af795020974d7e0a8ae00d101bfbec6ac5cc87f907f1a97393b2153');
 });
 
 test('broad-phase includes tangent circle, capsule and polygon contacts', () => {
