@@ -40,14 +40,19 @@ try {
   });
   await page.addInitScript(() => {
     const listeners = new Map();
-    const account = '0x1234567890abcdef1234567890abcdef12345678';
+    // Fixture key 0x11..11 (never a real wallet). The portal now recovers the
+    // SIWE signature, so the fixture signs the exact challenge with ethers.
+    const account = '0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a';
     globalThis.ethereum = {
       isMetaMask: true,
-      request: async ({ method }) => {
+      request: async ({ method, params = [] }) => {
         if (method === 'eth_requestAccounts' || method === 'eth_accounts') return [account];
         if (method === 'eth_chainId') return '0x1159';
         if (method === 'eth_getBalance') return '0xde0b6b3a7640000';
-        if (method === 'personal_sign') return `0x${'11'.repeat(65)}`;
+        if (method === 'personal_sign') {
+          const ethers = await import('/vendor/ethers.min.js');
+          return new ethers.Wallet(`0x${'11'.repeat(32)}`).signMessage(String(params[0] ?? ''));
+        }
         if (method === 'wallet_switchEthereumChain' || method === 'wallet_addEthereumChain') return null;
         throw new Error(`Headless smoke provider does not implement ${method}`);
       },

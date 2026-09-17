@@ -1,5 +1,5 @@
 {
-  "status": "candidate-ready-not-promoted",
+  "status": "verified-live",
   "date": "2026-09-16",
   "production": "https://lestersarcade.io",
   "liveDeploymentAtHandoff": "dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B",
@@ -13,9 +13,9 @@
   "cache": "lesters-arcade-v51-weapon-wheel",
   "rollback": "dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B",
   "promotion": {
-    "performed": false,
-    "reason": "The `npx vercel promote` call was blocked by the session permission classifier. The owner can promote with `npx vercel promote dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT --yes` from the worktree, then verify public hashes with the script noted below.",
-    "publicVerificationPending": true
+    "performed": true,
+    "command": "npx vercel promote dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT --yes",
+    "note": "Vercel promoted by creating a new production build of the same source; it reached Ready and the public alias serves it."
   },
   "changes": [
     "HMH: SWAP weapon control (Q/E, right bumper, touch SWAP), weapon wheel (Tab or HUD weapon card) with a simulation hold, railgun lane pierce through six bodies (7 Deep Proof, 8 Settler Rail).",
@@ -52,12 +52,26 @@
     "portal boot and simulated-wallet connect fallback checked headless; the stale simulated-wallet smoke also fails on the current live site (missing #walletStatus after the homepage redesign)"
   ],
   "publicVerification": {
-    "plannedScript": "compares sha256 of dist/main.js, sw.js, shells, dist chunks, the 2x prop atlas and the new SFX against the local build, and probes POST /api/attest for a 503 verifier-not-configured response",
-    "result": "not run: promotion pending"
+    "script": "sha256 of dist/main.js, sw.js, all shells and stylesheets, every dist chunk, the 2x prop atlas + metadata and the new SFX + manifest against the local build; POST /api/attest",
+    "matchingFiles": 97,
+    "checkedFiles": 97,
+    "mismatches": 0,
+    "attest": {
+      "status": 503,
+      "error": "verifier-not-configured"
+    }
   },
   "ownerDecisionsPending": [
-    "Promote dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT (or allow the promote command).",
     "Deploy the hardened contracts (deployer key) and set VERIFIER_PRIVATE_KEY / SCORE_REGISTRY_ADDRESS before enabling SETTLEMENT_LIVE.",
     "Fee split recipients per game, Chikun creator wallet and rights, achievement art set."
-  ]
+  ],
+  "deployment": "dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq",
+  "immutableUrl": "https://lesters-arcade-hrxxa0m5v-justin-agent-projects.vercel.app",
+  "liveBrowserSmokes": {
+    "origin": "https://lestersarcade.io",
+    "weaponWheel": "pass (desktop + 390x844 touch)",
+    "stackedPlayable": "pass, 6 profiles, zero errors",
+    "chikunRanked": "pass after the smoke wallet fixture was changed to sign the SIWE challenge with a fixture key; the previous dummy signature is now correctly rejected by the live login recovery",
+    "note": "The first live Chikun run failed only because the fixture returned a fake signature; a real wallet signs normally."
+  }
 }
