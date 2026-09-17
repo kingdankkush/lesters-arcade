@@ -5076,7 +5076,6 @@ async function boot() {
       framingZoom: framing.zoom,
       mobile: touchUiEnabled,
     });
-    if (!touchUiEnabled) camera.zoom *= userZoom.factor;
     followCameraTarget(camera, {
       ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
@@ -5087,6 +5086,9 @@ async function boot() {
         focusWeight: 0.18,
       } : {}),
     }, viewport(), { dtSeconds: Math.max(1 / 240, Math.min(ticker.deltaMS / 1000, 1 / 15)), maxDeadZoneFraction: 0.12 });
+    // Owner direction 2026-09-16: desktop wheel zoom scales the readable
+    // default after the follow step so the camera lead is unaffected.
+    if (!touchUiEnabled) camera.zoom *= userZoom.factor;
     // Shake offsets the render container only. It deliberately does NOT touch
     // camera.shakeX/Y: those are read back by screenToGround, so shaking the
     // camera would feed a jittered pointer position into aim resolution and

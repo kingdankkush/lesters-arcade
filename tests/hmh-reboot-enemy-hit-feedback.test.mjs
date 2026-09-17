@@ -199,7 +199,7 @@ test('the runtime loads the resolver as a dynamic chunk, records hits after the 
 
   // Pruned on retirement (inside queueEnemyDeathVisual, which both retirement
   // paths call) and cleared with the run.
-  const deathVisual = source.indexOf('const queueEnemyDeathVisual = (enemy, tick) => {');
+  const deathVisual = source.indexOf('const queueEnemyDeathVisual = (enemy, tick, cause = null) => {');
   assert.ok(deathVisual >= 0);
   const prune = source.indexOf('enemyHitFeedbackById.delete(enemy?.id);', deathVisual);
   assert.ok(prune > deathVisual && prune < source.indexOf('enemyDeathMarkers.has(enemy.id)', deathVisual), 'pruned before the corpse is queued');
