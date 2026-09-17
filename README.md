@@ -6,7 +6,7 @@ All three games now share an end-of-run share row (X, Facebook, Discord copy and
 
 Web3 groundwork (owner direction 2026-09-16): Ranked Mode is priced at 0.1 zkLTC in the LitVM native token, wallet login now verifies the signed challenge and Ranked refuses an unsigned session, the settlement plan pays a native entry before the run and settles through an EIP-712 verifier attestation, and `/api/attest` signs attestations once `VERIFIER_PRIVATE_KEY` is configured. The June contracts are replaced in source by a native-fee, soulbound-achievement set (`docs/web3/contract-overhaul-20260916.md`). `SETTLEMENT_LIVE` remains false and nothing is deployed: the fee is disclosed, never charged, until the owner deploys the hardened contracts and enables settlement.
 
-Runtime source `81a03ef6` on `fable/master-list-20260916`; production deployment `dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq` (promoted from candidate `dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT`); immutable build https://lesters-arcade-hrxxa0m5v-justin-agent-projects.vercel.app; site/game version `1.6.0`; cache marker `lesters-arcade-v51-weapon-wheel`. The local and hosted gates pass 3,791 of 3,842 tests with exactly 51 unchanged retired exceptions. All 97 checked public files and chunks match the certified local build and `/api/attest` fails closed (503, verifier not configured). Retained rollback: `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`. [Release receipt](docs/qa/master-list-release-20260916.json). Continue on `fable/master-list-20260916`.
+Runtime source `81a03ef6` on `fable/master-list-20260916`; production deployment `dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq` (promoted from candidate `dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT`); immutable build https://lesters-arcade-hrxxa0m5v-justin-agent-projects.vercel.app; site/game version `1.6.0`; cache marker `lesters-arcade-v52-owner-round`. The local and hosted gates pass 3,791 of 3,842 tests with exactly 51 unchanged retired exceptions. All 97 checked public files and chunks match the certified local build and `/api/attest` fails closed (503, verifier not configured). Retained rollback: `dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B`. [Release receipt](docs/qa/master-list-release-20260916.json). Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — completed updates verified live
 
@@ -20,7 +20,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v51-weapon-wheel`
+**Production cache marker:** `lesters-arcade-v52-owner-round`
 
 # Lester's Arcade
 

@@ -12,7 +12,7 @@
 // requests bypass stale HTTP-cache responses; content-hashed chunks retain their
 // immutable HTTP-cache policy. An already running game is never force-reloaded.
 
-const CACHE_VERSION = 'lesters-arcade-v51-weapon-wheel';
+const CACHE_VERSION = 'lesters-arcade-v52-owner-round';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
