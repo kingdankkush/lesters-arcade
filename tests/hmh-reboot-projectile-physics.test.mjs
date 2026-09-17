@@ -453,3 +453,13 @@ test('main routes projectile collision through the ground-transition planner', a
   assert.match(source, /flightCeilingZ:\s*shot\.flightCeilingZ/);
   assert.match(source, /flightCeilingZ:\s*muzzle\.z/);
 });
+
+test('a projectile damage scale lands a fraction of the muzzle damage on every pierce hit and fails closed outside (0, 1]', () => {
+  const scaled = createProjectileState({ id: 'lane', ownerId: 'hero', previous: { x: 0, y: 0, z: 28 }, current: { x: 140, y: 0, z: 28 }, radius: 2, damage: 54, policy: { type: 'pierce', maxTargets: 2 }, damageScale: 0.35 });
+  const result = resolveProjectilePath({ projectile: scaled, targets: [target('second', 90, 0), target('first', 40, 0)] });
+  assert.deepEqual(result.hits.map(({ targetId, damage }) => [targetId, damage]), [['first', 54 * 0.35], ['second', 54 * 0.35]]);
+  assert.equal(projectile('flat', { x: 0, y: 0 }, { x: 10, y: 0 }).damageScale, 1, 'default scale is one');
+  for (const damageScale of [0, -0.5, 1.5, Number.NaN, 'x']) {
+    assert.throws(() => createProjectileState({ id: 'bad', ownerId: 'hero', previous: { x: 0, y: 0, z: 28 }, current: { x: 1, y: 0, z: 28 }, damage: 5, damageScale }), /damageScale/);
+  }
+});

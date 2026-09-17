@@ -341,6 +341,7 @@ export function createRunProgression({ seed = 0, ownedWeaponIds = ['coin-blaster
   return {
     seed: validSeed(seed),
     score: 0,
+    silverCollected: 0,
     xp: 0,
     level: 1,
     pendingLevels: 0,
@@ -366,6 +367,7 @@ export function getRunProgressionSnapshot(state) {
   const nextThreshold = nextLevelThreshold(state.level);
   return freezeDeep({
     score: state.score,
+    silverCollected: state.silverCollected ?? 0,
     xp: state.xp,
     level: state.level,
     xpCurrentLevel: state.xp - currentFloor,
@@ -397,6 +399,22 @@ export function grantRunXp(state, baseXp, tick) {
   if (!Number.isInteger(baseXp) || baseXp <= 0 || baseXp > 1_000_000) throw new TypeError('baseXp must be a positive bounded integer');
   const gained = applyRunXp(state, baseXp);
   state.lastEvent = { tick, ...gained };
+  return getRunProgressionSnapshot(state);
+}
+
+// Owner decision 2026-09-16: silver Litecoin coins count toward the run
+// score. Each coin is worth a flat SILVER_SCORE_PER_COIN before the run's
+// score multiplier; coins never grant XP or levels.
+export const SILVER_SCORE_PER_COIN = 10;
+
+export function grantRunSilver(state, coins, tick) {
+  if (!state || !(state.recordedEnemyIds instanceof Set)) throw new TypeError('run progression state is required');
+  if (!Number.isInteger(coins) || coins <= 0 || coins > 100_000) throw new TypeError('coins must be a positive bounded integer');
+  if (!Number.isInteger(tick) || tick < 0 || tick > 1_000_000_000) throw new TypeError('tick must be a non-negative bounded integer');
+  const scoreGain = Math.round(coins * SILVER_SCORE_PER_COIN * resolveEffects(state).scoreMultiplier);
+  state.silverCollected = (state.silverCollected ?? 0) + coins;
+  state.score += scoreGain;
+  state.lastEvent = { sourceId: 'silver', coins, tick, scoreGain, xpGain: 0, levelsGained: 0 };
   return getRunProgressionSnapshot(state);
 }
 

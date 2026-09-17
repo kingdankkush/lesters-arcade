@@ -119,7 +119,13 @@ function validateExcludedTargets(value) {
   return Object.freeze([...new Set(value)].sort());
 }
 
-export function createProjectileState({ id, ownerId, previous, current, heightTransition = null, radius = 0, damage, policy = { type: 'stop' }, excludeTargetIds = null } = {}) {
+function validateDamageScale(value) {
+  if (value === undefined || value === null) return 1;
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > 1) throw new TypeError('projectile damageScale must be a number above zero and at most one');
+  return value;
+}
+
+export function createProjectileState({ id, ownerId, previous, current, heightTransition = null, radius = 0, damage, policy = { type: 'stop' }, excludeTargetIds = null, damageScale = 1 } = {}) {
   if (typeof id !== 'string' || !id) throw new TypeError('projectile id must be a non-empty string');
   if (typeof ownerId !== 'string' || !ownerId) throw new TypeError('projectile ownerId must be a non-empty string');
   return Object.freeze({
@@ -134,6 +140,10 @@ export function createProjectileState({ id, ownerId, previous, current, heightTr
     // Bodies a piercing slug already passed through on earlier ticks. They
     // stay out of every later segment so one enemy is never hit twice.
     excludeTargetIds: validateExcludedTargets(excludeTargetIds),
+    // Lane falloff (owner direction 2026-09-16): a slug that has already
+    // travelled part of its range lands with a fraction of its muzzle damage.
+    // The scale is fixed per segment by the runtime so hits stay deterministic.
+    damageScale: validateDamageScale(damageScale),
   });
 }
 
@@ -476,7 +486,7 @@ function freezeHit(projectile, event, kind = 'direct') {
     targetId: event.targetId,
     time: event.time,
     point: Object.freeze({ ...event.point }),
-    damage: projectile.damage,
+    damage: projectile.damage * (projectile.damageScale ?? 1),
     kind,
   });
 }

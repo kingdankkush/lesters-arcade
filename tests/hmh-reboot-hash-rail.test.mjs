@@ -4,8 +4,10 @@ import test from 'node:test';
 import { COLLECTIBLE_EFFECTS } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import {
   HMH_WEAPON_DEFINITIONS,
+  RAIL_FAR_DAMAGE_SCALE,
   applyWeaponProgression,
   createWeaponLoadout,
+  laneDamageScale,
   grantWeaponPickup,
   stepWeaponLoadout,
 } from '../apps/hmh-reboot/src/weapon-system.mjs';
@@ -31,7 +33,7 @@ test('W8 Hash Rail is a bounded deterministic piercing weapon', () => {
     clipSize: 3,
     reserve: 15,
     chargeTicks: 72,
-    policy: { type: 'pierce', maxTargets: 6 },
+    policy: { type: 'pierce', maxTargets: 6, falloff: { farScale: 0.35 } },
   });
   const state = createWeaponLoadout({ weaponIds: ['coin-blaster', 'hash-rail'], seed: 71 });
   const pickup = grantWeaponPickup(state, { tick: 1, weaponId: 'hash-rail', select: true });
@@ -88,4 +90,18 @@ test('W8 Hash Rail pickup, audio, tracking, HUD, and VFX are wired as one slice'
       palette: { primary: '#cbd5df', secondary: '#25303c', accent: '#58d8ff' }, runtimeScale: 0.68,
     },
   );
+});
+
+test('W8 Hash Rail damage falls off along its lane to 35% at maximum range on every rail variant', () => {
+  const range = HMH_WEAPON_DEFINITIONS['hash-rail'].range;
+  const falloff = HMH_WEAPON_DEFINITIONS['hash-rail'].policy.falloff;
+  assert.equal(RAIL_FAR_DAMAGE_SCALE, 0.35);
+  assert.equal(laneDamageScale({ traveled: 0, range, falloff }), 1, 'muzzle damage is untouched');
+  assert.equal(laneDamageScale({ traveled: range / 2, range, falloff }), 0.675, 'halfway is the linear midpoint');
+  assert.equal(laneDamageScale({ traveled: range, range, falloff }), 0.35, 'maximum range takes 35%');
+  assert.equal(laneDamageScale({ traveled: range * 3, range, falloff }), 0.35, 'never below the far scale');
+  assert.equal(laneDamageScale({ traveled: 500, range, falloff: null }), 1, 'weapons without a falloff spec are flat');
+  assert.throws(() => laneDamageScale({ traveled: 1, range, falloff: { farScale: 0 } }), /farScale/);
+  assert.deepEqual(applyWeaponProgression('hash-rail', { branches: { damage: 3 } }).projectilePolicy.falloff, { farScale: 0.35 }, 'Deep Proof keeps the lane falloff');
+  assert.deepEqual(applyWeaponProgression('coin-blaster', { evolutionId: 'settler-rail' }).projectilePolicy, { type: 'pierce', maxTargets: 8, falloff: { farScale: 0.35 } }, 'the pistol Settler Rail evolution is a lane weapon with the same falloff');
 });

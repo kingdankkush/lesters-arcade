@@ -64,6 +64,20 @@ function rotate(direction, radians) {
 const STOP_POLICY = freezeDeep({ type: 'stop' });
 const PELLET_POLICY = freezeDeep({ type: 'pellet' });
 
+// Owner direction 2026-09-16: railgun damage falls off along its lane. A body
+// at the muzzle takes full damage; a body at maximum range takes 35% of it.
+// Linear in distance travelled so the scale is a pure function of the shot.
+export const RAIL_FAR_DAMAGE_SCALE = 0.35;
+
+export function laneDamageScale({ traveled, range, falloff = null } = {}) {
+  if (!falloff || typeof falloff !== 'object') return 1;
+  const farScale = Number(falloff.farScale);
+  if (!Number.isFinite(farScale) || farScale <= 0 || farScale > 1) throw new TypeError('falloff.farScale must be a number above zero and at most one');
+  if (!Number.isFinite(range) || range <= 0) return 1;
+  const fraction = Math.max(0, Math.min(1, (Number(traveled) || 0) / range));
+  return 1 - (1 - farScale) * fraction;
+}
+
 export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   'coin-blaster': {
     id: 'coin-blaster',
@@ -146,7 +160,8 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
     pickupReserveAmmo: 15,
     // Owner direction 2026-09-16: the rail is a lane weapon. One slug keeps
     // going through a crowd; bosses take the same high hit without dying to it.
-    policy: { type: 'pierce', maxTargets: 6 },
+    // Damage falls off along the lane: a body at maximum range takes 35%.
+    policy: { type: 'pierce', maxTargets: 6, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } },
   },
   'lightning-ledger': {
     id: 'lightning-ledger',
@@ -310,7 +325,7 @@ export const progressionByWeapon = (ranks = {}) => ({
 const SPECIAL_EFFECTS = freezeDeep({
   // Rounds punch through a target and keep going.
   'armor-piercing': { policy: { type: 'pierce', maxTargets: 3 } },
-  'deep-proof': { policy: { type: 'pierce', maxTargets: 7 }, projectileTag: 'deep-proof' },
+  'deep-proof': { policy: { type: 'pierce', maxTargets: 7, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } }, projectileTag: 'deep-proof' },
   ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
   // Shells detonate on impact.
   explosive: { policy: { type: 'splash', radius: 58 } },
@@ -486,7 +501,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
 
   // The evolution keeps priority over a capstone policy: it is the rarer award.
   const projectilePolicy = evolutionId === 'settler-rail'
-    ? freezeDeep({ type: 'pierce', maxTargets: 8 })
+    ? freezeDeep({ type: 'pierce', maxTargets: 8, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } })
     : specialPolicy ?? definition.policy;
   return freezeDeep({
     weaponId,

@@ -64,6 +64,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/server-neon.mjs',
   'apps/portal/src/profile-sync-client.mjs',
   'tests/profile-sync-client.test.mjs',
+  'tests/hmh-reboot-silver-score.test.mjs',
   'api/attest.mjs',
   'api/settle.mjs',
   'api/session.mjs',
