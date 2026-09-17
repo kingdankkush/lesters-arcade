@@ -65,7 +65,7 @@ def metal(gain, at, hz=1500, decay=12):
 # below 250 Hz, and pump/reload mechanics are short, bright (6-7 kHz
 # centroid) metal clicks. `tail` adds that body, `room` a soft reflected
 # tail, `pump` a two-stage rack after the shot.
-def rack(at, gain=.55):
+def rack(at, gain=.4):
     return [*metal(gain, at, hz=2300, decay=9), layer('noise', gain * .9, 14, at=at, high=1800, low=8000),
             *metal(gain * .8, at + 95, hz=1500, decay=10), layer('noise', gain * .7, 12, at=at + 95, high=1200, low=7000)]
 
@@ -80,9 +80,9 @@ def shot(seed, duration, hz, decay, *, crack=4.2, sub=66, heavy=False, tail=0, r
         *metal(.13, 26, hz=1900, decay=8),
     ]
     if tail:
-        layers += [layer('noise', .7, tail, at=40, attack=6, low=900),
-                   layer('sub', 1.4 if heavy else .6, tail * .9, at=30, attack=8, hz=sub * .75, sweep=.9, low=220),
-                   layer('tone', .5 if heavy else .25, tail * .7, at=30, attack=6, hz=hz * .6, sweep=.85, low=700)]
+        layers += [layer('noise', .55, tail, at=40, attack=6, low=900),
+                   layer('sub', 1.1 if heavy else .5, tail * .9, at=30, attack=8, hz=sub * .75, sweep=.9, low=220),
+                   layer('tone', .4 if heavy else .2, tail * .7, at=30, attack=6, hz=hz * .6, sweep=.85, low=700)]
     if room:
         layers.append(layer('noise', room, max(tail, decay * 2), at=90, attack=30, low=2600, high=300))
     if pump:
@@ -108,17 +108,17 @@ def reward(seed, notes, runtime, *, duration=460):
 CUES = {
     # Immediate crack, low-mid pressure that survives laptop speakers, then
     # a brief reflected tail. The fired event never starts with a charge-up.
-    'hmh-fire-coin-blaster': shot(0x0C01B1A5, 360, 165, 55, crack=1.6, tail=120, room=.12),
+    'hmh-fire-coin-blaster': shot(0x0C01B1A5, 300, 165, 42, crack=2.6, tail=48, room=.05),
     # Shotgun: heavy boom, long body, then the pump rack at 330 ms (well inside
     # its 0.95/s fire cycle) so every shell has a mechanical follow-through.
-    'hmh-fire-scatter-shotgun': shot(0x5C471234, 980, 150, 150, crack=2.8, sub=62, heavy=True, tail=320, room=.3, pump=330),
-    'hmh-fire-auto-miner': shot(0x0A471111, 150, 178, 30, crack=1.1, sub=74, tail=30),
-    'hmh-fire-launcher-rig': shot(0x1A0C4E12, 900, 140, 160, crack=2.6, sub=56, heavy=True, tail=340, room=.26),
+    'hmh-fire-scatter-shotgun': shot(0x5C471234, 720, 150, 95, crack=4.6, sub=62, heavy=True, tail=95, room=.1, pump=250),
+    'hmh-fire-auto-miner': shot(0x0A471111, 140, 178, 27, crack=1.3, sub=74, tail=18),
+    'hmh-fire-launcher-rig': shot(0x1A0C4E12, 760, 140, 105, crack=4.0, sub=56, heavy=True, tail=110, room=.1),
     'hmh-fire-hash-rail': cue(0x8A571A11, 520, [
         layer('noise', 3.2, 3.5, high=1600,attack=.12,length=24,post=True),
-        layer('sub', 1.1, 90, hz=71, sweep=.94),layer('tone', .70, 58, hz=190,sweep=.88),
+        layer('sub', .8, 78, hz=71, sweep=.94),layer('tone', .70, 58, hz=190,sweep=.88),
         layer('metal', .3, 65, hz=530, sweep=.82), layer('noise', .2, 65, at=20, low=4700),
-        layer('noise', .5, 150, at=40, attack=6, low=1500), layer('metal', .18, 120, at=60, hz=820, sweep=.7),
+        layer('noise', .3, 90, at=40, attack=6, low=1500), layer('metal', .16, 90, at=60, hz=820, sweep=.7),
     ], peak=.76, drive=1.1),
     'hmh-fire-lightning-ledger': cue(0x11E6E220, 190, [
         layer('noise', 1.4, 8, high=1800), layer('metal', .8, 27, hz=670, sweep=1.14),

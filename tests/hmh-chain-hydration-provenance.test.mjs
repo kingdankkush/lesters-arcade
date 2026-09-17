@@ -94,7 +94,8 @@ test('legacy hydrated caches do not turn a session ID into transaction proof', (
 test('the reader rejects a wallet provider on the wrong chain', async () => {
   const ethers = await loadEthers();
   const iface = new ethers.Interface(SCORE_REGISTRY_ABI);
-  const tuple = [hash('ab'), wallet, hash('cd'), 1200n, 10n, 4n, 120n, hash('11'), 1788955200n, true, true];
+  // Hardened thirteen-field ScoreRecord (2026-09-16): runtimeId and seasonId precede submittedAt.
+  const tuple = [hash('ab'), wallet, hash('cd'), 1200n, 10n, 4n, 120n, hash('11'), hash('77'), hash('88'), 1788955200n, true, true];
   const walletProvider = { async request({ method, params }) {
     if (method === 'eth_chainId') return '0x1';
     if (method === 'eth_call') {
@@ -112,7 +113,7 @@ test('the reader rejects a wallet provider on the wrong chain', async () => {
 test('the real player-session reader excludes unverified decoded tuples', async () => {
   const ethers = await loadEthers();
   const iface = new ethers.Interface(SCORE_REGISTRY_ABI);
-  const tuple = (verified) => [hash('ab'), wallet, hash('cd'), 1200n, 10n, 4n, 120n, hash('11'), 1788955200n, verified, true];
+  const tuple = (verified) => [hash('ab'), wallet, hash('cd'), 1200n, 10n, 4n, 120n, hash('11'), hash('77'), hash('88'), 1788955200n, verified, true];
   const encoded = iface.encodeFunctionResult('getPlayerSessions', [[tuple(false), tuple(true)]]);
   const calls = [];
   const walletProvider = { async request({ method, params }) {
