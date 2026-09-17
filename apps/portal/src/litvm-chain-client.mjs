@@ -41,6 +41,8 @@ export const GAME_REGISTRY_ABI = [
 // contract derives the split from GameRegistry and records the paid session.
 export const RANKED_ENTRY_ABI = [
   'function openSession(bytes32 sessionId, bytes32 gameId) external payable',
+  'function quoteEntry(bytes32 gameId) external view returns (uint256 entryFeeWei, uint256 settlementGasReserveWei, uint256 totalWei)',
+  'function settlementGasReserveWei() view returns (uint256)',
   'function isPaid(bytes32 sessionId, address player, bytes32 gameId) external view returns (bool)',
   'function getPaidSession(bytes32 sessionId) external view returns (tuple(address player, bytes32 gameId, uint256 amountWei, uint64 openedAt, bool exists))',
   'function entryFeeEnabled() view returns (bool)',
@@ -162,7 +164,16 @@ async function readRankedContractGate(ethers, provider, gameId) {
       const wiredEntry = await scores.rankedEntry(overrides);
       if (wiredEntry.toLowerCase() !== rankedEntryAddress.toLowerCase()) return deny('ranked-entry-mismatch', 'The score contract is bound to a different entry-fee contract.');
     }
-    return { ok: true, reason: null, error: null, blockNumber, gameId32, entryFeeWei, rankedEntryAddress, trustedVerifier: verifier };
+    // The contract quotes the exact msg.value: flat fee + settlement gas reserve.
+    let entryTotalWei = entryFeeWei, settlementGasReserveWei = 0n;
+    if (rankedEntryAddress) {
+      const entry = new ethers.Contract(rankedEntryAddress, RANKED_ENTRY_ABI, provider);
+      const quote = await entry.quoteEntry(gameId32, overrides);
+      settlementGasReserveWei = BigInt(quote.settlementGasReserveWei);
+      entryTotalWei = BigInt(quote.totalWei);
+      if (BigInt(quote.entryFeeWei) !== entryFeeWei) return deny('entry-quote-mismatch', 'The entry contract quotes a different flat fee than the game registry.');
+    }
+    return { ok: true, reason: null, error: null, blockNumber, gameId32, entryFeeWei, settlementGasReserveWei, entryTotalWei, rankedEntryAddress, trustedVerifier: verifier };
   } catch {
     return deny('contract-read-failed', 'Ranked contract approval and compatibility could not be verified. Try again later.');
   }
@@ -187,9 +198,9 @@ export async function openRankedSession(walletProvider, { sessionId, sessionKey 
   const signer = await browserProvider.getSigner();
   const entry = new ethers.Contract(gate.rankedEntryAddress, RANKED_ENTRY_ABI, signer);
   const sessionId32 = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
-  const tx = await entry.openSession(sessionId32, gate.gameId32, { value: gate.entryFeeWei });
+  const tx = await entry.openSession(sessionId32, gate.gameId32, { value: gate.entryTotalWei });
   const receipt = await tx.wait();
-  return { txHash: tx.hash, receipt, paid: true, amountWei: gate.entryFeeWei, sessionId32 };
+  return { txHash: tx.hash, receipt, paid: true, amountWei: gate.entryTotalWei, entryFeeWei: gate.entryFeeWei, settlementGasReserveWei: gate.settlementGasReserveWei, sessionId32 };
 }
 
 // --- attestation: ask the trusted verifier (/api/attest) to sign the run -----

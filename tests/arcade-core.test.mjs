@@ -510,30 +510,26 @@ test('paid mode session uses free-entry (testnet) economics and leaderboard elig
   assert.equal(session.paymentToken, 'zkLTC');
 });
 
-test('revenue split reserves settlement gas and routes the rest (dev wallet biggest share)', () => {
-  const split = calculateRevenueSplit(250_000, DEFAULT_REVENUE_SPLIT_BPS);
-
-  assert.deepEqual(split, {
-    settlement: 37_500,   // 15% reserved for on-chain settlement gas
-    dev: 137_500,         // 55% -> dev wallet (biggest share)
-    tournament: 45_000,   // 18% -> tournament pools
-    community: 30_000,    // 12% -> community building
-  });
-  // dev is the largest bucket
-  assert.ok(split.dev > split.settlement && split.dev > split.tournament && split.dev > split.community);
-  // total is preserved
-  assert.equal(split.settlement + split.dev + split.tournament + split.community, 250_000);
+test('revenue split sends 15% to the treasury and 85% to the developer (owner decision 2026-09-16)', () => {
+  const split = calculateRevenueSplit(100_000, DEFAULT_REVENUE_SPLIT_BPS);
+  assert.equal(split.treasury, 15_000);
+  assert.equal(split.dev, 85_000);
+  assert.equal(split.treasury + split.dev, 100_000);
+  // Dust from flooring lands with the developer.
+  const odd = calculateRevenueSplit(100_003, DEFAULT_REVENUE_SPLIT_BPS);
+  assert.equal(odd.treasury + odd.dev, 100_003);
+  assert.equal(odd.treasury, 15_000);
+  assert.equal(DEFAULT_REVENUE_SPLIT_BPS.treasury + DEFAULT_REVENUE_SPLIT_BPS.dev, 10_000);
 });
 
-test('unused settlement-gas reserve rolls into the dev wallet', () => {
-  // actual gas costs only 10,000 micro-units; settlement bucket is 37,500.
-  const split = calculateRevenueSplit(250_000, DEFAULT_REVENUE_SPLIT_BPS, { settlementGasMicroUnits: 10_000 });
-  assert.equal(split.settlement, 10_000);             // only actual gas reserved
-  assert.equal(split.settlementRemainderToDev, 27_500); // leftover
-  assert.equal(split.dev, 137_500 + 27_500);          // remainder rolled into dev
-  assert.equal(split.gasShortfall, 0);
-  // total still preserved
-  assert.equal(split.settlement + split.dev + split.tournament + split.community, 250_000);
+test('the settlement gas reserve is separate from the flat fee and rides along as one total', async () => {
+  const { RANKED_ENTRY_FEE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei } = await import('../apps/portal/src/arcade-core.mjs');
+  assert.equal(RANKED_ENTRY_FEE_WEI, '100000000000000000');
+  assert.equal(RANKED_SETTLEMENT_GAS_RESERVE_WEI, '20000000000000000');
+  assert.equal(rankedEntryTotalWei(), '120000000000000000');
+  const legacy = calculateRevenueSplit(250_000, { settlement: 1500, dev: 5500, tournament: 1800, community: 1200 }, { settlementGasMicroUnits: 10_000 });
+  assert.equal(legacy.settlement, 10_000, 'legacy bucket sets still resolve their settlement reserve');
+  assert.equal(legacy.settlementRemainderToDev, 27_500);
 });
 
 test('settlement plan routes the dev share to the dev wallet', async () => {
@@ -552,8 +548,10 @@ test('settlement plan routes the dev share to the dev wallet', async () => {
   // ArcadeRankedEntry derives the dev wallet/splits from GameRegistry; the
   // client plan may only name the session, game and value.
   assert.deepEqual(Object.keys(route.args).sort(), ['gameId', 'sessionId']);
-  assert.equal(route.valueWei, '250000000000000000');
-  assert.equal(plan.revenueSplit.dev, 137_500);
+  assert.equal(route.entryFeeWei, '250000000000000000');
+  assert.equal(route.valueWei, '270000000000000000', 'flat fee plus the 0.02 zkLTC settlement gas reserve');
+  assert.equal(plan.revenueSplit.dev, 212_500, '85% of the 250,000 preview units');
+  assert.equal(plan.revenueSplit.treasury, 37_500);
   assert.equal(plan.devWallet, '0x' + 'd'.repeat(40));
 });
 

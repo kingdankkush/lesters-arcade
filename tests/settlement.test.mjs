@@ -113,14 +113,18 @@ test('a native 0.1 zkLTC entry fee produces one payable openSession call with no
   assert.ok(entry, 'paid session must include the native entry call');
   assert.equal(entry.method, 'openSession');
   assert.equal(plan.calls[0], entry, 'the entry fee precedes the run and the score submit');
-  assert.equal(entry.valueWei, '100000000000000000');
+  assert.equal(entry.valueWei, '120000000000000000', 'flat fee plus the settlement gas reserve');
+  assert.equal(entry.entryFeeWei, '100000000000000000');
+  assert.equal(entry.settlementGasReserveWei, '20000000000000000');
+  assert.equal(plan.entryTotalWei, '120000000000000000');
   assert.deepEqual(Object.keys(entry.args).sort(), ['gameId', 'sessionId']);
   assert.equal('paymentToken' in entry.args, false);
   assert.equal('split' in entry.args, false);
   assert.ok(!plan.calls.some((c) => c.contract === 'arcadePaymentRouter' || c.method === 'startPaidSession'), 'the ERC-20 router is retired');
   assert.equal(plan.entryFeeWei, '100000000000000000');
   assert.equal(plan.paymentToken, 'zkLTC');
-  assert.equal(plan.revenueSplit.dev, 55_000, 'preview split of 100,000 micro-units (0.1 zkLTC)');
+  assert.equal(plan.revenueSplit.dev, 85_000, '85% of the 100,000 micro-unit preview (0.1 zkLTC)');
+  assert.equal(plan.revenueSplit.treasury, 15_000);
 });
 
 test('zero entry fee emits no entry call', () => {

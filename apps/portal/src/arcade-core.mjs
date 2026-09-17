@@ -90,17 +90,26 @@ export function formatZkLtcWei(wei) {
   return `${whole}${fraction ? `.${fraction}` : ''} ${RANKED_PAYMENT_TOKEN}`;
 }
 
-// Ranked $0.25 fee split. Cost-first intent: a settlement reserve covers the
-// on-chain gas to write the player's score/achievements/username; the dev bucket
-// is the biggest share and funds future game development, community building, and
-// more. Any settlement-reserve gas left unused rolls into the dev bucket (see
-// calculateRevenueSplit -> settlementRemainderToDev). Must total 10,000 bps.
+// Ranked fee split (owner decision 2026-09-16): every game sends 15% of the
+// flat 0.1 zkLTC entry to the Lester's Arcade treasury and the remaining 85%
+// to the game's developer. Settlement gas is NOT part of this split: the
+// player pays the flat fee plus a separate settlement gas reserve that funds
+// the relayer (see RANKED_SETTLEMENT_GAS_RESERVE_WEI), so the fee can be
+// adjusted as one flat number. Must total 10,000 bps.
 export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
-  settlement: 1500,  // 15% reserved for on-chain settlement gas (zkLTC)
-  dev: 5500,         // 55% -> dev wallet (biggest share)
-  tournament: 1800,  // 18% -> tournament prize pools
-  community: 1200,   // 12% -> community building
+  treasury: 1500,    // 15% -> Lester's Arcade treasury wallet
+  dev: 8500,         // 85% -> the game's developer wallet
 });
+
+// Settlement gas reserve paid with the entry and forwarded to the relayer
+// vault so the relayer can submit the verified score for the player. A
+// placeholder estimate (0.02 zkLTC) the operator tunes on chain; the live
+// quote comes from ArcadeRankedEntry.quoteEntry, never from this constant.
+export const RANKED_SETTLEMENT_GAS_RESERVE_WEI = '20000000000000000';
+
+export function rankedEntryTotalWei(entryFeeWei = RANKED_ENTRY_FEE_WEI, reserveWei = RANKED_SETTLEMENT_GAS_RESERVE_WEI) {
+  return (BigInt(String(entryFeeWei)) + BigInt(String(reserveWei))).toString();
+}
 
 // Dev wallet that receives the dev share + unused settlement-gas remainder.
 // Confirmed by the owner on 2026-09-16 as the zkLTC recipient for everything
@@ -5177,24 +5186,22 @@ export function calculateRevenueSplit(amountMicroUnits, splitBps = DEFAULT_REVEN
     throw new Error(`revenue split must equal 10,000 bps; received ${totalBps}`);
   }
 
-  const settlement = Math.floor((amountMicroUnits * splitBps.settlement) / 10_000);
-  const dev = Math.floor((amountMicroUnits * splitBps.dev) / 10_000);
-  const tournament = Math.floor((amountMicroUnits * splitBps.tournament) / 10_000);
-  const community = Math.floor((amountMicroUnits * splitBps.community) / 10_000);
-  const allocated = settlement + dev + tournament + community;
-
-  // Dust from flooring goes to dev (largest, owner-facing bucket).
-  const split = {
-    settlement,
-    dev: dev + (amountMicroUnits - allocated),
-    tournament,
-    community,
-  };
+  // Generic over the bucket names so the 2026-09-16 treasury/dev split and
+  // any future bucket set share one implementation. Dust from flooring goes
+  // to dev (the owner-facing bucket).
+  const split = {};
+  let allocated = 0;
+  for (const [bucket, bps] of Object.entries(splitBps)) {
+    split[bucket] = Math.floor((amountMicroUnits * bps) / 10_000);
+    allocated += split[bucket];
+  }
+  const settlement = split.settlement ?? 0;
+  split.dev = (split.dev ?? 0) + (amountMicroUnits - allocated);
 
   // If we know the actual settlement gas this run needs, reserve exactly that
   // from the settlement bucket and roll the unused remainder into dev — i.e.
   // "cover the chain cost, what's left over goes to the dev wallet."
-  if (Number.isInteger(settlementGasMicroUnits) && settlementGasMicroUnits >= 0) {
+  if (Object.hasOwn(splitBps, 'settlement') && Number.isInteger(settlementGasMicroUnits) && settlementGasMicroUnits >= 0) {
     const gasReserved = Math.min(settlement, settlementGasMicroUnits);
     const settlementRemainderToDev = settlement - gasReserved;
     split.settlement = gasReserved;

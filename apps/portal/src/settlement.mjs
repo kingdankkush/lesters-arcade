@@ -17,7 +17,7 @@
 // Per AGENTS.md, no real chain write happens without explicit approval, so the
 // live path is opt-in and inert until contracts are deployed and the flag is on.
 
-import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, RANKED_PAYMENT_TOKEN, calculateRevenueSplit } from './arcade-core.mjs';
+import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, RANKED_PAYMENT_TOKEN, RANKED_SETTLEMENT_GAS_RESERVE_WEI, calculateRevenueSplit } from './arcade-core.mjs';
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
@@ -103,6 +103,7 @@ export function buildSettlementPlan({
   profileChanged = false,
   entryFeeMicroUnits = 0,
   entryFeeWei = '0',
+  settlementGasReserveWei = RANKED_SETTLEMENT_GAS_RESERVE_WEI,
   paymentToken = RANKED_PAYMENT_TOKEN,
   runtimeId = null,
   seasonId = null,
@@ -122,12 +123,18 @@ export function buildSettlementPlan({
   // entry, before the run; the contract derives the split from GameRegistry
   // and records the paid session the score contract later requires.
   const feeWei = BigInt(String(entryFeeWei ?? '0').replace(/[^0-9]/g, '') || '0');
+  // Owner decision 2026-09-16: the flat fee is split treasury/dev; a separate
+  // settlement gas reserve rides along and funds the relayer that submits
+  // the verified score for the player. msg.value = fee + reserve, exact.
+  const reserveWei = feeWei > 0n ? BigInt(String(settlementGasReserveWei ?? '0').replace(/[^0-9]/g, '') || '0') : 0n;
   if (feeWei > 0n) {
     calls.push(Object.freeze({
       contract: 'arcadeRankedEntry',
       method: 'openSession',
       args: Object.freeze({ sessionId, gameId }),
-      valueWei: feeWei.toString(),
+      valueWei: (feeWei + reserveWei).toString(),
+      entryFeeWei: feeWei.toString(),
+      settlementGasReserveWei: reserveWei.toString(),
       gas: ZKLTC_SETTLEMENT_GAS.rankedEntry,
     }));
   }
@@ -203,6 +210,8 @@ export function buildSettlementPlan({
     paymentToken,
     entryFeeMicroUnits,
     entryFeeWei: feeWei.toString(),
+    settlementGasReserveWei: reserveWei.toString(),
+    entryTotalWei: (feeWei + reserveWei).toString(),
     revenueSplit,
     devWallet: devWalletAddress,
     gas,
