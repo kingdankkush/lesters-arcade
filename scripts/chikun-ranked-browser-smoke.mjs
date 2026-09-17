@@ -38,6 +38,10 @@ try {
   page.on('console', (message) => {
     if (message.type() === 'error') issues.push(`console: ${message.text()}`);
   });
+  // Name the failing URL so a static-host 404/501 is diagnosable from the log.
+  page.on('response', (response) => {
+    if (response.status() >= 400) issues.push(`http ${response.status()} ${response.request().method()} ${response.url()}`);
+  });
   await page.addInitScript(() => {
     const listeners = new Map();
     // Fixture key 0x11..11 (never a real wallet). The portal now recovers the
@@ -303,7 +307,12 @@ try {
   }
 
   await page.screenshot({ path: resolve(evidencePath), fullPage: true });
-  assert.deepEqual(issues, [], `browser console/runtime issues:\n${issues.join('\n')}`);
+  // A plain static host (npm run serve) has no /api/session or /api/profile;
+  // CHIKUN_SMOKE_STATIC_HOST=1 documents that gap instead of failing on it.
+  const staticHost = process.env.CHIKUN_SMOKE_STATIC_HOST === '1';
+  const apiGap = (issue) => /\/api\/(session|profile)\b/.test(issue) || /status of (404|501)/.test(issue);
+  const blocking = staticHost ? issues.filter((issue) => !apiGap(issue)) : issues;
+  assert.deepEqual(blocking, [], `browser console/runtime issues:\n${issues.join('\n')}`);
   console.log(JSON.stringify({ status: 'PASS', mode, viewport, score, startUi, pauseControls, frameTiming, cabinetArt, modeArt, controlRects, upgradeHud, resultUi, sharedPayload, scoreBoard: ranked ? 'recorded' : 'isolated', profile: ranked ? 'recorded' : 'isolated', gameplayScreenshot: gameplayPath, screenshot: evidencePath }, null, 2));
 } catch (error) {
   const state = await page?.evaluate(() => ({

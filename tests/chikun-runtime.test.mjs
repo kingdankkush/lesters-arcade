@@ -62,7 +62,8 @@ test('Chikun difficulty follows elapsed time without shrinking gaps', () => {
 });
 
 test('near-miss scoring is deterministic, bounded, and included in terminal results', () => {
-  const a = simulateChikunRun({seed:1,taps:[352],maxTicks:470});
+  // Jump at 334, flap at 342: skims the opening farmland hurdle for a near miss.
+  const a = simulateChikunRun({seed:1,taps:[334,342],maxTicks:470});
   const b = replayChikunRun(a.evidence);
 
   assert.deepEqual(a, b);

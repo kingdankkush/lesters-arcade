@@ -1,15 +1,21 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync}from'node:fs';
 import {courseKind,buildCourseObstacle,courseObstacles,groundPickups}from'../apps/portal/src/chikun-ground-course.mjs';
+import {REGION_SCHEDULE,REGION_LOOP_SLOTS}from'../apps/portal/src/chikun-course-regions.mjs';
 import {obstacleClearance}from'../apps/portal/src/chikun-obstacles.mjs';
 import {replayChikunRun,simulateChikunRun}from'../apps/portal/src/chikun-cabinet.mjs';
-test('early course teaches sustained flight and every twelve passages mix high, low and optional routes',()=>{
- assert.ok(['pit','waterfall'].includes(courseKind(1,1)));
- for(let seed=1;seed<=30;seed++)for(let start=0;start<72;start+=12){
-  const entries=Array.from({length:12},(_,i)=>buildCourseObstacle({seed,index:start+i,x:0}));
-  assert.ok(entries.filter(o=>o.route==='flight').length>=5,'enough required flight');
-  assert.ok(entries.filter(o=>o.route==='ground').length>=2,'required low passages');
-  assert.ok(entries.filter(o=>o.route==='choice').length>=2,'optional routes');
+test('the course opens on a farmland hurdle and every region mixes required flight, low and optional passages',()=>{
+ assert.ok(['hurdle','log','crate'].includes(courseKind(1,0)));
+ assert.ok(['oak','willow'].includes(courseKind(1,1)),'a first tree teaches sustained flight');
+ for(let seed=1;seed<=30;seed++)for(const seg of REGION_SCHEDULE){
+  const entries=Array.from({length:seg.slots},(_,i)=>buildCourseObstacle({seed,index:seg.startSlot+i,x:0}));
+  assert.ok(entries.some(o=>o.route==='flight'),seg.id+' required flight');
+  assert.ok(entries.some(o=>o.route==='ground'),seg.id+' required low passage');
+  assert.ok(entries.some(o=>o.route==='choice'),seg.id+' optional routes');
  }
+ // Across a loop at least a third of passages demand flight and low passages never stack.
+ const loop=Array.from({length:REGION_LOOP_SLOTS},(_,i)=>buildCourseObstacle({seed:19,index:i,x:0}));
+ assert.ok(loop.filter(o=>o.route==='flight').length>=REGION_LOOP_SLOTS/3);
+ for(let i=0;i<loop.length;i++)if(loop[i].route==='ground')assert.notEqual(loop[(i+1)%loop.length].route,'ground');
 });
 test('broad gaps, forests and towns visibly block the ground and retain a safe upper route',()=>{
  for(const kind of ['pit','waterfall','forest','town'])for(let seed=1;seed<=20;seed++){

@@ -19,7 +19,7 @@ import {
   validateChikunChildMessage,
 } from '../../portal/src/chikun-bridge-protocol.mjs';
 import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
-import { buildChikunReplayTimeline, buildChikunShareText } from './presentation.mjs';
+import { buildChikunReplayTimeline, buildChikunShareText, buildChikunModeTease } from './presentation.mjs';
 import { buildShareLinks, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
 import { createChikunReplayPlayback, replayPlayheadRatio } from './replay-viewer.mjs';
 import {
@@ -77,6 +77,7 @@ const replaySpeed = document.querySelector('#replaySpeed');
 const watchReplayButton = document.querySelector('#watchReplayButton');
 const shareRunButton = document.querySelector('#shareRunButton');
 const liveStatus = document.querySelector('#liveStatus');
+const modeTease = document.querySelector('#modeTease');
 
 const STEP_MS = 1000 / CHIKUN_FIXED_STEP_HZ;
 const MAX_CATCH_UP_STEPS = 4;
@@ -357,6 +358,21 @@ function setModePresentation() {
       ? `The ${dailyChallenge.dayKey} course resets at 00:00 UTC. Collect Litecoin and beat your best on this device. This flight keeps its course through reset.`
       : 'Collect Litecoin and skim the edges for bonuses. Practice scores stay separate from your Ranked profile.';
   loadGhostForSeed(initPayload?.session?.seed);
+  renderModeTease();
+}
+
+// Start-screen teases only; nothing here reaches the gameplay HUD.
+function renderModeTease() {
+  if (!modeTease) return;
+  const tease = buildChikunModeTease(mode);
+  modeTease.replaceChildren();
+  for (const [title, detail] of [[tease.daily, tease.dailyDetail], [tease.rewards, tease.rewardsDetail]]) {
+    if (!title) continue;
+    const item = document.createElement('li');
+    item.append(title);
+    if (detail) { const copy = document.createElement('span'); copy.textContent = detail; item.append(copy); }
+    modeTease.append(item);
+  }
 }
 
 function syncAudioControl() {
@@ -445,7 +461,7 @@ function updateHud() {
   comboValue.textContent = String(latestSnapshot?.combo ?? 0);
   nearMissValue.textContent = String(latestSnapshot?.nearMisses ?? 0);
   if(speedValue)speedValue.textContent = Math.round((latestSnapshot?.difficulty?.speedMultiplier??1)*100)+'%';
-  if(routeReadout)routeReadout.textContent = (latestSnapshot?.region??'Meadow')+' · '+(latestSnapshot?.chikun?.locomotion==='run'?'RUNNING':'AIRBORNE');
+  if(routeReadout)routeReadout.textContent = (latestSnapshot?.region??'Farmland')+' · '+(latestSnapshot?.chikun?.locomotion==='run'?'RUNNING':'AIRBORNE');
 }
 
 function finishRun() {
@@ -497,7 +513,7 @@ function finishRun() {
       ? `${ghostComparison.beatGhost ? 'You beat your daily best' : 'Your daily best leads'} by ${Math.abs(ghostComparison.scoreDelta)} points. Practice score only.`
       : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';
   resultStats.replaceChildren();
-  const cause = {ground:'Reached the ground',ceiling:'Reached the flight ceiling',fork:'Hit a gate',tree:'Hit a tree',drone:'Decapitated by a drone',rock:'Hit a boulder',log:'Hit a fallen log',thorn:'Caught in thorns',hurdle:'Hit a hurdle',crate:'Hit a crate',shiba:'Caught by a Shiba',pit:'Fell into a gap',waterfall:'Fell into the waterfall',forest:'Crashed into the forest',town:'Crashed into town',canopy:'Hit a low canopy',hawk:'Hit a hawk',eagle:'Hit an eagle',pelican:'Hit a pelican',plane:'Hit a plane',storm:'Caught in a storm',pipe:'Hit an industrial pipe','run-complete':'Course complete'}[result.finalState?.terminalReason ?? latestSnapshot?.terminalReason];
+  const cause = {ground:'Reached the ground',ceiling:'Reached the flight ceiling',fork:'Hit a gate',tree:'Hit a tree',drone:'Decapitated by a drone',rock:'Hit a boulder',log:'Hit a fallen log',thorn:'Caught in thorns',hurdle:'Hit a hurdle',crate:'Hit a crate',shiba:'Caught by a Shiba',pit:'Fell into a gap',waterfall:'Fell into the waterfall',forest:'Crashed into the forest',town:{city:'Crashed into a city block',suburb:'Crashed into a suburban home'}[latestSnapshot?.impact?.variant]??'Crashed into town',canopy:'Hit a low canopy',hawk:'Hit a hawk',eagle:'Hit an eagle',pelican:'Hit a pelican',plane:'Hit a plane',storm:'Caught in a storm',pipe:'Hit an industrial pipe','run-complete':'Course complete'}[result.finalState?.terminalReason ?? latestSnapshot?.terminalReason];
   const statLabels = [`Ł ${result.coinsCollected} coins`, `${result.forksPassed} obstacles`, `${result.nearMisses} near misses`, `${result.bestCombo} best combo`, `${result.survivalTime.toFixed(1)} seconds`];
   if(cause)statLabels.unshift(cause);
   if(latestSnapshot.distancePixels)statLabels.push(Math.floor(latestSnapshot.distancePixels/10)+' m travelled');
@@ -878,6 +894,14 @@ window.addEventListener('blur', () => {
 });
 
 latestSnapshot = createChikunRuntime({ seed: 1, maxTicks: MAX_RUN_TICKS }).snapshot();
+renderModeTease();
+// Read-only QA peek for browser smokes (scripts/chikun-regions-browser-smoke.mjs).
+// The harness must define the global before this module runs; the frozen
+// snapshot cannot alter the run, the score or the replay evidence.
+if (globalThis.__CHIKUN_QA__ && typeof globalThis.__CHIKUN_QA__ === 'object') {
+  globalThis.__CHIKUN_QA__.peek = () => latestSnapshot;
+  globalThis.__CHIKUN_QA__.region = () => flightWorld.regionState();
+}
 syncAudioControl();
 syncFullscreenControl();
 draw(latestSnapshot);

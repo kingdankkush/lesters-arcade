@@ -140,4 +140,12 @@ button:focus-visible,select:focus-visible,.replay-timeline:focus-visible{outline
 .overlay{overflow-y:auto}
 @media(orientation:portrait){.route-readout{bottom:8px;font-size:10px}#startOverlay{padding-top:100px;padding-bottom:24px}#startOverlay>p:not(.eyebrow){margin:10px 0}#startOverlay small{margin-top:8px}.hud-secondary{top:65px}}
 
+.mode-tease{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0 0 14px;padding:0;max-width:390px}
+.mode-tease li{display:flex;flex-direction:column;gap:2px;padding:7px 11px;border:1px solid #d6c39a55;border-left:2px solid #e0c08b;border-radius:5px;background:#12283899;color:#efe0bd;font:600 10px/1.35 ui-sans-serif,system-ui;letter-spacing:.08em;text-transform:uppercase;text-align:left}
+.mode-tease li span{font-weight:400;letter-spacing:.02em;text-transform:none;color:#d6e2df}
+.mode-tease:empty{display:none}
+@media(max-width:700px){.mode-tease{gap:5px;margin:0 0 8px;max-width:95%}.mode-tease li{padding:4px 7px;font-size:8px}.mode-tease li span{display:none}}
+@media(max-height:450px){.mode-tease{gap:4px;margin:0 0 5px}.mode-tease li{padding:3px 6px;font-size:7px}.mode-tease li span{display:none}}
+@media(max-height:260px){.mode-tease{display:none}}
+@media(orientation:portrait){.mode-tease{justify-content:center;max-width:290px}.mode-tease li{text-align:center;align-items:center}}
 .run-objectives{font:11px/1.6 system-ui;color:#d9d9bd;max-width:500px;margin:0 0 8px}.result-actions{flex-wrap:wrap}

@@ -1,3 +1,17 @@
+// Mode-screen teases (owner direction 2026-09-16). Free Mode never mentions a
+// wallet or Web3; Ranked also teases the coming high-score rewards.
+export const CHIKUN_DAILY_TEASE = 'Daily Challenge — coming soon';
+export const CHIKUN_REWARDS_TEASE = 'High-score rewards coming soon';
+export function buildChikunModeTease(mode = 'free') {
+  const ranked = mode === 'ranked';
+  return Object.freeze({
+    daily: CHIKUN_DAILY_TEASE,
+    dailyDetail: ranked ? 'Daily boards for every Ranked pilot are on the way.' : 'Daily boards and streaks are on the way. Free to play, no sign-in needed.',
+    rewards: ranked ? CHIKUN_REWARDS_TEASE : '',
+    rewardsDetail: ranked ? 'First to a set Ranked score, plus the top Ranked score of the week, month and year.' : '',
+  });
+}
+
 function number(value) {
   return Math.max(0, Math.round(Number(value) || 0));
 }

@@ -1,4 +1,7 @@
 // Canonical v3 course. Shared by the child, parent verifier and replay viewer.
+// Obstacle placement is frozen for historical replays; only the cosmetic region
+// and terrain labels follow the current seven-region loop.
+export {courseRegion,courseTerrain} from './chikun-course-regions.mjs';
 export const GROUND_Y=690;
 export const GROUND_SKY_KINDS=Object.freeze(['rock','log','thorn','hurdle','crate','shiba','pit','waterfall','willow','cherry','maple','oak','drone','hawk','eagle','pelican','plane','storm','pipe']);
 export const speedAtTick=tick=>1+Math.max(0,tick)/28800;
@@ -6,8 +9,6 @@ export const speedAtTick=tick=>1+Math.max(0,tick)/28800;
 export const distanceAtTick=tick=>{const n=Math.max(0,Math.floor(tick));return 2.4*(n+n*(n-1)/57600);};
 const tickAtDistance=d=>(-57599+Math.sqrt(57599**2+4*Math.max(0,d)/2.4*57600))/2;
 export const courseRoll=(seed,index,salt=0)=>{let n=Math.imul((seed>>>0)^Math.imul(index+13,2654435761)^salt,2246822519)>>>0;n^=n>>>13;return (Math.imul(n,3266489917)>>>0)/4294967296;};
-export function courseRegion(tick=0){return ['Meadow','Cherry valley','River coast','Lite City','Mining country'][Math.floor(tick/3600)%5];}
-export function courseTerrain(tick=0){return ['grass','dirt','sand','asphalt','concrete'][Math.floor(tick/3600)%5];}
 const treeKinds=new Set(['willow','cherry','maple','oak']);
 const intro=['rock','log','hurdle','cherry','drone','pit','crate','thorn','storm','shiba','waterfall','hawk'];
 export function courseKind(seed,index){
