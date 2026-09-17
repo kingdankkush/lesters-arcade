@@ -43,3 +43,13 @@ test('browser score-record tuple matches compiled verified and exists fields', (
   const result = compiled.getFunction('getSession').outputs[0].components.map((component) => component.name);
   assert.deepEqual(result.slice(-2), ['verified', 'exists']);
 });
+
+test('compiled score registry settles relayer submissions without value and routes achievements per game', () => {
+  const compiled = new ethers.Interface(artifact.abi);
+  const submit = compiled.getFunction('submitVerifiedSession');
+  assert.equal(submit.payable, false, 'relayer path needs nothing but the attestation');
+  assert.equal(compiled.getFunction('relayers').inputs.length, 1, 'relayers(address) view is public');
+  assert.equal(compiled.getFunction('achievementRegistryByGame').inputs[0].type, 'bytes32');
+  assert.equal(compiled.getFunction('setAchievementRegistry').format('sighash'), 'setAchievementRegistry(bytes32,address)');
+  assert.equal(artifact.abi.some((entry) => entry.type === 'function' && entry.name === 'achievementRegistry'), false);
+});

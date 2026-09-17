@@ -35,9 +35,12 @@ Registry of cabinets keyed by `gameId = keccak256(abi.encodePacked(slug))` (`eth
 - `openSession(bytes32 sessionId, bytes32 gameId) payable nonReentrant`
   - `sessionId` must be non-zero and unused.
   - game must exist, be playable and have a confirmed dev wallet.
-  - `entryFeeEnabled` (default true): `msg.value == game.entryFeeWei` exactly; otherwise `msg.value == 0`.
-  - records `PaidSession{player, gameId, amountWei, openedAt, exists}`.
-  - routes `msg.value` by bps: platform/liquidity/treasury shares to the operator-set vaults, remainder
+  - `entryFeeEnabled` (default true): `msg.value == game.entryFeeWei + settlementGasReserveWei` exactly
+    (`quoteEntry(gameId)` returns both parts and the total); otherwise `msg.value == 0`.
+  - records `PaidSession{player, gameId, amountWei (total), openedAt, exists}`.
+  - forwards the reserve whole to `relayerVault` (`SettlementReserveForwarded`); a non-zero reserve requires
+    the vault to be set (`setSettlementGasReserve` / `setRelayerVault`, operator-only).
+  - routes the flat fee by bps: platform/liquidity/treasury shares to the operator-set vaults, remainder
     (dev share + rounding dust + any share whose vault is `address(0)`) to the game's dev wallet. Payouts
     use `call{value:}` and revert `PAYOUT_FAILED` if any recipient rejects.
   - emits `RankedSessionOpened(sessionId, player, gameId, amountWei)` and
@@ -62,16 +65,21 @@ Registry of cabinets keyed by `gameId = keccak256(abi.encodePacked(slug))` (`eth
   6. `ECDSA.recover(attestationDigest(run), signature) == trustedVerifier`
   7. store `ScoreRecord` (verified = true), index by player and globally, bind `sessionEnvelopeHash`,
      update `bestScore[gameId][player]` and `bestSeasonScore[gameId][seasonId][player]`
-  8. `AchievementRegistry.mintFor(player, id, sessionId)` for each attested id (false results ignored)
+  8. `achievementRegistryByGame[run.gameId].mintFor(player, id, sessionId)` for each attested id (false
+     results ignored; skipped entirely when no registry is bound for the game)
   9. emit `ScoreSubmitted(...)` and `SessionSubmitted(sessionId, true)`.
-- Operator surface: `setTrustedVerifier`, `setRelayer`, `setRankedEntry`, `setAchievementRegistry`,
-  2-step operator transfer.
+- Operator surface: `setTrustedVerifier`, `setRelayer(address,bool)` (public `relayers(address)`),
+  `setRankedEntry`, `setAchievementRegistry(bytes32 gameId, address)`, 2-step operator transfer.
+- Non-payable: a relayer settles with nothing but the attestation; its gas is funded off chain from the
+  settlement reserve collected at entry.
 - Views: `getSession`, `getSessionAchievements`, `playerSessionCount`, `getPlayerSessions(offset, limit)`,
   `totalSessions`, `getRecentSessions(offset, limit)`, `bestScore`, `bestSeasonScore`, `domainSeparator`.
 
 ### AchievementRegistry (soulbound ERC-721)
 
-- OpenZeppelin 5 `ERC721("Lester's Arcade Achievements", "LAACH")`.
+- OpenZeppelin 5 `ERC721(name_, symbol_)`; **one deployment per game** (`Hard Money Heroes Achievements` /
+  `HMHACH`, `Chikun's Escape Achievements` / `CHKACH`, `STACKED Achievements` / `STKACH`), each with its
+  own `baseTokenUri` (`https://lestersarcade.io/achievements/<slug>/`).
 - `defineAchievement(id, gameId, title, category, tokenUriPath)` (operator, idempotent update).
 - `setMinter(address, bool)` (operator). The score registry is the only minter after deploy.
 - `mintFor(player, achievementId, sessionId) onlyMinter returns (bool)`: `false` when undefined or already
@@ -107,14 +115,20 @@ achievements`). Excluded from the hardened deployment.
 
 1. `GameRegistry(operator)`
 2. `PlayerProfileRegistry()`
-3. `AchievementRegistry(operator, achievementBaseTokenUri)`
-4. `ArcadeRankedEntry(gameRegistry, operator)`
-5. `ScoreSubmissionRegistry(gameRegistry, rankedEntry, achievementRegistry, verifier, operator)`
-6. `AchievementRegistry.setMinter(scoreSubmissionRegistry, true)`
-7. `ArcadeRankedEntry.setPlatformVaults(platformVault, liquidityVault, treasuryVault)`
-8. per game: `registerGame(...)`, `confirmDevWallet(gameId)`, `setPlayable(gameId, true)`
+3. `ArcadeRankedEntry(gameRegistry, operator)`
+4. `ScoreSubmissionRegistry(gameRegistry, rankedEntry, verifier, operator)`
+5. per game: `AchievementRegistry(operator, name, symbol, baseTokenUri)` (three collections)
+6. `ArcadeRankedEntry.setPlatformVaults(platformVault, liquidityVault, treasuryVault)`,
+   `setRelayerVault(relayerVault)`, `setSettlementGasReserve(settlementGasReserveWei)`
+7. `ScoreSubmissionRegistry.setRelayer(relayer, true)`
+8. per game: `AchievementRegistry[slug].setMinter(scoreSubmissionRegistry, true)`,
+   `ScoreSubmissionRegistry.setAchievementRegistry(gameId, achievementRegistry[slug])`, `registerGame(...)`
+9. activation per game: `confirmDevWallet(gameId)` (developer wallet), `setPlayable(gameId, true)` (operator);
+   atomic only when the deployer is the developer wallet, otherwise listed in the manifest for the owner.
 
-`scripts/deploy-contracts.mjs` predicts all five addresses from the deployer's pending nonce
+Testnet epoch: this whole set is wiped at mainnet, which is a fresh deployment.
+
+`scripts/deploy-contracts.mjs` predicts all seven addresses from the deployer's pending nonce
 (`getCreateAddress`), writes an unsigned manifest in dry-run mode, and in broadcast mode requires
 `--broadcast`, `LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`, a signer matching the
 configured deployer and an unchanged pending nonce, then verifies every address and wiring by read-back

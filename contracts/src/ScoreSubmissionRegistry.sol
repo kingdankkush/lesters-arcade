@@ -13,7 +13,10 @@ import {IAchievementMinter} from "./interfaces/IAchievementMinter.sol";
 /// @notice Verified-only ranked-run ledger for Lester's Arcade on LitVM LiteForge. Every record is
 ///         backed by an EIP-712 attestation signed by the trusted verifier key; there is no
 ///         unverified submission path. Paid games require a matching ArcadeRankedEntry session, and
-///         achievements attested in the run are minted as soulbound tokens during settlement.
+///         achievements attested in the run are minted as soulbound tokens during settlement through the
+///         per-game AchievementRegistry (`achievementRegistryByGame[run.gameId]`, skipped when unset).
+///         Settlement is callable by the player or by an operator-allowed relayer; the relayer path needs
+///         nothing but the attestation (no msg.value, the function is non-payable).
 /// @dev    EIP-712 domain: name "Lester's Arcade Ranked Settlement", version "2", chainId, this contract.
 contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
     uint256 public constant MAX_SCORE = 10_000_000_000;
@@ -60,12 +63,14 @@ contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
 
     address public immutable gameRegistry;
     address public rankedEntry;
-    address public achievementRegistry;
     address public trustedVerifier;
     address public operator;
     address public pendingOperator;
 
+    /// @notice Operator-allowed settlement relayers (may call submitVerifiedSession for any player).
     mapping(address => bool) public relayers;
+    /// @notice One soulbound achievement collection per game; address(0) = no minting for that game.
+    mapping(bytes32 => address) public achievementRegistryByGame;
     mapping(bytes32 => ScoreRecord) public scoresBySession;
     mapping(bytes32 => bytes32) public sessionEnvelopeHash;
     mapping(bytes32 => mapping(address => uint256)) public bestScore;
@@ -90,7 +95,7 @@ contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
     event TrustedVerifierUpdated(address indexed trustedVerifier);
     event RelayerUpdated(address indexed relayer, bool allowed);
     event RankedEntryUpdated(address indexed rankedEntry);
-    event AchievementRegistryUpdated(address indexed achievementRegistry);
+    event AchievementRegistryUpdated(bytes32 indexed gameId, address indexed achievementRegistry);
     event OperatorTransferStarted(address indexed currentOperator, address indexed pendingOperator);
     event OperatorTransferred(address indexed previousOperator, address indexed newOperator);
 
@@ -99,19 +104,14 @@ contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
         _;
     }
 
-    constructor(
-        address _gameRegistry,
-        address _rankedEntry,
-        address _achievementRegistry,
-        address _trustedVerifier,
-        address _operator
-    ) EIP712("Lester's Arcade Ranked Settlement", "2") {
+    constructor(address _gameRegistry, address _rankedEntry, address _trustedVerifier, address _operator)
+        EIP712("Lester's Arcade Ranked Settlement", "2")
+    {
         require(_gameRegistry != address(0), "Invalid registry");
         require(_trustedVerifier != address(0), "Invalid verifier");
         require(_operator != address(0), "Invalid operator");
         gameRegistry = _gameRegistry;
         rankedEntry = _rankedEntry;
-        achievementRegistry = _achievementRegistry;
         trustedVerifier = _trustedVerifier;
         operator = _operator;
     }
@@ -138,10 +138,12 @@ contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
         emit RankedEntryUpdated(_rankedEntry);
     }
 
-    /// @dev address(0) disables achievement minting (scores still settle).
-    function setAchievementRegistry(address _achievementRegistry) external onlyOperator {
-        achievementRegistry = _achievementRegistry;
-        emit AchievementRegistryUpdated(_achievementRegistry);
+    /// @notice Bind (or unbind with address(0)) the soulbound AchievementRegistry that mints for `gameId`.
+    /// @dev Unset = achievements are recorded in the session but not minted (scores still settle).
+    function setAchievementRegistry(bytes32 gameId, address _achievementRegistry) external onlyOperator {
+        require(gameId != bytes32(0), "EMPTY_GAME_ID");
+        achievementRegistryByGame[gameId] = _achievementRegistry;
+        emit AchievementRegistryUpdated(gameId, _achievementRegistry);
     }
 
     function transferOperator(address newOperator) external onlyOperator {
@@ -230,7 +232,7 @@ contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
         require(ECDSA.recover(attestationDigest(run), signature) == trustedVerifier, "INVALID_ATTESTATION");
 
         _record(run);
-        _mintAchievements(run.player, run.sessionId, achievements);
+        _mintAchievements(run.player, run.gameId, run.sessionId, achievements);
     }
 
     function _record(VerifiedRun calldata run) private {
@@ -275,10 +277,12 @@ contract ScoreSubmissionRegistry is EIP712, ReentrancyGuard {
         emit SessionSubmitted(run.sessionId, true);
     }
 
-    function _mintAchievements(address player, bytes32 sessionId, bytes32[] calldata achievements) private {
+    function _mintAchievements(address player, bytes32 gameId, bytes32 sessionId, bytes32[] calldata achievements)
+        private
+    {
         uint256 len = achievements.length;
         if (len == 0) return;
-        address minter = achievementRegistry;
+        address minter = achievementRegistryByGame[gameId];
         bytes32[] storage recorded = _sessionAchievements[sessionId];
         for (uint256 i = 0; i < len; i++) {
             bytes32 achievementId = achievements[i];

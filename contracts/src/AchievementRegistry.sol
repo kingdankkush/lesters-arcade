@@ -5,9 +5,10 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 /// @title AchievementRegistry
 /// @author Lester's Arcade Core
-/// @notice Soulbound ERC-721 achievements bound to the player's wallet. The operator defines
-///         achievements; approved minters (ScoreSubmissionRegistry) mint them during verified
-///         settlement. Tokens cannot be transferred between wallets (ERC-5192 "locked").
+/// @notice Soulbound ERC-721 achievements bound to the player's wallet. One collection is deployed per
+///         game (own ERC-721 name/symbol and baseTokenUri); the operator defines achievements and approved
+///         minters (ScoreSubmissionRegistry, routed by gameId) mint them during verified settlement.
+///         Tokens cannot be transferred between wallets (ERC-5192 "locked").
 /// @dev    tokenId = uint256(keccak256(abi.encode(player, achievementId))) so a wallet can hold at
 ///         most one token per achievement and the id is derivable off chain without an indexer.
 contract AchievementRegistry is ERC721 {
@@ -56,8 +57,16 @@ contract AchievementRegistry is ERC721 {
         _;
     }
 
-    constructor(address _operator, string memory _baseTokenUri) ERC721("Lester's Arcade Achievements", "LAACH") {
+    /// @param _operator     Platform operator (defines achievements, sets minters, revokes).
+    /// @param name_         ERC-721 collection name, e.g. "Hard Money Heroes Achievements".
+    /// @param symbol_       ERC-721 collection symbol, e.g. "HMHACH".
+    /// @param _baseTokenUri Metadata prefix, e.g. "https://lestersarcade.io/achievements/lester-blaster/".
+    constructor(address _operator, string memory name_, string memory symbol_, string memory _baseTokenUri)
+        ERC721(name_, symbol_)
+    {
         require(_operator != address(0), "Invalid operator");
+        require(bytes(name_).length != 0, "EMPTY_NAME");
+        require(bytes(symbol_).length != 0, "EMPTY_SYMBOL");
         operator = _operator;
         baseTokenUri = _baseTokenUri;
     }

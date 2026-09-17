@@ -19,9 +19,12 @@ const requiredContracts = [
 const requiredSignals = new Map([
   ['PlayerProfileRegistry.sol', ['event ProfileCreated', 'function registerProfile', 'mapping(address => Profile)']],
   ['GameRegistry.sol', ['event GameRegistered', 'function registerGame', 'devWallet', 'entryFeeWei', 'function setEntryFee', 'event EntryFeeUpdated', 'function acceptOperator']],
-  ['AchievementRegistry.sol', ['is ERC721', 'error Soulbound', 'function mintFor', 'onlyMinter', 'function revoke', 'function locked', '0xb45a3c0e', 'event AchievementUnlocked', 'function tokenIdFor']],
-  ['ArcadeRankedEntry.sol', ['function openSession', 'payable', 'nonReentrant', 'entryFeeWei', 'function isPaid', 'event RankedSessionOpened', 'event RevenueRouted', 'function setPlatformVaults', 'function setEntryFeeEnabled']],
-  ['ScoreSubmissionRegistry.sol', ['function submitVerifiedSession', 'VERIFIED_RUN_TYPEHASH', 'is EIP712', 'ECDSA.recover', 'function attestationDigest', 'relayers', 'isPaid', 'mintFor', 'bestScore', 'bestSeasonScore', 'MAX_ACHIEVEMENTS_PER_SESSION = 32']],
+  // One soulbound collection per game: name/symbol are constructor args, not hard-coded.
+  ['AchievementRegistry.sol', ['is ERC721', 'error Soulbound', 'function mintFor', 'onlyMinter', 'function revoke', 'function locked', '0xb45a3c0e', 'event AchievementUnlocked', 'function tokenIdFor', 'string memory name_, string memory symbol_', 'ERC721(name_, symbol_)']],
+  // Fee = flat entryFeeWei + operator-set settlementGasReserveWei (forwarded to relayerVault), exact msg.value.
+  ['ArcadeRankedEntry.sol', ['function openSession', 'payable', 'nonReentrant', 'entryFeeWei', 'function isPaid', 'event RankedSessionOpened', 'event RevenueRouted', 'function setPlatformVaults', 'function setEntryFeeEnabled', 'uint256 public settlementGasReserveWei', 'address public relayerVault', 'function setSettlementGasReserve(uint256', 'function setRelayerVault(address', 'event SettlementGasReserveUpdated', 'event RelayerVaultUpdated', 'event SettlementReserveForwarded', 'msg.value == game.entryFeeWei + reserveWei', 'function quoteEntry(bytes32 gameId)']],
+  // Per-game achievement routing + relayer allow-list (public getter relayers(address)).
+  ['ScoreSubmissionRegistry.sol', ['function submitVerifiedSession', 'VERIFIED_RUN_TYPEHASH', 'is EIP712', 'ECDSA.recover', 'function attestationDigest', 'mapping(address => bool) public relayers', 'isPaid', 'mintFor', 'bestScore', 'bestSeasonScore', 'MAX_ACHIEVEMENTS_PER_SESSION = 32', 'mapping(bytes32 => address) public achievementRegistryByGame', 'function setAchievementRegistry(bytes32 gameId, address', 'achievementRegistryByGame[gameId]']],
   ['IGameRegistry.sol', ['function getGame', 'entryFeeWei']],
   ['IArcadeRankedEntry.sol', ['function isPaid']],
   ['IAchievementMinter.sol', ['function mintFor']],
@@ -30,8 +33,9 @@ const requiredSignals = new Map([
 // Signals that must NOT be present in the live sources (old unverified / ERC-20 design).
 const forbiddenSignals = new Map([
   ['GameRegistry.sol', ['entryFeeMicroUsdc']],
-  ['ScoreSubmissionRegistry.sol', ['function submitSession(', 'entryFeeMicroUsdc', 'SECP256K1_HALF_ORDER']],
-  ['AchievementRegistry.sol', ['function unlockFor', 'onlyLedger']],
+  ['ScoreSubmissionRegistry.sol', ['function submitSession(', 'entryFeeMicroUsdc', 'SECP256K1_HALF_ORDER', 'address public achievementRegistry;', 'function setAchievementRegistry(address']],
+  ['AchievementRegistry.sol', ['function unlockFor', 'onlyLedger', 'ERC721("Lester\'s Arcade Achievements"']],
+  ['ArcadeRankedEntry.sol', ['msg.value == game.entryFeeWei,']],
 ]);
 
 const archivedLegacyFiles = [

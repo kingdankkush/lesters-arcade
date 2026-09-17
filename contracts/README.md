@@ -20,9 +20,9 @@ the June contracts are outdated and must be replaced and redeployed.
 | Contract | Role |
 |----------|------|
 | `GameRegistry.sol` | Cabinet registry. `gameId = keccak256(slug)`. Stores dev wallet, fee split (dev/platform/liquidity/treasury bps = 10 000) and **`entryFeeWei`** (native). Operator 2-step transfer, `registerGame`, `confirmDevWallet` (by the dev wallet), `setPlayable`, `updateFeeSplit`, **`setEntryFee`**, `setTrustedVerifier`. |
-| `ArcadeRankedEntry.sol` | **Native-token entry desk.** `openSession(sessionId, gameId)` is `payable`; `msg.value` must equal the game's `entryFeeWei` exactly (or 0 when `entryFeeEnabled == false`). The value is routed immediately by the game's bps to devWallet / platformVault / liquidityVault / treasuryVault; rounding dust and any share whose vault is unset go to the dev wallet. Nothing is escrowed. `isPaid(sessionId, player, gameId)` is what the score registry checks. |
-| `ScoreSubmissionRegistry.sol` | **Verified-only ranked ledger.** `submitVerifiedSession(VerifiedRun run, bytes32[] achievements, bytes signature)` accepts an **EIP-712** attestation (domain `Lester's Arcade Ranked Settlement` v`2`) signed by `trustedVerifier`. Requires the paid session when the game's fee > 0, bounds-checks the run, stores the record, updates `bestScore` / `bestSeasonScore`, and mints attested achievements. Caller must be `run.player` or an operator-allowed relayer. No unverified path exists. |
-| `AchievementRegistry.sol` | **Soulbound ERC-721** (OpenZeppelin 5) + ERC-5192 `locked()`. Operator defines achievements; allowed minters (the score registry) call `mintFor(player, achievementId, sessionId)`, which returns `false` instead of reverting when already held / undefined. `tokenId = uint256(keccak256(abi.encode(player, achievementId)))`. Transfers between wallets revert `Soulbound()`; owner `burn`, operator `revoke`. |
+| `ArcadeRankedEntry.sol` | **Native-token entry desk.** `openSession(sessionId, gameId)` is `payable`; `msg.value` must equal `quoteEntry(gameId).totalWei = game.entryFeeWei + settlementGasReserveWei` exactly (or 0 when `entryFeeEnabled == false`). The operator-set `settlementGasReserveWei` (default 0) is forwarded whole to `relayerVault` (funds the settlement relayer); the flat fee is routed immediately by the game's bps to devWallet / platformVault / liquidityVault / treasuryVault; rounding dust and any share whose vault is unset go to the dev wallet. Nothing is escrowed. `isPaid(sessionId, player, gameId)` is what the score registry checks. |
+| `ScoreSubmissionRegistry.sol` | **Verified-only ranked ledger.** `submitVerifiedSession(VerifiedRun run, bytes32[] achievements, bytes signature)` accepts an **EIP-712** attestation (domain `Lester's Arcade Ranked Settlement` v`2`) signed by `trustedVerifier`. Requires the paid session when the game's fee > 0, bounds-checks the run, stores the record, updates `bestScore` / `bestSeasonScore`, and mints attested achievements through the game's own collection (`achievementRegistryByGame[run.gameId]`, skipped when unset). Caller must be `run.player` or an operator-allowed relayer (`relayers(address)`); the function is non-payable so the relayer needs nothing but the attestation. No unverified path exists. |
+| `AchievementRegistry.sol` | **Soulbound ERC-721** (OpenZeppelin 5) + ERC-5192 `locked()`, **one deployment per game** with its own `name`/`symbol`/`baseTokenUri` (constructor args). Operator defines achievements; allowed minters (the score registry) call `mintFor(player, achievementId, sessionId)`, which returns `false` instead of reverting when already held / undefined. `tokenId = uint256(keccak256(abi.encode(player, achievementId)))`. Transfers between wallets revert `Soulbound()`; owner `burn`, operator `revoke`. |
 | `PlayerProfileRegistry.sol` | Unchanged. Wallet → handle/avatar profile. |
 | `LestersArcadeCore.sol` | Optional immutable address book for a deployed set. Not part of the deployment. |
 | `interfaces/` | `IGameRegistry` (Game struct + `getGame`), `IArcadeRankedEntry` (`isPaid`), `IAchievementMinter` (`mintFor`). |
@@ -31,19 +31,24 @@ the June contracts are outdated and must be replaced and redeployed.
 
 ```
 GameRegistry.getGame(gameId)               -> entryFeeWei = 0.1 zkLTC, playable, devWalletConfirmed
-ArcadeRankedEntry.openSession{value: fee}   -> RankedSessionOpened + RevenueRouted (fee split instantly)
+ArcadeRankedEntry.quoteEntry(gameId)       -> (entryFeeWei, settlementGasReserveWei, totalWei)
+ArcadeRankedEntry.openSession{value: total} -> RankedSessionOpened + SettlementReserveForwarded (reserve -> relayerVault)
+                                              + RevenueRouted (flat fee split 85/15 instantly)
 play (off chain) -> verifier service signs VerifiedRun (EIP-712)
 ScoreSubmissionRegistry.submitVerifiedSession(run, achievements, signature)
     -> isPaid(sessionId, player, gameId) must be true (fee > 0)
     -> ECDSA.recover(attestationDigest(run), signature) == trustedVerifier
     -> ScoreSubmitted + SessionSubmitted; bestScore / bestSeasonScore updated
-    -> AchievementRegistry.mintFor(player, id, sessionId) per attested achievement (soulbound token)
+    -> achievementRegistryByGame[gameId].mintFor(player, id, sessionId) per attested achievement (soulbound token)
 ```
 
 ## Fee split (testnet config)
 
-All three registered games: `devBps 7500 / platformBps 2500 / liquidityBps 0 / treasuryBps 0`,
-`entryFeeWei 100000000000000000` (0.1 zkLTC). Vaults default to the operator address on testnet.
+All three registered games (owner decision 2026-09-16): `devBps 8500 / platformBps 0 / liquidityBps 0 /
+treasuryBps 1500` (85 % developer, 15 % treasury), `entryFeeWei 100000000000000000` (0.1 zkLTC) plus
+`settlementGasReserveWei 20000000000000000` (0.02 zkLTC placeholder the owner tunes) forwarded to
+`relayerVault`. Developer wallet and treasury vault are the owner wallet; relayer vault defaults to the
+operator. This is a **testnet epoch**: mainnet is a fresh deployment set.
 
 | slug | title |
 |------|-------|

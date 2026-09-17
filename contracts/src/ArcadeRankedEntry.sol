@@ -6,13 +6,16 @@ import {IGameRegistry} from "./interfaces/IGameRegistry.sol";
 
 /// @title ArcadeRankedEntry
 /// @author Lester's Arcade Core
-/// @notice Native-token (zkLTC) Ranked Mode entry desk. A player opens a ranked session by paying the
-///         game's exact `entryFeeWei` in the chain's native token; the fee is split immediately by the
-///         game's registry-defined bps to the dev wallet and the platform/liquidity/treasury vaults.
-///         That fee funds settlement of the run (score, session data, soulbound achievements) on chain.
+/// @notice Native-token (zkLTC) Ranked Mode entry desk. A player opens a ranked session by paying exactly
+///         `game.entryFeeWei + settlementGasReserveWei` in the chain's native token:
+///         - the flat `entryFeeWei` (0.1 zkLTC) is split immediately by the game's registry-defined bps to
+///           the dev wallet and the platform/liquidity/treasury vaults;
+///         - the `settlementGasReserveWei` (operator-set, default 0) is forwarded whole to `relayerVault`,
+///           which funds the relayer that settles the run (score, session data, soulbound achievements)
+///           on chain on the player's behalf.
 /// @dev    Replaces the June 2026 ERC-20/USDC ArcadePaymentRouter, PaymentRouter and SessionLedger.
-///         WO-118 intent preserved: the caller controls NO token address and NO split — both come from
-///         GameRegistry and operator-set vaults only. No funds are ever held by this contract.
+///         WO-118 intent preserved: the caller controls NO token address, NO amount and NO split; all come
+///         from GameRegistry and operator-set values only. No funds are ever held by this contract.
 contract ArcadeRankedEntry is ReentrancyGuard {
     struct PaidSession {
         address player;
@@ -30,6 +33,10 @@ contract ArcadeRankedEntry is ReentrancyGuard {
     address public platformVault;
     address public liquidityVault;
     address public treasuryVault;
+    /// @notice Receives the settlement gas reserve of every paid session (funds the settlement relayer).
+    address public relayerVault;
+    /// @notice Extra native amount, on top of the game's flat entry fee, that funds relayer settlement.
+    uint256 public settlementGasReserveWei;
     bool public entryFeeEnabled = true;
 
     mapping(bytes32 => PaidSession) public paidSessions;
@@ -42,7 +49,10 @@ contract ArcadeRankedEntry is ReentrancyGuard {
         uint256 liquidityAmount,
         uint256 treasuryAmount
     );
+    event SettlementReserveForwarded(bytes32 indexed sessionId, address indexed relayerVault, uint256 amountWei);
     event PlatformVaultsUpdated(address indexed platformVault, address indexed liquidityVault, address indexed treasuryVault);
+    event RelayerVaultUpdated(address indexed relayerVault);
+    event SettlementGasReserveUpdated(uint256 settlementGasReserveWei);
     event EntryFeeEnabledUpdated(bool enabled);
     event OperatorTransferStarted(address indexed currentOperator, address indexed pendingOperator);
     event OperatorTransferred(address indexed previousOperator, address indexed newOperator);
@@ -73,7 +83,24 @@ contract ArcadeRankedEntry is ReentrancyGuard {
         emit PlatformVaultsUpdated(_platformVault, _liquidityVault, _treasuryVault);
     }
 
-    /// @notice Toggle fee collection. When disabled, openSession requires msg.value == 0 (free ranked).
+    /// @notice Set the vault that receives the settlement gas reserve (the relayer's funding wallet).
+    /// @dev address(0) is only valid while settlementGasReserveWei == 0.
+    function setRelayerVault(address _relayerVault) external onlyOperator {
+        require(_relayerVault != address(0) || settlementGasReserveWei == 0, "RELAYER_VAULT_REQUIRED");
+        relayerVault = _relayerVault;
+        emit RelayerVaultUpdated(_relayerVault);
+    }
+
+    /// @notice Set the settlement gas reserve added on top of every game's flat entry fee.
+    /// @dev A non-zero reserve requires relayerVault to be set first so no reserve can be stranded.
+    function setSettlementGasReserve(uint256 _settlementGasReserveWei) external onlyOperator {
+        require(_settlementGasReserveWei == 0 || relayerVault != address(0), "RELAYER_VAULT_UNSET");
+        settlementGasReserveWei = _settlementGasReserveWei;
+        emit SettlementGasReserveUpdated(_settlementGasReserveWei);
+    }
+
+    /// @notice Toggle fee collection. When disabled, openSession requires msg.value == 0 (free ranked:
+    ///         neither the flat fee nor the settlement gas reserve is collected).
     function setEntryFeeEnabled(bool enabled) external onlyOperator {
         entryFeeEnabled = enabled;
         emit EntryFeeEnabledUpdated(enabled);
@@ -97,9 +124,11 @@ contract ArcadeRankedEntry is ReentrancyGuard {
     // Ranked entry
     // ---------------------------------------------------------------------
 
-    /// @notice Open a Ranked session for `gameId`, paying the game's exact native entry fee.
+    /// @notice Open a Ranked session for `gameId`, paying exactly `quoteEntry(gameId).totalWei`
+    ///         (= game.entryFeeWei + settlementGasReserveWei) in the native token.
     /// @dev The session id is caller-chosen but must be unique; ScoreSubmissionRegistry later binds the
-    ///      verified run to (sessionId, player, gameId) via isPaid.
+    ///      verified run to (sessionId, player, gameId) via isPaid. The reserve is forwarded to
+    ///      relayerVault first, then the flat fee is split by the game's bps.
     function openSession(bytes32 sessionId, bytes32 gameId) external payable nonReentrant {
         require(sessionId != bytes32(0), "EMPTY_SESSION_ID");
         require(!paidSessions[sessionId].exists, "SESSION_EXISTS");
@@ -109,8 +138,11 @@ contract ArcadeRankedEntry is ReentrancyGuard {
         require(game.playable, "GAME_NOT_PLAYABLE");
         require(game.devWalletConfirmed, "DEV_WALLET_UNCONFIRMED");
 
+        uint256 reserveWei = 0;
         if (entryFeeEnabled) {
-            require(msg.value == game.entryFeeWei, "WRONG_ENTRY_FEE");
+            reserveWei = settlementGasReserveWei;
+            require(msg.value == game.entryFeeWei + reserveWei, "WRONG_ENTRY_FEE");
+            if (reserveWei > 0) require(relayerVault != address(0), "RELAYER_VAULT_UNSET");
         } else {
             require(msg.value == 0, "ENTRY_FEE_DISABLED");
         }
@@ -124,8 +156,14 @@ contract ArcadeRankedEntry is ReentrancyGuard {
         });
         emit RankedSessionOpened(sessionId, msg.sender, gameId, msg.value);
 
-        if (msg.value > 0) {
-            _route(sessionId, game, msg.value);
+        if (reserveWei > 0) {
+            _pay(relayerVault, reserveWei);
+            emit SettlementReserveForwarded(sessionId, relayerVault, reserveWei);
+        }
+
+        uint256 flatFee = msg.value - reserveWei;
+        if (flatFee > 0) {
+            _route(sessionId, game, flatFee);
         } else {
             emit RevenueRouted(sessionId, 0, 0, 0, 0);
         }
@@ -176,5 +214,20 @@ contract ArcadeRankedEntry is ReentrancyGuard {
 
     function getPaidSession(bytes32 sessionId) external view returns (PaidSession memory) {
         return paidSessions[sessionId];
+    }
+
+    /// @notice Exact native amount openSession requires for `gameId` right now, and its two parts.
+    /// @dev Returns (0, 0, 0) while entryFeeEnabled is false (free ranked). Reverts for unknown games.
+    function quoteEntry(bytes32 gameId)
+        external
+        view
+        returns (uint256 entryFeeWei, uint256 settlementGasReserveWei_, uint256 totalWei)
+    {
+        IGameRegistry.Game memory game = IGameRegistry(gameRegistry).getGame(gameId);
+        require(game.exists, "GAME_NOT_REGISTERED");
+        if (!entryFeeEnabled) return (0, 0, 0);
+        entryFeeWei = game.entryFeeWei;
+        settlementGasReserveWei_ = settlementGasReserveWei;
+        totalWei = entryFeeWei + settlementGasReserveWei_;
     }
 }

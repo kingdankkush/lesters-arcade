@@ -183,3 +183,17 @@ test('ABI alignment recognizes generated public getters, not private state', () 
   `);
   assert.deepEqual([...names].sort(), ['MAX_SCORE', 'bestScore', 'gameRegistry', 'submitVerifiedSession']);
 });
+
+test('2026-09-16 owner-decision surface exists in the Solidity sources the portal will bind to', () => {
+  const entryFns = solFunctionNames(solSource('ArcadeRankedEntry'));
+  for (const name of ['openSession', 'quoteEntry', 'settlementGasReserveWei', 'relayerVault', 'setSettlementGasReserve', 'setRelayerVault', 'entryFeeEnabled', 'isPaid']) {
+    assert.ok(entryFns.has(name), `ArcadeRankedEntry.sol must expose ${name}`);
+  }
+  const scoreFns = solFunctionNames(solSource('ScoreSubmissionRegistry'));
+  for (const name of ['submitVerifiedSession', 'achievementRegistryByGame', 'setAchievementRegistry', 'relayers']) {
+    assert.ok(scoreFns.has(name), `ScoreSubmissionRegistry.sol must expose ${name}`);
+  }
+  assert.equal(scoreFns.has('achievementRegistry'), false, 'single achievementRegistry() getter retired in favour of achievementRegistryByGame(gameId)');
+  const src = solSource('ScoreSubmissionRegistry');
+  assert.match(src, /function setAchievementRegistry\(bytes32 gameId, address/, 'setAchievementRegistry is keyed by gameId');
+});

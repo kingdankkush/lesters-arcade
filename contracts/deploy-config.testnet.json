@@ -1,5 +1,6 @@
 {
   "_note": "Deployment requires the owner's deployer key and explicit approval; nothing here is deployed.",
+  "_epoch": "TESTNET EPOCH. This set runs on LiteForge testnet until mainnet; at mainnet every contract, score, session and achievement here is wiped and a fresh deployment set is created from scratch (see docs/web3/contract-overhaul-20260916.md, 'Epoch policy').",
   "network": "LitVM LiteForge Testnet",
   "chainId": 4441,
   "rpcUrl": "https://liteforge.rpc.caldera.xyz/http",
@@ -10,6 +11,9 @@
   "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "operator": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "verifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "relayer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "relayerVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "settlementGasReserveWei": "20000000000000000",
   "developerWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
   "platformVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
   "liquidityVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
@@ -19,32 +23,47 @@
     {
       "slug": "lester-blaster",
       "title": "Hard Money Heroes",
-      "devBps": 7500,
-      "platformBps": 2500,
+      "devBps": 8500,
+      "platformBps": 0,
       "liquidityBps": 0,
-      "treasuryBps": 0,
+      "treasuryBps": 1500,
       "entryFeeWei": "100000000000000000",
-      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
+      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+      "achievements": {
+        "name": "Hard Money Heroes Achievements",
+        "symbol": "HMHACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/lester-blaster/"
+      }
     },
     {
       "slug": "chikun",
       "title": "Chikun's Escape",
-      "devBps": 7500,
-      "platformBps": 2500,
+      "devBps": 8500,
+      "platformBps": 0,
       "liquidityBps": 0,
-      "treasuryBps": 0,
+      "treasuryBps": 1500,
       "entryFeeWei": "100000000000000000",
-      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
+      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+      "achievements": {
+        "name": "Chikun's Escape Achievements",
+        "symbol": "CHKACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/chikun/"
+      }
     },
     {
       "slug": "stacked",
       "title": "STACKED",
-      "devBps": 7500,
-      "platformBps": 2500,
+      "devBps": 8500,
+      "platformBps": 0,
       "liquidityBps": 0,
-      "treasuryBps": 0,
+      "treasuryBps": 1500,
       "entryFeeWei": "100000000000000000",
-      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
+      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+      "achievements": {
+        "name": "STACKED Achievements",
+        "symbol": "STKACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/stacked/"
+      }
     }
   ],
   "oldDeployment": {
@@ -55,5 +74,5 @@
     "expectedScoreRows": 13,
     "disposition": "archive-read-only; never import as verified"
   },
-  "_recipients": "developerWallet/platformVault/treasuryVault/liquidityVault = the owner revenue wallet (DEV_WALLET in apps/portal/src/arcade-core.mjs, confirmed by the owner 2026-09-16). deployer/operator/verifier stay the key holder addresses the owner supplies at deploy time; see docs/web3/contract-overhaul-20260916.md runbook."
+  "_recipients": "Owner decisions 2026-09-16: every game splits the flat 0.1 zkLTC entry fee 85% developer / 15% treasury (devBps 8500, treasuryBps 1500, platform/liquidity 0). developerWallet and treasuryVault = the owner wallet 0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26 (the owner is the developer of all three live games; the Chikun creator wallet is not yet supplied). platformVault/liquidityVault are also the owner wallet (unused 0-bps shares). settlementGasReserveWei (0.02 zkLTC placeholder, owner tunes) is added on top of the flat fee and forwarded to relayerVault (defaults to the relayer/operator address) to fund relayer-settled scores. deployer/operator/verifier/relayer stay the key-holder addresses the owner supplies at deploy time; see docs/web3/contract-overhaul-20260916.md runbook."
 }
