@@ -3,14 +3,17 @@
   "network": "LitVM LiteForge Testnet",
   "chainId": 4441,
   "rpcUrl": "https://liteforge.rpc.caldera.xyz/http",
-  "nativeToken": { "symbol": "zkLTC", "decimals": 18 },
+  "nativeToken": {
+    "symbol": "zkLTC",
+    "decimals": 18
+  },
   "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "operator": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
   "verifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "developerWallet": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "platformVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "liquidityVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "treasuryVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "developerWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+  "platformVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+  "liquidityVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+  "treasuryVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
   "achievementBaseTokenUri": "https://lestersarcade.io/achievements/",
   "games": [
     {
@@ -20,7 +23,8 @@
       "platformBps": 2500,
       "liquidityBps": 0,
       "treasuryBps": 0,
-      "entryFeeWei": "100000000000000000"
+      "entryFeeWei": "100000000000000000",
+      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
     },
     {
       "slug": "chikun",
@@ -29,7 +33,8 @@
       "platformBps": 2500,
       "liquidityBps": 0,
       "treasuryBps": 0,
-      "entryFeeWei": "100000000000000000"
+      "entryFeeWei": "100000000000000000",
+      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
     },
     {
       "slug": "stacked",
@@ -38,7 +43,8 @@
       "platformBps": 2500,
       "liquidityBps": 0,
       "treasuryBps": 0,
-      "entryFeeWei": "100000000000000000"
+      "entryFeeWei": "100000000000000000",
+      "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
     }
   ],
   "oldDeployment": {
@@ -48,5 +54,6 @@
     "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
     "expectedScoreRows": 13,
     "disposition": "archive-read-only; never import as verified"
-  }
+  },
+  "_recipients": "developerWallet/platformVault/treasuryVault/liquidityVault = the owner revenue wallet (DEV_WALLET in apps/portal/src/arcade-core.mjs, confirmed by the owner 2026-09-16). deployer/operator/verifier stay the key holder addresses the owner supplies at deploy time; see docs/web3/contract-overhaul-20260916.md runbook."
 }

@@ -201,3 +201,16 @@ with predicted addresses, init-code hashes and calldata hashes. Broadcast additi
   in the compiled runtime bytecode.
 - `contracts/test/SecurityBaseline.t.sol` rewritten for the new set; **not executed** (no foundry on the
   build machine).
+
+## Runbook: deploy the hardened set and enable settlement (owner key holder)
+
+Nothing below was run by the authoring session: no deployer key exists on the build machine and Vercel secret writes are not permitted from it. Every step is a plain command the key holder runs once.
+
+1. **Recipients are configured.** `contracts/deploy-config.testnet.json` already routes the dev share and all vault shares to the owner revenue wallet `0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26` for all three games (split 7500/2500/0/0 bps; adjust before deploying if the platform/treasury share should land elsewhere).
+2. **Choose the key addresses.** Set `deployer`, `operator` and `verifier` in the same file. `verifier` is the address of a fresh key that will only ever sign attestations (generate it offline: `node -e "import('ethers').then(({ethers})=>{const w=ethers.Wallet.createRandom();console.log(w.address)})"` and keep the private key out of the repo).
+3. **Dry run** (no transaction): `DEPLOYER_PRIVATE_KEY=0x... node scripts/deploy-contracts.mjs` writes `docs/web3/hardened-ranked-deployment-manifest.json` with predicted addresses and gas.
+4. **Deploy** (LiteForge testnet, zkLTC gas only): `DEPLOYER_PRIVATE_KEY=0x... LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441 node scripts/deploy-contracts.mjs` deploys GameRegistry, PlayerProfileRegistry, AchievementRegistry, ArcadeRankedEntry and ScoreSubmissionRegistry, wires the minter and vaults, registers the three games at 0.1 zkLTC and writes `contracts/deployment-record.hardened.json`.
+5. **Point the portal at the new addresses.** Copy the hardened addresses into `LITVM_CONTRACT_ADDRESSES` in `apps/portal/src/settlement.mjs` (including `arcadeRankedEntry` and `achievementRegistry`), run `node --test tests/litvm-ranked-contract-gate.test.mjs tests/score-registry-abi.test.mjs`, commit.
+6. **Verifier secrets on Vercel** (production): `npx vercel env add VERIFIER_PRIVATE_KEY production` (paste the verifier private key) and `npx vercel env add SCORE_REGISTRY_ADDRESS production` (the deployed ScoreSubmissionRegistry). Redeploy; `POST /api/attest` should stop answering 503.
+7. **Enable settlement.** Set `SETTLEMENT_LIVE = true` in `apps/portal/src/settlement.mjs`, update the tests that pin it (`tests/settlement.test.mjs`, `tests/litvm-ranked-contract-gate.test.mjs`), run `npm run vercel:build`, deploy and promote. From then on Ranked entry charges 0.1 zkLTC via `ArcadeRankedEntry.openSession` and every result settles through `submitVerifiedSession` with the verifier's EIP-712 signature.
+8. **Achievement art.** Define achievements on chain (`AchievementRegistry.defineAchievement`) once the badge set is approved; `tokenUriPath` resolves under `https://lestersarcade.io/achievements/`.

@@ -103,8 +103,9 @@ export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
 });
 
 // Dev wallet that receives the dev share + unused settlement-gas remainder.
-// Placeholder until Justin provides his real address; settlement stays simulated
-// (SETTLEMENT_LIVE=false) so no funds move until deploy + approval.
+// Confirmed by the owner on 2026-09-16 as the zkLTC recipient for everything
+// outside settlement gas. Settlement stays simulated (SETTLEMENT_LIVE=false)
+// so no funds move until the hardened contracts are deployed and enabled.
 export const DEV_WALLET = Object.freeze({
   address: '0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26',
   label: "Justin's Revenue Wallet",
