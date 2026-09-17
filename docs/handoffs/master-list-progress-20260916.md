@@ -54,6 +54,12 @@ Working branch `fable/master-list-20260916`, cut from `codex/mobile-worlds-aquat
 - Result: gunshots carry a low-mid body and room tail, the shotgun has a two-stage pump rack, the reload has four mechanical stages, the explosion a sub floor and debris, enemy death an original wet gib layer. Cue bytes 1.57 MB / 1.75 MB budget; reproducible; the weapon-SFX browser smoke plays every cue with zero unknown cues.
 - Remaining audio work: per-weapon reload variants, boss/actor voices (HMH-S02), biome beds (S03), a listening pass on real speakers (S05).
 
+## Slice 8 — release 1.6.0 live, Web3 recipients and runbook, adaptive phone sharpness
+
+- 1.6.0 promoted (`dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq`, receipt `docs/qa/master-list-release-20260916.json`); 97/97 public files matched; live smokes for the wheel, STACKED and Chikun Ranked pass (the Chikun smoke wallet now signs the SIWE challenge for real).
+- Web3: fee recipients in `contracts/deploy-config.testnet.json` point at the owner wallet `0x07cec6Fc…8B26` for every game and vault; `docs/web3/contract-overhaul-20260916.md` ends with the eight-step deploy/enable runbook. No deployer key exists on the build machine and Vercel secret writes are not permitted from the session, so contract deployment, verifier secrets and `SETTLEMENT_LIVE` remain the key holder's steps.
+- HMH: `createAdaptiveResolution` (runtime-performance.mjs) steps a fast phone from resolution 1 to 1.5 after a sustained fast window and back down for good on slow frames; emulated mobile profile stepped up with p95 7 ms.
+
 ## Not yet done in this session (see master list)
 
 X-02/X-05/X-07 (backend, profiles sync, global boards), X-08 art/mint policy, contract deployment (owner key), HMH-N03 weapon models, CH-N01/N02, ST-N01..N03. Physical-device acceptance remains owner/tester work.
