@@ -2,6 +2,7 @@ import { BOARD_VISIBLE_ROWS, CELL_PX, STACKED_FRAME_SIZES } from '../../../porta
 
 export const BOARD_LAYER_ORDER = Object.freeze(['wellFrame','stackLayer','garbageWarnLayer','ghostLayer','activeLayer','effectLayer','hudLayer']);
 const COLORS = Object.freeze({ I:0x32d9ff, J:0x5688ff, L:0xffa447, O:0xffd84d, S:0x60e889, T:0xb66cff, Z:0xff6078, garbage:0x718092 });
+export const PIECE_COLORS = COLORS;
 const LOCKED_KIND_BY_ID = Object.freeze([null,'I','J','L','O','S','T','Z','garbage']);
 const WELL_X = Object.freeze({ wide: 96, tall: 0 });
 const MARKS = Object.freeze({ I:[3,4,5], J:[0,3,4,5], L:[2,3,4,5], O:[0,1,2,3,5,6,7,8], S:[1,2,3,4], T:[1,3,4,5], Z:[0,1,4,5], garbage:[0,2,4,6,8] });

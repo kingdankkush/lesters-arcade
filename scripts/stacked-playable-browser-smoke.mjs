@@ -75,6 +75,13 @@ try {
       assert.equal(await frame.locator('#stackedStage').getAttribute('data-rendered-particles'),'432');
       assert.equal(await frame.locator('#stackedStage').getAttribute('data-particle-capacity'),'256');
     }
+    // Scene deck and menu tiles (owner direction 2026-09-16): the choice reaches the renderer and persists on this device.
+    await frame.locator('#sceneSelect').selectOption('horizon');
+    await frame.waitForFunction(() => document.querySelector('#stackedStage').dataset.visualizerScene === 'horizon');
+    await frame.locator('#scoresTile').click();
+    assert.equal(await frame.locator('#scoreShelf').isVisible(), true, 'the Scores tile opens the device shelf');
+    await frame.locator('#scoresTile').click();
+    assert.equal(await frame.locator('#freeModeTile').getAttribute('aria-current'), 'true');
     await frame.locator('#intensityRange').fill('55');
     await frame.locator('#intensityRange').dispatchEvent('change');
     await frame.locator('#volumeRange').fill('20');
@@ -131,6 +138,8 @@ try {
     assert.equal(await restarted.locator('#volumeRange').inputValue(), '20');
     assert.equal(await restarted.locator('#flashToggle').isChecked(),false);
     assert.equal(await restarted.locator('#leftHandToggle').isChecked(),mobile);
+    assert.equal(await restarted.locator('#sceneSelect').inputValue(), 'horizon', 'the backdrop scene persists on this device');
+    assert.equal(await restarted.locator('#boardPulseToggle').isChecked(), true);
     await restarted.locator('#overlayExitButton').click();
     await page.waitForSelector('#officialWalletSplash:not([hidden])');
     assert.equal(await page.locator('iframe.stacked-game-frame').count(), 0);

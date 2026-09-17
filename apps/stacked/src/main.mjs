@@ -6,11 +6,10 @@ import { connectStackedChild } from './child-bridge.mjs';
 import { buildStackedRunSummary } from './run-summary.mjs';
 import { buildShareLinks, buildStackedShareText, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
 import { chunkStackedEvidence } from '../../portal/src/stacked-evidence-transport.mjs';
-import { STACKED_CAPABILITIES } from '../../portal/src/stacked-contracts.mjs';
+import { STACKED_CAPABILITIES, STACKED_FREE_MEDALS_KEY } from '../../portal/src/stacked-contracts.mjs';
 import { createStackedPauseClock } from './pause-clock.mjs';
 import { manageOverlayFocus } from './overlay-focus.mjs';
 import { createStackedSoundEffects, stackedSoundForStep } from './sound-effects.mjs';
-import { createVisualizerPreview } from './render/visualizer-preview.mjs';
 
 const $ = id => document.getElementById(id);
 const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameOverlay');
@@ -18,17 +17,23 @@ const releaseOverlayFocus = manageOverlayFocus(overlay, () => stage.querySelecto
 let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTime = 0, accumulator = 0, started = false, submitted = false, pauseCount = 0, forfeited = false;
 const pauseClock = createStackedPauseClock();
 const sfx = createStackedSoundEffects();
-const preview = createVisualizerPreview($('visualizerPreview'));
+let preview = null;
+// Child-side visual preferences (scene deck, music-reactive board). The parent
+// bridge validates an exact preference key set, so these stay on this device.
+const LOCAL_KEY = 'stacked-visual-scenes-v1', SCENES = ['auto', 'tunnel', 'particles', 'horizon', 'off'];
+const local = { scene: 'auto', reactiveBoard: true };
+try { const saved = JSON.parse(localStorage.getItem(LOCAL_KEY) ?? 'null'); if (SCENES.includes(saved?.scene)) local.scene = saved.scene; if (typeof saved?.reactiveBoard === 'boolean') local.reactiveBoard = saved.reactiveBoard; } catch {}
+const applyLocal = () => { if (settings) { settings.video.scene = local.scene; settings.video.reactiveBoard = local.reactiveBoard; } };
 let lastFeedback = '';
 let counters = { hardDrops: 0, spinClears: 0, allClearStreakMax: 0 }, allClearStreak = 0;
 const reportError = error => { status.textContent = error.message; $('overlayTitle').textContent = 'Unable to continue'; $('overlayCopy').textContent = error.message; overlay.hidden = false; $('continueButton').hidden = true; };
 const bridge = connectStackedChild(async (message, send) => {
-  if (message.type === 'portal:init') { init = message.payload; settings = structuredClone(init.settings); await boot(); if (!disposed) send('game:ready', { runtimeVersion: 'stacked-playable-v1', renderer: 'pixi-webgl', capabilities: [...STACKED_CAPABILITIES] }); }
+  if (message.type === 'portal:init') { init = message.payload; settings = structuredClone(init.settings); applyLocal(); await boot(); if (!disposed) send('game:ready', { runtimeVersion: 'stacked-playable-v1', renderer: 'pixi-webgl', capabilities: [...STACKED_CAPABILITIES] }); }
   else if (message.type === 'portal:audio-frame') renderer?.audio(message.payload.audio, performance.now());
   else if (message.type === 'portal:pause') pause();
   else if (message.type === 'portal:resume') resume();
   else if (message.type === 'portal:exit') dispose();
-  else if (message.type === 'portal:settings') { settings = structuredClone(message.payload.settings); syncPreferences(); }
+  else if (message.type === 'portal:settings') { settings = structuredClone(message.payload.settings); applyLocal(); syncPreferences(); }
   else if (message.type === 'portal:preferences-status') { status.textContent = message.payload.saved ? 'Preferences saved on this device.' : 'Preferences apply to this run; device storage is unavailable.'; }
   else if (message.type === 'portal:result-status') { $('overlayCopy').textContent = message.payload.message; $('restartButton').disabled = false; }
 }, reportError);
@@ -49,6 +54,12 @@ function syncPreferences() {
   $('leftHandToggle').checked = settings.controls.touchLeftHanded;
   $('touchControls').dataset.leftHanded=String(settings.controls.touchLeftHanded);
   $('visualizerSelect').value = settings.video.visualizer ?? 'journey';
+  $('sceneSelect').value = local.scene; $('boardPulseToggle').checked = local.reactiveBoard;
+  $('boardPulseToggle').disabled = settings.accessibility.reduceMotion || settings.accessibility.reduceFlash || !settings.video.audioReactive;
+  $('sceneHint').textContent = {auto:'Scenes crossfade when the music changes section, every 64 beats, or on a Halving.',tunnel:'Polygon rings fly out from behind the board; beats twist them, bass stretches the spokes.',particles:'A star field streams outward; energy lengthens the streaks, beats swell the motes.',horizon:'A grid scrolls toward you under a striped sun that breathes with the bass.',off:'No backdrop scene. Your music world still plays.'}[local.scene];
+  $('sceneNextButton').disabled = local.scene === 'off';
+  $('boardPulseNote').textContent = $('boardPulseToggle').disabled ? 'Off while Reduced motion, Reduced flashes or React to music keep the board still.' : 'The frame and falling piece glow gently with the beat.';
+  for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.setAttribute('aria-current', String(tile.dataset.mode === init?.mode));
   $('intensityRange').value = String(Math.round((settings.video.effectsIntensity ?? .7) * 100));
   $('volumeRange').value = String(Math.round(settings.audio.sfxVolume * 100));
   $('intensityValue').textContent = $('intensityRange').value + '%';
@@ -168,9 +179,9 @@ function frame(now) {
   if (run && renderer) {
     const info = renderer.frame(run.snapshot, now, settings);
     if ($('epochLabel').textContent !== info.name) $('epochLabel').textContent = info.name;
-    const audioCopy = info.visualizerName.toUpperCase() + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
+    const audioCopy = info.visualizerName.toUpperCase() + (info.scene !== 'off' ? ' · ' + info.sceneName.toUpperCase() : '') + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
     if ($('audioLabel').textContent !== audioCopy) $('audioLabel').textContent = audioCopy;
-    if (!overlay.hidden && $('preferencePanel').open) preview.draw(now, settings, info);
+    if (!overlay.hidden && $('preferencePanel').open) preview?.draw(now, settings, info);
     if (stage.dataset.feedback && stage.dataset.feedback !== lastFeedback) { lastFeedback = stage.dataset.feedback; status.textContent = lastFeedback; }
     if (!stage.dataset.feedback) lastFeedback = '';
     stage.dataset.simulationTick = String(run.snapshot.tick); stage.dataset.runScore = String(run.snapshot.score);
@@ -179,8 +190,9 @@ function frame(now) {
   raf = requestAnimationFrame(frame);
 }
 async function boot() {
-  const { createStackedRenderer } = await import('./render/renderer.mjs');
+  const [{ createStackedRenderer }, { createVisualizerPreview }] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs')]);
   if (disposed) return;
+  preview = createVisualizerPreview($('visualizerPreview'));
   run = createStackedPlaySession({ ...init.session, mode: init.mode, startLevel: settings.startLevel }); run.pause();
   app = new Application();
   await app.init({ resizeTo: stage, backgroundAlpha: 0, resolution: Math.min(1.5, window.devicePixelRatio || 1), antialias: false, autoDensity: true, preference: 'webgl', powerPreference: 'low-power' });
@@ -227,10 +239,25 @@ function updatePreferences() {
   settings.video.visualizer = $('visualizerSelect').value; settings.video.effectsIntensity = Number($('intensityRange').value) / 100;
   settings.audio.sfxVolume = Number($('volumeRange').value) / 100; settings.accessibility.colorblindPieces = $('pieceMarksToggle').checked;
   settings.accessibility.reduceFlash=$('flashToggle').checked; settings.controls.touchLeftHanded=$('leftHandToggle').checked;
+  local.scene = SCENES.includes($('sceneSelect').value) ? $('sceneSelect').value : 'auto'; local.reactiveBoard = $('boardPulseToggle').checked; applyLocal();
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(local)); } catch {}
   syncPreferences();
   bridge.send('game:preferences-request', { reduceMotion: settings.accessibility.reduceMotion, reducedEffects: settings.video.reducedEffects, audioReactive: settings.video.audioReactive, ghostPiece: settings.video.ghostPiece, gridLines: settings.video.gridLines, sfxEnabled: settings.audio.sfxEnabled, visualizer:settings.video.visualizer, effectsIntensity:settings.video.effectsIntensity, sfxVolume:settings.audio.sfxVolume, colorblindPieces:settings.accessibility.colorblindPieces, reduceFlash:settings.accessibility.reduceFlash, touchLeftHanded:settings.controls.touchLeftHanded });
 }
-for (const id of ['motionToggle', 'effectsToggle', 'reactiveToggle', 'ghostToggle', 'gridToggle', 'soundToggle', 'visualizerSelect', 'pieceMarksToggle', 'flashToggle', 'leftHandToggle', 'intensityRange', 'volumeRange']) $(id).addEventListener('change', updatePreferences);
+for (const id of ['motionToggle', 'effectsToggle', 'reactiveToggle', 'ghostToggle', 'gridToggle', 'soundToggle', 'visualizerSelect', 'pieceMarksToggle', 'flashToggle', 'leftHandToggle', 'intensityRange', 'volumeRange', 'sceneSelect', 'boardPulseToggle']) $(id).addEventListener('change', updatePreferences);
+$('sceneNextButton').addEventListener('click', () => { renderer?.nextScene(); status.textContent = 'Next backdrop scene.'; });
+$('settingsTile').addEventListener('click', () => { $('preferencePanel').open = true; $('ghostToggle').focus(); });
+$('scoresTile').addEventListener('click', () => {
+  const shelf = $('scoreShelf'), open = shelf.hidden;
+  if (open) {
+    let store = null; try { store = JSON.parse(localStorage.getItem(STACKED_FREE_MEDALS_KEY) ?? 'null'); } catch {}
+    $('scoreBest').textContent = Number.isSafeInteger(store?.bestScore) ? store.bestScore.toLocaleString() : '—';
+    $('scoreRuns').textContent = String(Number.isSafeInteger(store?.runs) ? store.runs : 0);
+    $('scoreMedals').textContent = (Array.isArray(store?.medals) ? store.medals.length : 0) + ' / 16';
+  }
+  shelf.hidden = !open; $('scoresTile').setAttribute('aria-expanded', String(open));
+});
+for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.addEventListener('click', () => { if (tile.dataset.mode === init?.mode) status.textContent = tile.dataset.mode === 'ranked' ? 'Ranked preview is active on this device.' : 'Free Mode is active. Practice medals stay on this device.'; else bridge.send('game:exit-request', {}); });
 for (const [id, output] of [['intensityRange','intensityValue'],['volumeRange','volumeValue']]) $(id).addEventListener('input', () => { $(output).textContent = $(id).value + '%'; });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('blur', pause);

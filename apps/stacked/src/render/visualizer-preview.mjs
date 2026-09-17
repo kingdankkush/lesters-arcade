@@ -22,6 +22,8 @@ export function createVisualizerPreview(canvas) {
       for(let i=0;i<data.count;i++) context.fillRect(data.x[i]+399,data.y[i]+129,2,2);
       context.globalAlpha=1;
       context.fillStyle='#0a1c2b';context.fillRect(363,24,74,210);context.strokeStyle=tint;context.globalAlpha=.7;context.strokeRect(363,24,74,210);context.globalAlpha=1;
+      // Scene deck label (owner direction 2026-09-16): the live scene name, top right.
+      if(info.sceneName){context.fillStyle='#8fb1c5';context.font='600 16px system-ui, sans-serif';context.textAlign='right';context.fillText('SCENE · '+info.sceneName.toUpperCase(),786,34);context.textAlign='left';}
     },
   };
 }

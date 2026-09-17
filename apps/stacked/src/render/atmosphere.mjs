@@ -2,6 +2,7 @@ import { createLivingField, LIVING_FIELD_CAPACITY } from './living-field.mjs';
 import { createMusicMotion } from './music-motion.mjs';
 import { createMusicWorld, MUSIC_WORLD_NAMES, JOURNEY_WORLDS } from './music-worlds.mjs';
 import { createWorldForms } from './world-forms.mjs';
+import { createMusicScenes } from './music-scenes.mjs';
 
 // Zone palettes: `color` and `accent` tint points and membranes, `deep` tints
 // the far rings and webs so every epoch reads as its own world.
@@ -15,7 +16,7 @@ export const STACKED_EPOCHS = Object.freeze([
 ]);
 const boundaries = [0, 10800, 25200, 43200, 64800, 90000];
 const mixColor = (a, b, t) => [16, 8, 0].reduce((n, shift) => n | Math.round(((a >> shift) & 255) * (1 - t) + ((b >> shift) & 255) * t) << shift, 0);
-export function createStackedAtmosphere({ layer, Graphics, mobile=false }) {
+export function createStackedAtmosphere({ layer, sceneLayer = null, Graphics, mobile=false }) {
   // Shared immutable geometry avoids rebuilding/triangulating every particle
   // and membrane every frame. Only transforms, tint and alpha change.
   const dot = new Graphics().circle(0, 0, 3).fill({ color: 0xffffff, alpha: 0.045 })
@@ -28,12 +29,16 @@ export function createStackedAtmosphere({ layer, Graphics, mobile=false }) {
   // and stays behind the opaque board well like the rest of this layer.
   const forms = createWorldForms({ layer, Graphics, mobile });
   layer.addChild(...links, ...points, ...forms.over);
+  // Scene deck (energy tunnel / particle drift / synthwave horizon) lives on
+  // its own layer under the worlds when the renderer provides one.
+  const scenes = sceneLayer ? createMusicScenes({ layer: sceneLayer, Graphics, mobile }) : null;
   const field = createLivingField({mobile});
   const motion = createMusicMotion(), world = createMusicWorld();
   const palette = { color: 0, accent: 0, deep: 0 };
   let mode = '', changedAt = 0;
   return {
     audio(frame, now) { motion.audio(frame, now); },
+    nextScene() { scenes?.next(motion.state.time); },
     draw({ now, tick, lines = 0, width, height, settings, feedback = {} }) {
       const zoneIndex = Math.max(0, boundaries.findLastIndex(value => tick >= value));
       const zone = STACKED_EPOCHS[zoneIndex], previous = STACKED_EPOCHS[Math.max(0, zoneIndex - 1)];
@@ -75,12 +80,13 @@ export function createStackedAtmosphere({ layer, Graphics, mobile=false }) {
         point.alpha = (0.48 + level * 0.25) * intensity * fade;
       }
       const webs = forms.draw({ mode, x: shapes.x, y: shapes.y, weight: mode === 'living' ? null : shapes.weight, count, perOrganism: living.pointsPerOrganism, cohesion, generation: living.generation, width, height, time, level, bass, high, beat, intensity, fade, minimal: !!settings.video.reducedEffects, reduceFlash: !!settings.accessibility.reduceFlash, palette });
+      const scene = scenes ? scenes.draw({ mode: settings.video.scene ?? 'auto', time, width, height, level, bass, high, beat, lines, intensity, fade: 1, minimal: !!settings.video.reducedEffects, reduceFlash: !!settings.accessibility.reduceFlash, reducedMotion: reduced, palette }) : null;
       // No full-screen flashes or strobe, including on beat onsets.
-      return { name: zone.name, color, particles: count, webs, available: !!available, phase: living.phase, generation: living.generation, organisms: living.organisms, mode, visualizerName: MUSIC_WORLD_NAMES[mode] };
+      return { name: zone.name, color, palette, signals: motion.state, particles: count, webs, available: !!available, phase: living.phase, generation: living.generation, organisms: living.organisms, mode, visualizerName: MUSIC_WORLD_NAMES[mode], scene: scene?.scene ?? 'off', sceneName: scene?.name ?? 'Off', sceneTransitions: scene?.transitions ?? 0, sceneMix: scene?.mix ?? 1 };
     },
     destroy() {
       for (const visual of [...points, ...links]) visual.destroy();
-      forms.destroy();
+      forms.destroy(); scenes?.destroy();
       dotContext.destroy(); filamentContext.destroy();
     },
   };
