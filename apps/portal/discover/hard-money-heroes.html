@@ -69,6 +69,8 @@
               <div class="ranked-entry-row"><span>Wallet</span><strong id="rankedEntryWallet">—</strong></div>
               <div class="ranked-entry-row"><span>zkLTC balance</span><strong id="rankedEntryBalance">Checking…</strong></div>
               <div class="ranked-entry-row"><span>Entry fee</span><strong id="rankedEntryFee">0.1 zkLTC</strong></div>
+              <div class="ranked-entry-row"><span>Settlement gas reserve</span><strong id="rankedEntryReserve">0.02 zkLTC</strong></div>
+              <div class="ranked-entry-row ranked-entry-row-total"><span>Total at entry</span><strong id="rankedEntryTotal">0.12 zkLTC</strong></div>
             </div>
             <div id="rankedEntryChainGuard" class="ranked-entry-chainguard" hidden></div>
             <p id="rankedEntryStatus" class="ranked-entry-status"></p>
@@ -76,7 +78,7 @@
               <button id="rankedEntryCancel" class="back-nav-button" type="button">Cancel</button>
               <button id="rankedEntryApprove" class="primary-button big-action" type="button">Start Ranked Run</button>
             </div>
-            <p class="tiny-note" id="rankedEntryFootnote">Ranked Mode charges 0.1 zkLTC at entry once verified settlement is live; that fee settles your score and session data on LitVM. In this preview your wallet identifies the local session and no transaction is sent.</p>
+            <p class="tiny-note" id="rankedEntryFootnote">Ranked Mode charges a flat 0.1 zkLTC entry plus a small settlement gas reserve once verified settlement is live; the reserve pays the relayer that publishes your score and session data on LitVM for you, and the exact total is quoted by the entry contract before you confirm. In this preview your wallet identifies the local session and no transaction is sent.</p>
           </div>
         </div>
 
