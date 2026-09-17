@@ -282,7 +282,7 @@ import {
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
-import { SETTLEMENT_LIVE, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
+import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
 import { CURRENT_RANKED_SEASON_ID, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
@@ -1850,7 +1850,7 @@ function currentProfileDocument() {
   return profile ? buildProfileDocument(profile, state.runHistory ?? []) : null;
 }
 function pushProfileToCloudSoon() {
-  if (!profileSync.hasSession(connectedWallet)) return;
+  if (!HOSTED_PROFILE_SYNC || !profileSync.hasSession(connectedWallet)) return;
   const document = currentProfileDocument();
   if (!document) return;
   const json = JSON.stringify(document);
@@ -1859,7 +1859,7 @@ function pushProfileToCloudSoon() {
   profileSync.push(document, { wallet: connectedWallet });
 }
 async function pullProfileFromCloud(wallet) {
-  if (!wallet || walletConnector !== 'injected-evm' || profileSyncPulledFor === wallet) return;
+  if (!HOSTED_PROFILE_SYNC || !wallet || walletConnector !== 'injected-evm' || profileSyncPulledFor === wallet) return;
   profileSyncPulledFor = wallet;
   const pulled = await profileSync.pull(wallet);
   if (!pulled.ok || !pulled.profile) return;
@@ -5964,7 +5964,7 @@ async function authenticateWalletSiwe(provider, address) {
     const ethers = await loadEthers();
     const ok = isValidLogin({ challenge, signature, signingAddress: address, recoverAddress: (message, sig) => ethers.verifyMessage(message, sig) });
     walletAuthenticated = ok;
-    if (ok) {
+    if (ok && HOSTED_PROFILE_SYNC) {
       // Same signature, hosted session: the server re-verifies the SIWE
       // login and hands back the token that authorises profile writes.
       profileSync.login({ challenge, signature }).then((login) => {

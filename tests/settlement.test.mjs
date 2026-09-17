@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   SETTLEMENT_LIVE,
+  HOSTED_PROFILE_SYNC,
   ZKLTC_SETTLEMENT_GAS,
   estimateSettlementGas,
   buildSettlementPlan,
@@ -13,6 +14,7 @@ const WALLET = '0x' + 'a'.repeat(40);
 
 test('ranked settlement fails closed until the verifier contract and attestation service are approved', () => {
   assert.equal(SETTLEMENT_LIVE, false);
+  assert.equal(HOSTED_PROFILE_SYNC, false, 'hosted profile sync stays off until the Vercel secrets exist');
 });
 
 test('estimateSettlementGas scales with achievements + profile change', () => {

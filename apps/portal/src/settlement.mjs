@@ -26,6 +26,14 @@ import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, RANKED_
 // attestation service is production-approved. Never publish unverified rows.
 export const SETTLEMENT_LIVE = false;
 
+// Hosted profile services (owner decision 2026-09-16): SIWE session tokens
+// and cross-device profile sync through /api/session and /api/profile.
+// Stays false until the Vercel secrets (SESSION_SECRET, NEON_DATABASE_URL)
+// exist; while false the browser never calls those endpoints, so a plain
+// static host or an unconfigured deployment logs no failed requests and the
+// portal stays local-only exactly as before.
+export const HOSTED_PROFILE_SYNC = false;
+
 // Recorded legacy testnet addresses, not proof of hardened compatibility.
 // The GameRegistry address is used for read-only approval checks.
 export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
