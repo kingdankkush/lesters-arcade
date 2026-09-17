@@ -332,3 +332,8 @@ Nothing below was run by the authoring session: no deployer key exists on the bu
 | `SESSION_SECRET` | HMAC secret for wallet session tokens (`/api/session`, `/api/profile`) |
 | `SESSION_ALLOWED_DOMAINS` | optional comma list; default lestersarcade.io, www, localhost |
 | `NEON_DATABASE_URL` | Neon/Vercel Postgres connection string for profile sync |
+
+
+## Flipping hosted profile sync (2026-09-16)
+
+The browser only calls `/api/session` and `/api/profile` when `HOSTED_PROFILE_SYNC` in `apps/portal/src/settlement.mjs` is `true`. Flip it in the same change that adds `SESSION_SECRET` (≥ 32 chars) and `NEON_DATABASE_URL` on Vercel; until then an unconfigured deployment logs no failed requests and profiles stay device-local. `SETTLEMENT_LIVE` remains the separate gate for on-chain settlement and relayed `/api/settle`.

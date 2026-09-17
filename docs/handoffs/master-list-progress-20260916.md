@@ -90,6 +90,24 @@ Working branch `fable/master-list-20260916`, cut from `codex/mobile-worlds-aquat
 - `pickup-banner.mjs` (tick-driven bold banner for pickups and world interactions, coalescing queue) with styles in the HMH host stylesheet; `gore-presentation.mjs` physics droplets on directional flesh hits and dismembering kills with tumbling limbs (`shouldDismember`); `createUserZoom()` for desktop wheel zoom 0.7–1.1.
 - Runtime wiring in `apps/hmh-reboot/src/main.mjs` is prepared (scratchpad `wire-hmh-main.py`) and lands after the held-weapons slice releases that file.
 
+## Slice 15 — HMH held weapons through the pistol path (HMH-N03) — committed `94f6e291`
+
+- Seven authored weapon meshes (`apps/hmh-reboot/assets/source/blender/hmh-held-weapons.blend`) are appended into each hero's packed rig, skinned to the pistol prop bone with a slide-fitted bore axis and rendered through the hero's own camera, lights, clip actions and reload / idle-check gestures into per-hero, lazily fetched weapon pages (`apps/portal/assets/generated/hmh-held-weapons/<actor>/`, 2x density, exact WebP, ≤ 1.5 MiB per page, ≤ 8 MiB per hero). `held-weapon-atlas.mjs` + `production-hero-atlas.mjs` substitute the held frame per pose and fire the muzzle from the page's muzzle point.
+- Evidence: `tests/hmh-reboot-held-weapon-atlas.test.mjs`, `npm run smoke:hmh:held-weapons` (all four heroes, desktop + touch), production asset QA section, contact sheets under `.hermes/evidence/hmh-held-weapons-20260916/`. Remaining: death keeps the native pistol frame; long guns are held one-handed (hero arm poses are locked).
+
+## Slice 16 — STACKED reactive scenes, board pulse and menu (ST-N01/N02) — committed `e0a411a2`
+
+- `render/music-scenes.mjs` (energy tunnel, particle drift, synthwave horizon; director crossfades on energy shifts, 64 beats, a Halving or a 40 s fallback), `render/board-pulse.mjs` (frame ring and active-piece halo within pinned alpha caps; off under reduced motion / flash or the new toggle), rebuilt menu, mode tiles, grouped settings and results with inline SVG art. Scene and pulse preferences persist device-side (`stacked-visual-scenes-v1`). Note: the board pulse is hidden while "Reduced flashes" (default on) is set.
+
+## Slice 17 — Chikun to the sheet and one looping course (CH-N01/N02/N03) — committed `602c7898`, `de8ca47f`, `7d117e41`
+
+- Character: native rig plus brow / beak expression bones, vertex regrade to the sheet palette with glowing mint eyes, 39 clips (idle, steep climb / dive, hit per obstacle family, expressions baked per clip), atlases regenerated within budgets (`docs/chikun/CHARACTER-SHEET-PIPELINE.md`).
+- Course: `apps/portal/src/chikun-course-regions.mjs` schedules farmland → forest → town → city → industrial → suburbs → coast as one 16,320-tick lap that loops into farmland with no reset; per-region parallax, terrain and passage mixes; start-overlay teases; regions browser smoke. Evidence version bumped to v5 (old local previews no longer re-verify).
+
+## Slice 18 — HMH runtime wiring and the hosted-sync flag — committed `f5b1c7e0`, `edc9aa90`, `1502fee5`
+
+- `main.mjs` now applies the rail lane falloff per segment, grants score for silver, announces pickups / activated sites / secrets through the lazy banner, passes direction and dismember flags into the gore pool, and zooms with the desktop wheel. `HOSTED_PROFILE_SYNC = false` (settlement.mjs) keeps the portal from calling `/api/session` and `/api/profile` until the owner flips it with the Vercel secrets. Version 1.7.0, cache marker `lesters-arcade-v52-owner-round`.
+
 ## Not yet done in this session (see master list)
 
-X-08 art (owner), contract deployment and Vercel secrets (owner key), HMH-N03 weapon models (in flight), HMH main.mjs wiring of slice 14, Chikun looping seven-region world and character-to-sheet (in flight), STACKED reactive board and menu redesign (in flight). Physical-device acceptance remains owner/tester work.
+X-08 art (owner), contract deployment and Vercel secrets plus the `HOSTED_PROFILE_SYNC` / `SETTLEMENT_LIVE` flips (owner key), Tripo props (no API access on the build machine), HMH interactive-area hero animations and world dressing (next art slices), STACKED portal-side persistence of scene prefs, Chikun ragdoll sever rules per new hit family. Physical-device acceptance remains owner/tester work.
