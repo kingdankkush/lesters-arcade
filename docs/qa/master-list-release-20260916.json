@@ -1,0 +1,63 @@
+{
+  "status": "candidate-ready-not-promoted",
+  "date": "2026-09-16",
+  "production": "https://lestersarcade.io",
+  "liveDeploymentAtHandoff": "dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B",
+  "candidateDeployment": "dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT",
+  "candidateUrl": "https://lesters-arcade-didds3ryr-justin-agent-projects.vercel.app",
+  "candidateReadyState": "READY",
+  "source": "81a03ef6",
+  "branch": "fable/master-list-20260916",
+  "siteVersion": "1.6.0",
+  "gameVersion": "1.6.0",
+  "cache": "lesters-arcade-v51-weapon-wheel",
+  "rollback": "dpl_Gnf2tetZUqK5fsfH7Pgcy4gERe7B",
+  "promotion": {
+    "performed": false,
+    "reason": "The `npx vercel promote` call was blocked by the session permission classifier. The owner can promote with `npx vercel promote dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT --yes` from the worktree, then verify public hashes with the script noted below.",
+    "publicVerificationPending": true
+  },
+  "changes": [
+    "HMH: SWAP weapon control (Q/E, right bumper, touch SWAP), weapon wheel (Tab or HUD weapon card) with a simulation hold, railgun lane pierce through six bodies (7 Deep Proof, 8 Settler Rail).",
+    "All games: end-of-run share row (X, Facebook, Discord copy, native share sheet) with score and session stats.",
+    "Web3: 0.1 zkLTC native Ranked entry fee model, SIWE signature recovery and Ranked gate, native openSession + submitVerifiedSession settlement plan, /api/attest EIP-712 verifier function (fails closed without VERIFIER_PRIVATE_KEY), hardened chain-client ABI. SETTLEMENT_LIVE remains false; no funds move.",
+    "Contracts: native-fee, EIP-712 attestation and soulbound-achievement set in contracts/src; June 2026 contracts archived; nothing deployed.",
+    "HMH: authored prop atlas rendered at 2x pixel density (2048 px, pixelDensity 2), world footprints unchanged.",
+    "STACKED: piece presentation layer (lock thud, hold streak, level shimmer, ledger dust, perfect-clear sparkles, top-out crumble, danger pulse) within the flash limiter.",
+    "HMH audio: gun bodies, shotgun pump rack, four-stage reload, bigger explosion, wet gib layer; owner-supplied Doom packs measured only, never sampled.",
+    "Site/game version 1.6.0; service-worker cache marker lesters-arcade-v51-weapon-wheel."
+  ],
+  "localGate": {
+    "command": "npm run vercel:build",
+    "tests": 3842,
+    "passed": 3791,
+    "unchangedRetiredExceptions": 51,
+    "unexpectedFailures": 0,
+    "syntaxJs": 697,
+    "syntaxPython": 113,
+    "assets": "pass",
+    "contractStructure": "pass",
+    "build": "pass",
+    "hmhInitialJsBytes": 1040691,
+    "hmhInitialJsCap": 1048576
+  },
+  "hostedGate": "The candidate deployment reached READY, which means the same vercel:build gate passed in Vercel's build image.",
+  "browserEvidence": [
+    "scripts/hmh-reboot-weapon-wheel-browser-smoke.mjs (desktop + 390x844 touch) pass",
+    "scripts/hmh-reboot-mobile-controls-browser-smoke.mjs 4 devices pass",
+    "scripts/hmh-reboot-performance-browser-smoke.mjs pass",
+    "scripts/chikun-ranked-browser-smoke.mjs pass (share row visible on the result overlay)",
+    "scripts/stacked-playable-browser-smoke.mjs 6 profiles pass with the piece layer",
+    "scripts/hmh-weapon-sfx-browser-smoke.mjs zero unknown cues",
+    "portal boot and simulated-wallet connect fallback checked headless; the stale simulated-wallet smoke also fails on the current live site (missing #walletStatus after the homepage redesign)"
+  ],
+  "publicVerification": {
+    "plannedScript": "compares sha256 of dist/main.js, sw.js, shells, dist chunks, the 2x prop atlas and the new SFX against the local build, and probes POST /api/attest for a 503 verifier-not-configured response",
+    "result": "not run: promotion pending"
+  },
+  "ownerDecisionsPending": [
+    "Promote dpl_AkmKkzZKqr7scPMDe5ACU6J7tKVT (or allow the promote command).",
+    "Deploy the hardened contracts (deployer key) and set VERIFIER_PRIVATE_KEY / SCORE_REGISTRY_ADDRESS before enabling SETTLEMENT_LIVE.",
+    "Fee split recipients per game, Chikun creator wallet and rights, achievement art set."
+  ]
+}
