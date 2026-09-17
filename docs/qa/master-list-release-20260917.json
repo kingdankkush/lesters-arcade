@@ -1,0 +1,76 @@
+{
+  "status": "verified-live",
+  "date": "2026-09-17",
+  "production": "https://lestersarcade.io",
+  "liveDeploymentAtHandoff": "dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq",
+  "candidateUrl": "https://lesters-arcade-c355nyc8n-justin-agent-projects.vercel.app",
+  "candidateReadyState": "READY",
+  "productionDeployment": "dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu",
+  "productionImmutableUrl": "https://lesters-arcade-nnbuoiuh3-justin-agent-projects.vercel.app",
+  "source": "69144aad",
+  "branch": "fable/master-list-20260916",
+  "siteVersion": "1.7.0",
+  "gameVersion": "1.7.0",
+  "cache": "lesters-arcade-v52-owner-round",
+  "rollback": "dpl_7PT1JEqXYgS4jFjZvip2cMKsACMq",
+  "promotion": {
+    "performed": true,
+    "command": "npx vercel promote https://lesters-arcade-c355nyc8n-justin-agent-projects.vercel.app --yes",
+    "note": "Owner asked on 2026-09-16 to push all completed work live. Vercel promoted by creating a new production build of the same source; it reached Ready and the public alias serves it. The preview candidate is behind Vercel deployment protection (401), so hash verification ran against the production alias."
+  },
+  "ownerDecisions": "docs/handoffs/owner-decisions-20260916.md",
+  "changes": [
+    "HMH: every held weapon rendered through the pistol's own Blender path into per-hero lazily fetched weapon pages (shotgun, auto-miner, launcher rig, hash rail, lightning ledger, bear-market burner, forked standard).",
+    "HMH: three gated destinations (Liquidity Haven, Litecoin Sanctuary + Scrypt Cache, Liquidation Trap) with timed restocks; objective cap 8.",
+    "HMH: railgun lane damage falls off to 35% at maximum range; silver coins count toward the run score (10 per coin before the score multiplier).",
+    "HMH: bold pickup / interaction banner (weapons, ammo, grenades, health, nuke, timed power-ups, activated sites, found secrets); physics blood droplets on directional flesh hits and dismemberment (explosive, lane and pellet weapons, hazards); desktop mouse-wheel zoom between 0.7x and 1.1x of the readable default.",
+    "Chikun: character regraded to the original sheet (white feathers, crimson crest, glowing mint eyes, black coat with red lining) with 39 clips including idle, steep climb/dive and per-obstacle hit poses.",
+    "Chikun: one looping course farmland -> forest -> town -> city -> industrial -> suburbs -> coast -> farmland with no reset of speed, score or difficulty; start-overlay teases for the daily challenge and Ranked rewards; replay evidence v5.",
+    "STACKED: three music-reactive backdrop scenes with a section director, board frame and piece halo pulse, bespoke menu / tiles / grouped settings / results.",
+    "Portal: redesigned global Scores page (per-game banners, cadence and standing tabs, search, sortable columns, jump to my rank, phone cards); Ranked modal lists the flat fee, settlement gas reserve and quoted total.",
+    "Web3 services: /api/session (SIWE session tokens), /api/profile (Neon-backed cross-device profiles), /api/settle (relayed settlement), browser profile-sync client wired into the portal behind HOSTED_PROFILE_SYNC=false; contracts round 2 (quoteEntry, relayer vault, per-game soulbound collections); SETTLEMENT_LIVE remains false and nothing is deployed on chain.",
+    "Site/game version 1.7.0; service-worker cache marker lesters-arcade-v52-owner-round."
+  ],
+  "localGate": {
+    "command": "npm run vercel:build",
+    "tests": 3943,
+    "passed": 3892,
+    "unchangedRetiredExceptions": 51,
+    "unexpectedFailures": 0,
+    "syntaxJs": 728,
+    "syntaxPython": 117,
+    "assets": "pass",
+    "contractStructure": "pass",
+    "build": "pass",
+    "hmhInitialJsHeadroomBytes": 2150,
+    "hmhInitialJsCap": 1048576
+  },
+  "hostedGate": "The candidate and the promoted production build both reached READY, which means the same vercel:build gate passed in Vercel's build image.",
+  "browserEvidence": [
+    "scripts/hmh-reboot-weapon-wheel-browser-smoke.mjs (desktop + 390x844 touch) pass on https://lestersarcade.io",
+    "scripts/hmh-reboot-held-weapons-browser-smoke.mjs pass on https://lestersarcade.io (7 weapons desktop + touch)",
+    "scripts/chikun-ranked-browser-smoke.mjs pass on https://lestersarcade.io (full ranked flow, score recorded, SIWE signed by the fixture wallet)",
+    "scripts/stacked-playable-browser-smoke.mjs pass on https://lestersarcade.io",
+    "scripts/hmh-objective-rewards-browser.mjs pass locally (all destinations, desktop + touch)",
+    "scripts/chikun-regions-browser-smoke.mjs pass locally (9 stops across the full lap and lap 2); against the live alias its Playwright route interception of dist/chikun/game.js races the frame load and aborts before the first assertion (harness follow-up, not a game defect)",
+    "scripts/stacked-reactive-evidence-smoke.mjs pass locally at 1280 and 390"
+  ],
+  "publicVerification": {
+    "script": "sha256 of every public shell, stylesheet, dist chunk, generated atlas and manifest against the local build; POST /api/attest, /api/session, /api/settle and GET /api/profile",
+    "matchingFiles": 102,
+    "checkedFiles": 102,
+    "mismatches": 0,
+    "attest": { "status": 503, "meaning": "verifier not configured; fails closed" },
+    "session": { "status": 503, "meaning": "SESSION_SECRET not configured; fails closed" },
+    "profile": { "status": 503, "meaning": "NEON_DATABASE_URL not configured; fails closed" },
+    "settle": { "status": 503, "meaning": "verifier not configured; fails closed" }
+  },
+  "ownerGated": [
+    "Deploy the round-2 contracts with the owner key (docs/web3/contract-overhaul-20260916.md runbook) and set SCORE_REGISTRY_ADDRESS / VERIFIER_PRIVATE_KEY / RELAYER_PRIVATE_KEY on Vercel.",
+    "Add SESSION_SECRET and NEON_DATABASE_URL on Vercel and flip HOSTED_PROFILE_SYNC in apps/portal/src/settlement.mjs.",
+    "Flip SETTLEMENT_LIVE once the contracts and secrets exist.",
+    "Louie's Chikun developer wallet for the 85% split.",
+    "Tiered achievement illustrations (bronze / silver / gold / platinum) per game.",
+    "Tripo API access on the build machine for the prop rebuilds."
+  ]
+}
