@@ -125,6 +125,24 @@ test('foreign origins and non-GET requests remain outside the worker', async () 
   assert.equal(runtime.fetches.length, 0);
 });
 
+test('same-origin API requests stay outside the worker', async () => {
+  const runtime = worker({ offline: true });
+  runtime.entries.set(key('/api/leaderboard?game=chikun'), new Response('stale cached board'));
+  for (const [path, overrides] of [
+    ['/api/leaderboard?game=chikun', {}],
+    ['/api/profile?wallet=0x1111111111111111111111111111111111111111&self=1', { cache: 'no-store' }],
+    [`/api/session/${'ab'.repeat(32)}`, {}],
+    [`/api/share-card/${'ab'.repeat(32)}.png?v=0123456789ab`, { destination: 'image' }],
+    ['/api/settle/status?sessionId32=0x00', { mode: 'navigate' }],
+    ['/api', {}],
+  ]) {
+    assert.equal(await runtime.request(path, overrides), undefined, `${path} must reach the network untouched`);
+  }
+  assert.equal(runtime.fetches.length, 0, 'the worker never fetches or caches API responses');
+  const online = worker();
+  assert.equal(await (await online.request('/apiary/logo.png', { destination: 'image' })).text(), 'current release bytes', 'only the /api/ path prefix is bypassed');
+});
+
 test('explicit no-store requests bypass worker persistence and retain their fetch policy', async () => {
   const runtime = worker();
   runtime.entries.set(key('/private-snapshot'), new Response('existing cached value'));
