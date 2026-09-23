@@ -5,7 +5,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { HOSTED_BOARD_TTL_MS, createOfficialLeaderboardRoute } from '../apps/portal/src/routes/official-leaderboard-route.mjs';
+import { createOfficialLeaderboardRoute } from '../apps/portal/src/routes/official-leaderboard-route.mjs';
+import * as hostedLeaderboardView from '../apps/portal/src/routes/hosted-leaderboard-view.mjs';
 import {
   LEADERBOARD_PERIODS,
   formatResetCountdown,
@@ -93,7 +94,11 @@ const find = (root, predicate) => { const hits = []; walk(root, (candidate) => {
 const text = (root) => { const parts = []; walk(root, (candidate) => { if (candidate.textContent) parts.push(candidate.textContent); if (candidate.text) parts.push(candidate.text); }); return parts.join(' '); };
 const byClass = (root, className) => find(root, (candidate) => String(candidate.className ?? '').split(/\s+/).includes(className));
 
-function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 'lester-blaster' }, playRanked = () => {}, viewProfile = () => {}, timers = null, active = true } = {}) {
+const { HOSTED_BOARD_TTL_MS } = hostedLeaderboardView;
+
+// The hosted view module is handed over directly, so the view exists on the
+// first render; the lazy default is covered by its own test below.
+function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 'lester-blaster' }, playRanked = () => {}, viewProfile = () => {}, timers = null, active = true, loadHostedView = () => hostedLeaderboardView, lazy = false } = {}) {
   const grid = node('grid');
   let localReads = 0;
   const context = { connectedWallet, state: { profiles: {} } };
@@ -103,6 +108,7 @@ function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 
     indexApi,
     playRanked,
     viewProfile,
+    ...(lazy ? {} : { loadHostedView }),
     isActive: () => active,
     now: () => clock.now,
     dom: { officialCabinetGrid: grid },
@@ -431,4 +437,44 @@ test('preview never fetches and hosted entries keep only index fields', async ()
   assert.equal(entry.explorerUrl, null, 'only LiteForge explorer transaction links are rendered');
   assert.equal(entry.isCurrentPlayer, true);
   assert.equal(entry.runStats.forksPassed, 40);
+});
+
+test('the hosted board loads on demand and preview never downloads it', async () => {
+  // Default loader: a dynamic import(), so the first render shows a loading card.
+  const { calls, indexApi } = e5Fixture({ total: 30 });
+  const lazy = hostedRoute({ indexApi, lazy: true });
+  lazy.route.renderLeaderboards();
+  assert.equal(lazy.grid.children.length, 1, 'only the loading card until the view arrives');
+  assert.match(text(lazy.grid), /Loading verified scores…/);
+  await lazy.route.hydrate();
+  await settle();
+  assert.equal(calls.length, 1, 'one E5 request once the view is in');
+  assert.equal(rowsOf(lazy.grid.children[1]).length, 25, 'the board renders in place');
+
+  // A failed download offers Try again, which loads it again.
+  let attempts = 0;
+  const flaky = hostedRoute({ indexApi, loadHostedView: () => { attempts += 1; return attempts === 1 ? Promise.reject(new Error('chunk failed')) : Promise.resolve(hostedLeaderboardView); } });
+  const warn = console.warn;
+  console.warn = () => {};
+  try {
+    flaky.route.renderLeaderboards();
+    assert.equal(await flaky.route.hydrate(), null);
+    await settle();
+  } finally {
+    console.warn = warn;
+  }
+  assert.match(text(flaky.grid), /Scores are unavailable right now/);
+  byClass(flaky.grid, 'leaderboard-empty-action')[0].listeners.click();
+  await settle();
+  await settle();
+  assert.equal(attempts, 2);
+  assert.equal(rowsOf(flaky.grid.children[1]).length, 25);
+
+  // Preview: the hosted module is never requested, by render or by hydrate.
+  let loads = 0;
+  const preview = createOfficialLeaderboardRoute({ hosted: false, indexApi, loadHostedView: () => { loads += 1; return hostedLeaderboardView; } });
+  assert.equal(await preview.hydrate(), null);
+  preview.invalidate();
+  preview.markStale();
+  assert.equal(loads, 0);
 });

@@ -7,22 +7,24 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 
 import * as catalogModule from '../apps/portal/src/achievements/index.mjs';
-import {
+import { createOfficialProfileRoute } from '../apps/portal/src/routes/official-profile-route.mjs';
+import * as hostedProfileView from '../apps/portal/src/routes/hosted-profile-view.mjs';
+import { ARCADE_AVATARS } from '../apps/portal/src/arcade-avatars.mjs';
+import { RANKED_PENDING_STORAGE_KEY, createRankedRunHoldings } from '../apps/portal/src/index-api-client.mjs';
+import { ERROR_CODE_ALLOWLIST } from '../server/settle/errors.mjs';
+
+const {
   BLOCKED_NAME_COPY,
   DEAD_LETTER_COPY,
   HOSTED_PROFILE_TTL_MS,
   RETRY_FAILED_COPY,
   RETRY_HANDED_OFF_COPY,
-  createOfficialProfileRoute,
   hostedSessionStatus,
   profileShareUrl,
   retryCooldownMs,
   retryFailureWords,
   settleErrorWords,
-} from '../apps/portal/src/routes/official-profile-route.mjs';
-import { ARCADE_AVATARS } from '../apps/portal/src/arcade-avatars.mjs';
-import { RANKED_PENDING_STORAGE_KEY, createRankedRunHoldings } from '../apps/portal/src/index-api-client.mjs';
-import { ERROR_CODE_ALLOWLIST } from '../server/settle/errors.mjs';
+} = hostedProfileView;
 
 const ME = `0x${'aa'.repeat(20)}`;
 const OTHER = `0x${'bb'.repeat(20)}`;
@@ -95,6 +97,7 @@ function hostedProfile({
   rankedClientHolds = () => false,
   dispatchEvent = null,
   active = true,
+  lazy = false,
 } = {}) {
   const grid = node('grid');
   const calls = { profile: [], retrySettle: [], events: [], connect: 0, views: [] };
@@ -114,6 +117,9 @@ function hostedProfile({
   const route = createOfficialProfileRoute({
     hosted: true,
     indexApi,
+    // The view module is handed over directly so it exists on the first
+    // render; the lazy default has its own test.
+    ...(lazy ? {} : { loadHostedView: () => hostedProfileView }),
     deployment: { status: deploymentStatus, addresses: { playerProfileRegistry: `0x${'3e'.repeat(20)}`, achievementRegistries: { chikun: `0x${'f6'.repeat(20)}`, 'lester-blaster': `0x${'c1'.repeat(20)}`, stacked: `0x${'54'.repeat(20)}` } } },
     isAuthenticated: (wallet) => authenticated && wallet === connectedWallet,
     isActive: () => active,
@@ -599,4 +605,26 @@ test('main.js routes Retry through the holdings and refreshes the verified views
   assert.match(renamed, /officialLeaderboardRoute\.markStale\(\);/);
   assert.match(renamed, /mergeRemoteProfile\(profile, \{ profile: \{ displayName: detail\.displayName \?\? null \} \}\)\.changed/, 'the nav follows the confirmed on-chain name');
   assert.match(renamed, /renderOfficialNav\(\);/);
+});
+
+test('the hosted profile loads on demand and preview never downloads it', async () => {
+  const lazy = hostedProfile({ lazy: true, active: true });
+  lazy.route.setPendingSavedRuns(2); // known before the view arrives
+  lazy.route.renderProfile();
+  assert.match(text(lazy.grid), /Loading verified profile…/, 'a loading card until the view module arrives');
+  assert.equal(lazy.route.cachedSelfProfile(ME), null);
+  await lazy.route.hydrate();
+  await settle();
+  assert.equal(lazy.calls.profile.length, 1, 'one E6 read once the view is in');
+  assert.match(text(lazy.grid), /Your Verified Profile/);
+  assert.match(text(lazy.grid), /2 runs saved on this device/, 'the saved-run count reached the view');
+  assert.equal(lazy.route.cachedSelfProfile(ME)?.ok, true);
+
+  let loads = 0;
+  const preview = createOfficialProfileRoute({ hosted: false, indexApi: { profile: async () => ({ ok: true }) }, loadHostedView: () => { loads += 1; return hostedProfileView; } });
+  assert.equal(await preview.hydrate(), null);
+  preview.invalidate();
+  preview.markStale();
+  assert.equal(preview.cachedSelfProfile(ME), null);
+  assert.equal(loads, 0, 'preview never requests the hosted module');
 });

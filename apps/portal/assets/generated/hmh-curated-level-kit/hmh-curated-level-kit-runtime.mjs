@@ -157,6 +157,8 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/profile-sync-client.mjs",
     "apps/portal/src/projectile-pool.mjs",
     "apps/portal/src/ranked-identity.mjs",
+    "apps/portal/src/routes/hosted-leaderboard-view.mjs",
+    "apps/portal/src/routes/hosted-profile-view.mjs",
     "apps/portal/src/routes/official-app-routes.mjs",
     "apps/portal/src/routes/official-leaderboard-route.mjs",
     "apps/portal/src/routes/official-play-routes.mjs",

@@ -361,6 +361,8 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/profile-chain.mjs',
   'apps/portal/src/arcade-avatars.mjs',
   'apps/portal/src/name-claim-prompt.mjs',
+  'apps/portal/src/routes/hosted-leaderboard-view.mjs',
+  'apps/portal/src/routes/hosted-profile-view.mjs',
   'tests/index-api-client.test.mjs',
   'tests/profile-chain.test.mjs',
   'tests/hosted-leaderboard.test.mjs',
