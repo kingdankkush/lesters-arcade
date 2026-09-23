@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { PORTAL_GAMES, portalPageMeta, portalSchema, renderCatalog, renderGameDetails } from '../apps/portal/src/portal-content.mjs';
+import { PORTAL_COPY, PORTAL_GAMES, escapeHtml, portalCopyFor, portalPageMeta, portalSchema, renderCatalog, renderGameDetails } from '../apps/portal/src/portal-content.mjs';
 import { CABINET_FRAMING, cabinetFramePresentation } from '../apps/portal/src/cabinet-presentation.mjs';
 
 test('public discovery describes all three real games and keeps private session URLs out of indexing', () => {
@@ -24,6 +24,10 @@ test('structured discovery reuses a single brand identity and makes no prize or 
   assert.equal(games.length, 3);
   for (const game of games) { assert.equal(game.isAccessibleForFree, true); assert.equal(game.publisher['@id'], 'https://lestersarcade.io/#organization'); }
   assert.doesNotMatch(JSON.stringify(schema), /aggregateRating|prize|global leaderboard/i);
+  for (const settlementLive of [false, true]) {
+    const copy = portalCopyFor({ settlementLive, hostedProfileSync: settlementLive });
+    assert.doesNotMatch(portalSchema('/games', copy), /aggregateRating|prize|global leaderboard/i, `structured data with SETTLEMENT_LIVE=${settlementLive}`);
+  }
 });
 
 test('every cabinet view has the same visible height and ground line without stretching', () => {
@@ -47,7 +51,10 @@ test('home discovery is readable before JavaScript and primary links precede opt
   assert.match(html, /href="\/games"/);
   for(const game of PORTAL_GAMES) assert.ok(html.includes(`/games/${game.slug}`));
   assert.match(html, /How does Lester's Arcade work/);
-  assert.match(html, /device-local/i);
+  // The Ranked wording follows the settlement flags (contract A33).
+  assert.ok(html.includes(escapeHtml(PORTAL_COPY.scoresNote)), 'the scores section states the current Ranked status');
+  for (const [question, answer] of PORTAL_COPY.faq) assert.ok(html.includes(`<summary>${escapeHtml(question)}</summary><p>${escapeHtml(answer)}</p>`), question);
+  assert.doesNotMatch(html, /\byearly\b/i, 'the scoreboards are Weekly, Monthly and All-time');
   assert.ok(html.indexOf('id="officialGuestEnterButton"')<html.indexOf('id="splashLoopVideo"'));
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
   assert.equal(ids.length,new Set(ids).size,'the static app shell has no duplicate control IDs');
