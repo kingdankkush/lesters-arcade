@@ -1,18 +1,31 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildProfileDocument, createProfileSync, mergeRemoteProfile, SESSION_TOKEN_STORAGE_KEY } from '../apps/portal/src/profile-sync-client.mjs';
-import { sanitizeProfileDocument } from '../apps/portal/src/server-session.mjs';
+import {
+  SESSION_TOKEN_STORAGE_KEY,
+  buildProfileDocument,
+  createProfileSync,
+  mergeRemoteProfile,
+  sessionTokenWallet,
+} from '../apps/portal/src/profile-sync-client.mjs';
+import { createIndexApiClient } from '../apps/portal/src/index-api-client.mjs';
+import { buildSiweChallenge, generateNonce } from '../apps/portal/src/wallet-auth.mjs';
+import { sanitizePreferences } from '../server/profile/sanitize.mjs';
 
 /**
- * Browser side of the 2026-09-16 services: the session token follows the
- * wallet, profile pull/push is best-effort and silent when the service is not
- * configured, and relayed settlement hands back either a tx hash or an
- * attestation the player can submit themselves.
+ * Browser side of the hosted profile: the session token comes only from the
+ * wallet session of contract §7.6 (server nonce, then profileSync.login), stale
+ * or pre-v2 tokens are dropped, and the profile document carries preferences
+ * only, because every stat now comes from the verified-session index.
  */
 
 const WALLET = '0xAbCdEf0000000000000000000000000000000001';
 const lower = WALLET.toLowerCase();
+const SERVER_NONCE = 'a1'.repeat(36); // 72 lowercase hex, the E1 shape
+const SERVER_ISSUED_AT = '2026-09-23T10:00:00.000Z';
+// Fixture token: base64url('v2|<audience>|<wallet>|<expiresAt>') + '.' + a fake MAC.
+const v2TokenFor = (wallet, expiresAt) => `${Buffer.from(`v2|lestersarcade:development|${wallet}|${expiresAt}`).toString('base64url')}.fixture-mac`;
+const legacyTokenFor = (wallet, expiresAt) => `${Buffer.from(`${wallet}|${expiresAt}`).toString('base64url')}.fixture-mac`;
 
 function memoryStorage() {
   const map = new Map();
@@ -24,127 +37,233 @@ function jsonResponse(status, body) {
 }
 
 function localProfile(overrides = {}) {
-  return { wallet: lower, handle: 'Player 0001', usernameSet: false, avatar: '🕹️', rank: 'New Challenger', xp: 10, achievements: ['cabinet-pioneer'], totalPaidRuns: 1, totalFreeRuns: 2, preferences: { selectedCharacterId: 'lester' }, ...overrides };
+  return { wallet: lower, handle: 'Player 0001', usernameSet: false, avatar: '🕹️', rank: 'New Challenger', xp: 10, achievements: ['cabinet-pioneer'], totalPaidRuns: 1, totalFreeRuns: 2, progress: { 'lester-blaster': { paidRuns: 1 } }, preferences: { selectedCharacterId: 'lester-original' }, ...overrides };
 }
 
-test('a profile document round-trips through the server sanitiser and only carries the wallet\'s own runs', () => {
-  const runs = [
-    { sessionId: 's-1', gameId: 'stacked', wallet: WALLET, score: 4200.4, recordedAt: '2026-09-16T00:00:00.000Z', runStats: { kills: 0, survivalSeconds: 240 }, envelopeHash: 'A'.repeat(64) },
-    { sessionId: 's-2', gameId: 'lester-blaster', wallet: '0x' + '9'.repeat(40), score: 1 },
-    { gameId: 'stacked', wallet: WALLET, score: 5 },
-  ];
-  const doc = buildProfileDocument(localProfile(), runs);
-  assert.deepEqual(doc.runHistory.map((r) => r.sessionId), ['s-1']);
-  assert.equal(doc.runHistory[0].elapsedSeconds, 240);
-  assert.equal(doc.runHistory[0].score, 4200);
-  const sanitized = sanitizeProfileDocument(doc);
-  assert.equal(sanitized.handle, 'Player 0001');
-  assert.equal(sanitized.runHistory[0].envelopeHash, 'a'.repeat(64));
-  assert.deepEqual(sanitized.preferences, { usernameSet: false, selectedCharacterId: 'lester' });
-});
+// A double of signin-entry's wallet session (contract §7.6), honouring its API:
+// createWalletSession({ hosted, fetchImpl, storage, now, profileSync, loadEthers, domain, chainId })
+// → { signIn, restore, isAuthenticated, token, signOut, remember, remembered }.
+function createWalletSessionDouble({ hosted, fetchImpl, profileSync, domain = 'lestersarcade.io', chainId = 4441 }) {
+  let remembered = null;
+  return {
+    async signIn({ provider, address }) {
+      const wallet = String(address).toLowerCase();
+      if (!hosted) return { ok: true, wallet, authenticated: true, token: null, expiresAt: null };
+      const nonceResponse = await fetchImpl('/api/session/nonce', { method: 'GET', cache: 'no-store' });
+      const { nonce, issuedAt } = await nonceResponse.json();
+      const challenge = buildSiweChallenge({ domain, address, chainId, nonce, issuedAt });
+      const signature = await provider.request({ method: 'personal_sign', params: [challenge.message, address] });
+      const login = await profileSync.login({ challenge, signature });
+      return login.ok
+        ? { ok: true, wallet, authenticated: true, token: login.token, expiresAt: login.expiresAt }
+        : { ok: false, wallet, authenticated: false, token: null, expiresAt: null, error: { kind: 'server', message: login.error } };
+    },
+    async restore() {
+      const wallet = remembered?.wallet ?? null;
+      return { ok: true, wallet, authenticated: Boolean(wallet) && profileSync.hasSession(wallet), providerPending: false };
+    },
+    isAuthenticated: (wallet) => profileSync.hasSession(wallet),
+    token: (wallet) => profileSync.tokenFor(wallet),
+    signOut: () => { profileSync.logout(); remembered = null; },
+    remember: (entry) => { remembered = entry; },
+    remembered: () => remembered,
+  };
+}
 
-test('merging a remote document only ever grows progress and follows the customised identity', () => {
-  const profile = localProfile();
-  const remote = { handle: 'Ace Pilot', avatar: '🚀', xp: 40, rank: 'Contender', totalPaidRuns: 3, totalFreeRuns: 0, achievements: ['cabinet-pioneer', 'stacked-first-quad'], preferences: { usernameSet: true }, runHistory: [{ sessionId: 's-9', gameId: 'stacked', score: 900 }] };
-  const merged = mergeRemoteProfile(profile, remote, [{ sessionId: 's-1' }]);
-  assert.equal(merged.changed, true);
-  assert.equal(profile.handle, 'Ace Pilot');
-  assert.equal(profile.usernameSet, true);
-  assert.equal(profile.avatar, '🚀');
-  assert.equal(profile.xp, 40);
-  assert.equal(profile.rank, 'Contender');
-  assert.equal(profile.totalPaidRuns, 3);
-  assert.equal(profile.totalFreeRuns, 2, 'local count is not lowered');
-  assert.deepEqual(profile.achievements, ['cabinet-pioneer', 'stacked-first-quad']);
-  assert.deepEqual(merged.missingRuns.map((r) => [r.sessionId, r.wallet, r.status]), [['s-9', lower, 'synced-from-profile']]);
-
-  const customised = localProfile({ handle: 'Keep Me', usernameSet: true, xp: 100 });
-  const again = mergeRemoteProfile(customised, remote, [{ sessionId: 's-9' }]);
-  assert.equal(customised.handle, 'Keep Me', 'a locally set name is never overwritten');
-  assert.equal(customised.xp, 100);
-  assert.equal(customised.rank, 'New Challenger', 'rank only follows a higher remote xp');
-  assert.equal(again.missingRuns.length, 0);
-  assert.deepEqual(mergeRemoteProfile(localProfile(), null), { changed: false, missingRuns: [] });
-});
-
-test('login stores the session token per wallet, expiry and a 503 leave the browser local-only', async () => {
+test('the wallet session is the only way to a token: server nonce in, v2 token out', async () => {
   const storage = memoryStorage();
-  let nowMs = 1_000_000;
-  const calls = [];
-  const fetchImpl = async (url, init) => {
-    calls.push([url, init.method]);
-    if (url === '/api/session') return jsonResponse(200, { ok: true, wallet: lower, token: 'abc.def', expiresAt: nowMs + 60_000 });
+  const nowMs = Date.parse(SERVER_ISSUED_AT) + 1_000;
+  const seen = [];
+  const fetchImpl = async (url, init = {}) => {
+    seen.push({ url, method: init.method, cache: init.cache, auth: init.headers?.authorization ?? null, body: init.body ? JSON.parse(init.body) : null });
+    if (url === '/api/session/nonce') return jsonResponse(200, { ok: true, nonce: SERVER_NONCE, issuedAt: SERVER_ISSUED_AT, expiresAt: '2026-09-23T10:10:00.000Z' });
+    if (url === '/api/session') {
+      const { challenge } = JSON.parse(init.body);
+      assert.equal(challenge.nonce, SERVER_NONCE, 'the challenge carries the server nonce');
+      assert.equal(challenge.issuedAt, SERVER_ISSUED_AT, 'and the server issuedAt, so client clock skew cannot stale it');
+      return jsonResponse(200, { ok: true, wallet: lower, token: v2TokenFor(lower, nowMs + 86_400_000), expiresAt: nowMs + 86_400_000 });
+    }
+    if (url.startsWith('/api/profile?')) return jsonResponse(200, { ok: true, wallet: lower, profile: { displayName: null, avatarUri: null, hidden: false, nameBlocked: null }, games: {}, recentSessions: [], achievements: [], preferences: {} });
     throw new Error(`unexpected ${url}`);
   };
-  const sync = createProfileSync({ fetchImpl, storage, now: () => nowMs });
-  assert.equal(sync.hasSession(WALLET), false);
-  const login = await sync.login({ challenge: { message: 'm' }, signature: '0x1' });
-  assert.equal(login.ok, true);
-  assert.equal(sync.hasSession(WALLET), true);
-  assert.equal(sync.hasSession('0x' + '2'.repeat(40)), false, 'the token is bound to the wallet');
-  assert.ok(storage.getItem(SESSION_TOKEN_STORAGE_KEY));
+  const profileSync = createProfileSync({ fetchImpl, storage, now: () => nowMs });
+  const walletSession = createWalletSessionDouble({ hosted: true, fetchImpl, profileSync });
+  const provider = { request: async ({ method }) => { assert.equal(method, 'personal_sign'); return `0x${'1'.repeat(130)}`; } };
 
-  const restored = createProfileSync({ fetchImpl, storage, now: () => nowMs });
-  assert.equal(restored.hasSession(WALLET), true, 'a stored token survives a reload');
-  nowMs += 61_000;
-  assert.equal(restored.hasSession(WALLET), false, 'an expired token is ignored');
+  assert.equal(walletSession.isAuthenticated(WALLET), false);
+  const signedIn = await walletSession.signIn({ provider, address: WALLET });
+  assert.equal(signedIn.ok, true);
+  assert.equal(signedIn.authenticated, true);
+  assert.equal(sessionTokenWallet(signedIn.token), lower);
+  assert.equal(walletSession.token(WALLET), signedIn.token);
+  assert.equal(profileSync.session.token, signedIn.token, 'main.js reads profileSync.session?.token (§7.6)');
+  assert.deepEqual(seen.map((call) => [call.url, call.cache]), [['/api/session/nonce', 'no-store'], ['/api/session', 'no-store']]);
+
+  // The index client picks the token up from the same place.
+  const indexApi = createIndexApiClient({ hosted: true, fetchImpl, getToken: () => profileSync.session?.token ?? null, onUnauthorized: () => profileSync.logout() });
+  assert.equal((await indexApi.profile(WALLET, { self: true })).ok, true);
+  assert.equal(seen.at(-1).auth, `Bearer ${signedIn.token}`);
+
+  // A reload restores the token for the same wallet only.
+  const reloaded = createProfileSync({ fetchImpl, storage, now: () => nowMs });
+  assert.equal(reloaded.hasSession(WALLET), true);
+  assert.equal(reloaded.tokenFor(`0x${'2'.repeat(40)}`), null, 'the token is bound to the wallet');
+  walletSession.signOut();
+  assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
+});
+
+test('a browser-made nonce never reaches /api/session', async () => {
+  let calls = 0;
+  const profileSync = createProfileSync({ fetchImpl: async () => { calls += 1; return jsonResponse(200, {}); }, storage: memoryStorage() });
+  const challenge = buildSiweChallenge({ domain: 'lestersarcade.io', address: WALLET, chainId: 4441, nonce: generateNonce(), issuedAt: SERVER_ISSUED_AT });
+  const refused = await profileSync.login({ challenge, signature: `0x${'1'.repeat(130)}` });
+  assert.deepEqual(refused, { ok: false, unavailable: false, error: 'nonce-not-server-issued' });
+  assert.equal(calls, 0, 'the old browser-nonce login path makes no request at all');
+  assert.equal((await profileSync.login({ challenge: { message: 'm' }, signature: '0x1' })).error, 'nonce-not-server-issued');
+  assert.equal(profileSync.hasSession(WALLET), false);
+});
+
+test('pre-v2, expired and rejected tokens are discarded', async () => {
+  const nowMs = 1_000_000;
+  const storage = memoryStorage();
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: lower, token: legacyTokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 }));
+  const fromOldSite = createProfileSync({ fetchImpl: async () => jsonResponse(200, {}), storage, now: () => nowMs });
+  assert.equal(fromOldSite.hasSession(WALLET), false, 'a 1.7.0 token is never sent again');
+  assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null, 'and it is removed from storage');
+
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: `0x${'2'.repeat(40)}`, token: v2TokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 }));
+  assert.equal(createProfileSync({ storage, now: () => nowMs }).session, null, 'a token for another wallet is not this wallet’s session');
+
+  let clock = nowMs;
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: lower, token: v2TokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 }));
+  const expiring = createProfileSync({ storage, now: () => clock });
+  assert.equal(expiring.hasSession(WALLET), true);
+  clock += 61_000;
+  assert.equal(expiring.hasSession(WALLET), false, 'an expired token is ignored');
+
+  // POST /api/session carries no Bearer token: its 401 is about the new
+  // signature or nonce, so a failed sign-in keeps the token already stored.
+  const loginCalls = [];
+  const loginFetch = async (url, init) => { loginCalls.push([url, init]); return jsonResponse(401, { ok: false, error: 'nonce-used' }); };
+  const stored = { wallet: lower, token: v2TokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 };
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify(stored));
+  const rejected = createProfileSync({ fetchImpl: loginFetch, storage, now: () => nowMs });
+  const answer = await rejected.login({ challenge: { nonce: SERVER_NONCE, message: 'm' }, signature: '0x1' });
+  assert.deepEqual([answer.ok, answer.status, answer.error], [false, 401, 'nonce-used']);
+  assert.equal(loginCalls[0][1].headers.authorization, undefined, 'sign-in sends no Bearer token');
+  assert.equal(rejected.hasSession(WALLET), true, 'a failed sign-in keeps the valid stored token');
+  assert.deepEqual(JSON.parse(storage.getItem(SESSION_TOKEN_STORAGE_KEY)), stored, 'and leaves it in storage');
+
+  const badToken = createProfileSync({ fetchImpl: async () => jsonResponse(200, { ok: true, wallet: lower, token: legacyTokenFor(lower, 1), expiresAt: nowMs + 60_000 }), storage: memoryStorage(), now: () => nowMs });
+  assert.equal((await badToken.login({ challenge: { nonce: SERVER_NONCE, message: 'm' }, signature: '0x1' })).error, 'invalid-token');
+  assert.equal(badToken.hasSession(WALLET), false);
 
   const unconfigured = createProfileSync({ fetchImpl: async () => jsonResponse(503, { ok: false, error: 'session-not-configured' }), storage: memoryStorage(), now: () => nowMs });
-  const missing = await unconfigured.login({ challenge: { message: 'm' }, signature: '0x1' });
+  const missing = await unconfigured.login({ challenge: { nonce: SERVER_NONCE, message: 'm' }, signature: '0x1' });
   assert.deepEqual([missing.ok, missing.unavailable, missing.error], [false, true, 'session-not-configured']);
   assert.equal(unconfigured.serviceState().session, 'unconfigured');
   const offline = createProfileSync({ fetchImpl: async () => { throw new Error('offline'); }, storage: memoryStorage() });
-  assert.equal((await offline.login({ challenge: { message: 'm' }, signature: '0x1' })).unavailable, true);
+  assert.equal((await offline.login({ challenge: { nonce: SERVER_NONCE, message: 'm' }, signature: '0x1' })).unavailable, true);
 });
 
-test('profile pull needs no session, push is debounced behind the session token and clears it on 401', async () => {
+test('the profile document carries preferences only and survives the server sanitizer', () => {
+  const doc = buildProfileDocument(localProfile({ xp: 99_999, totalPaidRuns: 500, achievements: ['arcade-legend-500'] }), [{ sessionId: 's-1', gameId: 'stacked', wallet: WALLET, score: 4200 }]);
+  assert.deepEqual(doc, { preferences: { selectedCharacterId: 'lester-original' } });
+  assert.deepEqual(sanitizePreferences(doc.preferences), doc.preferences, 'E7 keeps every key the browser sends');
+  assert.deepEqual(buildProfileDocument(localProfile({ preferences: { selectedCharacterId: 'Not Valid!' } })), { preferences: {} });
+  assert.deepEqual(buildProfileDocument({ wallet: lower }), { preferences: {} });
+  assert.throws(() => buildProfileDocument(null), /profile is required/);
+});
+
+test('merging the index profile ignores every spoofable field', () => {
+  const profile = localProfile();
+  const before = structuredClone(profile);
+  const legacyDocument = { handle: 'Ace Pilot', avatar: '🚀', xp: 40_000, rank: 'Legend', totalPaidRuns: 300, totalFreeRuns: 9, achievements: ['arcade-legend-500'], preferences: { usernameSet: true }, runHistory: [{ sessionId: 's-9', gameId: 'stacked', score: 900 }] };
+  assert.deepEqual(mergeRemoteProfile(profile, legacyDocument), { changed: false });
+  assert.deepEqual(profile, before, 'an old browser-pushed document changes nothing');
+
+  const indexed = {
+    ok: true, wallet: lower,
+    profile: { displayName: 'Lit Pilot', avatarUri: 'lestersarcade:avatar/lilly', hidden: false },
+    games: { 'lester-blaster': { rankedRuns: 40, confirmedRuns: 40, bestScore: 99_999 } },
+    achievements: [{ id: 'arcade-legend-500', gameId: 'lester-blaster' }],
+    recentSessions: [{ sessionId32: `0x${'1'.repeat(64)}`, score: 5 }],
+    preferences: { selectedCharacterId: 'lilly', nameClaimDismissed: true },
+    xp: 1e9, totalPaidRuns: 1e9, runHistory: [{ sessionId: 'forged' }],
+  };
+  assert.deepEqual(mergeRemoteProfile(profile, indexed), { changed: true });
+  assert.equal(profile.handle, 'Lit Pilot', 'the on-chain name (D3) follows the wallet');
+  assert.equal(profile.usernameSet, true);
+  assert.equal(profile.preferences.selectedCharacterId, 'lilly');
+  for (const key of ['xp', 'rank', 'totalPaidRuns', 'totalFreeRuns', 'achievements', 'avatar', 'progress']) {
+    assert.deepEqual(profile[key], before[key], `${key} is never merged`);
+  }
+  assert.deepEqual(mergeRemoteProfile(profile, indexed), { changed: false }, 'idempotent');
+  assert.deepEqual(mergeRemoteProfile(localProfile(), { profile: { displayName: null, hidden: true } }), { changed: false }, 'a hidden or blocked name leaves the local one');
+  assert.deepEqual(mergeRemoteProfile(localProfile(), null), { changed: false });
+});
+
+test('pull reads the E6 shape, uses the self view with a token and falls back after a 401', async () => {
+  const nowMs = 5_000;
+  const storage = memoryStorage();
+  const token = v2TokenFor(lower, nowMs + 60_000);
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: lower, token, expiresAt: nowMs + 60_000 }));
+  const requests = [];
+  let selfStatus = 200;
+  const body = { ok: true, wallet: lower, profile: { displayName: 'Lit Pilot', avatarUri: null, hidden: false }, games: { chikun: { confirmedRuns: 2 } }, recentSessions: [], achievements: [], preferences: { nameClaimDismissed: true }, updatedAt: 'x' };
+  const fetchImpl = async (url, init) => {
+    requests.push({ url, auth: init.headers?.authorization ?? null, cache: init.cache });
+    if (url.endsWith('&self=1')) return selfStatus === 200 ? jsonResponse(200, body) : jsonResponse(401, { ok: false, error: 'invalid-session' });
+    return jsonResponse(200, { ...body, preferences: null });
+  };
+  const sync = createProfileSync({ fetchImpl, storage, now: () => nowMs });
+  const own = await sync.pull(WALLET);
+  assert.deepEqual([own.ok, own.self, own.profile.displayName, own.games.chikun.confirmedRuns, own.preferences.nameClaimDismissed], [true, true, 'Lit Pilot', 2, true]);
+  assert.deepEqual(requests[0], { url: `/api/profile?wallet=${lower}&self=1`, auth: `Bearer ${token}`, cache: 'no-store' });
+
+  const other = await sync.pull(`0x${'3'.repeat(40)}`);
+  assert.equal(other.self, false);
+  assert.equal(requests[1].auth, null, 'another wallet is read through the public URL');
+
+  selfStatus = 401;
+  const fallback = await sync.pull(WALLET);
+  assert.deepEqual([fallback.ok, fallback.self, fallback.preferences], [true, false, null]);
+  assert.equal(sync.hasSession(WALLET), false, 'the rejected token is gone');
+  assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
+  assert.equal((await sync.pull('nope')).unavailable, true);
+});
+
+test('preference pushes are debounced behind the session token and a 401 drops it', async () => {
   const storage = memoryStorage();
   const nowMs = 5_000;
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: lower, token: v2TokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 }));
   const requests = [];
   const timers = [];
   const fetchImpl = async (url, init) => {
-    requests.push({ url, method: init.method, auth: init.headers?.authorization ?? null, body: init.body ? JSON.parse(init.body) : null });
-    if (url === '/api/session') return jsonResponse(200, { ok: true, wallet: lower, token: 'tok.en', expiresAt: nowMs + 60_000 });
-    if (url.startsWith('/api/profile?wallet=')) return jsonResponse(200, { ok: true, wallet: lower, profile: { handle: 'Remote' }, updatedAt: 'x' });
-    if (url === '/api/profile' && init.method === 'PUT') {
-      return init.body.includes('"handle":"expire"') ? jsonResponse(401, { ok: false, error: 'invalid-session' }) : jsonResponse(200, { ok: true, wallet: lower, updatedAt: 'y' });
-    }
-    throw new Error(`unexpected ${url}`);
+    requests.push({ url, method: init.method, auth: init.headers?.authorization ?? null, cache: init.cache, body: init.body ? JSON.parse(init.body) : null });
+    return init.body.includes('expire') ? jsonResponse(401, { ok: false, error: 'invalid-session' }) : jsonResponse(200, { ok: true, wallet: lower, preferences: {}, updatedAt: 'y' });
   };
   const sync = createProfileSync({ fetchImpl, storage, now: () => nowMs, setTimeoutImpl: (fn, ms) => { timers.push({ fn, ms }); return timers.length; }, clearTimeoutImpl: (id) => { timers[id - 1].cleared = true; } });
-  const pulled = await sync.pull(WALLET);
-  assert.deepEqual([pulled.ok, pulled.profile.handle, requests[0].url], [true, 'Remote', `/api/profile?wallet=${lower}`]);
-  assert.equal((await sync.pull('nope')).unavailable, true);
-
-  assert.equal(sync.push({ handle: 'a' }, { wallet: WALLET }), false, 'no session, nothing queued');
-  await sync.login({ challenge: { message: 'm' }, signature: '0x1' });
-  assert.equal(sync.push({ handle: 'a' }, { wallet: WALLET }), true);
-  assert.equal(sync.push({ handle: 'b' }, { wallet: WALLET }), true);
+  assert.equal(sync.push({ preferences: { selectedCharacterId: 'lilly' } }, { wallet: `0x${'2'.repeat(40)}` }), false, 'another wallet has no session');
+  assert.equal(sync.push({ preferences: { selectedCharacterId: 'lit-valkyrie' } }, { wallet: WALLET }), true);
+  assert.equal(sync.push({ preferences: { selectedCharacterId: 'lilly' } }, { wallet: WALLET }), true);
   assert.equal(timers.filter((t) => !t.cleared).length, 1, 'a burst collapses to one timer');
   timers.at(-1).fn();
   await new Promise((resolve) => setImmediate(resolve));
   const put = requests.filter((r) => r.method === 'PUT');
   assert.equal(put.length, 1);
-  assert.deepEqual([put[0].auth, put[0].body.handle], ['Bearer tok.en', 'b']);
+  assert.deepEqual([put[0].url, put[0].cache, put[0].body], ['/api/profile', 'no-store', { preferences: { selectedCharacterId: 'lilly' } }]);
+  assert.match(put[0].auth, /^Bearer /);
 
-  const expired = await sync.pushNow({ handle: 'expire' }, { wallet: WALLET });
+  const expired = await sync.pushNow({ preferences: { selectedCharacterId: 'expire' } }, { wallet: WALLET });
   assert.equal(expired.status, 401);
   assert.equal(sync.hasSession(WALLET), false, 'a rejected token is dropped');
   assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
   assert.deepEqual(await sync.flush(WALLET), { ok: true, skipped: true });
 });
 
-test('relayed settlement returns the tx hash, falls back to the attestation, and surfaces verifier refusals', async () => {
-  const make = (status, body) => createProfileSync({ fetchImpl: async () => jsonResponse(status, body), storage: null });
-  const relayed = await make(200, { ok: true, relayed: true, txHash: '0x' + 'ab'.repeat(32), signature: '0xsig' }).settle({ gameId: 'stacked' });
-  assert.deepEqual([relayed.relayed, relayed.txHash], [true, '0x' + 'ab'.repeat(32)]);
-  const attested = await make(200, { ok: true, relayed: false, txHash: null, signature: '0xsig', deadline: 1 }).settle({});
-  assert.deepEqual([attested.relayed, attested.signature], [false, '0xsig']);
-  const broken = await make(502, { ok: false, error: 'relay-failed', detail: 'nonce', attestation: { signature: '0xsig', deadline: 1, run: {}, achievements32: [], domain: {} } }).settle({});
-  assert.deepEqual([broken.ok, broken.relayed, broken.signature, broken.relayError], [true, false, '0xsig', 'nonce']);
-  await assert.rejects(make(409, { ok: false, error: 'session-already-settled' }).settle({}), /already settled/);
-  await assert.rejects(make(422, { ok: false, error: 'implausible-run' }).settle({}), /implausible/);
-  await assert.rejects(make(503, { ok: false, error: 'verifier-not-configured' }).settle({}), /not configured/);
-  await assert.rejects(make(503, { ok: false, error: 'relayer-not-allowed' }).settle({}), /not authorised/);
-  await assert.rejects(createProfileSync({ fetchImpl: null }).settle({}), /unavailable/);
+test('the relayed settle() is gone: ranked-client owns settlement (A3)', () => {
+  const sync = createProfileSync({ storage: null });
+  assert.equal('settle' in sync, false);
+  assert.deepEqual(Object.keys(sync.serviceState()), ['session', 'profile']);
 });

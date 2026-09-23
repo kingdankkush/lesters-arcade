@@ -1,6 +1,7 @@
 import {
   gameIdForSlug,
   gameSlugFor,
+  profileWalletFor,
   routeForView,
   viewForPath,
 } from '../arcade-router.mjs';
@@ -15,6 +16,10 @@ export function createPortalRouteController({
   getSelectedGameId,
   setSelectedGameId,
   getSessionId = () => null,
+  // The wallet a /profile/<wallet> URL names (contract A6). null means the
+  // connected wallet's own profile at /profile.
+  getViewedWallet = () => null,
+  setViewedWallet = noop,
   getCharacterPanel = () => null,
   render,
   hydrateLeaderboard = noop,
@@ -32,13 +37,21 @@ export function createPortalRouteController({
     if (suppressRouteSync || !windowRef?.history?.pushState) return;
     const gameSlug = gameSlugFor(getSelectedGameId());
     const sessionId = getSessionId() ?? null;
-    const path = routeForView(step, { gameSlug, sessionId, routeBase: 'play' });
+    const wallet = step === 'profile' ? profileWalletFor(getViewedWallet()) : null;
+    const path = routeForView(step, { gameSlug, sessionId, routeBase: 'play', wallet });
     if (windowRef.location?.pathname !== path) {
-      windowRef.history.pushState({ step, gameSlug, sessionId }, '', path);
+      windowRef.history.pushState(wallet ? { step, gameSlug, sessionId, wallet } : { step, gameSlug, sessionId }, '', path);
     }
   }
 
-  function setView(step) {
+  // setView(step, { wallet }): `wallet` picks whose profile the profile step
+  // shows, and the URL names it (/profile/<wallet>). Navigation without a
+  // wallet (the nav Profile tab, the nav avatar "Open profile", "View my
+  // profile") is the connected wallet's own profile at /profile. Only a URL
+  // (applyLocation, on load and on back/forward) restores another wallet
+  // without the option. Leaving the profile step forgets it.
+  function setView(step, options = {}) {
+    setViewedWallet(step === 'profile' ? profileWalletFor(options?.wallet ?? null) : null);
     setStep(step);
     syncRoute(step);
     const rootStyle = documentRef?.documentElement?.style;
@@ -62,10 +75,11 @@ export function createPortalRouteController({
 
   function applyLocation() {
     if (!windowRef?.location) return;
-    const { step, gameSlug } = viewForPath(windowRef.location.pathname, {
+    const { step, gameSlug, wallet = null } = viewForPath(windowRef.location.pathname, {
       connected: Boolean(getConnected()),
     });
     if (gameSlug) setSelectedGameId(gameIdForSlug(gameSlug));
+    setViewedWallet(step === 'profile' ? wallet : null);
     suppressRouteSync = true;
     setStep(step);
     try {
@@ -73,6 +87,10 @@ export function createPortalRouteController({
     } finally {
       suppressRouteSync = false;
     }
+    // Deep links and back/forward fill the Scores and Profile pages exactly
+    // as a click does (A6); both hooks are no-ops in preview.
+    if (step === 'leaderboards') hydrateLeaderboard();
+    if (step === 'profile') hydrateProfile();
   }
 
   function attachPopstate() {

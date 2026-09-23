@@ -1,10 +1,12 @@
-import { LEADERBOARD_SOURCE_TABS, filterLeaderboardEntriesBySource } from '../leaderboard-seed.mjs';
+import { filterLeaderboardEntriesBySource } from '../leaderboard-seed.mjs';
 import { stackedInputLabel } from '../stacked-profile.mjs';
 import {
+  DEFAULT_LEADERBOARD_PERIOD,
   LEADERBOARD_DEVICE_LOCAL_NOTICE,
   LEADERBOARD_GAME_PREFERENCE_KEY,
   LEADERBOARD_MAX_ROWS,
   LEADERBOARD_PAGE_SIZE,
+  LEADERBOARD_PREVIEW_LABEL,
   STACKED_LOCAL_NOTICE,
   defaultSortDirFor,
   describeLeaderboardWindow,
@@ -24,6 +26,9 @@ import {
 
 const SCORES_PATH_PATTERN = /^\/(scores|leaderboards)\/?$/;
 const BANNER_NAV_KEYS = Object.freeze(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']);
+// Preview boards show only this device's own Ranked runs (A22): no House Demo,
+// no source tabs.
+const PREVIEW_SOURCE = 'local';
 
 function safeStorage() {
   try {
@@ -33,6 +38,13 @@ function safeStorage() {
   }
 }
 
+// The Scores page. Hosted (HOSTED_PROFILE_SYNC): Weekly, Monthly and All-time
+// boards from GET /api/leaderboard, 25 rows a page, server-side search, jump to
+// my rank and a verified transaction link per row (hosted-leaderboard-view.mjs,
+// loaded on demand so preview visitors never download it; contract §11 rule
+// 5). Preview: this device's Ranked runs only, labelled "Preview · this
+// device", with no request of any kind. Rendering is always synchronous;
+// hydrate() fetches and renders again.
 export function createOfficialLeaderboardRoute({
   appendText,
   buildLeaderboardExperienceV2Model,
@@ -51,14 +63,26 @@ export function createOfficialLeaderboardRoute({
   resolveDisplayName,
   routeState,
   storage = safeStorage(),
-  summarizeVisibleLeaderboardProvenance,
   windowRef = globalThis.window,
+  hosted = false,
+  indexApi = null,
+  playRanked = null,
+  viewProfile = null,
+  isActive = () => true,
+  now = () => Date.now(),
+  setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
+  clearTimeoutImpl = (id) => globalThis.clearTimeout(id),
+  loadHostedView = () => import('./hosted-leaderboard-view.mjs'),
 } = {}) {
   // Pagination is view state that resets whenever the standing changes.
   let visibleLimit = LEADERBOARD_PAGE_SIZE;
   // The URL / stored preference only wins over routeState until the player
   // makes a choice in this session.
   let selectionSettled = false;
+  // The hosted view (hosted-leaderboard-view.mjs) once it has loaded.
+  let hostedView = null;
+  let hostedViewRequest = null;
+  let hostedViewFailed = false;
 
   function readStoredGame() {
     try {
@@ -82,12 +106,6 @@ export function createOfficialLeaderboardRoute({
     } catch { /* history unavailable */ }
   }
 
-  function sourceForGame(gameId, source = routeState.source) {
-    // Verified on-chain standings only exist for Hard Money Heroes today; the
-    // other cabinets fall back to this device's Local Preview standing.
-    return ['chikun', 'stacked'].includes(gameId) && source === 'official' ? 'local' : source;
-  }
-
   function resetView() {
     visibleLimit = LEADERBOARD_PAGE_SIZE;
   }
@@ -104,78 +122,123 @@ export function createOfficialLeaderboardRoute({
     }
   }
 
-  function renderOfficialLeaderboards() {
-    const { connectedWallet, state } = getContext();
-    dom.officialCabinetGrid.replaceChildren();
-    const displayNameFor = (wallet) => resolveDisplayName(state.profiles?.[wallet], wallet);
+  // ---------------------------------------------------------------------------
+  // Hosted view, loaded on demand (contract §11 rule 5)
+  // ---------------------------------------------------------------------------
 
-    // --- Game selection (URL query > session choice > stored preference) ----
-    const leaderboardGameFilters = publicLeaderboardCabinets();
-    const onScoresPath = SCORES_PATH_PATTERN.test(windowRef?.location?.pathname ?? '');
-    routeState.gameId = resolveLeaderboardGameId({
-      search: onScoresPath ? (windowRef?.location?.search ?? '') : '',
-      stored: readStoredGame(),
-      current: routeState.gameId,
-      settled: selectionSettled,
-      cabinets: leaderboardGameFilters,
+  function rerenderIfShown() {
+    if (isActive()) renderOfficialLeaderboards();
+  }
+
+  function createHostedView(module) {
+    return module.createHostedLeaderboardView({
+      appendText,
+      clearTimeoutImpl,
+      documentRef,
+      dom,
+      el,
+      getContext,
+      getGame,
+      humanList,
+      indexApi,
+      isActive,
+      now,
+      playableCabinetNames,
+      playRanked,
+      renderArcadeIcon,
+      renderAvatarChip,
+      renderFilterPanel,
+      renderPage: () => renderOfficialLeaderboards(),
+      rerender,
+      routeState,
+      setTimeoutImpl,
+      viewProfile,
     });
-    selectionSettled = true;
+  }
 
-    routeState.source ??= 'official';
-    routeState.search ??= '';
-    routeState.sortKey ??= 'score';
-    routeState.sortDir ??= 'desc';
-    const buildStanding = (gameId, source) => {
-      const model = buildLeaderboardExperienceV2Model(state, {
-        gameId,
-        cadence: routeState.cadence,
-        wallet: connectedWallet,
-        displayNameFor,
-        source,
-        // Partition before best-per-wallet aggregation as well as truncation.
-        // A higher local score must not erase this wallet's verified score.
-        limit: 5000,
+  // The hosted view, or null while it loads. A loader that returns the module
+  // itself (tests) creates the view at once. After a failed download only
+  // hydrate() (a visit, or Try again) loads it again; a render never does, so
+  // a broken chunk cannot loop.
+  function ensureHostedView({ retry = false } = {}) {
+    if (!hosted || hostedView) return hostedView;
+    if (hostedViewRequest || (hostedViewFailed && !retry)) return null;
+    hostedViewFailed = false;
+    let loaded;
+    try {
+      loaded = loadHostedView();
+    } catch (error) {
+      loaded = Promise.reject(error);
+    }
+    if (loaded && typeof loaded.then !== 'function') {
+      hostedView = createHostedView(loaded);
+      hostedViewRequest = Promise.resolve(hostedView);
+      return hostedView;
+    }
+    hostedViewRequest = Promise.resolve(loaded)
+      .then((module) => {
+        hostedView = createHostedView(module);
+        rerenderIfShown();
+        return hostedView;
+      })
+      .catch((error) => {
+        console.warn('[Scores] verified board could not load:', error?.message || error);
+        hostedViewRequest = null;
+        hostedViewFailed = true;
+        rerenderIfShown();
+        return null;
       });
-      return { model, board: filterLeaderboardEntriesBySource(model.topEntries, state.profiles, source) };
-    };
-    const { model: unfiltered, board: sourceBoard } = buildStanding(routeState.gameId, routeState.source);
-    routeState.source = sourceBoard.source;
-    const active = {
-      ...unfiltered,
-      total: sourceBoard.total,
-      topEntries: sourceBoard.rows.slice(0, LEADERBOARD_MAX_ROWS),
-      rows: sourceBoard.rows.slice(0, LEADERBOARD_MAX_ROWS),
-      playerRank: sourceBoard.playerRank,
-      playerEntry: sourceBoard.playerEntry,
-      trustSummary: {
-        totalRankedRuns: sourceBoard.total,
-        settledRuns: sourceBoard.rows.filter((row) => row.trust?.verdict === 'settled' || row.settlementTxHash).length,
-        flaggedRuns: sourceBoard.rows.filter((row) => ['suspicious', 'rejected'].includes(row.trust?.verdict)).length,
-        prototypeRuns: sourceBoard.rows.filter((row) => row.trust?.verdict === 'prototype').length,
-      },
-    };
-    const scoreSourceSummary = summarizeVisibleLeaderboardProvenance(
-      active.topEntries,
-      state.profiles,
-      active.total,
-    );
-    const { houseScoreCount, officialCount: officialScoreCount } = scoreSourceSummary;
-    const activeLeaderboardCabinet = leaderboardGameFilters.find((cabinet) => cabinet.gameId === routeState.gameId);
-    const activeLeaderboardTitle = activeLeaderboardCabinet?.title ?? getGame(routeState.gameId).title;
-    const timeWindow = describeLeaderboardWindow(active.cadence ?? routeState.cadence, active.periodKey);
-    const sourceTab = LEADERBOARD_SOURCE_TABS.find((tab) => tab.id === routeState.source) ?? LEADERBOARD_SOURCE_TABS[0];
-    syncGameLocation(routeState.gameId);
+    return null;
+  }
 
-    // =======================================================================
-    // Command panel: game banners + filters
-    // =======================================================================
+  // The hydrate hook: fetch the board on screen (hosted only).
+  function hydrate() {
+    if (!hosted) return Promise.resolve(null);
+    const view = ensureHostedView({ retry: true });
+    if (view) return view.hydrate();
+    return (hostedViewRequest ?? Promise.resolve(null)).then((loaded) => (loaded ? loaded.hydrate() : null));
+  }
+
+  // Drops every cached board (the viewer changed).
+  function invalidate() {
+    hostedView?.invalidate();
+  }
+
+  // Marks cached boards (every game, or one) out of date: see the view.
+  function markStale(gameId = null) {
+    hostedView?.markStale(gameId);
+  }
+
+  // Shown while the hosted view downloads, or if it failed to.
+  function renderHostedLoading() {
+    const card = el('article', { className: 'official-info-card leaderboard-board-card leaderboard-board-hosted' });
+    const state = el('div', { className: `leaderboard-empty-state leaderboard-state-${hostedViewFailed ? 'error' : 'loading'}` });
+    state.setAttribute('role', 'status');
+    if (hostedViewFailed) {
+      appendText(state, 'strong', 'Scores are unavailable right now', 'leaderboard-empty-title');
+      appendText(state, 'span', 'The verified board could not load. Try again in a moment.', 'leaderboard-empty-copy');
+      const retry = el('button', { className: 'pixel-button leaderboard-empty-action', type: 'button', textContent: 'Try again' });
+      retry.addEventListener('click', () => { void hydrate(); rerender(); });
+      state.append(retry);
+    } else {
+      appendText(state, 'strong', 'Loading verified scores…', 'leaderboard-empty-title');
+    }
+    card.append(state);
+    dom.officialCabinetGrid.append(card);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Shared pieces
+  // ---------------------------------------------------------------------------
+
+  function renderFilterPanel({ cabinets, heading, detail, standingFor, onSelectGame }) {
     const filterPanel = el('section', { className: 'official-info-card leaderboard-filter-panel leaderboard-filter-shell leaderboard-command-v10' });
     filterPanel.setAttribute('aria-label', 'Leaderboard filters');
     const filterHead = el('div', { className: 'leaderboard-filter-head' });
     const filterCopy = el('div', { className: 'leaderboard-filter-copy' });
     appendText(filterCopy, 'span', 'Leaderboard Filters', 'cabinet-status-label');
-    appendText(filterCopy, 'strong', leaderboardGameFilters.length > 1 ? 'Pick a cabinet, then a score window' : 'Pick a score window');
-    appendText(filterCopy, 'small', `${humanList(playableCabinetNames())} ${leaderboardGameFilters.length === 1 ? 'has a public board' : 'have public boards'}. Daily, weekly, monthly, yearly, and all-time are time windows on the same standing.`);
+    appendText(filterCopy, 'strong', heading);
+    appendText(filterCopy, 'small', detail);
     filterHead.append(filterCopy);
     filterPanel.append(filterHead);
 
@@ -185,25 +248,18 @@ export function createOfficialLeaderboardRoute({
     const gameBar = el('div', { className: 'leaderboard-game-tabs leaderboard-filter-buttons leaderboard-game-banners', role: 'tablist' });
     gameBar.setAttribute('aria-label', 'Choose a game leaderboard');
     const bannerButtons = [];
-    for (const cabinet of leaderboardGameFilters) {
-      const isActive = cabinet.gameId === routeState.gameId;
+    for (const cabinet of cabinets) {
+      const isActiveGame = cabinet.gameId === routeState.gameId;
       const banner = leaderboardBannerFor(cabinet.gameId, cabinet);
-      let standing;
-      if (isActive) {
-        standing = { total: active.total, topScore: active.topEntries[0]?.score ?? null };
-      } else {
-        const { board: otherBoard } = buildStanding(cabinet.gameId, sourceForGame(cabinet.gameId));
-        standing = { total: otherBoard.total, topScore: otherBoard.rows[0]?.score ?? null };
-      }
       const tab = el('button', {
-        className: `pixel-button leaderboard-game-tab leaderboard-game-filter leaderboard-filter-button leaderboard-game-banner${isActive ? ' is-active' : ''}`,
+        className: `pixel-button leaderboard-game-tab leaderboard-game-filter leaderboard-filter-button leaderboard-game-banner${isActiveGame ? ' is-active' : ''}`,
         type: 'button',
         role: 'tab',
       });
       tab.dataset.game = cabinet.gameId;
-      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      tab.setAttribute('tabindex', isActive ? '0' : '-1');
-      tab.setAttribute('aria-label', `${banner.title} leaderboard${isActive ? ', selected' : ''}`);
+      tab.setAttribute('aria-selected', isActiveGame ? 'true' : 'false');
+      tab.setAttribute('tabindex', isActiveGame ? '0' : '-1');
+      tab.setAttribute('aria-label', `${banner.title} leaderboard${isActiveGame ? ', selected' : ''}`);
       const art = el('span', { className: 'leaderboard-game-banner-art' });
       art.setAttribute('aria-hidden', 'true');
       tab.append(art);
@@ -217,15 +273,12 @@ export function createOfficialLeaderboardRoute({
       appendText(copy, 'span', banner.kicker, 'leaderboard-game-banner-kicker');
       appendText(copy, 'span', cabinet.title, 'leaderboard-game-tab-title leaderboard-game-banner-title');
       appendText(copy, 'small', banner.tagline, 'leaderboard-game-banner-tagline');
-      appendText(copy, 'span', standing.total > 0
-        ? `${standing.total.toLocaleString()} player${standing.total === 1 ? '' : 's'} · top ${Number(standing.topScore ?? 0).toLocaleString()}`
-        : `No scores yet · ${timeWindow.label.toLowerCase()}`, 'leaderboard-game-banner-meta');
+      appendText(copy, 'span', standingFor(cabinet.gameId, isActiveGame), 'leaderboard-game-banner-meta');
       tab.append(copy);
-      appendText(tab, 'span', isActive ? 'Viewing' : 'View board', 'leaderboard-game-banner-state');
+      appendText(tab, 'span', isActiveGame ? 'Viewing' : 'View board', 'leaderboard-game-banner-state');
       tab.addEventListener('click', () => {
         if (routeState.gameId === cabinet.gameId) return;
         routeState.gameId = cabinet.gameId;
-        routeState.source = sourceForGame(cabinet.gameId);
         routeState.search = '';
         routeState.sortKey = 'score';
         routeState.sortDir = 'desc';
@@ -234,6 +287,7 @@ export function createOfficialLeaderboardRoute({
         // instead of the stale ?game= query.
         syncGameLocation(cabinet.gameId);
         rerender(`.leaderboard-game-banner[data-game="${cabinet.gameId}"]`);
+        onSelectGame?.();
       });
       bannerButtons.push(tab);
       gameBar.append(tab);
@@ -253,23 +307,97 @@ export function createOfficialLeaderboardRoute({
     });
     gameGroup.append(gameBar);
     filterPanel.append(gameGroup);
+    return filterPanel;
+  }
 
-    // --- Time window + source + search/sort ---------------------------------
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
+
+  function renderOfficialLeaderboards() {
+    dom.officialCabinetGrid.replaceChildren();
+
+    // --- Game selection (URL query > session choice > stored preference) ----
+    const leaderboardGameFilters = publicLeaderboardCabinets();
+    const onScoresPath = SCORES_PATH_PATTERN.test(windowRef?.location?.pathname ?? '');
+    routeState.gameId = resolveLeaderboardGameId({
+      search: onScoresPath ? (windowRef?.location?.search ?? '') : '',
+      stored: readStoredGame(),
+      current: routeState.gameId,
+      settled: selectionSettled,
+      cabinets: leaderboardGameFilters,
+    });
+    selectionSettled = true;
+    routeState.cadence ??= DEFAULT_LEADERBOARD_PERIOD;
+    routeState.search ??= '';
+    routeState.sortKey ??= 'score';
+    routeState.sortDir ??= 'desc';
+    syncGameLocation(routeState.gameId);
+    if (!hosted) {
+      renderPreviewLeaderboard(leaderboardGameFilters);
+      return;
+    }
+    const view = ensureHostedView();
+    if (view) view.render(leaderboardGameFilters);
+    else renderHostedLoading();
+  }
+
+  function renderPreviewLeaderboard(leaderboardGameFilters) {
+    const { connectedWallet, state } = getContext();
+    const displayNameFor = (wallet) => resolveDisplayName(state.profiles?.[wallet], wallet);
+    const buildStanding = (gameId) => {
+      const model = buildLeaderboardExperienceV2Model(state, {
+        gameId,
+        cadence: routeState.cadence,
+        wallet: connectedWallet,
+        displayNameFor,
+        source: PREVIEW_SOURCE,
+        // Partition before best-per-wallet aggregation as well as truncation.
+        limit: 5000,
+      });
+      return { model, board: filterLeaderboardEntriesBySource(model.topEntries, state.profiles, PREVIEW_SOURCE) };
+    };
+    const { model: unfiltered, board: sourceBoard } = buildStanding(routeState.gameId);
+    const active = {
+      ...unfiltered,
+      total: sourceBoard.total,
+      topEntries: sourceBoard.rows.slice(0, LEADERBOARD_MAX_ROWS),
+      playerRank: sourceBoard.playerRank,
+      playerEntry: sourceBoard.playerEntry,
+    };
+    const activeLeaderboardCabinet = leaderboardGameFilters.find((cabinet) => cabinet.gameId === routeState.gameId);
+    const activeLeaderboardTitle = activeLeaderboardCabinet?.title ?? getGame(routeState.gameId).title;
+    const timeWindow = describeLeaderboardWindow(active.cadence ?? routeState.cadence, active.periodKey);
+
+    const filterPanel = renderFilterPanel({
+      cabinets: leaderboardGameFilters,
+      heading: leaderboardGameFilters.length > 1 ? 'Pick a cabinet, then a score window' : 'Pick a score window',
+      detail: `${LEADERBOARD_PREVIEW_LABEL}: ${humanList(playableCabinetNames())} Ranked runs recorded in this browser. Verified boards open when Ranked publishing goes live.`,
+      standingFor: (gameId, isActiveGame) => {
+        const standing = isActiveGame
+          ? { total: active.total, topScore: active.topEntries[0]?.score ?? null }
+          : (({ board }) => ({ total: board.total, topScore: board.rows[0]?.score ?? null }))(buildStanding(gameId));
+        return standing.total > 0
+          ? `${standing.total.toLocaleString()} player${standing.total === 1 ? '' : 's'} · top ${Number(standing.topScore ?? 0).toLocaleString()}`
+          : `No scores yet · ${timeWindow.label.toLowerCase()}`;
+      },
+    });
+
+    // --- Time window + search/sort ----------------------------------------
     const filterGrid = el('div', { className: 'leaderboard-filter-grid leaderboard-filter-grid-v10' });
-
     const timeGroup = el('div', { className: 'leaderboard-filter-group leaderboard-time-filter' });
     appendText(timeGroup, 'span', 'Time window', 'leaderboard-filter-label');
     const tabBar = el('div', { className: 'leaderboard-cadence-tabs leaderboard-filter-buttons', role: 'group' });
     tabBar.setAttribute('aria-label', 'Time window');
     for (const cadenceBoard of getAllCadenceLeaderboards(state, routeState.gameId, { wallet: connectedWallet, displayNameFor })) {
-      const isActive = cadenceBoard.cadence === routeState.cadence;
+      const isActiveCadence = cadenceBoard.cadence === routeState.cadence;
       const tab = el('button', {
-        className: `pixel-button leaderboard-cadence-tab leaderboard-time-filter leaderboard-filter-button${isActive ? ' is-active' : ''}`,
+        className: `pixel-button leaderboard-cadence-tab leaderboard-time-filter leaderboard-filter-button${isActiveCadence ? ' is-active' : ''}`,
         textContent: cadenceBoard.cadence.replace('-', ' ').toUpperCase(),
         type: 'button',
       });
       tab.dataset.cadence = cadenceBoard.cadence;
-      tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      tab.setAttribute('aria-pressed', isActiveCadence ? 'true' : 'false');
       tab.addEventListener('click', () => {
         if (routeState.cadence === cadenceBoard.cadence) return;
         routeState.cadence = cadenceBoard.cadence;
@@ -279,33 +407,6 @@ export function createOfficialLeaderboardRoute({
       tabBar.append(tab);
     }
     timeGroup.append(tabBar);
-
-    const sourceGroup = el('div', { className: 'leaderboard-filter-group leaderboard-source-filter' });
-    appendText(sourceGroup, 'span', 'Standing', 'leaderboard-filter-label');
-    const sourceBar = el('div', { className: 'leaderboard-source-tabs leaderboard-filter-buttons', role: 'group' });
-    sourceBar.setAttribute('aria-label', 'Score source');
-    for (const source of LEADERBOARD_SOURCE_TABS) {
-      const isActive = source.id === routeState.source;
-      const tab = el('button', {
-        className: `pixel-button leaderboard-filter-button leaderboard-source-tab${isActive ? ' is-active' : ''}`,
-        type: 'button',
-      });
-      tab.dataset.source = source.id;
-      appendText(tab, 'span', source.label, 'leaderboard-game-tab-title');
-      tab.title = source.copy;
-      tab.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-      tab.addEventListener('click', () => {
-        if (routeState.source === source.id) return;
-        routeState.source = source.id;
-        routeState.search = '';
-        routeState.sortKey = 'score';
-        routeState.sortDir = 'desc';
-        resetView();
-        rerender(`.leaderboard-source-tab[data-source="${source.id}"]`);
-      });
-      sourceBar.append(tab);
-    }
-    sourceGroup.append(sourceBar);
 
     const findGroup = el('div', { className: 'leaderboard-filter-group leaderboard-find-filter' });
     appendText(findGroup, 'span', 'Find & sort', 'leaderboard-filter-label');
@@ -370,22 +471,22 @@ export function createOfficialLeaderboardRoute({
     controls.append(resetButton);
     findGroup.append(controls);
 
-    filterGrid.append(timeGroup, sourceGroup, findGroup);
+    filterGrid.append(timeGroup, findGroup);
     filterPanel.append(filterGrid);
 
     const filterSummary = el('p', { className: 'leaderboard-filter-summary leaderboard-filter-summary-v10' });
     filterSummary.setAttribute('role', 'status');
     filterSummary.setAttribute('aria-live', 'polite');
     appendText(filterSummary, 'span', activeLeaderboardTitle, 'leaderboard-filter-summary-game');
-    appendText(filterSummary, 'strong', `${timeWindow.label}${timeWindow.detail ? ` (${timeWindow.detail})` : ''} · ${sourceBoard.label}`);
-    appendText(filterSummary, 'small', scoreSourceSummary.label);
+    appendText(filterSummary, 'strong', `${timeWindow.label}${timeWindow.detail ? ` (${timeWindow.detail})` : ''} · ${LEADERBOARD_PREVIEW_LABEL}`);
+    appendText(filterSummary, 'small', `Showing ${active.topEntries.length} of ${active.total} player${active.total === 1 ? '' : 's'} recorded on this device`);
     filterPanel.append(filterSummary);
     dom.officialCabinetGrid.append(filterPanel);
 
     // =======================================================================
     // Board card
     // =======================================================================
-    const board = el('article', { className: `official-info-card leaderboard-board-card leaderboard-board-v9 leaderboard-board-v10 leaderboard-board-${routeState.gameId} hmh-visual-polish-v12` });
+    const board = el('article', { className: `official-info-card leaderboard-board-card leaderboard-board-v9 leaderboard-board-v10 leaderboard-board-preview leaderboard-board-${routeState.gameId} hmh-visual-polish-v12` });
     board.dataset.game = routeState.gameId;
     board.setAttribute('aria-label', `${activeLeaderboardTitle} leaderboard`);
     const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
@@ -393,15 +494,12 @@ export function createOfficialLeaderboardRoute({
     const leaderboardTitle = el('h3', { className: 'leaderboard-title' });
     leaderboardTitle.append(renderArcadeIcon('trophy'), documentRef.createTextNode(activeLeaderboardTitle.toUpperCase()));
     headerCopy.append(leaderboardTitle);
-    appendText(headerCopy, 'span', `${timeWindow.tab}${timeWindow.detail ? ` · ${timeWindow.detail}` : ''} · ${sourceBoard.label} · ${scoreSourceSummary.label}`, 'cabinet-status-label');
-    appendText(headerCopy, 'small', sourceTab.copy, 'leaderboard-source-copy');
+    appendText(headerCopy, 'span', `${timeWindow.tab}${timeWindow.detail ? ` · ${timeWindow.detail}` : ''} · ${LEADERBOARD_PREVIEW_LABEL}`, 'cabinet-status-label');
     const headerStats = el('div', { className: 'leaderboard-header-stats' });
     const topScore = active.topEntries[0]?.score ?? 0;
     for (const [label, value, tone] of [
       ['Top Score', topScore.toLocaleString(), 'score'],
-      ['Official shown', officialScoreCount.toLocaleString(), 'official'],
-      ['House shown', houseScoreCount.toLocaleString(), 'house'],
-      ['Review', `${active.trustSummary.flaggedRuns} flagged`, active.trustSummary.flaggedRuns > 0 ? 'warn' : 'muted'],
+      ['Players', active.total.toLocaleString(), 'muted'],
       ['You', connectedWallet && active.playerRank ? `#${active.playerRank}` : 'Unranked', connectedWallet && active.playerRank ? 'you' : 'muted'],
     ]) {
       const stat = el('div', { className: `leaderboard-header-stat leaderboard-header-stat-${tone}` });
@@ -413,6 +511,7 @@ export function createOfficialLeaderboardRoute({
     board.append(header);
 
     const notice = el('p', { className: 'leaderboard-local-notice' });
+    appendText(notice, 'strong', LEADERBOARD_PREVIEW_LABEL, 'leaderboard-preview-label');
     appendText(notice, 'span', LEADERBOARD_DEVICE_LOCAL_NOTICE);
     if (routeState.gameId === 'stacked') appendText(notice, 'span', STACKED_LOCAL_NOTICE);
     board.append(notice);
@@ -439,7 +538,7 @@ export function createOfficialLeaderboardRoute({
       });
       you.append(jump);
     } else if (connectedWallet) {
-      appendText(you, 'small', 'You have no ranked score in this period yet. Play Ranked and submit at game over.', 'leaderboard-you-detail');
+      appendText(you, 'small', 'You have no Ranked score on this device in this period yet.', 'leaderboard-you-detail');
     } else {
       appendText(you, 'small', 'Connect a wallet to see your placement highlighted on this board.', 'leaderboard-you-detail');
     }
@@ -447,19 +546,10 @@ export function createOfficialLeaderboardRoute({
 
     // --- Empty standing ------------------------------------------------------
     if (active.topEntries.length === 0) {
-      const empty = leaderboardEmptyState({ gameId: routeState.gameId, source: routeState.source, gameTitle: activeLeaderboardTitle });
+      const empty = leaderboardEmptyState({ hosted: false, gameTitle: activeLeaderboardTitle });
       const emptyCard = el('div', { className: 'leaderboard-empty-state' });
       appendText(emptyCard, 'small', empty.title, 'leaderboard-empty-title');
       appendText(emptyCard, 'span', empty.copy, 'leaderboard-empty-copy');
-      if (empty.action === 'show-local' && routeState.source !== 'local') {
-        const showLocal = el('button', { className: 'pixel-button leaderboard-empty-action', type: 'button', textContent: 'Show Local Preview' });
-        showLocal.addEventListener('click', () => {
-          routeState.source = 'local';
-          resetView();
-          rerender('.leaderboard-source-tab[data-source="local"]');
-        });
-        emptyCard.append(showLocal);
-      }
       board.append(emptyCard);
       dom.officialCabinetGrid.append(board);
       return;
@@ -478,8 +568,6 @@ export function createOfficialLeaderboardRoute({
         appendText(col, 'span', medals[entry.rank] ?? `#${entry.rank}`, 'podium-medal');
         col.append(renderAvatarChip(wallet, entry.displayName, 'podium-avatar'));
         appendText(col, 'strong', entry.displayName, 'podium-name');
-        const provenance = leaderboardEntryProvenance(entry, state.profiles?.[wallet]);
-        if (!provenance.official) appendText(col, 'span', provenance.label, 'podium-provenance');
         appendText(col, 'span', entry.score.toLocaleString(), 'podium-score');
         const stand = el('div', { className: 'podium-stand' });
         appendText(stand, 'span', `#${entry.rank}`, 'podium-stand-rank');
@@ -530,7 +618,7 @@ export function createOfficialLeaderboardRoute({
     table.append(headRow);
 
     if (page.total === 0) {
-      const empty = leaderboardEmptyState({ gameId: routeState.gameId, source: routeState.source, search: routeState.search });
+      const empty = leaderboardEmptyState({ hosted: false, search: routeState.search });
       const emptyRow = el('div', { className: 'leaderboard-empty', role: 'row' });
       const emptyCell = el('div', { className: 'leaderboard-empty-cell', role: 'cell' });
       appendText(emptyCell, 'strong', empty.title, 'leaderboard-empty-title');
@@ -547,7 +635,7 @@ export function createOfficialLeaderboardRoute({
     }
 
     const stackedBoard = routeState.gameId === 'stacked';
-    const now = Date.now();
+    const clock = now();
     for (const entry of page.visible) {
       const wallet = entry.wallet ?? entry.address ?? null;
       const medalClass = entry.trueRank === 1 ? ' rank-gold' : entry.trueRank === 2 ? ' rank-silver' : entry.trueRank === 3 ? ' rank-bronze' : '';
@@ -569,8 +657,7 @@ export function createOfficialLeaderboardRoute({
           const nameMeta = el('span', { className: 'lt-name-meta' });
           if (entry.isCurrentPlayer) appendText(nameMeta, 'span', 'YOU', 'lt-you-chip');
           if (stackedBoard) appendText(nameMeta, 'small', stackedInputLabel(entry.runStats?.inputDevice), 'lt-input-device');
-          if (provenance.official) appendText(nameMeta, 'span', '⛓ ON-CHAIN', 'lt-settled');
-          else appendText(nameMeta, 'span', provenance.label, 'lt-house-score');
+          appendText(nameMeta, 'span', provenance.label, 'lt-house-score');
           if (entry.sessionDetail?.detailHref) {
             nameMeta.append(el('a', { className: 'lt-session-detail', href: entry.sessionDetail.detailHref, textContent: 'Open run ↗' }));
           }
@@ -584,16 +671,13 @@ export function createOfficialLeaderboardRoute({
           const value = appendText(cell, 'span', column.format(entry), `lt-stat lt-${column.key}`);
           if (column.title && column.title !== column.label) value.title = column.title;
         } else if (column.kind === 'trust') {
-          const trustBadge = el('span', { className: `lt-trust lt-trust-${entry.trust?.tone ?? 'muted'}` });
-          trustBadge.textContent = provenance.official ? (entry.trust?.label ?? 'Pending') : provenance.label.replace('HOUSE SCORE', 'House Score');
-          if (entry.trust?.flags?.length) {
-            trustBadge.title = entry.trust.flags.map((flag) => `${flag.code ?? 'flag'}: ${flag.detail ?? flag.severity ?? ''}`).join(' | ');
-          }
+          const trustBadge = el('span', { className: 'lt-trust lt-trust-muted' });
+          trustBadge.textContent = 'This device';
           appendText(cell, 'span', 'Source', 'lt-cell-label');
           cell.append(trustBadge);
         } else if (column.kind === 'posted') {
           appendText(cell, 'span', 'Posted', 'lt-cell-label');
-          const posted = appendText(cell, 'span', formatPostedDate(entry.recordedAt, now), 'lt-date');
+          const posted = appendText(cell, 'span', formatPostedDate(entry.recordedAt, clock), 'lt-date');
           if (entry.recordedAt) posted.title = String(entry.recordedAt);
         }
         row.append(cell);
@@ -634,5 +718,5 @@ export function createOfficialLeaderboardRoute({
     dom.officialCabinetGrid.append(board);
   }
 
-  return Object.freeze({ renderLeaderboards: renderOfficialLeaderboards });
+  return Object.freeze({ renderLeaderboards: renderOfficialLeaderboards, hydrate, invalidate, markStale });
 }

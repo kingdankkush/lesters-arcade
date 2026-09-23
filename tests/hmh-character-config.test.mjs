@@ -169,3 +169,16 @@ test('playable character visual kit metadata exposes repo-local manifests and di
   assert.equal(HMH_PLAYABLE_CHARACTER_VISUAL_KITS['lester-original'].manifestPath, './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs');
   assert.equal(HMH_PLAYABLE_CHARACTER_VISUAL_KITS.lilly.productionStatus.includes('Justin reference sprites'), true);
 });
+
+test('hosted unlock helpers thread verified runs through selection and keep the gate shape the server reads', () => {
+  const profile = { achievements: ['getaway-clear'], progress: { 'lester-blaster': { paidRuns: 99 } }, unlocks: { characters: { lilly: true } }, preferences: { selectedCharacterId: 'lilly' } };
+  assert.equal(resolveSelectedCharacterId(profile, undefined, { verifiedRuns: 9 }), 'lit-commando');
+  assert.equal(resolveSelectedCharacterId(profile, undefined, { verifiedRuns: 10 }), 'lilly');
+  assert.deepEqual(setPreferredCharacter(profile, 'lester-original', undefined, { verifiedRuns: 4 }), { ok: false, reason: 'locked', selectedCharacterId: 'lit-commando' });
+  assert.deepEqual(setPreferredCharacter(profile, 'lester-original', undefined, { verifiedRuns: 5 }), { ok: true, selectedCharacterId: 'lester-original' });
+  // E3 reads gate.count from this exact shape (§4.3.3 step 11).
+  assert.deepEqual(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.unlockableCharacters.map((unlock) => [unlock.id, unlock.gate.type, unlock.gate.count]), [
+    ['lester-original', 'ranked-matches-played', 5],
+    ['lilly', 'ranked-matches-played', 10],
+  ]);
+});

@@ -3,6 +3,7 @@ import { buildHmhRunHistoryModel, buildHmhRunDetailsModel } from '../hmh-run-his
 import { RUN_HISTORY_LIMIT } from '../persistence.mjs';
 import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
 import { buildStackedProfileFacts, stackedInputLabel } from '../stacked-profile.mjs';
+import { LITVM_DEPLOYMENT } from '../generated/litvm-addresses.mjs';
 
 const formatPermille = (value) => `${(Math.max(0, Number(value) || 0) / 10).toFixed(1)}%`;
 const titleCase = (value) => String(value ?? '').split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
@@ -53,7 +54,7 @@ export function renderProfileAchievements(snapshot, { ACHIEVEMENTS, el, appendTe
   appendText(head, 'span', 'ACHIEVEMENTS', 'cabinet-status-label');
   appendText(head, 'strong', `${achievements.filter((a) => a.unlocked).length} / ${achievements.length} unlocked`, 'achievements-count');
   card.append(head);
-  appendText(card, 'p', 'These are device-local Testnet achievement records, not verified on-chain achievements or NFTs. Dates record local parent unlocks. Progress uses recorded Ranked aggregates; missing or compound conditions are not estimated. Open a badge for its requirement.', 'tiny-note');
+  appendText(card, 'p', 'Achievements earned on this device (preview). Dates record local unlocks. Progress uses recorded Ranked aggregates; missing or compound conditions are not estimated. Open a badge for its requirement.', 'tiny-note');
   const grid = el('div', { className: 'achievements-grid profile-achievement-grid' });
   for (const a of achievements) {
     const badge = el('article', {
@@ -92,6 +93,16 @@ export function renderProfileAchievements(snapshot, { ACHIEVEMENTS, el, appendTe
   return card;
 }
 
+const HEX_WALLET = /^0x[0-9a-fA-F]{40}$/;
+const walletKey = (value) => (HEX_WALLET.test(String(value ?? '')) ? String(value).toLowerCase() : null);
+const shortWallet = (wallet) => (wallet ? `${wallet.slice(0, 6)}…${wallet.slice(-4)}` : '');
+
+// The Profile page. Hosted (HOSTED_PROFILE_SYNC): the viewed wallet's public
+// profile from GET /api/profile (/profile/<wallet>, or the connected wallet at
+// /profile), the owner's self view with D10 retries, and the on-chain name and
+// avatar editor once the contracts are deployed (hosted-profile-view.mjs,
+// loaded on demand so preview visitors never download it; contract §11 rule
+// 5). Preview: today's device-local profile, with no request of any kind (A22).
 export function createOfficialProfileRoute({
   ACHIEVEMENTS,
   ARCADE_GAMES,
@@ -125,11 +136,240 @@ export function createOfficialProfileRoute({
   setView,
   validateAvatarFile,
   validateUsername,
+  hosted = false,
+  indexApi = null,
+  deployment = LITVM_DEPLOYMENT,
+  isAuthenticated = () => false,
+  isActive = () => true,
+  dispatchEvent = () => {},
+  // D10 (§7.8): whether ranked-client holds a run (createRankedRunHoldings).
+  rankedClientHolds = () => false,
+  loadProfileChain = () => import('../profile-chain.mjs'),
+  loadEthers = () => import('../litvm-chain-client.mjs').then((module) => module.loadEthers()),
+  loadAchievementCatalog = () => import('../achievements/index.mjs'),
+  loadChainClient = () => import('../litvm-chain-client.mjs'),
+  rpcUrl = 'https://liteforge.rpc.caldera.xyz/http',
+  copyText = (text) => (globalThis.navigator?.clipboard?.writeText
+    ? globalThis.navigator.clipboard.writeText(text)
+    : Promise.reject(new Error('clipboard unavailable'))),
+  playRanked = null,
+  now = () => Date.now(),
+  setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
+  loadHostedView = () => import('./hosted-profile-view.mjs'),
 } = {}) {
+  // Saved runs on this device (lesters:ranked-pending), known before the
+  // hosted view loads.
+  let pendingSavedRuns = 0;
+  // The hosted view (hosted-profile-view.mjs) once it has loaded.
+  let hostedView = null;
+  let hostedViewRequest = null;
+  let hostedViewFailed = false;
+
+  function rerenderIfShown() {
+    if (isActive()) renderOfficialProfile();
+  }
+
+  function createHostedView(module) {
+    return module.createHostedProfileView({
+      appendText,
+      connectWallet,
+      copyText,
+      deployment,
+      detectEthereumProvider,
+      dispatchEvent,
+      dom,
+      el,
+      getContext,
+      getPendingSavedRuns: () => pendingSavedRuns,
+      indexApi,
+      isActive,
+      isAuthenticated,
+      loadAchievementCatalog,
+      loadChainClient,
+      loadEthers,
+      loadProfileChain,
+      now,
+      playRanked,
+      playSfxCue,
+      rankedClientHolds,
+      renderAchievementIcon,
+      renderAvatarChip,
+      renderLocalUsernameEditor: () => renderLocalUsernameEditor(),
+      renderPage: () => renderOfficialProfile(),
+      requestAnimationFrameRef,
+      routeState,
+      rpcUrl,
+      setTimeoutImpl,
+      setView,
+    });
+  }
+
+  // The hosted view, or null while it loads (contract §11 rule 5: preview
+  // never downloads it). A loader that returns the module itself (tests)
+  // creates the view at once. After a failed download only hydrate() (a visit,
+  // or Try again) loads it again; a render never does, so a broken chunk
+  // cannot loop.
+  function ensureHostedView({ retry = false } = {}) {
+    if (!hosted || hostedView) return hostedView;
+    if (hostedViewRequest || (hostedViewFailed && !retry)) return null;
+    hostedViewFailed = false;
+    let loaded;
+    try {
+      loaded = loadHostedView();
+    } catch (error) {
+      loaded = Promise.reject(error);
+    }
+    if (loaded && typeof loaded.then !== 'function') {
+      hostedView = createHostedView(loaded);
+      hostedViewRequest = Promise.resolve(hostedView);
+      return hostedView;
+    }
+    hostedViewRequest = Promise.resolve(loaded)
+      .then((module) => {
+        hostedView = createHostedView(module);
+        rerenderIfShown();
+        return hostedView;
+      })
+      .catch((error) => {
+        console.warn('[Profile] verified profile could not load:', error?.message || error);
+        hostedViewRequest = null;
+        hostedViewFailed = true;
+        rerenderIfShown();
+        return null;
+      });
+    return null;
+  }
+
+  // The hydrate hook: read E6 (or the self view) for the wallet on screen.
+  function hydrate(options = {}) {
+    if (!hosted || !indexApi) return Promise.resolve(null);
+    const view = ensureHostedView({ retry: true });
+    if (view) return view.hydrate(options);
+    return (hostedViewRequest ?? Promise.resolve(null)).then((loaded) => (loaded ? loaded.hydrate(options) : null));
+  }
+
+  // Drops cached profiles (every wallet, or one): the session changed.
+  function invalidate(wallet = null) {
+    hostedView?.invalidate(wallet);
+  }
+
+  // Marks cached profiles (every wallet, or one) out of date: see the view.
+  function markStale(wallet = null) {
+    hostedView?.markStale(wallet);
+  }
+
+  // The last self view read for a wallet (the name-claim prompt reuses it).
+  function cachedSelfProfile(wallet) {
+    return hostedView?.cachedSelfProfile(wallet) ?? null;
+  }
+
+  // lesters:ranked-pending { count } (ranked-client, §7.7). Returns whether
+  // the count changed.
+  function setPendingSavedRuns(count) {
+    const next = Math.max(0, Math.floor(Number(count) || 0));
+    if (next === pendingSavedRuns) return false;
+    pendingSavedRuns = next;
+    rerenderIfShown();
+    return true;
+  }
+
+  // Shown while the hosted view downloads, or if it failed to.
+  function renderHostedLoading() {
+    dom.officialCabinetGrid.replaceChildren();
+    dom.officialCabinetGrid.classList.add('profile-command-grid');
+    const card = el('article', { className: `official-info-card profile-state-card profile-state-${hostedViewFailed ? 'error' : 'loading'}` });
+    card.setAttribute('role', 'status');
+    if (hostedViewFailed) {
+      appendText(card, 'strong', 'This profile is unavailable right now.');
+      appendText(card, 'small', 'The verified profile could not load. Try again in a moment.');
+      const retry = el('button', { className: 'pixel-button', type: 'button', textContent: 'Try again' });
+      retry.addEventListener('click', () => { void hydrate(); renderOfficialProfile(); });
+      card.append(retry);
+    } else {
+      appendText(card, 'strong', 'Loading verified profile…');
+    }
+    dom.officialCabinetGrid.append(card);
+  }
+
+  // The device-local username editor: preview, and hosted before the
+  // contracts are deployed (brief acceptance 4).
+  function renderLocalUsernameEditor({ profile, state, connectedWallet } = {}) {
+    if (!state) ({ state, connectedWallet } = getContext());
+    if (!profile) profile = buildPlayerArcadeSnapshot(state, connectedWallet)?.profile;
+    const editor = el('article', { className: 'official-info-card username-editor-card' });
+    appendText(editor, 'span', 'DISPLAY NAME', 'cabinet-status-label');
+    appendText(editor, 'small', profile?.usernameSet
+      ? 'This name shows on every leaderboard. 3–18 chars, unique, no hate speech.'
+      : 'By default leaderboards show your wallet address. Set a username to display instead. 3–18 chars, unique, no hate speech.');
+
+    const form = el('div', { className: 'username-editor-form' });
+    const input = el('input', { className: 'username-input', type: 'text' });
+    input.maxLength = 18;
+    input.placeholder = 'Your display name';
+    input.value = profile?.usernameSet ? profile.handle : '';
+    input.setAttribute('aria-label', 'Display name');
+    const saveBtn = el('button', { className: 'pixel-button username-save-button', textContent: 'Save Username', type: 'button' });
+    const feedback = el('p', { className: 'username-feedback tiny-note' });
+
+    // Persistent post-save confirmation: if the profile was just re-rendered as a
+    // result of a username save, show "✓ Username saved!" + flash the card so the
+    // user gets clear visual proof the save worked (mirrors the avatar save UX).
+    if (routeState.usernameJustSaved) {
+      routeState.usernameJustSaved = false;
+      feedback.textContent = '✓ Display name saved!';
+      feedback.dataset.state = 'ok';
+      requestAnimationFrameRef(() => {
+        editor.classList.add('username-saved-flash');
+      });
+    }
+
+    // live validation
+    input.addEventListener('input', () => {
+      const v = validateUsername(input.value);
+      feedback.textContent = input.value.trim() ? v.message : '';
+      feedback.dataset.state = input.value.trim() ? (v.valid ? 'ok' : 'error') : '';
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const res = setArcadeUsername(state, connectedWallet, input.value);
+      if (res.ok) {
+        routeState.usernameJustSaved = true; // surfaced as a persistent note on re-render
+        persistArcadeStateSoon();
+        playSfxCue('menu-click', 0.06);
+        // Refresh the nav (display name) + profile panel in place. Do NOT call the
+        // global render() here — it resets officialAppStep and bounces the user off
+        // the profile screen (same reason as the avatar save below).
+        renderNav();
+        renderOfficialProfile();
+      } else {
+        feedback.textContent = res.message;
+        feedback.dataset.state = 'error';
+      }
+    });
+
+    form.append(input, saveBtn);
+    editor.append(form, feedback);
+    dom.officialCabinetGrid.append(editor);
+  }
+
   function renderOfficialProfile() {
+    if (hosted) {
+      const view = ensureHostedView();
+      if (view) view.render();
+      else renderHostedLoading();
+      return;
+    }
     const { connectedChainId, connectedWallet, combat, state, walletConnector } = getContext();
     dom.officialCabinetGrid.replaceChildren();
     dom.officialCabinetGrid.classList.add('profile-command-grid');
+    const viewedOther = walletKey(routeState.viewedWallet);
+    if (viewedOther && viewedOther !== walletKey(connectedWallet)) {
+      const notice = el('article', { className: 'official-info-card profile-preview-notice' });
+      appendText(notice, 'span', 'Preview · this device', 'cabinet-status-label');
+      appendText(notice, 'strong', `Profile ${shortWallet(viewedOther)}`);
+      appendText(notice, 'small', 'Public wallet profiles open when verified Ranked publishing goes live. This preview only has the profile recorded on this device.');
+      dom.officialCabinetGrid.append(notice);
+    }
     const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
     const profileV2 = connectedWallet ? buildProfileExperienceV2Model(state, connectedWallet, { selectedGameId: routeState.gameId }) : null;
     routeState.historyFilters ??= { heroId: 'all', weaponId: 'all', mode: 'all', date: 'all', result: 'all' };
@@ -288,61 +528,7 @@ export function createOfficialProfileRoute({
       dom.officialCabinetGrid.append(privacyCard);
     }
 
-    // --- Username / display-name editor ---
-    const editor = el('article', { className: 'official-info-card username-editor-card' });
-    appendText(editor, 'span', 'DISPLAY NAME', 'cabinet-status-label');
-    appendText(editor, 'small', profile?.usernameSet
-      ? 'This name shows on every leaderboard. 3–18 chars, unique, no hate speech.'
-      : 'By default leaderboards show your wallet address. Set a username to display instead. 3–18 chars, unique, no hate speech.');
-
-    const form = el('div', { className: 'username-editor-form' });
-    const input = el('input', { className: 'username-input', type: 'text' });
-    input.maxLength = 18;
-    input.placeholder = 'Your display name';
-    input.value = profile?.usernameSet ? profile.handle : '';
-    input.setAttribute('aria-label', 'Display name');
-    const saveBtn = el('button', { className: 'pixel-button username-save-button', textContent: 'Save Username', type: 'button' });
-    const feedback = el('p', { className: 'username-feedback tiny-note' });
-
-    // Persistent post-save confirmation: if the profile was just re-rendered as a
-    // result of a username save, show "✓ Username saved!" + flash the card so the
-    // user gets clear visual proof the save worked (mirrors the avatar save UX).
-    if (routeState.usernameJustSaved) {
-      routeState.usernameJustSaved = false;
-      feedback.textContent = '✓ Display name saved!';
-      feedback.dataset.state = 'ok';
-      requestAnimationFrameRef(() => {
-        editor.classList.add('username-saved-flash');
-      });
-    }
-
-    // live validation
-    input.addEventListener('input', () => {
-      const v = validateUsername(input.value);
-      feedback.textContent = input.value.trim() ? v.message : '';
-      feedback.dataset.state = input.value.trim() ? (v.valid ? 'ok' : 'error') : '';
-    });
-
-    saveBtn.addEventListener('click', () => {
-      const res = setArcadeUsername(state, connectedWallet, input.value);
-      if (res.ok) {
-        routeState.usernameJustSaved = true; // surfaced as a persistent note on re-render
-        persistArcadeStateSoon();
-        playSfxCue('menu-click', 0.06);
-        // Refresh the nav (display name) + profile panel in place. Do NOT call the
-        // global render() here — it resets officialAppStep and bounces the user off
-        // the profile screen (same reason as the avatar save below).
-        renderNav();
-        renderOfficialProfile();
-      } else {
-        feedback.textContent = res.message;
-        feedback.dataset.state = 'error';
-      }
-    });
-
-    form.append(input, saveBtn);
-    editor.append(form, feedback);
-    dom.officialCabinetGrid.append(editor);
+    renderLocalUsernameEditor({ profile, state, connectedWallet });
 
     // --- Avatar upload (.jpg/.png, 2MB cap) ---
     const avatarCard = el('article', { className: 'official-info-card avatar-editor-card' });
@@ -760,5 +946,5 @@ export function createOfficialProfileRoute({
   // (HMH). Game-specific so future cabinets get their own boards via the switcher.
   let leaderboardGameId = 'lester-blaster';
 
-  return Object.freeze({ renderProfile: renderOfficialProfile });
+  return Object.freeze({ renderProfile: renderOfficialProfile, hydrate, invalidate, markStale, setPendingSavedRuns, cachedSelfProfile });
 }

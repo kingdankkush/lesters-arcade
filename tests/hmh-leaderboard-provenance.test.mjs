@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  LEADERBOARD_SOURCE_TABS,
+  LEADERBOARD_SOURCES,
   filterLeaderboardEntriesBySource,
 } from '../apps/portal/src/leaderboard-seed.mjs';
 import { recordCadenceScore } from '../apps/portal/src/leaderboard-engine.mjs';
@@ -57,7 +57,7 @@ test('source selection owns a distinct normalized V2 cache namespace', () => {
   assert.equal(unknown.cache.key, official.cache.key);
 });
 
-test('the real public route passes source selection into its aggregation model', () => {
+test('the real public route aggregates only this device\u2019s rows in preview and never in hosted mode', async () => {
   const sentinel = new Error('stop after real route-to-model boundary');
   let captured;
   const route = createOfficialLeaderboardRoute({
@@ -68,7 +68,29 @@ test('the real public route passes source selection into its aggregation model',
     buildLeaderboardExperienceV2Model: (_state, options) => { captured = options; throw sentinel; },
   });
   assert.throws(() => route.renderLeaderboards(), error => error === sentinel);
-  assert.equal(captured.source, 'official');
+  assert.equal(captured.source, 'local', 'a stale source in routeState cannot bring back another standing');
+
+  let localReads = 0;
+  const hosted = createOfficialLeaderboardRoute({
+    hosted: true,
+    indexApi: { leaderboard: async () => ({ ok: true, rows: [], total: 0, pageSize: 25, you: null, resetsAt: null }) },
+    dom: { officialCabinetGrid: { replaceChildren() {}, append() {} } },
+    getContext: () => ({ state: { profiles: {} }, connectedWallet: null }),
+    publicLeaderboardCabinets: () => [{ gameId: 'lester-blaster', title: 'Hard Money Heroes' }],
+    routeState: { gameId: 'lester-blaster' },
+    buildLeaderboardExperienceV2Model: () => { localReads += 1; throw sentinel; },
+    getAllCadenceLeaderboards: () => { localReads += 1; return []; },
+    appendText: (parent) => parent,
+    el: () => ({ append() {}, setAttribute() {}, addEventListener() {}, dataset: {}, classList: { add() {} } }),
+    documentRef: { createTextNode: () => ({}) },
+    renderArcadeIcon: () => ({}),
+    humanList: (items) => items.join(', '),
+    playableCabinetNames: () => ['Hard Money Heroes'],
+    getGame: () => ({ title: 'Hard Money Heroes' }),
+  });
+  hosted.renderLeaderboards();
+  await hosted.hydrate();
+  assert.equal(localReads, 0, 'hosted boards never read device-local rows');
 });
 
 test('V2 cache refreshes the requesting player rank below the visible cut', () => {
@@ -99,21 +121,21 @@ const entries = [
   { wallet: '0x2222222222222222222222222222222222222222', score: 10_000, rank: 3 },
 ];
 
-test('leaderboard source tabs keep official, local, and house demo scores in separate standings', () => {
-  assert.deepEqual(LEADERBOARD_SOURCE_TABS.map((tab) => tab.id), ['official', 'local', 'demo']);
+test('hosted boards show only verified rows; preview shows only this device', () => {
+  assert.deepEqual(LEADERBOARD_SOURCES.map((source) => source.id), ['official', 'local'], 'there is no House Demo standing');
   const official = filterLeaderboardEntriesBySource(entries, {}, 'official');
   assert.deepEqual(official.rows.map((row) => [row.wallet, row.rank]), [[entries[1].wallet, 1]]);
   assert.equal(official.playerRank, 1);
   assert.equal(official.label, 'Verified Ranked');
 
   const local = filterLeaderboardEntriesBySource(entries, {}, 'local');
-  assert.deepEqual(local.rows.map((row) => [row.wallet, row.rank]), [[entries[2].wallet, 1]]);
+  assert.deepEqual(local.rows.map((row) => [row.wallet, row.rank]), [[entries[2].wallet, 1]], 'a stored House seed row never shows on this device\u2019s board');
   assert.equal(local.playerRank, null);
-  assert.equal(local.label, 'Local Preview');
+  assert.equal(local.label, 'This device');
 
   const demo = filterLeaderboardEntriesBySource(entries, {}, 'demo');
-  assert.deepEqual(demo.rows.map((row) => [row.wallet, row.rank]), [[entries[0].wallet, 1]]);
-  assert.equal(demo.label, 'House Demo');
+  assert.equal(demo.source, 'official', 'the retired House Demo source fails closed');
+  assert.ok(demo.rows.every((row) => row.seed !== true));
 });
 
 test('unknown source fails closed to the official standing', () => {

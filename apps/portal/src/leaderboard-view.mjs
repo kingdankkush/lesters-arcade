@@ -10,6 +10,95 @@ export const LEADERBOARD_PAGE_SIZE = 10;
 export const LEADERBOARD_MAX_ROWS = 50;
 export const LEADERBOARD_GAME_PREFERENCE_KEY = 'lesters-arcade-scores-game-v1';
 export const LEADERBOARD_GAME_QUERY_PARAM = 'game';
+// Hosted boards page through GET /api/leaderboard (E5): 25 rows a page, and a
+// search is sent to the server after the player stops typing.
+export const HOSTED_LEADERBOARD_PAGE_SIZE = 25;
+export const LEADERBOARD_SEARCH_DEBOUNCE_MS = 300;
+
+// Launch periods (D2): Weekly is the default, then Monthly and All-time. The
+// API already accepts `daily`; flip `daily` to true when Daily returns as the
+// headline board. There is no Yearly board.
+export const LEADERBOARD_PERIODS = Object.freeze({
+  daily: false,
+  weekly: true,
+  monthly: true,
+  'all-time': true,
+});
+export const DEFAULT_LEADERBOARD_PERIOD = 'weekly';
+
+const PERIOD_TABS = Object.freeze([
+  Object.freeze({ id: 'daily', label: 'Daily', resets: 'Resets daily, 00:00 UTC', board: 'today’s board' }),
+  Object.freeze({ id: 'weekly', label: 'Weekly', resets: 'Resets Monday 00:00 UTC', board: 'this week’s board' }),
+  Object.freeze({ id: 'monthly', label: 'Monthly', resets: 'Resets on the 1st, 00:00 UTC', board: 'this month’s board' }),
+  Object.freeze({ id: 'all-time', label: 'All-time', resets: null, board: 'the all-time board' }),
+]);
+
+// The period tabs a hosted board offers, in display order.
+export function leaderboardPeriodTabs(periods = LEADERBOARD_PERIODS) {
+  return Object.freeze(PERIOD_TABS.filter((tab) => periods?.[tab.id] === true));
+}
+
+// A hosted board's period for a stored cadence: any tab that is switched on,
+// otherwise the Weekly default (older sessions may hold 'yearly' or 'daily').
+export function hostedLeaderboardPeriod(cadence, periods = LEADERBOARD_PERIODS) {
+  return leaderboardPeriodTabs(periods).some((tab) => tab.id === cadence) ? cadence : DEFAULT_LEADERBOARD_PERIOD;
+}
+
+export function leaderboardPeriodTab(period) {
+  return PERIOD_TABS.find((tab) => tab.id === period) ?? PERIOD_TABS[1];
+}
+
+// "in 3d 4h", "in 5h 12m", "in 9m", "in under a minute"; null when there is
+// no reset (all-time) or the time cannot be read.
+export function formatResetCountdown(resetsAt, now = Date.now()) {
+  const at = Date.parse(String(resetsAt ?? ''));
+  if (!Number.isFinite(at)) return null;
+  const minutes = Math.floor(Math.max(0, at - now) / 60_000);
+  if (minutes < 1) return 'in under a minute';
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor((minutes % 1440) / 60);
+  const mins = minutes % 60;
+  if (days > 0) return `in ${days}d ${hours}h`;
+  if (hours > 0) return `in ${hours}h ${mins}m`;
+  return `in ${mins}m`;
+}
+
+// The E5 page that holds a rank (1-based).
+export function hostedPageForRank(rank, pageSize = HOSTED_LEADERBOARD_PAGE_SIZE) {
+  const r = Math.max(1, Math.floor(Number(rank) || 1));
+  return Math.ceil(r / pageSize);
+}
+
+const EXPLORER_TX = /^https:\/\/liteforge\.explorer\.caldera\.xyz\/tx\/0x[0-9a-fA-F]{64}$/;
+
+// The index's explorer link when it has the expected shape, else null.
+export function verifiedExplorerUrl(value) {
+  return EXPLORER_TX.test(String(value ?? '')) ? String(value) : null;
+}
+
+// One E5 row as a board entry. Names are the index's sanitized values: a
+// hidden or blocked name is null there and shows as the short wallet here.
+export function hostedLeaderboardEntry(row = {}, { connectedWallet = null } = {}) {
+  const wallet = String(row.wallet ?? '').toLowerCase();
+  const you = Boolean(connectedWallet) && wallet === String(connectedWallet).toLowerCase();
+  const walletShort = row.walletShort || (wallet ? `${wallet.slice(0, 6)}…${wallet.slice(-4)}` : '');
+  return Object.freeze({
+    rank: Number(row.rank) || 0,
+    trueRank: Number(row.rank) || 0,
+    wallet,
+    walletShort,
+    displayName: row.displayName || walletShort,
+    named: Boolean(row.displayName),
+    avatarUri: row.avatarUri ?? null,
+    score: Number(row.score) || 0,
+    runStats: row.stats && typeof row.stats === 'object' ? row.stats : {},
+    recordedAt: row.confirmedAt ?? null,
+    explorerUrl: verifiedExplorerUrl(row.explorerUrl),
+    shareId: row.shareId ?? null,
+    sessionId32: row.sessionId32 ?? null,
+    isCurrentPlayer: you,
+  });
+}
 
 // Banner presentation per public leaderboard cabinet. `art` and `cabinet`
 // reuse the assets the cabinet browser and mode-select screens already ship;
@@ -288,44 +377,48 @@ export function leaderboardScoresPath(gameId, pathname = '/scores') {
 // Copy
 // ---------------------------------------------------------------------------
 
+// Preview (HOSTED_PROFILE_SYNC off, A22): the board is this browser's own
+// Ranked runs, labelled as such. Hosted boards come only from the index.
+export const LEADERBOARD_PREVIEW_LABEL = 'Preview · this device';
 export const LEADERBOARD_DEVICE_LOCAL_NOTICE = 'Device-local preview: records stay in this browser until on-chain settlement is live. Boards can be wiped per game as games evolve; the only planned full reset is at mainnet.';
 export const STACKED_LOCAL_NOTICE = 'Device-local Ranked preview. One board across input devices; labels are self-reported. No fees, prizes or online ranking.';
+export const HOSTED_LEADERBOARD_NOTICE = 'Verified Ranked runs published on LitVM. Best score per wallet; ties go to whoever got there first. Every row links to its transaction.';
 
-export function leaderboardEmptyState({ gameId = 'lester-blaster', source = 'official', search = '', gameTitle = '' } = {}) {
+export function leaderboardEmptyState({ hosted = false, period = DEFAULT_LEADERBOARD_PERIOD, search = '', gameTitle = '' } = {}) {
   const needle = normalizeLeaderboardSearch(search);
   if (needle) {
     return Object.freeze({
       kind: 'search',
       title: `No players match "${String(search).trim()}".`,
-      copy: 'Search matches display names and wallet prefixes on the standing shown. Clear the search to see every row.',
+      copy: hosted
+        ? 'Search matches display names and wallet prefixes (at least four characters) on this board. Clear the search to see every row.'
+        : 'Search matches display names and wallet prefixes on the standing shown. Clear the search to see every row.',
       action: 'clear-search',
     });
   }
-  if (gameId === 'stacked' && source === 'official') {
-    return Object.freeze({
-      kind: 'source',
-      title: 'Online verified STACKED scores are not available.',
-      copy: 'Select Local to see this device’s preview.',
-      action: 'show-local',
-    });
-  }
-  if (source === 'demo') {
-    return Object.freeze({ kind: 'empty', title: 'No synthetic house scores are available for this period.', copy: 'House Demo rows are layout previews only; they never settle on-chain.', action: null });
-  }
-  if (source === 'local') {
+  if (hosted) {
     return Object.freeze({
       kind: 'empty',
-      title: 'No unpublished local ranked scores are available in this period.',
-      copy: `Finish a Ranked run${gameTitle ? ` in ${gameTitle}` : ''} on this device to place here.`,
-      action: null,
+      title: `Be the first on ${leaderboardPeriodTab(period).board}`,
+      copy: `No verified Ranked run is on ${leaderboardPeriodTab(period).board}${gameTitle ? ` for ${gameTitle}` : ''} yet. Play Ranked and your score posts here once it is published on LitVM.`,
+      action: 'play-ranked',
     });
   }
   return Object.freeze({
     kind: 'empty',
-    title: 'No verified ranked scores in this period yet. Play Ranked and publish a settled score to claim the top spot.',
-    copy: 'Verified rows appear once on-chain settlement is live. Switch to Local Preview for this device’s records.',
-    action: 'show-local',
+    title: 'No unpublished local ranked scores are available in this period.',
+    copy: `Finish a Ranked run${gameTitle ? ` in ${gameTitle}` : ''} on this device to place here.`,
+    action: null,
   });
+}
+
+// Loading and failure states of a hosted board (the render stays synchronous;
+// the hydrate hook fills the board and renders again).
+export function hostedLeaderboardStatusCopy(status) {
+  if (status === 'loading') return Object.freeze({ kind: 'loading', title: 'Loading verified scores…', copy: 'Reading this board from the arcade index.', action: null });
+  if (status === 'offline') return Object.freeze({ kind: 'offline', title: 'You appear to be offline.', copy: 'Verified scores load again when your connection is back.', action: 'retry' });
+  if (status === 'error') return Object.freeze({ kind: 'error', title: 'Scores are unavailable right now.', copy: 'The arcade index did not answer. Try again in a moment.', action: 'retry' });
+  return null;
 }
 
 export function formatPostedDate(iso, now = Date.now()) {

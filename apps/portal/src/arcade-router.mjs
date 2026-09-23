@@ -10,6 +10,7 @@
 //   /games/hard-money-heroes/game-session-000000001    -> an active ranked session
 //
 //   /profile                                           -> guest-browsable profile shell
+//   /profile/0x<40 hex>                                -> a wallet's public profile (contract A6)
 //   /scores                                            -> guest-browsable scores shell
 //   /settings                                          -> guest-browsable settings shell
 //
@@ -95,8 +96,16 @@ function gameRoutePrefix(routeBase = 'games') {
   return routeBase === 'play' ? '/play' : '/games';
 }
 
+const PROFILE_WALLET = /^0x[0-9a-fA-F]{40}$/;
+
+// A viewed profile wallet, lowercase, or null when the value is not an address.
+export function profileWalletFor(value) {
+  const text = String(value ?? '');
+  return PROFILE_WALLET.test(text) ? text.toLowerCase() : null;
+}
+
 // Build the canonical URL path for a given view + context.
-export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = null, routeBase = 'games' } = {}) {
+export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = null, routeBase = 'games', wallet = null } = {}) {
   const gamePrefix = gameRoutePrefix(routeBase);
   switch (step) {
     case 'wallet-splash':
@@ -111,8 +120,10 @@ export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = n
     case 'gameplay':
       // Ranked sessions get a session URL; free / no-session falls back to the game page.
       return sessionId ? `${gamePrefix}/${gameSlug}/${sessionId}` : `${gamePrefix}/${gameSlug}`;
-    case 'profile':
-      return '/profile';
+    case 'profile': {
+      const viewed = profileWalletFor(wallet);
+      return viewed ? `/profile/${viewed}` : '/profile';
+    }
     case 'leaderboards':
       return '/scores';
     case 'settings':
@@ -122,9 +133,11 @@ export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = n
   }
 }
 
-// Parse a URL path into a view intent. Returns { step, gameSlug, sessionId }.
-// `connected` controls the gate: protected routes bounce to wallet-splash when
-// no wallet is connected (mirrors the app's existing guard).
+// Parse a URL path into a view intent. Returns { step, gameSlug, sessionId },
+// plus `wallet` (lowercase) only for /profile/<address>, so the 3-key shape of
+// every other route is unchanged (A6). `connected` controls the gate:
+// protected routes bounce to wallet-splash when no wallet is connected
+// (mirrors the app's existing guard).
 export function viewForPath(pathname, { connected = false } = {}) {
   const clean = String(pathname || '/').split('?')[0].split('#')[0];
   const parts = clean.split('/').filter(Boolean); // e.g. ['games','hard-money-heroes','game-session-1']
@@ -133,7 +146,11 @@ export function viewForPath(pathname, { connected = false } = {}) {
   if (parts.length === 0) {
     return { step: 'wallet-splash', gameSlug: null, sessionId: null };
   }
-  if (parts[0] === 'profile') return guestGate('profile', connected);
+  if (parts[0] === 'profile') {
+    const view = guestGate('profile', connected);
+    const wallet = parts.length === 2 ? profileWalletFor(parts[1]) : null;
+    return wallet && view.step === 'profile' ? { ...view, wallet } : view;
+  }
   if (parts[0] === 'scores' || parts[0] === 'leaderboards') return guestGate('leaderboards', connected);
   if (parts[0] === 'settings') return guestGate('settings', connected);
 

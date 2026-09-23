@@ -66,11 +66,16 @@ export function containsBlockedTerm(name) {
 // Validate a candidate username WITHOUT checking uniqueness. Returns
 // { valid, cleaned, error } where cleaned is the trimmed/space-collapsed form
 // to store, and error is a stable machine code when invalid.
+//
+// Whitespace follows the on-chain handle rules (PlayerProfileRegistry
+// _normalizedHandle, contract §8.4): only the space character (0x20) is
+// trimmed from the ends and collapsed; a tab, a line break or any other
+// whitespace is an invalid character, never silently turned into a space.
 export function validateUsername(rawName) {
   if (typeof rawName !== 'string') {
     return { valid: false, cleaned: '', error: 'invalid-type', message: 'Username must be text.' };
   }
-  const cleaned = rawName.trim().replace(/\s+/g, ' ');
+  const cleaned = rawName.replace(/^ +| +$/g, '').replace(/ {2,}/g, ' ');
 
   if (cleaned.length < USERNAME_RULES.minLength) {
     return { valid: false, cleaned, error: 'too-short', message: `Username must be at least ${USERNAME_RULES.minLength} characters.` };

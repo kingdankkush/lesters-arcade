@@ -8,7 +8,7 @@ function harness({ pathname = '/', connected = false } = {}) {
   const listeners = new Map();
   const pushes = [];
   const scrolls = [];
-  const state = { step: 'wallet-splash', gameId: 'lester-blaster', sessionId: null };
+  const state = { step: 'wallet-splash', gameId: 'lester-blaster', sessionId: null, viewedWallet: null };
   const characterPanel = { scrollIntoView: (options) => scrolls.push(['panel', options]) };
   const documentRef = {
     documentElement: { style: {} },
@@ -34,6 +34,8 @@ function harness({ pathname = '/', connected = false } = {}) {
     getSelectedGameId: () => state.gameId,
     setSelectedGameId: (gameId) => { state.gameId = gameId; },
     getSessionId: () => state.sessionId,
+    getViewedWallet: () => state.viewedWallet,
+    setViewedWallet: (wallet) => { state.viewedWallet = wallet; },
     getCharacterPanel: () => characterPanel,
     render: () => { calls.render += 1; },
     hydrateLeaderboard: () => { calls.leaderboard += 1; },
@@ -77,6 +79,92 @@ test('ranked session deep links remain wallet-gated and popstate is detachable',
   assert.equal(h.calls.render, 1);
   detach();
   assert.equal(h.listeners.has('popstate'), false);
+});
+
+const PROFILE_WALLET = `0x${'Ab'.repeat(20)}`;
+const profileWallet = PROFILE_WALLET.toLowerCase();
+
+test('deep link to a wallet profile hydrates on load', () => {
+  const h = harness({ pathname: `/profile/${PROFILE_WALLET}` });
+  h.controller.applyLocation();
+  assert.equal(h.state.step, 'profile');
+  assert.equal(h.state.viewedWallet, profileWallet, 'the viewed wallet is kept, lowercase');
+  assert.equal(h.calls.profile, 1, 'the profile hydrate hook runs on a deep link');
+  assert.equal(h.calls.leaderboard, 0);
+  assert.deepEqual(h.pushes, [], 'restoring a URL never pushes history');
+
+  const scores = harness({ pathname: '/scores' });
+  scores.controller.applyLocation();
+  assert.equal(scores.state.step, 'leaderboards');
+  assert.equal(scores.calls.leaderboard, 1, 'the Scores hydrate hook runs on a deep link');
+
+  const own = harness({ pathname: '/profile' });
+  own.state.viewedWallet = profileWallet;
+  own.controller.applyLocation();
+  assert.equal(own.state.viewedWallet, null, '/profile is the connected wallet');
+  assert.equal(own.calls.profile, 1);
+
+  const bogus = harness({ pathname: '/profile/0x1234' });
+  bogus.controller.applyLocation();
+  assert.equal(bogus.state.step, 'profile');
+  assert.equal(bogus.state.viewedWallet, null, 'an invalid address is not a viewed wallet');
+
+  const popped = harness({ pathname: '/games' });
+  popped.controller.attachPopstate();
+  popped.windowRef.location.pathname = `/profile/${profileWallet}`;
+  popped.listeners.get('popstate')();
+  assert.equal(popped.state.viewedWallet, profileWallet);
+  assert.equal(popped.calls.profile, 1, 'back/forward to a profile hydrates too');
+});
+
+test('setView preserves the viewed wallet', () => {
+  const h = harness({ pathname: '/scores' });
+  h.controller.setView('profile', { wallet: PROFILE_WALLET });
+  assert.equal(h.state.viewedWallet, profileWallet);
+  assert.deepEqual(h.pushes.at(-1), [{ step: 'profile', gameSlug: 'hard-money-heroes', sessionId: null, wallet: profileWallet }, '', `/profile/${profileWallet}`]);
+  assert.equal(h.calls.profile, 1);
+
+  // Re-entering with the same wallet keeps it in the URL without a duplicate push.
+  h.windowRef.location.pathname = `/profile/${profileWallet}`;
+  h.controller.setView('profile', { wallet: profileWallet });
+  assert.equal(h.state.viewedWallet, profileWallet);
+  assert.equal(h.pushes.length, 1, 'the URL already names the wallet, so no duplicate push');
+  h.controller.syncRoute('profile');
+  assert.equal(h.pushes.length, 1);
+
+  // An explicit null goes to the connected wallet's own profile.
+  h.controller.setView('profile', { wallet: null });
+  assert.equal(h.state.viewedWallet, null);
+  assert.equal(h.pushes.at(-1)[2], '/profile');
+
+  // Leaving the profile step forgets the wallet.
+  h.controller.setView('profile', { wallet: profileWallet });
+  h.controller.setView('leaderboards');
+  assert.equal(h.state.viewedWallet, null);
+  assert.equal(h.pushes.at(-1)[2], '/scores');
+  assert.deepEqual(Object.keys(h.pushes.at(-1)[0]), ['step', 'gameSlug', 'sessionId'], 'other routes keep the 3-key history state');
+});
+
+test('the nav Profile tab and avatar go back to your own profile from another wallet', () => {
+  // official-shell-routes.mjs navigates with a bare setView: the Profile tab
+  // with setView(item.step) and the avatar ("Open profile") with setView('profile').
+  const shell = readFileSync(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url), 'utf8');
+  assert.match(shell, /setView\(item\.step\);/);
+  assert.match(shell, /ariaLabel: 'Open profile'[\s\S]{0,200}setView\('profile'\);/);
+
+  const h = harness({ pathname: '/scores', connected: true });
+  h.controller.setView('profile', { wallet: PROFILE_WALLET }); // a row on the Scores page
+  h.windowRef.location.pathname = `/profile/${profileWallet}`;
+  h.controller.setView('profile'); // the nav tab or the nav avatar
+  assert.equal(h.state.viewedWallet, null, 'a bare profile navigation is the connected wallet');
+  assert.equal(h.pushes.at(-1)[2], '/profile', 'and the URL returns to /profile');
+  assert.deepEqual(Object.keys(h.pushes.at(-1)[0]), ['step', 'gameSlug', 'sessionId']);
+  assert.equal(h.calls.profile, 2, 'your own profile is hydrated');
+
+  // Back to the other wallet's URL restores it from the address bar.
+  h.windowRef.location.pathname = `/profile/${profileWallet}`;
+  h.controller.applyLocation();
+  assert.equal(h.state.viewedWallet, profileWallet);
 });
 
 test('portal entry delegates transition and popstate ownership to the route controller', () => {

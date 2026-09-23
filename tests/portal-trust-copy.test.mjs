@@ -3,21 +3,49 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
-  buildSeedLeaderboardEntries,
   leaderboardEntryProvenance,
+  purgeHouseSeedRows,
   summarizeVisibleLeaderboardProvenance,
 } from '../apps/portal/src/leaderboard-seed.mjs';
+import { recordCadenceScore } from '../apps/portal/src/leaderboard-engine.mjs';
+import * as leaderboardSeed from '../apps/portal/src/leaderboard-seed.mjs';
 
-test('synthetic leaderboard seeds are explicitly labeled as unofficial House Scores', () => {
-  const [entry] = buildSeedLeaderboardEntries({ count: 1, now: 1_700_000_000_000 });
-  assert.equal(entry.seed, true);
-  assert.equal(entry.settlementTxHash, null);
-  assert.deepEqual(entry.provenance, {
+// A row the retired House Demo seed stored in a browser before the clean slate (D4).
+const storedHouseRow = Object.freeze({
+  wallet: '0xSEED0123456789abcdef0123456789abcdef01',
+  displayName: 'LitCommando42',
+  score: 25_000,
+  seed: true,
+  settlementTxHash: null,
+  recordedAt: '2026-09-01T00:00:00.000Z',
+  runStats: { kills: 90, surviveSeconds: 300 },
+});
+
+test('stored House Demo rows are still recognised as unofficial House Scores', () => {
+  assert.deepEqual(leaderboardEntryProvenance(storedHouseRow), {
     source: 'house-score',
     label: 'HOUSE SCORE',
     official: false,
   });
-  assert.deepEqual(leaderboardEntryProvenance(entry), entry.provenance);
+  assert.equal(leaderboardEntryProvenance({ wallet: storedHouseRow.wallet }).source, 'house-score', 'a 0xSEED wallet is a seed row even without the flag');
+  assert.equal(typeof leaderboardSeed.applySeedLeaderboard, 'undefined', 'nothing can seed a board any more');
+  assert.equal(typeof leaderboardSeed.buildSeedLeaderboardEntries, 'undefined');
+});
+
+test('the clean slate purges stored House Demo rows and profiles on load', () => {
+  const player = `0x${'12'.repeat(20)}`;
+  const state = { profiles: { [storedHouseRow.wallet]: { handle: 'LitCommando42', seed: true }, [player]: { handle: 'Real Player' } }, leaderboards: {} };
+  recordCadenceScore(state, 'lester-blaster', { ...storedHouseRow });
+  recordCadenceScore(state, 'lester-blaster', { wallet: player, score: 700, sessionId: 'real-run', recordedAt: '2026-09-01T00:00:00.000Z' });
+  state.leaderboards['lester-blaster'] = [{ ...storedHouseRow }, { wallet: player, score: 700 }];
+  const removed = purgeHouseSeedRows(state);
+  assert.ok(removed >= 6, `every cadence bucket and the flat board lose the seed row (${removed})`);
+  const allTime = state.cadenceLeaderboards['lester-blaster']['all-time']['all-time'];
+  assert.deepEqual(allTime.map((row) => row.wallet), [player]);
+  assert.deepEqual(state.leaderboards['lester-blaster'].map((row) => row.wallet), [player]);
+  assert.deepEqual(Object.keys(state.profiles), [player], 'the synthetic profile is gone, the real one stays');
+  assert.equal(purgeHouseSeedRows(state), 0, 'idempotent');
+  assert.equal(purgeHouseSeedRows(null), 0);
 });
 
 test('real settled leaderboard entries remain official', () => {
@@ -32,7 +60,7 @@ test('real settled leaderboard entries remain official', () => {
 });
 
 test('leaderboard provenance summary says its counts cover only the visible rows', () => {
-  const [houseEntry] = buildSeedLeaderboardEntries({ count: 1, now: 1_700_000_000_000 });
+  const houseEntry = storedHouseRow;
   const officialEntry = {
     wallet: '0x1234567890123456789012345678901234567890',
     settlementTxHash: `0x${'ab'.repeat(32)}`,
@@ -90,12 +118,37 @@ test('portal renders guest identity and House Score provenance without claiming 
   assert.match(appRoutesSource, /connectedWallet \? 'Wallet Profile' : 'Guest Practice Profile'/);
   assert.match(leaderboardRouteSource, /leaderboardEntryProvenance\(entry/);
   assert.match(leaderboardRouteSource, /provenance\.label/);
-  assert.match(leaderboardRouteSource, /summarizeVisibleLeaderboardProvenance/);
-  assert.match(leaderboardRouteSource, /Official shown/);
-  assert.match(leaderboardRouteSource, /House shown/);
+  // Clean slate (D4): no House Demo standing or House counts; preview rows are labelled as this device's.
+  assert.doesNotMatch(leaderboardRouteSource, /House shown|LEADERBOARD_SOURCE_TABS/);
+  assert.match(leaderboardRouteSource, /LEADERBOARD_PREVIEW_LABEL/);
   assert.doesNotMatch(htmlSource, /Wallet\/profile is already active/);
   assert.doesNotMatch(htmlSource, /Your Lester’s Arcade profile is already active/);
   assert.doesNotMatch(htmlSource, /Wallet profile active/i);
   assert.match(appRoutesSource, /officialProfileEyebrow/);
   assert.match(htmlSource, /Lester’s Arcade session is active/);
+});
+
+// Preview safety (A22, D4) lives in main.js wiring that the module tests
+// cannot see: pin it at the source.
+test('main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert.match(main, /^loadArcadeState\(state, ARCADE_STORAGE\);\n(?:\/\/.*\n)*purgeHouseSeedRows\(state\);$/m, 'the purge runs right after the stored state loads');
+  assert.doesNotMatch(main, /applySeedLeaderboard/, 'nothing seeds the boards any more');
+  assert.doesNotMatch(main, /__seededLeaderboard/);
+
+  const block = (start, end) => {
+    const from = main.indexOf(start);
+    assert.ok(from > 0, `${start} is in main.js`);
+    return main.slice(from, main.indexOf(end, from));
+  };
+  assert.match(block('const indexApi = createIndexApiClient({', '});'), /hosted: HOSTED_PROFILE_SYNC,/, 'the index client is offline in preview');
+  assert.match(block('const officialProfileRoute = createOfficialProfileRoute({', '\n});'), /\n {2}hosted: HOSTED_PROFILE_SYNC,\n/, 'the Profile route renders the device-local view in preview');
+  assert.match(block('const officialLeaderboardRoute = createOfficialLeaderboardRoute({', '\n});'), /\n {2}hosted: HOSTED_PROFILE_SYNC,\n/, 'the Scores route renders the device-local board in preview');
+  assert.doesNotMatch(main, /hosted: true\b/, 'never hard-coded on');
+  for (const hook of ['function hydrateLeaderboardFromIndex() {', 'function hydrateProfileFromIndex() {']) {
+    assert.match(block(hook, '\n}'), /^ {2}if \(!HOSTED_PROFILE_SYNC\) return;$/m, `${hook} is a no-op in preview`);
+  }
+  assert.match(main, /hydrateLeaderboard: hydrateLeaderboardFromIndex,/);
+  assert.match(main, /hydrateProfile: hydrateProfileFromIndex,/);
+  assert.doesNotMatch(main, /hydrateLeaderboardFromChain|hydrateProfileFromChain/, 'the 200-session chain scan is retired');
 });
