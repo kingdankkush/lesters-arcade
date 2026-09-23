@@ -95,7 +95,11 @@ test('deploy config describes the native 0.1 zkLTC fee for three games and is no
   }
   assert.equal(deployConfig.developerWallet, OWNER_WALLET);
   assert.equal(deployConfig.treasuryVault, OWNER_WALLET);
-  assert.equal(deployConfig.settlementGasReserveWei, '20000000000000000', '0.02 zkLTC placeholder reserve the owner tunes');
+  assert.equal(deployConfig.settlementGasReserveWei, '100000000000000', '0.0001 zkLTC reserve sized from measured LiteForge gas (2026-09-22)');
+  assert.equal(deployConfig.deployer, deployConfig.operator, 'the operator service key deploys and administers');
+  assert.notEqual(deployConfig.verifier.toLowerCase(), deployConfig.operator.toLowerCase(), 'the verifier is its own key');
+  assert.notEqual(deployConfig.relayer.toLowerCase(), deployConfig.operator.toLowerCase(), 'the relayer is its own key');
+  assert.equal(deployConfig.relayerVault, deployConfig.relayer, 'the reserve funds the relayer');
   assert.match(deployConfig.relayerVault, /^0x[0-9a-fA-F]{40}$/);
   assert.match(deployConfig.relayer, /^0x[0-9a-fA-F]{40}$/);
   assert.match(deployConfig._epoch, /TESTNET EPOCH/);

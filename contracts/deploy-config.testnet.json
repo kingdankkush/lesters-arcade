@@ -8,12 +8,12 @@
     "symbol": "zkLTC",
     "decimals": 18
   },
-  "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "operator": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "verifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "relayer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "relayerVault": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "settlementGasReserveWei": "20000000000000000",
+  "deployer": "0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF",
+  "operator": "0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF",
+  "verifier": "0x4d637a6C5b5c6f97cFA3d98BD53deeb8510120C7",
+  "relayer": "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+  "relayerVault": "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+  "settlementGasReserveWei": "100000000000000",
   "developerWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
   "platformVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
   "liquidityVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
@@ -74,5 +74,5 @@
     "expectedScoreRows": 13,
     "disposition": "archive-read-only; never import as verified"
   },
-  "_recipients": "Owner decisions 2026-09-16: every game splits the flat 0.1 zkLTC entry fee 85% developer / 15% treasury (devBps 8500, treasuryBps 1500, platform/liquidity 0). developerWallet and treasuryVault = the owner wallet 0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26 (the owner is the developer of all three live games; the Chikun creator wallet is not yet supplied). platformVault/liquidityVault are also the owner wallet (unused 0-bps shares). settlementGasReserveWei (0.02 zkLTC placeholder, owner tunes) is added on top of the flat fee and forwarded to relayerVault (defaults to the relayer/operator address) to fund relayer-settled scores. deployer/operator/verifier/relayer stay the key-holder addresses the owner supplies at deploy time; see docs/web3/contract-overhaul-20260916.md runbook."
+  "_recipients": "Owner decisions 2026-09-16: every game splits the flat 0.1 zkLTC entry fee 85% developer / 15% treasury (devBps 8500, treasuryBps 1500, platform/liquidity 0). developerWallet and treasuryVault = the owner wallet 0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26 (the owner is the developer of all three live games; the Chikun creator wallet is not yet supplied). platformVault/liquidityVault are also the owner wallet (unused 0-bps shares). settlementGasReserveWei (0.0001 zkLTC, sized 2026-09-22 from measured LiteForge gas of 0.01-0.02 gwei, about 5M gas per settlement) is added on top of the flat fee and forwarded to relayerVault (the relayer service key) to fund relayer-settled scores. deployer/operator = the 2026-09-22 operator service key, verifier and relayer = their own service keys; the private keys live only in the owner's vault and Vercel secrets. See docs/handoffs/pre-deployment-web3-guide-20260922.md section 1."
 }

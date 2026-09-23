@@ -82,3 +82,7 @@ contracts/out/
 .env*
 # Local Blender recovery files are retained outside the release source index.
 /assets-source/**/*.blend1
+
+# Neon marketplace installer output (2026-09-22); never commit
+.agents/
+skills-lock.json
