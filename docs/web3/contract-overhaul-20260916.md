@@ -193,7 +193,7 @@ event Locked(uint256 tokenId);
 1. **Gate**: `GameRegistry.getGame(ethers.id(slug))` → require `exists && playable && devWalletConfirmed`.
    Then `ArcadeRankedEntry.quoteEntry(gameId)` → `{ entryFeeWei, settlementGasReserveWei, totalWei }`
    (never hard-code 0.1 or the reserve; `totalWei` is 0 when `entryFeeEnabled()` is false). Show the player
-   both parts: "0.1 zkLTC entry + 0.02 zkLTC settlement reserve".
+   both parts: "0.1 zkLTC entry + 0.0001 zkLTC settlement reserve".
 2. **Entry**: choose a fresh 32-byte `sessionId` (e.g. `keccak256(wallet, slug, nonce, timestamp)`), then
    `ArcadeRankedEntry.openSession(sessionId, gameId, { value: totalWei })` with the quoted total, re-quoted
    immediately before sending (the operator can retune the reserve). Wait for the receipt and confirm
@@ -230,7 +230,7 @@ nonce+5  AchievementRegistry(operator, "Chikun's Escape Achievements",   "CHKACH
 nonce+6  AchievementRegistry(operator, "STACKED Achievements",           "STKACH", ".../achievements/stacked/")
 nonce+7  ArcadeRankedEntry.setPlatformVaults(platformVault, liquidityVault, treasuryVault)
 nonce+8  ArcadeRankedEntry.setRelayerVault(relayerVault)                 // config.relayerVault, default relayer -> operator
-nonce+9  ArcadeRankedEntry.setSettlementGasReserve(settlementGasReserveWei) // config, default 0.02 zkLTC placeholder
+nonce+9  ArcadeRankedEntry.setSettlementGasReserve(settlementGasReserveWei) // config: 0.0001 zkLTC (100000000000000 wei)
 nonce+10 ScoreSubmissionRegistry.setRelayer(relayer, true)               // config.relayer, default operator
 nonce+11.. per game (lester-blaster, chikun, stacked):
          AchievementRegistry[slug].setMinter(scoreSubmissionRegistry, true)
@@ -257,7 +257,8 @@ split and `quoteEntry` before `contracts/deployment-record.hardened.json` (schem
 
 ## Owner decisions required before deployment
 
-1. **Deployer key**: which wallet deploys (currently `0x24501ad9…20d4` in config) and who holds it.
+1. **Deployer key**: decided 2026-09-22: the operator service key `0x6Ac08Bed…6bfF` deploys and
+   administers; its private key lives only in the vault and is read inside the deploy command.
 2. **Verifier key custody**: the `trustedVerifier` address signs every score. It must live in the verifier
    service's secret store (not the browser). Decide the custody/rotation runbook
    (`ScoreSubmissionRegistry.setTrustedVerifier`).
@@ -266,9 +267,10 @@ split and `quoteEntry` before `contracts/deployment-record.hardened.json` (schem
    defaults to the relayer/operator key; supply a dedicated funding wallet if the relayer runs on its own
    key.
 4. **Fee approval**: decided 2026-09-16: 0.1 zkLTC flat (`100000000000000000` wei) split 85 % developer /
-   15 % treasury for all three games, **plus** `settlementGasReserveWei`, a placeholder `0.02 zkLTC`
-   (`20000000000000000` wei) the owner tunes to the observed settlement gas. Players pay
-   `quoteEntry(gameId).totalWei` (0.12 zkLTC at the placeholder). Still open: whether `chikun` and
+   15 % treasury for all three games, **plus** `settlementGasReserveWei` = **0.0001 zkLTC**
+   (`100000000000000` wei, decided 2026-09-22 from measured LiteForge gas; the deploy script's 0.02 zkLTC
+   default is only a fallback when the config omits it). Players pay `quoteEntry(gameId).totalWei`
+   (0.1001 zkLTC). Still open: whether `chikun` and
    `stacked` should be playable on day one, and the Chikun creator wallet (currently the owner wallet).
 5. **Relayer**: decided 2026-09-16: scores are relayer-settled. `config.relayer` (default operator) is
    allow-listed at deploy; the relayer service's key must hold zkLTC (topped up from `relayerVault`) and
@@ -293,47 +295,213 @@ split and `quoteEntry` before `contracts/deployment-record.hardened.json` (schem
 - `node --test tests/contracts-security-abi.test.mjs tests/deploy-contracts-security.test.mjs tests/contract-abi-alignment.test.mjs tests/score-registry-abi.test.mjs`: pass (see the change report for the count).
 - EIP-712 type string equals `ethers.TypedDataEncoder.encodeType('VerifiedRun')` and its keccak is present
   in the compiled runtime bytecode.
-- `contracts/test/SecurityBaseline.t.sol` rewritten for the new set; **not executed** (no foundry on the
-  build machine).
+- `contracts/test/SecurityBaseline.t.sol` (Foundry is not installed on the build machine) is ported case for
+  case to Hardhat: `tests/contracts-security-baseline.test.mjs` runs all 34 cases, same names minus the
+  `test` prefix, on the in-process chain inside `npm test` and the release gate (2026-09-23, below).
+
+## Local chain and the security baseline (Hardhat, 2026-09-23)
+
+- `hardhat.config.js` configures only Hardhat 3's in-process EDR network, with `chainId: 4441` (contract
+  A21), so EIP-712 domains, session keys and `LITVM_LITEFORGE_NETWORK` work unchanged. Nothing is compiled
+  and nothing is downloaded: tests deploy the committed `contracts/artifacts/*.json`. A test boots the
+  network with every socket, DNS lookup, HTTP request and child process blocked and records none.
+- `scripts/lib/local-chain.mjs`: `startLocalChain()` (ethers provider, named fixture wallets `operator`,
+  `verifier`, `relayer`, `developer`, `platformVault`, `player1`, `player2`, `attacker` from the public
+  Hardhat test mnemonic, `setBalance`, `impersonate`, `increaseTime`, `mine`, `snapshot`, `revert`, `close`),
+  `deployLocalSuite()` (same order and wiring calls as `scripts/deploy-contracts.mjs`, parity-tested; the
+  collections deploy empty) and `activateLocalGames()`. `serveJsonRpc()` exposes the chain over HTTP for
+  CLI scripts that take `--rpc`.
+- `npm run contracts:test:hardhat` runs the baseline port and the harness tests.
+
+## Contract addresses: the generated module
+
+Addresses are **never hand-edited**. `apps/portal/src/generated/litvm-addresses.mjs` exports
+`LITVM_DEPLOYMENT` (contract A19, §8.1) and is written only by `npm run contracts:addresses`
+(`scripts/generate-litvm-addresses.mjs`):
+
+- **Before the broadcast** (committed now): `status: 'predicted'`, the CREATE addresses of the deployer
+  `0x6Ac08Bed…6bfF` at nonces 0..6 in deploy order, `startBlock: null`. They hold only while the operator's
+  nonce stays 0, so never use the operator key before step 3.
+- **After the broadcast**: `scripts/deploy-contracts.mjs --broadcast` writes
+  `contracts/deployment-record.hardened.json` (now with `blocks`, `startBlock` and `deployTxHashes`) and
+  immediately regenerates the module with `status: 'deployed'`. Commit both files together.
+  `npm run contracts:addresses` does the same from the record at any time; `-- --predicted` forces the
+  predicted module and `-- --check` only compares.
+
+`apps/portal/src/settlement.mjs` builds `LITVM_CONTRACT_ADDRESSES` from it with exactly the keys
+`gameRegistry`, `playerProfileRegistry`, `arcadeRankedEntry`, `scoreSubmissionRegistry` and
+`achievementRegistries` (`lester-blaster`, `chikun`, `stacked`). The June keys are gone;
+`contracts/deployment-record.json` stays as the archive. The server reads the same module
+(`server/deployment.mjs`), and `RANKED_SCORE_REGISTRY_ADDRESS` must equal it. A test pins the §9.1
+invariant: `SETTLEMENT_LIVE` implies `HOSTED_PROFILE_SYNC` and a `deployed` module. Portal chain reads
+(`litvm-chain-client.mjs`) always go over the public LiteForge RPC, never the wallet's provider.
+
+## Keys and secrets
+
+Keys live only in the vault file (`C:/Users/just_/lesters-arcade-vault/keys/…`) and in Vercel. Every tool
+reads them **inside the command, without echo**, through `scripts/lib/key-source.mjs`:
+`--key-env <NAME>` (an environment variable you set for that one command), or
+`--key-file <vault path> --key-field <field>` (one field of a JSON file; a field holding
+`{ address, privateKey }` uses `privateKey`). Errors name the flag, variable or field, never the value or
+the file contents. No tool prints a key, and nobody pastes one into a prompt, a commit or a log.
 
 ## Runbook: deploy the hardened set and enable settlement (owner key holder)
 
-Nothing below was run by the authoring session: no deployer key exists on the build machine and Vercel secret writes are not permitted from it. Every step is a plain command the key holder runs once.
+This follows guide §7 as amended by contract §13; ⚠ steps need the owner's approval in the moment. The
+authoring sessions ran none of it: every command below was tested only against the in-process chain,
+a fake Vercel CLI and a local HTTP server.
 
-1. **Recipients are configured.** `contracts/deploy-config.testnet.json` routes the 85 % developer share and the 15 % treasury share to the owner wallet `0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26` for all three games (`8500/0/0/1500` bps); platform/liquidity are 0-bps placeholders on the same wallet.
-2. **Choose the key addresses.** Set `deployer`, `operator`, `verifier`, `relayer` and `relayerVault` in the same file. `verifier` is the address of a fresh key that will only ever sign attestations (generate it offline: `node -e "import('ethers').then(({ethers})=>{const w=ethers.Wallet.createRandom();console.log(w.address)})"` and keep the private key out of the repo). `relayer` is the key the settlement service sends `submitVerifiedSession` from; `relayerVault` is where the per-session settlement reserve lands (default: the relayer itself). If `deployer` is not the owner wallet, the owner wallet must send `confirmDevWallet` for each game after the deploy (the script prints the calls and lists them in the manifest).
-3. **Set `settlementGasReserveWei`.** The config ships `"20000000000000000"` (0.02 zkLTC) as a **placeholder**. Measure one settlement on testnet (`submitVerifiedSession` with the largest expected achievement list, ~gas x gas price), add headroom, and set the value before deploying; later retune without redeploying via `ArcadeRankedEntry.setSettlementGasReserve(uint256)` (emits `SettlementGasReserveUpdated`; `setRelayerVault` must be non-zero first). Players are charged `quoteEntry(gameId).totalWei = 0.1 zkLTC + reserve`. Set it to `"0"` to charge the flat fee only (the relayer then runs on its own funds).
-4. **Dry run** (no transaction): `node scripts/deploy-contracts.mjs` writes `docs/web3/hardened-ranked-deployment-manifest.json` with the seven predicted addresses (four shared contracts + three achievement collections), the full nonce plan, per-game `totalEntryWei`, and the activation block.
-5. **Deploy** (LiteForge testnet, zkLTC gas only): `DEPLOYER_PRIVATE_KEY=0x... LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441 node scripts/deploy-contracts.mjs --broadcast` deploys GameRegistry, PlayerProfileRegistry, ArcadeRankedEntry, ScoreSubmissionRegistry and the three AchievementRegistry collections, wires vaults + relayer vault + reserve + relayer allow-list + per-game minter/routing, registers the three games at 0.1 zkLTC (85/15), activates them when the deployer is the owner wallet, and writes `contracts/deployment-record.hardened.json` (`addresses.achievementRegistries[slug]`).
-6. **Point the portal and the relayer at the new addresses.** Copy the hardened addresses into `LITVM_CONTRACT_ADDRESSES` in `apps/portal/src/settlement.mjs` (`arcadeRankedEntry` plus the per-game achievement registries) and into the relayer/verifier service, run `node --test tests/litvm-ranked-contract-gate.test.mjs tests/score-registry-abi.test.mjs`, commit.
-7. **Verifier and relayer secrets on Vercel** (production): `npx vercel env add VERIFIER_PRIVATE_KEY production` (paste the verifier private key), `npx vercel env add RELAYER_PRIVATE_KEY production` (the allow-listed relayer key, funded with zkLTC from `relayerVault`) and `npx vercel env add SCORE_REGISTRY_ADDRESS production` (the deployed ScoreSubmissionRegistry). Redeploy; `POST /api/attest` should stop answering 503.
-8. **Enable settlement.** Set `SETTLEMENT_LIVE = true` in `apps/portal/src/settlement.mjs`, update the tests that pin it (`tests/settlement.test.mjs`, `tests/litvm-ranked-contract-gate.test.mjs`), run `npm run vercel:build`, deploy and promote. From then on Ranked entry charges `quoteEntry(gameId).totalWei` via `ArcadeRankedEntry.openSession` and every result is settled by the relayer through `submitVerifiedSession` with the verifier's EIP-712 signature.
-9. **Achievement art.** Define achievements on chain in each game's own collection (`AchievementRegistry[slug].defineAchievement`) once the badge set is approved; `tokenUriPath` resolves under `https://lestersarcade.io/achievements/<slug>/`.
-10. **Mainnet.** Do not migrate. When mainnet arrives, produce a new deploy config for the mainnet chain, redeploy the whole set, re-define achievements and repoint the portal/relayer; the testnet epoch is retired.
+0. **Preconditions.** Owner checkpoint O1 is done; `npx vercel teams ls` still shows the Pro plan; the
+   rehearsal's step-7 checklist exists.
+1. **Config is final.** `contracts/deploy-config.testnet.json` names the operator service key
+   `0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF` as deployer and operator, the verifier
+   `0x4d637a6C…20C7`, the relayer and relayer vault `0x494aF36e…EAf6`, the owner wallet
+   `0x07cec6Fc…8B26` as developer and treasury, and a settlement reserve of **0.0001 zkLTC**
+   (`"100000000000000"` wei, sized from measured LiteForge gas: 0.01-0.02 gwei, about 5M gas per
+   settlement). Players pay `quoteEntry(gameId).totalWei` = **0.1001 zkLTC**. Retune later without a
+   redeploy: `node scripts/operator-actions.mjs reserve <wei>` (dry run first).
+2. **Read the chain, then dry-run the deploy.** `node scripts/operator-actions.mjs status` (read-only:
+   operator nonce, which must still be 0, balances, contract state), then `node scripts/deploy-contracts.mjs`
+   (writes `docs/web3/hardened-ranked-deployment-manifest.json` with the seven predicted addresses; they must
+   equal the committed address module).
+3. ⚠ **Broadcast.** Read `DEPLOYER_PRIVATE_KEY` from the vault inside the command without echo, set
+   `LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`, run
+   `node scripts/deploy-contracts.mjs --broadcast`. Commit `contracts/deployment-record.hardened.json`
+   and the regenerated `apps/portal/src/generated/litvm-addresses.mjs` (`status: 'deployed'`) together.
+4. ⚠ **Owner confirms the developer wallet**, one transaction per game, on the owner page (next section).
+5. ⚠ **Operator activates the games:**
+   `node scripts/operator-actions.mjs activate --key-file <vault keys.json> --key-field operator --broadcast --confirm ACTIVATE_GAMES_4441`
+   (dry run first without `--broadcast`; games whose developer wallet is not confirmed are skipped).
+6. ⚠ **Vercel production secrets**: `node scripts/vercel-secrets.mjs --key-file <vault keys.json>
+   --cron-secret-out C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --rotate-session-secret`
+   is the dry run (names only); add `--apply --confirm SET_PRODUCTION_SECRETS` to write. It refuses to run
+   while any legacy name exists in any environment, pipes every value to `vercel env add` on stdin, writes
+   the new `CRON_SECRET` to the new vault file, rotates `SESSION_SECRET`, and re-lists production. See the
+   environment table below.
+7. **Flip the flags** following the rehearsal's step-7 checklist (`HOSTED_PROFILE_SYNC` and
+   `SETTLEMENT_LIVE` together, `node scripts/build-portal-pages.mjs`, the pinned tests). The §9.1 invariant
+   test fails the build if the module is not `deployed`.
+8. ⚠ **Release 1.8.0** (`npm run vercel:build`, deploy, promote). **8b.** Run the production migration and
+   the first live Neon call:
+   `node scripts/live-cron.mjs --site https://lestersarcade.io --path /api/cron/index-chain --secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt`,
+   then the same with `--path /api/cron/settle-retry` (expect `processed=0`). It prints only the status,
+   `ok`, `schemaVersion` and counts.
+9. ⚠ **Live end-to-end** per contract §13 step 9, then **10** the live smokes, README and release receipt.
+10. **Mainnet.** Do not migrate. Produce a new config for the mainnet chain, redeploy the whole set,
+    re-define achievements and regenerate the address module.
+
+## Owner page: confirm the developer wallet (runbook step 4)
+
+`apps/portal/owner/confirm-dev-wallet.html` (noindex, module script only, inline styles, portal CSP-safe)
+sends `GameRegistry.confirmDevWallet(gameId32)` (selector `0x33cf3157`) from the owner wallet
+`0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26` for Hard Money Heroes, Chikun's Escape and STACKED.
+
+**Where to open it.** Production still serves 1.7.0 at step 4, which has no owner page. From the step-3
+commit, serve the portal locally and open the page in the browser that has MetaMask or Rabby:
+
+```
+python -m http.server 8791 --directory apps/portal
+# then open http://127.0.0.1:8791/owner/confirm-dev-wallet.html
+```
+
+What it does: asks the wallet for the account; explains, then switches to (or adds) LiteForge, chain 4441;
+refuses any account but the owner wallet; checks **on-chain facts over the public RPC**, not just the module
+status (contract code at the GameRegistry address, every game registered with the owner as developer);
+skips games already confirmed; sends one transaction per click with its explorer link; and ends with the
+hand-off to step 5. Before the broadcast it shows "The Ranked contracts are not deployed yet" and sends
+nothing. It never asks for a seed phrase or a key.
+
+## Operator actions and emergency stops
+
+`node scripts/operator-actions.mjs <action>` is a dry run unless `--broadcast --confirm <PHRASE>` and the
+operator key are given; the address source is `LITVM_DEPLOYMENT`, which must be `deployed` to broadcast.
+`status` (read-only), `activate` (`ACTIVATE_GAMES_4441`), `pause-games` (`PAUSE_GAMES_4441`),
+`fees-on` / `fees-off` (`FEES_ON_4441` / `FEES_OFF_4441`), `reserve <wei>` (`SET_RESERVE_4441`),
+`relayer-off` (`RELAYER_OFF_4441`), `rotate-verifier <address>` (`ROTATE_VERIFIER_4441`).
+
+Emergency stops (contract §13, A27), in order of reach:
+
+1. **Pause Ranked:** add `SETTLEMENT_PAUSED=true` to the production environment and redeploy **the current
+   1.8.0 release**. `/api/ranked/seed`, `/api/settle` and the settle-retry cron answer
+   `503 settlement-paused`; new entries stop at the modal before payment and queued rows wait.
+2. **Stop on chain:**
+   `node scripts/operator-actions.mjs pause-games --key-file <vault keys.json> --key-field operator --broadcast --confirm PAUSE_GAMES_4441`
+   (`setPlayable(gameId, false)` for each game; blocks `openSession` and `submitVerifiedSession`).
+3. **Leaked verifier key:**
+   `node scripts/operator-actions.mjs rotate-verifier <new verifier address> --key-file <vault keys.json> --key-field operator --broadcast --confirm ROTATE_VERIFIER_4441`,
+   then replace `RANKED_VERIFIER_PRIVATE_KEY`. **Leaked relayer key:**
+   `node scripts/operator-actions.mjs relayer-off --key-file <vault keys.json> --key-field operator --broadcast --confirm RELAYER_OFF_4441`.
+4. **Site rollback:** Vercel **Instant Rollback** to `dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu` (1.7.0) only. Never
+   "Redeploy" or rebuild a pre-1.8.0 commit with production env; the renamed secrets make old code fail
+   closed anyway.
+5. **Never use `setEntryFeeEnabled(false)` (`fees-off`) as a stop.** With the minimum-paid check
+   (`RANKED_MIN_PAID_WEI`) it makes Ranked unusable, and without it Ranked would become free while the
+   relayer pays gas. The script prints this warning on every `fees-off`.
+6. **Dead letters** after an incident: `node scripts/requeue-dead-letters.mjs` (dry run), then `--apply`.
+
+## Phase 2: defining NFT achievements (written, not run)
+
+The collections deploy empty (D15) and phase 1 defines nothing. After the owner approves the NFT subset
+(checkpoint O3) and the catalog's `nft` flags match it:
+
+```
+node scripts/define-nft-achievements.mjs [--include-relayer-minter]        # dry run: the ordered calls
+LITVM_DEFINE_CONFIRM=DEFINE_NFT_ACHIEVEMENTS_4441 \
+  node scripts/define-nft-achievements.mjs --broadcast --key-env <NAME> [--include-relayer-minter]
+```
+
+It loads the catalog from `apps/portal/src/achievements/index.mjs` (`nftAchievementIds`, `catalogFor`) and
+sends, per collection, `defineAchievement(ethers.id(id), gameId32, title, category, '<id>.json')`, plus
+`setMinter(relayer, true)` with `--include-relayer-minter` (needed only for backfill minting). The key comes
+from the environment variable **name** you pass (or `--key-file`/`--key-field`) and is never printed.
+Broadcast also needs a `deployed` module and chain 4441; definitions already on chain are skipped.
+`planNftDefinitions()` is the pure planner the rehearsal reuses.
 
 ## Owner decisions 2026-09-16 (recorded)
 
-- **Key custody.** Deployer key: held by the owner only, used once from a local machine for the deploy script; never stored in Vercel or the repo. Verifier key and relayer key: generated by the owner offline and stored as Vercel production environment variables (`VERIFIER_PRIVATE_KEY`, `RELAYER_PRIVATE_KEY`); the functions under `api/` are the only readers. The relayer wallet is funded by the settlement gas reserve that `ArcadeRankedEntry` forwards to `relayerVault` (set it to the relayer address). Rotate either key by replacing the env var and calling `setTrustedVerifier` / `setRelayer` as operator. No separate service is needed; Vercel functions are the service.
-- **Fee.** Flat 0.1 zkLTC (`entryFeeWei`, adjustable per game via `setEntryFee`) split 15% treasury / 85% developer, plus a separate settlement gas reserve (`setSettlementGasReserve`, placeholder 0.02 zkLTC) that funds the relayer. Both treasury and developer wallets are currently the owner wallet `0x07cec6Fc…8B26`; the Chikun creator wallet replaces the developer wallet for `chikun` once supplied (`GameRegistry` dev wallet + `confirmDevWallet`).
-- **Settlement.** Relayer-settled: the player's only transaction is the entry; `/api/settle` verifies, signs and submits `submitVerifiedSession` from the relayer. If the relayer is unfunded or unset the browser falls back to a player-signed submit with the same attestation.
-- **Epochs.** Testnet boards run until mainnet; mainnet is a fresh deployment set and a clean slate for scores and achievements. Per-game leaderboard wipes may happen as games evolve (announce in the UI first).
-- **Profiles.** Hosted database (Neon/Vercel Postgres) behind SIWE session tokens: `SESSION_SECRET` (32+ chars) and `NEON_DATABASE_URL` in Vercel; `/api/session` and `/api/profile` fail closed without them and the browser stays device-local.
-- **Achievements.** One soulbound ERC-721 collection per game, per-game themed illustrations tiered bronze/silver/gold/platinum by unlock difficulty, revocable by the operator until mainnet, all wiped at mainnet.
+- **Key custody.** Deployer and operator: the 2026-09-22 operator service key in the vault, used from a
+  local machine through the scripts above; never stored in Vercel or the repo. Verifier and relayer keys:
+  service keys in the vault, piped into Vercel production as `RANKED_VERIFIER_PRIVATE_KEY` and
+  `RANKED_RELAYER_PRIVATE_KEY` by `scripts/vercel-secrets.mjs`; the settle core, the seed endpoint and the
+  crons are the only readers. The relayer wallet is funded by the settlement reserve `ArcadeRankedEntry`
+  forwards to `relayerVault` (the relayer address). Rotate with `operator-actions.mjs rotate-verifier` /
+  `relayer-off` and replace the env var. Vercel functions are the service.
+- **Fee.** Flat 0.1 zkLTC (`entryFeeWei`, adjustable per game via `setEntryFee`) split 15% treasury / 85%
+  developer, plus a separate settlement gas reserve of 0.0001 zkLTC (`setSettlementGasReserve`) that funds
+  the relayer. Both treasury and developer wallets are currently the owner wallet `0x07cec6Fc…8B26`; the
+  Chikun creator wallet replaces the developer wallet for `chikun` once supplied (`GameRegistry` dev wallet
+  + `confirmDevWallet`).
+- **Settlement.** Relayer-settled: the player's only transaction is the entry; `/api/settle` verifies,
+  signs and submits `submitVerifiedSession` from the relayer.
+- **Epochs.** Testnet boards run until mainnet; mainnet is a fresh deployment set and a clean slate for
+  scores and achievements. Per-game leaderboard wipes may happen as games evolve (announce in the UI first).
+- **Profiles.** Hosted database (Neon) behind SIWE session tokens; `/api/session` and `/api/profile` fail
+  closed without their secrets and the browser stays device-local.
+- **Achievements.** One soulbound ERC-721 collection per game, per-game themed illustrations tiered
+  bronze/silver/gold/platinum by unlock difficulty, revocable by the operator until mainnet, all wiped at
+  mainnet.
 - **Free Mode** never requires a wallet or any Web3 interaction.
 
 ### Vercel environment variables (production)
 
-| Variable | Purpose |
-| --- | --- |
-| `VERIFIER_PRIVATE_KEY` | signs EIP-712 attestations (`/api/attest`, `/api/settle`) |
-| `SCORE_REGISTRY_ADDRESS` | verifying contract for the attestation domain |
-| `RELAYER_PRIVATE_KEY` | submits verified scores for players (`/api/settle`); its address must be allowed via `setRelayer` and funded |
-| `RPC_URL` | optional override of the LiteForge RPC |
-| `SESSION_SECRET` | HMAC secret for wallet session tokens (`/api/session`, `/api/profile`) |
-| `SESSION_ALLOWED_DOMAINS` | optional comma list; default lestersarcade.io, www, localhost |
-| `NEON_DATABASE_URL` | Neon/Vercel Postgres connection string for profile sync |
+The secret names are **new** (contract A28): the live 1.7.0 `/api/attest` signs any posted score with a key
+found under the old names, so the legacy names `VERIFIER_PRIVATE_KEY`, `RELAYER_PRIVATE_KEY` and
+`SCORE_REGISTRY_ADDRESS` are **never set in any environment**. If any is present, the server fails closed
+(`settlementReady = false`) and `scripts/vercel-secrets.mjs` refuses to run.
 
+| Variable | Purpose | Set by |
+| --- | --- | --- |
+| `RANKED_VERIFIER_PRIVATE_KEY` | signs EIP-712 attestations (0x + 64 hex) | `vercel-secrets.mjs` (step 6) |
+| `RANKED_RELAYER_PRIVATE_KEY` | submits verified scores; its address is allow-listed via `setRelayer` and funded by the reserve | `vercel-secrets.mjs` (step 6) |
+| `RANKED_SCORE_REGISTRY_ADDRESS` | the deployed ScoreSubmissionRegistry; must equal the address module | `vercel-secrets.mjs` (step 6) |
+| `CRON_SECRET` | Bearer secret of `/api/cron/index-chain` and `/api/cron/settle-retry` (32 random bytes, hex; also in the vault for `live-cron.mjs`) | `vercel-secrets.mjs` (step 6) |
+| `SESSION_SECRET` | HMAC secret for session tokens, SIWE nonces, seed tickets and IP buckets; ≥ 32 characters, **rotated at step 6** and **different in every environment** | `vercel-secrets.mjs --rotate-session-secret` |
+| `NEON_DATABASE_URL` | Neon connection string (already set by the marketplace integration) | Neon integration |
+| `RPC_URL` | optional LiteForge RPC override; never echoed | optional |
+| `SESSION_ALLOWED_DOMAINS` | optional comma list; default lestersarcade.io, www, localhost | optional |
+| `SETTLEMENT_PAUSED` | `true` pauses Ranked (emergency stop 1); **never set at launch** | incident only |
+| `RANKED_MIN_PAID_WEI` | minimum `getPaidSession().amountWei` the settle endpoint accepts; default `100100000000000000` (0.1 fee + 0.0001 reserve) | optional |
 
 ## Flipping hosted profile sync (2026-09-16)
 
-The browser only calls `/api/session` and `/api/profile` when `HOSTED_PROFILE_SYNC` in `apps/portal/src/settlement.mjs` is `true`. Flip it in the same change that adds `SESSION_SECRET` (≥ 32 chars) and `NEON_DATABASE_URL` on Vercel; until then an unconfigured deployment logs no failed requests and profiles stay device-local. `SETTLEMENT_LIVE` remains the separate gate for on-chain settlement and relayed `/api/settle`.
+The browser only calls `/api/session` and `/api/profile` when `HOSTED_PROFILE_SYNC` in `apps/portal/src/settlement.mjs` is `true`. It flips together with `SETTLEMENT_LIVE` at runbook step 7, after the step-6 secrets exist; until then an unconfigured deployment logs no failed requests and profiles stay device-local. `SETTLEMENT_LIVE` remains the separate gate for on-chain settlement and relayed `/api/settle`, and it may only be true with a `deployed` address module.
