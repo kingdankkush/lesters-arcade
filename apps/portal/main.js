@@ -4912,29 +4912,23 @@ function hydrateLeaderboardFromIndex() {
   officialLeaderboardRoute.hydrate().catch((error) => console.warn('[Scores] verified board unavailable:', error?.message || error));
 }
 
+// Profile page fill (guide §5.7): the viewed wallet's GET /api/profile (the
+// self view for the signed-in owner). A no-op in preview.
 function hydrateProfileFromIndex() {
-  void hydrateProfileFromChain();
+  if (!HOSTED_PROFILE_SYNC) return;
+  officialProfileRoute.hydrate().catch((error) => console.warn('[Profile] verified profile unavailable:', error?.message || error));
 }
 
-async function hydrateProfileFromChain() {
-  if (!connectedWallet) return;
+// Integration events (contract §7.7), dispatched on window. The Retry buttons
+// send a cancelable lesters:ranked-retry-request; ranked-client marks it
+// handled (preventDefault, or detail.handled = true) when it holds that run.
+function dispatchPortalEvent(name, detail, { cancelable = false } = {}) {
   try {
-    await ensureGameIdHashes();
-    const provider = detectEthereumProvider();
-    const { fetchPlayerSessions } = await import('./src/litvm-chain-client.mjs');
-    const res = await fetchPlayerSessions(connectedWallet, { walletProvider: provider, limit: 100 });
-    if (!res.ok || !res.records.length) return;
-    let merged = 0;
-    for (const rec of res.records) {
-      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase());
-      if (mergeChainRecordIntoState(rec, gameId)) merged += 1;
-    }
-    if (merged > 0) {
-      persistArcadeStateSoon();
-      if (officialAppStep === 'profile') renderOfficialProfile();
-    }
-  } catch (err) {
-    console.warn('[chain] profile hydration failed (showing local only):', err?.message || err);
+    const event = new CustomEvent(name, { detail, cancelable });
+    const notCancelled = window.dispatchEvent(event);
+    return { handled: !notCancelled || detail?.handled === true };
+  } catch {
+    return { handled: false };
   }
 }
 
@@ -4943,6 +4937,9 @@ const profileRouteState = {
   usernameJustSaved: false,
   gameId: 'lester-blaster',
   historyFilters: { heroId: 'all', weaponId: 'all', mode: 'all', date: 'all', result: 'all' },
+  // /profile/<wallet> (A6); null is the connected wallet's own profile.
+  viewedWallet: null,
+  focusNameEditor: false,
 };
 
 const officialProfileRoute = createOfficialProfileRoute({
@@ -4978,8 +4975,49 @@ const officialProfileRoute = createOfficialProfileRoute({
   setView: setOfficialView,
   validateAvatarFile,
   validateUsername,
+  hosted: HOSTED_PROFILE_SYNC,
+  indexApi,
+  isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet),
+  isActive: () => officialAppStep === 'profile',
+  dispatchEvent: dispatchPortalEvent,
+  loadEthers,
+  rpcUrl: LITVM_LITEFORGE_NETWORK.rpcUrls.http,
+  playRanked: (gameId) => openModeSelectFor(gameId),
 });
 const renderOfficialProfile = officialProfileRoute.renderProfile;
+
+// D10 and sign-in seams (§7.7). All of them are inert in preview.
+window.addEventListener('lesters:ranked-pending', (event) => {
+  officialProfileRoute.setPendingSavedRuns(event?.detail?.count ?? 0);
+});
+window.addEventListener('lesters:wallet-session', () => {
+  if (!HOSTED_PROFILE_SYNC) return;
+  officialProfileRoute.invalidate();
+  officialLeaderboardRoute.invalidate();
+  if (officialAppStep === 'profile') hydrateProfileFromIndex();
+  if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
+});
+window.addEventListener('lesters:profile-changed', () => {
+  if (!HOSTED_PROFILE_SYNC) return;
+  officialLeaderboardRoute.invalidate();
+});
+// First-Ranked name prompt (brief acceptance 5): lazy, hosted only.
+window.addEventListener('lesters:ranked-run', (event) => {
+  if (!HOSTED_PROFILE_SYNC) return;
+  void import('./src/name-claim-prompt.mjs').then(({ maybePromptNameClaim }) => maybePromptNameClaim({
+    detail: event?.detail ?? null,
+    hosted: HOSTED_PROFILE_SYNC,
+    wallet: connectedWallet,
+    indexApi,
+    getCachedSelfProfile: (wallet) => officialProfileRoute.cachedSelfProfile(wallet),
+    documentRef: document,
+    mount: document.body,
+    onClaim: () => {
+      profileRouteState.focusNameEditor = true;
+      setOfficialView('profile', { wallet: null });
+    },
+  })).catch((error) => console.warn('[Profile] name prompt skipped:', error?.message || error));
+});
 
 const leaderboardRouteState = {
   cadence: 'weekly',

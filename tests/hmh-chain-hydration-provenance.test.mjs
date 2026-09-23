@@ -46,7 +46,9 @@ test('an unknown cabinet hash cannot fall back into Lester Blaster boards', () =
   assert.deepEqual(state, {});
   // The 200-session chain scan is retired (guide §5.8, profile-boards): the
   // index-backed fills that replace it never fall back to Lester Blaster either.
-  assert.equal(ast.body.some((row) => row.type === 'FunctionDeclaration' && row.id.name === 'hydrateLeaderboardFromChain'), false);
+  for (const retired of ['hydrateLeaderboardFromChain', 'hydrateProfileFromChain']) {
+    assert.equal(ast.body.some((row) => row.type === 'FunctionDeclaration' && row.id.name === retired), false, retired);
+  }
   for (const name of ['hydrateLeaderboardFromIndex', 'hydrateProfileFromIndex']) {
     const node = ast.body.find((row) => row.type === 'FunctionDeclaration' && row.id.name === name);
     assert.ok(node);

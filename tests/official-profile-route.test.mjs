@@ -266,8 +266,8 @@ test('achievement module joins by stable ID, not title, and exposes native keybo
   const time = nodes.find((n) => n.tag === 'time');
   assert.equal(time.attributes?.datetime, '2026-09-10T05:00:00.000Z');
   assert.match(time.textContent, /2026-09-10/);
-  assert.match(JSON.stringify(card), /device-local|device local/i);
-  assert.match(JSON.stringify(card), /not.*NFT/i);
+  assert.match(JSON.stringify(card), /Achievements earned on this device \(preview\)/);
+  assert.doesNotMatch(JSON.stringify(card), /NFT|soulbound|minting/i, 'no NFT wording in phase 1 (A32)');
 });
 
 test('achievement dates missing from legacy records stay explicitly unknown', () => {
