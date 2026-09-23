@@ -11,7 +11,6 @@ import * as profileApi from '../api/profile.mjs';
 import * as refreshApi from '../api/profile-refresh.mjs';
 import * as sessionApi from '../api/verified-session.mjs';
 import * as indexCronApi from '../api/cron/index-chain.mjs';
-import * as nonceStub from '../api/session-nonce.mjs';
 import * as statusStub from '../api/settle-status.mjs';
 import * as retryStub from '../api/cron/settle-retry.mjs';
 import * as sharePageStub from '../api/share-page.mjs';
@@ -338,7 +337,6 @@ test('unknown query parameters are rejected', async () => {
 });
 
 const STUBS = [
-  ['session-nonce', nonceStub, 'sessionNonceRequest', 'GET'],
   ['settle-status', statusStub, 'settleStatusRequest', 'GET'],
   ['cron/settle-retry', retryStub, 'settleRetryRequest', 'GET'],
   ['share-page', sharePageStub, 'sharePageRequest', 'GET'],
@@ -403,6 +401,6 @@ test('every handler module exposes the A30 seam and its pure request function', 
     assert.deepEqual(Object.keys(deps).sort(), ['config', 'crypto', 'db', 'deployment', 'fetchImpl', 'nowMs', 'provider'].sort(), pure);
     assert.equal(deps.nowMs(), NOW);
   }
-  const stubResult = await nonceStub.sessionNonceRequest({ method: 'GET' }, {});
+  const stubResult = await sharePageStub.sharePageRequest({ method: 'GET' }, {});
   assert.deepEqual([stubResult.status, stubResult.body], [503, { ok: false, error: 'not-implemented' }]);
 });

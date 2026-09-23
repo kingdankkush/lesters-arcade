@@ -1,8 +1,11 @@
 // Server-side SIWE session tokens (owner decision 2026-09-16: wallet login is
 // the account; profiles sync across devices through a hosted database).
 // Pure helpers: `ethers` and `crypto` are injected so the same code runs in
-// the Vercel function and in Node tests. Tokens are HMAC-SHA256 over
-// `wallet|expiresAt` with SESSION_SECRET; they carry no private data.
+// the Vercel function and in Node tests. Tokens are v2 (contract A13):
+// HMAC-SHA256 with SESSION_SECRET over `v2|<audience>|<wallet>|<expiresAt>`,
+// where audience = 'lestersarcade:' + (VERCEL_ENV ?? 'production'). A v1 token
+// (`wallet|expiresAt`) or a token minted for another audience never verifies.
+// Tokens carry no private data.
 
 import { buildSiweMessage, SIWE_CHALLENGE_TTL_MS } from './wallet-auth.mjs';
 
@@ -20,7 +23,10 @@ function hmac(crypto, secret, payload) {
 // Verify a SIWE login: the challenge must reconstruct byte for byte, belong
 // to an allowed domain, be fresh, and the signature must recover to the
 // challenged address.
-export function verifySiweLogin(ethers, { challenge, signature, allowedDomains, nowMs = Date.now() } = {}) {
+// `expectedChainId` (optional): E2 passes 4441, and a login signed for any
+// other chain then fails as wrong-chain after every other check has passed
+// (contract §4.3.2). Callers that omit it behave as before.
+export function verifySiweLogin(ethers, { challenge, signature, allowedDomains, nowMs = Date.now(), expectedChainId } = {}) {
   if (!challenge || typeof challenge !== 'object') return { ok: false, error: 'missing-challenge' };
   const { domain, address, chainId, nonce, issuedAt, uri = null, message } = challenge;
   if (!HEX_ADDRESS.test(String(address ?? ''))) return { ok: false, error: 'invalid-address' };
@@ -47,21 +53,36 @@ export function verifySiweLogin(ethers, { challenge, signature, allowedDomains, 
     return { ok: false, error: 'invalid-signature' };
   }
   if (recovered.toLowerCase() !== String(address).toLowerCase()) return { ok: false, error: 'signer-mismatch' };
+  if (expectedChainId !== undefined && expectedChainId !== null && Number(chainId) !== Number(expectedChainId)) return { ok: false, error: 'wrong-chain' };
   return { ok: true, wallet: String(address).toLowerCase(), chainId: Number(chainId) };
 }
 
-export function issueSessionToken(crypto, { secret, wallet, nowMs = Date.now(), ttlMs = SESSION_TTL_MS } = {}) {
+export const SESSION_TOKEN_VERSION = 'v2';
+// 'lestersarcade:production', 'lestersarcade:preview', 'lestersarcade:development', …
+// Never contains '|', the payload separator.
+const AUDIENCE = /^[A-Za-z0-9][A-Za-z0-9:._-]{0,95}$/;
+
+function requireAudience(audience) {
+  if (typeof audience !== 'string' || !AUDIENCE.test(audience)) throw new TypeError('session token audience must be a label such as lestersarcade:production');
+  return audience;
+}
+
+export function issueSessionToken(crypto, { secret, wallet, nowMs = Date.now(), ttlMs = SESSION_TTL_MS, audience } = {}) {
   if (typeof secret !== 'string' || secret.length < 32) throw new TypeError('session secret must be at least 32 characters');
   if (!HEX_ADDRESS.test(String(wallet ?? ''))) throw new TypeError('wallet must be an address');
+  const tokenAudience = requireAudience(audience);
   const expiresAt = nowMs + ttlMs;
-  const payload = `${String(wallet).toLowerCase()}|${expiresAt}`;
+  const payload = `${SESSION_TOKEN_VERSION}|${tokenAudience}|${String(wallet).toLowerCase()}|${expiresAt}`;
   return { token: `${base64url(payload)}.${hmac(crypto, secret, payload)}`, expiresAt };
 }
 
-export function verifySessionToken(crypto, { secret, token, nowMs = Date.now() } = {}) {
+// Returns { wallet, expiresAt } for a live v2 token of this audience, else
+// null. v1 tokens, other audiences, tampering and expiry all give null.
+export function verifySessionToken(crypto, { secret, token, nowMs = Date.now(), audience } = {}) {
   if (typeof secret !== 'string' || secret.length < 32 || typeof token !== 'string') return null;
-  const [encoded, signature] = token.split('.');
-  if (!encoded || !signature) return null;
+  if (typeof audience !== 'string' || !AUDIENCE.test(audience)) return null;
+  const [encoded, signature, extra] = token.split('.');
+  if (!encoded || !signature || extra !== undefined) return null;
   let payload;
   try {
     payload = Buffer.from(encoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
@@ -71,8 +92,11 @@ export function verifySessionToken(crypto, { secret, token, nowMs = Date.now() }
   const expected = hmac(crypto, secret, payload);
   const a = Buffer.from(expected), b = Buffer.from(signature);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
-  const [wallet, expiresAt] = payload.split('|');
-  if (!HEX_ADDRESS.test(wallet) || !Number.isFinite(Number(expiresAt)) || Number(expiresAt) < nowMs) return null;
+  const parts = payload.split('|');
+  if (parts.length !== 4) return null;
+  const [version, tokenAudience, wallet, expiresAt] = parts;
+  if (version !== SESSION_TOKEN_VERSION || tokenAudience !== audience) return null;
+  if (!/^0x[a-f0-9]{40}$/.test(wallet) || !/^[0-9]{1,16}$/.test(expiresAt) || Number(expiresAt) < nowMs) return null;
   return { wallet, expiresAt: Number(expiresAt) };
 }
 
