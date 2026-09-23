@@ -601,8 +601,8 @@ test('an RPC failure on the paid-entry read is a retryable 502 chain-read-failed
 
 test('a thrown core error is 500 internal-error with nothing but the name and code logged', async () => scenario(async (ctx) => {
   const { body } = await paidBody();
-  const secret = 'postgresql://owner:hunter2@ep-secret.neon.tech/neondb';
-  const throwing = (deps) => ({ ...deps, verify: { ...deps.verify, bindRankedIdentity: async () => { throw Object.assign(new TypeError(`boom ${secret}`), { code: 'ERR_FIXTURE' }); } } });
+  const neonUrl = 'postgresql://owner:hunter2@ep-secret.neon.tech/neondb';
+  const throwing = (deps) => ({ ...deps, verify: { ...deps.verify, bindRankedIdentity: async () => { throw Object.assign(new TypeError(`boom ${neonUrl}`), { code: 'ERR_FIXTURE' }); } } });
   const logged = [];
   const original = console.error;
   console.error = (...args) => logged.push(args.map(String).join(' '));
