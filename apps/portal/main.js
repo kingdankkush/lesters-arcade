@@ -1976,6 +1976,8 @@ let lastSettlementHandle = null;
 let lastSettlementUnsubscribe = null;
 // §7.2 result context per Ranked session, captured when the run starts.
 const rankedResultContexts = new Map();
+// Sessions already handed to settlement: one lesters:ranked-run per run (§7.7).
+const rankedRunsHandedOff = new WeakSet();
 // One lazy settlement client for all three games (ranked-settlement.mjs).
 let rankedSettlementClientPromise = null;
 function rankedSettlementClient() {
@@ -2000,12 +2002,14 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
     if (!SETTLEMENT_LIVE) return;
     void rankedSettlementClient().then(({ client }) => client.handleRetryRequest(event?.detail ?? null)).catch((error) => console.error('[Ranked settlement]', error));
   });
-  // Resume stored bodies once per page load, on the first authenticated session.
+  // Resume stored bodies once per page load, on the first authenticated
+  // session; a later sign-in re-drives the runs that stopped for want of one.
   let rankedResumeRequested = false;
   window.addEventListener('lesters:wallet-session', (event) => {
-    if (!SETTLEMENT_LIVE || rankedResumeRequested || event?.detail?.authenticated !== true) return;
+    if (!SETTLEMENT_LIVE || event?.detail?.authenticated !== true) return;
+    const first = !rankedResumeRequested;
     rankedResumeRequested = true;
-    void rankedSettlementClient().then(({ client }) => client.resume()).catch((error) => console.error('[Ranked settlement]', error));
+    void rankedSettlementClient().then(({ client }) => (first ? client.resume() : client.retrySignedOut())).catch((error) => console.error('[Ranked settlement]', error));
   });
   // lesters:ranked-pending once after boot: the live client reports its stored
   // count when it loads; preview never stores a body, so its count is 0.
@@ -2997,25 +3001,42 @@ function submitCombatGameOver(runSummary) {
   lastSettlementQueued = false;
   combat.gameOverSubmitted = true;
   // Local record inputs come from the canonical run summary (contract §6.4,
-  // HMH map §3.6 and G1), never the stale legacy combat.* counters.
-  let local = null;
+  // HMH map §3.6 and G1), never the stale legacy combat.* counters. Only the
+  // legacy in-portal sandbox (no summary at all) reads combat.*.
+  let local;
   if (summary) {
     try {
       local = achievementStats.hmhRecordScoreInputsFromRunSummary(summary);
     } catch (error) {
-      console.warn('[HMH] canonical run summary could not be mapped; recording the live counters', error);
+      // The server maps the same summary with the same module, so this run can
+      // never be ranked: keep it out of the Ranked record rather than record
+      // the stale live counters under its session.
+      console.error('[HMH] canonical run summary could not be mapped; the Ranked run is not recorded', error);
+      lastCompletedSession = session;
+      lastRunResult = { score: 0, elapsedSeconds: 0, acceptedForGlobalLeaderboard: false };
+      lastRunScore = 0;
+      lastRunElapsedSeconds = 0;
+      if (dom.combatStatus) dom.combatStatus.textContent = 'This run’s summary could not be read, so it was not recorded or ranked.';
+      renderOfficialRunStatus();
+      renderGameOverSummary();
+      renderCombatMenuActionGrid();
+      return;
     }
+  } else {
+    local = legacyHmhRecordInputs();
   }
-  local ??= legacyHmhRecordInputs();
   const result = recordScore(state, session, local.score, local.runStats);
+  // The run log, the sync packet and the recap read the same run as the record.
+  const elapsedSeconds = summary ? local.runStats.elapsedSeconds : combat.elapsedGameSeconds;
+  const kills = local.runStats.kills;
   lastCompletedSession = session;
   lastRunResult = {
     score: local.score,
-    elapsedSeconds: combat.elapsedGameSeconds,
+    elapsedSeconds,
     acceptedForGlobalLeaderboard: result.acceptedForGlobalLeaderboard,
   };
-  lastRunScore = combat.score;
-  lastRunElapsedSeconds = combat.elapsedGameSeconds;
+  lastRunScore = local.score;
+  lastRunElapsedSeconds = elapsedSeconds;
   // Ranked run history (persisted): feeds the profile run log + future
   // cross-game ArcadeProfile aggregation.
   appendRunRecord(state, {
@@ -3024,20 +3045,20 @@ function submitCombatGameOver(runSummary) {
     wallet: connectedWallet,
     mode: session.mode ?? 'paid',
     score: local.score,
-    elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
-    kills: combat.kills,
+    elapsedSeconds: Math.round(elapsedSeconds || 0),
+    kills,
     characterId: summary?.identity?.heroId ?? combat.characterId,
-    killedBy: combat.killedBy ?? null,
+    killedBy: summary ? (summary.defeat?.causeId ?? null) : (combat.killedBy ?? null),
     bossDefeated: summary ? summary.kills.boss > 0 : Boolean(combat.bossDefeated),
-    runSummary,
+    runSummary: summary,
   });
   persistArcadeStateSoon();
   // GameRegistry: child game -> parent sync packet (local now, LitVM SessionLedger later)
   submitGameRun('hard-money-heroes', {
     sessionId: session.sessionId,
     score: local.score,
-    kills: combat.kills,
-    survivalTime: Math.round(combat.elapsedGameSeconds || 0),
+    kills,
+    survivalTime: Math.round(elapsedSeconds || 0),
   }, connectedWallet);
   renderOfficialRunStatus();
   renderGameOverSummary();
@@ -3140,20 +3161,45 @@ function loadRankedRequests() {
   return import('./src/ranked-requests.mjs');
 }
 
+// A lazy chunk that failed to load (a network blip at game over) is fetched
+// again with backoff before the run is given up on.
+async function importWithRetry(load, delaysMs = [1000, 3000]) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await load();
+    } catch (error) {
+      if (attempt >= delaysMs.length) throw error;
+      await new Promise((resolve) => { setTimeout(resolve, delaysMs[attempt]); });
+    }
+  }
+}
+
 // One finished Ranked run of any game → its settlement handle (contract
 // §7.2) and exactly one lesters:ranked-run event (§7.7) for the results
 // screen. Preview (SETTLEMENT_LIVE false) builds no request and sends
 // nothing: the handle is a terminal 'preview'.
 async function startRankedSettlement({ session, localScore = 0, localStats = null, buildRequest = null }) {
+  if (rankedRunsHandedOff.has(session)) return null;
+  rankedRunsHandedOff.add(session);
+  let settlement;
   try {
-    const [{ client, module }, builders] = await Promise.all([
-      rankedSettlementClient(),
-      SETTLEMENT_LIVE && buildRequest ? loadRankedRequests() : null,
-    ]);
+    settlement = await importWithRetry(rankedSettlementClient);
+  } catch (error) {
+    // Without the client nothing can publish or show this run: say so.
+    console.error('[Ranked settlement]', error);
+    const line = session.gameId === 'lester-blaster' ? dom.combatStatus : dom.officialGameStateCopy;
+    if (line && SETTLEMENT_LIVE) line.textContent = 'This Ranked run could not be sent for publishing: part of the page failed to load. Check your connection.';
+    return null;
+  }
+  try {
+    const { client, module } = settlement;
     let request = null;
     if (SETTLEMENT_LIVE && buildRequest) {
+      // Preloaded when the run started (captureRankedResultContext). If it
+      // still cannot load or build, the request stays null and the client
+      // shows the run as not prepared instead of dropping it silently.
       try {
-        request = await buildRequest(builders);
+        request = await buildRequest(await importWithRetry(loadRankedRequests));
       } catch (error) {
         console.error('[Ranked settlement] the settle request could not be built', error);
       }
@@ -3202,6 +3248,9 @@ function trackRankedSettlement(handle, session, settlementModule) {
 // preview recomputes the device-local best before this run is recorded.
 function captureRankedResultContext(session) {
   if (!session?.isPaid || !session.sessionId) return;
+  // The request builders load now, not at game over, so a network blip at
+  // the end of a paid run cannot lose its settle body.
+  if (SETTLEMENT_LIVE) void loadRankedRequests().catch((error) => console.warn('[Ranked settlement] builders will load at game over', error));
   const wallet = session.wallet;
   const profile = state.profiles?.[wallet] ?? null;
   const progress = profile?.progress?.[session.gameId] ?? null;
@@ -3219,9 +3268,11 @@ async function rankedRunContext(session, handle, localScore, localStats) {
   const empty = { displayName: null, previousBest: null };
   const captured = rankedResultContexts.get(session.sessionId);
   rankedResultContexts.delete(session.sessionId);
+  let timer = null;
   const known = captured
-    ? await Promise.race([captured, new Promise((resolve) => { setTimeout(() => resolve(empty), 4000); })])
+    ? await Promise.race([captured, new Promise((resolve) => { timer = setTimeout(() => resolve(empty), 4000); })])
     : empty;
+  if (timer !== null) clearTimeout(timer);
   const snapshot = handle.snapshot;
   return {
     gameId: session.gameId,
@@ -5330,12 +5381,25 @@ function destroyChikunSession() {
   chikunActive = false;
 }
 
-async function restartChikunSession() {
+async function restartChikunSession({ fromChild = false } = {}) {
   // A16: a finished Ranked run restarts through a fresh paid entry (the
   // Ranked modal; mountChikunSession replaces this cabinet once a new session
   // exists). Free restarts as before.
   if (currentSession?.leaderboardEligible || officialSelectedMode === 'ranked') {
-    await startOfficialMode('ranked');
+    const finished = currentSession;
+    const host = chikunHost;
+    try {
+      await startOfficialMode('ranked');
+    } finally {
+      // No wallet, a declined sign-in, or a cancelled or failed entry starts
+      // no session. The child's Run Again is disabled ('Requesting new run…')
+      // and no message re-enables it, so the finished cabinet gives way to
+      // mode select, as STACKED's Ranked restart did before A16.
+      if (fromChild && host && chikunHost === host && currentSession === finished) {
+        destroyChikunSession();
+        setOfficialView('mode-select');
+      }
+    }
     return;
   }
   destroyChikunSession();
@@ -5423,7 +5487,7 @@ function mountChikunSession() {
         if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Chikun score rejected: ${result?.reason ?? 'verification failed'}`;
       }
     },
-    onRestartRequest: () => { void restartChikunSession(); },
+    onRestartRequest: () => { void restartChikunSession({ fromChild: true }); },
     onExitRequest: () => exitToArcade(),
     onMusicRequest: () => {
       if(!combat.paused)return;

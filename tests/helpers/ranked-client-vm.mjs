@@ -20,7 +20,7 @@ export const PORTAL_AST = parse(PORTAL_MAIN, { ecmaVersion: 'latest', sourceType
 export const RANKED_GLUE_FUNCTIONS = Object.freeze([
   'recordCurrentSessionEvent', 'currentCanonicalSessionIdentity', 'currentCanonicalFinalState', 'finalizeCurrentSessionEvidence',
   'legacyHmhRecordInputs', 'rankedLocalStats', 'submitCombatGameOver', 'retryPublishGameOver', 'rankedPublishRetryAvailable',
-  'settleRankedRun', 'settleChikunRankedRun', 'settleStackedRankedRun', 'startRankedSettlement',
+  'settleRankedRun', 'settleChikunRankedRun', 'settleStackedRankedRun', 'importWithRetry', 'startRankedSettlement',
   'trackRankedSettlement', 'captureRankedResultContext', 'rankedRunContext', 'rankedRunActions', 'applyRankedPublication',
   'resetRankedRunState',
 ]);
@@ -96,7 +96,7 @@ export function rankedGlueContext({ live = false, hosted = false, session = null
     lastHmhRunSummary: null, lastCompletedSession: null, lastRunResult: null, lastRunScore: 0, lastRunElapsedSeconds: 0, lastBossId: null,
     lastRunPreviousBestScore: 0, sessionRunStreak: 0, lastSettlementQueued: false, lastSettlementInput: null, lastRunStatsForSettlement: null,
     lastSettlementError: null, lastSettlementSucceeded: false, lastSettlementHandle: null, lastSettlementUnsubscribe: null,
-    rankedResultContexts: new Map(),
+    rankedResultContexts: new Map(), rankedRunsHandedOff: new WeakSet(),
     SETTLEMENT_LIVE: live, HOSTED_PROFILE_SYNC: hosted, LITVM_CONTRACT_ADDRESSES,
     achievementStats, rankedIdentityModule,
     recordScore, applySettlement, resolveDisplayName, appendRunRecord, finalizeSessionEvidence, recordSessionEvent,

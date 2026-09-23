@@ -11,11 +11,13 @@ import { startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 import { recordSessionEvent } from '../apps/portal/src/session-integrity.mjs';
 import { verifyRankedRun } from '../server/verify/index.mjs';
 import { FIXTURE_REGISTRY, FIXTURE_SEED_SECRET } from './fixtures/ranked/build-fixtures.mjs';
-import { PORTAL_MAIN, loadPortalFunctions, portalCallback, rankedGlueContext, until } from './helpers/ranked-client-vm.mjs';
+import * as rankedSettlementModule from '../apps/portal/src/ranked-settlement.mjs';
+import { PORTAL_AST, PORTAL_MAIN, loadPortalFunctions, memoryStorage, portalCallback, portalFunctionSource, rankedGlueContext, until } from './helpers/ranked-client-vm.mjs';
 
 const fixture = (name) => JSON.parse(readFileSync(new URL(`./fixtures/ranked/${name}.json`, import.meta.url), 'utf8'));
 const HMH = fixture('hmh-valid');
 const CHIKUN = fixture('chikun-valid');
+const STACKED = fixture('stacked-valid');
 const ENTRY_TX = `0x${'ab'.repeat(32)}`;
 const PREVIEW_COPY = 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
 // VM-realm objects have another Object.prototype; compare their JSON shape.
@@ -49,7 +51,7 @@ async function serverAccepts(body, { wallet, chainId, verifyAtMs }) {
 }
 
 test('settlement identity is rankedIdentityFor(session): the per-game key the entry paid', async () => {
-  for (const source of [HMH, CHIKUN]) {
+  for (const source of [HMH, CHIKUN, STACKED]) {
     const session = liveSession(source);
     const { context } = rankedGlueContext({ session });
     const identity = context.currentCanonicalSessionIdentity();
@@ -252,23 +254,55 @@ test('a Ranked Hard Money Heroes restart goes back through the paid entry', asyn
 });
 
 test('a Ranked Chikun restart goes back through the paid entry; Free restarts in place', async () => {
-  const chikunCalls = [];
-  const chikun = vm.createContext({
-    currentSession: { sessionId: 'finished', leaderboardEligible: true }, officialSelectedMode: 'ranked',
-    startOfficialMode: (mode) => { chikunCalls.push(['startOfficialMode', mode]); return Promise.resolve(); },
-    destroyChikunSession: () => chikunCalls.push(['destroy']), startMode: () => { throw new Error('no in-place Ranked restart'); },
+  // Approved: the entry opens a new session and mounts a new cabinet.
+  const approved = [];
+  const approve = vm.createContext({
+    currentSession: { sessionId: 'finished', leaderboardEligible: true }, officialSelectedMode: 'ranked', chikunHost: { id: 'finished-cabinet' },
+    startOfficialMode: (mode) => { approved.push(['startOfficialMode', mode]); approve.currentSession = { sessionId: 'next', leaderboardEligible: true }; approve.chikunHost = { id: 'next-cabinet' }; return Promise.resolve(); },
+    destroyChikunSession: () => approved.push(['destroy']), setOfficialView: (view) => approved.push(['view', view]), startMode: () => { throw new Error('no in-place Ranked restart'); },
   });
-  await loadPortalFunctions(['restartChikunSession'], chikun).restartChikunSession();
-  assert.deepEqual(chikunCalls, [['startOfficialMode', 'ranked']], 'the finished cabinet stays until a new session mounts');
+  await loadPortalFunctions(['restartChikunSession'], approve).restartChikunSession({ fromChild: true });
+  assert.deepEqual(approved, [['startOfficialMode', 'ranked']], 'the finished cabinet stays until a new session mounts');
+  assert.match(PORTAL_MAIN, /onRestartRequest: \(\) => \{ void restartChikunSession\(\{ fromChild: true \}\); \},/);
+});
+
+test('a declined Ranked Chikun restart from the child returns to mode select instead of a dead Run Again', async () => {
+  // No wallet, a declined sign-in, a cancelled or failed entry: startOfficialMode
+  // returns without a session, and the child's Run Again stays disabled.
+  for (const outcome of ['cancelled', 'threw']) {
+    const calls = [];
+    const finished = { sessionId: 'finished', leaderboardEligible: true };
+    const context = vm.createContext({
+      currentSession: finished, officialSelectedMode: 'ranked', chikunHost: { id: 'finished-cabinet' },
+      startOfficialMode: (mode) => { calls.push(['startOfficialMode', mode]); return outcome === 'threw' ? Promise.reject(new Error('wallet unavailable')) : Promise.resolve(); },
+      destroyChikunSession: () => { calls.push(['destroy']); context.chikunHost = null; }, setOfficialView: (view) => calls.push(['view', view]),
+      startMode: () => { throw new Error('no in-place Ranked restart'); },
+    });
+    const restart = loadPortalFunctions(['restartChikunSession'], context).restartChikunSession({ fromChild: true });
+    if (outcome === 'threw') await assert.rejects(restart, /wallet unavailable/);
+    else await restart;
+    assert.deepEqual(calls, [['startOfficialMode', 'ranked'], ['destroy'], ['view', 'mode-select']], outcome);
+  }
+
+  // The combat menu's Restart disables nothing in the child: a declined entry
+  // leaves the cabinet (and a paused run) as it was.
+  const menu = [];
+  const fromMenu = vm.createContext({
+    currentSession: { sessionId: 'running', leaderboardEligible: true }, officialSelectedMode: 'ranked', chikunHost: { id: 'cabinet' },
+    startOfficialMode: (mode) => { menu.push(['startOfficialMode', mode]); return Promise.resolve(); },
+    destroyChikunSession: () => menu.push(['destroy']), setOfficialView: (view) => menu.push(['view', view]),
+  });
+  await loadPortalFunctions(['restartChikunSession'], fromMenu).restartChikunSession();
+  assert.deepEqual(menu, [['startOfficialMode', 'ranked']]);
 
   const freeCalls = [];
   const free = vm.createContext({
-    currentSession: { sessionId: 'practice', leaderboardEligible: false }, officialSelectedMode: 'free',
+    currentSession: { sessionId: 'practice', leaderboardEligible: false }, officialSelectedMode: 'free', chikunHost: { id: 'cabinet' },
     startOfficialMode: () => { throw new Error('Free restarts in place'); },
     destroyChikunSession: () => freeCalls.push('destroy'), startMode: (mode) => { freeCalls.push(['startMode', mode]); return Promise.resolve(); },
     setOfficialView: (view) => freeCalls.push(['view', view]), mountChikunSession: () => freeCalls.push('mount'),
   });
-  await loadPortalFunctions(['restartChikunSession'], free).restartChikunSession();
+  await loadPortalFunctions(['restartChikunSession'], free).restartChikunSession({ fromChild: true });
   assert.deepEqual(freeCalls, ['destroy', ['startMode', 'free'], ['view', 'gameplay'], 'mount']);
 });
 
@@ -318,4 +352,245 @@ test('no player-signed submit, attestation call or HMH season override remains i
     assert.equal(range.includes(retired), false, retired);
   }
   assert.match(PORTAL_MAIN, /finalizeRanked: \(\{ runSummary \}\) => submitCombatGameOver\(runSummary\)/);
+});
+
+test('Chikun preview runs the real settlement glue with no network and no request builders', async () => {
+  const session = previewSession('chikun');
+  const glue = rankedGlueContext({ session });
+  const canonical = replayChikunRun(CHIKUN.body.evidence.flap);
+  await glue.context.settleChikunRankedRun(session, { canonical, evidence: CHIKUN.body.evidence.flap, acceptedForGlobalLeaderboard: true });
+  await until(() => glue.events.length === 1);
+  const { handle, context } = glue.events[0].detail;
+  assert.equal(glue.events[0].type, 'lesters:ranked-run');
+  assert.equal(handle.state, 'preview');
+  assert.equal(context.gameId, 'chikun');
+  assert.deepEqual(plain(context.localStats), plain(statsFromChikunResult(canonical)));
+  assert.equal(glue.calls.globalFetch.length + glue.calls.clientFetch.length, 0, 'zero /api requests and zero RPC calls in preview');
+  assert.equal(glue.calls.loadRankedRequests, undefined, 'preview never loads the builders');
+  assert.equal(glue.context.dom.officialGameStateCopy.textContent, PREVIEW_COPY);
+  assert.deepEqual(glue.errors, []);
+  // One hand-off per run, even if a finish is reported twice.
+  await glue.context.settleChikunRankedRun(session, { canonical, evidence: CHIKUN.body.evidence.flap, acceptedForGlobalLeaderboard: true });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(glue.events.length, 1);
+});
+
+test('an entry that failed on chain makes the run practice and nothing is posted', async () => {
+  const session = liveSession(CHIKUN, { entry: 'failed' });
+  assert.equal(session.entryReceipt.status, 'pending', 'the receipt alone would still post');
+  const glue = rankedGlueContext({ session, live: true, clientFetch: settleOk('pending') });
+  const canonical = replayChikunRun(CHIKUN.body.evidence.flap);
+  await glue.context.settleChikunRankedRun(session, { canonical, evidence: CHIKUN.body.evidence.flap, acceptedForGlobalLeaderboard: true });
+  await until(() => glue.events.length === 1 && glue.events[0].detail.handle.state !== 'waiting-entry');
+  const { handle } = glue.events[0].detail;
+  assert.equal(handle.state, 'practice', 'session.entryConfirmed reached the client');
+  assert.equal(handle.snapshot.entry.status, 'failed');
+  assert.equal(glue.calls.clientFetch.filter((call) => call.url === '/api/settle').length, 0, 'zero /api/settle calls');
+  assert.equal(glue.context.dom.officialGameStateCopy.textContent, 'Entry didn’t go through. This run is practice and won’t be ranked.');
+});
+
+test('a lazy chunk that fails at game over is fetched again, and a paid run is never dropped silently', async () => {
+  const immediate = (fn) => { fn(); return 0; };
+  const canonical = replayChikunRun(CHIKUN.body.evidence.flap);
+  const result = { canonical, evidence: CHIKUN.body.evidence.flap, acceptedForGlobalLeaderboard: true };
+
+  // The live Ranked run start preloads the builders; preview does not.
+  const start = liveSession(CHIKUN);
+  const preload = rankedGlueContext({ session: start, live: true });
+  preload.context.captureRankedResultContext(start);
+  assert.equal(preload.calls.loadRankedRequests, 1, 'loaded when the run starts, not at game over');
+  const quiet = rankedGlueContext({ session: previewSession('chikun') });
+  quiet.context.captureRankedResultContext(quiet.context.currentSession);
+  assert.equal(quiet.calls.loadRankedRequests, undefined);
+
+  // The client chunk fails twice, then loads: the run still settles.
+  const flaky = rankedGlueContext({ session: liveSession(CHIKUN), live: true, clientFetch: settleOk('pending') });
+  const realClient = flaky.context.rankedSettlementClient;
+  let failures = 2;
+  flaky.context.setTimeout = immediate;
+  flaky.context.rankedSettlementClient = () => (failures-- > 0 ? Promise.reject(new Error('chunk load failed')) : realClient());
+  await flaky.context.settleChikunRankedRun(flaky.context.currentSession, result);
+  await until(() => flaky.events.length === 1 && flaky.calls.clientFetch.length === 1);
+  assert.equal(failures, -1, 'two retries');
+
+  // The builders never load: the run is shown as not prepared, not dropped.
+  const noBuilders = rankedGlueContext({ session: liveSession(CHIKUN), live: true, clientFetch: settleOk('pending') });
+  let builderLoads = 0;
+  noBuilders.context.setTimeout = immediate;
+  noBuilders.context.loadRankedRequests = () => { builderLoads += 1; return Promise.reject(new Error('chunk load failed')); };
+  await noBuilders.context.settleChikunRankedRun(noBuilders.context.currentSession, result);
+  await until(() => noBuilders.events.length === 1);
+  assert.equal(builderLoads, 3, 'the first load and two retries');
+  assert.equal(noBuilders.events[0].detail.handle.state, 'rejected');
+  assert.equal(noBuilders.events[0].detail.handle.snapshot.error.code, 'request-unavailable');
+  assert.equal(noBuilders.calls.clientFetch.length, 0);
+
+  // The client never loads: the status line says so.
+  const noClient = rankedGlueContext({ session: liveSession(CHIKUN), live: true });
+  noClient.context.setTimeout = immediate;
+  noClient.context.rankedSettlementClient = () => Promise.reject(new Error('chunk load failed'));
+  assert.equal(await noClient.context.settleChikunRankedRun(noClient.context.currentSession, result), null);
+  assert.equal(noClient.events.length, 0);
+  assert.match(noClient.context.dom.officialGameStateCopy.textContent, /could not be sent for publishing: part of the page failed to load/);
+});
+
+test('a legacy sandbox run (no summary) records the live counters, with the boss only when beaten', () => {
+  for (const bossDefeated of [false, true]) {
+    const session = previewSession('lester-blaster');
+    const { context } = rankedGlueContext({ session });
+    Object.assign(context.combat, {
+      score: 4200, kills: 17, elapsedGameSeconds: 95.4, maxCombo: 6, killsByType: { 'fiat-goon': 12, 'bear-bot': 5 },
+      bossDefeated, weaponId: 'pistol', noDamageSeconds: 0, collectedPowerUpTypes: ['shield'], killedBy: 'fiat-goon',
+    });
+    context.lastBossId = 'boss-liquidator';
+    context.submitCombatGameOver();
+    const row = context.state.leaderboards['lester-blaster'].find((entry) => entry.sessionId === session.sessionId);
+    assert.equal(row.score, 4200);
+    assert.equal(row.runStats.bossId, bossDefeated ? 'boss-liquidator' : null, 'an encountered boss is not a beaten boss');
+    assert.deepEqual(plain(row.runStats.enemyKillsByType), { 'fiat-goon': 12, 'bear-bot': 5 }, 'the key the resolver reads');
+    assert.equal(row.runStats.killsByType, undefined);
+    const run = context.state.runHistory.find((entry) => entry.sessionId === session.sessionId);
+    assert.equal(run.kills, 17);
+    assert.equal(run.killedBy, 'fiat-goon');
+  }
+});
+
+test('the HMH run log, sync packet and recap read the summary, and an unmappable summary is not recorded', async () => {
+  const summary = HMH.body.evidence.runSummary;
+  const session = previewSession('lester-blaster');
+  const glue = rankedGlueContext({ session });
+  const packets = [];
+  glue.context.submitGameRun = (game, packet) => packets.push({ game, ...packet });
+  // Stale live counters that must not reach any record.
+  Object.assign(glue.context.combat, { score: 1, kills: 2, elapsedGameSeconds: 3, killedBy: 'stale' });
+  glue.context.submitCombatGameOver(summary);
+  const run = glue.context.state.runHistory.find((entry) => entry.sessionId === session.sessionId);
+  const elapsed = summary.totals.elapsedMs / 1000;
+  assert.equal(run.score, summary.totals.score);
+  assert.equal(run.kills, summary.kills.total);
+  assert.equal(run.elapsedSeconds, Math.round(elapsed));
+  assert.equal(run.killedBy, summary.defeat?.causeId ?? null);
+  assert.equal(run.runSummary, summary);
+  assert.deepEqual(packets, [{ game: 'hard-money-heroes', sessionId: session.sessionId, score: summary.totals.score, kills: summary.kills.total, survivalTime: Math.round(elapsed) }]);
+  assert.equal(glue.context.lastRunScore, summary.totals.score);
+  assert.equal(glue.context.lastRunResult.elapsedSeconds, statsFromHmhRunSummary(summary).survivalSeconds);
+
+  const broken = structuredClone(summary);
+  broken.totals.score = -1; // the §6.3 mapper refuses it, and so does the server
+  const other = previewSession('lester-blaster');
+  const bad = rankedGlueContext({ session: other });
+  Object.assign(bad.context.combat, { score: 999, kills: 9, elapsedGameSeconds: 99 });
+  bad.context.submitCombatGameOver(broken);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(bad.context.state.leaderboards['lester-blaster'].some((entry) => entry.sessionId === other.sessionId), false, 'no Ranked record from the stale counters');
+  assert.equal(bad.context.state.profiles[other.wallet]?.progress?.['lester-blaster']?.paidRuns ?? 0, 0);
+  assert.equal(bad.context.lastRunResult.acceptedForGlobalLeaderboard, false);
+  assert.equal(bad.events.length, 0, 'nothing to settle');
+  assert.equal(bad.context.combat.gameOverSubmitted, true);
+  assert.equal(bad.context.dom.combatStatus.textContent, 'This run’s summary could not be read, so it was not recorded or ranked.');
+});
+
+// The shipped boot block of main.js (the retry-request, wallet-session and
+// boot pending-count wiring) and rankedSettlementClient(), run in a VM with a
+// fake window and profile sync. Only the dynamic import() is swapped.
+function settlementBootHarness({ live, stored = [] }) {
+  const listeners = new Map();
+  const events = [];
+  const timers = [];
+  const spy = { imports: 0, resume: 0, retrySignedOut: 0, retryRequests: [], clients: [] };
+  const storage = memoryStorage();
+  if (stored.length) storage.setItem(rankedSettlementModule.RANKED_PENDING_KEY, JSON.stringify(stored));
+  const wallet = CHIKUN.wallet.toLowerCase();
+  const block = PORTAL_AST.body.find((node) => node.type === 'IfStatement' && PORTAL_MAIN.slice(node.start, node.end).includes("'lesters:ranked-retry-request'"));
+  assert.ok(block, 'main.js registers the settlement listeners in one top-level block');
+  const source = [portalFunctionSource('rankedSettlementClient'), PORTAL_MAIN.slice(block.start, block.end)].join('\n').replaceAll('import(', '__import(');
+  assert.equal((source.match(/__import\(/g) ?? []).length, 1, 'the client is the only lazy import here');
+  const context = vm.createContext({
+    SETTLEMENT_LIVE: live,
+    ARCADE_STORAGE: storage,
+    rankedSettlementClientPromise: null,
+    profileSync: { hasSession: (address) => address === wallet, session: { token: 'owner-token' } },
+    applyRankedPublication: () => {},
+    console: { error: (...args) => { throw new Error(`unexpected error ${args.join(' ')}`); } },
+    setTimeout: (fn, ms) => { timers.push({ fn, ms }); return timers.length; },
+    CustomEvent: class CustomEvent { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
+    window: {
+      addEventListener: (type, fn) => { listeners.set(type, [...(listeners.get(type) ?? []), fn]); },
+      dispatchEvent: (event) => { events.push(event); for (const fn of listeners.get(event.type) ?? []) fn(event); return true; },
+    },
+    __import: async (path) => {
+      assert.equal(path, './src/ranked-settlement.mjs');
+      spy.imports += 1;
+      return {
+        ...rankedSettlementModule,
+        createRankedSettlementClient: (options) => {
+          spy.options = options;
+          // The shipped options, with the network swapped for a refusal.
+          const client = rankedSettlementModule.createRankedSettlementClient({ ...options, fetchImpl: () => { throw new Error('no network in this test'); }, setTimeoutImpl: () => 0, clearTimeoutImpl: () => {} });
+          const wrapped = {
+            ...client,
+            resume: (...args) => { spy.resume += 1; return client.resume(...args); },
+            retrySignedOut: (...args) => { spy.retrySignedOut += 1; return client.retrySignedOut(...args); },
+            handleRetryRequest: (detail) => { spy.retryRequests.push(detail); return client.handleRetryRequest(detail); },
+          };
+          spy.clients.push(wrapped);
+          return wrapped;
+        },
+      };
+    },
+  });
+  vm.runInContext(source, context);
+  const dispatch = (type, detail) => context.window.dispatchEvent(new context.CustomEvent(type, { detail }));
+  const pendingCounts = () => events.filter((event) => event.type === 'lesters:ranked-pending').map((event) => event.detail.count);
+  return { context, events, timers, spy, storage, wallet, dispatch, pendingCounts };
+}
+
+const storedBody = (index) => {
+  const sessionId32 = `0x${String(index).padStart(2, '0').repeat(32)}`;
+  return { sessionId32, gameId: 'chikun', wallet: CHIKUN.wallet.toLowerCase(), localScore: 5, entry: { status: 'confirmed', txHash: null }, savedAt: 0, body: { ...CHIKUN.body, sessionId32 } };
+};
+
+test('live: boot reports the stored count, the first sign-in resumes once, later sign-ins re-drive, retry requests reach the client', async () => {
+  const boot = settlementBootHarness({ live: true, stored: [storedBody(1), storedBody(2)] });
+  await until(() => boot.spy.clients.length === 1);
+  await until(() => boot.pendingCounts().length === 1);
+  assert.deepEqual(boot.pendingCounts(), [2], 'lesters:ranked-pending once after boot, with the stored count');
+  assert.equal(boot.timers.length, 0);
+
+  // getToken is bound to the run's wallet session.
+  assert.equal(boot.spy.options.live, true);
+  assert.equal(boot.spy.options.getToken(boot.wallet), 'owner-token');
+  assert.equal(boot.spy.options.getToken(`0x${'9'.repeat(40)}`), null, 'no token for another wallet');
+
+  boot.dispatch('lesters:wallet-session', { wallet: boot.wallet, authenticated: false });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(boot.spy.resume, 0, 'an unauthenticated session resumes nothing');
+  boot.dispatch('lesters:wallet-session', { wallet: boot.wallet, authenticated: true });
+  boot.dispatch('lesters:wallet-session', { wallet: boot.wallet, authenticated: true });
+  await until(() => boot.spy.retrySignedOut === 1);
+  assert.equal(boot.spy.resume, 1, 'resume() once per page load');
+  assert.equal(boot.spy.imports, 1, 'one lazy client');
+
+  const detail = { sessionId32: storedBody(1).sessionId32 };
+  boot.dispatch('lesters:ranked-retry-request', detail);
+  boot.dispatch('lesters:ranked-retry-request', { sessionId32: null });
+  await until(() => boot.spy.retryRequests.length === 2);
+  assert.deepEqual(plain(boot.spy.retryRequests), [detail, { sessionId32: null }]);
+
+  // Each change of the stored count is dispatched.
+  boot.spy.clients[0].settle({ ...CHIKUN.body, sessionId32: storedBody(3).sessionId32 });
+  assert.deepEqual(boot.pendingCounts(), [2, 3]);
+});
+
+test('preview: boot reports zero once, and no event loads the client', async () => {
+  const boot = settlementBootHarness({ live: false, stored: [storedBody(1)] });
+  assert.equal(boot.timers.length, 1);
+  boot.timers[0].fn();
+  assert.deepEqual(boot.pendingCounts(), [0], 'lesters:ranked-pending { count: 0 } once after boot');
+  boot.dispatch('lesters:wallet-session', { wallet: boot.wallet, authenticated: true });
+  boot.dispatch('lesters:ranked-retry-request', { sessionId32: null });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(boot.spy.imports, 0, 'preview never loads the settlement client for these events');
+  assert.equal(boot.spy.resume, 0);
+  assert.deepEqual(boot.spy.retryRequests, []);
 });
