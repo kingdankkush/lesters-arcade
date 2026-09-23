@@ -9,8 +9,16 @@ export function buildChikunViewport(cssWidth, cssHeight, dpr = 1) {
     density, pixelWidth: Math.round(width * density), pixelHeight: Math.round(height * density) });
 }
 
+// Portrait "<KIND> AHEAD" preview. It names the next obstacle once it is within
+// CHIKUN_PREVIEW_PX of Chikun (the intermediate player's look-ahead), or within
+// CHIKUN_PREVIEW_TICKS of arriving at high speed, and never before the landscape
+// screen would show it: a phone never gets more warning than landscape play.
+// scripts/lib/chikun-bots.mjs models it for the difficulty harness.
+export const CHIKUN_PREVIEW_PX = 360;
+export const CHIKUN_PREVIEW_TICKS = 50;
 export function upcomingChikunObstacle(obstacles, view, speedMultiplier=1) {
   if (!view.portrait) return null;
   const next = obstacles.find(obstacle => !obstacle.passed && obstacle.x + obstacle.width > 250);
-  return next && next.x > view.left + view.width && next.x < Math.max(1050,280+2.4*speedMultiplier*180) ? next : null;
+  const lead = Math.min(1000, Math.max(CHIKUN_PREVIEW_PX, 2.4 * speedMultiplier * CHIKUN_PREVIEW_TICKS));
+  return next && next.x > view.left + view.width && next.x < 280 + lead ? next : null;
 }

@@ -7,27 +7,28 @@
 // Math.min, Math.max and integer operations, so Node (the server replay) and
 // Safari compute bit-identical courses. No Math.sqrt, Math.pow, Math.exp,
 // Math.hypot or trig in this file.
-import {COURSE_CADENCE,regionForObstacle,courseRegion,courseTerrain,passageRoute} from './chikun-course-regions.mjs';
+import {COURSE_CADENCE,CHIKUN_REGIONS,regionForObstacle,lowSlotsOf,courseRegion,courseTerrain,passageRoute} from './chikun-course-regions.mjs';
 export {COURSE_CADENCE,courseRegion,courseTerrain};
 export const GROUND_Y=690;
 export const GROUND_SKY_KINDS=Object.freeze(['rock','log','thorn','hurdle','crate','shiba','pit','waterfall','willow','cherry','maple','oak','drone','hawk','eagle','pelican','plane','storm','pipe','forest','town','canopy']);
 
 // Speed ramp (decision D11), tuned with scripts/chikun-difficulty-harness.mjs.
-// Piecewise linear in fixed ticks and front-loaded across the hour: after a
-// gentle three-minute warm-up the whole climb to about 7.1x happens by minute
-// 15 (the v5 ramp took 49 minutes to get there), then it flattens. Each segment
-// adds `slope / SPEED_SLOPE_UNIT` per tick from `from` to `to` (one unit per
-// tick = +0.0549x per minute), so every speed is a dyadic rational and the
-// running sum of speeds is exact in doubles.
+// Piecewise linear in fixed ticks and front-loaded: a quick first minute, a
+// 2.5-5 minute plateau where beginner and intermediate runs part ways, then the
+// climb to about 7.3x by minute 15 (the v5 ramp took 49 minutes), then it
+// flattens. Each segment adds `slope / SPEED_SLOPE_UNIT` per tick from `from`
+// to `to` (one unit per tick = +0.0549x per minute), so every speed is a dyadic
+// rational and the running sum of speeds is exact in doubles.
 export const SPEED_SLOPE_UNIT=65536;
 export const SPEED_RAMP=Object.freeze([
- Object.freeze({from:0,to:10800,slope:1}),        // 0-3 min   1.00x -> 1.16x  learn the moves
- Object.freeze({from:10800,to:18000,slope:4}),    // 3-5 min   -> 1.60x
- Object.freeze({from:18000,to:25200,slope:11}),   // 5-7 min   -> 2.81x
- Object.freeze({from:25200,to:36000,slope:6}),    // 7-10 min  -> 3.80x
- Object.freeze({from:36000,to:43200,slope:15}),   // 10-12 min -> 5.45x
- Object.freeze({from:43200,to:54000,slope:10}),   // 12-15 min -> 7.10x  past 15 min is very rare
- Object.freeze({from:54000,to:216000,slope:2}),   // 15-60 min -> 12.04x
+ Object.freeze({from:0,to:3600,slope:5}),         // 0-1 min    1.00x -> 1.27x
+ Object.freeze({from:3600,to:9000,slope:4}),      // 1-2.5 min  -> 1.60x
+ Object.freeze({from:9000,to:18000,slope:1}),     // 2.5-5 min  -> 1.74x  plateau
+ Object.freeze({from:18000,to:25200,slope:12}),   // 5-7 min    -> 3.06x
+ Object.freeze({from:25200,to:36000,slope:6}),    // 7-10 min   -> 4.05x
+ Object.freeze({from:36000,to:43200,slope:18}),   // 10-12 min  -> 6.03x
+ Object.freeze({from:43200,to:54000,slope:8}),    // 12-15 min  -> 7.34x  past 15 min is very rare
+ Object.freeze({from:54000,to:216000,slope:2}),   // 15-60 min  -> 12.29x
 ]);
 export function speedAtTick(tick){
  const t=Math.max(0,Math.floor(tick));let units=0;
@@ -59,12 +60,15 @@ export const obstacleDifficulty=index=>Math.min(1,Math.max(0,Math.floor(index)-D
 const lerp=(a,b,t)=>a+(b-a)*t;
 
 const treeKinds=new Set(['willow','cherry','maple','oak']);
-// Each region cycles its own passage list; the roll only picks within a passage,
-// so the high / low / optional rhythm of a region is fixed and the loop back to
-// farmland (index REGION_LOOP_SLOTS) reads the same table with fresh rolls.
+// Each region cycles its own passage list; the roll only picks within a passage.
+// Where a visit's low passages (storm / canopy) fall is seeded per region visit
+// (lowSlotsOf), so which slots demand a descent differs from seed to seed and the
+// loop cannot be memorised; the region's flavour and passage rules stay fixed.
+const LOW_PLACEMENT_SALT=0x51ab;
 export function courseKind(seed,index){
- const {region,local}=regionForObstacle(index);
- const choices=region.passages[local%region.passages.length];
+ const {region,index:regionIndex,local,loop}=regionForObstacle(index);
+ const low=lowSlotsOf(regionIndex,courseRoll(seed,loop*CHIKUN_REGIONS.length+regionIndex,LOW_PLACEMENT_SALT)).includes(local);
+ const choices=low?region.low.kinds:region.passages[local];
  return choices[Math.floor(courseRoll(seed,index,41)*choices.length)];
 }
 // Buildings keep one collision silhouette; only the facade changes by region.

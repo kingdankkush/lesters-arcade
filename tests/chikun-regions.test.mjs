@@ -46,14 +46,17 @@ test('each region draws a region-appropriate obstacle mix and every low passage 
  const seen=new Map(ORDER.map(id=>[id,new Set()]));
  for(let seed=1;seed<=40;seed++)for(let index=0;index<REGION_LOOP_SLOTS*2;index++){
   const {region,local,loop}=regionForObstacle(index),kind=courseKind(seed,index);
-  assert.ok(region.passages[local].includes(kind),`${region.id}#${local} (lap ${loop+1}) rolled ${kind}`);
+  const allowed=[...region.passages[local],...(region.low.slots.includes(local)?region.low.kinds:[])];
+  assert.ok(allowed.includes(kind),`${region.id}#${local} (lap ${loop+1}) rolled ${kind}`);
   seen.get(region.id).add(kind);
   const o=buildCourseObstacle({seed,index,x:0});
   assert.equal(o.route,passageRoute(kind));
   if(kind==='town')assert.equal(o.variant,{town:'town',city:'city',suburbs:'suburb'}[region.id]);
  }
  for(const r of CHIKUN_REGIONS){
-  const routes=r.passages.flat().map(passageRoute);
+  const routes=[...r.passages.flat(),...r.low.kinds].map(passageRoute);
+  assert.ok(r.passages.flat().every(k=>passageRoute(k)!=='ground'),r.id+' slot lists hold no low passage; low.kinds do');
+  assert.ok(r.low.kinds.every(k=>passageRoute(k)==='ground')&&r.low.count>=1&&r.low.slots.length>r.low.count,r.id+' seeds where its low passages fall');
   assert.ok(routes.includes('flight'),r.id+' needs a required flight passage');
   assert.ok(routes.includes('ground'),r.id+' needs a low passage');
   assert.ok(routes.includes('choice'),r.id+' needs optional routes');
@@ -62,7 +65,10 @@ test('each region draws a region-appropriate obstacle mix and every low passage 
  assert.ok(CHIKUN_REGIONS[0].passages[0].every(k=>passageRoute(k)==='choice'),'farmland opens on a simple ground hurdle');
  for(let slot=0;slot<REGION_LOOP_SLOTS;slot++){
   const {region,local}=regionForObstacle(slot),prev=regionForObstacle((slot-1+REGION_LOOP_SLOTS)%REGION_LOOP_SLOTS);
-  if(region.passages[local].some(k=>passageRoute(k)==='ground'))assert.ok(!prev.region.passages[prev.local].some(isGapKind),`slot ${slot}: a low passage must not follow a gap`);
+  if(!region.low.slots.includes(local))continue;
+  assert.ok(local>0,`slot ${slot}: a low passage never opens a region`);
+  assert.ok(!prev.region.passages[prev.local].some(isGapKind),`slot ${slot}: a low passage must not follow a gap`);
+  assert.ok(!region.passages[local].includes('plane')&&!region.passages[local].some(k=>['forest','town'].includes(k)),`slot ${slot}: planes and signature flight passages stay`);
  }
  const kinds=id=>CHIKUN_REGIONS.find(r=>r.id===id).passages.flat();
  assert.ok(kinds('farmland').includes('hurdle')&&kinds('farmland').includes('oak'));

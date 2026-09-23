@@ -9,10 +9,14 @@
 // Model, per tick t:
 //  - Perception: obstacles come from the snapshot `perceptionLag` ticks old,
 //    filtered to the viewport (landscape x < 1280; portrait x < the right edge
-//    of buildChikunViewport, plus the portrait "AHEAD" marker) and to
-//    `lookAheadPx` beyond Chikun (x = 280). perceptionLag + pressLead equals
-//    the profile's reaction delay, so an obstacle that appears at tick t can
-//    first change a press at tick t + reactionDelayTicks.
+//    of buildChikunViewport) and to `lookAheadPx` beyond Chikun (x = 280). On
+//    portrait the in-game "<KIND> AHEAD" marker (upcomingChikunObstacle, the
+//    game's own function) is drawn at the screen edge, so the obstacle it names
+//    is perceived whatever the look-ahead. perceptionLag + pressLead equals the
+//    profile's reaction delay, so an obstacle that appears at tick t can first
+//    change a press at tick t + reactionDelayTicks.
+//  - Cruise: with nothing in sight the bot returns to its cruise height, drawn
+//    per run from CHIKUN_BOT_CRUISE_RANGE (botCruiseY).
 //  - Self: the bot knows its own presses (efference copy), so it predicts its
 //    own state `pressLead` ticks ahead exactly with the runtime physics.
 //  - Planning: a small beam search over target altitudes, one per known
@@ -24,6 +28,7 @@
 //    One press is in flight at a time, and presses are at least 6 ticks apart
 //    (a 10 taps-per-second human limit that is the same for every profile).
 import { obstacleClearance } from '../../apps/portal/src/chikun-obstacles.mjs';
+import { buildChikunViewport, upcomingChikunObstacle } from '../../apps/chikun/src/viewport.mjs';
 
 export const CHIKUN_BOT_MIN_PRESS_GAP_TICKS = 6;
 
@@ -78,10 +83,27 @@ function normal(random) {
 
 export function viewportRightEdge(viewport) {
   if (viewport.orientation !== 'portrait') return 1280;
-  // Mirrors apps/chikun/src/viewport.mjs buildChikunViewport.
-  const width = 720 * Math.max(1, viewport.width) / Math.max(1, viewport.height);
-  const left = 280 - width * 0.26;
-  return left + width;
+  const view = buildChikunViewport(viewport.width, viewport.height, 1);
+  return view.left + view.width;
+}
+
+// What a player can see, for the scripted pilots in scripts/chikun-course-pilot.mjs:
+// obstacles from the snapshot `delay` ticks old, filtered to the screen (landscape
+// x < 1280; portrait the phone screen plus the in-game marker), with Chikun's own
+// state current. The full runtime snapshot also holds obstacles up to about
+// 1,850 px (more at speed), far past any screen; a pilot reading it is a solver.
+export function createVisiblePilot(pilot, { orientation = 'landscape', width = 1280, height = 720, delay = 8, marker = upcomingChikunObstacle } = {}) {
+  const view = buildChikunViewport(width, height, 1);
+  const rightEdge = view.portrait ? view.left + view.width : 1280;
+  const history = [];
+  if ((orientation === 'portrait') !== view.portrait) throw new Error('createVisiblePilot orientation does not match the viewport size');
+  return (snapshot) => {
+    history.push(snapshot);
+    if (history.length > delay + 1) history.shift();
+    const seen = history[0];
+    const marked = view.portrait ? marker(seen.forks, view, seen.difficulty?.speedMultiplier ?? 1) : null;
+    return pilot({ ...snapshot, forks: seen.forks.filter((o) => o.x < rightEdge || o === marked) });
+  };
 }
 
 // Course adapter: obstacle geometry at any future tick, built at x = 0 once and
@@ -125,7 +147,16 @@ const GROUND = -1;
 const TARGETS = Object.freeze([GROUND, 600, 540, 480, 420, 360, 300, 240, 180, 130]);
 const START_DELAYS = Object.freeze([0, 18, 36, 60]);
 const TAIL_TICKS = 36;
-const CRUISE_Y = 480;
+// With nothing in sight a bot returns to its cruise height. Players differ in
+// that habit, so each run draws its own from CHIKUN_BOT_CRUISE_RANGE (seeded like
+// the jitter, never Math.random): the survival percentiles then describe a spread
+// of habits instead of hinging on one constant (the committed 480 px cruise sat
+// 10 px under the shallowest low passage).
+export const CHIKUN_BOT_CRUISE_RANGE = Object.freeze([420, 540]);
+export function botCruiseY(profileName, seed) {
+  const [low, high] = CHIKUN_BOT_CRUISE_RANGE;
+  return low + Math.floor(mulberry32((seed >>> 0) ^ profileHash(profileName) ^ 0x63727573)() * (high - low + 1));
+}
 const MAX_HORIZON = 480;
 
 function wantsPress(state, target, sinceLastPress, physics) {
@@ -158,8 +189,9 @@ function stepPhysics(state, press, overGap, physics) {
 
 // `skim` (0 by default, and 0 for every harness profile) rewards passing an obstacle
 // within the 32 px near-miss band; the v6 replay fixtures use it for a near-miss-heavy run.
-export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5_PHYSICS, margin = 6, skim = 0 } = {}) {
+export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5_PHYSICS, margin = 6, skim = 0, marker = upcomingChikunObstacle, cruiseY = null } = {}) {
   if (!profile || !course) throw new Error('createChikunBot needs a profile and a course module');
+  const cruise = cruiseY ?? botCruiseY(profile.name, seed);
   const random = mulberry32((seed >>> 0) ^ profileHash(profile.name));
   const model = createCourseModel(course, seed >>> 0);
   const pressLead = Math.min(profile.reactionDelayTicks, Math.ceil(2 * profile.jitterSigmaTicks));
@@ -167,6 +199,8 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
   const robustTicks = Math.round(profile.jitterSigmaTicks);
   const rightEdge = viewportRightEdge(profile.viewport);
   const portrait = profile.viewport.orientation === 'portrait';
+  const view = portrait ? buildChikunViewport(profile.viewport.width, profile.viewport.height, 1) : null;
+  let markersSeen = 0;
   const history = [];
   const known = new Map();
   const seen = new Set();
@@ -181,17 +215,16 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
   let maxKnownIndex = -1;
 
   function perceive(snapshot) {
-    const view = snapshot.forks;
+    const forks = snapshot.forks;
     const speed = snapshot.difficulty?.speedMultiplier ?? 1;
-    let marker = null;
-    if (portrait) {
-      const next = view.find((o) => !o.passed && o.x + o.width > 250);
-      if (next && next.x > rightEdge && next.x < Math.max(1050, 280 + 2.4 * speed * 180)) marker = next.index;
-    }
-    for (const o of view) {
+    // The portrait "<KIND> AHEAD" marker is screen information: it is drawn at
+    // the right edge of the phone screen (inside every portrait look-ahead), so a
+    // portrait bot learns the marked obstacle whatever its lookAheadPx.
+    const marked = view ? marker(forks, view, speed) : null;
+    for (const o of forks) {
       if (o.passed || seen.has(o.index)) continue;
-      if (o.x - 280 > profile.lookAheadPx) continue;
-      if (o.x >= rightEdge && o.index !== marker) continue;
+      if (o !== marked && (o.x - 280 > profile.lookAheadPx || o.x >= rightEdge)) continue;
+      if (o === marked) markersSeen += 1;
       known.set(o.index, true);
       seen.add(o.index);
       if (o.index > maxKnownIndex) maxKnownIndex = o.index;
@@ -329,7 +362,7 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
   // With nothing in sight, cruise at the height from which a climb over the
   // tallest passage and a descent under a low passage take about equally long.
   function holdAltitude() {
-    return CRUISE_Y;
+    return cruise;
   }
 
   function predict(snapshot, lead, pressNow) {
@@ -383,5 +416,5 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
     return press;
   }
 
-  return Object.freeze({ decide, get presses() { return executed.length; }, profile, pressLead, perceptionLag });
+  return Object.freeze({ decide, get presses() { return executed.length; }, get markersSeen() { return markersSeen; }, cruiseY: cruise, profile, pressLead, perceptionLag });
 }

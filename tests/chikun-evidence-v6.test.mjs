@@ -141,21 +141,35 @@ function limitedRun() {
   return runtime.result();
 }
 
-test('flap cap covers sixty minutes of the fastest profile', () => {
+test('flap cap covers sixty minutes of the fastest profile and of hover play', () => {
   const rates = Object.entries(harness.profiles).map(([name, profile]) => [name, profile.flapsPerMinute.p99]);
-  const fastest = Math.max(...rates.map(([, rate]) => rate));
+  // Hover play flaps far more often than the bots: every scripted pilot, including
+  // routePilot flying the full hour, is counted too.
+  const hover = Object.entries(harness.pilots).map(([name, pilot]) => [name, pilot.flapsPerMinute]);
+  const fastest = Math.max(...[...rates, ...hover].map(([, rate]) => rate));
   assert.ok(fastest > 0, JSON.stringify(rates));
+  assert.ok(harness.pilots.routePilotFullSnapshot.flapsPerMinute > harness.profiles.exceptional.flapsPerMinute.p99, 'hover play is the faster case');
   assert.ok(CHIKUN_MAX_FLAP_TRANSITIONS >= 1.25 * 60 * harness.profiles.exceptional.flapsPerMinute.p99);
   assert.ok(CHIKUN_MAX_FLAP_TRANSITIONS >= 1.25 * 60 * fastest, `12,000 flaps cover 60 minutes at ${fastest} flaps per minute`);
+  // A full-hour hover run stays under the cap, so it ends as run-complete, not flap-limit.
+  assert.deepEqual(harness.pilots.routePilotFullSnapshot.causes, { 'run-complete': 16 });
+  // Only sustained tapping above 12,000 / 60 = 200 taps a minute (3.3 a second)
+  // for the whole hour reaches the cap, and that ends the run gracefully.
+  assert.equal(CHIKUN_MAX_FLAP_TRANSITIONS / 60, 200);
 });
 
 test('60-minute worst-case result message fits the bridge cap', () => {
   assert.equal(CHIKUN_MAX_MESSAGE_BYTES, 262_144);
   assert.equal(REPLAY_FILE_LIMIT, 262_144);
-  // 12,000 two-digit deltas are the longest legal encoding under 216,000 ticks.
-  const flapDeltas = Array.from({ length: 12_000 }, (_, i) => (i === 0 ? 0 : 18));
+  // The longest legal encoding: 12,000 deltas whose ticks stay under 216,000.
+  // The cheapest extra digit is 1 -> 10 (9 ticks), then 10 -> 100 (90 ticks): all
+  // 12,000 deltas get two digits and the leftover budget buys 1,066 three-digit ones.
+  const hundreds = Math.floor((215_999 - 12_000 * 10) / 90);
+  assert.equal(hundreds, 1_066);
+  const flapDeltas = Array.from({ length: 12_000 }, (_, i) => (i < hundreds ? 100 : 10));
   const evidence = { version: 'chikun-flap-evidence-v6', seed: 0xffffffff, fixedStepHz: 60, maxTicks: 216_000, flapDeltas };
-  assert.equal(decodeFlapDeltas(flapDeltas, 216_000).at(-1), 215_982);
+  assert.equal(decodeFlapDeltas(flapDeltas, 216_000).at(-1), 215_940);
+  assert.throws(() => decodeFlapDeltas(Array.from({ length: 12_000 }, (_, i) => (i <= hundreds ? 100 : 10)), 216_000), /within maxTicks/, 'no room for one more 100');
   const finalState = { step: 216_000, y: -123.456789, velocity: -4.567891, score: 999_999_999, coinsCollected: 999_999, forksPassed: 999_999, nearMisses: 999_999, bestCombo: 999_999, survivalTicks: 216_000, survivalTime: 3600, crashed: false, terminalReason: 'flap-limit' };
   const payload = {
     score: 999_999_999, survivalTime: 3600, survivalTicks: 216_000, coinsCollected: 999_999, forksPassed: 999_999, nearMisses: 999_999, bestCombo: 999_999,

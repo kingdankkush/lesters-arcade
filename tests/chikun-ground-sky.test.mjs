@@ -16,7 +16,7 @@ test('starts grounded, jumps on one tap, takes flight on the next, and safely la
  assert.equal(run.terminal,false);assert.equal(run.snapshot().chikun.locomotion,'run');
 });
 test('speed follows the tuned front-loaded ramp with consistent distance',()=>{
- for(const [seconds,speed] of [[0,1],[180,1.164794921875],[300,1.604248046875],[420,2.812744140625],[600,3.801513671875],[720,5.449462890625],[900,7.097412109375]])assert.equal(speedAtTick(seconds*60),speed);
+ for(const [seconds,speed] of [[0,1],[60,1.274658203125],[180,1.6317138671875],[300,1.7415771484375],[420,3.0599365234375],[600,4.0487060546875],[720,6.0262451171875],[900,7.3446044921875]])assert.equal(speedAtTick(seconds*60),speed);
  for(const t of [1,7200,14400,28800,60000])assert.ok(Math.abs(distanceAtTick(t)-distanceAtTick(t-1)-2.4*speedAtTick(t-1))<1e-8);
 });
 test('ground and sky obstacles have safe collectible paths and visible collision shapes',()=>{

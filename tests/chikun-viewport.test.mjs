@@ -22,8 +22,11 @@ test('landscape preserves the entire 16:9 course without altering simulation', (
 
 test('portrait previews an approaching obstacle before it enters the narrower camera', () => {
   const view = buildChikunViewport(405,720,1);
-  const obstacles=[{index:0,kind:'tree',x:720,width:230,gapCenter:200,passed:false}];
+  const obstacles=[{index:0,kind:'tree',x:620,width:230,gapCenter:200,passed:false}];
   assert.equal(upcomingChikunObstacle(obstacles, view)?.kind, 'tree');
+  assert.equal(upcomingChikunObstacle([{...obstacles[0],x:720}], view), null, 'at 1x the preview reaches 360 px ahead of Chikun');
+  assert.equal(upcomingChikunObstacle([{...obstacles[0],x:720}], view, 4)?.kind, 'tree', 'at speed it gives 50 ticks of warning');
+  assert.equal(upcomingChikunObstacle([{...obstacles[0],x:1300}], view, 20), null, 'never before the landscape screen would show it');
   assert.equal(upcomingChikunObstacle([{...obstacles[0],x:400}], view), null);
   assert.equal(upcomingChikunObstacle([{...obstacles[0],passed:true}], view), null);
   assert.equal(upcomingChikunObstacle(obstacles,buildChikunViewport(1280,720,1)),null);

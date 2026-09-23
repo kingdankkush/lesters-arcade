@@ -57,7 +57,7 @@ test('Chikun difficulty follows elapsed time without shrinking gaps', () => {
   assert.ok(later.scrollPixelsPerTick >= opening.difficulty.scrollPixelsPerTick);
   assert.ok(later.safeGapHeight <= opening.difficulty.safeGapHeight);
   assert.ok(later.safeGapHeight >= 238);
-  assert.ok(later.scrollPixelsPerTick === 2.4 * 3.142333984375, 'eight minutes in, the tuned ramp runs at 3.14x');
+  assert.ok(later.scrollPixelsPerTick === 2.4 * 3.3895263671875, 'eight minutes in, the tuned ramp runs at 3.39x');
   assert.equal(Object.isFrozen(later), true);
 });
 
