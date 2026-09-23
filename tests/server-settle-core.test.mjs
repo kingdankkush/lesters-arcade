@@ -252,11 +252,11 @@ test('an underpaid entry is 402 entry-underpaid', async () => scenario(async (ct
   const response = await post(settleHandler(ctx), body);
   assert.deepEqual([response.status, response.body], [402, { ok: false, error: 'entry-underpaid' }]);
   assert.equal(ctx.verify.calls.verifyRankedRun, 0);
-  // The minimum is configurable (RANKED_MIN_PAID_WEI); the default is 0.1001 zkLTC.
+  // The minimum is configurable (RANKED_MIN_PAID_WEI); the default is 0.102 zkLTC.
   await (await operatorEntry.setEntryFeeEnabled(true)).wait();
   const normal = await paidBody();
-  assert.equal(normal.paid.amountWei, 100_100_000_000_000_000n);
-  const strict = settleHandler(ctx, { envOverride: { ...env, RANKED_MIN_PAID_WEI: '100100000000000001' } });
+  assert.equal(normal.paid.amountWei, 102_000_000_000_000_000n);
+  const strict = settleHandler(ctx, { envOverride: { ...env, RANKED_MIN_PAID_WEI: '102000000000000001' } });
   assert.deepEqual((await post(strict, normal.body)).body, { ok: false, error: 'entry-underpaid' });
 }));
 

@@ -6,7 +6,7 @@ import {
   escapeHtml, portalCopyFor, portalPageMeta, portalSchema, renderGameDetails,
 } from '../apps/portal/src/portal-content.mjs';
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from '../apps/portal/src/settlement.mjs';
-import { DEFAULT_REVENUE_SPLIT_BPS, RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
+import { DEFAULT_REVENUE_SPLIT_BPS, RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI } from '../apps/portal/src/arcade-core.mjs';
 import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
 
@@ -82,14 +82,14 @@ test('preview copy says device-local and no fees', () => {
   // profile-boards slice drops its tabs, so preview copy names no period.
   assert.doesNotMatch(preview.scoresLead + preview.scoresView, /daily|weekly|monthly|yearly|all-time/i);
   const text = allText(preview);
-  assert.doesNotMatch(text, /0\.1001|zkLTC per run|Neon|replayed|plausibility|published on LitVM|not refunded/i);
+  assert.doesNotMatch(text, /0\.102|zkLTC per run|Neon|replayed|plausibility|published on LitVM|not refunded/i);
 });
 
 test('launch copy states the fee, the split and the testnet', () => {
   const fee = answer(launch, /cost money/);
-  const terms = /0\.1001 zkLTC per run on the LitVM LiteForge testnet: a 0\.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0\.0001 zkLTC settlement reserve/;
+  const terms = /0\.102 zkLTC per run on the LitVM LiteForge testnet: a 0\.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0\.002 zkLTC settlement reserve/;
   assert.match(fee, terms);
-  assert.match(launch.trustStatus[0], /costs 0\.1001 zkLTC: a 0\.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0\.0001 zkLTC settlement reserve/);
+  assert.match(launch.trustStatus[0], /costs 0\.102 zkLTC: a 0\.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0\.002 zkLTC settlement reserve/);
   assert.match(launch.llmsScope, terms);
   for (const text of [fee, launch.trustStatus.join(' '), launch.llmsScope]) {
     assert.match(text, /Free Mode is always free/);
@@ -97,13 +97,13 @@ test('launch copy states the fee, the split and the testnet', () => {
     assert.match(text, /Testnet entries are not refunded\./);
   }
   assert.match(answer(launch, /wallet to play/), /Free Mode is always free and needs no wallet/);
-  assert.match(launch.description, /0\.1001 testnet zkLTC per run/);
-  assert.match(launch.modeRanked, /^0\.1001 testnet zkLTC per run\./);
+  assert.match(launch.description, /0\.102 testnet zkLTC per run/);
+  assert.match(launch.modeRanked, /^0\.102 testnet zkLTC per run\./);
   for (const entry of Object.values(launch.modeSelect)) {
-    assert.match(entry.ranked, /^0\.1001 testnet zkLTC per run\. The arcade server .* and publishes it on LitVM\.$/);
+    assert.match(entry.ranked, /^0\.102 testnet zkLTC per run\. The arcade server .* and publishes it on LitVM\.$/);
     assert.match(entry.copy, /sign in and choose Play Ranked to compete on the LitVM testnet/);
   }
-  assert.match(launch.howConnect, /costs nothing and sends no transaction\. Each Ranked run then costs 0\.1001 testnet zkLTC/);
+  assert.match(launch.howConnect, /costs nothing and sends no transaction\. Each Ranked run then costs 0\.102 testnet zkLTC/);
 });
 
 test('launch copy says HMH is plausibility-checked and the other games are replayed', () => {
@@ -158,9 +158,9 @@ test('launch copy covers boards, achievements, names, retries and refunds', () =
 // new text is quoted and reviewed again.
 test('the launch wording quoted for owner review is what the flip ships', () => {
   assert.equal(answer(launch, /cost money/),
-    "Ranked costs 0.1001 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.0001 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Testnet zkLTC has no value, and there are no prizes. Testnet entries are not refunded. Free Mode is always free.");
+    "Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Testnet zkLTC has no value, and there are no prizes. Testnet entries are not refunded. Free Mode is always free.");
   assert.deepEqual([...launch.trustStatus], [
-    "Ranked is live on the LitVM LiteForge testnet. A Ranked run costs 0.1001 zkLTC: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.0001 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.",
+    "Ranked is live on the LitVM LiteForge testnet. A Ranked run costs 0.102 zkLTC: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.",
     "The arcade server checks every Ranked run before its relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed from their recorded inputs; a replay proves that a run follows the game's rules, not who played it. Hard Money Heroes runs are plausibility-checked against the game's limits and are not replayed; the check rejects impossible results but cannot prove how a run was played.",
     'If publishing fails, it retries automatically, and you can retry it from your profile. Testnet entries are not refunded. Testnet zkLTC has no value, and there are no prizes.',
   ]);
@@ -191,7 +191,7 @@ test('launch copy drops every preview statement', () => {
 
 test('hosted preview promises neither a fee nor on-chain publishing', () => {
   const text = allText(hostedPreview);
-  assert.doesNotMatch(text, /0\.1001|zkLTC per run|published on LitVM|replayed|plausibility|not refunded/i);
+  assert.doesNotMatch(text, /0\.102|zkLTC per run|published on LitVM|replayed|plausibility|not refunded/i);
   assert.doesNotMatch(hostedPreview.description+hostedPreview.scoresNote+answer(hostedPreview, /online/), /device-local|stay in this browser/, 'profiles and boards are online');
   assert.match(answer(hostedPreview, /cost money/), /requires no entry fee/);
   assert.match(answer(hostedPreview, /online/), /Ranked is still a preview, so no runs are published or ranked yet\./);
@@ -217,11 +217,11 @@ test('launch terms match the entry fee, the split and the server minimum paid am
 // The quote must match what the contracts charge, not only the server minimum:
 // a retuned reserve (setSettlementGasReserve, a new deploy config) or a changed
 // per-game fee or split fails here until the public copy is updated with it.
-// The client's RANKED_SETTLEMENT_GAS_RESERVE_WEI (arcade-core.mjs:108) is still
-// 0.02 zkLTC at this base; the signin-entry slice sets it to 0.0001, and its pin
-// against reserveZkLtc is added when that slice merges.
+// The client's RANKED_SETTLEMENT_GAS_RESERVE_WEI (arcade-core.mjs) must match too:
+// the Ranked modal shows it before the chain quote arrives.
 test('launch terms match the deployment reserve and every game fee and split', () => {
   const { feeZkLtc, reserveZkLtc, developerPercent, arcadePercent } = RANKED_LAUNCH_TERMS;
+  assert.equal(toWei(reserveZkLtc), BigInt(RANKED_SETTLEMENT_GAS_RESERVE_WEI), 'arcade-core.mjs client reserve');
   assert.equal(toWei(reserveZkLtc), BigInt(LITVM_DEPLOYMENT.settlementGasReserveWei), 'generated/litvm-addresses.mjs reserve');
   assert.equal(toWei(reserveZkLtc), BigInt(deployConfig.settlementGasReserveWei), 'deploy-config.testnet.json reserve');
   assert.deepEqual(deployConfig.games.map(game => game.slug).sort(), PORTAL_GAMES.map(game => game.id).sort());

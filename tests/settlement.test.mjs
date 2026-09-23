@@ -115,10 +115,10 @@ test('a native 0.1 zkLTC entry fee produces one payable openSession call with no
   assert.ok(entry, 'paid session must include the native entry call');
   assert.equal(entry.method, 'openSession');
   assert.equal(plan.calls[0], entry, 'the entry fee precedes the run and the score submit');
-  assert.equal(entry.valueWei, '120000000000000000', 'flat fee plus the settlement gas reserve');
+  assert.equal(entry.valueWei, '102000000000000000', 'flat fee plus the settlement gas reserve');
   assert.equal(entry.entryFeeWei, '100000000000000000');
-  assert.equal(entry.settlementGasReserveWei, '20000000000000000');
-  assert.equal(plan.entryTotalWei, '120000000000000000');
+  assert.equal(entry.settlementGasReserveWei, '2000000000000000');
+  assert.equal(plan.entryTotalWei, '102000000000000000');
   assert.deepEqual(Object.keys(entry.args).sort(), ['gameId', 'sessionId']);
   assert.equal('paymentToken' in entry.args, false);
   assert.equal('split' in entry.args, false);

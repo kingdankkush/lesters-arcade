@@ -11,7 +11,7 @@ export const LITVM_DEPLOYMENT = Object.freeze({
   deployer: '0x6ac08bed727a6951d755f0674f096e6a8ac06bff',
   trustedVerifier: '0x4d637a6c5b5c6f97cfa3d98bd53deeb8510120c7',
   relayer: '0x494af36ea4958c417260faf3efb3b672b343eaf6',
-  settlementGasReserveWei: '100000000000000',
+  settlementGasReserveWei: '2000000000000000',
   addresses: Object.freeze({
     gameRegistry: '0xcb0b695ebee650afcce93f566259cb477b19bf23',
     playerProfileRegistry: '0x3eb9e9f2620940496a2b8ed6f7384e6687587c94',

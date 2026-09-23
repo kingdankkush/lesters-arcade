@@ -38,7 +38,7 @@ Owns: `tests/api-settle-handler.test.mjs` (create), `tests/helpers/settle-fixtur
 5. **Re-run the gates** after the rebase: `npm test`, `npm run check`, `npm run contracts:check`, `npm run build`, `npm run test:release` (51), then `git checkout` the gate JSON.
 
 **Owner / deployment risk:**
-- The §3.4 fee cap (gasLimit × maxFeePerGas ≤ 5 × 0.0001 zkLTC) only allows a maxFeePerGas up to about 0.84 gwei at about 590k gasLimit. If LiteForge fees are higher, every settle waits as fee-too-high (no attempts spent, but nothing publishes).
+- The §3.4 fee cap (gasLimit × maxFeePerGas ≤ 5 × 0.002 zkLTC) only allows a maxFeePerGas up to about 0.84 gwei at about 590k gasLimit. If LiteForge fees are higher, every settle waits as fee-too-high (no attempts spent, but nothing publishes).
 - Check the live `getFeeData()` and `estimateGas` of submitVerifiedSession against the reserve before runbook step 8, or raise `settlementGasReserveWei`. That is an on-chain operator action plus the generated address module.
 
 **Other slices:**

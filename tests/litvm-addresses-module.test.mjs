@@ -84,7 +84,7 @@ test('committed address module is generated and matches either the §8.1 predict
   assert.equal(LITVM_DEPLOYMENT.deployer, config.deployer.toLowerCase());
   assert.equal(LITVM_DEPLOYMENT.trustedVerifier, config.verifier.toLowerCase());
   assert.equal(LITVM_DEPLOYMENT.relayer, config.relayer.toLowerCase());
-  assert.equal(LITVM_DEPLOYMENT.settlementGasReserveWei, '100000000000000');
+  assert.equal(LITVM_DEPLOYMENT.settlementGasReserveWei, '2000000000000000');
 });
 
 test('the generator CLI check agrees with the committed module', () => {

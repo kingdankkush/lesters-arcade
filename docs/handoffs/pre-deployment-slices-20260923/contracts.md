@@ -75,7 +75,7 @@
    - broadcasting needs `--broadcast`, `LITVM_DEFINE_CONFIRM=DEFINE_NFT_ACHIEVEMENTS_4441`, and an operator key from an env var **name** given by the operator. Never read the vault, and never print or log the key.
    - Tests use a fixture catalog and the local chain: define, then `mintFor` from a minter succeeds, and the token URI is `baseTokenUri + '<id>.json'`.
 10. **Docs.** Update `docs/web3/contract-overhaul-20260916.md`:
-    - the reserve is 0.0001 zkLTC;
+    - the reserve is 0.002 zkLTC;
     - addresses come from `npm run contracts:addresses` (generated module), not hand edits;
     - keys are read from the vault inside the command, without echo;
     - owner-page usage and local hosting (acceptance 8);

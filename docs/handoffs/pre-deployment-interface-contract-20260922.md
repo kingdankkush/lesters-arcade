@@ -1,7 +1,7 @@
 # Pre-deployment interface contract (2026-09-22 guide, Ranked + Web3 launch)
 
 **Status:** binding for every implementation slice of `docs/handoffs/pre-deployment-web3-guide-20260922.md` (the "guide").
-**Revision:** 2 (2026-09-23). Applies the security, feasibility and completeness reviews. Decisions A25 to A34, the runbook amendments (§13) and the review dispositions (§14) are new in this revision.
+**Revision:** 2 (2026-09-23), with the reserve amendment of 2026-09-23: LiteForge base fees rose from about 0.01 to about 1.5 gwei, so the owner raised the settlement reserve from 0.0001 to **0.002 zkLTC** (entry total 0.102 zkLTC, `RANKED_MIN_PAID_WEI` default `102000000000000000`, client `RANKED_SETTLEMENT_GAS_RESERVE_WEI = '2000000000000000'`). Any 0.0001 / 0.1001 figure left below is superseded. Applies the security, feasibility and completeness reviews. Decisions A25 to A34, the runbook amendments (§13) and the review dispositions (§14) are new in this revision.
 **Base commit:** `06ebe4ca` on `fable/master-list-20260916` (worktree `C:/Users/just_/lesters-arcade-fable0916`). Every `file:line` below is as of that commit. Line numbers drift after each merge: re-grep by the function or anchor text given next to each number.
 **Vercel plan:** Pro (team `justin-agent-projects`, checked with `npx vercel teams ls` on 2026-09-23). Minute-level crons and `maxDuration` up to 300 s are available. The runbook re-checks the plan before deploying (§13 step 0), because a Hobby plan rejects the every-minute cron at deploy time.
 
@@ -167,7 +167,7 @@ Period keys (day, week, month) come from `openedAt`, the time the run was played
 - `SETTLEMENT_PAUSED=true` in the production env, then a redeploy of the current release. E15, E3 and E13 answer `503 settlement-paused` and leave every row untouched. The browser cannot obtain a seed ticket, so it stops at the Ranked modal before any payment.
 - `GameRegistry.setPlayable(gameId32, false)` per game (`scripts/operator-actions.mjs pause-games`), which blocks `openSession` and `submitVerifiedSession` on chain.
 - `ScoreSubmissionRegistry.setTrustedVerifier(new)` to rotate a leaked verifier key, and `setRelayer(relayer, false)` to stop a leaked relayer key.
-- E3 requires `getPaidSession(...).amountWei ≥ RANKED_MIN_PAID_WEI` (default `100100000000000000`, the 0.1 zkLTC fee plus the 0.0001 reserve), else `402 entry-underpaid`. So a free session is never relayed, and turning fees off makes Ranked unusable instead of free.
+- E3 requires `getPaidSession(...).amountWei ≥ RANKED_MIN_PAID_WEI` (default `102000000000000000`, the 0.1 zkLTC fee plus the 0.002 reserve), else `402 entry-underpaid`. So a free session is never relayed, and turning fees off makes Ranked unusable instead of free.
 
 **A28. Server secrets use new names, and config never holds key strings.** The live 1.7.0 `/api/attest` signs any posted score with `VERIFIER_PRIVATE_KEY`, unauthenticated, and `api/settle.mjs` relays with `RELAYER_PRIVATE_KEY`. Any rebuild of pre-1.8.0 code with production env would turn into a public signing oracle if those names ever held keys. So:
 
@@ -197,7 +197,7 @@ export default createHandler(() => buildDeps());
 
 **A32. No NFT wording until a token exists.** In phase 1 no surface says "NFT", "soulbound" or "minting". The results screen and the profile show NFT-flagged unlocks as normal achievements. The "⛓ Soulbound NFT" badge, the token link and the "minted" state appear only when `tokenId` is non-null (phase 2). The profile-boards slice confirms held tokens with `fetchPlayerAchievements`, on that `tokenId != null` path only.
 
-**A33. Public copy is generated from the flags.** The landing-page FAQ, meta, OG, Twitter and JSON-LD descriptions, `portal-content.mjs`, the discover pages, `llms.txt` and `trust.html` describe Ranked. They are rendered by `scripts/build-portal-pages.mjs` from `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC`, with preview wording while the flags are false and launch wording once they are true. The committed files must equal the build output (test). The step-7 flag flip therefore regenerates the copy in the same commit (§13). Launch wording states the 0.1001 zkLTC entry, the on-chain publishing, that HMH is plausibility-checked while Chikun and STACKED are replay-verified, and the server-side storage in Neon (wallet-linked sessions, evidence, achievements, and HMAC'd IP buckets). Owner: the site-copy slice (§10.2).
+**A33. Public copy is generated from the flags.** The landing-page FAQ, meta, OG, Twitter and JSON-LD descriptions, `portal-content.mjs`, the discover pages, `llms.txt` and `trust.html` describe Ranked. They are rendered by `scripts/build-portal-pages.mjs` from `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC`, with preview wording while the flags are false and launch wording once they are true. The committed files must equal the build output (test). The step-7 flag flip therefore regenerates the copy in the same commit (§13). Launch wording states the 0.102 zkLTC entry, the on-chain publishing, that HMH is plausibility-checked while Chikun and STACKED are replay-verified, and the server-side storage in Neon (wallet-linked sessions, evidence, achievements, and HMAC'd IP buckets). Owner: the site-copy slice (§10.2).
 
 **A34. Neon schema exists before the first query, everywhere.** Every handler and cron that touches Neon, E1 and E2 included, calls `ensureSchema(db)` before its first query. `ensureSchema` is memoized per process (a module-level `Map` of promises keyed by `db.schemaKey`, which is the database host plus name for Neon and a unique id per PGlite instance), and a failure clears the memo. It first reads `SELECT coalesce(max(version),0)::int AS v FROM schema_migrations` (treating a missing table as 0) and runs `migrate` only when behind. A concurrent creator can fail on the catalog; `migrate` retries once on SQLSTATE `42P07`, `42710` or `23505`. Each handler caches its Neon client at module scope, so the memo hits. E12 also calls `migrate(db)` explicitly and reports the applied versions, which the runbook uses as the production migration step (§13).
 
@@ -1417,7 +1417,7 @@ export const LITVM_DEPLOYMENT = Object.freeze({
   deployer: '0x6ac08bed727a6951d755f0674f096e6a8ac06bff',
   trustedVerifier: '0x4d637a6c5b5c6f97cfa3d98bd53deeb8510120c7',
   relayer: '0x494af36ea4958c417260faf3efb3b672b343eaf6',
-  settlementGasReserveWei: '100000000000000',
+  settlementGasReserveWei: '2000000000000000',
   addresses: Object.freeze({
     gameRegistry, playerProfileRegistry, arcadeRankedEntry, scoreSubmissionRegistry,    // lowercase
     achievementRegistries: Object.freeze({ 'lester-blaster', chikun, stacked }),
@@ -1562,7 +1562,7 @@ Event `RankedSessionOpened(bytes32 indexed sessionId, address indexed player, by
 | `RANKED_SCORE_REGISTRY_ADDRESS` | E3, E13, E15, E12 | 503; a mismatch with `LITVM_DEPLOYMENT` gives 503 `address-mismatch` |
 | `VERIFIER_PRIVATE_KEY`, `RELAYER_PRIVATE_KEY`, `SCORE_REGISTRY_ADDRESS` (legacy) | nothing | **must be absent**; if any is present, `settlementReady` is false (A28) |
 | `SETTLEMENT_PAUSED` (`'true'` to pause) | E3, E13, E15 | absent means not paused |
-| `RANKED_MIN_PAID_WEI` (decimal wei) | E3 | default `100100000000000000` |
+| `RANKED_MIN_PAID_WEI` (decimal wei) | E3 | default `102000000000000000` |
 | `CRON_SECRET` (≥ 32 characters) | E12, E13 | 401 on every call |
 | `RPC_URL` | all chain I/O | default `https://liteforge.rpc.caldera.xyz/http`. It is never echoed; errors store allowlisted codes only (A31). |
 | `SESSION_ALLOWED_DOMAINS` | E2 | default per §4.3.2 |

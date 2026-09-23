@@ -70,13 +70,13 @@ The Ranked entry is seamless: a background pre-flight with a cached quote, one c
     The `user rejected` regex in `main.js:3144-3161` belongs to ranked-client and is removed there; do not duplicate it.
 11. **Modal copy and values.** `index.html:63-81`, `:104-105`:
     - the button label becomes "Sign in";
-    - the modal shows entry `0.1 zkLTC`, settlement reserve `0.0001 zkLTC` ("pays the relayer that publishes your score on LitVM"), and the total `0.1001 zkLTC` (quoted live by `quoteEntry`);
+    - the modal shows entry `0.1 zkLTC`, settlement reserve `0.002 zkLTC` ("pays the relayer that publishes your score on LitVM"), and the total `0.102 zkLTC` (quoted live by `quoteEntry`);
     - the split "85% to the game's developer · 15% to the arcade";
     - a "Free Mode is always free" link;
     - one confirmation button;
     - readable at 320 px.
 
-    Change `RANKED_SETTLEMENT_GAS_RESERVE_WEI` (`arcade-core.mjs:108`) to `'100000000000000'`, and update its pins: `tests/settlement.test.mjs:118-121`, `tests/arcade-core.test.mjs:528-529,552`, and the modal-quote test in `tests/ranked-entry-preflight.test.mjs`. Do **not** touch `DEFAULT_SETTLEMENT_GAS_RESERVE_WEI` in `scripts/deploy-contracts.mjs`: it is pinned, and the config overrides it.
+    `RANKED_SETTLEMENT_GAS_RESERVE_WEI` (`arcade-core.mjs:108`) is ALREADY `'2000000000000000'` (0.002 zkLTC, orchestrator commit after the 2026-09-23 owner decision) and its pins are already updated; do not change it. Previously this step said: change it to `'100000000000000'`, and update its pins: `tests/settlement.test.mjs:118-121`, `tests/arcade-core.test.mjs:528-529,552`, and the modal-quote test in `tests/ranked-entry-preflight.test.mjs`. Do **not** touch `DEFAULT_SETTLEMENT_GAS_RESERVE_WEI` in `scripts/deploy-contracts.mjs`: it is pinned, and the config overrides it.
 12. **CSP** (`vercel.json`, the portal catch-all rule only). Add the Reown and WalletConnect hosts to `connect-src`, `img-src` and `font-src`, taken from Reown's current CSP documentation (fetch it; do not guess), and record the doc URL in the commit message. **`frame-src` does not exist in that rule today**: frames fall back to `default-src 'self'`, which is what lets the `/hmh-reboot/`, `/chikun/` and `/stacked/` game iframes load. Add it as `frame-src 'self' <reown hosts>`. Without `'self'` all three games break in production only, because the local static server sends no CSP. `script-src` is unchanged (AppKit is bundled). Update `tests/vercel-security-headers.test.mjs`: the new hosts are present, `frame-src` starts with `'self'`, and no remote script origin is allowed.
 13. **Preview parity.** With both flags false:
     - no `/api/*` calls, no RPC calls, no Reown load unless the player explicitly picks WalletConnect on an allowed host;

@@ -49,12 +49,12 @@ export const PORTAL_FLAGS = Object.freeze({
 });
 
 // Launch Ranked terms (guide §3.2). The server refuses a session that paid less
-// than fee + reserve (contract A27, RANKED_MIN_PAID_WEI = 100100000000000000);
+// than fee + reserve (contract A27, RANKED_MIN_PAID_WEI = 102000000000000000);
 // tests/portal-copy.test.mjs pins these against the code.
 export const RANKED_LAUNCH_TERMS = Object.freeze({
   feeZkLtc: '0.1',
-  reserveZkLtc: '0.0001',
-  totalZkLtc: '0.1001',
+  reserveZkLtc: '0.002',
+  totalZkLtc: '0.102',
   developerPercent: 85,
   arcadePercent: 15,
 });

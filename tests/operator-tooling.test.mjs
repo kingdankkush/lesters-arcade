@@ -204,7 +204,7 @@ test('activate, pause-games, relayer-off and rotate-verifier change the local ch
     assert.equal(status.relayer.allowed, true);
     assert.equal(status.trustedVerifier, chain.wallets.verifier.address.toLowerCase());
     assert.equal(status.entryFeeEnabled, true);
-    assert.deepEqual(status.games.map((game) => [game.gameId, game.devWalletConfirmed, game.playable, game.quote.totalWei]), record.games.map((game) => [game.slug, true, true, '100100000000000000']));
+    assert.deepEqual(status.games.map((game) => [game.gameId, game.devWalletConfirmed, game.playable, game.quote.totalWei]), record.games.map((game) => [game.slug, true, true, '102000000000000000']));
     assert.equal(status.onChainOperators.gameRegistry, chain.wallets.operator.address.toLowerCase());
 
     await act('pause-games');

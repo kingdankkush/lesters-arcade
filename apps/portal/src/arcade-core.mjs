@@ -105,7 +105,7 @@ export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
 // vault so the relayer can submit the verified score for the player. A
 // placeholder estimate (0.02 zkLTC) the operator tunes on chain; the live
 // quote comes from ArcadeRankedEntry.quoteEntry, never from this constant.
-export const RANKED_SETTLEMENT_GAS_RESERVE_WEI = '20000000000000000';
+export const RANKED_SETTLEMENT_GAS_RESERVE_WEI = '2000000000000000';
 
 export function rankedEntryTotalWei(entryFeeWei = RANKED_ENTRY_FEE_WEI, reserveWei = RANKED_SETTLEMENT_GAS_RESERVE_WEI) {
   return (BigInt(String(entryFeeWei)) + BigInt(String(reserveWei))).toString();

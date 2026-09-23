@@ -46,7 +46,7 @@ ScoreSubmissionRegistry.submitVerifiedSession(run, achievements, signature)
 
 All three registered games (owner decision 2026-09-16): `devBps 8500 / platformBps 0 / liquidityBps 0 /
 treasuryBps 1500` (85 % developer, 15 % treasury), `entryFeeWei 100000000000000000` (0.1 zkLTC) plus
-`settlementGasReserveWei 20000000000000000` (0.02 zkLTC placeholder the owner tunes) forwarded to
+`settlementGasReserveWei 2000000000000000` (0.002 zkLTC, owner decision 2026-09-23; the operator retunes it with `setSettlementGasReserve`) forwarded to
 `relayerVault`. Developer wallet and treasury vault are the owner wallet; relayer vault defaults to the
 operator. This is a **testnet epoch**: mainnet is a fresh deployment set.
 

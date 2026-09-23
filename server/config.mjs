@@ -12,7 +12,7 @@ import { createNeonClient, neonSchemaKeyFor } from '../apps/portal/src/server-ne
 import { loadDeployment, UNAVAILABLE_DEPLOYMENT } from './deployment.mjs';
 
 export const DEFAULT_RPC_URL = 'https://liteforge.rpc.caldera.xyz/http';
-export const DEFAULT_MIN_PAID_WEI = '100100000000000000';
+export const DEFAULT_MIN_PAID_WEI = '102000000000000000';
 export const LEGACY_ENV_NAMES = Object.freeze(['VERIFIER_PRIVATE_KEY', 'RELAYER_PRIVATE_KEY', 'SCORE_REGISTRY_ADDRESS']);
 export const PRODUCTION_SESSION_DOMAINS = Object.freeze(['lestersarcade.io', 'www.lestersarcade.io']);
 const LOCAL_SESSION_DOMAINS = Object.freeze(['localhost', '127.0.0.1']);

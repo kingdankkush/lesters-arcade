@@ -8,7 +8,7 @@
 
 ## Goal
 
-Make every public statement about Ranked, profiles and leaderboards true in both states of the flags, so the step-7 flag flip cannot leave false copy live. Today the site tells players Ranked has no entry fee and sends no score transaction; the launched site charges 0.1001 zkLTC and publishes on chain.
+Make every public statement about Ranked, profiles and leaderboards true in both states of the flags, so the step-7 flag flip cannot leave false copy live. Today the site tells players Ranked has no entry fee and sends no score transaction; the launched site charges 0.102 zkLTC and publishes on chain.
 
 The copy is **generated from the flags** (A33): preview wording while `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` are false, launch wording once they are true. Step 7 flips the flags and re-runs `node scripts/build-portal-pages.mjs` in the same commit.
 
@@ -24,7 +24,7 @@ The copy is **generated from the flags** (A33): preview wording while `SETTLEMEN
 
 1. **Flag-aware content.** `apps/portal/src/portal-content.mjs` exports `portalCopyFor({ settlementLive, hostedProfileSync })` returning `{ description, faq, scoresNote, trustStatus, trustStorage, llmsScope, llmsHowItWorks }`, and keeps `PORTAL_DESCRIPTION` and `PORTAL_FAQ` as the values for the **current** flags (import them from `settlement.mjs`; that module is small). The builder and any SPA view read the same source.
 2. **Launch wording** (flags true) states plainly, with no hype and no hashtags:
-   - Ranked costs 0.1 zkLTC plus a 0.0001 zkLTC settlement reserve on the LitVM LiteForge **testnet**, split 85% to the game's developer and 15% to the arcade; Free Mode is always free and needs no wallet;
+   - Ranked costs 0.1 zkLTC plus a 0.002 zkLTC settlement reserve on the LitVM LiteForge **testnet**, split 85% to the game's developer and 15% to the arcade; Free Mode is always free and needs no wallet;
    - Ranked runs are published on LitVM by the arcade's relayer after the server checks them: Chikun's Escape and STACKED runs are **replayed** by the server; Hard Money Heroes runs are **plausibility-checked**, not replayed (A9);
    - global Weekly, Monthly and All-time leaderboards, best score per wallet (D1, D2);
    - achievements are recorded against the wallet on the server; there is **no NFT wording** (A32);

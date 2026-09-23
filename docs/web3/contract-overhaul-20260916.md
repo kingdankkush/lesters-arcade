@@ -193,7 +193,7 @@ event Locked(uint256 tokenId);
 1. **Gate**: `GameRegistry.getGame(ethers.id(slug))` → require `exists && playable && devWalletConfirmed`.
    Then `ArcadeRankedEntry.quoteEntry(gameId)` → `{ entryFeeWei, settlementGasReserveWei, totalWei }`
    (never hard-code 0.1 or the reserve; `totalWei` is 0 when `entryFeeEnabled()` is false). Show the player
-   both parts: "0.1 zkLTC entry + 0.0001 zkLTC settlement reserve".
+   both parts: "0.1 zkLTC entry + 0.002 zkLTC settlement reserve".
 2. **Entry**: choose a fresh 32-byte `sessionId` (e.g. `keccak256(wallet, slug, nonce, timestamp)`), then
    `ArcadeRankedEntry.openSession(sessionId, gameId, { value: totalWei })` with the quoted total, re-quoted
    immediately before sending (the operator can retune the reserve). Wait for the receipt and confirm
@@ -230,7 +230,7 @@ nonce+5  AchievementRegistry(operator, "Chikun's Escape Achievements",   "CHKACH
 nonce+6  AchievementRegistry(operator, "STACKED Achievements",           "STKACH", ".../achievements/stacked/")
 nonce+7  ArcadeRankedEntry.setPlatformVaults(platformVault, liquidityVault, treasuryVault)
 nonce+8  ArcadeRankedEntry.setRelayerVault(relayerVault)                 // config.relayerVault, default relayer -> operator
-nonce+9  ArcadeRankedEntry.setSettlementGasReserve(settlementGasReserveWei) // config: 0.0001 zkLTC (100000000000000 wei)
+nonce+9  ArcadeRankedEntry.setSettlementGasReserve(settlementGasReserveWei) // config: 0.002 zkLTC (2000000000000000 wei)
 nonce+10 ScoreSubmissionRegistry.setRelayer(relayer, true)               // config.relayer, default operator
 nonce+11.. per game (lester-blaster, chikun, stacked):
          AchievementRegistry[slug].setMinter(scoreSubmissionRegistry, true)
@@ -267,10 +267,10 @@ split and `quoteEntry` before `contracts/deployment-record.hardened.json` (schem
    defaults to the relayer/operator key; supply a dedicated funding wallet if the relayer runs on its own
    key.
 4. **Fee approval**: decided 2026-09-16: 0.1 zkLTC flat (`100000000000000000` wei) split 85 % developer /
-   15 % treasury for all three games, **plus** `settlementGasReserveWei` = **0.0001 zkLTC**
-   (`100000000000000` wei, decided 2026-09-22 from measured LiteForge gas; the deploy script's 0.02 zkLTC
-   default is only a fallback when the config omits it). Players pay `quoteEntry(gameId).totalWei`
-   (0.1001 zkLTC). Still open: whether `chikun` and
+   15 % treasury for all three games, **plus** `settlementGasReserveWei` = **0.002 zkLTC**
+   (`2000000000000000` wei, decided 2026-09-23 after LiteForge base fees rose from about 0.01 to about
+   1.5 gwei; it replaces the 0.0001 zkLTC sized on 2026-09-22. The deploy script's 0.02 zkLTC default is
+   only a fallback when the config omits it). Players pay `quoteEntry(gameId).totalWei` (0.102 zkLTC). Still open: whether `chikun` and
    `stacked` should be playable on day one, and the Chikun creator wallet (currently the owner wallet).
 5. **Relayer**: decided 2026-09-16: scores are relayer-settled. `config.relayer` (default operator) is
    allow-listed at deploy; the relayer service's key must hold zkLTC (topped up from `relayerVault`) and
@@ -363,9 +363,9 @@ a fake Vercel CLI and a local HTTP server.
 1. **Config is final.** `contracts/deploy-config.testnet.json` names the operator service key
    `0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF` as deployer and operator, the verifier
    `0x4d637a6C…20C7`, the relayer and relayer vault `0x494aF36e…EAf6`, the owner wallet
-   `0x07cec6Fc…8B26` as developer and treasury, and a settlement reserve of **0.0001 zkLTC**
-   (`"100000000000000"` wei, sized from measured LiteForge gas: 0.01-0.02 gwei, about 5M gas per
-   settlement). Players pay `quoteEntry(gameId).totalWei` = **0.1001 zkLTC**. Retune later without a
+   `0x07cec6Fc…8B26` as developer and treasury, and a settlement reserve of **0.002 zkLTC**
+   (`"2000000000000000"` wei; owner decision 2026-09-23 after LiteForge base fees rose to about 1.5 gwei;
+   a settlement uses about 475k gas). Players pay `quoteEntry(gameId).totalWei` = **0.102 zkLTC**. Retune later without a
    redeploy: `node scripts/operator-actions.mjs reserve <wei>` (dry run first).
 2. **Read the chain, then dry-run the deploy.** `node scripts/operator-actions.mjs status` (read-only:
    operator nonce, which must still be 0, balances, contract state), then `node scripts/deploy-contracts.mjs`
@@ -482,7 +482,7 @@ override only with a loopback `--rpc`); definitions already on chain are skipped
   forwards to `relayerVault` (the relayer address). Rotate with `operator-actions.mjs rotate-verifier` /
   `relayer-off` and replace the env var. Vercel functions are the service.
 - **Fee.** Flat 0.1 zkLTC (`entryFeeWei`, adjustable per game via `setEntryFee`) split 15% treasury / 85%
-  developer, plus a separate settlement gas reserve of 0.0001 zkLTC (`setSettlementGasReserve`) that funds
+  developer, plus a separate settlement gas reserve of 0.002 zkLTC (`setSettlementGasReserve`) that funds
   the relayer. Both treasury and developer wallets are currently the owner wallet `0x07cec6Fc…8B26`; the
   Chikun creator wallet replaces the developer wallet for `chikun` once supplied (`GameRegistry` dev wallet
   + `confirmDevWallet`).
@@ -515,7 +515,7 @@ found under the old names, so the legacy names `VERIFIER_PRIVATE_KEY`, `RELAYER_
 | `RPC_URL` | optional LiteForge RPC override; never echoed | optional |
 | `SESSION_ALLOWED_DOMAINS` | optional comma list; default lestersarcade.io, www, localhost | optional |
 | `SETTLEMENT_PAUSED` | `true` pauses Ranked (emergency stop 1); **never set at launch** | incident only |
-| `RANKED_MIN_PAID_WEI` | minimum `getPaidSession().amountWei` the settle endpoint accepts; default `100100000000000000` (0.1 fee + 0.0001 reserve) | optional |
+| `RANKED_MIN_PAID_WEI` | minimum `getPaidSession().amountWei` the settle endpoint accepts; default `102000000000000000` (0.1 fee + 0.002 reserve) | optional |
 
 ## Flipping hosted profile sync (2026-09-16)
 

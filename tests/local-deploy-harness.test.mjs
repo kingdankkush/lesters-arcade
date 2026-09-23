@@ -332,16 +332,16 @@ test('quoteEntry returns fee plus reserve after activation', async () => {
     for (const game of record.games) {
       const [fee, reserve, total] = await rankedEntry.quoteEntry(game.gameId);
       assert.equal(fee, 100_000_000_000_000_000n, `${game.slug} flat 0.1 zkLTC`);
-      assert.equal(reserve, 100_000_000_000_000n, `${game.slug} 0.0001 zkLTC reserve`);
-      assert.equal(total, 100_100_000_000_000_000n);
+      assert.equal(reserve, 2_000_000_000_000_000n, `${game.slug} 0.002 zkLTC reserve`);
+      assert.equal(total, 102_000_000_000_000_000n);
       assert.equal(total.toString(), game.totalEntryWei);
     }
     // A paid entry lands on the local chain with the quoted total.
     const sessionId32 = ethers.id('local-harness-session');
-    await (await rankedEntry.connect(chain.wallets.player1).openSession(sessionId32, record.games[1].gameId, { value: 100_100_000_000_000_000n })).wait();
+    await (await rankedEntry.connect(chain.wallets.player1).openSession(sessionId32, record.games[1].gameId, { value: 102_000_000_000_000_000n })).wait();
     const paid = await rankedEntry.getPaidSession(sessionId32);
     assert.equal(paid.exists, true);
-    assert.equal(paid.amountWei, 100_100_000_000_000_000n);
+    assert.equal(paid.amountWei, 102_000_000_000_000_000n);
   } finally {
     await chain.revert(snapshot);
   }

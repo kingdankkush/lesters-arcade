@@ -53,6 +53,8 @@ The three service keys:
   "settlementGasReserveWei": "100000000000000"
   ```
 
+  > **Amended 2026-09-23 (owner decision):** LiteForge base fees rose to about 1.5 gwei (from 0.01 gwei on 2026-09-22), so the reserve is now **0.002 zkLTC** (`"settlementGasReserveWei": "2000000000000000"`), and a Ranked entry totals **0.102 zkLTC**. The paragraph below describes the superseded 0.0001 sizing.
+
   The reserve of 0.0001 zkLTC is sized from measured LiteForge gas (0.01 gwei base, 0.02 gwei max on 2026-09-22). It buys about 5M gas per settlement, well above a verified submit with achievement mints. The old 0.02 zkLTC placeholder was about 3,000 times too high.
 - No contract is deployed. `VERIFIER_PRIVATE_KEY`, `RELAYER_PRIVATE_KEY` and `SCORE_REGISTRY_ADDRESS` are not in Vercel.
 - `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` in `apps/portal/src/settlement.mjs` are both `false`.

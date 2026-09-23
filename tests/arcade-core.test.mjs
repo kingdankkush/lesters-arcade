@@ -531,8 +531,8 @@ test('revenue split sends 15% to the treasury and 85% to the developer (owner de
 test('the settlement gas reserve is separate from the flat fee and rides along as one total', async () => {
   const { RANKED_ENTRY_FEE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei } = await import('../apps/portal/src/arcade-core.mjs');
   assert.equal(RANKED_ENTRY_FEE_WEI, '100000000000000000');
-  assert.equal(RANKED_SETTLEMENT_GAS_RESERVE_WEI, '20000000000000000');
-  assert.equal(rankedEntryTotalWei(), '120000000000000000');
+  assert.equal(RANKED_SETTLEMENT_GAS_RESERVE_WEI, '2000000000000000');
+  assert.equal(rankedEntryTotalWei(), '102000000000000000');
   const legacy = calculateRevenueSplit(250_000, { settlement: 1500, dev: 5500, tournament: 1800, community: 1200 }, { settlementGasMicroUnits: 10_000 });
   assert.equal(legacy.settlement, 10_000, 'legacy bucket sets still resolve their settlement reserve');
   assert.equal(legacy.settlementRemainderToDev, 27_500);
@@ -555,7 +555,7 @@ test('settlement plan routes the dev share to the dev wallet', async () => {
   // client plan may only name the session, game and value.
   assert.deepEqual(Object.keys(route.args).sort(), ['gameId', 'sessionId']);
   assert.equal(route.entryFeeWei, '250000000000000000');
-  assert.equal(route.valueWei, '270000000000000000', 'flat fee plus the 0.02 zkLTC settlement gas reserve');
+  assert.equal(route.valueWei, '252000000000000000', 'flat fee plus the 0.002 zkLTC settlement gas reserve');
   assert.equal(plan.revenueSplit.dev, 212_500, '85% of the 250,000 preview units');
   assert.equal(plan.revenueSplit.treasury, 37_500);
   assert.equal(plan.devWallet, '0x' + 'd'.repeat(40));
