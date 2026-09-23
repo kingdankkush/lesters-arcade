@@ -873,22 +873,24 @@ Add these top-level keys. Keep every existing entry, including the pinned `"/(pr
 ]
 ```
 
-Append these rewrites **before** the existing `"/games/:path*"` entry. Order matters: `nonce` must come before `:shareId`.
+Append these rewrites **before** the existing `"/games/:path*"` entry. Order matters: `nonce` must come before `:id`.
 
 ```json
-{ "source": "/s/:shareId([0-9a-fA-F]{64})", "destination": "/api/share-page?id=:shareId" },
+{ "source": "/s/:id([0-9a-fA-F]{64})", "destination": "/api/share-page?id=:id" },
 { "source": "/profile/:wallet(0x[0-9a-fA-F]{40})", "destination": "/index.html" },
 { "source": "/api/session/nonce", "destination": "/api/session-nonce" },
-{ "source": "/api/session/:shareId((?:0x)?[0-9a-fA-F]{64})", "destination": "/api/verified-session?id=:shareId" },
+{ "source": "/api/session/:id((?:0x)?[0-9a-fA-F]{64})", "destination": "/api/verified-session?id=:id" },
 { "source": "/api/settle/status", "destination": "/api/settle-status" },
 { "source": "/api/profile/refresh", "destination": "/api/profile-refresh" },
 { "source": "/api/ranked/seed", "destination": "/api/ranked-seed" },
-{ "source": "/api/share-card/:shareId([0-9a-fA-F]{64}).png", "destination": "/api/share-card?id=:shareId" }
+{ "source": "/api/share-card/:id([0-9a-fA-F]{64}).png", "destination": "/api/share-card?id=:id" }
 ```
 
-Vercel appends the original query string (`?v=<rev>`) to a rewrite destination; `tests/vercel-routing.test.mjs` pins that the card handler reads `v` from the query.
+**Name each captured param after the destination query key** (amended 2026-09-23 by the index fixer). Vercel's router (`@vercel/routing-utils` `replaceSegments`) appends every named source param that the destination pathname does not use and the destination query does not already carry, as `name=$n`. The first draft's `:shareId` → `?id=:shareId` therefore compiled to `/api/verified-session?id=$1&shareId=$1`, and every handler answers an undeclared `shareId` with `400 invalid-query`. With `:id` the compiled destinations carry only `id` (checked with `getTransformedRoutes` from vercel CLI 59.14.0 and 59.25.4, which also confirms path-to-regexp 6 accepts every constrained `:param(...)` form above).
 
-If a live check shows path-to-regexp rejects a constrained `:param(...)` form, use Vercel's regex form (`"^/s/(?<shareId>[0-9a-fA-F]{64})$"` → `"/api/share-page?id=$shareId"`) and pin the chosen form in `tests/vercel-routing.test.mjs`.
+Vercel merges the original query string (`?v=<rev>`) into a rewrite destination; `tests/vercel-routing.test.mjs` pins the compiled routes, that no `/api/` destination gains an undeclared query key, and that the card handler receives `v` from the original query.
+
+Do **not** use Vercel's regex source form as a fallback: the router rejects `"^/s/(?<shareId>[0-9a-fA-F]{64})$"` with `invalid_rewrite` ("invalid `source` pattern").
 
 Headers to add:
 - `X-Robots-Tag: noindex, follow` for `/profile/(.*)`, `/s/(.*)` (share pages are shared links, not index targets) and `/owner/(.*)`.

@@ -2,6 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
+import * as verifiedSessionApi from '../api/verified-session.mjs';
+import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
+import { invoke } from './helpers/fake-http.mjs';
+
 const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
 
 test('Vercel rewrites every SPA deep-link namespace used by the arcade router', () => {
@@ -74,6 +78,24 @@ function sourcePattern(source) {
   return new RegExp(`^${out}$`);
 }
 
+function namedParams(source) {
+  return [...sourcePattern(source).source.matchAll(/\(\?<([A-Za-z0-9_]+)>/g)].map((match) => match[1]);
+}
+
+// Vercel's rewrite rule (@vercel/routing-utils replaceSegments): when the
+// destination PATHNAME uses none of the source's named params, every named
+// param that is not already a destination query key is appended to the query
+// as `name=value`. A `:shareId` feeding `?id=:shareId` therefore reaches the
+// function as `?id=…&shareId=…`, which the handlers' unknown-query check
+// answers with 400 invalid-query.
+function vercelAppendedParams(rule) {
+  const [pathname, search = ''] = rule.destination.split('?');
+  const names = namedParams(rule.source);
+  if (names.some((name) => pathname.includes(`:${name}`))) return [];
+  const declared = new Set([...new URLSearchParams(search).keys()]);
+  return names.filter((name) => !declared.has(name));
+}
+
 // First matching rewrite wins; the original query string is carried through.
 function rewrite(url) {
   const [path, query = ''] = url.split('?');
@@ -81,7 +103,8 @@ function rewrite(url) {
     const match = sourcePattern(rule.source).exec(path);
     if (!match) continue;
     let destination = rule.destination.replace(/:([A-Za-z0-9_]+)/g, (_, name) => match.groups?.[name] ?? '');
-    if (query) destination += `${destination.includes('?') ? '&' : '?'}${query}`;
+    const extra = vercelAppendedParams(rule).map((name) => `${name}=${match.groups?.[name] ?? ''}`);
+    for (const part of [...extra, ...(query ? [query] : [])]) destination += `${destination.includes('?') ? '&' : '?'}${part}`;
     return { source: rule.source, destination };
   }
   return null;
@@ -103,7 +126,7 @@ test('API, share and profile deep links route to their functions', () => {
   const cases = [
     [`/s/${HEX64}`, `/api/share-page?id=${HEX64}`],
     [`/s/${HEX64.toUpperCase()}`, `/api/share-page?id=${HEX64.toUpperCase()}`],
-    [`/profile/${WALLET}`, '/index.html'],
+    [`/profile/${WALLET}`, `/index.html?wallet=${WALLET}`],
     ['/profile', '/index.html'],
     ['/api/session/nonce', '/api/session-nonce'],
     [`/api/session/0x${HEX64}`, `/api/verified-session?id=0x${HEX64}`],
@@ -113,19 +136,106 @@ test('API, share and profile deep links route to their functions', () => {
     ['/api/ranked/seed', '/api/ranked-seed'],
     [`/api/share-card/${HEX64}.png?v=0123456789ab`, `/api/share-card?id=${HEX64}&v=0123456789ab`],
     ['/games/chikun', '/discover/chikun.html'],
-    ['/play/hard-money-heroes/ranked', '/index.html'],
+    ['/play/hard-money-heroes/ranked', '/index.html?path=hard-money-heroes/ranked'],
   ];
   for (const [url, destination] of cases) assert.equal(rewrite(url)?.destination, destination, url);
   for (const url of [`/s/${HEX64.slice(2)}`, `/s/${HEX64}0`, '/profile/0x1234', `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, '/api/session']) {
     assert.equal(rewrite(url), null, `${url} matches no rewrite`);
   }
   const sources = vercel.rewrites.map((rule) => rule.source);
-  assert.ok(sources.indexOf('/api/session/nonce') < sources.indexOf('/api/session/:shareId((?:0x)?[0-9a-fA-F]{64})'), 'nonce is routed before the share id');
-  assert.ok(sources.indexOf('/api/share-card/:shareId([0-9a-fA-F]{64}).png') < sources.indexOf('/games/:path*'), 'the new rewrites come before /games/:path*');
-  assert.equal(vercel.rewrites.find((rule) => rule.source.startsWith('/api/share-card/')).destination, '/api/share-card?id=:shareId', 'the card rewrite adds only id, so ?v=<rev> reaches the handler from the original query');
+  assert.ok(sources.indexOf('/api/session/nonce') < sources.indexOf('/api/session/:id((?:0x)?[0-9a-fA-F]{64})'), 'nonce is routed before the share id');
+  assert.ok(sources.indexOf('/api/share-card/:id([0-9a-fA-F]{64}).png') < sources.indexOf('/games/:path*'), 'the new rewrites come before /games/:path*');
+  assert.equal(vercel.rewrites.find((rule) => rule.source.startsWith('/api/share-card/')).destination, '/api/share-card?id=:id', 'the card rewrite declares only id, so ?v=<rev> reaches the handler from the original query');
   for (const rule of vercel.rewrites.filter((entry) => entry.destination.startsWith('/api/'))) {
     const file = `${rule.destination.split('?')[0].slice(1)}.mjs`;
     assert.ok(existsSync(new URL(`../${file}`, import.meta.url)), `${rule.source} → ${file} exists`);
+  }
+});
+
+// The index rewrites exactly as Vercel's own router compiles them
+// (@vercel/routing-utils getTransformedRoutes, bundled in vercel CLI 59.14.0
+// and 59.25.4, recorded 2026-09-23). path-to-regexp 6 accepts every
+// constrained `:param(...)` form used here. `dest` carries no query key other
+// than the declared ones only because each captured param is named after
+// the destination key (`:id` → `?id=:id`); a `:shareId` compiled to
+// `?id=$1&shareId=$1`, which every handler answers with 400 invalid-query.
+const VERCEL_COMPILED = Object.freeze([
+  { source: '/s/:id([0-9a-fA-F]{64})', destination: '/api/share-page?id=:id', src: '^/s(?:/([0-9a-fA-F]{64}))$', dest: '/api/share-page?id=$1' },
+  { source: '/profile/:wallet(0x[0-9a-fA-F]{40})', destination: '/index.html', src: '^/profile(?:/(0x[0-9a-fA-F]{40}))$', dest: '/index.html?wallet=$1' },
+  { source: '/api/session/nonce', destination: '/api/session-nonce', src: '^/api/session/nonce$', dest: '/api/session-nonce' },
+  { source: '/api/session/:id((?:0x)?[0-9a-fA-F]{64})', destination: '/api/verified-session?id=:id', src: '^/api/session(?:/((?:0x)?[0-9a-fA-F]{64}))$', dest: '/api/verified-session?id=$1' },
+  { source: '/api/settle/status', destination: '/api/settle-status', src: '^/api/settle/status$', dest: '/api/settle-status' },
+  { source: '/api/profile/refresh', destination: '/api/profile-refresh', src: '^/api/profile/refresh$', dest: '/api/profile-refresh' },
+  { source: '/api/ranked/seed', destination: '/api/ranked-seed', src: '^/api/ranked/seed$', dest: '/api/ranked-seed' },
+  { source: '/api/share-card/:id([0-9a-fA-F]{64}).png', destination: '/api/share-card?id=:id', src: '^/api/share-card(?:/([0-9a-fA-F]{64}))\\.png$', dest: '/api/share-card?id=$1' },
+]);
+
+// Routes a URL through the compiled table; Vercel merges the original query
+// string into the destination's.
+function vercelRoute(url) {
+  const [path, query = ''] = url.split('?');
+  for (const route of VERCEL_COMPILED) {
+    const match = new RegExp(route.src).exec(path);
+    if (!match) continue;
+    const destination = route.dest.replace(/\$(\d)/g, (_, index) => match[Number(index)] ?? '');
+    return query ? `${destination}${destination.includes('?') ? '&' : '?'}${query}` : destination;
+  }
+  return null;
+}
+
+const queryKeys = (url) => [...new URLSearchParams(url.split('?')[1] ?? '').keys()].sort();
+
+test('rewrites give API functions only the query keys they declare, as Vercel compiles them', () => {
+  // vercel.json still says what the compiled table was recorded from.
+  const bySource = new Map(vercel.rewrites.map((rule) => [rule.source, rule.destination]));
+  for (const route of VERCEL_COMPILED) assert.equal(bySource.get(route.source), route.destination, `${route.source} is unchanged since the compiled table was recorded`);
+  const recorded = new Set(VERCEL_COMPILED.map((route) => route.source));
+  for (const rule of vercel.rewrites.filter((entry) => entry.destination.startsWith('/api/'))) {
+    assert.ok(recorded.has(rule.source), `${rule.source} is in the compiled table`);
+    assert.deepEqual(vercelAppendedParams(rule), [], `${rule.source}: Vercel appends no named param to ${rule.destination}`);
+  }
+  for (const route of VERCEL_COMPILED.filter((entry) => entry.destination.startsWith('/api/'))) {
+    assert.deepEqual(queryKeys(route.dest), queryKeys(route.destination), `${route.source} compiles to ${route.dest} with no extra query key`);
+  }
+  // The pre-fix naming, run through the same rule, is what production would have got.
+  assert.deepEqual(vercelAppendedParams({ source: '/api/session/:shareId((?:0x)?[0-9a-fA-F]{64})', destination: '/api/verified-session?id=:shareId' }), ['shareId']);
+
+  const cases = [
+    [`/s/${HEX64}`, `/api/share-page?id=${HEX64}`],
+    [`/api/session/0x${HEX64}`, `/api/verified-session?id=0x${HEX64}`],
+    [`/api/session/${HEX64.toUpperCase()}`, `/api/verified-session?id=${HEX64.toUpperCase()}`],
+    ['/api/session/nonce', '/api/session-nonce'],
+    [`/api/share-card/${HEX64}.png?v=0123456789ab`, `/api/share-card?id=${HEX64}&v=0123456789ab`],
+    [`/api/settle/status?sessionId32=0x${HEX64}`, `/api/settle-status?sessionId32=0x${HEX64}`],
+    [`/api/profile/refresh?wallet=${WALLET}`, `/api/profile-refresh?wallet=${WALLET}`],
+  ];
+  for (const [url, destination] of cases) {
+    assert.equal(vercelRoute(url), destination, `${url} (compiled)`);
+    assert.equal(rewrite(url)?.destination, destination, `${url} (model)`);
+  }
+  for (const url of [`/s/${HEX64}0`, `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, `/api/share-card/${HEX64}xpng`]) {
+    assert.equal(vercelRoute(url), null, `${url} matches no compiled route`);
+  }
+});
+
+test('a routed session link reaches E9 with the exact query Vercel sends', async () => {
+  const db = createPgliteClient();
+  try {
+    const session = await seedVerifiedSession(db, { wallet: `0x${'c3'.repeat(20)}`, score: 4321 });
+    const deployment = { status: 'unavailable', chainId: 4441, startBlock: null, addresses: {} };
+    const handler = verifiedSessionApi.createHandler(() => verifiedSessionApi.buildDeps({ VERCEL_ENV: 'development' }, { db, deployment, nowMs: Date.parse('2026-09-23T12:00:00.000Z') }));
+    for (const link of [`/api/session/${session.sessionId32}`, `/api/session/${session.sessionId32.slice(2)}`]) {
+      const url = vercelRoute(link);
+      assert.deepEqual(queryKeys(url), ['id'], link);
+      const response = await invoke(handler, { url });
+      assert.equal(response.status, 200, `${link} → ${url}`);
+      assert.equal(response.body.session.sessionId32, session.sessionId32);
+      assert.equal(response.body.session.score, 4321);
+    }
+    const preFix = await invoke(handler, { url: `/api/verified-session?id=${session.sessionId32}&shareId=${session.sessionId32}` });
+    assert.deepEqual([preFix.status, preFix.body.error], [400, 'invalid-query'], 'the query a :shareId rewrite produced is rejected');
+  } finally {
+    await db.close();
   }
 });
 

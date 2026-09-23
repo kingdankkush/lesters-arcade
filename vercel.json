@@ -230,8 +230,8 @@
       "destination": "/index.html"
     },
     {
-      "source": "/s/:shareId([0-9a-fA-F]{64})",
-      "destination": "/api/share-page?id=:shareId"
+      "source": "/s/:id([0-9a-fA-F]{64})",
+      "destination": "/api/share-page?id=:id"
     },
     {
       "source": "/profile/:wallet(0x[0-9a-fA-F]{40})",
@@ -242,8 +242,8 @@
       "destination": "/api/session-nonce"
     },
     {
-      "source": "/api/session/:shareId((?:0x)?[0-9a-fA-F]{64})",
-      "destination": "/api/verified-session?id=:shareId"
+      "source": "/api/session/:id((?:0x)?[0-9a-fA-F]{64})",
+      "destination": "/api/verified-session?id=:id"
     },
     {
       "source": "/api/settle/status",
@@ -258,8 +258,8 @@
       "destination": "/api/ranked-seed"
     },
     {
-      "source": "/api/share-card/:shareId([0-9a-fA-F]{64}).png",
-      "destination": "/api/share-card?id=:shareId"
+      "source": "/api/share-card/:id([0-9a-fA-F]{64}).png",
+      "destination": "/api/share-card?id=:id"
     },
     {
       "source": "/games/:path*",
