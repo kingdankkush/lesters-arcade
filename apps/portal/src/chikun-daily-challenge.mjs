@@ -1,7 +1,7 @@
 import { createChikunRuntime, replayChikunRun, flapTicksOf, CHIKUN_EVIDENCE_VERSION } from './chikun-cabinet.mjs';
 
 export const CHIKUN_DAILY_CHALLENGE_VERSION = 'chikun-daily-v3';
-export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v3';
+export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v4'; // v4: evidence v6 course; v3 ghosts ran the v5 course
 const MAX_GHOST_SAMPLES = 720;
 const MS_PER_DAY = 86_400_000;
 

@@ -23,6 +23,7 @@ import { CHIKUN_MAX_MESSAGE_BYTES, createChikunBridgeEnvelope, validateChikunChi
 import { REPLAY_FILE_LIMIT, exportChikunReplay, importChikunReplay } from '../apps/chikun/src/replay-file.mjs';
 import { routePilot } from '../scripts/chikun-course-pilot.mjs';
 import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
+import { CHIKUN_GHOST_STORAGE_VERSION, buildChikunGhostTrack, createChikunGhostRecord, ghostYAt, readChikunGhostRecord } from '../apps/portal/src/chikun-daily-challenge.mjs';
 
 const v5Fixtures = JSON.parse(readFileSync(new URL('./fixtures/chikun-v5-replays.json', import.meta.url), 'utf8'));
 const v6Fixtures = JSON.parse(readFileSync(new URL('./fixtures/chikun-v6-replays.json', import.meta.url), 'utf8'));
@@ -306,4 +307,34 @@ test('the child keeps its frame loop alive when a result fails', () => {
   assert.match(source, /if \(runtime\.terminal\) \{\s*try \{ finishRun\(\); \} catch \(error\) \{ reportFrameFailure\(error\); \}/);
   assert.equal(source.match(/requestAnimationFrame\(frame\)/g).length, 2, 'the boot call and the always-run finally');
   assert.match(source, /runtimeVersion: '0\.9\.0'/);
+});
+
+test('daily-challenge ghosts replay v6 flaps', () => {
+  // A v6 run with real taps (the hardcore fixture) becomes a ghost that follows it.
+  const run = v6Fixtures.runs.find((entry) => entry.profile === 'hardcore');
+  const replayed = replayChikunRun(run.evidence);
+  const track = buildChikunGhostTrack(run.evidence);
+  assert.equal(track.terminalTick, replayed.survivalTicks);
+  assert.equal(track.survivalTicks, replayed.survivalTicks);
+  const taps = new Set(flapTicksOf(run.evidence));
+  assert.ok(taps.size > 100);
+  const runtime = createChikunRuntime({ seed: run.evidence.seed, maxTicks: run.evidence.maxTicks });
+  const ys = new Map();
+  while (!runtime.terminal) { const s = runtime.snapshot(); ys.set(s.tick, s.chikun.y); runtime.step({ flap: taps.has(s.tick) }); }
+  ys.set(runtime.snapshot().tick, runtime.snapshot().chikun.y);
+  assert.ok(track.samples.length > 100);
+  for (const sample of track.samples) assert.equal(sample.y, ys.get(sample.tick), `ghost y at tick ${sample.tick}`);
+  // A ghost that lost its flaps would run along the ground and die early.
+  const flapless = buildChikunGhostTrack({ ...run.evidence, flapDeltas: [] });
+  assert.ok(flapless.terminalTick < track.terminalTick);
+  assert.ok(track.samples.some((sample) => sample.y < 500), 'the ghost flies');
+  assert.ok(flapless.samples.every((sample) => sample.y >= 600), 'the flapless ghost never leaves the ground');
+  assert.equal(ghostYAt(track, track.samples[5].tick), track.samples[5].y);
+  const record = createChikunGhostRecord(run.result);
+  assert.equal(record.version, CHIKUN_GHOST_STORAGE_VERSION);
+  assert.equal(record.version, 'chikun-ghost-v4', 'v3 ghosts were recorded on the v5 course');
+  assert.deepEqual(record.samples, track.samples);
+  // A ghost stored before this course (storage v3) is not read back.
+  const stale = { getItem: () => JSON.stringify({ ...record, version: 'chikun-ghost-v3' }) };
+  assert.equal(readChikunGhostRecord(stale, record.seed), null);
 });
