@@ -282,3 +282,28 @@ test('every functions entry points at an existing file', () => {
   }
   assert.ok(existsSync(new URL('../apps/portal/assets/share-cards/.gitkeep', import.meta.url)));
 });
+
+// integration-glue C12: production cards show badge art only if every file
+// the card function reads is inside its includeFiles glob. The badges are
+// byte copies under share-cards/badges (results-share, 786f0129), so the
+// one glob covers the catalog art without shipping achievement-badges/**.
+test('every badge and background the share card reads is inside its includeFiles', async () => {
+  const { shareCardBadgeUrl, shareCardBackgroundUrl } = await import('../api/share-card.mjs');
+  const { ACHIEVEMENT_GAME_IDS, catalogFor } = await import('../apps/portal/src/achievements/index.mjs');
+  const { fileURLToPath } = await import('node:url');
+  const { relative, sep } = await import('node:path');
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const glob = vercel.functions['api/share-card.mjs'].includeFiles;
+  assert.match(glob, /\/\*\*$/);
+  const covered = glob.replace(/\*\*$/, '');
+  const repoPath = (url) => relative(root, fileURLToPath(url)).split(sep).join('/');
+  const images = ACHIEVEMENT_GAME_IDS.flatMap((gameId) => catalogFor(gameId).map((entry) => entry.image));
+  assert.ok(images.length > 100, 'every game catalog has badge art');
+  for (const image of images) {
+    const url = shareCardBadgeUrl(image);
+    assert.ok(url, image);
+    assert.ok(repoPath(url).startsWith(covered), `${image} is read from ${repoPath(url)}, inside ${glob}`);
+    assert.ok(existsSync(url), `${repoPath(url)} is committed`);
+  }
+  for (const gameId of ACHIEVEMENT_GAME_IDS) assert.ok(repoPath(shareCardBackgroundUrl(gameId)).startsWith(covered), gameId);
+});

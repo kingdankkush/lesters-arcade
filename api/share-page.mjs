@@ -17,8 +17,20 @@ import { ensureSchema } from '../server/neon/migrations.mjs';
 import { readPublicSession } from '../server/neon/queries.mjs';
 import { normalizeSessionId32 } from '../server/neon/rows.mjs';
 import { renderSharePage } from '../server/share/render-page.mjs';
+import { arcadeAvatarForUri } from '../apps/portal/src/arcade-avatars.mjs';
 
 export const SHARE_PAGE_QUERY = Object.freeze(['id']);
+
+// The on-chain avatar (PlayerProfileRegistry avatarUri, as the index kept it)
+// as a site-root image path, or null for anything this build does not ship.
+// The page serves from /s/<id>, so the portal's './assets/…' becomes
+// '/assets/…'. Hidden profiles reach here with no avatarUri, and a profile
+// without a public name (hidden or blocked) keeps the default avatar in
+// renderSharePage.
+export function shareAvatarSrc(avatarUri) {
+  const avatar = arcadeAvatarForUri(avatarUri);
+  return avatar ? `/${avatar.src.replace(/^\.\//, '')}` : null;
+}
 
 const cache = {};
 
@@ -37,7 +49,7 @@ export async function sharePageRequest({ query = {} } = {}, deps) {
   } else {
     await ensureSchema(deps.db);
     const session = await readPublicSession(deps.db, sessionId32);
-    page = renderSharePage({ session, status: session ? 200 : 404 });
+    page = renderSharePage({ session, status: session ? 200 : 404, avatarSrc: shareAvatarSrc });
   }
   return { status: page.status, body: page.html, headers: page.headers };
 }
