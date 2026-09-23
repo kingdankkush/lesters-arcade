@@ -84,7 +84,7 @@ test('flapTicksOf reads v5 and v6 evidence alike', () => {
   assert.equal(flapTicksOf(v5), v5.flapSteps, 'v5 flapSteps are returned as they are');
   const v6 = simulateChikunRun({ seed: 22, taps: v5.flapSteps.filter((tick) => tick < 1200), maxTicks: 1200 }).evidence;
   assert.equal(v6.version, CHIKUN_EVIDENCE_VERSION);
-  assert.deepEqual(flapTicksOf(v6), v5.flapSteps.filter((tick) => tick < 1200 && tick <= replayChikunRun(v6).survivalTicks));
+  assert.deepEqual(flapTicksOf(v6), v5.flapSteps.filter((tick) => tick < 1200 && tick < replayChikunRun(v6).survivalTicks));
   assert.deepEqual(flapTicksOf({ version: 'chikun-flap-evidence-v1', flapSteps: [3, 8] }), [3, 8]);
   assert.deepEqual(flapTicksOf({}), []);
   assert.deepEqual(flapTicksOf(null), []);
