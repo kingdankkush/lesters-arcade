@@ -421,3 +421,14 @@ body[data-ranked-results-open] > .name-claim-toast {
   outline: 2px solid var(--crypto-cyan, #19f7ff);
   outline-offset: 3px;
 }
+/* On a phone the child's result panel fills the screen and ends in its own
+   buttons, so the reopen button moves to the top-left corner, over the
+   cabinet's score readout instead of a control. */
+@media (max-width: 720px), (max-height: 560px) {
+  .cabinet-results-reopen {
+    top: max(8px, env(safe-area-inset-top));
+    bottom: auto;
+    padding: 8px 14px;
+    font-size: 0.74rem;
+  }
+}
