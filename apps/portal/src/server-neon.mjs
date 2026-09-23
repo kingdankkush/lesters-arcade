@@ -40,25 +40,5 @@ export function createNeonClient({ connectionString, fetchImpl = globalThis.fetc
   });
 }
 
-export const PROFILE_SCHEMA_SQL = `CREATE TABLE IF NOT EXISTS arcade_profiles (
-  wallet TEXT PRIMARY KEY,
-  document JSONB NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-)`;
-
-export async function ensureProfileSchema(client) {
-  await client.query(PROFILE_SCHEMA_SQL);
-}
-
-export async function readProfile(client, wallet) {
-  const rows = await client.query('SELECT wallet, document, updated_at FROM arcade_profiles WHERE wallet = $1', [wallet]);
-  return rows[0] ?? null;
-}
-
-export async function writeProfile(client, wallet, document) {
-  const rows = await client.query(
-    'INSERT INTO arcade_profiles (wallet, document, updated_at) VALUES ($1, $2::jsonb, now()) ON CONFLICT (wallet) DO UPDATE SET document = EXCLUDED.document, updated_at = now() RETURNING wallet, updated_at',
-    [wallet, JSON.stringify(document)],
-  );
-  return rows[0] ?? null;
-}
+// The schema lives in server/neon/migrations.mjs (contract §3). The legacy
+// arcade_profiles document table is no longer created or read (D4).
