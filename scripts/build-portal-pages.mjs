@@ -1,6 +1,7 @@
-import { readFileSync,writeFileSync,mkdirSync } from 'node:fs';
+import { readFileSync,writeFileSync,mkdirSync,mkdtempSync,rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { resolve } from 'node:path';
+import { join,resolve } from 'node:path';
 import { PORTAL_GAMES, PORTAL_FLAGS, escapeHtml, portalCopyFor, portalPageMeta, portalSchema, renderCatalog, renderGameDetails } from '../apps/portal/src/portal-content.mjs';
 
 const portal=fileURLToPath(new URL('../apps/portal/',import.meta.url));
@@ -106,12 +107,27 @@ export function buildPortalPages({flags,outDir=portal}={}){
 // Files written by buildPortalPages, relative to its outDir.
 export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt']);
 
-// CLI: node scripts/build-portal-pages.mjs [--flags live|preview] [--out <dir>]
+// Renders into a scratch directory and returns the generated files under outDir
+// that differ from that render. Nothing under outDir is written.
+export function stalePortalPages({flags,outDir=portal}={}){
+  const scratch=mkdtempSync(join(tmpdir(),'portal-pages-check-'));
+  try{
+    buildPortalPages({flags,outDir:scratch});
+    return PORTAL_GENERATED_FILES.filter(name=>{
+      let current=null;
+      try{current=readFileSync(resolve(outDir,name),'utf8');}catch{}
+      return current!==readFileSync(resolve(scratch,name),'utf8');
+    });
+  }finally{rmSync(scratch,{recursive:true,force:true});}
+}
+
+// CLI: node scripts/build-portal-pages.mjs [--flags live|preview] [--out <dir>] [--check]
 export function parsePortalPagesArgs(argv){
   const options={};
   for(let index=0;index<argv.length;index++){
+    if(argv[index]==='--check'){options.check=true;continue;}
     const [name,inline]=argv[index].split(/=(.*)/s);
-    if(name!=='--flags'&&name!=='--out')throw new RangeError('unknown argument '+argv[index]+' (use --flags live|preview and --out <dir>)');
+    if(name!=='--flags'&&name!=='--out')throw new RangeError('unknown argument '+argv[index]+' (use --flags live|preview, --out <dir> and --check)');
     const value=inline ?? argv[++index];
     if(!value)throw new RangeError(name+' needs a value');
     if(name==='--flags'){resolvePortalFlags(value);options.flags=value;}
@@ -123,8 +139,17 @@ export function parsePortalPagesArgs(argv){
 if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
   const options=parsePortalPagesArgs(process.argv.slice(2));
   const flags=resolvePortalFlags(options.flags);
-  if(!options.outDir&&(flags.settlementLive!==PORTAL_FLAGS.settlementLive||flags.hostedProfileSync!==PORTAL_FLAGS.hostedProfileSync))
-    console.warn('Warning: --flags '+options.flags+' differs from settlement.mjs and rewrites apps/portal. Never commit these pages (contract §11 rule 9).');
-  buildPortalPages(options);
-  console.log('Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference ('+portalCopyFor(flags).state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
+  const state=portalCopyFor(flags).state;
+  if(options.check){
+    const stale=stalePortalPages(options);
+    if(stale.length){
+      console.error('Stale generated pages ('+state+' copy): '+stale.join(', ')+'. Run node scripts/build-portal-pages.mjs and commit the output.');
+      process.exitCode=1;
+    } else console.log('Generated pages are current ('+state+' copy).');
+  } else {
+    if(!options.outDir&&(flags.settlementLive!==PORTAL_FLAGS.settlementLive||flags.hostedProfileSync!==PORTAL_FLAGS.hostedProfileSync))
+      console.warn('Warning: --flags '+options.flags+' differs from settlement.mjs and rewrites apps/portal. Never commit these pages (contract §11 rule 9).');
+    buildPortalPages(options);
+    console.log('Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
+  }
 }

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
-  PORTAL_GENERATED_FILES, buildPortalPages, parsePortalPagesArgs, renderCopyBlock, resolvePortalFlags,
+  PORTAL_GENERATED_FILES, buildPortalPages, parsePortalPagesArgs, renderCopyBlock, resolvePortalFlags, stalePortalPages,
 } from '../scripts/build-portal-pages.mjs';
 import { PORTAL_FLAGS, PORTAL_GAMES, escapeHtml, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
 
@@ -123,6 +123,7 @@ test('the flag override accepts only live or preview, and markers must be unique
   for (const bad of ['on', 'true', '', 1, { settlementLive: 'yes', hostedProfileSync: true }]) assert.throws(() => resolvePortalFlags(bad));
   assert.deepEqual(parsePortalPagesArgs(['--flags', 'live']), { flags: 'live' });
   assert.deepEqual(parsePortalPagesArgs(['--flags=preview']), { flags: 'preview' });
+  assert.deepEqual(parsePortalPagesArgs(['--check', '--flags', 'live']), { check: true, flags: 'live' });
   assert.throws(() => parsePortalPagesArgs(['--flags', 'staging']), /live or preview/);
   assert.throws(() => parsePortalPagesArgs(['--flags']), /needs a value/);
   assert.throws(() => parsePortalPagesArgs(['--live']), /unknown argument/);
@@ -142,4 +143,26 @@ test('the CLI writes an overridden render only to --out and leaves the committed
     assert.deepEqual(readAll(portal), before);
     for (const game of PORTAL_GAMES) assert.match(readFileSync(join(dir, `discover/${game.slug}.html`), 'utf8'), /0\.1001 testnet zkLTC per run/);
   });
+});
+
+test('check mode reports stale pages without writing anything', () => {
+  const before = readAll(portal);
+  assert.deepEqual(stalePortalPages(), [], 'the committed pages are current');
+  const staleForLaunch = stalePortalPages({ flags: 'live' });
+  for (const name of ['index.html', 'trust.html', 'llms.txt', 'manifest.webmanifest', ...PORTAL_GAMES.map(game => `discover/${game.slug}.html`), 'discover/games.html']) {
+    assert.ok(staleForLaunch.includes(name), `${name} changes at the step-7 flip`);
+  }
+  assert.ok(!staleForLaunch.includes('sitemap.xml') && !staleForLaunch.includes('robots.txt'), 'the sitemap and robots file do not depend on the flags');
+  withTempDir(dir => {
+    buildPortalPages({ flags: 'live', outDir: dir });
+    assert.deepEqual(stalePortalPages({ flags: 'live', outDir: dir }), []);
+    assert.deepEqual(stalePortalPages({ outDir: dir }).sort(), [...staleForLaunch].sort());
+  });
+  const current = spawnSync(process.execPath, [builder, '--check'], { encoding: 'utf8' });
+  assert.equal(current.status, 0, current.stderr);
+  assert.match(current.stdout, /Generated pages are current/);
+  const launchCheck = spawnSync(process.execPath, [builder, '--check', '--flags', 'live'], { encoding: 'utf8' });
+  assert.equal(launchCheck.status, 1);
+  assert.match(launchCheck.stderr, /Stale generated pages \(launch copy\): index\.html.*trust\.html/);
+  assert.deepEqual(readAll(portal), before);
 });
