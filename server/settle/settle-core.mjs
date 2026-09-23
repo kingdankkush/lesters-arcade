@@ -608,11 +608,16 @@ export async function settleStatusRequest({ query = {}, headers = {}, ip = 'unkn
 
 // --- Production deps (A30) ------------------------------------------------------
 
-async function optionalImport(load, label) {
+// The verify and achievements modules are required parts of the deployment,
+// loaded at request time. An import that fails (including
+// ERR_MODULE_NOT_FOUND, a file the function bundle lacks) returns null, so
+// the endpoint fails closed with 503 settlement-not-configured, and is logged
+// by label, error name and code only (never the message, which names paths).
+export async function optionalImport(load, label) {
   try {
     return await load();
   } catch (error) {
-    if (error?.code !== 'ERR_MODULE_NOT_FOUND') logSafeError(`settle:import:${label}`, error);
+    logSafeError(`settle:import:${label}`, error);
     return null;
   }
 }
@@ -623,22 +628,24 @@ function pickFunctions(module, names) {
 }
 
 // The verify slice's functions (server/verify/index.mjs), resolved at request
-// time; null when the module cannot load, so the endpoint fails closed with
-// 503 (tests/api-settle-handler.test.mjs proves the real module loads here).
-export async function loadVerifyModule() {
-  return pickFunctions(await optionalImport(() => import('../verify/index.mjs'), 'verify'), ['bindRankedIdentity', 'verifyRankedRun', 'computeEvidenceDigest', 'reverifyStoredRun']);
+// time; null when the module or anything it imports statically (for example
+// apps/portal/src/achievements/stats.mjs) cannot load, so E3, E15 and E13
+// answer 503 verify-unavailable (tests/api-settle-handler.test.mjs proves the
+// real module loads here). `load` is a test seam.
+export async function loadVerifyModule(load = () => import('../verify/index.mjs')) {
+  return pickFunctions(await optionalImport(load, 'verify'), ['bindRankedIdentity', 'verifyRankedRun', 'computeEvidenceDigest', 'reverifyStoredRun']);
 }
 
 // The achievements registry (§6.2), resolved at request time; null when it
 // cannot load (the endpoint then fails closed).
-export async function loadAchievementRegistry() {
-  return pickFunctions(await optionalImport(() => import('../../apps/portal/src/achievements/index.mjs'), 'achievements'), ['deriveEarnedAchievements', 'historyFieldsFor', 'nftAchievementIds', 'achievementById', 'catalogFor']);
+export async function loadAchievementRegistry(load = () => import('../../apps/portal/src/achievements/index.mjs')) {
+  return pickFunctions(await optionalImport(load, 'achievements'), ['deriveEarnedAchievements', 'historyFieldsFor', 'nftAchievementIds', 'achievementById', 'catalogFor']);
 }
 
 // HMH_HERO_GATES and HMH_FREE_HEROES (server/verify/hmh.mjs), loaded only for
 // an HMH settle or ticket; null when that module cannot load.
-export async function loadHeroGates() {
-  const module = await optionalImport(() => import('../verify/hmh.mjs'), 'hmh');
+export async function loadHeroGates(load = () => import('../verify/hmh.mjs')) {
+  const module = await optionalImport(load, 'hmh');
   if (!module?.HMH_HERO_GATES || typeof module.HMH_HERO_GATES !== 'object' || !Array.isArray(module.HMH_FREE_HEROES)) return null;
   return Object.freeze({ gates: module.HMH_HERO_GATES, free: module.HMH_FREE_HEROES });
 }

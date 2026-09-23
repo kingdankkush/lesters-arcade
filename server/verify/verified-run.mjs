@@ -10,11 +10,18 @@
 //
 // Stats: the mappers are exactly statsFromChikunResult, statsFromStackedTuple
 // and statsFromHmhRunSummary of apps/portal/src/achievements/stats.mjs
-// (achievements slice, §6.3), imported statically, so a missing or broken
-// stats module fails when the verifier loads, never at settle time. The
-// verify slice's interim fallback (a mirror of those mappers, kept while its
-// base lacked the achievements slice) was removed at the settle-wiring
-// integration, after it gave deepEqual stats on every committed ranked fixture.
+// (achievements slice, §6.3), imported statically, so there is one copy of
+// them. A missing or broken stats module therefore breaks every per-game
+// verifier that imports this file (chikun.mjs, stacked.mjs, hmh.mjs). Those
+// load lazily, per request (index.mjs, and settle's loadHeroGates for
+// hmh.mjs), so the failure shows at request time, not at deploy time: an HMH
+// settle or ticket answers 503 settlement-not-configured with detail
+// hero-gates-unavailable, a Chikun or STACKED replay throws (settle answers
+// 500 internal-error and the cron waits), and settle logs each failed import
+// by error name and code. The verify slice's interim fallback (a mirror of
+// those mappers, kept while its base lacked the achievements slice) was
+// removed at the settle-wiring integration, after it gave deepEqual stats on
+// every committed ranked fixture.
 import { statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple } from '../../apps/portal/src/achievements/stats.mjs';
 import { RANKED_GAMES, rankedEnvelopeHash } from '../../apps/portal/src/ranked-identity.mjs';
 

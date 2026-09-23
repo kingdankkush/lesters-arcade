@@ -4,13 +4,15 @@ import test, { after, before } from 'node:test';
 import { ethers } from 'ethers';
 
 import { buildSiweChallenge } from '../apps/portal/src/wallet-auth.mjs';
-import { RANKED_GAMES, rankedEnvelopeHash } from '../apps/portal/src/ranked-identity.mjs';
+import { RANKED_GAME_IDS, RANKED_GAMES, RANKED_SESSION_HANDLE_PATTERN, rankedEnvelopeHash, validateRankedIdentity } from '../apps/portal/src/ranked-identity.mjs';
 import { deriveRankedSeed } from '../apps/portal/src/session-seed.mjs';
 import * as achievements from '../apps/portal/src/achievements/index.mjs';
 import * as verify from '../server/verify/index.mjs';
 import { HMH_FREE_HEROES, HMH_HERO_GATES } from '../server/verify/hmh.mjs';
 import { issueSeedTicket } from '../server/verify/seed-ticket.mjs';
 import { periodKeysFor } from '../server/neon/period-keys.mjs';
+import { loadAchievementRegistry, loadHeroGates, loadVerifyModule } from '../server/settle/settle-core.mjs';
+import { BUILD_HASH_PATTERNS, loadIssueSeedTicket, SESSION_HANDLE_PATTERN, validateSeedBody } from '../server/settle/seed.mjs';
 import * as settleApi from '../api/settle.mjs';
 import * as statusApi from '../api/settle-status.mjs';
 import * as seedApi from '../api/ranked-seed.mjs';
@@ -25,7 +27,7 @@ import {
   openPaidSession, REAL_SETTLEMENT_GAS_RESERVE_WEI, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE,
 } from './helpers/settle-fixtures.mjs';
 import {
-  buildFixtureBody, FIXTURE_BUILD_HASHES, FIXTURE_UUID, FIXTURE_VERIFY_AT_MS, fixtureVerifyOptions, readFixture,
+  buildFixtureBody, FIXTURE_BUILD_HASHES, FIXTURE_REGISTRY, FIXTURE_UUID, FIXTURE_VERIFY_AT_MS, FIXTURE_WALLET, fixtureVerifyOptions, readFixture,
 } from './fixtures/ranked/build-fixtures.mjs';
 
 /**
@@ -484,6 +486,68 @@ test('the retry cron re-signs from re-verified stored evidence and publishes eac
     const status = await getStatus(body.sessionId32);
     assert.deepEqual([status.body.view, status.body.status, status.body.txHash], ['public', 'confirmed', row.tx_hash]);
   }
+});
+
+test('a verify, achievements, hero-gate or seed-ticket module that cannot load is logged by code and fails closed at request time', async (t) => {
+  const errors = t.mock.method(console, 'error', () => {});
+  const missing = (file) => () => Promise.reject(Object.assign(new Error(`Cannot find module '/var/task/${file}'`), { code: 'ERR_MODULE_NOT_FOUND' }));
+  const broken = () => Promise.reject(new SyntaxError('Unexpected token in /var/task/apps/portal/src/achievements/stats.mjs'));
+  assert.equal(await loadVerifyModule(missing('server/verify/seed-ticket.mjs')), null);
+  assert.equal(await loadAchievementRegistry(missing('apps/portal/src/achievements/index.mjs')), null);
+  assert.equal(await loadHeroGates(missing('apps/portal/src/achievements/stats.mjs')), null);
+  assert.equal(await loadIssueSeedTicket(missing('server/verify/seed-ticket.mjs')), null);
+  assert.equal(await loadVerifyModule(broken), null);
+  assert.deepEqual(errors.mock.calls.map((call) => call.arguments), [
+    ['[settle:import:verify]', 'Error', 'ERR_MODULE_NOT_FOUND'],
+    ['[settle:import:achievements]', 'Error', 'ERR_MODULE_NOT_FOUND'],
+    ['[settle:import:hmh]', 'Error', 'ERR_MODULE_NOT_FOUND'],
+    ['[settle:import:seed-ticket]', 'Error', 'ERR_MODULE_NOT_FOUND'],
+    ['[settle:import:verify]', 'SyntaxError', 'none'],
+  ], 'every failed import is logged, by label, error name and code only (never the message or path)');
+
+  // What buildDeps hands E3, E15 and E13 when the verify module cannot load.
+  const withoutVerify = (api, { provider = true } = {}) => api.createHandler(async () => {
+    const overrides = { db, deployment: local.deployment, nowMs };
+    if (provider) overrides.provider = local.chain.provider;
+    const deps = await api.buildDeps(env, overrides);
+    deps.verify = await loadVerifyModule(missing('server/verify/index.mjs'));
+    return deps;
+  });
+  const player = local.chain.wallets.player1;
+  const settled = await invoke(withoutVerify(settleApi), { method: 'POST', url: '/api/settle', headers: await authHeaders(player), body: {} });
+  const seeded = await invoke(withoutVerify(seedApi, { provider: false }), { method: 'POST', url: '/api/ranked-seed', headers: await authHeaders(player), body: {} });
+  const cron = await invoke(withoutVerify(retryApi), { url: '/api/cron/settle-retry', headers: { authorization: `Bearer ${SETTLE_CRON_VALUE}` } });
+  for (const [name, response] of [['E3', settled], ['E15', seeded], ['E13', cron]]) {
+    assert.deepEqual([response.status, response.body.error, response.body.detail], [503, 'settlement-not-configured', 'verify-unavailable'], name);
+  }
+});
+
+test('E15 checks the session handle, season and build hash with the verifier\'s own rules', () => {
+  // The same objects, not copies (review: a drifted copy would issue tickets
+  // for sessions E3 refuses after payment).
+  assert.equal(SESSION_HANDLE_PATTERN, RANKED_SESSION_HANDLE_PATTERN);
+  assert.deepEqual(Object.keys(BUILD_HASH_PATTERNS), [...RANKED_GAME_IDS]);
+  for (const gameId of RANKED_GAME_IDS) assert.equal(BUILD_HASH_PATTERNS[gameId], RANKED_GAMES[gameId].buildHashPattern, gameId);
+  // And the same verdicts: E15 accepts exactly the combinations whose
+  // identity passes the verifier's format checks.
+  const sessionIds = [`game-session-${FIXTURE_UUID}`, 'game-session-000000001', 'game-session-AAAAAAAA-BBBB-4CCC-8DDD-EEEEEEEEEEEE', `game-session-${FIXTURE_UUID.replace('-4111-', '-9111-')}`];
+  const seasonIds = [...RANKED_GAME_IDS.map((gameId) => RANKED_GAMES[gameId].seasonId), 'chikun-season-preview-2'];
+  const buildHashes = [...Object.values(FIXTURE_BUILD_HASHES), 'site-1.7:game-1.7.0', 'site-1.7.0:game-1.7.0:cabinet-0.9'];
+  let accepted = 0;
+  for (const gameId of RANKED_GAME_IDS) {
+    for (const sessionId of sessionIds) {
+      for (const seasonId of seasonIds) {
+        for (const buildHash of buildHashes) {
+          const identity = { sessionId, chainId: 4441, scoreRegistryAddress: FIXTURE_REGISTRY, wallet: FIXTURE_WALLET, gameId, seasonId, buildHash, seed: 7, nonce: sessionId.slice('game-session-'.length) };
+          const e3 = validateRankedIdentity(identity, { chainId: 4441, scoreRegistryAddress: FIXTURE_REGISTRY, wallet: FIXTURE_WALLET, gameId });
+          assert.equal(validateSeedBody({ gameId, sessionId, seasonId, buildHash }), e3.ok, `${gameId} ${sessionId} ${seasonId} ${buildHash}: ${e3.error ?? 'ok'}`);
+          if (e3.ok) accepted += 1;
+        }
+      }
+    }
+  }
+  // Both cabinet build hashes fit Chikun and STACKED; one fits HMH.
+  assert.equal(accepted, 5);
 });
 
 // --- The settle doubles against the real verify functions (DoD 2) -------------
