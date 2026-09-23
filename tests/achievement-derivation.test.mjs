@@ -4,22 +4,24 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 import {
-  ACHIEVEMENTS, connectPlayerAccount, createInitialArcadeState, recordScore, resolveAchievementUnlocksForRun, startPlaySession,
+  ACHIEVEMENTS, ACHIEVEMENT_LIST, connectPlayerAccount, createInitialArcadeState, recordScore, resolveAchievementUnlocksForRun, startPlaySession,
 } from '../apps/portal/src/arcade-core.mjs';
 import { buildChikunReplayClaim, replayChikunRun, simulateChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 import { replayStackedRun } from '../apps/portal/src/stacked-sim.mjs';
-import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
+import { FREE_MEDALS } from '../apps/stacked/src/free-medals.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
 import {
   achievementById, achievementId32, catalogFor, deriveEarnedAchievements, emptyHistory, historyFieldsFor, nftAchievementIds,
 } from '../apps/portal/src/achievements/index.mjs';
 import { statAt } from '../apps/portal/src/achievements/entry.mjs';
-import { HMH_DAMAGE_CHAIN_DAMAGE } from '../apps/portal/src/achievements/hmh.mjs';
+import { HMH_DAMAGE_CHAIN_DAMAGE, HMH_DISTRICT_STAGES } from '../apps/portal/src/achievements/hmh.mjs';
 import {
   hmhRecordScoreInputsFromRunSummary, hmhResolverInputsFromRunSummary, statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple,
 } from '../apps/portal/src/achievements/stats.mjs';
 import { HMH_PLANS, buildHmhSummary } from './fixtures/achievements/build-fixtures.mjs';
 
 const read = (path) => JSON.parse(readFileSync(fileURLToPath(new URL(path, import.meta.url)), 'utf8'));
+const CATALOG_DOC = readFileSync(fileURLToPath(new URL('../docs/game-design/achievement-catalogs-20260923.md', import.meta.url)), 'utf8');
 const HMH = read('./fixtures/achievements/hmh-run-summary.json');
 const CHIKUN = read('./fixtures/achievements/chikun-v6-result.json');
 const STACKED = read('./fixtures/achievements/stacked-tuple.json');
@@ -94,6 +96,32 @@ test('stats mappers produce the contract shapes from real runs', () => {
   assert.deepEqual(boss.uniquePowerUps, ['berserk-candle', 'bonus-life', 'hash-rail-core', 'scatter-shotgun-cache', 'time-dilation']);
   assert.deepEqual(boss.familyKills, { goblin: 196, drone: 75, gasBeast: 64, enforcer: 42 });
   assert.equal(statsFromHmhRunSummary(HMH.runs['grenade-run']).meleeKills, 18, 'melee = Litecoin Knife + Forked Standard kills');
+
+  // The 0|1 flags. bossEngaged reads the schema-6 milestone tick (0 = never engaged),
+  // and falls back to a boss kill without it; perfectBossKill needs a boss kill and no damage.
+  assert.equal(HMH.runs['short-run'].milestones.bossEngagedTick, 0);
+  assert.equal(statsFromHmhRunSummary(HMH.runs['short-run']).bossEngaged, 0);
+  assert.equal(boss.perfectBossKill, 0, 'a boss kill with damage taken');
+  const untouched = statsFromHmhRunSummary(HMH.runs['untouched-run']);
+  assert.deepEqual([untouched.noDamage, untouched.perfectBossKill, untouched.bossEngaged], [1, 0, 0], 'no damage but no boss kill');
+  const flawlessBoss = structuredClone(HMH.runs['boss-run']);
+  flawlessBoss.totals.damageTaken = 0;
+  const flawless = statsFromHmhRunSummary(flawlessBoss);
+  assert.deepEqual([flawless.noDamage, flawless.perfectBossKill, flawless.bossEngaged], [1, 1, 1]);
+  const noMilestone = structuredClone(HMH.runs['boss-run']);
+  delete noMilestone.milestones.bossEngagedTick;
+  assert.equal(statsFromHmhRunSummary(noMilestone).bossEngaged, 1);
+  noMilestone.kills.boss = 0;
+  assert.equal(statsFromHmhRunSummary(noMilestone).bossEngaged, 0);
+
+  // Chikun speedMultiplierReached keeps 2 decimals (§6.3).
+  for (const [name, fixture] of Object.entries(CHIKUN.runs)) {
+    const speed = statsFromChikunResult(fixture.result).speedMultiplierReached;
+    assert.equal(speed, Number(fixture.result.speedMultiplierReached.toFixed(2)), name);
+    assert.equal(speed, Math.round(speed * 100) / 100, name);
+  }
+  assert.equal(statsFromChikunResult({ ...CHIKUN.runs.hardcore.result, speedMultiplierReached: 1.23456 }).speedMultiplierReached, 1.23);
+  assert.equal(statsFromChikunResult({ ...CHIKUN.runs.hardcore.result, speedMultiplierReached: 1.999 }).speedMultiplierReached, 2);
 });
 
 test('committed HMH fixtures are rebuilt byte-for-byte by the sdk accumulator', () => {
@@ -127,6 +155,17 @@ test('derivation excludes already-unlocked and unavailable entries', () => {
   assert.deepEqual(ids(first), order.filter((id) => ids(first).includes(id)));
   assert.ok(Object.isFrozen(first));
   assert.equal(first[0], achievementById('chikun', first[0].id), 'derivation returns the catalog entries themselves');
+
+  // A finished loop reaches every region: the hardcore run ends in the Forest on
+  // its third lap, yet earns every region and both loop ids.
+  const hardcore = chikunRun('hardcore');
+  assert.deepEqual([hardcore.stats.laps, hardcore.stats.regionIndexReached], [2, 1]);
+  for (const id of ['chikun-reach-forest', 'chikun-reach-town', 'chikun-reach-city', 'chikun-reach-industrial', 'chikun-reach-suburbs', 'chikun-reach-coast', 'chikun-loop-1', 'chikun-loop-2']) {
+    assert.ok(ids(first).includes(id), `${id} is earned by a two-loop run`);
+  }
+  const lapless = run('chikun', { ...hardcore.stats, laps: 0 });
+  assert.ok(achievementById('chikun', 'chikun-reach-forest').criteria(lapless, history('chikun')));
+  assert.ok(!achievementById('chikun', 'chikun-reach-town').criteria(lapless, history('chikun')), 'without a loop only the regions passed count');
 
   assert.throws(() => deriveEarnedAchievements('stacked', { ...stackedRun(), gameId: 'chikun' }, history('stacked')), /gameId/);
   assert.throws(() => deriveEarnedAchievements('stacked', { gameId: 'stacked' }, history('stacked')), /stats/);
@@ -302,60 +341,294 @@ const sessionOf = (gameId, stats, count) => history(gameId, {
   sums: Object.fromEntries(historyFieldsFor(gameId).sum.map((path) => [path, statAt(stats, path) * count])),
   maxima: Object.fromEntries(historyFieldsFor(gameId).max.map((path) => [path, statAt(stats, path)])),
 });
-// STACKED thresholds the soak pilot cannot calibrate (it plays for singles): anchored on the Free medals.
-const STACKED_MEDAL_ANCHORED = new Set([
-  'stacked-first-halving', 'stacked-halvings-total-5', 'stacked-first-spin-lock', 'stacked-first-hold',
-  'stacked-halvings-3', 'stacked-first-perfect-clear', 'stacked-spins-10', 'stacked-chain-5', 'stacked-b2b-streak-2',
-  'stacked-halvings-10', 'stacked-perfect-clears-3', 'stacked-spins-25', 'stacked-chain-10', 'stacked-b2b-streak-5', 'stacked-b2b-streak-10',
-]);
+const TIER_RANK = Object.freeze({ bronze: 0, silver: 1, gold: 2, platinum: 3, diamond: 4, mythic: 5 });
+
+// The Chikun and STACKED tables of the owner-review doc, one rule per row:
+// run count (`history.runs + 1 ≥ N`), cumulative (Σ `path ≥ N`), region reached
+// (`laps ≥ 1` or `regionIndexReached ≥ N`) or best single run (`path ≥ N`).
+function docCatalog(heading) {
+  const start = CATALOG_DOC.indexOf(`\n## ${heading}`);
+  assert.ok(start >= 0, `the catalog doc has a ${heading} section`);
+  const section = CATALOG_DOC.slice(start + 1, CATALOG_DOC.indexOf('\n## ', start + 1));
+  const rows = new Map();
+  for (const line of section.split('\n').filter((row) => /^\| \d+ \| `/.test(row))) {
+    const [, , id, title, tier, category, criterion, available, nft, source] = line.split('|').map((cell) => cell.trim());
+    const number = (text) => Number(text.replace(/,/g, ''));
+    const runsMatch = criterion.match(/^`history\.runs \+ 1 ≥ ([\d,]+)`/);
+    const reachMatch = criterion.match(/^`laps ≥ 1` or `regionIndexReached ≥ (\d+)`/);
+    const ruleMatch = criterion.match(/^(Σ )?`([a-zA-Z][a-zA-Z0-9.]*) ≥ ([\d,.]+)`/);
+    let rule = null;
+    if (runsMatch) rule = { kind: 'runs', path: null, target: number(runsMatch[1]) };
+    else if (reachMatch) rule = { kind: 'reach', path: 'regionIndexReached', target: number(reachMatch[1]) };
+    else if (ruleMatch) rule = { kind: ruleMatch[1] ? 'total' : 'best', path: ruleMatch[2], target: number(ruleMatch[3]) };
+    assert.ok(rule, `${heading} row ${id}: criterion "${criterion}" names one rule`);
+    rows.set(id.replace(/`/g, ''), { ...rule, title, tier, category, available, nft, source });
+  }
+  return rows;
+}
+const DOC_RULES = { chikun: docCatalog("Chikun's Escape (40)"), stacked: docCatalog('STACKED (40)') };
+const statsWith = (path, value) => (path.includes('.') ? { [path.split('.')[0]]: { [path.split('.')[1]]: value } } : { [path]: value });
+
+test('Chikun and STACKED thresholds match the owner-review doc and rise with the tier', () => {
+  for (const [gameId, rules] of Object.entries(DOC_RULES)) {
+    const entries = catalogFor(gameId);
+    assert.deepEqual([...rules.keys()], entries.map((entry) => entry.id), `${gameId}: the doc lists every entry, in catalog order`);
+    for (const entry of entries) {
+      const rule = rules.get(entry.id);
+      assert.deepEqual([rule.title, rule.tier, rule.category, rule.nft.startsWith('**yes**')], [entry.title, entry.tier, entry.category, entry.nft], entry.id);
+      const empty = history(gameId);
+      const at = (stats, prior = empty) => entry.criteria(run(gameId, stats), prior);
+      const below = rule.target - 1e-6;
+      assert.equal(entry.progress(null, empty).target, rule.target, `${entry.id} progress target`);
+      if (rule.kind === 'runs') {
+        assert.equal(at({}, history(gameId, { runs: rule.target - 1 })), true, entry.id);
+        if (rule.target > 1) assert.equal(at({}, history(gameId, { runs: rule.target - 2 })), false, entry.id);
+      } else if (rule.kind === 'total') {
+        assert.equal(at(statsWith(rule.path, 0), history(gameId, { sums: { ...empty.sums, [rule.path]: rule.target } })), true, `${entry.id} counts history`);
+        assert.equal(at(statsWith(rule.path, 0), history(gameId, { sums: { ...empty.sums, [rule.path]: below } })), false, entry.id);
+        assert.equal(at(statsWith(rule.path, 1), history(gameId, { sums: { ...empty.sums, [rule.path]: rule.target - 1 } })), true, `${entry.id} counts this run`);
+      } else if (rule.kind === 'reach') {
+        assert.equal(at({ laps: 0, regionIndexReached: rule.target }), true, entry.id);
+        assert.equal(at({ laps: 0, regionIndexReached: rule.target - 1 }), false, entry.id);
+        assert.equal(at({ laps: 1, regionIndexReached: 0 }), true, `${entry.id} after a finished loop`);
+      } else {
+        assert.equal(at(statsWith(rule.path, rule.target)), true, `${entry.id} at ${rule.path} ${rule.target}`);
+        assert.equal(at(statsWith(rule.path, below)), false, `${entry.id} just below ${rule.target}`);
+        const pastRuns = history(gameId, { runs: 99, sums: { ...empty.sums, [rule.path]: rule.target * 99 } });
+        assert.equal(at(statsWith(rule.path, 0), pastRuns), false, `${entry.id} is a single-run best, not a total`);
+      }
+    }
+    // Within one stat and rule kind, a rarer tier always needs strictly more.
+    const ordered = [...rules].filter(([, rule]) => rule.kind !== 'runs');
+    for (const [idA, a] of ordered) {
+      for (const [idB, b] of ordered) {
+        if (a.kind === b.kind && a.path === b.path && TIER_RANK[a.tier] < TIER_RANK[b.tier]) {
+          assert.ok(a.target < b.target, `${idA} (${a.tier} ${a.target}) sits below ${idB} (${b.tier} ${b.target})`);
+        }
+      }
+    }
+    const volume = [...rules].filter(([, rule]) => rule.kind === 'runs').sort(([, a], [, b]) => TIER_RANK[a.tier] - TIER_RANK[b.tier]);
+    for (let i = 1; i < volume.length; i += 1) assert.ok(volume[i - 1][1].target < volume[i][1].target, `${gameId} run counts rise with the tier`);
+  }
+});
+
+// Chikun ids that sit past their tier's anchor percentile (silver: intermediate
+// median; gold: expert or hardcore median), with the harness percentile that
+// first reaches them. Each is on the doc's "What to review" list for owner O1.
+const CHIKUN_TIER_EDGES = Object.freeze({
+  'chikun-survive-6m': ['intermediate', 'p99'],
+  'chikun-speed-2x': ['intermediate', 'p90'],
+  'chikun-loop-2': ['hardcore', 'p90'],
+  'chikun-survive-10m': ['hardcore', 'p90'],
+  'chikun-survive-12m': ['exceptional', 'p90'],
+});
+// STACKED thresholds the soak pilot reaches only by accident (it plays for
+// singles). Seven equal a Free medal threshold ([medal id, stats path]; the
+// medal counts spin clears, the tuple only spin locks) ...
+const STACKED_MEDAL_ANCHORS = Object.freeze({
+  'stacked-first-halving': ['stacked-first-quad', 'quadClears'],
+  'stacked-first-spin-lock': ['stacked-first-spin', 'spins'],
+  'stacked-first-perfect-clear': ['stacked-perfect-clear', 'perfectClears'],
+  'stacked-chain-5': ['stacked-combo-5', 'maxCombo'],
+  'stacked-chain-10': ['stacked-combo-10', 'maxCombo'],
+  'stacked-halvings-10': ['stacked-quad-10', 'quadClears'],
+  'stacked-b2b-streak-10': ['stacked-b2b-10', 'maxBackToBack'],
+});
+// ... and eight are estimates between medal thresholds on the same stat
+// ([stats path, medal it must exceed or null, medal it must stay under or null]).
+const STACKED_ESTIMATES = Object.freeze({
+  'stacked-halvings-total-5': ['quadClears', 'stacked-first-quad', 'stacked-quad-10'],
+  'stacked-first-hold': ['holdsUsed', null, null],
+  'stacked-halvings-3': ['quadClears', 'stacked-first-quad', 'stacked-quad-10'],
+  'stacked-spins-10': ['spins', 'stacked-first-spin', null],
+  'stacked-b2b-streak-2': ['maxBackToBack', null, 'stacked-b2b-10'],
+  'stacked-perfect-clears-3': ['perfectClears', 'stacked-perfect-clear', null],
+  'stacked-spins-25': ['spins', 'stacked-first-spin', null],
+  'stacked-b2b-streak-5': ['maxBackToBack', null, 'stacked-b2b-10'],
+});
+const WHAT_TO_REVIEW = CATALOG_DOC.slice(CATALOG_DOC.indexOf('## What to review'), CATALOG_DOC.indexOf('## How the catalogs work'));
 
 test('bronze thresholds are reachable at the novice median, platinum sits at or above exceptional p90', () => {
   // Chikun: the harness JSON (plus the near-miss-chasing sample for combo and near misses).
   assert.equal(HARNESS.course.evidenceVersion, 'chikun-flap-evidence-v6');
+  const chikunAt = (profile, percentile) => run('chikun', chikunProfileStats(profile, percentile, profile));
   const novice = run('chikun', chikunProfileStats('novice', 'p50'));
   const firstSession = sessionOf('chikun', novice.stats, 4); // a first session: five novice-median runs
   for (const entry of catalogFor('chikun').filter((e) => e.tier === 'bronze')) {
     assert.ok(entry.criteria(novice, firstSession), `${entry.id} is earned in a first session of novice-median runs`);
   }
   const exceptionalP90 = run('chikun', lower(chikunProfileStats('exceptional', 'p90', 'exceptional')));
-  const exceptionalP99 = run('chikun', chikunProfileStats('exceptional', 'p99', 'exceptional'));
+  const exceptionalP99 = chikunAt('exceptional', 'p99');
   for (const entry of catalogFor('chikun').filter((e) => e.tier === 'platinum')) {
     assert.equal(entry.criteria(exceptionalP90, history('chikun')), false, `${entry.id} is not earned below the exceptional p90`);
     assert.equal(entry.criteria(exceptionalP99, history('chikun')), true, `${entry.id} is reached by the exceptional p99`);
   }
-  // Every single-run Chikun threshold is reachable by the top of the sampled distributions.
-  for (const entry of catalogFor('chikun').filter((e) => e.progress && !['volume', 'distance'].includes(e.category))) {
-    assert.ok(entry.criteria(exceptionalP99, history('chikun')), `${entry.id} is reachable`);
+  // Silver is reached at the intermediate median and gold at the expert or hardcore
+  // median (either strategy), except the listed edges, which the owner reviews.
+  const anchors = { silver: [chikunAt('intermediate', 'p50')], gold: [chikunAt('expert', 'p50'), chikunAt('hardcore', 'p50')] };
+  for (const entry of catalogFor('chikun').filter((e) => (e.tier === 'silver' || e.tier === 'gold') && !['volume', 'distance'].includes(e.category))) {
+    const atAnchor = anchors[entry.tier].some((sample) => entry.criteria(sample, history('chikun')));
+    const edge = CHIKUN_TIER_EDGES[entry.id];
+    if (!edge) {
+      assert.ok(atAnchor, `${entry.id} (${entry.tier}) is reached at its tier's median`);
+      continue;
+    }
+    assert.ok(!atAnchor, `${entry.id} is listed as an edge, so it must sit past its tier's median`);
+    assert.ok(entry.criteria(chikunAt(...edge), history('chikun')), `${entry.id} is reached at the ${edge.join(' ')}`);
+    assert.match(WHAT_TO_REVIEW, new RegExp(`\`${entry.id}\``), `${entry.id} is on the doc's review list`);
   }
-  // Silver sits at or below the intermediate p90, gold at or below the hardcore p90 (both strategies).
-  const intermediateP90 = run('chikun', chikunProfileStats('intermediate', 'p90', 'intermediate'));
-  const expertP90 = run('chikun', chikunProfileStats('expert', 'p90', 'expert'));
-  const hardcoreP90 = run('chikun', chikunProfileStats('hardcore', 'p90', 'hardcore'));
-  for (const entry of catalogFor('chikun').filter((e) => e.tier === 'silver' && !['volume', 'distance'].includes(e.category))) {
-    assert.ok(entry.criteria(intermediateP90, history('chikun')) || entry.criteria(expertP90, history('chikun')), `${entry.id} is within intermediate-expert reach`);
-  }
-  for (const entry of catalogFor('chikun').filter((e) => e.tier === 'gold')) {
-    assert.ok(entry.criteria(hardcoreP90, history('chikun')) || entry.criteria(exceptionalP99, history('chikun')), `${entry.id} is within hardcore reach`);
-  }
+  // The cumulative silver: nine intermediate-median runs fly 50 km.
+  const intermediate = chikunAt('intermediate', 'p50');
+  const haul = achievementById('chikun', 'chikun-distance-50km');
+  assert.ok(haul.criteria(intermediate, sessionOf('chikun', intermediate.stats, 8)));
+  assert.ok(!haul.criteria(intermediate, sessionOf('chikun', intermediate.stats, 7)));
 
-  // STACKED: the throttled soak-pilot profiles, for the thresholds they can calibrate.
+  // STACKED: the throttled soak-pilot profiles, for the thresholds they calibrate.
+  const anchored = new Set([...Object.keys(STACKED_MEDAL_ANCHORS), ...Object.keys(STACKED_ESTIMATES)]);
   const stackedNovice = run('stacked', stackedProfileStats('novice', 'p50'));
   const stackedSession = sessionOf('stacked', stackedNovice.stats, 4);
-  for (const entry of catalogFor('stacked').filter((e) => e.tier === 'bronze' && !STACKED_MEDAL_ANCHORED.has(e.id))) {
+  for (const entry of catalogFor('stacked').filter((e) => e.tier === 'bronze' && !anchored.has(e.id))) {
     assert.ok(entry.criteria(stackedNovice, stackedSession), `${entry.id} is earned in a first session of novice-median runs`);
   }
   const stackedP90 = run('stacked', lower(stackedProfileStats('exceptional', 'p90')));
   const stackedP99 = run('stacked', stackedProfileStats('exceptional', 'p99'));
   for (const entry of catalogFor('stacked').filter((e) => e.tier === 'platinum')) {
     assert.equal(entry.criteria(stackedP90, history('stacked')), false, `${entry.id} is not earned below the exceptional p90`);
-    if (!STACKED_MEDAL_ANCHORED.has(entry.id)) assert.equal(entry.criteria(stackedP99, history('stacked')), true, `${entry.id} is reached by the exceptional p99`);
+    // Bot-calibrated platinum is reached at the exceptional p99; the one medal-anchored platinum keeps the medal's threshold.
+    if (!anchored.has(entry.id)) assert.equal(entry.criteria(stackedP99, history('stacked')), true, `${entry.id} is reached by the exceptional p99`);
+    else assert.ok(STACKED_MEDAL_ANCHORS[entry.id], `${entry.id} platinum rests on a medal, not an estimate`);
   }
   const stackedHardcore = run('stacked', stackedProfileStats('hardcore', 'p50'));
   const stackedIntermediate = run('stacked', stackedProfileStats('intermediate', 'p50'));
-  for (const entry of catalogFor('stacked').filter((e) => !STACKED_MEDAL_ANCHORED.has(e.id) && e.category !== 'volume' && !e.id.includes('total'))) {
+  for (const entry of catalogFor('stacked').filter((e) => !anchored.has(e.id) && e.category !== 'volume' && !e.id.includes('total'))) {
     if (entry.tier === 'silver') assert.ok(entry.criteria(stackedIntermediate, history('stacked')), `${entry.id} at the intermediate median`);
     if (entry.tier === 'gold') assert.ok(entry.criteria(stackedHardcore, history('stacked')), `${entry.id} at the hardcore median`);
   }
+  assert.ok(achievementById('stacked', 'stacked-lines-total-1000').criteria(stackedIntermediate, sessionOf('stacked', stackedIntermediate.stats, 8)), 'nine intermediate-median runs clear 1,000 rows');
+
+  // Medal anchors keep the medal's threshold on the matching stat; estimates stay
+  // between their medals and are marked in the doc.
+  const medal = (id) => FREE_MEDALS.find((row) => row.id === id);
+  for (const [id, [medalId, path]] of Object.entries(STACKED_MEDAL_ANCHORS)) {
+    const rule = DOC_RULES.stacked.get(id);
+    assert.deepEqual([rule.path, rule.target], [path, medal(medalId).threshold], `${id} equals medal ${medalId}`);
+    assert.ok(medal(medalId).field === path || (medalId === 'stacked-first-spin' && medal(medalId).field === 'spinClears'), id);
+    assert.match(rule.source, new RegExp(`Medal \`${medalId.replace('stacked-', '')}\``), `${id} names its medal in the doc`);
+  }
+  for (const [id, [path, above, under]] of Object.entries(STACKED_ESTIMATES)) {
+    const rule = DOC_RULES.stacked.get(id);
+    assert.equal(rule.path, path, id);
+    if (above) assert.ok(rule.target > medal(above).threshold, `${id} sits above medal ${above}`);
+    if (under) assert.ok(rule.target < medal(under).threshold, `${id} sits under medal ${under}`);
+    assert.match(rule.source, /\*\*estimate\*\*/, `${id} is marked as an estimate in the doc`);
+    assert.match(WHAT_TO_REVIEW, new RegExp(`\`${id}\``), `${id} is on the doc's review list`);
+  }
+  const marked = [...DOC_RULES.stacked].filter(([, rule]) => /\*\*estimate\*\*/.test(rule.source)).map(([id]) => id);
+  assert.deepEqual(marked.sort(), Object.keys(STACKED_ESTIMATES).sort(), 'the doc marks exactly these STACKED estimates');
+});
+
+// The legacy requirement of an ACHIEVEMENT_DEFINITIONS entry as the catalog rule
+// the server applies to §6.3 stats. Remaps are explicit; see the catalog doc.
+const HMH_REMAPS = Object.freeze({
+  'cabinet-pioneer': { kind: 'runs', target: 1 }, // legacy { login: true }: settling a run needs a signed-in wallet
+  'first-blood': { kind: 'total', path: 'kills', target: 1 }, // the legacy resolver counts the running kill total
+  'first-grenade-kill': { kind: 'total', path: 'grenadeKills', target: 1 },
+  'first-powerup': { kind: 'total', path: 'powerUpsCollected', target: 1 },
+  'spread-ltc-specialist': { kind: 'weapon', weaponId: 'scatter-shotgun' }, // legacy 'spread-ltc'
+  'damage-chain': { kind: 'best', path: 'damageDealt', target: HMH_DAMAGE_CHAIN_DAMAGE }, // legacy maxDamageCombo 250
+  'weapon-collector': { kind: 'best', path: 'uniqueWeaponCount', target: 3 }, // legacy uniqueWeapons across runs
+});
+const CUMULATIVE_REQUIREMENTS = Object.freeze({
+  cumulativeKills: 'kills', cumulativeGrenadeKills: 'grenadeKills', cumulativeMeleeKills: 'meleeKills', cumulativePowerUps: 'powerUpsCollected',
+  cumulativeBossKills: 'bossKills', cumulativeSeconds: 'survivalSeconds',
+});
+const districtsForStage = (stage) => HMH_DISTRICT_STAGES.find(([, legacyStage]) => legacyStage === stage)[0];
+function expectedHmhRule(definition) {
+  if (HMH_REMAPS[definition.id]) return HMH_REMAPS[definition.id];
+  const r = definition.requirement;
+  const keys = Object.keys(r).sort().join(',');
+  if (keys === 'paidRuns') return { kind: 'runs', target: r.paidRuns };
+  if (keys === 'score') return { kind: 'best', path: 'score', target: r.score };
+  if (keys === 'kills') return { kind: 'best', path: 'kills', target: r.kills };
+  if (keys === 'bossId') return { kind: 'best', path: 'bossKills', target: 1 };
+  if (keys === 'elapsedSeconds') return { kind: 'best', path: 'survivalSeconds', target: r.elapsedSeconds };
+  if (keys === 'maxCombo') return { kind: 'best', path: 'maxCombo', target: r.maxCombo };
+  if (keys === 'weaponId') return { kind: 'weapon', weaponId: r.weaponId };
+  if (keys === 'uniquePowerUps') return { kind: 'uniquePowerUps', target: r.uniquePowerUps };
+  if (keys === 'stageIndexReached') return { kind: 'best', path: 'districtsVisited', target: districtsForStage(r.stageIndexReached) };
+  if (keys === 'bossId,stageIndexReached') return { kind: 'districtsAnd', districts: districtsForStage(r.stageIndexReached), path: 'bossKills', target: 1 };
+  if (keys === 'grenadeKills,stageIndexReached') return { kind: 'districtsAnd', districts: districtsForStage(r.stageIndexReached), path: 'grenadeKills', target: r.grenadeKills };
+  if (keys === 'cumulativeKills,enemyId' && r.enemyId === 'gas-beast') return { kind: 'total', path: 'familyKills.gasBeast', target: r.cumulativeKills };
+  if (keys === 'cumulativeKills,family') return { kind: 'total', path: `familyKills.${r.family}`, target: r.cumulativeKills };
+  if (keys.split(',').length === 1 && CUMULATIVE_REQUIREMENTS[keys]) return { kind: 'total', path: CUMULATIVE_REQUIREMENTS[keys], target: r[keys] };
+  return null;
+}
+
+test('HMH catalog thresholds match the ACHIEVEMENT_DEFINITIONS requirements', () => {
+  // Zeroed §6.3 stats, then one field at a time.
+  const zero = JSON.parse(JSON.stringify(hmhRun('short-run').stats, (key, value) => (typeof value === 'number' ? 0 : Array.isArray(value) ? [] : value)));
+  const withStats = (changes) => {
+    const stats = structuredClone(zero);
+    for (const [path, value] of Object.entries(changes)) {
+      const [head, tail] = path.split('.');
+      if (tail === undefined) stats[head] = value; else stats[head][tail] = value;
+    }
+    return run('lester-blaster', stats);
+  };
+  const empty = history('lester-blaster');
+  const withSums = (sums, overrides = {}) => history('lester-blaster', { ...overrides, sums: { ...empty.sums, ...sums } });
+  let checked = 0;
+  for (const definition of ACHIEVEMENT_LIST) {
+    const entry = achievementById('lester-blaster', definition.id);
+    if (!entry.available) continue;
+    const rule = expectedHmhRule(definition);
+    assert.ok(rule, `${definition.id}: its requirement maps to a catalog rule`);
+    const at = (changes, prior = empty) => entry.criteria(withStats(changes), prior);
+    const id = definition.id;
+    if (rule.kind === 'runs') {
+      assert.equal(at({}, history('lester-blaster', { runs: rule.target - 1 })), true, id);
+      if (rule.target > 1) assert.equal(at({}, history('lester-blaster', { runs: rule.target - 2 })), false, id);
+      assert.equal(at({ kills: 1e6, score: 1e9, survivalSeconds: 1e6 }, history('lester-blaster', { runs: Math.max(0, rule.target - 2) })), rule.target === 1, `${id} counts runs only`);
+    } else if (rule.kind === 'best') {
+      assert.equal(at({ [rule.path]: rule.target }), true, `${id} at ${rule.path} ${rule.target}`);
+      assert.equal(at({ [rule.path]: rule.target - 1e-6 }), false, `${id} just below ${rule.target}`);
+      assert.equal(at({ [rule.path]: 0 }, withSums({ [rule.path]: rule.target * 50 }, { runs: 50 })), false, `${id} is a single-run best`);
+    } else if (rule.kind === 'total') {
+      assert.equal(at({ [rule.path]: 0 }, withSums({ [rule.path]: rule.target })), true, `${id} counts history`);
+      assert.equal(at({ [rule.path]: 0 }, withSums({ [rule.path]: rule.target - 1 })), false, `${id} just below ${rule.target}`);
+      assert.equal(at({ [rule.path]: 1 }, withSums({ [rule.path]: rule.target - 1 })), true, `${id} counts this run`);
+      assert.equal(at({ [rule.path]: rule.target - 1 }), false, `${id} below ${rule.target} in one run`);
+    } else if (rule.kind === 'weapon') {
+      assert.equal(at({ weaponsUsed: [rule.weaponId] }), true, id);
+      assert.equal(at({ weaponsUsed: HMH_RUN_SUMMARY_CATALOGS.weapons.filter((weaponId) => weaponId !== rule.weaponId) }), false, id);
+    } else if (rule.kind === 'uniquePowerUps') {
+      const powerUps = HMH_RUN_SUMMARY_CATALOGS.collectibles.filter((effectId) => effectId !== 'litecoin-token');
+      assert.equal(at({ uniquePowerUps: powerUps.slice(0, rule.target) }), true, id);
+      assert.equal(at({ uniquePowerUps: powerUps.slice(0, rule.target - 1), powerUpsCollected: 99 }), false, id);
+    } else if (rule.kind === 'districtsAnd') {
+      assert.equal(at({ districtsVisited: rule.districts, [rule.path]: rule.target }), true, id);
+      assert.equal(at({ districtsVisited: rule.districts, [rule.path]: rule.target - 1 }), false, `${id} needs ${rule.path} ${rule.target}`);
+      assert.equal(at({ districtsVisited: rule.districts - 1, [rule.path]: rule.target }), false, `${id} needs ${rule.districts} districts`);
+    }
+    if (entry.progress && rule.target !== undefined && rule.kind !== 'districtsAnd') {
+      assert.equal(entry.progress(null, empty).target, rule.target, `${id} progress target`);
+    }
+    checked += 1;
+  }
+  assert.equal(checked, 44, 'every available HMH id is pinned to its legacy requirement');
+  // Six districts without a boss kill are not a getaway (the loop above covers five districts with one).
+  const getaway = achievementById('lester-blaster', 'getaway-clear');
+  const sixNoBoss = structuredClone(HMH.runs['boss-run']);
+  sixNoBoss.kills.boss = 0;
+  assert.equal(statsFromHmhRunSummary(sixNoBoss).districtsVisited, 6);
+  assert.equal(getaway.criteria(run('lester-blaster', statsFromHmhRunSummary(sixNoBoss)), history('lester-blaster')), false);
+  assert.ok(!resolveAchievementUnlocksForRun(hmhResolverInputsFromRunSummary(sixNoBoss)).includes('getaway-clear'), 'the browser resolver agrees');
+  // Hard Fork Hero: 20 grenade kills with all six districts, in one run.
+  const fork = achievementById('lester-blaster', 'hard-fork-hero');
+  const boss = hmhRun('boss-run').stats; // 6 districts, 24 grenade kills
+  assert.equal(fork.criteria(run('lester-blaster', { ...boss, grenadeKills: 20 }), history('lester-blaster')), true);
+  assert.equal(fork.criteria(run('lester-blaster', { ...boss, grenadeKills: 19 }), withSums({ grenadeKills: 500 })), false, 'history grenade kills do not count');
+  assert.equal(fork.criteria(run('lester-blaster', { ...boss, districtsVisited: 5 }), history('lester-blaster')), false);
 });
 
 test('HMH resolver inputs use the legacy enemy ids and stage thresholds', () => {

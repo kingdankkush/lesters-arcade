@@ -8,10 +8,16 @@
 
 1. **Thresholds.**
    - Chikun's thresholds come from the difficulty harness (`docs/qa/chikun-difficulty-harness-20260923.json`, 200 bot runs per profile). Combo and near-miss thresholds also use a near-miss-chasing sample (below), because harness bots never aim for near misses.
-   - STACKED's thresholds come from a soak pilot throttled to five human speeds. Halvings, spins, perfect clears, combos and back-to-back are anchored on the 16 Free medals, because the pilot never sets those up. Four of them (`stacked-spins-10`, `stacked-spins-25`, `stacked-perfect-clears-3`, `stacked-b2b-streak-5`) have no medal to anchor on and are marked **estimate**.
-   - These sit at the edge of their tier, or rest on estimates, and need a decision:
-     - `chikun-survive-6m` and `chikun-speed-2x` are silver but only reached around the intermediate p90;
-     - `chikun-survive-12m` is gold but reached around the exceptional median;
+   - STACKED's thresholds come from a soak pilot throttled to five human speeds. The pilot plays for singles, so it makes Halvings, perfect clears and back-to-back chains only by accident (exceptional Halvings p50 5, hardcore perfect clears p90 1) and never spins. Those thresholds are anchored on the 16 Free medals instead:
+     - seven copy a medal threshold exactly: `stacked-first-halving`, `stacked-first-spin-lock`, `stacked-first-perfect-clear`, `stacked-chain-5`, `stacked-chain-10`, `stacked-halvings-10`, `stacked-b2b-streak-10`;
+     - eight have no medal to copy and are marked **estimate**, each placed between the medals on the same stat: `stacked-halvings-total-5`, `stacked-first-hold`, `stacked-halvings-3`, `stacked-spins-10`, `stacked-b2b-streak-2`, `stacked-perfect-clears-3`, `stacked-spins-25`, `stacked-b2b-streak-5`.
+   - The tier rule the tests enforce on every bot-calibrated threshold: bronze is earned in a first session of five novice-median runs; silver is reached at the intermediate median; gold at the expert or hardcore median; platinum fails just below the exceptional p90. These five Chikun ids break that rule and need a decision:
+     - `chikun-survive-6m` (silver) is reached at the intermediate p99 (6.27 min) or the expert median (7.30), not at the intermediate median (4.78);
+     - `chikun-speed-2x` (silver) is reached at the intermediate p90 (2.28x; the median is 1.73x);
+     - `chikun-loop-2` (gold) is reached at the hardcore p90; the hardcore median is 1.5 loops, so about half of hardcore runs make it;
+     - `chikun-survive-10m` (gold) is reached at the hardcore p90 (10.70 min; median 9.05, p75 10.32);
+     - `chikun-survive-12m` (gold) is reached only at the exceptional p90 (14.18 min; exceptional median 11.82, hardcore p99 11.83), so in practice it is a platinum.
+   - Also open:
      - STACKED platinum assumes survival at 20G, and the bots handle 20G better than most people will;
      - HMH `damage-chain` now means 20,000 damage in one run, estimated from the reboot health curve with no measured runs.
 2. **Unavailable HMH ids (13).**
@@ -97,16 +103,20 @@ The three hunt achievements count families of reboot enemy roles (`HMH_ROLE_FAMI
   | hardcore | 14 / 4 / 2% | 1.8 pieces/s | 7.17 min | 307 | 30 |
   | exceptional | 10 / 3 / 1% | 2.3 pieces/s | 14.39 min | 835 | 30 |
 
-  The expert profile hits a wall at the level 17-20 lock delays. Only the hardcore and exceptional profiles survive 20G. The pilot plays for singles, so its Halvings, spins, perfect clears and back-to-back chains are accidental. Those thresholds are anchored on the Free medal order in `apps/stacked/src/free-medals.mjs`:
+  The expert profile hits a wall at the level 17-20 lock delays. Only the hardcore and exceptional profiles survive 20G. The pilot plays for singles, so its Halvings, perfect clears and back-to-back chains are accidental (exceptional Halvings p50 5 and p99 10.4, hardcore perfect clears p90 1, back-to-back never above 2), and it never spins. Those thresholds are anchored on the Free medal order in `apps/stacked/src/free-medals.mjs`:
   1. `first-seal`, `first-quad`, `first-spin`, `combo-5`, `survive-180`;
   2. `lines-40`, `combo-10`, `zone-3`, `survive-360`, `quad-10`;
   3. `perfect-clear`, `lines-150`, `zone-6`, `survive-900`, `b2b-10`, `ranked-25`.
 - **Rebuilding the samples.** `node tests/fixtures/achievements/build-fixtures.mjs --calibrate` rebuilds both samples (about 3 minutes on 24 logical CPUs). Without the flag it rebuilds the test fixtures.
 - **Tests.** `tests/achievement-derivation.test.mjs` reads the harness, skim and soak JSON and checks the tier rules:
   - every bronze is earned in a first session of five novice-median runs;
-  - every platinum fails just below the exceptional p90 and is reached at the exceptional p99;
-  - Chikun silver and gold sit within intermediate-to-expert and hardcore reach;
-  - bot-calibrated STACKED silver and gold hold at the intermediate and hardcore medians.
+  - Chikun silver is reached at the intermediate median and gold at the expert or hardcore median, except the five ids on the "What to review" list, each reached at the percentile named there;
+  - bot-calibrated STACKED silver and gold hold at the intermediate and hardcore medians;
+  - the seven medal-anchored STACKED thresholds equal their medal, and the eight estimates sit between the medals on their stat;
+  - every platinum fails just below the exceptional p90 and is reached at the exceptional p99, except `stacked-b2b-streak-10`, which keeps the medal `b2b-10` threshold;
+  - within one stat, a rarer tier always needs more.
+
+  The same file parses the Chikun and STACKED tables below and checks every criterion against the code. It also checks each available HMH criterion against its `ACHIEVEMENT_DEFINITIONS` requirement, with the remaps shown in the HMH table.
 
 ## Hard Money Heroes (57)
 
@@ -195,19 +205,19 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Harness" is the harn
 | 15 | `chikun-reach-coast` | Coastal Escape | silver | region | `laps ≥ 1` or `regionIndexReached ≥ 6` | yes | no | Harness intermediate loop-0 region p50 6 (novice p90 6) |
 | 16 | `chikun-loop-1` | Full Circuit | silver | loop | `laps ≥ 1` | yes | no | Harness intermediate p50 1 (novice p90 1) |
 | 17 | `chikun-survive-4m` | Four-Minute Flight | silver | survival | `survivalSeconds ≥ 240` | yes | no | Harness intermediate p50 4.78 min |
-| 18 | `chikun-survive-6m` | Six-Minute Flight | silver | survival | `survivalSeconds ≥ 360` | yes | no | Harness intermediate p99 6.27 / expert p10 5.53 min: **top edge of silver** |
+| 18 | `chikun-survive-6m` | Six-Minute Flight | silver | survival | `survivalSeconds ≥ 360` | yes | no | Harness intermediate p99 6.27 / expert p50 7.30 min (intermediate p50 4.78): **edge of silver** |
 | 19 | `chikun-forks-50` | Obstacle Course | silver | forks | `forksPassed ≥ 50` | yes | no | Harness intermediate p50 50 |
 | 20 | `chikun-coins-60` | Coin Collector | silver | coins | `coinsCollected ≥ 60` | yes | no | Harness intermediate p50 68 |
 | 21 | `chikun-combo-5` | Combo Chick | silver | combo | `bestCombo ≥ 5` | yes | no | Harness intermediate p50 5; skim intermediate p50 5.5 |
 | 22 | `chikun-near-miss-10` | Feather Trimmer | silver | near-miss | `nearMisses ≥ 10` | yes | no | Skim intermediate p50 10 (harness p99 is 7: players who avoid close calls rarely get it) |
 | 23 | `chikun-flawless-5` | Spotless Flight | silver | flawless | `flawlessRegions ≥ 5` | yes | no | Harness intermediate p50 5 |
-| 24 | `chikun-speed-2x` | Double Time | silver | speed | `speedMultiplierReached ≥ 2` | yes | no | Harness intermediate p90 2.28 / expert p10 2.09 (reached at 5.4 min): **top edge of silver** |
+| 24 | `chikun-speed-2x` | Double Time | silver | speed | `speedMultiplierReached ≥ 2` | yes | no | Harness intermediate p90 2.28x (median 1.73x) / expert p10 2.09x (reached at 5.4 min): **edge of silver** |
 | 25 | `chikun-runs-25` | Coop Veteran | silver | volume | `history.runs + 1 ≥ 25` | yes | no | Volume |
-| 26 | `chikun-distance-50km` | Long Haul | silver | distance | Σ `distanceMeters ≥ 50,000` | yes | no | About 8 intermediate-median runs (harness p50 6,132 m) |
-| 27 | `chikun-loop-2` | Double Circuit | gold | loop | `laps ≥ 2` | yes | no | Harness hardcore p50 1.5, p90 2; exceptional p50 2 |
+| 26 | `chikun-distance-50km` | Long Haul | silver | distance | Σ `distanceMeters ≥ 50,000` | yes | no | Nine intermediate-median runs (harness p50 6,132 m each) |
+| 27 | `chikun-loop-2` | Double Circuit | gold | loop | `laps ≥ 2` | yes | no | Harness hardcore p50 1.5 (about half of hardcore runs), p90 2; exceptional p50 2: **edge of gold** |
 | 28 | `chikun-survive-8m` | Eight-Minute Flight | gold | survival | `survivalSeconds ≥ 480` | yes | no | Harness hardcore p50 9.05 min (expert p50 7.30) |
-| 29 | `chikun-survive-10m` | Ten-Minute Flight | gold | survival | `survivalSeconds ≥ 600` | yes | no | Harness hardcore p75 10.32 min |
-| 30 | `chikun-survive-12m` | Twelve-Minute Flight | gold | survival | `survivalSeconds ≥ 720` | yes | no | Harness exceptional p50 11.82 / hardcore p99 11.83 min |
+| 29 | `chikun-survive-10m` | Ten-Minute Flight | gold | survival | `survivalSeconds ≥ 600` | yes | no | Harness hardcore p90 10.70 min (p50 9.05, p75 10.32): **edge of gold** |
+| 30 | `chikun-survive-12m` | Twelve-Minute Flight | gold | survival | `survivalSeconds ≥ 720` | yes | no | Harness exceptional p90 14.18 min (exceptional p50 11.82, hardcore p99 11.83): **past gold**, reached like a platinum |
 | 31 | `chikun-forks-90` | Fork Veteran | gold | forks | `forksPassed ≥ 90` | yes | no | Harness hardcore p50 95.5 |
 | 32 | `chikun-coins-200` | Coin Hoard | gold | coins | `coinsCollected ≥ 200` | yes | no | Harness hardcore p50 204 |
 | 33 | `chikun-combo-20` | Combo Rooster | gold | combo | `bestCombo ≥ 20` | yes | no | Skim hardcore p50 20 (harness exceptional p99 25) |
@@ -229,10 +239,10 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | 2 | `stacked-level-2` | Block Height 2 | bronze | level | `level ≥ 2` | yes | no | Soak novice p10 1.9, p50 4.5 |
 | 3 | `stacked-lines-25` | Twenty-Five Rows | bronze | lines | `lines ≥ 25` | yes | no | Soak novice p50 37.5 |
 | 4 | `stacked-lines-total-100` | Hundred-Row Ledger | bronze | lines | Σ `lines ≥ 100` | yes | no | About 3 novice-median runs |
-| 5 | `stacked-first-halving` | First Halving | bronze | halving | `quadClears ≥ 1` | yes | no | Medal `first-quad` (2nd of 16); the pilot never builds for Halvings |
-| 6 | `stacked-halvings-total-5` | Halving Habit | bronze | halving | Σ `quadClears ≥ 5` | yes | no | Medal `first-quad`, over a few runs |
+| 5 | `stacked-first-halving` | First Halving | bronze | halving | `quadClears ≥ 1` | yes | no | Medal `first-quad` (2nd of 16); the pilot makes one only by accident (novice p99 1) |
+| 6 | `stacked-halvings-total-5` | Halving Habit | bronze | halving | Σ `quadClears ≥ 5` | yes | no | Medal `first-quad`, over a few runs (**estimate**) |
 | 7 | `stacked-first-spin-lock` | First Spin | bronze | spin | `spins ≥ 1` (spin locks, mini or full) | yes | no | Medal `first-spin` (3rd of 16; the medal counts spin clears and the tuple spin locks, so the id differs from the medal's) |
-| 8 | `stacked-first-hold` | Cold Storage | bronze | hold | `holdsUsed ≥ 1` | yes | no | Basic mechanic; the pilot never holds |
+| 8 | `stacked-first-hold` | Cold Storage | bronze | hold | `holdsUsed ≥ 1` | yes | no | Basic mechanic; the pilot never holds (**estimate**) |
 | 9 | `stacked-chain-2` | Chain Starter | bronze | combo | `maxCombo ≥ 2` (3 clearing pieces in a row) | yes | no | Soak novice p50 2 |
 | 10 | `stacked-pieces-100` | Hundred Blocks | bronze | pieces | `pieces ≥ 100` | yes | no | Soak novice p50 124 |
 | 11 | `stacked-survive-2m` | Two-Minute Stack | bronze | survival | `survivalSeconds ≥ 120` | yes | no | Soak novice p50 2.65 min |
@@ -242,11 +252,11 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | 15 | `stacked-level-10` | Block Height 10 | silver | level | `level ≥ 10` | yes | no | Soak intermediate p50 12 |
 | 16 | `stacked-lines-100` | Hundred Rows | silver | lines | `lines ≥ 100` | yes | no | Soak intermediate p50 114.5 |
 | 17 | `stacked-lines-total-1000` | Row Miner | silver | lines | Σ `lines ≥ 1,000` | yes | no | About 9 intermediate-median runs |
-| 18 | `stacked-halvings-3` | Triple Halving | silver | halving | `quadClears ≥ 3` | yes | no | Between medals `first-quad` (2nd) and `quad-10` (10th); soak exceptional p50 5 by accident |
+| 18 | `stacked-halvings-3` | Triple Halving | silver | halving | `quadClears ≥ 3` | yes | no | Between medals `first-quad` (2nd) and `quad-10` (10th) (**estimate**); the pilot reaches it by accident at the hardcore p90 |
 | 19 | `stacked-first-perfect-clear` | Clean Books | silver | perfect-clear | `perfectClears ≥ 1` | yes | no | Medal `perfect-clear` (11th of 16); soak hardcore/exceptional p90 1 by accident |
 | 20 | `stacked-spins-10` | Spin Doctor | silver | spin | `spins ≥ 10` | yes | no | Ten times medal `first-spin`; the pilot never spins (**estimate**) |
 | 21 | `stacked-chain-5` | Five-Link Chain | silver | combo | `maxCombo ≥ 5` | yes | no | Medal `combo-5` (4th of 16); soak exceptional p90 5 by accident |
-| 22 | `stacked-b2b-streak-2` | Back-to-Back | silver | back-to-back | `maxBackToBack ≥ 2` | yes | no | The first real back-to-back; soak exceptional p99 2 |
+| 22 | `stacked-b2b-streak-2` | Back-to-Back | silver | back-to-back | `maxBackToBack ≥ 2` | yes | no | The first real back-to-back, under medal `b2b-10` (**estimate**); soak exceptional p99 2 by accident |
 | 23 | `stacked-survive-4m` | Four-Minute Stack | silver | survival | `survivalSeconds ≥ 240` | yes | no | Soak intermediate p50 4.77 min |
 | 24 | `stacked-score-100k` | 100K Block | silver | score | `score ≥ 100,000` | yes | no | Soak intermediate p50 148,244 |
 | 25 | `stacked-garbage-5` | Garbage Day | silver | garbage | `garbageRowsReceived ≥ 5` | yes | no | Soak intermediate p50 5.5 |
@@ -304,5 +314,6 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
   - `weapon-collector` says "across official runs"; it now counts one run.
 
   A slice that may edit the definitions should align the text and requirements, or profile-boards should show the catalog descriptions (`catalogFor`) for HMH.
+- **Orchestrator.** `apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-runtime.mjs` lists every `apps/portal/src` module, so each slice that adds one edits the same hunk. Regenerate it once per integration with `npm run assets:hmh:curated-level-kit-runtime` instead of hand-merging it.
 - **HMH child (post-launch).** Record boss-phase damage, a boss-kill tick and a lowest-health mark in the run summary. That makes `no-damage-boss`, `perfect-boss-gauntlet`, `speed-clear` and `lucky-survivor` computable. `no-damage-10-minutes` needs a Ranked end state other than defeat.
 - **Owner at O1.** Confirm or change the edge thresholds above, the `damage-chain` remap and the STACKED estimates. Any change is a follow-up slice for the achievements owner.

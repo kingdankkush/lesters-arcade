@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'acorn';
@@ -181,10 +181,37 @@ test('catalog modules import without arcade-core or DOM', () => {
   assert.deepEqual([...registry.keys()].map((file) => relative(moduleDir, file).split('\\').join('/')).sort(), ['chikun.mjs', 'entry.mjs', 'hmh.mjs', 'index.mjs', 'stacked.mjs']);
   // The achievements modules themselves: no DOM, clock, randomness, environment or eval.
   for (const file of MODULES) assert.deepEqual(forbiddenGlobals(graph.get(file).ast), [], relative(repoRoot, file));
-  // Nothing in the shared child code imports the achievements modules.
+});
+
+// Every module specifier in a source file: static imports and re-exports,
+// side-effect imports and dynamic import() with a literal.
+const SPECIFIER_PATTERN = /\b(?:from\s*|import\s*\(\s*|import\s+)(['"`])([^'"`\n]+)\1/g;
+function sourceFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((item) => {
+    const path = join(dir, item.name);
+    if (item.isDirectory()) return item.name === 'node_modules' ? [] : sourceFiles(path);
+    return /\.(m?js|cjs)$/.test(item.name) ? [path] : [];
+  });
+}
+
+test('the HMH child and the shared sdk never import the achievements modules', () => {
+  // Contract §6.1: the catalogs stay out of apps/hmh-reboot/** and sdk/**, so they
+  // never reach the child's initial JS.
+  const files = ['apps/hmh-reboot', 'sdk'].flatMap((dir) => sourceFiles(join(repoRoot, dir)));
+  assert.ok(files.length > 50, 'the scan sees the child and sdk sources');
+  const offenders = [];
   for (const file of files) {
-    if (file.startsWith('sdk/')) assert.doesNotMatch(graph.get(join(repoRoot, file)).source, /achievements\//, file);
+    for (const [, , specifier] of readFileSync(file, 'utf8').matchAll(SPECIFIER_PATTERN)) {
+      const target = specifier.startsWith('.') ? resolve(dirname(file), specifier) : specifier;
+      if (target.split('\\').join('/').includes('portal/src/achievements/') || /(^|\/)achievements\/(index|hmh|chikun|stacked|stats|metadata|entry)\.mjs$/.test(specifier)) {
+        offenders.push(`${relative(repoRoot, file)} -> ${specifier}`);
+      }
+    }
   }
+  assert.deepEqual(offenders, []);
+  // The scan recognizes each import form it looks for.
+  const probe = "import a from '../x.mjs'; export * from \"./y.mjs\"; import './z.mjs'; await import(`../w.mjs`);";
+  assert.deepEqual([...probe.matchAll(SPECIFIER_PATTERN)].map((m) => m[2]), ['../x.mjs', './y.mjs', './z.mjs', '../w.mjs']);
 });
 
 test('catalog modules load in plain Node with no flags', () => {
