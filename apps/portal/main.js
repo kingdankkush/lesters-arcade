@@ -2001,7 +2001,7 @@ let chikunHost = null;
 let chikunRunMusic = null;
 let stackedHost = null;
 let stackedMountGeneration = 0;
-function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; }
+function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; syncCabinetResultsButton(); }
 async function mountStackedSession() {
   if (!currentSession || currentSession.gameId !== 'stacked') return;
   destroyHmhRebootSession(); destroyChikunSession(); destroyStackedSession();
@@ -2911,6 +2911,52 @@ let rankedResultsReopen = null;
 function showRankedResults(view) {
   rankedResultsView = view;
   renderGameOverSummary();
+  syncCabinetResultsButton();
+}
+
+// The results screen closed (Escape, Close, or its view went away): HMH
+// re-renders its summary and Chikun and STACKED show their cabinet button.
+// Either "View results" button is where focus goes back to.
+function rankedResultsClosed() {
+  return renderGameOverSummary() ?? syncCabinetResultsButton();
+}
+
+// Chikun and STACKED run in child frames whose result panels cannot reopen
+// the parent's results screen. While that cabinet is still open on the run
+// the screen belongs to, a small parent-level "View results" button floats
+// over it (styled in src/styles/ranked-results.css, which the screen already
+// loaded). It hides while the screen is open, and for good once the player
+// leaves the cabinet or starts another run.
+let cabinetResultsButton = null;
+function cabinetResultsView() {
+  const view = rankedResultsView;
+  if (!view || (view.gameId !== 'chikun' && view.gameId !== 'stacked')) return null;
+  if (officialAppStep !== 'gameplay' || selectedGameId !== view.gameId) return null;
+  const cabinetOpen = view.gameId === 'chikun' ? Boolean(chikunHost) : Boolean(stackedHost);
+  const sessionId = (currentSession ?? lastCompletedSession)?.sessionId;
+  return cabinetOpen && sessionId && view.sessionId === sessionId ? view : null;
+}
+function syncCabinetResultsButton() {
+  const view = cabinetResultsView();
+  if (!view || view.isOpen) {
+    if (cabinetResultsButton) cabinetResultsButton.hidden = true;
+    return null;
+  }
+  if (!cabinetResultsButton) {
+    cabinetResultsButton = el('button', { className: 'cabinet-results-reopen', type: 'button', textContent: 'View results' });
+    cabinetResultsButton.setAttribute('aria-haspopup', 'dialog');
+    cabinetResultsButton.addEventListener('click', () => {
+      const current = cabinetResultsView();
+      if (!current) { syncCabinetResultsButton(); return; }
+      playSfxCue('menu-click');
+      current.reopen();
+      syncCabinetResultsButton();
+    });
+    document.body.append(cabinetResultsButton);
+  }
+  cabinetResultsButton.dataset.gameId = view.gameId;
+  cabinetResultsButton.hidden = false;
+  return cabinetResultsButton;
 }
 
 function rankedResultsViewForCurrentRun() {
@@ -5494,6 +5540,7 @@ function destroyChikunSession() {
   chikunHost = null;
   chikunLifecycle = null;
   chikunActive = false;
+  syncCabinetResultsButton();
 }
 
 async function restartChikunSession({ fromChild = false } = {}) {
@@ -15613,6 +15660,7 @@ function render() {
   renderOfficialApp();
   renderArcadeMusicPlayer();
   placeWalletBalanceChip();
+  syncCabinetResultsButton();
 }
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
@@ -16203,7 +16251,7 @@ window.addEventListener('orientationchange', () => {
 });
 
 // Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
-window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => renderGameOverSummary() }))).catch((error) => console.error('[Ranked results]', error)); });
+window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => rankedResultsClosed() }))).catch((error) => console.error('[Ranked results]', error)); });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 portalRouteController.applyLocation();

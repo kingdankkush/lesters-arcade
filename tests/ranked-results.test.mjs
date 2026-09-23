@@ -6,6 +6,10 @@ import vm from 'node:vm';
 import { RANKED_RESULTS_STYLESHEET, STANDING_RETRY_DELAYS_MS, openRankedResults } from '../apps/portal/src/ranked-results.mjs';
 import { catalogFor, nftAchievementIds } from '../apps/portal/src/achievements/index.mjs';
 import { buildHmhShareText, buildShareLinks, shareUrlFor } from '../apps/portal/src/share-links.mjs';
+import { startPlaySession } from '../apps/portal/src/arcade-core.mjs';
+import { applySeedTicket } from '../apps/portal/src/ranked-identity.mjs';
+import { RANKED_ENTRY_EVENT, recordEntryBroadcast } from '../apps/portal/src/ranked-entry-flow.mjs';
+import { rankedGlueContext, until } from './helpers/ranked-client-vm.mjs';
 
 // Contract §7.3 (openRankedResults), §7.7 (events), guide §3.3 and §5.11.
 // A minimal fake DOM stands in for jsdom: createElement, tree operations,
@@ -685,7 +689,8 @@ test('main.js mounts the screen from exactly one lazy listener', async () => {
   const listener = main.lastIndexOf("window.addEventListener('lesters:ranked-run'", anchor);
   assert.ok(listener > 0 && main.slice(listener, anchor).split('\n').filter(Boolean).length === 1, 'the listener sits immediately before the initial-paint anchor');
   assert.match(main.slice(listener, anchor), /import\('\.\/src\/ranked-results\.mjs'\)\.then\(\(\{ openRankedResults \}\) => showRankedResults\(openRankedResults\(\{ \.\.\.event\.detail, documentRef: document, mount: dom\.officialGameplay \?\? document\.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC/);
-  assert.match(main.slice(listener, anchor), /onClose: \(\) => renderGameOverSummary\(\)/, 'onClose hands back the View results button to focus');
+  assert.match(main.slice(listener, anchor), /onClose: \(\) => rankedResultsClosed\(\)/, 'onClose hands back a View results button to focus');
+  assert.match(main, /function rankedResultsClosed\(\) \{\n {2}return renderGameOverSummary\(\) \?\? syncCabinetResultsButton\(\);\n\}/, 'HMH re-renders its summary; Chikun and STACKED show the cabinet button');
   assert.match(main.slice(listener, anchor), /\.catch\(\(error\) => console\.error\('\[Ranked results\]', error\)\)/);
   assert.doesNotMatch(main, /^import[^\n]*ranked-results/m, 'never a static import: the screen stays lazy');
 });
@@ -693,7 +698,7 @@ test('main.js mounts the screen from exactly one lazy listener', async () => {
 // Runs the real showRankedResults / rankedResultsViewForCurrentRun /
 // renderGameOverSummary source from main.js in a vm context with stand-ins
 // for the HMH helpers around it.
-async function hmhSummaryHost({ mode = 'ranked', sessionId = SESSION_ID } = {}) {
+async function hmhSummaryHost({ mode = 'ranked', sessionId = SESSION_ID, selectedGameId = 'lester-blaster', officialAppStep = 'gameplay', chikunHost = null, stackedHost = null, gameOver = true } = {}) {
   const main = await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const start = main.indexOf('let rankedResultsView = null;');
   const end = main.indexOf('\nfunction recordCurrentSessionEvent(', start);
@@ -703,7 +708,7 @@ async function hmhSummaryHost({ mode = 'ranked', sessionId = SESSION_ID } = {}) 
   const shareRows = [];
   const context = vm.createContext({
     dom: { combatGameOverSummary: summaryNode },
-    combat: { gameOver: true, score: 48210, kills: 312, maxCombo: 42, elapsedGameSeconds: 724, runLevel: 3, bossDefeated: false, clearedCampaignLevelId: null, nextCampaignLevelId: null, killedBy: 'a Bagholder swarm' },
+    combat: { gameOver, score: 48210, kills: 312, maxCombo: 42, elapsedGameSeconds: 724, runLevel: 3, bossDefeated: false, clearedCampaignLevelId: null, nextCampaignLevelId: null, killedBy: 'a Bagholder swarm' },
     currentSession: { sessionId, mode },
     lastCompletedSession: null,
     officialSelectedMode: mode,
@@ -736,10 +741,81 @@ async function hmhSummaryHost({ mode = 'ranked', sessionId = SESSION_ID } = {}) 
     },
     restartCombatRun: () => {},
     continueToCampaignLevel: () => {},
+    // The cabinet "View results" button (Chikun and STACKED) reads these.
+    officialAppStep,
+    selectedGameId,
+    chikunHost,
+    stackedHost,
+    document: documentRef,
   });
   vm.runInContext(main.slice(start, end), context);
-  return { context, summaryNode, shareRows };
+  return { context, summaryNode, shareRows, documentRef };
 }
+
+// Chikun and STACKED (integration-glue B11): after the results screen is
+// dismissed the child's own panel cannot reopen it, so a parent-level button
+// floats over the cabinet while it is still open on that run.
+for (const gameId of ['chikun', 'stacked']) {
+  test(`${gameId}: a parent-level View results reopens a dismissed results screen while the cabinet is open`, async () => {
+    const host = await hmhSummaryHost({ selectedGameId: gameId, gameOver: gameId === 'chikun', [gameId === 'chikun' ? 'chikunHost' : 'stackedHost']: {} });
+    const { context, documentRef } = host;
+    const opened = [];
+    let open = true;
+    const view = { gameId, sessionId: SESSION_ID, get isOpen() { return open; }, reopen: () => { opened.push('reopen'); open = true; } };
+    const floating = () => documentRef.body.children.find((node) => node.className === 'cabinet-results-reopen') ?? null;
+    context.showRankedResults(view);
+    assert.equal(floating(), null, 'nothing while the screen is open');
+    assert.equal(buttonNamed(host.summaryNode, 'View results'), null, 'the HMH summary is untouched');
+
+    // Dismissed: onClose returns the cabinet button, which the screen focuses.
+    open = false;
+    const button = context.rankedResultsClosed();
+    assert.equal(button, floating());
+    assert.equal(button.hidden, false);
+    assert.equal(button.tagName, 'BUTTON');
+    assert.equal(button.type, 'button', 'a real button: keyboard and touch reachable');
+    assert.equal(button.textContent, 'View results');
+    assert.equal(button.getAttribute('aria-haspopup'), 'dialog');
+    assert.equal(button.dataset.gameId, gameId);
+    await button.dispatch('click');
+    assert.deepEqual(opened, ['reopen']);
+    assert.equal(button.hidden, true, 'hidden again while the screen is open');
+    open = false;
+    context.syncCabinetResultsButton();
+    assert.equal(button.hidden, false);
+    assert.equal(documentRef.body.children.filter((node) => node.className === 'cabinet-results-reopen').length, 1, 'one button, reused');
+
+    // Another run in the same cabinet, leaving the cabinet, or closing it hides it.
+    context.currentSession = { sessionId: 'game-session-next-run', mode: 'ranked' };
+    context.syncCabinetResultsButton();
+    assert.equal(button.hidden, true, 'a new run is not this screen’s run');
+    context.currentSession = { sessionId: SESSION_ID, mode: 'ranked' };
+    context.officialAppStep = 'cabinet-select';
+    context.syncCabinetResultsButton();
+    assert.equal(button.hidden, true, 'left the cabinet');
+    context.officialAppStep = 'gameplay';
+    context[gameId === 'chikun' ? 'chikunHost' : 'stackedHost'] = null;
+    context.syncCabinetResultsButton();
+    assert.equal(button.hidden, true, 'the cabinet was torn down');
+    await button.dispatch('click');
+    assert.deepEqual(opened, ['reopen'], 'a stale button never reopens anything');
+  });
+}
+
+test('the cabinet View results button is wired into every place its state changes', async () => {
+  const main = (await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
+  const body = (name) => {
+    const from = main.indexOf(`function ${name}(`);
+    assert.ok(from > 0, name);
+    return main.slice(from, main.indexOf('\n}', from) + 2);
+  };
+  assert.match(body('showRankedResults'), /syncCabinetResultsButton\(\);/);
+  assert.match(body('render'), /syncCabinetResultsButton\(\);/, 'every view change and new session renders');
+  assert.match(body('destroyChikunSession'), /syncCabinetResultsButton\(\);/);
+  assert.match(main, /function destroyStackedSession\(\) \{[^\n]*syncCabinetResultsButton\(\); \}/);
+  // HMH keeps its own button in the game-over summary.
+  assert.match(body('cabinetResultsView'), /view\.gameId !== 'chikun' && view\.gameId !== 'stacked'/);
+});
 
 test('HMH shows View results in place of its summary for the Ranked run on screen, and keeps the Free share row', async () => {
   // Free: the full summary with its share row.
@@ -799,4 +875,93 @@ test('the stylesheet uses the arcade tokens, tier colours, reduced motion and a 
   assert.doesNotMatch(css, /width:\s*(?:[4-9]\d{2}|\d{4,})px(?!\))/, 'no fixed width wider than a phone');
   const module = await readFile(new URL('../apps/portal/src/ranked-results.mjs', import.meta.url), 'utf8');
   assert.doesNotMatch(module, /innerHTML|insertAdjacentHTML|eval\(|new Function/);
+});
+
+// integration-glue B6 and B10, end to end: the real ranked-client glue of
+// main.js (startRankedSettlement, in a VM) and the real settlement client
+// produce the lesters:ranked-run detail; signin-entry's real
+// recordEntryBroadcast announces the entry; this screen consumes both.
+test('the real Ranked glue hands the screen a run it matches by session id, follows through the entry, and releases on close', async () => {
+  const STACKED = JSON.parse(await readFile(new URL('./fixtures/ranked/stacked-valid.json', import.meta.url), 'utf8'));
+  const { identity, seedTicket } = STACKED.body;
+  const session = startPlaySession({ wallet: identity.wallet, gameId: identity.gameId, mode: 'paid', sessionNonce: identity.nonce });
+  Object.assign(session, { buildHash: identity.buildHash, seasonId: identity.seasonId });
+  session.canonicalContext = Object.freeze({ ...session.canonicalContext, buildHash: identity.buildHash, seasonId: identity.seasonId });
+  applySeedTicket(session, { seed: identity.seed, seedTicket });
+  // The entry broadcast by signin-entry, confirming later on LitVM.
+  const documentRef = fakeDocument();
+  const windowRef = fakeWindow();
+  const entryTx = `0x${'ab'.repeat(32)}`;
+  let confirm;
+  recordEntryBroadcast(session, { txHash: entryTx, sessionId32: STACKED.body.sessionId32, amountWei: '102000000000000000', wait: () => new Promise((resolve) => { confirm = resolve; }) }, {
+    eventTarget: { dispatchEvent: (event) => { windowRef.emit(event.type, event.detail); return true; } },
+    gameId: 'stacked',
+  });
+  assert.equal(session.entryReceipt.status, 'pending');
+
+  // A live STACKED body too large to keep on the device (§7.2).
+  const oversize = { ...STACKED.body, evidence: { ...STACKED.body.evidence, sic1: 'A'.repeat(240_001) } };
+  const glue = rankedGlueContext({ session, live: true, clientFetch: async (url, init) => ({ status: 200, headers: { get: () => null }, json: async () => ({ ok: true, view: 'owner', sessionId32: JSON.parse(init.body).sessionId32, status: 'pending', retryable: true, pollAfterMs: 3000, txHash: null }) }) });
+  await glue.context.startRankedSettlement({ session, localScore: 1234, localStats: null, buildRequest: () => oversize });
+  await until(() => glue.events.length === 1);
+  const { detail } = glue.events[0];
+
+  // B6: the context names the session main.js holds, so HMH's "View results"
+  // and the cabinet button can match the screen to the run on screen.
+  assert.equal(detail.context.sessionId, session.sessionId);
+  assert.equal(detail.context.sessionId32, STACKED.body.sessionId32);
+  assert.equal(detail.handle.snapshot.persisted, false, 'the snapshot says the body is not stored on the device');
+  assert.equal(detail.handle.snapshot.sessionId, session.sessionId);
+  const seen = [];
+  const unsubscribe = detail.handle.subscribe((snapshot) => seen.push(snapshot.state));
+  assert.equal(typeof unsubscribe, 'function', 'subscribe returns its unsubscribe');
+
+  // The real (frozen) handle behind a recorder of the screen's subscriptions.
+  const subscriptions = [];
+  const real = detail.handle;
+  const handle = {
+    sessionId32: real.sessionId32,
+    gameId: real.gameId,
+    get state() { return real.state; },
+    get snapshot() { return real.snapshot; },
+    subscribe(fn) {
+      const release = real.subscribe(fn);
+      const entry = { released: false };
+      subscriptions.push(entry);
+      return () => { entry.released = true; release(); };
+    },
+    retry: () => real.retry(),
+    dispose: () => real.dispose(),
+  };
+  const view = openRankedResults({ ...detail, handle, documentRef, windowRef, mount: documentRef.body, live: true, hosted: false, navigatorRef: {}, setTimeoutImpl: () => 0, clearTimeoutImpl: () => {} });
+  assert.equal(view.sessionId, session.sessionId, 'the view carries the same session id');
+  assert.equal(view.gameId, 'stacked');
+  assert.equal(detail.handle.state, 'waiting-entry');
+  assert.equal(view.model.notice, 'Keep this tab open until publishing finishes');
+  // B10: the entry chip reads the receipt, then follows lesters:ranked-entry.
+  const entryStep = () => view.model.timeline.find((step) => step.id === 'entry');
+  assert.equal(entryStep().status, 'active');
+  assert.equal(entryStep().href, `https://liteforge.explorer.caldera.xyz/tx/${entryTx}`);
+  confirm({ status: 'confirmed', blockNumber: 7 });
+  await until(() => session.entryReceipt.status === 'confirmed');
+  await flush();
+  assert.equal(entryStep().status, 'done', 'confirmed');
+  await until(() => detail.handle.state === 'queued');
+  assert.equal(glue.calls.clientFetch.length, 1, 'the body went out once the entry confirmed');
+  assert.ok(seen.includes('queued'));
+
+  // Closing the screen releases its subscription; the unsubscribe works.
+  view.close({ restoreFocus: false });
+  assert.ok(subscriptions.length > 0 && subscriptions.every((entry) => entry.released), 'no subscription outlives the screen');
+  unsubscribe();
+  const before = seen.length;
+  await detail.handle.retry();
+  await flush();
+  assert.equal(seen.length, before, 'an unsubscribed listener hears nothing');
+
+  // A failed entry turns the chip failed from the same event.
+  const failed = openRankedResults({ ...detail, context: { ...detail.context, entry: { status: 'pending', txHash: entryTx } }, handle: { ...fakeHandle(snapshotFor('waiting-entry', { gameId: 'stacked', entry: { status: 'pending', txHash: entryTx } })), sessionId32: STACKED.body.sessionId32 }, documentRef, windowRef, mount: documentRef.body, live: true, hosted: false, navigatorRef: {}, setTimeoutImpl: () => 0, clearTimeoutImpl: () => {} });
+  windowRef.emit(RANKED_ENTRY_EVENT, { sessionId: session.sessionId, gameId: 'stacked', status: 'failed', txHash: entryTx });
+  assert.equal(failed.model.timeline.find((step) => step.id === 'entry').status, 'failed');
+  failed.close({ restoreFocus: false });
 });
