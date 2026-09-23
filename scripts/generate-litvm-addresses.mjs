@@ -20,7 +20,7 @@
 // the committed module is generated.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ethers } from 'ethers';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
@@ -233,6 +233,15 @@ export function writeLitvmAddressModule({ root = repoRoot, mode = 'auto', record
   mkdirSync(dirname(target), { recursive: true });
   if (previous !== content) writeFileSync(target, content, 'utf8');
   return { path: target, relativePath: ADDRESS_MODULE_RELATIVE_PATH, status: input.status, content, changed: previous !== content };
+}
+
+// Imports a generated module (default: the committed one) and returns its validated LITVM_DEPLOYMENT.
+// Operator tooling takes `--deployment <module.mjs>` so the rehearsal can point it at a local chain.
+export async function loadLitvmDeployment(modulePath = null) {
+  const target = modulePath ? resolve(modulePath) : join(repoRoot, ADDRESS_MODULE_RELATIVE_PATH);
+  const imported = await import(pathToFileURL(target).href);
+  if (!imported.LITVM_DEPLOYMENT) fail(`${target} does not export LITVM_DEPLOYMENT`);
+  return Object.freeze(normalizeDeploymentInput(imported.LITVM_DEPLOYMENT));
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
