@@ -198,7 +198,6 @@ export async function indexChain({
     const entry = reverse.achievements[gameId]?.get(String(args.achievementId).toLowerCase());
     if (!entry) { counts.skipped += 1; return; }
     const wallet = String(args.wallet).toLowerCase();
-    const sessionId32 = String(args.sessionId).toLowerCase();
     const tokenId = args.tokenId.toString();
     const txHash = String(log.transactionHash).toLowerCase();
     const mintedAt = iso(await blockTime(log.blockNumber));
@@ -208,17 +207,10 @@ export async function indexChain({
         RETURNING achievement_id`,
       [wallet, gameId, entry.id, tokenId, txHash, mintedAt],
     );
-    if (stamped.length) { counts.achievements += 1; return; }
-    const inserted = await db.query(
-      `INSERT INTO achievement_unlocks (wallet, game_id, achievement_id, session_id32, tier, nft, unlocked_at, token_id, mint_tx_hash, minted_at)
-       SELECT $1, $2, $3, $4, $5, true, $6::timestamptz, $7, $8, $6::timestamptz
-        WHERE EXISTS (SELECT 1 FROM verified_sessions WHERE session_id32 = $4)
-       ON CONFLICT (wallet, game_id, achievement_id) DO UPDATE
-         SET token_id = EXCLUDED.token_id, mint_tx_hash = EXCLUDED.mint_tx_hash, minted_at = EXCLUDED.minted_at
-       RETURNING achievement_id`,
-      [wallet, gameId, entry.id, sessionId32, entry.tier, mintedAt, tokenId, txHash],
-    );
-    if (inserted.length) counts.achievements += 1;
+    // §4.3.10 stamps the matching row only. achievement_unlocks is settle's
+    // record of "first earned" (§3.3, A20), so a mint without a row is
+    // counted under skipped and never creates history.
+    if (stamped.length) counts.achievements += 1;
     else counts.skipped += 1;
   };
 

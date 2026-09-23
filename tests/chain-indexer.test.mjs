@@ -121,12 +121,21 @@ const sessionRow = async (db, id) => (await db.query(
    FROM verified_sessions WHERE session_id32 = $1`, [id]))[0];
 
 test('ScoreSubmitted confirms a pending row', async () => withDb(async (db) => {
+  const pending = await seedVerifiedSession(db, { wallet: PLAYER, score: 777, status: 'pending' });
   const row = await seedVerifiedSession(db, { wallet: PLAYER, score: 1000, status: 'submitted' });
   const failed = await seedVerifiedSession(db, { wallet: PLAYER, score: 50, status: 'failed', nextAttemptAt: '2026-09-23T12:10:00.000Z' });
+  assert.deepEqual([pending.txHash, (await sessionRow(db, pending.sessionId32)).status], [null, 'pending'], 'the pending row has no transaction yet');
+  const pendingLog = scoreLog({ sessionId32: pending.sessionId32, score: 777n, blockNumber: 19 });
   const log = scoreLog({ sessionId32: row.sessionId32, score: 1000n, blockNumber: 20 });
-  const chain = fakeChain({ logs: [log, scoreLog({ sessionId32: failed.sessionId32, score: 50n, blockNumber: 21 })] });
+  const chain = fakeChain({ logs: [pendingLog, log, scoreLog({ sessionId32: failed.sessionId32, score: 50n, blockNumber: 21 })] });
   const result = await run(db, chain);
-  assert.equal(result.scores, 2);
+  assert.equal(result.scores, 3);
+  const fromPending = await sessionRow(db, pending.sessionId32);
+  assert.deepEqual(
+    [fromPending.status, fromPending.tx_hash, fromPending.block_number, fromPending.confirmed_at, fromPending.source, fromPending.chain_mismatch],
+    ['confirmed', pendingLog.transactionHash, '19', new Date(blockSeconds(19) * 1000).toISOString(), 'settle', false],
+    'a pending row the chain already has is confirmed with the log\'s transaction, block and block time',
+  );
   const confirmed = await sessionRow(db, row.sessionId32);
   assert.equal(confirmed.status, 'confirmed');
   assert.equal(confirmed.tx_hash, log.transactionHash);
@@ -178,13 +187,12 @@ test('AchievementUnlocked stamps token ids', async () => withDb(async (db) => {
     achievementLog({ achievementId: 'chikun-first-flight', sessionId32: randomHex32(), wallet: `0x${'b8'.repeat(20)}`, blockNumber: 43 }),
   ];
   const result = await run(db, fakeChain({ logs }));
-  assert.equal(result.achievements, 2);
-  assert.equal(result.skipped, 2, 'unknown ids and sessions the index has never seen are skipped');
-  const rows = await db.query(`SELECT achievement_id, token_id, mint_tx_hash, minted_at IS NOT NULL AS minted, nft FROM achievement_unlocks WHERE wallet = $1 ORDER BY achievement_id`, [PLAYER]);
+  assert.equal(result.achievements, 1);
+  assert.equal(result.skipped, 3, 'unknown ids and mints without a recorded unlock are skipped');
+  const rows = await db.query(`SELECT achievement_id, token_id, mint_tx_hash, minted_at IS NOT NULL AS minted, nft FROM achievement_unlocks ORDER BY wallet, achievement_id`);
   assert.deepEqual(rows.map((row) => [row.achievement_id, row.token_id, row.mint_tx_hash, row.minted]), [
     ['chikun-coast-legend', '123456789', logs[0].transactionHash, true],
-    ['chikun-first-flight', '5', logs[1].transactionHash, true],
-  ]);
+  ], 'a mint only stamps the matching row; it never creates achievement history (§4.3.10, §3.3)');
 }));
 
 test('profile events re-read getProfile and sanitize', async () => withDb(async (db) => {
