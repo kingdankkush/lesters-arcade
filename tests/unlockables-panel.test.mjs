@@ -276,6 +276,13 @@ test('the panel ships lazily, builds DOM safely, reads at 320 px and keeps phase
   assert.match(main, /import\('\.\/src\/routes\/unlockables-panel\.mjs'\)/, 'the panel loads with import()');
   assert.match(main, /import\('\.\/src\/unlockables-store\.mjs'\)/, 'the store loads with import()');
   assert.doesNotMatch(main, /^import .*unlockables/m, 'no static import of the new modules');
+  // Contract §7.7: the results-share listener stays immediately before the
+  // initial-paint anchor, so the unlockables block sits just above it.
+  const block = main.indexOf('// Unlockables (contract §7.9, A7)');
+  const results = main.indexOf('// Ranked results screen (results-share slice');
+  const paint = main.indexOf('// Initial paint honors the URL (deep-link / refresh) instead of always splash.');
+  assert.ok(block > 0 && block < results && results < paint, 'the unlockables block precedes the results-share listener');
+  assert.equal(main.slice(results, paint).split(String.fromCharCode(10)).filter(Boolean).length, 2, 'nothing between the results-share listener and the anchor');
   assert.match(main, /const renderOfficialSettings = \(\) => \{ officialShellRoutes\.renderSettings\(\); showUnlockablesPanel\('settings'\); \};/);
   assert.match(main, /const renderOfficialProfile = \(\) => \{ officialProfileRoute\.renderProfile\(\); showUnlockablesPanel\('profile'\); \};/);
   for (const [game, needle] of [['chikun', /reduceMotion: Boolean\(gameSettings\.reduceMotion\),\n\s+\.\.\.childCosmetics\('chikun'\),/], ['stacked', /\.\.\.childCosmetics\('stacked'\) \}, music:/], ['lester-blaster', /settings: \{ \.\.\.hmhRebootSettings\(\), \.\.\.childCosmetics\('lester-blaster'\) \},/]]) {

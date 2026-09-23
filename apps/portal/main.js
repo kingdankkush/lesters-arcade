@@ -16223,9 +16223,6 @@ window.addEventListener('orientationchange', () => {
   }, 200);
 });
 
-// Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
-window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => renderGameOverSummary() }))).catch((error) => console.error('[Ranked results]', error)); });
-
 // Unlockables (contract §7.9, A7): the per-wallet unlock cache and cosmetic picks load with import()
 // and listen for lesters:wallet-session, lesters:profile-changed and lesters:ranked-run themselves.
 // `var` so render paths that run before the store resolves read null instead of a TDZ error.
@@ -16240,6 +16237,9 @@ function childCosmetics(gameId) { const cosmetics = unlockables?.cosmeticsFor(ga
 function showUnlockablesPanel(view) {
   void Promise.all([unlockablesReady, import('./src/routes/unlockables-panel.mjs')]).then(([store, { renderUnlockablesPanel }]) => store && renderUnlockablesPanel({ store, view, own: view === 'settings' || !profileRouteState.viewedWallet || String(profileRouteState.viewedWallet).toLowerCase() === connectedWallet, documentRef: document, after: dom.officialCabinetGrid, app: dom.officialApp, openAchievements: () => setOfficialView('profile', { wallet: null }) })).catch((error) => console.warn('[Unlockables panel]', error?.message || error));
 }
+
+// Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
+window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => renderGameOverSummary() }))).catch((error) => console.error('[Ranked results]', error)); });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 portalRouteController.applyLocation();
