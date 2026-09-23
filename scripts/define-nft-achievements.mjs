@@ -135,7 +135,7 @@ export async function broadcastNftDefinitions({ calls, signer, log = () => {} })
 }
 
 // CLI body, injectable for tests. Returns a process exit code.
-export async function runDefineCli({ argv = process.argv.slice(2), env = process.env, log = console.log, importCatalog, providerFactory = (url) => new ethers.JsonRpcProvider(url, 4441, { staticNetwork: true }) } = {}) {
+export async function runDefineCli({ argv = process.argv.slice(2), env = process.env, log = console.log, importCatalog, providerFactory = (url) => new ethers.JsonRpcProvider(url, 4441, { staticNetwork: true, cacheTimeout: -1 }) } = {}) {
   const broadcast = hasFlag(argv, '--broadcast');
   const includeRelayerMinter = hasFlag(argv, '--include-relayer-minter');
   if (broadcast && env.LITVM_DEFINE_CONFIRM !== DEFINE_CONFIRM) {
