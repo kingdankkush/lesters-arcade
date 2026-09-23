@@ -64,6 +64,8 @@ const NODE_CHECK_FILES = [
   'tests/session-seed.test.mjs',
   'server/verify/seed-ticket.mjs',
   'tests/server-seed-ticket.test.mjs',
+  'apps/portal/src/ranked-identity.mjs',
+  'tests/ranked-identity.test.mjs',
   'apps/portal/src/server-session.mjs',
   'apps/portal/src/server-neon.mjs',
   'apps/portal/src/profile-sync-client.mjs',
