@@ -13,7 +13,7 @@
 
 import { randomUUID } from 'node:crypto';
 import { ethers } from 'ethers';
-import { RANKED_ENTRY_ABI, SCORE_REGISTRY_ABI } from '../chain/abis.mjs';
+import { EVENT_TOPICS, RANKED_ENTRY_ABI, SCORE_REGISTRY_ABI } from '../chain/abis.mjs';
 import { attestationMatchesRow, isAttestationRecord, runFromRow } from './attestation.mjs';
 import { classifyRelayError, decodeRevertReason, isDefiniteRejection, logSafeError, nonceErrorKind } from './errors.mjs';
 import { casStatus, markConfirmed, readSettleRow, recordFailure, SUBMITTED_CHECK_AFTER_MS } from './store.mjs';
@@ -27,6 +27,9 @@ export const ENTRY_RECEIPT_WAIT_MS = 10_000;
 export const NONCE_GAP_GUARD = 8;
 export const MAX_NONCE_TRIES = 3;
 export const FEE_CAP_MULTIPLIER = 5n;
+// The ScoreSubmitted log search for a run confirmed through getSession (§3.3).
+export const PUBLISH_LOG_CHUNK = 5_000;
+const MAX_BISECT_STEPS = 64;
 
 const registryIface = new ethers.Interface(SCORE_REGISTRY_ABI);
 const entryIface = new ethers.Interface(RANKED_ENTRY_ABI);
@@ -143,6 +146,65 @@ export function createChainReader({ provider, deployment }) {
   });
 }
 
+// --- The publishing transaction ---------------------------------------------
+
+function topicAddress(topic) {
+  const text = lower(topic);
+  return /^0x[0-9a-f]{64}$/.test(text) ? `0x${text.slice(26)}` : null;
+}
+
+// The transaction that published a run the chain already holds (§3.3:
+// getSession(id).exists ⇒ confirmed with block_number and confirmed_at = block
+// time). A row confirmed this way may carry a hash that is not the publisher
+// (a transaction that reverted SESSION_EXISTS, or one that never landed), so
+// the publisher is read from the ScoreSubmitted log whose indexed sessionId
+// is this session (session ids are unique on chain: at most one log).
+//
+// The search reads the chunk that ends at `hintBlock` (a race or an
+// ambiguous broadcast lands there). When getSession's submittedAt is older
+// than that chunk, it bisects block timestamps down to the deployment's
+// start block for the first block at submittedAt and reads the chunk from
+// there. → { txHash, blockNumber } | null. RPC failures throw, so the caller
+// retries later instead of confirming without the facts.
+export async function findPublishingTx({ provider, registryAddress, sessionId32, player = null, submittedAt = null, hintBlock = null, startBlock = 0, chunk = PUBLISH_LOG_CHUNK }) {
+  const registry = lower(registryAddress);
+  const key = lower(sessionId32);
+  const floor = Math.max(0, Math.floor(Number(startBlock) || 0));
+  const head = hintBlock === null || hintBlock === undefined ? Number(await provider.getBlockNumber()) : Number(hintBlock);
+  if (!Number.isSafeInteger(head) || head < floor) return null;
+  const size = Math.max(1, Math.floor(Number(chunk) || PUBLISH_LOG_CHUNK));
+  const logsIn = async (fromBlock, toBlock) => {
+    const logs = await provider.getLogs({ address: registry, topics: [EVENT_TOPICS.ScoreSubmitted, key], fromBlock, toBlock });
+    const match = (logs ?? []).find((log) => log && !log.removed && lower(log.address) === registry
+      && lower(log.topics?.[0]) === EVENT_TOPICS.ScoreSubmitted && lower(log.topics?.[1]) === key
+      && (!player || topicAddress(log.topics?.[2]) === lower(player)));
+    return match ? { txHash: lower(match.transactionHash), blockNumber: Number(match.blockNumber) } : null;
+  };
+  const nearFrom = Math.max(floor, head - size + 1);
+  const near = await logsIn(nearFrom, head);
+  if (near || nearFrom === floor) return near;
+  const target = Number(submittedAt);
+  if (!Number.isFinite(target) || target <= 0) return null;
+  const timestampOf = async (blockNumber) => {
+    const block = await provider.getBlock(blockNumber);
+    if (!block || !Number.isFinite(Number(block.timestamp))) throw Object.assign(new Error('block unavailable'), { code: 'SERVER_ERROR' });
+    return Number(block.timestamp);
+  };
+  // Timestamps never decrease: when the chunk already read starts before
+  // submittedAt, it held the publishing block, and there was no log.
+  if (await timestampOf(nearFrom) < target) return null;
+  let lo = floor;
+  let hi = nearFrom - 1;
+  if (await timestampOf(hi) < target) return null;
+  for (let step = 0; step < MAX_BISECT_STEPS && lo < hi; step += 1) {
+    const mid = Math.floor((lo + hi) / 2);
+    // eslint-disable-next-line no-await-in-loop
+    if (await timestampOf(mid) < target) lo = mid + 1;
+    else hi = mid;
+  }
+  return logsIn(lo, Math.min(nearFrom - 1, lo + size - 1));
+}
+
 // --- Receipts ----------------------------------------------------------------
 
 async function blockTimeMs(provider, blockNumber, fallbackMs) {
@@ -155,10 +217,39 @@ async function blockTimeMs(provider, blockNumber, fallbackMs) {
   return fallbackMs;
 }
 
+// Confirms a run the chain already holds for this player with the facts of
+// the transaction that published it: `ownReceipt` when that is a successful
+// receipt of the row's own transaction, else the ScoreSubmitted log
+// (findPublishingTx). A publisher that cannot be found clears the stored
+// hash (a wrong explorer link is worse than none). A failed log read confirms
+// nothing and returns null, so the caller leaves the row for the next check.
+async function confirmFromChain({ db, provider, registryAddress, row, session, nowMs, from, hintBlock = null, startBlock = 0, ownReceipt = null }) {
+  let facts;
+  if (ownReceipt && Number(ownReceipt.status) === 1) {
+    facts = { txHash: lower(ownReceipt.hash ?? row.txHash), blockNumber: Number(ownReceipt.blockNumber) };
+  } else {
+    try {
+      facts = await findPublishingTx({ provider, registryAddress, sessionId32: row.sessionId32, player: row.wallet, submittedAt: session.submittedAt, hintBlock, startBlock });
+    } catch (error) {
+      logSafeError('settle:publisher', error);
+      return null;
+    }
+  }
+  await markConfirmed(db, {
+    sessionId32: row.sessionId32,
+    txHash: facts?.txHash ?? null,
+    blockNumber: facts?.blockNumber ?? null,
+    confirmedAtMs: session.submittedAt * 1000,
+    nowMs: nowMs(),
+    from,
+  });
+  return { status: 'confirmed', code: null };
+}
+
 // SESSION_EXISTS, or a revert on a session that the chain already holds: the
 // run is confirmed when getSession shows it for this player (§3.3 "already
 // done"); otherwise the rejection is deterministic.
-async function settleExistingSession({ db, provider, registryAddress, row, nowMs, from }) {
+async function settleExistingSession({ db, provider, registryAddress, row, nowMs, from, startBlock = 0 }) {
   let session;
   try {
     session = await readSession(provider, registryAddress, row.sessionId32);
@@ -168,18 +259,18 @@ async function settleExistingSession({ db, provider, registryAddress, row, nowMs
     return { status: updated?.status ?? row.status, code: updated?.lastError ?? failure.code };
   }
   if (session.exists && session.player === row.wallet) {
-    let txHash = null;
-    let blockNumber = null;
+    let ownReceipt = null;
     if (row.txHash) {
       try {
-        const receipt = await provider.getTransactionReceipt(row.txHash);
-        if (receipt?.status === 1) { txHash = row.txHash; blockNumber = receipt.blockNumber; }
+        ownReceipt = await provider.getTransactionReceipt(row.txHash);
       } catch {
-        txHash = null;
+        ownReceipt = null;
       }
     }
-    await markConfirmed(db, { sessionId32: row.sessionId32, txHash, blockNumber, confirmedAtMs: session.submittedAt * 1000, nowMs: nowMs(), from });
-    return { status: 'confirmed', code: null };
+    const confirmed = await confirmFromChain({ db, provider, registryAddress, row, session, nowMs, from, startBlock, ownReceipt });
+    if (confirmed) return confirmed;
+    const updated = await recordFailure(db, { sessionId32: row.sessionId32, class: 'wait', code: 'rpc-unavailable', nowMs: nowMs(), from });
+    return { status: updated?.status ?? row.status, code: updated?.lastError ?? 'rpc-unavailable' };
   }
   const updated = await recordFailure(db, { sessionId32: row.sessionId32, class: 'deterministic', code: 'session-exists', nowMs: nowMs(), from });
   return { status: updated?.status ?? row.status, code: updated?.lastError ?? 'session-exists' };
@@ -188,7 +279,7 @@ async function settleExistingSession({ db, provider, registryAddress, row, nowMs
 // Applies a mined receipt to a submitted row (§3.3): status 1 → confirmed
 // with the block facts; status 0 → confirmed when getSession already holds
 // the run, else classified by the decoded revert.
-export async function applyReceipt({ db, provider, registryAddress, row, receipt, nowMs }) {
+export async function applyReceipt({ db, provider, registryAddress, row, receipt, nowMs, startBlock = 0 }) {
   const clock = typeof nowMs === 'function' ? nowMs : () => Number(nowMs);
   if (receipt.status === 1) {
     const confirmedAtMs = await blockTimeMs(provider, receipt.blockNumber, clock());
@@ -202,8 +293,10 @@ export async function applyReceipt({ db, provider, registryAddress, row, receipt
     session = null;
   }
   if (session?.exists && session.player === row.wallet) {
-    await markConfirmed(db, { sessionId32: row.sessionId32, blockNumber: null, confirmedAtMs: session.submittedAt * 1000, nowMs: clock(), from: ['submitted'] });
-    return { status: 'confirmed', code: null };
+    // This transaction reverted (SESSION_EXISTS): another one published the
+    // run at or before this receipt's block.
+    const confirmed = await confirmFromChain({ db, provider, registryAddress, row, session, nowMs: clock, from: ['submitted'], hintBlock: Number(receipt.blockNumber), startBlock });
+    return confirmed ?? { status: 'submitted', code: 'rpc-unavailable' };
   }
   // Re-run the call at the receipt's block to decode the revert.
   let failure = { class: 'wait', code: 'unknown-error' };
@@ -223,11 +316,11 @@ export async function applyReceipt({ db, provider, registryAddress, row, receipt
 // E4's throttled receipt check (§4.3.4): read-only apart from applying a
 // receipt that exists. It never resubmits and never applies the dropped rule
 // (that needs the relayer's lease; the cron does it).
-export async function checkSubmittedRow({ db, provider, registryAddress, row, nowMs }) {
+export async function checkSubmittedRow({ db, provider, registryAddress, row, nowMs, startBlock = 0 }) {
   if (row?.status !== 'submitted' || !row.txHash) return { status: row?.status ?? null, code: null };
   const receipt = await provider.getTransactionReceipt(row.txHash);
   if (!receipt) return { status: 'submitted', code: null };
-  return applyReceipt({ db, provider, registryAddress, row, receipt, nowMs });
+  return applyReceipt({ db, provider, registryAddress, row, receipt, nowMs, startBlock });
 }
 
 // --- The relayer -------------------------------------------------------------
@@ -246,6 +339,7 @@ export function createRelayer({
   monotonicMs = defaultMonotonic,
   receiptTimeoutMs = RECEIPT_WAIT_MS,
   droppedAfterMs = SUBMITTED_CHECK_AFTER_MS,
+  startBlock = 0,
 } = {}) {
   if (!db || typeof db.query !== 'function') throw new TypeError('createRelayer needs db');
   if (!provider) throw new TypeError('createRelayer needs provider');
@@ -259,7 +353,7 @@ export function createRelayer({
   const domain = { name: "Lester's Arcade Ranked Settlement", version: '2', chainId: Number(chainId), verifyingContract: registry };
 
   async function fail(row, failure, from = ['signed']) {
-    if (failure.class === 'already-done') return settleExistingSession({ db, provider, registryAddress: registry, row, nowMs: clock, from });
+    if (failure.class === 'already-done') return settleExistingSession({ db, provider, registryAddress: registry, row, nowMs: clock, from, startBlock });
     const updated = await recordFailure(db, { sessionId32: row.sessionId32, class: failure.class, code: failure.code, nowMs: clock(), from });
     if (updated) return { status: updated.status, code: updated.lastError ?? failure.code };
     return { status: (await readSettleRow(db, row.sessionId32))?.status ?? row.status, code: failure.code };
@@ -455,7 +549,7 @@ export function createRelayer({
     const receipt = await waitForReceipt(broadcastHash, waitMs);
     const current = await readSettleRow(db, row.sessionId32);
     if (!receipt || current?.status !== 'submitted') return { status: current?.status ?? 'submitted', code: null, txHash: broadcastHash };
-    const applied = await applyReceipt({ db, provider, registryAddress: registry, row: current, receipt, nowMs: clock });
+    const applied = await applyReceipt({ db, provider, registryAddress: registry, row: current, receipt, nowMs: clock, startBlock });
     return { ...applied, txHash: broadcastHash };
   }
 
@@ -471,7 +565,7 @@ export function createRelayer({
     } catch (error) {
       return { status: 'submitted', code: classifyRelayError(error).code };
     }
-    if (receipt) return applyReceipt({ db, provider, registryAddress: registry, row, receipt, nowMs: clock });
+    if (receipt) return applyReceipt({ db, provider, registryAddress: registry, row, receipt, nowMs: clock, startBlock });
     const submittedAt = Date.parse(row.submittedAt ?? '');
     if (Number.isFinite(submittedAt) && clock() - submittedAt < droppedAfterMs) return { status: 'submitted', code: null };
     let session;
@@ -481,8 +575,9 @@ export function createRelayer({
       return { status: 'submitted', code: classifyRelayError(error).code };
     }
     if (session.exists && session.player === row.wallet) {
-      await markConfirmed(db, { sessionId32: row.sessionId32, confirmedAtMs: session.submittedAt * 1000, nowMs: clock(), from: ['submitted'] });
-      return { status: 'confirmed', code: null };
+      // Another transaction published the run; this one never landed.
+      const confirmed = await confirmFromChain({ db, provider, registryAddress: registry, row, session, nowMs: clock, from: ['submitted'], startBlock });
+      return confirmed ?? { status: 'submitted', code: 'rpc-unavailable' };
     }
     // Dropped. The lease row belongs to the relayer that sent it.
     const sender = ADDRESS.test(lower(row.relayer)) ? lower(row.relayer) : address;

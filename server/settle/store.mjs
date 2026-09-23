@@ -325,11 +325,14 @@ export async function recordFailure(db, { sessionId32, class: errorClass, code, 
   return readSettleRow(db, sessionId32);
 }
 
-// submitted (or any unfinished status) → confirmed, with the block facts.
-export async function markConfirmed(db, { sessionId32, txHash = null, blockNumber = null, confirmedAtMs, nowMs = Date.now(), from = ['submitted', 'signed', 'failed', 'pending'] } = {}) {
+// submitted (or any unfinished status) → confirmed, with the block facts of
+// the transaction that published the run. `txHash` undefined keeps the stored
+// hash; null clears it (the stored hash is not the publishing transaction and
+// the publisher is unknown, so no explorer link beats a wrong one).
+export async function markConfirmed(db, { sessionId32, txHash, blockNumber = null, confirmedAtMs, nowMs = Date.now(), from = ['submitted', 'signed', 'failed', 'pending'] } = {}) {
   const confirmedAt = Number.isFinite(Number(confirmedAtMs)) ? iso(confirmedAtMs) : iso(nowMs);
   const set = { confirmed_at: confirmedAt, block_number: blockNumber, next_attempt_at: null, last_error: null };
-  if (txHash) set.tx_hash = String(txHash).toLowerCase();
+  if (txHash !== undefined) set.tx_hash = txHash === null ? null : String(txHash).toLowerCase();
   return casStatus(db, { sessionId32, from, to: 'confirmed', set, nowMs });
 }
 

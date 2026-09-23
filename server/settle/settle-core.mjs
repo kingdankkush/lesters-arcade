@@ -81,6 +81,13 @@ function clockOf(deps) {
   return typeof deps.nowMs === 'function' ? deps.nowMs : () => Number(deps.nowMs ?? Date.now());
 }
 
+// The lowest block a ScoreSubmitted log search reads: the deployment's start
+// block, else INDEX_START_BLOCK (as the indexer), else 0.
+function logStartBlock(deps) {
+  const block = Number(deps?.deployment?.startBlock ?? deps?.config?.indexStartBlock ?? 0);
+  return Number.isSafeInteger(block) && block > 0 ? block : 0;
+}
+
 // --- Gates -------------------------------------------------------------------
 
 function missingDetail(config) {
@@ -526,7 +533,7 @@ export async function settleStatusRequest({ query = {}, headers = {}, ip = 'unkn
   if (row.status === 'submitted' && row.txHash && /^0x[0-9a-f]{40}$/.test(registryAddress)
     && (!Number.isFinite(lastChecked) || clock() - lastChecked > STATUS_RECEIPT_THROTTLE_MS)) {
     try {
-      await checkSubmittedRow({ db, provider: deps.provider, registryAddress, row, nowMs: clock });
+      await checkSubmittedRow({ db, provider: deps.provider, registryAddress, row, nowMs: clock, startBlock: logStartBlock(deps) });
     } catch (error) {
       logSafeError('settle-status:receipt', error);
     } finally {
@@ -594,6 +601,7 @@ export async function attachSettleDeps(deps, { env = process.env, verify = true,
         holderId: `${env?.VERCEL_REGION ?? 'local'}:${(deps.crypto ?? nodeCrypto).randomUUID()}`,
         nowMs: deps.nowMs,
         chainId: deps.config.chainId,
+        startBlock: logStartBlock(deps),
       });
       return memo;
     };

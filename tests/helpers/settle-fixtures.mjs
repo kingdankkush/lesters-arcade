@@ -21,10 +21,17 @@ export const FIXTURE_NEON_URL = 'postgresql://fixture@db.invalid/settle';
 export const RANKED_SETTLE_VERSION = 'lesters-ranked-settle-v1';
 export const SEED_TICKET_VERSION = 'lesters-ranked-seed-v1';
 // The fee cap is 5 x the deployment's settlement gas reserve (§3.4). The
-// in-process chain prices gas at about 1 gwei, well above LiteForge, so the
-// fixture deployment record carries a larger reserve for the cap only. The
-// on-chain reserve (what openSession charges) stays the deploy config's.
+// in-process chain prices gas at about 1 gwei (ethers' getFeeData adds a
+// 1 gwei priority fee to twice the base fee), far above LiteForge's measured
+// 0.01-0.02 gwei, so the fixture deployment record carries a reserve 100 x
+// the real one (1e16 instead of LITVM_DEPLOYMENT's 1e14) for the cap only.
+// The on-chain reserve (what openSession charges) stays the deploy config's.
+// With the real reserve and 1 gwei fee data a plain settlement (about 530k
+// gas limit) waits as fee-too-high; tests/server-relayer.test.mjs pins both
+// that and the LiteForge-like fee data under which the real reserve passes.
 export const LOCAL_FEE_CAP_RESERVE_WEI = '10000000000000000';
+// LITVM_DEPLOYMENT.settlementGasReserveWei (deploy-config.testnet.json).
+export const REAL_SETTLEMENT_GAS_RESERVE_WEI = '100000000000000';
 
 export const FIXTURE_BUILD_HASHES = Object.freeze({
   'lester-blaster': 'site-1.7.0:game-1.7.0',
