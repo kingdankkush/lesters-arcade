@@ -63,16 +63,28 @@ const chainId = await provider.request({ method: 'eth_chainId' });
 const accounts = await provider.request({ method: 'eth_accounts' });
 const attempts = [...globalThis.__offlineAttempts];
 await connection.close();
+// The path every Hardhat test file and Vercel's test:release run take: hardhat/hre's
+// createHardhatRuntimeEnvironment + importUserConfig inside scripts/lib/local-chain.mjs, then a full
+// local deploy and activation.
+const harness = await import(process.env.LOCAL_CHAIN_MODULE_URL);
+const local = await harness.startLocalChain();
+const record = await harness.deployLocalSuite({ provider: local.provider, wallets: local.wallets });
+await harness.activateLocalGames({ provider: local.provider, record, developer: local.wallets.developer, operator: local.wallets.operator });
+const harnessChainId = await local.eip1193.request({ method: 'eth_chainId' });
+const playable = (await harness.localContracts(record, local.provider).gameRegistry.getGame(record.games[0].gameId)).playable;
+const harnessAttempts = globalThis.__offlineAttempts.slice(attempts.length);
+await local.close();
 // Prove the blocker is live: a real fetch and a raw socket from this process are both recorded.
+const beforeProof = globalThis.__offlineAttempts.length;
 await fetch('http://127.0.0.1:9/').catch(() => {});
 const net = await import('node:net');
 try { net.connect(9, '127.0.0.1'); } catch {}
-const blockerLive = globalThis.__offlineAttempts.length >= attempts.length + 2;
-process.stdout.write(JSON.stringify({ chainId, accounts: accounts.length, type: connection.networkConfig.type, forking: connection.networkConfig.forking ?? null, attempts, blockerLive }));
+const blockerLive = globalThis.__offlineAttempts.length >= beforeProof + 2;
+process.stdout.write(JSON.stringify({ chainId, accounts: accounts.length, type: connection.networkConfig.type, forking: connection.networkConfig.forking ?? null, attempts, harnessChainId, harnessGames: record.games.length, playable, harnessAttempts, blockerLive }));
 `;
 
-// Wiring calls of scripts/deploy-contracts.mjs, in broadcast order. Each literal must appear in both
-// files (whitespace-normalized), in the same relative order.
+// Wiring calls of scripts/deploy-contracts.mjs, in broadcast order (documentation, and a check that the
+// extractor below sees them). Parity itself compares the full extracted call sequences of both files.
 const WIRING_LITERALS = [
   "deploy('GameRegistry', [config.operator])",
   "deploy('PlayerProfileRegistry', [])",
@@ -88,6 +100,23 @@ const WIRING_LITERALS = [
   'gameRegistry.registerGame(game.slug, game.title, config.developerWallet, game.devBps, game.platformBps, game.liquidityBps, game.treasuryBps, game.entryFeeWei)',
 ];
 const normalize = (source) => source.replace(/\s+/g, ' ');
+
+// The broadcast wiring region of each file: the deploy script from the first deploy( call up to the
+// activation branch, and the harness between its Mirrors and End markers.
+function between(source, startMarker, endMarker, label) {
+  const start = source.indexOf(startMarker);
+  const end = source.indexOf(endMarker, start);
+  assert.ok(start >= 0 && end > start, `${label}: markers ${JSON.stringify(startMarker)} … ${JSON.stringify(endMarker)} not found`);
+  return source.slice(start, end);
+}
+const scriptWiringRegion = (source) => between(source, 'const gameRegistry = await deploy(', 'if (atomicActivation)', 'scripts/deploy-contracts.mjs');
+const harnessWiringRegion = (source) => between(source, '// --- Mirrors scripts/deploy-contracts.mjs', '// --- End of the mirrored wiring', 'scripts/lib/local-chain.mjs');
+
+// Every deploy('…', […]) call, every `await (await X.method(…)).wait()` call and every loop head, in
+// order and whitespace-normalized: an extra, missing, reordered or re-argued call in either file shows.
+function wiringCalls(region) {
+  return [...normalize(region).matchAll(/for \(const \w+ of \w+\)|deploy\('\w+', \[.*?\]\)|await \(await (.+?)\)\.wait\(\)/g)].map((match) => match[1] ?? match[0]);
+}
 
 let chain;
 let record;
@@ -108,7 +137,8 @@ test('in-process chain runs offline on chain 4441', () => {
   const artifactsBefore = existsSync(join(root, 'artifacts'));
   const cacheBefore = existsSync(join(root, 'cache'));
   try {
-    const child = spawnSync(process.execPath, ['--import', pathToFileURL(preload).href, '--input-type=module', '-e', OFFLINE_PROBE], { cwd: root, encoding: 'utf8', timeout: 60_000 });
+    const env = { ...process.env, LOCAL_CHAIN_MODULE_URL: pathToFileURL(join(root, 'scripts', 'lib', 'local-chain.mjs')).href };
+    const child = spawnSync(process.execPath, ['--import', pathToFileURL(preload).href, '--input-type=module', '-e', OFFLINE_PROBE], { cwd: root, encoding: 'utf8', timeout: 60_000, env });
     assert.equal(child.status, 0, child.stderr);
     const probe = JSON.parse(child.stdout);
     assert.equal(probe.chainId, '0x1159', 'eth_chainId from the repo-root Hardhat network');
@@ -116,6 +146,11 @@ test('in-process chain runs offline on chain 4441', () => {
     assert.equal(probe.forking, null, 'no fork: nothing is fetched from a remote chain');
     assert.deepEqual(probe.attempts, [], 'no socket, DNS, HTTP, fetch or child process (no compiler download or solc run)');
     assert.ok(probe.accounts > 0);
+    // The hardhat/hre path of scripts/lib/local-chain.mjs, through a full deploy and activation.
+    assert.equal(probe.harnessChainId, '0x1159');
+    assert.equal(probe.harnessGames, 3);
+    assert.equal(probe.playable, true);
+    assert.deepEqual(probe.harnessAttempts, [], 'startLocalChain, deployLocalSuite and activateLocalGames stay offline too');
     assert.equal(probe.blockerLive, true, 'the network blocker itself works');
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -167,22 +202,33 @@ test('local chain exposes named fixture wallets from the public Hardhat mnemonic
 });
 
 test('local suite wires registries, relayer, reserve and collections exactly like the deploy script', async () => {
-  // Parity: the harness mirrors scripts/deploy-contracts.mjs call for call (text scan, never an import).
-  const script = normalize(deployScript);
-  const harness = normalize(harnessSource);
-  let lastScript = -1;
-  let lastHarness = -1;
+  // Parity: the harness makes exactly the deploy script's calls, in the same order and loop structure
+  // (text scan of both broadcast regions, never an import of the deploy script).
+  const scriptCalls = wiringCalls(scriptWiringRegion(deployScript));
+  const harnessCalls = wiringCalls(harnessWiringRegion(harnessSource));
+  assert.deepEqual(harnessCalls, scriptCalls, 'local-chain.mjs mirrors scripts/deploy-contracts.mjs call for call');
+  // And the whole region, statement for statement (catches a call written in any other form, such as
+  // a transaction sent without .wait()). The harness region's first line is its marker comment.
+  const harnessRegion = harnessWiringRegion(harnessSource);
+  assert.equal(normalize(harnessRegion.slice(harnessRegion.indexOf('\n'))).trim(), normalize(scriptWiringRegion(deployScript)).trim(), 'the mirrored region equals the deploy script region');
+  assert.equal(scriptCalls.filter((call) => !call.startsWith('for (')).length, WIRING_LITERALS.length, 'twelve wiring calls');
+  let last = -1;
   for (const literal of WIRING_LITERALS) {
-    const inScript = script.indexOf(literal);
-    const inHarness = harness.indexOf(literal);
-    assert.ok(inScript >= 0, `deploy-contracts.mjs no longer contains: ${literal}`);
-    assert.ok(inHarness >= 0, `local-chain.mjs does not mirror: ${literal}`);
-    assert.ok(inScript > lastScript, `deploy-contracts.mjs order changed at: ${literal}`);
-    assert.ok(inHarness > lastHarness, `local-chain.mjs order differs at: ${literal}`);
-    lastScript = inScript;
-    lastHarness = inHarness;
+    const index = scriptCalls.indexOf(literal);
+    assert.ok(index > last, `the extracted sequence has, in order: ${literal}`);
+    last = index;
   }
-  assert.equal(harness.includes('.defineAchievement('), false, 'collections deploy empty (D15)');
+  // The comparison catches a one-sided change: an extra call in either file, a dropped call, or a
+  // changed argument.
+  const extraCall = 'await (await scores.setRelayer(relayer, true)).wait();';
+  const mutatedScript = deployScript.replace(extraCall, `${extraCall}\nawait (await rankedEntry.setEntryFeeEnabled(false)).wait();`);
+  assert.notEqual(mutatedScript, deployScript);
+  assert.notDeepEqual(wiringCalls(scriptWiringRegion(mutatedScript)), harnessCalls, 'an extra deploy-script call fails parity');
+  const mutatedHarness = harnessSource.replace('await (await rankedEntry.setRelayerVault(relayerVault)).wait();', '');
+  assert.notDeepEqual(wiringCalls(harnessWiringRegion(mutatedHarness)), scriptCalls, 'a dropped harness call fails parity');
+  const reargued = harnessSource.replace('scores.setRelayer(relayer, true)', 'scores.setRelayer(relayer, false)');
+  assert.notDeepEqual(wiringCalls(harnessWiringRegion(reargued)), scriptCalls, 'a changed argument fails parity');
+  assert.equal(normalize(harnessSource).includes('.defineAchievement('), false, 'collections deploy empty (D15)');
 
   // Record shape: every key of the deploy script's record literal, plus the §8.1 block fields.
   const recordLiteral = deployScript.slice(deployScript.indexOf('const record = {'), deployScript.indexOf('};', deployScript.indexOf('const record = {')));
