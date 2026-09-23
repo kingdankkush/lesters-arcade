@@ -230,6 +230,14 @@ test('page refuses non-owner accounts and undeployed modules', async () => {
     const unregistered = controllerFor({ ethereum: fakeEthereum({ account: await owner.getAddress() }), deployment: { ...predicted, addresses: { ...predicted.addresses, gameRegistry: (await bare.getAddress()).toLowerCase() } } });
     await unregistered.connect();
     assert.equal(unregistered.state.phase, 'not-registered');
+
+    // 5. A public-RPC failure is reported as such, and nothing is sent.
+    const offline = fakeEthereum({ account: await owner.getAddress() });
+    const unreachable = createConfirmController({ ethereum: offline, deployment: predicted, loadEthers: vendoredEthers, createReadProvider: () => ({ getCode: async () => { throw new Error('fixture RPC down'); } }) });
+    await unreachable.connect();
+    assert.equal(unreachable.state.phase, 'error');
+    assert.match(unreachable.state.message, /Could not read LiteForge over its public RPC \(fixture RPC down\)/);
+    assert.equal(offline.calls.includes('eth_sendTransaction'), false);
   } finally {
     await chain.revert(snapshot);
   }

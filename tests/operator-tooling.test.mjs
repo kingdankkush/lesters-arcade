@@ -258,7 +258,8 @@ function fakeVercel({ production = [], preview = [], development = [], failAdd =
       let code = 0;
       if (sub === 'ls') {
         const table = tables[name];
-        child.stdout.write(`> Environment Variables found for team/lesters-arcade\n\n name                          value      environments   created\n${[...table].map((item) => ` ${item.padEnd(30)} Encrypted  ${name}  1d ago`).join('\n')}\n`);
+        // Vercel CLI versions differ on the stream: preview answers on stderr to cover both.
+        (name === 'preview' ? child.stderr : child.stdout).write(`> Environment Variables found for team/lesters-arcade\n\n name                          value      environments   created\n${[...table].map((item) => ` ${item.padEnd(30)} Encrypted  ${name}  1d ago`).join('\n')}\n`);
       } else if (sub === 'add') {
         if (failAdd === name) {
           code = 1;

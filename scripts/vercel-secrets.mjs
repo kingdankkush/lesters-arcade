@@ -149,7 +149,8 @@ export async function runVercelSecrets({
       log(`vercel env ls ${environment} failed (exit ${listed.code}); nothing was changed.`);
       return 1;
     }
-    existing[environment] = envNamesIn(listed.stdout);
+    // The Vercel CLI prints its tables on stdout or stderr depending on the version: read both.
+    existing[environment] = envNamesIn([listed.stdout, listed.stderr].join('\n'));
   }
   const legacy = CHECKED_ENVIRONMENTS.flatMap((environment) => LEGACY_SECRET_NAMES.filter((name) => existing[environment].has(name)).map((name) => `${environment}:${name}`));
   if (legacy.length > 0) {
@@ -180,7 +181,7 @@ export async function runVercelSecrets({
     log(`set ${entry.name} in production.`);
   }
   const after = await vercel(['env', 'ls', 'production']);
-  const names = envNamesIn(after.stdout);
+  const names = envNamesIn([after.stdout, after.stderr].join('\n'));
   const missing = entries.map((entry) => entry.name).filter((name) => !names.has(name));
   const stillLegacy = LEGACY_SECRET_NAMES.filter((name) => names.has(name));
   if (after.code !== 0 || missing.length > 0 || stillLegacy.length > 0) {

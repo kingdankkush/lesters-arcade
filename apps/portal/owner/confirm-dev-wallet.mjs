@@ -139,6 +139,7 @@ export function createConfirmController({
   };
   let ethersPromise = null;
   let readProvider = null;
+  const confirmedByReceipt = new Set();
   const emit = () => onChange(state);
   const set = (patch) => {
     Object.assign(state, patch);
@@ -183,14 +184,21 @@ export function createConfirmController({
 
   async function refreshGates() {
     set({ phase: 'checking', message: 'Reading the GameRegistry on LiteForge…' });
-    const ethers = await ethersLib();
-    const gate = await readOnChainGate({ ethers, readProvider: await reader(), deployment, ownerWallet: owner });
+    let gate;
+    try {
+      const ethers = await ethersLib();
+      gate = await readOnChainGate({ ethers, readProvider: await reader(), deployment, ownerWallet: owner });
+    } catch (error) {
+      set({ phase: 'error', message: `Could not read LiteForge over its public RPC (${String(error?.shortMessage ?? error?.message ?? error).slice(0, 120)}). Nothing was sent; try again.` });
+      return false;
+    }
     if (!gate.ok) {
       set({ phase: gate.reason, message: gate.message });
       return false;
     }
     const txHashes = new Map(state.games.map((game) => [game.gameId, game.txHash]));
-    state.games = gate.games.map((game) => ({ ...game, txHash: txHashes.get(game.gameId) ?? null }));
+    // A successful receipt is proof even if a load-balanced RPC node still serves the older state.
+    state.games = gate.games.map((game) => ({ ...game, devWalletConfirmed: game.devWalletConfirmed || confirmedByReceipt.has(game.gameId), txHash: txHashes.get(game.gameId) ?? null }));
     const pending = state.games.filter((game) => !game.devWalletConfirmed);
     if (pending.length === 0) {
       set({ phase: 'done', message: summaryMessage() });
@@ -270,6 +278,7 @@ export function createConfirmController({
         set({ phase: 'error', message: `The ${game.title} transaction reverted (${hash}). Nothing changed on chain; reload and try again.` });
         return state;
       }
+      confirmedByReceipt.add(game.gameId);
       await refreshGates();
     } catch (error) {
       set({ phase: 'error', message: walletErrorMessage(error) });
