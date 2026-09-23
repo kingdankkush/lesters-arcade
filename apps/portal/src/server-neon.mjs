@@ -9,11 +9,19 @@ export function neonEndpointFor(connectionString) {
   return `https://${url.hostname}/sql`;
 }
 
+// Identifies the database for the per-process schema memo (contract A34):
+// host plus database name, never the user or password.
+export function neonSchemaKeyFor(connectionString) {
+  const url = new URL(String(connectionString));
+  return `neon:${url.hostname}${url.pathname || '/'}`;
+}
+
 export function createNeonClient({ connectionString, fetchImpl = globalThis.fetch } = {}) {
   if (!connectionString) return null;
   const endpoint = neonEndpointFor(connectionString);
   if (typeof fetchImpl !== 'function') throw new TypeError('fetch is required');
   return Object.freeze({
+    schemaKey: neonSchemaKeyFor(connectionString),
     async query(sql, params = []) {
       const response = await fetchImpl(endpoint, {
         method: 'POST',
@@ -21,7 +29,12 @@ export function createNeonClient({ connectionString, fetchImpl = globalThis.fetc
         body: JSON.stringify({ query: sql, params }),
       });
       const body = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(`neon ${response.status}: ${body?.message ?? 'query failed'}`);
+      if (!response.ok) {
+        const error = new Error(`neon ${response.status}: ${body?.message ?? 'query failed'}`);
+        // The SQLSTATE lets migrate() retry catalog races (A34).
+        if (/^[0-9A-Z]{5}$/.test(String(body?.code ?? ''))) error.code = body.code;
+        throw error;
+      }
       return body?.rows ?? [];
     },
   });
