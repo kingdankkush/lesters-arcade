@@ -310,7 +310,6 @@ function checker(checks) {
 // One Ranked session for one game (acceptance 1, items 1-13).
 
 async function runGame(ctx, gameId, { evidence }) {
-  const game = RANKED_GAMES[gameId];
   const checks = [];
   const { record, expect } = checker(checks);
   const out = { gameId, ok: false, checks };
@@ -449,7 +448,12 @@ async function runGame(ctx, gameId, { evidence }) {
     out.body = played.body;
     out.ok = checks.every((check) => check.ok);
   } catch (error) {
-    if (!(error instanceof CheckFailure)) record('unexpected-error', false, `${error?.name ?? 'Error'}: ${brief(error?.shortMessage ?? error?.message ?? error)}`);
+    if (error instanceof CheckFailure) {
+      // A step that failed outside expect() (sign-in, the settle loop, the run-length wait) is recorded here.
+      if (!checks.some((check) => check.id === error.checkId && !check.ok)) record(error.checkId, false, error.message);
+    } else {
+      record('unexpected-error', false, `${error?.name ?? 'Error'}: ${brief(error?.shortMessage ?? error?.message ?? error)}`);
+    }
     out.ok = false;
   }
   return out;

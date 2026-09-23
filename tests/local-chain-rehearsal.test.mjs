@@ -183,6 +183,27 @@ test('the driver plays one Ranked session per game in process, and every negativ
   assert.doesNotMatch(text, /Bearer|"mac"|"token"/);
 });
 
+test('the driver reports a broken endpoint as a failed check instead of passing or throwing', async () => {
+  const { stack } = state;
+  // E3 answers 503 settlement-paused for every call: the run stops at the settle step, the report says
+  // why, and the negative checks that need a settled run are reported as not run.
+  const api = (method, path, init) => (method === 'POST' && path === '/api/settle'
+    ? Promise.resolve({ status: 503, headers: { 'content-type': 'application/json' }, body: { ok: false, error: 'settlement-paused' } })
+    : stack.api(method, path, init));
+  const report = await runRankedE2E({
+    target: 'local', api, chain: stack.driverChain(), wallets: { player: stack.wallets.player2 }, games: ['chikun'],
+    evidence: { chikun: { profile: 'expert', maxMinutes: 0.25 } }, cronSecret: stack.cronSecret(), domain: '127.0.0.1', local: stack.localControls,
+  });
+  assert.equal(report.ok, false);
+  const game = report.games.chikun;
+  assert.equal(game.ok, false);
+  assert.deepEqual(game.checks.at(-1), { id: 'settle', ok: false, detail: 'settle failed: E3 answered 503 settlement-paused' });
+  assert.ok(game.checks.slice(0, -1).every((check) => check.ok), 'every step before the settle passed');
+  assert.deepEqual(report.failures, ['chikun:settle', 'negative:negatives']);
+  await assert.rejects(runRankedE2E({ api, chain: stack.driverChain(), wallets: { player: stack.wallets.player2 }, games: ['tetris'], domain: 'x' }), /unknown ranked game/);
+  await assert.rejects(runRankedE2E({ api, chain: { provider: stack.chain.provider, deployment: stack.deployment }, wallets: { player: stack.wallets.player2 }, domain: 'x' }), /relayer address/);
+});
+
 test('the committed rehearsal report records a passing local rehearsal on both transports and phase 2', () => {
   const path = new URL('../docs/qa/pre-deployment-rehearsal-20260923.json', import.meta.url);
   assert.ok(existsSync(path), 'node scripts/rehearse-ranked-e2e.mjs --target local writes the report');
