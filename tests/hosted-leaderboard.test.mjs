@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createOfficialLeaderboardRoute } from '../apps/portal/src/routes/official-leaderboard-route.mjs';
+import { HOSTED_BOARD_TTL_MS, createOfficialLeaderboardRoute } from '../apps/portal/src/routes/official-leaderboard-route.mjs';
 import {
   LEADERBOARD_PERIODS,
   formatResetCountdown,
@@ -93,20 +93,23 @@ const find = (root, predicate) => { const hits = []; walk(root, (candidate) => {
 const text = (root) => { const parts = []; walk(root, (candidate) => { if (candidate.textContent) parts.push(candidate.textContent); if (candidate.text) parts.push(candidate.text); }); return parts.join(' '); };
 const byClass = (root, className) => find(root, (candidate) => String(candidate.className ?? '').split(/\s+/).includes(className));
 
-function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 'lester-blaster' }, playRanked = () => {}, viewProfile = () => {}, timers = null } = {}) {
+function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 'lester-blaster' }, playRanked = () => {}, viewProfile = () => {}, timers = null, active = true } = {}) {
   const grid = node('grid');
   let localReads = 0;
+  const context = { connectedWallet, state: { profiles: {} } };
+  const clock = { now: NOW };
   const route = createOfficialLeaderboardRoute({
     hosted: true,
     indexApi,
     playRanked,
     viewProfile,
-    now: () => NOW,
+    isActive: () => active,
+    now: () => clock.now,
     dom: { officialCabinetGrid: grid },
     routeState,
     storage: null,
     windowRef: { location: { pathname: '/scores', search: '' }, history: { state: null, replaceState() {} } },
-    getContext: () => ({ connectedWallet, state: { profiles: {} } }),
+    getContext: () => context,
     appendText: (parent, tag, content, className = '') => { const child = node(tag, { textContent: content, className }); parent.append(child); return child; },
     buildLeaderboardExperienceV2Model: () => { localReads += 1; throw new Error('hosted boards never read local rows'); },
     getAllCadenceLeaderboards: () => { localReads += 1; return []; },
@@ -125,9 +128,10 @@ function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 
       clearTimeoutImpl: (id) => { if (timers[id - 1]) timers[id - 1].cleared = true; },
     } : {}),
   });
-  return { grid, route, routeState, localReads: () => localReads };
+  return { grid, route, routeState, context, clock, localReads: () => localReads };
 }
 
+const settle = () => new Promise((resolve) => setImmediate(resolve));
 const rowsOf = (grid) => find(grid, (candidate) => String(candidate.className ?? '').startsWith('leaderboard-trow'));
 
 test('the hosted leaderboard renders E5 rows with verified links', async () => {
@@ -323,6 +327,99 @@ test('loading, offline and failure states offer a retry', async () => {
   byClass(h.grid.children[1], 'leaderboard-empty-action')[0].listeners.click();
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(rowsOf(h.grid.children[1]).length, 2);
+});
+
+test('a wallet that connects while Scores is open fetches its own board', async () => {
+  const { calls, indexApi } = e5Fixture({ total: 30, youRank: 27 });
+  const h = hostedRoute({ indexApi });
+  h.route.renderLeaderboards();
+  await h.route.hydrate();
+  await settle();
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].wallet, null);
+
+  // main.js render() re-renders the page on connect without calling hydrate.
+  h.context.connectedWallet = walletFor(27);
+  h.route.renderLeaderboards();
+  assert.equal(calls.length, 2, 'the new board (keyed by viewer) starts its own request');
+  assert.equal(calls[1].wallet, walletFor(27));
+  assert.match(text(h.grid.children[1]), /Loading verified scores…/);
+  await settle();
+  assert.equal(rowsOf(h.grid.children[1]).length, 25, 'and renders its rows');
+  assert.match(text(h.grid.children[1]), /YOUR RANK #27/);
+  h.route.renderLeaderboards();
+  await settle();
+  assert.equal(calls.length, 2, 'a loaded board is not fetched again by a render');
+
+  // Rendering a board that failed does not loop; Try again stays the way back.
+  let fail = true;
+  const failing = hostedRoute({ indexApi: { leaderboard: async (params) => (fail ? { ok: false, error: 'network' } : indexApi.leaderboard(params)) } });
+  failing.route.renderLeaderboards();
+  await settle();
+  failing.route.renderLeaderboards();
+  failing.route.renderLeaderboards();
+  await settle();
+  assert.match(text(failing.grid.children[1]), /You appear to be offline/);
+  fail = false;
+  byClass(failing.grid.children[1], 'leaderboard-empty-action')[0].listeners.click();
+  await settle();
+  assert.equal(rowsOf(failing.grid.children[1]).length, 25);
+});
+
+test('a finished Ranked run, an old board or a period reset reads E5 again on the next visit', async () => {
+  const { calls, indexApi } = e5Fixture({ total: 30 });
+  const h = hostedRoute({ indexApi, active: false });
+  h.route.renderLeaderboards();
+  await h.route.hydrate();
+  await h.route.hydrate();
+  assert.equal(calls.length, 1, 'a fresh board is served from the cache');
+
+  // main.js marks boards stale on lesters:ranked-run (that run's game) and when
+  // the saved-run count changes (every game).
+  h.route.markStale('chikun');
+  await h.route.hydrate();
+  assert.equal(calls.length, 1, 'another game going stale leaves this board cached');
+  h.route.markStale('lester-blaster');
+  await h.route.hydrate();
+  assert.equal(calls.length, 2, 'the finished run shows on the next visit');
+  await h.route.hydrate();
+  assert.equal(calls.length, 2);
+
+  h.clock.now += HOSTED_BOARD_TTL_MS;
+  await h.route.hydrate();
+  assert.equal(calls.length, 3, 'a board older than the TTL is read again');
+
+  // The Weekly board rolls over once resetsAt passes, even inside the TTL.
+  h.clock.now = Date.parse(WEEK_RESET) - 5_000;
+  await h.route.hydrate();
+  assert.equal(calls.length, 4);
+  h.clock.now = Date.parse(WEEK_RESET) + 5_000;
+  await h.route.hydrate();
+  assert.equal(calls.length, 5, 'a reset board is read again');
+});
+
+test('the board on screen reloads in place and keeps its rows when the reload fails', async () => {
+  const fixture = e5Fixture({ total: 30 });
+  let fail = false;
+  const calls = [];
+  const indexApi = { leaderboard: async (params) => { calls.push(params); return fail ? { ok: false, error: 'network' } : fixture.indexApi.leaderboard(params); } };
+  const h = hostedRoute({ indexApi });
+  h.route.renderLeaderboards();
+  await settle();
+  assert.equal(rowsOf(h.grid.children[1]).length, 25);
+  fail = true;
+  h.route.markStale();
+  assert.equal(calls.length, 2, 'the active board reloads right away');
+  h.route.renderLeaderboards();
+  assert.equal(rowsOf(h.grid.children[1]).length, 25, 'its rows stay while it reloads');
+  await settle();
+  assert.equal(rowsOf(h.grid.children[1]).length, 25, 'and when the reload fails');
+  assert.doesNotMatch(text(h.grid.children[1]), /offline/);
+  fail = false;
+  h.route.markStale();
+  await settle();
+  assert.equal(calls.length, 3);
+  assert.equal(rowsOf(h.grid.children[1]).length, 25);
 });
 
 test('preview never fetches and hosted entries keep only index fields', async () => {

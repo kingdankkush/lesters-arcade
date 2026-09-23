@@ -36,6 +36,10 @@ import {
 } from '../leaderboard-view.mjs';
 
 const SCORES_PATH_PATTERN = /^\/(scores|leaderboards)\/?$/;
+// A loaded hosted board is re-read on the next visit once it is this old, once
+// its period has reset (resetsAt), or when a Ranked run or a published saved
+// run marks it stale (markStale).
+export const HOSTED_BOARD_TTL_MS = 60_000;
 const BANNER_NAV_KEYS = Object.freeze(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']);
 // Preview boards show only this device's own Ranked runs (A22): no House Demo,
 // no source tabs.
@@ -155,6 +159,8 @@ export function createOfficialLeaderboardRoute({
         you: null,
         loadingMore: false,
         request: null,
+        loadedAt: null,
+        stale: false,
       });
     }
     return hostedBoards.get(spec.key);
@@ -164,13 +170,28 @@ export function createOfficialLeaderboardRoute({
     if (isActive()) renderOfficialLeaderboards();
   }
 
+  // Whether a loaded board can be shown without asking E5 again.
+  function boardIsFresh(board) {
+    if (board.status !== 'ready' || board.stale) return false;
+    const clock = now();
+    if (!Number.isFinite(board.loadedAt) || clock - board.loadedAt >= HOSTED_BOARD_TTL_MS) return false;
+    const resetsAt = Date.parse(String(board.resetsAt ?? ''));
+    return !(Number.isFinite(resetsAt) && clock >= resetsAt);
+  }
+
   // Loads one page. `replace` starts a new window at that page (jump to my
-  // rank); otherwise rows are appended (Show more).
+  // rank); otherwise rows are appended (Show more). A page-1 reload of a board
+  // that already shows rows keeps them on screen until the answer arrives, and
+  // keeps them if the reload fails.
   async function loadHostedPage(board, page, { replace = false } = {}) {
     if (!hosted || !indexApi?.leaderboard) return board;
     const appending = !replace && page > 1;
+    const refreshing = !appending && board.status === 'ready' && board.rows.length > 0;
     if (appending) board.loadingMore = true;
-    else if (!board.rows.length) board.status = 'loading';
+    else {
+      board.stale = false;
+      if (!board.rows.length) board.status = 'loading';
+    }
     board.moreFailed = false;
     const request = indexApi.leaderboard({ game: board.gameId, period: board.period, page, q: board.q, wallet: board.wallet });
     board.request = request;
@@ -178,10 +199,14 @@ export function createOfficialLeaderboardRoute({
     board.request = null;
     board.loadingMore = false;
     if (!answer?.ok) {
-      // A failed "Show more" keeps the rows already shown and offers a retry.
+      // A failed "Show more" keeps the rows already shown and offers a retry;
+      // so does a failed background reload.
       if (appending) board.moreFailed = true;
-      else board.status = answer?.error === 'network' ? 'offline' : 'error';
-      if (!appending) board.rows = [];
+      else if (refreshing) board.loadedAt = now();
+      else {
+        board.status = answer?.error === 'network' ? 'offline' : 'error';
+        board.rows = [];
+      }
       rerenderIfShown();
       return board;
     }
@@ -200,22 +225,35 @@ export function createOfficialLeaderboardRoute({
     board.you = answer.you ?? null;
     board.nextPage = page * board.pageSize < board.total ? page + 1 : null;
     board.status = 'ready';
+    if (!appending) board.loadedAt = now();
     rerenderIfShown();
     return board;
   }
 
-  // The hydrate hook: fetch the board on screen unless it is loaded or loading.
+  // The hydrate hook: fetch the board on screen unless it is loading, or
+  // loaded and still fresh (boardIsFresh).
   function hydrate() {
     if (!hosted) return Promise.resolve(null);
     const board = hostedBoard(hostedKey());
     if (board.request) return board.request.then(() => board);
-    if (board.status === 'ready') return Promise.resolve(board);
+    if (boardIsFresh(board)) return Promise.resolve(board);
     return loadHostedPage(board, 1);
   }
 
-  // Drops every cached board (names changed, a run was published).
+  // Drops every cached board (the viewer changed).
   function invalidate() {
     hostedBoards.clear();
+  }
+
+  // Marks cached boards out of date (every game, or one) so the next visit
+  // reads E5 again: a Ranked run finished, a saved run published, a name
+  // changed. The board on screen reloads now, keeping its rows meanwhile.
+  function markStale(gameId = null) {
+    if (!hosted) return;
+    for (const board of hostedBoards.values()) {
+      if (!gameId || board.gameId === gameId) board.stale = true;
+    }
+    if (isActive()) void hydrate();
   }
 
   // ---------------------------------------------------------------------------
@@ -384,6 +422,10 @@ export function createOfficialLeaderboardRoute({
     const { connectedWallet } = getContext();
     const spec = hostedKey();
     const board = hostedBoard(spec);
+    // A board nobody fetched yet (a new wallet, search or period reached
+    // through any render path) starts its own request, so "Loading…" always
+    // has one in flight.
+    if (board.status === 'idle') void hydrate();
     const periodTab = leaderboardPeriodTab(spec.period);
     const activeCabinet = cabinets.find((cabinet) => cabinet.gameId === routeState.gameId);
     const title = activeCabinet?.title ?? getGame(routeState.gameId).title;
@@ -1039,5 +1081,5 @@ export function createOfficialLeaderboardRoute({
     dom.officialCabinetGrid.append(board);
   }
 
-  return Object.freeze({ renderLeaderboards: renderOfficialLeaderboards, hydrate, invalidate });
+  return Object.freeze({ renderLeaderboards: renderOfficialLeaderboards, hydrate, invalidate, markStale });
 }
