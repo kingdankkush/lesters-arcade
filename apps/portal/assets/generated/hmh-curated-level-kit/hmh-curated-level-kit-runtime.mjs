@@ -170,7 +170,6 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/session-seed.mjs",
     "apps/portal/src/settlement.mjs",
     "apps/portal/src/share-links.mjs",
-    "apps/portal/src/share-templates.mjs",
     "apps/portal/src/sprite-pipeline.mjs",
     "apps/portal/src/stacked-audio.mjs",
     "apps/portal/src/stacked-autoshift.mjs",

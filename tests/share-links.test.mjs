@@ -7,7 +7,9 @@ import {
   SHARE_ORIGIN,
   X_MENTION,
   X_RELATED,
+  buildFreeShareText,
   buildHmhShareText,
+  buildRankedShareText,
   buildShareLinks,
   buildStackedShareText,
   createShareRow,
@@ -16,7 +18,6 @@ import {
   shareUrlFor,
   xWeightedLength,
 } from '../apps/portal/src/share-links.mjs';
-import { buildFreeShareText, buildRankedShareText } from '../apps/portal/src/share-templates.mjs';
 import { buildChikunShareText } from '../apps/chikun/src/presentation.mjs';
 
 /**
@@ -168,17 +169,30 @@ test('fragment scrubbing cannot splice a mention, hash, address or session handl
   assert.equal(buildHmhShareText({ killedBy: 'sess#ion-abc @evil' }).includes('Fell to abc evil.'), true);
 });
 
-test('the Ranked and Free templates stay out of the module the children ship', async () => {
-  const [links, templates, chikunMain, stackedMain] = await Promise.all([
-    read('../apps/portal/src/share-links.mjs'), read('../apps/portal/src/share-templates.mjs'),
+test('share-links.mjs exports the whole §7.4 surface, the Ranked and Free templates included', async () => {
+  // Contract §7.4 names apps/portal/src/share-links.mjs as the one module for
+  // every builder, the Ranked and Free templates included; other slices
+  // import them from there. The children ship the module but never call the
+  // templates: the parent results screen owns Ranked sharing.
+  const shareLinks = await import('../apps/portal/src/share-links.mjs');
+  assert.equal(shareLinks.SHARE_ORIGIN, 'https://lestersarcade.io');
+  assert.equal(shareLinks.X_MENTION, '@LestersArcade');
+  assert.equal(shareLinks.X_RELATED, 'LestersArcade');
+  for (const name of ['shareUrlFor', 'sharePageUrl', 'xWeightedLength', 'buildRankedShareText', 'buildFreeShareText', 'buildShareLinks', 'createShareRow', 'buildHmhShareText', 'buildStackedShareText']) {
+    assert.equal(typeof shareLinks[name], 'function', `share-links.mjs exports ${name}`);
+  }
+  const [links, model, chikunMain, stackedMain] = await Promise.all([
+    read('../apps/portal/src/share-links.mjs'), read('../apps/portal/src/ranked-results-model.mjs'),
     read('../apps/chikun/src/main.mjs'), read('../apps/stacked/src/main.mjs'),
   ]);
-  for (const phrase of ['Beat my flight', 'Stack higher', 'Verified on LitVM', 'Practising on', 'TEMPLATES']) {
-    assert.equal(links.includes(phrase), false, `share-links.mjs carries no ${phrase}`);
-    assert.equal(templates.includes(phrase), true, `share-templates.mjs carries ${phrase}`);
+  assert.doesNotMatch(links, /^import /m, 'share-links.mjs stays dependency-free');
+  assert.match(model, /import \{[^}]*\bbuildFreeShareText\b[^}]*\bbuildRankedShareText\b[^}]*\} from '\.\/share-links\.mjs';/, 'the results model takes the templates from share-links.mjs');
+  for (const source of [chikunMain, stackedMain]) assert.doesNotMatch(source, /buildRankedShareText|buildFreeShareText/);
+  // A game id is looked up as an own key only.
+  for (const gameId of ['toString', '__proto__', 'constructor']) {
+    assert.throws(() => buildRankedShareText(gameId, {}), /no share template/, gameId);
+    assert.throws(() => buildFreeShareText(gameId, {}), /no share template/, gameId);
   }
-  assert.match(templates, /from '\.\/share-links\.mjs'/, 'templates reuse the one fragment scrubber');
-  for (const source of [chikunMain, stackedMain]) assert.doesNotMatch(source, /share-templates/);
 });
 
 // A small DOM with parents and bubbling (stopPropagation honoured).

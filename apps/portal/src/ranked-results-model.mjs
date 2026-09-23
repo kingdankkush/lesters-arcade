@@ -13,8 +13,7 @@
 //     the server reports a non-null tokenId (phase 2).
 import { achievementById } from './achievements/index.mjs';
 import { LITVM_DEPLOYMENT } from './generated/litvm-addresses.mjs';
-import { SHARE_ORIGIN, sharePageUrl } from './share-links.mjs';
-import { buildFreeShareText, buildRankedShareText } from './share-templates.mjs';
+import { SHARE_ORIGIN, buildFreeShareText, buildRankedShareText, sharePageUrl } from './share-links.mjs';
 
 export const EXPLORER_ORIGIN = 'https://liteforge.explorer.caldera.xyz';
 // Decision D2: Weekly is the headline standing until the owner switches Daily on.

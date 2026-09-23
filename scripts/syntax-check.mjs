@@ -62,7 +62,6 @@ const NODE_CHECK_FILES = [
   'apps/stacked/src/render/gameplay-particles.mjs',
   'apps/stacked/src/render/piece-presentation.mjs',
   'apps/portal/src/share-links.mjs',
-  'apps/portal/src/share-templates.mjs',
   'server/share/render-card.mjs',
   'server/share/render-page.mjs',
   'tests/share-card.test.mjs',
