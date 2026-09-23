@@ -245,6 +245,8 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/achievements/stats.mjs',
   'apps/portal/src/achievements/metadata.mjs',
   'tests/achievement-catalogs.test.mjs',
+  'tests/achievement-derivation.test.mjs',
+  'tests/fixtures/achievements/build-fixtures.mjs',
   "apps/portal/src/hmh-challenges.mjs",
   "tests/hmh-challenge-session.test.mjs",
   "tests/hmh-challenges.test.mjs",
