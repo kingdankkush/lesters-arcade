@@ -6,6 +6,7 @@ import {
   simulateChikunRun,
 } from '../apps/portal/src/chikun-cabinet.mjs';
 import {
+  ACHIEVEMENTS,
   createInitialArcadeState,
   recordScore,
   startPlaySession,
@@ -133,6 +134,24 @@ test('ranked result carries settlementInput and verified v6 evidence', () => {
   const practice = createChikunPortalLifecycle({ state, session: free, recordScoreRef: () => { throw new Error('practice never writes'); } }).handleResult(resultPayload(free));
   assert.equal(practice.ok, true);
   assert.equal(practice.settlementInput, null, 'Free runs never produce a settlement input');
+});
+
+test('a fresh wallet whose first Ranked run is Chikun unlocks no Hard Money Heroes achievement', () => {
+  // The real leak: nothing but the maybeUnlockRunAchievements gate stops a
+  // first-ever Ranked run from granting HMH's First Ranked Run.
+  const FRESH = '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd';
+  const hmhRunIds = new Set(Object.values(ACHIEVEMENTS).filter((achievement) => achievement.unlockType !== 'login').map((achievement) => achievement.id));
+  assert.ok(hmhRunIds.has('first-paid-run'));
+  const state = createInitialArcadeState();
+  const ranked = startPlaySession({ wallet: FRESH, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000940', sequenceNumber: 940, sessionNonce: 'lifecycle-940' });
+  const final = createChikunPortalLifecycle({ state, session: ranked, recordScoreRef: recordScore }).handleResult(resultPayload(ranked));
+  assert.equal(final.ok, true);
+  assert.equal(final.acceptedForGlobalLeaderboard, true);
+  assert.deepEqual(final.settlementInput.unlockedAchievements, [], 'no HMH id in the Chikun settlement input');
+  const profile = state.profiles[FRESH];
+  assert.equal(profile.progress.chikun.paidRuns, 1);
+  assert.deepEqual(profile.achievements.filter((id) => hmhRunIds.has(id)), [], 'no HMH run achievement on the profile');
+  assert.equal(profile.progress['lester-blaster']?.paidRuns ?? 0, 0);
 });
 
 test('no Hard Money Heroes achievement reaches a Chikun run at the portal', () => {
