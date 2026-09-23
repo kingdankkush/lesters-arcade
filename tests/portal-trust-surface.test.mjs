@@ -53,7 +53,7 @@ test('the trust page Ranked status and storage disclosure follow the settlement 
   const launch = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
   const status = launch.trustStatus.join(' ');
   const storage = launch.trustStorage.join(' ');
-  assert.match(status, /^Ranked is live on the LitVM LiteForge testnet\. A Ranked run costs 0\.1001 zkLTC/);
+  assert.match(status, /^Ranked is live on the LitVM LiteForge testnet\. A Ranked run costs 0\.102 zkLTC/);
   assert.match(status, /Hard Money Heroes runs are plausibility-checked against the game's limits and are not replayed/);
   assert.doesNotMatch(status, /SETTLEMENT_LIVE|preview|simulated/i);
   for (const text of ['Neon Postgres database', 'your wallet address', 'evidence', 'achievements', 'preferences', 'HMAC', 'not raw IP addresses']) {
