@@ -249,16 +249,20 @@ test('anonymous refreshes never spend a wallet\'s bucket', async () => withFresh
   const buckets = (await db.query('SELECT bucket, hits FROM rate_limits ORDER BY bucket')).map((row) => [row.bucket, row.hits]);
   const attackerBucket = `refresh:ip:${ipBucket('2001:db8:1:2::1', SESSION_VALUE)}`;
   assert.deepEqual(buckets, [[attackerBucket, 2]], 'only the caller\'s /64 IP bucket is spent');
-  // Exhaust the attacker's IP bucket.
-  await db.query('UPDATE rate_limits SET hits = 60 WHERE bucket = $1', [attackerBucket]);
+  // The IP bucket allows exactly 60 per hour (§4.3.7): the 60th call passes,
+  // the 61st is limited.
+  assert.deepEqual({ ...refreshApi.REFRESH_LIMITS }, { wallet: 30, ip: 60, windowSeconds: 3600 });
+  await db.query('UPDATE rate_limits SET hits = 59 WHERE bucket = $1', [attackerBucket]);
+  assert.equal((await invoke(handler, { method: 'POST', url: `/api/profile/refresh?wallet=${ALICE}`, headers: attacker })).status, 200, 'the 60th anonymous refresh in the hour passes');
   const limited = await invoke(handler, { method: 'POST', url: `/api/profile/refresh?wallet=${ALICE}`, headers: { 'x-forwarded-for': '2001:db8:1:2:abcd::1' } });
-  assert.deepEqual([limited.status, limited.body.error], [429, 'rate-limited']);
+  assert.deepEqual([limited.status, limited.body.error], [429, 'rate-limited'], 'the 61st is limited, from anywhere in the /64');
   assert.match(limited.headers['retry-after'], /^[0-9]+$/);
   // The victim's own refresh uses the per-wallet bucket and still works.
   const own = await invoke(handler, { method: 'POST', url: `/api/profile/refresh?wallet=${ALICE}`, headers: { ...attacker, authorization: bearer(ALICE) } });
   assert.equal(own.status, 200);
   assert.deepEqual((await db.query("SELECT hits FROM rate_limits WHERE bucket = $1", [`refresh:w:${ALICE}`]))[0], { hits: 1 });
-  await db.query('UPDATE rate_limits SET hits = 30 WHERE bucket = $1', [`refresh:w:${ALICE}`]);
+  await db.query('UPDATE rate_limits SET hits = 29 WHERE bucket = $1', [`refresh:w:${ALICE}`]);
+  assert.equal((await invoke(handler, { method: 'POST', url: `/api/profile/refresh?wallet=${ALICE}`, headers: { authorization: bearer(ALICE) } })).status, 200, 'the 30th own-wallet refresh in the hour passes');
   assert.equal((await invoke(handler, { method: 'POST', url: `/api/profile/refresh?wallet=${ALICE}`, headers: { authorization: bearer(ALICE) } })).status, 429, 'the wallet bucket allows 30 per hour');
 }));
 

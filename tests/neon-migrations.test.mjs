@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { LATEST_SCHEMA_VERSION, MIGRATIONS, ensureSchema, migrate, readSchemaVersion } from '../server/neon/migrations.mjs';
@@ -39,6 +40,35 @@ test('migration 1 creates every table, index and constraint', async () => {
     await db.close();
   }
 });
+
+// AC3: migration 1 is exactly the contract's §3.2 DDL. The ```sql block after
+// "### 3.2 DDL" is split into statements, `--` comments are dropped and
+// whitespace runs collapse to one space, so column types, CHECK expressions
+// and partial-index WHERE clauses cannot drift from the contract.
+function contractDdlStatements() {
+  const doc = readFileSync(new URL('../docs/handoffs/pre-deployment-interface-contract-20260922.md', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const section = doc.indexOf('### 3.2 DDL');
+  assert.ok(section >= 0, 'the contract has a §3.2 DDL section');
+  const open = doc.indexOf('```sql\n', section);
+  const close = doc.indexOf('\n```', open + 7);
+  assert.ok(open > section && close > open, 'the §3.2 section has a sql block');
+  return doc.slice(open + 7, close)
+    .replace(/\s--\s.*$/gm, '')
+    .split(';')
+    .map(normalizeSql)
+    .filter(Boolean);
+}
+
+function normalizeSql(statement) {
+  return String(statement).replace(/\s+/g, ' ').trim();
+}
+
+test('migration 1 is exactly the contract §3.2 DDL', () => {
+  const expected = contractDdlStatements();
+  assert.equal(expected.length, 20, 'the §3.2 block has 20 statements (9 tables, 11 indexes)');
+  assert.deepEqual(MIGRATIONS[0].statements.map(normalizeSql), expected);
+});
+
 
 test('migrate is idempotent and records the version', async () => {
   const db = createPgliteClient();
