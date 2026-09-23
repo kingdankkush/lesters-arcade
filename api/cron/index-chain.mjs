@@ -7,29 +7,14 @@
 
 import { makeHandler } from '../../server/http.mjs';
 import { buildBaseDeps } from '../../server/config.mjs';
-import { createPublicProvider } from '../../server/chain/public-rpc.mjs';
+import { attachLazyProvider } from '../../server/chain/public-rpc.mjs';
 import { indexChain } from '../../server/indexer/index-chain.mjs';
 import { migrate } from '../../server/neon/migrations.mjs';
 
 const cache = {};
 
 export async function buildDeps(env = process.env, overrides = {}) {
-  const deps = await buildBaseDeps(env, overrides, cache);
-  let provider = overrides.provider ?? null;
-  Object.defineProperty(deps, 'provider', {
-    enumerable: true,
-    get() {
-      if (!provider) {
-        if (!cache.provider || cache.rpcUrl !== deps.config.rpcUrl) {
-          cache.provider = createPublicProvider({ rpcUrl: deps.config.rpcUrl, chainId: deps.config.chainId });
-          cache.rpcUrl = deps.config.rpcUrl;
-        }
-        provider = cache.provider;
-      }
-      return provider;
-    },
-  });
-  return deps;
+  return attachLazyProvider(await buildBaseDeps(env, overrides, cache), overrides, cache);
 }
 
 const json = (status, body) => ({ status, body, headers: { 'Cache-Control': 'no-store' } });

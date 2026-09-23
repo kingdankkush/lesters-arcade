@@ -12,3 +12,25 @@ export const LITEFORGE_CHAIN_ID = 4441;
 export function createPublicProvider({ rpcUrl = LITEFORGE_RPC_URL, chainId = LITEFORGE_CHAIN_ID } = {}) {
   return new ethers.JsonRpcProvider(rpcUrl || LITEFORGE_RPC_URL, Number(chainId), { staticNetwork: true });
 }
+
+// Gives handler deps a `provider` that is created on first use and cached in
+// the calling module's scope. An override (tests, the local rehearsal) wins.
+export function attachLazyProvider(deps, overrides = {}, cache = {}) {
+  let provider = overrides.provider ?? null;
+  Object.defineProperty(deps, 'provider', {
+    enumerable: true,
+    configurable: true,
+    get() {
+      if (!provider) {
+        if (!cache.provider || cache.rpcUrl !== deps.config.rpcUrl || cache.chainId !== deps.config.chainId) {
+          cache.provider = createPublicProvider({ rpcUrl: deps.config.rpcUrl, chainId: deps.config.chainId });
+          cache.rpcUrl = deps.config.rpcUrl;
+          cache.chainId = deps.config.chainId;
+        }
+        provider = cache.provider;
+      }
+      return provider;
+    },
+  });
+  return deps;
+}
