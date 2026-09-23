@@ -8,6 +8,7 @@ import { createRankedPreflight, preflightFromReadiness, RANKED_PREFLIGHT_TTL_MS 
 import {
   checkRankedReadiness, openRankedSession, sendRankedEntry, loadEthers,
   SCORE_REGISTRY_ABI, RANKED_ENTRY_ABI, GAME_REGISTRY_ABI, RANKED_ENTRY_GAS_UNITS,
+  RANKED_ENTRY_CONFIRM_DEADLINE_MS, RANKED_ENTRY_POLL_INTERVAL_MS, RANKED_ENTRY_CLOSED_ERROR, RANKED_ENTRY_ACCOUNT_CHANGED_ERROR,
 } from '../apps/portal/src/litvm-chain-client.mjs';
 import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from '../apps/portal/src/settlement.mjs';
 
@@ -174,7 +175,10 @@ test('reads go through the public RPC, not the wallet', async () => {
 
 // sendRankedEntry runs source-isolated with the live flag on and a fake ethers,
 // so nothing touches a real chain and the committed flag stays false.
-function isolatedEntry({ receipt, publicReadFails = false } = {}) {
+// `publicWait(hash)` and `walletWait()` script the two receipt sources (return
+// a receipt, or throw); `paid()` answers the entry contract's isPaid.
+function timeoutError() { return Object.assign(new Error('timeout'), { code: 'TIMEOUT' }); }
+function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET } = {}) {
   const source = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');
   const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
   const names = ['sendRankedEntry', 'openRankedSession', 'withReadProvider', 'isBytes32Hex', 'toBytes32Id', 'readRankedContractGate', 'scoreContractAddress'];
@@ -189,13 +193,24 @@ function isolatedEntry({ receipt, publicReadFails = false } = {}) {
     BrowserProvider: class {
       constructor(eip) { this.eip = eip; }
       async getNetwork() { log.push('wallet:eth_chainId'); return { chainId: BigInt(await this.eip.request({ method: 'eth_chainId' })) }; }
-      async getSigner() { log.push('wallet:signer'); return { address: WALLET }; }
+      async getSigner() { log.push('wallet:signer'); return { address: signer, async getAddress() { return signer; } }; }
     },
     Contract: class {
       constructor(address, abi, runner) { this.address = address; this.runner = runner; }
       async openSession(sessionId32, gameId32, overrides) {
         log.push(`wallet:openSession:${sessionId32}:${gameId32}:${overrides.value}`);
-        return { hash: `0x${'77'.repeat(32)}`, wait: async () => { log.push('wallet:wait'); return receipt ?? { status: 1, blockNumber: 9 }; } };
+        return {
+          hash: `0x${'77'.repeat(32)}`,
+          wait: async () => {
+            log.push('wallet:wait');
+            if (walletWait) return walletWait();
+            return receipt ?? { status: 1, blockNumber: 9 };
+          },
+        };
+      }
+      async isPaid(sessionId32, player, gameId32) {
+        log.push(`public:isPaid:${player}`);
+        return paid({ sessionId32, player, gameId32 });
       }
     },
   };
@@ -204,6 +219,7 @@ function isolatedEntry({ receipt, publicReadFails = false } = {}) {
     waitForTransaction: async (hash) => {
       log.push(`public:wait:${hash.slice(0, 6)}`);
       if (publicReadFails) throw new Error('public RPC down');
+      if (publicWait) return publicWait(hash);
       return confirmation;
     },
   };
@@ -214,6 +230,8 @@ function isolatedEntry({ receipt, publicReadFails = false } = {}) {
     LITVM_LITEFORGE_NETWORK: { chainId: 4441, name: 'Fixture LiteForge' },
     RANKED_ENTRY_ABI, GAME_REGISTRY_ABI, SCORE_REGISTRY_ABI,
     RANKED_ENTRY_WAIT_TIMEOUT_MS: 1000,
+    RANKED_ENTRY_CONFIRM_DEADLINE_MS, RANKED_ENTRY_POLL_INTERVAL_MS, RANKED_ENTRY_CLOSED_ERROR, RANKED_ENTRY_ACCOUNT_CHANGED_ERROR,
+    setTimeout,
     withPublicRead: async () => { throw new Error('tests inject the read provider'); },
   };
   const api = runInNewContext(`${code}\n({ sendRankedEntry, openRankedSession })`, context);
@@ -221,11 +239,13 @@ function isolatedEntry({ receipt, publicReadFails = false } = {}) {
   return { api, log, settle, readProvider, wallet };
 }
 
+const QUOTE = Object.freeze({ ok: true, gameId: GAME, rankedEntryAddress: LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry, entryFeeWei: FEE, settlementGasReserveWei: RESERVE, entryTotalWei: TOTAL });
+
 test('sendRankedEntry resolves on broadcast and reports confirmation later', async () => {
   const sessionKey = `0x${'AB'.repeat(32)}`;
-  const preflight = { ok: true, gameId: GAME, rankedEntryAddress: LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry, entryFeeWei: FEE, settlementGasReserveWei: RESERVE, entryTotalWei: TOTAL };
+  const preflight = { ...QUOTE };
   const { api, log, settle, readProvider, wallet } = isolatedEntry();
-  const sent = await api.sendRankedEntry(wallet, { sessionKey, gameId: GAME, preflight, readProvider });
+  const sent = await api.sendRankedEntry(wallet, { sessionKey, gameId: GAME, preflight, readProvider, expectedWallet: WALLET });
   // Resolved right after the broadcast, before any confirmation exists.
   assert.equal(sent.txHash, `0x${'77'.repeat(32)}`);
   assert.equal(sent.sessionId32, sessionKey.toLowerCase());
@@ -249,15 +269,102 @@ test('sendRankedEntry resolves on broadcast and reports confirmation later', asy
   assert.deepEqual({ ...(await sentOutage.wait()) }, { status: 'confirmed', blockNumber: 14 });
   assert.ok(outage.log.includes('wallet:wait'));
 
-  // openRankedSession is the waiting wrapper.
-  const wrapped = isolatedEntry();
-  const paying = wrapped.api.openRankedSession(wrapped.wallet, { sessionId: 'game-session-x', sessionKey, gameId: GAME });
-  // Without a preflight it reads the gate itself, which the fixture refuses: it rejects before any signer.
-  await assert.rejects(paying);
-  assert.equal(wrapped.log.includes('wallet:signer'), false);
-
   // The committed build refuses before touching the wallet.
   const untouched = { request() { throw new Error('must not be contacted'); } };
   await assert.rejects(sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);
   await assert.rejects(openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);
+});
+
+test('the entry is refused before openSession from another account or on a zero quote', async () => {
+  const sessionKey = `0x${'cd'.repeat(32)}`;
+  // The key is bound to WALLET; the wallet now signs as another account.
+  const switched = isolatedEntry({ signer: `0x${'34'.repeat(20)}` });
+  await assert.rejects(
+    switched.api.sendRankedEntry(switched.wallet, { sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: switched.readProvider, expectedWallet: WALLET }),
+    (error) => error.code === 'ACCOUNT_MISMATCH' && error.message === RANKED_ENTRY_ACCOUNT_CHANGED_ERROR,
+  );
+  assert.equal(switched.log.some((entry) => entry.startsWith('wallet:openSession')), false, 'no transaction from the other account');
+  // The same account in another case passes.
+  const sameAccount = isolatedEntry({ signer: WALLET.toUpperCase().replace('0X', '0x') });
+  const sent = await sameAccount.api.sendRankedEntry(sameAccount.wallet, { sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: sameAccount.readProvider, expectedWallet: WALLET });
+  assert.equal(sent.amountWei, TOTAL);
+
+  // A27: a zero quote (fees switched off) is closed, not free: nothing is sent
+  // and no signer is asked for.
+  const free = isolatedEntry();
+  await assert.rejects(
+    free.api.sendRankedEntry(free.wallet, { sessionKey, gameId: GAME, preflight: { ...QUOTE, entryTotalWei: 0n }, readProvider: free.readProvider }),
+    (error) => error.code === 'RANKED_ENTRY_CLOSED' && error.message === RANKED_ENTRY_CLOSED_ERROR,
+  );
+  assert.deepEqual(free.log, ['wallet:eth_chainId']);
+});
+
+test('a slow entry stays pending until a receipt or the entry contract says paid', async () => {
+  const sessionKey = `0x${'ef'.repeat(32)}`;
+  const fast = { waitTimeoutMs: 5, pollIntervalMs: 1 };
+  // Both receipt waits time out once, then the receipt arrives: confirmed, never failed.
+  let publicCalls = 0;
+  const late = isolatedEntry({
+    publicWait: async () => { publicCalls += 1; if (publicCalls === 1) throw timeoutError(); return { status: 1, blockNumber: 21 }; },
+    walletWait: async () => { throw timeoutError(); },
+  });
+  const sentLate = await late.api.sendRankedEntry(late.wallet, { sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: late.readProvider, ...fast });
+  assert.deepEqual({ ...(await sentLate.wait()) }, { status: 'confirmed', blockNumber: 21 });
+  assert.deepEqual(late.log.slice(3), ['public:wait:0x7777', 'wallet:wait', `public:isPaid:${WALLET}`, 'public:wait:0x7777']);
+
+  // A sped-up (replaced) entry: this hash never gets a receipt, but the entry
+  // contract records the session as paid by this player.
+  let paidReads = 0;
+  const replaced = isolatedEntry({
+    publicWait: async () => { throw timeoutError(); },
+    walletWait: async () => { throw timeoutError(); },
+    paid: ({ sessionId32, player, gameId32 }) => {
+      paidReads += 1;
+      assert.equal(sessionId32, sessionKey.toLowerCase());
+      assert.equal(player, WALLET);
+      assert.equal(gameId32, ethers.id(GAME));
+      return paidReads >= 2;
+    },
+  });
+  const sentReplaced = await replaced.api.sendRankedEntry(replaced.wallet, { sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: replaced.readProvider, ...fast });
+  assert.deepEqual({ ...(await sentReplaced.wait()) }, { status: 'confirmed', blockNumber: null });
+  assert.equal(paidReads, 2);
+
+  // No receipt and no payment until the deadline (A26: the ticket is stale
+  // after 30 minutes, so the run can no longer be ranked): failed.
+  let clock = 0;
+  const lost = isolatedEntry({ publicWait: async () => { clock += 10; throw timeoutError(); }, walletWait: async () => { throw timeoutError(); } });
+  const sentLost = await lost.api.sendRankedEntry(lost.wallet, { sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: lost.readProvider, ...fast, confirmDeadlineMs: 35, now: () => clock });
+  assert.deepEqual({ ...(await sentLost.wait()) }, { status: 'failed', blockNumber: null });
+  assert.equal(lost.log.filter((entry) => entry.startsWith('public:wait')).length, 4, 'polled until the deadline, then failed');
+  assert.equal(RANKED_ENTRY_CONFIRM_DEADLINE_MS, 30 * 60 * 1000);
+});
+
+test('openRankedSession waits for the confirmation and throws on a revert', async () => {
+  const sessionKey = `0x${'AB'.repeat(32)}`;
+  const wrapped = isolatedEntry();
+  let settledValue = null;
+  const paying = wrapped.api.openRankedSession(wrapped.wallet, { sessionId: 'game-session-x', sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: wrapped.readProvider, expectedWallet: WALLET })
+    .then((value) => { settledValue = value; return value; });
+  await new Promise((resolve) => setTimeout(resolve, 5));
+  assert.ok(wrapped.log.some((entry) => entry.startsWith('wallet:openSession')), 'broadcast');
+  assert.equal(settledValue, null, 'still waiting for the receipt');
+  wrapped.settle({ status: 1, blockNumber: 30 });
+  const result = await paying;
+  assert.equal(result.txHash, `0x${'77'.repeat(32)}`);
+  assert.equal(result.amountWei, TOTAL);
+  assert.equal(result.sessionId32, sessionKey.toLowerCase());
+  assert.equal(result.paid, true);
+  assert.deepEqual({ ...result.receipt }, { status: 'confirmed', blockNumber: 30 });
+
+  const reverted = isolatedEntry();
+  const failing = reverted.api.openRankedSession(reverted.wallet, { sessionId: 'game-session-x', sessionKey, gameId: GAME, preflight: { ...QUOTE }, readProvider: reverted.readProvider });
+  await new Promise((resolve) => setTimeout(resolve, 5));
+  reverted.settle({ status: 0, blockNumber: 31 });
+  await assert.rejects(failing, /did not confirm/);
+
+  // Without a pre-flight quote it reads the gate over the read provider.
+  const gateRead = isolatedEntry();
+  await assert.rejects(gateRead.api.openRankedSession(gateRead.wallet, { sessionId: 'game-session-x', sessionKey, gameId: GAME }), /tests inject the read provider/);
+  assert.equal(gateRead.log.includes('wallet:signer'), false, 'the gate is read before any signer');
 });

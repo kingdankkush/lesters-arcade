@@ -220,17 +220,35 @@ async function estimateEntryGasWei(provider) {
   }
 }
 
+// One bounded receipt wait (per RPC) inside wait().
 export const RANKED_ENTRY_WAIT_TIMEOUT_MS = 180_000;
+// A slow entry is never reported as failed while it can still count: an entry
+// mined more than 30 minutes after its seed ticket can no longer settle (A26,
+// seed-ticket-stale), so wait() gives up on a missing receipt only after that.
+export const RANKED_ENTRY_CONFIRM_DEADLINE_MS = 30 * 60 * 1000;
+export const RANKED_ENTRY_POLL_INTERVAL_MS = 5_000;
+// A27: switching the fee off makes Ranked unusable, not free (E3 answers
+// 402 entry-underpaid), so a zero quote is never sent.
+export const RANKED_ENTRY_CLOSED_ERROR = 'The Ranked entry is closed right now: the entry contract quotes no fee.';
+export const RANKED_ENTRY_ACCOUNT_CHANGED_ERROR = 'Your wallet switched accounts. The entry was not sent.';
 
 // --- WRITE: pay the native Ranked entry (player-signed, 1 tx) ---------------
 // Sends the contract's exact quote (entry fee + settlement reserve) to
 // ArcadeRankedEntry.openSession against the canonical session key and returns
 // right after the broadcast, so the run can start while the entry confirms
 // (contract A17, §7.6). `wait()` never rejects: it resolves
-// { status: 'confirmed'|'failed', blockNumber }. The wallet sees the chain id
-// request, the signer and the transaction itself; the quote comes from the
-// background pre-flight or a public read.
-export async function sendRankedEntry(walletProvider, { sessionKey, gameId, preflight = null, readProvider = null, waitTimeoutMs = RANKED_ENTRY_WAIT_TIMEOUT_MS } = {}) {
+// { status: 'confirmed'|'failed', blockNumber }. A missing receipt is looked
+// for again (and isPaid read) until RANKED_ENTRY_CONFIRM_DEADLINE_MS; only a
+// reverted receipt, or no payment by then, is 'failed'. `expectedWallet` is
+// the account the session key is bound to: a signer on any other account is
+// refused before openSession. The wallet sees the chain id request, the signer
+// and the transaction itself; the quote comes from the background pre-flight
+// or a public read.
+export async function sendRankedEntry(walletProvider, {
+  sessionKey, gameId, preflight = null, expectedWallet = null, readProvider = null,
+  waitTimeoutMs = RANKED_ENTRY_WAIT_TIMEOUT_MS, confirmDeadlineMs = RANKED_ENTRY_CONFIRM_DEADLINE_MS,
+  pollIntervalMs = RANKED_ENTRY_POLL_INTERVAL_MS, now = () => Date.now(),
+} = {}) {
   if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No entry fee was requested.');
   if (!walletProvider?.request) throw new Error('A connected wallet is required to pay the Ranked entry.');
   if (!isBytes32Hex(sessionKey)) throw new Error('A canonical session key is required.');
@@ -258,25 +276,43 @@ export async function sendRankedEntry(walletProvider, { sessionKey, gameId, pref
     if (!gate.ok) throw new Error(gate.error);
     quote = gate;
   }
-  if (!quote.rankedEntryAddress || quote.entryTotalWei === 0n) {
-    return { txHash: null, sessionId32, amountWei: 0n, paid: false, wait: async () => ({ status: 'confirmed', blockNumber: null }) };
-  }
+  if (!quote.rankedEntryAddress || BigInt(quote.entryTotalWei ?? 0n) === 0n) throw Object.assign(new Error(RANKED_ENTRY_CLOSED_ERROR), { code: 'RANKED_ENTRY_CLOSED' });
   const signer = await browserProvider.getSigner();
+  const player = String(typeof signer.getAddress === 'function' ? await signer.getAddress() : signer.address ?? '').toLowerCase();
+  if (expectedWallet && player !== String(expectedWallet).toLowerCase()) {
+    throw Object.assign(new Error(RANKED_ENTRY_ACCOUNT_CHANGED_ERROR), { code: 'ACCOUNT_MISMATCH' });
+  }
+  const gameId32 = quote.gameId32 ?? ethers.id(gameId);
   const entry = new ethers.Contract(quote.rankedEntryAddress, RANKED_ENTRY_ABI, signer);
-  const tx = await entry.openSession(sessionId32, quote.gameId32 ?? ethers.id(gameId), { value: quote.entryTotalWei });
+  const tx = await entry.openSession(sessionId32, gameId32, { value: quote.entryTotalWei });
+  const broadcastAt = now();
+  const receiptOnce = async () => {
+    try {
+      const receipt = await withReadProvider(ethers, readProvider, (provider) => provider.waitForTransaction(tx.hash, 1, waitTimeoutMs));
+      if (receipt) return receipt;
+    } catch { /* the public RPC failed or timed out; ask the wallet's own RPC */ }
+    try { return await tx.wait(1, waitTimeoutMs); } catch (error) { return error?.receipt ?? null; }
+  };
+  // A replaced (sped-up) entry has another hash: the entry contract itself says
+  // whether this session is paid.
+  const paidOnChain = async () => {
+    try {
+      return Boolean(await withReadProvider(ethers, readProvider, (provider) => new ethers.Contract(quote.rankedEntryAddress, RANKED_ENTRY_ABI, provider).isPaid(sessionId32, player, gameId32)));
+    } catch {
+      return false;
+    }
+  };
   let waiting = null;
   const wait = () => {
     waiting ??= (async () => {
-      let receipt = null;
-      try {
-        receipt = await withReadProvider(ethers, readProvider, (provider) => provider.waitForTransaction(tx.hash, 1, waitTimeoutMs));
-      } catch {
-        // The public RPC failed; ask the wallet's own RPC before giving up.
-        try { receipt = await tx.wait(1, waitTimeoutMs); } catch (error) { receipt = error?.receipt ?? null; }
+      for (;;) {
+        const receipt = await receiptOnce();
+        if (receipt) return { status: Number(receipt.status) === 1 ? 'confirmed' : 'failed', blockNumber: receipt.blockNumber ?? null };
+        if (await paidOnChain()) return { status: 'confirmed', blockNumber: null };
+        if (now() - broadcastAt >= confirmDeadlineMs) return { status: 'failed', blockNumber: null };
+        await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
       }
-      if (!receipt) return { status: 'failed', blockNumber: null };
-      return { status: Number(receipt.status) === 1 ? 'confirmed' : 'failed', blockNumber: receipt.blockNumber ?? null };
-    })();
+    })().catch(() => ({ status: 'failed', blockNumber: null }));
     return waiting;
   };
   return {
@@ -286,13 +322,14 @@ export async function sendRankedEntry(walletProvider, { sessionKey, gameId, pref
 }
 
 // Waits for the entry to confirm (existing callers and tests). New code uses
-// sendRankedEntry and starts the run on broadcast.
-export async function openRankedSession(walletProvider, { sessionId, sessionKey = null, gameId } = {}) {
+// sendRankedEntry and starts the run on broadcast. The other options (the
+// pre-flight quote, the expected wallet, a read provider, timings) pass through.
+export async function openRankedSession(walletProvider, { sessionId, sessionKey = null, gameId, ...entryOptions } = {}) {
   if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No entry fee was requested.');
   if (!walletProvider?.request) throw new Error('A connected wallet is required to pay the Ranked entry.');
   if (!sessionId || !gameId) throw new Error('sessionId and gameId are required.');
   const key = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
-  const sent = await sendRankedEntry(walletProvider, { sessionKey: key, gameId });
+  const sent = await sendRankedEntry(walletProvider, { ...entryOptions, sessionKey: key, gameId });
   const receipt = await sent.wait();
   if (receipt.status !== 'confirmed') throw new Error('The Ranked entry transaction did not confirm.');
   return {
