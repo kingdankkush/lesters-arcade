@@ -2739,11 +2739,37 @@ function bestRoguelikeUpgradeTitle() {
   return best ? `${best.title} (Rank ${bestLevel})` : null;
 }
 
+// Ranked results screen (contract §7.3, §7.7): the lesters:ranked-run
+// listener near the end of this file lazy-loads src/ranked-results.mjs and
+// hands the open view here. For a Ranked HMH run the results screen replaces
+// the game-over summary, which shrinks to one "View results" button while
+// the screen is open or after it was dismissed for this session.
+let rankedResultsView = null;
+function showRankedResults(view) {
+  rankedResultsView = view;
+  renderGameOverSummary();
+}
+
+function rankedResultsViewForCurrentRun() {
+  const sessionId = (currentSession ?? lastCompletedSession)?.sessionId;
+  return rankedResultsView?.gameId === 'lester-blaster' && sessionId && rankedResultsView.sessionId === sessionId ? rankedResultsView : null;
+}
+
 function renderGameOverSummary() {
   if (!dom.combatGameOverSummary) return;
   dom.combatGameOverSummary.hidden = !combat.gameOver;
   if (!combat.gameOver) {
     dom.combatGameOverSummary.replaceChildren();
+    return;
+  }
+  const rankedView = rankedResultsViewForCurrentRun();
+  if (rankedView) {
+    dom.combatGameOverSummary.dataset.channel = 'ranked-results';
+    dom.combatGameOverSummary.replaceChildren();
+    appendText(dom.combatGameOverSummary, 'strong', 'RANKED RUN COMPLETE', 'game-over-summary-title');
+    const viewResults = el('button', { className: 'combat-action-button combat-action-button-primary ranked-results-reopen', type: 'button', textContent: 'View results' });
+    viewResults.addEventListener('click', () => { playSfxCue('menu-click'); rankedView.reopen(); });
+    dom.combatGameOverSummary.append(viewResults);
     return;
   }
   const summary = currentGameOverSummaryModel();
@@ -15327,6 +15353,9 @@ window.addEventListener('orientationchange', () => {
     scheduleCombatViewportRelayout(220);
   }, 200);
 });
+
+// Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
+window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => renderGameOverSummary() }))).catch((error) => console.error('[Ranked results]', error)); });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 portalRouteController.applyLocation();

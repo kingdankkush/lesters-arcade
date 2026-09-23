@@ -62,6 +62,8 @@ const NODE_CHECK_FILES = [
   'apps/stacked/src/render/gameplay-particles.mjs',
   'apps/stacked/src/render/piece-presentation.mjs',
   'apps/portal/src/share-links.mjs',
+  'apps/portal/src/ranked-results.mjs',
+  'tests/ranked-results.test.mjs',
   'apps/portal/src/ranked-results-model.mjs',
   'tests/share-links.test.mjs',
   'tests/ranked-results-model.test.mjs',

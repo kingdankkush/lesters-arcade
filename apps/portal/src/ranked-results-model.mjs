@@ -182,7 +182,7 @@ function timelineFor({ state, entry, server, error }) {
 
   const explorerUrl = typeof server?.explorerUrl === 'string' && TX_URL.test(server.explorerUrl) ? server.explorerUrl : null;
   let publishedStep;
-  if (published) publishedStep = step('published', 'done', explorerUrl ? 'Published on LitVM · view transaction' : 'Published on LitVM', explorerUrl);
+  if (published) publishedStep = step('published', 'done', 'Published on LitVM', explorerUrl);
   else if (offline || rejected) publishedStep = step('published', 'skipped', 'Not published');
   else publishedStep = step('published', 'pending', 'Published');
 
