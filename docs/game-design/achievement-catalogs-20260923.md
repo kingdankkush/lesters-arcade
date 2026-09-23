@@ -8,7 +8,7 @@
 
 1. **Thresholds.**
    - Chikun's thresholds come from the difficulty harness (`docs/qa/chikun-difficulty-harness-20260923.json`, 200 bot runs per profile). Combo and near-miss thresholds also use a near-miss-chasing sample (below), because harness bots never aim for near misses.
-   - STACKED's thresholds come from a soak pilot throttled to five human speeds. Halvings, spins, perfect clears, combos and back-to-back are anchored on the 16 Free medals, because the pilot never sets those up. Four of them (`stacked-spins-10`, `stacked-spins-25`, `stacked-perfect-clears-3`, `stacked-b2b-5`) have no medal to anchor on and are marked **estimate**.
+   - STACKED's thresholds come from a soak pilot throttled to five human speeds. Halvings, spins, perfect clears, combos and back-to-back are anchored on the 16 Free medals, because the pilot never sets those up. Four of them (`stacked-spins-10`, `stacked-spins-25`, `stacked-perfect-clears-3`, `stacked-b2b-streak-5`) have no medal to anchor on and are marked **estimate**.
    - These sit at the edge of their tier, or rest on estimates, and need a decision:
      - `chikun-survive-6m` and `chikun-speed-2x` are silver but only reached around the intermediate p90;
      - `chikun-survive-12m` is gold but reached around the exceptional median;
@@ -21,14 +21,15 @@
    - 44 of the 50 non-Level-2 ids are available (target 44).
 3. **NFT proposal for phase 2 (13).** Nothing is defined on chain in phase 1, and no screen uses NFT wording (A32). The candidates are:
    - five Chikun platinum: `chikun-survive-15m`, `chikun-forks-150`, `chikun-coins-375`, `chikun-flawless-20`, `chikun-combo-40`;
-   - five STACKED platinum: `stacked-lines-1000`, `stacked-survive-17m`, `stacked-score-4250k`, `stacked-garbage-100`, `stacked-b2b-10`;
+   - five STACKED platinum: `stacked-lines-1000`, `stacked-survive-17m`, `stacked-score-4250k`, `stacked-garbage-100`, `stacked-b2b-streak-10`;
    - three HMH mythic run totals: `two-hundred-ranked-runs`, `two-fifty-ranked-runs`, `arcade-legend-500`.
 
    `marathon-wallet` and `perfect-boss-gauntlet` are **not** candidates. HMH is plausibility-checked, not replayed (A9), and they rest only on client-attested survival and no-damage fields. The owner may revisit this in phase 2 (checkpoint O3).
 
 ## How the catalogs work
 
-- **Entries.** Each catalog entry is frozen and has exactly these fields: `id, gameId, title, description, tier, category, nft, available, order, image, lockedImage, criteria, progress` (contract §6.1). Ids are unique across the three games. Titles and descriptions never mention NFTs, soulbound tokens or minting.
+- **Entries.** Each catalog entry is frozen and has exactly these fields: `id, gameId, title, description, tier, category, nft, available, order, image, lockedImage, criteria, progress` (contract §6.1). Titles and descriptions never mention NFTs, soulbound tokens or minting.
+- **Ids.** Ids are unique across the three games, and no Ranked id equals a STACKED Free medal id (`apps/stacked/src/free-medals.mjs`, stored as `stacked-<medal>`), so a view that lists both never shows one as the other. That is why the STACKED combo and back-to-back ids are `stacked-chain-N` and `stacked-b2b-streak-N`, and the first spin lock is `stacked-first-spin-lock`: the medals `stacked-combo-5`, `stacked-combo-10`, `stacked-b2b-10` and `stacked-first-spin` have other titles, and `first-spin` counts spin clears. Chikun's three reused runtime ids keep their runtime titles and thresholds. Tests pin all of this.
 - **Criteria.** A criterion reads only the stats of the verified run (contract §6.3: `statsFromHmhRunSummary`, `statsFromChikunResult`, `statsFromStackedTuple`) plus the wallet's verified history (§6.5). There are three kinds:
   - **best run**: this run reaches the threshold;
   - **cumulative** (Σ): `history.sums[path] + run.stats[path]` reaches it;
@@ -230,9 +231,9 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | 4 | `stacked-lines-total-100` | Hundred-Row Ledger | bronze | lines | Σ `lines ≥ 100` | yes | no | About 3 novice-median runs |
 | 5 | `stacked-first-halving` | First Halving | bronze | halving | `quadClears ≥ 1` | yes | no | Medal `first-quad` (2nd of 16); the pilot never builds for Halvings |
 | 6 | `stacked-halvings-total-5` | Halving Habit | bronze | halving | Σ `quadClears ≥ 5` | yes | no | Medal `first-quad`, over a few runs |
-| 7 | `stacked-first-spin` | First Spin | bronze | spin | `spins ≥ 1` (spin locks, mini or full) | yes | no | Medal `first-spin` (3rd of 16; the medal counts spin clears, the tuple counts spin locks) |
+| 7 | `stacked-first-spin-lock` | First Spin | bronze | spin | `spins ≥ 1` (spin locks, mini or full) | yes | no | Medal `first-spin` (3rd of 16; the medal counts spin clears and the tuple spin locks, so the id differs from the medal's) |
 | 8 | `stacked-first-hold` | Cold Storage | bronze | hold | `holdsUsed ≥ 1` | yes | no | Basic mechanic; the pilot never holds |
-| 9 | `stacked-combo-2` | Chain Starter | bronze | combo | `maxCombo ≥ 2` (3 clearing pieces in a row) | yes | no | Soak novice p50 2 |
+| 9 | `stacked-chain-2` | Chain Starter | bronze | combo | `maxCombo ≥ 2` (3 clearing pieces in a row) | yes | no | Soak novice p50 2 |
 | 10 | `stacked-pieces-100` | Hundred Blocks | bronze | pieces | `pieces ≥ 100` | yes | no | Soak novice p50 124 |
 | 11 | `stacked-survive-2m` | Two-Minute Stack | bronze | survival | `survivalSeconds ≥ 120` | yes | no | Soak novice p50 2.65 min |
 | 12 | `stacked-score-20k` | 20K Block | bronze | score | `score ≥ 20,000` | yes | no | Soak novice p50 22,131 |
@@ -244,8 +245,8 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | 18 | `stacked-halvings-3` | Triple Halving | silver | halving | `quadClears ≥ 3` | yes | no | Between medals `first-quad` (2nd) and `quad-10` (10th); soak exceptional p50 5 by accident |
 | 19 | `stacked-first-perfect-clear` | Clean Books | silver | perfect-clear | `perfectClears ≥ 1` | yes | no | Medal `perfect-clear` (11th of 16); soak hardcore/exceptional p90 1 by accident |
 | 20 | `stacked-spins-10` | Spin Doctor | silver | spin | `spins ≥ 10` | yes | no | Ten times medal `first-spin`; the pilot never spins (**estimate**) |
-| 21 | `stacked-combo-5` | Five-Link Chain | silver | combo | `maxCombo ≥ 5` | yes | no | Medal `combo-5` (4th of 16); soak exceptional p90 5 by accident |
-| 22 | `stacked-b2b-2` | Back-to-Back | silver | back-to-back | `maxBackToBack ≥ 2` | yes | no | The first real back-to-back; soak exceptional p99 2 |
+| 21 | `stacked-chain-5` | Five-Link Chain | silver | combo | `maxCombo ≥ 5` | yes | no | Medal `combo-5` (4th of 16); soak exceptional p90 5 by accident |
+| 22 | `stacked-b2b-streak-2` | Back-to-Back | silver | back-to-back | `maxBackToBack ≥ 2` | yes | no | The first real back-to-back; soak exceptional p99 2 |
 | 23 | `stacked-survive-4m` | Four-Minute Stack | silver | survival | `survivalSeconds ≥ 240` | yes | no | Soak intermediate p50 4.77 min |
 | 24 | `stacked-score-100k` | 100K Block | silver | score | `score ≥ 100,000` | yes | no | Soak intermediate p50 148,244 |
 | 25 | `stacked-garbage-5` | Garbage Day | silver | garbage | `garbageRowsReceived ≥ 5` | yes | no | Soak intermediate p50 5.5 |
@@ -255,15 +256,15 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | 29 | `stacked-halvings-10` | Halving Cycle | gold | halving | `quadClears ≥ 10` | yes | no | Medal `quad-10` (10th of 16); soak exceptional p99 10.4 |
 | 30 | `stacked-perfect-clears-3` | Audited Thrice | gold | perfect-clear | `perfectClears ≥ 3` | yes | no | Beyond medal `perfect-clear`; soak exceptional p99 2.7 (**estimate**) |
 | 31 | `stacked-spins-25` | Torque Master | gold | spin | `spins ≥ 25` | yes | no | The pilot never spins (**estimate**) |
-| 32 | `stacked-combo-10` | Ten-Link Chain | gold | combo | `maxCombo ≥ 10` | yes | no | Medal `combo-10` (7th of 16); soak hardcore p99 6.4 |
-| 33 | `stacked-b2b-5` | Difficulty Spike | gold | back-to-back | `maxBackToBack ≥ 5` | yes | no | Halfway to medal `b2b-10` (**estimate**) |
+| 32 | `stacked-chain-10` | Ten-Link Chain | gold | combo | `maxCombo ≥ 10` | yes | no | Medal `combo-10` (7th of 16); soak hardcore p99 6.4 |
+| 33 | `stacked-b2b-streak-5` | Difficulty Spike | gold | back-to-back | `maxBackToBack ≥ 5` | yes | no | Halfway to medal `b2b-10` (**estimate**) |
 | 34 | `stacked-survive-7m` | Hashrate Forge | gold | survival | `survivalSeconds ≥ 420` (zone 2, Hashrate Forge) | yes | no | Soak hardcore p50 7.17 min |
 | 35 | `stacked-score-500k` | Half-Million Block | gold | score | `score ≥ 500,000` | yes | no | Soak expert p50 277,447 / hardcore p50 839,023 |
 | 36 | `stacked-lines-1000` | Thousand-Row Run | platinum | lines | `lines ≥ 1,000` | yes | **yes** (phase 2) | Soak exceptional p90 973 (p99 1,025) |
 | 37 | `stacked-survive-17m` | Lattice Survivor | platinum | survival | `survivalSeconds ≥ 1,020` | yes | **yes** (phase 2) | Soak exceptional p90 16.38, p99 17.03 min |
 | 38 | `stacked-score-4250k` | Whale Stack | platinum | score | `score ≥ 4,250,000` | yes | **yes** (phase 2) | Soak exceptional p90 4.11M (p99 4.33M) |
 | 39 | `stacked-garbage-100` | Garbage Collector | platinum | garbage | `garbageRowsReceived ≥ 100` | yes | **yes** (phase 2) | Soak exceptional p90 92.3 (p99 115) |
-| 40 | `stacked-b2b-10` | Unbroken Chain | platinum | back-to-back | `maxBackToBack ≥ 10` | yes | **yes** (phase 2) | Medal `b2b-10` "Difficulty Adjustment" (15th of 16, the hardest skill medal); soak max 2 |
+| 40 | `stacked-b2b-streak-10` | Unbroken Chain | platinum | back-to-back | `maxBackToBack ≥ 10` | yes | **yes** (phase 2) | Medal `b2b-10` "Difficulty Adjustment" (15th of 16, the hardest skill medal); soak max 2 |
 
 ## NFT proposal (phase 2, not defined on chain)
 
@@ -272,7 +273,7 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 | Game | Candidates | Why |
 | --- | --- | --- |
 | Chikun's Escape | `chikun-survive-15m`, `chikun-forks-150`, `chikun-coins-375`, `chikun-flawless-20`, `chikun-combo-40` | Platinum; single-run stats of a server-replayed v6 run, each at or above the exceptional p90 |
-| STACKED | `stacked-lines-1000`, `stacked-survive-17m`, `stacked-score-4250k`, `stacked-garbage-100`, `stacked-b2b-10` | Platinum; the stats come from the server-replayed result tuple |
+| STACKED | `stacked-lines-1000`, `stacked-survive-17m`, `stacked-score-4250k`, `stacked-garbage-100`, `stacked-b2b-streak-10` | Platinum; the stats come from the server-replayed result tuple |
 | Hard Money Heroes | `two-hundred-ranked-runs`, `two-fifty-ranked-runs`, `arcade-legend-500` | Mythic; they depend only on verified runs the server counts itself, not on anything the client reports |
 
 ## Metadata and badges

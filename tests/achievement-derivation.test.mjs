@@ -304,9 +304,9 @@ const sessionOf = (gameId, stats, count) => history(gameId, {
 });
 // STACKED thresholds the soak pilot cannot calibrate (it plays for singles): anchored on the Free medals.
 const STACKED_MEDAL_ANCHORED = new Set([
-  'stacked-first-halving', 'stacked-halvings-total-5', 'stacked-first-spin', 'stacked-first-hold',
-  'stacked-halvings-3', 'stacked-first-perfect-clear', 'stacked-spins-10', 'stacked-combo-5', 'stacked-b2b-2',
-  'stacked-halvings-10', 'stacked-perfect-clears-3', 'stacked-spins-25', 'stacked-combo-10', 'stacked-b2b-5', 'stacked-b2b-10',
+  'stacked-first-halving', 'stacked-halvings-total-5', 'stacked-first-spin-lock', 'stacked-first-hold',
+  'stacked-halvings-3', 'stacked-first-perfect-clear', 'stacked-spins-10', 'stacked-chain-5', 'stacked-b2b-streak-2',
+  'stacked-halvings-10', 'stacked-perfect-clears-3', 'stacked-spins-25', 'stacked-chain-10', 'stacked-b2b-streak-5', 'stacked-b2b-streak-10',
 ]);
 
 test('bronze thresholds are reachable at the novice median, platinum sits at or above exceptional p90', () => {

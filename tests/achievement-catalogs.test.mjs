@@ -6,7 +6,9 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'acorn';
 import { ACHIEVEMENT_LIST } from '../apps/portal/src/arcade-core.mjs';
+import { CHIKUN_VERTICAL_SLICE_CONFIG } from '../apps/portal/src/chikun-cabinet.mjs';
 import { CHIKUN_REGIONS } from '../apps/portal/src/chikun-course-regions.mjs';
+import { FREE_MEDALS } from '../apps/stacked/src/free-medals.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
 import {
   ACHIEVEMENT_GAME_IDS, achievementById, catalogFor, nftAchievementIds,
@@ -101,6 +103,18 @@ test('every entry is frozen, uniquely identified and image-backed', () => {
     });
   }
   assert.equal(ids.size, 137);
+
+  // Other achievement-like ids players see: STACKED Free medals never share an
+  // id with a Ranked entry (a merged profile view would show one as the other).
+  const stackedIds = new Set(catalogFor('stacked').map((entry) => entry.id));
+  assert.equal(FREE_MEDALS.length, 16);
+  for (const medal of FREE_MEDALS) assert.ok(!ids.has(medal.id), `${medal.id} is a Free medal id, not a Ranked achievement id`);
+  assert.ok([...stackedIds].every((id) => id.startsWith('stacked-')));
+  // Chikun's in-runtime result ids are reused on purpose, with the same titles
+  // (and thresholds, pinned in achievement-derivation.test.mjs); thread-needle is not reused.
+  const runtime = CHIKUN_VERTICAL_SLICE_CONFIG.achievements;
+  assert.deepEqual(runtime.map((a) => a.id).filter((id) => ids.has(id)), ['chikun-first-flight', 'chikun-stack-three', 'chikun-fork-runner']);
+  for (const a of runtime.filter((row) => ids.has(row.id))) assert.equal(achievementById('chikun', a.id).title, a.title, a.id);
 });
 
 test('catalog tables follow the game sources they name', () => {
