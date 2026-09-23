@@ -5,6 +5,7 @@ export function createOfficialShellRoutes({
   documentRef = globalThis.document,
   getStep,
   getConnectedWallet,
+  portalCopy = PORTAL_COPY,
   getSelectedGameId,
   getSessionId,
   getState,
@@ -94,8 +95,8 @@ export function createOfficialShellRoutes({
       dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
     }
     dom.officialWalletCopy.textContent = connectedWallet
-      ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. ${PORTAL_COPY.walletConnected}`
-      : PORTAL_COPY.scoresWallet;
+      ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. ${portalCopy.walletConnected}`
+      : portalCopy.scoresWallet;
     dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Connect Wallet';
   }
 

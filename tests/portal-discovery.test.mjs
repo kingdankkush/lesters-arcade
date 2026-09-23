@@ -59,3 +59,40 @@ test('home discovery is readable before JavaScript and primary links precede opt
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
   assert.equal(ids.length,new Set(ids).size,'the static app shell has no duplicate control IDs');
 });
+
+// Contract A33: the SPA game view and the head metadata take the copy by
+// injection, so the launch wording is rendered here without flipping a flag.
+test('the SPA game details and metadata render the copy they are given', async () => {
+  const { gameDetailsNode, syncDiscoveryMeta } = await import('../apps/portal/src/portal-discovery.mjs');
+  const element = tag => ({
+    tag, textContent: '', className: '', attrs: {}, children: [],
+    setAttribute(name, value) { this.attrs[name] = value; },
+    append(...children) { this.children.push(...children); },
+  });
+  const text = node => [node.textContent, ...node.children.map(text)].join(' ');
+  const documentRef = { createElement: element };
+  const launch = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
+  for (const game of PORTAL_GAMES) {
+    const rendered = text(gameDetailsNode(documentRef, game.slug, launch));
+    assert.ok(rendered.includes(launch.rankedDetail[game.id]), `${game.slug} launch detail`);
+    assert.doesNotMatch(rendered, /device-local|preview/i);
+    assert.ok(text(gameDetailsNode(documentRef, game.slug)).includes(PORTAL_COPY.rankedDetail[game.id]), `${game.slug} default detail`);
+  }
+  assert.equal(gameDetailsNode(documentRef, 'not-a-game', launch), null);
+
+  const head = new Map();
+  const headDocument = {
+    title: '',
+    querySelector: selector => {
+      if (!head.has(selector)) head.set(selector, { attrs: {}, textContent: '', setAttribute(name, value) { this.attrs[name] = value; } });
+      return head.get(selector);
+    },
+  };
+  syncDiscoveryMeta(headDocument, '/', launch);
+  assert.equal(head.get('meta[name="description"]').attrs.content, launch.description);
+  assert.equal(head.get('meta[property="og:description"]').attrs.content, launch.description);
+  const website = JSON.parse(head.get('#portalStructuredData').textContent)['@graph'].find(node => node['@type'] === 'WebSite');
+  assert.equal(website.description, launch.description);
+  syncDiscoveryMeta(headDocument, '/');
+  assert.equal(head.get('meta[name="description"]').attrs.content, PORTAL_COPY.description);
+});

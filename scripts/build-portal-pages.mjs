@@ -53,7 +53,8 @@ function renderHome(html,copy){
   for(const [key,text] of [
     ['how-intro',copy.howIntro],['how-connect-title',copy.howConnectTitle],['how-connect',copy.howConnect],['how-connect-action',copy.howConnectAction],['how-profile',copy.howProfile],
     ['scores-lead',copy.scoresLead],['scores-note',copy.scoresNote],['scores-wallet',copy.scoresWallet],
-    ['mode-copy',copy.modeCopy],['mode-ranked',copy.modeRanked],
+    // The landing page's static mode-select view is the Hard Money Heroes one.
+    ['mode-copy',copy.modeSelect['lester-blaster'].copy],['mode-ranked',copy.modeSelect['lester-blaster'].ranked],
   ]) html=renderCopyBlock(html,key,escapeHtml(text),'index.html');
   return withMeta(html,'/',copy);
 }
@@ -99,6 +100,7 @@ export function buildPortalPages({flags,outDir=portal}={}){
       .replace(/(<img id="officialRankedModeBanner"[^>]*src=")[^"]*/,'$1'+game.art)
       .replace(/alt="Hard Money Heroes (Free Mode|Ranked) key art"/g,'alt="'+escapeHtml(game.title)+' key art"')
       .replace('<div id="portalGameDetails"></div>','<div id="portalGameDetails">'+renderGameDetails(game.slug,copy)+'</div>');
+    html=renderCopyBlock(html,'mode-ranked',escapeHtml(copy.modeSelect[game.id]?.ranked ?? copy.modeRanked),'discover/'+game.slug+'.html');
     write('discover/'+game.slug+'.html',withMeta(html,'/games/'+game.slug,copy));
   }
   write('trust.html',renderTrust(readFileSync(resolve(portal,'trust.html'),'utf8'),copy));

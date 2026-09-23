@@ -6,6 +6,7 @@ export function createOfficialAppRoutes({
   getStep,
   setStep,
   getConnectedWallet,
+  portalCopy = PORTAL_COPY,
   isGuestAllowedStep,
   isSimulatedWalletActive,
   playableCabinetNames,
@@ -59,9 +60,9 @@ export function createOfficialAppRoutes({
         ? 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Your next run starts here.'
         : 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Choose a game and play Free.',
       profile: connectedWallet
-        ? PORTAL_COPY.profileWalletView
-        : PORTAL_COPY.profileGuestView,
-      leaderboards: PORTAL_COPY.scoresView,
+        ? portalCopy.profileWalletView
+        : portalCopy.profileGuestView,
+      leaderboards: portalCopy.scoresView,
       settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
     };
     dom.officialProfileEyebrow.textContent = simulatedWallet

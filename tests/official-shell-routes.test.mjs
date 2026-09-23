@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 
 import { createOfficialShellRoutes } from '../apps/portal/src/routes/official-shell-routes.mjs';
-import { PORTAL_COPY } from '../apps/portal/src/portal-content.mjs';
+import { PORTAL_COPY, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
 
 function node(tag = 'div', props = {}) {
   return {
@@ -21,7 +21,7 @@ function node(tag = 'div', props = {}) {
   };
 }
 
-function harness({ connectedWallet = null } = {}) {
+function harness({ connectedWallet = null, portalCopy } = {}) {
   const dom = {
     officialApp: node(),
     officialNavTabs: node(),
@@ -37,6 +37,7 @@ function harness({ connectedWallet = null } = {}) {
     documentRef: { createTextNode: (text) => ({ text }) },
     getStep: () => 'settings',
     getConnectedWallet: () => connectedWallet,
+    ...(portalCopy ? { portalCopy } : {}),
     getSelectedGameId: () => 'lester-blaster',
     getSessionId: () => null,
     getState: () => ({ profiles: {} }),
@@ -97,6 +98,17 @@ test('wallet splash renders the featured cabinet and connection state', () => {
   assert.match(connected.dom.officialWalletCopy.textContent, /0x123456…345678 is active/);
   assert.ok(connected.dom.officialWalletCopy.textContent.endsWith(PORTAL_COPY.walletConnected));
   assert.equal(connected.dom.officialConnectButton.textContent, 'Enter Arcade');
+});
+
+test('wallet splash renders the launch wallet note once the flags flip', () => {
+  const launch = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
+  const guest = harness({ portalCopy: launch });
+  guest.routes.renderWalletSplash();
+  assert.equal(guest.dom.officialWalletCopy.textContent, launch.scoresWallet);
+  const connected = harness({ connectedWallet: '0x1234567890abcdef1234567890abcdef12345678', portalCopy: launch });
+  connected.routes.renderWalletSplash();
+  assert.equal(connected.dom.officialWalletCopy.textContent, `0x123456…345678 is active. ${launch.walletConnected}`);
+  for (const h of [guest, connected]) assert.doesNotMatch(h.dom.officialWalletCopy.textContent, /local|preview/i);
 });
 
 test('settings route renders the four authored platform settings cards', () => {

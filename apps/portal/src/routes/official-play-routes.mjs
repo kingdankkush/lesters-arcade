@@ -1,4 +1,4 @@
-import { gameFor } from '../portal-content.mjs';
+import { PORTAL_COPY, gameFor } from '../portal-content.mjs';
 import {
   HERO_SELECT_STAT_MAX,
   activeCarouselIndex,
@@ -26,6 +26,7 @@ export function createOfficialPlayRoutes({
   loadChikunGame,
   persistArcadeStateSoon,
   playSfxCue,
+  portalCopy = PORTAL_COPY,
   productionCabinetSprite,
   renderArcadeIcon,
   renderHeroStatBars,
@@ -315,13 +316,17 @@ export function createOfficialPlayRoutes({
     dom.officialRankedModeButton.disabled = false;
     dom.officialFreeModeBanner.hidden = false;
     dom.officialRankedModeBanner.hidden = false;
-    const ranked = modeSelect.ranked;
+    // Contract A33: what the HMH and Chikun cards say about Ranked comes from
+    // the flag-driven site copy, like the prerendered page, so the step-7 flip
+    // cannot leave preview wording live. Other games keep their descriptor.
+    const siteCopy = portalCopy.modeSelect?.[modeSelect.gameId];
+    const ranked = siteCopy ? { ...modeSelect.ranked, copy: siteCopy.ranked } : modeSelect.ranked;
     applyGameModeSelectBackground(dom.officialModeSelect, modeSelect);
     dom.officialModeSelect.dataset.gameId = modeSelect.gameId;
     dom.officialModeSelect.dataset.artStatus = modeSelect.artStatus;
     dom.officialModeEyebrow.textContent = modeSelect.eyebrow;
     dom.officialModeTitle.textContent = modeSelect.title;
-    dom.officialModeCopy.textContent = modeSelect.copy;
+    dom.officialModeCopy.textContent = siteCopy?.copy ?? modeSelect.copy;
     dom.officialModeArtNote.hidden = modeSelect.artStatus === 'production';
     dom.officialModeArtNote.textContent = modeSelect.artStatus === 'production'
       ? ''
@@ -347,7 +352,7 @@ export function createOfficialPlayRoutes({
       appendText(dom.officialRankedTooltip, 'strong', `${modeSelect.free.label} is open to guests`);
       appendText(dom.officialRankedTooltip, 'span', `${modeSelect.free.copy} Connect a wallet when you want ${ranked.label}.`);
     } else {
-      appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: local verified-preview mode`);
+      appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: ${portalCopy.modeRankedTooltip}`);
       appendText(dom.officialRankedTooltip, 'span', ranked.copy);
     }
     if (SETTLEMENT_LIVE && ranked.requiresZkLtc) {

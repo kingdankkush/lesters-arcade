@@ -16,7 +16,7 @@ const STATES = { preview, hostedPreview, launch };
 const COPY_KEYS = [
   'description', 'faq', 'scoresNote', 'trustStatus', 'trustStorage', 'llmsScope', 'llmsHowItWorks',
   'manifestDescription', 'howIntro', 'howConnectTitle', 'howConnect', 'howConnectAction', 'howProfile',
-  'scoresLead', 'scoresWallet', 'modeCopy', 'modeRanked', 'rankedDetail', 'scoresView', 'profileGuestView',
+  'scoresLead', 'scoresWallet', 'modeSelect', 'modeRanked', 'modeRankedTooltip', 'rankedDetail', 'scoresView', 'profileGuestView',
   'profileWalletView', 'walletConnected',
 ];
 
@@ -44,6 +44,11 @@ test('every flag state provides each block the builder and the SPA render', () =
     assert.ok(Object.isFrozen(copy) && Object.isFrozen(copy.faq), `${name} copy is frozen`);
     for (const pair of copy.faq) assert.equal(pair.length, 2);
     for (const game of PORTAL_GAMES) assert.equal(typeof copy.rankedDetail[game.id], 'string', `${name} ranked detail for ${game.id}`);
+    assert.deepEqual(Object.keys(copy.modeSelect), ['lester-blaster', 'chikun'], `${name} mode-select games (STACKED's cards belong to ranked-client)`);
+    for (const entry of Object.values(copy.modeSelect)) {
+      assert.ok(Object.isFrozen(entry) && entry.copy && entry.ranked, `${name} mode-select entry`);
+      assert.doesNotMatch(entry.copy + entry.ranked, /—|\bpaid\b|\bprototype\b/i, 'HMH copy style rules (hmh-copy-sheet.mjs)');
+    }
     assert.ok(copy.trustStatus.length >= 1 && copy.trustStorage.length >= 1);
   }
   assert.deepEqual([preview.state, hostedPreview.state, launch.state], ['preview', 'hosted-preview', 'launch']);
@@ -67,6 +72,12 @@ test('preview copy says device-local and no fees', () => {
   assert.match(preview.llmsScope, /No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing/);
   assert.match(preview.howConnect, /needs no entry fee or score transaction/);
   for (const game of PORTAL_GAMES) assert.match(preview.rankedDetail[game.id], /device-local preview with no fees or prizes/);
+  for (const entry of Object.values(preview.modeSelect)) assert.match(entry.ranked, /nothing is published on chain yet/);
+  assert.match(preview.modeRanked, /No entry fee and no prizes; nothing is published on chain yet/);
+  assert.equal(preview.modeRankedTooltip, 'local verified-preview mode');
+  // The preview Scores page still offers other time windows until the
+  // profile-boards slice drops its tabs, so preview copy names no period.
+  assert.doesNotMatch(preview.scoresLead + preview.scoresView, /daily|weekly|monthly|yearly|all-time/i);
   const text = allText(preview);
   assert.doesNotMatch(text, /0\.1001|zkLTC per run|Neon|replayed|plausibility|published on LitVM|not refunded/i);
 });
@@ -85,6 +96,10 @@ test('launch copy states the fee, the split and the testnet', () => {
   assert.match(answer(launch, /wallet to play/), /Free Mode is always free and needs no wallet/);
   assert.match(launch.description, /0\.1001 testnet zkLTC per run/);
   assert.match(launch.modeRanked, /^0\.1001 testnet zkLTC per run\./);
+  for (const entry of Object.values(launch.modeSelect)) {
+    assert.match(entry.ranked, /^0\.1001 testnet zkLTC per run\. The arcade server .* and publishes it on LitVM\.$/);
+    assert.match(entry.copy, /sign in and choose Play Ranked to compete on the LitVM testnet/);
+  }
   assert.match(launch.howConnect, /costs nothing and sends no transaction\. Each Ranked run then costs 0\.1001 testnet zkLTC/);
 });
 
@@ -99,6 +114,8 @@ test('launch copy says HMH is plausibility-checked and the other games are repla
   assert.match(launch.rankedDetail['lester-blaster'], /plausibility-checks each run \(it is not replayed\)/);
   assert.match(launch.rankedDetail.chikun, /replays each run from your inputs/);
   assert.match(launch.rankedDetail.stacked, /replays each run from your inputs/);
+  assert.match(launch.modeSelect['lester-blaster'].ranked, /plausibility-checks your run \(it is not replayed\)/);
+  assert.match(launch.modeSelect.chikun.ranked, /replays your run from its inputs/);
   // No sentence ever claims a Hard Money Heroes replay (contract A9).
   for (const text of strings(launch)) {
     for (const sentence of sentences(text)) {
@@ -188,15 +205,18 @@ test('meta, structured data and game details render the copy they are given', ()
   assert.doesNotMatch(portalSchema('/games', launch), /aggregateRating|prize/i);
 });
 
-test('SPA views read the same copy source as the builder', () => {
-  const discovery = readFileSync(new URL('../apps/portal/src/portal-discovery.mjs', import.meta.url), 'utf8');
-  const appRoutes = readFileSync(new URL('../apps/portal/src/routes/official-app-routes.mjs', import.meta.url), 'utf8');
-  assert.match(discovery, /\['Free or Ranked\?',PORTAL_COPY\.rankedDetail\[game\.id\]\]/);
-  assert.match(appRoutes, /leaderboards: PORTAL_COPY\.scoresView/);
-  assert.match(appRoutes, /: PORTAL_COPY\.profileGuestView/);
-  assert.match(appRoutes, /\? PORTAL_COPY\.profileWalletView/);
-  const shellRoutes = readFileSync(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url), 'utf8');
-  assert.match(shellRoutes, /: PORTAL_COPY\.scoresWallet;/);
+// The rendering tests live with each view: tests/official-app-routes.test.mjs,
+// tests/official-shell-routes.test.mjs, tests/portal-discovery.test.mjs and
+// tests/portal-mode-select-copy.test.mjs render the launch copy into the DOM.
+test('SPA views default to the copy for the committed flags', () => {
+  const source = path => readFileSync(new URL(path, import.meta.url), 'utf8');
+  const discovery = source('../apps/portal/src/portal-discovery.mjs');
+  const appRoutes = source('../apps/portal/src/routes/official-app-routes.mjs');
+  const shellRoutes = source('../apps/portal/src/routes/official-shell-routes.mjs');
+  const playRoutes = source('../apps/portal/src/routes/official-play-routes.mjs');
+  for (const route of [appRoutes, shellRoutes, playRoutes]) assert.match(route, /\n  portalCopy = PORTAL_COPY,\n/);
+  assert.equal(discovery.match(/copy=PORTAL_COPY/g)?.length, 3, 'gameDetailsNode, syncDiscoveryMeta and installPortalDiscovery');
   assert.doesNotMatch(shellRoutes + appRoutes, /walletLockCopy/, 'the settlement-disabled wallet note never reaches a launch page');
-  for (const source of [discovery, appRoutes, shellRoutes]) assert.doesNotMatch(source, /device-local|yearly/i);
+  assert.doesNotMatch(playRoutes, /local verified-preview mode/, 'the Ranked tooltip heading follows the flags');
+  for (const text of [discovery, appRoutes, shellRoutes]) assert.doesNotMatch(text, /device-local|yearly/i);
 });

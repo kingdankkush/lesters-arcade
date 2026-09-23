@@ -36,6 +36,7 @@ const NODE_CHECK_FILES = [
   'scripts/build-portal-pages.mjs',
   'tests/portal-copy.test.mjs',
   'tests/portal-pages-build.test.mjs',
+  'tests/portal-mode-select-copy.test.mjs',
   'scripts/portal-discovery-browser-smoke.mjs',
   'tests/portal-discovery.test.mjs',
   'apps/chikun/src/ground-world.mjs',

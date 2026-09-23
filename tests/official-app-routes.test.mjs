@@ -9,7 +9,9 @@ function panel() {
   return { hidden: false, dataset: {}, style: {} };
 }
 
-function harness({ step = 'settings', connectedWallet = null, guestAllowed = true } = {}) {
+const launchCopy = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
+
+function harness({ step = 'settings', connectedWallet = null, guestAllowed = true, portalCopy } = {}) {
   const state = { step };
   const calls = [];
   const toggles = [];
@@ -34,6 +36,7 @@ function harness({ step = 'settings', connectedWallet = null, guestAllowed = tru
     getStep: () => state.step,
     setStep: (next) => { state.step = next; },
     getConnectedWallet: () => connectedWallet,
+    ...(portalCopy ? { portalCopy } : {}),
     isGuestAllowedStep: () => guestAllowed,
     isSimulatedWalletActive: () => false,
     playableCabinetNames: () => ['Hard Money Heroes'],
@@ -89,17 +92,31 @@ test('connected profile header follows the settlement flags', () => {
   assert.match(portalCopyFor({ settlementLive: true, hostedProfileSync: true }).profileWalletView, /verified Ranked runs, achievements, and on-chain name are tied to this wallet/);
 });
 
-test('scores header names only the Weekly, Monthly and All-time boards in every flag state', () => {
+test('scores header never names a board period the Scores page does not offer', () => {
   const h = harness({ step: 'leaderboards', connectedWallet: '0x1234567890abcdef' });
   h.routes.renderApp();
   assert.equal(h.dom.officialProfileCopy.textContent, PORTAL_COPY.scoresView);
-  for (const settlementLive of [false, true]) {
-    const copy = portalCopyFor({ settlementLive, hostedProfileSync: settlementLive }).scoresView;
-    assert.match(copy, /weekly, monthly, and all-time/i);
-    assert.doesNotMatch(copy, /daily|yearly/i);
-  }
-  assert.match(portalCopyFor({ settlementLive: true, hostedProfileSync: true }).scoresView, /^Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs/);
+  // The preview Scores page still has other time windows until profile-boards
+  // drops its tabs, so the preview header names no period at all.
+  const preview = portalCopyFor({ settlementLive: false, hostedProfileSync: false }).scoresView;
+  assert.doesNotMatch(preview, /daily|weekly|monthly|yearly|all-time/i);
+  assert.match(preview, /device-local Ranked preview records/);
+  assert.match(launchCopy.scoresView, /^Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs/);
+  assert.doesNotMatch(launchCopy.scoresView, /daily|yearly/i);
   assert.ok(h.calls.includes('leaderboards'));
+});
+
+test('the Scores and Profile headers render the launch copy once the flags flip', () => {
+  const scores = harness({ step: 'leaderboards', connectedWallet: '0x1234567890abcdef', portalCopy: launchCopy });
+  scores.routes.renderApp();
+  assert.equal(scores.dom.officialProfileCopy.textContent, launchCopy.scoresView);
+  const wallet = harness({ step: 'profile', connectedWallet: '0x1234567890abcdef', portalCopy: launchCopy });
+  wallet.routes.renderApp();
+  assert.equal(wallet.dom.officialProfileCopy.textContent, launchCopy.profileWalletView);
+  const guest = harness({ step: 'profile', portalCopy: launchCopy });
+  guest.routes.renderApp();
+  assert.equal(guest.dom.officialProfileCopy.textContent, launchCopy.profileGuestView);
+  for (const h of [scores, wallet, guest]) assert.doesNotMatch(h.dom.officialProfileCopy.textContent, /device-local|preview|No score transaction/i);
 });
 
 test('app dispatcher applies guest gating before route selection', () => {

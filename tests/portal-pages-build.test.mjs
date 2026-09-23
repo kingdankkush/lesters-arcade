@@ -58,7 +58,8 @@ test('each copy block exists exactly once in the committed sources', () => {
   }
   const copy = portalCopyFor(PORTAL_FLAGS);
   assert.equal(block(index, 'scores-note'), escapeHtml(copy.scoresNote));
-  assert.equal(block(index, 'mode-ranked'), escapeHtml(copy.modeRanked));
+  assert.equal(block(index, 'mode-copy'), escapeHtml(copy.modeSelect['lester-blaster'].copy));
+  assert.equal(block(index, 'mode-ranked'), escapeHtml(copy.modeSelect['lester-blaster'].ranked));
 });
 
 test('the live render states the launch copy and drops the preview copy', () => {
@@ -76,7 +77,7 @@ test('the live render states the launch copy and drops the preview copy', () => 
     assert.match(index, /0\.1001 zkLTC per run on the LitVM LiteForge testnet: a 0\.1 zkLTC entry, split 85% to the game&#39;s developer and 15% to the arcade, plus a 0\.0001 zkLTC settlement reserve/);
     assert.match(index, /Hard Money Heroes runs are plausibility-checked against the game&#39;s limits; they are not replayed\./);
     assert.match(block(index, 'scores-lead'), /global Weekly, Monthly, and All-time leaderboards/);
-    assert.equal(block(index, 'mode-ranked'), escapeHtml(launch.modeRanked));
+    assert.equal(block(index, 'mode-ranked'), escapeHtml(launch.modeSelect['lester-blaster'].ranked));
 
     const trust = pages['trust.html'];
     assert.match(block(trust, 'ranked-status'), /Ranked is live on the LitVM LiteForge testnet\. A Ranked run costs 0\.1001 zkLTC/);
@@ -94,7 +95,7 @@ test('the live render states the launch copy and drops the preview copy', () => 
     assert.match(pages['discover/games.html'], new RegExp(`<meta name="description" content="${escapeHtml(launch.description).replace(/[.()]/g, '\\$&')}"`));
 
     const launchStrings = new Set([...Object.values(launch).flat(2)].filter(value => typeof value === 'string'));
-    const previewStatements = [preview.description, preview.scoresLead, preview.scoresNote, preview.scoresWallet, preview.howIntro, preview.howConnect, preview.howProfile, preview.modeCopy, preview.modeRanked, preview.llmsScope, preview.llmsHowItWorks, ...preview.faq.map(([, answer]) => answer), ...preview.trustStatus, ...preview.trustStorage, ...Object.values(preview.rankedDetail)]
+    const previewStatements = [preview.description, preview.scoresLead, preview.scoresNote, preview.scoresWallet, preview.howIntro, preview.howConnect, preview.howProfile, ...Object.values(preview.modeSelect).flatMap(entry => [entry.copy, entry.ranked]), preview.modeRanked, preview.llmsScope, preview.llmsHowItWorks, ...preview.faq.map(([, answer]) => answer), ...preview.trustStatus, ...preview.trustStorage, ...Object.values(preview.rankedDetail)]
       .filter(statement => !launchStrings.has(statement));
     assert.ok(previewStatements.length > 15);
     for (const [name, text] of Object.entries(pages)) {
@@ -108,12 +109,15 @@ test('the live render states the launch copy and drops the preview copy', () => 
   });
 });
 
-test('the preview render keeps the preview wording and names only weekly, monthly and all-time boards', () => {
+test('the preview render keeps the preview wording and names no board period', () => {
   withTempDir(dir => {
     buildPortalPages({ flags: 'preview', outDir: dir });
     const pages = readAll(dir);
     assert.equal(metaContent(pages['index.html'], 'name', 'description'), escapeHtml(preview.description));
-    assert.match(block(pages['index.html'], 'scores-lead'), /on weekly, monthly, and all-time scoreboards/);
+    // The preview Scores page still offers other time windows until the
+    // profile-boards slice drops its tabs, so the preview lead names none.
+    assert.match(block(pages['index.html'], 'scores-lead'), /^See your Ranked preview records on this device&#39;s scoreboards\./);
+    assert.doesNotMatch(block(pages['index.html'], 'scores-lead'), /daily|weekly|monthly|yearly|all-time/i);
     assert.match(block(pages['index.html'], 'scores-note'), /device-local previews today/);
     assert.match(block(pages['trust.html'], 'ranked-status'), /<code>SETTLEMENT_LIVE=false<\/code>/);
     assert.match(block(pages['trust.html'], 'ranked-storage'), /stay in this browser/);
