@@ -3357,7 +3357,7 @@ function captureRankedResultContext(session) {
     previousBest: progress && progress.paidRuns > 0 ? Math.max(0, Math.round(progress.bestPaidScore ?? 0)) : null,
   };
   const pending = HOSTED_PROFILE_SYNC
-    ? rankedSettlementClient().then(({ module }) => module.fetchRankedResultContext({ hosted: true, fetchImpl: (...args) => fetch(...args), wallet, gameId: session.gameId }))
+    ? rankedSettlementClient().then(({ module }) => module.fetchRankedResultContext({ hosted: HOSTED_PROFILE_SYNC, fetchImpl: (...args) => fetch(...args), wallet, gameId: session.gameId }))
     : Promise.resolve(local);
   rankedResultContexts.set(session.sessionId, pending.catch(() => ({ displayName: null, previousBest: null })));
 }

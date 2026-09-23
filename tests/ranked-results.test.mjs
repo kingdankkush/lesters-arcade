@@ -664,9 +664,23 @@ test('a browser back that hides the owning gameplay view closes the screen', asy
 });
 
 test('main.js mounts the screen from exactly one lazy listener', async () => {
-  const main = await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  const listeners = main.match(/window\.addEventListener\('lesters:ranked-run'/g) ?? [];
-  assert.equal(listeners.length, 1);
+  const main = (await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
+  // Contract §7.7 names two listeners of lesters:ranked-run: results-share
+  // (opens this screen) and profile-boards (holdings, stale marks and the
+  // hosted-only name prompt). Exactly one of them mounts the screen, and the
+  // screen module is imported from nowhere else.
+  const starts = [...main.matchAll(/window\.addEventListener\('lesters:ranked-run'/g)].map((match) => match.index);
+  assert.equal(starts.length, 2, 'the results-share listener and the profile-boards listener, nothing else');
+  const bodies = starts.map((from) => {
+    const lineEnd = main.indexOf('\n', from);
+    return main.slice(from, main.slice(from, lineEnd).trimEnd().endsWith('});') ? lineEnd : main.indexOf('\n});', from) + 4);
+  });
+  const mounts = bodies.filter((body) => /ranked-results\.mjs|openRankedResults|showRankedResults/.test(body));
+  assert.equal(mounts.length, 1, 'one lazy mount path');
+  assert.equal((main.match(/import\('\.\/src\/ranked-results\.mjs'\)/g) ?? []).length, 1, 'the screen module is imported once');
+  const [profileListener] = bodies.filter((body) => !mounts.includes(body));
+  assert.match(profileListener, /^ {2}if \(!HOSTED_PROFILE_SYNC\) return;$/m, 'the profile listener is inert in preview');
+  assert.match(profileListener, /maybePromptNameClaim/);
   const anchor = main.indexOf('// Initial paint honors the URL (deep-link / refresh) instead of always splash.');
   const listener = main.lastIndexOf("window.addEventListener('lesters:ranked-run'", anchor);
   assert.ok(listener > 0 && main.slice(listener, anchor).split('\n').filter(Boolean).length === 1, 'the listener sits immediately before the initial-paint anchor');
