@@ -107,6 +107,9 @@ export const HOSTED_PROFILE_GAMES = Object.freeze([
   Object.freeze({ gameId: 'stacked', title: 'STACKED' }),
 ]);
 export const BLOCKED_NAME_COPY = 'That name isn’t allowed here. Choose another.';
+// A loaded hosted profile is re-read on the next visit once it is this old, or
+// when a Ranked run or a published saved run marks it stale (markStale).
+export const HOSTED_PROFILE_TTL_MS = 60_000;
 export const DEAD_LETTER_COPY = 'This run could not be published. Testnet entries are not refunded.';
 
 const HEX_WALLET = /^0x[0-9a-fA-F]{40}$/;
@@ -157,6 +160,43 @@ const SETTLE_ERROR_WORDS = Object.freeze({
 export function settleErrorWords(code) {
   if (code == null || code === '') return null;
   return Object.hasOwn(SETTLE_ERROR_WORDS, code) ? SETTLE_ERROR_WORDS[code] : SETTLE_ERROR_WORDS['unknown-error'];
+}
+
+// Plain words for a Retry that E3 refused (§4.3.3 errors, §4.1). A raw code
+// is never shown.
+export const RETRY_HANDED_OFF_COPY = 'Retrying from this device…';
+export const RETRY_FAILED_COPY = 'The retry did not go through. Try again in a moment.';
+const RETRY_FAILURE_WORDS = Object.freeze({
+  network: 'Lester’s Arcade could not be reached. Check your connection and try again.',
+  'sign-in-required': 'Sign in with your wallet to retry this run.',
+  'invalid-session': 'Your sign-in expired. Sign in again to retry this run.',
+  'wallet-mismatch': 'This run belongs to another wallet.',
+  'session-not-found': 'The arcade has no stored copy of this run to retry.',
+  'rate-limited': 'Too many retries just now. Try again in a minute.',
+  'settlement-paused': 'Ranked publishing is paused; this run will publish when it resumes.',
+  'settlement-not-configured': 'Ranked publishing is not available right now. Try again later.',
+  'address-mismatch': 'Ranked publishing is not available right now. Try again later.',
+  'chain-read-failed': 'LitVM could not be read just now. Try again shortly.',
+});
+// Without a server hint, a rate-limited retry waits a minute.
+const RATE_LIMITED_COOLDOWN_MS = 60_000;
+// A retry handed to ranked-client holds the button this long, so repeated
+// clicks do not restart its backoff over and over.
+const HANDED_OFF_COOLDOWN_MS = 5_000;
+
+export function retryFailureWords(answer = {}) {
+  const code = String(answer?.error ?? '');
+  if (Object.hasOwn(RETRY_FAILURE_WORDS, code)) return RETRY_FAILURE_WORDS[code];
+  if (answer?.status === 401) return RETRY_FAILURE_WORDS['invalid-session'];
+  if (answer?.status === 429) return RETRY_FAILURE_WORDS['rate-limited'];
+  return RETRY_FAILED_COPY;
+}
+
+// How long a refused Retry keeps its button disabled (ms).
+export function retryCooldownMs(answer = {}) {
+  const hinted = Number(answer?.retryAfterMs);
+  if (Number.isFinite(hinted) && hinted > 0) return Math.min(hinted, 10 * 60_000);
+  return answer?.error === 'rate-limited' || answer?.status === 429 ? RATE_LIMITED_COOLDOWN_MS : 0;
 }
 
 function relativeTime(iso, now) {
@@ -248,7 +288,9 @@ export function createOfficialProfileRoute({
   deployment = LITVM_DEPLOYMENT,
   isAuthenticated = () => false,
   isActive = () => true,
-  dispatchEvent = () => ({ handled: false }),
+  dispatchEvent = () => {},
+  // D10 (§7.8): whether ranked-client holds a run (createRankedRunHoldings).
+  rankedClientHolds = () => false,
   loadProfileChain = () => import('../profile-chain.mjs'),
   loadEthers = () => import('../litvm-chain-client.mjs').then((module) => module.loadEthers()),
   loadAchievementCatalog = () => import('../achievements/index.mjs'),
@@ -259,6 +301,7 @@ export function createOfficialProfileRoute({
     : Promise.reject(new Error('clipboard unavailable'))),
   playRanked = null,
   now = () => Date.now(),
+  setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
 } = {}) {
   // --- Hosted profile state (index data only; A22) --------------------------
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
@@ -267,6 +310,8 @@ export function createOfficialProfileRoute({
   let achievementCatalog = null;
   let catalogRequest = null;
   let pendingSavedRuns = 0;
+  // D10 Retry buttons, per session: { busy, message, tone, until }.
+  const retryStates = new Map();
   const nameEditor = { wallet: null, raw: null, avatarUri: null, prepared: null, busy: false, message: '', tone: '' };
 
   function rerenderIfShown() {
@@ -284,7 +329,7 @@ export function createOfficialProfileRoute({
 
   function profileEntry({ wallet, self }) {
     const key = `${wallet}|${self ? 'self' : 'public'}`;
-    if (!hostedProfiles.has(key)) hostedProfiles.set(key, { status: 'idle', response: null, request: null, error: null });
+    if (!hostedProfiles.has(key)) hostedProfiles.set(key, { status: 'idle', response: null, request: null, error: null, loadedAt: null, stale: false });
     return hostedProfiles.get(key);
   }
 
@@ -321,7 +366,13 @@ export function createOfficialProfileRoute({
       .finally(() => rerenderIfShown());
   }
 
-  // The hydrate hook: read E6 (or the self view) for the wallet on screen.
+  function entryIsFresh(entry) {
+    return entry.status === 'ready' && !entry.stale
+      && Number.isFinite(entry.loadedAt) && now() - entry.loadedAt < HOSTED_PROFILE_TTL_MS;
+  }
+
+  // The hydrate hook: read E6 (or the self view) for the wallet on screen,
+  // unless it is loading, or loaded and still fresh (entryIsFresh).
   function hydrate({ force = false } = {}) {
     if (!hosted || !indexApi) return Promise.resolve(null);
     const target = viewedTarget();
@@ -329,7 +380,8 @@ export function createOfficialProfileRoute({
     loadCatalog();
     const entry = profileEntry(target);
     if (entry.request) return entry.request;
-    if (entry.status === 'ready' && !force) return Promise.resolve(entry);
+    if (!force && entryIsFresh(entry)) return Promise.resolve(entry);
+    entry.stale = false;
     entry.status = entry.response ? 'refreshing' : 'loading';
     entry.request = indexApi.profile(target.wallet, { self: target.self }).then((answer) => {
       entry.request = null;
@@ -346,6 +398,7 @@ export function createOfficialProfileRoute({
         entry.status = 'ready';
         entry.response = answer;
         entry.error = null;
+        entry.loadedAt = now();
         confirmHeldTokens(target.wallet, answer);
       }
       rerenderIfShown();
@@ -368,26 +421,80 @@ export function createOfficialProfileRoute({
     }
   }
 
+  // Marks cached profiles out of date (every wallet, or one) so the next visit
+  // reads E6 again: a Ranked run finished, a saved run published. The profile
+  // on screen reloads now and keeps showing the old answer meanwhile.
+  function markStale(wallet = null) {
+    if (!hosted) return;
+    const key = walletKey(wallet);
+    for (const [cacheKey, entry] of hostedProfiles) {
+      if (!key || cacheKey.startsWith(`${key}|`)) entry.stale = true;
+    }
+    if (isActive()) void hydrate();
+  }
+
   // The last self view read for a wallet (the name-claim prompt reuses it).
   function cachedSelfProfile(wallet) {
     const key = walletKey(wallet);
     return key ? hostedProfiles.get(`${key}|self`)?.response ?? null : null;
   }
 
-  // lesters:ranked-pending { count } (ranked-client, §7.7).
+  // lesters:ranked-pending { count } (ranked-client, §7.7). Returns whether
+  // the count changed.
   function setPendingSavedRuns(count) {
     const next = Math.max(0, Math.floor(Number(count) || 0));
-    if (next === pendingSavedRuns) return;
+    if (next === pendingSavedRuns) return false;
     pendingSavedRuns = next;
     rerenderIfShown();
+    return true;
   }
 
-  // D10: the ranked client retries its own handle when it holds one (it marks
-  // the cancelable request handled); otherwise the stored settle is retried
-  // through E3's retry body. Then the self view is read again.
+  // D10 (§7.8): a run ranked-client holds is retried by its handle
+  // (lesters:ranked-retry-request); any other run through E3's retry body
+  // (retrySettle). Exactly one of the two, never both: two POSTs would race on
+  // the relayer lease. A refused retry says why in plain words and keeps the
+  // button disabled for the server's retryAfterMs. Then the self view is read
+  // again.
+  function retryState(sessionId32) {
+    const state = retryStates.get(sessionId32);
+    if (state && !state.busy && state.tone === 'pending' && now() >= state.until) {
+      retryStates.delete(sessionId32);
+      return null;
+    }
+    return state ?? null;
+  }
+
+  function scheduleRetryRerender(until) {
+    const wait = until - now();
+    if (!(wait > 0)) return;
+    try { setTimeoutImpl(() => rerenderIfShown(), wait + 50); } catch { /* re-enabled on the next render */ }
+  }
+
   async function retrySession(sessionId32) {
-    const outcome = dispatchEvent('lesters:ranked-retry-request', { sessionId32 }, { cancelable: true }) ?? {};
-    if (!outcome.handled) await indexApi?.retrySettle?.(sessionId32);
+    const id = String(sessionId32 ?? '').toLowerCase();
+    const current = retryState(id);
+    if (current?.busy || (current?.until && now() < current.until)) return;
+    retryStates.set(id, { busy: true, message: '', tone: '', until: 0 });
+    let held = false;
+    try { held = Boolean(rankedClientHolds(id)); } catch { held = false; }
+    if (held) {
+      dispatchEvent('lesters:ranked-retry-request', { sessionId32: id });
+      const until = now() + HANDED_OFF_COOLDOWN_MS;
+      retryStates.set(id, { busy: false, message: RETRY_HANDED_OFF_COPY, tone: 'pending', until });
+      scheduleRetryRerender(until);
+    } else {
+      let answer;
+      try { answer = await indexApi?.retrySettle?.(id); } catch { answer = { ok: false, error: 'network' }; }
+      if (answer?.ok) {
+        retryStates.delete(id);
+      } else {
+        const cooldown = retryCooldownMs(answer ?? {});
+        const until = cooldown > 0 ? now() + cooldown : 0;
+        retryStates.set(id, { busy: false, message: retryFailureWords(answer ?? {}), tone: 'error', until });
+        scheduleRetryRerender(until);
+      }
+    }
+    rerenderIfShown();
     await hydrate({ force: true });
   }
 
@@ -537,7 +644,7 @@ export function createOfficialProfileRoute({
       const retryAll = el('button', { className: 'pixel-button profile-retry-saved', type: 'button', textContent: 'Retry saved runs' });
       retryAll.addEventListener('click', () => {
         playSfxCue('menu-click', 0.05);
-        dispatchEvent('lesters:ranked-retry-request', { sessionId32: null }, { cancelable: true });
+        dispatchEvent('lesters:ranked-retry-request', { sessionId32: null });
       });
       saved.append(retryAll);
       card.append(saved);
@@ -560,13 +667,20 @@ export function createOfficialProfileRoute({
       }
       if (status.detail) appendText(row, 'small', status.detail, status.deadLetter ? 'profile-session-dead-letter tiny-note' : 'profile-session-detail tiny-note');
       if (status.retry) {
+        const id = String(session.sessionId32 ?? '').toLowerCase();
+        const retrying = retryState(id);
         const retry = el('button', { className: 'pixel-button profile-session-retry', type: 'button', textContent: 'Retry' });
+        retry.disabled = Boolean(retrying?.busy || (retrying?.until && clock < retrying.until));
         retry.addEventListener('click', () => {
           playSfxCue('menu-click', 0.05);
           retry.disabled = true;
-          void retrySession(session.sessionId32);
+          return retrySession(session.sessionId32);
         });
         row.append(retry);
+        if (retrying?.message) {
+          const note = appendText(row, 'small', retrying.message, `profile-session-retry-note tiny-note${retrying.tone === 'error' ? ' profile-session-retry-error' : ''}`);
+          note.setAttribute('role', retrying.tone === 'error' ? 'alert' : 'status');
+        }
       }
       list.append(row);
     }
@@ -1452,5 +1566,5 @@ export function createOfficialProfileRoute({
   // (HMH). Game-specific so future cabinets get their own boards via the switcher.
   let leaderboardGameId = 'lester-blaster';
 
-  return Object.freeze({ renderProfile: renderOfficialProfile, hydrate, invalidate, setPendingSavedRuns, cachedSelfProfile });
+  return Object.freeze({ renderProfile: renderOfficialProfile, hydrate, invalidate, markStale, setPendingSavedRuns, cachedSelfProfile });
 }

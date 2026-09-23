@@ -4,17 +4,24 @@
 // and a DOM double; no network, no chain.
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 
 import * as catalogModule from '../apps/portal/src/achievements/index.mjs';
 import {
   BLOCKED_NAME_COPY,
   DEAD_LETTER_COPY,
+  HOSTED_PROFILE_TTL_MS,
+  RETRY_FAILED_COPY,
+  RETRY_HANDED_OFF_COPY,
   createOfficialProfileRoute,
   hostedSessionStatus,
   profileShareUrl,
+  retryCooldownMs,
+  retryFailureWords,
   settleErrorWords,
 } from '../apps/portal/src/routes/official-profile-route.mjs';
 import { ARCADE_AVATARS } from '../apps/portal/src/arcade-avatars.mjs';
+import { RANKED_PENDING_STORAGE_KEY, createRankedRunHoldings } from '../apps/portal/src/index-api-client.mjs';
 import { ERROR_CODE_ALLOWLIST } from '../server/settle/errors.mjs';
 
 const ME = `0x${'aa'.repeat(20)}`;
@@ -84,32 +91,41 @@ function hostedProfile({
   loadChainClient = async () => ({ fetchPlayerAchievements: async () => ({ ok: true, unlocked: [] }) }),
   loadProfileChain,
   copied = [],
+  retryAnswer = { ok: true, status: 'submitted' },
+  rankedClientHolds = () => false,
+  dispatchEvent = null,
+  active = true,
 } = {}) {
   const grid = node('grid');
   const calls = { profile: [], retrySettle: [], events: [], connect: 0, views: [] };
+  const clock = { now: NOW };
+  const timers = [];
   const indexApi = {
     profile: async (wallet, options) => {
       calls.profile.push([wallet, options]);
       const key = `${wallet}|${options?.self ? 'self' : 'public'}`;
-      return answers[key] ?? e6({ wallet, self: Boolean(options?.self) });
+      const answer = answers[key];
+      return (typeof answer === 'function' ? answer() : answer) ?? e6({ wallet, self: Boolean(options?.self) });
     },
-    retrySettle: async (id) => { calls.retrySettle.push(id); return { ok: true, status: 'submitted' }; },
+    retrySettle: async (id) => { calls.retrySettle.push(id); return typeof retryAnswer === 'function' ? retryAnswer(id) : retryAnswer; },
     refreshProfile: async () => ({ ok: true, profile: { displayName: 'Lit Pilot', avatarUri: null, hidden: false } }),
   };
-  let handled = false;
   const routeState = { gameId: 'lester-blaster', viewedWallet, avatarJustSaved: false, usernameJustSaved: false };
   const route = createOfficialProfileRoute({
     hosted: true,
     indexApi,
     deployment: { status: deploymentStatus, addresses: { playerProfileRegistry: `0x${'3e'.repeat(20)}`, achievementRegistries: { chikun: `0x${'f6'.repeat(20)}`, 'lester-blaster': `0x${'c1'.repeat(20)}`, stacked: `0x${'54'.repeat(20)}` } } },
     isAuthenticated: (wallet) => authenticated && wallet === connectedWallet,
-    dispatchEvent: (name, detail, options) => { calls.events.push([name, detail, options]); return { handled }; },
+    isActive: () => active,
+    dispatchEvent: (name, detail, ...rest) => { calls.events.push([name, detail, ...rest]); return dispatchEvent?.(name, detail); },
+    rankedClientHolds,
     loadAchievementCatalog: async () => catalogModule,
     loadChainClient,
     loadProfileChain,
     loadEthers: async () => ({}),
     copyText: async (value) => { copied.push(value); },
-    now: () => NOW,
+    now: () => clock.now,
+    setTimeoutImpl: (callback, ms) => { timers.push({ callback, ms }); return timers.length; },
     dom: { officialCabinetGrid: grid },
     routeState,
     getContext: () => ({ connectedWallet, connectedChainId: '0x1159', walletConnector: 'injected-evm', state: { profiles: {} }, combat: {} }),
@@ -128,7 +144,7 @@ function hostedProfile({
     persistArcadeStateSoon: () => {},
     renderNav: () => {},
   });
-  return { grid, route, calls, routeState, setHandled: (value) => { handled = value; } };
+  return { grid, route, calls, routeState, clock, timers };
 }
 
 async function rendered(h) {
@@ -294,14 +310,188 @@ test('own failed runs offer Retry and dead letters say no refunds', async () => 
 
   await retries[0].listeners.click();
   await settle();
-  assert.deepEqual(h.calls.events[0], ['lesters:ranked-retry-request', { sessionId32: `0x${hex64(1)}` }, { cancelable: true }]);
-  assert.deepEqual(h.calls.retrySettle, [`0x${hex64(1)}`], 'no handle on this page, so the stored settle is retried');
+  assert.deepEqual(h.calls.events, [], 'ranked-client does not hold this run, so no retry request is sent');
+  assert.deepEqual(h.calls.retrySettle, [`0x${hex64(1)}`], 'the stored settle is retried through the E3 retry body');
   assert.equal(h.calls.profile.filter(([, options]) => options.self).length, 2, 'the self view is read again');
+});
 
-  h.setHandled(true);
+test('a Retry goes to ranked-client when it holds the run, and never also to E3', async () => {
+  const sessions = [
+    session(1, { status: 'failed', retryable: true, lastError: 'rpc-timeout', txHash: null, explorerUrl: null }),
+    session(2, { status: 'signed', retryable: true, lastError: null, txHash: null, explorerUrl: null }),
+  ];
+  const held = new Set([`0x${hex64(2)}`]);
+  const h = hostedProfile({ answers: { [`${ME}|self`]: e6({ self: true, sessions }) }, rankedClientHolds: (id) => held.has(id) });
+  await rendered(h);
   await buttons(h.grid, 'Retry')[1].listeners.click();
   await settle();
-  assert.equal(h.calls.retrySettle.length, 1, 'ranked-client retried its own handle');
+  assert.deepEqual(h.calls.events, [['lesters:ranked-retry-request', { sessionId32: `0x${hex64(2)}` }]], 'the held run is retried by its handle');
+  assert.deepEqual(h.calls.retrySettle, [], 'and not by a second POST to /api/settle');
+  const row = byClass(h.grid, 'profile-session-row')[1];
+  assert.match(text(row), new RegExp(RETRY_HANDED_OFF_COPY));
+  assert.equal(buttons(row, 'Retry')[0].disabled, true, 'held briefly so clicks do not restart its backoff');
+  await buttons(row, 'Retry')[0].listeners.click();
+  assert.equal(h.calls.events.length, 1, 'a second click inside the hold sends nothing');
+  h.clock.now += 6_000;
+  h.route.renderProfile();
+  assert.equal(buttons(byClass(h.grid, 'profile-session-row')[1], 'Retry')[0].disabled, false, 'the button comes back');
+  assert.doesNotMatch(text(h.grid), new RegExp(RETRY_HANDED_OFF_COPY));
+
+  await buttons(h.grid, 'Retry')[0].listeners.click();
+  await settle();
+  assert.deepEqual(h.calls.retrySettle, [`0x${hex64(1)}`], 'a run it does not hold goes to E3 only');
+  assert.equal(h.calls.events.length, 1);
+});
+
+test('a refused Retry says why in plain words and waits out retryAfterMs', async () => {
+  const sessions = [session(1, { status: 'failed', retryable: true, lastError: 'rpc-timeout', txHash: null, explorerUrl: null })];
+  let answer = { ok: false, status: 429, error: 'rate-limited', retryAfterMs: 30_000 };
+  const h = hostedProfile({ answers: { [`${ME}|self`]: e6({ self: true, sessions }) }, retryAnswer: () => answer });
+  await rendered(h);
+  await buttons(h.grid, 'Retry')[0].listeners.click();
+  await settle();
+  const refused = byClass(h.grid, 'profile-session-retry-error');
+  assert.equal(refused.length, 1);
+  assert.equal(refused[0].textContent, 'Too many retries just now. Try again in a minute.');
+  assert.equal(refused[0].attributes.role, 'alert');
+  assert.doesNotMatch(text(h.grid), /rate-limited/, 'never the raw code');
+  assert.equal(buttons(h.grid, 'Retry')[0].disabled, true, 'disabled for the server’s retryAfterMs');
+  assert.ok(h.timers.some((timer) => timer.ms >= 30_000), 'a re-render is scheduled for when it may retry');
+  await buttons(h.grid, 'Retry')[0].listeners.click();
+  assert.equal(h.calls.retrySettle.length, 1, 'no request while waiting');
+
+  h.clock.now += 31_000;
+  h.route.renderProfile();
+  assert.equal(buttons(h.grid, 'Retry')[0].disabled, false);
+  answer = { ok: false, status: 503, error: 'settlement-not-configured' };
+  await buttons(h.grid, 'Retry')[0].listeners.click();
+  await settle();
+  assert.equal(byClass(h.grid, 'profile-session-retry-error')[0].textContent, 'Ranked publishing is not available right now. Try again later.');
+  assert.equal(buttons(h.grid, 'Retry')[0].disabled, false, 'no server hint, no wait');
+
+  answer = { ok: true, status: 'submitted' };
+  await buttons(h.grid, 'Retry')[0].listeners.click();
+  await settle();
+  assert.equal(byClass(h.grid, 'profile-session-retry-error').length, 0, 'a retry that went through clears the message');
+
+  for (const [refusal, words] of [
+    [{ ok: false, error: 'network' }, /could not be reached/],
+    [{ ok: false, status: 401, error: 'invalid-session' }, /sign-in expired/],
+    [{ ok: false, status: 403, error: 'wallet-mismatch' }, /another wallet/],
+    [{ ok: false, status: 404, error: 'session-not-found' }, /no stored copy/],
+    [{ ok: false, status: 503, error: 'settlement-paused' }, /paused/],
+    [{ ok: false, status: 502, error: 'chain-read-failed' }, /LitVM could not be read/],
+    [{ ok: false, status: 500, error: 'internal-error' }, new RegExp(RETRY_FAILED_COPY.replace(/[.]/g, '\\.'))],
+  ]) {
+    assert.match(retryFailureWords(refusal), words, refusal.error);
+    assert.equal(retryFailureWords(refusal).includes(refusal.error), false, `${refusal.error} reads as words, never the code`);
+  }
+  assert.equal(retryCooldownMs({ status: 429, error: 'rate-limited' }), 60_000, 'a minute without a hint');
+  assert.equal(retryCooldownMs({ error: 'network' }), 0);
+  assert.equal(retryCooldownMs({ retryAfterMs: 5_000 }), 5_000);
+});
+
+// ranked-client's real listener (fable/pd-ranked-client main.js): it ignores
+// the request unless settlement is live, never cancels or acknowledges it, and
+// handles it after a lazy import: a held handle retries, otherwise resume()
+// re-drives a stored body, otherwise nothing happens.
+function rankedClientDouble({ live, storage }) {
+  const calls = [];
+  const handles = new Map();
+  const target = new EventTarget();
+  const client = {
+    handleRetryRequest(detail) {
+      const id = detail?.sessionId32 ?? null;
+      const handle = id ? handles.get(id) : null;
+      if (handle) { calls.push(['handle.retry', id]); return; }
+      const stored = JSON.parse(storage.getItem(RANKED_PENDING_STORAGE_KEY) ?? '[]').filter((entry) => !id || entry.sessionId32 === id);
+      for (const entry of stored) calls.push(['resume', entry.sessionId32]);
+    },
+  };
+  target.addEventListener('lesters:ranked-retry-request', (event) => {
+    if (!live) return;
+    void Promise.resolve().then(() => client.handleRetryRequest(event?.detail ?? null));
+  });
+  // main.js dispatchPortalEvent: a plain CustomEvent on window.
+  const dispatch = (name, detail) => { target.dispatchEvent(new CustomEvent(name, { detail })); };
+  return { calls, handles, dispatch };
+}
+
+function memoryStorage(initial = {}) {
+  const map = new Map(Object.entries(initial));
+  return { getItem: (key) => (map.has(key) ? map.get(key) : null), setItem: (key, value) => map.set(key, String(value)), removeItem: (key) => map.delete(key) };
+}
+
+test('each Retry sends exactly one request with ranked-client’s real listener shape', async () => {
+  const stored = `0x${hex64(1)}`;
+  const inPage = `0x${hex64(2)}`;
+  const elsewhere = `0x${hex64(3)}`;
+  const sessions = [stored, inPage, elsewhere].map((id, index) => session(index + 1, { sessionId32: id, status: 'failed', retryable: true, lastError: 'rpc-timeout', txHash: null, explorerUrl: null }));
+  for (const live of [true, false]) {
+    const storage = memoryStorage({ [RANKED_PENDING_STORAGE_KEY]: JSON.stringify([{ sessionId32: stored, gameId: 'chikun', body: {} }]) });
+    const rankedClient = rankedClientDouble({ live, storage });
+    const holdings = createRankedRunHoldings({ live, storage });
+    // A run finished in this page: ranked-client announced its handle.
+    const handle = { sessionId32: inPage, state: 'saved-locally' };
+    rankedClient.handles.set(inPage, handle);
+    holdings.track({ handle, context: { sessionId32: inPage, gameId: 'chikun' } });
+    const h = hostedProfile({
+      answers: { [`${ME}|self`]: e6({ self: true, sessions }) },
+      rankedClientHolds: (id) => holdings.holds(id),
+      dispatchEvent: rankedClient.dispatch,
+    });
+    await rendered(h);
+    for (const index of [0, 1, 2]) {
+      h.clock.now += 10_000;
+      h.route.renderProfile();
+      await buttons(h.grid, 'Retry')[index].listeners.click();
+      await settle();
+    }
+    if (live) {
+      assert.deepEqual(rankedClient.calls, [['resume', stored], ['handle.retry', inPage]], 'held runs: ranked-client only');
+      assert.deepEqual(h.calls.retrySettle, [elsewhere], 'the run this device does not hold: E3 only');
+    } else {
+      assert.deepEqual(rankedClient.calls, [], 'with settlement off ranked-client ignores the request');
+      assert.deepEqual(h.calls.retrySettle, [stored, inPage, elsewhere], 'so every Retry goes to E3');
+    }
+    assert.equal(rankedClient.calls.length + h.calls.retrySettle.length, 3, 'one request per click, never two');
+  }
+});
+
+test('a finished Ranked run or a stale entry reads the profile again on the next visit', async () => {
+  const h = hostedProfile({ active: false });
+  await rendered(h);
+  assert.equal(h.calls.profile.length, 1);
+  await h.route.hydrate();
+  assert.equal(h.calls.profile.length, 1, 'a fresh profile is served from the cache');
+
+  // main.js marks the profile stale on lesters:ranked-run and when the saved-run count changes.
+  h.route.markStale(ME);
+  await h.route.hydrate();
+  assert.equal(h.calls.profile.length, 2, 'the run shows on the next visit');
+  await h.route.hydrate();
+  assert.equal(h.calls.profile.length, 2);
+
+  h.clock.now += HOSTED_PROFILE_TTL_MS;
+  await h.route.hydrate();
+  assert.equal(h.calls.profile.length, 3, 'an entry older than the TTL is read again');
+
+  h.route.markStale(OTHER);
+  await h.route.hydrate();
+  assert.equal(h.calls.profile.length, 3, 'another wallet going stale leaves this one cached');
+
+  // The profile on screen reloads at once and keeps its answer meanwhile.
+  const onScreen = hostedProfile();
+  await rendered(onScreen);
+  assert.equal(onScreen.calls.profile.length, 1);
+  onScreen.route.markStale();
+  assert.equal(onScreen.calls.profile.length, 2, 'the active profile reloads right away');
+  onScreen.route.renderProfile();
+  assert.match(text(onScreen.grid), /Lit Pilot/, 'still showing the last answer while it reloads');
+  assert.match(text(onScreen.grid), /Refreshing/);
+  await settle();
+  assert.equal(onScreen.route.setPendingSavedRuns(2), true, 'the saved-run count reports a change');
+  assert.equal(onScreen.route.setPendingSavedRuns(2), false);
 });
 
 test('saved runs on this device offer Retry saved runs', async () => {
@@ -311,7 +501,7 @@ test('saved runs on this device offer Retry saved runs', async () => {
   h.route.setPendingSavedRuns(2);
   assert.match(text(h.grid), /2 runs saved on this device/);
   buttons(h.grid, 'Retry saved runs')[0].listeners.click();
-  assert.deepEqual(h.calls.events.at(-1), ['lesters:ranked-retry-request', { sessionId32: null }, { cancelable: true }]);
+  assert.deepEqual(h.calls.events.at(-1), ['lesters:ranked-retry-request', { sessionId32: null }]);
   h.route.setPendingSavedRuns(0);
   assert.equal(buttons(h.grid, 'Retry saved runs').length, 0);
 
@@ -386,4 +576,27 @@ test('saved runs show on the owner\u2019s profile before sign-in too', async () 
   h.route.setPendingSavedRuns(1);
   assert.match(text(h.grid), /1 run saved on this device/);
   assert.equal(buttons(h.grid, 'Retry saved runs').length, 1);
+});
+
+test('main.js routes Retry through the holdings and refreshes the verified views after a run', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert.match(main, /const rankedRunHoldings = createRankedRunHoldings\(\{ live: SETTLEMENT_LIVE, storage: ARCADE_STORAGE \}\);/);
+  assert.match(main, /rankedClientHolds: \(sessionId32\) => rankedRunHoldings\.holds\(sessionId32\),/);
+  assert.doesNotMatch(main, /cancelable/, 'no invented acknowledgement: ranked-client never cancels the request');
+  const listener = (name) => {
+    const from = main.indexOf(`window.addEventListener('${name}'`);
+    assert.ok(from > 0, `${name} listener`);
+    return main.slice(from, main.indexOf('\n});', from));
+  };
+  const run = listener('lesters:ranked-run');
+  assert.match(run, /rankedRunHoldings\.track\(event\?\.detail\);/, 'every announced handle is recorded');
+  assert.match(run, /officialProfileRoute\.markStale\(/);
+  assert.match(run, /officialLeaderboardRoute\.markStale\(event\?\.detail\?\.context\?\.gameId \?\? null\);/);
+  const pending = listener('lesters:ranked-pending');
+  assert.match(pending, /const changed = officialProfileRoute\.setPendingSavedRuns\(/);
+  assert.match(pending, /if \(changed && HOSTED_PROFILE_SYNC\) \{\n\s+officialProfileRoute\.markStale\(connectedWallet\);\n\s+officialLeaderboardRoute\.markStale\(\);/);
+  const renamed = listener('lesters:profile-changed');
+  assert.match(renamed, /officialLeaderboardRoute\.markStale\(\);/);
+  assert.match(renamed, /mergeRemoteProfile\(profile, \{ profile: \{ displayName: detail\.displayName \?\? null \} \}\)\.changed/, 'the nav follows the confirmed on-chain name');
+  assert.match(renamed, /renderOfficialNav\(\);/);
 });

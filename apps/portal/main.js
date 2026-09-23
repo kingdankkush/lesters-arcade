@@ -292,7 +292,7 @@ import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { formatSurvive, leaderboardEntryProvenance, purgeHouseSeedRows } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
 import { createProfileSync, buildProfileDocument, mergeRemoteProfile } from './src/profile-sync-client.mjs';
-import { createIndexApiClient } from './src/index-api-client.mjs';
+import { createIndexApiClient, createRankedRunHoldings } from './src/index-api-client.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
 const DEV_CABINETS_ENABLED = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('devCabinets') === '1';
@@ -4919,18 +4919,17 @@ function hydrateProfileFromIndex() {
   officialProfileRoute.hydrate().catch((error) => console.warn('[Profile] verified profile unavailable:', error?.message || error));
 }
 
-// Integration events (contract §7.7), dispatched on window. The Retry buttons
-// send a cancelable lesters:ranked-retry-request; ranked-client marks it
-// handled (preventDefault, or detail.handled = true) when it holds that run.
-function dispatchPortalEvent(name, detail, { cancelable = false } = {}) {
+// Integration events (contract §7.7), dispatched on window.
+function dispatchPortalEvent(name, detail) {
   try {
-    const event = new CustomEvent(name, { detail, cancelable });
-    const notCancelled = window.dispatchEvent(event);
-    return { handled: !notCancelled || detail?.handled === true };
-  } catch {
-    return { handled: false };
-  }
+    window.dispatchEvent(new CustomEvent(name, { detail }));
+  } catch { /* no window events: nothing listens */ }
 }
+
+// D10 (§7.8): the runs ranked-client holds (a live handle announced by
+// lesters:ranked-run, or a body stored on this device). A profile Retry for
+// one of them goes to ranked-client; any other run to E3's retry body.
+const rankedRunHoldings = createRankedRunHoldings({ live: SETTLEMENT_LIVE, storage: ARCADE_STORAGE });
 
 const profileRouteState = {
   avatarJustSaved: false,
@@ -4980,6 +4979,7 @@ const officialProfileRoute = createOfficialProfileRoute({
   isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet),
   isActive: () => officialAppStep === 'profile',
   dispatchEvent: dispatchPortalEvent,
+  rankedClientHolds: (sessionId32) => rankedRunHoldings.holds(sessionId32),
   loadEthers,
   rpcUrl: LITVM_LITEFORGE_NETWORK.rpcUrls.http,
   playRanked: (gameId) => openModeSelectFor(gameId),
@@ -4988,7 +4988,12 @@ const renderOfficialProfile = officialProfileRoute.renderProfile;
 
 // D10 and sign-in seams (§7.7). All of them are inert in preview.
 window.addEventListener('lesters:ranked-pending', (event) => {
-  officialProfileRoute.setPendingSavedRuns(event?.detail?.count ?? 0);
+  const changed = officialProfileRoute.setPendingSavedRuns(event?.detail?.count ?? 0);
+  // A saved run published (or was dropped): the verified views are out of date.
+  if (changed && HOSTED_PROFILE_SYNC) {
+    officialProfileRoute.markStale(connectedWallet);
+    officialLeaderboardRoute.markStale();
+  }
 });
 window.addEventListener('lesters:wallet-session', () => {
   if (!HOSTED_PROFILE_SYNC) return;
@@ -4997,13 +5002,25 @@ window.addEventListener('lesters:wallet-session', () => {
   if (officialAppStep === 'profile') hydrateProfileFromIndex();
   if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
 });
-window.addEventListener('lesters:profile-changed', () => {
+window.addEventListener('lesters:profile-changed', (event) => {
   if (!HOSTED_PROFILE_SYNC) return;
-  officialLeaderboardRoute.invalidate();
+  officialLeaderboardRoute.markStale();
+  // The nav reads the local handle: follow the confirmed on-chain name (D3).
+  const detail = event?.detail ?? {};
+  const profile = connectedWallet && String(detail.wallet ?? '').toLowerCase() === connectedWallet ? state.profiles?.[connectedWallet] : null;
+  if (profile && mergeRemoteProfile(profile, { profile: { displayName: detail.displayName ?? null } }).changed) {
+    persistArcadeStateSoon();
+    renderOfficialNav();
+  }
 });
 // First-Ranked name prompt (brief acceptance 5): lazy, hosted only.
 window.addEventListener('lesters:ranked-run', (event) => {
   if (!HOSTED_PROFILE_SYNC) return;
+  rankedRunHoldings.track(event?.detail);
+  // The run changes the player's profile and that game's boards: the next
+  // visit reads the index again.
+  officialProfileRoute.markStale(event?.detail?.context?.wallet ?? connectedWallet);
+  officialLeaderboardRoute.markStale(event?.detail?.context?.gameId ?? null);
   void import('./src/name-claim-prompt.mjs').then(({ maybePromptNameClaim }) => maybePromptNameClaim({
     detail: event?.detail ?? null,
     hosted: HOSTED_PROFILE_SYNC,

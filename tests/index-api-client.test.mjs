@@ -3,8 +3,10 @@ import test from 'node:test';
 
 import {
   INDEX_API_ENDPOINTS,
+  RANKED_PENDING_STORAGE_KEY,
   RANKED_SETTLE_RETRY_VERSION,
   createIndexApiClient,
+  createRankedRunHoldings,
   tokenWallet,
 } from '../apps/portal/src/index-api-client.mjs';
 
@@ -181,4 +183,41 @@ test('tokenWallet reads only v2 payloads', () => {
   assert.equal(tokenWallet('no-dot'), null);
   assert.equal(tokenWallet(`${SIGNED_IN}.extra`), null);
   assert.equal(tokenWallet(null), null);
+});
+
+test('a 429 Retry-After header becomes retryAfterMs', async () => {
+  const limited = (retryAfter) => createIndexApiClient({
+    hosted: true,
+    getToken: () => SIGNED_IN,
+    fetchImpl: async () => ({ ...jsonResponse(429, { ok: false, error: 'rate-limited' }), headers: { get: (name) => (name === 'retry-after' ? retryAfter : null) } }),
+  });
+  assert.deepEqual(await limited('42').retrySettle(SESSION_ID32), { ok: false, status: 429, error: 'rate-limited', retryAfterMs: 42_000 });
+  const dated = await limited(new Date(Date.now() + 90_000).toUTCString()).retrySettle(SESSION_ID32);
+  assert.ok(dated.retryAfterMs > 80_000 && dated.retryAfterMs <= 90_000, String(dated.retryAfterMs));
+  assert.deepEqual(await limited(null).retrySettle(SESSION_ID32), { ok: false, status: 429, error: 'rate-limited' });
+  assert.deepEqual(await limited('soon').retrySettle(SESSION_ID32), { ok: false, status: 429, error: 'rate-limited' });
+});
+
+test('ranked-client holds a run only when live and it has the handle or the stored body', () => {
+  const stored = `0x${'1'.repeat(64)}`;
+  const inPage = `0x${'2'.repeat(64)}`;
+  const finished = `0x${'3'.repeat(64)}`;
+  const memory = new Map([[RANKED_PENDING_STORAGE_KEY, JSON.stringify([{ sessionId32: stored, gameId: 'chikun', body: {} }, { sessionId32: 'not-an-id' }])]]);
+  const storage = { getItem: (key) => memory.get(key) ?? null };
+  const holdings = createRankedRunHoldings({ live: true, storage });
+  const handle = { sessionId32: inPage, state: 'retrying' };
+  holdings.track({ handle, context: { sessionId32: inPage } });
+  holdings.track({ handle: { sessionId32: finished, state: 'published' }, context: {} });
+  holdings.track({ handle: null, context: { sessionId32: `0x${'4'.repeat(64)}` } });
+  assert.equal(holdings.holds(stored.toUpperCase().replace('0X', '0x')), true, 'a body stored on this device');
+  assert.equal(holdings.holds(inPage), true, 'a live handle announced by lesters:ranked-run');
+  assert.equal(holdings.holds(finished), false, 'a terminal handle retries nothing');
+  assert.equal(holdings.holds(`0x${'4'.repeat(64)}`), false);
+  handle.state = 'rejected';
+  assert.equal(holdings.holds(inPage), false, 'the handle state is read at click time');
+  assert.equal(holdings.holds('0x1234'), false);
+  assert.equal(createRankedRunHoldings({ live: false, storage }).holds(stored), false, 'ranked-client ignores retries while settlement is off');
+  assert.equal(createRankedRunHoldings({ live: true, storage: { getItem: () => '{not json' } }).holds(stored), false);
+  assert.equal(createRankedRunHoldings({ live: true, storage: { getItem: () => { throw new Error('blocked'); } } }).holds(stored), false);
+  assert.equal(RANKED_PENDING_STORAGE_KEY, 'lesters-arcade-ranked-pending-v1', 'the §7.2 pendingKey');
 });

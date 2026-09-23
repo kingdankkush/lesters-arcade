@@ -58,6 +58,18 @@ async function readJson(response) {
   try { return await response.json(); } catch { return null; }
 }
 
+// A Retry-After header (429 rate-limited) in milliseconds, or null. Seconds
+// or an HTTP date.
+function retryAfterHeaderMs(response, nowMs = Date.now()) {
+  let value = null;
+  try { value = response?.headers?.get?.('retry-after') ?? null; } catch { value = null; }
+  if (value == null || value === '') return null;
+  const text = String(value).trim();
+  if (/^\d+$/.test(text)) return Number(text) * 1000;
+  const at = Date.parse(text);
+  return Number.isFinite(at) ? Math.max(0, at - nowMs) : null;
+}
+
 export function createIndexApiClient({
   hosted = false,
   fetchImpl = globalThis.fetch,
@@ -88,7 +100,8 @@ export function createIndexApiClient({
     if (!response.ok || !body || body.ok !== true) {
       const out = { ok: false, status: response.status, error: typeof body?.error === 'string' ? body.error : `http-${response.status}` };
       if (body?.retryable === true) out.retryable = true;
-      if (Number.isFinite(body?.retryAfterMs)) out.retryAfterMs = body.retryAfterMs;
+      const retryAfterMs = Number.isFinite(body?.retryAfterMs) ? body.retryAfterMs : retryAfterHeaderMs(response);
+      if (Number.isFinite(retryAfterMs)) out.retryAfterMs = retryAfterMs;
       return out;
     }
     // A success body is returned as the server sent it: a SettleResponse
@@ -189,4 +202,65 @@ export function createIndexApiClient({
   }
 
   return Object.freeze({ hosted: live, leaderboard, profile, refreshProfile, savePreferences, session, retrySettle });
+}
+
+// ---------------------------------------------------------------------------
+// D10 retry routing (§7.8): ranked-client or E3's retry body, never both.
+// ---------------------------------------------------------------------------
+
+// ranked-client (§7.2) keeps each unpublished settle body under this key until
+// the run is published, rejected or practice.
+export const RANKED_PENDING_STORAGE_KEY = 'lesters-arcade-ranked-pending-v1';
+const RANKED_TERMINAL_STATES = new Set(['preview', 'published', 'rejected', 'practice']);
+const MAX_TRACKED_HANDLES = 20;
+
+// Which runs ranked-client holds. A profile Retry for a held run dispatches
+// lesters:ranked-retry-request (ranked-client retries its handle, or resumes
+// the stored body); any other run is retried through E3's retry body
+// (retrySettle). Sending both would race two POSTs on the relayer lease.
+//
+// ranked-client answers the event only while settlement is live (its listener
+// ignores it otherwise, and it never acknowledges it), so a run is held only
+// when `live` and either its handle is alive in this page (every handle is
+// announced by lesters:ranked-run, which track() records) or its body is
+// stored on this device under RANKED_PENDING_STORAGE_KEY.
+export function createRankedRunHoldings({ live = false, storage = null, pendingKey = RANKED_PENDING_STORAGE_KEY } = {}) {
+  const handles = new Map();
+  const idOf = (value) => (SESSION_ID32.test(String(value ?? '')) ? String(value).toLowerCase() : null);
+
+  function storedIds() {
+    try {
+      const raw = storage?.getItem?.(pendingKey) ?? null;
+      const list = raw ? JSON.parse(raw) : [];
+      return new Set((Array.isArray(list) ? list : []).map((entry) => idOf(entry?.sessionId32)).filter(Boolean));
+    } catch {
+      return new Set();
+    }
+  }
+
+  // lesters:ranked-run detail ({ handle, context }).
+  function track(detail) {
+    const handle = detail?.handle ?? null;
+    let id = null;
+    try { id = idOf(handle?.sessionId32 ?? detail?.context?.sessionId32); } catch { id = null; }
+    if (!id || !handle) return;
+    handles.delete(id);
+    handles.set(id, handle);
+    while (handles.size > MAX_TRACKED_HANDLES) handles.delete(handles.keys().next().value);
+  }
+
+  function holds(sessionId32) {
+    if (live !== true) return false;
+    const id = idOf(sessionId32);
+    if (!id) return false;
+    const handle = handles.get(id);
+    if (handle) {
+      let state = null;
+      try { state = handle.state ?? handle.snapshot?.state ?? null; } catch { state = null; }
+      if (typeof state === 'string' && !RANKED_TERMINAL_STATES.has(state)) return true;
+    }
+    return storedIds().has(id);
+  }
+
+  return Object.freeze({ track, holds });
 }
