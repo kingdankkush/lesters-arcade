@@ -17,12 +17,13 @@ import {
   serializeVerifiedRun,
   signAttestation,
 } from '../apps/portal/src/verifier-attestation.mjs';
-import { attestRequest, readVerifierConfig } from '../api/attest.mjs';
 
 /**
  * Owner direction 2026-09-16: Ranked settlement is attested by a trusted
- * verifier (EIP-712), the browser checks the signature before spending gas,
- * and the server fails closed without a key.
+ * verifier (EIP-712). These are the pure verifier-attestation.mjs tests; the
+ * server signing path moved from /api/attest (retired, contract A3/E14) to
+ * server/settle/attestation.mjs and is tested in
+ * tests/server-settle-attestation.test.mjs.
  */
 
 const verifier = new ethers.Wallet(`0x${'11'.repeat(32)}`);
@@ -84,32 +85,4 @@ test('a verifier signature recovers to the verifier and is rejected when tampere
   assert.equal(check({ domain: attestationDomain({ chainId: 1, verifyingContract: registry }) }), false, 'wrong chain domain');
   const impostor = await signAttestation(ethers, { signer: new ethers.Wallet(`0x${'44'.repeat(32)}`), domain, run });
   assert.equal(check({ signature: impostor.signature }), false);
-});
-
-test('the attest endpoint fails closed without a key and signs a bounded plausible run with one', async () => {
-  const body = {
-    gameId: 'lester-blaster', sessionId32, player, score: 4_200, kills: 30, maxCombo: 6, survivalSeconds: 240, bossId: null,
-    envelope: { version: 'lesters-session-envelope-v1', inputHash: 'a'.repeat(64), eventHash: 'b'.repeat(64), finalStateHash: 'c'.repeat(64), envelopeHash: 'd'.repeat(64), identity: { sessionId: 'game-session-000000042', wallet: player } },
-    runtimeId: 'lester-blaster:1.5.1', seasonId: 'hmh-season-1-2026', achievements: ['first-blood'], level: 2,
-  };
-  assert.equal(readVerifierConfig({}).configured, false);
-  const unconfigured = await attestRequest(body, { env: {} });
-  assert.equal(unconfigured.status, 503);
-  assert.equal(unconfigured.body.error, 'verifier-not-configured');
-  const env = { VERIFIER_PRIVATE_KEY: verifier.privateKey, SCORE_REGISTRY_ADDRESS: registry };
-  const now = () => 1_700_000_000;
-  const signed = await attestRequest(body, { env, now });
-  assert.equal(signed.status, 200, JSON.stringify(signed.body));
-  assert.equal(signed.body.verifier, verifier.address);
-  assert.equal(signed.body.deadline, String(1_700_000_000 + ATTESTATION_TTL_SECONDS));
-  const run = deserializeVerifiedRun(signed.body.run);
-  assert.equal(run.envelopeHash, `0x${'d'.repeat(64)}`);
-  assert.equal(isAttestationValid(ethers, { domain: signed.body.domain, run, signature: signed.body.signature, trustedVerifier: verifier.address, nowSeconds: 1_700_000_001 }), true);
-  assert.equal((await attestRequest({ ...body, gameId: 'unknown' }, { env, now })).body.error, 'unknown-game');
-  assert.equal((await attestRequest({ ...body, envelope: { ...body.envelope, version: 'v0' } }, { env, now })).body.error, 'unsupported-envelope-version');
-  assert.equal((await attestRequest({ ...body, envelope: { ...body.envelope, identity: { wallet: registry } } }, { env, now })).body.error, 'envelope-wallet-mismatch');
-  const implausible = await attestRequest({ ...body, score: 9_000_000_000, survivalSeconds: 3 }, { env, now });
-  assert.equal(implausible.status, 422);
-  assert.equal(implausible.body.error, 'implausible-run');
-  assert.equal((await attestRequest(null, { env, now })).status, 400);
 });

@@ -11,11 +11,9 @@ import * as profileApi from '../api/profile.mjs';
 import * as refreshApi from '../api/profile-refresh.mjs';
 import * as sessionApi from '../api/verified-session.mjs';
 import * as indexCronApi from '../api/cron/index-chain.mjs';
-import * as statusStub from '../api/settle-status.mjs';
 import * as retryStub from '../api/cron/settle-retry.mjs';
 import * as sharePageStub from '../api/share-page.mjs';
 import * as shareCardStub from '../api/share-card.mjs';
-import * as seedStub from '../api/ranked-seed.mjs';
 import { createPgliteClient, seedAchievementUnlock, seedVerifiedSession, seedWalletProfile } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 
@@ -337,11 +335,9 @@ test('unknown query parameters are rejected', async () => {
 });
 
 const STUBS = [
-  ['settle-status', statusStub, 'settleStatusRequest', 'GET'],
   ['cron/settle-retry', retryStub, 'settleRetryRequest', 'GET'],
   ['share-page', sharePageStub, 'sharePageRequest', 'GET'],
   ['share-card', shareCardStub, 'shareCardRequest', 'GET'],
-  ['ranked-seed', seedStub, 'rankedSeedRequest', 'POST'],
 ];
 
 test('every new endpoint fails closed with no env at all and never throws', async () => {

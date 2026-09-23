@@ -136,46 +136,27 @@ test('profile documents are bounded and profile sync needs the database, a sessi
   }
 });
 
-test('relayed settlement returns the attestation without a relayer and relays it with one', async () => {
-  const verifier = new ethers.Wallet(`0x${'11'.repeat(32)}`);
+test('relayed settlement needs a v2 session token and the RANKED_* configuration, and fails closed otherwise', async () => {
+  // Contract §4.3.3 (E3). The full pipeline (paid entry, verification,
+  // Neon, EIP-712 signing and relayed submission on the local chain) is
+  // tested in tests/server-settle-core.test.mjs and tests/server-relayer.test.mjs.
+  const { buildDeps } = await import('../api/settle.mjs');
   const registry = `0x${'33'.repeat(20)}`;
-  const body = {
-    gameId: 'stacked', sessionId32: ethers.id('game-session-000000042'), player: wallet.address, score: 4200, kills: 0, maxCombo: 4, survivalSeconds: 240,
-    envelope: { version: 'lesters-session-envelope-v1', inputHash: 'a'.repeat(64), eventHash: 'b'.repeat(64), finalStateHash: 'c'.repeat(64), envelopeHash: 'd'.repeat(64), identity: { wallet: wallet.address } },
-    runtimeId: 'stacked:1.6.0', seasonId: 'stacked-season-preview-1', achievements: ['stacked-first-quad'],
+  const deployment = { status: 'deployed', chainId: 4441, settlementGasReserveWei: '100000000000000', addresses: { scoreSubmissionRegistry: registry, arcadeRankedEntry: `0x${'44'.repeat(20)}` } };
+  const env = {
+    VERCEL_ENV: 'development', SESSION_SECRET: secret, NEON_DATABASE_URL: 'postgresql://fixture@db.invalid/settle',
+    RANKED_VERIFIER_PRIVATE_KEY: `0x${'11'.repeat(32)}`, RANKED_RELAYER_PRIVATE_KEY: `0x${'77'.repeat(32)}`, RANKED_SCORE_REGISTRY_ADDRESS: registry,
   };
-  const env = { VERIFIER_PRIVATE_KEY: verifier.privateKey, SCORE_REGISTRY_ADDRESS: registry };
-  const unrelayed = await settleRequest(body, { env, now: () => 1_700_000_000 });
-  assert.equal(unrelayed.status, 200);
-  assert.equal(unrelayed.body.relayed, false);
-  assert.ok(unrelayed.body.signature);
-  const relayerKey = `0x${'77'.repeat(32)}`;
-  const sent = [];
-  const providerFactory = () => ({
-    // Enough of an ethers provider for Contract calls in the relay path.
-    async call({ to, data }) {
-      const iface = new ethers.Interface(['function getSession(bytes32) view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 runtimeId, bytes32 seasonId, uint64 submittedAt, bool verified, bool exists))', 'function relayers(address) view returns (bool)']);
-      const parsed = iface.parseTransaction({ data });
-      if (parsed.name === 'getSession') return iface.encodeFunctionResult('getSession', [[ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, ethers.ZeroHash, ethers.ZeroHash, 0n, false, false]]);
-      if (parsed.name === 'relayers') return iface.encodeFunctionResult('relayers', [true]);
-      throw new Error(`unexpected call ${parsed.name} to ${to}`);
-    },
-    async getNetwork() { return { chainId: 4441n }; },
-    async resolveName(name) { return name; },
-    async estimateGas() { return 300000n; },
-    async getFeeData() { return { gasPrice: 1_000_000_000n, maxFeePerGas: null, maxPriorityFeePerGas: null }; },
-    async getTransactionCount() { return 0; },
-    async broadcastTransaction(raw) { sent.push(raw); const hash = ethers.keccak256(raw); return { hash, wait: async () => ({ blockNumber: 1 }) }; },
-    async getBlock() { return { baseFeePerGas: null }; },
-    async getBlockNumber() { return 2; },
-    async getTransactionReceipt(hash) { return { hash, blockNumber: 1, blockHash: ethers.ZeroHash, status: 1, logs: [], gasUsed: 1n, cumulativeGasUsed: 1n, gasPrice: 1n, from: ethers.ZeroAddress, to: registry, index: 0, type: 2, logsBloom: `0x${'00'.repeat(256)}`, contractAddress: null, root: null, blobGasUsed: null, blobGasPrice: null, confirmations: async () => 2 }; },
-    async getTransaction(hash) { return { hash, blockNumber: 1 }; },
-  });
-  const relayed = await settleRequest(body, { env: { ...env, RELAYER_PRIVATE_KEY: relayerKey }, now: () => 1_700_000_000, providerFactory });
-  assert.equal(relayed.status, 200, JSON.stringify(relayed.body).slice(0, 300));
-  assert.equal(relayed.body.relayed, true);
-  assert.equal(relayed.body.relayer, new ethers.Wallet(relayerKey).address);
-  assert.match(relayed.body.txHash, /^0x[0-9a-f]{64}$/);
-  assert.equal(sent.length, 1, 'exactly one transaction was broadcast');
-  assert.equal((await settleRequest({ ...body, gameId: 'lester-blaster', score: 9_000_000_000, survivalSeconds: 2 }, { env, now: () => 1_700_000_000 })).status, 422, 'implausible HMH runs are never relayed');
+  const body = { v: 'lesters-ranked-settle-v1', sessionId32: ethers.id('game-session-000000042'), retry: true };
+  const token = (audience) => `Bearer ${issueSessionToken(crypto, { secret, wallet: wallet.address, nowMs: now, audience }).token}`;
+  const deps = await buildDeps(env, { db: null, deployment, nowMs: now });
+  assert.deepEqual((await settleRequest({ headers: {}, body }, deps)).body, { ok: false, error: 'invalid-session' });
+  assert.deepEqual((await settleRequest({ headers: { authorization: token('lestersarcade:production') }, body }, deps)).body, { ok: false, error: 'invalid-session' }, 'another audience');
+  const paused = await settleRequest({ headers: { authorization: token('lestersarcade:development') }, body }, await buildDeps({ ...env, SETTLEMENT_PAUSED: 'true' }, { db: null, deployment, nowMs: now }));
+  assert.deepEqual([paused.status, paused.body.error], [503, 'settlement-paused']);
+  const legacy = await settleRequest({ headers: { authorization: token('lestersarcade:development') }, body }, await buildDeps({ ...env, RELAYER_PRIVATE_KEY: `0x${'77'.repeat(32)}` }, { db: null, deployment, nowMs: now }));
+  assert.deepEqual([legacy.status, legacy.body.error, legacy.body.detail], [503, 'settlement-not-configured', 'legacy-env-present:RELAYER_PRIVATE_KEY']);
+  assert.ok(!JSON.stringify(legacy.body).includes('77'.repeat(32)), 'names only, never values');
+  const predicted = await settleRequest({ headers: { authorization: token('lestersarcade:development') }, body }, await buildDeps(env, { db: null, deployment: { ...deployment, status: 'predicted' }, nowMs: now }));
+  assert.deepEqual([predicted.status, predicted.body.detail], [503, 'deployment-not-deployed']);
 });
