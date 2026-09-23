@@ -11,13 +11,15 @@
 // while the wallet keeps its rank. --exclude / --include set board_excluded:
 // the wallet never ranks and has no standing.
 //
-// A dry run by default. Writing needs --apply plus the action's confirm
-// phrase (contract §11 rule 13). NEON_DATABASE_URL is read from the
-// environment only and is never printed.
+// A dry run by default: it only SELECTs. Writing needs --apply plus the
+// action's confirm phrase (contract §11 rule 13). The script never migrates:
+// on a database whose schema is behind it stops before any write, and the
+// migration belongs to the E12 cron (§13 step 8b) or scripts/neon-migrate.mjs.
+// NEON_DATABASE_URL is read from the environment only and is never printed.
 
 import { pathToFileURL } from 'node:url';
 import { createNeonClient } from '../apps/portal/src/server-neon.mjs';
-import { ensureSchema } from '../server/neon/migrations.mjs';
+import { LATEST_SCHEMA_VERSION, readSchemaVersion } from '../server/neon/migrations.mjs';
 
 export const MODERATION_ACTIONS = Object.freeze({
   hide: Object.freeze({ column: 'hidden', value: true, confirm: 'HIDE_PROFILE' }),
@@ -80,7 +82,11 @@ export async function runModerateProfile({ argv = process.argv.slice(2), env = p
     }
   }
   try {
-    await ensureSchema(client);
+    const version = await readSchemaVersion(client);
+    if (version < LATEST_SCHEMA_VERSION) {
+      out(`schema not migrated (version ${version} of ${LATEST_SCHEMA_VERSION}); run the E12 cron or scripts/neon-migrate.mjs first. Nothing was written.`);
+      return { exitCode: 1, changed: false };
+    }
     const [current] = await client.query('SELECT hidden, board_excluded, display_name FROM wallet_profiles WHERE wallet = $1', [args.wallet]);
     const [runs] = await client.query("SELECT count(*)::int AS confirmed FROM verified_sessions WHERE wallet = $1 AND status = 'confirmed'", [args.wallet]);
     const before = current ? current[plan.column] === true : false;

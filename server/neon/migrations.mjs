@@ -160,6 +160,18 @@ export async function readSchemaVersion(db) {
   }
 }
 
+// Applied versions in ascending order, [] when schema_migrations is missing.
+// One SELECT and no DDL: the owner scripts' dry runs use it (§11 rule 13).
+export async function readAppliedVersions(db) {
+  try {
+    const rows = await db.query('SELECT version::int AS version FROM schema_migrations ORDER BY version');
+    return rows.map((row) => Number(row.version));
+  } catch (error) {
+    if (isMissingRelation(error)) return [];
+    throw error;
+  }
+}
+
 async function applyVersion(db, migration) {
   for (const statement of migration.statements) await db.query(statement);
   await db.query('INSERT INTO schema_migrations (version, name) VALUES ($1::int, $2) ON CONFLICT DO NOTHING', [String(migration.version), migration.name]);

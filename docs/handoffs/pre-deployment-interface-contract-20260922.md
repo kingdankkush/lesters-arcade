@@ -320,7 +320,7 @@ seed = deriveRankedSeed({ sessionId, wallet, gameId, seasonId, buildHash, salt }
 - `ensureSchema(db)` follows A34: memoized per process by `db.schemaKey`, a version check first, `migrate` only when behind, the memo cleared on failure. This replaces the `schemaReady` boolean in `api/profile.mjs:14`, which was set per module and never keyed to the database.
 - `CREATE … IF NOT EXISTS` is **not** race-safe in Postgres (concurrent creators can collide on `pg_type` / `pg_class`). `migrate` retries the whole version once on SQLSTATE `42P07`, `42710` or `23505`.
 - **Call rule:** every handler and cron that touches Neon calls `ensureSchema(db)` before its first query (A34). PGlite test helpers must **not** migrate in setup for handler-level tests, so a missing call fails the test.
-- `scripts/neon-migrate.mjs` runs `migrate` with `NEON_DATABASE_URL` from the environment and never prints the URL. In production the migration step is the E12 call in §13 step 8b, because the database URL lives only in Vercel.
+- `scripts/neon-migrate.mjs` runs `migrate` with `NEON_DATABASE_URL` from the environment and never prints the URL. Per §11 rule 13 it is a dry run by default (one `SELECT` on `schema_migrations`, listing the pending versions) and applies only with `--apply --confirm APPLY_MIGRATIONS` (clarified 2026-09-23 by the index fixer). `scripts/moderate-profile.mjs` never migrates: on a schema that is behind it stops before any write. In production the migration step is the E12 call in §13 step 8b, because the database URL lives only in Vercel.
 
 `arcade_profiles` is no longer created or read. Decision D4 is a clean slate, and no production table exists yet (guide §1.1).
 
