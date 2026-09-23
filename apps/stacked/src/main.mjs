@@ -201,7 +201,7 @@ async function boot() {
   stage.prepend(app.canvas);
   renderer = createStackedRenderer({ app, stageElement: stage, geometry: { PIECE_CELLS, cellsFor, collides }, Container, Graphics, Text });
   input = createStackedInput({ target: window, controls: $('touchControls'), settings, onPause: () => run.paused ? resume() : pause(), onUndo: undo, isMenuOpen: () => !overlay.hidden, onMenuAction: menuAction });
-  $('modeLabel').textContent = init.mode === 'ranked' ? 'RANKED PREVIEW' : 'FREE MODE';
+  $('modeLabel').textContent = init.mode === 'ranked' ? 'RANKED' : 'FREE MODE';
   $('undoButton').hidden = init.mode === 'ranked';
   $('overlayCopy').textContent = 'Fill a row to clear it. The ledger rises from below, so leave room at the top. Clear four rows together for a HALVING. ' + (renderer.mobile ? 'Use the arrow and rotation buttons below. HOLD saves a piece; DROP places it at the landing guide.' : 'Move with ← →, rotate with ↑ / X, and drop with Space. C holds a piece; Z rotates back. Choose your music world below or start right away.');
   $('continueButton').disabled = false; syncPreferences(); stage.dataset.assetsReady = 'true'; state();
@@ -257,7 +257,7 @@ $('scoresTile').addEventListener('click', () => {
   }
   shelf.hidden = !open; $('scoresTile').setAttribute('aria-expanded', String(open));
 });
-for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.addEventListener('click', () => { if (tile.dataset.mode === init?.mode) status.textContent = tile.dataset.mode === 'ranked' ? 'Ranked preview is active on this device.' : 'Free Mode is active. Practice medals stay on this device.'; else bridge.send('game:exit-request', {}); });
+for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.addEventListener('click', () => { if (tile.dataset.mode === init?.mode) status.textContent = tile.dataset.mode === 'ranked' ? 'Ranked is active for this run.' : 'Free Mode is active. Practice medals stay on this device.'; else bridge.send('game:exit-request', {}); });
 for (const [id, output] of [['intensityRange','intensityValue'],['volumeRange','volumeValue']]) $(id).addEventListener('input', () => { $(output).textContent = $(id).value + '%'; });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('blur', pause);

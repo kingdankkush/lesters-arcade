@@ -22,13 +22,17 @@ test('WO-38 profile and ranked writes both enforce the LitVM chain guard', () =>
   assert.match(chainClient, /export async function submitProfile[\s\S]*getNetwork\(\)[\s\S]*Wrong network/);
 });
 
-test('WO-38 runtime submits ranked sessions only from game-over publish path and reads leaderboard back', () => {
+test('WO-38 runtime settles ranked sessions only through the relayed client from the game-over path', () => {
   const main = repoText('apps/portal/main.js');
   assert.equal(main.includes('checkRankedReadiness'), true);
-  assert.equal(main.includes('submitRankedSession(provider'), true);
+  assert.equal(main.includes('createRankedSettlementClient'), true);
+  assert.equal(main.includes('rankedIdentityFor('), true);
+  assert.equal(main.includes('lesters:ranked-run'), true);
   assert.equal(main.includes('retryPublishGameOver'), true);
   assert.equal(main.includes('combat.gameOverSubmitted'), true);
-  assert.equal(main.includes('fetchGlobalLeaderboard'), true);
+  // A3: no player-signed score submission and no /api/attest call remain.
+  assert.equal(main.includes('submitRankedSession('), false);
+  assert.equal(main.includes('requestVerifierAttestation('), false);
 });
 
 test('WO-38 syntax and verification gates include Web3 settlement audit', () => {

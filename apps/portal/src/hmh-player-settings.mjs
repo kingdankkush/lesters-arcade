@@ -1,4 +1,4 @@
-import { DEFAULT_KEYBOARD_BINDINGS, normalizeKeyboardBindings, rebindKeyboardAction } from '../../hmh-reboot/src/action-map.mjs';
+import { normalizeKeyboardBindings, rebindKeyboardAction } from '../../hmh-reboot/src/action-map.mjs';
 
 export const HMH_PLAYER_SETTINGS_VERSION = 1;
 const clamp = (value, min, max, fallback) => Number.isFinite(Number(value)) ? Math.min(max, Math.max(min, Number(value))) : fallback;
@@ -14,7 +14,10 @@ const freeze = (value) => {
 export const HMH_PLAYER_SETTINGS_DEFAULTS = freeze({
   version: HMH_PLAYER_SETTINGS_VERSION,
   controls: {
-    keyboardBindings: { ...DEFAULT_KEYBOARD_BINDINGS },
+    // normalizeKeyboardBindings() is the default map. Importing it instead of
+    // DEFAULT_KEYBOARD_BINDINGS keeps one export off the chunk the portal
+    // shares with the HMH child, whose initial JS is budgeted (contract §11.5).
+    keyboardBindings: { ...normalizeKeyboardBindings() },
     gamepadDeadzone: 0.2,
     gamepadSensitivity: 1,
     touchSensitivity: 1,

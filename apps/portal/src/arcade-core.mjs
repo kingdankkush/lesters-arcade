@@ -590,7 +590,7 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
     gameId: 'stacked',
     title: 'STACKED',
     eyebrow: 'Selected Cabinet',
-    copy: 'Public beta. Practice in Free Mode, or play one wallet-bound Ranked preview run. Ranked results are replay-verified and saved on this device only. Online scores and paid entry are not enabled.',
+    copy: 'Public beta. Practice in Free Mode, or play a wallet-bound Ranked run. Every Ranked run is replay-verified before it counts.',
     artStatus: 'production',
     backgroundAsset: './assets/stacked-mode-select/stacked-mode-bg.svg',
     backgroundPosition: 'center center',
@@ -602,11 +602,11 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       copy: 'Practice sandbox: instant restart, starting-level selector, and optional practice aids. Local score only — no profile progress, leaderboard placement, or chain writes.',
     }),
     ranked: Object.freeze({
-      label: 'Ranked Game · Local Only', official: true, icon: 'star', requiresZkLtc: false,
+      label: 'Play Ranked', official: true, icon: 'star', requiresZkLtc: true,
       chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
       bannerAsset: './assets/stacked-mode-select/stacked-ranked-v1.png',
       bannerPosition: 'center center', bannerAlt: 'STACKED ranked run key art',
-      copy: 'Local Ranked preview. Start at level 1 with no undo. Your recorded inputs must pass replay verification before a result is saved. No fees, prizes or online ranking.',
+      copy: 'Wallet-bound Ranked run. Start at level 1 with no undo. Your recorded inputs must pass replay verification before the result is recorded.',
     }),
   }),
 });
@@ -5308,6 +5308,7 @@ export function nextGlobalSessionId(state) {
 
 import { deriveSessionSeed } from './session-seed.mjs';
 export { deriveSessionSeed };
+import { RANKED_GAMES } from './ranked-identity.mjs';
 
 export function getPlaySessionIdentity(gameId) {
   const game = getGame(gameId);
@@ -5810,7 +5811,8 @@ export function recordScore(state, session, score, runStats = {}) {
       entryFeeMicroUnits: session.entryFeeMicroUsdc ?? 0,
       entryFeeWei: String(session.entryFeeWei ?? '0'),
       paymentToken: session.paymentToken ?? RANKED_PAYMENT_TOKEN,
-      runtimeId: `${game.id}:${session.version?.gameVersion ?? ''}`,
+      // The per-game runtime id the registry records (contract §2.2).
+      runtimeId: RANKED_GAMES[game.id]?.runtimeId ?? `${game.id}:${session.version?.gameVersion ?? ''}`,
       seasonId: session.seasonId ?? null,
     },
   };
@@ -5835,12 +5837,17 @@ export function applySettlement(state, settlement) {
   const txHash = settlement.primaryTxHash ?? null;
   const simulatedTxHash = settlement.primarySimulatedTxHash ?? null;
   const gameId = settlement.gameId;
+  // The Ranked session key (sessionId32). Stamped on every local row of the
+  // session so the chain hydration skips the same run's registry record.
+  const sessionKey = typeof settlement.onChainSessionId32 === 'string' && /^0x[0-9a-fA-F]{64}$/.test(settlement.onChainSessionId32)
+    ? settlement.onChainSessionId32.toLowerCase() : null;
 
   // stamp flat board
   for (const e of state.leaderboards?.[gameId] ?? []) {
     if (e.sessionId === settlement.sessionId) {
       e.settlementTxHash = txHash;
       e.settlementSimulatedTxHash = simulatedTxHash;
+      if (sessionKey) e.onChainSessionId32 = sessionKey;
     }
   }
   // stamp cadence buckets
@@ -5852,12 +5859,20 @@ export function applySettlement(state, settlement) {
           if (row.sessionId === settlement.sessionId) {
             row.settlementTxHash = txHash;
             row.settlementSimulatedTxHash = simulatedTxHash;
+            if (sessionKey) row.onChainSessionId32 = sessionKey;
           }
         }
       }
     }
   }
-  // stamp official session
+  // stamp official session (state.sessions and state.officialSessions hold the
+  // same object in memory, but separate copies after a reload)
+  if (sessionKey) {
+    for (const row of state.officialSessions ?? []) {
+      if (row?.sessionId === settlement.sessionId) row.onChainSessionId32 = sessionKey;
+    }
+    if (state.sessions?.[settlement.sessionId]) state.sessions[settlement.sessionId].onChainSessionId32 = sessionKey;
+  }
   if (state.sessions?.[settlement.sessionId]) {
     state.sessions[settlement.sessionId].settlement = {
       mode: settlement.mode,

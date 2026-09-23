@@ -6,6 +6,7 @@ import {
   simulateChikunRun,
 } from '../apps/portal/src/chikun-cabinet.mjs';
 import {
+  ACHIEVEMENTS,
   createInitialArcadeState,
   recordScore,
   startPlaySession,
@@ -111,4 +112,66 @@ test('Free retries verify a fresh result while duplicate results and Ranked rese
  locked.handleResult(resultPayload(ranked));
  assert.equal(locked.beginPracticeRun(),false);
  assert.equal(locked.handleResult(resultPayload(ranked)).reason,'already-finalized');
+});
+
+test('ranked result carries settlementInput and verified v6 evidence', () => {
+  const state = createInitialArcadeState();
+  const ranked = session('paid', 920);
+  const payload = resultPayload(ranked);
+  const lifecycle = createChikunPortalLifecycle({ state, session: ranked, recordScoreRef: recordScore });
+  const final = lifecycle.handleResult(payload);
+  assert.equal(final.ok, true);
+  assert.equal(final.evidence, payload.replayClaim.evidence, 'the evidence object the replay verified');
+  assert.equal(final.evidence.version, 'chikun-flap-evidence-v6');
+  assert.equal(final.evidence.seed, ranked.seed);
+  assert.equal(final.settlementInput.sessionId, ranked.sessionId);
+  assert.equal(final.settlementInput.gameId, 'chikun');
+  assert.equal(final.settlementInput.score, final.canonical.score);
+  assert.equal(final.settlementInput.seasonId, 'chikun-season-preview-1');
+  assert.equal(final.settlementInput.runtimeId, 'chikun:canvas-runtime-v7', 'the registry runtime id (contract §2.2)');
+
+  const free = session('free', 921);
+  const practice = createChikunPortalLifecycle({ state, session: free, recordScoreRef: () => { throw new Error('practice never writes'); } }).handleResult(resultPayload(free));
+  assert.equal(practice.ok, true);
+  assert.equal(practice.settlementInput, null, 'Free runs never produce a settlement input');
+});
+
+test('a fresh wallet whose first Ranked run is Chikun unlocks no Hard Money Heroes achievement', () => {
+  // The real leak: nothing but the maybeUnlockRunAchievements gate stops a
+  // first-ever Ranked run from granting HMH's First Ranked Run.
+  const FRESH = '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd';
+  const hmhRunIds = new Set(Object.values(ACHIEVEMENTS).filter((achievement) => achievement.unlockType !== 'login').map((achievement) => achievement.id));
+  assert.ok(hmhRunIds.has('first-paid-run'));
+  const state = createInitialArcadeState();
+  const ranked = startPlaySession({ wallet: FRESH, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000940', sequenceNumber: 940, sessionNonce: 'lifecycle-940' });
+  const final = createChikunPortalLifecycle({ state, session: ranked, recordScoreRef: recordScore }).handleResult(resultPayload(ranked));
+  assert.equal(final.ok, true);
+  assert.equal(final.acceptedForGlobalLeaderboard, true);
+  assert.deepEqual(final.settlementInput.unlockedAchievements, [], 'no HMH id in the Chikun settlement input');
+  const profile = state.profiles[FRESH];
+  assert.equal(profile.progress.chikun.paidRuns, 1);
+  assert.deepEqual(profile.achievements.filter((id) => hmhRunIds.has(id)), [], 'no HMH run achievement on the profile');
+  assert.equal(profile.progress['lester-blaster']?.paidRuns ?? 0, 0);
+});
+
+test('no Hard Money Heroes achievement reaches a Chikun run at the portal', () => {
+  const state = createInitialArcadeState();
+  // A wallet with Hard Money Heroes history: its Ranked counters are the ones
+  // the HMH resolver reads (first run, paid-run milestones, kill totals).
+  const hmh = startPlaySession({ wallet: WALLET, gameId: 'lester-blaster', mode: 'paid', sessionNonce: '0f0f0f0f-0f0f-4f0f-8f0f-0f0f0f0f0f0f' });
+  const hmhRun = recordScore(state, hmh, 5000, { kills: 120, elapsedSeconds: 600, maxCombo: 30 });
+  assert.ok(hmhRun.unlockedAchievements.length > 0, 'the fixture wallet does unlock HMH achievements on HMH runs');
+  const profile = state.profiles[WALLET.toLowerCase()];
+  profile.progress['lester-blaster'].paidRuns = 99; // one Ranked run away from the 100-run HMH milestone
+  const before = [...profile.achievements];
+
+  for (let index = 0; index < 3; index += 1) {
+    const ranked = session('paid', 930 + index);
+    const final = createChikunPortalLifecycle({ state, session: ranked, recordScoreRef: recordScore }).handleResult(resultPayload(ranked));
+    assert.equal(final.ok, true);
+    assert.deepEqual(final.settlementInput.unlockedAchievements, [], 'no HMH id in the Chikun settlement input');
+  }
+  assert.deepEqual(profile.achievements, before, 'Chikun runs unlock no HMH achievement');
+  assert.equal(profile.progress.chikun.paidRuns, 3);
+  assert.equal(profile.progress['lester-blaster'].paidRuns, 99, 'Chikun runs do not count toward HMH paid-run milestones');
 });
