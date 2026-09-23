@@ -22,12 +22,20 @@ test('public STACKED cabinet and normal play route agree across all launch regis
   assert.deepEqual(manifest.endpoints, []);
 });
 
-test('beta mode selection explicitly discloses local-only Ranked and isolated Free play', () => {
+test('truthful Ranked copy in preview and live', () => {
   const model = buildGameModeSelectModel('stacked');
   assert.match(model.copy, /beta/i);
-  assert.match(model.ranked.label, /local/i);
-  assert.match(model.ranked.copy, /No fees, prizes or online ranking/);
-  assert.equal(model.ranked.requiresZkLtc, false);
+  assert.equal(model.ranked.label, 'Play Ranked');
+  assert.match(model.ranked.copy, /replay verification/);
+  assert.match(model.copy, /replay-verified/);
+  // Neither preview nor launch wording: no claim that results stay local, and
+  // no claim that they are already published.
+  for (const text of [model.copy, model.ranked.label, model.ranked.copy]) {
+    assert.doesNotMatch(text, /local only|this device only|online scores .* not enabled|no fees|preview/i);
+    assert.doesNotMatch(text, /on-chain|published|LitVM/i);
+  }
+  // Live Ranked needs zkLTC (the faucet link shows only when SETTLEMENT_LIVE).
+  assert.equal(model.ranked.requiresZkLtc, true);
   assert.equal(model.free.official, false);
   assert.match(model.free.copy, /no profile progress, leaderboard placement, or chain writes/);
 });

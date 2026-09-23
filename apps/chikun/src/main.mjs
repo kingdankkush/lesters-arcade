@@ -504,13 +504,13 @@ function finishRun() {
   tone(96, 0.38, 0.07, 'sawtooth');
   send('game:result', payload);
   resultEyebrow.textContent = mode === 'ranked'
-    ? 'Ranked run sent for parent replay'
+    ? 'Ranked flight complete'
     : dailyChallenge
       ? `${dailyChallenge.label} complete`
       : 'Free flight complete';
   resultScore.textContent = String(result.score);
   resultCopy.textContent = mode === 'ranked'
-    ? 'Lester’s Arcade is verifying this input log. Accepted scores update this device’s profile and local Chikun score boards.'
+    ? 'Ranked run sent to Lester’s Arcade for verification.'
     : ghostComparison
       ? `${ghostComparison.beatGhost ? 'You beat your daily best' : 'Your daily best leads'} by ${Math.abs(ghostComparison.scoreDelta)} points. Practice score only.`
       : 'Practice score only. Nothing was written to Ranked progress or leaderboards.';

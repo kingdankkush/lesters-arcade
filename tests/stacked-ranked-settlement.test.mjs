@@ -157,3 +157,17 @@ test('a finished Ranked STACKED run restarts through a paid entry', () => {
     assert.deepEqual(calls, ranked ? [['startOfficialMode', 'ranked']] : ['destroy', ['startOfficialMode', 'free']]);
   }
 });
+
+test('child Ranked copy is true with settlement off and on', () => {
+  const stacked = read('../apps/stacked/src/main.mjs');
+  assert.match(stacked, /init\.mode === 'ranked' \? 'RANKED' : 'FREE MODE'/);
+  assert.match(stacked, /'Ranked is active for this run\.'/);
+  assert.match(stacked, /Ranked has a shared 15-minute pause allowance/, 'the pause allowance copy stays');
+  assert.doesNotMatch(stacked, /RANKED PREVIEW|Ranked preview is active on this device/);
+  const page = read('../apps/portal/stacked/index.html');
+  assert.match(page, /<span class="tile-label">Ranked<\/span><span class="tile-hint">Verified runs<\/span>/);
+  assert.doesNotMatch(page, /tile-hint">Local ledger/);
+  const chikun = read('../apps/chikun/src/main.mjs');
+  assert.match(chikun, /'Ranked run sent to Lester’s Arcade for verification\.'/);
+  assert.doesNotMatch(chikun, /sent for parent replay|update this device’s profile and local Chikun score boards/);
+});

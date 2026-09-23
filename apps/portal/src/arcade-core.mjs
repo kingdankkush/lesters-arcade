@@ -590,7 +590,7 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
     gameId: 'stacked',
     title: 'STACKED',
     eyebrow: 'Selected Cabinet',
-    copy: 'Public beta. Practice in Free Mode, or play one wallet-bound Ranked preview run. Ranked results are replay-verified and saved on this device only. Online scores and paid entry are not enabled.',
+    copy: 'Public beta. Practice in Free Mode, or play a wallet-bound Ranked run. Every Ranked run is replay-verified before it counts.',
     artStatus: 'production',
     backgroundAsset: './assets/stacked-mode-select/stacked-mode-bg.svg',
     backgroundPosition: 'center center',
@@ -602,11 +602,11 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       copy: 'Practice sandbox: instant restart, starting-level selector, and optional practice aids. Local score only — no profile progress, leaderboard placement, or chain writes.',
     }),
     ranked: Object.freeze({
-      label: 'Ranked Game · Local Only', official: true, icon: 'star', requiresZkLtc: false,
+      label: 'Play Ranked', official: true, icon: 'star', requiresZkLtc: true,
       chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
       bannerAsset: './assets/stacked-mode-select/stacked-ranked-v1.png',
       bannerPosition: 'center center', bannerAlt: 'STACKED ranked run key art',
-      copy: 'Local Ranked preview. Start at level 1 with no undo. Your recorded inputs must pass replay verification before a result is saved. No fees, prizes or online ranking.',
+      copy: 'Wallet-bound Ranked run. Start at level 1 with no undo. Your recorded inputs must pass replay verification before the result is recorded.',
     }),
   }),
 });
