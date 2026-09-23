@@ -3,6 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 
 import { createOfficialAppRoutes } from '../apps/portal/src/routes/official-app-routes.mjs';
+import { PORTAL_COPY, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
 
 function panel() {
   return { hidden: false, dataset: {}, style: {} };
@@ -69,11 +70,28 @@ test('app dispatcher owns shell rendering and the settings arcade-floor route', 
 test('guest profile header does not promise available permanent history or Ranked publishing', () => {
   const h = harness({ step: 'profile' });
   h.routes.renderApp();
-  const copy = h.dom.officialProfileCopy.textContent;
+  // The header follows the settlement flags (contract A33); the preview wording
+  // never promises history or publishing that the preview does not have.
+  assert.equal(h.dom.officialProfileCopy.textContent, PORTAL_COPY.profileGuestView);
+  const copy = portalCopyFor({ settlementLive: false, hostedProfileSync: false }).profileGuestView;
   assert.match(copy, /browser|device/i);
   assert.match(copy, /not.*available|not.*provide/i);
   assert.doesNotMatch(copy, /connect.*if you want.*publishing/i);
+  assert.match(portalCopyFor({ settlementLive: false, hostedProfileSync: true }).profileGuestView, /Verified Ranked publishing is not available yet/);
   assert.ok(h.calls.includes('profile'));
+});
+
+test('scores header names only the Weekly, Monthly and All-time boards in every flag state', () => {
+  const h = harness({ step: 'leaderboards', connectedWallet: '0x1234567890abcdef' });
+  h.routes.renderApp();
+  assert.equal(h.dom.officialProfileCopy.textContent, PORTAL_COPY.scoresView);
+  for (const settlementLive of [false, true]) {
+    const copy = portalCopyFor({ settlementLive, hostedProfileSync: settlementLive }).scoresView;
+    assert.match(copy, /weekly, monthly, and all-time/i);
+    assert.doesNotMatch(copy, /daily|yearly/i);
+  }
+  assert.match(portalCopyFor({ settlementLive: true, hostedProfileSync: true }).scoresView, /^Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs/);
+  assert.ok(h.calls.includes('leaderboards'));
 });
 
 test('app dispatcher applies guest gating before route selection', () => {

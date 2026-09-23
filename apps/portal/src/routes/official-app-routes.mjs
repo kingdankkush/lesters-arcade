@@ -1,3 +1,5 @@
+import { PORTAL_COPY } from '../portal-content.mjs';
+
 export function createOfficialAppRoutes({
   dom,
   documentRef = globalThis.document,
@@ -58,8 +60,8 @@ export function createOfficialAppRoutes({
         : 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Choose a game and play Free.',
       profile: connectedWallet
         ? shellModel.profileRules.walletLockCopy
-        : 'Guest stats are local to this browser. Permanent or cross-device history and verified Ranked publishing are not available yet.',
-      leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time views of device-local Ranked preview records.',
+        : PORTAL_COPY.profileGuestView,
+      leaderboards: PORTAL_COPY.scoresView,
       settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
     };
     dom.officialProfileEyebrow.textContent = simulatedWallet

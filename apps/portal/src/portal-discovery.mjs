@@ -1,4 +1,4 @@
-import { portalPageMeta, portalSchema, gameFor } from './portal-content.mjs';
+import { PORTAL_COPY, portalPageMeta, portalSchema, gameFor } from './portal-content.mjs';
 
 // Text-only DOM construction keeps even an arbitrary URL slug out of an HTML
 // parser. Game facts resolve through the allowlisted public catalog.
@@ -10,7 +10,7 @@ function gameDetailsNode(documentRef,slug) {
   const intro=node('div','');
   intro.append(node('p',game.genre,'portal-kicker'),node('h2',game.tag),node('p',game.description));
   const list=node('dl','');
-  for(const [label,text] of [['Your goal',game.goal],['How to play',game.controls],['Free or Ranked?','Free Mode is open to guests. Wallet-connected Ranked is a device-local preview with no fees or prizes.']]) {
+  for(const [label,text] of [['Your goal',game.goal],['How to play',game.controls],['Free or Ranked?',PORTAL_COPY.rankedDetail[game.id]]]) {
     const row=node('div','');row.append(node('dt',label),node('dd',text));list.append(row);
   }
   const link=node('a','Explore all games →','portal-text-link');link.setAttribute('href','/games');
