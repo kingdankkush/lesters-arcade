@@ -152,6 +152,24 @@ test('launch copy covers boards, achievements, names, retries and refunds', () =
   assert.match(launch.scoresView, /Weekly, Monthly, and All-time/);
 });
 
+// The orchestrator shows the owner these launch texts, quoted in the slice's
+// final commit message, before step 7. They are pinned word for word so the
+// flip ships exactly the reviewed wording: a later edit fails here until the
+// new text is quoted and reviewed again.
+test('the launch wording quoted for owner review is what the flip ships', () => {
+  assert.equal(answer(launch, /cost money/),
+    "Ranked costs 0.1001 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.0001 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Testnet zkLTC has no value, and there are no prizes. Testnet entries are not refunded. Free Mode is always free.");
+  assert.deepEqual([...launch.trustStatus], [
+    "Ranked is live on the LitVM LiteForge testnet. A Ranked run costs 0.1001 zkLTC: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.0001 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.",
+    "The arcade server checks every Ranked run before its relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed from their recorded inputs; a replay proves that a run follows the game's rules, not who played it. Hard Money Heroes runs are plausibility-checked against the game's limits and are not replayed; the check rejects impossible results but cannot prove how a run was played.",
+    'If publishing fails, it retries automatically, and you can retry it from your profile. Testnet entries are not refunded. Testnet zkLTC has no value, and there are no prizes.',
+  ]);
+  assert.deepEqual([...launch.trustStorage], [
+    "Signing in and playing Ranked also stores data on the arcade server, in a Neon Postgres database: your wallet address; your verified Ranked sessions with their evidence (the recorded inputs that replay a Chikun's Escape or STACKED run, or the run summary of a Hard Money Heroes run), scores, stats, check results, and publishing status; the achievements recorded for your wallet; a copy of your on-chain display name and avatar; your profile preferences; and the one-time codes used to sign in. Rate limiting stores keyed hashes (HMAC) of IP addresses in short time windows, not raw IP addresses.",
+    'Your wallet address, display name, best scores, verified runs, and achievements are public on your profile and the leaderboards. Published results are also public records on the LitVM LiteForge testnet, which the arcade cannot delete.',
+  ]);
+});
+
 test('no copy mentions NFTs, hashtags, hype or daily and yearly boards', () => {
   for (const [name, copy] of Object.entries(STATES)) {
     const text = allText(copy);
