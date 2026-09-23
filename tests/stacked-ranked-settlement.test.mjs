@@ -11,7 +11,7 @@ import { STACKED_MAX_TICKS } from '../apps/portal/src/stacked-contracts.mjs';
 import { createStackedReplayStore } from '../apps/portal/src/stacked-replay-store.mjs';
 import { persistStackedRankedRun, stackedReplayBase64Url, writeStackedRankedReplay } from '../apps/portal/src/stacked-persistence.mjs';
 import { createStackedPortalLifecycle } from '../apps/portal/src/stacked-portal-lifecycle.mjs';
-import { STACKED_RANKED_RESULT_COPY } from '../apps/portal/src/stacked-host.mjs';
+import { STACKED_RANKED_RESULT_COPY, stackedRankedResultCopy } from '../apps/portal/src/stacked-host.mjs';
 import { RANKED_PENDING_KEY } from '../apps/portal/src/ranked-settlement.mjs';
 import { verifyRankedRun } from '../server/verify/index.mjs';
 import { FIXTURE_REGISTRY, FIXTURE_SEED_SECRET } from './fixtures/ranked/build-fixtures.mjs';
@@ -79,23 +79,52 @@ test('persistRanked writes the replay store with the evidence digest and builds 
   assert.match(PORTAL_MAIN, /builders\.buildStackedSettleRequest\(\{ session, scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES\.scoreSubmissionRegistry, sic1Bytes: evidence, claimScore: canonical\.score \}\)/);
 });
 
-test('preview keeps the device archive only; a live paid run is settled even if the device archive fails', async () => {
+test('preview keeps the archive and a replay copy, sends nothing, and builds no body', async () => {
   const session = rankedSession();
   const canonical = canonicalFor(session);
   const preview = rankedGlueContext({ session });
-  await persistStackedRankedRun({ state: preview.context.state, storage: preview.storage, session, evidence: BYTES, canonical, metadata: { evidenceDigest: DIGEST }, live: false, settle: () => preview.context.settleStackedRankedRun(session, canonical, BYTES) });
+  const result = await persistStackedRankedRun({ state: preview.context.state, storage: preview.storage, session, evidence: BYTES, canonical, metadata: { evidenceDigest: DIGEST }, live: false, settle: () => preview.context.settleStackedRankedRun(session, canonical, BYTES) });
+  assert.equal(result.acceptedForLocalLeaderboard, true);
   await until(() => preview.events.length === 1);
   assert.equal(preview.events[0].detail.handle.state, 'preview');
-  assert.equal(createStackedReplayStore(preview.storage).read(session.sessionId), null, 'no replay copy in preview');
-  assert.equal(preview.storage.getItem(RANKED_PENDING_KEY), null);
+  // Brief acceptance 5: the replay store is written in both modes.
+  assert.deepEqual({ ...createStackedReplayStore(preview.storage).read(session.sessionId) }, { sessionId: session.sessionId, score: canonical.score, encoded: stackedReplayBase64Url(BYTES), mode: 'ranked', resultHash: DIGEST });
+  assert.equal(preview.storage.getItem(RANKED_PENDING_KEY), null, 'no pending settle body in preview');
   assert.equal(preview.calls.clientFetch.length + preview.calls.globalFetch.length, 0, 'zero /api requests in preview');
+  assert.equal(preview.calls.loadRankedRequests ?? 0, 0, 'preview never loads the request builders');
+  assert.deepEqual(preview.errors, []);
+});
 
+test('an unsaved preview is not handed off; a live paid run whose archive failed still settles and reports it', async () => {
+  const session = rankedSession();
+  const canonical = canonicalFor(session);
+  const storage = { data: new Map(), getItem(key) { return this.data.get(key) ?? null; }, setItem(key, value) { this.data.set(key, value); }, removeItem(key) { this.data.delete(key); } };
   const settled = [];
   const failingState = { get profiles() { throw new Error('boom'); } };
-  await assert.rejects(persistStackedRankedRun({ state: failingState, storage: preview.storage, session, evidence: BYTES, canonical, metadata: { evidenceDigest: DIGEST }, live: false, settle: async () => settled.push('preview') }), /boom/);
+  await assert.rejects(persistStackedRankedRun({ state: failingState, storage, session, evidence: BYTES, canonical, metadata: { evidenceDigest: DIGEST }, live: false, settle: async () => settled.push('preview') }), /boom/);
   assert.deepEqual(settled, [], 'an unsaved preview is not handed off');
-  await assert.rejects(persistStackedRankedRun({ state: failingState, storage: preview.storage, session, evidence: BYTES, canonical, metadata: { evidenceDigest: DIGEST }, live: true, settle: async () => settled.push('live') }), /boom/);
+  const live = await persistStackedRankedRun({ state: failingState, storage, session, evidence: BYTES, canonical, metadata: { evidenceDigest: DIGEST }, live: true, settle: async () => settled.push('live') });
   assert.deepEqual(settled, ['live'], 'the paid run still goes to the server');
+  assert.deepEqual(live, { archived: false, archiveError: 'boom' }, 'publishing, with only the device copy missing: no throw');
+
+  // Through the lifecycle: ok (finalized, so no second hand-off), with archived:false.
+  const binding = { seed: 44, buildHash: 'stacked-local', seasonId: 'stacked-season-preview-1', leaderboardEligible: true };
+  const claim = { score: 10, lines: 1 };
+  let handedOff = 0;
+  const lifecycle = createStackedPortalLifecycle({ session: binding, verify: async () => ({ ...claim }), persistRanked: async () => { handedOff += 1; return { archived: false, archiveError: 'boom' }; } });
+  assert.deepEqual(await lifecycle.finish(BYTES, claim, { evidenceDigest: DIGEST }), { ok: true, canonical: claim, ranked: true, archived: false });
+  assert.equal((await lifecycle.finish(BYTES, claim, { evidenceDigest: DIGEST })).reason, 'already-finalizing');
+  assert.equal(handedOff, 1);
+  const saved = createStackedPortalLifecycle({ session: binding, verify: async () => ({ ...claim }), persistRanked: async () => ({ acceptedForLocalLeaderboard: true }) });
+  assert.deepEqual(await saved.finish(BYTES, claim, {}), { ok: true, canonical: claim, ranked: true });
+
+  // The child and parent lines: publishing, not "Not saved".
+  assert.equal(stackedRankedResultCopy({ ok: true, ranked: true, archived: false }, true), STACKED_RANKED_RESULT_COPY.liveUnarchived);
+  assert.match(STACKED_RANKED_RESULT_COPY.liveUnarchived, /^Replay verified\. Publishing your run on LitVM/);
+  assert.doesNotMatch(STACKED_RANKED_RESULT_COPY.liveUnarchived, /Not saved/);
+  const dom = { officialGameStateCopy: { textContent: 'Publishing your run on LitVM…' } };
+  portalCallback('createStackedHost', 'onResult', vm.createContext({ combat: {}, dom, SETTLEMENT_LIVE: true }))({ ok: true, ranked: true, archived: false });
+  assert.equal(dom.officialGameStateCopy.textContent, 'Publishing your run on LitVM…', 'the settlement handle keeps the line');
 });
 
 test('replay copies over the stored-replay cap are refused, not truncated', () => {
@@ -123,9 +152,12 @@ test('ranked copy is truthful in preview and live', () => {
   assert.equal(STACKED_RANKED_RESULT_COPY.live, 'Replay verified. Publishing your run on LitVM — see the results panel.');
   assert.equal(STACKED_RANKED_RESULT_COPY.preview, 'Replay verified. Ranked preview: nothing is published while online settlement is off.');
   for (const copy of Object.values(STACKED_RANKED_RESULT_COPY)) assert.ok(copy.length <= 512);
+  assert.equal(stackedRankedResultCopy({ ok: true, ranked: true }, true), STACKED_RANKED_RESULT_COPY.live);
+  assert.equal(stackedRankedResultCopy({ ok: true, ranked: true }, false), STACKED_RANKED_RESULT_COPY.preview);
+  assert.equal(stackedRankedResultCopy({ ok: true, ranked: true, archived: false }, false), STACKED_RANKED_RESULT_COPY.preview);
   const host = read('../apps/portal/src/stacked-host.mjs');
   assert.match(host, /settlementLive = false/);
-  assert.match(host, /STACKED_RANKED_RESULT_COPY\[settlementLive \? 'live' : 'preview'\]/);
+  assert.match(host, /result\.ranked \? stackedRankedResultCopy\(result, settlementLive\)/);
   assert.doesNotMatch(host, /local Ranked preview, not an online or paid leaderboard/);
   assert.match(PORTAL_MAIN, /startLevel, settlementLive: SETTLEMENT_LIVE,/);
 

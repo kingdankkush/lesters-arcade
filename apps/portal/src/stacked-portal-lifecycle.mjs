@@ -15,15 +15,18 @@ export function createStackedPortalLifecycle({ session, startLevel = 1, verify =
         if (cancelled) throw new Error('cabinet-closed');
         if (!claim || Object.keys(canonical).length !== Object.keys(claim).length || Object.keys(canonical).some(key => canonical[key] !== claim[key])) throw new Error('Canonical replay does not match the submitted result');
         // Persist only the verifier's own tuple, never untrusted summary counters.
+        let archived = true;
         if (binding.ranked) {
           if (typeof persistRanked !== 'function') throw new Error('Ranked persistence is not available');
           const inputDevice=['keyboard','touch','gamepad','mixed'].includes(metadata.inputDevice)?metadata.inputDevice:null;
           // The host's '0x'+sha256 of these exact bytes (checked against the child's claim).
           const evidenceDigest = typeof metadata.evidenceDigest === 'string' && /^0x[0-9a-f]{64}$/.test(metadata.evidenceDigest) ? metadata.evidenceDigest : null;
-          await persistRanked(Object.freeze({ ...canonical }), evidence, Object.freeze({ inputDevice, evidenceDigest }));
+          // A live run whose device archive failed is still settling: it
+          // finalizes (no second hand-off) with archived:false.
+          archived = (await persistRanked(Object.freeze({ ...canonical }), evidence, Object.freeze({ inputDevice, evidenceDigest })))?.archived !== false;
         }
         finalized = true;
-        return { ok: true, canonical, ranked: binding.ranked };
+        return archived ? { ok: true, canonical, ranked: binding.ranked } : { ok: true, canonical, ranked: binding.ranked, archived: false };
       } catch (error) { return { ok: false, reason: error.message }; }
       finally { inFlight = false; }
     },

@@ -5,11 +5,14 @@ import { createStackedPortalLifecycle } from './stacked-portal-lifecycle.mjs';
 import { createStackedAudioSampler } from './stacked-audio.mjs';
 import { saveStackedSettings, applyStackedPresentationPreferences } from './stacked-player-settings.mjs';
 
-// Ranked result-status copy, true in each settlement mode (≤ 512 chars).
+// Ranked result-status copy, true in each settlement mode (≤ 512 chars). A
+// live run whose device archive failed is still publishing (liveUnarchived).
 export const STACKED_RANKED_RESULT_COPY = Object.freeze({
   live: 'Replay verified. Publishing your run on LitVM — see the results panel.',
+  liveUnarchived: 'Replay verified. Publishing your run on LitVM — see the results panel. This device could not keep its own copy of the run.',
   preview: 'Replay verified. Ranked preview: nothing is published while online settlement is off.',
 });
+export const stackedRankedResultCopy = (result, settlementLive) => STACKED_RANKED_RESULT_COPY[!settlementLive ? 'preview' : result?.archived === false ? 'liveUnarchived' : 'live'];
 
 export function createStackedHost({ mount, session, startLevel = 1, profile, settings, music, settlementLive = false, onReady = () => {}, onState = () => {}, onResult = () => {}, onRestart = () => {}, onExit = () => {}, onError = () => {}, persistRanked }) {
   const sessionId = session.urlSessionId ?? session.sessionId;
@@ -68,7 +71,7 @@ export function createStackedHost({ mount, session, startLevel = 1, profile, set
         if (digest !== data.payload.evidenceDigest || evidence.length !== data.payload.totalRawBytes) throw new Error('Evidence digest mismatch');
         const result = await lifecycle.finish(evidence, data.payload.tuple, { inputDevice: data.payload.summary.handling.inputDevice, evidenceDigest: digest });
         if (disposed) return;
-        send('portal:result-status', { accepted: result.ok, message: result.ok ? result.ranked ? STACKED_RANKED_RESULT_COPY[settlementLive ? 'live' : 'preview'] : 'Replay verified locally. Free Mode did not write to your profile, achievements or score boards.' : 'Not saved: ' + result.reason });
+        send('portal:result-status', { accepted: result.ok, message: result.ok ? result.ranked ? stackedRankedResultCopy(result, settlementLive) :'Replay verified locally. Free Mode did not write to your profile, achievements or score boards.' : 'Not saved: ' + result.reason });
         onResult(result);
       } else if (data.type === 'game:preferences-request') {
         const p = data.payload;

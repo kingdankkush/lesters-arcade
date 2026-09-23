@@ -31,7 +31,7 @@ export function stackedReplayBase64Url(bytes) {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-// A secondary on-device copy of a live Ranked replay (guide §5.4 item 3). The
+// A secondary on-device copy of a Ranked replay (guide §5.4 item 3). The
 // pending settle body in ranked-settlement storage is the retry source; the
 // store keeps only the newest and the best record. resultHash is the host's
 // evidence digest, passed through and never recomputed.
@@ -46,10 +46,14 @@ export function writeStackedRankedReplay(storage, { sessionId, score, evidence, 
 
 // The Ranked persistRanked step of the STACKED host: the local archive first
 // (recordStackedScore replays once and refuses a second record, so nothing
-// here records twice), then for a live run the replay-store copy, then the
-// injected settle step (the request builder, the settlement handle and the
-// results hand-off). A live paid run is settled even when the device archive
-// failed; a preview is only handed off once it is saved.
+// here records twice), then the replay-store copy (brief acceptance 5, in both
+// modes), then the injected settle step (the request builder, the settlement
+// handle and the results hand-off).
+// - A preview is only handed off once it is saved; an unsaved one throws, and
+//   the host reports it as not saved.
+// - A live paid run is settled even when the device archive failed. It then
+//   resolves { archived: false, archiveError } instead of throwing: the run
+//   is publishing, and only the device copy is missing (the host says so).
 export async function persistStackedRankedRun({ state, storage, session, evidence, canonical, metadata = {}, live = false, settle = async () => null } = {}) {
   let result = null;
   let failure = null;
@@ -58,10 +62,9 @@ export async function persistStackedRankedRun({ state, storage, session, evidenc
   } catch (error) {
     failure = error;
   }
-  if (!failure || live) {
-    if (live) writeStackedRankedReplay(storage, { sessionId: session.sessionId, score: canonical.score, evidence, evidenceDigest: metadata.evidenceDigest });
-    await settle();
-  }
-  if (failure) throw failure;
+  if (failure && !live) throw failure;
+  writeStackedRankedReplay(storage, { sessionId: session.sessionId, score: canonical.score, evidence, evidenceDigest: metadata.evidenceDigest });
+  await settle();
+  if (failure) return { archived: false, archiveError: failure.message };
   return result;
 }
