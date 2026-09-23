@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
-import {createChikunRuntime} from '../apps/portal/src/chikun-cabinet.mjs';
+import {createChikunRuntime,flapTicksOf} from '../apps/portal/src/chikun-cabinet.mjs';
 import {buildChikunDailyChallenge} from '../apps/portal/src/chikun-daily-challenge.mjs';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_PACKAGE_PATH||'playwright');
 const origin=process.env.CHIKUN_PORTAL_ORIGIN||'http://127.0.0.1:8794';
@@ -51,7 +51,7 @@ try {
  await frame.evaluate(()=>{for(let i=0;i<950;i++)__flightTestAdvance(1000/240);});
  const first=await frame.evaluate(()=>__flightTestMessages.find(m=>m.type==='game:result')?.payload);
  assert.ok(first,'first flight must finish');
- assert.ok(first.evidence.flapSteps.includes(0),'a launch tap must survive multiple 240 Hz frames before the first 60 Hz simulation step');
+ assert.ok(flapTicksOf(first.evidence).includes(0),'a launch tap must survive multiple 240 Hz frames before the first 60 Hz simulation step');
  await page.waitForFunction(()=>{const a=document.querySelector('#arcadeMusicAudio');return !a.paused && a.currentTime>0;},null,{timeout:15000});
  const firstTrack=await page.locator('#arcadeMusicAudio').getAttribute('data-track-id');
  await frame.locator('#restartButton').click({force:true});

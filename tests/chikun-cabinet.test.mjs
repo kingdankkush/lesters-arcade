@@ -40,8 +40,8 @@ test('WO-55 Chikun ships one valid playable ranked Cabinet SDK manifest', () => 
   assert.equal(result.manifest.id, 'chikun');
   assert.equal(result.manifest.version, CHIKUN_CABINET_VERSION);
   assert.equal(raw.runtimeVersion, CHIKUN_RUNTIME_VERSION);
-  assert.equal(CHIKUN_CABINET_VERSION, '0.8.0');
-  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v6');
+  assert.equal(CHIKUN_CABINET_VERSION, '0.9.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v7');
   assert.equal(result.manifest.status, 'playable');
   assert.equal(result.manifest.controlScheme, 'tap');
   assert.equal(result.manifest.rankedEligible, true);
@@ -82,10 +82,10 @@ test('Chikun deterministic core normalizes bounded flap evidence and replays the
   assert.equal(CHIKUN_FIXED_STEP_HZ, 60);
   assert.equal(result.seed, 55);
   assert.equal(result.fixedStepHz, CHIKUN_FIXED_STEP_HZ);
-  assert.equal(result.evidence.version, 'chikun-flap-evidence-v5');
-  assert.deepEqual(result.evidence.flapSteps, [0, 4, 11, 18, 27]);
+  assert.equal(result.evidence.version, 'chikun-flap-evidence-v6');
+  assert.deepEqual(result.evidence.flapDeltas, [0, 4, 7, 7, 9]);
   assert.equal(Object.isFrozen(result.evidence), true);
-  assert.equal(Object.isFrozen(result.evidence.flapSteps), true);
+  assert.equal(Object.isFrozen(result.evidence.flapDeltas), true);
 
   const replayed = replayChikunRun(result.evidence);
   assert.deepEqual(replayed, result);
@@ -106,9 +106,9 @@ test('Chikun evidence fails closed when flap transitions exceed the bounded repl
 
 test('Chikun replay rejects non-canonical flap evidence before simulation', () => {
   const evidence = simulateChikunRun({ seed: 55, taps: [4, 11, 18], maxTicks: 48 }).evidence;
-  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: '4,11,18' }), /flapSteps must be an array/i);
-  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: [4, 4, 11] }), /strictly increasing/i);
-  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: [4, 48] }), /within maxTicks/i);
+  assert.throws(() => replayChikunRun({ ...evidence, flapDeltas: '4,7,7' }), /flapDeltas must be an array/i);
+  assert.throws(() => replayChikunRun({ ...evidence, flapDeltas: [4, 0, 7] }), /strictly increasing/i);
+  assert.throws(() => replayChikunRun({ ...evidence, flapDeltas: [4, 44] }), /within maxTicks/i);
 });
 
 test('ranked Chikun cabinet binds simulation to the parent-issued seed and session metadata', () => {
@@ -126,7 +126,7 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
 
   const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
   assert.equal(ctx.seed, session.seed);
-  assert.equal(ctx.buildHash, 'site-1.7.0:game-1.7.0:cabinet-0.8.0');
+  assert.equal(ctx.buildHash, 'site-1.7.0:game-1.7.0:cabinet-0.9.0');
   assert.equal(ctx.seasonId, 'chikun-season-preview-1');
   assert.equal(result.seed, session.seed);
   assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));

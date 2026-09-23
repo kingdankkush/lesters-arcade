@@ -1,5 +1,8 @@
 export const CHIKUN_BRIDGE_PROTOCOL = 'chikun-bridge/v1';
-export const CHIKUN_MAX_MESSAGE_BYTES = 64 * 1024;
+// A 60-minute v6 result carries up to 12,000 flap deltas twice (evidence and
+// replayClaim.evidence); 256 KB leaves room for both.
+export const CHIKUN_MAX_MESSAGE_BYTES = 262_144;
+export const CHIKUN_BRIDGE_MAX_FLAPS = 12_000;
 
 const SESSION_ID_PATTERN = /^[a-z0-9][a-z0-9:_-]{2,127}$/;
 const MESSAGE_ID_PATTERN = /^[a-z0-9][a-z0-9:_-]{0,63}$/;
@@ -81,16 +84,19 @@ function validateState(payload) {
   return '';
 }
 
+// The child only ever sends evidence for the current course (v6).
 function validateEvidence(value) {
-  const error = exactKeys(value, ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapSteps'], 'evidence');
+  const error = exactKeys(value, ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapDeltas'], 'evidence');
   if (error) return error;
-  if (!['chikun-flap-evidence-v1','chikun-flap-evidence-v2','chikun-flap-evidence-v3','chikun-flap-evidence-v5'].includes(value.version)) return 'evidence version is invalid';
+  if (value.version !== 'chikun-flap-evidence-v6') return 'evidence version is invalid';
   if (!integer(value.seed, 0, 0xffff_ffff) || value.fixedStepHz !== 60 || !integer(value.maxTicks, 1, 216_000)) return 'evidence metadata is invalid';
-  if (!Array.isArray(value.flapSteps) || value.flapSteps.length > 4096) return 'evidence flapSteps are invalid';
-  let previous = -1;
-  for (const tick of value.flapSteps) {
-    if (!integer(tick, 0, value.maxTicks - 1) || tick <= previous) return 'evidence flapSteps must be bounded and strictly increasing';
-    previous = tick;
+  if (!Array.isArray(value.flapDeltas) || value.flapDeltas.length > CHIKUN_BRIDGE_MAX_FLAPS) return 'evidence flapDeltas are invalid';
+  let tick = -1;
+  for (let i = 0; i < value.flapDeltas.length; i += 1) {
+    const delta = value.flapDeltas[i];
+    if (!integer(delta, i === 0 ? 0 : 1, value.maxTicks)) return 'evidence flapDeltas must be canonical';
+    tick = i === 0 ? delta : tick + delta;
+    if (tick > value.maxTicks - 1) return 'evidence flap ticks must stay within maxTicks';
   }
   return '';
 }
@@ -101,7 +107,7 @@ function validateFinalState(value) {
   if (!integer(value.step, 0, 216_000) || !finite(value.y, -10_000, 10_000) || !finite(value.velocity, -1_000, 1_000)) return 'finalState motion values are invalid';
   for (const field of ['score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks']) if (!integer(value[field], 0, 1_000_000_000)) return `finalState ${field} is invalid`;
   if (!finite(value.survivalTime, 0, 3_600) || typeof value.crashed !== 'boolean') return 'finalState terminal values are invalid';
-  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone', 'rock', 'log', 'thorn', 'hurdle', 'crate', 'shiba', 'pit', 'waterfall', 'forest', 'town', 'canopy', 'hawk', 'eagle', 'pelican', 'plane', 'storm', 'pipe'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
+  if (!['run-complete', 'ceiling', 'ground', 'fork', 'tree', 'drone', 'rock', 'log', 'thorn', 'hurdle', 'crate', 'shiba', 'pit', 'waterfall', 'forest', 'town', 'canopy', 'hawk', 'eagle', 'pelican', 'plane', 'storm', 'pipe', 'flap-limit'].includes(value.terminalReason)) return 'finalState terminalReason is invalid';
   return '';
 }
 

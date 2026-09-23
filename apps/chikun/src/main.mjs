@@ -6,6 +6,7 @@ import { createChikunCharacter, CHIKUN_FLOURISHES, milestoneFlourish } from './c
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
+import { createGuardedFrameLoop, finishRunSafely } from './frame-guard.mjs';
 import {
   CHIKUN_FIXED_STEP_HZ,
   buildChikunReplayClaim,
@@ -429,6 +430,7 @@ function startRun() {
   }
   stopReplayViewer();
   prepareRun();
+  frameLoop.reset();
   phase = 'running';
   paused = false;
   flapQueued = false;
@@ -654,8 +656,29 @@ function draw(snapshot = latestSnapshot) {
   ctx.restore();
 }
 
-function frame(now) {
-  if (disposed) return;
+// Failure safety: nothing a frame does may stop the loop (frame-guard.mjs). A
+// throw is reported once per run to the parent and the next animation frame is
+// always requested.
+const frameLoop = createGuardedFrameLoop({
+  step: (now) => stepFrame(now),
+  schedule: (next) => requestAnimationFrame(next),
+  isDisposed: () => disposed,
+  onError: (error) => send('game:error', { code: 'runtime-error', message: error instanceof Error ? error.message.slice(0, 240) : 'Runtime failure' }),
+});
+const frame = frameLoop.frame;
+
+// A run whose result could not be finished still gets a usable result screen:
+// no stale score from the previous run, and Run Again is enabled.
+function showUnfinishedRun() {
+  resultEyebrow.textContent = 'Run could not be finished';
+  resultScore.textContent = String(latestSnapshot?.score ?? 0);
+  resultCopy.textContent = 'Something went wrong while finishing this flight, so it was not recorded here. Run Again to fly a new one.';
+  resultStats.replaceChildren();
+  restartButton.disabled = false;
+  restartButton.textContent = 'Run Again';
+}
+
+function stepFrame(now) {
   if (!previousFrameAt) previousFrameAt = now;
   const elapsed = Math.min(100, Math.max(0, now - previousFrameAt));
   previousFrameAt = now;
@@ -706,13 +729,13 @@ function frame(now) {
       lastStateTick = latestSnapshot.tick;
       sendState('running');
     }
-    if (runtime.terminal) finishRun();
+    if (runtime.terminal) finishRunSafely(finishRun, { report: frameLoop.report, recover: showUnfinishedRun });
   } else if (phase === 'game-over' && replayPlaying && replayPlayback) {
     accumulator = Math.min(accumulator + elapsed * Number(replaySpeed.value), STEP_MS * MAX_CATCH_UP_STEPS);
     let steps = 0;
     while (accumulator >= STEP_MS && !replayPlayback.terminal && steps < MAX_CATCH_UP_STEPS) {
       const replayTick = replayPlayback.tick;
-      if (lastCompletedResult?.evidence?.flapSteps?.includes(replayTick)) { flapAge = 0; flapVelocity = latestSnapshot?.chikun?.velocityY ?? 0; }
+      if (replayPlayback.hasFlapAt(replayTick)) { flapAge = 0; flapVelocity = latestSnapshot?.chikun?.velocityY ?? 0; }
       latestSnapshot = replayPlayback.step();
       accumulator -= STEP_MS;
       steps += 1;
@@ -725,7 +748,6 @@ function frame(now) {
     }
   }
   draw(latestSnapshot);
-  if (!disposed) requestAnimationFrame(frame);
 }
 
 function handleParentMessage(event) {
@@ -748,7 +770,7 @@ function handleParentMessage(event) {
     prepareRun();
     phase = 'ready';
     startOverlay.classList.remove('is-hidden');
-    send('game:ready', { runtimeVersion: '0.8.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
+    send('game:ready', { runtimeVersion: '0.9.0', renderer: 'canvas-2d', capabilities: ['pause', 'restart', 'score-result', 'fullscreen'] });
     sendState('ready');
     setLive(`Ready for ${mode === 'ranked' ? 'Ranked' : 'Free'} Mode.`);
   } else if (message.type === 'portal:pause') togglePause('portal', true);
@@ -921,10 +943,10 @@ document.querySelector('#importReplayButton').addEventListener('click',()=>docum
 document.querySelector('#replayFile').addEventListener('change',async event=>{
  const file=event.target.files?.[0];event.target.value='';if(!file)return;
  try{
-  if(file.size>REPLAY_FILE_LIMIT)throw new Error('Replay file must be smaller than 64 KB.');
+  if(file.size>REPLAY_FILE_LIMIT)throw new Error('Replay file must be smaller than 256 KB.');
   const imported=importChikunReplay(await file.text());stopReplayViewer();lastCompletedResult=imported;ragdoll?.dispose();ragdoll=null;
   renderReplayTimeline(imported.evidence);resultScore.textContent=String(imported.score);resultStats.replaceChildren();document.querySelector('#runObjectives').textContent='';
-  resultEyebrow.textContent=['chikun-flap-evidence-v3','chikun-flap-evidence-v5'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
+  resultEyebrow.textContent=['chikun-flap-evidence-v3','chikun-flap-evidence-v5','chikun-flap-evidence-v6'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
   resultCopy.textContent='Playback only. This replay does not write a score, best, achievement or profile record.';startReplayViewer();
  }catch(error){setLive(error.message);resultCopy.textContent=error.message;}
 });

@@ -1,12 +1,16 @@
-import { createChikunRuntime, replayChikunRun } from '../../portal/src/chikun-cabinet.mjs';
+import { createChikunRuntime, flapTicksOf, replayChikunRun } from '../../portal/src/chikun-cabinet.mjs';
 
+// v6 evidence keeps its delta-encoded flaps; historical evidence keeps flapSteps.
 function cloneEvidence(evidence) {
+  const flaps = Array.isArray(evidence.flapDeltas)
+    ? { flapDeltas: Object.freeze([...evidence.flapDeltas]) }
+    : { flapSteps: Object.freeze([...(evidence.flapSteps ?? [])]) };
   return Object.freeze({
     version: evidence.version,
     seed: evidence.seed,
     fixedStepHz: evidence.fixedStepHz,
     maxTicks: evidence.maxTicks,
-    flapSteps: Object.freeze([...(evidence.flapSteps ?? [])]),
+    ...flaps,
   });
 }
 
@@ -19,7 +23,7 @@ export function replayPlayheadRatio(tick = 0, durationTicks = 1) {
 export function createChikunReplayPlayback(evidence) {
   const canonical = replayChikunRun(evidence);
   const frozenEvidence = cloneEvidence(canonical.evidence);
-  const flapSet = new Set(frozenEvidence.flapSteps);
+  const flapSet = new Set(flapTicksOf(frozenEvidence));
   let runtime = createChikunRuntime({
     seed: canonical.seed,
     maxTicks: frozenEvidence.maxTicks,
@@ -55,6 +59,7 @@ export function createChikunReplayPlayback(evidence) {
     result: canonical,
     evidence: frozenEvidence,
     snapshot: () => runtime.snapshot(),
+    hasFlapAt: (tick) => flapSet.has(tick),
     seek,
     step,
     reset,

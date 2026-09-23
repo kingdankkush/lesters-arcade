@@ -98,7 +98,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | Cabinet | Game ID | State | Summary |
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
-| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.8.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
+| Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.9.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
 | STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 

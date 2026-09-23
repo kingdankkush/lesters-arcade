@@ -1,0 +1,1318 @@
+{
+  "version": "chikun-difficulty-harness-v1",
+  "course": {
+    "evidenceVersion": "chikun-flap-evidence-v6",
+    "runtimeVersion": "canvas-runtime-v7",
+    "cabinetVersion": "0.9.0",
+    "speedRamp": [
+      {
+        "from": 0,
+        "to": 3600,
+        "slope": 5
+      },
+      {
+        "from": 3600,
+        "to": 9000,
+        "slope": 4
+      },
+      {
+        "from": 9000,
+        "to": 18000,
+        "slope": 1
+      },
+      {
+        "from": 18000,
+        "to": 25200,
+        "slope": 12
+      },
+      {
+        "from": 25200,
+        "to": 36000,
+        "slope": 6
+      },
+      {
+        "from": 36000,
+        "to": 43200,
+        "slope": 18
+      },
+      {
+        "from": 43200,
+        "to": 54000,
+        "slope": 8
+      },
+      {
+        "from": 54000,
+        "to": 216000,
+        "slope": 2
+      }
+    ],
+    "speedSlopeUnit": 65536,
+    "speedByMinute": {
+      "0": 1,
+      "1": 1.274658203125,
+      "2": 1.494384765625,
+      "3": 1.6317138671875,
+      "4": 1.6866455078125,
+      "5": 1.7415771484375,
+      "6": 2.4007568359375,
+      "7": 3.0599365234375,
+      "8": 3.3895263671875,
+      "10": 4.0487060546875,
+      "12": 6.0262451171875,
+      "15": 7.3446044921875,
+      "20": 7.8939208984375,
+      "30": 8.9925537109375,
+      "60": 12.2884521484375
+    },
+    "geometryRamp": {
+      "startIndex": 12,
+      "slots": 36
+    },
+    "lowPassages": "seeded per region visit (chikun-course-regions.mjs lowSlotsOf), so the loop cannot be memorised",
+    "portraitPreview": {
+      "px": 360,
+      "ticks": 50,
+      "maxPx": 1000
+    },
+    "courseDigest": "3b6d158c"
+  },
+  "seeds": "run i of every profile uses harnessSeed(i) = (imul(i + 1, 0x9e3779b1) ^ 0x2545f491) >>> 0; pilots use seeds 1..16",
+  "botModel": "scripts/lib/chikun-bots.mjs: delayed, viewport-filtered perception (portrait bots also read the in-game \"<KIND> AHEAD\" marker drawn at the screen edge); exact self-prediction from its own presses; beam search over target heights robust to +/- round(sigma) ticks; presses land at T + round(N(0, sigma)); one press in flight, presses >= 6 ticks apart; with nothing in sight a bot cruises at a per-run height drawn from 420-540 px (seeded, botCruiseY).",
+  "assumptions": [
+    "The bots do not memorise the course. Low passages are seeded per region visit, so there is nothing to memorise across seeds; only a daily-challenge seed replayed in Free practice can be learned.",
+    "The D11 figures describe players who see what the screen shows. A pilot that reads the whole runtime snapshot (obstacles far past the screen edge) is a solver: pilots.routePilotFullSnapshot survives the hour, and contract section 12 accepts solver risk for the testnet launch.",
+    "Deaths above expert still cluster where a high passage is followed by a low one at speed (see topDeathSlots). Seeded low passages and per-run cruise heights spread the percentiles, but achievement thresholds should be read from the p10-p90 range rather than one upper percentile.",
+    "Bot-sample medians ran on 24 logical CPUs with 16 workers; wall time scales roughly with 1 / workers."
+  ],
+  "botProfiles": [
+    {
+      "name": "novice",
+      "reactionDelayTicks": 24,
+      "jitterSigmaTicks": 5,
+      "lookAheadPx": 260,
+      "viewport": {
+        "orientation": "portrait",
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "name": "intermediate",
+      "reactionDelayTicks": 18,
+      "jitterSigmaTicks": 3.5,
+      "lookAheadPx": 360,
+      "viewport": {
+        "orientation": "portrait",
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "name": "expert",
+      "reactionDelayTicks": 12,
+      "jitterSigmaTicks": 2,
+      "lookAheadPx": 520,
+      "viewport": {
+        "orientation": "landscape",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "name": "hardcore",
+      "reactionDelayTicks": 8,
+      "jitterSigmaTicks": 1.2,
+      "lookAheadPx": 700,
+      "viewport": {
+        "orientation": "landscape",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "name": "exceptional",
+      "reactionDelayTicks": 5,
+      "jitterSigmaTicks": 0.8,
+      "lookAheadPx": 1000,
+      "viewport": {
+        "orientation": "landscape",
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "botChanges": [],
+  "botModelChanges": [
+    {
+      "change": "Portrait bots read the in-game \"<KIND> AHEAD\" marker whatever their lookAheadPx.",
+      "reason": "The marker is drawn at the right edge of the phone screen, inside every portrait look-ahead, so filtering it by look-ahead understated what portrait players see. The marker itself now previews at most 360 px ahead (50 ticks at speed, never past the landscape screen), so a phone never gets more warning than landscape play."
+    },
+    {
+      "change": "Cruise height is drawn per run from 420-540 px instead of a fixed 480 px.",
+      "reason": "One cruise constant decided which low passages were free (480 px sat 10 px under the shallowest low passage). A spread of habits keeps the percentiles from hinging on it; cruiseSensitivity reports the medians at fixed heights."
+    }
+  ],
+  "command": "node scripts/chikun-difficulty-harness.mjs --runs 200",
+  "runsPerProfile": 200,
+  "capMinutes": 60,
+  "maxTicks": 216000,
+  "elapsedSeconds": 292.8,
+  "botElapsedSeconds": 277.6,
+  "environment": {
+    "cpus": 24,
+    "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900K",
+    "workers": 16,
+    "node": "v24.17.0",
+    "platform": "win32"
+  },
+  "profiles": {
+    "novice": {
+      "runs": 200,
+      "survivalMinutes": {
+        "p10": 1.485,
+        "p25": 2.613,
+        "p50": 3.418,
+        "p75": 4.405,
+        "p90": 5.434,
+        "p95": 5.526,
+        "p99": 5.9
+      },
+      "over15MinutesFraction": 0,
+      "deathCauses": {
+        "storm": 113,
+        "canopy": 31,
+        "tree": 15,
+        "forest": 13,
+        "town": 10,
+        "log": 7,
+        "rock": 4,
+        "pipe": 3,
+        "crate": 1,
+        "hurdle": 1,
+        "shiba": 1,
+        "waterfall": 1
+      },
+      "deathRegions": {
+        "forest": 37,
+        "suburbs": 34,
+        "farmland": 33,
+        "city": 30,
+        "industrial": 29,
+        "coast": 27,
+        "town": 10
+      },
+      "topDeathSlots": {
+        "coast#4 lap 1": 16,
+        "city#7 lap 1": 12,
+        "farmland#6 lap 2": 11,
+        "industrial#1 lap 1": 11,
+        "forest#2 lap 2": 10,
+        "industrial#4 lap 1": 10,
+        "suburbs#2 lap 1": 10,
+        "suburbs#4 lap 1": 9
+      },
+      "stats": {
+        "score": {
+          "p10": 5977.5,
+          "p50": 13956,
+          "p90": 22242.5,
+          "p99": 24058.51
+        },
+        "forksPassed": {
+          "p10": 14.9,
+          "p50": 35.5,
+          "p90": 57,
+          "p99": 62.01
+        },
+        "nearMisses": {
+          "p10": 0,
+          "p50": 2,
+          "p90": 4.1,
+          "p99": 7
+        },
+        "coinsCollected": {
+          "p10": 19,
+          "p50": 49,
+          "p90": 75,
+          "p99": 85
+        },
+        "bestCombo": {
+          "p10": 2,
+          "p50": 4,
+          "p90": 6.1,
+          "p99": 8
+        },
+        "nearMissStreakBest": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 2,
+          "p99": 2.01
+        },
+        "flawlessRegions": {
+          "p10": 1,
+          "p50": 3,
+          "p90": 6,
+          "p99": 7.01
+        },
+        "distanceMeters": {
+          "p10": 1538.8,
+          "p50": 4139.5,
+          "p90": 7167,
+          "p99": 8045.91
+        },
+        "regionIndexReached": {
+          "p10": 0,
+          "p50": 3,
+          "p90": 6,
+          "p99": 6
+        },
+        "laps": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 1
+        },
+        "speedMultiplierReached": {
+          "p10": 1.379,
+          "p50": 1.655,
+          "p90": 2.03,
+          "p99": 2.331
+        }
+      },
+      "flapsPerMinute": {
+        "p50": 51.779,
+        "p99": 57.218
+      },
+      "loop0RegionIndexReached": {
+        "p10": 1,
+        "p50": 5,
+        "p90": 6
+      },
+      "portraitMarkersSeen": {
+        "p10": 15.9,
+        "p50": 36.5
+      }
+    },
+    "intermediate": {
+      "runs": 200,
+      "survivalMinutes": {
+        "p10": 2.613,
+        "p25": 3.249,
+        "p50": 4.781,
+        "p75": 5.526,
+        "p90": 5.815,
+        "p95": 5.993,
+        "p99": 6.273
+      },
+      "over15MinutesFraction": 0,
+      "deathCauses": {
+        "storm": 129,
+        "canopy": 47,
+        "tree": 10,
+        "forest": 9,
+        "rock": 2,
+        "pipe": 1,
+        "log": 1,
+        "town": 1
+      },
+      "deathRegions": {
+        "forest": 63,
+        "farmland": 44,
+        "industrial": 26,
+        "coast": 26,
+        "city": 20,
+        "suburbs": 17,
+        "town": 4
+      },
+      "topDeathSlots": {
+        "forest#2 lap 2": 27,
+        "coast#4 lap 1": 25,
+        "farmland#6 lap 2": 17,
+        "industrial#3 lap 1": 14,
+        "forest#7 lap 2": 12,
+        "city#7 lap 1": 11,
+        "farmland#7 lap 2": 11,
+        "industrial#1 lap 1": 11
+      },
+      "stats": {
+        "score": {
+          "p10": 10704.5,
+          "p50": 19449,
+          "p90": 23915.1,
+          "p99": 25601.5
+        },
+        "forksPassed": {
+          "p10": 27,
+          "p50": 50,
+          "p90": 61.1,
+          "p99": 66
+        },
+        "nearMisses": {
+          "p10": 0,
+          "p50": 2,
+          "p90": 4,
+          "p99": 6
+        },
+        "coinsCollected": {
+          "p10": 38.9,
+          "p50": 68,
+          "p90": 85,
+          "p99": 97.01
+        },
+        "bestCombo": {
+          "p10": 3,
+          "p50": 5,
+          "p90": 7,
+          "p99": 10
+        },
+        "nearMissStreakBest": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 2.01
+        },
+        "flawlessRegions": {
+          "p10": 2,
+          "p50": 5,
+          "p90": 7,
+          "p99": 8
+        },
+        "distanceMeters": {
+          "p10": 3004,
+          "p50": 6132,
+          "p90": 7876.6,
+          "p99": 8837
+        },
+        "regionIndexReached": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 6,
+          "p99": 6
+        },
+        "laps": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 1
+        },
+        "speedMultiplierReached": {
+          "p10": 1.61,
+          "p50": 1.73,
+          "p90": 2.276,
+          "p99": 2.58
+        }
+      },
+      "flapsPerMinute": {
+        "p50": 53.853,
+        "p99": 58.542
+      },
+      "loop0RegionIndexReached": {
+        "p10": 3,
+        "p50": 6,
+        "p90": 6
+      },
+      "portraitMarkersSeen": {
+        "p10": 28,
+        "p50": 51
+      }
+    },
+    "expert": {
+      "runs": 200,
+      "survivalMinutes": {
+        "p10": 5.526,
+        "p25": 5.993,
+        "p50": 7.304,
+        "p75": 7.963,
+        "p90": 8.717,
+        "p95": 9.659,
+        "p99": 10.036
+      },
+      "over15MinutesFraction": 0,
+      "deathCauses": {
+        "storm": 122,
+        "canopy": 66,
+        "tree": 10,
+        "forest": 2
+      },
+      "deathRegions": {
+        "forest": 70,
+        "industrial": 47,
+        "suburbs": 26,
+        "city": 22,
+        "farmland": 13,
+        "coast": 11,
+        "town": 11
+      },
+      "topDeathSlots": {
+        "forest#7 lap 2": 25,
+        "forest#2 lap 2": 23,
+        "industrial#1 lap 2": 21,
+        "industrial#4 lap 2": 19,
+        "forest#5 lap 2": 16,
+        "suburbs#2 lap 2": 12,
+        "city#3 lap 2": 11,
+        "town#1 lap 2": 9
+      },
+      "stats": {
+        "score": {
+          "p10": 23188.5,
+          "p50": 30189.5,
+          "p90": 36590.1,
+          "p99": 41595.85
+        },
+        "forksPassed": {
+          "p10": 58,
+          "p50": 77,
+          "p90": 92,
+          "p99": 106
+        },
+        "nearMisses": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 4,
+          "p99": 6
+        },
+        "coinsCollected": {
+          "p10": 100,
+          "p50": 133,
+          "p90": 161,
+          "p99": 191.01
+        },
+        "bestCombo": {
+          "p10": 5,
+          "p50": 7,
+          "p90": 11,
+          "p99": 14.01
+        },
+        "nearMissStreakBest": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 2
+        },
+        "flawlessRegions": {
+          "p10": 7,
+          "p50": 8.5,
+          "p90": 12,
+          "p99": 13
+        },
+        "distanceMeters": {
+          "p10": 7332,
+          "p50": 11427,
+          "p90": 15568,
+          "p99": 19949
+        },
+        "regionIndexReached": {
+          "p10": 1,
+          "p50": 3,
+          "p90": 5,
+          "p99": 6
+        },
+        "laps": {
+          "p10": 1,
+          "p50": 1,
+          "p90": 1,
+          "p99": 2
+        },
+        "speedMultiplierReached": {
+          "p10": 2.09,
+          "p50": 3.16,
+          "p90": 3.63,
+          "p99": 4.08
+        }
+      },
+      "flapsPerMinute": {
+        "p50": 54.492,
+        "p99": 59.705
+      },
+      "loop0RegionIndexReached": {
+        "p10": 6,
+        "p50": 6,
+        "p90": 6
+      },
+      "portraitMarkersSeen": {
+        "p10": 0,
+        "p50": 0
+      }
+    },
+    "hardcore": {
+      "runs": 200,
+      "survivalMinutes": {
+        "p10": 7.587,
+        "p25": 7.963,
+        "p50": 9.047,
+        "p75": 10.318,
+        "p90": 10.703,
+        "p95": 11.258,
+        "p99": 11.825
+      },
+      "over15MinutesFraction": 0,
+      "deathCauses": {
+        "storm": 150,
+        "canopy": 50
+      },
+      "deathRegions": {
+        "forest": 54,
+        "coast": 43,
+        "industrial": 39,
+        "farmland": 22,
+        "suburbs": 21,
+        "town": 13,
+        "city": 8
+      },
+      "topDeathSlots": {
+        "coast#5 lap 2": 32,
+        "industrial#4 lap 2": 24,
+        "forest#5 lap 3": 20,
+        "forest#2 lap 3": 19,
+        "forest#7 lap 3": 15,
+        "industrial#1 lap 2": 13,
+        "suburbs#2 lap 2": 12,
+        "coast#4 lap 2": 11
+      },
+      "stats": {
+        "score": {
+          "p10": 32364.5,
+          "p50": 38804.5,
+          "p90": 45491.4,
+          "p99": 50512.83
+        },
+        "forksPassed": {
+          "p10": 80,
+          "p50": 95.5,
+          "p90": 113.1,
+          "p99": 125.02
+        },
+        "nearMisses": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 3,
+          "p99": 5.01
+        },
+        "coinsCollected": {
+          "p10": 168,
+          "p50": 204,
+          "p90": 235,
+          "p99": 263.06
+        },
+        "bestCombo": {
+          "p10": 6,
+          "p50": 9,
+          "p90": 14,
+          "p99": 19.03
+        },
+        "nearMissStreakBest": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 2
+        },
+        "flawlessRegions": {
+          "p10": 10,
+          "p50": 13,
+          "p90": 14,
+          "p99": 16
+        },
+        "distanceMeters": {
+          "p10": 12209,
+          "p50": 16625,
+          "p90": 22492.9,
+          "p99": 27628.67
+        },
+        "regionIndexReached": {
+          "p10": 0,
+          "p50": 4,
+          "p90": 6,
+          "p99": 6
+        },
+        "laps": {
+          "p10": 1,
+          "p50": 1.5,
+          "p90": 2,
+          "p99": 2
+        },
+        "speedMultiplierReached": {
+          "p10": 3.25,
+          "p50": 3.735,
+          "p90": 4.74,
+          "p99": 5.852
+        }
+      },
+      "flapsPerMinute": {
+        "p50": 53.495,
+        "p99": 59.239
+      },
+      "loop0RegionIndexReached": {
+        "p10": 6,
+        "p50": 6,
+        "p90": 6
+      },
+      "portraitMarkersSeen": {
+        "p10": 0,
+        "p50": 0
+      }
+    },
+    "exceptional": {
+      "runs": 200,
+      "survivalMinutes": {
+        "p10": 10.506,
+        "p25": 11.258,
+        "p50": 11.823,
+        "p75": 12.579,
+        "p90": 14.181,
+        "p95": 14.842,
+        "p99": 15.698
+      },
+      "over15MinutesFraction": 0.04,
+      "deathCauses": {
+        "storm": 122,
+        "canopy": 70,
+        "tree": 7,
+        "forest": 1
+      },
+      "deathRegions": {
+        "city": 59,
+        "industrial": 50,
+        "forest": 34,
+        "suburbs": 21,
+        "town": 13,
+        "farmland": 12,
+        "coast": 11
+      },
+      "topDeathSlots": {
+        "city#4 lap 3": 24,
+        "industrial#4 lap 3": 21,
+        "industrial#3 lap 3": 20,
+        "city#3 lap 3": 14,
+        "city#7 lap 3": 14,
+        "forest#7 lap 3": 13,
+        "forest#5 lap 3": 8,
+        "industrial#1 lap 3": 8
+      },
+      "stats": {
+        "score": {
+          "p10": 46126.6,
+          "p50": 52137,
+          "p90": 61344.5,
+          "p99": 67837.85
+        },
+        "forksPassed": {
+          "p10": 111,
+          "p50": 125,
+          "p90": 150,
+          "p99": 166.07
+        },
+        "nearMisses": {
+          "p10": 0,
+          "p50": 2,
+          "p90": 4,
+          "p99": 6
+        },
+        "coinsCollected": {
+          "p10": 284.9,
+          "p50": 321.5,
+          "p90": 367,
+          "p99": 418.03
+        },
+        "bestCombo": {
+          "p10": 8,
+          "p50": 11,
+          "p90": 17,
+          "p99": 25.02
+        },
+        "nearMissStreakBest": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 2
+        },
+        "flawlessRegions": {
+          "p10": 14,
+          "p50": 16,
+          "p90": 19,
+          "p99": 22
+        },
+        "distanceMeters": {
+          "p10": 21700,
+          "p50": 27619,
+          "p90": 40786,
+          "p99": 50307.6
+        },
+        "regionIndexReached": {
+          "p10": 1,
+          "p50": 3,
+          "p90": 5,
+          "p99": 6
+        },
+        "laps": {
+          "p10": 2,
+          "p50": 2,
+          "p90": 3,
+          "p99": 3
+        },
+        "speedMultiplierReached": {
+          "p10": 4.55,
+          "p50": 5.85,
+          "p90": 6.98,
+          "p99": 7.421
+        }
+      },
+      "flapsPerMinute": {
+        "p50": 53.449,
+        "p99": 57.825
+      },
+      "loop0RegionIndexReached": {
+        "p10": 6,
+        "p50": 6,
+        "p90": 6
+      },
+      "portraitMarkersSeen": {
+        "p10": 0,
+        "p50": 0
+      }
+    }
+  },
+  "hoverPilot": {
+    "seeds": 16,
+    "medianMinutes": 2.061,
+    "maxMinutes": 7.399,
+    "over15Minutes": 0,
+    "flapsPerMinute": 89.842,
+    "causes": {
+      "plane": 16
+    }
+  },
+  "pilots": {
+    "coursePilot": {
+      "seeds": 16,
+      "medianMinutes": 2.061,
+      "maxMinutes": 7.399,
+      "over15Minutes": 0,
+      "flapsPerMinute": 89.842,
+      "causes": {
+        "plane": 16
+      }
+    },
+    "routePilotLandscape": {
+      "seeds": 16,
+      "medianMinutes": 8.811,
+      "maxMinutes": 10.694,
+      "over15Minutes": 0,
+      "flapsPerMinute": 91.29,
+      "causes": {
+        "storm": 15,
+        "canopy": 1
+      }
+    },
+    "routePilotPortrait": {
+      "seeds": 16,
+      "medianMinutes": 2.191,
+      "maxMinutes": 3.744,
+      "over15Minutes": 0,
+      "flapsPerMinute": 91.077,
+      "causes": {
+        "storm": 11,
+        "canopy": 5
+      }
+    },
+    "routePilotFullSnapshot": {
+      "seeds": 16,
+      "medianMinutes": 60,
+      "maxMinutes": 60,
+      "over15Minutes": 16,
+      "flapsPerMinute": 95.009,
+      "causes": {
+        "run-complete": 16
+      }
+    }
+  },
+  "acceptance": {
+    "pass": true,
+    "checks": [
+      {
+        "name": "novice median survival 2-4 min",
+        "pass": true,
+        "value": 3.418
+      },
+      {
+        "name": "intermediate median survival 4-6 min",
+        "pass": true,
+        "value": 4.781
+      },
+      {
+        "name": "expert median survival 6-8 min",
+        "pass": true,
+        "value": 7.304
+      },
+      {
+        "name": "hardcore median survival 8-12 min",
+        "pass": true,
+        "value": 9.047
+      },
+      {
+        "name": "exceptional median survival 10-14 min",
+        "pass": true,
+        "value": 11.823
+      },
+      {
+        "name": "novice p10 at least 1.0 min",
+        "pass": true,
+        "value": 1.485
+      },
+      {
+        "name": "exceptional at most 10% of runs over 15 min",
+        "pass": true,
+        "value": 0.04
+      },
+      {
+        "name": "hardcore at most 2% of runs over 15 min",
+        "pass": true,
+        "value": 0
+      },
+      {
+        "name": "median hardcore run reaches region index 6 (coast) in loop 0",
+        "pass": true,
+        "value": 6
+      },
+      {
+        "name": "portrait bots read the in-game marker (median markers seen > 0)",
+        "pass": true,
+        "value": [
+          36.5,
+          51
+        ]
+      },
+      {
+        "name": "12,000-flap cap >= 1.25 x 60 x fastest flaps per minute (bot p99 and hover pilots)",
+        "pass": true,
+        "value": 7126
+      },
+      {
+        "name": "coursePilot (hover at y <= 100) median under 4 min across 16 seeds",
+        "pass": true,
+        "value": 2.061
+      },
+      {
+        "name": "routePilotLandscape (hover that dips under planes, on-screen information and a reaction delay) never passes 15 min and has a median of at most 12 min",
+        "pass": true,
+        "value": [
+          8.811,
+          10.694
+        ]
+      },
+      {
+        "name": "routePilotPortrait (hover that dips under planes, on-screen information and a reaction delay) never passes 15 min and has a median of at most 12 min",
+        "pass": true,
+        "value": [
+          2.191,
+          3.744
+        ]
+      }
+    ]
+  },
+  "cruiseSensitivity": {
+    "command": "node scripts/chikun-difficulty-harness.mjs --sensitivity --runs 48",
+    "runsPerProfile": 48,
+    "capMinutes": 60,
+    "note": "Median survival minutes with every run at one fixed cruise height instead of the per-run CHIKUN_BOT_CRUISE_RANGE draw.",
+    "medianMinutesByCruiseY": {
+      "420": {
+        "novice": 2.144,
+        "intermediate": 2.801,
+        "expert": 6.741,
+        "hardcore": 9.282,
+        "exceptional": 10.694
+      },
+      "480": {
+        "novice": 3.697,
+        "intermediate": 4.312,
+        "expert": 7.304,
+        "hardcore": 8.811,
+        "exceptional": 11.917
+      },
+      "540": {
+        "novice": 4.215,
+        "intermediate": 4.875,
+        "expert": 7.963,
+        "hardcore": 10.036,
+        "exceptional": 13.191
+      }
+    },
+    "elapsedSeconds": 202.5,
+    "environment": {
+      "cpus": 24,
+      "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900K",
+      "workers": 16,
+      "node": "v24.17.0",
+      "platform": "win32"
+    }
+  },
+  "baseline": {
+    "course": "chikun-flap-evidence-v5 (frozen v5 course, cabinet 0.8.0)",
+    "command": "node scripts/chikun-difficulty-harness.mjs --course v5 --baseline --runs 200 --cap-minutes 40",
+    "runsPerProfile": 200,
+    "capMinutes": 40,
+    "maxTicks": 144000,
+    "elapsedSeconds": 339.6,
+    "profiles": {
+      "novice": {
+        "runs": 200,
+        "survivalMinutes": {
+          "p10": 0.38,
+          "p25": 0.38,
+          "p50": 0.38,
+          "p75": 1.034,
+          "p90": 1.783,
+          "p95": 2.251,
+          "p99": 3.001
+        },
+        "over15MinutesFraction": 0,
+        "deathCauses": {
+          "storm": 163,
+          "canopy": 29,
+          "tree": 3,
+          "rock": 2,
+          "waterfall": 1,
+          "pit": 1,
+          "crate": 1
+        },
+        "stats": {
+          "score": {
+            "p10": 1448,
+            "p50": 1473,
+            "p90": 7331,
+            "p99": 12341.4
+          },
+          "forksPassed": {
+            "p10": 3,
+            "p50": 3,
+            "p90": 18,
+            "p99": 31
+          },
+          "nearMisses": {
+            "p10": 0,
+            "p50": 0,
+            "p90": 2.1,
+            "p99": 5.01
+          },
+          "coinsCollected": {
+            "p10": 2,
+            "p50": 3,
+            "p90": 26,
+            "p99": 44.05
+          },
+          "bestCombo": {
+            "p10": 3,
+            "p50": 3,
+            "p90": 18,
+            "p99": 31
+          },
+          "nearMissStreakBest": null,
+          "flawlessRegions": null,
+          "distanceMeters": {
+            "p10": 336,
+            "p50": 336,
+            "p90": 1711,
+            "p99": 3079
+          },
+          "regionIndexReached": null,
+          "laps": null,
+          "speedMultiplierReached": {
+            "p10": 1.05,
+            "p50": 1.05,
+            "p90": 1.22,
+            "p99": 1.38
+          }
+        },
+        "flapsPerMinute": {
+          "p50": 55.531,
+          "p99": 66.336
+        }
+      },
+      "intermediate": {
+        "runs": 200,
+        "survivalMinutes": {
+          "p10": 3.001,
+          "p25": 3.001,
+          "p50": 5.538,
+          "p75": 6.008,
+          "p90": 6.76,
+          "p95": 8.831,
+          "p99": 9.403
+        },
+        "over15MinutesFraction": 0,
+        "deathCauses": {
+          "storm": 99,
+          "canopy": 89,
+          "forest": 4,
+          "log": 3,
+          "town": 3,
+          "tree": 1,
+          "pipe": 1
+        },
+        "stats": {
+          "score": {
+            "p10": 12479,
+            "p50": 22906.5,
+            "p90": 28226.5,
+            "p99": 39115.59
+          },
+          "forksPassed": {
+            "p10": 31,
+            "p50": 58,
+            "p90": 71,
+            "p99": 99.07
+          },
+          "nearMisses": {
+            "p10": 0,
+            "p50": 2,
+            "p90": 5,
+            "p99": 8.01
+          },
+          "coinsCollected": {
+            "p10": 53,
+            "p50": 90,
+            "p90": 119,
+            "p99": 162.01
+          },
+          "bestCombo": {
+            "p10": 31,
+            "p50": 58,
+            "p90": 71,
+            "p99": 99.07
+          },
+          "nearMissStreakBest": null,
+          "flawlessRegions": null,
+          "distanceMeters": {
+            "p10": 3079,
+            "p50": 6440,
+            "p90": 8308,
+            "p99": 12898.62
+          },
+          "regionIndexReached": null,
+          "laps": null,
+          "speedMultiplierReached": {
+            "p10": 1.38,
+            "p50": 1.69,
+            "p90": 1.85,
+            "p99": 2.171
+          }
+        },
+        "flapsPerMinute": {
+          "p50": 56.063,
+          "p99": 59.472
+        }
+      },
+      "expert": {
+        "runs": 200,
+        "survivalMinutes": {
+          "p10": 10.056,
+          "p25": 10.056,
+          "p50": 10.904,
+          "p75": 11.281,
+          "p90": 15.052,
+          "p95": 15.066,
+          "p99": 16.568
+        },
+        "over15MinutesFraction": 0.11,
+        "deathCauses": {
+          "canopy": 118,
+          "storm": 80,
+          "pipe": 1,
+          "crate": 1
+        },
+        "stats": {
+          "score": {
+            "p10": 42335,
+            "p50": 45980.5,
+            "p90": 63322.5,
+            "p99": 69718.21
+          },
+          "forksPassed": {
+            "p10": 106,
+            "p50": 115,
+            "p90": 159,
+            "p99": 175.08
+          },
+          "nearMisses": {
+            "p10": 0,
+            "p50": 2,
+            "p90": 5,
+            "p99": 6.01
+          },
+          "coinsCollected": {
+            "p10": 201,
+            "p50": 219.5,
+            "p90": 295.2,
+            "p99": 328.01
+          },
+          "bestCombo": {
+            "p10": 106,
+            "p50": 115,
+            "p90": 159,
+            "p99": 175.08
+          },
+          "nearMissStreakBest": null,
+          "flawlessRegions": null,
+          "distanceMeters": {
+            "p10": 14148,
+            "p50": 15848.5,
+            "p90": 25238,
+            "p99": 29138.32
+          },
+          "regionIndexReached": null,
+          "laps": null,
+          "speedMultiplierReached": {
+            "p10": 2.26,
+            "p50": 2.365,
+            "p90": 2.88,
+            "p99": 3.071
+          }
+        },
+        "flapsPerMinute": {
+          "p50": 55.951,
+          "p99": 57.378
+        }
+      },
+      "hardcore": {
+        "runs": 200,
+        "survivalMinutes": {
+          "p10": 15.731,
+          "p25": 15.806,
+          "p50": 19.108,
+          "p75": 20.334,
+          "p90": 21.844,
+          "p95": 22.41,
+          "p99": 22.987
+        },
+        "over15MinutesFraction": 0.95,
+        "deathCauses": {
+          "canopy": 104,
+          "storm": 96
+        },
+        "stats": {
+          "score": {
+            "p10": 67626.9,
+            "p50": 82414.5,
+            "p90": 93762.5,
+            "p99": 99501.12
+          },
+          "forksPassed": {
+            "p10": 166.2,
+            "p50": 202,
+            "p90": 231,
+            "p99": 243.12
+          },
+          "nearMisses": {
+            "p10": 1,
+            "p50": 3,
+            "p90": 6,
+            "p99": 9
+          },
+          "coinsCollected": {
+            "p10": 370,
+            "p50": 453,
+            "p90": 507.5,
+            "p99": 555.11
+          },
+          "bestCombo": {
+            "p10": 166.2,
+            "p50": 202,
+            "p90": 231,
+            "p99": 243.12
+          },
+          "nearMissStreakBest": null,
+          "flawlessRegions": null,
+          "distanceMeters": {
+            "p10": 26956.1,
+            "p50": 36224,
+            "p90": 44639,
+            "p99": 48395.58
+          },
+          "regionIndexReached": null,
+          "laps": null,
+          "speedMultiplierReached": {
+            "p10": 2.97,
+            "p50": 3.39,
+            "p90": 3.73,
+            "p99": 3.871
+          }
+        },
+        "flapsPerMinute": {
+          "p50": 55.295,
+          "p99": 56.591
+        }
+      },
+      "exceptional": {
+        "runs": 200,
+        "survivalMinutes": {
+          "p10": 28.639,
+          "p25": 28.639,
+          "p50": 29.394,
+          "p75": 33.453,
+          "p90": 34.68,
+          "p95": 35.435,
+          "p99": 35.435
+        },
+        "over15MinutesFraction": 0.995,
+        "deathCauses": {
+          "canopy": 101,
+          "storm": 98,
+          "forest": 1
+        },
+        "stats": {
+          "score": {
+            "p10": 126975,
+            "p50": 130904.5,
+            "p90": 153715.5,
+            "p99": 157791
+          },
+          "forksPassed": {
+            "p10": 303,
+            "p50": 311,
+            "p90": 367,
+            "p99": 375
+          },
+          "nearMisses": {
+            "p10": 2,
+            "p50": 4.5,
+            "p90": 8,
+            "p99": 10.01
+          },
+          "coinsCollected": {
+            "p10": 834.9,
+            "p50": 873.5,
+            "p90": 1006.2,
+            "p99": 1046.01
+          },
+          "bestCombo": {
+            "p10": 303,
+            "p50": 311,
+            "p90": 367,
+            "p99": 375
+          },
+          "nearMissStreakBest": null,
+          "flawlessRegions": null,
+          "distanceMeters": {
+            "p10": 69033,
+            "p50": 72051,
+            "p90": 94908,
+            "p99": 98421
+          },
+          "regionIndexReached": null,
+          "laps": null,
+          "speedMultiplierReached": {
+            "p10": 4.58,
+            "p50": 4.67,
+            "p90": 5.33,
+            "p99": 5.43
+          }
+        },
+        "flapsPerMinute": {
+          "p50": 55.148,
+          "p99": 56.385
+        }
+      }
+    }
+  }
+}

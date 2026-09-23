@@ -1,3 +1,5 @@
+import { flapTicksOf } from '../../portal/src/chikun-cabinet.mjs';
+
 // Mode-screen teases (owner direction 2026-09-16). Free Mode never mentions a
 // wallet or Web3; Ranked also teases the coming high-score rewards.
 export const CHIKUN_DAILY_TEASE = 'Daily Challenge — coming soon';
@@ -20,7 +22,8 @@ export function buildChikunReplayTimeline(evidence = {}, binCount = 24) {
   const safeBinCount = Math.max(1, Math.min(64, Math.floor(Number(binCount) || 24)));
   const maxTicks = Math.max(1, Math.floor(Number(evidence.maxTicks) || 1));
   const bins = Array.from({ length: safeBinCount }, () => 0);
-  const steps = Array.isArray(evidence.flapSteps) ? evidence.flapSteps : [];
+  let steps = [];
+  try { steps = flapTicksOf(evidence); } catch { steps = []; }
   for (const raw of steps) {
     const step = Math.max(0, Math.min(maxTicks - 1, Math.floor(Number(raw) || 0)));
     bins[Math.min(safeBinCount - 1, Math.floor((step / maxTicks) * safeBinCount))] += 1;

@@ -19,8 +19,8 @@ test('incremental Chikun runtime and canonical replay produce the same terminal 
   const replay = simulateChikunRun({ seed: 20260807, taps, maxTicks: 300 });
 
   assert.deepEqual(incremental, replay);
-  assert.equal(incremental.evidence.flapSteps.length > 0, true);
-  assert.deepEqual(incremental.evidence.flapSteps, replay.evidence.flapSteps);
+  assert.equal(incremental.evidence.flapDeltas.length > 0, true);
+  assert.deepEqual(incremental.evidence.flapDeltas, replay.evidence.flapDeltas);
   assert.equal(runtime.snapshot().terminal, true);
 });
 
@@ -57,13 +57,13 @@ test('Chikun difficulty follows elapsed time without shrinking gaps', () => {
   assert.ok(later.scrollPixelsPerTick >= opening.difficulty.scrollPixelsPerTick);
   assert.ok(later.safeGapHeight <= opening.difficulty.safeGapHeight);
   assert.ok(later.safeGapHeight >= 238);
-  assert.ok(later.scrollPixelsPerTick === 4.8);
+  assert.ok(later.scrollPixelsPerTick === 2.4 * 3.3895263671875, 'eight minutes in, the tuned ramp runs at 3.39x');
   assert.equal(Object.isFrozen(later), true);
 });
 
 test('near-miss scoring is deterministic, bounded, and included in terminal results', () => {
-  // Jump at 334, flap at 342: skims the opening farmland hurdle for a near miss.
-  const a = simulateChikunRun({seed:1,taps:[334,342],maxTicks:470});
+  // Jump at 322, flap at 337: skims the opening farmland hurdle for a near miss.
+  const a = simulateChikunRun({seed:1,taps:[322,337],maxTicks:470});
   const b = replayChikunRun(a.evidence);
 
   assert.deepEqual(a, b);

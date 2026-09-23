@@ -31,8 +31,10 @@ test('reduced motion keeps restrained event feedback but removes shake and flash
 });
 
 test('replay timeline bins bounded canonical flap evidence without copying every tick', () => {
-  const evidence = { maxTicks: 120, flapSteps: [0, 1, 29, 30, 31, 60, 90, 119] };
+  const evidence = { version: 'chikun-flap-evidence-v6', maxTicks: 120, flapDeltas: [0, 1, 28, 1, 1, 29, 30, 29] };
   const timeline = buildChikunReplayTimeline(evidence, 4);
+  assert.deepEqual(buildChikunReplayTimeline({ maxTicks: 120, flapSteps: [0, 1, 29, 30, 31, 60, 90, 119] }, 4).bins, [3, 2, 1, 2], 'historical flapSteps bin the same way');
+  assert.equal(buildChikunReplayTimeline({ maxTicks: 120, flapDeltas: [5, 0] }, 4).totalFlaps, 0, 'malformed deltas draw an empty timeline');
   assert.deepEqual(timeline.bins, [3, 2, 1, 2]);
   assert.equal(timeline.peak, 3);
   assert.equal(timeline.totalFlaps, 8);

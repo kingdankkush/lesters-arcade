@@ -36,6 +36,8 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/chikun-ground-runtime.mjs",
     "apps/portal/src/chikun-ground-v3-course.mjs",
     "apps/portal/src/chikun-ground-v3-runtime.mjs",
+    "apps/portal/src/chikun-ground-v5-course.mjs",
+    "apps/portal/src/chikun-ground-v5-runtime.mjs",
     "apps/portal/src/chikun-host.mjs",
     "apps/portal/src/chikun-obstacles.mjs",
     "apps/portal/src/chikun-portal-lifecycle.mjs",

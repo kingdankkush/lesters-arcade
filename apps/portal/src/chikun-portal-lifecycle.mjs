@@ -1,4 +1,4 @@
-import { verifyChikunReplayClaim } from './chikun-cabinet.mjs';
+import { flapTicksOf, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
 
 function normalizeResultPayload(payload = {}) {
   return {
@@ -11,7 +11,7 @@ function normalizeResultPayload(payload = {}) {
       forksPassed: payload.forksPassed,
       nearMisses: payload.nearMisses,
       bestCombo: payload.bestCombo,
-      flapCount: payload.evidence?.flapSteps?.length ?? 0,
+      flapCount: payload.evidence ? flapTicksOf(payload.evidence).length : 0,
       achievements: payload.achievements,
       replayClaim: payload.replayClaim,
     },

@@ -208,8 +208,9 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       const img=images.get(CHIKUN_CLIPS[current].sheet)??images.get('cruise')??images.values().next().value,incoming=hasComposite?blend:1;
       if(hasComposite && blend<1){mixCtx.globalAlpha=1-blend;mixCtx.drawImage(outgoing,0,0);}
       let seconds=age;
-      const motionAge=(tick-(bird.motionTick??0))/60,speed=snapshot.difficulty?.speedMultiplier??1;
-      if(GROUND_CLIPS.includes(current)){seconds=['run','walk'].includes(current)?tick/60*speed:current==='idle'?age:motionAge*(current==='jump_flight'?2.22:current.startsWith('land')?1.33:.85);}
+      // The stride follows distance covered (2.4 px per tick at 1x), so the feet keep pace with the ground as the speed ramps.
+      const motionAge=(tick-(bird.motionTick??0))/60,speed=snapshot.difficulty?.speedMultiplier??1,stride=(snapshot.distancePixels??tick*2.4*speed)/2.4;
+      if(GROUND_CLIPS.includes(current)){seconds=['run','walk'].includes(current)?stride/60:current==='idle'?age:motionAge*(current==='jump_flight'?2.22:current.startsWith('land')?1.33:.85);}
       if(CHIKUN_HIT_CLIPS.includes(current))seconds=options.terminalAge??0;
       if(current==='flare')seconds=clamp(1-chikunTicksToGround(bird)/16,0,1)*11/30;
       if(current==='brake')seconds=flapAge/.15*.4;
@@ -237,7 +238,7 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
         const v=bird.velocityY??0;
         if(grounded){
           target=clamp(-.035*(speed-1),-.06,0);
-          if(current==='walk'||current==='run')bob=-Math.abs(Math.sin(tick*speed*Math.PI/24))*(current==='run'?5:3);
+          if(current==='walk'||current==='run')bob=-Math.abs(Math.sin(stride*Math.PI/24))*(current==='run'?5:3);
         }
         else if(motion==='fall')target=.34;
         else if(current!=='flare'){
