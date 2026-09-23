@@ -373,6 +373,7 @@ const NODE_CHECK_FILES = [
   'tests/wallet-main-glue.test.mjs',
   'tests/integration-glue-signin.test.mjs',
   'tests/integration-glue-ranked.test.mjs',
+  'tests/integration-glue-copy.test.mjs',
   "apps/portal/src/combat-sprite-bridge.mjs",
   "apps/portal/src/canonical-actor-routing.mjs",
   "apps/portal/src/canonical-actors.mjs",

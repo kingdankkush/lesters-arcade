@@ -162,6 +162,14 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
       : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
     // Heading of the connected-wallet Ranked tooltip on the mode-select screen.
     modeRankedTooltip: live ? 'verified and published on LitVM' : 'local verified-preview mode',
+    // The Ranked entry modal's lead and footnote (prerendered, hidden until
+    // opened). The live pair is the one main.js requestRankedEntry shows.
+    rankedEntryCopy: live
+      ? 'One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.'
+      : 'Ranked preview: your wallet identifies this run on this device. Verified on-chain publishing remains disabled, so no transaction is sent and no zkLTC is charged.',
+    rankedEntryFootnote: live
+      ? 'The entry contract quotes the exact total. Testnet entries are not refunded.'
+      : 'The entry contract quotes the exact total before you confirm, and your wallet asks once. In this preview no transaction is sent.',
     // Game details "Free or Ranked?" (discover pages and the SPA game view).
     rankedDetail: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live
       ? `Free Mode is open to everyone and needs no wallet. Ranked costs ${total} testnet zkLTC per run; the arcade server ${game.id === 'lester-blaster' ? 'plausibility-checks each run (it is not replayed)' : 'replays each run from your inputs'} before publishing it on LitVM.`

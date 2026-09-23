@@ -191,6 +191,19 @@ test('public profile renders another wallet read-only', async () => {
   assert.doesNotMatch(page, /device-local|Cached Receipt|Trophy Room/i, 'hosted pages render index data only (A22)');
 });
 
+// integration-glue D18: the device-local STACKED facts ("Device-local
+// preview", "replay-verified on this device") are the preview profile's; the
+// hosted profile of a STACKED player shows the index's verified stats only.
+test('a hosted STACKED profile shows no device-local preview text', async () => {
+  const h = hostedProfile();
+  h.routeState.gameId = 'stacked';
+  await rendered(h);
+  h.route.renderProfile();
+  const shown = text(h.grid);
+  assert.match(shown, /Your Verified Profile/);
+  assert.doesNotMatch(shown, /Device-local|on this device\. Input labels|not online rankings|Local Ranked Runs|Score Source/i);
+});
+
 test('own profile shows the on-chain name editor only when deployed', async () => {
   const deployed = await rendered(hostedProfile());
   assert.equal(buttons(deployed, 'Check name & fee').length, 1);

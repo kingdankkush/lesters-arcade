@@ -427,7 +427,9 @@ test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteFor
   assert.equal(guest.connectors.some((connector) => connector.id === 'mock-wallet' && connector.safeForPrototype), true);
   assert.equal(guest.connectors.some((connector) => connector.id === 'injected-evm' && connector.available === false), true);
   assert.equal(ready.connectors.some((connector) => connector.id === 'injected-evm' && connector.recommended), true);
-  assert.deepEqual(guest.permissions.writeScopes, ['canonical local Ranked previews', 'local profile progress', 'local achievements', 'preview scores']);
+  // True with or without live settlement (integration-glue D19): no preview-only claim.
+  assert.deepEqual(guest.permissions.writeScopes, ['canonical Ranked run evidence', 'profile progress', 'achievements', 'Ranked scores']);
+  assert.doesNotMatch(`${guest.permissions.writeScopes.join(' ')} ${LESTER_ARCADE_WALLET_RAILS.permissions.paidModeRule}`, /preview|local|remains disabled/i);
   assert.equal(connectedRightChain.status, 'connected-valid-chain');
   assert.equal(connectedRightChain.wallet, '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd');
   assert.equal(connectedRightChain.walletShort, '0xabcdef…efabcd');
@@ -2029,9 +2031,13 @@ test('Chikun mode selection uses canonical title, supplied production art, and t
   assert.match(chikun.copy, /endless guest practice/i);
   assert.match(chikun.free.copy, /local score only/i);
   assert.equal(chikun.ranked.official, true);
-  assert.equal(chikun.ranked.requiresZkLtc, false);
+  // Ranked needs zkLTC in every game at launch, so the faucet link shows for
+  // Chikun too once SETTLEMENT_LIVE is on (integration-glue D16).
+  assert.equal(chikun.ranked.requiresZkLtc, true);
   assert.match(chikun.ranked.copy, /parent replay verification/i);
-  assert.match(chikun.ranked.copy, /on-chain publishing remains safely gated/i);
+  // The descriptor stays true in both flag states; the flag-driven wording is
+  // portal-content's (tests/portal-mode-select-copy.test.mjs).
+  assert.doesNotMatch(chikun.ranked.copy, /safely gated|preview|on this device|published|on-chain|LitVM/i);
   assert.match(chikun.free.bannerAlt, /bright blue sky.*green pipes/i);
   assert.match(chikun.ranked.bannerAlt, /stormy lightning sky.*green pipes/i);
   assert.equal(chikun.backgroundPosition, 'right center');

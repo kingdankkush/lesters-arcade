@@ -140,6 +140,21 @@ function hostedRoute({ indexApi, connectedWallet = null, routeState = { gameId: 
 const settle = () => new Promise((resolve) => setImmediate(resolve));
 const rowsOf = (grid) => find(grid, (candidate) => String(candidate.className ?? '').startsWith('leaderboard-trow'));
 
+// integration-glue D15: the device-local notices (STACKED's included) belong
+// to the preview board only; a hosted STACKED board never shows them.
+test('a hosted STACKED board carries no device-local notice', async () => {
+  const { LEADERBOARD_DEVICE_LOCAL_NOTICE, STACKED_LOCAL_NOTICE } = await import('../apps/portal/src/leaderboard-view.mjs');
+  const { indexApi } = e5Fixture({ total: 3 });
+  const h = hostedRoute({ indexApi, routeState: { gameId: 'stacked' } });
+  h.route.renderLeaderboards();
+  await h.route.hydrate();
+  h.route.renderLeaderboards();
+  const shown = text(h.grid);
+  assert.match(shown, /Verified Ranked runs published on LitVM/);
+  for (const notice of [STACKED_LOCAL_NOTICE, LEADERBOARD_DEVICE_LOCAL_NOTICE]) assert.equal(shown.includes(notice), false, notice);
+  assert.doesNotMatch(shown, /Device-local|self-reported|No fees, prizes or online ranking|this device/i);
+});
+
 test('the hosted leaderboard renders E5 rows with verified links', async () => {
   const { calls, indexApi } = e5Fixture({ total: 30 });
   const viewed = [];
