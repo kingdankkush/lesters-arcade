@@ -292,6 +292,7 @@ import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance, summarizeVisibleLeaderboardProvenance } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
 import { createProfileSync, buildProfileDocument, mergeRemoteProfile } from './src/profile-sync-client.mjs';
+import { createIndexApiClient } from './src/index-api-client.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
 const DEV_CABINETS_ENABLED = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('devCabinets') === '1';
@@ -1841,13 +1842,26 @@ let walletAuthChallenge = null;  // the SIWE challenge we last issued
 // wallet is the account and its profile follows it across devices. Every
 // call is best-effort; until the Vercel secrets exist the services answer
 // 503 and the portal keeps working from local storage exactly as before.
+// The server index owns every stat (guide §5.7): the browser syncs only
+// preferences, and a pull brings back the on-chain name and the saved hero,
+// never xp, run counts, achievements or runs. The v2 Bearer token is minted by
+// the wallet session of contract §7.6 (server nonce, then profileSync.login);
+// this block and the index client only read it, and a 401 discards it.
 const profileSync = createProfileSync({ storage: ARCADE_STORAGE });
 let profileSyncPulledFor = null;
 let profileSyncLastPushed = null;
+// Index reads and profile writes (§7.8). While HOSTED_PROFILE_SYNC is false
+// every call answers offline-preview without a request (A22).
+const indexApi = createIndexApiClient({
+  hosted: HOSTED_PROFILE_SYNC,
+  fetchImpl: (...args) => globalThis.fetch(...args),
+  getToken: () => profileSync.session?.token ?? null,
+  onUnauthorized: () => profileSync.logout(),
+});
 function currentProfileDocument() {
   if (!connectedWallet || walletConnector !== 'injected-evm') return null;
   const profile = state.profiles?.[connectedWallet];
-  return profile ? buildProfileDocument(profile, state.runHistory ?? []) : null;
+  return profile ? buildProfileDocument(profile) : null;
 }
 function pushProfileToCloudSoon() {
   if (!HOSTED_PROFILE_SYNC || !profileSync.hasSession(connectedWallet)) return;
@@ -1862,12 +1876,11 @@ async function pullProfileFromCloud(wallet) {
   if (!HOSTED_PROFILE_SYNC || !wallet || walletConnector !== 'injected-evm' || profileSyncPulledFor === wallet) return;
   profileSyncPulledFor = wallet;
   const pulled = await profileSync.pull(wallet);
-  if (!pulled.ok || !pulled.profile) return;
+  if (!pulled.ok) return;
   const profile = state.profiles?.[wallet];
   if (!profile) return;
-  const merged = mergeRemoteProfile(profile, pulled.profile, state.runHistory ?? []);
-  for (const run of merged.missingRuns) appendRunRecord(state, run);
-  debugRuntimeLog('[Profile] Hosted profile merged:', { changed: merged.changed, runs: merged.missingRuns.length });
+  const merged = mergeRemoteProfile(profile, pulled);
+  debugRuntimeLog('[Profile] Hosted profile merged:', { changed: merged.changed, self: pulled.self });
   if (merged.changed) {
     persistArcadeStateSoon();
     render();
