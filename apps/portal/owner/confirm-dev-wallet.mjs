@@ -158,7 +158,7 @@ export function createConfirmController({
     return String(await request('eth_chainId')).toLowerCase();
   }
 
-  async function checkAccountChainAndChain() {
+  async function checkChainAndAccount() {
     const chainId = await currentChainId();
     state.chainId = chainId;
     if (chainId !== LITEFORGE_CHAIN.chainIdHex) {
@@ -209,7 +209,7 @@ export function createConfirmController({
     try {
       set({ phase: 'connecting', message: 'Waiting for your wallet to share the account…' });
       await request('eth_requestAccounts');
-      if (!(await checkAccountChainAndChain())) return state;
+      if (!(await checkChainAndAccount())) return state;
       await refreshGates();
     } catch (error) {
       set({ phase: 'error', message: walletErrorMessage(error) });
@@ -255,7 +255,7 @@ export function createConfirmController({
     const game = state.games.find((entry) => !entry.devWalletConfirmed);
     if (!game) return state;
     try {
-      if (!(await checkAccountChainAndChain())) return state;
+      if (!(await checkChainAndAccount())) return state;
       const call = calls.find((entry) => entry.gameId === game.gameId);
       set({ phase: 'sending', message: `Confirm "${game.title}" in your wallet (confirmDevWallet, no zkLTC is transferred beyond gas).` });
       const hash = await request('eth_sendTransaction', [{ from: state.account, to: call.to, data: call.data }]);

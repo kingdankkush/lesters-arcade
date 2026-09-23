@@ -242,12 +242,15 @@ test('the operator CLI reads the key file inside the process and never prints it
 function fakeVercel({ production = [], preview = [], development = [], failAdd = null } = {}) {
   const tables = { production: new Set(production), preview: new Set(preview), development: new Set(development) };
   const calls = [];
-  const spawnImpl = (command, args, options) => {
+  const spawnImpl = (rawCommand, rawArgs, options) => {
     const child = new EventEmitter();
     child.stdin = new PassThrough();
     child.stdout = new PassThrough();
     child.stderr = new PassThrough();
-    const entry = { command, args: [...args], options, stdin: '' };
+    // With shell:true (npx.cmd on Windows) the runner passes one command string and no args.
+    const tokens = rawArgs.length ? [rawCommand, ...rawArgs] : String(rawCommand).split(' ');
+    const [command, ...args] = tokens;
+    const entry = { command, args, raw: { command: rawCommand, args: [...rawArgs] }, options, stdin: '' };
     calls.push(entry);
     child.stdin.on('data', (chunk) => { entry.stdin += chunk; });
     child.stdin.on('finish', () => {
@@ -344,8 +347,10 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
   assert.deepEqual(adds.map((call) => call.stdin), [keys.verifier, keys.relayer, deployment.addresses.scoreSubmissionRegistry, cronSecret, sessionSecret]);
   const secretValues = [keys.verifier, keys.relayer, cronSecret, sessionSecret];
   for (const call of fake.calls) {
-    assertNoSecret(`${call.command} ${JSON.stringify(call.args)} ${JSON.stringify(call.options)}`, secretValues, 'spawn command line');
+    assertNoSecret(`${call.raw.command} ${JSON.stringify(call.raw.args)} ${JSON.stringify(call.options)}`, secretValues, 'spawn command line');
     assert.deepEqual(call.options.stdio, ['pipe', 'pipe', 'pipe']);
+    // Through a shell (npx.cmd on Windows) the runner passes one validated command string, no args array.
+    if (call.options.shell) assert.deepEqual(call.raw.args, []);
   }
   assert.equal(readFileSync(cronOut, 'utf8').trim(), cronSecret, 'CRON_SECRET is written to the new file for live-cron');
   if (process.platform !== 'win32') assert.equal(statSync(cronOut).mode & 0o777, 0o600);

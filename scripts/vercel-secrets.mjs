@@ -52,9 +52,19 @@ export function defaultVercelCommand(bin = null) {
 
 // Runs one Vercel CLI command with piped stdio; `stdin` (a secret) is written to the child's stdin.
 export function createVercelRunner({ spawnImpl = spawn, command, baseArgs = [], shell = false, scope = null } = {}) {
+  if (scope !== null && !/^[A-Za-z0-9_-]+$/.test(scope)) throw new Error('--scope must be a Vercel team slug');
   return (args, { stdin = null } = {}) => new Promise((resolveRun, rejectRun) => {
     const fullArgs = [...baseArgs, ...args, ...(scope ? ['--scope', scope] : [])];
-    const child = spawnImpl(command, fullArgs, { stdio: ['pipe', 'pipe', 'pipe'], shell, windowsHide: true, env: process.env });
+    const options = { stdio: ['pipe', 'pipe', 'pipe'], shell, windowsHide: true, env: process.env };
+    let child;
+    if (shell) {
+      // Through the shell (npx.cmd on Windows) the command line is one string of fixed, validated
+      // tokens; values never appear in it.
+      for (const token of fullArgs) if (!/^[A-Za-z0-9_.:-]+$/.test(token)) throw new Error(`unsafe Vercel CLI argument ${JSON.stringify(token)}`);
+      child = spawnImpl([/\s/.test(command) ? `"${command}"` : command, ...fullArgs].join(' '), [], options);
+    } else {
+      child = spawnImpl(command, fullArgs, options);
+    }
     let stdout = '';
     let stderr = '';
     child.stdout?.on('data', (chunk) => { stdout += chunk; });
