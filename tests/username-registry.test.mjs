@@ -38,6 +38,32 @@ test('username charset restricted to letters/digits/space/_-.', () => {
   assert.equal(validateUsername('semi;colon').valid, false);
 });
 
+test('whitespace follows the on-chain handle rules: tabs and line breaks are invalid, spaces collapse', () => {
+  assert.deepEqual([validateUsername('  Cool   Player  ').valid, validateUsername('  Cool   Player  ').cleaned], [true, 'Cool Player']);
+  for (const raw of ['Cool\tPlayer', 'Cool\nPlayer', '\tCool Player', 'Cool Player\n', 'Cool\r\nPlayer', 'Cool\u00a0Player']) {
+    const verdict = validateUsername(raw);
+    assert.equal(verdict.valid, false, JSON.stringify(raw));
+    assert.equal(verdict.error, 'invalid-characters', JSON.stringify(raw));
+  }
+});
+
+test('validateUsername agrees with the on-chain handle rules for 500 fuzzed ASCII names', async () => {
+  const { normalizeHandle } = await import('../apps/portal/src/profile-chain.mjs');
+  let state = 0x2a17;
+  const next = () => { state = (Math.imul(state, 1103515245) + 12345) >>> 0; return state / 4294967296; };
+  const alphabet = 'abcXYZ019 _.-';
+  for (let i = 0; i < 500; i++) {
+    let raw = '';
+    const length = Math.floor(next() * 24);
+    for (let j = 0; j < length; j++) raw += next() < 0.1 ? String.fromCharCode(Math.floor(next() * 128)) : alphabet[Math.floor(next() * alphabet.length)];
+    const local = validateUsername(raw);
+    const onchain = normalizeHandle(raw);
+    if (local.error === 'blocked-term') continue; // moderation is a separate, stricter layer
+    assert.equal(local.valid, onchain.ok, `validity differs for ${JSON.stringify(raw)}`);
+    if (local.valid) assert.equal(local.cleaned, onchain.cleaned, 'the local editor stores what the chain editor sends');
+  }
+});
+
 test('vulgar / hate-speech names blocked, including leetspeak + separators', () => {
   assert.equal(validateUsername('fuckface').error, 'blocked-term');
   assert.equal(validateUsername('n1gg3r').error, 'blocked-term');
