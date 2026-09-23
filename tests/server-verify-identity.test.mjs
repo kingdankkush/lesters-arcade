@@ -5,7 +5,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bindRankedIdentity, computeEvidenceDigest, reverifyStoredRun, verifyRankedRun } from '../server/verify/index.mjs';
-import { ACHIEVEMENT_STATS_PATH, buildVerifiedRun, loadRunStatsMappers } from '../server/verify/verified-run.mjs';
+import { ACHIEVEMENT_STATS_PATH, RUN_STATS_MAPPER_NAMES, buildVerifiedRun, loadRunStatsMappers, resolveRunStatsMappers } from '../server/verify/verified-run.mjs';
 import { deriveSessionSeed } from '../apps/portal/src/session-seed.mjs';
 import { rankedSessionKey } from '../apps/portal/src/ranked-identity.mjs';
 import { decodeFlapDeltas } from '../apps/portal/src/chikun-cabinet.mjs';
@@ -197,10 +197,45 @@ test('scores above the contract MAX_SCORE are rejected for every game', async ()
   assert.equal((await build(-1)).error, 'replay-rejected');
 });
 
-test('stats come from the achievements mappers when that module exists', async () => {
-  const mappers = await loadRunStatsMappers();
-  assert.equal(mappers.source, existsSync(ACHIEVEMENT_STATS_PATH) ? 'achievements' : 'verify-fallback');
-  for (const key of ['statsFromChikunResult', 'statsFromStackedTuple', 'statsFromHmhRunSummary']) assert.equal(typeof mappers[key], 'function');
+test('stats come from the achievements exports exactly, and a broken module never falls back', async () => {
+  const achievements = Object.freeze({
+    statsFromChikunResult: () => 'chikun',
+    statsFromStackedTuple: () => 'stacked',
+    statsFromHmhRunSummary: () => 'hmh',
+    hmhResolverInputsFromRunSummary: () => 'other',
+  });
+  let imports = 0;
+  const present = await resolveRunStatsMappers({ exists: () => true, importStats: async () => { imports += 1; return achievements; } });
+  assert.equal(present.source, 'achievements');
+  assert.deepEqual(Object.keys(present), ['source', ...RUN_STATS_MAPPER_NAMES]);
+  for (const name of RUN_STATS_MAPPER_NAMES) assert.equal(present[name], achievements[name], `${name} is the module's own export`);
+  assert.equal(imports, 1);
+  // The module exists but will not load, or lacks a mapper: the settle fails, loudly.
+  const broken = new SyntaxError('broken stats module');
+  await assert.rejects(resolveRunStatsMappers({ exists: () => true, importStats: async () => { throw broken; } }), (error) => error === broken);
+  for (const name of RUN_STATS_MAPPER_NAMES) {
+    const { [name]: _missing, ...partial } = achievements;
+    await assert.rejects(resolveRunStatsMappers({ exists: () => true, importStats: async () => partial }), new RegExp(`must export ${name}`));
+  }
+  // Only an absent module selects the verify fallback, and nothing is imported for it.
+  const absent = await resolveRunStatsMappers({ exists: () => false, importStats: async () => { throw new Error('imported the absent module'); } });
+  assert.equal(absent.source, 'verify-fallback');
+  for (const name of RUN_STATS_MAPPER_NAMES) assert.equal(typeof absent[name], 'function');
+  // The default probe and the default import name the same file, and the import is a literal specifier.
+  assert.equal(relative(ROOT, ACHIEVEMENT_STATS_PATH).replaceAll('\\', '/'), 'apps/portal/src/achievements/stats.mjs');
+  assert.match(readFileSync(join(ROOT, 'server', 'verify', 'verified-run.mjs'), 'utf8'), /importStats = \(\) => import\('\.\.\/\.\.\/apps\/portal\/src\/achievements\/stats\.mjs'\)/);
+  const loaded = await loadRunStatsMappers();
+  assert.deepEqual(Object.keys(loaded), ['source', ...RUN_STATS_MAPPER_NAMES]);
+  assert.equal(await loadRunStatsMappers(), loaded, 'loaded once per process');
+});
+
+test('a stats mapper that throws propagates as a server error, never a rejected run', async () => {
+  const run = await verifyRankedRun(fixture.body, fixtureVerifyOptions());
+  const bug = new TypeError('stats mapper bug');
+  await assert.rejects(buildVerifiedRun({
+    identity: run.identity, nowMs: FIXTURE_VERIFY_AT_MS, score: run.score, stats: () => { throw bug; },
+    contract: run.contract, evidence: { encoding: run.evidence.encoding, text: run.evidence.text, digest: run.evidence.digest },
+  }), (error) => error === bug);
 });
 
 test('the server verifier loads in Node with no flags', () => {

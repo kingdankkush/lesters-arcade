@@ -11,11 +11,18 @@
 // Stats: the canonical mappers are statsFromChikunResult, statsFromStackedTuple
 // and statsFromHmhRunSummary in apps/portal/src/achievements/stats.mjs
 // (achievements slice). loadRunStatsMappers() uses that module whenever it
-// exists. The fallback below exists only because the verify slice was branched
-// before the achievements slice merged: it mirrors the achievements mappers
-// (same keys, same values) so VerifiedRun.stats has the §6.3 shape either way.
-// Once the achievements slice is merged the fallback is dead code and can be
-// deleted together with the existsSync branch.
+// exists, and a module that exists but fails to load or lacks a mapper fails
+// the settle instead of falling back. The fallback below exists only because
+// this slice's base (aa57dab4) does not contain the achievements slice: it
+// mirrors the achievements mappers at 67dcb453 (unchanged through e615dd44;
+// same keys, same values) so VerifiedRun.stats has the §6.3 shape either way.
+//
+// INTEGRATION STEP, in the merge that brings achievements/stats.mjs together
+// with this file: replace the fallback, the existsSync probe and
+// resolveRunStatsMappers with a static
+//   import { statsFromChikunResult, statsFromStackedTuple, statsFromHmhRunSummary } from '../../apps/portal/src/achievements/stats.mjs';
+// so a missing module fails at load, and make the loader test assert the
+// mappers are exactly those exports.
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { HMH_RUN_SUMMARY_CATALOGS } from '../../sdk/hmh-run-summary-schema.mjs';
@@ -182,27 +189,40 @@ const FALLBACK = Object.freeze({
   statsFromHmhRunSummary: hmhStats,
 });
 
-let loaded = null;
+export const RUN_STATS_MAPPER_NAMES = Object.freeze(['statsFromChikunResult', 'statsFromStackedTuple', 'statsFromHmhRunSummary']);
+export const ACHIEVEMENT_STATS_PATH = fileURLToPath(ACHIEVEMENT_STATS_URL);
+
+// The three mappers of an achievements stats module, exactly as exported.
+// Throws when one is missing: a broken module never falls back.
+export function runStatsMappersFrom(module) {
+  const mappers = { source: 'achievements' };
+  for (const name of RUN_STATS_MAPPER_NAMES) {
+    if (typeof module?.[name] !== 'function') throw new TypeError(`apps/portal/src/achievements/stats.mjs must export ${name}`);
+    mappers[name] = module[name];
+  }
+  return Object.freeze(mappers);
+}
 
 // → Promise<{ source, statsFromChikunResult, statsFromStackedTuple, statsFromHmhRunSummary }>.
-// When the achievements module exists, any error loading it propagates: a
-// broken stats module must fail the settle, never fall back silently.
+// Only a missing module selects the fallback; when the module exists, any
+// error loading it propagates. `exists` and `importStats` are injectable for
+// tests; the import specifier stays a literal so bundlers trace the file.
+export async function resolveRunStatsMappers({
+  exists = () => existsSync(ACHIEVEMENT_STATS_PATH),
+  importStats = () => import('../../apps/portal/src/achievements/stats.mjs'),
+} = {}) {
+  if (!exists()) return FALLBACK;
+  return runStatsMappersFrom(await importStats());
+}
+
+let loaded = null;
+
+// resolveRunStatsMappers(), once per process (a failed load is retried).
 export function loadRunStatsMappers() {
-  loaded ??= (async () => {
-    if (!existsSync(fileURLToPath(ACHIEVEMENT_STATS_URL))) return FALLBACK;
-    const module = await import('../../apps/portal/src/achievements/stats.mjs');
-    return Object.freeze({
-      source: 'achievements',
-      statsFromChikunResult: module.statsFromChikunResult,
-      statsFromStackedTuple: module.statsFromStackedTuple,
-      statsFromHmhRunSummary: module.statsFromHmhRunSummary,
-    });
-  })();
+  loaded ??= resolveRunStatsMappers();
   loaded.catch(() => { loaded = null; });
   return loaded;
 }
-
-export const ACHIEVEMENT_STATS_PATH = fileURLToPath(ACHIEVEMENT_STATS_URL);
 
 // ---------------------------------------------------------------------------
 // Error shapes. Every failure is { ok:false, status, error, detail?, flags? }.
@@ -238,9 +258,16 @@ const clampCount = (value, maximum) => Math.min(maximum, Math.max(0, Math.floor(
 
 // → Promise<VerifiedRun | failure>. `identity` is the canonical identity (with
 // version and sessionKey). `stats` receives the loaded mappers and returns the
-// §6.3 stats. A stats mapper that throws on evidence that already verified is
-// a server bug, not the player's: it propagates (500, retryable) instead of
-// rejecting a paid run for good.
+// §6.3 stats.
+//
+// Throw policy (contract §5.3 and §6.3 are silent; this is the verify rule):
+// the mappers run only on a server-replayed result or tuple, or on an HMH
+// summary that already passed the schema and plausibility checks, so a mapper
+// that throws there is a server-side inconsistency, not the player's fault. It
+// propagates (settle answers a retryable 500) instead of rejecting a paid run
+// for good with a 422. The achievements stats.mjs header says the opposite
+// ("the server verifier treats that as a rejected run"); that comment is the
+// achievements slice's to correct.
 export async function buildVerifiedRun({ identity, nowMs, score, stats, contract, evidence, plausibility = null }) {
   if (!Number.isFinite(nowMs)) throw new TypeError('nowMs is required to stamp verifiedAt');
   const game = RANKED_GAMES[identity.gameId];
