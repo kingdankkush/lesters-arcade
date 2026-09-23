@@ -97,9 +97,27 @@ export function isBytes32Hex(value) {
 
 // Reads ALWAYS go over the public LiteForge RPC (guide §5.2 item 6), whatever wallet is connected:
 // a wallet's RPC can sit on another chain, lag, or rate-limit, and a read must never prompt it.
-// The wallet provider is ignored here; write paths keep using it.
+// The wallet provider is ignored here; write paths keep using it. staticNetwork: without it an
+// unreachable RPC leaves ethers retrying network detection every second, forever, in the background.
 function pickReadProvider(ethers, _walletProvider = null) {
-  return new ethers.JsonRpcProvider(LITVM_LITEFORGE_NETWORK.rpcUrls.http, 4441);
+  return new ethers.JsonRpcProvider(LITVM_LITEFORGE_NETWORK.rpcUrls.http, 4441, { staticNetwork: true });
+}
+
+// One public read on a fresh provider. The node's own eth_chainId is checked alongside the read (the
+// same JSON-RPC batch), so records never come from another chain, and the provider is destroyed
+// afterwards, so a failed read leaves nothing running.
+async function withPublicRead(ethers, walletProvider, read) {
+  const provider = pickReadProvider(ethers, walletProvider);
+  const checkChain = async () => {
+    const chainId = Number(BigInt(await provider.send('eth_chainId', [])));
+    if (chainId !== LITVM_LITEFORGE_NETWORK.chainId) throw new Error(`the public RPC is on chain ${chainId}, expected ${LITVM_LITEFORGE_NETWORK.chainId}`);
+  };
+  try {
+    const [, value] = await Promise.all([checkChain(), read(provider)]);
+    return value;
+  } finally {
+    provider.destroy();
+  }
 }
 
 function scoreContractAddress() {
@@ -325,15 +343,16 @@ function normalizeRecord(r) {
 export async function fetchGlobalLeaderboard({ walletProvider = null, scan = 200, top = 50 } = {}) {
   try {
     const ethers = await loadEthers();
-    const provider = pickReadProvider(ethers, walletProvider);
-    const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, provider);
-    const total = Number(await contract.totalSessions());
-    if (total === 0) return { ok: true, records: [], total: 0 };
-    const offset = Math.max(0, total - scan);
-    const raw = await contract.getRecentSessions(BigInt(offset), BigInt(scan));
-    const records = raw.map(normalizeRecord).filter((record) => record?.verified);
-    records.sort((a, b) => b.score - a.score || b.submittedAt - a.submittedAt);
-    return { ok: true, records: records.slice(0, top), total };
+    return await withPublicRead(ethers, walletProvider, async (provider) => {
+      const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, provider);
+      const total = Number(await contract.totalSessions());
+      if (total === 0) return { ok: true, records: [], total: 0 };
+      const offset = Math.max(0, total - scan);
+      const raw = await contract.getRecentSessions(BigInt(offset), BigInt(scan));
+      const records = raw.map(normalizeRecord).filter((record) => record?.verified);
+      records.sort((a, b) => b.score - a.score || b.submittedAt - a.submittedAt);
+      return { ok: true, records: records.slice(0, top), total };
+    });
   } catch (err) {
     return { ok: false, records: [], error: err?.message || String(err) };
   }
@@ -344,15 +363,16 @@ export async function fetchPlayerSessions(wallet, { walletProvider = null, limit
   if (!wallet) return { ok: false, records: [], error: 'no wallet' };
   try {
     const ethers = await loadEthers();
-    const provider = pickReadProvider(ethers, walletProvider);
-    const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, provider);
-    const count = Number(await contract.playerSessionCount(wallet));
-    if (count === 0) return { ok: true, records: [], total: 0 };
-    const offset = Math.max(0, count - limit);
-    const raw = await contract.getPlayerSessions(wallet, BigInt(offset), BigInt(limit));
-    const records = raw.map(normalizeRecord).filter((record) => record?.verified === true);
-    records.sort((a, b) => b.submittedAt - a.submittedAt);
-    return { ok: true, records, total: count };
+    return await withPublicRead(ethers, walletProvider, async (provider) => {
+      const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, provider);
+      const count = Number(await contract.playerSessionCount(wallet));
+      if (count === 0) return { ok: true, records: [], total: 0 };
+      const offset = Math.max(0, count - limit);
+      const raw = await contract.getPlayerSessions(wallet, BigInt(offset), BigInt(limit));
+      const records = raw.map(normalizeRecord).filter((record) => record?.verified === true);
+      records.sort((a, b) => b.submittedAt - a.submittedAt);
+      return { ok: true, records, total: count };
+    });
   } catch (err) {
     return { ok: false, records: [], error: err?.message || String(err) };
   }
@@ -363,9 +383,7 @@ export async function fetchProfile(wallet, { walletProvider = null } = {}) {
   if (!wallet) return null;
   try {
     const ethers = await loadEthers();
-    const provider = pickReadProvider(ethers, walletProvider);
-    const contract = new ethers.Contract(profileContractAddress(), PROFILE_REGISTRY_ABI, provider);
-    const p = await contract.getProfile(wallet);
+    const p = await withPublicRead(ethers, walletProvider, (provider) => new ethers.Contract(profileContractAddress(), PROFILE_REGISTRY_ABI, provider).getProfile(wallet));
     if (!p || !p.exists) return null;
     return {
       displayName: p.displayName,
@@ -387,14 +405,16 @@ export async function fetchPlayerAchievements(wallet, achievementIds = [], { wal
   if (!wallet || !address || achievementIds.length === 0) return { ok: false, unlocked: [], error: 'achievement registry unavailable' };
   try {
     const ethers = await loadEthers();
-    const provider = pickReadProvider(ethers, walletProvider);
-    const contract = new ethers.Contract(address, ACHIEVEMENT_REGISTRY_ABI, provider);
-    const unlocked = [];
-    for (const id of achievementIds) {
-      const id32 = isBytes32Hex(id) ? id : ethers.id(String(id));
-      // eslint-disable-next-line no-await-in-loop
-      if (await contract.hasUnlocked(wallet, id32)) unlocked.push(String(id));
-    }
+    const unlocked = await withPublicRead(ethers, walletProvider, async (provider) => {
+      const contract = new ethers.Contract(address, ACHIEVEMENT_REGISTRY_ABI, provider);
+      const found = [];
+      for (const id of achievementIds) {
+        const id32 = isBytes32Hex(id) ? id : ethers.id(String(id));
+        // eslint-disable-next-line no-await-in-loop
+        if (await contract.hasUnlocked(wallet, id32)) found.push(String(id));
+      }
+      return found;
+    });
     return { ok: true, unlocked };
   } catch (err) {
     return { ok: false, unlocked: [], error: err?.message || String(err) };

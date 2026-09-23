@@ -11,7 +11,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parse } from 'acorn';
 import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
 import { HOSTED_PROFILE_SYNC, LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from '../apps/portal/src/settlement.mjs';
-import { fetchPlayerAchievements } from '../apps/portal/src/litvm-chain-client.mjs';
+import { ACHIEVEMENT_REGISTRY_ABI, SCORE_REGISTRY_ABI, fetchGlobalLeaderboard, fetchPlayerAchievements, fetchPlayerSessions, fetchProfile, loadEthers } from '../apps/portal/src/litvm-chain-client.mjs';
+import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
 import {
   ADDRESS_MODULE_BANNER,
   ADDRESS_MODULE_RELATIVE_PATH,
@@ -192,14 +193,48 @@ test('chain-client reads always use the public LiteForge RPC, never the wallet p
   });
   const provider = pick({ JsonRpcProvider, BrowserProvider }, wallet);
   assert.ok(provider instanceof JsonRpcProvider);
-  assert.deepEqual(created, [['JsonRpcProvider', 'https://liteforge.rpc.caldera.xyz/http', 4441]]);
+  // (url, 4441, { staticNetwork: true }): the options object comes from the vm context, so compare it as JSON.
+  assert.deepEqual(created.map((args) => JSON.parse(JSON.stringify(args))), [['JsonRpcProvider', 'https://liteforge.rpc.caldera.xyz/http', 4441, { staticNetwork: true }]]);
   pick({ JsonRpcProvider, BrowserProvider }, null);
   assert.equal(created.every(([kind]) => kind === 'JsonRpcProvider'), true);
   assert.deepEqual(walletCalls, []);
+  // Every read goes through withPublicRead (chain check + destroy); none builds its own provider.
+  assert.equal((source.match(/pickReadProvider\(/g) ?? []).length, 2, 'the definition and the one call in withPublicRead');
+  assert.match(source, /provider\.destroy\(\)/);
   // Write paths keep the wallet provider.
   assert.match(source, /export async function openRankedSession[\s\S]*?new ethers\.BrowserProvider\(walletProvider\)/);
   assert.match(source, /export async function submitProfile[\s\S]*?new ethers\.BrowserProvider\(walletProvider\)/);
 });
+
+// The vendored ethers transport uses global fetch, so a fixture answers JSON-RPC there (single and
+// batch payloads) and nothing leaves the process. `answer(request)` returns the result or throws.
+async function withRpcFetch(answer, run) {
+  const original = globalThis.fetch;
+  const seen = [];
+  globalThis.fetch = async (url, init = {}) => {
+    const payload = JSON.parse(new TextDecoder().decode(init.body));
+    const reply = async (request) => {
+      seen.push({ url: String(url), method: request.method, params: request.params });
+      try {
+        return { jsonrpc: '2.0', id: request.id, result: await answer(request) };
+      } catch (error) {
+        return { jsonrpc: '2.0', id: request.id, error: { code: -32000, message: error.message } };
+      }
+    };
+    const body = Array.isArray(payload) ? await Promise.all(payload.map(reply)) : await reply(payload);
+    return new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  try {
+    return { result: await run(), seen };
+  } finally {
+    globalThis.fetch = original;
+  }
+}
+
+const untouchableWallet = () => {
+  const calls = [];
+  return { calls, request: async ({ method }) => { calls.push(method); throw new Error('the wallet must not be used for reads'); } };
+};
 
 test('fetchPlayerAchievements reads only the game\'s own collection (no legacy fallback)', async () => {
   const source = readFileSync(join(root, 'apps', 'portal', 'src', 'litvm-chain-client.mjs'), 'utf8');
@@ -209,6 +244,80 @@ test('fetchPlayerAchievements reads only the game\'s own collection (no legacy f
     const result = await fetchPlayerAchievements(`0x${'12'.repeat(20)}`, ['first-blood'], { walletProvider: wallet, gameId });
     assert.equal(result.ok, false, String(gameId));
     assert.equal(result.error, 'achievement registry unavailable');
+  }
+
+  // A known game reads its own collection over the public RPC.
+  const ethers = await loadEthers();
+  const iface = new ethers.Interface(ACHIEVEMENT_REGISTRY_ABI);
+  const player = `0x${'12'.repeat(20)}`;
+  const walletProvider = untouchableWallet();
+  const { result, seen } = await withRpcFetch(async ({ method, params }) => {
+    if (method === 'eth_chainId') return LITVM_LITEFORGE_NETWORK.chainIdHex;
+    if (method === 'eth_call') {
+      const call = iface.parseTransaction({ data: params[0].data });
+      return iface.encodeFunctionResult('hasUnlocked', [call.args[1] === ethers.id('sky-legend')]);
+    }
+    throw new Error(`Unexpected fixture RPC method: ${method}`);
+  }, () => fetchPlayerAchievements(player, ['sky-legend', 'coin-hoarder'], { walletProvider, gameId: 'chikun' }));
+  assert.equal(result.ok, true, result.error);
+  assert.deepEqual(result.unlocked, ['sky-legend']);
+  const calls = seen.filter((entry) => entry.method === 'eth_call');
+  assert.equal(calls.length, 2);
+  for (const call of calls) assert.equal(call.params[0].to.toLowerCase(), LITVM_CONTRACT_ADDRESSES.achievementRegistries.chikun, 'the chikun collection only');
+  assert.ok(seen.every((entry) => entry.url === LITVM_LITEFORGE_NETWORK.rpcUrls.http), 'the public RPC only');
+  assert.ok(seen.some((entry) => entry.method === 'eth_chainId'), 'the node reports its chain');
+  assert.deepEqual(walletProvider.calls, []);
+});
+
+test('public reads refuse an RPC that reports another chain', async () => {
+  const ethers = await loadEthers();
+  const scoreIface = new ethers.Interface(SCORE_REGISTRY_ABI);
+  const tuple = [ethers.id('s'), `0x${'12'.repeat(20)}`, ethers.id('chikun'), 1200n, 10n, 4n, 120n, ethers.ZeroHash, ethers.ZeroHash, ethers.ZeroHash, 1788955200n, true, true];
+  const walletProvider = untouchableWallet();
+  const { result, seen } = await withRpcFetch(async ({ method, params }) => {
+    if (method === 'eth_chainId') return '0x1';
+    const call = scoreIface.parseTransaction({ data: params[0].data });
+    if (call.name === 'playerSessionCount' || call.name === 'totalSessions') return scoreIface.encodeFunctionResult(call.name, [1n]);
+    return scoreIface.encodeFunctionResult(call.name, [[tuple]]);
+  }, async () => ({
+    sessions: await fetchPlayerSessions(`0x${'12'.repeat(20)}`, { walletProvider }),
+    board: await fetchGlobalLeaderboard({ walletProvider }),
+    profile: await fetchProfile(`0x${'12'.repeat(20)}`, { walletProvider }),
+  }));
+  assert.equal(result.sessions.ok, false);
+  assert.deepEqual(result.sessions.records, []);
+  assert.match(result.sessions.error, /the public RPC is on chain 1, expected 4441/);
+  assert.equal(result.board.ok, false);
+  assert.deepEqual(result.board.records, []);
+  assert.equal(result.profile, null);
+  assert.ok(seen.some((entry) => entry.method === 'eth_chainId'));
+  assert.deepEqual(walletProvider.calls, []);
+});
+
+test('an unreachable public RPC fails the read once and leaves nothing retrying', async () => {
+  const original = globalThis.fetch;
+  const originalLog = console.log;
+  let fetchCalls = 0;
+  const logged = [];
+  globalThis.fetch = async () => {
+    fetchCalls += 1;
+    throw new TypeError('Failed to fetch');
+  };
+  console.log = (...args) => { logged.push(args.join(' ')); };
+  try {
+    const sessions = await fetchPlayerSessions(`0x${'12'.repeat(20)}`, { walletProvider: untouchableWallet() });
+    const board = await fetchGlobalLeaderboard();
+    assert.equal(sessions.ok, false);
+    assert.equal(board.ok, false);
+    const afterReads = fetchCalls;
+    assert.ok(afterReads >= 2 && afterReads <= 4, `one request (batch) per read, got ${afterReads}`);
+    // ethers retries network detection every 1 s when the network is not static; wait past two retries.
+    await new Promise((resolveWait) => setTimeout(resolveWait, 2_200));
+    assert.equal(fetchCalls, afterReads, 'no background request after the reads returned');
+    assert.deepEqual(logged.filter((line) => /failed to detect network/i.test(line)), []);
+  } finally {
+    globalThis.fetch = original;
+    console.log = originalLog;
   }
 });
 
