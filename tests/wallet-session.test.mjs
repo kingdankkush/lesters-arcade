@@ -59,7 +59,7 @@ function fixtureWallet({ accounts = [ADDRESS], declineSign = false } = {}) {
 
 // The hosted services: E1 answers a server nonce, E2 verifies the SIWE login
 // with the real server check (chain 4441) and issues a real v2 token.
-function hostedServer({ nonceStatus = 200 } = {}) {
+function hostedServer({ nonceStatus = 200, nonceBody = null, loginStatus = 200, loginWallet = null, loginThrows = false } = {}) {
   const requests = [];
   const nonce = 'ab'.repeat(36);
   const issuedAt = new Date(NOW - 3_000).toISOString();
@@ -67,9 +67,15 @@ function hostedServer({ nonceStatus = 200 } = {}) {
     requests.push({ url, init });
     if (url === '/api/session/nonce') {
       if (nonceStatus !== 200) return new Response(JSON.stringify({ ok: false, error: 'session-not-configured' }), { status: nonceStatus });
-      return new Response(JSON.stringify({ ok: true, nonce, issuedAt, expiresAt: new Date(NOW + 600_000).toISOString() }), { status: 200 });
+      return new Response(JSON.stringify(nonceBody ?? { ok: true, nonce, issuedAt, expiresAt: new Date(NOW + 600_000).toISOString() }), { status: 200 });
     }
     if (url === '/api/session') {
+      if (loginThrows) throw new TypeError('Failed to fetch');
+      if (loginStatus !== 200) return new Response(JSON.stringify({ ok: false, error: 'signature-invalid' }), { status: loginStatus });
+      if (loginWallet) {
+        const token = issueSessionToken(crypto, { secret: TOKEN_HMAC_FIXTURE, wallet: loginWallet, nowMs: NOW, audience: AUDIENCE });
+        return new Response(JSON.stringify({ ok: true, wallet: loginWallet, ...token }), { status: 200 });
+      }
       const { challenge, signature } = JSON.parse(init.body);
       const verified = verifySiweLogin(ethers, { challenge, signature, allowedDomains: ['lestersarcade.io'], nowMs: NOW, expectedChainId: 4441 });
       if (!verified.ok) return new Response(JSON.stringify({ ok: false, error: verified.error }), { status: 401 });
@@ -135,6 +141,67 @@ test('hosted sign-in stays signed out when the session service is down or the wa
   assert.equal(cancelled.error.kind, 'user-cancelled');
   assert.equal(declined.session.isAuthenticated(WALLET), false);
   assert.equal(declined.server.requests.some((request) => request.url === '/api/session'), false);
+});
+
+test('hosted sign-in stays signed out when the server refuses the login or sends a malformed nonce', async () => {
+  // POST /api/session answers 401: a wallet error the player can retry, no token.
+  const refused = hostedSession({ server: hostedServer({ loginStatus: 401 }) });
+  const result = await refused.session.signIn({ provider: fixtureWallet(), address: ADDRESS });
+  assert.deepEqual([result.ok, result.authenticated, result.token], [false, false, null]);
+  assert.equal(result.error.kind, 'wallet-error');
+  assert.equal(result.error.message, 'The arcade could not verify that signature. Try again.');
+  assert.equal(refused.session.isAuthenticated(WALLET), false);
+  assert.equal(refused.storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
+
+  // A login for another wallet is refused, and its token is not kept.
+  const other = hostedSession({ server: hostedServer({ loginWallet: OTHER }) });
+  const mismatch = await other.session.signIn({ provider: fixtureWallet(), address: ADDRESS });
+  assert.equal(mismatch.ok, false);
+  assert.equal(mismatch.error.kind, 'wallet-error');
+  assert.equal(other.storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
+  assert.equal(other.profileSync.hasSession(OTHER), false);
+
+  // The session service unreachable after the signature: unavailable, not the player's fault.
+  const offline = hostedSession({ server: hostedServer({ loginThrows: true }) });
+  const unreachable = await offline.session.signIn({ provider: fixtureWallet(), address: ADDRESS });
+  assert.equal(unreachable.error.kind, 'service-unavailable');
+
+  // A nonce that is not 72 lowercase hex characters, or a bad issuedAt: no
+  // signature is ever requested.
+  for (const nonceBody of [
+    { ok: true, nonce: 'ab'.repeat(35), issuedAt: new Date(NOW).toISOString() },
+    { ok: true, nonce: 'AB'.repeat(36), issuedAt: new Date(NOW).toISOString() },
+    { ok: true, nonce: 'ab'.repeat(36), issuedAt: 'yesterday-ish' },
+    { ok: false, nonce: 'ab'.repeat(36), issuedAt: new Date(NOW).toISOString() },
+  ]) {
+    const malformed = hostedSession({ server: hostedServer({ nonceBody }) });
+    const wallet = fixtureWallet();
+    const attempt = await malformed.session.signIn({ provider: wallet, address: ADDRESS });
+    assert.equal(attempt.ok, false, JSON.stringify(nonceBody));
+    assert.equal(attempt.error.kind, 'service-unavailable');
+    assert.deepEqual(wallet.calls, [], 'no personal_sign without a valid server nonce');
+    assert.equal(malformed.server.requests.some((request) => request.url === '/api/session'), false);
+  }
+});
+
+test('preview silent restore needs the same wallet and a live local flag', async () => {
+  const storage = memoryStorage();
+  let fetches = 0;
+  const fetchImpl = async () => { fetches += 1; throw new Error('no network in preview'); };
+  const first = createWalletSession({ hosted: false, fetchImpl, storage, now: () => NOW, loadEthers, domain: 'localhost', eventTarget: null });
+  assert.equal((await first.signIn({ provider: fixtureWallet(), address: ADDRESS })).ok, true);
+  first.remember({ kind: 'legacy', wallet: ADDRESS });
+  const reboot = (at) => createWalletSession({ hosted: false, fetchImpl, storage, now: () => at, profileSync: null, loadEthers, domain: 'localhost', eventTarget: null });
+
+  const wallet = fixtureWallet();
+  const restored = await reboot(NOW + 60_000).restore({ provider: wallet });
+  assert.deepEqual({ ...restored }, { ok: true, wallet: WALLET, address: ADDRESS, authenticated: true, providerPending: false });
+  assert.deepEqual(wallet.calls, ['eth_accounts']);
+  // Another account in the wallet: stays signed out.
+  assert.equal((await reboot(NOW + 60_000).restore({ provider: fixtureWallet({ accounts: [OTHER] }) })).ok, false);
+  // The local flag lasts 24 h.
+  assert.equal((await reboot(NOW + 25 * 60 * 60 * 1000).restore({ provider: fixtureWallet() })).ok, false);
+  assert.equal(fetches, 0, 'preview restore never touches the network');
 });
 
 test('preview sign-in stays offline', async () => {

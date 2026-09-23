@@ -190,8 +190,14 @@ export function createWalletSession({
       }
       const login = await profileSync.login({ challenge, signature: signed.signature });
       if (!login?.ok || lower(login.wallet) !== wallet) {
+        // A token issued for any other wallet is never kept.
+        if (login?.ok) { try { profileSync.logout?.(); } catch { /* ignore */ } }
         announce({ wallet, authenticated: false });
-        return failure('service-unavailable', login?.unavailable ? 'Sign-in is unavailable right now. Free Mode still works.' : 'The arcade could not verify that signature. Try again.', wallet);
+        // The service being down is not the player's doing; a refused
+        // signature (401, another wallet) is a wallet error they can retry.
+        return login?.unavailable
+          ? failure('service-unavailable', 'Sign-in is unavailable right now. Free Mode still works.', wallet)
+          : failure('wallet-error', 'The arcade could not verify that signature. Try again.', wallet);
       }
       const result = Object.freeze({ ok: true, wallet, authenticated: true, token: login.token, expiresAt: login.expiresAt });
       announce({ wallet, authenticated: true });
