@@ -397,6 +397,8 @@ const NODE_CHECK_FILES = [
   "scripts/write-hmh-integrity-bounds.mjs",
   "scripts/archive-legacy-ranked-sessions.mjs",
   "scripts/deploy-contracts.mjs",
+  'apps/portal/owner/confirm-dev-wallet.mjs',
+  'tests/owner-confirm-page.test.mjs',
   'hardhat.config.js',
   'scripts/lib/local-chain.mjs',
   'tests/local-deploy-harness.test.mjs',
