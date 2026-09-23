@@ -52,15 +52,34 @@ export function emptyHistory(wallet, gameId) {
   };
 }
 
+// The §6.5 history must arrive complete and typed. A missing or malformed field
+// throws instead of reading as "nothing yet": that would hand back ids the
+// wallet already holds, or silently never unlock a run-count or cumulative entry
+// (for example when the driver returns count(*) or sum(...) as strings).
+function checkHistory(game, gameId, history) {
+  if (!history || typeof history !== 'object') throw new TypeError('achievement history is required');
+  if (history.gameId !== gameId) throw new TypeError(`achievement history gameId must be ${gameId}`);
+  if (!Number.isSafeInteger(history.runs) || history.runs < 0) throw new TypeError('achievement history runs must be a non-negative integer');
+  if (!Array.isArray(history.unlockedIds) || !history.unlockedIds.every((id) => typeof id === 'string')) {
+    throw new TypeError('achievement history unlockedIds must be an array of strings');
+  }
+  for (const [bucket, paths] of [['sums', game.fields.sum], ['maxima', game.fields.max]]) {
+    const values = history[bucket];
+    if (!values || typeof values !== 'object') throw new TypeError(`achievement history ${bucket} must be an object`);
+    for (const path of paths) {
+      if (typeof values[path] !== 'number' || !Number.isFinite(values[path])) throw new TypeError(`achievement history ${bucket}.${path} must be a finite number`);
+    }
+  }
+}
+
 // Every available achievement this verified run newly earns, in catalog order.
 export function deriveEarnedAchievements(gameId, verifiedRun, history) {
-  const { entries } = gameOf(gameId);
+  const game = gameOf(gameId);
   if (!verifiedRun || verifiedRun.gameId !== gameId) throw new Error(`verified run gameId must be ${gameId}`);
   if (!verifiedRun.stats || typeof verifiedRun.stats !== 'object') throw new Error('verified run stats are required');
-  if (history?.gameId !== undefined && history.gameId !== gameId) throw new Error(`achievement history gameId must be ${gameId}`);
-  const unlocked = new Set(Array.isArray(history?.unlockedIds) ? history.unlockedIds : []);
-  const safeHistory = history ?? emptyHistory(verifiedRun.wallet ?? null, gameId);
-  return Object.freeze(entries.filter((entry) => entry.available && !unlocked.has(entry.id) && entry.criteria(verifiedRun, safeHistory)));
+  checkHistory(game, gameId, history);
+  const unlocked = new Set(history.unlockedIds);
+  return Object.freeze(game.entries.filter((entry) => entry.available && !unlocked.has(entry.id) && entry.criteria(verifiedRun, history)));
 }
 
 // keccak256 of the UTF-8 id, as AchievementRegistry keys achievements (§2.1 style).

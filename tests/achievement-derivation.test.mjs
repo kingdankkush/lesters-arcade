@@ -133,6 +133,36 @@ test('derivation excludes already-unlocked and unavailable entries', () => {
   assert.throws(() => deriveEarnedAchievements('stacked', stackedRun(), history('chikun')), /history gameId/);
 });
 
+test('derivation rejects missing or malformed history instead of reading it as empty', () => {
+  const stacked = stackedRun();
+  const good = history('stacked');
+  assert.ok(ids(deriveEarnedAchievements('stacked', stacked, good)).includes('stacked-first-line'));
+  const derive = (value) => () => deriveEarnedAchievements('stacked', stacked, value);
+  assert.throws(derive(undefined), /history is required/);
+  assert.throws(derive(null), /history is required/);
+  assert.throws(derive({ ...good, gameId: undefined }), /history gameId must be stacked/);
+  assert.throws(derive({ ...good, unlockedIds: 'stacked-first-line' }), /unlockedIds/);
+  assert.throws(derive({ ...good, unlockedIds: undefined }), /unlockedIds/);
+  assert.throws(derive({ ...good, unlockedIds: [7] }), /unlockedIds/);
+  // What the Neon driver returns when the query forgets to cast: count(*) is a
+  // bigint string and sum(...::numeric) a numeric string.
+  assert.throws(derive({ ...good, runs: '4' }), /runs/);
+  assert.throws(derive({ ...good, sums: { ...good.sums, lines: '1000' } }), /sums\.lines/);
+  assert.throws(derive({ ...good, maxima: { ...good.maxima, lines: '250' } }), /maxima\.lines/);
+  assert.throws(derive({ ...good, runs: -1 }), /runs/);
+  assert.throws(derive({ ...good, runs: 1.5 }), /runs/);
+  assert.throws(derive({ ...good, maxima: { ...good.maxima, score: Number.NaN } }), /maxima\.score/);
+  assert.throws(derive({ ...good, sums: null }), /sums/);
+  const { lines, ...withoutLines } = good.sums;
+  assert.equal(lines, 0);
+  assert.throws(derive({ ...good, sums: withoutLines }), /sums\.lines/, 'every catalog history path must be present');
+  // The same values, typed as §6.5 requires, derive normally and skip held ids.
+  const typed = { ...good, runs: 4, sums: { ...good.sums, lines: 1000 }, unlockedIds: ['stacked-first-line'] };
+  const earned = ids(deriveEarnedAchievements('stacked', stacked, typed));
+  assert.ok(!earned.includes('stacked-first-line'));
+  assert.ok(earned.includes('stacked-lines-total-100') && earned.includes('stacked-lines-total-1000') && earned.includes('stacked-runs-5'));
+});
+
 test('cumulative criteria add history sums to the current run', () => {
   const reaper = achievementById('lester-blaster', 'enemy-reaper-500');
   const boss = hmhRun('boss-run'); // 378 kills
