@@ -11,7 +11,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { isIPv4, isIPv6 } from 'node:net';
 import { verifySessionToken } from '../apps/portal/src/server-session.mjs';
 
-export const HEX_WALLET = /^0x[0-9a-f]{40}$/;
+const HEX_WALLET = /^0x[0-9a-f]{40}$/;
 
 function lowerHeaders(headers) {
   const out = {};
@@ -179,16 +179,14 @@ export function queryOf(req, allowed = []) {
   return { ok: true, query };
 }
 
-export function errorBody(error, extra = {}) {
+function errorBody(error, extra = {}) {
   return { ok: false, error, ...extra };
 }
 
-export function jsonResult(status, body, cache = 'no-store', headers = {}) {
-  return { status, body, headers: { 'Cache-Control': cache, ...headers } };
-}
-
 // The session audience of token v2 (contract A13). Passing it to today's v1
-// verifier is harmless; the settle slice makes the verifier enforce it.
+// verifier is harmless; the settle slice makes the verifier enforce it, and
+// its E2 issues tokens for this audience. Exported with verifyBearer as part
+// of the seam settle (E2-E4, E15) reuses.
 export function sessionAudience(config) {
   return `lestersarcade:${config?.environment ?? 'production'}`;
 }
@@ -280,7 +278,7 @@ export function makeHandler({ label = 'api', methods = ['GET'], query = [], maxB
   };
 }
 
-export function sendResult(res, result) {
+function sendResult(res, result) {
   const headers = { ...(result?.headers ?? {}) };
   const cacheKey = Object.keys(headers).find((key) => key.toLowerCase() === 'cache-control');
   const cache = cacheKey ? headers[cacheKey] : 'no-store';

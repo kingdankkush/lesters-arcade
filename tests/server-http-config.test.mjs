@@ -10,6 +10,8 @@ import { createNeonClient, neonSchemaKeyFor } from '../apps/portal/src/server-ne
 import { bearerToken, clientIp, foldIp, ipBucket, makeHandler, queryOf, readJsonBody, sendJson, verifyBearer } from '../server/http.mjs';
 import { buildBaseDeps, DEFAULT_MIN_PAID_WEI, readServerConfig } from '../server/config.mjs';
 import { loadDeployment, UNAVAILABLE_DEPLOYMENT } from '../server/deployment.mjs';
+import * as httpModule from '../server/http.mjs';
+import * as deploymentModule from '../server/deployment.mjs';
 
 /**
  * Contract §4.1, §9.2, A24, A28 and A30: the shared HTTP helpers, the
@@ -255,6 +257,15 @@ test('the handler seam checks the method, the query and auth before the body, an
   const res = fakeRes();
   sendJson(res, 404, { ok: false, error: 'session-not-found' }, { cache: 'public, s-maxage=30', headers: { 'Retry-After': '5' } });
   assert.deepEqual([res.statusCode, res.headers['cache-control'], res.headers['retry-after']], [404, 'public, s-maxage=30', '5']);
+});
+
+test('server/http.mjs exports the §4.1 helpers, the handler seam and the Bearer seam only', () => {
+  // §4.1 helpers, makeHandler (A30), foldIp (tested bucket input), and the
+  // Bearer seam that settle (E2-E4, E15) reuses: verifyBearer and sessionAudience.
+  assert.deepEqual(Object.keys(httpModule).sort(), [
+    'bearerToken', 'clientIp', 'foldIp', 'ipBucket', 'makeHandler', 'queryOf', 'readJsonBody', 'sendJson', 'sessionAudience', 'verifyBearer',
+  ]);
+  assert.deepEqual(Object.keys(deploymentModule).sort(), ['UNAVAILABLE_DEPLOYMENT', 'loadDeployment']);
 });
 
 test('loadDeployment reads the generated module and falls back to an unavailable deployment', async () => {

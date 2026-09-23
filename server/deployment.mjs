@@ -36,7 +36,3 @@ export async function loadDeployment({ importModule = null } = {}) {
   if (!importModule) memo = deployment;
   return deployment;
 }
-
-export function isDeployed(deployment) {
-  return deployment?.status === 'deployed';
-}
