@@ -370,12 +370,12 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
 });
 
 test('live cron prints only status and counts', async () => {
-  const secret = 'fixture-cron-secret-0123456789abcdef0123456789';
+  const cronToken = 'fixture-cron-token-0123456789abcdef0123456789';
   const requests = [];
   const server = createServer((req, res) => {
     requests.push({ url: req.url, authorization: req.headers.authorization });
     const json = (status, body) => res.writeHead(status, { 'content-type': 'application/json' }).end(JSON.stringify(body));
-    if (req.headers.authorization !== `Bearer ${secret}`) return json(401, { ok: false, error: 'unauthorized', detail: 'bearer mismatch for rpc https://user:pass@rpc.example' });
+    if (req.headers.authorization !== `Bearer ${cronToken}`) return json(401, { ok: false, error: 'unauthorized', detail: 'bearer mismatch for rpc https://user:pass@rpc.example' });
     if (req.url === '/api/cron/index-chain') return json(200, { ok: true, schemaVersion: 1, fromBlock: 10, toBlock: 20, scores: 2, achievements: 0, profiles: 1, skipped: 0, mismatches: 0, lagBlocks: 3, rpcUrl: 'https://user:pass@rpc.example/x', note: 'internal detail' });
     if (req.url === '/api/cron/settle-retry') return json(200, { ok: true, processed: [{ sessionId32: `0x${'ab'.repeat(32)}`, from: 'pending', to: 'confirmed', code: 'confirmed' }] });
     return json(404, { ok: false, error: 'not-found' });
@@ -383,7 +383,7 @@ test('live cron prints only status and counts', async () => {
   await new Promise((resolveListen) => server.listen(0, '127.0.0.1', resolveListen));
   const site = `http://127.0.0.1:${server.address().port}`;
   const secretFile = join(dir, 'cron-secret.txt');
-  writeFileSync(secretFile, `${secret}\n`);
+  writeFileSync(secretFile, `${cronToken}\n`);
   try {
     const run = async (argv, env = {}) => {
       const lines = [];
@@ -394,9 +394,9 @@ test('live cron prints only status and counts', async () => {
     assert.equal(index.code, 0);
     assert.equal(index.lines.length, 1);
     assert.equal(index.output, '/api/cron/index-chain: status 200 · ok true · schemaVersion 1 · counts achievements=0 fromBlock=10 lagBlocks=3 mismatches=0 profiles=1 scores=2 skipped=0 toBlock=20');
-    assert.equal(requests.at(-1).authorization, `Bearer ${secret}`, 'the secret travels only in the Authorization header');
+    assert.equal(requests.at(-1).authorization, `Bearer ${cronToken}`, 'the secret travels only in the Authorization header');
 
-    const retry = await run(['--site', site, '--path', '/api/cron/settle-retry', '--secret-env', 'FIXTURE_CRON_SECRET'], { FIXTURE_CRON_SECRET: secret });
+    const retry = await run(['--site', site, '--path', '/api/cron/settle-retry', '--secret-env', 'FIXTURE_CRON_SECRET'], { FIXTURE_CRON_SECRET: cronToken });
     assert.equal(retry.code, 0);
     assert.match(retry.output, /counts processed=1$/);
 
@@ -405,10 +405,10 @@ test('live cron prints only status and counts', async () => {
     assert.match(wrong.output, /status 401 · ok false · schemaVersion n\/a · error unauthorized · counts none/);
 
     for (const result of [index, retry, wrong]) {
-      assertNoSecret(result.output, [secret, 'user:pass', 'internal detail', 'bearer mismatch', 'x'.repeat(40)], 'live-cron output');
+      assertNoSecret(result.output, [cronToken, 'user:pass', 'internal detail', 'bearer mismatch', 'x'.repeat(40)], 'live-cron output');
     }
     assert.equal(summarizeCronResponse(200, { ok: true, skipped: 'not-deployed', schemaVersion: 1 }).skipped, 'not-deployed');
-    assert.equal(summarizeCronResponse(500, { ok: false, error: 'Error: connect ECONNREFUSED https://secret-rpc' }).error, undefined, 'free text is never echoed');
+    assert.equal(summarizeCronResponse(500, { ok: false, error: 'Error: connect ECONNREFUSED https://private-rpc' }).error, undefined, 'free text is never echoed');
     assert.throws(() => cronUrl({ site: 'http://lestersarcade.io', path: '/api/cron/index-chain' }), /https/);
     assert.throws(() => cronUrl({ site: 'https://lestersarcade.io/x', path: '/api/cron/index-chain' }), /bare origin/);
     assert.throws(() => cronUrl({ site: 'https://lestersarcade.io', path: '/api/settle' }), /\/api\/cron\//);
@@ -419,7 +419,7 @@ test('live cron prints only status and counts', async () => {
     const cli = await runNode([join(root, 'scripts', 'live-cron.mjs'), '--site', site, '--path', '/api/cron/index-chain', '--secret-file', secretFile]);
     assert.equal(cli.code, 0, cli.stderr);
     assert.equal(cli.stdout.trim(), index.output);
-    assertNoSecret(cli.stdout + cli.stderr, [secret], 'CLI output');
+    assertNoSecret(cli.stdout + cli.stderr, [cronToken], 'CLI output');
   } finally {
     await new Promise((resolveClose) => server.close(() => resolveClose()));
   }
