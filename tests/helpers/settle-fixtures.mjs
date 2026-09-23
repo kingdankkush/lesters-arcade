@@ -18,6 +18,7 @@
 import { createHash, createHmac, randomBytes as nodeRandomBytes, timingSafeEqual } from 'node:crypto';
 import { ethers } from 'ethers';
 import { canonicalSessionJson, createCanonicalSessionIdentity, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
+import { LITVM_DEPLOYMENT } from '../../apps/portal/src/generated/litvm-addresses.mjs';
 import { INDEX_GAMES } from '../../server/neon/rows.mjs';
 import { activateLocalGames, deployLocalSuite, localContracts, localWalletKeys, startLocalChain } from '../../scripts/lib/local-chain.mjs';
 
@@ -26,18 +27,20 @@ export const SETTLE_CRON_VALUE = `cron-fixture-${'c3'.repeat(16)}`;
 export const FIXTURE_NEON_URL = 'postgresql://fixture@db.invalid/settle';
 export const RANKED_SETTLE_VERSION = 'lesters-ranked-settle-v1';
 export const SEED_TICKET_VERSION = 'lesters-ranked-seed-v1';
+// LITVM_DEPLOYMENT.settlementGasReserveWei: 0.002 zkLTC since the 2026-09-23
+// reserve amendment (deploy-config.testnet.json, the predicted address module).
+export const REAL_SETTLEMENT_GAS_RESERVE_WEI = LITVM_DEPLOYMENT.settlementGasReserveWei;
 // The fee cap is 5 x the deployment's settlement gas reserve (§3.4). The
-// in-process chain prices gas at about 1 gwei (ethers' getFeeData adds a
-// 1 gwei priority fee to twice the base fee), far above LiteForge's measured
-// 0.01-0.02 gwei, so the fixture deployment record carries a reserve 100 x
-// the real one (1e16 instead of LITVM_DEPLOYMENT's 1e14) for the cap only.
-// The on-chain reserve (what openSession charges) stays the deploy config's.
-// With the real reserve and 1 gwei fee data a plain settlement (about 530k
-// gas limit) waits as fee-too-high; tests/server-relayer.test.mjs pins both
-// that and the LiteForge-like fee data under which the real reserve passes.
-export const LOCAL_FEE_CAP_RESERVE_WEI = '10000000000000000';
-// LITVM_DEPLOYMENT.settlementGasReserveWei (deploy-config.testnet.json).
-export const REAL_SETTLEMENT_GAS_RESERVE_WEI = '100000000000000';
+// in-process chain quotes about 1.07 gwei (ethers' getFeeData adds a 1 gwei
+// priority fee to twice the base fee). Under the old 0.0001 zkLTC reserve a
+// plain settlement (a 530k-590k gas limit, 5.7e14-6.3e14 wei) exceeded its 5e14 cap,
+// so the fixture deployment carried a 1e16 override. With the 0.002 zkLTC
+// reserve the cap is 1e16 wei and the real reserve clears the local chain, so
+// deploymentFromRecord now uses the record's own reserve (the deploy config's,
+// which equals LITVM_DEPLOYMENT's; tests/server-relayer.test.mjs pins the
+// fee levels at which it holds). LOCAL_FEE_CAP_RESERVE_WEI remains the name
+// the settle tests pass for the cap, and it is the real reserve.
+export const LOCAL_FEE_CAP_RESERVE_WEI = REAL_SETTLEMENT_GAS_RESERVE_WEI;
 
 export const FIXTURE_BUILD_HASHES = Object.freeze({
   'lester-blaster': 'site-1.7.0:game-1.7.0',
@@ -68,8 +71,10 @@ export function fixtureEnv({ registry, extra = {} } = {}) {
   };
 }
 
-// A LITVM_DEPLOYMENT-shaped object for a local deployment record.
-export function deploymentFromRecord(record, { reserveWei = LOCAL_FEE_CAP_RESERVE_WEI } = {}) {
+// A LITVM_DEPLOYMENT-shaped object for a local deployment record. The fee
+// cap uses the record's own settlement gas reserve (what openSession charges
+// and forwards to the relayer) unless a test overrides it.
+export function deploymentFromRecord(record, { reserveWei = record.settlementGasReserveWei ?? REAL_SETTLEMENT_GAS_RESERVE_WEI } = {}) {
   const addresses = record.addresses;
   return Object.freeze({
     status: 'deployed',
