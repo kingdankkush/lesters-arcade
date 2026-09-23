@@ -199,6 +199,8 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/stacked-score-order.mjs",
     "apps/portal/src/stacked-sim.mjs",
     "apps/portal/src/stacked-versus-table.mjs",
+    "apps/portal/src/unlockables-store.mjs",
+    "apps/portal/src/unlockables.mjs",
     "apps/portal/src/username-registry.mjs",
     "apps/portal/src/vercel-analytics.mjs",
     "apps/portal/src/verifier-attestation.mjs",

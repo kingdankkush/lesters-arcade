@@ -2020,16 +2020,21 @@ export const LESTER_BLASTER_SOUND_DESIGN = Object.freeze({
   mixRules: Object.freeze(['duck music by 3dB under boss warnings', 'prioritize player damage and pickup cues', 'mute attract mode until user interaction in browser builds', 'boss themes get the largest arrangement and clearest voice barks']),
 });
 
+// HMH codex lines for the working unlockables (contract §7.9). Each `unlock`
+// names a real, available achievement ("Earn <title>") or a verified Ranked run
+// gate, and equals requirementText() of its `unlockableId` in unlockables.mjs
+// (a test keeps the two in step). No NFT wording in phase 1 (A32).
 export const LESTER_BLASTER_UNLOCKABLES = Object.freeze([
-  Object.freeze({ id: 'skin-classic-lester', type: 'skin', title: 'Classic Lester Jacket', unlock: 'starter' }),
-  Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Litecoin Silver Armor', unlock: 'score 10,000+ in Ranked Testnet' }),
-  Object.freeze({ id: 'character-lester', type: 'character', title: 'Lester', unlock: 'clear Level 1: The Crypto Wasteland' }),
-  Object.freeze({ id: 'character-lilly', type: 'character', title: 'Lilly', unlock: 'play 10 ranked matches' }),
-  Object.freeze({ id: 'weapon-hashstorm', type: 'weapon', title: 'Hashstorm Permanent Loadout', unlock: 'Hashstorm Specialist achievement' }),
-  Object.freeze({ id: 'music-mainnet-express', type: 'music', title: 'Mainnet Express Rooftop Jukebox Track', unlock: 'survive 15 minutes' }),
-  Object.freeze({ id: 'cabinet-boss-rush-marquee', type: 'cabinet-art', title: 'Boss Rush Marquee', unlock: 'defeat five bosses' }),
-  Object.freeze({ id: 'badge-no-damage-boss', type: 'profile-badge', title: 'Untouchable Boss Badge', unlock: 'no-damage boss clear' }),
-  Object.freeze({ id: 'gallery-boss-concepts', type: 'gallery', title: 'Boss Concept Gallery', unlock: 'encounter all ten bosses' }),
+  Object.freeze({ id: 'character-lester', type: 'character', title: 'Lester', unlock: 'Finish 5 verified Ranked runs', unlockableId: 'hmh-hero-lester' }),
+  Object.freeze({ id: 'character-lilly', type: 'character', title: 'Lilly', unlock: 'Finish 10 verified Ranked runs', unlockableId: 'hmh-hero-lilly' }),
+  Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Litecoin Silver Hero Skin', unlock: 'Earn 10K Neon Run', unlockableId: 'hmh-hero-silver' }),
+  Object.freeze({ id: 'skin-neon-signal', type: 'skin', title: 'Neon Signal Hero Skin', unlock: 'Earn Big Combo', unlockableId: 'hmh-hero-neon' }),
+  Object.freeze({ id: 'skin-gold-reserve', type: 'skin', title: 'Gold Reserve Hero Skin', unlock: 'Earn Boss Breaker', unlockableId: 'hmh-hero-gold' }),
+  Object.freeze({ id: 'skin-liquidation-red', type: 'skin', title: 'Liquidation Red Hero Skin', unlock: 'Earn Enemy Reaper 250', unlockableId: 'hmh-hero-crimson' }),
+  Object.freeze({ id: 'weapon-hashstorm', type: 'weapon-skin', title: 'Hashstorm Violet Weapon Skin', unlock: 'Earn Weapon Collector', unlockableId: 'hmh-weapon-hashstorm' }),
+  Object.freeze({ id: 'weapon-blast-amber', type: 'weapon-skin', title: 'Blast Amber Weapon Skin', unlock: 'Earn Grenade Century', unlockableId: 'hmh-weapon-amber' }),
+  Object.freeze({ id: 'weapon-seafoam-tracer', type: 'weapon-skin', title: 'Seafoam Tracer Weapon Skin', unlock: 'Earn Hash Rail Specialist', unlockableId: 'hmh-weapon-seafoam' }),
+  Object.freeze({ id: 'weapon-veteran-steel', type: 'weapon-skin', title: 'Veteran Steel Weapon Skin', unlock: 'Finish 25 verified Ranked runs', unlockableId: 'hmh-weapon-veteran' }),
 ]);
 
 export const LESTER_BLASTER_AI_DIRECTOR = Object.freeze({
