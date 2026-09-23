@@ -232,7 +232,8 @@ test('the WalletConnect provider is lazy, host-gated and configured for LiteForg
   assert.match(source, /await import\('\.\/reown-appkit-vendor\.mjs'\)/);
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.doesNotMatch(main, /^import[^\n]*(?:walletconnect-provider|reown-appkit-vendor|@reown)/m, 'AppKit is never statically reachable from main.js');
-  for (const lazy of ['wallet-picker', 'wallet-chips', 'walletconnect-provider', 'ranked-preflight', 'ranked-identity']) {
+  // ranked-identity is left out: ranked-client may import it statically for its own sites.
+  for (const lazy of ['wallet-picker', 'wallet-chips', 'walletconnect-provider', 'ranked-preflight']) {
     assert.doesNotMatch(main, new RegExp(`^import[^\\n]*\\./src/${lazy}\\.mjs`, 'm'), `${lazy} loads with import()`);
     assert.match(main, new RegExp(`import\\('\\./src/${lazy}\\.mjs'\\)`), `${lazy} has a dynamic import`);
   }
