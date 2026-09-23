@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { verifyRankedRun } from '../server/verify/index.mjs';
-import { HMH_HERO_GATES, verifyHmhRun } from '../server/verify/hmh.mjs';
+import { HMH_FREE_HEROES, HMH_HERO_GATES, verifyHmhRun } from '../server/verify/hmh.mjs';
 import { HMH_BOSS_START_TICK, rebootLevelForXp } from '../server/verify/hmh-plausibility.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
 import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
@@ -188,6 +188,9 @@ test('boss kill maps to the boss-liquidator id', async () => {
 
 test('hero gates match hmh-character-config', () => {
   assert.deepEqual(HMH_HERO_GATES, { 'lester-original': 5, lilly: 10 });
+  assert.deepEqual(HMH_FREE_HEROES, ['lit-commando', 'lit-valkyrie']);
+  assert.deepEqual(HMH_FREE_HEROES, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterCharacterIds);
+  assert.equal(HMH_FREE_HEROES.some((id) => Object.hasOwn(HMH_HERO_GATES, id)), false);
   for (const character of HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.unlockableCharacters) {
     assert.equal(HMH_HERO_GATES[character.id], character.gate.count);
   }

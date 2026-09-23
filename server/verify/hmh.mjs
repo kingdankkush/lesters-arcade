@@ -24,6 +24,10 @@ const HASH_PATTERN = /^0x[0-9a-f]{64}$/;
 export const HMH_HERO_GATES = Object.freeze(Object.fromEntries(
   HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.unlockableCharacters.map((character) => [character.id, character.gate.count]),
 ));
+// The heroes that need no gate. A hero id in neither list is unknown: the
+// child accepts any id-shaped heroId, so the hero-locked check should refuse
+// ids outside HMH_FREE_HEROES and HMH_HERO_GATES rather than treat them as free.
+export const HMH_FREE_HEROES = Object.freeze([...HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterCharacterIds]);
 
 function exactKeys(value, keys) {
   if (!isPlainObject(value)) return false;
@@ -78,7 +82,6 @@ export async function verifyHmhRun({ identity, evidence, nowMs }) {
     nowMs,
     score,
     stats: (mappers) => mappers.statsFromHmhRunSummary(runSummary),
-    statsError: invalid('run-summary-invalid', 'stats'),
     contract: {
       kills: runSummary.kills.total,
       maxCombo: runSummary.totals.maxCombo,

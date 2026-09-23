@@ -238,19 +238,16 @@ const clampCount = (value, maximum) => Math.min(maximum, Math.max(0, Math.floor(
 
 // → Promise<VerifiedRun | failure>. `identity` is the canonical identity (with
 // version and sessionKey). `stats` receives the loaded mappers and returns the
-// §6.3 stats; a mapper that throws turns into `statsError`.
-export async function buildVerifiedRun({ identity, nowMs, score, stats, statsError = rejected('replay-rejected', { detail: 'stats' }), contract, evidence, plausibility = null }) {
+// §6.3 stats. A stats mapper that throws on evidence that already verified is
+// a server bug, not the player's: it propagates (500, retryable) instead of
+// rejecting a paid run for good.
+export async function buildVerifiedRun({ identity, nowMs, score, stats, contract, evidence, plausibility = null }) {
   if (!Number.isFinite(nowMs)) throw new TypeError('nowMs is required to stamp verifiedAt');
   const game = RANKED_GAMES[identity.gameId];
   if (!game) throw new TypeError(`unknown ranked gameId: ${String(identity.gameId)}`);
   if (!Number.isSafeInteger(score) || score < 0) return rejected('replay-rejected', { detail: 'score' });
   if (score > MAX_RANKED_SCORE) return scoreOutOfBounds(score);
-  let runStats;
-  try {
-    runStats = stats(await loadRunStatsMappers());
-  } catch {
-    return statsError;
-  }
+  const runStats = stats(await loadRunStatsMappers());
   const bytes = new TextEncoder().encode(evidence.text).length;
   const envelopeHash = await rankedEnvelopeHash({ gameId: identity.gameId, sessionId32: identity.sessionKey, encoding: evidence.encoding, evidenceDigest: evidence.digest });
   return deepFreeze({
