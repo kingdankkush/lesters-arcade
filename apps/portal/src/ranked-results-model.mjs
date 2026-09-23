@@ -6,6 +6,9 @@
 //   - never a dead end: every state keeps Play again, Practice and Back;
 //   - never a fake success: "Verified on LitVM" (the Ranked share template)
 //     and the Published step exist only once the session is confirmed;
+//   - a rank belongs to this run only: E5 `you` is the wallet's best row in
+//     the period, so it counts only when its sessionId32 is this run's (the
+//     rule E9 applies to the share page and card, §4.3.8);
 //   - no NFT wording in phase 1 (A32): an achievement shows a token only when
 //     the server reports a non-null tokenId (phase 2).
 import { achievementById } from './achievements/index.mjs';
@@ -24,8 +27,9 @@ export const RANKED_RESULT_GAMES = Object.freeze({
 });
 
 // §7.2: STACKED bodies above 240,000 base64 characters are not persisted, so
-// a reload would lose the run before it is stored on the server. The client
-// marks such a snapshot `persisted: false`.
+// a reload would lose the run before it is stored on the server. ranked-client
+// marks such a snapshot `persisted: false` and adds
+// `notice: { code: 'keep-tab-open' }`; either one shows the line.
 export const KEEP_TAB_OPEN_TEXT = 'Keep this tab open until publishing finishes';
 const UNSETTLED_STATES = new Set(['waiting-entry', 'verifying', 'queued', 'publishing', 'retrying', 'saved-locally']);
 
@@ -139,9 +143,20 @@ function entryOf(snapshot, context) {
   return { status: Object.hasOwn(ENTRY_RANK, primary.status) ? primary.status : 'none', txHash };
 }
 
-function standingText(standing) {
+function sameSession(a, b) {
+  const left = String(a ?? '').toLowerCase();
+  return SESSION_KEY.test(left) && left === String(b ?? '').toLowerCase();
+}
+
+// E5 `you` (the wallet's best row in a period) as this run's standing, or
+// null when the wallet's best in that period is another of its runs.
+export function standingForRun(entry, sessionId32) {
+  return entry && typeof entry === 'object' && sameSession(entry.sessionId32, sessionId32) ? entry : null;
+}
+
+function standingText(standing, sessionId32) {
   const parts = [];
-  const rank = (entry) => whole(entry?.rank);
+  const rank = (entry) => whole(standingForRun(entry, sessionId32)?.rank);
   const daily = DAILY_STANDING_ENABLED ? rank(standing?.daily) : null;
   const weekly = rank(standing?.weekly);
   const allTime = rank(standing?.allTime);
@@ -256,11 +271,11 @@ export function buildRankedResultsModel({ snapshot, context = {}, standing = nul
   const published = state === 'published';
   const previousBest = finite(context?.previousBest);
   const personalBestDelta = (published || state === 'preview') && previousBest !== null && score > previousBest ? score - Math.max(0, Math.round(previousBest)) : null;
-  const ranks = published ? standingText(standing) : { parts: [], share: '' };
+  const sessionId32 = [snap.sessionId32, context?.sessionId32, server?.sessionId32].find((id) => typeof id === 'string' && SESSION_KEY.test(id)) ?? null;
+  const ranks = published ? standingText(standing, sessionId32) : { parts: [], share: '' };
   const standingParts = [...ranks.parts];
   if (personalBestDelta !== null) standingParts.push(`New personal best (+${personalBestDelta.toLocaleString('en-US')})`);
 
-  const sessionId32 = [snap.sessionId32, context?.sessionId32, server?.sessionId32].find((id) => typeof id === 'string' && SESSION_KEY.test(id)) ?? null;
   // §7.3: a Ranked share (with "Verified on LitVM") only once the run is on
   // chain; preview and practice share the Free template to the site root.
   const canShareRanked = published && sessionId32 !== null && Object.hasOwn(RANKED_RESULT_GAMES, gameId);
@@ -276,8 +291,11 @@ export function buildRankedResultsModel({ snapshot, context = {}, standing = nul
     share = Object.freeze({ template: 'free', text: buildFreeShareText(gameId, { score, stats: statsSource }), url: SHARE_ORIGIN });
   }
 
+  const keepTabOpen = snap.persisted === false || snap.notice?.code === 'keep-tab-open';
+
   return Object.freeze({
     gameId,
+    sessionId32,
     title: context?.gameTitle ?? RANKED_RESULT_GAMES[gameId] ?? 'Ranked run',
     state,
     hero: Object.freeze({ score, scoreLabel: score.toLocaleString('en-US'), handle: displayName ?? (shortWallet(wallet) || 'Player') }),
@@ -288,7 +306,7 @@ export function buildRankedResultsModel({ snapshot, context = {}, standing = nul
     achievements: Object.freeze(achievementsFor(gameId, server)),
     actions: Object.freeze({ share: share !== null, retry: state === 'saved-locally', playAgain: true, practice: true, profile: ADDRESS.test(wallet) }),
     banner: bannerFor({ state, error, server }),
-    notice: snap.persisted === false && UNSETTLED_STATES.has(state) && !server ? KEEP_TAB_OPEN_TEXT : null,
+    notice: keepTabOpen && UNSETTLED_STATES.has(state) && !server ? KEEP_TAB_OPEN_TEXT : null,
     share,
   });
 }

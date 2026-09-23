@@ -37,6 +37,15 @@
   box-sizing: border-box;
 }
 
+/* Companions (§7.7): small non-modal surfaces over a finished run, such as
+   the first-Ranked name prompt, stay above the backdrop and clickable while
+   the screen is open. They are direct children of <body>; !important beats
+   their inline z-index. */
+body[data-ranked-results-open] > [data-results-companion],
+body[data-ranked-results-open] > .name-claim-toast {
+  z-index: 10060 !important;
+}
+
 .ranked-results {
   position: relative;
   width: min(760px, 100%);

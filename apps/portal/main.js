@@ -2743,8 +2743,11 @@ function bestRoguelikeUpgradeTitle() {
 // listener near the end of this file lazy-loads src/ranked-results.mjs and
 // hands the open view here. For a Ranked HMH run the results screen replaces
 // the game-over summary, which shrinks to one "View results" button while
-// the screen is open or after it was dismissed for this session.
+// the screen is open or after it was dismissed for this session. The button
+// node survives re-renders (settlement updates re-render the summary), and
+// renderGameOverSummary returns it so closing the screen can focus it.
 let rankedResultsView = null;
+let rankedResultsReopen = null;
 function showRankedResults(view) {
   rankedResultsView = view;
   renderGameOverSummary();
@@ -2756,22 +2759,25 @@ function rankedResultsViewForCurrentRun() {
 }
 
 function renderGameOverSummary() {
-  if (!dom.combatGameOverSummary) return;
+  if (!dom.combatGameOverSummary) return null;
   dom.combatGameOverSummary.hidden = !combat.gameOver;
   if (!combat.gameOver) {
     dom.combatGameOverSummary.replaceChildren();
-    return;
+    return null;
   }
   const rankedView = rankedResultsViewForCurrentRun();
   if (rankedView) {
+    if (rankedResultsReopen?.view === rankedView && rankedResultsReopen.button.parentNode === dom.combatGameOverSummary) return rankedResultsReopen.button;
     dom.combatGameOverSummary.dataset.channel = 'ranked-results';
     dom.combatGameOverSummary.replaceChildren();
     appendText(dom.combatGameOverSummary, 'strong', 'RANKED RUN COMPLETE', 'game-over-summary-title');
     const viewResults = el('button', { className: 'combat-action-button combat-action-button-primary ranked-results-reopen', type: 'button', textContent: 'View results' });
     viewResults.addEventListener('click', () => { playSfxCue('menu-click'); rankedView.reopen(); });
     dom.combatGameOverSummary.append(viewResults);
-    return;
+    rankedResultsReopen = { view: rankedView, button: viewResults };
+    return viewResults;
   }
+  rankedResultsReopen = null;
   const summary = currentGameOverSummaryModel();
   const nextLevel = combat.nextCampaignLevelId ? getHmhCampaignLevel(combat.nextCampaignLevelId) : null;
   const win = Boolean(combat.clearedCampaignLevelId) && isL2CampaignActive();

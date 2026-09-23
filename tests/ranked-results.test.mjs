@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import vm from 'node:vm';
 
-import { RANKED_RESULTS_STYLESHEET, openRankedResults } from '../apps/portal/src/ranked-results.mjs';
+import { RANKED_RESULTS_STYLESHEET, STANDING_RETRY_DELAYS_MS, openRankedResults } from '../apps/portal/src/ranked-results.mjs';
 import { catalogFor, nftAchievementIds } from '../apps/portal/src/achievements/index.mjs';
+import { buildHmhShareText, buildShareLinks, shareUrlFor } from '../apps/portal/src/share-links.mjs';
 
 // Contract §7.3 (openRankedResults), §7.7 (events), guide §3.3 and §5.11.
 // A minimal fake DOM stands in for jsdom: createElement, tree operations,
@@ -138,13 +140,37 @@ function context(extra = {}) {
   };
 }
 
-function setup({ snapshot = snapshotFor('published'), hosted = false, live = true, fetchImpl, ctx = context(), actions } = {}) {
+// setTimeout stand-in: nothing runs until the test calls runNext().
+function fakeTimers() {
+  const pending = new Map();
+  let next = 1;
+  return {
+    pending,
+    setTimeoutImpl: (fn, ms) => { const id = next++; pending.set(id, { fn, ms }); return id; },
+    clearTimeoutImpl: (id) => { pending.delete(id); },
+    get delays() { return [...pending.values()].map((entry) => entry.ms); },
+    async runNext() {
+      const [id, entry] = [...pending][0] ?? [];
+      if (!id) return null;
+      pending.delete(id);
+      entry.fn();
+      await flush();
+      return entry.ms;
+    },
+  };
+}
+
+const flush = () => new Promise((resolve) => setImmediate(resolve));
+
+function setup({ snapshot = snapshotFor('published'), hosted = false, live = true, fetchImpl, ctx = context(), actions, patchWindow, onClose } = {}) {
   const documentRef = fakeDocument();
   const windowRef = fakeWindow();
+  patchWindow?.(windowRef);
   const mount = documentRef.body.appendChild(documentRef.createElement('section'));
   const opener = documentRef.body.appendChild(documentRef.createElement('button'));
   opener.focus();
   const handle = fakeHandle(snapshot);
+  const timers = fakeTimers();
   const calls = [];
   const fetches = [];
   const closed = [];
@@ -158,9 +184,11 @@ function setup({ snapshot = snapshotFor('published'), hosted = false, live = tru
     documentRef, windowRef, mount, live, hosted,
     navigatorRef: { clipboard: { writeText: async () => {} } },
     fetchImpl: fetchImpl ?? (async (url, init) => { fetches.push({ url, init }); throw new Error('offline'); }),
-    onClose: (closedView) => closed.push(closedView),
+    onClose: onClose ?? ((closedView) => { closed.push(closedView); }),
+    setTimeoutImpl: timers.setTimeoutImpl,
+    clearTimeoutImpl: timers.clearTimeoutImpl,
   });
-  return { documentRef, windowRef, mount, opener, handle, view, calls, fetches, closed };
+  return { documentRef, windowRef, mount, opener, handle, view, calls, fetches, closed, timers };
 }
 
 const find = (root, predicate) => [root, ...root.all()].find(predicate) ?? null;
@@ -265,7 +293,7 @@ test('focus is trapped and Escape closes', async () => {
 });
 
 test('Escape inside the share menu closes the menu, not the dialog', async () => {
-  const { view } = setup({ snapshot: snapshotFor('published') });
+  const { view, documentRef } = setup({ snapshot: snapshotFor('published') });
   const root = view.element;
   const more = find(root, (node) => node.dataset.share === 'more');
   await more.dispatch('click');
@@ -274,7 +302,120 @@ test('Escape inside the share menu closes the menu, not the dialog', async () =>
   await discord.dispatch('keydown', { key: 'Escape' });
   assert.equal(more.getAttribute('aria-expanded'), 'false');
   assert.equal(view.isOpen, true);
+  // Right after opening the menu from the keyboard, focus is on the toggle:
+  // Escape there closes the menu too, and focus stays on the toggle.
+  more.focus();
+  await more.dispatch('click');
+  assert.equal(more.getAttribute('aria-expanded'), 'true');
+  const onToggle = await more.dispatch('keydown', { key: 'Escape' });
+  assert.equal(onToggle.stopped, true);
+  assert.equal(more.getAttribute('aria-expanded'), 'false');
+  assert.equal(view.isOpen, true, 'the dialog stays open');
+  assert.equal(documentRef.activeElement, more);
+  // With the menu closed, the next Escape closes the dialog.
+  await more.dispatch('keydown', { key: 'Escape' });
+  assert.equal(view.isOpen, false);
+});
+
+test('a companion (the first-Ranked name prompt) stays reachable above the open screen', async () => {
+  const { documentRef, view, opener } = setup({ snapshot: snapshotFor('published') });
+  const root = view.element;
+  assert.equal(documentRef.body.dataset.rankedResultsOpen, 'true', 'the stylesheet lifts companions while this is set');
+  // profile-boards appends its toast to <body> after the screen opened.
+  const toast = documentRef.createElement('aside');
+  toast.className = 'name-claim-toast official-info-card';
+  toast.setAttribute('role', 'status');
+  const claim = toast.appendChild(documentRef.createElement('button'));
+  claim.textContent = 'Claim';
+  const later = toast.appendChild(documentRef.createElement('button'));
+  later.textContent = 'Not now';
+  documentRef.body.appendChild(toast);
+  const focusin = (target) => { for (const fn of documentRef.listeners.get('focusin') ?? []) fn({ target }); };
+  const documentKeydown = (target, init) => {
+    const event = { key: 'Tab', shiftKey: false, target, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }, ...init };
+    for (const fn of documentRef.listeners.get('keydown') ?? []) fn(event);
+    return event;
+  };
+  // Focus moving into the companion is not pulled back into the dialog.
+  claim.focus();
+  focusin(claim);
+  assert.equal(documentRef.activeElement, claim);
+  // Tab order: dialog controls, then the companion, then back to the dialog.
+  const items = findAll(root, (node) => (node.tagName === 'BUTTON' && !node.disabled) || (node.tagName === 'A' && node.href)).filter((node) => visible(node, root));
+  const [first, last] = [items[0], items.at(-1)];
+  last.focus();
+  assert.equal((await last.dispatch('keydown', { key: 'Tab' })).defaultPrevented, true);
+  assert.equal(documentRef.activeElement, claim, 'Tab from the last dialog control reaches the prompt');
+  later.focus();
+  assert.equal(documentKeydown(later).defaultPrevented, true);
+  assert.equal(documentRef.activeElement, first, 'Tab from the last prompt control wraps into the dialog');
+  first.focus();
+  await first.dispatch('keydown', { key: 'Tab', shiftKey: true });
+  assert.equal(documentRef.activeElement, later, 'Shift+Tab from the first dialog control reaches the prompt');
+  claim.focus();
+  documentKeydown(claim, { shiftKey: true });
+  assert.equal(documentRef.activeElement, last, 'Shift+Tab from the first prompt control returns to the dialog');
+  const middle = documentKeydown(claim, { shiftKey: false });
+  assert.equal(middle.defaultPrevented, false, 'inside the prompt the browser moves focus itself');
+  // Any element marked data-results-companion is treated the same way.
+  const other = documentRef.body.appendChild(documentRef.createElement('div'));
+  other.dataset.resultsCompanion = '';
+  const otherButton = other.appendChild(documentRef.createElement('button'));
+  otherButton.focus();
+  focusin(otherButton);
+  assert.equal(documentRef.activeElement, otherButton);
+  // Anything else behind the screen is still pulled back.
+  opener.focus();
+  focusin(opener);
+  assert.equal(documentRef.activeElement, first);
   view.close();
+  assert.equal(documentRef.body.dataset.rankedResultsOpen, undefined);
+  assert.equal((documentRef.listeners.get('keydown') ?? []).length, 0);
+});
+
+test('an in-app navigation that hides the owning view closes the screen (a companion Claim, pushState)', () => {
+  const observers = [];
+  class FakeMutationObserver {
+    constructor(callback) { this.callback = callback; observers.push(this); }
+    observe(target, options) { this.target = target; this.options = options; }
+    disconnect() { this.disconnected = true; }
+  }
+  const { view, mount, closed } = setup({ snapshot: snapshotFor('published'), patchWindow: (windowRef) => { windowRef.MutationObserver = FakeMutationObserver; } });
+  assert.equal(observers.length, 1);
+  assert.equal(observers[0].target, mount);
+  assert.deepEqual(observers[0].options.attributeFilter, ['hidden', 'class', 'style']);
+  observers[0].callback([]);
+  assert.equal(view.isOpen, true, 'an attribute change that keeps the view shown changes nothing');
+  mount.hidden = true;
+  observers[0].callback([]);
+  assert.equal(view.isOpen, false);
+  assert.deepEqual(closed, [view]);
+  assert.equal(observers[0].disconnected, true);
+});
+
+test('closing runs onClose first, then focuses its replacement when the opener is gone (HMH View results)', () => {
+  const documentRef = fakeDocument();
+  const windowRef = fakeWindow();
+  const summary = documentRef.body.appendChild(documentRef.createElement('div'));
+  let reopen = summary.appendChild(documentRef.createElement('button'));
+  const opener = reopen;
+  opener.focus();
+  const order = [];
+  const view = openRankedResults({
+    handle: fakeHandle(snapshotFor('published')), context: context(), actions: {}, documentRef, windowRef, mount: summary,
+    onClose: () => {
+      order.push(`onClose (focus on ${documentRef.activeElement === reopen ? 'opener' : 'dialog'})`);
+      summary.replaceChildren();
+      reopen = summary.appendChild(documentRef.createElement('button'));
+      return reopen;
+    },
+  });
+  assert.notEqual(documentRef.activeElement, opener, 'setup: the dialog took focus from the opener');
+  view.close();
+  assert.deepEqual(order, ['onClose (focus on dialog)'], 'onClose ran before focus moved');
+  assert.equal(opener.isConnected, false, 'onClose re-rendered the summary without the old button');
+  assert.equal(documentRef.activeElement, reopen, 'the new View results button has focus, not <body>');
+  assert.equal(reopen.isConnected, true);
 });
 
 test('retry calls handle.retry', async () => {
@@ -299,6 +440,23 @@ test('retry calls handle.retry', async () => {
   const disabledShare = find(byClass(root, 'rr-share'), (node) => node.tagName === 'BUTTON' && node.textContent === 'Share on X');
   assert.equal(disabledShare.disabled, true);
   assert.match(byClass(root, 'rr-share-note').textContent, /unlocks once the run is published/);
+  view.close();
+});
+
+test('a retry that rejects re-enables the button and keeps the screen', async () => {
+  const { view, handle } = setup({ snapshot: snapshotFor('saved-locally', { error: { code: 'network-error', retryable: true } }) });
+  handle.retry = async () => { handle.retries += 1; throw new Error('still offline'); };
+  const retry = buttonNamed(view.element, 'Retry now');
+  await retry.dispatch('click');
+  await flush();
+  assert.equal(handle.retries, 1);
+  assert.equal(retry.disabled, false);
+  assert.equal(retry.textContent, 'Retry now');
+  assert.equal(view.isOpen, true);
+  assert.equal(byClass(view.element, 'rr-banner').dataset.kind, 'saved-locally', 'the handle, not the rejection, drives the banner');
+  await retry.dispatch('click');
+  await flush();
+  assert.equal(handle.retries, 2, 'the player can retry again');
   view.close();
 });
 
@@ -348,11 +506,11 @@ test('hosted published runs read the weekly and all-time standing once', async (
     const rank = url.includes('period=weekly') ? 3 : 12;
     return { ok: true, json: async () => ({ ok: true, you: { rank, score: 19475, sessionId32: SESSION_ID32 } }) };
   };
-  const { view, handle } = setup({ snapshot: snapshotFor('publishing'), hosted: true, fetchImpl });
+  const { view, handle, timers } = setup({ snapshot: snapshotFor('publishing'), hosted: true, fetchImpl });
   assert.equal(fetches.length, 0, 'nothing before the run is published');
   handle.set(snapshotFor('published'));
   handle.set(snapshotFor('published', { updatedAt: 2 }));
-  await new Promise((resolve) => setImmediate(resolve));
+  await flush();
   assert.deepEqual(fetches.map((call) => call.url).sort(), [
     `/api/leaderboard?game=chikun&period=all-time&wallet=${WALLET}`,
     `/api/leaderboard?game=chikun&period=weekly&wallet=${WALLET}`,
@@ -361,7 +519,76 @@ test('hosted published runs read the weekly and all-time standing once', async (
   assert.equal(byClass(view.element, 'rr-standing').textContent, '#3 this week · #12 all-time · New personal best (+4,475)');
   const x = find(view.element, (node) => node.dataset.share === 'x');
   assert.match(new URL(x.href).searchParams.get('text'), /19,475 pts · Rank 3 this week/);
+  assert.deepEqual(timers.delays, [], 'both periods answered for this run: no retry');
+  handle.set(snapshotFor('published', { updatedAt: 3 }));
+  await flush();
+  assert.equal(fetches.length, 2, 'read once');
   view.close();
+});
+
+const OTHER_SESSION = `0x${'77'.repeat(32)}`;
+const okJson = (body) => ({ ok: true, json: async () => body });
+
+test('a standing that belongs to another run of the wallet is left out of the screen and the X text', async () => {
+  // E5 `you` is the wallet's best row; here another, higher-scoring run holds it.
+  const fetches = [];
+  const fetchImpl = async (url) => { fetches.push(url); return okJson({ ok: true, you: { rank: 1, score: 99999, sessionId32: OTHER_SESSION, shareId: OTHER_SESSION.slice(2) } }); };
+  const { view, timers } = setup({ snapshot: snapshotFor('published'), hosted: true, fetchImpl });
+  await flush();
+  assert.equal(fetches.length, 2);
+  assert.equal(byClass(view.element, 'rr-standing').textContent, 'New personal best (+4,475)', 'no rank from another session');
+  const text = new URL(find(view.element, (node) => node.dataset.share === 'x').href).searchParams.get('text');
+  assert.doesNotMatch(text, /Rank/);
+  assert.match(text, /^🐔 RANKED · Chikun's Escape\n19,475 pts · Lap 2 · Farmland\n/);
+  assert.deepEqual(timers.delays, [], 'a higher-scoring best is final: no retry');
+  view.close();
+});
+
+test('a hosted standing read that fails or lags is retried a bounded number of times, then left out', async () => {
+  const replies = [];
+  const fetches = [];
+  const fetchImpl = async (url) => {
+    fetches.push(url);
+    const next = replies.shift();
+    if (next instanceof Error) throw next;
+    return next;
+  };
+  // Round 1: weekly answers 500, all-time throws. Nothing is shown; one retry waits.
+  replies.push({ ok: false, status: 500, json: async () => ({ ok: false }) }, new Error('offline'));
+  const { view, timers, handle } = setup({ snapshot: snapshotFor('published'), hosted: true, fetchImpl });
+  await flush();
+  assert.equal(fetches.length, 2);
+  assert.equal(byClass(view.element, 'rr-standing').textContent, 'New personal best (+4,475)', 'the screen still renders, without a rank');
+  assert.ok(find(view.element, (node) => node.dataset.share === 'x'), 'sharing still works');
+  assert.deepEqual(timers.delays, [STANDING_RETRY_DELAYS_MS[0]]);
+  // Round 2: weekly is this run; all-time still shows an older, lower run (a
+  // lagging index or CDN copy), so only all-time is read again.
+  replies.push(okJson({ ok: true, you: { rank: 5, score: 19475, sessionId32: SESSION_ID32 } }), okJson({ ok: true, you: { rank: 40, score: 1000, sessionId32: OTHER_SESSION } }));
+  assert.equal(await timers.runNext(), 4_000);
+  assert.equal(fetches.length, 4);
+  assert.equal(byClass(view.element, 'rr-standing').textContent, '#5 this week · New personal best (+4,475)');
+  assert.match(new URL(find(view.element, (node) => node.dataset.share === 'x').href).searchParams.get('text'), /19,475 pts · Rank 5 this week/);
+  assert.deepEqual(timers.delays, [STANDING_RETRY_DELAYS_MS[1]]);
+  // Rounds 3 and 4 fail too; then it stops for good.
+  replies.push(okJson({ ok: true, you: null }));
+  assert.equal(await timers.runNext(), 15_000);
+  replies.push(new Error('offline'));
+  assert.equal(await timers.runNext(), 40_000);
+  assert.deepEqual(fetches.slice(4), [`/api/leaderboard?game=chikun&period=all-time&wallet=${WALLET}`, `/api/leaderboard?game=chikun&period=all-time&wallet=${WALLET}`]);
+  assert.deepEqual(timers.delays, [], 'no fifth round');
+  handle.set(snapshotFor('published', { updatedAt: 9 }));
+  await flush();
+  assert.equal(fetches.length, 6);
+  assert.equal(byClass(view.element, 'rr-standing').textContent, '#5 this week · New personal best (+4,475)');
+  view.close();
+});
+
+test('closing the screen cancels a pending standing retry', async () => {
+  const { view, timers } = setup({ snapshot: snapshotFor('published'), hosted: true });
+  await flush();
+  assert.deepEqual(timers.delays, [4_000]);
+  view.close();
+  assert.deepEqual(timers.delays, []);
 });
 
 test('the entry chip and handle follow lesters:ranked-entry and lesters:profile-changed', () => {
@@ -436,7 +663,7 @@ test('a browser back that hides the owning gameplay view closes the screen', asy
   assert.equal(view.isOpen, false, 'closed with its view');
 });
 
-test('main.js mounts the screen from exactly one lazy listener and HMH shows View results in place of its summary', async () => {
+test('main.js mounts the screen from exactly one lazy listener', async () => {
   const main = await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const listeners = main.match(/window\.addEventListener\('lesters:ranked-run'/g) ?? [];
   assert.equal(listeners.length, 1);
@@ -444,15 +671,99 @@ test('main.js mounts the screen from exactly one lazy listener and HMH shows Vie
   const listener = main.lastIndexOf("window.addEventListener('lesters:ranked-run'", anchor);
   assert.ok(listener > 0 && main.slice(listener, anchor).split('\n').filter(Boolean).length === 1, 'the listener sits immediately before the initial-paint anchor');
   assert.match(main.slice(listener, anchor), /import\('\.\/src\/ranked-results\.mjs'\)\.then\(\(\{ openRankedResults \}\) => showRankedResults\(openRankedResults\(\{ \.\.\.event\.detail, documentRef: document, mount: dom\.officialGameplay \?\? document\.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC/);
+  assert.match(main.slice(listener, anchor), /onClose: \(\) => renderGameOverSummary\(\)/, 'onClose hands back the View results button to focus');
   assert.match(main.slice(listener, anchor), /\.catch\(\(error\) => console\.error\('\[Ranked results\]', error\)\)/);
   assert.doesNotMatch(main, /^import[^\n]*ranked-results/m, 'never a static import: the screen stays lazy');
-  const summaryStart = main.indexOf('function renderGameOverSummary()');
-  const summary = main.slice(summaryStart, main.indexOf('\nfunction ', summaryStart + 10));
-  assert.match(summary, /const rankedView = rankedResultsViewForCurrentRun\(\);\s*if \(rankedView\) \{/);
-  assert.match(summary, /textContent: 'View results'/);
-  assert.match(summary, /rankedView\.reopen\(\)/);
-  assert.ok(summary.indexOf('rankedResultsViewForCurrentRun()') < summary.indexOf('currentGameOverSummaryModel()'), 'the compact branch replaces the full summary');
-  assert.match(main, /rankedResultsView\?\.gameId === 'lester-blaster' && sessionId && rankedResultsView\.sessionId === sessionId/);
+});
+
+// Runs the real showRankedResults / rankedResultsViewForCurrentRun /
+// renderGameOverSummary source from main.js in a vm context with stand-ins
+// for the HMH helpers around it.
+async function hmhSummaryHost({ mode = 'ranked', sessionId = SESSION_ID } = {}) {
+  const main = await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  const start = main.indexOf('let rankedResultsView = null;');
+  const end = main.indexOf('\nfunction recordCurrentSessionEvent(', start);
+  assert.ok(start > 0 && end > start, 'the HMH summary block is found');
+  const documentRef = fakeDocument();
+  const summaryNode = documentRef.body.appendChild(documentRef.createElement('div'));
+  const shareRows = [];
+  const context = vm.createContext({
+    dom: { combatGameOverSummary: summaryNode },
+    combat: { gameOver: true, score: 48210, kills: 312, maxCombo: 42, elapsedGameSeconds: 724, runLevel: 3, bossDefeated: false, clearedCampaignLevelId: null, nextCampaignLevelId: null, killedBy: 'a Bagholder swarm' },
+    currentSession: { sessionId, mode },
+    lastCompletedSession: null,
+    officialSelectedMode: mode,
+    hmhRebootActive: true,
+    el: (tag, props = {}) => Object.assign(documentRef.createElement(tag), props),
+    appendText: (parent, tag, text, className) => {
+      const node = documentRef.createElement(tag);
+      node.textContent = text;
+      if (className) node.className = className;
+      parent.append(node);
+      return node;
+    },
+    playSfxCue: () => {},
+    currentGameOverSummaryModel: () => ({
+      channel: 'defeat', title: 'GAME OVER', trackingCopy: 'Tracked.', metrics: [{ id: 'score', label: 'Score', value: '48,210' }],
+      oneMoreRun: { copy: 'One more?', primaryActionId: 'run-it-back', estimatedRestartSeconds: 3 }, streak: { copy: '' }, settlement: { copy: '' },
+      actions: [], exitRampCopy: '',
+    }),
+    getHmhCampaignLevel: () => null,
+    isL2CampaignActive: () => false,
+    currentHmhRunRecap: () => null,
+    renderHmhRunRecap: () => documentRef.createElement('div'),
+    buildHmhShareText, buildShareLinks, shareUrlFor,
+    createShareRow: (options) => {
+      shareRows.push(options);
+      const row = documentRef.createElement('div');
+      row.className = options.className;
+      row.prepend = (child) => row.insertBefore(child, row.children[0] ?? null);
+      return row;
+    },
+    restartCombatRun: () => {},
+    continueToCampaignLevel: () => {},
+  });
+  vm.runInContext(main.slice(start, end), context);
+  return { context, summaryNode, shareRows };
+}
+
+test('HMH shows View results in place of its summary for the Ranked run on screen, and keeps the Free share row', async () => {
+  // Free: the full summary with its share row.
+  const free = await hmhSummaryHost({ mode: 'free' });
+  free.context.renderGameOverSummary();
+  assert.equal(free.shareRows.length, 1);
+  assert.equal(free.shareRows[0].title, 'Hard Money Heroes');
+  assert.equal(new URL(free.shareRows[0].links.x).searchParams.get('url'), `${'https://lestersarcade.io'}/hmh-reboot`);
+  assert.ok(byClass(free.summaryNode, 'game-over-share-row'), 'the Free share row is mounted');
+  assert.ok(byClass(free.summaryNode, 'run-it-back-button'));
+
+  // Ranked without a results screen yet: the full summary, no share row.
+  const ranked = await hmhSummaryHost({ mode: 'ranked' });
+  ranked.context.renderGameOverSummary();
+  assert.equal(ranked.shareRows.length, 0, 'Ranked HMH shares from the results screen only');
+  assert.ok(byClass(ranked.summaryNode, 'run-it-back-button'));
+
+  // The results screen of this run: one "View results" button, kept across re-renders.
+  const reopened = [];
+  const view = { gameId: 'lester-blaster', sessionId: SESSION_ID, reopen: () => reopened.push('reopen') };
+  ranked.context.showRankedResults(view);
+  const button = buttonNamed(ranked.summaryNode, 'View results');
+  assert.ok(button);
+  assert.equal(ranked.summaryNode.dataset.channel, 'ranked-results');
+  assert.equal(byClass(ranked.summaryNode, 'run-it-back-button'), null, 'the compact branch replaces the full summary');
+  assert.equal(ranked.context.renderGameOverSummary(), button, 'a re-render returns the same node, so focus on it survives');
+  assert.equal(ranked.summaryNode.children.includes(button), true);
+  await button.dispatch('click');
+  assert.deepEqual(reopened, ['reopen']);
+
+  // A results screen from an earlier run never replaces this run's summary.
+  const stale = await hmhSummaryHost({ mode: 'ranked', sessionId: 'game-session-another-run' });
+  stale.context.showRankedResults(view);
+  assert.equal(buttonNamed(stale.summaryNode, 'View results'), null);
+  assert.ok(byClass(stale.summaryNode, 'run-it-back-button'));
+  const otherGame = await hmhSummaryHost({ mode: 'ranked' });
+  otherGame.context.showRankedResults({ ...view, gameId: 'chikun' });
+  assert.equal(buttonNamed(otherGame.summaryNode, 'View results'), null, 'a Chikun screen never touches the HMH summary');
 });
 
 test('the stylesheet uses the arcade tokens, tier colours, reduced motion and a 320 px-safe layout', async () => {
@@ -461,6 +772,10 @@ test('the stylesheet uses the arcade tokens, tier colours, reduced motion and a 
     assert.match(css, new RegExp(`--rr-${tier}: ${colour};`), tier);
     assert.match(css, new RegExp(`\\.rr-badge\\[data-tier="${tier}"\\] \\{ --tier: var\\(--rr-${tier}\\); \\}`), tier);
   }
+  // Companions sit above the backdrop while the screen is open (§7.7 name prompt).
+  const backdropZ = Number(/\.ranked-results-backdrop \{[^}]*z-index: (\d+);/.exec(css)?.[1]);
+  const companionZ = Number(/body\[data-ranked-results-open\] > \[data-results-companion\],\s*body\[data-ranked-results-open\] > \.name-claim-toast \{\s*z-index: (\d+) !important;/.exec(css)?.[1]);
+  assert.ok(backdropZ > 0 && companionZ > backdropZ, `companion z-index ${companionZ} above the backdrop ${backdropZ}`);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /\[data-reduced-motion="true"\]/);
   assert.match(css, /overflow-x: hidden/);

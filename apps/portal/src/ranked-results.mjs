@@ -9,12 +9,28 @@
 //
 // Network: nothing unless `hosted` is true AND the run is published; then the
 // standing comes from GET /api/leaderboard (weekly and all-time, `wallet=`),
-// with cache:'no-store' (A23). With both flags false it fetches nothing.
+// with cache:'no-store' (A23). A period counts only when its `you` row is
+// this run (the §4.3.8 rule). A failed read, or a `you` that trails this
+// run's score (the index or the CDN copy has not caught up), is read again
+// after 4, 15 and 40 s, then left out. With both flags false it fetches
+// nothing.
+//
+// Companions (§7.7): another feature may show a small non-modal surface over
+// a finished run, such as the first-Ranked name prompt of profile-boards. A
+// direct child of <body> marked `data-results-companion` (or carrying the
+// `name-claim-toast` class of that prompt) stacks above the backdrop while
+// the screen is open (the stylesheet keys on body[data-ranked-results-open]),
+// is reachable with Tab from the dialog, and is never pulled back by the
+// focus trap. When the view that owns the screen is hidden (a companion
+// action or any other in-app navigation), the screen closes with it.
 // DOM: createElement and textContent only (§11 rule 6).
-import { DAILY_STANDING_ENABLED, buildRankedResultsModel } from './ranked-results-model.mjs';
+import { DAILY_STANDING_ENABLED, buildRankedResultsModel, standingForRun } from './ranked-results-model.mjs';
 import { buildShareLinks, createShareRow } from './share-links.mjs';
 
-export const RANKED_RESULTS_STYLESHEET = './src/styles/ranked-results.css?v=ranked-results-20260923';
+export const RANKED_RESULTS_STYLESHEET = './src/styles/ranked-results.css?v=ranked-results-20260923b';
+export const RESULTS_COMPANION_CLASSES = Object.freeze(['name-claim-toast']);
+export const STANDING_RETRY_DELAYS_MS = Object.freeze([4_000, 15_000, 40_000]);
+const STANDING_PERIODS = Object.freeze([['weekly', 'weekly'], ['allTime', 'all-time'], ...(DAILY_STANDING_ENABLED ? [['daily', 'daily']] : [])]);
 const WALLET = /^0x[0-9a-f]{40}$/;
 const TIERS = new Set(['bronze', 'silver', 'gold', 'platinum', 'diamond', 'mythic']);
 const STEP_ICON = Object.freeze({ done: '✓', active: '◌', pending: '·', failed: '✕', skipped: '–' });
@@ -58,6 +74,14 @@ function prefersReducedMotion(windowRef) {
   }
 }
 
+// A companion surface: marked data-results-companion, or a known class.
+function isCompanionNode(node) {
+  if (!node || typeof node !== 'object') return false;
+  if (node.dataset && node.dataset.resultsCompanion !== undefined) return true;
+  const classes = typeof node.className === 'string' ? node.className.split(/\s+/) : [];
+  return RESULTS_COMPANION_CLASSES.some((name) => classes.includes(name));
+}
+
 // Every enabled, visible link and button inside `root`, in document order.
 function focusablesIn(root) {
   const found = [];
@@ -86,6 +110,8 @@ export function openRankedResults({
   windowRef = globalThis.window,
   navigatorRef = globalThis.navigator,
   onClose = null,
+  setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
+  clearTimeoutImpl = (timer) => globalThis.clearTimeout(timer),
 } = {}) {
   if (!documentRef?.createElement) throw new TypeError('openRankedResults needs a document');
   activeView?.close({ restoreFocus: false });
@@ -93,8 +119,13 @@ export function openRankedResults({
 
   const ctx = { ...context, entry: { ...(context?.entry ?? {}) }, wallet: String(context?.wallet ?? '').toLowerCase() || null };
   const id = `rr-${++serial}`;
+  // Standing: the E5 `you` rows that belong to this run, per period.
   let standing = null;
-  let standingRequested = false;
+  const standingSettled = new Set();
+  let standingRounds = 0;
+  let standingBusy = false;
+  let standingTimer = null;
+  let ownerObserver = null;
   let open = false;
   let unsubscribe = null;
   let returnFocus = null;
@@ -375,24 +406,47 @@ export function openRankedResults({
     return model;
   }
 
+  // One E5 read gives { settled, you }. Settled means no later read can change
+  // the answer: either this run's row, or another run of the wallet scoring
+  // at least as much (this run is not the wallet's best in the period).
+  async function readStanding(model, wallet, period) {
+    try {
+      const url = `/api/leaderboard?game=${encodeURIComponent(model.gameId)}&period=${period}&wallet=${wallet}`;
+      const response = await fetchImpl(url, { cache: 'no-store', headers: { accept: 'application/json' } });
+      if (!response?.ok) return { settled: false, you: null };
+      const body = await response.json();
+      const you = body?.ok && body.you && typeof body.you === 'object' ? body.you : null;
+      if (standingForRun(you, model.sessionId32)) return { settled: true, you };
+      return { settled: Boolean(you) && Number(you.score) >= model.hero.score, you: null };
+    } catch {
+      return { settled: false, you: null };
+    }
+  }
+
   function maybeFetchStanding(model) {
-    if (!hosted || standingRequested || model.state !== 'published' || typeof fetchImpl !== 'function') return;
+    if (!hosted || standingBusy || model.state !== 'published' || typeof fetchImpl !== 'function') return;
     const wallet = String(ctx.wallet ?? currentSnapshot()?.wallet ?? '').toLowerCase();
-    if (!WALLET.test(wallet) || !model.gameId) return;
-    standingRequested = true;
-    const periods = [['weekly', 'weekly'], ['allTime', 'all-time'], ...(DAILY_STANDING_ENABLED ? [['daily', 'daily']] : [])];
-    void Promise.all(periods.map(async ([key, period]) => {
-      try {
-        const url = `/api/leaderboard?game=${encodeURIComponent(model.gameId)}&period=${period}&wallet=${wallet}`;
-        const response = await fetchImpl(url, { cache: 'no-store', headers: { accept: 'application/json' } });
-        if (!response?.ok) return [key, null];
-        const body = await response.json();
-        return [key, body?.ok && body.you && typeof body.you === 'object' ? body.you : null];
-      } catch {
-        return [key, null];
+    if (!WALLET.test(wallet) || !model.gameId || !model.sessionId32) return;
+    const periods = STANDING_PERIODS.filter(([key]) => !standingSettled.has(key));
+    if (!periods.length || standingRounds > STANDING_RETRY_DELAYS_MS.length) return;
+    standingBusy = true;
+    standingRounds += 1;
+    void Promise.all(periods.map(async ([key, period]) => [key, await readStanding(model, wallet, period)])).then((results) => {
+      for (const [key, { settled, you }] of results) {
+        if (settled) standingSettled.add(key);
+        if (you) standing = { ...standing, [key]: you };
       }
-    })).then((entries) => {
-      standing = Object.fromEntries(entries);
+      const delay = STANDING_RETRY_DELAYS_MS[standingRounds - 1];
+      const unsettled = STANDING_PERIODS.some(([key]) => !standingSettled.has(key));
+      if (open && unsettled && delay !== undefined) {
+        standingTimer = setTimeoutImpl(() => {
+          standingTimer = null;
+          standingBusy = false;
+          if (open) render();
+        }, delay);
+      } else {
+        standingBusy = false;
+      }
       if (open) render();
     });
   }
@@ -427,22 +481,52 @@ export function openRankedResults({
     }
     const first = items[0];
     const last = items[items.length - 1];
+    const extra = companionFocusables();
     const activeElement = documentRef.activeElement;
     const inside = items.includes(activeElement);
     if (event.shiftKey && (activeElement === first || activeElement === dialog || !inside)) {
       event.preventDefault?.();
-      last.focus?.();
+      (extra.at(-1) ?? last).focus?.();
     } else if (!event.shiftKey && (activeElement === last || !inside && activeElement !== dialog)) {
       event.preventDefault?.();
-      first.focus?.();
+      (extra[0] ?? first).focus?.();
     }
   }
 
   // Focus that escapes the dialog (a click on the page behind, a screen
-  // reader jump) is pulled back in while the dialog is open.
+  // reader jump) is pulled back in while the dialog is open. A companion
+  // keeps it.
   function onFocusIn(event) {
-    if (!open || !event?.target || root.contains?.(event.target)) return;
+    if (!open || !event?.target || root.contains?.(event.target) || companionOf(event.target)) return;
     (focusablesIn(dialog)[0] ?? dialog).focus?.();
+  }
+
+  function companionOf(node) {
+    for (let current = node; current && current !== documentRef.body; current = current.parentNode) {
+      if (current !== root && isCompanionNode(current)) return current;
+    }
+    return null;
+  }
+
+  function companionFocusables() {
+    return Array.from(documentRef.body?.children ?? [])
+      .filter((node) => node !== root && !node.hidden && isCompanionNode(node))
+      .flatMap((node) => focusablesIn(node));
+  }
+
+  // Tab past either end of the companions goes back into the dialog.
+  function onCompanionKeydown(event) {
+    if (!open || event?.key !== 'Tab' || !companionOf(event.target)) return;
+    const extra = companionFocusables();
+    const items = focusablesIn(dialog);
+    const activeElement = documentRef.activeElement;
+    if (!event.shiftKey && activeElement === extra.at(-1)) {
+      event.preventDefault?.();
+      (items[0] ?? dialog).focus?.();
+    } else if (event.shiftKey && activeElement === extra[0]) {
+      event.preventDefault?.();
+      (items.at(-1) ?? dialog).focus?.();
+    }
   }
 
   function onProfileChanged(event) {
@@ -472,8 +556,26 @@ export function openRankedResults({
     return typeof mount.getClientRects === 'function' ? mount.getClientRects().length > 0 : true;
   }
 
+  function closeIfOwnerHidden() {
+    if (open && !ownerShown()) close({ restoreFocus: false });
+  }
+
   function onPopState() {
-    setTimeout(() => { if (open && !ownerShown()) close({ restoreFocus: false }); }, 0);
+    setTimeout(closeIfOwnerHidden, 0);
+  }
+
+  // In-app navigation (pushState, or a companion action such as Claim) hides
+  // the owning view without a popstate, so the screen follows its attributes.
+  function observeOwner() {
+    const Observer = windowRef?.MutationObserver;
+    if (!mount || mount === documentRef.body || typeof Observer !== 'function') return null;
+    try {
+      const observer = new Observer(closeIfOwnerHidden);
+      observer.observe(mount, { attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
+      return observer;
+    } catch {
+      return null;
+    }
   }
 
   root.addEventListener('keydown', onKeydown);
@@ -484,7 +586,10 @@ export function openRankedResults({
     activeView = view;
     returnFocus = documentRef.activeElement ?? null;
     (documentRef.body ?? mount).appendChild(root);
+    if (documentRef.body?.dataset) documentRef.body.dataset.rankedResultsOpen = 'true';
     documentRef.addEventListener?.('focusin', onFocusIn);
+    documentRef.addEventListener?.('keydown', onCompanionKeydown);
+    ownerObserver = observeOwner();
     windowRef?.addEventListener?.('lesters:profile-changed', onProfileChanged);
     windowRef?.addEventListener?.('lesters:ranked-entry', onRankedEntry);
     windowRef?.addEventListener?.('popstate', onPopState);
@@ -512,20 +617,35 @@ export function openRankedResults({
     root.scrollTop = 0;
   }
 
+  // onClose runs first (HMH re-renders its summary there). Focus then goes
+  // back to where it was or, when that element is gone, to whatever onClose
+  // returned (the HMH "View results" button).
   function close({ restoreFocus = true } = {}) {
     if (!open) return;
     open = false;
     if (activeView === view) activeView = null;
     try { unsubscribe?.(); } catch { /* a disposed handle has nothing to release */ }
     unsubscribe = null;
+    if (standingTimer !== null) {
+      clearTimeoutImpl(standingTimer);
+      standingTimer = null;
+      standingBusy = false;
+    }
+    ownerObserver?.disconnect?.();
+    ownerObserver = null;
     documentRef.removeEventListener?.('focusin', onFocusIn);
+    documentRef.removeEventListener?.('keydown', onCompanionKeydown);
     windowRef?.removeEventListener?.('lesters:profile-changed', onProfileChanged);
     windowRef?.removeEventListener?.('lesters:ranked-entry', onRankedEntry);
     windowRef?.removeEventListener?.('popstate', onPopState);
     root.remove?.();
-    if (restoreFocus && returnFocus && returnFocus.isConnected !== false) returnFocus.focus?.();
+    if (documentRef.body?.dataset) delete documentRef.body.dataset.rankedResultsOpen;
+    const previous = returnFocus;
     returnFocus = null;
-    if (typeof onClose === 'function') onClose(view);
+    const fallback = typeof onClose === 'function' ? onClose(view) : null;
+    if (!restoreFocus) return;
+    const target = previous && previous.isConnected !== false ? previous : fallback;
+    if (target && target.isConnected !== false) target.focus?.();
   }
 
   const view = {

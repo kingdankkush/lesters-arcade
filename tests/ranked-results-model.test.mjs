@@ -8,6 +8,7 @@ import {
   buildRankedResultsModel,
   rejectionText,
   shortWallet,
+  standingForRun,
 } from '../apps/portal/src/ranked-results-model.mjs';
 import { catalogFor, nftAchievementIds } from '../apps/portal/src/achievements/index.mjs';
 import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
@@ -74,7 +75,7 @@ test('every client state times every entry status keeps the timeline, banner and
   for (const state of STATES) {
     for (const entryStatus of ENTRY_STATUSES) {
       const label = `${state}/${entryStatus}`;
-      const model = buildRankedResultsModel({ snapshot: snapshotFor(state, { entryStatus }), context: contextFor(), standing: { weekly: { rank: 3 }, allTime: { rank: 12 } } });
+      const model = buildRankedResultsModel({ snapshot: snapshotFor(state, { entryStatus }), context: contextFor(), standing: { weekly: { rank: 3, sessionId32: SESSION_ID32 }, allTime: { rank: 12, sessionId32: SESSION_ID32 } } });
       assert.deepEqual(model.timeline.map((stepItem) => stepItem.id), TIMELINE_IDS, label);
       for (const stepItem of model.timeline) {
         assert.ok(['done', 'active', 'pending', 'failed', 'skipped'].includes(stepItem.status), `${label} ${stepItem.id}`);
@@ -171,7 +172,7 @@ test('banners cover every terminal and error state in plain words', () => {
 });
 
 test('standing text shows weekly and all-time ranks and the personal best only once published', () => {
-  const model = (state, context = {}, standing = { weekly: { rank: 3, score: 48210 }, allTime: { rank: 12, score: 48210 } }) => buildRankedResultsModel({
+  const model = (state, context = {}, standing = { weekly: { rank: 3, score: 48210, sessionId32: SESSION_ID32 }, allTime: { rank: 12, score: 48210, sessionId32: SESSION_ID32 } }) => buildRankedResultsModel({
     snapshot: snapshotFor(state, { gameId: 'lester-blaster' }), context: contextFor('lester-blaster', { previousBest: 44000, ...context }), standing,
   });
   const published = model('published');
@@ -181,7 +182,7 @@ test('standing text shows weekly and all-time ranks and the personal best only o
   assert.match(published.share.text, /🔥 New personal best!/);
   assert.doesNotMatch(published.share.text, /#/, 'the share text never carries #');
   assert.equal(DAILY_STANDING_ENABLED, false, 'D2: Daily stays off until the owner switches it on');
-  assert.equal(model('published', {}, { daily: { rank: 1 }, weekly: { rank: 3 }, allTime: null }).standing.text, '#3 this week · New personal best (+4,210)');
+  assert.equal(model('published', {}, { daily: { rank: 1, sessionId32: SESSION_ID32 }, weekly: { rank: 3, sessionId32: SESSION_ID32 }, allTime: null }).standing.text, '#3 this week · New personal best (+4,210)');
   assert.equal(model('published', { previousBest: 50000 }).standing.text, '#3 this week · #12 all-time');
   assert.equal(model('published', { previousBest: 50000 }).standing.personalBestDelta, null);
   assert.equal(model('published', { previousBest: null }, null).standing.text, null, 'an unknown previous best claims nothing');
@@ -190,6 +191,29 @@ test('standing text shows weekly and all-time ranks and the personal best only o
   const preview = buildRankedResultsModel({ snapshot: snapshotFor('preview', { gameId: 'lester-blaster', entryStatus: 'none' }), context: contextFor('lester-blaster', { previousBest: 40000 }) });
   assert.equal(preview.standing.text, 'New personal best (+5,000)', 'preview compares against the local best');
   assert.equal(preview.hero.score, 45000, 'preview has no server score');
+});
+
+test('a rank counts only when the E5 you row is this run (the wallet best may be another run)', () => {
+  // E5 `you` is the wallet's best row in the period (§4.3.5). When another of
+  // its runs holds that best, the rank belongs to that run: the screen and the
+  // X text leave it out, like the share page and card (E9 standing, §4.3.8).
+  const OTHER = `0x${'77'.repeat(32)}`;
+  const model = (standing) => buildRankedResultsModel({
+    snapshot: snapshotFor('published', { gameId: 'chikun' }), context: contextFor('chikun', { previousBest: 50000 }), standing,
+  });
+  const foreign = model({ weekly: { rank: 1, score: 99999, sessionId32: OTHER }, allTime: { rank: 2, score: 99999, sessionId32: OTHER } });
+  assert.equal(foreign.standing.text, null);
+  assert.doesNotMatch(foreign.share.text, /Rank/);
+  assert.match(foreign.share.text, /^🐔 RANKED · Chikun's Escape\n48,210 pts · Lap 2 · Farmland\n/);
+  const mixed = model({ weekly: { rank: 4, score: 48210, sessionId32: SESSION_ID32.toUpperCase().replace('0X', '0x') }, allTime: { rank: 9, score: 99999, sessionId32: OTHER } });
+  assert.equal(mixed.standing.text, '#4 this week', 'the weekly best is this run, the all-time best is not');
+  assert.match(mixed.share.text, /48,210 pts · Rank 4 this week/);
+  assert.equal(model({ weekly: { rank: 4 }, allTime: null }).standing.text, null, 'a row without a session key claims nothing');
+  assert.equal(model({ weekly: { rank: 4, sessionId32: SESSION_ID32 } }).sessionId32, SESSION_ID32, 'the model reports the run key it matched against');
+  assert.equal(standingForRun({ rank: 1, sessionId32: SESSION_ID32 }, SESSION_ID32).rank, 1);
+  assert.equal(standingForRun({ rank: 1, sessionId32: OTHER }, SESSION_ID32), null);
+  assert.equal(standingForRun({ rank: 1, sessionId32: SESSION_ID32 }, null), null);
+  assert.equal(standingForRun(null, SESSION_ID32), null);
 });
 
 test('each game lists its guide §3.3 stats, local until the server stats arrive', () => {
@@ -280,6 +304,15 @@ test('an unpersisted STACKED body asks the player to keep the tab open until the
   assert.equal(notice('queued'), null, 'the server stores the evidence on the first successful POST');
   assert.equal(notice('published'), null);
   assert.equal(buildRankedResultsModel({ snapshot: snapshotFor('verifying', { gameId: 'stacked', server: null }), context: contextFor('stacked') }).notice, null, 'persisted bodies need no notice');
+  // The snapshot ranked-client produces (origin/fable/pd-ranked-client
+  // ranked-settlement.mjs): persisted:false plus notice.code 'keep-tab-open'.
+  // Either field alone is enough.
+  const clientNotice = { code: 'keep-tab-open', message: 'Keep this tab open until publishing finishes' };
+  const fromClient = (extra) => buildRankedResultsModel({ snapshot: { ...snapshotFor('publishing', { gameId: 'stacked', server: null }), ...extra }, context: contextFor('stacked') }).notice;
+  assert.equal(fromClient({ persisted: false, notice: clientNotice }), 'Keep this tab open until publishing finishes');
+  assert.equal(fromClient({ notice: clientNotice }), 'Keep this tab open until publishing finishes');
+  assert.equal(fromClient({ persisted: true, notice: null }), null);
+  assert.equal(fromClient({ notice: { code: 'something-else' } }), null);
 });
 
 test('a missing or unknown snapshot degrades to an honest screen', () => {
