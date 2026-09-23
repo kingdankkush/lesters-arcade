@@ -414,21 +414,29 @@ export async function listDeadLetters(db, { sessionIds = null, limit = 500 } = {
 }
 
 // Moves the given dead letters back to failed with attempts = 0,
-// infra_failures = 0 and next_attempt_at = now. verified_at is the stale
-// clock (§3.3), so a row that would be stale again at once (verified more
-// than 6 days ago) restarts its retry window at the requeue; newer rows keep
-// their verified_at. Returns the requeued ids.
+// infra_failures = 0, resigns = 0 and next_attempt_at = now (§3.3), so the
+// settle-retry cron picks them up. verified_at is never touched: it is the
+// public verification time (E3, E4, E9, the profile's recent runs) as well as
+// the stale clock. A row verified more than 7 days ago is therefore not
+// requeued (the stale rule would dead-letter it again at once); moving that
+// clock needs a contract decision (a separate column). Returns the requeued ids.
 export async function requeueDeadLetters(db, { sessionIds, nowMs = Date.now() } = {}) {
   const ids = (sessionIds ?? []).map(requireId);
   if (!ids.length) return [];
   const rows = await db.query(
     `UPDATE verified_sessions SET attempts = 0, infra_failures = 0, resigns = 0, next_attempt_at = $2::timestamptz,
-            verified_at = CASE WHEN verified_at < $2::timestamptz - interval '6 days' THEN $2::timestamptz ELSE verified_at END,
             updated_at = $2::timestamptz
      WHERE session_id32 IN (SELECT jsonb_array_elements_text($1::jsonb))
        AND source = 'settle' AND status = 'failed' AND next_attempt_at IS NULL
+       AND verified_at >= $2::timestamptz - interval '7 days'
      RETURNING session_id32`,
     [JSON.stringify(ids), iso(nowMs)],
   );
   return rows.map((row) => row.session_id32);
+}
+
+// True when a row verified at `verifiedAt` is past the 7-day stale window.
+export function isStaleVerifiedAt(verifiedAt, nowMs) {
+  const verified = Date.parse(verifiedAt ?? '');
+  return Number.isFinite(verified) && Number(nowMs) - verified > STALE_AFTER_MS;
 }

@@ -1,12 +1,16 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { ethers } from 'ethers';
 
 import { migrate } from '../server/neon/migrations.mjs';
 import { periodKeysFor } from '../server/neon/period-keys.mjs';
+import { readPublicProfile } from '../server/neon/queries.mjs';
 import { attestationDomain, attestationRecord, signVerifiedRun } from '../server/settle/attestation.mjs';
 import { runSettleRetry } from '../server/settle/retry.mjs';
-import { insertSettleRow, markConfirmed, readSettleRow, settleInsertParams } from '../server/settle/store.mjs';
+import { insertSettleRow, markConfirmed, readSettleRow, requeueDeadLetters, settleInsertParams } from '../server/settle/store.mjs';
 import { localContracts, localWalletKeys } from '../scripts/lib/local-chain.mjs';
 import { REQUEUE_CONFIRM, runRequeueDeadLetters } from '../scripts/requeue-dead-letters.mjs';
 import * as retryApi from '../api/cron/settle-retry.mjs';
@@ -259,48 +263,92 @@ test('requeue script lists dead letters in a dry run and requeues only with --ap
   const deadOld = await seedRow(db, verify, { status: 'failed', deadLetter: true, verifiedAgoMs: eightDays });
   const deadNew = await seedRow(db, verify, { status: 'failed', deadLetter: true, verifiedAgoMs: 3_600_000 });
   const retryable = await seedRow(db, verify, { status: 'failed', nextAttemptInMs: 60_000 });
+  await seedRow(db, verify, { status: 'confirmed', verifiedAgoMs: 1_800_000 });
   const lines = [];
   const out = (line) => lines.push(String(line));
   const run = (argv, extra = {}) => runRequeueDeadLetters({ argv, db, out, nowMs: () => NOW, ...extra });
+  const recentRuns = async () => (await readPublicProfile(db, PLAYER, { self: true, nowMs: NOW, catalog: null })).recentSessions.map((row) => [row.sessionId32, row.verifiedAt]);
+  const recentBefore = await recentRuns();
+  assert.equal(recentBefore.length, 4);
 
   const dry = await run(['--all-dead']);
   assert.equal(dry.exitCode, 0);
-  assert.deepEqual([...dry.found].sort(), [deadNew, deadOld].sort());
+  assert.deepEqual(dry.found, [deadNew]);
+  assert.deepEqual(dry.stale, [deadOld], 'a dead letter verified more than 7 days ago is stale');
   assert.deepEqual(dry.requeued, []);
+  assert.ok(lines.some((line) => line.includes(`stale, not requeued`) && line.includes(deadOld)));
   assert.ok(lines.some((line) => line.includes('dry run: nothing was requeued')));
-  assert.equal((await readSettleRow(db, deadOld)).nextAttemptAt, null, 'a dry run writes nothing');
+  assert.equal((await readSettleRow(db, deadNew)).nextAttemptAt, null, 'a dry run writes nothing');
 
   lines.length = 0;
   assert.equal((await run(['--all-dead', '--apply'])).exitCode, 2, '--apply alone is refused');
   assert.equal((await run(['--all-dead', '--apply', '--confirm', 'yes'])).exitCode, 2);
-  assert.equal((await readSettleRow(db, deadOld)).nextAttemptAt, null);
+  assert.equal((await readSettleRow(db, deadNew)).nextAttemptAt, null);
   assert.equal((await run([])).exitCode, 2, 'a selection is required');
   assert.equal((await run(['--all-dead', '--session', deadOld])).exitCode, 2, 'not both');
   assert.equal((await run(['--session', '0x1234'])).exitCode, 2);
   assert.equal((await run(['--all-dead', '--force'])).exitCode, 2);
+  assert.equal((await run(['--all-dead', '--key-env'])).exitCode, 2, 'a key flag needs a value');
 
   const one = await run(['--session', deadNew, '--session', retryable, '--apply', '--confirm', REQUEUE_CONFIRM]);
   assert.deepEqual(one.requeued, [deadNew], 'only dead letters are requeued');
   assert.ok(lines.some((line) => line.includes(`not a dead letter (skipped): ${retryable}`)));
   const requeuedNew = await readSettleRow(db, deadNew);
   assert.deepEqual([requeuedNew.status, requeuedNew.attempts, requeuedNew.infraFailures, requeuedNew.nextAttemptAt], ['failed', 0, 0, new Date(NOW).toISOString()]);
-  assert.equal(requeuedNew.verifiedAt, new Date(NOW - 3_600_000).toISOString(), 'a recent row keeps its verified_at');
+  assert.equal(requeuedNew.verifiedAt, new Date(NOW - 3_600_000).toISOString(), 'verified_at is never rewritten');
 
-  const all = await run([`--all-dead`, '--apply', `--confirm=${REQUEUE_CONFIRM}`]);
-  assert.deepEqual(all.requeued, [deadOld]);
-  const requeuedOld = await readSettleRow(db, deadOld);
-  assert.deepEqual([requeuedOld.attempts, requeuedOld.nextAttemptAt, requeuedOld.verifiedAt], [0, new Date(NOW).toISOString(), new Date(NOW).toISOString()], 'a stale row restarts its retry window');
+  const all = await run(['--all-dead', '--apply', `--confirm=${REQUEUE_CONFIRM}`]);
+  assert.deepEqual([all.found, all.stale, all.requeued], [[], [deadOld], []]);
+  const stillDead = await readSettleRow(db, deadOld);
+  assert.deepEqual([stillDead.nextAttemptAt, stillDead.verifiedAt], [null, new Date(NOW - eightDays).toISOString()], 'the stale row is left as it was');
+  assert.deepEqual(await requeueDeadLetters(db, { sessionIds: [deadOld], nowMs: NOW }), [], 'the store refuses a stale row too');
+  assert.deepEqual(await recentRuns(), recentBefore, 'the profile\'s recent runs keep their order and verification times');
+
   const due = await runSettleRetry(await cronDeps(db, { verify, relayer: fakeRelayer(db) }));
-  assert.deepEqual(due.body.processed.filter((entry) => [deadOld, deadNew].includes(entry.sessionId32)).map((entry) => entry.to), ['confirmed', 'confirmed'], 'the cron picks requeued rows up');
-
-  // The connection string comes from the environment and is never printed.
-  lines.length = 0;
-  const secretUrl = 'postgresql://owner:hunter2@ep-secret.neon.tech/neondb';
-  const failing = await runRequeueDeadLetters({ argv: ['--all-dead'], env: { NEON_DATABASE_URL: secretUrl }, out, fetchImpl: async () => { throw Object.assign(new Error(`connect failed ${secretUrl}`), { code: 'ECONNREFUSED' }); } });
-  assert.equal(failing.exitCode, 1);
-  assert.deepEqual(lines, ['requeue failed (ECONNREFUSED)']);
-  assert.ok(lines.every((line) => !line.includes('hunter2') && !line.includes('ep-secret')));
-  lines.length = 0;
-  assert.equal((await runRequeueDeadLetters({ argv: ['--all-dead'], env: {}, out })).exitCode, 2);
-  assert.deepEqual(lines, ['NEON_DATABASE_URL is not set; nothing was requeued.']);
+  const picked = due.body.processed.filter((entry) => [deadOld, deadNew].includes(entry.sessionId32));
+  assert.deepEqual(picked.map((entry) => [entry.sessionId32, entry.to]), [[deadNew, 'confirmed']], 'the cron picks the requeued row up');
 }));
+
+test('requeue script reads the connection string through key-source and never prints it', async () => {
+  const secretUrl = 'postgresql://owner:hunter2@ep-secret-pooler.neon.tech/neondb?sslmode=require';
+  const dir = mkdtempSync(join(tmpdir(), 'requeue-key-'));
+  try {
+    const jsonFile = join(dir, 'neon.json');
+    writeFileSync(jsonFile, JSON.stringify({ neon: { url: secretUrl }, other: 'x' }));
+    const textFile = join(dir, 'neon.txt');
+    writeFileSync(textFile, `${secretUrl}\n`);
+    const lines = [];
+    const out = (line) => lines.push(String(line));
+    const used = [];
+    const fetchImpl = async (endpoint, init) => {
+      used.push(init.headers['Neon-Connection-String']);
+      throw Object.assign(new Error(`connect failed ${secretUrl}`), { code: 'ECONNREFUSED' });
+    };
+    const run = (argv, env = {}) => runRequeueDeadLetters({ argv: ['--all-dead', ...argv], env, out, fetchImpl, nowMs: () => NOW });
+
+    // Default: --key-env NEON_DATABASE_URL.
+    assert.equal((await run([], { NEON_DATABASE_URL: secretUrl })).exitCode, 1);
+    // A named variable, a JSON field and a plain-text file.
+    assert.equal((await run(['--key-env', 'OPS_NEON_URL'], { OPS_NEON_URL: secretUrl })).exitCode, 1);
+    assert.equal((await run(['--key-file', jsonFile, '--key-field', 'neon.url'])).exitCode, 1);
+    assert.equal((await run([`--key-file=${textFile}`])).exitCode, 1);
+    assert.deepEqual(used, [secretUrl, secretUrl, secretUrl, secretUrl], 'each source reached the client');
+    assert.deepEqual(lines, Array(4).fill('requeue failed (ECONNREFUSED)'));
+
+    lines.length = 0;
+    assert.equal((await run([])).exitCode, 2);
+    assert.equal((await run(['--key-file', jsonFile, '--key-field', 'neon.missing'])).exitCode, 2);
+    assert.equal((await run(['--key-env', 'OPS_NEON_URL', '--key-file', jsonFile])).exitCode, 2);
+    assert.equal((await run(['--key-env', secretUrl])).exitCode, 2, 'a pasted value is refused');
+    assert.equal((await run(['--key-file', jsonFile, '--key-field', 'other'])).exitCode, 2, 'the value must look like a connection string');
+    assert.deepEqual(lines.slice(0, 1), ['environment variable NEON_DATABASE_URL is not set or empty; nothing was requeued.']);
+    assert.ok(lines[1].includes('neon.missing') && lines[1].includes(jsonFile));
+    assert.equal(lines.length, 5);
+    assert.equal(used.length, 4, 'no client for a source that failed');
+    for (const line of lines) {
+      assert.ok(!line.includes('hunter2') && !line.includes('ep-secret'), line);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
