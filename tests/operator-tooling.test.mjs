@@ -14,7 +14,7 @@ import { PassThrough } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 import { SecretSourceError, flagValue, readSecret } from '../scripts/lib/key-source.mjs';
-import { FEES_OFF_WARNING, OPERATOR_ACTIONS, operatorHelp, runOperatorAction, runOperatorCli } from '../scripts/operator-actions.mjs';
+import { FEES_OFF_WARNING, OPERATOR_ACTIONS, isLoopbackRpc, operatorHelp, runOperatorAction, runOperatorCli } from '../scripts/operator-actions.mjs';
 import { LEGACY_SECRET_NAMES, VERCEL_APPLY_CONFIRM, defaultVercelCommand, envNamesIn, runVercelSecrets } from '../scripts/vercel-secrets.mjs';
 import { cronUrl, runLiveCronCli, summarizeCronResponse } from '../scripts/live-cron.mjs';
 import { deployLocalSuite, localContracts, localWalletKeys, serveJsonRpc, startLocalChain } from '../scripts/lib/local-chain.mjs';
@@ -235,6 +235,78 @@ test('the operator CLI reads the key file inside the process and never prints it
     await bridge.close();
     await chain.revert(snapshot);
   }
+});
+
+// A JSON-RPC node on another chain (default chain 1). It answers every read with zeros, so a CLI that
+// trusted the static provider's 4441 would happily print this chain's state as LiteForge's.
+async function serveOtherChainRpc(chainIdHex = '0x1') {
+  const methods = [];
+  const node = { async request({ method }) {
+    methods.push(method);
+    if (method === 'eth_chainId') return chainIdHex;
+    return method === 'eth_getCode' || method === 'eth_call' ? '0x' : '0x0';
+  } };
+  return { ...(await serveJsonRpc(node)), methods };
+}
+
+test('the operator CLI asks the RPC node for its chain id and refuses any chain but 4441', async () => {
+  const other = await serveOtherChainRpc('0x1');
+  try {
+    // status, with the real default provider factory (static network): the node's own eth_chainId decides.
+    const lines = [];
+    const code = await runOperatorCli({ argv: ['status', '--rpc', other.url], env: {}, log: (line) => lines.push(String(line)) });
+    assert.equal(code, 2);
+    assert.match(lines.join('\n'), /the RPC is on chain 1, expected 4441\. Nothing was read or sent/);
+    assert.doesNotMatch(lines.join('\n'), /chain 4441 ·/, 'no status is printed under the LiteForge label');
+    assert.deepEqual(other.methods, ['eth_chainId'], 'nothing but eth_chainId is read from the wrong chain');
+
+    // A broadcast stops at the same check, before the key is read (the key variable is unset: reading it would throw).
+    const broadcast = [];
+    other.methods.length = 0;
+    const refused = await runOperatorCli({ argv: ['activate', '--rpc', other.url, '--deployment', modulePath, '--broadcast', '--confirm', 'ACTIVATE_GAMES_4441', '--key-env', 'NOT_SET_ANYWHERE'], env: {}, log: (line) => broadcast.push(String(line)) });
+    assert.equal(refused, 2);
+    assert.match(broadcast.join('\n'), /the RPC is on chain 1, expected 4441/);
+    assert.equal(other.methods.includes('eth_sendRawTransaction'), false);
+
+    // The programmatic API checks the node too, not provider.getNetwork().
+    const staticProvider = new ethers.JsonRpcProvider(other.url, 4441, { staticNetwork: true, cacheTimeout: -1 });
+    try {
+      assert.equal((await staticProvider.getNetwork()).chainId, 4441n, 'a static provider never asks the node');
+      await assert.rejects(runOperatorAction({ action: 'status', deployment, provider: staticProvider }), /the RPC is on chain 1, expected 4441/);
+    } finally {
+      staticProvider.destroy();
+    }
+  } finally {
+    await other.close();
+  }
+
+  // On the right chain, status prints the chain id the node reported.
+  const bridge = await serveJsonRpc(chain.eip1193);
+  try {
+    const lines = [];
+    assert.equal(await runOperatorCli({ argv: ['status', '--rpc', bridge.url, '--deployment', modulePath], env: {}, log: (line) => lines.push(String(line)) }), 0);
+    assert.match(lines[0], /^chain 4441 · block \d+ · address module deployed · contracts deployed$/);
+  } finally {
+    await bridge.close();
+  }
+});
+
+test('a --deployment override broadcasts only to a loopback RPC', async () => {
+  const lines = [];
+  // No --rpc and no RPC_URL: the LiteForge default. Blocked before any provider or key is touched.
+  const code = await runOperatorCli({
+    argv: ['activate', '--deployment', modulePath, '--broadcast', '--confirm', 'ACTIVATE_GAMES_4441', '--key-env', 'NOT_SET_ANYWHERE'],
+    env: {},
+    log: (line) => lines.push(String(line)),
+    providerFactory: () => { throw new Error('no provider may be built'); },
+  });
+  assert.equal(code, 2);
+  assert.match(lines.join('\n'), /--deployment is for dry runs and the local chain/);
+  const viaEnv = [];
+  assert.equal(await runOperatorCli({ argv: ['pause-games', '--deployment', modulePath, '--broadcast', '--confirm', 'PAUSE_GAMES_4441', '--key-env', 'X'], env: { RPC_URL: 'https://liteforge.rpc.caldera.xyz/http' }, log: (line) => viaEnv.push(String(line)), providerFactory: () => { throw new Error('no provider may be built'); } }), 2);
+  assert.match(viaEnv.join('\n'), /--deployment is for dry runs/);
+  for (const url of ['http://127.0.0.1:8545', 'http://localhost:8545/', 'http://[::1]:8545']) assert.equal(isLoopbackRpc(url), true, url);
+  for (const url of ['https://liteforge.rpc.caldera.xyz/http', 'http://127.0.0.1.example.com/', 'not a url']) assert.equal(isLoopbackRpc(url), false, url);
 });
 
 // A fake `spawn` for the Vercel CLI: records command, args, options and stdin; answers `env ls` from a

@@ -19,7 +19,9 @@
 //   rotate-verifier <address>   setTrustedVerifier(address) on the score registry                  ROTATE_VERIFIER_4441
 //
 // Options: --rpc <url> (default RPC_URL, else the LiteForge RPC), --deployment <module.mjs> (default the
-// committed generated module), --relayer <address> (relayer-off; default the module's relayer), --json.
+// committed generated module; dry runs, or a broadcast to a loopback --rpc only), --relayer <address>
+// (relayer-off; default the module's relayer), --json. Every run first asks the RPC node for its
+// eth_chainId and stops (exit 2) unless it is the module's chain, 4441.
 import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -76,6 +78,22 @@ function contracts(deployment, runner) {
 
 const TARGETS = Object.freeze({ gameRegistry: 'GameRegistry', rankedEntry: 'ArcadeRankedEntry', scores: 'ScoreSubmissionRegistry' });
 
+// The chain id the RPC node itself reports. Never provider.getNetwork(): the CLI provider uses
+// staticNetwork, which answers the configured 4441 without asking the node.
+export async function rpcChainId(provider) {
+  return Number(BigInt(await provider.send('eth_chainId', [])));
+}
+
+// Loopback RPC (the in-process chain behind serveJsonRpc): the only place a --deployment override may
+// broadcast. Against LiteForge the address source is always the committed LITVM_DEPLOYMENT.
+export function isLoopbackRpc(url) {
+  try {
+    return ['127.0.0.1', 'localhost', '[::1]', '::1'].includes(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
+
 async function hasCode(provider, address) {
   const code = await provider.getCode(address);
   return Boolean(code) && code !== '0x';
@@ -83,11 +101,11 @@ async function hasCode(provider, address) {
 
 // Read-only snapshot. Works before the deploy too (contracts then report deployed:false).
 export async function readOperatorStatus({ provider, deployment, relayer = deployment.relayer }) {
-  const network = await provider.getNetwork();
+  const chainId = await rpcChainId(provider);
   const operator = deployment.deployer;
   const balance = async (address) => (await provider.getBalance(address)).toString();
   const status = {
-    chainId: Number(network.chainId),
+    chainId,
     addressModule: deployment.status,
     blockNumber: await provider.getBlockNumber(),
     operator: {
@@ -180,8 +198,8 @@ export async function planOperatorAction({ action, args = [], deployment, provid
 export async function runOperatorAction({ action, args = [], deployment, provider, signer = null, broadcast = false, confirm = null, relayer = deployment?.relayer, log = () => {} }) {
   const spec = OPERATOR_ACTIONS[action];
   if (!spec) throw new Error(`unknown action ${JSON.stringify(action)}\n${operatorHelp()}`);
-  const network = await provider.getNetwork();
-  if (Number(network.chainId) !== deployment.chainId) throw new Error(`the RPC is on chain ${network.chainId}, expected ${deployment.chainId}`);
+  const chainId = await rpcChainId(provider);
+  if (chainId !== deployment.chainId) throw new Error(`the RPC is on chain ${chainId}, expected ${deployment.chainId}`);
   if (action === 'status') return { action, status: await readOperatorStatus({ provider, deployment, relayer }) };
   if (broadcast) {
     if (confirm !== spec.confirm) throw new Error(`broadcast blocked: ${action} needs --confirm ${spec.confirm}`);
@@ -236,7 +254,9 @@ export async function runOperatorCli({ argv = process.argv.slice(2), env = proce
   }
   const broadcast = hasFlag(argv, '--broadcast');
   const confirm = flagValue(argv, '--confirm');
-  const deployment = await loadLitvmDeployment(flagValue(argv, '--deployment'));
+  const deploymentOverride = flagValue(argv, '--deployment');
+  const rpcUrl = flagValue(argv, '--rpc') ?? env.RPC_URL ?? DEFAULT_RPC_URL;
+  const deployment = await loadLitvmDeployment(deploymentOverride);
   if (action === 'fees-off') log(`WARNING: ${FEES_OFF_WARNING}`);
   if (broadcast) {
     // All guards before the key is read.
@@ -248,8 +268,18 @@ export async function runOperatorCli({ argv = process.argv.slice(2), env = proce
       log(`Broadcast blocked: the address module is '${deployment.status}', not 'deployed'.`);
       return 2;
     }
+    if (deploymentOverride !== null && !isLoopbackRpc(rpcUrl)) {
+      log('Broadcast blocked: --deployment is for dry runs and the local chain (a loopback --rpc). A broadcast to LiteForge always uses the committed address module.');
+      return 2;
+    }
   }
-  const provider = providerFactory(flagValue(argv, '--rpc') ?? env.RPC_URL ?? DEFAULT_RPC_URL);
+  const provider = providerFactory(rpcUrl);
+  // Ask the node itself (the default provider is static, so getNetwork() would just echo 4441).
+  const chainId = await rpcChainId(provider);
+  if (chainId !== deployment.chainId) {
+    log(`Blocked: the RPC is on chain ${chainId}, expected ${deployment.chainId}. Nothing was read or sent.`);
+    return 2;
+  }
   const signer = broadcast && action !== 'status' ? new ethers.Wallet(readSecret({ env, argv, label: 'operator key' }), provider) : null;
   if (signer) log(`Operator signer ${signer.address}.`);
   const result = await runOperatorAction({ action, args: positional, deployment, provider, signer, broadcast, confirm, relayer: flagValue(argv, '--relayer') ?? deployment.relayer, log });

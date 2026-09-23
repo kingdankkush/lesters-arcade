@@ -14,15 +14,17 @@
 //   LITVM_DEFINE_CONFIRM=DEFINE_NFT_ACHIEVEMENTS_4441 \
 //     node scripts/define-nft-achievements.mjs --broadcast --key-env <NAME> [--include-relayer-minter]
 //
-// Options: --rpc <url> (default RPC_URL or the LiteForge RPC), --deployment <module.mjs> (default the
-// committed generated module; the rehearsal points it at a local chain). Re-running is safe: calls
-// whose on-chain state already matches are skipped.
+// Options: --rpc <url> (default RPC_URL or the LiteForge RPC; its eth_chainId must be 4441),
+// --deployment <module.mjs> (default the committed generated module; the rehearsal points it at a local
+// chain, and a broadcast accepts it only with a loopback --rpc). Re-running is safe: calls whose
+// on-chain state already matches are skipped.
 import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 import { flagValue, hasFlag, readSecret } from './lib/key-source.mjs';
 import { LITVM_GAME_SLUGS, loadLitvmDeployment } from './generate-litvm-addresses.mjs';
+import { isLoopbackRpc, rpcChainId } from './operator-actions.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 
@@ -142,9 +144,15 @@ export async function runDefineCli({ argv = process.argv.slice(2), env = process
     log(`Broadcast blocked. Set LITVM_DEFINE_CONFIRM=${DEFINE_CONFIRM} after reviewing the dry run.`);
     return 2;
   }
-  const deployment = await loadLitvmDeployment(flagValue(argv, '--deployment'));
+  const deploymentOverride = flagValue(argv, '--deployment');
+  const rpcUrl = flagValue(argv, '--rpc') ?? env.RPC_URL ?? DEFAULT_RPC_URL;
+  const deployment = await loadLitvmDeployment(deploymentOverride);
   if (broadcast && deployment.status !== 'deployed') {
     log(`Broadcast blocked: the address module is '${deployment.status}', not 'deployed'. Run the deploy (runbook step 3) and regenerate it first.`);
+    return 2;
+  }
+  if (broadcast && deploymentOverride !== null && !isLoopbackRpc(rpcUrl)) {
+    log('Broadcast blocked: --deployment is for dry runs and the local chain (a loopback --rpc). A broadcast to LiteForge always uses the committed address module.');
     return 2;
   }
   const catalog = await loadNftCatalog(importCatalog);
@@ -157,10 +165,11 @@ export async function runDefineCli({ argv = process.argv.slice(2), env = process
     log('DRY RUN ONLY. Nothing was signed or sent. Broadcast needs --broadcast, LITVM_DEFINE_CONFIRM and the operator key (--key-env <NAME>).');
     return 0;
   }
-  const provider = providerFactory(flagValue(argv, '--rpc') ?? env.RPC_URL ?? DEFAULT_RPC_URL);
-  const network = await provider.getNetwork();
-  if (Number(network.chainId) !== deployment.chainId) {
-    log(`Broadcast blocked: the RPC is on chain ${network.chainId}, expected ${deployment.chainId}.`);
+  const provider = providerFactory(rpcUrl);
+  // Ask the node itself: the default provider is static, so getNetwork() would just echo 4441.
+  const chainId = await rpcChainId(provider);
+  if (chainId !== deployment.chainId) {
+    log(`Broadcast blocked: the RPC is on chain ${chainId}, expected ${deployment.chainId}.`);
     return 2;
   }
   const signer = new ethers.Wallet(readSecret({ env, argv, label: 'operator key' }), provider);
