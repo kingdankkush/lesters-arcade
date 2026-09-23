@@ -237,6 +237,7 @@ async function settleAndAssert(gameId, { wallet = local.chain.wallets.player1, c
   const expected = await verifiedPreview(body, wallet);
   const history = await achievements.emptyHistory(wallet.address.toLowerCase(), gameId);
   const expectedUnlocks = achievements.deriveEarnedAchievements(gameId, expected, history).map((entry) => entry.id).sort();
+  assert.ok(expectedUnlocks.length > 0, `a first ${gameId} run earns catalog achievements`);
   const nftIds = new Set(achievements.nftAchievementIds(gameId));
   const paid = await payAndWait(body, wallet, { survivalSeconds: expected.contract.survivalSeconds });
   const nonceBefore = await relayerNonce();
