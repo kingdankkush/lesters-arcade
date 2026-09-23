@@ -10,6 +10,7 @@ import { startLocalHttp, startRpcProxy, withConnectSrc } from '../scripts/lib/lo
 import { localWalletKeys } from '../scripts/lib/local-chain.mjs';
 import { DEFAULT_GAMES, createFetchApi } from '../scripts/lib/rehearsal-driver.mjs';
 import { checkLiveFlags, LIVE_CONFIRM, parseSite, runRehearsalCli } from '../scripts/rehearse-ranked-e2e.mjs';
+import { renderLitvmAddressModule, resolveDeploymentInput } from '../scripts/generate-litvm-addresses.mjs';
 
 /**
  * Rehearsal slice, acceptance 3-4: the SAME driver over real HTTP and JSON-RPC. The local stack is
@@ -54,9 +55,12 @@ test('the live CLI refuses to start without every flag, and reads no secret befo
   assert.equal(checkLiveFlags(wrongPhrase).ok, false);
   assert.equal(await runRehearsalCli({ argv: wrongPhrase, log: () => {}, readFile: refusingReadFile }), 2);
   assert.equal(checkLiveFlags([...full, '--cron-secret-env', 'CRON']).ok, false, 'one cron secret source only');
-  // The committed address module is still `predicted`: the live run stops before reading any key.
+  // A `predicted` address module (before runbook step 3): the live run stops before reading any key.
+  const predicted = join(state.dir, 'predicted-addresses.mjs');
+  writeFileSync(predicted, renderLitvmAddressModule(resolveDeploymentInput({ mode: 'predicted' })), 'utf8');
+  const loopback = full.map((arg) => (arg === 'https://liteforge.rpc.caldera.xyz/http' ? 'http://127.0.0.1:9' : arg));
   const logs = [];
-  assert.equal(await runRehearsalCli({ argv: full, log: (line) => logs.push(line), readFile: refusingReadFile, providerFactory: () => { throw new Error('no provider'); } }), 2);
+  assert.equal(await runRehearsalCli({ argv: [...loopback, '--deployment', predicted], log: (line) => logs.push(line), readFile: refusingReadFile, providerFactory: () => { throw new Error('no provider'); } }), 2);
   assert.match(logs.join('\n'), /address module is 'predicted', not 'deployed'/);
   // A local address module is accepted only with a loopback RPC.
   assert.equal(await runRehearsalCli({ argv: [...full, '--deployment', state.module], log: () => {}, readFile: refusingReadFile }), 2);

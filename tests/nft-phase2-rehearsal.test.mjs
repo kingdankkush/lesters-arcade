@@ -14,6 +14,7 @@ import {
 import { approvedCatalogModule, approvedSubset, PHASE2_GAME, PHASE2_TEST_SETUP, rehearseNftPhase2 } from '../scripts/rehearse-nft-phase2.mjs';
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
 import { migrate } from '../server/neon/migrations.mjs';
+import { renderLitvmAddressModule, resolveDeploymentInput } from '../scripts/generate-litvm-addresses.mjs';
 
 /**
  * Rehearsal slice, acceptance 5: phase 2 (soulbound NFTs) rehearsed on the local stack after one
@@ -103,8 +104,10 @@ test('the backfill CLI is a dry run by default and refuses to broadcast without 
     assert.deepEqual([result.exit, /LITVM_BACKFILL_CONFIRM=BACKFILL_NFT_MINTS_4441/.test(result.text)], [2, true], 'no confirm phrase');
     result = await run(['--broadcast', '--deployment', module, '--rpc', 'https://liteforge.rpc.caldera.xyz/http'], { LITVM_BACKFILL_CONFIRM: BACKFILL_CONFIRM });
     assert.deepEqual([result.exit, /loopback/.test(result.text)], [2, true], 'a local address module never reaches LiteForge');
-    result = await run(['--broadcast'], { LITVM_BACKFILL_CONFIRM: BACKFILL_CONFIRM });
-    assert.deepEqual([result.exit, /'predicted', not 'deployed'/.test(result.text)], [2, true], 'the committed module is still predicted');
+    const predicted = join(dir, 'predicted-addresses.mjs');
+    writeFileSync(predicted, renderLitvmAddressModule(resolveDeploymentInput({ mode: 'predicted' })), 'utf8');
+    result = await run(['--broadcast', '--deployment', predicted, '--rpc', 'http://127.0.0.1:9'], { LITVM_BACKFILL_CONFIRM: BACKFILL_CONFIRM });
+    assert.deepEqual([result.exit, /'predicted', not 'deployed'/.test(result.text)], [2, true], 'a predicted address module (before runbook step 3) never broadcasts');
     result = await run(['--frobnicate']);
     assert.equal(result.exit, 2);
     result = await runBackfillCli({ argv: [], env: {}, log: () => {}, db: null });
