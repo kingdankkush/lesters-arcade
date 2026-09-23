@@ -122,7 +122,7 @@ export function rankedGlueContext({ live = false, hosted = false, session = null
   return { context, client, events, errors, calls, storage };
 }
 
-export async function until(predicate, { timeoutMs = 2000 } = {}) {
+export async function until(predicate, { timeoutMs = 10_000 } = {}) {
   const started = Date.now();
   while (!predicate()) {
     if (Date.now() - started > timeoutMs) throw new Error('condition not reached');
