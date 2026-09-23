@@ -113,8 +113,8 @@ export function settlementGate(deps) {
   return null;
 }
 
-// The verify and achievements modules must be present (they merge in
-// parallel slices; until then the service fails closed). E15 runs the same
+// The verify and achievements modules must have loaded (a deployment that
+// cannot load them fails closed). E15 runs the same
 // check, so a player is stopped before paying for a run E3 could not settle.
 export function moduleGate(deps) {
   const verify = deps.verify;
@@ -623,18 +623,20 @@ function pickFunctions(module, names) {
 }
 
 // The verify slice's functions (server/verify/index.mjs), resolved at request
-// time; null until that module exists.
+// time; null when the module cannot load, so the endpoint fails closed with
+// 503 (tests/api-settle-handler.test.mjs proves the real module loads here).
 export async function loadVerifyModule() {
   return pickFunctions(await optionalImport(() => import('../verify/index.mjs'), 'verify'), ['bindRankedIdentity', 'verifyRankedRun', 'computeEvidenceDigest', 'reverifyStoredRun']);
 }
 
-// The achievements registry (§6.2), resolved at request time; null until it exists.
+// The achievements registry (§6.2), resolved at request time; null when it
+// cannot load (the endpoint then fails closed).
 export async function loadAchievementRegistry() {
   return pickFunctions(await optionalImport(() => import('../../apps/portal/src/achievements/index.mjs'), 'achievements'), ['deriveEarnedAchievements', 'historyFieldsFor', 'nftAchievementIds', 'achievementById', 'catalogFor']);
 }
 
 // HMH_HERO_GATES and HMH_FREE_HEROES (server/verify/hmh.mjs), loaded only for
-// an HMH settle or ticket; null until that module exists.
+// an HMH settle or ticket; null when that module cannot load.
 export async function loadHeroGates() {
   const module = await optionalImport(() => import('../verify/hmh.mjs'), 'hmh');
   if (!module?.HMH_HERO_GATES || typeof module.HMH_HERO_GATES !== 'object' || !Array.isArray(module.HMH_FREE_HEROES)) return null;

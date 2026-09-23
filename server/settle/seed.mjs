@@ -105,8 +105,8 @@ export async function seedRequest({ headers = {}, body = null, ip = 'unknown' } 
   return json(200, { ok: true, seedTicket: issued.seedTicket, seed: issued.seed });
 }
 
-// The verify slice's issueSeedTicket, resolved at request time; null until
-// server/verify/seed-ticket.mjs exists.
+// The verify slice's issueSeedTicket (server/verify/seed-ticket.mjs), resolved
+// at request time; null when it cannot load, so E15 fails closed with 503.
 export async function loadIssueSeedTicket() {
   try {
     const module = await import('../verify/seed-ticket.mjs');

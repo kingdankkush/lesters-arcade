@@ -107,6 +107,7 @@ const NODE_CHECK_FILES = [
   'tests/hmh-reboot-pickup-banner.test.mjs',
   'api/attest.mjs',
   'api/settle.mjs',
+  'tests/api-settle-handler.test.mjs',
   'server/settle/retry.mjs',
   'scripts/requeue-dead-letters.mjs',
   'tests/server-settle-retry.test.mjs',
