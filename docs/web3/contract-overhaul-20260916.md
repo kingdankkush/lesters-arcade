@@ -472,6 +472,82 @@ Broadcast also needs a `deployed` module and an RPC whose own `eth_chainId` is 4
 override only with a loopback `--rpc`); definitions already on chain are skipped.
 `planNftDefinitions()` is the pure planner the rehearsal reuses.
 
+**Backfill** (after the definitions and `--include-relayer-minter`): `scripts/backfill-nft-mints.mjs`
+mints, from the relayer key, every `achievement_unlocks` row whose `achievement_id` is in
+`nftAchievementIds(gameId)` of the catalog **at run time** and whose `token_id` is null. The stored `nft`
+column (the phase-1 proposal) is ignored (contract A20); `--resync` rewrites it from the catalog for
+display. Each `mintFor` is simulated first, so duplicates and undefined ids are skipped without a
+transaction and a re-run mints nothing. The E12 index cron then stamps `token_id`, `mint_tx_hash` and
+`minted_at`.
+
+```
+node scripts/backfill-nft-mints.mjs [--resync]                                          # dry run (reads Neon only)
+LITVM_BACKFILL_CONFIRM=BACKFILL_NFT_MINTS_4441 \
+  node scripts/backfill-nft-mints.mjs --broadcast --resync --key-file <vault keys.json> --key-field relayer
+```
+
+`NEON_DATABASE_URL` comes from the environment and is never printed; the script never migrates. The key
+must be the deployment's relayer. Rehearsed end to end by `node scripts/rehearse-nft-phase2.mjs` (below).
+
+## Rehearsal: local chain end to end and phase 2 (2026-09-23)
+
+Everything here runs offline on the in-process Hardhat chain (chain 4441) with PGlite standing in for
+Neon and public fixture keys only. Nothing touches LiteForge, Vercel or production Neon.
+
+- `scripts/lib/local-stack.mjs` `startLocalStack()`: deploys the suite (`scripts/lib/local-chain.mjs`),
+  confirms the developer wallet, sets every game playable, checks fees are on, and builds an
+  **unmigrated** PGlite, so the first requests prove the handlers' own `ensureSchema` (A34). Every
+  `api/*.mjs` module is mounted as production mounts it, `createHandler(() => buildDeps(env, { db,
+  provider, deployment, nowMs }))` (A30), behind the rewrites **read from `vercel.json`** (query strings
+  carried, named params appended the way Vercel's router does), so routing drift fails the rehearsal.
+  The server clock is the timestamp the chain would give its next block, so the A26 timing checks run
+  on chain time and the driver advances time with `evm_increaseTime` instead of sleeping.
+- `scripts/lib/local-http.mjs`: the same mounts over `node:http` (optionally with a static web root and
+  the `vercel.json` headers, CSP included, for the browser-e2e slice), plus a JSON-RPC proxy to the chain.
+- `scripts/lib/rehearsal-driver.mjs` `runRankedE2E()`: one Ranked session per game through the real
+  endpoints and contracts, asserting every item of guide §7 step 9 (sign-in, seed ticket, entry,
+  evidence at the ticket seed, settle until confirmed, `getSession` and `sessionEnvelopeHash`, the
+  weekly board row, profile stats and achievements, share session, page tags and card PNG, an on-chain
+  rename plus E8, the E12 cron twice) and the negative checks: duplicate settle (same state, no second
+  transaction), unpaid entry (402 `entry-not-paid`), fees off (402 `entry-underpaid`, local only),
+  a tampered Chikun claim (ignored), evidence copied to another wallet's ticket (rejected), an
+  ephemeral wallet's token (403 `wallet-mismatch`), and `SETTLEMENT_PAUSED` (503 on E15, E3 and E13,
+  no row changed, local only).
+
+Commands:
+
+```
+node scripts/rehearse-ranked-e2e.mjs --target local      # in process, then over HTTP + JSON-RPC, then phase 2
+                                                         # → docs/qa/pre-deployment-rehearsal-20260923.json
+node scripts/rehearse-nft-phase2.mjs [--out <path>]      # phase 2 only
+node --test tests/local-chain-rehearsal.test.mjs tests/local-chain-rehearsal-http.test.mjs tests/nft-phase2-rehearsal.test.mjs
+```
+
+### Live end-to-end (runbook step 9, owner approval in the moment)
+
+Owner checkpoint O2 first: decide whether the test wallet's rows stay on the launch boards
+(recommended: a fresh test wallet, excluded afterwards with
+`node scripts/moderate-profile.mjs --wallet <player> --exclude --apply --confirm EXCLUDE_WALLET`).
+The player wallet needs about 0.35 zkLTC (three entries of 0.102 plus gas for three renames).
+
+```
+# 1. Plan only: prints the three entries at their quoteEntry totals and the O2 reminder, sends nothing.
+node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
+  --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path to the funded test key> \
+  --cron-secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --confirm-live SPEND_TESTNET_ZKLTC
+# 2. The run: the same command with --yes (optionally --out <path>; default docs/qa/ranked-live-e2e-<date>.json).
+node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
+  --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path to the funded test key> \
+  --cron-secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --confirm-live SPEND_TESTNET_ZKLTC --yes
+```
+
+The CLI refuses to start without every flag (`--cron-secret-env <NAME>` may replace the file), refuses a
+`predicted` address module and any RPC whose own `eth_chainId` is not 4441, reads the player key
+(`--player-key-field <field>` for a JSON key file) and the cron secret inside the process through
+`scripts/lib/key-source.mjs`, and never prints either. It waits real time for each run's length on the
+chain clock (about 3, 1.5 and 1 minutes), skips the local-only negative checks (fees off, pause) and
+writes a report with no secret in it. The ephemeral 403 wallet is created in memory and never funded.
+
 ## Owner decisions 2026-09-16 (recorded)
 
 - **Key custody.** Deployer and operator: the 2026-09-22 operator service key in the vault, used from a

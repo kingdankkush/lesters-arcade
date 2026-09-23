@@ -1,0 +1,2275 @@
+{
+  "schema": "lesters-pre-deployment-rehearsal-v1",
+  "generatedAt": "2026-09-23T22:56:38.299Z",
+  "note": "Local rehearsal only: Hardhat chain 4441 in process, PGlite for Neon, public fixture keys. Nothing touched LiteForge, Vercel or production Neon.",
+  "commands": {
+    "rehearsal": "node scripts/rehearse-ranked-e2e.mjs --target local",
+    "phase2": "node scripts/rehearse-nft-phase2.mjs",
+    "live": "node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --cron-secret-file <vault cron-secret.txt> --confirm-live SPEND_TESTNET_ZKLTC --yes"
+  },
+  "ok": true,
+  "runs": [
+    {
+      "schema": "lesters-ranked-e2e-report-v1",
+      "target": "local",
+      "transport": "in-process",
+      "site": null,
+      "signInDomain": "127.0.0.1",
+      "chainId": 4441,
+      "deployment": {
+        "status": "deployed",
+        "addresses": {
+          "gameRegistry": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "playerProfileRegistry": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+          "arcadeRankedEntry": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+          "scoreSubmissionRegistry": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+          "achievementRegistries": {
+            "lester-blaster": "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9",
+            "chikun": "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707",
+            "stacked": "0x0165878a594ca255338adfa4d48449f69242eb8f"
+          }
+        },
+        "relayer": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      },
+      "player": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+      "games": {
+        "lester-blaster": {
+          "gameId": "lester-blaster",
+          "ok": true,
+          "checks": [
+            {
+              "id": "siwe",
+              "ok": true,
+              "detail": "E1 nonce, signed challenge, E2 token"
+            },
+            {
+              "id": "seed-ticket",
+              "ok": true,
+              "detail": "E15 answered 200 null"
+            },
+            {
+              "id": "session-handle",
+              "ok": true,
+              "detail": "game-session-578c7869-aefb-4b38-b584-54305b4f7c81"
+            },
+            {
+              "id": "ticket-seed-applied",
+              "ok": true,
+              "detail": {
+                "seed": 1288412480
+              }
+            },
+            {
+              "id": "session-key",
+              "ok": true,
+              "detail": "0x956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34"
+            },
+            {
+              "id": "entry-quote",
+              "ok": true,
+              "detail": {
+                "entryFeeWei": "100000000000000000",
+                "settlementGasReserveWei": "2000000000000000",
+                "totalWei": "102000000000000000"
+              }
+            },
+            {
+              "id": "entry-paid",
+              "ok": true,
+              "detail": {
+                "status": 1,
+                "isPaid": true
+              }
+            },
+            {
+              "id": "settle-body",
+              "ok": true,
+              "detail": "the ranked-client builder keyed the body to the paid session"
+            },
+            {
+              "id": "settle-confirmed",
+              "ok": true,
+              "detail": {
+                "status": "confirmed"
+              }
+            },
+            {
+              "id": "server-score",
+              "ok": true,
+              "detail": {
+                "server": 7002,
+                "replayed": 7002
+              }
+            },
+            {
+              "id": "settle-tx",
+              "ok": true,
+              "detail": "0x024c250cb037aa7aa5a81fe6d4becba14550bbed9e457873485fe6512bbf8399"
+            },
+            {
+              "id": "status-owner-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "status-public-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "chain-session",
+              "ok": true,
+              "detail": {
+                "exists": true
+              }
+            },
+            {
+              "id": "chain-envelope",
+              "ok": true,
+              "detail": {
+                "chain": "0xc50812630803d7cf6553beac54fab53c9950a4a82aada3f0648b38f36e893038",
+                "response": "0xc50812630803d7cf6553beac54fab53c9950a4a82aada3f0648b38f36e893038"
+              }
+            },
+            {
+              "id": "relayer-published",
+              "ok": true,
+              "detail": {
+                "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+              }
+            },
+            {
+              "id": "duplicate-post",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "relayerTxs": 1
+              }
+            },
+            {
+              "id": "leaderboard-row",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "rank": 1
+              }
+            },
+            {
+              "id": "profile-stats",
+              "ok": true,
+              "detail": {
+                "confirmedRuns": 1,
+                "bestScore": 7002
+              }
+            },
+            {
+              "id": "profile-achievements",
+              "ok": true,
+              "detail": {
+                "unlocks": [
+                  "cabinet-pioneer",
+                  "first-paid-run",
+                  "first-1000-points",
+                  "first-blood",
+                  "ten-enemy-kills",
+                  "combo-starter",
+                  "score-5000",
+                  "slums-clear"
+                ]
+              }
+            },
+            {
+              "id": "share-session",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "cardRev": "46dc29c51894"
+              }
+            },
+            {
+              "id": "share-page",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "ogImage": "https://lestersarcade.io/api/share-card/956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34.png?v=46dc29c51894"
+              }
+            },
+            {
+              "id": "share-card",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "bytes": 529929
+              }
+            },
+            {
+              "id": "profile-name-valid",
+              "ok": true,
+              "detail": "E2E HMH 6686"
+            },
+            {
+              "id": "profile-set",
+              "ok": true,
+              "detail": "0x9ceacb710081cd9dacad1c6209468e75249affb12fbd8a047ef27550a9340fc7"
+            },
+            {
+              "id": "profile-refresh",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null
+              }
+            },
+            {
+              "id": "profile-name",
+              "ok": true,
+              "detail": {
+                "displayName": "E2E HMH 6686"
+              }
+            },
+            {
+              "id": "index-cron",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null,
+                "schemaVersion": 1
+              }
+            },
+            {
+              "id": "index-cron-idempotent",
+              "ok": true,
+              "detail": {
+                "first": {
+                  "fromBlock": 1,
+                  "toBlock": 30,
+                  "scores": 0,
+                  "profiles": 1
+                },
+                "second": {
+                  "fromBlock": 31,
+                  "toBlock": 30,
+                  "scores": 0,
+                  "profiles": 0
+                }
+              }
+            }
+          ],
+          "sessionHandle": "game-session-578c7869-aefb-4b38-b584-54305b4f7c81",
+          "sessionId32": "0x956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
+          "shareId": "956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
+          "seed": 1288412480,
+          "buildHash": "site-1.7.0:game-1.7.0",
+          "seasonId": "hmh-season-1-2026",
+          "entry": {
+            "txHash": "0x231e91c429cb3c6b4cb6ff2e06137babfbbb29415fe4c0fb83b7ccf6f8a6859b",
+            "totalWei": "102000000000000000",
+            "amountWei": "102000000000000000",
+            "openedAt": 1790204226,
+            "blockNumber": 27
+          },
+          "run": {
+            "expectedScore": 7002,
+            "survivalSeconds": 180,
+            "claimScore": 7002,
+            "kills": 36,
+            "elapsedMs": 180000
+          },
+          "runWait": {
+            "waitedSeconds": 181,
+            "mode": "increaseTime"
+          },
+          "settle": {
+            "firstStatus": "confirmed",
+            "status": "confirmed",
+            "txHash": "0x024c250cb037aa7aa5a81fe6d4becba14550bbed9e457873485fe6512bbf8399",
+            "blockNumber": 29,
+            "envelopeHash": "0xc50812630803d7cf6553beac54fab53c9950a4a82aada3f0648b38f36e893038",
+            "score": 7002,
+            "achievements": [
+              "cabinet-pioneer",
+              "first-paid-run",
+              "first-1000-points",
+              "first-blood",
+              "ten-enemy-kills",
+              "combo-starter",
+              "score-5000",
+              "slums-clear"
+            ],
+            "attempts": [
+              {
+                "status": 200,
+                "error": null,
+                "state": "confirmed"
+              }
+            ],
+            "ms": 130
+          },
+          "leaderboard": {
+            "period": "weekly",
+            "periodKey": "2026-W39",
+            "rank": 1
+          },
+          "profile": {
+            "confirmedRuns": 1,
+            "bestScore": 7002,
+            "achievements": [
+              "cabinet-pioneer",
+              "first-paid-run",
+              "first-1000-points",
+              "first-blood",
+              "ten-enemy-kills",
+              "combo-starter",
+              "score-5000",
+              "slums-clear"
+            ]
+          },
+          "share": {
+            "shareId": "956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
+            "cardRev": "46dc29c51894",
+            "url": "https://lestersarcade.io/s/956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
+            "ogImage": "https://lestersarcade.io/api/share-card/956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34.png?v=46dc29c51894",
+            "cardBytes": 529929
+          },
+          "profileName": {
+            "displayName": "E2E HMH 6686",
+            "avatarUri": "lestersarcade:avatar/lit-commando",
+            "txHash": "0x9ceacb710081cd9dacad1c6209468e75249affb12fbd8a047ef27550a9340fc7"
+          },
+          "indexCron": {
+            "schemaVersion": 1,
+            "first": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 1
+            },
+            "second": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 0
+            }
+          }
+        },
+        "chikun": {
+          "gameId": "chikun",
+          "ok": true,
+          "checks": [
+            {
+              "id": "siwe",
+              "ok": true,
+              "detail": "E1 nonce, signed challenge, E2 token"
+            },
+            {
+              "id": "seed-ticket",
+              "ok": true,
+              "detail": "E15 answered 200 null"
+            },
+            {
+              "id": "session-handle",
+              "ok": true,
+              "detail": "game-session-15c4a80a-260c-4ce9-8be5-2a1bad358390"
+            },
+            {
+              "id": "ticket-seed-applied",
+              "ok": true,
+              "detail": {
+                "seed": 2040615917
+              }
+            },
+            {
+              "id": "session-key",
+              "ok": true,
+              "detail": "0xce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629"
+            },
+            {
+              "id": "entry-quote",
+              "ok": true,
+              "detail": {
+                "entryFeeWei": "100000000000000000",
+                "settlementGasReserveWei": "2000000000000000",
+                "totalWei": "102000000000000000"
+              }
+            },
+            {
+              "id": "entry-paid",
+              "ok": true,
+              "detail": {
+                "status": 1,
+                "isPaid": true
+              }
+            },
+            {
+              "id": "settle-body",
+              "ok": true,
+              "detail": "the ranked-client builder keyed the body to the paid session"
+            },
+            {
+              "id": "settle-confirmed",
+              "ok": true,
+              "detail": {
+                "status": "confirmed"
+              }
+            },
+            {
+              "id": "server-score",
+              "ok": true,
+              "detail": {
+                "server": 6584,
+                "replayed": 6584
+              }
+            },
+            {
+              "id": "tampered-claim-ignored",
+              "ok": true,
+              "detail": {
+                "server": 6584,
+                "claim": 6584007
+              }
+            },
+            {
+              "id": "settle-tx",
+              "ok": true,
+              "detail": "0xc074ba29da56d95191b0374a552abb57b112868ba527095aef4ff9f27a36d65a"
+            },
+            {
+              "id": "status-owner-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "status-public-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "chain-session",
+              "ok": true,
+              "detail": {
+                "exists": true
+              }
+            },
+            {
+              "id": "chain-envelope",
+              "ok": true,
+              "detail": {
+                "chain": "0x811677c2ea76f5fc904e9f185d8384f840df8c5d9c068444dcd8e798aece1665",
+                "response": "0x811677c2ea76f5fc904e9f185d8384f840df8c5d9c068444dcd8e798aece1665"
+              }
+            },
+            {
+              "id": "relayer-published",
+              "ok": true,
+              "detail": {
+                "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+              }
+            },
+            {
+              "id": "duplicate-post",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "relayerTxs": 1
+              }
+            },
+            {
+              "id": "leaderboard-row",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "rank": 1
+              }
+            },
+            {
+              "id": "profile-stats",
+              "ok": true,
+              "detail": {
+                "confirmedRuns": 1,
+                "bestScore": 6584
+              }
+            },
+            {
+              "id": "profile-achievements",
+              "ok": true,
+              "detail": {
+                "unlocks": [
+                  "chikun-first-flight",
+                  "chikun-stack-three",
+                  "chikun-fork-runner",
+                  "chikun-reach-forest"
+                ]
+              }
+            },
+            {
+              "id": "share-session",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "cardRev": "477d6beff6c2"
+              }
+            },
+            {
+              "id": "share-page",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "ogImage": "https://lestersarcade.io/api/share-card/ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629.png?v=477d6beff6c2"
+              }
+            },
+            {
+              "id": "share-card",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "bytes": 417587
+              }
+            },
+            {
+              "id": "profile-name-valid",
+              "ok": true,
+              "detail": "E2E Chikun 6686"
+            },
+            {
+              "id": "profile-set",
+              "ok": true,
+              "detail": "0xa92024aa5cf72d25f2fbf86a2bed7c17668380ad59aa8a51a4ed39c44fc29720"
+            },
+            {
+              "id": "profile-refresh",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null
+              }
+            },
+            {
+              "id": "profile-name",
+              "ok": true,
+              "detail": {
+                "displayName": "E2E Chikun 6686"
+              }
+            },
+            {
+              "id": "index-cron",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null,
+                "schemaVersion": 1
+              }
+            },
+            {
+              "id": "index-cron-idempotent",
+              "ok": true,
+              "detail": {
+                "first": {
+                  "fromBlock": 31,
+                  "toBlock": 34,
+                  "scores": 0,
+                  "profiles": 1
+                },
+                "second": {
+                  "fromBlock": 35,
+                  "toBlock": 34,
+                  "scores": 0,
+                  "profiles": 0
+                }
+              }
+            }
+          ],
+          "sessionHandle": "game-session-15c4a80a-260c-4ce9-8be5-2a1bad358390",
+          "sessionId32": "0xce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
+          "shareId": "ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
+          "seed": 2040615917,
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.9.0",
+          "seasonId": "chikun-season-preview-1",
+          "entry": {
+            "txHash": "0x118b354c29ed8bfded3cd0e76da29ce03f73655c618b6b8bf1d351c8660e37fb",
+            "totalWei": "102000000000000000",
+            "amountWei": "102000000000000000",
+            "openedAt": 1790204410,
+            "blockNumber": 31
+          },
+          "run": {
+            "expectedScore": 6584,
+            "survivalSeconds": 95,
+            "claimScore": 6584007,
+            "flaps": 76,
+            "survivalTicks": 5700
+          },
+          "runWait": {
+            "waitedSeconds": 96,
+            "mode": "increaseTime"
+          },
+          "settle": {
+            "firstStatus": "confirmed",
+            "status": "confirmed",
+            "txHash": "0xc074ba29da56d95191b0374a552abb57b112868ba527095aef4ff9f27a36d65a",
+            "blockNumber": 33,
+            "envelopeHash": "0x811677c2ea76f5fc904e9f185d8384f840df8c5d9c068444dcd8e798aece1665",
+            "score": 6584,
+            "achievements": [
+              "chikun-first-flight",
+              "chikun-stack-three",
+              "chikun-fork-runner",
+              "chikun-reach-forest"
+            ],
+            "attempts": [
+              {
+                "status": 200,
+                "error": null,
+                "state": "confirmed"
+              }
+            ],
+            "ms": 267
+          },
+          "leaderboard": {
+            "period": "weekly",
+            "periodKey": "2026-W39",
+            "rank": 1
+          },
+          "profile": {
+            "confirmedRuns": 1,
+            "bestScore": 6584,
+            "achievements": [
+              "chikun-first-flight",
+              "chikun-stack-three",
+              "chikun-fork-runner",
+              "chikun-reach-forest"
+            ]
+          },
+          "share": {
+            "shareId": "ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
+            "cardRev": "477d6beff6c2",
+            "url": "https://lestersarcade.io/s/ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
+            "ogImage": "https://lestersarcade.io/api/share-card/ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629.png?v=477d6beff6c2",
+            "cardBytes": 417587
+          },
+          "profileName": {
+            "displayName": "E2E Chikun 6686",
+            "avatarUri": "lestersarcade:avatar/chikun",
+            "txHash": "0xa92024aa5cf72d25f2fbf86a2bed7c17668380ad59aa8a51a4ed39c44fc29720"
+          },
+          "indexCron": {
+            "schemaVersion": 1,
+            "first": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 1
+            },
+            "second": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 0
+            }
+          }
+        },
+        "stacked": {
+          "gameId": "stacked",
+          "ok": true,
+          "checks": [
+            {
+              "id": "siwe",
+              "ok": true,
+              "detail": "E1 nonce, signed challenge, E2 token"
+            },
+            {
+              "id": "seed-ticket",
+              "ok": true,
+              "detail": "E15 answered 200 null"
+            },
+            {
+              "id": "session-handle",
+              "ok": true,
+              "detail": "game-session-3a865dbe-037c-41a0-9fef-1e9351a30e2b"
+            },
+            {
+              "id": "ticket-seed-applied",
+              "ok": true,
+              "detail": {
+                "seed": 3966834974
+              }
+            },
+            {
+              "id": "session-key",
+              "ok": true,
+              "detail": "0x5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19"
+            },
+            {
+              "id": "entry-quote",
+              "ok": true,
+              "detail": {
+                "entryFeeWei": "100000000000000000",
+                "settlementGasReserveWei": "2000000000000000",
+                "totalWei": "102000000000000000"
+              }
+            },
+            {
+              "id": "entry-paid",
+              "ok": true,
+              "detail": {
+                "status": 1,
+                "isPaid": true
+              }
+            },
+            {
+              "id": "settle-body",
+              "ok": true,
+              "detail": "the ranked-client builder keyed the body to the paid session"
+            },
+            {
+              "id": "settle-confirmed",
+              "ok": true,
+              "detail": {
+                "status": "confirmed"
+              }
+            },
+            {
+              "id": "server-score",
+              "ok": true,
+              "detail": {
+                "server": 216012,
+                "replayed": 216012
+              }
+            },
+            {
+              "id": "settle-tx",
+              "ok": true,
+              "detail": "0x76b478cd1c8b87c2cafe982e47b9339aec4ae08dc9551c4f43786df384e6a5a2"
+            },
+            {
+              "id": "status-owner-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "status-public-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "chain-session",
+              "ok": true,
+              "detail": {
+                "exists": true
+              }
+            },
+            {
+              "id": "chain-envelope",
+              "ok": true,
+              "detail": {
+                "chain": "0x8ad9cad0f4425c312887efe03e322651b7b19b2de033c0d4a95f4c9ec8e2dc09",
+                "response": "0x8ad9cad0f4425c312887efe03e322651b7b19b2de033c0d4a95f4c9ec8e2dc09"
+              }
+            },
+            {
+              "id": "relayer-published",
+              "ok": true,
+              "detail": {
+                "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+              }
+            },
+            {
+              "id": "duplicate-post",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "relayerTxs": 1
+              }
+            },
+            {
+              "id": "leaderboard-row",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "rank": 1
+              }
+            },
+            {
+              "id": "profile-stats",
+              "ok": true,
+              "detail": {
+                "confirmedRuns": 1,
+                "bestScore": 216012
+              }
+            },
+            {
+              "id": "profile-achievements",
+              "ok": true,
+              "detail": {
+                "unlocks": [
+                  "stacked-first-line",
+                  "stacked-level-2",
+                  "stacked-lines-25",
+                  "stacked-lines-total-100",
+                  "stacked-chain-2",
+                  "stacked-pieces-100",
+                  "stacked-score-20k",
+                  "stacked-level-10",
+                  "stacked-lines-100",
+                  "stacked-score-100k"
+                ]
+              }
+            },
+            {
+              "id": "share-session",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "cardRev": "05d49829c365"
+              }
+            },
+            {
+              "id": "share-page",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "ogImage": "https://lestersarcade.io/api/share-card/5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19.png?v=05d49829c365"
+              }
+            },
+            {
+              "id": "share-card",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "bytes": 503443
+              }
+            },
+            {
+              "id": "profile-name-valid",
+              "ok": true,
+              "detail": "E2E Stacked 6686"
+            },
+            {
+              "id": "profile-set",
+              "ok": true,
+              "detail": "0x615ac826f5c6a2f7bfb3c8276139574884f712c2063e80c5f86239a1d3420608"
+            },
+            {
+              "id": "profile-refresh",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null
+              }
+            },
+            {
+              "id": "profile-name",
+              "ok": true,
+              "detail": {
+                "displayName": "E2E Stacked 6686"
+              }
+            },
+            {
+              "id": "index-cron",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null,
+                "schemaVersion": 1
+              }
+            },
+            {
+              "id": "index-cron-idempotent",
+              "ok": true,
+              "detail": {
+                "first": {
+                  "fromBlock": 35,
+                  "toBlock": 38,
+                  "scores": 0,
+                  "profiles": 1
+                },
+                "second": {
+                  "fromBlock": 39,
+                  "toBlock": 38,
+                  "scores": 0,
+                  "profiles": 0
+                }
+              }
+            }
+          ],
+          "sessionHandle": "game-session-3a865dbe-037c-41a0-9fef-1e9351a30e2b",
+          "sessionId32": "0x5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
+          "shareId": "5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
+          "seed": 3966834974,
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+          "seasonId": "stacked-season-preview-1",
+          "entry": {
+            "txHash": "0x4324e3a9c31e6935622c20e54effc58affb3ed2b6dd294dde0e8a78fac4279b9",
+            "totalWei": "102000000000000000",
+            "amountWei": "102000000000000000",
+            "openedAt": 1790204510,
+            "blockNumber": 35
+          },
+          "run": {
+            "expectedScore": 216012,
+            "survivalSeconds": 60,
+            "claimScore": 216012,
+            "sic1Bytes": 3650,
+            "ticks": 3623
+          },
+          "runWait": {
+            "waitedSeconds": 61,
+            "mode": "increaseTime"
+          },
+          "settle": {
+            "firstStatus": "confirmed",
+            "status": "confirmed",
+            "txHash": "0x76b478cd1c8b87c2cafe982e47b9339aec4ae08dc9551c4f43786df384e6a5a2",
+            "blockNumber": 37,
+            "envelopeHash": "0x8ad9cad0f4425c312887efe03e322651b7b19b2de033c0d4a95f4c9ec8e2dc09",
+            "score": 216012,
+            "achievements": [
+              "stacked-first-line",
+              "stacked-level-2",
+              "stacked-lines-25",
+              "stacked-lines-total-100",
+              "stacked-chain-2",
+              "stacked-pieces-100",
+              "stacked-score-20k",
+              "stacked-level-10",
+              "stacked-lines-100",
+              "stacked-score-100k"
+            ],
+            "attempts": [
+              {
+                "status": 200,
+                "error": null,
+                "state": "confirmed"
+              }
+            ],
+            "ms": 115
+          },
+          "leaderboard": {
+            "period": "weekly",
+            "periodKey": "2026-W39",
+            "rank": 1
+          },
+          "profile": {
+            "confirmedRuns": 1,
+            "bestScore": 216012,
+            "achievements": [
+              "stacked-first-line",
+              "stacked-level-2",
+              "stacked-lines-25",
+              "stacked-lines-total-100",
+              "stacked-chain-2",
+              "stacked-pieces-100",
+              "stacked-score-20k",
+              "stacked-level-10",
+              "stacked-lines-100",
+              "stacked-score-100k"
+            ]
+          },
+          "share": {
+            "shareId": "5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
+            "cardRev": "05d49829c365",
+            "url": "https://lestersarcade.io/s/5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
+            "ogImage": "https://lestersarcade.io/api/share-card/5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19.png?v=05d49829c365",
+            "cardBytes": 503443
+          },
+          "profileName": {
+            "displayName": "E2E Stacked 6686",
+            "avatarUri": "lestersarcade:avatar/gold-emblem",
+            "txHash": "0x615ac826f5c6a2f7bfb3c8276139574884f712c2063e80c5f86239a1d3420608"
+          },
+          "indexCron": {
+            "schemaVersion": 1,
+            "first": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 1
+            },
+            "second": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 0
+            }
+          }
+        }
+      },
+      "negatives": [
+        {
+          "id": "tampered-chikun-claim",
+          "ok": true,
+          "claim": 6584007,
+          "serverScore": 6584
+        },
+        {
+          "id": "unpaid-entry",
+          "ok": true,
+          "got": {
+            "status": 402,
+            "error": "entry-not-paid",
+            "e4": 404
+          }
+        },
+        {
+          "id": "fees-disabled-entry",
+          "ok": true,
+          "got": {
+            "status": 402,
+            "error": "entry-underpaid",
+            "paidAmountWei": "0"
+          }
+        },
+        {
+          "id": "evidence-copied-to-another-wallet",
+          "ok": true,
+          "copier": "second funded wallet (paid)",
+          "got": {
+            "status": 400,
+            "error": "evidence-seed-mismatch"
+          }
+        },
+        {
+          "id": "ephemeral-wallet-token",
+          "ok": true,
+          "got": {
+            "full": [
+              403,
+              "wallet-mismatch"
+            ],
+            "retry": [
+              403,
+              "wallet-mismatch"
+            ],
+            "statusView": "public"
+          }
+        },
+        {
+          "id": "settlement-paused",
+          "ok": true,
+          "got": {
+            "seed": [
+              503,
+              "settlement-paused"
+            ],
+            "settle": [
+              503,
+              "settlement-paused"
+            ],
+            "retryCron": [
+              503,
+              "settlement-paused"
+            ],
+            "resumed": 200
+          }
+        }
+      ],
+      "startedAt": "2026-09-23T22:56:40.403Z",
+      "finishedAt": "2026-09-23T22:56:49.329Z",
+      "durationMs": 8926,
+      "failures": [],
+      "ok": true
+    },
+    {
+      "schema": "lesters-ranked-e2e-report-v1",
+      "target": "live",
+      "transport": "http",
+      "site": "http://127.0.0.1:64283",
+      "signInDomain": "127.0.0.1:64283",
+      "chainId": 4441,
+      "deployment": {
+        "status": "deployed",
+        "addresses": {
+          "gameRegistry": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "playerProfileRegistry": "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+          "arcadeRankedEntry": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+          "scoreSubmissionRegistry": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+          "achievementRegistries": {
+            "lester-blaster": "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9",
+            "chikun": "0x5fc8d32690cc91d4c39d9d3abcbd16989f875707",
+            "stacked": "0x0165878a594ca255338adfa4d48449f69242eb8f"
+          }
+        },
+        "relayer": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+      },
+      "player": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+      "games": {
+        "lester-blaster": {
+          "gameId": "lester-blaster",
+          "ok": true,
+          "checks": [
+            {
+              "id": "siwe",
+              "ok": true,
+              "detail": "E1 nonce, signed challenge, E2 token"
+            },
+            {
+              "id": "seed-ticket",
+              "ok": true,
+              "detail": "E15 answered 200 null"
+            },
+            {
+              "id": "session-handle",
+              "ok": true,
+              "detail": "game-session-daad89d3-50be-473a-9341-e66b1f8735f1"
+            },
+            {
+              "id": "ticket-seed-applied",
+              "ok": true,
+              "detail": {
+                "seed": 224333947
+              }
+            },
+            {
+              "id": "session-key",
+              "ok": true,
+              "detail": "0x8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2"
+            },
+            {
+              "id": "entry-quote",
+              "ok": true,
+              "detail": {
+                "entryFeeWei": "100000000000000000",
+                "settlementGasReserveWei": "2000000000000000",
+                "totalWei": "102000000000000000"
+              }
+            },
+            {
+              "id": "entry-paid",
+              "ok": true,
+              "detail": {
+                "status": 1,
+                "isPaid": true
+              }
+            },
+            {
+              "id": "settle-body",
+              "ok": true,
+              "detail": "the ranked-client builder keyed the body to the paid session"
+            },
+            {
+              "id": "settle-confirmed",
+              "ok": true,
+              "detail": {
+                "status": "confirmed"
+              }
+            },
+            {
+              "id": "server-score",
+              "ok": true,
+              "detail": {
+                "server": 6210,
+                "replayed": 6210
+              }
+            },
+            {
+              "id": "settle-tx",
+              "ok": true,
+              "detail": "0x475d963900b7f7e1872c069ae07ecea9850c8e5922c7a327f75bbb3fe223f274"
+            },
+            {
+              "id": "status-owner-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "status-public-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "chain-session",
+              "ok": true,
+              "detail": {
+                "exists": true
+              }
+            },
+            {
+              "id": "chain-envelope",
+              "ok": true,
+              "detail": {
+                "chain": "0xa492c48e3916ab542e2591f9bb7db490a24a0f9a92929ef8bf94ba5fdc8b7da8",
+                "response": "0xa492c48e3916ab542e2591f9bb7db490a24a0f9a92929ef8bf94ba5fdc8b7da8"
+              }
+            },
+            {
+              "id": "relayer-published",
+              "ok": true,
+              "detail": {
+                "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+              }
+            },
+            {
+              "id": "duplicate-post",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "relayerNonceDelta": 1,
+                "note": "live: other sessions may move the relayer nonce; the session record is unchanged"
+              }
+            },
+            {
+              "id": "leaderboard-row",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "rank": 1
+              }
+            },
+            {
+              "id": "profile-stats",
+              "ok": true,
+              "detail": {
+                "confirmedRuns": 1,
+                "bestScore": 6210
+              }
+            },
+            {
+              "id": "profile-achievements",
+              "ok": true,
+              "detail": {
+                "unlocks": [
+                  "cabinet-pioneer",
+                  "first-paid-run",
+                  "first-1000-points",
+                  "first-blood",
+                  "ten-enemy-kills",
+                  "combo-starter",
+                  "score-5000",
+                  "slums-clear"
+                ]
+              }
+            },
+            {
+              "id": "share-session",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "cardRev": "46dc29c51894"
+              }
+            },
+            {
+              "id": "share-page",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "ogImage": "https://lestersarcade.io/api/share-card/8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2.png?v=46dc29c51894"
+              }
+            },
+            {
+              "id": "share-card",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "bytes": 524713
+              }
+            },
+            {
+              "id": "profile-name-valid",
+              "ok": true,
+              "detail": "E2E HMH 6686"
+            },
+            {
+              "id": "profile-set",
+              "ok": true,
+              "detail": "0x9ceacb710081cd9dacad1c6209468e75249affb12fbd8a047ef27550a9340fc7"
+            },
+            {
+              "id": "profile-refresh",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null
+              }
+            },
+            {
+              "id": "profile-name",
+              "ok": true,
+              "detail": {
+                "displayName": "E2E HMH 6686"
+              }
+            },
+            {
+              "id": "index-cron",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null,
+                "schemaVersion": 1
+              }
+            },
+            {
+              "id": "index-cron-idempotent",
+              "ok": true,
+              "detail": {
+                "first": {
+                  "fromBlock": 1,
+                  "toBlock": 30,
+                  "scores": 0,
+                  "profiles": 1
+                },
+                "second": {
+                  "fromBlock": 31,
+                  "toBlock": 30,
+                  "scores": 0,
+                  "profiles": 0
+                }
+              }
+            }
+          ],
+          "sessionHandle": "game-session-daad89d3-50be-473a-9341-e66b1f8735f1",
+          "sessionId32": "0x8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
+          "shareId": "8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
+          "seed": 224333947,
+          "buildHash": "site-1.7.0:game-1.7.0",
+          "seasonId": "hmh-season-1-2026",
+          "entry": {
+            "txHash": "0xe681fe326a6abc39b926cdd204195299053dc122c2f0d961323b2b946a4ab0c3",
+            "totalWei": "102000000000000000",
+            "amountWei": "102000000000000000",
+            "openedAt": 1790204225,
+            "blockNumber": 27
+          },
+          "run": {
+            "expectedScore": 6210,
+            "survivalSeconds": 180,
+            "claimScore": 6210,
+            "kills": 36,
+            "elapsedMs": 180000
+          },
+          "runWait": {
+            "waitedSeconds": 181,
+            "mode": "increaseTime"
+          },
+          "settle": {
+            "firstStatus": "confirmed",
+            "status": "confirmed",
+            "txHash": "0x475d963900b7f7e1872c069ae07ecea9850c8e5922c7a327f75bbb3fe223f274",
+            "blockNumber": 29,
+            "envelopeHash": "0xa492c48e3916ab542e2591f9bb7db490a24a0f9a92929ef8bf94ba5fdc8b7da8",
+            "score": 6210,
+            "achievements": [
+              "cabinet-pioneer",
+              "first-paid-run",
+              "first-1000-points",
+              "first-blood",
+              "ten-enemy-kills",
+              "combo-starter",
+              "score-5000",
+              "slums-clear"
+            ],
+            "attempts": [
+              {
+                "status": 200,
+                "error": null,
+                "state": "confirmed"
+              }
+            ],
+            "ms": 150
+          },
+          "leaderboard": {
+            "period": "weekly",
+            "periodKey": "2026-W39",
+            "rank": 1
+          },
+          "profile": {
+            "confirmedRuns": 1,
+            "bestScore": 6210,
+            "achievements": [
+              "cabinet-pioneer",
+              "first-paid-run",
+              "first-1000-points",
+              "first-blood",
+              "ten-enemy-kills",
+              "combo-starter",
+              "score-5000",
+              "slums-clear"
+            ]
+          },
+          "share": {
+            "shareId": "8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
+            "cardRev": "46dc29c51894",
+            "url": "https://lestersarcade.io/s/8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
+            "ogImage": "https://lestersarcade.io/api/share-card/8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2.png?v=46dc29c51894",
+            "cardBytes": 524713
+          },
+          "profileName": {
+            "displayName": "E2E HMH 6686",
+            "avatarUri": "lestersarcade:avatar/lit-commando",
+            "txHash": "0x9ceacb710081cd9dacad1c6209468e75249affb12fbd8a047ef27550a9340fc7"
+          },
+          "indexCron": {
+            "schemaVersion": 1,
+            "first": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 1
+            },
+            "second": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 0
+            }
+          }
+        },
+        "chikun": {
+          "gameId": "chikun",
+          "ok": true,
+          "checks": [
+            {
+              "id": "siwe",
+              "ok": true,
+              "detail": "E1 nonce, signed challenge, E2 token"
+            },
+            {
+              "id": "seed-ticket",
+              "ok": true,
+              "detail": "E15 answered 200 null"
+            },
+            {
+              "id": "session-handle",
+              "ok": true,
+              "detail": "game-session-08689169-a561-4703-ab9e-adbef9e151c4"
+            },
+            {
+              "id": "ticket-seed-applied",
+              "ok": true,
+              "detail": {
+                "seed": 2543566215
+              }
+            },
+            {
+              "id": "session-key",
+              "ok": true,
+              "detail": "0xbbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f"
+            },
+            {
+              "id": "entry-quote",
+              "ok": true,
+              "detail": {
+                "entryFeeWei": "100000000000000000",
+                "settlementGasReserveWei": "2000000000000000",
+                "totalWei": "102000000000000000"
+              }
+            },
+            {
+              "id": "entry-paid",
+              "ok": true,
+              "detail": {
+                "status": 1,
+                "isPaid": true
+              }
+            },
+            {
+              "id": "settle-body",
+              "ok": true,
+              "detail": "the ranked-client builder keyed the body to the paid session"
+            },
+            {
+              "id": "settle-confirmed",
+              "ok": true,
+              "detail": {
+                "status": "confirmed"
+              }
+            },
+            {
+              "id": "server-score",
+              "ok": true,
+              "detail": {
+                "server": 6634,
+                "replayed": 6634
+              }
+            },
+            {
+              "id": "tampered-claim-ignored",
+              "ok": true,
+              "detail": {
+                "server": 6634,
+                "claim": 6634007
+              }
+            },
+            {
+              "id": "settle-tx",
+              "ok": true,
+              "detail": "0x4f1f95b896ef154b6f2546b62b0f3593027b7d5d01ee35d9f8177deeb471f727"
+            },
+            {
+              "id": "status-owner-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "status-public-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "chain-session",
+              "ok": true,
+              "detail": {
+                "exists": true
+              }
+            },
+            {
+              "id": "chain-envelope",
+              "ok": true,
+              "detail": {
+                "chain": "0x85ea866d539504bedae11bbb387adcd16dfd5a87bbefe480f189386f3d272ddd",
+                "response": "0x85ea866d539504bedae11bbb387adcd16dfd5a87bbefe480f189386f3d272ddd"
+              }
+            },
+            {
+              "id": "relayer-published",
+              "ok": true,
+              "detail": {
+                "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+              }
+            },
+            {
+              "id": "duplicate-post",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "relayerNonceDelta": 1,
+                "note": "live: other sessions may move the relayer nonce; the session record is unchanged"
+              }
+            },
+            {
+              "id": "leaderboard-row",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "rank": 1
+              }
+            },
+            {
+              "id": "profile-stats",
+              "ok": true,
+              "detail": {
+                "confirmedRuns": 1,
+                "bestScore": 6634
+              }
+            },
+            {
+              "id": "profile-achievements",
+              "ok": true,
+              "detail": {
+                "unlocks": [
+                  "chikun-first-flight",
+                  "chikun-stack-three",
+                  "chikun-fork-runner",
+                  "chikun-reach-forest"
+                ]
+              }
+            },
+            {
+              "id": "share-session",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "cardRev": "477d6beff6c2"
+              }
+            },
+            {
+              "id": "share-page",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "ogImage": "https://lestersarcade.io/api/share-card/bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f.png?v=477d6beff6c2"
+              }
+            },
+            {
+              "id": "share-card",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "bytes": 418228
+              }
+            },
+            {
+              "id": "profile-name-valid",
+              "ok": true,
+              "detail": "E2E Chikun 6686"
+            },
+            {
+              "id": "profile-set",
+              "ok": true,
+              "detail": "0x40bb3039e87ff56859da4bb683694dff880bd1370583d6fe62d32f61ebb2a9ca"
+            },
+            {
+              "id": "profile-refresh",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null
+              }
+            },
+            {
+              "id": "profile-name",
+              "ok": true,
+              "detail": {
+                "displayName": "E2E Chikun 6686"
+              }
+            },
+            {
+              "id": "index-cron",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null,
+                "schemaVersion": 1
+              }
+            },
+            {
+              "id": "index-cron-idempotent",
+              "ok": true,
+              "detail": {
+                "first": {
+                  "fromBlock": 31,
+                  "toBlock": 34,
+                  "scores": 0,
+                  "profiles": 1
+                },
+                "second": {
+                  "fromBlock": 35,
+                  "toBlock": 34,
+                  "scores": 0,
+                  "profiles": 0
+                }
+              }
+            }
+          ],
+          "sessionHandle": "game-session-08689169-a561-4703-ab9e-adbef9e151c4",
+          "sessionId32": "0xbbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
+          "shareId": "bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
+          "seed": 2543566215,
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.9.0",
+          "seasonId": "chikun-season-preview-1",
+          "entry": {
+            "txHash": "0x70091f83875f2b3c2c1719babde0bb4ed9b4bf255213c7d839a66f681dd55cca",
+            "totalWei": "102000000000000000",
+            "amountWei": "102000000000000000",
+            "openedAt": 1790204409,
+            "blockNumber": 31
+          },
+          "run": {
+            "expectedScore": 6634,
+            "survivalSeconds": 95,
+            "claimScore": 6634007,
+            "flaps": 78,
+            "survivalTicks": 5700
+          },
+          "runWait": {
+            "waitedSeconds": 96,
+            "mode": "increaseTime"
+          },
+          "settle": {
+            "firstStatus": "confirmed",
+            "status": "confirmed",
+            "txHash": "0x4f1f95b896ef154b6f2546b62b0f3593027b7d5d01ee35d9f8177deeb471f727",
+            "blockNumber": 33,
+            "envelopeHash": "0x85ea866d539504bedae11bbb387adcd16dfd5a87bbefe480f189386f3d272ddd",
+            "score": 6634,
+            "achievements": [
+              "chikun-first-flight",
+              "chikun-stack-three",
+              "chikun-fork-runner",
+              "chikun-reach-forest"
+            ],
+            "attempts": [
+              {
+                "status": 200,
+                "error": null,
+                "state": "confirmed"
+              }
+            ],
+            "ms": 295
+          },
+          "leaderboard": {
+            "period": "weekly",
+            "periodKey": "2026-W39",
+            "rank": 1
+          },
+          "profile": {
+            "confirmedRuns": 1,
+            "bestScore": 6634,
+            "achievements": [
+              "chikun-first-flight",
+              "chikun-stack-three",
+              "chikun-fork-runner",
+              "chikun-reach-forest"
+            ]
+          },
+          "share": {
+            "shareId": "bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
+            "cardRev": "477d6beff6c2",
+            "url": "https://lestersarcade.io/s/bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
+            "ogImage": "https://lestersarcade.io/api/share-card/bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f.png?v=477d6beff6c2",
+            "cardBytes": 418228
+          },
+          "profileName": {
+            "displayName": "E2E Chikun 6686",
+            "avatarUri": "lestersarcade:avatar/chikun",
+            "txHash": "0x40bb3039e87ff56859da4bb683694dff880bd1370583d6fe62d32f61ebb2a9ca"
+          },
+          "indexCron": {
+            "schemaVersion": 1,
+            "first": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 1
+            },
+            "second": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 0
+            }
+          }
+        },
+        "stacked": {
+          "gameId": "stacked",
+          "ok": true,
+          "checks": [
+            {
+              "id": "siwe",
+              "ok": true,
+              "detail": "E1 nonce, signed challenge, E2 token"
+            },
+            {
+              "id": "seed-ticket",
+              "ok": true,
+              "detail": "E15 answered 200 null"
+            },
+            {
+              "id": "session-handle",
+              "ok": true,
+              "detail": "game-session-a3f8e4ed-85fb-41e5-bedf-3d124092d5e4"
+            },
+            {
+              "id": "ticket-seed-applied",
+              "ok": true,
+              "detail": {
+                "seed": 3121506870
+              }
+            },
+            {
+              "id": "session-key",
+              "ok": true,
+              "detail": "0x4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb"
+            },
+            {
+              "id": "entry-quote",
+              "ok": true,
+              "detail": {
+                "entryFeeWei": "100000000000000000",
+                "settlementGasReserveWei": "2000000000000000",
+                "totalWei": "102000000000000000"
+              }
+            },
+            {
+              "id": "entry-paid",
+              "ok": true,
+              "detail": {
+                "status": 1,
+                "isPaid": true
+              }
+            },
+            {
+              "id": "settle-body",
+              "ok": true,
+              "detail": "the ranked-client builder keyed the body to the paid session"
+            },
+            {
+              "id": "settle-confirmed",
+              "ok": true,
+              "detail": {
+                "status": "confirmed"
+              }
+            },
+            {
+              "id": "server-score",
+              "ok": true,
+              "detail": {
+                "server": 214436,
+                "replayed": 214436
+              }
+            },
+            {
+              "id": "settle-tx",
+              "ok": true,
+              "detail": "0xd15ff9fe0daf81518fc7fe733b45eeee55d9d9492473c49d191b7aaa93afea79"
+            },
+            {
+              "id": "status-owner-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "status-public-view",
+              "ok": true,
+              "detail": {
+                "status": 200
+              }
+            },
+            {
+              "id": "chain-session",
+              "ok": true,
+              "detail": {
+                "exists": true
+              }
+            },
+            {
+              "id": "chain-envelope",
+              "ok": true,
+              "detail": {
+                "chain": "0x3fe85085df3f700e2fbe54af38f488aa9aaab6f2ddba48c1bb26136ae7523d8e",
+                "response": "0x3fe85085df3f700e2fbe54af38f488aa9aaab6f2ddba48c1bb26136ae7523d8e"
+              }
+            },
+            {
+              "id": "relayer-published",
+              "ok": true,
+              "detail": {
+                "from": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc"
+              }
+            },
+            {
+              "id": "duplicate-post",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "relayerNonceDelta": 1,
+                "note": "live: other sessions may move the relayer nonce; the session record is unchanged"
+              }
+            },
+            {
+              "id": "leaderboard-row",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "rank": 1
+              }
+            },
+            {
+              "id": "profile-stats",
+              "ok": true,
+              "detail": {
+                "confirmedRuns": 1,
+                "bestScore": 214436
+              }
+            },
+            {
+              "id": "profile-achievements",
+              "ok": true,
+              "detail": {
+                "unlocks": [
+                  "stacked-first-line",
+                  "stacked-level-2",
+                  "stacked-lines-25",
+                  "stacked-lines-total-100",
+                  "stacked-chain-2",
+                  "stacked-pieces-100",
+                  "stacked-score-20k",
+                  "stacked-level-10",
+                  "stacked-lines-100",
+                  "stacked-score-100k"
+                ]
+              }
+            },
+            {
+              "id": "share-session",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "cardRev": "05d49829c365"
+              }
+            },
+            {
+              "id": "share-page",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "ogImage": "https://lestersarcade.io/api/share-card/4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb.png?v=05d49829c365"
+              }
+            },
+            {
+              "id": "share-card",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "bytes": 504903
+              }
+            },
+            {
+              "id": "profile-name-valid",
+              "ok": true,
+              "detail": "E2E Stacked 6686"
+            },
+            {
+              "id": "profile-set",
+              "ok": true,
+              "detail": "0xa34bc7505943c9a317ed07a78d71efbbdb3b5d0e7e268c368d883117007171aa"
+            },
+            {
+              "id": "profile-refresh",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null
+              }
+            },
+            {
+              "id": "profile-name",
+              "ok": true,
+              "detail": {
+                "displayName": "E2E Stacked 6686"
+              }
+            },
+            {
+              "id": "index-cron",
+              "ok": true,
+              "detail": {
+                "status": 200,
+                "error": null,
+                "schemaVersion": 1
+              }
+            },
+            {
+              "id": "index-cron-idempotent",
+              "ok": true,
+              "detail": {
+                "first": {
+                  "fromBlock": 35,
+                  "toBlock": 38,
+                  "scores": 0,
+                  "profiles": 1
+                },
+                "second": {
+                  "fromBlock": 39,
+                  "toBlock": 38,
+                  "scores": 0,
+                  "profiles": 0
+                }
+              }
+            }
+          ],
+          "sessionHandle": "game-session-a3f8e4ed-85fb-41e5-bedf-3d124092d5e4",
+          "sessionId32": "0x4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
+          "shareId": "4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
+          "seed": 3121506870,
+          "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+          "seasonId": "stacked-season-preview-1",
+          "entry": {
+            "txHash": "0x97fd7f2a8f3fea00b26fc496b27f0f3ef1e8eee01d8042d0bce55a2c38dabf16",
+            "totalWei": "102000000000000000",
+            "amountWei": "102000000000000000",
+            "openedAt": 1790204508,
+            "blockNumber": 35
+          },
+          "run": {
+            "expectedScore": 214436,
+            "survivalSeconds": 60,
+            "claimScore": 214436,
+            "sic1Bytes": 3646,
+            "ticks": 3619
+          },
+          "runWait": {
+            "waitedSeconds": 61,
+            "mode": "increaseTime"
+          },
+          "settle": {
+            "firstStatus": "confirmed",
+            "status": "confirmed",
+            "txHash": "0xd15ff9fe0daf81518fc7fe733b45eeee55d9d9492473c49d191b7aaa93afea79",
+            "blockNumber": 37,
+            "envelopeHash": "0x3fe85085df3f700e2fbe54af38f488aa9aaab6f2ddba48c1bb26136ae7523d8e",
+            "score": 214436,
+            "achievements": [
+              "stacked-first-line",
+              "stacked-level-2",
+              "stacked-lines-25",
+              "stacked-lines-total-100",
+              "stacked-chain-2",
+              "stacked-pieces-100",
+              "stacked-score-20k",
+              "stacked-level-10",
+              "stacked-lines-100",
+              "stacked-score-100k"
+            ],
+            "attempts": [
+              {
+                "status": 200,
+                "error": null,
+                "state": "confirmed"
+              }
+            ],
+            "ms": 97
+          },
+          "leaderboard": {
+            "period": "weekly",
+            "periodKey": "2026-W39",
+            "rank": 1
+          },
+          "profile": {
+            "confirmedRuns": 1,
+            "bestScore": 214436,
+            "achievements": [
+              "stacked-first-line",
+              "stacked-level-2",
+              "stacked-lines-25",
+              "stacked-lines-total-100",
+              "stacked-chain-2",
+              "stacked-pieces-100",
+              "stacked-score-20k",
+              "stacked-level-10",
+              "stacked-lines-100",
+              "stacked-score-100k"
+            ]
+          },
+          "share": {
+            "shareId": "4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
+            "cardRev": "05d49829c365",
+            "url": "https://lestersarcade.io/s/4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
+            "ogImage": "https://lestersarcade.io/api/share-card/4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb.png?v=05d49829c365",
+            "cardBytes": 504903
+          },
+          "profileName": {
+            "displayName": "E2E Stacked 6686",
+            "avatarUri": "lestersarcade:avatar/gold-emblem",
+            "txHash": "0xa34bc7505943c9a317ed07a78d71efbbdb3b5d0e7e268c368d883117007171aa"
+          },
+          "indexCron": {
+            "schemaVersion": 1,
+            "first": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 1
+            },
+            "second": {
+              "scores": 0,
+              "achievements": 0,
+              "profiles": 0
+            }
+          }
+        }
+      },
+      "negatives": [
+        {
+          "id": "tampered-chikun-claim",
+          "ok": true,
+          "claim": 6634007,
+          "serverScore": 6634
+        },
+        {
+          "id": "unpaid-entry",
+          "ok": true,
+          "got": {
+            "status": 402,
+            "error": "entry-not-paid",
+            "e4": 404
+          }
+        },
+        {
+          "id": "fees-disabled-entry",
+          "ok": true,
+          "skipped": "local-only"
+        },
+        {
+          "id": "evidence-copied-to-another-wallet",
+          "ok": true,
+          "copier": "ephemeral wallet (unpaid)",
+          "got": {
+            "status": 402,
+            "error": "entry-not-paid"
+          }
+        },
+        {
+          "id": "ephemeral-wallet-token",
+          "ok": true,
+          "got": {
+            "full": [
+              403,
+              "wallet-mismatch"
+            ],
+            "retry": [
+              403,
+              "wallet-mismatch"
+            ],
+            "statusView": "public"
+          }
+        },
+        {
+          "id": "settlement-paused",
+          "ok": true,
+          "skipped": "local-only"
+        }
+      ],
+      "startedAt": "2026-09-23T22:56:51.219Z",
+      "finishedAt": "2026-09-23T22:56:59.337Z",
+      "durationMs": 8118,
+      "failures": [],
+      "ok": true
+    }
+  ],
+  "phase2": {
+    "schema": "lesters-nft-phase2-rehearsal-v1",
+    "gameId": "lester-blaster",
+    "setup": {
+      "label": "labelled test setup: platinum and mythic achievements are not earnable in a short run, so these two unlock rows are inserted for the settled session",
+      "approvedAdded": "marathon-wallet",
+      "droppedFromPhase1": "arcade-legend-500"
+    },
+    "steps": [
+      {
+        "id": "settled-run",
+        "ok": true,
+        "sessionId32": "0xb6b5eaf5ebe9575cb5b3b036eafb0076e2147339868b8eea5c58ae71a0849b72",
+        "earned": [
+          "cabinet-pioneer",
+          "first-paid-run",
+          "first-1000-points",
+          "first-blood",
+          "ten-enemy-kills",
+          "combo-starter",
+          "score-5000",
+          "slums-clear"
+        ]
+      },
+      {
+        "id": "phase1-proposal",
+        "ok": true,
+        "approvedAdded": {
+          "id": "marathon-wallet",
+          "tier": "mythic",
+          "phase1Nft": false
+        },
+        "droppedFromPhase1": {
+          "id": "arcade-legend-500",
+          "tier": "mythic",
+          "phase1Nft": true
+        }
+      },
+      {
+        "id": "test-setup-rows",
+        "ok": true,
+        "label": "labelled test setup: platinum and mythic achievements are not earnable in a short run, so these two unlock rows are inserted for the settled session",
+        "inserted": [
+          "marathon-wallet",
+          "arcade-legend-500"
+        ]
+      },
+      {
+        "id": "define-approved-subset",
+        "ok": true,
+        "definedPerGame": {
+          "lester-blaster": 3,
+          "chikun": 5,
+          "stacked": 5
+        },
+        "relayerMinter": true
+      },
+      {
+        "id": "backfill-plan",
+        "ok": true,
+        "planned": 1,
+        "candidates": 10,
+        "storedNftTrueRows": [
+          "arcade-legend-500"
+        ]
+      },
+      {
+        "id": "resync-flags",
+        "ok": true,
+        "stored": {
+          "marathon-wallet": true,
+          "arcade-legend-500": false
+        }
+      },
+      {
+        "id": "backfill-mint",
+        "ok": true,
+        "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644",
+        "relayerTransactions": 1
+      },
+      {
+        "id": "index-stamps-token",
+        "ok": true,
+        "cron": {
+          "status": 200,
+          "achievements": 1
+        },
+        "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644",
+        "mintTxHash": "0x6631f855a9b60d92e9317044e9cf19202e4c744057c382e0f2be0d200a924245",
+        "mintedAt": "2026-09-23T23:00:25.000Z"
+      },
+      {
+        "id": "profile-token",
+        "ok": true,
+        "marathon-wallet": {
+          "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644",
+          "nft": false
+        },
+        "arcade-legend-500": {
+          "tokenId": null,
+          "nft": true
+        },
+        "note": "nft comes from the server catalog (A20), never the stored flag; the resync set the stored flags the other way round"
+      },
+      {
+        "id": "token-uri",
+        "ok": true,
+        "tokenUri": "https://lestersarcade.io/achievements/lester-blaster/marathon-wallet.json"
+      },
+      {
+        "id": "second-backfill-mints-nothing",
+        "ok": true,
+        "plannedAfterIndex": 0,
+        "forcedDuplicate": [
+          {
+            "skipped": true,
+            "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644"
+          }
+        ]
+      }
+    ],
+    "ok": true,
+    "player": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
+    "sessionId32": "0xb6b5eaf5ebe9575cb5b3b036eafb0076e2147339868b8eea5c58ae71a0849b72",
+    "approved": {
+      "lester-blaster": [
+        "two-hundred-ranked-runs",
+        "two-fifty-ranked-runs",
+        "marathon-wallet"
+      ],
+      "chikun": [
+        "chikun-survive-15m",
+        "chikun-forks-150",
+        "chikun-coins-375",
+        "chikun-flawless-20",
+        "chikun-combo-40"
+      ],
+      "stacked": [
+        "stacked-lines-1000",
+        "stacked-survive-17m",
+        "stacked-score-4250k",
+        "stacked-garbage-100",
+        "stacked-b2b-streak-10"
+      ]
+    },
+    "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644"
+  }
+}

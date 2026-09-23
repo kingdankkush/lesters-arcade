@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test, { after, before } from 'node:test';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 
@@ -181,4 +181,16 @@ test('the driver plays one Ranked session per game in process, and every negativ
     assert.equal(text.includes(secret) || text.includes(secret.slice(2)), false, 'a secret leaked into the report or the log');
   }
   assert.doesNotMatch(text, /Bearer|"mac"|"token"/);
+});
+
+test('the committed rehearsal report records a passing local rehearsal on both transports and phase 2', () => {
+  const path = new URL('../docs/qa/pre-deployment-rehearsal-20260923.json', import.meta.url);
+  assert.ok(existsSync(path), 'node scripts/rehearse-ranked-e2e.mjs --target local writes the report');
+  const report = JSON.parse(readFileSync(path, 'utf8'));
+  assert.equal(report.schema, 'lesters-pre-deployment-rehearsal-v1');
+  assert.equal(report.ok, true);
+  assert.deepEqual(report.runs.map((run) => [run.transport, run.target, run.ok]), [['in-process', 'local', true], ['http', 'live', true]]);
+  for (const run of report.runs) assert.deepEqual(Object.keys(run.games), DEFAULT_GAMES);
+  assert.equal(report.phase2.ok, true);
+  assert.doesNotMatch(JSON.stringify(report), /Bearer|"mac"|"token"|PRIVATE_KEY/);
 });
