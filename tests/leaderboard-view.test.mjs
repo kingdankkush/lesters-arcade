@@ -403,3 +403,13 @@ test('preview shows a truthful empty state with no source tabs and no House rows
   assert.equal(find(grid, (candidate) => String(candidate.className ?? '').includes('leaderboard-source-tab')).length, 0, 'no source tabs');
   assert.ok(calls.every((input) => input.source === 'local'), 'preview aggregates only this device’s rows');
 });
+
+test('preview keeps the Scores and Profile text the Chikun smoke reads', () => {
+  // scripts/chikun-ranked-browser-smoke.mjs reads these in preview (both flags false).
+  const chikun = leaderboardColumnsFor('chikun').map((column) => column.label.toUpperCase());
+  for (const label of ['COINS', 'CLEARED', 'NEAR MISS']) assert.ok(chikun.includes(label), label);
+  assert.match(leaderboardEmptyState({ hosted: false, gameTitle: "Chikun's Escape" }).title, /No unpublished local ranked scores/);
+  const profileRoute = readFileSync(new URL('../apps/portal/src/routes/official-profile-route.mjs', import.meta.url), 'utf8');
+  assert.match(profileRoute, /\['Score Source', 'Device-local'\]/);
+  assert.match(profileRoute, /parent replays the child input evidence/);
+});
