@@ -12,6 +12,8 @@ import { recordSessionEvent } from '../apps/portal/src/session-integrity.mjs';
 import { verifyRankedRun } from '../server/verify/index.mjs';
 import { FIXTURE_REGISTRY, FIXTURE_SEED_SECRET } from './fixtures/ranked/build-fixtures.mjs';
 import * as rankedSettlementModule from '../apps/portal/src/ranked-settlement.mjs';
+import { HMH_PLAYER_SETTINGS_DEFAULTS } from '../apps/portal/src/hmh-player-settings.mjs';
+import { DEFAULT_KEYBOARD_BINDINGS } from '../apps/hmh-reboot/src/action-map.mjs';
 import { PORTAL_AST, PORTAL_MAIN, loadPortalFunctions, memoryStorage, portalCallback, portalFunctionSource, rankedGlueContext, until } from './helpers/ranked-client-vm.mjs';
 
 const fixture = (name) => JSON.parse(readFileSync(new URL(`./fixtures/ranked/${name}.json`, import.meta.url), 'utf8'));
@@ -593,4 +595,19 @@ test('preview: boot reports zero once, and no event loads the client', async () 
   assert.equal(boot.spy.imports, 0, 'preview never loads the settlement client for these events');
   assert.equal(boot.spy.resume, 0);
   assert.deepEqual(boot.spy.retryRequests, []);
+});
+
+// Contract §11.5: the HMH child's initial JS counts the chunk it shares with
+// the portal, export list included. The §6.4 mapper at the HMH game-over call
+// site (achievements/stats.mjs) adds HMH_RUN_SUMMARY_CATALOGS to that list, so
+// the portal takes DEFAULT_KEYBOARD_BINDINGS off it and builds the same
+// defaults with normalizeKeyboardBindings(): the HMH total stays at the base.
+test('the portal keyboard defaults equal the action map defaults without importing them from the HMH shared chunk', () => {
+  const portalDefaults = HMH_PLAYER_SETTINGS_DEFAULTS.controls.keyboardBindings;
+  assert.deepEqual({ ...portalDefaults }, { ...DEFAULT_KEYBOARD_BINDINGS });
+  assert.deepEqual(Object.keys(portalDefaults), Object.keys(DEFAULT_KEYBOARD_BINDINGS), 'same action order');
+  assert.equal(Object.isFrozen(portalDefaults), true);
+  assert.notEqual(portalDefaults, DEFAULT_KEYBOARD_BINDINGS, 'the portal keeps its own copy');
+  const source = readFileSync(new URL('../apps/portal/src/hmh-player-settings.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /import\s*\{[^}]*\bDEFAULT_KEYBOARD_BINDINGS\b/);
 });
