@@ -108,7 +108,7 @@ These are the acceptance criteria. Every workstream serves one of them.
 One shared results screen for all three games, rendered by the parent portal and lazy-loaded.
 
 - **Hero block:** the score, big, and the player's handle.
-- **Standing:** "#3 today · #12 all-time · New personal best (+4,210)", read from the leaderboard index after settlement.
+- **Standing:** "#3 this week · #12 all-time · New personal best (+4,210)", read from the leaderboard index after settlement (Weekly is the headline period while the Daily board is off).
 - **Game stats:**
   - Hard Money Heroes: kills, time, combo, level, boss.
   - Chikun: distance or region reached, laps, forks passed, near-misses, coins, best combo.
@@ -408,7 +408,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
    Hard Money Heroes:
    ```
    🏆 RANKED · Hard Money Heroes
-   48,210 pts · #3 today
+   48,210 pts · Rank 3 this week
    ☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04
    ⛓ Verified on LitVM
    Can you beat it? @LestersArcade
@@ -428,14 +428,14 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
    STACKED:
    ```
    🧱 RANKED · STACKED
-   412,900 pts · #1 this week
+   412,900 pts · Rank 1 this week
    📈 186 lines · Lv 14 · 5 Halvings
    ⛓ Verified on LitVM
    Stack higher @LestersArcade
    https://lestersarcade.io/s/<sessionId>
    ```
 
-   A new personal best adds a `🔥 New personal best!` line. Free runs use a lighter template ending "Practising on @LestersArcade" with no verification line. **No hashtags** (decision D13).
+   A new personal best adds a `🔥 New personal best!` line. Free runs use a lighter template ending "Practising on @LestersArcade" with no verification line. **No hashtags** (decision D13), and no `#` at all: the standing in share text reads "Rank N this week" (Weekly is the headline period while the Daily board is off; amended at integration, per results-share and contract §7.4).
 3. **Share page `/s/<sessionId>`.**
    - Add a Vercel rewrite to a lightweight page that reads `/api/session/<id>` (from Neon).
    - It shows the score card, stats, standing, badges, the transaction link and **Play** buttons.

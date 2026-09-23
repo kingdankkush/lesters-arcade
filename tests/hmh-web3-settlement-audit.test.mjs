@@ -16,6 +16,16 @@ test('WO-38 Web3 settlement audit passes wallet to settlement to leaderboard che
   assert.ok(audit.plan.methods.includes('submitVerifiedSession'));
 });
 
+test('the audit markdown lists every address, the nested achievement registries included', async () => {
+  const { renderWeb3SettlementAuditMarkdown } = await import('../scripts/hmh-web3-settlement-audit.mjs');
+  const audit = buildWeb3SettlementAudit();
+  const markdown = renderWeb3SettlementAuditMarkdown(audit);
+  assert.doesNotMatch(markdown, /\[object Object\]/);
+  for (const gameId of Object.keys(audit.contractAddresses.achievementRegistries)) {
+    assert.match(markdown, new RegExp(`\\| achievementRegistries\\.${gameId} \\| 0x[0-9a-fA-F]{40} \\|`), gameId);
+  }
+});
+
 test('WO-38 profile and ranked writes both enforce the LitVM chain guard', () => {
   const chainClient = repoText('apps/portal/src/litvm-chain-client.mjs');
   assert.match(chainClient, /export async function submitRankedSession[\s\S]*getNetwork\(\)[\s\S]*Wrong network/);
