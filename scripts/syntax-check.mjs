@@ -72,6 +72,7 @@ const NODE_CHECK_FILES = [
   'scripts/lib/chikun-bots.mjs',
   'scripts/chikun-difficulty-harness.mjs',
   'tests/chikun-difficulty.test.mjs',
+  'apps/chikun/src/frame-guard.mjs',
   'scripts/chikun-regions-browser-smoke.mjs',
   'tests/chikun-regions.test.mjs',
   'apps/stacked/src/render/music-scenes.mjs',

@@ -6,6 +6,7 @@ import { createChikunCharacter, CHIKUN_FLOURISHES, milestoneFlourish } from './c
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
+import { createGuardedFrameLoop, finishRunSafely } from './frame-guard.mjs';
 import {
   CHIKUN_FIXED_STEP_HZ,
   buildChikunReplayClaim,
@@ -429,7 +430,7 @@ function startRun() {
   }
   stopReplayViewer();
   prepareRun();
-  frameFailureReported = false;
+  frameLoop.reset();
   phase = 'running';
   paused = false;
   flapQueued = false;
@@ -655,24 +656,26 @@ function draw(snapshot = latestSnapshot) {
   ctx.restore();
 }
 
-// Failure safety: nothing a frame does may stop the loop. A throw is reported
-// once to the parent and the next animation frame is always requested.
-let frameFailureReported = false;
-function reportFrameFailure(error) {
-  if (frameFailureReported) return;
-  frameFailureReported = true;
-  try { send('game:error', { code: 'runtime-error', message: error instanceof Error ? error.message.slice(0, 240) : 'Runtime failure' }); } catch { /* the bridge itself failed */ }
-}
+// Failure safety: nothing a frame does may stop the loop (frame-guard.mjs). A
+// throw is reported once per run to the parent and the next animation frame is
+// always requested.
+const frameLoop = createGuardedFrameLoop({
+  step: (now) => stepFrame(now),
+  schedule: (next) => requestAnimationFrame(next),
+  isDisposed: () => disposed,
+  onError: (error) => send('game:error', { code: 'runtime-error', message: error instanceof Error ? error.message.slice(0, 240) : 'Runtime failure' }),
+});
+const frame = frameLoop.frame;
 
-function frame(now) {
-  if (disposed) return;
-  try {
-    stepFrame(now);
-  } catch (error) {
-    reportFrameFailure(error);
-  } finally {
-    if (!disposed) requestAnimationFrame(frame);
-  }
+// A run whose result could not be finished still gets a usable result screen:
+// no stale score from the previous run, and Run Again is enabled.
+function showUnfinishedRun() {
+  resultEyebrow.textContent = 'Run could not be finished';
+  resultScore.textContent = String(latestSnapshot?.score ?? 0);
+  resultCopy.textContent = 'Something went wrong while finishing this flight, so it was not recorded here. Run Again to fly a new one.';
+  resultStats.replaceChildren();
+  restartButton.disabled = false;
+  restartButton.textContent = 'Run Again';
 }
 
 function stepFrame(now) {
@@ -726,9 +729,7 @@ function stepFrame(now) {
       lastStateTick = latestSnapshot.tick;
       sendState('running');
     }
-    if (runtime.terminal) {
-      try { finishRun(); } catch (error) { reportFrameFailure(error); }
-    }
+    if (runtime.terminal) finishRunSafely(finishRun, { report: frameLoop.report, recover: showUnfinishedRun });
   } else if (phase === 'game-over' && replayPlaying && replayPlayback) {
     accumulator = Math.min(accumulator + elapsed * Number(replaySpeed.value), STEP_MS * MAX_CATCH_UP_STEPS);
     let steps = 0;

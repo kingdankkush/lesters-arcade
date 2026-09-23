@@ -24,6 +24,7 @@ import { REPLAY_FILE_LIMIT, exportChikunReplay, importChikunReplay } from '../ap
 import { routePilot } from '../scripts/chikun-course-pilot.mjs';
 import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 import { CHIKUN_GHOST_STORAGE_VERSION, buildChikunGhostTrack, createChikunGhostRecord, ghostYAt, readChikunGhostRecord } from '../apps/portal/src/chikun-daily-challenge.mjs';
+import { createGuardedFrameLoop, finishRunSafely } from '../apps/chikun/src/frame-guard.mjs';
 
 const v5Fixtures = JSON.parse(readFileSync(new URL('./fixtures/chikun-v5-replays.json', import.meta.url), 'utf8'));
 const v6Fixtures = JSON.parse(readFileSync(new URL('./fixtures/chikun-v6-replays.json', import.meta.url), 'utf8'));
@@ -301,11 +302,57 @@ test('v6 result counters follow their documented definitions', () => {
 });
 
 test('the child keeps its frame loop alive when a result fails', () => {
+  // Drive the guarded loop with a fake animation-frame clock.
+  const queue = [];
+  const errors = [];
+  const rendered = [];
+  let disposed = false;
+  let failAt = new Set([2, 3]);
+  const loop = createGuardedFrameLoop({
+    step: (now) => { if (failAt.has(now)) throw new Error(`frame ${now} failed`); rendered.push(now); },
+    schedule: (next) => queue.push(next),
+    isDisposed: () => disposed,
+    onError: (error) => errors.push(error.message),
+  });
+  const tick = (now) => { const next = queue.shift(); assert.equal(typeof next, 'function', `a frame is scheduled before ${now}`); next(now); };
+  queue.push(loop.frame);
+  for (let now = 1; now <= 6; now += 1) tick(now);
+  assert.deepEqual(rendered, [1, 4, 5, 6], 'frames after a failure still render');
+  assert.deepEqual(errors, ['frame 2 failed'], 'a failure is reported once per run');
+  assert.equal(queue.length, 1, 'the next frame is always re-armed');
+  loop.reset();
+  failAt = new Set([7]);
+  tick(7);
+  assert.deepEqual(errors, ['frame 2 failed', 'frame 7 failed'], 'a new run reports again');
+  const brokenBridge = createGuardedFrameLoop({ step: () => { throw new Error('x'); }, schedule: (next) => queue.push(next), onError: () => { throw new Error('bridge down'); } });
+  queue.length = 0;
+  brokenBridge.frame(1);
+  assert.equal(queue.length, 1, 'even a failing reporter cannot stop the loop');
+  disposed = true;
+  queue.length = 0;
+  loop.frame(9);
+  assert.equal(queue.length, 0, 'a disposed child stops scheduling');
+
+  // finishRun throwing after it set phase 'game-over': reported once, and the
+  // result screen is rebuilt instead of showing the previous run.
+  const reports = [];
+  let recovered = null;
+  assert.equal(finishRunSafely(() => { throw new Error('replay claim failed'); }, { report: (error) => reports.push(error.message), recover: (error) => { recovered = error.message; } }), false);
+  assert.deepEqual(reports, ['replay claim failed']);
+  assert.equal(recovered, 'replay claim failed');
+  assert.equal(finishRunSafely(() => {}, { report: () => assert.fail('no report'), recover: () => assert.fail('no recovery') }), true);
+  assert.equal(finishRunSafely(() => { throw new Error('a'); }, { report: () => {}, recover: () => { throw new Error('b'); } }), false, 'a failing recovery is contained');
+
+  // main.mjs wires the loop and the recovery through these helpers.
   const source = readFileSync(new URL('../apps/chikun/src/main.mjs', import.meta.url), 'utf8');
-  const frame = source.slice(source.indexOf('function frame(now) {'), source.indexOf('function stepFrame(now) {'));
-  assert.match(frame, /try \{\s*stepFrame\(now\);\s*\} catch \(error\) \{\s*reportFrameFailure\(error\);\s*\} finally \{\s*if \(!disposed\) requestAnimationFrame\(frame\);/);
-  assert.match(source, /if \(runtime\.terminal\) \{\s*try \{ finishRun\(\); \} catch \(error\) \{ reportFrameFailure\(error\); \}/);
-  assert.equal(source.match(/requestAnimationFrame\(frame\)/g).length, 2, 'the boot call and the always-run finally');
+  assert.match(source, /const frameLoop = createGuardedFrameLoop\(\{\s*step: \(now\) => stepFrame\(now\),\s*schedule: \(next\) => requestAnimationFrame\(next\),\s*isDisposed: \(\) => disposed,/);
+  assert.match(source, /if \(runtime\.terminal\) finishRunSafely\(finishRun, \{ report: frameLoop\.report, recover: showUnfinishedRun \}\);/);
+  const recovery = source.slice(source.indexOf('function showUnfinishedRun() {'), source.indexOf('function stepFrame(now) {'));
+  assert.match(recovery, /resultStats\.replaceChildren\(\);/);
+  assert.match(recovery, /restartButton\.disabled = false;/);
+  assert.match(recovery, /resultScore\.textContent = String\(latestSnapshot\?\.score \?\? 0\);/);
+  assert.match(source, /frameLoop\.reset\(\);\s*phase = 'running';/);
+  assert.equal(source.match(/requestAnimationFrame\(frame\)/g).length, 1, 'the boot call; the loop re-arms itself');
   assert.match(source, /runtimeVersion: '0\.9\.0'/);
 });
 
