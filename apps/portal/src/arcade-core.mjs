@@ -5519,6 +5519,20 @@ function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = nu
   }
 
   const cumulativeProgress = progress;
+  // recordScore has already folded this run into progress (updateProgressFromRun).
+  // The resolver adds enemyKillsByType (this run) to cumulativeEnemyKillsByType,
+  // so it gets the family totals from before this run; otherwise this run's
+  // family kills would count twice.
+  const runEnemyKills = runStats.enemyKillsByType ?? {};
+  const runKillsOf = (enemyId) => {
+    const count = Math.floor(Number(runEnemyKills[enemyId]));
+    return Number.isFinite(count) && count > 0 ? count : 0;
+  };
+  const priorEnemyKillsByType = Object.fromEntries(Object.entries(cumulativeProgress.enemyKillsByType ?? {})
+    .map(([enemyId, total]) => [enemyId, Math.max(0, (Number.isFinite(total) ? total : 0) - runKillsOf(enemyId))]));
+  // Weapons count within this run only, as the server catalog does (weapon-collector).
+  const runWeaponIds = new Set([...(Array.isArray(runStats.weaponIds) ? runStats.weaponIds : []), runStats.weaponId, runStats.rareWeaponId]
+    .filter((weaponId) => typeof weaponId === 'string' && weaponId));
   for (const achievementId of resolveAchievementUnlocksForRun({
     score,
     elapsedSeconds: runStats.elapsedSeconds ?? 0,
@@ -5533,8 +5547,8 @@ function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = nu
     cumulativeGrenadeKills: cumulativeProgress.grenadeKills ?? runStats.grenadeKills ?? 0,
     meleeKills: runStats.meleeKills ?? 0,
     cumulativeMeleeKills: cumulativeProgress.meleeKills ?? runStats.meleeKills ?? 0,
-    enemyKillsByType: runStats.enemyKillsByType ?? {},
-    cumulativeEnemyKillsByType: cumulativeProgress.enemyKillsByType ?? {},
+    enemyKillsByType: runEnemyKills,
+    cumulativeEnemyKillsByType: priorEnemyKillsByType,
     maxCombo: runStats.maxCombo ?? runStats.maxKillCombo ?? cumulativeProgress.maxCombo ?? 0,
     maxDamageCombo: runStats.maxDamageCombo ?? cumulativeProgress.maxDamageCombo ?? 0,
     powerUpsCollected: runStats.powerUpsCollected ?? (runStats.collectedPowerUps?.length ?? 0),
@@ -5547,8 +5561,8 @@ function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = nu
     perfectBossKills: cumulativeProgress.perfectBossKills ?? 0,
     stageIndexReached: runStats.stageIndexReached ?? 1,
     lowHealthSurvival: runStats.lowHealthSurvival ?? false,
-    uniqueWeapons: cumulativeProgress.weaponIdsUsed?.length ?? 0,
-    weaponIds: runStats.weaponIds ?? [],
+    uniqueWeapons: runWeaponIds.size,
+    weaponIds: [...runWeaponIds],
     damageDealt: runStats.damageDealt ?? 0,
   })) {
     if (unlockAchievement(profile, achievementId)) unlockedAchievements.push(achievementId);

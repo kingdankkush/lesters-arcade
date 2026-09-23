@@ -37,15 +37,19 @@
 - **Derivation.** `deriveEarnedAchievements(gameId, verifiedRun, history)` returns, in catalog order, every available entry that the run earns and that the wallet has not unlocked yet. It throws when the run belongs to another game, so a Chikun run can never earn an HMH id. `historyFieldsFor(gameId)` lists the catalog-owned stats paths the index sums or maximizes. They match `^[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z][a-zA-Z0-9]*)?$`, and a test checks each one exists as a number in real stats.
 - **Browser resolver fixes** (`arcade-core.mjs`), so that the device-local profile and the server agree:
   - `maybeUnlockRunAchievements` now runs only for Hard Money Heroes progress, and its run count is the HMH-scoped `progress.paidRuns`. `profile.totalPaidRuns` still counts every game, as a display counter.
+  - `recordScore` adds the run to HMH progress before it resolves unlocks, and the resolver adds the run's own enemy-family kills to the cumulative ones. So `maybeUnlockRunAchievements` passes the family totals from before this run. Before this fix a run's family kills counted twice: 38 goblin-family kills unlocked the 75-kill `goblin-cleanup`.
+  - It counts weapons within this run only, as the server does. Before, `weapon-collector` counted weapons across runs.
   - `resolveAchievementUnlocksForRun` also accepts the canonical `weaponIds` (the Scatter Shotgun counts for `spread-ltc-specialist`) and `damageDealt` (`damage-chain`).
   - `ACHIEVEMENT_TIER_UNLOCK_PCT` gains `mythic: 1`.
   - The achievement-progress "completed Ranked runs" metric reads HMH progress.
-- **Resolver inputs.** `hmhResolverInputsFromRunSummary(runSummary)` feeds the legacy resolver the same facts the server uses:
+- **Resolver inputs.** `hmhResolverInputsFromRunSummary(runSummary)` (contract §6.4) feeds the legacy resolver the same facts the server uses:
   - legacy enemy ids per family;
   - `stageIndexReached` from `districtsVisited` (6 → 13, 4 → 8, 2 → 4, else 1);
   - `bossId: 'boss-liquidator'` only on a boss kill.
 
-  A parity test runs four HMH summaries through both paths, with and without history. The resolver and the server return the same ids, except the unavailable ones and `cabinet-pioneer`, which the browser grants at wallet connect.
+  The resolver also reads run totals that the §6.4 keys leave out. `hmhRecordScoreInputsFromRunSummary(runSummary)` returns both `recordScore` arguments: `score`, and `runStats`, which is the §6.4 inputs plus `elapsedSeconds` (`totals.elapsedMs / 1000`), `kills`, `powerUpsCollected` and `damageDealt`. With the §6.4 mapper alone, the browser misses `first-blood`, `five-minute-run`, `damage-chain`, `master-survivor` and the kill totals.
+
+  Two parity tests hold the browser to the server. One feeds the bare resolver. The other goes through the real `recordScore` path run by run: each fixture on a fresh profile, each after nine earlier runs, and a mixed sequence. Both return the same ids as the server, except the unavailable ones and `cabinet-pioneer`, which the browser grants at wallet connect.
 
 ### HMH enemy families
 
@@ -290,6 +294,6 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 
 ## Follow-ups
 
-- **ranked-client slice.** At the `submitCombatGameOver` call site, spread `hmhResolverInputsFromRunSummary(runSummary)` into the run stats. Also pass `score`, `elapsedSeconds` (`totals.elapsedMs / 1000`), `kills`, `powerUpsCollected` and `damageDealt` (`totals.damageDealt`), so the device-local resolver matches the server. Do not keep the stale `bossId`, `killsByType` and `maxCombo` globals in `main.js`.
+- **ranked-client slice (brief amendment needed).** Its brief (item 3) names only `hmhResolverInputsFromRunSummary`, which leaves the run totals out. At the `submitCombatGameOver` call site, use `const { score, runStats } = hmhRecordScoreInputsFromRunSummary(runSummary)` and call `recordScore(state, currentSession, score, runStats)`. That passes the §6.4 inputs plus `elapsedSeconds`, `kills`, `powerUpsCollected` and `damageDealt`, so the device-local resolver matches the server. Do not keep the stale `bossId`, `killsByType` and `maxCombo` globals in `main.js`.
 - **HMH child (post-launch).** Record boss-phase damage, a boss-kill tick and a lowest-health mark in the run summary. That makes `no-damage-boss`, `perfect-boss-gauntlet`, `speed-clear` and `lucky-survivor` computable. `no-damage-10-minutes` needs a Ranked end state other than defeat.
 - **Owner at O1.** Confirm or change the edge thresholds above, the `damage-chain` remap and the STACKED estimates. Any change is a follow-up slice for the achievements owner.

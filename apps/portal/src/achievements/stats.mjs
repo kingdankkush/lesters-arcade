@@ -177,3 +177,22 @@ export function hmhResolverInputsFromRunSummary(runSummary) {
     collectedPowerUps: p.uniquePowerUps,
   };
 }
+
+// Both arguments the device-local arcade-core recordScore(state, session, score,
+// runStats) needs for an HMH Ranked run, from the same summary: the §6.4 resolver
+// inputs plus the run totals the resolver also reads (survival time, kills,
+// pickups, damage dealt). With them the browser unlocks the same HMH ids as the
+// server catalog; the §6.4 mapper alone leaves those totals at 0.
+export function hmhRecordScoreInputsFromRunSummary(runSummary) {
+  const stats = statsFromHmhRunSummary(runSummary);
+  return {
+    score: stats.score,
+    runStats: {
+      ...hmhResolverInputsFromRunSummary(runSummary),
+      elapsedSeconds: stats.survivalSeconds,
+      kills: stats.kills,
+      powerUpsCollected: stats.powerUpsCollected,
+      damageDealt: stats.damageDealt,
+    },
+  };
+}

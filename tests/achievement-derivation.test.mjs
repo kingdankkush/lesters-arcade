@@ -15,7 +15,7 @@ import {
 import { statAt } from '../apps/portal/src/achievements/entry.mjs';
 import { HMH_DAMAGE_CHAIN_DAMAGE } from '../apps/portal/src/achievements/hmh.mjs';
 import {
-  hmhResolverInputsFromRunSummary, statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple,
+  hmhRecordScoreInputsFromRunSummary, hmhResolverInputsFromRunSummary, statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple,
 } from '../apps/portal/src/achievements/stats.mjs';
 import { HMH_PLANS, buildHmhSummary } from './fixtures/achievements/build-fixtures.mjs';
 
@@ -186,26 +186,37 @@ test('Chikun runs never earn HMH achievements', () => {
   // The browser resolver agrees: a Chikun Ranked record unlocks no HMH achievement.
   const state = createInitialArcadeState();
   connectPlayerAccount(state, WALLET, { handle: 'ChikunOnly' });
-  const session = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', allowDevCabinet: true });
-  const result = simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34, 55, 89], maxTicks: 180 });
-  const replayClaim = buildChikunReplayClaim({ buildHash: session.buildHash, seasonId: session.seasonId, result });
-  const before = [...state.profiles[WALLET].achievements];
-  const recorded = recordScore(state, session, result.score, {
-    survivalTime: result.survivalTime, survivalTicks: result.survivalTicks, coinsCollected: result.coinsCollected,
-    forksPassed: result.forksPassed, nearMisses: result.nearMisses, bestCombo: result.bestCombo, achievements: result.achievements, replayClaim,
-  });
-  assert.deepEqual(recorded.unlockedAchievements, []);
-  assert.deepEqual(state.profiles[WALLET].achievements, before);
-  assert.ok(!state.profiles[WALLET].achievements.includes(ACHIEVEMENTS.FIRST_PAID_RUN.id));
-  assert.equal(state.profiles[WALLET].totalPaidRuns, 1, 'the all-game display counter still counts the run');
-  assert.equal(state.profiles[WALLET].progress['lester-blaster'].paidRuns, 0);
+  const profile = state.profiles[WALLET];
+  const recordChikun = () => {
+    const session = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', allowDevCabinet: true });
+    const result = simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34, 55, 89], maxTicks: 180 });
+    const replayClaim = buildChikunReplayClaim({ buildHash: session.buildHash, seasonId: session.seasonId, result });
+    return recordScore(state, session, result.score, {
+      survivalTime: result.survivalTime, survivalTicks: result.survivalTicks, coinsCollected: result.coinsCollected,
+      forksPassed: result.forksPassed, nearMisses: result.nearMisses, bestCombo: result.bestCombo, achievements: result.achievements, replayClaim,
+    });
+  };
+  const before = [...profile.achievements];
+  assert.deepEqual(recordChikun().unlockedAchievements, []);
+  assert.deepEqual(profile.achievements, before);
+  assert.ok(!profile.achievements.includes(ACHIEVEMENTS.FIRST_PAID_RUN.id));
+  assert.equal(profile.totalPaidRuns, 1, 'the all-game display counter still counts the run');
+  assert.equal(profile.progress['lester-blaster'].paidRuns, 0);
 
-  // An HMH run after it: first-paid-run counts HMH runs only.
-  const hmhSession = startPlaySession({ wallet: WALLET, gameId: 'lester-blaster', mode: 'paid' });
-  const hmh = recordScore(state, hmhSession, 1200, { elapsedSeconds: 90, kills: 3 });
-  assert.ok(hmh.unlockedAchievements.includes(ACHIEVEMENTS.FIRST_PAID_RUN.id));
-  assert.ok(!hmh.unlockedAchievements.includes(ACHIEVEMENTS.TEN_PAID_RUNS.id));
-  assert.equal(state.profiles[WALLET].totalPaidRuns, 2);
+  // Ten Chikun runs fill the all-game counter past ten; none of them count toward
+  // the HMH run-count achievements (the resolver reads HMH progress.paidRuns).
+  for (let count = 2; count <= 10; count += 1) assert.deepEqual(recordChikun().unlockedAchievements, [], `Chikun run ${count}`);
+  assert.deepEqual([profile.totalPaidRuns, profile.progress.chikun.paidRuns, profile.progress['lester-blaster'].paidRuns], [10, 10, 0]);
+  assert.deepEqual(profile.achievements, before);
+
+  const recordHmh = () => recordScore(state, startPlaySession({ wallet: WALLET, gameId: 'lester-blaster', mode: 'paid' }), 1200, { elapsedSeconds: 90, kills: 3 }).unlockedAchievements;
+  const firstHmh = recordHmh();
+  assert.ok(firstHmh.includes(ACHIEVEMENTS.FIRST_PAID_RUN.id), 'first-paid-run counts HMH runs only');
+  assert.ok(!firstHmh.includes(ACHIEVEMENTS.TEN_PAID_RUNS.id), 'eleven Ranked runs in all, but only one of them HMH');
+  assert.equal(profile.totalPaidRuns, 11);
+  for (let count = 2; count <= 9; count += 1) assert.ok(!recordHmh().includes(ACHIEVEMENTS.TEN_PAID_RUNS.id), `HMH run ${count}`);
+  assert.ok(recordHmh().includes(ACHIEVEMENTS.TEN_PAID_RUNS.id), 'the tenth HMH run unlocks ten-paid-runs');
+  assert.deepEqual([profile.totalPaidRuns, profile.progress['lester-blaster'].paidRuns], [20, 10]);
 });
 
 test('history field paths are safe SQL identifiers', () => {
@@ -349,8 +360,10 @@ test('HMH resolver inputs use the legacy enemy ids and stage thresholds', () => 
   }
 });
 
-// The legacy resolver fed by the mapper plus the call-site fields (score, time,
-// kills, pickups, damage) and, for the history pass, the same cumulative totals.
+// The bare legacy resolver fed by the mapper plus the call-site fields (score,
+// time, kills, pickups, damage) and, for the history pass, the cumulative totals
+// before this run (cumulativeEnemyKillsByType excludes it, as maybeUnlockRunAchievements
+// now passes it). The real recordScore path is the next test's subject.
 function legacyIds(summary, prior = history('lester-blaster')) {
   const stats = statsFromHmhRunSummary(summary);
   const sums = prior.sums;
@@ -403,6 +416,98 @@ test('legacy resolver and server derivation agree on HMH fixtures', () => {
     assert.deepEqual([...legacy].sort(), [...server].sort(), `${name}: same ids after nine runs`);
     assert.ok(server.includes('ten-paid-runs') && server.includes('grenade-century') && server.includes('enemy-reaper-500'), name);
   }
+});
+
+// The path the browser really takes: recordScore folds the run into HMH progress
+// (updateProgressFromRun), then maybeUnlockRunAchievements resolves the unlocks.
+function browserProfile() {
+  const state = createInitialArcadeState();
+  return (summary, override = null) => {
+    const session = startPlaySession({ wallet: WALLET, gameId: 'lester-blaster', mode: 'paid' });
+    const { score, runStats } = hmhRecordScoreInputsFromRunSummary(summary);
+    return recordScore(state, session, score, override ? { ...runStats, ...override } : runStats).unlockedAchievements;
+  };
+}
+// The settle server: derivation over verified history that grows run by run.
+function serverProfile() {
+  let prior = history('lester-blaster');
+  return (summary) => {
+    const stats = statsFromHmhRunSummary(summary);
+    const earned = ids(deriveEarnedAchievements('lester-blaster', run('lester-blaster', stats), prior));
+    const { sum, max } = historyFieldsFor('lester-blaster');
+    prior = {
+      ...prior,
+      runs: prior.runs + 1,
+      sums: Object.fromEntries(sum.map((path) => [path, prior.sums[path] + statAt(stats, path)])),
+      maxima: Object.fromEntries(max.map((path) => [path, Math.max(prior.maxima[path], statAt(stats, path))])),
+      unlockedIds: [...prior.unlockedIds, ...earned],
+    };
+    return earned;
+  };
+}
+const comparable = (list) => list.filter((id) => !PARITY_EXEMPT.has(id)).sort();
+
+test('device-local recordScore and server derivation unlock the same HMH ids run by run', () => {
+  const summary = HMH.runs['boss-run'];
+  const stats = statsFromHmhRunSummary(summary);
+  const inputs = hmhRecordScoreInputsFromRunSummary(summary);
+  assert.deepEqual(Object.keys(inputs), ['score', 'runStats']);
+  assert.equal(inputs.score, stats.score);
+  assert.deepEqual(inputs.runStats, {
+    ...hmhResolverInputsFromRunSummary(summary),
+    elapsedSeconds: stats.survivalSeconds, kills: stats.kills, powerUpsCollected: stats.powerUpsCollected, damageDealt: stats.damageDealt,
+  });
+
+  const sequences = [
+    ...Object.keys(HMH.runs).map((name) => [name]),
+    ...Object.keys(HMH.runs).map((name) => [...Array(9).fill('grenade-run'), name]),
+    ['short-run', 'short-run', 'grenade-run', 'boss-run', 'untouched-run', 'short-run', 'grenade-run'],
+  ];
+  for (const sequence of sequences) {
+    const browser = browserProfile();
+    const server = serverProfile();
+    sequence.forEach((name, index) => {
+      const local = browser(HMH.runs[name]);
+      const remote = server(HMH.runs[name]);
+      assert.deepEqual(comparable(local), comparable(remote), `${sequence.slice(0, index + 1).join(' > ')}`);
+    });
+  }
+
+  // The regression the double count caused: one short run has 38 goblin-family
+  // kills, below the 75 of goblin-cleanup; the second one crosses it on both sides.
+  const browser = browserProfile();
+  const server = serverProfile();
+  assert.equal(statsFromHmhRunSummary(HMH.runs['short-run']).familyKills.goblin, 38);
+  assert.ok(!browser(HMH.runs['short-run']).includes('goblin-cleanup') && !server(HMH.runs['short-run']).includes('goblin-cleanup'));
+  assert.ok(browser(HMH.runs['short-run']).includes('goblin-cleanup') && server(HMH.runs['short-run']).includes('goblin-cleanup'));
+  assert.equal(statsFromHmhRunSummary(HMH.runs['grenade-run']).familyKills.drone, 32);
+  assert.ok(!browserProfile()(HMH.runs['grenade-run']).includes('drone-swatter'), '32 drone-family kills stay below 60');
+
+  // The canonical weapons and damage reach the resolver through recordScore.
+  const bossUnlocks = browserProfile()(summary);
+  for (const id of ['hash-rail-specialist', 'spread-ltc-specialist', 'weapon-collector', 'damage-chain', 'getaway-clear', 'master-survivor']) {
+    assert.ok(bossUnlocks.includes(id), `boss-run unlocks ${id} on the device`);
+  }
+  const spread = browserProfile()(HMH.runs['short-run'], { weaponIds: ['scatter-shotgun'], damageDealt: HMH_DAMAGE_CHAIN_DAMAGE });
+  assert.ok(spread.includes('spread-ltc-specialist') && spread.includes('damage-chain'));
+  const short = browserProfile()(HMH.runs['short-run'], { weaponIds: ['coin-blaster'], damageDealt: HMH_DAMAGE_CHAIN_DAMAGE - 1 });
+  assert.ok(!short.includes('spread-ltc-specialist') && !short.includes('damage-chain'));
+
+  // weapon-collector counts one run's weapons, as the server does, not weapons across runs.
+  const collector = browserProfile();
+  assert.ok(!collector(HMH.runs['short-run'], { weaponIds: ['coin-blaster', 'hash-rail'] }).includes('weapon-collector'));
+  assert.ok(!collector(HMH.runs['short-run'], { weaponIds: ['litecoin-knife', 'scatter-shotgun'] }).includes('weapon-collector'));
+  for (const weaponId of ['auto-miner', 'hash-rail', 'coin-blaster']) {
+    assert.ok(!collector(HMH.runs['short-run'], { weaponIds: [], weaponId }).includes('weapon-collector'), `legacy weaponId ${weaponId}, one per run`);
+  }
+  assert.ok(collector(HMH.runs['short-run'], { weaponIds: ['coin-blaster', 'hash-rail'], weaponId: 'auto-miner' }).includes('weapon-collector'));
+
+  // The legacy call shape (enemyKillsByType without a summary) no longer counts the run twice either.
+  const state = createInitialArcadeState();
+  const legacyRun = () => recordScore(state, startPlaySession({ wallet: WALLET, gameId: 'lester-blaster', mode: 'paid' }), 900, { elapsedSeconds: 60, kills: 40, enemyKillsByType: { 'fud-goblin': 40 } }).unlockedAchievements;
+  assert.ok(!legacyRun().includes('goblin-cleanup'), '40 goblin kills');
+  assert.ok(legacyRun().includes('goblin-cleanup'), '80 goblin kills');
+  assert.equal(state.profiles[WALLET].progress['lester-blaster'].enemyKillsByType['fud-goblin'], 80);
 });
 
 test('HMH NFT candidates are only server-counted run totals', () => {
