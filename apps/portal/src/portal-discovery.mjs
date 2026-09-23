@@ -1,8 +1,9 @@
-import { portalPageMeta, portalSchema, gameFor } from './portal-content.mjs';
+import { PORTAL_COPY, portalPageMeta, portalSchema, gameFor } from './portal-content.mjs';
 
 // Text-only DOM construction keeps even an arbitrary URL slug out of an HTML
-// parser. Game facts resolve through the allowlisted public catalog.
-function gameDetailsNode(documentRef,slug) {
+// parser. Game facts resolve through the allowlisted public catalog. The copy
+// defaults to the committed flags (contract A33); tests pass other flag states.
+export function gameDetailsNode(documentRef,slug,copy=PORTAL_COPY) {
   const game=gameFor(slug);
   if(!game)return null;
   const node=(tag,text,className='')=>{const element=documentRef.createElement(tag);element.textContent=text;element.className=className;return element;};
@@ -10,15 +11,15 @@ function gameDetailsNode(documentRef,slug) {
   const intro=node('div','');
   intro.append(node('p',game.genre,'portal-kicker'),node('h2',game.tag),node('p',game.description));
   const list=node('dl','');
-  for(const [label,text] of [['Your goal',game.goal],['How to play',game.controls],['Free or Ranked?','Free Mode is open to guests. Wallet-connected Ranked is a device-local preview with no fees or prizes.']]) {
+  for(const [label,text] of [['Your goal',game.goal],['How to play',game.controls],['Free or Ranked?',copy.rankedDetail[game.id]]]) {
     const row=node('div','');row.append(node('dt',label),node('dd',text));list.append(row);
   }
   const link=node('a','Explore all games →','portal-text-link');link.setAttribute('href','/games');
   section.append(intro,list,link);return section;
 }
 
-export function syncDiscoveryMeta(documentRef, pathname) {
-  const meta=portalPageMeta(pathname);
+export function syncDiscoveryMeta(documentRef, pathname, copy=PORTAL_COPY) {
+  const meta=portalPageMeta(pathname,copy);
   documentRef.title=meta.title;
   for(const [selector,value] of [
     ['meta[name="description"]',meta.description], ['meta[name="robots"]',meta.robots],
@@ -29,18 +30,18 @@ export function syncDiscoveryMeta(documentRef, pathname) {
   ]) documentRef.querySelector(selector)?.setAttribute('content',value);
   documentRef.querySelector('link[rel="canonical"]')?.setAttribute('href',meta.canonical);
   const schema=documentRef.querySelector('#portalStructuredData');
-  if(schema) schema.textContent=meta.robots.startsWith('noindex') ? '{}' : portalSchema(new URL(meta.canonical).pathname);
+  if(schema) schema.textContent=meta.robots.startsWith('noindex') ? '{}' : portalSchema(new URL(meta.canonical).pathname,copy);
 }
 
-export function installPortalDiscovery({connectWallet, documentRef=globalThis.document, windowRef=globalThis.window}={}) {
+export function installPortalDiscovery({connectWallet, documentRef=globalThis.document, windowRef=globalThis.window, copy=PORTAL_COPY}={}) {
   const app=documentRef.querySelector('#officialApp');
   if(!app)return;
   const details=documentRef.querySelector('#portalGameDetails');
   const update=()=>{
-    syncDiscoveryMeta(documentRef,windowRef.location.pathname);
+    syncDiscoveryMeta(documentRef,windowRef.location.pathname,copy);
     const slug=windowRef.location.pathname.split('/')[2] ?? '';
     if(details && details.dataset.game!==slug) {
-      const content=gameDetailsNode(documentRef,slug);
+      const content=gameDetailsNode(documentRef,slug,copy);
       details.replaceChildren(...(content ? [content] : [])); details.dataset.game=slug;
     }
   };
