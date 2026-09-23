@@ -103,7 +103,7 @@ test('validateEventPayload enforces per-event schema', () => {
       seed: 55,
       buildHash: 'site-1.3.0:game-1.3.0:cabinet-0.2.0',
       seasonId: 'chikun-season-preview-1',
-      evidence: { version: 'chikun-flap-evidence-v1', seed: 55, fixedStepHz: 60, maxTicks: 48, flapSteps: [3, 8] },
+      evidence: { version: 'chikun-flap-evidence-v6', seed: 55, fixedStepHz: 60, maxTicks: 48, flapDeltas: [3, 5] },
       finalState: { score: 900 },
     },
   };

@@ -5,13 +5,19 @@ import { createGroundRuntime, groundDifficulty } from './chikun-ground-runtime.m
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
-export const CHIKUN_CABINET_VERSION = '0.8.0';
-export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v6';
+export const CHIKUN_CABINET_VERSION = '0.9.0';
+export const CHIKUN_RUNTIME_VERSION = 'canvas-runtime-v7';
 export const CHIKUN_FIXED_STEP_HZ = 60;
-export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
+// Evidence v6 cap: the 12,000th flap ends the run as 'flap-limit' (60 minutes of
+// the fastest bot profile is under a quarter of it; see tests/chikun-evidence-v6).
+export const CHIKUN_MAX_FLAP_TRANSITIONS = 12_000;
+const LEGACY_MAX_FLAP_TRANSITIONS = 4_096;
 const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
-export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v5';
+export const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v6';
 const LEGACY_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
+// Older course versions carry absolute flapSteps and the 4,096-flap cap.
+const FLAP_STEP_VERSIONS = Object.freeze([LEGACY_EVIDENCE_VERSION, 'chikun-flap-evidence-v2', 'chikun-flap-evidence-v3', 'chikun-flap-evidence-v5']);
+const SUPPORTED_EVIDENCE_VERSIONS = Object.freeze([CHIKUN_EVIDENCE_VERSION, ...FLAP_STEP_VERSIONS]);
 
 export const CHIKUN_VERTICAL_SLICE_CONFIG = Object.freeze({
   gameId: 'chikun',
@@ -70,10 +76,14 @@ function normalizeMaxTicks(value) {
   return Math.max(1, Math.min(CHIKUN_MAX_RUN_TICKS, ticks));
 }
 
-function normalizeFlapSteps(taps, maxTicks) {
+function flapCapFor(evidenceVersion) {
+  return evidenceVersion === CHIKUN_EVIDENCE_VERSION ? CHIKUN_MAX_FLAP_TRANSITIONS : LEGACY_MAX_FLAP_TRANSITIONS;
+}
+
+function normalizeFlapSteps(taps, maxTicks, cap) {
   const raw = Array.isArray(taps) ? taps : [];
-  if (raw.length > CHIKUN_MAX_FLAP_TRANSITIONS) {
-    throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  if (raw.length > cap) {
+    throw new Error(`Chikun flap evidence exceeds ${cap} transitions`);
   }
   const unique = new Set();
   for (const value of raw) {
@@ -81,29 +91,73 @@ function normalizeFlapSteps(taps, maxTicks) {
     if (step < maxTicks) unique.add(step);
   }
   const flapSteps = [...unique].sort((a, b) => a - b);
-  if (flapSteps.length > CHIKUN_MAX_FLAP_TRANSITIONS) {
-    throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  if (flapSteps.length > cap) {
+    throw new Error(`Chikun flap evidence exceeds ${cap} transitions`);
   }
   return Object.freeze(flapSteps);
 }
 
+// Evidence v6 flap codec (contract §5.1): tick[0] = deltas[0], tick[i] = tick[i-1] + deltas[i].
+// The encoder and decoder accept only canonical input and throw on anything else.
+export function encodeFlapDeltas(ticks) {
+  if (!Array.isArray(ticks)) throw new Error('Chikun flap ticks must be an array');
+  if (ticks.length > CHIKUN_MAX_FLAP_TRANSITIONS) throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  const deltas = new Array(ticks.length);
+  let previous = -1;
+  for (let i = 0; i < ticks.length; i += 1) {
+    const tick = ticks[i];
+    if (!Number.isInteger(tick) || tick < 0 || tick >= CHIKUN_MAX_RUN_TICKS) throw new Error('Chikun flap ticks must be integers within the run budget');
+    if (tick <= previous) throw new Error('Chikun flap ticks must be strictly increasing');
+    deltas[i] = i === 0 ? tick : tick - previous;
+    previous = tick;
+  }
+  return deltas;
+}
+
+export function decodeFlapDeltas(deltas, maxTicks = CHIKUN_MAX_RUN_TICKS) {
+  if (!Array.isArray(deltas)) throw new Error('Chikun evidence flapDeltas must be an array');
+  if (deltas.length > CHIKUN_MAX_FLAP_TRANSITIONS) throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  const limit = Math.min(CHIKUN_MAX_RUN_TICKS, Math.floor(Number(maxTicks)) || 0);
+  const ticks = new Array(deltas.length);
+  let tick = 0;
+  for (let i = 0; i < deltas.length; i += 1) {
+    const delta = deltas[i];
+    if (!Number.isInteger(delta)) throw new Error('Chikun evidence flapDeltas must be integers');
+    if (i === 0 ? delta < 0 : delta < 1) throw new Error('Chikun evidence flapDeltas must start at 0 or later and keep flap ticks strictly increasing');
+    tick = i === 0 ? delta : tick + delta;
+    if (tick >= limit) throw new Error('Chikun evidence flapDeltas must stay within maxTicks');
+    ticks[i] = tick;
+  }
+  return ticks;
+}
+
+// The flap ticks of any Chikun evidence: v1-v5 `flapSteps` as they are, or the
+// decoded v6 `flapDeltas`. Every reader of flap timing goes through this.
+export function flapTicksOf(evidence) {
+  if (!evidence || typeof evidence !== 'object') return [];
+  if (Array.isArray(evidence.flapDeltas)) return decodeFlapDeltas(evidence.flapDeltas, evidence.maxTicks ?? CHIKUN_MAX_RUN_TICKS);
+  if (Array.isArray(evidence.flapSteps)) return evidence.flapSteps;
+  return [];
+}
+
 function buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion = CHIKUN_EVIDENCE_VERSION }) {
-  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION, "chikun-flap-evidence-v2", "chikun-flap-evidence-v3"].includes(evidenceVersion)) throw new Error("Unsupported Chikun evidence version");
+  if (!SUPPORTED_EVIDENCE_VERSIONS.includes(evidenceVersion)) throw new Error('Unsupported Chikun evidence version');
   const normalizedMaxTicks = normalizeMaxTicks(maxTicks);
+  const flapSteps = normalizeFlapSteps(taps, normalizedMaxTicks, flapCapFor(evidenceVersion));
   return Object.freeze({
     version: evidenceVersion,
     seed: normalizeSeed(seed),
     fixedStepHz: CHIKUN_FIXED_STEP_HZ,
     maxTicks: normalizedMaxTicks,
-    flapSteps: normalizeFlapSteps(taps, normalizedMaxTicks),
+    ...(evidenceVersion === CHIKUN_EVIDENCE_VERSION ? { flapDeltas: Object.freeze(encodeFlapDeltas(flapSteps)) } : { flapSteps }),
   });
 }
 
 export const buildChikunDifficulty = groundDifficulty;
 export function createChikunRuntime({ seed = 1, maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
  // Historical courses replay on frozen copies; only the current version uses the live course.
- if (evidenceVersion === 'chikun-flap-evidence-v5') return createGroundV5Runtime({seed,maxTicks});
  if (evidenceVersion === CHIKUN_EVIDENCE_VERSION) return createGroundRuntime({seed,maxTicks});
+ if (evidenceVersion === 'chikun-flap-evidence-v5') return createGroundV5Runtime({seed,maxTicks});
  if (evidenceVersion === 'chikun-flap-evidence-v3') return createGroundV3Runtime({seed,maxTicks});
  if (['chikun-flap-evidence-v1','chikun-flap-evidence-v2'].includes(evidenceVersion)) return createLegacyRuntime({seed,maxTicks,evidenceVersion});
  throw new Error('Unsupported Chikun evidence version');
@@ -111,7 +165,7 @@ export function createChikunRuntime({ seed = 1, maxTicks = 60, evidenceVersion =
 
 export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
   const evidence = buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion });
-  const tapSet = new Set(evidence.flapSteps);
+  const tapSet = new Set(flapTicksOf(evidence));
   const runtime = createChikunRuntime({ seed: evidence.seed, maxTicks: evidence.maxTicks, evidenceVersion: evidence.version });
   while (!runtime.terminal) {
     const tick = runtime.snapshot().tick;
@@ -122,19 +176,27 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60, evidence
 
 export function replayChikunRun(evidence = {}) {
   if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) throw new Error('Chikun replay evidence must be an object');
-  if (![CHIKUN_EVIDENCE_VERSION, LEGACY_EVIDENCE_VERSION, "chikun-flap-evidence-v2", "chikun-flap-evidence-v3"].includes(evidence.version)) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
+  if (!SUPPORTED_EVIDENCE_VERSIONS.includes(evidence.version)) throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
   if (evidence.fixedStepHz !== CHIKUN_FIXED_STEP_HZ) throw new Error(`Chikun evidence fixedStepHz must be ${CHIKUN_FIXED_STEP_HZ}`);
   const maxTicks = Math.floor(Number(evidence.maxTicks));
   if (!Number.isFinite(maxTicks) || maxTicks < 1 || maxTicks > CHIKUN_MAX_RUN_TICKS) throw new Error('Chikun evidence maxTicks is outside the supported run budget');
-  if (!Array.isArray(evidence.flapSteps)) throw new Error('Chikun evidence flapSteps must be an array');
-  if (evidence.flapSteps.length > CHIKUN_MAX_FLAP_TRANSITIONS) throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
-  let previousStep = -1;
-  for (const value of evidence.flapSteps) {
-    if (!Number.isInteger(value) || value < 0 || value >= maxTicks) throw new Error('Chikun evidence flapSteps must be integers within maxTicks');
-    if (value <= previousStep) throw new Error('Chikun evidence flapSteps must be strictly increasing');
-    previousStep = value;
+  let ticks;
+  if (evidence.version === CHIKUN_EVIDENCE_VERSION) {
+    // v6 carries only delta-encoded flaps.
+    if (Object.hasOwn(evidence, 'flapSteps')) throw new Error('Chikun v6 evidence carries flapDeltas, not flapSteps');
+    ticks = decodeFlapDeltas(evidence.flapDeltas, maxTicks);
+  } else {
+    if (!Array.isArray(evidence.flapSteps)) throw new Error('Chikun evidence flapSteps must be an array');
+    if (evidence.flapSteps.length > LEGACY_MAX_FLAP_TRANSITIONS) throw new Error(`Chikun flap evidence exceeds ${LEGACY_MAX_FLAP_TRANSITIONS} transitions`);
+    let previousStep = -1;
+    for (const value of evidence.flapSteps) {
+      if (!Number.isInteger(value) || value < 0 || value >= maxTicks) throw new Error('Chikun evidence flapSteps must be integers within maxTicks');
+      if (value <= previousStep) throw new Error('Chikun evidence flapSteps must be strictly increasing');
+      previousStep = value;
+    }
+    ticks = evidence.flapSteps;
   }
-  return simulateChikunRun({ seed: evidence.seed, taps: evidence.flapSteps, maxTicks, evidenceVersion: evidence.version });
+  return simulateChikunRun({ seed: evidence.seed, taps: ticks, maxTicks, evidenceVersion: evidence.version });
 }
 
 function sameJson(left, right) {
@@ -210,7 +272,7 @@ export function createChikunCabinet({ sessionId = null } = {}) {
         forksPassed: result.forksPassed,
         nearMisses: result.nearMisses,
         bestCombo: result.bestCombo,
-        flapCount: result.evidence?.flapSteps?.length ?? 0,
+        flapCount: flapTicksOf(result.evidence).length,
         achievements: result.achievements,
       };
       const canonical = verifyChikunReplayClaim({

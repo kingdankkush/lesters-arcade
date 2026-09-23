@@ -15,8 +15,8 @@ test('starts grounded, jumps on one tap, takes flight on the next, and safely la
  for(let i=0;i<110&&!run.terminal;i++)run.step();
  assert.equal(run.terminal,false);assert.equal(run.snapshot().chikun.locomotion,'run');
 });
-test('speed follows the requested continuous two-minute ramp with consistent distance',()=>{
- for(const [seconds,speed] of [[0,1],[120,1.25],[240,1.5],[360,1.75],[480,2],[600,2.25]])assert.equal(speedAtTick(seconds*60),speed);
+test('speed follows the tuned front-loaded ramp with consistent distance',()=>{
+ for(const [seconds,speed] of [[0,1],[180,1.164794921875],[300,1.604248046875],[420,2.812744140625],[600,3.801513671875],[720,5.449462890625],[900,7.097412109375]])assert.equal(speedAtTick(seconds*60),speed);
  for(const t of [1,7200,14400,28800,60000])assert.ok(Math.abs(distanceAtTick(t)-distanceAtTick(t-1)-2.4*speedAtTick(t-1))<1e-8);
 });
 test('ground and sky obstacles have safe collectible paths and visible collision shapes',()=>{
@@ -32,5 +32,5 @@ test('both historical recording versions retain exact scores and final states',(
 });
 test('new jump/flight evidence replays exact results',()=>{
  const run=simulateChikunRun({seed:22,taps:[42,54,88,125,167,202,245],maxTicks:1200});
- assert.equal(run.evidence.version,'chikun-flap-evidence-v5');assert.deepEqual(replayChikunRun(run.evidence),run);
+ assert.equal(run.evidence.version,'chikun-flap-evidence-v6');assert.deepEqual(replayChikunRun(run.evidence),run);
 });

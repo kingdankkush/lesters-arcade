@@ -8,7 +8,7 @@ import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs'
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
 import { buildAchievementProgress, normalizeAchievementUnlockDate } from './achievement-progress.mjs';
 import { resolveHmhChallenge } from './hmh-challenges.mjs';
-import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
+import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, flapTicksOf, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
 import { STACKED_CABINET_VERSION } from './stacked-cabinet.mjs';
 import { replayStackedRun } from './stacked-sim.mjs';
 import { compareStackedRows } from './stacked-score-order.mjs';
@@ -5647,7 +5647,7 @@ export function recordScore(state, session, score, runStats = {}) {
       replayClaim,
     });
     runStats.evidenceVersion = canonical.evidence.version;
-    runStats.flapCount = canonical.evidence.flapSteps.length;
+    runStats.flapCount = flapTicksOf(canonical.evidence).length;
     runStats.runtimeVersion = CHIKUN_RUNTIME_VERSION;
   }
 

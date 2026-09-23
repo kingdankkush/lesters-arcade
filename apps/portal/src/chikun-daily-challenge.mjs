@@ -1,4 +1,4 @@
-import { createChikunRuntime, replayChikunRun, CHIKUN_EVIDENCE_VERSION } from './chikun-cabinet.mjs';
+import { createChikunRuntime, replayChikunRun, flapTicksOf, CHIKUN_EVIDENCE_VERSION } from './chikun-cabinet.mjs';
 
 export const CHIKUN_DAILY_CHALLENGE_VERSION = 'chikun-daily-v3';
 export const CHIKUN_GHOST_STORAGE_VERSION = 'chikun-ghost-v3';
@@ -77,7 +77,7 @@ export function bindChikunDailyChallenge(session, { now = Date.now() } = {}) {
 
 export function buildChikunGhostTrack(evidence) {
   const replayed = replayChikunRun(evidence);
-  const tapSet = new Set(replayed.evidence.flapSteps);
+  const tapSet = new Set(flapTicksOf(replayed.evidence));
   const runtime = createChikunRuntime({
     seed: replayed.seed,
     maxTicks: replayed.evidence.maxTicks,

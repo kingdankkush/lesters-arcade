@@ -8,7 +8,7 @@ const taps = [3, 18, 42, 70];
 
 test('replay playback terminal state matches canonical simulation and does not mutate evidence', () => {
   const run = simulateChikunRun({ seed: 20260818, taps, maxTicks: 160 });
-  const originalSteps = [...run.evidence.flapSteps];
+  const originalSteps = [...run.evidence.flapDeltas];
   const playback = createChikunReplayPlayback(run.evidence);
   const terminal = playback.seek(playback.durationTicks);
 
@@ -21,9 +21,11 @@ test('replay playback terminal state matches canonical simulation and does not m
   assert.equal(terminal.nearMisses, run.nearMisses);
   assert.equal(terminal.bestCombo, run.bestCombo);
   assert.equal(terminal.chikun.y, run.finalState.y);
-  assert.deepEqual(run.evidence.flapSteps, originalSteps);
-  assert.notEqual(playback.evidence.flapSteps, run.evidence.flapSteps);
-  assert.throws(() => { playback.evidence.flapSteps.push(99); }, /object is not extensible|Cannot add property/i);
+  assert.deepEqual(run.evidence.flapDeltas, originalSteps);
+  assert.notEqual(playback.evidence.flapDeltas, run.evidence.flapDeltas);
+  assert.throws(() => { playback.evidence.flapDeltas.push(99); }, /object is not extensible|Cannot add property/i);
+  assert.equal(playback.hasFlapAt(taps[1]), true);
+  assert.equal(playback.hasFlapAt(taps[1] + 1), false);
 });
 
 test('seek is identical to stepping and 1-step equals 4 catch-up at the same tick', () => {

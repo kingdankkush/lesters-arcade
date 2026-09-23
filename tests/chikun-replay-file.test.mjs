@@ -6,6 +6,7 @@ test('replay files contain no account/session identity and cannot supply a score
  assert.throws(()=>importChikunReplay(text.replace('"game"','"score":900000,"game"')),/supported/);
 });
 test('malformed, oversized and invalid replay streams fail closed',()=>{
- for(const text of ['{','x'.repeat(65537),'{}'])assert.throws(()=>importChikunReplay(text));
- const d=JSON.parse(exportChikunReplay(simulateChikunRun({maxTicks:10})));d.evidence.flapSteps=[4,2];assert.throws(()=>importChikunReplay(JSON.stringify(d)),/increasing/);
+ for(const text of ['{','x'.repeat(262145),'{}'])assert.throws(()=>importChikunReplay(text));
+ const d=JSON.parse(exportChikunReplay(simulateChikunRun({maxTicks:10})));d.evidence.flapDeltas=[4,0];assert.throws(()=>importChikunReplay(JSON.stringify(d)),/increasing/);
+ d.evidence.flapSteps=[4];delete d.evidence.flapDeltas;assert.throws(()=>importChikunReplay(JSON.stringify(d)),/flapDeltas/,'a v6 replay cannot swap in absolute flapSteps');
 });

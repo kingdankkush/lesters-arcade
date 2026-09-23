@@ -1,4 +1,4 @@
-import {createChikunRuntime,replayChikunRun} from '../apps/portal/src/chikun-cabinet.mjs';
+import {createChikunRuntime,replayChikunRun,flapTicksOf} from '../apps/portal/src/chikun-cabinet.mjs';
 import {writeFile,mkdir} from 'node:fs/promises';
 export function auditInput(s){
  const b=s.chikun,next=s.forks.find(o=>!o.passed&&o.x+o.width>250);
@@ -13,7 +13,7 @@ export function auditInput(s){
 export function auditRun(seed,ticks=36000){
  const run=createChikunRuntime({seed,maxTicks:ticks});const kinds=new Set();
  while(!run.terminal){const s=run.snapshot();for(const o of s.forks)if(o.passed)kinds.add(o.variant);run.step({flap:auditInput(s)});}
- const result=run.result();return {seed,seconds:result.survivalTime,passed:result.forksPassed,reason:result.finalState.terminalReason,nearMisses:result.nearMisses,inputs:result.evidence.flapSteps.length,kinds:[...kinds],evidence:result.evidence};
+ const result=run.result();return {seed,seconds:result.survivalTime,passed:result.forksPassed,reason:result.finalState.terminalReason,nearMisses:result.nearMisses,inputs:flapTicksOf(result.evidence).length,kinds:[...kinds],evidence:result.evidence};
 }
 if(process.argv[1]?.replaceAll('\\','/').endsWith('/chikun-course-audit.mjs')){
  const reports=[];for(let seed=1;seed<=24;seed++){const row=auditRun(seed);reports.push(row);console.log(JSON.stringify({...row,evidence:undefined}));}

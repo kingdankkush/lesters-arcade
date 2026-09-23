@@ -156,7 +156,9 @@ function stepPhysics(state, press, overGap, physics) {
   return state.y <= physics.fallDeathY;
 }
 
-export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5_PHYSICS, margin = 6 } = {}) {
+// `skim` (0 by default, and 0 for every harness profile) rewards passing an obstacle
+// within the 32 px near-miss band; the v6 replay fixtures use it for a near-miss-heavy run.
+export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5_PHYSICS, margin = 6, skim = 0 } = {}) {
   if (!profile || !course) throw new Error('createChikunBot needs a profile and a course module');
   const random = mulberry32((seed >>> 0) ^ profileHash(profile.name));
   const model = createCourseModel(course, seed >>> 0);
@@ -214,6 +216,8 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
     let segment = 0;
     let simPending = null;
     let taken = 0;
+    let skims = 0;
+    const closest = skim > 0 ? [Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity, Infinity] : null;
     let tick = tick0;
     for (; tick < horizonEnd; tick += 1) {
       const schedule = timing < 0 ? tick + k : tick - k;
@@ -249,19 +253,21 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
         const clearance = obstacleClearance(local, cx - x, state.y, physics.radius);
         if (clearance < 0) return { alive: false, survived: tick - tick0, minClear: clearance, coins, presses };
         if (clearance < minClear) minClear = clearance;
+        if (closest && i < 8 && clearance < closest[i]) closest[i] = clearance;
         if ((taken & (1 << i)) === 0) {
           const dx = local.coin.x + x - cx, dy = local.coin.y - state.y;
           if (dx * dx + dy * dy <= 49 * 49) { taken |= 1 << i; coins += 1; }
         }
       }
     }
-    return { alive: true, survived: tick - tick0, minClear, coins, presses };
+    if (closest) for (let i = 0; i < obstacles.length && i < 8; i += 1) if (closest[i] <= 32) skims += 1;
+    return { alive: true, survived: tick - tick0, minClear, coins, presses, skims };
   }
 
   function score(outcome) {
     const clear = Math.min(outcome.minClear, 40);
     return (outcome.alive ? 1e9 : 0) + outcome.survived * 1e5
-      + Math.min(clear, margin) * 2_000 + outcome.coins * 150 + clear * 12 - outcome.presses * 30;
+      + Math.min(clear, margin) * 2_000 + outcome.coins * 150 + clear * 12 - outcome.presses * 30 + skim * (outcome.skims ?? 0);
   }
 
   // Nominal first; the best nominal candidates are re-scored against the bot's
@@ -275,7 +281,7 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
       for (const c of top) {
         for (const timing of [robustTicks, -robustTicks]) {
           const other = simulate(start, tick0, obstacles, c.targets, c.delay, c.hold, horizonEnd, forced, timing, table);
-          c.outcome = { alive: c.outcome.alive && other.alive, survived: Math.min(c.outcome.survived, other.survived), minClear: Math.min(c.outcome.minClear, other.minClear), coins: c.outcome.coins, presses: c.outcome.presses };
+          c.outcome = { alive: c.outcome.alive && other.alive, survived: Math.min(c.outcome.survived, other.survived), minClear: Math.min(c.outcome.minClear, other.minClear), coins: c.outcome.coins, presses: c.outcome.presses, skims: c.outcome.skims };
         }
         c.value = score(c.outcome);
       }

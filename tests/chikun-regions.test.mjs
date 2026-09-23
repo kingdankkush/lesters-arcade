@@ -5,7 +5,7 @@ import {courseRegion as v3Region}from'../apps/portal/src/chikun-ground-v3-course
 import {createChikunRuntime,replayChikunRun,buildChikunDifficulty}from'../apps/portal/src/chikun-cabinet.mjs';
 import {buildChikunModeTease}from'../apps/chikun/src/presentation.mjs';
 import {REGION_LAYERS,paintRegionLayer}from'../apps/chikun/src/world.mjs';
-import {coursePilot,pilotRun}from'../scripts/chikun-course-pilot.mjs';
+import {routePilot,pilotRun}from'../scripts/chikun-course-pilot.mjs';
 
 const ORDER=['farmland','forest','town','city','industrial','suburbs','coast'];
 
@@ -86,7 +86,7 @@ test('obstacle placement is deterministic across the loop boundary and a full-la
  assert.equal(snapshot.terminal,true);assert.equal(snapshot.terminalReason,'run-complete');
  assert.equal(snapshot.region,'Farmland','the lap ended back in farmland');
  const result=run.result();
- assert.equal(result.evidence.version,'chikun-flap-evidence-v5');
+ assert.equal(result.evidence.version,'chikun-flap-evidence-v6');
  assert.deepEqual(replayChikunRun(result.evidence),result);
  assert.ok(result.forksPassed>=REGION_LOOP_SLOTS&&result.score>10000);
 });
@@ -97,7 +97,7 @@ test('speed, score and difficulty keep ramping through the loop instead of reset
  assert.ok(after.speedMultiplier>before.speedMultiplier);assert.ok(after.level>=before.level);
  assert.ok(buildChikunDifficulty(loopTick*2).speedMultiplier>after.speedMultiplier);
  const run=createChikunRuntime({seed:7,maxTicks:loopTick+600});let scoreAtLoop=0,speedAtLoop=0;
- while(!run.terminal){const s=run.snapshot();if(s.tick===loopTick){scoreAtLoop=s.score;speedAtLoop=s.difficulty.speedMultiplier;}run.step({flap:coursePilot(s)});}
+ while(!run.terminal){const s=run.snapshot();if(s.tick===loopTick){scoreAtLoop=s.score;speedAtLoop=s.difficulty.speedMultiplier;}run.step({flap:routePilot(s)});}
  const end=run.snapshot();
  assert.ok(scoreAtLoop>0&&end.score>scoreAtLoop);assert.ok(end.difficulty.speedMultiplier>speedAtLoop);
  assert.equal(end.terminalReason,'run-complete');

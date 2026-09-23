@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';import {mkdir,writeFile} from 'node:fs/promises';
-import {auditRun} from './chikun-course-audit.mjs';import {buildChikunDailyChallenge} from '../apps/portal/src/chikun-daily-challenge.mjs';
+import {auditRun} from './chikun-course-audit.mjs';import {flapTicksOf} from '../apps/portal/src/chikun-cabinet.mjs';import {buildChikunDailyChallenge} from '../apps/portal/src/chikun-daily-challenge.mjs';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_PACKAGE_PATH||'C:/Users/just_/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
-const seed=buildChikunDailyChallenge().seed,inputs=auditRun(seed,7200).evidence.flapSteps;
+const seed=buildChikunDailyChallenge().seed,inputs=flapTicksOf(auditRun(seed,7200).evidence);
 const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
 const out=process.env.CHIKUN_QA_OUTPUT||'../../outputs/qa';await mkdir(out,{recursive:true});const reports=[];
 function measure(inputs){

@@ -7,6 +7,7 @@ import {
   CHIKUN_CABINET_VERSION,
   CHIKUN_RUNTIME_VERSION,
   buildChikunReplayClaim,
+  flapTicksOf,
   simulateChikunRun,
 } from '../apps/portal/src/chikun-cabinet.mjs';
 import {
@@ -43,8 +44,8 @@ test("Chikun's Escape is a public playable cabinet with production Free and Rank
   const cabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((entry) => entry.gameId === 'chikun');
   const mode = buildGameModeSelectModel('chikun');
 
-  assert.equal(CHIKUN_CABINET_VERSION, '0.8.0');
-  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v6');
+  assert.equal(CHIKUN_CABINET_VERSION, '0.9.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'canvas-runtime-v7');
   assert.equal(game.status, 'playable');
   assert.equal(cabinet.status, 'playable');
   assert.equal(cabinet.playable, true);
@@ -102,7 +103,7 @@ test('a canonical Ranked Chikun result updates its profile snapshot and every Ch
     forksPassed: result.forksPassed,
     nearMisses: result.nearMisses,
     bestCombo: result.bestCombo,
-    flapCount: result.evidence.flapSteps.length,
+    flapCount: flapTicksOf(result.evidence).length,
     achievements: result.achievements,
     replayClaim,
   });

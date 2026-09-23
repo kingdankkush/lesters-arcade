@@ -2,11 +2,32 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { createChikunRuntime, replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
+import {
+  CHIKUN_EVIDENCE_VERSION,
+  CHIKUN_MAX_FLAP_TRANSITIONS,
+  buildChikunReplayClaim,
+  createChikunRuntime,
+  decodeFlapDeltas,
+  encodeFlapDeltas,
+  flapTicksOf,
+  replayChikunRun,
+  simulateChikunRun,
+  verifyChikunReplayClaim,
+} from '../apps/portal/src/chikun-cabinet.mjs';
+import { GROUND_MAX_FLAPS } from '../apps/portal/src/chikun-ground-runtime.mjs';
 import { createGroundRuntime as createFrozenV5Runtime, GROUND_EVIDENCE as FROZEN_V5_EVIDENCE } from '../apps/portal/src/chikun-ground-v5-runtime.mjs';
 import * as frozenV5Course from '../apps/portal/src/chikun-ground-v5-course.mjs';
+import { regionForObstacle, REGION_LOOP_SLOTS } from '../apps/portal/src/chikun-course-regions.mjs';
+import { distanceAtTick, speedAtTick } from '../apps/portal/src/chikun-ground-course.mjs';
+import { CHIKUN_MAX_MESSAGE_BYTES, createChikunBridgeEnvelope, validateChikunChildMessage } from '../apps/portal/src/chikun-bridge-protocol.mjs';
+import { REPLAY_FILE_LIMIT, exportChikunReplay, importChikunReplay } from '../apps/chikun/src/replay-file.mjs';
+import { routePilot } from '../scripts/chikun-course-pilot.mjs';
+import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 
 const v5Fixtures = JSON.parse(readFileSync(new URL('./fixtures/chikun-v5-replays.json', import.meta.url), 'utf8'));
+const v6Fixtures = JSON.parse(readFileSync(new URL('./fixtures/chikun-v6-replays.json', import.meta.url), 'utf8'));
+const harness = JSON.parse(readFileSync(new URL('../docs/qa/chikun-difficulty-harness-20260923.json', import.meta.url), 'utf8'));
+const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
 
 function driveFrozenV5(evidence) {
   const taps = new Set(evidence.flapSteps);
@@ -14,6 +35,163 @@ function driveFrozenV5(evidence) {
   while (!runtime.terminal) runtime.step({ flap: taps.has(runtime.snapshot().tick) });
   return runtime.result();
 }
+
+function resultPayload(result, replayClaim) {
+  return {
+    score: result.score,
+    survivalTime: result.survivalTime,
+    survivalTicks: result.survivalTicks,
+    coinsCollected: result.coinsCollected,
+    forksPassed: result.forksPassed,
+    nearMisses: result.nearMisses,
+    bestCombo: result.bestCombo,
+    achievements: result.achievements,
+    evidence: result.evidence,
+    finalState: result.finalState,
+    replayClaim,
+  };
+}
+
+test('delta codec round-trips and rejects non-canonical input', () => {
+  assert.equal(CHIKUN_MAX_FLAP_TRANSITIONS, 12_000);
+  assert.equal(GROUND_MAX_FLAPS, CHIKUN_MAX_FLAP_TRANSITIONS);
+  assert.deepEqual(encodeFlapDeltas([0, 4, 11, 18, 27]), [0, 4, 7, 7, 9]);
+  assert.deepEqual(decodeFlapDeltas([0, 4, 7, 7, 9]), [0, 4, 11, 18, 27]);
+  assert.deepEqual(encodeFlapDeltas([]), []);
+  const ticks = Array.from({ length: 12_000 }, (_, i) => i * 18 + 3);
+  assert.deepEqual(decodeFlapDeltas(encodeFlapDeltas(ticks)), ticks);
+  assert.throws(() => decodeFlapDeltas([-1, 4]), /start at 0/);
+  assert.throws(() => decodeFlapDeltas([3, 0, 4]), /strictly increasing/);
+  assert.throws(() => decodeFlapDeltas([3, 1.5]), /integers/);
+  assert.throws(() => decodeFlapDeltas([3, '4']), /integers/);
+  assert.throws(() => decodeFlapDeltas([3, Number.NaN]), /integers/);
+  assert.throws(() => decodeFlapDeltas(Array.from({ length: 12_001 }, () => 1)), /exceeds 12000/);
+  assert.throws(() => decodeFlapDeltas([40, 8], 48), /within maxTicks/);
+  assert.deepEqual(decodeFlapDeltas([40, 7], 48), [40, 47]);
+  assert.throws(() => decodeFlapDeltas([216_000]), /within maxTicks/);
+  assert.throws(() => decodeFlapDeltas('0,4'), /must be an array/);
+  assert.throws(() => encodeFlapDeltas([4, 4]), /strictly increasing/);
+  assert.throws(() => encodeFlapDeltas([-2]), /integers/);
+  assert.throws(() => encodeFlapDeltas(Array.from({ length: 12_001 }, (_, i) => i)), /exceeds 12000/);
+  const evidence = simulateChikunRun({ seed: 55, taps: [4, 11, 18], maxTicks: 48 }).evidence;
+  assert.deepEqual(Object.keys(evidence), ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapDeltas']);
+  assert.throws(() => replayChikunRun({ ...evidence, flapDeltas: [4, 7, 37] }), /within maxTicks/);
+  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: [4, 11, 18] }), /flapDeltas, not flapSteps/);
+});
+
+test('flapTicksOf reads v5 and v6 evidence alike', () => {
+  const v5 = v5Fixtures.runs[0].evidence;
+  assert.equal(flapTicksOf(v5), v5.flapSteps, 'v5 flapSteps are returned as they are');
+  const v6 = simulateChikunRun({ seed: 22, taps: v5.flapSteps.filter((tick) => tick < 1200), maxTicks: 1200 }).evidence;
+  assert.equal(v6.version, CHIKUN_EVIDENCE_VERSION);
+  assert.deepEqual(flapTicksOf(v6), v5.flapSteps.filter((tick) => tick < 1200 && tick <= replayChikunRun(v6).survivalTicks));
+  assert.deepEqual(flapTicksOf({ version: 'chikun-flap-evidence-v1', flapSteps: [3, 8] }), [3, 8]);
+  assert.deepEqual(flapTicksOf({}), []);
+  assert.deepEqual(flapTicksOf(null), []);
+  assert.throws(() => flapTicksOf({ maxTicks: 10, flapDeltas: [4, 9] }), /within maxTicks/);
+});
+
+test('recordScore counts flaps from v6 evidence', () => {
+  const state = createInitialArcadeState();
+  const session = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000931', sequenceNumber: 931, sessionNonce: 'v6-flap-count' });
+  const result = simulateChikunRun({ seed: session.seed, taps: [1, 18, 42, 68, 94, 120, 146], maxTicks: 300 });
+  assert.equal(result.evidence.version, 'chikun-flap-evidence-v6');
+  const replayClaim = buildChikunReplayClaim({ buildHash: session.buildHash, seasonId: session.seasonId, result });
+  assert.equal(session.buildHash, 'site-1.7.0:game-1.7.0:cabinet-0.9.0');
+  const accepted = recordScore(state, session, result.score, {
+    elapsedSeconds: result.survivalTime, survivalTime: result.survivalTime, survivalTicks: result.survivalTicks,
+    coinsCollected: result.coinsCollected, forksPassed: result.forksPassed, nearMisses: result.nearMisses, bestCombo: result.bestCombo,
+    flapCount: 0, achievements: result.achievements, replayClaim,
+  });
+  assert.equal(accepted.acceptedForGlobalLeaderboard, true);
+  const stored = state.officialSessions.at(-1);
+  assert.equal(stored.runStats.flapCount, flapTicksOf(result.evidence).length);
+  assert.equal(stored.runStats.flapCount > 0, true);
+  assert.equal(stored.runStats.evidenceVersion, 'chikun-flap-evidence-v6');
+  assert.equal(stored.runStats.runtimeVersion, 'canvas-runtime-v7');
+});
+
+test('flap cap ends the run as flap-limit', () => {
+  const limited = limitedRun();
+  assert.equal(limited.finalState.terminalReason, 'flap-limit');
+  assert.equal(limited.crashed, false);
+  assert.equal(limited.finalState.crashed, false);
+  assert.equal(limited.evidence.flapDeltas.length, 12_000);
+  assert.ok(limited.survivalTicks < limited.evidence.maxTicks, 'the cap, not the clock, ended it');
+  assert.equal(flapTicksOf(limited.evidence).at(-1), limited.survivalTicks - 1, 'the 12,000th flap is applied on the last step');
+  assert.deepEqual(replayChikunRun(limited.evidence), limited);
+  const claim = buildChikunReplayClaim({ buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0', seasonId: 'chikun-season-preview-1', result: limited });
+  const message = createChikunBridgeEnvelope({ type: 'game:result', sessionId: 'la-000001', messageId: 'game-9', payload: resultPayload(limited, claim) });
+  assert.equal(validateChikunChildMessage(message).ok, true, 'flap-limit is a valid terminal reason on the bridge');
+  assert.throws(() => simulateChikunRun({ seed: 3, taps: Array.from({ length: 12_001 }, (_, i) => i), maxTicks: 20_000 }), /exceeds 12000/);
+});
+
+// Twelve thousand flaps without a crash: follow the route pilot, and whenever it
+// is not dropping for a low passage or ducking a plane, flap every tick (the
+// soft ceiling holds Chikun at the top of the sky).
+function limitedRun() {
+  const runtime = createChikunRuntime({ seed: 19, maxTicks: 216_000 });
+  while (!runtime.terminal) {
+    const s = runtime.snapshot();
+    const scroll = s.difficulty.scrollPixelsPerTick;
+    const low = s.forks.find((o) => !o.passed && o.route === 'ground' && o.x + o.width > 250 && o.x - 280 < scroll * 112 + 140);
+    const plane = s.forks.find((o) => !o.passed && o.kind === 'plane' && o.x + o.width > 220 && o.x - 280 < scroll * 80 + 230);
+    runtime.step({ flap: low || plane ? routePilot(s) : true });
+  }
+  return runtime.result();
+}
+
+test('flap cap covers sixty minutes of the fastest profile', () => {
+  const rates = Object.entries(harness.profiles).map(([name, profile]) => [name, profile.flapsPerMinute.p99]);
+  const fastest = Math.max(...rates.map(([, rate]) => rate));
+  assert.ok(fastest > 0, JSON.stringify(rates));
+  assert.ok(CHIKUN_MAX_FLAP_TRANSITIONS >= 1.25 * 60 * harness.profiles.exceptional.flapsPerMinute.p99);
+  assert.ok(CHIKUN_MAX_FLAP_TRANSITIONS >= 1.25 * 60 * fastest, `12,000 flaps cover 60 minutes at ${fastest} flaps per minute`);
+});
+
+test('60-minute worst-case result message fits the bridge cap', () => {
+  assert.equal(CHIKUN_MAX_MESSAGE_BYTES, 262_144);
+  assert.equal(REPLAY_FILE_LIMIT, 262_144);
+  // 12,000 two-digit deltas are the longest legal encoding under 216,000 ticks.
+  const flapDeltas = Array.from({ length: 12_000 }, (_, i) => (i === 0 ? 0 : 18));
+  const evidence = { version: 'chikun-flap-evidence-v6', seed: 0xffffffff, fixedStepHz: 60, maxTicks: 216_000, flapDeltas };
+  assert.equal(decodeFlapDeltas(flapDeltas, 216_000).at(-1), 215_982);
+  const finalState = { step: 216_000, y: -123.456789, velocity: -4.567891, score: 999_999_999, coinsCollected: 999_999, forksPassed: 999_999, nearMisses: 999_999, bestCombo: 999_999, survivalTicks: 216_000, survivalTime: 3600, crashed: false, terminalReason: 'flap-limit' };
+  const payload = {
+    score: 999_999_999, survivalTime: 3600, survivalTicks: 216_000, coinsCollected: 999_999, forksPassed: 999_999, nearMisses: 999_999, bestCombo: 999_999,
+    achievements: ['chikun-first-flight', 'chikun-stack-three', 'chikun-fork-runner', 'chikun-thread-needle'],
+    evidence, finalState,
+    replayClaim: { version: 'chikun-parent-replay-v1', seed: 0xffffffff, buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0', seasonId: 'chikun-season-preview-1', evidence, finalState },
+  };
+  const message = createChikunBridgeEnvelope({ type: 'game:result', sessionId: 'game-session-000000001', messageId: 'game-999999', payload });
+  const bytes = new TextEncoder().encode(JSON.stringify(message)).byteLength;
+  assert.ok(bytes > 64 * 1024, `the old 64 KB cap would reject it (${bytes} bytes)`);
+  assert.ok(bytes < CHIKUN_MAX_MESSAGE_BYTES, `${bytes} bytes`);
+  assert.deepEqual(validateChikunChildMessage(message), { ok: true, value: message });
+  // Non-canonical deltas and v5 evidence are refused by the bridge.
+  const bad = structuredClone(message);
+  bad.payload.evidence.flapDeltas[5] = 0;
+  assert.equal(validateChikunChildMessage(bad).ok, false);
+  const v5 = structuredClone(message);
+  v5.payload.evidence = v5Fixtures.runs[0].evidence;
+  assert.match(validateChikunChildMessage(v5).error, /flapSteps|flapDeltas|version/);
+  const file = JSON.stringify({ format: 'chikun-replay-file-v1', game: 'chikun', evidence });
+  assert.ok(new TextEncoder().encode(file).byteLength < REPLAY_FILE_LIMIT);
+});
+
+test('verifyChikunReplayClaim rejects v5 for Ranked', () => {
+  const run = v5Fixtures.runs.find((entry) => entry.seed === 7 && entry.policy === 'flap-every-20-ticks');
+  const result = run.result;
+  const replayClaim = buildChikunReplayClaim({ buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0', seasonId: 'chikun-season-preview-1', result });
+  assert.equal(replayClaim.evidence.version, 'chikun-flap-evidence-v5', 'the v5 replay itself still verifies');
+  assert.throws(() => verifyChikunReplayClaim({
+    expectedSeed: result.seed, expectedBuildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0', expectedSeasonId: 'chikun-season-preview-1',
+    score: result.score, runStats: result, replayClaim,
+  }), /evidence version does not match the current cabinet/);
+  const v6 = simulateChikunRun({ seed: 7, taps: [5, 30, 60], maxTicks: 400 });
+  const claim = buildChikunReplayClaim({ buildHash: 'b-1', seasonId: 's-1', result: v6 });
+  assert.deepEqual(verifyChikunReplayClaim({ expectedSeed: 7, expectedBuildHash: 'b-1', expectedSeasonId: 's-1', score: v6.score, runStats: v6, replayClaim: claim }), v6);
+});
 
 test('v5 fixtures replay through the frozen runtime', () => {
   assert.equal(FROZEN_V5_EVIDENCE, 'chikun-flap-evidence-v5');
@@ -34,4 +212,63 @@ test('v5 fixtures replay through the frozen runtime', () => {
     const flap = tick % 23 === 0;
     assert.deepEqual(live.step({ flap }), frozen.step({ flap }));
   }
+  // The v6 course really differs, so the frozen copy is what keeps v5 exact.
+  const onV6 = simulateChikunRun({ seed: 7, taps: v5Fixtures.runs[1].evidence.flapSteps, maxTicks: v5Fixtures.maxTicks });
+  assert.notDeepEqual(onV6.finalState, v5Fixtures.runs[1].result.finalState);
+  const exported = exportChikunReplay(v5Fixtures.runs[0].result);
+  assert.deepEqual(importChikunReplay(exported), v5Fixtures.runs[0].result, 'historical replay files still open');
+});
+
+test('v6 fixtures replay deterministically', () => {
+  assert.equal(v6Fixtures.runs.length, 3);
+  assert.ok(v6Fixtures.runs.some((run) => run.result.nearMisses >= 8), 'one run is near-miss heavy');
+  for (const run of v6Fixtures.runs) {
+    assert.equal(run.evidence.version, 'chikun-flap-evidence-v6');
+    assert.deepEqual(run.evidence, run.result.evidence);
+    const replayed = replayChikunRun(run.evidence);
+    assert.deepEqual(replayed, run.result, `${run.profile} seed ${run.seed}`);
+    assert.deepEqual(replayChikunRun(replayed.evidence), replayed);
+    assert.deepEqual(JSON.parse(JSON.stringify(replayed)), run.result, 'results survive JSON round trips');
+  }
+});
+
+test('v6 result counters follow their documented definitions', () => {
+  for (const run of v6Fixtures.runs) {
+    const taps = new Set(flapTicksOf(run.evidence));
+    const runtime = createChikunRuntime({ seed: run.evidence.seed, maxTicks: run.evidence.maxTicks });
+    let previous = runtime.snapshot();
+    const passes = [];
+    while (!runtime.terminal) {
+      const next = runtime.step({ flap: taps.has(previous.tick) });
+      if (next.forksPassed > previous.forksPassed) {
+        assert.equal(next.forksPassed - previous.forksPassed, 1);
+        const index = passes.length;
+        const obstacle = next.forks.find((o) => o.index === index);
+        passes.push({ index, near: next.nearMisses > previous.nearMisses, coin: obstacle.coin.collected });
+      }
+      previous = next;
+    }
+    const result = runtime.result();
+    let combo = 0, best = 0, streak = 0, streakBest = 0, flawless = 0, clean = true, visit = -1;
+    for (const pass of passes) {
+      combo = pass.near || pass.coin ? combo + 1 : 0; best = Math.max(best, combo);
+      streak = pass.near ? streak + 1 : 0; streakBest = Math.max(streakBest, streak);
+      const { index, local, loop, region } = regionForObstacle(pass.index);
+      if (loop * 8 + index !== visit) { visit = loop * 8 + index; clean = true; }
+      if (pass.near) clean = false;
+      if (local === region.slots - 1 && clean) flawless += 1;
+    }
+    const last = passes.length - 1;
+    assert.equal(result.bestCombo, best, 'combo counts consecutive passes that took their coin or skimmed it');
+    assert.equal(result.nearMissStreakBest, streakBest);
+    assert.equal(result.flawlessRegions, flawless);
+    assert.equal(result.regionIndexReached, last < 0 ? 0 : regionForObstacle(last).index);
+    assert.equal(result.regionReached, last < 0 ? 'farmland' : regionForObstacle(last).region.id);
+    assert.equal(result.laps, Math.floor((last + 1) / REGION_LOOP_SLOTS));
+    assert.equal(result.distancePixels, distanceAtTick(result.survivalTicks));
+    assert.equal(result.speedMultiplierReached, speedAtTick(result.survivalTicks));
+    assert.deepEqual(Object.keys(result.finalState), ['step', 'y', 'velocity', 'score', 'coinsCollected', 'forksPassed', 'nearMisses', 'bestCombo', 'survivalTicks', 'survivalTime', 'crashed', 'terminalReason'], 'finalState keeps the bridge shape');
+  }
+  assert.ok(v6Fixtures.runs.some((run) => run.result.bestCombo !== run.result.forksPassed), 'bestCombo is no longer just forksPassed');
+  assert.ok(v6Fixtures.runs.some((run) => run.result.laps >= 1 && run.result.regionIndexReached >= 0));
 });

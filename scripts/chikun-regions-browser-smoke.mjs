@@ -9,7 +9,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {REGION_SCHEDULE,REGION_LEAD_TICKS,REGION_LOOP_TICKS,REGION_BLEND_TICKS} from '../apps/portal/src/chikun-course-regions.mjs';
-import {coursePilot} from './chikun-course-pilot.mjs';
+import {routePilot} from './chikun-course-pilot.mjs';
 
 async function loadPlaywright(){
  try{return await import('playwright');}
@@ -78,7 +78,8 @@ try{
  await node.screenshot({path:path.join(out,'00-free-mode-start.png')});
  await frame.locator('#startButton').click({force:true});
  await frame.waitForFunction(()=>typeof __CHIKUN_QA__.peek==='function'&&__CHIKUN_QA__.peek()?.tick>=0,null,{polling:50});
- const pilotSource=coursePilot.toString();
+ // routePilot: the hover-only coursePilot now meets top-band planes (v6 course).
+ const pilotSource=routePilot.toString();
  let pilotInjected=false;
  for(const stop of stops){
   if(!pilotInjected){await frame.addScriptTag({content:`window.__chikunCoursePilot=${pilotSource};`});pilotInjected=true;}
