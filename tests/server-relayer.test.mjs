@@ -369,6 +369,7 @@ test('an expired or rejected attestation is re-signed from re-verified evidence'
   const calls = verify.calls.reverifyStoredRun;
   assert.deepEqual(await resignRow({ ethers, db, row: pending, verify, catalog, signer, domain, nowMs }), { ok: true, moved: true });
   assert.equal(verify.calls.reverifyStoredRun, calls + 1, 're-signing re-verified the stored evidence');
+  assert.equal(verify.calls.reverifyNowMs.at(-1), clockMs, 'with the injected clock');
   const resigned = await readSettleRow(db, expired.row.sessionId32);
   assert.equal(resigned.status, 'signed');
   assert.equal(needsResign(resigned, clockMs), false);

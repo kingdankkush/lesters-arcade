@@ -6,15 +6,20 @@
 // pays, so a paused or unconfigured service (503) stops players before any
 // payment. The ticket itself comes from the verify slice's issueSeedTicket
 // (server/verify/seed-ticket.mjs), injected as deps.issueSeedTicket.
+//
+// E15 is ready only when E3 could settle the run: the verify functions, the
+// achievements registry and, for Hard Money Heroes, the hero gates must load
+// too. Otherwise it answers 503 and the player never pays for a run that E3
+// would refuse to settle.
 
 import * as nodeCrypto from 'node:crypto';
 import { ipBucket } from '../http.mjs';
-import { authenticateBearer } from '../auth/bearer.mjs';
+import { authenticateBearer, bearerAuthHook } from '../auth/bearer.mjs';
 import { ensureSchema } from '../neon/migrations.mjs';
 import { hitRateLimit, rateLimitedResult } from '../neon/rate-limit.mjs';
 import { INDEX_GAMES } from '../neon/rows.mjs';
 import { logSafeError } from './errors.mjs';
-import { settlementGate } from './settle-core.mjs';
+import { heroPolicyFrom, moduleGate, settlementGate } from './settle-core.mjs';
 
 export const SEED_BODY_MAX_BYTES = 2048;
 export const SEED_LIMITS = Object.freeze({ wallet: 60, ip: 600, windowSeconds: 3600 });
@@ -47,14 +52,38 @@ async function limitedBy(db, bucket, limit, nowMs) {
   return hit.ok ? null : rateLimitedResult(hit.retryAfterSeconds);
 }
 
+// The ticket issuer plus everything E3 needs to settle (moduleGate).
+export function seedModuleGate(deps) {
+  if (typeof deps?.issueSeedTicket !== 'function') return fail(503, 'settlement-not-configured', { detail: 'seed-ticket-unavailable' });
+  return moduleGate(deps);
+}
+
+// The makeHandler auth hook of E15 (A30, §4.3.13): the Bearer, then the pause,
+// the config and the modules, all before the body is read.
+export function seedAuthHook() {
+  const bearer = bearerAuthHook();
+  return async function seedAuth(request, deps) {
+    return (await bearer(request, deps)) ?? settlementGate(deps) ?? seedModuleGate(deps);
+  };
+}
+
+async function heroGatesReady(deps) {
+  try {
+    return heroPolicyFrom(typeof deps.heroGates === 'function' ? await deps.heroGates() : deps.heroGates) !== null;
+  } catch (error) {
+    logSafeError('ranked-seed:hero-gates', error);
+    return false;
+  }
+}
+
 export async function seedRequest({ headers = {}, body = null, ip = 'unknown' } = {}, deps) {
   const auth = authenticateBearer(headers, deps);
   if (!auth.ok) return auth.status === 503 ? fail(503, 'settlement-not-configured', { detail: [...(deps?.config?.missing ?? [])].join(',').slice(0, 240) }) : fail(401, 'invalid-session');
-  const gate = settlementGate(deps);
+  const gate = settlementGate(deps) ?? seedModuleGate(deps);
   if (gate) return gate;
-  const issueSeedTicket = typeof deps.issueSeedTicket === 'function' ? deps.issueSeedTicket : null;
-  if (!issueSeedTicket) return fail(503, 'settlement-not-configured', { detail: 'seed-ticket-unavailable' });
+  const { issueSeedTicket } = deps;
   if (!validateSeedBody(body)) return fail(400, 'invalid-body');
+  if (body.gameId === 'lester-blaster' && !(await heroGatesReady(deps))) return fail(503, 'settlement-not-configured', { detail: 'hero-gates-unavailable' });
   const { db, config } = deps;
   const nowMs = typeof deps.nowMs === 'function' ? deps.nowMs() : Date.now();
   const secret = config.session.secret();

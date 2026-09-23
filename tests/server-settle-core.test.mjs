@@ -16,6 +16,7 @@ import * as seedApi from '../api/ranked-seed.mjs';
 import * as attestApi from '../api/attest.mjs';
 import * as nonceApi from '../api/session-nonce.mjs';
 import * as sessionApi from '../api/session.mjs';
+import * as retryApi from '../api/cron/settle-retry.mjs';
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import {
@@ -100,11 +101,16 @@ function statusHandler({ db, catalog }, { provider = local.chain.provider, envOv
   });
 }
 
-function seedHandler({ db }, { envOverride = env, issue = issueSeedTicketDouble } = {}) {
+// E15 checks the same modules as E3 (verify, the achievements registry and,
+// for HMH, the hero gates), so it gets the same doubles.
+function seedHandler({ db, verify, catalog }, { envOverride = env, issue = issueSeedTicketDouble, wrap = null } = {}) {
   return seedApi.createHandler(async () => {
     const deps = await seedApi.buildDeps(envOverride, { db, deployment: local.deployment, nowMs });
     deps.issueSeedTicket = issue;
-    return deps;
+    deps.verify = verify;
+    deps.catalog = catalog;
+    deps.heroGates = HERO_GATES_DOUBLE;
+    return wrap ? wrap(deps) : deps;
   });
 }
 
@@ -306,6 +312,38 @@ test('a locked hero is rejected until the wallet has the runs', async () => scen
   const [row] = await ctx.db.query('SELECT plausibility::text AS plausibility, boss_id FROM verified_sessions WHERE session_id32 = $1', [locked.body.sessionId32]);
   assert.deepEqual(JSON.parse(row.plausibility), { verdict: 'ok', flags: [] }, 'HMH plausibility flags are stored (non-public)');
   assert.equal(row.boss_id, null);
+
+  // A hero in neither HMH_FREE_HEROES nor HMH_HERO_GATES is never free, however
+  // many runs the wallet has (the run-summary schema accepts any id-shaped heroId).
+  const unknown = await paidBody({ gameId: 'lester-blaster', evidenceOptions: { heroId: 'lester-original-2', elapsedMs: 60_000 } });
+  await advanceChain(60);
+  const verifyCalls = ctx.verify.calls.verifyRankedRun;
+  const refused = await post(handler, unknown.body);
+  assert.deepEqual([refused.status, refused.body], [422, { ok: false, error: 'hero-locked' }]);
+  const blank = await paidBody({ gameId: 'lester-blaster', evidenceOptions: { heroId: '', elapsedMs: 60_000 } });
+  await advanceChain(60);
+  assert.deepEqual((await post(handler, blank.body)).body, { ok: false, error: 'hero-locked' });
+  assert.equal(ctx.verify.calls.verifyRankedRun, verifyCalls, 'refused before verification');
+  const [recorded] = await ctx.db.query('SELECT count(*)::int AS n FROM verified_sessions WHERE session_id32 IN (SELECT jsonb_array_elements_text($1::jsonb))', [JSON.stringify([unknown.body.sessionId32, blank.body.sessionId32])]);
+  assert.equal(recorded.n, 0, 'nothing recorded');
+
+  // Without the free-hero list the gate cannot decide: fail closed.
+  const gatesOnly = settleHandler(ctx, { wrap: (deps) => ({ ...deps, heroGates: { gates: HERO_GATES_DOUBLE.gates } }) });
+  assert.deepEqual((await post(gatesOnly, unknown.body)).body, { ok: false, error: 'settlement-not-configured', detail: 'hero-gates-unavailable' });
+}));
+
+test('an implausible HMH run is 422 with the verifier\'s flag ids and severities only', async () => scenario(async (ctx) => {
+  const handler = settleHandler(ctx);
+  const { body } = await paidBody({ gameId: 'lester-blaster', evidenceOptions: { elapsedMs: 60_000, xp: 2_000_000 } });
+  await advanceChain(60);
+  const response = await post(handler, body);
+  assert.equal(response.status, 422);
+  assert.deepEqual(response.body, {
+    ok: false,
+    error: 'implausible-run',
+    flags: [{ id: 'xp-above-ceiling', severity: 'reject' }, { id: 'xp-near-ceiling', severity: 'flag' }],
+  }, 'never the measured value or the ceiling');
+  assert.equal((await ctx.db.query('SELECT count(*)::int AS n FROM verified_sessions'))[0].n, 0);
 }));
 
 test('retry bodies do not spend the IP budget; full bodies do', async () => scenario(async (ctx) => {
@@ -543,6 +581,64 @@ test('a repeat POST returns the same state without a second transaction', async 
   assert.equal(await relayerNonce(), nonce, 'no second transaction');
 }));
 
+test('an RPC failure on the paid-entry read is a retryable 502 chain-read-failed', async () => scenario(async (ctx) => {
+  const failing = (deps) => ({ ...deps, chain: { ...deps.chain, getPaidSession: async () => { throw Object.assign(new Error('fetch failed https://user:hunter2@rpc.example'), { code: 'NETWORK_ERROR' }); } } });
+  const { body } = await paidBody();
+  const logged = [];
+  const original = console.error;
+  console.error = (...args) => logged.push(args.map(String).join(' '));
+  let response;
+  try {
+    response = await post(settleHandler(ctx, { wrap: failing }), body);
+  } finally {
+    console.error = original;
+  }
+  assert.deepEqual([response.status, response.body], [502, { ok: false, error: 'chain-read-failed', retryable: true, retryAfterMs: 5000 }]);
+  assert.equal(ctx.verify.calls.verifyRankedRun, 0);
+  assert.ok(logged.every((line) => !line.includes('hunter2') && !line.includes('rpc.example')), 'logs carry the name and code only');
+  assert.equal((await post(settleHandler(ctx), body)).body.status, 'confirmed', 'the same body settles once the RPC answers');
+}));
+
+test('a thrown core error is 500 internal-error with nothing but the name and code logged', async () => scenario(async (ctx) => {
+  const { body } = await paidBody();
+  const secret = 'postgresql://owner:hunter2@ep-secret.neon.tech/neondb';
+  const throwing = (deps) => ({ ...deps, verify: { ...deps.verify, bindRankedIdentity: async () => { throw Object.assign(new TypeError(`boom ${secret}`), { code: 'ERR_FIXTURE' }); } } });
+  const logged = [];
+  const original = console.error;
+  console.error = (...args) => logged.push(args.map(String).join(' '));
+  let response;
+  try {
+    response = await post(settleHandler(ctx, { wrap: throwing }), body);
+  } finally {
+    console.error = original;
+  }
+  assert.deepEqual([response.status, response.body], [500, { ok: false, error: 'internal-error' }]);
+  assert.equal(response.headers['cache-control'], 'no-store');
+  assert.deepEqual(logged, ['[settle] internal-error TypeError ERR_FIXTURE']);
+}));
+
+test('a double-tapped POST records one row and sends one transaction', async () => scenario(async (ctx) => {
+  const { body } = await paidBody();
+  const nonce = await relayerNonce();
+  const [first, second] = await Promise.all([post(settleHandler(ctx), body), post(settleHandler(ctx), body)]);
+  assert.deepEqual([first.status, second.status], [200, 200], JSON.stringify([first.body, second.body]));
+  assert.equal((await ctx.db.query('SELECT count(*)::int AS n FROM verified_sessions'))[0].n, 1);
+  assert.equal((await ctx.db.query('SELECT count(*)::int AS n FROM session_evidence'))[0].n, 1);
+  assert.equal(await relayerNonce(), nonce + 1, 'one relayed transaction');
+  assert.ok([first.body.status, second.body.status].includes('confirmed'));
+  assert.equal((await readSettleRow(ctx.db, body.sessionId32)).status, 'confirmed');
+}));
+
+test('a repeat POST whose evidence does not decode is 400 invalid-evidence, not a conflict', async () => scenario(async (ctx) => {
+  const handler = settleHandler(ctx);
+  const { body } = await paidBody({ gameId: 'stacked' });
+  assert.equal((await post(handler, body)).body.status, 'confirmed');
+  const garbled = { ...body, evidence: { ...body.evidence, sic1: `${body.evidence.sic1.slice(0, -2)}!!` } };
+  assert.deepEqual((await post(handler, garbled)).body, { ok: false, error: 'invalid-evidence' });
+  const other = { ...body, evidence: { ...body.evidence, sic1: Buffer.alloc(21, 0x5a).toString('base64') } };
+  assert.deepEqual((await post(handler, other)).body, { ok: false, error: 'session-conflict' }, 'decodable but different evidence is still 409');
+}));
+
 test('a different evidence digest for the same session is 409', async () => scenario(async (ctx) => {
   const handler = settleHandler(ctx);
   const { body } = await paidBody();
@@ -645,6 +741,51 @@ test('the status endpoint confirms a submitted row from its receipt', async () =
   assert.deepEqual([confirmed.body.status, confirmed.body.view, confirmed.body.pollAfterMs], ['confirmed', 'owner', null]);
   const receipt = await local.chain.provider.getTransactionReceipt(confirmed.body.txHash);
   assert.equal(confirmed.body.blockNumber, receipt.blockNumber);
+}));
+
+test('a paused or unready service answers 503 before the body is read', async () => scenario(async (ctx) => {
+  const { fakeResponse } = await import('./helpers/fake-http.mjs');
+  const paused = { ...env, SETTLEMENT_PAUSED: 'true' };
+  const token = bearer(local.chain.wallets.player1.address);
+  let reads = 0;
+  const raw = (url, headers) => ({ method: 'POST', url, headers: { authorization: token, ...headers }, get body() { reads += 1; return '{"v":'; } });
+  const cases = [
+    [settleHandler(ctx, { envOverride: paused }), '/api/settle', {}, 'settlement-paused'],
+    [settleHandler(ctx, { envOverride: paused }), '/api/settle', { 'content-length': '5000000' }, 'settlement-paused'],
+    [seedHandler(ctx, { envOverride: paused }), '/api/ranked-seed', {}, 'settlement-paused'],
+    [seedHandler(ctx, { envOverride: paused }), '/api/ranked-seed', { 'content-length': '5000000' }, 'settlement-paused'],
+    [settleHandler(ctx, { wrap: (deps) => ({ ...deps, catalog: null }) }), '/api/settle', {}, 'settlement-not-configured'],
+    [seedHandler(ctx, { wrap: (deps) => ({ ...deps, verify: null }) }), '/api/ranked-seed', {}, 'settlement-not-configured'],
+  ];
+  for (const [handler, url, headers, error] of cases) {
+    const res = fakeResponse();
+    // eslint-disable-next-line no-await-in-loop
+    await handler(raw(url, headers), res);
+    assert.deepEqual([res.statusCode, res.json.error], [503, error], `${url} ${JSON.stringify(headers)}`);
+  }
+  assert.equal(reads, 0, 'neither a malformed nor an oversized body is read while paused or unready');
+  assert.equal((await ctx.db.query("SELECT to_regclass('public.schema_migrations') IS NULL AS absent"))[0].absent, true);
+}));
+
+test('the seed endpoint stops before payment whenever E3 could not settle the run', async () => scenario(async (ctx) => {
+  const uuid = '33333333-3333-4333-8333-333333333333';
+  const chikun = { gameId: 'chikun', sessionId: `game-session-${uuid}`, seasonId: 'chikun-season-preview-1', buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0' };
+  const hmh = { gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.7.0:game-1.7.0' };
+  const call = (handler, body) => invoke(handler, { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(local.chain.wallets.player1.address), 'x-forwarded-for': IP }, body });
+  for (const [wrap, detail] of [
+    [(deps) => ({ ...deps, verify: null }), 'verify-unavailable'],
+    [(deps) => ({ ...deps, verify: { ...deps.verify, reverifyStoredRun: undefined } }), 'verify-unavailable'],
+    [(deps) => ({ ...deps, catalog: null }), 'achievements-unavailable'],
+    [(deps) => ({ ...deps, issueSeedTicket: null }), 'seed-ticket-unavailable'],
+  ]) {
+    // eslint-disable-next-line no-await-in-loop
+    const response = await call(seedHandler(ctx, { wrap }), chikun);
+    assert.deepEqual([response.status, response.body.error, response.body.detail], [503, 'settlement-not-configured', detail]);
+  }
+  const noGates = seedHandler(ctx, { wrap: (deps) => ({ ...deps, heroGates: async () => null }) });
+  assert.deepEqual((await call(noGates, hmh)).body, { ok: false, error: 'settlement-not-configured', detail: 'hero-gates-unavailable' }, 'an HMH ticket needs the hero gates');
+  assert.equal((await call(noGates, chikun)).status, 200, 'other games do not');
+  assert.equal((await call(seedHandler(ctx), hmh)).status, 200);
 }));
 
 test('paused settlement answers 503 and touches nothing', async () => scenario(async (ctx) => {
@@ -804,7 +945,7 @@ test('missing or legacy env fails closed with the variable names only', async ()
 test('every settle handler exposes the A30 seam and no other override hook', async () => {
   const modules = [
     [settleApi, 'settleRequest'], [statusApi, 'settleStatusRequest'], [seedApi, 'rankedSeedRequest'],
-    [nonceApi, 'sessionNonceRequest'], [sessionApi, 'sessionRequest'], [attestApi, 'attestRequest'],
+    [nonceApi, 'sessionNonceRequest'], [sessionApi, 'sessionRequest'], [attestApi, 'attestRequest'], [retryApi, 'settleRetryRequest'],
   ];
   for (const [api, pure] of modules) {
     assert.equal(typeof api.buildDeps, 'function', pure);
@@ -823,6 +964,11 @@ test('every settle handler exposes the A30 seam and no other override hook', asy
   assert.equal(typeof deps.config.session.secret, 'function');
   const status = await statusApi.buildDeps({}, { db: null, deployment, nowMs: 42, catalog: 'x' });
   assert.notEqual(status.catalog, 'x');
-  const seed = await seedApi.buildDeps({}, { db: null, deployment, nowMs: 42, issueSeedTicket: 'x' });
+  const seed = await seedApi.buildDeps({}, { db: null, deployment, nowMs: 42, issueSeedTicket: 'x', verify: 'x', catalog: 'x', heroGates: 'x' });
   assert.notEqual(seed.issueSeedTicket, 'x');
+  for (const key of ['verify', 'catalog', 'heroGates']) assert.notEqual(seed[key], 'x', key);
+  assert.equal(Object.hasOwn(seed, 'relayer'), false, 'E15 never builds a relayer');
+  const cron = await retryApi.buildDeps(env, { db: null, deployment, nowMs: 42, verify: 'x', relayer: 'x' });
+  assert.notEqual(cron.verify, 'x');
+  assert.equal(typeof cron.relayer, 'function');
 });

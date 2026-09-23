@@ -152,7 +152,7 @@ export async function resignRow({ ethers, db, row, verify, catalog, signer, doma
   if (!stored || !stored.identity) return { ok: false, class: 'deterministic', code: 'stored-run-mismatch' };
   let fresh;
   try {
-    fresh = await verify.reverifyStoredRun({ gameId: row.gameId, identity: stored.identity, evidence: { encoding: stored.encoding, text: stored.text } });
+    fresh = await verify.reverifyStoredRun({ gameId: row.gameId, identity: stored.identity, evidence: { encoding: stored.encoding, text: stored.text } }, { nowMs: now });
   } catch {
     // The verifier could not run (a module or runtime fault), which is not
     // evidence that the run is wrong: wait and try again.

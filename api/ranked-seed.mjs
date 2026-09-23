@@ -2,20 +2,24 @@
 //
 // Issues the seed ticket of a live Ranked session to a signed-in wallet
 // (Bearer checked before the body is read; body at most 2 KB). Needs
-// SESSION_SECRET, NEON_DATABASE_URL and settlementReady; SETTLEMENT_PAUSED
-// answers 503 settlement-paused. Because the browser cannot compute a live
-// session key without a ticket, both 503s stop players before they pay.
+// SESSION_SECRET, NEON_DATABASE_URL and settlementReady, plus the modules E3
+// settles with (verify, the achievements registry and, for HMH, the hero
+// gates); SETTLEMENT_PAUSED answers 503 settlement-paused. All of it is
+// checked before the body is read. Because the browser cannot compute a live
+// session key without a ticket, these 503s stop players before they pay.
 // Rate limits: seed:w 60/h and seed:ip 600/h.
 
 import { makeHandler } from '../server/http.mjs';
 import { buildBaseDeps } from '../server/config.mjs';
-import { bearerAuthHook } from '../server/auth/bearer.mjs';
-import { loadIssueSeedTicket, SEED_BODY_MAX_BYTES, seedRequest } from '../server/settle/seed.mjs';
+import { attachSettleDeps } from '../server/settle/settle-core.mjs';
+import { loadIssueSeedTicket, SEED_BODY_MAX_BYTES, seedAuthHook, seedRequest } from '../server/settle/seed.mjs';
 
 const cache = {};
 
 export async function buildDeps(env = process.env, overrides = {}) {
-  const deps = await buildBaseDeps(env, overrides, cache);
+  // The same verify functions, achievements registry and hero gates as E3
+  // (no relayer: E15 never submits), so both endpoints agree on readiness.
+  const deps = await attachSettleDeps(await buildBaseDeps(env, overrides, cache), { env, relayer: false });
   deps.issueSeedTicket = await loadIssueSeedTicket();
   return deps;
 }
@@ -29,7 +33,7 @@ const adapter = makeHandler({
   methods: ['POST'],
   query: [],
   maxBytes: SEED_BODY_MAX_BYTES,
-  auth: bearerAuthHook(),
+  auth: seedAuthHook(),
   run: rankedSeedRequest,
 });
 

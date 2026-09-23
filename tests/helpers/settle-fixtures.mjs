@@ -7,6 +7,12 @@
 // and v2 envelope hash, and a frozen §5.3 VerifiedRun. The "replay" is a toy
 // function of the evidence so tests can choose scores and run lengths.
 //
+// They also follow the verify slice's hand-off (fable/pd-verify 437aa1f3):
+// computeEvidenceDigest resolves { ok:true, … } or { ok:false, status:400,
+// error:'invalid-evidence' } and never throws; reverifyStoredRun takes an
+// optional { nowMs }; HMH plausibility flags are { id, severity, value, limit }
+// objects; server/verify/hmh.mjs exports HMH_HERO_GATES and HMH_FREE_HEROES.
+//
 // Keys: Hardhat's public test mnemonic only (scripts/lib/local-chain.mjs).
 
 import { createHash, createHmac, randomBytes as nodeRandomBytes, timingSafeEqual } from 'node:crypto';
@@ -143,13 +149,13 @@ export function stackedEvidence({ lines = 20 } = {}) {
 }
 
 // HMH: the summary carries its own score and length (plausibility-checked).
-export function hmhEvidence({ seed, buildHash = FIXTURE_BUILD_HASHES['lester-blaster'], heroId = 'lit-commando', score = 4200, kills = 30, boss = 0, elapsedMs = 240_000, maxCombo = 12, sessionKey = null } = {}) {
+export function hmhEvidence({ seed, buildHash = FIXTURE_BUILD_HASHES['lester-blaster'], heroId = 'lit-commando', score = 4200, kills = 30, boss = 0, elapsedMs = 240_000, maxCombo = 12, xp = 4500, sessionKey = null } = {}) {
   return {
     encoding: ENCODINGS['lester-blaster'],
     runSummary: {
       schemaVersion: 6,
       identity: { heroId, seed, buildHash, mode: 'ranked' },
-      totals: { score, elapsedMs, maxCombo, level: 5, xp: 4500 },
+      totals: { score, elapsedMs, maxCombo, level: 5, xp },
       kills: { total: kills, boss },
       terminalReason: 'defeated',
     },
@@ -195,6 +201,7 @@ async function evidenceRecord(gameId, evidence) {
   if (gameId === 'stacked') {
     if (typeof evidence.sic1 !== 'string' || !evidence.sic1) throw new TypeError('stacked evidence');
     const bytes = Buffer.from(evidence.sic1, 'base64');
+    if (bytes.toString('base64') !== evidence.sic1) throw new TypeError('stacked evidence is not canonical base64');
     return { encoding: evidence.encoding, text: evidence.sic1, bytes: Buffer.byteLength(evidence.sic1), digest: `0x${createHash('sha256').update(bytes).digest('hex')}` };
   }
   if (!evidence.runSummary || !evidence.sessionEnvelope) throw new TypeError('hmh evidence');
@@ -230,16 +237,24 @@ function toyReplay(gameId, evidence, identity) {
     return { score: stats.score, stats, contract: { kills: lines, maxCombo, survivalSeconds: Math.floor(ticks / 60), bossId: null } };
   }
   const summary = evidence.runSummary;
+  if (typeof summary?.identity?.heroId !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(summary.identity.heroId)) return fail(400, 'run-summary-invalid');
   if (summary?.identity?.seed !== identity.seed || summary?.identity?.buildHash !== identity.buildHash || summary?.identity?.mode !== 'ranked') return fail(400, 'run-summary-identity-mismatch');
   if (summary.terminalReason !== 'defeated') return fail(400, 'run-summary-not-terminal');
   if (evidence.sessionEnvelope?.version !== 'lesters-session-envelope-v1' || evidence.sessionEnvelope?.sessionKey !== identity.sessionKey) return fail(400, 'session-envelope-invalid');
   const totals = summary.totals;
+  // Plausibility in the verifier's shape: { verdict, flags: [{ id, severity, value, limit }] }.
+  // XP above 1,000,000 is an impossibility (rejected); above 100,000 is a soft flag.
+  const flags = [];
+  if (totals.xp > 1_000_000) flags.push(Object.freeze({ id: 'xp-above-ceiling', severity: 'reject', value: totals.xp, limit: 1_000_000 }));
+  if (totals.xp > 100_000) flags.push(Object.freeze({ id: 'xp-near-ceiling', severity: 'flag', value: totals.xp, limit: 100_000 }));
+  const verdict = flags.some((flag) => flag.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok';
+  if (verdict === 'rejected') return fail(422, 'implausible-run', { flags: Object.freeze(flags) });
   const stats = { score: totals.score, kills: summary.kills.total, bossKills: summary.kills.boss, eliteKills: 0, maxCombo: totals.maxCombo, level: totals.level, xp: totals.xp, survivalTicks: Math.floor(totals.elapsedMs * 0.06), elapsedMs: totals.elapsedMs, survivalSeconds: Number((totals.elapsedMs / 1000).toFixed(3)), heroId: summary.identity.heroId, noDamage: 0, terminalReason: summary.terminalReason };
   return {
     score: totals.score,
     stats,
     contract: { kills: Math.min(summary.kills.total, 100_000), maxCombo: Math.min(totals.maxCombo, 10_000), survivalSeconds: Math.min(Math.floor(totals.elapsedMs / 1000), 86_400), bossId: summary.kills.boss > 0 ? 'boss-liquidator' : null },
-    plausibility: { verdict: totals.xp > 100_000 ? 'flagged' : 'ok', flags: totals.xp > 100_000 ? ['xp-near-ceiling'] : [] },
+    plausibility: { verdict, flags },
   };
 }
 
@@ -273,7 +288,7 @@ async function verifiedRunFor({ gameId, identity, evidence, nowMs }) {
 
 // { bindRankedIdentity, verifyRankedRun, computeEvidenceDigest, reverifyStoredRun, calls }
 export function createVerifyDouble({ nowMs = () => Date.now() } = {}) {
-  const calls = { bindRankedIdentity: 0, verifyRankedRun: 0, computeEvidenceDigest: 0, reverifyStoredRun: 0 };
+  const calls = { bindRankedIdentity: 0, verifyRankedRun: 0, computeEvidenceDigest: 0, reverifyStoredRun: 0, reverifyNowMs: [] };
   const clock = () => (typeof nowMs === 'function' ? nowMs() : Number(nowMs));
 
   async function bindRankedIdentity(body, { chainId, scoreRegistryAddress, wallet, nowMs: now, seedSecret }) {
@@ -304,14 +319,20 @@ export function createVerifyDouble({ nowMs = () => Date.now() } = {}) {
     return verifiedRunFor({ gameId: bound.gameId, identity: bound.identity, evidence: body.evidence, nowMs: options.nowMs ?? clock() });
   }
 
+  // { ok:true, encoding, text, bytes, digest } | { ok:false, status:400, error:'invalid-evidence' }; never throws.
   async function computeEvidenceDigest(body) {
     calls.computeEvidenceDigest += 1;
-    return evidenceRecord(body.gameId, body.evidence);
+    try {
+      return Object.freeze({ ok: true, ...(await evidenceRecord(body?.gameId, body?.evidence)) });
+    } catch {
+      return fail(400, 'invalid-evidence');
+    }
   }
 
-  async function reverifyStoredRun({ gameId, identity, evidence }) {
+  async function reverifyStoredRun({ gameId, identity, evidence }, { nowMs: now } = {}) {
     calls.reverifyStoredRun += 1;
-    return verifiedRunFor({ gameId, identity, evidence: evidenceFromStored(gameId, evidence), nowMs: clock() });
+    calls.reverifyNowMs.push(now ?? null);
+    return verifiedRunFor({ gameId, identity, evidence: evidenceFromStored(gameId, evidence), nowMs: now ?? clock() });
   }
 
   return { bindRankedIdentity, verifyRankedRun, computeEvidenceDigest, reverifyStoredRun, calls };
@@ -374,6 +395,10 @@ export function createCatalogDouble({ extraNft = 0 } = {}) {
   };
 }
 
-// HMH_HERO_GATES as verify exports it (hero id → required runs), from
-// hmh-character-config.mjs.
-export const HERO_GATES_DOUBLE = Object.freeze({ 'lester-original': 5, lilly: 10 });
+// The hero policy as loadHeroGates builds it from server/verify/hmh.mjs:
+// HMH_HERO_GATES (hero id → required Ranked runs) and HMH_FREE_HEROES, both
+// from hmh-character-config.mjs.
+export const HERO_GATES_DOUBLE = Object.freeze({
+  gates: Object.freeze({ 'lester-original': 5, lilly: 10 }),
+  free: Object.freeze(['lit-commando', 'lit-valkyrie']),
+});

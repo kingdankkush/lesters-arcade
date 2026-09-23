@@ -1,8 +1,9 @@
 // E3 POST /api/settle (contract §4.3.3, A30).
 //
 // The authenticated, idempotent, nonce-safe settlement of a paid Ranked run:
-// Bearer (checked before the body is read), SETTLEMENT_PAUSED and the
-// fail-closed config, the 1,800,000-byte body cap, per-wallet and per-IP
+// Bearer, SETTLEMENT_PAUSED and the fail-closed config (all checked before
+// the body is read, so a paused service answers 503 whatever the body), the
+// 1,800,000-byte body cap, per-wallet and per-IP
 // limits, identity and seed-ticket binding, the paid-entry check over the
 // server's own RPC, ticket freshness, history and the HMH hero gate, server
 // verification, run timing, achievement derivation, the Neon insert, the
@@ -17,8 +18,7 @@
 import { makeHandler } from '../server/http.mjs';
 import { buildBaseDeps } from '../server/config.mjs';
 import { attachLazyProvider } from '../server/chain/public-rpc.mjs';
-import { bearerAuthHook } from '../server/auth/bearer.mjs';
-import { attachSettleDeps, SETTLE_BODY_MAX_BYTES, settleRequest } from '../server/settle/settle-core.mjs';
+import { attachSettleDeps, SETTLE_BODY_MAX_BYTES, settleAuthHook, settleRequest } from '../server/settle/settle-core.mjs';
 
 export { settleRequest };
 
@@ -34,7 +34,8 @@ const adapter = makeHandler({
   methods: ['POST'],
   query: [],
   maxBytes: SETTLE_BODY_MAX_BYTES,
-  auth: bearerAuthHook(),
+  // Bearer, SETTLEMENT_PAUSED, config and modules, before the body is read.
+  auth: settleAuthHook(),
   run: settleRequest,
 });
 

@@ -5,8 +5,9 @@
 // stopping at the first failure. Nothing expensive (replay, signing,
 // broadcast) runs until the entry is proven paid (security review S4):
 //
-//    1 auth (the adapter checks the Bearer before the body is read)
-//    2 pause and config          3 body (read by the adapter, 1.8 MB cap)
+//    1 auth and 2 pause, config and modules (the adapter's auth hook runs
+//      both before the body is read; direct callers get the same checks)
+//    3 body (read by the adapter, 1.8 MB cap)
 //    4 rate limits               5 retry body
 //    6 shape                     7 identity binding (no chain read)
 //    8 existing row              9 paid entry (the server's own RPC)
@@ -23,7 +24,7 @@
 import * as nodeCrypto from 'node:crypto';
 import { ethers } from 'ethers';
 import { ipBucket } from '../http.mjs';
-import { authenticateBearer, optionalBearerWallet } from '../auth/bearer.mjs';
+import { authenticateBearer, bearerAuthHook, optionalBearerWallet } from '../auth/bearer.mjs';
 import { ensureSchema } from '../neon/migrations.mjs';
 import { periodKeysFor } from '../neon/period-keys.mjs';
 import { readAchievementHistory } from '../neon/queries.mjs';
@@ -60,6 +61,9 @@ const EVIDENCE_KEYS = Object.freeze({
 const BODY_KEYS = new Set(['v', 'gameId', 'sessionId32', 'identity', 'seedTicket', 'entryTxHash', 'evidence', 'claim']);
 const RETRY_KEYS = ['retry', 'sessionId32', 'v'];
 const HEX32 = /^0x[0-9a-f]{64}$/;
+const FLAG_ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
+const FLAG_SEVERITIES = new Set(['reject', 'flag']);
+export const MAX_RESPONSE_FLAGS = 32;
 // Failed rows whose last error is about the attestation are re-signed (with
 // re-verification) before their next submission (§3.3 failed → signed).
 const RESIGN_BEFORE_RETRY = new Set(['attestation-expired', 'invalid-attestation', 'verifier-rejected', 'stored-run-mismatch']);
@@ -110,8 +114,9 @@ export function settlementGate(deps) {
 }
 
 // The verify and achievements modules must be present (they merge in
-// parallel slices; until then the service fails closed).
-function moduleGate(deps) {
+// parallel slices; until then the service fails closed). E15 runs the same
+// check, so a player is stopped before paying for a run E3 could not settle.
+export function moduleGate(deps) {
   const verify = deps.verify;
   if (!verify || ['bindRankedIdentity', 'verifyRankedRun', 'computeEvidenceDigest', 'reverifyStoredRun'].some((name) => typeof verify[name] !== 'function')) {
     return fail(503, 'settlement-not-configured', { detail: 'verify-unavailable' });
@@ -121,6 +126,16 @@ function moduleGate(deps) {
     return fail(503, 'settlement-not-configured', { detail: 'achievements-unavailable' });
   }
   return null;
+}
+
+// The makeHandler auth hook of E3 (A30, §4.3.3 steps 1-2): the Bearer, then
+// the pause, the config and the modules, all before the body is read, so a
+// paused or unready service answers 503 whatever the body is.
+export function settleAuthHook() {
+  const bearer = bearerAuthHook();
+  return async function settleAuth(request, deps) {
+    return (await bearer(request, deps)) ?? settlementGate(deps) ?? moduleGate(deps);
+  };
 }
 
 async function limitedBy(db, bucket, limit, nowMs) {
@@ -357,11 +372,55 @@ async function checkPaidEntry({ body, wallet, gameId, sessionId32 }, deps) {
   return { openedAt: Number(paid.openedAt), amountWei: BigInt(paid.amountWei) };
 }
 
-function heroGateCount(gates, heroId) {
-  if (!gates || typeof heroId !== 'string' || !Object.hasOwn(gates, heroId)) return null;
-  const value = gates[heroId];
-  const count = typeof value === 'number' ? value : Number(value?.count ?? value?.gate?.count);
-  return Number.isFinite(count) && count > 0 ? count : null;
+// The HMH hero policy (§4.3.3 step 11): { gates: HMH_HERO_GATES (hero id →
+// Ranked runs required), free: HMH_FREE_HEROES }, both from the verify slice
+// (server/verify/hmh.mjs). null when either is missing, so E3 fails closed.
+export function heroPolicyFrom(value) {
+  if (!value || typeof value !== 'object') return null;
+  const { gates, free } = value;
+  if (!gates || typeof gates !== 'object' || Array.isArray(gates) || !Array.isArray(free)) return null;
+  const counts = new Map();
+  for (const [heroId, gate] of Object.entries(gates)) {
+    const count = typeof gate === 'number' ? gate : Number(gate?.count ?? gate?.gate?.count);
+    if (!Number.isSafeInteger(count) || count < 0) return null;
+    counts.set(heroId, count);
+  }
+  return Object.freeze({ counts, free: new Set(free.filter((heroId) => typeof heroId === 'string')) });
+}
+
+async function loadHeroPolicy(deps) {
+  try {
+    return heroPolicyFrom(typeof deps.heroGates === 'function' ? await deps.heroGates() : deps.heroGates);
+  } catch (error) {
+    logSafeError('settle:hero-gates', error);
+    return null;
+  }
+}
+
+// A free hero passes; a gated hero needs history.runs ≥ its count; any other
+// id (unknown, missing or malformed) is refused: the run-summary schema
+// accepts any id-shaped heroId, so an unknown id is never treated as free.
+export function heroAllowed(policy, heroId, runs) {
+  if (typeof heroId !== 'string' || !heroId) return false;
+  if (policy.free.has(heroId)) return true;
+  if (!policy.counts.has(heroId)) return false;
+  return Number(runs) >= policy.counts.get(heroId);
+}
+
+// The verifier's plausibility flags for a 422 (§4.3.3 "implausible-run (with
+// flags)"): the id and severity of each, never the measured value or the
+// ceiling (those would publish the validator's calibration).
+export function responseFlags(flags) {
+  if (!Array.isArray(flags)) return [];
+  const out = [];
+  for (const flag of flags) {
+    const id = typeof flag === 'string' ? flag : flag?.id;
+    if (typeof id !== 'string' || !FLAG_ID.test(id)) continue;
+    const severity = typeof flag === 'object' && FLAG_SEVERITIES.has(flag?.severity) ? flag.severity : null;
+    out.push({ id, severity });
+    if (out.length >= MAX_RESPONSE_FLAGS) break;
+  }
+  return out;
 }
 
 // --- E3 ------------------------------------------------------------------------
@@ -381,13 +440,15 @@ async function retryBodyRequest(body, wallet, deps) {
 async function existingRowRequest(existing, body, wallet, deps) {
   if (existing.wallet !== wallet) return fail(403, 'wallet-mismatch');
   if (existing.source === 'chain-index') return ownerResult(deps, existing.sessionId32);
-  let digest;
+  let computed;
   try {
-    digest = (await deps.verify.computeEvidenceDigest(body))?.digest;
+    computed = await deps.verify.computeEvidenceDigest(body);
   } catch {
     return fail(400, 'invalid-evidence');
   }
-  if (lower(digest) !== lower(existing.evidenceDigest)) return fail(409, 'session-conflict');
+  // Evidence that does not decode is the caller's error, not a conflict.
+  if (!computed || computed.ok === false || typeof computed.digest !== 'string') return fail(400, 'invalid-evidence');
+  if (lower(computed.digest) !== lower(existing.evidenceDigest)) return fail(409, 'session-conflict');
   if (retryAllowed(existing, clockOf(deps)())) await submitSafely(existing, deps, submissionContext(deps));
   return ownerResult(deps, existing.sessionId32);
 }
@@ -446,10 +507,9 @@ export async function settleRequest({ headers = {}, body = null, ip = 'unknown' 
   const fields = await deps.catalog.historyFieldsFor(gameId);
   const history = await readAchievementHistory(db, { wallet, gameId, fields, excludeSessionId32: sessionId32 });
   if (gameId === 'lester-blaster') {
-    const gates = typeof deps.heroGates === 'function' ? await deps.heroGates() : deps.heroGates;
-    if (!gates || typeof gates !== 'object') return fail(503, 'settlement-not-configured', { detail: 'hero-gates-unavailable' });
-    const required = heroGateCount(gates, body.evidence.runSummary?.identity?.heroId);
-    if (required !== null && history.runs < required) return fail(422, 'hero-locked');
+    const policy = await loadHeroPolicy(deps);
+    if (!policy) return fail(503, 'settlement-not-configured', { detail: 'hero-gates-unavailable' });
+    if (!heroAllowed(policy, body.evidence.runSummary?.identity?.heroId, history.runs)) return fail(422, 'hero-locked');
   }
 
   // 12. Verify: replay (Chikun, STACKED) or plausibility (HMH).
@@ -457,7 +517,7 @@ export async function settleRequest({ headers = {}, body = null, ip = 'unknown' 
   if (!run || run.ok === false) {
     const extra = {};
     if (typeof run?.detail === 'string') extra.detail = run.detail.slice(0, 240);
-    if (Array.isArray(run?.flags)) extra.flags = run.flags.filter((flag) => typeof flag === 'string').slice(0, 32);
+    if (Array.isArray(run?.flags)) extra.flags = responseFlags(run.flags);
     return fail([400, 422].includes(run?.status) ? run.status : 422, typeof run?.error === 'string' ? run.error : 'replay-rejected', extra);
   }
   if (run.sessionId32 !== sessionId32 || lower(run.wallet) !== wallet || run.gameId !== gameId) throw new Error('verified run does not match the request');
@@ -573,10 +633,12 @@ export async function loadAchievementRegistry() {
   return pickFunctions(await optionalImport(() => import('../../apps/portal/src/achievements/index.mjs'), 'achievements'), ['deriveEarnedAchievements', 'historyFieldsFor', 'nftAchievementIds', 'achievementById', 'catalogFor']);
 }
 
-// HMH_HERO_GATES (server/verify/hmh.mjs), loaded only for an HMH settle.
+// HMH_HERO_GATES and HMH_FREE_HEROES (server/verify/hmh.mjs), loaded only for
+// an HMH settle or ticket; null until that module exists.
 export async function loadHeroGates() {
   const module = await optionalImport(() => import('../verify/hmh.mjs'), 'hmh');
-  return module?.HMH_HERO_GATES && typeof module.HMH_HERO_GATES === 'object' ? module.HMH_HERO_GATES : null;
+  if (!module?.HMH_HERO_GATES || typeof module.HMH_HERO_GATES !== 'object' || !Array.isArray(module.HMH_FREE_HEROES)) return null;
+  return Object.freeze({ gates: module.HMH_HERO_GATES, free: module.HMH_FREE_HEROES });
 }
 
 // Adds the settle dependencies to index's base deps (buildBaseDeps plus the
