@@ -105,6 +105,39 @@ function createHmhPixiPlugin({ externalizeRuntimeImports }) {
   };
 }
 
+// WalletConnect sign-in: the portal lazy-loads Reown AppKit through
+// apps/portal/src/reown-appkit-vendor.mjs. The portal build treats that module
+// as an external file (dist/reown/appkit.js), and a separate build below
+// produces it with its own chunks and its own runtime helpers. In the portal's
+// split graph, AppKit's CommonJS dependencies would add esbuild runtime helpers
+// to the shared helper chunk that the HMH and STACKED children load
+// statically, growing their initial JS.
+const reownAppKitVendor = resolve(portalDir, 'src/reown-appkit-vendor.mjs');
+function createReownAppKitExternalPlugin() {
+  return {
+    name: 'reown-appkit-external',
+    setup(buildApi) {
+      buildApi.onResolve({ filter: /reown-appkit-vendor\.mjs$/ }, () => ({ path: '../reown/appkit.js', external: true }));
+    },
+  };
+}
+
+// The ethers adapter builds a Safe{Wallet} provider only inside a Safe app
+// iframe (CoreHelperUtil.isSafeApp()), which the arcade never runs in. Its
+// CommonJS SDK would add a second, CommonJS copy of viem to the AppKit bundle.
+function createReownVendorStubPlugin() {
+  return {
+    name: 'reown-vendor-stubs',
+    setup(buildApi) {
+      buildApi.onResolve({ filter: /^@safe-global\/safe-apps-provider$/ }, () => ({ path: 'safe-apps-provider', namespace: 'reown-stub' }));
+      buildApi.onLoad({ filter: /.*/, namespace: 'reown-stub' }, () => ({
+        contents: "export class SafeAppProvider { constructor() { throw new Error('Safe apps are not supported here.'); } }",
+        loader: 'js',
+      }));
+    },
+  };
+}
+
 const wantMeta = process.argv.includes('--metafile');
 const wantSourceMap = process.argv.includes('--sourcemap');
 
@@ -141,7 +174,7 @@ async function run() {
       'chikun/flight-room': resolve(__dirname, 'apps/chikun/src/flight-room.mjs'),
     },
     absWorkingDir: __dirname, // metafile output keys stay repo-relative from any cwd
-    plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true })],
+    plugins: [createHmhPixiPlugin({ externalizeRuntimeImports: true }), createReownAppKitExternalPlugin()],
     bundle: true,
     splitting: true,        // preserve dynamic import() code-split chunks
     format: 'esm',          // app loads main.js as <script type="module">
@@ -157,6 +190,17 @@ async function run() {
     metafile: true,
     logLevel: 'info',
     // Do NOT add file/dataurl loaders: asset URLs are runtime strings, not imports.
+  });
+
+  // Reown AppKit, loaded only after the player picks WalletConnect (see the
+  // plugin above). Split so the modal loads only the views it opens.
+  const reownVendorResult = await build({
+    entryPoints: { 'reown/appkit': reownAppKitVendor },
+    absWorkingDir: __dirname,
+    plugins: [createReownVendorStubPlugin()],
+    bundle: true, splitting: true, format: 'esm', minify: true, treeShaking: true,
+    target: ['es2020'], outdir, entryNames: '[dir]/[name]', chunkNames: 'reown/chunks/[name]-[hash]',
+    legalComments: 'none', metafile: true,
   });
 
   const vendorResult = await build({
@@ -182,8 +226,8 @@ async function run() {
     target: ['es2020'], outdir, entryNames: '[dir]/[name]', legalComments: 'none', metafile: true,
   });
   const combinedMetafile = {
-    inputs: { ...result.metafile.inputs, ...vendorResult.metafile.inputs, ...stackedVendorResult.metafile.inputs },
-    outputs: { ...result.metafile.outputs, ...vendorResult.metafile.outputs, ...stackedVendorResult.metafile.outputs },
+    inputs: { ...result.metafile.inputs, ...vendorResult.metafile.inputs, ...stackedVendorResult.metafile.inputs, ...reownVendorResult.metafile.inputs },
+    outputs: { ...result.metafile.outputs, ...vendorResult.metafile.outputs, ...stackedVendorResult.metafile.outputs, ...reownVendorResult.metafile.outputs },
   };
 
   const outMain = resolve(outdir, 'main.js');
@@ -240,6 +284,9 @@ async function run() {
   console.log(`HMH initial JS:     ${human(hmhBudget.combinedInitialChildBytes)} (${hmhBudget.combinedInitialChildBytes.toLocaleString('en-US')} B) / ${human(hmhBudget.cap)} raw aggregate, entry + vendor`);
   console.log(`HMH initial JS + shared: ${human(hmhBudget.initialChildBytesWithSharedChunks)} (${hmhBudget.initialChildBytesWithSharedChunks.toLocaleString('en-US')} B) / ${human(hmhBudget.cap)} raw aggregate, entry + shared chunks + vendor`);
   console.log(`HMH headroom:       ${human(hmhBudget.remaining)} entry + vendor; ${human(hmhBudget.remainingWithSharedChunks)} including shared chunks`);
+  const reownStatic = sumStaticChunkBytes({ metafile: reownVendorResult.metafile, entryOutput: 'apps/portal/dist/reown/appkit.js' });
+  const reownEntryBytes = statSync(resolve(outdir, 'reown/appkit.js')).size;
+  console.log(`Reown AppKit (lazy): ${human(reownEntryBytes + reownStatic.bytes)} on first WalletConnect use (entry ${reownEntryBytes} B + ${reownStatic.chunks.length} static chunk(s) ${reownStatic.bytes} B)`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
   buildPortalPages();
   console.log(`Output dir:         apps/portal/dist/ (plus public discovery pages)`);
