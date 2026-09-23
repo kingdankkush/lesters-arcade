@@ -12,7 +12,7 @@ import * as refreshApi from '../api/profile-refresh.mjs';
 import * as sessionApi from '../api/verified-session.mjs';
 import * as indexCronApi from '../api/cron/index-chain.mjs';
 import * as sharePageStub from '../api/share-page.mjs';
-import * as shareCardStub from '../api/share-card.mjs';
+import * as shareCardApi from '../api/share-card.mjs';
 import { createPgliteClient, seedAchievementUnlock, seedVerifiedSession, seedWalletProfile } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 
@@ -335,8 +335,10 @@ test('unknown query parameters are rejected', async () => {
 
 const STUBS = [
   ['share-page', sharePageStub, 'sharePageRequest', 'GET'],
-  ['share-card', shareCardStub, 'shareCardRequest', 'GET'],
 ];
+// The results-share slice replaced the E11 stub (§10.4 rule 5); its own suite
+// is tests/share-card.test.mjs.
+const SHARE_ID = 'ab'.repeat(32);
 
 test('every new endpoint fails closed with no env at all and never throws', async () => {
   const logged = [];
@@ -354,6 +356,7 @@ test('every new endpoint fails closed with no env at all and never throws', asyn
       [sessionApi, { url: `/api/verified-session?id=${'ab'.repeat(32)}` }, 503, 'index-not-configured'],
       [indexCronApi, { url: '/api/cron/index-chain', headers: { authorization: 'Bearer ' } }, 401, 'unauthorized'],
       ...STUBS.map(([path, api, , method]) => [api, { method, url: `/api/${path}` }, 503, 'not-implemented']),
+      [shareCardApi, { url: `/api/share-card?id=${SHARE_ID}` }, 503, 'index-not-configured'],
     ];
     for (const [api, request, status, error] of expectations) {
       const response = await invoke(bare(api), request);
@@ -368,7 +371,7 @@ test('every new endpoint fails closed with no env at all and never throws', asyn
 
 test('legacy env names alone leave settlement unconfigured', async () => {
   const legacyOnly = { VERIFIER_PRIVATE_KEY: `0x${'11'.repeat(32)}`, RELAYER_PRIVATE_KEY: `0x${'22'.repeat(32)}`, SCORE_REGISTRY_ADDRESS: DEPLOYED.addresses.scoreSubmissionRegistry };
-  for (const api of [leaderboardApi, profileApi, refreshApi, sessionApi, indexCronApi, ...STUBS.map(([, stub]) => stub)]) {
+  for (const api of [leaderboardApi, profileApi, refreshApi, sessionApi, indexCronApi, shareCardApi, ...STUBS.map(([, stub]) => stub)]) {
     const deps = await api.buildDeps(legacyOnly, { deployment: DEPLOYED });
     assert.equal(deps.config.settlementReady, false);
     assert.deepEqual([...deps.config.legacyEnvPresent], ['VERIFIER_PRIVATE_KEY', 'RELAYER_PRIVATE_KEY', 'SCORE_REGISTRY_ADDRESS']);
@@ -378,12 +381,14 @@ test('legacy env names alone leave settlement unconfigured', async () => {
     const response = await invoke(stub.createHandler(() => stub.buildDeps(legacyOnly, { deployment: DEPLOYED })), { method, url: `/api/${path}`, body: {} });
     assert.equal(response.status, 503, path);
   }
+  const card = await invoke(shareCardApi.createHandler(() => shareCardApi.buildDeps(legacyOnly, { deployment: DEPLOYED })), { url: `/api/share-card?id=${SHARE_ID}` });
+  assert.equal(card.status, 503, 'share-card');
 });
 
 test('every handler module exposes the A30 seam and its pure request function', async () => {
   const modules = [
     [leaderboardApi, 'leaderboardRequest'], [profileApi, 'profileRequest'], [refreshApi, 'profileRefreshRequest'],
-    [sessionApi, 'verifiedSessionRequest'], [indexCronApi, 'indexChainRequest'],
+    [sessionApi, 'verifiedSessionRequest'], [indexCronApi, 'indexChainRequest'], [shareCardApi, 'shareCardRequest'],
     ...STUBS.map(([, stub, name]) => [stub, name]),
   ];
   for (const [api, pure] of modules) {
