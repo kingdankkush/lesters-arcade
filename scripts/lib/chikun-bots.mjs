@@ -116,7 +116,9 @@ export function createCourseModel(course, seed) {
     for (const key of staticGeometry.keys()) if (key < belowIndex) staticGeometry.delete(key);
     for (const key of phaseGeometry.keys()) if (Math.floor(key / 240) < belowIndex) phaseGeometry.delete(key);
   }
-  return { xAt, geometry, forget, speedAtTick: course.speedAtTick };
+  const base = (index) => 1180 + course.distanceAtTick(index * cadence);
+  const isStatic = (index) => { geometry(index, 0); return staticGeometry.get(index) !== null; };
+  return { xAt, geometry, forget, base, isStatic, distance: course.distanceAtTick, speedAtTick: course.speedAtTick };
 }
 
 const GROUND = -1;
@@ -200,20 +202,22 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
   // is a press already in flight. `timing` models the bot's own imprecision:
   // +k presses land k ticks late, -k the bot acts k ticks early (it anticipates
   // its ballistic state), 0 is nominal.
-  function simulate(start, tick0, obstacles, targets, delay, hold, horizonEnd, forced, timing) {
+  function simulate(start, tick0, obstacles, targets, delay, hold, horizonEnd, forced, timing, table) {
     const state = { y: start.y, v: start.v, loco: start.loco };
     const k = timing < 0 ? -timing : timing;
+    const { dist, lo } = table;
+    const cx = physics.chikunX;
     let since = start.since;
     let presses = 0;
     let minClear = Infinity;
     let coins = 0;
     let segment = 0;
     let simPending = null;
-    const taken = new Set();
+    let taken = 0;
     let tick = tick0;
     for (; tick < horizonEnd; tick += 1) {
       const schedule = timing < 0 ? tick + k : tick - k;
-      while (segment < obstacles.length - 1 && model.xAt(obstacles[segment].index, schedule) + obstacles[segment].width < physics.chikunX - 40) segment += 1;
+      while (segment < obstacles.length - 1 && obstacles[segment].base - dist[schedule - lo] + obstacles[segment].width < cx - 40) segment += 1;
       const target = schedule - tick0 < delay ? hold : targets[Math.min(segment, targets.length - 1)];
       let press = false;
       if (forced !== null && tick <= forced) press = tick === forced;
@@ -226,25 +230,28 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
         press = wantsPress(ahead, target, since, physics);
       } else press = wantsPress(state, target, since, physics);
       if (press) { presses += 1; since = 0; } else since += 1;
+      const now = dist[tick + 1 - lo];
       // Gap under Chikun at the post-step tick, as in the runtime.
       let overGap = false;
-      for (const o of obstacles) {
+      for (let i = 0; i < obstacles.length; i += 1) {
+        const o = obstacles[i];
         if (o.family !== 'gap') continue;
-        const x = model.xAt(o.index, tick + 1);
-        if (physics.chikunX > x && physics.chikunX < x + o.width) { overGap = true; break; }
+        const x = o.base - now;
+        if (cx > x && cx < x + o.width) { overGap = true; break; }
       }
       if (!stepPhysics(state, press, overGap, physics)) return { alive: false, survived: tick - tick0, minClear: -1, coins, presses };
       if (physics.ceilingLethal && state.y - physics.ceilingY < minClear) minClear = state.y - physics.ceilingY;
-      for (const o of obstacles) {
-        const x = model.xAt(o.index, tick + 1);
-        if (x > physics.chikunX + 40 || x + o.width < physics.chikunX - 40) continue;
-        const local = model.geometry(o.index, tick + 1);
-        const clearance = obstacleClearance(local, physics.chikunX - x, state.y, physics.radius);
+      for (let i = 0; i < obstacles.length; i += 1) {
+        const o = obstacles[i];
+        const x = o.base - now;
+        if (x > cx + 40 || x + o.width < cx - 40) continue;
+        const local = o.local ?? model.geometry(o.index, tick + 1);
+        const clearance = obstacleClearance(local, cx - x, state.y, physics.radius);
         if (clearance < 0) return { alive: false, survived: tick - tick0, minClear: clearance, coins, presses };
         if (clearance < minClear) minClear = clearance;
-        if (!taken.has(o.index)) {
-          const dx = local.coin.x + x - physics.chikunX, dy = local.coin.y - state.y;
-          if (dx * dx + dy * dy <= 49 * 49) { taken.add(o.index); coins += 1; }
+        if ((taken & (1 << i)) === 0) {
+          const dx = local.coin.x + x - cx, dy = local.coin.y - state.y;
+          if (dx * dx + dy * dy <= 49 * 49) { taken |= 1 << i; coins += 1; }
         }
       }
     }
@@ -260,14 +267,14 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
   // Nominal first; the best nominal candidates are re-scored against the bot's
   // own +/- k tick timing error (worst case), as a player who knows how precise
   // they are would.
-  function evaluate(candidates, start, tick0, obstacles, horizonEnd, forced, keep) {
-    for (const c of candidates) { c.outcome = simulate(start, tick0, obstacles, c.targets, c.delay, c.hold, horizonEnd, forced, 0); c.value = score(c.outcome); }
+  function evaluate(candidates, start, tick0, obstacles, horizonEnd, forced, keep, table) {
+    for (const c of candidates) { c.outcome = simulate(start, tick0, obstacles, c.targets, c.delay, c.hold, horizonEnd, forced, 0, table); c.value = score(c.outcome); }
     candidates.sort((a, b) => b.value - a.value);
     if (robustTicks > 0) {
       const top = candidates.slice(0, keep).filter((c) => c.outcome.alive);
       for (const c of top) {
         for (const timing of [robustTicks, -robustTicks]) {
-          const other = simulate(start, tick0, obstacles, c.targets, c.delay, c.hold, horizonEnd, forced, timing);
+          const other = simulate(start, tick0, obstacles, c.targets, c.delay, c.hold, horizonEnd, forced, timing, table);
           c.outcome = { alive: c.outcome.alive && other.alive, survived: Math.min(c.outcome.survived, other.survived), minClear: Math.min(c.outcome.minClear, other.minClear), coins: c.outcome.coins, presses: c.outcome.presses };
         }
         c.value = score(c.outcome);
@@ -283,7 +290,7 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
       const local = model.geometry(index, tick0);
       const x = model.xAt(index, tick0);
       if (x + local.width < physics.chikunX - 40) { known.delete(index); continue; }
-      obstacles.push({ index, family: local.family, width: local.width });
+      obstacles.push({ index, family: local.family, width: local.width, base: model.base(index), local: model.isStatic(index) ? local : null });
     }
     const hold = currentTarget;
     if (obstacles.length === 0) return { targets: [holdAltitude()], delay: 0, hold, obstacles };
@@ -291,6 +298,10 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
     let horizonEnd = tick0;
     while (horizonEnd < tick0 + MAX_HORIZON && model.xAt(last.index, horizonEnd) + last.width >= physics.chikunX - 40) horizonEnd += 1;
     horizonEnd = Math.min(tick0 + MAX_HORIZON, horizonEnd + TAIL_TICKS);
+    const lo = tick0 - robustTicks - 1;
+    const dist = new Float64Array(horizonEnd + robustTicks + 2 - lo);
+    for (let i = 0; i < dist.length; i += 1) dist[i] = model.distance(lo + i);
+    const table = { dist, lo };
     const forced = pending !== null && pending >= tick0 ? pending : null;
     // Level 1: the first obstacle's target and when to start acting.
     const first = [];
@@ -298,12 +309,12 @@ export function createChikunBot({ profile, seed = 1, course, physics = CHIKUN_V5
       if (delay > 0 && target === hold) continue;
       first.push({ targets: [target], delay, hold });
     }
-    let beam = evaluate(first, start, tick0, obstacles, horizonEnd, forced, 12);
+    let beam = evaluate(first, start, tick0, obstacles, horizonEnd, forced, 12, table);
     // Later levels: one more target per known obstacle, from the best three.
     for (let level = 1; level < obstacles.length && level < 3; level += 1) {
       const next = [];
       for (const node of beam.slice(0, 3)) for (const target of TARGETS) next.push({ targets: [...node.targets, target], delay: node.delay, hold });
-      beam = evaluate(next, start, tick0, obstacles, horizonEnd, forced, 8);
+      beam = evaluate(next, start, tick0, obstacles, horizonEnd, forced, 8, table);
     }
     const best = beam[0];
     return { targets: best.targets, delay: best.delay, hold, obstacles };
