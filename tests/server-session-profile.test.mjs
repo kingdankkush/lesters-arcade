@@ -68,33 +68,47 @@ test('profile documents are bounded and profile sync needs the database, a sessi
   assert.equal(doc.runHistory[0].envelopeHash, 'a'.repeat(64));
   assert.deepEqual(doc.achievements, ['a', 'b']);
   assert.deepEqual(doc.preferences, { theme: 'dark' });
+  // Guide §5.2 item 5: ISO timestamps, emoji avatars and 0x envelope hashes survive.
+  assert.equal(doc.avatar, '🎮', 'emoji avatars are kept');
+  const iso = sanitizeProfileDocument({ runHistory: [{ sessionId: 'game-session-1', gameId: 'chikun', recordedAt: '2026-09-23T10:05:00.123Z', envelopeHash: `0x${'B'.repeat(64)}` }] }).runHistory[0];
+  assert.equal(iso.recordedAt, '2026-09-23T10:05:00.123Z', 'recordedAt keeps : - T . Z');
+  assert.equal(iso.envelopeHash, `0x${'b'.repeat(64)}`, '0x-prefixed envelope hashes are stored lowercase with 0x');
+  assert.equal(sanitizeProfileDocument({ runHistory: [{ sessionId: 's', gameId: 'g', recordedAt: '2026-09-23T10:05:00Z<img src=x>' }] }).runHistory[0].recordedAt, '2026-09-23T10:05:00Z', 'markup is still stripped');
+  assert.equal(sanitizeProfileDocument({ runHistory: [{ sessionId: 's', gameId: 'g', envelopeHash: `0x${'b'.repeat(63)}` }] }).runHistory[0].envelopeHash, null);
+  assert.equal(sanitizeProfileDocument({ avatar: '👩🏽‍🚀' }).avatar, '👩🏽‍🚀', 'a multi-codepoint emoji avatar within 8 UTF-16 units is kept');
+  assert.equal(sanitizeProfileDocument({ avatar: '🏳️‍🌈👩🏽‍🚀' }).avatar, '🏳️‍🌈', 'avatars are cut at 8 UTF-16 units on a whole character');
+  assert.equal(sanitizeProfileDocument({ avatar: '<b>🎮</b>' }).avatar, 'b🎮b', 'markup characters are dropped from avatars');
 
   assert.equal(neonEndpointFor('postgresql://user:pw@ep-cool-123.us-east-2.aws.neon.tech/neondb?sslmode=require'), 'https://ep-cool-123.us-east-2.aws.neon.tech/sql');
   assert.throws(() => neonEndpointFor('mysql://x'), /postgres/);
   assert.equal(createNeonClient({ connectionString: '' }), null);
 
-  const store = new Map();
-  const calls = [];
-  const client = { async query(sql, params) {
-    calls.push(sql.split(' ')[0]);
-    if (sql.startsWith('CREATE')) return [];
-    if (sql.startsWith('SELECT')) return store.has(params[0]) ? [{ wallet: params[0], document: store.get(params[0]), updated_at: 'now' }] : [];
-    if (sql.startsWith('INSERT')) { store.set(params[0], JSON.parse(params[1])); return [{ wallet: params[0], updated_at: 'now' }]; }
-    throw new Error('unexpected sql');
-  } };
-  assert.equal((await profileRequest({ method: 'GET', query: { wallet: wallet.address } }, { env: {} })).status, 503, 'no database url fails closed');
-  const env = { NEON_DATABASE_URL: 'postgresql://u:p@ep-x.neon.tech/db', SESSION_SECRET: secret };
-  const empty = await profileRequest({ method: 'GET', query: { wallet: wallet.address } }, { env, client });
-  assert.equal(empty.status, 200);
-  assert.equal(empty.body.profile, null);
-  assert.equal((await profileRequest({ method: 'PUT', headers: {}, body: doc }, { env, client })).status, 401);
-  const { token } = issueSessionToken(crypto, { secret, wallet: wallet.address, nowMs: now });
-  const written = await profileRequest({ method: 'PUT', headers: { authorization: `Bearer ${token}` }, body: { ...doc, handle: 'Ace Pilot' } }, { env, client, now: () => now });
-  assert.equal(written.status, 200);
-  assert.equal(written.body.wallet, wallet.address.toLowerCase());
-  const read = await profileRequest({ method: 'GET', query: { wallet: wallet.address.toUpperCase().replace('0X', '0x') } }, { env, client });
-  assert.equal(read.body.profile.handle, 'Ace Pilot');
-  assert.equal(calls.filter((c) => c === 'CREATE').length, 1, 'schema is ensured once per process');
+  // E6 / E7 (contract §4.3.6): the profile is server-derived and PUT accepts
+  // preferences only. The database starts unmigrated: the handler must call
+  // ensureSchema itself (A34).
+  const { buildDeps } = await import('../api/profile.mjs');
+  const { createPgliteClient } = await import('./helpers/pglite-client.mjs');
+  assert.equal((await profileRequest({ method: 'GET', query: { wallet: wallet.address } }, await buildDeps({}))).status, 503, 'no database url fails closed');
+  const client = createPgliteClient();
+  try {
+    const env = { VERCEL_ENV: 'development', SESSION_SECRET: secret };
+    const deps = await buildDeps(env, { db: client, nowMs: now });
+    const empty = await profileRequest({ method: 'GET', query: { wallet: wallet.address } }, deps);
+    assert.equal(empty.status, 200);
+    assert.equal(empty.body.profile.displayName, null);
+    assert.equal((await profileRequest({ method: 'PUT', headers: {}, body: { preferences: {} } }, deps)).status, 401);
+    const { token } = issueSessionToken(crypto, { secret, wallet: wallet.address, nowMs: now, audience: 'lestersarcade:development' });
+    const written = await profileRequest({ method: 'PUT', headers: { authorization: `Bearer ${token}` }, body: { ...doc, handle: 'Ace Pilot', preferences: { selectedCharacterId: 'ace-pilot' } } }, deps);
+    assert.equal(written.status, 200);
+    assert.equal(written.body.wallet, wallet.address.toLowerCase());
+    assert.deepEqual(written.body.preferences, { selectedCharacterId: 'ace-pilot' });
+    const read = await profileRequest({ method: 'GET', query: { wallet: wallet.address.toUpperCase().replace('0X', '0x'), self: '1' }, headers: { authorization: `Bearer ${token}` } }, deps);
+    assert.equal(read.status, 200);
+    assert.equal(read.body.preferences.selectedCharacterId, 'ace-pilot');
+    assert.equal(read.body.profile.displayName, null, 'names are never accepted from the browser');
+  } finally {
+    await client.close();
+  }
 });
 
 test('relayed settlement returns the attestation without a relayer and relays it with one', async () => {

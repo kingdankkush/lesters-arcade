@@ -102,6 +102,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Same-origin API calls (JSON, share cards) are never intercepted or cached.
+  if (url.pathname === '/api' || url.pathname.startsWith('/api/')) return;
   if (request.cache === 'no-store') {
     event.respondWith(fetch(request));
     return;

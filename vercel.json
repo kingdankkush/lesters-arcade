@@ -4,6 +4,63 @@
   "installCommand": "npm install && uv pip install --python \"$(command -v python)\" --target .vercel-python --no-cache -r requirements-vercel.txt",
   "buildCommand": "PYTHONPATH=\"$PWD/.vercel-python\" npm run vercel:build",
   "outputDirectory": "apps/portal",
+  "functions": {
+    "api/settle.mjs": {
+      "maxDuration": 60,
+      "memory": 1024,
+      "includeFiles": "apps/chikun/assets/obstacle-shapes.json"
+    },
+    "api/cron/settle-retry.mjs": {
+      "maxDuration": 60,
+      "memory": 1024,
+      "includeFiles": "apps/chikun/assets/obstacle-shapes.json"
+    },
+    "api/cron/index-chain.mjs": {
+      "maxDuration": 60
+    },
+    "api/settle-status.mjs": {
+      "maxDuration": 15
+    },
+    "api/leaderboard.mjs": {
+      "maxDuration": 10
+    },
+    "api/profile.mjs": {
+      "maxDuration": 10
+    },
+    "api/profile-refresh.mjs": {
+      "maxDuration": 15
+    },
+    "api/verified-session.mjs": {
+      "maxDuration": 10
+    },
+    "api/session.mjs": {
+      "maxDuration": 10
+    },
+    "api/session-nonce.mjs": {
+      "maxDuration": 10
+    },
+    "api/share-page.mjs": {
+      "maxDuration": 10
+    },
+    "api/share-card.mjs": {
+      "maxDuration": 20,
+      "memory": 1024,
+      "includeFiles": "apps/portal/assets/share-cards/**"
+    },
+    "api/ranked-seed.mjs": {
+      "maxDuration": 10
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/settle-retry",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/index-chain",
+      "schedule": "*/5 * * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/dist/chunks/(.*)",
@@ -106,6 +163,37 @@
           "value": "noindex, follow"
         }
       ]
+    },
+    {
+      "source": "/profile/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    },
+    {
+      "source": "/s/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    },
+    {
+      "source": "/owner/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ],
   "rewrites": [
@@ -140,6 +228,38 @@
     {
       "source": "/",
       "destination": "/index.html"
+    },
+    {
+      "source": "/s/:id([0-9a-fA-F]{64})",
+      "destination": "/api/share-page?id=:id"
+    },
+    {
+      "source": "/profile/:wallet(0x[0-9a-fA-F]{40})",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/api/session/nonce",
+      "destination": "/api/session-nonce"
+    },
+    {
+      "source": "/api/session/:id((?:0x)?[0-9a-fA-F]{64})",
+      "destination": "/api/verified-session?id=:id"
+    },
+    {
+      "source": "/api/settle/status",
+      "destination": "/api/settle-status"
+    },
+    {
+      "source": "/api/profile/refresh",
+      "destination": "/api/profile-refresh"
+    },
+    {
+      "source": "/api/ranked/seed",
+      "destination": "/api/ranked-seed"
+    },
+    {
+      "source": "/api/share-card/:id([0-9a-fA-F]{64}).png",
+      "destination": "/api/share-card?id=:id"
     },
     {
       "source": "/games/:path*",

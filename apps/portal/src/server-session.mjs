@@ -80,14 +80,39 @@ export function verifySessionToken(crypto, { secret, token, nowMs = Date.now() }
 // dropped so a client cannot stash arbitrary data server-side.
 export const PROFILE_DOCUMENT_LIMITS = Object.freeze({ handle: 18, avatar: 8, runHistory: 50, achievements: 200, preferencesBytes: 2_048 });
 
+// ISO-8601 timestamps keep their digits and : - T . Z (+ for offsets).
+function isoText(value) {
+  return String(value ?? '').replace(/[^0-9TZ:.+\-]/g, '').slice(0, 40);
+}
+
+// Avatars may be emoji, including multi-codepoint sequences (ZWJ, skin
+// tones, flags), up to the limit in UTF-16 units, cut on a whole character.
+function avatarText(value, maxUnits) {
+  const cleaned = String(value ?? '').replace(/[^\p{L}\p{N}\p{Extended_Pictographic}\p{Emoji_Component}‍️ _.'\-]/gu, '');
+  let out = '';
+  for (const { segment } of new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(cleaned)) {
+    if (out.length + segment.length > maxUnits) break;
+    out += segment;
+  }
+  return out;
+}
+
+// A bare 64-hex hash stays bare; a 0x-prefixed one keeps its 0x. Both are
+// stored lowercase.
+function envelopeHashText(value) {
+  const text = String(value ?? '');
+  if (/^0x[0-9a-f]{64}$/i.test(text)) return `0x${text.slice(2).toLowerCase()}`;
+  return /^[0-9a-f]{64}$/i.test(text) ? text.toLowerCase() : null;
+}
+
 export function sanitizeProfileDocument(input = {}) {
   const text = (value, max) => String(value ?? '').replace(/[^\p{L}\p{N} _.'\-]/gu, '').slice(0, max);
   const runs = Array.isArray(input.runHistory) ? input.runHistory.slice(0, PROFILE_DOCUMENT_LIMITS.runHistory) : [];
   const runHistory = runs.map((run) => ({
     sessionId: text(run?.sessionId, 64), gameId: text(run?.gameId, 32), mode: text(run?.mode, 16),
-    score: Math.max(0, Math.round(Number(run?.score) || 0)), recordedAt: text(run?.recordedAt, 40),
+    score: Math.max(0, Math.round(Number(run?.score) || 0)), recordedAt: isoText(run?.recordedAt),
     kills: Math.max(0, Math.round(Number(run?.kills) || 0)), elapsedSeconds: Math.max(0, Math.round(Number(run?.elapsedSeconds) || 0)),
-    envelopeHash: /^[0-9a-f]{64}$/i.test(String(run?.envelopeHash ?? '')) ? String(run.envelopeHash).toLowerCase() : null,
+    envelopeHash: envelopeHashText(run?.envelopeHash),
   })).filter((run) => run.sessionId && run.gameId);
   const achievements = Array.isArray(input.achievements) ? [...new Set(input.achievements.map((id) => text(id, 64)).filter(Boolean))].slice(0, PROFILE_DOCUMENT_LIMITS.achievements) : [];
   let preferences = {};
@@ -97,7 +122,7 @@ export function sanitizeProfileDocument(input = {}) {
   } catch { preferences = {}; }
   return {
     handle: text(input.handle, PROFILE_DOCUMENT_LIMITS.handle),
-    avatar: text(input.avatar, PROFILE_DOCUMENT_LIMITS.avatar),
+    avatar: avatarText(input.avatar, PROFILE_DOCUMENT_LIMITS.avatar),
     xp: Math.max(0, Math.round(Number(input.xp) || 0)),
     rank: text(input.rank, 32),
     totalPaidRuns: Math.max(0, Math.round(Number(input.totalPaidRuns) || 0)),

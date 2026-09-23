@@ -1,60 +1,102 @@
-// Cross-device profile sync (owner decision 2026-09-16: hosted database).
-// GET  /api/profile?wallet=0x...        -> public profile document (no token)
-// PUT  /api/profile  Authorization: Bearer <session token>  body: document
-// Storage is Neon (Vercel Postgres) over its HTTP SQL endpoint; without
-// NEON_DATABASE_URL the endpoint answers 503 and the browser stays local.
+// E6 / E6s / E7 /api/profile (contract §4.3.6, A29, A34, D3).
+//
+// GET  /api/profile?wallet=0x…          public, server-derived, CDN-cached
+// GET  /api/profile?wallet=0x…&self=1   the wallet's own view: Bearer for the
+//                                       same wallet, always private, no-store
+// PUT  /api/profile                     Bearer; preferences only, merged by
+//                                       top-level key into the stored document
+//
+// Names and avatars come only from PlayerProfileRegistry (mirrored by E8 and
+// the E12 indexer); stats, runs and achievements come only from verified
+// sessions. The browser never writes any of them.
 
-import { createHmac, timingSafeEqual } from 'node:crypto';
-import { sanitizeProfileDocument, verifySessionToken } from '../apps/portal/src/server-session.mjs';
-import { createNeonClient, ensureProfileSchema, readProfile, writeProfile } from '../apps/portal/src/server-neon.mjs';
+import { makeHandler, verifyBearer } from '../server/http.mjs';
+import { buildBaseDeps } from '../server/config.mjs';
+import { ensureSchema } from '../server/neon/migrations.mjs';
+import { readPublicProfile, writePreferences } from '../server/neon/queries.mjs';
+import { PREFERENCES_MAX_BYTES, sanitizePreferences } from '../server/profile/sanitize.mjs';
 
-const crypto = { createHmac, timingSafeEqual };
-const HEX_ADDRESS = /^0x[a-fA-F0-9]{40}$/;
-const MAX_BODY_BYTES = 64 * 1024;
-let schemaReady = false;
+export const PROFILE_QUERY = Object.freeze({ GET: Object.freeze(['wallet', 'self']), PUT: Object.freeze([]) });
+export const PUBLIC_PROFILE_CACHE = 'public, s-maxage=10, stale-while-revalidate=30';
+export const SELF_PROFILE_CACHE = 'private, no-store';
+export const PROFILE_PUT_MAX_BYTES = 4096;
+const WALLET = /^0x[0-9a-fA-F]{40}$/;
 
-export function readProfileConfig(env = process.env) {
-  return Object.freeze({ databaseUrl: env.NEON_DATABASE_URL ?? '', secret: env.SESSION_SECRET ?? '' });
+const cache = {};
+
+export async function buildDeps(env = process.env, overrides = {}) {
+  return buildBaseDeps(env, overrides, cache);
 }
 
-export async function profileRequest({ method, query = {}, headers = {}, body = null }, { env = process.env, fetchImpl = globalThis.fetch, now = () => Date.now(), client = null } = {}) {
-  const config = readProfileConfig(env);
-  const db = client ?? createNeonClient({ connectionString: config.databaseUrl, fetchImpl });
-  if (!db) return { status: 503, body: { ok: false, error: 'profile-sync-not-configured' } };
-  if (!schemaReady) { await ensureProfileSchema(db); schemaReady = true; }
-  if (method === 'GET') {
-    const wallet = String(query.wallet ?? '').toLowerCase();
-    if (!HEX_ADDRESS.test(wallet)) return { status: 400, body: { ok: false, error: 'invalid-wallet' } };
-    const row = await readProfile(db, wallet);
-    return { status: 200, body: { ok: true, wallet, profile: row?.document ?? null, updatedAt: row?.updated_at ?? null } };
-  }
-  if (method === 'PUT') {
-    if (config.secret.length < 32) return { status: 503, body: { ok: false, error: 'session-not-configured' } };
-    const token = String(headers.authorization ?? headers.Authorization ?? '').replace(/^Bearer\s+/i, '');
-    const session = verifySessionToken(crypto, { secret: config.secret, token, nowMs: now() });
-    if (!session) return { status: 401, body: { ok: false, error: 'invalid-session' } };
-    if (!body || typeof body !== 'object') return { status: 400, body: { ok: false, error: 'invalid-body' } };
-    const document = sanitizeProfileDocument(body);
-    const row = await writeProfile(db, session.wallet, document);
-    return { status: 200, body: { ok: true, wallet: session.wallet, updatedAt: row?.updated_at ?? null, profile: document } };
-  }
-  return { status: 405, body: { ok: false, error: 'method-not-allowed' } };
+const result = (status, body, cacheControl = 'no-store') => ({ status, body, headers: { 'Cache-Control': cacheControl } });
+const fail = (status, error, cacheControl = 'no-store') => result(status, { ok: false, error }, cacheControl);
+
+function isSelfView(query) {
+  return query.self !== undefined;
 }
 
-export default async function handler(req, res) {
-  let body = req.body;
-  if (typeof body === 'string') {
-    if (body.length > MAX_BODY_BYTES) { res.status(413).json({ ok: false, error: 'body-too-large' }); return; }
-    try { body = JSON.parse(body); } catch { res.status(400).json({ ok: false, error: 'invalid-json' }); return; }
+// Runs before the body is read (A30): E7 and the self view need a Bearer.
+async function authorize(request, deps) {
+  if (request.method === 'PUT') {
+    if (!deps.config.session.configured) return fail(503, 'session-not-configured');
+    if (!verifyBearer(request.headers, deps)) return fail(401, 'invalid-session');
   }
-  const query = req.query ?? Object.fromEntries(new URL(req.url ?? '/', 'http://local').searchParams);
-  let result;
-  try {
-    result = await profileRequest({ method: req.method, query, headers: req.headers ?? {}, body });
-  } catch (error) {
-    result = { status: 502, body: { ok: false, error: 'profile-store-error', detail: String(error?.message ?? error).slice(0, 200) } };
+  if (request.method === 'GET' && isSelfView(request.query) && !verifyBearer(request.headers, deps)) {
+    return fail(401, 'invalid-session', SELF_PROFILE_CACHE);
   }
-  res.setHeader('Cache-Control', 'no-store');
-  if (result.status === 405) res.setHeader('Allow', 'GET, PUT');
-  res.status(result.status).json(result.body);
+  return null;
 }
+
+async function readProfile({ query = {}, headers = {} }, deps) {
+  const rawWallet = String(query.wallet ?? '');
+  const self = isSelfView(query);
+  const errorCache = self ? SELF_PROFILE_CACHE : 'no-store';
+  if (!WALLET.test(rawWallet)) return fail(400, 'invalid-wallet', errorCache);
+  const wallet = rawWallet.toLowerCase();
+  if (self) {
+    if (query.self !== '1') return fail(400, 'invalid-query', SELF_PROFILE_CACHE);
+    const session = verifyBearer(headers, deps);
+    if (!session || session.wallet !== wallet) return fail(401, 'invalid-session', SELF_PROFILE_CACHE);
+  }
+  if (!deps.db) return fail(503, 'index-not-configured', errorCache);
+  await ensureSchema(deps.db);
+  const profile = await readPublicProfile(deps.db, wallet, { self, nowMs: deps.nowMs() });
+  return result(200, profile, self ? SELF_PROFILE_CACHE : PUBLIC_PROFILE_CACHE);
+}
+
+async function writeProfilePreferences({ headers = {}, body = null }, deps) {
+  if (!deps.config.session.configured) return fail(503, 'session-not-configured');
+  const session = verifyBearer(headers, deps);
+  if (!session) return fail(401, 'invalid-session');
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return fail(400, 'invalid-body');
+  const preferences = sanitizePreferences(body.preferences);
+  if (!preferences) return fail(400, 'invalid-body');
+  if (!deps.db) return fail(503, 'index-not-configured');
+  await ensureSchema(deps.db);
+  const saved = await writePreferences(deps.db, session.wallet, preferences, { maxBytes: PREFERENCES_MAX_BYTES });
+  if (!saved) return result(400, { ok: false, error: 'invalid-body', detail: 'preferences-too-large' });
+  return result(200, { ok: true, wallet: session.wallet, preferences: saved.preferences, updatedAt: saved.updatedAt });
+}
+
+// The pure request function (kept under its historical name).
+export async function profileRequest(request = {}, deps) {
+  const method = String(request.method ?? 'GET').toUpperCase();
+  if (method === 'GET') return readProfile(request, deps);
+  if (method === 'PUT') return writeProfilePreferences(request, deps);
+  return { status: 405, body: { ok: false, error: 'method-not-allowed' }, headers: { 'Cache-Control': 'no-store', Allow: 'GET, PUT' } };
+}
+
+const adapter = makeHandler({
+  label: 'profile',
+  methods: ['GET', 'PUT'],
+  query: PROFILE_QUERY,
+  maxBytes: PROFILE_PUT_MAX_BYTES,
+  auth: authorize,
+  run: profileRequest,
+});
+
+export function createHandler(depsFactory) {
+  return adapter(depsFactory);
+}
+
+export default createHandler(() => buildDeps());

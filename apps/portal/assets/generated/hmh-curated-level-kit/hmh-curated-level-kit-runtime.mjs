@@ -138,6 +138,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/leaderboard-seed.mjs",
     "apps/portal/src/leaderboard-view.mjs",
     "apps/portal/src/litvm-chain-client.mjs",
+    "apps/portal/src/name-moderation.mjs",
     "apps/portal/src/persistence.mjs",
     "apps/portal/src/portal-content.mjs",
     "apps/portal/src/portal-discovery.mjs",

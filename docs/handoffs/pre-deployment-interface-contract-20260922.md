@@ -320,7 +320,7 @@ seed = deriveRankedSeed({ sessionId, wallet, gameId, seasonId, buildHash, salt }
 - `ensureSchema(db)` follows A34: memoized per process by `db.schemaKey`, a version check first, `migrate` only when behind, the memo cleared on failure. This replaces the `schemaReady` boolean in `api/profile.mjs:14`, which was set per module and never keyed to the database.
 - `CREATE … IF NOT EXISTS` is **not** race-safe in Postgres (concurrent creators can collide on `pg_type` / `pg_class`). `migrate` retries the whole version once on SQLSTATE `42P07`, `42710` or `23505`.
 - **Call rule:** every handler and cron that touches Neon calls `ensureSchema(db)` before its first query (A34). PGlite test helpers must **not** migrate in setup for handler-level tests, so a missing call fails the test.
-- `scripts/neon-migrate.mjs` runs `migrate` with `NEON_DATABASE_URL` from the environment and never prints the URL. In production the migration step is the E12 call in §13 step 8b, because the database URL lives only in Vercel.
+- `scripts/neon-migrate.mjs` runs `migrate` with `NEON_DATABASE_URL` from the environment and never prints the URL. Per §11 rule 13 it is a dry run by default (one `SELECT` on `schema_migrations`, listing the pending versions) and applies only with `--apply --confirm APPLY_MIGRATIONS` (clarified 2026-09-23 by the index fixer). `scripts/moderate-profile.mjs` never migrates: on a schema that is behind it stops before any write. In production the migration step is the E12 call in §13 step 8b, because the database URL lives only in Vercel.
 
 `arcade_profiles` is no longer created or read. Decision D4 is a clean slate, and no production table exists yet (guide §1.1).
 
@@ -748,7 +748,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 - **Self view** `GET /api/profile?wallet=0x…&self=1`: requires a Bearer token for the same wallet (else `401 invalid-session`), and is always `private, no-store`. It is a distinct URL, so the CDN can never serve a cached public body to it.
 - **Errors:** 400 `invalid-wallet` | `invalid-query`; 401 (self view); 503 `index-not-configured`.
 
-**PUT** (Bearer, body at most 4 KB) takes `{ preferences: { selectedCharacterId?: string≤32 matching /^[a-z0-9-]+$/, cosmetics?: { [gameId]: { [slot:/^[a-z-]{1,24}$/]: id≤48 } }, nameClaimDismissed?: boolean } }`. Unknown keys are dropped, and the serialized result must be at most 2,048 bytes.
+**PUT** (Bearer, body at most 4 KB) takes `{ preferences: { selectedCharacterId?: string≤32 matching /^[a-z0-9-]+$/, cosmetics?: { [gameId]: { [slot:/^[a-z-]{1,24}$/]: id≤48 } }, nameClaimDismissed?: boolean } }`. Unknown keys are dropped, and the serialized result must be at most 2,048 bytes. A PUT **merges** its top-level keys into the stored preferences, so a PUT of `{ nameClaimDismissed }` keeps `cosmetics` and `selectedCharacterId`; a key's whole value (for example the full `cosmetics` map) is replaced. The merged document must also fit 2,048 bytes, else `400 invalid-body` with `detail: 'preferences-too-large'` (clarified 2026-09-23 by the index fixer).
 - **200** `{ ok:true, wallet, preferences, updatedAt }`.
 - **Errors:** 400 `invalid-body`; 401 `invalid-session`; 503 `session-not-configured` | `index-not-configured`.
 - Names, avatars, stats, runs and achievements are **never** accepted from the browser.
@@ -772,7 +772,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
   ```
   `standing` is the rank of this session's wallet in each period, only when this session is that wallet's best and the wallet is not `board_excluded`; otherwise null per period.
 - `displayName` and `avatarUri` are null when the profile is `hidden` (A29); blocked names are already null. Consumers fall back to `walletShort`.
-- `stats` is the §6.3 server stats only; `client_claim` and `plausibility` are never included.
+- `stats` is the §6.3 server stats only, as the headline subset (§6.3: "the `stats` subset in E5, E6 and E9 rows"); `client_claim` and `plausibility` are never included.
 - `verification`: `'replay'` for Chikun and STACKED, `'plausibility'` for HMH, `'chain-index'` for rows the indexer created.
 - `cardRev`: the card revision of §7.5, so the share page can build the versioned `og:image`.
 - **Errors:** 404 `session-not-found`; 400 `invalid-session-id` | `invalid-query`; 503.
@@ -786,6 +786,7 @@ These are specified in §7.5. Unknown ids return 404 HTML with generic OG tags (
 
 - **Auth:** `Authorization: Bearer ${CRON_SECRET}` compared per A24; a missing secret or mismatch gives `401 unauthorized`. Deployment status not `deployed` gives `200 {ok:true, skipped:'not-deployed'}`.
 - **Migration first:** `migrate(db)` runs before indexing, and the response reports `schemaVersion` (A34, §13 step 8b).
+- **Registry address (§9.2):** on a `deployed` deployment, after the migration, an absent or malformed `RANKED_SCORE_REGISTRY_ADDRESS` gives `503 settlement-not-configured` (`detail: 'RANKED_SCORE_REGISTRY_ADDRESS'`) and one that differs from `LITVM_DEPLOYMENT.addresses.scoreSubmissionRegistry` gives `503 address-mismatch`; both bodies still carry `schemaVersion` and nothing is indexed. Local stacks that call E12 set the variable (clarified 2026-09-23 by the index fixer).
 - **Work** proceeds in chunks of at most 5,000 blocks and at most 10 chunks per call, within a 45 s time budget, from `indexer_state['litvm-4441'].last_block + 1`. Before the first run the start is `LITVM_DEPLOYMENT.startBlock`, or `INDEX_START_BLOCK` when set. `last_block` is updated after each chunk.
 - **Every `getLogs` call carries an explicit `address` filter** for its stream: the score registry for `ScoreSubmitted`, the three collection addresses for `AchievementUnlocked`, and `PlayerProfileRegistry` for the profile events. Anyone can deploy a contract that emits the same topic0, so an unfiltered query is a bug; a test feeds decoy logs from another address and asserts they are ignored. Logs handled:
   - `ScoreSubmitted` on the score registry:
@@ -873,22 +874,24 @@ Add these top-level keys. Keep every existing entry, including the pinned `"/(pr
 ]
 ```
 
-Append these rewrites **before** the existing `"/games/:path*"` entry. Order matters: `nonce` must come before `:shareId`.
+Append these rewrites **before** the existing `"/games/:path*"` entry. Order matters: `nonce` must come before `:id`.
 
 ```json
-{ "source": "/s/:shareId([0-9a-fA-F]{64})", "destination": "/api/share-page?id=:shareId" },
+{ "source": "/s/:id([0-9a-fA-F]{64})", "destination": "/api/share-page?id=:id" },
 { "source": "/profile/:wallet(0x[0-9a-fA-F]{40})", "destination": "/index.html" },
 { "source": "/api/session/nonce", "destination": "/api/session-nonce" },
-{ "source": "/api/session/:shareId((?:0x)?[0-9a-fA-F]{64})", "destination": "/api/verified-session?id=:shareId" },
+{ "source": "/api/session/:id((?:0x)?[0-9a-fA-F]{64})", "destination": "/api/verified-session?id=:id" },
 { "source": "/api/settle/status", "destination": "/api/settle-status" },
 { "source": "/api/profile/refresh", "destination": "/api/profile-refresh" },
 { "source": "/api/ranked/seed", "destination": "/api/ranked-seed" },
-{ "source": "/api/share-card/:shareId([0-9a-fA-F]{64}).png", "destination": "/api/share-card?id=:shareId" }
+{ "source": "/api/share-card/:id([0-9a-fA-F]{64}).png", "destination": "/api/share-card?id=:id" }
 ```
 
-Vercel appends the original query string (`?v=<rev>`) to a rewrite destination; `tests/vercel-routing.test.mjs` pins that the card handler reads `v` from the query.
+**Name each captured param after the destination query key** (amended 2026-09-23 by the index fixer). Vercel's router (`@vercel/routing-utils` `replaceSegments`) appends every named source param that the destination pathname does not use and the destination query does not already carry, as `name=$n`. The first draft's `:shareId` → `?id=:shareId` therefore compiled to `/api/verified-session?id=$1&shareId=$1`, and every handler answers an undeclared `shareId` with `400 invalid-query`. With `:id` the compiled destinations carry only `id` (checked with `getTransformedRoutes` from vercel CLI 59.14.0 and 59.25.4, which also confirms path-to-regexp 6 accepts every constrained `:param(...)` form above).
 
-If a live check shows path-to-regexp rejects a constrained `:param(...)` form, use Vercel's regex form (`"^/s/(?<shareId>[0-9a-fA-F]{64})$"` → `"/api/share-page?id=$shareId"`) and pin the chosen form in `tests/vercel-routing.test.mjs`.
+Vercel merges the original query string (`?v=<rev>`) into a rewrite destination; `tests/vercel-routing.test.mjs` pins the compiled routes, that no `/api/` destination gains an undeclared query key, and that the card handler receives `v` from the original query.
+
+Do **not** use Vercel's regex source form as a fallback: the router rejects `"^/s/(?<shareId>[0-9a-fA-F]{64})$"` with `invalid_rewrite` ("invalid `source` pattern").
 
 Headers to add:
 - `X-Robots-Tag: noindex, follow` for `/profile/(.*)`, `/s/(.*)` (share pages are shared links, not index targets) and `/owner/(.*)`.
