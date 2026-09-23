@@ -218,10 +218,18 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   const explorerUrl = confirmed && typeof session.explorerUrl === 'string' && EXPLORER_TX.test(session.explorerUrl) ? session.explorerUrl : null;
   const headlineStats = (SUMMARY[gameId] ?? (() => ''))(stats);
 
-  const title = confirmed ? `${handle} scored ${score} in ${gameTitle}` : `${handle}'s ${gameTitle} run is publishing to LitVM`;
+  // A `failed` row may be retrying or dead-lettered, and E9 does not say
+  // which, so its copy promises nothing: "not on LitVM yet". It keeps the
+  // §7.5 badge, like every other unconfirmed status.
+  const failed = session.status === 'failed';
+  const title = confirmed ? `${handle} scored ${score} in ${gameTitle}`
+    : failed ? `${handle}'s ${gameTitle} run is not on LitVM yet` : `${handle}'s ${gameTitle} run is publishing to LitVM`;
   const description = confirmed
     ? `Verified on LitVM · ${standing ? `${standing} · ` : ''}${headlineStats}. Can you beat it? Play free or Ranked at Lester's Arcade.`
-    : `Publishing to LitVM… ${score} pts · ${headlineStats}. Play free or Ranked at Lester's Arcade.`;
+    : `${failed ? 'Not on LitVM yet ·' : 'Publishing to LitVM…'} ${score} pts · ${headlineStats}. Play free or Ranked at Lester's Arcade.`;
+  const pendingNote = failed
+    ? 'The arcade server verified this run. It is not on LitVM yet.'
+    : 'The arcade server verified this run and is publishing it to LitVM. This page updates once it is on chain.';
 
   const head = metaTags({
     title, description, url: pageUrl, image: cardUrl,
@@ -250,7 +258,7 @@ ${confirmed
     ? `<p class="status verified">✓ Verified on LitVM</p>
 <p class="note">${escapeHtml(VERIFICATION_NOTE[session.verification] ?? VERIFICATION_NOTE.replay)}${explorerUrl ? ` <a href="${escapeHtml(explorerUrl)}" rel="noopener noreferrer">View the transaction on the LiteForge explorer</a>` : ''}</p>`
     : `<p class="status pending">Publishing to LitVM…</p>
-<p class="note">The arcade server verified this run and is publishing it to LitVM. This page updates once it is on chain.</p>`}
+<p class="note">${escapeHtml(pendingNote)}</p>`}
 <h2>Run stats</h2>
 <dl>${statRows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl>
 ${achievements.length ? `<h2>Achievements earned</h2>\n<ul>${achievements.join('')}</ul>` : ''}

@@ -110,13 +110,23 @@ test('unpublished runs say publishing, with no transaction link', async () => {
     for (const status of ['signed', 'submitted', 'failed']) {
       const { shareId } = await seedRun(db, { status });
       const { html, headers } = await page(db, `/api/share-page?id=${shareId}`);
-      assert.match(html, /Publishing to LitVM…/, status);
+      assert.match(html, /<p class="status pending">Publishing to LitVM…<\/p>/, `${status}: the §7.5 badge`);
       assert.doesNotMatch(html, /Verified on LitVM/i, status);
       assert.doesNotMatch(html, /liteforge\.explorer\.caldera\.xyz\/tx\//, `${status}: no transaction link`);
       assert.match(html, /<meta name="robots" content="noindex">/, status);
       assert.equal(headers['x-robots-tag'], 'noindex', status);
-      assert.match(meta(html, 'og:title'), /is publishing to LitVM$/);
-      assert.match(meta(html, 'og:description'), /^Publishing to LitVM… 48,210 pts/);
+      if (status === 'failed') {
+        // A failed row may be dead-lettered (E9 does not say), so nothing
+        // promises it will reach the chain.
+        assert.doesNotMatch(html, /updates once it is on chain|is publishing it/, 'failed: no promise of progress');
+        assert.match(html, /<p class="note">The arcade server verified this run\. It is not on LitVM yet\.<\/p>/);
+        assert.match(meta(html, 'og:title'), /run is not on LitVM yet$/);
+        assert.match(meta(html, 'og:description'), /^Not on LitVM yet · 48,210 pts/);
+      } else {
+        assert.match(html, /is publishing it to LitVM\. This page updates once it is on chain\./, status);
+        assert.match(meta(html, 'og:title'), /is publishing to LitVM$/);
+        assert.match(meta(html, 'og:description'), /^Publishing to LitVM… 48,210 pts/);
+      }
     }
     // A pending row is not a public record yet: 404.
     const pending = await seedRun(db, { status: 'pending' });
@@ -184,8 +194,8 @@ test('unknown ids render a 404 with generic tags', async () => {
     assert.equal(meta(response.html, 'og:url'), 'https://lestersarcade.io/');
     assert.match(response.html, /<meta name="robots" content="noindex">/);
     assert.doesNotMatch(response.html, /Verified on LitVM/);
-    // Only `id` is accepted; anything else is a 400 page.
-    for (const url of [`/api/share-page?id=${'0f'.repeat(32)}&utm_source=x`, '/api/share-page?id=session-1', '/api/share-page']) {
+    // A missing, invalid or conflicting id is a 400 page, extra parameters or not.
+    for (const url of ['/api/share-page?id=session-1', '/api/share-page', '/api/share-page?utm_source=x', `/api/share-page?id=session-1&fbclid=abc`, `/api/share-page?id=${'0f'.repeat(32)}&id=${'0e'.repeat(32)}`]) {
       const bad = await page(db, url);
       assert.equal(bad.status, 400, url);
       assert.equal(meta(bad.html, 'twitter:site'), '@LestersArcade', url);
@@ -204,6 +214,60 @@ test('unknown ids render a 404 with generic tags', async () => {
     assert.equal(meta(res.text, 'og:image'), 'https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png');
     assert.equal(res.headers['cache-control'], 'no-store');
   } finally {
+    await db.close();
+  }
+});
+
+test('extra parameters on a run link (fbclid, utm_*) redirect once to the canonical page, without a read', async () => {
+  // Facebook appends fbclid to every outbound click and Vercel keeps the
+  // query through the /s/:id rewrite. The page answers a cacheable 301 to the
+  // canonical URL instead of an error, and never reads or renders for it.
+  const shareId = 'ab'.repeat(32);
+  const reads = [];
+  const noReads = { schemaKey: 'no-reads', query: async (sql) => { reads.push(sql); throw new Error('the redirect must not read'); } };
+  for (const url of [
+    `/api/share-page?id=${shareId}&fbclid=IwAR0abc`,
+    `/api/share-page?id=${shareId}&utm_source=x&utm_medium=social`,
+    `/api/share-page?fbclid=1&id=0x${shareId.toUpperCase()}`,
+    `/api/share-page?id=${shareId}&id=${shareId}&v=1`,
+  ]) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await page(noReads, url, method);
+      assert.equal(response.status, 301, `${method} ${url}`);
+      assert.equal(response.headers.location, `/s/${shareId}`, url);
+      assert.equal(response.headers['cache-control'], sharePageApi.CANONICAL_REDIRECT_CACHE, url);
+      assert.equal(response.html, '', 'no body');
+    }
+  }
+  assert.equal(sharePageApi.CANONICAL_REDIRECT_CACHE, 'public, s-maxage=300');
+  assert.deepEqual(reads, []);
+  // Vercel passes the merged query as req.query too.
+  const res = fakeResponse();
+  await sharePageApi.createHandler(() => sharePageApi.buildDeps(env, { db: noReads }))({ method: 'GET', url: `/s/${shareId}?fbclid=x`, query: { id: shareId, fbclid: 'x' }, headers: {} }, res);
+  assert.deepEqual([res.statusCode, res.headers.location], [301, `/s/${shareId}`]);
+  assert.equal(sharePageApi.canonicalSharePath({ query: { id: [shareId, shareId], utm_source: 'x' } }), `/s/${shareId}`);
+  assert.equal(sharePageApi.canonicalSharePath({ query: { id: [shareId, 'cd'.repeat(32)] } }), null);
+  assert.equal(sharePageApi.canonicalSharePath({ url: '/api/share-page?fbclid=1' }), null);
+});
+
+test('a failing read answers a 500 page and logs only the error name and code', async () => {
+  const db = createPgliteClient();
+  const logged = [];
+  const original = console.error;
+  console.error = (...args) => { logged.push(args); };
+  try {
+    const { shareId } = await seedRun(db);
+    const failure = Object.assign(new Error('connect postgres://arcade:hunter2-secret@db.example/neon failed'), { name: 'NeonDbError', code: '57P01' });
+    const failing = { schemaKey: db.schemaKey, query: (sql, params) => (/FROM verified_sessions vs/.test(sql) ? Promise.reject(failure) : db.query(sql, params)) };
+    const response = await page(failing, `/api/share-page?id=${shareId}`);
+    assert.equal(response.status, 500);
+    assert.equal(response.headers['cache-control'], 'no-store');
+    assert.equal(response.headers['content-type'], 'text/html; charset=utf-8');
+    assert.equal(meta(response.html, 'og:image'), 'https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png', 'generic tags');
+    assert.doesNotMatch(response.html, /hunter2|postgres:\/\/|NeonDbError/);
+    assert.deepEqual(logged, [['[share-page] internal-error', 'NeonDbError', '57P01']]);
+  } finally {
+    console.error = original;
     await db.close();
   }
 });
