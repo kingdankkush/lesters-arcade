@@ -17,8 +17,10 @@
 // with piped stdio), never as an argument, and is never printed. Before anything is written it runs
 // `vercel env ls` for production, preview and development and refuses to continue if a legacy name
 // (VERIFIER_PRIVATE_KEY, RELAYER_PRIVATE_KEY, SCORE_REGISTRY_ADDRESS) exists anywhere, printing only the
-// names. The dry run (default) reads and checks the inputs and prints names only. After applying, it
-// lists production again and checks every new name is there and no legacy name is.
+// names (the listings are `--format json`, and a listing that cannot be read stops the run). The dry
+// run (default) reads and checks the inputs and prints names only. After applying, it lists production
+// again and checks every new name is there and no legacy name is. --deployment is for dry runs only:
+// --apply always uses the committed address module.
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { existsSync, writeFileSync } from 'node:fs';
@@ -33,12 +35,32 @@ export const LEGACY_SECRET_NAMES = Object.freeze(['VERIFIER_PRIVATE_KEY', 'RELAY
 export const RANKED_SECRET_NAMES = Object.freeze(['RANKED_VERIFIER_PRIVATE_KEY', 'RANKED_RELAYER_PRIVATE_KEY', 'RANKED_SCORE_REGISTRY_ADDRESS', 'CRON_SECRET']);
 export const CHECKED_ENVIRONMENTS = Object.freeze(['production', 'preview', 'development']);
 
-// Names in `vercel env ls` output: the first token of each table row that looks like an env name.
-export function envNamesIn(lsOutput) {
+// `vercel env ls <environment> --format json` (Vercel CLI 59.15+) prints { envs: [{ key, ... }] } on
+// stdout. The human table is not parsed: its names are bold (ANSI) whenever colour is forced, and its
+// layout changes between versions, so a table that parses to nothing would let a legacy name through.
+export const ENV_LS_ARGS = Object.freeze(['--format', 'json']);
+
+export class VercelListingError extends Error {}
+
+// Names from one JSON listing. Fails closed: anything but a well-formed listing throws, and the
+// message never quotes the output (plain-text env values appear in it).
+export function envNamesFromLsJson(stdout) {
+  const text = String(stdout ?? '');
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  let listing = null;
+  if (start >= 0 && end > start) {
+    try {
+      listing = JSON.parse(text.slice(start, end + 1));
+    } catch {
+      listing = null;
+    }
+  }
+  if (!listing || !Array.isArray(listing.envs)) throw new VercelListingError('the output is not a --format json env listing');
   const names = new Set();
-  for (const line of String(lsOutput ?? '').split(/\r?\n/)) {
-    const first = line.trim().split(/\s+/)[0] ?? '';
-    if (/^[A-Z][A-Z0-9_]*$/.test(first)) names.add(first);
+  for (const entry of listing.envs) {
+    if (typeof entry?.key !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(entry.key)) throw new VercelListingError('the listing holds an entry without a valid name');
+    names.add(entry.key);
   }
   return names;
 }
@@ -55,7 +77,8 @@ export function createVercelRunner({ spawnImpl = spawn, command, baseArgs = [], 
   if (scope !== null && !/^[A-Za-z0-9_-]+$/.test(scope)) throw new Error('--scope must be a Vercel team slug');
   return (args, { stdin = null } = {}) => new Promise((resolveRun, rejectRun) => {
     const fullArgs = [...baseArgs, ...args, ...(scope ? ['--scope', scope] : [])];
-    const options = { stdio: ['pipe', 'pipe', 'pipe'], shell, windowsHide: true, env: process.env };
+    // No colour or decoration in the child's output.
+    const options = { stdio: ['pipe', 'pipe', 'pipe'], shell, windowsHide: true, env: { ...process.env, FORCE_COLOR: '0', NO_COLOR: '1' } };
     let child;
     if (shell) {
       // Through the shell (npx.cmd on Windows) the command line is one string of fixed, validated
@@ -120,11 +143,17 @@ export async function runVercelSecrets({
   writeSecretFile = (path, value) => writeFileSync(path, `${value}\n`, { flag: 'wx', mode: 0o600 }),
   readFile = null,
   log = console.log,
+  // Tests only (the CLI never sets it): lets --apply use a --deployment module against a fake Vercel.
+  allowDeploymentOverride = false,
 } = {}) {
   const apply = hasFlag(argv, '--apply');
   const rotateSession = hasFlag(argv, '--rotate-session-secret');
   if (apply && flagValue(argv, '--confirm') !== VERCEL_APPLY_CONFIRM) {
     log(`Apply blocked: add --confirm ${VERCEL_APPLY_CONFIRM}.`);
+    return 2;
+  }
+  if (apply && flagValue(argv, '--deployment') !== null && !allowDeploymentOverride) {
+    log('Apply blocked: --deployment is for dry runs. --apply always takes RANKED_SCORE_REGISTRY_ADDRESS from the committed address module (LITVM_DEPLOYMENT).');
     return 2;
   }
   const deployment = await loadLitvmDeployment(flagValue(argv, '--deployment'));
@@ -144,13 +173,18 @@ export async function runVercelSecrets({
   // Legacy names must not exist in any environment (A28). Names only are printed.
   const existing = {};
   for (const environment of CHECKED_ENVIRONMENTS) {
-    const listed = await vercel(['env', 'ls', environment]);
+    const command = `vercel env ls ${environment} ${ENV_LS_ARGS.join(' ')}`;
+    const listed = await vercel(['env', 'ls', environment, ...ENV_LS_ARGS]);
     if (listed.code !== 0) {
-      log(`vercel env ls ${environment} failed (exit ${listed.code}); nothing was changed.`);
+      log(`${command} failed (exit ${listed.code}); nothing was changed. The JSON listing needs Vercel CLI 59.15 or newer.`);
       return 1;
     }
-    // The Vercel CLI prints its tables on stdout or stderr depending on the version: read both.
-    existing[environment] = envNamesIn([listed.stdout, listed.stderr].join('\n'));
+    try {
+      existing[environment] = envNamesFromLsJson(listed.stdout);
+    } catch (error) {
+      log(`Refusing to continue: could not read the names from ${command} (${error.message}); nothing was changed.`);
+      return 1;
+    }
   }
   const legacy = CHECKED_ENVIRONMENTS.flatMap((environment) => LEGACY_SECRET_NAMES.filter((name) => existing[environment].has(name)).map((name) => `${environment}:${name}`));
   if (legacy.length > 0) {
@@ -180,8 +214,14 @@ export async function runVercelSecrets({
     }
     log(`set ${entry.name} in production.`);
   }
-  const after = await vercel(['env', 'ls', 'production']);
-  const names = envNamesIn([after.stdout, after.stderr].join('\n'));
+  const after = await vercel(['env', 'ls', 'production', ...ENV_LS_ARGS]);
+  let names;
+  try {
+    names = envNamesFromLsJson(after.stdout);
+  } catch (error) {
+    log(`Verification failed: could not read the production listing (${error.message}). Check it by hand with vercel env ls production.`);
+    return 1;
+  }
   const missing = entries.map((entry) => entry.name).filter((name) => !names.has(name));
   const stillLegacy = LEGACY_SECRET_NAMES.filter((name) => names.has(name));
   if (after.code !== 0 || missing.length > 0 || stillLegacy.length > 0) {

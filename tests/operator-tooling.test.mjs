@@ -13,9 +13,9 @@ import { join } from 'node:path';
 import { PassThrough } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
-import { SecretSourceError, flagValue, readSecret } from '../scripts/lib/key-source.mjs';
+import { SecretSourceError, flagValue, looksLikeSecretValue, readSecret } from '../scripts/lib/key-source.mjs';
 import { FEES_OFF_WARNING, OPERATOR_ACTIONS, isLoopbackRpc, operatorHelp, runOperatorAction, runOperatorCli } from '../scripts/operator-actions.mjs';
-import { LEGACY_SECRET_NAMES, VERCEL_APPLY_CONFIRM, defaultVercelCommand, envNamesIn, runVercelSecrets } from '../scripts/vercel-secrets.mjs';
+import { ENV_LS_ARGS, LEGACY_SECRET_NAMES, VERCEL_APPLY_CONFIRM, VercelListingError, defaultVercelCommand, envNamesFromLsJson, runVercelSecrets } from '../scripts/vercel-secrets.mjs';
 import { cronUrl, runLiveCronCli, summarizeCronResponse } from '../scripts/live-cron.mjs';
 import { deployLocalSuite, localContracts, localWalletKeys, serveJsonRpc, startLocalChain } from '../scripts/lib/local-chain.mjs';
 import { deployedDeploymentInput, normalizeDeploymentInput, predictedDeploymentInput, writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
@@ -111,6 +111,33 @@ test('key source reads env names and JSON fields without echoing them', () => {
       return true;
     });
   }
+  // A key or secret pasted where a NAME, path or field belongs is refused without being repeated.
+  const bareHex = key.slice(2);
+  const cronHex = 'ab'.repeat(32);
+  const token = 'Zq9xR2mK7vT4wP8nL3cF6hJ1bD5sG0yA-uE';
+  const pasted = [
+    [{ env: {}, argv: ['--key-env', bareHex] }, /--key-env must be the NAME of an environment variable, not the key itself; the value was not printed/],
+    [{ env: {}, argv: ['--key-env', key] }, /--key-env must be the NAME of an environment variable, not the key itself/],
+    [{ argv: ['--key-file', bareHex] }, /--key-file must be a file path, not the key itself/],
+    [{ argv: ['--key-file', key, '--key-field', 'operator'] }, /--key-file must be a file path, not the key itself/],
+    [{ argv: ['--key-file', file, '--key-field', bareHex] }, /--key-field must be a field name, not the key itself/],
+    [{ env: {}, argv: ['--secret-env', cronHex], shape: 'secret', envFlag: '--secret-env', fileFlag: '--secret-file', fieldFlag: null, label: 'cron secret' }, /--secret-env must be the NAME of an environment variable, not the cron secret itself/],
+    [{ env: {}, argv: ['--secret-env', token], shape: 'secret', envFlag: '--secret-env', fileFlag: '--secret-file', fieldFlag: null, label: 'cron secret' }, /not the cron secret itself/],
+  ];
+  for (const [options, pattern] of pasted) {
+    assert.throws(() => readSecret(options), (error) => {
+      assert.ok(error instanceof SecretSourceError);
+      assert.match(error.message, pattern);
+      assertNoSecret(error.message, [key, cronHex, token], 'error message');
+      return true;
+    });
+  }
+  // Real names, paths and fields are not mistaken for secrets.
+  for (const value of ['RANKED_VERIFIER_PRIVATE_KEY', 'LESTERS_ARCADE_RANKED_RELAYER_PRIVATE_KEY_2026', 'C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt', 'nested.relayer', 'operator']) {
+    assert.equal(looksLikeSecretValue(value), false, value);
+  }
+  assert.equal(readSecret({ env: { LESTERS_ARCADE_RANKED_RELAYER_PRIVATE_KEY_2026: key }, argv: ['--key-env', 'LESTERS_ARCADE_RANKED_RELAYER_PRIVATE_KEY_2026'] }), key);
+
   // The key-source module itself never logs.
   assert.doesNotMatch(readFileSync(join(root, 'scripts', 'lib', 'key-source.mjs'), 'utf8'), /console\./);
 });
@@ -310,8 +337,11 @@ test('a --deployment override broadcasts only to a loopback RPC', async () => {
 });
 
 // A fake `spawn` for the Vercel CLI: records command, args, options and stdin; answers `env ls` from a
-// stateful name table and `env add` by adding the name.
-function fakeVercel({ production = [], preview = [], development = [], failAdd = null } = {}) {
+// stateful name table and `env add` by adding the name. `env ls … --format json` answers like Vercel CLI
+// 59.25 (stdout, `{ envs: [{ key, value?, type, target }] }`, sensitive values omitted, plain values
+// included); `listing: 'ansi-table'` answers with the human table as FORCE_COLOR renders it (bold names).
+const PLAIN_ENV_VALUE = 'https://user:plain-value-never-printed@rpc.example/x';
+function fakeVercel({ production = [], preview = [], development = [], failAdd = null, listing = 'json' } = {}) {
   const tables = { production: new Set(production), preview: new Set(preview), development: new Set(development) };
   const calls = [];
   const spawnImpl = (rawCommand, rawArgs, options) => {
@@ -330,8 +360,16 @@ function fakeVercel({ production = [], preview = [], development = [], failAdd =
       let code = 0;
       if (sub === 'ls') {
         const table = tables[name];
-        // Vercel CLI versions differ on the stream: preview answers on stderr to cover both.
-        (name === 'preview' ? child.stderr : child.stdout).write(`> Environment Variables found for team/lesters-arcade\n\n name                          value      environments   created\n${[...table].map((item) => ` ${item.padEnd(30)} Encrypted  ${name}  1d ago`).join('\n')}\n`);
+        const json = args.includes('--format') && args[args.indexOf('--format') + 1] === 'json';
+        if (listing === 'json' && json) {
+          child.stderr.write('Vercel CLI 59.25.4\n> Retrieving project…\n');
+          const envs = [...table].map((key) => (key === 'RPC_URL'
+            ? { key, value: PLAIN_ENV_VALUE, type: 'plain', target: [name] }
+            : { key, type: 'sensitive', target: [name] }));
+          child.stdout.write(`${JSON.stringify({ envs }, null, 2)}\n`);
+        } else {
+          child.stdout.write(`> Environment Variables found for team/lesters-arcade\n\n name                          value      environments   created\n${[...table].map((item) => ` \x1b[1m${item}\x1b[22m${' '.repeat(Math.max(1, 30 - item.length))}\x1b[90m\x1b[3mHidden\x1b[23m\x1b[39m  ${name}  1d ago`).join('\n')}\n`);
+        }
       } else if (sub === 'add') {
         if (failAdd === name) {
           code = 1;
@@ -354,9 +392,10 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
   writeFileSync(keyFile, JSON.stringify({ verifier: keys.verifier, relayer: { address: chain.wallets.relayer.address, privateKey: keys.relayer } }));
   const cronOut = join(dir, `cron-secret-${Date.now()}.txt`);
   const base = ['--key-file', keyFile, '--deployment', modulePath, '--cron-secret-out', cronOut];
+  // allowDeploymentOverride: these runs apply a --deployment module (the local chain) to a fake Vercel.
   const run = async (argv, fake, options = {}) => {
     const lines = [];
-    const code = await runVercelSecrets({ argv, spawnImpl: fake.spawnImpl, log: (line) => lines.push(String(line)), ...options });
+    const code = await runVercelSecrets({ argv, spawnImpl: fake.spawnImpl, log: (line) => lines.push(String(line)), allowDeploymentOverride: true, ...options });
     return { code, output: lines.join('\n') };
   };
 
@@ -369,11 +408,32 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
   assert.doesNotMatch(blocked.output, /production:RANKED_VERIFIER_PRIVATE_KEY/, 'the new name is not mistaken for the legacy one');
   assert.equal(legacy.calls.some((call) => call.args.includes('add')), false, 'nothing written');
   assert.equal(existsSync(cronOut), false, 'no cron secret generated');
+  for (const call of legacy.calls) {
+    assert.deepEqual(call.args.slice(call.args.indexOf('env') + 3), [...ENV_LS_ARGS], 'every listing is --format json');
+    assert.equal(call.options.env.FORCE_COLOR, '0', 'no colour codes in the child output');
+  }
+
+  // A listing that is not JSON (an old CLI, or the table with FORCE_COLOR bold names) fails closed.
+  const coloured = fakeVercel({ production: ['VERIFIER_PRIVATE_KEY'], listing: 'ansi-table' });
+  const unreadable = await run([...base, '--apply', '--confirm', VERCEL_APPLY_CONFIRM], coloured);
+  assert.equal(unreadable.code, 1);
+  assert.match(unreadable.output, /Refusing to continue: could not read the names from vercel env ls production --format json/);
+  assert.equal(coloured.calls.some((call) => call.args.includes('add')), false, 'nothing written');
+  assert.equal(existsSync(cronOut), false, 'no cron secret generated');
+  assert.equal((await run(base, fakeVercel({ listing: 'ansi-table' }))).code, 1, 'a dry run fails closed too');
+
+  // --apply never takes the registry address from a --deployment override (the CLI never allows it).
+  const override = fakeVercel();
+  const overridden = await run([...base, '--apply', '--confirm', VERCEL_APPLY_CONFIRM], override, { allowDeploymentOverride: false });
+  assert.equal(overridden.code, 2);
+  assert.match(overridden.output, /--deployment is for dry runs/);
+  assert.equal(override.calls.length, 0);
 
   // Dry run: names only, nothing written.
-  const dryFake = fakeVercel({ production: ['SESSION_SECRET', 'NEON_DATABASE_URL'] });
+  const dryFake = fakeVercel({ production: ['SESSION_SECRET', 'NEON_DATABASE_URL', 'RPC_URL'] });
   const dry = await run(base, dryFake);
   assert.equal(dry.code, 0);
+  assert.equal(dry.output.includes('plain-value-never-printed'), false, 'listed plain values are never printed');
   assert.match(dry.output, /would set RANKED_VERIFIER_PRIVATE_KEY in production/);
   assert.match(dry.output, /would set CRON_SECRET in production/);
   assert.match(dry.output, /DRY RUN/);
@@ -441,8 +501,18 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
   assert.match(failed.output, /\[redacted\]/);
   assertNoSecret(failed.output, [keys.relayer], 'failure output');
 
-  // Helpers.
-  assert.deepEqual([...envNamesIn(' RANKED_VERIFIER_PRIVATE_KEY  Encrypted\n VERIFIER_PRIVATE_KEY Encrypted\n> Environment Variables')].sort(), ['RANKED_VERIFIER_PRIVATE_KEY', 'VERIFIER_PRIVATE_KEY']);
+  // Helpers: the JSON listing parser fails closed and never quotes the output.
+  const listingJson = JSON.stringify({ envs: [{ key: 'RANKED_VERIFIER_PRIVATE_KEY', type: 'sensitive' }, { key: 'VERIFIER_PRIVATE_KEY', type: 'encrypted' }, { key: 'RPC_URL', value: PLAIN_ENV_VALUE, type: 'plain' }] });
+  assert.deepEqual([...envNamesFromLsJson(`Vercel CLI 59.25.4\n${listingJson}\n`)].sort(), ['RANKED_VERIFIER_PRIVATE_KEY', 'RPC_URL', 'VERIFIER_PRIVATE_KEY']);
+  assert.deepEqual([...envNamesFromLsJson('{"envs":[]}')], []);
+  const ansiTable = ' \x1b[1mVERIFIER_PRIVATE_KEY\x1b[22m  \x1b[90m\x1b[3mHidden\x1b[23m\x1b[39m  production  1d ago';
+  for (const bad of [ansiTable, ' VERIFIER_PRIVATE_KEY  Encrypted  production', '', '{"envs":{}}', '{"projects":[]}', '{"envs":[{"value":"x"}]}', '{"envs":[{"key":"bad name"}]}', `{"envs":[{"key":"RPC_URL","value":"${PLAIN_ENV_VALUE}"}`]) {
+    assert.throws(() => envNamesFromLsJson(bad), (error) => {
+      assert.ok(error instanceof VercelListingError, JSON.stringify(bad));
+      assert.equal(error.message.includes('plain-value-never-printed'), false);
+      return true;
+    });
+  }
   assert.deepEqual(LEGACY_SECRET_NAMES, ['VERIFIER_PRIVATE_KEY', 'RELAYER_PRIVATE_KEY', 'SCORE_REGISTRY_ADDRESS']);
   assert.equal(defaultVercelCommand().baseArgs[0], 'vercel');
 });
