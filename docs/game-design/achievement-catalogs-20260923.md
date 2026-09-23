@@ -42,8 +42,8 @@
   - `recordScore` adds the run to HMH progress before it resolves unlocks, and the resolver adds the run's own enemy-family kills to the cumulative ones. So `maybeUnlockRunAchievements` passes the family totals from before this run. Before this fix a run's family kills counted twice: 38 goblin-family kills unlocked the 75-kill `goblin-cleanup`.
   - It counts weapons within this run only, as the server does. Before, `weapon-collector` counted weapons across runs.
   - `resolveAchievementUnlocksForRun` also accepts the canonical `weaponIds` (the Scatter Shotgun counts for `spread-ltc-specialist`) and `damageDealt` (`damage-chain`).
-  - `ACHIEVEMENT_TIER_UNLOCK_PCT` gains `mythic: 1`.
-  - The achievement-progress "completed Ranked runs" metric reads HMH progress.
+  - `ACHIEVEMENT_TIER_UNLOCK_PCT` gains `mythic: 1`, and platinum moves from 6 to 9. Every platinum definition is `expert` (-5), so platinum used to floor at 1%, level with mythic and below diamond. Now bronze > silver > gold > platinum (4%) > diamond (2%) > mythic (1%).
+  - The achievement-progress "completed Ranked runs" metric reads HMH progress. `damage-chain` no longer shows a "best damage combo" bar, because the reboot records no damage combo and the achievement now unlocks on damage dealt.
 - **Resolver inputs.** `hmhResolverInputsFromRunSummary(runSummary)` (contract §6.4) feeds the legacy resolver the same facts the server uses:
   - legacy enemy ids per family;
   - `stageIndexReached` from `districtsVisited` (6 → 13, 4 → 8, 2 → 4, else 1);
@@ -298,5 +298,11 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Soak" is the throttl
 
 - **ranked-client slice (brief amendment needed).** Its brief (item 3) names only `hmhResolverInputsFromRunSummary`, which leaves the run totals out. At the `submitCombatGameOver` call site, use `const { score, runStats } = hmhRecordScoreInputsFromRunSummary(runSummary)` and call `recordScore(state, currentSession, score, runStats)`. That passes the §6.4 inputs plus `elapsedSeconds`, `kills`, `powerUpsCollected` and `damageDealt`, so the device-local resolver matches the server. Do not keep the stale `bossId`, `killsByType` and `maxCombo` globals in `main.js`.
 - **index slice.** `readAchievementHistory` must return numbers: cast `count(*)` and every `sum(...)` and `max(...)`, and fill every `historyFieldsFor` path (0 when there are no rows). `deriveEarnedAchievements` throws on strings or missing paths.
+- **`ACHIEVEMENT_DEFINITIONS` text (arcade-core, outside this slice).** Three HMH definitions no longer describe how they unlock:
+  - `damage-chain` says "Built a 250-damage chain" with requirement `maxDamageCombo: 250`; it now unlocks at 20,000 damage dealt in one run;
+  - `spread-ltc-specialist` names "the Spread LTC upgrade"; it now means the Scatter Shotgun;
+  - `weapon-collector` says "across official runs"; it now counts one run.
+
+  A slice that may edit the definitions should align the text and requirements, or profile-boards should show the catalog descriptions (`catalogFor`) for HMH.
 - **HMH child (post-launch).** Record boss-phase damage, a boss-kill tick and a lowest-health mark in the run summary. That makes `no-damage-boss`, `perfect-boss-gauntlet`, `speed-clear` and `lucky-survivor` computable. `no-damage-10-minutes` needs a Ranked end state other than defeat.
 - **Owner at O1.** Confirm or change the edge thresholds above, the `damage-chain` remap and the STACKED estimates. Any change is a follow-up slice for the achievements owner.

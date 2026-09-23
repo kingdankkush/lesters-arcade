@@ -11,7 +11,8 @@ const METRICS = Object.freeze({
   cumulativePowerUps: ['cumulativePowerUps', 'total pickups'],
   cumulativeSeconds: ['cumulativeSeconds', 'total survival seconds'],
   maxCombo: ['maxCombo', 'best combo'],
-  maxDamageCombo: ['maxDamageCombo', 'best damage combo'],
+  // No maxDamageCombo: damage-chain now unlocks on one run's damage dealt
+  // (achievements/hmh.mjs), so a damage-combo bar would measure the wrong thing.
   cumulativeBossKills: ['bossKills', 'total boss kills'],
   perfectBossKills: ['perfectBossKills', 'perfect boss kills'],
 });

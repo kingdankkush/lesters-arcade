@@ -3087,6 +3087,19 @@ test('achievementRarityPct orders rarer tiers lower', () => {
   assert.ok(mythic >= 1);
 });
 
+test('achievementRarityPct keeps every real definition in tier order', async () => {
+  // With the real difficulty nudges (every platinum is 'expert') and the 1% floor,
+  // each tier's most common entry is still rarer than the next tier's rarest.
+  const { ACHIEVEMENT_LIST } = await import('../apps/portal/src/arcade-core.mjs');
+  const tiers = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'mythic'];
+  const pct = Object.fromEntries(tiers.map((tier) => [tier, ACHIEVEMENT_LIST.filter((a) => a.tier === tier).map(achievementRarityPct)]));
+  for (const tier of tiers) assert.ok(pct[tier].length > 0, tier);
+  for (let i = 1; i < tiers.length; i += 1) {
+    assert.ok(Math.max(...pct[tiers[i]]) < Math.min(...pct[tiers[i - 1]]), `${tiers[i]} (${pct[tiers[i]]}) is rarer than ${tiers[i - 1]} (${pct[tiers[i - 1]]})`);
+  }
+  assert.ok(ACHIEVEMENT_LIST.filter((a) => a.tier === 'platinum').every((a) => a.difficulty === 'expert'));
+});
+
 test('roguelike power-ups expose the effect contract the runtime depends on', () => {
   // main.js applyRoguelikePowerUp() switches on `effect` and reads `durationSeconds`
   // for timed buffs. These assertions lock the data contract so a rename/removal

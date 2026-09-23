@@ -6058,8 +6058,10 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
 // Rarer tiers map to a lower simulated "% of players who've unlocked it", so the
 // stats module can surface a believable "top achievement by rarity". Clearly a
 // prototype heuristic until on-chain/global achievement indexing exists.
+// Every platinum definition is 'expert' (-5), so platinum sits at 9 to stay
+// above diamond (2) and mythic (1) after the nudge and the 1% floor.
 const ACHIEVEMENT_TIER_UNLOCK_PCT = Object.freeze({
-  bronze: 62, silver: 34, gold: 15, platinum: 6, diamond: 2, mythic: 1,
+  bronze: 62, silver: 34, gold: 15, platinum: 9, diamond: 2, mythic: 1,
 });
 
 export function achievementRarityPct(achievement) {
