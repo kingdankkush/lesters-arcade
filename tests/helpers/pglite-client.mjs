@@ -11,13 +11,35 @@ import { migrate } from '../../server/neon/migrations.mjs';
 import { periodKeysFor } from '../../server/neon/period-keys.mjs';
 import { INDEX_GAMES } from '../../server/neon/rows.mjs';
 
+// initdb dominates PGlite start-up (about 1 s, several seconds on a busy
+// machine). The first instance's freshly initialised, empty data directory is
+// dumped once per process and every client boots from that dump (about
+// 0.2 s). The dump holds no tables, so every client still starts unmigrated.
+let templateDataDir = null;
+function emptyDataDir() {
+  templateDataDir ??= (async () => {
+    const pg = new PGlite();
+    await pg.waitReady;
+    try {
+      return await pg.dumpDataDir('none');
+    } finally {
+      await pg.close();
+    }
+  })();
+  return templateDataDir;
+}
+
 export function createPgliteClient() {
-  let pg = null;
+  let booting = null;
   let closed = false;
   const ready = () => {
-    if (closed) throw new Error('pglite client is closed');
-    pg ??= new PGlite();
-    return pg;
+    if (closed) return Promise.reject(new Error('pglite client is closed'));
+    booting ??= emptyDataDir().then(async (dump) => {
+      const pg = new PGlite({ loadDataDir: dump });
+      await pg.waitReady;
+      return pg;
+    });
+    return booting;
   };
   return Object.freeze({
     schemaKey: `pglite:${randomUUID()}`,
@@ -25,12 +47,13 @@ export function createPgliteClient() {
       for (const value of params) {
         if (value !== null && typeof value !== 'string') throw new TypeError(`A15: query parameters must be strings or null, got ${typeof value}`);
       }
-      const result = await ready().query(sql, params);
+      const pg = await ready();
+      const result = await pg.query(sql, params);
       return result.rows;
     },
     async close() {
       closed = true;
-      if (pg) await pg.close();
+      if (booting) await (await booting).close();
     },
   });
 }
