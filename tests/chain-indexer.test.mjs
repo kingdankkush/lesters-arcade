@@ -38,7 +38,7 @@ const PLAYER = `0x${'a7'.repeat(20)}`;
 const CATALOG = Object.freeze({
   catalogFor: (gameId) => (gameId === 'chikun' ? [{ id: 'chikun-coast-legend', tier: 'platinum' }, { id: 'chikun-first-flight', tier: 'bronze' }] : []),
 });
-const env = { VERCEL_ENV: 'development', CRON_SECRET: CRON_VALUE };
+const env = { VERCEL_ENV: 'development', CRON_SECRET: CRON_VALUE, RANKED_SCORE_REGISTRY_ADDRESS: '0xC5c5949a02FAC9a4115DF182672c0F8cEb0eaF55' };
 
 function scoreLog({ address = REGISTRY, sessionId32 = randomHex32(), player = PLAYER, gameId = 'chikun', gameId32, seasonId32, runtimeId32, score = 1000n, kills = 12n, maxCombo = 4n, survivalSeconds = 180n, bossId = ethers.ZeroHash, blockNumber = 10, index = 0 } = {}) {
   const game = INDEX_GAMES[gameId];
@@ -368,6 +368,31 @@ test('not-deployed skips cleanly', async () => {
     assert.equal((await db.query('SELECT count(*)::int AS n FROM verified_sessions')).at(0).n, 0);
     const noDb = await invoke(createHandler(() => buildDeps(env, { deployment: DEPLOYED, provider: chain })), { url: '/api/cron/index-chain', headers: { authorization: `Bearer ${CRON_VALUE}` } });
     assert.deepEqual([noDb.status, noDb.body.error], [503, 'index-not-configured']);
+  } finally {
+    await db.close();
+  }
+});
+
+test('the cron needs RANKED_SCORE_REGISTRY_ADDRESS to match the deployment', async () => {
+  const db = createPgliteClient();
+  try {
+    const chain = fakeChain({ logs: [scoreLog({ blockNumber: 3 })], head: 10 });
+    const headers = { authorization: `Bearer ${CRON_VALUE}` };
+    const { RANKED_SCORE_REGISTRY_ADDRESS: _unused, ...withoutRegistry } = env;
+    const absent = await invoke(cronHandler({ db, chain, envOverride: withoutRegistry }), { url: '/api/cron/index-chain', headers });
+    assert.deepEqual([absent.status, absent.body.error, absent.body.detail], [503, 'settlement-not-configured', 'RANKED_SCORE_REGISTRY_ADDRESS']);
+    assert.deepEqual([absent.body.schemaVersion, absent.body.appliedMigrations], [1, [1]], 'the migration step still runs (§13 step 8b)');
+    assert.equal(absent.headers['cache-control'], 'no-store');
+    const other = await invoke(cronHandler({ db, chain, envOverride: { ...env, RANKED_SCORE_REGISTRY_ADDRESS: `0x${'9f'.repeat(20)}` } }), { url: '/api/cron/index-chain', headers });
+    assert.deepEqual([other.status, other.body.error, other.body.schemaVersion], [503, 'address-mismatch', 1]);
+    const malformed = await invoke(cronHandler({ db, chain, envOverride: { ...env, RANKED_SCORE_REGISTRY_ADDRESS: 'not-an-address' } }), { url: '/api/cron/index-chain', headers });
+    assert.deepEqual([malformed.status, malformed.body.error], [503, 'settlement-not-configured']);
+    assert.equal(chain.filters.length, 0, 'nothing is indexed from a misconfigured environment');
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM indexer_state')).at(0).n, 0);
+    const skipped = await invoke(cronHandler({ db, chain, envOverride: withoutRegistry, deployment: { ...DEPLOYED, status: 'predicted' } }), { url: '/api/cron/index-chain', headers });
+    assert.deepEqual([skipped.status, skipped.body.skipped], [200, 'not-deployed'], 'before deployment the address is not needed');
+    const matched = await invoke(cronHandler({ db, chain }), { url: '/api/cron/index-chain', headers });
+    assert.deepEqual([matched.status, matched.body.scores], [200, 1], 'a case-insensitive match indexes');
   } finally {
     await db.close();
   }

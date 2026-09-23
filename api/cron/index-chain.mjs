@@ -3,7 +3,9 @@
 // Vercel Cron calls this every 5 minutes with Authorization: Bearer
 // ${CRON_SECRET}. It runs migrate(db) first (the runbook's production
 // migration step, §13 step 8b) and reports the schema version, then mirrors
-// ScoreSubmitted, AchievementUnlocked and profile events into Neon.
+// ScoreSubmitted, AchievementUnlocked and profile events into Neon. On a
+// deployed deployment it needs RANKED_SCORE_REGISTRY_ADDRESS equal to the
+// deployment's score registry (§9.2), else 503.
 
 import { makeHandler } from '../../server/http.mjs';
 import { buildBaseDeps } from '../../server/config.mjs';
@@ -25,6 +27,13 @@ export async function indexChainRequest({ headers = {} } = {}, deps) {
   const migration = await migrate(deps.db);
   const schema = { schemaVersion: migration.version, appliedMigrations: migration.applied };
   if (deps.deployment?.status !== 'deployed') return json(200, { ok: true, skipped: 'not-deployed', ...schema });
+  // §9.2: E12 is a user of RANKED_SCORE_REGISTRY_ADDRESS. Settle writes to
+  // that address and the indexer confirms rows from the deployment's registry,
+  // so a missing or different value would leave every row unconfirmed. The
+  // migration above still runs (runbook step 8b).
+  const registry = deps.config.scoreRegistry;
+  if (!registry.configured) return json(503, { ok: false, error: 'settlement-not-configured', detail: 'RANKED_SCORE_REGISTRY_ADDRESS', ...schema });
+  if (!registry.matchesDeployment) return json(503, { ok: false, error: 'address-mismatch', detail: 'RANKED_SCORE_REGISTRY_ADDRESS differs from LITVM_DEPLOYMENT', ...schema });
   const provider = deps.provider;
   let result;
   try {
