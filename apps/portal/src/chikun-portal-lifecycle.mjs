@@ -56,6 +56,10 @@ export function createChikunPortalLifecycle({
         leaderboardEntry: scoreResult.leaderboardEntry ?? null,
         scorePacket: scoreResult.scorePacket ?? null,
         canonical,
+        // Ranked settlement inputs (contract §7.2): recordScore's settlement
+        // input, and the v6 evidence object the replay above just verified.
+        settlementInput: scoreResult.settlementInput ?? null,
+        evidence: payload.replayClaim.evidence,
       });
       onComplete(finalResult);
       return finalResult;

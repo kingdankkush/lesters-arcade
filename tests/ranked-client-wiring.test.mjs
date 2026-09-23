@@ -168,6 +168,40 @@ test('live HMH settles through the relayed client with a body the server verifie
   assert.deepEqual(errors, []);
 });
 
+test('live Chikun settles the verified v6 evidence and publication stamps the local rows', async () => {
+  const session = liveSession(CHIKUN);
+  const flap = CHIKUN.body.evidence.flap;
+  const canonical = replayChikunRun(flap);
+  const confirmed = async (url, init) => {
+    const body = JSON.parse(init.body);
+    return { status: 200, headers: { get: () => null }, json: async () => ({ ok: true, view: 'owner', sessionId32: body.sessionId32, gameId: 'chikun', wallet: CHIKUN.wallet, status: 'confirmed', score: canonical.score, retryable: false, pollAfterMs: null, txHash: `0x${'cd'.repeat(32)}`, confirmedAt: '2026-09-23T01:00:00.000Z' }) };
+  };
+  const glue = rankedGlueContext({ session, live: true, clientFetch: confirmed });
+  const { context, events, calls } = glue;
+  // The local record the Chikun lifecycle writes before settlement.
+  context.recordScore(context.state, session, canonical.score, {
+    elapsedSeconds: canonical.survivalTime, survivalTime: canonical.survivalTime, survivalTicks: canonical.survivalTicks, coinsCollected: canonical.coinsCollected,
+    forksPassed: canonical.forksPassed, nearMisses: canonical.nearMisses, bestCombo: canonical.bestCombo, achievements: canonical.achievements,
+    replayClaim: { version: 'chikun-parent-replay-v1', seed: session.seed, buildHash: session.buildHash, seasonId: session.seasonId, evidence: flap, finalState: canonical.finalState },
+  });
+  await context.settleChikunRankedRun(session, { canonical, evidence: flap, acceptedForGlobalLeaderboard: true });
+  await until(() => events.length === 1);
+  const [post] = calls.clientFetch;
+  assert.deepEqual(post.body.evidence, CHIKUN.body.evidence);
+  const run = await serverAccepts(post.body, CHIKUN);
+  assert.equal(run.ok, true, JSON.stringify(run));
+  const { handle, context: result } = events[0].detail;
+  assert.equal(handle.state, 'published');
+  assert.deepEqual(plain(result.localStats), plain(statsFromChikunResult(canonical)));
+  assert.equal(result.sessionId32, CHIKUN.body.sessionId32);
+  assert.equal(context.lastSettlementSucceeded, true);
+  const key = CHIKUN.body.sessionId32;
+  const row = context.state.leaderboards.chikun.find((entry) => entry.sessionId === session.sessionId);
+  assert.equal(row.onChainSessionId32, key);
+  assert.equal(row.settlementTxHash, `0x${'cd'.repeat(32)}`);
+  assert.equal(context.state.officialSessions.find((entry) => entry.sessionId === session.sessionId).onChainSessionId32, key);
+});
+
 test('a request that cannot be built never reaches the network and is shown as not published', async () => {
   const session = liveSession(CHIKUN);
   delete session.seedTicket; // e.g. a live session opened without a ticket
@@ -177,6 +211,31 @@ test('a request that cannot be built never reaches the network and is shown as n
   assert.equal(glue.events[0].detail.handle.state, 'rejected');
   assert.equal(glue.events[0].detail.handle.snapshot.error.code, 'request-unavailable');
   assert.equal(glue.calls.clientFetch.length, 0);
+});
+
+test('Chikun Ranked completion hands the run to settlement; Free completion does not', async () => {
+  for (const live of [false, true]) {
+    const session = live ? liveSession(CHIKUN) : previewSession('chikun');
+    const glue = rankedGlueContext({ session, live, clientFetch: settleOk('pending') });
+    const settled = [];
+    glue.context.boundSession = session;
+    glue.context.settleChikunRankedRun = (...args) => { settled.push(args); return Promise.resolve(null); };
+    const onComplete = portalCallback('createChikunPortalLifecycle', 'onComplete', glue.context);
+    const result = { canonical: { score: 12, survivalTime: 3 }, evidence: CHIKUN.body.evidence.flap, acceptedForGlobalLeaderboard: true };
+    onComplete(result);
+    assert.equal(settled.length, 1);
+    assert.equal(settled[0][0], session);
+    assert.equal(settled[0][1], result);
+    assert.equal(glue.context.lastCompletedSession, session);
+    assert.equal(glue.context.dom.officialGameStateCopy.textContent, live ? 'Ranked score 12 replay-verified. Publishing your run on LitVM — see the results panel.' : PREVIEW_COPY);
+    assert.doesNotMatch(glue.context.dom.officialGameStateCopy.textContent, /accepted for your profile/);
+  }
+  const free = startPlaySession({ wallet: HMH.wallet, gameId: 'chikun', mode: 'free' });
+  const glue = rankedGlueContext({ session: free });
+  glue.context.boundSession = free;
+  glue.context.settleChikunRankedRun = () => { throw new Error('Free never settles'); };
+  portalCallback('createChikunPortalLifecycle', 'onComplete', glue.context)({ canonical: { score: 5, survivalTime: 1 }, acceptedForGlobalLeaderboard: false });
+  assert.match(glue.context.dom.officialGameStateCopy.textContent, /^Free score 5 verified locally/);
 });
 
 test('a Ranked Hard Money Heroes restart goes back through the paid entry', async () => {
@@ -190,6 +249,27 @@ test('a Ranked Hard Money Heroes restart goes back through the paid entry', asyn
     await loadPortalFunctions(['restartCombatRun'], context).restartCombatRun();
     assert.deepEqual(calls, [['startOfficialMode', 'ranked']], `reboot=${hmhRebootActive}`);
   }
+});
+
+test('a Ranked Chikun restart goes back through the paid entry; Free restarts in place', async () => {
+  const chikunCalls = [];
+  const chikun = vm.createContext({
+    currentSession: { sessionId: 'finished', leaderboardEligible: true }, officialSelectedMode: 'ranked',
+    startOfficialMode: (mode) => { chikunCalls.push(['startOfficialMode', mode]); return Promise.resolve(); },
+    destroyChikunSession: () => chikunCalls.push(['destroy']), startMode: () => { throw new Error('no in-place Ranked restart'); },
+  });
+  await loadPortalFunctions(['restartChikunSession'], chikun).restartChikunSession();
+  assert.deepEqual(chikunCalls, [['startOfficialMode', 'ranked']], 'the finished cabinet stays until a new session mounts');
+
+  const freeCalls = [];
+  const free = vm.createContext({
+    currentSession: { sessionId: 'practice', leaderboardEligible: false }, officialSelectedMode: 'free',
+    startOfficialMode: () => { throw new Error('Free restarts in place'); },
+    destroyChikunSession: () => freeCalls.push('destroy'), startMode: (mode) => { freeCalls.push(['startMode', mode]); return Promise.resolve(); },
+    setOfficialView: (view) => freeCalls.push(['view', view]), mountChikunSession: () => freeCalls.push('mount'),
+  });
+  await loadPortalFunctions(['restartChikunSession'], free).restartChikunSession();
+  assert.deepEqual(freeCalls, ['destroy', ['startMode', 'free'], ['view', 'gameplay'], 'mount']);
 });
 
 test('the reboot bridge records boss defeats but not one event per enemy kill', () => {

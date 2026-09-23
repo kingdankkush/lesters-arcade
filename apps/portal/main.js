@@ -5319,8 +5319,15 @@ function destroyChikunSession() {
 }
 
 async function restartChikunSession() {
+  // A16: a finished Ranked run restarts through a fresh paid entry (the
+  // Ranked modal; mountChikunSession replaces this cabinet once a new session
+  // exists). Free restarts as before.
+  if (currentSession?.leaderboardEligible || officialSelectedMode === 'ranked') {
+    await startOfficialMode('ranked');
+    return;
+  }
   destroyChikunSession();
-  await startMode(officialSelectedMode === 'ranked' ? 'paid' : 'free');
+  await startMode('free');
   setOfficialView('gameplay');
   mountChikunSession();
 }
@@ -5330,7 +5337,10 @@ function mountChikunSession() {
   if (!currentSession.leaderboardEligible) {
     currentSession = bindChikunDailyChallenge(currentSession);
   }
+  const boundSession = currentSession;
   destroyHmhRebootSession();
+  destroyStackedSession();
+  destroyChikunSession();
   const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
   const initContext = buildCabinetInitContextFromSession(currentSession, {
     displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest Flyer',
@@ -5344,18 +5354,24 @@ function mountChikunSession() {
     recordScoreRef: recordScore,
     persist: persistArcadeStateSoon,
     onComplete: (result) => {
-      lastCompletedSession = currentSession;
+      lastCompletedSession = boundSession;
       lastRunResult = result;
       lastRunScore = result.canonical.score;
       lastRunElapsedSeconds = result.canonical.survivalTime;
       combat.active = false;
       combat.gameOver = true;
       combat.paused = false;
-      if (dom.officialGameStateCopy) {
-        dom.officialGameStateCopy.textContent = result.acceptedForGlobalLeaderboard
-          ? `Ranked score ${result.canonical.score.toLocaleString()} accepted for your profile and Chikun’s Escape score boards.`
-          : `Free score ${result.canonical.score.toLocaleString()} verified locally. No profile or leaderboard write occurred.`;
+      if (!boundSession.leaderboardEligible) {
+        if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = `Free score ${result.canonical.score.toLocaleString()} verified locally. No profile or leaderboard write occurred.`;
+        return;
       }
+      if (dom.officialGameStateCopy) {
+        dom.officialGameStateCopy.textContent = SETTLEMENT_LIVE
+          ? `Ranked score ${result.canonical.score.toLocaleString()} replay-verified. Publishing your run on LitVM — see the results panel.`
+          : 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
+      }
+      // The replay-verified local record exists; settle the same v6 evidence.
+      if (result.acceptedForGlobalLeaderboard) void settleChikunRankedRun(boundSession, result);
     },
   });
   chikunRunMusic = createChikunRunMusic(startArcadeMusicForGame);
