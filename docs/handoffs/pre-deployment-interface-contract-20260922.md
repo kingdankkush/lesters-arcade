@@ -748,7 +748,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 - **Self view** `GET /api/profile?wallet=0x…&self=1`: requires a Bearer token for the same wallet (else `401 invalid-session`), and is always `private, no-store`. It is a distinct URL, so the CDN can never serve a cached public body to it.
 - **Errors:** 400 `invalid-wallet` | `invalid-query`; 401 (self view); 503 `index-not-configured`.
 
-**PUT** (Bearer, body at most 4 KB) takes `{ preferences: { selectedCharacterId?: string≤32 matching /^[a-z0-9-]+$/, cosmetics?: { [gameId]: { [slot:/^[a-z-]{1,24}$/]: id≤48 } }, nameClaimDismissed?: boolean } }`. Unknown keys are dropped, and the serialized result must be at most 2,048 bytes.
+**PUT** (Bearer, body at most 4 KB) takes `{ preferences: { selectedCharacterId?: string≤32 matching /^[a-z0-9-]+$/, cosmetics?: { [gameId]: { [slot:/^[a-z-]{1,24}$/]: id≤48 } }, nameClaimDismissed?: boolean } }`. Unknown keys are dropped, and the serialized result must be at most 2,048 bytes. A PUT **merges** its top-level keys into the stored preferences, so a PUT of `{ nameClaimDismissed }` keeps `cosmetics` and `selectedCharacterId`; a key's whole value (for example the full `cosmetics` map) is replaced. The merged document must also fit 2,048 bytes, else `400 invalid-body` with `detail: 'preferences-too-large'` (clarified 2026-09-23 by the index fixer).
 - **200** `{ ok:true, wallet, preferences, updatedAt }`.
 - **Errors:** 400 `invalid-body`; 401 `invalid-session`; 503 `session-not-configured` | `index-not-configured`.
 - Names, avatars, stats, runs and achievements are **never** accepted from the browser.
@@ -772,7 +772,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
   ```
   `standing` is the rank of this session's wallet in each period, only when this session is that wallet's best and the wallet is not `board_excluded`; otherwise null per period.
 - `displayName` and `avatarUri` are null when the profile is `hidden` (A29); blocked names are already null. Consumers fall back to `walletShort`.
-- `stats` is the §6.3 server stats only; `client_claim` and `plausibility` are never included.
+- `stats` is the §6.3 server stats only, as the headline subset (§6.3: "the `stats` subset in E5, E6 and E9 rows"); `client_claim` and `plausibility` are never included.
 - `verification`: `'replay'` for Chikun and STACKED, `'plausibility'` for HMH, `'chain-index'` for rows the indexer created.
 - `cardRev`: the card revision of §7.5, so the share page can build the versioned `og:image`.
 - **Errors:** 404 `session-not-found`; 400 `invalid-session-id` | `invalid-query`; 503.

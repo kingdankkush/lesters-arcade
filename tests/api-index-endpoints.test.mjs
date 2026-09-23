@@ -198,6 +198,14 @@ test('E7 stores preferences only, behind a Bearer checked before the body', asyn
   assert.equal(saved.body.wallet, ALICE);
   const [row] = await db.query('SELECT display_name FROM wallet_profiles WHERE wallet = $1', [ALICE]);
   assert.equal(row.display_name, null, 'names are never accepted from the browser');
+  const dismissed = await invoke(handler, { method: 'PUT', url: '/api/profile', headers: auth, body: { preferences: { nameClaimDismissed: true } } });
+  assert.deepEqual(dismissed.body.preferences, { selectedCharacterId: 'lilly', cosmetics: { chikun: { hat: 'crown' } }, nameClaimDismissed: true }, 'a partial PUT merges and keeps the other keys');
+  const nearCap = { cosmetics: { chikun: Object.fromEntries(Array.from({ length: 26 }, (_, i) => [`slot-${'abcdefghijklmnopqrstuvwxyz'[i]}-${'z'.repeat(15)}`, `cosmetic-${'y'.repeat(38)}`])) } };
+  assert.equal(JSON.stringify({ selectedCharacterId: 'lilly', nameClaimDismissed: true, ...nearCap }).length, 2032, 'fixture: the merged document fits');
+  assert.equal(JSON.stringify({ selectedCharacterId: 'x'.repeat(32), nameClaimDismissed: true, ...nearCap }).length, 2059, 'fixture: a longer character id would not');
+  assert.equal((await invoke(handler, { method: 'PUT', url: '/api/profile', headers: auth, body: { preferences: nearCap } })).status, 200);
+  const grown = await invoke(handler, { method: 'PUT', url: '/api/profile', headers: auth, body: { preferences: { selectedCharacterId: 'x'.repeat(32) } } });
+  assert.deepEqual([grown.status, grown.body], [400, { ok: false, error: 'invalid-body', detail: 'preferences-too-large' }], 'the merged document keeps the 2,048-byte cap');
   const noDb = await invoke(mount(profileApi, { db: null }), { method: 'PUT', url: '/api/profile', headers: auth, body: { preferences: {} } });
   assert.deepEqual([noDb.status, noDb.body.error], [503, 'index-not-configured']);
   assert.equal((await invoke(handler, { method: 'PUT', url: '/api/profile?wallet=x', headers: auth, body: { preferences: {} } })).status, 400);

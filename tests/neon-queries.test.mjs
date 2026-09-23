@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 
 import { migrate } from '../server/neon/migrations.mjs';
@@ -294,9 +295,32 @@ test('profile reads split the public and self views and take NFT flags from the 
   assert.equal(byId.get(confirmed.sessionId32).retryable, false);
 
   const saved = await writePreferences(db, wallet, { nameClaimDismissed: true });
-  assert.deepEqual(saved.preferences, { nameClaimDismissed: true });
+  assert.deepEqual(saved.preferences, { selectedCharacterId: 'lester', nameClaimDismissed: true }, 'a PUT merges into the stored preferences');
   assert.match(saved.updatedAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
   assert.equal((await db.query('SELECT display_name FROM wallet_profiles WHERE wallet = $1', [wallet]))[0].display_name, 'Lit Pilot', 'preferences never touch the name');
+}));
+
+test('preferences merge by top-level key and the merged document keeps the byte cap', async () => withDb(async (db) => {
+  const wallet = W(7);
+  const stored = async () => JSON.parse((await db.query('SELECT preferences::text AS p FROM wallet_profiles WHERE wallet = $1', [wallet]))[0].p);
+  assert.deepEqual((await writePreferences(db, wallet, { nameClaimDismissed: true })).preferences, { nameClaimDismissed: true }, 'the first PUT creates the row');
+  const cosmetics = { chikun: { hat: 'crown' }, stacked: { skin: 'neon-grid' } };
+  await writePreferences(db, wallet, { cosmetics, selectedCharacterId: 'lilly' });
+  assert.deepEqual(await stored(), { nameClaimDismissed: true, cosmetics, selectedCharacterId: 'lilly' }, 'the unlockables PUT keeps the name prompt flag');
+  await writePreferences(db, wallet, { nameClaimDismissed: false });
+  assert.deepEqual(await stored(), { nameClaimDismissed: false, cosmetics, selectedCharacterId: 'lilly' }, 'the name prompt PUT keeps the cosmetics and the character');
+  await writePreferences(db, wallet, { cosmetics: { chikun: { trail: 'sparks' } } });
+  assert.deepEqual((await stored()).cosmetics, { chikun: { trail: 'sparks' } }, 'the whole value of a key is replaced, not deep-merged');
+
+  // The cap counts the merged document the way JSON.stringify does.
+  const big = (n) => ({ cosmetics: { chikun: Object.fromEntries(Array.from({ length: n }, (_, i) => [`slot-${'abcdefghijklmnopqrstuvwxyz'[i]}`, `cosmetic-id-${String(i).padStart(2, '0')}-${'x'.repeat(24)}`])) } });
+  const before = await stored();
+  const fits = { ...before, ...big(26) };
+  const limit = Buffer.byteLength(JSON.stringify(fits), 'utf8');
+  assert.ok(limit < 2048, `fixture fits (${limit} bytes)`);
+  assert.notEqual(await writePreferences(db, wallet, big(26), { maxBytes: limit }), null, 'exactly at the cap is accepted');
+  assert.equal(await writePreferences(db, wallet, { selectedCharacterId: 'lester-long-name' }, { maxBytes: limit }), null, 'a merge that grows past the cap is refused');
+  assert.equal((await stored()).selectedCharacterId, 'lilly', 'a refused merge writes nothing');
 }));
 
 test('session reads hide pending rows, private columns and hidden names, and version the card', async () => withDb(async (db) => {
@@ -320,7 +344,11 @@ test('session reads hide pending rows, private columns and hidden names, and ver
   assert.deepEqual(session.achievements, [{ id: 'chikun-coast-legend', tier: 'platinum', nft: true, unlockedAt: '2026-09-23T10:02:00.000Z', tokenId: '77' }]);
   assert.deepEqual(session.contract, { kills: 0, maxCombo: 0, survivalSeconds: 60, bossId: null });
   assert.match(session.cardRev, /^[0-9a-f]{12}$/);
-  assert.equal(session.cardRev, await cardRevision({ status: 'confirmed', displayName: null, avatarUri: null, hidden: false, verification: 'replay' }));
+  // §7.5 computed independently: SHA-256 of the sorted-key JSON of exactly
+  // { status, displayName, avatarUri, hidden, verification }, first 12 hex.
+  assert.equal(session.cardRev, expectedCardRev({ status: 'confirmed', displayName: null, avatarUri: null, hidden: false, verification: 'replay' }));
+  assert.equal(session.cardRev, '9aad35cebaa9', 'literal fixture for a confirmed, unnamed Chikun run');
+  assert.equal(await cardRevision({ status: 'confirmed', displayName: null, avatarUri: null, hidden: false, verification: 'replay' }), '9aad35cebaa9');
   assert.deepEqual((await readPublicSession(db, lower.sessionId32, { catalog })).standing, { weekly: null, monthly: null, allTime: null }, 'standing only for the wallet\'s best session');
   assert.equal((await readPublicSession(db, submitted.sessionId32, { catalog })).status, 'submitted');
   assert.equal((await readPublicSession(db, indexed.sessionId32, { catalog })).verification, 'chain-index');
@@ -335,4 +363,37 @@ test('session reads hide pending rows, private columns and hidden names, and ver
   assert.notEqual(hidden.cardRev, named.cardRev, 'hiding a profile produces a new card revision');
   await seedWalletProfile(db, { wallet, displayName: 'Lit Pilot', boardExcluded: true });
   assert.deepEqual((await readPublicSession(db, best.sessionId32, { catalog })).standing, { weekly: null, monthly: null, allTime: null });
+}));
+
+// SHA-256 over the sorted-key JSON, built by hand so the test does not reuse
+// the module's canonicalSessionJson or sha256Hex.
+function expectedCardRev(fields) {
+  const sorted = Object.fromEntries(Object.entries(fields).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
+  return createHash('sha256').update(JSON.stringify(sorted), 'utf8').digest('hex').slice(0, 12);
+}
+
+test('the card revision follows §7.5 and changes when a run is published', async () => withDb(async (db) => {
+  const wallet = W(3);
+  await seedWalletProfile(db, { wallet, displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester' });
+  const run = await seedVerifiedSession(db, { wallet, gameId: 'lester-blaster', score: 48210, status: 'submitted' });
+  const submitted = await readPublicSession(db, run.sessionId32);
+  assert.equal(submitted.cardRev, expectedCardRev({ status: 'submitted', displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, verification: 'plausibility' }));
+  await db.query("UPDATE verified_sessions SET status = 'confirmed', confirmed_at = now() WHERE session_id32 = $1", [run.sessionId32]);
+  const confirmed = await readPublicSession(db, run.sessionId32);
+  assert.equal(confirmed.cardRev, expectedCardRev({ status: 'confirmed', displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, verification: 'plausibility' }));
+  assert.notEqual(confirmed.cardRev, submitted.cardRev, 'publishing the run gives the card a new revision');
+}));
+
+test('E9 stats are the §6.3 headline subset', async () => withDb(async (db) => {
+  const fullHmhStats = {
+    score: 48210, kills: 120, bossKills: 1, eliteKills: 4, maxCombo: 30, level: 12, xp: 9000, survivalTicks: 36000, elapsedMs: 600000,
+    survivalSeconds: 600, damageTaken: 350, damageDealt: 90000, healing: 40, litecoin: 77, weaponsUsed: ['pistol', 'railgun'],
+    uniqueWeaponCount: 2, killsByRole: { grunt: 100, elite: 20 }, heroId: 'lilly', noDamage: 0, terminalReason: 'death',
+  };
+  const hmh = await seedVerifiedSession(db, { wallet: W(4), gameId: 'lester-blaster', stats: fullHmhStats });
+  const session = await readPublicSession(db, hmh.sessionId32);
+  assert.deepEqual(Object.keys(session.stats), ['kills', 'survivalSeconds', 'maxCombo', 'level', 'bossKills']);
+  assert.deepEqual(session.stats, { kills: 120, survivalSeconds: 600, maxCombo: 30, level: 12, bossKills: 1 });
+  const chikun = await seedVerifiedSession(db, { wallet: W(4) });
+  assert.deepEqual(Object.keys((await readPublicSession(db, chikun.sessionId32)).stats), ['forksPassed', 'nearMisses', 'coinsCollected', 'bestCombo', 'survivalSeconds', 'regionReached', 'laps']);
 }));

@@ -3,7 +3,8 @@
 // GET  /api/profile?wallet=0x…          public, server-derived, CDN-cached
 // GET  /api/profile?wallet=0x…&self=1   the wallet's own view: Bearer for the
 //                                       same wallet, always private, no-store
-// PUT  /api/profile                     Bearer; preferences only
+// PUT  /api/profile                     Bearer; preferences only, merged by
+//                                       top-level key into the stored document
 //
 // Names and avatars come only from PlayerProfileRegistry (mirrored by E8 and
 // the E12 indexer); stats, runs and achievements come only from verified
@@ -13,7 +14,7 @@ import { makeHandler, verifyBearer } from '../server/http.mjs';
 import { buildBaseDeps } from '../server/config.mjs';
 import { ensureSchema } from '../server/neon/migrations.mjs';
 import { readPublicProfile, writePreferences } from '../server/neon/queries.mjs';
-import { sanitizePreferences } from '../server/profile/sanitize.mjs';
+import { PREFERENCES_MAX_BYTES, sanitizePreferences } from '../server/profile/sanitize.mjs';
 
 export const PROFILE_QUERY = Object.freeze({ GET: Object.freeze(['wallet', 'self']), PUT: Object.freeze([]) });
 export const PUBLIC_PROFILE_CACHE = 'public, s-maxage=10, stale-while-revalidate=30';
@@ -72,7 +73,8 @@ async function writeProfilePreferences({ headers = {}, body = null }, deps) {
   if (!preferences) return fail(400, 'invalid-body');
   if (!deps.db) return fail(503, 'index-not-configured');
   await ensureSchema(deps.db);
-  const saved = await writePreferences(deps.db, session.wallet, preferences);
+  const saved = await writePreferences(deps.db, session.wallet, preferences, { maxBytes: PREFERENCES_MAX_BYTES });
+  if (!saved) return result(400, { ok: false, error: 'invalid-body', detail: 'preferences-too-large' });
   return result(200, { ok: true, wallet: session.wallet, preferences: saved.preferences, updatedAt: saved.updatedAt });
 }
 

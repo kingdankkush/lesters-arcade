@@ -10,7 +10,7 @@ import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-i
 import { periodKeysFor } from './period-keys.mjs';
 import {
   ALL_NUMERIC_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
-  explorerUrlFor, leaderboardRow, numberOrNull, parseJsonText, publicDisplay, recentSessionRow,
+  explorerUrlFor, headlineStats, leaderboardRow, numberOrNull, parseJsonText, publicDisplay, recentSessionRow,
   shareIdFor, verificationFor, walletShort,
 } from './rows.mjs';
 
@@ -287,7 +287,8 @@ export async function cardRevision({ status, displayName, avatarUri, hidden, ver
 }
 
 // E9 (§4.3.8). Pending rows are not public records and read as missing.
-// client_claim and plausibility are never selected.
+// client_claim and plausibility are never selected, and stats is the §6.3
+// headline subset ("the stats subset in E5, E6 and E9 rows"), like E5 and E6.
 export async function readPublicSession(db, sessionId32, { catalog } = {}) {
   const id = String(sessionId32 ?? '').toLowerCase();
   if (!SESSION_ID32.test(id)) throw new TypeError('sessionId32 must be 0x + 64 lowercase hex');
@@ -330,7 +331,7 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
     displayName: display.displayName,
     avatarUri: display.avatarUri,
     score: Number(row.score),
-    stats: parseJsonText(row.stats, {}),
+    stats: headlineStats(row.game_id, parseJsonText(row.stats, {})),
     contract: {
       kills: Number(row.kills),
       maxCombo: Number(row.max_combo),
@@ -435,13 +436,23 @@ export async function upsertWalletProfile(db, { wallet, displayName = null, name
 }
 
 // E7: preferences are the only profile field the browser writes (§4.3.6).
-export async function writePreferences(db, wallet, preferences) {
+// A PUT merges its top-level keys into the stored document, so the name
+// prompt's { nameClaimDismissed } never erases the cosmetics or the selected
+// character (and a key's whole value, such as the cosmetics map, is replaced).
+// One statement, so concurrent PUTs cannot lose each other's keys. The merged
+// document must still fit maxBytes as JSON.stringify would count it: jsonb
+// text differs only by a space after every ':' and ',' between members,
+// because the sanitized keys and values never contain spaces, commas or
+// quotes. Returns null, and writes nothing, when the merge would not fit.
+export async function writePreferences(db, wallet, preferences, { maxBytes = 2048 } = {}) {
   const who = requireWallet(wallet);
   const rows = await db.query(
     `INSERT INTO wallet_profiles (wallet, preferences, updated_at) VALUES ($1, $2::jsonb, now())
-     ON CONFLICT (wallet) DO UPDATE SET preferences = EXCLUDED.preferences, updated_at = now()
+     ON CONFLICT (wallet) DO UPDATE SET preferences = wallet_profiles.preferences || EXCLUDED.preferences, updated_at = now()
+       WHERE octet_length(replace(replace((wallet_profiles.preferences || EXCLUDED.preferences)::text, '": ', '":'), ', "', ',"')) <= $3::int
      RETURNING preferences::text AS preferences, ${isoSql('updated_at')} AS updated_at`,
-    [who, JSON.stringify(preferences ?? {})],
+    [who, JSON.stringify(preferences ?? {}), String(maxBytes)],
   );
-  return { preferences: parseJsonText(rows[0]?.preferences, {}), updatedAt: rows[0]?.updated_at ?? null };
+  if (!rows[0]) return null;
+  return { preferences: parseJsonText(rows[0].preferences, {}), updatedAt: rows[0].updated_at ?? null };
 }
