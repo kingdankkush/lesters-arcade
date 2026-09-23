@@ -66,6 +66,8 @@ const NODE_CHECK_FILES = [
   'tests/chikun-character-sheet.test.mjs',
   'apps/portal/src/chikun-course-regions.mjs',
   'scripts/chikun-course-pilot.mjs',
+  'apps/portal/src/chikun-ground-v5-course.mjs',
+  'apps/portal/src/chikun-ground-v5-runtime.mjs',
   'tests/chikun-evidence-v6.test.mjs',
   'scripts/chikun-regions-browser-smoke.mjs',
   'tests/chikun-regions.test.mjs',

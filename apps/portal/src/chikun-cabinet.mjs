@@ -1,5 +1,6 @@
 import { createChikunRuntime as createLegacyRuntime } from './chikun-flight-legacy.mjs';
 import { createGroundRuntime as createGroundV3Runtime } from './chikun-ground-v3-runtime.mjs';
+import { createGroundRuntime as createGroundV5Runtime } from './chikun-ground-v5-runtime.mjs';
 import { createGroundRuntime, groundDifficulty } from './chikun-ground-runtime.mjs';
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
@@ -100,6 +101,8 @@ function buildChikunEvidence({ seed, taps, maxTicks, evidenceVersion = CHIKUN_EV
 
 export const buildChikunDifficulty = groundDifficulty;
 export function createChikunRuntime({ seed = 1, maxTicks = 60, evidenceVersion = CHIKUN_EVIDENCE_VERSION } = {}) {
+ // Historical courses replay on frozen copies; only the current version uses the live course.
+ if (evidenceVersion === 'chikun-flap-evidence-v5') return createGroundV5Runtime({seed,maxTicks});
  if (evidenceVersion === CHIKUN_EVIDENCE_VERSION) return createGroundRuntime({seed,maxTicks});
  if (evidenceVersion === 'chikun-flap-evidence-v3') return createGroundV3Runtime({seed,maxTicks});
  if (['chikun-flap-evidence-v1','chikun-flap-evidence-v2'].includes(evidenceVersion)) return createLegacyRuntime({seed,maxTicks,evidenceVersion});
