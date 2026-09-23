@@ -113,15 +113,22 @@ test('evidence digest is computed without replay', async () => {
   const unfinished = bodyWith((body) => { body.evidence.sic1 = Buffer.from(short).toString('base64'); }, stacked);
   assert.equal((await verifyRankedRun(unfinished, fixtureVerifyOptions())).error, 'replay-rejected');
   assert.equal((await computeEvidenceDigest(unfinished)).ok, true);
-  // Malformed evidence has no digest.
-  for (const body of [
-    bodyWith((draft) => { draft.evidence.encoding = 'stacked-sic1+base64'; }),
-    bodyWith((draft) => { draft.evidence = null; }),
-    bodyWith((draft) => { draft.gameId = 'pong'; }),
-    bodyWith((draft) => { draft.evidence.sic1 = 'abc'; }, stacked),
-    bodyWith((draft) => { delete draft.evidence.sessionEnvelope; }, readFixture('hmh-valid')),
+  // Malformed evidence has no digest, and gets the same answer here as from the verifier.
+  assert.deepEqual(await computeEvidenceDigest(bodyWith((draft) => { draft.gameId = 'pong'; })), { ok: false, status: 400, error: 'invalid-evidence' });
+  const unpadded = stacked.body.evidence.sic1.replace(/=+$/, '');
+  assert.notEqual(unpadded, stacked.body.evidence.sic1, 'the fixture SIC1 base64 carries padding');
+  for (const [body, error] of [
+    [bodyWith((draft) => { draft.evidence.encoding = 'stacked-sic1+base64'; }), 'invalid-evidence'],
+    [bodyWith((draft) => { draft.evidence = null; }), 'invalid-evidence'],
+    [bodyWith((draft) => { draft.evidence.extra = 1; }, stacked), 'invalid-evidence'],
+    [bodyWith((draft) => { draft.evidence.sic1 = 'abc'; }, stacked), 'evidence-invalid'],
+    [bodyWith((draft) => { draft.evidence.sic1 = unpadded; }, stacked), 'evidence-invalid'],
+    [bodyWith((draft) => { draft.evidence.startLevel = 2; }, stacked), 'evidence-invalid'],
+    [bodyWith((draft) => { delete draft.evidence.sessionEnvelope; }, readFixture('hmh-valid')), 'invalid-evidence'],
   ]) {
-    assert.deepEqual(await computeEvidenceDigest(body), { ok: false, status: 400, error: 'invalid-evidence' });
+    const digest = await computeEvidenceDigest(body);
+    assert.deepEqual([digest.ok, digest.status, digest.error], [false, 400, error], JSON.stringify(digest));
+    assert.deepEqual(digest, await verifyRankedRun(body, fixtureVerifyOptions()), `${body.gameId} ${error}: the same code at every pipeline step`);
   }
 });
 
@@ -171,6 +178,11 @@ test('stored runs re-verify to the same VerifiedRun', async () => {
   const edited = JSON.parse(stored.evidence.text);
   edited.flapDeltas[0] = -1;
   assert.equal((await reverifyStoredRun({ ...stored, evidence: { ...stored.evidence, text: JSON.stringify(edited) } })).error, 'evidence-invalid');
+  // The stored canonical identity must carry its own session key.
+  const { sessionKey: _sessionKey, ...keyless } = stored.identity;
+  assert.deepEqual(await reverifyStoredRun({ ...stored, identity: keyless }), { ok: false, status: 400, error: 'session-key-mismatch' });
+  assert.deepEqual(await reverifyStoredRun({ ...stored, identity: { ...stored.identity, sessionKey: flipHex(stored.identity.sessionKey) } }), { ok: false, status: 400, error: 'session-key-mismatch' });
+  assert.deepEqual(await reverifyStoredRun({ ...stored, identity: { ...stored.identity, sessionKey: null } }), { ok: false, status: 400, error: 'session-key-mismatch' });
 });
 
 test('scores above the contract MAX_SCORE are rejected for every game', async () => {

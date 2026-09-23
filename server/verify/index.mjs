@@ -78,7 +78,9 @@ function utf8Bytes(text) {
 }
 
 // The stored evidence of §2.6 for a settle body, without replaying:
-// { ok:true, encoding, text, bytes, digest } or { ok:false, status:400, error:'invalid-evidence' }.
+// { ok:true, encoding, text, bytes, digest } or a 400 failure. Malformed
+// evidence gets the same code here as from verifyRankedRun (STACKED decoding
+// answers the verifier's own evidence-invalid); anything else is invalid-evidence.
 export async function computeEvidenceDigest(body) {
   const game = isPlainObject(body) && Object.hasOwn(RANKED_GAMES, body.gameId) ? RANKED_GAMES[body.gameId] : null;
   const evidence = isPlainObject(body) ? body.evidence : null;
@@ -92,7 +94,7 @@ export async function computeEvidenceDigest(body) {
     if (game.gameId === 'stacked') {
       const { decodeStackedEvidence } = await import('./stacked.mjs');
       const decoded = decodeStackedEvidence(evidence);
-      if (!decoded.ok) return fail('invalid-evidence');
+      if (!decoded.ok) return decoded.failure;
       return done(evidence.sic1, await sha256BytesHex(decoded.bytes));
     }
     if (!Object.hasOwn(evidence, 'runSummary') || !Object.hasOwn(evidence, 'sessionEnvelope')) return fail('invalid-evidence');
@@ -106,7 +108,11 @@ export async function computeEvidenceDigest(body) {
 // §5.3 re-sign rule (§3.3, review S16): replay or re-check the evidence stored
 // in session_evidence against the stored canonical identity, without the seed
 // ticket, paid and timing checks. Returns the same VerifiedRun as the first
-// settle (verifiedAt aside), or a failure.
+// settle (verifiedAt aside), or a failure. The stored identity is the
+// VerifiedRun's canonical identity, so it must carry the sessionKey its nine
+// preimage keys hash to. `nowMs` only stamps verifiedAt, which the re-sign
+// rule does not compare; it defaults to the clock because §5.3 gives this
+// function no clock argument.
 export async function reverifyStoredRun({ gameId, identity, evidence } = {}, { nowMs = Date.now() } = {}) {
   if (!Object.hasOwn(RANKED_GAMES, gameId)) return fail('identity-game-unknown');
   if (!isPlainObject(identity) || identity.gameId !== gameId) return fail('identity-invalid');
@@ -117,7 +123,7 @@ export async function reverifyStoredRun({ gameId, identity, evidence } = {}, { n
   } catch {
     return fail('identity-invalid');
   }
-  if (identity.sessionKey !== undefined && canonical.sessionKey !== identity.sessionKey) return fail('session-key-mismatch');
+  if (canonical.sessionKey !== identity.sessionKey) return fail('session-key-mismatch');
   if (!isPlainObject(evidence) || evidence.encoding !== RANKED_GAMES[gameId].evidenceEncoding || typeof evidence.text !== 'string') return fail('invalid-evidence');
   const { verify, parse } = await gameModule(gameId);
   let parsed;

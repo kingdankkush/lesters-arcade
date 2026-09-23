@@ -193,6 +193,17 @@ test('evidence digests follow §2.6 for every game, bare or wrapped', async () =
   assert.equal(await evidenceDigestFor('lester-blaster', { encoding: 'hmh-run-summary-v6+json', ...hmh }), hmhDigest);
   await assert.rejects(evidenceDigestFor('lester-blaster', { runSummary: {} }), /sessionEnvelope/);
   await assert.rejects(evidenceDigestFor('pong', flap), /gameId/);
+  // A §5.1 wrapper with another encoding throws for every game; it is never hashed as a bare object.
+  const wrongEncoding = [
+    ['chikun', { encoding: 'chikun-flap-evidence-v5+json', flap }],
+    ['chikun', { encoding: 'stacked-sic1+base64', flap }],
+    ['stacked', { encoding: 'stacked-sic1+base64 ', sic1, startLevel: 1 }],
+    ['stacked', { encoding: undefined, sic1, startLevel: 1 }],
+    ['lester-blaster', { encoding: 'hmh-run-summary-v5+json', ...hmh }],
+  ];
+  for (const [gameId, evidence] of wrongEncoding) {
+    await assert.rejects(evidenceDigestFor(gameId, evidence), (error) => error instanceof TypeError && /evidence encoding must be/.test(error.message), `${gameId} ${String(evidence.encoding)}`);
+  }
 });
 
 test('ranked-identity is pure and imports only session-integrity and session-seed', () => {

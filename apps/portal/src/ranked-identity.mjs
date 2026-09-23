@@ -170,10 +170,13 @@ function gameOf(gameId) {
 
 // §2.6 evidenceDigest. `evidence` is either the per-game evidence itself (the
 // v6 flap object, the SIC1 bytes, or { runSummary, sessionEnvelope }) or the
-// §5.1 settle-body evidence that wraps it.
+// §5.1 settle-body evidence that wraps it. None of the bare forms has an
+// `encoding` key, so an object with one is a wrapper and its encoding must be
+// the game's: a wrong one throws rather than hashing the wrapper.
 export async function evidenceDigestFor(gameId, evidence) {
   const game = gameOf(gameId);
-  const wrapped = isPlainObject(evidence) && evidence.encoding === game.evidenceEncoding;
+  const wrapped = isPlainObject(evidence) && Object.hasOwn(evidence, 'encoding');
+  if (wrapped && evidence.encoding !== game.evidenceEncoding) throw new TypeError(`evidence encoding must be ${game.evidenceEncoding}`);
   if (gameId === 'chikun') {
     const flap = wrapped ? evidence.flap : evidence;
     if (!isPlainObject(flap)) throw new TypeError('Chikun evidence must be the v6 flap object');
