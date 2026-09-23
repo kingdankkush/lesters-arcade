@@ -366,3 +366,16 @@ test('preview never fetches and hydrate is a no-op', async () => {
   assert.equal(await route.hydrate(), null);
   assert.equal(calls, 0);
 });
+
+test('a rejected self view falls back to the public view once', async () => {
+  const h = hostedProfile({ answers: { [`${ME}|self`]: { ok: false, status: 401, error: 'invalid-session' } } });
+  const grid = await rendered(h);
+  await settle();
+  assert.deepEqual(h.calls.profile, [[ME, { self: true }], [ME, { self: false }]], 'one self attempt, then the public view, no loop');
+  assert.equal(buttons(grid, 'Check name & fee').length, 0, 'no edit controls without a working session');
+  assert.equal(buttons(grid, 'Sign in').length, 1);
+  h.route.invalidate();
+  h.route.renderProfile();
+  await h.route.hydrate();
+  assert.deepEqual(h.calls.profile.at(-2), [ME, { self: true }], 'a new session (invalidate) tries the self view again');
+});

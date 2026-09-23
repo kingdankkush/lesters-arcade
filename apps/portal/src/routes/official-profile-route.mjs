@@ -263,6 +263,7 @@ export function createOfficialProfileRoute({
   // --- Hosted profile state (index data only; A22) --------------------------
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
   const heldTokens = new Map(); // wallet -> { status, confirmed: Set('<gameId>:<id>') }
+  const selfRejected = new Set(); // wallets whose token the self view refused (until the session changes)
   let achievementCatalog = null;
   let catalogRequest = null;
   let pendingSavedRuns = 0;
@@ -278,7 +279,7 @@ export function createOfficialProfileRoute({
     const connected = walletKey(connectedWallet);
     const wallet = walletKey(routeState.viewedWallet) ?? connected;
     const own = Boolean(wallet) && wallet === connected;
-    return { wallet, own, self: own && Boolean(isAuthenticated(wallet)) };
+    return { wallet, own, self: own && !selfRejected.has(wallet) && Boolean(isAuthenticated(wallet)) };
   }
 
   function profileEntry({ wallet, self }) {
@@ -336,6 +337,7 @@ export function createOfficialProfileRoute({
         // A dead token was discarded by the client: read the public view instead.
         if (target.self && (answer?.status === 401 || answer?.error === 'sign-in-required')) {
           entry.status = 'idle';
+          selfRejected.add(target.wallet);
           return hydrate();
         }
         entry.status = answer?.error === 'network' ? 'offline' : 'error';
@@ -357,8 +359,13 @@ export function createOfficialProfileRoute({
     for (const cacheKey of [...hostedProfiles.keys()]) {
       if (!key || cacheKey.startsWith(`${key}|`)) hostedProfiles.delete(cacheKey);
     }
-    if (key) heldTokens.delete(key);
-    else heldTokens.clear();
+    if (key) {
+      heldTokens.delete(key);
+      selfRejected.delete(key);
+    } else {
+      heldTokens.clear();
+      selfRejected.clear();
+    }
   }
 
   // The last self view read for a wallet (the name-claim prompt reuses it).
