@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Chikun's Escape"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Platinum"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Forks"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Passed 150 obstacles in one Ranked run.",
+  "external_url": "https://lestersarcade.io/games/chikun",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/platinum.png",
+  "name": "Fork Master"
+}

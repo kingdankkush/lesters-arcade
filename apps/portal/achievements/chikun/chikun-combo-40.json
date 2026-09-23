@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Chikun's Escape"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Platinum"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Combo"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Built a 40-obstacle combo in one Ranked run: a coin or a near miss at every obstacle in a row.",
+  "external_url": "https://lestersarcade.io/games/chikun",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/platinum.png",
+  "name": "Combo Legend"
+}
