@@ -4,7 +4,8 @@ import test, { after, before } from 'node:test';
 import { ethers } from 'ethers';
 
 import { buildSiweChallenge } from '../apps/portal/src/wallet-auth.mjs';
-import { RANKED_GAMES } from '../apps/portal/src/ranked-identity.mjs';
+import { RANKED_GAMES, rankedEnvelopeHash } from '../apps/portal/src/ranked-identity.mjs';
+import { deriveRankedSeed } from '../apps/portal/src/session-seed.mjs';
 import * as achievements from '../apps/portal/src/achievements/index.mjs';
 import * as verify from '../server/verify/index.mjs';
 import { HMH_FREE_HEROES, HMH_HERO_GATES } from '../server/verify/hmh.mjs';
@@ -20,9 +21,12 @@ import { localContracts } from '../scripts/lib/local-chain.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import {
-  bootLocalChain, fixtureEnv, openPaidSession, REAL_SETTLEMENT_GAS_RESERVE_WEI, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE,
+  bootLocalChain, createCatalogDouble, createVerifyDouble, deriveRankedSeedDouble, fixtureEnv, HERO_GATES_DOUBLE, issueSeedTicketDouble,
+  openPaidSession, REAL_SETTLEMENT_GAS_RESERVE_WEI, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE,
 } from './helpers/settle-fixtures.mjs';
-import { buildFixtureBody, FIXTURE_BUILD_HASHES } from './fixtures/ranked/build-fixtures.mjs';
+import {
+  buildFixtureBody, FIXTURE_BUILD_HASHES, FIXTURE_UUID, FIXTURE_VERIFY_AT_MS, fixtureVerifyOptions, readFixture,
+} from './fixtures/ranked/build-fixtures.mjs';
 
 /**
  * Contract §10.4 rule 6, the settle-wiring proof: the REAL handlers end to end.
@@ -479,4 +483,134 @@ test('the retry cron re-signs from re-verified stored evidence and publishes eac
     const status = await getStatus(body.sessionId32);
     assert.deepEqual([status.body.view, status.body.status, status.body.txHash], ['public', 'confirmed', row.tx_hash]);
   }
+});
+
+// --- The settle doubles against the real verify functions (DoD 2) -------------
+//
+// tests/server-settle-core, -relayer and -retry keep the contract-shaped
+// doubles of tests/helpers/settle-fixtures.mjs, whose toy replay lets a test
+// choose a run's score and length. Everything else settle relies on must be
+// the real verify slice's behaviour, on the committed fixtures.
+
+const plain = (value) => JSON.parse(JSON.stringify(value));
+const flipHex = (hex) => `${hex.slice(0, -1)}${hex.at(-1) === '0' ? '1' : '0'}`;
+// §5.2, in the contract's order (as tests/server-verify-identity.test.mjs),
+// for a body of `gameId`.
+const bindingChecks = (gameId) => [
+  ['identity-invalid', (body) => { body.identity.version = 'lesters-canonical-session-v1'; }],
+  ['identity-game-unknown', (body) => { body.identity.gameId = 'pong'; }],
+  ['identity-invalid', (body) => { body.gameId = gameId === 'chikun' ? 'stacked' : 'chikun'; }],
+  ['identity-chain-mismatch', (body) => { body.identity.chainId = 31337; }],
+  ['identity-registry-mismatch', (body) => { body.identity.scoreRegistryAddress = `0x${'5'.repeat(40)}`; }],
+  ['identity-wallet-mismatch', (body) => { body.identity.wallet = `0x${'3c'.repeat(20)}`; }],
+  ['identity-season-mismatch', (body) => { body.identity.seasonId = RANKED_GAMES[gameId === 'chikun' ? 'stacked' : 'chikun'].seasonId; }],
+  ['identity-buildhash-invalid', (body) => { body.identity.buildHash = gameId === 'lester-blaster' ? FIXTURE_BUILD_HASHES.chikun : FIXTURE_BUILD_HASHES['lester-blaster']; }],
+  ['identity-session-invalid', (body) => { body.identity.sessionId = 'game-session-000000001'; }],
+  ['identity-nonce-mismatch', (body) => { body.identity.nonce = '22222222-2222-4222-8222-222222222222'; }],
+  ['seed-ticket-invalid', (body) => { body.seedTicket.mac = flipHex(body.seedTicket.mac); }],
+  ['identity-seed-mismatch', (body) => { body.identity.seed = (body.identity.seed ^ 1) >>> 0; }],
+  ['session-key-mismatch', (body) => { body.sessionId32 = `0x${'9'.repeat(64)}`; }],
+];
+
+test('the settle doubles equal the real seed ticket MAC and deriveRankedSeed', async () => {
+  const salt = Uint8Array.from({ length: 16 }, (_, index) => (index * 37 + 11) % 256);
+  for (const gameId of Object.keys(RANKED_GAMES)) {
+    const input = {
+      secret: SETTLE_SESSION_VALUE, nowMs: 1_790_000_123_456, randomBytes: () => salt, sessionId: `game-session-${FIXTURE_UUID}`,
+      wallet: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8', gameId, seasonId: RANKED_GAMES[gameId].seasonId, buildHash: FIXTURE_BUILD_HASHES[gameId],
+    };
+    const real = await issueSeedTicket(input);
+    assert.deepEqual(plain(await issueSeedTicketDouble(input)), plain(real), `${gameId} ticket and seed`);
+    const seedInput = { sessionId: input.sessionId, wallet: input.wallet.toLowerCase(), gameId, seasonId: input.seasonId, buildHash: input.buildHash, salt: real.seedTicket.salt };
+    assert.equal(await deriveRankedSeedDouble(seedInput), await deriveRankedSeed(seedInput));
+    assert.equal(real.seed, await deriveRankedSeed(seedInput));
+  }
+});
+
+test('the verify double binds, digests, hashes the v2 envelope and shapes the VerifiedRun like the real verifier', async () => {
+  const options = fixtureVerifyOptions();
+  const double = createVerifyDouble({ nowMs: () => FIXTURE_VERIFY_AT_MS });
+  for (const name of ['chikun-valid', 'stacked-valid', 'hmh-valid']) {
+    const fixture = readFixture(name);
+    const { body } = fixture;
+    // §5.2: the same canonical identity, and every error code in the same order.
+    const bound = await verify.bindRankedIdentity(body, options);
+    assert.equal(bound.ok, true);
+    assert.deepEqual(plain(await double.bindRankedIdentity(body, options)), plain(bound), `${name} binding`);
+    const checks = bindingChecks(body.gameId);
+    for (const [index, [error, mutate]] of checks.entries()) {
+      const one = structuredClone(body);
+      mutate(one);
+      const all = structuredClone(body);
+      for (const [, later] of checks.slice(index)) later(all);
+      for (const mutated of [one, all]) {
+        // eslint-disable-next-line no-await-in-loop
+        const real = await verify.bindRankedIdentity(mutated, options);
+        assert.deepEqual(plain(real), { ok: false, status: 400, error }, `${name}: real ${error}`);
+        // eslint-disable-next-line no-await-in-loop
+        assert.deepEqual(plain(await double.bindRankedIdentity(mutated, options)), plain(real), `${name}: double ${error}`);
+      }
+    }
+    // §2.6: the stored evidence text, bytes and digest, without replay.
+    const digest = await verify.computeEvidenceDigest(body);
+    assert.deepEqual(plain(await double.computeEvidenceDigest(body)), plain(digest), `${name} digest`);
+    assert.equal(digest.digest, fixture.expected.evidenceDigest);
+
+    // §5.3: the same VerifiedRun shape; the binding fields, the evidence and
+    // the v2 envelope hash are equal (score, contract and stats are the toy's).
+    const real = await verify.verifyRankedRun(body, options);
+    const toy = await double.verifyRankedRun(body, options);
+    assert.equal(real.ok, true);
+    assert.equal(toy.ok, true, JSON.stringify(toy));
+    assert.deepEqual(Object.keys(toy), Object.keys(real), `${name} VerifiedRun keys`);
+    assert.deepEqual(Object.keys(toy.contract), Object.keys(real.contract));
+    assert.deepEqual(Object.keys(toy.evidence), Object.keys(real.evidence));
+    assert.equal(Object.isFrozen(toy) && Object.isFrozen(toy.contract) && Object.isFrozen(toy.stats) && Object.isFrozen(toy.evidence), true);
+    for (const key of ['ok', 'gameId', 'sessionId32', 'sessionHandle', 'wallet', 'seasonId', 'runtimeId', 'buildHash', 'seed', 'envelopeHash', 'verifiedAt']) {
+      assert.deepEqual(toy[key], real[key], `${name} ${key}`);
+    }
+    assert.deepEqual(plain(toy.evidence), plain(real.evidence));
+    assert.deepEqual(plain(toy.identity), plain(real.identity));
+    const envelopeHash = await rankedEnvelopeHash({ gameId: body.gameId, sessionId32: body.sessionId32, encoding: digest.encoding, evidenceDigest: digest.digest });
+    assert.deepEqual([toy.envelopeHash, real.envelopeHash, fixture.expected.envelopeHash], [envelopeHash, envelopeHash, envelopeHash], `${name} v2 envelope hash`);
+    assert.equal(typeof toy.score, typeof real.score);
+    for (const key of Object.keys(toy.contract)) assert.equal(typeof toy.contract[key], typeof real.contract[key], `${name} contract.${key}`);
+    const realKeys = Object.keys(real.stats);
+    if (body.gameId === 'lester-blaster') {
+      // The toy HMH stats are a subset of the real keys, in the real order.
+      const positions = Object.keys(toy.stats).map((key) => realKeys.indexOf(key));
+      assert.equal(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1])), true, `${name} toy stats keys`);
+      assert.deepEqual(Object.keys(toy.plausibility).sort(), Object.keys(real.plausibility).sort());
+      assert.equal(toy.plausibility.verdict, real.plausibility.verdict);
+    } else {
+      assert.deepEqual(Object.keys(toy.stats), realKeys, `${name} stats keys`);
+      assert.deepEqual([toy.plausibility, real.plausibility], [null, null]);
+    }
+
+    // The re-sign rule's reverifyStoredRun on the stored evidence.
+    const stored = { gameId: body.gameId, identity: plain(real.identity), evidence: { encoding: real.evidence.encoding, text: real.evidence.text } };
+    const again = await verify.reverifyStoredRun(stored, { nowMs: FIXTURE_VERIFY_AT_MS });
+    const toyAgain = await double.reverifyStoredRun(stored, { nowMs: FIXTURE_VERIFY_AT_MS });
+    assert.deepEqual(Object.keys(toyAgain), Object.keys(again));
+    for (const key of ['sessionId32', 'envelopeHash', 'verifiedAt']) assert.equal(toyAgain[key], again[key], `${name} re-verified ${key}`);
+    assert.deepEqual(plain(toyAgain.evidence), plain(again.evidence));
+    assert.deepEqual([again.score, again.envelopeHash], [real.score, real.envelopeHash]);
+  }
+});
+
+test('the achievements and hero-gate doubles expose the real registry API and gates', () => {
+  const catalog = createCatalogDouble();
+  for (const [name, value] of Object.entries(catalog)) {
+    if (name === 'calls') continue;
+    assert.equal(Object.hasOwn(achievements, name), true, `the real registry exports ${name}`);
+    assert.equal(typeof value, typeof achievements[name], name);
+  }
+  assert.deepEqual([...catalog.ACHIEVEMENT_GAME_IDS], [...achievements.ACHIEVEMENT_GAME_IDS]);
+  assert.equal(catalog.achievementId32(ethers, 'first-blood'), achievements.achievementId32(ethers, 'first-blood'));
+  for (const gameId of achievements.ACHIEVEMENT_GAME_IDS) {
+    const fields = achievements.historyFieldsFor(gameId);
+    assert.deepEqual(Object.keys(fields).sort(), Object.keys(catalog.historyFieldsFor(gameId)).sort());
+    assert.equal(Array.isArray(fields.sum) && Array.isArray(fields.max), true);
+  }
+  assert.deepEqual(plain(HERO_GATES_DOUBLE), plain({ gates: HMH_HERO_GATES, free: HMH_FREE_HEROES }));
 });

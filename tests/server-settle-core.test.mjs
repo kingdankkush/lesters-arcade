@@ -30,7 +30,9 @@ import {
  * buildDeps (unmigrated PGlite, the in-process chain, its deployment record
  * and an injected clock). Only the verify slice's functions and the
  * achievements registry are swapped for contract-shaped doubles
- * (tests/helpers/settle-fixtures.mjs) until the settle-wiring step.
+ * (tests/helpers/settle-fixtures.mjs), so a test can choose a run's score
+ * and length. tests/api-settle-handler.test.mjs runs the same handlers with
+ * the real modules and proves the doubles match them.
  */
 
 const IP = '198.51.100.23';
@@ -468,7 +470,7 @@ test('malformed bodies, identity errors and foreign wallets stop before any chai
 
   // A verifier rejection returns the verifier's status and code.
   const hmh = await paidBody({ gameId: 'lester-blaster', evidenceOptions: { elapsedMs: 30_000 } });
-  hmh.body.evidence.runSummary.terminalReason = 'quit';
+  hmh.body.evidence.runSummary.identity.terminalReason = 'quit';
   assert.deepEqual((await post(handler, hmh.body)).body, { ok: false, error: 'run-summary-not-terminal' });
 }));
 

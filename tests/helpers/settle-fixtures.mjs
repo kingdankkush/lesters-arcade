@@ -1,11 +1,14 @@
 // Settle-slice fixtures: contract-shaped doubles for the verify slice
 // (§5.2, §5.3, §2.7) and the achievements registry (§6.2), plus local-chain
-// helpers. The doubles stand in until the settle-wiring step replaces them
-// with server/verify/** and apps/portal/src/achievements/** (contract §10.4
-// rule 6). They honour the contract shapes exactly: the §5.2 check order and
-// error codes, the §2.7 seed ticket MAC and seed, the §2.6 evidence digests
-// and v2 envelope hash, and a frozen §5.3 VerifiedRun. The "replay" is a toy
-// function of the evidence so tests can choose scores and run lengths.
+// helpers. The settle unit tests keep the doubles, because their toy "replay"
+// is a function of the evidence so tests can choose scores and run lengths.
+// tests/api-settle-handler.test.mjs settles through the real server/verify/**
+// and apps/portal/src/achievements/** (contract §10.4 rule 6) and proves the
+// doubles equal the real functions where settle depends on them: the §5.2
+// check order and error codes, the §2.7 seed ticket MAC and seed, the §2.6
+// evidence digests and v2 envelope hash, and the frozen §5.3 VerifiedRun
+// shape (plausibility included, terminalReason read from the v6 summary's
+// identity).
 //
 // They also follow the verify slice's hand-off (fable/pd-verify 437aa1f3):
 // computeEvidenceDigest resolves { ok:true, … } or { ok:false, status:400,
@@ -159,10 +162,10 @@ export function hmhEvidence({ seed, buildHash = FIXTURE_BUILD_HASHES['lester-bla
     encoding: ENCODINGS['lester-blaster'],
     runSummary: {
       schemaVersion: 6,
-      identity: { heroId, seed, buildHash, mode: 'ranked' },
+      // terminalReason sits in identity, where run summary schema v6 keeps it.
+      identity: { heroId, seed, buildHash, mode: 'ranked', terminalReason: 'defeated' },
       totals: { score, elapsedMs, maxCombo, level: 5, xp },
       kills: { total: kills, boss },
-      terminalReason: 'defeated',
     },
     sessionEnvelope: { version: 'lesters-session-envelope-v1', sessionKey },
   };
@@ -244,7 +247,7 @@ function toyReplay(gameId, evidence, identity) {
   const summary = evidence.runSummary;
   if (typeof summary?.identity?.heroId !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(summary.identity.heroId)) return fail(400, 'run-summary-invalid');
   if (summary?.identity?.seed !== identity.seed || summary?.identity?.buildHash !== identity.buildHash || summary?.identity?.mode !== 'ranked') return fail(400, 'run-summary-identity-mismatch');
-  if (summary.terminalReason !== 'defeated') return fail(400, 'run-summary-not-terminal');
+  if (summary.identity.terminalReason !== 'defeated') return fail(400, 'run-summary-not-terminal');
   if (evidence.sessionEnvelope?.version !== 'lesters-session-envelope-v1' || evidence.sessionEnvelope?.sessionKey !== identity.sessionKey) return fail(400, 'session-envelope-invalid');
   const totals = summary.totals;
   // Plausibility in the verifier's shape: { verdict, flags: [{ id, severity, value, limit }] }.
@@ -254,7 +257,7 @@ function toyReplay(gameId, evidence, identity) {
   if (totals.xp > 100_000) flags.push(Object.freeze({ id: 'xp-near-ceiling', severity: 'flag', value: totals.xp, limit: 100_000 }));
   const verdict = flags.some((flag) => flag.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok';
   if (verdict === 'rejected') return fail(422, 'implausible-run', { flags: Object.freeze(flags) });
-  const stats = { score: totals.score, kills: summary.kills.total, bossKills: summary.kills.boss, eliteKills: 0, maxCombo: totals.maxCombo, level: totals.level, xp: totals.xp, survivalTicks: Math.floor(totals.elapsedMs * 0.06), elapsedMs: totals.elapsedMs, survivalSeconds: Number((totals.elapsedMs / 1000).toFixed(3)), heroId: summary.identity.heroId, noDamage: 0, terminalReason: summary.terminalReason };
+  const stats = { score: totals.score, kills: summary.kills.total, bossKills: summary.kills.boss, eliteKills: 0, maxCombo: totals.maxCombo, level: totals.level, xp: totals.xp, survivalTicks: Math.floor(totals.elapsedMs * 0.06), elapsedMs: totals.elapsedMs, survivalSeconds: Number((totals.elapsedMs / 1000).toFixed(3)), noDamage: 0, heroId: summary.identity.heroId, terminalReason: summary.identity.terminalReason };
   return {
     score: totals.score,
     stats,
@@ -285,9 +288,10 @@ async function verifiedRunFor({ gameId, identity, evidence, nowMs }) {
     evidence: Object.freeze(record),
     envelopeHash,
     identity,
+    // Like the real VerifiedRun: the HMH validator verdict, null for replayed games.
+    plausibility: replay.plausibility ?? null,
     verifiedAt: new Date(nowMs).toISOString(),
   };
-  if (replay.plausibility) run.plausibility = replay.plausibility;
   return Object.freeze(run);
 }
 
