@@ -77,6 +77,18 @@ test('delta codec round-trips and rejects non-canonical input', () => {
   assert.deepEqual(Object.keys(evidence), ['version', 'seed', 'fixedStepHz', 'maxTicks', 'flapDeltas']);
   assert.throws(() => replayChikunRun({ ...evidence, flapDeltas: [4, 7, 37] }), /within maxTicks/);
   assert.throws(() => replayChikunRun({ ...evidence, flapSteps: [4, 11, 18] }), /flapDeltas, not flapSteps/);
+  // One run, one encoding: flaps at or after the final tick are refused, so the
+  // same run cannot be resubmitted as differently padded evidence.
+  const crashed = simulateChikunRun({ seed: 7, taps: [5, 30, 60], maxTicks: 4_000 });
+  assert.ok(crashed.crashed && crashed.survivalTicks < 4_000);
+  const lastTick = decodeFlapDeltas(crashed.evidence.flapDeltas).at(-1);
+  for (const extra of [crashed.survivalTicks, crashed.survivalTicks + 10, 3_999]) {
+    const padded = { ...crashed.evidence, flapDeltas: [...crashed.evidence.flapDeltas, extra - lastTick] };
+    assert.throws(() => replayChikunRun(padded), /at or after the final tick/, `flap at ${extra}`);
+    const claim = { version: 'chikun-parent-replay-v1', seed: 7, buildHash: 'b-1', seasonId: 's-1', evidence: padded, finalState: crashed.finalState };
+    assert.throws(() => verifyChikunReplayClaim({ expectedSeed: 7, expectedBuildHash: 'b-1', expectedSeasonId: 's-1', score: crashed.score, runStats: crashed, replayClaim: claim }), /at or after the final tick/);
+  }
+  assert.deepEqual(replayChikunRun(crashed.evidence), crashed, 'the canonical evidence still replays');
 });
 
 test('flapTicksOf reads v5 and v6 evidence alike', () => {

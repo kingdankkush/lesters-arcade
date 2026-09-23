@@ -196,7 +196,13 @@ export function replayChikunRun(evidence = {}) {
     }
     ticks = evidence.flapSteps;
   }
-  return simulateChikunRun({ seed: evidence.seed, taps: ticks, maxTicks, evidenceVersion: evidence.version });
+  const result = simulateChikunRun({ seed: evidence.seed, taps: ticks, maxTicks, evidenceVersion: evidence.version });
+  // v6 evidence is canonical: every flap it lists was applied, so one run has
+  // exactly one encoding (no padding with flaps at or after the final tick).
+  if (evidence.version === CHIKUN_EVIDENCE_VERSION && result.evidence.flapDeltas.length !== ticks.length) {
+    throw new Error('Chikun v6 evidence lists flaps at or after the final tick of the run');
+  }
+  return result;
 }
 
 function sameJson(left, right) {
