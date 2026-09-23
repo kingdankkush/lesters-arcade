@@ -28,6 +28,7 @@ Before that session touches contracts or Vercel secrets, switch its **permission
 | Neon database | Provisioned through the Vercel marketplace as `lesters-arcade-profiles`, connected to production. `NEON_DATABASE_URL` and related `NEON_*` variables exist. No table has been created yet; `api/profile.mjs` creates `arcade_profiles` on first use. |
 | Service keys | Generated 2026-09-22 into `C:\Users\just_\lesters-arcade-vault\keys\litvm-liteforge-testnet-keys.json` (outside the repo). **Never print, paste, commit or log the private keys.** Read them only inside a script that pipes them where they go. |
 | Operator funding | Operator wallet holds **0.4 zkLTC**, nonce **0**. |
+| Reown (WalletConnect) | Project created by the owner 2026-09-22 with `lestersarcade.io` and `www.lestersarcade.io` allowed. **Project ID: `eedf4ae26a379df793b7f4eef223a0c9`** (a public identifier, safe to commit; put it in a portal config constant, not a Vercel secret). |
 
 The three service keys:
 
@@ -374,7 +375,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 - Silent re-auth: on load, if `eth_accounts` returns the same wallet and the stored session token is valid, skip the signature.
 - Show a balance chip with a faucet link (`https://liteforge.hub.caldera.xyz`).
 - **Mobile first** (decision D9: whatever makes mobile smoother):
-  - **WalletConnect / Reown AppKit**, loaded lazily. It lets players sign in from any mobile browser with MetaMask, Rabby, Trust, Coinbase Wallet and others, and approve the Ranked entry in their wallet app with an automatic hand-off back. Needs a Reown project ID from the owner (section 10).
+  - **WalletConnect / Reown AppKit**, loaded lazily. It lets players sign in from any mobile browser with MetaMask, Rabby, Trust, Coinbase Wallet and others, and approve the Ranked entry in their wallet app with an automatic hand-off back. Use project ID `eedf4ae26a379df793b7f4eef223a0c9` (section 1.1). Add `localhost` / `127.0.0.1` to the Reown project's allowed domains only if local testing needs it (ask the owner).
   - **Wallet deep links** when no wallet is detected on a phone: "Open in MetaMask" (`https://metamask.app.link/dapp/lestersarcade.io`) and the equivalent for Rabby and Trust, so the site opens inside the wallet's own browser.
   - Keep every wallet prompt reachable with a thumb, keep the Ranked modal readable at 320 px, and never open a wallet prompt from inside the game canvas's input handler, which some mobile browsers block.
   - Later option to evaluate: email or social sign-in with an embedded wallet (Privy, Dynamic, thirdweb) for players who have no wallet at all. It needs an owner account with the provider and a custody review, so it is not in the launch scope.
@@ -564,7 +565,7 @@ Answered by Justin on 2026-09-22 unless marked pending. Where an answer was "rec
 
 1. Back up `C:\Users\just_\lesters-arcade-vault\keys\litvm-liteforge-testnet-keys.json` to a thumb drive and a password manager. **The operator key controls the contracts.**
 2. Review the Chikun and STACKED achievement catalogs (40 each) when the session presents them. The NFT subset waits for phase 2.
-3. **Create a free Reown project** for mobile wallet sign-in (D9): sign up at https://cloud.reown.com, create a project named "Lester's Arcade", add `lestersarcade.io` and `www.lestersarcade.io` under allowed domains, and send the project ID to the session. The ID is public, not a secret.
+3. ~~Create a Reown project~~ **Done 2026-09-22** (project ID in section 1.1).
 4. At deployment:
    - switch the session to "ask before each action" mode;
    - approve each ⚠ step;
