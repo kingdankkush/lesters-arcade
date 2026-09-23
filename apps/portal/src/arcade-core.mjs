@@ -5306,16 +5306,8 @@ export function nextGlobalSessionId(state) {
   };
 }
 
-export function deriveSessionSeed({ sessionId, gameId, seasonId, buildHash } = {}) {
-  const parts = [sessionId, gameId, seasonId, buildHash].map((value) => String(value ?? '').trim());
-  if (parts.some((value) => !value)) throw new Error('sessionId, gameId, seasonId, and buildHash are required to derive a session seed');
-  let hash = 0x811c9dc5;
-  for (const character of parts.join('|')) {
-    hash ^= character.codePointAt(0);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  return hash >>> 0;
-}
+import { deriveSessionSeed } from './session-seed.mjs';
+export { deriveSessionSeed };
 
 export function getPlaySessionIdentity(gameId) {
   const game = getGame(gameId);
