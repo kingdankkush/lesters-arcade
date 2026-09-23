@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import {
   PORTAL_COPY, PORTAL_DESCRIPTION, PORTAL_FAQ, PORTAL_FLAGS, PORTAL_GAMES, RANKED_LAUNCH_TERMS,
   escapeHtml, portalCopyFor, portalPageMeta, portalSchema, renderGameDetails,
@@ -8,6 +8,9 @@ import {
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from '../apps/portal/src/settlement.mjs';
 import { DEFAULT_REVENUE_SPLIT_BPS, RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
 import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
+import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
+
+const deployConfig = JSON.parse(readFileSync(new URL('../contracts/deploy-config.testnet.json', import.meta.url), 'utf8'));
 
 const preview = portalCopyFor({ settlementLive: false, hostedProfileSync: false });
 const hostedPreview = portalCopyFor({ settlementLive: false, hostedProfileSync: true });
@@ -191,6 +194,39 @@ test('launch terms match the entry fee, the split and the server minimum paid am
   assert.equal(toWei(totalZkLtc), BigInt(DEFAULT_MIN_PAID_WEI));
   assert.equal(developerPercent * 100, DEFAULT_REVENUE_SPLIT_BPS.dev);
   assert.equal(arcadePercent * 100, DEFAULT_REVENUE_SPLIT_BPS.treasury);
+});
+
+// The quote must match what the contracts charge, not only the server minimum:
+// a retuned reserve (setSettlementGasReserve, a new deploy config) or a changed
+// per-game fee or split fails here until the public copy is updated with it.
+// The client's RANKED_SETTLEMENT_GAS_RESERVE_WEI (arcade-core.mjs:108) is still
+// 0.02 zkLTC at this base; the signin-entry slice sets it to 0.0001, and its pin
+// against reserveZkLtc is added when that slice merges.
+test('launch terms match the deployment reserve and every game fee and split', () => {
+  const { feeZkLtc, reserveZkLtc, developerPercent, arcadePercent } = RANKED_LAUNCH_TERMS;
+  assert.equal(toWei(reserveZkLtc), BigInt(LITVM_DEPLOYMENT.settlementGasReserveWei), 'generated/litvm-addresses.mjs reserve');
+  assert.equal(toWei(reserveZkLtc), BigInt(deployConfig.settlementGasReserveWei), 'deploy-config.testnet.json reserve');
+  assert.deepEqual(deployConfig.games.map(game => game.slug).sort(), PORTAL_GAMES.map(game => game.id).sort());
+  for (const game of deployConfig.games) {
+    assert.equal(BigInt(game.entryFeeWei), toWei(feeZkLtc), `${game.slug} entry fee`);
+    assert.deepEqual([game.devBps, game.treasuryBps, game.platformBps, game.liquidityBps], [developerPercent * 100, arcadePercent * 100, 0, 0], `${game.slug} split`);
+  }
+});
+
+test('server code never imports the flag-bound portal copy', () => {
+  // portal-content.mjs reads the flags from settlement.mjs, whose import graph
+  // (arcade-core.mjs, asset manifests) does not belong in a Vercel function.
+  const sources = [];
+  const walk = dir => {
+    for (const entry of readdirSync(new URL(dir, import.meta.url), { withFileTypes: true })) {
+      if (entry.isDirectory()) walk(`${dir}${entry.name}/`);
+      else if (/\.m?js$/.test(entry.name)) sources.push(`${dir}${entry.name}`);
+    }
+  };
+  walk('../server/');
+  walk('../api/');
+  assert.ok(sources.length > 20);
+  for (const source of sources) assert.doesNotMatch(readFileSync(new URL(source, import.meta.url), 'utf8'), /portal-content\.mjs/, source);
 });
 
 test('meta, structured data and game details render the copy they are given', () => {

@@ -1,4 +1,7 @@
 // Public, non-personal discovery facts shared by prerendered HTML and SPA views.
+// The flags come from settlement.mjs, which imports arcade-core.mjs and the
+// generated address module, so this module is for the browser and the page
+// builder only: server/** and api/** never import it (tests/portal-copy.test.mjs).
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
