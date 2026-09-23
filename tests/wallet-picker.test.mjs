@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import { buildWalletPickerModel, WALLET_PICKER_STYLESHEET } from '../apps/portal/src/wallet-picker.mjs';
+import { WALLET_CONNECTOR_STORAGE_KEY } from '../apps/portal/src/wallet-session.mjs';
+import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
 import {
   FEATURED_WALLET_RDNS,
   REOWN_ALLOWED_HOSTS,
@@ -232,9 +234,53 @@ test('the WalletConnect provider is lazy, host-gated and configured for LiteForg
   assert.match(source, /await import\('\.\/reown-appkit-vendor\.mjs'\)/);
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.doesNotMatch(main, /^import[^\n]*(?:walletconnect-provider|reown-appkit-vendor|@reown)/m, 'AppKit is never statically reachable from main.js');
-  // ranked-identity is left out: ranked-client may import it statically for its own sites.
-  for (const lazy of ['wallet-picker', 'wallet-chips', 'walletconnect-provider', 'ranked-preflight']) {
+  // ranked-identity is left out: ranked-client may import it statically for
+  // its own sites. wallet-config has no import of its own in main.js: the
+  // lazy modules carry it (brief acceptance 1).
+  for (const lazy of ['wallet-picker', 'wallet-chips', 'walletconnect-provider', 'ranked-preflight', 'wallet-session']) {
     assert.doesNotMatch(main, new RegExp(`^import[^\\n]*\\./src/${lazy}\\.mjs`, 'm'), `${lazy} loads with import()`);
     assert.match(main, new RegExp(`import\\('\\./src/${lazy}\\.mjs'\\)`), `${lazy} has a dynamic import`);
   }
+  assert.doesNotMatch(main, /^import[^\n]*\.\/src\/wallet-config\.mjs/m, 'wallet-config is never a static import of main.js');
+  // The boot peek at the remembered connector uses the module's own key.
+  assert.ok(main.includes(`const WALLET_CONNECTOR_STORAGE_KEY = '${WALLET_CONNECTOR_STORAGE_KEY}';`));
+  // The faucet link the Ranked modal renders is the configured faucet.
+  assert.equal(LITVM_LITEFORGE_NETWORK.faucetUrl, LITEFORGE_FAUCET_URL);
+});
+
+test('sign-out ends a WalletConnect session restored at boot, and only then creates AppKit', async () => {
+  // A fresh module instance: no AppKit has been created in it yet.
+  const fresh = await import(`../apps/portal/src/walletconnect-provider.mjs?signout=${Date.now()}`);
+  let loads = 0;
+  const refuse = async () => { loads += 1; throw new Error('must not load'); };
+  // A plain disconnect never creates AppKit.
+  await fresh.disconnectWalletConnect({ loadAppKit: refuse });
+  // Off the Reown-allowed hosts there is nothing to end.
+  await fresh.disconnectWalletConnect({ restoreFirst: true, host: 'localhost', loadAppKit: refuse });
+  assert.equal(loads, 0);
+
+  // A restored session (no provider yet): AppKit is created on the sign-out
+  // click, reconnects the stored relay session without its modal, then
+  // disconnects it, so the next WalletConnect pick asks again.
+  const calls = [];
+  let connected = false;
+  const appKit = {
+    getIsConnectedState: () => connected,
+    getProvider: () => (connected ? { request: async () => [] } : undefined),
+    subscribeProviders: (fn) => { setTimeout(() => { connected = true; fn(); }, 1); return () => {}; },
+    subscribeAccount: () => () => {},
+    subscribeState: () => () => {},
+    open: async () => { calls.push('open'); },
+    disconnect: async () => { calls.push('disconnect'); connected = false; },
+  };
+  await fresh.disconnectWalletConnect({
+    restoreFirst: true, host: 'lestersarcade.io', origin: 'https://lestersarcade.io', reconnectWaitMs: 200,
+    loadAppKit: async () => ({ createAppKit: () => { calls.push('create'); return appKit; }, EthersAdapter: class {} }),
+  });
+  assert.deepEqual(calls, ['create', 'disconnect'], 'no connect modal, and the stored session is ended');
+
+  // main.js ends it on sign-out whether or not the provider was ever created.
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.ok(main.includes("if (walletPickKind === 'walletconnect') void endWalletConnectSession({ restoreFirst: !connectedProvider });"));
+  assert.ok(main.includes('disconnectWalletConnect({ restoreFirst })'));
 });

@@ -24,9 +24,7 @@ import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-
 import { buildSiweChallenge, isValidLogin, createProviderRegistry, classifyWalletError, walletErrorAction } from './src/wallet-auth.mjs';
 import { RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei, formatZkLtcWei } from './src/arcade-core.mjs';
 import { createCanonicalSessionIdentity } from './src/session-integrity.mjs';
-import { createWalletSession } from './src/wallet-session.mjs';
-import { isReownAllowedHost, LITEFORGE_FAUCET_URL } from './src/wallet-config.mjs';
-import { ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_PAUSED_MESSAGE } from './src/ranked-entry-flow.mjs';
+import { ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from './src/ranked-entry-flow.mjs';
 import { sendRankedEntry, fetchWalletBalance, RANKED_ENTRY_GAS_UNITS, RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI } from './src/litvm-chain-client.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
@@ -1851,6 +1849,7 @@ let connectedAddress = null;
 // needs the wallet.
 let walletProviderPending = false;
 let walletPickKind = null; // 'eip6963' | 'legacy' | 'walletconnect'
+let walletPickRdns = null; // the picked EIP-6963 wallet's rdns, kept with the remembered connector
 
 // Hosted profile sync + relayed settlement (owner decisions 2026-09-16): the
 // wallet is the account and its profile follows it across devices. Every
@@ -1918,15 +1917,33 @@ function waitForAnnouncedWallet(rdns, ms = 500) {
 }
 // Wallet sign-in session (contract §7.6): SIWE with the server nonce when
 // hosted, the local challenge in preview, silent restore and the remembered
-// connector. It announces lesters:wallet-session on every change.
-const walletSession = createWalletSession({
-  hosted: HOSTED_PROFILE_SYNC,
-  storage: ARCADE_STORAGE,
-  profileSync,
-  loadEthers,
-  domain: (typeof location !== 'undefined' && location.hostname) ? location.hostname : 'lestersarcade.io',
-  chainId: LITVM_LITEFORGE_NETWORK.chainId,
-});
+// connector. It announces lesters:wallet-session on every change. Loaded with
+// import() (brief acceptance 1): at boot only when a connector is remembered,
+// otherwise on the first sign-in. `walletSession` is null until then.
+let walletSession = null;
+let walletSessionLoading = null;
+function loadWalletSession() {
+  if (walletSession) return Promise.resolve(walletSession);
+  walletSessionLoading ??= import('./src/wallet-session.mjs').then(({ createWalletSession }) => {
+    walletSession ??= createWalletSession({
+      hosted: HOSTED_PROFILE_SYNC,
+      storage: ARCADE_STORAGE,
+      profileSync,
+      loadEthers,
+      domain: (typeof location !== 'undefined' && location.hostname) ? location.hostname : 'lestersarcade.io',
+      chainId: LITVM_LITEFORGE_NETWORK.chainId,
+    });
+    return walletSession;
+  }).catch((error) => { walletSessionLoading = null; throw error; });
+  return walletSessionLoading;
+}
+// The remembered connector's storage key (wallet-session.mjs
+// WALLET_CONNECTOR_STORAGE_KEY, pinned equal by a test): boot peeks at it so a
+// first-time visitor never loads the session module.
+const WALLET_CONNECTOR_STORAGE_KEY = 'lesters-arcade-wallet-connector-v1';
+function hasRememberedWalletConnector() {
+  try { return Boolean(ARCADE_STORAGE?.getItem?.(WALLET_CONNECTOR_STORAGE_KEY)); } catch { return false; }
+}
 let currentSession = null;
 const bootRuntimeSearch = window.location.search;
 let hmhRebootHost = null;
@@ -5522,7 +5539,7 @@ async function startOfficialMode(mode) {
     }
     // A WalletConnect session restored at boot creates its provider now, on
     // this click, never at boot (guide rule 3).
-    if (walletProviderPending && !(await ensureWalletProvider())) {
+    if (walletProviderPending && !(await walletProviderForAction())) {
       showRankedTooltip('Reconnect your wallet to play Ranked', 'Your WalletConnect session could not reconnect. Sign in again; Free Mode is always available.');
       return;
     }
@@ -5572,12 +5589,20 @@ function requestRankedEntry(pendingSession = null) {
     renderEntryTotals(RANKED_SETTLEMENT_GAS_RESERVE_WEI, entryTotalWei);
     let closed = false;
     let checkSequence = 0;
-    let paused = false;
+    // Set when E15 answers paused or the entry contract quotes nothing: the
+    // modal stays open with the message, and nothing may reach the wallet.
+    let halted = false;
     let needsSignIn = !walletAuthenticated;
     let readyToPay = false;
     let latestQuote = null;
     let seedTicket = null;
+    let prefetchInFlight = null;
+    // The amounts the last readiness check read, for a funds error at send.
+    let lastFundsAmounts = {};
     const provider = detectEthereumProvider();
+    // The session key binds the account the pending session was created for.
+    const sessionWallet = String(pendingSession?.canonicalContext?.wallet ?? pendingSession?.wallet ?? '').toLowerCase();
+    const accountSwitched = () => Boolean(pendingSession) && String(connectedWallet ?? '').toLowerCase() !== sessionWallet;
     const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
     dom.rankedEntryWallet.textContent = walletShort;
     dom.rankedEntryNetwork.textContent = `${LITVM_LITEFORGE_NETWORK.name} · ${LITVM_LITEFORGE_NETWORK.chainId}`;
@@ -5602,6 +5627,9 @@ function requestRankedEntry(pendingSession = null) {
       dom.rankedEntryStatus.dataset.state = state;
       dom.rankedEntryStatus.textContent = text;
     };
+    // Checked after every await of the approve flow: a closed or halted modal
+    // never goes on to the key or the wallet.
+    const stopped = () => closed || halted;
     const cleanup = () => {
       closed = true;
       dom.rankedEntryApprove.disabled = true;
@@ -5618,19 +5646,41 @@ function requestRankedEntry(pendingSession = null) {
       resolve(false);
       void startOfficialMode('free');
     };
-    // Ranked paused (E15 503): stop before any wallet prompt.
-    const showPaused = () => {
-      paused = true;
+    // Ranked paused (E15 503) or closed (a zero quote, A27): stop before any
+    // wallet prompt.
+    const showHalted = (message) => {
+      halted = true;
       readyToPay = false;
       guard.hidden = true;
       guard.replaceChildren();
-      setStatus('error', RANKED_PAUSED_MESSAGE);
+      setStatus('error', message);
       dom.rankedEntryApprove.disabled = true;
       resolve(false);
     };
+    const showPaused = () => showHalted(RANKED_PAUSED_MESSAGE);
+    // The wallet switched accounts after the session was created: that key
+    // must not be paid from another account. Start again for the new one.
+    const restartForSwitchedAccount = () => {
+      cleanup();
+      resolve(false);
+      if (!connectedWallet) return;
+      showWalletNotice('Your wallet switched accounts, so the Ranked entry starts again for the new account.');
+      void startOfficialMode('ranked');
+    };
     const refreshApprove = () => {
       dom.rankedEntryApprove.textContent = approveLabel();
-      dom.rankedEntryApprove.disabled = closed || paused || !(needsSignIn || readyToPay);
+      dom.rankedEntryApprove.disabled = closed || halted || !(needsSignIn || readyToPay);
+    };
+    // A failed readiness read: the message plus one Try again.
+    const showRetry = (message) => {
+      readyToPay = false;
+      setStatus('error', message);
+      guard.hidden = false;
+      guard.replaceChildren();
+      const retry = el('button', { className: 'pixel-button', type: 'button', textContent: 'Try again' });
+      retry.addEventListener('click', () => { retry.textContent = 'Checking…'; runCheck(); });
+      guard.append(retry);
+      refreshApprove();
     };
     // One message and one action per wallet error kind (wallet-auth.mjs).
     const showWalletError = (classified, amounts = {}) => {
@@ -5638,9 +5688,11 @@ function requestRankedEntry(pendingSession = null) {
       guard.hidden = true;
       guard.replaceChildren();
       if (action.kind === 'missing-wallet') {
+        // The picker, even though the player still looks signed in: the
+        // provider behind that session is gone.
         cleanup();
         resolve(false);
-        void connectWallet();
+        void signInFromPicker({ allowSimulated: false });
         return;
       }
       if (action.kind === 'wrong-network') {
@@ -5665,7 +5717,7 @@ function requestRankedEntry(pendingSession = null) {
         guard.hidden = false;
         appendText(guard, 'strong', action.message);
         const actions = el('div', { className: 'ranked-entry-guard-actions' });
-        const faucet = el('a', { className: 'pixel-button', textContent: action.actions[0].label, href: LITEFORGE_FAUCET_URL, target: '_blank', rel: 'noopener noreferrer' });
+        const faucet = el('a', { className: 'pixel-button', textContent: action.actions[0].label, href: LITVM_LITEFORGE_NETWORK.faucetUrl, target: '_blank', rel: 'noopener noreferrer' });
         const recheck = el('button', { className: 'pixel-button', type: 'button', textContent: action.actions[1].label });
         recheck.addEventListener('click', () => { recheck.textContent = 'Checking…'; runCheck(); });
         actions.append(faucet, recheck);
@@ -5682,14 +5734,16 @@ function requestRankedEntry(pendingSession = null) {
 
     // E15 seed ticket (A25), fetched before the session key; never a wallet
     // prompt. A 401 re-runs sign-in once (this runs inside the approve click).
+    // The Bearer token is the one of the wallet the session is bound to.
     const obtainSeedTicket = async ({ reauth }) => {
       if (seedTicketUsable(seedTicket, { sessionId: pendingSession.sessionId, nowMs: Date.now() })) return seedTicket;
-      let result = await fetchSeedTicket({ token: walletSession.token(connectedWallet), session: pendingSession });
-      if (result.status === 401 && reauth) {
-        walletSession.invalidate();
+      const session = await loadWalletSession();
+      let result = await fetchSeedTicket({ token: session.token(sessionWallet), session: pendingSession });
+      if (result.status === 401 && reauth && !stopped()) {
+        session.invalidate();
         walletAuthenticated = false;
         if (await authenticateWalletSiwe(provider, connectedAddress ?? connectedWallet)) {
-          result = await fetchSeedTicket({ token: walletSession.token(connectedWallet), session: pendingSession });
+          result = await fetchSeedTicket({ token: session.token(sessionWallet), session: pendingSession });
         }
       }
       if (result.ok) seedTicket = result;
@@ -5699,35 +5753,43 @@ function requestRankedEntry(pendingSession = null) {
     const onApprove = async () => {
       if (closed || dom.rankedEntryApprove.disabled) return;
       playSfxCue('wallet-connect', 0.05);
+      if (accountSwitched()) { restartForSwitchedAccount(); return; }
       if (needsSignIn) {
         // Sign-in from this button's click, then a second click pays.
         dom.rankedEntryApprove.disabled = true;
         dom.rankedEntryApprove.textContent = 'Check your wallet…';
         const signed = await authenticateWalletSiwe(provider, connectedAddress ?? connectedWallet);
-        if (closed) return;
+        if (stopped()) return;
         needsSignIn = !signed;
         if (signed) {
           setStatus('ok', SETTLEMENT_LIVE ? '✓ Signed in.' : '✓ Signed in. Start your Ranked preview run.');
           if (!SETTLEMENT_LIVE) readyToPay = true;
-          else if (!paused) prefetchSeedTicket();
+          else prefetchSeedTicket();
         } else {
           setStatus('', 'Ranked runs are bound to a signed wallet login. The signature is free and sends no transaction.');
         }
         refreshApprove();
         return;
       }
-      if (!SETTLEMENT_LIVE || entryFeeWei === '0' || !pendingSession) {
+      if (!SETTLEMENT_LIVE) {
         cleanup();
         resolve(requestedGameId === selectedGameId);
         return;
       }
       if (requestedGameId !== selectedGameId) { cleanup(); resolve(false); return; }
+      // A27: a free Ranked entry cannot settle (402 entry-underpaid), so live
+      // Ranked without a fee is closed rather than free.
+      if (entryFeeWei === '0' || !pendingSession) { showHalted(RANKED_CLOSED_MESSAGE); return; }
       // Live: seed ticket, then the key, then one wallet confirmation.
       dom.rankedEntryApprove.disabled = true;
       dom.rankedEntryApprove.textContent = 'Preparing…';
       setStatus('pending', 'Preparing your Ranked session…');
-      const ticket = await obtainSeedTicket({ reauth: true });
-      if (closed) return;
+      // The ticket prefetched when the modal opened is awaited, never raced:
+      // a paused answer arriving now still stops the entry.
+      if (prefetchInFlight) await prefetchInFlight;
+      if (stopped()) return;
+      const ticket = await obtainSeedTicket({ reauth: true }).catch(() => ({ ok: false, status: 0, error: 'network' }));
+      if (stopped()) return;
       if (!ticket.ok) {
         if (isRankedPaused(ticket)) { showPaused(); return; }
         setStatus('error', ticket.status === 401 ? 'Sign in again to play Ranked.' : 'Ranked could not start. Try again.');
@@ -5737,24 +5799,30 @@ function requestRankedEntry(pendingSession = null) {
       }
       try {
         const { applySeedTicket, rankedIdentityFor, rankedSessionKey } = await loadRankedIdentity();
+        if (stopped()) return;
+        if (accountSwitched()) { restartForSwitchedAccount(); return; }
         applySeedTicket(pendingSession, ticket);
         const identity = rankedIdentityFor(pendingSession, { scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry });
         const sessionKey = await rankedSessionKey(identity);
-        if (closed) return;
+        if (stopped()) return;
+        if (accountSwitched()) { restartForSwitchedAccount(); return; }
         dom.rankedEntryApprove.textContent = 'Confirm in your wallet…';
         setStatus('pending', `Confirm the ${formatZkLtcWei(entryTotalWei)} entry in your wallet.`);
-        const sent = await sendRankedEntry(provider, { sessionKey, gameId: requestedGameId, preflight: latestQuote });
+        const sent = await sendRankedEntry(provider, { sessionKey, gameId: requestedGameId, preflight: latestQuote, expectedWallet: sessionWallet });
         recordEntryBroadcast(pendingSession, sent, { eventTarget: window, gameId: requestedGameId });
-        if (sent.txHash) {
-          showEntryChip(pendingSession);
-          pendingSession.entryConfirmed.then(() => refreshWalletBalanceChip()).catch(() => {});
-        }
+        showEntryChip(pendingSession);
+        pendingSession.entryConfirmed.then(() => refreshWalletBalanceChip()).catch(() => {});
         setStatus('ok', '✓ Entry sent. Your run is starting.');
         cleanup();
         resolve(requestedGameId === selectedGameId);
       } catch (error) {
         if (closed) return;
-        showWalletError(classifyWalletError(error));
+        // The wallet signs as another account: start again once the page has
+        // seen the switch; until then the wallet error (and Try again) shows.
+        if (error?.code === 'ACCOUNT_MISMATCH' && accountSwitched()) { restartForSwitchedAccount(); return; }
+        if (error?.code === 'RANKED_ENTRY_CLOSED') { showHalted(RANKED_CLOSED_MESSAGE); return; }
+        const classified = classifyWalletError(error);
+        showWalletError(classified, classified.kind === 'insufficient-funds' ? lastFundsAmounts : {});
       }
     };
     dom.rankedEntryApprove.addEventListener('click', onApprove);
@@ -5781,10 +5849,13 @@ function requestRankedEntry(pendingSession = null) {
     // Prefetch the seed ticket (no wallet prompt) so a paused service stops
     // the entry before anything is paid. Refetched at approval if stale.
     function prefetchSeedTicket() {
-      if (!pendingSession || entryFeeWei === '0') return;
-      void obtainSeedTicket({ reauth: false }).then((result) => {
+      if (!pendingSession || entryFeeWei === '0' || halted) return;
+      const request = obtainSeedTicket({ reauth: false }).then((result) => {
         if (!closed && !result.ok && isRankedPaused(result)) showPaused();
-      }).catch(() => {});
+        return result;
+      }).catch(() => null);
+      prefetchInFlight = request;
+      void request.then(() => { if (prefetchInFlight === request) prefetchInFlight = null; });
     }
     if (!needsSignIn) prefetchSeedTicket();
 
@@ -5797,7 +5868,7 @@ function requestRankedEntry(pendingSession = null) {
       guard.hidden = true;
       guard.replaceChildren();
       const r = await checkRankedReadiness(provider, { gameId: requestedGameId, wallet: connectedWallet });
-      if (closed || sequence !== checkSequence) return;
+      if (closed || halted || sequence !== checkSequence) return;
       if (!r.onChain && r.chainId !== null && r.chainId !== undefined) {
         if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = '—';
         showWalletError({ kind: 'wrong-network' }, { chainId: r.chainId });
@@ -5805,25 +5876,25 @@ function requestRankedEntry(pendingSession = null) {
       }
       if (r.error) {
         if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = '—';
-        setStatus('error', r.errorKind === 'contract-gate' ? r.error : walletErrorAction({ kind: 'wallet-error', message: r.error }).message);
-        refreshApprove();
+        showRetry(r.errorKind === 'contract-gate' ? r.error : walletErrorAction({ kind: 'wallet-error', message: r.error }).message);
         return;
       }
-      // Right chain → the contract's exact quote and the balance.
+      // Right chain → the contract's exact quote and the balance (rounded
+      // down, like every balance; the amount owed rounds up).
       if (r.contractGate?.entryTotalWei !== undefined) renderEntryTotals(r.contractGate.settlementGasReserveWei ?? 0n, r.contractGate.entryTotalWei);
-      const bal = Number(r.balanceEth || '0');
-      if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = `${bal.toFixed(4)} zkLTC`;
+      const balanceText = `${formatZkLtc4(r.balanceWei ?? 0n)} zkLTC`;
+      if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = balanceText;
+      lastFundsAmounts = { totalZkLtc: formatZkLtc4(r.needWei ?? entryTotalWei, { roundUp: true }), balanceZkLtc: balanceText };
       if (!r.hasFunds) {
-        showWalletError({ kind: 'insufficient-funds' }, { totalZkLtc: formatZkLtc4(r.needWei ?? entryTotalWei, { roundUp: true }), balanceZkLtc: `${bal.toFixed(4)} zkLTC` });
+        showWalletError({ kind: 'insufficient-funds' }, lastFundsAmounts);
         return;
       }
       if (r.ok !== true) {
-        setStatus('error', 'Ranked prerequisites could not be verified.');
-        refreshApprove();
+        showRetry('Ranked prerequisites could not be verified.');
         return;
       }
       latestQuote = r.contractGate ? { ok: true, gameId: requestedGameId, ...r.contractGate } : null;
-      if (paused) return;
+      if (latestQuote && BigInt(latestQuote.entryTotalWei ?? 0n) === 0n) { showHalted(RANKED_CLOSED_MESSAGE); return; }
       readyToPay = true;
       if (!needsSignIn) setStatus('ok', '✓ Ready. One confirmation in your wallet starts the run.');
       refreshApprove();
@@ -6201,11 +6272,15 @@ function peekRankedPreflight(gameId) {
   return rankedPreflight?.peek({ gameId, wallet: connectedWallet }) ?? null;
 }
 
-// The "Entry confirming…" chip (lazy): follows lesters:ranked-entry.
+// The "Entry confirming…" chip (lazy): follows lesters:ranked-entry. The
+// status is read once the module has loaded, so an entry that settled while
+// it loaded (first use, a slow network) is shown settled, not confirming.
 function showEntryChip(session) {
-  const status = session?.entryReceipt?.status === 'pending' ? 'broadcast' : session?.entryReceipt?.status;
   void loadWalletChips()
-    .then(({ mountEntryChip }) => mountEntryChip({ documentRef: document, eventTarget: window, sessionId: session.sessionId, status }))
+    .then(({ mountEntryChip }) => {
+      const status = session?.entryReceipt?.status === 'pending' ? 'broadcast' : session?.entryReceipt?.status;
+      return mountEntryChip({ documentRef: document, eventTarget: window, sessionId: session.sessionId, status });
+    })
     .catch(() => {});
 }
 
@@ -6253,10 +6328,10 @@ async function ensureWalletProvider() {
     walletProviderPending = false;
     bindWalletProviderEvents(provider);
     if (account.toLowerCase() !== connectedWallet) {
-      // Another account came back: it has not signed this session.
+      // Another account came back: it has not signed this session, unless it
+      // holds a live session of its own. It is remembered from now on.
       connectedWallet = account.toLowerCase();
-      walletAuthenticated = walletSession.isAuthenticated(connectedWallet);
-      walletSession.announce({ wallet: connectedWallet, authenticated: walletAuthenticated });
+      syncWalletAuthentication();
       connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
       render();
     }
@@ -6268,6 +6343,42 @@ async function ensureWalletProvider() {
   }
 }
 
+// The provider for a wallet action started by a DOM click (a profile write,
+// the Ranked entry): a WalletConnect session restored at boot gets its
+// provider here, never at boot. Null when no wallet can act.
+async function walletProviderForAction() {
+  if (walletProviderPending && !(await ensureWalletProvider())) return null;
+  const provider = detectEthereumProvider();
+  return provider?.request ? provider : null;
+}
+
+// The remembered connector follows the account the picked wallet is on, so a
+// reload restores the account the player last signed with.
+function rememberPickedWallet(session = walletSession) {
+  if (!session || !walletPickKind || !connectedWallet || walletConnector !== 'injected-evm') return;
+  session.remember({ kind: walletPickKind, rdns: walletPickRdns, wallet: connectedWallet });
+}
+
+// After the connected account changed: signed in only if that account holds a
+// live session of its own; announced (lesters:wallet-session) and remembered.
+function syncWalletAuthentication() {
+  const wallet = connectedWallet;
+  const apply = (session) => {
+    if (wallet !== connectedWallet) return false;
+    walletAuthenticated = Boolean(wallet) && session.isAuthenticated(wallet);
+    session.announce({ wallet, authenticated: walletAuthenticated });
+    rememberPickedWallet(session);
+    return true;
+  };
+  if (walletSession) { apply(walletSession); return; }
+  walletAuthenticated = false;
+  void loadWalletSession().then((session) => { if (apply(session)) render(); }).catch(() => {});
+}
+function announceWalletSignedOut() {
+  if (walletSession) { walletSession.announce({ wallet: null, authenticated: false }); return; }
+  void loadWalletSession().then((session) => session.announce({ wallet: null, authenticated: false })).catch(() => {});
+}
+
 // Sign-In-With-Ethereum (contract §7.6, A13): one plain-language signature
 // binds the session to the address. Hosted: server nonce + issuedAt, then
 // POST /api/session (24 h Bearer token). Preview: the local challenge checked
@@ -6277,10 +6388,19 @@ async function ensureWalletProvider() {
 // wallet returned it.
 async function authenticateWalletSiwe(provider, address) {
   if (!provider?.request || !address) return false;
-  const result = await walletSession.signIn({ provider, address });
+  let session = null;
+  try {
+    session = await loadWalletSession();
+  } catch {
+    showWalletNotice('Sign-in could not load. Check your connection and try again. Free Mode still works.', { tone: 'warning' });
+    return false;
+  }
+  const result = await session.signIn({ provider, address });
   walletAuthenticated = Boolean(result.ok && result.authenticated);
   if (walletAuthenticated) {
     if (HOSTED_PROFILE_SYNC && result.expiresAt) debugRuntimeLog('[Profile] Hosted session issued until', new Date(result.expiresAt).toISOString());
+    // A fresh login is what a reload restores: remember this account.
+    rememberPickedWallet(session);
     refreshWalletBalanceChip();
     return true;
   }
@@ -6306,6 +6426,8 @@ function connectMockWallet() {
   connectedProvider = null;
   connectedAddress = null;
   walletProviderPending = false;
+  walletPickKind = null;
+  walletPickRdns = null;
   walletConnector = 'mock-wallet';
   connectPlayerAccount(state, connectedWallet, { handle: 'Lester Pilot' });
   persistArcadeStateSoon();
@@ -6361,14 +6483,23 @@ function showSignOutConfirmModal() {
   document.addEventListener('keydown', onEscape);
 }
 
+// Ends the WalletConnect session on sign-out, including one restored at boot
+// whose provider was never created (restoreFirst): AppKit reconnects the
+// stored relay session, then disconnects it, so the next WalletConnect pick on
+// this device asks again. Sign-out is a click, so creating AppKit here is fine.
+function endWalletConnectSession({ restoreFirst = false } = {}) {
+  return import('./src/walletconnect-provider.mjs')
+    .then(({ disconnectWalletConnect }) => disconnectWalletConnect({ restoreFirst }))
+    .catch(() => {});
+}
+
 function executeSignOut() {
   profileSync.flush(connectedWallet).catch(() => {});
   // Drops the Bearer token, the preview flag and the remembered connector, and
   // announces lesters:wallet-session. A WalletConnect session is ended too.
-  walletSession.signOut();
-  if (walletPickKind === 'walletconnect' && connectedProvider) {
-    import('./src/walletconnect-provider.mjs').then(({ disconnectWalletConnect }) => disconnectWalletConnect()).catch(() => {});
-  }
+  if (walletSession) walletSession.signOut();
+  else void loadWalletSession().then((session) => session.signOut()).catch(() => {});
+  if (walletPickKind === 'walletconnect') void endWalletConnectSession({ restoreFirst: !connectedProvider });
   profileSyncPulledFor = null;
   profileSyncLastPushed = null;
   resetCombatAudioVoiceState();
@@ -6409,6 +6540,7 @@ function executeSignOut() {
   connectedAddress = null;
   walletProviderPending = false;
   walletPickKind = null;
+  walletPickRdns = null;
   walletAuthenticated = false;
   walletAuthChallenge = null;
   refreshWalletBalanceChip();
@@ -6563,11 +6695,8 @@ async function walletPickerProviders() {
 // Returns the player's choice: a picker entry, { kind:'simulated' } when no
 // real wallet exists at all (local QA fallback), or null when dismissed.
 async function chooseWallet() {
-  const providers = await walletPickerProviders();
-  const host = currentWalletHost();
-  if (!providers.length && !isReownAllowedHost(host)) return { kind: 'simulated' };
-  const picker = await loadWalletPicker();
-  const model = picker.buildWalletPickerModel({ providers, isMobile: isMobileWalletDevice(), host, remembered: walletSession.remembered() });
+  const [providers, picker] = await Promise.all([walletPickerProviders(), loadWalletPicker()]);
+  const model = picker.buildWalletPickerModel({ providers, isMobile: isMobileWalletDevice(), host: currentWalletHost(), remembered: walletSession?.remembered() ?? null });
   if (model.simulated) return { kind: 'simulated' };
   // One browser wallet and nothing else to offer: connect it directly.
   if (model.entries.length === 1 && !model.walletConnect) return model.entries[0];
@@ -6616,13 +6745,14 @@ async function signInWithWalletProvider(provider, choice) {
   connectedProvider = provider;
   walletProviderPending = false;
   walletPickKind = choice.kind;
+  walletPickRdns = choice.rdns ?? null;
   walletConnector = 'injected-evm';
   walletAuthenticated = false;
   walletAuthChallenge = null;
   bindWalletProviderEvents(provider);
   // Remembered now; a reload restores it only with a live session (restore()
   // checks the token), so a later sign-in from the Ranked modal counts too.
-  walletSession.remember({ kind: choice.kind, rdns: choice.rdns ?? null, wallet: connectedWallet });
+  try { rememberPickedWallet(await loadWalletSession()); } catch { /* remembered at the SIWE step, or next time */ }
   debugRuntimeLog('[Wallet] Connected:', connectedWallet);
   // One explainer, then switch (or add) LiteForge. A refusal keeps the player
   // signed in for Free play; the Ranked modal offers the switch again.
@@ -6649,19 +6779,39 @@ async function signInWithWalletProvider(provider, choice) {
   return connectedWallet;
 }
 
+// One sign-in at a time: a double click on Sign in, or a click while the
+// picker is still loading, joins the sign-in in progress instead of opening a
+// second picker. `allowSimulated: false` (a vanished provider in the Ranked
+// modal) never swaps a real identity for the simulated one.
+let walletSignInInFlight = null;
+function signInFromPicker({ allowSimulated = true } = {}) {
+  if (walletSignInInFlight) return walletSignInInFlight;
+  const attempt = (async () => {
+    const choice = await chooseWallet();
+    debugRuntimeLog('[Wallet] Choice:', choice?.kind ?? 'dismissed');
+    // The simulated local identity only when no wallet exists at all.
+    if (choice?.kind === 'simulated') {
+      if (allowSimulated) return connectMockWallet();
+      showWalletNotice('No browser wallet answered. Unlock or install your wallet, then sign in again.', { tone: 'warning' });
+      return null;
+    }
+    if (!choice) return null; // picker dismissed: stay signed out, Free Mode stays open
+    const provider = await providerForWalletChoice(choice);
+    if (!provider?.request) return null;
+    return signInWithWalletProvider(provider, choice);
+  })();
+  walletSignInInFlight = attempt;
+  const release = () => { if (walletSignInInFlight === attempt) walletSignInInFlight = null; };
+  attempt.then(release, release);
+  return attempt;
+}
+
 async function connectWallet() {
   if (connectedWallet && walletConnector === 'injected-evm') {
     if (walletProviderPending) await ensureWalletProvider();
     return connectedWallet;
   }
-  const choice = await chooseWallet();
-  debugRuntimeLog('[Wallet] Choice:', choice?.kind ?? 'dismissed');
-  // The simulated local identity only when no wallet exists at all.
-  if (choice?.kind === 'simulated') return connectMockWallet();
-  if (!choice) return null; // picker dismissed: stay signed out, Free Mode stays open
-  const provider = await providerForWalletChoice(choice);
-  if (!provider?.request) return null;
-  return signInWithWalletProvider(provider, choice);
+  return signInFromPicker();
 }
 
 async function ensureWalletConnected() {
@@ -15417,7 +15567,9 @@ const boundWalletProviders = new WeakSet();
 function bindWalletProviderEvents(provider) {
   if (!provider?.on || boundWalletProviders.has(provider)) return;
   boundWalletProviders.add(provider);
-  const fromPickedWallet = () => !connectedProvider || connectedProvider === provider;
+  // While a restored WalletConnect session waits for its provider, no other
+  // installed wallet may stand in for it (or sign it out).
+  const fromPickedWallet = () => (connectedProvider ? connectedProvider === provider : !walletProviderPending);
   provider.on('chainChanged', (chainId) => {
     if (walletConnector === 'injected-evm' && fromPickedWallet()) {
       connectedChainId = chainId;
@@ -15433,9 +15585,8 @@ function bindWalletProviderEvents(provider) {
       connectedAddress = nextWallet;
       walletConnector = 'injected-evm';
       if (changed) {
-        walletAuthenticated = walletSession.isAuthenticated(connectedWallet);
         walletAuthChallenge = null; profileSyncPulledFor = null; profileSyncLastPushed = null;
-        walletSession.announce({ wallet: connectedWallet, authenticated: walletAuthenticated });
+        syncWalletAuthentication();
         refreshWalletBalanceChip();
       }
       connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
@@ -15447,7 +15598,7 @@ function bindWalletProviderEvents(provider) {
       walletConnector = 'none';
       walletAuthenticated = false;
       walletAuthChallenge = null;
-      walletSession.announce({ wallet: null, authenticated: false });
+      announceWalletSignedOut();
       refreshWalletBalanceChip();
     }
     render();
@@ -15462,19 +15613,22 @@ bindWalletProviderEvents(detectEthereumProvider());
 // WalletConnect session is restored from its token alone; AppKit is not
 // created here, so Free Mode opens no relay connection (guide rule 3).
 async function restoreWalletSession() {
-  const memory = walletSession.remembered();
+  if (!hasRememberedWalletConnector()) return; // nothing remembered: the session module never loads
+  const session = await loadWalletSession();
+  const memory = session.remembered();
   if (!memory) return;
   let provider = null;
   if (memory.kind === 'eip6963') provider = (await waitForAnnouncedWallet(memory.rdns, 500))?.provider ?? null;
   else if (memory.kind === 'legacy') provider = legacyInjectedProvider();
   if (connectedWallet) return; // the player signed in while we waited
-  const restored = await walletSession.restore({ provider });
+  const restored = await session.restore({ provider });
   if (!restored.ok || !restored.authenticated || connectedWallet) return;
   connectedWallet = restored.wallet;
   connectedAddress = restored.address ?? restored.wallet;
   connectedProvider = restored.providerPending ? null : provider;
   walletProviderPending = Boolean(restored.providerPending);
   walletPickKind = memory.kind;
+  walletPickRdns = memory.rdns;
   walletConnector = 'injected-evm';
   walletAuthenticated = true;
   if (connectedProvider) {

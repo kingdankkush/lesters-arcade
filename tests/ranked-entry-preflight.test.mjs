@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { parse } from 'acorn';
 import { walletErrorAction } from '../apps/portal/src/wallet-auth.mjs';
-import { formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_PAUSED_MESSAGE } from '../apps/portal/src/ranked-entry-flow.mjs';
+import { formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from '../apps/portal/src/ranked-entry-flow.mjs';
 
 const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 const ast = parse(main, { ecmaVersion: 'latest', sourceType: 'module' });
@@ -29,7 +29,7 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     dom, SETTLEMENT_LIVE: live, selectedGameId: 'lester-blaster', connectedWallet: `0x${'12'.repeat(20)}`,
     LITVM_LITEFORGE_NETWORK: { name: 'Fixture LiteForge', chainId: 4441, faucetUrl: 'https://example.invalid/faucet' },
     detectEthereumProvider: () => ({ request() { throw new Error('No real wallet in modal tests'); } }),
-    checkRankedReadiness: async (provider, options) => { calls.push({ provider, options }); return pending ? pending : { ok: true, onChain: true, hasFunds: true, balanceEth: '1', error: null, ...status }; },
+    checkRankedReadiness: async (provider, options) => { calls.push({ provider, options }); return pending ? pending : { ok: true, onChain: true, hasFunds: true, balanceWei: 10n ** 18n, balanceEth: '1', error: null, ...status }; },
     playSfxCue() {}, requestLiteForgeNetwork: async () => false,
     // 2026-09-16 native entry fee wiring (disclosed in the modal; paid only when live).
     RANKED_ENTRY_FEE_ZKLTC: '0.1', formatZkLtcWei: (wei) => `${Number(BigInt(wei) / 1_000_000_000_000_000n) / 1000} zkLTC`,
@@ -39,12 +39,13 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     // Sign-in and live entry (signin-entry slice): a signed-in wallet, no cached
     // pre-flight, and no seed ticket or payment unless a test says otherwise.
     walletAuthenticated: true, connectedAddress: null, ensureWalletStylesheet() {}, peekRankedPreflight: () => null,
-    formatZkLtc4, walletErrorAction, LITEFORGE_FAUCET_URL: 'https://example.invalid/faucet', RANKED_PAUSED_MESSAGE, isRankedPaused, seedTicketUsable,
+    formatZkLtc4, walletErrorAction, RANKED_PAUSED_MESSAGE, RANKED_CLOSED_MESSAGE, isRankedPaused, seedTicketUsable,
     fetchSeedTicket: async () => ({ ok: false, status: 0, error: 'no-seed-in-modal-tests' }),
-    walletSession: { token: () => 'fixture-token', invalidate() {} }, authenticateWalletSiwe: async () => false,
+    walletSession: { token: () => 'fixture-token', invalidate() {} }, loadWalletSession: async () => context.walletSession, authenticateWalletSiwe: async () => false,
+    showWalletNotice() {}, signInFromPicker: async () => null,
     loadRankedIdentity: async () => { throw new Error('No session key in modal tests'); },
     sendRankedEntry: async () => { throw new Error('No entry payment in modal tests'); }, recordEntryBroadcast, showEntryChip() {}, refreshWalletBalanceChip() {},
-    startOfficialMode: async () => {}, connectWallet: async () => null, window: null,
+    startOfficialMode: async () => {}, window: null,
     classifyWalletError: (error) => ({ userCancelled: false, message: String(error?.message ?? error) }),
     el: (tag, options = {}) => Object.assign(element(), { tag }, options),
     appendText: (parent, tag, text) => { const child = Object.assign(element(), { tag, textContent: text }); parent.append(child); return child; },

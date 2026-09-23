@@ -6,11 +6,12 @@
 // Free Mode opens no WalletConnect relay connection (guide rule 3).
 //
 // Every Reown import stays behind the dynamic import() below (the vendor entry
-// reown-appkit-vendor.mjs, which build.mjs bundles separately into
-// dist/chunks/reown-appkit.js), so AppKit and its ethers copy never enter the
-// portal's static graph or the children's shared chunks. AppKit is bundled
-// locally (no CDN script), so the CSP script-src is unchanged; the relay, API,
-// font and verify hosts are in vercel.json.
+// reown-appkit-vendor.mjs, which build.mjs bundles in a build of its own, with
+// code splitting, into dist/reown/appkit.js plus dist/reown/chunks/), so AppKit
+// and its ethers copy never enter the portal's static graph or the children's
+// shared chunks. AppKit is bundled locally (no CDN script), so the CSP
+// script-src is unchanged; the relay, API, font and verify hosts are in
+// vercel.json.
 
 import { REOWN_PROJECT_ID, isReownAllowedHost } from './wallet-config.mjs';
 
@@ -123,8 +124,16 @@ export async function createWalletConnectProvider({
   });
 }
 
-// Ends the WalletConnect session (sign-out). Never creates AppKit.
-export async function disconnectWalletConnect() {
+// Ends the WalletConnect session (sign-out). Without `restoreFirst` it never
+// creates AppKit. With it (a session restored at boot whose provider was never
+// created), AppKit is created on this sign-out click so it can reconnect the
+// stored relay session and then disconnect it; otherwise AppKit's stored
+// session would silently reconnect the old wallet on the next WalletConnect
+// pick. Off the Reown-allowed hosts there is nothing to end.
+export async function disconnectWalletConnect({ restoreFirst = false, ...options } = {}) {
+  if (!appKitInstance && restoreFirst) {
+    try { await createWalletConnectProvider({ ...options, reconnectOnly: true }); } catch { return; }
+  }
   if (!appKitInstance) return;
   try { await appKitInstance.disconnect?.(); } catch { /* already disconnected */ }
 }

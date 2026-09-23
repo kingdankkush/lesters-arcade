@@ -5,6 +5,9 @@
 export const RANKED_ENTRY_EVENT = 'lesters:ranked-entry';
 export const RANKED_SEED_ENDPOINT = '/api/ranked/seed';
 export const RANKED_PAUSED_MESSAGE = 'Ranked is paused right now. Free Mode is open.';
+// A27: with the entry fee off (a zero quote) Ranked cannot settle, so it is
+// closed rather than free.
+export const RANKED_CLOSED_MESSAGE = 'Ranked entry is closed right now. Free Mode is open.';
 // E3 rejects a ticket used more than 30 minutes after issue (A26); a ticket
 // fetched when the modal opened is fetched again after 10 minutes.
 export const SEED_TICKET_MAX_AGE_MS = 10 * 60 * 1000;
