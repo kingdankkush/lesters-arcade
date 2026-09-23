@@ -147,8 +147,11 @@ test('portal entrypoint binds reboot game over, canonical summary, seed, and res
   assert.match(source, /onRunSummary: \(message\) => hmhRebootLifecycle\?\.handleRunSummary\(message\)/);
   assert.match(source, /hmhRebootLifecycle\?\.handleScoreResult\(message\)/);
   assert.match(source, /finalizeRanked: \(\{ runSummary \}\) => submitCombatGameOver\(runSummary\)/);
-  assert.match(source, /seed: currentSession\.seed \?\? currentSession\.canonicalContext\?\.seed \?\? 0/);
-  assert.match(source, /currentSession = beginTrackedSession\(\{ mode: wasPaid \? 'paid' : 'free' \}\)/);
+  // A10: the settlement identity (and so the envelope seed) is the session's own ranked identity.
+  assert.match(source, /rankedIdentityModule\.rankedIdentityFor\(session, \{ scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES\.scoreSubmissionRegistry \}\)/);
+  // A16: a Ranked restart goes back through the paid entry; only Free restarts in place.
+  assert.match(source, /if \(currentSession\?\.isPaid \|\| officialSelectedMode === 'ranked'\) \{\s+await startOfficialMode\('ranked'\);\s+return;\s+\}/);
+  assert.match(source, /currentSession = beginTrackedSession\(\{ mode: 'free' \}\)/);
   assert.match(source, /sessionId: currentSession\.sessionId,\s+rankedEligible: currentSession\.isPaid/);
   assert.doesNotMatch(source, /if \(hmhRebootActive\) \{\s+hmhRebootHost\?\.restart\(\)/);
 });

@@ -285,6 +285,11 @@ import {
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
 import { CURRENT_RANKED_SEASON_ID, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
+// Namespace imports: other wave-3 slices may import single names from these
+// modules at their own anchors, and a second `import { rankedIdentityFor }`
+// binding would be a duplicate declaration after the merge.
+import * as rankedIdentityModule from './src/ranked-identity.mjs';
+import * as achievementStats from './src/achievements/stats.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness, loadEthers, openRankedSession, requestVerifierAttestation } from './src/litvm-chain-client.mjs';
@@ -1939,20 +1944,62 @@ let lastRunElapsedSeconds = 0;
 let lastBossId = null;
 let officialAppStep = 'wallet-splash';
 let officialSelectedMode = null;
-// Last on-chain settlement outcome (for the game-over screen explorer link + errors).
+// Last Ranked settlement outcome of the run on screen. The results screen
+// (lesters:ranked-run) shows the explorer link, so lastSettlementTxUrl stays
+// unset here; startCombat still clears it.
 let lastSettlementTxUrl = null;
 let lastSettlementError = null;
-// Retained ranked-run settlement input + stats so the game-over Retry Publish
-// button can re-attempt the LitVM transaction without replaying the run.
+// Retained ranked-run settlement input + stats of the run on screen.
 let lastSettlementInput = null;
 let lastRunStatsForSettlement = null;
 let lastRunPreviousBestScore = 0;
 let sessionRunStreak = 0;
 let lastSettlementQueued = false;
-// True only after the run actually published on-chain (or simulated for mock).
-// Drives the game-over "Published ✓" vs "Retry Publish" state, so a declined
-// wallet tx is never shown as a successful publish.
+// True only after the relayer's transaction confirmed on LitVM. Drives the
+// game-over "Score Synced" vs "Submit Official Score" state.
 let lastSettlementSucceeded = false;
+// The settlement handle (contract §7.2) of the latest Ranked run; the
+// lastSettlement* flags above follow its state.
+let lastSettlementHandle = null;
+let lastSettlementUnsubscribe = null;
+// §7.2 result context per Ranked session, captured when the run starts.
+const rankedResultContexts = new Map();
+// One lazy settlement client for all three games (ranked-settlement.mjs).
+let rankedSettlementClientPromise = null;
+function rankedSettlementClient() {
+  rankedSettlementClientPromise ??= import('./src/ranked-settlement.mjs').then((module) => ({
+    module,
+    client: module.createRankedSettlementClient({
+      live: SETTLEMENT_LIVE,
+      getToken: (wallet) => (profileSync.hasSession(wallet) ? profileSync.session?.token ?? null : null),
+      storage: ARCADE_STORAGE,
+      onPendingCount: (count) => window.dispatchEvent(new CustomEvent('lesters:ranked-pending', { detail: { count } })),
+      onPublished: applyRankedPublication,
+    }),
+  })).catch((error) => {
+    rankedSettlementClientPromise = null;
+    throw error;
+  });
+  return rankedSettlementClientPromise;
+}
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  // §7.7: profile-boards' Retry buttons. Stored bodies exist only when live.
+  window.addEventListener('lesters:ranked-retry-request', (event) => {
+    if (!SETTLEMENT_LIVE) return;
+    void rankedSettlementClient().then(({ client }) => client.handleRetryRequest(event?.detail ?? null)).catch((error) => console.error('[Ranked settlement]', error));
+  });
+  // Resume stored bodies once per page load, on the first authenticated session.
+  let rankedResumeRequested = false;
+  window.addEventListener('lesters:wallet-session', (event) => {
+    if (!SETTLEMENT_LIVE || rankedResumeRequested || event?.detail?.authenticated !== true) return;
+    rankedResumeRequested = true;
+    void rankedSettlementClient().then(({ client }) => client.resume()).catch((error) => console.error('[Ranked settlement]', error));
+  });
+  // lesters:ranked-pending once after boot: the live client reports its stored
+  // count when it loads; preview never stores a body, so its count is 0.
+  if (SETTLEMENT_LIVE) void rankedSettlementClient().catch((error) => console.error('[Ranked settlement]', error));
+  else setTimeout(() => window.dispatchEvent(new CustomEvent('lesters:ranked-pending', { detail: { count: 0 } })), 0);
+}
 
 
 // Playable hero display names. The in-game roguelike heroes were renamed from
@@ -2828,19 +2875,30 @@ function recordCurrentSessionEvent(type, payload = {}) {
   return recordSessionEvent(currentSession.evidence, { step: combat.frame, type, payload });
 }
 
-function currentCanonicalSessionIdentity() {
-  if (!currentSession?.isPaid) return null;
-  return {
-    ...currentSession.canonicalContext,
-    chainId: LITVM_LITEFORGE_NETWORK.chainId,
-    scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry,
-    seasonId: CURRENT_RANKED_SEASON_ID,
-    seed: currentSession.seed ?? currentSession.canonicalContext?.seed ?? 0,
-    nonce: currentSession.sessionNonce,
-  };
+// The one Ranked identity (A10): the entry key and the settlement key are both
+// rankedIdentityFor(session), with the session's own per-game season and the
+// ticket seed once signin-entry applied it (A25).
+function currentCanonicalSessionIdentity(session = currentSession) {
+  if (!session?.isPaid) return null;
+  return rankedIdentityModule.rankedIdentityFor(session, { scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry });
 }
 
-function currentCanonicalFinalState() {
+// The envelope's final state. A reboot run answers from its canonical summary
+// totals; only the legacy in-portal sandbox (no summary) reads combat.*.
+function currentCanonicalFinalState(runSummary = lastHmhRunSummary) {
+  if (runSummary?.totals && runSummary.kills && runSummary.identity) {
+    return {
+      hp: 0,
+      score: runSummary.totals.score,
+      kills: runSummary.kills.total,
+      maxCombo: runSummary.totals.maxCombo,
+      survivalSeconds: Math.max(0, Number(((Number(runSummary.totals.elapsedMs) || 0) / 1000).toFixed(3))),
+      level: runSummary.totals.level,
+      bossKills: runSummary.kills.boss,
+      characterId: runSummary.identity.heroId,
+      killedBy: runSummary.defeat?.causeId ?? null,
+    };
+  }
   return {
     hp: Math.max(0, Number(combat.health) || 0),
     mapX: Number((Number(combat.playerMapX) || 0).toFixed(4)),
@@ -2856,10 +2914,10 @@ function currentCanonicalFinalState() {
   };
 }
 
-async function finalizeCurrentSessionEvidence() {
-  const identity = currentCanonicalSessionIdentity();
-  if (!identity || !currentSession.evidence) return null;
-  return finalizeSessionEvidence({ identity, evidence: currentSession.evidence, finalState: currentCanonicalFinalState() });
+async function finalizeCurrentSessionEvidence(session = currentSession, runSummary = lastHmhRunSummary) {
+  const identity = currentCanonicalSessionIdentity(session);
+  if (!identity || !session.evidence) return null;
+  return finalizeSessionEvidence({ identity, evidence: session.evidence, finalState: currentCanonicalFinalState(runSummary) });
 }
 
 let sessionCheckpointInFlight = false;
@@ -2886,55 +2944,86 @@ async function checkpointCurrentSessionEvidence() {
   }
 }
 
+// recordScore inputs of a legacy in-portal sandbox run (no canonical summary).
+function legacyHmhRecordInputs() {
+  return {
+    score: Math.max(0, Math.round(combat.score)),
+    runStats: {
+      distanceMeters: Math.round((combat.elapsedGameSeconds || 0) * 2.7),
+      elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
+      kills: combat.kills,
+      enemyKillsByType: { ...(combat.killsByType || {}) },
+      maxCombo: combat.maxCombo,
+      bossId: combat.bossDefeated ? lastBossId : null,
+      weaponId: combat.weaponId,
+      noDamage: combat.noDamageSeconds >= combat.elapsedGameSeconds - 1,
+      collectedPowerUps: [...(combat.collectedPowerUpTypes ?? [])],
+    },
+  };
+}
+
+// §6.3 stats of a local canonical result, or null when the mapper refuses it.
+function rankedLocalStats(map) {
+  try {
+    return map();
+  } catch (error) {
+    console.warn('[Ranked settlement] local stats unavailable', error);
+    return null;
+  }
+}
+
 function submitCombatGameOver(runSummary) {
   // syncCombatOverlay re-enters with no argument; only a real payload may
   // replace the recap, and restart/teardown are what clear it.
   if (runSummary) lastHmhRunSummary = runSummary;
   if (!combat.gameOver || !currentSession?.isPaid || combat.gameOverSubmitted) return;
-  recordCurrentSessionEvent('run-end', currentCanonicalFinalState());
-  lastRunPreviousBestScore = currentPlayerBestScoreForMode(currentSession?.mode);
+  const session = currentSession;
+  const summary = lastHmhRunSummary;
+  recordCurrentSessionEvent('run-end', currentCanonicalFinalState(summary));
+  lastRunPreviousBestScore = currentPlayerBestScoreForMode(session.mode);
   sessionRunStreak += 1;
   lastSettlementQueued = false;
-  const result = recordScore(state, currentSession, Math.max(0, Math.round(combat.score)), {
-    distanceMeters: Math.round((combat.elapsedGameSeconds || 0) * 2.7),
-    elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
-    kills: combat.kills,
-    killsByType: { ...(combat.killsByType || {}) },
-    maxCombo: combat.maxCombo,
-    bossId: lastBossId,
-    weaponId: combat.weaponId,
-    noDamage: combat.noDamageSeconds >= combat.elapsedGameSeconds - 1,
-    collectedPowerUps: [...combat.collectedPowerUpTypes],
-  });
-  lastCompletedSession = currentSession;
+  combat.gameOverSubmitted = true;
+  // Local record inputs come from the canonical run summary (contract §6.4,
+  // HMH map §3.6 and G1), never the stale legacy combat.* counters.
+  let local = null;
+  if (summary) {
+    try {
+      local = achievementStats.hmhRecordScoreInputsFromRunSummary(summary);
+    } catch (error) {
+      console.warn('[HMH] canonical run summary could not be mapped; recording the live counters', error);
+    }
+  }
+  local ??= legacyHmhRecordInputs();
+  const result = recordScore(state, session, local.score, local.runStats);
+  lastCompletedSession = session;
   lastRunResult = {
-    score: combat.score,
+    score: local.score,
     elapsedSeconds: combat.elapsedGameSeconds,
     acceptedForGlobalLeaderboard: result.acceptedForGlobalLeaderboard,
   };
   lastRunScore = combat.score;
   lastRunElapsedSeconds = combat.elapsedGameSeconds;
-  combat.gameOverSubmitted = true;
   // Ranked run history (persisted): feeds the profile run log + future
   // cross-game ArcadeProfile aggregation.
   appendRunRecord(state, {
-    sessionId: currentSession.sessionId,
+    sessionId: session.sessionId,
     gameId: 'lester-blaster',
     wallet: connectedWallet,
-    mode: currentSession?.mode ?? 'paid',
-    score: Math.max(0, Math.round(combat.score)),
+    mode: session.mode ?? 'paid',
+    score: local.score,
     elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
     kills: combat.kills,
-    characterId: combat.characterId,
+    characterId: summary?.identity?.heroId ?? combat.characterId,
     killedBy: combat.killedBy ?? null,
-    bossDefeated: Boolean(combat.bossDefeated),
+    bossDefeated: summary ? summary.kills.boss > 0 : Boolean(combat.bossDefeated),
     runSummary,
   });
   persistArcadeStateSoon();
   // GameRegistry: child game -> parent sync packet (local now, LitVM SessionLedger later)
   submitGameRun('hard-money-heroes', {
-    sessionId: currentSession.sessionId,
-    score: Math.max(0, Math.round(combat.score)),
+    sessionId: session.sessionId,
+    score: local.score,
     kills: combat.kills,
     survivalTime: Math.round(combat.elapsedGameSeconds || 0),
   }, connectedWallet);
@@ -2942,48 +3031,42 @@ function submitCombatGameOver(runSummary) {
   renderGameOverSummary();
   renderCombatMenuActionGrid();
 
-  // Auto-publish the run to LitVM from the player's own wallet (one confirmation).
-  // Retained so the Retry Publish button can re-attempt if the player declines
-  // the wallet tx or it errors.
+  // Settlement: the relayer publishes the verified run (A3), so the player
+  // never signs a score submission. Preview keeps the local record only.
   if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
-    lastSettlementQueued = true;
+    lastSettlementQueued = SETTLEMENT_LIVE;
     lastSettlementInput = result.settlementInput;
-    lastRunStatsForSettlement = {
-      kills: combat.kills,
-      maxCombo: combat.maxCombo,
-      survivalSeconds: Math.round(combat.elapsedGameSeconds || 0),
-      bossId: combat.bossDefeated ? lastBossId : null,
-    };
+    lastRunStatsForSettlement = summary ? rankedLocalStats(() => achievementStats.statsFromHmhRunSummary(summary)) : null;
     renderGameOverSummary();
     renderCombatMenuActionGrid();
-    settleRankedRun(lastSettlementInput, lastRunStatsForSettlement);
+    void settleRankedRun({ session, runSummary: summary, localScore: local.score, localStats: lastRunStatsForSettlement });
   }
 }
 
-// Retry the on-chain publish for a finished ranked run whose auto-submit was
-// declined or failed. The local record already exists; this only re-attempts
-// the LitVM transaction.
+// Retry publishing the finished Ranked run on screen (the combat menu's Submit
+// Official Score): its settlement handle re-drives the stored request.
 function retryPublishGameOver() {
-  if (!lastSettlementInput) return;
-  settleRankedRun(lastSettlementInput, lastRunStatsForSettlement || {});
+  if (!lastSettlementHandle) return;
+  void lastSettlementHandle.retry();
 }
 
-async function settleRankedRun(settlementInput, runStats = {}) {
-  const sessionEnvelope = await finalizeCurrentSessionEvidence();
-  if (!sessionEnvelope) {
-    lastSettlementError = 'Canonical replay evidence was unavailable; the ranked run was not published.';
-    lastSettlementQueued = false;
-    lastSettlementSucceeded = false;
-    renderGameOverSummary();
-    renderCombatMenuActionGrid();
-    return;
+// The manual publish action is offered only where a retry can help.
+function rankedPublishRetryAvailable() {
+  return ['saved-locally', 'retrying'].includes(lastSettlementHandle?.state);
+}
+
+// Hard Money Heroes settlement: the lesters-session-envelope-v1 commits to
+// the summary totals, the run summary travels as the evidence (§5.1), and the
+// server plausibility-checks it (A9). No player-signed submit and no
+// /api/attest call remain (A3).
+async function settleRankedRun({ session, runSummary = null, localScore = 0, localStats = null } = {}) {
+  let sessionEnvelope = null;
+  try {
+    sessionEnvelope = await finalizeCurrentSessionEvidence(session, runSummary);
+  } catch (error) {
+    console.error('[settlement] canonical session evidence could not be finalized', error);
   }
-  settlementInput = {
-    ...settlementInput,
-    sessionKey: sessionEnvelope.sessionKey,
-    sessionEvidence: sessionEnvelope,
-  };
-  const persistedRun = state.runHistory?.find((run) => run.sessionId === settlementInput.sessionId);
+  const persistedRun = sessionEnvelope ? state.runHistory?.find((run) => run.sessionId === session.sessionId) : null;
   if (persistedRun) {
     persistedRun.sessionKey = sessionEnvelope.sessionKey;
     persistedRun.inputHash = sessionEnvelope.inputHash;
@@ -2991,44 +3074,13 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     persistedRun.finalStateHash = sessionEnvelope.finalStateHash;
     persistedRun.envelopeHash = sessionEnvelope.envelopeHash;
   }
-  // Run integrity gate (handoff §17): before publishing a ranked run on-chain,
-  // sanity-check it against physically-achievable ceilings derived from the
-  // Level 1 balance constants. A tampered client can submit an impossible run
-  // (huge score in no time, boss cleared instantly, combo >> kills). A
-  // 'rejected' verdict is a hard impossibility — never broadcast it and never
-  // record it as official. A 'suspicious' verdict is logged for later review
-  // but still allowed (generous tolerances mean legit runs are never flagged).
-  const integrity = validateRunPlausibility({
-    score: settlementInput.score,
-    kills: runStats.kills ?? 0,
-    maxCombo: runStats.maxCombo ?? 0,
-    survivalSeconds: runStats.survivalSeconds ?? 0,
-    bossDefeated: Boolean(runStats.bossId),
-    level: settlementInput.campaignLevelNumber ?? 1,
-  });
-  if (!integrity.rankable) {
-    console.warn('[integrity] ranked run rejected as implausible:', integrity.flags);
-    lastSettlementError = 'This run could not be verified as a legitimate ranked result and was not published on-chain.';
-    lastSettlementQueued = false;
-    lastSettlementSucceeded = false;
-    if (dom.combatStatus) {
-      dom.combatStatus.textContent = 'Run not published: it failed the ranked integrity check (implausible score/time). Free-mode practice is unaffected.';
-    }
-    renderGameOverSummary();
-    renderCombatMenuActionGrid();
-    return;
-  }
-  if (integrity.verdict === 'suspicious') {
-    console.warn('[integrity] ranked run flagged suspicious (published, marked for review):', integrity.flags);
-  }
 
   if (!SETTLEMENT_LIVE) {
-    clearActiveSessionCheckpoint(state, settlementInput.sessionId, { submitted: false });
+    clearActiveSessionCheckpoint(state, session.sessionId, { submitted: false });
     persistArcadeStateSoon();
     lastSettlementQueued = false;
     lastSettlementSucceeded = false;
     lastSettlementError = null;
-    lastSettlementTxUrl = null;
     if (dom.combatStatus) {
       dom.combatStatus.textContent = 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
     }
@@ -3036,139 +3088,190 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     if (officialAppStep === 'profile') renderOfficialProfile();
     renderGameOverSummary();
     renderCombatMenuActionGrid();
+    await startRankedSettlement({ session, localScore, localStats });
     return;
   }
 
-  // LIVE player-signed path: if settlement is live AND the player connected a
-  // real injected wallet (not the mock), submit the run on-chain from THEIR
-  // wallet (one confirmation, they pay the zkLTC gas). Otherwise fall back to
-  // the deterministic simulated receipt so offline/mock QA still works.
-  const provider = detectEthereumProvider();
-  const isRealWallet = walletConnector === 'injected-evm' && Boolean(provider?.request);
+  if (dom.combatStatus) dom.combatStatus.textContent = 'Publishing your run on LitVM — see the results panel.';
+  await startRankedSettlement({
+    session,
+    localScore,
+    localStats,
+    buildRequest: (builders) => {
+      if (!runSummary || !sessionEnvelope) throw new Error('the canonical run summary or its session envelope is unavailable');
+      return builders.buildHmhSettleRequest({ session, scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry, runSummary, sessionEnvelope, claimScore: localScore });
+    },
+  });
+}
 
-  if (SETTLEMENT_LIVE && isRealWallet) {
-    if (dom.combatStatus) {
-      dom.combatStatus.textContent = 'Publishing your run to LitVM…';
+// Chikun's Escape: the verified v6 evidence of the replay claim (§5.1).
+function settleChikunRankedRun(session, result) {
+  return startRankedSettlement({
+    session,
+    localScore: result.canonical.score,
+    localStats: rankedLocalStats(() => achievementStats.statsFromChikunResult(result.canonical)),
+    buildRequest: (builders) => builders.buildChikunSettleRequest({ session, scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry, evidence: result.evidence, claimScore: result.canonical.score }),
+  });
+}
+
+// STACKED: the host-verified SIC1 bytes and tuple (§5.1).
+function settleStackedRankedRun(session, canonical, evidence) {
+  return startRankedSettlement({
+    session,
+    localScore: canonical.score,
+    localStats: rankedLocalStats(() => achievementStats.statsFromStackedTuple(canonical)),
+    buildRequest: (builders) => builders.buildStackedSettleRequest({ session, scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry, sic1Bytes: evidence, claimScore: canonical.score }),
+  });
+}
+
+function loadRankedRequests() {
+  return import('./src/ranked-requests.mjs');
+}
+
+// One finished Ranked run of any game → its settlement handle (contract
+// §7.2) and exactly one lesters:ranked-run event (§7.7) for the results
+// screen. Preview (SETTLEMENT_LIVE false) builds no request and sends
+// nothing: the handle is a terminal 'preview'.
+async function startRankedSettlement({ session, localScore = 0, localStats = null, buildRequest = null }) {
+  try {
+    const [{ client, module }, builders] = await Promise.all([
+      rankedSettlementClient(),
+      SETTLEMENT_LIVE && buildRequest ? loadRankedRequests() : null,
+    ]);
+    let request = null;
+    if (SETTLEMENT_LIVE && buildRequest) {
+      try {
+        request = await buildRequest(builders);
+      } catch (error) {
+        console.error('[Ranked settlement] the settle request could not be built', error);
+      }
     }
-    try {
-      // Trusted verifier attestation (owner direction 2026-09-16): the same
-      // origin signs the EIP-712 VerifiedRun the contract checks. The entry
-      // reserve already paid for settlement gas, so /api/settle submits the
-      // run FOR the player when a relayer is configured; otherwise it hands
-      // back the attestation and the player's wallet submits it, re-verified
-      // against the on-chain verifier before any gas is spent.
-      const attestPayload = {
-        gameId: settlementInput.gameId,
-        sessionId32: settlementInput.sessionKey,
-        player: settlementInput.wallet,
-        score: settlementInput.score,
-        kills: runStats.kills ?? 0,
-        maxCombo: runStats.maxCombo ?? 0,
-        survivalSeconds: runStats.survivalSeconds ?? 0,
-        bossId: runStats.bossId ?? null,
-        envelope: settlementInput.sessionEvidence,
-        runtimeId: settlementInput.runtimeId ?? null,
-        seasonId: settlementInput.seasonId ?? null,
-        achievements: settlementInput.unlockedAchievements ?? [],
-        level: settlementInput.campaignLevelNumber ?? 1,
-      };
-      let attestation = settlementInput.verifierAttestation ?? null;
-      let txHash = null;
-      let relayedBy = null;
-      if (!attestation) {
-        try {
-          const settled = await profileSync.settle(attestPayload);
-          if (settled.relayed && settled.txHash) {
-            txHash = settled.txHash;
-            relayedBy = settled.relayer ?? 'relayer';
-          } else {
-            attestation = settled;
-          }
-        } catch (settleError) {
-          if (settleError?.code === 'session-already-settled' || settleError?.code === 'verifier-not-configured') throw settleError;
-          console.warn('[settlement] relayed settle unavailable; falling back to a player-signed submit:', settleError);
-          attestation = await requestVerifierAttestation(attestPayload);
-        }
-      }
-      if (!txHash) {
-        if (dom.combatStatus) {
-          dom.combatStatus.textContent = 'Publishing your run to LitVM… confirm the transaction in your wallet to pay the zkLTC gas.';
-        }
-        ({ txHash } = await submitRankedSession(provider, {
-        sessionId: settlementInput.sessionId,
-        sessionKey: settlementInput.sessionKey,
-        envelopeHash: settlementInput.sessionEvidence.envelopeHash,
-        attestation,
-        gameId: settlementInput.gameId,
-        score: settlementInput.score,
-        kills: runStats.kills ?? 0,
-        maxCombo: runStats.maxCombo ?? 0,
-        survivalSeconds: runStats.survivalSeconds ?? 0,
-        bossId: runStats.bossId ?? null,
-        achievements: settlementInput.unlockedAchievements ?? [],
-        runtimeId: settlementInput.runtimeId ?? null,
-        seasonId: settlementInput.seasonId ?? null,
-        }));
-      }
-      const settlement = {
-        mode: 'live',
-        settled: true,
-        relayed: Boolean(relayedBy),
-        wallet: settlementInput.wallet,
-        gameId: settlementInput.gameId,
-        sessionId: settlementInput.sessionId,
-        score: settlementInput.score,
-        cadenceKeys: { ...(settlementInput.cadenceKeys || {}) },
-        receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitVerifiedSession', txHash, relayer: relayedBy }],
-        primaryTxHash: txHash,
-        settledAt: new Date().toISOString(),
-        integrity,
-      };
-      applySettlement(state, settlement);
-      clearActiveSessionCheckpoint(state, settlementInput.sessionId, { submitted: true });
-      persistArcadeStateSoon();
-      const shortTx = `${txHash.slice(0, 10)}…${txHash.slice(-6)}`;
-      if (dom.combatStatus) {
-        dom.combatStatus.textContent = relayedBy
-          ? `✓ Run settled on-chain to LitVM by the settlement relayer (no wallet confirmation needed). Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`
-          : `✓ Run published on-chain to LitVM. Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`;
-      }
-      lastSettlementTxUrl = explorerTxUrl(txHash);
-      lastSettlementError = null;
-      lastSettlementQueued = false;
-      lastSettlementSucceeded = true;
-      if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
-      if (officialAppStep === 'profile') renderOfficialProfile();
-      renderGameOverSummary();
-      renderCombatMenuActionGrid();
-      return;
-    } catch (err) {
-      // User rejected, wrong chain, or RPC error. Keep the local record; tell
-      // them clearly and let them retry. Do NOT silently fall back to a fake tx.
-      console.warn('[settlement] on-chain submit failed:', err);
-      const reason = /user rejected|denied|4001/i.test(err?.message || '')
-        ? 'You declined the wallet transaction.'
-        : (err?.message || 'Unknown error');
-      if (dom.combatStatus) {
-        dom.combatStatus.textContent = `Score saved locally, but the on-chain publish did not complete: ${reason} You can retry from the game-over screen.`;
-      }
-      lastSettlementError = reason;
-      lastSettlementQueued = false;
-      lastSettlementSucceeded = false;
-      renderGameOverSummary();
-      renderCombatMenuActionGrid();
-      return;
-    }
+    const handle = client.settle(request, {
+      entryConfirmed: session.entryConfirmed ?? null,
+      entry: session.entryReceipt ?? null,
+      localScore,
+      gameId: session.gameId,
+      wallet: session.wallet,
+      sessionId: session.sessionId,
+    });
+    trackRankedSettlement(handle, session, module);
+    const context = await rankedRunContext(session, handle, localScore, localStats);
+    window.dispatchEvent(new CustomEvent('lesters:ranked-run', { detail: { handle, context, actions: rankedRunActions() } }));
+    return handle;
+  } catch (error) {
+    console.error('[Ranked settlement]', error);
+    return null;
   }
+}
 
+// The lastSettlement* flags and the status line follow the latest run's handle.
+function trackRankedSettlement(handle, session, settlementModule) {
+  lastSettlementUnsubscribe?.();
+  lastSettlementHandle = handle;
+  const hmh = session.gameId === 'lester-blaster';
+  const apply = (snapshot) => {
+    if (lastSettlementHandle !== handle) return;
+    lastSettlementSucceeded = snapshot.state === 'published';
+    lastSettlementQueued = ['waiting-entry', 'verifying', 'queued', 'publishing', 'retrying'].includes(snapshot.state);
+    lastSettlementError = ['saved-locally', 'rejected', 'practice'].includes(snapshot.state) ? (snapshot.error?.message ?? null) : null;
+    const line = hmh ? dom.combatStatus : dom.officialGameStateCopy;
+    if (line && (currentSession === session || lastCompletedSession === session)) line.textContent = settlementModule.rankedSettlementStatusCopy(snapshot);
+    if (hmh) {
+      renderGameOverSummary();
+      renderCombatMenuActionGrid();
+    }
+  };
+  lastSettlementUnsubscribe = handle.subscribe(apply);
+  apply(handle.snapshot);
+}
+
+// §7.2 result context, captured when a Ranked run starts: hosted reads the
+// public index profile once (a device-local best is never used there);
+// preview recomputes the device-local best before this run is recorded.
+function captureRankedResultContext(session) {
+  if (!session?.isPaid || !session.sessionId) return;
+  const wallet = session.wallet;
+  const profile = state.profiles?.[wallet] ?? null;
+  const progress = profile?.progress?.[session.gameId] ?? null;
+  const local = {
+    displayName: profile ? resolveDisplayName(profile, wallet) : null,
+    previousBest: progress && progress.paidRuns > 0 ? Math.max(0, Math.round(progress.bestPaidScore ?? 0)) : null,
+  };
+  const pending = HOSTED_PROFILE_SYNC
+    ? rankedSettlementClient().then(({ module }) => module.fetchRankedResultContext({ hosted: true, fetchImpl: (...args) => fetch(...args), wallet, gameId: session.gameId }))
+    : Promise.resolve(local);
+  rankedResultContexts.set(session.sessionId, pending.catch(() => ({ displayName: null, previousBest: null })));
+}
+
+async function rankedRunContext(session, handle, localScore, localStats) {
+  const empty = { displayName: null, previousBest: null };
+  const captured = rankedResultContexts.get(session.sessionId);
+  rankedResultContexts.delete(session.sessionId);
+  const known = captured
+    ? await Promise.race([captured, new Promise((resolve) => { setTimeout(() => resolve(empty), 4000); })])
+    : empty;
+  const snapshot = handle.snapshot;
+  return {
+    gameId: session.gameId,
+    gameTitle: session.gameTitle ?? session.gameId,
+    sessionId: session.sessionId,
+    sessionId32: snapshot.sessionId32 ?? null,
+    wallet: session.wallet,
+    displayName: known?.displayName ?? null,
+    localScore,
+    localStats,
+    previousBest: known?.previousBest ?? null,
+    entry: { ...snapshot.entry },
+    mode: 'ranked',
+  };
+}
+
+function rankedRunActions() {
+  return Object.freeze({
+    playAgainRanked: () => startOfficialMode('ranked'),
+    practiceFree: () => startOfficialMode('free'),
+    viewProfile: () => setOfficialView('profile'),
+    backToArcade: () => exitToArcade(),
+  });
+}
+
+// A published run (this page's or a resumed one) stamps its local rows with
+// the transaction and the session key, so chain hydration never lists it twice.
+function applyRankedPublication(snapshot) {
+  const txHash = snapshot?.server?.txHash;
+  if (!snapshot?.sessionId || !snapshot.gameId || typeof txHash !== 'string') return;
+  applySettlement(state, {
+    mode: 'live',
+    settled: true,
+    relayed: true,
+    wallet: snapshot.wallet,
+    gameId: snapshot.gameId,
+    sessionId: snapshot.sessionId,
+    score: snapshot.server.score ?? snapshot.localScore,
+    onChainSessionId32: snapshot.sessionId32,
+    receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitVerifiedSession', txHash, relayer: 'relayer' }],
+    primaryTxHash: txHash,
+    settledAt: snapshot.server.confirmedAt ?? new Date().toISOString(),
+  });
+  clearActiveSessionCheckpoint(state, snapshot.sessionId, { submitted: true });
+  persistArcadeStateSoon();
+  if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
+  if (officialAppStep === 'profile') renderOfficialProfile();
+}
+
+// Every run starts from a clean settlement state (the reboot path included).
+function resetRankedRunState() {
+  lastSettlementUnsubscribe?.();
+  lastSettlementUnsubscribe = null;
+  lastSettlementHandle = null;
+  lastSettlementInput = null;
+  lastRunStatsForSettlement = null;
+  lastSettlementError = null;
   lastSettlementQueued = false;
   lastSettlementSucceeded = false;
-  lastSettlementError = 'Verified publishing requires an approved deployment and a real injected wallet.';
-  if (dom.combatStatus) {
-    dom.combatStatus.textContent = 'Canonical evidence is preserved, but no transaction was sent. Verified publishing requires an approved deployment and a real injected wallet.';
-  }
-  renderGameOverSummary();
-  renderCombatMenuActionGrid();
+  lastHmhRunSummary = null;
+  combat.gameOver = false;
+  combat.gameOverSubmitted = false;
 }
 
 const activeLevelUpPointerIds = new Set();
@@ -3423,7 +3526,7 @@ function renderCombatMenuActionGrid() {
     viewportMode: combat.viewportMode,
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
     officialScoreSubmitted: lastSettlementSucceeded,
-    officialSubmissionEnabled: SETTLEMENT_LIVE,
+    officialSubmissionEnabled: SETTLEMENT_LIVE && (lastSettlementSucceeded || rankedPublishRetryAvailable()),
   });
   const actions = menu.actions.map((action) => {
     if (action.id === 'resume') return { ...action, run: () => toggleCombatPause(false) };
@@ -3841,7 +3944,7 @@ function syncCombatOverlay() {
     viewportMode: combat.viewportMode,
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
     officialScoreSubmitted: lastSettlementSucceeded,
-    officialSubmissionEnabled: SETTLEMENT_LIVE,
+    officialSubmissionEnabled: SETTLEMENT_LIVE && (lastSettlementSucceeded || rankedPublishRetryAvailable()),
   });
   const menuEyebrow = dom.combatMenuPanel?.querySelector(':scope > .eyebrow');
   if (menuEyebrow) menuEyebrow.textContent = combat.levelUpPaused ? 'LEVEL UP' : menu.kicker;
@@ -4110,11 +4213,17 @@ function renderCombatSettingsPanel() {
 
 async function restartCombatRun() {
   playSfxCue('level-start');
+  // A16: a Ranked restart always pays a fresh entry. startOfficialMode shows
+  // the Ranked modal (preview approves without payment); the finished run
+  // stays on screen if the player cancels. Reboot and legacy runs alike.
+  if (currentSession?.isPaid || officialSelectedMode === 'ranked') {
+    await startOfficialMode('ranked');
+    return;
+  }
   if (hmhRebootActive) {
     void startArcadeMusicForGame('hard-money-heroes');
     lastHmhRunSummary = null;
-    const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
-    currentSession = beginTrackedSession({ mode: wasPaid ? 'paid' : 'free' });
+    currentSession = beginTrackedSession({ mode: 'free' });
     gameAdapter?.teardown?.();
     gameAdapter = createInProcessGameAdapter({
       gameId: 'hard-money-heroes',
@@ -4133,16 +4242,8 @@ async function restartCombatRun() {
     syncCombatOverlay();
     return;
   }
-  const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
-  if (wasPaid) {
-    dom.combatStatus.textContent = SETTLEMENT_LIVE
-      ? 'Ranked restart selected: this starts a fresh verified session. Prior ranked state is not silently resubmitted.'
-      : 'Ranked preview restarted locally with a fresh canonical session. No transaction is sent.';
-    currentSession = beginTrackedSession({ mode: 'paid' });
-  } else {
-    dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or ranked state is written.';
-    currentSession = beginTrackedSession({ mode: 'free' });
-  }
+  dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or ranked state is written.';
+  currentSession = beginTrackedSession({ mode: 'free' });
   await startCombat();
   combat.paused = false;
   renderOfficialRunStatus();
@@ -5144,6 +5245,11 @@ function mountHmhRebootSession() {
       onExit: (message) => message.payload.reason === 'restart' ? restartCombatRun() : returnToOfficialGameMenu(),
       onRunEvent: (message) => {
         if (!currentSession?.isPaid || !currentSession.evidence) return;
+        // One event per enemy kill would pass the 10,000-event cap on long
+        // runs and make finalizeSessionEvidence throw; the server does not
+        // verify events (HMH is plausibility-checked from the run summary).
+        // Boss defeats and the score result are still recorded.
+        if (message.payload.eventType === 'enemy-defeated') return;
         recordSessionEvent(currentSession.evidence, {
           step: message.payload.tick,
           type: `hmh-reboot:${message.payload.eventType}`,
@@ -6318,6 +6424,8 @@ async function startMode(mode, { session = null } = {}) {
   currentSession = session ?? beginTrackedSession({ mode });
   lastCompletedSession = null;
   lastRunResult = null;
+  resetRankedRunState();
+  captureRankedResultContext(currentSession);
   // Ranked sessions get a session URL; free stays on the game page.
   if (currentSession?.urlSessionId && officialAppStep === 'gameplay') {
     syncRouteForView('gameplay');
@@ -6366,9 +6474,7 @@ async function completePrototypeRun() {
     acceptedForGlobalLeaderboard: result.acceptedForGlobalLeaderboard,
   };
   currentSession = null;
-  if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
-    settleRankedRun(result.settlementInput);
-  }
+  // A prototype run has no canonical run summary, so it never settles.
   render();
 }
 
