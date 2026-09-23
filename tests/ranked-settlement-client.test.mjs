@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import {
-  RANKED_CLIENT_STATES, RANKED_MAX_PENDING, RANKED_PENDING_KEY, RANKED_SETTLEMENT_MESSAGES, RANKED_TIMING,
+  RANKED_CLIENT_STATES, RANKED_MAX_PENDING, RANKED_PENDING_KEY, RANKED_SETTLEMENT_MESSAGES, RANKED_SETTLEMENT_UNSTORED_MESSAGES, RANKED_TIMING,
   createRankedSettlementClient, fetchRankedResultContext, rankedSettlementStatusCopy,
 } from '../apps/portal/src/ranked-settlement.mjs';
 
@@ -496,4 +496,196 @@ test('status copy is truthful for every state', () => {
   assert.match(copy('practice'), /practice/);
   assert.match(copy('rejected', { error: { message: 'no' } }), /^no$/);
   for (const state of RANKED_CLIENT_STATES) assert.ok(copy(state).length > 0, state);
+});
+
+test('a 404 on a status GET re-POSTs the full body once, then saves locally', async () => {
+  const { client, fetch, clock } = setup({ script: [settleResponse('submitted'), errorResponse(404, 'session-not-found'), settleResponse('submitted'), errorResponse(404, 'session-not-found')] });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.equal(handle.state, 'publishing');
+  await clock.advance(2500);
+  assert.equal(fetch.calls[1].method, 'GET');
+  assert.equal(fetch.calls[2].method, 'POST');
+  assert.deepEqual(fetch.calls[2].body, BODY, 'the stored full body goes again after a status 404');
+  assert.equal(handle.state, 'publishing');
+  await clock.advance(2500);
+  assert.equal(fetch.calls.length, 4);
+  assert.equal(handle.state, 'saved-locally', 'only once');
+  assert.equal(handle.snapshot.error.code, 'session-not-found');
+  assert.deepEqual(clock.delays(), [], 'a manual retry takes it from here');
+});
+
+test('a 404 on the full POST saves locally with no automatic retry', async () => {
+  const { client, fetch, clock, storage } = setup({ script: [errorResponse(404, 'session-not-found')] });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.equal(handle.state, 'saved-locally');
+  assert.equal(handle.snapshot.error.code, 'session-not-found');
+  assert.deepEqual(clock.delays(), [], 'no timer: re-POSTing the same body cannot help');
+  await clock.advance(10 * 60_000);
+  assert.equal(fetch.calls.length, 1);
+  assert.equal(stored(storage).length, 1, 'the body stays for a manual retry');
+});
+
+test('run-timing-early keeps retrying past the 10-minute give-up', async () => {
+  const early = () => errorResponse(409, 'run-timing-early', { retryable: true, retryAfterMs: 60_000 });
+  const { client, fetch, clock } = setup({ script: Array.from({ length: 20 }, early) });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  await clock.advance(RANKED_TIMING.retryableGiveUpMs + 120_000);
+  assert.equal(handle.state, 'retrying', 'the server said when; the client never gives up on it');
+  assert.equal(handle.snapshot.error.code, 'run-timing-early');
+  assert.ok(fetch.calls.length >= 11, `re-POSTed every minute (${fetch.calls.length})`);
+  assert.ok(fetch.calls.every((call) => call.body.retry !== true), 'always the full body');
+  assert.deepEqual(clock.delays(), [60_000]);
+});
+
+test('dispose() clears the pending timer and stops the handle', async () => {
+  const { client, fetch, clock } = setup({ script: [settleResponse('pending')] });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.deepEqual(clock.delays(), [3000]);
+  handle.dispose();
+  assert.deepEqual(clock.delays(), []);
+  await clock.advance(60_000);
+  assert.equal(fetch.calls.length, 1);
+  assert.equal(client.get(KEY), null);
+});
+
+test('retry() from saved-locally restarts the give-up window', async () => {
+  const pending = () => errorResponse(409, 'entry-pending', { retryable: true, retryAfterMs: 5000 });
+  const { client, clock } = setup({ script: Array.from({ length: 60 }, pending) });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  await clock.advance(RANKED_TIMING.retryableGiveUpMs + RANKED_TIMING.retryableMaxMs);
+  assert.equal(handle.state, 'saved-locally', 'gave up after 10 minutes');
+  await handle.retry();
+  assert.equal(handle.state, 'retrying', 'a manual retry waits another 10 minutes');
+  assert.deepEqual(clock.delays(), [5000], 'with the backoff reset as well');
+});
+
+test('a 429 waits for Retry-After', async () => {
+  const { client, clock } = setup({ script: [{ status: 429, body: { ok: false, error: 'rate-limited' }, headers: { 'retry-after': '30' } }] });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.equal(handle.state, 'saved-locally');
+  assert.equal(handle.snapshot.error.code, 'rate-limited');
+  assert.deepEqual(clock.delays(), [30_000], 'max(Retry-After, the 5 s backoff)');
+});
+
+test('resume() re-drives only handles that stopped', async () => {
+  const { client, fetch, clock } = setup({ script: [settleResponse('pending')] });
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.equal(handle.state, 'queued');
+  assert.deepEqual(client.resume(), [handle]);
+  await flush();
+  assert.equal(fetch.calls.length, 1, 'a queued handle keeps its own schedule');
+  assert.deepEqual(clock.delays(), [3000]);
+  assert.equal(handle.state, 'queued');
+});
+
+// A token that disappears mid-publish (a sign-out, an expiry, a wallet switch).
+function signOutSetup(script) {
+  const clock = fakeClock();
+  const fetch = scriptedFetch(script);
+  const auth = { token: TOKEN };
+  const client = createRankedSettlementClient({
+    live: true, fetchImpl: fetch.fetchImpl, getToken: (wallet) => (wallet === WALLET ? auth.token : null), storage: memoryStorage(),
+    now: clock.now, setTimeoutImpl: clock.setTimeout, clearTimeoutImpl: clock.clearTimeout,
+  });
+  return { client, fetch, clock, auth };
+}
+const publicView = (status) => ({
+  status: 200,
+  body: {
+    ok: true, view: 'public', sessionId32: KEY, shareId: KEY.slice(2), gameId: 'chikun', status,
+    txHash: ['submitted', 'confirmed'].includes(status) ? `0x${'aa'.repeat(32)}` : null, blockNumber: status === 'confirmed' ? 42 : null, explorerUrl: null,
+    retryable: status !== 'confirmed', nextAttemptAt: null, pollAfterMs: status === 'confirmed' ? null : status === 'submitted' ? 2500 : 3000,
+    confirmedAt: status === 'confirmed' ? '2026-09-23T00:01:00.000Z' : null,
+  },
+});
+
+test('a sign-out mid-publish keeps following the run through the public status view', async () => {
+  const { client, fetch, clock, auth } = signOutSetup([settleResponse('submitted'), publicView('submitted'), publicView('confirmed')]);
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.equal(handle.state, 'publishing');
+  auth.token = null;
+  await clock.advance(2500);
+  assert.equal(fetch.calls[1].method, 'GET');
+  assert.equal(fetch.calls[1].headers.authorization, undefined, 'no token, so the public view');
+  assert.equal(handle.state, 'publishing', 'the relayer is still publishing it');
+  assert.equal(handle.snapshot.server.wallet, WALLET, 'the owner fields already known are kept');
+  await clock.advance(2500);
+  assert.equal(handle.state, 'published');
+  assert.equal(handle.snapshot.server.txHash, `0x${'aa'.repeat(32)}`);
+});
+
+test('a queued run with no token polls status instead of nudging, and a refused nudge does the same', async () => {
+  const signedOut = signOutSetup([settleResponse('pending'), publicView('pending'), publicView('submitted')]);
+  const handle = signedOut.client.settle(BODY);
+  await signedOut.clock.advance(0);
+  signedOut.auth.token = null;
+  await signedOut.clock.advance(3000);
+  assert.equal(signedOut.fetch.calls[1].method, 'GET', 'no retry POST without the owner token');
+  assert.equal(handle.state, 'queued');
+  await signedOut.clock.advance(3000);
+  assert.equal(handle.state, 'publishing');
+
+  const expired = signOutSetup([settleResponse('pending'), errorResponse(401, 'invalid-session'), publicView('submitted')]);
+  const expiredHandle = expired.client.settle(BODY);
+  await expired.clock.advance(0);
+  await expired.clock.advance(3000);
+  assert.deepEqual(expired.fetch.calls.map((call) => call.method), ['POST', 'POST', 'GET']);
+  assert.equal(expiredHandle.state, 'publishing', 'a 401 on the nudge is not a stop');
+});
+
+test('a run that stopped for a sign-in goes again when the wallet signs in', async () => {
+  const { client, fetch, clock, auth } = signOutSetup([settleResponse('pending')]);
+  auth.token = null;
+  const handle = client.settle(BODY);
+  await clock.advance(0);
+  assert.equal(handle.state, 'saved-locally');
+  assert.equal(handle.snapshot.error.code, 'sign-in-required');
+  assert.equal(fetch.calls.length, 0);
+  auth.token = TOKEN;
+  assert.deepEqual(client.retrySignedOut(), [handle]);
+  await clock.advance(0);
+  assert.equal(fetch.calls[0].headers.authorization, `Bearer ${TOKEN}`);
+  assert.equal(handle.state, 'queued');
+  assert.deepEqual(client.retrySignedOut(), [], 'only handles waiting for a sign-in');
+});
+
+test('a run that is not stored on this device never says it is', async () => {
+  const sic1 = 'A'.repeat(240_004);
+  const big = { ...BODY, gameId: 'stacked', evidence: { encoding: 'stacked-sic1+base64', sic1, startLevel: 1 } };
+  const { client, clock } = setup({ script: ['network'] });
+  const handle = client.settle(big);
+  await clock.advance(0);
+  assert.equal(handle.state, 'saved-locally');
+  assert.equal(handle.snapshot.persisted, false);
+  assert.equal(handle.snapshot.error.code, 'network-error');
+  const claimsStored = /(?<!not )saved on this device|your run is saved|it is saved/i;
+  assert.doesNotMatch(handle.snapshot.error.message, claimsStored);
+  assert.match(handle.snapshot.error.message, /Keep this tab open/);
+  assert.doesNotMatch(rankedSettlementStatusCopy(handle.snapshot), claimsStored);
+  assert.match(rankedSettlementStatusCopy({ state: 'waiting-entry', notice: handle.snapshot.notice }), /Keep this tab open/);
+  assert.doesNotMatch(rankedSettlementStatusCopy({ state: 'waiting-entry', notice: handle.snapshot.notice }), /Run saved/);
+  for (const [code, message] of Object.entries(RANKED_SETTLEMENT_UNSTORED_MESSAGES)) {
+    assert.doesNotMatch(message, claimsStored, code);
+    assert.match(RANKED_SETTLEMENT_MESSAGES[code], /saved/, `${code} has a stored form`);
+  }
+
+  // An evicted body: its line changes when it stops being stored.
+  const evict = setup({ token: null });
+  const seen = [];
+  const first = evict.client.settle({ ...BODY, sessionId32: `0x${'00'.repeat(32)}` });
+  await evict.clock.advance(0);
+  first.subscribe((snapshot) => seen.push(snapshot));
+  assert.equal(first.snapshot.error.message, RANKED_SETTLEMENT_MESSAGES['sign-in-required']);
+  for (let index = 1; index <= RANKED_MAX_PENDING; index += 1) evict.client.settle({ ...BODY, sessionId32: `0x${String(index).padStart(2, '0').repeat(32)}` });
+  assert.equal(first.snapshot.persisted, false);
+  assert.equal(first.snapshot.error.message, RANKED_SETTLEMENT_UNSTORED_MESSAGES['sign-in-required']);
+  assert.equal(seen.at(-1).notice.code, 'keep-tab-open', 'subscribers hear the eviction');
 });

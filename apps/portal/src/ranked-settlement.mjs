@@ -72,19 +72,37 @@ export const RANKED_SETTLEMENT_MESSAGES = Object.freeze({
   'keep-tab-open': 'Keep this tab open until publishing finishes',
 });
 
-export function rankedSettlementMessage(code) {
+// The same codes for a run whose body is NOT stored on the device (a STACKED
+// body over RANKED_MAX_PERSISTED_BASE64, a quota failure, an evicted body):
+// it lives in this tab only, so no line may say it is saved here.
+export const RANKED_SETTLEMENT_UNSTORED_MESSAGES = Object.freeze({
+  'sign-in-required': 'Sign in with your wallet to publish this run. Keep this tab open: it is not saved on this device.',
+  'settlement-paused': 'Ranked publishing is paused. Keep this tab open until publishing finishes: this run is not saved on this device.',
+  'network-error': 'Lester’s Arcade could not be reached. Keep this tab open until publishing finishes; it will retry.',
+  'rate-limited': 'Publishing is busy right now. Keep this tab open until publishing finishes; it will retry shortly.',
+  'server-error': 'Publishing hit a server problem. Keep this tab open until publishing finishes; it will retry.',
+  'entry-pending': 'Your entry is still confirming on LitVM. Keep this tab open until publishing finishes; it will retry.',
+  'session-not-found': 'The publishing service lost track of this run. Keep this tab open and retry to send it again.',
+});
+
+export function rankedSettlementMessage(code, { stored = true } = {}) {
   const key = typeof code === 'string' ? code : '';
+  if (!stored && Object.hasOwn(RANKED_SETTLEMENT_UNSTORED_MESSAGES, key)) return RANKED_SETTLEMENT_UNSTORED_MESSAGES[key];
   if (Object.hasOwn(RANKED_SETTLEMENT_MESSAGES, key)) return RANKED_SETTLEMENT_MESSAGES[key];
   return `This run could not be published (${key || 'unknown-error'}).`;
 }
 
-// One status line for the parent's game-state copy, true in every state.
+// One status line for the parent's game-state copy, true in every state. A
+// live run whose body is not stored carries the keep-tab-open notice.
 export function rankedSettlementStatusCopy(snapshot) {
   const state = snapshot?.state;
   const error = snapshot?.error;
+  const unstored = snapshot?.notice?.code === 'keep-tab-open';
   switch (state) {
     case 'preview': return 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
-    case 'waiting-entry': return 'Run saved. Waiting for your Ranked entry to confirm on LitVM before publishing…';
+    case 'waiting-entry': return unstored
+      ? 'Waiting for your Ranked entry to confirm on LitVM before publishing… Keep this tab open until publishing finishes.'
+      : 'Run saved. Waiting for your Ranked entry to confirm on LitVM before publishing…';
     case 'verifying': return 'Verifying your run with Lester’s Arcade…';
     case 'queued': return 'Run verified. Queued for publishing on LitVM…';
     case 'publishing': return 'Publishing your run on LitVM…';
@@ -93,7 +111,7 @@ export function rankedSettlementStatusCopy(snapshot) {
       return typeof tx === 'string' && tx.length > 16 ? `Run published on LitVM. Tx ${tx.slice(0, 10)}…${tx.slice(-6)}.` : 'Run published on LitVM.';
     }
     case 'retrying': return error?.message ?? 'Publishing will retry shortly.';
-    case 'saved-locally': return error?.message ?? 'Saved on this device. Publishing will retry automatically.';
+    case 'saved-locally': return error?.message ?? (unstored ? `${RANKED_SETTLEMENT_MESSAGES['keep-tab-open']}.` : 'Saved on this device. Publishing will retry automatically.');
     case 'rejected': return error?.message ?? rankedSettlementMessage(null);
     case 'practice': return error?.message ?? RANKED_SETTLEMENT_MESSAGES['entry-failed'];
     default: return '';
@@ -248,6 +266,8 @@ export function createRankedSettlementClient({
       localScore: Number.isFinite(localScore) ? localScore : null,
     });
 
+    // A live, unfinished run whose body is not stored on the device (§7.2).
+    const tabOnly = () => Boolean(live && !h.persisted && !TERMINAL_STATES.has(h.state) && request);
     const snapshot = () => Object.freeze({
       state: h.state,
       sessionId32: meta.sessionId32,
@@ -258,9 +278,10 @@ export function createRankedSettlementClient({
       localScore: meta.localScore,
       entry: Object.freeze({ ...h.entry }),
       server: h.server,
-      error: h.error ? Object.freeze({ ...h.error }) : null,
+      // The message follows where the body lives now (an eviction included).
+      error: h.error ? Object.freeze({ ...h.error, message: rankedSettlementMessage(h.error.code, { stored: !tabOnly() }) }) : null,
       persisted: h.persisted,
-      notice: live && !h.persisted && !TERMINAL_STATES.has(h.state) && request
+      notice: tabOnly()
         ? Object.freeze({ code: 'keep-tab-open', message: RANKED_SETTLEMENT_MESSAGES['keep-tab-open'] })
         : null,
       updatedAt: h.updatedAt,
@@ -322,17 +343,17 @@ export function createRankedSettlementClient({
         return { network: true };
       }
     }
-    function tokenOrSignIn() {
+    function currentToken() {
       let token = null;
       try { token = getToken(meta.wallet); } catch { token = null; }
-      if (typeof token === 'string' && token) return token;
-      savedLocally('sign-in-required', { auto: false });
-      return null;
+      return typeof token === 'string' && token ? token : null;
     }
+    // Only the full body needs the player's token: without it the server has
+    // nothing to publish, so a signed-out full POST waits for a sign-in.
     async function postFull() {
       if (!request) return savedLocally('request-unavailable', { auto: false });
-      const token = tokenOrSignIn();
-      if (!token) return undefined;
+      const token = currentToken();
+      if (!token) return savedLocally('sign-in-required', { auto: false });
       set('verifying');
       const res = await call(settleUrl, {
         method: 'POST',
@@ -341,9 +362,12 @@ export function createRankedSettlementClient({
       });
       return respond(res, 'full');
     }
+    // The retry nudge is the owner's. Signed out (a sign-out, an expired
+    // token, a wallet switch) the relayer and the cron still publish the
+    // server's row, so the client follows it through the status view instead.
     async function postRetry() {
-      const token = tokenOrSignIn();
-      if (!token) return undefined;
+      const token = currentToken();
+      if (!token) return getStatus();
       const res = await call(settleUrl, {
         method: 'POST',
         headers: { 'content-type': 'application/json', accept: 'application/json', authorization: `Bearer ${token}` },
@@ -351,13 +375,12 @@ export function createRankedSettlementClient({
       });
       return respond(res, 'retry');
     }
+    // The owner view with the Bearer token (§4.4), the public view without one.
     async function getStatus() {
-      const token = tokenOrSignIn();
-      if (!token) return undefined;
-      const res = await call(`${statusUrl}?sessionId32=${sessionId32}`, {
-        method: 'GET',
-        headers: { accept: 'application/json', authorization: `Bearer ${token}` },
-      });
+      const token = currentToken();
+      const headers = { accept: 'application/json' };
+      if (token) headers.authorization = `Bearer ${token}`;
+      const res = await call(`${statusUrl}?sessionId32=${sessionId32}`, { method: 'GET', headers });
       return respond(res, 'status');
     }
     const redrive = () => (h.server ? postRetry() : postFull());
@@ -374,7 +397,9 @@ export function createRankedSettlementClient({
       }
       const code = typeof body?.error === 'string' && body.error ? body.error : null;
       if (body?.retryable === true) return retryable(code ?? 'server-error', body.retryAfterMs);
-      if (status === 401) return savedLocally('sign-in-required', { auto: false });
+      // A refused retry nudge (an expired token) leaves the server's row
+      // publishing: follow it through the status view (which never answers 401).
+      if (status === 401) return kind === 'retry' && h.server ? getStatus() : savedLocally('sign-in-required', { auto: false });
       if (status === 404) {
         if (kind !== 'full' && !h.reposted && request) {
           h.reposted = true;
@@ -389,7 +414,9 @@ export function createRankedSettlementClient({
     }
 
     function applyServer(body) {
-      h.server = Object.freeze({ ...body });
+      // A public status view (signed out) omits the owner fields; keep the
+      // ones the owner view already gave.
+      h.server = Object.freeze(body.view === 'public' && h.server ? { ...h.server, ...body } : { ...body });
       const poll = Number.isFinite(body.pollAfterMs) && body.pollAfterMs > 0 ? body.pollAfterMs : null;
       switch (body.status) {
         case 'confirmed': {
@@ -511,7 +538,17 @@ export function createRankedSettlementClient({
         }
       },
     });
-    return { handle, start, setPersisted(value) { h.persisted = Boolean(value); } };
+    return {
+      handle,
+      start,
+      // An eviction changes what the lines may claim, so subscribers hear it.
+      setPersisted(value) {
+        const next = Boolean(value);
+        if (h.persisted === next) return;
+        h.persisted = next;
+        if (!h.disposed) notify();
+      },
+    };
   }
 
   function track(created) {
@@ -590,6 +627,20 @@ export function createRankedSettlementClient({
     return resume({ sessionId32: key });
   }
 
+  // A later sign-in (lesters:wallet-session authenticated, after the one
+  // resume() per page load) re-drives the handles that stopped only for want
+  // of a token, stored or tab-only.
+  function retrySignedOut() {
+    if (!live) return [];
+    const out = [];
+    for (const handle of handles.values()) {
+      if (handle.state !== 'saved-locally' || handle.snapshot.error?.code !== 'sign-in-required') continue;
+      void handle.retry();
+      out.push(handle);
+    }
+    return out;
+  }
+
   if (live) reportCount(true);
 
   return Object.freeze({
@@ -598,6 +649,7 @@ export function createRankedSettlementClient({
     resume,
     get,
     handleRetryRequest,
+    retrySignedOut,
     pendingCount: () => readPending().length,
     isPersisted,
   });
