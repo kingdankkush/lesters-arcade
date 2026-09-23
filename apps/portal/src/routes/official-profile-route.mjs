@@ -638,7 +638,14 @@ export function createOfficialProfileRoute({
       const option = el('button', { className: `pixel-button profile-avatar-option${uri === chosen ? ' is-active' : ''}`, type: 'button', title: avatar.label });
       option.setAttribute('aria-pressed', uri === chosen ? 'true' : 'false');
       option.dataset.avatar = avatar.id;
-      option.append(el('img', { className: 'avatar-chip-img profile-avatar-choice', src: avatar.src, alt: avatar.label }));
+      const image = el('img', { className: 'avatar-chip-img profile-avatar-choice', src: avatar.src, alt: avatar.label });
+      // Some arcade avatars are large portrait strips: size the choice explicitly
+      // (object-fit: cover on .avatar-chip-img shows the centred portrait).
+      image.width = 56;
+      image.height = 56;
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      option.append(image);
       option.addEventListener('click', () => {
         nameEditor.avatarUri = uri;
         nameEditor.raw = input.value;
