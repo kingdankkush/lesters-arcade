@@ -3,7 +3,7 @@
 // be reconstructed from independent best runs or a bounded summary cache.
 const METRICS = Object.freeze({
   score: ['bestPaidScore', 'best Ranked score'],
-  paidRuns: ['totalPaidRuns', 'completed Ranked runs (all games)'],
+  paidRuns: ['paidRuns', 'completed Ranked runs'],
   elapsedSeconds: ['longestRunSeconds', 'best survival seconds'],
   cumulativeKills: ['totalKills', 'total kills'],
   cumulativeGrenadeKills: ['grenadeKills', 'total grenade kills'],
@@ -27,7 +27,8 @@ export function buildAchievementProgress(achievement, profile) {
   if (requirements.length !== 1) return { status: 'unavailable' };
   const [key, target] = requirements[0];
   const metric = Object.hasOwn(METRICS, key) ? METRICS[key] : null;
-  const source = key === 'paidRuns' ? profile : profile.progress?.['lester-blaster'];
+  // Every metric, completed Ranked runs included, is Hard Money Heroes progress.
+  const source = profile.progress?.['lester-blaster'];
   const value = metric ? source?.[metric[0]] : undefined;
   if (!metric || typeof target !== 'number' || !Number.isFinite(target) || target <= 0
     || typeof value !== 'number' || !Number.isFinite(value) || value < 0) return { status: 'unavailable' };

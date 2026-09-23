@@ -4715,6 +4715,10 @@ export function resolveAchievementUnlocksForRun({
   stageIndexReached = 1,
   lowHealthSurvival = false,
   uniqueWeapons = 0,
+  // Canonical run-summary inputs (achievements/stats.mjs hmhResolverInputsFromRunSummary
+  // and the summary's totals.damageDealt), so this resolver agrees with the server catalog.
+  weaponIds = [],
+  damageDealt = 0,
 } = {}) {
   const unlocks = [];
   const push = (achievement, condition) => {
@@ -4728,7 +4732,8 @@ export function resolveAchievementUnlocksForRun({
   const grenadeTotal = Math.max(cumulativeGrenadeKills, grenadeKills);
   const meleeTotal = Math.max(cumulativeMeleeKills, meleeKills);
   const powerUpTotal = Math.max(cumulativePowerUps, powerUpsCollected);
-  const effectiveWeaponCount = Math.max(uniqueWeapons, weaponId ? 1 : 0, rareWeaponId ? 1 : 0);
+  const usedWeaponIds = new Set(Array.isArray(weaponIds) ? weaponIds : []);
+  const effectiveWeaponCount = Math.max(uniqueWeapons, usedWeaponIds.size, weaponId ? 1 : 0, rareWeaponId ? 1 : 0);
 
   push(ACHIEVEMENTS.FIRST_PAID_RUN, paidRuns >= 1);
   push(ACHIEVEMENTS.FIRST_1000_POINTS, score >= 1000);
@@ -4745,8 +4750,9 @@ export function resolveAchievementUnlocksForRun({
   push(ACHIEVEMENTS.DRONE_SWATTER, droneKills >= 60);
   push(ACHIEVEMENTS.GRENADE_CENTURY, grenadeTotal >= 100);
   push(ACHIEVEMENTS.BLADE_MASTER, meleeTotal >= 100);
-  push(ACHIEVEMENTS.HASH_RAIL_SPECIALIST, weaponId === 'hash-rail');
-  push(ACHIEVEMENTS.SPREAD_LTC_SPECIALIST, weaponId === 'spread-ltc');
+  push(ACHIEVEMENTS.HASH_RAIL_SPECIALIST, weaponId === 'hash-rail' || usedWeaponIds.has('hash-rail'));
+  // The reboot's spread weapon is the Scatter Shotgun.
+  push(ACHIEVEMENTS.SPREAD_LTC_SPECIALIST, weaponId === 'spread-ltc' || usedWeaponIds.has('spread-ltc') || usedWeaponIds.has('scatter-shotgun'));
   push(ACHIEVEMENTS.POWERUP_COLLECTOR, uniquePowerUps >= 3);
   push(ACHIEVEMENTS.SCORE_5000, score >= 5000);
   push(ACHIEVEMENTS.SCORE_10000, score >= 10000);
@@ -4757,7 +4763,8 @@ export function resolveAchievementUnlocksForRun({
   push(ACHIEVEMENTS.FOUNDRY_CLEAR, stageIndexReached >= 8);
   push(ACHIEVEMENTS.GETAWAY_CLEAR, stageIndexReached >= 13 && Boolean(bossId));
   push(ACHIEVEMENTS.BIG_COMBO, maxCombo >= 15);
-  push(ACHIEVEMENTS.DAMAGE_CHAIN, maxDamageCombo >= 250);
+  // The reboot records no damage chains; one run's damage dealt stands in (achievements/hmh.mjs HMH_DAMAGE_CHAIN_DAMAGE).
+  push(ACHIEVEMENTS.DAMAGE_CHAIN, maxDamageCombo >= 250 || damageDealt >= 20_000);
   push(ACHIEVEMENTS.WEAPON_COLLECTOR, effectiveWeaponCount >= 3);
   push(ACHIEVEMENTS.LUCKY_SURVIVOR, elapsedSeconds >= 10 * 60 && lowHealthSurvival);
   push(ACHIEVEMENTS.TEN_PAID_RUNS, paidRuns >= 10);
@@ -5502,12 +5509,16 @@ export function buildParentSyncPacket(session, { score = null, survivalTime = nu
 
 function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = null) {
   const unlockedAchievements = [];
+  // These are Hard Money Heroes achievements: only HMH progress (the caller's
+  // profile.progress['lester-blaster']) may unlock them. Chikun and STACKED have
+  // their own catalogs, derived on the server (achievements/index.mjs).
+  if (!progress || progress !== profile.progress?.['lester-blaster']) return unlockedAchievements;
 
   if (unlockAchievement(profile, ACHIEVEMENTS.FIRST_PAID_RUN.id)) {
     unlockedAchievements.push(ACHIEVEMENTS.FIRST_PAID_RUN.id);
   }
 
-  const cumulativeProgress = progress ?? { bossesDefeated: [] };
+  const cumulativeProgress = progress;
   for (const achievementId of resolveAchievementUnlocksForRun({
     score,
     elapsedSeconds: runStats.elapsedSeconds ?? 0,
@@ -5528,7 +5539,8 @@ function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = nu
     maxDamageCombo: runStats.maxDamageCombo ?? cumulativeProgress.maxDamageCombo ?? 0,
     powerUpsCollected: runStats.powerUpsCollected ?? (runStats.collectedPowerUps?.length ?? 0),
     cumulativePowerUps: cumulativeProgress.cumulativePowerUps ?? 0,
-    paidRuns: profile.totalPaidRuns ?? 0,
+    // HMH-scoped completed Ranked runs; profile.totalPaidRuns counts every game.
+    paidRuns: progress.paidRuns ?? 0,
     cumulativeSeconds: cumulativeProgress.cumulativeSeconds ?? 0,
     bossesDefeatedCount: cumulativeProgress.bossesDefeated?.length ?? 0,
     cumulativeBossKills: cumulativeProgress.bossKills ?? 0,
@@ -5536,6 +5548,8 @@ function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = nu
     stageIndexReached: runStats.stageIndexReached ?? 1,
     lowHealthSurvival: runStats.lowHealthSurvival ?? false,
     uniqueWeapons: cumulativeProgress.weaponIdsUsed?.length ?? 0,
+    weaponIds: runStats.weaponIds ?? [],
+    damageDealt: runStats.damageDealt ?? 0,
   })) {
     if (unlockAchievement(profile, achievementId)) unlockedAchievements.push(achievementId);
   }
@@ -6031,7 +6045,7 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
 // stats module can surface a believable "top achievement by rarity". Clearly a
 // prototype heuristic until on-chain/global achievement indexing exists.
 const ACHIEVEMENT_TIER_UNLOCK_PCT = Object.freeze({
-  bronze: 62, silver: 34, gold: 15, platinum: 6, diamond: 2,
+  bronze: 62, silver: 34, gold: 15, platinum: 6, diamond: 2, mythic: 1,
 });
 
 export function achievementRarityPct(achievement) {

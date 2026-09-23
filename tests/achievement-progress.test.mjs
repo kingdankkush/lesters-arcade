@@ -137,13 +137,14 @@ test('every catalog projection remains explicit, with no mint or verified-status
   assert.ok(rows.every((a) => !a.minted && !a.verified));
 });
 
-test('completed Ranked volume uses the parent all-game completion counter, not started or Free runs', () => {
+test('completed Ranked volume uses the Hard Money Heroes completion counter, not other games or Free runs', () => {
   const { state, profile, progress } = setup();
-  profile.totalPaidRuns = 3;
+  profile.totalPaidRuns = 7;
   profile.totalFreeRuns = 999;
-  progress.paidRuns = 1;
+  progress.paidRuns = 3;
+  progress.freeRuns = 999;
   const a = row(state, ACHIEVEMENTS.TEN_PAID_RUNS.id);
-  assert.deepEqual(a.progress, { status: 'measured', value: 3, target: 10, fraction: 0.3, unit: 'completed Ranked runs (all games)' });
+  assert.deepEqual(a.progress, { status: 'measured', value: 3, target: 10, fraction: 0.3, unit: 'completed Ranked runs' });
 });
 
 test('invalid explicit timestamps fail for dated duplicates and legacy unlocks without changing either record', () => {
