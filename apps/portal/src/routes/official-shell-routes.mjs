@@ -97,7 +97,7 @@ export function createOfficialShellRoutes({
     dom.officialWalletCopy.textContent = connectedWallet
       ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. ${portalCopy.walletConnected}`
       : portalCopy.scoresWallet;
-    dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Connect Wallet';
+    dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Sign in';
   }
 
   function renderSettings() {

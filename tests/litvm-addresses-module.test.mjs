@@ -201,9 +201,17 @@ test('chain-client reads always use the public LiteForge RPC, never the wallet p
   // Every read goes through withPublicRead (chain check + destroy); none builds its own provider.
   assert.equal((source.match(/pickReadProvider\(/g) ?? []).length, 2, 'the definition and the one call in withPublicRead');
   assert.match(source, /provider\.destroy\(\)/);
-  // Write paths keep the wallet provider.
-  assert.match(source, /export async function openRankedSession[\s\S]*?new ethers\.BrowserProvider\(walletProvider\)/);
-  assert.match(source, /export async function submitProfile[\s\S]*?new ethers\.BrowserProvider\(walletProvider\)/);
+  // Write paths keep the wallet provider. Each pin is bounded to its own
+  // function body; openRankedSession pays through sendRankedEntry.
+  const exported = (name) => {
+    const node = ast.body.find((entry) => entry.declaration?.type === 'FunctionDeclaration' && entry.declaration.id.name === name);
+    assert.ok(node, `${name} is exported`);
+    return source.slice(node.start, node.end);
+  };
+  assert.match(exported('sendRankedEntry'), /new ethers\.BrowserProvider\(walletProvider\)/);
+  assert.match(exported('openRankedSession'), /await sendRankedEntry\(walletProvider, /);
+  assert.doesNotMatch(exported('openRankedSession'), /BrowserProvider|JsonRpcProvider/);
+  assert.match(exported('submitProfile'), /new ethers\.BrowserProvider\(walletProvider\)/);
 });
 
 // The vendored ethers transport uses global fetch, so a fixture answers JSON-RPC there (single and

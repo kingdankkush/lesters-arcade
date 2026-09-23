@@ -169,7 +169,7 @@ test('homepage keeps Browse Arcade and wallet entry beside the explicit HMH quic
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(html, /id="officialHmhFreeQuickplayButton"[^>]*>Play Hard Money Heroes Free</u);
   assert.match(html, /id="officialGuestEnterButton"[^>]*>Browse Arcade</u);
-  assert.match(html, /id="officialConnectButton"[^>]*>Connect Wallet</u);
+  assert.match(html, /id="officialConnectButton"[^>]*>Sign in</u);
   assert.match(html, /id="officialGuestQuickplayStatus"[^>]*aria-live="polite"/u);
   assert.match(main, /wireHmhFreeQuickplay/u);
   assert.match(main, /officialHmhFreeQuickplayButton/u);

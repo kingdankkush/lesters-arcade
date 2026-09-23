@@ -60,25 +60,27 @@
       <section id="officialApp" class="official-app" tabindex="-1" data-step="wallet-splash" aria-label="Lester's Arcade official app">
         <div class="official-scanline" aria-hidden="true"></div>
 
-        <div id="rankedEntryModal" class="ranked-entry-overlay" hidden role="dialog" aria-modal="true" aria-label="Ranked pre-flight check">
+        <div id="rankedEntryModal" class="ranked-entry-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rankedEntryTitle">
           <div class="ranked-entry-card">
-            <p class="eyebrow">Ranked · Pre-Flight Check</p>
-            <p class="ranked-entry-copy">Ranked preview creates a canonical local session with deterministic integrity evidence. Verified on-chain publishing remains disabled until the hardened verifier deployment is separately approved. No transaction or zkLTC is required for this preview.</p>
+            <p class="eyebrow" id="rankedEntryTitle">Ranked · Entry</p>
+            <p class="ranked-entry-copy" id="rankedEntryCopy">Ranked preview: your wallet identifies this run on this device. Verified on-chain publishing remains disabled, so no transaction is sent and no zkLTC is charged.</p>
             <div class="ranked-entry-rows">
               <div class="ranked-entry-row"><span>Network</span><strong id="rankedEntryNetwork">LitVM LiteForge · 4441</strong></div>
               <div class="ranked-entry-row"><span>Wallet</span><strong id="rankedEntryWallet">—</strong></div>
               <div class="ranked-entry-row"><span>zkLTC balance</span><strong id="rankedEntryBalance">Checking…</strong></div>
-              <div class="ranked-entry-row"><span>Entry fee</span><strong id="rankedEntryFee">0.1 zkLTC</strong></div>
-              <div class="ranked-entry-row"><span>Settlement gas reserve</span><strong id="rankedEntryReserve">0.02 zkLTC</strong></div>
-              <div class="ranked-entry-row ranked-entry-row-total"><span>Total at entry</span><strong id="rankedEntryTotal">0.12 zkLTC</strong></div>
+              <div class="ranked-entry-row"><span>Entry</span><strong id="rankedEntryFee">0.1 zkLTC</strong></div>
+              <div class="ranked-entry-row"><span>Settlement reserve<small class="ranked-entry-row-note">pays the relayer that publishes your score on LitVM</small></span><strong id="rankedEntryReserve">0.002 zkLTC</strong></div>
+              <div class="ranked-entry-row ranked-entry-row-total"><span>Total</span><strong id="rankedEntryTotal">0.102 zkLTC</strong></div>
+              <div class="ranked-entry-row ranked-entry-row-split"><span>Where it goes</span><strong>85% to the game's developer · 15% to the arcade</strong></div>
             </div>
             <div id="rankedEntryChainGuard" class="ranked-entry-chainguard" hidden></div>
-            <p id="rankedEntryStatus" class="ranked-entry-status"></p>
+            <p id="rankedEntryStatus" class="ranked-entry-status" role="status" aria-live="polite"></p>
             <div class="ranked-entry-actions">
               <button id="rankedEntryCancel" class="back-nav-button" type="button">Cancel</button>
               <button id="rankedEntryApprove" class="primary-button big-action" type="button">Start Ranked Run</button>
             </div>
-            <p class="tiny-note" id="rankedEntryFootnote">Ranked Mode charges a flat 0.1 zkLTC entry plus a small settlement gas reserve once verified settlement is live; the reserve pays the relayer that publishes your score and session data on LitVM for you, and the exact total is quoted by the entry contract before you confirm. In this preview your wallet identifies the local session and no transaction is sent.</p>
+            <a id="rankedEntryFreeLink" class="ranked-entry-free-link" href="/games">Free Mode is always free</a>
+            <p class="tiny-note" id="rankedEntryFootnote">The entry contract quotes the exact total before you confirm, and your wallet asks once. In this preview no transaction is sent.</p>
           </div>
         </div>
 
@@ -102,7 +104,7 @@
               <p class="portal-lead">Welcome to Lester's Arcade. Survive the wasteland, make your escape, or find your rhythm in falling blocks. Pick a cabinet and play Free, right here in your browser.</p>
               <div class="portal-actions">
                 <a id="officialGuestEnterButton" class="portal-button" href="/games">Browse Arcade</a>
-                <button id="officialConnectButton" class="portal-button portal-button-outline" type="button">Connect Wallet</button>
+                <button id="officialConnectButton" class="portal-button portal-button-outline" type="button">Sign in</button>
               </div>
               <p class="portal-entry-note">Free play needs no wallet. No download. Just a browser.</p>
               <button id="officialHmhFreeQuickplayButton" class="portal-text-link" type="button">Play Hard Money Heroes Free</button>

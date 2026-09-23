@@ -6,7 +6,8 @@
 // no trusted operator key in the browser.
 //
 //   WRITE  (needs the player's wallet provider, 1 confirmation popup):
-//     submitRankedSession(provider, { ... })  -> { txHash, receipt }
+//     sendRankedEntry(provider, { ... })      -> { txHash, wait() } right after broadcast
+//     submitRankedSession(provider, { ... })  -> { txHash, receipt } (owner tooling only)
 //
 //   READ   (gas-free; always over the public LiteForge RPC, never the wallet provider):
 //     fetchGlobalLeaderboard({ limit })       -> [{ player, score, ... }]
@@ -196,28 +197,145 @@ async function readRankedContractGate(ethers, provider, gameId) {
   }
 }
 
-// --- WRITE: pay the native 0.1 zkLTC Ranked entry (player-signed, 1 tx) -----
-// Sends exactly the game's registered entryFeeWei to ArcadeRankedEntry.openSession.
-// The contract records the paid session the score contract later checks.
-export async function openRankedSession(walletProvider, { sessionId, sessionKey = null, gameId } = {}) {
+// A read provider for tests and tools: an EIP-1193 object is wrapped, an
+// ethers provider is used as is. Without one, reads go through withPublicRead.
+async function withReadProvider(ethers, readProvider, read) {
+  if (!readProvider) return withPublicRead(ethers, null, read);
+  const provider = typeof readProvider.getBlockNumber === 'function' ? readProvider : new ethers.BrowserProvider(readProvider);
+  return read(provider);
+}
+
+// Gas for openSession (three native transfers plus the paid-session record),
+// padded. The fee per gas comes from the public RPC; the fallback covers a
+// failed fee read at LiteForge's 2026-09-23 level (about 1.5 gwei).
+export const RANKED_ENTRY_GAS_UNITS = 250_000n;
+export const RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI = 2_000_000_000n;
+async function estimateEntryGasWei(provider) {
+  try {
+    const fee = await provider.getFeeData();
+    const perGas = fee?.maxFeePerGas ?? fee?.gasPrice ?? 0n;
+    return RANKED_ENTRY_GAS_UNITS * (perGas > 0n ? perGas : RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI);
+  } catch {
+    return RANKED_ENTRY_GAS_UNITS * RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI;
+  }
+}
+
+// One bounded receipt wait (per RPC) inside wait().
+export const RANKED_ENTRY_WAIT_TIMEOUT_MS = 180_000;
+// A slow entry is never reported as failed while it can still count: an entry
+// mined more than 30 minutes after its seed ticket can no longer settle (A26,
+// seed-ticket-stale), so wait() gives up on a missing receipt only after that.
+export const RANKED_ENTRY_CONFIRM_DEADLINE_MS = 30 * 60 * 1000;
+export const RANKED_ENTRY_POLL_INTERVAL_MS = 5_000;
+// A27: switching the fee off makes Ranked unusable, not free (E3 answers
+// 402 entry-underpaid), so a zero quote is never sent.
+export const RANKED_ENTRY_CLOSED_ERROR = 'The Ranked entry is closed right now: the entry contract quotes no fee.';
+export const RANKED_ENTRY_ACCOUNT_CHANGED_ERROR = 'Your wallet switched accounts. The entry was not sent.';
+
+// --- WRITE: pay the native Ranked entry (player-signed, 1 tx) ---------------
+// Sends the contract's exact quote (entry fee + settlement reserve) to
+// ArcadeRankedEntry.openSession against the canonical session key and returns
+// right after the broadcast, so the run can start while the entry confirms
+// (contract A17, §7.6). `wait()` never rejects: it resolves
+// { status: 'confirmed'|'failed', blockNumber }. A missing receipt is looked
+// for again (and isPaid read) until RANKED_ENTRY_CONFIRM_DEADLINE_MS; only a
+// reverted receipt, or no payment by then, is 'failed'. `expectedWallet` is
+// the account the session key is bound to: a signer on any other account is
+// refused before openSession. The wallet sees the chain id request, the signer
+// and the transaction itself; the quote comes from the background pre-flight
+// or a public read.
+export async function sendRankedEntry(walletProvider, {
+  sessionKey, gameId, preflight = null, expectedWallet = null, readProvider = null,
+  waitTimeoutMs = RANKED_ENTRY_WAIT_TIMEOUT_MS, confirmDeadlineMs = RANKED_ENTRY_CONFIRM_DEADLINE_MS,
+  pollIntervalMs = RANKED_ENTRY_POLL_INTERVAL_MS, now = () => Date.now(),
+} = {}) {
   if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No entry fee was requested.');
   if (!walletProvider?.request) throw new Error('A connected wallet is required to pay the Ranked entry.');
-  if (!sessionId || !gameId) throw new Error('sessionId and gameId are required.');
+  if (!isBytes32Hex(sessionKey)) throw new Error('A canonical session key is required.');
+  if (typeof gameId !== 'string' || !gameId) throw new Error('gameId is required.');
   const ethers = await loadEthers();
+  const sessionId32 = sessionKey.toLowerCase();
   const browserProvider = new ethers.BrowserProvider(walletProvider);
   const net = await browserProvider.getNetwork();
   if (Number(net.chainId) !== LITVM_LITEFORGE_NETWORK.chainId) {
     throw new Error(`Wrong network: wallet is on chain ${net.chainId}, expected ${LITVM_LITEFORGE_NETWORK.chainId} (${LITVM_LITEFORGE_NETWORK.name}).`);
   }
-  const gate = await readRankedContractGate(ethers, browserProvider, gameId);
-  if (!gate.ok) throw new Error(gate.error);
-  if (gate.entryFeeWei === 0n || !gate.rankedEntryAddress) return { txHash: null, paid: false, amountWei: 0n, sessionId32: isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId) };
+  const configuredEntry = String(LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry ?? '').toLowerCase();
+  let quote = null;
+  if (preflight?.ok === true && preflight.gameId === gameId && preflight.rankedEntryAddress
+    && String(preflight.rankedEntryAddress).toLowerCase() === configuredEntry && typeof preflight.entryTotalWei === 'bigint') {
+    quote = {
+      rankedEntryAddress: preflight.rankedEntryAddress,
+      entryTotalWei: preflight.entryTotalWei,
+      entryFeeWei: preflight.entryFeeWei ?? 0n,
+      settlementGasReserveWei: preflight.settlementGasReserveWei ?? 0n,
+      gameId32: ethers.id(gameId),
+    };
+  } else {
+    const gate = await withReadProvider(ethers, readProvider, (provider) => readRankedContractGate(ethers, provider, gameId));
+    if (!gate.ok) throw new Error(gate.error);
+    quote = gate;
+  }
+  if (!quote.rankedEntryAddress || BigInt(quote.entryTotalWei ?? 0n) === 0n) throw Object.assign(new Error(RANKED_ENTRY_CLOSED_ERROR), { code: 'RANKED_ENTRY_CLOSED' });
   const signer = await browserProvider.getSigner();
-  const entry = new ethers.Contract(gate.rankedEntryAddress, RANKED_ENTRY_ABI, signer);
-  const sessionId32 = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
-  const tx = await entry.openSession(sessionId32, gate.gameId32, { value: gate.entryTotalWei });
-  const receipt = await tx.wait();
-  return { txHash: tx.hash, receipt, paid: true, amountWei: gate.entryTotalWei, entryFeeWei: gate.entryFeeWei, settlementGasReserveWei: gate.settlementGasReserveWei, sessionId32 };
+  const player = String(typeof signer.getAddress === 'function' ? await signer.getAddress() : signer.address ?? '').toLowerCase();
+  if (expectedWallet && player !== String(expectedWallet).toLowerCase()) {
+    throw Object.assign(new Error(RANKED_ENTRY_ACCOUNT_CHANGED_ERROR), { code: 'ACCOUNT_MISMATCH' });
+  }
+  const gameId32 = quote.gameId32 ?? ethers.id(gameId);
+  const entry = new ethers.Contract(quote.rankedEntryAddress, RANKED_ENTRY_ABI, signer);
+  const tx = await entry.openSession(sessionId32, gameId32, { value: quote.entryTotalWei });
+  const broadcastAt = now();
+  const receiptOnce = async () => {
+    try {
+      const receipt = await withReadProvider(ethers, readProvider, (provider) => provider.waitForTransaction(tx.hash, 1, waitTimeoutMs));
+      if (receipt) return receipt;
+    } catch { /* the public RPC failed or timed out; ask the wallet's own RPC */ }
+    try { return await tx.wait(1, waitTimeoutMs); } catch (error) { return error?.receipt ?? null; }
+  };
+  // A replaced (sped-up) entry has another hash: the entry contract itself says
+  // whether this session is paid.
+  const paidOnChain = async () => {
+    try {
+      return Boolean(await withReadProvider(ethers, readProvider, (provider) => new ethers.Contract(quote.rankedEntryAddress, RANKED_ENTRY_ABI, provider).isPaid(sessionId32, player, gameId32)));
+    } catch {
+      return false;
+    }
+  };
+  let waiting = null;
+  const wait = () => {
+    waiting ??= (async () => {
+      for (;;) {
+        const receipt = await receiptOnce();
+        if (receipt) return { status: Number(receipt.status) === 1 ? 'confirmed' : 'failed', blockNumber: receipt.blockNumber ?? null };
+        if (await paidOnChain()) return { status: 'confirmed', blockNumber: null };
+        if (now() - broadcastAt >= confirmDeadlineMs) return { status: 'failed', blockNumber: null };
+        await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+      }
+    })().catch(() => ({ status: 'failed', blockNumber: null }));
+    return waiting;
+  };
+  return {
+    txHash: tx.hash, sessionId32, amountWei: quote.entryTotalWei,
+    entryFeeWei: quote.entryFeeWei, settlementGasReserveWei: quote.settlementGasReserveWei, paid: true, wait,
+  };
+}
+
+// Waits for the entry to confirm (existing callers and tests). New code uses
+// sendRankedEntry and starts the run on broadcast. The other options (the
+// pre-flight quote, the expected wallet, a read provider, timings) pass through.
+export async function openRankedSession(walletProvider, { sessionId, sessionKey = null, gameId, ...entryOptions } = {}) {
+  if (!SETTLEMENT_LIVE) throw new Error('Ranked settlement is disabled. No entry fee was requested.');
+  if (!walletProvider?.request) throw new Error('A connected wallet is required to pay the Ranked entry.');
+  if (!sessionId || !gameId) throw new Error('sessionId and gameId are required.');
+  const key = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
+  const sent = await sendRankedEntry(walletProvider, { ...entryOptions, sessionKey: key, gameId });
+  const receipt = await sent.wait();
+  if (receipt.status !== 'confirmed') throw new Error('The Ranked entry transaction did not confirm.');
+  return {
+    txHash: sent.txHash, receipt, paid: sent.paid, amountWei: sent.amountWei,
+    entryFeeWei: sent.entryFeeWei, settlementGasReserveWei: sent.settlementGasReserveWei, sessionId32: sent.sessionId32,
+  };
 }
 
 // --- attestation: ask the trusted verifier (/api/attest) to sign the run -----
@@ -428,12 +546,18 @@ export function explorerTxUrl(txHash) {
 
 // --- PRE-FLIGHT: chain, contract approval/ABI, connected account and gas ------
 // Gas-free reads only: never prompts for account access or creates a signer.
-// `ok` proves these prerequisites, not .1 zkLTC entry collection, verifier-service
+// The one wallet call is eth_chainId (plus eth_accounts, which never prompts,
+// when the caller does not pass `wallet`). The contract gate, the quote, the
+// balance and the fee all come over the public LiteForge RPC (`readProvider`
+// only for tests and tools). `needWei` is the exact entry total plus a gas
+// estimate for openSession (`minGasWei` overrides the estimate).
+// `ok` proves these prerequisites, not entry collection, verifier-service
 // acceptance, real-wallet compatibility, or settlement activation.
-export async function checkRankedReadiness(walletProvider, { gameId, minGasWei = null } = {}) {
+export async function checkRankedReadiness(walletProvider, { gameId, minGasWei = null, wallet = null, readProvider = null, ethersLoader = loadEthers } = {}) {
   const result = {
-    ok: false, onChain: false, chainId: null,
-    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, error: null, errorKind: null, contractGate: null,
+    ok: false, onChain: false, chainId: null, wallet: null,
+    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, gasWei: 0n, entryTotalWei: 0n,
+    error: null, errorKind: null, contractGate: null,
   };
   if (minGasWei !== null && (typeof minGasWei !== 'bigint' || minGasWei <= 0n)) {
     result.error = 'The Ranked gas estimate must be a positive integer in wei.';
@@ -447,41 +571,41 @@ export async function checkRankedReadiness(walletProvider, { gameId, minGasWei =
     return result;
   }
   try {
-    const ethers = await loadEthers();
-    const browserProvider = new ethers.BrowserProvider(walletProvider);
-    const net = await browserProvider.getNetwork();
-    result.chainId = Number(net.chainId);
+    const ethers = await ethersLoader();
+    result.chainId = Number(BigInt(await walletProvider.request({ method: 'eth_chainId' })));
     result.onChain = result.chainId === LITVM_LITEFORGE_NETWORK.chainId;
     if (!result.onChain) return result;
-    result.contractGate = await readRankedContractGate(ethers, browserProvider, gameId);
+    let account = typeof wallet === 'string' && ethers.isAddress(wallet) ? wallet : null;
+    const reads = await withReadProvider(ethers, readProvider, async (provider) => {
+      const gate = await readRankedContractGate(ethers, provider, gameId);
+      if (!gate.ok) return { gate };
+      if (!account) {
+        const accounts = await walletProvider.request({ method: 'eth_accounts' });
+        account = Array.isArray(accounts) && ethers.isAddress(accounts[0]) ? accounts[0] : null;
+      }
+      if (!account) return { gate };
+      const [balanceWei, gasWei] = await Promise.all([provider.getBalance(account), minGasWei ?? estimateEntryGasWei(provider)]);
+      return { gate, balanceWei, gasWei };
+    });
+    result.contractGate = reads.gate;
     if (!result.contractGate.ok) {
       result.error = result.contractGate.error;
       result.errorKind = 'contract-gate';
       return result;
     }
-    const accounts = await walletProvider.request({ method: 'eth_accounts' });
-    if (!Array.isArray(accounts) || !ethers.isAddress(accounts[0])) {
+    if (!account) {
       result.error = 'Connect a wallet before checking Ranked readiness.';
       result.errorKind = 'no-account';
       return result;
     }
-
-    // Estimated worst-case gas for entry + submitVerifiedSession. The actual
-    // observed submit gas was ~300k; we pad to 400k * gasPrice for headroom and
-    // add the native entry fee the game registers.
-    const gasUnits = 400_000n;
-    let gasPriceWei = 1_000_000_000n; // 1 gwei fallback
-    if (minGasWei === null) {
-      try {
-        const fee = await browserProvider.getFeeData();
-        if (fee?.gasPrice && fee.gasPrice > 0n) gasPriceWei = fee.gasPrice;
-      } catch { /* use conservative fallback gas estimate, not a payment quote */ }
-    }
-    result.needWei = minGasWei ?? (gasUnits * gasPriceWei);
-
-    result.balanceWei = await browserProvider.getBalance(accounts[0]);
+    result.wallet = account.toLowerCase();
+    result.entryTotalWei = BigInt(result.contractGate.entryTotalWei ?? 0n);
+    result.gasWei = BigInt(reads.gasWei);
+    result.needWei = result.entryTotalWei + result.gasWei;
+    result.balanceWei = BigInt(reads.balanceWei);
     result.balanceEth = ethers.formatEther(result.balanceWei);
     result.hasFunds = result.balanceWei >= result.needWei;
+    if (!result.hasFunds) result.errorKind = 'insufficient-funds';
     result.ok = result.onChain && result.contractGate.ok && result.hasFunds;
     return result;
   } catch (err) {
@@ -489,5 +613,17 @@ export async function checkRankedReadiness(walletProvider, { gameId, minGasWei =
     result.error = classified.message;
     result.errorKind = classified.kind;
     return result;
+  }
+}
+
+// The wallet's zkLTC over the public RPC (the nav balance chip). Null when the
+// read fails.
+export async function fetchWalletBalance(wallet, { readProvider = null } = {}) {
+  if (typeof wallet !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(wallet)) return null;
+  try {
+    const ethers = await loadEthers();
+    return BigInt(await withReadProvider(ethers, readProvider, (provider) => provider.getBalance(wallet)));
+  } catch {
+    return null;
   }
 }

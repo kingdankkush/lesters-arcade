@@ -182,14 +182,49 @@ export function classifyWalletError(error) {
   if (code === 4001 || code === 'ACTION_REJECTED' || /user (rejected|denied|cancelled|canceled)/i.test(message)) {
     return Object.freeze({ kind: 'user-cancelled', userCancelled: true, recoverable: true, severity: 'info', message });
   }
-  if (lower.includes('wrong network') || lower.includes('expected') && lower.includes('chain')) {
+  if (code === 4901 || code === 4902 || lower.includes('wrong network') || lower.includes('expected') && lower.includes('chain')) {
     return Object.freeze({ kind: 'wrong-network', userCancelled: false, recoverable: true, severity: 'warning', message });
   }
   if (lower.includes('no wallet') || lower.includes('connected wallet is required')) {
     return Object.freeze({ kind: 'missing-wallet', userCancelled: false, recoverable: true, severity: 'warning', message });
   }
-  if (lower.includes('insufficient funds') || lower.includes('insufficient balance')) {
+  if (code === 'INSUFFICIENT_FUNDS' || lower.includes('insufficient funds') || lower.includes('insufficient balance')) {
     return Object.freeze({ kind: 'insufficient-funds', userCancelled: false, recoverable: true, severity: 'warning', message });
   }
   return Object.freeze({ kind: 'wallet-error', userCancelled: false, recoverable: false, severity: 'error', message });
+}
+
+// --- One message and one action per error kind (guide §3.2) ----------------
+// The Ranked modal and sign-in show exactly what this returns. Action ids are
+// wired by the caller: 'retry' re-enables the same step, 'switch-network' asks
+// the wallet for LiteForge, 'faucet' links to the zkLTC faucet, 'recheck'
+// re-reads the balance, and 'pick-wallet' opens the wallet picker.
+export const WALLET_ERROR_KINDS = Object.freeze(['user-cancelled', 'wrong-network', 'insufficient-funds', 'missing-wallet', 'wallet-error']);
+
+// Wallet messages can embed an RPC URL or a long revert dump. Keep the first
+// sentence-sized piece only.
+export function shortWalletMessage(message, maxLength = 140) {
+  const text = String(message ?? '').replace(/\s+/g, ' ').replace(/\s*\(\w+=.*$/, '').trim();
+  if (!text) return 'Your wallet could not complete that request.';
+  return text.length > maxLength ? `${text.slice(0, maxLength - 1).trimEnd()}…` : text;
+}
+
+export function walletErrorAction(classified, { totalZkLtc = null, balanceZkLtc = null } = {}) {
+  const kind = WALLET_ERROR_KINDS.includes(classified?.kind) ? classified.kind : 'wallet-error';
+  switch (kind) {
+    case 'user-cancelled':
+      return Object.freeze({ kind, message: 'You cancelled in your wallet. Nothing was charged.', actions: Object.freeze([Object.freeze({ id: 'retry', label: 'Try again' })]) });
+    case 'wrong-network':
+      return Object.freeze({ kind, message: 'Your wallet is on another network.', actions: Object.freeze([Object.freeze({ id: 'switch-network', label: 'Switch to LiteForge' })]) });
+    case 'insufficient-funds':
+      return Object.freeze({
+        kind,
+        message: `You need about ${totalZkLtc ?? '0.102'} zkLTC. Balance ${balanceZkLtc ?? 'unknown'}.`,
+        actions: Object.freeze([Object.freeze({ id: 'faucet', label: 'Get zkLTC' }), Object.freeze({ id: 'recheck', label: 'Re-check' })]),
+      });
+    case 'missing-wallet':
+      return Object.freeze({ kind, message: null, actions: Object.freeze([Object.freeze({ id: 'pick-wallet', label: 'Sign in' })]) });
+    default:
+      return Object.freeze({ kind: 'wallet-error', message: shortWalletMessage(classified?.message), actions: Object.freeze([Object.freeze({ id: 'retry', label: 'Try again' })]) });
+  }
 }

@@ -89,7 +89,7 @@ test('wallet splash renders the featured cabinet and connection state', () => {
   // The splash wallet note follows the settlement flags (contract A33) and
   // matches the prerendered #officialWalletCopy text.
   assert.equal(guest.dom.officialWalletCopy.textContent, PORTAL_COPY.scoresWallet);
-  assert.equal(guest.dom.officialConnectButton.textContent, 'Connect Wallet');
+  assert.equal(guest.dom.officialConnectButton.textContent, 'Sign in');
   assert.equal(guest.dom.splashFeaturedCabinet.children[0].variant, 'splash');
   assert.equal(guest.calls.backgrounds.length, 0, 'brand homepage does not request game-specific background art');
 

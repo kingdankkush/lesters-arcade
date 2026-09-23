@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { parse } from 'acorn';
+import { walletErrorAction } from '../apps/portal/src/wallet-auth.mjs';
+import { formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from '../apps/portal/src/ranked-entry-flow.mjs';
 
 const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 const ast = parse(main, { ecmaVersion: 'latest', sourceType: 'module' });
@@ -27,15 +29,23 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     dom, SETTLEMENT_LIVE: live, selectedGameId: 'lester-blaster', connectedWallet: `0x${'12'.repeat(20)}`,
     LITVM_LITEFORGE_NETWORK: { name: 'Fixture LiteForge', chainId: 4441, faucetUrl: 'https://example.invalid/faucet' },
     detectEthereumProvider: () => ({ request() { throw new Error('No real wallet in modal tests'); } }),
-    checkRankedReadiness: async (provider, options) => { calls.push({ provider, options }); return pending ? pending : { ok: true, onChain: true, hasFunds: true, balanceEth: '1', error: null, ...status }; },
+    checkRankedReadiness: async (provider, options) => { calls.push({ provider, options }); return pending ? pending : { ok: true, onChain: true, hasFunds: true, balanceWei: 10n ** 18n, balanceEth: '1', error: null, ...status }; },
     playSfxCue() {}, requestLiteForgeNetwork: async () => false,
     // 2026-09-16 native entry fee wiring (disclosed in the modal; paid only when live).
     RANKED_ENTRY_FEE_ZKLTC: '0.1', formatZkLtcWei: (wei) => `${Number(BigInt(wei) / 1_000_000_000_000_000n) / 1000} zkLTC`,
-    // Fee + settlement gas reserve rows (owner decision 2026-09-16).
-    RANKED_SETTLEMENT_GAS_RESERVE_WEI: '20000000000000000', rankedEntryTotalWei: (fee, reserve = '20000000000000000') => (BigInt(fee) + BigInt(reserve)).toString(),
-    LITVM_CONTRACT_ADDRESSES: { scoreSubmissionRegistry: `0x${'ab'.repeat(20)}` }, CURRENT_RANKED_SEASON_ID: 'fixture-season',
-    createCanonicalSessionIdentity: async () => ({ sessionKey: `0x${'cd'.repeat(32)}` }),
-    openRankedSession: async () => { throw new Error('No entry payment in modal tests'); }, explorerTxUrl: (hash) => `https://example.invalid/tx/${hash}`,
+    // Fee + settlement reserve rows (owner decisions 2026-09-16 and 2026-09-23: 0.002 zkLTC).
+    RANKED_SETTLEMENT_GAS_RESERVE_WEI: '2000000000000000', rankedEntryTotalWei: (fee, reserve = '2000000000000000') => (BigInt(fee) + BigInt(reserve)).toString(),
+    LITVM_CONTRACT_ADDRESSES: { scoreSubmissionRegistry: `0x${'ab'.repeat(20)}` },
+    // Sign-in and live entry (signin-entry slice): a signed-in wallet, no cached
+    // pre-flight, and no seed ticket or payment unless a test says otherwise.
+    walletAuthenticated: true, connectedAddress: null, ensureWalletStylesheet() {}, peekRankedPreflight: () => null,
+    formatZkLtc4, walletErrorAction, RANKED_PAUSED_MESSAGE, RANKED_CLOSED_MESSAGE, isRankedPaused, seedTicketUsable,
+    fetchSeedTicket: async () => ({ ok: false, status: 0, error: 'no-seed-in-modal-tests' }),
+    walletSession: { token: () => 'fixture-token', invalidate() {} }, loadWalletSession: async () => context.walletSession, authenticateWalletSiwe: async () => false,
+    showWalletNotice() {}, signInFromPicker: async () => null,
+    loadRankedIdentity: async () => { throw new Error('No session key in modal tests'); },
+    sendRankedEntry: async () => { throw new Error('No entry payment in modal tests'); }, recordEntryBroadcast, showEntryChip() {}, refreshWalletBalanceChip() {},
+    startOfficialMode: async () => {}, window: null,
     classifyWalletError: (error) => ({ userCancelled: false, message: String(error?.message ?? error) }),
     el: (tag, options = {}) => Object.assign(element(), { tag }, options),
     appendText: (parent, tag, text) => { const child = Object.assign(element(), { tag, textContent: text }); parent.append(child); return child; },
@@ -97,7 +107,7 @@ test('approval cannot admit a different cabinet selected while its read was pend
 test('the modal quotes fee, settlement reserve and total, then follows the contract quote once the live check passes', async () => {
   const session = { sessionId: 'game-session-000000042', entryFeeWei: '100000000000000000', canonicalContext: {}, seed: 1, sessionNonce: 1 };
   const preview = subject({ live: false, session });
-  assert.deepEqual([preview.dom.rankedEntryFee.textContent, preview.dom.rankedEntryReserve.textContent, preview.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.02 zkLTC', '0.12 zkLTC']);
+  assert.deepEqual([preview.dom.rankedEntryFee.textContent, preview.dom.rankedEntryReserve.textContent, preview.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.002 zkLTC', '0.102 zkLTC']);
   preview.dom.rankedEntryCancel.click();
   await preview.promise;
   const live = subject({ session, status: { contractGate: { ok: true, entryFeeWei: 100000000000000000n, settlementGasReserveWei: 35000000000000000n, entryTotalWei: 135000000000000000n } } });

@@ -62,6 +62,50 @@ test('production Vercel config keeps portal framing closed except for same-origi
   assert.equal(connectSrc.includes('wss://liteforge.rpc.caldera.xyz'), true);
 });
 
+// WalletConnect sign-in (signin-entry slice, contract §4.5). Hosts from Reown's
+// CSP guide, https://docs.reown.com/advanced/security/content-security-policy
+// (fetched 2026-09-23); AppKit itself is bundled, so script-src gains nothing.
+test('portal CSP allows the Reown and WalletConnect hosts and keeps the games framable', () => {
+  const portalSource = '/((?!(?:hmh-reboot|chikun|stacked)/).*)';
+  const csp = parseCsp(findSecurityHeader('Content-Security-Policy', portalSource).header.value);
+  const connectSrc = csp.get('connect-src');
+  for (const host of [
+    'https://rpc.walletconnect.com', 'https://rpc.walletconnect.org',
+    'https://relay.walletconnect.com', 'https://relay.walletconnect.org',
+    'wss://relay.walletconnect.com', 'wss://relay.walletconnect.org',
+    'https://pulse.walletconnect.com', 'https://pulse.walletconnect.org',
+    'https://api.web3modal.com', 'https://api.web3modal.org',
+    'https://keys.walletconnect.com', 'https://keys.walletconnect.org',
+    'https://notify.walletconnect.com', 'https://notify.walletconnect.org',
+    'https://echo.walletconnect.com', 'https://echo.walletconnect.org',
+    'https://push.walletconnect.com', 'https://push.walletconnect.org',
+  ]) assert.ok(connectSrc.includes(host), `connect-src ${host}`);
+  for (const host of ['https://walletconnect.org', 'https://walletconnect.com', 'https://secure.walletconnect.com', 'https://secure.walletconnect.org']) {
+    assert.ok(csp.get('img-src').includes(host), `img-src ${host}`);
+  }
+  assert.ok(csp.get('font-src').includes('https://fonts.reown.com'));
+  assert.equal(csp.get('img-src').includes('*'), false, 'no wildcard image source');
+
+  // frame-src did not exist before: frames fell back to default-src 'self',
+  // which is what lets /hmh-reboot/, /chikun/ and /stacked/ load. It must start
+  // with 'self' or all three games break in production only.
+  const frameSrc = csp.get('frame-src');
+  assert.equal(frameSrc[0], "'self'");
+  assert.deepEqual(frameSrc.slice(1).sort(), ['https://secure.walletconnect.com', 'https://secure.walletconnect.org', 'https://verify.walletconnect.com', 'https://verify.walletconnect.org']);
+
+  // No remote script origin, ever: AppKit ships in dist/reown/.
+  const scriptSrc = csp.get('script-src');
+  assert.deepEqual(scriptSrc, ["'self'", "'unsafe-inline'"]);
+  assert.equal(scriptSrc.some((token) => /^(https?|wss?):|\*/i.test(token)), false);
+
+  // The children keep their own policies untouched.
+  for (const childSource of ['/hmh-reboot/(.*)', '/chikun/(.*)', '/stacked/(.*)']) {
+    const child = parseCsp(findSecurityHeader('Content-Security-Policy', childSource).header.value);
+    assert.equal(child.has('frame-src'), false, `${childSource} is unchanged`);
+    assert.equal((child.get('connect-src') ?? []).some((token) => /walletconnect|reown|web3modal/.test(token)), false);
+  }
+});
+
 test('Vercel security headers include conservative browser hardening defaults', () => {
   assert.equal(findSecurityHeader('X-Content-Type-Options')?.header.value, 'nosniff');
   assert.equal(findSecurityHeader('Referrer-Policy')?.header.value, 'strict-origin-when-cross-origin');

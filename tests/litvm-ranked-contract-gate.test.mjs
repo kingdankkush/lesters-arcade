@@ -56,7 +56,8 @@ function fixture(options = {}) {
 }
 async function check(options = {}, request = {}) {
   const f = fixture(options);
-  const result = await checkRankedReadiness(f.provider, { gameId, minGasWei: 1n, ...request });
+  // Reads go over the public RPC (guide §5.10); the fixture stands in for it and for the wallet.
+  const result = await checkRankedReadiness(f.provider, { gameId, minGasWei: 1n, readProvider: f.provider, ...request });
   return { ...f, result };
 }
 
