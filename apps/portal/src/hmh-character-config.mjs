@@ -201,17 +201,25 @@ function profileRankedRuns(profile = {}) {
 // and Lilly gates count only verified Ranked runs, games['lester-blaster']
 // .confirmedRuns from GET /api/profile (or the unlockables slice's cached copy
 // of it). Local unlock flags, local run counts and the local getaway-clear
-// migration are ignored there, because a browser can edit all of them. The
-// options are { verifiedRuns, hosted }: passing verifiedRuns (a count, or null
-// while it is unknown) selects hosted mode, and hosted:true forces it. With
-// neither, preview mode keeps today's device-local logic. The server enforces
-// the same gates for Ranked (E3, §4.3.3 step 11).
+// migration are ignored there, because a browser can edit all of them.
+//
+// Callers pass { hosted: HOSTED_PROFILE_SYNC, verifiedRuns }:
+// - hosted:true is hosted mode. A missing, undefined, null or invalid count
+//   (first visit, offline, E6 not loaded yet) counts as 0 verified runs, never
+//   as the local path, so a paid Ranked run can never start with a hero E3
+//   then refuses with 422 hero-locked (entries are not refunded).
+// - hosted:false is preview mode: today's device-local logic.
+// - Without `hosted`, the verifiedRuns key itself selects hosted mode, even
+//   when its value is undefined ({ verifiedRuns: cache?.count }); only options
+//   without that key keep the device-local logic.
+// The server enforces the same gates for Ranked (E3, §4.3.3 step 11).
 export function verifiedRunsFor(options = {}) {
   if (!options || typeof options !== 'object') return null;
-  const hosted = options.hosted === true || (options.hosted !== false && options.verifiedRuns !== undefined);
+  const hosted = options.hosted === true || (options.hosted !== false && Object.hasOwn(options, 'verifiedRuns'));
   if (!hosted) return null;
-  const count = Number(options.verifiedRuns);
-  return options.verifiedRuns !== null && Number.isSafeInteger(count) && count >= 0 ? count : 0;
+  const raw = options.verifiedRuns;
+  const count = typeof raw === 'number' ? raw : typeof raw === 'string' && /^\d+$/.test(raw) ? Number(raw) : Number.NaN;
+  return Number.isSafeInteger(count) && count >= 0 ? count : 0;
 }
 
 function gateProgress(unlock = {}, profile = {}, verifiedRuns = null) {

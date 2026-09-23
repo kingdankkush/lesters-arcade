@@ -80,3 +80,31 @@ test('hosted mode before the profile loads locks both heroes and repairs a locke
   // hosted:false wins over a stray count and keeps the local path.
   assert.equal(buildCharacterUnlockMap(structuredClone(TAMPERED), undefined, { hosted: false, verifiedRuns: 0 }).lilly, true);
 });
+
+test('hosted mode with no cached count yet never falls back to local unlocks', () => {
+  // The unlockables cache is empty on a first visit, offline, or before E6
+  // loads: `{ verifiedRuns: cache?.count }` is undefined. That is 0 verified
+  // runs in hosted mode, never the sticky local flags or the getaway-clear
+  // migration (D4, §7.9), so a paid Ranked run cannot start with a hero E3
+  // refuses as hero-locked.
+  const cache = undefined;
+  for (const options of [
+    { verifiedRuns: cache?.count },
+    { hosted: true, verifiedRuns: cache?.count },
+    { hosted: true, verifiedRuns: undefined },
+    { hosted: true, verifiedRuns: true },
+    { hosted: true, verifiedRuns: '7 runs' },
+  ]) {
+    const profile = structuredClone(TAMPERED);
+    const unlocks = buildCharacterUnlockMap(profile, undefined, options);
+    assert.deepEqual([unlocks['lester-original'], unlocks.lilly], [false, false], `locked for ${JSON.stringify(options)} (undefined keys dropped)`);
+    const entries = buildCharacterSelectEntries([{ id: 'lester-original' }, { id: 'lilly' }], profile, undefined, options);
+    assert.deepEqual(entries.map((entry) => [entry.unlocked, entry.unlockProgress.current, entry.unlockProgress.source]), [[false, 0, 'verified'], [false, 0, 'verified']]);
+    assert.equal(syncConfiguredCharacterUnlocks(profile, undefined, options).lilly, false);
+    assert.equal(profile.preferences.selectedCharacterId, 'lit-commando', 'the tampered Lilly selection is repaired');
+  }
+  // A numeric string from a cache is still a count.
+  assert.equal(buildCharacterUnlockMap(structuredClone(TAMPERED), undefined, { hosted: true, verifiedRuns: '10' }).lilly, true);
+  // Preview (no hosted flag, no verifiedRuns key) keeps today's local logic.
+  assert.deepEqual(Object.entries(buildCharacterUnlockMap(structuredClone(TAMPERED), undefined, {})).filter(([id]) => id !== 'lit-commando' && id !== 'lit-valkyrie'), [['lester-original', true], ['lilly', true]]);
+});
