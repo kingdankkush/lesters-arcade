@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Hard Money Heroes"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Mythic"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Volume"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Survived a total of 10 hours across Ranked runs.",
+  "external_url": "https://lestersarcade.io/games/hard-money-heroes",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/marathon-wallet.png",
+  "name": "Marathon Wallet"
+}

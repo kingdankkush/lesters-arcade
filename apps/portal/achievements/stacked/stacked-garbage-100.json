@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "STACKED"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Platinum"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Garbage"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Took 100 garbage rows in one Ranked run and kept stacking.",
+  "external_url": "https://lestersarcade.io/games/stacked",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/stacked/platinum.png",
+  "name": "Garbage Collector"
+}

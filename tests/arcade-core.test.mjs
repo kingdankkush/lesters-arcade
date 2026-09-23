@@ -275,7 +275,8 @@ test('WO-58 profile v2 model builds trophy room, session feed, achievements, col
   const sessionB = startPlaySession({ wallet, gameId: 'chikun', mode: 'paid', urlSessionId: chikunHandle.urlSessionId, sequenceNumber: chikunHandle.sequence, allowDevCabinet: true });
   const chikunRun = simulateChikunRun({ seed: sessionB.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
   const replayClaim = buildChikunReplayClaim({ buildHash: sessionB.buildHash, seasonId: sessionB.seasonId, result: chikunRun });
-  recordScore(state, sessionB, chikunRun.score, {
+  const hmhUnlocks = [...state.profiles[wallet].achievements];
+  const resultB = recordScore(state, sessionB, chikunRun.score, {
     survivalTime: chikunRun.survivalTime,
     survivalTicks: chikunRun.survivalTicks,
     coinsCollected: chikunRun.coinsCollected,
@@ -285,6 +286,11 @@ test('WO-58 profile v2 model builds trophy room, session feed, achievements, col
     achievements: chikunRun.achievements,
     replayClaim,
   });
+  // Hard Money Heroes achievements are HMH-only: a Chikun run grants none of them
+  // (Chikun's own catalog is derived on the server, achievements/chikun.mjs).
+  assert.deepEqual(resultB.unlockedAchievements, []);
+  assert.deepEqual(state.profiles[wallet].achievements, hmhUnlocks);
+  assert.equal(state.profiles[wallet].progress.chikun.paidRuns, 1);
   applySettlement(state, {
     ...resultA.settlementInput,
     mode: 'simulated',
@@ -3074,6 +3080,24 @@ test('achievementRarityPct orders rarer tiers lower', () => {
   const platinum = achievementRarityPct({ tier: 'platinum', difficulty: 'expert' });
   assert.ok(platinum < bronze, 'platinum should be rarer (lower %) than bronze');
   assert.ok(bronze <= 99 && platinum >= 1);
+  // Mythic is the rarest tier, below diamond (it used to fall back to 40%).
+  const diamond = achievementRarityPct({ tier: 'diamond', difficulty: 'long-haul' });
+  const mythic = achievementRarityPct({ tier: 'mythic', difficulty: 'endgame' });
+  assert.ok(mythic < diamond, 'mythic should be rarer (lower %) than diamond');
+  assert.ok(mythic >= 1);
+});
+
+test('achievementRarityPct keeps every real definition in tier order', async () => {
+  // With the real difficulty nudges (every platinum is 'expert') and the 1% floor,
+  // each tier's most common entry is still rarer than the next tier's rarest.
+  const { ACHIEVEMENT_LIST } = await import('../apps/portal/src/arcade-core.mjs');
+  const tiers = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'mythic'];
+  const pct = Object.fromEntries(tiers.map((tier) => [tier, ACHIEVEMENT_LIST.filter((a) => a.tier === tier).map(achievementRarityPct)]));
+  for (const tier of tiers) assert.ok(pct[tier].length > 0, tier);
+  for (let i = 1; i < tiers.length; i += 1) {
+    assert.ok(Math.max(...pct[tiers[i]]) < Math.min(...pct[tiers[i - 1]]), `${tiers[i]} (${pct[tiers[i]]}) is rarer than ${tiers[i - 1]} (${pct[tiers[i - 1]]})`);
+  }
+  assert.ok(ACHIEVEMENT_LIST.filter((a) => a.tier === 'platinum').every((a) => a.difficulty === 'expert'));
 });
 
 test('roguelike power-ups expose the effect contract the runtime depends on', () => {

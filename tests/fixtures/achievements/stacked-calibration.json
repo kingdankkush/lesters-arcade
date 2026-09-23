@@ -1,0 +1,464 @@
+{
+  "version": "stacked-achievement-calibration-v1",
+  "model": "apps/stacked/src/dev/soak-pilot.mjs (Free-only lookahead pilot) throttled to human speed: after each spawn it waits thinkTicks, after each input gapTicks, and errorPct of hard drops are preceded by a one-column slip. The pilot plays for singles; it never sets up Halvings, spins, perfect clears or back-to-back chains, so those thresholds are anchored on the Free medals (apps/stacked/src/free-medals.mjs) instead.",
+  "command": "node tests/fixtures/achievements/build-fixtures.mjs --calibrate",
+  "runsPerProfile": 30,
+  "maxTicks": 108000,
+  "seeds": "run i uses (imul(i + 1, 0x9e3779b1) ^ 0x5bd1e995) >>> 0",
+  "config": {
+    "startLevel": 1,
+    "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
+    "seasonId": "stacked-season-preview-1"
+  },
+  "profiles": {
+    "novice": {
+      "name": "novice",
+      "thinkTicks": 45,
+      "gapTicks": 8,
+      "errorPct": 12,
+      "terminalReasons": {
+        "lock-out": 19,
+        "block-out": 11
+      },
+      "stats": {
+        "survivalMinutes": {
+          "p10": 1.259,
+          "p50": 2.654,
+          "p90": 4.026,
+          "p99": 5.008
+        },
+        "lines": {
+          "p10": 9.9,
+          "p50": 37.5,
+          "p90": 63.8,
+          "p99": 87.23
+        },
+        "level": {
+          "p10": 1.9,
+          "p50": 4.5,
+          "p90": 7.1,
+          "p99": 9.42
+        },
+        "score": {
+          "p10": 3807.8,
+          "p50": 22131,
+          "p90": 56978.4,
+          "p99": 94286.2
+        },
+        "quadClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 1
+        },
+        "spins": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0
+        },
+        "perfectClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0
+        },
+        "maxCombo": {
+          "p10": 1,
+          "p50": 2,
+          "p90": 3.1,
+          "p99": 4
+        },
+        "maxBackToBack": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 1
+        },
+        "garbageRowsReceived": {
+          "p10": 0,
+          "p50": 2,
+          "p90": 8,
+          "p99": 9
+        },
+        "garbageRowsCleared": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0.1,
+          "p99": 3.13
+        },
+        "pieces": {
+          "p10": 60.8,
+          "p50": 124,
+          "p90": 186.8,
+          "p99": 233.75
+        },
+        "zone": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 1
+        }
+      }
+    },
+    "intermediate": {
+      "name": "intermediate",
+      "thinkTicks": 30,
+      "gapTicks": 6,
+      "errorPct": 6,
+      "terminalReasons": {
+        "block-out": 14,
+        "lock-out": 16
+      },
+      "stats": {
+        "survivalMinutes": {
+          "p10": 2.884,
+          "p50": 4.765,
+          "p90": 5.469,
+          "p99": 5.589
+        },
+        "lines": {
+          "p10": 59.8,
+          "p50": 114.5,
+          "p90": 140,
+          "p99": 141.71
+        },
+        "level": {
+          "p10": 6.9,
+          "p50": 12,
+          "p90": 15,
+          "p99": 15
+        },
+        "score": {
+          "p10": 49984.4,
+          "p50": 148244,
+          "p90": 207993.6,
+          "p99": 223051.88
+        },
+        "quadClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 2
+        },
+        "spins": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0
+        },
+        "perfectClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0.71
+        },
+        "maxCombo": {
+          "p10": 2,
+          "p50": 2.5,
+          "p90": 4,
+          "p99": 4
+        },
+        "maxBackToBack": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 1
+        },
+        "garbageRowsReceived": {
+          "p10": 0,
+          "p50": 5.5,
+          "p90": 8.1,
+          "p99": 9.71
+        },
+        "garbageRowsCleared": {
+          "p10": 0,
+          "p50": 1.5,
+          "p90": 6.1,
+          "p99": 8.71
+        },
+        "pieces": {
+          "p10": 185.6,
+          "p50": 307.5,
+          "p90": 354.5,
+          "p99": 362.55
+        },
+        "zone": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 1
+        }
+      }
+    },
+    "expert": {
+      "name": "expert",
+      "thinkTicks": 22,
+      "gapTicks": 5,
+      "errorPct": 3,
+      "terminalReasons": {
+        "block-out": 16,
+        "lock-out": 14
+      },
+      "stats": {
+        "survivalMinutes": {
+          "p10": 5.003,
+          "p50": 5.272,
+          "p90": 5.589,
+          "p99": 5.71
+        },
+        "lines": {
+          "p10": 159.4,
+          "p50": 167,
+          "p90": 180.1,
+          "p99": 181.71
+        },
+        "level": {
+          "p10": 16.9,
+          "p50": 17.5,
+          "p90": 19,
+          "p99": 19
+        },
+        "score": {
+          "p10": 238102,
+          "p50": 277447,
+          "p90": 325367.2,
+          "p99": 327077.06
+        },
+        "quadClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 2,
+          "p99": 2
+        },
+        "spins": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0
+        },
+        "perfectClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0.1,
+          "p99": 1
+        },
+        "maxCombo": {
+          "p10": 2,
+          "p50": 3,
+          "p90": 3,
+          "p99": 3.71
+        },
+        "maxBackToBack": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 1.71
+        },
+        "garbageRowsReceived": {
+          "p10": 2.9,
+          "p50": 5.5,
+          "p90": 8,
+          "p99": 9
+        },
+        "garbageRowsCleared": {
+          "p10": 0,
+          "p50": 3.5,
+          "p90": 6.1,
+          "p99": 8.71
+        },
+        "pieces": {
+          "p10": 405.7,
+          "p50": 429.5,
+          "p90": 457,
+          "p99": 462.71
+        },
+        "zone": {
+          "p10": 1,
+          "p50": 1,
+          "p90": 1,
+          "p99": 1
+        }
+      }
+    },
+    "hardcore": {
+      "name": "hardcore",
+      "thinkTicks": 14,
+      "gapTicks": 4,
+      "errorPct": 2,
+      "terminalReasons": {
+        "block-out": 14,
+        "lock-out": 16
+      },
+      "stats": {
+        "survivalMinutes": {
+          "p10": 4.948,
+          "p50": 7.169,
+          "p90": 10.125,
+          "p99": 14.241
+        },
+        "lines": {
+          "p10": 206.5,
+          "p50": 307,
+          "p90": 449.3,
+          "p99": 666.88
+        },
+        "level": {
+          "p10": 21,
+          "p50": 30,
+          "p90": 30,
+          "p99": 30
+        },
+        "score": {
+          "p10": 393339.6,
+          "p50": 839023,
+          "p90": 1520567,
+          "p99": 2654071
+        },
+        "quadClears": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 3,
+          "p99": 6.13
+        },
+        "spins": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0
+        },
+        "perfectClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 1
+        },
+        "maxCombo": {
+          "p10": 2,
+          "p50": 3,
+          "p90": 4,
+          "p99": 6.42
+        },
+        "maxBackToBack": {
+          "p10": 0,
+          "p50": 1,
+          "p90": 1,
+          "p99": 1
+        },
+        "garbageRowsReceived": {
+          "p10": 2,
+          "p50": 6.5,
+          "p90": 24.2,
+          "p99": 64.26
+        },
+        "garbageRowsCleared": {
+          "p10": 0,
+          "p50": 3,
+          "p90": 18.6,
+          "p99": 58.97
+        },
+        "pieces": {
+          "p10": 539.8,
+          "p50": 780.5,
+          "p90": 1103.4,
+          "p99": 1552.34
+        },
+        "zone": {
+          "p10": 1,
+          "p50": 2,
+          "p90": 2,
+          "p99": 3
+        }
+      }
+    },
+    "exceptional": {
+      "name": "exceptional",
+      "thinkTicks": 10,
+      "gapTicks": 3,
+      "errorPct": 1,
+      "terminalReasons": {
+        "block-out": 30
+      },
+      "stats": {
+        "survivalMinutes": {
+          "p10": 10.979,
+          "p50": 14.391,
+          "p90": 16.381,
+          "p99": 17.032
+        },
+        "lines": {
+          "p10": 616.3,
+          "p50": 835,
+          "p90": 972.7,
+          "p99": 1025.15
+        },
+        "level": {
+          "p10": 30,
+          "p50": 30,
+          "p90": 30,
+          "p99": 30
+        },
+        "score": {
+          "p10": 2277611.2,
+          "p50": 3401291,
+          "p90": 4108551.6,
+          "p99": 4327546.86
+        },
+        "quadClears": {
+          "p10": 1,
+          "p50": 5,
+          "p90": 7.1,
+          "p99": 10.42
+        },
+        "spins": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0,
+          "p99": 0
+        },
+        "perfectClears": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 1,
+          "p99": 2.71
+        },
+        "maxCombo": {
+          "p10": 3,
+          "p50": 4,
+          "p90": 5,
+          "p99": 5
+        },
+        "maxBackToBack": {
+          "p10": 1,
+          "p50": 1,
+          "p90": 1,
+          "p99": 2
+        },
+        "garbageRowsReceived": {
+          "p10": 27.4,
+          "p50": 59,
+          "p90": 92.3,
+          "p99": 115.04
+        },
+        "garbageRowsCleared": {
+          "p10": 19.8,
+          "p50": 47,
+          "p90": 79,
+          "p99": 99.17
+        },
+        "pieces": {
+          "p10": 1519.9,
+          "p50": 1997.5,
+          "p90": 2267.7,
+          "p99": 2351.29
+        },
+        "zone": {
+          "p10": 2,
+          "p50": 3,
+          "p90": 3,
+          "p99": 3
+        }
+      }
+    }
+  }
+}

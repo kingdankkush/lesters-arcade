@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "STACKED"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Silver"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Combo"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Reached a combo of 5 (6 clearing pieces in a row) in one Ranked run.",
+  "external_url": "https://lestersarcade.io/games/stacked",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/stacked/silver.png",
+  "name": "Five-Link Chain"
+}

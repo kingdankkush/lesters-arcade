@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Hard Money Heroes"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Silver"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Enemy Hunt"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Defeated 60 Liquidator Agents or Validator Cultists across Ranked runs.",
+  "external_url": "https://lestersarcade.io/games/hard-money-heroes",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/drone-swatter.png",
+  "name": "Sybil Breaker"
+}

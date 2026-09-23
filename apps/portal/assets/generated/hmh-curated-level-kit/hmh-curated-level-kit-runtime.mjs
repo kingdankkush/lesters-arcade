@@ -11,6 +11,13 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
   "sourceFiles": [
     "apps/portal/main.js",
     "apps/portal/src/achievement-progress.mjs",
+    "apps/portal/src/achievements/chikun.mjs",
+    "apps/portal/src/achievements/entry.mjs",
+    "apps/portal/src/achievements/hmh.mjs",
+    "apps/portal/src/achievements/index.mjs",
+    "apps/portal/src/achievements/metadata.mjs",
+    "apps/portal/src/achievements/stacked.mjs",
+    "apps/portal/src/achievements/stats.mjs",
     "apps/portal/src/arcade-core.mjs",
     "apps/portal/src/arcade-music-transport.mjs",
     "apps/portal/src/arcade-playlist-manifest.mjs",

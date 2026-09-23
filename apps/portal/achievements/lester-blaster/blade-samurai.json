@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Hard Money Heroes"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Platinum"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Melee"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Defeated 250 enemies with the Litecoin Knife or Forked Standard across Ranked runs.",
+  "external_url": "https://lestersarcade.io/games/hard-money-heroes",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/blade-samurai.png",
+  "name": "Blade Samurai"
+}

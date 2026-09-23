@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Hard Money Heroes"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Bronze"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Collection"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Collected your first power-up or weapon cache in a Ranked run.",
+  "external_url": "https://lestersarcade.io/games/hard-money-heroes",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/first-powerup.png",
+  "name": "Pickup Ready"
+}

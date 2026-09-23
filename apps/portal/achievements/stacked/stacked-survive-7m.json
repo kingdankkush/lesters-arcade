@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "STACKED"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Gold"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Survival"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Survived 7 minutes and reached the Hashrate Forge zone.",
+  "external_url": "https://lestersarcade.io/games/stacked",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/stacked/gold.png",
+  "name": "Hashrate Forge"
+}

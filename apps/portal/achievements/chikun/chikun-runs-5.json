@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Chikun's Escape"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Bronze"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Volume"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Finished 5 verified Ranked runs.",
+  "external_url": "https://lestersarcade.io/games/chikun",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/bronze.png",
+  "name": "Coop Regular"
+}

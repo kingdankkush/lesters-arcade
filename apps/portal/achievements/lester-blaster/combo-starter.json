@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Hard Money Heroes"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Bronze"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Combo"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Reached a 5-kill combo.",
+  "external_url": "https://lestersarcade.io/games/hard-money-heroes",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/combo-starter.png",
+  "name": "Combo Starter"
+}

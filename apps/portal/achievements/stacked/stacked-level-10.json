@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "STACKED"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Silver"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Level"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Reached level 10 in one Ranked run.",
+  "external_url": "https://lestersarcade.io/games/stacked",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/stacked/silver.png",
+  "name": "Block Height 10"
+}

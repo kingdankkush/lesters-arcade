@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "STACKED"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Platinum"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Survival"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Survived 17 minutes, deep in the Scrypt Lattice zone.",
+  "external_url": "https://lestersarcade.io/games/stacked",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/stacked/platinum.png",
+  "name": "Lattice Survivor"
+}

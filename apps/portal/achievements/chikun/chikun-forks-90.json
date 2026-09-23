@@ -1,0 +1,28 @@
+{
+  "attributes": [
+    {
+      "trait_type": "Game",
+      "value": "Chikun's Escape"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Gold"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Forks"
+    },
+    {
+      "trait_type": "Soulbound",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Season",
+      "value": "LiteForge testnet"
+    }
+  ],
+  "description": "Passed 90 obstacles in one Ranked run.",
+  "external_url": "https://lestersarcade.io/games/chikun",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/gold.png",
+  "name": "Fork Veteran"
+}
