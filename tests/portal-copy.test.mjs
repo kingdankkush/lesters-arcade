@@ -17,6 +17,7 @@ const COPY_KEYS = [
   'description', 'faq', 'scoresNote', 'trustStatus', 'trustStorage', 'llmsScope', 'llmsHowItWorks',
   'manifestDescription', 'howIntro', 'howConnectTitle', 'howConnect', 'howConnectAction', 'howProfile',
   'scoresLead', 'scoresWallet', 'modeCopy', 'modeRanked', 'rankedDetail', 'scoresView', 'profileGuestView',
+  'profileWalletView', 'walletConnected',
 ];
 
 // Every string a copy object can put on a page, flattened.
@@ -193,5 +194,9 @@ test('SPA views read the same copy source as the builder', () => {
   assert.match(discovery, /\['Free or Ranked\?',PORTAL_COPY\.rankedDetail\[game\.id\]\]/);
   assert.match(appRoutes, /leaderboards: PORTAL_COPY\.scoresView/);
   assert.match(appRoutes, /: PORTAL_COPY\.profileGuestView/);
-  for (const source of [discovery, appRoutes]) assert.doesNotMatch(source, /device-local|yearly/i);
+  assert.match(appRoutes, /\? PORTAL_COPY\.profileWalletView/);
+  const shellRoutes = readFileSync(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url), 'utf8');
+  assert.match(shellRoutes, /: PORTAL_COPY\.scoresWallet;/);
+  assert.doesNotMatch(shellRoutes + appRoutes, /walletLockCopy/, 'the settlement-disabled wallet note never reaches a launch page');
+  for (const source of [discovery, appRoutes, shellRoutes]) assert.doesNotMatch(source, /device-local|yearly/i);
 });

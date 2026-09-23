@@ -140,8 +140,12 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     rankedDetail: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live
       ? `Free Mode is open to everyone and needs no wallet. Ranked costs ${total} testnet zkLTC per run; the arcade server ${game.id === 'lester-blaster' ? 'plausibility-checks each run (it is not replayed)' : 'replays each run from your inputs'} before publishing it on LitVM.`
       : 'Free Mode is open to guests. Wallet-connected Ranked is a device-local preview with no fees or prizes.']))),
-    // SPA headers of the Scores page and the guest Profile page.
+    // SPA headers of the Scores and Profile pages, and the splash wallet note.
     scoresView: hosted ? 'Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs, best score per wallet.' : 'Browse weekly, monthly, and all-time views of device-local Ranked preview records.',
+    profileWalletView: live ? 'Your verified Ranked runs, achievements, and on-chain name are tied to this wallet and follow you to any device.'
+      : hosted ? 'Your profile and preferences follow this wallet to any device. Ranked is still a preview, so no score transaction is sent.'
+      : 'Local progress, preview scores, achievements, and uploads are assigned to the connected wallet. No score transaction is sent while verified settlement is disabled.',
+    walletConnected: hosted ? 'Your arcade profile is connected.' : 'Your local arcade profile is connected.',
     profileGuestView: live ? 'Sign in with a wallet to see your verified Ranked runs and achievements on any device. Every wallet’s profile is public.'
       : hosted ? 'Sign in with a wallet to see your profile on any device. Verified Ranked publishing is not available yet.'
       : 'Guest stats are local to this browser. Permanent or cross-device history and verified Ranked publishing are not available yet.',

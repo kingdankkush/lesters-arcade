@@ -1,3 +1,5 @@
+import { PORTAL_COPY } from '../portal-content.mjs';
+
 export function createOfficialShellRoutes({
   dom,
   documentRef = globalThis.document,
@@ -92,8 +94,8 @@ export function createOfficialShellRoutes({
       dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
     }
     dom.officialWalletCopy.textContent = connectedWallet
-      ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Your local arcade profile is connected.`
-      : shellModel.profileRules.walletLockCopy;
+      ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. ${PORTAL_COPY.walletConnected}`
+      : PORTAL_COPY.scoresWallet;
     dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Connect Wallet';
   }
 

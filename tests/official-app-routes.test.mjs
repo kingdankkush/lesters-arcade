@@ -81,6 +81,14 @@ test('guest profile header does not promise available permanent history or Ranke
   assert.ok(h.calls.includes('profile'));
 });
 
+test('connected profile header follows the settlement flags', () => {
+  const h = harness({ step: 'profile', connectedWallet: '0x1234567890abcdef' });
+  h.routes.renderApp();
+  assert.equal(h.dom.officialProfileCopy.textContent, PORTAL_COPY.profileWalletView);
+  assert.match(portalCopyFor({ settlementLive: false, hostedProfileSync: false }).profileWalletView, /No score transaction is sent while verified settlement is disabled/);
+  assert.match(portalCopyFor({ settlementLive: true, hostedProfileSync: true }).profileWalletView, /verified Ranked runs, achievements, and on-chain name are tied to this wallet/);
+});
+
 test('scores header names only the Weekly, Monthly and All-time boards in every flag state', () => {
   const h = harness({ step: 'leaderboards', connectedWallet: '0x1234567890abcdef' });
   h.routes.renderApp();
