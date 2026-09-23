@@ -15,21 +15,21 @@
 import * as nodeCrypto from 'node:crypto';
 import { ipBucket } from '../http.mjs';
 import { authenticateBearer, bearerAuthHook } from '../auth/bearer.mjs';
+import { RANKED_GAMES, RANKED_SESSION_HANDLE_PATTERN } from '../../apps/portal/src/ranked-identity.mjs';
 import { ensureSchema } from '../neon/migrations.mjs';
 import { hitRateLimit, rateLimitedResult } from '../neon/rate-limit.mjs';
-import { INDEX_GAMES } from '../neon/rows.mjs';
 import { logSafeError } from './errors.mjs';
-import { heroPolicyFrom, moduleGate, settlementGate } from './settle-core.mjs';
+import { heroPolicyFrom, moduleGate, optionalImport, settlementGate } from './settle-core.mjs';
 
 export const SEED_BODY_MAX_BYTES = 2048;
 export const SEED_LIMITS = Object.freeze({ wallet: 60, ip: 600, windowSeconds: 3600 });
-export const SESSION_HANDLE_PATTERN = /^game-session-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+// The session handle, season and build hash rules are the verifier's own
+// (apps/portal/src/ranked-identity.mjs, which bindRankedIdentity applies in
+// E3), not copies, so E15 never issues a ticket for a session E3 would refuse
+// after the player paid.
+export const SESSION_HANDLE_PATTERN = RANKED_SESSION_HANDLE_PATTERN;
 // A11: format-checked, not allowlisted.
-export const BUILD_HASH_PATTERNS = Object.freeze({
-  'lester-blaster': /^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+$/,
-  chikun: /^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+:cabinet-\d+\.\d+\.\d+$/,
-  stacked: /^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+:cabinet-\d+\.\d+\.\d+$/,
-});
+export const BUILD_HASH_PATTERNS = Object.freeze(Object.fromEntries(Object.entries(RANKED_GAMES).map(([gameId, game]) => [gameId, game.buildHashPattern])));
 const BODY_KEYS = ['buildHash', 'gameId', 'seasonId', 'sessionId'];
 
 const NO_STORE = Object.freeze({ 'Cache-Control': 'no-store' });
@@ -41,8 +41,8 @@ export function validateSeedBody(body) {
   if (Object.keys(body).sort().join(',') !== BODY_KEYS.join(',')) return false;
   const { gameId, sessionId, seasonId, buildHash } = body;
   if (![gameId, sessionId, seasonId, buildHash].every((value) => typeof value === 'string')) return false;
-  if (!Object.hasOwn(INDEX_GAMES, gameId)) return false;
-  if (seasonId !== INDEX_GAMES[gameId].seasonId) return false;
+  if (!Object.hasOwn(RANKED_GAMES, gameId)) return false;
+  if (seasonId !== RANKED_GAMES[gameId].seasonId) return false;
   if (!SESSION_HANDLE_PATTERN.test(sessionId)) return false;
   return BUILD_HASH_PATTERNS[gameId].test(buildHash);
 }
@@ -105,14 +105,11 @@ export async function seedRequest({ headers = {}, body = null, ip = 'unknown' } 
   return json(200, { ok: true, seedTicket: issued.seedTicket, seed: issued.seed });
 }
 
-// The verify slice's issueSeedTicket, resolved at request time; null until
-// server/verify/seed-ticket.mjs exists.
-export async function loadIssueSeedTicket() {
-  try {
-    const module = await import('../verify/seed-ticket.mjs');
-    return typeof module.issueSeedTicket === 'function' ? module.issueSeedTicket : null;
-  } catch (error) {
-    if (error?.code !== 'ERR_MODULE_NOT_FOUND') logSafeError('ranked-seed:import', error);
-    return null;
-  }
+// The verify slice's issueSeedTicket (server/verify/seed-ticket.mjs), resolved
+// at request time; null when it cannot load, so E15 fails closed with 503.
+// Every import failure, ERR_MODULE_NOT_FOUND included, is logged by error name
+// and code only. `load` is a test seam.
+export async function loadIssueSeedTicket(load = () => import('../verify/seed-ticket.mjs')) {
+  const module = await optionalImport(load, 'seed-ticket');
+  return typeof module?.issueSeedTicket === 'function' ? module.issueSeedTicket : null;
 }

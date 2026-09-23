@@ -1,16 +1,20 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bindRankedIdentity, computeEvidenceDigest, reverifyStoredRun, verifyRankedRun } from '../server/verify/index.mjs';
-import { ACHIEVEMENT_STATS_PATH, RUN_STATS_MAPPER_NAMES, buildVerifiedRun, loadRunStatsMappers, resolveRunStatsMappers } from '../server/verify/verified-run.mjs';
+import { RUN_STATS_MAPPER_NAMES, RUN_STATS_MAPPERS, buildVerifiedRun } from '../server/verify/verified-run.mjs';
+import * as achievementStats from '../apps/portal/src/achievements/stats.mjs';
 import { deriveSessionSeed } from '../apps/portal/src/session-seed.mjs';
 import { rankedSessionKey } from '../apps/portal/src/ranked-identity.mjs';
-import { decodeFlapDeltas } from '../apps/portal/src/chikun-cabinet.mjs';
-import { decodeSic1, encodeSic1 } from '../apps/portal/src/stacked-sim.mjs';
-import { FIXTURE_ISSUED_AT, FIXTURE_VERIFY_AT_MS, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { decodeFlapDeltas, replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
+import { decodeSic1, encodeSic1, replayStackedRun } from '../apps/portal/src/stacked-sim.mjs';
+import { decodeStackedBase64 } from '../apps/portal/src/stacked-evidence-transport.mjs';
+import { STACKED_MAX_EVIDENCE_BYTES, STACKED_MAX_TICKS } from '../apps/portal/src/stacked-contracts.mjs';
+import { FIXTURE_ISSUED_AT, FIXTURE_NAMES, FIXTURE_VERIFY_AT_MS, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const fixture = readFixture('chikun-valid');
@@ -197,36 +201,52 @@ test('scores above the contract MAX_SCORE are rejected for every game', async ()
   assert.equal((await build(-1)).error, 'replay-rejected');
 });
 
-test('stats come from the achievements exports exactly, and a broken module never falls back', async () => {
-  const achievements = Object.freeze({
-    statsFromChikunResult: () => 'chikun',
-    statsFromStackedTuple: () => 'stacked',
-    statsFromHmhRunSummary: () => 'hmh',
-    hmhResolverInputsFromRunSummary: () => 'other',
-  });
-  let imports = 0;
-  const present = await resolveRunStatsMappers({ exists: () => true, importStats: async () => { imports += 1; return achievements; } });
-  assert.equal(present.source, 'achievements');
-  assert.deepEqual(Object.keys(present), ['source', ...RUN_STATS_MAPPER_NAMES]);
-  for (const name of RUN_STATS_MAPPER_NAMES) assert.equal(present[name], achievements[name], `${name} is the module's own export`);
-  assert.equal(imports, 1);
-  // The module exists but will not load, or lacks a mapper: the settle fails, loudly.
-  const broken = new SyntaxError('broken stats module');
-  await assert.rejects(resolveRunStatsMappers({ exists: () => true, importStats: async () => { throw broken; } }), (error) => error === broken);
-  for (const name of RUN_STATS_MAPPER_NAMES) {
-    const { [name]: _missing, ...partial } = achievements;
-    await assert.rejects(resolveRunStatsMappers({ exists: () => true, importStats: async () => partial }), new RegExp(`must export ${name}`));
+test('stats come from the achievements exports exactly, through a static import', () => {
+  assert.deepEqual(Object.keys(RUN_STATS_MAPPERS), [...RUN_STATS_MAPPER_NAMES]);
+  for (const name of RUN_STATS_MAPPER_NAMES) assert.equal(RUN_STATS_MAPPERS[name], achievementStats[name], `${name} is the achievements module's own export`);
+  assert.equal(Object.isFrozen(RUN_STATS_MAPPERS), true);
+  // A static import: a missing or broken stats module fails when the verifier
+  // loads. The interim fallback and its existsSync probe are gone.
+  const source = readFileSync(join(ROOT, 'server', 'verify', 'verified-run.mjs'), 'utf8');
+  assert.match(source, /^import \{ statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple \} from '\.\.\/\.\.\/apps\/portal\/src\/achievements\/stats\.mjs';$/m);
+  assert.doesNotMatch(source, /existsSync|verify-fallback|import\(/);
+});
+
+// sha256 (first 16 hex) of JSON.stringify(stats) for every committed ranked
+// fixture, computed with the verify slice's interim fallback mappers just
+// before the settle-wiring step removed them. The achievements mappers must
+// give the same values in the same key order. A deliberate change to a
+// mapper or a regenerated fixture updates these pins in the same commit.
+const FIXTURE_STATS_DIGESTS = Object.freeze({
+  'chikun-valid': 'e0bf9ce8f146c125',
+  'chikun-10min': 'a31c52ad82bce239',
+  'stacked-valid': '7aae958020321cf1',
+  'stacked-15min': 'd43b961b2cd2d4b8',
+  'hmh-valid': '90b5841817dbb18d',
+  'hmh-realistic': '82a1ad2fd441ed8e',
+  'hmh-level-90': '078c1b358762af1a',
+});
+
+test('every committed ranked fixture verifies to the achievements stats of its own replay', async () => {
+  assert.deepEqual(Object.keys(FIXTURE_STATS_DIGESTS).sort(), [...FIXTURE_NAMES].sort());
+  for (const name of FIXTURE_NAMES) {
+    const { body } = readFixture(name);
+    let expected;
+    if (body.gameId === 'chikun') {
+      expected = achievementStats.statsFromChikunResult(replayChikunRun(body.evidence.flap));
+    } else if (body.gameId === 'stacked') {
+      const bytes = decodeStackedBase64(body.evidence.sic1, STACKED_MAX_EVIDENCE_BYTES);
+      const config = { startLevel: 1, buildHash: body.identity.buildHash, seasonId: body.identity.seasonId };
+      expected = achievementStats.statsFromStackedTuple(replayStackedRun(bytes, { expectedSeed: body.identity.seed, maxTicks: STACKED_MAX_TICKS, config }));
+    } else {
+      expected = achievementStats.statsFromHmhRunSummary(body.evidence.runSummary);
+    }
+    const run = await verifyRankedRun(body, fixtureVerifyOptions());
+    assert.equal(run.ok, true, name);
+    assert.deepEqual(run.stats, expected, `${name} stats`);
+    assert.deepEqual(Object.keys(run.stats), Object.keys(expected), `${name} key order`);
+    assert.equal(createHash('sha256').update(JSON.stringify(run.stats)).digest('hex').slice(0, 16), FIXTURE_STATS_DIGESTS[name], `${name} stats unchanged by the static import`);
   }
-  // Only an absent module selects the verify fallback, and nothing is imported for it.
-  const absent = await resolveRunStatsMappers({ exists: () => false, importStats: async () => { throw new Error('imported the absent module'); } });
-  assert.equal(absent.source, 'verify-fallback');
-  for (const name of RUN_STATS_MAPPER_NAMES) assert.equal(typeof absent[name], 'function');
-  // The default probe and the default import name the same file, and the import is a literal specifier.
-  assert.equal(relative(ROOT, ACHIEVEMENT_STATS_PATH).replaceAll('\\', '/'), 'apps/portal/src/achievements/stats.mjs');
-  assert.match(readFileSync(join(ROOT, 'server', 'verify', 'verified-run.mjs'), 'utf8'), /importStats = \(\) => import\('\.\.\/\.\.\/apps\/portal\/src\/achievements\/stats\.mjs'\)/);
-  const loaded = await loadRunStatsMappers();
-  assert.deepEqual(Object.keys(loaded), ['source', ...RUN_STATS_MAPPER_NAMES]);
-  assert.equal(await loadRunStatsMappers(), loaded, 'loaded once per process');
 });
 
 test('a stats mapper that throws propagates as a server error, never a rejected run', async () => {

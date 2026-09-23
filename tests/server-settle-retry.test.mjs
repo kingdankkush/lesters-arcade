@@ -17,7 +17,8 @@ import * as retryApi from '../api/cron/settle-retry.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import {
-  bootLocalChain, buildSettleBody, createCatalogDouble, createVerifyDouble, fixtureEnv, openPaidSession, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE,
+  bootLocalChain, buildSettleBody, createCatalogDouble, createVerifyDouble, fixtureEnv, openPaidSession, REAL_SETTLEMENT_GAS_RESERVE_WEI, SETTLE_CRON_VALUE,
+  SETTLE_SESSION_VALUE,
 } from './helpers/settle-fixtures.mjs';
 
 /**
@@ -30,8 +31,11 @@ import {
 
 const NOW = Date.parse('2026-09-23T12:00:00.000Z');
 const REGISTRY = `0x${'33'.repeat(20)}`;
+// The real 0.002 zkLTC reserve and the 0.102 zkLTC entry it implies (0.1 +
+// 0.002); these rows never reach a chain, so the values are only realistic.
+const ENTRY_AMOUNT_WEI = 102_000_000_000_000_000n;
 const DEPLOYMENT = Object.freeze({
-  status: 'deployed', chainId: 4441, settlementGasReserveWei: '100000000000000',
+  status: 'deployed', chainId: 4441, settlementGasReserveWei: REAL_SETTLEMENT_GAS_RESERVE_WEI,
   addresses: Object.freeze({ scoreSubmissionRegistry: REGISTRY, arcadeRankedEntry: `0x${'44'.repeat(20)}` }),
 });
 const PLAYER = new ethers.Wallet(`0x${'55'.repeat(32)}`).address.toLowerCase();
@@ -56,7 +60,7 @@ async function seedRow(db, verify, { status = 'signed', registry = REGISTRY, pla
   const run = await verify.verifyRankedRun(body, { ...common, bound });
   assert.equal(run.ok, true);
   const verified = { ...run, verifiedAt: new Date(verifiedAt).toISOString() };
-  await insertSettleRow(db, settleInsertParams({ verifiedRun: verified, openedAtMs: verifiedAt - 60_000, amountWei: 100_100_000_000_000_000n, periodKeys: periodKeysFor(verifiedAt - 60_000) }));
+  await insertSettleRow(db, settleInsertParams({ verifiedRun: verified, openedAtMs: verifiedAt - 60_000, amountWei: ENTRY_AMOUNT_WEI, periodKeys: periodKeysFor(verifiedAt - 60_000) }));
   if (status !== 'pending') {
     const domain = attestationDomain({ chainId: 4441, verifyingContract: registry });
     const signed = await signVerifiedRun(ethers, { verifiedRun: run, deadlineSeconds: Math.floor(nowMs / 1000) + 900, domain, signer });

@@ -717,15 +717,47 @@ test('a reverted receipt is classified by the replayed call', async () => scenar
 
 // --- Fee cap with the real deployment reserve (§3.4) ------------------------------
 
-test('the real settlement gas reserve covers plain and 32-NFT settlements at LiteForge fees', async () => scenario(async (db) => {
-  // LITVM_DEPLOYMENT.settlementGasReserveWei is 1e14, so the cap is 5e14 wei.
-  // LiteForge was measured at 0.01-0.02 gwei (deploy-config.testnet.json);
-  // fee data at the top of that range with no priority fee: maxFee 0.04 gwei.
-  const liteForgeFees = wrapProvider({ getFeeData: async () => new ethers.FeeData(20_000_000n, 40_000_000n, 0n) });
-  const plain = await seedSignedRow(db);
-  assert.deepEqual((await relayerFor(db, { provider: liteForgeFees, reserveWei: REAL_SETTLEMENT_GAS_RESERVE_WEI }).submit(plain.row)).status, 'confirmed');
+test('the 0.002 zkLTC reserve clears the local chain and LiteForge fees; only 32 mints at LiteForge fees wait', async () => scenario(async (db) => {
+  // LITVM_DEPLOYMENT.settlementGasReserveWei is 2e15 wei since the 2026-09-23
+  // reserve amendment, so the cap is 5 x 2e15 = 1e16 wei, and the fixture
+  // deployment now carries that real reserve (no test override).
+  const REAL = BigInt(REAL_SETTLEMENT_GAS_RESERVE_WEI);
+  const CAP = 5n * REAL;
+  assert.equal(REAL, 2_000_000_000_000_000n);
+  assert.equal(local.deployment.settlementGasReserveWei, REAL_SETTLEMENT_GAS_RESERVE_WEI);
+  const limits = [];
+  const measured = (overrides = {}) => wrapProvider({
+    estimateGas: async (tx) => {
+      const estimate = await local.chain.provider.estimateGas(tx);
+      limits.push((BigInt(estimate) * 125n + 99n) / 100n);
+      return estimate;
+    },
+    ...overrides,
+  });
+  const relayer = (provider) => relayerFor(db, { provider, reserveWei: REAL_SETTLEMENT_GAS_RESERVE_WEI });
 
-  // 32 NFT candidates that all mint (defined on the collection): the heaviest settlement.
+  // 1. The in-process chain quotes about 1.07 gwei (twice the base fee plus
+  //    ethers' 1 gwei priority fee). Under the old 1e14 reserve a plain
+  //    settlement (about 590k gas limit, 6.3e14 wei) waited as fee-too-high;
+  //    under 2e15 it confirms.
+  const local1559 = await local.chain.provider.getFeeData();
+  assert.ok(local1559.maxFeePerGas >= 1_000_000_000n && local1559.maxFeePerGas < 2_000_000_000n, `about 1 gwei (${local1559.maxFeePerGas})`);
+  const plain = await seedSignedRow(db);
+  assert.equal((await relayer(measured()).submit(plain.row)).status, 'confirmed');
+  const plainLimit = limits.at(-1);
+  assert.ok(plainLimit > 400_000n && plainLimit < 800_000n, `plain gas limit ${plainLimit}`);
+  assert.ok(plainLimit * local1559.maxFeePerGas > 5n * 100_000_000_000_000n, 'the old 1e14 reserve could not clear the local chain');
+
+  // 2. LiteForge on 2026-09-23: a base fee of about 1.5 gwei, so ethers'
+  //    getFeeData quotes maxFee = 2 x 1.5 + 1 = 4 gwei. A plain settlement
+  //    costs about 2.4e15 wei there, well under the cap.
+  const liteForgeFees = measured({ getFeeData: async () => new ethers.FeeData(1_500_000_000n, 4_000_000_000n, 1_000_000_000n) });
+  const second = await seedSignedRow(db, { player: local.chain.wallets.player2 });
+  assert.equal((await relayer(liteForgeFees).submit(second.row)).status, 'confirmed');
+  assert.ok(limits.at(-1) * 4_000_000_000n < CAP);
+
+  // 3. 32 NFT candidates that all mint (defined on the collection): phase 2's
+  //    heaviest settlement. It confirms at the local chain's fees.
   const collection = localContracts(local.record, local.chain.wallets.operator).achievementRegistries.chikun;
   const ids = Array.from({ length: 32 }, (_, index) => `fee-cap-nft-${String(index).padStart(2, '0')}`);
   for (const id of ids) {
@@ -734,18 +766,21 @@ test('the real settlement gas reserve covers plain and 32-NFT settlements at Lit
   }
   await syncClock();
   const heavy = await seedSignedRow(db, { nftIds: ids });
-  const result = await relayerFor(db, { provider: liteForgeFees, reserveWei: REAL_SETTLEMENT_GAS_RESERVE_WEI }).submit(heavy.row);
+  const result = await relayer(measured()).submit(heavy.row);
   assert.equal(result.status, 'confirmed', JSON.stringify(result));
   const receipt = await local.chain.provider.getTransactionReceipt(result.txHash);
   assert.ok(receipt.gasUsed > 3_000_000n, `32 mints are the worst case (${receipt.gasUsed} gas)`);
   assert.equal(await localContracts(local.record, local.chain.provider).achievementRegistries.chikun.balanceOf(heavy.row.wallet), 32n);
+  const heavyLimit = limits.at(-1);
 
-  // Documented risk (reported to the orchestrator): ethers' getFeeData adds a
-  // 1 gwei priority fee when the RPC offers none, and the in-process chain
-  // prices the priority fee at 1 gwei. At about 1 gwei a wallet's first plain
-  // settlement (about 530k gas limit) already exceeds 5 x 1e14.
-  const firstRun = await seedSignedRow(db, { player: local.chain.wallets.player2 });
-  const fee = await local.chain.provider.getFeeData();
-  assert.ok(fee.maxFeePerGas >= 1_000_000_000n, 'the in-process chain quotes about 1 gwei');
-  assert.deepEqual(await relayerFor(db, { reserveWei: REAL_SETTLEMENT_GAS_RESERVE_WEI }).submit(firstRun.row), { status: 'failed', code: 'fee-too-high' });
+  // 4. Documented risk (reported to the orchestrator): at LiteForge's 4 gwei
+  //    the same 32-mint settlement is above the cap, so it waits as
+  //    fee-too-high (no attempt spent) until fees fall to about 5 x 2e15 /
+  //    its gas limit. Phase 1 mints nothing (the collections deploy empty),
+  //    so this only matters once the owner defines NFT achievements.
+  assert.ok(heavyLimit * 4_000_000_000n > CAP, `a ${heavyLimit} gas limit at 4 gwei exceeds ${CAP}`);
+  const heavyAtLiteForge = await seedSignedRow(db, { player: local.chain.wallets.player2, nftIds: ids });
+  assert.deepEqual(await relayer(liteForgeFees).submit(heavyAtLiteForge.row), { status: 'failed', code: 'fee-too-high' });
+  const waiting = await readSettleRow(db, heavyAtLiteForge.row.sessionId32);
+  assert.deepEqual([waiting.attempts, waiting.infraFailures, waiting.lastError], [0, 1, 'fee-too-high']);
 }));

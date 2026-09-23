@@ -3,226 +3,31 @@
 // - buildVerifiedRun: the frozen VerifiedRun of §5.3 (A12 clamps, the v2
 //   envelope hash of §2.6, the stored evidence text, bytes and digest).
 // - invalid / rejected / scoreOutOfBounds: the error shapes (400 and 422).
-// - loadRunStatsMappers: the §6.3 stats mappers.
+// - RUN_STATS_MAPPERS: the §6.3 stats mappers.
 //
 // index.mjs imports the per-game modules lazily, so this shared code lives here
 // rather than in index.mjs (which would make an import cycle).
 //
-// Stats: the canonical mappers are statsFromChikunResult, statsFromStackedTuple
-// and statsFromHmhRunSummary in apps/portal/src/achievements/stats.mjs
-// (achievements slice). loadRunStatsMappers() uses that module whenever it
-// exists, and a module that exists but fails to load or lacks a mapper fails
-// the settle instead of falling back. The fallback below exists only because
-// this slice's base (aa57dab4) does not contain the achievements slice: it
-// mirrors the achievements mappers at 67dcb453 (unchanged through e615dd44;
-// same keys, same values) so VerifiedRun.stats has the §6.3 shape either way.
-//
-// INTEGRATION STEP, in the merge that brings achievements/stats.mjs together
-// with this file: replace the fallback, the existsSync probe and
-// resolveRunStatsMappers with a static
-//   import { statsFromChikunResult, statsFromStackedTuple, statsFromHmhRunSummary } from '../../apps/portal/src/achievements/stats.mjs';
-// so a missing module fails at load, and make the loader test assert the
-// mappers are exactly those exports.
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { HMH_RUN_SUMMARY_CATALOGS } from '../../sdk/hmh-run-summary-schema.mjs';
-import { distanceAtTick } from '../../apps/portal/src/chikun-ground-course.mjs';
-import { CHIKUN_REGIONS } from '../../apps/portal/src/chikun-course-regions.mjs';
-import { zoneForTick } from '../../apps/portal/src/stacked-sim.mjs';
+// Stats: the mappers are exactly statsFromChikunResult, statsFromStackedTuple
+// and statsFromHmhRunSummary of apps/portal/src/achievements/stats.mjs
+// (achievements slice, §6.3), imported statically, so there is one copy of
+// them. A missing or broken stats module therefore breaks every per-game
+// verifier that imports this file (chikun.mjs, stacked.mjs, hmh.mjs). Those
+// load lazily, per request (index.mjs, and settle's loadHeroGates for
+// hmh.mjs), so the failure shows at request time, not at deploy time: an HMH
+// settle or ticket answers 503 settlement-not-configured with detail
+// hero-gates-unavailable, a Chikun or STACKED replay throws (settle answers
+// 500 internal-error and the cron waits), and settle logs each failed import
+// by error name and code. The verify slice's interim fallback (a mirror of
+// those mappers, kept while its base lacked the achievements slice) was
+// removed at the settle-wiring integration, after it gave deepEqual stats on
+// every committed ranked fixture.
+import { statsFromChikunResult, statsFromHmhRunSummary, statsFromStackedTuple } from '../../apps/portal/src/achievements/stats.mjs';
 import { RANKED_GAMES, rankedEnvelopeHash } from '../../apps/portal/src/ranked-identity.mjs';
 
-const ACHIEVEMENT_STATS_URL = new URL('../../apps/portal/src/achievements/stats.mjs', import.meta.url);
-
-const round = (value, places) => Number(value.toFixed(places));
-function num(value, label) {
-  if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError(`${label} must be a finite number`);
-  return value;
-}
-function count(value, label) {
-  if (!Number.isSafeInteger(value) || value < 0) throw new TypeError(`${label} must be a non-negative integer`);
-  return value;
-}
-function text(value, label) {
-  if (typeof value !== 'string' || !value) throw new TypeError(`${label} must be a non-empty string`);
-  return value;
-}
-const bits = (mask) => { let total = 0; for (let rest = count(mask, 'mask'); rest > 0; rest = Math.floor(rest / 2)) total += rest % 2; return total; };
-
-function chikunStats(result) {
-  if (!result || typeof result !== 'object') throw new TypeError('Chikun result must be an object');
-  const evidence = result.evidence;
-  const flaps = Array.isArray(evidence?.flapDeltas) ? evidence.flapDeltas : evidence?.flapSteps;
-  if (!Array.isArray(flaps)) throw new TypeError('Chikun result evidence must list its flaps');
-  const survivalTicks = count(result.survivalTicks, 'survivalTicks');
-  const regionIndexReached = count(result.regionIndexReached, 'regionIndexReached');
-  if (regionIndexReached >= CHIKUN_REGIONS.length || result.regionReached !== CHIKUN_REGIONS[regionIndexReached].id) {
-    throw new TypeError('Chikun regionReached does not match regionIndexReached');
-  }
-  return {
-    score: count(result.score, 'score'),
-    survivalTicks,
-    survivalSeconds: round(survivalTicks / 60, 3),
-    coinsCollected: count(result.coinsCollected, 'coinsCollected'),
-    forksPassed: count(result.forksPassed, 'forksPassed'),
-    nearMisses: count(result.nearMisses, 'nearMisses'),
-    bestCombo: count(result.bestCombo, 'bestCombo'),
-    nearMissStreakBest: count(result.nearMissStreakBest, 'nearMissStreakBest'),
-    flawlessRegions: count(result.flawlessRegions, 'flawlessRegions'),
-    flapCount: flaps.length,
-    distanceMeters: Math.floor(distanceAtTick(survivalTicks) / 10),
-    regionIndexReached,
-    regionReached: result.regionReached,
-    laps: count(result.laps, 'laps'),
-    speedMultiplierReached: round(num(result.speedMultiplierReached, 'speedMultiplierReached'), 2),
-    terminalReason: text(result.finalState?.terminalReason, 'terminalReason'),
-    evidenceVersion: text(evidence.version, 'evidenceVersion'),
-  };
-}
-
-function stackedStats(tuple) {
-  if (!tuple || typeof tuple !== 'object' || tuple.v !== 'stacked-result-v1') throw new TypeError('STACKED tuple must be a stacked-result-v1 object');
-  const ticks = count(tuple.ticks, 'ticks');
-  return {
-    score: count(tuple.score, 'score'),
-    lines: count(tuple.lines, 'lines'),
-    level: count(tuple.level, 'level'),
-    quadClears: count(tuple.quadClears, 'quadClears'),
-    spins: count(tuple.spins, 'spins'),
-    perfectClears: count(tuple.perfectClears, 'perfectClears'),
-    maxCombo: count(tuple.maxCombo, 'maxCombo'),
-    maxBackToBack: count(tuple.maxBackToBack, 'maxBackToBack'),
-    garbageRowsReceived: count(tuple.garbageRowsReceived, 'garbageRowsReceived'),
-    garbageRowsCleared: count(tuple.garbageRowsCleared, 'garbageRowsCleared'),
-    pieces: count(tuple.pieces, 'pieces'),
-    holdsUsed: count(tuple.holdsUsed, 'holdsUsed'),
-    ticks,
-    survivalSeconds: round(ticks / 60, 3),
-    zone: zoneForTick(ticks),
-    terminalReason: text(tuple.terminalReason, 'terminalReason'),
-    boardHash: text(tuple.boardHash, 'boardHash'),
-  };
-}
-
-// The achievements catalog's role → family table (achievements/hmh.mjs).
-const HMH_ROLE_FAMILIES = Object.freeze({
-  'bagholder-rusher': 'goblin',
-  forkrunner: 'goblin',
-  'liquidator-agent': 'drone',
-  'validator-cultist': 'drone',
-  'gas-bomber': 'gasBeast',
-  'whale-enforcer': 'enforcer',
-});
-const HMH_FAMILY_IDS = Object.freeze(['goblin', 'drone', 'gasBeast', 'enforcer']);
-const C = HMH_RUN_SUMMARY_CATALOGS;
-const MELEE_WEAPONS = Object.freeze(['litecoin-knife', 'forked-standard']);
-const NOT_POWER_UPS = Object.freeze(['litecoin-token']);
-
-function rowsById(rows, ids, idKey, label) {
-  if (!Array.isArray(rows)) throw new TypeError(`${label} must be an array`);
-  const out = {};
-  for (const row of rows) {
-    if (!ids.includes(row?.[idKey])) throw new TypeError(`${label} has an unknown id`);
-    out[row[idKey]] = row;
-  }
-  return out;
-}
-
-function hmhStats(summary) {
-  if (!summary || typeof summary !== 'object') throw new TypeError('HMH run summary must be an object');
-  const { identity, totals, kills, weapons, grenades, collectibles, exploration } = summary;
-  if (!identity || !totals || !kills || !grenades || !exploration) throw new TypeError('HMH run summary is incomplete');
-  const byRole = rowsById(kills.byEnemyRole, C.enemyRoles, 'enemyRoleId', 'kills.byEnemyRole');
-  const byWeapon = rowsById(kills.byWeapon, C.weapons, 'weaponId', 'kills.byWeapon');
-  const weaponRows = rowsById(weapons, C.weapons, 'weaponId', 'weapons');
-  const collectibleRows = rowsById(collectibles, C.collectibles, 'effectId', 'collectibles');
-  const killsByRole = Object.fromEntries(C.enemyRoles.map((id) => [id, count(byRole[id]?.count ?? 0, `kills of ${id}`)]));
-  const familyKills = Object.fromEntries(HMH_FAMILY_IDS.map((family) => [family, 0]));
-  for (const [role, family] of Object.entries(HMH_ROLE_FAMILIES)) familyKills[family] += killsByRole[role];
-  const weaponsUsed = C.weapons.filter((id) => count(weaponRows[id]?.equippedTicks ?? 0, `${id} equippedTicks`) > 0).sort();
-  const powerUps = C.collectibles.filter((id) => !NOT_POWER_UPS.includes(id));
-  const uniquePowerUps = powerUps.filter((id) => count(collectibleRows[id]?.collected ?? 0, `${id} collected`) > 0).sort();
-  const powerUpsCollected = powerUps.reduce((sum, id) => sum + (collectibleRows[id]?.collected ?? 0), 0);
-  const meleeKills = MELEE_WEAPONS.reduce((sum, id) => sum + count(byWeapon[id]?.count ?? 0, `kills with ${id}`), 0);
-  const bossKills = count(kills.boss, 'kills.boss');
-  const damageTaken = num(totals.damageTaken, 'totals.damageTaken');
-  const elapsedMs = num(totals.elapsedMs, 'totals.elapsedMs');
-  const noDamage = damageTaken === 0 ? 1 : 0;
-  const bossEngagedTick = summary.milestones?.bossEngagedTick;
-  return {
-    score: count(totals.score, 'totals.score'),
-    kills: count(kills.total, 'kills.total'),
-    bossKills,
-    eliteKills: count(kills.elite, 'kills.elite'),
-    maxCombo: count(totals.maxCombo, 'totals.maxCombo'),
-    level: count(totals.level, 'totals.level'),
-    xp: count(totals.xp, 'totals.xp'),
-    survivalTicks: count(totals.survivalTicks, 'totals.survivalTicks'),
-    elapsedMs,
-    survivalSeconds: round(elapsedMs / 1000, 3),
-    damageTaken,
-    damageDealt: num(totals.damageDealt, 'totals.damageDealt'),
-    healing: num(totals.healing, 'totals.healing'),
-    litecoin: count(totals.litecoin, 'totals.litecoin'),
-    grenadeKills: count(grenades.kills, 'grenades.kills'),
-    meleeKills,
-    weaponsUsed,
-    uniqueWeaponCount: weaponsUsed.length,
-    powerUpsCollected,
-    uniquePowerUps,
-    districtsVisited: bits(exploration.visitedDistrictMask),
-    poisDiscovered: bits(exploration.discoveredPoiMask),
-    revealedPermille: count(exploration.revealedPermille, 'exploration.revealedPermille'),
-    killsByRole,
-    familyKills,
-    noDamage,
-    perfectBossKill: bossKills > 0 && noDamage === 1 ? 1 : 0,
-    bossEngaged: Number.isInteger(bossEngagedTick) ? (bossEngagedTick > 0 ? 1 : 0) : (bossKills > 0 ? 1 : 0),
-    heroId: text(identity.heroId, 'identity.heroId'),
-    terminalReason: text(identity.terminalReason, 'identity.terminalReason'),
-  };
-}
-
-const FALLBACK = Object.freeze({
-  source: 'verify-fallback',
-  statsFromChikunResult: chikunStats,
-  statsFromStackedTuple: stackedStats,
-  statsFromHmhRunSummary: hmhStats,
-});
-
 export const RUN_STATS_MAPPER_NAMES = Object.freeze(['statsFromChikunResult', 'statsFromStackedTuple', 'statsFromHmhRunSummary']);
-export const ACHIEVEMENT_STATS_PATH = fileURLToPath(ACHIEVEMENT_STATS_URL);
-
-// The three mappers of an achievements stats module, exactly as exported.
-// Throws when one is missing: a broken module never falls back.
-export function runStatsMappersFrom(module) {
-  const mappers = { source: 'achievements' };
-  for (const name of RUN_STATS_MAPPER_NAMES) {
-    if (typeof module?.[name] !== 'function') throw new TypeError(`apps/portal/src/achievements/stats.mjs must export ${name}`);
-    mappers[name] = module[name];
-  }
-  return Object.freeze(mappers);
-}
-
-// → Promise<{ source, statsFromChikunResult, statsFromStackedTuple, statsFromHmhRunSummary }>.
-// Only a missing module selects the fallback; when the module exists, any
-// error loading it propagates. `exists` and `importStats` are injectable for
-// tests; the import specifier stays a literal so bundlers trace the file.
-export async function resolveRunStatsMappers({
-  exists = () => existsSync(ACHIEVEMENT_STATS_PATH),
-  importStats = () => import('../../apps/portal/src/achievements/stats.mjs'),
-} = {}) {
-  if (!exists()) return FALLBACK;
-  return runStatsMappersFrom(await importStats());
-}
-
-let loaded = null;
-
-// resolveRunStatsMappers(), once per process (a failed load is retried).
-export function loadRunStatsMappers() {
-  loaded ??= resolveRunStatsMappers();
-  loaded.catch(() => { loaded = null; });
-  return loaded;
-}
+// What each per-game verifier's `stats(mappers)` callback receives.
+export const RUN_STATS_MAPPERS = Object.freeze({ statsFromChikunResult, statsFromStackedTuple, statsFromHmhRunSummary });
 
 // ---------------------------------------------------------------------------
 // Error shapes. Every failure is { ok:false, status, error, detail?, flags? }.
@@ -257,7 +62,7 @@ function deepFreeze(value) {
 const clampCount = (value, maximum) => Math.min(maximum, Math.max(0, Math.floor(Number(value) || 0)));
 
 // → Promise<VerifiedRun | failure>. `identity` is the canonical identity (with
-// version and sessionKey). `stats` receives the loaded mappers and returns the
+// version and sessionKey). `stats` receives RUN_STATS_MAPPERS and returns the
 // §6.3 stats.
 //
 // Throw policy (contract §5.3 and §6.3 are silent; this is the verify rule):
@@ -274,7 +79,7 @@ export async function buildVerifiedRun({ identity, nowMs, score, stats, contract
   if (!game) throw new TypeError(`unknown ranked gameId: ${String(identity.gameId)}`);
   if (!Number.isSafeInteger(score) || score < 0) return rejected('replay-rejected', { detail: 'score' });
   if (score > MAX_RANKED_SCORE) return scoreOutOfBounds(score);
-  const runStats = stats(await loadRunStatsMappers());
+  const runStats = stats(RUN_STATS_MAPPERS);
   const bytes = new TextEncoder().encode(evidence.text).length;
   const envelopeHash = await rankedEnvelopeHash({ gameId: identity.gameId, sessionId32: identity.sessionKey, encoding: evidence.encoding, evidenceDigest: evidence.digest });
   return deepFreeze({

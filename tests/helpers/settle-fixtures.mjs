@@ -1,58 +1,58 @@
-// Settle-slice fixtures: contract-shaped doubles for the verify slice
-// (§5.2, §5.3, §2.7) and the achievements registry (§6.2), plus local-chain
-// helpers. The doubles stand in until the settle-wiring step replaces them
-// with server/verify/** and apps/portal/src/achievements/** (contract §10.4
-// rule 6). They honour the contract shapes exactly: the §5.2 check order and
-// error codes, the §2.7 seed ticket MAC and seed, the §2.6 evidence digests
-// and v2 envelope hash, and a frozen §5.3 VerifiedRun. The "replay" is a toy
-// function of the evidence so tests can choose scores and run lengths.
+// Settle-slice fixtures: the verify double used by the settle unit tests, the
+// achievements registry double (§6.2) and the local-chain helpers.
 //
-// They also follow the verify slice's hand-off (fable/pd-verify 437aa1f3):
-// computeEvidenceDigest resolves { ok:true, … } or { ok:false, status:400,
-// error:'invalid-evidence' } and never throws; reverifyStoredRun takes an
-// optional { nowMs }; HMH plausibility flags are { id, severity, value, limit }
-// objects; server/verify/hmh.mjs exports HMH_HERO_GATES and HMH_FREE_HEROES.
+// Contract §10.4 rule 6: settle's verify and seed-ticket doubles are replaced
+// by the real server/verify/** and session-seed.mjs. Seed tickets come from
+// the real issueSeedTicket (server/verify/seed-ticket.mjs), and the verify
+// double's bindRankedIdentity and computeEvidenceDigest ARE the real
+// functions (counted, not reimplemented), as are the v2 envelope hash and the
+// §5.3 error shapes. Only the replay stays a toy, inside verifyRankedRun and
+// reverifyStoredRun: its score, stats, contract and plausibility are a simple
+// function of the evidence, so a settle unit test can choose a run's score
+// and length without playing it. The toy evidence below is shaped so the
+// real functions accept it (a toy STACKED SIC1 has a valid header and
+// checksum). tests/api-settle-handler.test.mjs settles through the real
+// modules end to end and pins the double against the real verifier.
 //
 // Keys: Hardhat's public test mnemonic only (scripts/lib/local-chain.mjs).
 
-import { createHash, createHmac, randomBytes as nodeRandomBytes, timingSafeEqual } from 'node:crypto';
+import { Buffer } from 'node:buffer';
 import { ethers } from 'ethers';
-import { canonicalSessionJson, createCanonicalSessionIdentity, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
-import { INDEX_GAMES } from '../../server/neon/rows.mjs';
+import { createCanonicalSessionIdentity } from '../../apps/portal/src/session-integrity.mjs';
+import { RANKED_GAMES, RANKED_IDENTITY_KEYS, RANKED_SETTLE_VERSION, rankedEnvelopeHash } from '../../apps/portal/src/ranked-identity.mjs';
+import { STACKED_EVIDENCE_CODEC_VERSION, STACKED_FIXED_STEP_HZ } from '../../apps/portal/src/stacked-contracts.mjs';
+import { fnv1a32Bytes } from '../../apps/portal/src/stacked-sim.mjs';
+import { LITVM_DEPLOYMENT } from '../../apps/portal/src/generated/litvm-addresses.mjs';
+import * as realVerify from '../../server/verify/index.mjs';
+import { issueSeedTicket } from '../../server/verify/seed-ticket.mjs';
+import { invalid, isPlainObject, MAX_RANKED_SCORE as MAX_SCORE, rejected, scoreOutOfBounds } from '../../server/verify/verified-run.mjs';
 import { activateLocalGames, deployLocalSuite, localContracts, localWalletKeys, startLocalChain } from '../../scripts/lib/local-chain.mjs';
 
 export const SETTLE_SESSION_VALUE = `settle-fixture-${'a7'.repeat(16)}`;
 export const SETTLE_CRON_VALUE = `cron-fixture-${'c3'.repeat(16)}`;
 export const FIXTURE_NEON_URL = 'postgresql://fixture@db.invalid/settle';
-export const RANKED_SETTLE_VERSION = 'lesters-ranked-settle-v1';
-export const SEED_TICKET_VERSION = 'lesters-ranked-seed-v1';
+export { RANKED_SETTLE_VERSION };
+// LITVM_DEPLOYMENT.settlementGasReserveWei: 0.002 zkLTC since the 2026-09-23
+// reserve amendment (deploy-config.testnet.json, the predicted address module).
+export const REAL_SETTLEMENT_GAS_RESERVE_WEI = LITVM_DEPLOYMENT.settlementGasReserveWei;
 // The fee cap is 5 x the deployment's settlement gas reserve (§3.4). The
-// in-process chain prices gas at about 1 gwei (ethers' getFeeData adds a
-// 1 gwei priority fee to twice the base fee), far above LiteForge's measured
-// 0.01-0.02 gwei, so the fixture deployment record carries a reserve 100 x
-// the real one (1e16 instead of LITVM_DEPLOYMENT's 1e14) for the cap only.
-// The on-chain reserve (what openSession charges) stays the deploy config's.
-// With the real reserve and 1 gwei fee data a plain settlement (about 530k
-// gas limit) waits as fee-too-high; tests/server-relayer.test.mjs pins both
-// that and the LiteForge-like fee data under which the real reserve passes.
-export const LOCAL_FEE_CAP_RESERVE_WEI = '10000000000000000';
-// LITVM_DEPLOYMENT.settlementGasReserveWei (deploy-config.testnet.json).
-export const REAL_SETTLEMENT_GAS_RESERVE_WEI = '100000000000000';
+// in-process chain quotes about 1.07 gwei (ethers' getFeeData adds a 1 gwei
+// priority fee to twice the base fee). Under the old 0.0001 zkLTC reserve a
+// plain settlement (a 530k-590k gas limit, 5.7e14-6.3e14 wei) exceeded its 5e14 cap,
+// so the fixture deployment carried a 1e16 override. With the 0.002 zkLTC
+// reserve the cap is 1e16 wei and the real reserve clears the local chain, so
+// deploymentFromRecord now uses the record's own reserve (the deploy config's,
+// which equals LITVM_DEPLOYMENT's; tests/server-relayer.test.mjs pins the
+// fee levels at which it holds). LOCAL_FEE_CAP_RESERVE_WEI remains the name
+// the settle tests pass for the cap, and it is the real reserve.
+export const LOCAL_FEE_CAP_RESERVE_WEI = REAL_SETTLEMENT_GAS_RESERVE_WEI;
 
 export const FIXTURE_BUILD_HASHES = Object.freeze({
   'lester-blaster': 'site-1.7.0:game-1.7.0',
   chikun: 'site-1.7.0:game-1.7.0:cabinet-0.9.0',
   stacked: 'site-1.7.0:game-1.7.0:cabinet-1.6.0',
 });
-const BUILD_HASH_PATTERNS = Object.freeze({
-  'lester-blaster': /^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+$/,
-  chikun: /^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+:cabinet-\d+\.\d+\.\d+$/,
-  stacked: /^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+:cabinet-\d+\.\d+\.\d+$/,
-});
-const ENCODINGS = Object.freeze({ 'lester-blaster': 'hmh-run-summary-v6+json', chikun: 'chikun-flap-evidence-v6+json', stacked: 'stacked-sic1+base64' });
-const HANDLE = /^game-session-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-const IDENTITY_KEYS = ['buildHash', 'chainId', 'gameId', 'nonce', 'scoreRegistryAddress', 'seasonId', 'seed', 'sessionId', 'wallet'];
-const MAX_SCORE = 10_000_000_000;
+const ENCODINGS = Object.freeze(Object.fromEntries(Object.entries(RANKED_GAMES).map(([gameId, game]) => [gameId, game.evidenceEncoding])));
 
 export function fixtureEnv({ registry, extra = {} } = {}) {
   const keys = localWalletKeys();
@@ -68,8 +68,10 @@ export function fixtureEnv({ registry, extra = {} } = {}) {
   };
 }
 
-// A LITVM_DEPLOYMENT-shaped object for a local deployment record.
-export function deploymentFromRecord(record, { reserveWei = LOCAL_FEE_CAP_RESERVE_WEI } = {}) {
+// A LITVM_DEPLOYMENT-shaped object for a local deployment record. The fee
+// cap uses the record's own settlement gas reserve (what openSession charges
+// and forwards to the relayer) unless a test overrides it.
+export function deploymentFromRecord(record, { reserveWei = record.settlementGasReserveWei ?? REAL_SETTLEMENT_GAS_RESERVE_WEI } = {}) {
   const addresses = record.addresses;
   return Object.freeze({
     status: 'deployed',
@@ -108,33 +110,6 @@ export async function openPaidSession({ chain, record, player, sessionId32, game
   return { txHash: tx.hash.toLowerCase(), amountWei: amount, openedAt: Number(block.timestamp), blockNumber: receipt.blockNumber };
 }
 
-// --- Seed tickets (§2.7) -----------------------------------------------------
-
-export async function deriveRankedSeedDouble({ sessionId, wallet, gameId, seasonId, buildHash, salt }) {
-  const digest = await sha256Hex(canonicalSessionJson({ v: SEED_TICKET_VERSION, sessionId, wallet: String(wallet).toLowerCase(), gameId, seasonId, buildHash, salt }));
-  return parseInt(digest.slice(2, 10), 16) >>> 0;
-}
-
-function ticketMac(secret, { sessionId, wallet, gameId, seasonId, buildHash, salt, issuedAt }) {
-  return createHmac('sha256', secret).update(`${SEED_TICKET_VERSION}|${[sessionId, String(wallet).toLowerCase(), gameId, seasonId, buildHash, salt, issuedAt].join('|')}`).digest('hex');
-}
-
-// Same signature and result as server/verify/seed-ticket.mjs issueSeedTicket.
-export async function issueSeedTicketDouble({ crypto, secret, nowMs, randomBytes, sessionId, wallet, gameId, seasonId, buildHash }) {
-  const salt = Buffer.from((randomBytes ?? crypto?.randomBytes ?? nodeRandomBytes)(16)).toString('hex');
-  const issuedAt = Math.floor(Number(nowMs) / 1000);
-  const seedTicket = { v: SEED_TICKET_VERSION, salt, issuedAt, mac: ticketMac(secret, { sessionId, wallet, gameId, seasonId, buildHash, salt, issuedAt }) };
-  return { seedTicket, seed: await deriveRankedSeedDouble({ sessionId, wallet, gameId, seasonId, buildHash, salt }) };
-}
-
-function checkTicket(ticket, secret, nowMs, fields) {
-  if (!ticket || typeof ticket !== 'object' || ticket.v !== SEED_TICKET_VERSION || !/^[0-9a-f]{32}$/.test(String(ticket.salt)) || !Number.isSafeInteger(ticket.issuedAt) || !/^[0-9a-f]{64}$/.test(String(ticket.mac))) return false;
-  if (ticket.issuedAt > Math.floor(nowMs / 1000) + 60) return false;
-  const expected = Buffer.from(ticketMac(secret, { ...fields, salt: ticket.salt, issuedAt: ticket.issuedAt }));
-  const given = Buffer.from(ticket.mac);
-  return expected.length === given.length && timingSafeEqual(expected, given);
-}
-
 // --- Evidence ----------------------------------------------------------------
 
 // Chikun: survival = min(maxTicks, sum(flapDeltas) + 120) ticks; one fork per
@@ -143,9 +118,25 @@ export function chikunEvidence({ seed, flaps = 12, gap = 90, maxTicks = 216_000 
   return { encoding: ENCODINGS.chikun, flap: { version: 'chikun-flap-evidence-v6', seed, fixedStepHz: 60, maxTicks, flapDeltas: Array.from({ length: flaps }, (_, index) => (index === 0 ? 30 : gap)) } };
 }
 
-// STACKED: one line per SIC1 byte, 60 ticks per line, score 100 per line.
-export function stackedEvidence({ lines = 20 } = {}) {
-  return { encoding: ENCODINGS.stacked, sic1: Buffer.alloc(lines, 0x5a).toString('base64'), startLevel: 1 };
+// STACKED: a toy SIC1 whose header, counts and checksum pass the real
+// decoder (verify's decodeStackedEvidence), so the real computeEvidenceDigest
+// accepts it: 24 header bytes, then one payload byte per line (at least 2).
+// The header seed is the ticket seed, as in a real run. The toy replay reads
+// one line per payload byte, 60 ticks per line, score 100 per line.
+export const TOY_SIC1_HEADER_BYTES = 24;
+export function stackedEvidence({ lines = 20, seed = 1 } = {}) {
+  if (!Number.isSafeInteger(lines) || lines < 2) throw new RangeError('a toy SIC1 needs at least 2 lines');
+  const bytes = new Uint8Array(TOY_SIC1_HEADER_BYTES + lines).fill(0x5a, TOY_SIC1_HEADER_BYTES);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(0, 0x53494331);
+  bytes[4] = STACKED_EVIDENCE_CODEC_VERSION;
+  bytes[5] = 1;
+  view.setUint16(6, STACKED_FIXED_STEP_HZ);
+  view.setUint32(8, seed >>> 0);
+  view.setUint32(12, lines * 60);
+  view.setUint32(16, 0);
+  view.setUint32(20, fnv1a32Bytes(bytes.subarray(TOY_SIC1_HEADER_BYTES)));
+  return { encoding: ENCODINGS.stacked, sic1: Buffer.from(bytes).toString('base64'), startLevel: 1 };
 }
 
 // HMH: the summary carries its own score and length (plausibility-checked).
@@ -154,31 +145,34 @@ export function hmhEvidence({ seed, buildHash = FIXTURE_BUILD_HASHES['lester-bla
     encoding: ENCODINGS['lester-blaster'],
     runSummary: {
       schemaVersion: 6,
-      identity: { heroId, seed, buildHash, mode: 'ranked' },
+      // terminalReason sits in identity, where run summary schema v6 keeps it.
+      identity: { heroId, seed, buildHash, mode: 'ranked', terminalReason: 'defeated' },
       totals: { score, elapsedMs, maxCombo, level: 5, xp },
       kills: { total: kills, boss },
-      terminalReason: 'defeated',
     },
     sessionEnvelope: { version: 'lesters-session-envelope-v1', sessionKey },
   };
 }
 
-// A complete §5.1 body with a real seed ticket MAC and the ticket seed.
+// A complete §5.1 body with a real seed ticket (the verify slice's
+// issueSeedTicket) and its seed, and toy evidence at that seed.
 export async function buildSettleBody({
   gameId = 'chikun', wallet, registry, secret = SETTLE_SESSION_VALUE, nowMs, uuid = null, evidence = null,
   evidenceOptions = {}, entryTxHash = null, claim = undefined, ticketIssuedAtMs = null, buildHash = FIXTURE_BUILD_HASHES[gameId],
 }) {
   const id = uuid ?? crypto.randomUUID();
   const sessionId = `game-session-${id}`;
-  const seasonId = INDEX_GAMES[gameId].seasonId;
+  const seasonId = RANKED_GAMES[gameId].seasonId;
   const walletLower = String(wallet).toLowerCase();
-  const { seedTicket, seed } = await issueSeedTicketDouble({ secret, nowMs: ticketIssuedAtMs ?? nowMs, sessionId, wallet: walletLower, gameId, seasonId, buildHash });
+  const issued = await issueSeedTicket({ secret, nowMs: ticketIssuedAtMs ?? nowMs, sessionId, wallet: walletLower, gameId, seasonId, buildHash });
+  const { seed } = issued;
+  const seedTicket = { ...issued.seedTicket };
   const identity = { sessionId, chainId: 4441, scoreRegistryAddress: String(registry).toLowerCase(), wallet: walletLower, gameId, seasonId, buildHash, seed, nonce: id };
   const canonical = await createCanonicalSessionIdentity(identity);
   let bodyEvidence = evidence;
   if (!bodyEvidence) {
     if (gameId === 'chikun') bodyEvidence = chikunEvidence({ seed, ...evidenceOptions });
-    else if (gameId === 'stacked') bodyEvidence = stackedEvidence(evidenceOptions);
+    else if (gameId === 'stacked') bodyEvidence = stackedEvidence({ seed, ...evidenceOptions });
     else bodyEvidence = hmhEvidence({ seed, buildHash, sessionKey: canonical.sessionKey, ...evidenceOptions });
   }
   const body = { v: RANKED_SETTLE_VERSION, gameId, sessionId32: canonical.sessionKey, identity, seedTicket, entryTxHash, evidence: bodyEvidence };
@@ -188,28 +182,7 @@ export async function buildSettleBody({
 
 // --- Verify double (§5.2, §5.3) ----------------------------------------------
 
-const fail = (status, error, extra = {}) => ({ ok: false, status, error, ...extra });
-
-async function evidenceRecord(gameId, evidence) {
-  if (!evidence || typeof evidence !== 'object' || evidence.encoding !== ENCODINGS[gameId]) throw new TypeError('evidence encoding');
-  if (gameId === 'chikun') {
-    const flap = evidence.flap;
-    if (!flap || !Array.isArray(flap.flapDeltas)) throw new TypeError('chikun evidence');
-    const text = canonicalSessionJson(flap);
-    return { encoding: evidence.encoding, text, bytes: Buffer.byteLength(text), digest: await sha256Hex(flap) };
-  }
-  if (gameId === 'stacked') {
-    if (typeof evidence.sic1 !== 'string' || !evidence.sic1) throw new TypeError('stacked evidence');
-    const bytes = Buffer.from(evidence.sic1, 'base64');
-    if (bytes.toString('base64') !== evidence.sic1) throw new TypeError('stacked evidence is not canonical base64');
-    return { encoding: evidence.encoding, text: evidence.sic1, bytes: Buffer.byteLength(evidence.sic1), digest: `0x${createHash('sha256').update(bytes).digest('hex')}` };
-  }
-  if (!evidence.runSummary || !evidence.sessionEnvelope) throw new TypeError('hmh evidence');
-  const payload = { runSummary: evidence.runSummary, sessionEnvelope: evidence.sessionEnvelope };
-  const text = canonicalSessionJson(payload);
-  return { encoding: evidence.encoding, text, bytes: Buffer.byteLength(text), digest: await sha256Hex(payload) };
-}
-
+// Stored evidence text → the §5.1 evidence object (as the real per-game parsers).
 function evidenceFromStored(gameId, { encoding, text }) {
   if (gameId === 'chikun') return { encoding, flap: JSON.parse(text) };
   if (gameId === 'stacked') return { encoding, sic1: text, startLevel: 1 };
@@ -217,11 +190,14 @@ function evidenceFromStored(gameId, { encoding, text }) {
   return { encoding, runSummary: parsed.runSummary, sessionEnvelope: parsed.sessionEnvelope };
 }
 
+// The toy replay: score, stats, contract and plausibility from the evidence.
+// It only runs on evidence the real computeEvidenceDigest already accepted.
 function toyReplay(gameId, evidence, identity) {
   if (gameId === 'chikun') {
     const { flap } = evidence;
-    if (flap.version !== 'chikun-flap-evidence-v6') return fail(400, 'evidence-version-unsupported');
-    if (flap.seed !== identity.seed) return fail(400, 'evidence-seed-mismatch');
+    if (flap.version !== 'chikun-flap-evidence-v6') return invalid('evidence-version-unsupported');
+    if (flap.seed !== identity.seed) return invalid('evidence-seed-mismatch');
+    if (!Array.isArray(flap.flapDeltas)) return invalid('invalid-evidence');
     const forks = flap.flapDeltas.length;
     const ticks = Math.min(Number(flap.maxTicks), flap.flapDeltas.reduce((sum, delta) => sum + delta, 0) + 120);
     const bestCombo = Math.min(forks, 12);
@@ -229,18 +205,19 @@ function toyReplay(gameId, evidence, identity) {
     return { score: stats.score, stats, contract: { kills: forks, maxCombo: Math.min(bestCombo, 10_000), survivalSeconds: Math.floor(ticks / 60), bossId: null } };
   }
   if (gameId === 'stacked') {
-    if (evidence.startLevel !== 1) return fail(400, 'evidence-invalid');
-    const lines = Buffer.from(evidence.sic1, 'base64').length;
+    const bytes = Buffer.from(evidence.sic1, 'base64');
+    if (bytes.readUInt32BE(8) !== identity.seed) return invalid('evidence-seed-mismatch');
+    const lines = bytes.length - TOY_SIC1_HEADER_BYTES;
     const ticks = lines * 60;
     const maxCombo = Math.min(lines, 5);
     const stats = { score: lines * 100, lines, level: 1 + Math.floor(lines / 10), quadClears: Math.floor(lines / 4), spins: 0, perfectClears: 0, maxCombo, maxBackToBack: 0, garbageRowsReceived: 0, garbageRowsCleared: 0, pieces: lines * 3, holdsUsed: 0, ticks, survivalSeconds: Number((ticks / 60).toFixed(3)), zone: 'zone-1', terminalReason: 'block-out', boardHash: '0x00' };
     return { score: stats.score, stats, contract: { kills: lines, maxCombo, survivalSeconds: Math.floor(ticks / 60), bossId: null } };
   }
   const summary = evidence.runSummary;
-  if (typeof summary?.identity?.heroId !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(summary.identity.heroId)) return fail(400, 'run-summary-invalid');
-  if (summary?.identity?.seed !== identity.seed || summary?.identity?.buildHash !== identity.buildHash || summary?.identity?.mode !== 'ranked') return fail(400, 'run-summary-identity-mismatch');
-  if (summary.terminalReason !== 'defeated') return fail(400, 'run-summary-not-terminal');
-  if (evidence.sessionEnvelope?.version !== 'lesters-session-envelope-v1' || evidence.sessionEnvelope?.sessionKey !== identity.sessionKey) return fail(400, 'session-envelope-invalid');
+  if (typeof summary?.identity?.heroId !== 'string' || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(summary.identity.heroId)) return invalid('run-summary-invalid');
+  if (summary?.identity?.seed !== identity.seed || summary?.identity?.buildHash !== identity.buildHash || summary?.identity?.mode !== 'ranked') return invalid('run-summary-identity-mismatch');
+  if (summary.identity.terminalReason !== 'defeated') return invalid('run-summary-not-terminal');
+  if (evidence.sessionEnvelope?.version !== 'lesters-session-envelope-v1' || evidence.sessionEnvelope?.sessionKey !== identity.sessionKey) return invalid('session-envelope-invalid');
   const totals = summary.totals;
   // Plausibility in the verifier's shape: { verdict, flags: [{ id, severity, value, limit }] }.
   // XP above 1,000,000 is an impossibility (rejected); above 100,000 is a soft flag.
@@ -248,8 +225,8 @@ function toyReplay(gameId, evidence, identity) {
   if (totals.xp > 1_000_000) flags.push(Object.freeze({ id: 'xp-above-ceiling', severity: 'reject', value: totals.xp, limit: 1_000_000 }));
   if (totals.xp > 100_000) flags.push(Object.freeze({ id: 'xp-near-ceiling', severity: 'flag', value: totals.xp, limit: 100_000 }));
   const verdict = flags.some((flag) => flag.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok';
-  if (verdict === 'rejected') return fail(422, 'implausible-run', { flags: Object.freeze(flags) });
-  const stats = { score: totals.score, kills: summary.kills.total, bossKills: summary.kills.boss, eliteKills: 0, maxCombo: totals.maxCombo, level: totals.level, xp: totals.xp, survivalTicks: Math.floor(totals.elapsedMs * 0.06), elapsedMs: totals.elapsedMs, survivalSeconds: Number((totals.elapsedMs / 1000).toFixed(3)), heroId: summary.identity.heroId, noDamage: 0, terminalReason: summary.terminalReason };
+  if (verdict === 'rejected') return rejected('implausible-run', { flags: Object.freeze(flags) });
+  const stats = { score: totals.score, kills: summary.kills.total, bossKills: summary.kills.boss, eliteKills: 0, maxCombo: totals.maxCombo, level: totals.level, xp: totals.xp, survivalTicks: Math.floor(totals.elapsedMs * 0.06), elapsedMs: totals.elapsedMs, survivalSeconds: Number((totals.elapsedMs / 1000).toFixed(3)), noDamage: 0, heroId: summary.identity.heroId, terminalReason: summary.identity.terminalReason };
   return {
     score: totals.score,
     stats,
@@ -258,12 +235,21 @@ function toyReplay(gameId, evidence, identity) {
   };
 }
 
+// The VerifiedRun of §5.3 around a toy replay. The stored evidence record
+// (text, bytes, digest, and every decode failure) is the real
+// computeEvidenceDigest's, and the envelope hash is the real rankedEnvelopeHash.
 async function verifiedRunFor({ gameId, identity, evidence, nowMs }) {
-  const replay = toyReplay(gameId, evidence, identity);
+  const record = await realVerify.computeEvidenceDigest({ gameId, evidence });
+  if (!record.ok) return record;
+  let replay;
+  try {
+    replay = toyReplay(gameId, evidence, identity);
+  } catch {
+    return invalid('invalid-evidence');
+  }
   if (replay.ok === false) return replay;
-  if (replay.score > MAX_SCORE) return fail(422, 'score-out-of-bounds');
-  const record = await evidenceRecord(gameId, evidence);
-  const envelopeHash = await sha256Hex({ version: 'lesters-ranked-envelope-v2', gameId, sessionKey: identity.sessionKey, encoding: record.encoding, evidenceDigest: record.digest });
+  if (replay.score > MAX_SCORE) return scoreOutOfBounds(replay.score);
+  const envelopeHash = await rankedEnvelopeHash({ gameId, sessionId32: identity.sessionKey, encoding: record.encoding, evidenceDigest: record.digest });
   const run = {
     ok: true,
     gameId,
@@ -271,68 +257,75 @@ async function verifiedRunFor({ gameId, identity, evidence, nowMs }) {
     sessionHandle: identity.sessionId,
     wallet: identity.wallet,
     seasonId: identity.seasonId,
-    runtimeId: INDEX_GAMES[gameId].runtimeId,
+    runtimeId: RANKED_GAMES[gameId].runtimeId,
     buildHash: identity.buildHash,
     seed: identity.seed,
     score: replay.score,
     contract: Object.freeze({ ...replay.contract }),
     stats: Object.freeze({ ...replay.stats }),
-    evidence: Object.freeze(record),
+    evidence: Object.freeze({ encoding: record.encoding, text: record.text, bytes: record.bytes, digest: record.digest }),
     envelopeHash,
-    identity,
+    identity: { ...identity },
+    // Like the real VerifiedRun: the HMH validator verdict, null for replayed games.
+    plausibility: replay.plausibility ?? null,
     verifiedAt: new Date(nowMs).toISOString(),
   };
-  if (replay.plausibility) run.plausibility = replay.plausibility;
   return Object.freeze(run);
 }
 
 // { bindRankedIdentity, verifyRankedRun, computeEvidenceDigest, reverifyStoredRun, calls }
+// bindRankedIdentity and computeEvidenceDigest are the real server/verify
+// functions behind a call counter; verifyRankedRun and reverifyStoredRun run
+// the real checks around the toy replay.
 export function createVerifyDouble({ nowMs = () => Date.now() } = {}) {
   const calls = { bindRankedIdentity: 0, verifyRankedRun: 0, computeEvidenceDigest: 0, reverifyStoredRun: 0, reverifyNowMs: [] };
   const clock = () => (typeof nowMs === 'function' ? nowMs() : Number(nowMs));
 
-  async function bindRankedIdentity(body, { chainId, scoreRegistryAddress, wallet, nowMs: now, seedSecret }) {
+  async function bindRankedIdentity(body, options) {
     calls.bindRankedIdentity += 1;
-    const identity = body?.identity;
-    if (!identity || typeof identity !== 'object' || Array.isArray(identity) || Object.keys(identity).sort().join(',') !== IDENTITY_KEYS.join(',')) return fail(400, 'identity-invalid');
-    if (!Object.hasOwn(INDEX_GAMES, identity.gameId)) return fail(400, 'identity-game-unknown');
-    if (identity.gameId !== body.gameId) return fail(400, 'identity-invalid');
-    if (identity.chainId !== chainId) return fail(400, 'identity-chain-mismatch');
-    if (String(identity.scoreRegistryAddress).toLowerCase() !== String(scoreRegistryAddress).toLowerCase()) return fail(400, 'identity-registry-mismatch');
-    if (String(identity.wallet).toLowerCase() !== String(wallet).toLowerCase()) return fail(400, 'identity-wallet-mismatch');
-    if (identity.seasonId !== INDEX_GAMES[identity.gameId].seasonId) return fail(400, 'identity-season-mismatch');
-    if (!BUILD_HASH_PATTERNS[identity.gameId].test(String(identity.buildHash))) return fail(400, 'identity-buildhash-invalid');
-    if (!HANDLE.test(String(identity.sessionId))) return fail(400, 'identity-session-invalid');
-    if (identity.nonce !== identity.sessionId.slice('game-session-'.length)) return fail(400, 'identity-nonce-mismatch');
-    const fields = { sessionId: identity.sessionId, wallet: String(identity.wallet).toLowerCase(), gameId: identity.gameId, seasonId: identity.seasonId, buildHash: identity.buildHash };
-    if (!checkTicket(body.seedTicket, seedSecret, now, fields)) return fail(400, 'seed-ticket-invalid');
-    if (identity.seed !== await deriveRankedSeedDouble({ ...fields, salt: body.seedTicket.salt })) return fail(400, 'identity-seed-mismatch');
-    const canonical = await createCanonicalSessionIdentity(identity);
-    if (canonical.sessionKey !== body.sessionId32) return fail(400, 'session-key-mismatch');
-    return { ok: true, gameId: identity.gameId, identity: canonical };
+    return realVerify.bindRankedIdentity(body, options);
   }
 
-  async function verifyRankedRun(body, options) {
+  // The real verifyRankedRun's order: bind (unless `bound` is given), check
+  // the binding belongs to this body, then replay.
+  async function verifyRankedRun(body, options = {}) {
     calls.verifyRankedRun += 1;
     const bound = options.bound ?? await bindRankedIdentity(body, options);
-    if (!bound.ok) return bound;
+    if (!bound?.ok) return bound ?? invalid('identity-invalid');
+    if (!isPlainObject(body) || bound.gameId !== body.gameId || bound.identity?.sessionKey !== body.sessionId32) return invalid('session-key-mismatch');
     return verifiedRunFor({ gameId: bound.gameId, identity: bound.identity, evidence: body.evidence, nowMs: options.nowMs ?? clock() });
   }
 
-  // { ok:true, encoding, text, bytes, digest } | { ok:false, status:400, error:'invalid-evidence' }; never throws.
+  // { ok:true, encoding, text, bytes, digest } | { ok:false, status:400, error, detail? }; never throws.
   async function computeEvidenceDigest(body) {
     calls.computeEvidenceDigest += 1;
-    try {
-      return Object.freeze({ ok: true, ...(await evidenceRecord(body?.gameId, body?.evidence)) });
-    } catch {
-      return fail(400, 'invalid-evidence');
-    }
+    return realVerify.computeEvidenceDigest(body);
   }
 
-  async function reverifyStoredRun({ gameId, identity, evidence }, { nowMs: now } = {}) {
+  // The real reverifyStoredRun's checks (game, canonical identity and session
+  // key, encoding, parse, canonical stored text) around the toy replay.
+  async function reverifyStoredRun({ gameId, identity, evidence } = {}, { nowMs: now } = {}) {
     calls.reverifyStoredRun += 1;
     calls.reverifyNowMs.push(now ?? null);
-    return verifiedRunFor({ gameId, identity, evidence: evidenceFromStored(gameId, evidence), nowMs: now ?? clock() });
+    if (!Object.hasOwn(RANKED_GAMES, gameId)) return invalid('identity-game-unknown');
+    if (!isPlainObject(identity) || identity.gameId !== gameId) return invalid('identity-invalid');
+    let canonical;
+    try {
+      canonical = await createCanonicalSessionIdentity(Object.fromEntries(RANKED_IDENTITY_KEYS.map((key) => [key, identity[key]])));
+    } catch {
+      return invalid('identity-invalid');
+    }
+    if (canonical.sessionKey !== identity.sessionKey) return invalid('session-key-mismatch');
+    if (!isPlainObject(evidence) || evidence.encoding !== RANKED_GAMES[gameId].evidenceEncoding || typeof evidence.text !== 'string') return invalid('invalid-evidence');
+    let parsed;
+    try {
+      parsed = evidenceFromStored(gameId, evidence);
+    } catch {
+      return invalid('invalid-evidence');
+    }
+    const run = await verifiedRunFor({ gameId, identity: canonical, evidence: parsed, nowMs: now ?? clock() });
+    if (run.ok && run.evidence.text !== evidence.text) return invalid('invalid-evidence', 'stored evidence text is not canonical');
+    return run;
   }
 
   return { bindRankedIdentity, verifyRankedRun, computeEvidenceDigest, reverifyStoredRun, calls };
