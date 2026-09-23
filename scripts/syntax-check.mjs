@@ -60,6 +60,8 @@ const NODE_CHECK_FILES = [
   'apps/stacked/src/render/piece-presentation.mjs',
   'apps/portal/src/share-links.mjs',
   'apps/portal/src/verifier-attestation.mjs',
+  'apps/portal/src/session-seed.mjs',
+  'tests/session-seed.test.mjs',
   'apps/portal/src/server-session.mjs',
   'apps/portal/src/server-neon.mjs',
   'apps/portal/src/profile-sync-client.mjs',
