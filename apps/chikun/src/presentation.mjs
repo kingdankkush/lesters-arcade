@@ -36,12 +36,16 @@ export function buildChikunReplayTimeline(evidence = {}, binCount = 24) {
   });
 }
 
+// The child shares Free runs only (its Ranked share controls are hidden, the
+// parent results screen owns Ranked sharing), so a Ranked label never claims
+// a verification the server has not made yet. X mentions @LestersArcade and
+// carries no hashtags (guide D12, D13).
 export function buildChikunShareText(result = {}, mode = 'free', dailyLabel = '') {
   const label = mode === 'ranked'
-    ? 'Replay Verified Ranked'
+    ? 'Ranked run'
     : dailyLabel
       ? dailyLabel
       : 'Free Practice';
   const seconds = Math.max(0, Number(result.survivalTime) || 0).toFixed(1);
-  return `I scored ${number(result.score).toLocaleString('en-US')} points in Chikun's Escape: ${number(result.forksPassed)} obstacles, ${number(result.nearMisses)} near misses, ${number(result.bestCombo)} best combo, ${seconds}s flight. ${label} at lestersarcade.io`;
+  return `I scored ${number(result.score).toLocaleString('en-US')} points in Chikun's Escape: ${number(result.forksPassed)} obstacles, ${number(result.nearMisses)} near misses, ${number(result.bestCombo)} best combo, ${seconds}s flight. ${label} on @LestersArcade`;
 }

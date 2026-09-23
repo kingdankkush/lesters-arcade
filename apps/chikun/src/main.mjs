@@ -846,14 +846,16 @@ exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
 // X / Facebook / Discord targets beside the native Share Run button (owner
 // direction 2026-09-16). Same text as the native share, same public link.
+// Free runs only: the parent results screen owns Ranked sharing (§7.4).
 let shareRow = null;
 function renderShareRow(result) {
   const mount = document.querySelector('#shareRow');
   if (!mount) return;
+  mount.hidden = shareRunButton.hidden = mode === 'ranked';
+  if (mode === 'ranked') return;
   const links = buildShareLinks({
     text: buildChikunShareText(result, mode, dailyChallenge?.label ?? ''),
     url: shareUrlFor('chikun'),
-    hashtags: ['LestersArcade', 'ChikunsEscape'],
   });
   if (shareRow) { shareRow.refresh(links); return; }
   shareRow = createShareRow({

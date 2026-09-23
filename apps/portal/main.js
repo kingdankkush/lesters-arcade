@@ -2767,10 +2767,12 @@ function renderGameOverSummary() {
   const recap = currentHmhRunRecap();
   if (recap) dom.combatGameOverSummary.append(renderHmhRunRecap(recap));
 
-  // Share row (owner direction 2026-09-16): X, Facebook, Discord copy and the
-  // native share sheet where the browser has one. Built from the same summary
-  // the recap shows; posting is always the player's own click.
-  if (!win) {
+  // Share row (owner direction 2026-09-16): Share on X first, then Discord
+  // copy, Facebook and the native share sheet. Built from the same summary
+  // the recap shows; posting is always the player's own click. Free runs
+  // only: a Ranked run is shared from the Ranked results screen once it is
+  // published on LitVM (contract §7.4).
+  if (!win && (currentSession?.mode ?? officialSelectedMode ?? 'free') === 'free') {
     const shareText = buildHmhShareText({
       score: combat.score,
       kills: combat.kills,
@@ -2779,12 +2781,11 @@ function renderGameOverSummary() {
       maxCombo: combat.maxCombo ?? 0,
       killedBy: recap?.defeat?.label ?? combat.killedBy ?? '',
       bossDefeated: Boolean(combat.bossDefeated),
-      ranked: (currentSession?.mode ?? officialSelectedMode ?? 'free') !== 'free',
     });
     const shareLabel = el('span', { className: 'share-row-label', textContent: 'Share this run' });
     const shareRow = createShareRow({
       title: 'Hard Money Heroes',
-      links: buildShareLinks({ text: shareText, url: shareUrlFor('hmh-reboot'), hashtags: ['LestersArcade', 'HardMoneyHeroes'] }),
+      links: buildShareLinks({ text: shareText, url: shareUrlFor('hmh-reboot') }),
       className: 'share-row game-over-share-row',
       buttonClassName: 'combat-menu-action share-button',
       onStatus: (message) => { shareLabel.textContent = message; },
