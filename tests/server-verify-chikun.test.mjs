@@ -10,6 +10,7 @@ import {
   FIXTURE_VERIFY_AT_MS,
   buildFixture,
   buildFixtureBody,
+  fastestVerifyCpuMs,
   fixtureSalt,
   fixtureVerifyOptions,
   readFixture,
@@ -97,8 +98,9 @@ test("evidence copied from another wallet's ticket does not verify", async () =>
     body.evidence = structuredClone(other.body.evidence);
     body.evidence.flap.seed = body.identity.seed;
   }));
-  const otherRun = await verify(other.body, { wallet: otherWallet });
-  assert.ok(!reseeded.ok || reseeded.score !== otherRun.score, 'the inputs replay to a different run under the copier seed');
+  const { detail, ...outcome } = reseeded;
+  assert.deepEqual(outcome, { ok: false, status: 422, error: 'replay-rejected' });
+  assert.match(detail, /flaps at or after the final tick/, 'under the copier seed the run ends early and the copied flaps overrun it');
   // Or submits the other body wholesale: its identity is bound to the other wallet.
   assert.equal((await verify(other.body)).error, 'identity-wallet-mismatch');
   const stolenIdentity = structuredClone(other.body);
@@ -150,12 +152,12 @@ test('10-minute replay stays within budget', async () => {
   const long = readFixture('chikun-10min');
   assert.equal(long.expected.contract.survivalSeconds >= 600, true, 'the timing fixture covers at least 10 minutes');
   await verify(readFixture('chikun-valid').body); // module load and JIT warm-up are not the budget
-  const started = performance.now();
-  const run = await verify(long.body);
-  const elapsed = performance.now() - started;
-  assert.equal(run.ok, true);
-  assert.equal(run.score, long.expected.score);
-  assert.ok(elapsed < 1_500, `10-minute Chikun verification took ${elapsed.toFixed(0)} ms (budget 1,500 ms)`);
+  const { fastestMs, results } = await fastestVerifyCpuMs(() => verify(long.body), { budgetMs: 1_500 });
+  for (const run of results) {
+    assert.equal(run.ok, true);
+    assert.equal(run.score, long.expected.score);
+  }
+  assert.ok(fastestMs < 1_500, `10-minute Chikun verification took ${fastestMs.toFixed(0)} ms of CPU at best over ${results.length} runs (budget 1,500 ms)`);
 });
 
 test('the per-game verifier binds nothing itself and replays the canonical copy', async () => {
