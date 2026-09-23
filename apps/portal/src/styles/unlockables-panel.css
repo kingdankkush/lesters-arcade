@@ -1,0 +1,286 @@
+/* Unlockables panel (contract §7.9). Injected once as a <link> by
+   apps/portal/src/routes/unlockables-panel.mjs when Settings or the player's
+   own profile first renders. Cabinet look: design-tokens.css variables, the
+   cyan-edged info-card panel, neon type and pixel swatches. Works from 320 px
+   with no horizontal scroll; every option is a 44 px touch target. */
+
+.unlockables-panel {
+  --unl-edge: rgba(25, 247, 255, 0.24);
+  --unl-locked: rgba(180, 174, 212, 0.55);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: var(--space-4, 16px) 0 0;
+  padding: clamp(14px, 3.5vw, 24px);
+  display: grid;
+  gap: var(--space-4, 16px);
+  color: var(--text-primary, #f9f7ff);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  border: 1px solid var(--unl-edge);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 232, 77, 0.1), transparent 14rem),
+    rgba(4, 11, 26, 0.86);
+  box-shadow: inset 0 0 24px rgba(25, 247, 255, 0.06), 0 0 24px rgba(0, 0, 0, 0.2);
+  overflow-wrap: anywhere;
+}
+
+.unlockables-panel[hidden],
+#officialApp:not([data-step="settings"]):not([data-step="profile"]) .unlockables-panel {
+  display: none !important;
+}
+
+.unlockables-panel *,
+.unlockables-panel *::before,
+.unlockables-panel *::after {
+  box-sizing: border-box;
+}
+
+.unlockables-head {
+  display: grid;
+  gap: var(--space-1, 4px);
+  min-width: 0;
+}
+
+.unlockables-title {
+  margin: 0;
+  font-family: var(--font-display, "Trebuchet MS", system-ui, sans-serif);
+  font-size: clamp(1.15rem, 4vw, 1.6rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brass-bright, #ffe84d);
+  text-shadow: 0 0 12px rgba(255, 232, 77, 0.35);
+}
+
+.unlockables-notice,
+.unlockables-status {
+  margin: 0;
+  font-size: var(--type-14, 0.875rem);
+  line-height: 1.4;
+  color: var(--text-secondary, #b4aed4);
+}
+
+.unlockables-status:empty {
+  display: none;
+}
+
+.unlockables-status {
+  color: var(--crypto-green, #45ff8a);
+}
+
+.unlockables-game {
+  display: grid;
+  gap: var(--space-3, 12px);
+  min-width: 0;
+  padding-top: var(--space-3, 12px);
+  border-top: 1px dashed rgba(25, 247, 255, 0.2);
+}
+
+.unlockables-game-title {
+  margin: 0;
+  font-family: var(--font-display, "Trebuchet MS", system-ui, sans-serif);
+  font-size: var(--type-16, 1rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--crypto-cyan, #19f7ff);
+  text-shadow: 0 0 10px rgba(25, 247, 255, 0.35);
+}
+
+.unlockables-slot {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.unlockables-slot-label {
+  margin: 0 0 var(--space-2, 8px);
+  padding: 0;
+  font-size: var(--type-12, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--silver-300, #b4c4df);
+}
+
+.unlockables-options,
+.unlockables-hero-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 136px), 1fr));
+  gap: var(--space-2, 8px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unlockables-option {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-1, 4px);
+  min-width: 0;
+}
+
+/* The native radio stays focusable and readable by assistive tech; the card
+   label is the visible, 44 px touch target. */
+.unlockables-radio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.unlockables-radio:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.unlockables-card {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: var(--space-2, 8px);
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid rgba(180, 196, 223, 0.28);
+  border-radius: 12px;
+  background: rgba(7, 17, 36, 0.92);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.unlockables-swatch {
+  grid-row: 1 / span 2;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #04121f;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+  image-rendering: pixelated;
+}
+
+.unlockables-swatch[data-default="true"] {
+  background:
+    linear-gradient(135deg, transparent 45%, rgba(255, 255, 255, 0.55) 45% 55%, transparent 55%),
+    rgba(127, 147, 184, 0.35);
+}
+
+.unlockables-option-title {
+  min-width: 0;
+  font-size: var(--type-14, 0.875rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.unlockables-option-state {
+  font-size: var(--type-12, 0.75rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary, #b4aed4);
+}
+
+.unlockables-option[data-state="selected"] .unlockables-card {
+  border-color: var(--crypto-cyan, #19f7ff);
+  box-shadow: 0 0 0 1px var(--crypto-cyan, #19f7ff), 0 0 16px rgba(25, 247, 255, 0.35);
+}
+
+.unlockables-option[data-state="selected"] .unlockables-option-state {
+  color: var(--crypto-cyan, #19f7ff);
+}
+
+.unlockables-option[data-state="unlocked"] .unlockables-option-state {
+  color: var(--crypto-green, #45ff8a);
+}
+
+.unlockables-option[data-state="locked"] .unlockables-card,
+.unlockables-option[data-state="coming-soon"] .unlockables-card {
+  cursor: not-allowed;
+  border-style: dashed;
+  color: var(--unl-locked);
+}
+
+/* A locked look still shows its colour, dimmed, so players see the goal. */
+.unlockables-option[data-state="locked"] .unlockables-swatch,
+.unlockables-option[data-state="coming-soon"] .unlockables-swatch {
+  opacity: 0.6;
+}
+
+.unlockables-radio:focus-visible + .unlockables-card {
+  outline: 3px solid var(--crypto-cyan, #19f7ff);
+  outline-offset: 2px;
+}
+
+.unlockables-radio:not(:disabled):hover + .unlockables-card {
+  border-color: var(--brass-bright, #ffe84d);
+}
+
+.unlockables-requirement {
+  margin: 0;
+  font-size: var(--type-12, 0.75rem);
+  line-height: 1.35;
+  color: var(--text-secondary, #b4aed4);
+}
+
+.unlockables-achievement-link {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  min-height: 24px;
+  color: var(--brass-bright, #ffe84d);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.unlockables-achievement-link:focus-visible {
+  outline: 2px solid var(--crypto-cyan, #19f7ff);
+  outline-offset: 2px;
+}
+
+.unlockables-heroes {
+  min-width: 0;
+}
+
+.unlockables-hero {
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid rgba(180, 196, 223, 0.28);
+  border-radius: 12px;
+  background: rgba(7, 17, 36, 0.92);
+}
+
+.unlockables-hero small {
+  font-size: var(--type-12, 0.75rem);
+  color: var(--text-secondary, #b4aed4);
+}
+
+.unlockables-hero[data-state="unlocked"] {
+  border-color: rgba(69, 255, 138, 0.55);
+}
+
+.unlockables-hero[data-state="locked"] {
+  border-style: dashed;
+}
+
+@media (max-width: 380px) {
+  .unlockables-panel {
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .unlockables-options,
+  .unlockables-hero-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unlockables-card {
+    transition: none;
+  }
+}

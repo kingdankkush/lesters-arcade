@@ -172,6 +172,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/routes/official-profile-route.mjs",
     "apps/portal/src/routes/official-shell-routes.mjs",
     "apps/portal/src/routes/portal-route-controller.mjs",
+    "apps/portal/src/routes/unlockables-panel.mjs",
     "apps/portal/src/scene-templates.mjs",
     "apps/portal/src/seeded-rng.mjs",
     "apps/portal/src/server-neon.mjs",
