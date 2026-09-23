@@ -44,16 +44,14 @@ export function createPortalRouteController({
     }
   }
 
-  // setView(step, { wallet }): `wallet` (an address or null) picks whose
-  // profile the profile step shows. Without the option a profile view keeps
-  // the wallet it already shows, so re-entering the step never drops it from
-  // the URL; leaving the profile step forgets it.
+  // setView(step, { wallet }): `wallet` picks whose profile the profile step
+  // shows, and the URL names it (/profile/<wallet>). Navigation without a
+  // wallet (the nav Profile tab, the nav avatar "Open profile", "View my
+  // profile") is the connected wallet's own profile at /profile. Only a URL
+  // (applyLocation, on load and on back/forward) restores another wallet
+  // without the option. Leaving the profile step forgets it.
   function setView(step, options = {}) {
-    if (step === 'profile') {
-      if (options && Object.hasOwn(options, 'wallet')) setViewedWallet(profileWalletFor(options.wallet));
-    } else {
-      setViewedWallet(null);
-    }
+    setViewedWallet(step === 'profile' ? profileWalletFor(options?.wallet ?? null) : null);
     setStep(step);
     syncRoute(step);
     const rootStyle = documentRef?.documentElement?.style;

@@ -124,9 +124,9 @@ test('setView preserves the viewed wallet', () => {
   assert.deepEqual(h.pushes.at(-1), [{ step: 'profile', gameSlug: 'hard-money-heroes', sessionId: null, wallet: profileWallet }, '', `/profile/${profileWallet}`]);
   assert.equal(h.calls.profile, 1);
 
-  // Re-entering the profile step without a wallet keeps the one in the URL.
+  // Re-entering with the same wallet keeps it in the URL without a duplicate push.
   h.windowRef.location.pathname = `/profile/${profileWallet}`;
-  h.controller.setView('profile');
+  h.controller.setView('profile', { wallet: profileWallet });
   assert.equal(h.state.viewedWallet, profileWallet);
   assert.equal(h.pushes.length, 1, 'the URL already names the wallet, so no duplicate push');
   h.controller.syncRoute('profile');
@@ -143,6 +143,28 @@ test('setView preserves the viewed wallet', () => {
   assert.equal(h.state.viewedWallet, null);
   assert.equal(h.pushes.at(-1)[2], '/scores');
   assert.deepEqual(Object.keys(h.pushes.at(-1)[0]), ['step', 'gameSlug', 'sessionId'], 'other routes keep the 3-key history state');
+});
+
+test('the nav Profile tab and avatar go back to your own profile from another wallet', () => {
+  // official-shell-routes.mjs navigates with a bare setView: the Profile tab
+  // with setView(item.step) and the avatar ("Open profile") with setView('profile').
+  const shell = readFileSync(new URL('../apps/portal/src/routes/official-shell-routes.mjs', import.meta.url), 'utf8');
+  assert.match(shell, /setView\(item\.step\);/);
+  assert.match(shell, /ariaLabel: 'Open profile'[\s\S]{0,200}setView\('profile'\);/);
+
+  const h = harness({ pathname: '/scores', connected: true });
+  h.controller.setView('profile', { wallet: PROFILE_WALLET }); // a row on the Scores page
+  h.windowRef.location.pathname = `/profile/${profileWallet}`;
+  h.controller.setView('profile'); // the nav tab or the nav avatar
+  assert.equal(h.state.viewedWallet, null, 'a bare profile navigation is the connected wallet');
+  assert.equal(h.pushes.at(-1)[2], '/profile', 'and the URL returns to /profile');
+  assert.deepEqual(Object.keys(h.pushes.at(-1)[0]), ['step', 'gameSlug', 'sessionId']);
+  assert.equal(h.calls.profile, 2, 'your own profile is hydrated');
+
+  // Back to the other wallet's URL restores it from the address bar.
+  h.windowRef.location.pathname = `/profile/${profileWallet}`;
+  h.controller.applyLocation();
+  assert.equal(h.state.viewedWallet, profileWallet);
 });
 
 test('portal entry delegates transition and popstate ownership to the route controller', () => {
