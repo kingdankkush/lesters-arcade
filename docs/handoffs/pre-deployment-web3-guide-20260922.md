@@ -115,14 +115,14 @@ One shared results screen for all three games, rendered by the parent portal and
   2. Run verified by the arcade server.
   3. Publishing to LitVM.
   4. **Published**, with a link to the transaction on `https://liteforge.explorer.caldera.xyz`.
-  5. Achievements minted.
-- **Achievements earned this run:** badge art with tier colour. Server-recorded ones appear instantly; the few soulbound NFT ones get a bigger reveal, shown as "minting on LitVM…" then "minted", each linking to its token.
+  5. Achievements recorded (phase 2 adds "NFT minted" for the few soulbound ones).
+- **Achievements earned this run:** badge art with tier colour, recorded on the server against the wallet and shown instantly. (When soulbound NFTs are switched on in phase 2, those few get a bigger reveal: "minting on LitVM…" then "minted", linking to the token.)
 - **Actions:** **Share on X** is the primary button. Copy for Discord and Facebook sit in a secondary menu. Then Play again (Ranked), Practice (Free) and View profile.
 - **Failure states:** "Saved; publishing will retry automatically" with a Retry button. Never a dead end, never a fake success.
 
 ### 3.4 Sharing looks good, with X as the focus
 
-- X posts mention **@LestersArcade** (decision D12 confirms the exact handle).
+- X posts mention **@LestersArcade** (https://x.com/LestersArcade, confirmed in D12) so the owner sees every share in that account's mentions and can reply. **No hashtags** (D13): every character goes to the player's run and the game.
 - Every Ranked share links to a **public session page** at `https://lestersarcade.io/s/<sessionId>`. That page has its own dynamically generated **1200×630 score card image** in its Open Graph and Twitter card tags, so X, Discord and Facebook all unfurl a proper card. The card shows game key art, score, standing, the headline stats, the player handle and a "Verified on LitVM" badge.
 - The page shows the verified run, the transaction link, earned badges and a **Play** button.
 - Text templates live in section 5.12.
@@ -299,7 +299,17 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 3. HMH settlement must adopt the authenticated `/api/settle` flow and the new results screen.
 4. **Duplicate rows.** The local row (stamped with a tx hash) and the `chain:` row have different ids (`main.js:4833-4891`). Dedup by sessionId.
 
-### 5.6 Achievements: server-recorded for most, soulbound NFTs for a select few (P0)
+### 5.6 Achievements: server-recorded at launch, soulbound NFTs in phase 2 (P0 for phase 1)
+
+**Phasing (decision D15, 2026-09-22): soulbound NFTs come later, as a separate phase.** This needs no redeploy, because `AchievementRegistry` was written for it (checked in `contracts/src/AchievementRegistry.sol`):
+
+- `defineAchievement` can be called by the operator at any time, and re-defining an id updates its metadata.
+- `setMinter` can add a minter (for example the relayer) at any time.
+- `mintFor(player, achievementId, sessionId)` accepts past sessions, never mints a duplicate (one deterministic token id per wallet and achievement), and returns quietly for undefined ids, so settlement is never blocked.
+
+**Phase 1, before deployment (this guide):** build the catalogs, server derivation and the Neon `achievement_unlocks` table, show unlocks on profiles and results, and deploy the three per-game collections **empty** (the deploy script already creates them and makes the score registry a minter). Items 1, 2, 4 (server-recorded part only), 7 and the metadata folder layout from item 6 are phase 1.
+
+**Phase 2, later:** approve the NFT subset (item 3), commission the art, publish metadata, `defineAchievement` for the subset, `setMinter(relayer, true)`, then **backfill-mint** every wallet that already earned one, straight from `achievement_unlocks`. From then on settlement mints them live. Items 3, 5, 6 (publishing) and 8 are phase 2.
 
 **Owner model (decisions D5–D7):**
 
@@ -323,7 +333,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
    - **STACKED themes:** first Halving and Halving counts; levels reached; perfect clears; spins; combo and back-to-back chains; lines in one run and cumulative; survival time; score milestones; clean boards; garbage survived; cumulative sessions.
 3. **Choose the NFT subset:** about **5 per game**, drawn from the top tier (platinum for Chikun and STACKED; mythic for HMH). The session proposes the list and the owner approves it before deployment.
 4. **Server derivation.** `/api/settle` computes every newly earned achievement from the replayed stats and the wallet's verified history in Neon. It writes all of them to `achievement_unlocks`, and passes only the **NFT** ones into `submitVerifiedSession` for minting (well under the contract's 32 per submit). If an NFT mint fails or arrives late, a backfill path mints it through the relayer allowed as minter (`AchievementRegistry.setMinter`, `mintFor(player, id, sessionId)`).
-5. **Deploy script.** For each game, call `defineAchievement(id, gameId, title, category, tokenUriPath)` **only for the NFT subset**. Server-recorded achievements need nothing on chain. Record the definitions in the manifest.
+5. **Deploy script (phase 2).** For each game, call `defineAchievement(id, gameId, title, category, tokenUriPath)` **only for the NFT subset**, from a separate script such as `scripts/define-nft-achievements.mjs`, so it runs after the art is ready. Server-recorded achievements need nothing on chain. Phase 1 deploys the collections with no definitions.
 6. **Metadata built for the art upgrade.** Generate `apps/portal/achievements/<slug>/<achievement-id>.json` with ERC-721 metadata:
    - name, description, `image` (a still, for wallets that only show images);
    - **`animation_url`** reserved for the future 3D and effects version (a GLB model or a small self-contained HTML viewer), so upgrading means replacing files, not re-minting;
@@ -389,7 +399,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 
 **Build:**
 
-1. **X is primary.** Use `https://x.com/intent/post` with `text` and `url`, and put `@LestersArcade` in the text. Optionally add `related=LestersArcade` so X suggests following the account after posting. Skip `via`, which would duplicate the mention.
+1. **X is primary.** Use `https://x.com/intent/post` with `text` and `url`, and put `@LestersArcade` in the text (the owner's account, https://x.com/LestersArcade, where replies and engagement happen). Add `related=LestersArcade` so X suggests following the account after posting. Skip `via`, which would duplicate the mention. **Send no `hashtags` parameter** and remove hashtag handling from `buildShareLinks`.
 2. **Templates.** Keep them under 280 characters; X counts every URL as 23. Ranked:
 
    Hard Money Heroes:
@@ -422,14 +432,14 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
    https://lestersarcade.io/s/<sessionId>
    ```
 
-   A new personal best adds a `🔥 New personal best!` line. Free runs use a lighter template ending "Practising on @LestersArcade" with no verification line. Hashtags (`#Litecoin #LitVM`) are optional per decision D13, added only when characters allow.
+   A new personal best adds a `🔥 New personal best!` line. Free runs use a lighter template ending "Practising on @LestersArcade" with no verification line. **No hashtags** (decision D13).
 3. **Share page `/s/<sessionId>`.**
    - Add a Vercel rewrite to a lightweight page that reads `/api/session/<id>` (from Neon).
    - It shows the score card, stats, standing, badges, the transaction link and **Play** buttons.
    - It must set `og:title`, `og:description`, `og:image`, `twitter:card=summary_large_image` and `twitter:site=@LestersArcade`. X reads these from server-rendered HTML, so render the tags in a function, not in client JavaScript.
 4. **Score card image.** `/api/share-card/<sessionId>.png` renders 1200×630 with `@vercel/og` (Satori, new dependency). It shows game key art as the background, the score, handle, standing, three headline stats, earned badges and "Verified on LitVM". Cache it immutably once the session is confirmed.
 5. **Facebook and Discord:** secondary. Facebook's sharer takes the share-page URL and shows the card. Discord gets copied text plus the URL, which unfurls the card. The native share sheet (mobile) passes the same text and URL.
-6. **Tests:** template length under 280 with a 23-character URL, the mention present, no raw wallet addresses in text, and OG tags present on the share page.
+6. **Tests:** template length under 280 with a 23-character URL, `@LestersArcade` present exactly once, no `#` hashtags, no raw wallet addresses in text, and OG tags (including `twitter:site=@LestersArcade`) present on the share page.
 
 ### 5.13 Unlockables (P2, approved by the owner in D8)
 
@@ -451,7 +461,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
    - It sends `GameRegistry.confirmDevWallet(gameId)` for each of the three games, then shows the transactions.
    - The contracts require this so nobody can redirect fees. After that the operator calls `setPlayable(gameId, true)`.
 5. **Contract changes.** None are required. Score, kills, combo and survival carry the headline numbers, and the envelope hash commits to the evidence Neon stores. Revisit only if the owner wants lines and level on chain.
-6. **Local chain rehearsal (recommended).** Add Hardhat or Anvil as a dev tool and rehearse the full deploy → entry → settle → mint flow locally before touching LiteForge. Foundry is not installed; the forge `SecurityBaseline.t.sol` suite has never run. Get owner approval before installing tools.
+6. **Local chain rehearsal (approved, D14).** Add Hardhat as an npm dev dependency and rehearse the full flow locally before touching LiteForge: deploy, confirm payout wallets, entry, settle through the real `/api/settle` code, profile name change, leaderboard rows. Add a phase 2 rehearsal script for define → backfill mint so that phase is proven too. Foundry is not installed, so the forge `SecurityBaseline.t.sol` suite has never run; port its key cases to Hardhat tests.
 
 ### 5.15 Tests, evidence and docs (throughout)
 
@@ -468,7 +478,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 | --- | --- | --- |
 | 1 | `.gitignore` for installer files; confirm owner decisions in section 9 | — |
 | 2 | Chikun difficulty harness and retune (5.3 item 6) | D11 |
-| 2b | Achievement catalogs for all three games (40 Chikun, 40 STACKED, 57 HMH), NFT subset proposal, shared resolver fixes (5.5 item 2, 5.6 items 1–3) | 2, D5, D7 |
+| 2b | Achievement catalogs for all three games (40 Chikun, 40 STACKED, 57 HMH) and shared resolver fixes (5.5 item 2, 5.6 items 1–2), server-recorded only | 2, D5, D7 |
 | 3 | Neon schema + migrations + read APIs (5.2) | — |
 | 4 | Server nonce, authenticated settle, server replay, derivation, nonce-safe relayer, queue and cron (5.1, 5.6 item 3) | 2, 3 |
 | 5 | Chikun Ranked path (5.3) | 4 |
@@ -478,10 +488,11 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 | 9 | Shared Ranked results screen (5.11) | 5–7 |
 | 10 | Sharing: templates, share page, OG card (5.12) | 3, D12, D13 |
 | 11 | Profiles with on-chain names, leaderboards UI on the index (5.7, 5.8) | 3, D1–D4 |
-| 12 | Deploy-script updates, metadata JSON, generated addresses, owner page (5.6 items 4–5, 5.14) | 2 |
+| 12 | Deploy-script updates (collections deployed empty), generated addresses, owner page (5.14) | 2 |
 | 13 | Local-chain rehearsal (5.14 item 6) | 12 |
 | 14 | Unlockables (5.13) | D8 |
 | 15 | Deployment (section 7) | all of the above |
+| Later | **Phase 2: soulbound NFTs** (5.6 phase 2), after the owner's art upgrade | owner art, D15 |
 
 ---
 
@@ -509,7 +520,7 @@ Every step with ⚠ needs the owner's approval in the moment, with the session i
    - the Neon row;
    - the leaderboard row;
    - the profile stats;
-   - achievements minted, with `tokenURI` resolving to metadata and an image;
+   - achievements recorded in Neon and shown on the profile and results screen (NFT minting is phase 2);
    - the share page card rendering in X's card validator or an unfurl preview.
 10. Verify public file hashes, run the live smokes, then update the README and write the receipt `docs/qa/…-release-<date>.json`.
 
@@ -544,15 +555,15 @@ Answered by Justin on 2026-09-22 unless marked pending. Where an answer was "rec
 | D9 | Mobile wallets | **Whatever makes it smoother, especially on mobile:** WalletConnect/Reown AppKit plus wallet deep links (section 5.9). Needs the Reown project ID. |
 | D10 | Failed publishes | **Recommended:** auto-retry, retry button on the profile, no refunds on testnet. |
 | D11 | Chikun run length | **Retune difficulty.** Targets: beginner–intermediate 2–6 min, intermediate–expert 6–8 min, expert–hardcore 8–12 min; surviving past 15 min should be extraordinary. This is the frame of reference for the level's difficulty and pacing. |
-| D12 | X handle to mention | _Pending:_ owner to confirm `@LestersArcade` is the exact handle. |
-| D13 | Hashtags on X | _Pending._ Recommendation: `#Litecoin #LitVM` only when characters allow, never more than two. |
-| D14 | Local-chain rehearsal | _Pending._ Recommendation: add Hardhat as a dev dependency and rehearse deploy → entry → settle → mint locally before LiteForge. |
-| D15 | NFT subset per game | _Pending owner approval_ of the session's proposed list (about 5 per game from the top tier, section 5.6 item 3). |
+| D12 | X handle to mention | **`@LestersArcade`** (https://x.com/LestersArcade). The owner watches its mentions to engage with players. |
+| D13 | Hashtags on X | **None.** Characters are reserved for the player's session, the game and Lester's Arcade. |
+| D14 | Local-chain rehearsal | **Recommended:** Hardhat dev dependency and a full local rehearsal before LiteForge. The goal is a fully operational Lester's Arcade on LiteForge testnet. |
+| D15 | Soulbound NFTs | **Deferred to phase 2.** Launch with server-recorded achievements; the three collections deploy empty and NFTs are defined, minted and backfilled later without a redeploy. |
 
 ## 10. Owner actions
 
 1. Back up `C:\Users\just_\lesters-arcade-vault\keys\litvm-liteforge-testnet-keys.json` to a thumb drive and a password manager. **The operator key controls the contracts.**
-2. Confirm the X handle (D12), and answer D13 and D14. Approve the NFT subset (D15) and the Chikun and STACKED catalogs when the session presents them.
+2. Review the Chikun and STACKED achievement catalogs (40 each) when the session presents them. The NFT subset waits for phase 2.
 3. **Create a free Reown project** for mobile wallet sign-in (D9): sign up at https://cloud.reown.com, create a project named "Lester's Arcade", add `lestersarcade.io` and `www.lestersarcade.io` under allowed domains, and send the project ID to the session. The ID is public, not a secret.
 4. At deployment:
    - switch the session to "ask before each action" mode;
