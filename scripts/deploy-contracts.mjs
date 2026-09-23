@@ -27,6 +27,7 @@ import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
+import { summarizeDeployReceipts, writeLitvmAddressModule } from './generate-litvm-addresses.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const config = JSON.parse(readFileSync(join(root, 'contracts', 'deploy-config.testnet.json'), 'utf8'));
@@ -322,6 +323,17 @@ if (!same(await rankedEntry.relayerVault(), relayerVault)) throw new Error('Rela
 if ((await rankedEntry.settlementGasReserveWei()).toString() !== settlementGasReserveWei) throw new Error('Settlement gas reserve mismatch.');
 if (!(await rankedEntry.entryFeeEnabled())) throw new Error('Entry fee must be enabled after deploy.');
 
+// Deployment blocks and transaction hashes (contract §8.1): the indexer starts at startBlock.
+const deployFacts = summarizeDeployReceipts({
+  core: {
+    gameRegistry: await gameRegistry.deploymentTransaction().wait(),
+    playerProfileRegistry: await profiles.deploymentTransaction().wait(),
+    arcadeRankedEntry: await rankedEntry.deploymentTransaction().wait(),
+    scoreSubmissionRegistry: await scores.deploymentTransaction().wait(),
+  },
+  achievementRegistries: Object.fromEntries(await Promise.all(games.map(async (game) => [game.slug, await achievementRegistries[game.slug].deploymentTransaction().wait()]))),
+});
+
 const record = {
   schemaVersion: 4,
   epoch: manifest.epoch,
@@ -339,6 +351,9 @@ const record = {
     scoreSubmissionRegistry: await scores.getAddress(),
     achievementRegistries: Object.fromEntries(await Promise.all(games.map(async (game) => [game.slug, await achievementRegistries[game.slug].getAddress()]))),
   },
+  blocks: deployFacts.blocks,
+  startBlock: deployFacts.startBlock,
+  deployTxHashes: deployFacts.deployTxHashes,
   trustedVerifier: config.verifier,
   relayer,
   relayerVault,
@@ -351,3 +366,7 @@ const record = {
 };
 writeFileSync(join(root, 'contracts', 'deployment-record.hardened.json'), `${JSON.stringify(record, null, 2)}\n`);
 console.log(JSON.stringify(record, null, 2));
+
+// Regenerate the portal address module from the record just written (contract A19): status 'deployed'.
+const addressModule = writeLitvmAddressModule({ root, mode: 'deployed', record });
+console.log(`Portal address module regenerated: ${addressModule.relativePath} (status ${addressModule.status}). Commit it with the record.`);

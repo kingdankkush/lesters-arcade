@@ -107,3 +107,20 @@ test('deploy config describes the native 0.1 zkLTC fee for three games and is no
   assert.equal(deployConfig.oldDeployment.disposition, 'archive-read-only; never import as verified');
   for (const key of ['platformVault', 'liquidityVault', 'treasuryVault']) assert.match(deployConfig[key], /^0x[0-9a-fA-F]{40}$/);
 });
+
+test('deploy record gains blocks, startBlock and deployTxHashes and regenerates the portal address module', () => {
+  // Contract §8.1: read from each contract's deploymentTransaction() receipt.
+  assert.match(deployScript, /summarizeDeployReceipts\(\{/);
+  for (const name of ['gameRegistry', 'profiles', 'rankedEntry', 'scores']) {
+    assert.ok(deployScript.includes(`await ${name}.deploymentTransaction().wait()`), `${name} deploy receipt is read`);
+  }
+  assert.ok(deployScript.includes('await achievementRegistries[game.slug].deploymentTransaction().wait()'), 'each collection deploy receipt is read');
+  assert.match(deployScript, /blocks: deployFacts\.blocks,\n  startBlock: deployFacts\.startBlock,\n  deployTxHashes: deployFacts\.deployTxHashes,/);
+  // A broadcast regenerates apps/portal/src/generated/litvm-addresses.mjs (status 'deployed') right after the record.
+  assert.match(deployScript, /import \{ summarizeDeployReceipts, writeLitvmAddressModule \} from '\.\/generate-litvm-addresses\.mjs';/);
+  const recordWrite = deployScript.indexOf("writeFileSync(join(root, 'contracts', 'deployment-record.hardened.json')");
+  const moduleWrite = deployScript.indexOf("writeLitvmAddressModule({ root, mode: 'deployed', record })");
+  assert.ok(recordWrite > 0 && moduleWrite > recordWrite, 'the module is regenerated after the record is written');
+  // The dry run exits before any of this: the generator only runs on the broadcast path.
+  assert.ok(deployScript.indexOf("if (!broadcast) {") < moduleWrite);
+});

@@ -7,7 +7,20 @@ import {
   renderWeb3LiveReadinessMarkdown,
 } from '../apps/portal/src/web3-live-readiness.mjs';
 import { buildReplayVerificationEnvelope } from '../apps/portal/src/hmh-run-integrity.mjs';
-import { LITVM_CONTRACT_ADDRESSES } from '../apps/portal/src/settlement.mjs';
+import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
+
+// Registry/economy facts from the generated address module (contract A19). Both need the DEPLOYED
+// module: a predicted address holds no code yet. The fee split lives in GameRegistry and is paid out by
+// ArcadeRankedEntry, so the split is configured once both exist on chain.
+export function registryEconomyFromDeployment(deployment = LITVM_DEPLOYMENT) {
+  const deployed = deployment?.status === 'deployed';
+  const addresses = deployment?.addresses ?? {};
+  return {
+    gameRegistry: deployed && Boolean(addresses.gameRegistry),
+    splitConfig: deployed && Boolean(addresses.gameRegistry) && Boolean(addresses.arcadeRankedEntry),
+    legalApproved: false,
+  };
+}
 
 function repoRootFromHere() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -28,11 +41,7 @@ export function writeWeb3LiveReadiness({ repoRoot = repoRootFromHere() } = {}) {
     replayVerifier: { ok: true, evidence: [`sample replayHash ${sampleReplay.replayHash.slice(0, 12)}… recomputes deterministically`] },
     chainReads: { leaderboard: true, playerSessions: true, profile: true, fallback: 'local-cache' },
     profileDurability: { localPersistence: true, chainProfileRead: true, chainProfileWrite: true },
-    registryEconomy: {
-      gameRegistry: Boolean(LITVM_CONTRACT_ADDRESSES.gameRegistry),
-      splitConfig: Boolean(LITVM_CONTRACT_ADDRESSES.splitConfig),
-      legalApproved: false,
-    },
+    registryEconomy: registryEconomyFromDeployment(LITVM_DEPLOYMENT),
   });
   const outDir = path.join(repoRoot, 'docs', 'web3');
   mkdirSync(outDir, { recursive: true });

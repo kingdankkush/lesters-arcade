@@ -86,3 +86,7 @@ contracts/out/
 # Neon marketplace installer output (2026-09-22); never commit
 .agents/
 skills-lock.json
+
+# Hardhat 3 in-process chain (hardhat.config.js). network.connect() writes nothing, but a stray
+# `npx hardhat build` would write artifacts/ and cache/ at the root; contracts/artifacts/ stays tracked.
+/artifacts/

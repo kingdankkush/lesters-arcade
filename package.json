@@ -89,6 +89,8 @@
     "contracts:test": "forge test",
     "contracts:slither": "slither . --config-file slither.config.json --fail-high",
     "contracts:deploy": "node scripts/deploy-contracts.mjs",
+    "contracts:addresses": "node scripts/generate-litvm-addresses.mjs",
+    "contracts:test:hardhat": "node --test tests/contracts-security-baseline.test.mjs tests/local-deploy-harness.test.mjs",
     "build": "node build.mjs",
     "build:meta": "node build.mjs --metafile",
     "assets:optimize": "python scripts/optimize-assets.py",

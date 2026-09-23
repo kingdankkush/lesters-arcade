@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
 import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE, buildSettlementPlan } from '../apps/portal/src/settlement.mjs';
 import { PROFILE_REGISTRY_ABI, SCORE_REGISTRY_ABI } from '../apps/portal/src/litvm-chain-client.mjs';
+import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
 
 function repoRootFromHere() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -16,6 +17,18 @@ function source(repoRoot, rel) {
 
 // Per-game achievement collections nest under one key; flatten for the address checks.
 const flattenAddresses = (map) => Object.values(map).flatMap((value) => (value && typeof value === 'object' ? Object.values(value) : [value]));
+// The seven hardened contracts of contract §8.1: four shared contracts plus one collection per game.
+const HARDENED_ADDRESS_COUNT = 7;
+
+// safe-ranked-live-gate (contract §9.1): every configured address is well formed, and live settlement
+// additionally needs a DEPLOYED address module with all seven §8.1 addresses present.
+export function rankedLiveGatePasses({ settlementLive = SETTLEMENT_LIVE, deployment = LITVM_DEPLOYMENT, addresses = LITVM_CONTRACT_ADDRESSES, chainClient = '' } = {}) {
+  const flat = flattenAddresses(addresses);
+  const wellFormed = flat.every((address) => address === null || /^0x[a-fA-F0-9]{40}$/.test(address));
+  if (!settlementLive) return wellFormed;
+  const deployed = deployment?.status === 'deployed' && flattenAddresses(deployment.addresses ?? {}).length === HARDENED_ADDRESS_COUNT && flattenAddresses(deployment.addresses).every(Boolean);
+  return wellFormed && deployed && flat.length === HARDENED_ADDRESS_COUNT && flat.every(Boolean) && chainClient.includes('trusted verifier attestation is required');
+}
 
 export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {}) {
   const chainClient = source(repoRoot, 'apps/portal/src/litvm-chain-client.mjs');
@@ -36,7 +49,7 @@ export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {})
     entryFeeMicroUnits: 0,
   });
   const checks = Object.freeze([
-    Object.freeze({ id: 'safe-ranked-live-gate', pass: flattenAddresses(LITVM_CONTRACT_ADDRESSES).every((address) => address === null || /^0x[a-fA-F0-9]{40}$/.test(address)) && (!SETTLEMENT_LIVE || (flattenAddresses(LITVM_CONTRACT_ADDRESSES).every(Boolean) && chainClient.includes('trusted verifier attestation is required'))), detail: `legacy addresses populated; hardened entry address ${LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry ?? 'pending deploy'}; settlement live=${SETTLEMENT_LIVE}; unverified writes remain gated` }),
+    Object.freeze({ id: 'safe-ranked-live-gate', pass: rankedLiveGatePasses({ chainClient }), detail: `address module ${LITVM_DEPLOYMENT.status}; hardened entry address ${LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry}; settlement live=${SETTLEMENT_LIVE} (live needs a deployed module with all seven addresses); unverified writes remain gated` }),
     Object.freeze({ id: 'score-abi-verified-session', pass: SCORE_REGISTRY_ABI.some((sig) => sig.includes('submitVerifiedSession(')), detail: 'score client exposes verifier-attested submission ABI' }),
     Object.freeze({ id: 'profile-abi-set-profile', pass: PROFILE_REGISTRY_ABI.some((sig) => sig.includes('setProfile(string displayName, string avatarUri)')), detail: 'profile client calls deployed setProfile ABI' }),
     Object.freeze({ id: 'ranked-submit-chain-guard', pass: chainClient.includes('submitRankedSession') && chainClient.includes('Wrong network: wallet is on chain') && chainClient.includes('expected ${LITVM_LITEFORGE_NETWORK.chainId}'), detail: 'ranked score write blocks wrong chain before signer transaction' }),
