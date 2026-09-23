@@ -379,3 +379,11 @@ test('a rejected self view falls back to the public view once', async () => {
   await h.route.hydrate();
   assert.deepEqual(h.calls.profile.at(-2), [ME, { self: true }], 'a new session (invalidate) tries the self view again');
 });
+
+test('saved runs show on the owner\u2019s profile before sign-in too', async () => {
+  const h = hostedProfile({ authenticated: false });
+  await rendered(h);
+  h.route.setPendingSavedRuns(1);
+  assert.match(text(h.grid), /1 run saved on this device/);
+  assert.equal(buttons(h.grid, 'Retry saved runs').length, 1);
+});

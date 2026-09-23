@@ -530,7 +530,8 @@ export function createOfficialProfileRoute({
     appendText(card, 'span', 'RECENT RANKED RUNS', 'cabinet-status-label');
     const sessions = Array.isArray(response?.recentSessions) ? response.recentSessions : [];
     appendText(card, 'strong', sessions.length ? `${sessions.length} recent run${sessions.length === 1 ? '' : 's'}` : 'No Ranked runs yet');
-    if (target.own && target.self && pendingSavedRuns > 0) {
+    // Saved runs live in this browser, so the owner sees them signed in or not.
+    if (target.own && pendingSavedRuns > 0) {
       const saved = el('div', { className: 'profile-saved-runs' });
       appendText(saved, 'span', `${pendingSavedRuns} run${pendingSavedRuns === 1 ? '' : 's'} saved on this device`, 'profile-saved-runs-count');
       const retryAll = el('button', { className: 'pixel-button profile-retry-saved', type: 'button', textContent: 'Retry saved runs' });
