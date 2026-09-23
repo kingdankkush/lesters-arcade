@@ -4839,9 +4839,16 @@ function mergeChainRecordIntoState(rec, gameId) {
     || ['score', 'kills', 'maxCombo', 'survivalSeconds', 'submittedAt'].some((key) => !Number.isSafeInteger(rec[key]) || rec[key] < 0)) return false;
   const submittedDate = new Date(rec.submittedAt * 1000);
   if (!Number.isFinite(submittedDate.getTime())) return false;
-  // Skip if this session already exists locally (dedup).
+  // Skip if this session already exists locally (dedup): a synced chain row, or
+  // a local Ranked row that applySettlement stamped with its session key when
+  // the relayer published it (guide §5.5 item 4).
   state.officialSessions ??= [];
-  if (state.officialSessions.some((s) => s.onChainSessionId32 === rec.sessionId32)) return false;
+  const sessionKey = rec.sessionId32.toLowerCase();
+  const sameSession = (row) => typeof row?.onChainSessionId32 === 'string' && row.onChainSessionId32.toLowerCase() === sessionKey;
+  const cadenceRows = Object.values(state.cadenceLeaderboards?.[gameId] ?? {})
+    .flatMap((periods) => Object.values(periods ?? {}))
+    .flatMap((rows) => (Array.isArray(rows) ? rows : []));
+  if (state.officialSessions.some(sameSession) || (state.leaderboards?.[gameId] ?? []).some(sameSession) || cadenceRows.some(sameSession)) return false;
   const recordedAt = submittedDate.toISOString();
   const syntheticSessionId = `chain:${rec.sessionId32}`;
   // File into the cadence boards (what the leaderboard UI reads).
