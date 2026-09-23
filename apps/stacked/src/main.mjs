@@ -91,12 +91,13 @@ let shareRow = null;
 function renderShareRow(s) {
   const mount = $('shareRow');
   if (!mount) return;
+  // Free runs only: the parent results screen owns Ranked sharing (§7.4).
+  if ((mount.hidden = init.mode === 'ranked')) return;
   const links = buildShareLinks({
-    text: buildStackedShareText({ score: s.score, lines: s.lines, level: s.level, tick: s.tick, quadClears: s.quadClears, maxCombo: s.maxCombo, ranked: init.mode === 'ranked', assisted: run.assisted }),
+    text: buildStackedShareText({ score: s.score, lines: s.lines, level: s.level, tick: s.tick, quadClears: s.quadClears, maxCombo: s.maxCombo, assisted: run.assisted }),
     url: shareUrlFor('stacked'),
-    hashtags: ['LestersArcade', 'STACKED'],
   });
-  if (shareRow) { shareRow.refresh(links); mount.hidden = false; return; }
+  if (shareRow) { shareRow.refresh(links); return; }
   shareRow = createShareRow({ documentRef: document, title: 'STACKED', links, className: 'share-row', buttonClassName: 'share-button', onStatus: (message) => { $('overlayCopy').textContent = message; } });
   mount.replaceChildren(shareRow); mount.hidden = false;
 }

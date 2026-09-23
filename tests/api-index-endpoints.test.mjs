@@ -11,10 +11,10 @@ import * as profileApi from '../api/profile.mjs';
 import * as refreshApi from '../api/profile-refresh.mjs';
 import * as sessionApi from '../api/verified-session.mjs';
 import * as indexCronApi from '../api/cron/index-chain.mjs';
-import * as sharePageStub from '../api/share-page.mjs';
-import * as shareCardStub from '../api/share-card.mjs';
+import * as sharePageApi from '../api/share-page.mjs';
+import * as shareCardApi from '../api/share-card.mjs';
 import { createPgliteClient, seedAchievementUnlock, seedVerifiedSession, seedWalletProfile } from './helpers/pglite-client.mjs';
-import { invoke } from './helpers/fake-http.mjs';
+import { fakeRequest, fakeResponse, invoke } from './helpers/fake-http.mjs';
 
 /**
  * Contract §4.3.5-§4.3.8 (E5-E9), §4.2 stubs, A29, A30, A34: the real
@@ -333,10 +333,20 @@ test('unknown query parameters are rejected', async () => {
   assert.equal(repeated.status, 503, 'an identical repeated id (a rewrite that also appends it) is tolerated');
 });
 
-const STUBS = [
-  ['share-page', sharePageStub, 'sharePageRequest', 'GET'],
-  ['share-card', shareCardStub, 'shareCardRequest', 'GET'],
+// The results-share slice replaced the E10 and E11 stubs (§10.4 rule 5): the
+// card answers JSON errors, the page answers HTML with generic tags (their own
+// suites are tests/share-card.test.mjs and tests/share-page.test.mjs).
+const SHARE_ENDPOINTS = [
+  ['share-page', sharePageApi, 'sharePageRequest', 'GET'],
+  ['share-card', shareCardApi, 'shareCardRequest', 'GET'],
 ];
+const SHARE_ID = 'ab'.repeat(32);
+
+async function invokeHtml(handler, request) {
+  const res = fakeResponse();
+  await handler(fakeRequest(request), res);
+  return { status: res.statusCode, text: res.text, headers: res.headers };
+}
 
 test('every new endpoint fails closed with no env at all and never throws', async () => {
   const logged = [];
@@ -353,13 +363,18 @@ test('every new endpoint fails closed with no env at all and never throws', asyn
       [refreshApi, { method: 'POST', url: `/api/profile/refresh?wallet=${ALICE}` }, 503, 'index-not-configured'],
       [sessionApi, { url: `/api/verified-session?id=${'ab'.repeat(32)}` }, 503, 'index-not-configured'],
       [indexCronApi, { url: '/api/cron/index-chain', headers: { authorization: 'Bearer ' } }, 401, 'unauthorized'],
-      ...STUBS.map(([path, api, , method]) => [api, { method, url: `/api/${path}` }, 503, 'not-implemented']),
+      [shareCardApi, { url: `/api/share-card?id=${SHARE_ID}` }, 503, 'index-not-configured'],
     ];
     for (const [api, request, status, error] of expectations) {
       const response = await invoke(bare(api), request);
       assert.deepEqual([response.status, response.body.error], [status, error], request.url);
       assert.equal(response.headers['cache-control'], response.status === 401 && request.url.includes('self=1') ? 'private, no-store' : 'no-store', request.url);
     }
+    const page = await invokeHtml(bare(sharePageApi), { url: `/api/share-page?id=${SHARE_ID}` });
+    assert.equal(page.status, 503);
+    assert.match(page.headers['content-type'], /^text\/html/);
+    assert.equal(page.headers['cache-control'], 'no-store');
+    assert.match(page.text, /<meta name="twitter:site" content="@LestersArcade">/);
   } finally {
     console.error = original;
   }
@@ -368,14 +383,14 @@ test('every new endpoint fails closed with no env at all and never throws', asyn
 
 test('legacy env names alone leave settlement unconfigured', async () => {
   const legacyOnly = { VERIFIER_PRIVATE_KEY: `0x${'11'.repeat(32)}`, RELAYER_PRIVATE_KEY: `0x${'22'.repeat(32)}`, SCORE_REGISTRY_ADDRESS: DEPLOYED.addresses.scoreSubmissionRegistry };
-  for (const api of [leaderboardApi, profileApi, refreshApi, sessionApi, indexCronApi, ...STUBS.map(([, stub]) => stub)]) {
+  for (const api of [leaderboardApi, profileApi, refreshApi, sessionApi, indexCronApi, ...SHARE_ENDPOINTS.map(([, api]) => api)]) {
     const deps = await api.buildDeps(legacyOnly, { deployment: DEPLOYED });
     assert.equal(deps.config.settlementReady, false);
     assert.deepEqual([...deps.config.legacyEnvPresent], ['VERIFIER_PRIVATE_KEY', 'RELAYER_PRIVATE_KEY', 'SCORE_REGISTRY_ADDRESS']);
     assert.equal(deps.db, null);
   }
-  for (const [path, stub, , method] of STUBS) {
-    const response = await invoke(stub.createHandler(() => stub.buildDeps(legacyOnly, { deployment: DEPLOYED })), { method, url: `/api/${path}`, body: {} });
+  for (const [path, api, , method] of SHARE_ENDPOINTS) {
+    const response = await invokeHtml(api.createHandler(() => api.buildDeps(legacyOnly, { deployment: DEPLOYED })), { method, url: `/api/${path}?id=${SHARE_ID}` });
     assert.equal(response.status, 503, path);
   }
 });
@@ -384,7 +399,7 @@ test('every handler module exposes the A30 seam and its pure request function', 
   const modules = [
     [leaderboardApi, 'leaderboardRequest'], [profileApi, 'profileRequest'], [refreshApi, 'profileRefreshRequest'],
     [sessionApi, 'verifiedSessionRequest'], [indexCronApi, 'indexChainRequest'],
-    ...STUBS.map(([, stub, name]) => [stub, name]),
+    ...SHARE_ENDPOINTS.map(([, api, name]) => [api, name]),
   ];
   for (const [api, pure] of modules) {
     assert.equal(typeof api.buildDeps, 'function', pure);
@@ -395,6 +410,9 @@ test('every handler module exposes the A30 seam and its pure request function', 
     assert.deepEqual(Object.keys(deps).sort(), ['config', 'crypto', 'db', 'deployment', 'fetchImpl', 'nowMs', 'provider'].sort(), pure);
     assert.equal(deps.nowMs(), NOW);
   }
-  const stubResult = await sharePageStub.sharePageRequest({ method: 'GET' }, {});
-  assert.deepEqual([stubResult.status, stubResult.body], [503, { ok: false, error: 'not-implemented' }]);
+  const noId = await sharePageApi.sharePageRequest({ method: 'GET' }, {});
+  assert.equal(noId.status, 400);
+  assert.match(noId.body, /^<!doctype html>/);
+  const noDb = await shareCardApi.shareCardRequest({ method: 'GET', query: { id: SHARE_ID } }, { db: null });
+  assert.deepEqual([noDb.status, noDb.body], [503, { ok: false, error: 'index-not-configured' }]);
 });

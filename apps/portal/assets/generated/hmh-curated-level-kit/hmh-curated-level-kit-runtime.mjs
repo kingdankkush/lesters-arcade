@@ -156,6 +156,8 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/ranked-identity.mjs",
     "apps/portal/src/ranked-preflight.mjs",
     "apps/portal/src/ranked-requests.mjs",
+    "apps/portal/src/ranked-results-model.mjs",
+    "apps/portal/src/ranked-results.mjs",
     "apps/portal/src/ranked-settlement.mjs",
     "apps/portal/src/reown-appkit-vendor.mjs",
     "apps/portal/src/routes/official-app-routes.mjs",

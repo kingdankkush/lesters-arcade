@@ -2858,13 +2858,45 @@ function bestRoguelikeUpgradeTitle() {
   return best ? `${best.title} (Rank ${bestLevel})` : null;
 }
 
+// Ranked results screen (contract §7.3, §7.7): the lesters:ranked-run
+// listener near the end of this file lazy-loads src/ranked-results.mjs and
+// hands the open view here. For a Ranked HMH run the results screen replaces
+// the game-over summary, which shrinks to one "View results" button while
+// the screen is open or after it was dismissed for this session. The button
+// node survives re-renders (settlement updates re-render the summary), and
+// renderGameOverSummary returns it so closing the screen can focus it.
+let rankedResultsView = null;
+let rankedResultsReopen = null;
+function showRankedResults(view) {
+  rankedResultsView = view;
+  renderGameOverSummary();
+}
+
+function rankedResultsViewForCurrentRun() {
+  const sessionId = (currentSession ?? lastCompletedSession)?.sessionId;
+  return rankedResultsView?.gameId === 'lester-blaster' && sessionId && rankedResultsView.sessionId === sessionId ? rankedResultsView : null;
+}
+
 function renderGameOverSummary() {
-  if (!dom.combatGameOverSummary) return;
+  if (!dom.combatGameOverSummary) return null;
   dom.combatGameOverSummary.hidden = !combat.gameOver;
   if (!combat.gameOver) {
     dom.combatGameOverSummary.replaceChildren();
-    return;
+    return null;
   }
+  const rankedView = rankedResultsViewForCurrentRun();
+  if (rankedView) {
+    if (rankedResultsReopen?.view === rankedView && rankedResultsReopen.button.parentNode === dom.combatGameOverSummary) return rankedResultsReopen.button;
+    dom.combatGameOverSummary.dataset.channel = 'ranked-results';
+    dom.combatGameOverSummary.replaceChildren();
+    appendText(dom.combatGameOverSummary, 'strong', 'RANKED RUN COMPLETE', 'game-over-summary-title');
+    const viewResults = el('button', { className: 'combat-action-button combat-action-button-primary ranked-results-reopen', type: 'button', textContent: 'View results' });
+    viewResults.addEventListener('click', () => { playSfxCue('menu-click'); rankedView.reopen(); });
+    dom.combatGameOverSummary.append(viewResults);
+    rankedResultsReopen = { view: rankedView, button: viewResults };
+    return viewResults;
+  }
+  rankedResultsReopen = null;
   const summary = currentGameOverSummaryModel();
   const nextLevel = combat.nextCampaignLevelId ? getHmhCampaignLevel(combat.nextCampaignLevelId) : null;
   const win = Boolean(combat.clearedCampaignLevelId) && isL2CampaignActive();
@@ -2886,10 +2918,12 @@ function renderGameOverSummary() {
   const recap = currentHmhRunRecap();
   if (recap) dom.combatGameOverSummary.append(renderHmhRunRecap(recap));
 
-  // Share row (owner direction 2026-09-16): X, Facebook, Discord copy and the
-  // native share sheet where the browser has one. Built from the same summary
-  // the recap shows; posting is always the player's own click.
-  if (!win) {
+  // Share row (owner direction 2026-09-16): Share on X first, then Discord
+  // copy, Facebook and the native share sheet. Built from the same summary
+  // the recap shows; posting is always the player's own click. Free runs
+  // only: a Ranked run is shared from the Ranked results screen once it is
+  // published on LitVM (contract §7.4).
+  if (!win && (currentSession?.mode ?? officialSelectedMode ?? 'free') === 'free') {
     const shareText = buildHmhShareText({
       score: combat.score,
       kills: combat.kills,
@@ -2898,12 +2932,11 @@ function renderGameOverSummary() {
       maxCombo: combat.maxCombo ?? 0,
       killedBy: recap?.defeat?.label ?? combat.killedBy ?? '',
       bossDefeated: Boolean(combat.bossDefeated),
-      ranked: (currentSession?.mode ?? officialSelectedMode ?? 'free') !== 'free',
     });
     const shareLabel = el('span', { className: 'share-row-label', textContent: 'Share this run' });
     const shareRow = createShareRow({
       title: 'Hard Money Heroes',
-      links: buildShareLinks({ text: shareText, url: shareUrlFor('hmh-reboot'), hashtags: ['LestersArcade', 'HardMoneyHeroes'] }),
+      links: buildShareLinks({ text: shareText, url: shareUrlFor('hmh-reboot') }),
       className: 'share-row game-over-share-row',
       buttonClassName: 'combat-menu-action share-button',
       onStatus: (message) => { shareLabel.textContent = message; },
@@ -16119,6 +16152,9 @@ window.addEventListener('orientationchange', () => {
     scheduleCombatViewportRelayout(220);
   }, 200);
 });
+
+// Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
+window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => renderGameOverSummary() }))).catch((error) => console.error('[Ranked results]', error)); });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 portalRouteController.applyLocation();
