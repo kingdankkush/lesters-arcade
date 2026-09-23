@@ -218,13 +218,15 @@ test('unknown ids render a 404 with generic tags', async () => {
   }
 });
 
-test('extra parameters on a run link (fbclid, utm_*) redirect once to the canonical page, without a read', async () => {
-  // Facebook appends fbclid to every outbound click and Vercel keeps the
-  // query through the /s/:id rewrite. The page answers a cacheable 301 to the
-  // canonical URL instead of an error, and never reads or renders for it.
+test('undeclared parameters on a run link (fbclid, utm_*) answer a 400 page without a read', async () => {
+  // §4.1 and §4.3.9: E10 accepts only `id`, else 400 invalid-query. A tagged
+  // run link (Facebook's fbclid, campaign utm_*, a stray `v`) gets the 400
+  // page with generic tags. It is never read, rendered or redirected, so a
+  // varying query can neither force reads nor split the CDN key.
   const shareId = 'ab'.repeat(32);
+  const generic = 'https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png';
   const reads = [];
-  const noReads = { schemaKey: 'no-reads', query: async (sql) => { reads.push(sql); throw new Error('the redirect must not read'); } };
+  const noReads = { schemaKey: 'no-reads', query: async (sql) => { reads.push(sql); throw new Error('an undeclared parameter must not read'); } };
   for (const url of [
     `/api/share-page?id=${shareId}&fbclid=IwAR0abc`,
     `/api/share-page?id=${shareId}&utm_source=x&utm_medium=social`,
@@ -233,21 +235,35 @@ test('extra parameters on a run link (fbclid, utm_*) redirect once to the canoni
   ]) {
     for (const method of ['GET', 'HEAD']) {
       const response = await page(noReads, url, method);
-      assert.equal(response.status, 301, `${method} ${url}`);
-      assert.equal(response.headers.location, `/s/${shareId}`, url);
-      assert.equal(response.headers['cache-control'], sharePageApi.CANONICAL_REDIRECT_CACHE, url);
-      assert.equal(response.html, '', 'no body');
+      assert.equal(response.status, 400, `${method} ${url}`);
+      assert.equal(response.headers.location, undefined, `${method} ${url}: no redirect`);
+      assert.equal(response.headers['cache-control'], 'no-store', url);
+      assert.equal(response.headers['content-type'], 'text/html; charset=utf-8', url);
+      if (method === 'HEAD') {
+        assert.equal(response.html, '', 'HEAD has no body');
+      } else {
+        assert.equal(meta(response.html, 'og:image'), generic, `${url}: generic tags`);
+        assert.equal(meta(response.html, 'twitter:site'), '@LestersArcade', url);
+        assert.doesNotMatch(response.html, new RegExp(shareId, 'i'), `${url}: the run is not rendered`);
+      }
     }
   }
-  assert.equal(sharePageApi.CANONICAL_REDIRECT_CACHE, 'public, s-maxage=300');
-  assert.deepEqual(reads, []);
   // Vercel passes the merged query as req.query too.
   const res = fakeResponse();
   await sharePageApi.createHandler(() => sharePageApi.buildDeps(env, { db: noReads }))({ method: 'GET', url: `/s/${shareId}?fbclid=x`, query: { id: shareId, fbclid: 'x' }, headers: {} }, res);
-  assert.deepEqual([res.statusCode, res.headers.location], [301, `/s/${shareId}`]);
-  assert.equal(sharePageApi.canonicalSharePath({ query: { id: [shareId, shareId], utm_source: 'x' } }), `/s/${shareId}`);
-  assert.equal(sharePageApi.canonicalSharePath({ query: { id: [shareId, 'cd'.repeat(32)] } }), null);
-  assert.equal(sharePageApi.canonicalSharePath({ url: '/api/share-page?fbclid=1' }), null);
+  assert.deepEqual([res.statusCode, res.headers.location], [400, undefined]);
+  assert.deepEqual(reads, [], 'no read for any undeclared parameter');
+  assert.deepEqual(Object.keys(sharePageApi).filter((key) => /canonical|redirect/i.test(key)), [], 'E10 has no redirect path');
+  // Control: the same id alone does reach the database.
+  const original = console.error;
+  console.error = () => {};
+  try {
+    const alone = await page(noReads, `/api/share-page?id=${shareId}`);
+    assert.equal(alone.status, 500);
+  } finally {
+    console.error = original;
+  }
+  assert.ok(reads.length > 0, 'the bare id is read');
 });
 
 test('a failing read answers a 500 page and logs only the error name and code', async () => {
