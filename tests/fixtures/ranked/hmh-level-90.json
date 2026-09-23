@@ -1,0 +1,806 @@
+{
+ "fixture": "hmh-level-90",
+ "note": "A long run past level 80 (to level 90) with XP, level and score from the reboot progression, including a boss kill in the boss band.",
+ "gameId": "lester-blaster",
+ "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+ "registry": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+ "chainId": 4441,
+ "salt": "afc1357e100945d3bd52f347b90ec32d",
+ "issuedAt": 1790000000,
+ "verifyAtMs": 1790000060000,
+ "body": {
+  "v": "lesters-ranked-settle-v1",
+  "gameId": "lester-blaster",
+  "sessionId32": "0xf367c6a3e61f4b17c11f384c8b1c0578a96ab9d8575ff60a64ba118ef236aeac",
+  "identity": {
+   "sessionId": "game-session-11111111-1111-4111-8111-111111111111",
+   "chainId": 4441,
+   "scoreRegistryAddress": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+   "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+   "gameId": "lester-blaster",
+   "seasonId": "hmh-season-1-2026",
+   "buildHash": "site-1.7.0:game-1.7.0",
+   "seed": 3779792668,
+   "nonce": "11111111-1111-4111-8111-111111111111"
+  },
+  "seedTicket": {
+   "v": "lesters-ranked-seed-v1",
+   "salt": "afc1357e100945d3bd52f347b90ec32d",
+   "issuedAt": 1790000000,
+   "mac": "3bdd254611dd3b6e3b212e8d2aa001e64d27503c925248b5d20f036e7c70f5ef"
+  },
+  "entryTxHash": null,
+  "evidence": {
+   "encoding": "hmh-run-summary-v6+json",
+   "runSummary": {
+    "schemaVersion": 6,
+    "identity": {
+     "seed": 3779792668,
+     "buildHash": "site-1.7.0:game-1.7.0",
+     "mode": "ranked",
+     "heroId": "lit-commando",
+     "startTick": 0,
+     "terminalReason": "defeated",
+     "endTick": 229740
+    },
+    "totals": {
+     "survivalTicks": 229740,
+     "elapsedMs": 3829000.0000000005,
+     "score": 1273095,
+     "level": 90,
+     "xp": 1204660,
+     "litecoin": 0,
+     "currentCombo": 9,
+     "maxCombo": 30,
+     "damageDealt": 129560,
+     "damageTaken": 799,
+     "healing": 0,
+     "distanceMilli": 12956787
+    },
+    "kills": {
+     "total": 3239,
+     "byEnemyRole": [
+      {
+       "enemyRoleId": "bagholder-rusher",
+       "count": 0
+      },
+      {
+       "enemyRoleId": "forkrunner",
+       "count": 646
+      },
+      {
+       "enemyRoleId": "liquidator-agent",
+       "count": 648
+      },
+      {
+       "enemyRoleId": "whale-enforcer",
+       "count": 648
+      },
+      {
+       "enemyRoleId": "gas-bomber",
+       "count": 648
+      },
+      {
+       "enemyRoleId": "validator-cultist",
+       "count": 648
+      },
+      {
+       "enemyRoleId": "liquidator",
+       "count": 1
+      }
+     ],
+     "byWeapon": [
+      {
+       "weaponId": "coin-blaster",
+       "count": 56
+      },
+      {
+       "weaponId": "scatter-shotgun",
+       "count": 0
+      },
+      {
+       "weaponId": "auto-miner",
+       "count": 0
+      },
+      {
+       "weaponId": "launcher-rig",
+       "count": 0
+      },
+      {
+       "weaponId": "hash-rail",
+       "count": 133
+      },
+      {
+       "weaponId": "lightning-ledger",
+       "count": 3050
+      },
+      {
+       "weaponId": "bear-market-burner",
+       "count": 0
+      },
+      {
+       "weaponId": "forked-standard",
+       "count": 0
+      },
+      {
+       "weaponId": "litecoin-knife",
+       "count": 0
+      },
+      {
+       "weaponId": "satoshi-frag",
+       "count": 0
+      },
+      {
+       "weaponId": "nuke-liquidation",
+       "count": 0
+      }
+     ],
+     "elite": 129,
+     "boss": 1
+    },
+    "weapons": [
+     {
+      "weaponId": "coin-blaster",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 200,
+      "damage": 2240,
+      "kills": 56,
+      "criticalHits": 8,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 12
+     },
+     {
+      "weaponId": "scatter-shotgun",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "auto-miner",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "launcher-rig",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "hash-rail",
+      "pickups": 1,
+      "swaps": 1,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 300,
+      "damage": 5320,
+      "kills": 133,
+      "criticalHits": 19,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 30
+     },
+     {
+      "weaponId": "lightning-ledger",
+      "pickups": 1,
+      "swaps": 1,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 3329,
+      "damage": 122000,
+      "kills": 3050,
+      "criticalHits": 435,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 757
+     },
+     {
+      "weaponId": "bear-market-burner",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "forked-standard",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "litecoin-knife",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "satoshi-frag",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     },
+     {
+      "weaponId": "nuke-liquidation",
+      "pickups": 0,
+      "swaps": 0,
+      "triggers": 0,
+      "triggerContacts": 0,
+      "projectilesEmitted": 0,
+      "projectileContacts": 0,
+      "reloadStarts": 0,
+      "reloadCompletes": 0,
+      "emptyAttempts": 0,
+      "equippedTicks": 0,
+      "damage": 0,
+      "kills": 0,
+      "criticalHits": 0,
+      "overkill": 0,
+      "chargesStarted": 0,
+      "chargesCancelled": 0,
+      "chargedShots": 0,
+      "cancelledChargeTicks": 0,
+      "zeroHitShots": 0,
+      "oneHitShots": 0,
+      "twoHitShots": 0,
+      "threePlusHitShots": 0,
+      "bossHits": 0,
+      "damageTakenWhileEquipped": 0
+     }
+    ],
+    "lightningLedger": {
+     "pulses": 0,
+     "chainedHits": 0,
+     "longestChain": 0,
+     "maxRampPermille": 0,
+     "heldTicks": 0,
+     "secondsHeld": 0,
+     "cellsSpent": 0,
+     "cellsRefunded": 0,
+     "fullChains": 0,
+     "overheats": 0,
+     "capstonePulses": 0,
+     "interruptions": {
+      "release": 0,
+      "switch": 0,
+      "dodge": 0,
+      "empty": 0,
+      "overheat": 0,
+      "invalidTarget": 0,
+      "other": 0
+     }
+    },
+    "bearMarketBurner": {
+     "pulses": 0,
+     "contacts": 0,
+     "fuelSpent": 0,
+     "burnTicks": 0,
+     "scorchZonesCreated": 0,
+     "maxActiveBurns": 0,
+     "totalSelloffPulses": 0,
+     "emergencyRefills": 0
+    },
+    "forkedStandard": {
+     "attacks": 0,
+     "contacts": 0,
+     "whiffs": 0,
+     "thrusts": 0,
+     "sweeps": 0,
+     "capstoneAttacks": 0,
+     "droppedContacts": 0
+    },
+    "grenades": {
+     "thrown": 0,
+     "detonated": 0,
+     "contacts": 0,
+     "kills": 0,
+     "selfDamage": 0,
+     "overflows": 0
+    },
+    "collectibles": [
+     {
+      "effectId": "bonus-life",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "coin-blaster-cache",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "scatter-shotgun-cache",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "auto-miner-cache",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "launcher-rig-cache",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "litecoin-token",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "hash-rail-core",
+      "collected": 1,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "lightning-ledger-cache",
+      "collected": 1,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "bear-market-burner-cache",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "forked-standard-cache",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "time-dilation",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "berserk-candle",
+      "collected": 0,
+      "activeTicks": 0
+     },
+     {
+      "effectId": "nuke-liquidation",
+      "collected": 0,
+      "activeTicks": 0
+     }
+    ],
+    "upgrades": [
+     {
+      "upgradeId": "proof-of-work",
+      "offered": 8,
+      "selected": 3
+     },
+     {
+      "upgradeId": "diamond-hands",
+      "offered": 6,
+      "selected": 3
+     },
+     {
+      "upgradeId": "gas-optimization",
+      "offered": 5,
+      "selected": 2
+     },
+     {
+      "upgradeId": "cold-storage",
+      "offered": 4,
+      "selected": 3
+     },
+     {
+      "upgradeId": "block-reward",
+      "offered": 3,
+      "selected": 3
+     },
+     {
+      "upgradeId": "validator-training",
+      "offered": 3,
+      "selected": 3
+     },
+     {
+      "upgradeId": "compound-interest",
+      "offered": 35,
+      "selected": 18
+     },
+     {
+      "upgradeId": "precision-ledger",
+      "offered": 3,
+      "selected": 3
+     },
+     {
+      "upgradeId": "hard-fork-rounds",
+      "offered": 5,
+      "selected": 3
+     },
+     {
+      "upgradeId": "hot-wallet",
+      "offered": 3,
+      "selected": 3
+     },
+     {
+      "upgradeId": "layer-two",
+      "offered": 35,
+      "selected": 16
+     },
+     {
+      "upgradeId": "hardened-wallet",
+      "offered": 43,
+      "selected": 19
+     },
+     {
+      "upgradeId": "ledger-conductivity",
+      "offered": 6,
+      "selected": 3
+     },
+     {
+      "upgradeId": "ledger-voltage",
+      "offered": 7,
+      "selected": 3
+     },
+     {
+      "upgradeId": "ledger-reconciliation",
+      "offered": 11,
+      "selected": 3
+     },
+     {
+      "upgradeId": "proof-of-network",
+      "offered": 1,
+      "selected": 1
+     },
+     {
+      "upgradeId": "burner-liquidity",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "burner-volatility",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "burner-contagion",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "total-selloff",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "standard-reach",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "standard-force",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "standard-tempo",
+      "offered": 0,
+      "selected": 0
+     },
+     {
+      "upgradeId": "canonical-fork",
+      "offered": 0,
+      "selected": 0
+     }
+    ],
+    "exploration": {
+     "visitedDistrictMask": 63,
+     "discoveredPoiMask": 1,
+     "revealedCells": 4096,
+     "totalCells": 4096,
+     "revealedPermille": 1000,
+     "distanceMilli": 12956787
+    },
+    "defeat": {
+     "kind": "enemy",
+     "causeId": "enemy-liquidator-agent",
+     "tick": 229740,
+     "damage": 25
+    },
+    "milestones": {
+     "levelUps": 89,
+     "firstLevelUpTick": 1260,
+     "lastLevelUpTick": 229200,
+     "bossEngagedTick": 72000,
+     "sites": [
+      {
+       "siteId": "relay-power",
+       "operated": 0,
+       "tick": 0
+      },
+      {
+       "siteId": "ravine-winch",
+       "operated": 0,
+       "tick": 0
+      },
+      {
+       "siteId": "crossing-pump",
+       "operated": 0,
+       "tick": 0
+      },
+      {
+       "siteId": "hashwood-shrine",
+       "operated": 0,
+       "tick": 0
+      },
+      {
+       "siteId": "mining-valve",
+       "operated": 0,
+       "tick": 0
+      },
+      {
+       "siteId": "yard-warehouse",
+       "operated": 0,
+       "tick": 0
+      }
+     ],
+     "secrets": [
+      {
+       "secretId": "farmstead-hidden-supplies",
+       "found": 0,
+       "tick": 0
+      },
+      {
+       "secretId": "ravine-surveyor-cache",
+       "found": 0,
+       "tick": 0
+      },
+      {
+       "secretId": "warehouse-logbook",
+       "found": 0,
+       "tick": 0
+      }
+     ]
+    }
+   },
+   "sessionEnvelope": {
+    "version": "lesters-session-envelope-v1",
+    "identity": {
+     "version": "lesters-canonical-session-v1",
+     "sessionId": "game-session-11111111-1111-4111-8111-111111111111",
+     "chainId": 4441,
+     "scoreRegistryAddress": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+     "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+     "gameId": "lester-blaster",
+     "seasonId": "hmh-season-1-2026",
+     "buildHash": "site-1.7.0:game-1.7.0",
+     "seed": 3779792668,
+     "nonce": "11111111-1111-4111-8111-111111111111",
+     "sessionKey": "0xf367c6a3e61f4b17c11f384c8b1c0578a96ab9d8575ff60a64ba118ef236aeac"
+    },
+    "inputHash": "0x501c5a941b4a231564bada3811fd104a2978ad094ab7347fa608f1ad3cb90d94",
+    "eventHash": "0x07eeb89af8d8f2837efdfde9086bd063b158a182bae7a848ed47367c4fffd78b",
+    "finalStateHash": "0x27668e7f543f66b3e88c925e71fdc30062d39a5a3e35ff9a8ef82b6e4b64c31e",
+    "inputTransitions": 382,
+    "gameplayEvents": 289,
+    "sessionKey": "0xf367c6a3e61f4b17c11f384c8b1c0578a96ab9d8575ff60a64ba118ef236aeac",
+    "envelopeHash": "0xa330c4c32ff51751d29c83bea01c9d8f0a2498920cb76e0d4cb54bafb3bee8f1"
+   }
+  },
+  "claim": {
+   "score": 1273095
+  }
+ },
+ "expected": {
+  "score": 1273095,
+  "contract": {
+   "kills": 3239,
+   "maxCombo": 30,
+   "survivalSeconds": 3829,
+   "bossId": "boss-liquidator"
+  },
+  "envelopeHash": "0x348481f9e15b928e4d6dbd26f008eca5f28c8966cffd6bcf2619e5ae83a72791",
+  "evidenceDigest": "0xdcde0b75535db7b8c2db4c63a087c15a1f5c460a39eab58bc0f316a007740b84",
+  "evidenceBytes": 10952,
+  "seed": 3779792668,
+  "plausibility": {
+   "verdict": "flagged",
+   "flags": [
+    {
+     "id": "xp-near-ceiling",
+     "severity": "flag",
+     "value": 1204660,
+     "limit": 1305994
+    },
+    {
+     "id": "score-near-ceiling",
+     "severity": "flag",
+     "value": 1273095,
+     "limit": 1279663
+    }
+   ]
+  }
+ }
+}
