@@ -1,21 +1,22 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import vm from 'node:vm';
 
 import {
   SHARE_ORIGIN,
   X_MENTION,
   X_RELATED,
-  buildFreeShareText,
   buildHmhShareText,
-  buildRankedShareText,
   buildShareLinks,
   buildStackedShareText,
   createShareRow,
+  safeShareFragment,
   sharePageUrl,
   shareUrlFor,
   xWeightedLength,
 } from '../apps/portal/src/share-links.mjs';
+import { buildFreeShareText, buildRankedShareText } from '../apps/portal/src/share-templates.mjs';
 import { buildChikunShareText } from '../apps/chikun/src/presentation.mjs';
 
 /**
@@ -141,21 +142,64 @@ test('HMH, STACKED and Chikun Free share text carry the session stats and one me
   }
 });
 
+test('fragment scrubbing cannot splice a mention, hash, address or session handle back together', () => {
+  const address = `0x${'c'.repeat(40)}`;
+  const spliced = [
+    'sess#ion-x', 'se@ssion-', 'sess@#ion-abc @evil', `sess${address}ion-x`, `0x${'d'.repeat(20)}session-${'d'.repeat(20)}`,
+    `0x${'e'.repeat(20)}#${'e'.repeat(20)}`, 'sessi＠on-＃tag', 'SESS#ION-', `${address}${address}`,
+  ];
+  for (const value of spliced) {
+    const out = safeShareFragment(value, 200);
+    assert.doesNotMatch(out, /session-/i, value);
+    assert.doesNotMatch(out, /0x[0-9a-f]{40}/i, value);
+    assert.doesNotMatch(out, /[#@＃＠]/, value);
+  }
+  assert.equal(safeShareFragment('Rank 3 this week'), 'Rank 3 this week', 'ordinary labels pass unchanged');
+  assert.equal(safeShareFragment('a Bagholder swarm'), 'a Bagholder swarm');
+  // Through every template a caller-supplied fragment reaches.
+  for (const gameId of GAMES) {
+    for (const fragment of spliced) {
+      const ranked = buildRankedShareText(gameId, { score: 1, standingLabel: fragment, stats: { regionReached: fragment, regionName: fragment } });
+      assertShareInvariants(ranked, `${gameId} ranked ${fragment}`);
+      assertShareInvariants(buildFreeShareText(gameId, { stats: { regionReached: fragment } }), `${gameId} free ${fragment}`);
+    }
+  }
+  for (const fragment of spliced) assertShareInvariants(buildHmhShareText({ killedBy: fragment }), `hmh ${fragment}`);
+  assert.equal(buildHmhShareText({ killedBy: 'sess#ion-abc @evil' }).includes('Fell to abc evil.'), true);
+});
+
+test('the Ranked and Free templates stay out of the module the children ship', async () => {
+  const [links, templates, chikunMain, stackedMain] = await Promise.all([
+    read('../apps/portal/src/share-links.mjs'), read('../apps/portal/src/share-templates.mjs'),
+    read('../apps/chikun/src/main.mjs'), read('../apps/stacked/src/main.mjs'),
+  ]);
+  for (const phrase of ['Beat my flight', 'Stack higher', 'Verified on LitVM', 'Practising on', 'TEMPLATES']) {
+    assert.equal(links.includes(phrase), false, `share-links.mjs carries no ${phrase}`);
+    assert.equal(templates.includes(phrase), true, `share-templates.mjs carries ${phrase}`);
+  }
+  assert.match(templates, /from '\.\/share-links\.mjs'/, 'templates reuse the one fragment scrubber');
+  for (const source of [chikunMain, stackedMain]) assert.doesNotMatch(source, /share-templates/);
+});
+
+// A small DOM with parents and bubbling (stopPropagation honoured).
 function fakeDocument() {
   class Node {
-    constructor(tag) { this.tagName = tag; this.children = []; this.dataset = {}; this.attributes = {}; this.style = {}; this.textContent = ''; this.listeners = new Map(); }
-    appendChild(child) { this.children.push(child); return child; }
-    append(...nodes) { this.children.push(...nodes); }
-    prepend(child) { this.children.unshift(child); }
+    constructor(tag) { this.tagName = tag; this.children = []; this.parentNode = null; this.dataset = {}; this.attributes = {}; this.style = {}; this.textContent = ''; this.listeners = new Map(); this.hidden = false; }
+    adopt(child) { child.parentNode = this; return child; }
+    appendChild(child) { this.children.push(this.adopt(child)); return child; }
+    append(...nodes) { for (const node of nodes) this.appendChild(node); }
+    prepend(child) { this.children.unshift(this.adopt(child)); }
     get lastChild() { return this.children.at(-1); }
-    replaceChildren(...nodes) { this.children = nodes; }
+    replaceChildren(...nodes) { for (const node of this.children) node.parentNode = null; this.children = []; this.append(...nodes); }
     setAttribute(name, value) { this.attributes[name] = String(value); }
     getAttribute(name) { return this.attributes[name] ?? null; }
     addEventListener(type, fn) { this.listeners.set(type, [...(this.listeners.get(type) ?? []), fn]); }
     focus() { this.focused = true; }
     async dispatch(type, extra = {}) {
-      const event = { preventDefault() {}, stopPropagation() { event.stopped = true; }, ...extra };
-      for (const fn of this.listeners.get(type) ?? []) await fn(event);
+      const event = { target: this, preventDefault() { event.defaultPrevented = true; }, stopPropagation() { event.stopped = true; }, ...extra };
+      for (let node = this; node && !event.stopped; node = node.parentNode) {
+        for (const fn of node.listeners.get(type) ?? []) await fn(event);
+      }
       return event;
     }
   }
@@ -191,17 +235,33 @@ test('the share row puts Share on X first and Discord, Facebook and the native s
   assert.equal(discord.tagName, 'button');
 
   // The secondary menu is a disclosure: closed by default, toggled by More,
-  // closed again by Escape without letting Escape reach an enclosing dialog.
+  // closed again by Escape without letting Escape reach an enclosing dialog,
+  // whether focus is on a menu item or on the More toggle itself.
   assert.equal(more.getAttribute('aria-controls'), menu.id);
   assert.equal(more.getAttribute('aria-expanded'), 'false');
   assert.equal(menu.style.display, 'none');
+  const dialogEscapes = [];
+  const dialog = documentRef.createElement('section');
+  dialog.addEventListener('keydown', (event) => { if (event.key === 'Escape') dialogEscapes.push(event.target); });
+  dialog.appendChild(row);
   await more.dispatch('click');
   assert.equal(more.getAttribute('aria-expanded'), 'true');
   assert.equal(menu.style.display, 'contents');
-  const escape = await menu.dispatch('keydown', { key: 'Escape' });
+  const escape = await discord.dispatch('keydown', { key: 'Escape' });
   assert.equal(escape.stopped, true);
   assert.equal(more.getAttribute('aria-expanded'), 'false');
   assert.equal(more.focused, true);
+  more.focused = false;
+  await more.dispatch('click');
+  const onToggle = await more.dispatch('keydown', { key: 'Escape' });
+  assert.equal(onToggle.stopped, true, 'Escape on the toggle closes the open menu first');
+  assert.equal(onToggle.defaultPrevented, true);
+  assert.equal(more.getAttribute('aria-expanded'), 'false');
+  assert.equal(more.focused, true, 'focus stays on the toggle');
+  assert.deepEqual(dialogEscapes, [], 'the enclosing dialog never saw those Escapes');
+  const closedEscape = await more.dispatch('keydown', { key: 'Escape' });
+  assert.equal(closedEscape.stopped, undefined, 'with the menu closed, Escape reaches the dialog');
+  assert.deepEqual(dialogEscapes, [more]);
 
   await discord.dispatch('click');
   assert.deepEqual(copied, [links.discord]);
@@ -258,29 +318,99 @@ test('all three cabinets mount the share row and the child hosts allow popups, s
 
 // The children do not know the session key, so the parent results screen owns
 // Ranked sharing (contract §7.4, review C14). Their share controls hide for
-// Ranked and stay for Free; the HMH summary does the same.
-function functionBody(source, name) {
-  const start = source.indexOf(`function ${name}(`);
-  assert.ok(start >= 0, `${name} exists`);
-  const open = source.indexOf('{', source.indexOf(')', start));
-  let depth = 0;
-  for (let index = open; index < source.length; index += 1) {
-    if (source[index] === '{') depth += 1;
-    if (source[index] === '}') depth -= 1;
-    if (depth === 0) return source.slice(open, index + 1);
-  }
-  throw new Error(`unterminated ${name}`);
+// Ranked and stay for Free (the HMH summary is covered in
+// tests/ranked-results.test.mjs).
+//
+// Runs the child's own renderShareRow source (sliced from its main.mjs) in a
+// vm context with a fake document, so the test drives the real code path in
+// both modes instead of pinning its text.
+function childShareRow(source, { start, end, globals }) {
+  const from = source.indexOf(start);
+  const to = source.indexOf(end, from);
+  assert.ok(from >= 0 && to > from, `${start} … ${end} found`);
+  const context = vm.createContext({ ...globals });
+  vm.runInContext(source.slice(from, to), context);
+  return context;
+}
+
+function spy(fn) {
+  const calls = [];
+  const wrapped = (...args) => { calls.push(args); return fn(...args); };
+  wrapped.calls = calls;
+  return wrapped;
 }
 
 test('child share rows are hidden for Ranked runs and kept for Free', async () => {
-  const [chikunMain, stackedMain, portalMain] = await Promise.all([read('../apps/chikun/src/main.mjs'), read('../apps/stacked/src/main.mjs'), read('../apps/portal/main.js')]);
-  const chikun = functionBody(chikunMain, 'renderShareRow');
-  assert.match(chikun, /mount\.hidden = shareRunButton\.hidden = mode === 'ranked';\s*if \(mode === 'ranked'\) return;/);
-  assert.ok(chikun.indexOf("if (mode === 'ranked') return;") < chikun.indexOf('buildShareLinks('), 'Ranked returns before any share link is built');
-  const stacked = functionBody(stackedMain, 'renderShareRow');
-  assert.match(stacked, /if \(\(mount\.hidden = init\.mode === 'ranked'\)\) return;/);
-  assert.ok(stacked.indexOf("init.mode === 'ranked'") < stacked.indexOf('buildShareLinks('));
-  assert.doesNotMatch(stacked, /ranked: init\.mode/, 'the child never builds Ranked share text');
-  const summary = functionBody(portalMain, 'renderGameOverSummary');
-  assert.match(summary, /if \(!win && \(currentSession\?\.mode \?\? officialSelectedMode \?\? 'free'\) === 'free'\) \{\s*const shareText = buildHmhShareText/);
+  const [chikunMain, stackedMain] = await Promise.all([read('../apps/chikun/src/main.mjs'), read('../apps/stacked/src/main.mjs')]);
+  const result = { score: 1234, forksPassed: 12, nearMisses: 4, bestCombo: 3, survivalTime: 42.5 };
+
+  // Chikun: the row and the native Share Run button hide together.
+  {
+    const documentRef = fakeDocument();
+    const mount = documentRef.createElement('div');
+    const shareRunButton = documentRef.createElement('button');
+    const texts = spy(buildChikunShareText);
+    const rows = spy(createShareRow);
+    const context = childShareRow(chikunMain, {
+      start: 'let shareRow = null;\nfunction renderShareRow(result) {',
+      end: "\nshareRunButton.addEventListener('click'",
+      globals: {
+        document: { ...documentRef, querySelector: (selector) => (selector === '#shareRow' ? mount : null) },
+        navigator: { clipboard: { writeText: async () => {} } },
+        shareRunButton, mode: 'ranked', dailyChallenge: null, setLive: () => {},
+        buildShareLinks, buildChikunShareText: texts, shareUrlFor, createShareRow: rows,
+      },
+    });
+    context.renderShareRow(result);
+    assert.equal(mount.hidden, true, 'Chikun Ranked: share row hidden');
+    assert.equal(shareRunButton.hidden, true, 'Chikun Ranked: Share Run hidden');
+    assert.equal(texts.calls.length + rows.calls.length, 0, 'Ranked builds no share text and no row');
+    context.mode = 'free';
+    context.renderShareRow(result);
+    assert.equal(mount.hidden, false, 'Chikun Free: share row shown');
+    assert.equal(shareRunButton.hidden, false, 'Chikun Free: Share Run shown');
+    assert.equal(rows.calls.length, 1);
+    const row = mount.children[0];
+    assert.equal(row.dataset.shareRow, 'true');
+    const x = new URL(row.children[0].href);
+    assert.equal(x.searchParams.get('url'), `${SHARE_ORIGIN}/chikun`);
+    assert.match(x.searchParams.get('text'), /Free Practice on @LestersArcade$/);
+    context.renderShareRow({ ...result, score: 99 });
+    assert.equal(rows.calls.length, 1, 'a second Free run refreshes the same row');
+    assert.match(new URL(row.children[0].href).searchParams.get('text'), /^I scored 99 points/);
+    context.mode = 'ranked';
+    context.renderShareRow(result);
+    assert.equal(mount.hidden, true, 'a Ranked run after a Free one hides the row again');
+    assert.equal(shareRunButton.hidden, true);
+  }
+
+  // STACKED.
+  {
+    const documentRef = fakeDocument();
+    const mount = documentRef.createElement('div');
+    const overlayCopy = documentRef.createElement('p');
+    const texts = spy(buildStackedShareText);
+    const rows = spy(createShareRow);
+    const context = childShareRow(stackedMain, {
+      start: 'let shareRow = null;\nfunction renderShareRow(s) {',
+      end: '\nasync function finish()',
+      globals: {
+        document: documentRef, $: (id) => ({ shareRow: mount, overlayCopy }[id] ?? null),
+        init: { mode: 'ranked' }, run: { assisted: false },
+        buildShareLinks, buildStackedShareText: texts, shareUrlFor, createShareRow: rows,
+      },
+    });
+    const snapshot = { score: 4200, lines: 40, level: 5, tick: 10920, quadClears: 1, maxCombo: 4 };
+    context.renderShareRow(snapshot);
+    assert.equal(mount.hidden, true, 'STACKED Ranked: share row hidden');
+    assert.equal(texts.calls.length + rows.calls.length, 0, 'Ranked builds no share text and no row');
+    context.init.mode = 'free';
+    context.renderShareRow(snapshot);
+    assert.equal(mount.hidden, false, 'STACKED Free: share row shown');
+    assert.equal(rows.calls.length, 1);
+    assert.equal(texts.calls[0][0].ranked, undefined, 'the child never builds Ranked share text');
+    const x = new URL(mount.children[0].children[0].href);
+    assert.equal(x.searchParams.get('url'), `${SHARE_ORIGIN}/stacked`);
+    assert.match(x.searchParams.get('text'), /Free practice on @LestersArcade$/);
+  }
 });

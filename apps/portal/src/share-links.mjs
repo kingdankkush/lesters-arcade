@@ -8,7 +8,9 @@
 // X is primary: `@LestersArcade` rides in the text once, `related` suggests
 // the account after posting, and there are no hashtags (D13). The URL is not
 // part of the text: X appends it and counts it as 23 weighted characters.
-// This file also ships in the Chikun and STACKED children, so keep it small.
+// This file also ships in the Chikun and STACKED children, so keep it small:
+// the Ranked and Free templates of the parent results screen live in the
+// portal-only share-templates.mjs.
 
 export const SHARE_ORIGIN = 'https://lestersarcade.io';
 export const X_MENTION = '@LestersArcade';
@@ -36,21 +38,25 @@ function number(value) {
   return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
 }
 
-// Stats display at most 9,999,999 (no real run gets near it) and scores at
-// most 999,999,999,999, which keeps every template inside X's limit.
-function count(value, cap = 9_999_999) {
-  return Math.min(number(value), cap).toLocaleString('en-US');
-}
-
-function clock(totalSeconds) {
+// m:ss (minutes never roll over into hours), capped at 359,999 seconds.
+export function shareClock(totalSeconds) {
   const seconds = Math.min(number(totalSeconds), 359_999);
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 // Player- or caller-supplied fragments never add a mention, a hash, an
-// address or a session handle to the text (§7.4 invariants).
-function safeFragment(value, max = 24) {
-  return [...clean(String(value ?? '').replace(/0x[0-9a-f]{40}/gi, '').replace(/session-/gi, '').replace(/[#@]/g, ''))].slice(0, max).join('').trim();
+// address or a session handle to the text (§7.4 invariants). `#` and `@`
+// (and the fullwidth forms X also reads as hashtags and mentions) go first,
+// then addresses and `session-` are removed until nothing changes, so
+// a removal can never splice a new forbidden token together ("sess#ion-",
+// "sess0x…ion-"). Truncating the result cannot create one either.
+export function safeShareFragment(value, max = 24) {
+  let text = clean(value).replace(/[#@＃＠]/g, '');
+  for (let previous = null; previous !== text;) {
+    previous = text;
+    text = text.replace(/0x[0-9a-f]{40}/gi, '').replace(/session-/gi, '');
+  }
+  return [...clean(text)].slice(0, max).join('').trim();
 }
 
 export function shareUrlFor(gamePath = '') {
@@ -85,65 +91,6 @@ function fitWeight(text) {
   return `${chars.join('').trimEnd()}…`;
 }
 
-// Guide §5.12 templates, minus the URL line (X appends the url parameter).
-const TEMPLATES = Object.freeze({
-  'lester-blaster': Object.freeze({
-    icon: '🏆',
-    title: 'Hard Money Heroes',
-    detail: () => '',
-    stats: (s) => `☠ ${count(s.kills)} kills · 🔥 ×${count(s.maxCombo)} combo · ⏱ ${clock(s.survivalSeconds)}`,
-    call: 'Can you beat it?',
-  }),
-  chikun: Object.freeze({
-    icon: '🐔',
-    title: "Chikun's Escape",
-    detail: (s) => {
-      const region = safeFragment(s.regionName ?? s.regionReached ?? '', 12);
-      return ` · Lap ${count(number(s.laps) + 1)}${region ? ` · ${region[0].toUpperCase()}${region.slice(1)}` : ''}`;
-    },
-    stats: (s) => `🌾 ${count(s.forksPassed)} forks · ⚡ ${count(s.nearMisses)} near-misses · 🪙 ${count(s.coinsCollected)} coins`,
-    call: 'Beat my flight',
-  }),
-  stacked: Object.freeze({
-    icon: '🧱',
-    title: 'STACKED',
-    detail: () => '',
-    stats: (s) => `📈 ${count(s.lines)} lines · Lv ${count(Math.max(1, number(s.level)))} · ${count(s.quadClears)} ${number(s.quadClears) === 1 ? 'Halving' : 'Halvings'}`,
-    call: 'Stack higher',
-  }),
-});
-
-function templateFor(gameId) {
-  const template = TEMPLATES[gameId];
-  if (!template) throw new TypeError(`no share template for ${gameId}`);
-  return template;
-}
-
-// Used only for a published (confirmed) run: it carries the verification line.
-export function buildRankedShareText(gameId, { score = 0, standingLabel = '', stats = {}, personalBest = false } = {}) {
-  const template = templateFor(gameId);
-  const standing = safeFragment(standingLabel);
-  return [
-    `${template.icon} RANKED · ${template.title}`,
-    `${count(score, 999_999_999_999)} pts${standing ? ` · ${standing}` : ''}${template.detail(stats ?? {})}`,
-    template.stats(stats ?? {}),
-    ...(personalBest ? ['🔥 New personal best!'] : []),
-    '⛓ Verified on LitVM',
-    `${template.call} ${X_MENTION}`,
-  ].join('\n');
-}
-
-// Free, preview and practice runs: no verification line (guide §5.12).
-export function buildFreeShareText(gameId, { score = 0, stats = {} } = {}) {
-  const template = templateFor(gameId);
-  return [
-    `🕹 FREE PLAY · ${template.title}`,
-    `${count(score, 999_999_999_999)} pts${template.detail(stats ?? {})}`,
-    template.stats(stats ?? {}),
-    `Practising on ${X_MENTION}`,
-  ].join('\n');
-}
-
 // x.com/intent/post carries text, url and related; never hashtags or via.
 // Facebook's sharer takes only the URL. Discord has no intent endpoint, so it
 // is a copy: the text, a newline, then the URL (which unfurls the card).
@@ -162,16 +109,16 @@ export function buildShareLinks({ text, url = SHARE_ORIGIN } = {}) {
 
 // Free-run one-liners for the HMH summary and the STACKED child.
 export function buildHmhShareText({ score = 0, kills = 0, level = 1, elapsedSeconds = 0, maxCombo = 0, killedBy = '', bossDefeated = false, ranked = false } = {}) {
-  const parts = [`${number(kills)} enemies down`, `level ${Math.max(1, number(level))}`, `${clock(elapsedSeconds)} survived`];
+  const parts = [`${number(kills)} enemies down`, `level ${Math.max(1, number(level))}`, `${shareClock(elapsedSeconds)} survived`];
   if (number(maxCombo) > 1) parts.push(`best combo ×${number(maxCombo)}`);
   if (bossDefeated) parts.push('the Liquidator liquidated');
-  const cause = safeFragment(killedBy);
+  const cause = safeShareFragment(killedBy);
   const ending = bossDefeated ? '' : cause ? ` Fell to ${cause}.` : '';
   return `I scored ${number(score).toLocaleString('en-US')} points in Hard Money Heroes: ${parts.join(', ')}.${ending} ${ranked ? 'Ranked run' : 'Free run'} on ${X_MENTION}`;
 }
 
 export function buildStackedShareText({ score = 0, lines: cleared = 0, level = 1, tick = 0, quadClears = 0, maxCombo = 0, ranked = false, assisted = false } = {}) {
-  const parts = [`${number(cleared)} lines`, `level ${Math.max(1, number(level))}`, clock(number(tick) / 60)];
+  const parts = [`${number(cleared)} lines`, `level ${Math.max(1, number(level))}`, shareClock(number(tick) / 60)];
   if (number(quadClears) > 0) parts.push(`${number(quadClears)} ${number(quadClears) === 1 ? 'halving' : 'halvings'}`);
   if (number(maxCombo) > 1) parts.push(`best combo ${number(maxCombo)}`);
   const label = assisted ? 'Assisted practice' : ranked ? 'Ranked run' : 'Free practice';
@@ -235,8 +182,12 @@ export function createShareRow({
   };
   more.setAttribute('aria-controls', menu.id);
   more.addEventListener('click', (event) => { event.preventDefault(); setOpen(more.getAttribute('aria-expanded') !== 'true'); });
-  menu.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
+  // Escape anywhere in the row (the toggle included) closes an open menu
+  // first and keeps focus on the toggle; it never reaches an enclosing
+  // dialog while the menu is open.
+  row.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || more.getAttribute('aria-expanded') !== 'true') return;
+    event.preventDefault?.();
     event.stopPropagation();
     setOpen(false);
     more.focus?.();
