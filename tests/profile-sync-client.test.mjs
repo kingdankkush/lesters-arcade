@@ -141,12 +141,18 @@ test('pre-v2, expired and rejected tokens are discarded', async () => {
   clock += 61_000;
   assert.equal(expiring.hasSession(WALLET), false, 'an expired token is ignored');
 
-  const loginFetch = async () => jsonResponse(401, { ok: false, error: 'nonce-used' });
-  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: lower, token: v2TokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 }));
+  // POST /api/session carries no Bearer token: its 401 is about the new
+  // signature or nonce, so a failed sign-in keeps the token already stored.
+  const loginCalls = [];
+  const loginFetch = async (url, init) => { loginCalls.push([url, init]); return jsonResponse(401, { ok: false, error: 'nonce-used' }); };
+  const stored = { wallet: lower, token: v2TokenFor(lower, nowMs + 60_000), expiresAt: nowMs + 60_000 };
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify(stored));
   const rejected = createProfileSync({ fetchImpl: loginFetch, storage, now: () => nowMs });
   const answer = await rejected.login({ challenge: { nonce: SERVER_NONCE, message: 'm' }, signature: '0x1' });
   assert.deepEqual([answer.ok, answer.status, answer.error], [false, 401, 'nonce-used']);
-  assert.equal(rejected.hasSession(WALLET), false, 'a 401 discards the stored token');
+  assert.equal(loginCalls[0][1].headers.authorization, undefined, 'sign-in sends no Bearer token');
+  assert.equal(rejected.hasSession(WALLET), true, 'a failed sign-in keeps the valid stored token');
+  assert.deepEqual(JSON.parse(storage.getItem(SESSION_TOKEN_STORAGE_KEY)), stored, 'and leaves it in storage');
 
   const badToken = createProfileSync({ fetchImpl: async () => jsonResponse(200, { ok: true, wallet: lower, token: legacyTokenFor(lower, 1), expiresAt: nowMs + 60_000 }), storage: memoryStorage(), now: () => nowMs });
   assert.equal((await badToken.login({ challenge: { nonce: SERVER_NONCE, message: 'm' }, signature: '0x1' })).error, 'invalid-token');

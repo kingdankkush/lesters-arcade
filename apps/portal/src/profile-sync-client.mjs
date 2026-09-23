@@ -154,7 +154,9 @@ export function createProfileSync({
       return { ok: false, unavailable: true, error: 'network', detail: String(error?.message ?? error) };
     }
     const body = await readJson(response);
-    if (response.status === 401) logout();
+    // No Bearer token goes with this request, so a 401 here is about the new
+    // signature or nonce (nonce-expired, nonce-used, signer-mismatch…), never
+    // the stored token: a failed sign-in for one wallet keeps another's token.
     if (!response.ok || !body?.ok || !body.token) {
       serviceState.session = response.status === 503 ? 'unconfigured' : 'error';
       return unavailable(response.status, body?.error);
