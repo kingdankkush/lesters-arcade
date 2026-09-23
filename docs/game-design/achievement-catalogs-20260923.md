@@ -11,12 +11,13 @@
    - STACKED's thresholds come from a soak pilot throttled to five human speeds. The pilot plays for singles, so it makes Halvings, perfect clears and back-to-back chains only by accident (exceptional Halvings p50 5, hardcore perfect clears p90 1) and never spins. Those thresholds are anchored on the 16 Free medals instead:
      - seven copy a medal threshold exactly: `stacked-first-halving`, `stacked-first-spin-lock`, `stacked-first-perfect-clear`, `stacked-chain-5`, `stacked-chain-10`, `stacked-halvings-10`, `stacked-b2b-streak-10`;
      - eight have no medal to copy and are marked **estimate**, each placed between the medals on the same stat: `stacked-halvings-total-5`, `stacked-first-hold`, `stacked-halvings-3`, `stacked-spins-10`, `stacked-b2b-streak-2`, `stacked-perfect-clears-3`, `stacked-spins-25`, `stacked-b2b-streak-5`.
-   - The tier rule the tests enforce on every bot-calibrated threshold: bronze is earned in a first session of five novice-median runs; silver is reached at the intermediate median; gold at the expert or hardcore median; platinum fails just below the exceptional p90. These five Chikun ids break that rule and need a decision:
-     - `chikun-survive-6m` (silver) is reached at the intermediate p99 (6.27 min) or the expert median (7.30), not at the intermediate median (4.78);
-     - `chikun-speed-2x` (silver) is reached at the intermediate p90 (2.28x; the median is 1.73x);
-     - `chikun-loop-2` (gold) is reached at the hardcore p90; the hardcore median is 1.5 loops, so about half of hardcore runs make it;
-     - `chikun-survive-10m` (gold) is reached at the hardcore p90 (10.70 min; median 9.05, p75 10.32);
-     - `chikun-survive-12m` (gold) is reached only at the exceptional p90 (14.18 min; exceptional median 11.82, hardcore p99 11.83), so in practice it is a platinum.
+   - The tier rule the tests enforce on every bot-calibrated threshold: bronze is earned in a first session of five novice-median runs; silver is reached at the intermediate median; gold at the expert or hardcore median; platinum fails just below the exceptional p90. Five Chikun ids broke that rule. **Owner decision O1 (2026-09-23): re-tier to match the data.**
+     - `chikun-survive-6m` moved silver → **gold** (reached at the expert median, 7.30 min);
+     - `chikun-survive-12m` moved gold → **platinum** (reached only from the exceptional p90, 14.18 min). It is not an NFT candidate;
+     - `chikun-speed-2x` stays silver (intermediate p90 2.28x; median 1.73x);
+     - `chikun-loop-2` stays gold (hardcore p90; about half of hardcore runs make it);
+     - `chikun-survive-10m` stays gold (hardcore p90 10.70 min; p75 10.32).
+     - Chikun's spread is now 14 bronze, 11 silver, 9 gold, 6 platinum; STACKED keeps 14/12/9/5.
    - Also open:
      - STACKED platinum assumes survival at 20G, and the bots handle 20G better than most people will;
      - HMH `damage-chain` now means 20,000 damage in one run, estimated from the reboot health curve with no measured runs.
@@ -205,24 +206,24 @@ The tiers are 14 bronze, 12 silver, 9 gold and 5 platinum. "Harness" is the harn
 | 15 | `chikun-reach-coast` | Coastal Escape | silver | region | `laps ≥ 1` or `regionIndexReached ≥ 6` | yes | no | Harness intermediate loop-0 region p50 6 (novice p90 6) |
 | 16 | `chikun-loop-1` | Full Circuit | silver | loop | `laps ≥ 1` | yes | no | Harness intermediate p50 1 (novice p90 1) |
 | 17 | `chikun-survive-4m` | Four-Minute Flight | silver | survival | `survivalSeconds ≥ 240` | yes | no | Harness intermediate p50 4.78 min |
-| 18 | `chikun-survive-6m` | Six-Minute Flight | silver | survival | `survivalSeconds ≥ 360` | yes | no | Harness intermediate p99 6.27 / expert p50 7.30 min (intermediate p50 4.78): **edge of silver** |
-| 19 | `chikun-forks-50` | Obstacle Course | silver | forks | `forksPassed ≥ 50` | yes | no | Harness intermediate p50 50 |
-| 20 | `chikun-coins-60` | Coin Collector | silver | coins | `coinsCollected ≥ 60` | yes | no | Harness intermediate p50 68 |
-| 21 | `chikun-combo-5` | Combo Chick | silver | combo | `bestCombo ≥ 5` | yes | no | Harness intermediate p50 5; skim intermediate p50 5.5 |
-| 22 | `chikun-near-miss-10` | Feather Trimmer | silver | near-miss | `nearMisses ≥ 10` | yes | no | Skim intermediate p50 10 (harness p99 is 7: players who avoid close calls rarely get it) |
-| 23 | `chikun-flawless-5` | Spotless Flight | silver | flawless | `flawlessRegions ≥ 5` | yes | no | Harness intermediate p50 5 |
-| 24 | `chikun-speed-2x` | Double Time | silver | speed | `speedMultiplierReached ≥ 2` | yes | no | Harness intermediate p90 2.28x (median 1.73x) / expert p10 2.09x (reached at 5.4 min): **edge of silver** |
-| 25 | `chikun-runs-25` | Coop Veteran | silver | volume | `history.runs + 1 ≥ 25` | yes | no | Volume |
-| 26 | `chikun-distance-50km` | Long Haul | silver | distance | Σ `distanceMeters ≥ 50,000` | yes | no | Nine intermediate-median runs (harness p50 6,132 m each) |
-| 27 | `chikun-loop-2` | Double Circuit | gold | loop | `laps ≥ 2` | yes | no | Harness hardcore p50 1.5 (about half of hardcore runs), p90 2; exceptional p50 2: **edge of gold** |
+| 18 | `chikun-forks-50` | Obstacle Course | silver | forks | `forksPassed ≥ 50` | yes | no | Harness intermediate p50 50 |
+| 19 | `chikun-coins-60` | Coin Collector | silver | coins | `coinsCollected ≥ 60` | yes | no | Harness intermediate p50 68 |
+| 20 | `chikun-combo-5` | Combo Chick | silver | combo | `bestCombo ≥ 5` | yes | no | Harness intermediate p50 5; skim intermediate p50 5.5 |
+| 21 | `chikun-near-miss-10` | Feather Trimmer | silver | near-miss | `nearMisses ≥ 10` | yes | no | Skim intermediate p50 10 (harness p99 is 7: players who avoid close calls rarely get it) |
+| 22 | `chikun-flawless-5` | Spotless Flight | silver | flawless | `flawlessRegions ≥ 5` | yes | no | Harness intermediate p50 5 |
+| 23 | `chikun-speed-2x` | Double Time | silver | speed | `speedMultiplierReached ≥ 2` | yes | no | Harness intermediate p90 2.28x (median 1.73x) / expert p10 2.09x (reached at 5.4 min): **edge of silver** |
+| 24 | `chikun-runs-25` | Coop Veteran | silver | volume | `history.runs + 1 ≥ 25` | yes | no | Volume |
+| 25 | `chikun-distance-50km` | Long Haul | silver | distance | Σ `distanceMeters ≥ 50,000` | yes | no | Nine intermediate-median runs (harness p50 6,132 m each) |
+| 26 | `chikun-loop-2` | Double Circuit | gold | loop | `laps ≥ 2` | yes | no | Harness hardcore p50 1.5 (about half of hardcore runs), p90 2; exceptional p50 2: **edge of gold** |
+| 27 | `chikun-survive-6m` | Six-Minute Flight | gold | survival | `survivalSeconds ≥ 360` | yes | no | Harness intermediate p99 6.27 / expert p50 7.30 min (intermediate p50 4.78): gold by owner decision O1 (2026-09-23); reached at the expert median |
 | 28 | `chikun-survive-8m` | Eight-Minute Flight | gold | survival | `survivalSeconds ≥ 480` | yes | no | Harness hardcore p50 9.05 min (expert p50 7.30) |
 | 29 | `chikun-survive-10m` | Ten-Minute Flight | gold | survival | `survivalSeconds ≥ 600` | yes | no | Harness hardcore p90 10.70 min (p50 9.05, p75 10.32): **edge of gold** |
-| 30 | `chikun-survive-12m` | Twelve-Minute Flight | gold | survival | `survivalSeconds ≥ 720` | yes | no | Harness exceptional p90 14.18 min (exceptional p50 11.82, hardcore p99 11.83): **past gold**, reached like a platinum |
-| 31 | `chikun-forks-90` | Fork Veteran | gold | forks | `forksPassed ≥ 90` | yes | no | Harness hardcore p50 95.5 |
-| 32 | `chikun-coins-200` | Coin Hoard | gold | coins | `coinsCollected ≥ 200` | yes | no | Harness hardcore p50 204 |
-| 33 | `chikun-combo-20` | Combo Rooster | gold | combo | `bestCombo ≥ 20` | yes | no | Skim hardcore p50 20 (harness exceptional p99 25) |
-| 34 | `chikun-flawless-13` | Untouched Skies | gold | flawless | `flawlessRegions ≥ 13` | yes | no | Harness hardcore p50 13 |
-| 35 | `chikun-near-miss-streak-8` | Needle Streak | gold | near-miss | `nearMissStreakBest ≥ 8` | yes | no | Skim expert p50 6 / hardcore p50 9 (harness p99 2) |
+| 30 | `chikun-forks-90` | Fork Veteran | gold | forks | `forksPassed ≥ 90` | yes | no | Harness hardcore p50 95.5 |
+| 31 | `chikun-coins-200` | Coin Hoard | gold | coins | `coinsCollected ≥ 200` | yes | no | Harness hardcore p50 204 |
+| 32 | `chikun-combo-20` | Combo Rooster | gold | combo | `bestCombo ≥ 20` | yes | no | Skim hardcore p50 20 (harness exceptional p99 25) |
+| 33 | `chikun-flawless-13` | Untouched Skies | gold | flawless | `flawlessRegions ≥ 13` | yes | no | Harness hardcore p50 13 |
+| 34 | `chikun-near-miss-streak-8` | Needle Streak | gold | near-miss | `nearMissStreakBest ≥ 8` | yes | no | Skim expert p50 6 / hardcore p50 9 (harness p99 2) |
+| 35 | `chikun-survive-12m` | Twelve-Minute Flight | platinum | survival | `survivalSeconds ≥ 720` | yes | no | Harness exceptional p90 14.18 min (exceptional p50 11.82, hardcore p99 11.83): platinum by owner decision O1 (2026-09-23); not an NFT candidate |
 | 36 | `chikun-survive-15m` | Fifteen-Minute Legend | platinum | survival | `survivalSeconds ≥ 900` | yes | **yes** (phase 2) | Harness exceptional p90 14.18, p95 14.84 min (D11: past 15 minutes is extraordinary) |
 | 37 | `chikun-forks-150` | Fork Master | platinum | forks | `forksPassed ≥ 150` | yes | **yes** (phase 2) | Harness exceptional p90 150 (p99 166) |
 | 38 | `chikun-coins-375` | Golden Hoard | platinum | coins | `coinsCollected ≥ 375` | yes | **yes** (phase 2) | Harness exceptional p90 367 (p99 418) |

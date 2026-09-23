@@ -6,7 +6,7 @@
     },
     {
       "trait_type": "Tier",
-      "value": "Silver"
+      "value": "Gold"
     },
     {
       "trait_type": "Category",
@@ -23,6 +23,6 @@
   ],
   "description": "Survived 6 minutes in one Ranked run.",
   "external_url": "https://lestersarcade.io/games/chikun",
-  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/silver.png",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/gold.png",
   "name": "Six-Minute Flight"
 }

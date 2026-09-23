@@ -416,10 +416,14 @@ test('Chikun and STACKED thresholds match the owner-review doc and rise with the
 // median; gold: expert or hardcore median), with the harness percentile that
 // first reaches them. Each is on the doc's "What to review" list for owner O1.
 const CHIKUN_TIER_EDGES = Object.freeze({
-  'chikun-survive-6m': ['intermediate', 'p99'],
   'chikun-speed-2x': ['intermediate', 'p90'],
   'chikun-loop-2': ['hardcore', 'p90'],
   'chikun-survive-10m': ['hardcore', 'p90'],
+});
+// Platinum entries the owner placed at O1 (2026-09-23) although part of the
+// exceptional profile below its p90 reaches them ([profile, percentile] that
+// first reaches it). Each must still sit past every gold anchor.
+const CHIKUN_PLATINUM_BY_DECISION = Object.freeze({
   'chikun-survive-12m': ['exceptional', 'p90'],
 });
 // STACKED thresholds the soak pilot reaches only by accident (it plays for
@@ -460,8 +464,17 @@ test('bronze thresholds are reachable at the novice median, platinum sits at or 
   const exceptionalP90 = run('chikun', lower(chikunProfileStats('exceptional', 'p90', 'exceptional')));
   const exceptionalP99 = chikunAt('exceptional', 'p99');
   for (const entry of catalogFor('chikun').filter((e) => e.tier === 'platinum')) {
-    assert.equal(entry.criteria(exceptionalP90, history('chikun')), false, `${entry.id} is not earned below the exceptional p90`);
     assert.equal(entry.criteria(exceptionalP99, history('chikun')), true, `${entry.id} is reached by the exceptional p99`);
+    const decided = CHIKUN_PLATINUM_BY_DECISION[entry.id];
+    if (decided) {
+      assert.equal(entry.nft, false, `${entry.id} is platinum by owner decision, not an NFT candidate`);
+      for (const [profile, percentile] of [['expert', 'p50'], ['hardcore', 'p50'], ['hardcore', 'p99']]) {
+        assert.equal(entry.criteria(chikunAt(profile, percentile), history('chikun')), false, `${entry.id} sits past the ${profile} ${percentile}`);
+      }
+      assert.ok(entry.criteria(chikunAt(...decided), history('chikun')), `${entry.id} is reached at the ${decided.join(' ')}`);
+      continue;
+    }
+    assert.equal(entry.criteria(exceptionalP90, history('chikun')), false, `${entry.id} is not earned below the exceptional p90`);
   }
   // Silver is reached at the intermediate median and gold at the expert or hardcore
   // median (either strategy), except the listed edges, which the owner reviews.

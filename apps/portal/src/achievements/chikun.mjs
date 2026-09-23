@@ -1,5 +1,7 @@
 // Chikun's Escape achievement catalog (gameId 'chikun', contract §6.1): 40 entries,
-// 14 bronze, 12 silver, 9 gold, 5 platinum. Criteria read statsFromChikunResult
+// 14 bronze, 11 silver, 9 gold, 6 platinum. Owner checkpoint O1 (2026-09-23) moved
+// chikun-survive-6m silver->gold and chikun-survive-12m gold->platinum to match the
+// difficulty harness; chikun-survive-12m is platinum but not an NFT candidate. Criteria read statsFromChikunResult
 // (§6.3) of a replay-verified v6 run plus verified history (§6.5).
 // Thresholds come from docs/qa/chikun-difficulty-harness-20260923.json and the
 // near-miss-chasing sample in tests/fixtures/achievements/chikun-skim-calibration.json;
@@ -44,7 +46,6 @@ const specs = [
   { id: 'chikun-reach-coast', title: 'Coastal Escape', tier: 'silver', category: 'region', description: 'Reached the Coast, the last region of the loop.', rule: reach(6) },
   { id: 'chikun-loop-1', title: 'Full Circuit', tier: 'silver', category: 'loop', description: 'Flew one full loop of all seven regions in one Ranked run.', rule: best('laps', 1) },
   { id: 'chikun-survive-4m', title: 'Four-Minute Flight', tier: 'silver', category: 'survival', description: 'Survived 4 minutes in one Ranked run.', rule: minutes(4) },
-  { id: 'chikun-survive-6m', title: 'Six-Minute Flight', tier: 'silver', category: 'survival', description: 'Survived 6 minutes in one Ranked run.', rule: minutes(6) },
   { id: 'chikun-forks-50', title: 'Obstacle Course', tier: 'silver', category: 'forks', description: 'Passed 50 obstacles in one Ranked run.', rule: best('forksPassed', 50) },
   { id: 'chikun-coins-60', title: 'Coin Collector', tier: 'silver', category: 'coins', description: 'Collected 60 Litecoin in one Ranked run.', rule: best('coinsCollected', 60) },
   { id: 'chikun-combo-5', title: 'Combo Chick', tier: 'silver', category: 'combo', description: 'Built a 5-obstacle combo in one Ranked run: a coin or a near miss at every obstacle in a row.', rule: best('bestCombo', 5) },
@@ -55,15 +56,16 @@ const specs = [
   { id: 'chikun-distance-50km', title: 'Long Haul', tier: 'silver', category: 'distance', description: 'Flew 50 km in total across Ranked runs.', rule: total('distanceMeters', 50_000) },
 
   { id: 'chikun-loop-2', title: 'Double Circuit', tier: 'gold', category: 'loop', description: 'Flew two full loops of all seven regions in one Ranked run.', rule: best('laps', 2) },
+  { id: 'chikun-survive-6m', title: 'Six-Minute Flight', tier: 'gold', category: 'survival', description: 'Survived 6 minutes in one Ranked run.', rule: minutes(6) },
   { id: 'chikun-survive-8m', title: 'Eight-Minute Flight', tier: 'gold', category: 'survival', description: 'Survived 8 minutes in one Ranked run.', rule: minutes(8) },
   { id: 'chikun-survive-10m', title: 'Ten-Minute Flight', tier: 'gold', category: 'survival', description: 'Survived 10 minutes in one Ranked run.', rule: minutes(10) },
-  { id: 'chikun-survive-12m', title: 'Twelve-Minute Flight', tier: 'gold', category: 'survival', description: 'Survived 12 minutes in one Ranked run.', rule: minutes(12) },
   { id: 'chikun-forks-90', title: 'Fork Veteran', tier: 'gold', category: 'forks', description: 'Passed 90 obstacles in one Ranked run.', rule: best('forksPassed', 90) },
   { id: 'chikun-coins-200', title: 'Coin Hoard', tier: 'gold', category: 'coins', description: 'Collected 200 Litecoin in one Ranked run.', rule: best('coinsCollected', 200) },
   { id: 'chikun-combo-20', title: 'Combo Rooster', tier: 'gold', category: 'combo', description: 'Built a 20-obstacle combo in one Ranked run: a coin or a near miss at every obstacle in a row.', rule: best('bestCombo', 20) },
   { id: 'chikun-flawless-13', title: 'Untouched Skies', tier: 'gold', category: 'flawless', description: 'Cleared 13 regions without a single near miss in one Ranked run.', rule: best('flawlessRegions', 13) },
   { id: 'chikun-near-miss-streak-8', title: 'Needle Streak', tier: 'gold', category: 'near-miss', description: 'Scored near misses on 8 obstacles in a row.', rule: best('nearMissStreakBest', 8) },
 
+  { id: 'chikun-survive-12m', title: 'Twelve-Minute Flight', tier: 'platinum', category: 'survival', description: 'Survived 12 minutes in one Ranked run.', rule: minutes(12) },
   { id: 'chikun-survive-15m', title: 'Fifteen-Minute Legend', tier: 'platinum', category: 'survival', nft: true, description: 'Survived 15 minutes in one Ranked run.', rule: minutes(15) },
   { id: 'chikun-forks-150', title: 'Fork Master', tier: 'platinum', category: 'forks', nft: true, description: 'Passed 150 obstacles in one Ranked run.', rule: best('forksPassed', 150) },
   { id: 'chikun-coins-375', title: 'Golden Hoard', tier: 'platinum', category: 'coins', nft: true, description: 'Collected 375 Litecoin in one Ranked run.', rule: best('coinsCollected', 375) },

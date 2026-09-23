@@ -30,11 +30,15 @@ test('catalog sizes, tiers and NFT picks match the owner decisions', () => {
   for (const gameId of ['chikun', 'stacked']) {
     const entries = catalogFor(gameId);
     assert.equal(entries.length, 40, gameId);
-    assert.deepEqual(tiersOf(entries), { bronze: 14, silver: 12, gold: 9, platinum: 5 }, gameId);
+    // Owner checkpoint O1 (2026-09-23) re-tiered two Chikun survival entries to match the harness.
+    const spread = gameId === 'chikun' ? { bronze: 14, silver: 11, gold: 9, platinum: 6 } : { bronze: 14, silver: 12, gold: 9, platinum: 5 };
+    assert.deepEqual(tiersOf(entries), spread, gameId);
     assert.ok(entries.every((entry) => entry.available), `${gameId} entries are all earnable`);
     const nft = nftAchievementIds(gameId);
     assert.equal(nft.length, 5, gameId);
-    assert.deepEqual(nft, entries.filter((entry) => entry.tier === 'platinum').map((entry) => entry.id), `${gameId} NFT picks are its platinum entries, in catalog order`);
+    const platinum = entries.filter((entry) => entry.tier === 'platinum').map((entry) => entry.id);
+    assert.deepEqual(nft, platinum.filter((id) => nft.includes(id)), `${gameId} NFT picks are platinum entries, in catalog order`);
+    assert.deepEqual(platinum.filter((id) => !nft.includes(id)), gameId === 'chikun' ? ['chikun-survive-12m'] : [], `${gameId} platinum entries outside the NFT picks`);
   }
   assert.deepEqual(nftAchievementIds('lester-blaster'), ['two-hundred-ranked-runs', 'two-fifty-ranked-runs', 'arcade-legend-500']);
   assert.equal(achievementById('lester-blaster', 'marathon-wallet').nft, false);

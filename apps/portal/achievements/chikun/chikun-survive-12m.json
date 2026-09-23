@@ -6,7 +6,7 @@
     },
     {
       "trait_type": "Tier",
-      "value": "Gold"
+      "value": "Platinum"
     },
     {
       "trait_type": "Category",
@@ -23,6 +23,6 @@
   ],
   "description": "Survived 12 minutes in one Ranked run.",
   "external_url": "https://lestersarcade.io/games/chikun",
-  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/gold.png",
+  "image": "https://lestersarcade.io/assets/generated/achievement-badges/chikun/platinum.png",
   "name": "Twelve-Minute Flight"
 }
