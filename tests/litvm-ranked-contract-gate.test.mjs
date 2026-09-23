@@ -5,13 +5,14 @@ import { runInNewContext } from 'node:vm';
 import { parse } from 'acorn';
 import { checkRankedReadiness, submitRankedSession, loadEthers, SCORE_REGISTRY_ABI } from '../apps/portal/src/litvm-chain-client.mjs';
 import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from '../apps/portal/src/settlement.mjs';
+import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
 
 // Deterministic encoded EIP-1193 fixtures, never live-wallet acceptance evidence.
 const ethers = await loadEthers();
 const wallet = `0x${'12'.repeat(20)}`;
 const verifier = `0x${'34'.repeat(20)}`;
-const deployment = JSON.parse(readFileSync(new URL('../contracts/deployment-record.json', import.meta.url)));
-const registryAddress = deployment.addresses.gameRegistry;
+// Addresses come from the generated module (contract A19, §8.1), never the June archive record.
+const registryAddress = LITVM_DEPLOYMENT.addresses.gameRegistry;
 const gameId = 'lester-blaster';
 const gameId32 = ethers.id(gameId);
 const gameAbi = new ethers.Interface(['function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeWei,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))']);
@@ -59,8 +60,10 @@ async function check(options = {}, request = {}) {
   return { ...f, result };
 }
 
-test('configured read-only GameRegistry address exactly matches the recorded deployment', () => {
+test('configured read-only GameRegistry address exactly matches the generated address module', () => {
   assert.equal(LITVM_CONTRACT_ADDRESSES.gameRegistry, registryAddress);
+  assert.match(registryAddress, /^0x[0-9a-f]{40}$/);
+  assert.ok(['predicted', 'deployed'].includes(LITVM_DEPLOYMENT.status));
   assert.equal(SETTLEMENT_LIVE, false);
 });
 

@@ -91,23 +91,55 @@ test('legacy hydrated caches do not turn a session ID into transaction proof', (
   assert.equal(leaderboardEntryProvenance({ wallet, onChain: true, chainVerified: false, settlementTxHash: hash('ab') }).official, false);
 });
 
-test('the reader rejects a wallet provider on the wrong chain', async () => {
+// Reads go over the public LiteForge RPC only (guide §5.2 item 6, contracts slice): the vendored ethers
+// transport uses global fetch, so the fixture answers JSON-RPC there and nothing leaves the process.
+async function withPublicRpcFixture(answer, run) {
+  const original = globalThis.fetch;
+  const seen = [];
+  globalThis.fetch = async (url, init = {}) => {
+    const payload = JSON.parse(new TextDecoder().decode(init.body));
+    const reply = async (request) => {
+      seen.push({ url: String(url), method: request.method });
+      try {
+        return { jsonrpc: '2.0', id: request.id, result: await answer(request) };
+      } catch (error) {
+        return { jsonrpc: '2.0', id: request.id, error: { code: -32000, message: error.message } };
+      }
+    };
+    const body = Array.isArray(payload) ? await Promise.all(payload.map(reply)) : await reply(payload);
+    return new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  try {
+    return { result: await run(), seen };
+  } finally {
+    globalThis.fetch = original;
+  }
+}
+
+test('the reader ignores a wallet provider on the wrong chain and reads the public LiteForge RPC', async () => {
   const ethers = await loadEthers();
   const iface = new ethers.Interface(SCORE_REGISTRY_ABI);
   // Hardened thirteen-field ScoreRecord (2026-09-16): runtimeId and seasonId precede submittedAt.
   const tuple = [hash('ab'), wallet, hash('cd'), 1200n, 10n, 4n, 120n, hash('11'), hash('77'), hash('88'), 1788955200n, true, true];
-  const walletProvider = { async request({ method, params }) {
+  const walletCalls = [];
+  const walletProvider = { async request({ method }) {
+    walletCalls.push(method);
     if (method === 'eth_chainId') return '0x1';
+    throw new Error(`Unexpected wallet RPC method: ${method}`);
+  } };
+  const { result, seen } = await withPublicRpcFixture(async ({ method, params }) => {
+    if (method === 'eth_chainId') return LITVM_LITEFORGE_NETWORK.chainIdHex;
     if (method === 'eth_call') {
       const call = iface.parseTransaction({ data: params[0].data });
       if (call.name === 'playerSessionCount') return iface.encodeFunctionResult(call.name, [1n]);
       if (call.name === 'getPlayerSessions') return iface.encodeFunctionResult(call.name, [[tuple]]);
     }
     throw new Error(`Unexpected fixture RPC method: ${method}`);
-  } };
-  const result = await fetchPlayerSessions(wallet, { walletProvider });
-  assert.equal(result.ok, false);
-  assert.deepEqual(result.records, []);
+  }, () => fetchPlayerSessions(wallet, { walletProvider }));
+  assert.equal(result.ok, true, result.error);
+  assert.equal(result.records.length, 1);
+  assert.deepEqual(walletCalls, [], 'the wallet provider is never used for reads');
+  assert.ok(seen.length > 0 && seen.every((call) => call.url === LITVM_LITEFORGE_NETWORK.rpcUrls.http));
 });
 
 test('the real player-session reader excludes unverified decoded tuples', async () => {
@@ -115,9 +147,8 @@ test('the real player-session reader excludes unverified decoded tuples', async 
   const iface = new ethers.Interface(SCORE_REGISTRY_ABI);
   const tuple = (verified) => [hash('ab'), wallet, hash('cd'), 1200n, 10n, 4n, 120n, hash('11'), hash('77'), hash('88'), 1788955200n, verified, true];
   const encoded = iface.encodeFunctionResult('getPlayerSessions', [[tuple(false), tuple(true)]]);
-  const calls = [];
-  const walletProvider = { async request({ method, params }) {
-    calls.push(method);
+  const walletProvider = { async request() { throw new Error('the wallet provider must not be used for reads'); } };
+  const { result, seen } = await withPublicRpcFixture(async ({ method, params }) => {
     if (method === 'eth_chainId') return LITVM_LITEFORGE_NETWORK.chainIdHex;
     if (method === 'eth_call') {
       const call = iface.parseTransaction({ data: params[0].data });
@@ -125,11 +156,11 @@ test('the real player-session reader excludes unverified decoded tuples', async 
       if (call.name === 'getPlayerSessions') return encoded;
     }
     throw new Error(`Unexpected fixture RPC method: ${method}`);
-  } };
-  const result = await fetchPlayerSessions(wallet, { walletProvider });
+  }, () => fetchPlayerSessions(wallet, { walletProvider }));
   assert.equal(result.ok, true, result.error);
   assert.equal(result.records.length, 1);
   assert.equal(result.records[0].verified, true);
+  const calls = seen.map((call) => call.method);
   assert.ok(calls.includes('eth_call'));
   assert.ok(calls.every((method) => ['eth_call', 'eth_chainId'].includes(method)));
 });

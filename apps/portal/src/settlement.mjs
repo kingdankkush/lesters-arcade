@@ -18,6 +18,7 @@
 // live path is opt-in and inert until contracts are deployed and the flag is on.
 
 import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, RANKED_PAYMENT_TOKEN, RANKED_SETTLEMENT_GAS_RESERVE_WEI, calculateRevenueSplit } from './arcade-core.mjs';
+import { LITVM_DEPLOYMENT } from './generated/litvm-addresses.mjs';
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
@@ -34,22 +35,27 @@ export const SETTLEMENT_LIVE = false;
 // portal stays local-only exactly as before.
 export const HOSTED_PROFILE_SYNC = false;
 
-// Recorded legacy testnet addresses, not proof of hardened compatibility.
-// The GameRegistry address is used for read-only approval checks.
+// Invariant (contract §9.1, pinned by tests/litvm-addresses-module.test.mjs):
+//   SETTLEMENT_LIVE implies HOSTED_PROFILE_SYNC && LITVM_DEPLOYMENT.status === 'deployed'.
+// Both flags stay literal `false` until runbook step 7 flips them together.
+
+// Hardened contract addresses (contract A19, §8.1). They come ONLY from the generated module
+// apps/portal/src/generated/litvm-addresses.mjs (`npm run contracts:addresses`): predicted from the
+// operator's nonces before the broadcast, then regenerated from
+// contracts/deployment-record.hardened.json. Never hand-edit them here. The June 2026 legacy keys
+// (achievementRegistry, arcadePaymentRouter, lestersArcadeCore) are retired; their record stays in
+// contracts/deployment-record.json as the archive.
 export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
-  gameRegistry: '0x09C6f94e73f6aA16177549952Dc47dB5AEb83406',
-  playerProfileRegistry: '0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96',
-  scoreSubmissionRegistry: '0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0',
-  achievementRegistry: '0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53',
-  arcadePaymentRouter: '0x7c999E9570D44090b9279dbAbE33B361e94bf78B',
-  lestersArcadeCore: '0x609CBED352699003dec2381a79EFe5090B56F1D2',
-  // Hardened native-fee entry contract (ArcadeRankedEntry). Undeployed: the
-  // address is filled from contracts/deployment-record.hardened.json after the
-  // owner-approved redeploy. Null keeps every fee path fail-closed.
-  arcadeRankedEntry: null,
-  // Per-game soulbound achievement collections (hardened set, one per game);
-  // filled from contracts/deployment-record.hardened.json after the redeploy.
-  achievementRegistries: Object.freeze({ 'lester-blaster': null, chikun: null, stacked: null }),
+  gameRegistry: LITVM_DEPLOYMENT.addresses.gameRegistry,
+  playerProfileRegistry: LITVM_DEPLOYMENT.addresses.playerProfileRegistry,
+  arcadeRankedEntry: LITVM_DEPLOYMENT.addresses.arcadeRankedEntry,
+  scoreSubmissionRegistry: LITVM_DEPLOYMENT.addresses.scoreSubmissionRegistry,
+  // One soulbound collection per game (owner decision 2026-09-16).
+  achievementRegistries: Object.freeze({
+    'lester-blaster': LITVM_DEPLOYMENT.addresses.achievementRegistries['lester-blaster'],
+    chikun: LITVM_DEPLOYMENT.addresses.achievementRegistries.chikun,
+    stacked: LITVM_DEPLOYMENT.addresses.achievementRegistries.stacked,
+  }),
 });
 
 // Per-write zkLTC gas budget (testnet estimates, in wei-equivalent units of the

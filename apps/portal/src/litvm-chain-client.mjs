@@ -8,7 +8,7 @@
 //   WRITE  (needs the player's wallet provider, 1 confirmation popup):
 //     submitRankedSession(provider, { ... })  -> { txHash, receipt }
 //
-//   READ   (gas-free; uses the wallet provider if present, else public RPC):
+//   READ   (gas-free; always over the public LiteForge RPC, never the wallet provider):
 //     fetchGlobalLeaderboard({ limit })       -> [{ player, score, ... }]
 //     fetchPlayerSessions(wallet, { limit })   -> [{ ... }]
 //     fetchProfile(wallet)                     -> { displayName, ... } | null
@@ -95,12 +95,11 @@ export function isBytes32Hex(value) {
   return /^0x[0-9a-fA-F]{64}$/.test(String(value ?? ''));
 }
 
-function pickReadProvider(ethers, walletProvider) {
-  if (walletProvider?.request) {
-    try { return new ethers.BrowserProvider(walletProvider, LITVM_LITEFORGE_NETWORK.chainId); } catch { /* fall through */ }
-  }
-  // Public RPC read path (no wallet needed for the leaderboard/profile pages).
-  return new ethers.JsonRpcProvider(LITVM_LITEFORGE_NETWORK.rpcUrls.http, LITVM_LITEFORGE_NETWORK.chainId);
+// Reads ALWAYS go over the public LiteForge RPC (guide §5.2 item 6), whatever wallet is connected:
+// a wallet's RPC can sit on another chain, lag, or rate-limit, and a read must never prompt it.
+// The wallet provider is ignored here; write paths keep using it.
+function pickReadProvider(ethers, _walletProvider = null) {
+  return new ethers.JsonRpcProvider(LITVM_LITEFORGE_NETWORK.rpcUrls.http, 4441);
 }
 
 function scoreContractAddress() {
@@ -382,9 +381,9 @@ export async function fetchProfile(wallet, { walletProvider = null } = {}) {
 
 // --- READ: which achievement tokens a wallet holds (soulbound, one per id) ---
 export async function fetchPlayerAchievements(wallet, achievementIds = [], { walletProvider = null, gameId = null } = {}) {
-  // One soulbound collection per game (owner decision 2026-09-16); the legacy
-  // single registry is only a fallback for the archived June rows.
-  const address = (gameId && LITVM_CONTRACT_ADDRESSES.achievementRegistries?.[gameId]) || LITVM_CONTRACT_ADDRESSES.achievementRegistry;
+  // One soulbound collection per game (owner decision 2026-09-16). There is no
+  // cross-game fallback: without a known gameId there is nothing to read.
+  const address = (gameId && Object.hasOwn(LITVM_CONTRACT_ADDRESSES.achievementRegistries, gameId)) ? LITVM_CONTRACT_ADDRESSES.achievementRegistries[gameId] : null;
   if (!wallet || !address || achievementIds.length === 0) return { ok: false, unlocked: [], error: 'achievement registry unavailable' };
   try {
     const ethers = await loadEthers();
