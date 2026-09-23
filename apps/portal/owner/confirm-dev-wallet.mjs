@@ -212,8 +212,14 @@ export function createConfirmController({
     return `All ${state.games.length} games have a confirmed developer wallet. The operator now activates them (runbook step 5): ${OPERATOR_ACTIVATE_COMMAND}`;
   }
 
-  async function connect() {
-    if (!ethereum?.request) return state;
+  // One flow at a time. While a transaction is in flight (`sending`), a connect (a wallet
+  // accountsChanged/chainChanged event, say) must not re-render 'ready' and offer a second
+  // transaction for the same game: it is deferred until the send finishes.
+  let sending = false;
+  let recheckAfterSend = false;
+  let connecting = null;
+
+  async function connectOnce() {
     try {
       set({ phase: 'connecting', message: 'Waiting for your wallet to share the account…' });
       await request('eth_requestAccounts');
@@ -223,6 +229,16 @@ export function createConfirmController({
       set({ phase: 'error', message: walletErrorMessage(error) });
     }
     return state;
+  }
+
+  async function connect() {
+    if (!ethereum?.request) return state;
+    if (sending) {
+      recheckAfterSend = true;
+      return state;
+    }
+    connecting ??= connectOnce().finally(() => { connecting = null; });
+    return connecting;
   }
 
   async function switchChain() {
@@ -258,15 +274,20 @@ export function createConfirmController({
   }
 
   // One confirmDevWallet transaction for the next unconfirmed game. Re-checks chain and account first.
+  // Re-entrancy: `sending` and the 'sending' phase are set before the first await, so a double click
+  // (or a click during a wallet-event re-render) never sends a second transaction.
   async function confirmNext() {
-    if (state.phase !== 'ready') return state;
+    if (sending || state.phase !== 'ready') return state;
     const game = state.games.find((entry) => !entry.devWalletConfirmed);
     if (!game) return state;
+    sending = true;
+    set({ phase: 'sending', message: 'Checking the wallet chain and account…' });
     try {
       if (!(await checkChainAndAccount())) return state;
       const call = calls.find((entry) => entry.gameId === game.gameId);
-      set({ phase: 'sending', message: `Confirm "${game.title}" in your wallet (confirmDevWallet, no zkLTC is transferred beyond gas).` });
-      const hash = await request('eth_sendTransaction', [{ from: state.account, to: call.to, data: call.data }]);
+      set({ message: `Confirm "${game.title}" in your wallet (confirmDevWallet, no zkLTC is transferred beyond gas).` });
+      // chainId lets the wallet refuse the request if it switched chains after the check above.
+      const hash = await request('eth_sendTransaction', [{ from: state.account, to: call.to, data: call.data, chainId: LITEFORGE_CHAIN.chainIdHex }]);
       game.txHash = hash;
       set({ lastTx: { gameId: game.gameId, hash, url: explorerTxUrl(hash) }, message: `Sent ${game.title}: ${hash}. Waiting for LiteForge to include it…` });
       const receipt = await waitForReceipt(hash);
@@ -282,6 +303,13 @@ export function createConfirmController({
       await refreshGates();
     } catch (error) {
       set({ phase: 'error', message: walletErrorMessage(error) });
+    } finally {
+      sending = false;
+      // A wallet event arrived mid-send: re-check the account and chain now that the send is over.
+      if (recheckAfterSend) {
+        recheckAfterSend = false;
+        await connect();
+      }
     }
     return state;
   }

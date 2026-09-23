@@ -3,6 +3,7 @@
 // in-process chain, served from a local static server like the deploy session serves it.
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -21,9 +22,10 @@ import {
   buildConfirmCalls,
   createConfirmController,
   explorerTxUrl,
+  mountConfirmPage,
 } from '../apps/portal/owner/confirm-dev-wallet.mjs';
 import { activateLocalGames, deployLocalSuite, loadArtifact, localContracts, localDeployConfig, startLocalChain } from '../scripts/lib/local-chain.mjs';
-import { normalizeDeploymentInput, predictedDeploymentInput, writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
+import { deployedDeploymentInput, normalizeDeploymentInput, predictedDeploymentInput, writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const portalRoot = join(root, 'apps', 'portal');
@@ -45,14 +47,27 @@ after(async () => {
 
 // A browser wallet (EIP-1193) backed by the local chain: it answers as `account`, starts on
 // `chainIdHex`, knows only the chains in `knownChains`, and forwards transactions to the chain.
-function fakeEthereum({ account, chainIdHex = '0x1159', knownChains = ['0x1', '0x1159'] }) {
+// `beforeSend(params)` runs when a transaction request arrives (the wallet popup is open); `sendError`
+// is thrown instead of sending. `sent` holds each eth_sendTransaction params object; `emit(event)`
+// fires the listeners registered with `on`, like a wallet's accountsChanged / chainChanged.
+function fakeEthereum({ account, chainIdHex = '0x1159', knownChains = ['0x1', '0x1159'], beforeSend = null, sendError = null }) {
   const calls = [];
+  const sent = [];
+  const listeners = {};
   let current = chainIdHex;
   const known = new Set(knownChains);
   return {
     calls,
+    sent,
+    on(event, handler) { (listeners[event] ??= []).push(handler); },
+    emit(event, value) { for (const handler of listeners[event] ?? []) handler(value); },
     async request({ method, params = [] }) {
       calls.push(method);
+      if (method === 'eth_sendTransaction') {
+        sent.push(params[0]);
+        if (beforeSend) await beforeSend(params[0]);
+        if (sendError) throw sendError;
+      }
       switch (method) {
         case 'eth_requestAccounts':
         case 'eth_accounts':
@@ -183,6 +198,12 @@ test('page is noindex, CSP-safe and module-only', () => {
   const directive = (name) => (csp.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name} `)) ?? '').split(/\s+/).slice(1);
   assert.ok(directive('script-src').includes("'self'"), 'module scripts load from self');
   assert.ok(directive('connect-src').includes(new URL(LITEFORGE_CHAIN.rpcUrl).origin), 'public RPC reads are allowed');
+  // The page's only styling is one inline <style> block: style-src must allow it, by 'unsafe-inline'
+  // or by that block's hash (if the CSP owner tightens style-src, this fails instead of an unstyled page).
+  const styleBlock = html.match(/<style>([\s\S]*?)<\/style>/)[1];
+  const styleHash = `'sha256-${createHash('sha256').update(styleBlock, 'utf8').digest('base64')}'`;
+  const styleSrc = directive('style-src').length > 0 ? directive('style-src') : directive('default-src');
+  assert.ok(styleSrc.includes("'unsafe-inline'") || styleSrc.includes(styleHash), `style-src allows the inline <style> block ('unsafe-inline' or ${styleHash})`);
 });
 
 test('page shows the install-a-wallet state without a wallet', async () => {
@@ -337,5 +358,220 @@ test('page gate also passes with the predicted module once contracts exist at th
     assert.equal(controller.state.phase, 'ready');
   } finally {
     await chain.revert(snapshot);
+  }
+});
+
+// The local suite with the owner as every game's developer wallet, and its deployed address module.
+async function deployForOwner() {
+  const config = await localDeployConfig(chain.wallets, { developerWallet: OWNER_WALLET });
+  config.games = config.games.map((game) => ({ ...game, devWallet: OWNER_WALLET }));
+  const record = await deployLocalSuite({ provider: chain.provider, wallets: chain.wallets, config });
+  return { record, deployment: normalizeDeploymentInput(deployedDeploymentInput(record)) };
+}
+
+test('a double click or a wallet event mid-send never sends a second transaction', async () => {
+  const snapshot = await chain.snapshot();
+  try {
+    const { deployment } = await deployForOwner();
+    const owner = await chain.impersonate(OWNER_WALLET);
+    const account = (await owner.getAddress()).toLowerCase();
+
+    // Two quick clicks: one transaction, for the first game only.
+    const wallet = fakeEthereum({ account });
+    const controller = controllerFor({ ethereum: wallet, deployment });
+    await controller.connect();
+    assert.equal(controller.state.phase, 'ready', controller.state.message);
+    await Promise.all([controller.confirmNext(), controller.confirmNext()]);
+    assert.equal(wallet.sent.length, 1, 'one eth_sendTransaction for two quick clicks');
+    assert.equal(wallet.sent[0].data, buildConfirmCalls(deployment)[0].data);
+    assert.equal(wallet.sent[0].chainId, '0x1159', 'the wallet can refuse a request that races a chain switch');
+    assert.equal(controller.state.games.filter((game) => game.devWalletConfirmed).length, 1);
+    assert.equal(controller.state.phase, 'ready');
+
+    // accountsChanged / chainChanged while the wallet popup is open: the page stays in 'sending' (no
+    // second Confirm button), then re-checks the wallet once the send is over.
+    const phasesDuringSend = [];
+    let midSend = null;
+    let midSendController = null;
+    const eventWallet = fakeEthereum({
+      account,
+      beforeSend: async () => {
+        midSend = midSendController.connect();
+        phasesDuringSend.push(midSendController.state.phase);
+        await midSendController.confirmNext();
+        phasesDuringSend.push(midSendController.state.phase);
+      },
+    });
+    midSendController = controllerFor({ ethereum: eventWallet, deployment });
+    await midSendController.connect();
+    assert.equal(midSendController.state.phase, 'ready');
+    const requestsBefore = eventWallet.calls.filter((method) => method === 'eth_requestAccounts').length;
+    await midSendController.confirmNext();
+    await midSend;
+    assert.deepEqual(phasesDuringSend, ['sending', 'sending'], 'no reset to ready while the transaction is in flight');
+    assert.equal(eventWallet.sent.length, 1, 'the click during the send did nothing');
+    assert.equal(eventWallet.calls.filter((method) => method === 'eth_requestAccounts').length, requestsBefore + 1, 'the deferred re-check ran after the send');
+    assert.equal(midSendController.state.phase, 'ready');
+    assert.equal(midSendController.state.games.filter((game) => game.devWalletConfirmed).length, 2);
+  } finally {
+    await chain.revert(snapshot);
+  }
+});
+
+test('page refuses a registry whose developer wallet is not the owner, and reports rejections, reverts and timeouts', async () => {
+  const snapshot = await chain.snapshot();
+  try {
+    const owner = await chain.impersonate(OWNER_WALLET);
+    const account = (await owner.getAddress()).toLowerCase();
+
+    // 1. Games registered with another developer wallet (the local default config): refused, nothing sent.
+    const foreign = await deployLocalSuite({ provider: chain.provider, wallets: chain.wallets });
+    const foreignWallet = fakeEthereum({ account });
+    const mismatch = controllerFor({ ethereum: foreignWallet, deployment: normalizeDeploymentInput(deployedDeploymentInput(foreign)) });
+    await mismatch.connect();
+    assert.equal(mismatch.state.phase, 'dev-wallet-mismatch');
+    assert.match(mismatch.state.message, /registered with developer wallet 0x[0-9a-fA-F]{40}, not the owner wallet/);
+    await mismatch.confirmNext();
+    assert.deepEqual(foreignWallet.sent, []);
+
+    const { deployment } = await deployForOwner();
+    // 2. The owner rejects the request in the wallet (EIP-1193 code 4001).
+    const rejecting = fakeEthereum({ account, sendError: Object.assign(new Error('User rejected the request.'), { code: 4001 }) });
+    const rejected = controllerFor({ ethereum: rejecting, deployment });
+    await rejected.connect();
+    await rejected.confirmNext();
+    assert.equal(rejected.state.phase, 'error');
+    assert.equal(rejected.state.message, 'You rejected the request in your wallet. Nothing was sent.');
+    assert.equal(rejected.state.lastTx, null);
+    await rejected.connect();
+    assert.equal(rejected.state.phase, 'ready', 'connecting again offers the same game');
+    assert.equal(rejected.state.games.filter((game) => !game.devWalletConfirmed).length, 3);
+
+    // 3. A receipt with status 0 is reported as a revert, and the game stays unconfirmed.
+    const revertingReader = (ethersLib) => {
+      const reader = localReader(ethersLib);
+      reader.getTransactionReceipt = async () => ({ status: 0 });
+      return reader;
+    };
+    const reverted = createConfirmController({ ethereum: fakeEthereum({ account }), deployment, loadEthers: vendoredEthers, createReadProvider: revertingReader, sleep: async () => {}, receiptPollMs: 1 });
+    await reverted.connect();
+    await reverted.confirmNext();
+    assert.equal(reverted.state.phase, 'error');
+    assert.match(reverted.state.message, /The Hard Money Heroes transaction reverted \(0x[0-9a-f]{64}\)/);
+    assert.equal(reverted.state.games[0].devWalletConfirmed, false);
+
+    // 4. No receipt before the timeout: the page says so and points at the explorer.
+    const silentReader = (ethersLib) => {
+      const reader = localReader(ethersLib);
+      reader.getTransactionReceipt = async () => null;
+      return reader;
+    };
+    const slow = createConfirmController({ ethereum: fakeEthereum({ account }), deployment, loadEthers: vendoredEthers, createReadProvider: silentReader, sleep: async () => {}, receiptPollMs: 1, receiptTimeoutMs: -1 });
+    await slow.connect();
+    await slow.confirmNext();
+    assert.equal(slow.state.phase, 'error');
+    assert.match(slow.state.message, /No receipt for 0x[0-9a-f]{64} yet\. Check it on the explorer/);
+    assert.match(slow.state.lastTx.url, /^https:\/\/liteforge\.explorer\.caldera\.xyz\/tx\/0x[0-9a-f]{64}$/);
+  } finally {
+    await chain.revert(snapshot);
+  }
+});
+
+// A minimal DOM for mountConfirmPage: getElementById for the page's ids, createElement, append,
+// replaceChildren, setAttribute, dataset, disabled and click listeners.
+function fakeDocument() {
+  class FakeElement {
+    constructor(tag) {
+      this.tagName = tag.toUpperCase();
+      this.children = [];
+      this.textContent = '';
+      this.className = '';
+      this.dataset = {};
+      this.attributes = {};
+      this.disabled = false;
+      this.listeners = {};
+    }
+    append(...nodes) { this.children.push(...nodes); }
+    replaceChildren(...nodes) { this.children = [...nodes]; }
+    setAttribute(name, value) { this.attributes[name] = String(value); }
+    addEventListener(type, handler) { (this.listeners[type] ??= []).push(handler); }
+    click() { return Promise.all((this.listeners.click ?? []).map((handler) => handler())); }
+    get text() { return this.textContent + this.children.map((child) => child.text).join(''); }
+  }
+  const ids = ['owner-confirm', 'owner-status', 'owner-games', 'owner-actions', 'owner-account', 'owner-registry', 'owner-wallet', 'owner-last-tx'];
+  for (const id of ids) assert.match(html, new RegExp(`id="${id}"`), `the page has #${id}`);
+  const byId = new Map(ids.map((id) => [id, new FakeElement('div')]));
+  const doc = { getElementById: (id) => byId.get(id) ?? null, createElement: (tag) => new FakeElement(tag) };
+  const buttons = () => byId.get('owner-actions').children.filter((node) => node.tagName === 'BUTTON');
+  return { doc, byId, buttons };
+}
+
+test('the mounted page renders every state through the DOM, with the committed module and the default public-RPC reader', async () => {
+  // No wallet: the install message, no action buttons, and the committed module's registry address.
+  const bare = fakeDocument();
+  const idle = mountConfirmPage(bare.doc, {});
+  assert.equal(idle.state.phase, 'no-wallet');
+  assert.match(bare.byId.get('owner-status').textContent, /No browser wallet found\. Install MetaMask or Rabby/);
+  assert.equal(bare.byId.get('owner-status').dataset.phase, 'no-wallet');
+  assert.deepEqual(bare.buttons(), []);
+  assert.equal(bare.byId.get('owner-registry').textContent, `${LITVM_DEPLOYMENT.addresses.gameRegistry} (address module: ${LITVM_DEPLOYMENT.status})`);
+  assert.equal(bare.byId.get('owner-wallet').textContent, OWNER_WALLET);
+  assert.equal(bare.byId.get('owner-account').textContent, 'not connected');
+  assert.deepEqual(bare.byId.get('owner-games').children.map((item) => item.text), ['Hard Money Heroes · not checked yet', "Chikun's Escape · not checked yet", 'STACKED · not checked yet']);
+
+  // A stranger's wallet: Connect, then the refusal and a Connect again button. Nothing is read or sent.
+  const strangerPage = fakeDocument();
+  const stranger = fakeEthereum({ account: `0x${'ab'.repeat(20)}` });
+  mountConfirmPage(strangerPage.doc, { ethereum: stranger });
+  assert.deepEqual(strangerPage.buttons().map((node) => node.textContent), ['Connect owner wallet']);
+  await strangerPage.buttons()[0].click();
+  assert.equal(strangerPage.byId.get('owner-status').dataset.phase, 'wrong-account');
+  assert.match(strangerPage.byId.get('owner-status').textContent, /only works for the owner wallet/);
+  assert.deepEqual(strangerPage.buttons().map((node) => node.textContent), ['Connect again']);
+  assert.deepEqual(stranger.sent, []);
+
+  // The owner on another chain: the explanation and a Switch to LiteForge button.
+  const elsewherePage = fakeDocument();
+  const elsewhere = fakeEthereum({ account: OWNER_WALLET, chainIdHex: '0x1' });
+  mountConfirmPage(elsewherePage.doc, { ethereum: elsewhere });
+  await elsewherePage.buttons()[0].click();
+  assert.equal(elsewherePage.byId.get('owner-status').dataset.phase, 'wrong-chain');
+  assert.deepEqual(elsewherePage.buttons().map((node) => node.textContent), ['Switch to LiteForge']);
+
+  // The owner on LiteForge: the page's own default reader (vendored ethers, the public LiteForge RPC)
+  // checks the committed module's registry address. A fetch fixture stands in for the RPC and reports
+  // no code there, so the gate refuses before any transaction; a wallet event re-checks the page.
+  const original = globalThis.fetch;
+  const rpcRequests = [];
+  globalThis.fetch = async (url, init = {}) => {
+    const payload = JSON.parse(new TextDecoder().decode(init.body));
+    const reply = (request) => {
+      rpcRequests.push({ url: String(url), method: request.method, params: request.params });
+      const result = request.method === 'eth_chainId' ? '0x1159' : request.method === 'eth_getCode' ? '0x' : null;
+      return { jsonrpc: '2.0', id: request.id, result };
+    };
+    return new Response(JSON.stringify(Array.isArray(payload) ? payload.map(reply) : reply(payload)), { status: 200, headers: { 'content-type': 'application/json' } });
+  };
+  try {
+    const ownerPage = fakeDocument();
+    const ownerWallet = fakeEthereum({ account: OWNER_WALLET });
+    const controller = mountConfirmPage(ownerPage.doc, { ethereum: ownerWallet });
+    await ownerPage.buttons()[0].click();
+    const status = ownerPage.byId.get('owner-status');
+    assert.equal(status.dataset.phase, 'not-deployed', status.textContent);
+    assert.match(status.textContent, /not deployed yet: LiteForge has no contract code at the GameRegistry address/);
+    assert.deepEqual(ownerPage.buttons().map((node) => node.textContent), ['Connect again']);
+    const getCode = rpcRequests.find((request) => request.method === 'eth_getCode');
+    assert.ok(getCode, 'the gate read the registry code');
+    assert.equal(getCode.params[0].toLowerCase(), LITVM_DEPLOYMENT.addresses.gameRegistry, 'at the committed module address');
+    assert.ok(rpcRequests.every((request) => request.url === LITEFORGE_CHAIN.rpcUrl), 'over the public LiteForge RPC only');
+    assert.equal(ownerPage.byId.get('owner-account').textContent, `${OWNER_WALLET.slice(0, 6)}…${OWNER_WALLET.slice(-4)}`);
+    assert.deepEqual(ownerWallet.sent, []);
+    const requests = ownerWallet.calls.filter((method) => method === 'eth_requestAccounts').length;
+    ownerWallet.emit('chainChanged', '0x1159');
+    await controller.connect();
+    assert.equal(ownerWallet.calls.filter((method) => method === 'eth_requestAccounts').length, requests + 1, 'a wallet event re-checks the page once');
+  } finally {
+    globalThis.fetch = original;
   }
 });
