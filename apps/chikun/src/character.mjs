@@ -16,6 +16,35 @@ export const CHIKUN_CLIPS = Object.freeze({
   // The landing approach is jump_flight played backwards (prone to upright), so no extra atlas is shipped.
   flare:Object.freeze({name:'flare',frames:24,fps:30,loop:false,sheet:'jump_flight',reverse:true}),
 });
+// Unlockable looks (contract §7.9), keyed by the bridge allowlist ids
+// (chikun-bridge-protocol.mjs CHIKUN_COSMETIC_IDS). Draw-time only: the
+// canonical flight, its evidence and its result never read them.
+// - coat: a hue and saturation filter on the sprite;
+// - trail: the colour of the flap, obstacle and coin bursts (main.mjs);
+// - hat: pixel rectangles [x, y, w, h, colour] in hat pixels (3 sprite pixels
+//   each), x from the crest centre, y up from the base line sunk into the crest.
+export const CHIKUN_COSMETIC_LOOKS = Object.freeze({
+  coat: Object.freeze({
+    'chikun-coat-golden': 'sepia(0.55) saturate(2.4) hue-rotate(-8deg)',
+    'chikun-coat-glacier': 'sepia(0.45) hue-rotate(160deg) saturate(1.8)',
+    'chikun-coat-emerald': 'sepia(0.45) hue-rotate(70deg) saturate(1.9)',
+    'chikun-coat-royal': 'sepia(0.4) hue-rotate(215deg) saturate(1.7)',
+  }),
+  trail: Object.freeze({ 'chikun-trail-gold': '#ffd84a', 'chikun-trail-neon': '#19f7ff', 'chikun-trail-ember': '#ff7b2f' }),
+  hat: Object.freeze({
+    'chikun-hat-cap': Object.freeze([[-4, -4, 8, 4, '#345dcc'], [-3, -5, 6, 1, '#345dcc'], [3, -1, 6, 2, '#1d3480'], [-1, -6, 2, 1, '#eaf2ff'], [-2, -3, 3, 1, '#6f9bff']]),
+    'chikun-hat-top': Object.freeze([[-7, -1, 14, 2, '#1c1c24'], [-4, -11, 8, 10, '#1c1c24'], [-4, -4, 8, 2, '#c8102e'], [-3, -10, 1, 5, '#3c3c4c']]),
+    'chikun-hat-crown': Object.freeze([[-6, -3, 12, 3, '#ffd23f'], [-6, -1, 12, 1, '#c99a1a'], [-6, -6, 2, 3, '#ffd23f'], [-1, -7, 2, 4, '#ffd23f'], [4, -6, 2, 3, '#ffd23f'], [-3, -2, 2, 1, '#ff3df2'], [2, -2, 2, 1, '#19f7ff']]),
+  }),
+});
+// Hat base line below the crest top, in sprite pixels, so the hat sits on the head.
+const HAT_SINK = 9;
+// Paints one hat: a dark outline pass, then the colour pass (pixel-art read).
+export function drawChikunHat(ctx, rects, x, y, unit) {
+  ctx.fillStyle = '#04121f';
+  for (const [rx, ry, w, h] of rects) ctx.fillRect(x + (rx - 1) * unit, y + (ry - 1) * unit, (w + 2) * unit, (h + 2) * unit);
+  for (const [rx, ry, w, h, color] of rects) { ctx.fillStyle = color; ctx.fillRect(x + rx * unit, y + ry * unit, w * unit, h * unit); }
+}
 export const CHIKUN_CHARACTERS = Object.freeze({ 'chikun-original': Object.freeze({id:'chikun-original',name:'Chikun',base:'/assets/generated/chikun-flight-v3/',frameSize:192,columns:4}) });
 // Ground speed multiplier at which the gait changes from a brisk walk to a sprint.
 export const CHIKUN_RUN_SPEED = 1.15;
@@ -142,6 +171,23 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
   composite.width=composite.height=outgoing.width=outgoing.height=character.frameSize;
   const mixCtx=composite.getContext('2d'),oldCtx=outgoing.getContext('2d');
   let loading=null,finished=false;
+  // Hat anchors: the crest top of each sheet frame, found once from its red
+  // crest pixels on a half-size probe and cached per image.
+  const anchors=new WeakMap();let probe=null;
+  function headAnchor(img,frame) {
+    let frames=anchors.get(img);if(!frames)anchors.set(img,frames=new Map());
+    if(frames.has(frame))return frames.get(frame);
+    let anchor=null;
+    try{
+      probe??=document.createElement('canvas');probe.width=probe.height=96;
+      const p=probe.getContext('2d',{willReadFrequently:true});
+      p.clearRect(0,0,96,96);p.drawImage(img,(frame%4)*192,Math.floor(frame/4)*192,192,192,0,0,96,96);
+      const data=p.getImageData(0,0,96,96).data;let top=-1,sum=0,n=0;
+      for(let y=0;y<96&&(top<0||y<top+3);y++)for(let x=0;x<96;x++){const i=(y*96+x)*4;if(data[i+3]>150&&data[i]>150&&data[i+1]<90&&data[i+2]<110){if(top<0)top=y;sum+=x;n++;}}
+      if(n)anchor={x:sum/n*2,y:top*2};
+    }catch{anchor=null;}
+    frames.set(frame,anchor);return anchor;
+  }
   async function decode(img,url) {
     let timer;img.src=url;
     try {await Promise.race([img.decode(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Image timeout')),12000);})]);}
@@ -222,10 +268,12 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       if(options.event===current)seconds=(options.eventAge??0)*(CHIKUN_FLOURISHES.includes(current)?1:.8/.42);
       if(current==='victory_twirl'&&snapshot.terminal)seconds=options.terminalAge??0;
       if(Number.isFinite(options.previewTime))seconds=options.previewTime;
+      const hat=CHIKUN_COSMETIC_LOOKS.hat[options.cosmetics?.hat];let head=null;
       if(img){
         const s=sampleChikunFrame(current,reduced?0:seconds),px=character.frameSize;
         const paint=(frame,alpha)=>{mixCtx.globalAlpha=alpha*incoming;mixCtx.drawImage(img,(frame%4)*px,Math.floor(frame/4)*px,px,px,0,0,px,px);};
         paint(s.frame,1-s.mix);if(s.mix>0)paint(s.next,s.mix);
+        if(hat){const a=headAnchor(img,s.frame),b=s.mix>0?headAnchor(img,s.next):a;head=a&&b?{x:a.x+(b.x-a.x)*s.mix,y:a.y+(b.y-a.y)*s.mix}:a??b;}
       }else if(poster.complete&&poster.naturalWidth){mixCtx.globalAlpha=incoming;mixCtx.drawImage(poster,0,0,192,192);}
       else return false;
       mixCtx.globalAlpha=1;mixCtx.globalCompositeOperation='source-over';hasComposite=true;
@@ -251,7 +299,10 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       const sx=1+squash.x,sy=1-squash.x,anchor=grounded?size*.35:0;
       ctx.save();ctx.translate(x+recoil.x,y+bob);ctx.rotate(tilt+sway+lean.x);
       ctx.translate(0,anchor);ctx.scale(sx,sy);ctx.translate(0,-anchor);
-      ctx.drawImage(composite,-size/2,-size/2,size,size);ctx.restore();
+      ctx.filter=CHIKUN_COSMETIC_LOOKS.coat[options.cosmetics?.coat]??'none';
+      ctx.drawImage(composite,-size/2,-size/2,size,size);ctx.filter='none';
+      if(head){const k=size/192;drawChikunHat(ctx,hat,-size/2+head.x*k,-size/2+(head.y+HAT_SINK)*k,3*k);}
+      ctx.restore();
       return true;
     },
     dispose(){closed=true;images.clear();poster.src='';composite.width=outgoing.width=0;},

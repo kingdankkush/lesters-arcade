@@ -48,7 +48,7 @@ function serializedSize(value) {
 
 function validateSettings(value) {
   const booleanFields = ['musicEnabled', 'screenShake', 'gore', 'reduceMotion', 'reduceFlash', 'colorblindTags'];
-  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio'];
+  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio', 'cosmetics'];
   if (!isPlainRecord(value)) return 'settings must be a plain object';
   const allowed = new Set([...booleanFields, ...optionalFields]);
   for (const key of Object.keys(value)) if (!allowed.has(key)) return `settings has unexpected field: ${key}`;
@@ -67,6 +67,13 @@ function validateSettings(value) {
     if (Object.hasOwn(value, field) && (!Number.isFinite(value[field]) || value[field] < min || value[field] > max)) return `settings.${field} is out of range`;
   }
   if (Object.hasOwn(value, 'dynamicRange') && !['standard', 'night', 'wide'].includes(value.dynamicRange)) return 'settings.dynamicRange is invalid';
+  // Unlockable tints (contract §7.9): the parent resolves them from its own
+  // allowlist; the child draws them and never records them.
+  if (Object.hasOwn(value, 'cosmetics')) {
+    const cosmetics = value.cosmetics, cosmeticsError = exactKeys(cosmetics, ['heroTint', 'weaponTint'], 'settings.cosmetics');
+    if (cosmeticsError) return cosmeticsError;
+    for (const key in cosmetics) if (cosmetics[key] !== null && !integerInRange(cosmetics[key], 0, 0xffffff)) return 'settings.cosmetics is invalid';
+  }
   if (Object.hasOwn(value, 'keyboardBindings')) {
     const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
     const bindingError = exactKeys(value.keyboardBindings, actionIds, 'settings.keyboardBindings');

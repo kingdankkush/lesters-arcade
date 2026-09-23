@@ -8,6 +8,7 @@ import { createBoardFeedback } from './board-feedback.mjs';
 import { createBoardParticles, mobilePresentation } from './gameplay-particles.mjs';
 import { createBoardPiecePresentation } from './piece-presentation.mjs';
 import { createBoardPulse } from './board-pulse.mjs';
+import { piecePaletteFor, sceneGradeFor } from './cosmetic-palettes.mjs';
 
 export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
@@ -73,6 +74,9 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       board.layers.ghostLayer.visible = settings.video.ghostPiece;
       board.setGridLines(settings.video.gridLines);
       board.setColorblindPieces(settings.accessibility.colorblindPieces);
+      // Unlockable looks (contract §7.9): piece palette and backdrop grade, presentation only.
+      board.setPalette(piecePaletteFor(settings));
+      tree.layers.layerBackdrop.tint = tree.layers.layerParticleFar.tint = sceneGradeFor(settings);
       board.layers.effectLayer.visible = !settings.accessibility.reduceMotion;
       board.setTrails(false);
       const sparks=particles.draw(now,settings);

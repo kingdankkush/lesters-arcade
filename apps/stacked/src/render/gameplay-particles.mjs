@@ -1,5 +1,6 @@
 // Presentation only: consumes committed snapshots; never feeds the simulation.
 import { locateCommittedLock } from './lock-projection.mjs';
+import { pieceColorList, piecePaletteFor } from './cosmetic-palettes.mjs';
 export const mobilePresentation = ({ width = 1440, coarsePointer = false } = {}) => coarsePointer || width <= 600;
 const COLORS = { I:0x32d9ff,J:0x5688ff,L:0xffa447,O:0xffd84d,S:0x60e889,T:0xb66cff,Z:0xff6078 };
 const intensityFor = settings => settings.accessibility.reduceMotion ? 0 : Math.max(0, Math.min(1, settings.video.effectsIntensity ?? .7));
@@ -45,7 +46,9 @@ export function createGameplayParticles({ geometry, mobile = false }) {
     if(!strength) { reset(); lastTick=after.tick; return; }
     const minimal=settings.video.reducedEffects, scale=(minimal?.3:1)*(.5+strength*.5);
     const a=before.active,b=after.active, locked=after.piecesLocked>before.piecesLocked;
-    const tint=COLORS[a?.kind]??0xa9f5ff;
+    // Unlockable piece skin (contract §7.9): sparks match the skinned pieces.
+    const palette=piecePaletteFor(settings)??COLORS, paletteList=palette===COLORS?Object.values(COLORS):pieceColorList(palette);
+    const tint=palette[a?.kind]??0xa9f5ff;
     if(locked) {
       const placement=locateCommittedLock(before,after,geometry);
       const cells=visible(placement?.cells??landing(before));
@@ -76,7 +79,7 @@ export function createGameplayParticles({ geometry, mobile = false }) {
           const row=state.rows[i%tier], x=((i*.61803398875)%1)*316+2;
           const speed=45+tier*28+(i%7)*9, sign=x<160?-1:1;
           emit(x,(19-row)*32+16,sign*speed,-35-Math.sin(i*2.4)*speed*.55,520+tier*95+(i%4)*35,
-            1.8+tier*.35,i%7===0?0xe8fcff:Object.values(COLORS)[Math.max(0,(before.board[row*10+Math.min(9,Math.floor(x/32))]||((i%7)+1))-1)]??tint,now,i*1.3);
+            1.8+tier*.35,i%7===0?0xe8fcff:paletteList[Math.max(0,(before.board[row*10+Math.min(9,Math.floor(x/32))]||((i%7)+1))-1)]??tint,now,i*1.3);
         }
       }
     } else if(a&&b&&before.piecesSpawned===after.piecesSpawned&&before.holdsUsed===after.holdsUsed) {
