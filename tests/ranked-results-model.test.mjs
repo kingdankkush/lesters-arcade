@@ -273,6 +273,15 @@ test('NFT-flagged unlocks show no NFT wording without a token id', () => {
   assert.deepEqual({ ...unknown.achievements[0] }, { id: 'retired-id', title: 'Old', tier: 'gold', image: null, tokenId: null, tokenHref: null });
 });
 
+test('an unpersisted STACKED body asks the player to keep the tab open until the server holds it', () => {
+  const notice = (state, extra) => buildRankedResultsModel({ snapshot: { ...snapshotFor(state, { gameId: 'stacked', ...extra }), persisted: false }, context: contextFor('stacked') }).notice;
+  assert.equal(notice('verifying', { server: null }), 'Keep this tab open until publishing finishes');
+  assert.equal(notice('saved-locally', { server: null }), 'Keep this tab open until publishing finishes');
+  assert.equal(notice('queued'), null, 'the server stores the evidence on the first successful POST');
+  assert.equal(notice('published'), null);
+  assert.equal(buildRankedResultsModel({ snapshot: snapshotFor('verifying', { gameId: 'stacked', server: null }), context: contextFor('stacked') }).notice, null, 'persisted bodies need no notice');
+});
+
 test('a missing or unknown snapshot degrades to an honest screen', () => {
   const none = buildRankedResultsModel({ snapshot: null, context: { gameId: 'stacked' } });
   assert.equal(none.state, 'preview');

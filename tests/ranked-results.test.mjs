@@ -403,6 +403,17 @@ test('actions close the screen, then run; a new run replaces an open screen', as
   assert.equal(replacement.isOpen, false, 'Back always closes, even without an action');
 });
 
+test('the keep-this-tab-open notice shows only while an unpersisted body is unsettled', () => {
+  const { view, handle } = setup({ snapshot: { ...snapshotFor('verifying', { server: null }), persisted: false } });
+  const notice = byClass(view.element, 'rr-notice');
+  assert.equal(notice.hidden, false);
+  assert.equal(notice.textContent, 'Keep this tab open until publishing finishes');
+  assert.equal(notice.getAttribute('role'), 'status');
+  handle.set(snapshotFor('queued'));
+  assert.equal(notice.hidden, true);
+  view.close();
+});
+
 test('phase 2 token ids show Minted with a token link', () => {
   const nftId = nftAchievementIds('stacked')[0];
   const snapshot = { ...snapshotFor('published'), gameId: 'stacked' };

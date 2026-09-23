@@ -148,6 +148,7 @@
 .rr-banner[data-kind="practice"] { border-color: rgba(180, 196, 223, 0.45); background: rgba(12, 20, 38, 0.72); }
 
 .rr-banner-text { margin: 0; font-weight: 800; }
+.rr-notice { margin: 0; padding: 10px 14px; border-left: 4px solid var(--crypto-cyan, #19f7ff); background: rgba(7, 17, 36, 0.82); font-weight: 700; }
 .rr-banner-detail { margin: 0; color: var(--text-secondary, #b4aed4); font-size: 0.88rem; }
 
 .rr-section { display: grid; gap: 10px; min-width: 0; }

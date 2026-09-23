@@ -22,6 +22,12 @@ export const RANKED_RESULT_GAMES = Object.freeze({
   stacked: 'STACKED',
 });
 
+// §7.2: STACKED bodies above 240,000 base64 characters are not persisted, so
+// a reload would lose the run before it is stored on the server. The client
+// marks such a snapshot `persisted: false`.
+export const KEEP_TAB_OPEN_TEXT = 'Keep this tab open until publishing finishes';
+const UNSETTLED_STATES = new Set(['waiting-entry', 'verifying', 'queued', 'publishing', 'retrying', 'saved-locally']);
+
 export const BANNER_TEXT = Object.freeze({
   preview: 'Ranked preview · not published while online settlement is off',
   practice: "Entry didn't confirm, so this run was practice",
@@ -281,6 +287,7 @@ export function buildRankedResultsModel({ snapshot, context = {}, standing = nul
     achievements: Object.freeze(achievementsFor(gameId, server)),
     actions: Object.freeze({ share: share !== null, retry: state === 'saved-locally', playAgain: true, practice: true, profile: ADDRESS.test(wallet) }),
     banner: bannerFor({ state, error, server }),
+    notice: snap.persisted === false && UNSETTLED_STATES.has(state) && !server ? KEEP_TAB_OPEN_TEXT : null,
     share,
   });
 }

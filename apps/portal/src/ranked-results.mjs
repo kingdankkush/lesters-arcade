@@ -159,6 +159,9 @@ export function openRankedResults({
     return node;
   };
 
+  const notice = make('p', 'rr-notice');
+  notice.setAttribute('role', 'status');
+
   const statsSection = section('Run stats', 'rr-stats-section');
   const statsList = make('dl', 'rr-stats');
   statsSection.appendChild(statsList);
@@ -201,7 +204,7 @@ export function openRankedResults({
   nav.append(playAgain, practice, profile, back);
   actionsBlock.append(shareBlock, nav);
 
-  dialog.append(closeButton, hero, banner, statsSection, timelineSection, achievementsSection, actionsBlock);
+  dialog.append(closeButton, hero, banner, notice, statsSection, timelineSection, achievementsSection, actionsBlock);
 
   function currentSnapshot() {
     try {
@@ -355,6 +358,8 @@ export function openRankedResults({
     bannerText.textContent = model.banner.text ?? '';
     bannerDetail.textContent = model.banner.detail ?? '';
     bannerDetail.hidden = !model.banner.detail;
+    notice.textContent = model.notice ?? '';
+    notice.hidden = !model.notice;
     retryButton.hidden = !model.actions.retry;
     retryButton.disabled = retrying;
     retryButton.textContent = retrying ? 'Retrying…' : 'Retry now';
