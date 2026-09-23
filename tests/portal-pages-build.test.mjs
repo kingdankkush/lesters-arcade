@@ -70,24 +70,24 @@ test('the live render states the launch copy and drops the preview copy', () => 
     for (const [attribute, key] of [['name', 'description'], ['property', 'og:description'], ['name', 'twitter:description']]) {
       assert.equal(metaContent(index, attribute, key), escapeHtml(launch.description), key);
     }
-    assert.match(launch.description, /0.102 testnet zkLTC per run, with verified scores published on LitVM/);
+    assert.match(launch.description, /0\.102 testnet zkLTC per run, with verified scores published on LitVM/);
     const website = structuredData(index)['@graph'].find(node => node['@type'] === 'WebSite');
     assert.equal(website.description, launch.description);
     for (const [question, answer] of launch.faq) assert.ok(index.includes(`<details><summary>${escapeHtml(question)}</summary><p>${escapeHtml(answer)}</p></details>`), question);
-    assert.match(index, /0.102 zkLTC per run on the LitVM LiteForge testnet: a 0\.1 zkLTC entry, split 85% to the game&#39;s developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve/);
+    assert.match(index, /0\.102 zkLTC per run on the LitVM LiteForge testnet: a 0\.1 zkLTC entry, split 85% to the game&#39;s developer and 15% to the arcade, plus a 0\.002 zkLTC settlement reserve/);
     assert.match(index, /Hard Money Heroes runs are plausibility-checked against the game&#39;s limits; they are not replayed\./);
     assert.match(block(index, 'scores-lead'), /global Weekly, Monthly, and All-time leaderboards/);
     assert.equal(block(index, 'mode-ranked'), escapeHtml(launch.modeSelect['lester-blaster'].ranked));
 
     const trust = pages['trust.html'];
-    assert.match(block(trust, 'ranked-status'), /Ranked is live on the LitVM LiteForge testnet\. A Ranked run costs 0.102 zkLTC/);
+    assert.match(block(trust, 'ranked-status'), /Ranked is live on the LitVM LiteForge testnet\. A Ranked run costs 0\.102 zkLTC/);
     assert.match(block(trust, 'ranked-status'), /Chikun&#39;s Escape and STACKED runs are replayed from their recorded inputs/);
     assert.match(block(trust, 'ranked-status'), /Hard Money Heroes runs are plausibility-checked against the game&#39;s limits and are not replayed/);
     assert.match(block(trust, 'ranked-status'), /Testnet entries are not refunded\./);
     assert.match(block(trust, 'ranked-storage'), /Neon Postgres database: your wallet address; your verified Ranked sessions with their evidence/);
     assert.match(block(trust, 'ranked-storage'), /keyed hashes \(HMAC\) of IP addresses in short time windows, not raw IP addresses/);
 
-    assert.match(pages['llms.txt'], /## Current scope\nRanked costs 0.102 zkLTC per run/);
+    assert.match(pages['llms.txt'], /## Current scope\nRanked costs 0\.102 zkLTC per run/);
     assert.match(pages['llms.txt'], /How it works\]\(https:\/\/lestersarcade\.io\/#how-it-works\): Free play with no wallet, and wallet sign-in for Ranked runs on the LitVM testnet\./);
     assert.equal(JSON.parse(pages['manifest.webmanifest']).description, launch.description);
     assert.match(pages['discover/hard-money-heroes.html'], /the arcade server plausibility-checks each run \(it is not replayed\) before publishing it on LitVM/);
@@ -123,7 +123,7 @@ test('the preview render keeps the preview wording and names no board period', (
     assert.match(block(pages['trust.html'], 'ranked-storage'), /stay in this browser/);
     assert.match(pages['llms.txt'], /No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available\./);
     for (const [name, text] of Object.entries(pages)) {
-      assert.doesNotMatch(withoutModal(text), /\byearly\b|0.102|Neon Postgres|plausibility/i, name);
+      assert.doesNotMatch(withoutModal(text), /\byearly\b|0\.102|Neon Postgres|plausibility/i, name);
     }
   });
 });
@@ -153,7 +153,7 @@ test('the CLI writes an overridden render only to --out and leaves the committed
     assert.equal(result.stderr, '');
     assert.match(readFileSync(join(dir, 'trust.html'), 'utf8'), /Neon Postgres database/);
     assert.deepEqual(readAll(portal), before);
-    for (const game of PORTAL_GAMES) assert.match(readFileSync(join(dir, `discover/${game.slug}.html`), 'utf8'), /0.102 testnet zkLTC per run/);
+    for (const game of PORTAL_GAMES) assert.match(readFileSync(join(dir, `discover/${game.slug}.html`), 'utf8'), /0\.102 testnet zkLTC per run/);
   });
 });
 
