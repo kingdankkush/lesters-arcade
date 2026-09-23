@@ -21,7 +21,7 @@ function node(tag = 'div', props = {}) {
 test('leaderboard route restores default state and renders an empty ranked board', () => {
   const grid = node('grid');
   let modelInput = null;
-  const routeState = { cadence: 'all-time', gameId: 'lester-blaster', search: '', sortKey: 'score', sortDir: 'desc' };
+  const routeState = { gameId: 'lester-blaster' };
   const route = createOfficialLeaderboardRoute({
     dom: { officialCabinetGrid: grid },
     routeState,
@@ -51,15 +51,17 @@ test('leaderboard route restores default state and renders an empty ranked board
     renderArcadeIcon: () => node('icon'),
     renderAvatarChip: () => node('avatar'),
     resolveDisplayName: (_profile, wallet) => wallet,
-    summarizeVisibleLeaderboardProvenance: () => ({ label: 'Showing 0 players · 0 official · 0 house scores', houseScoreCount: 0, officialCount: 0 }),
   });
 
   route.renderLeaderboards();
   assert.equal(grid.children.length, 2);
   assert.match(JSON.stringify(grid.children[0]), /Leaderboard Filters/);
-  assert.match(JSON.stringify(grid.children[1]), /No verified ranked scores in this period yet/);
-  assert.deepEqual(routeState, { cadence: 'all-time', gameId: 'lester-blaster', source: 'official', search: '', sortKey: 'score', sortDir: 'desc' });
+  assert.match(JSON.stringify(grid.children[1]), /No unpublished local ranked scores are available in this period/);
+  assert.match(JSON.stringify(grid.children[1]), /Preview · this device/);
+  assert.deepEqual(routeState, { gameId: 'lester-blaster', cadence: 'weekly', search: '', sortKey: 'score', sortDir: 'desc' }, 'Weekly is the default period and there is no source');
   assert.equal(modelInput.limit, 5000, 'provenance must be filtered before the visible top-50 truncation');
+  assert.equal(modelInput.source, 'local', 'preview reads only the rows recorded on this device');
+  assert.equal(modelInput.cadence, 'weekly');
 
   const weekly = JSON.stringify(grid.children[0]).includes('WEEKLY');
   assert.equal(weekly, true);

@@ -3,7 +3,10 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 
 import {
+  HOSTED_LEADERBOARD_NOTICE,
   LEADERBOARD_DEVICE_LOCAL_NOTICE,
+  LEADERBOARD_PREVIEW_LABEL,
+  hostedLeaderboardStatusCopy,
   LEADERBOARD_GAME_BANNERS,
   LEADERBOARD_GAME_PREFERENCE_KEY,
   LEADERBOARD_PAGE_SIZE,
@@ -154,20 +157,38 @@ test('game selection resolves URL query, then session choice, then stored prefer
   assert.equal(LEADERBOARD_GAME_PREFERENCE_KEY, 'lesters-arcade-scores-game-v1');
 });
 
-test('window labels and empty states stay truthful about device-local records', () => {
+test('window labels and empty states describe hosted and preview boards truthfully', () => {
   assert.deepEqual(describeLeaderboardWindow('weekly', '2026-W38'), { cadence: 'weekly', label: 'This week', tab: 'WEEKLY', detail: '2026-W38' });
   assert.equal(describeLeaderboardWindow('all-time', 'all-time').detail, '');
+  // Preview (A22): this device only, labelled as such.
+  assert.equal(LEADERBOARD_PREVIEW_LABEL, 'Preview · this device');
   assert.match(LEADERBOARD_DEVICE_LOCAL_NOTICE, /device-local preview/i);
   assert.match(LEADERBOARD_DEVICE_LOCAL_NOTICE, /wiped per game/i);
   assert.match(LEADERBOARD_DEVICE_LOCAL_NOTICE, /reset is at mainnet/i);
   assert.match(STACKED_LOCAL_NOTICE, /No fees, prizes or online ranking/);
-  assert.equal(leaderboardEmptyState({ source: 'official' }).title, 'No verified ranked scores in this period yet. Play Ranked and publish a settled score to claim the top spot.');
-  assert.equal(leaderboardEmptyState({ source: 'local' }).title, 'No unpublished local ranked scores are available in this period.');
-  assert.equal(leaderboardEmptyState({ source: 'demo' }).title, 'No synthetic house scores are available for this period.');
-  assert.match(leaderboardEmptyState({ gameId: 'stacked', source: 'official' }).title, /Online verified STACKED scores are not available/);
-  const searchEmpty = leaderboardEmptyState({ source: 'official', search: ' zed ' });
+  const preview = leaderboardEmptyState({ hosted: false, gameTitle: "Chikun's Escape" });
+  assert.equal(preview.title, 'No unpublished local ranked scores are available in this period.');
+  assert.equal(preview.copy, "Finish a Ranked run in Chikun's Escape on this device to place here.");
+  assert.equal(preview.action, null, 'preview has no source tab to switch to');
+  // Hosted: verified rows only, with an inviting empty board per period (guide §5.8).
+  assert.match(HOSTED_LEADERBOARD_NOTICE, /Verified Ranked runs published on LitVM/);
+  assert.match(HOSTED_LEADERBOARD_NOTICE, /ties go to whoever got there first/);
+  assert.equal(leaderboardEmptyState({ hosted: true }).title, 'Be the first on this week’s board');
+  assert.equal(leaderboardEmptyState({ hosted: true, period: 'monthly' }).title, 'Be the first on this month’s board');
+  assert.equal(leaderboardEmptyState({ hosted: true, period: 'all-time' }).title, 'Be the first on the all-time board');
+  assert.equal(leaderboardEmptyState({ hosted: true, gameTitle: 'STACKED' }).action, 'play-ranked', 'STACKED gets the same inviting state as every game');
+  for (const hosted of [true, false]) {
+    const text = JSON.stringify(leaderboardEmptyState({ hosted }));
+    assert.doesNotMatch(text, /House|Local Preview|Switch to|NFT/i);
+  }
+  assert.equal(hostedLeaderboardStatusCopy('loading').title, 'Loading verified scores…');
+  assert.equal(hostedLeaderboardStatusCopy('offline').action, 'retry');
+  assert.equal(hostedLeaderboardStatusCopy('error').title, 'Scores are unavailable right now.');
+  assert.equal(hostedLeaderboardStatusCopy('ready'), null);
+  const searchEmpty = leaderboardEmptyState({ hosted: false, search: ' zed ' });
   assert.equal(searchEmpty.kind, 'search');
   assert.equal(searchEmpty.title, 'No players match "zed".');
+  assert.match(leaderboardEmptyState({ hosted: true, search: 'zed' }).copy, /at least four characters/);
   assert.equal(formatPostedDate('nope'), '—');
   assert.equal(formatPostedDate('2026-09-16T00:00:00.000Z', Date.parse('2026-09-16T12:00:00.000Z')), 'today');
   assert.equal(formatPostedDate('2026-09-15T00:00:00.000Z', Date.parse('2026-09-16T12:00:00.000Z')), 'yesterday');
@@ -237,7 +258,6 @@ function makeRoute({ entries, connectedWallet = null, routeState, windowRef, sto
     renderArcadeIcon: () => node('icon'),
     renderAvatarChip: () => node('avatar'),
     resolveDisplayName: (_profile, wallet) => wallet,
-    summarizeVisibleLeaderboardProvenance: (rows) => ({ label: `Showing ${rows.length} players`, houseScoreCount: 0, officialCount: rows.filter((entry) => entry.settlementTxHash).length }),
   });
   return { grid, route, calls };
 }
@@ -301,7 +321,6 @@ test('route persists the game choice to the URL query and stored preference', ()
   const chikunBanner = find(grid.children[0], (candidate) => candidate.dataset?.game === 'chikun')[0];
   chikunBanner.listeners.click();
   assert.equal(routeState.gameId, 'chikun');
-  assert.equal(routeState.source, 'local');
   assert.deepEqual(replaced, ['/scores?game=chikun']);
   assert.equal(stored.get(LEADERBOARD_GAME_PREFERENCE_KEY), 'chikun');
 
@@ -372,16 +391,15 @@ test('route filters, sorts, paginates and highlights the connected wallet', () =
   assert.equal(rows.some((candidate) => candidate.id === 'leaderboardYourRow'), true);
 });
 
-test('route shows a truthful empty state with a shortcut to the local standing', () => {
-  const routeState = { cadence: 'daily', gameId: 'lester-blaster', source: 'official', search: '', sortKey: 'score', sortDir: 'desc' };
-  const { grid, route } = makeRoute({ entries: {}, routeState });
+test('preview shows a truthful empty state with no source tabs and no House rows', () => {
+  const routeState = { cadence: 'daily', gameId: 'stacked', search: '', sortKey: 'score', sortDir: 'desc' };
+  const { grid, route, calls } = makeRoute({ entries: {}, routeState });
   route.renderLeaderboards();
   const board = grid.children[1];
-  assert.match(text(board), /No verified ranked scores in this period yet/);
+  assert.match(text(board), /No unpublished local ranked scores are available in this period/);
+  assert.match(text(board), /Preview · this device/);
   assert.match(text(board), /Connect a wallet to see your placement/);
-  const showLocal = find(board, (candidate) => candidate.textContent === 'Show Local Preview')[0];
-  assert.ok(showLocal);
-  showLocal.listeners.click();
-  assert.equal(routeState.source, 'local');
-  assert.match(text(grid.children[1]), /No unpublished local ranked scores are available in this period/);
+  assert.doesNotMatch(text(grid), /Show Local Preview|House Demo|Local Preview|Verified Ranked/);
+  assert.equal(find(grid, (candidate) => String(candidate.className ?? '').includes('leaderboard-source-tab')).length, 0, 'no source tabs');
+  assert.ok(calls.every((input) => input.source === 'local'), 'preview aggregates only this device’s rows');
 });

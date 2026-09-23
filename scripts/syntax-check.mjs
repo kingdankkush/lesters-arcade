@@ -362,6 +362,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/arcade-avatars.mjs',
   'tests/index-api-client.test.mjs',
   'tests/profile-chain.test.mjs',
+  'tests/hosted-leaderboard.test.mjs',
   "apps/portal/src/hmh-campaign-levels.mjs",
   "apps/portal/src/district-generator.mjs",
   "apps/portal/src/hmh-level-one-sketch-layout.mjs",

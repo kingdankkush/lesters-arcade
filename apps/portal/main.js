@@ -289,7 +289,7 @@ import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMini
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness, loadEthers, openRankedSession, requestVerifierAttestation } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
-import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance, summarizeVisibleLeaderboardProvenance } from './src/leaderboard-seed.mjs';
+import { formatSurvive, leaderboardEntryProvenance, purgeHouseSeedRows } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
 import { createProfileSync, buildProfileDocument, mergeRemoteProfile } from './src/profile-sync-client.mjs';
 import { createIndexApiClient } from './src/index-api-client.mjs';
@@ -1798,14 +1798,10 @@ const ARCADE_STORAGE = (() => {
   try { return globalThis.localStorage ?? null; } catch { return null; }
 })();
 loadArcadeState(state, ARCADE_STORAGE);
-// Seed the global leaderboard with a believable Top-50 of AI players so the
-// leaderboard UI (podium, rows, sort/filter/search, ranked highlights) can be
-// evaluated with real-looking data. These are local-only synthetic seeds — they
-// never settle on-chain. Idempotent guard so it only seeds once.
-if (!state.__seededLeaderboard) {
-  applySeedLeaderboard(state, 'lester-blaster', recordCadenceScore, { count: 50 });
-  state.__seededLeaderboard = true;
-}
+// Clean slate (D4): nothing seeds the boards any more. House Demo rows an older
+// build stored in this browser are dropped on load, so they never rank, fill a
+// period bucket or show as a player.
+purgeHouseSeedRows(state);
 // Debounced save so bursts of mutations (run submit -> achievements -> rename)
 // produce one write. Also flushed on pagehide/visibilitychange for mobile.
 let persistTimer = 0;
@@ -4789,10 +4785,14 @@ const portalRouteController = createPortalRouteController({
   getSelectedGameId: () => selectedGameId,
   setSelectedGameId: (gameId) => { selectedGameId = gameId; },
   getSessionId: () => currentSession?.urlSessionId ?? null,
+  getViewedWallet: () => profileRouteState.viewedWallet ?? null,
+  setViewedWallet: (wallet) => { profileRouteState.viewedWallet = wallet ?? null; },
   getCharacterPanel: () => dom.officialCharacterSelect,
   render,
-  hydrateLeaderboard: hydrateLeaderboardFromChain,
-  hydrateProfile: hydrateProfileFromChain,
+  // Index-backed fills (guide §5.7-§5.8); both are no-ops in preview, which
+  // retires the old 200-session chain scan and its RPC reads.
+  hydrateLeaderboard: hydrateLeaderboardFromIndex,
+  hydrateProfile: hydrateProfileFromIndex,
   isHtmlElement: (value) => value instanceof HTMLElement,
 });
 const setOfficialView = portalRouteController.setView;
@@ -4904,29 +4904,16 @@ function mergeChainRecordIntoState(rec, gameId) {
   return true;
 }
 
-async function hydrateLeaderboardFromChain() {
-  if (_hydratingLeaderboard) return;
-  _hydratingLeaderboard = true;
-  try {
-    await ensureGameIdHashes();
-    const provider = detectEthereumProvider();
-    const { fetchGlobalLeaderboard } = await import('./src/litvm-chain-client.mjs');
-    const res = await fetchGlobalLeaderboard({ walletProvider: provider, scan: 200, top: 200 });
-    if (!res.ok || !res.records.length) return;
-    let merged = 0;
-    for (const rec of res.records) {
-      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase());
-      if (mergeChainRecordIntoState(rec, gameId)) merged += 1;
-    }
-    if (merged > 0) {
-      persistArcadeStateSoon();
-      if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
-    }
-  } catch (err) {
-    console.warn('[chain] leaderboard hydration failed (showing local only):', err?.message || err);
-  } finally {
-    _hydratingLeaderboard = false;
-  }
+// Scores page fill (guide §5.8): the verified boards come from GET
+// /api/leaderboard. In preview this is a no-op: the page shows this device's
+// Ranked runs and makes no request (A22).
+function hydrateLeaderboardFromIndex() {
+  if (!HOSTED_PROFILE_SYNC) return;
+  officialLeaderboardRoute.hydrate().catch((error) => console.warn('[Scores] verified board unavailable:', error?.message || error));
+}
+
+function hydrateProfileFromIndex() {
+  void hydrateProfileFromChain();
 }
 
 async function hydrateProfileFromChain() {
@@ -4995,13 +4982,21 @@ const officialProfileRoute = createOfficialProfileRoute({
 const renderOfficialProfile = officialProfileRoute.renderProfile;
 
 const leaderboardRouteState = {
-  cadence: 'all-time',
+  cadence: 'weekly',
   gameId: 'lester-blaster',
-  source: 'official',
   search: '',
   sortKey: 'score',
   sortDir: 'desc',
 };
+
+// Opens mode select for a game (the Scores empty state's Play Ranked).
+function openModeSelectFor(gameId) {
+  selectedGameId = gameId;
+  currentSession = null;
+  lastCompletedSession = null;
+  lastRunResult = null;
+  setOfficialView('mode-select');
+}
 
 const officialLeaderboardRoute = createOfficialLeaderboardRoute({
   appendText,
@@ -5021,7 +5016,11 @@ const officialLeaderboardRoute = createOfficialLeaderboardRoute({
   renderAvatarChip,
   resolveDisplayName,
   routeState: leaderboardRouteState,
-  summarizeVisibleLeaderboardProvenance,
+  hosted: HOSTED_PROFILE_SYNC,
+  indexApi,
+  playRanked: (gameId) => { playSfxCue('menu-click'); openModeSelectFor(gameId); },
+  viewProfile: (wallet) => { playSfxCue('menu-click', 0.05); setOfficialView('profile', { wallet }); },
+  isActive: () => officialAppStep === 'leaderboards',
 });
 const renderOfficialLeaderboards = officialLeaderboardRoute.renderLeaderboards;
 
