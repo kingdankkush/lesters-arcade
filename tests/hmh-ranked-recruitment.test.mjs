@@ -41,3 +41,42 @@ test('earned characters survive migration when older scoped counts are absent', 
   assert.equal(profile.unlocks.characters.lilly, true);
   assert.equal(profile.preferences.selectedCharacterId, 'lilly');
 });
+
+// Hosted mode (contract §7.9, D4): only verified Ranked runs from the index count.
+const TAMPERED = Object.freeze({
+  achievements: ['getaway-clear', 'ten-paid-runs'],
+  progress: { 'lester-blaster': { paidRuns: 500 } },
+  unlocks: { characters: { 'lester-original': true, lilly: true } },
+  preferences: { selectedCharacterId: 'lilly' },
+});
+
+test('hosted recruitment counts verified runs at 5 and 10 and ignores local flags and migrations', () => {
+  for (const verifiedRuns of [0, 4, 5, 9, 10, 11]) {
+    const profile = structuredClone(TAMPERED);
+    const unlocks = buildCharacterUnlockMap(profile, undefined, { verifiedRuns });
+    assert.equal(unlocks['lester-original'], verifiedRuns >= 5, `Lester at ${verifiedRuns} verified runs`);
+    assert.equal(unlocks.lilly, verifiedRuns >= 10, `Lilly at ${verifiedRuns} verified runs`);
+    assert.equal(unlocks['lit-commando'], true);
+    const entries = buildCharacterSelectEntries([{ id: 'lester-original' }, { id: 'lilly' }], profile, undefined, { verifiedRuns });
+    assert.equal(entries[0].unlockProgress.current, Math.min(5, verifiedRuns));
+    assert.equal(entries[1].unlockProgress.current, Math.min(10, verifiedRuns));
+    assert.equal(entries[1].unlockProgress.source, 'verified');
+    assert.match(entries[1].unlockProgress.note, /Verified HMH Ranked games/);
+  }
+  // Preview keeps today's device-local logic for the very same profile.
+  const preview = buildCharacterUnlockMap(structuredClone(TAMPERED));
+  assert.deepEqual([preview['lester-original'], preview.lilly], [true, true]);
+});
+
+test('hosted mode before the profile loads locks both heroes and repairs a locked selection', () => {
+  for (const options of [{ verifiedRuns: null }, { hosted: true }, { verifiedRuns: 'many' }, { verifiedRuns: -3 }]) {
+    const unlocks = buildCharacterUnlockMap(structuredClone(TAMPERED), undefined, options);
+    assert.deepEqual([unlocks['lester-original'], unlocks.lilly], [false, false], JSON.stringify(options));
+  }
+  const profile = structuredClone(TAMPERED);
+  const synced = syncConfiguredCharacterUnlocks(profile, undefined, { verifiedRuns: 6 });
+  assert.deepEqual([synced['lester-original'], synced.lilly], [true, false]);
+  assert.equal(profile.preferences.selectedCharacterId, 'lit-commando', 'a locked Lilly selection falls back to a starter');
+  // hosted:false wins over a stray count and keeps the local path.
+  assert.equal(buildCharacterUnlockMap(structuredClone(TAMPERED), undefined, { hosted: false, verifiedRuns: 0 }).lilly, true);
+});

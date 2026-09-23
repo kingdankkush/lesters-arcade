@@ -197,13 +197,31 @@ function profileRankedRuns(profile = {}) {
   return Number.isSafeInteger(count) && count >= 0 ? count : 0;
 }
 
-function gateProgress(unlock = {}, profile = {}) {
+// Hosted mode (HOSTED_PROFILE_SYNC; D4 clean slate, contract §7.9): the Lester
+// and Lilly gates count only verified Ranked runs, games['lester-blaster']
+// .confirmedRuns from GET /api/profile (or the unlockables slice's cached copy
+// of it). Local unlock flags, local run counts and the local getaway-clear
+// migration are ignored there, because a browser can edit all of them. The
+// options are { verifiedRuns, hosted }: passing verifiedRuns (a count, or null
+// while it is unknown) selects hosted mode, and hosted:true forces it. With
+// neither, preview mode keeps today's device-local logic. The server enforces
+// the same gates for Ranked (E3, §4.3.3 step 11).
+export function verifiedRunsFor(options = {}) {
+  if (!options || typeof options !== 'object') return null;
+  const hosted = options.hosted === true || (options.hosted !== false && options.verifiedRuns !== undefined);
+  if (!hosted) return null;
+  const count = Number(options.verifiedRuns);
+  return options.verifiedRuns !== null && Number.isSafeInteger(count) && count >= 0 ? count : 0;
+}
+
+function gateProgress(unlock = {}, profile = {}, verifiedRuns = null) {
   const gate = unlock.gate ?? (Number.isFinite(Number(unlock.paidRunsRequired))
     ? { type: 'ranked-matches-played', count: Number(unlock.paidRunsRequired) }
     : null);
   if (!gate || gate.type !== 'ranked-matches-played') return null;
   const required = Math.max(0, Math.floor(Number(gate.count) || 0));
-  const current = Math.min(required, profileRankedRuns(profile));
+  const verified = verifiedRuns !== null;
+  const current = Math.min(required, verified ? verifiedRuns : profileRankedRuns(profile));
   return Object.freeze({
     type: gate.type,
     current,
@@ -211,37 +229,44 @@ function gateProgress(unlock = {}, profile = {}) {
     remaining: Math.max(0, required - current),
     percent: required > 0 ? Math.round((current / required) * 100) : 100,
     meterText: `RANKED MATCHES: ${current} / ${required}`,
-    note: 'Completed HMH Ranked games on this wallet. Free mode does not count.',
+    note: verified
+      ? 'Verified HMH Ranked games on this wallet, published on LitVM. Free mode does not count.'
+      : 'Completed HMH Ranked games on this wallet. Free mode does not count.',
+    source: verified ? 'verified' : 'device',
   });
 }
 
-function unlockEarned(unlock = {}, profile = {}, earned = new Set()) {
-  const legacyMigrationAchievementId = normalizeId(unlock.legacyMigrationAchievementId);
-  const existing = profile.unlocks?.characters?.[normalizeId(unlock.id)] === true;
-  if (existing) return true;
-  if (legacyMigrationAchievementId && earned.has(legacyMigrationAchievementId)) return true;
-  const achievementId = normalizeId(unlock.achievementId);
-  if (achievementId && earned.has(achievementId)) return true;
-  const progress = gateProgress(unlock, profile);
+function unlockEarned(unlock = {}, profile = {}, earned = new Set(), verifiedRuns = null) {
+  if (verifiedRuns === null) {
+    const legacyMigrationAchievementId = normalizeId(unlock.legacyMigrationAchievementId);
+    const existing = profile.unlocks?.characters?.[normalizeId(unlock.id)] === true;
+    if (existing) return true;
+    if (legacyMigrationAchievementId && earned.has(legacyMigrationAchievementId)) return true;
+    const achievementId = normalizeId(unlock.achievementId);
+    if (achievementId && earned.has(achievementId)) return true;
+  }
+  const progress = gateProgress(unlock, profile, verifiedRuns);
   if (progress && progress.current >= progress.required) return true;
   return false;
 }
 
-export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
+export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+  const verifiedRuns = verifiedRunsFor(options);
   const starterIds = configuredStarterIds(config);
   const earned = new Set((profile.achievements ?? []).map((id) => normalizeId(id)));
-  const existing = profile.unlocks?.characters ?? {};
+  // Sticky local flags only count on the device-local (preview) path.
+  const existing = verifiedRuns === null ? profile.unlocks?.characters ?? {} : {};
   const unlocks = { ...existing };
   for (const starterId of starterIds) unlocks[starterId] = true;
   for (const unlock of configuredUnlockables(config)) {
-    if (unlock.id) unlocks[unlock.id] = unlockEarned(unlock, profile, earned);
+    if (unlock.id) unlocks[unlock.id] = unlockEarned(unlock, profile, earned, verifiedRuns);
   }
   return Object.freeze(unlocks);
 }
 
-export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
+export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
   profile.unlocks ??= {};
-  profile.unlocks.characters = clone(buildCharacterUnlockMap(profile, config));
+  profile.unlocks.characters = clone(buildCharacterUnlockMap(profile, config, options));
   profile.preferences ??= {};
   const starters = configuredStarterIds(config);
   const fallback = starters[0] ?? normalizeId(config.starterLegacyId);
@@ -251,28 +276,29 @@ export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY
   return profile.unlocks.characters;
 }
 
-export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
-  const unlocks = buildCharacterUnlockMap(profile, config);
+export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+  const unlocks = buildCharacterUnlockMap(profile, config, options);
   const preferred = normalizeId(profile.preferences?.selectedCharacterId ?? config.starterLegacyId);
   if (unlocks[preferred]) return preferred;
   const starters = configuredStarterIds(config);
   return starters.find((id) => unlocks[id]) ?? normalizeId(config.starterLegacyId);
 }
 
-export function setPreferredCharacter(profile = {}, characterId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
+export function setPreferredCharacter(profile = {}, characterId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
   const desired = normalizeId(characterId);
-  const unlocks = buildCharacterUnlockMap(profile, config);
+  const unlocks = buildCharacterUnlockMap(profile, config, options);
   if (!unlocks[desired]) {
-    return { ok: false, reason: 'locked', selectedCharacterId: resolveSelectedCharacterId(profile, config) };
+    return { ok: false, reason: 'locked', selectedCharacterId: resolveSelectedCharacterId(profile, config, options) };
   }
   profile.preferences ??= {};
   profile.preferences.selectedCharacterId = desired;
   return { ok: true, selectedCharacterId: desired };
 }
 
-export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
-  const unlocks = buildCharacterUnlockMap(profile, config);
-  const selectedCharacterId = resolveSelectedCharacterId(profile, config);
+export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+  const verifiedRuns = verifiedRunsFor(options);
+  const unlocks = buildCharacterUnlockMap(profile, config, options);
+  const selectedCharacterId = resolveSelectedCharacterId(profile, config, options);
   const unlockById = new Map(configuredUnlockables(config).map((unlock) => [normalizeId(unlock.id), unlock]));
   return baseRoster.map((entry) => {
     const entryId = normalizeId(entry.id);
@@ -281,7 +307,7 @@ export function buildCharacterSelectEntries(baseRoster = [], profile = {}, confi
     const identity = characterStatIdentityEntry(lookupId);
     const unlock = unlockById.get(lookupId);
     const unlocked = Boolean(unlocks[lookupId]);
-    const unlockProgress = unlock ? gateProgress(unlock, profile) : null;
+    const unlockProgress = unlock ? gateProgress(unlock, profile, verifiedRuns) : null;
     const displayName = identity?.name ?? entry.name ?? entry.title ?? lookupId;
     const cta = unlocked
       ? `SELECT — PLAY AS ${String(displayName).toUpperCase()}`
