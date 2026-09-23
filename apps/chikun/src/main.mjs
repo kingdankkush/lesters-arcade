@@ -429,6 +429,7 @@ function startRun() {
   }
   stopReplayViewer();
   prepareRun();
+  frameFailureReported = false;
   phase = 'running';
   paused = false;
   flapQueued = false;
@@ -654,8 +655,27 @@ function draw(snapshot = latestSnapshot) {
   ctx.restore();
 }
 
+// Failure safety: nothing a frame does may stop the loop. A throw is reported
+// once to the parent and the next animation frame is always requested.
+let frameFailureReported = false;
+function reportFrameFailure(error) {
+  if (frameFailureReported) return;
+  frameFailureReported = true;
+  try { send('game:error', { code: 'runtime-error', message: error instanceof Error ? error.message.slice(0, 240) : 'Runtime failure' }); } catch { /* the bridge itself failed */ }
+}
+
 function frame(now) {
   if (disposed) return;
+  try {
+    stepFrame(now);
+  } catch (error) {
+    reportFrameFailure(error);
+  } finally {
+    if (!disposed) requestAnimationFrame(frame);
+  }
+}
+
+function stepFrame(now) {
   if (!previousFrameAt) previousFrameAt = now;
   const elapsed = Math.min(100, Math.max(0, now - previousFrameAt));
   previousFrameAt = now;
@@ -706,7 +726,9 @@ function frame(now) {
       lastStateTick = latestSnapshot.tick;
       sendState('running');
     }
-    if (runtime.terminal) finishRun();
+    if (runtime.terminal) {
+      try { finishRun(); } catch (error) { reportFrameFailure(error); }
+    }
   } else if (phase === 'game-over' && replayPlaying && replayPlayback) {
     accumulator = Math.min(accumulator + elapsed * Number(replaySpeed.value), STEP_MS * MAX_CATCH_UP_STEPS);
     let steps = 0;
@@ -725,7 +747,6 @@ function frame(now) {
     }
   }
   draw(latestSnapshot);
-  if (!disposed) requestAnimationFrame(frame);
 }
 
 function handleParentMessage(event) {

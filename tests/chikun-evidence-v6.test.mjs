@@ -272,3 +272,12 @@ test('v6 result counters follow their documented definitions', () => {
   assert.ok(v6Fixtures.runs.some((run) => run.result.bestCombo !== run.result.forksPassed), 'bestCombo is no longer just forksPassed');
   assert.ok(v6Fixtures.runs.some((run) => run.result.laps >= 1 && run.result.regionIndexReached >= 0));
 });
+
+test('the child keeps its frame loop alive when a result fails', () => {
+  const source = readFileSync(new URL('../apps/chikun/src/main.mjs', import.meta.url), 'utf8');
+  const frame = source.slice(source.indexOf('function frame(now) {'), source.indexOf('function stepFrame(now) {'));
+  assert.match(frame, /try \{\s*stepFrame\(now\);\s*\} catch \(error\) \{\s*reportFrameFailure\(error\);\s*\} finally \{\s*if \(!disposed\) requestAnimationFrame\(frame\);/);
+  assert.match(source, /if \(runtime\.terminal\) \{\s*try \{ finishRun\(\); \} catch \(error\) \{ reportFrameFailure\(error\); \}/);
+  assert.equal(source.match(/requestAnimationFrame\(frame\)/g).length, 2, 'the boot call and the always-run finally');
+  assert.match(source, /runtimeVersion: '0\.9\.0'/);
+});
