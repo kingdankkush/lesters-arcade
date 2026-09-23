@@ -5,10 +5,20 @@
 // name", with Claim (opens the profile's name editor) and Not now (saves
 // preferences.nameClaimDismissed = true through PUT /api/profile). Skipping
 // keeps the short wallet everywhere, which is fine.
+//
+// The same lesters:ranked-run opens results-share's results screen: a modal
+// backdrop over the whole page (z-index 10050) with a focus trap. The toast
+// waits until that screen is gone, hides again if it reopens, and its
+// auto-hide clock only runs while it is actually on screen.
+
+import { LITVM_DEPLOYMENT } from './generated/litvm-addresses.mjs';
 
 export const NAME_CLAIM_TOAST_CLASS = 'name-claim-toast';
 export const NAME_CLAIM_TITLE = 'Claim your arcade name';
 export const NAME_CLAIM_COPY = 'Show a name instead of your wallet on the boards, your profile and share cards. It is a small on-chain change you confirm in your wallet.';
+// results-share's results screen root (ranked-results.mjs sets data-ranked-results).
+export const RANKED_RESULTS_SELECTOR = '[data-ranked-results]';
+export const NAME_CLAIM_POLL_MS = 1_000;
 const HEX_WALLET = /^0x[0-9a-fA-F]{40}$/;
 const walletKey = (value) => (HEX_WALLET.test(String(value ?? '')) ? String(value).toLowerCase() : null);
 
@@ -36,21 +46,29 @@ function button(documentRef, className, text) {
   return node;
 }
 
-// Returns { shown, reason }. Never throws for a missing profile or network.
+// Returns { shown, reason, toast? }. `shown` means the prompt is queued: it
+// appears as soon as no results screen covers the page. Never throws for a
+// missing profile or network.
 export async function maybePromptNameClaim({
   detail = null,
   hosted = false,
   wallet = null,
   indexApi = null,
+  deployment = LITVM_DEPLOYMENT,
   getCachedSelfProfile = () => null,
   documentRef = globalThis.document,
   mount = globalThis.document?.body ?? null,
+  isCovered = () => Boolean(documentRef?.querySelector?.(RANKED_RESULTS_SELECTOR)),
   onClaim = () => {},
   onDismissed = () => {},
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
+  pollMs = NAME_CLAIM_POLL_MS,
   autoHideMs = 30_000,
 } = {}) {
   if (!hosted || !indexApi) return { shown: false, reason: 'preview' };
+  // Before the contracts are deployed the profile offers only the device-local
+  // editor, so the on-chain promise of this toast would not be true.
+  if (deployment?.status !== 'deployed') return { shown: false, reason: 'not-deployed' };
   const viewer = walletKey(wallet);
   const runWallet = walletKey(detail?.context?.wallet);
   if (!viewer || (runWallet && runWallet !== viewer)) return { shown: false, reason: 'other-wallet' };
@@ -86,9 +104,12 @@ export async function maybePromptNameClaim({
   toast.append(title, copy, actions);
 
   let closed = false;
+  let visible = false;
+  let visibleMs = 0;
   const close = () => {
     if (closed) return;
     closed = true;
+    visible = false;
     toast.remove?.();
   };
   claim.addEventListener('click', () => {
@@ -100,7 +121,31 @@ export async function maybePromptNameClaim({
     const saved = await indexApi.savePreferences({ nameClaimDismissed: true });
     onDismissed(viewer, saved);
   });
-  mount.append(toast);
-  if (autoHideMs > 0) setTimeoutImpl(close, autoHideMs);
+
+  // Show the toast whenever nothing covers the page, pull it back out while
+  // the results screen is open, and hide it for good after autoHideMs on
+  // screen. An ignored toast is not a dismissal.
+  const step = () => {
+    if (closed) return;
+    let covered = false;
+    try { covered = Boolean(isCovered()); } catch { covered = false; }
+    if (covered) {
+      if (visible) {
+        visible = false;
+        toast.remove?.();
+      }
+    } else if (!visible) {
+      visible = true;
+      mount.append(toast);
+    } else {
+      visibleMs += pollMs;
+      if (autoHideMs > 0 && visibleMs >= autoHideMs) {
+        close();
+        return;
+      }
+    }
+    setTimeoutImpl(step, pollMs);
+  };
+  step();
   return { shown: true, reason: null, toast };
 }
