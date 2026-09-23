@@ -3429,7 +3429,7 @@ function rankedRunActions() {
 }
 
 // A published run (this page's or a resumed one) stamps its local rows with
-// the transaction and the session key, so chain hydration never lists it twice.
+// the transaction and the session key (its verified record is the index's).
 function applyRankedPublication(snapshot) {
   const txHash = snapshot?.server?.txHash;
   if (!snapshot?.sessionId || !snapshot.gameId || typeof txHash !== 'string') return;
@@ -5111,91 +5111,10 @@ const renderOfficialNav = officialShellRoutes.renderNav;
 const renderOfficialSettings = officialShellRoutes.renderSettings;
 const renderOfficialWalletSplash = officialShellRoutes.renderWalletSplash;
 
-// --- on-chain hydration ----------------------------------------------------
-// Merge LitVM ScoreSubmissionRegistry records into local state so the global
-// leaderboard + profile reflect the chain (cross-device, cross-player). Dedup
-// is by sessionId, so re-hydrating is idempotent and never double-counts.
-let _hydratingLeaderboard = false;
-const _gameIdByHash = new Map(); // bytes32 -> local gameId, lazily filled
-
-async function ensureGameIdHashes() {
-  if (_gameIdByHash.size) return;
-  const { toBytes32Id } = await import('./src/litvm-chain-client.mjs');
-  for (const g of ARCADE_GAMES) {
-    // The runtime submits the per-cabinet gameId used in recordScore (game.id).
-    const h = await toBytes32Id(g.id);
-    _gameIdByHash.set(h.toLowerCase(), g.id);
-  }
-}
-
-function mergeChainRecordIntoState(rec, gameId) {
-  // Only verified records from the pinned-network reader may enter official UI.
-  // Validate before mutating any parent store; an unknown game has no fallback.
-  if (rec?.verified !== true || rec.onChain !== true || typeof gameId !== 'string' || !gameId
-    || typeof rec.player !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(rec.player)
-    || ['sessionId32', 'gameId32'].some((key) => typeof rec[key] !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(rec[key]))
-    || ['score', 'kills', 'maxCombo', 'survivalSeconds', 'submittedAt'].some((key) => !Number.isSafeInteger(rec[key]) || rec[key] < 0)) return false;
-  const submittedDate = new Date(rec.submittedAt * 1000);
-  if (!Number.isFinite(submittedDate.getTime())) return false;
-  // Skip if this session already exists locally (dedup): a synced chain row, or
-  // a local Ranked row that applySettlement stamped with its session key when
-  // the relayer published it (guide §5.5 item 4).
-  state.officialSessions ??= [];
-  const sessionKey = rec.sessionId32.toLowerCase();
-  const sameSession = (row) => typeof row?.onChainSessionId32 === 'string' && row.onChainSessionId32.toLowerCase() === sessionKey;
-  const cadenceRows = Object.values(state.cadenceLeaderboards?.[gameId] ?? {})
-    .flatMap((periods) => Object.values(periods ?? {}))
-    .flatMap((rows) => (Array.isArray(rows) ? rows : []));
-  if (state.officialSessions.some(sameSession) || (state.leaderboards?.[gameId] ?? []).some(sameSession) || cadenceRows.some(sameSession)) return false;
-  const recordedAt = submittedDate.toISOString();
-  const syntheticSessionId = `chain:${rec.sessionId32}`;
-  // File into the cadence boards (what the leaderboard UI reads).
-  try {
-    recordCadenceScore(state, gameId, {
-      wallet: rec.player,
-      score: rec.score,
-      sessionId: syntheticSessionId,
-      recordedAt,
-      runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-      settlementTxHash: null,
-      onChainSessionId32: rec.sessionId32,
-      onChain: true,
-      chainVerified: true,
-    });
-  } catch { /* numeric guard already in engine */ }
-  // Flat board mirror.
-  state.leaderboards ??= {};
-  state.leaderboards[gameId] ??= [];
-  state.leaderboards[gameId].push({
-    sessionId: syntheticSessionId,
-    wallet: rec.player,
-    handle: null,
-    displayName: `${rec.player.slice(0, 6)}…${rec.player.slice(-4)}`,
-    gameId,
-    score: rec.score,
-    mode: 'paid',
-    runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-    recordedAt,
-    onChain: true,
-    onChainSessionId32: rec.sessionId32,
-    chainVerified: true,
-  });
-  state.leaderboards[gameId].sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
-  // Track that we ingested this on-chain session (dedup key).
-  state.officialSessions.push({
-    sessionId: syntheticSessionId,
-    onChainSessionId32: rec.sessionId32,
-    wallet: rec.player,
-    chainVerified: true,
-    gameId,
-    score: rec.score,
-    runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-    status: 'on-chain',
-    syncedAt: recordedAt,
-  });
-  return true;
-}
-
+// --- verified boards and profiles ------------------------------------------
+// The 200-session chain scan and its merge into local state are retired (guide
+// §5.8, profile-boards): the Scores and Profile pages read the server index
+// instead, and a published local run is stamped by applyRankedPublication.
 // Scores page fill (guide §5.8): the verified boards come from GET
 // /api/leaderboard. In preview this is a no-op: the page shows this device's
 // Ranked runs and makes no request (A22).
