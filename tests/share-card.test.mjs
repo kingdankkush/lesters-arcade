@@ -291,3 +291,91 @@ test('the committed backgrounds are 1200x630 PNGs under 300 KB and the builder s
   const check = await readFile(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
   assert.match(check, /'scripts\/build-chikun-ground-props\.py',\n\s*'scripts\/build-share-card-backgrounds\.py',/);
 });
+
+test('the card reads badge art from byte copies inside the traced share-cards directory', async () => {
+  // vercel.json includeFiles gives the card function only
+  // apps/portal/assets/share-cards/**, so every catalog image has a copy
+  // there (scripts/build-share-card-backgrounds.py), and nothing else does.
+  const { readdir } = await import('node:fs/promises');
+  const { join, relative, sep } = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const { ACHIEVEMENT_GAME_IDS, catalogFor } = await import('../apps/portal/src/achievements/index.mjs');
+  const images = new Set(ACHIEVEMENT_GAME_IDS.flatMap((gameId) => catalogFor(gameId).map((entry) => entry.image)));
+  const root = fileURLToPath(new URL('../apps/portal/assets/share-cards/badges/', import.meta.url));
+  const copies = (await readdir(root, { recursive: true, withFileTypes: true }))
+    .filter((entry) => entry.isFile())
+    .map((entry) => relative(root, join(entry.parentPath ?? entry.path, entry.name)).split(sep).join('/'));
+  const expected = [...images].map((image) => image.replace(/^\/assets\/generated\//, '')).sort();
+  assert.deepEqual(copies.sort(), expected, 'exactly the catalog images; rerun python scripts/build-share-card-backgrounds.py --badges-only');
+  for (const image of images) {
+    const [copy, source] = await Promise.all([readFile(shareCardApi.shareCardBadgeUrl(image)), readFile(new URL(`../apps/portal${image}`, import.meta.url))]);
+    assert.ok(copy.equals(source), `${image} copy matches its catalog art`);
+  }
+  // Paths stay inside share-cards/badges.
+  for (const hostile of ['/assets/generated/../../../api/share-card.png', '/assets/generated/x/../../y.png', '/assets/other/x.png', '/assets/generated/x.jpg', null]) {
+    assert.equal(shareCardApi.shareCardBadgeUrl(hostile), null, String(hostile));
+  }
+  assert.equal(shareCardApi.shareCardBackgroundUrl('pinball'), null);
+  assert.match(shareCardApi.shareCardBackgroundUrl('chikun').href, /\/apps\/portal\/assets\/share-cards\/chikun\.png$/);
+  // The session's first four achievements with art become data URIs.
+  const session = { gameId: 'chikun', achievements: ['chikun-forks-150', 'chikun-first-flight', 'unknown-id'].map((id) => ({ id })) };
+  const badges = await shareCardApi.readShareCardBadges(session);
+  assert.deepEqual(Object.keys(badges).sort(), ['chikun-first-flight', 'chikun-forks-150']);
+  assert.ok(Object.values(badges).every((uri) => uri.startsWith('data:image/png;base64,iVBORw0KGgo')));
+  // No directory-level asset URL for the file tracer to copy whole.
+  const source = await readFile(new URL('../api/share-card.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /new URL\('[^'`]*\/', import\.meta\.url\)/);
+  assert.doesNotMatch(source, /process\.cwd\(\)/);
+});
+
+test('an unpublished HMH card with a hidden profile renders offline, and so does a card without a background', async () => {
+  const db = createPgliteClient();
+  try {
+    const row = await seedVerifiedSession(db, {
+      gameId: 'lester-blaster', status: 'submitted', wallet: WALLET, score: 48210,
+      stats: { score: 48210, kills: 312, survivalSeconds: 724, maxCombo: 42, level: 10, bossKills: 1 },
+    });
+    await seedWalletProfile(db, { wallet: WALLET, displayName: 'Hidden Pilot', hidden: true });
+    await seedAchievementUnlock(db, { wallet: WALLET, gameId: 'lester-blaster', achievementId: 'first-blood', sessionId32: row.sessionId32, tier: 'bronze' });
+    const session = await readPublicSession(db, row.sessionId32);
+    assert.equal(session.displayName, null);
+    const text = textOf(buildShareCardElement({ session }));
+    assert.match(text, /PUBLISHING TO LITVM…/);
+    assert.match(text, /0x5e5e…5e5e/);
+    assert.doesNotMatch(text, /Hidden Pilot|VERIFIED/);
+    const { result: response, attempts } = await withoutNetwork(() => call(mount(db), { url: `/api/share-card?id=${row.sessionId32.slice(2)}` }));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers['cache-control'], 'public, max-age=0, s-maxage=30');
+    assert.deepEqual(response.body.subarray(0, 8), PNG_SIGNATURE);
+    assert.deepEqual([response.body.readUInt32BE(16), response.body.readUInt32BE(20)], [1200, 630]);
+    assert.deepEqual(attempts, [], 'no network fetch while rendering');
+    // A game without a committed background still renders on the plain backdrop.
+    const { result: bare, attempts: bareAttempts } = await withoutNetwork(() => shareCardApi.renderShareCardPng({ ...session, gameId: 'pinball', gameTitle: 'Pinball', achievements: [] }));
+    assert.deepEqual(bare.subarray(0, 8), PNG_SIGNATURE);
+    assert.deepEqual([bare.readUInt32BE(16), bare.readUInt32BE(20)], [1200, 630]);
+    assert.deepEqual(bareAttempts, []);
+  } finally {
+    await db.close();
+  }
+});
+
+test('a failing read answers 500 JSON and logs only the error name and code', async () => {
+  const db = createPgliteClient();
+  const logged = [];
+  const original = console.error;
+  console.error = (...args) => { logged.push(args); };
+  try {
+    const { shareId } = await seedRun(db);
+    const failure = Object.assign(new Error('connect postgres://arcade:hunter2-secret@db.example/neon failed'), { name: 'NeonDbError', code: '57P01' });
+    const failing = { schemaKey: db.schemaKey, query: (sql, params) => (/FROM verified_sessions vs/.test(sql) ? Promise.reject(failure) : db.query(sql, params)) };
+    const handler = shareCardApi.createHandler(() => shareCardApi.buildDeps(env, { db: failing, nowMs: NOW }));
+    const response = await call(handler, { url: `/api/share-card?id=${shareId}` });
+    assert.deepEqual([response.status, response.json], [500, { ok: false, error: 'internal-error' }]);
+    assert.equal(response.headers['cache-control'], 'no-store');
+    assert.doesNotMatch(response.body.toString('utf8'), /hunter2|postgres:\/\/|NeonDbError/);
+    assert.deepEqual(logged, [['[share-card] internal-error', 'NeonDbError', '57P01']]);
+  } finally {
+    console.error = original;
+    await db.close();
+  }
+});

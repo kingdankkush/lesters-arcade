@@ -34,10 +34,27 @@ export const CARD_RENDER_LIMITS = Object.freeze({ ip: 120, windowSeconds: 3600 }
 // Used only when SESSION_SECRET is absent (the render limit still applies).
 const UNKEYED_IP_BUCKET_SALT = 'lestersarcade-ip-bucket-unkeyed';
 const CARD_REV = /^[0-9a-f]{12}$/;
-// Files traced into the function by vercel.json includeFiles
-// (apps/portal/assets/share-cards/**); resolved from this module, not cwd.
-const PORTAL_ROOT = new URL('../apps/portal/', import.meta.url);
-const SHARE_CARD_ASSETS = new URL('../apps/portal/assets/share-cards/', import.meta.url);
+// Every file the card reads sits under apps/portal/assets/share-cards/, the
+// only directory vercel.json includeFiles adds to this function, and is
+// resolved per file from this module (never cwd, never a directory-level
+// URL, which the file tracer would copy whole). The badges are byte copies
+// of the catalog art, written by scripts/build-share-card-backgrounds.py.
+const BACKGROUNDS = Object.freeze({
+  'lester-blaster': new URL('../apps/portal/assets/share-cards/lester-blaster.png', import.meta.url),
+  chikun: new URL('../apps/portal/assets/share-cards/chikun.png', import.meta.url),
+  stacked: new URL('../apps/portal/assets/share-cards/stacked.png', import.meta.url),
+});
+const CATALOG_BADGE = /^\/assets\/generated\/((?:[a-z0-9_-]+\/)*[a-z0-9_-][a-z0-9._-]*\.png)$/;
+
+export function shareCardBackgroundUrl(gameId) {
+  return Object.hasOwn(BACKGROUNDS, gameId) ? BACKGROUNDS[gameId] : null;
+}
+
+// Catalog image `/assets/generated/<path>.png` → its copy under share-cards/badges/.
+export function shareCardBadgeUrl(image) {
+  const match = CATALOG_BADGE.exec(String(image ?? ''));
+  return match ? new URL(`../apps/portal/assets/share-cards/badges/${match[1]}`, import.meta.url) : null;
+}
 
 const cache = {};
 const images = new Map();
@@ -52,10 +69,11 @@ export function shareCardPath(shareId, cardRev) {
   return `/api/share-card/${shareId}.png?v=${cardRev}`;
 }
 
-// A PNG under the portal root as a data URI, memoized per process. A file
-// that is missing (for example a badge the function bundle did not include)
-// reads as null, and the card draws a tier medallion instead.
+// A PNG as a data URI, memoized per process. A missing file (an out-of-date
+// badge copy, an unknown game) reads as null: the card then draws a tier
+// medallion or its plain backdrop instead.
 async function pngDataUri(url) {
+  if (!url) return null;
   const key = url.href;
   if (!images.has(key)) {
     images.set(key, readFile(url).then((bytes) => `data:image/png;base64,${bytes.toString('base64')}`).catch(() => null));
@@ -63,13 +81,14 @@ async function pngDataUri(url) {
   return images.get(key);
 }
 
-async function badgeImagesFor(session) {
+// { [achievementId]: data URI } for the first four achievements (the ones
+// the card draws) that have catalog art.
+export async function readShareCardBadges(session) {
   const out = {};
-  for (const item of (session.achievements ?? []).slice(0, SHARE_CARD_MAX_BADGES)) {
+  for (const item of (session?.achievements ?? []).slice(0, SHARE_CARD_MAX_BADGES)) {
     let entry = null;
     try { entry = achievementById(session.gameId, item?.id); } catch { entry = null; }
-    if (!entry?.image || !/^\/assets\/[a-z0-9/._-]+\.png$/.test(entry.image)) continue;
-    const uri = await pngDataUri(new URL(`.${entry.image}`, PORTAL_ROOT));
+    const uri = await pngDataUri(shareCardBadgeUrl(entry?.image));
     if (uri) out[item.id] = uri;
   }
   return out;
@@ -77,8 +96,8 @@ async function badgeImagesFor(session) {
 
 export async function renderShareCardPng(session) {
   const [background, badgeImages] = await Promise.all([
-    pngDataUri(new URL(`${session.gameId}.png`, SHARE_CARD_ASSETS)),
-    badgeImagesFor(session),
+    pngDataUri(shareCardBackgroundUrl(session.gameId)),
+    readShareCardBadges(session),
   ]);
   const element = buildShareCardElement({ session, background, badgeImages });
   const response = new ImageResponse(element, { width: SHARE_CARD_WIDTH, height: SHARE_CARD_HEIGHT });
