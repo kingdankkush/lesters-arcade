@@ -247,3 +247,37 @@ test('committed harness report meets the D11 acceptance, matches the course and 
   }
   assert.ok(harness.profiles.hardcore.stats.bestCombo.p50 < harness.profiles.hardcore.stats.forksPassed.p50, 'bestCombo is not forksPassed');
 });
+
+test('the run cycle keeps pace with the ground as the ramp climbs', async () => {
+  // character.mjs derives the stride from distance covered, so the feet match the
+  // scroll at every speed (tick * speed ran 2-3x fast on the steep segments).
+  const originals = { Image: globalThis.Image, document: globalThis.document };
+  const frames = [];
+  const record = (list) => new Proxy({}, { get: () => (...args) => { list.push(args); }, set: () => true });
+  globalThis.Image = class { naturalWidth = 768; complete = true; async decode() {} };
+  globalThis.document = { createElement: () => ({ getContext: () => record(frames) }) };
+  try {
+    const { createChikunCharacter, sampleChikunFrame, CHIKUN_CHARACTERS } = await import('../apps/chikun/src/character.mjs');
+    const character = createChikunCharacter();
+    assert.equal(await character.ready, true);
+    const px = CHIKUN_CHARACTERS['chikun-original'].frameSize;
+    let checked = 0;
+    for (let minute = 5; minute <= 15; minute += 0.37) {
+      const tick = Math.floor(minute * 3600);
+      const snapshot = { tick, distancePixels: distanceAtTick(tick), difficulty: { speedMultiplier: speedAtTick(tick) }, forks: [], chikun: { x: 280, y: 660, velocityY: 0, radius: 30, locomotion: 'run', motionTick: 0, jumpVariant: 0, landingVariant: 0 } };
+      for (let i = 0; i < 20; i += 1) character.draw(record([]), snapshot, 1 / 60, { phase: 'running' });
+      frames.length = 0;
+      character.draw(record([]), snapshot, 1 / 60, { phase: 'running' });
+      assert.equal(character.clip, 'run');
+      const painted = frames.filter((args) => args.length === 9).at(-1);
+      const expected = sampleChikunFrame('run', distanceAtTick(tick) / 2.4 / 60);
+      const frame = expected.mix > 0 ? expected.next : expected.frame;
+      assert.deepEqual([painted[1], painted[2]], [(frame % 4) * px, Math.floor(frame / 4) * px], `${minute.toFixed(2)} min`);
+      checked += 1;
+    }
+    assert.ok(checked >= 25);
+    character.dispose();
+  } finally {
+    Object.assign(globalThis, originals);
+  }
+});
