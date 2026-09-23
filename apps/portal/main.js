@@ -1860,9 +1860,16 @@ let walletPickRdns = null; // the picked EIP-6963 wallet's rdns, kept with the r
 // The server index owns every stat (guide §5.7): the browser syncs only
 // preferences, and a pull brings back the on-chain name and the saved hero,
 // never xp, run counts, achievements or runs. The v2 Bearer token is minted by
-// the wallet session of contract §7.6 (server nonce, then profileSync.login);
-// this block and the index client only read it, and a 401 discards it.
-const profileSync = createProfileSync({ storage: ARCADE_STORAGE });
+// the wallet session of contract §7.6 (server nonce, then profileSync.login)
+// and stored by profileSync. Every Bearer caller (profile PUT and pull,
+// profile refresh, settle, seed tickets, the name-claim flow) reads it only
+// through the wallet session (walletSessionToken), and a 401 from any of them
+// drops it through the wallet session too (invalidateWalletSession).
+const profileSync = createProfileSync({
+  storage: ARCADE_STORAGE,
+  getToken: (wallet) => walletSessionToken(wallet),
+  onUnauthorized: () => invalidateWalletSession(),
+});
 let profileSyncPulledFor = null;
 let profileSyncLastPushed = null;
 // Index reads and profile writes (§7.8). While HOSTED_PROFILE_SYNC is false
@@ -1870,8 +1877,8 @@ let profileSyncLastPushed = null;
 const indexApi = createIndexApiClient({
   hosted: HOSTED_PROFILE_SYNC,
   fetchImpl: (...args) => globalThis.fetch(...args),
-  getToken: () => profileSync.session?.token ?? null,
-  onUnauthorized: () => profileSync.logout(),
+  getToken: () => walletSessionToken(connectedWallet),
+  onUnauthorized: () => invalidateWalletSession(),
 });
 function currentProfileDocument() {
   if (!connectedWallet || walletConnector !== 'injected-evm') return null;
@@ -1879,7 +1886,7 @@ function currentProfileDocument() {
   return profile ? buildProfileDocument(profile) : null;
 }
 function pushProfileToCloudSoon() {
-  if (!HOSTED_PROFILE_SYNC || !profileSync.hasSession(connectedWallet)) return;
+  if (!HOSTED_PROFILE_SYNC || !walletSessionAuthenticated(connectedWallet)) return;
   const document = currentProfileDocument();
   if (!document) return;
   const json = JSON.stringify(document);
@@ -1950,6 +1957,30 @@ function loadWalletSession() {
     return walletSession;
   }).catch((error) => { walletSessionLoading = null; throw error; });
   return walletSessionLoading;
+}
+// The Bearer token of `wallet` and whether it is signed in, both only through
+// the wallet session (contract §7.6: walletSession.token / isAuthenticated,
+// backed by profileSync.tokenFor). Before the session module has loaded
+// nothing is signed in, so both answer no.
+function walletSessionToken(wallet) {
+  if (!walletSession || !wallet) return null;
+  try { return walletSession.token(wallet); } catch { return null; }
+}
+function walletSessionAuthenticated(wallet) {
+  if (!walletSession || !wallet) return false;
+  try { return walletSession.isAuthenticated(wallet); } catch { return false; }
+}
+// A 401 from any Bearer call: the token is dead (v2 tokens are audience-bound
+// and die at a secret rotation). The wallet session drops it and announces
+// lesters:wallet-session, so the profile, boards and Ranked all sign out
+// together; the wallet stays connected for Free play.
+function invalidateWalletSession() {
+  walletAuthenticated = false;
+  if (walletSession) {
+    try { walletSession.invalidate(); } catch { /* announce failures never block sign-out */ }
+  } else {
+    profileSync.logout();
+  }
 }
 // The remembered connector's storage key (wallet-session.mjs
 // WALLET_CONNECTOR_STORAGE_KEY, pinned equal by a test): boot peeks at it so a
@@ -2050,10 +2081,11 @@ function rankedSettlementClient() {
     module,
     client: module.createRankedSettlementClient({
       live: SETTLEMENT_LIVE,
-      getToken: (wallet) => (profileSync.hasSession(wallet) ? profileSync.session?.token ?? null : null),
+      getToken: (wallet) => walletSessionToken(wallet),
       storage: ARCADE_STORAGE,
       onPendingCount: (count) => window.dispatchEvent(new CustomEvent('lesters:ranked-pending', { detail: { count } })),
       onPublished: applyRankedPublication,
+      onUnauthorized: () => invalidateWalletSession(),
     }),
   })).catch((error) => {
     rankedSettlementClientPromise = null;
@@ -5209,7 +5241,7 @@ const officialProfileRoute = createOfficialProfileRoute({
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
   buildWalletConnectionModel,
-  connectWallet,
+  connectWallet: signInFromProfile,
   detectEthereumProvider,
   documentRef: document,
   dom,
@@ -5236,13 +5268,16 @@ const officialProfileRoute = createOfficialProfileRoute({
   validateUsername,
   hosted: HOSTED_PROFILE_SYNC,
   indexApi,
-  isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet),
+  isAuthenticated: (wallet) => walletSessionAuthenticated(wallet),
   isActive: () => officialAppStep === 'profile',
   dispatchEvent: dispatchPortalEvent,
   rankedClientHolds: (sessionId32) => rankedRunHoldings.holds(sessionId32),
   loadEthers,
   rpcUrl: LITVM_LITEFORGE_NETWORK.rpcUrls.http,
   playRanked: (gameId) => openModeSelectFor(gameId),
+  // On-chain name and avatar writes (§7.8) get their provider from the click:
+  // a WalletConnect session restored at boot creates it there.
+  walletProviderForAction,
 });
 const renderOfficialProfile = officialProfileRoute.renderProfile;
 
@@ -5255,12 +5290,17 @@ window.addEventListener('lesters:ranked-pending', (event) => {
     officialLeaderboardRoute.markStale();
   }
 });
+// Sign-in, silent restore, sign-out and a 401 all announce the session from
+// inside the wallet session, before main.js has applied the new wallet: the
+// caches drop at once, and the view on screen reads again once that settled.
 window.addEventListener('lesters:wallet-session', () => {
   if (!HOSTED_PROFILE_SYNC) return;
   officialProfileRoute.invalidate();
   officialLeaderboardRoute.invalidate();
-  if (officialAppStep === 'profile') hydrateProfileFromIndex();
-  if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
+  setTimeout(() => {
+    if (officialAppStep === 'profile') hydrateProfileFromIndex();
+    if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
+  }, 0);
 });
 window.addEventListener('lesters:profile-changed', (event) => {
   if (!HOSTED_PROFILE_SYNC) return;
@@ -7107,6 +7147,29 @@ function signInFromPicker({ allowSimulated = true } = {}) {
   })();
   walletSignInInFlight = attempt;
   const release = () => { if (walletSignInInFlight === attempt) walletSignInInFlight = null; };
+  attempt.then(release, release);
+  return attempt;
+}
+
+// The profile's Sign in buttons (§7.6): the picker when no wallet is
+// connected, one SIWE signature from the connected wallet when it is signed
+// out (its token expired, or a 401 dropped it), and nothing when it is signed
+// in. A double click joins the sign-in in progress.
+let profileSignInInFlight = null;
+function signInFromProfile() {
+  if (walletSignInInFlight) return walletSignInInFlight;
+  if (profileSignInInFlight) return profileSignInInFlight;
+  if (!connectedWallet || walletConnector !== 'injected-evm') return connectWallet();
+  if (HOSTED_PROFILE_SYNC ? walletSessionAuthenticated(connectedWallet) : walletAuthenticated) return Promise.resolve(connectedWallet);
+  const attempt = (async () => {
+    const provider = await walletProviderForAction();
+    // The provider behind this session is gone: pick a wallet again, never
+    // the simulated identity.
+    if (!provider) return signInFromPicker({ allowSimulated: false });
+    return (await authenticateWalletSiwe(provider, connectedAddress ?? connectedWallet)) ? connectedWallet : null;
+  })();
+  profileSignInInFlight = attempt;
+  const release = () => { if (profileSignInInFlight === attempt) profileSignInInFlight = null; };
   attempt.then(release, release);
   return attempt;
 }

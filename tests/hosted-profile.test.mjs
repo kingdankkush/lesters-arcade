@@ -98,6 +98,7 @@ function hostedProfile({
   dispatchEvent = null,
   active = true,
   lazy = false,
+  walletProviderForAction = null,
 } = {}) {
   const grid = node('grid');
   const calls = { profile: [], retrySettle: [], events: [], connect: 0, views: [] };
@@ -144,6 +145,7 @@ function hostedProfile({
     setView: (step, options) => calls.views.push([step, options]),
     detectEthereumProvider: () => ({ request: async () => null }),
     requestAnimationFrameRef: (callback) => callback(),
+    ...(walletProviderForAction ? { walletProviderForAction } : {}),
     buildPlayerArcadeSnapshot: () => ({ profile: { handle: 'Local Name', usernameSet: true, displayName: 'Local Name' } }),
     validateUsername: () => ({ valid: true, message: 'ok' }),
     setArcadeUsername: () => ({ ok: true }),
@@ -210,7 +212,10 @@ test('own profile shows the on-chain name editor only when deployed', async () =
   const guest = hostedProfile({ connectedWallet: null });
   const guestGrid = await rendered(guest);
   assert.equal(guest.calls.profile.length, 0);
-  assert.match(text(guestGrid), /Connect a wallet to open your verified profile/);
+  assert.match(text(guestGrid), /Sign in to open your verified profile/, 'the "Sign in" wording of signin-entry');
+  assert.doesNotMatch(text(guestGrid), /Connect Wallet|Connect a wallet/);
+  buttons(guestGrid, 'Sign in')[0].listeners.click();
+  assert.equal(guest.calls.connect, 1, 'the guest card signs in from its button');
 });
 
 test('the name editor checks the name and fee before the wallet opens', async () => {
@@ -255,6 +260,44 @@ test('the name editor checks the name and fee before the wallet opens', async ()
   assert.equal(committed.length, 1, 'one wallet prompt, from the Confirm click');
   assert.deepEqual(h.calls.events.find(([name]) => name === 'lesters:profile-changed')?.[1], { wallet: ME, displayName: 'Lit Ace', avatarUri: 'lestersarcade:avatar/lilly' });
   assert.match(text(h.grid), /Saved on LitVM/);
+});
+
+test('the name editor gets its wallet provider from the click, so a restored WalletConnect session creates it there', async () => {
+  // integration-glue A4: main.js passes walletProviderForAction, which awaits
+  // ensureWalletProvider() before any on-chain profile read or write.
+  const provider = { request: async () => null };
+  const order = [];
+  const loadProfileChain = async () => ({
+    publicReadProvider: () => ({}),
+    prepareProfileChange: async (input) => {
+      order.push(['prepare', input.walletProvider]);
+      return { ok: true, wallet: ME, cleaned: 'Lit Ace', avatarUri: input.avatarUri, feeLabel: 'Network fee about 0.0000421 zkLTC', fee: {} };
+    },
+    commitProfileChange: async (ready, options) => {
+      order.push(['commit', options.walletProvider]);
+      return { ok: true, refreshed: true };
+    },
+  });
+  const h = hostedProfile({ loadProfileChain, walletProviderForAction: async () => { order.push(['provider']); return provider; } });
+  const grid = await rendered(h);
+  assert.deepEqual(order, [], 'rendering the editor never creates a provider (no AppKit at boot)');
+  const input = byClass(grid, 'profile-onchain-name-input')[0];
+  input.value = 'Lit Ace';
+  input.listeners.input();
+  await buttons(h.grid, 'Check name & fee')[0].listeners.click();
+  await settle();
+  await buttons(h.grid, 'Confirm in wallet')[0].listeners.click();
+  await settle();
+  assert.deepEqual(order.map(([step]) => step), ['provider', 'prepare', 'provider', 'commit'], 'the provider is resolved from each click, before the chain call');
+  assert.equal(order[1][1], provider);
+  assert.equal(order[3][1], provider);
+
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const from = main.indexOf('const officialProfileRoute = createOfficialProfileRoute({');
+  const routeCall = main.slice(from, main.indexOf('\n});', from) + 1);
+  assert.match(routeCall, /\n {2}walletProviderForAction,\n/, 'main.js hands the profile its click-time provider');
+  assert.match(routeCall, /\n {2}connectWallet: signInFromProfile,\n/, 'the profile Sign in signs a connected wallet in');
+  assert.match(main, /async function walletProviderForAction\(\) \{\n {2}if \(walletProviderPending && !\(await ensureWalletProvider\(\)\)\) return null;/);
 });
 
 test('NFT badge only when a token id exists, confirmed on chain', async () => {

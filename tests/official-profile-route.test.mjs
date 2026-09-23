@@ -61,6 +61,7 @@ test('profile route renders guest local stats and connect CTA without wallet dep
   assert.match(flat, /not.*available|not.*provide|not.*permanent/i);
   const connectButton = guestCard.children.find((child) => child.tag === 'button');
   assert.ok(connectButton);
+  assert.equal(connectButton.textContent, 'Sign in to Save Progress', 'the "Sign in" wording of signin-entry, not "Connect Wallet"');
   connectButton.listeners.click();
   assert.deepEqual(calls.sfx, ['menu-click']);
   assert.equal(calls.connect, 1);

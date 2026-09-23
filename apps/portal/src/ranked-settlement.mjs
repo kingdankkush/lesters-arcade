@@ -180,6 +180,9 @@ export function createRankedSettlementClient({
   pendingKey = RANKED_PENDING_KEY,
   onPendingCount = null,
   onPublished = null,
+  // A 401 on a Bearer call: the wallet's token is dead (contract §7.6), so the
+  // wallet session drops it for every caller (walletSession.invalidate).
+  onUnauthorized = null,
   settleUrl = RANKED_SETTLE_URL,
   statusUrl = RANKED_STATUS_URL,
 } = {}) {
@@ -399,7 +402,10 @@ export function createRankedSettlementClient({
       if (body?.retryable === true) return retryable(code ?? 'server-error', body.retryAfterMs);
       // A refused retry nudge (an expired token) leaves the server's row
       // publishing: follow it through the status view (which never answers 401).
-      if (status === 401) return kind === 'retry' && h.server ? getStatus() : savedLocally('sign-in-required', { auto: false });
+      if (status === 401) {
+        try { onUnauthorized?.(meta.wallet); } catch { /* the caller's cleanup never stops settlement */ }
+        return kind === 'retry' && h.server ? getStatus() : savedLocally('sign-in-required', { auto: false });
+      }
       if (status === 404) {
         if (kind !== 'full' && !h.reposted && request) {
           h.reposted = true;

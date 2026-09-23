@@ -499,19 +499,22 @@ function settlementBootHarness({ live, stored = [] }) {
   const listeners = new Map();
   const events = [];
   const timers = [];
-  const spy = { imports: 0, resume: 0, retrySignedOut: 0, retryRequests: [], clients: [] };
+  const spy = { imports: 0, resume: 0, retrySignedOut: 0, retryRequests: [], clients: [], invalidated: 0 };
   const storage = memoryStorage();
   if (stored.length) storage.setItem(rankedSettlementModule.RANKED_PENDING_KEY, JSON.stringify(stored));
   const wallet = CHIKUN.wallet.toLowerCase();
   const block = PORTAL_AST.body.find((node) => node.type === 'IfStatement' && PORTAL_MAIN.slice(node.start, node.end).includes("'lesters:ranked-retry-request'"));
   assert.ok(block, 'main.js registers the settlement listeners in one top-level block');
-  const source = [portalFunctionSource('rankedSettlementClient'), PORTAL_MAIN.slice(block.start, block.end)].join('\n').replaceAll('import(', '__import(');
+  const source = [portalFunctionSource('rankedSettlementClient'), portalFunctionSource('walletSessionToken'), portalFunctionSource('invalidateWalletSession'), PORTAL_MAIN.slice(block.start, block.end)].join('\n').replaceAll('import(', '__import(');
   assert.equal((source.match(/__import\(/g) ?? []).length, 1, 'the client is the only lazy import here');
   const context = vm.createContext({
     SETTLEMENT_LIVE: live,
     ARCADE_STORAGE: storage,
     rankedSettlementClientPromise: null,
-    profileSync: { hasSession: (address) => address === wallet, session: { token: 'owner-token' } },
+    // Bearer tokens come only through the wallet session (contract §7.6).
+    walletSession: { token: (address) => (address === wallet ? 'owner-token' : null), invalidate: () => { spy.invalidated += 1; } },
+    walletAuthenticated: true,
+    profileSync: { logout: () => { throw new Error('the wallet session drops the token, not profileSync directly'); } },
     applyRankedPublication: () => {},
     console: { error: (...args) => { throw new Error(`unexpected error ${args.join(' ')}`); } },
     setTimeout: (fn, ms) => { timers.push({ fn, ms }); return timers.length; },
@@ -563,6 +566,10 @@ test('live: boot reports the stored count, the first sign-in resumes once, later
   assert.equal(boot.spy.options.live, true);
   assert.equal(boot.spy.options.getToken(boot.wallet), 'owner-token');
   assert.equal(boot.spy.options.getToken(`0x${'9'.repeat(40)}`), null, 'no token for another wallet');
+  // A 401 on a settle call drops the token through the wallet session.
+  boot.spy.options.onUnauthorized(boot.wallet);
+  assert.equal(boot.spy.invalidated, 1);
+  assert.equal(boot.context.walletAuthenticated, false);
 
   boot.dispatch('lesters:wallet-session', { wallet: boot.wallet, authenticated: false });
   await new Promise((resolve) => setImmediate(resolve));
