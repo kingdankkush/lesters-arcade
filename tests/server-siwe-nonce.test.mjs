@@ -218,6 +218,15 @@ test('login on another chain fails as wrong-chain', async () => withDb(async (db
   const forged = { ...wrong, signature: await new ethers.Wallet(`0x${'66'.repeat(32)}`).signMessage(wrong.challenge.message) };
   assert.equal(verifySiweLogin(ethers, { ...forged, allowedDomains, nowMs: NOW, expectedChainId: 4441 }).error, 'signer-mismatch', 'the signature is checked before the chain');
   assert.equal((await db.query('SELECT count(*)::int AS n FROM auth_nonces'))[0].n, 0, 'a wrong-chain login never spends its nonce');
+
+  // The chain is the literal 4441 (§4.3.2 step 2): LITVM_CHAIN_ID, a test and
+  // rehearsal override, never changes which chain a login is accepted for.
+  assert.equal(sessionApi.SESSION_CHAIN_ID, 4441);
+  const overridden = { ...DEV_ENV, LITVM_CHAIN_ID: '31337' };
+  const local = await postSession(db, await signedLogin(await fetchNonce(db, { env: overridden }), { chainId: 31337 }), { env: overridden });
+  assert.deepEqual([local.status, local.body.error], [401, 'wrong-chain']);
+  const liteforge = await postSession(db, await signedLogin(await fetchNonce(db, { env: overridden })), { env: overridden });
+  assert.equal(liteforge.status, 200, JSON.stringify(liteforge.body));
 }));
 
 test('v1 tokens and tokens for another audience are rejected', async () => {

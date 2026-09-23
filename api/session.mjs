@@ -24,6 +24,10 @@ import { hitRateLimit, rateLimitedResult } from '../server/neon/rate-limit.mjs';
 import { issueSessionToken, verifySiweLogin } from '../apps/portal/src/server-session.mjs';
 
 export const SESSION_BODY_MAX_BYTES = 16 * 1024;
+// §4.3.2 step 2: logins are for LitVM LiteForge only. A literal, not
+// config.chainId: LITVM_CHAIN_ID is a test and rehearsal override (§9.2) and
+// must never change which chain a production login is accepted for.
+export const SESSION_CHAIN_ID = 4441;
 export const SESSION_LIMITS = Object.freeze({ ip: 300, wallet: 30, windowSeconds: 3600 });
 
 const cache = {};
@@ -57,7 +61,7 @@ export async function sessionRequest({ body = null, ip = 'unknown' } = {}, deps)
     signature: body.signature,
     allowedDomains: [...config.session.allowedDomains],
     nowMs,
-    expectedChainId: config.chainId,
+    expectedChainId: SESSION_CHAIN_ID,
   });
   if (!login.ok) return unauthorized(login.error);
 
