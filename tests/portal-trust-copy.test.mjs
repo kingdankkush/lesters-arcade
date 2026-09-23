@@ -127,3 +127,28 @@ test('portal renders guest identity and House Score provenance without claiming 
   assert.match(appRoutesSource, /officialProfileEyebrow/);
   assert.match(htmlSource, /Lester’s Arcade session is active/);
 });
+
+// Preview safety (A22, D4) lives in main.js wiring that the module tests
+// cannot see: pin it at the source.
+test('main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert.match(main, /^loadArcadeState\(state, ARCADE_STORAGE\);\n(?:\/\/.*\n)*purgeHouseSeedRows\(state\);$/m, 'the purge runs right after the stored state loads');
+  assert.doesNotMatch(main, /applySeedLeaderboard/, 'nothing seeds the boards any more');
+  assert.doesNotMatch(main, /__seededLeaderboard/);
+
+  const block = (start, end) => {
+    const from = main.indexOf(start);
+    assert.ok(from > 0, `${start} is in main.js`);
+    return main.slice(from, main.indexOf(end, from));
+  };
+  assert.match(block('const indexApi = createIndexApiClient({', '});'), /hosted: HOSTED_PROFILE_SYNC,/, 'the index client is offline in preview');
+  assert.match(block('const officialProfileRoute = createOfficialProfileRoute({', '\n});'), /\n {2}hosted: HOSTED_PROFILE_SYNC,\n/, 'the Profile route renders the device-local view in preview');
+  assert.match(block('const officialLeaderboardRoute = createOfficialLeaderboardRoute({', '\n});'), /\n {2}hosted: HOSTED_PROFILE_SYNC,\n/, 'the Scores route renders the device-local board in preview');
+  assert.doesNotMatch(main, /hosted: true\b/, 'never hard-coded on');
+  for (const hook of ['function hydrateLeaderboardFromIndex() {', 'function hydrateProfileFromIndex() {']) {
+    assert.match(block(hook, '\n}'), /^ {2}if \(!HOSTED_PROFILE_SYNC\) return;$/m, `${hook} is a no-op in preview`);
+  }
+  assert.match(main, /hydrateLeaderboard: hydrateLeaderboardFromIndex,/);
+  assert.match(main, /hydrateProfile: hydrateProfileFromIndex,/);
+  assert.doesNotMatch(main, /hydrateLeaderboardFromChain|hydrateProfileFromChain/, 'the 200-session chain scan is retired');
+});
