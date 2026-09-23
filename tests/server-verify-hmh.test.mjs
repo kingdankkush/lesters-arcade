@@ -7,6 +7,7 @@ import { HMH_BOSS_START_TICK, rebootLevelForXp } from '../server/verify/hmh-plau
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
 import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
 import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+import { FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
 import { canonicalSessionJson } from '../apps/portal/src/session-integrity.mjs';
 import { rankedEnvelopeHash } from '../apps/portal/src/ranked-identity.mjs';
 import { validateRunPlausibility } from '../apps/portal/src/hmh-run-integrity.mjs';
@@ -119,6 +120,33 @@ test('a boss kill before the boss band is rejected', async () => {
   const run = await verify(bodyWith(realistic, (summary) => addKills(summary, 'liquidator', 1, { boss: true })));
   assert.equal(run.error, 'implausible-run');
   assert.ok(run.flags.some((flag) => flag.id === 'boss-before-band' && flag.severity === 'reject'), JSON.stringify(run.flags));
+});
+
+test('a summary that does not start at tick 0 is rejected', async () => {
+  // A far end tick with a short elapsed span: the level-90 boss run as 1 s, the realistic run as 20 s.
+  for (const [fixture, span] of [[level90, 60], [realistic, 1_200]]) {
+    const body = bodyWith(fixture, (summary) => {
+      summary.identity.startTick = summary.identity.endTick - span;
+      summary.totals.survivalTicks = span;
+      summary.totals.elapsedMs = span * FIXED_STEP_MS;
+    });
+    assert.equal(validateRunSummaryPayload(body.evidence.runSummary), '', 'the schema accepts it; plausibility must not');
+    const run = await verify(body);
+    assert.deepEqual([run.ok, run.status, run.error], [false, 422, 'implausible-run']);
+    const rejectIds = run.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id);
+    assert.ok(rejectIds.includes('start-tick-invalid'), JSON.stringify(rejectIds));
+    assert.ok(rejectIds.includes('kills-above-capacity'), JSON.stringify(rejectIds));
+  }
+});
+
+test('a score above 1e10 is rejected before the plausibility check', async () => {
+  const body = bodyWith(valid, (summary) => { summary.totals.score = 20_000_000_000; });
+  assert.equal(validateRunSummaryPayload(body.evidence.runSummary), '', 'the schema allows scores up to 1e12');
+  const run = await verify(body);
+  assert.deepEqual([run.ok, run.status, run.error], [false, 422, 'score-out-of-bounds']);
+  assert.equal(run.flags, undefined, 'answered by the score bound, not by implausible-run');
+  // 1e10 itself is in bounds, so the same run reaches the plausibility check.
+  assert.equal((await verify(bodyWith(valid, (summary) => { summary.totals.score = 10_000_000_000; }))).error, 'implausible-run');
 });
 
 test('XP above the reboot ceiling is rejected', async () => {

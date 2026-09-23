@@ -4,9 +4,11 @@
 // HMH is plausibility-checked, not replayed. This validator rejects only hard
 // impossibilities and flags everything else near a ceiling for owner review:
 //
-//   reject  progress-without-time    progress with zero elapsed time
+//   reject  start-tick-invalid       identity.startTick is not 0 (the reboot
+//                                    starts every run at simulation tick 0)
+//           progress-without-time    progress with zero elapsed time
 //           elapsed-time-mismatch    elapsedMs is not the fixed-step time of the
-//                                    summary's ticks (the reboot reports
+//                                    run's ticks (the reboot reports
 //                                    simulation.timeMs = tick x FIXED_STEP_MS);
 //                                    the A26 wall-clock bound relies on it
 //           boss-before-band         a boss kill before the boss band (72,000)
@@ -17,7 +19,8 @@
 //                                    maximum multiplier ranks
 //           kills-above-capacity     more kills than the encounter director,
 //                                    the opening enemies and the Liquidator (and
-//                                    its adds) can spawn by the summary's end tick
+//                                    its adds) can spawn in the run's ticks, or
+//                                    more than one Liquidator kill
 //           score-above-ceiling      score above kills by role and threat,
 //                                    silver coins and objective rewards at the
 //                                    maximum score multiplier
@@ -219,25 +222,30 @@ export function validateRebootRunPlausibility(runSummary) {
   }
   const killsByRole = rowCounts(kills.byEnemyRole, 'enemyRoleId', 'count');
   const bossRoleKills = killsByRole[HMH_BOSS_ROLE_ID] ?? 0;
-  const endTick = identity.endTick;
+
+  // The reboot creates the accumulator with startTick: 0 on a fresh
+  // DeterministicSimulation for every run (main.mjs; parity test), so a
+  // non-zero start is fabricated: it would let a summary claim the end tick
+  // (spawn capacity, boss band) of a long run with the elapsed time of a short
+  // one. Every tick bound below uses the run's elapsed ticks, never endTick.
+  if (identity.startTick !== 0) reject('start-tick-invalid', identity.startTick, 0);
+  const runTicks = totals.survivalTicks;
 
   const progress = kills.total > 0 || totals.score > 0 || totals.xp > 0 || totals.level > 1 || totals.litecoin > 0;
-  if (progress && (totals.survivalTicks === 0 || totals.elapsedMs === 0)) reject('progress-without-time', totals.elapsedMs, 0);
+  if (progress && (runTicks === 0 || totals.elapsedMs === 0)) reject('progress-without-time', totals.elapsedMs, 0);
 
-  const minimumMs = totals.survivalTicks * FIXED_STEP_MS;
-  const maximumMs = endTick * FIXED_STEP_MS;
-  if (totals.elapsedMs < minimumMs - ELAPSED_TOLERANCE_MS) reject('elapsed-time-mismatch', totals.elapsedMs, minimumMs);
-  else if (totals.elapsedMs > maximumMs + ELAPSED_TOLERANCE_MS) reject('elapsed-time-mismatch', totals.elapsedMs, maximumMs);
+  const expectedMs = runTicks * FIXED_STEP_MS;
+  if (Math.abs(totals.elapsedMs - expectedMs) > ELAPSED_TOLERANCE_MS) reject('elapsed-time-mismatch', totals.elapsedMs, expectedMs);
 
-  if ((kills.boss > 0 || bossRoleKills > 0) && endTick < HMH_BOSS_START_TICK) reject('boss-before-band', endTick, HMH_BOSS_START_TICK);
+  if ((kills.boss > 0 || bossRoleKills > 0) && runTicks < HMH_BOSS_START_TICK) reject('boss-before-band', runTicks, HMH_BOSS_START_TICK);
 
   const expectedLevel = rebootLevelForXp(totals.xp);
   if (totals.level !== expectedLevel) reject('level-xp-mismatch', totals.level, expectedLevel);
 
-  const capacity = spawnCapacity(endTick);
-  const bossCapacity = endTick >= HMH_BOSS_START_TICK ? 1 : 0;
+  const capacity = spawnCapacity(runTicks);
+  const bossCapacity = runTicks >= HMH_BOSS_START_TICK ? 1 : 0;
   if (kills.total > capacity) reject('kills-above-capacity', kills.total, capacity);
-  else if (Math.max(kills.boss, bossRoleKills) > bossCapacity && endTick >= HMH_BOSS_START_TICK) reject('kills-above-capacity', Math.max(kills.boss, bossRoleKills), bossCapacity);
+  else if (Math.max(kills.boss, bossRoleKills) > bossCapacity && runTicks >= HMH_BOSS_START_TICK) reject('kills-above-capacity', Math.max(kills.boss, bossRoleKills), bossCapacity);
   else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
 
   const hard = ceilings(runSummary, MAX_GAINS);

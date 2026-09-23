@@ -19,7 +19,8 @@ import {
   validateRebootRunPlausibility,
 } from '../server/verify/hmh-plausibility.mjs';
 import { createRunProgression, getRunProgressionSnapshot, grantRunXp } from '../apps/hmh-reboot/src/run-progression.mjs';
-import { ENCOUNTER_BANDS } from '../apps/hmh-reboot/src/encounter-director.mjs';
+import { ENCOUNTER_BANDS, createEncounterDirector, directorViewBounds, stepEncounterDirector } from '../apps/hmh-reboot/src/encounter-director.mjs';
+import { createEnemyPopulation, retireEnemyFromPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { COLLECTIBLE_EFFECTS } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import { addSilverDrop, createSilverDropState } from '../apps/hmh-reboot/src/silver-drops.mjs';
@@ -41,6 +42,12 @@ const setRoleKills = (summary, role, count) => {
   summary.kills.total += count - entry.count;
   entry.count = count;
 };
+// A summary whose identity claims it started `span` ticks before its end tick.
+const shiftedStart = (summary, span) => clone(summary, (s) => {
+  s.identity.startTick = s.identity.endTick - span;
+  s.totals.survivalTicks = span;
+  s.totals.elapsedMs = span * FIXED_STEP_MS;
+});
 
 test('constants copied from the reboot main module match its source', () => {
   assert.match(MAIN_SOURCE, new RegExp(`const LIQUIDATOR_THREAT_COST = ${LIQUIDATOR_THREAT_COST};`));
@@ -58,6 +65,13 @@ test('constants copied from the reboot main module match its source', () => {
   assert.match(MAIN_SOURCE, /threatCost: ENEMY_ARCHETYPES\[defeatedEnemy\.archetypeId\]\.costs\.threat,/);
   // The summary's elapsedMs is the fixed-step simulation time of its end tick.
   assert.match(MAIN_SOURCE, /endTick: simulation\.tick,\s*elapsedMs: simulation\.timeMs,/);
+  // Every run starts at tick 0: one accumulator, created with startTick 0 right
+  // after a fresh DeterministicSimulation (whose tick starts at 0).
+  assert.equal(MAIN_SOURCE.match(/createRunSummaryAccumulator\(/g).length, 1);
+  const accumulatorCall = MAIN_SOURCE.match(/runSummaryAccumulator = createRunSummaryAccumulator\(\{[^}]*\}\);/)?.[0] ?? '';
+  assert.match(accumulatorCall, /\bstartTick: 0,/);
+  const freshSimulation = MAIN_SOURCE.indexOf('simulation = new DeterministicSimulation({ seed: payload.session.seed });');
+  assert.ok(freshSimulation > 0 && freshSimulation < MAIN_SOURCE.indexOf(accumulatorCall), 'the accumulator is created after the fresh simulation');
   assert.match(readFileSync(new URL('../apps/hmh-reboot/src/simulation.mjs', import.meta.url), 'utf8'), /get timeMs\(\) \{\s*return this\.tick \* this\.fixedStepMs;/);
 });
 
@@ -121,6 +135,37 @@ test('spawn capacity bounds the director schedule', () => {
   assert.equal(spawnCapacity(HMH_BOSS_START_TICK) - spawnCapacity(HMH_BOSS_START_TICK - 1), 1 + directorSpawnCapacity(HMH_BOSS_START_TICK) - directorSpawnCapacity(HMH_BOSS_START_TICK - 1), 'the boss adds one body at its start');
 });
 
+test('spawn capacity bounds the real encounter director', () => {
+  // The real stepEncounterDirector with permissive callbacks: one valid spawn
+  // point far off camera, open ground, and every enemy retired as soon as it is
+  // inserted, so no cap ever holds an insertion back.
+  const player = { x: 0, y: 0, groundZ: 0 };
+  const spawnPoints = [{ id: 'probe-point', regionId: 'probe-region', districtId: 'mining-camp', x: 5_000, y: 5_000 }];
+  const drive = (nextSpawnTick, lastTick, checkpoints = []) => {
+    const state = createEncounterDirector({ nextSpawnTick, seed: 1337 });
+    const population = createEnemyPopulation();
+    const inserted = new Map();
+    for (let tick = 0; tick <= lastTick; tick += 1) {
+      const step = stepEncounterDirector({
+        state, population, tick, districtId: 'mining-camp', player, camera: directorViewBounds(player), spawnPoints,
+        queryGround: () => ({ groundZ: 0, kind: 'ground' }), isBlocked: () => false, isRouteReachable: () => true,
+      });
+      if (step.inserted) retireEnemyFromPopulation(population, step.enemyId, { tick });
+      if (state.insertedCount > directorSpawnCapacity(tick)) assert.fail(`tick ${tick}: ${state.insertedCount} insertions > capacity ${directorSpawnCapacity(tick)}`);
+      if (checkpoints.includes(tick)) inserted.set(tick, state.insertedCount);
+    }
+    assert.equal(state.rejectedCount, 0, 'nothing held an insertion back');
+    return inserted;
+  };
+  // From nextSpawnTick 0 the director inserts exactly the capacity: the bound is tight.
+  const checkpoints = [0, 3_599, 3_600, 17_999, 35_999, 71_999, 72_000, 75_599, 100_000, 150_000];
+  const fromZero = drive(0, 150_000, checkpoints);
+  for (const tick of checkpoints) assert.equal(fromZero.get(tick), directorSpawnCapacity(tick), `tick ${tick}`);
+  // The game's own start (nextSpawnTick 600) stays under it.
+  const fromGameStart = drive(600, 80_000, [80_000]);
+  assert.ok(fromGameStart.get(80_000) <= directorSpawnCapacity(80_000));
+});
+
 test('fixtures pass, and each hard impossibility rejects', () => {
   assert.equal(validateRebootRunPlausibility(valid).verdict, 'ok');
   assert.equal(validateRebootRunPlausibility(realistic).verdict, 'ok');
@@ -144,6 +189,20 @@ test('fixtures pass, and each hard impossibility rejects', () => {
   const atCeiling = validateRebootRunPlausibility(clone(realistic, (s) => { s.totals.score = scoreCeiling.limit; }));
   assert.equal(atCeiling.verdict, 'flagged');
   assert.deepEqual(rejects(validateRebootRunPlausibility(null)), ['summary-unreadable']);
+});
+
+test('a run that does not start at tick 0 is rejected, and every tick bound uses the elapsed ticks', () => {
+  // A start tick other than 0 is fabricated, even with consistent totals.
+  assert.deepEqual(rejects(validateRebootRunPlausibility(shiftedStart(valid, valid.identity.endTick - 1))), ['start-tick-invalid']);
+  // Moving the start without the time: the elapsed time no longer matches the run's ticks.
+  assert.deepEqual(rejects(validateRebootRunPlausibility(clone(valid, (s) => { s.identity.startTick = 1; s.totals.survivalTicks -= 1; }))), ['start-tick-invalid', 'elapsed-time-mismatch']);
+  // The level-90 boss run squeezed into one second: a far end tick buys neither
+  // the kill capacity nor the boss band.
+  const squeezed = validateRebootRunPlausibility(shiftedStart(level90, 60));
+  assert.deepEqual(rejects(squeezed), ['start-tick-invalid', 'boss-before-band', 'kills-above-capacity']);
+  assert.deepEqual(squeezed.flags.find((flag) => flag.id === 'kills-above-capacity').limit, spawnCapacity(60));
+  // The realistic run claimed as 20 seconds.
+  assert.deepEqual(rejects(validateRebootRunPlausibility(shiftedStart(realistic, 1_200))), ['start-tick-invalid', 'kills-above-capacity']);
 });
 
 test('soft cross-checks flag without rejecting', () => {
