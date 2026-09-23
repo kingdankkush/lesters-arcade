@@ -397,6 +397,7 @@ const NODE_CHECK_FILES = [
   "scripts/write-hmh-integrity-bounds.mjs",
   "scripts/archive-legacy-ranked-sessions.mjs",
   "scripts/deploy-contracts.mjs",
+  'scripts/deploy-contracts-with-key.mjs',
   'scripts/operator-actions.mjs',
   'scripts/vercel-secrets.mjs',
   'scripts/live-cron.mjs',

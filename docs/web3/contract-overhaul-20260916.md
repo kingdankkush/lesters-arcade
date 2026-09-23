@@ -343,7 +343,14 @@ reads them **inside the command, without echo**, through `scripts/lib/key-source
 `--key-env <NAME>` (an environment variable you set for that one command), or
 `--key-file <vault path> --key-field <field>` (one field of a JSON file; a field holding
 `{ address, privateKey }` uses `privateKey`). Errors name the flag, variable or field, never the value or
-the file contents. No tool prints a key, and nobody pastes one into a prompt, a commit or a log.
+the file contents; a key pasted where a variable NAME, path or field belongs is refused without being
+repeated. No tool prints a key, and nobody pastes one into a prompt, a commit or a log.
+
+Every chain tool (`operator-actions.mjs`, `define-nft-achievements.mjs`) asks the RPC node for its own
+`eth_chainId` before it reads or sends anything and stops (exit 2) unless it is 4441; `status` prints the
+chain id the node reported. `--deployment <module.mjs>` is for dry runs and the local chain: a broadcast
+accepts it only with a loopback `--rpc`, and `vercel-secrets.mjs --apply` never accepts it, so LiteForge
+and Vercel always get the committed `LITVM_DEPLOYMENT`.
 
 ## Runbook: deploy the hardened set and enable settlement (owner key holder)
 
@@ -364,10 +371,16 @@ a fake Vercel CLI and a local HTTP server.
    operator nonce, which must still be 0, balances, contract state), then `node scripts/deploy-contracts.mjs`
    (writes `docs/web3/hardened-ranked-deployment-manifest.json` with the seven predicted addresses; they must
    equal the committed address module).
-3. ⚠ **Broadcast.** Read `DEPLOYER_PRIVATE_KEY` from the vault inside the command without echo, set
-   `LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`, run
-   `node scripts/deploy-contracts.mjs --broadcast`. Commit `contracts/deployment-record.hardened.json`
-   and the regenerated `apps/portal/src/generated/litvm-addresses.mjs` (`status: 'deployed'`) together.
+3. ⚠ **Broadcast.** First check the key without starting anything:
+   `node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator`
+   (it confirms the vault field holds the configured deployer's key). Then:
+   `node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator --broadcast --confirm DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`.
+   The launcher reads the key inside its own process and starts `node scripts/deploy-contracts.mjs --broadcast`
+   with `DEPLOYER_PRIVATE_KEY` and `LITVM_DEPLOY_CONFIRM` set in that child's environment only: the key is
+   never on a command line, in the shell's environment or in any output, and nothing is left set when the
+   deploy exits. Never export `DEPLOYER_PRIVATE_KEY` by hand. Commit
+   `contracts/deployment-record.hardened.json` and the regenerated
+   `apps/portal/src/generated/litvm-addresses.mjs` (`status: 'deployed'`) together.
 4. ⚠ **Owner confirms the developer wallet**, one transaction per game, on the owner page (next section).
 5. ⚠ **Operator activates the games:**
    `node scripts/operator-actions.mjs activate --key-file <vault keys.json> --key-field operator --broadcast --confirm ACTIVATE_GAMES_4441`
@@ -376,8 +389,9 @@ a fake Vercel CLI and a local HTTP server.
    --cron-secret-out C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --rotate-session-secret`
    is the dry run (names only); add `--apply --confirm SET_PRODUCTION_SECRETS` to write. It refuses to run
    while any legacy name exists in any environment, pipes every value to `vercel env add` on stdin, writes
-   the new `CRON_SECRET` to the new vault file, rotates `SESSION_SECRET`, and re-lists production. See the
-   environment table below.
+   the new `CRON_SECRET` to the new vault file, rotates `SESSION_SECRET`, and re-lists production. The
+   listings use `vercel env ls <environment> --format json` (Vercel CLI 59.15 or newer); a listing it cannot
+   read stops the run before anything is written. See the environment table below.
 7. **Flip the flags** following the rehearsal's step-7 checklist (`HOSTED_PROFILE_SYNC` and
    `SETTLEMENT_LIVE` together, `node scripts/build-portal-pages.mjs`, the pinned tests). The §9.1 invariant
    test fails the build if the module is not `deployed`.
@@ -454,7 +468,8 @@ It loads the catalog from `apps/portal/src/achievements/index.mjs` (`nftAchievem
 sends, per collection, `defineAchievement(ethers.id(id), gameId32, title, category, '<id>.json')`, plus
 `setMinter(relayer, true)` with `--include-relayer-minter` (needed only for backfill minting). The key comes
 from the environment variable **name** you pass (or `--key-file`/`--key-field`) and is never printed.
-Broadcast also needs a `deployed` module and chain 4441; definitions already on chain are skipped.
+Broadcast also needs a `deployed` module and an RPC whose own `eth_chainId` is 4441 (a `--deployment`
+override only with a loopback `--rpc`); definitions already on chain are skipped.
 `planNftDefinitions()` is the pure planner the rehearsal reuses.
 
 ## Owner decisions 2026-09-16 (recorded)

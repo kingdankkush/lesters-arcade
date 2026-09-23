@@ -5,6 +5,7 @@
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { createServer } from 'node:http';
 import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
@@ -17,6 +18,7 @@ import { SecretSourceError, flagValue, looksLikeSecretValue, readSecret } from '
 import { FEES_OFF_WARNING, OPERATOR_ACTIONS, isLoopbackRpc, operatorHelp, runOperatorAction, runOperatorCli } from '../scripts/operator-actions.mjs';
 import { ENV_LS_ARGS, LEGACY_SECRET_NAMES, VERCEL_APPLY_CONFIRM, VercelListingError, defaultVercelCommand, envNamesFromLsJson, runVercelSecrets } from '../scripts/vercel-secrets.mjs';
 import { cronUrl, runLiveCronCli, summarizeCronResponse } from '../scripts/live-cron.mjs';
+import { DEPLOY_BROADCAST_CONFIRM, runDeployWithKey } from '../scripts/deploy-contracts-with-key.mjs';
 import { deployLocalSuite, localContracts, localWalletKeys, serveJsonRpc, startLocalChain } from '../scripts/lib/local-chain.mjs';
 import { deployedDeploymentInput, normalizeDeploymentInput, predictedDeploymentInput, writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
 
@@ -515,6 +517,81 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
   }
   assert.deepEqual(LEGACY_SECRET_NAMES, ['VERIFIER_PRIVATE_KEY', 'RELAYER_PRIVATE_KEY', 'SCORE_REGISTRY_ADDRESS']);
   assert.equal(defaultVercelCommand().baseArgs[0], 'vercel');
+});
+
+test('the deploy launcher hands the deployer key only to the deploy process', async () => {
+  const deployer = chain.wallets.operator.address;
+  const keyFile = join(dir, 'deployer-keys.json');
+  writeFileSync(keyFile, JSON.stringify({ operator: { address: deployer, privateKey: keys.operator } }));
+  const keyArgs = ['--key-file', keyFile, '--key-field', 'operator'];
+  const run = async (argv, options = {}) => {
+    const lines = [];
+    const spawned = [];
+    const spawnImpl = (command, args, spawnOptions) => {
+      spawned.push({ command, args, options: spawnOptions });
+      const child = new EventEmitter();
+      setImmediate(() => child.emit('close', 0));
+      return child;
+    };
+    const code = await runDeployWithKey({ argv, env: { RPC_URL: 'http://127.0.0.1:1' }, log: (line) => lines.push(String(line)), spawnImpl, deployer, ...options });
+    return { code, output: lines.join('\n'), spawned };
+  };
+
+  // The runbook's step 3 is exactly this tested invocation.
+  const runbook = readFileSync(join(root, 'docs', 'web3', 'contract-overhaul-20260916.md'), 'utf8');
+  assert.ok(runbook.includes(`node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator --broadcast --confirm ${DEPLOY_BROADCAST_CONFIRM}`), 'runbook step 3 command');
+  // The phrase is the deploy script's own, and it is checked before the key is read.
+  assert.match(readFileSync(join(root, 'scripts', 'deploy-contracts.mjs'), 'utf8'), new RegExp(`const BROADCAST_CONFIRM = '${DEPLOY_BROADCAST_CONFIRM}';`));
+  const noPhrase = await run(['--key-env', 'NOT_SET_ANYWHERE', '--broadcast']);
+  assert.equal(noPhrase.code, 2);
+  assert.match(noPhrase.output, /add --confirm DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441/);
+  assert.deepEqual(noPhrase.spawned, []);
+
+  // Dry run: the key is checked against the configured deployer; nothing starts.
+  const dry = await run(keyArgs);
+  assert.equal(dry.code, 0);
+  assert.match(dry.output, new RegExp(`Key checked: it belongs to the configured deployer ${deployer}`));
+  assert.deepEqual(dry.spawned, []);
+
+  // Another key (not the configured deployer) is refused before anything starts.
+  const wrong = await run(keyArgs, { deployer: testnetConfig.deployer });
+  assert.equal(wrong.code, 2);
+  assert.match(wrong.output, /the key is for 0x[0-9a-fA-F]{40}, but the configured deployer is 0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF/);
+  assert.deepEqual(wrong.spawned, []);
+
+  // Broadcast: one child, `node scripts/deploy-contracts.mjs --broadcast`, with the key and the phrase
+  // in its environment only.
+  const sent = await run([...keyArgs, '--broadcast', '--confirm', DEPLOY_BROADCAST_CONFIRM]);
+  assert.equal(sent.code, 0);
+  assert.equal(sent.spawned.length, 1);
+  const [child] = sent.spawned;
+  assert.equal(child.command, process.execPath);
+  assert.deepEqual(child.args, [join(root, 'scripts', 'deploy-contracts.mjs'), '--broadcast']);
+  assert.equal(child.options.env.DEPLOYER_PRIVATE_KEY, keys.operator);
+  assert.equal(child.options.env.LITVM_DEPLOY_CONFIRM, DEPLOY_BROADCAST_CONFIRM);
+  assert.equal(child.options.env.RPC_URL, 'http://127.0.0.1:1', 'the rest of the environment passes through');
+  assert.equal(child.options.shell, undefined, 'no shell');
+  assertNoSecret(`${child.command} ${JSON.stringify(child.args)}`, [keys.operator], 'deploy command line');
+  for (const result of [noPhrase, dry, wrong, sent]) assertNoSecret(result.output, [keys.operator], 'launcher output');
+  assert.equal(process.env.DEPLOYER_PRIVATE_KEY, undefined, 'the parent environment is untouched');
+
+  // A real child process receives exactly that key (compared by hash) and the parent prints nothing of it.
+  const fixtureScript = join(dir, 'fixture-deploy.mjs');
+  const resultPath = join(dir, 'fixture-deploy-result.json');
+  writeFileSync(fixtureScript, [
+    "import { createHash } from 'node:crypto';",
+    "import { writeFileSync } from 'node:fs';",
+    "const digest = createHash('sha256').update(process.env.DEPLOYER_PRIVATE_KEY ?? '').digest('hex');",
+    "writeFileSync(process.env.FIXTURE_RESULT_PATH, JSON.stringify({ digest, confirm: process.env.LITVM_DEPLOY_CONFIRM, argv: process.argv.slice(2) }));",
+  ].join('\n'));
+  const lines = [];
+  const code = await runDeployWithKey({ argv: [...keyArgs, '--broadcast', '--confirm', DEPLOY_BROADCAST_CONFIRM], env: { ...process.env, FIXTURE_RESULT_PATH: resultPath }, log: (line) => lines.push(String(line)), deployer, deployScript: fixtureScript });
+  assert.equal(code, 0);
+  const result = JSON.parse(readFileSync(resultPath, 'utf8'));
+  assert.equal(result.digest, createHash('sha256').update(keys.operator).digest('hex'));
+  assert.equal(result.confirm, DEPLOY_BROADCAST_CONFIRM);
+  assert.deepEqual(result.argv, ['--broadcast']);
+  assertNoSecret(lines.join('\n'), [keys.operator], 'launcher output');
 });
 
 test('live cron prints only status and counts', async () => {
