@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
-  PORTAL_GENERATED_FILES, buildPortalPages, parsePortalPagesArgs, renderCopyBlock, resolvePortalFlags, stalePortalPages,
+  PORTAL_GENERATED_FILES, buildPortalPages, parsePortalPagesArgs, renderCopyBlock, resolvePortalFlags, runPortalPagesCli, stalePortalPages,
 } from '../scripts/build-portal-pages.mjs';
 import { PORTAL_FLAGS, PORTAL_GAMES, escapeHtml, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
 
@@ -16,6 +16,14 @@ const INDEX_BLOCKS = ['how-intro', 'how-connect-title', 'how-connect', 'how-conn
 const TRUST_BLOCKS = ['ranked-storage', 'ranked-status'];
 const preview = portalCopyFor({ settlementLive: false, hostedProfileSync: false });
 const launch = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
+// The flag state that settlement.mjs does not carry, so these tests hold both
+// before and after the step-7 flip (no slice test changes at the flip).
+const OTHER_FLAGS = PORTAL_FLAGS.settlementLive ? 'preview' : 'live';
+const FLAG_DEPENDENT_FILES = ['index.html', 'trust.html', 'llms.txt', 'manifest.webmanifest', 'discover/games.html', ...PORTAL_GAMES.map(game => `discover/${game.slug}.html`)];
+const captureConsole = () => {
+  const lines = { log: [], error: [] };
+  return { lines, output: { log: text => lines.log.push(text), error: text => lines.error.push(text) } };
+};
 
 function withTempDir(run) {
   const dir = mkdtempSync(join(tmpdir(), 'portal-pages-'));
@@ -145,24 +153,64 @@ test('the CLI writes an overridden render only to --out and leaves the committed
   });
 });
 
-test('check mode reports stale pages without writing anything', () => {
+test('check mode reports stale pages without writing anything, whichever flags are committed', () => {
   const before = readAll(portal);
   assert.deepEqual(stalePortalPages(), [], 'the committed pages are current');
-  const staleForLaunch = stalePortalPages({ flags: 'live' });
-  for (const name of ['index.html', 'trust.html', 'llms.txt', 'manifest.webmanifest', ...PORTAL_GAMES.map(game => `discover/${game.slug}.html`), 'discover/games.html']) {
-    assert.ok(staleForLaunch.includes(name), `${name} changes at the step-7 flip`);
-  }
-  assert.ok(!staleForLaunch.includes('sitemap.xml') && !staleForLaunch.includes('robots.txt'), 'the sitemap and robots file do not depend on the flags');
+  const staleForOther = stalePortalPages({ flags: OTHER_FLAGS });
+  for (const name of FLAG_DEPENDENT_FILES) assert.ok(staleForOther.includes(name), `${name} changes when the flags flip`);
+  assert.ok(!staleForOther.includes('sitemap.xml') && !staleForOther.includes('robots.txt'), 'the sitemap and robots file do not depend on the flags');
   withTempDir(dir => {
-    buildPortalPages({ flags: 'live', outDir: dir });
-    assert.deepEqual(stalePortalPages({ flags: 'live', outDir: dir }), []);
-    assert.deepEqual(stalePortalPages({ outDir: dir }).sort(), [...staleForLaunch].sort());
+    buildPortalPages({ flags: OTHER_FLAGS, outDir: dir });
+    assert.deepEqual(stalePortalPages({ flags: OTHER_FLAGS, outDir: dir }), []);
+    assert.deepEqual(stalePortalPages({ outDir: dir }).sort(), [...staleForOther].sort());
   });
   const current = spawnSync(process.execPath, [builder, '--check'], { encoding: 'utf8' });
   assert.equal(current.status, 0, current.stderr);
-  assert.match(current.stdout, /Generated pages are current/);
-  const launchCheck = spawnSync(process.execPath, [builder, '--check', '--flags', 'live'], { encoding: 'utf8' });
-  assert.equal(launchCheck.status, 1);
-  assert.match(launchCheck.stderr, /Stale generated pages \(launch copy\): index\.html.*trust\.html/);
+  assert.equal(current.stdout.trim(), `Generated pages match the ${portalCopyFor(PORTAL_FLAGS).state} copy from settlement.mjs.`);
+  const otherCheck = spawnSync(process.execPath, [builder, '--check', '--flags', OTHER_FLAGS], { encoding: 'utf8' });
+  assert.equal(otherCheck.status, 1);
+  const otherState = portalCopyFor(resolvePortalFlags(OTHER_FLAGS)).state;
+  assert.match(otherCheck.stderr, new RegExp(`^Generated pages differ from the ${otherState} copy from --flags ${OTHER_FLAGS}: index\\.html, .*trust\\.html`));
+  assert.match(otherCheck.stderr, /That is expected until settlement\.mjs carries these flags/);
   assert.deepEqual(readAll(portal), before);
+});
+
+test('check mode tells a stale tree to rebuild and commit', () => {
+  withTempDir(dir => {
+    buildPortalPages({ outDir: dir });
+    writeFileSync(join(dir, 'llms.txt'), 'stale');
+    const { lines, output } = captureConsole();
+    assert.equal(runPortalPagesCli(['--check', '--out', dir], output), 1);
+    assert.deepEqual(lines.error, [`Generated pages differ from the ${portalCopyFor(PORTAL_FLAGS).state} copy from settlement.mjs: llms.txt. Run node scripts/build-portal-pages.mjs and commit the output.`]);
+  });
+});
+
+test('the CLI refuses to write flipped pages over the committed tree', () => {
+  const before = readAll(portal);
+  const { lines, output } = captureConsole();
+  assert.equal(runPortalPagesCli(['--flags', OTHER_FLAGS], output), 1);
+  assert.deepEqual(lines.error, [`--flags ${OTHER_FLAGS} differs from settlement.mjs, so it needs --out <dir>; the committed apps/portal pages always follow settlement.mjs.`]);
+  assert.deepEqual(lines.log, []);
+  const spawned = spawnSync(process.execPath, [builder, `--flags=${OTHER_FLAGS}`], { encoding: 'utf8' });
+  assert.equal(spawned.status, 1);
+  assert.match(spawned.stderr, /needs --out <dir>/);
+  assert.deepEqual(readAll(portal), before);
+});
+
+test('a rebuild rewrites only the files whose content changed', () => {
+  // build.mjs rebuilds the committed pages during npm test while other test
+  // files read them, so a current file must never be truncated and rewritten.
+  withTempDir(dir => {
+    buildPortalPages({ outDir: dir });
+    const old = new Date('2001-01-01T00:00:00Z');
+    for (const name of PORTAL_GENERATED_FILES) utimesSync(join(dir, name), old, old);
+    writeFileSync(join(dir, 'llms.txt'), 'stale');
+    buildPortalPages({ outDir: dir });
+    for (const name of PORTAL_GENERATED_FILES) {
+      const { mtimeMs } = statSync(join(dir, name));
+      if (name === 'llms.txt') assert.ok(mtimeMs > old.getTime(), 'the changed file is rewritten');
+      else assert.equal(mtimeMs, old.getTime(), `${name} was rewritten although it was current`);
+    }
+    assert.deepEqual(stalePortalPages({ outDir: dir }), []);
+  });
 });

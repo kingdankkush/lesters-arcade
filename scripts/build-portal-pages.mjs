@@ -69,9 +69,17 @@ function renderManifest(text,copy){
 
 // Renders every generated public page. Sources are read from apps/portal; outputs
 // go to outDir (apps/portal by default, so the committed pages are rewritten in place).
+// A file whose content is already current is not rewritten: build.mjs runs this
+// during npm test while other test files read the same pages, and an in-place
+// rewrite would briefly expose a truncated file to them.
 export function buildPortalPages({flags,outDir=portal}={}){
   const copy=portalCopyFor(resolvePortalFlags(flags));
-  const write=(name,text)=>writeFileSync(resolve(outDir,name),text);
+  const write=(name,text)=>{
+    const target=resolve(outDir,name);
+    let current=null;
+    try{current=readFileSync(target,'utf8');}catch{}
+    if(current!==text)writeFileSync(target,text);
+  };
   mkdirSync(resolve(outDir,'discover'),{recursive:true});
   const home=renderHome(readFileSync(resolve(portal,'index.html'),'utf8'),copy);
   write('index.html',home);
@@ -136,20 +144,29 @@ export function parsePortalPagesArgs(argv){
   return options;
 }
 
-if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
-  const options=parsePortalPagesArgs(process.argv.slice(2));
+// Runs the CLI and returns its exit code; messages go to the given console.
+export function runPortalPagesCli(argv,output=console){
+  const options=parsePortalPagesArgs(argv);
   const flags=resolvePortalFlags(options.flags);
   const state=portalCopyFor(flags).state;
+  const overridden=flags.settlementLive!==PORTAL_FLAGS.settlementLive||flags.hostedProfileSync!==PORTAL_FLAGS.hostedProfileSync;
+  const render=state+' copy'+(options.flags?' from --flags '+options.flags:' from settlement.mjs');
   if(options.check){
     const stale=stalePortalPages(options);
-    if(stale.length){
-      console.error('Stale generated pages ('+state+' copy): '+stale.join(', ')+'. Run node scripts/build-portal-pages.mjs and commit the output.');
-      process.exitCode=1;
-    } else console.log('Generated pages are current ('+state+' copy).');
-  } else {
-    if(!options.outDir&&(flags.settlementLive!==PORTAL_FLAGS.settlementLive||flags.hostedProfileSync!==PORTAL_FLAGS.hostedProfileSync))
-      console.warn('Warning: --flags '+options.flags+' differs from settlement.mjs and rewrites apps/portal. Never commit these pages (contract §11 rule 9).');
-    buildPortalPages(options);
-    console.log('Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
+    if(!stale.length){output.log('Generated pages match the '+render+'.');return 0;}
+    output.error('Generated pages differ from the '+render+': '+stale.join(', ')+'. '+(overridden
+      ? 'That is expected until settlement.mjs carries these flags; step 7 flips them and then runs node scripts/build-portal-pages.mjs.'
+      : 'Run node scripts/build-portal-pages.mjs and commit the output.'));
+    return 1;
   }
+  // Contract §11 rule 9: flipped pages are never written over the committed tree.
+  if(overridden&&!options.outDir){
+    output.error('--flags '+options.flags+' differs from settlement.mjs, so it needs --out <dir>; the committed apps/portal pages always follow settlement.mjs.');
+    return 1;
+  }
+  buildPortalPages(options);
+  output.log('Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
+  return 0;
 }
+
+if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) process.exitCode=runPortalPagesCli(process.argv.slice(2));
