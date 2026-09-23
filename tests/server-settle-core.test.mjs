@@ -4,11 +4,13 @@ import test, { after, before } from 'node:test';
 import { ethers } from 'ethers';
 
 import { issueSessionToken } from '../apps/portal/src/server-session.mjs';
+import { deriveRankedSeed } from '../apps/portal/src/session-seed.mjs';
 import { ipBucket } from '../server/http.mjs';
 import { migrate } from '../server/neon/migrations.mjs';
 import { periodKeysFor } from '../server/neon/period-keys.mjs';
 import { createRelayer } from '../server/settle/relayer.mjs';
 import { readSettleRow } from '../server/settle/store.mjs';
+import { issueSeedTicket } from '../server/verify/seed-ticket.mjs';
 import { localContracts, localWalletKeys } from '../scripts/lib/local-chain.mjs';
 import * as settleApi from '../api/settle.mjs';
 import * as statusApi from '../api/settle-status.mjs';
@@ -20,19 +22,21 @@ import * as retryApi from '../api/cron/settle-retry.mjs';
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import {
-  bootLocalChain, buildSettleBody, createCatalogDouble, createVerifyDouble, deriveRankedSeedDouble, fixtureEnv, HERO_GATES_DOUBLE,
-  issueSeedTicketDouble, LOCAL_FEE_CAP_RESERVE_WEI, openPaidSession, SETTLE_SESSION_VALUE,
+  bootLocalChain, buildSettleBody, createCatalogDouble, createVerifyDouble, fixtureEnv, HERO_GATES_DOUBLE,
+  LOCAL_FEE_CAP_RESERVE_WEI, openPaidSession, SETTLE_SESSION_VALUE, stackedEvidence,
 } from './helpers/settle-fixtures.mjs';
 
 /**
  * Contract §4.3.3 (E3), §4.3.4 (E4), §4.3.13 (E15), §4.3.12 (E14), §4.4 and
  * A30: the real handlers, mounted through createHandler with the production
  * buildDeps (unmigrated PGlite, the in-process chain, its deployment record
- * and an injected clock). Only the verify slice's functions and the
- * achievements registry are swapped for contract-shaped doubles
- * (tests/helpers/settle-fixtures.mjs), so a test can choose a run's score
- * and length. tests/api-settle-handler.test.mjs runs the same handlers with
- * the real modules and proves the doubles match them.
+ * and an injected clock). Seed tickets are the verify slice's real
+ * issueSeedTicket, and the verify double (tests/helpers/settle-fixtures.mjs)
+ * binds and digests with the real server/verify functions; only its replay
+ * is a toy, so a test can choose a run's score and length. The achievements
+ * registry and hero gates are small doubles with the real API.
+ * tests/api-settle-handler.test.mjs runs the same handlers with the real
+ * modules throughout.
  */
 
 const IP = '198.51.100.23';
@@ -105,7 +109,7 @@ function statusHandler({ db, catalog }, { provider = local.chain.provider, envOv
 
 // E15 checks the same modules as E3 (verify, the achievements registry and,
 // for HMH, the hero gates), so it gets the same doubles.
-function seedHandler({ db, verify, catalog }, { envOverride = env, issue = issueSeedTicketDouble, wrap = null } = {}) {
+function seedHandler({ db, verify, catalog }, { envOverride = env, issue = issueSeedTicket, wrap = null } = {}) {
   return seedApi.createHandler(async () => {
     const deps = await seedApi.buildDeps(envOverride, { db, deployment: local.deployment, nowMs });
     deps.issueSeedTicket = issue;
@@ -635,10 +639,21 @@ test('a repeat POST whose evidence does not decode is 400 invalid-evidence, not 
   const handler = settleHandler(ctx);
   const { body } = await paidBody({ gameId: 'stacked' });
   assert.equal((await post(handler, body)).body.status, 'confirmed');
-  const garbled = { ...body, evidence: { ...body.evidence, sic1: `${body.evidence.sic1.slice(0, -2)}!!` } };
-  assert.deepEqual((await post(handler, garbled)).body, { ok: false, error: 'invalid-evidence' });
-  const other = { ...body, evidence: { ...body.evidence, sic1: Buffer.alloc(21, 0x5a).toString('base64') } };
+  // The real computeEvidenceDigest decodes the SIC1 (verify's
+  // decodeStackedEvidence): garbled base64, a body too short for the SIC1
+  // header and a start level other than 1 are all undecodable.
+  const undecodable = [
+    { ...body.evidence, sic1: `${body.evidence.sic1.slice(0, -2)}!!` },
+    { ...body.evidence, sic1: Buffer.alloc(21, 0x5a).toString('base64') },
+    { ...body.evidence, startLevel: 2 },
+  ];
+  for (const evidence of undecodable) {
+    // eslint-disable-next-line no-await-in-loop
+    assert.deepEqual((await post(handler, { ...body, evidence })).body, { ok: false, error: 'invalid-evidence' });
+  }
+  const other = { ...body, evidence: stackedEvidence({ lines: 21, seed: body.identity.seed }) };
   assert.deepEqual((await post(handler, other)).body, { ok: false, error: 'session-conflict' }, 'decodable but different evidence is still 409');
+  assert.equal(ctx.verify.calls.verifyRankedRun, 1, 'a repeat POST never re-verifies');
 }));
 
 test('a different evidence digest for the same session is 409', async () => scenario(async (ctx) => {
@@ -817,7 +832,7 @@ test('the seed endpoint issues tickets only to signed-in wallets and stops when 
   assert.match(seedTicket.salt, /^[0-9a-f]{32}$/);
   assert.match(seedTicket.mac, /^[0-9a-f]{64}$/);
   assert.equal(seedTicket.issuedAt, Math.floor(clockMs / 1000), 'issuedAt from the injected clock');
-  assert.equal(seed, await deriveRankedSeedDouble({ ...request, wallet: player.address.toLowerCase(), salt: seedTicket.salt }));
+  assert.equal(seed, await deriveRankedSeed({ ...request, wallet: player.address.toLowerCase(), salt: seedTicket.salt }));
 
   for (const bad of [
     { ...request, gameId: 'tetris' },

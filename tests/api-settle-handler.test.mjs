@@ -23,7 +23,7 @@ import { localContracts } from '../scripts/lib/local-chain.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import {
-  bootLocalChain, createCatalogDouble, createVerifyDouble, deriveRankedSeedDouble, fixtureEnv, HERO_GATES_DOUBLE, issueSeedTicketDouble,
+  bootLocalChain, buildSettleBody, createCatalogDouble, createVerifyDouble, fixtureEnv, HERO_GATES_DOUBLE,
   openPaidSession, REAL_SETTLEMENT_GAS_RESERVE_WEI, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE,
 } from './helpers/settle-fixtures.mjs';
 import {
@@ -550,12 +550,13 @@ test('E15 checks the session handle, season and build hash with the verifier\'s 
   assert.equal(accepted, 5);
 });
 
-// --- The settle doubles against the real verify functions (DoD 2) -------------
+// --- The settle test double against the real verify functions (DoD 2) --------
 //
-// tests/server-settle-core, -relayer and -retry keep the contract-shaped
-// doubles of tests/helpers/settle-fixtures.mjs, whose toy replay lets a test
-// choose a run's score and length. Everything else settle relies on must be
-// the real verify slice's behaviour, on the committed fixtures.
+// tests/server-settle-core, -relayer and -retry keep one double
+// (tests/helpers/settle-fixtures.mjs), whose toy replay lets a test choose a
+// run's score and length. Its seed tickets, binding, evidence digests, error
+// shapes and envelope hash are the real functions; these tests pin that, on
+// valid and on malformed input.
 
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const flipHex = (hex) => `${hex.slice(0, -1)}${hex.at(-1) === '0' ? '1' : '0'}`;
@@ -573,26 +574,59 @@ const bindingChecks = (gameId) => [
   ['identity-session-invalid', (body) => { body.identity.sessionId = 'game-session-000000001'; }],
   ['identity-nonce-mismatch', (body) => { body.identity.nonce = '22222222-2222-4222-8222-222222222222'; }],
   ['seed-ticket-invalid', (body) => { body.seedTicket.mac = flipHex(body.seedTicket.mac); }],
+  ['seed-ticket-invalid', (body) => { body.seedTicket.extra = 1; }],
+  ['seed-ticket-invalid', (body) => { body.seedTicket.issuedAt = -1; }],
   ['identity-seed-mismatch', (body) => { body.identity.seed = (body.identity.seed ^ 1) >>> 0; }],
   ['session-key-mismatch', (body) => { body.sessionId32 = `0x${'9'.repeat(64)}`; }],
 ];
 
-test('the settle doubles equal the real seed ticket MAC and deriveRankedSeed', async () => {
-  const salt = Uint8Array.from({ length: 16 }, (_, index) => (index * 37 + 11) % 256);
-  for (const gameId of Object.keys(RANKED_GAMES)) {
-    const input = {
-      secret: SETTLE_SESSION_VALUE, nowMs: 1_790_000_123_456, randomBytes: () => salt, sessionId: `game-session-${FIXTURE_UUID}`,
-      wallet: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8', gameId, seasonId: RANKED_GAMES[gameId].seasonId, buildHash: FIXTURE_BUILD_HASHES[gameId],
-    };
-    const real = await issueSeedTicket(input);
-    assert.deepEqual(plain(await issueSeedTicketDouble(input)), plain(real), `${gameId} ticket and seed`);
-    const seedInput = { sessionId: input.sessionId, wallet: input.wallet.toLowerCase(), gameId, seasonId: input.seasonId, buildHash: input.buildHash, salt: real.seedTicket.salt };
-    assert.equal(await deriveRankedSeedDouble(seedInput), await deriveRankedSeed(seedInput));
-    assert.equal(real.seed, await deriveRankedSeed(seedInput));
+// Malformed evidence per game: the real computeEvidenceDigest's failures.
+const MALFORMED_EVIDENCE = Object.freeze({
+  chikun: (evidence) => [
+    { encoding: evidence.encoding },
+    { ...evidence, flap: [1, 2] },
+    { ...evidence, encoding: RANKED_GAMES.stacked.evidenceEncoding },
+  ],
+  stacked: (evidence) => [
+    { ...evidence, sic1: `${evidence.sic1.slice(0, -2)}!!` },
+    { ...evidence, sic1: Buffer.alloc(21, 0x5a).toString('base64') },
+    { ...evidence, sic1: Buffer.alloc(40, 0x5a).toString('base64') },
+    { ...evidence, startLevel: 2 },
+    { ...evidence, extra: 1 },
+  ],
+  'lester-blaster': (evidence) => [
+    { encoding: evidence.encoding, runSummary: evidence.runSummary },
+    { encoding: evidence.encoding, sessionEnvelope: evidence.sessionEnvelope },
+  ],
+});
+
+test('the settle fixtures issue real seed tickets, and their toy bodies bind and digest under the real verifier', async () => {
+  const nowMs = FIXTURE_VERIFY_AT_MS;
+  const options = { chainId: 4441, scoreRegistryAddress: FIXTURE_REGISTRY, wallet: FIXTURE_WALLET, nowMs, seedSecret: SETTLE_SESSION_VALUE };
+  const double = createVerifyDouble({ nowMs });
+  for (const gameId of RANKED_GAME_IDS) {
+    // eslint-disable-next-line no-await-in-loop
+    const body = await buildSettleBody({ gameId, wallet: FIXTURE_WALLET, registry: FIXTURE_REGISTRY, nowMs });
+    const { sessionId, seasonId, buildHash, seed } = body.identity;
+    // eslint-disable-next-line no-await-in-loop
+    assert.equal(seed, await deriveRankedSeed({ sessionId, wallet: FIXTURE_WALLET, gameId, seasonId, buildHash, salt: body.seedTicket.salt }), `${gameId} ticket seed`);
+    // eslint-disable-next-line no-await-in-loop
+    const bound = await verify.bindRankedIdentity(body, options);
+    assert.equal(bound.ok, true, `${gameId}: ${JSON.stringify(bound)}`);
+    assert.equal(bound.identity.sessionKey, body.sessionId32);
+    // eslint-disable-next-line no-await-in-loop
+    const digest = await verify.computeEvidenceDigest(body);
+    assert.equal(digest.ok, true, `${gameId} toy evidence decodes: ${JSON.stringify(digest)}`);
+    // eslint-disable-next-line no-await-in-loop
+    const run = await double.verifyRankedRun(body, options);
+    assert.equal(run.ok, true, JSON.stringify(run));
+    assert.deepEqual(plain(run.evidence), { encoding: digest.encoding, text: digest.text, bytes: digest.bytes, digest: digest.digest });
+    // eslint-disable-next-line no-await-in-loop
+    assert.equal(run.envelopeHash, await rankedEnvelopeHash({ gameId, sessionId32: body.sessionId32, encoding: digest.encoding, evidenceDigest: digest.digest }));
   }
 });
 
-test('the verify double binds, digests, hashes the v2 envelope and shapes the VerifiedRun like the real verifier', async () => {
+test('the verify double binds, digests and fails like the real verifier, and shapes the VerifiedRun the same way', async () => {
   const options = fixtureVerifyOptions();
   const double = createVerifyDouble({ nowMs: () => FIXTURE_VERIFY_AT_MS });
   for (const name of ['chikun-valid', 'stacked-valid', 'hmh-valid']) {
@@ -616,10 +650,25 @@ test('the verify double binds, digests, hashes the v2 envelope and shapes the Ve
         assert.deepEqual(plain(await double.bindRankedIdentity(mutated, options)), plain(real), `${name}: double ${error}`);
       }
     }
-    // §2.6: the stored evidence text, bytes and digest, without replay.
+    // §2.6: the stored evidence text, bytes and digest, without replay, and
+    // the same failure for evidence that does not decode.
     const digest = await verify.computeEvidenceDigest(body);
     assert.deepEqual(plain(await double.computeEvidenceDigest(body)), plain(digest), `${name} digest`);
     assert.equal(digest.digest, fixture.expected.evidenceDigest);
+    for (const evidence of MALFORMED_EVIDENCE[body.gameId](body.evidence)) {
+      const bad = { ...body, evidence };
+      // eslint-disable-next-line no-await-in-loop
+      const real = await verify.computeEvidenceDigest(bad);
+      assert.equal(real.ok, false, `${name}: ${JSON.stringify(evidence).slice(0, 80)}`);
+      assert.equal(real.status, 400);
+      // eslint-disable-next-line no-await-in-loop
+      assert.deepEqual(plain(await double.computeEvidenceDigest(bad)), plain(real), `${name}: double digest failure ${real.error}`);
+      if (body.gameId === 'stacked') {
+        // The STACKED verifier decodes first, so the replay fails the same way.
+        // eslint-disable-next-line no-await-in-loop
+        assert.deepEqual(plain(await double.verifyRankedRun(bad, options)), plain(await verify.verifyRankedRun(bad, options)), `${name}: verify failure ${real.error}`);
+      }
+    }
 
     // §5.3: the same VerifiedRun shape; the binding fields, the evidence and
     // the v2 envelope hash are equal (score, contract and stats are the toy's).
@@ -652,7 +701,8 @@ test('the verify double binds, digests, hashes the v2 envelope and shapes the Ve
       assert.deepEqual([toy.plausibility, real.plausibility], [null, null]);
     }
 
-    // The re-sign rule's reverifyStoredRun on the stored evidence.
+    // The re-sign rule's reverifyStoredRun on the stored evidence, and on a
+    // stored identity whose session key does not match.
     const stored = { gameId: body.gameId, identity: plain(real.identity), evidence: { encoding: real.evidence.encoding, text: real.evidence.text } };
     const again = await verify.reverifyStoredRun(stored, { nowMs: FIXTURE_VERIFY_AT_MS });
     const toyAgain = await double.reverifyStoredRun(stored, { nowMs: FIXTURE_VERIFY_AT_MS });
@@ -660,6 +710,14 @@ test('the verify double binds, digests, hashes the v2 envelope and shapes the Ve
     for (const key of ['sessionId32', 'envelopeHash', 'verifiedAt']) assert.equal(toyAgain[key], again[key], `${name} re-verified ${key}`);
     assert.deepEqual(plain(toyAgain.evidence), plain(again.evidence));
     assert.deepEqual([again.score, again.envelopeHash], [real.score, real.envelopeHash]);
+    for (const tampered of [
+      { ...stored, identity: { ...stored.identity, sessionKey: `0x${'9'.repeat(64)}` } },
+      { ...stored, gameId: 'pong' },
+      { ...stored, evidence: { ...stored.evidence, encoding: 'text/plain' } },
+    ]) {
+      // eslint-disable-next-line no-await-in-loop
+      assert.deepEqual(plain(await double.reverifyStoredRun(tampered, { nowMs: FIXTURE_VERIFY_AT_MS })), plain(await verify.reverifyStoredRun(tampered, { nowMs: FIXTURE_VERIFY_AT_MS })), `${name} stored-run failure`);
+    }
   }
 });
 
