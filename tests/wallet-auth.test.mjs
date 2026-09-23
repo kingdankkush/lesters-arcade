@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   SIWE_STATEMENT,
+  isServerNonce,
   generateNonce,
   buildSiweMessage,
   buildSiweChallenge,
@@ -36,11 +37,26 @@ test('buildSiweMessage is deterministic + canonical EIP-4361 shape', () => {
   assert.ok(msg.includes('Nonce: abc123'));
   assert.ok(msg.includes('Issued At: 2026-06-20T00:00:00.000Z'));
   assert.ok(msg.includes(SIWE_STATEMENT));
+  // Contract A13: the exact statement the browser and the server share.
+  assert.equal(SIWE_STATEMENT, 'Sign in to Lester’s Arcade. This does not cost anything or send a transaction.');
+  assert.ok(msg.includes('\nSign in to Lester’s Arcade. This does not cost anything or send a transaction.\n'));
   // Deterministic: same inputs -> identical bytes (verifier can reconstruct).
   const msg2 = buildSiweMessage({
     domain: 'lestersarcade.io', address: ADDR, chainId: 4441, nonce: 'abc123', issuedAt: '2026-06-20T00:00:00.000Z',
   });
   assert.equal(msg, msg2);
+});
+
+test('isServerNonce accepts only the 72-hex server nonce format', () => {
+  assert.equal(isServerNonce('a'.repeat(72)), true);
+  assert.equal(isServerNonce('0123456789abcdef'.repeat(4) + '01234567'), true);
+  assert.equal(isServerNonce(generateNonce()), false, 'a 32-hex browser nonce is not a server nonce');
+  assert.equal(isServerNonce('A'.repeat(72)), false, 'lowercase only');
+  assert.equal(isServerNonce('a'.repeat(71)), false);
+  assert.equal(isServerNonce('a'.repeat(73)), false);
+  assert.equal(isServerNonce('g'.repeat(72)), false);
+  assert.equal(isServerNonce(null), false);
+  assert.equal(isServerNonce(123), false);
 });
 
 test('buildSiweMessage rejects bad inputs', () => {

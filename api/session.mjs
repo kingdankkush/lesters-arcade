@@ -1,37 +1,88 @@
-// Wallet login session (owner decision 2026-09-16). The browser posts the
-// SIWE challenge it had the wallet sign; the server re-derives the message,
-// recovers the signer, and returns an HMAC session token used for profile
-// sync writes. Fails closed without SESSION_SECRET. Nothing here touches the
-// chain and no private data is stored.
+// E2 POST /api/session (contract §4.3.2, A13, A30, A34).
+//
+// The browser posts the SIWE challenge its wallet signed, built on a server
+// nonce from E1. Checks, in this order:
+//   1. verifySiweLogin (allowed domain, freshness, exact message, signature);
+//   2. chainId === 4441, else wrong-chain;
+//   3. the nonce format and MAC, else nonce-invalid;
+//   4. the nonce has not expired, else nonce-expired;
+//   5. the nonce is consumed through auth_nonces, else nonce-used.
+// Then it returns a v2 session token for this deployment's audience.
+//
+// Allowed domains: SESSION_ALLOWED_DOMAINS, else lestersarcade.io and www,
+// plus localhost and 127.0.0.1 only when VERCEL_ENV is set and not
+// production (an absent VERCEL_ENV is production; server/config.mjs).
+// Rate limits: session:ip:<ipBucket> 300/h, and session:w:<wallet> 30/h
+// counted once the signature verifies.
 
-import { createHmac, timingSafeEqual } from 'node:crypto';
 import { ethers } from 'ethers';
+import { ipBucket, makeHandler, sessionAudience } from '../server/http.mjs';
+import { buildBaseDeps } from '../server/config.mjs';
+import { checkSiweNonce, consumeSiweNonce } from '../server/auth/siwe-nonce.mjs';
+import { ensureSchema } from '../server/neon/migrations.mjs';
+import { hitRateLimit, rateLimitedResult } from '../server/neon/rate-limit.mjs';
 import { issueSessionToken, verifySiweLogin } from '../apps/portal/src/server-session.mjs';
 
-const crypto = { createHmac, timingSafeEqual };
-const DEFAULT_DOMAINS = ['lestersarcade.io', 'www.lestersarcade.io', 'localhost', '127.0.0.1'];
+export const SESSION_BODY_MAX_BYTES = 16 * 1024;
+// §4.3.2 step 2: logins are for LitVM LiteForge only. A literal, not
+// config.chainId: LITVM_CHAIN_ID is a test and rehearsal override (§9.2) and
+// must never change which chain a production login is accepted for.
+export const SESSION_CHAIN_ID = 4441;
+export const SESSION_LIMITS = Object.freeze({ ip: 300, wallet: 30, windowSeconds: 3600 });
 
-export function readSessionConfig(env = process.env) {
-  const secret = env.SESSION_SECRET ?? '';
-  const allowedDomains = String(env.SESSION_ALLOWED_DOMAINS ?? '').split(',').map((value) => value.trim()).filter(Boolean);
-  return Object.freeze({ configured: secret.length >= 32, secret, allowedDomains: allowedDomains.length ? allowedDomains : DEFAULT_DOMAINS });
+const cache = {};
+
+export async function buildDeps(env = process.env, overrides = {}) {
+  return buildBaseDeps(env, overrides, cache);
 }
 
-export async function sessionRequest(body, { env = process.env, now = () => Date.now() } = {}) {
-  const config = readSessionConfig(env);
-  if (!config.configured) return { status: 503, body: { ok: false, error: 'session-not-configured' } };
-  if (!body || typeof body !== 'object') return { status: 400, body: { ok: false, error: 'invalid-body' } };
-  const login = verifySiweLogin(ethers, { challenge: body.challenge, signature: body.signature, allowedDomains: config.allowedDomains, nowMs: now() });
-  if (!login.ok) return { status: 401, body: { ok: false, error: login.error } };
-  const session = issueSessionToken(crypto, { secret: config.secret, wallet: login.wallet, nowMs: now() });
-  return { status: 200, body: { ok: true, wallet: login.wallet, token: session.token, expiresAt: session.expiresAt } };
+const json = (status, body) => ({ status, body, headers: { 'Cache-Control': 'no-store' } });
+const unauthorized = (error) => json(401, { ok: false, error });
+
+async function limited(db, bucket, limit, nowMs) {
+  const hit = await hitRateLimit(db, { bucket, limit, windowSeconds: SESSION_LIMITS.windowSeconds, nowMs });
+  return hit.ok ? null : rateLimitedResult(hit.retryAfterSeconds);
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); res.status(405).json({ ok: false, error: 'method-not-allowed' }); return; }
-  let body = req.body;
-  if (typeof body === 'string') { try { body = JSON.parse(body); } catch { res.status(400).json({ ok: false, error: 'invalid-json' }); return; } }
-  const result = await sessionRequest(body);
-  res.setHeader('Cache-Control', 'no-store');
-  res.status(result.status).json(result.body);
+export async function sessionRequest({ body = null, ip = 'unknown' } = {}, deps) {
+  const config = deps?.config;
+  if (!config?.session?.configured || !deps.db) return json(503, { ok: false, error: 'session-not-configured' });
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return json(400, { ok: false, error: 'invalid-body' });
+  const secret = config.session.secret();
+  await ensureSchema(deps.db);
+  const nowMs = deps.nowMs();
+
+  const ipLimited = await limited(deps.db, `session:ip:${ipBucket(ip, secret)}`, SESSION_LIMITS.ip, nowMs);
+  if (ipLimited) return ipLimited;
+
+  // Steps 1 and 2.
+  const login = verifySiweLogin(ethers, {
+    challenge: body.challenge,
+    signature: body.signature,
+    allowedDomains: [...config.session.allowedDomains],
+    nowMs,
+    expectedChainId: SESSION_CHAIN_ID,
+  });
+  if (!login.ok) return unauthorized(login.error);
+
+  const walletLimited = await limited(deps.db, `session:w:${login.wallet}`, SESSION_LIMITS.wallet, nowMs);
+  if (walletLimited) return walletLimited;
+
+  // Steps 3 to 5.
+  const nonce = body.challenge.nonce;
+  const checked = checkSiweNonce(nonce, { secret, nowMs });
+  if (!checked.ok) return unauthorized(checked.error);
+  const consumed = await consumeSiweNonce(deps.db, { nonce, wallet: login.wallet, expiresAt: checked.expiresAtMs });
+  if (!consumed) return unauthorized('nonce-used');
+
+  const session = issueSessionToken(deps.crypto, { secret, wallet: login.wallet, nowMs, audience: sessionAudience(config) });
+  return json(200, { ok: true, wallet: login.wallet, token: session.token, expiresAt: session.expiresAt });
 }
+
+const adapter = makeHandler({ label: 'session', methods: ['POST'], query: [], maxBytes: SESSION_BODY_MAX_BYTES, run: sessionRequest });
+
+export function createHandler(depsFactory) {
+  return adapter(depsFactory);
+}
+
+export default createHandler(() => buildDeps());

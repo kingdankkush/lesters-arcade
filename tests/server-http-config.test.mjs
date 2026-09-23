@@ -198,7 +198,7 @@ test('verifyBearer accepts only a live token signed with SESSION_SECRET', async 
   const wallet = new ethers.Wallet(VERIFIER_KEY).address;
   const now = Date.parse('2026-09-23T12:00:00.000Z');
   const deps = await buildBaseDeps(fullEnv(), { db: null, deployment: DEPLOYED, nowMs: now });
-  const { token } = issueSessionToken({ createHmac, timingSafeEqual }, { secret: SESSION_VALUE, wallet, nowMs: now });
+  const { token } = issueSessionToken({ createHmac, timingSafeEqual }, { secret: SESSION_VALUE, wallet, nowMs: now, audience: 'lestersarcade:development' });
   assert.deepEqual(verifyBearer({ authorization: `Bearer ${token}` }, deps)?.wallet, wallet.toLowerCase());
   assert.equal(verifyBearer({ authorization: `Bearer ${token}x` }, deps), null);
   assert.equal(verifyBearer({}, deps), null);

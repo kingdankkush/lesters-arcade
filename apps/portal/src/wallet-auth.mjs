@@ -10,8 +10,17 @@
 // everything here is pure so it can be unit-tested in Node and reused by both
 // the runtime and any future third-party adapter.
 
+// Shared by the browser and the server (contract A13): the server rebuilds the
+// message byte for byte, so both sides must use this exact constant.
 export const SIWE_STATEMENT =
-  'Sign in to Lester\u2019s Arcade. This signature proves you control this wallet. It is free, off-chain, and does not authorize any transaction.';
+  'Sign in to Lester\u2019s Arcade. This does not cost anything or send a transaction.';
+
+// A nonce issued by GET /api/session/nonce (contract §4.3.1): 72 lowercase
+// hex characters (random, expiry, MAC). Browser-generated nonces
+// (generateNonce, 32 hex) are for the local preview only.
+export function isServerNonce(nonce) {
+  return typeof nonce === 'string' && /^[0-9a-f]{72}$/.test(nonce);
+}
 
 // Generate a random nonce for a SIWE challenge. Uses crypto when available
 // (browser / modern Node) and falls back to Math.random so tests never throw.

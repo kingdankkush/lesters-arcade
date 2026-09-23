@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import { buildSiweChallenge } from '../apps/portal/src/wallet-auth.mjs';
 import { issueSessionToken, sanitizeProfileDocument, verifySessionToken, verifySiweLogin, SESSION_TTL_MS } from '../apps/portal/src/server-session.mjs';
 import { createNeonClient, neonEndpointFor } from '../apps/portal/src/server-neon.mjs';
-import { sessionRequest } from '../api/session.mjs';
+import { buildDeps as buildSessionDeps, sessionRequest } from '../api/session.mjs';
 import { profileRequest } from '../api/profile.mjs';
 import { settleRequest } from '../api/settle.mjs';
 
@@ -31,33 +31,58 @@ test('a SIWE login verifies only a fresh, allowed, exactly-reconstructed challen
   const { challenge, signature } = await signedChallenge();
   const allowedDomains = ['lestersarcade.io'];
   assert.deepEqual(verifySiweLogin(ethers, { challenge, signature, allowedDomains, nowMs: now + 1000 }), { ok: true, wallet: wallet.address.toLowerCase(), chainId: 4441 });
+  assert.deepEqual(verifySiweLogin(ethers, { challenge, signature, allowedDomains, nowMs: now + 1000, expectedChainId: 4441 }), { ok: true, wallet: wallet.address.toLowerCase(), chainId: 4441 });
   assert.equal(verifySiweLogin(ethers, { challenge, signature, allowedDomains: ['evil.example'], nowMs: now }).error, 'domain-not-allowed');
   assert.equal(verifySiweLogin(ethers, { challenge, signature, allowedDomains, nowMs: now + 11 * 60 * 1000 }).error, 'challenge-stale');
   assert.equal(verifySiweLogin(ethers, { challenge: { ...challenge, message: `${challenge.message}!` }, signature, allowedDomains, nowMs: now }).error, 'message-mismatch');
   const other = await new ethers.Wallet(`0x${'66'.repeat(32)}`).signMessage(challenge.message);
   assert.equal(verifySiweLogin(ethers, { challenge, signature: other, allowedDomains, nowMs: now }).error, 'signer-mismatch');
   assert.equal(verifySiweLogin(ethers, { challenge, signature: '0x1234', allowedDomains, nowMs: now }).error, 'invalid-signature');
+  // Contract §4.3.2 step 2: E2 passes expectedChainId 4441.
+  const mainnet = await signedChallenge({ chainId: 1 });
+  assert.equal(verifySiweLogin(ethers, { ...mainnet, allowedDomains, nowMs: now, expectedChainId: 4441 }).error, 'wrong-chain');
+  assert.equal(verifySiweLogin(ethers, { ...mainnet, allowedDomains, nowMs: now }).ok, true, 'callers without expectedChainId are unchanged');
 });
 
-test('session tokens round-trip, expire, and reject tampering or a short secret', () => {
-  const { token, expiresAt } = issueSessionToken(crypto, { secret, wallet: wallet.address, nowMs: now });
+test('session tokens round-trip, expire, and reject tampering, a short secret, v1 payloads and other audiences', () => {
+  const audience = 'lestersarcade:production';
+  const { token, expiresAt } = issueSessionToken(crypto, { secret, wallet: wallet.address, nowMs: now, audience });
   assert.equal(expiresAt, now + SESSION_TTL_MS);
-  assert.deepEqual(verifySessionToken(crypto, { secret, token, nowMs: now + 5 }), { wallet: wallet.address.toLowerCase(), expiresAt });
-  assert.equal(verifySessionToken(crypto, { secret, token, nowMs: expiresAt + 1 }), null, 'expired');
-  assert.equal(verifySessionToken(crypto, { secret: 'y'.repeat(48), token, nowMs: now }), null, 'wrong secret');
-  assert.equal(verifySessionToken(crypto, { secret, token: `${token}a`, nowMs: now }), null, 'tampered');
-  assert.throws(() => issueSessionToken(crypto, { secret: 'short', wallet: wallet.address }), /32 characters/);
+  assert.deepEqual(verifySessionToken(crypto, { secret, token, nowMs: now + 5, audience }), { wallet: wallet.address.toLowerCase(), expiresAt });
+  assert.equal(Buffer.from(token.split('.')[0], 'base64url').toString('utf8'), `v2|${audience}|${wallet.address.toLowerCase()}|${expiresAt}`, 'contract A13 payload');
+  assert.equal(verifySessionToken(crypto, { secret, token, nowMs: expiresAt + 1, audience }), null, 'expired');
+  assert.equal(verifySessionToken(crypto, { secret: 'y'.repeat(48), token, nowMs: now, audience }), null, 'wrong secret');
+  assert.equal(verifySessionToken(crypto, { secret, token: `${token}a`, nowMs: now, audience }), null, 'tampered');
+  assert.equal(verifySessionToken(crypto, { secret, token, nowMs: now, audience: 'lestersarcade:preview' }), null, 'another audience');
+  const v1Payload = `${wallet.address.toLowerCase()}|${expiresAt}`;
+  const v1 = `${Buffer.from(v1Payload).toString('base64url')}.${createHmac('sha256', secret).update(v1Payload).digest('base64url')}`;
+  assert.equal(verifySessionToken(crypto, { secret, token: v1, nowMs: now, audience }), null, 'v1 tokens from the 1.7.0 login die');
+  assert.throws(() => issueSessionToken(crypto, { secret: 'short', wallet: wallet.address, audience }), /32 characters/);
+  assert.throws(() => issueSessionToken(crypto, { secret, wallet: wallet.address }), /audience/);
 });
 
-test('the session endpoint fails closed without a secret and issues a token for a valid login', async () => {
-  const { challenge, signature } = await signedChallenge();
-  assert.equal((await sessionRequest({ challenge, signature }, { env: {}, now: () => now })).status, 503);
-  const env = { SESSION_SECRET: secret };
-  const ok = await sessionRequest({ challenge, signature }, { env, now: () => now });
-  assert.equal(ok.status, 200);
-  assert.equal(ok.body.wallet, wallet.address.toLowerCase());
-  assert.ok(verifySessionToken(crypto, { secret, token: ok.body.token, nowMs: now }));
-  assert.equal((await sessionRequest({ challenge, signature: `0x${'00'.repeat(65)}` }, { env, now: () => now })).status, 401);
+test('the session endpoint fails closed without a secret and issues a v2 token for a valid server-nonce login', async () => {
+  const { createPgliteClient } = await import('./helpers/pglite-client.mjs');
+  const { invoke } = await import('./helpers/fake-http.mjs');
+  const nonceApi = await import('../api/session-nonce.mjs');
+  const env = { VERCEL_ENV: 'development', SESSION_SECRET: secret, NEON_DATABASE_URL: 'postgresql://fixture@db.invalid/settle' };
+  const db = createPgliteClient();
+  try {
+    const { challenge, signature } = await signedChallenge();
+    assert.equal((await sessionRequest({ body: { challenge, signature } }, await buildSessionDeps({}, { db, nowMs: now }))).status, 503);
+    const nonce = await invoke(nonceApi.createHandler(() => nonceApi.buildDeps(env, { db, nowMs: now })), { url: '/api/session-nonce' });
+    assert.equal(nonce.status, 200);
+    const login = await signedChallenge({ nonce: nonce.body.nonce, issuedAt: nonce.body.issuedAt });
+    const deps = await buildSessionDeps(env, { db, nowMs: now });
+    assert.deepEqual((await sessionRequest({ body: { challenge, signature } }, deps)).body, { ok: false, error: 'nonce-invalid' }, 'a browser nonce no longer logs in');
+    const ok = await sessionRequest({ body: login }, deps);
+    assert.equal(ok.status, 200, JSON.stringify(ok.body));
+    assert.equal(ok.body.wallet, wallet.address.toLowerCase());
+    assert.ok(verifySessionToken(crypto, { secret, token: ok.body.token, nowMs: now, audience: 'lestersarcade:development' }));
+    assert.equal((await sessionRequest({ body: { challenge: login.challenge, signature: `0x${'00'.repeat(65)}` } }, deps)).status, 401);
+  } finally {
+    await db.close();
+  }
 });
 
 test('profile documents are bounded and profile sync needs the database, a session token for writes, and nothing for reads', async () => {
@@ -111,46 +136,27 @@ test('profile documents are bounded and profile sync needs the database, a sessi
   }
 });
 
-test('relayed settlement returns the attestation without a relayer and relays it with one', async () => {
-  const verifier = new ethers.Wallet(`0x${'11'.repeat(32)}`);
+test('relayed settlement needs a v2 session token and the RANKED_* configuration, and fails closed otherwise', async () => {
+  // Contract §4.3.3 (E3). The full pipeline (paid entry, verification,
+  // Neon, EIP-712 signing and relayed submission on the local chain) is
+  // tested in tests/server-settle-core.test.mjs and tests/server-relayer.test.mjs.
+  const { buildDeps } = await import('../api/settle.mjs');
   const registry = `0x${'33'.repeat(20)}`;
-  const body = {
-    gameId: 'stacked', sessionId32: ethers.id('game-session-000000042'), player: wallet.address, score: 4200, kills: 0, maxCombo: 4, survivalSeconds: 240,
-    envelope: { version: 'lesters-session-envelope-v1', inputHash: 'a'.repeat(64), eventHash: 'b'.repeat(64), finalStateHash: 'c'.repeat(64), envelopeHash: 'd'.repeat(64), identity: { wallet: wallet.address } },
-    runtimeId: 'stacked:1.6.0', seasonId: 'stacked-season-preview-1', achievements: ['stacked-first-quad'],
+  const deployment = { status: 'deployed', chainId: 4441, settlementGasReserveWei: '100000000000000', addresses: { scoreSubmissionRegistry: registry, arcadeRankedEntry: `0x${'44'.repeat(20)}` } };
+  const env = {
+    VERCEL_ENV: 'development', SESSION_SECRET: secret, NEON_DATABASE_URL: 'postgresql://fixture@db.invalid/settle',
+    RANKED_VERIFIER_PRIVATE_KEY: `0x${'11'.repeat(32)}`, RANKED_RELAYER_PRIVATE_KEY: `0x${'77'.repeat(32)}`, RANKED_SCORE_REGISTRY_ADDRESS: registry,
   };
-  const env = { VERIFIER_PRIVATE_KEY: verifier.privateKey, SCORE_REGISTRY_ADDRESS: registry };
-  const unrelayed = await settleRequest(body, { env, now: () => 1_700_000_000 });
-  assert.equal(unrelayed.status, 200);
-  assert.equal(unrelayed.body.relayed, false);
-  assert.ok(unrelayed.body.signature);
-  const relayerKey = `0x${'77'.repeat(32)}`;
-  const sent = [];
-  const providerFactory = () => ({
-    // Enough of an ethers provider for Contract calls in the relay path.
-    async call({ to, data }) {
-      const iface = new ethers.Interface(['function getSession(bytes32) view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 runtimeId, bytes32 seasonId, uint64 submittedAt, bool verified, bool exists))', 'function relayers(address) view returns (bool)']);
-      const parsed = iface.parseTransaction({ data });
-      if (parsed.name === 'getSession') return iface.encodeFunctionResult('getSession', [[ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, ethers.ZeroHash, ethers.ZeroHash, 0n, false, false]]);
-      if (parsed.name === 'relayers') return iface.encodeFunctionResult('relayers', [true]);
-      throw new Error(`unexpected call ${parsed.name} to ${to}`);
-    },
-    async getNetwork() { return { chainId: 4441n }; },
-    async resolveName(name) { return name; },
-    async estimateGas() { return 300000n; },
-    async getFeeData() { return { gasPrice: 1_000_000_000n, maxFeePerGas: null, maxPriorityFeePerGas: null }; },
-    async getTransactionCount() { return 0; },
-    async broadcastTransaction(raw) { sent.push(raw); const hash = ethers.keccak256(raw); return { hash, wait: async () => ({ blockNumber: 1 }) }; },
-    async getBlock() { return { baseFeePerGas: null }; },
-    async getBlockNumber() { return 2; },
-    async getTransactionReceipt(hash) { return { hash, blockNumber: 1, blockHash: ethers.ZeroHash, status: 1, logs: [], gasUsed: 1n, cumulativeGasUsed: 1n, gasPrice: 1n, from: ethers.ZeroAddress, to: registry, index: 0, type: 2, logsBloom: `0x${'00'.repeat(256)}`, contractAddress: null, root: null, blobGasUsed: null, blobGasPrice: null, confirmations: async () => 2 }; },
-    async getTransaction(hash) { return { hash, blockNumber: 1 }; },
-  });
-  const relayed = await settleRequest(body, { env: { ...env, RELAYER_PRIVATE_KEY: relayerKey }, now: () => 1_700_000_000, providerFactory });
-  assert.equal(relayed.status, 200, JSON.stringify(relayed.body).slice(0, 300));
-  assert.equal(relayed.body.relayed, true);
-  assert.equal(relayed.body.relayer, new ethers.Wallet(relayerKey).address);
-  assert.match(relayed.body.txHash, /^0x[0-9a-f]{64}$/);
-  assert.equal(sent.length, 1, 'exactly one transaction was broadcast');
-  assert.equal((await settleRequest({ ...body, gameId: 'lester-blaster', score: 9_000_000_000, survivalSeconds: 2 }, { env, now: () => 1_700_000_000 })).status, 422, 'implausible HMH runs are never relayed');
+  const body = { v: 'lesters-ranked-settle-v1', sessionId32: ethers.id('game-session-000000042'), retry: true };
+  const token = (audience) => `Bearer ${issueSessionToken(crypto, { secret, wallet: wallet.address, nowMs: now, audience }).token}`;
+  const deps = await buildDeps(env, { db: null, deployment, nowMs: now });
+  assert.deepEqual((await settleRequest({ headers: {}, body }, deps)).body, { ok: false, error: 'invalid-session' });
+  assert.deepEqual((await settleRequest({ headers: { authorization: token('lestersarcade:production') }, body }, deps)).body, { ok: false, error: 'invalid-session' }, 'another audience');
+  const paused = await settleRequest({ headers: { authorization: token('lestersarcade:development') }, body }, await buildDeps({ ...env, SETTLEMENT_PAUSED: 'true' }, { db: null, deployment, nowMs: now }));
+  assert.deepEqual([paused.status, paused.body.error], [503, 'settlement-paused']);
+  const legacy = await settleRequest({ headers: { authorization: token('lestersarcade:development') }, body }, await buildDeps({ ...env, RELAYER_PRIVATE_KEY: `0x${'77'.repeat(32)}` }, { db: null, deployment, nowMs: now }));
+  assert.deepEqual([legacy.status, legacy.body.error, legacy.body.detail], [503, 'settlement-not-configured', 'legacy-env-present:RELAYER_PRIVATE_KEY']);
+  assert.ok(!JSON.stringify(legacy.body).includes('77'.repeat(32)), 'names only, never values');
+  const predicted = await settleRequest({ headers: { authorization: token('lestersarcade:development') }, body }, await buildDeps(env, { db: null, deployment: { ...deployment, status: 'predicted' }, nowMs: now }));
+  assert.deepEqual([predicted.status, predicted.body.detail], [503, 'deployment-not-deployed']);
 });
