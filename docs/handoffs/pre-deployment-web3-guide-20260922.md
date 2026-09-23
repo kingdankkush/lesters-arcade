@@ -501,17 +501,21 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 
 Every step with ⚠ needs the owner's approval in the moment, with the session in "ask before each action" mode.
 
+> **Amended 2026-09-23 after the security review.** `docs/handoffs/pre-deployment-interface-contract-20260922.md` §13 adds steps 0 and 8b, fixes where the owner page is opened (step 4), renames the server secrets (step 6) and replaces the rollback line. Where this section and contract §13 differ, §13 wins.
+
 1. Run `npm run vercel:build` green. Commit.
 2. Check the operator balance and that its nonce is still 0. Run the dry run (`node scripts/deploy-contracts.mjs`) and review `docs/web3/hardened-ranked-deployment-manifest.json`: predicted addresses, gas, achievement definitions.
 3. ⚠ **Broadcast.** Read `DEPLOYER_PRIVATE_KEY` from the vault file inside the command without echoing it, and set `LITVM_DEPLOY_CONFIRM=DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`. Run `node scripts/deploy-contracts.mjs --broadcast`. Commit the deployment record.
 4. ⚠ **Owner signs** three `confirmDevWallet` transactions on the owner page, from MetaMask or Rabby on the owner wallet.
 5. ⚠ **Operator** calls `setPlayable(gameId, true)` for each game.
-6. ⚠ Add Vercel production secrets by piping values from the vault file. **Do not echo them.**
-   - `VERIFIER_PRIVATE_KEY`
-   - `RELAYER_PRIVATE_KEY`
-   - `SCORE_REGISTRY_ADDRESS`
+6. ⚠ Add Vercel production secrets by piping values from the vault file (`scripts/vercel-secrets.mjs`). **Do not echo them.** The names are new, because the live 1.7.0 `/api/attest` signs anything with a key found under the old names:
+   - `RANKED_VERIFIER_PRIVATE_KEY`
+   - `RANKED_RELAYER_PRIVATE_KEY`
+   - `RANKED_SCORE_REGISTRY_ADDRESS`
    - `CRON_SECRET` (new)
-   - Optional: `RPC_URL`, `SESSION_ALLOWED_DOMAINS`
+   - rotate `SESSION_SECRET` to a fresh value
+   - **never** set `VERIFIER_PRIVATE_KEY`, `RELAYER_PRIVATE_KEY` or `SCORE_REGISTRY_ADDRESS` in any environment
+   - Optional: `RPC_URL`, `SESSION_ALLOWED_DOMAINS`, `RANKED_MIN_PAID_WEI`
 7. Regenerate the portal address module from the deployment record. Set `HOSTED_PROFILE_SYNC = true` and `SETTLEMENT_LIVE = true`, and update the tests that pin them (`tests/settlement.test.mjs`, `tests/litvm-ranked-contract-gate.test.mjs`).
 8. Bump the version (1.8.0) and cache marker (v53). Run `npm run vercel:build`, then `npx vercel deploy --yes`, then ⚠ `npx vercel promote … --yes`.
 9. **Live end-to-end, one Ranked run per game,** using a test player wallet funded with a little zkLTC (about 0.35 zkLTC for three runs; the 0.1 fees return to the owner wallet). For each run, confirm all of:
@@ -525,7 +529,7 @@ Every step with ⚠ needs the owner's approval in the moment, with the session i
    - the share page card rendering in X's card validator or an unfurl preview.
 10. Verify public file hashes, run the live smokes, then update the README and write the receipt `docs/qa/…-release-<date>.json`.
 
-**Rollback:** the site rolls back with `npx vercel promote dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu` (1.7.0). Contracts are testnet. If something is wrong on chain, flip `SETTLEMENT_LIVE` back to false and redeploy the site. `ArcadeRankedEntry.setEntryFeeEnabled(false)` stops fees immediately.
+**Rollback:** see contract §13 "Emergency stops and rollback". In short: pause with `SETTLEMENT_PAUSED=true` plus a redeploy of the current release; stop on chain with `setPlayable(gameId, false)`; roll the site back only with Vercel Instant Rollback to `dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu` (1.7.0), never by rebuilding old code with production env. Do **not** use `ArcadeRankedEntry.setEntryFeeEnabled(false)` as a stop: it makes Ranked free while the relayer keeps paying gas.
 
 ---
 
