@@ -636,6 +636,7 @@ const NODE_CHECK_FILES = [
   'tests/ranked-requests.test.mjs',
   'tests/ranked-client-wiring.test.mjs',
   'tests/ranked-settlement-dedup.test.mjs',
+  'tests/stacked-ranked-settlement.test.mjs',
   'tests/helpers/ranked-client-vm.mjs',
   "tests/hmh-fable-markdown-crosswalk.test.mjs",
   "apps/portal/src/boss-phase-controller.mjs",

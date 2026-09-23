@@ -10,9 +10,17 @@
 //
 // Pure: no DOM, no network, no clock.
 import { RANKED_GAMES, RANKED_SETTLE_VERSION, rankedIdentityFor, rankedSessionKey } from './ranked-identity.mjs';
-import { encodeStackedBase64 } from './stacked-evidence-transport.mjs';
 
 const HEX32 = /^0x[0-9a-f]{64}$/;
+
+// Standard base64 with padding, byte for byte what encodeStackedBase64 emits.
+// Local on purpose: importing stacked-evidence-transport.mjs from this lazy
+// chunk re-splits the STACKED child's shared chunks (entry-JS budget).
+export function sic1Base64(bytes) {
+  let binary = '';
+  for (let index = 0; index < bytes.length; index += 0x8000) binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+  return btoa(binary);
+}
 const MAX_CLAIM_SCORE = 1e12;
 const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v6';
 
@@ -63,7 +71,7 @@ export async function buildChikunSettleRequest({ session, scoreRegistryAddress, 
 export async function buildStackedSettleRequest({ session, scoreRegistryAddress, sic1Bytes, claimScore } = {}) {
   const body = await baseRequest({ session, scoreRegistryAddress, claimScore }, 'stacked');
   if (!(sic1Bytes instanceof Uint8Array)) throw new TypeError('STACKED evidence must be the SIC1 bytes');
-  body.evidence = { encoding: RANKED_GAMES.stacked.evidenceEncoding, sic1: encodeStackedBase64(sic1Bytes), startLevel: 1 };
+  body.evidence = { encoding: RANKED_GAMES.stacked.evidenceEncoding, sic1: sic1Base64(sic1Bytes), startLevel: 1 };
   return body;
 }
 

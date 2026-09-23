@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import * as nodeCrypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-import { buildChikunSettleRequest, buildHmhSettleRequest, buildStackedSettleRequest } from '../apps/portal/src/ranked-requests.mjs';
+import { buildChikunSettleRequest, buildHmhSettleRequest, buildStackedSettleRequest, sic1Base64 } from '../apps/portal/src/ranked-requests.mjs';
+import { encodeStackedBase64 } from '../apps/portal/src/stacked-evidence-transport.mjs';
+import { stackedReplayBase64Url } from '../apps/portal/src/stacked-persistence.mjs';
 import { RANKED_GAMES, applySeedTicket, rankedIdentityFor, rankedSessionKey } from '../apps/portal/src/ranked-identity.mjs';
 import { deriveRankedSeed } from '../apps/portal/src/session-seed.mjs';
 import { CURRENT_RANKED_SEASON_ID, createCanonicalSessionIdentity, finalizeSessionEvidence } from '../apps/portal/src/session-integrity.mjs';
@@ -136,5 +138,13 @@ test('chikun, stacked and hmh evidence encodings match the contract', async () =
     assert.equal(run.ok, true, `${gameId}: ${JSON.stringify(run)}`);
     assert.equal(run.score, expected.score);
     assert.equal(run.envelopeHash, expected.envelopeHash);
+  }
+});
+
+test('the local SIC1 encoders match the transport encoder and base64url', () => {
+  for (const length of [0, 1, 2, 3, 4, 0x7fff, 0x8000, 0x8001, 70_000]) {
+    const bytes = Uint8Array.from({ length }, (_, index) => (index * 131 + length) % 256);
+    assert.equal(sic1Base64(bytes), encodeStackedBase64(bytes), `standard base64, ${length} bytes`);
+    assert.equal(stackedReplayBase64Url(bytes), Buffer.from(bytes).toString('base64url'), `base64url, ${length} bytes`);
   }
 });

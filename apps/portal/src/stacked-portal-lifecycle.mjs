@@ -18,7 +18,9 @@ export function createStackedPortalLifecycle({ session, startLevel = 1, verify =
         if (binding.ranked) {
           if (typeof persistRanked !== 'function') throw new Error('Ranked persistence is not available');
           const inputDevice=['keyboard','touch','gamepad','mixed'].includes(metadata.inputDevice)?metadata.inputDevice:null;
-          await persistRanked(Object.freeze({ ...canonical }), evidence, Object.freeze({inputDevice}));
+          // The host's '0x'+sha256 of these exact bytes (checked against the child's claim).
+          const evidenceDigest = typeof metadata.evidenceDigest === 'string' && /^0x[0-9a-f]{64}$/.test(metadata.evidenceDigest) ? metadata.evidenceDigest : null;
+          await persistRanked(Object.freeze({ ...canonical }), evidence, Object.freeze({ inputDevice, evidenceDigest }));
         }
         finalized = true;
         return { ok: true, canonical, ranked: binding.ranked };

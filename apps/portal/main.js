@@ -1915,21 +1915,33 @@ async function mountStackedSession() {
   const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
   const startLevel = boundSession.leaderboardEligible ? 1 : Number(document.querySelector('#stackedStartLevel')?.value ?? 1);
   stackedHost = createStackedHost({
-    mount: dom.officialCombatMount, session: boundSession, startLevel,
+    mount: dom.officialCombatMount, session: boundSession, startLevel, settlementLive: SETTLEMENT_LIVE,
     profile: { displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest', locale: document.documentElement.lang || 'en' },
     settings: readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), music: arcadeMusicAudio(),
     onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; },
     onState(value) { combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; },
     onResult(result) {
       combat.active = false; combat.gameOver = true;
-      if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = result.ok ? 'STACKED replay verified locally. Online settlement is disabled.' : 'STACKED run not saved: ' + result.reason;
+      if (!dom.officialGameStateCopy) return;
+      // A live Ranked run's line follows its settlement handle (trackRankedSettlement).
+      if (!result.ok) dom.officialGameStateCopy.textContent = 'STACKED run not saved: ' + result.reason;
+      else if (!result.ranked) dom.officialGameStateCopy.textContent = 'STACKED replay verified locally. Free Mode did not write to your profile or score boards.';
+      else if (!SETTLEMENT_LIVE) dom.officialGameStateCopy.textContent = 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
     },
+    // Local archive (persistStackedScore), then for a live run the replay
+    // store copy and the settle request, then the results hand-off (§7.7).
     async persistRanked(canonical, evidence, metadata) {
-      const { persistStackedScore } = await import('./src/stacked-persistence.mjs');
+      const { persistStackedRankedRun } = await import('./src/stacked-persistence.mjs');
       if (generation !== stackedMountGeneration || currentSession !== boundSession) throw new Error('cabinet-closed');
-      return persistStackedScore(state, ARCADE_STORAGE, boundSession, evidence, canonical, metadata);
+      return persistStackedRankedRun({
+        state, storage: ARCADE_STORAGE, session: boundSession, evidence, canonical, metadata, live: SETTLEMENT_LIVE,
+        settle: () => settleStackedRankedRun(boundSession, canonical, evidence),
+      });
     },
-    onRestart() { const ranked = boundSession.leaderboardEligible; destroyStackedSession(); if (ranked) setOfficialView('mode-select'); else void startOfficialMode('free'); },
+    // A16: a finished Ranked run restarts through a fresh paid entry (the
+    // Ranked modal; the finished cabinet stays until a new session mounts).
+    // Free restarts as before.
+    onRestart() { const ranked = boundSession.leaderboardEligible; if (ranked) { void startOfficialMode('ranked'); return; } destroyStackedSession(); void startOfficialMode('free'); },
     onExit: exitToArcade,
     onError(error) { console.error('[STACKED]', error); if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = error.message; },
   });
