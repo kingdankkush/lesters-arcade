@@ -262,7 +262,7 @@ test('a confirmed change refreshes the index and announces the sanitized profile
 });
 
 test('arcade avatars are existing site art with contract-shaped URIs', async () => {
-  const { existsSync } = await import('node:fs');
+  const { existsSync, statSync } = await import('node:fs');
   assert.ok(ARCADE_AVATARS.length >= 8 && ARCADE_AVATARS.length <= 12);
   const ids = new Set();
   for (const avatar of ARCADE_AVATARS) {
@@ -270,8 +270,14 @@ test('arcade avatars are existing site art with contract-shaped URIs', async () 
     assert.ok(!ids.has(avatar.id));
     ids.add(avatar.id);
     assert.match(avatarUriFor(avatar.id), /^lestersarcade:avatar\/[a-z0-9-]{1,32}$/, 'the server sanitizer keeps the URI');
-    assert.ok(existsSync(new URL(`../apps/portal/${avatar.src.replace(/^\.\//, '')}`, import.meta.url)), `${avatar.src} ships with the site`);
+    const file = new URL(`../apps/portal/${avatar.src.replace(/^\.\//, '')}`, import.meta.url);
+    assert.ok(existsSync(file), `${avatar.src} ships with the site`);
+    // Boards show up to 25 avatars on a phone: every choice is a small file.
+    assert.ok(statSync(file).size <= 32 * 1024, `${avatar.src} is ${statSync(file).size} B; avatars stay under 32 KB`);
+    assert.doesNotMatch(avatar.src, /hmh-hero-portraits\//, 'never the 0.5 MB hero portrait strips');
   }
+  // Stable ids: players store 'lestersarcade:avatar/<id>' on chain.
+  assert.deepEqual(ARCADE_AVATARS.map((avatar) => avatar.id), ['litecoin-chad', 'lester-pilot', 'lit-commando', 'lit-valkyrie', 'lester', 'lilly', 'chikun', 'gold-emblem', 'diamond-emblem', 'mythic-emblem']);
   assert.equal(avatarUriFor('nope'), null);
   assert.equal(formatZkLtc('0.000042318'), '0.0000423');
   assert.equal(formatZkLtc('0.000000'), '0');

@@ -761,8 +761,7 @@ export function createOfficialProfileRoute({
       option.setAttribute('aria-pressed', uri === chosen ? 'true' : 'false');
       option.dataset.avatar = avatar.id;
       const image = el('img', { className: 'avatar-chip-img profile-avatar-choice', src: avatar.src, alt: avatar.label });
-      // Some arcade avatars are large portrait strips: size the choice explicitly
-      // (object-fit: cover on .avatar-chip-img shows the centred portrait).
+      // Size the choice explicitly (object-fit: cover on .avatar-chip-img).
       image.width = 56;
       image.height = 56;
       image.loading = 'lazy';

@@ -163,7 +163,7 @@ test('the hosted leaderboard renders E5 rows with verified links', async () => {
   assert.match(text(rows[1]), new RegExp(e5Row(2, 'lester-blaster').walletShort));
   assert.doesNotMatch(text(rows[1]), /Pilot 2/);
   const avatar = find(rows[0], (candidate) => candidate.tag === 'img')[0];
-  assert.equal(avatar.src, './assets/generated/hmh-hero-portraits/lilly.webp', 'avatars resolve from ARCADE_AVATARS');
+  assert.equal(avatar.src, './assets/generated/arcade-avatars/lilly.webp', 'avatars resolve from ARCADE_AVATARS');
   const fallback = find(rows[2], (candidate) => candidate.tag === 'img')[0];
   assert.equal(fallback.dataset.wallet, 'null', 'no local avatar is ever shown for an index row');
 

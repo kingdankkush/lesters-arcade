@@ -1,0 +1,49 @@
+{
+  "generatedBy": "scripts/build-arcade-avatar-thumbnails.py",
+  "avatars": {
+    "lit-commando": {
+      "source": "apps/portal/assets/generated/hmh-hero-portraits/lit-commando.webp",
+      "crop": [
+        102,
+        24,
+        294,
+        216
+      ],
+      "size": 128,
+      "bytes": 5324
+    },
+    "lit-valkyrie": {
+      "source": "apps/portal/assets/generated/hmh-hero-portraits/lit-valkyrie.webp",
+      "crop": [
+        93,
+        24,
+        285,
+        216
+      ],
+      "size": 128,
+      "bytes": 7034
+    },
+    "lester": {
+      "source": "apps/portal/assets/generated/hmh-hero-portraits/lester-original.webp",
+      "crop": [
+        95,
+        24,
+        287,
+        216
+      ],
+      "size": 128,
+      "bytes": 5370
+    },
+    "lilly": {
+      "source": "apps/portal/assets/generated/hmh-hero-portraits/lilly.webp",
+      "crop": [
+        90,
+        24,
+        282,
+        216
+      ],
+      "size": 128,
+      "bytes": 6628
+    }
+  }
+}
