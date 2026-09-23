@@ -11,6 +11,9 @@ import { localContracts, localWalletKeys } from '../scripts/lib/local-chain.mjs'
 import { DEFAULT_GAMES, profileNameFor, runRankedE2E } from '../scripts/lib/rehearsal-driver.mjs';
 import { buildSiweChallenge } from '../apps/portal/src/wallet-auth.mjs';
 import { RANKED_GAMES } from '../apps/portal/src/ranked-identity.mjs';
+import {
+  applyTextEdit, checkGuards, CHECKLIST_END, CHECKLIST_START, FLAG_EDITS, parseGateErrors, renderChecklist, splitNpmScript, STEP7_TEST_EDITS, testLineFromStack, upsertChecklist,
+} from '../scripts/rehearse-step7-dry-run.mjs';
 
 /**
  * Rehearsal slice, acceptance 1-2 (the in-process target): the local stack (in-process Hardhat chain
@@ -69,6 +72,43 @@ test('routing drift between vercel.json and the handlers fails the local stack',
   renamed.rewrites.find((rule) => rule.source.startsWith('/api/session/:shareId')).destination = '/api/verified-session?id=:shareId';
   assert.equal(applyVercelRewrites(`/api/session/${HEX64}`, compileVercelRewrites(renamed)).destination, `/api/verified-session?id=${HEX64}&shareId=${HEX64}`,
     'the handler would see the undeclared shareId and answer 400 invalid-query');
+});
+
+test('the step-7 dry run refuses without --confirm-throwaway and in the main worktree, and parses the gate', () => {
+  assert.equal(checkGuards({ argv: [], gitDir: 'C:/repo/.git/worktrees/x', commonDir: 'C:/repo/.git' }).ok, false);
+  assert.match(checkGuards({ argv: ['--confirm-throwaway'], gitDir: 'C:/repo/.git', commonDir: 'C:/repo/.git' }).error, /main worktree/);
+  assert.equal(checkGuards({ argv: ['--confirm-throwaway'], gitDir: 'C:/repo/.git/worktrees/x', commonDir: 'C:/repo/.git' }).ok, true);
+  assert.deepEqual(parseGateErrors(['unexpected failure: tests/a.test.mjs :: pins false', 'missing ledger failure: tests/b.test.mjs :: old', 'raw test process exit must be 1']), {
+    unexpected: [{ file: 'tests/a.test.mjs', name: 'pins false' }], missing: [{ file: 'tests/b.test.mjs', name: 'old' }], other: ['raw test process exit must be 1'],
+  });
+  const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.deepEqual(splitNpmScript(pkg.scripts['vercel:build']).map((step) => step.id), ['assets:hmh:curated-level-kit-runtime', 'assets:verify', 'test:release', 'check', 'contracts:check', 'build']);
+  assert.equal(testLineFromStack('Error\n    at TestContext.<anonymous> (file:///C:/tmp/wt/tests/settlement.test.mjs:16:10)', 'tests/settlement.test.mjs'), 16);
+  assert.deepEqual(applyTextEdit('a = false;\nb = false;', { find: 'b = false;', replace: 'b = true;' }), { ok: true, text: 'a = false;\nb = true;', error: null });
+  assert.equal(applyTextEdit('x x', { find: 'x', replace: 'y' }).ok, false, 'an ambiguous edit is refused');
+  const doc = readFileSync(new URL('../docs/web3/contract-overhaul-20260916.md', import.meta.url), 'utf8');
+  assert.equal(doc.split(CHECKLIST_START).length, 2, 'the doc carries exactly one generated step-7 checklist block');
+  assert.ok(doc.indexOf(CHECKLIST_END) > doc.indexOf(CHECKLIST_START));
+  const block = renderChecklist({
+    head: 'abc1234', generatedAt: '2026-09-23T00:00:00.000Z', flagEdits: [{ line: 28, before: 'export const SETTLEMENT_LIVE = false;', after: 'export const SETTLEMENT_LIVE = true;' }],
+    generated: { changedByPortalPages: ['apps/portal/index.html'] }, step7Edits: [{ file: 'tests/settlement.test.mjs', line: 16, before: 'false', after: 'true', verified: true }],
+    steps: [], failures: { preExisting: [] }, fullVerify: null,
+  });
+  assert.ok(block.startsWith(CHECKLIST_START) && block.endsWith(CHECKLIST_END));
+  assert.equal(upsertChecklist(`x\n${CHECKLIST_START}\nold\n${CHECKLIST_END}\ny`, block), `x\n${block}\ny`);
+  // The committed dry-run report is the checklist's source.
+  const report = JSON.parse(readFileSync(new URL('../docs/qa/step7-dry-run-20260923.json', import.meta.url), 'utf8'));
+  assert.equal(report.schema, 'lesters-step7-dry-run-v1');
+  assert.equal(report.throwawayRemoved, true);
+  assert.ok(doc.includes(renderChecklist(report)), 'the doc checklist is the one rendered from the committed report');
+  // Every step-7 edit still applies to exactly one place (or has been applied, after runbook step 7).
+  for (const edit of STEP7_TEST_EDITS) {
+    const text = readFileSync(new URL(`../${edit.file}`, import.meta.url), 'utf8');
+    const pending = applyTextEdit(text, edit).ok;
+    const done = !text.includes(edit.find) && applyTextEdit(text, { find: edit.replace, replace: edit.replace }).ok;
+    assert.ok(pending || done, `${edit.file}: a step-7 edit no longer matches; re-run the dry run and update STEP7_TEST_EDITS`);
+  }
+  assert.deepEqual(FLAG_EDITS.map((edit) => edit.file), ['apps/portal/src/settlement.mjs', 'apps/portal/src/settlement.mjs']);
 });
 
 const state = { stack: null };

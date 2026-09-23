@@ -510,6 +510,7 @@ const NODE_CHECK_FILES = [
   'scripts/rehearse-ranked-e2e.mjs',
   'scripts/rehearse-nft-phase2.mjs',
   'scripts/backfill-nft-mints.mjs',
+  'scripts/rehearse-step7-dry-run.mjs',
   'tests/local-chain-rehearsal.test.mjs',
   'tests/local-chain-rehearsal-http.test.mjs',
   'tests/nft-phase2-rehearsal.test.mjs',
