@@ -11,6 +11,7 @@ import {
   buildPlatformShellModel,
   DEFAULT_GAME_SLUG,
   gameIdForSlug,
+  profileWalletFor,
 } from '../apps/portal/src/arcade-router.mjs';
 
 test('routeForView maps each view step to the canonical URL path', () => {
@@ -54,6 +55,25 @@ test('viewForPath parses URLs back into view intents (connected)', () => {
   assert.deepEqual(viewForPath('/scores', { connected: true }), { step: 'leaderboards', gameSlug: null, sessionId: null });
   assert.deepEqual(viewForPath('/leaderboards', { connected: true }), { step: 'leaderboards', gameSlug: null, sessionId: null });
   assert.deepEqual(viewForPath('/settings', { connected: true }), { step: 'settings', gameSlug: null, sessionId: null });
+});
+
+test('wallet profiles route to /profile/<wallet> and back (contract A6)', () => {
+  const wallet = `0x${'AbCd'.repeat(10)}`;
+  const lower = wallet.toLowerCase();
+  for (const connected of [true, false]) {
+    assert.deepEqual(viewForPath(`/profile/${wallet}`, { connected }), { step: 'profile', gameSlug: null, sessionId: null, wallet: lower });
+    assert.deepEqual(viewForPath(`/profile/${lower}/`, { connected }), { step: 'profile', gameSlug: null, sessionId: null, wallet: lower });
+  }
+  // Only a valid hex40 address adds the key; every other shape keeps the 3-key intent.
+  for (const bad of ['/profile/0x1234', `/profile/${lower}00`, '/profile/not-a-wallet', `/profile/${lower.slice(2)}`, `/profile/${lower}/extra`]) {
+    assert.deepEqual(viewForPath(bad, { connected: true }), { step: 'profile', gameSlug: null, sessionId: null }, bad);
+  }
+  assert.equal(routeForView('profile', { wallet }), `/profile/${lower}`);
+  assert.equal(routeForView('profile', { wallet: null }), '/profile');
+  assert.equal(routeForView('profile', { wallet: 'nope' }), '/profile');
+  assert.equal(routeForView('leaderboards', { wallet }), '/scores', 'only the profile route carries a wallet');
+  assert.equal(profileWalletFor(wallet), lower);
+  assert.equal(profileWalletFor(undefined), null);
 });
 
 test('viewForPath is guest-first: arcade + free game entry reachable without a wallet', () => {
