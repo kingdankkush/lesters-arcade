@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync}from'node:fs';
-import {CHIKUN_REGIONS,REGION_SCHEDULE,REGION_LOOP_SLOTS,REGION_LOOP_TICKS,REGION_LEAD_TICKS,REGION_BLEND_TICKS,COURSE_CADENCE,courseRegionState,courseRegion,courseTerrain,regionForObstacle,passageRoute,isGapKind}from'../apps/portal/src/chikun-course-regions.mjs';
-import {courseKind,buildCourseObstacle,courseObstacles}from'../apps/portal/src/chikun-ground-course.mjs';
+import {CHIKUN_REGIONS,REGION_SCHEDULE,REGION_LOOP_SLOTS,REGION_LOOP_TICKS,REGION_LEAD_TICKS,REGION_LEAD_PX,REGION_BLEND_TICKS,COURSE_CADENCE,courseRegionState,courseRegion,courseTerrain,regionForObstacle,regionSwitchTick,sceneryTick,passageRoute,isGapKind}from'../apps/portal/src/chikun-course-regions.mjs';
+import {courseKind,buildCourseObstacle,courseObstacles,courseObstacleX,distanceAtTick}from'../apps/portal/src/chikun-ground-course.mjs';
 import {courseRegion as v3Region}from'../apps/portal/src/chikun-ground-v3-course.mjs';
 import {createChikunRuntime,replayChikunRun,buildChikunDifficulty}from'../apps/portal/src/chikun-cabinet.mjs';
 import {buildChikunModeTease}from'../apps/chikun/src/presentation.mjs';
@@ -8,6 +8,7 @@ import {REGION_LAYERS,paintRegionLayer}from'../apps/chikun/src/world.mjs';
 import {routePilot,pilotRun}from'../scripts/chikun-course-pilot.mjs';
 
 const ORDER=['farmland','forest','town','city','industrial','suburbs','coast'];
+const LAP_SWITCH=regionSwitchTick(REGION_LOOP_SLOTS);
 
 test('the endless course is one loop: farmland → forest → town → city → industrial → suburbs → coast → farmland',()=>{
  assert.deepEqual(CHIKUN_REGIONS.map(r=>r.id),ORDER);
@@ -15,11 +16,11 @@ test('the endless course is one loop: farmland → forest → town → city → 
  assert.equal(REGION_LOOP_SLOTS,48);assert.equal(REGION_LOOP_TICKS,16320);assert.equal(COURSE_CADENCE,340);
  assert.equal(courseRegion(0),'Farmland');assert.equal(courseTerrain(0),'grass');
  const walk=[];let last='';
- for(let tick=0;tick<=REGION_LOOP_TICKS*2+REGION_LEAD_TICKS;tick+=60){const name=courseRegion(tick);if(name!==last){walk.push(name);last=name;}}
+ for(let tick=0;tick<=regionSwitchTick(REGION_LOOP_SLOTS*2)+60;tick+=60){const name=courseRegion(tick);if(name!==last){walk.push(name);last=name;}}
  const names=CHIKUN_REGIONS.map(r=>r.name);
  assert.deepEqual(walk,[...names,...names,'Farmland'],'two full laps then straight back into farmland');
- assert.equal(courseRegion(REGION_LEAD_TICKS+REGION_LOOP_TICKS-1),'Coast');assert.equal(courseRegion(REGION_LEAD_TICKS+REGION_LOOP_TICKS),'Farmland');
- assert.equal(courseTerrain(REGION_LEAD_TICKS+REGION_LOOP_TICKS-1),'sand');
+ assert.equal(courseRegion(LAP_SWITCH-1),'Coast');assert.equal(courseRegion(LAP_SWITCH),'Farmland');
+ assert.equal(courseTerrain(LAP_SWITCH-1),'sand');
  assert.equal(v3Region(0),'Farmland','historical v3 replays read the same cosmetic labels');
  assert.deepEqual(CHIKUN_REGIONS.map(r=>r.terrain),['grass','loam','cobble','asphalt','concrete','pavement','sand']);
 });
@@ -27,19 +28,42 @@ test('the endless course is one loop: farmland → forest → town → city → 
 test('transitions blend over a short window, stay continuous and wrap seamlessly from coast to farmland',()=>{
  assert.equal(REGION_BLEND_TICKS,180);
  const state={};
- REGION_SCHEDULE.forEach((seg,i)=>{
-  const start=REGION_LEAD_TICKS+seg.startTick,end=start+seg.ticks;
-  courseRegionState(start+Math.floor(seg.ticks/2),state);assert.equal(state.index,i);assert.equal(state.blend,0);
+ for(const lap of [0,1,2])REGION_SCHEDULE.forEach((seg,i)=>{
+  const first=lap*REGION_LOOP_SLOTS+seg.startSlot,start=regionSwitchTick(first),end=regionSwitchTick(first+seg.slots);
+  courseRegionState(Math.floor((start+end)/2),state);assert.equal(state.index,i);assert.equal(state.blend,0);assert.equal(state.loop,lap);
   let previous=-1;
   for(let tick=end-REGION_BLEND_TICKS;tick<end;tick++){courseRegionState(tick,state);assert.equal(state.index,i);assert.ok(state.blend>=previous&&state.blend>=0&&state.blend<1);previous=state.blend;}
-  courseRegionState(end-1,state);assert.ok(state.blend>=1-1/REGION_BLEND_TICKS-1e-9);assert.equal(state.next.id,ORDER[(i+1)%7]);
-  courseRegionState(end,state);assert.equal(state.index,(i+1)%7);assert.equal(state.blend,0);
+  // At speed the scenery clock can step two slot ticks in one tick, so the last frame lands within a few ticks of a full blend.
+  courseRegionState(end-1,state);assert.ok(state.blend>=1-3/REGION_BLEND_TICKS,`${seg.id} lap ${lap+1} blend ${state.blend}`);assert.equal(state.next.id,ORDER[(i+1)%7]);
+  courseRegionState(end,state);assert.equal(state.index,(i+1)%7);assert.ok(state.blend<=2/REGION_BLEND_TICKS);
  });
- courseRegionState(REGION_LEAD_TICKS+REGION_LOOP_TICKS-1,state);
- assert.equal(state.region.id,'coast');assert.equal(state.next.id,'farmland');assert.ok(state.blend>.99);assert.equal(state.loop,0);
- courseRegionState(REGION_LEAD_TICKS+REGION_LOOP_TICKS,state);assert.equal(state.region.id,'farmland');assert.equal(state.loop,1);assert.equal(state.localTick,0);
+ courseRegionState(LAP_SWITCH-1,state);
+ assert.equal(state.region.id,'coast');assert.equal(state.next.id,'farmland');assert.ok(state.blend>.98);assert.equal(state.loop,0);
+ courseRegionState(LAP_SWITCH,state);assert.equal(state.region.id,'farmland');assert.equal(state.loop,1);assert.ok(state.localTick<=1);
  assert.equal(courseRegionState(5,state),state,'the caller-owned object is reused: no per-frame allocation');
- for(const tick of [0,REGION_LEAD_TICKS-1]){courseRegionState(tick,state);assert.equal(state.region.id,'farmland');assert.equal(state.blend,0);}
+ for(const tick of [0,regionSwitchTick(1)-1]){courseRegionState(tick,state);assert.equal(state.region.id,'farmland');assert.equal(state.blend,0);}
+});
+
+test('the scenery of a region takes over as its first obstacle comes within 180 px of Chikun, at every speed',()=>{
+ // The lead is a distance: REGION_LEAD_TICKS (300) of travel at 1x, fewer at speed.
+ assert.equal(REGION_LEAD_PX,720);
+ assert.equal(sceneryTick(0),0);assert.equal(sceneryTick(250),0,'the first 720 px show farmland');
+ for(const tick of [400,5_000,40_000,120_000]){
+  const t=sceneryTick(tick);
+  assert.ok(distanceAtTick(t)<=distanceAtTick(tick)-REGION_LEAD_PX&&distanceAtTick(t+1)>distanceAtTick(tick)-REGION_LEAD_PX,`scenery tick at ${tick}`);
+  assert.ok(tick-t<=REGION_LEAD_TICKS);
+ }
+ const state={};
+ for(let lap=0;lap<4;lap++)for(const [i,seg] of REGION_SCHEDULE.entries()){
+  const slot=lap*REGION_LOOP_SLOTS+seg.startSlot;if(slot===0)continue;
+  const switchTick=regionSwitchTick(slot);
+  const x=courseObstacleX(slot,switchTick);
+  assert.ok(x<=460&&x>280,`${seg.id} lap ${lap+1}: scenery switches with its first obstacle at x ${x.toFixed(1)}`);
+  assert.ok(courseObstacleX(slot,switchTick-1)>460,`${seg.id} lap ${lap+1}: not before it is within 180 px`);
+  let arrival=switchTick;while(courseObstacleX(slot,arrival)>280)arrival++;
+  courseRegionState(arrival,state);assert.equal(state.index,i,`${seg.id} lap ${lap+1}: its first obstacle arrives under its own scenery`);
+  courseRegionState(switchTick-1,state);assert.equal(state.index,(i+6)%7);
+ }
 });
 
 test('each region draws a region-appropriate obstacle mix and every low passage has a runway',()=>{
@@ -87,7 +111,7 @@ test('obstacle placement is deterministic across the loop boundary and a full-la
  assert.ok(courseObstacles(19,boundary).some(o=>o.index>=REGION_LOOP_SLOTS),'indices keep counting; nothing resets at the loop');
  assert.equal(regionForObstacle(REGION_LOOP_SLOTS).region.id,'farmland');assert.equal(regionForObstacle(REGION_LOOP_SLOTS).loop,1);
  assert.equal(regionForObstacle(REGION_LOOP_SLOTS-1).region.id,'coast');
- const run=createChikunRuntime({seed:19,maxTicks:REGION_LOOP_TICKS+REGION_LEAD_TICKS+1500});
+ const run=createChikunRuntime({seed:19,maxTicks:LAP_SWITCH+1500});
  const snapshot=pilotRun(run);
  assert.equal(snapshot.terminal,true);assert.equal(snapshot.terminalReason,'run-complete');
  assert.equal(snapshot.region,'Farmland','the lap ended back in farmland');
@@ -98,7 +122,7 @@ test('obstacle placement is deterministic across the loop boundary and a full-la
 });
 
 test('speed, score and difficulty keep ramping through the loop instead of resetting',()=>{
- const loopTick=REGION_LEAD_TICKS+REGION_LOOP_TICKS;
+ const loopTick=LAP_SWITCH;
  const before=buildChikunDifficulty(loopTick-1),after=buildChikunDifficulty(loopTick);
  assert.ok(after.speedMultiplier>before.speedMultiplier);assert.ok(after.level>=before.level);
  assert.ok(buildChikunDifficulty(loopTick*2).speedMultiplier>after.speedMultiplier);

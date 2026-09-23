@@ -17,7 +17,8 @@
 //    all passed with no near miss. A region counts when its last obstacle is passed.
 //  - regionIndexReached / regionReached: obstacle-exact, the region of the highest
 //    obstacle index passed (regionForObstacle(index)); 0 / 'farmland' before the
-//    first pass. The snapshot `region` label lags by REGION_LEAD_TICKS (scenery).
+//    first pass. The snapshot `region` label is scenery: it changes as the
+//    region's first obstacle comes within 180 px (chikun-course-regions.mjs sceneryTick).
 //  - laps: completed loops = floor((highest passed index + 1) / REGION_LOOP_SLOTS).
 //  - distancePixels: distanceAtTick(survivalTicks).
 //  - speedMultiplierReached: speedAtTick(survivalTicks).

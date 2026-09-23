@@ -8,7 +8,7 @@ import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {REGION_SCHEDULE,REGION_LEAD_TICKS,REGION_LOOP_TICKS,REGION_BLEND_TICKS} from '../apps/portal/src/chikun-course-regions.mjs';
+import {REGION_SCHEDULE,REGION_LOOP_SLOTS,REGION_BLEND_TICKS,regionSwitchTick} from '../apps/portal/src/chikun-course-regions.mjs';
 import {routePilot} from './chikun-course-pilot.mjs';
 
 async function loadPlaywright(){
@@ -49,9 +49,10 @@ function driveTo({targetTick}){
 }
 
 const stops=[
- ...REGION_SCHEDULE.map((seg,i)=>({name:`${String(i+1).padStart(2,'0')}-${seg.id}`,tick:REGION_LEAD_TICKS+seg.startTick+Math.floor(seg.ticks/2),expectRegion:seg.id})),
- {name:'08-coast-to-farmland-blend',tick:REGION_LEAD_TICKS+REGION_LOOP_TICKS-Math.floor(REGION_BLEND_TICKS/2),expectRegion:'coast',expectBlend:true},
- {name:'09-farmland-lap-2',tick:REGION_LEAD_TICKS+REGION_LOOP_TICKS+Math.floor(REGION_SCHEDULE[0].ticks/2),expectRegion:'farmland',expectLoop:1},
+ // Scenery switches when a region's first obstacle is 180 px from Chikun (regionSwitchTick), so stops sit mid-region at any speed.
+ ...REGION_SCHEDULE.map((seg,i)=>({name:`${String(i+1).padStart(2,'0')}-${seg.id}`,tick:Math.floor((regionSwitchTick(seg.startSlot)+regionSwitchTick(seg.startSlot+seg.slots))/2),expectRegion:seg.id})),
+ {name:'08-coast-to-farmland-blend',tick:regionSwitchTick(REGION_LOOP_SLOTS)-Math.floor(REGION_BLEND_TICKS/2),expectRegion:'coast',expectBlend:true},
+ {name:'09-farmland-lap-2',tick:Math.floor((regionSwitchTick(REGION_LOOP_SLOTS)+regionSwitchTick(REGION_LOOP_SLOTS+REGION_SCHEDULE[0].slots))/2),expectRegion:'farmland',expectLoop:1},
 ];
 const browser=await chromium.launch({executablePath:chromePath,headless:true});
 const issues=[],report=[];

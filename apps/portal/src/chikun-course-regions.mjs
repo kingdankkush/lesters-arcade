@@ -5,10 +5,16 @@
 // so the obstacle mix and the scenery share one schedule. Everything here is
 // pure and allocation-free on the hot path; the runtime, the world renderer,
 // the replay viewer and tests all read the same table.
+// The scenery clock reads the course distance (chikun-ground-course.mjs). The two
+// modules import each other, which is safe: neither uses the other at load time.
+import {distanceAtTick} from './chikun-ground-course.mjs';
 export const COURSE_CADENCE=340;
-// Scenery switches when a region's first obstacle is about to reach Chikun
-// (900 px of travel ≈ 375 ticks at 1×, fewer later), then cross-fades.
+// Scenery switches when a region's first obstacle is 180 px from Chikun (it
+// enters at x = 1180, so after 720 px of travel: REGION_LEAD_TICKS at 1x, fewer
+// at speed), then cross-fades. The lead is a distance, so the first obstacles of
+// a region never pass under the previous region's scenery as the course speeds up.
 export const REGION_LEAD_TICKS=300;
+export const REGION_LEAD_PX=2.4*REGION_LEAD_TICKS;
 export const REGION_BLEND_TICKS=180;
 const freeze=Object.freeze;
 // Every visit to a region seeds where its low passages fall (see lowSlotsOf), so
@@ -79,9 +85,36 @@ export function regionForObstacle(index=0){
  const slot=Math.max(0,Math.floor(index)),i=regionIndexForSlot(slot);
  return {region:CHIKUN_REGIONS[i],index:i,local:slot%REGION_LOOP_SLOTS-starts[i],loop:Math.floor(slot/REGION_LOOP_SLOTS)};
 }
+// The scenery clock: the slot-timeline tick the scenery shows at `tick`, i.e. the
+// last tick by which the course had covered REGION_LEAD_PX less than it has now.
+// It is tick - 300 at 1x and closes up at speed; slot i's scenery takes over as
+// obstacle i comes within 180 px of Chikun. Rendering only (never in evidence).
+let memoTick=-1,memoScenery=0;
+export function sceneryTick(tick=0){
+ const t=Math.max(0,Math.floor(Number(tick)||0));
+ if(t===memoTick)return memoScenery;
+ const target=distanceAtTick(t)-REGION_LEAD_PX;
+ let lo=0;
+ if(target>0){
+  // Covering 720 px takes at most 300 ticks (speed >= 1), so the answer lies in [t - 300, t).
+  lo=Math.max(0,t-REGION_LEAD_TICKS);let hi=t;
+  while(hi-lo>1){const mid=Math.floor((lo+hi)/2);if(distanceAtTick(mid)<=target)lo=mid;else hi=mid;}
+ }
+ memoTick=t;memoScenery=lo;
+ return lo;
+}
+// The first tick whose scenery shows obstacle slot `slot` (its region's switch
+// when `slot` opens a region): the tick obstacle `slot` comes within 180 px.
+export function regionSwitchTick(slot=0){
+ const start=Math.max(0,Math.floor(Number(slot)||0))*COURSE_CADENCE;
+ if(start===0)return 0;
+ let lo=start,hi=start+REGION_LEAD_TICKS;
+ while(hi-lo>1){const mid=Math.floor((lo+hi)/2);if(sceneryTick(mid)>=start)hi=mid;else lo=mid;}
+ return sceneryTick(lo)>=start?lo:hi;
+}
 // Scenery state for a tick. `out` is reused by callers so drawing allocates nothing.
 export function courseRegionState(tick=0,out={}){
- const t=Math.max(0,Math.floor(Number(tick)||0)-REGION_LEAD_TICKS),local=t%REGION_LOOP_TICKS;
+ const t=sceneryTick(tick),local=t%REGION_LOOP_TICKS;
  const slot=Math.floor(local/COURSE_CADENCE),i=regionIndexForSlot(slot),r=CHIKUN_REGIONS[i];
  const start=starts[i]*COURSE_CADENCE,end=start+r.slots*COURSE_CADENCE;
  const blend=Math.max(0,Math.min(1,(local-(end-REGION_BLEND_TICKS))/REGION_BLEND_TICKS));
