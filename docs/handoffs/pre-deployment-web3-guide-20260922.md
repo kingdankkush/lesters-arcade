@@ -2,6 +2,7 @@
 
 **Written:** 2026-09-22
 **For:** a fresh session that finishes everything needed before the LitVM smart contracts are deployed, then deploys them.
+**Owner decisions:** answered 2026-09-22 (section 9). They are applied throughout this guide.
 **Repo:** `kingdankkush/lesters-arcade`, branch `fable/master-list-20260916`, worktree `C:\Users\just_\lesters-arcade-fable0916`
 **Live site:** https://lestersarcade.io, version 1.7.0, cache marker `lesters-arcade-v52-owner-round`, production deployment `dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu`
 
@@ -85,7 +86,7 @@ These are the acceptance criteria. Every workstream serves one of them.
 
 ### 3.1 Sign-in is easy
 
-- One **Sign in** button. A wallet picker lists installed wallets (EIP-6963), with MetaMask and Rabby featured. On mobile it falls back to WalletConnect if that is approved (decision D9).
+- One **Sign in** button. A wallet picker lists installed wallets (EIP-6963), with MetaMask and Rabby featured. On mobile it offers WalletConnect and wallet-app deep links (decision D9, approved).
 - The wallet adds or switches to LiteForge automatically, with one clear prompt that explains why.
 - **One signature** with a human-readable message: "Sign in to Lester's Arcade. This does not cost anything or send a transaction."
 - The session lasts 24 hours and survives reloads. A returning player is signed in silently, with no new signature until the token expires.
@@ -115,7 +116,7 @@ One shared results screen for all three games, rendered by the parent portal and
   3. Publishing to LitVM.
   4. **Published**, with a link to the transaction on `https://liteforge.explorer.caldera.xyz`.
   5. Achievements minted.
-- **Achievements earned this run:** badge art with tier colour, shown as "minting…" then "minted", each linking to the token.
+- **Achievements earned this run:** badge art with tier colour. Server-recorded ones appear instantly; the few soulbound NFT ones get a bigger reveal, shown as "minting on LitVM…" then "minted", each linking to its token.
 - **Actions:** **Share on X** is the primary button. Copy for Discord and Facebook sit in a secondary menu. Then Play again (Ranked), Practice (Free) and View profile.
 - **Failure states:** "Saved; publishing will retry automatically" with a Retry button. Never a dead end, never a fake success.
 
@@ -128,9 +129,15 @@ One shared results screen for all three games, rendered by the parent portal and
 
 ### 3.5 Profiles and leaderboards are accurate and wallet-based
 
-- A **public profile for every wallet** at `/profile/<wallet>`: handle, avatar, per-game best scores and ranks, Ranked runs played, recent verified sessions with transaction links, and the soulbound achievement collection read from chain.
-- All stats come from **verified sessions only**. The player can edit only their handle, avatar and preferences.
-- **Global leaderboards** per game and per period (daily, weekly, monthly, yearly, all-time), best score per wallet. The data comes from the server index with transaction proof per row, is paginated, searchable, and fast on phones.
+- A **public profile for every wallet** at `/profile/<wallet>`:
+  - its **on-chain display name** and avatar;
+  - per-game best scores and ranks;
+  - Ranked runs played;
+  - recent verified sessions with transaction links;
+  - achievements: every unlocked achievement, with the few soulbound NFT achievements highlighted as tokens held on chain.
+- All stats come from **verified sessions only**. Players change their name and avatar with a small on-chain transaction they pay for (decision D3). Preferences stay off-chain.
+- **Global leaderboards** per game for **Weekly, Monthly and All-time** (decision D2), best score per wallet. Daily is added later as the headline board once activity grows. The data comes from the server index with transaction proof per row, is paginated and searchable, and loads fast on phones.
+- **Launch is a clean slate** (decision D4). No earlier run, preview row or local unlock carries over.
 
 ---
 
@@ -211,15 +218,15 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 **Build:**
 
 1. **Migrations** in a `server-neon.mjs` `ensureSchema` with a version table:
-   - `verified_sessions`: session_id (pk), wallet, game_id, score, stats jsonb, runtime_id, season_id, period keys (day/week/month/year UTC), achievements text[], tx_hash, block_number, status, created_at, confirmed_at.
+   - `verified_sessions`: session_id (pk), wallet, game_id, score, stats jsonb, runtime_id, season_id, period keys (ISO week starting Monday UTC, calendar month UTC; store the UTC day too so Daily can switch on later without a migration), achievements text[], tx_hash, block_number, status, created_at, confirmed_at.
    - `session_evidence`: session_id, evidence bytea or text, digest.
-   - `wallet_profiles`: wallet, handle unique citext, avatar, preferences jsonb, handle_changed_at.
-   - `achievement_holdings`: wallet, game_id, achievement_id, token_id, tx_hash.
+   - `wallet_profiles`: wallet, display_name, avatar_uri (both **mirrored from `PlayerProfileRegistry` events**, never written by the browser), preferences jsonb, hidden boolean (moderation).
+   - `achievement_unlocks`: wallet, game_id, achievement_id, session_id, unlocked_at, **nft boolean**, token_id, tx_hash. Every achievement lands here; NFT achievements also carry their token.
    - `settle_queue` and `rate_limits` as needed.
    - Indexes: `(game_id, season_id, score desc)`, `(wallet, game_id)`, and the period keys.
-2. **`GET /api/leaderboard?game=&period=&page=&q=`.** Best per wallet (decision D1), ties by earliest `confirmed_at`, 25 rows per page. Each row carries handle, shortened wallet, score, headline stats, tx hash and date. Cache with `s-maxage=15, stale-while-revalidate=60`.
-3. **`GET /api/profile?wallet=` becomes public and server-derived.** It returns editable fields plus per-game bests and ranks, run counts, recent sessions (with tx) and holdings. `PUT` accepts only handle, avatar and preferences.
-4. **Backfill cron** (`/api/cron/index-chain`, every 5 minutes, protected by `CRON_SECRET`). It reads `ScoreSubmitted` / `SessionSubmitted` and `AchievementUnlocked` events since the last indexed block, and upserts rows. This covers player-signed fallback submissions and any missed writes. Events exist at `ScoreSubmissionRegistry.sol:82-94` and `AchievementRegistry.sol:39-41`.
+2. **`GET /api/leaderboard?game=&period=weekly|monthly|all-time&page=&q=`.** Best per wallet (decision D1), ties by earliest `confirmed_at`, 25 rows per page. Each row carries display name, shortened wallet, score, headline stats, tx hash and date. Cache with `s-maxage=15, stale-while-revalidate=60`. Accept `period=daily` in the API from day one, but do not show it in the UI until the owner turns it on (decision D2).
+3. **`GET /api/profile?wallet=` becomes public and server-derived.** It returns the on-chain name and avatar, per-game bests and ranks, run counts, recent sessions (with tx) and every achievement unlock (NFT ones flagged). `PUT` accepts **preferences only**; name and avatar change on chain.
+4. **Backfill cron** (`/api/cron/index-chain`, every 5 minutes, protected by `CRON_SECRET`). It reads `ScoreSubmitted` / `SessionSubmitted`, `AchievementUnlocked` and `PlayerProfileRegistry` `ProfileCreated` / `ProfileUpdated` events since the last indexed block, and upserts rows. Name changes should also be picked up immediately: after a player's rename transaction confirms, the browser calls `POST /api/profile/refresh?wallet=`, which reads `getProfile` from chain. This covers player-signed fallback submissions and any missed writes. Events exist at `ScoreSubmissionRegistry.sol:82-94` and `AchievementRegistry.sol:39-41`.
 5. **Fix the sanitizer.** `sanitizeProfileDocument` strips `:`, which breaks ISO timestamps, and strips emoji avatars (`server-session.mjs:84`).
 6. **Public RPC for all chain reads.** Reads currently go through the wallet provider (`litvm-chain-client.mjs:98-104`) and fail when the wallet is on another network.
 
@@ -242,9 +249,21 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
    - `seasonId` = `chikun-season-preview-1`, used consistently in the entry key and in settlement (today the entry key uses the HMH season at `main.js:5578`).
 4. Stop HMH achievement ids leaking into Chikun runs. `maybeUnlockRunAchievements` (`arcade-core.mjs:5503-5543`) uses the cross-game `totalPaidRuns`.
 5. **Ranked restart must pay a fresh entry.** `main.js:5208-5213` currently goes straight to `startMode('paid')`.
-6. **Lift the 4,096-flap cap.** It kills runs at about 43 minutes (`chikun-ground-runtime.mjs:27`), and a capped result nearly fills the 64 KB bridge limit. Chunk the evidence like STACKED does, or delta-encode the flap ticks.
-7. Keep the evidence locally until settlement is confirmed, so a failed publish can retry after a reload.
-8. Update the copy on the child result overlay and in the parent.
+6. **Retune difficulty to the owner's play-length targets** (decision D11). Today speed climbs only 100% every 8 minutes (`speedAtTick = 1 + tick/28800`, `chikun-ground-course.mjs:7`; level every 7,200 ticks, `chikun-ground-runtime.mjs:4`), so the autopilot survives about 43 minutes.
+
+   | Player | Target survival |
+   | --- | --- |
+   | Beginner to intermediate | 2–6 minutes |
+   | Intermediate to expert | 6–8 minutes |
+   | Expert to hardcore | 8–12 minutes |
+   | Exceptional | past 15 minutes should be very rare |
+
+   - Build a headless **difficulty harness** on the pure runtime: bot profiles with different reaction delays, timing error and look-ahead, 200+ seeded runs each, reporting survival percentiles.
+   - Tune the speed ramp (steeper and front-loaded), obstacle spacing and gap height per region until the percentiles land on the targets. Re-check that a strong run still sees farmland through coast in its first loop.
+   - Pin the tuned curves and the harness percentiles in tests. Bump the evidence version to v6 because the course changes.
+7. **Replay size cap.** With the retune, runs past 15 minutes are rare, so the 4,096-flap evidence cap (`chikun-ground-runtime.mjs:27`) stops being a practical limit. Still make it fail safe: raise it to cover 60 minutes (delta-encode the flap ticks so the payload stays small), and end the run gracefully instead of throwing `game:error` if a limit is ever hit.
+8. Keep the evidence locally until settlement is confirmed, so a failed publish can retry after a reload.
+9. Update the copy on the child result overlay and in the parent.
 
 ### 5.4 STACKED Ranked path (P0)
 
@@ -280,43 +299,62 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 3. HMH settlement must adopt the authenticated `/api/settle` flow and the new results screen.
 4. **Duplicate rows.** The local row (stamped with a tx hash) and the `chain:` row have different ids (`main.js:4833-4891`). Dedup by sessionId.
 
-### 5.6 Soulbound achievements (P0)
+### 5.6 Achievements: server-recorded for most, soulbound NFTs for a select few (P0)
+
+**Owner model (decisions D5–D7):**
+
+- **Most achievements are unlocked and stored on the server**, tied to the wallet in the Neon `achievement_unlocks` table and derived only from verified sessions. They cost no gas and appear on the profile immediately.
+- **A select few high-tier achievements per game are soulbound NFTs**, minted on chain the moment they are earned.
+- **Catalog sizes:** Chikun's Escape **40**, STACKED **40**, Hard Money Heroes keeps its **57**. Each game spans bronze to platinum by difficulty; HMH also keeps its diamond and mythic tiers.
+- **Art:** launch with the existing badge images. The owner plans spectacular upgrades later (highly detailed 3D models with effects), so the metadata must support that without re-minting.
 
 **Today:**
 
 - The deploy script **never calls `defineAchievement`**, so every mint is silently skipped (`AchievementRegistry.sol:133-136`).
-- Hard Money Heroes has 57 achievements (`arcade-core.mjs:1509-1572`): bronze 10, silver 10, gold 12, platinum 13, diamond 6, mythic 6.
-- Chikun has 4 (`chikun-cabinet.mjs:50-55`), which are not in the main table.
-- STACKED has none for Ranked play, only 16 device-local Free medals (`apps/stacked/src/free-medals.mjs:5-22`).
-- No metadata JSON exists anywhere. There are 100 badge PNGs under `apps/portal/assets/generated/achievement-badges/`.
+- HMH's 57 achievements (`arcade-core.mjs:1509-1572`) have no gameId and several are computed wrongly (section 5.5).
+- Chikun has 4 (`chikun-cabinet.mjs:50-55`), outside the main table. STACKED has none for Ranked play, only 16 device-local Free medals (`apps/stacked/src/free-medals.mjs:5-22`).
+- No metadata JSON exists. There are 100 badge PNGs under `apps/portal/assets/generated/achievement-badges/`.
 
 **Build:**
 
-1. **One catalog module per game** with a `gameId` field (for example `apps/portal/src/achievements/{hmh,chikun,stacked}.mjs`), shared by browser and server. Each entry: id, gameId, title, description, tier, criteria as a pure function of verified stats plus the wallet's verified history, and image.
-2. **Draft catalogs** for Chikun and STACKED, about 12 each, spread bronze → platinum. Get owner approval (decision D7).
-   - Chikun ideas: reach each region; complete a lap; complete two laps; a near-miss streak; a coin haul; survive at 150% speed.
-   - STACKED ideas: first Halving; levels 5, 10 and 15; a perfect clear; a combo streak; a back-to-back chain; 100 and 500 lines; 15 minutes survived.
-3. **Server derivation.** `/api/settle` computes earned achievements from the replayed stats and the wallet's verified history in Neon, excluding ones already held. Cap at 32 per submit (the contract limit). Queue the rest, and mint them later through a relayer allowed as minter (`AchievementRegistry.setMinter`) using `mintFor(player, id, sessionId)`. That also handles backfill.
-4. **Deploy script.** For each game, after deploying its collection, call `defineAchievement(id, gameId, title, category, tokenUriPath)` for every catalog entry. Record it in the manifest.
-5. **Metadata hosting.** Generate `apps/portal/achievements/<slug>/<achievement-id>.json` with ERC-721 metadata:
-   - name, description and image (`https://lestersarcade.io/achievements/<slug>/img/<id>.png`);
+1. **One catalog module per game** with a `gameId` field (for example `apps/portal/src/achievements/{hmh,chikun,stacked}.mjs`), shared by browser and server. Each entry: id, gameId, title, description, tier, `nft: true|false`, criteria as a pure function of verified stats plus the wallet's verified history, and image.
+2. **Write the Chikun and STACKED catalogs, 40 each.** Suggested spread: 14 bronze, 12 silver, 9 gold, 5 platinum. Calibrate thresholds to the play-length targets (section 5.3 item 6) using the difficulty harness, so bronze is reachable in a first session and platinum marks the top few percent.
+   - **Chikun themes:** reach each of the seven regions; complete one and two loops; survive 2, 4, 6, 8, 10 and 12 minutes; forks passed; near-miss streaks; coins in one run; best combo; flawless region (no near misses); speed milestones; cumulative runs and distance across sessions.
+   - **STACKED themes:** first Halving and Halving counts; levels reached; perfect clears; spins; combo and back-to-back chains; lines in one run and cumulative; survival time; score milestones; clean boards; garbage survived; cumulative sessions.
+3. **Choose the NFT subset:** about **5 per game**, drawn from the top tier (platinum for Chikun and STACKED; mythic for HMH). The session proposes the list and the owner approves it before deployment.
+4. **Server derivation.** `/api/settle` computes every newly earned achievement from the replayed stats and the wallet's verified history in Neon. It writes all of them to `achievement_unlocks`, and passes only the **NFT** ones into `submitVerifiedSession` for minting (well under the contract's 32 per submit). If an NFT mint fails or arrives late, a backfill path mints it through the relayer allowed as minter (`AchievementRegistry.setMinter`, `mintFor(player, id, sessionId)`).
+5. **Deploy script.** For each game, call `defineAchievement(id, gameId, title, category, tokenUriPath)` **only for the NFT subset**. Server-recorded achievements need nothing on chain. Record the definitions in the manifest.
+6. **Metadata built for the art upgrade.** Generate `apps/portal/achievements/<slug>/<achievement-id>.json` with ERC-721 metadata:
+   - name, description, `image` (a still, for wallets that only show images);
+   - **`animation_url`** reserved for the future 3D and effects version (a GLB model or a small self-contained HTML viewer), so upgrading means replacing files, not re-minting;
    - attributes: game, tier, category, "Soulbound: yes", season "LiteForge testnet".
-   - Add a build step so the owner's final illustrations can replace images with no re-mint. The base URI is updatable with `setBaseTokenUri`.
-6. **Display.** The profile reads holdings from chain (`fetchPlayerAchievements`, currently imported but never called) or from the Neon mirror. Remove the "device-local … not NFTs" copy (`official-profile-route.mjs:56`).
+   - `setBaseTokenUri` stays available if the hosting path ever moves.
+7. **Display.** The profile lists every unlock, marks NFT achievements with a "⛓ Soulbound NFT" badge, and links each to its token on the explorer. Read holdings from the Neon mirror and confirm with `fetchPlayerAchievements` (currently imported but never called). Remove the "device-local … not NFTs" copy (`official-profile-route.mjs:56`).
+8. **The results screen** celebrates NFT unlocks distinctly: a larger reveal, "minting on LitVM…" then "minted", plus a share prompt.
 
-### 5.7 Profiles (P1)
+### 5.7 Profiles and on-chain names (P1)
 
 - Add a public `/profile/<wallet>` route. The current profile route shows only the connected wallet's device state (`official-profile-route.mjs:134-147`).
 - Stats come from `/api/profile` (server-derived). Drop client-pushed xp, run counts, achievements and runHistory from the hosted document. They are spoofable today (`profile-sync-client.mjs:72-81`), and they gate HMH character unlocks (`hmh-character-config.mjs:218-227`). Character unlocks should read verified run counts.
-- **Handles** (decision D3): unique, 3–18 characters, a profanity filter, changeable once a week. Show the handle on leaderboards, results and share cards, with a shortened wallet as the fallback.
-- Leave `PlayerProfileRegistry` unused for now unless the owner chooses on-chain names.
+- **Names are on chain** (decision D3) through the already-written `PlayerProfileRegistry`:
+  - It stores the display name and avatar URI per wallet and enforces unique names of 3–18 characters with an allowed character set (`PlayerProfileRegistry.sol:30-125`).
+  - It emits `ProfileCreated`, `ProfileUpdated` and `HandleReserved`, which the index mirrors.
+  - The player pays gas for every create or change. On LiteForge that is a tiny fraction of a zkLTC; show the estimate before the wallet opens.
+- **Name-change UX:**
+  - Check availability and validity **before** the wallet prompt: read `handleOwners(normalizedHandle)` and apply the same rules as the contract, so no transaction ever reverts.
+  - Run a profanity and impersonation check in the browser before sending. Names cannot be filtered on chain, so add a moderation flag in Neon (`wallet_profiles.hidden`) that falls back to the shortened wallet in every display.
+  - After confirmation, call `POST /api/profile/refresh` so the new name shows everywhere at once.
+  - First-time Ranked players get a friendly optional prompt to claim a name; skipping shows the shortened wallet.
+- Avatars: the contract stores an avatar URI. Offer a set of arcade avatars hosted on the site. Custom image upload is out of scope for launch.
+- Make sure `PlayerProfileRegistry`'s address flows into the generated address module (section 5.14).
 
 ### 5.8 Leaderboards UI (P1)
 
-- Switch the Scores page (`leaderboard-view.mjs`, `routes/official-leaderboard-route.mjs`) to `/api/leaderboard`, keeping the existing banners, tabs, search and jump-to-rank.
+- Switch the Scores page (`leaderboard-view.mjs`, `routes/official-leaderboard-route.mjs`) to `/api/leaderboard`, keeping the existing banners, search and jump-to-rank.
+- Period tabs at launch: **Weekly** (default), **Monthly**, **All-time**. Remove Daily and Yearly from the UI for now; Daily returns later as the headline tab (decision D2). Show when the current period resets.
 - Retire the 200-session chain scan (`litvm-chain-client.mjs:326-337`), or keep it only as an offline fallback.
 - Show a per-row "⛓ verified" link to the explorer transaction.
-- Keep House and Local Preview as clearly labelled secondary tabs, or hide them after launch (decision D4).
+- Remove the House and Local Preview tabs at launch (decision D4: clean slate). Empty boards show an inviting "Be the first on this week's board" state with a Play Ranked button.
 
 ### 5.9 Sign-in UX (P1)
 
@@ -325,7 +363,11 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 - Replace the SIWE statement with plain language (`wallet-auth.mjs:36+`), and use the server nonce from section 5.1.
 - Silent re-auth: on load, if `eth_accounts` returns the same wallet and the stored session token is valid, skip the signature.
 - Show a balance chip with a faucet link (`https://liteforge.hub.caldera.xyz`).
-- **WalletConnect for mobile** (decision D9): needs a Reown project ID from the owner and an allowed-origins entry. Load it lazily.
+- **Mobile first** (decision D9: whatever makes mobile smoother):
+  - **WalletConnect / Reown AppKit**, loaded lazily. It lets players sign in from any mobile browser with MetaMask, Rabby, Trust, Coinbase Wallet and others, and approve the Ranked entry in their wallet app with an automatic hand-off back. Needs a Reown project ID from the owner (section 10).
+  - **Wallet deep links** when no wallet is detected on a phone: "Open in MetaMask" (`https://metamask.app.link/dapp/lestersarcade.io`) and the equivalent for Rabby and Trust, so the site opens inside the wallet's own browser.
+  - Keep every wallet prompt reachable with a thumb, keep the Ranked modal readable at 320 px, and never open a wallet prompt from inside the game canvas's input handler, which some mobile browsers block.
+  - Later option to evaluate: email or social sign-in with an embedded wallet (Privy, Dynamic, thirdweb) for players who have no wallet at all. It needs an owner account with the provider and a custody review, so it is not in the launch scope.
 
 ### 5.10 Ranked entry UX (P1)
 
@@ -389,7 +431,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 5. **Facebook and Discord:** secondary. Facebook's sharer takes the share-page URL and shows the card. Discord gets copied text plus the URL, which unfurls the card. The native share sheet (mobile) passes the same text and URL.
 6. **Tests:** template length under 280 with a 23-character URL, the mention present, no raw wallet addresses in text, and OG tags present on the share page.
 
-### 5.13 Unlockables (P2, after owner decision D8)
+### 5.13 Unlockables (P2, approved by the owner in D8)
 
 - An unlockable is granted by **holding** a soulbound achievement token, so it follows the wallet across devices.
 - Suggested sets:
@@ -425,7 +467,8 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 | Step | Slice | Depends on |
 | --- | --- | --- |
 | 1 | `.gitignore` for installer files; confirm owner decisions in section 9 | — |
-| 2 | Achievement catalogs for all three games + shared resolver fixes (5.5 item 2, 5.6 items 1–2) | D5, D7 |
+| 2 | Chikun difficulty harness and retune (5.3 item 6) | D11 |
+| 2b | Achievement catalogs for all three games (40 Chikun, 40 STACKED, 57 HMH), NFT subset proposal, shared resolver fixes (5.5 item 2, 5.6 items 1–3) | 2, D5, D7 |
 | 3 | Neon schema + migrations + read APIs (5.2) | — |
 | 4 | Server nonce, authenticated settle, server replay, derivation, nonce-safe relayer, queue and cron (5.1, 5.6 item 3) | 2, 3 |
 | 5 | Chikun Ranked path (5.3) | 4 |
@@ -434,7 +477,7 @@ References are `file:line` as of commit `d0e26c78`; lines drift, so re-grep befo
 | 8 | Sign-in and Ranked entry UX (5.9, 5.10) | D9 |
 | 9 | Shared Ranked results screen (5.11) | 5–7 |
 | 10 | Sharing: templates, share page, OG card (5.12) | 3, D12, D13 |
-| 11 | Profiles and leaderboards UI on the index (5.7, 5.8) | 3, D1–D4 |
+| 11 | Profiles with on-chain names, leaderboards UI on the index (5.7, 5.8) | 3, D1–D4 |
 | 12 | Deploy-script updates, metadata JSON, generated addresses, owner page (5.6 items 4–5, 5.14) | 2 |
 | 13 | Local-chain rehearsal (5.14 item 6) | 12 |
 | 14 | Unlockables (5.13) | D8 |
@@ -486,35 +529,32 @@ Every step with ⚠ needs the owner's approval in the moment, with the session i
 
 ## 9. Owner decisions
 
-> **Status: answers pending.** Justin is posting answers; record them here and treat the recommendation as the default for any decision still blank.
+Answered by Justin on 2026-09-22 unless marked pending. Where an answer was "recommended", the recommendation is the decision.
 
-| # | Decision | Recommendation | Answer |
-| --- | --- | --- | --- |
-| D1 | Leaderboard ranking | Best score per wallet, per game, per period; ties go to whoever got there first. | _pending_ |
-| D2 | Period resets | Daily at 00:00 UTC; weekly on Monday 00:00 UTC; calendar months and years in UTC. | _pending_ |
-| D3 | Display names | Free unique off-chain names, 3–18 characters, filtered, changeable once a week. | _pending_ |
-| D4 | Past runs and preview boards | Only runs published after launch count. Local preview runs stay on the device, and preview tabs are hidden after launch. | _pending_ |
-| D5 | Which achievements become NFTs | Every achievement, one soulbound token per wallet each. | _pending_ |
-| D6 | Badge art until the owner's illustrations arrive | Launch with the existing 100 badge images; swap art later without re-minting. | _pending_ |
-| D7 | Chikun and STACKED achievement lists | Session drafts about 12 per game (bronze → platinum), owner reviews before deploy. | _pending_ |
-| D8 | Unlockables | HMH hero/weapon skins; Chikun coats, trails, hats; STACKED piece skins and scenes; unlocks apply in Free Mode too. | _pending_ |
-| D9 | Mobile wallets | Add WalletConnect; owner creates a free Reown project and supplies the project ID. | _pending_ |
-| D10 | Failed publishes | Auto-retry, retry button on the profile, no refunds on testnet. | _pending_ |
-| D11 | HMH verification level | Plausibility-checked (no server replay) for testnet; no special UI label. | _pending_ |
-| D12 | X handle to mention | `@LestersArcade`; owner confirms the exact handle and that the account exists. | _pending_ |
-| D13 | Hashtags on X | `#Litecoin #LitVM` only when characters allow; never more than two. | _pending_ |
-| D14 | Long Chikun runs | Lift the ~43-minute cap. | _pending_ |
-| D15 | Local-chain rehearsal tooling | Add Hardhat (npm dev dependency) for a local rehearsal before LiteForge. | _pending_ |
-
----
+| # | Decision | Answer |
+| --- | --- | --- |
+| D1 | Leaderboard ranking | **Recommended:** best score per wallet, per game, per period; ties go to whoever got there first. |
+| D2 | Periods and resets | **Weekly and Monthly** (plus All-time) at launch. Weekly resets Monday 00:00 UTC, Monthly on the 1st at 00:00 UTC. **Daily is added later** as the main focus once activity grows. |
+| D3 | Display names | **On chain**, tied to the wallet through `PlayerProfileRegistry`. Players pay the gas for each change. |
+| D4 | Past runs | **None carry over.** The new contracts are a full reset. |
+| D5 | Achievements vs NFTs | **Hybrid:** most achievements are unlocked and stored on the server; a **select few high-tier achievements per game** are soulbound NFTs minted on unlock. |
+| D6 | Badge art | **Recommended** existing badges at launch. The owner will soon upgrade all badge art and make the NFT achievements spectacular: **highly detailed 3D models with effects**. Metadata must be ready for that (section 5.6 item 6). |
+| D7 | Catalog sizes | **40 for Chikun's Escape and 40 for STACKED**, spread bronze → platinum by difficulty. |
+| D8 | Unlockables | **Yes to everything proposed:** HMH hero/weapon skins; Chikun coats, trails, hats; STACKED piece skins and scenes; unlocks work in Free Mode too. |
+| D9 | Mobile wallets | **Whatever makes it smoother, especially on mobile:** WalletConnect/Reown AppKit plus wallet deep links (section 5.9). Needs the Reown project ID. |
+| D10 | Failed publishes | **Recommended:** auto-retry, retry button on the profile, no refunds on testnet. |
+| D11 | Chikun run length | **Retune difficulty.** Targets: beginner–intermediate 2–6 min, intermediate–expert 6–8 min, expert–hardcore 8–12 min; surviving past 15 min should be extraordinary. This is the frame of reference for the level's difficulty and pacing. |
+| D12 | X handle to mention | _Pending:_ owner to confirm `@LestersArcade` is the exact handle. |
+| D13 | Hashtags on X | _Pending._ Recommendation: `#Litecoin #LitVM` only when characters allow, never more than two. |
+| D14 | Local-chain rehearsal | _Pending._ Recommendation: add Hardhat as a dev dependency and rehearse deploy → entry → settle → mint locally before LiteForge. |
+| D15 | NFT subset per game | _Pending owner approval_ of the session's proposed list (about 5 per game from the top tier, section 5.6 item 3). |
 
 ## 10. Owner actions
 
 1. Back up `C:\Users\just_\lesters-arcade-vault\keys\litvm-liteforge-testnet-keys.json` to a thumb drive and a password manager. **The operator key controls the contracts.**
-2. Answer section 9.
-3. If D9 is yes: create a free project at https://cloud.reown.com, add `lestersarcade.io` and `www.lestersarcade.io` as allowed origins, and send the project ID. It is public, not a secret.
-4. Confirm the X handle (D12).
-5. At deployment:
+2. Confirm the X handle (D12), and answer D13 and D14. Approve the NFT subset (D15) and the Chikun and STACKED catalogs when the session presents them.
+3. **Create a free Reown project** for mobile wallet sign-in (D9): sign up at https://cloud.reown.com, create a project named "Lester's Arcade", add `lestersarcade.io` and `www.lestersarcade.io` under allowed domains, and send the project ID to the session. The ID is public, not a secret.
+4. At deployment:
    - switch the session to "ask before each action" mode;
    - approve each ⚠ step;
    - sign the three payout-wallet confirmations from your wallet;
