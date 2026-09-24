@@ -10,7 +10,15 @@
 // never opens the wallet picker (signin-entry slice, contract §7.6).
 //
 // Serve apps/portal as the web root, then:
-//   HMH_PORTAL_ORIGIN=http://127.0.0.1:8809 node scripts/hmh-simulated-wallet-browser-smoke.mjs
+//   HMH_PORTAL_ORIGIN=http://127.0.0.1:8809 node scripts/hmh-simulated-wallet-browser-smoke.mjs [--fail-on-known-gap]
+//
+// KNOWN GAP (reported, not asserted away): the U11a shell banner #simulatedWalletBanner is not rendered.
+// Its renderer, renderSimulatedWalletBanner(), runs only from renderLogin(), which has had no caller in
+// apps/portal/main.js since 372c7ef9 retired the legacy canvas backstage (2026-08-05, before the Ranked
+// work). While it stays hidden the smoke prints a KNOWN-GAP line and reports status
+// 'PASS with KNOWN GAP' (exit 0; --fail-on-known-gap exits 3); once the banner renders again, every
+// U11a banner check below applies and must pass. The other disclosures (the profile eyebrow, the shell
+// copy, the console warning and the Profile notice) are asserted either way.
 import assert from 'node:assert/strict';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 
@@ -39,6 +47,8 @@ const browser = await chromium.launch({
 });
 
 const findings = {};
+const knownGaps = [];
+const SHELL_BANNER_GAP = 'U11a shell banner #simulatedWalletBanner is hidden: renderSimulatedWalletBanner() runs only from renderLogin(), which has no caller in apps/portal/main.js since 372c7ef9; the profile eyebrow, the shell copy, the console warning and the Profile notice still disclose the simulated identity. Portal-shell follow-up.';
 
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -101,15 +111,31 @@ try {
   findings.pickerShown = await page.locator('.wallet-picker').count();
   assert.equal(findings.pickerShown, 0, 'no wallet picker without a wallet');
 
-  // The shell copy carries the disclosure while the cabinet row loads (official-app-routes). The old
-  // shell banner (#simulatedWalletBanner) is no longer rendered: its renderer, renderLogin(), has had
-  // no caller since the legacy canvas backstage was retired, so the banner stays hidden (reported as a
-  // follow-up); the eyebrow, this copy, the console warning and the profile notice below remain.
+  // The shell copy carries the disclosure while the cabinet row loads (official-app-routes).
   await page.waitForFunction(() => /simulated local identity, not a real wallet/i.test(document.querySelector('#officialProfileCopy')?.textContent ?? ''), null, { timeout: 10_000 });
   findings.shellCopy = (await page.textContent('#officialProfileCopy')).replace(/\s+/g, ' ').trim();
   assert.match(findings.shellCopy, /0x[0-9a-f]{4,}…?[0-9a-f]* is a simulated local identity, not a real wallet/i);
   await page.locator('.official-cabinet-card.playable').first().waitFor({ state: 'visible', timeout: 10_000 });
-  findings.bannerHidden = await page.locator('#simulatedWalletBanner').isHidden();
+
+  // The U11a shell banner: every U11a check when it renders, a loud KNOWN GAP while it does not (see
+  // the header). It must be visible, not merely present, announced, and amber rather than green.
+  const banner = page.locator('#simulatedWalletBanner');
+  findings.bannerVisible = await banner.isVisible();
+  if (findings.bannerVisible) {
+    findings.bannerText = (await banner.innerText()).replace(/\s+/g, ' ').trim();
+    assert.match(findings.bannerText, /simulated/i);
+    assert.match(findings.bannerText, /blockchain|on-chain/i);
+    assert.match(findings.bannerText, /does not carry over|reconnect|install/i);
+    assert.equal(await banner.getAttribute('role'), 'status', 'the banner must be announced to assistive tech');
+    const box = await banner.boundingBox();
+    assert.ok(box && box.width > 100 && box.height > 20, `the banner has no readable box: ${JSON.stringify(box)}`);
+    findings.bannerBorder = await banner.evaluate((node) => getComputedStyle(node).borderTopColor);
+    const [br, bg, bb] = findings.bannerBorder.match(/[\d.]+/g).map(Number);
+    assert.ok(br > 200 && bg > 120 && bg < 220 && bb < 120, `expected an amber banner border, got ${findings.bannerBorder}`);
+  } else {
+    knownGaps.push(SHELL_BANNER_GAP);
+    console.warn(`KNOWN-GAP: ${SHELL_BANNER_GAP}`);
+  }
 
   findings.consoleWarned = consoleWarnings.some((text) => /simulated local identity/i.test(text));
   assert.equal(findings.consoleWarned, true, 'connectMockWallet must warn on the console');
@@ -151,7 +177,11 @@ try {
   // Preview (both flags false): nothing reaches /api, and the console stays clean.
   assert.deepEqual(apiRequests, [], `preview must not call /api: ${apiRequests.join(', ')}`);
   assert.deepEqual(issues, [], `browser console/network issues:\n${issues.join('\n')}`);
-  console.log(JSON.stringify({ status: 'PASS', ...findings }, null, 2));
+  console.log(JSON.stringify({ status: knownGaps.length ? 'PASS with KNOWN GAP' : 'PASS', knownGaps, ...findings }, null, 2));
+  if (knownGaps.length) {
+    console.warn(`KNOWN-GAP: ${knownGaps.length} known gap(s) above; exit 0 does not mean the shell banner shows${process.argv.includes('--fail-on-known-gap') ? '' : ' (--fail-on-known-gap exits 3)'}.`);
+    if (process.argv.includes('--fail-on-known-gap')) process.exitCode = 3;
+  }
 } finally {
   await browser.close();
 }
