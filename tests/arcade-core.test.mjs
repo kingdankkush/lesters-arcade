@@ -480,7 +480,7 @@ test('ranked sessions use one UUID-backed canonical id across routing and eviden
   assert.equal(session.evidence.sessionId, session.sessionId);
   assert.equal(session.canonicalContext.wallet, wallet);
   assert.equal(session.canonicalContext.gameId, 'lester-blaster');
-  assert.equal(session.canonicalContext.buildHash, 'site-1.7.0:game-1.7.0');
+  assert.equal(session.canonicalContext.buildHash, 'site-1.8.0:game-1.8.0');
 });
 
 test('parent session allocator issues deterministic seed, build, and season bindings for every cabinet', () => {
@@ -499,7 +499,7 @@ test('parent session allocator issues deterministic seed, build, and season bind
   assert.notEqual(a.seed, changed.seed);
   assert.equal(Number.isInteger(a.seed), true);
   assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
-  assert.equal(a.buildHash, 'site-1.7.0:game-1.7.0:cabinet-0.9.0');
+  assert.equal(a.buildHash, 'site-1.8.0:game-1.8.0:cabinet-0.9.0');
   assert.equal(a.seasonId, 'chikun-season-preview-1');
   assert.equal(a.canonicalContext.seed, a.seed);
   assert.equal(a.canonicalContext.buildHash, a.buildHash);

@@ -1,3 +1,11 @@
+# Lester's Arcade — 1.8.0: Ranked goes live on LitVM LiteForge
+
+Ranked Mode is live on the LitVM LiteForge testnet for all three games. Sign in once with a wallet (MetaMask and Rabby featured, WalletConnect on phones), pay a 0.102 zkLTC entry (0.1 zkLTC fee split 85% developer / 15% arcade, plus a 0.002 zkLTC settlement reserve), and the run starts as soon as the entry is broadcast. The arcade server checks every Ranked run (Chikun's Escape and STACKED are replayed from their inputs; Hard Money Heroes is plausibility-checked) and its relayer publishes the verified result to `ScoreSubmissionRegistry` on chain. A shared results screen follows the run on chain to "Published" with an explorer link, then offers X-first sharing (mentioning @LestersArcade, no hashtags) with a public session page and a generated score card.
+
+Every wallet has a public profile with an on-chain display name and avatar (`PlayerProfileRegistry`), verified bests, runs and achievements, and the Scores page ranks the best verified run per wallet on Weekly, Monthly and All-time boards from the Neon index. 137 achievements (57 Hard Money Heroes, 40 Chikun's Escape, 40 STACKED) are derived and recorded by the server from verified runs; soulbound NFT minting is phase 2. Chikun's Escape is retuned to the owner's 2 to 12 minute run-length targets, and earned achievements unlock cosmetic looks in every game.
+
+Contracts (LiteForge, chain 4441, start block 54207405): GameRegistry `0xcb0b695ebee650afcce93f566259cb477b19bf23`, PlayerProfileRegistry `0x3eb9e9f2620940496a2b8ed6f7384e6687587c94`, ArcadeRankedEntry `0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190`, ScoreSubmissionRegistry `0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55`, achievement collections `0xc1a383cb7521978f429424443fdd69bdd71ff737` (HMH), `0xf6cd1cf7e1accaea93accdfb911034b3e8eb6f93` (Chikun), `0x5430f8c142ca7ec8971a447cc09ae63f8860a8a7` (STACKED). Site/game version `1.8.0`; cache marker `lesters-arcade-v53-ranked-launch`. Release candidate; the production deployment and live verification are recorded in the release receipt under `docs/qa/`. Rollback: Vercel Instant Rollback to `dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu` (1.7.0) and the pause levers in `docs/web3/contract-overhaul-20260916.md`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.7.0 verified live: owner question round applied across all three games
 
 Hard Money Heroes: every held weapon is now a real modelled gun rendered through the same Blender path as the pistol, so shotgun, minigun, launcher, rail, arc rifle, burner and the war fork sit in each hero's hands per pose. Three more gated destinations reward exploration (Liquidity Haven, Litecoin Sanctuary with the Scrypt Cache, the Liquidation Trap). The Railgun loses damage along its lane (35% at maximum range), silver coins count toward score, a brief bold banner names every pickup and world interaction, gunfire throws physics blood that lands as splats while explosives, the rail, pellets and hazards dismember, and the desktop mouse wheel zooms between 0.7x and 1.1x of the readable default.
@@ -30,7 +38,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v52-owner-round`
+**Production cache marker:** `lesters-arcade-v53-ranked-launch`
 
 # Lester's Arcade
 
