@@ -20,7 +20,7 @@ const COPY_KEYS = [
   'description', 'faq', 'scoresNote', 'trustStatus', 'trustStorage', 'llmsScope', 'llmsHowItWorks',
   'manifestDescription', 'howIntro', 'howConnectTitle', 'howConnect', 'howConnectAction', 'howProfile',
   'scoresLead', 'scoresWallet', 'modeSelect', 'modeRanked', 'modeRankedTooltip', 'rankedDetail', 'scoresView', 'profileGuestView',
-  'profileWalletView', 'walletConnected',
+  'profileWalletView', 'profilePublicView', 'walletConnected',
 ];
 
 // Every string a copy object can put on a page, flattened.

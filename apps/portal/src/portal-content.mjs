@@ -183,6 +183,10 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     profileGuestView: live ? 'Sign in with a wallet to see your verified Ranked runs and achievements on any device. Every wallet’s profile is public.'
       : hosted ? 'Sign in with a wallet to see your profile on any device. Verified Ranked publishing is not available yet.'
       : 'Guest stats are local to this browser. Permanent or cross-device history and verified Ranked publishing are not available yet.',
+    // SPA header of another wallet's public profile (/profile/<wallet>).
+    profilePublicView: live ? 'This wallet’s public profile: its best scores, verified Ranked runs published on LitVM, and the achievements the arcade server recorded for it.'
+      : hosted ? 'This wallet’s public profile. Verified Ranked publishing is not available yet, so it lists no verified runs.'
+      : 'Public wallet profiles open when verified Ranked publishing goes live. This preview only shows the profile recorded on this device.',
     // trust.html paragraphs. `text` in backticks renders as <code>.
     trustStatus: Object.freeze(live ? [
       `Ranked is live on the LitVM LiteForge testnet. A Ranked run costs ${total} zkLTC: a ${fee} zkLTC entry, split ${developer}% to the game's developer and ${arcade}% to the arcade, plus a ${reserve} zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.`,
