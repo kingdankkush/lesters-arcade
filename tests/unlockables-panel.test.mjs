@@ -6,10 +6,13 @@ import {
   UNLOCKABLES_PANEL_ID,
   UNLOCKABLES_PANEL_STYLESHEET,
   buildUnlockablesPanelModel,
+  canvasFilterSupported,
+  isOwnUnlockablesView,
   renderUnlockablesPanel,
   unlockablesNotice,
 } from '../apps/portal/src/routes/unlockables-panel.mjs';
 import { COSMETIC_SLOTS, UNLOCKABLES, emptyUnlocks, unlocksFromProfileResponse } from '../apps/portal/src/unlockables.mjs';
+import { buildCharacterSelectEntries, buildCharacterStatIdentityRoster, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
@@ -137,8 +140,80 @@ test('preview shows the default looks equipped and every other look locked with 
   }
   const glacier = model.games.find((game) => game.gameId === 'chikun').slots.find((slot) => slot.slot === 'coat').options.find((option) => option.id === 'chikun-coat-glacier');
   assert.deepEqual([glacier.requirement, glacier.achievementId, glacier.achievementTitle], ['Earn Coastal Escape', 'chikun-reach-coast', 'Coastal Escape']);
+  // Without the hero select's entries, preview makes no claim about heroes.
   const heroes = model.games[0].heroes;
-  assert.deepEqual(heroes.map((hero) => [hero.title, hero.status, hero.progress]), [['Lester', 'locked', { current: 0, required: 5 }], ['Lilly', 'locked', { current: 0, required: 10 }]]);
+  assert.deepEqual(heroes.map((hero) => [hero.title, hero.status, hero.progress]), [['Lester', 'hero-select', null], ['Lilly', 'hero-select', null]]);
+});
+
+// The hero select's own entries (main.js passes these to the panel).
+const HERO_ROSTER = buildCharacterStatIdentityRoster();
+const heroEntriesFor = (profile, options) => buildCharacterSelectEntries(HERO_ROSTER, profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options);
+const heroRows = (model) => model.games[0].heroes.map((hero) => [hero.title, hero.status, hero.requirement, hero.progress]);
+const localRuns = (paidRuns) => ({ progress: { 'lester-blaster': { paidRuns } } });
+
+test('the Heroes rows match the hero select in preview (device counts) and when hosted (verified counts)', () => {
+  // Preview, 12 local Ranked runs: the hero select unlocks both, and so does the panel.
+  const twelve = heroEntriesFor(localRuns(12), { hosted: false, verifiedRuns: null });
+  assert.deepEqual(twelve.filter((hero) => ['lester-original', 'lilly'].includes(hero.id)).map((hero) => [hero.id, hero.unlocked]), [['lester-original', true], ['lilly', true]]);
+  assert.deepEqual(heroRows(buildUnlockablesPanelModel(previewSnapshot, { heroEntries: twelve })), [['Lester', 'unlocked', 'Finish 5 Ranked runs on this device', null], ['Lilly', 'unlocked', 'Finish 10 Ranked runs on this device', null]]);
+  // Preview, 7 local runs: Lilly is locked on this device's count.
+  assert.deepEqual(heroRows(buildUnlockablesPanelModel(previewSnapshot, { heroEntries: heroEntriesFor(localRuns(7), { hosted: false, verifiedRuns: null }) })), [
+    ['Lester', 'unlocked', 'Finish 5 Ranked runs on this device', null],
+    ['Lilly', 'locked', 'Finish 10 Ranked runs on this device', { current: 7, required: 10 }],
+  ]);
+  // Hosted: the verified count decides, whatever this device holds.
+  const hosted = heroEntriesFor(localRuns(12), { hosted: true, verifiedRuns: 6 });
+  const rows = heroRows(buildUnlockablesPanelModel(hostedSnapshot({}), { heroEntries: hosted }));
+  assert.deepEqual(rows, [['Lester', 'unlocked', 'Finish 5 verified Ranked runs', null], ['Lilly', 'locked', 'Finish 10 verified Ranked runs', { current: 6, required: 10 }]]);
+  assert.deepEqual(rows, heroRows(buildUnlockablesPanelModel(hostedSnapshot({}))), 'the store\'s verified count agrees');
+
+  // The rendered panel reads its entries on every paint.
+  const { documentRef, app, grid } = fakeDocument();
+  let runs = 7;
+  const store = fakeStore(previewSnapshot);
+  const host = renderUnlockablesPanel({ store, documentRef, after: grid, app, heroEntries: () => heroEntriesFor(localRuns(runs), { hosted: false, verifiedRuns: null }) });
+  assert.match(host.textContent, /Lilly.*Locked · Finish 10 Ranked runs on this device \(7\/10\)/);
+  runs = 10;
+  store.emit(previewSnapshot);
+  assert.match(host.textContent, /Lilly.*Unlocked · choose in hero select/);
+  assert.doesNotMatch(host.textContent, /Locked · Finish/);
+});
+
+test('the notice never promises a load or a save that is not coming', () => {
+  const hosted = { hosted: true, wallet: WALLET };
+  assert.match(unlockablesNotice({ ...hosted, authenticated: false, source: 'none' }), /Sign in to load your unlocks and save your picks to your wallet; until then picks stay on this device\.$/);
+  assert.doesNotMatch(unlockablesNotice({ ...hosted, authenticated: false, source: 'none' }), /Loading/, 'signed out, nothing loads');
+  assert.match(unlockablesNotice({ ...hosted, authenticated: true, source: 'none', loading: true }), /Loading your unlocks…$/);
+  assert.match(unlockablesNotice({ ...hosted, authenticated: true, source: 'none', loading: false }), /Your unlocks could not load\. They load when you are back online\.$/);
+  assert.match(unlockablesNotice({ ...hosted, authenticated: true, source: 'server', unsaved: true }), /Your picks save to your wallet\. Your latest picks are on this device and save to your wallet when you are back online\.$/);
+  assert.match(unlockablesNotice({ ...hosted, authenticated: true, source: 'cache' }), /Your picks save to your wallet\. Showing the unlocks saved on this device\.$/);
+});
+
+test('the panel shows on Settings and the own profile only, and says when coats cannot show', () => {
+  assert.equal(isOwnUnlockablesView({ view: 'settings', viewedWallet: '0xabc', connectedWallet: WALLET }), true);
+  assert.equal(isOwnUnlockablesView({ view: 'profile', viewedWallet: null, connectedWallet: WALLET }), true, 'no wallet in the route is the own profile');
+  assert.equal(isOwnUnlockablesView({ view: 'profile', viewedWallet: WALLET.toUpperCase().replace('0X', '0x'), connectedWallet: WALLET }), true);
+  assert.equal(isOwnUnlockablesView({ view: 'profile', viewedWallet: `0x${'9'.repeat(40)}`, connectedWallet: WALLET }), false);
+  assert.equal(isOwnUnlockablesView({ view: 'profile', viewedWallet: WALLET, connectedWallet: null }), false);
+  const { documentRef, app, grid } = fakeDocument();
+  app.dataset.step = 'profile';
+  const store = fakeStore(hostedSnapshot({}));
+  const host = renderUnlockablesPanel({ store, view: 'profile', viewedWallet: `0x${'9'.repeat(40)}`, connectedWallet: WALLET, documentRef, after: grid, app });
+  assert.equal(host.hidden, true, 'another wallet\'s profile hides it');
+  renderUnlockablesPanel({ store, view: 'profile', viewedWallet: WALLET, connectedWallet: WALLET, documentRef, after: grid, app });
+  assert.equal(host.hidden, false);
+  // Canvas filters: detected from the context prototype; no canvas at all means no claim.
+  assert.equal(canvasFilterSupported({}), true);
+  assert.equal(canvasFilterSupported({ CanvasRenderingContext2D: class { get filter() { return 'none'; } } }), true);
+  assert.equal(canvasFilterSupported({ CanvasRenderingContext2D: class {} }), false);
+  const coatNote = (canvasFilter) => buildUnlockablesPanelModel(hostedSnapshot({}), { canvasFilter }).games.find((game) => game.gameId === 'chikun').slots.map((slot) => [slot.slot, slot.note]);
+  assert.deepEqual(coatNote(true), [['coat', null], ['trail', null], ['hat', null]]);
+  assert.deepEqual(coatNote(false), [['coat', 'This browser draws the classic coat. Update your browser to see coat colours.'], ['trail', null], ['hat', null]]);
+  const bare = fakeDocument();
+  const noted = renderUnlockablesPanel({ store: fakeStore(hostedSnapshot({})), documentRef: bare.documentRef, after: bare.grid, app: bare.app, canvasFilter: false });
+  const coat = noted.all((node) => node.tagName === 'FIELDSET' && node.dataset.slot === 'coat')[0];
+  assert.equal(coat.children[0].tagName, 'LEGEND');
+  assert.equal(coat.children[1].textContent, 'This browser draws the classic coat. Update your browser to see coat colours.');
 });
 
 test('hosted unlocks show unlocked and equipped looks, and a locked pick is not honoured', () => {
@@ -287,6 +362,18 @@ test('the panel ships lazily, builds DOM safely, reads at 320 px and keeps phase
   assert.match(main, /const renderOfficialProfile = \(\) => \{ officialProfileRoute\.renderProfile\(\); showUnlockablesPanel\('profile'\); \};/);
   for (const [game, needle] of [['chikun', /reduceMotion: Boolean\(gameSettings\.reduceMotion\),\n\s+\.\.\.childCosmetics\('chikun'\),/], ['stacked', /\.\.\.childCosmetics\('stacked'\) \}, music:/], ['lester-blaster', /settings: \{ \.\.\.hmhRebootSettings\(\), \.\.\.childCosmetics\('lester-blaster'\) \},/]]) {
     assert.match(main, needle, `${game} receives its looks through its settings channel`);
+  }
+  // Hero gates (acceptance 5): every gate call in the hero select and at game
+  // start gets the cached verified count, and arcade-core's option-less
+  // profile syncs get it through the registered provider.
+  assert.match(main, /function characterUnlockOptions\(\) \{ return \{ hosted: HOSTED_PROFILE_SYNC, verifiedRuns: unlockables\?\.verifiedRuns\(\) \?\? null \}; \}/);
+  assert.match(main, /const officialPlayRoutes = createOfficialPlayRoutes\(\{[^}]*\n  characterUnlockOptions,\n/, 'the hero select receives the options');
+  assert.match(main, /combat\.characterId = resolveSelectedCharacterId\(state\.profiles\[connectedWallet\], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions\(\)\);/, 'game start resolves the hero on the same gates');
+  assert.match(main, /setCharacterUnlockOptionsProvider\(\(profile\) => \(connectedWallet && String\(profile\?\.wallet \?\? ''\)\.toLowerCase\(\) === String\(connectedWallet\)\.toLowerCase\(\) \? characterUnlockOptions\(\) : \{\}\)\);/);
+  assert.match(main, /renderUnlockablesPanel\(\{ store, view, viewedWallet: profileRouteState\.viewedWallet \?\? null, connectedWallet, heroEntries: \(\) => buildCharacterSelectEntries\(HERO_ROSTER_BASE, \(connectedWallet && state\.profiles\[connectedWallet\]\) \|\| \{\}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions\(\)\),/, 'the panel gets the own-profile inputs and the hero select\'s entries');
+  const play = read('apps/portal/src/routes/official-play-routes.mjs');
+  for (const call of ['resolveSelectedCharacterId(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions)', 'buildCharacterSelectEntries(HERO_ROSTER_BASE, profile ?? {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions)', 'setPreferredCharacter(profile, hero.legacyId ?? hero.id, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions)']) {
+    assert.ok(play.includes(call), call);
   }
   const css = read('apps/portal/src/styles/unlockables-panel.css');
   assert.match(css, /@media \(max-width: 380px\)/);

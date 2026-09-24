@@ -165,3 +165,50 @@ test('cached verified runs unlock Lester and Lilly before the profile loads', as
   assert.deepEqual(cards.map((card) => [card.dataset.characterId, card.disabled]), [['lit-commando', false], ['lester-original', false], ['lilly', false]], 'the cached count unlocks both cards');
   store.destroy();
 });
+
+test('a hero picked through the cached verified count survives reconnects, recorded runs and the arcade snapshot', async () => {
+  // arcade-core syncs the profile on every connect, recorded run and snapshot
+  // without options; main.js registers the hero select's options for the
+  // connected wallet so those syncs use the same verified gates (§7.9).
+  const { setCharacterUnlockOptionsProvider, setPreferredCharacter, resolveSelectedCharacterId } = await import('../apps/portal/src/hmh-character-config.mjs');
+  const { buildPlayerArcadeSnapshot, connectPlayerAccount } = await import('../apps/portal/src/arcade-core.mjs');
+  const wallet = `0x${'d'.repeat(40)}`;
+  const connect = (state) => connectPlayerAccount(state, wallet, { handle: 'LitVM Pilot' });
+  let verifiedRuns = 10;
+  setCharacterUnlockOptionsProvider((profile) => (profile?.wallet === wallet ? { hosted: true, verifiedRuns } : {}));
+  try {
+    const state = createInitialArcadeState();
+    connect(state);
+    const profile = state.profiles[wallet];
+    assert.equal(profile.progress['lester-blaster']?.paidRuns ?? 0, 0, 'no Ranked history on this device');
+    assert.deepEqual(setPreferredCharacter(profile, 'lilly', undefined, { hosted: true, verifiedRuns }), { ok: true, selectedCharacterId: 'lilly' });
+    connect(state);
+    assert.equal(profile.preferences.selectedCharacterId, 'lilly', 'a reconnect keeps the pick');
+    recordScore(state, startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' }), 300, { elapsedSeconds: 60 });
+    assert.equal(profile.preferences.selectedCharacterId, 'lilly', 'a recorded run keeps it');
+    assert.equal(buildPlayerArcadeSnapshot(state, wallet).profile.selectedCharacterId, 'lilly', 'the arcade snapshot shows it');
+    assert.equal(profile.unlocks.characters.lilly, true);
+    // The count is unknown again (the store has not loaded, nothing cached):
+    // the pick waits for it, while a run still starts as a starter.
+    verifiedRuns = null;
+    connect(state);
+    assert.equal(profile.preferences.selectedCharacterId, 'lilly');
+    assert.equal(resolveSelectedCharacterId(profile), 'lit-commando');
+    verifiedRuns = 10;
+    assert.equal(resolveSelectedCharacterId(profile), 'lilly');
+    // A verified count below the gate repairs it.
+    verifiedRuns = 3;
+    connect(state);
+    assert.equal(profile.preferences.selectedCharacterId, 'lit-commando');
+    // Another wallet's profile keeps the device-local logic.
+    assert.equal(buildCharacterUnlockMap(createPlayerProfile(`0x${'e'.repeat(40)}`)).lilly, false);
+  } finally {
+    setCharacterUnlockOptionsProvider(null);
+  }
+  // Without the provider the same reconnect falls back to the local gates.
+  const state = createInitialArcadeState();
+  connect(state);
+  setPreferredCharacter(state.profiles[wallet], 'lilly', undefined, { hosted: true, verifiedRuns: 10 });
+  connect(state);
+  assert.equal(state.profiles[wallet].preferences.selectedCharacterId, 'lit-commando');
+});

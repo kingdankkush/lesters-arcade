@@ -14,6 +14,11 @@
 // shows only while #officialApp is on the Settings step or the player's own
 // profile.
 //
+// The Heroes rows repeat the hero select's own gates: main.js passes
+// `heroEntries()`, the hero select's buildCharacterSelectEntries with the same
+// options (verified counts when hosted, this device's counts in preview), so
+// the two screens never disagree.
+//
 // Copy follows A32: no NFT, soulbound or minting wording in phase 1.
 // DOM: createElement and textContent only (§11 rule 6).
 import {
@@ -53,14 +58,67 @@ export function unlockablesNotice(snapshot) {
     return 'Preview · this device. Only the default looks are available until verified Ranked runs go live. Looks never change a run.';
   }
   if (!snapshot.wallet) return 'Sign in with a wallet to use the looks your verified achievements unlock. Looks never change a run.';
-  const saved = snapshot.source === 'cache' ? ' Showing the unlocks saved on this device.' : snapshot.source === 'none' ? ' Loading your unlocks…' : '';
-  return snapshot.authenticated
-    ? `Unlocks follow your wallet to every device, in Free and Ranked. Your picks save to your wallet.${saved}`
-    : `Unlocks follow your wallet to every device, in Free and Ranked. Sign in to save your picks to your wallet; until then they stay on this device.${saved}`;
+  const lead = 'Unlocks follow your wallet to every device, in Free and Ranked.';
+  const cached = snapshot.source === 'cache' ? ' Showing the unlocks saved on this device.' : '';
+  if (!snapshot.authenticated) {
+    // Signed out with nothing cached: the store reads nothing until sign-in.
+    return snapshot.source === 'none'
+      ? `${lead} Sign in to load your unlocks and save your picks to your wallet; until then picks stay on this device.`
+      : `${lead} Sign in to save your picks to your wallet; until then they stay on this device.${cached}`;
+  }
+  const status = snapshot.source === 'none'
+    ? (snapshot.loading ? ' Loading your unlocks…' : ' Your unlocks could not load. They load when you are back online.')
+    : cached;
+  const waiting = snapshot.unsaved ? ' Your latest picks are on this device and save to your wallet when you are back online.' : '';
+  return `${lead} Your picks save to your wallet.${status}${waiting}`;
 }
 
-// Pure view model of the panel for a store snapshot.
-export function buildUnlockablesPanelModel(snapshot) {
+// Whether the panel belongs on this view: always on Settings; on a profile only
+// when it is the connected wallet's own (no wallet in the route means "mine").
+export function isOwnUnlockablesView({ view = 'settings', viewedWallet = null, connectedWallet = null } = {}) {
+  if (view !== 'profile' || !viewedWallet) return true;
+  return String(viewedWallet).toLowerCase() === String(connectedWallet ?? '').toLowerCase();
+}
+
+// One Heroes row from the hero select's entry for that hero (preferred), or
+// from the verified counts in the snapshot when hosted. Preview without the
+// hero select's entries makes no claim and points to the hero select.
+function heroOption(item, snapshot, heroEntries) {
+  const base = { id: item.id, title: item.title, swatch: item.swatch ?? null, achievementId: null, achievementTitle: null };
+  const entry = Array.isArray(heroEntries) ? heroEntries.find((hero) => hero?.id === item.characterId) : null;
+  if (entry) {
+    const progress = entry.unlockProgress;
+    const verified = progress?.source !== 'device';
+    const required = progress?.required ?? item.requires.confirmedRuns;
+    return Object.freeze({
+      ...base,
+      status: entry.unlocked ? 'unlocked' : 'locked',
+      requirement: verified ? requirementText(item) : `Finish ${required} Ranked ${required === 1 ? 'run' : 'runs'} on this device`,
+      progress: !entry.unlocked && progress ? { current: progress.current, required: progress.required } : null,
+    });
+  }
+  if (!snapshot?.hosted) return Object.freeze({ ...base, status: 'hero-select', requirement: '', progress: null });
+  const state = unlockState(item, snapshot.unlocks ?? {});
+  return Object.freeze({
+    ...base,
+    status: state.unlocked ? 'unlocked' : 'locked',
+    requirement: requirementText(item),
+    progress: state.reason === 'verified-runs-required' ? { current: state.current, required: state.required } : null,
+  });
+}
+
+// Chikun coats are canvas filters. An engine without CanvasRenderingContext2D
+// .filter draws the classic coat, so the Coat slot says so instead of implying
+// the look shows. Outside a browser (no canvas at all) nothing is claimed.
+export function canvasFilterSupported(scope = globalThis) {
+  const Context = scope?.CanvasRenderingContext2D;
+  return typeof Context !== 'function' || 'filter' in Context.prototype;
+}
+const NOTES = Object.freeze({ coat: 'This browser draws the classic coat. Update your browser to see coat colours.' });
+
+// Pure view model of the panel for a store snapshot. `heroEntries` is the hero
+// select's entry list (see heroOption); `canvasFilter` whether coats can show.
+export function buildUnlockablesPanelModel(snapshot, { heroEntries = null, canvasFilter = true } = {}) {
   const unlocks = snapshot?.unlocks ?? {};
   const selection = snapshot?.selection ?? {};
   const optionFor = (item, selectedId) => {
@@ -79,7 +137,7 @@ export function buildUnlockablesPanelModel(snapshot) {
     });
   };
   const games = Object.entries(COSMETIC_SLOTS).map(([gameId, slots]) => {
-    const heroes = UNLOCKABLES.filter((item) => item.gameId === gameId && item.kind === 'character').map((item) => optionFor(item, null));
+    const heroes = UNLOCKABLES.filter((item) => item.gameId === gameId && item.kind === 'character').map((item) => heroOption(item, snapshot, heroEntries));
     return Object.freeze({
       gameId,
       title: UNLOCKABLES_GAME_TITLES[gameId],
@@ -92,6 +150,7 @@ export function buildUnlockablesPanelModel(snapshot) {
         return Object.freeze({
           slot,
           label: UNLOCKABLES_SLOT_LABELS[slot],
+          note: slot === 'coat' && !canvasFilter ? NOTES.coat : null,
           selectedId,
           options: Object.freeze([
             Object.freeze({ id: null, title: DEFAULT_LOOKS[slot], swatch: null, status: selectedId === null ? 'selected' : 'unlocked', requirement: '', achievementId: null, achievementTitle: null, progress: null }),
@@ -128,12 +187,17 @@ let serial = 0;
 const panels = new WeakMap();
 
 // Renders (or re-renders) the panel after `after` (the route grid). `view` is
-// 'settings' or 'profile'; `own` is false on another wallet's profile, which
-// hides the panel. `openAchievements()` shows the player's own profile.
+// 'settings' or 'profile'; on another wallet's profile (`viewedWallet` is not
+// `connectedWallet`) the panel hides. `heroEntries()` returns the hero select's
+// entries for the Heroes rows. `openAchievements()` shows the own profile.
 export function renderUnlockablesPanel({
   store,
   view = 'settings',
-  own = true,
+  viewedWallet = null,
+  connectedWallet = null,
+  own = isOwnUnlockablesView({ view, viewedWallet, connectedWallet }),
+  heroEntries = null,
+  canvasFilter = canvasFilterSupported(),
   documentRef = globalThis.document,
   after,
   app = null,
@@ -160,6 +224,8 @@ export function renderUnlockablesPanel({
   state.store = store;
   state.app = app;
   state.openAchievements = openAchievements;
+  state.heroEntries = typeof heroEntries === 'function' ? heroEntries : null;
+  state.canvasFilter = canvasFilter !== false;
   state.requestFrame = requestFrame;
   state.documentRef = documentRef;
 
@@ -180,7 +246,9 @@ export function renderUnlockablesPanel({
 function paint(host, state) {
   const { documentRef, store } = state;
   const snapshot = store.snapshot();
-  const model = buildUnlockablesPanelModel(snapshot);
+  let heroEntries = null;
+  try { heroEntries = state.heroEntries?.() ?? null; } catch { heroEntries = null; }
+  const model = buildUnlockablesPanelModel(snapshot, { heroEntries, canvasFilter: state.canvasFilter });
   const body = [];
 
   const header = documentRef.createElement('header');
@@ -220,11 +288,11 @@ function renderHeroes(documentRef, heroes) {
   for (const hero of heroes) {
     const item = documentRef.createElement('li');
     item.className = 'unlockables-hero';
-    item.dataset.state = hero.status === 'locked' ? 'locked' : 'unlocked';
+    item.dataset.state = hero.status;
     item.append(text(documentRef, 'strong', hero.title));
     const detail = hero.status === 'locked'
       ? `Locked · ${hero.requirement}${hero.progress ? ` (${hero.progress.current}/${hero.progress.required})` : ''}`
-      : 'Unlocked · choose in hero select';
+      : hero.status === 'unlocked' ? 'Unlocked · choose in hero select' : 'See the hero select';
     item.append(text(documentRef, 'small', detail));
     list.append(item);
   }
@@ -238,6 +306,7 @@ function renderSlot(host, state, game, slot) {
   fieldset.className = 'unlockables-slot';
   fieldset.dataset.slot = slot.slot;
   fieldset.append(text(documentRef, 'legend', slot.label, 'unlockables-slot-label'));
+  if (slot.note) fieldset.append(text(documentRef, 'p', slot.note, 'unlockables-requirement'));
   const list = documentRef.createElement('ul');
   list.className = 'unlockables-options';
   const name = `unlockables-${game.gameId}-${slot.slot}`;
@@ -334,7 +403,7 @@ async function choose(host, state, gameId, slot, option) {
   } else if (result.saved === 'wallet') {
     state.status = `${label} saved to your wallet.`;
   } else if (result.saved === 'device') {
-    state.status = result.error ? `${label} saved on this device. Your wallet copy will update when you are signed in and online.` : `${label} saved on this device.`;
+    state.status = result.error ? `${label} saved on this device. It saves to your wallet when you are signed in and online.` : `${label} saved on this device.`;
   } else {
     state.status = `${label} applies for this visit; this browser cannot store it.`;
   }

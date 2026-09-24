@@ -222,6 +222,30 @@ export function verifiedRunsFor(options = {}) {
   return Number.isSafeInteger(count) && count >= 0 ? count : 0;
 }
 
+// Unlockables slice (contract §7.9, A7): the portal registers where a profile's
+// gate options come from, so calls that pass no options (arcade-core's profile
+// syncs on connect, after every recorded run and in the arcade snapshot) apply
+// the hero select's gates, with the cached verified count, to the connected
+// wallet. With no provider, or for a profile it does not name, `{}` keeps the
+// device-local logic.
+let characterUnlockOptionsProvider = null;
+const providedOptions = new WeakSet();
+export function setCharacterUnlockOptionsProvider(provider) {
+  characterUnlockOptionsProvider = typeof provider === 'function' ? provider : null;
+}
+function providedUnlockOptions(profile) {
+  let options = null;
+  try { options = characterUnlockOptionsProvider?.(profile) ?? null; } catch { options = null; }
+  if (!options || typeof options !== 'object') return {};
+  const copy = { ...options };
+  providedOptions.add(copy);
+  return copy;
+}
+// Hosted gates whose verified count is not known yet (no E6 answer, no cache).
+function verifiedCountPending(options = {}) {
+  return verifiedRunsFor(options) !== null && (options.verifiedRuns === null || options.verifiedRuns === undefined);
+}
+
 function gateProgress(unlock = {}, profile = {}, verifiedRuns = null) {
   const gate = unlock.gate ?? (Number.isFinite(Number(unlock.paidRunsRequired))
     ? { type: 'ranked-matches-played', count: Number(unlock.paidRunsRequired) }
@@ -258,7 +282,7 @@ function unlockEarned(unlock = {}, profile = {}, earned = new Set(), verifiedRun
   return false;
 }
 
-export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = providedUnlockOptions(profile)) {
   const verifiedRuns = verifiedRunsFor(options);
   const starterIds = configuredStarterIds(config);
   const earned = new Set((profile.achievements ?? []).map((id) => normalizeId(id)));
@@ -272,19 +296,25 @@ export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES
   return Object.freeze(unlocks);
 }
 
-export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = providedUnlockOptions(profile)) {
   profile.unlocks ??= {};
   profile.unlocks.characters = clone(buildCharacterUnlockMap(profile, config, options));
   profile.preferences ??= {};
   const starters = configuredStarterIds(config);
   const fallback = starters[0] ?? normalizeId(config.starterLegacyId);
-  if (!profile.preferences.selectedCharacterId || !profile.unlocks.characters[normalizeId(profile.preferences.selectedCharacterId)]) {
+  // A sync with the provider's options (arcade-core passes none) runs on every
+  // connect, run and snapshot: while the hosted count is still unknown the
+  // saved pick waits for it instead of falling back to the starter.
+  // resolveSelectedCharacterId still refuses a locked pick at every use, and
+  // explicit options keep the repair.
+  const waiting = providedOptions.has(options) && Boolean(profile.preferences.selectedCharacterId) && verifiedCountPending(options);
+  if (!waiting && (!profile.preferences.selectedCharacterId || !profile.unlocks.characters[normalizeId(profile.preferences.selectedCharacterId)])) {
     profile.preferences.selectedCharacterId = fallback;
   }
   return profile.unlocks.characters;
 }
 
-export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = providedUnlockOptions(profile)) {
   const unlocks = buildCharacterUnlockMap(profile, config, options);
   const preferred = normalizeId(profile.preferences?.selectedCharacterId ?? config.starterLegacyId);
   if (unlocks[preferred]) return preferred;
@@ -292,7 +322,7 @@ export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HER
   return starters.find((id) => unlocks[id]) ?? normalizeId(config.starterLegacyId);
 }
 
-export function setPreferredCharacter(profile = {}, characterId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+export function setPreferredCharacter(profile = {}, characterId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = providedUnlockOptions(profile)) {
   const desired = normalizeId(characterId);
   const unlocks = buildCharacterUnlockMap(profile, config, options);
   if (!unlocks[desired]) {
@@ -303,7 +333,7 @@ export function setPreferredCharacter(profile = {}, characterId, config = HARD_M
   return { ok: true, selectedCharacterId: desired };
 }
 
-export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = {}) {
+export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, options = providedUnlockOptions(profile)) {
   const verifiedRuns = verifiedRunsFor(options);
   const unlocks = buildCharacterUnlockMap(profile, config, options);
   const selectedCharacterId = resolveSelectedCharacterId(profile, config, options);

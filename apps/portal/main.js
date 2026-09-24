@@ -154,6 +154,7 @@ import {
   HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
   playableCharacterStatIdentityFor,
   resolveSelectedCharacterId,
+  setCharacterUnlockOptionsProvider,
   setPreferredCharacter,
 } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
@@ -16223,9 +16224,8 @@ window.addEventListener('orientationchange', () => {
   }, 200);
 });
 
-// Unlockables (contract §7.9, A7): the per-wallet unlock cache and cosmetic picks load with import()
-// and listen for lesters:wallet-session, lesters:profile-changed and lesters:ranked-run themselves.
-// `var` so render paths that run before the store resolves read null instead of a TDZ error.
+// Unlockables (contract §7.9, A7): the per-wallet unlock cache and cosmetic picks load with import() and listen for
+// the lesters:* events themselves. `var` so render paths before the store resolves read null, not a TDZ error.
 var unlockables = null;
 var unlockablesReady = import('./src/unlockables-store.mjs').then(({ createUnlockablesStore }) => {
   unlockables = createUnlockablesStore({ hosted: HOSTED_PROFILE_SYNC, storage: ARCADE_STORAGE, indexApi, windowRef: window, getWallet: () => connectedWallet, isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet), getCachedSelfProfile: (wallet) => officialProfileRoute.cachedSelfProfile(wallet) });
@@ -16233,9 +16233,11 @@ var unlockablesReady = import('./src/unlockables-store.mjs').then(({ createUnloc
   return unlockables;
 }).catch((error) => { console.warn('[Unlockables]', error?.message || error); return null; });
 function characterUnlockOptions() { return { hosted: HOSTED_PROFILE_SYNC, verifiedRuns: unlockables?.verifiedRuns() ?? null }; }
+// arcade-core's option-less profile syncs (connect, recorded runs, the arcade snapshot) use the same hero gates.
+setCharacterUnlockOptionsProvider((profile) => (connectedWallet && String(profile?.wallet ?? '').toLowerCase() === String(connectedWallet).toLowerCase() ? characterUnlockOptions() : {}));
 function childCosmetics(gameId) { const cosmetics = unlockables?.cosmeticsFor(gameId); return cosmetics ? { cosmetics } : {}; }
 function showUnlockablesPanel(view) {
-  void Promise.all([unlockablesReady, import('./src/routes/unlockables-panel.mjs')]).then(([store, { renderUnlockablesPanel }]) => store && renderUnlockablesPanel({ store, view, own: view === 'settings' || !profileRouteState.viewedWallet || String(profileRouteState.viewedWallet).toLowerCase() === connectedWallet, documentRef: document, after: dom.officialCabinetGrid, app: dom.officialApp, openAchievements: () => setOfficialView('profile', { wallet: null }) })).catch((error) => console.warn('[Unlockables panel]', error?.message || error));
+  void Promise.all([unlockablesReady, import('./src/routes/unlockables-panel.mjs')]).then(([store, { renderUnlockablesPanel }]) => store && renderUnlockablesPanel({ store, view, viewedWallet: profileRouteState.viewedWallet ?? null, connectedWallet, heroEntries: () => buildCharacterSelectEntries(HERO_ROSTER_BASE, (connectedWallet && state.profiles[connectedWallet]) || {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions()), documentRef: document, after: dom.officialCabinetGrid, app: dom.officialApp, openAchievements: () => setOfficialView('profile', { wallet: null }) })).catch((error) => console.warn('[Unlockables panel]', error?.message || error));
 }
 
 // Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
