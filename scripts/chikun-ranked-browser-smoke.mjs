@@ -353,8 +353,26 @@ async function runPreviewSmoke() {
     if (ranked) {
       // The parent results screen owns Ranked sharing; the child does not know the session key (§7.4).
       assert.equal(resultUi.shareVisible, false, 'the child share row is hidden for Ranked');
+      assert.equal(await frame.locator('#shareRow').isHidden(), true, 'the child share menu is hidden for Ranked');
       assert.match(resultUi.eyebrow, /Ranked flight complete/i);
       assert.match(resultUi.copy, /Ranked run sent to Lester.s Arcade for verification/i);
+      assert.equal(await frame.locator('#modeLabel').textContent(), 'Ranked Mode · Verified Flight');
+      // The child's Ranked share label is now 'Ranked run' (it no longer claims 'Replay Verified Ranked'
+      // before the server has verified anything). No player can reach it (the button is hidden), so the
+      // smoke fires the hidden button's own handler to read the text it would share.
+      await frame.locator('#shareRunButton').evaluate((button) => button.click());
+      await frame.locator('body').evaluate(() => new Promise((resolve, reject) => {
+        const deadline = performance.now() + 5_000;
+        const check = () => {
+          if (globalThis.__chikunSharedPayload) resolve(true);
+          else if (performance.now() >= deadline) reject(new Error('the hidden Ranked share handler produced no text'));
+          else setTimeout(check, 50);
+        };
+        check();
+      }));
+      const rankedShare = await frame.locator('body').evaluate(() => globalThis.__chikunSharedPayload);
+      assert.match(rankedShare?.text ?? '', /\. Ranked run on @LestersArcade$/);
+      assert.doesNotMatch(rankedShare?.text ?? '', /Replay Verified|verified|0x[a-f0-9]{40}|session-|#/i);
     } else {
       assert.equal(resultUi.shareVisible, true);
       assert.ok(resultUi.shareRight <= resultUi.viewportWidth, `Chikun share control overflows: ${JSON.stringify(resultUi)}`);
@@ -373,6 +391,9 @@ async function runPreviewSmoke() {
     await frameNode.screenshot({ path: resolve(dirname(evidencePath), `chikun-${mode}-result.png`) });
     if (ranked) {
       await page.waitForFunction(() => /Canonical Ranked preview saved locally[\s\S]*No transaction was sent/i.test(document.querySelector('#officialGameStateCopy')?.textContent ?? ''), null, { timeout: 10_000 });
+      // The 1.7.0 line 'accepted for your profile' is gone: preview saves locally, live follows settlement.
+      assert.doesNotMatch(await page.locator('#officialGameStateCopy').textContent(), /accepted for your profile/i);
+      assert.equal(await page.locator('.cabinet-results-reopen').isVisible(), true, 'View results stays over the cabinet after Escape');
       // A16: Run Again after a Ranked run opens the Ranked entry modal (preview: approves without payment).
       await frame.locator('#restartButton').click();
       await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible', timeout: 10_000 });
