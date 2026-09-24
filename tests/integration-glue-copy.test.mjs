@@ -58,6 +58,8 @@ const ALLOWED = [
   { file: 'apps/portal/src/stacked-host.mjs', text: STACKED_RANKED_RESULT_COPY.preview, why: 'stackedRankedResultCopy picks it only when settlementLive is false' },
   { file: 'apps/stacked/src/main.mjs', text: 'Free Mode is active. Practice medals stay on this device.', why: 'Free medals are local in both states' },
   { file: 'apps/stacked/src/main.mjs', text: 'Take your time. This Free run stays on this device.', why: 'the Free pause overlay; Free runs are local in both states' },
+  { file: 'apps/portal/src/routes/unlockables-panel.mjs', text: '… Sign in to load your unlocks and save your picks to your wallet; until then picks stay on this device.', why: 'signed-out cosmetic picks are device-local in both flag states (unlockables-store keeps them in localStorage until a signed-in pick uploads them)' },
+  { file: 'apps/portal/src/routes/unlockables-panel.mjs', text: '… Sign in to save your picks to your wallet; until then they stay on this device.…', why: 'signed-out cosmetic picks are device-local in both flag states' },
 ];
 
 // Every string literal and template (its static text) with the path of

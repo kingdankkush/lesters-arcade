@@ -1,8 +1,8 @@
 // Runbook step 3 launcher (contract §11 rule 13, §13): runs scripts/deploy-contracts.mjs --broadcast
 // with the deployer key read inside this process and handed ONLY to that one child process.
 //
-//   node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator
-//   node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator \
+//   node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field keys.operator
+//   node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field keys.operator \
 //        --broadcast --confirm DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441
 //
 // scripts/deploy-contracts.mjs reads DEPLOYER_PRIVATE_KEY and LITVM_DEPLOY_CONFIRM from its environment

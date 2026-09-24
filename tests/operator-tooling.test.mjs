@@ -522,8 +522,9 @@ test('vercel secrets travel only over stdin and legacy names block the run', asy
 test('the deploy launcher hands the deployer key only to the deploy process', async () => {
   const deployer = chain.wallets.operator.address;
   const keyFile = join(dir, 'deployer-keys.json');
-  writeFileSync(keyFile, JSON.stringify({ operator: { address: deployer, privateKey: keys.operator } }));
-  const keyArgs = ['--key-file', keyFile, '--key-field', 'operator'];
+  // Same shape as the owner's 2026-09-22 vault file: service keys nested under `keys`.
+  writeFileSync(keyFile, JSON.stringify({ network: 'LiteForge', keys: { operator: { address: deployer, privateKey: keys.operator } } }));
+  const keyArgs = ['--key-file', keyFile, '--key-field', 'keys.operator'];
   const run = async (argv, options = {}) => {
     const lines = [];
     const spawned = [];
@@ -539,7 +540,7 @@ test('the deploy launcher hands the deployer key only to the deploy process', as
 
   // The runbook's step 3 is exactly this tested invocation.
   const runbook = readFileSync(join(root, 'docs', 'web3', 'contract-overhaul-20260916.md'), 'utf8');
-  assert.ok(runbook.includes(`node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator --broadcast --confirm ${DEPLOY_BROADCAST_CONFIRM}`), 'runbook step 3 command');
+  assert.ok(runbook.includes(`node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field keys.operator --broadcast --confirm ${DEPLOY_BROADCAST_CONFIRM}`), 'runbook step 3 command');
   // The phrase is the deploy script's own, and it is checked before the key is read.
   assert.match(readFileSync(join(root, 'scripts', 'deploy-contracts.mjs'), 'utf8'), new RegExp(`const BROADCAST_CONFIRM = '${DEPLOY_BROADCAST_CONFIRM}';`));
   const noPhrase = await run(['--key-env', 'NOT_SET_ANYWHERE', '--broadcast']);
