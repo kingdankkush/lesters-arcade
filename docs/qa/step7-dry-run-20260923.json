@@ -1,0 +1,1064 @@
+{
+  "schema": "lesters-step7-dry-run-v2",
+  "generatedAt": "2026-09-24T01:23:21.035Z",
+  "head": "46901768",
+  "scriptSha256": "ca15f1f1a0a64304aa7a9cf5806d161dc28bd920dc570ae74555feb779d5321a",
+  "command": "node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway",
+  "note": "Throwaway worktree under the OS temp directory, removed at the end. Nothing was committed, pushed or deployed; the deployment record is a local Hardhat deploy. Local paths are written as <throwaway>, <repo> and ~.",
+  "base": {
+    "audits": [
+      {
+        "id": "release-facts --check",
+        "command": "node scripts/hmh-release-facts.mjs --check",
+        "exitCode": 1,
+        "ms": 252,
+        "output": [
+          "Stale or missing fact sheet: hmh-fact-sheet.json"
+        ],
+        "wrote": [],
+        "checks": [
+          "docs/releases/hmh-fact-sheet.json",
+          "docs/releases/hmh-fact-sheet.md"
+        ]
+      },
+      {
+        "id": "portal-pages",
+        "command": "node scripts/build-portal-pages.mjs",
+        "exitCode": 0,
+        "ms": 273,
+        "output": [
+          "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (preview copy)."
+        ],
+        "wrote": []
+      },
+      {
+        "id": "release-facts --write",
+        "command": "node scripts/hmh-release-facts.mjs --write",
+        "exitCode": 0,
+        "ms": 252,
+        "output": [
+          "    \"originalIdsInFeatures\": 67,",
+          "    \"originalRegisterIds\": 99,",
+          "    \"states\": {",
+          "      \"public-recorded\": 1,",
+          "      \"local\": 9,",
+          "      \"unfinished\": 40,",
+          "      \"gated\": 5",
+          "    }",
+          "  },",
+          "  \"sourceSnapshotSha256\": \"fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa\",",
+          "  \"currentCandidateCertified\": false",
+          "}"
+        ],
+        "wrote": [
+          "docs/releases/hmh-fact-sheet.json",
+          "docs/releases/hmh-fact-sheet.md"
+        ]
+      },
+      {
+        "id": "design:web3-audit",
+        "command": "npm run design:web3-audit",
+        "exitCode": 0,
+        "ms": 1809,
+        "output": [
+          "> lesters-arcade@0.3.1 design:web3-audit",
+          "> node scripts/hmh-web3-settlement-audit.mjs",
+          "HMH Web3 settlement audit written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.json",
+          "HMH Web3 settlement markdown written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.md",
+          "Status: PASS; checks 10/10"
+        ],
+        "wrote": [
+          "docs/qa/hard-money-heroes-web3-settlement-audit.json",
+          "docs/qa/hard-money-heroes-web3-settlement-audit.md"
+        ]
+      },
+      {
+        "id": "design:web3-live",
+        "command": "npm run design:web3-live",
+        "exitCode": 0,
+        "ms": 826,
+        "output": [
+          "> lesters-arcade@0.3.1 design:web3-live",
+          "> node scripts/hmh-web3-live-readiness.mjs",
+          "HMH Web3 live readiness written: <throwaway>\\docs\\web3\\hmh-web3-live-readiness.json",
+          "HMH Web3 live readiness markdown written: <throwaway>\\docs\\web3\\hmh-web3-live-readiness.md",
+          "Status: PARTIAL; gates 3/4; blocked 1"
+        ],
+        "wrote": [
+          "docs/web3/hmh-web3-live-readiness.json",
+          "docs/web3/hmh-web3-live-readiness.md"
+        ]
+      },
+      {
+        "id": "design:security-audit",
+        "command": "npm run design:security-audit",
+        "exitCode": 0,
+        "ms": 1061,
+        "output": [
+          "> lesters-arcade@0.3.1 design:security-audit",
+          "> node scripts/hmh-security-audit-sweep.mjs",
+          "HMH security audit written: <throwaway>\\docs\\security\\hard-money-heroes-security-audit.json",
+          "HMH security audit markdown written: <throwaway>\\docs\\security\\hard-money-heroes-security-audit.md",
+          "Status: PASS; findings 0; checks 5/5"
+        ],
+        "wrote": [
+          "docs/security/hard-money-heroes-security-audit.json",
+          "docs/security/hard-money-heroes-security-audit.md"
+        ]
+      }
+    ],
+    "driftAtBase": [
+      {
+        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.json",
+        "by": "npm run design:web3-audit",
+        "removed": [
+          "\"submitSession\"",
+          "\"detail\": \"addresses populated; settlement live=false; unverified writes remain gated\"",
+          "\"detail\": \"on-chain score publish is attached to game-over submission path\"",
+          "\"detail\": \"leaderboard path reads chain records and maintains cadence boards\"",
+          "\"detail\": \"plan methods: setProfile, submitSession\"",
+          "\"passCount\": 9,"
+        ],
+        "added": [
+          "\"achievementRegistries\": {",
+          "}",
+          "\"submitVerifiedSession\"",
+          "{",
+          "\"pass\": true,",
+          "},"
+        ],
+        "removedCount": 13,
+        "addedCount": 21
+      },
+      {
+        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.md",
+        "by": "npm run design:web3-audit",
+        "removed": [
+          "- Settlement methods in fixture plan: setProfile, submitSession",
+          "| safe-ranked-live-gate | PASS | addresses populated; settlement live=false; unverified writes remain gated |",
+          "| gameover-submit-only | PASS | on-chain score publish is attached to game-over submission path |",
+          "| leaderboard-readback | PASS | leaderboard path reads chain records and maintains cadence boards |",
+          "| settlement-plan-methods-match-abi | PASS | plan methods: setProfile, submitSession |",
+          "| gameRegistry | 0x09C6f94e73f6aA16177549952Dc47dB5AEb83406 |"
+        ],
+        "added": [
+          "- Settlement methods in fixture plan: setProfile, submitVerifiedSession",
+          "| gameover-submit-only | PASS | finished Ranked runs settle through the relayed settlement client from the game-over path; no player-signed submit and no /api/attest call |",
+          "| ranked-identity-single-source | PASS | settlement builds its session identity with rankedIdentityFor (A10), the per-game season the entry key uses |",
+          "| leaderboard-readback | PASS | leaderboard path maintains cadence boards |",
+          "| settlement-plan-methods-match-abi | PASS | plan methods: setProfile, submitVerifiedSession |",
+          "| achievementRegistries | [object Object] |"
+        ],
+        "removedCount": 11,
+        "addedCount": 11
+      },
+      {
+        "path": "docs/releases/hmh-fact-sheet.json",
+        "by": "node scripts/hmh-release-facts.mjs --write",
+        "removed": [
+          "\"recordedProductionMarker\": \"lesters-arcade-v33-hmh-playable-update\",",
+          "\"declaredVersion\": \"0.5.0\",",
+          "\"currentFileMatches\": 8,",
+          "\"sourceSnapshotSha256\": \"dbf463e7d682a14613eff99b503713cd78cca9b194377e54d604c6eabc555eef\",",
+          "\"sha256\": \"0ad24f5c6514ce623b7b8bf0ccef310c6962c5ca1d93c5794eb912440b5b8429\",",
+          "\"bytes\": 554"
+        ],
+        "added": [
+          "\"recordedProductionMarker\": \"lesters-arcade-v52-owner-round\",",
+          "\"declaredVersion\": \"0.9.0\",",
+          "\"apps/portal/src/arcade-core.mjs\",",
+          "\"apps/portal/main.js\",",
+          "\"apps/portal/styles-arcade-polish.css\",",
+          "\"currentFileMatches\": 1,"
+        ],
+        "removedCount": 30,
+        "addedCount": 37
+      },
+      {
+        "path": "docs/releases/hmh-fact-sheet.md",
+        "by": "node scripts/hmh-release-facts.mjs --write",
+        "removed": [
+          "| Chikun's Escape | chikun / 0.5.0 | playable | true | Not performed |",
+          "- README-recorded production marker: lesters-arcade-v33-hmh-playable-update. Not fetched by this offline generator.",
+          "| Parent Free challenges | source-reviewed; combined build/browser/release pending | 8/10 | Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself a de",
+          "| Parent profile and achievement truth | SOURCE_REVIEWED_CORRECTED_BUILD_BROWSER_PENDING | 5/8 | Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself",
+          "Input snapshot SHA-256: `dbf463e7d682a14613eff99b503713cd78cca9b194377e54d604c6eabc555eef`",
+          "| apps/portal/games/chikun/game.manifest.json | 0ad24f5c6514ce623b7b8bf0ccef310c6962c5ca1d93c5794eb912440b5b8429 | 554 |"
+        ],
+        "added": [
+          "| Chikun's Escape | chikun / 0.9.0 | playable | true | Not performed |",
+          "- README-recorded production marker: lesters-arcade-v52-owner-round. Not fetched by this offline generator.",
+          "| Parent Free challenges | source-reviewed; combined build/browser/release pending | 5/10 | Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself a de",
+          "| Parent profile and achievement truth | SOURCE_REVIEWED_CORRECTED_BUILD_BROWSER_PENDING | 1/8 | Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself",
+          "Input snapshot SHA-256: `fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa`",
+          "| apps/portal/games/chikun/game.manifest.json | ad3fc63aa65fa8057d36fe6f7836ae01883a5b5215af8d2da5b70902601f19f7 | 592 |"
+        ],
+        "removedCount": 18,
+        "addedCount": 18
+      },
+      {
+        "path": "docs/security/hard-money-heroes-security-audit.json",
+        "by": "npm run design:security-audit",
+        "removed": [
+          "\"filesScanned\": 1070,"
+        ],
+        "added": [
+          "\"filesScanned\": 1374,"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/security/hard-money-heroes-security-audit.md",
+        "by": "npm run design:security-audit",
+        "removed": [
+          "- Files scanned: 1070"
+        ],
+        "added": [
+          "- Files scanned: 1374"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/web3/hmh-web3-live-readiness.json",
+        "by": "npm run design:web3-live",
+        "removed": [],
+        "added": [
+          "\"GameRegistry cabinet approval path is not live-gated.\","
+        ],
+        "removedCount": 0,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/web3/hmh-web3-live-readiness.md",
+        "by": "npm run design:web3-live",
+        "removed": [
+          "| on-chain-registry-economy | BLOCKED | — | SplitConfig/economy settings are not production-approved.; Legal/brand/economy approval is required before real-value launch. |"
+        ],
+        "added": [
+          "| on-chain-registry-economy | BLOCKED | — | GameRegistry cabinet approval path is not live-gated.; SplitConfig/economy settings are not production-approved.; Legal/brand/economy approval is required b"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      }
+    ]
+  },
+  "addressModule": {
+    "status": "deployed",
+    "command": "npm run contracts:addresses -- --deployed",
+    "startBlock": 1,
+    "deployer": "0x6ac08bed727a6951d755f0674f096e6a8ac06bff",
+    "addresses": {
+      "gameRegistry": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+      "playerProfileRegistry": "0x3EB9e9F2620940496A2b8Ed6f7384e6687587c94",
+      "arcadeRankedEntry": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+      "scoreSubmissionRegistry": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "achievementRegistries": {
+        "lester-blaster": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737",
+        "chikun": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93",
+        "stacked": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7"
+      }
+    },
+    "note": "Deployed on the in-process chain from the real deployer address (impersonated) at nonce 0, so the addresses equal the §8.1 prediction."
+  },
+  "step3": {
+    "changedByDeploy": [
+      "apps/portal/src/generated/litvm-addresses.mjs",
+      "contracts/deployment-record.hardened.json"
+    ],
+    "gate": {
+      "status": "FAIL",
+      "counts": {
+        "tests": 4643,
+        "failed": 55,
+        "passed": 4588,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 4576,
+        "suites": 8
+      },
+      "expectedFailureCount": 51,
+      "unexpected": 4,
+      "missing": 0,
+      "other": []
+    },
+    "audits": [
+      {
+        "id": "release-facts --check",
+        "command": "node scripts/hmh-release-facts.mjs --check",
+        "exitCode": 1,
+        "ms": 206,
+        "output": [
+          "Stale or missing fact sheet: hmh-fact-sheet.json"
+        ],
+        "wrote": [],
+        "checks": [
+          "docs/releases/hmh-fact-sheet.json",
+          "docs/releases/hmh-fact-sheet.md"
+        ]
+      },
+      {
+        "id": "portal-pages",
+        "command": "node scripts/build-portal-pages.mjs",
+        "exitCode": 0,
+        "ms": 226,
+        "output": [
+          "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (preview copy)."
+        ],
+        "wrote": []
+      },
+      {
+        "id": "release-facts --write",
+        "command": "node scripts/hmh-release-facts.mjs --write",
+        "exitCode": 0,
+        "ms": 188,
+        "output": [
+          "    \"originalIdsInFeatures\": 67,",
+          "    \"originalRegisterIds\": 99,",
+          "    \"states\": {",
+          "      \"public-recorded\": 1,",
+          "      \"local\": 9,",
+          "      \"unfinished\": 40,",
+          "      \"gated\": 5",
+          "    }",
+          "  },",
+          "  \"sourceSnapshotSha256\": \"fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa\",",
+          "  \"currentCandidateCertified\": false",
+          "}"
+        ],
+        "wrote": [
+          "docs/releases/hmh-fact-sheet.json",
+          "docs/releases/hmh-fact-sheet.md"
+        ]
+      },
+      {
+        "id": "design:web3-audit",
+        "command": "npm run design:web3-audit",
+        "exitCode": 0,
+        "ms": 768,
+        "output": [
+          "> lesters-arcade@0.3.1 design:web3-audit",
+          "> node scripts/hmh-web3-settlement-audit.mjs",
+          "HMH Web3 settlement audit written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.json",
+          "HMH Web3 settlement markdown written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.md",
+          "Status: PASS; checks 10/10"
+        ],
+        "wrote": [
+          "docs/qa/hard-money-heroes-web3-settlement-audit.json",
+          "docs/qa/hard-money-heroes-web3-settlement-audit.md"
+        ]
+      },
+      {
+        "id": "design:web3-live",
+        "command": "npm run design:web3-live",
+        "exitCode": 0,
+        "ms": 646,
+        "output": [
+          "> lesters-arcade@0.3.1 design:web3-live",
+          "> node scripts/hmh-web3-live-readiness.mjs",
+          "HMH Web3 live readiness written: <throwaway>\\docs\\web3\\hmh-web3-live-readiness.json",
+          "HMH Web3 live readiness markdown written: <throwaway>\\docs\\web3\\hmh-web3-live-readiness.md",
+          "Status: PARTIAL; gates 3/4; blocked 1"
+        ],
+        "wrote": [
+          "docs/web3/hmh-web3-live-readiness.json",
+          "docs/web3/hmh-web3-live-readiness.md"
+        ]
+      },
+      {
+        "id": "design:security-audit",
+        "command": "npm run design:security-audit",
+        "exitCode": 0,
+        "ms": 1017,
+        "output": [
+          "> lesters-arcade@0.3.1 design:security-audit",
+          "> node scripts/hmh-security-audit-sweep.mjs",
+          "HMH security audit written: <throwaway>\\docs\\security\\hard-money-heroes-security-audit.json",
+          "HMH security audit markdown written: <throwaway>\\docs\\security\\hard-money-heroes-security-audit.md",
+          "Status: PASS; findings 0; checks 5/5"
+        ],
+        "wrote": [
+          "docs/security/hard-money-heroes-security-audit.json",
+          "docs/security/hard-money-heroes-security-audit.md"
+        ]
+      }
+    ],
+    "failures": {
+      "caused": [
+        {
+          "file": "tests/name-claim-prompt.test.mjs",
+          "name": "the toast is skipped until the contracts are deployed",
+          "message": "the generated LITVM_DEPLOYMENT is not deployed at this commit\n+ actual - expected\n\n+ null\n- 'not-deployed'\n",
+          "expected": "not-deployed",
+          "actual": null,
+          "line": 175,
+          "source": "assert.equal(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is not deployed at this commit');"
+        }
+      ],
+      "preExisting": [
+        {
+          "file": "tests/portal-trust-copy.test.mjs",
+          "name": "main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC",
+          "note": "fails before this step too"
+        },
+        {
+          "file": "tests/ranked-results.test.mjs",
+          "name": "main.js mounts the screen from exactly one lazy listener",
+          "note": "fails before this step too"
+        },
+        {
+          "file": "tests/wallet-session.test.mjs",
+          "name": "a token stored by the 1.7.0 flow is discarded instead of restored or sent",
+          "note": "fails before this step too"
+        }
+      ],
+      "missingLedger": []
+    },
+    "edits": [
+      {
+        "file": "tests/name-claim-prompt.test.mjs",
+        "line": 174,
+        "before": "  const byDefault = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, documentRef, mount });\n  assert.equal(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is not deployed at this commit');\n  assert.equal(indexApi.calls.profile.length, 0, 'no request either');\n  assert.equal(mount.children.length, 0);",
+        "after": "  assert.equal(indexApi.calls.profile.length, 0, 'no request either');\n  assert.equal(mount.children.length, 0);\n  // Since runbook step 3 the generated LITVM_DEPLOYMENT is deployed, so the default is no longer skipped.\n  const byDefault = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, documentRef, mount: element('body') });\n  assert.notEqual(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is deployed since runbook step 3');",
+        "reason": "the default reads the generated module, which step 3 makes deployed",
+        "applied": true,
+        "error": null,
+        "verified": true
+      }
+    ],
+    "unexplainedFailures": [],
+    "generatedDocs": [
+      {
+        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.json",
+        "by": "npm run design:web3-audit",
+        "removed": [
+          "\"detail\": \"address module predicted; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresses); unverified writes"
+        ],
+        "added": [
+          "\"detail\": \"address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresses); unverified writes "
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.md",
+        "by": "npm run design:web3-audit",
+        "removed": [
+          "| safe-ranked-live-gate | PASS | address module predicted; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven address"
+        ],
+        "added": [
+          "| safe-ranked-live-gate | PASS | address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresse"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/web3/hmh-web3-live-readiness.json",
+        "by": "npm run design:web3-live",
+        "removed": [
+          "\"GameRegistry cabinet approval path is not live-gated.\",",
+          "\"SplitConfig/economy settings are not production-approved.\","
+        ],
+        "added": [],
+        "removedCount": 2,
+        "addedCount": 0
+      },
+      {
+        "path": "docs/web3/hmh-web3-live-readiness.md",
+        "by": "npm run design:web3-live",
+        "removed": [
+          "| on-chain-registry-economy | BLOCKED | — | GameRegistry cabinet approval path is not live-gated.; SplitConfig/economy settings are not production-approved.; Legal/brand/economy approval is required b"
+        ],
+        "added": [
+          "| on-chain-registry-economy | BLOCKED | — | Legal/brand/economy approval is required before real-value launch. |"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      }
+    ]
+  },
+  "step7": {
+    "flagEdits": [
+      {
+        "file": "apps/portal/src/settlement.mjs",
+        "line": 28,
+        "before": "export const SETTLEMENT_LIVE = false;",
+        "after": "export const SETTLEMENT_LIVE = true;",
+        "reason": "contract §9.1: live settlement (seed tickets, entry payment, /api/settle)",
+        "applied": true,
+        "error": null
+      },
+      {
+        "file": "apps/portal/src/settlement.mjs",
+        "line": 36,
+        "before": "export const HOSTED_PROFILE_SYNC = false;",
+        "after": "export const HOSTED_PROFILE_SYNC = true;",
+        "reason": "contract §9.1: hosted sign-in, profiles and boards",
+        "applied": true,
+        "error": null
+      }
+    ],
+    "generated": {
+      "buildPortalPages": {
+        "exitCode": 0,
+        "output": [
+          "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (launch copy)."
+        ]
+      },
+      "changedByFlags": [
+        "apps/portal/src/settlement.mjs"
+      ],
+      "changedByPortalPages": [
+        "apps/portal/discover/chikun.html",
+        "apps/portal/discover/games.html",
+        "apps/portal/discover/hard-money-heroes.html",
+        "apps/portal/discover/stacked.html",
+        "apps/portal/index.html",
+        "apps/portal/llms.txt",
+        "apps/portal/manifest.webmanifest",
+        "apps/portal/trust.html"
+      ],
+      "changedBySteps": [
+        "docs/qa/hard-money-heroes-web3-settlement-audit.json",
+        "docs/qa/hard-money-heroes-web3-settlement-audit.md",
+        "docs/releases/hmh-fact-sheet.json",
+        "docs/releases/hmh-fact-sheet.md",
+        "docs/security/hard-money-heroes-security-audit.json",
+        "docs/security/hard-money-heroes-security-audit.md",
+        "docs/testing/hmh-reboot-test-retirement-gate.json",
+        "docs/web3/hmh-web3-live-readiness.json",
+        "docs/web3/hmh-web3-live-readiness.md"
+      ]
+    },
+    "gate": {
+      "status": "FAIL",
+      "counts": {
+        "tests": 4643,
+        "failed": 62,
+        "passed": 4581,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 4576,
+        "suites": 8
+      },
+      "expectedFailureCount": 51,
+      "unexpected": 11,
+      "missing": 0,
+      "other": []
+    },
+    "steps": [
+      {
+        "id": "assets:hmh:curated-level-kit-runtime",
+        "command": "npm run assets:hmh:curated-level-kit-runtime",
+        "exitCode": 0,
+        "ms": 819,
+        "inVercelBuild": true,
+        "output": [
+          "> lesters-arcade@0.3.1 assets:hmh:curated-level-kit-runtime",
+          "> node scripts/build-hmh-curated-level-kit-runtime.mjs",
+          "{",
+          "  \"outPath\": \"<throwaway>\\\\apps\\\\portal\\\\assets\\\\generated\\\\hmh-curated-level-kit\\\\hmh-curated-level-kit-runtime.mjs\",",
+          "  \"referencedKeys\": 74,",
+          "  \"assets\": 74,",
+          "  \"missing\": []",
+          "}"
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "assets:verify",
+        "command": "npm run assets:verify",
+        "exitCode": 0,
+        "ms": 877,
+        "inVercelBuild": true,
+        "output": [
+          "> lesters-arcade@0.3.1 assets:verify",
+          "> node scripts/verify-generated-assets.mjs",
+          "Generated sliced asset verification passed: 76 PNGs (lester=16, enemies=16, icons=16, badges=16, level1Parallax=4); production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames/4320ms loop; arcade playlist=26 MP3s/71MB."
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "test:release",
+        "command": "npm run test:release",
+        "exitCode": 1,
+        "ms": 511303,
+        "inVercelBuild": true,
+        "output": [
+          "> lesters-arcade@0.3.1 test:release",
+          "> node scripts/hmh-reboot-test-retirement-gate.mjs",
+          "HMH_REBOOT_TEST_RETIREMENT_GATE FAIL",
+          "- unexpected failure: tests/hmh-release-facts.test.mjs :: real repository adapters cover all 55 groups, 67 feature IDs and all 99 original namespaced IDs",
+          "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: configured read-only GameRegistry address exactly matches the generated address module",
+          "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: approved current-ABI fixture passes only contract/funds preflight at one pinned block",
+          "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: the direct ranked writer refuses disabled settlement before any provider access",
+          "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: a source-isolated live writer rechecks approval before creating any signer",
+          "- unexpected failure: tests/portal-trust-copy.test.mjs :: main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC",
+          "- unexpected failure: tests/ranked-preflight.test.mjs :: reads go through the public RPC, not the wallet",
+          "- unexpected failure: tests/ranked-preflight.test.mjs :: sendRankedEntry resolves on broadcast and reports confirmation later",
+          "- unexpected failure: tests/ranked-results.test.mjs :: main.js mounts the screen from exactly one lazy listener",
+          "- unexpected failure: tests/settlement.test.mjs :: ranked settlement fails closed until the verifier contract and attestation service are approved",
+          "- unexpected failure: tests/wallet-session.test.mjs :: a token stored by the 1.7.0 flow is discarded instead of restored or sent",
+          "- full report written to docs/testing/hmh-reboot-test-retirement-gate.json"
+        ],
+        "causedByStep7": true
+      },
+      {
+        "id": "check",
+        "command": "npm run check",
+        "exitCode": 0,
+        "ms": 58411,
+        "inVercelBuild": true,
+        "output": [
+          "> lesters-arcade@0.3.1 check",
+          "> node scripts/syntax-check.mjs",
+          "Syntax check passed: 891 JS modules + 119 Python scripts."
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "contracts:check",
+        "command": "npm run contracts:check",
+        "exitCode": 0,
+        "ms": 550,
+        "inVercelBuild": true,
+        "output": [
+          "> lesters-arcade@0.3.1 contracts:check",
+          "> node scripts/contract-structure-check.mjs",
+          "Lester's Arcade contract structure check passed (2026-09 native-fee set)."
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "build",
+        "command": "npm run build",
+        "exitCode": 0,
+        "ms": 2284,
+        "inVercelBuild": true,
+        "output": [
+          "STACKED initial JS: 572513 B (entry 27694, vendor 496615, shared 48204)",
+          "Source main.js:     713.1 KB",
+          "Bundled main.js:    1.16 MB  (+66.9% vs source entry; imports included)",
+          "HMH reboot source:  273.3 KB",
+          "HMH reboot entry:   352.2 KB  (+28.9% vs child source)",
+          "HMH entry cap:      360,674 / 480,000 B; 119,326 B remaining",
+          "Chikun source:      43.9 KB",
+          "Chikun entry:       41.4 KB  (-5.7% vs child source)",
+          "HMH Pixi vendor:    454.8 KB  (stable preloaded module)",
+          "HMH shared chunks:  214.9 KB (220,009 B) across 16 hoisted chunk(s) game.js imports statically",
+          "HMH initial JS:     807.1 KB (826,420 B) / 1.00 MB raw aggregate, entry + vendor",
+          "HMH initial JS + shared: 1021.9 KB (1,046,429 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor",
+          "HMH headroom:       216.9 KB entry + vendor; 2.1 KB including shared chunks",
+          "Reown AppKit (lazy): 1.51 MB on first WalletConnect use (entry 348574 B + 9 static chunk(s) 1232981 B)",
+          "Total emitted JS:   10.92 MB across 239 files",
+          "Output dir:         apps/portal/dist/ (plus public discovery pages)",
+          "  apps\\portal\\dist\\chunks\\hmh-animated-roster-LWW4EAQC.js      1.8mb",
+          "  apps\\portal\\dist\\main.js                                     1.2mb",
+          "  apps\\portal\\dist\\chunks\\chunk-AYGX2PAC.js                  802.6kb",
+          "  apps\\portal\\dist\\chunks\\hmh-curated-level-art-ILZ4JAAC.js  726.3kb",
+          "  apps\\portal\\dist\\chunks\\chunk-VSG3JNSZ.js                  383.3kb",
+          "  ...and 108 more output files...",
+          "Done in 154ms",
+          "  apps\\portal\\dist\\chunks\\hmh-pixi.js  454.8kb",
+          "Done in 200ms"
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "release-facts --check",
+        "command": "node scripts/hmh-release-facts.mjs --check",
+        "exitCode": 1,
+        "ms": 190,
+        "inVercelBuild": false,
+        "output": [
+          "Stale or missing fact sheet: hmh-fact-sheet.json"
+        ],
+        "checks": [
+          "docs/releases/hmh-fact-sheet.json",
+          "docs/releases/hmh-fact-sheet.md"
+        ],
+        "baselineExitCode": 1,
+        "causedByStep7": false,
+        "sameOutputBefore": true
+      },
+      {
+        "id": "portal-pages",
+        "command": "node scripts/build-portal-pages.mjs",
+        "exitCode": 0,
+        "ms": 223,
+        "inVercelBuild": false,
+        "output": [
+          "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (launch copy)."
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "release-facts --write",
+        "command": "node scripts/hmh-release-facts.mjs --write",
+        "exitCode": 0,
+        "ms": 210,
+        "inVercelBuild": false,
+        "output": [
+          "    \"originalIdsInFeatures\": 67,",
+          "    \"originalRegisterIds\": 99,",
+          "    \"states\": {",
+          "      \"public-recorded\": 1,",
+          "      \"local\": 9,",
+          "      \"unfinished\": 40,",
+          "      \"gated\": 5",
+          "    }",
+          "  },",
+          "  \"sourceSnapshotSha256\": \"21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c\",",
+          "  \"currentCandidateCertified\": false",
+          "}"
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "design:web3-audit",
+        "command": "npm run design:web3-audit",
+        "exitCode": 0,
+        "ms": 637,
+        "inVercelBuild": false,
+        "output": [
+          "> lesters-arcade@0.3.1 design:web3-audit",
+          "> node scripts/hmh-web3-settlement-audit.mjs",
+          "HMH Web3 settlement audit written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.json",
+          "HMH Web3 settlement markdown written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.md",
+          "Status: PASS; checks 10/10"
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "design:web3-live",
+        "command": "npm run design:web3-live",
+        "exitCode": 0,
+        "ms": 637,
+        "inVercelBuild": false,
+        "output": [
+          "> lesters-arcade@0.3.1 design:web3-live",
+          "> node scripts/hmh-web3-live-readiness.mjs",
+          "HMH Web3 live readiness written: <throwaway>\\docs\\web3\\hmh-web3-live-readiness.json",
+          "HMH Web3 live readiness markdown written: <throwaway>\\docs\\web3\\hmh-web3-live-readiness.md",
+          "Status: PARTIAL; gates 3/4; blocked 1"
+        ],
+        "causedByStep7": false
+      },
+      {
+        "id": "design:security-audit",
+        "command": "npm run design:security-audit",
+        "exitCode": 0,
+        "ms": 804,
+        "inVercelBuild": false,
+        "output": [
+          "> lesters-arcade@0.3.1 design:security-audit",
+          "> node scripts/hmh-security-audit-sweep.mjs",
+          "HMH security audit written: <throwaway>\\docs\\security\\hard-money-heroes-security-audit.json",
+          "HMH security audit markdown written: <throwaway>\\docs\\security\\hard-money-heroes-security-audit.md",
+          "Status: PASS; findings 0; checks 5/5"
+        ],
+        "causedByStep7": false
+      }
+    ],
+    "failures": {
+      "caused": [
+        {
+          "file": "tests/hmh-release-facts.test.mjs",
+          "name": "real repository adapters cover all 55 groups, 67 feature IDs and all 99 original namespaced IDs",
+          "message": "Expected values to be strictly equal:\n\ntrue !== false\n",
+          "expected": false,
+          "actual": true,
+          "line": 170,
+          "source": "assert.equal(f.settlement.liveFlag, false);"
+        },
+        {
+          "file": "tests/litvm-ranked-contract-gate.test.mjs",
+          "name": "configured read-only GameRegistry address exactly matches the generated address module",
+          "message": "Expected values to be strictly equal:\n\ntrue !== false\n",
+          "expected": false,
+          "actual": true,
+          "line": 68,
+          "source": "assert.equal(SETTLEMENT_LIVE, false);"
+        },
+        {
+          "file": "tests/litvm-ranked-contract-gate.test.mjs",
+          "name": "approved current-ABI fixture passes only contract/funds preflight at one pinned block",
+          "message": "fixture preflight does not enable real settlement\n\ntrue !== false\n",
+          "expected": false,
+          "actual": true,
+          "line": 100,
+          "source": "assert.equal(SETTLEMENT_LIVE, false, 'fixture preflight does not enable real settlement');"
+        },
+        {
+          "file": "tests/litvm-ranked-contract-gate.test.mjs",
+          "name": "the direct ranked writer refuses disabled settlement before any provider access",
+          "message": "The input did not match the regular expression /settlement is disabled/i. Input:\n\n'Error: could not coalesce error (error={ \"message\": \"provider must not be contacted\" }, payload={ \"id\": 1, \"jsonrpc\": \"2.0\", \"method\": \"eth_chainId\", \"params\": [  ] }, code=UNKNOWN_ERROR, version=6.17.0)'\n",
+          "expected": {},
+          "actual": {},
+          "line": 145,
+          "source": "await assert.rejects(submitRankedSession(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);"
+        },
+        {
+          "file": "tests/litvm-ranked-contract-gate.test.mjs",
+          "name": "a source-isolated live writer rechecks approval before creating any signer",
+          "message": "the real exported gate is never toggled by this fixture\n\ntrue !== false\n",
+          "expected": false,
+          "actual": true,
+          "line": 163,
+          "source": "assert.equal(SETTLEMENT_LIVE, false, 'the real exported gate is never toggled by this fixture');"
+        },
+        {
+          "file": "tests/ranked-preflight.test.mjs",
+          "name": "reads go through the public RPC, not the wallet",
+          "message": "the preview build never runs these reads\n\ntrue !== false\n",
+          "expected": false,
+          "actual": true,
+          "line": 173,
+          "source": "assert.equal(SETTLEMENT_LIVE, false, 'the preview build never runs these reads');"
+        },
+        {
+          "file": "tests/ranked-preflight.test.mjs",
+          "name": "sendRankedEntry resolves on broadcast and reports confirmation later",
+          "message": "The input did not match the regular expression /settlement is disabled/i. Input:\n\n'Error: could not coalesce error (error={ \"message\": \"must not be contacted\" }, payload={ \"id\": 1, \"jsonrpc\": \"2.0\", \"method\": \"eth_chainId\", \"params\": [  ] }, code=UNKNOWN_ERROR, version=6.17.0)'\n",
+          "expected": {},
+          "actual": {},
+          "line": 274,
+          "source": "await assert.rejects(sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);"
+        },
+        {
+          "file": "tests/settlement.test.mjs",
+          "name": "ranked settlement fails closed until the verifier contract and attestation service are approved",
+          "message": "Expected values to be strictly equal:\n\ntrue !== false\n",
+          "expected": false,
+          "actual": true,
+          "line": 16,
+          "source": "assert.equal(SETTLEMENT_LIVE, false);"
+        }
+      ],
+      "preExisting": [
+        {
+          "file": "tests/portal-trust-copy.test.mjs",
+          "name": "main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC",
+          "note": "fails before this step too"
+        },
+        {
+          "file": "tests/ranked-results.test.mjs",
+          "name": "main.js mounts the screen from exactly one lazy listener",
+          "note": "fails before this step too"
+        },
+        {
+          "file": "tests/wallet-session.test.mjs",
+          "name": "a token stored by the 1.7.0 flow is discarded instead of restored or sent",
+          "note": "fails before this step too"
+        }
+      ],
+      "missingLedger": []
+    },
+    "edits": [
+      {
+        "file": "tests/settlement.test.mjs",
+        "line": 16,
+        "before": "  assert.equal(SETTLEMENT_LIVE, false);\n  assert.equal(HOSTED_PROFILE_SYNC, false, 'hosted profile sync stays off until the Vercel secrets exist');",
+        "after": "  assert.equal(SETTLEMENT_LIVE, true);\n  assert.equal(HOSTED_PROFILE_SYNC, true, 'hosted profile sync is on since runbook step 7 (the Vercel secrets exist)');",
+        "reason": "pins both flags",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/hmh-release-facts.test.mjs",
+        "line": 169,
+        "before": "  assert.equal(f.cabinets.length, 2);\n  assert.equal(f.settlement.liveFlag, false);",
+        "after": "  assert.equal(f.cabinets.length, 2);\n  assert.equal(f.settlement.liveFlag, true);",
+        "reason": "the real-repository adapter reads the committed SETTLEMENT_LIVE",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/litvm-ranked-contract-gate.test.mjs",
+        "line": 67,
+        "before": "  assert.ok(['predicted', 'deployed'].includes(LITVM_DEPLOYMENT.status));\n  assert.equal(SETTLEMENT_LIVE, false);",
+        "after": "  assert.equal(LITVM_DEPLOYMENT.status, 'deployed');\n  assert.equal(SETTLEMENT_LIVE, true);",
+        "reason": "pins the flag; the module is deployed from step 3 on",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/litvm-ranked-contract-gate.test.mjs",
+        "line": 100,
+        "before": "  assert.equal(SETTLEMENT_LIVE, false, 'fixture preflight does not enable real settlement');",
+        "after": "  assert.equal(SETTLEMENT_LIVE, true, 'the committed build is live since runbook step 7; this fixture preflight sends nothing');",
+        "reason": "pins the flag",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/litvm-ranked-contract-gate.test.mjs",
+        "line": 144,
+        "before": "  const provider = { async request(request) { calls.push(request); throw new Error('provider must not be contacted'); } };\n  await assert.rejects(submitRankedSession(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);",
+        "after": "  const provider = { async request(request) { calls.push(request); throw new Error('provider must not be contacted'); } };\n  // Since runbook step 7 the committed flag is true, so the disabled path is proven on the\n  // source-isolated writer with SETTLEMENT_LIVE false.\n  const source = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');\n  const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });\n  const names = ['scoreContractAddress', 'readRankedContractGate', 'submitRankedSession', 'isBytes32Hex', 'toBytes32Id'];\n  const code = ast.body.map(n => n.declaration ?? n).filter(n => n.type === 'FunctionDeclaration' && names.includes(n.id.name)).map(n => source.slice(n.start, n.end)).join('\\n');\n  const disabledWriter = runInNewContext(`${code}\\nsubmitRankedSession`, {\n    SETTLEMENT_LIVE: false, loadEthers, SCORE_REGISTRY_ABI,\n    GAME_REGISTRY_ABI: gameAbi.fragments, LITVM_CONTRACT_ADDRESSES,\n    LITVM_LITEFORGE_NETWORK: { chainId: 4441, name: 'Fixture LiteForge' },\n  });\n  await assert.rejects(disabledWriter(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);",
+        "reason": "the real writer is live after step 7; the disabled gate is kept on the isolated writer",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/litvm-ranked-contract-gate.test.mjs",
+        "line": 163,
+        "before": "  assert.equal(SETTLEMENT_LIVE, false, 'the real exported gate is never toggled by this fixture');",
+        "after": "  assert.equal(SETTLEMENT_LIVE, true, 'the committed gate is live since runbook step 7; this fixture never toggles it');",
+        "reason": "pins the flag",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/ranked-preflight.test.mjs",
+        "line": 173,
+        "before": "  assert.equal(SETTLEMENT_LIVE, false, 'the preview build never runs these reads');",
+        "after": "  assert.equal(SETTLEMENT_LIVE, true, 'the live build runs these reads, always over the public RPC');",
+        "reason": "pins the flag",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/ranked-preflight.test.mjs",
+        "line": 181,
+        "before": "function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET } = {}) {",
+        "after": "function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET, live = true } = {}) {",
+        "reason": "lets the disabled-entry check run on the isolated module",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/ranked-preflight.test.mjs",
+        "line": 227,
+        "before": "    SETTLEMENT_LIVE: true,\n    loadEthers: async () => fakeEthers,",
+        "after": "    SETTLEMENT_LIVE: live,\n    loadEthers: async () => fakeEthers,",
+        "reason": "lets the disabled-entry check run on the isolated module",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/ranked-preflight.test.mjs",
+        "line": 272,
+        "before": "  // The committed build refuses before touching the wallet.\n  const untouched = { request() { throw new Error('must not be contacted'); } };\n  await assert.rejects(sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);\n  await assert.rejects(openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);",
+        "after": "  // A build with settlement off (every build before runbook step 7) refuses before touching the wallet.\n  const untouched = { request() { throw new Error('must not be contacted'); } };\n  const disabled = isolatedEntry({ live: false }).api;\n  await assert.rejects(disabled.sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);\n  await assert.rejects(disabled.openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);",
+        "reason": "the committed entry is live after step 7; the disabled refusal is kept on the isolated module",
+        "applied": true,
+        "error": null,
+        "verified": true
+      }
+    ],
+    "unexplainedFailures": [],
+    "generatedDocs": [
+      {
+        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.json",
+        "by": "npm run design:web3-audit",
+        "removed": [
+          "\"detail\": \"address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresses); unverified writes "
+        ],
+        "added": [
+          "\"detail\": \"address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=true (live needs a deployed module with all seven addresses); unverified writes r"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.md",
+        "by": "npm run design:web3-audit",
+        "removed": [
+          "| safe-ranked-live-gate | PASS | address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresse"
+        ],
+        "added": [
+          "| safe-ranked-live-gate | PASS | address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=true (live needs a deployed module with all seven addresses"
+        ],
+        "removedCount": 1,
+        "addedCount": 1
+      },
+      {
+        "path": "docs/releases/hmh-fact-sheet.json",
+        "by": "node scripts/hmh-release-facts.mjs --write",
+        "removed": [
+          "\"state\": \"simulated\",",
+          "\"liveFlag\": false,",
+          "\"sourceSnapshotSha256\": \"fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa\",",
+          "\"sha256\": \"ff134abe959cb9bf0cec59b3a864f3a7bb75096d367258bc97130e8a2345c95d\",",
+          "\"bytes\": 37322",
+          "\"sha256\": \"6d2b1e4a4082165d298135a07a9ab3ebd58c9a1993d72a21eee76f1e3c49eda0\","
+        ],
+        "added": [
+          "\"state\": \"gated\",",
+          "\"liveFlag\": true,",
+          "\"sourceSnapshotSha256\": \"21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c\",",
+          "\"sha256\": \"3ccb6be0f9fa5d6a6d55923ab6a2a6f5e50178f832e7e38981cdeba9cc9ca404\",",
+          "\"bytes\": 38729",
+          "\"sha256\": \"7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea\","
+        ],
+        "removedCount": 7,
+        "addedCount": 7
+      },
+      {
+        "path": "docs/releases/hmh-fact-sheet.md",
+        "by": "node scripts/hmh-release-facts.mjs --write",
+        "removed": [
+          "- Settlement: **simulated**; SETTLEMENT_LIVE=false. This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, durable history, epoch and authority acc",
+          "Input snapshot SHA-256: `fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa`",
+          "| apps/portal/index.html | ff134abe959cb9bf0cec59b3a864f3a7bb75096d367258bc97130e8a2345c95d | 37322 |",
+          "| apps/portal/src/settlement.mjs | 6d2b1e4a4082165d298135a07a9ab3ebd58c9a1993d72a21eee76f1e3c49eda0 | 14185 |"
+        ],
+        "added": [
+          "- Settlement: **gated**; SETTLEMENT_LIVE=true. This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, durable history, epoch and authority acceptan",
+          "Input snapshot SHA-256: `21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c`",
+          "| apps/portal/index.html | 3ccb6be0f9fa5d6a6d55923ab6a2a6f5e50178f832e7e38981cdeba9cc9ca404 | 38729 |",
+          "| apps/portal/src/settlement.mjs | 7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea | 14183 |"
+        ],
+        "removedCount": 4,
+        "addedCount": 4
+      }
+    ]
+  },
+  "fullVerify": {
+    "exitCode": 1,
+    "status": "FAIL",
+    "counts": {
+      "tests": 4643,
+      "failed": 54,
+      "passed": 4589,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "topLevel": 4576,
+      "suites": 8
+    },
+    "expectedFailureCount": 51,
+    "unexpected": 3,
+    "missing": 0,
+    "other": [],
+    "unexpectedFailures": [
+      {
+        "file": "tests/portal-trust-copy.test.mjs",
+        "name": "main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC"
+      },
+      {
+        "file": "tests/ranked-results.test.mjs",
+        "name": "main.js mounts the screen from exactly one lazy listener"
+      },
+      {
+        "file": "tests/wallet-session.test.mjs",
+        "name": "a token stored by the 1.7.0 flow is discarded instead of restored or sent"
+      }
+    ]
+  },
+  "ok": true,
+  "throwawayRemoved": true
+}

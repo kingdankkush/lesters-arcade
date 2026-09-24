@@ -472,6 +472,260 @@ Broadcast also needs a `deployed` module and an RPC whose own `eth_chainId` is 4
 override only with a loopback `--rpc`); definitions already on chain are skipped.
 `planNftDefinitions()` is the pure planner the rehearsal reuses.
 
+**Backfill** (after the definitions and `--include-relayer-minter`): `scripts/backfill-nft-mints.mjs`
+mints, from the relayer key, every `achievement_unlocks` row whose `achievement_id` is in
+`nftAchievementIds(gameId)` of the catalog **at run time** and whose `token_id` is null. The stored `nft`
+column (the phase-1 proposal) is ignored (contract A20); `--resync` rewrites it from the catalog for
+display. Each `mintFor` is simulated first, so duplicates and undefined ids are skipped without a
+transaction and a re-run mints nothing. The E12 index cron then stamps `token_id`, `mint_tx_hash` and
+`minted_at`.
+
+```
+node scripts/backfill-nft-mints.mjs [--resync]                                          # dry run (reads Neon only)
+LITVM_BACKFILL_CONFIRM=BACKFILL_NFT_MINTS_4441 \
+  node scripts/backfill-nft-mints.mjs --broadcast --resync --key-file <vault keys.json> --key-field relayer
+```
+
+`NEON_DATABASE_URL` comes from the environment and is never printed; the script never migrates. The key
+must be the deployment's relayer. Rehearsed end to end by `node scripts/rehearse-nft-phase2.mjs` (below).
+
+## Rehearsal: local chain end to end, phase 2, step-7 dry run (2026-09-23)
+
+Everything here runs offline on the in-process Hardhat chain (chain 4441) with PGlite standing in for
+Neon and public fixture keys only. Nothing touches LiteForge, Vercel or production Neon.
+
+- `scripts/lib/local-stack.mjs` `startLocalStack()`: deploys the suite (`scripts/lib/local-chain.mjs`),
+  confirms the developer wallet, sets every game playable, checks fees are on, and builds an
+  **unmigrated** PGlite, so the first requests prove the handlers' own `ensureSchema` (A34). Every
+  `api/*.mjs` module is mounted as production mounts it, `createHandler(() => buildDeps(env, { db,
+  provider, deployment, nowMs }))` (A30), behind the rewrites **read from `vercel.json`** (query strings
+  carried, named params appended the way Vercel's router does), so routing drift fails the rehearsal.
+  The server clock is the timestamp the chain would give its next block, so the A26 timing checks run
+  on chain time and the driver advances time with `evm_increaseTime` instead of sleeping.
+- `scripts/lib/local-http.mjs`: the same mounts over `node:http` (optionally with a static web root and
+  the `vercel.json` headers, CSP included, for the browser-e2e slice), plus a JSON-RPC proxy to the chain.
+- `scripts/lib/rehearsal-driver.mjs` `runRankedE2E()`: one Ranked session per game through the real
+  endpoints and contracts, asserting every item of guide §7 step 9 (sign-in, seed ticket, entry,
+  evidence at the ticket seed, settle until confirmed, `getSession` and `sessionEnvelopeHash`, the
+  weekly board row, profile stats and achievements, share session, page tags and card PNG, an on-chain
+  rename plus E8, the E12 cron twice) and the negative checks: duplicate settle (same state, no second
+  transaction), unpaid entry (402 `entry-not-paid`), fees off (402 `entry-underpaid`, local only),
+  a tampered Chikun claim (ignored), evidence copied to another wallet's paid ticket (rejected; needs
+  a second funded wallet, skipped without one), an ephemeral wallet's token (403 `wallet-mismatch`),
+  and `SETTLEMENT_PAUSED` (503 on E15, E3 and E13, local only). "No row changed" compares the content
+  of every session, evidence, achievement, profile, lease and indexer row (an md5 per table), so an
+  UPDATE by a rejected request fails the check, not only an INSERT or a DELETE.
+- A wallet may rehearse more than once: E5 shows each wallet's best confirmed run of the period (D1)
+  and first-run achievements unlock once, so a run that is not the wallet's best, or earns nothing new,
+  is recorded as such (with the wallet's best row and prior achievements), while E4, E9 and the chain
+  still prove the run itself confirmed.
+
+Commands:
+
+```
+node scripts/rehearse-ranked-e2e.mjs --target local      # in process, then over HTTP + JSON-RPC, then phase 2
+                                                         # → docs/qa/pre-deployment-rehearsal-20260923.json
+node scripts/rehearse-nft-phase2.mjs [--out <path>]      # phase 2 only
+node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway   # about an hour; see the checklist below
+node --test tests/local-chain-rehearsal.test.mjs tests/local-chain-rehearsal-http.test.mjs tests/nft-phase2-rehearsal.test.mjs
+```
+
+### Live end-to-end (runbook step 9, owner approval in the moment)
+
+Owner checkpoint O2 first: decide whether the test wallet's rows stay on the launch boards
+(recommended: a fresh test wallet, excluded afterwards with
+`node scripts/moderate-profile.mjs --wallet <player> --exclude --apply --confirm EXCLUDE_WALLET`).
+The player wallet needs about 0.32 zkLTC (three entries of 0.102 plus 0.01 of gas margin for three
+renames). The optional second wallet (`--second-key-file`, for the evidence-copy check) needs about
+0.104 zkLTC (one Chikun entry plus gas); without it that check is reported as skipped.
+
+```
+# 1. Plan only: prints the entries at their quoteEntry totals, the second wallet's entry, any earlier
+#    runs of the player (a warning) and the O2 reminder; sends nothing.
+node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
+  --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path to the funded test key> \
+  --second-key-file <path to a second funded test key> \
+  --cron-secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --confirm-live SPEND_TESTNET_ZKLTC
+# 2. The run: the same command with --yes (optionally --out <path>; default docs/qa/ranked-live-e2e-<date>.json).
+node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
+  --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path to the funded test key> \
+  --second-key-file <path to a second funded test key> \
+  --cron-secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --confirm-live SPEND_TESTNET_ZKLTC --yes
+# A retry replays only what failed: add --games <id,id> (lester-blaster, chikun, stacked).
+```
+
+The CLI refuses to start without every flag (`--cron-secret-env <NAME>` may replace the file), refuses a
+`predicted` address module and any RPC whose own `eth_chainId` is not 4441, reads the player key
+(`--player-key-field <field>` for a JSON key file), the optional second key (`--second-key-field`,
+`--second-key-env`) and the cron secret inside the process through `scripts/lib/key-source.mjs`, and
+never prints any of them. It waits wall-clock time for each run's length since the entry block (about
+3, 1.5 and 1 minutes): LiteForge is Arbitrum Orbit and makes no empty blocks, so the latest block time
+stands still while nobody transacts, and the server checks the run length against its own clock (A26;
+a retryable 409 `run-timing-early` is honoured for up to 15 minutes). It skips the local-only negative
+checks (fees off, pause) and writes a report with no secret in it. The ephemeral 403 wallet is created
+in memory and never funded. A retry with the same wallet still passes (see above), but spends another
+entry per game, which is what `--games` is for.
+
+### Step-7 checklist (with the step-3 commit)
+
+`scripts/rehearse-step7-dry-run.mjs` rehearses both runbook commits that change what the committed build
+does, in a throwaway git worktree under the OS temp directory (never committed, merged or pushed;
+removed at the end). **Step 3** (contract §13): the deployment record from a local deploy of the real
+deploy config and the address module regenerated with `--deployed`, flags off; it runs the whole release
+gate and the offline audits, separates the failures the deployed module causes from those already
+failing, and proves the step-3 edits. **Step 7**, on top of that step-3 commit: the flags, the public
+copy, every step of `npm run vercel:build` and the audits; it separates the failures the flip causes
+from those already failing at the step-3 commit (comparing the output too when a step fails on both
+sides), proves the step-7 edits and re-runs the whole gate. Generated documents (the fact sheet, the
+design audits, the public pages) are compared state by state by content, so one that records the module
+or the flags is listed for regeneration even when its checker already fails at the base. The raw
+evidence is `docs/qa/step7-dry-run-20260923.json`, written unedited by the script (local paths as
+`<throwaway>`, `<repo>` and `~`); `tests/local-chain-rehearsal.test.mjs` fails when the script changes
+without a new run.
+
+<!-- step7-checklist:start (generated by scripts/rehearse-step7-dry-run.mjs; do not edit by hand) -->
+
+Generated from `docs/qa/step7-dry-run-20260923.json` (dry run at `46901768`, 2026-09-24, script sha256 `ca15f1f1a0a6`). Contract §13 step 0 needs this checklist current: re-run `node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway` whenever main moves before the deployment (in particular after the integration-glue slice merges) and commit its two outputs unedited.
+
+**Step 3 (the deploy commit).** Contract §13 step 3 commits these together, after the broadcast:
+
+1. **Deployment record and address module.** Commit `contracts/deployment-record.hardened.json` from the broadcast and regenerate `apps/portal/src/generated/litvm-addresses.mjs` with `npm run contracts:addresses -- --deployed` (`status: 'deployed'`, `startBlock` from the record). `--deployed` fails when the record is missing, where the bare `npm run contracts:addresses` would quietly write the `predicted` module again.
+2. **Pinned tests** (1 edit, each proven by the dry run; the flags stay off):
+   - `tests/name-claim-prompt.test.mjs:174` (the default reads the generated module, which step 3 makes deployed):
+     ```diff
+     -  const byDefault = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, documentRef, mount });
+     -  assert.equal(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is not deployed at this commit');
+     -  assert.equal(indexApi.calls.profile.length, 0, 'no request either');
+     -  assert.equal(mount.children.length, 0);
+     +  assert.equal(indexApi.calls.profile.length, 0, 'no request either');
+     +  assert.equal(mount.children.length, 0);
+     +  // Since runbook step 3 the generated LITVM_DEPLOYMENT is deployed, so the default is no longer skipped.
+     +  const byDefault = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, documentRef, mount: element('body') });
+     +  assert.notEqual(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is deployed since runbook step 3');
+     ```
+3. **Generated documents the deployed module changes** (not gated; regenerate and commit them so they stay true):
+   - `npm run design:web3-audit` rewrites `docs/qa/hard-money-heroes-web3-settlement-audit.json`, `docs/qa/hard-money-heroes-web3-settlement-audit.md`:
+     ```diff
+     -"detail": "address module predicted; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module wi…
+     +"detail": "address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module wit…
+     -| safe-ranked-live-gate | PASS | address module predicted; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live need…
+     +| safe-ranked-live-gate | PASS | address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs…
+     ```
+   - `npm run design:web3-live` rewrites `docs/web3/hmh-web3-live-readiness.json`, `docs/web3/hmh-web3-live-readiness.md`:
+     ```diff
+     -"GameRegistry cabinet approval path is not live-gated.",
+     -"SplitConfig/economy settings are not production-approved.",
+     -| on-chain-registry-economy | BLOCKED | — | GameRegistry cabinet approval path is not live-gated.; SplitConfig/economy settings are not production-approved.; …
+     +| on-chain-registry-economy | BLOCKED | — | Legal/brand/economy approval is required before real-value launch. |
+     ```
+4. **Gate.** The step-3 commit then shows exactly the 51 ledgered failures plus the 3 already failing at the base (step 7, item 6) (the dry run's step-3 gate: FAIL, 4 unexpected = 1 caused by step 3 + 3 already failing, 0 missing).
+
+**Step 7 (the flag flip).** Runbook step 7 (contract §13) makes exactly these changes in ONE commit, on top of the step-3 commit, after step 6 and before the 1.8.0 build:
+
+1. **Flags** in `apps/portal/src/settlement.mjs`:
+   - line 28: `export const SETTLEMENT_LIVE = false;` → `export const SETTLEMENT_LIVE = true;`
+   - line 36: `export const HOSTED_PROFILE_SYNC = false;` → `export const HOSTED_PROFILE_SYNC = true;`
+2. **Public copy.** Run `node scripts/build-portal-pages.mjs` (contract A33) and commit what it rewrites. In the dry run the regeneration changed:
+   - `apps/portal/discover/chikun.html`
+   - `apps/portal/discover/games.html`
+   - `apps/portal/discover/hard-money-heroes.html`
+   - `apps/portal/discover/stacked.html`
+   - `apps/portal/index.html`
+   - `apps/portal/llms.txt`
+   - `apps/portal/manifest.webmanifest`
+   - `apps/portal/trust.html`
+3. **Pinned tests** (10 edits, each proven by the dry run):
+   - `tests/settlement.test.mjs:16` (pins both flags):
+     ```diff
+     -  assert.equal(SETTLEMENT_LIVE, false);
+     -  assert.equal(HOSTED_PROFILE_SYNC, false, 'hosted profile sync stays off until the Vercel secrets exist');
+     +  assert.equal(SETTLEMENT_LIVE, true);
+     +  assert.equal(HOSTED_PROFILE_SYNC, true, 'hosted profile sync is on since runbook step 7 (the Vercel secrets exist)');
+     ```
+   - `tests/hmh-release-facts.test.mjs:169` (the real-repository adapter reads the committed SETTLEMENT_LIVE):
+     ```diff
+     -  assert.equal(f.cabinets.length, 2);
+     -  assert.equal(f.settlement.liveFlag, false);
+     +  assert.equal(f.cabinets.length, 2);
+     +  assert.equal(f.settlement.liveFlag, true);
+     ```
+   - `tests/litvm-ranked-contract-gate.test.mjs:67` (pins the flag; the module is deployed from step 3 on):
+     ```diff
+     -  assert.ok(['predicted', 'deployed'].includes(LITVM_DEPLOYMENT.status));
+     -  assert.equal(SETTLEMENT_LIVE, false);
+     +  assert.equal(LITVM_DEPLOYMENT.status, 'deployed');
+     +  assert.equal(SETTLEMENT_LIVE, true);
+     ```
+   - `tests/litvm-ranked-contract-gate.test.mjs:100` (pins the flag): `assert.equal(SETTLEMENT_LIVE, false, 'fixture preflight does not enable real settlement');` → `assert.equal(SETTLEMENT_LIVE, true, 'the committed build is live since runbook step 7; this fixture preflight sends nothing');`
+   - `tests/litvm-ranked-contract-gate.test.mjs:144` (the real writer is live after step 7; the disabled gate is kept on the isolated writer):
+     ```diff
+     -  const provider = { async request(request) { calls.push(request); throw new Error('provider must not be contacted'); } };
+     -  await assert.rejects(submitRankedSession(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);
+     +  const provider = { async request(request) { calls.push(request); throw new Error('provider must not be contacted'); } };
+     +  // Since runbook step 7 the committed flag is true, so the disabled path is proven on the
+     +  // source-isolated writer with SETTLEMENT_LIVE false.
+     +  const source = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');
+     +  const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
+     +  const names = ['scoreContractAddress', 'readRankedContractGate', 'submitRankedSession', 'isBytes32Hex', 'toBytes32Id'];
+     +  const code = ast.body.map(n => n.declaration ?? n).filter(n => n.type === 'FunctionDeclaration' && names.includes(n.id.name)).map(n => source.slice(n.start, n.end)).join('\n');
+     +  const disabledWriter = runInNewContext(`${code}\nsubmitRankedSession`, {
+     +    SETTLEMENT_LIVE: false, loadEthers, SCORE_REGISTRY_ABI,
+     +    GAME_REGISTRY_ABI: gameAbi.fragments, LITVM_CONTRACT_ADDRESSES,
+     +    LITVM_LITEFORGE_NETWORK: { chainId: 4441, name: 'Fixture LiteForge' },
+     +  });
+     +  await assert.rejects(disabledWriter(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);
+     ```
+   - `tests/litvm-ranked-contract-gate.test.mjs:163` (pins the flag): `assert.equal(SETTLEMENT_LIVE, false, 'the real exported gate is never toggled by this fixture');` → `assert.equal(SETTLEMENT_LIVE, true, 'the committed gate is live since runbook step 7; this fixture never toggles it');`
+   - `tests/ranked-preflight.test.mjs:173` (pins the flag): `assert.equal(SETTLEMENT_LIVE, false, 'the preview build never runs these reads');` → `assert.equal(SETTLEMENT_LIVE, true, 'the live build runs these reads, always over the public RPC');`
+   - `tests/ranked-preflight.test.mjs:181` (lets the disabled-entry check run on the isolated module): `function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET } = {}) {` → `function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET, live = true } = {}) {`
+   - `tests/ranked-preflight.test.mjs:227` (lets the disabled-entry check run on the isolated module):
+     ```diff
+     -    SETTLEMENT_LIVE: true,
+     -    loadEthers: async () => fakeEthers,
+     +    SETTLEMENT_LIVE: live,
+     +    loadEthers: async () => fakeEthers,
+     ```
+   - `tests/ranked-preflight.test.mjs:272` (the committed entry is live after step 7; the disabled refusal is kept on the isolated module):
+     ```diff
+     -  // The committed build refuses before touching the wallet.
+     -  const untouched = { request() { throw new Error('must not be contacted'); } };
+     -  await assert.rejects(sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);
+     -  await assert.rejects(openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);
+     +  // A build with settlement off (every build before runbook step 7) refuses before touching the wallet.
+     +  const untouched = { request() { throw new Error('must not be contacted'); } };
+     +  const disabled = isolatedEntry({ live: false }).api;
+     +  await assert.rejects(disabled.sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);
+     +  await assert.rejects(disabled.openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);
+     ```
+4. **Generated documents that record the flags.** Regenerate and commit them with the flip (their content changes with it, even where a checker already fails at the base):
+   - `npm run design:web3-audit` rewrites `docs/qa/hard-money-heroes-web3-settlement-audit.json`, `docs/qa/hard-money-heroes-web3-settlement-audit.md`:
+     ```diff
+     -"detail": "address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module wit…
+     +"detail": "address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=true (live needs a deployed module with…
+     -| safe-ranked-live-gate | PASS | address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs…
+     +| safe-ranked-live-gate | PASS | address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=true (live needs …
+     ```
+   - `node scripts/hmh-release-facts.mjs --write` rewrites `docs/releases/hmh-fact-sheet.json`, `docs/releases/hmh-fact-sheet.md`:
+     ```diff
+     -"state": "simulated",
+     -"liveFlag": false,
+     +"state": "gated",
+     +"liveFlag": true,
+     -- Settlement: **simulated**; SETTLEMENT_LIVE=false. This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI…
+     -Input snapshot SHA-256: `fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa`
+     +- Settlement: **gated**; SETTLEMENT_LIVE=true. This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, dur…
+     +Input snapshot SHA-256: `21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c`
+     ```
+5. **Audits and build steps.** No step of `npm run vercel:build` and no offline audit fails because of the flip.
+6. **Already failing before the flip** (they fail at the step-3 commit too; not step-7 work):
+   - test `tests/portal-trust-copy.test.mjs :: main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC` (fails at the dry-run base as well)
+   - test `tests/ranked-results.test.mjs :: main.js mounts the screen from exactly one lazy listener` (fails at the dry-run base as well)
+   - test `tests/wallet-session.test.mjs :: a token stored by the 1.7.0 flow is discarded instead of restored or sent` (fails at the dry-run base as well)
+   - `node scripts/hmh-release-facts.mjs --check` exits 1 before the flip as well (Stale or missing fact sheet: hmh-fact-sheet.json); what it checks (`docs/releases/hmh-fact-sheet.json`, `docs/releases/hmh-fact-sheet.md`) changes with the flip and is regenerated in item 4
+7. **Gate.** `npm run vercel:build` then shows exactly the 51 ledgered failures plus the 3 listed in item 6 until their owner fixes them (the dry run's full re-run after both commits' edits: FAIL, 3 unexpected, 0 missing). If it shows a different set, the base has moved: re-run the dry run first. Restore `docs/testing/hmh-reboot-test-retirement-gate.json` before committing unless the orchestrator is committing the integration's gate JSON.
+
+<!-- step7-checklist:end -->
+
 ## Owner decisions 2026-09-16 (recorded)
 
 - **Key custody.** Deployer and operator: the 2026-09-22 operator service key in the vault, used from a
