@@ -1,0 +1,114 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-24",
+  "release": "Ranked + Web3 launch (1.8.0)",
+  "siteVersion": "1.8.0",
+  "gameVersion": "1.8.0",
+  "cacheMarker": "lesters-arcade-v53-ranked-launch",
+  "branch": "fable/master-list-20260916",
+  "production": {
+    "url": "https://lestersarcade.io",
+    "current": {
+      "deployment": "dpl_D8RR6Xm9T2ZC8ZhDMrr697WW9jMu",
+      "immutableUrl": "https://lesters-arcade-38i23se2n-justin-agent-projects.vercel.app",
+      "candidate": "https://lesters-arcade-6fkfmzqnr-justin-agent-projects.vercel.app",
+      "source": "de2e6733",
+      "note": "1.8.0 plus the index-chain maxDuration 300 s fix (config only; client files unchanged)"
+    },
+    "launch": {
+      "deployment": "dpl_4CwRv1Qg1ZMNcYN5QbbNDEvMsz1T",
+      "immutableUrl": "https://lesters-arcade-o0hbx89hk-justin-agent-projects.vercel.app",
+      "candidate": "https://lesters-arcade-7yae4x8pu-justin-agent-projects.vercel.app",
+      "source": "64b1ff2f"
+    },
+    "rollback": "Vercel Instant Rollback to dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu (1.7.0) only; never rebuild a pre-1.8.0 commit with production env. Pause levers: docs/web3/contract-overhaul-20260916.md and contract §13."
+  },
+  "gates": {
+    "local": "npm run vercel:build PASS, 4766 tests, 4715 passed, exactly 51 ledgered failures",
+    "vercel": "same gate PASS on both production builds (local-upload deploys)"
+  },
+  "contracts": {
+    "chainId": 4441,
+    "network": "LitVM LiteForge Testnet",
+    "record": "contracts/deployment-record.hardened.json",
+    "deployedAt": "2026-09-24T14:44:10.981Z",
+    "startBlock": 54207405,
+    "deployer": "0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF",
+    "addresses": {
+      "gameRegistry": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+      "playerProfileRegistry": "0x3EB9e9F2620940496A2b8Ed6f7384e6687587c94",
+      "arcadeRankedEntry": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+      "scoreSubmissionRegistry": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "achievementRegistries": {
+        "lester-blaster": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737",
+        "chikun": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93",
+        "stacked": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7"
+      }
+    },
+    "settlementGasReserveWei": "2000000000000000",
+    "entryTotalWei": "102000000000000000",
+    "deployGasZkLtc": "about 0.021 (20 transactions)"
+  },
+  "ownerConfirmDevWalletTxs": [
+    "0x1094a0cdd7d2e94a025282f9d57645bd0ce394d106a3256966f49fb08c5258d3",
+    "0x8d458c54ab20bbf3c345af3c57c86fea5b74e52bdc199a8ff34a982288d35140",
+    "0x6c5d01134a5429e35067bbf1ae5f3caea106050cb055539e21bd7fd3cd35e55c"
+  ],
+  "setPlayableTxs": [
+    "0x480ca2fba10615f8eb065130ac95632aadcf54baf571e6f9334f91a2c477053a",
+    "0x9bf754e0ff454304fb642053dfa7c3b8c1347cbd209d59dd689610b7e36134db",
+    "0xff272e692fadcf4d92fca9239bddad4af190e962483a875b2223bd5d278f5d44"
+  ],
+  "vercelSecrets": "production has RANKED_VERIFIER_PRIVATE_KEY, RANKED_RELAYER_PRIVATE_KEY, RANKED_SCORE_REGISTRY_ADDRESS, CRON_SECRET (copy in the owner vault), rotated SESSION_SECRET; no legacy name in any environment; values never printed",
+  "productionMigration": "E12 index-chain: schemaVersion 1 (first call migrated; a first-run 500 followed by 200s, and a 60 s timeout fixed by maxDuration 300)",
+  "liveRuns": {
+    "report": "docs/qa/ranked-live-e2e-20260924.json",
+    "player": "0x8841ae6244dba71f620de450e71b0ef7e0cce824 (owner-funded test wallet, board_excluded per checkpoint O2)",
+    "games": {
+      "lester-blaster": {
+        "entryTx": "0xb7bdfdb2de27422e4cdecef016022c39f6705a78a10235a66031d8133caa1c3a",
+        "settleTx": "0x8069bb655726df4d9570ae76612de8ce902118a026a7b02a6fac15e9f8fe8448",
+        "score": 6210,
+        "checks": "17/18"
+      },
+      "chikun": {
+        "entryTx": "0x746949c75f852d027f95c00585a4dd0a12af1d2d69409b26cfe6868836290e72",
+        "settleTx": "0xe66dd1bb0124cca9ac6d7e7d69c9e260c5af1183f8b91bf06bc3ad69f6c2d629",
+        "score": 6684,
+        "checks": "18/19"
+      },
+      "stacked": {
+        "entryTx": "0x61d54d9199cd7ee9dd2f33876fc4ea97ca12464fe58886ee2609bb5d1ed2e52b",
+        "settleTx": "0x1cd3b88ce74612efc9081dcd1e2d005b80acfedf5c8f6f0bb872698d6a1bc21b",
+        "score": 229008,
+        "checks": "17/18"
+      }
+    },
+    "failedCheckExplained": "The one failing check per game is leaderboard-row (rank null) because the test wallet was board_excluded before the run, as the owner chose at O2. Re-including the wallet briefly showed rank 1 on all three boards with tx hashes and share ids, the /s/<id> page with og:image, twitter:card=summary_large_image and twitter:site=@LestersArcade, a 1200x630 card PNG, and the public profile with 3 bests, 3 runs and 24 server-recorded achievements; the wallet was then excluded again.",
+    "negatives": "The driver skips its negatives when a game check fails; probed directly on production instead: unauthenticated and forged-token /api/settle 401, /api/ranked/seed without a session 401, all three sessions confirmed in /api/settle/status. Idempotent duplicates, wrong-wallet 403, unpaid 402 and tampered-evidence 422 are proven on the real handlers by tests/api-settle-handler*.test.mjs."
+  },
+  "publicFiles": "140/140 checked public files and chunks match the certified local build on both production deployments",
+  "apiProbes": {
+    "/api/attest": 410,
+    "/api/session/nonce": 200,
+    "/api/leaderboard": 200,
+    "/api/profile": 200,
+    "/api/settle (GET)": 405,
+    "/s/<unknown>": 404,
+    "/profile/<wallet>": 200
+  },
+  "liveSmokes": [
+    "scripts/smoke-portal-flow.mjs (PORTAL_SMOKE_ROOT=https://lestersarcade.io) PASS",
+    "scripts/smoke-portal-interactions.mjs (external) PASS"
+  ],
+  "incidents": [
+    "Owner confirmDevWallet refused twice (max fee per gas less than block base fee): wallets under-price LiteForge base fees, which moved 0.07 -> 0.26 gwei within minutes on 2026-09-24. Owner page now sends maxFeePerGas = 10x latest base fee, floor 5 gwei (aed1cf7b); every player transaction does the same (apps/portal/src/liteforge-fees.mjs, 32ebcd5b). Only the base fee is charged on LiteForge.",
+    "index-chain cron 504 at the 60 s limit: maxDuration raised to 300 s (de2e6733).",
+    "Vercel Git-integration previews of branch pushes fail two HMH LFS hash tests (LFS content is not cloned); production ships by local vercel deploy upload, which is unaffected."
+  ],
+  "ownerNotes": [
+    "MetaMask manual transfers on LiteForge: set Max base fee 5 gwei and priority fee 0 while base fees climb quickly.",
+    "Phase 2 (soulbound NFTs) follows guide §5.6 phase 2: approve the NFT subset (O3), art, scripts/define-nft-achievements.mjs, setMinter(relayer), scripts/backfill-nft-mints.mjs."
+  ]
+}
