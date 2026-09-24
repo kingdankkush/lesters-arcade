@@ -10,19 +10,39 @@ import {
   resolveGarbageExchange,
 } from '../apps/portal/src/stacked-versus-table.mjs';
 
-// Other test files running in parallel create and remove short-lived probe directories under apps/
+// Other test files running in parallel create and remove short-lived entries under apps/
 // (tests/stacked-contracts.test.mjs plants .stacked-contract-probe-* to prove its own guard). An
-// entry that disappears while this walk runs no longer exists, so it has nothing to audit; every
-// other file-system error still fails the audit.
-const vanished = (error) => error?.code === 'ENOENT';
-const walk = (root, { readdir = readdirSync, stat = statSync } = {}) => {
-  let names;
-  try { names = readdir(root); } catch (error) { if (vanished(error)) return []; throw error; }
+// entry that disappears while this walk runs no longer exists, so it has nothing to audit. Windows
+// reports an entry that is being deleted or replaced as EPERM or EBUSY for a moment before it is
+// gone, so those are retried briefly: an entry that then reads, is audited; one that is then gone
+// (ENOENT), is skipped; one still refused fails the audit, as does every other file-system error.
+//
+// apps/portal/dist is not walked: it is the gitignored `npm run build` output, which build.mjs
+// removes and rewrites while tests/hmh-load-speed.test.mjs runs it in parallel, and a bundle can
+// never name this module (esbuild inlines the sources it bundles, and its chunks end in .js). The
+// sources it is built from are all under the walk.
+const BUILD_OUTPUT = new Set([join('apps', 'portal', 'dist')]);
+const TRANSIENT = new Set(['EPERM', 'EBUSY']);
+const GONE = Symbol('gone');
+const pause = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+const settle = (operation, { retries = 5, delayMs = 20 } = {}) => {
+  for (let attempt = 0; ; attempt += 1) {
+    try { return operation(); } catch (error) {
+      if (error?.code === 'ENOENT') return GONE;
+      if (!TRANSIENT.has(error?.code) || attempt >= retries) throw error;
+      pause(delayMs);
+    }
+  }
+};
+const walk = (root, { readdir = readdirSync, stat = statSync, delayMs = 20 } = {}) => {
+  const names = settle(() => readdir(root), { delayMs });
+  if (names === GONE) return [];
   return names.flatMap((name) => {
     const path = join(root, name);
-    let entry;
-    try { entry = stat(path); } catch (error) { if (vanished(error)) return []; throw error; }
-    return entry.isDirectory() ? walk(path, { readdir, stat }) : [path];
+    if (BUILD_OUTPUT.has(path)) return [];
+    const entry = settle(() => stat(path), { delayMs });
+    if (entry === GONE) return [];
+    return entry.isDirectory() ? walk(path, { readdir, stat, delayMs }) : [path];
   });
 };
 
@@ -30,8 +50,8 @@ const attackTableImporters = () => {
   const importers = [];
   for (const path of walk('apps')) {
     if (!/\.(?:mjs|js)$/.test(path)) continue;
-    let text;
-    try { text = readFileSync(path, 'utf8'); } catch (error) { if (vanished(error)) continue; throw error; }
+    const text = settle(() => readFileSync(path, 'utf8'));
+    if (text === GONE) continue;
     let references;
     try { references = findModuleReferences(text); }
     catch (cause) { throw new Error(`Cannot audit ${relative('.', path)}: ${cause.message}`, { cause }); }
@@ -120,22 +140,55 @@ test('no application runtime imports the Phase-1 attack table', () => {
 });
 
 test('the import-audit walk skips entries that vanish mid-walk and fails on any other error', () => {
-  const enoent = () => Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' });
+  const failure = (code) => Object.assign(new Error(`${code}: file-system error`), { code });
   const tree = { apps: ['live.mjs', '.probe-gone', 'dir-gone'], 'apps/dir-gone': null };
   const readdir = (path) => {
     const key = path.replaceAll('\\', '/');
-    if (tree[key] === null) throw enoent();
+    if (tree[key] === null) throw failure('ENOENT');
     return tree[key] ?? [];
   };
   const stat = (path) => {
     const key = path.replaceAll('\\', '/');
-    if (key === 'apps/.probe-gone') throw enoent();
+    if (key === 'apps/.probe-gone') throw failure('ENOENT');
     return { isDirectory: () => key === 'apps/dir-gone' };
   };
-  assert.deepEqual(walk('apps', { readdir, stat }).map((path) => path.replaceAll('\\', '/')), ['apps/live.mjs']);
-  const denied = () => { throw Object.assign(new Error('EACCES: permission denied'), { code: 'EACCES' }); };
-  assert.throws(() => walk('apps', { readdir: denied, stat }), /EACCES/);
-  assert.throws(() => walk('apps', { readdir, stat: denied }), /EACCES/);
+  const files = (options) => walk('apps', { readdir, stat, delayMs: 0, ...options }).map((path) => path.replaceAll('\\', '/'));
+  assert.deepEqual(files(), ['apps/live.mjs']);
+  const denied = () => { throw failure('EACCES'); };
+  assert.throws(() => walk('apps', { readdir: denied, stat, delayMs: 0 }), /EACCES/);
+  assert.throws(() => walk('apps', { readdir, stat: denied, delayMs: 0 }), /EACCES/);
+
+  // Windows: an entry being deleted or replaced answers EPERM or EBUSY for a moment. Retried, it is
+  // either gone (skipped), readable again (audited), or still refused (the audit fails).
+  for (const code of ['EPERM', 'EBUSY']) {
+    let calls = 0;
+    const deleting = (path) => {
+      if (!path.endsWith('.probe-gone')) return stat(path);
+      calls += 1;
+      throw failure(calls === 1 ? code : 'ENOENT');
+    };
+    assert.deepEqual(files({ stat: deleting }), ['apps/live.mjs'], `${code} then ENOENT: skipped`);
+    assert.equal(calls, 2);
+    let rewrites = 0;
+    const rewriting = (path) => {
+      if (path.endsWith('live.mjs') && rewrites++ < 2) throw failure(code);
+      return stat(path);
+    };
+    assert.deepEqual(files({ stat: rewriting }), ['apps/live.mjs'], `${code} then readable: audited`);
+    const stuck = (path) => { if (path.endsWith('live.mjs')) throw failure(code); return stat(path); };
+    assert.throws(() => files({ stat: stuck }), new RegExp(code), `${code} that never clears fails the audit`);
+    const stuckDir = () => { throw failure(code); };
+    assert.throws(() => files({ readdir: stuckDir }), new RegExp(code));
+  }
+
+  // The build output is never walked; everything else under apps/ is.
+  const built = { apps: ['portal'], 'apps/portal': ['dist', 'src', 'main.js'], 'apps/portal/src': ['a.mjs'], 'apps/portal/dist': ['main.js'] };
+  const builtFiles = walk('apps', {
+    readdir: (path) => built[path.replaceAll('\\', '/')] ?? [],
+    stat: (path) => ({ isDirectory: () => Object.hasOwn(built, path.replaceAll('\\', '/')) }),
+    delayMs: 0,
+  }).map((path) => path.replaceAll('\\', '/'));
+  assert.deepEqual(builtFiles, ['apps/portal/src/a.mjs', 'apps/portal/main.js']);
 });
 
 test('import audit recognizes module edges but ignores strings and comments and rejects parse failure', () => {
