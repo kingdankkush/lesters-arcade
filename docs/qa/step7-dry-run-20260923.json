@@ -1,8 +1,8 @@
 {
   "schema": "lesters-step7-dry-run-v2",
-  "generatedAt": "2026-09-24T01:23:21.035Z",
-  "head": "46901768",
-  "scriptSha256": "ca15f1f1a0a64304aa7a9cf5806d161dc28bd920dc570ae74555feb779d5321a",
+  "generatedAt": "2026-09-24T11:44:43.817Z",
+  "head": "a7ab5c3c",
+  "scriptSha256": "225385c66c53ffe127437c2fdc66ed1d4fe85947a45946b3d19061c7a690df72",
   "command": "node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway",
   "note": "Throwaway worktree under the OS temp directory, removed at the end. Nothing was committed, pushed or deployed; the deployment record is a local Hardhat deploy. Local paths are written as <throwaway>, <repo> and ~.",
   "base": {
@@ -11,7 +11,7 @@
         "id": "release-facts --check",
         "command": "node scripts/hmh-release-facts.mjs --check",
         "exitCode": 1,
-        "ms": 252,
+        "ms": 404,
         "output": [
           "Stale or missing fact sheet: hmh-fact-sheet.json"
         ],
@@ -25,7 +25,7 @@
         "id": "portal-pages",
         "command": "node scripts/build-portal-pages.mjs",
         "exitCode": 0,
-        "ms": 273,
+        "ms": 210,
         "output": [
           "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (preview copy)."
         ],
@@ -35,7 +35,7 @@
         "id": "release-facts --write",
         "command": "node scripts/hmh-release-facts.mjs --write",
         "exitCode": 0,
-        "ms": 252,
+        "ms": 183,
         "output": [
           "    \"originalIdsInFeatures\": 67,",
           "    \"originalRegisterIds\": 99,",
@@ -46,7 +46,7 @@
           "      \"gated\": 5",
           "    }",
           "  },",
-          "  \"sourceSnapshotSha256\": \"fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa\",",
+          "  \"sourceSnapshotSha256\": \"ad82548b8655b7303921708b990a60e8fbf7dc356b7ca35f3cac95b6364aabde\",",
           "  \"currentCandidateCertified\": false",
           "}"
         ],
@@ -59,7 +59,7 @@
         "id": "design:web3-audit",
         "command": "npm run design:web3-audit",
         "exitCode": 0,
-        "ms": 1809,
+        "ms": 679,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-audit",
           "> node scripts/hmh-web3-settlement-audit.mjs",
@@ -67,16 +67,13 @@
           "HMH Web3 settlement markdown written: <throwaway>\\docs\\qa\\hard-money-heroes-web3-settlement-audit.md",
           "Status: PASS; checks 10/10"
         ],
-        "wrote": [
-          "docs/qa/hard-money-heroes-web3-settlement-audit.json",
-          "docs/qa/hard-money-heroes-web3-settlement-audit.md"
-        ]
+        "wrote": []
       },
       {
         "id": "design:web3-live",
         "command": "npm run design:web3-live",
         "exitCode": 0,
-        "ms": 826,
+        "ms": 602,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-live",
           "> node scripts/hmh-web3-live-readiness.mjs",
@@ -93,7 +90,7 @@
         "id": "design:security-audit",
         "command": "npm run design:security-audit",
         "exitCode": 0,
-        "ms": 1061,
+        "ms": 751,
         "output": [
           "> lesters-arcade@0.3.1 design:security-audit",
           "> node scripts/hmh-security-audit-sweep.mjs",
@@ -108,50 +105,6 @@
       }
     ],
     "driftAtBase": [
-      {
-        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.json",
-        "by": "npm run design:web3-audit",
-        "removed": [
-          "\"submitSession\"",
-          "\"detail\": \"addresses populated; settlement live=false; unverified writes remain gated\"",
-          "\"detail\": \"on-chain score publish is attached to game-over submission path\"",
-          "\"detail\": \"leaderboard path reads chain records and maintains cadence boards\"",
-          "\"detail\": \"plan methods: setProfile, submitSession\"",
-          "\"passCount\": 9,"
-        ],
-        "added": [
-          "\"achievementRegistries\": {",
-          "}",
-          "\"submitVerifiedSession\"",
-          "{",
-          "\"pass\": true,",
-          "},"
-        ],
-        "removedCount": 13,
-        "addedCount": 21
-      },
-      {
-        "path": "docs/qa/hard-money-heroes-web3-settlement-audit.md",
-        "by": "npm run design:web3-audit",
-        "removed": [
-          "- Settlement methods in fixture plan: setProfile, submitSession",
-          "| safe-ranked-live-gate | PASS | addresses populated; settlement live=false; unverified writes remain gated |",
-          "| gameover-submit-only | PASS | on-chain score publish is attached to game-over submission path |",
-          "| leaderboard-readback | PASS | leaderboard path reads chain records and maintains cadence boards |",
-          "| settlement-plan-methods-match-abi | PASS | plan methods: setProfile, submitSession |",
-          "| gameRegistry | 0x09C6f94e73f6aA16177549952Dc47dB5AEb83406 |"
-        ],
-        "added": [
-          "- Settlement methods in fixture plan: setProfile, submitVerifiedSession",
-          "| gameover-submit-only | PASS | finished Ranked runs settle through the relayed settlement client from the game-over path; no player-signed submit and no /api/attest call |",
-          "| ranked-identity-single-source | PASS | settlement builds its session identity with rankedIdentityFor (A10), the per-game season the entry key uses |",
-          "| leaderboard-readback | PASS | leaderboard path maintains cadence boards |",
-          "| settlement-plan-methods-match-abi | PASS | plan methods: setProfile, submitVerifiedSession |",
-          "| achievementRegistries | [object Object] |"
-        ],
-        "removedCount": 11,
-        "addedCount": 11
-      },
       {
         "path": "docs/releases/hmh-fact-sheet.json",
         "by": "node scripts/hmh-release-facts.mjs --write",
@@ -190,7 +143,7 @@
           "- README-recorded production marker: lesters-arcade-v52-owner-round. Not fetched by this offline generator.",
           "| Parent Free challenges | source-reviewed; combined build/browser/release pending | 5/10 | Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself a de",
           "| Parent profile and achievement truth | SOURCE_REVIEWED_CORRECTED_BUILD_BROWSER_PENDING | 1/8 | Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself",
-          "Input snapshot SHA-256: `fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa`",
+          "Input snapshot SHA-256: `ad82548b8655b7303921708b990a60e8fbf7dc356b7ca35f3cac95b6364aabde`",
           "| apps/portal/games/chikun/game.manifest.json | ad3fc63aa65fa8057d36fe6f7836ae01883a5b5215af8d2da5b70902601f19f7 | 592 |"
         ],
         "removedCount": 18,
@@ -203,7 +156,7 @@
           "\"filesScanned\": 1070,"
         ],
         "added": [
-          "\"filesScanned\": 1374,"
+          "\"filesScanned\": 1390,"
         ],
         "removedCount": 1,
         "addedCount": 1
@@ -215,7 +168,7 @@
           "- Files scanned: 1070"
         ],
         "added": [
-          "- Files scanned: 1374"
+          "- Files scanned: 1390"
         ],
         "removedCount": 1,
         "addedCount": 1
@@ -270,17 +223,17 @@
     "gate": {
       "status": "FAIL",
       "counts": {
-        "tests": 4643,
-        "failed": 55,
-        "passed": 4588,
+        "tests": 4762,
+        "failed": 52,
+        "passed": 4710,
         "cancelled": 0,
         "skipped": 0,
         "todo": 0,
-        "topLevel": 4576,
+        "topLevel": 4695,
         "suites": 8
       },
       "expectedFailureCount": 51,
-      "unexpected": 4,
+      "unexpected": 1,
       "missing": 0,
       "other": []
     },
@@ -289,7 +242,7 @@
         "id": "release-facts --check",
         "command": "node scripts/hmh-release-facts.mjs --check",
         "exitCode": 1,
-        "ms": 206,
+        "ms": 196,
         "output": [
           "Stale or missing fact sheet: hmh-fact-sheet.json"
         ],
@@ -303,7 +256,7 @@
         "id": "portal-pages",
         "command": "node scripts/build-portal-pages.mjs",
         "exitCode": 0,
-        "ms": 226,
+        "ms": 218,
         "output": [
           "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (preview copy)."
         ],
@@ -313,7 +266,7 @@
         "id": "release-facts --write",
         "command": "node scripts/hmh-release-facts.mjs --write",
         "exitCode": 0,
-        "ms": 188,
+        "ms": 201,
         "output": [
           "    \"originalIdsInFeatures\": 67,",
           "    \"originalRegisterIds\": 99,",
@@ -324,7 +277,7 @@
           "      \"gated\": 5",
           "    }",
           "  },",
-          "  \"sourceSnapshotSha256\": \"fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa\",",
+          "  \"sourceSnapshotSha256\": \"ad82548b8655b7303921708b990a60e8fbf7dc356b7ca35f3cac95b6364aabde\",",
           "  \"currentCandidateCertified\": false",
           "}"
         ],
@@ -337,7 +290,7 @@
         "id": "design:web3-audit",
         "command": "npm run design:web3-audit",
         "exitCode": 0,
-        "ms": 768,
+        "ms": 966,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-audit",
           "> node scripts/hmh-web3-settlement-audit.mjs",
@@ -354,7 +307,7 @@
         "id": "design:web3-live",
         "command": "npm run design:web3-live",
         "exitCode": 0,
-        "ms": 646,
+        "ms": 740,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-live",
           "> node scripts/hmh-web3-live-readiness.mjs",
@@ -371,7 +324,7 @@
         "id": "design:security-audit",
         "command": "npm run design:security-audit",
         "exitCode": 0,
-        "ms": 1017,
+        "ms": 765,
         "output": [
           "> lesters-arcade@0.3.1 design:security-audit",
           "> node scripts/hmh-security-audit-sweep.mjs",
@@ -397,23 +350,7 @@
           "source": "assert.equal(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is not deployed at this commit');"
         }
       ],
-      "preExisting": [
-        {
-          "file": "tests/portal-trust-copy.test.mjs",
-          "name": "main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC",
-          "note": "fails before this step too"
-        },
-        {
-          "file": "tests/ranked-results.test.mjs",
-          "name": "main.js mounts the screen from exactly one lazy listener",
-          "note": "fails before this step too"
-        },
-        {
-          "file": "tests/wallet-session.test.mjs",
-          "name": "a token stored by the 1.7.0 flow is discarded instead of restored or sent",
-          "note": "fails before this step too"
-        }
-      ],
+      "preExisting": [],
       "missingLedger": []
     },
     "edits": [
@@ -535,17 +472,17 @@
     "gate": {
       "status": "FAIL",
       "counts": {
-        "tests": 4643,
-        "failed": 62,
-        "passed": 4581,
+        "tests": 4762,
+        "failed": 61,
+        "passed": 4701,
         "cancelled": 0,
         "skipped": 0,
         "todo": 0,
-        "topLevel": 4576,
+        "topLevel": 4695,
         "suites": 8
       },
       "expectedFailureCount": 51,
-      "unexpected": 11,
+      "unexpected": 10,
       "missing": 0,
       "other": []
     },
@@ -554,7 +491,7 @@
         "id": "assets:hmh:curated-level-kit-runtime",
         "command": "npm run assets:hmh:curated-level-kit-runtime",
         "exitCode": 0,
-        "ms": 819,
+        "ms": 579,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 assets:hmh:curated-level-kit-runtime",
@@ -572,7 +509,7 @@
         "id": "assets:verify",
         "command": "npm run assets:verify",
         "exitCode": 0,
-        "ms": 877,
+        "ms": 574,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 assets:verify",
@@ -585,23 +522,22 @@
         "id": "test:release",
         "command": "npm run test:release",
         "exitCode": 1,
-        "ms": 511303,
+        "ms": 528762,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 test:release",
           "> node scripts/hmh-reboot-test-retirement-gate.mjs",
           "HMH_REBOOT_TEST_RETIREMENT_GATE FAIL",
           "- unexpected failure: tests/hmh-release-facts.test.mjs :: real repository adapters cover all 55 groups, 67 feature IDs and all 99 original namespaced IDs",
+          "- unexpected failure: tests/integration-glue-copy.test.mjs :: D19: the prerendered Ranked entry modal follows the flags, and main.js shows the same live text",
           "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: configured read-only GameRegistry address exactly matches the generated address module",
           "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: approved current-ABI fixture passes only contract/funds preflight at one pinned block",
           "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: the direct ranked writer refuses disabled settlement before any provider access",
           "- unexpected failure: tests/litvm-ranked-contract-gate.test.mjs :: a source-isolated live writer rechecks approval before creating any signer",
-          "- unexpected failure: tests/portal-trust-copy.test.mjs :: main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC",
           "- unexpected failure: tests/ranked-preflight.test.mjs :: reads go through the public RPC, not the wallet",
           "- unexpected failure: tests/ranked-preflight.test.mjs :: sendRankedEntry resolves on broadcast and reports confirmation later",
-          "- unexpected failure: tests/ranked-results.test.mjs :: main.js mounts the screen from exactly one lazy listener",
           "- unexpected failure: tests/settlement.test.mjs :: ranked settlement fails closed until the verifier contract and attestation service are approved",
-          "- unexpected failure: tests/wallet-session.test.mjs :: a token stored by the 1.7.0 flow is discarded instead of restored or sent",
+          "- unexpected failure: tests/ship-readiness.test.mjs :: brand tokens load before portal styles and public metadata is truthful",
           "- full report written to docs/testing/hmh-reboot-test-retirement-gate.json"
         ],
         "causedByStep7": true
@@ -610,12 +546,12 @@
         "id": "check",
         "command": "npm run check",
         "exitCode": 0,
-        "ms": 58411,
+        "ms": 72771,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 check",
           "> node scripts/syntax-check.mjs",
-          "Syntax check passed: 891 JS modules + 119 Python scripts."
+          "Syntax check passed: 906 JS modules + 119 Python scripts."
         ],
         "causedByStep7": false
       },
@@ -623,7 +559,7 @@
         "id": "contracts:check",
         "command": "npm run contracts:check",
         "exitCode": 0,
-        "ms": 550,
+        "ms": 738,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 contracts:check",
@@ -636,34 +572,34 @@
         "id": "build",
         "command": "npm run build",
         "exitCode": 0,
-        "ms": 2284,
+        "ms": 2228,
         "inVercelBuild": true,
         "output": [
-          "STACKED initial JS: 572513 B (entry 27694, vendor 496615, shared 48204)",
-          "Source main.js:     713.1 KB",
-          "Bundled main.js:    1.16 MB  (+66.9% vs source entry; imports included)",
-          "HMH reboot source:  273.3 KB",
-          "HMH reboot entry:   352.2 KB  (+28.9% vs child source)",
-          "HMH entry cap:      360,674 / 480,000 B; 119,326 B remaining",
-          "Chikun source:      43.9 KB",
-          "Chikun entry:       41.4 KB  (-5.7% vs child source)",
+          "STACKED initial JS: 572902 B (entry 27694, vendor 496615, shared 48593)",
+          "Source main.js:     718.2 KB",
+          "Bundled main.js:    1.17 MB  (+66.2% vs source entry; imports included)",
+          "HMH reboot source:  273.5 KB",
+          "HMH reboot entry:   352.3 KB  (+28.8% vs child source)",
+          "HMH entry cap:      360,738 / 480,000 B; 119,262 B remaining",
+          "Chikun source:      44.6 KB",
+          "Chikun entry:       41.6 KB  (-6.7% vs child source)",
           "HMH Pixi vendor:    454.8 KB  (stable preloaded module)",
-          "HMH shared chunks:  214.9 KB (220,009 B) across 16 hoisted chunk(s) game.js imports statically",
-          "HMH initial JS:     807.1 KB (826,420 B) / 1.00 MB raw aggregate, entry + vendor",
-          "HMH initial JS + shared: 1021.9 KB (1,046,429 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor",
-          "HMH headroom:       216.9 KB entry + vendor; 2.1 KB including shared chunks",
+          "HMH shared chunks:  215.1 KB (220,229 B) across 16 hoisted chunk(s) game.js imports statically",
+          "HMH initial JS:     807.1 KB (826,484 B) / 1.00 MB raw aggregate, entry + vendor",
+          "HMH initial JS + shared: 1022.2 KB (1,046,713 B) / 1.00 MB raw aggregate, entry + shared chunks + vendor",
+          "HMH headroom:       216.9 KB entry + vendor; 1.8 KB including shared chunks",
           "Reown AppKit (lazy): 1.51 MB on first WalletConnect use (entry 348574 B + 9 static chunk(s) 1232981 B)",
-          "Total emitted JS:   10.92 MB across 239 files",
+          "Total emitted JS:   10.95 MB across 242 files",
           "Output dir:         apps/portal/dist/ (plus public discovery pages)",
           "  apps\\portal\\dist\\chunks\\hmh-animated-roster-LWW4EAQC.js      1.8mb",
           "  apps\\portal\\dist\\main.js                                     1.2mb",
-          "  apps\\portal\\dist\\chunks\\chunk-AYGX2PAC.js                  802.6kb",
+          "  apps\\portal\\dist\\chunks\\chunk-HOIQOMDB.js                  803.3kb",
           "  apps\\portal\\dist\\chunks\\hmh-curated-level-art-ILZ4JAAC.js  726.3kb",
           "  apps\\portal\\dist\\chunks\\chunk-VSG3JNSZ.js                  383.3kb",
-          "  ...and 108 more output files...",
-          "Done in 154ms",
+          "  ...and 111 more output files...",
+          "Done in 146ms",
           "  apps\\portal\\dist\\chunks\\hmh-pixi.js  454.8kb",
-          "Done in 200ms"
+          "Done in 175ms"
         ],
         "causedByStep7": false
       },
@@ -671,7 +607,7 @@
         "id": "release-facts --check",
         "command": "node scripts/hmh-release-facts.mjs --check",
         "exitCode": 1,
-        "ms": 190,
+        "ms": 174,
         "inVercelBuild": false,
         "output": [
           "Stale or missing fact sheet: hmh-fact-sheet.json"
@@ -688,7 +624,7 @@
         "id": "portal-pages",
         "command": "node scripts/build-portal-pages.mjs",
         "exitCode": 0,
-        "ms": 223,
+        "ms": 234,
         "inVercelBuild": false,
         "output": [
           "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (launch copy)."
@@ -699,7 +635,7 @@
         "id": "release-facts --write",
         "command": "node scripts/hmh-release-facts.mjs --write",
         "exitCode": 0,
-        "ms": 210,
+        "ms": 182,
         "inVercelBuild": false,
         "output": [
           "    \"originalIdsInFeatures\": 67,",
@@ -711,7 +647,7 @@
           "      \"gated\": 5",
           "    }",
           "  },",
-          "  \"sourceSnapshotSha256\": \"21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c\",",
+          "  \"sourceSnapshotSha256\": \"639ba0483a91a1818209add06f6cfffbf01929cba48b4582f2cd990defd30daa\",",
           "  \"currentCandidateCertified\": false",
           "}"
         ],
@@ -721,7 +657,7 @@
         "id": "design:web3-audit",
         "command": "npm run design:web3-audit",
         "exitCode": 0,
-        "ms": 637,
+        "ms": 615,
         "inVercelBuild": false,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-audit",
@@ -736,7 +672,7 @@
         "id": "design:web3-live",
         "command": "npm run design:web3-live",
         "exitCode": 0,
-        "ms": 637,
+        "ms": 590,
         "inVercelBuild": false,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-live",
@@ -751,7 +687,7 @@
         "id": "design:security-audit",
         "command": "npm run design:security-audit",
         "exitCode": 0,
-        "ms": 804,
+        "ms": 1119,
         "inVercelBuild": false,
         "output": [
           "> lesters-arcade@0.3.1 design:security-audit",
@@ -773,6 +709,15 @@
           "actual": true,
           "line": 170,
           "source": "assert.equal(f.settlement.liveFlag, false);"
+        },
+        {
+          "file": "tests/integration-glue-copy.test.mjs",
+          "name": "D19: the prerendered Ranked entry modal follows the flags, and main.js shows the same live text",
+          "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.'\n- 'Ranked preview: your wallet identifies this run on this device. Verified on-chain publishing remains disabled, so no transaction is sent and no zkLTC is charged.'\n",
+          "expected": "Ranked preview: your wallet identifies this run on this device. Verified on-chain publishing remains disabled, so no transaction is sent and no zkLTC is charged.",
+          "actual": "One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.",
+          "line": 199,
+          "source": "assert.equal(block(index, 'entry-copy'), preview.rankedEntryCopy.replace(/'/g, '&#39;'));"
         },
         {
           "file": "tests/litvm-ranked-contract-gate.test.mjs",
@@ -836,25 +781,18 @@
           "actual": true,
           "line": 16,
           "source": "assert.equal(SETTLEMENT_LIVE, false);"
-        }
-      ],
-      "preExisting": [
-        {
-          "file": "tests/portal-trust-copy.test.mjs",
-          "name": "main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC",
-          "note": "fails before this step too"
         },
         {
-          "file": "tests/ranked-results.test.mjs",
-          "name": "main.js mounts the screen from exactly one lazy listener",
-          "note": "fails before this step too"
-        },
-        {
-          "file": "tests/wallet-session.test.mjs",
-          "name": "a token stored by the 1.7.0 flow is discarded instead of restored or sent",
-          "note": "fails before this step too"
+          "file": "tests/ship-readiness.test.mjs",
+          "name": "brand tokens load before portal styles and public metadata is truthful",
+          "message": "The input did not match the regular expression /verified on-chain publishing remains disabled/i. Input:\n\n'<!doctype html>\\n' +\n  '<html lang=\"en\">\\n' +\n  '  <head>\\n' +\n  '    <meta charset=\"utf-8\" />\\n' +\n  '    <base href=\"/\" />\\n' +\n  '    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\" />\\n' +\n  '    <meta name=\"mobile-web-app-capable\" content=\"yes\" />\\n' +\n  '    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\\n' +\n  '    <meta name=\"theme-color\" content=\"#05070f\" />\\n' +\n  '    <link rel=\"manifest\" href=\"./manifest.webmanifest\" />\\n' +\n ",
+          "expected": {},
+          "actual": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <base href=\"/\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\" />\n    <meta name=\"mobile-web-app-capable\" content=\"yes\" />\n    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n    <meta name=\"theme-color\" content=\"#05070f\" />\n    <link rel=\"manifest\" href=\"./manifest.webmanifest\" />\n    <link rel=\"apple-touch-icon\" href=\"./assets/lester-pilot.svg\" />\n    <title>Lester&#39;s Arcade — Free Browser Games</title>\n    <meta name=\"description\" content=\"Lester&#39;s Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun&#39;s Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\" />\n    <meta name=\"author\" content=\"Lester's Arcade\" />\n    <meta name=\"robots\" content=\"index, follow\" />\n    <link rel=\"canonical\" href=\"https://lestersarcade.io/\" />\n\n    <!-- Open Graph / Social Media -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://lestersarcade.io/\" />\n    <meta property=\"og:title\" content=\"Lester&#39;s Arcade — Free Browser Games\" />\n    <meta property=\"og:description\" content=\"Lester&#39;s Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun&#39;s Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\" />\n    <meta property=\"og:image\" content=\"https://lestersarcade.io/assets/video/arcade-splash-poster.jpg\" />\n    <meta property=\"og:site_name\" content=\"Lester's Arcade\" />\n\n    <!-- Twitter Card -->\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"twitter:url\" content=\"https://lestersarcade.io/\" />\n    <meta name=\"twitter:title\" content=\"Lester&#39;s Arcade — Free Browser Games\" />\n    <meta name=\"twitter:description\" content=\"Lester&#39;s Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun&#39;s Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\" />\n    <meta name=\"twitter:image\" content=\"https://lestersarcade.io/assets/video/arcade-splash-poster.jpg\" />\n\n    <!-- Favicon -->\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"./assets/favicon.svg\" />\n    <link rel=\"apple-touch-icon\" href=\"./assets/lester-pilot.svg\" />\n<!-- Critical CSS inline (first 2KB) to avoid render blocking -->\n    <style>\n      body { margin: 0; background: var(--navy-950, #05070f); color: var(--text-primary, #e4e4e7); font-family: var(--font-ui, system-ui, sans-serif); }\n      .arcade-shell { min-height: 100vh; }\n      .official-app { position: relative; }\n      .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }\n    </style>\n    <link rel=\"stylesheet\" href=\"./src/design-tokens.css?v=arcade-discovery-20260914\" />\n    <link rel=\"preload\" href=\"./assets/video/arcade-splash-poster.jpg\" as=\"image\" fetchpriority=\"high\" />\n    <link rel=\"modulepreload\" href=\"./dist/main.js?v=arcade-discovery-20260914\" />\n    <link rel=\"stylesheet\" href=\"/portal-discovery.css?v=arcade-discovery-20260914\" />\n    <!-- Deferred stylesheets -->\n    <link rel=\"preload\" href=\"./styles.css?v=arcade-discovery-20260914\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\" />\n    <link rel=\"preload\" href=\"./styles-arcade-polish.css?v=arcade-discovery-20260914\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\" />\n    <noscript>\n      <link rel=\"stylesheet\" href=\"./styles.css?v=arcade-discovery-20260914\" />\n      <link rel=\"stylesheet\" href=\"./styles-arcade-polish.css?v=arcade-discovery-20260914\" />\n    </noscript>\n    <script id=\"portalStructuredData\" type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://lestersarcade.io/#organization\",\"name\":\"Lester's Arcade\",\"url\":\"https://lestersarcade.io/\",\"logo\":\"https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png\"},{\"@type\":\"WebSite\",\"@id\":\"https://lestersarcade.io/#website\",\"name\":\"Lester's Arcade\",\"url\":\"https://lestersarcade.io/\",\"description\":\"Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\",\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"},\"inLanguage\":\"en\"},{\"@type\":\"WebPage\",\"@id\":\"https://lestersarcade.io/#webpage\",\"url\":\"https://lestersarcade.io/\",\"name\":\"Lester's Arcade — Free Browser Games\",\"description\":\"Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\",\"isPartOf\":{\"@id\":\"https://lestersarcade.io/#website\"}},{\"@type\":\"VideoGame\",\"@id\":\"https://lestersarcade.io/games/hard-money-heroes#game\",\"name\":\"Hard Money Heroes\",\"url\":\"https://lestersarcade.io/games/hard-money-heroes\",\"description\":\"Fight through the Crypto Wasteland in a top-down roguelite. Choose a hero, collect weapons, complete field objectives, and hold out against the horde.\",\"genre\":\"Survival shooter\",\"image\":\"https://lestersarcade.io/assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg\",\"gamePlatform\":\"Web browser\",\"applicationCategory\":\"Game\",\"operatingSystem\":\"Web browser\",\"playMode\":\"SinglePlayer\",\"isAccessibleForFree\":true,\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"}},{\"@type\":\"VideoGame\",\"@id\":\"https://lestersarcade.io/games/chikun#game\",\"name\":\"Chikun's Escape\",\"url\":\"https://lestersarcade.io/games/chikun\",\"description\":\"Run, jump, and fly through the Ground & Sky course. Time your taps, collect coins, and find a way through hazards as the pace picks up.\",\"genre\":\"Run & fly\",\"image\":\"https://lestersarcade.io/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp\",\"gamePlatform\":\"Web browser\",\"applicationCategory\":\"Game\",\"operatingSystem\":\"Web browser\",\"playMode\":\"SinglePlayer\",\"isAccessibleForFree\":true,\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"}},{\"@type\":\"VideoGame\",\"@id\":\"https://lestersarcade.io/games/stacked#game\",\"name\":\"STACKED\",\"url\":\"https://lestersarcade.io/games/stacked\",\"description\":\"Stack, spin, and seal falling ledger blocks to the arcade soundtrack. Chase cleaner clears while music-driven worlds react around the board.\",\"genre\":\"Falling-block puzzle\",\"image\":\"https://lestersarcade.io/assets/stacked-mode-select/stacked-free-v1.png\",\"gamePlatform\":\"Web browser\",\"applicationCategory\":\"Game\",\"operatingSystem\":\"Web browser\",\"playMode\":\"SinglePlayer\",\"isAccessibleForFree\":true,\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"}}]}</script>\n  </head>\n  <body>\n    <a class=\"portal-skip\" href=\"#officialApp\">Skip to arcade content</a>\n    <div class=\"crt-overlay\" aria-hidden=\"true\"></div>\n    <main class=\"arcade-shell official-shell\">\n      <section id=\"officialApp\" class=\"official-app\" tabindex=\"-1\" data-step=\"wallet-splash\" aria-label=\"Lester's Arcade official app\">\n        <div class=\"official-scanline\" aria-hidden=\"true\"></div>\n\n        <div id=\"rankedEntryModal\" class=\"ranked-entry-overlay\" hidden role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"rankedEntryTitle\">\n          <div class=\"ranked-entry-card\">\n            <p class=\"eyebrow\" id=\"rankedEntryTitle\">Ranked · Entry</p>\n            <p class=\"ranked-entry-copy\" id=\"rankedEntryCopy\"><!-- copy:entry-copy:start -->One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.<!-- copy:entry-copy:end --></p>\n            <div class=\"ranked-entry-rows\">\n              <div class=\"ranked-entry-row\"><span>Network</span><strong id=\"rankedEntryNetwork\">LitVM LiteForge · 4441</strong></div>\n              <div class=\"ranked-entry-row\"><span>Wallet</span><strong id=\"rankedEntryWallet\">—</strong></div>\n              <div class=\"ranked-entry-row\"><span>zkLTC balance</span><strong id=\"rankedEntryBalance\">Checking…</strong></div>\n              <div class=\"ranked-entry-row\"><span>Entry</span><strong id=\"rankedEntryFee\">0.1 zkLTC</strong></div>\n              <div class=\"ranked-entry-row\"><span>Settlement reserve<small class=\"ranked-entry-row-note\">pays the relayer that publishes your score on LitVM</small></span><strong id=\"rankedEntryReserve\">0.002 zkLTC</strong></div>\n              <div class=\"ranked-entry-row ranked-entry-row-total\"><span>Total</span><strong id=\"rankedEntryTotal\">0.102 zkLTC</strong></div>\n              <div class=\"ranked-entry-row ranked-entry-row-split\"><span>Where it goes</span><strong>85% to the game's developer · 15% to the arcade</strong></div>\n            </div>\n            <div id=\"rankedEntryChainGuard\" class=\"ranked-entry-chainguard\" hidden></div>\n            <p id=\"rankedEntryStatus\" class=\"ranked-entry-status\" role=\"status\" aria-live=\"polite\"></p>\n            <div class=\"ranked-entry-actions\">\n              <button id=\"rankedEntryCancel\" class=\"back-nav-button\" type=\"button\">Cancel</button>\n              <button id=\"rankedEntryApprove\" class=\"primary-button big-action\" type=\"button\">Start Ranked Run</button>\n            </div>\n            <a id=\"rankedEntryFreeLink\" class=\"ranked-entry-free-link\" href=\"/games\">Free Mode is always free</a>\n            <p class=\"tiny-note\" id=\"rankedEntryFootnote\"><!-- copy:entry-footnote:start -->The entry contract quotes the exact total. Testnet entries are not refunded.<!-- copy:entry-footnote:end --></p>\n          </div>\n        </div>\n\n        <nav class=\"official-nav official-simplified-nav\" aria-label=\"Lester's Arcade main navigation\">\n          <a class=\"portal-brand\" href=\"/\" aria-label=\"Lester's Arcade home\"><img src=\"/assets/brand/lesters-arcade-logo-horizontal.png\" alt=\"Lester's Arcade\" width=\"600\" height=\"223\"></a>\n          <div id=\"officialNavTabs\" class=\"official-nav-tabs\"><a class=\"official-nav-tab\" href=\"/games\">Games</a><a class=\"official-nav-tab\" href=\"/profile\">Profile</a><a class=\"official-nav-tab\" href=\"/scores\">Scores</a><a class=\"official-nav-tab\" href=\"/settings\">Settings</a></div>\n        </nav>\n\n        <!-- U11a. Shown whenever the arcade fell back to the local test identity\n             because no browser wallet answered. It lives in the app shell rather\n             than on one route so the state is legible on every screen. -->\n        <div id=\"simulatedWalletBanner\" class=\"simulated-wallet-banner\" role=\"status\" hidden></div>\n\n\n\n        <section id=\"officialWalletSplash\" class=\"official-view wallet-splash-view portal-home\">\n          <div class=\"portal-hero\">\n            <div class=\"portal-hero-copy\">\n              <p class=\"portal-kicker\"><span class=\"portal-open-dot\" aria-hidden=\"true\"></span> Browser games. Litecoin culture.</p>\n              <h1>Good games.<br><em>One more run.</em></h1>\n              <p class=\"portal-lead\">Welcome to Lester's Arcade. Survive the wasteland, make your escape, or find your rhythm in falling blocks. Pick a cabinet and play Free, right here in your browser.</p>\n              <div class=\"portal-actions\">\n                <a id=\"officialGuestEnterButton\" class=\"portal-button\" href=\"/games\">Browse Arcade</a>\n                <button id=\"officialConnectButton\" class=\"portal-button portal-button-outline\" type=\"button\">Sign in</button>\n              </div>\n              <p class=\"portal-entry-note\">Free play needs no wallet. No download. Just a browser.</p>\n              <button id=\"officialHmhFreeQuickplayButton\" class=\"portal-text-link\" type=\"button\">Play Hard Money Heroes Free</button>\n              <p id=\"officialGuestQuickplayStatus\" class=\"tiny-note\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\" hidden></p>\n            </div>\n            <figure class=\"portal-hero-film\">\n              <div class=\"portal-film-label\"><span>Lester &amp; Lilly welcome you</span><span aria-hidden=\"true\">↗</span></div>\n              <div class=\"splash-marquee\">\n                <video id=\"splashLoopVideo\" class=\"splash-marquee-art splash-loop-video\" data-portal-video data-src=\"/assets/video/arcade-splash-loop.mp4\" poster=\"/assets/video/arcade-splash-poster.jpg\" loop muted playsinline preload=\"none\" aria-label=\"Lester and Lilly in a neon-lit arcade\"></video>\n              </div>\n              <figcaption><span>The arcade is open.</span><button class=\"portal-media-toggle\" type=\"button\" data-video-toggle=\"splashLoopVideo\" aria-pressed=\"false\">Play film</button></figcaption>\n            </figure>\n          </div>\n          <div class=\"portal-ticker\" aria-label=\"Available games\"><span>Now playing</span><a href=\"/games/hard-money-heroes\">Hard Money Heroes</a><span aria-hidden=\"true\">✦</span><a href=\"/games/chikun\">Chikun's Escape</a><span aria-hidden=\"true\">✦</span><a href=\"/games/stacked\">STACKED</a></div>\n\n          <section class=\"portal-section\" aria-labelledby=\"homeGamesTitle\">\n            <div class=\"portal-section-heading\"><div><p class=\"portal-kicker\">01 / On the floor</p><h2 id=\"homeGamesTitle\">Three ways to lose track of time.</h2></div><a class=\"portal-text-link\" href=\"/games\">Meet the cabinets ↗</a></div>\n            <div class=\"portal-game-previews\">\n              <a href=\"/games/hard-money-heroes\" class=\"portal-game-preview\"><div class=\"portal-preview-art\"><img src=\"/assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg\" alt=\"Hard Money Heroes wasteland key art\" width=\"1200\" height=\"675\" loading=\"lazy\" decoding=\"async\"></div><div class=\"portal-preview-caption\"><span class=\"portal-kicker\">Survival shooter</span><h3>Hard Money Heroes <span aria-hidden=\"true\">↗</span></h3><p>Choose your hero. Build your loadout. Hold off the horde.</p></div></a>\n              <a href=\"/games/chikun\" class=\"portal-game-preview\"><div class=\"portal-preview-art\"><img src=\"/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp\" alt=\"Chikun's Escape game artwork\" width=\"1200\" height=\"675\" loading=\"lazy\" decoding=\"async\"></div><div class=\"portal-preview-caption\"><span class=\"portal-kicker\">Run &amp; fly</span><h3>Chikun's Escape <span aria-hidden=\"true\">↗</span></h3><p>Run, jump, and flap your way through Ground &amp; Sky.</p></div></a>\n              <a href=\"/games/stacked\" class=\"portal-game-preview\"><div class=\"portal-preview-art\"><img src=\"/assets/stacked-mode-select/stacked-free-v1.png\" alt=\"Glowing falling blocks in a STACKED music world\" width=\"1672\" height=\"941\" loading=\"lazy\" decoding=\"async\"></div><div class=\"portal-preview-caption\"><span class=\"portal-kicker\">Falling-block puzzle · Beta</span><h3>STACKED <span aria-hidden=\"true\">↗</span></h3><p>Stack, spin, and seal blocks to the arcade soundtrack.</p></div></a>\n            </div>\n          </section>\n\n          <section id=\"how-it-works\" class=\"portal-section portal-how\" aria-labelledby=\"howTitle\">\n            <div class=\"portal-how-intro\"><p class=\"portal-kicker\">02 / Make yourself at home</p><h2 id=\"howTitle\">How does Lester's Arcade work?</h2><p><!-- copy:how-intro:start -->Lester&#39;s Arcade brings original browser games, a shared jukebox, and wallet-based player profiles into one arcade. Start with Free Mode. Sign in with a wallet when you&#39;re ready to play Ranked on the LitVM testnet.<!-- copy:how-intro:end --></p><a class=\"portal-text-link\" href=\"/games\">Find your first game →</a><img src=\"/assets/generated/lesters-arcade-parent-portal-hero-textfree-web.jpg\" alt=\"Illustrated neon arcade cabinet row\" width=\"1024\" height=\"576\" loading=\"lazy\" decoding=\"async\"></div>\n            <ol class=\"portal-steps\">\n              <li><span class=\"portal-step-number\" aria-hidden=\"true\">01</span><div><h3>Walk in. Pick a cabinet.</h3><p>Every active game has Free Mode. Try a survival run, a quick escape, or a puzzle session. Keyboard, mouse, and touch controls are supported.</p></div></li>\n              <li><span class=\"portal-step-number\" aria-hidden=\"true\">02</span><div><h3><!-- copy:how-connect-title:start -->Sign in with your wallet.<!-- copy:how-connect-title:end --></h3><p><!-- copy:how-connect:start -->Choose your wallet and sign one message. Signing in costs nothing and sends no transaction. Each Ranked run then costs 0.102 testnet zkLTC, confirmed once in your wallet.<!-- copy:how-connect:end --></p><button class=\"portal-text-link\" type=\"button\" data-portal-connect><!-- copy:how-connect-action:start -->Sign in with a wallet →<!-- copy:how-connect-action:end --></button></div></li>\n              <li><span class=\"portal-step-number\" aria-hidden=\"true\">03</span><div><h3>Put your name on your runs.</h3><p><!-- copy:how-profile:start -->Choose a display name and avatar on chain; each change is a small transaction you pay for. Your public profile shows your best scores, verified Ranked runs, and the achievements recorded for your wallet.<!-- copy:how-profile:end --></p><a class=\"portal-text-link\" href=\"/profile\">Explore player profiles →</a></div></li>\n            </ol>\n          </section>\n\n          <section class=\"portal-section portal-scores-story\" aria-labelledby=\"scoresTitle\">\n            <div class=\"portal-score-art\" aria-hidden=\"true\"><span class=\"portal-kicker\">Your next personal best</span><div class=\"portal-score-lines\"><span>YOUR NAME</span><span>YOUR RUN</span><span>YOUR NEXT TRY</span></div><span class=\"portal-score-stamp\">ONE MORE?</span></div>\n            <div><p class=\"portal-kicker\">03 / Chase your next best</p><h2 id=\"scoresTitle\">Every run gives you something to beat.</h2><p><!-- copy:scores-lead:start -->Each game has global Weekly, Monthly, and All-time leaderboards that rank the best verified Ranked score of each wallet. Revisit a run, change your approach, and come back for another try.<!-- copy:scores-lead:end --></p><p class=\"portal-note\"><!-- copy:scores-note:start -->Ranked runs are checked by the arcade server and published on the LitVM LiteForge testnet, and each leaderboard row links to its transaction. Weekly boards reset on Monday at 00:00 UTC and monthly boards on the 1st at 00:00 UTC.<!-- copy:scores-note:end --></p><div class=\"portal-actions\"><a class=\"portal-button\" href=\"/scores\">View scoreboards ↗</a><a class=\"portal-text-link\" href=\"/profile\">Your profile →</a></div><p id=\"officialWalletCopy\" class=\"portal-note\"><!-- copy:scores-wallet:start -->Sign in with a wallet to play Ranked and follow your runs on your profile.<!-- copy:scores-wallet:end --></p></div>\n          </section>\n\n          <section class=\"portal-section portal-jukebox-story\" aria-labelledby=\"jukeboxTitle\"><figure><video id=\"portalPromoVideo\" data-portal-video data-src=\"/assets/video/arcade-promo-loop.mp4\" poster=\"/assets/video/arcade-promo-poster.jpg\" loop muted playsinline preload=\"none\" aria-label=\"Lester and Lilly playing air hockey\"></video><figcaption><span>A little arcade atmosphere.</span><button type=\"button\" class=\"portal-media-toggle\" data-video-toggle=\"portalPromoVideo\" aria-pressed=\"false\">Play film</button></figcaption></figure><div><p class=\"portal-kicker\">Sound on, when you're ready</p><h2 id=\"jukeboxTitle\">The jukebox is part of the ritual.</h2><p>Queue up the Lester's Arcade playlist. Skip tracks, shuffle the mix, and set the volume from the shared music player. The games bring their own rhythm; you choose the soundtrack.</p><button type=\"button\" class=\"portal-text-link\" data-open-jukebox>Open the jukebox →</button></div></section>\n\n          <section class=\"portal-section portal-faq\" aria-labelledby=\"faqTitle\"><div><p class=\"portal-kicker\">Before your first run</p><h2 id=\"faqTitle\">A few things to know.</h2><a class=\"portal-text-link\" href=\"/trust.html#support\">Need a hand? →</a></div><div id=\"portalFaqList\"><details><summary>Do I need a wallet to play?</summary><p>No. Free Mode is always free and needs no wallet. Browse the cabinets, choose a game, and start playing in your browser. You need a wallet only for Ranked.</p></details>\n<details><summary>What does signing in with a wallet do?</summary><p>You sign one message to prove the wallet is yours. Signing in costs nothing and sends no transaction. Your wallet address is your player identity, so your profile, Ranked runs, and achievements follow you to any device.</p></details>\n<details><summary>Are profiles and leaderboards online?</summary><p>Yes. Each game has global Weekly, Monthly, and All-time leaderboards that rank the best verified Ranked score of each wallet. Weekly boards reset on Monday at 00:00 UTC and monthly boards on the 1st at 00:00 UTC. Every wallet has a public profile with its best scores, verified runs, and the achievements the arcade server recorded for it. You choose your display name and avatar on chain, with a small transaction you pay for. Names that break the arcade&#39;s rules are hidden on its pages by moderation.</p></details>\n<details><summary>Does Ranked cost money or pay prizes?</summary><p>Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game&#39;s developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade&#39;s relayer to publish your result. Testnet zkLTC has no value, and there are no prizes. Testnet entries are not refunded. Free Mode is always free.</p></details>\n<details><summary>How are Ranked runs checked and published?</summary><p>When a Ranked run ends, the arcade server checks it. Chikun&#39;s Escape and STACKED runs are replayed on the server from their recorded inputs. Hard Money Heroes runs are plausibility-checked against the game&#39;s limits; they are not replayed. The arcade&#39;s relayer then publishes the result on LitVM, and your results screen links to the transaction. If publishing fails, it retries automatically, and you can retry it from your profile.</p></details>\n<details><summary>Can I play on my phone?</summary><p>The three active games support on-screen touch controls as well as desktop input. A current browser is required. Performance varies by device; the games include settings for controls, audio, and visual effects.</p></details></div></section>\n          <div class=\"portal-final-cta\"><p>Found your game?</p><a class=\"portal-button\" href=\"/games\">Step into the arcade ↗</a></div>\n          <a id=\"adBannerHorizontal\" class=\"portal-partner\" href=\"mailto:kingdankkush420@gmail.com?subject=Lester%27s%20Arcade%20Ad%20Space\" rel=\"sponsored\" data-ad-slot=\"horizontal-bottom\"><span class=\"portal-kicker\">Partner with the arcade</span><span>Put your brand on the floor.</span><span>Ask about ad space ↗</span></a>\n        </section>\n\n        <section id=\"officialArcadeFloor\" class=\"official-view arcade-floor-view\" hidden>\n          <div class=\"arcade-walk-in\">\n            <p id=\"officialProfileEyebrow\" class=\"eyebrow\">Guest practice session</p>\n            <h1 id=\"officialProfileTitle\">Pick your cabinet.</h1>\n            <p id=\"officialProfileCopy\">Loading cabinet access, local practice history, and testnet mode options.</p>\n          </div>\n          <div class=\"cabinet-motion-toolbar\"><p class=\"portal-catalog-note\">Free to play · Keyboard &amp; touch · No wallet needed</p>\n            <button id=\"cabinetMotionToggle\" class=\"secondary-button\" type=\"button\" aria-controls=\"officialCabinetGrid\" aria-pressed=\"false\">Pause cabinet rotation</button>\n          </div>\n          <div id=\"officialCabinetGrid\" class=\"official-cabinet-grid official-key-art-grid\" aria-label=\"Arcade cabinet selection\"></div>\n        </section>\n\n        <section id=\"officialGameIntroSplash\" class=\"official-view game-intro-splash-view\" hidden>\n          <div class=\"game-intro-shell\">\n            <div class=\"game-intro-heading\">\n              <p class=\"eyebrow\">Cabinet Boot Sequence</p>\n              <h2>Hard Money Heroes</h2>\n              <p id=\"hardMoneyHeroesIntroStatus\" class=\"machine-copy\">Loading Lester’s intro transmission. The clip fades to black before the game menu appears.</p>\n            </div>\n            <div class=\"game-intro-video-frame\" aria-label=\"Hard Money Heroes intro splash video\">\n              <video id=\"hardMoneyHeroesIntroVideo\" class=\"game-intro-video\" src=\"./assets/video/hard-money-heroes-intro.mp4\" poster=\"./assets/hard-money-heroes/screens/boot-splash.png\" preload=\"none\" playsinline controls></video>\n              <div id=\"hardMoneyHeroesIntroFade\" class=\"game-intro-fade\" aria-hidden=\"true\"></div>\n            </div>\n            <div class=\"game-intro-controls\">\n              <button id=\"hardMoneyHeroesIntroSkipButton\" class=\"primary-button big-action\" type=\"button\">Skip to Game Menu</button>\n              <p class=\"tiny-note\">Your Lester’s Arcade session is active. Hard Money Heroes does not interrupt Free play with a second wallet prompt.</p>\n            </div>\n          </div>\n        </section>\n\n        <section id=\"officialModeSelect\" class=\"official-view mode-select-view\" hidden>\n          <button id=\"officialModeBackButton\" class=\"back-nav-button\" type=\"button\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#back\"></use></svg> Back to Cabinets</button>\n          <div class=\"mode-select-heading\">\n            <p id=\"officialModeEyebrow\" class=\"eyebrow\">Selected Cabinet</p>\n            <h1 id=\"officialModeTitle\">Hard Money Heroes</h1>\n            <p id=\"officialModeCopy\" class=\"machine-copy\"><!-- copy:mode-copy:start -->Your Lester’s Arcade session is active. Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.<!-- copy:mode-copy:end --></p>\n            <p id=\"officialModeArtNote\" class=\"mode-art-note\" hidden>Temporary derived art is active in the development harness. Final production art is still required.</p>\n          </div>\n          <div class=\"official-mode-grid\">\n            <button id=\"officialFreeModeButton\" class=\"mode-card\" type=\"button\">\n              <img id=\"officialFreeModeBanner\" class=\"mode-card-banner\" src=\"./assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg\" alt=\"Hard Money Heroes Free Mode key art\" loading=\"lazy\" decoding=\"async\" />\n              <svg class=\"arcade-svg-icon arcade-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#infinity\"></use></svg>\n              <strong id=\"officialFreeModeTitle\">Free Mode</strong>\n              <span id=\"officialFreeModeCopy\">Practice only. No official score, progress, achievements, or chain writes.</span>\n            </button>\n            <button id=\"officialRankedModeButton\" class=\"mode-card ranked-card\" type=\"button\">\n              <img id=\"officialRankedModeBanner\" class=\"mode-card-banner\" src=\"./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg\" alt=\"Hard Money Heroes Ranked key art\" loading=\"lazy\" decoding=\"async\" />\n              <svg class=\"arcade-svg-icon arcade-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#star\"></use></svg>\n              <strong id=\"officialRankedModeTitle\">Play Ranked</strong>\n              <span id=\"officialRankedModeCopy\"><!-- copy:mode-ranked:start -->0.102 testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.<!-- copy:mode-ranked:end --></span>\n            </button>\n          </div>\n          <fieldset id=\"hmhChallengePanel\" class=\"hmh-challenge-panel\" hidden>\n            <legend>Free practice course</legend>\n            <label for=\"hmhChallengeChoice\">Choose a seed schedule</label>\n            <select id=\"hmhChallengeChoice\" aria-describedby=\"hmhChallengeStatus\">\n              <option value=\"random\">Fresh seed each run</option>\n              <option value=\"daily\">Daily UTC challenge</option>\n              <option value=\"weekly\">Weekly UTC challenge (Monday start)</option>\n              <option id=\"hmhChallengeSharedOption\" value=\"shared\" hidden>Shared course</option>\n            </select>\n            <p id=\"hmhChallengeStatus\" class=\"tiny-note\" role=\"status\" aria-live=\"polite\"></p>\n            <div class=\"hmh-challenge-share\">\n              <label for=\"hmhChallengeLink\">Shareable course link</label>\n              <input id=\"hmhChallengeLink\" type=\"url\" readonly spellcheck=\"false\" aria-describedby=\"hmhChallengeStatus\" />\n              <button id=\"hmhChallengeCopy\" type=\"button\" disabled>Copy challenge link</button>\n            </div>\n          </fieldset>\n          <div id=\"officialRankedTooltip\" class=\"ranked-tooltip\"></div>\n          <div id=\"portalGameDetails\"></div>\n        </section>\n\n        <section id=\"officialCharacterSelect\" class=\"official-view character-select-view\" hidden>\n          <button id=\"officialCharacterBackButton\" class=\"back-nav-button\" type=\"button\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#back\"></use></svg> Back to Mode Select</button>\n          <div class=\"char-select-head\">\n            <p class=\"eyebrow\">Choose Your Hero</p>\n            <h2>Hard Money Heroes</h2>\n            <p class=\"machine-copy\">Pick the hero for your run. More heroes unlock as Lester's Arcade grows.</p>\n          </div>\n          <p class=\"hero-carousel-hint\" aria-hidden=\"true\">Swipe to browse all four heroes <span>→</span></p>\n          <div id=\"officialCharacterRoster\" class=\"character-roster\" aria-label=\"Hero selection\"></div>\n        </section>\n\n        <section id=\"officialLevelIntro\" class=\"official-view level-intro-view\" hidden>\n          <div class=\"level-intro-card\">\n            <button id=\"officialLevelBackButton\" class=\"back-nav-button\" type=\"button\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#back\"></use></svg> Back to Hero Select</button>\n            <p class=\"eyebrow\">Level 1 // Into the Forked Frontier</p>\n            <h2>Level 1: The Crypto Wasteland</h2>\n          <p>The relay has gone silent. Beyond it lie broken roads, overgrown settlements and the Liquidator's yard. Your approach changes each run. Follow glowing supplies, find stronger weapons and keep moving as the horde closes in. The run ends when your hero falls. The next screen prepares your hero and the world while you review your insertion point and field tips.</p>\n            <div class=\"level-control-strip\">\n              <span>⌨ WASD / arrows: move (default keys)</span>\n              <span>🖱 Mouse: aim — gun auto-fires</span>\n              <span>📱 MOVE: move · AIM: aim manually</span>\n              <span>🎯 Release AIM: automatic targeting resumes</span>\n              <span>💣 Grenade: right click / F · 📱 GRENADE</span>\n              <span>⚡ Dodge, close combat and machinery: automatic</span>\n              <span>⬆ Level-up: choose an upgrade · ⎋ Esc / pause button: menu</span>\n            </div>\n            <p class=\"tiny-note\">Collect pickups as you move. Walk near machinery to activate it. You can change supported keyboard bindings in Settings.</p>\n            <button id=\"officialBeginLevelButton\" class=\"primary-button big-action\" type=\"button\">Begin Level 1: The Crypto Wasteland</button>\n          </div>\n        </section>\n\n        <section id=\"officialGameplay\" class=\"official-view gameplay-view\" hidden>\n          <button id=\"combatMenuIconButton\" class=\"combat-menu-icon-button\" type=\"button\" aria-label=\"Pause and open game menu\" aria-haspopup=\"dialog\"><svg class=\"arcade-svg-icon arcade-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#menu\"></use></svg></button>\n          <div class=\"gameplay-topbar\">\n            <div>\n              <p class=\"eyebrow\">Hard Money Heroes</p>\n              <h2 id=\"officialGameModeTitle\">Level 1: The Crypto Wasteland // Free Mode</h2>\n            </div>\n            <p id=\"officialGameStateCopy\" class=\"tiny-note\">Free practice stays local. Ranked testnet runs submit only from the game-over screen.</p>\n          </div>\n          <div id=\"roguelikeStatBar\" class=\"roguelike-stat-bar\" aria-label=\"Run stats\" aria-live=\"polite\" hidden></div>\n          <div id=\"officialGameplayControls\" class=\"gameplay-control-bar\" aria-label=\"Hard Money Heroes gameplay menu controls\">\n            <button id=\"combatPauseButton\" class=\"secondary-button\" type=\"button\">Pause</button>\n            <button id=\"combatRestartButton\" class=\"secondary-button\" type=\"button\">Restart</button>\n            <button id=\"combatMusicButton\" class=\"secondary-button\" type=\"button\">Music On</button>\n            <button id=\"combatShakeButton\" class=\"secondary-button\" type=\"button\" aria-label=\"Toggle screen shake\">Shake On</button>\n            <button id=\"combatGoreButton\" class=\"secondary-button\" type=\"button\" aria-label=\"Toggle gore effects\">Gore On</button>\n            <button id=\"combatCharacterButton\" class=\"secondary-button\" type=\"button\" aria-label=\"Switch hero\">Switch Hero</button>\n            <button id=\"combatViewportButton\" class=\"secondary-button\" type=\"button\">Fullscreen</button>\n            <button id=\"combatReturnMenuButton\" class=\"secondary-button\" type=\"button\">Game Menu</button>\n            <button id=\"combatExitButton\" class=\"secondary-button\" type=\"button\">Exit Game</button>\n          </div>\n          <div id=\"combatMenuPanel\" class=\"combat-menu-panel\" hidden>\n            <p class=\"eyebrow\">Game Menu</p>\n            <h3 id=\"combatMenuTitle\">Paused</h3>\n            <p id=\"combatMenuCopy\">Restart, music, switch hero, and exit controls are always available during gameplay.</p>\n            <div id=\"combatGameOverSummary\" class=\"game-over-summary\" hidden aria-live=\"polite\"></div>\n            <div id=\"combatMenuActionGrid\" class=\"combat-menu-action-grid\" aria-label=\"Pause and game-over actions\"></div>\n            <div id=\"combatSettingsPanel\" class=\"combat-settings-panel\" hidden aria-label=\"Gameplay settings\"></div>\n          </div>\n          <div id=\"combatHudOverlay\" class=\"combat-hud-overlay\" aria-label=\"Hard Money Heroes health score timer power-ups and status\" aria-live=\"polite\"></div>\n          <aside id=\"tacticalBalanceDebugOverlay\" class=\"tactical-debug-overlay\" hidden aria-label=\"Developer tactical balance debug overlay\"></aside>\n          <div id=\"officialCombatMount\" class=\"official-combat-mount\"></div>\n        </section>\n\n<aside id=\"arcadeMusicPlayer\" class=\"arcade-music-player\" data-expanded=\"false\" data-playing=\"false\" data-muted=\"false\" aria-label=\"Lester's Arcade music player\">\n          <audio id=\"arcadeMusicAudio\" preload=\"metadata\"></audio>\n          <div class=\"arcade-music-now\">\n            <span class=\"arcade-music-kicker\">Arcade Jukebox</span>\n            <strong id=\"arcadeMusicTitle\">Lester's Arcade Playlist</strong>\n            <span id=\"arcadeMusicTime\" class=\"arcade-music-time\">0:00 / 0:00</span>\n          </div>\n          <label class=\"arcade-music-progress\">\n            <span class=\"arcade-music-sr-only\">Seek arcade music</span>\n            <span id=\"arcadeMusicProgressFill\" class=\"arcade-music-progress-fill\"></span>\n            <input id=\"arcadeMusicSeek\" type=\"range\" min=\"0\" max=\"1000\" step=\"1\" value=\"0\" aria-label=\"Seek arcade music\">\n          </label>\n          <div class=\"arcade-music-controls\" aria-label=\"Arcade music controls\">\n            <button id=\"arcadeMusicPreviousButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Previous song\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#previous\"></use></svg></button>\n            <button id=\"arcadeMusicPlayButton\" class=\"arcade-music-button primary\" type=\"button\" aria-label=\"Play arcade music\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#play\"></use></svg></button>\n            <button id=\"arcadeMusicMuteButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Mute arcade music\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#volume\"></use></svg></button>\n            <button id=\"arcadeMusicNextButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Next song\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#next\"></use></svg></button>\n            <button id=\"arcadeMusicShuffleButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Turn shuffle on\" aria-pressed=\"false\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#shuffle\"></use></svg></button>\n            <button id=\"arcadeMusicExpandButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Expand arcade music player\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#chevron-down\"></use></svg></button>\n          </div>\n          <div class=\"arcade-music-expanded-panel\">\n            <div class=\"arcade-music-volume-row\">\n              <label for=\"arcadeMusicVolume\">Volume</label>\n              <input id=\"arcadeMusicVolume\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"70\">\n              <output id=\"arcadeMusicVolumeValue\" for=\"arcadeMusicVolume\">70%</output>\n            </div>\n            <span class=\"arcade-music-duration-label\">Length <strong id=\"arcadeMusicDuration\">0:00</strong></span>\n            <ol id=\"arcadeMusicQueueList\" class=\"arcade-music-queue\"></ol>\n          </div>\n        </aside>\n        <noscript><p class=\"portal-noscript\">You can browse the arcade and game guides without JavaScript. Enable JavaScript to play games, connect a wallet, or open your profile.</p></noscript>\n        <footer class=\"official-footer\" aria-label=\"Lester's Arcade footer\">\n          <span>Copyright 2026</span>\n          <span>Designed by: <strong>KingDankKush</strong></span>\n          <nav class=\"official-footer-links\" aria-label=\"Support and policies\">\n            <a href=\"./trust.html#support\">Support</a>\n            <a href=\"./trust.html#privacy\">Privacy</a>\n            <a href=\"./trust.html#terms\">Terms</a>\n            <a href=\"./trust.html#accessibility\">Accessibility</a>\n            <a href=\"./trust.html#testnet\">Testnet notice</a>\n          </nav>\n        </footer>\n      </section>\n    </main>\n\n    <script type=\"module\" src=\"./dist/main.js?v=arcade-discovery-20260914\"></script>\n    <script>\n      // Register the service worker for offline + repeat-visit caching. Fails\n      // silently on unsupported browsers / file:// and never blocks the app.\n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});\n        });\n      }\n    </script>\n  </body>\n</html>\n",
+          "line": null,
+          "source": null
         }
       ],
+      "preExisting": [],
       "missingLedger": []
     },
     "edits": [
@@ -957,6 +895,26 @@
         "applied": true,
         "error": null,
         "verified": true
+      },
+      {
+        "file": "tests/ship-readiness.test.mjs",
+        "line": 50,
+        "before": "  assert.match(html, /verified on-chain publishing remains disabled/i);",
+        "after": "  // Since runbook step 7 the committed pages carry the launch copy (contract A33).\n  assert.match(html, /the relayer publishes your score on LitVM/i);\n  assert.doesNotMatch(html, /verified on-chain publishing remains disabled/i);",
+        "reason": "the committed index.html is the launch page after the flip",
+        "applied": true,
+        "error": null,
+        "verified": true
+      },
+      {
+        "file": "tests/integration-glue-copy.test.mjs",
+        "line": 198,
+        "before": "  // Committed pages are the preview state (the ship-readiness phrase included).\n  assert.equal(block(index, 'entry-copy'), preview.rankedEntryCopy.replace(/'/g, '&#39;'));\n  assert.equal(block(index, 'entry-footnote'), preview.rankedEntryFootnote.replace(/'/g, '&#39;'));",
+        "after": "  // Since runbook step 7 the committed pages are the launch state (the preview copy, checked below,\n  // still carries the ship-readiness phrase for any build with the flags off).\n  assert.equal(block(index, 'entry-copy'), launch.rankedEntryCopy.replace(/'/g, '&#39;'));\n  assert.equal(block(index, 'entry-footnote'), launch.rankedEntryFootnote.replace(/'/g, '&#39;'));",
+        "reason": "the prerendered entry modal follows the flags, so after the flip it is the launch copy",
+        "applied": true,
+        "error": null,
+        "verified": true
       }
     ],
     "unexplainedFailures": [],
@@ -991,17 +949,17 @@
         "removed": [
           "\"state\": \"simulated\",",
           "\"liveFlag\": false,",
-          "\"sourceSnapshotSha256\": \"fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa\",",
-          "\"sha256\": \"ff134abe959cb9bf0cec59b3a864f3a7bb75096d367258bc97130e8a2345c95d\",",
-          "\"bytes\": 37322",
+          "\"sourceSnapshotSha256\": \"ad82548b8655b7303921708b990a60e8fbf7dc356b7ca35f3cac95b6364aabde\",",
+          "\"sha256\": \"0376c8041d458e3557839b8a27db7c07efdd989688f65f72a9e253a04888eb53\",",
+          "\"bytes\": 37446",
           "\"sha256\": \"6d2b1e4a4082165d298135a07a9ab3ebd58c9a1993d72a21eee76f1e3c49eda0\","
         ],
         "added": [
           "\"state\": \"gated\",",
           "\"liveFlag\": true,",
-          "\"sourceSnapshotSha256\": \"21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c\",",
-          "\"sha256\": \"3ccb6be0f9fa5d6a6d55923ab6a2a6f5e50178f832e7e38981cdeba9cc9ca404\",",
-          "\"bytes\": 38729",
+          "\"sourceSnapshotSha256\": \"639ba0483a91a1818209add06f6cfffbf01929cba48b4582f2cd990defd30daa\",",
+          "\"sha256\": \"3e5d7562c834a744c3645d5cb27ce884cc785834744cd8bf977059c3c4d2496f\",",
+          "\"bytes\": 38773",
           "\"sha256\": \"7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea\","
         ],
         "removedCount": 7,
@@ -1012,14 +970,14 @@
         "by": "node scripts/hmh-release-facts.mjs --write",
         "removed": [
           "- Settlement: **simulated**; SETTLEMENT_LIVE=false. This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, durable history, epoch and authority acc",
-          "Input snapshot SHA-256: `fec4176077ce0397064028a9369c645e473f2ee820ac4843b0f68a4b1d418faa`",
-          "| apps/portal/index.html | ff134abe959cb9bf0cec59b3a864f3a7bb75096d367258bc97130e8a2345c95d | 37322 |",
+          "Input snapshot SHA-256: `ad82548b8655b7303921708b990a60e8fbf7dc356b7ca35f3cac95b6364aabde`",
+          "| apps/portal/index.html | 0376c8041d458e3557839b8a27db7c07efdd989688f65f72a9e253a04888eb53 | 37446 |",
           "| apps/portal/src/settlement.mjs | 6d2b1e4a4082165d298135a07a9ab3ebd58c9a1993d72a21eee76f1e3c49eda0 | 14185 |"
         ],
         "added": [
           "- Settlement: **gated**; SETTLEMENT_LIVE=true. This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, durable history, epoch and authority acceptan",
-          "Input snapshot SHA-256: `21dc82691523889e0fd14b6721a60083a8374f1a0592c7eda578854021ddd41c`",
-          "| apps/portal/index.html | 3ccb6be0f9fa5d6a6d55923ab6a2a6f5e50178f832e7e38981cdeba9cc9ca404 | 38729 |",
+          "Input snapshot SHA-256: `639ba0483a91a1818209add06f6cfffbf01929cba48b4582f2cd990defd30daa`",
+          "| apps/portal/index.html | 3e5d7562c834a744c3645d5cb27ce884cc785834744cd8bf977059c3c4d2496f | 38773 |",
           "| apps/portal/src/settlement.mjs | 7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea | 14183 |"
         ],
         "removedCount": 4,
@@ -1028,36 +986,23 @@
     ]
   },
   "fullVerify": {
-    "exitCode": 1,
-    "status": "FAIL",
+    "exitCode": 0,
+    "status": "PASS",
     "counts": {
-      "tests": 4643,
-      "failed": 54,
-      "passed": 4589,
+      "tests": 4762,
+      "failed": 51,
+      "passed": 4711,
       "cancelled": 0,
       "skipped": 0,
       "todo": 0,
-      "topLevel": 4576,
+      "topLevel": 4695,
       "suites": 8
     },
     "expectedFailureCount": 51,
-    "unexpected": 3,
+    "unexpected": 0,
     "missing": 0,
     "other": [],
-    "unexpectedFailures": [
-      {
-        "file": "tests/portal-trust-copy.test.mjs",
-        "name": "main.js purges House Demo rows on load and gates every index read on HOSTED_PROFILE_SYNC"
-      },
-      {
-        "file": "tests/ranked-results.test.mjs",
-        "name": "main.js mounts the screen from exactly one lazy listener"
-      },
-      {
-        "file": "tests/wallet-session.test.mjs",
-        "name": "a token stored by the 1.7.0 flow is discarded instead of restored or sent"
-      }
-    ]
+    "unexpectedFailures": []
   },
   "ok": true,
   "throwawayRemoved": true

@@ -13,31 +13,29 @@ import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycl
 import { buildHmhRunRecapModel, selectGameOverRecapFields } from './src/hmh-run-recap.mjs';
 import { buildHmhShareText, buildShareLinks, createShareRow, shareUrlFor } from './src/share-links.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
-import { recordStackedScore } from './src/arcade-core.mjs';
 import { readStackedSettings } from './src/stacked-player-settings.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
 import { bindChikunDailyChallenge } from './src/chikun-daily-challenge.mjs';
 import { mountHmhChallengeUi } from './src/hmh-challenge-ui.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings, normalizeHmhPlayerSettings, projectHmhRuntimeSettings } from './src/hmh-player-settings.mjs';
 import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from './src/arcade-music-transport.mjs';
-import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
-import { buildSiweChallenge, isValidLogin, createProviderRegistry, classifyWalletError, walletErrorAction } from './src/wallet-auth.mjs';
+import { getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
+import { createProviderRegistry, classifyWalletError, walletErrorAction } from './src/wallet-auth.mjs';
 import { RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei, formatZkLtcWei } from './src/arcade-core.mjs';
-import { createCanonicalSessionIdentity } from './src/session-integrity.mjs';
 import { ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from './src/ranked-entry-flow.mjs';
 import { sendRankedEntry, fetchWalletBalance, RANKED_ENTRY_GAS_UNITS, RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI } from './src/litvm-chain-client.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
-import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
+import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
 import { mountCabinetMotionControl } from './src/cabinet-motion.mjs';
 import { HMH_HERO_PORTRAITS as HMH_REBOOT_HERO_SELECTOR_ATLAS } from './src/generated/hmh-hero-portraits.mjs';
 import { restFrameIndex } from './src/hmh-hero-select-ui.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
-import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame, selectAnimatedEnemySet } from './src/combat-sprite-bridge.mjs';
+import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, selectAnimatedEnemySet } from './src/combat-sprite-bridge.mjs';
 
-import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
-import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
+import { computeDamage } from './src/combat-damage.mjs';
+import { sweptAABB, stepProjectile, knockback, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
 import { runtimeBossHitbox, runtimeEnemyHitbox } from './src/hmh-hurtbox-runtime.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
 import {
@@ -63,9 +61,9 @@ import {
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAlongSegment, circleTargetHitAlongSegment, drawRectIntersectsViewport, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove, resolveTrackingAiMove } from './src/world-obstacles.mjs';
-import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
-import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
+import { resolvePlayerCollision, obstacleHitAlongSegment, circleTargetHitAlongSegment, drawRectIntersectsViewport, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove, resolveTrackingAiMove } from './src/world-obstacles.mjs';
+import { sceneObjectsNear, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
+import { HMH_LEVEL_ONE_ID, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { buildLevelOneRoadTileIndex, classifyLevelOneTraversal, levelOneRoadTileKey } from './src/hmh-level-one-traversal.mjs';
 import { groundEntityContactPointForProjection, groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
@@ -75,10 +73,8 @@ import {
   propFrontEdgeDepth,
   propShadowEllipseForGroundContact,
 } from './src/hmh-prop-grounding.mjs';
-import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
-import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
-import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
-import { HMH_FINAL_WORLD_AMBIENT_ASSETS, finalWorldAmbientAssetByKey } from './assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs';
+import { animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
+import { finalWorldAmbientAssetByKey } from './assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs';
 import { HMH_LEVEL_TWO_FINAL_CITY_ASSETS, levelTwoFinalCityAssetByKey } from './assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, levelThreeFinalGetawayAssetByKey } from './assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three-ground/final-getaway/level3-final-getaway-ground-manifest.mjs';
@@ -91,9 +87,6 @@ import { createOfficialLeaderboardRoute } from './src/routes/official-leaderboar
 import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
-  generateDistrictGrid,
-  generateRoadNetwork,
-  generateTransitionZones,
   districtTemplateContextForCell,
 } from './src/district-generator.mjs';
 import {
@@ -103,7 +96,6 @@ import {
   formatHmhCampaignLevelBanner,
   buildHmhCampaignObjectiveState,
   buildHmhExtractionGuidance,
-  HMH_LEVEL_TWO_LITECOIN_CITY_POIS,
 } from './src/hmh-campaign-levels.mjs';
 import {
   buildCampaignExtractionPoint,
@@ -112,7 +104,7 @@ import {
   buildCampaignWorldSetup,
   isCampaignExtractionReached,
 } from './src/hmh-campaign-runtime.mjs';
-import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
+import { bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
 import { repairRuntimeActorKey } from './src/hmh-art-repair.mjs';
 import {
   levelOneInteractiveDebrisStateForObstacle,
@@ -132,7 +124,6 @@ import {
 import {
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
-  levelOneOpeningGroundRoleForTile,
 } from './src/hmh-level-one-visible-runtime.mjs';
 import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3-objects.mjs';
 import {
@@ -157,13 +148,13 @@ import {
   setCharacterUnlockOptionsProvider,
   setPreferredCharacter,
 } from './src/hmh-character-config.mjs';
-import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
+import { getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
 import HMH_ASSET_FOOTPRINTS from './assets/hmh-asset-footprints.json' with { type: 'json' };
 
 function animatedSceneAssetByKey(key) {
   return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
 }
-import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles, getFinalCombatVfxPack, buildIsometricHeroDrawPlan, projectPlayerShotScreenPoint } from './src/combat-vfx.mjs';
+import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, getFinalCombatVfxPack, buildIsometricHeroDrawPlan, projectPlayerShotScreenPoint } from './src/combat-vfx.mjs';
 import {
   buildLevelUpInteractionGate,
   buildLevelUpViewportLayout,
@@ -195,7 +186,6 @@ import {
   LESTER_BLASTER_GAMEPLAY,
   LESTER_BLASTER_ISOMETRIC_ROGUELIKE,
   LESTER_BLASTER_LEVEL_PLAN,
-  LESTER_BLASTER_MENU_OPTIONS,
   LESTER_BLASTER_PERFORMANCE_TARGETS,
   LESTER_BLASTER_POWER_UPS,
   LESTER_BLASTER_SOUND_DESIGN,
@@ -265,13 +255,11 @@ import {
   applyRoguelikeSkillUpgrade,
   calculateExtractionScore,
   hmhCampaignLevelAllowsExtraction,
-  getHmhLevelTarget,
   LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY,
   recordScore,
   applySettlement,
   setArcadeUsername,
   getAllCadenceLeaderboards,
-  getLeaderboard,
   resolveDisplayName,
   validateUsername,
   scheduleBossEncounter,
@@ -285,9 +273,8 @@ import {
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
-import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
-import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
-import { CURRENT_RANKED_SEASON_ID, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
+import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
+import { finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
 // Namespace imports: other wave-3 slices may import single names from these
 // modules at their own anchors, and a second `import { rankedIdentityFor }`
 // binding would be a duplicate declaration after the merge.
@@ -295,7 +282,9 @@ import * as rankedIdentityModule from './src/ranked-identity.mjs';
 import * as achievementStats from './src/achievements/stats.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
-import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness, loadEthers, openRankedSession, requestVerifierAttestation } from './src/litvm-chain-client.mjs';
+// recordCadenceScore is unused here but stays imported: the 'leaderboard-readback' check of
+// scripts/hmh-web3-settlement-audit.mjs reads this file for it. fetchGlobalLeaderboard stays beside it.
+import { fetchGlobalLeaderboard, checkRankedReadiness, loadEthers } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { formatSurvive, leaderboardEntryProvenance, purgeHouseSeedRows } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
@@ -16295,7 +16284,7 @@ var unlockablesReady = import('./src/unlockables-store.mjs').then(({ createUnloc
 }).catch((error) => { console.warn('[Unlockables]', error?.message || error); return null; });
 function characterUnlockOptions() { return { hosted: HOSTED_PROFILE_SYNC, verifiedRuns: unlockables?.verifiedRuns() ?? null }; }
 // arcade-core's option-less profile syncs (connect, recorded runs, the arcade snapshot) use the same hero gates.
-setCharacterUnlockOptionsProvider((profile) => (connectedWallet && String(profile?.wallet ?? '').toLowerCase() === String(connectedWallet).toLowerCase() ? characterUnlockOptions() : {}));
+setCharacterUnlockOptionsProvider((profile) => (connectedWallet && String(profile?.wallet ?? '').toLowerCase() === String(connectedWallet).toLowerCase() ? characterUnlockOptions() : {}), { hosted: HOSTED_PROFILE_SYNC });
 function childCosmetics(gameId) { const cosmetics = unlockables?.cosmeticsFor(gameId); return cosmetics ? { cosmetics } : {}; }
 function showUnlockablesPanel(view) {
   void Promise.all([unlockablesReady, import('./src/routes/unlockables-panel.mjs')]).then(([store, { renderUnlockablesPanel }]) => store && renderUnlockablesPanel({ store, view, viewedWallet: profileRouteState.viewedWallet ?? null, connectedWallet, heroEntries: () => buildCharacterSelectEntries(HERO_ROSTER_BASE, (connectedWallet && state.profiles[connectedWallet]) || {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions()), documentRef: document, after: dom.officialCabinetGrid, app: dom.officialApp, openAchievements: () => setOfficialView('profile', { wallet: null }) })).catch((error) => console.warn('[Unlockables panel]', error?.message || error));

@@ -3048,7 +3048,8 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(smokeScript.includes('officialConnectButton'), true);
   assert.equal(smokeScript.includes('arcade-discovery-20260914'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
-  assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
+  // The home revamp replaced the splash cabinet with the featured film (browser-e2e smoke update).
+  assert.equal(smokeScript.includes('portalPromoVideo'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
   assert.equal(smokeScript.includes('combatHudOverlay'), true);
 });

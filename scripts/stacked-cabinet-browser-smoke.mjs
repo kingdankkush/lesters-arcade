@@ -9,8 +9,11 @@ const evidenceDir = path.resolve(process.env.STACKED_CABINET_EVIDENCE_DIR || pat
 await mkdir(evidenceDir, { recursive: true });
 const dependency = process.env.STACKED_PLAYWRIGHT_PATH || path.join(root, 'benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
 const { chromium } = await import(pathToFileURL(dependency).href);
-const { server, origin } = process.env.STACKED_CABINET_BASE_URL
-  ? { server: null, origin: process.env.STACKED_CABINET_BASE_URL }
+// STACKED_ORIGIN (as the other STACKED smokes take it) or STACKED_CABINET_BASE_URL: an already-served
+// apps/portal web root; otherwise the harness's own static server.
+const externalOrigin = process.env.STACKED_ORIGIN || process.env.STACKED_CABINET_BASE_URL;
+const { server, origin } = externalOrigin
+  ? { server: null, origin: new URL(externalOrigin).origin }
   : await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const reports = [];
@@ -27,6 +30,12 @@ try {
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     page.on('response', response => {
       if (response.url().includes('stacked-cabinet-turnaround')) atlasRequests.push({ status: response.status(), url: response.url() });
+      if (response.status() >= 400) errors.push(`http ${response.status()} ${response.url()}`);
+    });
+    // Failed requests are errors too; a view that drops an image or media load (ERR_ABORTED) is not.
+    page.on('requestfailed', request => {
+      const failure = request.failure()?.errorText ?? 'failed';
+      if (!(/ERR_ABORTED/.test(failure) && request.method() === 'GET' && !new URL(request.url()).pathname.startsWith('/api/'))) errors.push(`requestfailed ${request.url()} ${failure}`);
     });
     await page.goto(origin, { waitUntil: 'networkidle' });
     await page.locator('#officialGuestEnterButton').click();
@@ -59,10 +68,25 @@ try {
     assert.deepEqual(visibleFrames, [0, 1, 2, 3, 4, 5], 'all six views actually animate');
     const toggle = page.locator('#cabinetMotionToggle');
     await toggle.click();
-    const pausedTimes = await card.evaluate(element => element.getAnimations({ subtree: true }).map(animation => animation.currentTime));
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true', 'the toggle reports the pause');
+    assert.equal(await page.locator('#officialCabinetGrid').getAttribute('data-cabinet-motion'), 'paused');
+    // The cabinet's looping CSS animations (the rotation). A tap on a phone also starts the card's short
+    // border-colour CSS transitions, which finish on their own and are not cabinet motion.
+    // `animation-play-state: paused` is a pending pause: Chrome keeps advancing currentTime until the next
+    // frame commits it, so a sample taken straight after the click runs a few ms ahead of the held time.
+    // Wait for every cabinet animation's ready promise (the commit) and two frames, then sample.
+    const cabinetAnimationState = async element => {
+      const animations = element.getAnimations({ subtree: true }).filter(animation => typeof animation.animationName === 'string');
+      await Promise.all(animations.map(animation => animation.ready));
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      return { playStates: animations.map(animation => animation.playState), times: animations.map(animation => animation.currentTime) };
+    };
+    const pausedSample = await card.evaluate(cabinetAnimationState);
+    assert.ok(pausedSample.times.length >= 6, `the six rotation frames animate: ${JSON.stringify(pausedSample.times)}`);
+    assert.ok(pausedSample.playStates.every(state => state === 'paused'), `every cabinet animation is paused: ${JSON.stringify(pausedSample.playStates)}`);
     await page.waitForTimeout(350);
-    const stillTimes = await card.evaluate(element => element.getAnimations({ subtree: true }).map(animation => animation.currentTime));
-    assert.deepEqual(stillTimes, pausedTimes, 'pause stops every cabinet animation');
+    const stillSample = await card.evaluate(cabinetAnimationState);
+    assert.deepEqual(stillSample.times, pausedSample.times, 'pause stops every cabinet animation');
     await toggle.focus();
     await page.keyboard.press('Space');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
@@ -80,7 +104,9 @@ try {
     // Check the actual cabinet click still reaches the public beta mode flow.
     await card.click();
     assert.equal(await page.locator('#officialModeTitle').textContent(), 'STACKED');
-    assert.match(await page.locator('#officialRankedModeTitle').textContent(), /Local Only/);
+    // Ranked-client rewrote the Ranked tile: a wallet-bound, replay-verified run (no "Local Only" tag).
+    assert.equal((await page.locator('#officialRankedModeTitle').textContent()).trim(), 'Play Ranked');
+    assert.match(await page.locator('#officialRankedModeCopy').textContent(), /replay verification/);
     assert.equal(await page.locator('#officialFreeModeButton').isEnabled(), true);
     await page.locator('#officialFreeModeButton').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();

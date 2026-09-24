@@ -64,9 +64,9 @@ export const PORTAL_E2E_FLOWS = Object.freeze([
   }),
   Object.freeze({
     id: 'ranked-preview',
-    status: 'deferred',
-    covers: Object.freeze(['ranked']),
-    reason: "startOfficialMode('ranked') hard-gates on walletConnector === 'injected-evm'; no real EVM provider exists headlessly. Needs a portal-approved test provider before it can be automated.",
+    status: 'implemented',
+    covers: Object.freeze(['ranked', 'game-over', 'restart-play-again']),
+    description: 'With the fixture EIP-1193 stub (key 0x11…11) the player signs in, opens the Ranked entry modal (0.102 zkLTC quote, preview approval), and an evidence-gated terminal-pilot run ends in the parent Ranked results screen in its preview state (results-share replaced the game-over recap for Ranked with a "View results" button); Escape closes it, View results reopens it, Play again (Ranked) opens the entry modal again, and nothing calls /api.',
   }),
   Object.freeze({
     id: 'wallet-connect-reconnect',
@@ -204,6 +204,45 @@ export function startPortalStaticServer({ rootDir, host = '127.0.0.1', port = 0 
   });
 }
 
+// The settlement flag the served portal carries (apps/portal/src/settlement.mjs is served as a static
+// file): true, false, or null when it cannot be read. The preview assertions hold only while it is false.
+async function servedSettlementLive(origin) {
+  try {
+    const response = await fetch(new URL('/src/settlement.mjs', origin), { cache: 'no-store' });
+    if (!response.ok) return null;
+    const match = /export const SETTLEMENT_LIVE = (true|false);/.exec(await response.text());
+    return match ? match[1] === 'true' : null;
+  } catch {
+    return null;
+  }
+}
+
+// A flow the served portal cannot run (the Ranked preview, once a portal serves the live flags after
+// runbook step 7) is NOT a pass: runFlow records it with ok: null and status 'not-run', and the verdict
+// counts it apart and names it on the last line, so a step-10 receipt that reads the exit code or the
+// ok flags never counts it as checked. --fail-on-not-run turns a not-run flow into exit 3.
+// results: [{ id, ok: true | false | null, reason? }] → { passed, failed, notRun, exitCode, line }
+export const NOT_RUN_EXIT_CODE = 3;
+export function summarizeFlowResults(results, { consoleErrors = [], failOnNotRun = false, label = 'Portal E2E' } = {}) {
+  const passed = results.filter((result) => result.ok === true).map((result) => result.id);
+  const failed = results.filter((result) => result.ok === false).map((result) => result.id);
+  const notRun = results.filter((result) => result.ok === null).map((result) => ({ id: result.id, reason: result.reason ?? null }));
+  if (failed.length > 0 || consoleErrors.length > 0) {
+    return { passed, failed, notRun, exitCode: 1, line: `${label} failed: ${failed.length} failing flows, ${consoleErrors.length} console/page errors.` };
+  }
+  if (notRun.length > 0) {
+    const names = notRun.map((flow) => `${flow.id}${flow.reason ? ` (${flow.reason})` : ''}`).join(', ');
+    return {
+      passed,
+      failed,
+      notRun,
+      exitCode: failOnNotRun ? NOT_RUN_EXIT_CODE : 0,
+      line: `${label}: PASS with ${notRun.length} flow${notRun.length === 1 ? '' : 's'} NOT RUN: ${names}. ${passed.length} flows passed; the flows not run were not checked${failOnNotRun ? '' : ' (exit 0 does not mean they ran; --fail-on-not-run exits 3)'}.`,
+    };
+  }
+  return { passed, failed, notRun, exitCode: 0, line: `${label} passed for all implemented flows.` };
+}
+
 const isMain = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 
 if (isMain) {
@@ -230,6 +269,10 @@ if (isMain) {
   const { chromium } = await import('../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
   // A hosted release must exercise the actual deployed bytes. No bundle or
   // asset interception is installed when an explicit origin is supplied.
+  // Locally, prefer the built-in server (apps/portal as the web root, with
+  // HTTP Range support): `python -m http.server` answers no Range request, so
+  // the pause-resume soundtrack seek cannot land on it and that flow (and the
+  // restart after it) fails for the host, not the portal.
   const { server, origin } = process.env.PORTAL_E2E_ORIGIN
     ? { server: { close() {} }, origin: new URL(process.env.PORTAL_E2E_ORIGIN).origin }
     : await startPortalStaticServer({ rootDir: portalRoot });
@@ -343,10 +386,16 @@ if (isMain) {
       const detail = await execute();
       const flowErrors = consoleErrors.slice(errorsBefore);
       if (flowErrors.length > 0) throw new Error(`console/page errors during flow: ${flowErrors.join(' | ')}`);
-      results.push({ id, ok: true, detail: detail ?? null });
-      console.log(`PASS ${id}`);
+      if (detail?.notRun) {
+        // Not a pass (summarizeFlowResults): ok is null, and the reason is kept.
+        results.push({ id, ok: null, status: 'not-run', reason: detail.notRun });
+        console.log(`NOT RUN ${id}: ${detail.notRun}`);
+      } else {
+        results.push({ id, ok: true, status: 'pass', detail: detail ?? null });
+        console.log(`PASS ${id}`);
+      }
     } catch (error) {
-      results.push({ id, ok: false, error: String(error?.message ?? error) });
+      results.push({ id, ok: false, status: 'fail', error: String(error?.message ?? error) });
       console.error(`FAIL ${id}: ${error?.message ?? error}`);
     }
   }
@@ -606,12 +655,116 @@ if (isMain) {
         recapVisible: true,
       };
     });
+
+    // Ranked in preview (both settlement flags false). The fixture stub is the Chikun smoke's: accounts,
+    // chain 4441, a balance, SIWE signed with the public 0x11…11 key, and switch/add chain. It is added
+    // last, so the guest flows above ran with no provider at all.
+    await runFlow('ranked-preview', async () => {
+      // The flow asserts the preview (both flags off). After runbook step 7 a hosted origin serves the live
+      // flags; the live Ranked run is scripts/ranked-live-browser-e2e.mjs --live (runbook step 9).
+      if (await servedSettlementLive(origin) === true) return { notRun: 'the served portal has SETTLEMENT_LIVE on' };
+      const apiRequests = [];
+      const onRequest = (request) => { if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(request.url()); };
+      page.on('request', onRequest);
+      try {
+        await page.addInitScript(() => {
+          const account = '0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a';
+          globalThis.ethereum = {
+            isMetaMask: true,
+            on: () => {},
+            removeListener: () => {},
+            request: async ({ method, params = [] }) => {
+              if (method === 'eth_requestAccounts' || method === 'eth_accounts') return [account];
+              if (method === 'eth_chainId') return '0x1159';
+              if (method === 'eth_getBalance') return '0xde0b6b3a7640000';
+              if (method === 'personal_sign') {
+                const ethers = await import('/vendor/ethers.min.js');
+                return new ethers.Wallet(`0x${'11'.repeat(32)}`).signMessage(String(params[0] ?? ''));
+              }
+              if (method === 'wallet_switchEthereumChain' || method === 'wallet_addEthereumChain') return null;
+              throw new Error(`Headless smoke provider does not implement ${method}`);
+            },
+          };
+        });
+        await page.goto(`${origin}/?evidenceSafe=1&terminalPilot=1`, { waitUntil: 'domcontentloaded' });
+        await page.waitForSelector('#officialWalletSplash:not([hidden])', { timeout: 20_000 });
+        assert.equal((await page.locator('#officialConnectButton').textContent()).trim(), 'Sign in');
+        await page.click('#officialConnectButton');
+        await page.locator('#officialCabinetGrid .official-cabinet-card.playable').first().waitFor({ state: 'visible', timeout: 20_000 });
+        await page.locator('#officialCabinetGrid .official-cabinet-card.playable').filter({ hasText: 'Hard Money Heroes' }).first().click();
+        await page.waitForSelector('#officialModeSelect:not([hidden])');
+        await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+        await page.click('#officialRankedModeButton');
+        await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
+        const modal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
+        assert.ok(/Ranked · Entry/i.test(modal) && /Total 0\.102 zkLTC/.test(modal) && /no transaction is sent/i.test(modal), `entry modal: ${modal}`);
+        await page.click('#rankedEntryApprove');
+        await page.waitForSelector('#officialCharacterSelect:not([hidden])', { timeout: 20_000 });
+        await page.locator('#officialCharacterRoster .hero-card.active').first().click();
+        await page.waitForSelector('#officialLevelIntro:not([hidden])');
+        await page.click('#officialBeginLevelButton');
+        const screen = page.locator('[data-ranked-results]');
+        await screen.waitFor({ state: 'visible', timeout: 60_000 });
+        await page.waitForFunction(() => document.querySelector('[data-ranked-results]')?.dataset.state === 'preview', undefined, { timeout: 10_000 });
+        const results = await screen.evaluate((root) => ({
+          eyebrow: root.querySelector('.rr-eyebrow')?.textContent ?? '',
+          score: root.querySelector('.rr-score-value')?.textContent ?? '',
+          banner: root.querySelector('.rr-banner-text')?.textContent ?? '',
+          stats: [...root.querySelectorAll('.rr-stat dt')].map((node) => node.textContent),
+          steps: [...root.querySelectorAll('li[data-step]')].map((node) => node.dataset.status),
+        }));
+        assert.match(results.eyebrow, /Ranked preview · Hard Money Heroes/i);
+        assert.match(results.banner, /not published while online settlement is off/i);
+        assert.deepEqual([...new Set(results.steps)], ['skipped']);
+        for (const stat of ['Kills', 'Time', 'Best combo', 'Level', 'Boss']) assert.ok(results.stats.some((label) => label.toLowerCase() === stat.toLowerCase()), `stat ${stat}: ${results.stats}`);
+        // The guest flows above left Free runs in this browser's history; read the Ranked one.
+        await page.waitForFunction(() => (JSON.parse(localStorage.getItem('lesters-arcade-save-v1') ?? 'null')?.runHistory ?? []).some((entry) => entry.runSummary?.identity?.mode === 'ranked'), undefined, { timeout: 10_000 });
+        const record = await page.evaluate(() => JSON.parse(localStorage.getItem('lesters-arcade-save-v1')).runHistory.find((entry) => entry.runSummary?.identity?.mode === 'ranked'));
+        assert.equal(record.mode, 'paid', `a Ranked run is recorded as paid: ${record.mode}`);
+        assert.equal(record.runSummary.identity.terminalReason, 'defeated');
+        assert.equal(results.score.replaceAll(',', ''), String(record.score), 'the results screen shows the recorded score');
+        await page.screenshot({ path: evidencePath('07-ranked-preview-results'), fullPage: false });
+
+        // Results-share replaced the parent game-over recap for Ranked: the summary is one
+        // "View results" button, which reopens the screen.
+        await page.keyboard.press('Escape');
+        await screen.waitFor({ state: 'detached', timeout: 10_000 });
+        const summary = page.locator('#combatGameOverSummary');
+        assert.match(await summary.innerText(), /Ranked run complete/i);
+        assert.equal(await summary.locator('[data-testid="hmh-run-recap"]').count(), 0, 'no parent recap under a Ranked run');
+        assert.match(await page.locator('#combatMenuCopy').textContent(), /Play Again starts a fresh local Ranked preview/i);
+        assert.match(await page.locator('#officialGameStateCopy').textContent(), /Canonical Ranked preview saved locally/i);
+        await summary.locator('button.ranked-results-reopen').click();
+        await screen.waitFor({ state: 'visible', timeout: 10_000 });
+        // A16: Play again (Ranked) opens the entry modal again; cancelling spends nothing.
+        await screen.locator('button', { hasText: 'Play again (Ranked)' }).click();
+        await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
+        await page.click('#rankedEntryCancel');
+        await page.waitForSelector('#rankedEntryModal', { state: 'hidden', timeout: 10_000 });
+        // The game menu's restart (the Ranked "Run It Back", and the child's own restart request, which
+        // reaches the same restartCombatRun) also opens the entry modal instead of restarting in place;
+        // cancelling leaves the finished run on screen.
+        await page.waitForSelector('[data-ranked-results]', { state: 'detached', timeout: 10_000 });
+        const restart = page.locator('#combatMenuActionGrid [data-action="restart"]');
+        await restart.waitFor({ state: 'visible', timeout: 10_000 });
+        await restart.click();
+        await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
+        assert.match(await page.locator('#rankedEntryModal').innerText(), /Ranked · Entry/i);
+        await page.click('#rankedEntryCancel');
+        await page.waitForSelector('#rankedEntryModal', { state: 'hidden', timeout: 10_000 });
+        assert.match(await summary.innerText(), /Ranked run complete/i, 'a cancelled entry leaves the finished run');
+        assert.deepEqual(apiRequests, [], `preview must not call /api: ${apiRequests.join(', ')}`);
+        return { resultsState: 'preview', score: record.score, stats: results.stats, recapReplaced: true, playAgainOpensEntry: true, menuRestartOpensEntry: true, apiRequests: 0 };
+      } finally {
+        page.off('request', onRequest);
+      }
+    });
   } finally {
     await browser.close();
     server.close();
   }
 
-  const failed = results.filter((result) => !result.ok);
+  const verdict = summarizeFlowResults(results, { consoleErrors, failOnNotRun: process.argv.includes('--fail-on-not-run') });
   const summary = {
     schema: PORTAL_E2E_FLOW_SCHEMA,
     origin,
@@ -620,12 +773,14 @@ if (isMain) {
     implementedFlows: PORTAL_E2E_FLOWS.filter((flow) => flow.status === 'implemented').map((flow) => flow.id),
     deferredFlows: PORTAL_E2E_FLOWS.filter((flow) => flow.status === 'deferred').map((flow) => ({ id: flow.id, reason: flow.reason })),
     results,
+    notRun: verdict.notRun,
     consoleErrors,
   };
   console.log(JSON.stringify(summary, null, 2));
-  if (failed.length > 0 || consoleErrors.length > 0) {
-    console.error(`Portal E2E failed: ${failed.length} failing flows, ${consoleErrors.length} console/page errors.`);
+  if (verdict.exitCode === 1) {
+    console.error(verdict.line);
     process.exit(1);
   }
-  console.log('Portal E2E passed for all implemented flows.');
+  console.log(verdict.line);
+  if (verdict.exitCode !== 0) process.exit(verdict.exitCode);
 }

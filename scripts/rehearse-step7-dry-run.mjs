@@ -168,6 +168,29 @@ export const STEP7_TEST_EDITS = Object.freeze([
       "  await assert.rejects(disabled.openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);",
     ),
     'the committed entry is live after step 7; the disabled refusal is kept on the isolated module'),
+  // Added by the browser-e2e slice: tests the integration-glue merge brought in after the rehearsal's
+  // run, which the refreshed dry run at c63ad089 listed as not covered.
+  edit('tests/ship-readiness.test.mjs',
+    '  assert.match(html, /verified on-chain publishing remains disabled/i);',
+    lines(
+      '  // Since runbook step 7 the committed pages carry the launch copy (contract A33).',
+      '  assert.match(html, /the relayer publishes your score on LitVM/i);',
+      '  assert.doesNotMatch(html, /verified on-chain publishing remains disabled/i);',
+    ),
+    'the committed index.html is the launch page after the flip'),
+  edit('tests/integration-glue-copy.test.mjs',
+    lines(
+      '  // Committed pages are the preview state (the ship-readiness phrase included).',
+      "  assert.equal(block(index, 'entry-copy'), preview.rankedEntryCopy.replace(/'/g, '&#39;'));",
+      "  assert.equal(block(index, 'entry-footnote'), preview.rankedEntryFootnote.replace(/'/g, '&#39;'));",
+    ),
+    lines(
+      '  // Since runbook step 7 the committed pages are the launch state (the preview copy, checked below,',
+      '  // still carries the ship-readiness phrase for any build with the flags off).',
+      "  assert.equal(block(index, 'entry-copy'), launch.rankedEntryCopy.replace(/'/g, '&#39;'));",
+      "  assert.equal(block(index, 'entry-footnote'), launch.rankedEntryFootnote.replace(/'/g, '&#39;'));",
+    ),
+    'the prerendered entry modal follows the flags, so after the flip it is the launch copy'),
 ]);
 
 const HEX_OR_KEY = /0x[0-9a-fA-F]{64}/g;
