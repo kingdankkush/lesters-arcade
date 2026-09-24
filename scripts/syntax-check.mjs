@@ -398,6 +398,8 @@ const NODE_CHECK_FILES = [
   'tests/hosted-leaderboard.test.mjs',
   'tests/hosted-profile.test.mjs',
   'tests/name-claim-prompt.test.mjs',
+  'apps/portal/src/focus-keeper.mjs',
+  'tests/focus-keeper.test.mjs',
   "apps/portal/src/hmh-campaign-levels.mjs",
   "apps/portal/src/district-generator.mjs",
   "apps/portal/src/hmh-level-one-sketch-layout.mjs",

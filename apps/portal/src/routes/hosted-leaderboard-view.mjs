@@ -7,6 +7,7 @@
 // renders again.
 
 import { arcadeAvatarForUri } from '../arcade-avatars.mjs';
+import { renderKeepingFocus } from '../focus-keeper.mjs';
 import {
   HOSTED_LEADERBOARD_NOTICE,
   HOSTED_LEADERBOARD_PAGE_SIZE,
@@ -84,8 +85,14 @@ export function createHostedLeaderboardView({
     return hostedBoards.get(spec.key);
   }
 
+  // Renders that rebuild the board keep keyboard focus on the control that had
+  // it (the search box while its results arrive, a period or cabinet tab).
+  function keepingFocus(render) {
+    return renderKeepingFocus(dom.officialCabinetGrid, render, { documentRef });
+  }
+
   function rerenderIfShown() {
-    if (isActive()) renderPage();
+    if (isActive()) keepingFocus(renderPage);
   }
 
   // Whether a loaded board can be shown without asking E5 again.
@@ -374,7 +381,7 @@ export function createHostedLeaderboardView({
     // --- Loading, failure and empty states -----------------------------------
     const statusCopy = board.rows.length === 0 ? hostedLeaderboardStatusCopy(board.status === 'idle' ? 'loading' : board.status) : null;
     if (statusCopy) {
-      renderStateCard(card, statusCopy, { onRetry: () => { board.status = 'idle'; rerender(); void hydrate(); } });
+      renderStateCard(card, statusCopy, { onRetry: () => { board.status = 'idle'; keepingFocus(() => rerender()); void hydrate(); } });
       dom.officialCabinetGrid.append(card);
       return;
     }
@@ -476,11 +483,13 @@ export function createHostedLeaderboardView({
       const remaining = Math.max(1, Math.min(board.pageSize, board.total - shown));
       const label = board.loadingMore ? 'Loading…' : board.moreFailed ? 'Could not load more. Try again' : `Show ${remaining} more`;
       const more = el('button', { className: 'pixel-button leaderboard-show-more', type: 'button', textContent: label });
-      more.disabled = board.loadingMore;
+      // aria-disabled, not disabled: a disabled button cannot hold focus, so
+      // a keyboard press would drop focus to the page while the page loads.
+      more.setAttribute('aria-disabled', board.loadingMore ? 'true' : 'false');
       more.addEventListener('click', () => {
         if (board.loadingMore || !board.nextPage) return;
         void loadHostedPage(board, board.nextPage);
-        rerender();
+        keepingFocus(() => rerender());
       });
       footer.append(more);
     }

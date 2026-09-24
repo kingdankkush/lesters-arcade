@@ -10,6 +10,7 @@
 import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
 import { ARCADE_AVATARS, ARCADE_AVATAR_URI_PREFIX, arcadeAvatarForUri } from '../arcade-avatars.mjs';
 import { verifiedExplorerUrl } from '../leaderboard-view.mjs';
+import { renderKeepingFocus } from '../focus-keeper.mjs';
 
 export const PROFILE_SHARE_ORIGIN = 'https://lestersarcade.io';
 export const LITEFORGE_EXPLORER = 'https://liteforge.explorer.caldera.xyz';
@@ -202,7 +203,9 @@ export function createHostedProfileView({
   const retryStates = new Map();
   const nameEditor = { wallet: null, raw: null, avatarUri: null, prepared: null, busy: false, message: '', tone: '' };
 
-  const renderOfficialProfile = () => renderPage();
+  // Every render rebuilds the grid; keyboard focus stays on the control that
+  // had it (a game tab just pressed, Retry, the avatar picker).
+  const renderOfficialProfile = () => renderKeepingFocus(dom.officialCabinetGrid, renderPage);
 
   function rerenderIfShown() {
     if (isActive()) renderOfficialProfile();
@@ -472,9 +475,12 @@ export function createHostedProfileView({
   function renderHostedGames(response) {
     const card = el('article', { className: 'official-info-card game-stats-card profile-verified-games-card' });
     appendText(card, 'span', 'VERIFIED RANKED STATS', 'cabinet-status-label');
-    const bar = el('div', { className: 'leaderboard-game-tabs profile-game-tabs' });
+    const bar = el('div', { className: 'leaderboard-game-tabs profile-game-tabs', role: 'group' });
+    bar.setAttribute('aria-label', 'Verified stats by game');
     for (const game of HOSTED_PROFILE_GAMES) {
       const tab = el('button', { className: `pixel-button leaderboard-game-tab${game.gameId === routeState.gameId ? ' is-active' : ''}`, type: 'button' });
+      tab.dataset.game = game.gameId;
+      tab.setAttribute('aria-pressed', game.gameId === routeState.gameId ? 'true' : 'false');
       appendText(tab, 'span', game.title, 'leaderboard-game-tab-title');
       tab.addEventListener('click', () => {
         if (routeState.gameId === game.gameId) return;
