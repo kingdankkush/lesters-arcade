@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
-import { startPortalStaticServer } from './hmh-reboot-portal-e2e.mjs';
+import { NOT_RUN_EXIT_CODE, startPortalStaticServer, summarizeFlowResults } from './hmh-reboot-portal-e2e.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const evidenceDir = path.resolve(process.env.STACKED_EVIDENCE_DIR || path.join(root, '.tmp/stacked-playable'));
 await mkdir(evidenceDir, { recursive: true });
@@ -171,9 +171,10 @@ try {
   // Ranked in preview (both settlement flags false). The Chikun smoke's fixture stub signs in (public key
   // 0x11…11); the entry modal approves without payment, and nothing may reach /api (contract §9.1).
   // Against a portal serving SETTLEMENT_LIVE = true (after runbook step 7) these passes are reported as
-  // not run: the live Ranked run is scripts/ranked-live-browser-e2e.mjs --live (runbook step 9).
+  // NOT RUN (status 'not-run', never a pass; the last line names them and --fail-on-not-run exits 3):
+  // the live Ranked run is scripts/ranked-live-browser-e2e.mjs --live (runbook step 9).
   if (servedLive === true) {
-    reports.push({ name: 'ranked-preview', notRun: 'the served portal has SETTLEMENT_LIVE on' });
+    reports.push({ name: 'ranked-preview', status: 'not-run', notRun: 'the served portal has SETTLEMENT_LIVE on' });
     console.log(JSON.stringify(reports.at(-1)));
   }
   for (const { name, mobile, width, height } of servedLive === true ? [] : [
@@ -312,4 +313,10 @@ try {
 } finally {
   await writeFile(path.join(evidenceDir, 'browser-report.json'), JSON.stringify(reports, null, 2));
   await browser.close(); server.close();
+}
+if (!process.exitCode) {
+  // Every pass that finished is a pass; the Ranked preview passes a live-flag portal cannot run are not.
+  const verdict = summarizeFlowResults(reports.map((report) => ({ id: report.name, ok: report.status === 'not-run' ? null : true, reason: report.notRun })), { failOnNotRun: process.argv.includes('--fail-on-not-run'), label: 'STACKED playable smoke' });
+  console.log(verdict.line);
+  if (verdict.exitCode === NOT_RUN_EXIT_CODE) process.exitCode = NOT_RUN_EXIT_CODE;
 }

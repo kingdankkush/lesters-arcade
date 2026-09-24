@@ -217,6 +217,32 @@ async function servedSettlementLive(origin) {
   }
 }
 
+// A flow the served portal cannot run (the Ranked preview, once a portal serves the live flags after
+// runbook step 7) is NOT a pass: runFlow records it with ok: null and status 'not-run', and the verdict
+// counts it apart and names it on the last line, so a step-10 receipt that reads the exit code or the
+// ok flags never counts it as checked. --fail-on-not-run turns a not-run flow into exit 3.
+// results: [{ id, ok: true | false | null, reason? }] → { passed, failed, notRun, exitCode, line }
+export const NOT_RUN_EXIT_CODE = 3;
+export function summarizeFlowResults(results, { consoleErrors = [], failOnNotRun = false, label = 'Portal E2E' } = {}) {
+  const passed = results.filter((result) => result.ok === true).map((result) => result.id);
+  const failed = results.filter((result) => result.ok === false).map((result) => result.id);
+  const notRun = results.filter((result) => result.ok === null).map((result) => ({ id: result.id, reason: result.reason ?? null }));
+  if (failed.length > 0 || consoleErrors.length > 0) {
+    return { passed, failed, notRun, exitCode: 1, line: `${label} failed: ${failed.length} failing flows, ${consoleErrors.length} console/page errors.` };
+  }
+  if (notRun.length > 0) {
+    const names = notRun.map((flow) => `${flow.id}${flow.reason ? ` (${flow.reason})` : ''}`).join(', ');
+    return {
+      passed,
+      failed,
+      notRun,
+      exitCode: failOnNotRun ? NOT_RUN_EXIT_CODE : 0,
+      line: `${label}: PASS with ${notRun.length} flow${notRun.length === 1 ? '' : 's'} NOT RUN: ${names}. ${passed.length} flows passed; the flows not run were not checked${failOnNotRun ? '' : ' (exit 0 does not mean they ran; --fail-on-not-run exits 3)'}.`,
+    };
+  }
+  return { passed, failed, notRun, exitCode: 0, line: `${label} passed for all implemented flows.` };
+}
+
 const isMain = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 
 if (isMain) {
@@ -360,10 +386,16 @@ if (isMain) {
       const detail = await execute();
       const flowErrors = consoleErrors.slice(errorsBefore);
       if (flowErrors.length > 0) throw new Error(`console/page errors during flow: ${flowErrors.join(' | ')}`);
-      results.push({ id, ok: true, detail: detail ?? null });
-      console.log(detail?.notRun ? `NOT RUN ${id}: ${detail.notRun}` : `PASS ${id}`);
+      if (detail?.notRun) {
+        // Not a pass (summarizeFlowResults): ok is null, and the reason is kept.
+        results.push({ id, ok: null, status: 'not-run', reason: detail.notRun });
+        console.log(`NOT RUN ${id}: ${detail.notRun}`);
+      } else {
+        results.push({ id, ok: true, status: 'pass', detail: detail ?? null });
+        console.log(`PASS ${id}`);
+      }
     } catch (error) {
-      results.push({ id, ok: false, error: String(error?.message ?? error) });
+      results.push({ id, ok: false, status: 'fail', error: String(error?.message ?? error) });
       console.error(`FAIL ${id}: ${error?.message ?? error}`);
     }
   }
@@ -732,7 +764,7 @@ if (isMain) {
     server.close();
   }
 
-  const failed = results.filter((result) => !result.ok);
+  const verdict = summarizeFlowResults(results, { consoleErrors, failOnNotRun: process.argv.includes('--fail-on-not-run') });
   const summary = {
     schema: PORTAL_E2E_FLOW_SCHEMA,
     origin,
@@ -741,12 +773,14 @@ if (isMain) {
     implementedFlows: PORTAL_E2E_FLOWS.filter((flow) => flow.status === 'implemented').map((flow) => flow.id),
     deferredFlows: PORTAL_E2E_FLOWS.filter((flow) => flow.status === 'deferred').map((flow) => ({ id: flow.id, reason: flow.reason })),
     results,
+    notRun: verdict.notRun,
     consoleErrors,
   };
   console.log(JSON.stringify(summary, null, 2));
-  if (failed.length > 0 || consoleErrors.length > 0) {
-    console.error(`Portal E2E failed: ${failed.length} failing flows, ${consoleErrors.length} console/page errors.`);
+  if (verdict.exitCode === 1) {
+    console.error(verdict.line);
     process.exit(1);
   }
-  console.log('Portal E2E passed for all implemented flows.');
+  console.log(verdict.line);
+  if (verdict.exitCode !== 0) process.exit(verdict.exitCode);
 }
