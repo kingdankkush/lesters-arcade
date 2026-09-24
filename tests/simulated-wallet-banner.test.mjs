@@ -68,6 +68,17 @@ test('renderSimulatedWalletBanner has a live caller', () => {
   assert.ok(live.includes('render'), `expected render() among the live callers, got ${live.join(', ')}`);
 });
 
+test('no dead function still calls renderSimulatedWalletBanner', () => {
+  // renderLogin() kept its call for weeks after nothing called renderLogin, so
+  // the source read as if the banner were wired up while it never rendered.
+  const dead = references('renderSimulatedWalletBanner')
+    .filter(({ parent, key }) => parent?.type === 'CallExpression' && key === 'callee')
+    .map(({ owner }) => owner)
+    .filter((owner) => !isLive(owner))
+    .map(ownerName);
+  assert.deepEqual(dead, [], `dead callers of renderSimulatedWalletBanner: ${dead.join(', ')}`);
+});
+
 const REAL = `0x${'ab'.repeat(20)}`;
 
 function bannerHarness() {

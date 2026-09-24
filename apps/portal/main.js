@@ -173,7 +173,6 @@ import {
   HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST,
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BUILD_STACK,
-  LESTER_ARCADE_WALLET_RAILS,
   SIMULATED_WALLET_ADDRESS,
   LESTERS_ARCADE_V2_APP_SHELL,
   LESTER_BLASTER_ANIMATION_PLAN,
@@ -1739,10 +1738,7 @@ const dom = {
   tacticalBalanceDebugOverlay: document.querySelector('#tacticalBalanceDebugOverlay'),
   officialCombatMount: document.querySelector('#officialCombatMount'),
   accountFlowSteps: document.querySelector('#accountFlowSteps'),
-  walletStatus: document.querySelector('#walletStatus'),
-  systemStatus: document.querySelector('#systemStatus'),
   connectWalletButton: document.querySelector('#connectWalletButton'),
-  walletRailPanel: document.querySelector('#walletRailPanel'),
   guideIntro: document.querySelector('#guideIntro'),
   quickStartGuide: document.querySelector('#quickStartGuide'),
   instructionPanel: document.querySelector('#instructionPanel'),
@@ -2676,8 +2672,8 @@ function renderSimulatedWalletNotice(disclosure, extraClass = '') {
   return notice;
 }
 
-// The shell-level banner. The wallet rail panel lives in the legacy login
-// terminal, which is hidden once you are connected -- rendering the disclosure
+// The shell-level banner. The old wallet rail panel lived in the legacy login
+// terminal, which was hidden once you were connected -- rendering the disclosure
 // only there meant it was in the DOM but invisible, which is worse than useless
 // because it looks handled. This one is in the official app shell, so it shows
 // on every route for as long as the simulated identity is active. render()
@@ -2702,53 +2698,6 @@ function renderSimulatedWalletBanner() {
   appendText(banner, 'strong', model.disclosure.headline);
   appendText(banner, 'span', model.disclosure.detail);
   appendText(banner, 'small', model.disclosure.action);
-}
-
-function renderWalletRails() {
-  const model = buildWalletConnectionModel({
-    providerAvailable: Boolean(detectEthereumProvider()?.request),
-    wallet: connectedWallet,
-    chainId: connectedChainId,
-    connector: walletConnector,
-  });
-
-  dom.walletRailPanel.replaceChildren();
-  const status = el('article', { className: `wallet-rail-card ${model.status} ${model.chainGuard.status}` });
-  appendText(status, 'strong', `${model.targetNetwork} wallet rail // ${model.status}`);
-  appendText(status, 'span', connectedWallet
-    ? `${model.walletShort} via ${walletConnector}`
-    : 'No wallet connected. Browser wallet will be tried first; mock fallback stays available for local testing.');
-  appendText(status, 'small', model.chainGuard.copy);
-  dom.walletRailPanel.append(status);
-  // No disclosure notice here on purpose. This panel lives in the legacy
-  // .hero-panel header, which measures 0x0 in both the connected and
-  // disconnected states -- a notice appended here is unreachable, and an
-  // unreachable disclosure is worse than none because it looks handled.
-  // The reachable surfaces are the shell banner and the profile wallet card.
-
-  const network = el('article', { className: 'wallet-rail-card network-card' });
-  appendText(network, 'strong', `${model.network.name} // Chain ${model.network.chainId} (${model.network.chainIdHex})`);
-  appendText(network, 'span', `Gas token ${model.network.nativeCurrency.symbol} · RPC ${model.network.rpcUrls.http}`);
-  appendText(network, 'small', `${model.chainGuard.switchMethod} → ${model.network.chainIdHex}; ${model.chainGuard.addMethod} uses ${model.network.name}, ${model.network.nativeCurrency.symbol}, RPC, and explorer below. ${model.network.safetyNotes.join(' ')}`);
-  const links = el('div', { className: 'wallet-link-row' });
-  links.append(
-    el('a', { className: 'wallet-link', href: model.network.faucetUrl, target: '_blank', rel: 'noreferrer', textContent: 'LiteForge faucet / hub' }),
-    el('a', { className: 'wallet-link', href: model.network.explorerUrl, target: '_blank', rel: 'noreferrer', textContent: 'Block explorer' }),
-    el('a', { className: 'wallet-link', href: model.network.portalUrl, target: '_blank', rel: 'noreferrer', textContent: 'Official testnet portal' }),
-  );
-  network.append(links);
-  dom.walletRailPanel.append(network);
-
-  const connectors = el('article', { className: 'wallet-rail-card' });
-  appendText(connectors, 'strong', 'Connectors');
-  appendText(connectors, 'span', model.connectors.map((connector) => `${connector.label}: ${connector.available ? 'ready' : 'not detected'}`).join(' // '));
-  dom.walletRailPanel.append(connectors);
-
-  const scopes = el('article', { className: 'wallet-rail-card' });
-  appendText(scopes, 'strong', 'Paid-run parent writes');
-  appendText(scopes, 'span', model.permissions.writeScopes.join(' // '));
-  appendText(scopes, 'small', LESTER_ARCADE_WALLET_RAILS.permissions.freeModeRule);
-  dom.walletRailPanel.append(scopes);
 }
 
 function renderOfficialRunStatus() {
@@ -7261,28 +7210,6 @@ async function completePrototypeRun() {
   currentSession = null;
   // A prototype run has no canonical run summary, so it never settles.
   render();
-}
-
-function renderLogin() {
-  renderWalletRails();
-  renderSimulatedWalletBanner();
-  if (!connectedWallet) {
-    dom.walletStatus.textContent = 'No wallet connected';
-    dom.systemStatus.textContent = 'Connect an injected EVM wallet if available, or use the mock fallback, to create the parent Lester\'s Arcade account used by Hard Money Heroes.';
-    return;
-  }
-
-  const snapshot = buildPlayerArcadeSnapshot(state, connectedWallet);
-  const simulated = isSimulatedWalletActive();
-  // The header chip is the one wallet surface visible on every screen, so the
-  // simulated state has to be readable there too rather than only in Profile.
-  dom.walletStatus.textContent = simulated
-    ? `${snapshot.profile.wallet.slice(0, 8)}…${snapshot.profile.wallet.slice(-6)} (simulated)`
-    : `${snapshot.profile.wallet.slice(0, 8)}…${snapshot.profile.wallet.slice(-6)}`;
-  dom.walletStatus.dataset.simulatedWallet = simulated ? 'true' : 'false';
-  dom.systemStatus.textContent = simulated
-    ? `${snapshot.profile.handle} // ${snapshot.profile.rank} // XP ${snapshot.profile.xp} // simulated wallet — not on-chain`
-    : `${snapshot.profile.handle} // ${snapshot.profile.rank} // XP ${snapshot.profile.xp} // ${walletConnector}`;
 }
 
 function renderParentOps() {
