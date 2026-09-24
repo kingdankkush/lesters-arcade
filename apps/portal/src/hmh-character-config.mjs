@@ -226,17 +226,29 @@ export function verifiedRunsFor(options = {}) {
 // gate options come from, so calls that pass no options (arcade-core's profile
 // syncs on connect, after every recorded run and in the arcade snapshot) apply
 // the hero select's gates, with the cached verified count, to the connected
-// wallet. With no provider, or for a profile it does not name, `{}` keeps the
-// device-local logic.
+// wallet. With no provider, `{}` keeps the device-local logic. For a profile
+// the provider does not name (another wallet's profile on this device, or the
+// wallet a Ranked run was opened with when it finishes after an account
+// switch), `hosted` decides: in preview `{}` keeps the device-local logic; in
+// hosted mode (`{ hosted: HOSTED_PROFILE_SYNC }` at registration) the profile
+// gets the hosted gates with an unknown count, so a Lester or Lilly pick
+// unlocked only by verified runs waits instead of being reset to a starter,
+// and no local flag or local run count unlocks a hero (browser-e2e slice).
 let characterUnlockOptionsProvider = null;
+let characterUnlockProviderHosted = false;
 const providedOptions = new WeakSet();
-export function setCharacterUnlockOptionsProvider(provider) {
+export function setCharacterUnlockOptionsProvider(provider, { hosted = false } = {}) {
   characterUnlockOptionsProvider = typeof provider === 'function' ? provider : null;
+  characterUnlockProviderHosted = characterUnlockOptionsProvider !== null && hosted === true;
 }
 function providedUnlockOptions(profile) {
   let options = null;
   try { options = characterUnlockOptionsProvider?.(profile) ?? null; } catch { options = null; }
-  if (!options || typeof options !== 'object') return {};
+  const named = Boolean(options) && typeof options === 'object' && Object.keys(options).length > 0;
+  if (!named) {
+    if (!characterUnlockProviderHosted) return {};
+    options = { hosted: true, verifiedRuns: null };
+  }
   const copy = { ...options };
   providedOptions.add(copy);
   return copy;

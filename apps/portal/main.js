@@ -16295,7 +16295,7 @@ var unlockablesReady = import('./src/unlockables-store.mjs').then(({ createUnloc
 }).catch((error) => { console.warn('[Unlockables]', error?.message || error); return null; });
 function characterUnlockOptions() { return { hosted: HOSTED_PROFILE_SYNC, verifiedRuns: unlockables?.verifiedRuns() ?? null }; }
 // arcade-core's option-less profile syncs (connect, recorded runs, the arcade snapshot) use the same hero gates.
-setCharacterUnlockOptionsProvider((profile) => (connectedWallet && String(profile?.wallet ?? '').toLowerCase() === String(connectedWallet).toLowerCase() ? characterUnlockOptions() : {}));
+setCharacterUnlockOptionsProvider((profile) => (connectedWallet && String(profile?.wallet ?? '').toLowerCase() === String(connectedWallet).toLowerCase() ? characterUnlockOptions() : {}), { hosted: HOSTED_PROFILE_SYNC });
 function childCosmetics(gameId) { const cosmetics = unlockables?.cosmeticsFor(gameId); return cosmetics ? { cosmetics } : {}; }
 function showUnlockablesPanel(view) {
   void Promise.all([unlockablesReady, import('./src/routes/unlockables-panel.mjs')]).then(([store, { renderUnlockablesPanel }]) => store && renderUnlockablesPanel({ store, view, viewedWallet: profileRouteState.viewedWallet ?? null, connectedWallet, heroEntries: () => buildCharacterSelectEntries(HERO_ROSTER_BASE, (connectedWallet && state.profiles[connectedWallet]) || {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions()), documentRef: document, after: dom.officialCabinetGrid, app: dom.officialApp, openAchievements: () => setOfficialView('profile', { wallet: null }) })).catch((error) => console.warn('[Unlockables panel]', error?.message || error));
