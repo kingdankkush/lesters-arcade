@@ -29,7 +29,7 @@
     {
       "id": "safe-ranked-live-gate",
       "pass": true,
-      "detail": "address module predicted; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresses); unverified writes remain gated"
+      "detail": "address module deployed; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresses); unverified writes remain gated"
     },
     {
       "id": "score-abi-verified-session",

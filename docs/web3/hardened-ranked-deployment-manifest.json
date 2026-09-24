@@ -88,7 +88,7 @@
       "initCodeHash": "0x4035a2fb35e029a02de430859b640e6b11caa0876887f93872532973575c30e9",
       "runtimeCodeHash": "0xb7da9ff9fda47b4d5201c31971955a4e7e8399fa75b1f3e1601b399f1368e73f",
       "artifactBytecodeSha256": "ee85641b37aada45f196b45664f25ec25fa05ba13c0f11a02dd7ac6fb09692a4",
-      "gasEstimate": "1293586"
+      "gasEstimate": "1293542"
     },
     {
       "name": "PlayerProfileRegistry",
@@ -97,7 +97,7 @@
       "initCodeHash": "0x81af5c5703ceba4d9524494f31a4bfd311f3dbf5b89dec4a9e3e268a22d127d2",
       "runtimeCodeHash": "0x83209ad7b9cea874ec61f5a78ed74bb3247ca192cbc55311ebf2e10c170cc9b3",
       "artifactBytecodeSha256": "2f5020062ff0e90c9dabd254c7387a433524e386ed6e413242b43f9fcad1df67",
-      "gasEstimate": "1031805"
+      "gasEstimate": "1031770"
     },
     {
       "name": "ArcadeRankedEntry",
@@ -106,7 +106,7 @@
       "initCodeHash": "0x0b13796dafa7de8af6f35b32ae48beeaaa50d791f2788cda29818fca56d9cbf5",
       "runtimeCodeHash": "0xb41cb06e8ef48055c2acd9af5bc09db50ae05daf6712b955e450e354801b9d64",
       "artifactBytecodeSha256": "22507c3b23be9730c573d7f806420a786a28b59f3c45084eefe67a9410ae3cd2",
-      "gasEstimate": "1358329"
+      "gasEstimate": "1358284"
     },
     {
       "name": "ScoreSubmissionRegistry",
@@ -115,7 +115,7 @@
       "initCodeHash": "0x32eb2e40716923bfa04b2eb0e562d852e8652b4bfa6961fa4ceea1a71117fb83",
       "runtimeCodeHash": "0x5d42efecaef5d82286a90dcdc4bd35d6f0caa4613d02704d46547747923d811f",
       "artifactBytecodeSha256": "7b7b8ce99d433a66d9027c8aab93c5c80b4aef196bb8566c0b61dc5d0a4cadb0",
-      "gasEstimate": "2759320"
+      "gasEstimate": "2759229"
     },
     {
       "name": "AchievementRegistry",
@@ -125,7 +125,7 @@
       "initCodeHash": "0x3bbe445e60431b6e50e55640610ac4c1252583c4d240a00bf1e256f279920c5a",
       "runtimeCodeHash": "0xe04dcbc37d59309ae0f5b45e7d35b4009d7fde22681144aa796b1b4971f5e4b2",
       "artifactBytecodeSha256": "56d58da96a9c54cb8e7c484f2b53ea5b5a3ddee734840667f4431c8e244c12ad",
-      "gasEstimate": "2122660"
+      "gasEstimate": "2122590"
     },
     {
       "name": "AchievementRegistry",
@@ -135,7 +135,7 @@
       "initCodeHash": "0x21e0bb4313bcd9babdb434bc638fca4debb619226d63e3177ef9d617eaf36f67",
       "runtimeCodeHash": "0xe04dcbc37d59309ae0f5b45e7d35b4009d7fde22681144aa796b1b4971f5e4b2",
       "artifactBytecodeSha256": "56d58da96a9c54cb8e7c484f2b53ea5b5a3ddee734840667f4431c8e244c12ad",
-      "gasEstimate": "2122539"
+      "gasEstimate": "2122469"
     },
     {
       "name": "AchievementRegistry",
@@ -145,7 +145,7 @@
       "initCodeHash": "0x969018798d2a409ab45439de2c5f00d1ca7d3f3da475bf6c789ddecf94b5fe09",
       "runtimeCodeHash": "0xe04dcbc37d59309ae0f5b45e7d35b4009d7fde22681144aa796b1b4971f5e4b2",
       "artifactBytecodeSha256": "56d58da96a9c54cb8e7c484f2b53ea5b5a3ddee734840667f4431c8e244c12ad",
-      "gasEstimate": "2122453"
+      "gasEstimate": "2122385"
     }
   ],
   "postDeployTransactions": [

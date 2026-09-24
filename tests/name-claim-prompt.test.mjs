@@ -171,10 +171,11 @@ test('the toast is skipped until the contracts are deployed', async () => {
     const outcome = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, deployment, documentRef, mount });
     assert.deepEqual(outcome, { shown: false, reason: 'not-deployed' }, JSON.stringify(deployment));
   }
-  const byDefault = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, documentRef, mount });
-  assert.equal(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is not deployed at this commit');
   assert.equal(indexApi.calls.profile.length, 0, 'no request either');
   assert.equal(mount.children.length, 0);
+  // Since runbook step 3 the generated LITVM_DEPLOYMENT is deployed, so the default is no longer skipped.
+  const byDefault = await promptNameClaim({ detail: runEvent(), hosted: true, wallet: WALLET, indexApi, documentRef, mount: element('body') });
+  assert.notEqual(byDefault.reason, 'not-deployed', 'the generated LITVM_DEPLOYMENT is deployed since runbook step 3');
 });
 
 test('a cached self view is used without another request', async () => {

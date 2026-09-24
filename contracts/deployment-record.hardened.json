@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 4,
+  "epoch": "testnet",
+  "epochNote": "Testnet epoch until mainnet; mainnet is a fresh deployment set and nothing here carries over.",
+  "network": "LitVM LiteForge Testnet",
+  "chainId": 4441,
+  "nativeToken": {
+    "symbol": "zkLTC",
+    "decimals": 18
+  },
+  "deployedAt": "2026-09-24T14:44:10.981Z",
+  "deployer": "0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF",
+  "mode": "native-fee-ranked-verified",
+  "addresses": {
+    "gameRegistry": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+    "playerProfileRegistry": "0x3EB9e9F2620940496A2b8Ed6f7384e6687587c94",
+    "arcadeRankedEntry": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+    "scoreSubmissionRegistry": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+    "achievementRegistries": {
+      "lester-blaster": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737",
+      "chikun": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93",
+      "stacked": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7"
+    }
+  },
+  "blocks": {
+    "gameRegistry": 54207405,
+    "playerProfileRegistry": 54207409,
+    "arcadeRankedEntry": 54207413,
+    "scoreSubmissionRegistry": 54207417,
+    "achievementRegistries": {
+      "lester-blaster": 54207421,
+      "chikun": 54207425,
+      "stacked": 54207429
+    }
+  },
+  "startBlock": 54207405,
+  "deployTxHashes": {
+    "gameRegistry": "0x037e2a981ccf33f3e76a040dda9f3a55ac1a91a0a8e37a9a9f2678013c175e02",
+    "playerProfileRegistry": "0x936e2b9f168495ba4ef3ae46afb4fe7008089cd51f27eafdb0be7f829a7ad124",
+    "arcadeRankedEntry": "0x8e052a9e39166f947e65d303dd06a50e50ea10be76a47205c68a5cc177ffaff3",
+    "scoreSubmissionRegistry": "0x5180a786d9cbd8f96d18ef3b08568365ff24ce4b036515b078cc1cd960f7e3d6",
+    "achievementRegistries": {
+      "lester-blaster": "0x02bb1a2ea901548746897c388b2a819aad37e9e1fa17fbdc054581866af6658f",
+      "chikun": "0x32188c5c9c689683587c86bcd30854e2022914919f5c2bd8ee740066e529299a",
+      "stacked": "0x594f4cee90213b8cd17f19c2da08a722087b89ae1ffc4460fb0897ab154fbcda"
+    }
+  },
+  "trustedVerifier": "0x4d637a6C5b5c6f97cFA3d98BD53deeb8510120C7",
+  "relayer": "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+  "relayerVault": "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+  "settlementGasReserveWei": "2000000000000000",
+  "vaults": {
+    "platformVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+    "liquidityVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+    "treasuryVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
+  },
+  "developerWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+  "activation": "deferred-dev-wallet-confirmation",
+  "games": [
+    {
+      "slug": "lester-blaster",
+      "title": "Hard Money Heroes",
+      "gameId": "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+      "entryFeeWei": "100000000000000000",
+      "settlementGasReserveWei": "2000000000000000",
+      "totalEntryWei": "102000000000000000",
+      "devBps": 8500,
+      "platformBps": 0,
+      "liquidityBps": 0,
+      "treasuryBps": 1500,
+      "achievements": {
+        "name": "Hard Money Heroes Achievements",
+        "symbol": "HMHACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/lester-blaster/",
+        "predictedAddress": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737"
+      }
+    },
+    {
+      "slug": "chikun",
+      "title": "Chikun's Escape",
+      "gameId": "0xe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385",
+      "entryFeeWei": "100000000000000000",
+      "settlementGasReserveWei": "2000000000000000",
+      "totalEntryWei": "102000000000000000",
+      "devBps": 8500,
+      "platformBps": 0,
+      "liquidityBps": 0,
+      "treasuryBps": 1500,
+      "achievements": {
+        "name": "Chikun's Escape Achievements",
+        "symbol": "CHKACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/chikun/",
+        "predictedAddress": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93"
+      }
+    },
+    {
+      "slug": "stacked",
+      "title": "STACKED",
+      "gameId": "0xf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f5",
+      "entryFeeWei": "100000000000000000",
+      "settlementGasReserveWei": "2000000000000000",
+      "totalEntryWei": "102000000000000000",
+      "devBps": 8500,
+      "platformBps": 0,
+      "liquidityBps": 0,
+      "treasuryBps": 1500,
+      "achievements": {
+        "name": "STACKED Achievements",
+        "symbol": "STKACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/stacked/",
+        "predictedAddress": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7"
+      }
+    }
+  ],
+  "oldDeployment": {
+    "deployedAt": "2026-06-22",
+    "gameRegistry": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",
+    "playerProfileRegistry": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+    "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+    "expectedScoreRows": 13,
+    "disposition": "archive-read-only; never import as verified"
+  }
+}

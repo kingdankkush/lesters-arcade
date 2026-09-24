@@ -30,7 +30,6 @@
       "status": "BLOCKED",
       "evidence": [],
       "blockers": [
-        "SplitConfig/economy settings are not production-approved.",
         "Legal/brand/economy approval is required before real-value launch."
       ]
     }
