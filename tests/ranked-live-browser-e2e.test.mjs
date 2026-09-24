@@ -178,3 +178,22 @@ test('only an aborted same-origin static GET counts as a cancellation, never an 
   assert.equal(isCancelledStaticLoad({ failure: 'net::ERR_CONNECTION_REFUSED', method: 'GET', url: `${origin}/assets/x.png`, origin }), false);
   assert.equal(isCancelledStaticLoad({ failure: 'net::ERR_ABORTED', method: 'GET', url: 'http://127.0.0.1:5001/', origin }), false);
 });
+
+test('the Ranked title and the signed-out profile checks follow the launch copy in the source', async () => {
+  const { HOSTED_GUEST_PROFILE_TITLE, LIVE_STACKED_MODE_TITLE, rankedModeTitleOk } = await import('../scripts/ranked-live-browser-e2e.mjs');
+  assert.equal(rankedModeTitleOk('stacked', LIVE_STACKED_MODE_TITLE), true);
+  assert.equal(rankedModeTitleOk('stacked', 'STACKED // Local Ranked Preview'), false, 'the preview STACKED title fails the live run');
+  assert.equal(rankedModeTitleOk('stacked', 'STACKED // Free Mode'), false);
+  assert.equal(rankedModeTitleOk('chikun', 'Chikun’s Escape // Ranked Mode'), true);
+  assert.equal(rankedModeTitleOk('chikun', "Chikun's Escape // Ranked Testnet"), true);
+  assert.equal(rankedModeTitleOk('chikun', 'Chikun’s Escape // Free Mode'), false);
+  assert.equal(rankedModeTitleOk('lester-blaster', 'Hard Money Heroes: Top-Down Reboot // Ranked Testnet'), true);
+  assert.equal(rankedModeTitleOk('lester-blaster', 'Level 1: The Crypto Wasteland // Free Mode'), false, 'the static index.html title is not a Ranked one');
+  assert.equal(rankedModeTitleOk('lester-blaster', null), false);
+  // The strings the run expects are the ones the portal renders.
+  const routes = readFileSync(new URL('../apps/portal/src/routes/official-play-routes.mjs', import.meta.url), 'utf8');
+  assert.match(routes, /'STACKED \/\/ ' \+ \(officialSelectedMode === 'ranked' \? \(SETTLEMENT_LIVE \? modeLabel : 'Local Ranked Preview'\)/);
+  assert.match(routes, /const modeLabel = officialSelectedMode === 'ranked' \? 'Ranked Testnet' : 'Free Mode';/);
+  const hosted = readFileSync(new URL('../apps/portal/src/routes/hosted-profile-view.mjs', import.meta.url), 'utf8');
+  assert.ok(hosted.includes(`appendText(card, 'strong', '${HOSTED_GUEST_PROFILE_TITLE}');`));
+});

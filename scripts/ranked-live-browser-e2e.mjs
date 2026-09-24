@@ -301,8 +301,11 @@ export async function prepareThrowawayPortal({ repoRoot = root, record, rpcUrl, 
     buildPortalPages({ flags: 'live', outDir: webRoot });
     // The regular build output, then the live-flag portal bundle over it (dist/main.js + its chunks).
     cpSync(join(portal, 'dist'), join(webRoot, 'dist'), { recursive: true });
-    const { renderLitvmAddressModule, deployedDeploymentInput } = await import(pathToFileURL(join(repoRoot, 'scripts/generate-litvm-addresses.mjs')).href);
-    const addressModuleSource = renderLitvmAddressModule(deployedDeploymentInput(record));
+    // The rehearsal's generator call (status 'deployed', from the local deployment record), written into
+    // the throwaway directory; the committed module is never touched.
+    const { writeLocalAddressModule } = await import(pathToFileURL(join(repoRoot, 'scripts/lib/local-stack.mjs')).href);
+    const addressModuleSource = readFileSync(writeLocalAddressModule(record, join(base, 'generated')), 'utf8');
+    if (!/status: 'deployed'/.test(addressModuleSource)) throw new Error('the throwaway address module is not status deployed');
     const { build } = await import('esbuild');
     const bundle = throwawayBundlePlugin({ addressModuleSource, rpcUrl });
     await build({
@@ -490,6 +493,20 @@ function createRunRecorder(page, origin, { allowedOrigins = [] } = {}) {
   return { issues, api, settleBodies, offOrigin, cancelled };
 }
 
+// Signed out: the splash offers 'Sign in', and the Profile tab shows the hosted guest card.
+async function readSignedOutShell(page, { origin, path, timeoutMs }) {
+  const signIn = (await page.locator('#officialConnectButton').textContent())?.trim() ?? null;
+  const connectWallet = /Connect Wallet/i.test(await page.locator('body').innerText());
+  await page.locator('#officialNavTabs a.official-nav-tab[href="/profile"]').click();
+  const card = page.locator('.profile-guest-card');
+  await card.waitFor({ state: 'visible', timeout: timeoutMs });
+  const profileTitle = (await card.locator('strong').first().textContent())?.trim() ?? null;
+  const profileButton = (await card.locator('button.profile-action-primary').textContent())?.trim() ?? null;
+  // Back to the splash for the sign-in (a static host would 404 /profile, so reload the landing path).
+  await page.goto(`${origin}${path}`, { waitUntil: 'networkidle', timeout: timeoutMs });
+  return { signIn, connectWallet, profileTitle, profileButton };
+}
+
 async function signInWithFixture(page, { timeoutMs }) {
   await page.locator('#officialConnectButton').click();
   await page.waitForFunction(() => globalThis.__rankedE2E?.walletSessions.some((entry) => entry.authenticated), null, { timeout: timeoutMs });
@@ -527,6 +544,19 @@ async function openRankedModal(page, gameId, { timeoutMs }) {
     };
   }, modeSelect);
 }
+
+// The gameplay title of a Ranked run with the flags on (official-play-routes.mjs). STACKED's is the one
+// that changes with the flags (preview: 'STACKED // Local Ranked Preview'); Chikun's child init retitles
+// its run 'Chikun’s Escape // Ranked Mode', and HMH's reads '… // Ranked Testnet' in both modes.
+export const LIVE_STACKED_MODE_TITLE = 'STACKED // Ranked Testnet';
+export function rankedModeTitleOk(gameId, title) {
+  if (typeof title !== 'string' || !title.includes(' // ')) return false;
+  if (gameId === 'stacked') return title === LIVE_STACKED_MODE_TITLE;
+  return /\/\/ Ranked (Mode|Testnet)$/.test(title) && !/preview|local/i.test(title);
+}
+// The signed-out Profile with HOSTED_PROFILE_SYNC on (hosted-profile-view.mjs); preview says 'Sign in to
+// Save Progress'.
+export const HOSTED_GUEST_PROFILE_TITLE = 'Sign in to open your verified profile';
 
 // Preview-only wording that must not survive in a launch (flags on) build (contract A33).
 export const PREVIEW_ONLY_COPY = /device-local Ranked|Ranked preview|No fees, prizes or online ranking|Local Only|not charged until verified settlement|no score transaction is sent/i;
@@ -654,6 +684,9 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     const path = gameId === 'lester-blaster' ? '/?evidenceSafe=1&terminalPilot=1' : '/';
     await page.goto(`${origin}${path}${extraPath}`, { waitUntil: 'networkidle', timeout: timeouts.navigationMs });
     const landing = await readLaunchCopy(page);
+    const shell = await readSignedOutShell(page, { origin, path: `${path}${extraPath}`, timeoutMs: timeouts.navigationMs });
+    out.signedOut = shell;
+    expect('signed-out-copy', shell.signIn === 'Sign in' && !shell.connectWallet && shell.profileTitle === HOSTED_GUEST_PROFILE_TITLE && shell.profileButton === 'Sign in', shell);
     await signInWithFixture(page, { timeoutMs: timeouts.stepMs });
     const counts = fixture.router.counts();
     expect('sign-in-one-signature', counts.personal_sign === 1 && counts.eth_requestAccounts >= 1, counts);
@@ -667,6 +700,8 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     const entryEvent = await page.evaluate(() => globalThis.__rankedE2E.entries.find((entry) => entry.status === 'broadcast'));
     await PLAYERS[gameId](page, { timeoutMs: timeouts.stepMs });
     const results = await waitForPublished(page, { timeoutMs: timeouts.publishMs });
+    out.modeTitle = (await page.locator('#officialGameModeTitle').textContent().catch(() => null))?.trim() ?? null;
+    expect('ranked-mode-title', rankedModeTitleOk(gameId, out.modeTitle), { modeTitle: out.modeTitle });
     out.results = { state: results.state, eyebrow: results.eyebrow, score: results.score, standing: results.standing, banner: results.banner, timeline: results.timeline, achievements: results.achievements };
     expect('results-published', results.state === 'published', { state: results.state, banner: results.banner });
 
@@ -877,13 +912,23 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
   const stack = await startLocalStack({ log });
   const cleanups = [async () => stack.close()];
   let throwaway = null;
+  let onSignal = null;
   try {
     const nodeRpc = await startRpcProxy(stack);
     cleanups.unshift(() => nodeRpc.close());
     const browserRpc = await startBrowserRpcProxy(stack.eip1193);
     cleanups.unshift(() => browserRpc.close());
     throwaway = await prepareThrowawayPortal({ record: stack.record, rpcUrl: browserRpc.url, log });
-    if (!keepRoot) cleanups.push(async () => throwaway.cleanup());
+    if (!keepRoot) {
+      cleanups.push(async () => throwaway.cleanup());
+      // An interrupted run (Ctrl+C) still unlinks the throwaway's junctions into apps/portal before it
+      // exits, so no temp directory is left pointing into the repository.
+      onSignal = (signal) => {
+        try { throwaway.cleanup(); } catch { /* best effort */ }
+        process.exit(signal === 'SIGINT' ? 130 : 143);
+      };
+      for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(signal, onSignal);
+    }
     const http = await startLocalHttp(stack, { staticRoot: throwaway.webRoot, applyVercelHeaders: true, extraConnectSrc: [browserRpc.origin], allowSignInHost: true });
     cleanups.unshift(() => http.close());
     browserRpc.allowOrigin(http.origin);
@@ -927,6 +972,7 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
       await Promise.resolve().then(cleanup).catch((error) => log(`cleanup: ${error?.message ?? error}`));
     }
     if (keepRoot && throwaway) log(`kept the throwaway portal at ${throwaway.base}`);
+    if (onSignal) for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.off(signal, onSignal);
     process.off('unhandledRejection', onUnhandled);
   }
 }
