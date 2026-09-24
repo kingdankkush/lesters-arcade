@@ -62,6 +62,35 @@ test('hosted: a verified-only Lilly pick survives syncs of that profile while an
   }
 });
 
+test('hosted: a verified-only pick with no local unlock flag survives a sync while another wallet is connected', () => {
+  // The failure the fix is for: A's Lilly pick came from the server's preferences (or was made while
+  // A's verified count was known) and A's profile on this device carries no sticky local unlock flag.
+  // The device-local gates then see Lilly locked and reset the pick to the starter; the hosted gates
+  // with an unknown count keep the pick and only refuse it at use.
+  register({ wallet: walletB }, { hosted: true });
+  try {
+    const state = createInitialArcadeState();
+    connectPlayerAccount(state, walletA, { handle: 'LitVM Pilot' });
+    const profileA = state.profiles[walletA];
+    profileA.preferences.selectedCharacterId = 'lilly';
+    profileA.unlocks.characters.lilly = false;
+    assert.equal(profileA.progress?.['lester-blaster']?.paidRuns ?? 0, 0, 'no local run count unlocks Lilly either');
+
+    connectPlayerAccount(state, walletA);
+    assert.equal(state.profiles[walletA].preferences.selectedCharacterId, 'lilly', 'a sync keeps the pick');
+    const session = startPlaySession({ wallet: walletA, gameId: 'lester-blaster', mode: 'paid' });
+    recordScore(state, session, 120, { elapsedSeconds: 30 });
+    assert.equal(state.profiles[walletA].preferences.selectedCharacterId, 'lilly', 'a recorded run keeps the pick');
+    buildPlayerArcadeSnapshot(state, walletA);
+    assert.equal(state.profiles[walletA].preferences.selectedCharacterId, 'lilly', 'a snapshot keeps the pick');
+    assert.equal(state.profiles[walletA].unlocks.characters.lilly, false, 'no sticky local flag was written');
+    // While A's count is unknown a run starts as the starter.
+    assert.equal(resolveSelectedCharacterId(state.profiles[walletA]), 'lit-commando');
+  } finally {
+    setCharacterUnlockOptionsProvider(null);
+  }
+});
+
 test('hosted: a profile the provider does not name never uses the device-local gates', () => {
   register({ wallet: walletB }, { hosted: true });
   try {
