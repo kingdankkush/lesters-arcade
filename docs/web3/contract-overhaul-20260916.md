@@ -341,7 +341,7 @@ invariant: `SETTLEMENT_LIVE` implies `HOSTED_PROFILE_SYNC` and a `deployed` modu
 Keys live only in the vault file (`C:/Users/just_/lesters-arcade-vault/keys/…`) and in Vercel. Every tool
 reads them **inside the command, without echo**, through `scripts/lib/key-source.mjs`:
 `--key-env <NAME>` (an environment variable you set for that one command), or
-`--key-file <vault path> --key-field <field>` (one field of a JSON file; a field holding
+`--key-file <vault path> --key-field <field>` (the 2026-09-22 vault file nests keys as `keys.operator`, `keys.verifier` and `keys.relayer`, so pass those dotted paths; one field of a JSON file; a field holding
 `{ address, privateKey }` uses `privateKey`). Errors name the flag, variable or field, never the value or
 the file contents; a key pasted where a variable NAME, path or field belongs is refused without being
 repeated. No tool prints a key, and nobody pastes one into a prompt, a commit or a log.
@@ -372,9 +372,9 @@ a fake Vercel CLI and a local HTTP server.
    (writes `docs/web3/hardened-ranked-deployment-manifest.json` with the seven predicted addresses; they must
    equal the committed address module).
 3. ⚠ **Broadcast.** First check the key without starting anything:
-   `node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator`
+   `node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field keys.operator`
    (it confirms the vault field holds the configured deployer's key). Then:
-   `node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field operator --broadcast --confirm DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`.
+   `node scripts/deploy-contracts-with-key.mjs --key-file <vault keys.json> --key-field keys.operator --broadcast --confirm DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441`.
    The launcher reads the key inside its own process and starts `node scripts/deploy-contracts.mjs --broadcast`
    with `DEPLOYER_PRIVATE_KEY` and `LITVM_DEPLOY_CONFIRM` set in that child's environment only: the key is
    never on a command line, in the shell's environment or in any output, and nothing is left set when the
@@ -383,9 +383,9 @@ a fake Vercel CLI and a local HTTP server.
    `apps/portal/src/generated/litvm-addresses.mjs` (`status: 'deployed'`) together.
 4. ⚠ **Owner confirms the developer wallet**, one transaction per game, on the owner page (next section).
 5. ⚠ **Operator activates the games:**
-   `node scripts/operator-actions.mjs activate --key-file <vault keys.json> --key-field operator --broadcast --confirm ACTIVATE_GAMES_4441`
+   `node scripts/operator-actions.mjs activate --key-file <vault keys.json> --key-field keys.operator --broadcast --confirm ACTIVATE_GAMES_4441`
    (dry run first without `--broadcast`; games whose developer wallet is not confirmed are skipped).
-6. ⚠ **Vercel production secrets**: `node scripts/vercel-secrets.mjs --key-file <vault keys.json>
+6. ⚠ **Vercel production secrets**: `node scripts/vercel-secrets.mjs --key-file <vault keys.json> --verifier-field keys.verifier --relayer-field keys.relayer
    --cron-secret-out C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --rotate-session-secret`
    is the dry run (names only); add `--apply --confirm SET_PRODUCTION_SECRETS` to write. It refuses to run
    while any legacy name exists in any environment, pipes every value to `vercel env add` on stdin, writes
@@ -439,12 +439,12 @@ Emergency stops (contract §13, A27), in order of reach:
    1.8.0 release**. `/api/ranked/seed`, `/api/settle` and the settle-retry cron answer
    `503 settlement-paused`; new entries stop at the modal before payment and queued rows wait.
 2. **Stop on chain:**
-   `node scripts/operator-actions.mjs pause-games --key-file <vault keys.json> --key-field operator --broadcast --confirm PAUSE_GAMES_4441`
+   `node scripts/operator-actions.mjs pause-games --key-file <vault keys.json> --key-field keys.operator --broadcast --confirm PAUSE_GAMES_4441`
    (`setPlayable(gameId, false)` for each game; blocks `openSession` and `submitVerifiedSession`).
 3. **Leaked verifier key:**
-   `node scripts/operator-actions.mjs rotate-verifier <new verifier address> --key-file <vault keys.json> --key-field operator --broadcast --confirm ROTATE_VERIFIER_4441`,
+   `node scripts/operator-actions.mjs rotate-verifier <new verifier address> --key-file <vault keys.json> --key-field keys.operator --broadcast --confirm ROTATE_VERIFIER_4441`,
    then replace `RANKED_VERIFIER_PRIVATE_KEY`. **Leaked relayer key:**
-   `node scripts/operator-actions.mjs relayer-off --key-file <vault keys.json> --key-field operator --broadcast --confirm RELAYER_OFF_4441`.
+   `node scripts/operator-actions.mjs relayer-off --key-file <vault keys.json> --key-field keys.operator --broadcast --confirm RELAYER_OFF_4441`.
 4. **Site rollback:** Vercel **Instant Rollback** to `dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu` (1.7.0) only. Never
    "Redeploy" or rebuild a pre-1.8.0 commit with production env; the renamed secrets make old code fail
    closed anyway.
@@ -483,7 +483,7 @@ transaction and a re-run mints nothing. The E12 index cron then stamps `token_id
 ```
 node scripts/backfill-nft-mints.mjs [--resync]                                          # dry run (reads Neon only)
 LITVM_BACKFILL_CONFIRM=BACKFILL_NFT_MINTS_4441 \
-  node scripts/backfill-nft-mints.mjs --broadcast --resync --key-file <vault keys.json> --key-field relayer
+  node scripts/backfill-nft-mints.mjs --broadcast --resync --key-file <vault keys.json> --key-field keys.relayer
 ```
 
 `NEON_DATABASE_URL` comes from the environment and is never printed; the script never migrates. The key

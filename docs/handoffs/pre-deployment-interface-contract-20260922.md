@@ -1730,7 +1730,7 @@ The guide's §7 steps keep their numbers. These amendments come from the reviews
 - **Step 2.** Also run `node scripts/operator-actions.mjs status` (read-only: operator nonce, balances, current contract state).
 - **Step 3 ⚠.** As written. The same commit adds `contracts/deployment-record.hardened.json` and the regenerated address module (`status:'deployed'`).
 - **Step 4 ⚠ (hosting fixed).** Production still serves 1.7.0 at this point, which has no owner page. From the step-3 commit, serve the portal locally: `python -m http.server 8791 --directory apps/portal`, and the owner opens `http://127.0.0.1:8791/owner/confirm-dev-wallet.html` in MetaMask or Rabby on the owner wallet. The page checks on-chain facts (code at the registry address and `getGame(id).exists`), not only the module status.
-- **Step 5 ⚠.** `node scripts/operator-actions.mjs activate --key-file <vault path> --key-field operator --broadcast --confirm ACTIVATE_GAMES_4441`. It reads the key inside the process and never prints it.
+- **Step 5 ⚠.** `node scripts/operator-actions.mjs activate --key-file <vault path> --key-field keys.operator --broadcast --confirm ACTIVATE_GAMES_4441`. It reads the key inside the process and never prints it.
 - **Step 6 ⚠ (secrets renamed; A28, A13).** `node scripts/vercel-secrets.mjs` (dry run lists names only), then with `--apply`:
   - writes `RANKED_VERIFIER_PRIVATE_KEY`, `RANKED_RELAYER_PRIVATE_KEY` and `RANKED_SCORE_REGISTRY_ADDRESS` to **production** by piping values from the vault into `vercel env add … production` over stdin;
   - generates `CRON_SECRET` (32 random bytes, hex), writes it to a new vault file `C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt`, and pipes it to Vercel;
