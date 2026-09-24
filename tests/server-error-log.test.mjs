@@ -84,7 +84,7 @@ function apiModules(dir = new URL('../api/', import.meta.url), prefix = 'api/') 
 
 test('every api function logs a failing dependency as one redacted line', async () => {
   const files = apiModules();
-  assert.ok(files.includes('api/cron/index-chain.mjs') && files.includes('api/share-page.mjs') && files.includes('api/share-card.mjs'), files.join(', '));
+  assert.ok(files.includes('api/health.mjs') && files.includes('api/cron/index-chain.mjs') && files.includes('api/share-page.mjs') && files.includes('api/share-card.mjs'), files.join(', '));
   for (const file of files) {
     // eslint-disable-next-line no-await-in-loop
     const mod = await import(new URL(`../${file}`, import.meta.url));
