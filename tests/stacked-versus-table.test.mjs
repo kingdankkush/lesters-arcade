@@ -10,17 +10,30 @@ import {
   resolveGarbageExchange,
 } from '../apps/portal/src/stacked-versus-table.mjs';
 
-const walk = (root) => readdirSync(root).flatMap((name) => {
-  const path = join(root, name);
-  return statSync(path).isDirectory() ? walk(path) : [path];
-});
+// Other test files running in parallel create and remove short-lived probe directories under apps/
+// (tests/stacked-contracts.test.mjs plants .stacked-contract-probe-* to prove its own guard). An
+// entry that disappears while this walk runs no longer exists, so it has nothing to audit; every
+// other file-system error still fails the audit.
+const vanished = (error) => error?.code === 'ENOENT';
+const walk = (root, { readdir = readdirSync, stat = statSync } = {}) => {
+  let names;
+  try { names = readdir(root); } catch (error) { if (vanished(error)) return []; throw error; }
+  return names.flatMap((name) => {
+    const path = join(root, name);
+    let entry;
+    try { entry = stat(path); } catch (error) { if (vanished(error)) return []; throw error; }
+    return entry.isDirectory() ? walk(path, { readdir, stat }) : [path];
+  });
+};
 
 const attackTableImporters = () => {
   const importers = [];
   for (const path of walk('apps')) {
     if (!/\.(?:mjs|js)$/.test(path)) continue;
+    let text;
+    try { text = readFileSync(path, 'utf8'); } catch (error) { if (vanished(error)) continue; throw error; }
     let references;
-    try { references = findModuleReferences(readFileSync(path, 'utf8')); }
+    try { references = findModuleReferences(text); }
     catch (cause) { throw new Error(`Cannot audit ${relative('.', path)}: ${cause.message}`, { cause }); }
     const unresolved = references.find((reference) => typeof reference.source !== 'string');
     if (unresolved) {
@@ -104,6 +117,25 @@ test('garbage exchange cancels oldest rows and never emits a zero-row entry', ()
 
 test('no application runtime imports the Phase-1 attack table', () => {
   assert.deepEqual(attackTableImporters(), []);
+});
+
+test('the import-audit walk skips entries that vanish mid-walk and fails on any other error', () => {
+  const enoent = () => Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' });
+  const tree = { apps: ['live.mjs', '.probe-gone', 'dir-gone'], 'apps/dir-gone': null };
+  const readdir = (path) => {
+    const key = path.replaceAll('\\', '/');
+    if (tree[key] === null) throw enoent();
+    return tree[key] ?? [];
+  };
+  const stat = (path) => {
+    const key = path.replaceAll('\\', '/');
+    if (key === 'apps/.probe-gone') throw enoent();
+    return { isDirectory: () => key === 'apps/dir-gone' };
+  };
+  assert.deepEqual(walk('apps', { readdir, stat }).map((path) => path.replaceAll('\\', '/')), ['apps/live.mjs']);
+  const denied = () => { throw Object.assign(new Error('EACCES: permission denied'), { code: 'EACCES' }); };
+  assert.throws(() => walk('apps', { readdir: denied, stat }), /EACCES/);
+  assert.throws(() => walk('apps', { readdir, stat: denied }), /EACCES/);
 });
 
 test('import audit recognizes module edges but ignores strings and comments and rejects parse failure', () => {
