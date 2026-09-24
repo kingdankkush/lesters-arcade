@@ -5,13 +5,15 @@
 // migration step, §13 step 8b) and reports the schema version, then mirrors
 // ScoreSubmitted, AchievementUnlocked and profile events into Neon. On a
 // deployed deployment it needs RANKED_SCORE_REGISTRY_ADDRESS equal to the
-// deployment's score registry (§9.2), else 503.
+// deployment's score registry (§9.2), else 503. Every authorized run's
+// outcome is recorded in cron_runs for /api/health (ops-health).
 
 import { makeHandler } from '../../server/http.mjs';
 import { buildBaseDeps } from '../../server/config.mjs';
 import { attachLazyProvider } from '../../server/chain/public-rpc.mjs';
 import { indexChain } from '../../server/indexer/index-chain.mjs';
 import { migrate } from '../../server/neon/migrations.mjs';
+import { CRON_NAMES, withCronRun } from '../../server/ops/cron-runs.mjs';
 
 const cache = {};
 
@@ -24,6 +26,10 @@ const json = (status, body) => ({ status, body, headers: { 'Cache-Control': 'no-
 export async function indexChainRequest({ headers = {} } = {}, deps) {
   if (!deps.config.cron.matches(headers.authorization)) return json(401, { ok: false, error: 'unauthorized' });
   if (!deps.db) return json(503, { ok: false, error: 'index-not-configured' });
+  return withCronRun(CRON_NAMES.indexChain, deps, () => indexChainRun(deps));
+}
+
+async function indexChainRun(deps) {
   const migration = await migrate(deps.db);
   const schema = { schemaVersion: migration.version, appliedMigrations: migration.applied };
   if (deps.deployment?.status !== 'deployed') return json(200, { ok: true, skipped: 'not-deployed', ...schema });

@@ -23,7 +23,7 @@ test('migration 1 creates every table, index and constraint', async () => {
     assert.equal(MIGRATIONS[0].name, '0001_ranked_index');
     assert.equal(await readSchemaVersion(db), 0, 'a missing schema_migrations table reads as version 0');
     const result = await migrate(db);
-    assert.deepEqual(result, { version: 1, applied: [1] });
+    assert.deepEqual(result, { version: 2, applied: [1, 2] }, 'a fresh database gets migration 1 and the additive migration 2');
     const tables = (await db.query("SELECT table_name::text AS name FROM information_schema.tables WHERE table_schema = 'public'")).map((row) => row.name);
     for (const table of TABLES) assert.ok(tables.includes(table), `table ${table}`);
     assert.equal(tables.includes('arcade_profiles'), false, 'D4 clean slate: the legacy profile table is gone');
@@ -73,12 +73,12 @@ test('migration 1 is exactly the contract §3.2 DDL', () => {
 test('migrate is idempotent and records the version', async () => {
   const db = createPgliteClient();
   try {
-    assert.deepEqual(await migrate(db), { version: 1, applied: [1] });
-    assert.deepEqual(await migrate(db), { version: 1, applied: [] }, 'applying twice is a no-op');
+    assert.deepEqual(await migrate(db), { version: 2, applied: [1, 2] });
+    assert.deepEqual(await migrate(db), { version: 2, applied: [] }, 'applying twice is a no-op');
     const rows = await db.query('SELECT version::int AS version, name FROM schema_migrations ORDER BY version');
-    assert.deepEqual(rows, [{ version: 1, name: '0001_ranked_index' }]);
+    assert.deepEqual(rows, [{ version: 1, name: '0001_ranked_index' }, { version: 2, name: '0002_cron_runs' }]);
     assert.equal(await readSchemaVersion(db), LATEST_SCHEMA_VERSION);
-    assert.equal(await ensureSchema(db), 1);
+    assert.equal(await ensureSchema(db), 2);
   } finally {
     await db.close();
   }
@@ -89,23 +89,23 @@ test('ensureSchema migrates only when behind, memoizes per schemaKey and forgets
   const statements = [];
   const spy = { schemaKey: db.schemaKey, async query(sql, params) { statements.push(sql.trim().split(/\s+/).slice(0, 2).join(' ')); return db.query(sql, params); } };
   try {
-    assert.equal(await ensureSchema(spy), 1);
+    assert.equal(await ensureSchema(spy), 2);
     const firstRun = statements.length;
     assert.ok(statements.some((sql) => sql.startsWith('CREATE TABLE')), 'the first call migrates');
-    assert.equal(await ensureSchema(spy), 1);
+    assert.equal(await ensureSchema(spy), 2);
     assert.equal(statements.length, firstRun, 'the memo hits for the same schemaKey');
 
     // A second client on the same database (new process) only checks the version.
     const fresh = [];
     const other = { schemaKey: `${db.schemaKey}:other-process`, async query(sql, params) { fresh.push(sql); return db.query(sql, params); } };
-    assert.equal(await ensureSchema(other), 1);
+    assert.equal(await ensureSchema(other), 2);
     assert.equal(fresh.length, 1, 'an up-to-date database needs one version read and no DDL');
 
     let fail = true;
     const flaky = { schemaKey: `flaky:${db.schemaKey}`, async query(sql, params) { if (fail) throw Object.assign(new Error('boom'), { code: '08006' }); return db.query(sql, params); } };
     await assert.rejects(ensureSchema(flaky), /boom/);
     fail = false;
-    assert.equal(await ensureSchema(flaky), 1, 'a failure clears the memo');
+    assert.equal(await ensureSchema(flaky), 2, 'a failure clears the memo');
   } finally {
     await db.close();
   }
@@ -126,7 +126,7 @@ test('migrate retries a version once when a concurrent creator wins the catalog 
     },
   };
   try {
-    assert.deepEqual(await migrate(racing), { version: 1, applied: [1] });
+    assert.deepEqual(await migrate(racing), { version: 2, applied: [1, 2] });
     assert.equal(raced, true);
     const fresh = createPgliteClient();
     let attempts = 0;

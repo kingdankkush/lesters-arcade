@@ -132,8 +132,27 @@ const MIGRATION_0001 = [
 )`,
 ];
 
+// Migration 2 (ops-health, post-launch): cron run bookkeeping for
+// /api/health and the owner status page. Additive only: one new table, no
+// change to any version-1 table, so the index-chain cron (or the first
+// ensureSchema after the deploy) applies it safely to the live v1 database.
+// last_error_code holds an allowlisted code (A31) or an error name plus a
+// SQLSTATE, never raw error text (server/ops/cron-runs.mjs).
+const MIGRATION_0002 = [
+  `CREATE TABLE IF NOT EXISTS cron_runs (
+  name             TEXT PRIMARY KEY CHECK (name ~ '^[a-z][a-z0-9-]{0,47}$'),
+  last_ok_at       TIMESTAMPTZ NULL,
+  last_error_at    TIMESTAMPTZ NULL,
+  last_error_code  TEXT NULL CHECK (last_error_code IS NULL OR last_error_code ~ '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$'),
+  runs             INTEGER NOT NULL DEFAULT 0 CHECK (runs >= 0),
+  failures         INTEGER NOT NULL DEFAULT 0 CHECK (failures >= 0),
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+)`,
+];
+
 export const MIGRATIONS = Object.freeze([
   Object.freeze({ version: 1, name: '0001_ranked_index', statements: Object.freeze(MIGRATION_0001) }),
+  Object.freeze({ version: 2, name: '0002_cron_runs', statements: Object.freeze(MIGRATION_0002) }),
 ]);
 
 export const LATEST_SCHEMA_VERSION = MIGRATIONS.reduce((max, migration) => Math.max(max, migration.version), 0);

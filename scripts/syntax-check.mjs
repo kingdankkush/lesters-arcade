@@ -169,6 +169,8 @@ const NODE_CHECK_FILES = [
   'api/share-page.mjs',
   'api/share-card.mjs',
   'api/ranked-seed.mjs',
+  'server/ops/cron-runs.mjs',
+  'tests/cron-runs.test.mjs',
   'tests/server-error-log.test.mjs',
   'tests/api-index-endpoints.test.mjs',
   'scripts/neon-migrate.mjs',
