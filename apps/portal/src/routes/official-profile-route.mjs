@@ -1,16 +1,19 @@
 import { buildChikunProfile } from '../chikun-profile.mjs';
-import { buildHmhRunHistoryModel, buildHmhRunDetailsModel } from '../hmh-run-history.mjs';
 import { RUN_HISTORY_LIMIT } from '../persistence.mjs';
 import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
 import { buildStackedProfileFacts, stackedInputLabel } from '../stacked-profile.mjs';
 import { LITVM_DEPLOYMENT } from '../generated/litvm-addresses.mjs';
+// main.js loads this module on the first Profile visit (routes/lazy-routes.mjs)
+// and passes the run-history builders in: importing hmh-run-history.mjs from
+// this lazy chunk would split the chunk the HMH child shares with the portal
+// (its run-summary schema and combo modules) and grow the child's initial JS.
 
 const formatPermille = (value) => `${(Math.max(0, Number(value) || 0) / 10).toFixed(1)}%`;
 const titleCase = (value) => String(value ?? '').split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');
 
 // DOM is created only when a player opens a run, not for every retained payload.
 // Native details/summary supplies keyboard activation and expanded-state semantics.
-export function renderHmhRunDetails(run, { el, appendText }) {
+export function renderHmhRunDetails(run, { el, appendText, buildHmhRunDetailsModel }) {
   const disclosure = el('details', { className: 'hmh-history-details' });
   disclosure.append(el('summary', { textContent: 'All captured stats', className: 'hmh-history-details-toggle' }));
   let rendered = false;
@@ -108,6 +111,8 @@ export function createOfficialProfileRoute({
   ARCADE_GAMES,
   appendText,
   buildHardMoneyHeroesStatsModule,
+  buildHmhRunDetailsModel,
+  buildHmhRunHistoryModel,
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
   buildWalletConnectionModel,
@@ -847,7 +852,7 @@ export function createOfficialProfileRoute({
         appendText(buildCell, 'small', `Build: ${buildText}`);
         const detailHref = detailsBySessionId.get(run.sessionId);
         if (detailHref) buildCell.append(el('a', { className: 'game-history-link', href: detailHref, textContent: 'Open parent session / receipt' }));
-        buildCell.append(renderHmhRunDetails(run, { el, appendText }));
+        buildCell.append(renderHmhRunDetails(run, { el, appendText, buildHmhRunDetailsModel }));
         row.append(buildCell);
         runList.append(row);
       }

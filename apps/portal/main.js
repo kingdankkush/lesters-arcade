@@ -84,6 +84,7 @@ import { createOfficialShellRoutes } from './src/routes/official-shell-routes.mj
 import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
 import { createOfficialProfileRoute } from './src/routes/official-profile-route.mjs';
 import { createOfficialLeaderboardRoute } from './src/routes/official-leaderboard-route.mjs';
+import { buildHmhRunDetailsModel, buildHmhRunHistoryModel } from './src/hmh-run-history.mjs';
 import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
@@ -5206,6 +5207,8 @@ const officialProfileRoute = createOfficialProfileRoute({
   ARCADE_GAMES,
   appendText,
   buildHardMoneyHeroesStatsModule,
+  buildHmhRunDetailsModel,
+  buildHmhRunHistoryModel,
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
   buildWalletConnectionModel,

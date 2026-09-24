@@ -8,6 +8,7 @@ import * as profileRoute from '../apps/portal/src/routes/official-profile-route.
 import * as arcadeCore from '../apps/portal/src/arcade-core.mjs';
 import { createStackedPlaySession } from '../apps/stacked/src/play-session.mjs';
 import { createRunSummaryAccumulator, finalizeRunSummary } from '../sdk/hmh-run-summary.mjs';
+import { buildHmhRunDetailsModel, buildHmhRunHistoryModel } from '../apps/portal/src/hmh-run-history.mjs';
 
 function node(tag = 'div', props = {}) {
   return {
@@ -92,6 +93,7 @@ test('all-stats disclosure is native, lazy, complete and stable across repeated 
   const detail = profileRoute.renderHmhRunDetails({ sessionId: 'ranked-1', runSummary: summary }, {
     el: node,
     appendText: (parent, tag, text, className = '') => parent.append(node(tag, { textContent: text, className })),
+    buildHmhRunDetailsModel,
   });
   assert.equal(detail.tag, 'details');
   assert.equal(detail.children[0].tag, 'summary');
@@ -155,7 +157,7 @@ function connectedProfileTree({ history = [], settlements = [], gameId='lester-b
   const grid = el('div');
   const noWrite = () => { throw new Error('render must not invoke an account, persistence or gameplay action'); };
   const route = createOfficialProfileRoute({
-    ...arcadeCore, el,
+    ...arcadeCore, el, buildHmhRunDetailsModel, buildHmhRunHistoryModel,
     dom: { officialCabinetGrid: grid },
     routeState: { gameId, avatarJustSaved: false, usernameJustSaved: false },
     getContext: () => ({ connectedWallet: wallet, connectedChainId: null, walletConnector: 'qa-fixture', state, combat: {} }),
