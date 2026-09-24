@@ -1,85 +1,440 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "status": "UNSIGNED_DRY_RUN",
+  "design": "native-fee-ranked-eip712-soulbound-2026-09-16",
+  "epoch": "testnet",
+  "epochNote": "Testnet epoch until mainnet; mainnet is a fresh deployment set and nothing here carries over.",
   "network": "LitVM LiteForge Testnet",
   "chainId": 4441,
-  "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-  "observedPendingNonce": 30,
-  "trustedVerifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "nativeToken": {
+    "symbol": "zkLTC",
+    "decimals": 18
+  },
+  "deployer": "0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF",
+  "observedPendingNonce": 0,
+  "operator": "0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF",
+  "trustedVerifier": "0x4d637a6C5b5c6f97cFA3d98BD53deeb8510120C7",
+  "relayer": "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+  "relayerVault": "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+  "settlementGasReserveWei": "2000000000000000",
+  "vaults": {
+    "platformVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+    "liquidityVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+    "treasuryVault": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
+  },
+  "developerWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+  "achievementBaseTokenUri": "https://lestersarcade.io/achievements/",
+  "games": [
+    {
+      "slug": "lester-blaster",
+      "title": "Hard Money Heroes",
+      "gameId": "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+      "entryFeeWei": "100000000000000000",
+      "settlementGasReserveWei": "2000000000000000",
+      "totalEntryWei": "102000000000000000",
+      "devBps": 8500,
+      "platformBps": 0,
+      "liquidityBps": 0,
+      "treasuryBps": 1500,
+      "achievements": {
+        "name": "Hard Money Heroes Achievements",
+        "symbol": "HMHACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/lester-blaster/",
+        "predictedAddress": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737"
+      }
+    },
+    {
+      "slug": "chikun",
+      "title": "Chikun's Escape",
+      "gameId": "0xe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385",
+      "entryFeeWei": "100000000000000000",
+      "settlementGasReserveWei": "2000000000000000",
+      "totalEntryWei": "102000000000000000",
+      "devBps": 8500,
+      "platformBps": 0,
+      "liquidityBps": 0,
+      "treasuryBps": 1500,
+      "achievements": {
+        "name": "Chikun's Escape Achievements",
+        "symbol": "CHKACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/chikun/",
+        "predictedAddress": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93"
+      }
+    },
+    {
+      "slug": "stacked",
+      "title": "STACKED",
+      "gameId": "0xf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f5",
+      "entryFeeWei": "100000000000000000",
+      "settlementGasReserveWei": "2000000000000000",
+      "totalEntryWei": "102000000000000000",
+      "devBps": 8500,
+      "platformBps": 0,
+      "liquidityBps": 0,
+      "treasuryBps": 1500,
+      "achievements": {
+        "name": "STACKED Achievements",
+        "symbol": "STKACH",
+        "baseTokenUri": "https://lestersarcade.io/achievements/stacked/",
+        "predictedAddress": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7"
+      }
+    }
+  ],
   "contracts": [
     {
       "name": "GameRegistry",
-      "nonce": 30,
-      "predictedAddress": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
-      "initCodeHash": "0x2e7f690240615ed9ab2d3e0334d5920e65ec6e59be058183a089f230f4c2c199",
-      "runtimeCodeHash": null,
-      "artifactBytecodeSha256": "9c3741885965e3391ffa679a9ce0d7a9aa8f1469ebb7ac58947b96e7402d2079",
-      "gasEstimate": "1249019"
+      "nonce": 0,
+      "predictedAddress": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+      "initCodeHash": "0x4035a2fb35e029a02de430859b640e6b11caa0876887f93872532973575c30e9",
+      "runtimeCodeHash": "0xb7da9ff9fda47b4d5201c31971955a4e7e8399fa75b1f3e1601b399f1368e73f",
+      "artifactBytecodeSha256": "ee85641b37aada45f196b45664f25ec25fa05ba13c0f11a02dd7ac6fb09692a4",
+      "gasEstimate": "1293586"
     },
     {
       "name": "PlayerProfileRegistry",
-      "nonce": 31,
-      "predictedAddress": "0xd49EdAD8c5247ce99D12e70a95293291d2Ee191C",
+      "nonce": 1,
+      "predictedAddress": "0x3EB9e9F2620940496A2b8Ed6f7384e6687587c94",
       "initCodeHash": "0x81af5c5703ceba4d9524494f31a4bfd311f3dbf5b89dec4a9e3e268a22d127d2",
-      "runtimeCodeHash": null,
+      "runtimeCodeHash": "0x83209ad7b9cea874ec61f5a78ed74bb3247ca192cbc55311ebf2e10c170cc9b3",
       "artifactBytecodeSha256": "2f5020062ff0e90c9dabd254c7387a433524e386ed6e413242b43f9fcad1df67",
-      "gasEstimate": "1036697"
+      "gasEstimate": "1031805"
+    },
+    {
+      "name": "ArcadeRankedEntry",
+      "nonce": 2,
+      "predictedAddress": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+      "initCodeHash": "0x0b13796dafa7de8af6f35b32ae48beeaaa50d791f2788cda29818fca56d9cbf5",
+      "runtimeCodeHash": "0xb41cb06e8ef48055c2acd9af5bc09db50ae05daf6712b955e450e354801b9d64",
+      "artifactBytecodeSha256": "22507c3b23be9730c573d7f806420a786a28b59f3c45084eefe67a9410ae3cd2",
+      "gasEstimate": "1358329"
     },
     {
       "name": "ScoreSubmissionRegistry",
-      "nonce": 32,
-      "predictedAddress": "0x55D37C5516F17e12bBd7Ec9ab520D10Cc5098782",
-      "initCodeHash": "0x75776659204c38bfaad168a8110e946b76f7816a545ea8621324ecac388a2f6e",
-      "runtimeCodeHash": null,
-      "artifactBytecodeSha256": "d4c566e8dcc7989de08a57a3ccc08732dca9e9eb7b90581e9433d8f88ee08e8d",
-      "gasEstimate": "1591221"
+      "nonce": 3,
+      "predictedAddress": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "initCodeHash": "0x32eb2e40716923bfa04b2eb0e562d852e8652b4bfa6961fa4ceea1a71117fb83",
+      "runtimeCodeHash": "0x5d42efecaef5d82286a90dcdc4bd35d6f0caa4613d02704d46547747923d811f",
+      "artifactBytecodeSha256": "7b7b8ce99d433a66d9027c8aab93c5c80b4aef196bb8566c0b61dc5d0a4cadb0",
+      "gasEstimate": "2759320"
+    },
+    {
+      "name": "AchievementRegistry",
+      "gameSlug": "lester-blaster",
+      "nonce": 4,
+      "predictedAddress": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737",
+      "initCodeHash": "0x3bbe445e60431b6e50e55640610ac4c1252583c4d240a00bf1e256f279920c5a",
+      "runtimeCodeHash": "0xe04dcbc37d59309ae0f5b45e7d35b4009d7fde22681144aa796b1b4971f5e4b2",
+      "artifactBytecodeSha256": "56d58da96a9c54cb8e7c484f2b53ea5b5a3ddee734840667f4431c8e244c12ad",
+      "gasEstimate": "2122660"
+    },
+    {
+      "name": "AchievementRegistry",
+      "gameSlug": "chikun",
+      "nonce": 5,
+      "predictedAddress": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93",
+      "initCodeHash": "0x21e0bb4313bcd9babdb434bc638fca4debb619226d63e3177ef9d617eaf36f67",
+      "runtimeCodeHash": "0xe04dcbc37d59309ae0f5b45e7d35b4009d7fde22681144aa796b1b4971f5e4b2",
+      "artifactBytecodeSha256": "56d58da96a9c54cb8e7c484f2b53ea5b5a3ddee734840667f4431c8e244c12ad",
+      "gasEstimate": "2122539"
+    },
+    {
+      "name": "AchievementRegistry",
+      "gameSlug": "stacked",
+      "nonce": 6,
+      "predictedAddress": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7",
+      "initCodeHash": "0x969018798d2a409ab45439de2c5f00d1ca7d3f3da475bf6c789ddecf94b5fe09",
+      "runtimeCodeHash": "0xe04dcbc37d59309ae0f5b45e7d35b4009d7fde22681144aa796b1b4971f5e4b2",
+      "artifactBytecodeSha256": "56d58da96a9c54cb8e7c484f2b53ea5b5a3ddee734840667f4431c8e244c12ad",
+      "gasEstimate": "2122453"
     }
   ],
   "postDeployTransactions": [
     {
-      "nonce": 33,
+      "nonce": 7,
+      "signer": "deployer",
+      "contract": "ArcadeRankedEntry",
+      "to": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+      "method": "setPlatformVaults",
+      "args": [
+        "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+        "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+        "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26"
+      ],
+      "data": "0xc03eaeb200000000000000000000000007cec6fc49caf6528f2f2f796042629cd3f48b2600000000000000000000000007cec6fc49caf6528f2f2f796042629cd3f48b2600000000000000000000000007cec6fc49caf6528f2f2f796042629cd3f48b26",
+      "calldataHash": "0xcb0f71b0f1ce93ec493fca561b35ee2ad421252e58a16795d50ee7485b5134bf"
+    },
+    {
+      "nonce": 8,
+      "signer": "deployer",
+      "contract": "ArcadeRankedEntry",
+      "to": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+      "method": "setRelayerVault",
+      "args": [
+        "0x494aF36ea4958c417260faf3efB3B672B343EAf6"
+      ],
+      "data": "0x98a7a5a6000000000000000000000000494af36ea4958c417260faf3efb3b672b343eaf6",
+      "calldataHash": "0x07baad8be8a9507571eb6a0f25f0c4f337c72d58bc5030bb041f60ff8124876b"
+    },
+    {
+      "nonce": 9,
+      "signer": "deployer",
+      "contract": "ArcadeRankedEntry",
+      "to": "0x10cd09e694e2B2Cd70d37f8CDdDcdA3Ef1208190",
+      "method": "setSettlementGasReserve",
+      "args": [
+        "2000000000000000"
+      ],
+      "data": "0x98fb3bfd00000000000000000000000000000000000000000000000000071afd498d0000",
+      "calldataHash": "0x23d583f25c9a987d331bf856a7ba898cf192fd7f43030551e8afd0bbce558a53"
+    },
+    {
+      "nonce": 10,
+      "signer": "deployer",
+      "contract": "ScoreSubmissionRegistry",
+      "to": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "method": "setRelayer",
+      "args": [
+        "0x494aF36ea4958c417260faf3efB3B672B343EAf6",
+        true
+      ],
+      "data": "0xecd8dc3a000000000000000000000000494af36ea4958c417260faf3efb3b672b343eaf60000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0xe99e368b80a9e22a0ddcd24ccf9887deccc413e6eaf0a4a58c2c45ba5c37745b"
+    },
+    {
+      "nonce": 11,
+      "signer": "deployer",
+      "contract": "AchievementRegistry",
+      "to": "0xc1A383cB7521978f429424443fdD69Bdd71Ff737",
+      "method": "setMinter",
+      "gameSlug": "lester-blaster",
+      "args": [
+        "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+        true
+      ],
+      "data": "0xcf456ae7000000000000000000000000c5c5949a02fac9a4115df182672c0f8ceb0eaf550000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x6e3855041cec3a6bc1270d465a8a4db8219b5d31f78c36abe4689f8fe549e5c8"
+    },
+    {
+      "nonce": 12,
+      "signer": "deployer",
+      "contract": "ScoreSubmissionRegistry",
+      "to": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "method": "setAchievementRegistry",
+      "gameSlug": "lester-blaster",
+      "args": [
+        "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+        "0xc1A383cB7521978f429424443fdD69Bdd71Ff737"
+      ],
+      "data": "0x67e05dcb545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e000000000000000000000000c1a383cb7521978f429424443fdd69bdd71ff737",
+      "calldataHash": "0xcb7c5ce056e3159208306e90cb0adc60e0fba2af035388bb2112b8ad71f618c8"
+    },
+    {
+      "nonce": 13,
+      "signer": "deployer",
+      "contract": "GameRegistry",
+      "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
       "method": "registerGame",
+      "gameSlug": "lester-blaster",
       "args": [
         "lester-blaster",
         "Hard Money Heroes",
-        "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
-        7500,
-        2500,
+        "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+        8500,
         0,
         0,
-        0
+        1500,
+        "100000000000000000"
       ],
-      "to": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
-      "data": "0xd15162130000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000024501ad94a9245dc88fb9546929cda10b91420d40000000000000000000000000000000000000000000000000000000000001d4c00000000000000000000000000000000000000000000000000000000000009c4000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e6c65737465722d626c6173746572000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001148617264204d6f6e6579204865726f6573000000000000000000000000000000",
-      "calldataHash": "0xae5be3325d6c2dba5592325f721838b00211124ecbedb4a208ddcdbfb55cd0d7"
+      "data": "0xd15162130000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000007cec6fc49caf6528f2f2f796042629cd3f48b2600000000000000000000000000000000000000000000000000000000000021340000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005dc000000000000000000000000000000000000000000000000016345785d8a0000000000000000000000000000000000000000000000000000000000000000000e6c65737465722d626c6173746572000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001148617264204d6f6e6579204865726f6573000000000000000000000000000000",
+      "calldataHash": "0xca7d1435d080add2b198889d81275b3d6159ab57b23ee5ed50fcf39c47580ff2"
     },
     {
-      "nonce": 34,
-      "method": "confirmDevWallet",
+      "nonce": 14,
+      "signer": "deployer",
+      "contract": "AchievementRegistry",
+      "to": "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93",
+      "method": "setMinter",
+      "gameSlug": "chikun",
       "args": [
-        "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e"
-      ],
-      "to": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
-      "data": "0x33cf3157545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
-      "calldataHash": "0x348ca2490f19fc5e821686d436abafece6994adb48a3d35e2c4d0dd1f11928a3"
-    },
-    {
-      "nonce": 35,
-      "method": "setPlayable",
-      "args": [
-        "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+        "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
         true
       ],
-      "to": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
-      "data": "0x4ea28ded545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e0000000000000000000000000000000000000000000000000000000000000001",
-      "calldataHash": "0x6aecfd9ab7829bd54e270aaf00e67eaddf132034f1845628f03b8a56f6e530c8"
+      "data": "0xcf456ae7000000000000000000000000c5c5949a02fac9a4115df182672c0f8ceb0eaf550000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x6e3855041cec3a6bc1270d465a8a4db8219b5d31f78c36abe4689f8fe549e5c8"
+    },
+    {
+      "nonce": 15,
+      "signer": "deployer",
+      "contract": "ScoreSubmissionRegistry",
+      "to": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "method": "setAchievementRegistry",
+      "gameSlug": "chikun",
+      "args": [
+        "0xe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385",
+        "0xf6Cd1cf7e1acCAeA93ACcdFB911034b3e8EB6f93"
+      ],
+      "data": "0x67e05dcbe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385000000000000000000000000f6cd1cf7e1accaea93accdfb911034b3e8eb6f93",
+      "calldataHash": "0xfed2405e0c37880bee1dd62c17ced4b96f52c3011d3872035ff338882f386065"
+    },
+    {
+      "nonce": 16,
+      "signer": "deployer",
+      "contract": "GameRegistry",
+      "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+      "method": "registerGame",
+      "gameSlug": "chikun",
+      "args": [
+        "chikun",
+        "Chikun's Escape",
+        "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+        8500,
+        0,
+        0,
+        1500,
+        "100000000000000000"
+      ],
+      "data": "0xd15162130000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000007cec6fc49caf6528f2f2f796042629cd3f48b2600000000000000000000000000000000000000000000000000000000000021340000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005dc000000000000000000000000000000000000000000000000016345785d8a000000000000000000000000000000000000000000000000000000000000000000066368696b756e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f4368696b756e2773204573636170650000000000000000000000000000000000",
+      "calldataHash": "0xd89ae98aeab387ec671c7310ace4d3ec7f061432cf72278466f5c679a90e9fd4"
+    },
+    {
+      "nonce": 17,
+      "signer": "deployer",
+      "contract": "AchievementRegistry",
+      "to": "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7",
+      "method": "setMinter",
+      "gameSlug": "stacked",
+      "args": [
+        "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+        true
+      ],
+      "data": "0xcf456ae7000000000000000000000000c5c5949a02fac9a4115df182672c0f8ceb0eaf550000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x6e3855041cec3a6bc1270d465a8a4db8219b5d31f78c36abe4689f8fe549e5c8"
+    },
+    {
+      "nonce": 18,
+      "signer": "deployer",
+      "contract": "ScoreSubmissionRegistry",
+      "to": "0xc5c5949a02fAC9a4115df182672C0f8cEB0Eaf55",
+      "method": "setAchievementRegistry",
+      "gameSlug": "stacked",
+      "args": [
+        "0xf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f5",
+        "0x5430f8c142Ca7ec8971a447Cc09ae63f8860A8A7"
+      ],
+      "data": "0x67e05dcbf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f50000000000000000000000005430f8c142ca7ec8971a447cc09ae63f8860a8a7",
+      "calldataHash": "0x4810b7b8c59893cafa7f1115e295b0bb5531f84e88efac9a91268e0a5a911e03"
+    },
+    {
+      "nonce": 19,
+      "signer": "deployer",
+      "contract": "GameRegistry",
+      "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+      "method": "registerGame",
+      "gameSlug": "stacked",
+      "args": [
+        "stacked",
+        "STACKED",
+        "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
+        8500,
+        0,
+        0,
+        1500,
+        "100000000000000000"
+      ],
+      "data": "0xd15162130000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000007cec6fc49caf6528f2f2f796042629cd3f48b2600000000000000000000000000000000000000000000000000000000000021340000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005dc000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000000000000000000000000000000000000000007737461636b6564000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007535441434b454400000000000000000000000000000000000000000000000000",
+      "calldataHash": "0x77b98674ef642d4b865f255505dd6a5b80f9c936f9d102b780e12e5f18554d18"
     }
   ],
+  "activation": {
+    "atomic": false,
+    "transactions": [
+      {
+        "nonce": null,
+        "signer": "developerWallet",
+        "contract": "GameRegistry",
+        "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+        "method": "confirmDevWallet",
+        "gameSlug": "lester-blaster",
+        "args": [
+          "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e"
+        ],
+        "data": "0x33cf3157545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+        "calldataHash": "0x348ca2490f19fc5e821686d436abafece6994adb48a3d35e2c4d0dd1f11928a3"
+      },
+      {
+        "nonce": null,
+        "signer": "operator",
+        "contract": "GameRegistry",
+        "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+        "method": "setPlayable",
+        "gameSlug": "lester-blaster",
+        "args": [
+          "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+          true
+        ],
+        "data": "0x4ea28ded545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e0000000000000000000000000000000000000000000000000000000000000001",
+        "calldataHash": "0x6aecfd9ab7829bd54e270aaf00e67eaddf132034f1845628f03b8a56f6e530c8"
+      },
+      {
+        "nonce": null,
+        "signer": "developerWallet",
+        "contract": "GameRegistry",
+        "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+        "method": "confirmDevWallet",
+        "gameSlug": "chikun",
+        "args": [
+          "0xe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385"
+        ],
+        "data": "0x33cf3157e293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385",
+        "calldataHash": "0x7d8fb0eeeb425a6fe066546878beaee778ca56fe0c016b34cd7087d2d83efe68"
+      },
+      {
+        "nonce": null,
+        "signer": "operator",
+        "contract": "GameRegistry",
+        "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+        "method": "setPlayable",
+        "gameSlug": "chikun",
+        "args": [
+          "0xe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385",
+          true
+        ],
+        "data": "0x4ea28dede293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f3850000000000000000000000000000000000000000000000000000000000000001",
+        "calldataHash": "0x6ddca34d217218d47161de6e96a585d6062bb93b4009d89195a12bc172388afb"
+      },
+      {
+        "nonce": null,
+        "signer": "developerWallet",
+        "contract": "GameRegistry",
+        "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+        "method": "confirmDevWallet",
+        "gameSlug": "stacked",
+        "args": [
+          "0xf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f5"
+        ],
+        "data": "0x33cf3157f59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f5",
+        "calldataHash": "0x323b25d8425dbc3b56cd524db0915e6068cf16e36ae5741ea05fc02ee3aeccd5"
+      },
+      {
+        "nonce": null,
+        "signer": "operator",
+        "contract": "GameRegistry",
+        "to": "0xCB0B695eBEE650aFcCe93F566259cb477B19bf23",
+        "method": "setPlayable",
+        "gameSlug": "stacked",
+        "args": [
+          "0xf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f5",
+          true
+        ],
+        "data": "0x4ea28dedf59739dcdad762dcc1b5c107223be71d49deb6bb5c775307196190123630d7f50000000000000000000000000000000000000000000000000000000000000001",
+        "calldataHash": "0x734077a16f3273d6aacaa0a60d3818b1734e10bcb2585dd72c375ade4168a074"
+      }
+    ]
+  },
   "excluded": [
     "PaymentRouter",
     "ArcadePaymentRouter",
     "SessionLedger",
-    "AchievementRegistry",
     "TournamentPool",
     "LestersArcadeCore"
   ],
@@ -88,5 +443,5 @@
     "totalSessions": 13,
     "checksum": "c5ee652e29b183d77a3a2c98c7a8e9839f15efb73c334ca200aecf86d8522574"
   },
-  "broadcastGuard": "DEPLOY_HARDENED_FREE_RANKED_4441"
+  "broadcastGuard": "DEPLOY_HARDENED_NATIVE_FEE_RANKED_4441"
 }
