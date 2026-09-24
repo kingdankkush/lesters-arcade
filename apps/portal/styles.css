@@ -1888,13 +1888,15 @@ svg.arcade-icon {
   color: rgb(255, 196, 104);
 }
 
-/* U11a shell banner. Amber and full width so the simulated identity is legible
-   on every route, not only in Profile. */
+/* U11a shell banner. Amber and as wide as the content column so the simulated
+   identity is legible on every route, not only in Profile. */
 .simulated-wallet-banner {
   /* Top margin clears the sticky nav, which otherwise crops the banner's top
      border and the first line of the headline. */
   margin: 14px auto 12px;
-  max-width: 1180px;
+  /* Keep a side gutter so its rounded border is not cut off at phone widths. */
+  box-sizing: border-box;
+  width: min(1180px, calc(100% - 40px));
   padding: 10px 14px;
   border: 1px solid rgba(255, 176, 62, 0.72);
   border-radius: 12px;

@@ -11,6 +11,8 @@
 //
 // Serve apps/portal as the web root (after `npm run build`: the page loads dist/main.js), then:
 //   HMH_PORTAL_ORIGIN=http://127.0.0.1:8809 node scripts/hmh-simulated-wallet-browser-smoke.mjs
+// It checks the preview only and exits 2 against a portal serving SETTLEMENT_LIVE = true, which the
+// committed source does from runbook step 7 (812e5c13) onward; run it against a preview-flag build.
 //
 // The U11a shell banner #simulatedWalletBanner must be hidden for a guest, visible and announced once
 // the simulated identity signs in, still the same node after a route change (a rebuilt role=status
@@ -128,6 +130,18 @@ try {
   const [br, bg, bb] = findings.bannerBorder.match(/[\d.]+/g).map(Number);
   assert.ok(br > 200 && bg > 120 && bg < 220 && bb < 120, `expected an amber banner border, got ${findings.bannerBorder}`);
   await banner.evaluate((node) => { globalThis.__u11aBannerHeadline = node.firstElementChild; });
+  // At phone width it keeps a side gutter (its rounded border is not cut off) and adds no sideways scroll.
+  await page.setViewportSize({ width: 390, height: 844 });
+  findings.bannerPhone = await banner.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, viewport: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth };
+  });
+  assert.ok(
+    findings.bannerPhone.left >= 16 && findings.bannerPhone.right <= findings.bannerPhone.viewport - 16,
+    `the banner needs a side gutter at 390 px: ${JSON.stringify(findings.bannerPhone)}`,
+  );
+  assert.ok(findings.bannerPhone.scrollWidth <= findings.bannerPhone.viewport, `the banner widens the page at 390 px: ${JSON.stringify(findings.bannerPhone)}`);
+  await page.setViewportSize({ width: 1440, height: 900 });
 
   findings.consoleWarned = consoleWarnings.some((text) => /simulated local identity/i.test(text));
   assert.equal(findings.consoleWarned, true, 'connectMockWallet must warn on the console');
