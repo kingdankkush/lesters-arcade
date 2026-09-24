@@ -227,8 +227,11 @@ test('reports carry the git head they ran at, and whether tracked files differed
   assert.deepEqual(sourceRevision(root, { ignore: [report], run: fake({ 'rev-parse': 'abc12345\n', status: ` M ${report}\n` }) }), { head: 'abc12345', dirty: false }, 'the report itself does not make the run dirty');
   assert.deepEqual(sourceRevision(root, { ignore: [report], run: fake({ 'rev-parse': 'abc12345\n', status: ' M scripts/ranked-live-browser-e2e.mjs\n' }) }), { head: 'abc12345', dirty: true, changed: ['scripts/ranked-live-browser-e2e.mjs'] });
   assert.deepEqual(sourceRevision(root, { run: fake({}) }), { head: null, dirty: null }, 'no git: unknown, not clean');
-  // The real repository answers with an 8-character head.
-  assert.match(sourceRevision(root).head ?? '', /^[0-9a-f]{8}$/);
+  // A git checkout answers with an 8-character head; a copy without git metadata (the Vercel build,
+  // which runs this suite through test:release) answers with nulls, never a made-up head.
+  const real = sourceRevision(root);
+  if (real.head === null) assert.equal(real.dirty, null);
+  else assert.match(real.head, /^[0-9a-f]{8}$/);
 });
 
 test('the throwaway tree junctions folders, copies files, and cleanup never touches the repository', (t) => {
