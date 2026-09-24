@@ -15,7 +15,8 @@ import { REHEARSAL_SUMMARY_SCHEMA } from '../scripts/rehearse-ranked-e2e.mjs';
 import { buildSiweChallenge } from '../apps/portal/src/wallet-auth.mjs';
 import { RANKED_GAMES } from '../apps/portal/src/ranked-identity.mjs';
 import {
-  applyTextEdit, checkGuards, CHECKLIST_END, CHECKLIST_START, FLAG_EDITS, parseGateErrors, renderChecklist, splitNpmScript, STEP7_TEST_EDITS, testLineFromStack, upsertChecklist,
+  ADDRESS_COMMAND, applyTextEdit, checkGuards, CHECKLIST_END, CHECKLIST_START, DRY_RUN_ENV, FLAG_EDITS, lineChanges, parseGateErrors, pathScrubber, renderChecklist, sha256Text, splitNpmScript,
+  STEP3_TEST_EDITS, STEP7_REPORT_SCHEMA, STEP7_SCRIPT_RELATIVE_PATH, STEP7_TEST_EDITS, testLineFromStack, upsertChecklist,
 } from '../scripts/rehearse-step7-dry-run.mjs';
 
 /**
@@ -172,35 +173,64 @@ test('the step-7 dry run refuses without --confirm-throwaway and in the main wor
   const doc = readFileSync(new URL('../docs/web3/contract-overhaul-20260916.md', import.meta.url), 'utf8');
   assert.equal(doc.split(CHECKLIST_START).length, 2, 'the doc carries exactly one generated step-7 checklist block');
   assert.ok(doc.indexOf(CHECKLIST_END) > doc.indexOf(CHECKLIST_START));
+  const gate = { status: 'FAIL', unexpected: 1, missing: 0 };
   const block = renderChecklist({
-    head: 'abc1234', generatedAt: '2026-09-23T00:00:00.000Z', flagEdits: [{ line: 28, before: 'export const SETTLEMENT_LIVE = false;', after: 'export const SETTLEMENT_LIVE = true;' }],
-    generated: { changedByPortalPages: ['apps/portal/index.html'] }, step7Edits: [{ file: 'tests/settlement.test.mjs', line: 16, before: 'false', after: 'true', verified: true }],
-    steps: [], failures: { preExisting: [] }, fullVerify: null,
+    head: 'abc1234', generatedAt: '2026-09-23T00:00:00.000Z', scriptSha256: 'f'.repeat(64), fullVerify: null,
+    step3: { gate, failures: { caused: [{ file: 'tests/n.test.mjs', name: 'n' }], preExisting: [] }, edits: [{ file: 'tests/n.test.mjs', line: 9, before: 'a', after: 'b', verified: true }], unexplainedFailures: [], generatedDocs: [] },
+    step7: {
+      flagEdits: [{ line: 28, before: 'export const SETTLEMENT_LIVE = false;', after: 'export const SETTLEMENT_LIVE = true;' }], generated: { changedByPortalPages: ['apps/portal/index.html'] },
+      edits: [{ file: 'tests/settlement.test.mjs', line: 16, before: 'false', after: 'true', verified: true }], unexplainedFailures: [], steps: [], failures: { caused: [], preExisting: [] },
+      generatedDocs: [{ path: 'docs/releases/hmh-fact-sheet.md', by: 'node scripts/hmh-release-facts.mjs --write', removed: ['SETTLEMENT_LIVE=false'], added: ['SETTLEMENT_LIVE=true'] }],
+    },
   });
   assert.ok(block.startsWith(CHECKLIST_START) && block.endsWith(CHECKLIST_END));
+  assert.ok(block.indexOf('**Step 3 (the deploy commit).**') < block.indexOf('**Step 7 (the flag flip).**'));
+  assert.ok(block.includes(`\`${ADDRESS_COMMAND}\``), 'the checklist names the command the dry run proved (--deployed, never the auto mode)');
+  assert.match(block, /`node scripts\/hmh-release-facts\.mjs --write` rewrites `docs\/releases\/hmh-fact-sheet\.md`/);
   assert.equal(upsertChecklist(`x\n${CHECKLIST_START}\nold\n${CHECKLIST_END}\ny`, block), `x\n${block}\ny`);
-  // The committed dry-run report is the checklist's source.
-  const report = JSON.parse(readFileSync(new URL('../docs/qa/step7-dry-run-20260923.json', import.meta.url), 'utf8'));
-  assert.equal(report.schema, 'lesters-step7-dry-run-v1');
+  // Local paths are scrubbed in every spelling, the throwaway before the home directory.
+  const scrubbed = pathScrubber([['C:\\Users\\me\\AppData\\Local\\Temp\\lesters-step7-x\\wt', '<throwaway>'], ['C:\\Users\\me', '~']]);
+  assert.equal(scrubbed('C:\\Users\\me\\AppData\\Local\\Temp\\lesters-step7-x\\wt\\docs\\a.json | C:/Users/me/AppData/Local/Temp/lesters-step7-x/wt/b | "C:\\\\Users\\\\me\\\\AppData\\\\Local\\\\Temp\\\\lesters-step7-x\\\\wt\\\\c" | c:\\users\\me\\x'), '<throwaway>\\docs\\a.json | <throwaway>/b | "<throwaway>\\\\c" | ~\\x');
+  assert.deepEqual(lineChanges('a\nstate: simulated\nb', 'a\nstate: gated\nb'), { removed: ['state: simulated'], added: ['state: gated'], removedCount: 1, addedCount: 1 });
+  assert.deepEqual(FLAG_EDITS.map((edit) => edit.file), ['apps/portal/src/settlement.mjs', 'apps/portal/src/settlement.mjs']);
+});
+
+test('the committed step-3/step-7 dry run is current: made by this script, unedited, and proving every edit', (t) => {
+  // Inside the dry run's own throwaway worktree the report is still being produced (the committed one
+  // is the previous run's), so there is nothing to hold it to yet.
+  if (process.env[DRY_RUN_ENV] === '1') return;
+  const doc = readFileSync(new URL('../docs/web3/contract-overhaul-20260916.md', import.meta.url), 'utf8');
+  const text = readFileSync(new URL('../docs/qa/step7-dry-run-20260923.json', import.meta.url), 'utf8');
+  const report = JSON.parse(text);
+  assert.equal(report.schema, STEP7_REPORT_SCHEMA);
+  assert.equal(report.scriptSha256, sha256Text(readFileSync(new URL(`../${STEP7_SCRIPT_RELATIVE_PATH}`, import.meta.url), 'utf8')), 'the dry-run script changed since the committed run: re-run node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway');
   assert.equal(report.throwawayRemoved, true);
   assert.ok(doc.includes(renderChecklist(report)), 'the doc checklist is the one rendered from the committed report');
-  // The committed pass is a full one that proved every current edit.
   assert.equal(report.partial ?? null, null, 'a --tests (partial) dry run is never committed');
   assert.equal(report.ok, true);
-  assert.deepEqual(report.unexplainedFailures, []);
-  assert.deepEqual(report.step7Edits.map((edit) => [edit.file, edit.before, edit.after, edit.applied, edit.verified]), STEP7_TEST_EDITS.map((edit) => [edit.file, edit.find, edit.replace, true, true]));
-  assert.deepEqual([report.addressModule.status, report.addressModule.deployer], ['deployed', '0x6ac08bed727a6951d755f0674f096e6a8ac06bff'], 'the rehearsed record comes from the real deploy config');
-  const preExisting = new Set(report.failures.preExisting.map((failure) => `${failure.file} :: ${failure.name}`));
+  // No local absolute path (the throwaway, the repo, the home directory) reaches the committed evidence.
+  assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\\\|\/)|AppData|lesters-step7-|\/home\/|\/Users\//);
+  // Step 3 (the record and the deployed module, flags off) and step 7 (the flip) proved their own edits.
+  const proven = (edits) => edits.map((edit) => [edit.file, edit.before, edit.after, edit.applied, edit.verified]);
+  assert.deepEqual(proven(report.step3.edits), STEP3_TEST_EDITS.map((edit) => [edit.file, edit.find, edit.replace, true, true]));
+  assert.deepEqual(proven(report.step7.edits), STEP7_TEST_EDITS.map((edit) => [edit.file, edit.find, edit.replace, true, true]));
+  assert.deepEqual([report.step3.unexplainedFailures, report.step7.unexplainedFailures], [[], []]);
+  assert.ok(report.step3.failures.caused.length > 0 && report.step3.failures.caused.every((failure) => STEP3_TEST_EDITS.some((edit) => edit.file === failure.file)), 'the deployed module alone breaks tests, and the step-3 edits cover them');
+  assert.deepEqual([report.addressModule.status, report.addressModule.deployer, report.addressModule.command], ['deployed', '0x6ac08bed727a6951d755f0674f096e6a8ac06bff', ADDRESS_COMMAND], 'the rehearsed record comes from the real deploy config');
+  // The fact sheet records SETTLEMENT_LIVE, so the flip changes it (even though its checker may already fail at the base).
+  assert.ok(report.step7.generatedDocs.some((entry) => entry.path === 'docs/releases/hmh-fact-sheet.json'), 'the flip regenerates the release fact sheet');
+  assert.ok(report.step7.generated.changedBySteps.length > 0, 'the files the build steps and audits rewrote are recorded');
+  const preExisting = new Set(report.step7.failures.preExisting.map((failure) => `${failure.file} :: ${failure.name}`));
   assert.equal(report.fullVerify.missing, 0);
-  assert.ok(report.fullVerify.unexpectedFailures.every((failure) => preExisting.has(`${failure.file} :: ${failure.name}`)), 'after the edits only failures already present at the dry-run base remain');
-  // Every step-7 edit still applies to exactly one place (or has been applied, after runbook step 7).
-  for (const edit of STEP7_TEST_EDITS) {
-    const text = readFileSync(new URL(`../${edit.file}`, import.meta.url), 'utf8');
-    const pending = applyTextEdit(text, edit).ok;
-    const done = !text.includes(edit.find) && applyTextEdit(text, { find: edit.replace, replace: edit.replace }).ok;
-    assert.ok(pending || done, `${edit.file}: a step-7 edit no longer matches; re-run the dry run and update STEP7_TEST_EDITS`);
+  assert.ok(report.fullVerify.unexpectedFailures.every((failure) => preExisting.has(`${failure.file} :: ${failure.name}`)), 'after both commits\' edits only failures already present before the flip remain');
+  // Every edit still applies to exactly one place (or has been applied, after its runbook step).
+  for (const edit of [...STEP3_TEST_EDITS, ...STEP7_TEST_EDITS]) {
+    const source = readFileSync(new URL(`../${edit.file}`, import.meta.url), 'utf8');
+    const pending = applyTextEdit(source, edit).ok;
+    const done = !source.includes(edit.find) && applyTextEdit(source, { find: edit.replace, replace: edit.replace }).ok;
+    assert.ok(pending || done, `${edit.file}: an edit no longer matches; re-run the dry run and update the script's edits`);
   }
-  assert.deepEqual(FLAG_EDITS.map((edit) => edit.file), ['apps/portal/src/settlement.mjs', 'apps/portal/src/settlement.mjs']);
+  t.diagnostic(`dry run at ${report.head}, ${report.generatedAt}`);
 });
 
 const state = { stack: null };
