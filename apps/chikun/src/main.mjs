@@ -2,7 +2,7 @@ import { exportChikunReplay, importChikunReplay, REPLAY_FILE_LIMIT } from './rep
 import { chikunAchievements } from '../../portal/src/chikun-profile.mjs';
 import { loadGroundArt, drawGround, drawGroundObstacle } from './ground-world.mjs';
 import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdoll.mjs';
-import { createChikunCharacter, CHIKUN_COSMETIC_LOOKS, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
+import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
@@ -180,14 +180,11 @@ function showCallout(message) {
 function cosmetics() {
   return initPayload?.settings?.cosmetics ?? null;
 }
-const TRAIL_EVENTS = new Set(['flap', 'fork', 'coin']);
 
 function spawnVfx(event, x = latestSnapshot?.chikun?.x ?? 280, y = latestSnapshot?.chikun?.y ?? 360) {
   const plan = planChikunVfx({ event, x, y, tick: latestSnapshot?.tick ?? 0, reduceMotion: reduceMotion() });
-  // A trail look recolours the flap, obstacle and coin bursts only; near
-  // misses, milestones and crashes keep their warning colours.
-  const trail = TRAIL_EVENTS.has(event) ? CHIKUN_COSMETIC_LOOKS.trail[cosmetics()?.trail] : undefined;
-  const particles = plan.particles.map((particle) => ({ ...particle, ...(trail ? { color: trail } : {}), bornFrame: vfxFrame }));
+  // A trail look recolours the flap, obstacle and coin bursts (character.mjs).
+  const particles = chikunTrailParticles(plan.particles, event, cosmetics()).map((particle) => ({ ...particle, bornFrame: vfxFrame }));
   activeParticles = [...activeParticles, ...particles].slice(-MAX_CHIKUN_PARTICLES);
   activeShake = plan.shake > 0 ? { amount: plan.shake, bornFrame: vfxFrame, lifeTicks: plan.lifeTicks } : null;
   activeFlash = plan.flash > 0 ? { alpha: plan.flash, bornFrame: vfxFrame, lifeTicks: Math.min(18, plan.lifeTicks) } : null;
@@ -595,7 +592,7 @@ function drawChikun(snapshot) {
     const handoff = Math.min(1, terminalAge / RAGDOLL_HANDOFF_SECONDS);
     if (handoff < 1) { ctx.save(); ctx.globalAlpha = 1 - handoff; flightCharacter.draw(ctx, snapshot, renderDt, characterOptions); ctx.restore(); }
     // The coat look follows Chikun into the ragdoll.
-    ctx.save(); ctx.filter = CHIKUN_COSMETIC_LOOKS.coat[characterOptions.cosmetics?.coat] ?? 'none';
+    ctx.save(); ctx.filter = chikunCoatFilter(characterOptions.cosmetics);
     drawChikunRagdoll(ctx, ragdoll, { alpha: handoff });
     ctx.restore();
     return;

@@ -37,6 +37,18 @@ export const CHIKUN_COSMETIC_LOOKS = Object.freeze({
     'chikun-hat-crown': Object.freeze([[-6, -3, 12, 3, '#ffd23f'], [-6, -1, 12, 1, '#c99a1a'], [-6, -6, 2, 3, '#ffd23f'], [-1, -7, 2, 4, '#ffd23f'], [4, -6, 2, 3, '#ffd23f'], [-3, -2, 2, 1, '#ff3df2'], [2, -2, 2, 1, '#19f7ff']]),
   }),
 });
+const lookOf = (table, id) => (typeof id === 'string' && Object.hasOwn(table, id) ? table[id] : null);
+// The coat look as a canvas filter ('none' keeps the classic coat).
+export const chikunCoatFilter = (cosmetics) => lookOf(CHIKUN_COSMETIC_LOOKS.coat, cosmetics?.coat) ?? 'none';
+// The hat look's pixel rectangles, or null for no hat.
+export const chikunHatRects = (cosmetics) => lookOf(CHIKUN_COSMETIC_LOOKS.hat, cosmetics?.hat);
+// A trail look recolours the flap, obstacle and coin bursts only; near misses,
+// milestones and crashes keep their warning colours.
+export const CHIKUN_TRAIL_EVENTS = Object.freeze(['flap', 'fork', 'coin']);
+export function chikunTrailParticles(particles, event, cosmetics) {
+  const color = CHIKUN_TRAIL_EVENTS.includes(event) ? lookOf(CHIKUN_COSMETIC_LOOKS.trail, cosmetics?.trail) : null;
+  return color ? particles.map((particle) => ({ ...particle, color })) : particles;
+}
 // Hat base line below the crest top, in sprite pixels, so the hat sits on the head.
 const HAT_SINK = 9;
 // Paints one hat: a dark outline pass, then the colour pass (pixel-art read).
@@ -268,7 +280,7 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       if(options.event===current)seconds=(options.eventAge??0)*(CHIKUN_FLOURISHES.includes(current)?1:.8/.42);
       if(current==='victory_twirl'&&snapshot.terminal)seconds=options.terminalAge??0;
       if(Number.isFinite(options.previewTime))seconds=options.previewTime;
-      const hat=CHIKUN_COSMETIC_LOOKS.hat[options.cosmetics?.hat];let head=null;
+      const hat=chikunHatRects(options.cosmetics);let head=null;
       if(img){
         const s=sampleChikunFrame(current,reduced?0:seconds),px=character.frameSize;
         const paint=(frame,alpha)=>{mixCtx.globalAlpha=alpha*incoming;mixCtx.drawImage(img,(frame%4)*px,Math.floor(frame/4)*px,px,px,0,0,px,px);};
@@ -299,7 +311,7 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
       const sx=1+squash.x,sy=1-squash.x,anchor=grounded?size*.35:0;
       ctx.save();ctx.translate(x+recoil.x,y+bob);ctx.rotate(tilt+sway+lean.x);
       ctx.translate(0,anchor);ctx.scale(sx,sy);ctx.translate(0,-anchor);
-      ctx.filter=CHIKUN_COSMETIC_LOOKS.coat[options.cosmetics?.coat]??'none';
+      ctx.filter=chikunCoatFilter(options.cosmetics);
       ctx.drawImage(composite,-size/2,-size/2,size,size);ctx.filter='none';
       if(head){const k=size/192;drawChikunHat(ctx,hat,-size/2+head.x*k,-size/2+(head.y+HAT_SINK)*k,3*k);}
       ctx.restore();

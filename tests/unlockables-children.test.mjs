@@ -8,7 +8,7 @@ import { createBridgeEnvelope, validateChildMessage, validateParentMessage } fro
 import { projectHmhRuntimeSettings } from '../apps/portal/src/hmh-player-settings.mjs';
 import { defaultStackedSettings } from '../apps/portal/src/stacked-player-settings.mjs';
 import { HMH_COSMETIC_TINTS, UNLOCKABLES, childCosmeticsFor, emptyUnlocks, unlocksFromProfileResponse } from '../apps/portal/src/unlockables.mjs';
-import { CHIKUN_COSMETIC_LOOKS, createChikunCharacter, drawChikunHat } from '../apps/chikun/src/character.mjs';
+import { CHIKUN_COSMETIC_LOOKS, CHIKUN_TRAIL_EVENTS, chikunCoatFilter, chikunHatRects, chikunTrailParticles, createChikunCharacter, drawChikunHat } from '../apps/chikun/src/character.mjs';
 import { planChikunVfx } from '../apps/chikun/src/vfx.mjs';
 import { buildChikunReplayClaim, createChikunRuntime, decodeFlapDeltas, replayChikunRun, verifyChikunReplayClaim } from '../apps/portal/src/chikun-cabinet.mjs';
 import { PIECE_CELLS, cellsFor, collides, createStackedRuntime } from '../apps/portal/src/stacked-sim.mjs';
@@ -17,6 +17,9 @@ import { createGameplayParticles } from '../apps/stacked/src/render/gameplay-par
 import { STACKED_PIECE_PALETTES, STACKED_SCENE_GRADES, piecePaletteFor, sceneGradeFor } from '../apps/stacked/src/render/cosmetic-palettes.mjs';
 import { createHmhRebootHost } from '../apps/portal/src/hmh-reboot-host.mjs';
 import { createProductionHeroAtlasIndex, createProductionHeroDisplay } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
+import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
+import { verifyRankedRun } from '../server/verify/index.mjs';
+import { fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const idsOf = (gameId, kind) => UNLOCKABLES.filter((item) => item.gameId === gameId && item.kind === kind).map((item) => item.id);
@@ -91,7 +94,11 @@ test('settings accept only allowlisted cosmetics', () => {
   assert.equal(validateChildMessage(echo).ok, true);
 });
 
-test('HMH tints are validated against the allowlist', () => {
+// Contract §7.9 ("tint tables stay in the parent") wins over the brief's
+// "allowlist sent by the parent": the parent resolves every tint from its own
+// table and the child checks only the shape (a 24-bit integer or null), which
+// keeps the tint hook inside the 350 B HMH child budget.
+test('the parent sends only allowlisted HMH tints; the child checks their shape', () => {
   const unlocks = unlocksFromProfileResponse({ achievements: [{ id: 'score-10000', gameId: 'lester-blaster', tokenId: null }, { id: 'weapon-collector', gameId: 'lester-blaster', tokenId: null }], games: {} });
   // The parent sends only tints from its own table, only for unlocked looks.
   const picked = childCosmeticsFor('lester-blaster', { 'lester-blaster': { 'hero-skin': 'hmh-hero-silver', 'weapon-skin': 'hmh-weapon-hashstorm' } }, unlocks);
@@ -106,6 +113,11 @@ test('HMH tints are validated against the allowlist', () => {
     const message = createBridgeEnvelope({ type: 'portal:settings', sessionId: 'game-session-000000001', messageId: 'portal-2', payload: { settings: { ...hmh, cosmetics: { heroTint, weaponTint } } } });
     assert.equal(validateParentMessage(message).ok, true);
   }
+  // The child boundary is a shape check only: an in-range colour outside the
+  // parent's table passes it (only the parent decides which tints exist).
+  const offTable = createBridgeEnvelope({ type: 'portal:settings', sessionId: 'game-session-000000001', messageId: 'portal-3', payload: { settings: { ...hmh, cosmetics: { heroTint: 0x000000, weaponTint: null } } } });
+  assert.equal(HMH_COSMETIC_TINTS.heroTint.includes(0x000000), false);
+  assert.equal(validateParentMessage(offTable).ok, true);
 });
 
 // ---------------------------------------------------------------------------
@@ -138,8 +150,9 @@ async function withChikunDom(run) {
 }
 
 // Drives a fixture's evidence through the canonical runtime the way the child
-// does, drawing Chikun (and planning trail bursts) with the given looks on
-// every frame. Returns the result and every draw call.
+// does, drawing Chikun (and planning trail bursts through the child's own
+// chikunTrailParticles) with the given looks on every frame. Returns the
+// result and every draw call.
 async function driveChikun(evidence, cosmetics) {
   return withChikunDom(async () => {
     const character = createChikunCharacter();
@@ -155,11 +168,7 @@ async function driveChikun(evidence, cosmetics) {
       if (tick % 4 === 0) {
         const snapshot = runtime.snapshot();
         character.draw(ctx, snapshot, 4 / 60, { phase: 'running', cosmetics });
-        if (flaps.has(tick)) {
-          const plan = planChikunVfx({ event: 'flap', x: 280, y: 360, tick });
-          const color = CHIKUN_COSMETIC_LOOKS.trail[cosmetics?.trail];
-          trails.push(...plan.particles.map((particle) => ({ ...particle, ...(color ? { color } : {}) })));
-        }
+        if (flaps.has(tick)) trails.push(...chikunTrailParticles(planChikunVfx({ event: 'flap', x: 280, y: 360, tick }).particles, 'flap', cosmetics));
       }
     }
     character.dispose();
@@ -194,6 +203,36 @@ test('cosmetics do not change a replayed Ranked result (Chikun v6 fixture)', asy
   assert.equal(read('apps/portal/src/chikun-bridge-protocol.mjs').match(/function validateResult[\s\S]*?\n}/)[0].includes('cosmetics'), false);
   const result = createChikunBridgeEnvelope({ type: 'game:result', sessionId: 'chikun:ranked:12345678', messageId: 'child-1', payload: { score: replayed.score, survivalTime: replayed.survivalTime, survivalTicks: replayed.survivalTicks, coinsCollected: replayed.coinsCollected, forksPassed: replayed.forksPassed, nearMisses: replayed.nearMisses, bestCombo: replayed.bestCombo, achievements: replayed.achievements, evidence: replayed.evidence, finalState: replayed.finalState, replayClaim: claim, cosmetics: look } });
   assert.equal(validateChikunChildMessage(result).ok, false, 'a result that tries to carry looks is refused');
+});
+
+test('the Chikun child applies its looks: coat filter, trail bursts, hat, and the ragdoll coat', () => {
+  // The helpers the child calls (character.mjs), driven directly.
+  assert.equal(chikunCoatFilter({ coat: 'chikun-coat-glacier' }), CHIKUN_COSMETIC_LOOKS.coat['chikun-coat-glacier']);
+  for (const none of [null, {}, { coat: null }, { coat: 'forged' }, { coat: 'constructor' }]) assert.equal(chikunCoatFilter(none), 'none', JSON.stringify(none));
+  assert.equal(chikunHatRects({ hat: 'chikun-hat-cap' }), CHIKUN_COSMETIC_LOOKS.hat['chikun-hat-cap']);
+  assert.equal(chikunHatRects({ hat: 'toString' }), null);
+  assert.deepEqual(CHIKUN_TRAIL_EVENTS, ['flap', 'fork', 'coin']);
+  const look = { coat: null, trail: 'chikun-trail-ember', hat: null };
+  for (const event of ['flap', 'fork', 'coin', 'near-miss', 'milestone', 'crash']) {
+    const plan = planChikunVfx({ event, x: 280, y: 360, tick: 12 });
+    const dressed = chikunTrailParticles(plan.particles, event, look);
+    assert.equal(dressed.length, plan.particles.length);
+    const recoloured = CHIKUN_TRAIL_EVENTS.includes(event);
+    if (recoloured) assert.ok(plan.particles.length > 0 && dressed.every((particle) => particle.color === '#ff7b2f'), `${event} takes the trail colour`);
+    else assert.deepEqual(dressed, plan.particles, `${event} keeps its warning colours`);
+    assert.deepEqual(dressed.map(({ color, ...rest }) => rest), plan.particles.map(({ color, ...rest }) => rest), `${event}: only the colour changes`);
+    assert.equal(chikunTrailParticles(plan.particles, event, null), plan.particles, 'no look, no copy');
+  }
+  // The child wires them in: the character draw, the burst spawner and the ragdoll.
+  const main = read('apps/chikun/src/main.mjs');
+  assert.match(main, /function cosmetics\(\) \{\n\s+return initPayload\?\.settings\?\.cosmetics \?\? null;\n\}/, 'looks come from the parent settings');
+  assert.match(main, /const characterOptions = \{[^\n]*, cosmetics: cosmetics\(\) \};/, 'the character draw receives the looks');
+  assert.match(main, /const particles = chikunTrailParticles\(plan\.particles, event, cosmetics\(\)\)\.map\(/, 'every burst goes through the trail look');
+  assert.match(main, /ctx\.filter = chikunCoatFilter\(characterOptions\.cosmetics\);\n\s+drawChikunRagdoll\(/, 'the coat follows Chikun into the ragdoll');
+  assert.equal((main.match(/cosmetics/g) ?? []).length, 6, 'no other code in the child reads looks');
+  const character = read('apps/chikun/src/character.mjs');
+  assert.match(character, /ctx\.filter=chikunCoatFilter\(options\.cosmetics\);\n\s+ctx\.drawImage\(composite/);
+  assert.match(character, /const hat=chikunHatRects\(options\.cosmetics\);/);
 });
 
 test('the hat sits on the crest found in the frame and keeps to pixel rectangles', async () => {
@@ -307,24 +346,46 @@ function hostFixture() {
   return { host, bridges, summaries, errors };
 }
 
-test('HMH tints never change the run summary', async () => {
+test('HMH tints reach the child through its settings and never the run summary', async () => {
+  // The child itself (Pixi) cannot run headless, so this proves the parent side
+  // end to end with a real summary, and audits the child's source below.
+  // hmh-valid holds a v6 summary built by the real accumulator and run
+  // progression (tests/fixtures/ranked/build-fixtures.mjs).
+  const fixture = readFixture('hmh-valid');
+  const summary = fixture.body.evidence.runSummary;
+  const { seed, buildHash, mode, heroId } = summary.identity;
+  const tints = { heroTint: HMH_COSMETIC_TINTS.heroTint[2], weaponTint: HMH_COSMETIC_TINTS.weaponTint[0] };
   const settings = projectHmhRuntimeSettings();
-  const session = (extra) => ({
-    sessionId: 'game-session-000000001', gameId: 'lester-blaster', mode: 'ranked', heroId: 'lit-commando',
-    profile: { displayName: 'Guest', locale: 'en' },
-    session: { seed: 1234567890, buildHash: 'site-48:game-48', seasonId: 'season-1', rankedEligible: true },
-    settings: { ...settings, ...extra },
-  });
-  const summary = { schemaVersion: 1, identity: { seed: 1234567890, buildHash: 'site-48:game-48', mode: 'ranked', heroId: 'lit-commando', terminalReason: 'defeated', startTick: 0, endTick: 3600 }, totals: { score: 4200 } };
-  const runs = [];
-  for (const extra of [{}, { cosmetics: { heroTint: HMH_COSMETIC_TINTS.heroTint[2], weaponTint: HMH_COSMETIC_TINTS.weaponTint[0] } }]) {
+  const forwarded = [];
+  for (const extra of [{}, { cosmetics: tints }]) {
     const { host, bridges, summaries, errors } = hostFixture();
-    host.mountSession(session(extra));
+    host.mountSession({
+      sessionId: 'game-session-000000001', gameId: 'lester-blaster', mode, heroId,
+      profile: { displayName: 'Guest', locale: 'en' },
+      session: { seed, buildHash, seasonId: 'season-1', rankedEligible: true },
+      settings: { ...settings, ...extra },
+    });
+    // The plumbing: portal:init carries exactly the parent's looks, and the
+    // child's validator accepts that init.
+    const session = bridges[0].options.session;
+    assert.deepEqual(session.settings.cosmetics, extra.cosmetics);
+    const init = createBridgeEnvelope({ type: 'portal:init', sessionId: session.sessionId, messageId: 'portal-1', payload: { gameId: session.gameId, mode: session.mode, heroId: session.heroId, profile: { ...session.profile }, session: { ...session.session }, settings: { ...session.settings } } });
+    assert.equal(validateParentMessage(init).ok, true);
     bridges[0].options.onMessage({ type: 'game:run-summary', payload: structuredClone(summary) });
     assert.deepEqual(errors, []);
-    runs.push(summaries[0].payload);
+    forwarded.push(summaries[0].payload);
   }
-  assert.deepEqual(runs[1], runs[0], 'the portal receives the same summary with and without tints');
+  assert.deepEqual(forwarded[0], summary);
+  assert.deepEqual(forwarded[1], forwarded[0], 'the portal forwards the same summary with and without tints');
+  // The server verifies both to the same verified run.
+  const verifyWith = (runSummary) => verifyRankedRun({ ...fixture.body, evidence: { ...fixture.body.evidence, runSummary } }, fixtureVerifyOptions());
+  const [plain, dressed] = await Promise.all(forwarded.map(verifyWith));
+  assert.equal(plain.ok, true);
+  assert.deepEqual(dressed, plain);
+  // A summary that tried to carry looks is refused by the schema the server uses.
+  assert.match(validateRunSummaryPayload({ ...summary, cosmetics: tints }) ?? '', /must contain exact fields|unexpected field/);
+  assert.ok(!validateRunSummaryPayload(summary), 'the plain summary passes');
+  assert.equal((await verifyWith({ ...summary, cosmetics: tints })).ok, false);
 
   // Source audit of the child: looks are read only where tints are applied.
   const main = read('apps/hmh-reboot/src/main.mjs');
