@@ -1,0 +1,106 @@
+{
+  "schema": "lesters-release-receipt-draft-v1",
+  "status": "draft",
+  "date": "2026-09-23",
+  "release": "Ranked + Web3 launch (1.8.0)",
+  "purpose": "Evidence gathered before deployment, for the deployment session to complete. It follows guide §7 as amended by contract §13 (docs/handoffs/pre-deployment-interface-contract-20260922.md), with the owner's approval at each ⚠ step, and writes the final receipt docs/qa/<name>-release-<date>.json at step 10. Nothing in this draft was deployed, broadcast or written to Vercel.",
+  "production": "https://lestersarcade.io",
+  "currentProduction": {
+    "siteVersion": "1.7.0",
+    "deployment": "dpl_2Q1MYFG9YQWypPjs84VLKdTkwdsu",
+    "rollback": "Vercel Instant Rollback to this deployment only; never rebuild or redeploy a pre-1.8.0 commit with production env (contract §13, emergency stops 4)."
+  },
+  "toComplete": {
+    "siteVersion": "1.8.0 (step 8)",
+    "cacheMarker": "v53 (step 8)",
+    "source": null,
+    "branch": null,
+    "deploymentRecordCommit": null,
+    "candidateUrl": null,
+    "productionDeployment": null,
+    "productionImmutableUrl": null,
+    "contracts": "addresses from contracts/deployment-record.hardened.json after step 3",
+    "ownerConfirmDevWalletTxs": [],
+    "setPlayableTxs": [],
+    "vercelSecrets": "names only (RANKED_VERIFIER_PRIVATE_KEY, RANKED_RELAYER_PRIVATE_KEY, RANKED_SCORE_REGISTRY_ADDRESS, CRON_SECRET, rotated SESSION_SECRET); the legacy names absent (step 6)",
+    "productionMigration": "schemaVersion and counts printed by scripts/live-cron.mjs (step 8b)",
+    "liveRuns": "one Ranked run per game (step 9): entry tx, settle confirmed, getSession on chain, Neon row, leaderboard row, profile stats, achievements, share card unfurl",
+    "publicHashes": "sha256 of every public shell, stylesheet, dist chunk, atlas and manifest against the local build (as in docs/qa/master-list-release-20260917.json publicVerification)",
+    "walletConnect": "checked by hand on lestersarcade.io (step 9): no local run can exercise it"
+  },
+  "stateAtDraft": {
+    "flags": { "SETTLEMENT_LIVE": false, "HOSTED_PROFILE_SYNC": false, "flippedAt": "runbook step 7" },
+    "addressModule": { "status": "predicted", "deployedAt": "runbook step 3" },
+    "readme": "README.md 'How Ranked works now' describes the launch flow; the version, cache marker and production lines are unchanged until step 8."
+  },
+  "evidence": {
+    "rehearsal": {
+      "path": "docs/qa/pre-deployment-rehearsal-20260923.json",
+      "commands": [
+        "node scripts/rehearse-ranked-e2e.mjs --target local",
+        "node scripts/rehearse-nft-phase2.mjs"
+      ],
+      "what": "The server end to end on an in-process Hardhat chain 4441 with PGlite: sign-in, seed ticket, paid entry, /api/settle replay and relayed publish, index, leaderboard, profile and achievements for all three games (in process and over local HTTP), the negative cases, and the phase-2 NFT rehearsal.",
+      "ok": true
+    },
+    "step7DryRun": {
+      "path": "docs/qa/step7-dry-run-20260923.json",
+      "command": "node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway",
+      "what": "The step-3 address module and the step-7 flag flip rehearsed in a throwaway worktree (removed afterwards): the files each step changes, the regenerated public copy, and the tests step 7 must update. Refreshed by the browser-e2e slice at its final commit."
+    },
+    "liveFlagBrowserRun": {
+      "path": "docs/qa/ranked-live-browser-e2e-20260923.json",
+      "command": "PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/ranked-live-browser-e2e.mjs --target local",
+      "what": "The real browser Ranked flow with both flags on (a throwaway live-flag portal, the rehearsal's local stack, the fixture EIP-6963 wallet on a Hardhat account): sign-in with one signature, the 0.102 zkLTC entry, the entry sessionId32 equal to the settle request's, the results screen published with explorer links, the share row at /s/<shareId>, the share page and card, the signed-out and Ranked-title launch copy, and a clean console and network, once per game; with Chikun also the unlockables path (E6 unlock, E7 cosmetics PUT, the look in the Free and Ranked child).",
+      "ok": true,
+      "games": {
+        "chikun": { "checks": 24, "passed": 24 },
+        "stacked": { "checks": 19, "passed": 19 },
+        "lester-blaster": { "checks": 19, "passed": 19 }
+      },
+      "walletConnect": "not exercised: localhost is not a Reown-allowed host"
+    },
+    "previewSmokes": {
+      "host": "python -m http.server 8850 --directory apps/portal (both flags false)",
+      "date": "2026-09-23",
+      "results": [
+        { "command": "CHIKUN_PORTAL_ORIGIN=http://127.0.0.1:8850 CHIKUN_MODE=ranked|free CHIKUN_VIEWPORT=1440x1000|390x844 node scripts/chikun-ranked-browser-smoke.mjs", "result": "PASS (4 runs)" },
+        { "command": "HMH_PORTAL_ORIGIN=http://127.0.0.1:8850 node scripts/hmh-simulated-wallet-browser-smoke.mjs", "result": "PASS" },
+        { "command": "PORTAL_SMOKE_ROOT=http://127.0.0.1:8850 node scripts/smoke-portal-flow.mjs", "result": "PASS" },
+        { "command": "PORTAL_SMOKE_ROOT=http://127.0.0.1:8850 node scripts/smoke-portal-interactions.mjs", "result": "PASS" },
+        { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-playable-browser-smoke.mjs", "result": "PASS (6 Free viewports + 2 Ranked preview)" },
+        { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-reactive-evidence-smoke.mjs", "result": "PASS (2 viewports)" },
+        { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-cabinet-browser-smoke.mjs", "result": "PASS (5 viewports)" },
+        { "command": "node scripts/hmh-reboot-portal-e2e.mjs [--profile=mobile]", "result": "PASS 8/8 flows on desktop and mobile with the harness's own server (apps/portal as the web root). Against python's http.server, pause-resume and mid-run-restart fail because it answers no HTTP Range request; ranked-preview passes there too." }
+      ],
+      "afterStep7": "These smokes assert the preview. Against a portal that serves SETTLEMENT_LIVE = true, the Chikun preview smoke and the simulated-wallet smoke exit 2, stacked-playable runs its Free viewports and reports its Ranked preview passes as not run, and hmh-reboot-portal-e2e reports ranked-preview as not run."
+    },
+    "releaseGate": {
+      "command": "npm run test:release",
+      "expectedFailures": 51,
+      "measured": { "tests": 4749, "passed": 4698, "failures": 51, "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS (npm run vercel:build, browser-e2e slice, 2026-09-23)" }
+    },
+    "bundleBudgets": {
+      "command": "npm run build",
+      "hmhInitialPlusShared": { "bytes": 1046713, "cap": 1048576 },
+      "stackedEntry": { "bytes": 27694, "cap": 29000 }
+    }
+  },
+  "runbookCommands": {
+    "step9": [
+      "Owner checkpoint O2 first (contract §10.1).",
+      "node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --cron-secret-file <vault cron-secret.txt> --confirm-live SPEND_TESTNET_ZKLTC --yes",
+      "Optional, one real browser run per game: PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/ranked-live-browser-e2e.mjs --live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --confirm-live SPEND_TESTNET_ZKLTC --yes (without --yes it prints the plan and spends nothing)",
+      "WalletConnect by hand on https://lestersarcade.io."
+    ],
+    "step10": [
+      "Public file hashes against the local build.",
+      "PORTAL_SMOKE_ROOT=https://lestersarcade.io node scripts/smoke-portal-flow.mjs (the landing page must equal the launch-copy page for the committed flags)",
+      "PORTAL_SMOKE_ROOT=https://lestersarcade.io node scripts/smoke-portal-interactions.mjs",
+      "STACKED_ORIGIN=https://lestersarcade.io node scripts/stacked-playable-browser-smoke.mjs (Free viewports; the Ranked preview passes report not run)",
+      "PORTAL_E2E_ORIGIN=https://lestersarcade.io node scripts/hmh-reboot-portal-e2e.mjs (guest flows; ranked-preview reports not run)",
+      "Optional, spends 0.102 testnet zkLTC: PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/chikun-ranked-browser-smoke.mjs --live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --confirm-live SPEND_TESTNET_ZKLTC --yes",
+      "Then update the README (version, cache marker, production lines, 'Not live end to end') and write the final receipt from this draft."
+    ]
+  }
+}

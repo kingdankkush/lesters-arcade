@@ -391,29 +391,31 @@ Do not restore retired assets under `apps/portal/assets/generated/hmh-isometric-
 - Profile run history and local official sessions.
 - Achievement and progression integration.
 - Simulated/local settlement records.
-- Player-signed chain client source for verified score and profile writes.
+- The relayed settlement client, the entry transaction and profile writes (`setProfile`) in source; the browser never signs a score submission.
+
+### How Ranked works now
+
+This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-deployment-web3-guide-20260922.md) and its [interface contract](docs/handoffs/pre-deployment-interface-contract-20260922.md)). It runs only with both flags in `apps/portal/src/settlement.mjs` on; until runbook step 7 they are `false`, and Ranked is a device-local preview that makes no `/api` call and sends no transaction.
+
+1. **Sign in.** The player picks a wallet (EIP-6963: MetaMask, Rabby; WalletConnect on lestersarcade.io), gets a server nonce from `/api/session/nonce` and signs one free SIWE message; `/api/session` returns a session token bound to the wallet and the environment.
+2. **Seed ticket.** Approving the Ranked entry first asks `/api/ranked/seed` for a ticket: a random salt MAC'd to the session, wallet, game, season and build. The run's seed comes from it, so nobody can pick an easy seed or replay someone else's run.
+3. **Entry.** One wallet confirmation calls `ArcadeRankedEntry.openSession` with the session key and the quoted 0.102 zkLTC (0.1 entry plus a 0.002 settlement reserve). The run starts as soon as the transaction is sent.
+4. **Relayed publish.** When the run ends, the browser posts the evidence to `/api/settle`. The server replays Chikun and STACKED runs and plausibility-checks HMH runs, checks the paid entry on chain, and its relayer publishes the verified result with `submitVerifiedSession`; a retry queue and a per-minute cron finish anything that stalls. The results screen follows the run from entry to published, with explorer links.
+5. **Index.** Confirmed runs, achievements and on-chain profiles live in Neon (`verified_sessions`, `achievement_unlocks`, `wallet_profiles`), indexed from the chain every five minutes. Scores (`/api/leaderboard`, best run per wallet per period) and profiles (`/api/profile`) read only that index; unlockable looks follow the recorded achievements.
+6. **Share.** A published run shares `https://lestersarcade.io/s/<shareId>`, a server-rendered page with an OG card (`/api/share-card`); the X post names @LestersArcade and carries no wallet address or hashtag. Preview and practice runs share the Free template.
+
+Evidence before launch: the [local rehearsal](docs/qa/pre-deployment-rehearsal-20260923.json) (server end to end on an in-process chain), the [step-7 dry run](docs/qa/step7-dry-run-20260923.json) (the flag flip in a throwaway worktree), and the [live-flag browser run](docs/qa/ranked-live-browser-e2e-20260923.json) (`node scripts/ranked-live-browser-e2e.mjs`: all three games in a real browser with both flags on, against the local stack). The [release receipt draft](docs/qa/ranked-launch-release-receipt-draft-20260923.json) lists what the deployment session completes.
 
 ### Not live end to end
 
-`SETTLEMENT_LIVE` remains `false`.
+`SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` remain `false`, and the hardened contracts are not deployed: `apps/portal/src/generated/litvm-addresses.mjs` holds the addresses predicted from the operator's nonces (`status: 'predicted'`). The June legacy contracts contain bytecode, but the hardened score ABI cannot decode the legacy score registry, so chain leaderboard reads fail closed.
 
-The June legacy contracts contain bytecode, but the current hardened score ABI cannot decode the legacy score registry. Chain leaderboard reads fail closed. The hardened verifier-based deployment is still an unsigned dry run and its predicted GameRegistry, PlayerProfileRegistry, and ScoreSubmissionRegistry addresses contain no bytecode.
-
-The browser consumes an externally supplied verifier attestation, but the project does not yet contain a trusted production attestation service or controlled signing flow.
-
-Before verified testnet publishing can be called functional:
-
-1. Obtain explicit contract-deployment HALT approval.
-2. Deploy and verify the hardened contracts.
-3. Implement trusted replay/evidence attestation outside the untrusted browser.
-4. Complete a real-wallet LitVM run and read it back into profile, session history, and verified leaderboards.
-5. Prove duplicate, replay, expiry, wrong-chain, user-cancel, and RPC-failure behavior.
-
-Paid settlement additionally requires approved payment asset, fees, splits, vaults, legal/economy decisions, security review, payment/session contracts, and real-wallet testnet certification.
+Going live follows the deployment runbook (guide §7 as amended by contract §13), with the owner's approval at each ⚠ step: broadcast the contracts, confirm the developer wallet, make the games playable, write the renamed server secrets, flip both flags and regenerate the public copy, deploy, run the production migration, then one real Ranked run per game (`scripts/rehearse-ranked-e2e.mjs --target live`, optionally `scripts/ranked-live-browser-e2e.mjs --live`) and the live smokes.
 
 See:
 
 - [HMH Web3 live readiness](docs/web3/hmh-web3-live-readiness.md)
+- [Contract overhaul and step-7 checklist](docs/web3/contract-overhaul-20260916.md)
 - [Hardened deployment dry run](docs/web3/hardened-ranked-deployment-manifest.json)
 - [Contract architecture](contracts/ARCHITECTURE.md)
 - [Full Fable handoff](docs/handoffs/2026-07-24-lesters-arcade-chikun-to-hmh-reboot-fable-handoff.md)
