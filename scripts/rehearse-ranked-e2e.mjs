@@ -12,14 +12,18 @@
 // Live (runbook step 9, OWNER APPROVAL REQUIRED; spends testnet zkLTC; never run by the slice):
 //   node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
 //     --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> [--player-key-field <field>] \
-//     (--cron-secret-file <path> | --cron-secret-env <NAME>) --confirm-live SPEND_TESTNET_ZKLTC [--yes]
-// refuses to start without every flag; reads the player key and the cron secret INSIDE this process
-// through scripts/lib/key-source.mjs and never prints or logs them; checks that the RPC node itself
-// reports chain 4441 and that the committed address module is `deployed`; prints the plan (three
-// entries at their quoteEntry totals) and stops unless --yes is given; skips the local-only negative
-// checks (fees off, pause); and reminds the operator of owner checkpoint O2 (keep the test wallet's
-// rows on the launch boards, or exclude them). `--deployment <module.mjs>` is accepted only with a
-// loopback --rpc (the local stand-in), where the chain clock can also be advanced instead of waited.
+//     (--cron-secret-file <path> | --cron-secret-env <NAME>) --confirm-live SPEND_TESTNET_ZKLTC [--yes] \
+//     [--games <id,id>] [--second-key-file <path> [--second-key-field <field>] | --second-key-env <NAME>]
+// refuses to start without every flag; reads the player key, the optional second key and the cron
+// secret INSIDE this process through scripts/lib/key-source.mjs and never prints or logs them; checks
+// that the RPC node itself reports chain 4441 and that the committed address module is `deployed`;
+// prints the plan (one entry per game at its quoteEntry total, plus the second wallet's copy entry
+// when one is given) and stops unless --yes is given; warns when the player already has confirmed
+// runs of these games; skips the local-only negative checks (fees off, pause) and, without a second
+// funded wallet, the evidence-copy check; and reminds the operator of owner checkpoint O2 (keep the
+// test wallet's rows on the launch boards, or exclude them). `--games` replays only those games (a
+// retry). `--deployment <module.mjs>` is accepted only with a loopback --rpc (the local stand-in),
+// where the chain clock can also be advanced instead of waited.
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -40,20 +44,39 @@ export const LIVE_CONFIRM = 'SPEND_TESTNET_ZKLTC';
 export const LOCAL_REPORT_RELATIVE_PATH = 'docs/qa/pre-deployment-rehearsal-20260923.json';
 export const REHEARSAL_SUMMARY_SCHEMA = 'lesters-pre-deployment-rehearsal-v1';
 export const LIVE_REQUIRED_FLAGS = Object.freeze(['--site', '--rpc', '--player-key-file', '--confirm-live']);
-// Gas headroom on top of the three entries: three setProfile calls on LiteForge (about 1.5 gwei).
+// Gas headroom on top of the entries: the setProfile calls on LiteForge (about 1.5 gwei).
 export const LIVE_GAS_MARGIN_WEI = 10_000_000_000_000_000n;
+// The optional second wallet sends one openSession only.
+export const SECOND_WALLET_GAS_MARGIN_WEI = 2_000_000_000_000_000n;
 export const O2_REMINDER = [
   'Owner checkpoint O2 (contract §10.1): decide whether this test wallet\'s rows stay on the launch boards.',
   'Recommended: a fresh test wallet, excluded afterwards with',
   '  node scripts/moderate-profile.mjs --wallet <player> --exclude            (dry run)',
   '  node scripts/moderate-profile.mjs --wallet <player> --exclude --apply --confirm EXCLUDE_WALLET',
+  'A retry with the same wallet still passes (a run that is not the wallet\'s best, or earns nothing new, is',
+  'reported as such), but it spends another entry per game: use --games <id,...> to replay only what failed.',
 ].join('\n');
 
 export const USAGE = [
   'usage: node scripts/rehearse-ranked-e2e.mjs [--target local] [--out <path>] [--no-write] [--skip-phase2]',
   '       node scripts/rehearse-ranked-e2e.mjs --target live --site <https origin> --rpc <url> --player-key-file <path> [--player-key-field <field>]',
   '            (--cron-secret-file <path> | --cron-secret-env <NAME>) --confirm-live SPEND_TESTNET_ZKLTC [--yes] [--out <path>]',
+  '            [--games <id,id>] [--second-key-file <path> [--second-key-field <field>] | --second-key-env <NAME>]',
 ].join('\n');
+
+// --games a,b (live only): a subset of the three Ranked games, in the driver's order.
+export function parseGames(value) {
+  if (value === null || value === undefined) return [...DEFAULT_GAMES];
+  const wanted = String(value).split(',').map((id) => id.trim()).filter(Boolean);
+  const unknown = wanted.filter((id) => !DEFAULT_GAMES.includes(id));
+  if (!wanted.length || unknown.length) throw new Error(`--games takes a comma list of ${DEFAULT_GAMES.join(', ')}${unknown.length ? ` (unknown: ${unknown.join(', ')})` : ''}`);
+  return DEFAULT_GAMES.filter((id) => wanted.includes(id));
+}
+
+// The game whose settled run the negative checks reuse (the driver's choice: Chikun first).
+export function negativeSourceGame(games) {
+  return ['chikun', ...games].find((id) => games.includes(id));
+}
 
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]']);
 
@@ -75,8 +98,8 @@ function todayStamp(nowMs) {
 }
 
 function summarize(report) {
-  return Object.values(report.games).map((game) => `  ${game.gameId}: ${game.ok ? 'PASS' : 'FAIL'} ${game.checks.filter((check) => check.ok).length}/${game.checks.length} checks${game.settle?.txHash ? `, settled ${game.settle.txHash}` : ''}`)
-    .concat(report.negatives.map((check) => `  negative ${check.id}: ${check.skipped ? `skipped (${check.skipped})` : check.ok ? 'PASS' : 'FAIL'}`));
+  return Object.values(report.games).map((game) => `  ${game.gameId}: ${game.ok ? 'PASS' : 'FAIL'} ${game.checks.filter((check) => check.ok).length}/${game.checks.length} checks${game.settle?.txHash ? `, settled ${game.settle.txHash}` : ''}${game.leaderboard && game.leaderboard.walletBest === false ? ' (not the wallet\'s best this period)' : ''}`)
+    .concat(report.negatives.map((check) => `  negative ${check.id}: ${check.skipped ? `SKIPPED (${check.skipped})` : check.ok ? 'PASS' : 'FAIL'}`));
 }
 
 function writeJson(path, value) {
@@ -109,7 +132,8 @@ export async function runLocalInProcess({ log = () => {}, games = DEFAULT_GAMES 
 }
 
 // The live-shaped run: the same driver over real HTTP (local-http) and JSON-RPC (the proxy), with
-// `target: 'live'` so exactly the live code path runs; the chain clock is advanced over the proxy.
+// `target: 'live'` so exactly the live code path runs, and a second funded wallet as runbook step 9
+// may pass with --second-key-file; the chain clock is advanced over the proxy.
 export async function runLocalOverHttp({ log = () => {}, games = DEFAULT_GAMES, viaCli = null } = {}) {
   const stack = await startLocalStack({ log });
   const http = await startLocalHttp(stack);
@@ -123,7 +147,7 @@ export async function runLocalOverHttp({ log = () => {}, games = DEFAULT_GAMES, 
         transport: 'http',
         api: createFetchApi(http.origin),
         chain: { provider, deployment: stack.deployment, relayer: stack.record.relayer, advanceTime: rpcTimeTravel(provider) },
-        wallets: { player: new ethers.Wallet(stack.chain.wallets.player1.privateKey, provider) },
+        wallets: { player: new ethers.Wallet(stack.chain.wallets.player1.privateKey, provider), second: new ethers.Wallet(stack.chain.wallets.player2.privateKey, provider) },
         cronSecret: stack.cronSecret(),
         site: http.origin,
         games,
@@ -175,7 +199,7 @@ export async function runLocalRehearsal({ log = () => {}, games = DEFAULT_GAMES,
     commands: {
       rehearsal: 'node scripts/rehearse-ranked-e2e.mjs --target local',
       phase2: 'node scripts/rehearse-nft-phase2.mjs',
-      live: 'node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --cron-secret-file <vault cron-secret.txt> --confirm-live SPEND_TESTNET_ZKLTC --yes',
+      live: 'node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --cron-secret-file <vault cron-secret.txt> --confirm-live SPEND_TESTNET_ZKLTC --yes [--second-key-file <path>] [--games <id,id>]',
     },
     ok: inProcess.ok && http.ok && (nft === null || nft.ok),
     runs: [inProcess, http],
@@ -199,7 +223,18 @@ export function checkLiveFlags(argv) {
   return { ok: missing.length === 0 && problems.length === 0, missing, problems };
 }
 
-export async function planLiveRun({ provider, deployment, player, games = DEFAULT_GAMES }) {
+// E6 for the player before anything is spent: confirmed runs per game (null when E6 cannot answer).
+export async function readPriorRuns(api, player, games) {
+  try {
+    const response = await api('GET', `/api/profile?wallet=${player.toLowerCase()}`);
+    if (response.status !== 200 || !response.body?.games) return null;
+    return Object.fromEntries(games.map((gameId) => [gameId, Number(response.body.games[gameId]?.confirmedRuns ?? 0)]));
+  } catch {
+    return null;
+  }
+}
+
+export async function planLiveRun({ provider, deployment, player, games = DEFAULT_GAMES, second = null, api = null }) {
   const contracts = rankedContracts(deployment, provider);
   const entries = [];
   for (const gameId of games) {
@@ -209,7 +244,20 @@ export async function planLiveRun({ provider, deployment, player, games = DEFAUL
   }
   const totalWei = entries.reduce((sum, entry) => sum + BigInt(entry.totalWei), 0n);
   const balanceWei = await provider.getBalance(player);
-  return { player: player.toLowerCase(), entries, totalWei: totalWei.toString(), neededWei: (totalWei + LIVE_GAS_MARGIN_WEI).toString(), balanceWei: balanceWei.toString() };
+  const plan = { player: player.toLowerCase(), games: [...games], entries, totalWei: totalWei.toString(), neededWei: (totalWei + LIVE_GAS_MARGIN_WEI).toString(), balanceWei: balanceWei.toString() };
+  if (second) {
+    // The evidence-copy check: one paid entry of the negative checks' source game from the second wallet.
+    const copied = entries.find((entry) => entry.gameId === negativeSourceGame(games));
+    plan.second = {
+      wallet: second.toLowerCase(),
+      gameId: copied.gameId,
+      totalWei: copied.totalWei,
+      neededWei: (BigInt(copied.totalWei) + SECOND_WALLET_GAS_MARGIN_WEI).toString(),
+      balanceWei: (await provider.getBalance(second)).toString(),
+    };
+  }
+  plan.priorRuns = api ? await readPriorRuns(api, player, games) : null;
+  return plan;
 }
 
 export async function runLiveCli({ argv, env, log, providerFactory, fetchImpl, readFile, nowMs = Date.now(), sleep }) {
@@ -229,6 +277,13 @@ export async function runLiveCli({ argv, env, log, providerFactory, fetchImpl, r
     log('Live run refused: --deployment is for the local stand-in only (a loopback --rpc). LiteForge always uses the committed address module.');
     return 2;
   }
+  let games;
+  try {
+    games = parseGames(flagValue(argv, '--games'));
+  } catch (error) {
+    log(`Live run refused: ${error.message}.`);
+    return 2;
+  }
   const deployment = await loadLitvmDeployment(deploymentOverride);
   if (deployment.status !== 'deployed') {
     log(`Live run refused: the address module is '${deployment.status}', not 'deployed'. Runbook steps 3-8 come first.`);
@@ -236,6 +291,8 @@ export async function runLiveCli({ argv, env, log, providerFactory, fetchImpl, r
   }
   // Secrets are read inside this process and never printed (contract §11 rule 13).
   const playerKey = readSecret({ env, argv, shape: 'private-key', envFlag: '--player-key-env', fileFlag: '--player-key-file', fieldFlag: '--player-key-field', label: 'player key', readFile });
+  const secondGiven = flagValue(argv, '--second-key-file') !== null || flagValue(argv, '--second-key-env') !== null;
+  const secondKey = secondGiven ? readSecret({ env, argv, shape: 'private-key', envFlag: '--second-key-env', fileFlag: '--second-key-file', fieldFlag: '--second-key-field', label: 'second key', readFile }) : null;
   const cronSecret = readSecret({ env, argv, shape: 'secret', envFlag: '--cron-secret-env', fileFlag: '--cron-secret-file', fieldFlag: null, label: 'cron secret', readFile });
   const provider = providerFactory(rpcUrl);
   try {
@@ -245,11 +302,25 @@ export async function runLiveCli({ argv, env, log, providerFactory, fetchImpl, r
       return 2;
     }
     const player = new ethers.Wallet(playerKey, provider);
-    const plan = await planLiveRun({ provider, deployment, player: player.address });
+    const second = secondKey ? new ethers.Wallet(secondKey, provider) : null;
+    if (second && second.address === player.address) {
+      log('Live run refused: the second wallet must differ from the player.');
+      return 2;
+    }
+    const api = createFetchApi(site, { fetchImpl });
+    const plan = await planLiveRun({ provider, deployment, player: player.address, games, second: second?.address ?? null, api });
     log(`Live Ranked end-to-end on ${site} (chain ${chainId}, RPC ${loopback ? 'loopback stand-in' : new URL(rpcUrl).host}).`);
     log(`Player ${plan.player}, balance ${ethers.formatEther(plan.balanceWei)} zkLTC.`);
     for (const entry of plan.entries) log(`  entry ${entry.gameId}: ${ethers.formatEther(entry.totalWei)} zkLTC (fee ${ethers.formatEther(entry.entryFeeWei)} + reserve ${ethers.formatEther(entry.settlementGasReserveWei)})`);
-    log(`  total ${ethers.formatEther(plan.totalWei)} zkLTC in entries, plus gas for three setProfile calls (needs about ${ethers.formatEther(plan.neededWei)}).`);
+    log(`  total ${ethers.formatEther(plan.totalWei)} zkLTC in entries, plus gas for ${plan.entries.length} setProfile call(s) (needs about ${ethers.formatEther(plan.neededWei)}).`);
+    if (plan.second) {
+      log(`Second wallet ${plan.second.wallet}, balance ${ethers.formatEther(plan.second.balanceWei)} zkLTC: one ${plan.second.gameId} entry of ${ethers.formatEther(plan.second.totalWei)} zkLTC for the evidence-copy check (needs about ${ethers.formatEther(plan.second.neededWei)}).`);
+    } else {
+      log('No second wallet (--second-key-file): the evidence-copy check is skipped, as it needs a second funded wallet.');
+    }
+    const repeated = Object.entries(plan.priorRuns ?? {}).filter(([, runs]) => runs > 0);
+    if (plan.priorRuns === null) log('WARNING: E6 did not answer for the player, so earlier runs could not be checked.');
+    for (const [gameId, runs] of repeated) log(`WARNING: the player already has ${runs} confirmed ${gameId} run(s). This run still passes if it is not the wallet's best or earns nothing new, but O2 recommends a fresh wallet.`);
     log('The local-only negative checks (fees off, settlement paused) are skipped on a live target.');
     log(O2_REMINDER);
     if (!hasFlag(argv, '--yes')) {
@@ -257,15 +328,20 @@ export async function runLiveCli({ argv, env, log, providerFactory, fetchImpl, r
       return 0;
     }
     if (BigInt(plan.balanceWei) < BigInt(plan.neededWei)) {
-      log('Live run refused: the player balance does not cover the three entries and the gas margin.');
+      log(`Live run refused: the player balance does not cover the ${plan.entries.length} entr${plan.entries.length === 1 ? 'y' : 'ies'} and the gas margin.`);
+      return 2;
+    }
+    if (plan.second && BigInt(plan.second.balanceWei) < BigInt(plan.second.neededWei)) {
+      log('Live run refused: the second wallet\'s balance does not cover its entry and the gas margin.');
       return 2;
     }
     const report = await runRankedE2E({
       target: 'live',
       transport: 'http',
-      api: createFetchApi(site, { fetchImpl }),
+      api,
       chain: { provider, deployment, relayer: deployment.relayer, ...(loopback ? { advanceTime: rpcTimeTravel(provider) } : {}) },
-      wallets: { player },
+      wallets: { player, ...(second ? { second } : {}) },
+      games,
       cronSecret,
       site,
       log,
@@ -312,7 +388,7 @@ export async function runRehearsalCli({
     log(USAGE);
     return 2;
   }
-  for (const flag of ['--site', '--rpc', '--player-key-file', '--cron-secret-file', '--cron-secret-env', '--confirm-live', '--yes']) {
+  for (const flag of ['--site', '--rpc', '--player-key-file', '--second-key-file', '--second-key-env', '--games', '--cron-secret-file', '--cron-secret-env', '--confirm-live', '--yes']) {
     if (argv.some((arg) => arg === flag || arg.startsWith(`${flag}=`))) {
       log(`${flag} belongs to --target live; the local target uses fixture keys only.`);
       return 2;

@@ -322,22 +322,33 @@ function randomSecret() {
   return randomBytes(32).toString('hex');
 }
 
-// Counts of every table a rejected or paused request must leave untouched.
-export async function countLocalRows(db) {
+// Every table a rejected or paused request must leave untouched: sessions, evidence, achievements,
+// profiles, the relayer lease and the indexer cursor. (auth_nonces and rate_limits move with every
+// sign-in and request by design.)
+export const SNAPSHOT_TABLES = Object.freeze(['verified_sessions', 'session_evidence', 'achievement_unlocks', 'wallet_profiles', 'relayer_lease', 'indexer_state']);
+
+// The row count AND an md5 of every row's text (ordered) per table, so an UPDATE to any column of any
+// row changes the snapshot, not only an INSERT or a DELETE.
+export async function snapshotLocalRows(db, tables = SNAPSHOT_TABLES) {
   const out = {};
-  for (const table of ['verified_sessions', 'session_evidence', 'achievement_unlocks']) {
+  for (const table of tables) {
     // eslint-disable-next-line no-await-in-loop
     const exists = await db.query('SELECT count(*)::int AS n FROM information_schema.tables WHERE table_name = $1', [table]);
+    if (exists[0].n === 0) {
+      out[table] = { rows: 0, digest: null };
+      continue;
+    }
     // eslint-disable-next-line no-await-in-loop
-    out[table] = exists[0].n === 0 ? 0 : (await db.query(`SELECT count(*)::int AS n FROM ${table}`))[0].n;
+    const [row] = await db.query(`SELECT count(*)::int AS n, md5(coalesce(string_agg(t::text, E'\\n' ORDER BY t::text), '')) AS digest FROM ${table} t`);
+    out[table] = { rows: row.n, digest: row.digest };
   }
   return out;
 }
 
 // Starts the local stack. Returns:
 //   { chain, record, deployment, db, env, wallets, api, router, handlerFor, nowMs, syncClock,
-//     advanceTime(seconds), eip1193 (clock-tracking), driverChain(), localControls, allowDomain(host),
-//     close() }
+//     advanceTime(seconds), advanceServerClock(seconds), eip1193 (clock-tracking), driverChain(),
+//     localControls, allowDomain(host), close() }
 export async function startLocalStack({ allowedDomains = LOCAL_ALLOWED_DOMAINS, ip = LOCAL_STACK_IP, root = REPO_ROOT, log = () => {} } = {}) {
   log('local stack: booting the in-process chain (4441) and deploying the suite');
   const local = await bootLocalChain();
@@ -365,9 +376,17 @@ export async function startLocalStack({ allowedDomains = LOCAL_ALLOWED_DOMAINS, 
     // The server clock is the timestamp the chain would give its next block: Hardhat stamps
     // max(latest + 1, wall clock + the evm_increaseTime total). Every request re-reads the latest
     // block first, so chain-time checks (A26) see what LiteForge would show at that moment.
+    // advanceServerClock() moves the server clock alone, as wall time passes on a chain that makes no
+    // empty blocks (LiteForge is Arbitrum Orbit): the tests of the driver's real-time path use it so
+    // the chain's latest block time stands still while the server's clock moves on.
     let increasedSeconds = 0;
+    let serverOnlySeconds = 0;
     let latestSeconds = 0;
-    const nowMs = () => Math.max(Date.now() + increasedSeconds * 1000, (latestSeconds + 1) * 1000);
+    const nowMs = () => Math.max(Date.now() + (increasedSeconds + serverOnlySeconds) * 1000, (latestSeconds + 1) * 1000);
+    const advanceServerClock = (seconds) => {
+      serverOnlySeconds += Math.max(0, Number(seconds) || 0);
+      return nowMs();
+    };
     const syncClock = async () => {
       const block = await chain.provider.getBlock('latest');
       latestSeconds = Math.max(latestSeconds, Number(block.timestamp));
@@ -413,7 +432,7 @@ export async function startLocalStack({ allowedDomains = LOCAL_ALLOWED_DOMAINS, 
         if ((await entry.entryFeeEnabled()) !== enabled) await (await entry.setEntryFeeEnabled(enabled)).wait();
         return entry.entryFeeEnabled();
       },
-      snapshotRows: () => countLocalRows(db),
+      snapshotRows: () => snapshotLocalRows(db),
     });
 
     const stack = {
@@ -429,6 +448,7 @@ export async function startLocalStack({ allowedDomains = LOCAL_ALLOWED_DOMAINS, 
       nowMs,
       syncClock,
       advanceTime,
+      advanceServerClock,
       eip1193,
       allowDomain,
       localControls,

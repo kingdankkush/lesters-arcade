@@ -1,11 +1,11 @@
 {
   "schema": "lesters-pre-deployment-rehearsal-v1",
-  "generatedAt": "2026-09-23T22:56:38.299Z",
+  "generatedAt": "2026-09-24T01:06:26.324Z",
   "note": "Local rehearsal only: Hardhat chain 4441 in process, PGlite for Neon, public fixture keys. Nothing touched LiteForge, Vercel or production Neon.",
   "commands": {
     "rehearsal": "node scripts/rehearse-ranked-e2e.mjs --target local",
     "phase2": "node scripts/rehearse-nft-phase2.mjs",
-    "live": "node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --cron-secret-file <vault cron-secret.txt> --confirm-live SPEND_TESTNET_ZKLTC --yes"
+    "live": "node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --cron-secret-file <vault cron-secret.txt> --confirm-live SPEND_TESTNET_ZKLTC --yes [--second-key-file <path>] [--games <id,id>]"
   },
   "ok": true,
   "runs": [
@@ -50,19 +50,19 @@
             {
               "id": "session-handle",
               "ok": true,
-              "detail": "game-session-578c7869-aefb-4b38-b584-54305b4f7c81"
+              "detail": "game-session-878b27d8-4b39-41af-8af4-fd726e2ce92f"
             },
             {
               "id": "ticket-seed-applied",
               "ok": true,
               "detail": {
-                "seed": 1288412480
+                "seed": 1824723751
               }
             },
             {
               "id": "session-key",
               "ok": true,
-              "detail": "0x956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34"
+              "detail": "0xe53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d"
             },
             {
               "id": "entry-quote",
@@ -97,14 +97,14 @@
               "id": "server-score",
               "ok": true,
               "detail": {
-                "server": 7002,
-                "replayed": 7002
+                "server": 6210,
+                "replayed": 6210
               }
             },
             {
               "id": "settle-tx",
               "ok": true,
-              "detail": "0x024c250cb037aa7aa5a81fe6d4becba14550bbed9e457873485fe6512bbf8399"
+              "detail": "0xb184e311dbcb00bfc5c1f4587494ead6f2dae17d34088e2d997756d7ab1fd111"
             },
             {
               "id": "status-owner-view",
@@ -131,8 +131,8 @@
               "id": "chain-envelope",
               "ok": true,
               "detail": {
-                "chain": "0xc50812630803d7cf6553beac54fab53c9950a4a82aada3f0648b38f36e893038",
-                "response": "0xc50812630803d7cf6553beac54fab53c9950a4a82aada3f0648b38f36e893038"
+                "chain": "0xed4453347c618195bf64097c1c39a4bf920ab26e2e4a23b76ca7f348f2ef7d32",
+                "response": "0xed4453347c618195bf64097c1c39a4bf920ab26e2e4a23b76ca7f348f2ef7d32"
               }
             },
             {
@@ -163,7 +163,7 @@
               "ok": true,
               "detail": {
                 "confirmedRuns": 1,
-                "bestScore": 7002
+                "bestScore": 6210
               }
             },
             {
@@ -195,7 +195,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "ogImage": "https://lestersarcade.io/api/share-card/956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34.png?v=46dc29c51894"
+                "ogImage": "https://lestersarcade.io/api/share-card/e53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d.png?v=46dc29c51894"
               }
             },
             {
@@ -203,7 +203,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "bytes": 529929
+                "bytes": 524713
               }
             },
             {
@@ -214,7 +214,7 @@
             {
               "id": "profile-set",
               "ok": true,
-              "detail": "0x9ceacb710081cd9dacad1c6209468e75249affb12fbd8a047ef27550a9340fc7"
+              "detail": "0x5729eedb224ca8f0d1054d21e4226b43722383b58992c8b2a58f56d58cc22270"
             },
             {
               "id": "profile-refresh",
@@ -259,23 +259,28 @@
               }
             }
           ],
-          "sessionHandle": "game-session-578c7869-aefb-4b38-b584-54305b4f7c81",
-          "sessionId32": "0x956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
-          "shareId": "956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
-          "seed": 1288412480,
+          "prior": {
+            "confirmedRuns": 0,
+            "bestScore": null,
+            "achievements": []
+          },
+          "sessionHandle": "game-session-878b27d8-4b39-41af-8af4-fd726e2ce92f",
+          "sessionId32": "0xe53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d",
+          "shareId": "e53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d",
+          "seed": 1824723751,
           "buildHash": "site-1.7.0:game-1.7.0",
           "seasonId": "hmh-season-1-2026",
           "entry": {
-            "txHash": "0x231e91c429cb3c6b4cb6ff2e06137babfbbb29415fe4c0fb83b7ccf6f8a6859b",
+            "txHash": "0xc902577e69abf2dcd624103b700c5c17ec0b32d08301f5e5a65561007b2e6f94",
             "totalWei": "102000000000000000",
             "amountWei": "102000000000000000",
-            "openedAt": 1790204226,
+            "openedAt": 1790212014,
             "blockNumber": 27
           },
           "run": {
-            "expectedScore": 7002,
+            "expectedScore": 6210,
             "survivalSeconds": 180,
-            "claimScore": 7002,
+            "claimScore": 6210,
             "kills": 36,
             "elapsedMs": 180000
           },
@@ -286,10 +291,10 @@
           "settle": {
             "firstStatus": "confirmed",
             "status": "confirmed",
-            "txHash": "0x024c250cb037aa7aa5a81fe6d4becba14550bbed9e457873485fe6512bbf8399",
+            "txHash": "0xb184e311dbcb00bfc5c1f4587494ead6f2dae17d34088e2d997756d7ab1fd111",
             "blockNumber": 29,
-            "envelopeHash": "0xc50812630803d7cf6553beac54fab53c9950a4a82aada3f0648b38f36e893038",
-            "score": 7002,
+            "envelopeHash": "0xed4453347c618195bf64097c1c39a4bf920ab26e2e4a23b76ca7f348f2ef7d32",
+            "score": 6210,
             "achievements": [
               "cabinet-pioneer",
               "first-paid-run",
@@ -307,16 +312,17 @@
                 "state": "confirmed"
               }
             ],
-            "ms": 130
+            "ms": 103
           },
           "leaderboard": {
             "period": "weekly",
             "periodKey": "2026-W39",
-            "rank": 1
+            "rank": 1,
+            "walletBest": true
           },
           "profile": {
             "confirmedRuns": 1,
-            "bestScore": 7002,
+            "bestScore": 6210,
             "achievements": [
               "cabinet-pioneer",
               "first-paid-run",
@@ -329,16 +335,16 @@
             ]
           },
           "share": {
-            "shareId": "956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
+            "shareId": "e53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d",
             "cardRev": "46dc29c51894",
-            "url": "https://lestersarcade.io/s/956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34",
-            "ogImage": "https://lestersarcade.io/api/share-card/956f1dcf87b7036c70674223121a28fa3eb940c8fb0507a798c2b5b587f4be34.png?v=46dc29c51894",
-            "cardBytes": 529929
+            "url": "https://lestersarcade.io/s/e53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d",
+            "ogImage": "https://lestersarcade.io/api/share-card/e53d967cf547570d1dce21697bce7389001e5b62e39c756822308da1b223d94d.png?v=46dc29c51894",
+            "cardBytes": 524713
           },
           "profileName": {
             "displayName": "E2E HMH 6686",
             "avatarUri": "lestersarcade:avatar/lit-commando",
-            "txHash": "0x9ceacb710081cd9dacad1c6209468e75249affb12fbd8a047ef27550a9340fc7"
+            "txHash": "0x5729eedb224ca8f0d1054d21e4226b43722383b58992c8b2a58f56d58cc22270"
           },
           "indexCron": {
             "schemaVersion": 1,
@@ -371,19 +377,19 @@
             {
               "id": "session-handle",
               "ok": true,
-              "detail": "game-session-15c4a80a-260c-4ce9-8be5-2a1bad358390"
+              "detail": "game-session-d53c6375-fb39-4fa7-8288-783618efa94a"
             },
             {
               "id": "ticket-seed-applied",
               "ok": true,
               "detail": {
-                "seed": 2040615917
+                "seed": 3358984449
               }
             },
             {
               "id": "session-key",
               "ok": true,
-              "detail": "0xce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629"
+              "detail": "0x5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d"
             },
             {
               "id": "entry-quote",
@@ -418,22 +424,22 @@
               "id": "server-score",
               "ok": true,
               "detail": {
-                "server": 6584,
-                "replayed": 6584
+                "server": 6069,
+                "replayed": 6069
               }
             },
             {
               "id": "tampered-claim-ignored",
               "ok": true,
               "detail": {
-                "server": 6584,
-                "claim": 6584007
+                "server": 6069,
+                "claim": 6069007
               }
             },
             {
               "id": "settle-tx",
               "ok": true,
-              "detail": "0xc074ba29da56d95191b0374a552abb57b112868ba527095aef4ff9f27a36d65a"
+              "detail": "0xe2f9e2ae310542448c3d95823ca3bf7ec0d9d2407ce12f770451d269df548840"
             },
             {
               "id": "status-owner-view",
@@ -460,8 +466,8 @@
               "id": "chain-envelope",
               "ok": true,
               "detail": {
-                "chain": "0x811677c2ea76f5fc904e9f185d8384f840df8c5d9c068444dcd8e798aece1665",
-                "response": "0x811677c2ea76f5fc904e9f185d8384f840df8c5d9c068444dcd8e798aece1665"
+                "chain": "0x14f915ffa8ae972a3f8378f69a0b2cb66c1046e23440d2370aad19bb6fac1077",
+                "response": "0x14f915ffa8ae972a3f8378f69a0b2cb66c1046e23440d2370aad19bb6fac1077"
               }
             },
             {
@@ -492,7 +498,7 @@
               "ok": true,
               "detail": {
                 "confirmedRuns": 1,
-                "bestScore": 6584
+                "bestScore": 6069
               }
             },
             {
@@ -520,7 +526,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "ogImage": "https://lestersarcade.io/api/share-card/ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629.png?v=477d6beff6c2"
+                "ogImage": "https://lestersarcade.io/api/share-card/5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d.png?v=477d6beff6c2"
               }
             },
             {
@@ -528,7 +534,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "bytes": 417587
+                "bytes": 420514
               }
             },
             {
@@ -539,7 +545,7 @@
             {
               "id": "profile-set",
               "ok": true,
-              "detail": "0xa92024aa5cf72d25f2fbf86a2bed7c17668380ad59aa8a51a4ed39c44fc29720"
+              "detail": "0x7aa2e35d2a851eaee59d58e526e3a81040146ca117773782f8536820457250b4"
             },
             {
               "id": "profile-refresh",
@@ -584,37 +590,42 @@
               }
             }
           ],
-          "sessionHandle": "game-session-15c4a80a-260c-4ce9-8be5-2a1bad358390",
-          "sessionId32": "0xce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
-          "shareId": "ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
-          "seed": 2040615917,
+          "prior": {
+            "confirmedRuns": 0,
+            "bestScore": null,
+            "achievements": []
+          },
+          "sessionHandle": "game-session-d53c6375-fb39-4fa7-8288-783618efa94a",
+          "sessionId32": "0x5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d",
+          "shareId": "5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d",
+          "seed": 3358984449,
           "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.9.0",
           "seasonId": "chikun-season-preview-1",
           "entry": {
-            "txHash": "0x118b354c29ed8bfded3cd0e76da29ce03f73655c618b6b8bf1d351c8660e37fb",
+            "txHash": "0x4099958ff1fd51731b64b86376e6351186fa302c1c9951ed7a99c1c2f5728363",
             "totalWei": "102000000000000000",
             "amountWei": "102000000000000000",
-            "openedAt": 1790204410,
+            "openedAt": 1790212198,
             "blockNumber": 31
           },
           "run": {
-            "expectedScore": 6584,
-            "survivalSeconds": 95,
-            "claimScore": 6584007,
-            "flaps": 76,
-            "survivalTicks": 5700
+            "expectedScore": 6069,
+            "survivalSeconds": 90,
+            "claimScore": 6069007,
+            "flaps": 80,
+            "survivalTicks": 5420
           },
           "runWait": {
-            "waitedSeconds": 96,
+            "waitedSeconds": 91,
             "mode": "increaseTime"
           },
           "settle": {
             "firstStatus": "confirmed",
             "status": "confirmed",
-            "txHash": "0xc074ba29da56d95191b0374a552abb57b112868ba527095aef4ff9f27a36d65a",
+            "txHash": "0xe2f9e2ae310542448c3d95823ca3bf7ec0d9d2407ce12f770451d269df548840",
             "blockNumber": 33,
-            "envelopeHash": "0x811677c2ea76f5fc904e9f185d8384f840df8c5d9c068444dcd8e798aece1665",
-            "score": 6584,
+            "envelopeHash": "0x14f915ffa8ae972a3f8378f69a0b2cb66c1046e23440d2370aad19bb6fac1077",
+            "score": 6069,
             "achievements": [
               "chikun-first-flight",
               "chikun-stack-three",
@@ -628,16 +639,17 @@
                 "state": "confirmed"
               }
             ],
-            "ms": 267
+            "ms": 165
           },
           "leaderboard": {
             "period": "weekly",
             "periodKey": "2026-W39",
-            "rank": 1
+            "rank": 1,
+            "walletBest": true
           },
           "profile": {
             "confirmedRuns": 1,
-            "bestScore": 6584,
+            "bestScore": 6069,
             "achievements": [
               "chikun-first-flight",
               "chikun-stack-three",
@@ -646,16 +658,16 @@
             ]
           },
           "share": {
-            "shareId": "ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
+            "shareId": "5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d",
             "cardRev": "477d6beff6c2",
-            "url": "https://lestersarcade.io/s/ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629",
-            "ogImage": "https://lestersarcade.io/api/share-card/ce8fb04abf30c0e4a1aa25b32634010bcb719ae66585e4e2c33a0506d3c18629.png?v=477d6beff6c2",
-            "cardBytes": 417587
+            "url": "https://lestersarcade.io/s/5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d",
+            "ogImage": "https://lestersarcade.io/api/share-card/5f8c68fe1350deafae6adbe5ae517f1f154bbf7288ca7b7db9e86d6923eed94d.png?v=477d6beff6c2",
+            "cardBytes": 420514
           },
           "profileName": {
             "displayName": "E2E Chikun 6686",
             "avatarUri": "lestersarcade:avatar/chikun",
-            "txHash": "0xa92024aa5cf72d25f2fbf86a2bed7c17668380ad59aa8a51a4ed39c44fc29720"
+            "txHash": "0x7aa2e35d2a851eaee59d58e526e3a81040146ca117773782f8536820457250b4"
           },
           "indexCron": {
             "schemaVersion": 1,
@@ -688,19 +700,19 @@
             {
               "id": "session-handle",
               "ok": true,
-              "detail": "game-session-3a865dbe-037c-41a0-9fef-1e9351a30e2b"
+              "detail": "game-session-07d840e7-1c96-4ea9-bfcb-644c526effd8"
             },
             {
               "id": "ticket-seed-applied",
               "ok": true,
               "detail": {
-                "seed": 3966834974
+                "seed": 3495296904
               }
             },
             {
               "id": "session-key",
               "ok": true,
-              "detail": "0x5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19"
+              "detail": "0xcb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9"
             },
             {
               "id": "entry-quote",
@@ -735,14 +747,14 @@
               "id": "server-score",
               "ok": true,
               "detail": {
-                "server": 216012,
-                "replayed": 216012
+                "server": 219526,
+                "replayed": 219526
               }
             },
             {
               "id": "settle-tx",
               "ok": true,
-              "detail": "0x76b478cd1c8b87c2cafe982e47b9339aec4ae08dc9551c4f43786df384e6a5a2"
+              "detail": "0xa784d6868718a876607c55ff0f0ffffa1d45ed10c4429c921df6abd80bd96eba"
             },
             {
               "id": "status-owner-view",
@@ -769,8 +781,8 @@
               "id": "chain-envelope",
               "ok": true,
               "detail": {
-                "chain": "0x8ad9cad0f4425c312887efe03e322651b7b19b2de033c0d4a95f4c9ec8e2dc09",
-                "response": "0x8ad9cad0f4425c312887efe03e322651b7b19b2de033c0d4a95f4c9ec8e2dc09"
+                "chain": "0xf2c313414608df7b4e9d0161ce7477f333d575d8d0f4913a30bee1b5626b1c42",
+                "response": "0xf2c313414608df7b4e9d0161ce7477f333d575d8d0f4913a30bee1b5626b1c42"
               }
             },
             {
@@ -801,7 +813,7 @@
               "ok": true,
               "detail": {
                 "confirmedRuns": 1,
-                "bestScore": 216012
+                "bestScore": 219526
               }
             },
             {
@@ -835,7 +847,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "ogImage": "https://lestersarcade.io/api/share-card/5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19.png?v=05d49829c365"
+                "ogImage": "https://lestersarcade.io/api/share-card/cb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9.png?v=05d49829c365"
               }
             },
             {
@@ -843,7 +855,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "bytes": 503443
+                "bytes": 509440
               }
             },
             {
@@ -854,7 +866,7 @@
             {
               "id": "profile-set",
               "ok": true,
-              "detail": "0x615ac826f5c6a2f7bfb3c8276139574884f712c2063e80c5f86239a1d3420608"
+              "detail": "0x959df7c41f0923530bb05dd51f9d0865d5f0492c403df5148632f7315d922525"
             },
             {
               "id": "profile-refresh",
@@ -899,25 +911,30 @@
               }
             }
           ],
-          "sessionHandle": "game-session-3a865dbe-037c-41a0-9fef-1e9351a30e2b",
-          "sessionId32": "0x5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
-          "shareId": "5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
-          "seed": 3966834974,
+          "prior": {
+            "confirmedRuns": 0,
+            "bestScore": null,
+            "achievements": []
+          },
+          "sessionHandle": "game-session-07d840e7-1c96-4ea9-bfcb-644c526effd8",
+          "sessionId32": "0xcb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9",
+          "shareId": "cb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9",
+          "seed": 3495296904,
           "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
           "seasonId": "stacked-season-preview-1",
           "entry": {
-            "txHash": "0x4324e3a9c31e6935622c20e54effc58affb3ed2b6dd294dde0e8a78fac4279b9",
+            "txHash": "0xaa93c6327cd7e6144678041178a0a1aee928ec21aae2c245c5661ac9c6ebf749",
             "totalWei": "102000000000000000",
             "amountWei": "102000000000000000",
-            "openedAt": 1790204510,
+            "openedAt": 1790212293,
             "blockNumber": 35
           },
           "run": {
-            "expectedScore": 216012,
+            "expectedScore": 219526,
             "survivalSeconds": 60,
-            "claimScore": 216012,
-            "sic1Bytes": 3650,
-            "ticks": 3623
+            "claimScore": 219526,
+            "sic1Bytes": 3648,
+            "ticks": 3621
           },
           "runWait": {
             "waitedSeconds": 61,
@@ -926,10 +943,10 @@
           "settle": {
             "firstStatus": "confirmed",
             "status": "confirmed",
-            "txHash": "0x76b478cd1c8b87c2cafe982e47b9339aec4ae08dc9551c4f43786df384e6a5a2",
+            "txHash": "0xa784d6868718a876607c55ff0f0ffffa1d45ed10c4429c921df6abd80bd96eba",
             "blockNumber": 37,
-            "envelopeHash": "0x8ad9cad0f4425c312887efe03e322651b7b19b2de033c0d4a95f4c9ec8e2dc09",
-            "score": 216012,
+            "envelopeHash": "0xf2c313414608df7b4e9d0161ce7477f333d575d8d0f4913a30bee1b5626b1c42",
+            "score": 219526,
             "achievements": [
               "stacked-first-line",
               "stacked-level-2",
@@ -949,16 +966,17 @@
                 "state": "confirmed"
               }
             ],
-            "ms": 115
+            "ms": 99
           },
           "leaderboard": {
             "period": "weekly",
             "periodKey": "2026-W39",
-            "rank": 1
+            "rank": 1,
+            "walletBest": true
           },
           "profile": {
             "confirmedRuns": 1,
-            "bestScore": 216012,
+            "bestScore": 219526,
             "achievements": [
               "stacked-first-line",
               "stacked-level-2",
@@ -973,16 +991,16 @@
             ]
           },
           "share": {
-            "shareId": "5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
+            "shareId": "cb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9",
             "cardRev": "05d49829c365",
-            "url": "https://lestersarcade.io/s/5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19",
-            "ogImage": "https://lestersarcade.io/api/share-card/5cf82a0c3df902e7b40c522da7621553e3e3663c74c10494390f1c05490c9a19.png?v=05d49829c365",
-            "cardBytes": 503443
+            "url": "https://lestersarcade.io/s/cb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9",
+            "ogImage": "https://lestersarcade.io/api/share-card/cb718ed99d1a11623238a27f6a02f742c57e7be971c1069aaea886d64c224fa9.png?v=05d49829c365",
+            "cardBytes": 509440
           },
           "profileName": {
             "displayName": "E2E Stacked 6686",
             "avatarUri": "lestersarcade:avatar/gold-emblem",
-            "txHash": "0x615ac826f5c6a2f7bfb3c8276139574884f712c2063e80c5f86239a1d3420608"
+            "txHash": "0x959df7c41f0923530bb05dd51f9d0865d5f0492c403df5148632f7315d922525"
           },
           "indexCron": {
             "schemaVersion": 1,
@@ -1003,8 +1021,8 @@
         {
           "id": "tampered-chikun-claim",
           "ok": true,
-          "claim": 6584007,
-          "serverScore": 6584
+          "claim": 6069007,
+          "serverScore": 6069
         },
         {
           "id": "unpaid-entry",
@@ -1068,9 +1086,9 @@
           }
         }
       ],
-      "startedAt": "2026-09-23T22:56:40.403Z",
-      "finishedAt": "2026-09-23T22:56:49.329Z",
-      "durationMs": 8926,
+      "startedAt": "2026-09-24T01:06:28.383Z",
+      "finishedAt": "2026-09-24T01:06:34.787Z",
+      "durationMs": 6404,
       "failures": [],
       "ok": true
     },
@@ -1078,8 +1096,8 @@
       "schema": "lesters-ranked-e2e-report-v1",
       "target": "live",
       "transport": "http",
-      "site": "http://127.0.0.1:64283",
-      "signInDomain": "127.0.0.1:64283",
+      "site": "http://127.0.0.1:54971",
+      "signInDomain": "127.0.0.1:54971",
       "chainId": 4441,
       "deployment": {
         "status": "deployed",
@@ -1115,19 +1133,19 @@
             {
               "id": "session-handle",
               "ok": true,
-              "detail": "game-session-daad89d3-50be-473a-9341-e66b1f8735f1"
+              "detail": "game-session-4c0d52d9-7ea8-404f-8a64-a80cf48a6c12"
             },
             {
               "id": "ticket-seed-applied",
               "ok": true,
               "detail": {
-                "seed": 224333947
+                "seed": 4096896843
               }
             },
             {
               "id": "session-key",
               "ok": true,
-              "detail": "0x8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2"
+              "detail": "0x9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435"
             },
             {
               "id": "entry-quote",
@@ -1169,7 +1187,7 @@
             {
               "id": "settle-tx",
               "ok": true,
-              "detail": "0x475d963900b7f7e1872c069ae07ecea9850c8e5922c7a327f75bbb3fe223f274"
+              "detail": "0x8a686d211a0d166d02a1b2c8270e0a526daa8288e2d9b129317666d9a6c1249a"
             },
             {
               "id": "status-owner-view",
@@ -1196,8 +1214,8 @@
               "id": "chain-envelope",
               "ok": true,
               "detail": {
-                "chain": "0xa492c48e3916ab542e2591f9bb7db490a24a0f9a92929ef8bf94ba5fdc8b7da8",
-                "response": "0xa492c48e3916ab542e2591f9bb7db490a24a0f9a92929ef8bf94ba5fdc8b7da8"
+                "chain": "0x54c030ac5df4063f82b11970c796a36b83fde1b45e431c475cf1b82cc8e2241c",
+                "response": "0x54c030ac5df4063f82b11970c796a36b83fde1b45e431c475cf1b82cc8e2241c"
               }
             },
             {
@@ -1261,7 +1279,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "ogImage": "https://lestersarcade.io/api/share-card/8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2.png?v=46dc29c51894"
+                "ogImage": "https://lestersarcade.io/api/share-card/9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435.png?v=46dc29c51894"
               }
             },
             {
@@ -1325,17 +1343,22 @@
               }
             }
           ],
-          "sessionHandle": "game-session-daad89d3-50be-473a-9341-e66b1f8735f1",
-          "sessionId32": "0x8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
-          "shareId": "8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
-          "seed": 224333947,
+          "prior": {
+            "confirmedRuns": 0,
+            "bestScore": null,
+            "achievements": []
+          },
+          "sessionHandle": "game-session-4c0d52d9-7ea8-404f-8a64-a80cf48a6c12",
+          "sessionId32": "0x9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435",
+          "shareId": "9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435",
+          "seed": 4096896843,
           "buildHash": "site-1.7.0:game-1.7.0",
           "seasonId": "hmh-season-1-2026",
           "entry": {
-            "txHash": "0xe681fe326a6abc39b926cdd204195299053dc122c2f0d961323b2b946a4ab0c3",
+            "txHash": "0x288f8da23b2f1dcecadf0861b803b9a13a53dc629e0f84075bae8b21590dbae7",
             "totalWei": "102000000000000000",
             "amountWei": "102000000000000000",
-            "openedAt": 1790204225,
+            "openedAt": 1790212013,
             "blockNumber": 27
           },
           "run": {
@@ -1352,9 +1375,9 @@
           "settle": {
             "firstStatus": "confirmed",
             "status": "confirmed",
-            "txHash": "0x475d963900b7f7e1872c069ae07ecea9850c8e5922c7a327f75bbb3fe223f274",
+            "txHash": "0x8a686d211a0d166d02a1b2c8270e0a526daa8288e2d9b129317666d9a6c1249a",
             "blockNumber": 29,
-            "envelopeHash": "0xa492c48e3916ab542e2591f9bb7db490a24a0f9a92929ef8bf94ba5fdc8b7da8",
+            "envelopeHash": "0x54c030ac5df4063f82b11970c796a36b83fde1b45e431c475cf1b82cc8e2241c",
             "score": 6210,
             "achievements": [
               "cabinet-pioneer",
@@ -1373,12 +1396,13 @@
                 "state": "confirmed"
               }
             ],
-            "ms": 150
+            "ms": 80
           },
           "leaderboard": {
             "period": "weekly",
             "periodKey": "2026-W39",
-            "rank": 1
+            "rank": 1,
+            "walletBest": true
           },
           "profile": {
             "confirmedRuns": 1,
@@ -1395,10 +1419,10 @@
             ]
           },
           "share": {
-            "shareId": "8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
+            "shareId": "9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435",
             "cardRev": "46dc29c51894",
-            "url": "https://lestersarcade.io/s/8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2",
-            "ogImage": "https://lestersarcade.io/api/share-card/8e091b5d17668a4b676777426c8f641a39159a6565e31e54f7db5b76635e11c2.png?v=46dc29c51894",
+            "url": "https://lestersarcade.io/s/9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435",
+            "ogImage": "https://lestersarcade.io/api/share-card/9dc45073c0c02f7cf32b0f6924ecaddc688430b7f5e93af8f8efd67a9afb9435.png?v=46dc29c51894",
             "cardBytes": 524713
           },
           "profileName": {
@@ -1437,19 +1461,19 @@
             {
               "id": "session-handle",
               "ok": true,
-              "detail": "game-session-08689169-a561-4703-ab9e-adbef9e151c4"
+              "detail": "game-session-a128821a-41c5-4eac-95a2-d58282d98a26"
             },
             {
               "id": "ticket-seed-applied",
               "ok": true,
               "detail": {
-                "seed": 2543566215
+                "seed": 3931912949
               }
             },
             {
               "id": "session-key",
               "ok": true,
-              "detail": "0xbbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f"
+              "detail": "0xab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d"
             },
             {
               "id": "entry-quote",
@@ -1484,22 +1508,22 @@
               "id": "server-score",
               "ok": true,
               "detail": {
-                "server": 6634,
-                "replayed": 6634
+                "server": 6609,
+                "replayed": 6609
               }
             },
             {
               "id": "tampered-claim-ignored",
               "ok": true,
               "detail": {
-                "server": 6634,
-                "claim": 6634007
+                "server": 6609,
+                "claim": 6609007
               }
             },
             {
               "id": "settle-tx",
               "ok": true,
-              "detail": "0x4f1f95b896ef154b6f2546b62b0f3593027b7d5d01ee35d9f8177deeb471f727"
+              "detail": "0xf97e01ec1fab89c69510759fc2c9e92086e0523f21e2518788269f0d5704e68b"
             },
             {
               "id": "status-owner-view",
@@ -1526,8 +1550,8 @@
               "id": "chain-envelope",
               "ok": true,
               "detail": {
-                "chain": "0x85ea866d539504bedae11bbb387adcd16dfd5a87bbefe480f189386f3d272ddd",
-                "response": "0x85ea866d539504bedae11bbb387adcd16dfd5a87bbefe480f189386f3d272ddd"
+                "chain": "0xc8eec746da85cce935cc19518d5bc15a3bd76fb195f276265ad9d97aa37f93e3",
+                "response": "0xc8eec746da85cce935cc19518d5bc15a3bd76fb195f276265ad9d97aa37f93e3"
               }
             },
             {
@@ -1559,7 +1583,7 @@
               "ok": true,
               "detail": {
                 "confirmedRuns": 1,
-                "bestScore": 6634
+                "bestScore": 6609
               }
             },
             {
@@ -1587,7 +1611,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "ogImage": "https://lestersarcade.io/api/share-card/bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f.png?v=477d6beff6c2"
+                "ogImage": "https://lestersarcade.io/api/share-card/ab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d.png?v=477d6beff6c2"
               }
             },
             {
@@ -1595,7 +1619,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "bytes": 418228
+                "bytes": 421672
               }
             },
             {
@@ -1606,7 +1630,7 @@
             {
               "id": "profile-set",
               "ok": true,
-              "detail": "0x40bb3039e87ff56859da4bb683694dff880bd1370583d6fe62d32f61ebb2a9ca"
+              "detail": "0xa92024aa5cf72d25f2fbf86a2bed7c17668380ad59aa8a51a4ed39c44fc29720"
             },
             {
               "id": "profile-refresh",
@@ -1651,24 +1675,29 @@
               }
             }
           ],
-          "sessionHandle": "game-session-08689169-a561-4703-ab9e-adbef9e151c4",
-          "sessionId32": "0xbbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
-          "shareId": "bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
-          "seed": 2543566215,
+          "prior": {
+            "confirmedRuns": 0,
+            "bestScore": null,
+            "achievements": []
+          },
+          "sessionHandle": "game-session-a128821a-41c5-4eac-95a2-d58282d98a26",
+          "sessionId32": "0xab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d",
+          "shareId": "ab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d",
+          "seed": 3931912949,
           "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.9.0",
           "seasonId": "chikun-season-preview-1",
           "entry": {
-            "txHash": "0x70091f83875f2b3c2c1719babde0bb4ed9b4bf255213c7d839a66f681dd55cca",
+            "txHash": "0x08d2d2facd644bb22bf2949ce7706b742f3f242a3fc7aeccb666d0ceafc13830",
             "totalWei": "102000000000000000",
             "amountWei": "102000000000000000",
-            "openedAt": 1790204409,
+            "openedAt": 1790212197,
             "blockNumber": 31
           },
           "run": {
-            "expectedScore": 6634,
+            "expectedScore": 6609,
             "survivalSeconds": 95,
-            "claimScore": 6634007,
-            "flaps": 78,
+            "claimScore": 6609007,
+            "flaps": 80,
             "survivalTicks": 5700
           },
           "runWait": {
@@ -1678,10 +1707,10 @@
           "settle": {
             "firstStatus": "confirmed",
             "status": "confirmed",
-            "txHash": "0x4f1f95b896ef154b6f2546b62b0f3593027b7d5d01ee35d9f8177deeb471f727",
+            "txHash": "0xf97e01ec1fab89c69510759fc2c9e92086e0523f21e2518788269f0d5704e68b",
             "blockNumber": 33,
-            "envelopeHash": "0x85ea866d539504bedae11bbb387adcd16dfd5a87bbefe480f189386f3d272ddd",
-            "score": 6634,
+            "envelopeHash": "0xc8eec746da85cce935cc19518d5bc15a3bd76fb195f276265ad9d97aa37f93e3",
+            "score": 6609,
             "achievements": [
               "chikun-first-flight",
               "chikun-stack-three",
@@ -1695,16 +1724,17 @@
                 "state": "confirmed"
               }
             ],
-            "ms": 295
+            "ms": 173
           },
           "leaderboard": {
             "period": "weekly",
             "periodKey": "2026-W39",
-            "rank": 1
+            "rank": 1,
+            "walletBest": true
           },
           "profile": {
             "confirmedRuns": 1,
-            "bestScore": 6634,
+            "bestScore": 6609,
             "achievements": [
               "chikun-first-flight",
               "chikun-stack-three",
@@ -1713,16 +1743,16 @@
             ]
           },
           "share": {
-            "shareId": "bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
+            "shareId": "ab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d",
             "cardRev": "477d6beff6c2",
-            "url": "https://lestersarcade.io/s/bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f",
-            "ogImage": "https://lestersarcade.io/api/share-card/bbd8168422782aabc159c93ae35c1f400cd8784b6a9ac50f6439f1bd58d9847f.png?v=477d6beff6c2",
-            "cardBytes": 418228
+            "url": "https://lestersarcade.io/s/ab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d",
+            "ogImage": "https://lestersarcade.io/api/share-card/ab81d8696c62e4b5dd50f3c7d728aefde46da6b30f22a1494294e7c65f38da6d.png?v=477d6beff6c2",
+            "cardBytes": 421672
           },
           "profileName": {
             "displayName": "E2E Chikun 6686",
             "avatarUri": "lestersarcade:avatar/chikun",
-            "txHash": "0x40bb3039e87ff56859da4bb683694dff880bd1370583d6fe62d32f61ebb2a9ca"
+            "txHash": "0xa92024aa5cf72d25f2fbf86a2bed7c17668380ad59aa8a51a4ed39c44fc29720"
           },
           "indexCron": {
             "schemaVersion": 1,
@@ -1755,19 +1785,19 @@
             {
               "id": "session-handle",
               "ok": true,
-              "detail": "game-session-a3f8e4ed-85fb-41e5-bedf-3d124092d5e4"
+              "detail": "game-session-a4c58037-18d5-4dbf-8291-cdfd0b5020ba"
             },
             {
               "id": "ticket-seed-applied",
               "ok": true,
               "detail": {
-                "seed": 3121506870
+                "seed": 1961008162
               }
             },
             {
               "id": "session-key",
               "ok": true,
-              "detail": "0x4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb"
+              "detail": "0xc8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1"
             },
             {
               "id": "entry-quote",
@@ -1802,14 +1832,14 @@
               "id": "server-score",
               "ok": true,
               "detail": {
-                "server": 214436,
-                "replayed": 214436
+                "server": 217614,
+                "replayed": 217614
               }
             },
             {
               "id": "settle-tx",
               "ok": true,
-              "detail": "0xd15ff9fe0daf81518fc7fe733b45eeee55d9d9492473c49d191b7aaa93afea79"
+              "detail": "0x224b0b48640e073a1052455eb0451338157975eab38201764526ea7fac6fc364"
             },
             {
               "id": "status-owner-view",
@@ -1836,8 +1866,8 @@
               "id": "chain-envelope",
               "ok": true,
               "detail": {
-                "chain": "0x3fe85085df3f700e2fbe54af38f488aa9aaab6f2ddba48c1bb26136ae7523d8e",
-                "response": "0x3fe85085df3f700e2fbe54af38f488aa9aaab6f2ddba48c1bb26136ae7523d8e"
+                "chain": "0x8e7c5f549d2883a4105b3ce0fa97531af40a54d5f05e38431d2ed807df63de51",
+                "response": "0x8e7c5f549d2883a4105b3ce0fa97531af40a54d5f05e38431d2ed807df63de51"
               }
             },
             {
@@ -1869,7 +1899,7 @@
               "ok": true,
               "detail": {
                 "confirmedRuns": 1,
-                "bestScore": 214436
+                "bestScore": 217614
               }
             },
             {
@@ -1903,7 +1933,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "ogImage": "https://lestersarcade.io/api/share-card/4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb.png?v=05d49829c365"
+                "ogImage": "https://lestersarcade.io/api/share-card/c8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1.png?v=05d49829c365"
               }
             },
             {
@@ -1911,7 +1941,7 @@
               "ok": true,
               "detail": {
                 "status": 200,
-                "bytes": 504903
+                "bytes": 493288
               }
             },
             {
@@ -1922,7 +1952,7 @@
             {
               "id": "profile-set",
               "ok": true,
-              "detail": "0xa34bc7505943c9a317ed07a78d71efbbdb3b5d0e7e268c368d883117007171aa"
+              "detail": "0x615ac826f5c6a2f7bfb3c8276139574884f712c2063e80c5f86239a1d3420608"
             },
             {
               "id": "profile-refresh",
@@ -1967,23 +1997,28 @@
               }
             }
           ],
-          "sessionHandle": "game-session-a3f8e4ed-85fb-41e5-bedf-3d124092d5e4",
-          "sessionId32": "0x4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
-          "shareId": "4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
-          "seed": 3121506870,
+          "prior": {
+            "confirmedRuns": 0,
+            "bestScore": null,
+            "achievements": []
+          },
+          "sessionHandle": "game-session-a4c58037-18d5-4dbf-8291-cdfd0b5020ba",
+          "sessionId32": "0xc8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1",
+          "shareId": "c8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1",
+          "seed": 1961008162,
           "buildHash": "site-1.7.0:game-1.7.0:cabinet-0.2.0",
           "seasonId": "stacked-season-preview-1",
           "entry": {
-            "txHash": "0x97fd7f2a8f3fea00b26fc496b27f0f3ef1e8eee01d8042d0bce55a2c38dabf16",
+            "txHash": "0x3e5ca11ce2f918518684295a3724c5abc6cd323d3ab2ee0a7e630b0a4e3dbb70",
             "totalWei": "102000000000000000",
             "amountWei": "102000000000000000",
-            "openedAt": 1790204508,
+            "openedAt": 1790212297,
             "blockNumber": 35
           },
           "run": {
-            "expectedScore": 214436,
+            "expectedScore": 217614,
             "survivalSeconds": 60,
-            "claimScore": 214436,
+            "claimScore": 217614,
             "sic1Bytes": 3646,
             "ticks": 3619
           },
@@ -1994,10 +2029,10 @@
           "settle": {
             "firstStatus": "confirmed",
             "status": "confirmed",
-            "txHash": "0xd15ff9fe0daf81518fc7fe733b45eeee55d9d9492473c49d191b7aaa93afea79",
+            "txHash": "0x224b0b48640e073a1052455eb0451338157975eab38201764526ea7fac6fc364",
             "blockNumber": 37,
-            "envelopeHash": "0x3fe85085df3f700e2fbe54af38f488aa9aaab6f2ddba48c1bb26136ae7523d8e",
-            "score": 214436,
+            "envelopeHash": "0x8e7c5f549d2883a4105b3ce0fa97531af40a54d5f05e38431d2ed807df63de51",
+            "score": 217614,
             "achievements": [
               "stacked-first-line",
               "stacked-level-2",
@@ -2017,16 +2052,17 @@
                 "state": "confirmed"
               }
             ],
-            "ms": 97
+            "ms": 86
           },
           "leaderboard": {
             "period": "weekly",
             "periodKey": "2026-W39",
-            "rank": 1
+            "rank": 1,
+            "walletBest": true
           },
           "profile": {
             "confirmedRuns": 1,
-            "bestScore": 214436,
+            "bestScore": 217614,
             "achievements": [
               "stacked-first-line",
               "stacked-level-2",
@@ -2041,16 +2077,16 @@
             ]
           },
           "share": {
-            "shareId": "4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
+            "shareId": "c8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1",
             "cardRev": "05d49829c365",
-            "url": "https://lestersarcade.io/s/4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb",
-            "ogImage": "https://lestersarcade.io/api/share-card/4e9587b235527bffca9e5a3a634b161ad03ccca752c90f3c855ee36d3bfba1fb.png?v=05d49829c365",
-            "cardBytes": 504903
+            "url": "https://lestersarcade.io/s/c8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1",
+            "ogImage": "https://lestersarcade.io/api/share-card/c8ab0fa827b27512d34080e493bf8b7f112812e7e26a6b27c04154ad8ae254d1.png?v=05d49829c365",
+            "cardBytes": 493288
           },
           "profileName": {
             "displayName": "E2E Stacked 6686",
             "avatarUri": "lestersarcade:avatar/gold-emblem",
-            "txHash": "0xa34bc7505943c9a317ed07a78d71efbbdb3b5d0e7e268c368d883117007171aa"
+            "txHash": "0x615ac826f5c6a2f7bfb3c8276139574884f712c2063e80c5f86239a1d3420608"
           },
           "indexCron": {
             "schemaVersion": 1,
@@ -2071,8 +2107,8 @@
         {
           "id": "tampered-chikun-claim",
           "ok": true,
-          "claim": 6634007,
-          "serverScore": 6634
+          "claim": 6609007,
+          "serverScore": 6609
         },
         {
           "id": "unpaid-entry",
@@ -2091,10 +2127,10 @@
         {
           "id": "evidence-copied-to-another-wallet",
           "ok": true,
-          "copier": "ephemeral wallet (unpaid)",
+          "copier": "second funded wallet (paid)",
           "got": {
-            "status": 402,
-            "error": "entry-not-paid"
+            "status": 400,
+            "error": "evidence-seed-mismatch"
           }
         },
         {
@@ -2118,9 +2154,9 @@
           "skipped": "local-only"
         }
       ],
-      "startedAt": "2026-09-23T22:56:51.219Z",
-      "finishedAt": "2026-09-23T22:56:59.337Z",
-      "durationMs": 8118,
+      "startedAt": "2026-09-24T01:06:36.246Z",
+      "finishedAt": "2026-09-24T01:06:41.803Z",
+      "durationMs": 5557,
       "failures": [],
       "ok": true
     }
@@ -2137,7 +2173,7 @@
       {
         "id": "settled-run",
         "ok": true,
-        "sessionId32": "0xb6b5eaf5ebe9575cb5b3b036eafb0076e2147339868b8eea5c58ae71a0849b72",
+        "sessionId32": "0x8b93ae95e1ad0ca04d68c76b53b0db361ab58096a5d8af91900f608994a7c072",
         "earned": [
           "cabinet-pioneer",
           "first-paid-run",
@@ -2213,8 +2249,8 @@
           "achievements": 1
         },
         "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644",
-        "mintTxHash": "0x6631f855a9b60d92e9317044e9cf19202e4c744057c382e0f2be0d200a924245",
-        "mintedAt": "2026-09-23T23:00:25.000Z"
+        "mintTxHash": "0x567597628eb27f7fe1a32413ca42fef5b6f2f8dc0c2792c7e2f75ae6ecffd11a",
+        "mintedAt": "2026-09-24T01:10:13.000Z"
       },
       {
         "id": "profile-token",
@@ -2227,7 +2263,22 @@
           "tokenId": null,
           "nft": true
         },
+        "catalog": "committed (phase-1 proposal)",
         "note": "nft comes from the server catalog (A20), never the stored flag; the resync set the stored flags the other way round"
+      },
+      {
+        "id": "profile-approved-catalog",
+        "ok": true,
+        "marathon-wallet": {
+          "tokenId": "61617627496329662342470714954171930690867007668297147596373885012387372410644",
+          "nft": true
+        },
+        "arcade-legend-500": {
+          "tokenId": null,
+          "nft": false
+        },
+        "catalog": "approved (phase 2)",
+        "note": "readPublicProfile (E6's query) with the approved catalog, as the handler reads it once phase 2 commits the catalog"
       },
       {
         "id": "token-uri",
@@ -2248,7 +2299,7 @@
     ],
     "ok": true,
     "player": "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc",
-    "sessionId32": "0xb6b5eaf5ebe9575cb5b3b036eafb0076e2147339868b8eea5c58ae71a0849b72",
+    "sessionId32": "0x8b93ae95e1ad0ca04d68c76b53b0db361ab58096a5d8af91900f608994a7c072",
     "approved": {
       "lester-blaster": [
         "two-hundred-ranked-runs",

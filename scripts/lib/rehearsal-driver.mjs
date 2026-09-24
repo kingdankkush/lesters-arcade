@@ -7,10 +7,20 @@
 //     local-http stand-in, or https://lestersarcade.io at runbook step 9);
 //   - `chain` is { provider, deployment, relayer, advanceTime? }: an ethers provider (the in-process
 //     chain, the local JSON-RPC proxy, or LiteForge) and the deployment addresses. `advanceTime` exists
-//     only on a local chain; without it the driver waits real time, as a live run must;
-//   - `wallets.player` is the paying player (an ethers signer). `wallets.second` (local only) is a
-//     second funded wallet for the evidence-copy check. The driver itself creates an EPHEMERAL wallet,
-//     never funded, for the 403 check.
+//     only on a local chain; without it the driver waits real (wall-clock) time, as a live run must:
+//     LiteForge is an Arbitrum Orbit chain that makes blocks only for transactions, so its latest block
+//     time can stand still while the server compares its own clock with openedAt (A26);
+//   - `wallets.player` is the paying player (an ethers signer). `wallets.second` (optional, on any
+//     target) is a second funded wallet for the evidence-copy check, which is reported as skipped
+//     without one. The driver itself creates an EPHEMERAL wallet, never funded, for the 403 check;
+//   - `now` and `sleep` (default Date.now and setTimeout) are the driver's wall clock, injectable so
+//     the real-time path is testable without waiting.
+//
+// A wallet may rehearse more than once (a retry of runbook step 9, or several runs in one week). E5
+// shows only each wallet's best confirmed run of the period (D1), and first-run achievements unlock
+// once. A run that is not the wallet's best, or that earns nothing new, is therefore recorded as such
+// (with the wallet's best row and its prior achievements) instead of failing; the run itself is still
+// proven confirmed on E4, E9 and the chain.
 //
 // Per game it asserts every item of guide §7 step 9 as amended (rehearsal brief, acceptance 1):
 // startPlaySession → SIWE (E1, E2) → seed ticket (E15, applySeedTicket, rankedIdentityFor,
@@ -192,7 +202,7 @@ export async function playAndBuildBody({ gameId, session, identity, scoreRegistr
   throw new Error(`unknown ranked game ${gameId}`);
 }
 
-function createContext({ target, api, chain, wallets, cronSecret, log, site, domain, local, timeouts, sleep }) {
+function createContext({ target, api, chain, wallets, cronSecret, log, site, domain, local, timeouts, sleep, now }) {
   const provider = chain.provider;
   const deployment = chain.deployment;
   const relayer = lower(chain.relayer ?? deployment.relayer);
@@ -218,6 +228,7 @@ function createContext({ target, api, chain, wallets, cronSecret, log, site, dom
     local: target === 'local' ? local : null,
     timeouts: { ...DEFAULT_TIMEOUTS, ...timeouts },
     sleep,
+    now,
     tokens: new Map(),
   };
 }
@@ -230,46 +241,58 @@ async function tokenFor(ctx, wallet, { fresh = false } = {}) {
 
 const relayerNonce = (ctx) => ctx.provider.getTransactionCount(ctx.relayer, 'latest');
 
-// Waits until the chain clock has passed openedAt + runSeconds: increaseTime on a local chain, real
-// time (polling the latest block) on a live one.
-async function waitRunLength(ctx, { openedAt, runSeconds }) {
+// Waits until the run length has passed since openedAt (the entry block's time).
+//   - Local chain (`chain.advanceTime`): evm_increaseTime past it, never sleeping.
+//   - Live: WALL-CLOCK time. LiteForge (Arbitrum Orbit) makes no empty blocks, so the latest block time
+//     stays at openedAt while nobody transacts, and polling it would only wait out maxRunWaitMs. The
+//     server compares its OWN clock with openedAt + survivalSeconds (A26, less RUN_EARLY_SLACK_SECONDS),
+//     and if the clocks still disagree E3 answers a retryable 409 run-timing-early with retryAfterMs,
+//     which settleUntilConfirmed() honours.
+// Exported for the tests.
+export async function waitRunLength(ctx, { openedAt, runSeconds }) {
   const target = openedAt + runSeconds + 1;
-  const latest = Number((await ctx.provider.getBlock('latest')).timestamp);
-  if (latest >= target) return { waitedSeconds: 0, mode: 'none' };
   if (typeof ctx.chain.advanceTime === 'function') {
+    const latest = Number((await ctx.provider.getBlock('latest')).timestamp);
+    if (latest >= target) return { waitedSeconds: 0, mode: 'none' };
     await ctx.chain.advanceTime(target - latest);
     return { waitedSeconds: target - latest, mode: 'increaseTime' };
   }
-  const started = Date.now();
-  ctx.log(`waiting ${target - latest} s of real time for the run length (${runSeconds} s) to pass on chain`);
-  while (Number((await ctx.provider.getBlock('latest')).timestamp) < target) {
-    if (Date.now() - started > ctx.timeouts.maxRunWaitMs) throw new CheckFailure('run-length-wait', 'the chain clock did not reach the run length in time');
-    await ctx.sleep(Math.min(5000, Math.max(1000, (target - Math.floor(Date.now() / 1000)) * 1000)));
-  }
-  return { waitedSeconds: Math.round((Date.now() - started) / 1000), mode: 'real-time' };
+  const nowSeconds = () => ctx.now() / 1000;
+  const blockBefore = Number((await ctx.provider.getBlock('latest')).timestamp);
+  const remaining = target - nowSeconds();
+  if (remaining <= 0) return { waitedSeconds: 0, mode: 'none', latestBlockTimestamp: { before: blockBefore, after: blockBefore } };
+  if (remaining * 1000 > ctx.timeouts.maxRunWaitMs) throw new CheckFailure('run-length-wait', `the run length ends ${Math.ceil(remaining)} s from now, beyond maxRunWaitMs`);
+  const started = ctx.now();
+  ctx.log(`waiting ${Math.ceil(remaining)} s of real time for the run length (${runSeconds} s) to pass since the entry`);
+  while (nowSeconds() < target) await ctx.sleep(Math.min(5000, Math.max(250, Math.ceil((target - nowSeconds()) * 1000))));
+  const blockAfter = Number((await ctx.provider.getBlock('latest')).timestamp);
+  return { waitedSeconds: Math.round((ctx.now() - started) / 1000), mode: 'real-time', latestBlockTimestamp: { before: blockBefore, after: blockAfter } };
 }
 
 // Polls a read until `accept(response)` holds (CDN caching on the live site lags up to s-maxage).
 async function readUntil(ctx, read, accept, { timeoutMs = ctx.timeouts.readMs, intervalMs = 3000 } = {}) {
-  const started = Date.now();
+  const started = ctx.now();
   let last = await read();
   while (!accept(last)) {
-    if (ctx.target === 'local' || Date.now() - started > timeoutMs) return { response: last, ok: false };
+    if (ctx.target === 'local' || ctx.now() - started > timeoutMs) return { response: last, ok: false };
     await ctx.sleep(intervalMs);
     last = await read();
   }
   return { response: last, ok: true };
 }
 
-// E3 with the retryable answers handled (§7.2), then E4 until confirmed (timeout 120 s).
-async function settleUntilConfirmed(ctx, { body, token }) {
-  const started = Date.now();
+// E3 with the retryable answers handled (§7.2), then E4 until confirmed (timeout 120 s from the first
+// accepted POST). A retryable 409 (run-timing-early, a busy relayer lease) is retried after its
+// retryAfterMs for up to maxRunWaitMs, which covers the longest run (HMH, about 3 minutes) should the
+// server's clock lag the driver's. Exported for the tests.
+export async function settleUntilConfirmed(ctx, { body, token }) {
+  const retryStarted = ctx.now();
   const attempts = [];
   let response;
-  for (let tries = 0; ; tries += 1) {
+  for (;;) {
     response = await ctx.api('POST', '/api/settle', { headers: bearer(token), body });
     attempts.push({ status: response.status, error: errorCode(response), state: response.body?.status ?? null });
-    if (response.status === 409 && response.body?.retryable && tries < 12) {
+    if (response.status === 409 && response.body?.retryable && ctx.now() - retryStarted < ctx.timeouts.maxRunWaitMs) {
       const waitMs = Math.max(1000, Number(response.body.retryAfterMs ?? 5000));
       if (response.body.error === 'run-timing-early' && typeof ctx.chain.advanceTime === 'function') await ctx.chain.advanceTime(Math.ceil(waitMs / 1000));
       else await ctx.sleep(waitMs);
@@ -278,11 +301,12 @@ async function settleUntilConfirmed(ctx, { body, token }) {
     break;
   }
   if (response.status !== 200) throw new CheckFailure('settle', `E3 answered ${response.status} ${brief(errorCode(response))}`);
+  const started = ctx.now();
   let view = response.body;
   const first = view;
   while (view.status !== 'confirmed') {
     if (view.status === 'failed' && view.retryable === false) throw new CheckFailure('settle', `dead-lettered: ${brief(view.lastError)}`);
-    if (Date.now() - started > ctx.timeouts.settleMs) throw new CheckFailure('settle', `not confirmed after ${ctx.timeouts.settleMs} ms (status ${view.status})`);
+    if (ctx.now() - started > ctx.timeouts.settleMs) throw new CheckFailure('settle', `not confirmed after ${ctx.timeouts.settleMs} ms (status ${view.status})`);
     await ctx.sleep(Math.max(500, Number(view.pollAfterMs ?? 2500)));
     const queued = view.status === 'pending' || view.status === 'signed' || (view.status === 'failed' && view.retryable);
     const next = queued
@@ -292,7 +316,7 @@ async function settleUntilConfirmed(ctx, { body, token }) {
     if (next.status !== 200) continue;
     view = next.body;
   }
-  return { first, view, attempts, ms: Date.now() - started };
+  return { first, view, attempts, ms: ctx.now() - retryStarted };
 }
 
 function checker(checks) {
@@ -304,6 +328,19 @@ function checker(checks) {
     if (!record(id, condition, detail)) throw new CheckFailure(id, typeof detail === 'string' ? detail : brief(detail));
   };
   return { record, expect };
+}
+
+// E6 before a run: the wallet's confirmed runs, best score and achievement ids for the game (null when
+// E6 cannot answer, which the checks treat as a first run).
+async function priorForGame(ctx, wallet, gameId) {
+  const response = await ctx.api('GET', `/api/profile?wallet=${wallet}`);
+  if (response.status !== 200 || !response.body?.games) return null;
+  const game = response.body.games[gameId] ?? {};
+  return {
+    confirmedRuns: Number(game.confirmedRuns ?? 0),
+    bestScore: game.bestScore ?? null,
+    achievements: (response.body.achievements ?? []).filter((item) => item.gameId === gameId).map((item) => item.id),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -320,6 +357,9 @@ async function runGame(ctx, gameId, { evidence }) {
     // 1-2. A real Ranked session and a real SIWE login.
     const token = await tokenFor(ctx, player, { fresh: true });
     record('siwe', true, 'E1 nonce, signed challenge, E2 token');
+    // What the wallet already had for this game (a retry, or an earlier rehearsal this period), so
+    // the board and achievement checks can tell "not the best" and "nothing new" from a failure.
+    out.prior = await priorForGame(ctx, wallet, gameId);
 
     // 3. Seed ticket, identity, session key.
     const ticketed = await ticketedSession({ api: ctx.api, token, wallet: player, gameId, scoreRegistryAddress: ctx.registry });
@@ -384,28 +424,47 @@ async function runGame(ctx, gameId, { evidence }) {
       expect('duplicate-post', sameState && unchanged.submittedAt === onChain.submittedAt, { status: again.status, relayerNonceDelta: nonceAfter - nonceBefore, note: 'live: other sessions may move the relayer nonce; the session record is unchanged' });
     }
 
-    // 8. E5 weekly board: this session's row, rank ≥ 1, with the transaction.
+    // 8. E5 weekly board. E5 shows each wallet's best confirmed run of the period (D1): this session's
+    //    row (rank ≥ 1, with its transaction) when it is the wallet's best, otherwise the wallet's
+    //    earlier row, which must score at least as much (this run's confirmation is proven on E4 and E9).
     const q = wallet.slice(2, 18);
-    const board = await readUntil(ctx, () => ctx.api('GET', `/api/leaderboard?game=${gameId}&period=weekly&wallet=${wallet}&q=${q}`), (response) => response.status === 200 && response.body.rows?.some((row) => row.sessionId32 === sessionId32));
-    const row = board.response.body?.rows?.find((entry) => entry.sessionId32 === sessionId32) ?? null;
-    expect('leaderboard-row', row !== null && row.rank >= 1 && row.txHash === view.txHash && row.score === view.score && row.wallet === wallet && board.response.body.you?.sessionId32 === sessionId32, { status: board.response.status, rank: row?.rank ?? null });
-    out.leaderboard = { period: board.response.body.period, periodKey: board.response.body.periodKey, rank: row.rank };
+    const walletRow = (response) => response.body?.rows?.find((entry) => entry.wallet === wallet) ?? null;
+    const board = await readUntil(ctx, () => ctx.api('GET', `/api/leaderboard?game=${gameId}&period=weekly&wallet=${wallet}&q=${q}`), (response) => {
+      const found = response.status === 200 ? walletRow(response) : null;
+      return found !== null && (found.sessionId32 === sessionId32 || found.score >= view.score);
+    });
+    const row = walletRow(board.response);
+    const you = board.response.body?.you ?? null;
+    const isBest = row?.sessionId32 === sessionId32;
+    if (isBest || row === null) {
+      expect('leaderboard-row', row !== null && row.rank >= 1 && row.txHash === view.txHash && row.score === view.score && you?.sessionId32 === sessionId32, { status: board.response.status, rank: row?.rank ?? null });
+    } else {
+      expect('leaderboard-row', row.rank >= 1 && row.score >= view.score && HEX32.test(String(row.txHash)) && you?.sessionId32 === row.sessionId32, {
+        status: board.response.status, rank: row.rank, walletBest: { sessionId32: row.sessionId32, score: row.score }, thisRun: view.score,
+        note: 'not the wallet\'s best this period: E5 ranks each wallet\'s best confirmed run (D1)',
+      });
+    }
+    out.leaderboard = { period: board.response.body?.period ?? null, periodKey: board.response.body?.periodKey ?? null, rank: row?.rank ?? null, walletBest: isBest };
 
-    // 9. E6: runs, best score and this session's achievements.
+    // 9. E6: runs, best score and this session's achievements. A first run of a game always unlocks
+    //    something; a later run may earn nothing new when the wallet already holds what it would.
     const unlocks = view.achievements.map((item) => item.id);
     const profile = await readUntil(ctx, () => ctx.api('GET', `/api/profile?wallet=${wallet}`), (response) => response.status === 200
       && response.body.games?.[gameId]?.confirmedRuns >= 1
       && unlocks.every((id) => response.body.achievements?.some((item) => item.id === id && item.sessionId32 === sessionId32)));
     const games = profile.response.body?.games?.[gameId] ?? {};
     expect('profile-stats', profile.ok && games.confirmedRuns >= 1 && games.bestScore >= view.score, { confirmedRuns: games.confirmedRuns ?? null, bestScore: games.bestScore ?? null });
-    expect('profile-achievements', profile.ok && unlocks.length > 0, { unlocks });
+    const heldBefore = out.prior?.confirmedRuns > 0 && out.prior.achievements.length > 0;
+    if (unlocks.length > 0 || !heldBefore) expect('profile-achievements', profile.ok && unlocks.length > 0, { unlocks });
+    else expect('profile-achievements', profile.ok, { unlocks, heldBefore: out.prior.achievements.length, note: 'nothing new: the wallet already held this game\'s achievements from earlier runs' });
     out.profile = { confirmedRuns: games.confirmedRuns, bestScore: games.bestScore, achievements: unlocks };
 
     // 10. E9 and the E10 share page tags.
     const shareId = shareIdFor(sessionId32);
     const publicSession = await ctx.api('GET', `/api/session/${shareId}`);
     const cardRev = publicSession.body?.session?.cardRev ?? null;
-    expect('share-session', publicSession.status === 200 && publicSession.body.session.sessionId32 === sessionId32 && publicSession.body.session.status === 'confirmed' && /^[0-9a-f]{12}$/.test(String(cardRev)), { status: publicSession.status, cardRev });
+    expect('share-session', publicSession.status === 200 && publicSession.body.session.sessionId32 === sessionId32 && publicSession.body.session.status === 'confirmed'
+      && publicSession.body.session.txHash === view.txHash && /^[0-9a-f]{12}$/.test(String(cardRev)), { status: publicSession.status, cardRev });
     const page = await ctx.api('GET', `/s/${shareId}`);
     const image = `${SHARE_ORIGIN}/api/share-card/${shareId}.png?v=${cardRev}`;
     const html = typeof page.body === 'string' ? page.body : '';
@@ -462,6 +521,9 @@ async function runGame(ctx, gameId, { evidence }) {
 // ---------------------------------------------------------------------------
 // Negative checks (acceptance 1, "Negative checks").
 
+// What a rejected or paused request must leave untouched: on the local stack the CONTENT of every
+// session, evidence, achievement, profile, lease and indexer row (a digest per table, so an UPDATE is
+// caught, not only an INSERT or a DELETE), and on any target the relayer's nonce.
 async function sideEffects(ctx) {
   const rows = ctx.local ? await ctx.local.snapshotRows() : null;
   return { rows, relayerNonce: await relayerNonce(ctx) };
@@ -525,22 +587,22 @@ async function runNegatives(ctx, source) {
   });
 
   await run('evidence-copied-to-another-wallet', {}, async () => {
-    const funded = ctx.target === 'local' && ctx.second;
-    const copier = funded ? ctx.second : ethers.Wallet.createRandom();
+    // Only a PAID copy reaches evidence binding: an unpaid one stops at the paid-entry check, which
+    // would just repeat unpaid-entry. Without a second funded wallet the check is skipped, not passed.
+    if (!ctx.second) return { ok: true, skipped: 'needs a second funded wallet' };
+    const copier = ctx.second;
     const token = await tokenFor(ctx, copier);
     const ticketed = await ticketedSession({ api: ctx.api, token, wallet: copier, gameId, scoreRegistryAddress: ctx.registry });
-    let entryTxHash = null;
-    if (funded) entryTxHash = (await payEntry({ contracts: ctx.contracts, player: copier, gameId, sessionId32: ticketed.sessionId32 })).txHash;
+    const entry = await payEntry({ contracts: ctx.contracts, player: copier, gameId, sessionId32: ticketed.sessionId32 });
     const before = await sideEffects(ctx);
-    const response = await ctx.api('POST', '/api/settle', { headers: bearer(token), body: bodyFor(ticketed, entryTxHash) });
+    const response = await ctx.api('POST', '/api/settle', { headers: bearer(token), body: bodyFor(ticketed, entry.txHash) });
     const after = await sideEffects(ctx);
-    // A paid copy reaches the verifier, which rejects evidence played at another seed; an unpaid
-    // copy (live: the ephemeral wallet is never funded) stops at the paid-entry check first.
-    const expected = funded ? [400, 'evidence-seed-mismatch'] : [402, 'entry-not-paid'];
-    const accepted = funded && gameId !== 'chikun'
-      ? response.status === 400 || response.status === 422
-      : response.status === expected[0] && errorCode(response) === expected[1];
-    return { ok: accepted && unchanged(before, after), copier: funded ? 'second funded wallet (paid)' : 'ephemeral wallet (unpaid)', got: { status: response.status, error: errorCode(response) } };
+    // The verifier rejects evidence played at another seed (Chikun: evidence-seed-mismatch; the
+    // others fail their replay or binding with a 400 or 422).
+    const accepted = gameId === 'chikun'
+      ? response.status === 400 && errorCode(response) === 'evidence-seed-mismatch'
+      : response.status === 400 || response.status === 422;
+    return { ok: entry.isPaid === true && accepted && unchanged(before, after), copier: 'second funded wallet (paid)', got: { status: response.status, error: errorCode(response) } };
   });
 
   await run('ephemeral-wallet-token', {}, async () => {
@@ -606,11 +668,12 @@ export async function runRankedE2E({
   negatives = true,
   timeouts = {},
   sleep = (ms) => new Promise((resolveSleep) => setTimeout(resolveSleep, ms)),
+  now = Date.now,
 } = {}) {
   if (target !== 'local' && target !== 'live') throw new Error(`unknown target ${target}`);
   if (typeof api !== 'function') throw new Error('runRankedE2E needs an api client');
   for (const gameId of games) if (!RANKED_GAMES[gameId]) throw new Error(`unknown ranked game ${gameId}`);
-  const ctx = createContext({ target, api, chain, wallets, cronSecret, log, site, domain, local, timeouts, sleep });
+  const ctx = createContext({ target, api, chain, wallets, cronSecret, log, site, domain, local, timeouts, sleep, now });
   const startedAt = new Date().toISOString();
   const started = Date.now();
   const report = {

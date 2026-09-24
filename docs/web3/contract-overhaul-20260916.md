@@ -510,9 +510,15 @@ Neon and public fixture keys only. Nothing touches LiteForge, Vercel or producti
   weekly board row, profile stats and achievements, share session, page tags and card PNG, an on-chain
   rename plus E8, the E12 cron twice) and the negative checks: duplicate settle (same state, no second
   transaction), unpaid entry (402 `entry-not-paid`), fees off (402 `entry-underpaid`, local only),
-  a tampered Chikun claim (ignored), evidence copied to another wallet's ticket (rejected), an
-  ephemeral wallet's token (403 `wallet-mismatch`), and `SETTLEMENT_PAUSED` (503 on E15, E3 and E13,
-  no row changed, local only).
+  a tampered Chikun claim (ignored), evidence copied to another wallet's paid ticket (rejected; needs
+  a second funded wallet, skipped without one), an ephemeral wallet's token (403 `wallet-mismatch`),
+  and `SETTLEMENT_PAUSED` (503 on E15, E3 and E13, local only). "No row changed" compares the content
+  of every session, evidence, achievement, profile, lease and indexer row (an md5 per table), so an
+  UPDATE by a rejected request fails the check, not only an INSERT or a DELETE.
+- A wallet may rehearse more than once: E5 shows each wallet's best confirmed run of the period (D1)
+  and first-run achievements unlock once, so a run that is not the wallet's best, or earns nothing new,
+  is recorded as such (with the wallet's best row and prior achievements), while E4, E9 and the chain
+  still prove the run itself confirmed.
 
 Commands:
 
@@ -520,7 +526,7 @@ Commands:
 node scripts/rehearse-ranked-e2e.mjs --target local      # in process, then over HTTP + JSON-RPC, then phase 2
                                                          # → docs/qa/pre-deployment-rehearsal-20260923.json
 node scripts/rehearse-nft-phase2.mjs [--out <path>]      # phase 2 only
-node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway   # about 25 minutes; see the checklist below
+node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway   # about an hour; see the checklist below
 node --test tests/local-chain-rehearsal.test.mjs tests/local-chain-rehearsal-http.test.mjs tests/nft-phase2-rehearsal.test.mjs
 ```
 
@@ -529,25 +535,36 @@ node --test tests/local-chain-rehearsal.test.mjs tests/local-chain-rehearsal-htt
 Owner checkpoint O2 first: decide whether the test wallet's rows stay on the launch boards
 (recommended: a fresh test wallet, excluded afterwards with
 `node scripts/moderate-profile.mjs --wallet <player> --exclude --apply --confirm EXCLUDE_WALLET`).
-The player wallet needs about 0.35 zkLTC (three entries of 0.102 plus gas for three renames).
+The player wallet needs about 0.32 zkLTC (three entries of 0.102 plus 0.01 of gas margin for three
+renames). The optional second wallet (`--second-key-file`, for the evidence-copy check) needs about
+0.104 zkLTC (one Chikun entry plus gas); without it that check is reported as skipped.
 
 ```
-# 1. Plan only: prints the three entries at their quoteEntry totals and the O2 reminder, sends nothing.
+# 1. Plan only: prints the entries at their quoteEntry totals, the second wallet's entry, any earlier
+#    runs of the player (a warning) and the O2 reminder; sends nothing.
 node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
   --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path to the funded test key> \
+  --second-key-file <path to a second funded test key> \
   --cron-secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --confirm-live SPEND_TESTNET_ZKLTC
 # 2. The run: the same command with --yes (optionally --out <path>; default docs/qa/ranked-live-e2e-<date>.json).
 node scripts/rehearse-ranked-e2e.mjs --target live --site https://lestersarcade.io \
   --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path to the funded test key> \
+  --second-key-file <path to a second funded test key> \
   --cron-secret-file C:/Users/just_/lesters-arcade-vault/keys/cron-secret.txt --confirm-live SPEND_TESTNET_ZKLTC --yes
+# A retry replays only what failed: add --games <id,id> (lester-blaster, chikun, stacked).
 ```
 
 The CLI refuses to start without every flag (`--cron-secret-env <NAME>` may replace the file), refuses a
 `predicted` address module and any RPC whose own `eth_chainId` is not 4441, reads the player key
-(`--player-key-field <field>` for a JSON key file) and the cron secret inside the process through
-`scripts/lib/key-source.mjs`, and never prints either. It waits real time for each run's length on the
-chain clock (about 3, 1.5 and 1 minutes), skips the local-only negative checks (fees off, pause) and
-writes a report with no secret in it. The ephemeral 403 wallet is created in memory and never funded.
+(`--player-key-field <field>` for a JSON key file), the optional second key (`--second-key-field`,
+`--second-key-env`) and the cron secret inside the process through `scripts/lib/key-source.mjs`, and
+never prints any of them. It waits wall-clock time for each run's length since the entry block (about
+3, 1.5 and 1 minutes): LiteForge is Arbitrum Orbit and makes no empty blocks, so the latest block time
+stands still while nobody transacts, and the server checks the run length against its own clock (A26;
+a retryable 409 `run-timing-early` is honoured for up to 15 minutes). It skips the local-only negative
+checks (fees off, pause) and writes a report with no secret in it. The ephemeral 403 wallet is created
+in memory and never funded. A retry with the same wallet still passes (see above), but spends another
+entry per game, which is what `--games` is for.
 
 ### Step-7 checklist
 

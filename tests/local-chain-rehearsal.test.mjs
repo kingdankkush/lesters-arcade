@@ -8,7 +8,10 @@ import {
   applyVercelRewrites, compileVercelRewrites, createVercelRouter, listApiModules, LOCAL_ALLOWED_DOMAINS, readVercelConfig, startLocalStack, vercelAppendedParams,
 } from '../scripts/lib/local-stack.mjs';
 import { localContracts, localWalletKeys } from '../scripts/lib/local-chain.mjs';
-import { DEFAULT_GAMES, profileNameFor, runRankedE2E } from '../scripts/lib/rehearsal-driver.mjs';
+import {
+  DEFAULT_GAMES, DEFAULT_TIMEOUTS, profileNameFor, REHEARSAL_REPORT_SCHEMA, runRankedE2E, settleUntilConfirmed, waitRunLength,
+} from '../scripts/lib/rehearsal-driver.mjs';
+import { REHEARSAL_SUMMARY_SCHEMA } from '../scripts/rehearse-ranked-e2e.mjs';
 import { buildSiweChallenge } from '../apps/portal/src/wallet-auth.mjs';
 import { RANKED_GAMES } from '../apps/portal/src/ranked-identity.mjs';
 import {
@@ -26,6 +29,86 @@ import {
 
 const HEX64 = 'ab'.repeat(32);
 const WALLET = `0x${'Cd'.repeat(20)}`;
+// The per-game checks every run records, in order (Chikun adds the tampered-claim check after the score).
+const PER_GAME_CHECKS = Object.freeze(['siwe', 'seed-ticket', 'session-handle', 'ticket-seed-applied', 'session-key', 'entry-quote', 'entry-paid', 'settle-body', 'settle-confirmed', 'server-score',
+  'settle-tx', 'status-owner-view', 'status-public-view', 'chain-session', 'chain-envelope', 'relayer-published', 'duplicate-post', 'leaderboard-row', 'profile-stats',
+  'profile-achievements', 'share-session', 'share-page', 'share-card', 'profile-name-valid', 'profile-set', 'profile-refresh', 'profile-name', 'index-cron', 'index-cron-idempotent']);
+const checksFor = (gameId) => (gameId === 'chikun' ? [...PER_GAME_CHECKS.slice(0, 10), 'tampered-claim-ignored', ...PER_GAME_CHECKS.slice(10)] : [...PER_GAME_CHECKS]);
+const NEGATIVE_CHECKS = Object.freeze(['tampered-chikun-claim', 'unpaid-entry', 'fees-disabled-entry', 'evidence-copied-to-another-wallet', 'ephemeral-wallet-token', 'settlement-paused']);
+
+// A driver context with a fake wall clock whose sleep() moves it (no real waiting).
+function fakeClockContext({ startMs = 1_790_000_000_000, provider, api = null, timeouts = {} } = {}) {
+  const ctx = {
+    target: 'live', chain: {}, provider, api, log: () => {}, timeouts: { ...DEFAULT_TIMEOUTS, ...timeouts }, sleeps: [], clockMs: startMs,
+  };
+  ctx.now = () => ctx.clockMs;
+  ctx.sleep = async (ms) => { ctx.sleeps.push(ms); ctx.clockMs += ms; };
+  return ctx;
+}
+
+test('the live path waits wall-clock time for the run length while the chain makes no blocks (LiteForge is Arbitrum Orbit)', async () => {
+  const openedAt = 1_790_000_000;
+  // Orbit makes blocks only for transactions: the latest block stays the entry's while nobody sends one.
+  const quietChain = { async getBlock() { return { timestamp: openedAt }; } };
+  const ctx = fakeClockContext({ startMs: openedAt * 1000 + 400, provider: quietChain });
+  const waited = await waitRunLength(ctx, { openedAt, runSeconds: 180 });
+  assert.equal(waited.mode, 'real-time');
+  assert.ok(ctx.clockMs >= (openedAt + 181) * 1000, 'the wall clock passed openedAt + the run length');
+  assert.ok(waited.waitedSeconds >= 180 && waited.waitedSeconds <= 182, String(waited.waitedSeconds));
+  assert.deepEqual(waited.latestBlockTimestamp, { before: openedAt, after: openedAt }, 'the chain clock stood still and the wait did not depend on it');
+  assert.ok(ctx.sleeps.every((ms) => ms >= 250 && ms <= 5000), 'polls at most every 5 s');
+  // Already past the run length: no wait.
+  assert.equal((await waitRunLength(ctx, { openedAt, runSeconds: 60 })).mode, 'none');
+  // A run ending beyond maxRunWaitMs is reported at once instead of slept through.
+  const short = fakeClockContext({ startMs: openedAt * 1000, provider: quietChain, timeouts: { maxRunWaitMs: 60_000 } });
+  await assert.rejects(waitRunLength(short, { openedAt, runSeconds: 180 }), /run-length-wait failed: the run length ends 181 s from now/);
+  assert.deepEqual(short.sleeps, []);
+  // A local chain is advanced instead (never slept).
+  const advanced = [];
+  const local = { ...fakeClockContext({ provider: quietChain }), chain: { advanceTime: async (seconds) => { advanced.push(seconds); } } };
+  assert.deepEqual(await waitRunLength(local, { openedAt, runSeconds: 30 }), { waitedSeconds: 31, mode: 'increaseTime' });
+  assert.deepEqual([advanced, local.sleeps], [[31], []]);
+});
+
+test('the settle loop honours a 409 run-timing-early, then walks pending, submitted and confirmed through E3 and E4', async () => {
+  const sessionId32 = `0x${HEX64}`;
+  const txHash = `0x${'cd'.repeat(32)}`;
+  const answers = [
+    { status: 409, body: { ok: false, error: 'run-timing-early', retryable: true, retryAfterMs: 4000 } },
+    { status: 200, body: { status: 'pending', pollAfterMs: 1500 } },
+    { status: 503, body: { ok: false, error: 'rpc-unavailable' } },
+    { status: 200, body: { status: 'submitted', pollAfterMs: 2000 } },
+    { status: 200, body: { status: 'confirmed', txHash } },
+  ];
+  const calls = [];
+  const api = async (method, path, init = {}) => {
+    calls.push([method, path, init.body?.retry ?? null, init.headers?.authorization === 'Bearer t']);
+    return answers.shift();
+  };
+  const ctx = fakeClockContext({ api });
+  const settled = await settleUntilConfirmed(ctx, { body: { sessionId32, evidence: {} }, token: 't' });
+  assert.equal(settled.view.status, 'confirmed');
+  assert.equal(settled.view.txHash, txHash);
+  assert.deepEqual(calls, [
+    ['POST', '/api/settle', null, true], // 409: wait retryAfterMs, then the same body again
+    ['POST', '/api/settle', null, true], // 200 pending
+    ['POST', '/api/settle', true, true], // queued: a retry POST (503, tried again)
+    ['POST', '/api/settle', true, true], // 200 submitted
+    ['GET', `/api/settle/status?sessionId32=${sessionId32}`, null, true], // submitted: E4 until confirmed
+  ]);
+  assert.deepEqual(ctx.sleeps, [4000, 1500, 1500, 2000], 'retryAfterMs, then the pollAfterMs of the last answer');
+  assert.deepEqual(settled.attempts.map((attempt) => [attempt.status, attempt.error, attempt.state]), [[409, 'run-timing-early', null], [200, null, 'pending'], [503, 'rpc-unavailable', null], [200, null, 'submitted'], [200, null, 'confirmed']]);
+
+  // The 409 budget is time, not a count: it covers an HMH run (about 180 s) many times over, then stops.
+  let early = 0;
+  const alwaysEarly = async () => { early += 1; return { status: 409, body: { ok: false, error: 'run-timing-early', retryable: true, retryAfterMs: 5000 } }; };
+  const budget = fakeClockContext({ api: alwaysEarly });
+  await assert.rejects(settleUntilConfirmed(budget, { body: { sessionId32 }, token: 't' }), /settle failed: E3 answered 409 run-timing-early/);
+  assert.equal(early, DEFAULT_TIMEOUTS.maxRunWaitMs / 5000 + 1);
+  // A dead letter stops the loop.
+  const dead = fakeClockContext({ api: async () => ({ status: 200, body: { status: 'failed', retryable: false, lastError: 'reverted' } }) });
+  await assert.rejects(settleUntilConfirmed(dead, { body: { sessionId32 }, token: 't' }), /dead-lettered/);
+});
 
 test('the local router applies vercel.json exactly: filesystem functions first, then the rewrites, query strings carried', () => {
   const router = createVercelRouter();
@@ -183,13 +266,12 @@ test('the driver plays one Ranked session per game in process, and every negativ
   });
   assert.equal(report.ok, true, JSON.stringify(report.failures));
   assert.deepEqual(Object.keys(report.games), DEFAULT_GAMES);
-  const perGame = ['siwe', 'seed-ticket', 'session-handle', 'ticket-seed-applied', 'session-key', 'entry-quote', 'entry-paid', 'settle-body', 'settle-confirmed', 'server-score',
-    'settle-tx', 'status-owner-view', 'status-public-view', 'chain-session', 'chain-envelope', 'relayer-published', 'duplicate-post', 'leaderboard-row', 'profile-stats',
-    'profile-achievements', 'share-session', 'share-page', 'share-card', 'profile-name-valid', 'profile-set', 'profile-refresh', 'profile-name', 'index-cron', 'index-cron-idempotent'];
   for (const gameId of DEFAULT_GAMES) {
     const game = report.games[gameId];
-    assert.deepEqual(game.checks.map((check) => check.id), gameId === 'chikun' ? [...perGame.slice(0, 10), 'tampered-claim-ignored', ...perGame.slice(10)] : perGame, gameId);
+    assert.deepEqual(game.checks.map((check) => check.id), checksFor(gameId), gameId);
     assert.ok(game.checks.every((check) => check.ok), gameId);
+    assert.deepEqual([game.prior.confirmedRuns, game.prior.achievements], [0, []], `${gameId}: a fresh wallet`);
+    assert.equal(game.leaderboard.walletBest, true, `${gameId}: a first run is the wallet's best`);
     assert.equal(game.entry.totalWei, '102000000000000000');
     assert.equal(game.settle.status, 'confirmed');
     assert.equal(game.settle.score, game.run.expectedScore, `${gameId}: the server replayed the same score`);
@@ -204,11 +286,11 @@ test('the driver plays one Ranked session per game in process, and every negativ
   assert.equal(report.games.stacked.run.ticks >= 3600, true, 'STACKED tops out after tick 3600');
 
   const negatives = Object.fromEntries(report.negatives.map((check) => [check.id, check]));
-  assert.deepEqual(Object.keys(negatives), ['tampered-chikun-claim', 'unpaid-entry', 'fees-disabled-entry', 'evidence-copied-to-another-wallet', 'ephemeral-wallet-token', 'settlement-paused']);
+  assert.deepEqual(Object.keys(negatives), NEGATIVE_CHECKS);
   for (const check of report.negatives) assert.deepEqual([check.ok, check.skipped ?? null], [true, null], check.id);
   assert.deepEqual(negatives['unpaid-entry'].got, { status: 402, error: 'entry-not-paid', e4: 404 });
   assert.deepEqual([negatives['fees-disabled-entry'].got.status, negatives['fees-disabled-entry'].got.error], [402, 'entry-underpaid']);
-  assert.deepEqual(negatives['evidence-copied-to-another-wallet'].got, { status: 400, error: 'evidence-seed-mismatch' });
+  assert.deepEqual([negatives['evidence-copied-to-another-wallet'].copier, negatives['evidence-copied-to-another-wallet'].got], ['second funded wallet (paid)', { status: 400, error: 'evidence-seed-mismatch' }]);
   assert.deepEqual(negatives['ephemeral-wallet-token'].got.full, [403, 'wallet-mismatch']);
   assert.deepEqual(negatives['settlement-paused'].got, { seed: [503, 'settlement-paused'], settle: [503, 'settlement-paused'], retryCron: [503, 'settlement-paused'], resumed: 200 });
   assert.equal(await localContracts(stack.record, stack.chain.provider).rankedEntry.entryFeeEnabled(), true, 'fees are back on');
@@ -230,6 +312,50 @@ test('the driver plays one Ranked session per game in process, and every negativ
     assert.equal(text.includes(secret) || text.includes(secret.slice(2)), false, 'a secret leaked into the report or the log');
   }
   assert.doesNotMatch(text, /Bearer|"mac"|"token"/);
+});
+
+test('a second run by the same wallet passes as "not the wallet\'s best", and a rejected request that CHANGES a row fails its negative check', async () => {
+  const { stack } = state;
+  // player1 already holds this week's Chikun best (a 1-2 minute run) and its first-run achievements.
+  const player = stack.wallets.player1;
+  // A server that answers 403 or 503 correctly but also UPDATEs the targeted session (no row added or
+  // removed): the content snapshot must catch it.
+  const tampered = [];
+  const api = async (method, path, init) => {
+    const response = await stack.api(method, path, init);
+    if (method === 'POST' && path === '/api/settle' && [403, 503].includes(response.status) && init?.body?.sessionId32) {
+      const rows = await stack.db.query("UPDATE verified_sessions SET attempts = attempts + 9, last_error = 'tampered' WHERE session_id32 = $1 RETURNING session_id32", [init.body.sessionId32]);
+      tampered.push(`${response.status} ${response.body?.error} updated ${rows.length}`);
+    }
+    return response;
+  };
+  const report = await runRankedE2E({
+    target: 'local', transport: 'in-process', api, chain: stack.driverChain(), wallets: { player, second: stack.wallets.player2 }, games: ['chikun'],
+    evidence: { chikun: { profile: 'expert', maxMinutes: 0.25 } }, cronSecret: stack.cronSecret(), domain: '127.0.0.1', local: stack.localControls,
+  });
+  const game = report.games.chikun;
+  assert.equal(game.ok, true, JSON.stringify(game.checks.filter((check) => !check.ok)));
+  assert.deepEqual(game.checks.map((check) => check.id), checksFor('chikun'));
+  assert.ok(game.prior.confirmedRuns >= 1 && game.prior.achievements.length > 0, 'the wallet had played before');
+  // E5 shows the earlier, better row (D1); the check records it instead of failing.
+  const board = game.checks.find((check) => check.id === 'leaderboard-row');
+  assert.equal(game.leaderboard.walletBest, false);
+  assert.ok(board.detail.walletBest.score > game.settle.score && board.detail.walletBest.sessionId32 !== game.sessionId32, JSON.stringify(board.detail));
+  assert.match(board.detail.note, /not the wallet's best/);
+  // This run is still confirmed on E9 with its own transaction.
+  assert.ok(game.checks.find((check) => check.id === 'share-session').ok);
+  const achievementsCheck = game.checks.find((check) => check.id === 'profile-achievements');
+  assert.ok(achievementsCheck.ok && (game.settle.achievements.length > 0 || /nothing new/.test(achievementsCheck.detail.note)), JSON.stringify(achievementsCheck));
+
+  // The tampering: both 403 POSTs of the ephemeral-wallet check and the paused 503 changed a row.
+  assert.deepEqual(tampered, ['403 wallet-mismatch updated 1', '403 wallet-mismatch updated 1', '503 settlement-paused updated 1']);
+  const negatives = Object.fromEntries(report.negatives.map((check) => [check.id, check]));
+  assert.deepEqual(Object.keys(negatives), NEGATIVE_CHECKS);
+  assert.deepEqual([negatives['ephemeral-wallet-token'].ok, negatives['settlement-paused'].ok], [false, false], 'a changed row fails the check although the answers were right');
+  assert.deepEqual([negatives['ephemeral-wallet-token'].got.full, negatives['settlement-paused'].got.settle], [[403, 'wallet-mismatch'], [503, 'settlement-paused']]);
+  for (const id of ['tampered-chikun-claim', 'unpaid-entry', 'fees-disabled-entry', 'evidence-copied-to-another-wallet']) assert.equal(negatives[id].ok, true, id);
+  assert.deepEqual(report.failures, ['negative:ephemeral-wallet-token', 'negative:settlement-paused']);
+  assert.equal(report.ok, false);
 });
 
 test('the driver reports a broken endpoint as a failed check instead of passing or throwing', async () => {
@@ -257,10 +383,21 @@ test('the committed rehearsal report records a passing local rehearsal on both t
   const path = new URL('../docs/qa/pre-deployment-rehearsal-20260923.json', import.meta.url);
   assert.ok(existsSync(path), 'node scripts/rehearse-ranked-e2e.mjs --target local writes the report');
   const report = JSON.parse(readFileSync(path, 'utf8'));
-  assert.equal(report.schema, 'lesters-pre-deployment-rehearsal-v1');
+  assert.equal(report.schema, REHEARSAL_SUMMARY_SCHEMA);
   assert.equal(report.ok, true);
-  assert.deepEqual(report.runs.map((run) => [run.transport, run.target, run.ok]), [['in-process', 'local', true], ['http', 'live', true]]);
-  for (const run of report.runs) assert.deepEqual(Object.keys(run.games), DEFAULT_GAMES);
+  assert.deepEqual(report.runs.map((run) => [run.schema, run.transport, run.target, run.ok]), [[REHEARSAL_REPORT_SCHEMA, 'in-process', 'local', true], [REHEARSAL_REPORT_SCHEMA, 'http', 'live', true]]);
+  // The report matches the CURRENT driver: a driver change that adds, drops or renames a check makes
+  // this fail until the report is regenerated (node scripts/rehearse-ranked-e2e.mjs --target local).
+  for (const run of report.runs) {
+    assert.deepEqual(Object.keys(run.games), DEFAULT_GAMES);
+    for (const gameId of DEFAULT_GAMES) assert.deepEqual(run.games[gameId].checks.map((check) => [check.id, check.ok]), checksFor(gameId).map((id) => [id, true]), `${run.transport} ${gameId}`);
+    assert.deepEqual(run.negatives.map((check) => check.id), NEGATIVE_CHECKS, run.transport);
+    assert.ok(run.negatives.every((check) => check.ok), run.transport);
+  }
+  // The HTTP run had a second funded wallet, so the evidence copy was checked, not skipped.
+  const copied = Object.fromEntries(report.runs.map((run) => [run.transport, run.negatives.find((check) => check.id === 'evidence-copied-to-another-wallet')]));
+  assert.deepEqual([copied['in-process'].got, copied.http.got, copied.http.skipped ?? null], [{ status: 400, error: 'evidence-seed-mismatch' }, { status: 400, error: 'evidence-seed-mismatch' }, null]);
+  assert.deepEqual(report.phase2.steps.map((step) => step.id), ['settled-run', 'phase1-proposal', 'test-setup-rows', 'define-approved-subset', 'backfill-plan', 'resync-flags', 'backfill-mint', 'index-stamps-token', 'profile-token', 'profile-approved-catalog', 'token-uri', 'second-backfill-mints-nothing']);
   assert.equal(report.phase2.ok, true);
   assert.doesNotMatch(JSON.stringify(report), /Bearer|"mac"|"token"|PRIVATE_KEY/);
 });
