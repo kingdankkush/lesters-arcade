@@ -15,7 +15,9 @@
 //   4. scripts/backfill-nft-mints.mjs --broadcast --resync (the relayer key) rewrites the stored nft
 //      flags from the approved catalog and mints: only the approved id mints, whatever the stored flag;
 //   5. the E12 index cron stamps token_id, mint_tx_hash and minted_at;
-//   6. E6 shows the tokenId and the catalog's nft flag; tokenURI is
+//   6. E6 shows the tokenId and the catalog's nft flag: through the handler with the committed
+//      (phase-1) catalog, and through E6's query (readPublicProfile) with the approved catalog, as the
+//      handler will once phase 2 commits it; tokenURI is
 //      https://lestersarcade.io/achievements/<slug>/<id>.json;
 //   7. a second backfill mints nothing (the stamped row is no longer planned, and mintFor returns false
 //      for the duplicate when forced).
@@ -35,6 +37,7 @@ import { startRpcProxy } from './lib/local-http.mjs';
 import { rankedContracts, runRankedE2E } from './lib/rehearsal-driver.mjs';
 import { DEFINE_CONFIRM, runDefineCli } from './define-nft-achievements.mjs';
 import { BACKFILL_CONFIRM, broadcastBackfillMints, loadNftIdsByGame, planBackfillMints, readUnmintedUnlocks, runBackfillCli } from './backfill-nft-mints.mjs';
+import { readPublicProfile } from '../server/neon/queries.mjs';
 
 export const PHASE2_REPORT_SCHEMA = 'lesters-nft-phase2-rehearsal-v1';
 export const PHASE2_GAME = 'lester-blaster';
@@ -164,13 +167,23 @@ export async function rehearseNftPhase2({ stack, log = () => {}, gameId = PHASE2
       { cron: { status: cron.status, achievements: cron.body?.achievements ?? null }, tokenId: stamped?.token_id ?? null, mintTxHash: stamped?.mint_tx_hash ?? null, mintedAt: stamped?.minted_at ?? null });
 
     // 6. E6 shows the token and the catalog's flag; tokenURI.
+    //    The E6 handler loads the COMMITTED catalog (still the phase-1 proposal here, since this
+    //    rehearsal injects the approved one instead of editing apps/portal/src/achievements), so through
+    //    the handler the flags are the phase-1 ones. E6's own query, given the approved catalog (what
+    //    the phase-2 catalog commit makes the handler load), must then show the approved flags.
     const profile = await stack.api('GET', `/api/profile?wallet=${player}`);
-    const shown = (id) => profile.body?.achievements?.find((item) => item.id === id && item.gameId === gameId) ?? null;
-    const addedShown = shown(added.id);
-    const droppedShown = shown(dropped.id);
+    const shownIn = (body, id) => body?.achievements?.find((item) => item.id === id && item.gameId === gameId) ?? null;
+    const addedShown = shownIn(profile.body, added.id);
+    const droppedShown = shownIn(profile.body, dropped.id);
     step('profile-token', profile.status === 200 && addedShown?.tokenId === tokenId && addedShown?.mintTxHash === stamped?.mint_tx_hash
       && addedShown?.nft === added.nft && droppedShown?.tokenId === null && droppedShown?.nft === dropped.nft,
-    { [added.id]: { tokenId: addedShown?.tokenId ?? null, nft: addedShown?.nft ?? null }, [dropped.id]: { tokenId: droppedShown?.tokenId ?? null, nft: droppedShown?.nft ?? null }, note: 'nft comes from the server catalog (A20), never the stored flag; the resync set the stored flags the other way round' });
+    { [added.id]: { tokenId: addedShown?.tokenId ?? null, nft: addedShown?.nft ?? null }, [dropped.id]: { tokenId: droppedShown?.tokenId ?? null, nft: droppedShown?.nft ?? null }, catalog: 'committed (phase-1 proposal)', note: 'nft comes from the server catalog (A20), never the stored flag; the resync set the stored flags the other way round' });
+    const approvedView = await readPublicProfile(stack.db, player, { nowMs: stack.nowMs(), catalog });
+    const addedApproved = shownIn(approvedView, added.id);
+    const droppedApproved = shownIn(approvedView, dropped.id);
+    step('profile-approved-catalog', addedApproved?.nft === true && addedApproved?.tokenId === tokenId && droppedApproved?.nft === false && droppedApproved?.tokenId === null
+      && approvedView.achievements.filter((item) => item.gameId === gameId).every((item) => item.nft === approved[gameId].includes(item.id)),
+    { [added.id]: { tokenId: addedApproved?.tokenId ?? null, nft: addedApproved?.nft ?? null }, [dropped.id]: { tokenId: droppedApproved?.tokenId ?? null, nft: droppedApproved?.nft ?? null }, catalog: 'approved (phase 2)', note: 'readPublicProfile (E6\'s query) with the approved catalog, as the handler reads it once phase 2 commits the catalog' });
     const tokenUri = await collection.tokenURI(tokenId);
     step('token-uri', tokenUri === `${TOKEN_URI_BASE}${gameId}/${added.id}.json`, { tokenUri });
 

@@ -142,7 +142,7 @@ test('phase 2 on the local stack: define the approved subset, setMinter(relayer)
   const report = await rehearseNftPhase2({ stack, log: (line) => logs.push(line) });
   const steps = Object.fromEntries(report.steps.map((step) => [step.id, step]));
   assert.equal(report.ok, true, JSON.stringify(report.steps.filter((step) => !step.ok)));
-  assert.deepEqual(report.steps.map((step) => step.id), ['settled-run', 'phase1-proposal', 'test-setup-rows', 'define-approved-subset', 'backfill-plan', 'resync-flags', 'backfill-mint', 'index-stamps-token', 'profile-token', 'token-uri', 'second-backfill-mints-nothing']);
+  assert.deepEqual(report.steps.map((step) => step.id), ['settled-run', 'phase1-proposal', 'test-setup-rows', 'define-approved-subset', 'backfill-plan', 'resync-flags', 'backfill-mint', 'index-stamps-token', 'profile-token', 'profile-approved-catalog', 'token-uri', 'second-backfill-mints-nothing']);
   const { approvedAdded: added, droppedFromPhase1: dropped } = PHASE2_TEST_SETUP;
   const player = stack.wallets.player1.address.toLowerCase();
   assert.equal(report.player, player);
@@ -164,6 +164,11 @@ test('phase 2 on the local stack: define the approved subset, setMinter(relayer)
   const shown = Object.fromEntries(profile.body.achievements.filter((item) => item.gameId === PHASE2_GAME).map((item) => [item.id, item]));
   assert.deepEqual([shown[added].tokenId, shown[added].nft], [tokenId, achievements.achievementById(PHASE2_GAME, added).nft]);
   assert.deepEqual([shown[dropped].tokenId, shown[dropped].nft], [null, achievements.achievementById(PHASE2_GAME, dropped).nft]);
+  assert.equal(steps['profile-token'].catalog, 'committed (phase-1 proposal)');
+  // E6's query with the approved catalog (what the phase-2 catalog commit makes the handler load)
+  // shows the approved flags: the added id is an NFT with its token, the dropped one is not.
+  assert.deepEqual(steps['profile-approved-catalog'][added], { tokenId, nft: true });
+  assert.deepEqual(steps['profile-approved-catalog'][dropped], { tokenId: null, nft: false });
   // 6. tokenURI.
   assert.equal(steps['token-uri'].tokenUri, `https://lestersarcade.io/achievements/lester-blaster/${added}.json`);
   // 7. Nothing mints twice.
