@@ -348,13 +348,15 @@ function setModePresentation() {
   const ranked = mode === 'ranked';
   dailyChallenge = ranked ? null : chikunDailyChallengeForSeed(initPayload?.session?.seed);
   shell.dataset.mode = mode;
+  // The child is never told the settlement flags, so the Ranked lines read
+  // true both in the device-local preview and once runs publish on LitVM.
   modeLabel.textContent = ranked
-    ? 'Ranked Preview · Device Local'
+    ? 'Ranked Mode · Verified Flight'
     : dailyChallenge
       ? `${dailyChallenge.label} · Shared Course`
       : 'Free Mode · Practice Flight';
   modeCopy.textContent = ranked
-    ? 'Collect Litecoin and skim the edges for bonuses. Lester’s Arcade verifies your replay for this device’s profile and local Ranked boards.'
+    ? 'Collect Litecoin and skim the edges for bonuses. Lester’s Arcade replays your inputs before the run counts toward your profile and the Ranked boards.'
     : dailyChallenge
       ? `The ${dailyChallenge.dayKey} course resets at 00:00 UTC. Collect Litecoin and beat your best on this device. This flight keeps its course through reset.`
       : 'Collect Litecoin and skim the edges for bonuses. Practice scores stay separate from your Ranked profile.';
