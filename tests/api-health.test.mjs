@@ -225,6 +225,9 @@ test('with no environment at all the report fails closed', async () => {
   const badRpc = await invoke(healthApi.createHandler(() => healthApi.buildDeps({ RPC_URL: 'not a url' }, { deployment: DEPLOYED, nowMs: NOW })), { url: '/api/health' });
   assert.equal(badRpc.status, 200, 'a provider that cannot be built is a degraded part');
   assert.equal(badRpc.body.index.headBlock, null);
+  assert.deepEqual(badRpc.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
+  const nothing = await invoke(healthApi.createHandler(() => healthApi.buildDeps({ RPC_URL: 'not a url' }, { deployment: { ...DEPLOYED, status: 'unavailable' }, nowMs: NOW })), { url: '/api/health' });
+  assert.deepEqual(nothing.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-address'], 'no relayer reads are expected without a relayer');
 });
 
 test('settles-left rounds down and a zero base fee gives no estimate', async () => withDb(async (db) => {

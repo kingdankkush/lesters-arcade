@@ -129,7 +129,9 @@ async function readChainPart(deps, { relayer, registry, deadlineMs }) {
     provider = null;
   }
   if (!provider) {
-    return { head: { ok: false, value: null }, balance: { ok: false, value: null }, allowed: { ok: false, value: null }, parts: ['chain-head', 'relayer-balance', 'relayer-allowed'] };
+    const missing = { ok: false, value: null };
+    const parts = ['chain-head', ...(relayer ? ['relayer-balance'] : []), ...(relayer && registry ? ['relayer-allowed'] : [])];
+    return { head: missing, balance: missing, allowed: missing, parts };
   }
   const [head, balance, allowed] = await Promise.all([
     settle(() => provider.getBlock('latest'), deadlineMs),
