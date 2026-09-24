@@ -55,6 +55,17 @@ try {
 
   findings.signInLabel = (await page.textContent('#officialConnectButton'))?.trim();
   assert.equal(findings.signInLabel, 'Sign in', 'the splash offers Sign in');
+  assert.doesNotMatch(await page.locator('body').innerText(), /Connect Wallet/i, 'the shell says Sign in, not Connect Wallet');
+
+  // Before signing in, the preview Profile is the guest card with its 'Sign in to Save Progress' call
+  // (the hosted profile, with both flags on, says 'Sign in to open your verified profile' instead).
+  await page.click('#officialNavTabs a.official-nav-tab[href="/profile"]');
+  const guestCard = page.locator('.profile-guest-card');
+  await guestCard.waitFor({ state: 'visible', timeout: 10_000 });
+  findings.guestProfileCta = (await guestCard.locator('button.profile-action-primary').textContent())?.trim();
+  assert.equal(findings.guestProfileCta, 'Sign in to Save Progress');
+  assert.doesNotMatch(await guestCard.innerText(), /verified profile/i);
+  await page.goto(`${origin}/`, { waitUntil: 'networkidle' });
   await page.click('#officialConnectButton');
 
   // The shell names the simulated session (the old #walletStatus header chip is gone).
