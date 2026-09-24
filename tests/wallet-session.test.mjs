@@ -268,12 +268,39 @@ test('a token stored by the 1.7.0 flow is discarded instead of restored or sent'
   storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: WALLET, token: v1, expiresAt: NOW + 3_600_000 }));
   storage.setItem(WALLET_CONNECTOR_STORAGE_KEY, JSON.stringify({ kind: 'legacy', rdns: null, wallet: WALLET }));
   assert.equal(isV2SessionToken(v1), false);
+  // Layer 1 (profile-boards): the token store drops a stored non-v2 token as
+  // soon as it loads, so it never offers one.
   const profileSync = createProfileSync({ storage, now: () => NOW });
-  assert.equal(profileSync.hasSession(WALLET), true, 'profileSync alone would still offer it');
+  assert.equal(profileSync.hasSession(WALLET), false, 'profileSync discards it on load');
+  assert.equal(profileSync.tokenFor(WALLET), null);
+  assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null, 'the dead token is removed from storage');
   const session = createWalletSession({ hosted: true, storage, now: () => NOW, profileSync, loadEthers, eventTarget: null });
   assert.equal(session.token(WALLET), null);
+  assert.equal(session.isAuthenticated(WALLET), false);
   assert.equal((await session.restore({ provider: fixtureWallet() })).ok, false);
-  assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null, 'the dead token is removed from storage');
+
+  // Layer 2 (this module): even a token store that still offers the v1 token
+  // (an older profileSync, or a token written after it loaded) never gets it
+  // restored or sent. The wallet session refuses it and has the store drop it.
+  let offered = null;
+  let logouts = 0;
+  const offer = () => { offered = { wallet: WALLET, token: v1, expiresAt: NOW + 3_600_000 }; };
+  const legacyStore = {
+    get session() { return offered; },
+    hasSession: (wallet) => Boolean(offered) && String(wallet).toLowerCase() === offered.wallet,
+    tokenFor: (wallet) => (offered && String(wallet).toLowerCase() === offered.wallet ? offered.token : null),
+    logout() { logouts += 1; offered = null; },
+  };
+  const connectorOnly = memoryStorage({ [WALLET_CONNECTOR_STORAGE_KEY]: JSON.stringify({ kind: 'legacy', rdns: null, wallet: WALLET }) });
+  const guarded = createWalletSession({ hosted: true, storage: connectorOnly, now: () => NOW, profileSync: legacyStore, loadEthers, eventTarget: null });
+  offer();
+  assert.equal(guarded.token(WALLET), null, 'never handed to a Bearer caller');
+  assert.equal(logouts, 1, 'the wallet session has the store discard it');
+  offer();
+  assert.equal(guarded.isAuthenticated(WALLET), false);
+  offer();
+  assert.equal((await guarded.restore({ provider: fixtureWallet() })).ok, false, 'never restored');
+  assert.equal(logouts, 3);
 });
 
 test('a remembered WalletConnect session restores without creating AppKit', async () => {

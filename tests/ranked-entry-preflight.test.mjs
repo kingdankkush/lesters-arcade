@@ -45,7 +45,7 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     showWalletNotice() {}, signInFromPicker: async () => null,
     loadRankedIdentity: async () => { throw new Error('No session key in modal tests'); },
     sendRankedEntry: async () => { throw new Error('No entry payment in modal tests'); }, recordEntryBroadcast, showEntryChip() {}, refreshWalletBalanceChip() {},
-    startOfficialMode: async () => {}, window: null,
+    startOfficialMode: async () => {}, window: null, syncCabinetResultsButton() {},
     classifyWalletError: (error) => ({ userCancelled: false, message: String(error?.message ?? error) }),
     el: (tag, options = {}) => Object.assign(element(), { tag }, options),
     appendText: (parent, tag, text) => { const child = Object.assign(element(), { tag, textContent: text }); parent.append(child); return child; },

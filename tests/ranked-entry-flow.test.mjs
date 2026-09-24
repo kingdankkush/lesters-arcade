@@ -289,6 +289,8 @@ function liveModal({ seedResponses = [], session = pendingRankedSession(), signI
     recordEntryBroadcast, showEntryChip: (pending) => order.push(`chip:${pending.entryReceipt.status}`), refreshWalletBalanceChip() {},
     startOfficialMode: async (mode) => { starts.push(mode); }, signInFromPicker: async (options) => { pickers.push(options); return null; },
     showWalletNotice: (message) => notices.push(message), window: eventTarget,
+    // integration-glue B11: closing the modal lets the cabinet View results button return.
+    syncCabinetResultsButton: () => { context.cabinetSyncs = (context.cabinetSyncs ?? 0) + 1; },
     el: (tag, options = {}) => Object.assign(element(), { tag }, options),
     appendText: (parent, tag, text) => { const child = Object.assign(element(), { tag, textContent: text }); parent.append(child); return child; },
   };

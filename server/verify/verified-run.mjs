@@ -70,9 +70,7 @@ const clampCount = (value, maximum) => Math.min(maximum, Math.max(0, Math.floor(
 // summary that already passed the schema and plausibility checks, so a mapper
 // that throws there is a server-side inconsistency, not the player's fault. It
 // propagates (settle answers a retryable 500) instead of rejecting a paid run
-// for good with a 422. The achievements stats.mjs header says the opposite
-// ("the server verifier treats that as a rejected run"); that comment is the
-// achievements slice's to correct.
+// for good with a 422. The achievements stats.mjs header states the same rule.
 export async function buildVerifiedRun({ identity, nowMs, score, stats, contract, evidence, plausibility = null }) {
   if (!Number.isFinite(nowMs)) throw new TypeError('nowMs is required to stamp verifiedAt');
   const game = RANKED_GAMES[identity.gameId];

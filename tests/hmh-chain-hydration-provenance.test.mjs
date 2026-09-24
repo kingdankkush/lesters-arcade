@@ -1,9 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import vm from 'node:vm';
 import { parse } from 'acorn';
-import { recordCadenceScore, getLeaderboard } from '../apps/portal/src/leaderboard-engine.mjs';
 import { leaderboardEntryProvenance } from '../apps/portal/src/leaderboard-seed.mjs';
 import { fetchPlayerSessions, SCORE_REGISTRY_ABI, loadEthers } from '../apps/portal/src/litvm-chain-client.mjs';
 import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
@@ -11,44 +9,23 @@ import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
 // Encoded, deterministic EIP-1193 fixtures only. These are not live chain results.
 const hash = (byte) => `0x${byte.repeat(32)}`;
 const wallet = `0x${'12'.repeat(20)}`;
-const record = (overrides = {}) => ({
-  sessionId32: hash('ab'), gameId32: hash('cd'), paymentSessionId32: hash('ef'),
-  player: wallet, score: 1200, kills: 10, maxCombo: 4, survivalSeconds: 120,
-  scoreHash32: hash('11'), runSeedHash32: hash('22'), buildHash32: hash('33'),
-  submittedAt: 1788955200, verified: true, onChain: true, ...overrides,
-});
 const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 const ast = parse(main, { ecmaVersion: 'latest', sourceType: 'module' });
-const merger = ast.body.find((node) => node.type === 'FunctionDeclaration' && node.id.name === 'mergeChainRecordIntoState');
-assert.ok(merger, 'exercise the actual parent merger, not a rewritten model');
-function subject(state = {}) {
-  const merge = vm.runInNewContext(`(${main.slice(merger.start, merger.end)})`, { state, recordCadenceScore });
-  return { state, merge };
-}
 
-test('unverified chain sessions cannot mutate any official parent store', () => {
-  const { state, merge } = subject();
-  assert.equal(merge(record({ verified: false }), 'hard-money-heroes'), false);
-  assert.deepEqual(state, {});
-});
-
-test('missing or malformed chain identity fails closed before parent mutation', () => {
-  for (const bad of [null, record({ verified: 'true' }), record({ onChain: false }), record({ sessionId32: '0xabc' }), record({ player: '0xabc' }), record({ score: Infinity }), record({ submittedAt: NaN })]) {
-    const { state, merge } = subject();
-    assert.equal(merge(bad, 'hard-money-heroes'), false);
-    assert.deepEqual(state, {});
+test('the chain-record merge is retired: no chain row can be written into the local boards', () => {
+  // The 200-session chain scan (guide §5.8, profile-boards) and the parent
+  // merge that filed its records into local state (integration-glue B9) are
+  // gone; the verified boards and profiles come from the server index.
+  const declared = new Set(ast.body.flatMap((row) => {
+    if (row.type === 'FunctionDeclaration') return [row.id.name];
+    if (row.type === 'VariableDeclaration') return row.declarations.map((entry) => entry.id?.name).filter(Boolean);
+    return [];
+  }));
+  for (const retired of ['mergeChainRecordIntoState', 'ensureGameIdHashes', '_hydratingLeaderboard', '_gameIdByHash', 'hydrateLeaderboardFromChain', 'hydrateProfileFromChain']) {
+    assert.equal(declared.has(retired), false, retired);
+    assert.doesNotMatch(main, new RegExp(`\\b${retired}\\b`), `${retired} is not referenced`);
   }
-});
-
-test('an unknown cabinet hash cannot fall back into Lester Blaster boards', () => {
-  const { state, merge } = subject();
-  assert.equal(merge(record(), undefined), false);
-  assert.deepEqual(state, {});
-  // The 200-session chain scan is retired (guide §5.8, profile-boards): the
-  // index-backed fills that replace it never fall back to Lester Blaster either.
-  for (const retired of ['hydrateLeaderboardFromChain', 'hydrateProfileFromChain']) {
-    assert.equal(ast.body.some((row) => row.type === 'FunctionDeclaration' && row.id.name === retired), false, retired);
-  }
+  // The index-backed fills that replace it never fall back to Lester Blaster.
   for (const name of ['hydrateLeaderboardFromIndex', 'hydrateProfileFromIndex']) {
     const node = ast.body.find((row) => row.type === 'FunctionDeclaration' && row.id.name === name);
     assert.ok(node);
@@ -56,31 +33,9 @@ test('an unknown cabinet hash cannot fall back into Lester Blaster boards', () =
   }
 });
 
-test('a verified registry session retains its identity without inventing a transaction hash', () => {
-  const { state, merge } = subject();
-  const rec = record();
-  assert.equal(merge(rec, 'hard-money-heroes'), true);
-  const board = getLeaderboard(state, 'hard-money-heroes', 'all-time', { filterToCurrentVersion: false });
-  const row = board.topEntries[0];
-  assert.equal(row.settlementTxHash, null);
-  assert.equal(row.onChainSessionId32, rec.sessionId32);
-  assert.equal(row.onChain, true);
-  assert.equal(row.chainVerified, true);
+test('a verified registry row is official without an invented transaction hash', () => {
+  const row = { wallet, settlementTxHash: null, onChainSessionId32: hash('ab'), onChain: true, chainVerified: true };
   assert.equal(leaderboardEntryProvenance(row).official, true);
-  assert.equal(merge(rec, 'hard-money-heroes'), false);
-  assert.equal(state.officialSessions.length, 1);
-  assert.equal(state.leaderboards['hard-money-heroes'].length, 1);
-});
-
-test('distinct sessions sharing a hash prefix remain distinct in cadence storage', () => {
-  const { state, merge } = subject();
-  const first = record();
-  const second = record({ sessionId32: `${first.sessionId32.slice(0, -2)}cd`, score: 1400 });
-  assert.equal(merge(first, 'hard-money-heroes'), true);
-  assert.equal(merge(second, 'hard-money-heroes'), true);
-  const stored = state.cadenceLeaderboards['hard-money-heroes']['all-time']['all-time'];
-  assert.equal(stored.length, 2);
-  assert.notEqual(stored[0].sessionId, stored[1].sessionId);
 });
 
 test('synthetic and malformed receipts never acquire official leaderboard provenance', () => {

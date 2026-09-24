@@ -194,8 +194,9 @@ function tokenHref(gameId, tokenId) {
   return /^0x[0-9a-f]{40}$/.test(collection) && /^[0-9]{1,78}$/.test(String(tokenId)) ? `https://liteforge.explorer.caldera.xyz/token/${collection}/instance/${tokenId}` : null;
 }
 
-// avatarSrc(avatarUri) → site-root image path. Until the profile avatars ship
-// a map, every avatar (and every hidden profile) uses the default one.
+// avatarSrc(avatarUri) → site-root image path (api/share-page.mjs passes
+// shareAvatarSrc, from arcade-avatars.mjs). A profile without a public name,
+// hidden or blocked, and an unknown avatar use the default one.
 export function renderSharePage({ session = null, status = 200, avatarSrc = () => SHARE_DEFAULT_AVATAR } = {}) {
   if (!session || status !== 200) return genericPage(status === 200 ? 404 : status);
   const shareId = String(session.shareId ?? '').toLowerCase();

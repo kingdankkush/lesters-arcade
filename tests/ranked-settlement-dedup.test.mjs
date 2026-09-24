@@ -1,26 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import vm from 'node:vm';
 
 import { applySettlement, createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
-import { recordCadenceScore } from '../apps/portal/src/leaderboard-engine.mjs';
 import { RANKED_GAMES } from '../apps/portal/src/ranked-identity.mjs';
 import { snapshotArcadeState } from '../apps/portal/src/persistence.mjs';
-import { portalFunctionSource } from './helpers/ranked-client-vm.mjs';
+import { PORTAL_MAIN } from './helpers/ranked-client-vm.mjs';
 
 const WALLET = '0x70997970c51812dc3a010c7d01b50e0d17dc79c8';
 const KEY = `0x${'5e'.repeat(32)}`;
 const TX = `0x${'7a'.repeat(32)}`;
-
-// The shipped merger, run with only the names its VM test whitelists.
-function merger(state) {
-  return vm.runInNewContext(`(${portalFunctionSource('mergeChainRecordIntoState')})`, { state, recordCadenceScore });
-}
-
-const chainRecord = (overrides = {}) => ({
-  sessionId32: KEY, gameId32: `0x${'cd'.repeat(32)}`, player: WALLET, score: 1234, kills: 7, maxCombo: 3, survivalSeconds: 90,
-  submittedAt: 1_790_000_000, verified: true, onChain: true, ...overrides,
-});
 
 function settledState() {
   const state = createInitialArcadeState();
@@ -52,28 +40,16 @@ test('applySettlement stamps the session key on the flat, cadence and official r
   assert.equal(other.leaderboards['lester-blaster'][0].onChainSessionId32, undefined);
 });
 
-test('a settled local row and its chain record appear once', () => {
-  const { state } = settledState();
-  const flatBefore = state.leaderboards['lester-blaster'].length;
-  const officialBefore = state.officialSessions.length;
-  const merge = merger(state);
-  assert.equal(merge(chainRecord(), 'lester-blaster'), false, 'the chain copy of the settled run is skipped');
-  assert.equal(merge(chainRecord({ sessionId32: KEY.toUpperCase().replace('0X', '0x') }), 'lester-blaster'), false, 'whatever the hex case');
-  assert.equal(state.leaderboards['lester-blaster'].length, flatBefore);
-  assert.equal(state.officialSessions.length, officialBefore);
-  assert.equal(state.leaderboards['lester-blaster'].filter((row) => row.onChainSessionId32 === KEY).length, 1);
-  // Another session still merges.
-  assert.equal(merge(chainRecord({ sessionId32: `0x${'6f'.repeat(32)}` }), 'lester-blaster'), true);
-});
-
-test('the dedup survives a reload, which keeps only the cadence boards', () => {
+// The chain scan that could list a settled run twice, and its merge into the
+// local boards, are retired (integration-glue B9): the verified boards come
+// from the server index, and the stamped key stays in the local rows.
+test('no chain copy can be merged next to a settled local row, before or after a reload', () => {
+  assert.doesNotMatch(PORTAL_MAIN, /mergeChainRecordIntoState|ensureGameIdHashes/);
   const { state } = settledState();
   const reloaded = JSON.parse(JSON.stringify(snapshotArcadeState(state)));
   assert.equal(reloaded.leaderboards, undefined, 'persistence stores the cadence boards, not the flat board or official rows');
-  const restored = { cadenceLeaderboards: reloaded.cadenceLeaderboards };
-  assert.equal(merger(restored)(chainRecord(), 'lester-blaster'), false, 'the stamped cadence row alone keeps the chain copy out');
-  const flatOnly = { leaderboards: JSON.parse(JSON.stringify(state.leaderboards)) };
-  assert.equal(merger(flatOnly)(chainRecord(), 'lester-blaster'), false, 'as does the stamped flat-board row');
+  const cadence = Object.values(reloaded.cadenceLeaderboards['lester-blaster']).flatMap((periods) => Object.values(periods)).flat();
+  assert.ok(cadence.length > 0 && cadence.every((row) => row.onChainSessionId32 === KEY), 'the stamped key survives the reload');
 });
 
 // Chikun's runtime id is checked with a verified replay claim in

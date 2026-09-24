@@ -262,6 +262,86 @@ test('preference pushes are debounced behind the session token and a 401 drops i
   assert.deepEqual(await sync.flush(WALLET), { ok: true, skipped: true });
 });
 
+// integration-glue A2: with an injected wallet session (getToken), a token is
+// sent only when it is a v2 token naming the wallet asked about.
+test('an injected token issued to another wallet is never sent', async () => {
+  const nowMs = 5_000;
+  const other = `0x${'b'.repeat(40)}`;
+  const requests = [];
+  const fetchImpl = async (url, init) => {
+    requests.push({ url, method: init.method, auth: init.headers?.authorization ?? null });
+    return jsonResponse(200, { ok: true, wallet: lower, profile: { displayName: null }, games: {}, recentSessions: [], achievements: [], preferences: null, updatedAt: 'x' });
+  };
+  const tokens = [];
+  const sync = createProfileSync({ fetchImpl, storage: memoryStorage(), now: () => nowMs, getToken: (wallet) => { tokens.push(wallet); return v2TokenFor(other, nowMs + 60_000); } });
+  const pulled = await sync.pull(WALLET);
+  assert.equal(pulled.self, false, 'the public view');
+  assert.deepEqual(requests, [{ url: `/api/profile?wallet=${lower}`, method: 'GET', auth: null }], 'no Authorization header for a token naming wallet B');
+  assert.deepEqual(await sync.pushNow({ preferences: {} }, { wallet: WALLET }), { ok: false, unavailable: true, error: 'no-session' });
+  assert.equal(sync.push({ preferences: {} }, { wallet: WALLET }), false);
+  assert.equal(requests.length, 1, 'no PUT went out');
+  assert.deepEqual(tokens, [lower, lower, lower], 'the token is asked for the requested wallet');
+  // The same token is sent for the wallet it names.
+  requests.length = 0;
+  await sync.pull(other);
+  assert.equal(requests[0].auth, `Bearer ${v2TokenFor(other, nowMs + 60_000)}`);
+});
+
+// After a 401 the pull reads the public view once, without a token, even
+// when the injected session still offers the dead one (its owner's cleanup
+// threw, or has not dropped it yet): never a second Bearer, never a loop.
+test('a refused pull falls back to one anonymous read, whatever getToken still offers', async () => {
+  const nowMs = 5_000;
+  const token = v2TokenFor(lower, nowMs + 60_000);
+  const requests = [];
+  const refused = [];
+  const fetchImpl = async (url, init) => {
+    requests.push({ url, auth: init.headers?.authorization ?? null });
+    if (requests.length > 4) throw new Error('a refused pull must not loop');
+    if (init.headers?.authorization) return jsonResponse(401, { ok: false, error: 'invalid-session' });
+    return jsonResponse(200, { ok: true, wallet: lower, profile: { displayName: null }, games: {}, recentSessions: [], achievements: [], preferences: null, updatedAt: 'x' });
+  };
+  const sync = createProfileSync({
+    fetchImpl, storage: memoryStorage(), now: () => nowMs,
+    getToken: () => token,
+    onUnauthorized: (wallet, refusedToken) => { refused.push([wallet, refusedToken]); throw new Error('cleanup failed'); },
+  });
+  const pulled = await sync.pull(WALLET);
+  assert.deepEqual([pulled.ok, pulled.self], [true, false]);
+  assert.deepEqual(requests, [
+    { url: `/api/profile?wallet=${lower}&self=1`, auth: `Bearer ${token}` },
+    { url: `/api/profile?wallet=${lower}`, auth: null },
+  ], 'exactly two GET /api/profile, the second without a token');
+  assert.deepEqual(refused, [[lower, token]], 'the owner hears the wallet and the refused token');
+});
+
+// A 401 drops this store's token only when it is the token that was refused:
+// a newer sign-in that replaced it while the request was in flight survives.
+test('a 401 for a token the store no longer holds keeps the newer sign-in', async () => {
+  const nowMs = 5_000;
+  const storage = memoryStorage();
+  const stale = v2TokenFor(lower, nowMs + 30_000);
+  const fresh = v2TokenFor(lower, nowMs + 60_000);
+  storage.setItem(SESSION_TOKEN_STORAGE_KEY, JSON.stringify({ wallet: lower, token: fresh, expiresAt: nowMs + 60_000 }));
+  const refused = [];
+  let offered = stale;
+  const fetchImpl = async (url, init) => (init.headers?.authorization === `Bearer ${stale}`
+    ? jsonResponse(401, { ok: false, error: 'invalid-session' })
+    : jsonResponse(200, { ok: true, wallet: lower, profile: { displayName: null }, games: {}, recentSessions: [], achievements: [], preferences: {}, updatedAt: 'x' }));
+  const sync = createProfileSync({ fetchImpl, storage, now: () => nowMs, getToken: () => offered, onUnauthorized: (wallet, token) => refused.push([wallet, token]) });
+  assert.equal((await sync.pushNow({ preferences: {} }, { wallet: WALLET })).status, 401);
+  assert.deepEqual(refused, [[lower, stale]]);
+  assert.equal(sync.tokenFor(WALLET), fresh, 'the newer token stays');
+  assert.notEqual(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
+  // The held token itself refused: gone.
+  offered = fresh;
+  const dead = async () => jsonResponse(401, { ok: false, error: 'invalid-session' });
+  const same = createProfileSync({ fetchImpl: dead, storage, now: () => nowMs, getToken: () => offered });
+  assert.equal((await same.pushNow({ preferences: {} }, { wallet: WALLET })).status, 401);
+  assert.equal(same.tokenFor(WALLET), null);
+  assert.equal(storage.getItem(SESSION_TOKEN_STORAGE_KEY), null);
+});
+
 test('the relayed settle() is gone: ranked-client owns settlement (A3)', () => {
   const sync = createProfileSync({ storage: null });
   assert.equal('settle' in sync, false);

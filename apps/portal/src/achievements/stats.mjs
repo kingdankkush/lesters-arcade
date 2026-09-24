@@ -1,7 +1,11 @@
 // Per-game stats mappers (contract §6.3). Their output is the only input to
 // achievement criteria, verified_sessions.stats and the results screen, so each
 // mapper returns exactly the documented keys and every numeric value is finite.
-// Malformed input throws: the server verifier treats that as a rejected run.
+// Malformed input throws. The server runs these only on a replayed result or
+// tuple, or on an HMH summary that already passed the schema and plausibility
+// checks, so a throw there is a server-side inconsistency, not the player's
+// fault: it propagates and settle answers a retryable 500, never a 422 that
+// rejects the paid run (verify's policy, server/verify/verified-run.mjs).
 import { HMH_RUN_SUMMARY_CATALOGS } from '../../../../sdk/hmh-run-summary-schema.mjs';
 import { distanceAtTick } from '../chikun-ground-course.mjs';
 import { CHIKUN_REGIONS } from '../chikun-course-regions.mjs';

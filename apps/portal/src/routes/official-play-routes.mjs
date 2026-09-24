@@ -367,7 +367,8 @@ export function createOfficialPlayRoutes({
     const game = selectedGame();
     if (dom.officialGameplay) dom.officialGameplay.dataset.gameId = game.id;
     if (game.id === 'stacked') {
-      dom.officialGameModeTitle.textContent = 'STACKED // ' + (officialSelectedMode === 'ranked' ? 'Local Ranked Preview' : 'Free Mode');
+      // A Ranked run is a local preview only while settlement is off.
+      dom.officialGameModeTitle.textContent = 'STACKED // ' + (officialSelectedMode === 'ranked' ? (SETTLEMENT_LIVE ? modeLabel : 'Local Ranked Preview') : 'Free Mode');
       if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = 'Stack, clear and survive. Visuals follow the Lester’s Arcade music player.';
       return;
     }

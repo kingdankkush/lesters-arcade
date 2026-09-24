@@ -287,9 +287,11 @@ export const LESTER_ARCADE_WALLET_RAILS = Object.freeze({
   ]),
   permissions: Object.freeze({
     readScopes: Object.freeze(['wallet address', 'chain id', 'parent arcade profile', 'child game progress']),
-    writeScopes: Object.freeze(['canonical local Ranked previews', 'local profile progress', 'local achievements', 'preview scores']),
+    // Worded to stay true with or without live settlement (SETTLEMENT_LIVE is
+    // not importable here: settlement.mjs imports this module).
+    writeScopes: Object.freeze(['canonical Ranked run evidence', 'profile progress', 'achievements', 'Ranked scores']),
     freeModeRule: 'free practice never writes progress, achievements, scores, or transactions to the parent account',
-    paidModeRule: 'Ranked preview creates canonical local evidence and parent-sync preview state; verified settlement remains disabled',
+    paidModeRule: 'a Ranked run records canonical evidence; only runs the arcade server verifies are published on LitVM',
   }),
   verifier: Object.freeze({
     currentStatus: 'prototype-local-unverified',
@@ -576,14 +578,18 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       label: 'Play Ranked',
       official: true,
       icon: 'star',
-      requiresZkLtc: false,
+      // Every game's Ranked run is paid in zkLTC once settlement is live, so
+      // the mode-select faucet link shows for Chikun too (SETTLEMENT_LIVE only).
+      requiresZkLtc: true,
       chainId: 4441,
       token: 'zkLTC',
       faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
       bannerAsset: './assets/generated/chikun-mode-select/chikuns-escape-ranked-mode.webp',
       bannerPosition: 'center center',
       bannerAlt: "Chikun flying through a stormy lightning sky between green pipes for Ranked Mode",
-      copy: 'Wallet-bound deterministic play with parent replay verification. Accepted scores are recorded to your profile and the Chikun’s Escape leaderboards; on-chain publishing remains safely gated.',
+      // True with or without live settlement; the SPA and the prerendered
+      // pages show the flag-driven portal-content line instead (contract A33).
+      copy: 'Wallet-bound deterministic play with parent replay verification. Only runs whose recorded inputs pass the replay count toward your profile and the Chikun’s Escape leaderboards.',
     }),
   }),
   stacked: Object.freeze({
@@ -670,7 +676,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     Object.freeze({
       id: 'stacked', gameId: 'stacked', title: 'STACKED', status: 'playable',
       playable: true, devPlayable: true, leaderboardEligible: true,
-      description: 'Public beta: stack, spin, and seal falling ledger blocks to arcade music. Free practice and replay-verified Ranked results stay on this device. No fees, prizes or online ranking.',
+      description: 'Public beta: stack, spin, and seal falling ledger blocks to arcade music. Free practice stays in this browser; Ranked runs count only once their recorded inputs pass replay verification.',
       bannerArt: './assets/cabinet-stacked.svg',
       desktopCabinetSprite: STACKED_CABINET_SPRITE,
     }),

@@ -7,18 +7,21 @@
     "explorerUrl": "https://liteforge.explorer.caldera.xyz"
   },
   "contractAddresses": {
-    "gameRegistry": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",
-    "playerProfileRegistry": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
-    "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
-    "achievementRegistry": "0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53",
-    "arcadePaymentRouter": "0x7c999E9570D44090b9279dbAbE33B361e94bf78B",
-    "lestersArcadeCore": "0x609CBED352699003dec2381a79EFe5090B56F1D2"
+    "gameRegistry": "0xcb0b695ebee650afcce93f566259cb477b19bf23",
+    "playerProfileRegistry": "0x3eb9e9f2620940496a2b8ed6f7384e6687587c94",
+    "arcadeRankedEntry": "0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190",
+    "scoreSubmissionRegistry": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+    "achievementRegistries": {
+      "lester-blaster": "0xc1a383cb7521978f429424443fdd69bdd71ff737",
+      "chikun": "0xf6cd1cf7e1accaea93accdfb911034b3e8eb6f93",
+      "stacked": "0x5430f8c142ca7ec8971a447cc09ae63f8860a8a7"
+    }
   },
   "plan": {
     "sessionId": "game-session-000000038",
     "methods": [
       "setProfile",
-      "submitSession"
+      "submitVerifiedSession"
     ],
     "callCount": 2
   },
@@ -26,7 +29,7 @@
     {
       "id": "safe-ranked-live-gate",
       "pass": true,
-      "detail": "addresses populated; settlement live=false; unverified writes remain gated"
+      "detail": "address module predicted; hardened entry address 0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190; settlement live=false (live needs a deployed module with all seven addresses); unverified writes remain gated"
     },
     {
       "id": "score-abi-verified-session",
@@ -56,22 +59,27 @@
     {
       "id": "gameover-submit-only",
       "pass": true,
-      "detail": "on-chain score publish is attached to game-over submission path"
+      "detail": "finished Ranked runs settle through the relayed settlement client from the game-over path; no player-signed submit and no /api/attest call"
+    },
+    {
+      "id": "ranked-identity-single-source",
+      "pass": true,
+      "detail": "settlement builds its session identity with rankedIdentityFor (A10), the per-game season the entry key uses"
     },
     {
       "id": "leaderboard-readback",
       "pass": true,
-      "detail": "leaderboard path reads chain records and maintains cadence boards"
+      "detail": "leaderboard path maintains cadence boards"
     },
     {
       "id": "settlement-plan-methods-match-abi",
       "pass": true,
-      "detail": "plan methods: setProfile, submitSession"
+      "detail": "plan methods: setProfile, submitVerifiedSession"
     }
   ],
   "summary": {
     "status": "PASS",
-    "passCount": 9,
-    "checkCount": 9
+    "passCount": 10,
+    "checkCount": 10
   }
 }

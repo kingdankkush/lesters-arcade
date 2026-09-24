@@ -156,6 +156,10 @@ export function createOfficialProfileRoute({
   now = () => Date.now(),
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   loadHostedView = () => import('./hosted-profile-view.mjs'),
+  // The provider for an on-chain profile write, from its click (main.js
+  // walletProviderForAction: a WalletConnect session restored at boot gets its
+  // provider here, never at boot).
+  walletProviderForAction = async () => detectEthereumProvider?.() ?? null,
 } = {}) {
   // Saved runs on this device (lesters:ranked-pending), known before the
   // hosted view loads.
@@ -201,6 +205,7 @@ export function createOfficialProfileRoute({
       rpcUrl,
       setTimeoutImpl,
       setView,
+      walletProviderForAction,
     });
   }
 
@@ -384,7 +389,7 @@ export function createOfficialProfileRoute({
     const heroTop = el('div', { className: 'profile-hero-topline' });
     heroTop.append(renderAvatarChip(connectedWallet, profile?.displayName, 'profile-hero-avatar'));
     const heroIdentity = el('div', { className: 'profile-hero-identity' });
-    appendText(heroIdentity, 'strong', profile?.displayName ?? 'Connect wallet to activate profile', 'profile-hero-name');
+    appendText(heroIdentity, 'strong', profile?.displayName ?? 'Sign in to activate your profile', 'profile-hero-name');
     // The "locked identity for settlement" claim is only true of a real wallet.
     // Saying it over the fallback identity is the exact misreading U11a exists to
     // stop, so the simulated case gets its own line.
@@ -465,7 +470,7 @@ export function createOfficialProfileRoute({
         guestStats.append(stat);
       }
       guestCard.append(guestStats);
-      const connectCta = el('button', { className: 'pixel-button profile-action-primary', type: 'button', textContent: 'Connect Wallet to Save Progress' });
+      const connectCta = el('button', { className: 'pixel-button profile-action-primary', type: 'button', textContent: 'Sign in to Save Progress' });
       connectCta.addEventListener('click', () => { playSfxCue('menu-click'); connectWallet(); });
       guestCard.append(connectCta);
       dom.officialCabinetGrid.append(guestCard);

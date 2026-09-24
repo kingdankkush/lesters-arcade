@@ -152,6 +152,42 @@ test('hidden profiles show the short wallet', async () => {
   }
 });
 
+// integration-glue C13: the real handler resolves the on-chain avatar through
+// arcade-avatars.mjs; hidden and blocked profiles keep the default avatar.
+test('the share page shows the player’s on-chain arcade avatar, and the default for hidden or blocked profiles', async () => {
+  const who = (html) => /<p class="who"><img src="([^"]*)" alt="" width="44" height="44">([^<]*)<\/p>/.exec(html)?.slice(1) ?? null;
+  const cases = [
+    [{ displayName: 'Avatar Pilot', avatarUri: 'lestersarcade:avatar/lilly' }, ['/assets/generated/arcade-avatars/lilly.webp', 'Avatar Pilot']],
+    [{ displayName: 'Emblem Pilot', avatarUri: 'lestersarcade:avatar/gold-emblem' }, ['/assets/generated/hmh-achievement-atlas/tier-gold.png', 'Emblem Pilot']],
+    [{ displayName: 'Hidden Pilot', avatarUri: 'lestersarcade:avatar/lilly', hidden: true }, ['/assets/lester-pilot.svg', '0x7d7d…7d7d']],
+    [{ displayName: null, nameBlocked: 'profanity', avatarUri: 'lestersarcade:avatar/lilly' }, ['/assets/lester-pilot.svg', '0x7d7d…7d7d']],
+    [{ displayName: 'Unknown Pilot', avatarUri: 'lestersarcade:avatar/not-shipped' }, ['/assets/lester-pilot.svg', 'Unknown Pilot']],
+    [{ displayName: 'Plain Pilot', avatarUri: null }, ['/assets/lester-pilot.svg', 'Plain Pilot']],
+  ];
+  for (const [profile, expected] of cases) {
+    const db = createPgliteClient();
+    try {
+      const { shareId } = await seedRun(db, { profile });
+      const response = await page(db, `/api/share-page?id=${shareId}`);
+      assert.equal(response.status, 200);
+      assert.deepEqual(who(response.html), expected, JSON.stringify(profile));
+    } finally {
+      await db.close();
+    }
+  }
+  // Every shipped avatar resolves to a site-root file that exists.
+  const { existsSync } = await import('node:fs');
+  const { ARCADE_AVATARS, avatarUriFor } = await import('../apps/portal/src/arcade-avatars.mjs');
+  for (const avatar of ARCADE_AVATARS) {
+    const src = sharePageApi.shareAvatarSrc(avatarUriFor(avatar.id));
+    assert.match(src, /^\/assets\//, avatar.id);
+    assert.ok(existsSync(new URL(`../apps/portal${src}`, import.meta.url)), `${src} exists`);
+  }
+  for (const other of [null, '', 'https://example.test/x.png', 'lestersarcade:avatar/../x', 'lestersarcade:avatar/']) {
+    assert.equal(sharePageApi.shareAvatarSrc(other), null, String(other));
+  }
+});
+
 test('all interpolations are escaped', async () => {
   const hostile = `"><script>alert(1)</script><img src=x onerror=alert('x')>&\``;
   const shareId = 'ab'.repeat(32);

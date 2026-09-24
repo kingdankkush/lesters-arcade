@@ -10,7 +10,8 @@
 // The Bearer token comes from the wallet session (§7.6): signin-entry signs in
 // and profileSync stores the v2 token; this client only reads it through
 // getToken() and never logs in. A 401 means the token is dead (v2 tokens are
-// audience-bound and die at a secret rotation), so onUnauthorized() discards it.
+// audience-bound and die at a secret rotation), so onUnauthorized(wallet,
+// refusedToken) discards it, unless a newer sign-in has already replaced it.
 
 export const INDEX_API_ENDPOINTS = Object.freeze({
   leaderboard: '/api/leaderboard',
@@ -86,7 +87,7 @@ export function createIndexApiClient({
     }
   };
 
-  async function send(url, init, { authorized = false } = {}) {
+  async function send(url, init, { bearer = null } = {}) {
     let response;
     try {
       response = await fetchImpl(url, init);
@@ -94,8 +95,8 @@ export function createIndexApiClient({
       return { ok: false, error: 'network', retryable: true };
     }
     const body = await readJson(response);
-    if (response.status === 401 && authorized) {
-      try { onUnauthorized?.(); } catch { /* the caller's cleanup must not mask the answer */ }
+    if (response.status === 401 && bearer) {
+      try { onUnauthorized?.(tokenWallet(bearer), bearer); } catch { /* the caller's cleanup must not mask the answer */ }
     }
     if (!response.ok || !body || body.ok !== true) {
       const out = { ok: false, status: response.status, error: typeof body?.error === 'string' ? body.error : `http-${response.status}` };
@@ -145,7 +146,7 @@ export function createIndexApiClient({
       method: 'GET',
       headers: { ...json, authorization: `Bearer ${bearer}` },
       cache: 'no-store',
-    }, { authorized: true });
+    }, { bearer });
   }
 
   // E8. The Bearer token goes only with the signed-in wallet's own refresh,
@@ -160,7 +161,7 @@ export function createIndexApiClient({
       method: 'POST',
       headers: own ? { ...json, authorization: `Bearer ${bearer}` } : json,
       cache: 'no-store',
-    }, { authorized: own });
+    }, { bearer: own ? bearer : null });
   }
 
   // E7. Preferences only; the server merges top-level keys.
@@ -174,7 +175,7 @@ export function createIndexApiClient({
       headers: { ...json, 'content-type': 'application/json', authorization: `Bearer ${bearer}` },
       body: JSON.stringify({ preferences }),
       cache: 'no-store',
-    }, { authorized: true });
+    }, { bearer });
   }
 
   // E9.
@@ -198,7 +199,7 @@ export function createIndexApiClient({
       headers: { ...json, 'content-type': 'application/json', authorization: `Bearer ${bearer}` },
       body: JSON.stringify({ v: RANKED_SETTLE_RETRY_VERSION, sessionId32: id.toLowerCase(), retry: true }),
       cache: 'no-store',
-    }, { authorized: true });
+    }, { bearer });
   }
 
   return Object.freeze({ hosted: live, leaderboard, profile, refreshProfile, savePreferences, session, retrySettle });

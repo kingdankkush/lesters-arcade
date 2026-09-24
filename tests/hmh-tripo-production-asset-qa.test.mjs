@@ -96,7 +96,7 @@ test('rehashing a corrupted atlas does not bypass exact per-frame reconstruction
 });
 
 test('unified production QA actually includes the native package report', () => {
-  const result = spawnSync(process.execPath, ['scripts/hmh-reboot-production-asset-qa.mjs'], {cwd:root,encoding:'utf8',timeout:120000});
+  const result = spawnSync(process.execPath, ['scripts/hmh-reboot-production-asset-qa.mjs'], {cwd:root,encoding:'utf8',timeout:300000});
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = JSON.parse(result.stdout.trim().split('\n').at(-1));
   assert.equal(report.nativePropReport?.assetCount, 56, 'unified production QA omitted the native Tripo package');

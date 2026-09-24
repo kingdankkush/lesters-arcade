@@ -87,6 +87,22 @@ test('play routes preserve character selection, cabinet reset, mode gating, and 
   assert.match(dom.officialGameModeTitle.textContent, /Chikun's Escape \/\/ Ranked Testnet/);
 });
 
+// integration-glue D14: the STACKED title calls a Ranked run a local preview
+// only while settlement is off.
+test('the STACKED gameplay title follows SETTLEMENT_LIVE', () => {
+  const title = (live, mode) => {
+    const dom = { officialGameModeTitle: node('title'), officialGameStateCopy: node('copy'), officialGameplay: node('view') };
+    createOfficialPlayRoutes({ dom, SETTLEMENT_LIVE: live, selectedGame: () => ({ id: 'stacked', title: 'STACKED' }), getContext: () => ({ officialSelectedMode: mode, hmhRebootActive: false }) }).renderGameplay();
+    return dom.officialGameModeTitle.textContent;
+  };
+  assert.equal(title(false, 'ranked'), 'STACKED // Local Ranked Preview');
+  assert.equal(title(true, 'ranked'), 'STACKED // Ranked Testnet');
+  assert.doesNotMatch(title(true, 'ranked'), /local|preview/i);
+  for (const live of [false, true]) assert.equal(title(live, 'free'), 'STACKED // Free Mode');
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.match(main, /createOfficialPlayRoutes\(\{[\s\S]*?\n {2}SETTLEMENT_LIVE,\n/, 'main.js hands the routes the real flag');
+});
+
 test('main delegates every remaining official play renderer', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(main, /createOfficialPlayRoutes/);

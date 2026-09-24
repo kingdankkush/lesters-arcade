@@ -188,6 +188,10 @@ export function createHostedProfileView({
   rpcUrl,
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   setView,
+  // Called from the click that needs the wallet, before any on-chain profile
+  // read or write: a restored WalletConnect session creates its provider here
+  // (main.js walletProviderForAction awaits ensureWalletProvider).
+  walletProviderForAction = async () => detectEthereumProvider?.() ?? null,
 } = {}) {
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
   const heldTokens = new Map(); // wallet -> { status, confirmed: Set('<gameId>:<id>') }
@@ -393,9 +397,9 @@ export function createHostedProfileView({
   function renderHostedGuest() {
     const card = el('article', { className: 'official-info-card profile-guest-card' });
     appendText(card, 'span', 'Wallet Profiles', 'cabinet-status-label');
-    appendText(card, 'strong', 'Connect a wallet to open your verified profile');
-    appendText(card, 'small', 'Every wallet has a public profile of its verified Ranked runs. Open any player from the Scores page, or connect to see your own.');
-    const connect = el('button', { className: 'pixel-button profile-action-primary', type: 'button', textContent: 'Connect Wallet' });
+    appendText(card, 'strong', 'Sign in to open your verified profile');
+    appendText(card, 'small', 'Every wallet has a public profile of its verified Ranked runs. Open any player from the Scores page, or sign in to see your own.');
+    const connect = el('button', { className: 'pixel-button profile-action-primary', type: 'button', textContent: 'Sign in' });
     connect.addEventListener('click', () => { playSfxCue('menu-click'); connectWallet(); });
     card.append(connect);
     dom.officialCabinetGrid.append(card);
@@ -673,12 +677,12 @@ export function createHostedProfileView({
       nameEditor.prepared = null;
       setStatus('Checking the name on LitVM…');
       try {
-        const [chain, ethers] = await Promise.all([loadProfileChain(), loadEthers()]);
+        const [chain, ethers, walletProvider] = await Promise.all([loadProfileChain(), loadEthers(), walletProviderForAction()]);
         const prepared = await chain.prepareProfileChange({
           raw: input.value,
           avatarUri: nameEditor.avatarUri ?? chosen ?? '',
           wallet: target.wallet,
-          walletProvider: detectEthereumProvider(),
+          walletProvider,
           readProvider: chain.publicReadProvider(ethers, rpcUrl),
           ethers,
           registryAddress: deployment?.addresses?.playerProfileRegistry,
@@ -703,9 +707,9 @@ export function createHostedProfileView({
         confirm.disabled = true;
         setStatus('Confirm the change in your wallet…');
         try {
-          const [chain, ethers] = await Promise.all([loadProfileChain(), loadEthers()]);
+          const [chain, ethers, walletProvider] = await Promise.all([loadProfileChain(), loadEthers(), walletProviderForAction()]);
           const done = await chain.commitProfileChange(nameEditor.prepared, {
-            walletProvider: detectEthereumProvider(),
+            walletProvider,
             ethers,
             registryAddress: deployment?.addresses?.playerProfileRegistry,
             indexApi,

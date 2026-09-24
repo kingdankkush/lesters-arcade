@@ -55,6 +55,8 @@ function renderHome(html,copy){
     ['scores-lead',copy.scoresLead],['scores-note',copy.scoresNote],['scores-wallet',copy.scoresWallet],
     // The landing page's static mode-select view is the Hard Money Heroes one.
     ['mode-copy',copy.modeSelect['lester-blaster'].copy],['mode-ranked',copy.modeSelect['lester-blaster'].ranked],
+    // The Ranked entry modal (hidden until opened; main.js sets the same live text at runtime).
+    ['entry-copy',copy.rankedEntryCopy],['entry-footnote',copy.rankedEntryFootnote],
   ]) html=renderCopyBlock(html,key,escapeHtml(text),'index.html');
   return withMeta(html,'/',copy);
 }

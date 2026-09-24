@@ -180,6 +180,10 @@ export function createRankedSettlementClient({
   pendingKey = RANKED_PENDING_KEY,
   onPendingCount = null,
   onPublished = null,
+  // A 401 on a Bearer call: onUnauthorized(wallet, refusedToken). That token
+  // is dead (contract §7.6), so the wallet session drops it for every caller
+  // (walletSession.invalidate) unless a newer sign-in has replaced it.
+  onUnauthorized = null,
   settleUrl = RANKED_SETTLE_URL,
   statusUrl = RANKED_STATUS_URL,
 } = {}) {
@@ -360,7 +364,7 @@ export function createRankedSettlementClient({
         headers: { 'content-type': 'application/json', accept: 'application/json', authorization: `Bearer ${token}` },
         body: JSON.stringify(request),
       });
-      return respond(res, 'full');
+      return respond(res, 'full', token);
     }
     // The retry nudge is the owner's. Signed out (a sign-out, an expired
     // token, a wallet switch) the relayer and the cron still publish the
@@ -373,7 +377,7 @@ export function createRankedSettlementClient({
         headers: { 'content-type': 'application/json', accept: 'application/json', authorization: `Bearer ${token}` },
         body: JSON.stringify({ v: SETTLE_VERSION, sessionId32, retry: true }),
       });
-      return respond(res, 'retry');
+      return respond(res, 'retry', token);
     }
     // The owner view with the Bearer token (§4.4), the public view without one.
     async function getStatus() {
@@ -381,11 +385,11 @@ export function createRankedSettlementClient({
       const headers = { accept: 'application/json' };
       if (token) headers.authorization = `Bearer ${token}`;
       const res = await call(`${statusUrl}?sessionId32=${sessionId32}`, { method: 'GET', headers });
-      return respond(res, 'status');
+      return respond(res, 'status', token);
     }
     const redrive = () => (h.server ? postRetry() : postFull());
 
-    function respond(res, kind) {
+    function respond(res, kind, sentToken = null) {
       if (h.disposed) return undefined;
       if (res.network) return savedLocally('network-error');
       const { status, body } = res;
@@ -399,7 +403,10 @@ export function createRankedSettlementClient({
       if (body?.retryable === true) return retryable(code ?? 'server-error', body.retryAfterMs);
       // A refused retry nudge (an expired token) leaves the server's row
       // publishing: follow it through the status view (which never answers 401).
-      if (status === 401) return kind === 'retry' && h.server ? getStatus() : savedLocally('sign-in-required', { auto: false });
+      if (status === 401) {
+        try { onUnauthorized?.(meta.wallet, sentToken); } catch { /* the caller's cleanup never stops settlement */ }
+        return kind === 'retry' && h.server ? getStatus() : savedLocally('sign-in-required', { auto: false });
+      }
       if (status === 404) {
         if (kind !== 'full' && !h.reposted && request) {
           h.reposted = true;

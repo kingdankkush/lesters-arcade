@@ -108,17 +108,20 @@ export function createWalletSession({
     return { wallet: lower(stored.wallet), expiresAt: Number(stored.expiresAt) };
   }
 
-  // The hosted token for `wallet`, or null. A pre-v2 token is dropped here, so
-  // no caller ever sends one.
+  // The hosted token for `wallet`, or null, read from the token store with
+  // profileSync.tokenFor(wallet) (contract §7.6): the store answers only for
+  // the wallet its live token was issued to. A pre-v2 token is dropped here
+  // too, so no caller ever sends one, whatever the store offers.
   function hostedSession(wallet) {
-    if (!profileSync?.hasSession?.(wallet)) return null;
-    const session = profileSync.session;
-    if (!session?.token || (wallet && lower(session.wallet) !== lower(wallet))) return null;
-    if (!isV2SessionToken(session.token)) {
+    if (!HEX_ADDRESS.test(String(wallet ?? ''))) return null;
+    let token = null;
+    try { token = profileSync?.tokenFor?.(lower(wallet)) ?? null; } catch { token = null; }
+    if (typeof token !== 'string' || !token) return null;
+    if (!isV2SessionToken(token)) {
       try { profileSync.logout?.(); } catch { /* ignore */ }
       return null;
     }
-    return session;
+    return { wallet: lower(wallet), token };
   }
 
   function isAuthenticated(wallet) {

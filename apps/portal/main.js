@@ -1860,9 +1860,17 @@ let walletPickRdns = null; // the picked EIP-6963 wallet's rdns, kept with the r
 // The server index owns every stat (guide §5.7): the browser syncs only
 // preferences, and a pull brings back the on-chain name and the saved hero,
 // never xp, run counts, achievements or runs. The v2 Bearer token is minted by
-// the wallet session of contract §7.6 (server nonce, then profileSync.login);
-// this block and the index client only read it, and a 401 discards it.
-const profileSync = createProfileSync({ storage: ARCADE_STORAGE });
+// the wallet session of contract §7.6 (server nonce, then profileSync.login)
+// and stored by profileSync. Every Bearer caller (profile PUT and pull,
+// profile refresh, settle, seed tickets, the name-claim flow) reads it only
+// through the wallet session (walletSessionToken), and a 401 from any of them
+// drops it through the wallet session too (invalidateWalletSession, with the
+// wallet and the refused token).
+const profileSync = createProfileSync({
+  storage: ARCADE_STORAGE,
+  getToken: (wallet) => walletSessionToken(wallet),
+  onUnauthorized: (wallet, refusedToken) => invalidateWalletSession(wallet, refusedToken),
+});
 let profileSyncPulledFor = null;
 let profileSyncLastPushed = null;
 // Index reads and profile writes (§7.8). While HOSTED_PROFILE_SYNC is false
@@ -1870,8 +1878,8 @@ let profileSyncLastPushed = null;
 const indexApi = createIndexApiClient({
   hosted: HOSTED_PROFILE_SYNC,
   fetchImpl: (...args) => globalThis.fetch(...args),
-  getToken: () => profileSync.session?.token ?? null,
-  onUnauthorized: () => profileSync.logout(),
+  getToken: () => walletSessionToken(connectedWallet),
+  onUnauthorized: (wallet, refusedToken) => invalidateWalletSession(wallet, refusedToken),
 });
 function currentProfileDocument() {
   if (!connectedWallet || walletConnector !== 'injected-evm') return null;
@@ -1879,7 +1887,7 @@ function currentProfileDocument() {
   return profile ? buildProfileDocument(profile) : null;
 }
 function pushProfileToCloudSoon() {
-  if (!HOSTED_PROFILE_SYNC || !profileSync.hasSession(connectedWallet)) return;
+  if (!HOSTED_PROFILE_SYNC || !walletSessionAuthenticated(connectedWallet)) return;
   const document = currentProfileDocument();
   if (!document) return;
   const json = JSON.stringify(document);
@@ -1951,6 +1959,34 @@ function loadWalletSession() {
   }).catch((error) => { walletSessionLoading = null; throw error; });
   return walletSessionLoading;
 }
+// The Bearer token of `wallet` and whether it is signed in, both only through
+// the wallet session (contract §7.6: walletSession.token / isAuthenticated,
+// backed by profileSync.tokenFor). Before the session module has loaded
+// nothing is signed in, so both answer no.
+function walletSessionToken(wallet) {
+  if (!walletSession || !wallet) return null;
+  try { return walletSession.token(wallet); } catch { return null; }
+}
+function walletSessionAuthenticated(wallet) {
+  if (!walletSession || !wallet) return false;
+  try { return walletSession.isAuthenticated(wallet); } catch { return false; }
+}
+// A 401 from any Bearer call: the token is dead (v2 tokens are audience-bound
+// and die at a secret rotation). The wallet session drops it and announces
+// lesters:wallet-session, so the profile, boards and Ranked all sign out
+// together; the wallet stays connected for Free play. A 401 for a token the
+// session no longer holds (a request still in flight from before a wallet
+// switch or a fresh sign-in) changes nothing: that token is already gone,
+// and the one that replaced it is live.
+function invalidateWalletSession(wallet = null, refusedToken = null) {
+  if (refusedToken && walletSessionToken(wallet ?? connectedWallet) !== refusedToken) return;
+  walletAuthenticated = false;
+  if (walletSession) {
+    try { walletSession.invalidate(); } catch { /* announce failures never block sign-out */ }
+  } else {
+    profileSync.logout();
+  }
+}
 // The remembered connector's storage key (wallet-session.mjs
 // WALLET_CONNECTOR_STORAGE_KEY, pinned equal by a test): boot peeks at it so a
 // first-time visitor never loads the session module.
@@ -1970,7 +2006,7 @@ let chikunHost = null;
 let chikunRunMusic = null;
 let stackedHost = null;
 let stackedMountGeneration = 0;
-function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; }
+function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; syncCabinetResultsButton(); }
 async function mountStackedSession() {
   if (!currentSession || currentSession.gameId !== 'stacked') return;
   destroyHmhRebootSession(); destroyChikunSession(); destroyStackedSession();
@@ -2050,10 +2086,11 @@ function rankedSettlementClient() {
     module,
     client: module.createRankedSettlementClient({
       live: SETTLEMENT_LIVE,
-      getToken: (wallet) => (profileSync.hasSession(wallet) ? profileSync.session?.token ?? null : null),
+      getToken: (wallet) => walletSessionToken(wallet),
       storage: ARCADE_STORAGE,
       onPendingCount: (count) => window.dispatchEvent(new CustomEvent('lesters:ranked-pending', { detail: { count } })),
       onPublished: applyRankedPublication,
+      onUnauthorized: (wallet, refusedToken) => invalidateWalletSession(wallet, refusedToken),
     }),
   })).catch((error) => {
     rankedSettlementClientPromise = null;
@@ -2879,6 +2916,59 @@ let rankedResultsReopen = null;
 function showRankedResults(view) {
   rankedResultsView = view;
   renderGameOverSummary();
+  syncCabinetResultsButton();
+}
+
+// The results screen closed (Escape, Close, or its view went away): HMH
+// re-renders its summary and Chikun and STACKED show their cabinet button.
+// Either "View results" button is where focus goes back to.
+function rankedResultsClosed() {
+  return renderGameOverSummary() ?? syncCabinetResultsButton();
+}
+
+// Chikun and STACKED run in child frames whose result panels cannot reopen
+// the parent's results screen. While that cabinet is still open on the run
+// the screen belongs to, a small parent-level "View results" button floats
+// over it (styled in src/styles/ranked-results.css, which the screen already
+// loaded). It hides while the screen is open, and for good once the player
+// leaves the cabinet or starts another run.
+// It also hides while a Ranked start is under way (the sign-in picker, the
+// entry modal, a WalletConnect reconnect), and while the entry modal stays
+// open on a paused or closed message: it floats above those dialogs
+// (z-index 10040 against 90-130), and reopening the results screen there
+// would stack a second dialog on the payment one.
+let cabinetResultsButton = null;
+let rankedStartsInFlight = 0;
+function cabinetResultsView() {
+  const view = rankedResultsView;
+  if (!view || (view.gameId !== 'chikun' && view.gameId !== 'stacked')) return null;
+  if (officialAppStep !== 'gameplay' || selectedGameId !== view.gameId) return null;
+  if (rankedStartsInFlight > 0 || dom.rankedEntryModal?.hidden === false) return null;
+  const cabinetOpen = view.gameId === 'chikun' ? Boolean(chikunHost) : Boolean(stackedHost);
+  const sessionId = (currentSession ?? lastCompletedSession)?.sessionId;
+  return cabinetOpen && sessionId && view.sessionId === sessionId ? view : null;
+}
+function syncCabinetResultsButton() {
+  const view = cabinetResultsView();
+  if (!view || view.isOpen) {
+    if (cabinetResultsButton) cabinetResultsButton.hidden = true;
+    return null;
+  }
+  if (!cabinetResultsButton) {
+    cabinetResultsButton = el('button', { className: 'cabinet-results-reopen', type: 'button', textContent: 'View results' });
+    cabinetResultsButton.setAttribute('aria-haspopup', 'dialog');
+    cabinetResultsButton.addEventListener('click', () => {
+      const current = cabinetResultsView();
+      if (!current) { syncCabinetResultsButton(); return; }
+      playSfxCue('menu-click');
+      current.reopen();
+      syncCabinetResultsButton();
+    });
+    document.body.append(cabinetResultsButton);
+  }
+  cabinetResultsButton.dataset.gameId = view.gameId;
+  cabinetResultsButton.hidden = false;
+  return cabinetResultsButton;
 }
 
 function rankedResultsViewForCurrentRun() {
@@ -3357,7 +3447,7 @@ function captureRankedResultContext(session) {
     previousBest: progress && progress.paidRuns > 0 ? Math.max(0, Math.round(progress.bestPaidScore ?? 0)) : null,
   };
   const pending = HOSTED_PROFILE_SYNC
-    ? rankedSettlementClient().then(({ module }) => module.fetchRankedResultContext({ hosted: true, fetchImpl: (...args) => fetch(...args), wallet, gameId: session.gameId }))
+    ? rankedSettlementClient().then(({ module }) => module.fetchRankedResultContext({ hosted: HOSTED_PROFILE_SYNC, fetchImpl: (...args) => fetch(...args), wallet, gameId: session.gameId }))
     : Promise.resolve(local);
   rankedResultContexts.set(session.sessionId, pending.catch(() => ({ displayName: null, previousBest: null })));
 }
@@ -3397,7 +3487,7 @@ function rankedRunActions() {
 }
 
 // A published run (this page's or a resumed one) stamps its local rows with
-// the transaction and the session key, so chain hydration never lists it twice.
+// the transaction and the session key (its verified record is the index's).
 function applyRankedPublication(snapshot) {
   const txHash = snapshot?.server?.txHash;
   if (!snapshot?.sessionId || !snapshot.gameId || typeof txHash !== 'string') return;
@@ -5079,91 +5169,10 @@ const renderOfficialNav = officialShellRoutes.renderNav;
 const renderOfficialSettings = officialShellRoutes.renderSettings;
 const renderOfficialWalletSplash = officialShellRoutes.renderWalletSplash;
 
-// --- on-chain hydration ----------------------------------------------------
-// Merge LitVM ScoreSubmissionRegistry records into local state so the global
-// leaderboard + profile reflect the chain (cross-device, cross-player). Dedup
-// is by sessionId, so re-hydrating is idempotent and never double-counts.
-let _hydratingLeaderboard = false;
-const _gameIdByHash = new Map(); // bytes32 -> local gameId, lazily filled
-
-async function ensureGameIdHashes() {
-  if (_gameIdByHash.size) return;
-  const { toBytes32Id } = await import('./src/litvm-chain-client.mjs');
-  for (const g of ARCADE_GAMES) {
-    // The runtime submits the per-cabinet gameId used in recordScore (game.id).
-    const h = await toBytes32Id(g.id);
-    _gameIdByHash.set(h.toLowerCase(), g.id);
-  }
-}
-
-function mergeChainRecordIntoState(rec, gameId) {
-  // Only verified records from the pinned-network reader may enter official UI.
-  // Validate before mutating any parent store; an unknown game has no fallback.
-  if (rec?.verified !== true || rec.onChain !== true || typeof gameId !== 'string' || !gameId
-    || typeof rec.player !== 'string' || !/^0x[0-9a-fA-F]{40}$/.test(rec.player)
-    || ['sessionId32', 'gameId32'].some((key) => typeof rec[key] !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(rec[key]))
-    || ['score', 'kills', 'maxCombo', 'survivalSeconds', 'submittedAt'].some((key) => !Number.isSafeInteger(rec[key]) || rec[key] < 0)) return false;
-  const submittedDate = new Date(rec.submittedAt * 1000);
-  if (!Number.isFinite(submittedDate.getTime())) return false;
-  // Skip if this session already exists locally (dedup): a synced chain row, or
-  // a local Ranked row that applySettlement stamped with its session key when
-  // the relayer published it (guide §5.5 item 4).
-  state.officialSessions ??= [];
-  const sessionKey = rec.sessionId32.toLowerCase();
-  const sameSession = (row) => typeof row?.onChainSessionId32 === 'string' && row.onChainSessionId32.toLowerCase() === sessionKey;
-  const cadenceRows = Object.values(state.cadenceLeaderboards?.[gameId] ?? {})
-    .flatMap((periods) => Object.values(periods ?? {}))
-    .flatMap((rows) => (Array.isArray(rows) ? rows : []));
-  if (state.officialSessions.some(sameSession) || (state.leaderboards?.[gameId] ?? []).some(sameSession) || cadenceRows.some(sameSession)) return false;
-  const recordedAt = submittedDate.toISOString();
-  const syntheticSessionId = `chain:${rec.sessionId32}`;
-  // File into the cadence boards (what the leaderboard UI reads).
-  try {
-    recordCadenceScore(state, gameId, {
-      wallet: rec.player,
-      score: rec.score,
-      sessionId: syntheticSessionId,
-      recordedAt,
-      runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-      settlementTxHash: null,
-      onChainSessionId32: rec.sessionId32,
-      onChain: true,
-      chainVerified: true,
-    });
-  } catch { /* numeric guard already in engine */ }
-  // Flat board mirror.
-  state.leaderboards ??= {};
-  state.leaderboards[gameId] ??= [];
-  state.leaderboards[gameId].push({
-    sessionId: syntheticSessionId,
-    wallet: rec.player,
-    handle: null,
-    displayName: `${rec.player.slice(0, 6)}…${rec.player.slice(-4)}`,
-    gameId,
-    score: rec.score,
-    mode: 'paid',
-    runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-    recordedAt,
-    onChain: true,
-    onChainSessionId32: rec.sessionId32,
-    chainVerified: true,
-  });
-  state.leaderboards[gameId].sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
-  // Track that we ingested this on-chain session (dedup key).
-  state.officialSessions.push({
-    sessionId: syntheticSessionId,
-    onChainSessionId32: rec.sessionId32,
-    wallet: rec.player,
-    chainVerified: true,
-    gameId,
-    score: rec.score,
-    runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
-    status: 'on-chain',
-    syncedAt: recordedAt,
-  });
-  return true;
-}
-
+// --- verified boards and profiles ------------------------------------------
+// The 200-session chain scan and its merge into local state are retired (guide
+// §5.8, profile-boards): the Scores and Profile pages read the server index
+// instead, and a published local run is stamped by applyRankedPublication.
 // Scores page fill (guide §5.8): the verified boards come from GET
 // /api/leaderboard. In preview this is a no-op: the page shows this device's
 // Ranked runs and makes no request (A22).
@@ -5209,7 +5218,7 @@ const officialProfileRoute = createOfficialProfileRoute({
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
   buildWalletConnectionModel,
-  connectWallet,
+  connectWallet: signInFromProfile,
   detectEthereumProvider,
   documentRef: document,
   dom,
@@ -5236,13 +5245,16 @@ const officialProfileRoute = createOfficialProfileRoute({
   validateUsername,
   hosted: HOSTED_PROFILE_SYNC,
   indexApi,
-  isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet),
+  isAuthenticated: (wallet) => walletSessionAuthenticated(wallet),
   isActive: () => officialAppStep === 'profile',
   dispatchEvent: dispatchPortalEvent,
   rankedClientHolds: (sessionId32) => rankedRunHoldings.holds(sessionId32),
   loadEthers,
   rpcUrl: LITVM_LITEFORGE_NETWORK.rpcUrls.http,
   playRanked: (gameId) => openModeSelectFor(gameId),
+  // On-chain name and avatar writes (§7.8) get their provider from the click:
+  // a WalletConnect session restored at boot creates it there.
+  walletProviderForAction,
 });
 const renderOfficialProfile = officialProfileRoute.renderProfile;
 
@@ -5255,12 +5267,17 @@ window.addEventListener('lesters:ranked-pending', (event) => {
     officialLeaderboardRoute.markStale();
   }
 });
+// Sign-in, silent restore, sign-out and a 401 all announce the session from
+// inside the wallet session, before main.js has applied the new wallet: the
+// caches drop at once, and the view on screen reads again once that settled.
 window.addEventListener('lesters:wallet-session', () => {
   if (!HOSTED_PROFILE_SYNC) return;
   officialProfileRoute.invalidate();
   officialLeaderboardRoute.invalidate();
-  if (officialAppStep === 'profile') hydrateProfileFromIndex();
-  if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
+  setTimeout(() => {
+    if (officialAppStep === 'profile') hydrateProfileFromIndex();
+    if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
+  }, 0);
 });
 window.addEventListener('lesters:profile-changed', (event) => {
   if (!HOSTED_PROFILE_SYNC) return;
@@ -5535,6 +5552,7 @@ function destroyChikunSession() {
   chikunHost = null;
   chikunLifecycle = null;
   chikunActive = false;
+  syncCabinetResultsButton();
 }
 
 async function restartChikunSession({ fromChild = false } = {}) {
@@ -5826,37 +5844,50 @@ async function startOfficialMode(mode) {
   catch { setOfficialView('mode-select'); return; }
   // Ranked is paid/official and wallet-bound. A guest must sign in first.
   if (mode === 'ranked') {
-    if (!connectedWallet) {
-      await connectWallet();
-      // If the player declined or closed the picker, stay on mode select.
+    // One Ranked entry at a time: while its modal is open (a results screen
+    // Play again, a child's Run Again, a double click) nothing else starts.
+    if (dom.rankedEntryModal?.hidden === false) return;
+    // The cabinet "View results" button stays hidden until this settles.
+    rankedStartsInFlight += 1;
+    syncCabinetResultsButton();
+    try {
       if (!connectedWallet) {
-        showRankedTooltip('Sign in to play Ranked', SETTLEMENT_LIVE
-          ? 'Ranked runs publish your score on LitVM, so they need a signed-in wallet. Free Mode needs no wallet.'
-          : 'Ranked preview uses your wallet as the run’s identity. Nothing is charged while verified settlement is off. Free Mode needs no wallet.');
+        await connectWallet();
+        // If the player declined or closed the picker, stay on mode select.
+        if (!connectedWallet) {
+          showRankedTooltip('Sign in to play Ranked', SETTLEMENT_LIVE
+            ? 'Ranked runs publish your score on LitVM, so they need a signed-in wallet. Free Mode needs no wallet.'
+            : 'Ranked preview uses your wallet as the run’s identity. Nothing is charged while verified settlement is off. Free Mode needs no wallet.');
+          return;
+        }
+        playSfxCue('wallet-connect', 0.055);
+      }
+      // A mock wallet (offline QA) can't rank because it can't sign / hold zkLTC.
+      if (walletConnector !== 'injected-evm') {
+        showRankedTooltip('Sign in with a real wallet to play Ranked', SETTLEMENT_LIVE
+          ? 'Ranked needs a real EVM wallet (MetaMask, Rabby or WalletConnect) to pay the entry and sign in. Free Mode is always available.'
+          : 'Ranked needs a real EVM wallet (MetaMask, Rabby or WalletConnect). Nothing is charged while verified settlement is off. Free Mode is always available.');
         return;
       }
-      playSfxCue('wallet-connect', 0.055);
+      // A WalletConnect session restored at boot creates its provider now, on
+      // this click, never at boot (guide rule 3).
+      if (walletProviderPending && !(await walletProviderForAction())) {
+        showRankedTooltip('Reconnect your wallet to play Ranked', 'Your WalletConnect session could not reconnect. Sign in again; Free Mode is always available.');
+        return;
+      }
+      // The canonical Ranked session is created BEFORE the entry modal so the
+      // entry (when live) is paid against the same session id the score is
+      // later settled under. A player who has not signed the login yet signs
+      // from the modal's own button (never from a game input handler).
+      const pendingRanked = beginTrackedSession({ mode: 'ranked' });
+      const ready = await requestRankedEntry(pendingRanked);
+      if (!ready) return; // cancelled, paused, wrong chain unresolved, unfunded, or the entry failed to send
+      officialSelectedMode = mode;
+      await startMode('paid', { session: pendingRanked });
+    } finally {
+      rankedStartsInFlight -= 1;
+      syncCabinetResultsButton();
     }
-    // A mock wallet (offline QA) can't rank because it can't sign / hold zkLTC.
-    if (walletConnector !== 'injected-evm') {
-      showRankedTooltip('Sign in with a real wallet to play Ranked', 'Ranked needs a real EVM wallet (MetaMask, Rabby or WalletConnect). Nothing is charged while verified settlement is off. Free Mode is always available.');
-      return;
-    }
-    // A WalletConnect session restored at boot creates its provider now, on
-    // this click, never at boot (guide rule 3).
-    if (walletProviderPending && !(await walletProviderForAction())) {
-      showRankedTooltip('Reconnect your wallet to play Ranked', 'Your WalletConnect session could not reconnect. Sign in again; Free Mode is always available.');
-      return;
-    }
-    // The canonical Ranked session is created BEFORE the entry modal so the
-    // entry (when live) is paid against the same session id the score is
-    // later settled under. A player who has not signed the login yet signs
-    // from the modal's own button (never from a game input handler).
-    const pendingRanked = beginTrackedSession({ mode: 'ranked' });
-    const ready = await requestRankedEntry(pendingRanked);
-    if (!ready) return; // cancelled, paused, wrong chain unresolved, unfunded, or the entry failed to send
-    officialSelectedMode = mode;
-    await startMode('paid', { session: pendingRanked });
   } else {
     officialSelectedMode = mode;
     await startMode('free');
@@ -5879,6 +5910,10 @@ function requestRankedEntry(pendingSession = null) {
   return new Promise((resolve) => {
     const modal = dom.rankedEntryModal;
     if (!modal) { resolve(!SETTLEMENT_LIVE); return; }
+    // Re-entry while the modal is open (still deciding, or halted on a paused
+    // or closed message) is refused: a second set of listeners on the shared
+    // buttons would outlive this request and later pay for its stale session.
+    if (modal.hidden === false) { resolve(false); return; }
     ensureWalletStylesheet();
     const requestedGameId = selectedGameId;
     const entryFeeWei = String(pendingSession?.entryFeeWei ?? '0');
@@ -5942,6 +5977,9 @@ function requestRankedEntry(pendingSession = null) {
       dom.rankedEntryApprove.removeEventListener('click', onApprove);
       dom.rankedEntryCancel.removeEventListener('click', onCancel);
       freeLink?.removeEventListener('click', onFree);
+      // A modal left open on a paused or closed message kept the cabinet
+      // "View results" button hidden; it may come back now.
+      syncCabinetResultsButton();
     };
     const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
     const freeLink = modal.querySelector?.('#rankedEntryFreeLink') ?? null;
@@ -7107,6 +7145,29 @@ function signInFromPicker({ allowSimulated = true } = {}) {
   })();
   walletSignInInFlight = attempt;
   const release = () => { if (walletSignInInFlight === attempt) walletSignInInFlight = null; };
+  attempt.then(release, release);
+  return attempt;
+}
+
+// The profile's Sign in buttons (§7.6): the picker when no wallet is
+// connected, one SIWE signature from the connected wallet when it is signed
+// out (its token expired, or a 401 dropped it), and nothing when it is signed
+// in. A double click joins the sign-in in progress.
+let profileSignInInFlight = null;
+function signInFromProfile() {
+  if (walletSignInInFlight) return walletSignInInFlight;
+  if (profileSignInInFlight) return profileSignInInFlight;
+  if (!connectedWallet || walletConnector !== 'injected-evm') return connectWallet();
+  if (HOSTED_PROFILE_SYNC ? walletSessionAuthenticated(connectedWallet) : walletAuthenticated) return Promise.resolve(connectedWallet);
+  const attempt = (async () => {
+    const provider = await walletProviderForAction();
+    // The provider behind this session is gone: pick a wallet again, never
+    // the simulated identity.
+    if (!provider) return signInFromPicker({ allowSimulated: false });
+    return (await authenticateWalletSiwe(provider, connectedAddress ?? connectedWallet)) ? connectedWallet : null;
+  })();
+  profileSignInInFlight = attempt;
+  const release = () => { if (profileSignInInFlight === attempt) profileSignInInFlight = null; };
   attempt.then(release, release);
   return attempt;
 }
@@ -15631,6 +15692,7 @@ function render() {
   renderOfficialApp();
   renderArcadeMusicPlayer();
   placeWalletBalanceChip();
+  syncCabinetResultsButton();
 }
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
@@ -16221,7 +16283,7 @@ window.addEventListener('orientationchange', () => {
 });
 
 // Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
-window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => renderGameOverSummary() }))).catch((error) => console.error('[Ranked results]', error)); });
+window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => rankedResultsClosed() }))).catch((error) => console.error('[Ranked results]', error)); });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 portalRouteController.applyLocation();

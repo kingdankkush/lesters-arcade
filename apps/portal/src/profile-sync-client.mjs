@@ -12,6 +12,12 @@
 // discards the token: v2 tokens are audience-bound and die when the server
 // secret rotates.
 //
+// In the portal the Bearer token of pull() and push() comes from the wallet
+// session (`getToken(wallet)`, which is walletSession.token), and a 401 also
+// calls `onUnauthorized(wallet, refusedToken)` (walletSession.invalidate when
+// that token is still the live one), so the whole page signs out together.
+// Without `getToken` this store's own session is used.
+//
 // Pure module: fetch, storage and the clock are injected so the same code runs
 // in the portal and in Node tests. Nothing here touches the wallet provider.
 
@@ -97,6 +103,8 @@ export function createProfileSync({
   setTimeoutImpl = globalThis.setTimeout,
   clearTimeoutImpl = globalThis.clearTimeout,
   endpoints = {},
+  getToken = null,
+  onUnauthorized = null,
 } = {}) {
   const urls = { session: '/api/session', profile: '/api/profile', ...endpoints };
   let session = null;
@@ -178,15 +186,40 @@ export function createProfileSync({
     return session;
   }
 
+  // The Bearer token for `wallet` (the stored session's wallet when null), or
+  // null: from the injected wallet session when there is one, else this
+  // store's session. Only a v2 token naming that wallet is ever sent.
+  function bearerFor(wallet) {
+    const who = wallet ? normalize(wallet) : session?.wallet ?? null;
+    if (!who || !HEX_ADDRESS.test(who)) return null;
+    let token = null;
+    if (typeof getToken === 'function') {
+      try { token = getToken(who); } catch { token = null; }
+    } else {
+      token = sessionFor(who)?.token ?? null;
+    }
+    return typeof token === 'string' && sessionTokenWallet(token) === who ? token : null;
+  }
+
+  // A 401 on a Bearer call: the refused token is dead everywhere, not just
+  // here. The owner (the wallet session, in the portal) hears first, with the
+  // wallet and the token that was refused; this store then forgets its session
+  // only if that is still the token it holds, so a 401 that arrives after a
+  // newer sign-in (another wallet, or a fresh signature) never logs it out.
+  function unauthorized(wallet, token) {
+    try { onUnauthorized?.(wallet, token); } catch { /* the caller's cleanup must not mask the answer */ }
+    if (!token || session?.token === token) logout();
+  }
+
   // GET /api/profile in the E6 shape. With a live token for this wallet it
   // reads the private self view (preferences, blocked-name reason, every run
   // status); a 401 there discards the token and falls back to the public view.
-  async function pull(wallet) {
+  async function pull(wallet, { anonymous = false } = {}) {
     if (!canFetch() || !HEX_ADDRESS.test(String(wallet ?? ''))) return { ok: false, unavailable: true, error: 'invalid-wallet' };
     const who = normalize(wallet);
-    const own = sessionFor(who);
+    const own = anonymous ? null : bearerFor(who);
     const init = own
-      ? { method: 'GET', headers: { accept: 'application/json', authorization: `Bearer ${own.token}` }, cache: 'no-store' }
+      ? { method: 'GET', headers: { accept: 'application/json', authorization: `Bearer ${own}` }, cache: 'no-store' }
       : { method: 'GET', headers: { accept: 'application/json' } };
     let response;
     try {
@@ -196,8 +229,8 @@ export function createProfileSync({
     }
     const body = await readJson(response);
     if (own && response.status === 401) {
-      logout();
-      return pull(who);
+      unauthorized(who, own);
+      return pull(who, { anonymous: true });
     }
     if (!response.ok || !body?.ok) {
       serviceState.profile = response.status === 503 ? 'unconfigured' : 'error';
@@ -220,13 +253,13 @@ export function createProfileSync({
   async function pushNow(document, { wallet = null } = {}) {
     if (pushTimer) { clearTimeoutImpl(pushTimer); pushTimer = null; }
     pendingDocument = null;
-    const active = sessionFor(wallet);
-    if (!canFetch() || !active) return { ok: false, unavailable: true, error: 'no-session' };
+    const bearer = bearerFor(wallet);
+    if (!canFetch() || !bearer) return { ok: false, unavailable: true, error: 'no-session' };
     let response;
     try {
       response = await fetchImpl(urls.profile, {
         method: 'PUT',
-        headers: { 'content-type': 'application/json', authorization: `Bearer ${active.token}` },
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${bearer}` },
         body: JSON.stringify(document),
         cache: 'no-store',
       });
@@ -234,7 +267,7 @@ export function createProfileSync({
       return { ok: false, unavailable: true, error: 'network', detail: String(error?.message ?? error) };
     }
     const body = await readJson(response);
-    if (response.status === 401) { logout(); return { ok: false, unavailable: false, status: 401, error: 'invalid-session' }; }
+    if (response.status === 401) { unauthorized(sessionTokenWallet(bearer), bearer); return { ok: false, unavailable: false, status: 401, error: 'invalid-session' }; }
     if (!response.ok || !body?.ok) {
       serviceState.profile = response.status === 503 ? 'unconfigured' : 'error';
       return unavailable(response.status, body?.error);
@@ -245,7 +278,7 @@ export function createProfileSync({
 
   // Debounced write: the last document wins, one PUT per burst of edits.
   function push(document, { wallet = null, delayMs = PROFILE_PUSH_DEBOUNCE_MS } = {}) {
-    if (!sessionFor(wallet) || serviceState.profile === 'unconfigured') return false;
+    if (!bearerFor(wallet) || serviceState.profile === 'unconfigured') return false;
     pendingDocument = document;
     if (pushTimer) clearTimeoutImpl(pushTimer);
     pushTimer = setTimeoutImpl(() => {

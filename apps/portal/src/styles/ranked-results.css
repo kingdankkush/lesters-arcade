@@ -389,3 +389,57 @@ body[data-ranked-results-open] > .name-claim-toast {
   .ranked-results-backdrop *,
   .ranked-results-backdrop { animation: none !important; transition: none !important; }
 }
+
+/* Chikun and STACKED: the parent-level "View results" button that floats over
+   the still-open cabinet after the screen was dismissed (main.js
+   syncCabinetResultsButton). A direct child of <body>, under the backdrop and
+   above the fullscreen child frame; 44 px tall and phone safe. */
+.cabinet-results-reopen {
+  position: fixed;
+  z-index: 10040;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  min-height: 44px;
+  max-width: calc(100vw - 24px);
+  padding: 10px 18px;
+  border: 1px solid rgba(255, 232, 77, 0.7);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 232, 77, 0.24), rgba(201, 163, 78, 0.18)), rgba(28, 18, 5, 0.94);
+  color: #fff6c2;
+  font: 700 0.82rem/1.1 var(--font-display, "Trebuchet MS", sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 0 18px rgba(255, 232, 77, 0.28), 0 6px 18px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.cabinet-results-reopen[hidden] { display: none; }
+.cabinet-results-reopen:hover { box-shadow: 0 0 24px rgba(255, 232, 77, 0.45), 0 6px 18px rgba(0, 0, 0, 0.45); }
+.cabinet-results-reopen:focus-visible {
+  outline: 2px solid var(--crypto-cyan, #19f7ff);
+  outline-offset: 3px;
+}
+/* The first-Ranked name toast (name-claim-prompt.mjs, fixed at left 16px and
+   bottom 16px, a direct child of <body>) appears once the screen has closed,
+   which is exactly when this button shows. While it is on screen the button
+   takes the bottom-right corner so it never covers the toast's Claim button.
+   Phones are covered by the rule below: the button sits at the top-left. */
+@media (min-width: 721px) and (min-height: 561px) {
+  body:has(> .name-claim-toast) > .cabinet-results-reopen {
+    left: auto;
+    right: max(12px, env(safe-area-inset-right));
+  }
+}
+/* On a phone the child's result panel fills the screen and ends in its own
+   buttons, so the reopen button moves to the top-left corner, over the
+   cabinet's score readout instead of a control. */
+@media (max-width: 720px), (max-height: 560px) {
+  .cabinet-results-reopen {
+    top: max(8px, env(safe-area-inset-top));
+    bottom: auto;
+    padding: 8px 14px;
+    font-size: 0.74rem;
+  }
+}
