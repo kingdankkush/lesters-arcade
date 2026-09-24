@@ -39,13 +39,15 @@ const GAME_REGISTRY_READ_ABI = [
 ];
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 
-// LiteForge's base fee moves fast (about 0.01 gwei on 2026-09-22, about 1.5 gwei on 2026-09-24) and a
-// wallet's own estimate can lag far behind it: on 2026-09-24 a wallet offered 0.13 gwei and LiteForge
-// refused the confirmation ("max fee per gas less than block base fee"). So the page prices each
-// transaction itself from the latest block: three times the base fee as the cap (an Arbitrum Orbit
-// chain charges only the base fee, so the headroom costs nothing) and no priority tip.
-export const FEE_HEADROOM = 3n;
-export const MIN_MAX_FEE_PER_GAS_WEI = 100_000_000n; // 0.1 gwei
+// LiteForge's base fee moves fast (0.01 gwei on 2026-09-22, 1.7 gwei at the 2026-09-23 peak, and on
+// 2026-09-24 it climbed from 0.07 to 0.26 gwei within minutes) and a wallet's own estimate lags behind
+// it: the confirmation was refused twice ("max fee per gas less than block base fee"), once with the
+// wallet's 0.13 gwei guess and once with 3x a base fee that rose while the wallet popup was open. So the
+// page prices each transaction from the latest block with a cap of ten times the base fee and never
+// below 5 gwei (above every LiteForge base fee seen so far). An Arbitrum Orbit chain charges only the
+// base fee, so the cap costs nothing; it only means the wallet must hold gas limit x cap. No tip.
+export const FEE_HEADROOM = 10n;
+export const MIN_MAX_FEE_PER_GAS_WEI = 5_000_000_000n; // 5 gwei
 export function liteForgeFeeFields(baseFeePerGas) {
   const base = BigInt(baseFeePerGas ?? 0);
   const capped = base * FEE_HEADROOM;
