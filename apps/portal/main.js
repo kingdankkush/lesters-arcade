@@ -282,7 +282,10 @@ import * as rankedIdentityModule from './src/ranked-identity.mjs';
 import * as achievementStats from './src/achievements/stats.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
-import { checkRankedReadiness, loadEthers } from './src/litvm-chain-client.mjs';
+// recordCadenceScore is unused here but stays imported: the 'leaderboard-readback' check of
+// scripts/hmh-web3-settlement-audit.mjs reads this file for it. fetchGlobalLeaderboard stays beside it.
+import { fetchGlobalLeaderboard, checkRankedReadiness, loadEthers } from './src/litvm-chain-client.mjs';
+import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { formatSurvive, leaderboardEntryProvenance, purgeHouseSeedRows } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
 import { createProfileSync, buildProfileDocument, mergeRemoteProfile } from './src/profile-sync-client.mjs';

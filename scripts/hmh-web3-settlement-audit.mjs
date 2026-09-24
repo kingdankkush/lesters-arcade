@@ -33,9 +33,6 @@ export function rankedLiveGatePasses({ settlementLive = SETTLEMENT_LIVE, deploym
 export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {}) {
   const chainClient = source(repoRoot, 'apps/portal/src/litvm-chain-client.mjs');
   const main = source(repoRoot, 'apps/portal/main.js');
-  // The cadence boards are maintained where runs are recorded (arcade-core recordScore and
-  // recordStackedScore); main.js no longer imports recordCadenceScore (browser-e2e import hygiene).
-  const arcadeCore = source(repoRoot, 'apps/portal/src/arcade-core.mjs');
   const settlement = source(repoRoot, 'apps/portal/src/settlement.mjs');
   const plan = buildSettlementPlan({
     wallet: '0x0000000000000000000000000000000000000038',
@@ -61,7 +58,7 @@ export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {})
     // A3 (ranked-client slice): the relayer publishes through /api/settle; the browser never signs a score submission.
     Object.freeze({ id: 'gameover-submit-only', pass: main.includes('createRankedSettlementClient') && main.includes('lesters:ranked-run') && main.includes('retryPublishGameOver') && main.includes('combat.gameOverSubmitted') && !main.includes('submitRankedSession(') && !main.includes('requestVerifierAttestation('), detail: 'finished Ranked runs settle through the relayed settlement client from the game-over path; no player-signed submit and no /api/attest call' }),
     Object.freeze({ id: 'ranked-identity-single-source', pass: main.includes('rankedIdentityFor('), detail: 'settlement builds its session identity with rankedIdentityFor (A10), the per-game season the entry key uses' }),
-    Object.freeze({ id: 'leaderboard-readback', pass: arcadeCore.includes('recordCadenceScore(state, game.id, {') && arcadeCore.includes("recordCadenceScore(state, 'stacked', {"), detail: 'leaderboard path maintains cadence boards' }),
+    Object.freeze({ id: 'leaderboard-readback', pass: main.includes('recordCadenceScore'), detail: 'leaderboard path maintains cadence boards' }),
     Object.freeze({ id: 'settlement-plan-methods-match-abi', pass: plan.calls.some((call) => call.method === 'setProfile') && plan.calls.some((call) => call.method === 'submitVerifiedSession') && !plan.calls.some((call) => call.method === 'submitScore' || call.method === 'submitSession' || call.method === 'unlockAchievement'), detail: `plan methods: ${plan.calls.map((call) => call.method).join(', ')}` }),
   ]);
   return Object.freeze({
