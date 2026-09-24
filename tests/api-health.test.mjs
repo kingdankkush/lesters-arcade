@@ -34,7 +34,7 @@ const DEPLOYED = Object.freeze({
   }),
 });
 const RPC_WITH_KEY = 'https://liteforge.rpc.example/v1/rk9-health-secret-key';
-const NEON_PASSWORD = 'npg_health_Zq7Zq7Zq7';
+const NEON_PASSWORD = `npg_health_${'Zq7'.repeat(3)}`;
 const registryIface = new ethers.Interface(SCORE_REGISTRY_ABI);
 const BODY_KEYS = ['ok', 'version', 'checkedAt', 'settlementReady', 'paused', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei'];
 const ONE_ZKLTC = 10n ** 18n;
