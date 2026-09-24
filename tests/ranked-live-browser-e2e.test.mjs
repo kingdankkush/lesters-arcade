@@ -61,25 +61,45 @@ test('the CLI refuses before starting anything or reading a key', async () => {
   lines.length = 0;
   assert.equal(await runCli({ argv: ['--games', 'pong'], log }), 2);
   lines.length = 0;
-  // Every flag, but the committed address module is still `predicted`: refused before the key file
-  // (which does not exist) is read.
-  const code = await runCli({ argv: ['--live', '--site', 'https://lestersarcade.io', '--rpc', 'http://127.0.0.1:9', '--player-key-file', 'C:/does-not-exist/player.json', '--confirm-live', LIVE_CONFIRM], log });
-  assert.equal(code, 2);
+  // Every flag, but the address module is `predicted` (the committed one until runbook step 3): refused
+  // before the key file (which does not exist) is read. The deployment is injected, so the check holds
+  // before and after step 3.
+  const argv = ['--live', '--site', 'https://lestersarcade.io', '--rpc', 'http://127.0.0.1:9', '--player-key-file', 'C:/does-not-exist/player.json', '--confirm-live', LIVE_CONFIRM];
+  assert.equal(await runCli({ argv, log, loadDeployment: async () => ({ status: 'predicted', chainId: 4441 }) }), 2);
   assert.match(lines.join('\n'), /address module is 'predicted', not 'deployed'/);
+  assert.doesNotMatch(lines.join('\n'), /player key|cannot read/);
+  lines.length = 0;
+  // Deployed (after step 3): the missing key file refuses before any RPC is contacted (port 9 is closed).
+  assert.equal(await runCli({ argv, log, loadDeployment: async () => ({ status: 'deployed', chainId: 4441 }) }), 2);
+  assert.match(lines.join('\n'), /Live run refused: .*--player-key-file/);
+  assert.doesNotMatch(lines.join('\n'), /RPC reports|balance/);
 });
 
 test('the throwaway flag flip turns exactly the two literal flags on, and only in memory', () => {
-  const source = readFileSync(`${root}apps/portal/src/settlement.mjs`, 'utf8');
+  const committed = readFileSync(`${root}apps/portal/src/settlement.mjs`, 'utf8');
+  // The preview file (the committed one until runbook step 7), whatever the committed flags are now.
+  const source = committed
+    .replace('export const SETTLEMENT_LIVE = true;', 'export const SETTLEMENT_LIVE = false;')
+    .replace('export const HOSTED_PROFILE_SYNC = true;', 'export const HOSTED_PROFILE_SYNC = false;');
   const flipped = flipFlagsSource(source);
   assert.match(flipped, /export const SETTLEMENT_LIVE = true;/);
   assert.match(flipped, /export const HOSTED_PROFILE_SYNC = true;/);
   assert.equal(flipped.length, source.length - 2, 'false → true twice, nothing else');
-  assert.throws(() => flipFlagsSource(flipped), /exactly one/);
+  assert.equal(flipFlagsSource(flipped), flipped, 'flags already on (after step 7) stay as they are');
+  assert.equal(flipFlagsSource(source.replace('export const HOSTED_PROFILE_SYNC = false;', 'export const HOSTED_PROFILE_SYNC = true;')), flipped);
   assert.throws(() => flipFlagsSource(`${source}\nexport const SETTLEMENT_LIVE = false;`), /exactly one/);
-  // The committed file keeps the preview flags.
+  assert.throws(() => flipFlagsSource(`${flipped}\nexport const SETTLEMENT_LIVE = false;`), /exactly one/);
+  assert.throws(() => flipFlagsSource(source.replace('export const SETTLEMENT_LIVE = false;', 'export const SETTLEMENT_LIVE = !0;')), /exactly one/);
+  // Only in memory: the committed file is untouched, and the guard reads what the files say.
+  assert.equal(readFileSync(`${root}apps/portal/src/settlement.mjs`, 'utf8'), committed);
   const guard = repoGuardSnapshot(root);
-  assert.deepEqual(guard.flags, { settlementLive: false, hostedProfileSync: false });
-  assert.equal(guard.addressStatus, 'predicted');
+  assert.deepEqual(guard.flags, {
+    settlementLive: committed.includes('export const SETTLEMENT_LIVE = true;'),
+    hostedProfileSync: committed.includes('export const HOSTED_PROFILE_SYNC = true;'),
+  });
+  const addresses = readFileSync(`${root}apps/portal/src/generated/litvm-addresses.mjs`, 'utf8');
+  assert.equal(guard.addressStatus, /status: '([a-z]+)'/.exec(addresses)[1]);
+  assert.ok(['predicted', 'deployed'].includes(guard.addressStatus));
 });
 
 test('the throwaway public RPC points LITVM_LITEFORGE_NETWORK at a loopback proxy only', () => {

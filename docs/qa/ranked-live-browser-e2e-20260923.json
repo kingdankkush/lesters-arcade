@@ -1,6 +1,6 @@
 {
   "schema": "lesters-ranked-live-browser-e2e-v1",
-  "generatedAt": "2026-09-24T05:29:44.073Z",
+  "generatedAt": "2026-09-24T06:50:21.276Z",
   "target": "local",
   "note": "Local only: in-process Hardhat chain 4441, PGlite for Neon, public Hardhat fixture keys, and a throwaway live-flag portal in the OS temp directory served by scripts/lib/local-http.mjs with the vercel.json headers. Nothing touched LiteForge, Vercel or production Neon, and no committed file changed.",
   "commands": {
@@ -25,7 +25,7 @@
   },
   "unhandledRejections": [],
   "ok": true,
-  "durationMs": 172075,
+  "durationMs": 121881,
   "games": {
     "chikun": {
       "gameId": "chikun",
@@ -103,8 +103,8 @@
           "id": "entry-session-matches-settle",
           "ok": true,
           "detail": {
-            "entry": "0xef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa",
-            "settle": "0xef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa"
+            "entry": "0x6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
+            "settle": "0x6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482"
           }
         },
         {
@@ -133,14 +133,14 @@
           "id": "explorer-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0x2e03427dd3829909c1c2847027ad23e5fb444067cb439b0a1d2c1ad80224014e"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xaf25cd470e652263fbf3cb68285e7770162b8ba147a113645d7d93995e56d194"
           }
         },
         {
           "id": "entry-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0xf6732fa7c6d41787ca85da452400adfb98707558fefedbe60e1d474afd7e2b26"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xd77cf38efb9161743cf32bd6b09b75342f7a156e8b93418394e95f547498dc99"
           }
         },
         {
@@ -161,8 +161,8 @@
           "detail": {
             "page": {
               "status": 200,
-              "ogUrl": "https://lestersarcade.io/s/ef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa",
-              "ogImage": "/api/share-card/ef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa.png?v=…",
+              "ogUrl": "https://lestersarcade.io/s/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
+              "ogImage": "/api/share-card/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482.png?v=…",
               "verified": true,
               "noindex": false
             },
@@ -242,7 +242,7 @@
           "detail": []
         }
       ],
-      "durationMs": 76168,
+      "durationMs": 48835,
       "signedOut": {
         "signIn": "Sign in",
         "connectWallet": false,
@@ -296,19 +296,19 @@
           "chikun-stack-three"
         ]
       },
-      "sessionId32": "0xef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa",
-      "entryTxHash": "0xf6732fa7c6d41787ca85da452400adfb98707558fefedbe60e1d474afd7e2b26",
-      "settleTxHash": "0x2e03427dd3829909c1c2847027ad23e5fb444067cb439b0a1d2c1ad80224014e",
+      "sessionId32": "0x6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
+      "entryTxHash": "0xd77cf38efb9161743cf32bd6b09b75342f7a156e8b93418394e95f547498dc99",
+      "settleTxHash": "0xaf25cd470e652263fbf3cb68285e7770162b8ba147a113645d7d93995e56d194",
       "share": {
-        "url": "https://lestersarcade.io/s/ef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa",
+        "url": "https://lestersarcade.io/s/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
         "text": "🐔 RANKED · Chikun's Escape\n460 pts · Rank 1 this week · Lap 1 · Farmland\n🌾 0 forks · ⚡ 0 near-misses · 🪙 4 coins\n⛓ Verified on LitVM\nBeat my flight @LestersArcade",
         "problems": []
       },
       "sharePage": {
         "page": {
           "status": 200,
-          "ogUrl": "https://lestersarcade.io/s/ef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa",
-          "ogImage": "/api/share-card/ef82a15104c1147142c3de47e37779e5a26ce16c0f805cfc1e50d9f9a529a5fa.png?v=…",
+          "ogUrl": "https://lestersarcade.io/s/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
+          "ogImage": "/api/share-card/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482.png?v=…",
           "verified": true,
           "noindex": false
         },
@@ -373,8 +373,8 @@
         "GET /api/profile?wallet=…&self=… 200",
         "GET /api/profile?wallet=…&self=… 200",
         "POST /api/ranked/seed 200",
-        "PUT /api/profile 200",
         "GET /api/profile?wallet=… 200",
+        "PUT /api/profile 200",
         "GET /api/profile?wallet=…&self=… 200",
         "POST /api/settle 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
@@ -391,7 +391,7 @@
         "GET /api/profile?wallet=…&self=… 200"
       ],
       "offOrigin": [],
-      "cancelledStaticLoads": 15,
+      "cancelledStaticLoads": 4,
       "issues": []
     },
     "stacked": {
@@ -470,8 +470,8 @@
           "id": "entry-session-matches-settle",
           "ok": true,
           "detail": {
-            "entry": "0xe0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7",
-            "settle": "0xe0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7"
+            "entry": "0x0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
+            "settle": "0x0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c"
           }
         },
         {
@@ -500,14 +500,14 @@
           "id": "explorer-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0xe5f9e4f6496a6e38c4ef7dbf923e579a5415dd23bcb9b201e48c77f10be23994"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xecfacfd6bb5f128d42fe31be34bdf144ec7ef6c7f9b889c3207fafd6cad61326"
           }
         },
         {
           "id": "entry-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0x9c63e897fff897e584d210f7399a7b3e8a90c0a93d7ab226d7dd09d3fa646f8f"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x5ecfbf7b4dbddf8c3703f0cacd46143fbe5fa692eef1c084d69c5db3ea2f898f"
           }
         },
         {
@@ -528,8 +528,8 @@
           "detail": {
             "page": {
               "status": 200,
-              "ogUrl": "https://lestersarcade.io/s/e0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7",
-              "ogImage": "/api/share-card/e0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7.png?v=…",
+              "ogUrl": "https://lestersarcade.io/s/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
+              "ogImage": "/api/share-card/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c.png?v=…",
               "verified": true,
               "noindex": false
             },
@@ -537,7 +537,7 @@
               "status": 200,
               "contentType": "image/png",
               "png": true,
-              "bytes": 400156
+              "bytes": 404747
             }
           }
         },
@@ -552,7 +552,7 @@
           "detail": []
         }
       ],
-      "durationMs": 45111,
+      "durationMs": 35119,
       "signedOut": {
         "signIn": "Sign in",
         "connectWallet": false,
@@ -576,7 +576,7 @@
       "results": {
         "state": "published",
         "eyebrow": "Ranked · STACKED",
-        "score": "234",
+        "score": "230",
         "standing": "#1 this week · #1 all-time",
         "banner": "",
         "timeline": [
@@ -603,19 +603,19 @@
         ],
         "achievements": []
       },
-      "sessionId32": "0xe0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7",
-      "entryTxHash": "0x9c63e897fff897e584d210f7399a7b3e8a90c0a93d7ab226d7dd09d3fa646f8f",
-      "settleTxHash": "0xe5f9e4f6496a6e38c4ef7dbf923e579a5415dd23bcb9b201e48c77f10be23994",
+      "sessionId32": "0x0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
+      "entryTxHash": "0x5ecfbf7b4dbddf8c3703f0cacd46143fbe5fa692eef1c084d69c5db3ea2f898f",
+      "settleTxHash": "0xecfacfd6bb5f128d42fe31be34bdf144ec7ef6c7f9b889c3207fafd6cad61326",
       "share": {
-        "url": "https://lestersarcade.io/s/e0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7",
-        "text": "🧱 RANKED · STACKED\n234 pts · Rank 1 this week\n📈 0 lines · Lv 1 · 0 Halvings\n⛓ Verified on LitVM\nStack higher @LestersArcade",
+        "url": "https://lestersarcade.io/s/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
+        "text": "🧱 RANKED · STACKED\n230 pts · Rank 1 this week\n📈 0 lines · Lv 1 · 0 Halvings\n⛓ Verified on LitVM\nStack higher @LestersArcade",
         "problems": []
       },
       "sharePage": {
         "page": {
           "status": 200,
-          "ogUrl": "https://lestersarcade.io/s/e0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7",
-          "ogImage": "/api/share-card/e0846531b16f08d460ddbae6c52b47cf794c6265654ff742a52e47d7ef9c30b7.png?v=…",
+          "ogUrl": "https://lestersarcade.io/s/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
+          "ogImage": "/api/share-card/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c.png?v=…",
           "verified": true,
           "noindex": false
         },
@@ -623,7 +623,7 @@
           "status": 200,
           "contentType": "image/png",
           "png": true,
-          "bytes": 400156
+          "bytes": 404747
         }
       },
       "walletCalls": {
@@ -651,7 +651,7 @@
         "GET /api/profile?wallet=…&self=… 200"
       ],
       "offOrigin": [],
-      "cancelledStaticLoads": 3,
+      "cancelledStaticLoads": 2,
       "issues": []
     },
     "lester-blaster": {
@@ -730,8 +730,8 @@
           "id": "entry-session-matches-settle",
           "ok": true,
           "detail": {
-            "entry": "0xa6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247",
-            "settle": "0xa6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247"
+            "entry": "0x9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
+            "settle": "0x9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31"
           }
         },
         {
@@ -760,14 +760,14 @@
           "id": "explorer-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0x2d9c2c02a6c238e08387146e259031b4f13b207853b8247876865727b9794ee5"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xe36aeaff619f68ff8354b8ed65bc0ed844d0873e635284fd5f2ac51fbfc38144"
           }
         },
         {
           "id": "entry-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0x3c0740dbd76437b1e58652157aba5a31393ba0b922e62370047bbd193caf00bf"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x4a0fb5a974e8357b1ff8f81140e4e6ebaddad4fd5eefc12ddff0eb6c6e9d156d"
           }
         },
         {
@@ -788,8 +788,8 @@
           "detail": {
             "page": {
               "status": 200,
-              "ogUrl": "https://lestersarcade.io/s/a6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247",
-              "ogImage": "/api/share-card/a6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247.png?v=…",
+              "ogUrl": "https://lestersarcade.io/s/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
+              "ogImage": "/api/share-card/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31.png?v=…",
               "verified": true,
               "noindex": false
             },
@@ -812,7 +812,7 @@
           "detail": []
         }
       ],
-      "durationMs": 46736,
+      "durationMs": 34876,
       "signedOut": {
         "signIn": "Sign in",
         "connectWallet": false,
@@ -866,19 +866,19 @@
           "first-paid-run"
         ]
       },
-      "sessionId32": "0xa6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247",
-      "entryTxHash": "0x3c0740dbd76437b1e58652157aba5a31393ba0b922e62370047bbd193caf00bf",
-      "settleTxHash": "0x2d9c2c02a6c238e08387146e259031b4f13b207853b8247876865727b9794ee5",
+      "sessionId32": "0x9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
+      "entryTxHash": "0x4a0fb5a974e8357b1ff8f81140e4e6ebaddad4fd5eefc12ddff0eb6c6e9d156d",
+      "settleTxHash": "0xe36aeaff619f68ff8354b8ed65bc0ed844d0873e635284fd5f2ac51fbfc38144",
       "share": {
-        "url": "https://lestersarcade.io/s/a6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247",
+        "url": "https://lestersarcade.io/s/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
         "text": "🏆 RANKED · Hard Money Heroes\n0 pts · Rank 1 this week\n☠ 0 kills · 🔥 ×0 combo · ⏱ 0:00\n⛓ Verified on LitVM\nCan you beat it? @LestersArcade",
         "problems": []
       },
       "sharePage": {
         "page": {
           "status": 200,
-          "ogUrl": "https://lestersarcade.io/s/a6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247",
-          "ogImage": "/api/share-card/a6e0493499907760b2e3487c0df6138441d218d92f15275045b6f93f89727247.png?v=…",
+          "ogUrl": "https://lestersarcade.io/s/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
+          "ogImage": "/api/share-card/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31.png?v=…",
           "verified": true,
           "noindex": false
         },
@@ -906,15 +906,15 @@
         "GET /api/profile?wallet=…&self=… 200",
         "POST /api/ranked/seed 200",
         "GET /api/profile?wallet=… 200",
-        "PUT /api/profile 200",
         "GET /api/profile?wallet=…&self=… 200",
         "POST /api/settle 200",
+        "PUT /api/profile 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/profile?wallet=…&self=… 200"
       ],
       "offOrigin": [],
-      "cancelledStaticLoads": 4,
+      "cancelledStaticLoads": 2,
       "issues": []
     }
   }

@@ -123,12 +123,14 @@ export function targetOf(argv) {
 }
 
 // settlement.mjs of the throwaway build: both literal flags true, or an error when either line moved.
+// A flag already true (the committed file after runbook step 7) stays as it is.
 export function flipFlagsSource(text) {
   let out = String(text);
   for (const line of FLAG_LINES) {
-    const count = out.split(line.find).length - 1;
-    if (count !== 1) throw new Error(`${SETTLEMENT_SOURCE} must hold exactly one "${line.find}" (found ${count}); the throwaway flag flip would be wrong`);
-    out = out.replace(line.find, line.replace);
+    const off = out.split(line.find).length - 1;
+    const on = out.split(line.replace).length - 1;
+    if (off === 1 && on === 0) out = out.replace(line.find, line.replace);
+    else if (!(off === 0 && on === 1)) throw new Error(`${SETTLEMENT_SOURCE} must hold exactly one "${line.find}" or "${line.replace}" (found ${off} and ${on}); the throwaway flag flip would be wrong`);
   }
   return out;
 }
@@ -270,7 +272,7 @@ export function throwawayBundlePlugin({ addressModuleSource, rpcUrl }) {
 export async function prepareThrowawayPortal({ repoRoot = root, record, rpcUrl, log = () => {} }) {
   ensurePortalBuild(repoRoot, log);
   const before = repoGuardSnapshot(repoRoot);
-  if (before.flags.settlementLive || before.flags.hostedProfileSync) throw new Error('settlement.mjs already has a flag on; this run expects the committed preview flags');
+  if (before.flags.settlementLive || before.flags.hostedProfileSync) log('throwaway portal: the committed settlement.mjs already has a live flag (after runbook step 7); the throwaway turns on the other');
   const base = mkdtempSync(join(tmpdir(), 'lesters-live-e2e-'));
   const webRoot = join(base, 'web');
   const portal = join(repoRoot, 'apps/portal');
@@ -977,7 +979,14 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
   }
 }
 
-export async function runLiveCli({ argv, env = process.env, log = console.log, readFile = undefined }) {
+// loadDeployment: the generated address module's deployment (tests inject one, so the refusals do not
+// depend on the committed module's status).
+async function committedDeployment() {
+  const { loadLitvmDeployment } = await import('./generate-litvm-addresses.mjs');
+  return loadLitvmDeployment();
+}
+
+export async function runLiveCli({ argv, env = process.env, log = console.log, readFile = undefined, loadDeployment = committedDeployment }) {
   const flags = checkLiveFlags(argv);
   if (!flags.ok) {
     log('Live run refused: every live flag is required.');
@@ -995,8 +1004,7 @@ export async function runLiveCli({ argv, env = process.env, log = console.log, r
   }
   const site = new URL(flagValue(argv, '--site')).origin;
   const rpcUrl = flagValue(argv, '--rpc');
-  const { loadLitvmDeployment } = await import('./generate-litvm-addresses.mjs');
-  const deployment = await loadLitvmDeployment();
+  const deployment = await loadDeployment();
   if (deployment.status !== 'deployed') {
     log(`Live run refused: the address module is '${deployment.status}', not 'deployed'. Runbook steps 3-8 come first.`);
     return 2;
@@ -1059,11 +1067,11 @@ function writeJson(path, value) {
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
-export async function runCli({ argv = process.argv.slice(2), env = process.env, log = console.log } = {}) {
+export async function runCli({ argv = process.argv.slice(2), env = process.env, log = console.log, loadDeployment = undefined } = {}) {
   const target = targetOf(argv);
   if (target === 'live') {
     try {
-      return await runLiveCli({ argv, env, log });
+      return await runLiveCli({ argv, env, log, loadDeployment });
     } catch (error) {
       // Key-source errors name the flag or file, never the value.
       if (error instanceof SecretSourceError) log(`Live run refused: ${error.message}`);
