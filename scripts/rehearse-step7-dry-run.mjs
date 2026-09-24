@@ -300,14 +300,22 @@ async function deployLocalRecord(repoRoot) {
   }
 }
 
+// Line numbers refer to each file as committed (before any edit), as the checklist reader sees it.
+export function lineOf(text, find) {
+  const at = text.indexOf(find);
+  return at < 0 ? null : text.slice(0, at).split(NEWLINE).length;
+}
+
 function applyEdits(wt, edits) {
   const results = [];
+  const originals = new Map();
   for (const edit of edits) {
     const path = join(wt, edit.file);
     const text = readFileSync(path, 'utf8');
+    if (!originals.has(edit.file)) originals.set(edit.file, text);
     const applied = applyTextEdit(text, edit);
     if (applied.ok) writeFileSync(path, applied.text, 'utf8');
-    const line = applied.ok ? text.slice(0, text.indexOf(edit.find)).split('\n').length : null;
+    const line = applied.ok ? lineOf(originals.get(edit.file), edit.find) : null;
     results.push({ file: edit.file, line, before: edit.find, after: edit.replace, reason: edit.reason ?? null, applied: applied.ok, error: applied.error });
   }
   return results;

@@ -101,6 +101,15 @@ test('the step-7 dry run refuses without --confirm-throwaway and in the main wor
   assert.equal(report.schema, 'lesters-step7-dry-run-v1');
   assert.equal(report.throwawayRemoved, true);
   assert.ok(doc.includes(renderChecklist(report)), 'the doc checklist is the one rendered from the committed report');
+  // The committed pass is a full one that proved every current edit.
+  assert.equal(report.partial ?? null, null, 'a --tests (partial) dry run is never committed');
+  assert.equal(report.ok, true);
+  assert.deepEqual(report.unexplainedFailures, []);
+  assert.deepEqual(report.step7Edits.map((edit) => [edit.file, edit.before, edit.after, edit.applied, edit.verified]), STEP7_TEST_EDITS.map((edit) => [edit.file, edit.find, edit.replace, true, true]));
+  assert.deepEqual([report.addressModule.status, report.addressModule.deployer], ['deployed', '0x6ac08bed727a6951d755f0674f096e6a8ac06bff'], 'the rehearsed record comes from the real deploy config');
+  const preExisting = new Set(report.failures.preExisting.map((failure) => `${failure.file} :: ${failure.name}`));
+  assert.equal(report.fullVerify.missing, 0);
+  assert.ok(report.fullVerify.unexpectedFailures.every((failure) => preExisting.has(`${failure.file} :: ${failure.name}`)), 'after the edits only failures already present at the dry-run base remain');
   // Every step-7 edit still applies to exactly one place (or has been applied, after runbook step 7).
   for (const edit of STEP7_TEST_EDITS) {
     const text = readFileSync(new URL(`../${edit.file}`, import.meta.url), 'utf8');
