@@ -155,6 +155,133 @@ try {
     console.log(JSON.stringify(reports.at(-1)));
     assert.deepEqual(errors, [], name + ' has no browser errors');
   }
+  // Ranked in preview (both settlement flags false). The Chikun smoke's fixture stub signs in (public key
+  // 0x11…11); the entry modal approves without payment, and nothing may reach /api (contract §9.1).
+  for (const { name, mobile, width, height } of [
+    { name:'ranked-desktop', mobile:false, width:1440, height:1000 },
+    { name:'ranked-mobile', mobile:true, width:390, height:844 },
+  ]) {
+    const errors = [], apiRequests = [];
+    const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: mobile ? 2 : 1, isMobile: mobile, hasTouch: mobile });
+    const page = await context.newPage();
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+    page.on('response', response => { if (response.status() >= 400) errors.push(`http ${response.status()} ${response.url()}`); });
+    page.on('requestfailed', request => {
+      const failure = request.failure()?.errorText ?? 'failed';
+      if (!(/ERR_ABORTED/.test(failure) && request.method() === 'GET' && !new URL(request.url()).pathname.startsWith('/api/'))) errors.push(`requestfailed ${request.url()} ${failure}`);
+    });
+    page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(`${request.method()} ${request.url()}`); });
+    await page.addInitScript(() => {
+      if (globalThis.top !== globalThis) return;
+      const account = '0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a';
+      globalThis.ethereum = {
+        isMetaMask: true,
+        on: () => {},
+        removeListener: () => {},
+        request: async ({ method, params = [] }) => {
+          if (method === 'eth_requestAccounts' || method === 'eth_accounts') return [account];
+          if (method === 'eth_chainId') return '0x1159';
+          if (method === 'eth_getBalance') return '0xde0b6b3a7640000';
+          if (method === 'personal_sign') {
+            const ethers = await import('/vendor/ethers.min.js');
+            return new ethers.Wallet(`0x${'11'.repeat(32)}`).signMessage(String(params[0] ?? ''));
+          }
+          if (method === 'wallet_switchEthereumChain' || method === 'wallet_addEthereumChain') return null;
+          throw new Error(`Headless smoke provider does not implement ${method}`);
+        },
+      };
+    });
+    if (!process.env.STACKED_ORIGIN) {
+      const config = JSON.parse(await readFile(path.join(root, 'vercel.json'), 'utf8'));
+      const csp = config.headers.find(rule => rule.source === '/stacked/(.*)').headers.find(header => header.key === 'Content-Security-Policy').value;
+      await page.route('**/stacked/index.html', async route => {
+        const response = await route.fetch();
+        await route.fulfill({ response, headers: { ...response.headers(), 'content-security-policy': csp.replace('; upgrade-insecure-requests', '') } });
+      });
+    }
+    await page.goto(origin + '/', { waitUntil: 'networkidle' });
+    assert.equal((await page.locator('#officialConnectButton').textContent()).trim(), 'Sign in');
+    await page.locator('#officialConnectButton').click();
+    await page.locator('.official-cabinet-card.playable').first().waitFor({ state: 'visible', timeout: 15000 });
+    await page.locator('.official-cabinet-card.playable').filter({ hasText: 'STACKED' }).click();
+    assert.equal((await page.locator('#officialRankedModeTitle').textContent()).trim(), 'Play Ranked');
+    await page.locator('#officialRankedModeButton').click();
+    await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible' });
+    const entryModal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
+    for (const expected of [/Ranked · Entry/i, /Entry 0\.1 zkLTC/, /Settlement reserve/, /0\.002 zkLTC/, /Total 0\.102 zkLTC/, /no transaction is sent/i]) assert.match(entryModal, expected);
+    await page.locator('#rankedEntryApprove').click();
+    const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
+    await frame.waitForSelector('#stackedStage[data-assets-ready="true"]', { timeout: 30000 });
+    // The Ranked copy the child and the parent show in preview (ranked-client).
+    await frame.waitForFunction(() => document.querySelector('#modeLabel')?.textContent === 'RANKED');
+    assert.equal(await page.locator('#officialGameModeTitle').textContent(), 'STACKED // Local Ranked Preview');
+    assert.equal(await frame.locator('#rankedModeTile').getAttribute('aria-current'), 'true');
+    assert.equal(await frame.locator('#rankedModeTile .tile-hint').textContent(), 'Verified runs');
+    await frame.locator('#rankedModeTile').click();
+    await frame.waitForFunction(() => document.querySelector('#stackedStatus')?.textContent === 'Ranked is active for this run.');
+    // Play: hard drops until the stack tops out.
+    await frame.locator('#continueButton').click();
+    await frame.waitForFunction(() => Number(document.querySelector('#stackedStage').dataset.simulationTick) > 30);
+    if (!mobile) await frame.locator('#stackedStage canvas').focus();
+    for (let i = 0; i < 120 && await frame.locator('#restartButton').isHidden(); i++) {
+      if (mobile) await frame.locator('[data-action="hardDrop"]').tap();
+      else await page.keyboard.press('Space');
+      await page.waitForTimeout(80);
+    }
+    // The parent results screen (results-share, contract §7.3) opens over the cabinet in its preview state.
+    const screen = page.locator('[data-ranked-results]');
+    await screen.waitFor({ state: 'visible', timeout: 60000 });
+    await page.waitForFunction(() => document.querySelector('[data-ranked-results]')?.dataset.state === 'preview', null, { timeout: 10000 });
+    const results = await screen.evaluate(root => ({
+      eyebrow: root.querySelector('.rr-eyebrow')?.textContent ?? '',
+      score: root.querySelector('.rr-score-value')?.textContent ?? '',
+      banner: root.querySelector('.rr-banner-text')?.textContent ?? '',
+      steps: [...root.querySelectorAll('li[data-step]')].map(node => node.dataset.status),
+      shareHref: root.querySelector('a[data-share="x"]')?.getAttribute('href') ?? null,
+    }));
+    assert.match(results.eyebrow, /Ranked preview · STACKED/i);
+    assert.match(results.banner, /not published while online settlement is off/i);
+    assert.deepEqual([...new Set(results.steps)], ['skipped']);
+    const intent = new URL(results.shareHref);
+    assert.equal(intent.searchParams.get('url'), 'https://lestersarcade.io', 'preview shares the Free template to the site root');
+    assert.doesNotMatch(intent.searchParams.get('text') ?? '', /0x[a-f0-9]{40}|session-|#/i);
+    await page.screenshot({ path: path.join(evidenceDir, name + '-results.png') });
+    // Close the parent overlay before touching the child panel; its View results button stays up.
+    await page.keyboard.press('Escape');
+    await screen.waitFor({ state: 'detached', timeout: 10000 });
+    await page.locator('.cabinet-results-reopen').waitFor({ state: 'visible', timeout: 5000 });
+    await frame.waitForFunction(() => document.querySelector('#overlayCopy').textContent === 'Replay verified. Ranked preview: nothing is published while online settlement is off.', null, { timeout: 20000 });
+    assert.equal(await frame.locator('#shareRow').isHidden(), true, 'the child share row is hidden for Ranked');
+    assert.equal(await frame.locator('#restartButton').textContent(), 'Choose a new Ranked run');
+    assert.equal(await frame.locator('#restartButton').isEnabled(), true);
+    const stateCopy = await page.locator('#officialGameStateCopy').textContent();
+    assert.match(stateCopy, /Canonical Ranked preview saved locally/i);
+    assert.doesNotMatch(stateCopy, /accepted for your profile|STACKED replay verified locally/i);
+    assert.equal(results.score.replaceAll(',', ''), (await frame.locator('#resultScore').textContent()).replaceAll(',', ''), 'the results screen shows the run score');
+    await page.screenshot({ path: path.join(evidenceDir, name + '-child-result.png') });
+    // A16: "Choose a new Ranked run" opens the Ranked entry modal (its View results button hides under
+    // it). Cancelling spends nothing and leaves the finished run on screen, View results included.
+    await frame.locator('#restartButton').click();
+    await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible', timeout: 10000 });
+    assert.match(await page.locator('#rankedEntryModal').innerText(), /Ranked · Entry/i);
+    assert.equal(await page.locator('.cabinet-results-reopen').isVisible(), false, 'View results hides under the entry modal');
+    await page.locator('#rankedEntryCancel').click();
+    await page.locator('#rankedEntryModal').waitFor({ state: 'hidden', timeout: 5000 });
+    await page.locator('.cabinet-results-reopen').waitFor({ state: 'visible', timeout: 5000 });
+    assert.equal(await page.locator('iframe.stacked-game-frame').count(), 1, 'the finished cabinet stays after a cancelled entry');
+    // View results reopens the same preview screen.
+    await page.locator('.cabinet-results-reopen').click();
+    await screen.waitFor({ state: 'visible', timeout: 10000 });
+    assert.equal(await screen.getAttribute('data-state'), 'preview');
+    await page.keyboard.press('Escape');
+    await screen.waitFor({ state: 'detached', timeout: 10000 });
+    reports.push({ name, results: { eyebrow: results.eyebrow, score: results.score, steps: results.steps }, apiRequests: apiRequests.length, errors });
+    console.log(JSON.stringify(reports.at(-1)));
+    await context.close();
+    assert.deepEqual(apiRequests, [], `${name}: preview must not call /api`);
+    assert.deepEqual(errors, [], name + ' has no browser errors');
+  }
 } catch (error) {
   console.error(error);
   for (const context of browser.contexts()) for (const page of context.pages()) {

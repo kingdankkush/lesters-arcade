@@ -9,8 +9,11 @@ const evidenceDir = path.resolve(process.env.STACKED_CABINET_EVIDENCE_DIR || pat
 await mkdir(evidenceDir, { recursive: true });
 const dependency = process.env.STACKED_PLAYWRIGHT_PATH || path.join(root, 'benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs');
 const { chromium } = await import(pathToFileURL(dependency).href);
-const { server, origin } = process.env.STACKED_CABINET_BASE_URL
-  ? { server: null, origin: process.env.STACKED_CABINET_BASE_URL }
+// STACKED_ORIGIN (as the other STACKED smokes take it) or STACKED_CABINET_BASE_URL: an already-served
+// apps/portal web root; otherwise the harness's own static server.
+const externalOrigin = process.env.STACKED_ORIGIN || process.env.STACKED_CABINET_BASE_URL;
+const { server, origin } = externalOrigin
+  ? { server: null, origin: new URL(externalOrigin).origin }
   : await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
 const reports = [];
