@@ -11,6 +11,7 @@
 
 import { moderateName } from './name-moderation.mjs';
 import { arcadeAvatarForUri } from './arcade-avatars.mjs';
+import { liteForgeFeeOverrides } from './liteforge-fees.mjs';
 
 export const HANDLE_MIN_BYTES = 3;
 export const HANDLE_MAX_BYTES = 18;
@@ -147,7 +148,8 @@ export async function sendSetProfile(walletProvider, { displayName, avatarUri = 
   await walletChain(browserProvider);
   const signer = await browserProvider.getSigner(from);
   const registry = new ethers.Contract(registryAddress, PROFILE_CHAIN_ABI, signer);
-  const tx = await registry.setProfile(displayName, avatarUri);
+  // Priced from the latest block, never the wallet's own fee guess (liteforge-fees.mjs).
+  const tx = await registry.setProfile(displayName, avatarUri, await liteForgeFeeOverrides(browserProvider));
   return {
     txHash: tx.hash,
     async wait() {

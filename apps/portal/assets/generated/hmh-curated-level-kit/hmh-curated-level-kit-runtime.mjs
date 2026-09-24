@@ -147,6 +147,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/leaderboard-engine.mjs",
     "apps/portal/src/leaderboard-seed.mjs",
     "apps/portal/src/leaderboard-view.mjs",
+    "apps/portal/src/liteforge-fees.mjs",
     "apps/portal/src/litvm-chain-client.mjs",
     "apps/portal/src/name-claim-prompt.mjs",
     "apps/portal/src/name-moderation.mjs",

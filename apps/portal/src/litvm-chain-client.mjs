@@ -20,6 +20,7 @@
 import { LITVM_LITEFORGE_NETWORK } from './arcade-core.mjs';
 import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from './settlement.mjs';
 import { classifyWalletError } from './wallet-auth.mjs';
+import { liteForgeFeeOverrides, liteForgeMaxFeePerGas } from './liteforge-fees.mjs';
 import { attestationDomain, buildVerifiedRun, deserializeVerifiedRun, isAttestationValid } from './verifier-attestation.mjs';
 
 // Lazy-load the vendored ethers ESM bundle so the heavy lib only loads when a
@@ -206,17 +207,18 @@ async function withReadProvider(ethers, readProvider, read) {
 }
 
 // Gas for openSession (three native transfers plus the paid-session record),
-// padded. The fee per gas comes from the public RPC; the fallback covers a
-// failed fee read at LiteForge's 2026-09-23 level (about 1.5 gwei).
+// padded. The fee per gas is the cap the entry is sent with (liteforge-fees.mjs);
+// the fallback is that cap's 5 gwei floor, for balance checks without a block read.
 export const RANKED_ENTRY_GAS_UNITS = 250_000n;
-export const RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI = 2_000_000_000n;
+export const RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI = 5_000_000_000n;
+// The funds check budgets the same fee cap the entry is sent with (liteforge-fees.mjs: 10x the latest
+// base fee, at least 5 gwei), because the wallet refuses a transaction it cannot cover at its cap.
 async function estimateEntryGasWei(provider) {
   try {
-    const fee = await provider.getFeeData();
-    const perGas = fee?.maxFeePerGas ?? fee?.gasPrice ?? 0n;
-    return RANKED_ENTRY_GAS_UNITS * (perGas > 0n ? perGas : RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI);
+    const block = await provider.getBlock('latest');
+    return RANKED_ENTRY_GAS_UNITS * liteForgeMaxFeePerGas(block?.baseFeePerGas);
   } catch {
-    return RANKED_ENTRY_GAS_UNITS * RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI;
+    return RANKED_ENTRY_GAS_UNITS * liteForgeMaxFeePerGas(null);
   }
 }
 
@@ -284,7 +286,9 @@ export async function sendRankedEntry(walletProvider, {
   }
   const gameId32 = quote.gameId32 ?? ethers.id(gameId);
   const entry = new ethers.Contract(quote.rankedEntryAddress, RANKED_ENTRY_ABI, signer);
-  const tx = await entry.openSession(sessionId32, gameId32, { value: quote.entryTotalWei });
+  // Priced from the latest block (public RPC, else the wallet's), never the wallet's own fee guess.
+  const fees = await withReadProvider(ethers, readProvider, (provider) => liteForgeFeeOverrides(provider)).catch(() => liteForgeFeeOverrides(browserProvider));
+  const tx = await entry.openSession(sessionId32, gameId32, { value: quote.entryTotalWei, ...fees });
   const broadcastAt = now();
   const receiptOnce = async () => {
     try {
@@ -413,7 +417,7 @@ export async function submitRankedSession(walletProvider, {
   if (!isAttestationValid(ethers, { domain, run: built.run, signature: attestation.signature, trustedVerifier: gate.trustedVerifier })) {
     throw new Error('The verifier attestation is invalid or expired; the run was not published.');
   }
-  const tx = await contract.submitVerifiedSession(built.run, [...built.achievements32], attestation.signature);
+  const tx = await contract.submitVerifiedSession(built.run, [...built.achievements32], attestation.signature, await liteForgeFeeOverrides(browserProvider));
   const receipt = await tx.wait();
   return { txHash: tx.hash, receipt, sessionId32 };
 }
@@ -430,7 +434,7 @@ export async function submitProfile(walletProvider, { displayName, avatarUri = '
   }
   const signer = await browserProvider.getSigner();
   const contract = new ethers.Contract(profileContractAddress(), PROFILE_REGISTRY_ABI, signer);
-  const tx = await contract.setProfile(displayName, avatarUri);
+  const tx = await contract.setProfile(displayName, avatarUri, await liteForgeFeeOverrides(browserProvider));
   const receipt = await tx.wait();
   return { txHash: tx.hash, receipt };
 }

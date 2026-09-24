@@ -11,6 +11,7 @@ import {
   RANKED_ENTRY_CONFIRM_DEADLINE_MS, RANKED_ENTRY_POLL_INTERVAL_MS, RANKED_ENTRY_CLOSED_ERROR, RANKED_ENTRY_ACCOUNT_CHANGED_ERROR,
 } from '../apps/portal/src/litvm-chain-client.mjs';
 import { LITVM_CONTRACT_ADDRESSES, SETTLEMENT_LIVE } from '../apps/portal/src/settlement.mjs';
+import { liteForgeFeeOverrides, liteForgeMaxFeePerGas } from '../apps/portal/src/liteforge-fees.mjs';
 
 const ethers = await loadEthers();
 const WALLET = `0x${'12'.repeat(20)}`;
@@ -134,11 +135,14 @@ test('funds check includes the entry total', async () => {
   assert.equal(exact.ok, true);
   assert.equal(exact.hasFunds, true);
 
-  // Without an override, the gas is openSession's padded units at the public
-  // RPC's max fee per gas (ethers: 2 x base fee + priority fee = 4 gwei here).
+  // Without an override, the gas is openSession's padded units at the fee cap the
+  // entry is sent with (liteforge-fees.mjs: 10 x the latest base fee, at least
+  // 5 gwei), because the wallet refuses a transaction it cannot cover at its cap.
   const estimated = await checkRankedReadiness(walletOnlyChain(), { gameId: GAME, wallet: WALLET, readProvider: publicRpc({ gasPrice: 2_000_000_000n }) });
-  assert.equal(estimated.gasWei, RANKED_ENTRY_GAS_UNITS * 4_000_000_000n);
-  assert.equal(estimated.needWei, TOTAL + RANKED_ENTRY_GAS_UNITS * 4_000_000_000n);
+  assert.equal(estimated.gasWei, RANKED_ENTRY_GAS_UNITS * 20_000_000_000n);
+  assert.equal(estimated.needWei, TOTAL + RANKED_ENTRY_GAS_UNITS * 20_000_000_000n);
+  const lowBase = await checkRankedReadiness(walletOnlyChain(), { gameId: GAME, wallet: WALLET, readProvider: publicRpc({ gasPrice: 100_000_000n }) });
+  assert.equal(lowBase.gasWei, RANKED_ENTRY_GAS_UNITS * 5_000_000_000n, 'a 0.1 gwei base fee still budgets the 5 gwei floor');
 
   // The preflight carries the same numbers.
   const preflight = preflightFromReadiness(short, { gameId: GAME, now: 5 });
@@ -199,6 +203,9 @@ function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, wa
       constructor(address, abi, runner) { this.address = address; this.runner = runner; }
       async openSession(sessionId32, gameId32, overrides) {
         log.push(`wallet:openSession:${sessionId32}:${gameId32}:${overrides.value}`);
+        // Priced by the arcade (liteforge-fees.mjs), never left to the wallet's own fee guess.
+        assert.equal(overrides.maxFeePerGas, 5_000_000_000n, 'no block read in this fixture: the 5 gwei floor');
+        assert.equal(overrides.maxPriorityFeePerGas, 0n);
         return {
           hash: `0x${'77'.repeat(32)}`,
           wait: async () => {
@@ -233,6 +240,7 @@ function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, wa
     RANKED_ENTRY_CONFIRM_DEADLINE_MS, RANKED_ENTRY_POLL_INTERVAL_MS, RANKED_ENTRY_CLOSED_ERROR, RANKED_ENTRY_ACCOUNT_CHANGED_ERROR,
     setTimeout,
     withPublicRead: async () => { throw new Error('tests inject the read provider'); },
+    liteForgeFeeOverrides, liteForgeMaxFeePerGas,
   };
   const api = runInNewContext(`${code}\n({ sendRankedEntry, openRankedSession })`, context);
   const wallet = { async request({ method }) { if (method === 'eth_chainId') return '0x1159'; throw new Error(`unexpected wallet call ${method}`); } };

@@ -369,6 +369,8 @@ const NODE_CHECK_FILES = [
   'tests/wallet-session.test.mjs',
   'tests/wallet-picker.test.mjs',
   'tests/ranked-preflight.test.mjs',
+  'apps/portal/src/liteforge-fees.mjs',
+  'tests/liteforge-fees.test.mjs',
   'tests/ranked-entry-flow.test.mjs',
   'tests/wallet-main-glue.test.mjs',
   'tests/integration-glue-signin.test.mjs',
