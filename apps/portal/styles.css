@@ -144,11 +144,6 @@ h3 { margin-bottom: 8px; color: white; }
   filter: drop-shadow(0 0 18px rgba(25, 247, 255, 0.25));
 }
 
-#walletStatus {
-  color: var(--neon-green);
-  word-break: break-word;
-}
-
 button {
   cursor: pointer;
   border: 0;
@@ -1824,12 +1819,6 @@ svg.arcade-icon {
   box-shadow: 0 0 22px rgba(255, 61, 242, 0.32);
 }
 
-.wallet-rail-panel {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-}
-
 .wallet-rail-card {
   padding: 12px;
   border: 1px solid rgba(25, 247, 255, 0.24);
@@ -1850,30 +1839,14 @@ svg.arcade-icon {
   color: var(--muted);
 }
 
-.wallet-rail-card.right-chain,
-.wallet-rail-card.connected-valid-chain {
-  border-color: rgba(69, 255, 138, 0.58);
-  box-shadow: inset 0 0 18px rgba(69, 255, 138, 0.08);
-}
-
-.wallet-rail-card.wrong-chain,
-.wallet-rail-card.connected-wrong-chain {
-  border-color: rgba(255, 232, 77, 0.68);
-  box-shadow: inset 0 0 18px rgba(255, 232, 77, 0.1);
-}
-
 /* U11a. The simulated fallback identity is a trust surface, not a status: it
-   reads amber like the wrong-chain warning rather than green like a real
-   connection, and it must not be mistaken for a connected wallet. */
-.wallet-rail-card.simulated-wallet,
+   reads amber like a warning rather than green like a real connection, and it
+   must not be mistaken for a connected wallet. */
 .wallet-rail-card.simulated-wallet-notice {
+  margin-top: 10px;
   border-color: rgba(255, 176, 62, 0.72);
   background: rgba(38, 22, 4, 0.72);
   box-shadow: inset 0 0 18px rgba(255, 176, 62, 0.12);
-}
-
-.wallet-rail-card.simulated-wallet-notice {
-  margin-top: 10px;
 }
 
 .wallet-rail-card.simulated-wallet-notice strong {
@@ -1888,13 +1861,15 @@ svg.arcade-icon {
   color: rgb(255, 196, 104);
 }
 
-/* U11a shell banner. Amber and full width so the simulated identity is legible
-   on every route, not only in Profile. */
+/* U11a shell banner. Amber and as wide as the content column so the simulated
+   identity is legible on every route, not only in Profile. */
 .simulated-wallet-banner {
   /* Top margin clears the sticky nav, which otherwise crops the banner's top
      border and the first line of the headline. */
   margin: 14px auto 12px;
-  max-width: 1180px;
+  /* Keep a side gutter so its rounded border is not cut off at phone widths. */
+  box-sizing: border-box;
+  width: min(1180px, calc(100% - 40px));
   padding: 10px 14px;
   border: 1px solid rgba(255, 176, 62, 0.72);
   border-radius: 12px;
@@ -1903,6 +1878,13 @@ svg.arcade-icon {
 }
 
 .simulated-wallet-banner[hidden] {
+  display: none;
+}
+
+/* Active play hides the shell chrome (nav, footer) so the game frame owns the
+   viewport; above it the banner pushed the frame's bottom off screen. It shows
+   again on the next shell route. */
+html[data-ingame="true"] .simulated-wallet-banner {
   display: none;
 }
 
@@ -1916,13 +1898,6 @@ svg.arcade-icon {
   display: block;
   margin-top: 4px;
   color: var(--muted);
-}
-
-.wallet-link-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
 }
 
 .wallet-link {
