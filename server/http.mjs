@@ -222,11 +222,35 @@ function allowedQueryFor(query, method) {
   return query?.[method] ?? [];
 }
 
-function logInternal(label, error) {
-  // Error name and code only: messages can embed connection strings or RPC
-  // URLs, and deps/config objects must never reach a log (contract §4.1).
-  const code = typeof error?.code === 'string' || typeof error?.code === 'number' ? error.code : 'none';
-  console.error(`[${label}] internal-error`, error?.name ?? 'Error', code);
+const SAFE_ERROR_NAME = /^[A-Za-z_$][A-Za-z0-9_$]{0,63}$/;
+const SAFE_ERROR_CODE = /^[A-Za-z0-9_.-]{1,64}$/;
+// A Postgres SQLSTATE: five upper-case alphanumerics with at least one digit
+// (57P01, 23505, XX000), so a Node code such as EPIPE is never taken for one.
+const SQLSTATE = /^(?=[0-9A-Z]*[0-9])[0-9A-Z]{5}$/;
+
+// The only facts about an error that may reach a log: { name, code, sqlstate }.
+// Never the message (it can embed a connection string or an RPC URL with a
+// key), the stack, the request URL, deps or config (contract §4.1). Each value
+// is shape-checked, so a name or code that carries text is logged as 'Error'
+// or null instead.
+export function errorLogFields(error) {
+  const source = error !== null && typeof error === 'object' ? error : {};
+  const name = typeof source.name === 'string' && SAFE_ERROR_NAME.test(source.name) ? source.name : 'Error';
+  const rawCode = typeof source.code === 'number' && Number.isSafeInteger(source.code) ? String(source.code) : source.code;
+  const code = typeof rawCode === 'string' && SAFE_ERROR_CODE.test(rawCode) ? rawCode : null;
+  const rawState = source.sqlstate ?? source.sqlState ?? code;
+  const sqlstate = typeof rawState === 'string' && SQLSTATE.test(rawState) ? rawState : null;
+  return { name, code, sqlstate };
+}
+
+// One line per 500 internal-error, so the Vercel runtime log shows the cause
+// class of every failure (name, code, SQLSTATE) and nothing else.
+export function logInternalError(label, error) {
+  console.error(`[${label}] internal-error`, errorLogFields(error));
+}
+
+function isHandlerResult(result) {
+  return Boolean(result) && typeof result === 'object' && Number.isInteger(result.status) && result.body !== undefined;
 }
 
 // Builds the createHandler(depsFactory) of an endpoint module.
@@ -269,9 +293,12 @@ export function makeHandler({ label = 'api', methods = ['GET'], query = [], maxB
           if (!read.ok) { sendJson(res, read.status, errorBody(read.error)); return; }
           request.body = read.body;
         }
-        sendResult(res, await run(request, deps));
+        const result = await run(request, deps);
+        // A handler that answers nothing is a bug: it is logged like a throw.
+        if (!isHandlerResult(result)) throw new TypeError('invalid handler result');
+        sendResult(res, result);
       } catch (error) {
-        logInternal(label, error);
+        logInternalError(label, error);
         sendJson(res, 500, errorBody('internal-error'));
       }
     };

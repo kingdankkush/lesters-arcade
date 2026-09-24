@@ -243,7 +243,7 @@ test('the handler seam checks the method, the query and auth before the body, an
 
   const logged = [];
   const original = console.error;
-  console.error = (...args) => logged.push(args.map(String).join(' '));
+  console.error = (...args) => logged.push(args);
   const crash = fakeRes();
   try {
     await handler({ method: 'PUT', url: '/api/x', headers: { authorization: 'Bearer ok' }, body: { explode: true } }, crash);
@@ -251,8 +251,8 @@ test('the handler seam checks the method, the query and auth before the body, an
     console.error = original;
   }
   assert.deepEqual([crash.statusCode, crash.body], [500, { ok: false, error: 'internal-error' }]);
-  assert.equal(logged.join('\n').includes(NEON_PASSWORD), false, 'only the error name and code are logged');
-  assert.match(logged.join('\n'), /XX000/);
+  assert.deepEqual(logged, [['[api] internal-error', { name: 'Error', code: 'XX000', sqlstate: 'XX000' }]], 'one line: the cause class only');
+  assert.equal(JSON.stringify(logged).includes(NEON_PASSWORD), false, 'never the message');
 
   const res = fakeRes();
   sendJson(res, 404, { ok: false, error: 'session-not-found' }, { cache: 'public, s-maxage=30', headers: { 'Retry-After': '5' } });
@@ -260,10 +260,11 @@ test('the handler seam checks the method, the query and auth before the body, an
 });
 
 test('server/http.mjs exports the §4.1 helpers, the handler seam and the Bearer seam only', () => {
-  // §4.1 helpers, makeHandler (A30), foldIp (tested bucket input), and the
-  // Bearer seam that settle (E2-E4, E15) reuses: verifyBearer and sessionAudience.
+  // §4.1 helpers, makeHandler (A30), foldIp (tested bucket input), the
+  // Bearer seam that settle (E2-E4, E15) reuses: verifyBearer and sessionAudience,
+  // and the redacted internal-error log the E10/E11 adapters share (ops-health).
   assert.deepEqual(Object.keys(httpModule).sort(), [
-    'bearerToken', 'clientIp', 'foldIp', 'ipBucket', 'makeHandler', 'queryOf', 'readJsonBody', 'sendJson', 'sessionAudience', 'verifyBearer',
+    'bearerToken', 'clientIp', 'errorLogFields', 'foldIp', 'ipBucket', 'logInternalError', 'makeHandler', 'queryOf', 'readJsonBody', 'sendJson', 'sessionAudience', 'verifyBearer',
   ]);
   assert.deepEqual(Object.keys(deploymentModule).sort(), ['UNAVAILABLE_DEPLOYMENT', 'loadDeployment']);
 });

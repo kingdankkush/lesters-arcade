@@ -16,7 +16,7 @@
 
 import { readFile } from 'node:fs/promises';
 import { ImageResponse } from '@vercel/og';
-import { clientIp, ipBucket, queryOf, sendJson } from '../server/http.mjs';
+import { clientIp, ipBucket, logInternalError, queryOf, sendJson } from '../server/http.mjs';
 import { buildBaseDeps } from '../server/config.mjs';
 import { ensureSchema } from '../server/neon/migrations.mjs';
 import { readPublicSession } from '../server/neon/queries.mjs';
@@ -125,9 +125,8 @@ export async function shareCardRequest({ method = 'GET', query = {}, ip = 'unkno
 }
 
 function logInternal(error) {
-  // Error name and code only: messages can embed connection strings (§4.1).
-  const code = typeof error?.code === 'string' || typeof error?.code === 'number' ? error.code : 'none';
-  console.error('[share-card] internal-error', error?.name ?? 'Error', code);
+  // { name, code, sqlstate } only: messages can embed connection strings (§4.1).
+  logInternalError('share-card', error);
 }
 
 // A30 seam. The adapter is the E11 one: GET and HEAD, the declared query

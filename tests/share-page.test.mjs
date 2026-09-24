@@ -317,7 +317,8 @@ test('a failing read answers a 500 page and logs only the error name and code', 
     assert.equal(response.headers['content-type'], 'text/html; charset=utf-8');
     assert.equal(meta(response.html, 'og:image'), 'https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png', 'generic tags');
     assert.doesNotMatch(response.html, /hunter2|postgres:\/\/|NeonDbError/);
-    assert.deepEqual(logged, [['[share-page] internal-error', 'NeonDbError', '57P01']]);
+    assert.deepEqual(logged, [['[share-page] internal-error', { name: 'NeonDbError', code: '57P01', sqlstate: '57P01' }]]);
+    assert.deepEqual(Object.keys(logged[0][1]), ['name', 'code', 'sqlstate'], 'the logged object carries only the cause class');
   } finally {
     console.error = original;
     await db.close();

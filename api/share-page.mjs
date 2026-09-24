@@ -11,7 +11,7 @@
 // Cache: confirmed public, s-maxage=300, stale-while-revalidate=86400; other
 // statuses public, s-maxage=15; 404 public, s-maxage=30; errors no-store.
 
-import { queryOf } from '../server/http.mjs';
+import { logInternalError, queryOf } from '../server/http.mjs';
 import { buildBaseDeps } from '../server/config.mjs';
 import { ensureSchema } from '../server/neon/migrations.mjs';
 import { readPublicSession } from '../server/neon/queries.mjs';
@@ -63,9 +63,8 @@ function sendHtml(res, { status, body, headers }, method) {
 }
 
 function logInternal(error) {
-  // Error name and code only: messages can embed connection strings (§4.1).
-  const code = typeof error?.code === 'string' || typeof error?.code === 'number' ? error.code : 'none';
-  console.error('[share-page] internal-error', error?.name ?? 'Error', code);
+  // { name, code, sqlstate } only: messages can embed connection strings (§4.1).
+  logInternalError('share-page', error);
 }
 
 // A30 seam. The adapter is the E10 one: GET and HEAD, the declared query
