@@ -11,6 +11,19 @@ const { chromium } = await import(pathToFileURL(dependency).href);
 const { server, origin } = process.env.STACKED_ORIGIN
   ? { server: { close(callback) { callback?.(); } }, origin: new URL(process.env.STACKED_ORIGIN).origin }
   : await startPortalStaticServer({ rootDir: path.join(root, 'apps/portal') });
+// The settlement flag the served portal carries (apps/portal/src/settlement.mjs is served as a static
+// file): true, false, or null when it cannot be read. The preview assertions hold only while it is false.
+async function servedSettlementLive(origin) {
+  try {
+    const response = await fetch(new URL('/src/settlement.mjs', origin), { cache: 'no-store' });
+    if (!response.ok) return null;
+    const match = /export const SETTLEMENT_LIVE = (true|false);/.exec(await response.text());
+    return match ? match[1] === 'true' : null;
+  } catch {
+    return null;
+  }
+}
+const servedLive = await servedSettlementLive(origin);
 const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--enable-webgl', '--enable-gpu', '--ignore-gpu-blocklist'] });
 const reports = [];
 try {
@@ -157,7 +170,13 @@ try {
   }
   // Ranked in preview (both settlement flags false). The Chikun smoke's fixture stub signs in (public key
   // 0x11…11); the entry modal approves without payment, and nothing may reach /api (contract §9.1).
-  for (const { name, mobile, width, height } of [
+  // Against a portal serving SETTLEMENT_LIVE = true (after runbook step 7) these passes are reported as
+  // not run: the live Ranked run is scripts/ranked-live-browser-e2e.mjs --live (runbook step 9).
+  if (servedLive === true) {
+    reports.push({ name: 'ranked-preview', notRun: 'the served portal has SETTLEMENT_LIVE on' });
+    console.log(JSON.stringify(reports.at(-1)));
+  }
+  for (const { name, mobile, width, height } of servedLive === true ? [] : [
     { name:'ranked-desktop', mobile:false, width:1440, height:1000 },
     { name:'ranked-mobile', mobile:true, width:390, height:844 },
   ]) {

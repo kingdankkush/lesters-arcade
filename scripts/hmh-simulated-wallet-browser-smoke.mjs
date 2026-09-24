@@ -16,6 +16,23 @@ import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwrig
 
 const origin = process.env.HMH_PORTAL_ORIGIN ?? 'http://127.0.0.1:8899';
 
+// The settlement flag the served portal carries (apps/portal/src/settlement.mjs is served as a static
+// file): true, false, or null when it cannot be read. The preview assertions hold only while it is false.
+async function servedSettlementLive(origin) {
+  try {
+    const response = await fetch(new URL('/src/settlement.mjs', origin), { cache: 'no-store' });
+    if (!response.ok) return null;
+    const match = /export const SETTLEMENT_LIVE = (true|false);/.exec(await response.text());
+    return match ? match[1] === 'true' : null;
+  } catch {
+    return null;
+  }
+}
+if (await servedSettlementLive(origin) === true) {
+  console.error(`${origin} serves SETTLEMENT_LIVE = true. This smoke checks the preview fallback (both flags off) only.`);
+  process.exit(2);
+}
+
 const browser = await chromium.launch({
   executablePath: String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`,
   headless: true,

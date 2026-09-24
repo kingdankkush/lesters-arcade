@@ -204,6 +204,19 @@ export function startPortalStaticServer({ rootDir, host = '127.0.0.1', port = 0 
   });
 }
 
+// The settlement flag the served portal carries (apps/portal/src/settlement.mjs is served as a static
+// file): true, false, or null when it cannot be read. The preview assertions hold only while it is false.
+async function servedSettlementLive(origin) {
+  try {
+    const response = await fetch(new URL('/src/settlement.mjs', origin), { cache: 'no-store' });
+    if (!response.ok) return null;
+    const match = /export const SETTLEMENT_LIVE = (true|false);/.exec(await response.text());
+    return match ? match[1] === 'true' : null;
+  } catch {
+    return null;
+  }
+}
+
 const isMain = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 
 if (isMain) {
@@ -348,7 +361,7 @@ if (isMain) {
       const flowErrors = consoleErrors.slice(errorsBefore);
       if (flowErrors.length > 0) throw new Error(`console/page errors during flow: ${flowErrors.join(' | ')}`);
       results.push({ id, ok: true, detail: detail ?? null });
-      console.log(`PASS ${id}`);
+      console.log(detail?.notRun ? `NOT RUN ${id}: ${detail.notRun}` : `PASS ${id}`);
     } catch (error) {
       results.push({ id, ok: false, error: String(error?.message ?? error) });
       console.error(`FAIL ${id}: ${error?.message ?? error}`);
@@ -615,6 +628,9 @@ if (isMain) {
     // chain 4441, a balance, SIWE signed with the public 0x11…11 key, and switch/add chain. It is added
     // last, so the guest flows above ran with no provider at all.
     await runFlow('ranked-preview', async () => {
+      // The flow asserts the preview (both flags off). After runbook step 7 a hosted origin serves the live
+      // flags; the live Ranked run is scripts/ranked-live-browser-e2e.mjs --live (runbook step 9).
+      if (await servedSettlementLive(origin) === true) return { notRun: 'the served portal has SETTLEMENT_LIVE on' };
       const apiRequests = [];
       const onRequest = (request) => { if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(request.url()); };
       page.on('request', onRequest);

@@ -43,9 +43,27 @@ async function loadPlaywright() {
   }
 }
 
+// The settlement flag the served portal carries (apps/portal/src/settlement.mjs is served as a static
+// file): true, false, or null when it cannot be read. The preview assertions hold only while it is false.
+async function servedSettlementLive(origin) {
+  try {
+    const response = await fetch(new URL('/src/settlement.mjs', origin), { cache: 'no-store' });
+    if (!response.ok) return null;
+    const match = /export const SETTLEMENT_LIVE = (true|false);/.exec(await response.text());
+    return match ? match[1] === 'true' : null;
+  } catch {
+    return null;
+  }
+}
+
 async function runPreviewSmoke() {
-  const { chromium } = await loadPlaywright();
   const origin = process.env.CHIKUN_PORTAL_ORIGIN ?? 'http://127.0.0.1:8791';
+  if (await servedSettlementLive(origin) === true) {
+    console.error(`${origin} serves SETTLEMENT_LIVE = true. This smoke asserts the preview (both flags off); after the flip use the --live variant (runbook step 10).`);
+    process.exitCode = 2;
+    return;
+  }
+  const { chromium } = await loadPlaywright();
   const evidencePath = process.env.CHIKUN_SMOKE_SCREENSHOT
     ?? fileURLToPath(new URL('../docs/testing/VISUAL_BASELINES/current/chikun-ranked-flow.png', import.meta.url));
   const chromePath = process.env.CHROME_EXECUTABLE_PATH ?? String.raw`C:\Program Files\Google\Chrome\Application\chrome.exe`;
