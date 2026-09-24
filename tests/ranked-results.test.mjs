@@ -9,7 +9,7 @@ import { buildHmhShareText, buildShareLinks, shareUrlFor } from '../apps/portal/
 import { startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 import { applySeedTicket } from '../apps/portal/src/ranked-identity.mjs';
 import { RANKED_ENTRY_EVENT, recordEntryBroadcast } from '../apps/portal/src/ranked-entry-flow.mjs';
-import { rankedGlueContext, until } from './helpers/ranked-client-vm.mjs';
+import { portalFunctionSource, rankedGlueContext, until } from './helpers/ranked-client-vm.mjs';
 
 // Contract §7.3 (openRankedResults), §7.7 (events), guide §3.3 and §5.11.
 // A minimal fake DOM stands in for jsdom: createElement, tree operations,
@@ -802,6 +802,127 @@ for (const gameId of ['chikun', 'stacked']) {
   });
 }
 
+// The screen's Play again (Ranked), like the child's Run Again, closes the
+// screen and opens the Ranked entry modal while the finished cabinet is still
+// mounted. The cabinet button floats above that modal (z-index 10040 against
+// 90), so it stays hidden until the entry settles, and the modal refuses a
+// second request while it is open: a second set of listeners on its shared
+// buttons would outlive the first and later pay for a stale session.
+function entryModalDom(documentRef) {
+  const node = (tag = 'div') => documentRef.body.appendChild(documentRef.createElement(tag));
+  const freeLink = node('a');
+  const modal = node();
+  modal.hidden = true;
+  modal.querySelector = (selector) => (selector === '#rankedEntryFreeLink' ? freeLink : null);
+  const names = ['rankedEntryWallet', 'rankedEntryNetwork', 'rankedEntryStatus', 'rankedEntryBalance', 'rankedEntryChainGuard', 'rankedEntryApprove', 'rankedEntryCancel', 'rankedEntryFee', 'rankedEntryReserve', 'rankedEntryTotal'];
+  return { rankedEntryModal: modal, freeLink, ...Object.fromEntries(names.map((name) => [name, node(name === 'rankedEntryApprove' || name === 'rankedEntryCancel' ? 'button' : 'p')])) };
+}
+
+for (const gameId of ['chikun', 'stacked']) {
+  test(`${gameId}: Play again (Ranked) from the results screen keeps the cabinet View results hidden while the entry modal is open`, async () => {
+    const hostKey = gameId === 'chikun' ? 'chikunHost' : 'stackedHost';
+    const host = await hmhSummaryHost({ selectedGameId: gameId, gameOver: gameId === 'chikun', [hostKey]: {} });
+    const { documentRef } = host;
+    const page = host.context;
+    const entry = entryModalDom(documentRef);
+    Object.assign(page.dom, entry);
+    const minted = [];
+    const started = [];
+    const mounted = [];
+    Object.assign(page, {
+      SETTLEMENT_LIVE: false, connectedWallet: WALLET, connectedAddress: WALLET, walletConnector: 'injected-evm',
+      walletProviderPending: false, walletAuthenticated: true, officialSelectedMode: 'ranked',
+      hmhChallengeUi: { requestFor: () => null },
+      beginTrackedSession: () => {
+        const sessionId = `game-session-next-${minted.length + 1}`;
+        const session = { sessionId, entryFeeWei: '100000000000000000', canonicalContext: { sessionId, wallet: WALLET } };
+        minted.push(session);
+        return session;
+      },
+      startMode: async (mode, { session }) => { started.push([mode, session.sessionId]); page.currentSession = session; },
+      setOfficialView: (step) => { page.officialAppStep = step; },
+      mountChikunSession: () => mounted.push('chikun'), mountStackedSession: async () => { mounted.push('stacked'); },
+      state: { profiles: {} },
+      connectWallet: async () => { throw new Error('the wallet is already connected'); },
+      showRankedTooltip: (title) => { throw new Error(`no tooltip expected: ${title}`); },
+      ensureWalletStylesheet() {}, detectEthereumProvider: () => null,
+      formatZkLtcWei: (wei) => `${wei} wei`, rankedEntryTotalWei: (fee) => String(BigInt(fee) + 2_000_000_000_000_000n),
+      RANKED_SETTLEMENT_GAS_RESERVE_WEI: '2000000000000000', RANKED_ENTRY_FEE_ZKLTC: '0.1',
+      LITVM_LITEFORGE_NETWORK: { name: 'Fixture LiteForge', chainId: 4441 },
+    });
+    vm.runInContext(`${portalFunctionSource('startOfficialMode')}\n${portalFunctionSource('requestRankedEntry')}`, page);
+    const plays = [];
+    const view = openRankedResults({
+      handle: fakeHandle({ ...snapshotFor('preview'), gameId }),
+      context: context({ gameId, gameTitle: gameId === 'chikun' ? 'Chikun’s Escape' : 'STACKED' }),
+      actions: {
+        playAgainRanked: () => { plays.push(page.startOfficialMode('ranked')); },
+        practiceFree: () => {}, viewProfile: () => {}, backToArcade: () => {},
+      },
+      documentRef, windowRef: fakeWindow(), mount: documentRef.body.appendChild(documentRef.createElement('section')), live: false, hosted: false,
+      navigatorRef: { clipboard: { writeText: async () => {} } },
+      fetchImpl: async () => { throw new Error('offline'); },
+      onClose: () => page.rankedResultsClosed(),
+      setTimeoutImpl: () => 0, clearTimeoutImpl: () => {},
+    });
+    page.showRankedResults(view);
+    const floating = () => documentRef.body.children.find((node) => node.className === 'cabinet-results-reopen') ?? null;
+    view.close();
+    const button = floating();
+    assert.equal(button?.hidden, false, 'dismissed: the cabinet button offers the screen again');
+    await button.dispatch('click');
+    assert.equal(view.isOpen, true);
+    const approveListeners = () => (entry.rankedEntryApprove.listeners.get('click') ?? []).length;
+    // A request that never settles fails here instead of hanging the file.
+    const settled = (promise, label) => Promise.race([promise, new Promise((resolve, reject) => { setTimeout(() => reject(new Error(`${label} never settled`)), 1_000).unref?.(); })]);
+
+    // Play again (Ranked): the screen closes and the entry modal opens.
+    await buttonNamed(view.element, 'Play again (Ranked)').dispatch('click');
+    assert.equal(view.isOpen, false);
+    assert.equal(entry.rankedEntryModal.hidden, false, 'the entry modal is open');
+    assert.equal(button.hidden, true, 'the cabinet button never floats over the entry modal');
+    await button.dispatch('click');
+    assert.equal(view.isOpen, false, 'a stale click reopens nothing over the modal');
+    page.syncCabinetResultsButton();
+    assert.equal(button.hidden, true, 'every re-render keeps it hidden while the modal is open');
+
+    // A second request while the modal is open is refused: one set of listeners.
+    assert.equal(approveListeners(), 1);
+    await settled(page.startOfficialMode('ranked'), 'a second Ranked start');
+    assert.equal(await settled(page.requestRankedEntry({ sessionId: 'game-session-stray', entryFeeWei: '100000000000000000', canonicalContext: { wallet: WALLET } }), 'a second entry request'), false);
+    assert.equal(approveListeners(), 1, 'no second set of approve listeners');
+    assert.equal(minted.length, 1, 'no second pending session was minted');
+
+    // Cancel: the finished run is still on screen, so the button comes back.
+    await entry.rankedEntryCancel.dispatch('click');
+    await settled(Promise.all(plays), 'the Ranked start');
+    assert.equal(entry.rankedEntryModal.hidden, true);
+    assert.equal(approveListeners(), 0);
+    assert.equal(button.hidden, false, 'back once the entry was cancelled');
+    assert.deepEqual(started, []);
+
+    // A paused or closed entry keeps its modal open after it settled: still hidden.
+    entry.rankedEntryModal.hidden = false;
+    page.syncCabinetResultsButton();
+    assert.equal(button.hidden, true);
+    entry.rankedEntryModal.hidden = true;
+    page.syncCabinetResultsButton();
+    assert.equal(button.hidden, false);
+
+    // Play again and approve: the new run starts and the button is gone for good.
+    await button.dispatch('click');
+    await buttonNamed(view.element, 'Play again (Ranked)').dispatch('click');
+    assert.equal(button.hidden, true);
+    assert.equal(entry.rankedEntryApprove.disabled, false, 'preview approves without payment');
+    await entry.rankedEntryApprove.dispatch('click');
+    await settled(Promise.all(plays), 'the Ranked start');
+    assert.deepEqual(started, [['paid', 'game-session-next-2']], 'exactly one run, on the approved session');
+    assert.equal(approveListeners(), 0, 'no listener outlives the entry');
+    assert.equal(button.hidden, true, 'the new run is not this screen’s run');
+    assert.deepEqual(mounted, [gameId]);
+  });
+}
+
 test('the cabinet View results button is wired into every place its state changes', async () => {
   const main = (await readFile(new URL('../apps/portal/main.js', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
   const body = (name) => {
@@ -815,6 +936,20 @@ test('the cabinet View results button is wired into every place its state change
   assert.match(main, /function destroyStackedSession\(\) \{[^\n]*syncCabinetResultsButton\(\); \}/);
   // HMH keeps its own button in the game-over summary.
   assert.match(body('cabinetResultsView'), /view\.gameId !== 'chikun' && view\.gameId !== 'stacked'/);
+});
+
+// The first-Ranked name toast shows exactly when the cabinet button does
+// (after the screen closes) and owns the bottom-left corner, so on a
+// desktop-sized window the button takes the bottom-right corner while the
+// toast is on screen; on a phone it already sits at the top-left.
+test('the cabinet View results button leaves the name toast’s corner', async () => {
+  const css = (await readFile(new URL('../apps/portal/src/styles/ranked-results.css', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
+  const toast = await readFile(new URL('../apps/portal/src/name-claim-prompt.mjs', import.meta.url), 'utf8');
+  assert.match(toast, /position: 'fixed', left: '16px', bottom: '16px'/, 'the toast owns the bottom-left corner');
+  assert.match(toast, /mount\.append\(toast\)/);
+  assert.match(css, /\.cabinet-results-reopen \{\n {2}position: fixed;\n {2}z-index: 10040;\n {2}left: max\(12px, env\(safe-area-inset-left\)\);\n {2}bottom: max\(12px, env\(safe-area-inset-bottom\)\);/);
+  assert.match(css, /@media \(min-width: 721px\) and \(min-height: 561px\) \{\n {2}body:has\(> \.name-claim-toast\) > \.cabinet-results-reopen \{\n {4}left: auto;\n {4}right: max\(12px, env\(safe-area-inset-right\)\);\n {2}\}\n\}/);
+  assert.match(css, /@media \(max-width: 720px\), \(max-height: 560px\) \{\n {2}\.cabinet-results-reopen \{\n {4}top: max\(8px, env\(safe-area-inset-top\)\);\n {4}bottom: auto;/, 'phones: the top-left corner');
 });
 
 test('HMH shows View results in place of its summary for the Ranked run on screen, and keeps the Free share row', async () => {

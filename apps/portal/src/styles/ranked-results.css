@@ -421,6 +421,17 @@ body[data-ranked-results-open] > .name-claim-toast {
   outline: 2px solid var(--crypto-cyan, #19f7ff);
   outline-offset: 3px;
 }
+/* The first-Ranked name toast (name-claim-prompt.mjs, fixed at left 16px and
+   bottom 16px, a direct child of <body>) appears once the screen has closed,
+   which is exactly when this button shows. While it is on screen the button
+   takes the bottom-right corner so it never covers the toast's Claim button.
+   Phones are covered by the rule below: the button sits at the top-left. */
+@media (min-width: 721px) and (min-height: 561px) {
+  body:has(> .name-claim-toast) > .cabinet-results-reopen {
+    left: auto;
+    right: max(12px, env(safe-area-inset-right));
+  }
+}
 /* On a phone the child's result panel fills the screen and ends in its own
    buttons, so the reopen button moves to the top-left corner, over the
    cabinet's score readout instead of a control. */

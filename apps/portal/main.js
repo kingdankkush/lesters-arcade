@@ -2927,11 +2927,18 @@ function rankedResultsClosed() {
 // over it (styled in src/styles/ranked-results.css, which the screen already
 // loaded). It hides while the screen is open, and for good once the player
 // leaves the cabinet or starts another run.
+// It also hides while a Ranked start is under way (the sign-in picker, the
+// entry modal, a WalletConnect reconnect), and while the entry modal stays
+// open on a paused or closed message: it floats above those dialogs
+// (z-index 10040 against 90-130), and reopening the results screen there
+// would stack a second dialog on the payment one.
 let cabinetResultsButton = null;
+let rankedStartsInFlight = 0;
 function cabinetResultsView() {
   const view = rankedResultsView;
   if (!view || (view.gameId !== 'chikun' && view.gameId !== 'stacked')) return null;
   if (officialAppStep !== 'gameplay' || selectedGameId !== view.gameId) return null;
+  if (rankedStartsInFlight > 0 || dom.rankedEntryModal?.hidden === false) return null;
   const cabinetOpen = view.gameId === 'chikun' ? Boolean(chikunHost) : Boolean(stackedHost);
   const sessionId = (currentSession ?? lastCompletedSession)?.sessionId;
   return cabinetOpen && sessionId && view.sessionId === sessionId ? view : null;
@@ -5832,37 +5839,50 @@ async function startOfficialMode(mode) {
   catch { setOfficialView('mode-select'); return; }
   // Ranked is paid/official and wallet-bound. A guest must sign in first.
   if (mode === 'ranked') {
-    if (!connectedWallet) {
-      await connectWallet();
-      // If the player declined or closed the picker, stay on mode select.
+    // One Ranked entry at a time: while its modal is open (a results screen
+    // Play again, a child's Run Again, a double click) nothing else starts.
+    if (dom.rankedEntryModal?.hidden === false) return;
+    // The cabinet "View results" button stays hidden until this settles.
+    rankedStartsInFlight += 1;
+    syncCabinetResultsButton();
+    try {
       if (!connectedWallet) {
-        showRankedTooltip('Sign in to play Ranked', SETTLEMENT_LIVE
-          ? 'Ranked runs publish your score on LitVM, so they need a signed-in wallet. Free Mode needs no wallet.'
-          : 'Ranked preview uses your wallet as the run’s identity. Nothing is charged while verified settlement is off. Free Mode needs no wallet.');
+        await connectWallet();
+        // If the player declined or closed the picker, stay on mode select.
+        if (!connectedWallet) {
+          showRankedTooltip('Sign in to play Ranked', SETTLEMENT_LIVE
+            ? 'Ranked runs publish your score on LitVM, so they need a signed-in wallet. Free Mode needs no wallet.'
+            : 'Ranked preview uses your wallet as the run’s identity. Nothing is charged while verified settlement is off. Free Mode needs no wallet.');
+          return;
+        }
+        playSfxCue('wallet-connect', 0.055);
+      }
+      // A mock wallet (offline QA) can't rank because it can't sign / hold zkLTC.
+      if (walletConnector !== 'injected-evm') {
+        showRankedTooltip('Sign in with a real wallet to play Ranked', SETTLEMENT_LIVE
+          ? 'Ranked needs a real EVM wallet (MetaMask, Rabby or WalletConnect) to pay the entry and sign in. Free Mode is always available.'
+          : 'Ranked needs a real EVM wallet (MetaMask, Rabby or WalletConnect). Nothing is charged while verified settlement is off. Free Mode is always available.');
         return;
       }
-      playSfxCue('wallet-connect', 0.055);
+      // A WalletConnect session restored at boot creates its provider now, on
+      // this click, never at boot (guide rule 3).
+      if (walletProviderPending && !(await walletProviderForAction())) {
+        showRankedTooltip('Reconnect your wallet to play Ranked', 'Your WalletConnect session could not reconnect. Sign in again; Free Mode is always available.');
+        return;
+      }
+      // The canonical Ranked session is created BEFORE the entry modal so the
+      // entry (when live) is paid against the same session id the score is
+      // later settled under. A player who has not signed the login yet signs
+      // from the modal's own button (never from a game input handler).
+      const pendingRanked = beginTrackedSession({ mode: 'ranked' });
+      const ready = await requestRankedEntry(pendingRanked);
+      if (!ready) return; // cancelled, paused, wrong chain unresolved, unfunded, or the entry failed to send
+      officialSelectedMode = mode;
+      await startMode('paid', { session: pendingRanked });
+    } finally {
+      rankedStartsInFlight -= 1;
+      syncCabinetResultsButton();
     }
-    // A mock wallet (offline QA) can't rank because it can't sign / hold zkLTC.
-    if (walletConnector !== 'injected-evm') {
-      showRankedTooltip('Sign in with a real wallet to play Ranked', 'Ranked needs a real EVM wallet (MetaMask, Rabby or WalletConnect). Nothing is charged while verified settlement is off. Free Mode is always available.');
-      return;
-    }
-    // A WalletConnect session restored at boot creates its provider now, on
-    // this click, never at boot (guide rule 3).
-    if (walletProviderPending && !(await walletProviderForAction())) {
-      showRankedTooltip('Reconnect your wallet to play Ranked', 'Your WalletConnect session could not reconnect. Sign in again; Free Mode is always available.');
-      return;
-    }
-    // The canonical Ranked session is created BEFORE the entry modal so the
-    // entry (when live) is paid against the same session id the score is
-    // later settled under. A player who has not signed the login yet signs
-    // from the modal's own button (never from a game input handler).
-    const pendingRanked = beginTrackedSession({ mode: 'ranked' });
-    const ready = await requestRankedEntry(pendingRanked);
-    if (!ready) return; // cancelled, paused, wrong chain unresolved, unfunded, or the entry failed to send
-    officialSelectedMode = mode;
-    await startMode('paid', { session: pendingRanked });
   } else {
     officialSelectedMode = mode;
     await startMode('free');
@@ -5885,6 +5905,10 @@ function requestRankedEntry(pendingSession = null) {
   return new Promise((resolve) => {
     const modal = dom.rankedEntryModal;
     if (!modal) { resolve(!SETTLEMENT_LIVE); return; }
+    // Re-entry while the modal is open (still deciding, or halted on a paused
+    // or closed message) is refused: a second set of listeners on the shared
+    // buttons would outlive this request and later pay for its stale session.
+    if (modal.hidden === false) { resolve(false); return; }
     ensureWalletStylesheet();
     const requestedGameId = selectedGameId;
     const entryFeeWei = String(pendingSession?.entryFeeWei ?? '0');
@@ -5948,6 +5972,9 @@ function requestRankedEntry(pendingSession = null) {
       dom.rankedEntryApprove.removeEventListener('click', onApprove);
       dom.rankedEntryCancel.removeEventListener('click', onCancel);
       freeLink?.removeEventListener('click', onFree);
+      // A modal left open on a paused or closed message kept the cabinet
+      // "View results" button hidden; it may come back now.
+      syncCabinetResultsButton();
     };
     const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
     const freeLink = modal.querySelector?.('#rankedEntryFreeLink') ?? null;
