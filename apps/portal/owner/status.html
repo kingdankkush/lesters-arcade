@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Owner · Ranked health · Lester's Arcade</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07060f;
+      --panel: #120f24;
+      --card: #1a1533;
+      --ink: #f2efff;
+      --muted: #a79fd0;
+      --neon: #3cf2ff;
+      --pink: #ff4fd8;
+      --gold: #ffd35c;
+      --ok: #5cff9d;
+      --bad: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% -20%, #231a52 0%, var(--bg) 60%);
+      color: var(--ink);
+      font: 15px/1.5 ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      padding: 24px 16px 48px;
+      overflow-x: hidden;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 2px solid var(--neon);
+      border-radius: 12px;
+      box-shadow: 0 0 24px rgba(60, 242, 255, 0.25), inset 0 0 40px rgba(255, 79, 216, 0.08);
+      padding: 20px;
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.35rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--neon);
+      text-shadow: 0 0 8px rgba(60, 242, 255, 0.6);
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--pink);
+    }
+    .kicker { margin: 0 0 12px; color: var(--pink); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    p { margin: 0 0 12px; color: var(--muted); }
+    #status-summary {
+      margin: 0 0 12px;
+      padding: 12px;
+      border: 1px dashed var(--muted);
+      border-radius: 8px;
+      color: var(--ink);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    #status-summary[data-level="ok"] { border-color: var(--ok); color: var(--ok); }
+    #status-summary[data-level="warn"] { border-color: var(--gold); color: var(--gold); }
+    #status-summary[data-level="bad"] { border-color: var(--bad); color: var(--bad); }
+    #status-warnings { margin: 0 0 16px; padding-left: 1.3em; }
+    #status-warnings li { margin: 0 0 8px; color: var(--gold); overflow-wrap: anywhere; }
+    #status-warnings:empty { display: none; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 16px; }
+    .toolbar p { margin: 0; font-size: 0.8rem; }
+    button {
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b3861f;
+    }
+    button:disabled { opacity: 0.6; cursor: wait; }
+    button:focus-visible, a:focus-visible { outline: 3px solid var(--neon); outline-offset: 2px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+    section { background: var(--card); border: 1px solid rgba(60, 242, 255, 0.35); border-radius: 10px; padding: 12px; min-width: 0; }
+    dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 4px 12px; margin: 0; font-size: 0.85rem; }
+    dt { color: var(--muted); }
+    dd { margin: 0; overflow-wrap: anywhere; min-width: 0; }
+    dd.bad { color: var(--bad); font-weight: 700; }
+    dd.warn { color: var(--gold); font-weight: 700; }
+    h3 { margin: 10px 0 6px; font-size: 0.75rem; color: var(--neon); letter-spacing: 0.1em; }
+    h3:first-of-type { margin-top: 0; }
+    a { color: var(--neon); }
+    .note { font-size: 0.75rem; margin-top: 16px; }
+    @media (max-width: 420px) {
+      body { padding: 16px 8px 32px; }
+      main { padding: 14px; }
+      dl { grid-template-columns: minmax(0, 1fr); gap: 0 0; }
+      dd { margin-bottom: 6px; }
+    }
+  </style>
+  <script type="module" src="./status.mjs"></script>
+</head>
+<body>
+  <main id="owner-status-page">
+    <p class="kicker">Lester's Arcade · owner tool</p>
+    <h1>Ranked health</h1>
+    <p>A live read of <a href="/api/health">/api/health</a>: the relayer's gas, the settle queue, the chain index and the two crons. Warnings say what needs a look.</p>
+    <div id="status-summary" role="status" aria-live="polite">Loading…</div>
+    <ul id="status-warnings" aria-label="Warnings"></ul>
+    <div class="toolbar">
+      <button id="status-refresh" type="button">Refresh</button>
+      <p id="status-loaded"></p>
+    </div>
+    <div class="grid">
+      <section aria-labelledby="status-service-title">
+        <h2 id="status-service-title">Service</h2>
+        <dl id="status-service"></dl>
+      </section>
+      <section aria-labelledby="status-relayer-title">
+        <h2 id="status-relayer-title">Relayer</h2>
+        <dl id="status-relayer"></dl>
+      </section>
+      <section aria-labelledby="status-queue-title">
+        <h2 id="status-queue-title">Settle queue</h2>
+        <dl id="status-queue"></dl>
+      </section>
+      <section aria-labelledby="status-index-title">
+        <h2 id="status-index-title">Chain index</h2>
+        <dl id="status-index"></dl>
+      </section>
+      <section aria-labelledby="status-crons-title">
+        <h2 id="status-crons-title">Crons</h2>
+        <h3>index-chain · every 5 min</h3>
+        <dl id="status-cron-index-chain"></dl>
+        <h3>settle-retry · every minute</h3>
+        <dl id="status-cron-settle-retry"></dl>
+      </section>
+    </div>
+    <p class="note">Read-only: this page never asks for a key, never signs and never sends anything. The numbers are public, aggregate facts.</p>
+    <noscript><p>This page needs JavaScript to read /api/health.</p></noscript>
+  </main>
+</body>
+</html>

@@ -169,6 +169,8 @@ const NODE_CHECK_FILES = [
   'api/share-page.mjs',
   'api/share-card.mjs',
   'api/ranked-seed.mjs',
+  'apps/portal/owner/status.mjs',
+  'tests/owner-status-page.test.mjs',
   'api/health.mjs',
   'server/ops/health.mjs',
   'tests/api-health.test.mjs',
