@@ -1864,11 +1864,12 @@ let walletPickRdns = null; // the picked EIP-6963 wallet's rdns, kept with the r
 // and stored by profileSync. Every Bearer caller (profile PUT and pull,
 // profile refresh, settle, seed tickets, the name-claim flow) reads it only
 // through the wallet session (walletSessionToken), and a 401 from any of them
-// drops it through the wallet session too (invalidateWalletSession).
+// drops it through the wallet session too (invalidateWalletSession, with the
+// wallet and the refused token).
 const profileSync = createProfileSync({
   storage: ARCADE_STORAGE,
   getToken: (wallet) => walletSessionToken(wallet),
-  onUnauthorized: () => invalidateWalletSession(),
+  onUnauthorized: (wallet, refusedToken) => invalidateWalletSession(wallet, refusedToken),
 });
 let profileSyncPulledFor = null;
 let profileSyncLastPushed = null;
@@ -1878,7 +1879,7 @@ const indexApi = createIndexApiClient({
   hosted: HOSTED_PROFILE_SYNC,
   fetchImpl: (...args) => globalThis.fetch(...args),
   getToken: () => walletSessionToken(connectedWallet),
-  onUnauthorized: () => invalidateWalletSession(),
+  onUnauthorized: (wallet, refusedToken) => invalidateWalletSession(wallet, refusedToken),
 });
 function currentProfileDocument() {
   if (!connectedWallet || walletConnector !== 'injected-evm') return null;
@@ -1973,8 +1974,12 @@ function walletSessionAuthenticated(wallet) {
 // A 401 from any Bearer call: the token is dead (v2 tokens are audience-bound
 // and die at a secret rotation). The wallet session drops it and announces
 // lesters:wallet-session, so the profile, boards and Ranked all sign out
-// together; the wallet stays connected for Free play.
-function invalidateWalletSession() {
+// together; the wallet stays connected for Free play. A 401 for a token the
+// session no longer holds (a request still in flight from before a wallet
+// switch or a fresh sign-in) changes nothing: that token is already gone,
+// and the one that replaced it is live.
+function invalidateWalletSession(wallet = null, refusedToken = null) {
+  if (refusedToken && walletSessionToken(wallet ?? connectedWallet) !== refusedToken) return;
   walletAuthenticated = false;
   if (walletSession) {
     try { walletSession.invalidate(); } catch { /* announce failures never block sign-out */ }
@@ -2085,7 +2090,7 @@ function rankedSettlementClient() {
       storage: ARCADE_STORAGE,
       onPendingCount: (count) => window.dispatchEvent(new CustomEvent('lesters:ranked-pending', { detail: { count } })),
       onPublished: applyRankedPublication,
-      onUnauthorized: () => invalidateWalletSession(),
+      onUnauthorized: (wallet, refusedToken) => invalidateWalletSession(wallet, refusedToken),
     }),
   })).catch((error) => {
     rankedSettlementClientPromise = null;

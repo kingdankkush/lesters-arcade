@@ -14,8 +14,9 @@
 //
 // In the portal the Bearer token of pull() and push() comes from the wallet
 // session (`getToken(wallet)`, which is walletSession.token), and a 401 also
-// calls `onUnauthorized()` (walletSession.invalidate), so the whole page signs
-// out together. Without `getToken` this store's own session is used.
+// calls `onUnauthorized(wallet, refusedToken)` (walletSession.invalidate when
+// that token is still the live one), so the whole page signs out together.
+// Without `getToken` this store's own session is used.
 //
 // Pure module: fetch, storage and the clock are injected so the same code runs
 // in the portal and in Node tests. Nothing here touches the wallet provider.
@@ -200,10 +201,14 @@ export function createProfileSync({
     return typeof token === 'string' && sessionTokenWallet(token) === who ? token : null;
   }
 
-  // A 401 on a Bearer call: the token is dead everywhere, not just here.
-  function unauthorized() {
-    logout();
-    try { onUnauthorized?.(); } catch { /* the caller's cleanup must not mask the answer */ }
+  // A 401 on a Bearer call: the refused token is dead everywhere, not just
+  // here. The owner (the wallet session, in the portal) hears first, with the
+  // wallet and the token that was refused; this store then forgets its session
+  // only if that is still the token it holds, so a 401 that arrives after a
+  // newer sign-in (another wallet, or a fresh signature) never logs it out.
+  function unauthorized(wallet, token) {
+    try { onUnauthorized?.(wallet, token); } catch { /* the caller's cleanup must not mask the answer */ }
+    if (!token || session?.token === token) logout();
   }
 
   // GET /api/profile in the E6 shape. With a live token for this wallet it
@@ -224,7 +229,7 @@ export function createProfileSync({
     }
     const body = await readJson(response);
     if (own && response.status === 401) {
-      unauthorized();
+      unauthorized(who, own);
       return pull(who, { anonymous: true });
     }
     if (!response.ok || !body?.ok) {
@@ -262,7 +267,7 @@ export function createProfileSync({
       return { ok: false, unavailable: true, error: 'network', detail: String(error?.message ?? error) };
     }
     const body = await readJson(response);
-    if (response.status === 401) { unauthorized(); return { ok: false, unavailable: false, status: 401, error: 'invalid-session' }; }
+    if (response.status === 401) { unauthorized(sessionTokenWallet(bearer), bearer); return { ok: false, unavailable: false, status: 401, error: 'invalid-session' }; }
     if (!response.ok || !body?.ok) {
       serviceState.profile = response.status === 503 ? 'unconfigured' : 'error';
       return unavailable(response.status, body?.error);

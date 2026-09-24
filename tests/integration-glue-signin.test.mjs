@@ -51,6 +51,9 @@ function fixtureWallet() {
 function hostedServices() {
   const requests = [];
   const refuse = new Set();
+  // Endpoints whose answer waits for a gate (a request still in flight).
+  const pause = new Map();
+  let signIns = 0;
   const nonce = 'ab'.repeat(36);
   const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
   async function fetchImpl(url, init = {}) {
@@ -62,16 +65,19 @@ function hostedServices() {
       const { challenge, signature } = JSON.parse(init.body);
       const verified = verifySiweLogin(ethers, { challenge, signature, allowedDomains: ['lestersarcade.io'], nowMs: NOW, expectedChainId: 4441 });
       if (!verified.ok || challenge.nonce !== nonce) return json(401, { ok: false, error: verified.error ?? 'nonce-invalid' });
-      return json(200, { ok: true, wallet: verified.wallet, ...issueSessionToken(crypto, { secret: SECRET_FIXTURE, wallet: verified.wallet, nowMs: NOW, audience: 'lestersarcade:development' }) });
+      // Each sign-in mints a distinct token (issued a second after the last).
+      const issuedAt = NOW + 1_000 * signIns++;
+      return json(200, { ok: true, wallet: verified.wallet, ...issueSessionToken(crypto, { secret: SECRET_FIXTURE, wallet: verified.wallet, nowMs: issuedAt, audience: 'lestersarcade:development' }) });
     }
     const endpoint = path.split('?')[0];
+    if (pause.has(endpoint)) await pause.get(endpoint);
     if (authorization && refuse.has(endpoint)) return json(401, { ok: false, error: 'invalid-session' });
     if (endpoint === '/api/profile' && (init.method ?? 'GET') === 'GET') return json(200, { ok: true, wallet: WALLET, profile: { displayName: null }, games: {}, recentSessions: [], achievements: [], preferences: authorization ? {} : undefined });
     if (endpoint === '/api/profile' && init.method === 'PUT') return json(200, { ok: true, wallet: WALLET, preferences: JSON.parse(init.body).preferences, updatedAt: new Date(NOW).toISOString() });
     if (endpoint === '/api/profile/refresh') return json(200, { ok: true, profile: { displayName: null } });
     throw new Error(`unexpected request ${init.method ?? 'GET'} ${path}`);
   }
-  return { fetchImpl, requests, refuse };
+  return { fetchImpl, requests, refuse, pause };
 }
 
 // The page as main.js wires it: profileSync and the index client take the
@@ -141,13 +147,15 @@ test('A2: every Bearer caller in main.js reads the token through the wallet sess
   };
   const sync = optionsOf('const profileSync = createProfileSync({');
   assert.match(sync, /getToken: \(wallet\) => walletSessionToken\(wallet\),/);
-  assert.match(sync, /onUnauthorized: \(\) => invalidateWalletSession\(\),/);
+  // A 401 hands over the wallet and the refused token (a stale 401 is inert).
+  const onUnauthorized = /onUnauthorized: \(wallet, refusedToken\) => invalidateWalletSession\(wallet, refusedToken\),/;
+  assert.match(sync, onUnauthorized);
   const index = optionsOf('const indexApi = createIndexApiClient({');
   assert.match(index, /getToken: \(\) => walletSessionToken\(connectedWallet\),/);
-  assert.match(index, /onUnauthorized: \(\) => invalidateWalletSession\(\),/);
+  assert.match(index, onUnauthorized);
   const settlement = portalFunctionSource('rankedSettlementClient');
   assert.match(settlement, /getToken: \(wallet\) => walletSessionToken\(wallet\),/);
-  assert.match(settlement, /onUnauthorized: \(\) => invalidateWalletSession\(\),/);
+  assert.match(settlement, onUnauthorized);
   // The seed ticket (E15) and its 401 re-sign go through the session too.
   const entry = portalFunctionSource('requestRankedEntry');
   assert.match(entry, /fetchSeedTicket\(\{ token: session\.token\(sessionWallet\), session: pendingSession \}\)/);
@@ -214,15 +222,54 @@ test('A2: a 401 on a settle call reaches the wallet session through onUnauthoriz
     storage: memoryStorage(),
     setTimeoutImpl: () => 0,
     clearTimeoutImpl: () => {},
-    onUnauthorized: (wallet) => unauthorized.push(wallet),
+    onUnauthorized: (wallet, refusedToken) => unauthorized.push([wallet, refusedToken]),
   });
   const body = JSON.parse(readFileSync(new URL('./fixtures/ranked/chikun-valid.json', import.meta.url), 'utf8')).body;
   const handle = client.settle(body, { localScore: 1 });
   for (let i = 0; i < 20 && handle.state !== 'saved-locally'; i += 1) await new Promise((resolve) => setImmediate(resolve));
   assert.equal(handle.state, 'saved-locally');
   assert.equal(handle.snapshot.error.code, 'sign-in-required');
-  assert.deepEqual(unauthorized, [body.identity.wallet.toLowerCase()]);
+  assert.deepEqual(unauthorized, [[body.identity.wallet.toLowerCase(), 'v2-token-fixture']], 'the run’s wallet and the token that was refused');
 });
+
+// A request still in flight with an older token must not sign out the
+// sign-in that replaced it (a wallet switch, or a fresh signature): the 401
+// names the refused token, and main.js drops only the token the wallet
+// session still holds for that wallet. The settle client hands over the same
+// pair (above), so its 401s go through the same check.
+for (const [label, call] of [
+  ['the profile pull', (stack) => stack.profileSync.pull(WALLET)],
+  ['the preferences PUT', (stack) => stack.profileSync.pushNow({ preferences: {} }, { wallet: WALLET })],
+  ['the index self view', (stack) => stack.indexApi.profile(WALLET, { self: true })],
+  ['the name-claim preferences', (stack) => stack.indexApi.savePreferences({ nameClaimDismissed: true })],
+]) {
+  test(`A2: a 401 from ${label} for a token a newer sign-in replaced signs nobody out`, async () => {
+    const stack = portalStack();
+    const first = await stack.signIn();
+    let release;
+    stack.services.pause.set('/api/profile', new Promise((resolve) => { release = resolve; }));
+    stack.services.refuse.add('/api/profile');
+    const inflight = call(stack);
+    for (let i = 0; i < 20 && !stack.services.requests.some((request) => request.path.startsWith('/api/profile')); i += 1) await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(bearerOf(stack.services.requests.at(-1)), first, 'sent with the first token');
+    const second = await stack.signIn();
+    assert.notEqual(second, first, 'the fresh sign-in holds a new token');
+    stack.events.length = 0;
+    release();
+    await inflight;
+    assert.equal(stack.walletSession.token(WALLET), second, 'the newer token survives');
+    assert.equal(stack.walletSession.isAuthenticated(WALLET), true);
+    assert.equal(stack.context.walletAuthenticated, true, 'still signed in for Ranked');
+    assert.equal(JSON.parse(stack.storage.getItem(SESSION_TOKEN_STORAGE_KEY)).token, second);
+    assert.deepEqual(stack.events, [], 'no sign-out is announced');
+    // The live token itself refused: that one does sign the page out.
+    stack.services.pause.clear();
+    await call(stack);
+    assert.equal(stack.walletSession.token(WALLET), null);
+    assert.equal(stack.context.walletAuthenticated, false);
+    assert.deepEqual(stack.events.at(-1), { wallet: WALLET, authenticated: false });
+  });
+}
 
 test('A2: a token minted by the 1.7.0 flow is never sent by any caller', async () => {
   const stack = portalStack();
@@ -288,6 +335,13 @@ test('A3: sign-in, silent restore and sign-out each announce lesters:wallet-sess
   page.flush();
   assert.deepEqual(page.calls, ['profile.invalidate', 'boards.invalidate', `profile.hydrate:${WALLET}`], 'the re-read sees the restored wallet, not the empty one');
 
+  // On the Scores page the boards read again instead (a fresh signature there).
+  page.calls.length = 0;
+  page.context.officialAppStep = 'leaderboards';
+  await session.signIn({ provider: fixtureWallet(), address: ADDRESS });
+  page.flush();
+  assert.deepEqual(page.calls, ['profile.invalidate', 'boards.invalidate', `boards.hydrate:${WALLET}`], 'the Scores boards re-hydrate with the applied wallet');
+
   // Sign-out: executeSignOut clears the wallet and leaves for the splash
   // right after walletSession.signOut() announces.
   page.calls.length = 0;
@@ -298,6 +352,7 @@ test('A3: sign-in, silent restore and sign-out each announce lesters:wallet-sess
   assert.deepEqual(page.calls, ['profile.invalidate', 'boards.invalidate'], 'no read for the wallet that just signed out');
 
   assert.deepEqual(seen, [
+    { wallet: WALLET, authenticated: true },
     { wallet: WALLET, authenticated: true },
     { wallet: WALLET, authenticated: true },
     { wallet: null, authenticated: false },

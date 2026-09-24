@@ -1163,9 +1163,11 @@ export function applySeedTicket(session, { seed, seedTicket }) → session
 ```
 export const RANKED_CLIENT_STATES = ['preview','waiting-entry','verifying','queued','publishing','published',
                                      'retrying','saved-locally','rejected','practice'];
-export function createRankedSettlementClient({ live, fetchImpl = fetch, getToken /* () => string|null */, storage,
+export function createRankedSettlementClient({ live, fetchImpl = fetch, getToken /* (wallet) => string|null */, storage,
                                                 now = Date.now, setTimeoutImpl, clearTimeoutImpl,
-                                                pendingKey = 'lesters-arcade-ranked-pending-v1' }) → {
+                                                pendingKey = 'lesters-arcade-ranked-pending-v1',
+                                                onPendingCount /* (count) => void */, onPublished /* (snapshot) => void */,
+                                                onUnauthorized /* (wallet, refusedToken) => void */ }) → {
   settle(request /* §5.1 body */, { entryConfirmed /* Promise<'confirmed'|'failed'>|null */, localScore, persistBody = true }) → Handle,
   resume() → Handle[],            // re-drive stored pending requests after reload (live only)
   get(sessionId32) → Handle | null,
@@ -1187,12 +1189,12 @@ snapshot = { state, sessionId32, shareId, gameId, wallet, localScore,
   - `failed` + not retryable → `rejected`.
 - An error body with `retryable: true` (`entry-pending`, `run-timing-early`) → `retrying`: re-POST the full body after `max(retryAfterMs, 5 s)`, with backoff; `entry-pending` gives up after 10 minutes into `saved-locally`.
 - Any other HTTP 4xx except 401, 404 and 429 → `rejected`, with the server code. That includes `402 entry-not-paid` and `entry-underpaid`, which the server returns only when the chain proves them (A17).
-- 401 → `saved-locally`, with error `sign-in-required`.
+- 401 → `saved-locally`, with error `sign-in-required`, after calling `onUnauthorized(wallet, refusedToken)` (main.js: the wallet session drops that token, §7.6). A refused retry nudge follows the status view instead.
 - 404 on a retry POST or a status GET → re-POST the full body once, if it is still persisted; otherwise `saved-locally`.
 - A network error, 429 or 5xx → `saved-locally`: backoff 5, 15, 45, 120 s, then a manual `retry()`. `503 settlement-paused` shows "Ranked publishing is paused; your run is saved and will publish when it resumes."
 - The request body is persisted in `storage[pendingKey]` (at most 5 entries, newest first) until `published`, `rejected` or `practice`.
 - STACKED bodies above 240,000 base64 chars are not persisted: the results screen says "Keep this tab open until publishing finishes".
-- Every fetch uses `cache:'no-store'`. POSTs **and** status GETs send `Authorization: Bearer <getToken()>`, so status responses are the owner view (§4.4).
+- Every fetch uses `cache:'no-store'`. POSTs **and** status GETs send `Authorization: Bearer <getToken(wallet)>` for the run's wallet, so status responses are the owner view (§4.4).
 - Integration: the client dispatches `lesters:ranked-pending` `{ count }` whenever the number of unpublished persisted bodies changes, and listens for `lesters:ranked-retry-request` `{ sessionId32|null }`: a specific id calls that handle's `retry()`, and `null` calls `resume()` (§7.7).
 
 `apps/portal/src/ranked-requests.mjs` (ranked-client slice), with pure request builders:
@@ -1306,10 +1308,12 @@ export function createWalletSession({ hosted, fetchImpl, storage, now, profileSy
       // remembered wallet it returns { ok:true, wallet, authenticated:true, providerPending:true }; the provider is created
       // lazily on the first action that needs the wallet (Sign in, the Ranked entry, a profile write).
   isAuthenticated(wallet) → boolean, token(wallet) → string|null, signOut() → void,
+  invalidate() → void,        // drop the token after a 401 without forgetting the wallet; announces { wallet, authenticated:false }
+  announce({ wallet, authenticated }) → detail,                     // dispatches lesters:wallet-session (§7.7)
   remember({ kind, rdns, wallet }) → void, remembered() → { kind, rdns, wallet } | null }
 ```
 
-The Bearer token is stored by `profileSync.login` under the existing key `lesters-arcade-session-token` (`{wallet, token, expiresAt}`). `main.js` reads it with `profileSync.session?.token`. `walletConnector` stays `'injected-evm'` for WalletConnect too (it is an EIP-1193 provider). A new `main.js` global, `connectedProvider`, holds the provider the player picked, and `detectEthereumProvider()` returns it first when it is set.
+The Bearer token is stored by `profileSync.login` under the existing key `lesters-arcade-session-token` (`{wallet, token, expiresAt}`). Every Bearer caller (profile pull and PUT, the index client's self view, refresh and preferences, settle, seed tickets, the name-claim flow) reads it only through `walletSession.token(wallet)` / `isAuthenticated(wallet)`, which are backed by `profileSync.tokenFor(wallet)` (a live v2 token issued to that wallet, or null); `main.js` never reads `profileSync.session`, `hasSession` or `tokenFor` itself (amended at integration, integration-glue; `tests/integration-glue-signin.test.mjs`). A 401 from any Bearer caller reaches `main.js` as `onUnauthorized(wallet, refusedToken)`, which calls `walletSession.invalidate()` only while the wallet session still holds that token for that wallet: a 401 for a token already replaced by a newer sign-in (a request still in flight across a wallet switch) signs nobody out. Stored pre-v2 (1.7.0) tokens are discarded by both `profileSync` and the wallet session. `walletConnector` stays `'injected-evm'` for WalletConnect too (it is an EIP-1193 provider). A new `main.js` global, `connectedProvider`, holds the provider the player picked, and `detectEthereumProvider()` returns it first when it is set.
 
 `apps/portal/src/ranked-preflight.mjs`:
 ```
@@ -1359,11 +1363,12 @@ window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ra
 
 ### 7.8 Index API client and profile writes (profile-boards slice)
 
-- `apps/portal/src/index-api-client.mjs`: `createIndexApiClient({ hosted, fetchImpl, getToken })` returns `{ leaderboard(params), profile(wallet, { self }), refreshProfile(wallet), savePreferences(prefs), session(shareId), retrySettle(sessionId32) }`.
+- `apps/portal/src/index-api-client.mjs`: `createIndexApiClient({ hosted, fetchImpl, getToken /* () => string|null */, onUnauthorized /* (wallet, refusedToken) => void, on a 401 to a Bearer call */ })` returns `{ leaderboard(params), profile(wallet, { self }), refreshProfile(wallet), savePreferences(prefs), session(shareId), retrySettle(sessionId32) }`.
   - Every method resolves `{ ok:false, error:'offline-preview' }` without fetching when `hosted` is false.
   - `profile(…, {self:true})` calls the self URL `GET /api/profile?wallet=…&self=1` with the Bearer token; it and `savePreferences` use `cache:'no-store'`.
   - `refreshProfile` sends the Bearer token when the wallet is the signed-in one (E8 rate limits).
   - `retrySettle(sessionId32)` POSTs `{ v:'lesters-ranked-settle-v1', sessionId32, retry:true }` to `/api/settle` with the Bearer token.
+- `apps/portal/src/profile-sync-client.mjs` (the token store): `createProfileSync({ …, getToken /* (wallet) => string|null */, onUnauthorized /* (wallet, refusedToken) => void */ })`. In the portal `getToken` is `walletSession.token` (§7.6); `pull()` and `push()` send a Bearer token only when it is a v2 token naming the requested wallet. On a 401 it calls `onUnauthorized(wallet, refusedToken)`, logs out only if its stored token is the refused one, and `pull()` then reads the public view once without a token. `tokenFor(wallet)` answers the stored live v2 token issued to that wallet, or null.
 - **D10 retry on the profile** (profile-boards). On the viewer's own profile (self view), each recent session with status `failed` or `signed` and `retryable` shows a **Retry** button that dispatches `lesters:ranked-retry-request` with its id when ranked-client holds a handle for it, and otherwise calls `retrySettle`. When `lesters:ranked-pending` reports a count above zero, the profile shows "N runs saved on this device" with **Retry saved runs** (`lesters:ranked-retry-request` with `null`). A dead-lettered session shows "This run could not be published. Testnet entries are not refunded." and no button.
 - **Held tokens** (A32): only when an achievement's `tokenId` is non-null does the profile show the "⛓ Soulbound NFT" badge and token link, and confirm it with `fetchPlayerAchievements` over the public RPC.
 - `apps/portal/src/profile-chain.mjs`:
