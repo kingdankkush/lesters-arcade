@@ -105,7 +105,7 @@ test('simulated fallback only when nothing is available', () => {
 function fakeDocument() {
   const listeners = new Map();
   class Node {
-    constructor(tag) { this.tagName = tag.toUpperCase(); this.children = []; this.parent = null; this.attributes = {}; this.listeners = {}; this.textContent = ''; this.className = ''; this.dataset = {}; }
+    constructor(tag) { this.tagName = tag.toUpperCase(); this.children = []; this.parent = null; this.attributes = {}; this.listeners = {}; this.textContent = ''; this.className = ''; this.dataset = {}; this.style = {}; }
     append(...nodes) { for (const node of nodes) { node.parent = this; this.children.push(node); } }
     remove() { if (this.parent) this.parent.children = this.parent.children.filter((child) => child !== this); this.parent = null; }
     setAttribute(key, value) { this.attributes[key] = value; if (key === 'id') this.id = value; }
@@ -172,6 +172,54 @@ test('the picker sits over the page, traps focus and closes on Escape', async ()
   const declined = openChainExplainer({ documentRef: doc });
   doc.key('Escape');
   assert.equal(await declined, false);
+});
+
+// Live UI audit 2026-09-24: on a phone with a cold cache the picker painted
+// unstyled under the page footer until wallet-picker.css arrived.
+test('the picker stays hidden until its stylesheet applies, then takes focus', async () => {
+  const { openWalletPicker, showWalletToast, walletPickerStylesPending } = await import('../apps/portal/src/wallet-picker.mjs');
+  const doc = fakeDocument();
+  const createElement = doc.createElement;
+  doc.createElement = (tag) => {
+    const node = createElement(tag);
+    if (tag === 'link') node.sheet = null; // a browser <link> before its CSS loads
+    return node;
+  };
+  const opener = createElement('button');
+  doc.body.append(opener);
+  opener.focus();
+  const model = buildWalletPickerModel({ providers: [announce('u-4', 'MetaMask', 'io.metamask')], host: 'lestersarcade.io' });
+  const pending = openWalletPicker({ documentRef: doc, model });
+  const link = doc.head.children[0];
+  const overlay = doc.body.children.at(-1);
+  assert.equal(overlay.style.visibility, 'hidden', 'not painted before its styles apply');
+  assert.equal(doc.activeElement, opener, 'focus waits for the sheet to show');
+  link.sheet = {};
+  link.listeners.load();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(overlay.style.visibility, '', 'shown once the stylesheet loaded');
+  assert.equal(doc.activeElement, overlay.children[0].querySelectorAll('a[href], button')[0], 'focus moves into the dialog');
+  doc.key('Escape');
+  assert.equal(await pending, null);
+
+  // Once loaded, later sheets and toasts show at once; a stylesheet that fails
+  // or stalls never keeps them hidden for good.
+  const again = openWalletPicker({ documentRef: doc, model });
+  assert.equal(doc.body.children.at(-1).style.visibility, undefined);
+  doc.key('Escape');
+  await again;
+  const toast = showWalletToast({ documentRef: doc, message: 'Signed in', timeoutMs: 0 });
+  assert.equal(toast.style.visibility, undefined);
+  assert.equal(walletPickerStylesPending(null), null);
+  assert.equal(walletPickerStylesPending({ sheet: {} }), null);
+  const stalled = { sheet: null, addEventListener() {} };
+  const started = Date.now();
+  await walletPickerStylesPending(stalled, { timeoutMs: 20 });
+  assert.ok(Date.now() - started >= 15, 'a stalled stylesheet resolves after the timeout');
+  const failed = { sheet: null, listeners: {}, addEventListener(type, fn) { this.listeners[type] = fn; } };
+  const waiting = walletPickerStylesPending(failed, { timeoutMs: 60_000 });
+  failed.listeners.error();
+  await waiting;
 });
 
 test('the picker stylesheet keeps 44 px touch targets, thumb reach and a 320 px layout', () => {

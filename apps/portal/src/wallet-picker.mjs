@@ -95,13 +95,42 @@ export function buildWalletPickerModel({ providers = [], isMobile = false, host 
 
 // ---------------------------------------------------------------- DOM ----
 
+// Returns the picker's <link> (main.js may have added it first, same id).
 export function ensureWalletPickerStyles(documentRef = globalThis.document) {
-  if (!documentRef?.head || documentRef.getElementById?.(STYLESHEET_ID)) return;
+  if (!documentRef?.head) return null;
+  const existing = documentRef.getElementById?.(STYLESHEET_ID);
+  if (existing) return existing;
   const link = documentRef.createElement('link');
   link.id = STYLESHEET_ID;
   link.rel = 'stylesheet';
   link.href = WALLET_PICKER_STYLESHEET;
   documentRef.head.append(link);
+  return link;
+}
+
+// Resolves once the stylesheet applies (load or error), or after timeoutMs.
+// null when it already applies. A browser <link> exposes `sheet` (null until
+// loaded); test doubles without it count as loaded.
+export function walletPickerStylesPending(link, { timeoutMs = 1500 } = {}) {
+  if (!link || !('sheet' in link) || link.sheet) return null;
+  return new Promise((resolve) => {
+    let timer = null;
+    const done = () => { if (timer !== null) clearTimeout(timer); resolve(); };
+    timer = setTimeout(done, timeoutMs);
+    link.addEventListener?.('load', done, { once: true });
+    link.addEventListener?.('error', done, { once: true });
+  });
+}
+
+// Keeps a freshly added sheet or toast invisible until its stylesheet applies.
+// Live UI audit 2026-09-24: on a phone with a cold cache the picker first
+// painted unstyled at the bottom of the page (a bullet list of plain buttons
+// under the footer) before its CSS arrived.
+function revealWhenStyled(element, link) {
+  const pending = walletPickerStylesPending(link);
+  if (!pending || !element?.style) return null;
+  element.style.visibility = 'hidden';
+  return pending.then(() => { element.style.visibility = ''; });
 }
 
 function node(documentRef, tag, { className = '', text = null, attrs = {} } = {}) {
@@ -120,7 +149,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
 // A modal sheet over the page: focus trapped inside, Escape and the backdrop
 // close it, focus returns to the opener afterwards.
 function openSheet(documentRef, { labelledBy, className = '', onClose }) {
-  ensureWalletPickerStyles(documentRef);
+  const stylesheet = ensureWalletPickerStyles(documentRef);
   const previous = documentRef.activeElement;
   const overlay = node(documentRef, 'div', { className: `wallet-sheet-overlay ${className}`.trim() });
   const sheet = node(documentRef, 'div', { className: 'wallet-sheet', attrs: { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': labelledBy } });
@@ -147,8 +176,15 @@ function openSheet(documentRef, { labelledBy, className = '', onClose }) {
   };
   overlay.addEventListener('click', (event) => { if (event.target === overlay) close(null); });
   documentRef.addEventListener('keydown', onKey, true);
+  const styled = revealWhenStyled(overlay, stylesheet);
   documentRef.body.append(overlay);
-  return { overlay, sheet, close, focusFirst: () => sheet.querySelector(FOCUSABLE)?.focus?.() };
+  // A hidden control cannot take focus: focus moves in once the sheet shows.
+  const focusFirst = () => {
+    const move = () => { if (!closed) sheet.querySelector(FOCUSABLE)?.focus?.(); };
+    if (styled) void styled.then(move);
+    else move();
+  };
+  return { overlay, sheet, close, focusFirst };
 }
 
 function header(documentRef, id, title, lead) {
@@ -235,7 +271,7 @@ export function openChainExplainer({ documentRef = globalThis.document, networkN
 // A short, dismissable status line for sign-in outcomes (declined, cancelled,
 // service down). role=status so screen readers hear it.
 export function showWalletToast({ documentRef = globalThis.document, message, tone = 'info', actions = [], timeoutMs = 7000 } = {}) {
-  ensureWalletPickerStyles(documentRef);
+  const stylesheet = ensureWalletPickerStyles(documentRef);
   documentRef.querySelector?.('.wallet-toast')?.remove();
   const toast = node(documentRef, 'div', { className: `wallet-toast wallet-toast-${tone}`, attrs: { role: 'status', 'aria-live': 'polite' } });
   toast.append(node(documentRef, 'span', { className: 'wallet-toast-text', text: message }));
@@ -247,6 +283,7 @@ export function showWalletToast({ documentRef = globalThis.document, message, to
   const dismiss = node(documentRef, 'button', { className: 'wallet-toast-close', text: '×', attrs: { type: 'button', 'aria-label': 'Dismiss' } });
   dismiss.addEventListener('click', () => toast.remove());
   toast.append(dismiss);
+  void revealWhenStyled(toast, stylesheet);
   documentRef.body.append(toast);
   if (timeoutMs > 0) setTimeout(() => toast.remove(), timeoutMs);
   return toast;
