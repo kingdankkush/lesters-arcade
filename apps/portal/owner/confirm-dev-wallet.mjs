@@ -38,6 +38,20 @@ const GAME_REGISTRY_READ_ABI = [
   'function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeWei,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))',
 ];
 const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
+
+// LiteForge's base fee moves fast (about 0.01 gwei on 2026-09-22, about 1.5 gwei on 2026-09-24) and a
+// wallet's own estimate can lag far behind it: on 2026-09-24 a wallet offered 0.13 gwei and LiteForge
+// refused the confirmation ("max fee per gas less than block base fee"). So the page prices each
+// transaction itself from the latest block: three times the base fee as the cap (an Arbitrum Orbit
+// chain charges only the base fee, so the headroom costs nothing) and no priority tip.
+export const FEE_HEADROOM = 3n;
+export const MIN_MAX_FEE_PER_GAS_WEI = 100_000_000n; // 0.1 gwei
+export function liteForgeFeeFields(baseFeePerGas) {
+  const base = BigInt(baseFeePerGas ?? 0);
+  const capped = base * FEE_HEADROOM;
+  const maxFee = capped > MIN_MAX_FEE_PER_GAS_WEI ? capped : MIN_MAX_FEE_PER_GAS_WEI;
+  return { maxFeePerGas: `0x${maxFee.toString(16)}`, maxPriorityFeePerGas: '0x0' };
+}
 const TX_HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 
 export function shortAddress(address) {
@@ -286,8 +300,13 @@ export function createConfirmController({
       if (!(await checkChainAndAccount())) return state;
       const call = calls.find((entry) => entry.gameId === game.gameId);
       set({ message: `Confirm "${game.title}" in your wallet (confirmDevWallet, no zkLTC is transferred beyond gas).` });
+      // Price the transaction from the latest block (public RPC first, the wallet's RPC as a fallback)
+      // instead of the wallet's own fee guess, which can sit below the current base fee.
+      const latest = await (await reader()).getBlock('latest').catch(() => null)
+        ?? await request('eth_getBlockByNumber', ['latest', false]).catch(() => null);
+      const fees = liteForgeFeeFields(latest?.baseFeePerGas);
       // chainId lets the wallet refuse the request if it switched chains after the check above.
-      const hash = await request('eth_sendTransaction', [{ from: state.account, to: call.to, data: call.data, chainId: LITEFORGE_CHAIN.chainIdHex }]);
+      const hash = await request('eth_sendTransaction', [{ from: state.account, to: call.to, data: call.data, chainId: LITEFORGE_CHAIN.chainIdHex, ...fees }]);
       game.txHash = hash;
       set({ lastTx: { gameId: game.gameId, hash, url: explorerTxUrl(hash) }, message: `Sent ${game.title}: ${hash}. Waiting for LiteForge to include it…` });
       const receipt = await waitForReceipt(hash);

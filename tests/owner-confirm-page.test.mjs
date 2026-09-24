@@ -22,6 +22,7 @@ import {
   buildConfirmCalls,
   createConfirmController,
   explorerTxUrl,
+  liteForgeFeeFields,
   mountConfirmPage,
 } from '../apps/portal/owner/confirm-dev-wallet.mjs';
 import { activateLocalGames, deployLocalSuite, loadArtifact, localContracts, localDeployConfig, startLocalChain } from '../scripts/lib/local-chain.mjs';
@@ -314,6 +315,11 @@ test('page loads from a local static server and confirms each game against the l
       assert.equal(receipt.from.toLowerCase(), OWNER_WALLET);
       assert.equal(receipt.to.toLowerCase(), deployed.addresses.gameRegistry);
       assert.equal(registryInterface.parseLog(receipt.logs[0]).name, 'DevWalletConfirmed');
+      // The page priced the transaction itself: three times the base fee of the block it read, no tip.
+      const sent = wallet.sent.at(-1);
+      const block = await chain.provider.getBlock(receipt.blockNumber - 1);
+      assert.equal(sent.maxPriorityFeePerGas, '0x0');
+      assert.ok(BigInt(sent.maxFeePerGas) >= block.baseFeePerGas * 3n || BigInt(sent.maxFeePerGas) === 100_000_000n, 'max fee is 3x the base fee (or the 0.1 gwei floor)');
     }
     assert.equal(controller.state.phase, 'done');
     assert.match(controller.state.message, /operator now activates them \(runbook step 5\)/);
@@ -574,4 +580,13 @@ test('the mounted page renders every state through the DOM, with the committed m
   } finally {
     globalThis.fetch = original;
   }
+});
+
+test('the page prices each confirmation from the latest block, not the wallet guess', () => {
+  // 2026-09-24: a wallet offered 0.13 gwei while the LiteForge base fee was about 1.47 gwei.
+  assert.deepEqual(liteForgeFeeFields(1_469_367_000n), { maxFeePerGas: `0x${(1_469_367_000n * 3n).toString(16)}`, maxPriorityFeePerGas: '0x0' });
+  assert.deepEqual(liteForgeFeeFields('0x5f5e100'), { maxFeePerGas: `0x${(300_000_000n).toString(16)}`, maxPriorityFeePerGas: '0x0' });
+  // A tiny or unknown base fee still offers the 0.1 gwei floor.
+  assert.equal(liteForgeFeeFields(10_000_000n).maxFeePerGas, `0x${(100_000_000n).toString(16)}`);
+  assert.equal(liteForgeFeeFields(null).maxFeePerGas, `0x${(100_000_000n).toString(16)}`);
 });
