@@ -49,11 +49,30 @@ function validateProfile(value) {
   return '';
 }
 
+// Unlockable looks the parent may send (contract §7.9): one optional
+// `cosmetics` key with ids from this fixed allowlist, or null for the default
+// look. The child only draws them; they never reach evidence or a result.
+export const CHIKUN_COSMETIC_IDS = Object.freeze({
+  coat: Object.freeze(['chikun-coat-golden', 'chikun-coat-glacier', 'chikun-coat-emerald', 'chikun-coat-royal']),
+  trail: Object.freeze(['chikun-trail-gold', 'chikun-trail-neon', 'chikun-trail-ember']),
+  hat: Object.freeze(['chikun-hat-cap', 'chikun-hat-top', 'chikun-hat-crown']),
+});
+
+function validateCosmetics(value) {
+  const error = exactKeys(value, ['coat', 'trail', 'hat'], 'settings.cosmetics');
+  if (error) return error;
+  for (const [slot, ids] of Object.entries(CHIKUN_COSMETIC_IDS)) {
+    if (value[slot] !== null && !ids.includes(value[slot])) return `settings.cosmetics.${slot} is not an allowed look`;
+  }
+  return '';
+}
+
 function validateSettings(value) {
-  const error = exactKeys(value, ['musicEnabled', 'reduceMotion'], 'settings');
+  const cosmetic = isRecord(value) && Object.hasOwn(value, 'cosmetics');
+  const error = exactKeys(value, cosmetic ? ['musicEnabled', 'reduceMotion', 'cosmetics'] : ['musicEnabled', 'reduceMotion'], 'settings');
   if (error) return error;
   if (typeof value.musicEnabled !== 'boolean' || typeof value.reduceMotion !== 'boolean') return 'settings values must be boolean';
-  return '';
+  return cosmetic ? validateCosmetics(value.cosmetics) : '';
 }
 
 function validateInit(payload) {

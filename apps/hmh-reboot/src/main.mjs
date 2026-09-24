@@ -1543,6 +1543,8 @@ async function boot() {
     grid.clear();
     collisionDebug.clear();
     projectileTrails.clear();
+    // Unlockable weapon skin (contract §7.9): a projection-only tint.
+    heldWeaponLayer.tint = projectileTrails.tint = settings.cosmetics?.weaponTint ?? 0xffffff;
     projectileImpacts.clear();
     grenadeVisuals.clear();
     combatVisuals.clear();
@@ -2505,7 +2507,7 @@ async function boot() {
           placeWeaponGlow(groundScreen.x + smear.offsetX, chestY + smear.offsetY, smear.radius, smear.tint, smear.alpha);
           placeWeaponGlow(groundScreen.x + smear.offsetX * 2, chestY + smear.offsetY * 2, smear.radius * 0.7, smear.tint, smear.alpha * 0.6);
         }
-        productionHeroDisplay.setTint(smear?.flash ? HIT_SMEAR.bodyTint : 0xffffff);
+        productionHeroDisplay.setTint(smear?.flash ? HIT_SMEAR.bodyTint : 0xffffff, settings.cosmetics);
         // K-6 afterimage trail: pooled glows behind the hero for the eight
         // active dash ticks; no hero texture clone, so no new textures.
         if (dashState?.startedTick >= 0 && lastDashDirection) {

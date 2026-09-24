@@ -2,7 +2,7 @@ import { exportChikunReplay, importChikunReplay, REPLAY_FILE_LIMIT } from './rep
 import { chikunAchievements } from '../../portal/src/chikun-profile.mjs';
 import { loadGroundArt, drawGround, drawGroundObstacle } from './ground-world.mjs';
 import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdoll.mjs';
-import { createChikunCharacter, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
+import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
 import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
@@ -176,9 +176,15 @@ function showCallout(message) {
   calloutTimer = setTimeout(() => eventCallout.classList.remove('is-visible'), reduceMotion() ? 500 : 900);
 }
 
+// Unlockable looks (contract §7.9) from the parent's settings; presentation only.
+function cosmetics() {
+  return initPayload?.settings?.cosmetics ?? null;
+}
+
 function spawnVfx(event, x = latestSnapshot?.chikun?.x ?? 280, y = latestSnapshot?.chikun?.y ?? 360) {
   const plan = planChikunVfx({ event, x, y, tick: latestSnapshot?.tick ?? 0, reduceMotion: reduceMotion() });
-  const particles = plan.particles.map((particle) => ({ ...particle, bornFrame: vfxFrame }));
+  // A trail look recolours the flap, obstacle and coin bursts (character.mjs).
+  const particles = chikunTrailParticles(plan.particles, event, cosmetics()).map((particle) => ({ ...particle, bornFrame: vfxFrame }));
   activeParticles = [...activeParticles, ...particles].slice(-MAX_CHIKUN_PARTICLES);
   activeShake = plan.shake > 0 ? { amount: plan.shake, bornFrame: vfxFrame, lifeTicks: plan.lifeTicks } : null;
   activeFlash = plan.flash > 0 ? { alpha: plan.flash, bornFrame: vfxFrame, lifeTicks: Math.min(18, plan.lifeTicks) } : null;
@@ -582,12 +588,15 @@ function drawFork(fork) {
 
 function drawChikun(snapshot) {
   const menuPosition = flightViewport.portrait ? {x: flightViewport.left + flightViewport.width / 2, y: 155, size: 280} : null;
-  const characterOptions = { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying) };
+  const characterOptions = { phase, terminalAge, flapAge, flapVelocity, event: flightEvent, eventAge: flightEventAge, idleTime, menuPosition, reduceMotion: reduceMotion(), seek: Boolean(replayPlayback && !replayPlaying), cosmetics: cosmetics() };
   if(ragdoll && phase==='game-over' && !replayPlayback && !reduceMotion()){
     // Defeat handoff: the hit pose recoils for one beat while the ragdoll fades in over it.
     const handoff = Math.min(1, terminalAge / RAGDOLL_HANDOFF_SECONDS);
     if (handoff < 1) { ctx.save(); ctx.globalAlpha = 1 - handoff; flightCharacter.draw(ctx, snapshot, renderDt, characterOptions); ctx.restore(); }
+    // The coat look follows Chikun into the ragdoll.
+    ctx.save(); ctx.filter = chikunCoatFilter(characterOptions.cosmetics);
     drawChikunRagdoll(ctx, ragdoll, { alpha: handoff });
+    ctx.restore();
     return;
   }
   if (flightCharacter.draw(ctx, snapshot, renderDt, characterOptions)) return;

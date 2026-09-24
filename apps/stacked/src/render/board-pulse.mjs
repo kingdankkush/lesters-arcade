@@ -48,7 +48,7 @@ export function createBoardPulse({ board, Graphics, geometry }) {
       for (let i = 0; i < halos.length; i++) {
         const halo = halos[i], point = cells?.[i] ? boardCellToAuthored({ x: cells[i][0], y: cells[i][1], frame: board.frame }) : null;
         halo.visible = !!point?.visible; if (!halo.visible) continue;
-        halo.position.set(point.x, point.y); halo.tint = PIECE_COLORS[piece.kind] ?? 0xa8bdca; halo.alpha = amplitude.piece;
+        halo.position.set(point.x, point.y); halo.tint = board.colorFor?.(piece.kind) ?? PIECE_COLORS[piece.kind] ?? 0xa8bdca; halo.alpha = amplitude.piece;
       }
       return result;
     },

@@ -15,6 +15,10 @@ export function createOfficialPlayRoutes({
   buildCharacterSelectEntries,
   buildGameModeSelectModel,
   cabinetPlayableInCurrentMode,
+  // Hero gate options (contract §7.9): { hosted, verifiedRuns } with the
+  // unlockables store's cached verified HMH run count, so Lester and Lilly
+  // unlock before E6 loads and offline. Empty keeps the device-local gates.
+  characterUnlockOptions = () => ({}),
   DEV_CABINETS_ENABLED,
   dom,
   el,
@@ -126,10 +130,11 @@ export function createOfficialPlayRoutes({
     roster.replaceChildren();
     roster.setAttribute('role', 'group');
     const profile = connectedWallet ? state.profiles[connectedWallet] ?? null : null;
+    const unlockOptions = characterUnlockOptions() ?? {};
     if (profile) {
-      combat.characterId = resolveSelectedCharacterId(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
+      combat.characterId = resolveSelectedCharacterId(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions);
     }
-    const heroEntries = buildCharacterSelectEntries(HERO_ROSTER_BASE, profile ?? {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
+    const heroEntries = buildCharacterSelectEntries(HERO_ROSTER_BASE, profile ?? {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions);
     const referenceId = referenceHeroId(heroEntries);
     const referenceName = heroEntries.find((hero) => hero.id === referenceId)?.name ?? '';
     const comparison = new Map(compareHeroStats(heroEntries, referenceId).map((hero) => [hero.id, hero]));
@@ -202,7 +207,7 @@ export function createOfficialPlayRoutes({
       if (!hero.locked) {
         card.addEventListener('click', () => {
           playSfxCue('hero-select', 0.07);
-          if (profile) setPreferredCharacter(profile, hero.legacyId ?? hero.id, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
+          if (profile) setPreferredCharacter(profile, hero.legacyId ?? hero.id, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions);
           combat.characterId = hero.legacyId ?? hero.id;
           persistArcadeStateSoon();
           setView('level-one-intro');

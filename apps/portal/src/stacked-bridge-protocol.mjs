@@ -40,10 +40,20 @@ const score = value => integer(value, 0, STACKED_MAX_SCORE);
 const level = value => integer(value, 1, STACKED_LEVEL_CAP);
 const hash = value => typeof value === 'string' && /^0x[a-f0-9]{64}$/.test(value);
 
+// Unlockable looks (contract §7.9): one optional `cosmetics` key, ids from this
+// fixed allowlist or null. Palettes and grades live in the lazy render modules.
+export const STACKED_COSMETIC_IDS = Object.freeze({
+  pieceSkin: Object.freeze(['stacked-pieces-silver', 'stacked-pieces-sunset', 'stacked-pieces-seafoam', 'stacked-pieces-gold']),
+  scene: Object.freeze(['stacked-scene-noir', 'stacked-scene-sunset', 'stacked-scene-forge']),
+});
+const look = ids => v => v === null || ids.includes(v);
+
 // Canonical nested portal settings (§12); init alone adds startLevel.
 export function validateStackedBridgeSettings(settings, { initial = false } = {}) {
   try {
-    if (!exact(settings, ['version', 'handling', 'controls', 'video', 'audio', 'accessibility', ...(initial ? ['startLevel'] : [])]) || settings.version !== 1) return false;
+    const cosmetic = Object.hasOwn(settings, 'cosmetics');
+    if (!exact(settings, ['version', 'handling', 'controls', 'video', 'audio', 'accessibility', ...(initial ? ['startLevel'] : []), ...(cosmetic ? ['cosmetics'] : [])]) || settings.version !== 1) return false;
+    if (cosmetic && !fields(settings.cosmetics, { pieceSkin: look(STACKED_COSMETIC_IDS.pieceSkin), scene: look(STACKED_COSMETIC_IDS.scene) })) return false;
     if (initial && !integer(settings.startLevel, 1, GRAVITY_LEVEL_CAP)) return false;
     if (!fields(settings.handling, { dasMs: v => integer(v, 67, 300), arrMs: v => integer(v, 17, 100), dcdMs: v => integer(v, 0, 133), cancelDas: bool })) return false;
     const binding = value => fields(value, { primary: token, secondary: v => v === null || token(v) });

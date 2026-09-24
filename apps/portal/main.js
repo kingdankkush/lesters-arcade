@@ -154,6 +154,7 @@ import {
   HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
   playableCharacterStatIdentityFor,
   resolveSelectedCharacterId,
+  setCharacterUnlockOptionsProvider,
   setPreferredCharacter,
 } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
@@ -2018,7 +2019,7 @@ async function mountStackedSession() {
   stackedHost = createStackedHost({
     mount: dom.officialCombatMount, session: boundSession, startLevel, settlementLive: SETTLEMENT_LIVE,
     profile: { displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest', locale: document.documentElement.lang || 'en' },
-    settings: readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), music: arcadeMusicAudio(),
+    settings: { ...readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), ...childCosmetics('stacked') }, music: arcadeMusicAudio(),
     onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; },
     onState(value) { combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; },
     onResult(result) {
@@ -5166,7 +5167,8 @@ const officialShellRoutes = createOfficialShellRoutes({
   renderRotatingCabinetSprite,
 });
 const renderOfficialNav = officialShellRoutes.renderNav;
-const renderOfficialSettings = officialShellRoutes.renderSettings;
+// Unlockables panel (contract §7.9) under Settings and the player's own profile.
+const renderOfficialSettings = () => { officialShellRoutes.renderSettings(); showUnlockablesPanel('settings'); };
 const renderOfficialWalletSplash = officialShellRoutes.renderWalletSplash;
 
 // --- verified boards and profiles ------------------------------------------
@@ -5256,7 +5258,7 @@ const officialProfileRoute = createOfficialProfileRoute({
   // a WalletConnect session restored at boot creates it there.
   walletProviderForAction,
 });
-const renderOfficialProfile = officialProfileRoute.renderProfile;
+const renderOfficialProfile = () => { officialProfileRoute.renderProfile(); showUnlockablesPanel('profile'); };
 
 // D10 and sign-in seams (§7.7). All of them are inert in preview.
 window.addEventListener('lesters:ranked-pending', (event) => {
@@ -5540,7 +5542,7 @@ function mountHmhRebootSession() {
       seasonId: initContext.seasonId,
       rankedEligible: initContext.rankedEligible,
     },
-    settings: hmhRebootSettings(),
+    settings: { ...hmhRebootSettings(), ...childCosmetics('lester-blaster') },
   });
 }
 
@@ -5694,6 +5696,7 @@ function mountChikunSession() {
     settings: {
       musicEnabled: gameSettings.musicEnabled !== false,
       reduceMotion: Boolean(gameSettings.reduceMotion),
+      ...childCosmetics('chikun'),
     },
   });
 }
@@ -5721,6 +5724,7 @@ const officialPlayRoutes = createOfficialPlayRoutes({
   buildCharacterSelectEntries,
   buildGameModeSelectModel,
   cabinetPlayableInCurrentMode,
+  characterUnlockOptions,
   DEV_CABINETS_ENABLED,
   dom,
   el,
@@ -5893,7 +5897,7 @@ async function startOfficialMode(mode) {
     await startMode('free');
   }
   if (connectedWallet && state.profiles[connectedWallet] && selectedGameId === 'lester-blaster') {
-    combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
+    combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions());
   }
   setOfficialView(selectedGameId === 'lester-blaster' ? 'character-select' : 'gameplay');
   if (selectedGameId === 'chikun') mountChikunSession();
@@ -16281,6 +16285,21 @@ window.addEventListener('orientationchange', () => {
     scheduleCombatViewportRelayout(220);
   }, 200);
 });
+
+// Unlockables (contract §7.9, A7): lazy unlock cache and cosmetic picks (the store hears lesters:* itself); `var` reads null early, not a TDZ error.
+var unlockables = null;
+var unlockablesReady = import('./src/unlockables-store.mjs').then(({ createUnlockablesStore }) => {
+  unlockables = createUnlockablesStore({ hosted: HOSTED_PROFILE_SYNC, storage: ARCADE_STORAGE, indexApi, windowRef: window, getWallet: () => connectedWallet, isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet), getCachedSelfProfile: (wallet) => officialProfileRoute.cachedSelfProfile(wallet) });
+  unlockables.subscribe(() => { if (officialAppStep === 'character-select') renderOfficialCharacterSelect(); });
+  return unlockables;
+}).catch((error) => { console.warn('[Unlockables]', error?.message || error); return null; });
+function characterUnlockOptions() { return { hosted: HOSTED_PROFILE_SYNC, verifiedRuns: unlockables?.verifiedRuns() ?? null }; }
+// arcade-core's option-less profile syncs (connect, recorded runs, the arcade snapshot) use the same hero gates.
+setCharacterUnlockOptionsProvider((profile) => (connectedWallet && String(profile?.wallet ?? '').toLowerCase() === String(connectedWallet).toLowerCase() ? characterUnlockOptions() : {}));
+function childCosmetics(gameId) { const cosmetics = unlockables?.cosmeticsFor(gameId); return cosmetics ? { cosmetics } : {}; }
+function showUnlockablesPanel(view) {
+  void Promise.all([unlockablesReady, import('./src/routes/unlockables-panel.mjs')]).then(([store, { renderUnlockablesPanel }]) => store && renderUnlockablesPanel({ store, view, viewedWallet: profileRouteState.viewedWallet ?? null, connectedWallet, heroEntries: () => buildCharacterSelectEntries(HERO_ROSTER_BASE, (connectedWallet && state.profiles[connectedWallet]) || {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, characterUnlockOptions()), documentRef: document, after: dom.officialCabinetGrid, app: dom.officialApp, openAchievements: () => setOfficialView('profile', { wallet: null }) })).catch((error) => console.warn('[Unlockables panel]', error?.message || error));
+}
 
 // Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
 window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => rankedResultsClosed() }))).catch((error) => console.error('[Ranked results]', error)); });

@@ -546,11 +546,19 @@ export function createProductionHeroDisplay({
 
   // Cycle 074 (V-5): an additive body tint over every non-shadow layer for
   // the hero hit flash. Idempotent per frame; white restores the atlas colour.
+  // Unlockables (contract §7.9): with no flash (white), `cosmetics` tints the
+  // body layers with heroTint and the weapon layer with weaponTint; a flash
+  // still covers every layer. Projection only.
   let currentTint = 0xffffff;
-  const setTint = (color) => {
-    if (color === currentTint) return;
-    currentTint = color;
-    for (const [layer, sprite] of spriteByLayer) if (layer !== 'shadow') sprite.tint = color;
+  let currentWeaponTint = 0xffffff;
+  const setTint = (color, cosmetics = null) => {
+    const flash = color !== 0xffffff;
+    const body = flash ? color : cosmetics?.heroTint ?? color;
+    const weapon = flash ? color : cosmetics?.weaponTint ?? color;
+    if (body === currentTint && weapon === currentWeaponTint) return;
+    currentTint = body;
+    currentWeaponTint = weapon;
+    for (const [layer, sprite] of spriteByLayer) if (layer !== 'shadow') sprite.tint = layer === 'weapon' ? weapon : body;
   };
 
   return Object.freeze({
