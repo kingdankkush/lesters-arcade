@@ -1906,6 +1906,13 @@ svg.arcade-icon {
   display: none;
 }
 
+/* Active play hides the shell chrome (nav, footer) so the game frame owns the
+   viewport; above it the banner pushed the frame's bottom off screen. It shows
+   again on the next shell route. */
+html[data-ingame="true"] .simulated-wallet-banner {
+  display: none;
+}
+
 .simulated-wallet-banner strong {
   display: block;
   color: rgb(255, 196, 104);

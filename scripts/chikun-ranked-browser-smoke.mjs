@@ -137,6 +137,7 @@ async function runPreviewSmoke() {
     await page.locator('.official-cabinet-card.playable').first().waitFor({ state: 'visible', timeout: 10_000 });
     const walletChip = await page.locator('body').innerText();
     assert.match(walletChip, /sign out/i, 'browser smoke wallet did not connect');
+    assert.equal(await page.locator('#simulatedWalletBanner').isVisible(), false, 'a real wallet must not show the simulated-wallet banner');
 
     const cabinet = page.locator('.official-cabinet-card.playable').filter({ hasText: "Chikun's Escape" });
     await cabinet.waitFor({ state: 'visible' });

@@ -2680,11 +2680,14 @@ function renderSimulatedWalletNotice(disclosure, extraClass = '') {
 // terminal, which is hidden once you are connected -- rendering the disclosure
 // only there meant it was in the DOM but invisible, which is worse than useless
 // because it looks handled. This one is in the official app shell, so it shows
-// on every route for as long as the simulated identity is active.
+// on every route for as long as the simulated identity is active. render()
+// calls it on every route change, so an unchanged banner is left alone: a
+// rebuilt role=status region would be announced again each time.
 function renderSimulatedWalletBanner() {
   const banner = dom.simulatedWalletBanner;
   if (!banner) return;
   const simulated = isSimulatedWalletActive();
+  if (simulated === !banner.hidden) return;
   banner.hidden = !simulated;
   banner.replaceChildren();
   if (!simulated) return;
@@ -15683,6 +15686,9 @@ function drawHud(ctx) {
 function render() {
   renderOfficialRunStatus();
   renderOfficialApp();
+  // U11a shell banner. Every wallet change (sign-in, the simulated fallback,
+  // accountsChanged, restore, sign-out via setView) re-renders through here.
+  renderSimulatedWalletBanner();
   renderArcadeMusicPlayer();
   placeWalletBalanceChip();
   syncCabinetResultsButton();
