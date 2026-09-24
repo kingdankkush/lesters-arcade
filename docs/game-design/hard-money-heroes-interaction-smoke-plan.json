@@ -7,11 +7,12 @@
     {
       "id": "connect-wallet",
       "selector": "#officialConnectButton",
+      "label": "Sign in",
       "expectedHandler": "enterOfficialArcadeFromSplash"
     },
     {
       "id": "profile-tab",
-      "selector": "[data-tab=\"profile\"]",
+      "selector": "#officialNavTabs a[href=\"/profile\"]",
       "expectedVisibleCopy": "connected wallet profile"
     },
     {
@@ -42,7 +43,17 @@
     {
       "id": "ranked-start",
       "selector": "#officialRankedModeButton",
+      "expectedModal": "#rankedEntryModal",
+      "approve": "#rankedEntryApprove",
+      "cancel": "#rankedEntryCancel",
       "expectedSeparation": "official score sync only at game over"
+    },
+    {
+      "id": "ranked-results",
+      "event": "lesters:ranked-run",
+      "expectedScreen": "[data-ranked-results]",
+      "close": "Escape",
+      "expectedReopen": ".cabinet-results-reopen"
     },
     {
       "id": "exit-cleanup",

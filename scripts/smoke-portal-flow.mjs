@@ -1,8 +1,27 @@
 import { spawn } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { buildPortalPages } from './build-portal-pages.mjs';
+import { PORTAL_FLAGS } from '../apps/portal/src/portal-content.mjs';
+
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
+
+// The public copy is generated from the settlement flags (contract A33, site-copy slice): the served
+// landing page must be exactly the page scripts/build-portal-pages.mjs renders for the flags in
+// apps/portal/src/settlement.mjs (preview wording while they are false, launch wording once true).
+function expectedLandingPage() {
+  const scratch = mkdtempSync(join(tmpdir(), 'portal-smoke-pages-'));
+  try {
+    buildPortalPages({ outDir: scratch });
+    return readFileSync(join(scratch, 'index.html'), 'utf8');
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
+}
 
 async function findOpenSmokePort(preferredPort = 8791) {
   return new Promise((resolve) => {
@@ -123,10 +142,31 @@ try {
     'arcadeMusicNextButton',
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
-    'splashFeaturedCabinet',
+    // The home revamp replaced the old splash cabinet with the featured film.
+    'portalPromoVideo',
     'arcade-discovery-20260914',
+    // Sign-in and the parent-owned Ranked entry modal (signin-entry slice).
+    '>Sign in<',
+    'rankedEntryModal',
+    'rankedEntryApprove',
+    'rankedEntryCancel',
+    'rankedEntryReserve',
+    'Settlement reserve',
+    'rankedEntryTotal',
+    'rankedEntryFreeLink',
+    // Generated public copy blocks (site-copy slice, contract A33).
+    'portalFaqList',
+    'portalStructuredData',
+    '<!-- copy:entry-copy:start -->',
+    '<!-- copy:entry-footnote:start -->',
+    '<!-- copy:mode-ranked:start -->',
+    '<!-- copy:scores-lead:start -->',
   ]) {
     assertIncludes('portal html', html, marker);
+  }
+  const expectedHtml = expectedLandingPage();
+  if (html !== expectedHtml) {
+    throw new Error(`portal html is not the page scripts/build-portal-pages.mjs renders for settlement.mjs (${PORTAL_FLAGS.settlementLive ? 'launch' : 'preview'} copy); run node scripts/build-portal-pages.mjs`);
   }
 
   for (const marker of [
@@ -152,6 +192,18 @@ try {
     'productionPropForIndex',
     'productionVfxFrame',
     'hero.animations.shoot',
+    // Sign-in (EIP-6963 picker, SIWE) and the Ranked flow (wave 3: entry, settlement, results, looks).
+    'eip6963:announceProvider',
+    "import('./src/wallet-picker.mjs')",
+    'function signInFromPicker',
+    'function requestRankedEntry',
+    'fetchSeedTicket',
+    'sendRankedEntry(',
+    'createRankedSettlementClient',
+    'lesters:ranked-run',
+    "import('./src/ranked-results.mjs')",
+    'cabinet-results-reopen',
+    "import('./src/unlockables-store.mjs')",
   ]) {
     assertIncludes('portal main.js', main, marker);
   }
@@ -229,7 +281,7 @@ try {
 
   console.log('Portal smoke gate passed.');
   console.log(`Checked ${portalUrl}`);
-  console.log('Covered: wallet entry markers, free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, player-led camera wiring, PixelLab Lester calibration assets, and Hard Money Heroes isometric production asset loading.');
+  console.log('Covered: sign-in and Ranked entry modal markers, the generated site copy (A33), free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, player-led camera wiring, PixelLab Lester calibration assets, and Hard Money Heroes isometric production asset loading.');
 } finally {
   if (server && !server.killed) server.kill();
 }

@@ -1,10 +1,16 @@
-// U11a browser check.
+// U11a browser check: the simulated-wallet fallback.
 //
 // The reboot visual gate screenshots the canvas only, so it is blind to every
 // DOM surface in the portal shell. This slice is entirely DOM, which means
 // without a check of its own it would ship unverified. Headless Chrome injects
-// no EIP-1193 provider, so simply clicking Connect Wallet exercises the exact
-// fallback path a real visitor without a wallet hits.
+// no EIP-1193 provider, so simply clicking Sign in exercises the exact
+// fallback path a real visitor without a wallet hits: with no wallet at all
+// (no EIP-6963 announcement, no window.ethereum, and WalletConnect not offered
+// on localhost), the portal signs in the simulated local identity directly and
+// never opens the wallet picker (signin-entry slice, contract §7.6).
+//
+// Serve apps/portal as the web root, then:
+//   HMH_PORTAL_ORIGIN=http://127.0.0.1:8809 node scripts/hmh-simulated-wallet-browser-smoke.mjs
 import assert from 'node:assert/strict';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
 
@@ -20,8 +26,24 @@ const findings = {};
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const consoleWarnings = [];
+  const issues = [];
+  const apiRequests = [];
   page.on('console', (message) => {
     if (message.type() === 'warning') consoleWarnings.push(message.text());
+    if (message.type() === 'error') issues.push(`console: ${message.text()}`);
+  });
+  page.on('pageerror', (error) => issues.push(`pageerror: ${error.message}`));
+  page.on('response', (response) => {
+    if (response.status() >= 400) issues.push(`http ${response.status()} ${response.url()}`);
+  });
+  page.on('requestfailed', (request) => {
+    const failure = request.failure()?.errorText ?? 'failed';
+    // A view that drops an image or media load cancels it (ERR_ABORTED); that is not a failed request.
+    if (/ERR_ABORTED/.test(failure) && request.method() === 'GET' && !new URL(request.url()).pathname.startsWith('/api/')) return;
+    issues.push(`requestfailed: ${request.url()} ${failure}`);
+  });
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(request.url());
   });
 
   await page.goto(`${origin}/`, { waitUntil: 'networkidle' });
@@ -31,60 +53,43 @@ try {
   const hasProvider = await page.evaluate(() => Boolean(globalThis.ethereum?.request));
   assert.equal(hasProvider, false, 'expected no injected provider in headless Chrome');
 
+  findings.signInLabel = (await page.textContent('#officialConnectButton'))?.trim();
+  assert.equal(findings.signInLabel, 'Sign in', 'the splash offers Sign in');
   await page.click('#officialConnectButton');
+
+  // The shell names the simulated session (the old #walletStatus header chip is gone).
   await page.waitForFunction(
-    () => document.querySelector('#walletStatus')?.dataset.simulatedWallet === 'true',
+    () => /simulated wallet session/i.test(document.querySelector('#officialProfileEyebrow')?.textContent ?? ''),
+    null,
     { timeout: 10_000 },
   );
+  findings.eyebrow = await page.textContent('#officialProfileEyebrow');
+  assert.match(findings.eyebrow, /simulated/i);
+  // The eyebrow must not still claim a real connection while the banner says
+  // otherwise. Two surfaces disagreeing is the mixed message U11a removes.
+  assert.doesNotMatch(findings.eyebrow, /profile connected/i);
 
-  findings.headerChip = await page.textContent('#walletStatus');
-  assert.match(findings.headerChip, /simulated/i, 'header wallet chip must name the simulated state');
+  // With no wallet at all the portal never opens the picker (signin-entry).
+  findings.pickerShown = await page.locator('.wallet-picker').count();
+  assert.equal(findings.pickerShown, 0, 'no wallet picker without a wallet');
 
-  findings.systemStatus = await page.textContent('#systemStatus');
-  assert.match(findings.systemStatus, /simulated wallet/i);
-  assert.match(findings.systemStatus, /not on-chain/i);
-
-  // The shell banner carries the full disclosure. Deliberately NOT the wallet
-  // rail panel: that lives in the legacy login terminal, which is hidden once
-  // you are connected, so a notice rendered only there is in the DOM and
-  // invisible. The visibility assertions below are what caught that.
-  const notice = page.locator('#simulatedWalletBanner');
-  await notice.waitFor({ state: 'visible', timeout: 10_000 });
-  findings.noticeText = (await notice.innerText()).replace(/\s+/g, ' ').trim();
-  assert.match(findings.noticeText, /simulated/i);
-  assert.match(findings.noticeText, /blockchain|on-chain/i);
-  assert.match(findings.noticeText, /does not carry over|reconnect|install/i);
-
-  findings.noticeRole = await notice.getAttribute('role');
-  assert.equal(findings.noticeRole, 'status', 'disclosure must be announced to assistive tech');
-
-  // It has to be visible, not merely present. A notice rendered into a
-  // collapsed or hidden container would pass a textContent assertion while
-  // telling the user nothing.
-  findings.noticeVisible = await notice.isVisible();
-  assert.equal(findings.noticeVisible, true, 'disclosure must be visible, not just in the DOM');
-  const box = await notice.boundingBox();
-  assert.ok(box && box.width > 100 && box.height > 20, `disclosure has no readable box: ${JSON.stringify(box)}`);
-
-  // Amber, not the green of a real connection.
-  findings.noticeBorder = await notice.evaluate((node) => getComputedStyle(node).borderTopColor);
-  assert.match(findings.noticeBorder, /^rgba?\(/);
-  const [r, g, b] = findings.noticeBorder.match(/[\d.]+/g).map(Number);
-  assert.ok(r > 200 && g > 120 && g < 220 && b < 120, `expected an amber warning border, got ${findings.noticeBorder}`);
+  // The shell copy carries the disclosure while the cabinet row loads (official-app-routes). The old
+  // shell banner (#simulatedWalletBanner) is no longer rendered: its renderer, renderLogin(), has had
+  // no caller since the legacy canvas backstage was retired, so the banner stays hidden (reported as a
+  // follow-up); the eyebrow, this copy, the console warning and the profile notice below remain.
+  await page.waitForFunction(() => /simulated local identity, not a real wallet/i.test(document.querySelector('#officialProfileCopy')?.textContent ?? ''), null, { timeout: 10_000 });
+  findings.shellCopy = (await page.textContent('#officialProfileCopy')).replace(/\s+/g, ' ').trim();
+  assert.match(findings.shellCopy, /0x[0-9a-f]{4,}…?[0-9a-f]* is a simulated local identity, not a real wallet/i);
+  await page.locator('.official-cabinet-card.playable').first().waitFor({ state: 'visible', timeout: 10_000 });
+  findings.bannerHidden = await page.locator('#simulatedWalletBanner').isHidden();
 
   findings.consoleWarned = consoleWarnings.some((text) => /simulated local identity/i.test(text));
   assert.equal(findings.consoleWarned, true, 'connectMockWallet must warn on the console');
 
-  // The eyebrow must not still claim a real connection while the banner says
-  // otherwise. Two surfaces disagreeing is the mixed message U11a removes.
-  findings.eyebrow = await page.textContent('#officialProfileEyebrow');
-  assert.match(findings.eyebrow, /simulated/i);
-  assert.doesNotMatch(findings.eyebrow, /profile connected/i);
-
   // Profile route: the wallet card notice has to be reachable too. The rail
   // panel version was not, and asserting presence alone would not have caught
   // it -- so check the rendered box here as well.
-  await page.click('[data-official-nav="profile"], #officialNavTabs button:has-text("Profile")');
+  await page.click('#officialNavTabs a.official-nav-tab[href="/profile"]');
   const profileNotice = page.locator('.profile-simulated-wallet-notice');
   await profileNotice.waitFor({ state: 'visible', timeout: 10_000 });
   const profileBox = await profileNotice.boundingBox();
@@ -93,6 +98,17 @@ try {
     `profile disclosure has no readable box: ${JSON.stringify(profileBox)}`,
   );
   findings.profileNoticeBox = profileBox;
+  // The full disclosure, announced to assistive tech, in amber rather than a connection's green.
+  findings.noticeText = (await profileNotice.innerText()).replace(/\s+/g, ' ').trim();
+  assert.match(findings.noticeText, /simulated/i);
+  assert.match(findings.noticeText, /blockchain|on-chain/i);
+  assert.match(findings.noticeText, /does not carry over|reconnect|install/i);
+  findings.noticeRole = await profileNotice.getAttribute('role');
+  assert.equal(findings.noticeRole, 'status', 'disclosure must be announced to assistive tech');
+  findings.noticeBorder = await profileNotice.evaluate((node) => getComputedStyle(node).borderTopColor);
+  assert.match(findings.noticeBorder, /^rgba?\(/);
+  const [r, g, b] = findings.noticeBorder.match(/[\d.]+/g).map(Number);
+  assert.ok(r > 200 && g > 120 && g < 220 && b < 120, `expected an amber warning border, got ${findings.noticeBorder}`);
   findings.profileConnectorFact = await page.textContent('.profile-wallet-facts');
   assert.match(findings.profileConnectorFact, /simulated \(no real wallet\)/i);
 
@@ -104,6 +120,9 @@ try {
     'the chain-guard line must not claim a connection over the simulated identity',
   );
 
+  // Preview (both flags false): nothing reaches /api, and the console stays clean.
+  assert.deepEqual(apiRequests, [], `preview must not call /api: ${apiRequests.join(', ')}`);
+  assert.deepEqual(issues, [], `browser console/network issues:\n${issues.join('\n')}`);
   console.log(JSON.stringify({ status: 'PASS', ...findings }, null, 2));
 } finally {
   await browser.close();

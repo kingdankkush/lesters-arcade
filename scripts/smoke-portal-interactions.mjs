@@ -102,6 +102,12 @@ try {
     'combatHudOverlay',
     'tacticalBalanceDebugOverlay',
     'arcadeMusicShuffleButton',
+    // The parent-owned Ranked entry modal (signin-entry slice).
+    'rankedEntryModal',
+    'rankedEntryApprove',
+    'rankedEntryCancel',
+    'rankedEntryFreeLink',
+    '>Sign in<',
   ];
   const requiredMainMarkers = [
     'enterOfficialArcadeFromSplash',
@@ -126,6 +132,15 @@ try {
     "officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'",
     'hmhDebug=balance',
     "event.key === 'F10'",
+    // Sign in (picker or direct), the Ranked entry modal, and the results screen with its reopen button.
+    'function signInFromPicker',
+    'function requestRankedEntry',
+    "dom.rankedEntryApprove.addEventListener('click', onApprove)",
+    "dom.rankedEntryCancel.addEventListener('click', onCancel)",
+    "window.addEventListener('lesters:ranked-run'",
+    'function showRankedResults',
+    'rankedResultsClosed',
+    'cabinet-results-reopen',
   ];
   const requiredStyleMarkers = [
     'combat-hud-overlay',
@@ -150,14 +165,15 @@ try {
     mode: 'static-interaction-contract',
     note: 'This gate verifies all selectors/handlers required for the live browser flow: wallet/profile/free/ranked/exit. Browser tool smoke still exercises actual clicks during handoff.',
     requiredSteps: [
-      { id: 'connect-wallet', selector: '#officialConnectButton', expectedHandler: 'enterOfficialArcadeFromSplash' },
-      { id: 'profile-tab', selector: '[data-tab="profile"]', expectedVisibleCopy: 'connected wallet profile' },
+      { id: 'connect-wallet', selector: '#officialConnectButton', label: 'Sign in', expectedHandler: 'enterOfficialArcadeFromSplash' },
+      { id: 'profile-tab', selector: '#officialNavTabs a[href="/profile"]', expectedVisibleCopy: 'connected wallet profile' },
       { id: 'free-start', selector: '#officialFreeModeButton', expectedNext: '#officialBeginLevelButton' },
       { id: 'rightward-scroll', key: 'd', expectedHud: 'combatHudOverlay' },
       { id: 'pause-options', selector: '#combatPauseButton', expectedPanel: '#combatMenuPanel' },
       { id: 'restart', selector: '#combatRestartButton', expectedCleanHud: true },
       { id: 'game-menu', selector: '#combatReturnMenuButton', expectedStep: 'mode-select' },
-      { id: 'ranked-start', selector: '#officialRankedModeButton', expectedSeparation: 'official score sync only at game over' },
+      { id: 'ranked-start', selector: '#officialRankedModeButton', expectedModal: '#rankedEntryModal', approve: '#rankedEntryApprove', cancel: '#rankedEntryCancel', expectedSeparation: 'official score sync only at game over' },
+      { id: 'ranked-results', event: 'lesters:ranked-run', expectedScreen: '[data-ranked-results]', close: 'Escape', expectedReopen: '.cabinet-results-reopen' },
       { id: 'exit-cleanup', selector: '#combatExitButton', expectedStep: 'cabinet-select', expectedCleanup: ['combatHudOverlay', 'clearInactiveCombatOverlay'] },
       { id: 'dev-balance-overlay', query: 'hmhDebug=balance', toggle: 'F10', model: 'buildTacticalBalanceDebugOverlayModel' },
     ],
