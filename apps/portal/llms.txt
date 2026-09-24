@@ -1,6 +1,6 @@
 # Lester's Arcade
 
-Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, with optional wallet profiles and device-local Ranked previews.
+Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.
 
 ## Games
 - [Hard Money Heroes](https://lestersarcade.io/games/hard-money-heroes): Fight through the Crypto Wasteland in a top-down roguelite. Choose a hero, collect weapons, complete field objectives, and hold out against the horde.
@@ -8,9 +8,12 @@ Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Mone
 - [STACKED](https://lestersarcade.io/games/stacked): Stack, spin, and seal falling ledger blocks to the arcade soundtrack. Chase cleaner clears while music-driven worlds react around the board.
 
 ## Platform
-- [How it works](https://lestersarcade.io/#how-it-works): Free play, wallet profiles, and local Ranked previews.
+- [How it works](https://lestersarcade.io/#how-it-works): Free play with no wallet, and wallet sign-in for Ranked runs on the LitVM testnet.
 - [Browse games](https://lestersarcade.io/games)
 - [Support and policies](https://lestersarcade.io/trust.html)
 
 ## Current scope
-Profiles and Ranked preview results stay in this browser. No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available. LitVM LiteForge is a testnet.
+Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve for publishing. Free Mode is always free and needs no wallet.
+The arcade server checks each Ranked run, then the arcade's relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed on the server; Hard Money Heroes runs are plausibility-checked, not replayed.
+Global Weekly, Monthly, and All-time leaderboards rank each wallet's best verified score. Achievements are recorded against the wallet on the arcade server. Display names are set on chain and can be hidden by moderation.
+Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. Testnet zkLTC has no value, and there are no prizes.

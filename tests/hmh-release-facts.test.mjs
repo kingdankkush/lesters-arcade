@@ -167,7 +167,7 @@ test('real repository adapters cover all 55 groups, 67 feature IDs and all 99 or
   assert.equal(f.counts.features, 55); assert.equal(f.counts.originalIdsInFeatures, 67); assert.equal(f.originalRegisterIds.length, 99);
   assert.equal(f.pausedExcludedIds.length, 22);
   assert.equal(f.cabinets.length, 2);
-  assert.equal(f.settlement.liveFlag, false);
+  assert.equal(f.settlement.liveFlag, true);
   assert.ok(f.sourceInputs.every(s => /^[a-f0-9]{64}$/.test(s.sha256) && Number.isSafeInteger(s.bytes)));
   assert.ok(!JSON.stringify(f).includes('C:\\Users\\'));
   assert.ok(!JSON.stringify(f).includes('kingdankkush420@'));

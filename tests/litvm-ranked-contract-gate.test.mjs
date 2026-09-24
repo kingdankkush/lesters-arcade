@@ -64,8 +64,8 @@ async function check(options = {}, request = {}) {
 test('configured read-only GameRegistry address exactly matches the generated address module', () => {
   assert.equal(LITVM_CONTRACT_ADDRESSES.gameRegistry, registryAddress);
   assert.match(registryAddress, /^0x[0-9a-f]{40}$/);
-  assert.ok(['predicted', 'deployed'].includes(LITVM_DEPLOYMENT.status));
-  assert.equal(SETTLEMENT_LIVE, false);
+  assert.equal(LITVM_DEPLOYMENT.status, 'deployed');
+  assert.equal(SETTLEMENT_LIVE, true);
 });
 
 for (const [label, options, reason] of [
@@ -97,7 +97,7 @@ test('approved current-ABI fixture passes only contract/funds preflight at one p
   assert.ok(pinned.length >= 6, 'must actually inspect code, approval, wiring, verifier and tuple');
   assert.ok(pinned.every(c => c.params[1] === '0x123'));
   assert.ok(calls.every(c => ['eth_chainId', 'eth_accounts', 'eth_blockNumber', 'eth_getBalance', 'eth_call', 'eth_getCode'].includes(c.method)));
-  assert.equal(SETTLEMENT_LIVE, false, 'fixture preflight does not enable real settlement');
+  assert.equal(SETTLEMENT_LIVE, true, 'the committed build is live since runbook step 7; this fixture preflight sends nothing');
 });
 
 test('wrong chain stops before contract, account and funding reads', async () => {
@@ -142,7 +142,18 @@ test('insufficient funds still deny an approved contract fixture', async () => {
 test('the direct ranked writer refuses disabled settlement before any provider access', async () => {
   const calls = [];
   const provider = { async request(request) { calls.push(request); throw new Error('provider must not be contacted'); } };
-  await assert.rejects(submitRankedSession(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);
+  // Since runbook step 7 the committed flag is true, so the disabled path is proven on the
+  // source-isolated writer with SETTLEMENT_LIVE false.
+  const source = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');
+  const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
+  const names = ['scoreContractAddress', 'readRankedContractGate', 'submitRankedSession', 'isBytes32Hex', 'toBytes32Id'];
+  const code = ast.body.map(n => n.declaration ?? n).filter(n => n.type === 'FunctionDeclaration' && names.includes(n.id.name)).map(n => source.slice(n.start, n.end)).join('\n');
+  const disabledWriter = runInNewContext(`${code}\nsubmitRankedSession`, {
+    SETTLEMENT_LIVE: false, loadEthers, SCORE_REGISTRY_ABI,
+    GAME_REGISTRY_ABI: gameAbi.fragments, LITVM_CONTRACT_ADDRESSES,
+    LITVM_LITEFORGE_NETWORK: { chainId: 4441, name: 'Fixture LiteForge' },
+  });
+  await assert.rejects(disabledWriter(provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /settlement is disabled/i);
   assert.deepEqual(calls, []);
 });
 
@@ -160,7 +171,7 @@ test('a source-isolated live writer rechecks approval before creating any signer
   });
   await assert.rejects(isolatedWriter(f.provider, { sessionId: 'fixture-run', gameId, envelopeHash: `0x${'ab'.repeat(32)}`, attestation: { signature: 'fixture-not-a-real-signature', deadline: 1 } }), /not registered/i);
   assert.equal(f.calls.some(c => /accounts|send|sign/i.test(c.method)), false);
-  assert.equal(SETTLEMENT_LIVE, false, 'the real exported gate is never toggled by this fixture');
+  assert.equal(SETTLEMENT_LIVE, true, 'the committed gate is live since runbook step 7; this fixture never toggles it');
 });
 
 test('new preflight behavioral suites are registered in the explicit syntax gate', () => {

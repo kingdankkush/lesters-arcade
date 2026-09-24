@@ -25,7 +25,7 @@ import { LITVM_DEPLOYMENT } from './generated/litvm-addresses.mjs';
 // Legacy contracts were deployed to LiteForge, but verified ranked settlement
 // remains disabled until the hardened verifier contract is deployed and an
 // attestation service is production-approved. Never publish unverified rows.
-export const SETTLEMENT_LIVE = false;
+export const SETTLEMENT_LIVE = true;
 
 // Hosted profile services (owner decision 2026-09-16): SIWE session tokens
 // and cross-device profile sync through /api/session and /api/profile.
@@ -33,7 +33,7 @@ export const SETTLEMENT_LIVE = false;
 // exist; while false the browser never calls those endpoints, so a plain
 // static host or an unconfigured deployment logs no failed requests and the
 // portal stays local-only exactly as before.
-export const HOSTED_PROFILE_SYNC = false;
+export const HOSTED_PROFILE_SYNC = true;
 
 // Invariant (contract §9.1, pinned by tests/litvm-addresses-module.test.mjs):
 //   SETTLEMENT_LIVE implies HOSTED_PROFILE_SYNC && LITVM_DEPLOYMENT.status === 'deployed'.

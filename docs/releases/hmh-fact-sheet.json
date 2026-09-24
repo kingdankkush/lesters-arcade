@@ -1,12 +1,12 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "dbf463e7d682a14613eff99b503713cd78cca9b194377e54d604c6eabc555eef",
+  "sourceSnapshotSha256": "639ba0483a91a1818209add06f6cfffbf01929cba48b4582f2cd990defd30daa",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
-      "sha256": "0ad24f5c6514ce623b7b8bf0ccef310c6962c5ca1d93c5794eb912440b5b8429",
-      "bytes": 554
+      "sha256": "ad3fc63aa65fa8057d36fe6f7836ae01883a5b5215af8d2da5b70902601f19f7",
+      "bytes": 592
     },
     {
       "path": "apps/portal/games/hard-money-heroes/game.manifest.json",
@@ -15,18 +15,18 @@
     },
     {
       "path": "apps/portal/index.html",
-      "sha256": "8d2793106b14be6555a74b66792c6fc6c3dbdc85feaba03289988edf4310a327",
-      "bytes": 25462
+      "sha256": "3e5d7562c834a744c3645d5cb27ce884cc785834744cd8bf977059c3c4d2496f",
+      "bytes": 38773
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "814f88f3ec9c684bbf3605f0976babfd05cd8473edd64fd862ad73dfadd8514d",
-      "bytes": 662770
+      "sha256": "d206a9e6ed7fc0dca822868c8f2d71cf013736e36df2571fc265fd99e74c1d1b",
+      "bytes": 735440
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
-      "sha256": "23b92936901525f7644a1cf9911dd8675e66c44773c69b674601d98a04e8450d",
-      "bytes": 350995
+      "sha256": "2a7330b2f321224d8c354d4571698831d4367786ed7eb92cdf40ad831b2a303a",
+      "bytes": 365491
     },
     {
       "path": "apps/portal/src/hmh-challenge-ui.mjs",
@@ -40,23 +40,23 @@
     },
     {
       "path": "apps/portal/src/routes/official-app-routes.mjs",
-      "sha256": "5c7bd36d6f324f6a1b957f930264ae45ad40d2f99c32c8a1e1392971fc849ce7",
-      "bytes": 4543
+      "sha256": "fc8a2a82ef8534df4fd0ce8dfe7f7606082163487d86045c5d364844dbaa5a85",
+      "bytes": 4377
     },
     {
       "path": "apps/portal/src/routes/official-profile-route.mjs",
-      "sha256": "e22650a614406e22644c6d344defbdd67a8170d3c213505e08281c9c4956e2a8",
-      "bytes": 45931
+      "sha256": "6faf2470b6c3f98d1b8ee7e8bb856b1e85baf231c5a95c2baafec6f56b8d92d9",
+      "bytes": 55197
     },
     {
       "path": "apps/portal/src/settlement.mjs",
-      "sha256": "da5f6ac40df6c0fc9ffa173f81b69bc0afc9b6a768cb8883cd67f09136b28fd4",
-      "bytes": 11599
+      "sha256": "7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea",
+      "bytes": 14183
     },
     {
       "path": "apps/portal/styles-arcade-polish.css",
-      "sha256": "26d23e6c700ad6efe7bb766844318dff91f96a549f832d61aa9fcd16266933d1",
-      "bytes": 66646
+      "sha256": "200f08d882140b02fbc392c21974d533633b24e6b011c4959276077882dfe260",
+      "bytes": 88509
     },
     {
       "path": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "70ad950afbf8d582d3688b38af99c56bbd77b1bde7c924aa4740ef123d679ff5",
-      "bytes": 26858
+      "sha256": "5fe39b38336277909f17b952a11971bc83b1d752df0643f3c02793aac87002ec",
+      "bytes": 43291
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,13 +100,13 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "ed7ffac2f89545213ea4d0226c7e2274b01439e4dd42d1d2d66de6f4391c317f",
-      "bytes": 29522
+      "sha256": "af2262b6bc67db3c49488d734ad53f539d38f61fa72bfdcab1f65abca69dc99b",
+      "bytes": 48317
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "b9424ed10192dd9146ebfa3de538642efc79e0b4f810c1917dd7535ffbf5b8fc",
-      "bytes": 190608
+      "sha256": "b552438442783d1a983f26cc623c422cc111a04076c945b19526aa73507863fa",
+      "bytes": 196643
     },
     {
       "path": "tests/hmh-challenge-session.test.mjs",
@@ -125,13 +125,13 @@
     },
     {
       "path": "tests/official-app-routes.test.mjs",
-      "sha256": "e61e5adf7d376e41531719d0d4280a92d45f43a43b116d772fc37ef593086848",
-      "bytes": 4370
+      "sha256": "e1797d1b53840061bba32ffe7a23be6509d98324c10a9f8e0c4ac7ba132ec1f5",
+      "bytes": 7426
     },
     {
       "path": "tests/official-profile-route.test.mjs",
-      "sha256": "41d01042b40a979feb05c9eafb4b6107f5668ceeea65d1649614478017931736",
-      "bytes": 18459
+      "sha256": "d0a59b0422a003ca80d7cd1f82dc0303c83423314927201776c54579fb3e2c7a",
+      "bytes": 19607
     },
     {
       "path": "tests/profile-data-truth.test.mjs",
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v33-hmh-playable-update",
+  "recordedProductionMarker": "lesters-arcade-v52-owner-round",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",
@@ -160,7 +160,7 @@
     {
       "manifestId": "chikun",
       "name": "Chikun's Escape",
-      "declaredVersion": "0.5.0",
+      "declaredVersion": "0.9.0",
       "declaredStatus": "playable",
       "declaredRankedEligible": true,
       "declaredCapabilities": [
@@ -200,8 +200,8 @@
     "scope": "Recorded historical combined run, not rerun or rebound by this generator"
   },
   "settlement": {
-    "state": "simulated",
-    "liveFlag": false,
+    "state": "gated",
+    "liveFlag": true,
     "chainAcceptance": "not-performed",
     "disclosure": "This flag is not payment, gas, receipt, score, NFT or provider verification. Real-wallet/native entry, ABI, durable history, epoch and authority acceptance remain separate."
   },
@@ -214,9 +214,12 @@
       "recordedStatus": "source-reviewed; combined build/browser/release pending",
       "recordedAt": "2026-09-10T15:01:27.459584+00:00",
       "boundFiles": 10,
-      "currentFileMatches": 8,
+      "currentFileMatches": 5,
       "mismatches": [
+        "apps/portal/src/arcade-core.mjs",
+        "apps/portal/main.js",
         "apps/portal/index.html",
+        "apps/portal/styles-arcade-polish.css",
         "scripts/syntax-check.mjs"
       ],
       "scope": "Whole-file snapshot comparison only. Later accepted layers can supersede a hash; mismatch is not itself a defect or permission to overwrite."
@@ -230,9 +233,13 @@
       "recordedStatus": "SOURCE_REVIEWED_CORRECTED_BUILD_BROWSER_PENDING",
       "recordedAt": "2026-09-10T09:22:47.959907+00:00",
       "boundFiles": 8,
-      "currentFileMatches": 5,
+      "currentFileMatches": 1,
       "mismatches": [
         "apps/portal/src/arcade-core.mjs",
+        "apps/portal/src/routes/official-profile-route.mjs",
+        "apps/portal/src/routes/official-app-routes.mjs",
+        "tests/official-profile-route.test.mjs",
+        "tests/official-app-routes.test.mjs",
         "tests/arcade-core.test.mjs",
         "scripts/syntax-check.mjs"
       ],

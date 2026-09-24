@@ -170,7 +170,7 @@ test('reads go through the public RPC, not the wallet', async () => {
   const source = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');
   assert.match(source, /async function withReadProvider\(ethers, readProvider, read\) \{\n  if \(!readProvider\) return withPublicRead\(ethers, null, read\);/);
   assert.match(source, /export async function checkRankedReadiness[\s\S]*?withReadProvider\(ethers, readProvider,/);
-  assert.equal(SETTLEMENT_LIVE, false, 'the preview build never runs these reads');
+  assert.equal(SETTLEMENT_LIVE, true, 'the live build runs these reads, always over the public RPC');
 });
 
 // sendRankedEntry runs source-isolated with the live flag on and a fake ethers,
@@ -178,7 +178,7 @@ test('reads go through the public RPC, not the wallet', async () => {
 // `publicWait(hash)` and `walletWait()` script the two receipt sources (return
 // a receipt, or throw); `paid()` answers the entry contract's isPaid.
 function timeoutError() { return Object.assign(new Error('timeout'), { code: 'TIMEOUT' }); }
-function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET } = {}) {
+function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, walletWait = null, paid = () => false, signer = WALLET, live = true } = {}) {
   const source = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');
   const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
   const names = ['sendRankedEntry', 'openRankedSession', 'withReadProvider', 'isBytes32Hex', 'toBytes32Id', 'readRankedContractGate', 'scoreContractAddress'];
@@ -224,7 +224,7 @@ function isolatedEntry({ receipt, publicReadFails = false, publicWait = null, wa
     },
   };
   const context = {
-    SETTLEMENT_LIVE: true,
+    SETTLEMENT_LIVE: live,
     loadEthers: async () => fakeEthers,
     LITVM_CONTRACT_ADDRESSES,
     LITVM_LITEFORGE_NETWORK: { chainId: 4441, name: 'Fixture LiteForge' },
@@ -269,10 +269,11 @@ test('sendRankedEntry resolves on broadcast and reports confirmation later', asy
   assert.deepEqual({ ...(await sentOutage.wait()) }, { status: 'confirmed', blockNumber: 14 });
   assert.ok(outage.log.includes('wallet:wait'));
 
-  // The committed build refuses before touching the wallet.
+  // A build with settlement off (every build before runbook step 7) refuses before touching the wallet.
   const untouched = { request() { throw new Error('must not be contacted'); } };
-  await assert.rejects(sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);
-  await assert.rejects(openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);
+  const disabled = isolatedEntry({ live: false }).api;
+  await assert.rejects(disabled.sendRankedEntry(untouched, { sessionKey, gameId: GAME, preflight }), /settlement is disabled/i);
+  await assert.rejects(disabled.openRankedSession(untouched, { sessionId: 'game-session-x', gameId: GAME }), /settlement is disabled/i);
 });
 
 test('the entry is refused before openSession from another account or on a zero quote', async () => {

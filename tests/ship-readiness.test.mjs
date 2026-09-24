@@ -47,7 +47,9 @@ test('brand tokens load before portal styles and public metadata is truthful', (
   const stylesAt = html.indexOf('styles.css');
   assert.ok(tokensAt > 0 && tokensAt < stylesAt);
   assert.equal(html.includes('automatically submitted on-chain'), false);
-  assert.match(html, /verified on-chain publishing remains disabled/i);
+  // Since runbook step 7 the committed pages carry the launch copy (contract A33).
+  assert.match(html, /the relayer publishes your score on LitVM/i);
+  assert.doesNotMatch(html, /verified on-chain publishing remains disabled/i);
 });
 
 test('fixed-step runtime recovers rare long frames without an unbounded catch-up spiral', () => {

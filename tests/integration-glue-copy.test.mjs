@@ -195,9 +195,10 @@ test('D19: the prerendered Ranked entry modal follows the flags, and main.js sho
   const launch = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
   const index = readFileSync(join(root, 'apps/portal/index.html'), 'utf8');
   const block = (html, key) => new RegExp(`<!-- copy:${key}:start -->([\\s\\S]*?)<!-- copy:${key}:end -->`).exec(html)?.[1];
-  // Committed pages are the preview state (the ship-readiness phrase included).
-  assert.equal(block(index, 'entry-copy'), preview.rankedEntryCopy.replace(/'/g, '&#39;'));
-  assert.equal(block(index, 'entry-footnote'), preview.rankedEntryFootnote.replace(/'/g, '&#39;'));
+  // Since runbook step 7 the committed pages are the launch state (the preview copy, checked below,
+  // still carries the ship-readiness phrase for any build with the flags off).
+  assert.equal(block(index, 'entry-copy'), launch.rankedEntryCopy.replace(/'/g, '&#39;'));
+  assert.equal(block(index, 'entry-footnote'), launch.rankedEntryFootnote.replace(/'/g, '&#39;'));
   assert.match(preview.rankedEntryCopy, /Verified on-chain publishing remains disabled/);
   // The live strings main.js writes into the modal when it opens are the launch copy.
   const main = readFileSync(join(root, 'apps/portal/main.js'), 'utf8');
