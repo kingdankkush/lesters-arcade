@@ -2587,3 +2587,129 @@
   .leaderboard-game-banner.leaderboard-filter-button:hover:not(:disabled) { transform: none; }
   .leaderboard-game-banner.leaderboard-filter-button:hover .leaderboard-game-banner-art { transform: none; }
 }
+
+/* ---- Live UI audit 2026-09-24 (docs/qa/live-ui-audit-20260924.json) ------ */
+/* Generic arcade buttons. A button or link that carries only the
+   pixel-button class (Share profile, View Leaderboard, Try again, Sign in,
+   Retry, the Ranked entry network and funds guard) had no style of its own:
+   the browser's grey fill under the dark global button text, 3.8:1, reading
+   as a disabled control. Variant classes (leaderboard-*, profile-action-*)
+   keep their own look. */
+button[class="pixel-button"],
+a[class="pixel-button"],
+.pixel-button.profile-share-button,
+.pixel-button.profile-session-retry,
+.pixel-button.profile-retry-saved {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid rgba(25, 247, 255, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(25, 247, 255, 0.16), rgba(25, 247, 255, 0.04)), #07112a;
+  color: #e8fbff;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 0 12px rgba(25, 247, 255, 0.14);
+}
+button[class="pixel-button"]:hover:not(:disabled),
+a[class="pixel-button"]:hover,
+.pixel-button.profile-share-button:hover:not(:disabled),
+.pixel-button.profile-session-retry:hover:not(:disabled),
+.pixel-button.profile-retry-saved:hover:not(:disabled) {
+  border-color: #19f7ff;
+  color: #fff;
+  box-shadow: 0 0 18px rgba(25, 247, 255, 0.32);
+}
+button[class="pixel-button"]:focus-visible,
+a[class="pixel-button"]:focus-visible,
+.pixel-button.profile-share-button:focus-visible,
+.pixel-button.profile-session-retry:focus-visible,
+.pixel-button.profile-retry-saved:focus-visible { outline: 2px solid #ffe84d; outline-offset: 3px; }
+button[class="pixel-button"]:disabled,
+.pixel-button.profile-session-retry:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+.pixel-button.profile-avatar-option {
+  padding: 4px;
+  border: 2px solid rgba(25, 247, 255, 0.3);
+  border-radius: 16px;
+  background: rgba(7, 17, 42, 0.85);
+}
+.pixel-button.profile-avatar-option.is-active { border-color: #ffe84d; box-shadow: 0 0 16px rgba(255, 232, 77, 0.4); }
+.pixel-button.profile-avatar-option:focus-visible { outline: 2px solid #ffe84d; outline-offset: 2px; }
+/* Show more stays focusable while its page loads (aria-disabled, not disabled). */
+.leaderboard-show-more[aria-disabled="true"] { opacity: 0.7; cursor: progress; }
+
+/* The board title's trophy sat raised against the first letter. */
+.leaderboard-title { display: flex; align-items: center; gap: 0.45em; }
+
+/* Profile: a wallet shown in place of a display name keeps its hex case
+   (the card's strong style uppercased "0x8841…e824" to "0X8841…E824"). */
+.profile-hero-name.profile-hero-name-wallet {
+  text-transform: none;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: clamp(1rem, 4.6vw, 1.4rem);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* The same for a board row's wallet line under its display name. */
+.leaderboard-table .lt-name-meta > .lt-wallet-short { text-transform: none; }
+
+/* Recent runs and verified stats start at the top of a card stretched to
+   its row; the card default (justify-content: flex-end) left a tall empty
+   band above "Recent Ranked runs". */
+.profile-command-grid > .profile-recent-sessions-card,
+.profile-command-grid > .profile-verified-games-card { justify-content: flex-start; }
+.profile-recent-sessions-card .profile-session-list { align-self: stretch; }
+
+/* One run per card on two lines (score and game, then status and links),
+   instead of five inline items squeezed into columns: at 390 px
+   "⛓ verified" and "Run page" broke into "Run / verifiedpage", and the
+   rows overflowed the card at 320 px. */
+.game-history-row.profile-session-row {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 10px 12px;
+}
+.profile-session-row > .game-history-score { font-size: 0.95rem; white-space: nowrap; }
+.profile-session-row > .game-history-detail { flex: 1 1 calc(100% - 9rem); min-width: 0; font-size: 0.78rem; }
+.profile-session-row > .game-history-chain {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #b4aed4;
+}
+.profile-session-row > .game-history-chain.trust-verified { color: #45ff8a; }
+.profile-session-row > .game-history-chain.trust-pending,
+.profile-session-row > .game-history-chain.trust-retrying { color: #ffb347; }
+.profile-session-row > .game-history-chain.trust-failed { color: #ff8fa3; }
+.profile-session-row > .game-history-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: #19f7ff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.profile-session-row > small { flex-basis: 100%; }
+
+/* Achievement cards: the title leads (it was 10 px, smaller than its game
+   and tier line), the tier reads in its colour, and phones get two
+   readable columns instead of three 84 px ones. */
+.profile-achievement-card .achievement-name { font-size: 0.86rem; font-weight: 800; color: #f4fbff; line-height: 1.25; }
+.profile-achievement-card .achievement-record-status { font-size: 0.66rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.profile-achievement-card.tier-bronze .achievement-record-status { color: #e8a867; }
+.profile-achievement-card.tier-silver .achievement-record-status { color: #c7d0dc; }
+.profile-achievement-card.tier-gold .achievement-record-status { color: #ffd54a; }
+.profile-achievement-card.tier-platinum .achievement-record-status { color: #7bf6ff; }
+@media (max-width: 560px) {
+  .achievements-grid.profile-achievement-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+}

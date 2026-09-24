@@ -400,6 +400,7 @@ const NODE_CHECK_FILES = [
   'tests/name-claim-prompt.test.mjs',
   'apps/portal/src/focus-keeper.mjs',
   'tests/focus-keeper.test.mjs',
+  'tests/live-ui-audit-polish.test.mjs',
   "apps/portal/src/hmh-campaign-levels.mjs",
   "apps/portal/src/district-generator.mjs",
   "apps/portal/src/hmh-level-one-sketch-layout.mjs",

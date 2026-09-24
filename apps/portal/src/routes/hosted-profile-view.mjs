@@ -417,7 +417,7 @@ export function createHostedProfileView({
     const top = el('div', { className: 'profile-hero-topline' });
     top.append(hostedAvatar(profile.avatarUri, name, 'profile-hero-avatar'));
     const identity = el('div', { className: 'profile-hero-identity' });
-    appendText(identity, 'strong', name, 'profile-hero-name');
+    appendText(identity, 'strong', name, profile.displayName ? 'profile-hero-name' : 'profile-hero-name profile-hero-name-wallet');
     appendText(identity, 'small', `${shortWallet(target.wallet)}${target.own ? ' · this is you' : ''} · verified Ranked runs on LitVM`);
     if (target.own && target.self && profile.nameBlocked) appendText(identity, 'p', BLOCKED_NAME_COPY, 'profile-name-blocked username-feedback');
     top.append(identity);
