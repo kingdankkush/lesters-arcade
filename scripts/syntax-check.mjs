@@ -570,6 +570,8 @@ const NODE_CHECK_FILES = [
   "scripts/write-hmh-balance-snapshot.mjs",
   "scripts/hmh-long-run-certification.mjs",
   "scripts/smoke-portal-flow.mjs",
+  'scripts/lib/fixture-wallet.mjs',
+  'tests/fixture-wallet.test.mjs',
   "scripts/smoke-portal-interactions.mjs",
   "scripts/visual-regression.mjs",
   "scripts/hmh-browser-soak.mjs",
