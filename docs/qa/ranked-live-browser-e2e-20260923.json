@@ -1,6 +1,8 @@
 {
   "schema": "lesters-ranked-live-browser-e2e-v1",
-  "generatedAt": "2026-09-24T06:50:21.276Z",
+  "generatedAt": "2026-09-24T09:23:19.177Z",
+  "head": "98e71a8d",
+  "dirty": false,
   "target": "local",
   "note": "Local only: in-process Hardhat chain 4441, PGlite for Neon, public Hardhat fixture keys, and a throwaway live-flag portal in the OS temp directory served by scripts/lib/local-http.mjs with the vercel.json headers. Nothing touched LiteForge, Vercel or production Neon, and no committed file changed.",
   "commands": {
@@ -18,6 +20,15 @@
     "launchCopy": true,
     "csp": "vercel.json headers, plus the loopback proxy origin in connect-src"
   },
+  "fixtureWallet": {
+    "frames": "the site origin's top frame only",
+    "transactions": "ArcadeRankedEntry.openSession only, at most the quoted total",
+    "quotesWei": {
+      "chikun": "102000000000000000",
+      "stacked": "102000000000000000",
+      "lester-blaster": "102000000000000000"
+    }
+  },
   "repoUnchanged": true,
   "browserRpc": {
     "calls": 131,
@@ -25,7 +36,7 @@
   },
   "unhandledRejections": [],
   "ok": true,
-  "durationMs": 121881,
+  "durationMs": 121993,
   "games": {
     "chikun": {
       "gameId": "chikun",
@@ -51,6 +62,28 @@
           }
         },
         {
+          "id": "look-locked-before-run",
+          "ok": true,
+          "detail": {
+            "state": "locked",
+            "notice": "Unlocks follow your wallet to every device, in Free and Ranked. Your picks save to your wallet."
+          }
+        },
+        {
+          "id": "entry-modal-eyebrow",
+          "ok": true,
+          "detail": {
+            "eyebrow": "Ranked · Entry"
+          }
+        },
+        {
+          "id": "entry-modal-reserve-label",
+          "ok": true,
+          "detail": {
+            "reserveLabel": "Settlement reserve"
+          }
+        },
+        {
           "id": "entry-modal-quote",
           "ok": true,
           "detail": {
@@ -67,6 +100,15 @@
             "rankedTitle": "Play Ranked",
             "rankedCopy": "0.102 testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.",
             "previewHit": null
+          }
+        },
+        {
+          "id": "seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
           }
         },
         {
@@ -103,8 +145,8 @@
           "id": "entry-session-matches-settle",
           "ok": true,
           "detail": {
-            "entry": "0x6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
-            "settle": "0x6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482"
+            "entry": "0xcad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284",
+            "settle": "0xcad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284"
           }
         },
         {
@@ -133,14 +175,14 @@
           "id": "explorer-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0xaf25cd470e652263fbf3cb68285e7770162b8ba147a113645d7d93995e56d194"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xa24609b6ea37f75a4fd24c371df1c515ff6972bbaefb8244d140c07717f4c776"
           }
         },
         {
           "id": "entry-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0xd77cf38efb9161743cf32bd6b09b75342f7a156e8b93418394e95f547498dc99"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xfaac88b8a3b31898debcc34abfe49932d1b888a064a2ca6944b139862c581aa2"
           }
         },
         {
@@ -161,8 +203,8 @@
           "detail": {
             "page": {
               "status": 200,
-              "ogUrl": "https://lestersarcade.io/s/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
-              "ogImage": "/api/share-card/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482.png?v=…",
+              "ogUrl": "https://lestersarcade.io/s/cad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284",
+              "ogImage": "/api/share-card/cad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284.png?v=…",
               "verified": true,
               "noindex": false
             },
@@ -178,7 +220,8 @@
           "id": "unlock-from-e6",
           "ok": true,
           "detail": {
-            "state": "unlocked"
+            "before": "locked",
+            "after": "unlocked"
           }
         },
         {
@@ -224,6 +267,15 @@
           }
         },
         {
+          "id": "second-ranked-seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
+          }
+        },
+        {
           "id": "second-ranked-published",
           "ok": true,
           "detail": {
@@ -240,14 +292,22 @@
           "id": "no-off-origin-requests",
           "ok": true,
           "detail": []
+        },
+        {
+          "id": "wallet-top-frame-only",
+          "ok": true,
+          "detail": []
         }
       ],
-      "durationMs": 48835,
+      "durationMs": 49274,
       "signedOut": {
         "signIn": "Sign in",
         "connectWallet": false,
         "profileTitle": "Sign in to open your verified profile",
         "profileButton": "Sign in"
+      },
+      "beforeEntry": {
+        "stateBeforeRun": "locked"
       },
       "modal": {
         "rankedTitle": "Play Ranked",
@@ -255,6 +315,7 @@
         "eyebrow": "Ranked · Entry",
         "fee": "0.1 zkLTC",
         "reserve": "0.002 zkLTC",
+        "reserveLabel": "Settlement reserve",
         "total": "0.102 zkLTC",
         "balance": "10000.0000 zkLTC",
         "network": "LitVM LiteForge · 4441",
@@ -262,6 +323,9 @@
         "footnote": "The entry contract quotes the exact total. Testnet entries are not refunded.",
         "approve": "Confirm entry"
       },
+      "seedTickets": [
+        "POST /api/ranked/seed 200"
+      ],
       "modeTitle": "Chikun’s Escape // Ranked Mode",
       "results": {
         "state": "published",
@@ -296,19 +360,19 @@
           "chikun-stack-three"
         ]
       },
-      "sessionId32": "0x6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
-      "entryTxHash": "0xd77cf38efb9161743cf32bd6b09b75342f7a156e8b93418394e95f547498dc99",
-      "settleTxHash": "0xaf25cd470e652263fbf3cb68285e7770162b8ba147a113645d7d93995e56d194",
+      "sessionId32": "0xcad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284",
+      "entryTxHash": "0xfaac88b8a3b31898debcc34abfe49932d1b888a064a2ca6944b139862c581aa2",
+      "settleTxHash": "0xa24609b6ea37f75a4fd24c371df1c515ff6972bbaefb8244d140c07717f4c776",
       "share": {
-        "url": "https://lestersarcade.io/s/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
+        "url": "https://lestersarcade.io/s/cad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284",
         "text": "🐔 RANKED · Chikun's Escape\n460 pts · Rank 1 this week · Lap 1 · Farmland\n🌾 0 forks · ⚡ 0 near-misses · 🪙 4 coins\n⛓ Verified on LitVM\nBeat my flight @LestersArcade",
         "problems": []
       },
       "sharePage": {
         "page": {
           "status": 200,
-          "ogUrl": "https://lestersarcade.io/s/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482",
-          "ogImage": "/api/share-card/6a1bc5a73714c7b36766bf93cc5c5d1f0e83f8971b6b2019a2f666592354b482.png?v=…",
+          "ogUrl": "https://lestersarcade.io/s/cad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284",
+          "ogImage": "/api/share-card/cad23438ed381165302a275d60b8c924327019c35299d3c8ac8837327e3a4284.png?v=…",
           "verified": true,
           "noindex": false
         },
@@ -321,6 +385,8 @@
       },
       "unlockables": {
         "steps": [
+          "look locked before the run",
+          "back to the cabinets",
           "open profile",
           "look unlocked",
           "pick look",
@@ -328,7 +394,9 @@
           "ranked run",
           "second ranked run publishes"
         ],
-        "stateBefore": "unlocked",
+        "noticeBeforeRun": "Unlocks follow your wallet to every device, in Free and Ranked. Your picks save to your wallet.",
+        "stateBeforeRun": "locked",
+        "stateAfterRun": "unlocked",
         "namePrompt": true,
         "put": {
           "status": 200,
@@ -346,6 +414,9 @@
             "hat": "chikun-hat-cap"
           }
         },
+        "secondSeedTickets": [
+          "POST /api/ranked/seed 200"
+        ],
         "ranked": {
           "type": "portal:init",
           "cosmetics": {
@@ -372,27 +443,31 @@
         "POST /api/session 200",
         "GET /api/profile?wallet=…&self=… 200",
         "GET /api/profile?wallet=…&self=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
         "POST /api/ranked/seed 200",
         "GET /api/profile?wallet=… 200",
         "PUT /api/profile 200",
-        "GET /api/profile?wallet=…&self=… 200",
         "POST /api/settle 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/profile?wallet=…&self=… 200",
         "GET /api/profile?wallet=…&self=… 200",
         "PUT /api/profile 200",
-        "PUT /api/profile 200",
         "POST /api/ranked/seed 200",
         "GET /api/profile?wallet=… 200",
+        "PUT /api/profile 200",
         "POST /api/settle 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/profile?wallet=…&self=… 200"
       ],
       "offOrigin": [],
-      "cancelledStaticLoads": 4,
-      "issues": []
+      "cancelledStaticLoads": [
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+      ],
+      "issues": [],
+      "walletRefusals": []
     },
     "stacked": {
       "gameId": "stacked",
@@ -418,6 +493,20 @@
           }
         },
         {
+          "id": "entry-modal-eyebrow",
+          "ok": true,
+          "detail": {
+            "eyebrow": "Ranked · Entry"
+          }
+        },
+        {
+          "id": "entry-modal-reserve-label",
+          "ok": true,
+          "detail": {
+            "reserveLabel": "Settlement reserve"
+          }
+        },
+        {
           "id": "entry-modal-quote",
           "ok": true,
           "detail": {
@@ -434,6 +523,15 @@
             "rankedTitle": "Play Ranked",
             "rankedCopy": "Wallet-bound Ranked run. Start at level 1 with no undo. Your recorded inputs must pass replay verification before the result is recorded.",
             "previewHit": null
+          }
+        },
+        {
+          "id": "seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
           }
         },
         {
@@ -470,8 +568,8 @@
           "id": "entry-session-matches-settle",
           "ok": true,
           "detail": {
-            "entry": "0x0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
-            "settle": "0x0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c"
+            "entry": "0x3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d",
+            "settle": "0x3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d"
           }
         },
         {
@@ -500,14 +598,14 @@
           "id": "explorer-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0xecfacfd6bb5f128d42fe31be34bdf144ec7ef6c7f9b889c3207fafd6cad61326"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x795ec9b83c43c1e6c2678c551704097c432468717fe345e555b9b857e37c5a48"
           }
         },
         {
           "id": "entry-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0x5ecfbf7b4dbddf8c3703f0cacd46143fbe5fa692eef1c084d69c5db3ea2f898f"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x2402389142ba203f327913c0256525faca25589d63be85d0721a923aa5bd8ce5"
           }
         },
         {
@@ -528,8 +626,8 @@
           "detail": {
             "page": {
               "status": 200,
-              "ogUrl": "https://lestersarcade.io/s/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
-              "ogImage": "/api/share-card/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c.png?v=…",
+              "ogUrl": "https://lestersarcade.io/s/3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d",
+              "ogImage": "/api/share-card/3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d.png?v=…",
               "verified": true,
               "noindex": false
             },
@@ -537,7 +635,7 @@
               "status": 200,
               "contentType": "image/png",
               "png": true,
-              "bytes": 404747
+              "bytes": 395971
             }
           }
         },
@@ -550,9 +648,14 @@
           "id": "no-off-origin-requests",
           "ok": true,
           "detail": []
+        },
+        {
+          "id": "wallet-top-frame-only",
+          "ok": true,
+          "detail": []
         }
       ],
-      "durationMs": 35119,
+      "durationMs": 35275,
       "signedOut": {
         "signIn": "Sign in",
         "connectWallet": false,
@@ -565,6 +668,7 @@
         "eyebrow": "Ranked · Entry",
         "fee": "0.1 zkLTC",
         "reserve": "0.002 zkLTC",
+        "reserveLabel": "Settlement reserve",
         "total": "0.102 zkLTC",
         "balance": "9999.7956 zkLTC",
         "network": "LitVM LiteForge · 4441",
@@ -572,11 +676,14 @@
         "footnote": "The entry contract quotes the exact total. Testnet entries are not refunded.",
         "approve": "Confirm entry"
       },
+      "seedTickets": [
+        "POST /api/ranked/seed 200"
+      ],
       "modeTitle": "STACKED // Ranked Testnet",
       "results": {
         "state": "published",
         "eyebrow": "Ranked · STACKED",
-        "score": "230",
+        "score": "216",
         "standing": "#1 this week · #1 all-time",
         "banner": "",
         "timeline": [
@@ -603,19 +710,19 @@
         ],
         "achievements": []
       },
-      "sessionId32": "0x0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
-      "entryTxHash": "0x5ecfbf7b4dbddf8c3703f0cacd46143fbe5fa692eef1c084d69c5db3ea2f898f",
-      "settleTxHash": "0xecfacfd6bb5f128d42fe31be34bdf144ec7ef6c7f9b889c3207fafd6cad61326",
+      "sessionId32": "0x3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d",
+      "entryTxHash": "0x2402389142ba203f327913c0256525faca25589d63be85d0721a923aa5bd8ce5",
+      "settleTxHash": "0x795ec9b83c43c1e6c2678c551704097c432468717fe345e555b9b857e37c5a48",
       "share": {
-        "url": "https://lestersarcade.io/s/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
-        "text": "🧱 RANKED · STACKED\n230 pts · Rank 1 this week\n📈 0 lines · Lv 1 · 0 Halvings\n⛓ Verified on LitVM\nStack higher @LestersArcade",
+        "url": "https://lestersarcade.io/s/3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d",
+        "text": "🧱 RANKED · STACKED\n216 pts · Rank 1 this week\n📈 0 lines · Lv 1 · 0 Halvings\n⛓ Verified on LitVM\nStack higher @LestersArcade",
         "problems": []
       },
       "sharePage": {
         "page": {
           "status": 200,
-          "ogUrl": "https://lestersarcade.io/s/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c",
-          "ogImage": "/api/share-card/0910c3f08f3d01770a79416549fb94488fdcd9c3101426358005c7dae35c9f5c.png?v=…",
+          "ogUrl": "https://lestersarcade.io/s/3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d",
+          "ogImage": "/api/share-card/3d3f868f243f481881dfecf728955b3321744023933ca52100e16ef7dce3bf7d.png?v=…",
           "verified": true,
           "noindex": false
         },
@@ -623,7 +730,7 @@
           "status": 200,
           "contentType": "image/png",
           "png": true,
-          "bytes": 404747
+          "bytes": 395971
         }
       },
       "walletCalls": {
@@ -651,8 +758,12 @@
         "GET /api/profile?wallet=…&self=… 200"
       ],
       "offOrigin": [],
-      "cancelledStaticLoads": 2,
-      "issues": []
+      "cancelledStaticLoads": [
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+      ],
+      "issues": [],
+      "walletRefusals": []
     },
     "lester-blaster": {
       "gameId": "lester-blaster",
@@ -678,6 +789,20 @@
           }
         },
         {
+          "id": "entry-modal-eyebrow",
+          "ok": true,
+          "detail": {
+            "eyebrow": "Ranked · Entry"
+          }
+        },
+        {
+          "id": "entry-modal-reserve-label",
+          "ok": true,
+          "detail": {
+            "reserveLabel": "Settlement reserve"
+          }
+        },
+        {
           "id": "entry-modal-quote",
           "ok": true,
           "detail": {
@@ -694,6 +819,15 @@
             "rankedTitle": "Play Ranked",
             "rankedCopy": "0.102 testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.",
             "previewHit": null
+          }
+        },
+        {
+          "id": "seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
           }
         },
         {
@@ -730,8 +864,8 @@
           "id": "entry-session-matches-settle",
           "ok": true,
           "detail": {
-            "entry": "0x9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
-            "settle": "0x9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31"
+            "entry": "0x6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e",
+            "settle": "0x6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e"
           }
         },
         {
@@ -760,14 +894,14 @@
           "id": "explorer-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0xe36aeaff619f68ff8354b8ed65bc0ed844d0873e635284fd5f2ac51fbfc38144"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x5de982bb88ce5fc9e131fa5892952e469d933dd1ad786bb89ca26ae1a1afa223"
           }
         },
         {
           "id": "entry-link",
           "ok": true,
           "detail": {
-            "href": "https://liteforge.explorer.caldera.xyz/tx/0x4a0fb5a974e8357b1ff8f81140e4e6ebaddad4fd5eefc12ddff0eb6c6e9d156d"
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x0e173dc4ec922237169af6d0fc56d67dec59eea7bf686c6a9f610d1e1f4628e3"
           }
         },
         {
@@ -788,8 +922,8 @@
           "detail": {
             "page": {
               "status": 200,
-              "ogUrl": "https://lestersarcade.io/s/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
-              "ogImage": "/api/share-card/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31.png?v=…",
+              "ogUrl": "https://lestersarcade.io/s/6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e",
+              "ogImage": "/api/share-card/6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e.png?v=…",
               "verified": true,
               "noindex": false
             },
@@ -810,9 +944,14 @@
           "id": "no-off-origin-requests",
           "ok": true,
           "detail": []
+        },
+        {
+          "id": "wallet-top-frame-only",
+          "ok": true,
+          "detail": []
         }
       ],
-      "durationMs": 34876,
+      "durationMs": 34729,
       "signedOut": {
         "signIn": "Sign in",
         "connectWallet": false,
@@ -825,6 +964,7 @@
         "eyebrow": "Ranked · Entry",
         "fee": "0.1 zkLTC",
         "reserve": "0.002 zkLTC",
+        "reserveLabel": "Settlement reserve",
         "total": "0.102 zkLTC",
         "balance": "9999.6934 zkLTC",
         "network": "LitVM LiteForge · 4441",
@@ -832,6 +972,9 @@
         "footnote": "The entry contract quotes the exact total. Testnet entries are not refunded.",
         "approve": "Confirm entry"
       },
+      "seedTickets": [
+        "POST /api/ranked/seed 200"
+      ],
       "modeTitle": "Hard Money Heroes: Top-Down Reboot // Ranked Testnet",
       "results": {
         "state": "published",
@@ -866,19 +1009,19 @@
           "first-paid-run"
         ]
       },
-      "sessionId32": "0x9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
-      "entryTxHash": "0x4a0fb5a974e8357b1ff8f81140e4e6ebaddad4fd5eefc12ddff0eb6c6e9d156d",
-      "settleTxHash": "0xe36aeaff619f68ff8354b8ed65bc0ed844d0873e635284fd5f2ac51fbfc38144",
+      "sessionId32": "0x6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e",
+      "entryTxHash": "0x0e173dc4ec922237169af6d0fc56d67dec59eea7bf686c6a9f610d1e1f4628e3",
+      "settleTxHash": "0x5de982bb88ce5fc9e131fa5892952e469d933dd1ad786bb89ca26ae1a1afa223",
       "share": {
-        "url": "https://lestersarcade.io/s/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
+        "url": "https://lestersarcade.io/s/6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e",
         "text": "🏆 RANKED · Hard Money Heroes\n0 pts · Rank 1 this week\n☠ 0 kills · 🔥 ×0 combo · ⏱ 0:00\n⛓ Verified on LitVM\nCan you beat it? @LestersArcade",
         "problems": []
       },
       "sharePage": {
         "page": {
           "status": 200,
-          "ogUrl": "https://lestersarcade.io/s/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31",
-          "ogImage": "/api/share-card/9a852187a68d0d29d268ccfa4de3fd31725d57f477eaf0e7d0a9c107cfd9fe31.png?v=…",
+          "ogUrl": "https://lestersarcade.io/s/6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e",
+          "ogImage": "/api/share-card/6876c034fcfd6636b263ec8fff7c79b8f21b999ecea45b1263adbdcd0c41798e.png?v=…",
           "verified": true,
           "noindex": false
         },
@@ -908,14 +1051,18 @@
         "GET /api/profile?wallet=… 200",
         "GET /api/profile?wallet=…&self=… 200",
         "POST /api/settle 200",
-        "PUT /api/profile 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
         "GET /api/leaderboard?game=…&period=…&wallet=… 200",
-        "GET /api/profile?wallet=…&self=… 200"
+        "GET /api/profile?wallet=…&self=… 200",
+        "PUT /api/profile 200"
       ],
       "offOrigin": [],
-      "cancelledStaticLoads": 2,
-      "issues": []
+      "cancelledStaticLoads": [
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+      ],
+      "issues": [],
+      "walletRefusals": []
     }
   }
 }
