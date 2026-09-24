@@ -10,6 +10,7 @@ import { ethers } from 'ethers';
 
 import {
   createFixtureWalletRouter,
+  fixtureBindingRefusal,
   fixtureWalletPageScript,
   installFixtureWallet,
   FIXTURE_ERRORS,
@@ -305,29 +306,107 @@ test('the page script can also sit at window.ethereum, and stays out of iframes'
   await assert.rejects(unbound.announced[0].provider.request({ method: 'eth_chainId' }), (error) => error.code === 4900);
 });
 
-test('installFixtureWallet exposes the router and injects only public info', async (t) => {
-  const rpc = await startFakeRpc();
-  const exposed = new Map();
+// A Playwright-shaped page for installFixtureWallet: exposeBinding hands the callback a source
+// ({ context, page, frame }), as Playwright does, so a call can come from any frame.
+function fakePlaywrightPage(url = 'http://127.0.0.1:8850/') {
+  const bindings = new Map();
   const scripts = [];
-  const fakePage = {
-    async exposeFunction(name, fn) { exposed.set(name, fn); },
+  const frame = (frameUrl) => ({ url: () => frameUrl });
+  const main = frame(url);
+  const page = {
+    mainFrame: () => main,
+    async exposeBinding(name, fn) { bindings.set(name, fn); },
     async addInitScript(script, arg) { scripts.push({ script, arg }); },
   };
-  const wallet = await installFixtureWallet(fakePage, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY });
+  const call = (source, payload) => Promise.resolve(bindings.get(FIXTURE_WALLET_BINDING)({ context: {}, page, frame: source }, JSON.stringify(payload))).then((json) => JSON.parse(json));
+  return { page, main, frame, bindings, scripts, call };
+}
+
+test('installFixtureWallet exposes the router and injects only public info', async (t) => {
+  const rpc = await startFakeRpc();
+  const fake = fakePlaywrightPage();
+  const wallet = await installFixtureWallet(fake.page, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY });
   t.after(async () => { wallet.close(); await rpc.close(); });
   assert.equal(wallet.address, FIXTURE_ADDRESS);
   assert.equal(wallet.info.rdns, FIXTURE_WALLET_RDNS);
-  assert.ok(exposed.has(FIXTURE_WALLET_BINDING));
-  assert.equal(scripts.length, 1);
-  assert.equal(scripts[0].script, fixtureWalletPageScript);
-  assert.deepEqual(Object.keys(scripts[0].arg).sort(), ['announce', 'binding', 'info', 'legacy']);
-  assert.ok(!JSON.stringify(scripts[0].arg).includes(FIXTURE_KEY.slice(2)), 'the key never goes to the page');
-  const reply = JSON.parse(await exposed.get(FIXTURE_WALLET_BINDING)(JSON.stringify({ method: 'eth_requestAccounts' })));
-  assert.deepEqual(reply, { result: [FIXTURE_ADDRESS] });
+  assert.ok(fake.bindings.has(FIXTURE_WALLET_BINDING));
+  assert.equal(fake.scripts.length, 1);
+  assert.equal(fake.scripts[0].script, fixtureWalletPageScript);
+  assert.deepEqual(Object.keys(fake.scripts[0].arg).sort(), ['announce', 'binding', 'info', 'legacy']);
+  assert.ok(!JSON.stringify(fake.scripts[0].arg).includes(FIXTURE_KEY.slice(2)), 'the key never goes to the page');
+  assert.deepEqual(await fake.call(fake.main, { method: 'eth_requestAccounts' }), { result: [FIXTURE_ADDRESS] });
   assert.equal(wallet.router.connected, true);
+  assert.deepEqual(wallet.refused, []);
 
   await assert.rejects(installFixtureWallet({}, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY }), TypeError);
-  await assert.rejects(installFixtureWallet(fakePage, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY, announce: false, legacy: false }), TypeError);
+  await assert.rejects(installFixtureWallet({ addInitScript() {}, exposeFunction() {} }, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY }), TypeError, 'exposeFunction alone cannot tell the calling frame');
+  await assert.rejects(installFixtureWallet(fakePlaywrightPage().page, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY, announce: false, legacy: false }), TypeError);
+  await assert.rejects(installFixtureWallet(fakePlaywrightPage().page, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY, origin: 'not an origin' }), TypeError);
+});
+
+test('the binding answers the portal top frame only: child frames and other origins never reach the signer', async (t) => {
+  const rpc = await startFakeRpc();
+  const fake = fakePlaywrightPage('http://127.0.0.1:8850/?evidenceSafe=1');
+  const wallet = await installFixtureWallet(fake.page, { rpcUrl: rpc.url, privateKey: FIXTURE_KEY, origin: 'http://127.0.0.1:8850', connected: true });
+  t.after(async () => { wallet.close(); await rpc.close(); });
+  const refusedCode = { error: { code: FIXTURE_ERRORS.unauthorized, message: 'The fixture wallet answers the portal top frame only.' } };
+
+  // A game iframe (same origin) and a cross-origin frame (a WalletConnect verify frame) are refused.
+  const gameFrame = fake.frame('http://127.0.0.1:8850/chikun/index.html');
+  const verifyFrame = fake.frame('https://verify.walletconnect.org/abc');
+  for (const frame of [gameFrame, verifyFrame]) {
+    // eslint-disable-next-line no-await-in-loop
+    assert.deepEqual(await fake.call(frame, { method: 'personal_sign', params: ['hello', FIXTURE_ADDRESS] }), refusedCode);
+    // eslint-disable-next-line no-await-in-loop
+    assert.deepEqual(await fake.call(frame, { method: 'eth_sendTransaction', params: [{ to: OTHER, value: '0x1' }] }), refusedCode);
+  }
+  // The top frame of another page in the context, on another origin, is refused too.
+  const stranger = fakePlaywrightPage('http://127.0.0.1:57016/');
+  assert.deepEqual(JSON.parse(await fake.bindings.get(FIXTURE_WALLET_BINDING)({ context: {}, page: stranger.page, frame: stranger.main }, JSON.stringify({ method: 'eth_accounts' }))), refusedCode);
+  assert.deepEqual(wallet.router.log, [], 'no refused call reached the router');
+  assert.deepEqual(rpc.rawTransactions, []);
+  assert.deepEqual(wallet.refused.map((entry) => ({ ...entry })), [
+    { reason: 'not the top frame', origin: 'http://127.0.0.1:8850' },
+    { reason: 'not the top frame', origin: 'http://127.0.0.1:8850' },
+    { reason: 'not the top frame', origin: 'https://verify.walletconnect.org' },
+    { reason: 'not the top frame', origin: 'https://verify.walletconnect.org' },
+    { reason: 'another origin', origin: 'http://127.0.0.1:57016' },
+  ]);
+
+  // The portal's own top frame is answered.
+  assert.deepEqual(await fake.call(fake.main, { method: 'eth_accounts' }), { result: [FIXTURE_ADDRESS] });
+  assert.deepEqual(wallet.router.counts(), { eth_accounts: 1 });
+
+  // Without `origin`, any page's top frame is answered and every child frame is still refused.
+  assert.equal(fixtureBindingRefusal({ page: stranger.page, frame: stranger.main }), null);
+  assert.deepEqual(fixtureBindingRefusal({ page: stranger.page, frame: gameFrame }), { reason: 'not the top frame', origin: 'http://127.0.0.1:8850' });
+  assert.deepEqual(fixtureBindingRefusal({}), { reason: 'not the top frame', origin: null });
+});
+
+test('allowTransaction vets every send before it is signed', async (t) => {
+  const rpc = await startFakeRpc();
+  const entry = '0x00000000000000000000000000000000000e0717';
+  const seen = [];
+  const allowTransaction = (tx) => {
+    seen.push(tx);
+    if (tx.to !== entry) return 'only the Ranked entry';
+    return tx.value <= 102n ? true : 'more than the quoted total';
+  };
+  const router = createFixtureWalletRouter({ privateKey: FIXTURE_KEY, rpcUrl: rpc.url, connected: true, allowTransaction });
+  t.after(async () => { router.close(); await rpc.close(); });
+  await assert.rejects(router.request({ method: 'eth_sendTransaction', params: [{ to: OTHER, value: '0x1' }] }), (error) => error.code === FIXTURE_ERRORS.unauthorized && /only the Ranked entry/.test(error.message));
+  await assert.rejects(router.request({ method: 'eth_sendTransaction', params: [{ to: entry, value: '0x67' }] }), /more than the quoted total/);
+  await assert.rejects(router.request({ method: 'eth_sendTransaction', params: [{ value: '0x1' }] }), /only the Ranked entry/, 'a contract creation is not the entry');
+  assert.equal(rpc.rawTransactions.length, 0, 'nothing refused is signed or sent');
+  assert.ok(!rpc.calls.includes('eth_getTransactionCount'), 'refused before the signer populates anything');
+  const hash = await router.request({ method: 'eth_sendTransaction', params: [{ to: entry.toUpperCase().replace('0X', '0x'), value: '0x66', data: '0xabcdef01' }] });
+  assert.equal(rpc.rawTransactions.length, 1);
+  assert.equal(hash, ethers.keccak256(rpc.rawTransactions[0]).toLowerCase());
+  assert.deepEqual({ ...seen.at(-1) }, { to: entry, value: 102n, data: '0xabcdef01' }, 'the policy sees the normalized to, value and data');
+  const throwing = createFixtureWalletRouter({ privateKey: FIXTURE_KEY, rpcUrl: rpc.url, connected: true, allowTransaction: () => { throw new Error('policy broke'); } });
+  await assert.rejects(throwing.request({ method: 'eth_sendTransaction', params: [{ to: entry, value: '0x1' }] }), /policy broke/);
+  throwing.close();
+  assert.throws(() => createFixtureWalletRouter({ privateKey: FIXTURE_KEY, rpcUrl: rpc.url, allowTransaction: 'yes' }), TypeError);
 });
 
 test('a real transaction through the fixture reaches the in-process chain', async (t) => {

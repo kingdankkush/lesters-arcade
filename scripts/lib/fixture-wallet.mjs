@@ -5,7 +5,10 @@
 //   - an EIP-1193 provider is injected into the top frame with page.addInitScript, and announced over
 //     EIP-6963 (rdns 'io.lestersarcade.fixture'), answering every later eip6963:requestProvider too;
 //     `legacy: true` also puts it at window.ethereum;
-//   - every request crosses to Node through page.exposeFunction, where an ethers Wallet answers:
+//   - every request crosses to Node through a binding (exposeBinding: exposeFunction plus the calling
+//     frame), which answers the portal's top frame only (and, given `origin`, only that origin); a call
+//     from a game iframe, a WalletConnect frame or any other frame or page is refused with 4100 and
+//     never reaches the signer. Behind it an ethers Wallet answers:
 //       eth_accounts / eth_requestAccounts   the fixture account (eth_accounts is [] until connected)
 //       eth_chainId / net_version            the wallet's chain (4441)
 //       personal_sign                        signs the message (hex data as bytes, text as UTF-8)
@@ -13,7 +16,9 @@
 //       wallet_switchEthereumChain / wallet_addEthereumChain   accepted for the wallet's own chain only
 //     and the read methods in READ_METHODS are proxied to rpcUrl unchanged;
 //   - anything else (other signing methods, chain cheats such as evm_* or hardhat_*, unknown wallet_*
-//     calls) is refused with 4200, exactly as a wallet refuses a method it does not support.
+//     calls) is refused with 4200, exactly as a wallet refuses a method it does not support;
+//   - `allowTransaction(tx)` (optional) vets every eth_sendTransaction before it is signed: the live-flag
+//     run allows only the Ranked entry (ArcadeRankedEntry.openSession, at most the quoted total).
 //
 // The private key never enters the page: the init script receives only the wallet's public info, and
 // the key lives in a closure of the Node-side router. Nothing here prints or logs a key, and the
@@ -117,10 +122,13 @@ export async function jsonRpcCall(rpcUrl, method, params = [], { fetchImpl = glo
 //   chainId         the only chain this wallet knows (default 4441)
 //   connected       start already connected (eth_accounts answers without eth_requestAccounts)
 //   rejectMethods   methods to refuse with 4001, as if the player pressed Reject in the wallet
+//   allowTransaction  (tx: { to, value: bigint, data }) → true, or a reason string to refuse it with 4100
+//                   before anything is signed
 // → { address, chainId, request({ method, params }), handleJson(json) → json, log, transactions, close() }
-export function createFixtureWalletRouter({ privateKey, rpcUrl = null, provider = null, chainId = DEFAULT_FIXTURE_CHAIN_ID, connected = false, rejectMethods = [], fetchImpl = globalThis.fetch } = {}) {
+export function createFixtureWalletRouter({ privateKey, rpcUrl = null, provider = null, chainId = DEFAULT_FIXTURE_CHAIN_ID, connected = false, rejectMethods = [], allowTransaction = null, fetchImpl = globalThis.fetch } = {}) {
   if (typeof privateKey !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(privateKey)) throw new TypeError('createFixtureWalletRouter needs a 0x-prefixed 32-byte private key');
   if (!provider && !rpcUrl) throw new TypeError('createFixtureWalletRouter needs an rpcUrl or a provider');
+  if (allowTransaction !== null && typeof allowTransaction !== 'function') throw new TypeError('allowTransaction must be a function');
   const ownsProvider = !provider;
   const ethersProvider = provider ?? fixtureRpcProvider(rpcUrl, chainId);
   // Reads, the chain check and the raw send go through rpcCall, so node errors reach the page as is.
@@ -182,6 +190,15 @@ export function createFixtureWalletRouter({ privateKey, rpcUrl = null, provider 
     if (nonce !== undefined) request.nonce = Number(nonce);
     if (tx.type !== undefined) request.type = Number(BigInt(tx.type));
     if (tx.accessList !== undefined) request.accessList = tx.accessList;
+    if (allowTransaction) {
+      let verdict;
+      try {
+        verdict = allowTransaction(Object.freeze({ to: request.to === null ? null : String(request.to).toLowerCase(), value: request.value, data: String(request.data) }));
+      } catch (error) {
+        verdict = String(error?.message ?? error);
+      }
+      if (verdict !== true) throw new FixtureWalletError(FIXTURE_ERRORS.unauthorized, `The fixture wallet refuses this transaction: ${typeof verdict === 'string' && verdict ? verdict : 'not allowed'}.`);
+    }
     // One transaction at a time, so two sends never race for the same nonce.
     const run = sendQueue.then(async () => {
       await assertRpcChain();
@@ -345,9 +362,23 @@ export function fixtureWalletPageScript({ binding, announce, legacy, info }) {
   if (legacy) Object.defineProperty(globalThis, 'ethereum', { value: provider, configurable: true, enumerable: true, writable: false });
 }
 
+// The frame a binding call came from may use the wallet only when it is its page's top frame and,
+// when `origin` is given, on that origin. → null (allowed) or { reason, origin } (refused).
+export function fixtureBindingRefusal(source, origin = null) {
+  const frame = source?.frame ?? null;
+  let mainFrame = null;
+  try { mainFrame = source?.page?.mainFrame?.() ?? null; } catch { mainFrame = null; }
+  let frameOrigin = null;
+  try { frameOrigin = new URL(String(frame?.url?.() ?? '')).origin; } catch { frameOrigin = null; }
+  if (!frame || !mainFrame || frame !== mainFrame) return { reason: 'not the top frame', origin: frameOrigin };
+  if (origin !== null && frameOrigin !== origin) return { reason: 'another origin', origin: frameOrigin };
+  return null;
+}
+
 // Installs the fixture wallet on a Playwright Page or BrowserContext (both have addInitScript and
-// exposeFunction). Call it before page.goto. Returns the router (address, log, transactions) and the
-// announced info.
+// exposeBinding). Call it before page.goto. `origin` (for example the site under test) limits the
+// wallet to that origin's top frame. Returns the router (address, log, transactions), the announced
+// info and `refused` (the binding calls refused for their frame: { reason, origin }).
 export async function installFixtureWallet(target, {
   rpcUrl,
   privateKey,
@@ -360,12 +391,29 @@ export async function installFixtureWallet(target, {
   rejectMethods = [],
   provider = null,
   binding = FIXTURE_WALLET_BINDING,
+  origin = null,
+  allowTransaction = null,
 } = {}) {
-  if (!target || typeof target.addInitScript !== 'function' || typeof target.exposeFunction !== 'function') throw new TypeError('installFixtureWallet needs a Playwright Page or BrowserContext');
+  if (!target || typeof target.addInitScript !== 'function' || typeof target.exposeBinding !== 'function') throw new TypeError('installFixtureWallet needs a Playwright Page or BrowserContext');
   if (!announce && !legacy) throw new TypeError('installFixtureWallet needs announce (EIP-6963) or legacy (window.ethereum)');
-  const router = createFixtureWalletRouter({ privateKey, rpcUrl, provider, chainId, connected, rejectMethods });
+  let allowedOrigin = null;
+  if (origin !== null) {
+    try { allowedOrigin = new URL(String(origin)).origin; } catch { allowedOrigin = 'null'; }
+    if (allowedOrigin === 'null') throw new TypeError('installFixtureWallet origin must be an http(s) origin');
+  }
+  const router = createFixtureWalletRouter({ privateKey, rpcUrl, provider, chainId, connected, rejectMethods, allowTransaction });
   const info = Object.freeze({ uuid: randomUUID(), name, icon: FIXTURE_WALLET_ICON, rdns });
-  await target.exposeFunction(binding, (json) => router.handleJson(json));
+  const refused = [];
+  // exposeBinding reaches every frame of every page in a context (cross-origin ones included), so the
+  // caller's frame is checked on every call: only the portal's top frame gets an answer.
+  await target.exposeBinding(binding, (source, json) => {
+    const refusal = fixtureBindingRefusal(source, allowedOrigin);
+    if (refusal) {
+      refused.push(Object.freeze(refusal));
+      return JSON.stringify({ error: { code: FIXTURE_ERRORS.unauthorized, message: 'The fixture wallet answers the portal top frame only.' } });
+    }
+    return router.handleJson(json);
+  });
   await target.addInitScript(fixtureWalletPageScript, { binding, announce: Boolean(announce), legacy: Boolean(legacy), info });
-  return Object.freeze({ router, address: router.address, info, close: () => router.close() });
+  return Object.freeze({ router, address: router.address, info, refused, close: () => router.close() });
 }
