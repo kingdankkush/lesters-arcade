@@ -68,14 +68,25 @@ try {
     assert.deepEqual(visibleFrames, [0, 1, 2, 3, 4, 5], 'all six views actually animate');
     const toggle = page.locator('#cabinetMotionToggle');
     await toggle.click();
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true', 'the toggle reports the pause');
+    assert.equal(await page.locator('#officialCabinetGrid').getAttribute('data-cabinet-motion'), 'paused');
     // The cabinet's looping CSS animations (the rotation). A tap on a phone also starts the card's short
     // border-colour CSS transitions, which finish on their own and are not cabinet motion.
-    const cabinetAnimationTimes = element => element.getAnimations({ subtree: true }).filter(animation => typeof animation.animationName === 'string').map(animation => animation.currentTime);
-    const pausedTimes = await card.evaluate(cabinetAnimationTimes);
-    assert.ok(pausedTimes.length >= 6, `the six rotation frames animate: ${JSON.stringify(pausedTimes)}`);
+    // `animation-play-state: paused` is a pending pause: Chrome keeps advancing currentTime until the next
+    // frame commits it, so a sample taken straight after the click runs a few ms ahead of the held time.
+    // Wait for every cabinet animation's ready promise (the commit) and two frames, then sample.
+    const cabinetAnimationState = async element => {
+      const animations = element.getAnimations({ subtree: true }).filter(animation => typeof animation.animationName === 'string');
+      await Promise.all(animations.map(animation => animation.ready));
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      return { playStates: animations.map(animation => animation.playState), times: animations.map(animation => animation.currentTime) };
+    };
+    const pausedSample = await card.evaluate(cabinetAnimationState);
+    assert.ok(pausedSample.times.length >= 6, `the six rotation frames animate: ${JSON.stringify(pausedSample.times)}`);
+    assert.ok(pausedSample.playStates.every(state => state === 'paused'), `every cabinet animation is paused: ${JSON.stringify(pausedSample.playStates)}`);
     await page.waitForTimeout(350);
-    const stillTimes = await card.evaluate(cabinetAnimationTimes);
-    assert.deepEqual(stillTimes, pausedTimes, 'pause stops every cabinet animation');
+    const stillSample = await card.evaluate(cabinetAnimationState);
+    assert.deepEqual(stillSample.times, pausedSample.times, 'pause stops every cabinet animation');
     await toggle.focus();
     await page.keyboard.press('Space');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'false');

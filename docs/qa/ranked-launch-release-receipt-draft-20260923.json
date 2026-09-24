@@ -68,7 +68,7 @@
     },
     "previewSmokes": {
       "host": "python -m http.server 8850 --directory apps/portal (both flags false), except hmh-reboot-portal-e2e (see its row)",
-      "date": "2026-09-23; the Chikun Ranked, simulated-wallet, stacked-playable and hmh-reboot-portal-e2e rows re-run 2026-09-24 after the review fixes",
+      "date": "2026-09-23; the Chikun Ranked, simulated-wallet, stacked-playable, stacked-cabinet and hmh-reboot-portal-e2e rows re-run 2026-09-24 after the review fixes",
       "results": [
         { "command": "CHIKUN_PORTAL_ORIGIN=http://127.0.0.1:8850 CHIKUN_MODE=ranked|free CHIKUN_VIEWPORT=1440x1000|390x844 node scripts/chikun-ranked-browser-smoke.mjs", "result": "PASS (4 runs)" },
         { "command": "HMH_PORTAL_ORIGIN=http://127.0.0.1:8850 node scripts/hmh-simulated-wallet-browser-smoke.mjs", "result": "PASS with KNOWN GAP (exit 0; --fail-on-known-gap exits 3): the U11a shell banner #simulatedWalletBanner is not rendered (see knownGaps); every other disclosure, no picker, no /api call and a clean console pass" },
@@ -76,7 +76,7 @@
         { "command": "PORTAL_SMOKE_ROOT=http://127.0.0.1:8850 node scripts/smoke-portal-interactions.mjs", "result": "PASS" },
         { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-playable-browser-smoke.mjs", "result": "PASS (6 Free viewports + 2 Ranked preview)" },
         { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-reactive-evidence-smoke.mjs", "result": "PASS (2 viewports)" },
-        { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-cabinet-browser-smoke.mjs", "result": "PASS (5 viewports)" },
+        { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-cabinet-browser-smoke.mjs", "result": "PASS (5 viewports), 10 of 10 consecutive runs on 2026-09-24 after the pause check waits for Chrome to commit the CSS pause (before that fix it passed 2 of 7: the first sample ran a few ms ahead of the held time)" },
         { "command": "node scripts/hmh-reboot-portal-e2e.mjs [--profile=mobile]", "result": "PASS 8/8 flows on desktop (re-run 2026-09-24) and mobile with the harness's own server (apps/portal as the web root)." }
       ],
       "hmhPortalE2eHost": "The HMH portal E2E runs on its own static server (apps/portal as the web root, with HTTP Range support), not on python -m http.server: python answers no Range request, so the pause-resume soundtrack seek and the restart after it fail for the host, not the portal. The brief's python host is unsuitable for this one smoke; ranked-preview and the other flows pass on either.",
