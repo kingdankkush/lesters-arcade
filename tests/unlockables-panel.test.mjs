@@ -357,6 +357,8 @@ test('the panel ships lazily, builds DOM safely, reads at 320 px and keeps phase
   const results = main.indexOf('// Ranked results screen (results-share slice');
   const paint = main.indexOf('// Initial paint honors the URL (deep-link / refresh) instead of always splash.');
   assert.ok(block > 0 && block < results && results < paint, 'the unlockables block precedes the results-share listener');
+  // Brief hunk (e) stays at most 15 lines, counting its trailing blank line.
+  assert.ok(main.slice(block, results).split(String.fromCharCode(10)).length - 1 <= 15, 'the unlockables block is at most 15 lines');
   assert.equal(main.slice(results, paint).split(String.fromCharCode(10)).filter(Boolean).length, 2, 'nothing between the results-share listener and the anchor');
   assert.match(main, /const renderOfficialSettings = \(\) => \{ officialShellRoutes\.renderSettings\(\); showUnlockablesPanel\('settings'\); \};/);
   assert.match(main, /const renderOfficialProfile = \(\) => \{ officialProfileRoute\.renderProfile\(\); showUnlockablesPanel\('profile'\); \};/);

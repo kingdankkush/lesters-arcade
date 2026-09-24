@@ -16224,8 +16224,7 @@ window.addEventListener('orientationchange', () => {
   }, 200);
 });
 
-// Unlockables (contract §7.9, A7): the per-wallet unlock cache and cosmetic picks load with import() and listen for
-// the lesters:* events themselves. `var` so render paths before the store resolves read null, not a TDZ error.
+// Unlockables (contract §7.9, A7): lazy unlock cache and cosmetic picks (the store hears lesters:* itself); `var` reads null early, not a TDZ error.
 var unlockables = null;
 var unlockablesReady = import('./src/unlockables-store.mjs').then(({ createUnlockablesStore }) => {
   unlockables = createUnlockablesStore({ hosted: HOSTED_PROFILE_SYNC, storage: ARCADE_STORAGE, indexApi, windowRef: window, getWallet: () => connectedWallet, isAuthenticated: (wallet) => Boolean(wallet) && profileSync.hasSession(wallet), getCachedSelfProfile: (wallet) => officialProfileRoute.cachedSelfProfile(wallet) });
