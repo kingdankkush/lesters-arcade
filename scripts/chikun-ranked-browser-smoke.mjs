@@ -26,10 +26,12 @@ if (argv.includes('--live')) {
     console.error('The Chikun live smoke runs Chikun only; leave out --games.');
     process.exit(2);
   }
-  const { runLiveCli } = await import('./ranked-live-browser-e2e.mjs');
+  // runCli, not runLiveCli: a missing flag value, a key-source error or an RPC failure ends as the
+  // live run's 'Live run refused' (exit 2) or 'Live run failed' (exit 1), never an uncaught stack.
+  const { runCli } = await import('./ranked-live-browser-e2e.mjs');
   const stamp = new Date().toISOString().slice(0, 10).replaceAll('-', '');
   const out = argv.some((arg) => arg === '--out' || arg.startsWith('--out=')) ? [] : ['--out', `docs/qa/chikun-ranked-live-smoke-${stamp}.json`];
-  process.exitCode = await runLiveCli({ argv: [...argv, '--games', 'chikun', ...out] });
+  process.exitCode = await runCli({ argv: [...argv, '--games', 'chikun', ...out] });
 } else {
   await runPreviewSmoke();
 }

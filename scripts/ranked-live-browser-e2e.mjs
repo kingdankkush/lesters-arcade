@@ -15,18 +15,22 @@
 // 3. serves that copy with scripts/lib/local-http.mjs as the web root, together with the API routes
 //    and the vercel.json headers (the CSP gains only the loopback proxy origin);
 // 4. per game, in a fresh browser context with the fixture wallet (scripts/lib/fixture-wallet.mjs,
-//    EIP-6963, Hardhat account player1): Sign in (server nonce, one signature), open Ranked, confirm
-//    the 0.102 zkLTC entry, play a short run (Chikun: start and let it fall; STACKED: hard drops to a
-//    top-out; HMH: the evidence-safe terminal pilot), then assert:
+//    EIP-6963, Hardhat account player1; it answers the site's top frame only and signs no transaction
+//    but ArcadeRankedEntry.openSession for at most the quoted total): Sign in (server nonce, one
+//    signature), open Ranked (the 'Ranked · Entry' modal, its 'Settlement reserve' row and the
+//    0.1 + 0.002 = 0.102 zkLTC quote), confirm the entry after exactly one seed ticket
+//    (POST /api/ranked/seed, A25), play a short run (Chikun: start and let it fall; STACKED: hard drops
+//    to a top-out; HMH: the evidence-safe terminal pilot), then assert:
 //      - the entry's sessionId32 on chain equals the sessionId32 the settle request used;
 //      - the results screen reaches `published` with the explorer link to the relayed transaction;
 //      - the share row points at /s/<shareId>, and its text has no address, no `session-`, no `#`;
 //      - the share page /s/<shareId> and its card render through the local http layer;
-//      - zero console errors, zero page errors and zero failed requests (4xx/5xx or network);
-// 5. with Chikun (unless --no-unlockables): the achievement the run earned unlocks a look through E6,
-//    picking it PUTs preferences.cosmetics (E7), and the look reaches the Chikun child in a Free run
-//    and in a second Ranked run.
-// The JSON report is written to docs/qa/ranked-live-browser-e2e-20260923.json.
+//      - zero console errors, zero page errors and zero failed requests (4xx/5xx or network; the
+//        static loads the browser cancelled are listed by path in the report);
+// 5. with Chikun (unless --no-unlockables): the look is locked before the first entry, the achievement
+//    the run earned unlocks it through E6, picking it PUTs preferences.cosmetics (E7), and the look
+//    reaches the Chikun child in a Free run and in a second Ranked run.
+// The JSON report (with the git head it ran at) is written to docs/qa/ranked-live-browser-e2e-20260923.json.
 //
 // Live (runbook step 9, OPTIONAL, OWNER APPROVAL REQUIRED; spends testnet zkLTC; never run by the slice):
 //   node scripts/ranked-live-browser-e2e.mjs --live --site https://lestersarcade.io \
@@ -195,6 +199,34 @@ export function isCancelledStaticLoad({ failure, method, url, origin }) {
   return parsed.origin === origin && !parsed.pathname.startsWith('/api/') && !parsed.pathname.startsWith('/s/');
 }
 
+// The only transaction the fixture wallet signs in these runs: ArcadeRankedEntry.openSession for a game
+// of this run, paying at most that game's quoted total. quotes: { [gameId]: totalWei }.
+export function rankedEntryOnly({ entryAddress, quotes }) {
+  const entry = String(entryAddress ?? '').toLowerCase();
+  const limits = new Map(Object.entries(quotes ?? {}).map(([gameId, wei]) => [ethers.id(gameId).toLowerCase(), BigInt(wei)]));
+  if (!/^0x[0-9a-f]{40}$/.test(entry) || limits.size === 0) throw new TypeError('rankedEntryOnly needs the entry address and at least one quote');
+  return (tx) => {
+    const call = tx?.to === entry ? decodeEntryCall(tx.data) : null;
+    if (!call) return 'only ArcadeRankedEntry.openSession is signed in this run';
+    if (!limits.has(call.gameId32)) return 'not a game of this run';
+    if (BigInt(tx.value) > limits.get(call.gameId32)) return `more than the quoted ${ethers.formatEther(limits.get(call.gameId32))} zkLTC`;
+    return true;
+  };
+}
+
+// The code a report was made from: the short git head and whether tracked files differed from it
+// (the report itself aside). → { head, dirty, changed? }; nulls when git is not available.
+export function sourceRevision(repoRoot = root, { ignore = [], run = spawnSync } = {}) {
+  const git = (...args) => {
+    const result = run('git', args, { cwd: repoRoot, encoding: 'utf8' });
+    return result?.status === 0 ? String(result.stdout) : null;
+  };
+  const head = git('rev-parse', '--short=8', 'HEAD')?.trim() || null;
+  const status = git('status', '--porcelain', '--untracked-files=no');
+  const changed = status === null ? null : status.split('\n').filter(Boolean).map((line) => line.slice(3).trim()).filter((path) => !ignore.includes(path));
+  return { head, dirty: changed === null ? null : changed.length > 0, ...(changed?.length ? { changed } : {}) };
+}
+
 // Request URLs the report may show: the path and the parameter names only (values can carry wallets).
 export function redactUrl(value) {
   try {
@@ -268,6 +300,44 @@ export function throwawayBundlePlugin({ addressModuleSource, rpcUrl }) {
   };
 }
 
+// The throwaway web root's copy of apps/portal: every folder junctioned (never copied), every file
+// copied, dist and the launch-copy pages left out (built next). Pushes each junction onto `links`.
+export function linkPortalTree(portal, webRoot, links) {
+  for (const name of readdirSync(portal)) {
+    if (name === 'dist' || PORTAL_GENERATED.has(name)) continue;
+    const source = join(portal, name);
+    const target = join(webRoot, name);
+    if (statSync(source).isDirectory()) {
+      symlinkSync(realpathSync(source), target, 'junction');
+      links.push(target);
+    } else {
+      copyFileSync(source, target);
+    }
+  }
+  return links;
+}
+
+// Removes a throwaway base: its junctions first (unlink removes the link, never what it points at),
+// then the tree. Safe to call twice.
+export function removeThrowaway(base, links) {
+  for (const link of links) {
+    try { unlinkSync(link); } catch { /* already gone */ }
+  }
+  rmSync(base, { recursive: true, force: true });
+}
+
+// An interrupted run (Ctrl+C, SIGTERM, SIGHUP) still runs `cleanup` before it exits (130 for SIGINT,
+// 143 otherwise), so no temp directory is left with junctions into the repository. → dispose()
+export const CLEANUP_SIGNALS = Object.freeze(['SIGINT', 'SIGTERM', 'SIGHUP']);
+export function cleanupOnSignal(cleanup, { proc = process, exit = (code) => proc.exit(code) } = {}) {
+  const onSignal = (signal) => {
+    try { cleanup(); } catch { /* best effort */ }
+    exit(signal === 'SIGINT' ? 130 : 143);
+  };
+  for (const signal of CLEANUP_SIGNALS) proc.once(signal, onSignal);
+  return () => { for (const signal of CLEANUP_SIGNALS) proc.off(signal, onSignal); };
+}
+
 // Builds the throwaway web root. Returns { webRoot, base, cleanup(), links }.
 export async function prepareThrowawayPortal({ repoRoot = root, record, rpcUrl, log = () => {} }) {
   ensurePortalBuild(repoRoot, log);
@@ -279,25 +349,9 @@ export async function prepareThrowawayPortal({ repoRoot = root, record, rpcUrl, 
   if (resolve(webRoot).startsWith(resolve(repoRoot) + sep)) throw new Error('the throwaway portal must live outside the repository');
   mkdirSync(webRoot, { recursive: true });
   const links = [];
-  const cleanup = () => {
-    // Junctions first (unlink never follows them), then the tree.
-    for (const link of links) {
-      try { unlinkSync(link); } catch { /* already gone */ }
-    }
-    rmSync(base, { recursive: true, force: true });
-  };
+  const cleanup = () => removeThrowaway(base, links);
   try {
-    for (const name of readdirSync(portal)) {
-      if (name === 'dist' || PORTAL_GENERATED.has(name)) continue;
-      const source = join(portal, name);
-      const target = join(webRoot, name);
-      if (statSync(source).isDirectory()) {
-        symlinkSync(realpathSync(source), target, 'junction');
-        links.push(target);
-      } else {
-        copyFileSync(source, target);
-      }
-    }
+    linkPortalTree(portal, webRoot, links);
     // Launch copy (contract A33): the committed pages stay the preview ones.
     const { buildPortalPages } = await import(pathToFileURL(join(repoRoot, 'scripts/build-portal-pages.mjs')).href);
     buildPortalPages({ flags: 'live', outDir: webRoot });
@@ -534,9 +588,11 @@ async function openRankedModal(page, gameId, { timeoutMs }) {
     const read = (selector) => document.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim() ?? null;
     return {
       ...mode,
-      eyebrow: read('#rankedEntryModal .ranked-entry-eyebrow') ?? read('#rankedEntryModal [class*="eyebrow"]'),
+      eyebrow: read('#rankedEntryTitle') ?? read('#rankedEntryModal [class*="eyebrow"]'),
       fee: read('#rankedEntryFee'),
       reserve: read('#rankedEntryReserve'),
+      // The row label only (its <small> note aside).
+      reserveLabel: document.querySelector('#rankedEntryReserve')?.closest('.ranked-entry-row')?.querySelector('span')?.firstChild?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
       total: read('#rankedEntryTotal'),
       balance: read('#rankedEntryBalance'),
       network: read('#rankedEntryNetwork'),
@@ -570,11 +626,22 @@ async function readLaunchCopy(page) {
   }));
 }
 
-async function confirmEntry(page, { timeoutMs }) {
+// Seed-ticket calls (E15, A25) among the /api responses a recorder saw.
+export const SEED_TICKET_OK = 'POST /api/ranked/seed 200';
+export function seedTicketCalls(apiLines) {
+  return apiLines.filter((line) => line.startsWith('POST /api/ranked/seed '));
+}
+
+// Approves the entry and waits for its broadcast. `apiFrom` is the recorder.api length when the entry
+// modal was opened; → the seed-ticket calls between that and the broadcast (exactly one expected: the
+// modal prefetches it, and approval reuses it while it is fresh).
+async function confirmEntry(page, { timeoutMs, recorder = null, apiFrom = 0 }) {
   const before = await page.evaluate(() => globalThis.__rankedE2E?.entries.filter((entry) => entry.status === 'broadcast').length ?? 0);
   await page.locator('#rankedEntryApprove').click();
   await page.waitForFunction((count) => (globalThis.__rankedE2E?.entries.filter((entry) => entry.status === 'broadcast').length ?? 0) > count, before, { timeout: timeoutMs });
+  const seeds = recorder ? seedTicketCalls(recorder.api.slice(apiFrom)) : [];
   await page.locator('#rankedEntryModal').waitFor({ state: 'hidden', timeout: timeoutMs });
+  return { seeds };
 }
 
 async function playChikun(page, { timeoutMs }) {
@@ -667,7 +734,7 @@ async function checkSharePage(api, shareId) {
 }
 
 // One Ranked run in a fresh context. Returns the per-game report.
-async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, chain, api, timeouts, log, afterPublished = null, extraPath = '', shotsDir = null }) {
+async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, chain, api, timeouts, log, beforeEntry = null, afterPublished = null, extraPath = '', shotsDir = null }) {
   const started = Date.now();
   const checks = [];
   const expect = (id, ok, detail = null) => {
@@ -678,7 +745,8 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
   const out = { gameId, ok: false, checks, durationMs: 0 };
   let fixture = null;
   try {
-    fixture = await installFixtureWallet(context, { rpcUrl: wallet.rpcUrl, privateKey: wallet.privateKey, chainId: 4441, announce: true });
+    // The wallet answers the site's top frame only, and signs nothing but the Ranked entry.
+    fixture = await installFixtureWallet(context, { rpcUrl: wallet.rpcUrl, privateKey: wallet.privateKey, chainId: 4441, announce: true, origin, allowTransaction: wallet.allowTransaction ?? null });
     await context.addInitScript(portalProbe);
     const page = await context.newPage();
     page.setDefaultTimeout(timeouts.stepMs);
@@ -692,13 +760,19 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     await signInWithFixture(page, { timeoutMs: timeouts.stepMs });
     const counts = fixture.router.counts();
     expect('sign-in-one-signature', counts.personal_sign === 1 && counts.eth_requestAccounts >= 1, counts);
+    if (beforeEntry) out.beforeEntry = await beforeEntry({ page, recorder, expect });
+    const apiBeforeEntry = recorder.api.length;
     const modal = await openRankedModal(page, gameId, { timeoutMs: timeouts.stepMs });
     out.modal = modal;
+    expect('entry-modal-eyebrow', modal.eyebrow === 'Ranked · Entry', { eyebrow: modal.eyebrow });
+    expect('entry-modal-reserve-label', modal.reserveLabel === 'Settlement reserve', { reserveLabel: modal.reserveLabel });
     expect('entry-modal-quote', /0\.102/.test(modal.total ?? '') && /0\.1\b/.test(modal.fee ?? '') && /0\.002/.test(modal.reserve ?? ''), { fee: modal.fee, reserve: modal.reserve, total: modal.total });
     // The launch copy (contract A33): the landing meta and FAQ, the mode select and the entry modal.
     const copyText = [landing.description, landing.faq, modal.rankedTitle, modal.rankedCopy, modal.copy, modal.footnote].join(' \n ');
     expect('launch-copy', /0\.102 testnet zkLTC per run/.test(landing.description ?? '') && /0\.102/.test(landing.faq) && !PREVIEW_ONLY_COPY.test(copyText), { description: landing.description, rankedTitle: modal.rankedTitle, rankedCopy: modal.rankedCopy, previewHit: PREVIEW_ONLY_COPY.exec(copyText)?.[0] ?? null });
-    await confirmEntry(page, { timeoutMs: timeouts.stepMs });
+    const { seeds } = await confirmEntry(page, { timeoutMs: timeouts.stepMs, recorder, apiFrom: apiBeforeEntry });
+    out.seedTickets = seeds;
+    expect('seed-ticket', seeds.length === 1 && seeds[0] === SEED_TICKET_OK, { seeds });
     const entryEvent = await page.evaluate(() => globalThis.__rankedE2E.entries.find((entry) => entry.status === 'broadcast'));
     await PLAYERS[gameId](page, { timeoutMs: timeouts.stepMs });
     const results = await waitForPublished(page, { timeoutMs: timeouts.publishMs });
@@ -744,10 +818,13 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     out.walletCalls = fixture.router.counts();
     out.api = recorder.api;
     out.offOrigin = recorder.offOrigin;
-    out.cancelledStaticLoads = recorder.cancelled.length;
+    // The static loads the browser cancelled (exempt from 'zero failed requests'), by redacted path.
+    out.cancelledStaticLoads = recorder.cancelled.slice();
     out.issues = recorder.issues;
+    out.walletRefusals = fixture.refused.slice();
     expect('clean-console-and-network', recorder.issues.length === 0, recorder.issues.slice(0, 20));
     expect('no-off-origin-requests', recorder.offOrigin.length === 0, recorder.offOrigin.slice(0, 20));
+    expect('wallet-top-frame-only', fixture.refused.length === 0, fixture.refused.slice(0, 20));
   } catch (error) {
     expect('flow', false, String(error?.message ?? error).split('\n')[0].slice(0, 400));
     if (shotsDir) {
@@ -766,23 +843,50 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
   return out;
 }
 
-// Chikun only: the run's achievement unlocks a look (E6), a pick PUTs preferences.cosmetics (E7), and the
-// look reaches the child in a Free run and in a second Ranked run.
+// Chikun only: the look is locked before the first entry, the run's achievement unlocks it (E6), a pick
+// PUTs preferences.cosmetics (E7), and the look reaches the child in a Free run and in a second Ranked
+// run. → { beforeEntry, afterPublished } hooks for runGame, sharing one report object.
+export const UNLOCKABLES_LOADED_NOTICE = /Your picks save to your wallet\.$/;
 function unlockablesCheck({ timeouts, shotsDir = null }) {
-  return async ({ page, recorder, expect }) => {
-    const out = { steps: [] };
-    const step = async (name, run) => {
-      out.steps.push(name);
-      try {
-        return await run();
-      } catch (error) {
-        if (shotsDir) await page.screenshot({ path: join(shotsDir, `chikun-unlockables-${name.replaceAll(' ', '-')}.png`) }).catch(() => {});
-        throw new Error(`unlockables step "${name}": ${String(error?.message ?? error).split('\n')[0]}`);
-      }
-    };
+  const out = { steps: [] };
+  const optionId = `unlockables-${UNLOCK_CHECK.gameId}-${UNLOCK_CHECK.slot}-${UNLOCK_CHECK.unlockableId}`;
+  const stepper = (page) => async (name, run) => {
+    out.steps.push(name);
+    try {
+      return await run();
+    } catch (error) {
+      if (shotsDir) await page.screenshot({ path: join(shotsDir, `chikun-unlockables-${name.replaceAll(' ', '-')}.png`) }).catch(() => {});
+      throw new Error(`unlockables step "${name}": ${String(error?.message ?? error).split('\n')[0]}`);
+    }
+  };
+  const readOptionState = (page) => page.locator(`li.unlockables-option:has(#${optionId})`).getAttribute('data-state');
+
+  // 0. Signed in, before the first entry: the player's own profile, once its unlocks have loaded from
+  // the server (a fresh database), shows the look locked.
+  const beforeEntry = async ({ page, expect }) => {
+    const step = stepper(page);
+    await step('look locked before the run', async () => {
+      await page.locator('#officialNavTabs a.official-nav-tab[href="/profile"]').click();
+      await page.locator(`#${optionId}`).waitFor({ state: 'attached', timeout: timeouts.stepMs });
+      await page.waitForFunction((pattern) => {
+        const notice = document.querySelector('.unlockables-notice')?.textContent?.trim() ?? '';
+        return new RegExp(pattern).test(notice);
+      }, UNLOCKABLES_LOADED_NOTICE.source, { timeout: timeouts.stepMs });
+    });
+    out.noticeBeforeRun = (await page.locator('.unlockables-notice').first().textContent())?.trim() ?? null;
+    out.stateBeforeRun = await readOptionState(page);
+    expect('look-locked-before-run', out.stateBeforeRun === 'locked', { state: out.stateBeforeRun, notice: out.noticeBeforeRun });
+    await step('back to the cabinets', async () => {
+      await page.locator('#officialNavTabs a.official-nav-tab[href="/games"]').click(); // "Play"
+      await page.locator('.official-cabinet-card.playable').filter({ hasText: GAME_TITLES.chikun }).first().waitFor({ state: 'visible', timeout: timeouts.stepMs });
+    });
+    return { stateBeforeRun: out.stateBeforeRun };
+  };
+
+  const afterPublished = async ({ page, recorder, expect }) => {
+    const step = stepper(page);
     const frame = () => page.frameLocator('iframe.chikun-game-frame');
     const childLooks = () => page.evaluate(() => globalThis.__rankedE2E.cosmetics.slice());
-    const optionId = `unlockables-${UNLOCK_CHECK.gameId}-${UNLOCK_CHECK.slot}-${UNLOCK_CHECK.unlockableId}`;
 
     // 1. E6 unlocks the look: the results screen's "View profile" opens the profile and its panel.
     await step('open profile', async () => {
@@ -793,8 +897,8 @@ function unlockablesCheck({ timeouts, shotsDir = null }) {
       const item = document.getElementById(id)?.closest('li');
       return Boolean(item) && item.dataset.state !== 'locked';
     }, optionId, { timeout: timeouts.stepMs }));
-    out.stateBefore = await page.locator(`li.unlockables-option:has(#${optionId})`).getAttribute('data-state');
-    expect('unlock-from-e6', out.stateBefore !== 'locked' && out.stateBefore !== 'coming-soon', { state: out.stateBefore });
+    out.stateAfterRun = await readOptionState(page);
+    expect('unlock-from-e6', out.stateBeforeRun === 'locked' && out.stateAfterRun !== 'locked' && out.stateAfterRun !== 'coming-soon', { before: out.stateBeforeRun ?? null, after: out.stateAfterRun });
     // The first-Ranked name prompt (profile-boards) can open over the lower-left of the page at any
     // moment after the run: a player answers it (Not now) before clicking what it covers.
     out.namePrompt = false;
@@ -854,6 +958,7 @@ function unlockablesCheck({ timeouts, shotsDir = null }) {
     // 4. Ranked: a second paid entry mounts the child with the same look; that run publishes too.
     const seenBeforeRanked = (await childLooks()).length;
     const runsBefore = await page.evaluate(() => globalThis.__rankedE2E.rankedRuns.length);
+    let apiBeforeSecondEntry = recorder.api.length;
     await step('ranked run', async () => {
       // Leave the Free run from its pause menu (a Free run's length depends on its seed).
       await frame().locator('#startButton').click();
@@ -863,19 +968,21 @@ function unlockablesCheck({ timeouts, shotsDir = null }) {
       await card.waitFor({ state: 'visible', timeout: timeouts.stepMs });
       await card.click();
       await page.locator('#officialModeSelect:not([hidden])').waitFor({ state: 'visible', timeout: timeouts.stepMs });
+      apiBeforeSecondEntry = recorder.api.length;
       await page.locator('#officialRankedModeButton').click();
       await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible', timeout: timeouts.stepMs });
       await page.waitForFunction(() => {
         const button = document.querySelector('#rankedEntryApprove');
         return button && !button.disabled && /confirm entry/i.test(button.textContent ?? '');
       }, null, { timeout: timeouts.stepMs });
-      await confirmEntry(page, { timeoutMs: timeouts.stepMs });
+      out.secondSeedTickets = (await confirmEntry(page, { timeoutMs: timeouts.stepMs, recorder, apiFrom: apiBeforeSecondEntry })).seeds;
       await frame().locator('#startButton').waitFor({ state: 'visible', timeout: timeouts.stepMs });
       await page.waitForFunction(({ key, count }) => globalThis.__rankedE2E.cosmetics.slice(count).some((entry) => entry.cosmetics?.[key]), { key: UNLOCK_CHECK.childKey, count: seenBeforeRanked }, { timeout: timeouts.stepMs });
     }).catch((error) => { out.rankedError = error.message; });
     out.ranked = (await childLooks()).slice(seenBeforeRanked).find((entry) => entry.cosmetics?.[UNLOCK_CHECK.childKey]) ?? null;
     expect('look-reaches-ranked-child', Boolean(out.ranked), { ranked: out.ranked, error: out.rankedError ?? null });
     if (!out.rankedError) {
+      expect('second-ranked-seed-ticket', out.secondSeedTickets?.length === 1 && out.secondSeedTickets[0] === SEED_TICKET_OK, { seeds: out.secondSeedTickets ?? null });
       await step('second ranked run publishes', async () => {
         await frame().locator('#liveStatus').filter({ hasText: 'Ready for Ranked Mode.' }).waitFor({ state: 'visible', timeout: timeouts.stepMs });
         await frame().locator('#startButton').click();
@@ -890,6 +997,7 @@ function unlockablesCheck({ timeouts, shotsDir = null }) {
     out.putRequests = recorder.api.filter((line) => line.startsWith('PUT /api/profile')).length;
     return out;
   };
+  return { beforeEntry, afterPublished };
 }
 
 // ---------------------------------------------------------------------------
@@ -902,11 +1010,12 @@ async function loadChromium() {
   return chromium;
 }
 
-export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoot = false, shotsDir = null, log = console.log } = {}) {
+export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoot = false, shotsDir = null, log = console.log, loadBrowser = loadChromium } = {}) {
   const { startLocalStack } = await import('./lib/local-stack.mjs');
   const { startLocalHttp, startRpcProxy } = await import('./lib/local-http.mjs');
   const { createFetchApi } = await import('./lib/rehearsal-driver.mjs');
   const started = Date.now();
+  const revision = sourceRevision(root, { ignore: [LOCAL_REPORT_RELATIVE_PATH] });
   // A Playwright promise that rejects outside an awaited step fails the run instead of killing it.
   const unhandled = [];
   const onUnhandled = (reason) => { unhandled.push(String(reason?.message ?? reason).split('\n')[0].slice(0, 300)); };
@@ -914,7 +1023,7 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
   const stack = await startLocalStack({ log });
   const cleanups = [async () => stack.close()];
   let throwaway = null;
-  let onSignal = null;
+  let disposeSignals = null;
   try {
     const nodeRpc = await startRpcProxy(stack);
     cleanups.unshift(() => nodeRpc.close());
@@ -925,34 +1034,41 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
       cleanups.push(async () => throwaway.cleanup());
       // An interrupted run (Ctrl+C) still unlinks the throwaway's junctions into apps/portal before it
       // exits, so no temp directory is left pointing into the repository.
-      onSignal = (signal) => {
-        try { throwaway.cleanup(); } catch { /* best effort */ }
-        process.exit(signal === 'SIGINT' ? 130 : 143);
-      };
-      for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(signal, onSignal);
+      disposeSignals = cleanupOnSignal(() => throwaway.cleanup());
     }
     const http = await startLocalHttp(stack, { staticRoot: throwaway.webRoot, applyVercelHeaders: true, extraConnectSrc: [browserRpc.origin], allowSignInHost: true });
     cleanups.unshift(() => http.close());
     browserRpc.allowOrigin(http.origin);
     log(`local site ${http.origin} (API + throwaway live portal), browser RPC ${browserRpc.url}`);
 
-    const chromium = await loadChromium();
+    const chromium = await loadBrowser();
     const browser = await chromium.launch({ executablePath: process.env.CHROME_EXECUTABLE_PATH ?? DEFAULT_CHROME, headless: true, args: ['--enable-webgl', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
     cleanups.unshift(() => browser.close());
     const api = createFetchApi(http.origin);
     const chain = { provider: stack.chain.provider, deployment: stack.deployment };
-    const wallet = { rpcUrl: nodeRpc.url, privateKey: stack.wallets.player1.privateKey };
+    const entryContract = chainContracts(stack.deployment, stack.chain.provider).entry;
+    const quotes = {};
+    for (const gameId of games) {
+      // eslint-disable-next-line no-await-in-loop
+      quotes[gameId] = BigInt((await entryContract.quoteEntry(ethers.id(gameId))).totalWei);
+    }
+    const allowTransaction = rankedEntryOnly({ entryAddress: stack.deployment.addresses.arcadeRankedEntry, quotes });
+    const wallet = { rpcUrl: nodeRpc.url, privateKey: stack.wallets.player1.privateKey, allowTransaction };
     const timeouts = { navigationMs: 60_000, stepMs: 60_000, publishMs: 180_000 };
     const results = {};
     for (const gameId of games) {
       log(`== ${gameId} ==`);
+      const hooks = gameId === 'chikun' && unlockables ? unlockablesCheck({ timeouts, shotsDir }) : null;
       // eslint-disable-next-line no-await-in-loop
-      results[gameId] = await runGame({ browser, gameId, origin: http.origin, allowedOrigins: [browserRpc.origin], wallet, chain, api, timeouts, log, shotsDir, afterPublished: gameId === 'chikun' && unlockables ? unlockablesCheck({ timeouts, shotsDir }) : null });
+      results[gameId] = await runGame({ browser, gameId, origin: http.origin, allowedOrigins: [browserRpc.origin], wallet, chain, api, timeouts, log, shotsDir, beforeEntry: hooks?.beforeEntry ?? null, afterPublished: hooks?.afterPublished ?? null });
     }
     const repoUnchanged = JSON.stringify(repoGuardSnapshot()) === JSON.stringify(throwaway.guard);
     return {
       schema: REPORT_SCHEMA,
       generatedAt: new Date().toISOString(),
+      head: revision.head,
+      dirty: revision.dirty,
+      ...(revision.changed ? { changed: revision.changed } : {}),
       target: 'local',
       note: 'Local only: in-process Hardhat chain 4441, PGlite for Neon, public Hardhat fixture keys, and a throwaway live-flag portal in the OS temp directory served by scripts/lib/local-http.mjs with the vercel.json headers. Nothing touched LiteForge, Vercel or production Neon, and no committed file changed.',
       commands: {
@@ -961,6 +1077,7 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
       },
       walletConnect: 'not exercised: localhost is not a Reown-allowed host; checked by hand at runbook step 9',
       throwaway: { flags: { settlementLive: true, hostedProfileSync: true }, addressModule: 'deployed (local deployment record)', publicRpc: 'loopback proxy (reads only)', launchCopy: true, csp: 'vercel.json headers, plus the loopback proxy origin in connect-src' },
+      fixtureWallet: { frames: 'the site origin\'s top frame only', transactions: 'ArcadeRankedEntry.openSession only, at most the quoted total', quotesWei: Object.fromEntries(Object.entries(quotes).map(([gameId, wei]) => [gameId, wei.toString()])) },
       repoUnchanged,
       browserRpc: { calls: browserRpc.calls.length, refused: browserRpc.refused },
       unhandledRejections: unhandled,
@@ -974,7 +1091,7 @@ export async function runLocal({ games = GAME_ORDER, unlockables = true, keepRoo
       await Promise.resolve().then(cleanup).catch((error) => log(`cleanup: ${error?.message ?? error}`));
     }
     if (keepRoot && throwaway) log(`kept the throwaway portal at ${throwaway.base}`);
-    if (onSignal) for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.off(signal, onSignal);
+    disposeSignals?.();
     process.off('unhandledRejection', onUnhandled);
   }
 }
@@ -986,7 +1103,8 @@ async function committedDeployment() {
   return loadLitvmDeployment();
 }
 
-export async function runLiveCli({ argv, env = process.env, log = console.log, readFile = undefined, loadDeployment = committedDeployment }) {
+// loadBrowser: Playwright's chromium (tests inject one to prove what runs before the browser does).
+export async function runLiveCli({ argv, env = process.env, log = console.log, readFile = undefined, loadDeployment = committedDeployment, loadBrowser = loadChromium }) {
   const flags = checkLiveFlags(argv);
   if (!flags.ok) {
     log('Live run refused: every live flag is required.');
@@ -1018,12 +1136,15 @@ export async function runLiveCli({ argv, env = process.env, log = console.log, r
       log(`Live run refused: the RPC reports chain ${chainId}, expected ${deployment.chainId}.`);
       return 2;
     }
+    const revision = sourceRevision(root);
     const player = new ethers.Wallet(privateKey).address.toLowerCase();
     const contracts = chainContracts(deployment, provider);
     let totalWei = 0n;
+    const quotes = {};
     for (const gameId of games) {
       // eslint-disable-next-line no-await-in-loop
       const quote = await contracts.entry.quoteEntry(ethers.id(gameId));
+      quotes[gameId] = BigInt(quote.totalWei);
       totalWei += BigInt(quote.totalWei);
       log(`  entry ${gameId}: ${ethers.formatEther(quote.totalWei)} zkLTC`);
     }
@@ -1039,20 +1160,23 @@ export async function runLiveCli({ argv, env = process.env, log = console.log, r
       return 2;
     }
     const { createFetchApi } = await import('./lib/rehearsal-driver.mjs');
-    const chromium = await loadChromium();
+    const chromium = await loadBrowser();
     const browser = await chromium.launch({ executablePath: process.env.CHROME_EXECUTABLE_PATH ?? DEFAULT_CHROME, headless: true, args: ['--enable-webgl', '--ignore-gpu-blocklist'] });
     const results = {};
+    // The funded key signs nothing but the Ranked entry of these games, for at most its quoted total,
+    // and only for the site's top frame.
+    const allowTransaction = rankedEntryOnly({ entryAddress: deployment.addresses.arcadeRankedEntry, quotes });
     try {
       const timeouts = { navigationMs: 90_000, stepMs: 120_000, publishMs: 600_000 };
       for (const gameId of games) {
         log(`== ${gameId} ==`);
         // eslint-disable-next-line no-await-in-loop
-        results[gameId] = await runGame({ browser, gameId, origin: site, allowedOrigins: [new URL(LITEFORGE_PUBLIC_RPC).origin], wallet: { rpcUrl, privateKey }, chain: { provider, deployment }, api: createFetchApi(site), timeouts, log });
+        results[gameId] = await runGame({ browser, gameId, origin: site, allowedOrigins: [new URL(LITEFORGE_PUBLIC_RPC).origin], wallet: { rpcUrl, privateKey, allowTransaction }, chain: { provider, deployment }, api: createFetchApi(site), timeouts, log });
       }
     } finally {
       await browser.close();
     }
-    const report = { schema: REPORT_SCHEMA, generatedAt: new Date().toISOString(), target: 'live', site, ok: games.every((gameId) => results[gameId].ok), games: results, walletConnect: 'not exercised; checked by hand at runbook step 9' };
+    const report = { schema: REPORT_SCHEMA, generatedAt: new Date().toISOString(), head: revision.head, dirty: revision.dirty, target: 'live', site, ok: games.every((gameId) => results[gameId].ok), games: results, walletConnect: 'not exercised; checked by hand at runbook step 9' };
     const out = resolve(root, flagValue(argv, '--out') ?? `docs/qa/ranked-live-browser-e2e-live-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}.json`);
     if (!hasFlag(argv, '--no-write')) writeJson(out, report);
     log(`${report.ok ? 'PASS' : 'FAIL'}: report ${hasFlag(argv, '--no-write') ? 'not written' : `written to ${out}`}.`);
@@ -1067,11 +1191,20 @@ function writeJson(path, value) {
   writeFileSync(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
-export async function runCli({ argv = process.argv.slice(2), env = process.env, log = console.log, loadDeployment = undefined } = {}) {
-  const target = targetOf(argv);
+export async function runCli({ argv = process.argv.slice(2), env = process.env, log = console.log, loadDeployment = undefined, loadBrowser = undefined } = {}) {
+  // A flag without a value (flagValue throws SecretSourceError) is a refusal, never a stack trace.
+  let target;
+  try {
+    target = targetOf(argv);
+  } catch (error) {
+    if (!(error instanceof SecretSourceError)) throw error;
+    log(`Run refused: ${error.message}`);
+    log(USAGE);
+    return 2;
+  }
   if (target === 'live') {
     try {
-      return await runLiveCli({ argv, env, log, loadDeployment });
+      return await runLiveCli({ argv, env, log, loadDeployment, ...(loadBrowser ? { loadBrowser } : {}) });
     } catch (error) {
       // Key-source errors name the flag or file, never the value.
       if (error instanceof SecretSourceError) log(`Live run refused: ${error.message}`);
@@ -1090,21 +1223,24 @@ export async function runCli({ argv = process.argv.slice(2), env = process.env, 
     }
   }
   let games;
+  let shotsDir;
+  let outPath;
   try {
     games = parseGames(flagValue(argv, '--games'));
+    shotsDir = flagValue(argv, '--shots');
+    outPath = flagValue(argv, '--out');
   } catch (error) {
-    log(error.message);
+    log(`Run refused: ${error.message}`);
     return 2;
   }
-  const shotsDir = flagValue(argv, '--shots');
   if (shotsDir) mkdirSync(shotsDir, { recursive: true });
-  const report = await runLocal({ games, unlockables: !hasFlag(argv, '--no-unlockables'), keepRoot: hasFlag(argv, '--keep-root'), shotsDir, log });
+  const report = await runLocal({ games, unlockables: !hasFlag(argv, '--no-unlockables'), keepRoot: hasFlag(argv, '--keep-root'), shotsDir, log, ...(loadBrowser ? { loadBrowser } : {}) });
   for (const gameId of games) {
     const game = report.games[gameId];
     log(`  ${gameId}: ${game.ok ? 'PASS' : 'FAIL'} ${game.checks.filter((check) => check.ok).length}/${game.checks.length}${game.settleTxHash ? `, published ${game.settleTxHash}` : ''}`);
   }
   if (!hasFlag(argv, '--no-write')) {
-    const out = resolve(root, flagValue(argv, '--out') ?? LOCAL_REPORT_RELATIVE_PATH);
+    const out = resolve(root, outPath ?? LOCAL_REPORT_RELATIVE_PATH);
     writeJson(out, report);
     log(`report written to ${out}`);
   }
