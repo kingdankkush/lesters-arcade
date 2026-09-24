@@ -27,6 +27,12 @@ try {
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+    // Failed requests are errors too; a view that drops an image or media load (ERR_ABORTED) is not.
+    page.on('response', response => { if (response.status() >= 400) errors.push(`http ${response.status()} ${response.url()}`); });
+    page.on('requestfailed', request => {
+      const failure = request.failure()?.errorText ?? 'failed';
+      if (!(/ERR_ABORTED/.test(failure) && request.method() === 'GET' && !new URL(request.url()).pathname.startsWith('/api/'))) errors.push(`requestfailed ${request.url()} ${failure}`);
+    });
     const shot = label => page.screenshot({ path: path.join(evidenceDir, `${name}-${label}.png`) });
     await page.goto(origin + '/', { waitUntil: 'networkidle' });
     await page.locator('#officialGuestEnterButton').click();

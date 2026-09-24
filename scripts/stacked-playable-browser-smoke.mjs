@@ -27,6 +27,12 @@ try {
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); else if (message.type() === 'warning') warnings.push(message.text()); });
+    // Failed requests are errors too; a view that drops an image or media load (ERR_ABORTED) is not.
+    page.on('response', response => { if (response.status() >= 400) errors.push(`http ${response.status()} ${response.url()}`); });
+    page.on('requestfailed', request => {
+      const failure = request.failure()?.errorText ?? 'failed';
+      if (!(/ERR_ABORTED/.test(failure) && request.method() === 'GET' && !new URL(request.url()).pathname.startsWith('/api/'))) errors.push(`requestfailed ${request.url()} ${failure}`);
+    });
     // The shared static server has no headers. Enforce the exact candidate CSP on the real document.
     const config = JSON.parse(await readFile(path.join(root, 'vercel.json'), 'utf8'));
     const csp = config.headers.find(rule => rule.source === '/stacked/(.*)').headers.find(header => header.key === 'Content-Security-Policy').value;
@@ -38,9 +44,10 @@ try {
     await page.locator('#officialGuestEnterButton').click();
     await page.locator('.official-cabinet-card').filter({ hasText: 'STACKED' }).click();
     assert.equal(await page.locator('#officialModeTitle').textContent(), 'STACKED');
-    assert.match(await page.locator('#officialModeCopy').textContent(), /Public beta/);
-    assert.match(await page.locator('#officialRankedModeTitle').textContent(), /Local Only/);
-    assert.match(await page.locator('#officialRankedModeCopy').textContent(), /No fees, prizes or online ranking/);
+    assert.match(await page.locator('#officialModeCopy').textContent(), /Public beta[\s\S]*Every Ranked run is replay-verified before it counts/);
+    // Ranked-client rewrote the Ranked tile: a wallet-bound, replay-verified run (no "Local Only" tag).
+    assert.equal((await page.locator('#officialRankedModeTitle').textContent()).trim(), 'Play Ranked');
+    assert.match(await page.locator('#officialRankedModeCopy').textContent(), /Wallet-bound Ranked run[\s\S]*must pass replay verification before the result is recorded/);
     await page.waitForFunction(() => ['officialFreeModeBanner', 'officialRankedModeBanner'].every(id => {
       const image = document.getElementById(id); return image.complete && image.naturalWidth > 0;
     }));
