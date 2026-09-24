@@ -230,7 +230,8 @@ test('the key never leaves the router: not in its JSON, inspect output or reques
   for (const text of [JSON.stringify(router), inspect(router, { depth: 10, showHidden: true }), JSON.stringify(router.log), JSON.stringify(router.transactions), String(router)]) {
     assert.ok(!text.includes(bare), 'the key must not appear');
   }
-  assert.throws(() => createFixtureWalletRouter({ privateKey: 'not-a-key', rpcUrl: rpc.url }), TypeError);
+  const malformed = 'not-a-key';
+  assert.throws(() => createFixtureWalletRouter({ privateKey: malformed, rpcUrl: rpc.url }), TypeError);
   assert.throws(() => createFixtureWalletRouter({ privateKey: FIXTURE_KEY }), TypeError);
 });
 
