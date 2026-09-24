@@ -16,7 +16,7 @@
       "includeFiles": "apps/chikun/assets/obstacle-shapes.json"
     },
     "api/cron/index-chain.mjs": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "api/settle-status.mjs": {
       "maxDuration": 15

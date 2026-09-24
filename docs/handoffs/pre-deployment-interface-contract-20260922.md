@@ -856,7 +856,7 @@ Add these top-level keys. Keep every existing entry, including the pinned `"/(pr
 "functions": {
   "api/settle.mjs":               { "maxDuration": 60, "memory": 1024, "includeFiles": "apps/chikun/assets/obstacle-shapes.json" },
   "api/cron/settle-retry.mjs":    { "maxDuration": 60, "memory": 1024, "includeFiles": "apps/chikun/assets/obstacle-shapes.json" },
-  "api/cron/index-chain.mjs":     { "maxDuration": 60 },
+  "api/cron/index-chain.mjs":     { "maxDuration": 300 },  // raised from 60 on 2026-09-24 after a production 504
   "api/settle-status.mjs":        { "maxDuration": 15 },
   "api/leaderboard.mjs":          { "maxDuration": 10 },
   "api/profile.mjs":              { "maxDuration": 10 },

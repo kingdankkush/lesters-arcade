@@ -244,7 +244,9 @@ test('crons and function limits are declared', () => {
   assert.deepEqual(vercel.functions, {
     'api/settle.mjs': { maxDuration: 60, memory: 1024, includeFiles: chikunShapes },
     'api/cron/settle-retry.mjs': { maxDuration: 60, memory: 1024, includeFiles: chikunShapes },
-    'api/cron/index-chain.mjs': { maxDuration: 60 },
+    // 300 s (Pro): the indexer stops starting chunks after 45 s, but one slow public-RPC chunk can run
+    // past a 60 s limit (2026-09-24 production: 504 Task timed out after 60 seconds).
+    'api/cron/index-chain.mjs': { maxDuration: 300 },
     'api/settle-status.mjs': { maxDuration: 15 },
     'api/leaderboard.mjs': { maxDuration: 10 },
     'api/profile.mjs': { maxDuration: 10 },
