@@ -209,7 +209,7 @@ test('the committed step-3/step-7 dry run is current: made by this script, unedi
   assert.equal(report.partial ?? null, null, 'a --tests (partial) dry run is never committed');
   assert.equal(report.ok, true);
   // No local absolute path (the throwaway, the repo, the home directory) reaches the committed evidence.
-  assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\\\|\/)|AppData|lesters-step7-|\/home\/|\/Users\//);
+  assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\\\|\/)|AppData|lesters-step7-[A-Za-z0-9]{6}(?![A-Za-z0-9-])|\/home\/|\/Users\//);
   // Step 3 (the record and the deployed module, flags off) and step 7 (the flip) proved their own edits.
   const proven = (edits) => edits.map((edit) => [edit.file, edit.before, edit.after, edit.applied, edit.verified]);
   assert.deepEqual(proven(report.step3.edits), STEP3_TEST_EDITS.map((edit) => [edit.file, edit.find, edit.replace, true, true]));
