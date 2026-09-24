@@ -46,44 +46,60 @@
     "step7DryRun": {
       "path": "docs/qa/step7-dry-run-20260923.json",
       "command": "node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway",
-      "what": "The step-3 address module and the step-7 flag flip rehearsed in a throwaway worktree (removed afterwards): the files each step changes, the regenerated public copy, and the tests step 7 must update. Refreshed by the browser-e2e slice at its final commit."
+      "what": "The step-3 address module and the step-7 flag flip rehearsed in a throwaway worktree (removed afterwards): the files each step changes, the regenerated public copy, and the tests step 7 must update.",
+      "ranAt": "62705965 (committed in d3d8d38e). The browser-e2e review fixes after it change neither the dry-run script nor any file its step-3/step-7 edits target, so tests/local-chain-rehearsal.test.mjs still holds the committed run current.",
+      "rehearsalSignOff": "The browser-e2e slice added two STEP7_TEST_EDITS entries to the rehearsal-owned scripts/rehearse-step7-dry-run.mjs (tests/ship-readiness.test.mjs and the integration-glue-copy D19 pin) so the refreshed report is accepted; the rehearsal owner signs these off at merge."
     },
     "liveFlagBrowserRun": {
       "path": "docs/qa/ranked-live-browser-e2e-20260923.json",
       "command": "PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/ranked-live-browser-e2e.mjs --target local",
-      "what": "The real browser Ranked flow with both flags on (a throwaway live-flag portal, the rehearsal's local stack, the fixture EIP-6963 wallet on a Hardhat account): sign-in with one signature, the 0.102 zkLTC entry, the entry sessionId32 equal to the settle request's, the results screen published with explorer links, the share row at /s/<shareId>, the share page and card, the signed-out and Ranked-title launch copy, and a clean console and network, once per game; with Chikun also the unlockables path (E6 unlock, E7 cosmetics PUT, the look in the Free and Ranked child).",
+      "what": "The real browser Ranked flow with both flags on (a throwaway live-flag portal, the rehearsal's local stack, the fixture EIP-6963 wallet on a Hardhat account): sign-in with one signature, the 'Ranked · Entry' modal with its 'Settlement reserve' row and the 0.1 + 0.002 = 0.102 zkLTC quote, exactly one seed ticket (POST /api/ranked/seed 200, A25) before the entry broadcast, the entry sessionId32 equal to the settle request's, the results screen published with explorer links, the share row at /s/<shareId>, the share page and card, the signed-out and Ranked-title launch copy, and a clean console and network, once per game; with Chikun also the unlockables path (chikun-hat-cap locked before the first entry, unlocked by E6 after it, the E7 cosmetics PUT, the look in the Free and Ranked child, a second Ranked run with its own seed ticket).",
+      "head": "98e71a8d",
+      "dirty": false,
       "ok": true,
       "games": {
-        "chikun": { "checks": 24, "passed": 24 },
-        "stacked": { "checks": 19, "passed": 19 },
-        "lester-blaster": { "checks": 19, "passed": 19 }
+        "chikun": { "checks": 30, "passed": 30 },
+        "stacked": { "checks": 23, "passed": 23 },
+        "lester-blaster": { "checks": 23, "passed": 23 }
       },
+      "fixtureWallet": "answers the site origin's top frame only (a game iframe, a WalletConnect frame or another page is refused with 4100) and signs no transaction but ArcadeRankedEntry.openSession for a game of the run at most at its quoted total; the same limits apply in --live",
+      "cancelledStaticLoads": "exempt from 'zero failed requests' and listed by path in the report: per game, the music playlist MP3 twice (media range requests the browser aborts)",
       "walletConnect": "not exercised: localhost is not a Reown-allowed host"
     },
     "previewSmokes": {
-      "host": "python -m http.server 8850 --directory apps/portal (both flags false)",
-      "date": "2026-09-23",
+      "host": "python -m http.server 8850 --directory apps/portal (both flags false), except hmh-reboot-portal-e2e (see its row)",
+      "date": "2026-09-23; the Chikun Ranked, simulated-wallet, stacked-playable and hmh-reboot-portal-e2e rows re-run 2026-09-24 after the review fixes",
       "results": [
         { "command": "CHIKUN_PORTAL_ORIGIN=http://127.0.0.1:8850 CHIKUN_MODE=ranked|free CHIKUN_VIEWPORT=1440x1000|390x844 node scripts/chikun-ranked-browser-smoke.mjs", "result": "PASS (4 runs)" },
-        { "command": "HMH_PORTAL_ORIGIN=http://127.0.0.1:8850 node scripts/hmh-simulated-wallet-browser-smoke.mjs", "result": "PASS" },
+        { "command": "HMH_PORTAL_ORIGIN=http://127.0.0.1:8850 node scripts/hmh-simulated-wallet-browser-smoke.mjs", "result": "PASS with KNOWN GAP (exit 0; --fail-on-known-gap exits 3): the U11a shell banner #simulatedWalletBanner is not rendered (see knownGaps); every other disclosure, no picker, no /api call and a clean console pass" },
         { "command": "PORTAL_SMOKE_ROOT=http://127.0.0.1:8850 node scripts/smoke-portal-flow.mjs", "result": "PASS" },
         { "command": "PORTAL_SMOKE_ROOT=http://127.0.0.1:8850 node scripts/smoke-portal-interactions.mjs", "result": "PASS" },
         { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-playable-browser-smoke.mjs", "result": "PASS (6 Free viewports + 2 Ranked preview)" },
         { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-reactive-evidence-smoke.mjs", "result": "PASS (2 viewports)" },
         { "command": "STACKED_ORIGIN=http://127.0.0.1:8850 node scripts/stacked-cabinet-browser-smoke.mjs", "result": "PASS (5 viewports)" },
-        { "command": "node scripts/hmh-reboot-portal-e2e.mjs [--profile=mobile]", "result": "PASS 8/8 flows on desktop and mobile with the harness's own server (apps/portal as the web root). Against python's http.server, pause-resume and mid-run-restart fail because it answers no HTTP Range request; ranked-preview passes there too." }
+        { "command": "node scripts/hmh-reboot-portal-e2e.mjs [--profile=mobile]", "result": "PASS 8/8 flows on desktop (re-run 2026-09-24) and mobile with the harness's own server (apps/portal as the web root)." }
       ],
-      "afterStep7": "These smokes assert the preview. Against a portal that serves SETTLEMENT_LIVE = true, the Chikun preview smoke and the simulated-wallet smoke exit 2, stacked-playable runs its Free viewports and reports its Ranked preview passes as not run, and hmh-reboot-portal-e2e reports ranked-preview as not run."
+      "hmhPortalE2eHost": "The HMH portal E2E runs on its own static server (apps/portal as the web root, with HTTP Range support), not on python -m http.server: python answers no Range request, so the pause-resume soundtrack seek and the restart after it fail for the host, not the portal. The brief's python host is unsuitable for this one smoke; ranked-preview and the other flows pass on either.",
+      "afterStep7": "These smokes assert the preview. Against a portal that serves SETTLEMENT_LIVE = true, the Chikun preview smoke and the simulated-wallet smoke exit 2. stacked-playable runs its Free viewports and hmh-reboot-portal-e2e its guest flows; their Ranked preview passes are reported NOT RUN (ok: null, status 'not-run'), never as passes, and the last line reads 'PASS with N flow(s) NOT RUN: ranked-preview (...)'. They still exit 0 unless --fail-on-not-run is given (exit 3). Checked 2026-09-24 against a scratch front serving /src/settlement.mjs with SETTLEMENT_LIVE = true: HMH 7 flows passed and ranked-preview NOT RUN (exit 0); stacked-playable 6 viewports passed and ranked-preview NOT RUN (exit 3 with --fail-on-not-run)."
     },
+    "knownGaps": [
+      {
+        "what": "The U11a shell banner #simulatedWalletBanner (simulated wallet, not a real connection) is never shown.",
+        "cause": "renderSimulatedWalletBanner() runs only from renderLogin(), which has had no caller in apps/portal/main.js since 372c7ef9 (2026-08-05, legacy canvas backstage retired), before the Ranked work.",
+        "impact": "Preview only (no wallet on localhost). The profile eyebrow 'Simulated wallet session', the shell copy, the console warning and the Profile notice still disclose the simulated identity.",
+        "followUp": "Portal-shell fix outside the browser-e2e scope (main.js lines 1-316 only); filed as a follow-up task. scripts/hmh-simulated-wallet-browser-smoke.mjs prints a KNOWN-GAP line until then and asserts the banner's U11a checks once it renders."
+      }
+    ],
     "releaseGate": {
       "command": "npm run test:release",
       "expectedFailures": 51,
-      "measured": { "tests": 4749, "passed": 4698, "failures": 51, "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS (npm run vercel:build, browser-e2e slice, 2026-09-23)" }
+      "measured": { "tests": 4762, "passed": 4711, "failures": 51, "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4762 passed=4711 expected_failures=51 (npm run test:release after the browser-e2e review fixes, 2026-09-24)" }
     },
     "bundleBudgets": {
       "command": "npm run build",
       "hmhInitialPlusShared": { "bytes": 1046713, "cap": 1048576 },
-      "stackedEntry": { "bytes": 27694, "cap": 29000 }
+      "stackedEntry": { "bytes": 27694, "cap": 29000 },
+      "deltaVsBase": "+0 B for both (base ce1f4eff; npm run build 2026-09-24)"
     }
   },
   "runbookCommands": {
@@ -97,8 +113,8 @@
       "Public file hashes against the local build.",
       "PORTAL_SMOKE_ROOT=https://lestersarcade.io node scripts/smoke-portal-flow.mjs (the landing page must equal the launch-copy page for the committed flags)",
       "PORTAL_SMOKE_ROOT=https://lestersarcade.io node scripts/smoke-portal-interactions.mjs",
-      "STACKED_ORIGIN=https://lestersarcade.io node scripts/stacked-playable-browser-smoke.mjs (Free viewports; the Ranked preview passes report not run)",
-      "PORTAL_E2E_ORIGIN=https://lestersarcade.io node scripts/hmh-reboot-portal-e2e.mjs (guest flows; ranked-preview reports not run)",
+      "STACKED_ORIGIN=https://lestersarcade.io node scripts/stacked-playable-browser-smoke.mjs (Free viewports only: exit 0 does NOT mean the Ranked passes ran; its last line reads 'PASS with 1 flow NOT RUN: ranked-preview'. Add --fail-on-not-run to make that exit 3. The Ranked check after step 7 is the step-9 live run and the optional Chikun --live smoke.)",
+      "PORTAL_E2E_ORIGIN=https://lestersarcade.io node scripts/hmh-reboot-portal-e2e.mjs (guest flows only: exit 0 does NOT mean ranked-preview ran; its summary lists it under notRun and the last line reads 'PASS with 1 flow NOT RUN'. Add --fail-on-not-run to make that exit 3.)",
       "Optional, spends 0.102 testnet zkLTC: PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/chikun-ranked-browser-smoke.mjs --live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --confirm-live SPEND_TESTNET_ZKLTC --yes",
       "Then update the README (version, cache marker, production lines, 'Not live end to end') and write the final receipt from this draft."
     ]
