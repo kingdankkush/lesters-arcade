@@ -174,3 +174,29 @@ test('Vercel uses the ledger-checked release suite without weakening raw npm tes
   assert.doesNotMatch(packageJson.scripts['vercel:build'], /(?:^|&&\s*)npm test(?:\s*&&|$)/);
   assert.match(gateSource, /--test-concurrency=1/, 'release suite must serialize test files so CPU timing assertions are not distorted by shared CI cores');
 });
+
+test('an unexpected failure carries its error text so a remote build log says why', async () => {
+  const events = exactEvents();
+  events.splice(1, 0, {
+    type: 'test:fail',
+    name: 'new runtime regression',
+    file: runtimeFile,
+    detailsType: 'test',
+    nesting: 0,
+    error: 'Expected values to be strictly equal:\n\nfalse !== true',
+  });
+  events.at(-1).counts.failed = 2;
+  events.at(-1).counts.tests = 3;
+  const result = verifyRetirementGate({ ledger, events, repoRoot });
+  const text = result.errors.join('\n');
+  assert.match(text, /unexpected failure: tests\/runtime\.test\.mjs :: new runtime regression\n {4}Expected values to be strictly equal:/);
+  assert.match(text, /\n {4}false !== true/);
+  // Ledgered failures stay terse: their error text is not repeated.
+  assert.doesNotMatch(text, /legacy-art/);
+
+  const { summarizeTestError } = await import('../scripts/hmh-reboot-test-retirement-reporter.mjs');
+  const cause = new Error('connect ECONNREFUSED 127.0.0.1:8545');
+  assert.equal(summarizeTestError(new Error('probe failed', { cause })), 'probe failed | cause: connect ECONNREFUSED 127.0.0.1:8545');
+  assert.equal(summarizeTestError(undefined), undefined);
+  assert.equal(summarizeTestError(new Error('x'.repeat(2000))).length, 1201);
+});

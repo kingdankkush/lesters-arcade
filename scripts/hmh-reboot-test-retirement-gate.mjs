@@ -74,11 +74,13 @@ export function verifyRetirementGate({ ledger, events, repoRoot = process.cwd() 
   }
 
   const observedFailureEvents = (events ?? []).filter((event) => event?.type === 'test:fail');
+  const firstError = new Map();
   for (const event of observedFailureEvents) {
     const file = normalizeFile(event.file, repoRoot);
     const assertion = normalizeAssertion(event.name);
     const key = failureKey(file, assertion);
     increment(observed, key);
+    if (event.error && !firstError.has(key)) firstError.set(key, String(event.error));
     if (event.detailsType !== 'test' || event.nesting !== 0) {
       errors.push(`unexpected non-top-level test failure: ${key}`);
     }
@@ -90,7 +92,9 @@ export function verifyRetirementGate({ ledger, events, repoRoot = process.cwd() 
   }
   for (const [key, count] of observed) {
     const allowed = expected.get(key) ?? 0;
-    for (let index = allowed; index < count; index += 1) errors.push(`unexpected failure: ${key}`);
+    // Only unexpected failures carry their error text: ledgered ones are known.
+    const detail = firstError.has(key) ? `\n    ${firstError.get(key).split('\n').join('\n    ')}` : '';
+    for (let index = allowed; index < count; index += 1) errors.push(`unexpected failure: ${key}${detail}`);
   }
 
   const aggregateSummaries = (events ?? []).filter((event) => event?.type === 'test:summary' && !event.file);
