@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { createHostedProfileView } from '../apps/portal/src/routes/hosted-profile-view.mjs';
+import { renderSharePage } from '../server/share/render-page.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (file) => readFileSync(path.join(root, file), 'utf8');
@@ -117,4 +118,11 @@ test('the profile hero marks a wallet shown in place of a display name', async (
     assert.equal(name.textContent, displayName ?? '0x8841…aaaa');
     assert.equal(name.className, displayName ? 'profile-hero-name' : 'profile-hero-name profile-hero-name-wallet');
   }
+});
+
+// At 320 px the share page's header links were 15 and 23 px tall.
+test('the share page header links are 44 px touch targets', () => {
+  const { html } = renderSharePage({ session: null, status: 404 });
+  assert.match(html, /\.top a\{display:inline-flex;align-items:center;min-height:44px\}/);
+  assert.match(html, /<div class="top"><a class="brand" href="\/">/);
 });
