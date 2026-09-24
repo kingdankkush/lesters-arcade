@@ -133,7 +133,9 @@ Two second-order consumers:
   `...(discoveryText.includes('stacker') ? ['puzzle', 'stacker'] : [])`; the `genre` string supplies the
   match. Its consumers `renderCabinetStage` / `renderCartridges` (`main.js:6230-6259`) render into
   `#cabinetStage` / `#cartridgeRack`, which do not exist in `index.html` — dead surface, so this is for
-  future readers, not a visible regression.
+  future readers, not a visible regression. (Both renderers were later deleted with the rest of the
+  legacy backstage renderers; `main.js` no longer calls `getCartridgeSelectModel`, and its tests still
+  cover the model.)
 - Both placeholder SVGs must exist; copy the style of `apps/portal/assets/cabinet-chikun.svg` and
   `cartridge-chikun.svg`. **Nothing gates this:** `npm run assets:verify`
   (`scripts/verify-generated-assets.mjs`) checks a hard-coded list of generated manifests and never walks

@@ -171,26 +171,17 @@ import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
   HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST,
-  HARD_MONEY_HEROES_CANON,
-  LESTER_ARCADE_BUILD_STACK,
   SIMULATED_WALLET_ADDRESS,
   LESTERS_ARCADE_V2_APP_SHELL,
-  LESTER_BLASTER_ANIMATION_PLAN,
   LITVM_LITEFORGE_NETWORK,
   LESTER_BLASTER_BOSS_SYSTEM,
-  LESTER_BLASTER_CHARACTER_ROSTER,
-  LESTER_BLASTER_COMBAT_EFFECTS,
-  LESTER_BLASTER_ENEMY_CATALOG,
   LESTER_BLASTER_ENVIRONMENTS,
-  LESTER_BLASTER_GAMEPLAY,
   LESTER_BLASTER_ISOMETRIC_ROGUELIKE,
   LESTER_BLASTER_LEVEL_PLAN,
   LESTER_BLASTER_PERFORMANCE_TARGETS,
   LESTER_BLASTER_POWER_UPS,
-  LESTER_BLASTER_SOUND_DESIGN,
   LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
   LESTER_BLASTER_TACTICAL_COMBAT_V2,
-  LESTER_BLASTER_UNLOCKABLES,
   LESTER_BLASTER_WEAPON_SYSTEM,
   advanceTacticalCameraModel,
   buildGameOverSummaryModel,
@@ -198,7 +189,6 @@ import {
   buildHardMoneyHeroesAnimationCoverageReport,
   buildLeaderboardModel,
   buildLeaderboardExperienceV2Model,
-  buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
   buildCombatAccessibilitySettingsModel,
   computeWeaponUpgrades,
@@ -209,13 +199,11 @@ import {
   buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
   buildFullscreenViewportModel,
-  buildLoginMenuModel,
   buildOfficialRunStatusModel,
   buildArcadeMusicPlayerModel,
   buildArcadeMusicQueueForContext,
 
   buildHardMoneyHeroesStatsModule,
-  buildUiQualityGuideModel,
   buildWalletConnectionModel,
   calculateLesterBlasterScore,
   chooseArcadeMusicNextIndex,
@@ -225,8 +213,6 @@ import {
   connectPlayerAccount,
   createInitialArcadeState,
   createRoguelikeRunState,
-  formatMicroUsdc,
-  getCartridgeSelectModel,
   getGame,
   ARCADE_GAMES,
   getLesterBlasterDifficultyAt,
@@ -1737,49 +1723,13 @@ const dom = {
   roguelikeStatBar: document.querySelector('#roguelikeStatBar'),
   tacticalBalanceDebugOverlay: document.querySelector('#tacticalBalanceDebugOverlay'),
   officialCombatMount: document.querySelector('#officialCombatMount'),
-  accountFlowSteps: document.querySelector('#accountFlowSteps'),
-  connectWalletButton: document.querySelector('#connectWalletButton'),
-  guideIntro: document.querySelector('#guideIntro'),
-  quickStartGuide: document.querySelector('#quickStartGuide'),
-  instructionPanel: document.querySelector('#instructionPanel'),
-  tooltipShelf: document.querySelector('#tooltipShelf'),
-  brandPalette: document.querySelector('#brandPalette'),
-  patternList: document.querySelector('#patternList'),
-  iconLegend: document.querySelector('#iconLegend'),
-  qualityChecklist: document.querySelector('#qualityChecklist'),
-  playerSummary: document.querySelector('#playerSummary'),
-  progressList: document.querySelector('#progressList'),
-  achievementList: document.querySelector('#achievementList'),
-  transactionList: document.querySelector('#transactionList'),
-  highScoreList: document.querySelector('#highScoreList'),
-  buildStackPanel: document.querySelector('#buildStackPanel'),
-  menuModelPanel: document.querySelector('#menuModelPanel'),
-  cabinetStage: document.querySelector('#cabinetStage'),
-  cartridgeRack: document.querySelector('#cartridgeRack'),
-  selectedGameTitle: document.querySelector('#selectedGameTitle'),
-  selectedGameStatus: document.querySelector('#selectedGameStatus'),
-  selectedGameTagline: document.querySelector('#selectedGameTagline'),
-  freePlayButton: document.querySelector('#freePlayButton'),
-  paidPlayButton: document.querySelector('#paidPlayButton'),
-  simulateRunButton: document.querySelector('#simulateRunButton'),
   runStatus: document.querySelector('#runStatus'),
   runDetails: document.querySelector('#runDetails'),
   leaderboardPanel: document.querySelector('#leaderboardPanel'),
   combatCanvas: document.querySelector('#combatCanvas'),
-  startCombatButton: document.querySelector('#startCombatButton'),
-  jumpButton: document.querySelector('#jumpButton'),
-  shootButton: document.querySelector('#shootButton'),
-
-  grenadeButton: document.querySelector('#grenadeButton'),
-  powerUpButton: document.querySelector('#powerUpButton'),
   fpsPill: document.querySelector('#fpsPill'),
-  controlSchemePanel: document.querySelector('#controlSchemePanel'),
   combatRunStatus: document.querySelector('#combatRunStatus'),
   combatStatus: document.querySelector('#officialGameStateCopy'),
-  difficultyPanel: document.querySelector('#difficultyPanel'),
-  mechanicList: document.querySelector('#mechanicList'),
-  bossRoster: document.querySelector('#bossRoster'),
-  codexPanels: document.querySelector('#codexPanels'),
 };
 
 const state = createInitialArcadeState();
@@ -1814,7 +1764,6 @@ try {
     if (document.visibilityState === 'hidden') { clearTimeout(persistTimer); saveArcadeState(state, ARCADE_STORAGE); }
   });
 } catch { /* non-DOM env */ }
-const cartridges = getCartridgeSelectModel();
 mountCabinetMotionControl({
   button: document.querySelector('#cabinetMotionToggle'),
   grid: dom.officialCabinetGrid,
@@ -5046,22 +4995,6 @@ function completeStage() {
   beginStage(combat.stageIndex + 1);
 }
 
-function renderFlowSteps() {
-  const steps = [
-    ['01', 'Wallet login', 'Use an injected EVM wallet when available; fallback to a local mock account for offline QA.'],
-    ['02', 'Parent account', 'One Lester profile stores progress, loadout unlocks, badges, transactions, and official high scores.'],
-    ['03', 'Cabinet dapp', 'Hard Money Heroes runs as the first child game that reads profile state and writes ranked testnet packets back.'],
-    ['04', 'LitVM rails', 'dappit.io can help move profile, ranked-session, score, achievement, and tournament contracts toward LitVM.'],
-  ];
-  dom.accountFlowSteps.replaceChildren();
-  for (const [number, title, copy] of steps) {
-    const card = el('article', { className: 'flow-step' });
-    appendText(card, 'strong', `${number} // ${title}`);
-    appendText(card, 'span', copy);
-    dom.accountFlowSteps.append(card);
-  }
-}
-
 const portalRouteController = createPortalRouteController({
   windowRef: window,
   documentRef: document,
@@ -7227,321 +7160,10 @@ async function completePrototypeRun() {
   render();
 }
 
-function renderParentOps() {
-  const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
-
-  dom.playerSummary.replaceChildren();
-  const avatar = el('img', { src: './assets/lester-pilot.svg', alt: 'Pixel Lester pilot avatar' });
-  const summaryText = el('div');
-  appendText(summaryText, 'strong', snapshot?.profile.handle ?? 'Guest Player');
-  appendText(summaryText, 'p', snapshot ? `${snapshot.profile.rank} · XP ${snapshot.profile.xp} · Paid ${snapshot.profile.totalPaidRuns} · Free ${snapshot.profile.totalFreeRuns}` : 'Connect a wallet to activate the parent account layer.');
-  appendText(summaryText, 'p', 'Parent system owns: profile, progress, achievements, transactions, high scores, and cross-game routing.', 'tiny-note');
-  dom.playerSummary.append(avatar, summaryText);
-
-  dom.progressList.replaceChildren();
-  const progressEntries = snapshot ? Object.values(snapshot.progress) : [];
-  if (progressEntries.length === 0) {
-    dom.progressList.append(emptyMini('No progress yet.'));
-  } else {
-    for (const progress of progressEntries) {
-      const game = getGame(progress.gameId);
-      const item = el('article', { className: 'mini-item' });
-      appendText(item, 'strong', game.title);
-      appendText(item, 'span', `Paid best ${progress.bestPaidScore.toLocaleString()} · Free best ${progress.bestFreeScore.toLocaleString()} · Longest ${formatSeconds(progress.longestRunSeconds)}`);
-      dom.progressList.append(item);
-    }
-  }
-
-  dom.achievementList.replaceChildren();
-  const achievements = snapshot?.achievements ?? Object.values(ACHIEVEMENTS).map((achievement) => ({ ...achievement, unlocked: false }));
-  for (const achievement of achievements) {
-    const item = el('article', { className: `mini-item ${achievement.unlocked ? 'unlocked' : 'locked'}` });
-    const achievementTitle = el('strong');
-    achievementTitle.append(renderArcadeIcon(achievement.unlocked ? 'trophy' : 'lock'), document.createTextNode(achievement.title));
-    item.append(achievementTitle);
-    appendText(item, 'span', achievement.description);
-    dom.achievementList.append(item);
-  }
-
-  dom.transactionList.replaceChildren();
-  if (!snapshot || snapshot.transactions.length === 0) {
-    dom.transactionList.append(emptyMini('No paid transactions yet.'));
-  } else {
-    for (const transaction of snapshot.transactions.slice(-4).reverse()) {
-      const item = el('article', { className: 'mini-item' });
-      appendText(item, 'strong', `${formatMicroUsdc(transaction.amountMicroUsdc)} ${transaction.kind}`);
-      appendText(item, 'span', `${getGame(transaction.gameId).title} · ${transaction.network ?? 'local simulation'} · ${transaction.simulatedTxHash ? transaction.simulatedTxHash.slice(0, 10) : 'no tx'}…`);
-      appendText(item, 'small', `Parent writes: ${transaction.parentSync?.writeSets?.join(' / ') ?? 'pending'}`);
-      dom.transactionList.append(item);
-    }
-  }
-
-  dom.highScoreList.replaceChildren();
-  if (!snapshot || snapshot.highScores.length === 0) {
-    dom.highScoreList.append(emptyMini('No official high scores yet.'));
-  } else {
-    for (const highScore of snapshot.highScores.slice(0, 5)) {
-      const item = el('article', { className: 'mini-item' });
-      appendText(item, 'strong', `#${highScore.rank} ${highScore.score.toLocaleString()} pts`);
-      appendText(item, 'span', `${highScore.gameTitle} · ${formatSeconds(highScore.runStats.elapsedSeconds ?? 0)} run`);
-      dom.highScoreList.append(item);
-    }
-  }
-}
-
 function emptyMini(text) {
   const item = el('article', { className: 'mini-item' });
   appendText(item, 'span', text);
   return item;
-}
-
-function applyTooltipAttributes(guide) {
-  for (const tooltip of guide.tooltips) {
-    const target = dom[tooltip.anchor] ?? document.querySelector(`#${tooltip.anchor}`);
-    if (!target) continue;
-    target.title = `${tooltip.title}: ${tooltip.copy}`;
-    target.dataset.tooltip = tooltip.copy;
-    target.dataset.tooltipTitle = tooltip.title;
-    target.classList.add('has-tooltip');
-    if (!target.getAttribute('aria-label')) {
-      target.setAttribute('aria-label', tooltip.title);
-    }
-  }
-}
-
-function renderUiQualityGuide() {
-  const guide = buildUiQualityGuideModel({
-    connected: Boolean(connectedWallet),
-    selectedGameId,
-    activeControl: combat.active ? 'combat-running' : currentSession?.mode ?? 'attract-mode',
-  });
-
-  applyTooltipAttributes(guide);
-  dom.guideIntro.textContent = guide.connected
-    ? 'Parent account is online. Follow the lit path from cabinet selection into Free Practice or Ranked Testnet, combat controls, scoring, and official run sync.'
-    : 'Start here: connect the mock wallet, pick a cabinet, choose Free Practice or Ranked Testnet, then use the combat guide to practice controls.';
-
-  dom.quickStartGuide.replaceChildren();
-  for (const step of guide.quickStart) {
-    const card = el('article', { className: `guide-step ${step.state}` });
-    appendText(card, 'span', step.iconSymbol, 'guide-icon');
-    appendText(card, 'strong', `${step.number} ${step.title}`);
-    appendText(card, 'p', step.copy);
-    dom.quickStartGuide.append(card);
-  }
-
-  dom.instructionPanel.replaceChildren();
-  for (const instruction of guide.instructions) {
-    const item = el('article', { className: 'instruction-card' });
-    appendText(item, 'strong', instruction.title);
-    appendText(item, 'span', instruction.body);
-    dom.instructionPanel.append(item);
-  }
-
-  dom.tooltipShelf.replaceChildren();
-  appendText(dom.tooltipShelf, 'strong', 'Hover / focus hints', 'tooltip-heading');
-  for (const tooltip of guide.tooltips.slice(0, 8)) {
-    const item = el('article', { className: 'tooltip-card' });
-    appendText(item, 'span', tooltip.title, 'label');
-    appendText(item, 'p', tooltip.copy);
-    dom.tooltipShelf.append(item);
-  }
-
-  dom.brandPalette.replaceChildren();
-  for (const color of guide.brand.palette) {
-    const swatch = el('article', { className: 'palette-swatch' });
-    swatch.style.setProperty('--swatch', color.hex);
-    appendText(swatch, 'span', color.name);
-    appendText(swatch, 'strong', color.hex);
-    appendText(swatch, 'small', color.usage);
-    dom.brandPalette.append(swatch);
-  }
-
-  dom.patternList.replaceChildren();
-  for (const pattern of guide.brand.patterns) {
-    const card = el('article', { className: `pattern-card pattern-${pattern.id}` });
-    appendText(card, 'strong', pattern.label);
-    appendText(card, 'span', pattern.usage);
-    dom.patternList.append(card);
-  }
-
-  dom.iconLegend.replaceChildren();
-  for (const icon of guide.iconLegend) {
-    const card = el('article', { className: 'icon-card' });
-    appendText(card, 'strong', icon.symbol);
-    appendText(card, 'span', icon.label);
-    appendText(card, 'small', icon.tooltip);
-    dom.iconLegend.append(card);
-  }
-
-  dom.qualityChecklist.replaceChildren();
-  for (const item of guide.qualityChecklist) {
-    const row = el('article', { className: `quality-row ${item.status}` });
-    appendText(row, 'strong', item.badge);
-    appendText(row, 'span', item.label);
-    dom.qualityChecklist.append(row);
-  }
-}
-
-function renderBuildStack() {
-  const cards = [
-    ['Current engine', LESTER_ARCADE_BUILD_STACK.currentPrototype.engine, `${LESTER_ARCADE_BUILD_STACK.currentPrototype.framework} — ${LESTER_ARCADE_BUILD_STACK.currentPrototype.reason}`],
-    ['Recommended next', LESTER_ARCADE_BUILD_STACK.recommendedGameEngine.primary, 'Phaser or custom Canvas gives smooth 60fps browser gameplay while keeping wallet UX native to the dApp.'],
-    ['Godot status', 'Optional later', LESTER_ARCADE_BUILD_STACK.recommendedGameEngine.note],
-    ['Web3 rails', `LitVM + ${LESTER_ARCADE_BUILD_STACK.web3.smartContractAssistants.join(' + ')}`, LESTER_ARCADE_BUILD_STACK.web3.chainRole],
-  ];
-  dom.buildStackPanel.replaceChildren();
-  for (const [label, value, copy] of cards) {
-    const card = el('article', { className: 'stack-card' });
-    appendText(card, 'span', label, 'label');
-    appendText(card, 'strong', value);
-    appendText(card, 'p', copy);
-    dom.buildStackPanel.append(card);
-  }
-}
-
-function menuActionFor(item) {
-  // Map each canonical menu option id to the runtime action it should trigger.
-  switch (item.id) {
-    case 'connect-wallet':
-      return connectedWallet ? null : () => connectWallet();
-    case 'free-run':
-      return () => startOfficialMode('free');
-    case 'paid-run':
-      return connectedWallet ? () => startOfficialMode('paid') : null;
-    case 'loadout':
-    case 'leaderboard':
-    case 'achievements':
-    case 'sound-options':
-    case 'accessibility':
-      return () => focusMenuSectionPanel(item.id);
-    default:
-      return null;
-  }
-}
-
-function focusMenuSectionPanel(itemId) {
-  // Lightweight in-page navigation: scroll the matching panel into view and
-  // flash it so the menu reads as a real navigation surface, not static cards.
-  const anchors = {
-    loadout: '#cartridgeRack',
-    leaderboard: '#highScoreList',
-    achievements: '#achievementList',
-    'sound-options': '#arcadeMusicPlayer',
-    accessibility: '#menuModelPanel',
-  };
-  const target = document.querySelector(anchors[itemId] ?? '#menuModelPanel');
-  if (!target) return;
-  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  target.classList.add('menu-section-flash');
-  window.setTimeout(() => target.classList.remove('menu-section-flash'), 900);
-}
-
-function renderMenuModel() {
-  const model = buildLoginMenuModel({ connected: Boolean(connectedWallet), selectedGameId, wallet: connectedWallet });
-  dom.menuModelPanel.replaceChildren();
-
-  // Login status header card (non-interactive summary of parent account state).
-  const login = el('article', { className: `menu-card login-status ${model.login.state}` });
-  appendText(login, 'span', model.login.state === 'connected' ? 'PARENT ACCOUNT ONLINE' : 'GUEST MODE', 'menu-card-eyebrow');
-  appendText(login, 'strong', model.login.primaryAction);
-  appendText(login, 'span', model.login.walletShort ?? 'No wallet connected', 'menu-card-wallet');
-  appendText(login, 'p', model.login.copy);
-  dom.menuModelPanel.append(login);
-
-  // Interactive, keyboard-navigable arcade menu buttons grouped by section.
-  const sectionLabels = {
-    login: 'ACCOUNT', play: 'PLAY', prep: 'PREP', scores: 'SCORES', profile: 'PROFILE', options: 'OPTIONS',
-  };
-  const navItems = model.menuItems.filter((item) => item.id !== 'connect-wallet' || !connectedWallet);
-  let lastSection = null;
-  for (const item of navItems) {
-    if (item.section && item.section !== lastSection) {
-      lastSection = item.section;
-      appendText(dom.menuModelPanel, 'p', sectionLabels[item.section] ?? item.section.toUpperCase(), 'menu-section-label');
-    }
-    const action = menuActionFor(item);
-    const interactive = Boolean(action) && !item.disabled;
-    const card = el(interactive ? 'button' : 'article', {
-      className: `menu-card menu-option ${item.disabled ? 'disabled' : ''} ${item.active ? 'active' : ''} ${interactive ? 'interactive' : ''}`.trim(),
-    });
-    if (interactive) {
-      card.type = 'button';
-      card.setAttribute('data-menu-action', item.id);
-      card.addEventListener('mouseenter', () => playSfxCue('menu-click', 0.02));
-      card.addEventListener('click', () => {
-        playSfxCue('menu-click');
-        action();
-      });
-    } else {
-      card.setAttribute('aria-disabled', 'true');
-    }
-    appendText(card, 'strong', item.title);
-    appendText(card, 'p', item.description);
-    if (item.disabled) {
-      const reason = item.id === 'paid-run' || (item.section === 'play' && !connectedWallet)
-        ? 'Connect a wallet to unlock'
-        : 'Available once Hard Money Heroes is playable';
-      appendText(card, 'span', reason, 'menu-card-lock');
-    } else if (interactive) {
-      const cue = el('span', { className: 'menu-card-cue' });
-      cue.append(renderArcadeIcon('play'));
-      card.append(cue);
-    }
-    dom.menuModelPanel.append(card);
-  }
-}
-
-function selectGame(gameId) {
-  selectedGameId = gameId;
-  currentSession = null;
-  lastCompletedSession = null;
-  lastRunResult = null;
-  render();
-}
-
-function renderCabinetStage() {
-  dom.cabinetStage.replaceChildren();
-  for (const game of cartridges) {
-    const button = el('button', { className: `cabinet-button ${game.id === selectedGameId ? 'active' : ''}` });
-    button.type = 'button';
-    button.disabled = game.status !== 'playable';
-    button.addEventListener('click', () => selectGame(game.id));
-    button.append(
-      el('img', { src: game.presentation.cabinetAsset, alt: `${game.title} arcade cabinet art` }),
-      el('span', { textContent: `${game.cabinet ?? game.title} // ${game.status}` }),
-    );
-    dom.cabinetStage.append(button);
-  }
-}
-
-function renderCartridges() {
-  dom.cartridgeRack.replaceChildren();
-  for (const cartridge of cartridges) {
-    const card = el('button', { className: `cartridge-card ${cartridge.id === selectedGameId ? 'active' : ''} ${cartridge.status !== 'playable' ? 'locked' : ''}` });
-    card.type = 'button';
-    card.disabled = cartridge.status !== 'playable';
-    card.addEventListener('click', () => selectGame(cartridge.id));
-    card.append(
-      el('img', { src: cartridge.presentation.cartridgeAsset, alt: `${cartridge.title} SNES-style cartridge` }),
-      el('strong', { textContent: cartridge.title }),
-      el('small', { textContent: `${cartridge.genre} · ${cartridge.systemRole}` }),
-      el('span', { textContent: cartridge.tagline }),
-    );
-    dom.cartridgeRack.append(card);
-  }
-}
-
-function renderSelectedGame() {
-  const game = selectedGame();
-  dom.selectedGameTitle.textContent = game.title;
-  dom.selectedGameStatus.textContent = game.status === 'playable' ? 'Playable now' : 'Coming soon';
-  dom.selectedGameTagline.textContent = game.status === 'playable'
-    ? `${game.tagline} Free Practice is local. Ranked Testnet can submit official state after game over.`
-    : `${game.tagline} Locked on the public floor until this cabinet is ready.`;
-  dom.freePlayButton.disabled = game.status !== 'playable';
-  dom.paidPlayButton.disabled = game.status !== 'playable';
-  dom.simulateRunButton.disabled = game.status !== 'playable';
 }
 
 function renderLeaderboard() {
@@ -7560,83 +7182,6 @@ function renderLeaderboard() {
       appendText(item, 'span', `${entry.displayName ?? `${entry.wallet.slice(0, 6)}…${entry.wallet.slice(-4)}`} · ${formatSeconds(entry.runStats.elapsedSeconds ?? 0)} · boss ${entry.runStats.bossId ?? 'none'}`);
       dom.leaderboardPanel.append(item);
     }
-  }
-}
-
-function renderDesignPanels() {
-  const average = getLesterBlasterDifficultyAt(5 * 60);
-  const master = getLesterBlasterDifficultyAt(18 * 60);
-  const cards = [
-    ['FPS target', `${LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps}`, `${LESTER_BLASTER_PERFORMANCE_TARGETS.frameBudgetMs}ms frame budget with fixed-timestep logic.`],
-    ['Average run', `${LESTER_BLASTER_GAMEPLAY.targetAverageRunMinutes} min`, 'Normal players should reach the first major boss loop.'],
-    ['Master run', `${LESTER_BLASTER_GAMEPLAY.veteranRunMinutes.join('–')} min`, 'Long-run survival becomes the high-score chase.'],
-    ['5-min AI tier', `${average.enemyAiLevel}/10`, `At 18 min AI tier reaches ${master.enemyAiLevel}/10.`],
-  ];
-  dom.difficultyPanel.replaceChildren();
-  for (const [label, value, detail] of cards) {
-    const card = el('article', { className: 'stat-card' });
-    appendText(card, 'span', label);
-    appendText(card, 'strong', value);
-    appendText(card, 'span', detail);
-    dom.difficultyPanel.append(card);
-  }
-
-  dom.mechanicList.replaceChildren();
-  const mechanics = [
-    ...LESTER_BLASTER_GAMEPLAY.coreMoves,
-    ...LESTER_BLASTER_GAMEPLAY.pickups,
-    ...LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.map((weapon) => weapon.title),
-    LESTER_BLASTER_WEAPON_SYSTEM.melee.title,
-  ];
-  for (const mechanic of mechanics) {
-    dom.mechanicList.append(el('span', { textContent: mechanic }));
-  }
-
-  dom.bossRoster.replaceChildren();
-  for (const [index, boss] of LESTER_BLASTER_BOSS_SYSTEM.bosses.entries()) {
-    const card = el('article', { className: 'boss-card' });
-    appendText(card, 'strong', `${String(index + 1).padStart(2, '0')} ${boss.title}`);
-    appendText(card, 'span', `${boss.stages.length} stages · ${boss.attackPatterns.length} patterns · ${boss.superMoves.length} supers`);
-    appendText(card, 'small', boss.specialty);
-    dom.bossRoster.append(card);
-  }
-}
-
-function renderControlScheme() {
-  const controls = buildLesterBlasterControlDisplayModel();
-  dom.controlSchemePanel.replaceChildren();
-  for (const control of controls) {
-    const item = el('article', { className: 'control-card' });
-    appendText(item, 'strong', control.key);
-    appendText(item, 'span', control.label);
-    if (control.hint) appendText(item, 'small', control.hint);
-    dom.controlSchemePanel.append(item);
-  }
-}
-
-function renderCodexPanels() {
-  const panels = [
-    ['Canon', `${HARD_MONEY_HEROES_CANON.title} in ${HARD_MONEY_HEROES_CANON.world.name}: ${HARD_MONEY_HEROES_CANON.tone}. Lester is the main Rambo-like hero; Lilly is a future same-hitbox alternate.`],
-    ['Economy + Modes', `${HARD_MONEY_HEROES_CANON.economy.freeModeRule} Paid entry = $${HARD_MONEY_HEROES_CANON.economy.paidEntryUsd.toFixed(2)}. Leaderboards: ${HARD_MONEY_HEROES_CANON.leaderboards.cadences.join(', ')}.`],
-    ['Effects + Brand Guardrails', `Sparks always on. Gore default: ${HARD_MONEY_HEROES_CANON.gore.defaultMode}. Toggle before run: ${HARD_MONEY_HEROES_CANON.gore.toggleBeforeRun}. Litecoin references stay subtle; commercial logo/name-heavy/pay-to-play usage needs written sign-off.`],
-    ['Characters', LESTER_BLASTER_CHARACTER_ROSTER.map((character) => `${character.title}: ${character.role}`).join(' // ')],
-    ['Weapons', LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.map((weapon) => `${weapon.title} (${weapon.rarity})`).join(' // ')],
-    ['Blade + Throwables', `${LESTER_BLASTER_WEAPON_SYSTEM.melee.title}; ${LESTER_BLASTER_WEAPON_SYSTEM.grenades.map((grenade) => grenade.title).join(', ')}`],
-    ['Levels', LESTER_BLASTER_LEVEL_PLAN.map((level) => `${level.title} — ${level.mode}, ${level.verticality} verticality`).join(' // ')],
-    ['Parallax Props', LESTER_BLASTER_ENVIRONMENTS.map((environment) => `${environment.title}: ${environment.props.slice(0, 3).join(', ')}`).join(' // ')],
-    ['Enemies + AI', LESTER_BLASTER_ENEMY_CATALOG.map((enemy) => `${enemy.title}: ${enemy.attackPatterns.join('/')}`).join(' // ')],
-    ['Blood + Death FX', `${LESTER_BLASTER_COMBAT_EFFECTS.blood.style}; ${Object.values(LESTER_BLASTER_COMBAT_EFFECTS.enemyDeathEffects).slice(0, 4).join(' // ')}`],
-    ['Animations', `${LESTER_BLASTER_ANIMATION_PLAN.pixelArtDetail}; states: ${LESTER_BLASTER_ANIMATION_PLAN.playerStates.join(', ')}`],
-    ['Sound + Music', LESTER_BLASTER_SOUND_DESIGN.musicTracks.map((track) => `${track.title} (${track.bpm} BPM)`).join(' // ')],
-    ['Unlockables', LESTER_BLASTER_UNLOCKABLES.map((unlockable) => unlockable.title).join(' // ')],
-  ];
-
-  dom.codexPanels.replaceChildren();
-  for (const [title, body] of panels) {
-    const card = el('article', { className: 'codex-card' });
-    appendText(card, 'h3', title);
-    appendText(card, 'p', body);
-    dom.codexPanels.append(card);
   }
 }
 
