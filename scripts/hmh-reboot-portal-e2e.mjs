@@ -693,8 +693,20 @@ if (isMain) {
         await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
         await page.click('#rankedEntryCancel');
         await page.waitForSelector('#rankedEntryModal', { state: 'hidden', timeout: 10_000 });
+        // The game menu's restart (the Ranked "Run It Back", and the child's own restart request, which
+        // reaches the same restartCombatRun) also opens the entry modal instead of restarting in place;
+        // cancelling leaves the finished run on screen.
+        await page.waitForSelector('[data-ranked-results]', { state: 'detached', timeout: 10_000 });
+        const restart = page.locator('#combatMenuActionGrid [data-action="restart"]');
+        await restart.waitFor({ state: 'visible', timeout: 10_000 });
+        await restart.click();
+        await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
+        assert.match(await page.locator('#rankedEntryModal').innerText(), /Ranked · Entry/i);
+        await page.click('#rankedEntryCancel');
+        await page.waitForSelector('#rankedEntryModal', { state: 'hidden', timeout: 10_000 });
+        assert.match(await summary.innerText(), /Ranked run complete/i, 'a cancelled entry leaves the finished run');
         assert.deepEqual(apiRequests, [], `preview must not call /api: ${apiRequests.join(', ')}`);
-        return { resultsState: 'preview', score: record.score, stats: results.stats, recapReplaced: true, playAgainOpensEntry: true, apiRequests: 0 };
+        return { resultsState: 'preview', score: record.score, stats: results.stats, recapReplaced: true, playAgainOpensEntry: true, menuRestartOpensEntry: true, apiRequests: 0 };
       } finally {
         page.off('request', onRequest);
       }
