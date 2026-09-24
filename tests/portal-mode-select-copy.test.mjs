@@ -17,7 +17,7 @@ const portal = fileURLToPath(new URL('../apps/portal/', import.meta.url));
 const preview = portalCopyFor({ settlementLive: false, hostedProfileSync: false });
 const hostedPreview = portalCopyFor({ settlementLive: false, hostedProfileSync: true });
 const launch = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
-const SITE_COPY_GAMES = ['lester-blaster', 'chikun'];
+const SITE_COPY_GAMES = ['lester-blaster', 'chikun', 'stacked'];
 
 function node(tag = 'div', props = {}) {
   return {
@@ -52,7 +52,7 @@ function renderModeSelect({ gameId, connectedWallet = '0xabc', portalCopy } = {}
 const block = (html, key) => html.match(new RegExp(`<!-- copy:${key}:start -->([\\s\\S]*?)<!-- copy:${key}:end -->`))?.[1];
 const slugOf = gameId => PORTAL_GAMES.find(game => game.id === gameId).slug;
 
-test('the HMH and Chikun mode-select cards show the site copy for every flag state', () => {
+test('every game’s mode-select cards show the site copy for every flag state', () => {
   for (const [name, copy] of Object.entries({ preview, hostedPreview, launch })) {
     for (const gameId of SITE_COPY_GAMES) {
       const descriptor = buildGameModeSelectModel(gameId);
@@ -85,7 +85,10 @@ test('the preview cards promise no publishing and the launch cards state the fee
   assert.match(hmh.ranked, /^0\.102 testnet zkLTC per run\. The arcade server plausibility-checks your run \(it is not replayed\) and publishes it on LitVM\.$/);
   const chikun = renderModeSelect({ gameId: 'chikun', portalCopy: launch });
   assert.match(chikun.ranked, /^0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.$/);
-  for (const view of [hmh, chikun]) {
+  const stacked = renderModeSelect({ gameId: 'stacked', portalCopy: launch });
+  assert.match(stacked.ranked, /^0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.$/);
+  assert.match(stacked.mode, /Ranked starts at level 1 with no undo/);
+  for (const view of [hmh, chikun, stacked]) {
     const text = [view.mode, view.ranked, ...view.tooltip].join(' ');
     assert.match(text, /LitVM testnet/);
     assert.doesNotMatch(text, /preview|Free on testnet|safely gated|canonical|temporarily disabled|device|local/i, 'no preview statement survives the flip');
@@ -93,20 +96,26 @@ test('the preview cards promise no publishing and the launch cards state the fee
   assert.equal(hmh.tooltip[0], 'Play Ranked: verified and published on LitVM');
 });
 
-test('the guest tooltip and STACKED keep their own descriptors', () => {
-  const guest = renderModeSelect({ gameId: 'lester-blaster', connectedWallet: null, portalCopy: launch });
+// Live UI audit 2026-09-24: STACKED's live Ranked card kept its descriptor
+// ("Wallet-bound Ranked run…") with no price, unlike the other two games and
+// its own prerendered page; the guest line said "Connect a wallet when you
+// want Play Ranked." while the site's action is Sign in.
+test('the guest line says Sign in once hosted, and STACKED no longer falls back to its descriptor', () => {
   const hmh = buildGameModeSelectModel('lester-blaster');
-  assert.equal(guest.tooltip[0], `${hmh.free.label} is open to guests`);
-  // STACKED's card copy belongs to the ranked-client slice (contract §10.2);
-  // only the tooltip heading comes from the site copy.
-  const stacked = buildGameModeSelectModel('stacked');
-  for (const copy of [preview, launch]) {
-    const view = renderModeSelect({ gameId: 'stacked', portalCopy: copy });
-    assert.equal(view.mode, stacked.copy);
-    assert.equal(view.ranked, stacked.ranked.copy);
-    assert.equal(view.tooltip[0], `${stacked.ranked.label}: ${copy.modeRankedTooltip}`);
+  for (const [copy, line] of [[launch, 'Sign in with a wallet when you want to play Ranked.'], [hostedPreview, 'Sign in with a wallet when you want to play Ranked.'], [preview, 'Connect a wallet when you want to play Ranked.']]) {
+    const guest = renderModeSelect({ gameId: 'lester-blaster', connectedWallet: null, portalCopy: copy });
+    assert.equal(guest.tooltip[0], `${hmh.free.label} is open to guests`);
+    assert.equal(guest.tooltip[1], `${hmh.free.copy} ${line}`);
   }
-  assert.equal(PORTAL_COPY.modeSelect.stacked, undefined);
+  const stacked = buildGameModeSelectModel('stacked');
+  for (const copy of [preview, hostedPreview, launch]) {
+    const view = renderModeSelect({ gameId: 'stacked', portalCopy: copy });
+    assert.notEqual(view.ranked, stacked.ranked.copy);
+    assert.equal(view.ranked, copy.modeSelect.stacked.ranked);
+    assert.equal(view.tooltip[0], `${stacked.ranked.label}: ${copy.modeRankedTooltip}`);
+    assert.equal(view.free, stacked.free.copy, 'the Free card keeps its descriptor');
+  }
+  assert.ok(PORTAL_COPY.modeSelect.stacked);
 });
 
 test('the prerendered mode-select blocks match what the SPA shows', () => {
@@ -125,7 +134,7 @@ test('the prerendered mode-select blocks match what the SPA shows', () => {
       }
     }
     assert.equal(block(readFileSync(join(dir, 'index.html'), 'utf8'), 'mode-ranked'), escapeHtml(launch.modeSelect['lester-blaster'].ranked));
-    assert.match(readFileSync(join(dir, `discover/${slugOf('stacked')}.html`), 'utf8'), /<!-- copy:mode-ranked:start -->0\.102 testnet zkLTC per run\. The arcade server checks your run and publishes it on LitVM\.<!-- copy:mode-ranked:end -->/);
+    assert.match(readFileSync(join(dir, `discover/${slugOf('stacked')}.html`), 'utf8'), /<!-- copy:mode-ranked:start -->0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.<!-- copy:mode-ranked:end -->/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

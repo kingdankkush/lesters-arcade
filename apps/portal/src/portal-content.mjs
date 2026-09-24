@@ -136,9 +136,10 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
       : 'Connect a wallet to identify your local profile and Ranked preview runs.',
     // Mode select. The builder prerenders these and the SPA mode-select route
     // (routes/official-play-routes.mjs) shows the same per-game lines, so the
-    // flip cannot leave a preview card live. STACKED's runtime cards come from
-    // its own descriptor in arcade-core.mjs (ranked-client, contract §10.2);
-    // pages without a per-game entry prerender the game-neutral modeRanked.
+    // flip cannot leave a preview card live. Every game has an entry: the live
+    // UI audit (2026-09-24) found STACKED's Ranked card, still on its
+    // descriptor in arcade-core.mjs, without the entry price. modeRanked is the
+    // game-neutral line for a page without an entry.
     modeSelect: Object.freeze({
       'lester-blaster': Object.freeze({
         copy: live
@@ -156,7 +157,17 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play with replay verification. Accepted scores are saved on this device; nothing is published on chain yet.',
       }),
+      stacked: Object.freeze({
+        copy: live
+          ? 'Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: sign in and choose Play Ranked to compete on the LitVM testnet.'
+          : `Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a replay-verified Ranked preview.`,
+        ranked: live
+          ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
+          : 'Wallet-bound play from level 1 with no undo, checked by replay. Accepted scores are saved on this device; nothing is published on chain yet.',
+      }),
     }),
+    // The guest line under the mode-select cards.
+    modeGuestRanked: hosted ? 'Sign in with a wallet when you want to play Ranked.' : 'Connect a wallet when you want to play Ranked.',
     modeRanked: live
       ? `${total} testnet zkLTC per run. The arcade server checks your run and publishes it on LitVM.`
       : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',

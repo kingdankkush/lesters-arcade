@@ -374,7 +374,7 @@ export function createHostedLeaderboardView({
     } else if (connectedWallet) {
       appendText(you, 'small', board.status === 'ready' ? `No verified run on ${periodTab.board} yet. Play Ranked to post one.` : 'Looking for your verified runs…', 'leaderboard-you-detail');
     } else {
-      appendText(you, 'small', 'Connect a wallet to see your placement highlighted on this board.', 'leaderboard-you-detail');
+      appendText(you, 'small', 'Sign in with a wallet to see your placement highlighted on this board.', 'leaderboard-you-detail');
     }
     card.append(you);
 

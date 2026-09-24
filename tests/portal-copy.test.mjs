@@ -20,7 +20,7 @@ const COPY_KEYS = [
   'description', 'faq', 'scoresNote', 'trustStatus', 'trustStorage', 'llmsScope', 'llmsHowItWorks',
   'manifestDescription', 'howIntro', 'howConnectTitle', 'howConnect', 'howConnectAction', 'howProfile',
   'scoresLead', 'scoresWallet', 'modeSelect', 'modeRanked', 'modeRankedTooltip', 'rankedDetail', 'scoresView', 'profileGuestView',
-  'profileWalletView', 'profilePublicView', 'walletConnected',
+  'profileWalletView', 'profilePublicView', 'walletConnected', 'modeGuestRanked',
 ];
 
 // Every string a copy object can put on a page, flattened.
@@ -47,7 +47,7 @@ test('every flag state provides each block the builder and the SPA render', () =
     assert.ok(Object.isFrozen(copy) && Object.isFrozen(copy.faq), `${name} copy is frozen`);
     for (const pair of copy.faq) assert.equal(pair.length, 2);
     for (const game of PORTAL_GAMES) assert.equal(typeof copy.rankedDetail[game.id], 'string', `${name} ranked detail for ${game.id}`);
-    assert.deepEqual(Object.keys(copy.modeSelect), ['lester-blaster', 'chikun'], `${name} mode-select games (STACKED's cards belong to ranked-client)`);
+    assert.deepEqual(Object.keys(copy.modeSelect), ['lester-blaster', 'chikun', 'stacked'], `${name} mode-select games (every game's Ranked card is site copy)`);
     for (const entry of Object.values(copy.modeSelect)) {
       assert.ok(Object.isFrozen(entry) && entry.copy && entry.ranked, `${name} mode-select entry`);
       assert.doesNotMatch(entry.copy + entry.ranked, /—|\bpaid\b|\bprototype\b/i, 'HMH copy style rules (hmh-copy-sheet.mjs)');

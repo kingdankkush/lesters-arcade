@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { NOT_RUN_EXIT_CODE, startPortalStaticServer, summarizeFlowResults } from './hmh-reboot-portal-e2e.mjs';
+import { PORTAL_COPY } from '../apps/portal/src/portal-content.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const evidenceDir = path.resolve(process.env.STACKED_EVIDENCE_DIR || path.join(root, '.tmp/stacked-playable'));
 await mkdir(evidenceDir, { recursive: true });
@@ -57,10 +58,11 @@ try {
     await page.locator('#officialGuestEnterButton').click();
     await page.locator('.official-cabinet-card').filter({ hasText: 'STACKED' }).click();
     assert.equal(await page.locator('#officialModeTitle').textContent(), 'STACKED');
-    assert.match(await page.locator('#officialModeCopy').textContent(), /Public beta[\s\S]*Every Ranked run is replay-verified before it counts/);
-    // Ranked-client rewrote the Ranked tile: a wallet-bound, replay-verified run (no "Local Only" tag).
+    // The mode line and the Ranked card are the flag-driven site copy (A33; live UI audit 2026-09-24).
+    assert.equal(await page.locator('#officialModeCopy').textContent(), PORTAL_COPY.modeSelect.stacked.copy);
+    // A wallet-bound, replay-verified run (no "Local Only" tag).
     assert.equal((await page.locator('#officialRankedModeTitle').textContent()).trim(), 'Play Ranked');
-    assert.match(await page.locator('#officialRankedModeCopy').textContent(), /Wallet-bound Ranked run[\s\S]*must pass replay verification before the result is recorded/);
+    assert.equal(await page.locator('#officialRankedModeCopy').textContent(), PORTAL_COPY.modeSelect.stacked.ranked);
     await page.waitForFunction(() => ['officialFreeModeBanner', 'officialRankedModeBanner'].every(id => {
       const image = document.getElementById(id); return image.complete && image.naturalWidth > 0;
     }));
