@@ -572,6 +572,8 @@ const NODE_CHECK_FILES = [
   "scripts/smoke-portal-flow.mjs",
   'scripts/lib/fixture-wallet.mjs',
   'tests/fixture-wallet.test.mjs',
+  'scripts/ranked-live-browser-e2e.mjs',
+  'tests/ranked-live-browser-e2e.test.mjs',
   "scripts/smoke-portal-interactions.mjs",
   "scripts/visual-regression.mjs",
   "scripts/hmh-browser-soak.mjs",
