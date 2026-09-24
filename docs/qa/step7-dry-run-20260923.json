@@ -1,7 +1,7 @@
 {
   "schema": "lesters-step7-dry-run-v2",
-  "generatedAt": "2026-09-24T07:43:46.934Z",
-  "head": "62705965",
+  "generatedAt": "2026-09-24T11:44:43.817Z",
+  "head": "a7ab5c3c",
   "scriptSha256": "225385c66c53ffe127437c2fdc66ed1d4fe85947a45946b3d19061c7a690df72",
   "command": "node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway",
   "note": "Throwaway worktree under the OS temp directory, removed at the end. Nothing was committed, pushed or deployed; the deployment record is a local Hardhat deploy. Local paths are written as <throwaway>, <repo> and ~.",
@@ -11,7 +11,7 @@
         "id": "release-facts --check",
         "command": "node scripts/hmh-release-facts.mjs --check",
         "exitCode": 1,
-        "ms": 232,
+        "ms": 404,
         "output": [
           "Stale or missing fact sheet: hmh-fact-sheet.json"
         ],
@@ -25,7 +25,7 @@
         "id": "portal-pages",
         "command": "node scripts/build-portal-pages.mjs",
         "exitCode": 0,
-        "ms": 262,
+        "ms": 210,
         "output": [
           "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (preview copy)."
         ],
@@ -35,7 +35,7 @@
         "id": "release-facts --write",
         "command": "node scripts/hmh-release-facts.mjs --write",
         "exitCode": 0,
-        "ms": 173,
+        "ms": 183,
         "output": [
           "    \"originalIdsInFeatures\": 67,",
           "    \"originalRegisterIds\": 99,",
@@ -59,7 +59,7 @@
         "id": "design:web3-audit",
         "command": "npm run design:web3-audit",
         "exitCode": 0,
-        "ms": 661,
+        "ms": 679,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-audit",
           "> node scripts/hmh-web3-settlement-audit.mjs",
@@ -73,7 +73,7 @@
         "id": "design:web3-live",
         "command": "npm run design:web3-live",
         "exitCode": 0,
-        "ms": 660,
+        "ms": 602,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-live",
           "> node scripts/hmh-web3-live-readiness.mjs",
@@ -90,7 +90,7 @@
         "id": "design:security-audit",
         "command": "npm run design:security-audit",
         "exitCode": 0,
-        "ms": 766,
+        "ms": 751,
         "output": [
           "> lesters-arcade@0.3.1 design:security-audit",
           "> node scripts/hmh-security-audit-sweep.mjs",
@@ -223,13 +223,13 @@
     "gate": {
       "status": "FAIL",
       "counts": {
-        "tests": 4749,
+        "tests": 4762,
         "failed": 52,
-        "passed": 4697,
+        "passed": 4710,
         "cancelled": 0,
         "skipped": 0,
         "todo": 0,
-        "topLevel": 4682,
+        "topLevel": 4695,
         "suites": 8
       },
       "expectedFailureCount": 51,
@@ -242,7 +242,7 @@
         "id": "release-facts --check",
         "command": "node scripts/hmh-release-facts.mjs --check",
         "exitCode": 1,
-        "ms": 427,
+        "ms": 196,
         "output": [
           "Stale or missing fact sheet: hmh-fact-sheet.json"
         ],
@@ -256,7 +256,7 @@
         "id": "portal-pages",
         "command": "node scripts/build-portal-pages.mjs",
         "exitCode": 0,
-        "ms": 211,
+        "ms": 218,
         "output": [
           "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (preview copy)."
         ],
@@ -266,7 +266,7 @@
         "id": "release-facts --write",
         "command": "node scripts/hmh-release-facts.mjs --write",
         "exitCode": 0,
-        "ms": 177,
+        "ms": 201,
         "output": [
           "    \"originalIdsInFeatures\": 67,",
           "    \"originalRegisterIds\": 99,",
@@ -290,7 +290,7 @@
         "id": "design:web3-audit",
         "command": "npm run design:web3-audit",
         "exitCode": 0,
-        "ms": 666,
+        "ms": 966,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-audit",
           "> node scripts/hmh-web3-settlement-audit.mjs",
@@ -307,7 +307,7 @@
         "id": "design:web3-live",
         "command": "npm run design:web3-live",
         "exitCode": 0,
-        "ms": 593,
+        "ms": 740,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-live",
           "> node scripts/hmh-web3-live-readiness.mjs",
@@ -324,7 +324,7 @@
         "id": "design:security-audit",
         "command": "npm run design:security-audit",
         "exitCode": 0,
-        "ms": 749,
+        "ms": 765,
         "output": [
           "> lesters-arcade@0.3.1 design:security-audit",
           "> node scripts/hmh-security-audit-sweep.mjs",
@@ -472,13 +472,13 @@
     "gate": {
       "status": "FAIL",
       "counts": {
-        "tests": 4749,
+        "tests": 4762,
         "failed": 61,
-        "passed": 4688,
+        "passed": 4701,
         "cancelled": 0,
         "skipped": 0,
         "todo": 0,
-        "topLevel": 4682,
+        "topLevel": 4695,
         "suites": 8
       },
       "expectedFailureCount": 51,
@@ -491,7 +491,7 @@
         "id": "assets:hmh:curated-level-kit-runtime",
         "command": "npm run assets:hmh:curated-level-kit-runtime",
         "exitCode": 0,
-        "ms": 617,
+        "ms": 579,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 assets:hmh:curated-level-kit-runtime",
@@ -509,7 +509,7 @@
         "id": "assets:verify",
         "command": "npm run assets:verify",
         "exitCode": 0,
-        "ms": 605,
+        "ms": 574,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 assets:verify",
@@ -522,7 +522,7 @@
         "id": "test:release",
         "command": "npm run test:release",
         "exitCode": 1,
-        "ms": 547916,
+        "ms": 528762,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 test:release",
@@ -546,7 +546,7 @@
         "id": "check",
         "command": "npm run check",
         "exitCode": 0,
-        "ms": 71666,
+        "ms": 72771,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 check",
@@ -559,7 +559,7 @@
         "id": "contracts:check",
         "command": "npm run contracts:check",
         "exitCode": 0,
-        "ms": 641,
+        "ms": 738,
         "inVercelBuild": true,
         "output": [
           "> lesters-arcade@0.3.1 contracts:check",
@@ -572,7 +572,7 @@
         "id": "build",
         "command": "npm run build",
         "exitCode": 0,
-        "ms": 2249,
+        "ms": 2228,
         "inVercelBuild": true,
         "output": [
           "STACKED initial JS: 572902 B (entry 27694, vendor 496615, shared 48593)",
@@ -597,9 +597,9 @@
           "  apps\\portal\\dist\\chunks\\hmh-curated-level-art-ILZ4JAAC.js  726.3kb",
           "  apps\\portal\\dist\\chunks\\chunk-VSG3JNSZ.js                  383.3kb",
           "  ...and 111 more output files...",
-          "Done in 141ms",
+          "Done in 146ms",
           "  apps\\portal\\dist\\chunks\\hmh-pixi.js  454.8kb",
-          "Done in 239ms"
+          "Done in 175ms"
         ],
         "causedByStep7": false
       },
@@ -607,7 +607,7 @@
         "id": "release-facts --check",
         "command": "node scripts/hmh-release-facts.mjs --check",
         "exitCode": 1,
-        "ms": 248,
+        "ms": 174,
         "inVercelBuild": false,
         "output": [
           "Stale or missing fact sheet: hmh-fact-sheet.json"
@@ -624,7 +624,7 @@
         "id": "portal-pages",
         "command": "node scripts/build-portal-pages.mjs",
         "exitCode": 0,
-        "ms": 207,
+        "ms": 234,
         "inVercelBuild": false,
         "output": [
           "Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference (launch copy)."
@@ -635,7 +635,7 @@
         "id": "release-facts --write",
         "command": "node scripts/hmh-release-facts.mjs --write",
         "exitCode": 0,
-        "ms": 181,
+        "ms": 182,
         "inVercelBuild": false,
         "output": [
           "    \"originalIdsInFeatures\": 67,",
@@ -657,7 +657,7 @@
         "id": "design:web3-audit",
         "command": "npm run design:web3-audit",
         "exitCode": 0,
-        "ms": 795,
+        "ms": 615,
         "inVercelBuild": false,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-audit",
@@ -672,7 +672,7 @@
         "id": "design:web3-live",
         "command": "npm run design:web3-live",
         "exitCode": 0,
-        "ms": 605,
+        "ms": 590,
         "inVercelBuild": false,
         "output": [
           "> lesters-arcade@0.3.1 design:web3-live",
@@ -687,7 +687,7 @@
         "id": "design:security-audit",
         "command": "npm run design:security-audit",
         "exitCode": 0,
-        "ms": 744,
+        "ms": 1119,
         "inVercelBuild": false,
         "output": [
           "> lesters-arcade@0.3.1 design:security-audit",
@@ -989,13 +989,13 @@
     "exitCode": 0,
     "status": "PASS",
     "counts": {
-      "tests": 4749,
+      "tests": 4762,
       "failed": 51,
-      "passed": 4698,
+      "passed": 4711,
       "cancelled": 0,
       "skipped": 0,
       "todo": 0,
-      "topLevel": 4682,
+      "topLevel": 4695,
       "suites": 8
     },
     "expectedFailureCount": 51,

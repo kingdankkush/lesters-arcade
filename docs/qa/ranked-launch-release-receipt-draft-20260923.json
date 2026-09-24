@@ -47,7 +47,7 @@
       "path": "docs/qa/step7-dry-run-20260923.json",
       "command": "node scripts/rehearse-step7-dry-run.mjs --confirm-throwaway",
       "what": "The step-3 address module and the step-7 flag flip rehearsed in a throwaway worktree (removed afterwards): the files each step changes, the regenerated public copy, and the tests step 7 must update.",
-      "ranAt": "62705965 (committed in d3d8d38e). The browser-e2e review fixes after it change neither the dry-run script nor any file its step-3/step-7 edits target, so tests/local-chain-rehearsal.test.mjs still holds the committed run current.",
+      "ranAt": "a7ab5c3c, the last browser-e2e commit that changes code or tests (2026-09-24): PASS, step 3 1 failure and 1 edit, step 7 10 failures and 12 edits, 0 unexplained, full gate 4762 tests with the 51 expected failures (0 unexpected, 0 missing). The report, its checklist block and this line are committed together right after it.",
       "rehearsalSignOff": "The browser-e2e slice added two STEP7_TEST_EDITS entries to the rehearsal-owned scripts/rehearse-step7-dry-run.mjs (tests/ship-readiness.test.mjs and the integration-glue-copy D19 pin) so the refreshed report is accepted; the rehearsal owner signs these off at merge."
     },
     "liveFlagBrowserRun": {
