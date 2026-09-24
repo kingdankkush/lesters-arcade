@@ -8,10 +8,19 @@
 //   - `lesters:profile-changed` names the wallet on screen;
 //   - a Ranked run's settlement handle (from `lesters:ranked-run`) reaches
 //     'published'.
+// The wallet named by the last authenticated `lesters:wallet-session` stands in
+// for getWallet() until main.js assigns it (silent restore announces first).
+// Whichever call first sees a switch to a signed-in wallet starts its refresh.
 // The selected cosmetic ids persist in `preferences.cosmetics` through
 // PUT /api/profile (Bearer) when hosted and signed in, and in localStorage
 // otherwise (and as the offline copy). A selection is honoured only while the
 // item is still unlocked (unlockables.mjs resolveCosmeticSelection).
+// Picks the wallet copy does not hold yet (made before sign-in, or whose PUT
+// failed) are kept per slot under `lesters-arcade-cosmetics-unsaved-v1:` and
+// win over the server copy: the next read of the self view merges them in and
+// saves them (also when the browser comes back online). PUTs run one at a
+// time with the latest picks, and a read that started before a pick never
+// replaces it.
 //
 // Preview (HOSTED_PROFILE_SYNC false, A22): nothing is fetched and nothing
 // extra unlocks. The cache is never read, so only the default looks exist.
@@ -34,7 +43,9 @@ import {
 export const UNLOCKS_CACHE_PREFIX = 'lesters-arcade-unlocks-v1:';
 export const UNLOCKS_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 export const COSMETICS_SELECTION_PREFIX = 'lesters-arcade-cosmetics-v1:';
+export const COSMETICS_UNSAVED_PREFIX = 'lesters-arcade-cosmetics-unsaved-v1:';
 const GUEST = 'guest';
+const SLOT_KEYS = new Set(Object.entries(COSMETIC_SLOTS).flatMap(([gameId, slots]) => slots.map((slot) => `${gameId}:${slot}`)));
 
 export function unlocksCacheKey(wallet) {
   const who = normalizeUnlockWallet(wallet);
@@ -97,6 +108,20 @@ export function writeCosmeticSelection(storage, wallet, selection) {
   return writeJson(storage, selectionKey(wallet), normalizeCosmeticSelection(selection));
 }
 
+// The 'gameId:slot' keys picked on this device that the wallet copy lacks.
+export function readUnsavedSlots(storage, wallet) {
+  const who = normalizeUnlockWallet(wallet);
+  const value = who ? readJson(storage, `${COSMETICS_UNSAVED_PREFIX}${who}`) : null;
+  return new Set(Array.isArray(value) ? value.filter((key) => SLOT_KEYS.has(key)) : []);
+}
+
+export function writeUnsavedSlots(storage, wallet, slots) {
+  const who = normalizeUnlockWallet(wallet);
+  if (!who) return false;
+  if (!slots?.size) { remove(storage, `${COSMETICS_UNSAVED_PREFIX}${who}`); return true; }
+  return writeJson(storage, `${COSMETICS_UNSAVED_PREFIX}${who}`, [...slots].sort());
+}
+
 export function createUnlockablesStore({
   hosted = false,
   storage = null,
@@ -111,12 +136,17 @@ export function createUnlockablesStore({
   const listeners = new Set();
   const handleUnsubscribers = new Set();
   let wallet = null;
+  let announced = null; // the wallet the last authenticated wallet-session named
   let unlocks = emptyUnlocks();
   let source = 'none'; // 'none' | 'cache' | 'server'
   let savedAt = null;
   let selection = {};
+  let unsaved = new Set(); // 'gameId:slot' picked here, not yet in the wallet copy
+  let pickSerial = 0; // bumps on every pick
   let refreshing = null;
   let refreshSerial = 0;
+  let refreshQueued = false;
+  let pushQueue = Promise.resolve();
   let destroyed = false;
 
   const emit = () => {
@@ -146,28 +176,83 @@ export function createUnlockablesStore({
       }
     }
     selection = readCosmeticSelection(storage, wallet);
+    unsaved = live && wallet ? readUnsavedSlots(storage, wallet) : new Set();
+  }
+
+  function currentWallet() {
+    let next = null;
+    try { next = normalizeUnlockWallet(getWallet()); } catch { next = null; }
+    return next ?? announced;
   }
 
   function syncWallet() {
-    let next = null;
-    try { next = normalizeUnlockWallet(getWallet()); } catch { next = null; }
+    const next = currentWallet();
     if (next === wallet) return false;
     load(next);
+    // A signed-in wallet reads its fresh unlocks, whichever call noticed the
+    // switch first (the wallet-session event may fire before or after
+    // getWallet() names the wallet, or before this store existed).
+    if (live && wallet && authenticated() && !refreshQueued) {
+      refreshQueued = true;
+      Promise.resolve().then(() => {
+        refreshQueued = false;
+        if (!refreshing && !destroyed) void refresh();
+      });
+    }
     return true;
   }
 
-  function adopt(body, { self }) {
+  // `fresh` is false when a pick was made after this copy was read.
+  function adopt(body, { self, fresh }) {
     unlocks = unlocksFromProfileResponse(body);
     source = 'server';
     savedAt = now();
     writeUnlocksCache(storage, wallet, unlocks, { now });
-    // The self view carries this wallet's saved picks (E6 preferences). A
-    // wallet with no saved `cosmetics` keeps the picks made on this device.
-    const remote = self ? body?.preferences?.cosmetics : null;
-    if (remote && typeof remote === 'object' && !Array.isArray(remote)) {
-      selection = normalizeCosmeticSelection(remote);
+    if (!self) return;
+    // The self view carries this wallet's saved picks (E6 preferences).
+    const remote = body?.preferences?.cosmetics;
+    const saved = remote && typeof remote === 'object' && !Array.isArray(remote) ? normalizeCosmeticSelection(remote) : null;
+    if (unsaved.size) {
+      // Picks the wallet copy lacks win slot by slot and are saved now; the
+      // other slots follow the wallet.
+      const merged = structuredCloneSafe(fresh && saved ? saved : selection);
+      for (const key of unsaved) {
+        const [gameId, slot] = key.split(':');
+        (merged[gameId] ??= {})[slot] = selection[gameId]?.[slot] ?? null;
+      }
+      selection = normalizeCosmeticSelection(merged);
+      writeCosmeticSelection(storage, wallet, selection);
+      void push();
+      return;
+    }
+    // A wallet with no saved `cosmetics` keeps the picks made on this device.
+    if (fresh && saved) {
+      selection = saved;
       writeCosmeticSelection(storage, wallet, selection);
     }
+  }
+
+  // PUT /api/profile, one request at a time, always with the latest picks, so
+  // an older map never lands after a newer one. It waits for the wallet copy
+  // (source 'server'), so a pick never drops picks saved on another device.
+  function push() {
+    const run = pushQueue.then(async () => {
+      if (!unsaved.size) return { ok: true };
+      if (destroyed || !live || !wallet || !authenticated() || !indexApi?.savePreferences) return { ok: false, error: 'signed-out' };
+      if (source !== 'server') return { ok: false, error: 'not-loaded' };
+      const who = wallet;
+      const serial = pickSerial;
+      let answer = null;
+      try { answer = await indexApi.savePreferences({ cosmetics: structuredCloneSafe(selection) }); } catch { answer = null; }
+      if (answer?.ok === true && who === wallet && serial === pickSerial) {
+        unsaved = new Set();
+        writeUnsavedSlots(storage, wallet, unsaved);
+        emit();
+      }
+      return answer ?? { ok: false, error: 'network' };
+    });
+    pushQueue = run.catch(() => {});
+    return run;
   }
 
   // Re-read E6 for the wallet on screen. Resolves the store snapshot; never
@@ -181,28 +266,31 @@ export function createUnlockablesStore({
     const serial = ++refreshSerial;
     const who = wallet;
     const self = authenticated();
+    const picksAtStart = pickSerial;
     if (!force) {
       let cached = null;
       try { cached = getCachedSelfProfile(who); } catch { cached = null; }
       if (cached && normalizeUnlockWallet(cached.wallet) === who) {
-        adopt(cached, { self: true });
+        // The route's copy may predate a pick made during this visit.
+        adopt(cached, { self: true, fresh: pickSerial === 0 });
         emit();
         return Promise.resolve(snapshot());
       }
     }
-    refreshing = Promise.resolve()
+    const request = Promise.resolve()
       .then(() => indexApi.profile(who, { self }))
       .catch(() => ({ ok: false, error: 'network' }))
       .then((body) => {
         if (serial !== refreshSerial || who !== wallet || destroyed) return snapshot();
         refreshing = null;
-        if (body?.ok === true && normalizeUnlockWallet(body.wallet) === who) {
-          adopt(body, { self });
-          emit();
-        }
+        // A pick made while this read was in flight is newer than its copy.
+        if (body?.ok === true && normalizeUnlockWallet(body.wallet) === who) adopt(body, { self, fresh: picksAtStart === pickSerial });
+        emit();
         return snapshot();
       });
-    return refreshing;
+    refreshing = request;
+    emit();
+    return request;
   }
 
   function stateOf(item) {
@@ -221,11 +309,18 @@ export function createUnlockablesStore({
     }
     // normalizeCosmeticSelection drops the null slot and any empty game.
     selection = normalizeCosmeticSelection({ ...selection, [gameId]: { ...(selection[gameId] ?? {}), [slot]: id } });
+    pickSerial += 1;
     const stored = writeCosmeticSelection(storage, wallet, selection);
+    if (live && wallet) {
+      unsaved.add(`${gameId}:${slot}`);
+      writeUnsavedSlots(storage, wallet, unsaved);
+    }
     emit();
     if (live && wallet && authenticated() && indexApi?.savePreferences) {
-      let answer = null;
-      try { answer = await indexApi.savePreferences({ cosmetics: selection }); } catch { answer = null; }
+      // Not read yet in this visit: read the wallet copy first; adopt() merges
+      // this pick into it and saves both.
+      if (source !== 'server') await refresh();
+      const answer = await push();
       if (answer?.ok === true) return { ok: true, saved: 'wallet' };
       return { ok: true, saved: stored ? 'device' : 'session', error: answer?.error ?? 'network' };
     }
@@ -252,6 +347,8 @@ export function createUnlockablesStore({
       authenticated: authenticated(),
       source,
       savedAt,
+      loading: Boolean(refreshing) || refreshQueued,
+      unsaved: unsaved.size > 0,
       unlocks: {
         achievementIds: new Set(unlocks.achievementIds),
         heldAchievementIds: new Set(unlocks.heldAchievementIds),
@@ -269,9 +366,18 @@ export function createUnlockablesStore({
 
   // Window events (§7.7).
   const onWalletSession = (event) => {
+    const signedIn = event?.detail?.authenticated === true;
+    announced = signedIn ? normalizeUnlockWallet(event.detail.wallet) : null;
     const changed = syncWallet();
-    if (event?.detail?.authenticated === true) void refresh({ force: true });
+    if (signedIn) void refresh({ force: true });
     else if (changed) emit();
+  };
+  // Back online: read the wallet copy if it is missing, else save waiting picks.
+  const onOnline = () => {
+    syncWallet();
+    if (!live || !wallet || !authenticated()) return;
+    if (source !== 'server') void refresh({ force: true });
+    else if (unsaved.size) void push();
   };
   const onProfileChanged = (event) => {
     syncWallet();
@@ -301,6 +407,7 @@ export function createUnlockablesStore({
     ['lesters:wallet-session', onWalletSession],
     ['lesters:profile-changed', onProfileChanged],
     ['lesters:ranked-run', onRankedRun],
+    ['online', onOnline],
   ];
   for (const [name, handler] of events) windowRef?.addEventListener?.(name, handler);
 
@@ -312,10 +419,9 @@ export function createUnlockablesStore({
   }
 
   load(null);
+  // A wallet restored and signed in before this module loaded queues its
+  // fresh unlocks here; the wallet-session event may already have fired.
   syncWallet();
-  // A wallet restored and signed in before this module loaded gets its fresh
-  // unlocks now; the wallet-session event may already have fired.
-  if (live && wallet && authenticated()) void refresh();
 
   return Object.freeze({
     get hosted() { return live; },

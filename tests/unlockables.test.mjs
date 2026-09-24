@@ -363,6 +363,179 @@ test('picks persist to preferences.cosmetics when signed in and to this device o
   store.destroy();
 });
 
+test('a silent restore refreshes even when the wallet-session event fires before main.js names the wallet', async () => {
+  const storage = memoryStorage();
+  const windowRef = eventTarget();
+  const api = fakeIndexApi({ profile: (wallet, self) => profileBody({ wallet, achievements: [['chikun', 'chikun-first-flight']], confirmedRuns: { 'lester-blaster': 10 }, preferences: self ? { cosmetics: { chikun: { hat: 'chikun-hat-cap' } } } : null }) });
+  let connectedWallet = null;
+  const store = createUnlockablesStore({ hosted: true, storage, indexApi: api, windowRef, getWallet: () => connectedWallet, isAuthenticated: (wallet) => wallet === WALLET });
+  await settle();
+  assert.equal(api.calls.length, 0, 'nobody is signed in yet');
+  // wallet-session.mjs restore() announces the signed-in wallet; main.js
+  // restoreWalletSession assigns connectedWallet only after its await.
+  windowRef.dispatch('lesters:wallet-session', { wallet: WALLET, authenticated: true });
+  assert.equal(store.snapshot().wallet, WALLET, 'the announced wallet stands in until main.js names it');
+  await Promise.resolve();
+  connectedWallet = WALLET;
+  await settle();
+  assert.deepEqual(api.calls, [['profile', WALLET, true]], 'exactly one self-view read');
+  assert.equal(store.snapshot().source, 'server');
+  assert.equal(store.verifiedRuns(), 10, 'the hero gates get the verified count');
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-cap' }, 'the saved picks reach the child');
+  assert.equal(store.snapshot().loading, false);
+  // Signing out forgets the announced wallet.
+  connectedWallet = null;
+  windowRef.dispatch('lesters:wallet-session', { wallet: null, authenticated: false });
+  assert.equal(store.snapshot().wallet, null);
+  store.destroy();
+
+  // A store whose import resolved after the event (and after main.js named the
+  // wallet): the first call that sees the signed-in wallet starts the read.
+  const late = fakeIndexApi({ profile: (wallet) => profileBody({ wallet, confirmedRuns: { 'lester-blaster': 12 } }) });
+  let named = null;
+  const lateStore = createUnlockablesStore({ hosted: true, storage, indexApi: late, windowRef: eventTarget(), getWallet: () => named, isAuthenticated: (wallet) => wallet === WALLET });
+  named = WALLET;
+  assert.equal(lateStore.verifiedRuns(), 10, 'the cache answers at once');
+  assert.equal(lateStore.snapshot().loading, true, 'and the read is queued');
+  await settle();
+  assert.deepEqual(late.calls, [['profile', WALLET, true]]);
+  assert.equal(lateStore.verifiedRuns(), 12);
+  lateStore.destroy();
+});
+
+// A server double for E6 self views and E7 PUTs of `preferences.cosmetics`.
+function cosmeticsServer({ cosmetics = null, achievements = [] } = {}) {
+  const server = { cosmetics, failSaves: false, calls: [], inFlight: 0, maxInFlight: 0, holdSaves: false, held: [], holdReads: false, heldReads: [] };
+  server.api = {
+    profile: (wallet, { self = false } = {}) => {
+      server.calls.push(['profile', self]);
+      const body = profileBody({ wallet, achievements, preferences: self ? { cosmetics: structuredClone(server.cosmetics) } : null });
+      if (!server.holdReads) return Promise.resolve(body);
+      return new Promise((resolve) => server.heldReads.push(() => resolve(body)));
+    },
+    savePreferences: ({ cosmetics: next }) => {
+      server.calls.push(['save', structuredClone(next)]);
+      server.inFlight += 1;
+      server.maxInFlight = Math.max(server.maxInFlight, server.inFlight);
+      const finish = () => {
+        server.inFlight -= 1;
+        if (server.failSaves) return { ok: false, error: 'network' };
+        server.cosmetics = structuredClone(next);
+        return { ok: true, wallet: WALLET, preferences: { cosmetics: next } };
+      };
+      if (!server.holdSaves) return Promise.resolve().then(finish);
+      return new Promise((resolve) => server.held.push(() => resolve(finish())));
+    },
+  };
+  return server;
+}
+const CHIKUN_LOOKS = [['chikun', 'chikun-first-flight'], ['chikun', 'chikun-survive-4m'], ['chikun', 'chikun-reach-coast'], ['chikun', 'chikun-stack-three']];
+
+test('a pick whose save failed is saved by the next read, after a reload and when back online, never reverted', async () => {
+  const storage = memoryStorage();
+  const windowRef = eventTarget();
+  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-cap' } }, achievements: CHIKUN_LOOKS });
+  const store = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef, getWallet: () => WALLET, isAuthenticated: () => true });
+  await settle();
+  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-cap' } }, 'the wallet copy loads');
+  server.failSaves = true;
+  assert.deepEqual(await store.select('chikun', 'hat', 'chikun-hat-top'), { ok: true, saved: 'device', error: 'network' });
+  assert.equal(store.snapshot().unsaved, true);
+  // The next read (a profile change) keeps the pick instead of the older wallet
+  // copy, and saves it once the server answers.
+  windowRef.dispatch('lesters:profile-changed', { wallet: WALLET });
+  await settle();
+  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-top' } }, 'the failed pick is not reverted');
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-top' });
+  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-cap' } }, 'still failing');
+  store.destroy();
+
+  // Reload: the unsaved slot survives on this device, and the first read saves it.
+  server.failSaves = false;
+  const reloaded = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef: eventTarget(), getWallet: () => WALLET, isAuthenticated: () => true });
+  assert.equal(reloaded.snapshot().unsaved, true);
+  await settle();
+  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-top' } }, 'saved to the wallet after the reload');
+  assert.equal(reloaded.snapshot().unsaved, false);
+  assert.equal(storage.getItem(`lesters-arcade-cosmetics-unsaved-v1:${WALLET}`), null);
+
+  // Back online: a waiting pick goes up with no other trigger.
+  server.failSaves = true;
+  const onlineWindow = eventTarget();
+  const online = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef: onlineWindow, getWallet: () => WALLET, isAuthenticated: () => true });
+  await settle();
+  assert.deepEqual(await online.select('chikun', 'trail', 'chikun-trail-gold'), { ok: true, saved: 'device', error: 'network' });
+  server.failSaves = false;
+  onlineWindow.dispatch('online', {});
+  await settle();
+  assert.deepEqual(server.cosmetics, { chikun: { hat: 'chikun-hat-top', trail: 'chikun-trail-gold' } });
+  assert.equal(online.snapshot().unsaved, false);
+  online.destroy();
+  reloaded.destroy();
+});
+
+test('picks made before sign-in are saved to the wallet at sign-in, merged slot by slot', async () => {
+  const now = () => Date.parse('2026-09-23T12:00:00.000Z');
+  const storage = memoryStorage();
+  writeUnlocksCache(storage, WALLET, unlocksFromProfileResponse(profileBody({ achievements: CHIKUN_LOOKS })), { now });
+  const windowRef = eventTarget();
+  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-cap', trail: 'chikun-trail-gold' } }, achievements: CHIKUN_LOOKS });
+  let signedIn = false;
+  const store = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef, getWallet: () => WALLET, isAuthenticated: () => signedIn, now });
+  await settle();
+  assert.deepEqual(await store.select('chikun', 'coat', 'chikun-coat-glacier'), { ok: true, saved: 'device' });
+  assert.deepEqual(await store.select('chikun', 'hat', null), { ok: true, saved: 'device' }, 'the default look is a pick too');
+  assert.deepEqual(server.calls, [], 'no Bearer, no request');
+  signedIn = true;
+  windowRef.dispatch('lesters:wallet-session', { wallet: WALLET, authenticated: true });
+  await settle();
+  const expected = { chikun: { trail: 'chikun-trail-gold', coat: 'chikun-coat-glacier' } };
+  assert.deepEqual(server.cosmetics, expected, 'this device\'s picks win their slots; the wallet keeps the rest');
+  assert.deepEqual(store.snapshot().selection, expected);
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: 'chikun-coat-glacier', trail: 'chikun-trail-gold', hat: null });
+  assert.equal(store.snapshot().unsaved, false);
+  store.destroy();
+});
+
+test('a read that started before a pick never replaces it, and saves never overlap', async () => {
+  const storage = memoryStorage();
+  const windowRef = eventTarget();
+  const server = cosmeticsServer({ cosmetics: { chikun: { hat: 'chikun-hat-cap' } }, achievements: CHIKUN_LOOKS });
+  const store = createUnlockablesStore({ hosted: true, storage, indexApi: server.api, windowRef, getWallet: () => WALLET, isAuthenticated: () => true });
+  await settle();
+  // A profile change starts a read of the old wallet copy …
+  server.holdReads = true;
+  windowRef.dispatch('lesters:profile-changed', { wallet: WALLET });
+  await settle();
+  assert.equal(server.heldReads.length, 1);
+  // … the player picks while it is in flight, and the save lands first.
+  assert.deepEqual(await store.select('chikun', 'hat', 'chikun-hat-top'), { ok: true, saved: 'wallet' });
+  server.heldReads.shift()();
+  await settle();
+  assert.deepEqual(store.snapshot().selection, { chikun: { hat: 'chikun-hat-top' } }, 'the older copy does not replace the pick');
+  assert.deepEqual(JSON.parse(storage.getItem(`${COSMETICS_SELECTION_PREFIX}${WALLET}`)), { chikun: { hat: 'chikun-hat-top' } });
+  assert.deepEqual(store.cosmeticsFor('chikun'), { coat: null, trail: null, hat: 'chikun-hat-top' });
+  server.holdReads = false;
+
+  // Two quick picks: one PUT at a time, and the last one carries both.
+  server.holdSaves = true;
+  const first = store.select('chikun', 'coat', 'chikun-coat-glacier');
+  await settle();
+  const second = store.select('chikun', 'trail', 'chikun-trail-gold');
+  await settle();
+  assert.equal(server.held.length, 1, 'the second save waits for the first');
+  server.held.shift()();
+  await settle();
+  assert.equal(server.held.length, 1);
+  server.held.shift()();
+  assert.deepEqual(await Promise.all([first, second]), [{ ok: true, saved: 'wallet' }, { ok: true, saved: 'wallet' }]);
+  assert.equal(server.maxInFlight, 1);
+  const both = { chikun: { hat: 'chikun-hat-top', coat: 'chikun-coat-glacier', trail: 'chikun-trail-gold' } };
+  assert.deepEqual(server.cosmetics, both);
+  assert.deepEqual(server.calls.filter(([kind]) => kind === 'save').at(-1)[1], both);
+  store.destroy();
+});
+
 test('every storage access is guarded, so blocked storage leaves the store working', async () => {
   const throwing = { getItem() { throw new Error('denied'); }, setItem() { throw new Error('quota'); }, removeItem() { throw new Error('denied'); } };
   const windowRef = eventTarget();
