@@ -16,8 +16,10 @@ import { INDEX_GAMES, leaderboardRow, recentSessionRow, rowVersionLabel } from '
 import * as leaderboardApi from '../api/leaderboard.mjs';
 import * as profileApi from '../api/profile.mjs';
 import * as sessionApi from '../api/verified-session.mjs';
+import * as sharePageApi from '../api/share-page.mjs';
+import { renderSharePage } from '../server/share/render-page.mjs';
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
-import { invoke } from './helpers/fake-http.mjs';
+import { fakeRequest, fakeResponse, invoke } from './helpers/fake-http.mjs';
 
 const SESSION_VALUE = `session-fixture-${'c7'.repeat(16)}`;
 const NOW = Date.parse('2026-09-25T12:00:00.000Z');
@@ -186,4 +188,26 @@ test('E5, E6 and E9 answer through the real handlers with unchanged cache header
   assert.equal(session.status, 200, JSON.stringify(session.body));
   assert.equal(session.headers['cache-control'], 'public, s-maxage=300, stale-while-revalidate=86400');
   assert.deepEqual([session.body.session.versionLabel, session.body.session.runtimeId], ['Chikun v6', 'chikun:canvas-runtime-v6']);
+}, { migrated: false }));
+
+test('the share page lists the version with the run stats (E10, from E9)', async () => withDb(async (db) => {
+  const seeded = await seedEras(db);
+  const handler = mount(sharePageApi, db);
+  for (const row of seeded) {
+    const res = fakeResponse();
+    await handler(fakeRequest({ url: `/api/share-page?id=${row.sessionId32.slice(2)}` }), res);
+    assert.equal(res.statusCode, 200, row.label);
+    assert.equal(res.headers['cache-control'], 'public, s-maxage=300, stale-while-revalidate=86400', 'confirmed page cache unchanged');
+    if (row.label.endsWith('v?')) {
+      assert.doesNotMatch(res.text, /<dt>Version<\/dt>/, 'an unrecorded version is not listed');
+      continue;
+    }
+    const escaped = row.label.replace(/[.?]/g, (ch) => `[${ch}]`);
+    assert.match(res.text, new RegExp(`<dt>Version</dt><dd>${escaped}</dd></div></dl>`), `${row.label}: the last entry of the stats list`);
+  }
+  const hmh = seeded.find((row) => row.label === 'HMH v0.6');
+  const session = await readPublicSession(db, hmh.sessionId32, { catalog: null });
+  assert.match(renderSharePage({ session }).html, /<dt>Version<\/dt><dd>HMH v0\.6<\/dd>/);
+  assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: undefined } }).html, /<dt>Version<\/dt>/, 'an E9 body without the field shows no row');
+  assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: '<script>alert(1)</script> v1' } }).html, /<dt>Version<\/dt>|alert\(1\)/);
 }, { migrated: false }));
