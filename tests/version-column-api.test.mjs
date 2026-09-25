@@ -10,6 +10,8 @@ import test from 'node:test';
 
 import { issueSessionToken } from '../apps/portal/src/server-session.mjs';
 import { versionLabelFor } from '../apps/portal/src/game-version-labels.mjs';
+import { HMH_CABINET_VERSION } from '../apps/portal/src/hmh-cabinet-version.mjs';
+import { STACKED_CABINET_VERSION } from '../apps/portal/src/stacked-cabinet.mjs';
 import { MIGRATIONS, migrate } from '../server/neon/migrations.mjs';
 import { readLeaderboard, readPublicProfile, readPublicSession } from '../server/neon/queries.mjs';
 import { INDEX_GAMES, leaderboardRow, recentSessionRow, rowVersionLabel } from '../server/neon/rows.mjs';
@@ -35,11 +37,18 @@ const DEPLOYED = Object.freeze({
 const W = (n) => `0x${String(n).padStart(2, '0').repeat(20)}`;
 const ME = W(1);
 
-// One HMH row per build era, one Chikun row per runtime, one STACKED row.
+// The next minor of a cabinet: a version this deploy has not shipped. The
+// server format-checks a buildHash (A11) and stores it as sent, so a row can
+// claim one; its label reads '<Game> v?' instead (game-version-labels.mjs).
+const unshipped = (cabinet) => { const [major, minor] = cabinet.split('.').map(Number); return `${major}.${minor + 1}.0`; };
+
+// One HMH row per build era, one Chikun row per runtime, one STACKED row, and
+// rows claiming cabinets this deploy has not shipped.
 const HMH_ROWS = Object.freeze([
   { wallet: W(1), score: 9000, buildHash: 'site-1.8.1:game-1.8.1', label: 'HMH v0.5' },
   { wallet: W(2), score: 8000, buildHash: 'site-1.8.2:game-1.8.2:cabinet-0.5.0', label: 'HMH v0.5' },
-  { wallet: W(3), score: 7000, buildHash: 'site-1.9.0:game-1.9.0:cabinet-0.6.0', label: 'HMH v0.6' },
+  { wallet: W(3), score: 7000, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(HMH_CABINET_VERSION)}`, label: 'HMH v?', claimed: true },
+  { wallet: W(7), score: 6500, buildHash: 'site-1.8.1:game-1.8.1:cabinet-999999.999999.0', label: 'HMH v?', claimed: true },
   { wallet: W(4), score: 6000, buildHash: null, source: 'chain-index', label: 'HMH v?' },
 ]);
 const CHIKUN_ROWS = Object.freeze([
@@ -48,7 +57,8 @@ const CHIKUN_ROWS = Object.freeze([
 ]);
 const STACKED_ROWS = Object.freeze([
   { wallet: W(1), score: 3000, buildHash: 'site-1.8.1:game-1.8.1:cabinet-0.2.0', label: 'STACKED v0.2' },
-  { wallet: W(6), score: 2000, buildHash: 'site-1.9.0:game-1.9.0:cabinet-0.3.0', label: 'STACKED v0.3' },
+  { wallet: W(6), score: 2000, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(STACKED_CABINET_VERSION)}`, label: 'STACKED v?', claimed: true },
+  { wallet: W(8), score: 1000, buildHash: 'site-1.8.1:game-1.8.1:cabinet-9.9.0', label: 'STACKED v?', claimed: true },
 ]);
 
 async function seedEras(db) {
@@ -127,9 +137,15 @@ test('E5 rows carry the label of the run that ranks, never the raw build hash', 
     assertNoBuildHash(board, gameId);
   }
   // The label follows the wallet's best run: a better run on a newer build relabels the row.
-  await seedVerifiedSession(db, { gameId: 'lester-blaster', wallet: W(1), score: 9500, buildHash: 'site-1.9.0:game-1.9.0:cabinet-0.6.0' });
+  await seedVerifiedSession(db, { gameId: 'chikun', wallet: W(5), score: 6000, runtimeId: 'chikun:canvas-runtime-v7' });
+  const chikun = await readLeaderboard(db, { gameId: 'chikun', seasonId: INDEX_GAMES.chikun.seasonId, period: 'all-time' });
+  assert.deepEqual([chikun.rows[0].wallet, chikun.rows[0].score, chikun.rows[0].versionLabel], [W(5), 6000, 'Chikun v7']);
+  // A better run claiming a cabinet this deploy has not shipped ranks (A11
+  // format-checks the build only) but never shows the claimed version.
+  await seedVerifiedSession(db, { gameId: 'lester-blaster', wallet: W(1), score: 9500, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(HMH_CABINET_VERSION)}` });
   const board = await readLeaderboard(db, { gameId: 'lester-blaster', seasonId: INDEX_GAMES['lester-blaster'].seasonId, period: 'all-time' });
-  assert.deepEqual([board.rows[0].wallet, board.rows[0].score, board.rows[0].versionLabel], [W(1), 9500, 'HMH v0.6']);
+  assert.deepEqual([board.rows[0].wallet, board.rows[0].score, board.rows[0].versionLabel], [W(1), 9500, 'HMH v?']);
+  for (const row of board.rows) assert.match(row.versionLabel, /^HMH v(?:0\.5|\?)$/, 'only shipped HMH versions are shown');
 }));
 
 test('E6 recent sessions carry a label per run in the public and self views', async () => withDb(async (db) => {
@@ -150,6 +166,13 @@ test('E6 recent sessions carry a label per run in the public and self views', as
   const failed = selfView.recentSessions.find((session) => session.status === 'failed');
   assert.deepEqual([failed.versionLabel, failed.retryable, failed.lastError], ['HMH v0.5', true, 'rpc-timeout'], 'unpublished runs are labelled too');
   assertNoBuildHash(selfView, 'E6 self');
+  // Runs claiming a cabinet this deploy has not shipped read '<Game> v?'.
+  for (const row of [...HMH_ROWS, ...STACKED_ROWS].filter((entry) => entry.claimed)) {
+    const view = await readPublicProfile(db, row.wallet, { nowMs: NOW, catalog: null });
+    const claimed = view.recentSessions.find((session) => session.score === row.score);
+    assert.equal(claimed.versionLabel, row.label, row.buildHash);
+    assertNoBuildHash(view, `E6 ${row.buildHash}`);
+  }
 }));
 
 test('E9 carries the label beside the already public runtimeId', async () => withDb(async (db) => {
@@ -199,15 +222,16 @@ test('the share page lists the version with the run stats (E10, from E9)', async
     assert.equal(res.statusCode, 200, row.label);
     assert.equal(res.headers['cache-control'], 'public, s-maxage=300, stale-while-revalidate=86400', 'confirmed page cache unchanged');
     if (row.label.endsWith('v?')) {
-      assert.doesNotMatch(res.text, /<dt>Version<\/dt>/, 'an unrecorded version is not listed');
+      assert.doesNotMatch(res.text, /<dt>Version<\/dt>/, 'an unknown version (unrecorded or unshipped) is not listed');
+      assert.doesNotMatch(res.text, /v999999|v9\.9|:cabinet-/, 'a claimed cabinet never reaches the page');
       continue;
     }
     const escaped = row.label.replace(/[.?]/g, (ch) => `[${ch}]`);
     assert.match(res.text, new RegExp(`<dt>Version</dt><dd>${escaped}</dd></div></dl>`), `${row.label}: the last entry of the stats list`);
   }
-  const hmh = seeded.find((row) => row.label === 'HMH v0.6');
+  const hmh = seeded.find((row) => row.buildHash === 'site-1.8.2:game-1.8.2:cabinet-0.5.0');
   const session = await readPublicSession(db, hmh.sessionId32, { catalog: null });
-  assert.match(renderSharePage({ session }).html, /<dt>Version<\/dt><dd>HMH v0\.6<\/dd>/);
+  assert.match(renderSharePage({ session }).html, /<dt>Version<\/dt><dd>HMH v0\.5<\/dd>/);
   assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: undefined } }).html, /<dt>Version<\/dt>/, 'an E9 body without the field shows no row');
   assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: '<script>alert(1)</script> v1' } }).html, /<dt>Version<\/dt>|alert\(1\)/);
 }, { migrated: false }));

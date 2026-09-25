@@ -1,7 +1,9 @@
 // Game version labels (version-column brief, acceptance 2): one pure module,
 // shared by the server (E5, E6 and E9 rows) and the browser, turns a run's
 // buildHash or runtimeId into 'HMH v0.5', 'Chikun v7' or 'STACKED v0.2', and
-// anything unexpected into a '<Game> v?' / 'v?' fallback, never a throw.
+// anything unexpected into a '<Game> v?' / 'v?' fallback, never a throw. An
+// HMH or STACKED cabinet (client-asserted, contract A11) is shown only inside
+// the range this deploy has shipped.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -9,6 +11,7 @@ import { readFileSync } from 'node:fs';
 import {
   GAME_VERSION_SHORT_NAMES,
   HMH_PRE_CABINET_VERSION,
+  SHIPPED_CABINETS,
   UNKNOWN_GAME_VERSION,
   versionLabelFor,
   versionLabelText,
@@ -19,14 +22,27 @@ import { CHIKUN_RUNTIME_VERSION } from '../apps/portal/src/chikun-cabinet.mjs';
 import { STACKED_CABINET_VERSION } from '../apps/portal/src/stacked-cabinet.mjs';
 import { RANKED_GAMES, RANKED_GAME_IDS } from '../apps/portal/src/ranked-identity.mjs';
 
-const hmh = (buildHash) => versionLabelFor('lester-blaster', { buildHash });
+const hmh = (buildHash, options) => versionLabelFor('lester-blaster', { buildHash }, options);
 const chikun = (runtimeId) => versionLabelFor('chikun', { runtimeId });
-const stacked = (buildHash) => versionLabelFor('stacked', { buildHash });
+const stacked = (buildHash, options) => versionLabelFor('stacked', { buildHash }, options);
 const majorMinor = (version) => version.split('.').slice(0, 2).join('.');
+// A later deploy, for the shapes this one has not shipped: HMH and STACKED
+// cabinets up to 999999.999999.
+const LATER = Object.freeze({ cabinets: Object.freeze({
+  'lester-blaster': Object.freeze({ first: '0.5', current: '999999.999999' }),
+  stacked: Object.freeze({ first: '0.2', current: '999999.999999' }),
+}) });
 
-test('the module is pure: no imports, no environment, no clock', () => {
+test('the module is pure: only the two cabinet constants, no environment, no clock', () => {
   const source = readFileSync(new URL('../apps/portal/src/game-version-labels.mjs', import.meta.url), 'utf8');
-  assert.equal(/^\s*import\s/m.test(source), false, 'no static imports');
+  const imports = [...source.matchAll(/^\s*import\s[^;]*?from\s*'([^']+)';/gm)].map((match) => match[1]);
+  assert.deepEqual(imports, ['./hmh-cabinet-version.mjs', './stacked-cabinet.mjs'], 'static imports');
+  assert.equal((source.match(/^\s*import\s/gm) ?? []).length, 2);
+  for (const constant of ['hmh-cabinet-version.mjs', 'stacked-cabinet.mjs']) {
+    const constantSource = readFileSync(new URL(`../apps/portal/src/${constant}`, import.meta.url), 'utf8');
+    assert.equal(constantSource.trim().split('\n').length, 1, `${constant}: one line`);
+    assert.equal(/\bimport\b/.test(constantSource), false, `${constant}: no imports`);
+  }
   assert.equal(/import\(/.test(source), false, 'no dynamic imports');
   for (const token of ['process', 'window', 'document', 'Date', 'localStorage', 'fetch']) {
     assert.equal(new RegExp(`\\b${token}\\b`).test(source.replace(/^\s*\/\/.*$/gm, '')), false, token);
@@ -40,9 +56,11 @@ test('the module is pure: no imports, no environment, no clock', () => {
 test('HMH reads the cabinet major.minor; a build without a cabinet segment is HMH v0.5', () => {
   assert.equal(hmh('site-1.8.2:game-1.8.2:cabinet-0.5.0'), 'HMH v0.5');
   assert.equal(hmh('site-1.8.2:game-1.8.2:cabinet-0.5.7'), 'HMH v0.5', 'the patch is not shown');
-  assert.equal(hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0'), 'HMH v0.6');
-  assert.equal(hmh('site-2.0.0:game-2.0.0:cabinet-12.34.0'), 'HMH v12.34');
-  assert.equal(hmh('site-2.0.0:game-2.0.0:cabinet-007.010.0'), 'HMH v7.10', 'leading zeros are normalized');
+  assert.equal(hmh('site-1.8.2:game-1.8.2:cabinet-00.005.0'), 'HMH v0.5', 'leading zeros are normalized');
+  // A later deploy that has shipped these cabinets labels them the same way.
+  assert.equal(hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0', LATER), 'HMH v0.6');
+  assert.equal(hmh('site-2.0.0:game-2.0.0:cabinet-12.34.0', LATER), 'HMH v12.34');
+  assert.equal(hmh('site-2.0.0:game-2.0.0:cabinet-007.010.0', LATER), 'HMH v7.10', 'leading zeros are normalized');
   // 1.8.x rows (live before the cabinet version existed) and older ones.
   assert.equal(hmh('site-1.8.1:game-1.8.1'), 'HMH v0.5');
   assert.equal(hmh('site-1.7.0:game-1.7.0'), 'HMH v0.5');
@@ -51,7 +69,60 @@ test('HMH reads the cabinet major.minor; a build without a cabinet segment is HM
 
 test('HMH majors and minors are shown as numbers, never as a trailing .0 of the major', () => {
   // cabinet-1.0.x is major 1, minor 0: shown as v1.0, not v1.
-  assert.equal(hmh('site-2.0.0:game-2.0.0:cabinet-1.0.3'), 'HMH v1.0');
+  assert.equal(hmh('site-2.0.0:game-2.0.0:cabinet-1.0.3', LATER), 'HMH v1.0');
+});
+
+// The server format-checks a buildHash but cannot prove its cabinet (contract
+// A11): a claimed cabinet is shown only inside the range this deploy shipped.
+test('an HMH or STACKED cabinet outside the shipped range reads "<Game> v?"', () => {
+  assert.deepEqual(SHIPPED_CABINETS, {
+    'lester-blaster': { first: '0.5', current: majorMinor(HMH_CABINET_VERSION) },
+    stacked: { first: '0.2', current: majorMinor(STACKED_CABINET_VERSION) },
+  });
+  assert.equal(Object.isFrozen(SHIPPED_CABINETS) && Object.values(SHIPPED_CABINETS).every(Object.isFrozen), true);
+  const [major, minor] = HMH_CABINET_VERSION.split('.').map(Number);
+  const [stackedMajor, stackedMinor] = STACKED_CABINET_VERSION.split('.').map(Number);
+  const futures = (majorPart, minorPart) => [
+    `${majorPart}.${minorPart + 1}.0`, // the next minor, not shipped yet
+    `${majorPart + 1}.0.0`, // the next major
+    `${majorPart}.${minorPart + 1}.${999}`,
+    '999999.999999.0', // oversized
+    '999999.0.0',
+    `${majorPart}.999999.0`,
+  ];
+  for (const cabinet of futures(major, minor)) {
+    assert.equal(hmh(`site-1.8.1:game-1.8.1:cabinet-${cabinet}`), 'HMH v?', `future HMH ${cabinet}`);
+    assert.equal(hmh(`site-1.8.1:game-1.8.1:cabinet-${cabinet}`, LATER), `HMH v${majorMinor(cabinet)}`, `${cabinet} after it ships`);
+  }
+  for (const cabinet of futures(stackedMajor, stackedMinor)) {
+    assert.equal(stacked(`site-1.8.1:game-1.8.1:cabinet-${cabinet}`), 'STACKED v?', `future STACKED ${cabinet}`);
+  }
+  // Cabinets before the first one a ranked run could carry never existed.
+  for (const cabinet of ['0.0.0', '0.4.9', '0.1.0']) {
+    assert.equal(hmh(`site-0.0.0:game-0.0.0:cabinet-${cabinet}`), 'HMH v?', `HMH ${cabinet}`);
+    assert.equal(hmh(`site-0.0.0:game-0.0.0:cabinet-${cabinet}`, LATER), 'HMH v?', `HMH ${cabinet}, later too`);
+  }
+  for (const cabinet of ['0.0.0', '0.1.0', '0.1.999']) {
+    assert.equal(stacked(`site-1.8.1:game-1.8.1:cabinet-${cabinet}`), 'STACKED v?', `STACKED ${cabinet}`);
+  }
+  // The shipped edge itself, and a patch on it, are shown.
+  assert.equal(hmh(`site-1.8.1:game-1.8.1:cabinet-${major}.${minor}.999`), `HMH v${major}.${minor}`);
+  assert.equal(stacked(`site-1.8.1:game-1.8.1:cabinet-${stackedMajor}.${stackedMinor}.999`), `STACKED v${stackedMajor}.${stackedMinor}`);
+  // The range follows the deploy: another range moves the edge, and a missing
+  // or malformed one shows no cabinet at all (the pre-cabinet HMH label stays).
+  const bumped = { cabinets: { 'lester-blaster': { first: '0.5', current: '0.6' }, stacked: { first: '0.2', current: '0.3' } } };
+  assert.equal(hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0', bumped), 'HMH v0.6');
+  assert.equal(hmh('site-1.9.0:game-1.9.0:cabinet-0.7.0', bumped), 'HMH v?');
+  assert.equal(stacked('site-1.9.0:game-1.9.0:cabinet-0.3.0', bumped), 'STACKED v0.3');
+  assert.equal(stacked('site-1.9.0:game-1.9.0:cabinet-0.4.0', bumped), 'STACKED v?');
+  for (const options of [{ cabinets: {} }, { cabinets: { 'lester-blaster': { first: 'x', current: 'y' } } }, { cabinets: { 'lester-blaster': null } }]) {
+    assert.equal(hmh('site-1.8.2:game-1.8.2:cabinet-0.5.0', options), 'HMH v?', JSON.stringify(options));
+    assert.equal(hmh('site-1.8.1:game-1.8.1', options), 'HMH v0.5');
+  }
+  // No options, or null ones, mean this deploy's range; never a throw.
+  for (const options of [undefined, null, {}, { cabinets: null }, 7]) {
+    assert.equal(hmh('site-1.8.2:game-1.8.2:cabinet-0.5.0', options), 'HMH v0.5', String(options));
+  }
 });
 
 test('Chikun reads the runtime generation from its runtimeId', () => {
@@ -67,8 +138,12 @@ test('Chikun reads the runtime generation from its runtimeId', () => {
 
 test('STACKED reads the cabinet major.minor', () => {
   assert.equal(stacked('site-1.8.1:game-1.8.1:cabinet-0.2.0'), 'STACKED v0.2');
-  assert.equal(stacked('site-1.9.0:game-1.9.0:cabinet-0.3.1'), 'STACKED v0.3');
-  assert.equal(stacked('site-1.7.0:game-1.7.0:cabinet-1.6.0'), 'STACKED v1.6');
+  assert.equal(stacked('site-1.8.1:game-1.8.1:cabinet-0.2.3'), 'STACKED v0.2', 'the patch is not shown');
+  // Not shipped by this deploy (every ranked STACKED run is replayed under
+  // today's rules), but labelled the same way once a later deploy has.
+  assert.equal(stacked('site-1.9.0:game-1.9.0:cabinet-0.3.1'), 'STACKED v?');
+  assert.equal(stacked('site-1.9.0:game-1.9.0:cabinet-0.3.1', LATER), 'STACKED v0.3');
+  assert.equal(stacked('site-1.7.0:game-1.7.0:cabinet-1.6.0', LATER), 'STACKED v1.6');
   // STACKED always had a cabinet segment: without one the version is unknown.
   assert.equal(stacked('site-1.8.1:game-1.8.1'), 'STACKED v?');
   // The runtime id does not decide a STACKED label.
@@ -120,9 +195,10 @@ test('unexpected inputs fall back to "<Game> v?" and never throw', () => {
 
 test('every label is short, printable ASCII (a compact column and a phone chip)', () => {
   const samples = [
-    hmh('site-1.8.1:game-1.8.1'), hmh('site-9.9.9:game-9.9.9:cabinet-999999.999999.0'), chikun('chikun:canvas-runtime-v999999'),
-    stacked('site-9.9.9:game-9.9.9:cabinet-999999.999999.0'), stacked(null), versionLabelFor('pong'),
+    hmh('site-1.8.1:game-1.8.1'), hmh('site-9.9.9:game-9.9.9:cabinet-999999.999999.0', LATER), chikun('chikun:canvas-runtime-v999999'),
+    stacked('site-9.9.9:game-9.9.9:cabinet-999999.999999.0', LATER), stacked(null), versionLabelFor('pong'),
   ];
+  assert.deepEqual(samples.slice(1, 4), ['HMH v999999.999999', 'Chikun v999999', 'STACKED v999999.999999'], 'the widest labels');
   for (const label of samples) {
     assert.match(label, /^(?:(?:HMH|Chikun|STACKED) )?v(?:\d+(?:\.\d+)?|\?)$/, label);
     assert.ok(label.length <= 24, label);
@@ -131,8 +207,9 @@ test('every label is short, printable ASCII (a compact column and a phone chip)'
 
 test('versionLabelText accepts exactly the labels versionLabelFor writes', () => {
   const written = [
-    hmh('site-1.8.1:game-1.8.1'), hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0'), hmh(null), chikun('chikun:canvas-runtime-v7'), chikun(null),
-    stacked('site-1.8.1:game-1.8.1:cabinet-0.2.0'), stacked('site-9.9.9:game-9.9.9:cabinet-999999.999999.0'), versionLabelFor('pong'),
+    hmh('site-1.8.1:game-1.8.1'), hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0', LATER), hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0'), hmh(null),
+    chikun('chikun:canvas-runtime-v7'), chikun(null), stacked('site-1.8.1:game-1.8.1:cabinet-0.2.0'),
+    stacked('site-9.9.9:game-9.9.9:cabinet-999999.999999.0', LATER), versionLabelFor('pong'),
   ];
   for (const label of written) assert.equal(versionLabelText(label), label, label);
   for (const bad of [undefined, null, 0, true, {}, ['HMH v0.5'], '', ' ', 'v', 'HMH', 'HMH v', 'HMH v0.5 ', ' HMH v0.5', 'HMH  v0.5', 'HMH v0.5.0',

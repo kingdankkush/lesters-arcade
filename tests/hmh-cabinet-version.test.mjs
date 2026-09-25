@@ -2,7 +2,9 @@
 // hashes read site-X:game-Y:cabinet-<HMH_CABINET_VERSION>, the browser
 // (RANKED_GAMES) and the server (bindRankedIdentity, E15) accept the optional
 // cabinet segment so 1.8.x runs without it stay valid, and the module stays
-// out of the HMH child (it is portal-only).
+// out of the HMH child (it is portal-only). The server format-checks the
+// cabinet (A11) and cannot prove it, so a cabinet this deploy has not shipped
+// is stored but labelled '<Game> v?'.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -55,6 +57,8 @@ test('the browser identity check accepts HMH builds with and without the cabinet
   const check = (buildHash) => validateRankedIdentity({ ...identity, buildHash }, { scoreRegistryAddress: FIXTURE_REGISTRY, wallet: FIXTURE_WALLET, gameId: 'lester-blaster' });
   assert.equal(check(CABINET_HMH_BUILD).ok, true);
   assert.equal(check(LEGACY_HMH_BUILD).ok, true, '1.8.x runs saved before the deploy stay valid');
+  // A11 format-checks the build; it never rejects a cabinet for its number
+  // (a later bump needs no pattern change). The label does not trust it.
   assert.equal(check('site-1.9.0:game-1.9.0:cabinet-0.6.0').ok, true, 'a later cabinet bump needs no pattern change');
   for (const bad of ['site-1.8.1:game-1.8.1:cabinet-0.5', `${CABINET_HMH_BUILD}:cabinet-0.6.0`, `${LEGACY_HMH_BUILD}:`, 'site-1.8.1:game-1.8.1:stacked-0.2.0']) {
     assert.deepEqual(check(bad), { ok: false, error: 'identity-buildhash-invalid' }, bad);
@@ -70,7 +74,9 @@ test('E15 issues seed tickets for HMH builds with and without the cabinet segmen
 });
 
 test('the server binds and verifies HMH runs with and without the cabinet segment', async () => {
-  for (const [buildHash, label] of [[CABINET_HMH_BUILD, versionLabelFor('lester-blaster', { buildHash: CABINET_HMH_BUILD })], [FIXTURE_BUILD_HASHES['lester-blaster'], 'HMH v0.5'], [LEGACY_HMH_BUILD, 'HMH v0.5'], ['site-1.9.0:game-1.9.0:cabinet-0.6.0', 'HMH v0.6']]) {
+  const shipped = versionLabelFor('lester-blaster', { buildHash: CABINET_HMH_BUILD });
+  assert.equal(shipped, `HMH v${HMH_CABINET_VERSION.split('.').slice(0, 2).join('.')}`);
+  for (const [buildHash, label] of [[CABINET_HMH_BUILD, shipped], [FIXTURE_BUILD_HASHES['lester-blaster'], 'HMH v0.5'], [LEGACY_HMH_BUILD, 'HMH v0.5']]) {
     const { body, sessionId32 } = await buildFixtureBody({ gameId: 'lester-blaster', salt: SALT, buildHash });
     const bound = await bindRankedIdentity(body, fixtureVerifyOptions());
     assert.equal(bound.ok, true, `${buildHash}: ${JSON.stringify(bound)}`);
@@ -83,6 +89,39 @@ test('the server binds and verifies HMH runs with and without the cabinet segmen
   }
   const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: SALT, buildHash: 'site-1.8.1:game-1.8.1:cabinet-0.5' });
   assert.deepEqual(await bindRankedIdentity(body, fixtureVerifyOptions()), { ok: false, status: 400, error: 'identity-buildhash-invalid' });
+});
+
+// Review finding (version-column fixer): the client chooses the buildHash, and
+// the server format-checks it (A11) but cannot prove the cabinet. A verified
+// run that claims a cabinet this deploy has not shipped (a future one, an
+// oversized one, or one from before the segment existed) is stored as sent,
+// and its public label reads '<Game> v?' instead of the claim.
+test('a verified run claiming an unshipped cabinet is labelled "<Game> v?", not the claim', async () => {
+  const [major, minor] = HMH_CABINET_VERSION.split('.').map(Number);
+  const forged = [
+    [`site-${SITE_VERSION}:game-${GAME_VERSION}:cabinet-${major}.${minor + 1}.0`, 'the next HMH minor, not shipped yet'],
+    [`site-${SITE_VERSION}:game-${GAME_VERSION}:cabinet-${major + 1}.0.0`, 'the next HMH major'],
+    [`site-${SITE_VERSION}:game-${GAME_VERSION}:cabinet-999999.999999.0`, 'an oversized cabinet'],
+    ['site-0.0.0:game-0.0.0:cabinet-0.0.0', 'a cabinet before the segment existed'],
+  ];
+  for (const [buildHash, why] of forged) {
+    const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: SALT, buildHash });
+    assert.equal(validateSeedBody({ gameId: 'lester-blaster', sessionId: body.identity.sessionId, seasonId: body.identity.seasonId, buildHash }), true, `${why}: E15 format-checks only`);
+    const run = await verifyRankedRun(body, fixtureVerifyOptions());
+    assert.equal(run.ok, true, `${why}: ${JSON.stringify(run)}`);
+    assert.equal(run.buildHash, buildHash, `${why}: stored as sent`);
+    assert.equal(versionLabelFor(run.gameId, run), 'HMH v?', why);
+  }
+  // STACKED replays every run under today's rules, whatever cabinet it names.
+  const [stackedMajor, stackedMinor] = STACKED_CABINET_VERSION.split('.').map(Number);
+  for (const [cabinet, label] of [[STACKED_CABINET_VERSION, `STACKED v${stackedMajor}.${stackedMinor}`], [`${stackedMajor}.${stackedMinor + 1}.0`, 'STACKED v?'], ['9.9.0', 'STACKED v?'], ['0.1.0', 'STACKED v?']]) {
+    const buildHash = `site-${SITE_VERSION}:game-${GAME_VERSION}:cabinet-${cabinet}`;
+    const { body } = await buildFixtureBody({ gameId: 'stacked', salt: SALT, buildHash, evidence: { topOutAtTick: 600 } });
+    const run = await verifyRankedRun(body, fixtureVerifyOptions());
+    assert.equal(run.ok, true, `STACKED ${cabinet}: ${JSON.stringify(run)}`);
+    assert.equal(run.buildHash, buildHash);
+    assert.equal(versionLabelFor(run.gameId, run), label, `STACKED ${cabinet}`);
+  }
 });
 
 // Static and dynamic relative imports reachable from the entries.

@@ -215,7 +215,8 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   const stats = session.stats && typeof session.stats === 'object' ? session.stats : {};
   const statRows = (PAGE_STATS[gameId] ?? []).map(([label, read]) => [label, read(stats)]);
   // The game version the run was played on (E9 versionLabel, version-column);
-  // a run whose version is not recorded ('HMH v?') lists none.
+  // a run whose version is unknown ('HMH v?': not recorded, or not a version
+  // this deploy has shipped) lists none.
   const versionLabel = versionLabelText(session.versionLabel);
   if (versionLabel && !versionLabel.endsWith('v?')) statRows.push(['Version', versionLabel]);
   const pageUrl = `${SHARE_SITE_ORIGIN}/s/${shareId}`;

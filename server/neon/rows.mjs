@@ -139,7 +139,9 @@ export function verificationFor(gameId, source) {
 
 // The game version a run was played on (owner decision 2026-09-25: no testnet
 // season resets), from its stored build_hash and runtime_id. Only the label is
-// public in E5 and E6; the raw build hash is never returned.
+// public in E5 and E6; the raw build hash is never returned. The build hash is
+// the client's (format-checked, A11), so an HMH or STACKED cabinet this deploy
+// has not shipped reads '<Game> v?' (game-version-labels.mjs SHIPPED_CABINETS).
 export function rowVersionLabel(gameId, row) {
   return versionLabelFor(gameId, { buildHash: row?.build_hash ?? null, runtimeId: row?.runtime_id ?? null });
 }
