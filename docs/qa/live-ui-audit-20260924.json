@@ -13,13 +13,14 @@
   "method": {
     "browser": "Playwright Chromium (benchmarks/hmh-engine-bakeoff/node_modules/playwright)",
     "viewports": ["desktop 1440x1000", "phone 390x844 (mobile, touch)", "narrow 320x640 (mobile, touch)"],
-    "readOnly": "Every request that was not GET or HEAD to lestersarcade.io, and every /api/ write, was aborted and counted: 0 were attempted. No wallet existed in the browser, so nothing could be signed or sent. Production API reads were GET only (E5 leaderboard, E6 profile public view, E9 session, E11 share card). No cron endpoint, vault file or secret was touched.",
-    "script": "scripts/live-ui-audit.mjs (committed on this branch; re-run after deploy: PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/live-ui-audit.mjs --viewports desktop,phone,narrow)",
+    "readOnly": "Every request that was not GET or HEAD to lestersarcade.io, and every /api/ write, was aborted and counted: 0 were attempted. Since the review fix (b47324f6) the cold-cache picker contexts count their aborted requests too. No wallet existed in the browser, so nothing could be signed or sent. Production API reads were GET only (E5 leaderboard, E6 profile public view, E9 session, E11 share card). No cron endpoint, vault file or secret was touched.",
+    "script": "scripts/live-ui-audit.mjs (committed on this branch). Re-run after deploy: PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/live-ui-audit.mjs (desktop, phone and narrow by default since b47324f6; --viewports picks a subset).",
     "extraProbes": [
       "keyboard focus retention (type, wait for the index answer, type again; press tabs with Enter)",
       "visible focus: every Tab stop on /, /scores, the profile, /games/stacked and a share page compared focused vs blurred computed style (no stop without a visible change)",
       "text contrast by sampling the rendered background around each text box (desktop and phone)",
       "picker first paint with src/styles/wallet-picker.css delayed 2.5 s, service worker blocked",
+      "picker first paint with src/styles/wallet-picker.css aborted and answered 404 (review follow-up; now the script's signin:picker-legible-when-css-fails), plus a second open after Escape",
       "Ranked results screen opened locally from the production E9 record of the HMH run (1440, 390, 320): focus trapped, Escape returns focus, no overflow",
       "populated boards (30-row E5 fixture) rendered locally at 1440 and 320, since every production board is empty"
     ],
@@ -35,15 +36,21 @@
       "failedChecks": "The 13 defect checks below at each of the three viewports, plus profile:recent-sessions-with-tx-links at 320 px (rows overflow the card).",
       "consoleErrors": 0,
       "pageErrors": 0,
-      "failedRequests": 0
+      "failedRequests": 0,
+      "scriptVersion": "77 checks per viewport (the script at 1e72cc3f). The script now has 78: signin:picker-legible-when-css-fails was added after the review, so a production re-run today reports 234 checks."
     },
     "localBuildOfThisBranch": {
-      "how": "apps/portal served on 127.0.0.1:8862 (python http.server), /api stubbed with the production GET answers captured during the audit, /s/<id> rendered by this branch's server/share/render-page.mjs from the production E9 records, two stand-in EIP-6963 wallets so the picker opens on localhost",
-      "checks": 231,
-      "passed": 229,
+      "ranAt": "2026-09-25T03:07:24Z",
+      "head": "b47324f6 (every code fix of this branch, including the review fixes)",
+      "how": "apps/portal served on 127.0.0.1:8862 (python http.server), /api stubbed from the production GET answers captured during the audit (empty boards, the test wallet's profile, the three E9 records and card PNGs), /s/<id> rendered by this branch's server/share/render-page.mjs, two stand-in EIP-6963 wallets so the picker opens on localhost. That harness lives in the scratchpad (live-ui-audit/local.mjs, run-local-script.mjs) and is NOT committed: the committed script reproduces the production run, not these local figures.",
+      "checks": 234,
+      "passed": 232,
       "failed": 2,
-      "failedChecks": "phone and narrow home:sign-in-picker only: localhost offers no WalletConnect and the stand-in wallets are injected, so the picker correctly shows no phone deep links there. Production shows them (verified live).",
-      "populatedBoards": "154 checks at 1440 and 320 with a 30-row board: 153 passed, the same localhost-only picker miss.",
+      "blockedNonGet": 0,
+      "failedChecks": "phone and narrow home:sign-in-picker only: localhost offers no WalletConnect and the stand-in wallets are injected, so the picker correctly shows no phone deep links there. Production shows them (verified live). Every other check passed at all three viewports in this one run, including narrow page/games/hard-money-heroes:console-clean and :requests-ok.",
+      "signinPickerChecks": "signin:picker-never-unstyled (CSS delayed 2.5 s): 'waiting' (page dimmed, sheet hidden) for all 6 samples and the second open, never 'unstyled'. signin:picker-legible-when-css-fails (CSS aborted, and answered 404): 'styled' (fixed overlay, sheet on the fallback) for all 6 samples and the second open, at 1440, 390 and 320.",
+      "correction": "The earlier figure here (231 checks, 229 passed) was not one run: the only full local run then scored 227/231 (narrow page/games/hard-money-heroes:console-clean and :requests-ok failed once when arcade-splash-poster.jpg returned net::ERR_FAILED), a narrow-only rerun was substituted, and both runs predated 9f7cf4a4 and c46a6f9a. The run above replaces it; the splash-poster failure did not reproduce.",
+      "populatedBoards": "Earlier run, before the review fixes: 154 checks at 1440 and 320 with a 30-row board: 153 passed, the same localhost-only picker miss.",
       "contrastSampling": "0 text boxes under 4.5:1 (3:1 large) on /, /scores (30-row board), the profile, /games/stacked and a share page, desktop and phone. The same sampling on production (empty boards) failed only the two grey profile buttons (LUA-04).",
       "visibleFocus": "No Tab stop without a visible focus change on /scores (40 stops), the profile (39) and a share page (34)."
     }
@@ -53,13 +60,13 @@
       { "item": "Sign in button opens the wallet picker", "ok": true, "evidence": "Dialog 'Choose your wallet' (role=dialog, labelled) at every viewport; desktop: WalletConnect 'Scan with a phone wallet' plus Get MetaMask and Get Rabby; phone and 320: WalletConnect 'Open a wallet app on this phone', Open in MetaMask, Open in Trust Wallet, Get MetaMask, Get Rabby. Focus starts inside, Tab is trapped, Escape closes and returns focus to Sign in." },
       { "item": "Picker styled on first open", "ok": false, "fixed": "LUA-02" },
       { "item": "Ranked entry points", "ok": true, "evidence": "Each game page has a Play Ranked card (WALLET REQUIRED chip); signed out, pressing it opens the sign-in picker and no Ranked modal or wallet prompt." },
-      { "item": "Launch copy: 0.102 zkLTC, no NFT wording, no hashtags", "ok": false, "evidence": "No NFT, soulbound or hashtag text on any audited page; HMH and Chikun cards say '0.102 testnet zkLTC per run'. STACKED's card had no price.", "fixed": "LUA-05" },
+      { "item": "Launch copy: 0.102 zkLTC, no NFT wording, no hashtags", "ok": false, "evidence": "No NFT, soulbound or hashtag text on any audited page; HMH and Chikun cards say '0.102 testnet zkLTC per run'. STACKED's card had no price. HMH's mode line told signed-out visitors 'Your Lester’s Arcade session is active.'", "fixed": "LUA-05, LUA-11" },
       { "item": "Console clean", "ok": true, "evidence": "0 console errors, 0 warnings, 0 page errors, 0 failed requests on every audited page at every viewport (the jukebox and splash-film preloads the browser cancels are ignored)." }
     ],
     "scores": [
       { "item": "Weekly (default), Monthly, All-time tabs", "ok": true, "evidence": "Tabs WEEKLY (aria-pressed) / MONTHLY / ALL-TIME; each asks E5 for its period (GET /api/leaderboard?game=lester-blaster&period=…, 200)." },
       { "item": "Reset time", "ok": true, "evidence": "'Resets Monday 00:00 UTC · resets in 2d 22h', 'Resets on the 1st, 00:00 UTC · resets in 5d 22h', 'All-time never resets.'" },
-      { "item": "Per-game banners", "ok": true, "evidence": "Cabinet 01-03 banners with art; choosing one updates ?game= and the board; arrow-key tablist with roving tabindex." },
+      { "item": "Per-game banners", "ok": false, "evidence": "Cabinet 01-03 banners with art; choosing one updates ?game= and the board; arrow-key tablist with roving tabindex. Boards not fetched yet read 'Verified · Weekly' beside 'No scores yet · weekly' for the board on screen.", "fixed": "LUA-12" },
       { "item": "Empty state with Play Ranked", "ok": true, "evidence": "'Be the first on this week's board' (month's / all-time board) with a Play Ranked button that opens /play/<game> mode select. The only real rows belong to the excluded test wallet, so all 3 boards x 3 periods are empty; search 0x8841 returns 0 players." },
       { "item": "Search input", "ok": false, "evidence": "Labelled, debounced, server-side; a no-match search shows 'No players match … Clear search'. Focus was lost when the results arrived.", "fixed": "LUA-01" },
       { "item": "No Daily/Yearly/House/Local Preview remnants", "ok": true, "evidence": "None on the page at any viewport." }
@@ -93,8 +100,8 @@
       "severity": "high",
       "area": "/scores search, period and cabinet tabs, Show more; profile game tabs",
       "found": "The hosted views rebuild their DOM on every render and render again when the index answers, dropping keyboard focus to <body>. On /scores, typing '0x88', waiting for the results and typing '41' left the box at '0x88': the later keys went nowhere. Period tabs and cabinet banners lost focus after their board loaded, Show more at once, and the profile game tabs the moment they were pressed.",
-      "fix": "New lazy apps/portal/src/focus-keeper.mjs restores the focused control (and caret) after each hosted re-render; Show more uses aria-disabled while loading and hands focus to the row count after the last page; profile tabs gain data-game, aria-pressed and a labelled group.",
-      "commits": ["ce8b72c5", "1e8a3295"],
+      "fix": "New lazy apps/portal/src/focus-keeper.mjs restores the focused control (and caret) after each hosted re-render; Show more uses aria-disabled while loading and hands focus to the row count after the last page; profile tabs gain data-game, aria-pressed and a labelled group. Review follow-up: when the focused control is gone after a render (Try again became the Loading card; Back to the top left with page 1), focus goes to the first of an ordered fallback list (Scores: Try again, the state card, the row count; Profile: Try again, the state card, the player's name) instead of <body>, and the Show more special handler, which pulled focus back even after the player moved it, is gone.",
+      "commits": ["ce8b72c5", "1e8a3295", "852a8f9f"],
       "tests": ["tests/focus-keeper.test.mjs"]
     },
     {
@@ -102,9 +109,9 @@
       "severity": "medium",
       "area": "Sign-in wallet picker (every page), toast",
       "found": "On a first visit the picker opened before src/styles/wallet-picker.css (loaded on first use) applied, and painted as page content under the footer: a bullet list with browser-grey buttons ('WCWALLETCONNECT…') and run-together links. Seen live on /games/stacked at 390 px; reproduced on / with the CSS delayed.",
-      "fix": "Until the stylesheet applies, inline stand-ins make the backdrop a fixed dimmed layer at once while the sheet stays hidden; the CSS then takes over (inline styles dropped). After 3 s or on a CSS error the sheet shows on a legible fallback, never as page content, and later sheets on that page skip the wait; focus moves in once it shows.",
-      "commits": ["55f72d78", "40d8f6ce", "9f7cf4a4"],
-      "tests": ["tests/wallet-picker.test.mjs"]
+      "fix": "Until the stylesheet applies, inline stand-ins make the backdrop a fixed dimmed layer at once while the sheet stays hidden; the CSS then takes over (inline styles dropped). After 3 s or on a CSS error the sheet shows on a legible fallback, never as page content, and later sheets on that page skip the wait; focus moves in once it shows. Review follow-up: the outcome now comes from the link's load and error events, because Chromium gives a failed <link> (404, network error) an empty, non-null sheet, which the first version read as 'applied' and so painted the picker unstyled after a failure; a backdrop tap while the sheet is still hidden no longer cancels sign-in.",
+      "commits": ["55f72d78", "40d8f6ce", "9f7cf4a4", "0174d32a"],
+      "tests": ["tests/wallet-picker.test.mjs", "scripts/live-ui-audit.mjs (signin:picker-never-unstyled, signin:picker-legible-when-css-fails)"]
     },
     {
       "id": "LUA-03",
@@ -121,7 +128,7 @@
       "area": "Generic buttons: profile Share profile, View Leaderboard, View my profile, Try again, Sign in, Retry, Retry saved runs; Ranked entry Switch network / Get zkLTC / Check again; the first-Ranked name toast's Not now",
       "found": "Buttons with only the pixel-button class had no style: browser-grey fill under the dark global button text, 3.76:1 (under 4.5:1), reading as disabled.",
       "fix": "Cyan-outline arcade button for them (text 17:1 on its base, 44 px target, gold focus ring); avatar options get an outlined tile. A test keeps every pixel-button variant styled.",
-      "commits": ["77a385ab", "c46a6f9a"],
+      "commits": ["77a385ab", "c46a6f9a", "852a8f9f (the profile Try again keeps the arcade style under its new class)"],
       "tests": ["tests/live-ui-audit-polish.test.mjs"]
     },
     {
@@ -130,16 +137,16 @@
       "area": "/games/stacked Ranked card; guest line on all three games; hosted board placement note",
       "found": "STACKED's Play Ranked card read 'Wallet-bound Ranked run. Start at level 1 with no undo…' with no entry price (HMH and Chikun show '0.102 testnet zkLTC per run…', and STACKED's own prerendered page showed a different line). The guest line said 'Connect a wallet when you want Play Ranked.' and the board 'Connect a wallet to see your placement…' while the site's action is Sign in.",
       "fix": "Flag-aware STACKED entry in PORTAL_COPY.modeSelect (SPA and discover/stacked.html now agree), PORTAL_COPY.modeGuestRanked 'Sign in with a wallet when you want to play Ranked.', board note 'Sign in with a wallet…'.",
-      "commits": ["88cd345e"],
-      "tests": ["tests/portal-mode-select-copy.test.mjs", "tests/portal-copy.test.mjs", "scripts/stacked-playable-browser-smoke.mjs (assertions follow the site copy)"]
+      "commits": ["88cd345e", "f9854c1b", "ca747ef8"],
+      "tests": ["tests/portal-mode-select-copy.test.mjs", "tests/portal-copy.test.mjs", "tests/focus-keeper.test.mjs (signed-out hosted board note)", "scripts/stacked-playable-browser-smoke.mjs (assertions follow the site copy)", "scripts/stacked-cabinet-browser-smoke.mjs (Ranked card equals the site copy; it had kept /replay verification/ and failed on every run until ca747ef8)"]
     },
     {
       "id": "LUA-06",
       "severity": "medium",
       "area": "Profile Recent Ranked runs",
       "found": "Desktop: content pushed to the bottom of the card (a tall empty band). 390 px: five inline items squeezed into columns ('Run / verifiedpage'). 320 px: rows overflowed the card (right edge 331 px).",
-      "fix": "Cards start at the top; each run is two wrapping lines (score and game, then a coloured status and the links).",
-      "commits": ["77a385ab"],
+      "fix": "Cards start at the top; each run is two wrapping lines (score and game, then a coloured status and the links). Review follow-up: the run links are 44 px touch targets (were 32 px).",
+      "commits": ["77a385ab", "f1615568"],
       "tests": ["tests/live-ui-audit-polish.test.mjs"]
     },
     {
@@ -177,6 +184,24 @@
       "fix": "Flex alignment with a gap.",
       "commits": ["77a385ab"],
       "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    },
+    {
+      "id": "LUA-11",
+      "severity": "low",
+      "area": "Hard Money Heroes mode select (SPA, index.html, discover/games.html)",
+      "found": "The mode line opened with 'Your Lester’s Arcade session is active.' for signed-out visitors too (listed as a follow-up in the first report; the review asked for it to be fixed).",
+      "fix": "PORTAL_COPY.modeSelect['lester-blaster'] starts with the choice ('Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'), as Chikun and STACKED do, in all three flag states; pages regenerated. The HMH intro note in index.html ('Your Lester’s Arcade session is active. Hard Money Heroes does not interrupt Free play…') is unchanged: tests/portal-trust-copy.test.mjs (site-copy) pins it.",
+      "commits": ["f9854c1b"],
+      "tests": ["tests/portal-mode-select-copy.test.mjs"]
+    },
+    {
+      "id": "LUA-12",
+      "severity": "low",
+      "area": "/scores cabinet banners",
+      "found": "Boards not fetched yet read 'Verified · Weekly' while the board on screen read 'No scores yet · weekly' (listed as a follow-up in the first report).",
+      "fix": "A board that has not loaded is named neutrally ('Weekly board', 'Monthly board', 'All-time board'); no prefetch, so the E5 request counts tests/hosted-leaderboard.test.mjs pins are unchanged.",
+      "commits": ["f9854c1b"],
+      "tests": ["tests/focus-keeper.test.mjs"]
     }
   ],
   "notDefects": [
@@ -186,21 +211,39 @@
     "Share cards of the Chikun and STACKED runs share cardRev 9aad35cebaa9: the revision hashes status, name, avatar, hidden and verification only (contract §7.5); the card URL still carries each share id."
   ],
   "followUps": [
-    "Deploy, then re-run scripts/live-ui-audit.mjs against production: it should pass 231/231 (it fails exactly the defects above today).",
-    "Scores cabinet banners show 'Verified · Weekly' for boards not fetched yet and 'No scores yet · weekly' for the one on screen. Prefetching the other two boards (two cacheable E5 GETs) would make them agree; it changes the request counts that tests/hosted-leaderboard.test.mjs pins, so it is left for the perf-lazy-hosted or profile-boards owner.",
+    "Deploy, then re-run scripts/live-ui-audit.mjs against production (three viewports by default): it should pass 234/234. Before the deploy it fails the defect checks above.",
     "Profile 'Verified totals' sums per-run bests (HMH 'Combo total', STACKED 'Levels'); consider max-style labels ('Best combo', 'Highest level') once players have several runs (owner copy decision).",
-    "The HMH and Chikun mode lines still say 'Your Lester's Arcade session is active' / 'endless guest practice' to signed-out visitors; the first is pinned by tests/portal-trust-copy.test.mjs (site-copy owner)."
+    "signin-entry owner: review the wallet-picker behaviour change before merge (apps/portal/src/wallet-picker.mjs, commits 55f72d78, 40d8f6ce, 9f7cf4a4, 0174d32a): the sheet stays hidden up to 3 s while wallet-picker.css loads, focus moves in once it shows, a backdrop tap is ignored while it is hidden, and a failed or stalled stylesheet shows the inline fallback.",
+    "Site-copy owner: the HMH intro note in index.html still opens with 'Your Lester’s Arcade session is active.' (pinned by tests/portal-trust-copy.test.mjs); reword it with that pin if wanted."
   ],
   "bytes": {
-    "distMainJs": { "base": 1222120, "branch": 1223702, "delta": 1582, "why": "portal-content (+1,198: STACKED mode copy, profilePublicView and modeGuestRanked in three flag states), official-app-routes (+311), official-play-routes (+24), main.js (+49)" },
+    "measuredAt": "b47324f6, npm run build",
+    "distMainJs": { "base": 1222120, "branch": 1223612, "delta": 1492, "why": "portal-content (STACKED mode copy, profilePublicView and modeGuestRanked in three flag states; the HMH mode line got shorter), official-app-routes, official-play-routes, main.js" },
     "lazyChunks": {
-      "hosted-leaderboard-view": { "base": 13709, "branch": 14127, "delta": 418 },
-      "hosted-profile-view": { "base": 23618, "branch": 23899, "delta": 281 },
-      "focus-keeper (new shared lazy chunk)": { "base": 0, "branch": 1494, "delta": 1494 },
-      "wallet-picker": { "base": 6834, "branch": 8189, "delta": 1355 }
+      "hosted-leaderboard-view": { "base": 13709, "branch": 14032, "delta": 323 },
+      "hosted-profile-view": { "base": 23618, "branch": 24063, "delta": 445 },
+      "focus-keeper (new shared lazy chunk)": { "base": 0, "branch": 1685, "delta": 1685 },
+      "wallet-picker (shared chunk with wallet-chips)": { "base": 6834, "branch": 8633, "delta": 1799 }
     },
     "hmhChildInitialPlusShared": { "base": 1046713, "branch": 1046713, "delta": 0 },
     "stackedEntry": { "base": 27694, "branch": 27694, "delta": 0 },
-    "stylesArcadePolishCss": { "base": 88509, "branch": 94453, "delta": 5944 }
+    "stylesArcadePolishCss": { "base": 88509, "branch": 94735, "delta": 6226 }
+  },
+  "commitNotes": [
+    "77a385ab bundles LUA-04, LUA-06, LUA-07, LUA-08 and LUA-10 (generic buttons, recent-runs layout, wallet hex case, achievement cards, board title icon) in one commit; it was not split after the fact. Every later fix is its own commit.",
+    "Files outside the slice's view modules, each disclosed in its commit: apps/portal/src/wallet-picker.mjs (signin-entry), apps/portal/main.js (one line), apps/portal/src/portal-content.mjs with index.html and discover pages (site-copy), official-play-routes.mjs, the curated-kit inventory, scripts/stacked-playable-browser-smoke.mjs and scripts/stacked-cabinet-browser-smoke.mjs (browser-e2e)."
+  ],
+  "review": {
+    "date": "2026-09-24",
+    "fixed": [
+      "LUA-02 failure path: stylesheet outcome from load/error events, not link.sheet (0174d32a)",
+      "LUA-02 backdrop tap while the sheet waits no longer cancels sign-in (0174d32a)",
+      "LUA-01 focus fallback when the focused control disappears; Show more no longer steals focus (852a8f9f)",
+      "LUA-11 and LUA-12, the two deferred defects; the hosted board's Sign in note pinned (f9854c1b)",
+      "44 px run links on the profile (f1615568)",
+      "scripts/stacked-cabinet-browser-smoke.mjs follows the STACKED site copy (ca747ef8)",
+      "audit script: three viewports by default, every context counts blocked requests, failed-CSS picker check (b47324f6)",
+      "this report: one real local run of the branch head, measured byte deltas, commit notes"
+    ]
   }
 }
