@@ -79,9 +79,11 @@ test('WO-119 docs, proof, syntax gate, and PixelLab generator are wired', () => 
   assert.equal(syntax.includes('scripts/write-wo119-pixellab-aaa-wave.py'), true);
 
   assert.equal(existsSync(repoUrl('scripts/pixellab-hmh-aaa-quality-wave.py')), true);
-  assert.equal(existsSync(repoUrl('apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json')), true);
 
   const generator = readText('scripts/pixellab-hmh-aaa-quality-wave.py');
+  // The public job ledger (raw PixelLab job ids, no runtime reader) was retired in the 2026-09-25 asset
+  // cleanup; the generator starts from an empty ledger when the file is absent.
+  assert.match(generator, /if LEDGER\.exists\(\):[\s\S]*?return \{"id": "hmh-aaa-pixellab-quality-wave-v1", "style": STYLE, "targets": \{\}\}/);
   for (const actor of ['coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake', 'scorpion-ambusher', 'sybil-drone']) {
     assert.match(generator, new RegExp(`"${actor}"`), `${actor} should be in the human/zombie PixelLab wave`);
   }
