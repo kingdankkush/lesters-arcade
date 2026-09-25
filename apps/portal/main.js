@@ -153,7 +153,6 @@ import {
   buildGameOverSummaryModel,
   buildGameModeSelectModel,
   buildHardMoneyHeroesAnimationCoverageReport,
-  buildLeaderboardModel,
   buildLeaderboardExperienceV2Model,
   buildCombatHudOverlayModel,
   buildCombatAccessibilitySettingsModel,
@@ -202,8 +201,6 @@ import {
   getAllCadenceLeaderboards,
   resolveDisplayName,
   validateUsername,
-  scheduleBossEncounter,
-  simulateLesterBlasterRun,
   startPlaySession,
   getPlaySessionIdentity,
   AVATAR_RULES,
@@ -466,42 +463,6 @@ async function ensureHMHLoaded() {
   return HMH_LOAD_PROMISE;
 }
 function hmh(name) { return HMH_PAYLOAD ? HMH_PAYLOAD[name] : undefined; }
-
-// Lightweight full-screen overlay shown while the heavy HMH manifests download
-// (first cabinet selection). The analysis flagged that the 9 dynamic imports
-// gave zero feedback on slow connections — this is the "INSERT CARTRIDGE"
-// moment, so it gets arcade-flavored copy and an animated bar.
-function showCartridgeLoadingOverlay(cabinetTitle = 'Hard Money Heroes') {
-  const overlay = document.createElement('div');
-  overlay.id = 'cartridgeLoadingOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(3,6,23,0.92);display:flex;align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(3px);';
-  const title = document.createElement('div');
-  title.style.cssText = 'color:#ffe84d;font-family:monospace;font-size:17px;letter-spacing:3px;margin-bottom:18px;text-shadow:0 0 18px rgba(255,232,77,0.6);';
-  title.textContent = `INSERTING ${cabinetTitle.toUpperCase()} CARTRIDGE…`;
-  const barShell = document.createElement('div');
-  barShell.style.cssText = 'width:50%;max-width:420px;height:10px;background:rgba(255,255,255,0.12);border:2px solid #19f7ff;border-radius:999px;overflow:hidden;';
-  const bar = document.createElement('div');
-  // Indeterminate sweep — import() exposes no byte progress, so honesty over
-  // a fake percentage: a looping cyan sweep that reads as "working".
-  bar.style.cssText = 'height:100%;width:34%;background:linear-gradient(90deg,transparent,#19f7ff,#fff);animation:cartridgeSweep 1.1s linear infinite;';
-  if (!document.getElementById('cartridgeSweepKeyframes')) {
-    const style = document.createElement('style');
-    style.id = 'cartridgeSweepKeyframes';
-    style.textContent = '@keyframes cartridgeSweep { from { transform: translateX(-110%); } to { transform: translateX(330%); } }';
-    document.head.appendChild(style);
-  }
-  barShell.appendChild(bar);
-  const hint = document.createElement('div');
-  hint.style.cssText = 'color:#9aa6c4;font-family:monospace;font-size:11px;letter-spacing:2px;margin-top:14px;';
-  hint.textContent = 'DOWNLOADING SPRITES · ENEMIES · LEVELS (FIRST LOAD ONLY)';
-  overlay.append(title, barShell, hint);
-  document.body.appendChild(overlay);
-  return () => {
-    overlay.style.transition = 'opacity 240ms ease';
-    overlay.style.opacity = '0';
-    setTimeout(() => overlay.remove(), 260);
-  };
-}
 
 // Default profile avatar shown when a player hasn't uploaded their own (was a
 // green initial chip; now the Litecoin Chad PFP).
@@ -987,10 +948,6 @@ async function previousArcadeMusicTrack() {
   return currentArcadeMusicTrack();
 }
 
-function nextCombatMusicTrack() {
-  return nextArcadeMusicTrack();
-}
-
 function toggleArcadeMusicExpanded() {
   arcadeMusic.expanded = !arcadeMusic.expanded;
   renderArcadeMusicPlayer();
@@ -1309,7 +1266,6 @@ const dom = {
   officialCombatMount: document.querySelector('#officialCombatMount'),
   runStatus: document.querySelector('#runStatus'),
   runDetails: document.querySelector('#runDetails'),
-  leaderboardPanel: document.querySelector('#leaderboardPanel'),
   combatCanvas: document.querySelector('#combatCanvas'),
   combatRunStatus: document.querySelector('#combatRunStatus'),
   combatStatus: document.querySelector('#officialGameStateCopy'),
@@ -6445,76 +6401,6 @@ async function startMode(mode, { session = null } = {}) {
     syncRouteForView('gameplay');
   }
   render();
-}
-
-async function completePrototypeRun() {
-  await ensureWalletConnected();
-  if (!currentSession) await startMode('free');
-
-  const paidBoost = currentSession.isPaid ? 42 : 0;
-  const elapsedSeconds = currentSession.isPaid ? 316 + (lastRunScore % 80) : 242 + (lastRunScore % 90);
-  const bossRoll = scheduleBossEncounter({ elapsedSeconds, seed: lastRunScore + paidBoost });
-  const score = simulateLesterBlasterRun({
-    mode: currentSession.mode,
-    entropy: Date.now() + lastRunScore + paidBoost,
-    elapsedSeconds,
-    kills: combat.kills || undefined,
-    bossId: bossRoll.boss?.id,
-    weaponId: combat.weaponId,
-    scoreMultiplier: currentSession.isPaid ? 1.15 : 1,
-  });
-
-  const completedSession = currentSession;
-  const result = recordScore(state, completedSession, score, {
-    distanceMeters: Math.round(elapsedSeconds * 2.7),
-    elapsedSeconds: Math.max(elapsedSeconds, Math.round(combat.longestSurvivalThisRun || 0)),
-    kills: combat.kills,
-    maxCombo: combat.maxCombo,
-    maxDamageCombo: combat.maxDamageCombo,
-    bossId: bossRoll.boss?.id,
-    weaponId: combat.weaponId,
-    enemyKillsByType: { ...(combat.killsByType || {}) },
-    powerUpsCollected: combat.powerUpsCollected || 0,
-    collectedPowerUps: [...(combat.collectedPowerUpTypes || [])],
-  });
-
-  lastRunScore = score;
-  lastRunElapsedSeconds = elapsedSeconds;
-  lastBossId = bossRoll.boss?.id ?? null;
-  lastCompletedSession = completedSession;
-  lastRunResult = {
-    score,
-    elapsedSeconds,
-    acceptedForGlobalLeaderboard: result.acceptedForGlobalLeaderboard,
-  };
-  currentSession = null;
-  // A prototype run has no canonical run summary, so it never settles.
-  render();
-}
-
-function emptyMini(text) {
-  const item = el('article', { className: 'mini-item' });
-  appendText(item, 'span', text);
-  return item;
-}
-
-function renderLeaderboard() {
-  const model = buildLeaderboardModel(state, { gameId: selectedGameId, wallet: connectedWallet });
-  dom.leaderboardPanel.replaceChildren();
-  appendText(dom.leaderboardPanel, 'h3', 'Official Ranked Leaderboard');
-  appendText(dom.leaderboardPanel, 'p', `${model.testnetDisclosure.title}: ${model.testnetDisclosure.body}`, 'tiny-note');
-  appendText(dom.leaderboardPanel, 'p', model.testnetDisclosure.leaderboardResetNotice, 'tiny-note');
-  appendText(dom.leaderboardPanel, 'p', model.scoreFormula, 'tiny-note');
-  if (model.topEntries.length === 0) {
-    dom.leaderboardPanel.append(emptyMini('No ranked scores yet. Finish a Ranked Testnet run to sync here.'));
-  } else {
-    for (const entry of model.topEntries.slice(0, 4)) {
-      const item = el('article', { className: 'leaderboard-entry' });
-      appendText(item, 'strong', `#${entry.rank} ${entry.score.toLocaleString()}`);
-      appendText(item, 'span', `${entry.displayName ?? `${entry.wallet.slice(0, 6)}…${entry.wallet.slice(-4)}`} · ${formatSeconds(entry.runStats.elapsedSeconds ?? 0)} · boss ${entry.runStats.bossId ?? 'none'}`);
-      dom.leaderboardPanel.append(item);
-    }
-  }
 }
 
 async function startCombat(options = {}) {

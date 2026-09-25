@@ -98,7 +98,6 @@ test('main runtime consumes upgrade policy outputs', () => {
     'critDamageBonus',
     'spreadMultiplier',
     'additionalPierceTargets',
-    'scoreMultiplier',
     'weaponEvolution',
   ]) assert.match(mainSource, new RegExp(token));
 });

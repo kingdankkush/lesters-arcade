@@ -20,7 +20,6 @@ const KNOWN_MISSING = new Map([
   ['splashFeaturedCabinet', 'official-shell-routes.mjs renders into it only when the element exists'],
   ['runStatus', 'renderOfficialRunStatus() returns early without it'],
   ['runDetails', 'renderOfficialRunStatus() returns early without it'],
-  ['leaderboardPanel', 'renderLeaderboard() has no caller'],
   ['combatCanvas', 'legacy Canvas combat loop, superseded by the PixiJS HMH child'],
   ['combatRunStatus', 'legacy Canvas combat sandbox status'],
 ]);
