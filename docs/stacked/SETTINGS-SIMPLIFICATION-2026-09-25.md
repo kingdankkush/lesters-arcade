@@ -106,6 +106,38 @@ ignored. The bridge (`stacked-bridge-protocol.mjs`) accepts `effectsPreset`,
 `settings.video` and in `game:preferences-request`. The required keys and
 `version: 1` are unchanged.
 
+### Deploy skew
+
+An arcade tab that loaded the 1.8.1 `stacked-host.mjs` chunk before a deploy
+keeps the 1.8.1 exact-key validator in memory, but relaunching STACKED loads the
+new child. That validator rejects `effectsPreset`, `scene` and `reactiveBoard`.
+The rejection happens before the host advances its message sequence, so every
+later child message fails as out of order, including `game:result`, and a
+Ranked run would end "Not saved". A service-worker bump does not help, because
+the old host is already in memory.
+
+`apps/stacked/src/preferences-bridge.mjs` prevents this:
+
+- `stackedParentKnowsPresets(init.settings)` is true only when the init
+  settings carry a valid `effectsPreset`. Only such a parent is sent the three
+  preset keys. Any other parent gets exactly the 1.8.1 key set, which the
+  current host classifies back to the same preset (0 → off, minimal → calm,
+  0.7 → standard, 1 → full).
+- `withStackedEffectsPreset` gives settings without a preset (from `portal:init`
+  or a `portal:settings` echo) the nearest preset in the child's copy, so the
+  radios, the backdrop and the board glow agree. Settings that already carry a
+  preset are left exactly as the parent sent them.
+
+`tests/stacked-preferences-bridge.test.mjs` pins the 1.8.1 request key set and
+round-trips every preset through a 1.8.1 host echo. The key set was also checked
+against the real 60ea173a validator.
+
+The reverse case is a 1.8.1 child with a new host. It needs the new portal chunk
+from the network and the old child from a cache, because the service worker is
+network-first for scripts and HTML. The 1.8.1 child then rejects the new
+`portal:init` with "Invalid parent message", so the launch fails before a run
+starts and no result is at stake. A reload fixes it.
+
 A successful save is silent. A failed save is announced once through
 `#stackedStatus`, and `#settingsSaveNote` changes to "Couldn't save on this
 device. Your changes still apply to this run."
@@ -172,7 +204,7 @@ Unit tests, run in this change:
   `lazy-routes`, `integration-glue-copy` and `share-links`
 - New or extended tests: `stacked-player-settings`, `stacked-bridge-protocol`,
   `stacked-music-worlds`, `stacked-board-pulse`, `stacked-music-scenes`,
-  `stacked-shell-ui` and `stacked-menu-navigation`
+  `stacked-shell-ui`, `stacked-menu-navigation` and `stacked-preferences-bridge`
 
 Still owed, because browser runs and the release gate were not available in
 this session:

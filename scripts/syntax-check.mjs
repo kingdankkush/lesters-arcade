@@ -143,6 +143,8 @@ const NODE_CHECK_FILES = [
   'tests/stacked-board-pulse.test.mjs',
   'apps/stacked/src/menu-navigation.mjs',
   'tests/stacked-menu-navigation.test.mjs',
+  'apps/stacked/src/preferences-bridge.mjs',
+  'tests/stacked-preferences-bridge.test.mjs',
   'scripts/stacked-reactive-evidence-smoke.mjs',
   'tests/profile-sync-client.test.mjs',
   'tests/hmh-reboot-silver-score.test.mjs',

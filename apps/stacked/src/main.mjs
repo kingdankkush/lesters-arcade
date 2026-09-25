@@ -12,6 +12,7 @@ import { manageOverlayFocus } from './overlay-focus.mjs';
 import { createStackedSoundEffects, stackedSoundForStep } from './sound-effects.mjs';
 import { STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset } from '../../portal/src/stacked-player-settings.mjs';
 import { applyMenuAction } from './menu-navigation.mjs';
+import { stackedParentKnowsPresets, stackedPreferencesRequest, withStackedEffectsPreset } from './preferences-bridge.mjs';
 
 const $ = id => document.getElementById(id);
 const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameOverlay');
@@ -20,6 +21,8 @@ let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTi
 const pauseClock = createStackedPauseClock();
 const sfx = createStackedSoundEffects();
 let preview = null;
+// Set from the init settings: a pre-preset (1.8.1) host must never be sent the preset keys.
+let parentPresets = false;
 // One settings card (settings simplification 2026-09-24). Every choice is a
 // presentation preference the parent validates, applies and saves under its
 // player-settings key; the Effects preset sets the scene and reactive board too.
@@ -38,12 +41,12 @@ let lastFeedback = '';
 let counters = { hardDrops: 0, spinClears: 0, allClearStreakMax: 0 }, allClearStreak = 0;
 const reportError = error => { status.textContent = error.message; $('overlayTitle').textContent = 'Unable to continue'; $('overlayCopy').textContent = error.message; overlay.hidden = false; $('continueButton').hidden = true; };
 const bridge = connectStackedChild(async (message, send) => {
-  if (message.type === 'portal:init') { init = message.payload; settings = structuredClone(init.settings); await boot(); if (!disposed) send('game:ready', { runtimeVersion: 'stacked-playable-v1', renderer: 'pixi-webgl', capabilities: [...STACKED_CAPABILITIES] }); }
+  if (message.type === 'portal:init') { init = message.payload; parentPresets = stackedParentKnowsPresets(init.settings); settings = withStackedEffectsPreset(structuredClone(init.settings)); await boot(); if (!disposed) send('game:ready', { runtimeVersion: 'stacked-playable-v1', renderer: 'pixi-webgl', capabilities: [...STACKED_CAPABILITIES] }); }
   else if (message.type === 'portal:audio-frame') renderer?.audio(message.payload.audio, performance.now());
   else if (message.type === 'portal:pause') pause();
   else if (message.type === 'portal:resume') resume();
   else if (message.type === 'portal:exit') dispose();
-  else if (message.type === 'portal:settings') { settings = structuredClone(message.payload.settings); syncPreferences(); }
+  else if (message.type === 'portal:settings') { settings = withStackedEffectsPreset(structuredClone(message.payload.settings)); syncPreferences(); }
   else if (message.type === 'portal:preferences-status') {
     // Saves are silent; a failure is announced once and stays in the fine print.
     const note = $('settingsSaveNote');
@@ -248,8 +251,7 @@ function updatePreferences() {
   settings.accessibility.colorblindPieces = $('pieceMarksToggle').checked;
   settings.accessibility.reduceFlash=$('flashToggle').checked; settings.controls.touchLeftHanded=$('leftHandToggle').checked;
   syncPreferences();
-  const { video, audio, accessibility, controls } = settings;
-  bridge.send('game:preferences-request', { reduceMotion: accessibility.reduceMotion, reducedEffects: video.reducedEffects, audioReactive: video.audioReactive, ghostPiece: video.ghostPiece, gridLines: video.gridLines, sfxEnabled: audio.sfxEnabled, effectsPreset: video.effectsPreset, scene: video.scene, reactiveBoard: video.reactiveBoard, effectsIntensity: video.effectsIntensity, visualizer: video.visualizer, sfxVolume: audio.sfxVolume, colorblindPieces: accessibility.colorblindPieces, reduceFlash: accessibility.reduceFlash, touchLeftHanded: controls.touchLeftHanded });
+  bridge.send('game:preferences-request', stackedPreferencesRequest(settings, { presets: parentPresets }));
 }
 for (const id of ['motionToggle', 'ghostToggle', 'gridToggle', 'visualizerSelect', 'pieceMarksToggle', 'flashToggle', 'leftHandToggle', 'volumeRange', 'effectsOff', 'effectsCalm', 'effectsStandard', 'effectsFull']) $(id).addEventListener('change', updatePreferences);
 $('volumeRange').addEventListener('input', showVolume);
