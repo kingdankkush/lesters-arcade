@@ -284,7 +284,7 @@ export function createOfficialPlayRoutes({
   }
 
   function renderOfficialModeSelect() {
-    const { connectedWallet } = getContext();
+    const { connectedWallet, walletSignedIn = false } = getContext();
     const game = selectedGame();
     const modeSelect = buildGameModeSelectModel(game.id);
     if (!modeSelect) {
@@ -331,7 +331,8 @@ export function createOfficialPlayRoutes({
     dom.officialModeSelect.dataset.artStatus = modeSelect.artStatus;
     dom.officialModeEyebrow.textContent = modeSelect.eyebrow;
     dom.officialModeTitle.textContent = modeSelect.title;
-    dom.officialModeCopy.textContent = siteCopy?.copy ?? modeSelect.copy;
+    // A signed-in player reads the line without guest or sign-in wording.
+    dom.officialModeCopy.textContent = (walletSignedIn ? siteCopy?.copySignedIn : null) ?? siteCopy?.copy ?? modeSelect.copy;
     dom.officialModeArtNote.hidden = modeSelect.artStatus === 'production';
     dom.officialModeArtNote.textContent = modeSelect.artStatus === 'production'
       ? ''

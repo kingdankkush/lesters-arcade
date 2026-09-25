@@ -5689,6 +5689,9 @@ const officialPlayRoutes = createOfficialPlayRoutes({
     hmhRebootActive,
     officialSelectedMode,
     state,
+    // The mode line's signed-in form: hosted, a live session for this wallet;
+    // the local preview, a connected wallet.
+    walletSignedIn: Boolean(connectedWallet) && (!HOSTED_PROFILE_SYNC || walletSessionAuthenticated(connectedWallet)),
   }),
   HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
   HERO_ROSTER_BASE,

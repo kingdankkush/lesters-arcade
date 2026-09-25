@@ -125,7 +125,10 @@ test('portal renders guest identity and House Score provenance without claiming 
   assert.doesNotMatch(htmlSource, /Your Lester’s Arcade profile is already active/);
   assert.doesNotMatch(htmlSource, /Wallet profile active/i);
   assert.match(appRoutesSource, /officialProfileEyebrow/);
-  assert.match(htmlSource, /Lester’s Arcade session is active/);
+  // The HMH intro note no longer tells signed-out visitors a session is
+  // active (live UI audit follow-up, polish-2).
+  assert.doesNotMatch(htmlSource, /session is active/);
+  assert.match(htmlSource, /Free play needs no wallet, and Hard Money Heroes never interrupts it with a wallet prompt\./);
 });
 
 // Preview safety (A22, D4) lives in main.js wiring that the module tests

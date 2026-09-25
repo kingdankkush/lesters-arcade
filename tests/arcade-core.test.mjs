@@ -2028,7 +2028,10 @@ test('Chikun mode selection uses canonical title, supplied production art, and t
   const chikun = buildGameModeSelectModel('chikun');
   assert.equal(chikun.title, "Chikun's Escape");
   assert.equal(chikun.artStatus, 'production');
-  assert.match(chikun.copy, /endless guest practice/i);
+  // The descriptor is the fallback mode line: it says nothing a signed-in
+  // player or a signed-out visitor would read as false (polish-2).
+  assert.match(chikun.copy, /^Choose Free Mode to practice without a wallet, or Play Ranked/);
+  for (const descriptor of [hardMoneyHeroes, chikun]) assert.doesNotMatch(descriptor.copy, /session is active|endless|guest/i);
   assert.match(chikun.free.copy, /local score only/i);
   assert.equal(chikun.ranked.official, true);
   // Ranked needs zkLTC in every game at launch, so the faucet link shows for
