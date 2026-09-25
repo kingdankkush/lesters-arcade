@@ -353,6 +353,7 @@ Revision 1's `lastFundedWeek` is removed: it let a 1-wei fund far in the future 
   - emits `CandidateSubmitted` with `submitter = admin`.
   - It refills a list that disqualifications emptied, from the next eligible sessions the owner page lists (§C.6). It cannot displace anyone, so it adds no power the admin's disqualification did not already have.
 - **`setBlocked(wallet, blocked, reason)`** (admin, global): emits `WalletBlocked`. `finalize` skips blocked players even if they were listed before the block, with `CandidateSkipped(w, id, "blocked")`.
+  - **J1 note (2026-09-25):** a block never removes a listed row, so a blocked row keeps its slot and a full list stays full. Against listed decoys the admin first disqualifies with `wholeWalletForWeek` (which removes the rows and frees the slots for re-listing), then blocks. The owner page and the review rubric follow that order.
 - **`holdWeek(w, reason)` / `releaseWeek(w)`** (admin): while held, `finalize(w)` reverts `"WEEK_HELD"`.
 - **`extendWeek(w, extra)`** (admin): allowed before `payoutAt(w)`; the cumulative extension is ≤ 72 h (`"EXTENSION_CAP"`). It shifts the settle cutoff, the candidate window and the payout time together, and is meant for relayer outages near a close. Emits `WeekExtended(w, totalExtension)`.
 - **Pauses and admin rotation (rev. 2; Appendix K, X3):**
@@ -376,6 +377,7 @@ Revision 1's `lastFundedWeek` is removed: it let a 1-wei fund far in the future 
 
 1. Require:
    - `w >= firstWeek`
+   - `endAfterWeek == 0 || w <= endAfterWeek` (`"AFTER_END"`; J1 amendment: a week after a scheduled end only holds refundable funding and never finalizes, so it stays `Open` until its funders `refundAfterEnd`)
    - `_weeks[w].status == Open` (`"WEEK_SETTLED"`)
    - `block.timestamp >= payoutAt(w)` (`"PAYOUT_NOT_DUE"`)
    - `!paused()` (`"PAUSED"`)
@@ -455,7 +457,7 @@ Funded(uint64 indexed week, address indexed funder, uint256 amount)
 RolledOver(uint64 indexed fromWeek, uint64 indexed toWeek, uint256 amount)
 CapExcessCarried(uint64 indexed fromWeek, uint64 indexed toWeek, uint256 amount)
 CandidateSubmitted(uint64 indexed week, bytes32 indexed sessionId, address indexed player, uint256 score, uint64 submittedAt, address submitter, uint8 rank)
-CandidateRemoved(uint64 indexed week, bytes32 indexed sessionId, bytes32 reason)   // "displaced" | "replaced" | "disqualified"
+CandidateRemoved(uint64 indexed week, bytes32 indexed sessionId, bytes32 reason)   // "displaced" | "replaced" | "disqualified" (J1: with wholeWalletForWeek, also the wallet's OTHER listed session, whose own review is unchanged)
 CandidateSkipped(uint64 indexed week, bytes32 indexed sessionId, bytes32 reason)   // finalize: "blocked" | "disqualified-wallet" | "staff"
 LeaderChanged(uint64 indexed week, bytes32 indexed sessionId, address indexed player, uint256 score)
 Cleared(bytes32 indexed sessionId, address indexed by)
@@ -479,6 +481,8 @@ RefundedAfterEnd(uint64 indexed week, address indexed funder, uint256 amount)
 ResidualRecipientNominated(address indexed current, address indexed nominee)  ResidualRecipientChanged(address indexed previous, address indexed current)
 ```
 
+**J1 amendment (2026-09-25):** `toWeek == 0` in `RolledOver`, `CapExcessCarried` and `UnclaimedRecycled` means the amount went to the residue (after a scheduled end); the mirror stores `rolled_to_week = NULL` for it (§C.2). `CandidateSkipped` may also carry `"disqualified"`, which is unreachable today (a disqualified session is never listed) and kept as a guard. The contracts slice's `docs/web3/weekly-jackpot-operations.md` ("Interface notes for jackpot-server") lists every such detail.
+
 ### A.14 Views
 
 | View | Returns |
@@ -488,7 +492,7 @@ ResidualRecipientNominated(address indexed current, address indexed nominee)  Re
 | `potOf(w)` | `(funded, carriedIn, total)` |
 | `weekState(w)` | `(status, held, count, winner, winningSession, prize, unclaimed, finalizedAt, extension)` |
 | `candidatesOf(w)` | `Candidate[]`, at most 5 |
-| `leaderOf(w)` | `(sessionId, player, score, review)`, using the same skip rules as `finalize` |
+| `leaderOf(w)` | `(sessionId, player, score, review)`, using the same skip rules as `finalize`. It also names the top row of an unfunded week, which `finalize` never records as the winner (a zero pot), so it is a champion only when the pot is funded (J13) |
 | `rulesFor(w)`, `rulesCount()`, `rulesAt(i)` | rule epochs |
 | `checkEligibility(sessionId)` | as in A.7 |
 | `liabilities()`, `residual()`, `endAfterWeek()`, `fundedBy(w, funder)` | accounting |
@@ -502,11 +506,13 @@ ResidualRecipientNominated(address indexed current, address indexed nominee)  Re
 | `NOT_FOUND`, `NOT_VERIFIED`, `WRONG_GAME`, `NOT_PAID`, `BELOW_MIN_PAID`, `BEFORE_FIRST_WEEK`, `AFTER_END`, `WRONG_SEASON`, `SURVIVAL_CAP`, `SCORE_CAP`, `ZERO_SCORE`, `STAFF_WALLET` | submit | `deterministic` (the Neon filter and the chain disagree; alert) |
 | `SETTLED_LATE`, `WINDOW_CLOSED`, `WALLET_BLOCKED`, `DISQUALIFIED`, `NOT_BETTER`, `NOT_IN_TOP` | submit | `skipped` (terminal, not an error) |
 | `ALREADY_CANDIDATE`, `WEEK_SETTLED` | submit, finalize | `already-done` |
+| `AFTER_END` (J1 amendment) | finalize of a week after `endAfterWeek` | `already-done` (terminal: the week is refund-only; the cron never finalizes a week after the end) |
+| `NOTHING_TO_CLAIM` (J1 amendment) | recycle, claim | `already-done` |
 | `PAYOUT_NOT_DUE`, `PAUSED`, `WEEK_HELD`, `LEADER_NOT_CLEARED` | finalize, clear | `wait` (the week goes to `awaiting-admin` for the last two) |
 | `REVIEW_LOCKED` | keeper clear or flag | `skipped` (the admin's decision stands) + `awaiting-admin` if it is the leader |
 | `DISQUALIFIED` on flag | keeper flag | `skipped` |
 | `ONLY_KEEPER`, `ONLY_ADMIN`, `Only platform operator` | any | `deterministic` (configuration error; alert) |
-| `NOTHING_RECEIVED`, `BELOW_MIN_FUND`, `BAD_WEEK`, `ONLY_WINNER`, `TOO_EARLY`, `TOO_LATE`, `LIST_FULL`, `RULES_NOT_FUTURE`, `RULES_TOO_FAR`, `TOO_MANY_EPOCHS`, `END_TOO_SOON`, `FUNDED_AFTER_END`, `NOT_AFTER_END`, `NOTHING_TO_REFUND`, `EXTENSION_CAP`, `OPERATOR_LOCK`, `LIABILITIES_BREACHED`, `ZERO_ADDRESS`, `Only pending operator`, `ONLY_PENDING_ADMIN`, `ONLY_RESIDUAL_RECIPIENT` | fund, claim, refund and admin/operator paths | not sent by the keeper |
+| `NOTHING_RECEIVED`, `BELOW_MIN_FUND`, `BAD_WEEK`, `ONLY_WINNER`, `TOO_EARLY`, `TOO_LATE`, `LIST_FULL`, `RULES_NOT_FUTURE`, `RULES_TOO_FAR`, `TOO_MANY_EPOCHS`, `END_TOO_SOON`, `FUNDED_AFTER_END`, `NOT_AFTER_END`, `NOTHING_TO_REFUND`, `EXTENSION_CAP`, `OPERATOR_LOCK`, `LIABILITIES_BREACHED`, `ZERO_ADDRESS`, `Only pending operator`, `ONLY_PENDING_ADMIN`, `ONLY_RESIDUAL_RECIPIENT`, and (J1 amendment) `BAD_RULES`, `END_FINAL`, `EMPTY_GAME_ID` | fund, claim, refund, constructor and admin/operator paths | not sent by the keeper |
 
 ### A.16 What can never happen (tested invariants)
 

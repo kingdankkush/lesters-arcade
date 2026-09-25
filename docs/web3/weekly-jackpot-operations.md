@@ -13,7 +13,7 @@ Nothing here is run against LiteForge by an agent. Every ⚠ step of the design'
 
 | Contract | Source | Size (solc 0.8.35, optimizer 200) |
 | --- | --- | --- |
-| `WeeklyJackpot` | `contracts/src/WeeklyJackpot.sol` | runtime 22,328 B (limit 24,576 B, so no lens contract), creation 24,841 B |
+| `WeeklyJackpot` | `contracts/src/WeeklyJackpot.sol` | runtime 22,338 B (limit 24,576 B, so no lens contract), creation 24,851 B |
 | `TestChikunToken` (tCHIKUN) | `contracts/src/TestChikunToken.sol` | runtime 2,588 B, creation 3,276 B |
 | `IRankedScoreReader`, `IRankedEntryReader` | `contracts/src/interfaces/IRankedReaders.sol` | interfaces |
 
@@ -47,7 +47,9 @@ Nothing here is run against LiteForge by an agent. Every ⚠ step of the design'
 14. A week with a zero pot records no winner.
 15. `reinstate` never inserts a session that was never listed.
 
-The accounting identity `liabilities == Σ open (funded + carriedIn) + Σ unclaimed + residual` is asserted after every step of a randomized run.
+The accounting identity `liabilities == Σ open (funded + carriedIn) + Σ unclaimed + residual` is asserted after every step of two seeded randomized runs. Each run pays winners, leaves a prize claim-pending and claims it, carries cap excess, rolls pots over, and ends with refunds and the residue recovery.
+
+`finalize` books the prize as paid before the token transfer and books it back as claimable only if the transfer fails (checks-effects-interactions). A token callback during the transfer therefore never sees the prize as both paid and owed.
 
 ### Roles
 
@@ -62,16 +64,28 @@ The accounting identity `liabilities == Σ open (funded + carriedIn) + Σ unclai
 - The operator, the admin and the keeper are `staffEver` from the constructor; every later `acceptOperator`, `acceptAdmin`, `forceAdmin` and `setKeeper` adds the new holder. They can never win. The owner wallet is the admin, so it can never win.
 - Role checks revert with the house strings: `"Only platform operator"`, `"Only pending operator"`, `ONLY_ADMIN`, `ONLY_PENDING_ADMIN`, `ONLY_KEEPER` (keeper or admin), `ONLY_WINNER`, `ONLY_RESIDUAL_RECIPIENT`.
 - A pause (`paused()` = admin pause or operator pause) stops payouts and keeper clears only. Funding, submissions, flags and claims continue.
+- **Blocking does not free a slot.** `setBlocked` never removes a listed row. `finalize` skips a blocked row (`CandidateSkipped` "blocked"), but the row keeps its place, so a list full of blocked decoys stays full: a displaced honest run cannot be re-listed (`NOT_IN_TOP`), `adminSubmit` reverts `LIST_FULL`, and the pot rolls over. Against listed cheaters, first `disqualify(session, wholeWalletForWeek = true, …)` each listed session. That removes the rows and frees the slots, and the honest runs are re-listed with their clears. Then block the wallets (reason `cheating`) so the record is public. `tests/weekly-jackpot-contract.test.mjs` shows both paths.
+- **`leaderOf(w)` is not a champion by itself.** It returns the highest row `finalize` would not skip, even in an unfunded week. `finalize` pays that row only if it is cleared and the pot (`funded + carriedIn`) is above zero; a zero pot records no winner. The UI and the keeper show or act on a leader only for a funded week.
 
-### Reference: revert strings and events beyond the design's tables
+### Interface notes for jackpot-server (and every other mirror of the contract)
 
-- The eligibility checks of `submitCandidate` run in the order of design §A.7, and `checkEligibility(sessionId)` returns the same string without writing. Every other string is listed in design §A.15, plus these four:
-  - `BAD_RULES` (a rules epoch without a season or with `minFundWei` 0);
-  - `END_FINAL` (`cancelEnd` or a new `scheduleEnd` after the last week has passed);
-  - `NOTHING_TO_CLAIM` (`claim` or `recycleUnclaimed` with nothing unclaimed);
-  - `EMPTY_GAME_ID` (constructor only).
-- `finalize` of a week **after** a scheduled end reverts `AFTER_END`: such a week only holds refundable funding and never pays out. The keeper treats it as terminal.
-- Amounts that reach the residue (a rollover, cap excess or recycle after a scheduled end) are reported with `toWeek = 0` in `RolledOver`, `CapExcessCarried` and `UnclaimedRecycled`.
+These details go beyond the design's tables. Design §A.9, §A.13, §A.14 and §A.15 carry them as "J1 amendments" (2026-09-25), and the jackpot-server brief points here.
+
+- **Order.** The eligibility checks of `submitCandidate` run in the order of design §A.7, and `checkEligibility(sessionId)` returns the same string without writing. A run that fails two checks reports the earlier one. The tests pin the pairs where the keeper's class would differ: `BEFORE_FIRST_WEEK` and `AFTER_END` before the rules, `WRONG_SEASON` before `SURVIVAL_CAP`, `SETTLED_LATE` before `STAFF_WALLET`, `STAFF_WALLET` before `WALLET_BLOCKED`, and `WALLET_BLOCKED` before `DISQUALIFIED`.
+- **Revert classes the keeper needs beyond design §A.15's rev. 2 table:**
+
+  | Revert | Where | Keeper class |
+  | --- | --- | --- |
+  | `AFTER_END` | `finalize` of a week after `endAfterWeek` | `already-done` (terminal). Such a week only holds refundable funding and never pays out, so it stays `Open` on chain until its funders `refundAfterEnd`. The cron never finalizes a week after the end and treats it as terminal ("refund-only"). |
+  | `NOTHING_TO_CLAIM` | `recycleUnclaimed` (and `claim`) with nothing unclaimed | `already-done` |
+  | `BAD_RULES` | `scheduleRules` and the constructor: no season, or `minFundWei` 0 | not sent by the keeper |
+  | `END_FINAL` | `cancelEnd` or a new `scheduleEnd` after the last week has passed | not sent by the keeper |
+  | `EMPTY_GAME_ID` | constructor only | not sent by the keeper |
+- **`toWeek == 0` means the residue.** Amounts that reach the residue (a rollover, cap excess or recycle after a scheduled end) are reported with `toWeek = 0` in `RolledOver`, `CapExcessCarried` and `UnclaimedRecycled`. The mirror stores `rolled_to_week = NULL` for them; `weekStartOf(0)` is not a week.
+- **`CandidateRemoved(w, id, "disqualified")`** names the disqualified session, and with `wholeWalletForWeek` also the wallet's OTHER listed session of that week, whose own `reviewOf` stays as it was. Mirror that row as removed and its wallet as `walletDisqualified[w]`; do not mark the sibling session itself disqualified.
+- **`CandidateSkipped`** reasons are `blocked`, `disqualified-wallet` and `staff`, as designed. The contract also has a fourth, `disqualified`, which is unreachable today (disqualify removes a listed session, and a disqualified session is never listed); it is kept as a guard, and a mirror should accept it.
+- **Leaders of unfunded weeks.** `leaderOf(w)` may name a cleared row while the pot is zero; `finalize` then records no winner (`Finalized(w, 0, 0, 0, 0)`, status `RolledOver`, no `RolledOver` event). Only a funded week has a champion.
+- **Blocked rows keep their slots** (see Roles above): a keeper that sees a full list of blocked rows should put the week in `awaiting-admin`, not re-list.
 - The constructor emits `OperatorTransferred(0, operator)`, `AdminTransferred(0, admin)`, `KeeperUpdated(keeper)` and `RulesScheduled` for the initial epoch, so an event mirror is complete from the deploy block.
 - `weekBounds(w)` returns the calendar `start` and `close`; `settleCutoff`, `candidateUntil` and `payoutAt` include the admin extension.
 - `reinstate` works before the payout time, or later while the week is held (the same rule as `adminSubmit`), so a hold keeps every admin correction open.
@@ -84,7 +98,7 @@ The accounting identity `liabilities == Σ open (funded + carriedIn) + Σ unclai
    node scripts/jackpot-keeper-key.mjs --out C:/Users/just_/lesters-arcade-vault/keys/jackpot-keeper.json
    ```
 
-   It writes `{ "address", "privateKey" }` to a new file (mode 0600 where supported), prints only the address, never overwrites, and refuses any path inside the repository.
+   It writes `{ "address", "privateKey" }` to a new file (mode 0600 where supported), prints only the address, and never overwrites. It refuses any path inside the repository: a directory named like `..keys` inside it counts as inside, and so does a junction or symlink that resolves into it.
 
 2. **E3 Dry run** (reads LiteForge, sends nothing):
 
@@ -109,6 +123,18 @@ The accounting identity `liabilities == Σ open (funded + carriedIn) + Σ unclai
    - reads every immutable and role back;
    - writes `contracts/deployment-record.jackpot.json`;
    - regenerates `apps/portal/src/generated/litvm-jackpot.mjs` (`status: 'deployed'`).
+
+   Refusals before anything is signed (exit 2, "Blocked"):
+   - **The owner's wallet must be staff.** Chikun's developer wallet on `GameRegistry` (`0x07cec6Fc…8B26`, the owner's wallet, which cannot be changed there) must be the `--admin`, the operator or the `--keeper`, so that it is `staffEver` and can never win (design §H.1). Otherwise the manifest warns and the broadcast is refused.
+   - **`--token` must be a usable ERC-20.** It must answer `totalSupply`, `balanceOf` and `allowance`, and have metadata the record accepts: a 1-64 character printable-ASCII name, a symbol matching Neon's `^[A-Za-z0-9$]{1,16}$`, and decimals from 0 to 36.
+   - **A real-value token needs manual payouts and a cap.** `--token` without `--token-testnet` means real value, and J16/OJ6 then require `adminClearOnly` true and a prize cap (`maxPrizeWei` > 0), so `--rules launch` is refused for it.
+   - **A rules file states its safety fields.** `--rules <file.json>` must state `adminClearOnly`, `maxSurvivalSeconds`, `minPaidWei`, `minFundWei` and the season; a missing field is never silently weakened.
+   - The manifest also warns when the first epoch has `adminClearOnly` false (the launch rules keep it true).
+
+   **If something fails after a transaction was sent** (an RPC outage during the read-back, a refused jackpot deploy after tCHIKUN landed, a record that cannot be written), the script exits **3** and prints "STRANDED ON CHAIN" with every deployed address, transaction hash and the recovery step:
+   - Only tCHIKUN landed: re-run with `--token <that address> --token-testnet`, or deploy a fresh one.
+   - The jackpot landed but the record was not written: the complete record is printed when it was built. Save it as `contracts/deployment-record.jackpot.json`, run `node scripts/generate-litvm-jackpot.mjs`, and do not deploy again.
+   - The jackpot landed before the read-back failed: keep the output and record the address in the release notes. It is in no module, so the keeper, the UI and the owner page ignore it, and an unfunded instance never pays anyone. Never fund it. Fix the cause before deploying again, with a later `--first-week` if in doubt.
 
    Commit both files. `JACKPOT_LIVE` stays false. Once the calibration gate (OJ2) is met, schedule an `adminClearOnly = false` epoch for the flip week with `schedule-rules`.
 
@@ -135,7 +161,7 @@ Every action but `status` is a dry run unless `--broadcast --confirm <PHRASE>` a
 | `refund-after-end <YYYY-Www>` | `REFUND_JACKPOT_4441` | the funder's own key |
 
 - `status` prints the roles, both pause flags, the current and previous week (pot, what the winner can receive, prize, winner, claim-pending amount, candidates with their review states), liabilities, the residue, the rules and the keeper balance (warning below 0.05 zkLTC). It also works while the module is undeployed.
-- `schedule-rules` starts from the epoch that would otherwise apply to that week and changes only the flags given.
+- `schedule-rules` starts from the epoch that would otherwise apply to that week and changes only the flags given. With `--rules <file.json>`, the file (plus the flags) must state `adminClearOnly`, `maxSurvivalSeconds`, `minPaidWei` and `minFundWei`. On an instance whose token is not a test token, every epoch must keep `adminClearOnly` true and a prize cap (J16, OJ6).
 - `set-keeper` reminds you to block the outgoing keeper wallet from the owner page.
 - `--instance <address>` targets a retired instance (for its last finalizes and refunds).
 - There is no operator `transfer-admin`: the two-step admin transfer is the admin's own, from the owner page.
