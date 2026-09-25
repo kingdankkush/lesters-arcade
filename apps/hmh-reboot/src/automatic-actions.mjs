@@ -8,6 +8,21 @@ function distanceToSegment(point,a,b) {
   return Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);
 }
 
+// The dodge footprint rule, shared by the automatic and the manual dodge:
+// dodge movement may not introduce a drop, cross deep water or clip the edge
+// of a narrow bridge. Samples every 4 units from the start to `distance`
+// across the body's width; returns the first unsafe sample's distance, or
+// null when the whole route is safe.
+export function firstUnsafeDodgeSample({start,direction,distance,radius,groundZ,queryGround}) {
+  for(let along=0;along<=distance;along+=4) {
+    for(const offset of [-radius,0,radius]) {
+      const ground=queryGround(start.x+direction.x*along-direction.y*offset,start.y+direction.y*along+direction.x*offset);
+      if(!ground.walkable || ground.deepWater || Math.abs(ground.groundZ-groundZ)>6) return along;
+    }
+  }
+  return null;
+}
+
 // Simulation only: no camera, wall clock, random draws or animation state.
 export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers,queryGround,enemies}) {
   if(state.active || tick<state.cooldownReadyTick || Math.hypot(move.x,move.y)<.5) return null;
@@ -35,13 +50,7 @@ export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers
   if(!danger.some(contains=>contains(start)) || danger.some(contains=>contains(end))) return null;
   const sweep=resolveSweptCircleMotion({body,start,delta:{x:end.x-start.x,y:end.y-start.y},blockers,bounds,stopOnFirstContact:true});
   if(sweep.contacts.length || sweep.depenetrations.length || Math.hypot(sweep.position.x-end.x,sweep.position.y-end.y)>.1) return null;
-  // Check the entire footprint: automatic movement may not introduce a drop,
-  // cross deep water or clip the edge of a narrow bridge.
-  for(let distance=0;distance<=state.distance;distance+=4) {
-    for(const offset of [-body.radius,0,body.radius]) {
-      const ground=queryGround(start.x+direction.x*distance-direction.y*offset,start.y+direction.y*distance+direction.x*offset);
-      if(!ground.walkable || ground.deepWater || Math.abs(ground.groundZ-actor.groundZ)>6) return null;
-    }
-  }
+  // Check the entire footprint: an automatic dodge needs the whole route safe.
+  if(firstUnsafeDodgeSample({start,direction,distance:state.distance,radius:body.radius,groundZ:actor.groundZ,queryGround})!==null) return null;
   return direction;
 }

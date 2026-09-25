@@ -63,7 +63,8 @@ test('M5 runtime projection sends only bounded child-relevant settings', () => {
   assert.equal(runtime.touchScale, 1.2);
   assert.equal(runtime.hudScale, 1.15);
   assert.equal(runtime.captionCriticalAudio, false);
-  assert.equal(Object.keys(runtime.keyboardBindings).length, 7, 'four movement keys, grenade, swap and pause');
+  assert.equal(Object.keys(runtime.keyboardBindings).length, 8, 'four movement keys, grenade, swap, pause and the keyboard dodge');
+  assert.equal(runtime.keyboardBindings.dodge, 'ShiftLeft');
 });
 
 test('M5 parent accepts bounded runtime settings but preserves ranked keyboard authority', () => {

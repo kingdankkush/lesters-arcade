@@ -53,6 +53,10 @@ export function createDashState({
     invulnerabilityTicks: positiveInteger(invulnerabilityTicks, 'invulnerabilityTicks'),
     active: false,
     direction: Object.freeze({ x: 0, y: 0 }),
+    // The current dash's length and tick count: the full dash, or a manual
+    // dodge truncated at the last safe sample (package 7.7).
+    activeDistance: safeDistance,
+    activeTicks: positiveInteger(durationTicks, 'durationTicks'),
     remainingTicks: 0,
     startedTick: -1,
     cooldownReadyTick: 0,
@@ -61,8 +65,12 @@ export function createDashState({
   };
 }
 
-export function beginDash(state, { tick, direction, fallbackDirection = { x: 0, y: 0 } } = {}) {
+// `distance` shortens one dash (a truncated manual dodge). It keeps dash
+// speed and ends early; cooldown and i-frames are those of a full dash.
+export function beginDash(state, { tick, direction, fallbackDirection = { x: 0, y: 0 }, distance = state.distance } = {}) {
   nonNegativeInteger(tick, 'tick');
+  const dashDistance = finite(distance, 'distance');
+  if (dashDistance <= 0 || dashDistance > state.distance) throw new TypeError('dash distance must be positive and no longer than a full dash');
   if (state.active) return freezeDeep({ started: false, reason: 'active', cooldownReadyTick: state.cooldownReadyTick });
   if (tick < state.cooldownReadyTick) return freezeDeep({ started: false, reason: 'cooldown', cooldownReadyTick: state.cooldownReadyTick });
   let resolvedDirection = normalize(direction, 'direction');
@@ -72,7 +80,11 @@ export function beginDash(state, { tick, direction, fallbackDirection = { x: 0, 
   }
   state.active = true;
   state.direction = resolvedDirection;
-  state.remainingTicks = state.durationTicks;
+  state.activeDistance = dashDistance;
+  state.activeTicks = dashDistance === state.distance
+    ? state.durationTicks
+    : Math.max(1, Math.ceil(dashDistance / (state.distance / state.durationTicks) - EPSILON));
+  state.remainingTicks = state.activeTicks;
   state.startedTick = tick;
   state.cooldownReadyTick = tick + DASH_COOLDOWN_TICKS_BY_TIER[state.cooldownTier];
   state.invulnerableUntilTick = tick + state.invulnerabilityTicks - 1;
@@ -85,7 +97,12 @@ export function stepDash(state, { tick } = {}) {
   if (!state.active || state.remainingTicks <= 0) {
     return freezeDeep({ active: false, delta: { x: 0, y: 0 }, invulnerable: isDashInvulnerable(state, tick), completed: false });
   }
-  const distance = state.distance / state.durationTicks;
+  const perTick = state.distance / state.durationTicks;
+  // A full dash is its eight equal steps; a truncated one moves at the same
+  // speed and covers the remainder on its last tick.
+  const distance = state.activeDistance < state.distance && state.remainingTicks === 1
+    ? state.activeDistance - perTick * (state.activeTicks - 1)
+    : perTick;
   const delta = { x: state.direction.x * distance, y: state.direction.y * distance };
   state.remainingTicks -= 1;
   const completed = state.remainingTicks === 0;

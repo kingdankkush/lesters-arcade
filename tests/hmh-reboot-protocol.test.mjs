@@ -265,6 +265,28 @@ test('child pause exit run score achievement and settings events use exact bound
   }
 });
 
+test('S1.1 settings carry the dodge binding both ways; seven-key bindings from an older parent stay valid', () => {
+  const envelopeFor = (type, keyboardBindings) => createBridgeEnvelope({
+    type,
+    sessionId: 'game-session-000000001',
+    messageId: `${type.replace(':', '-')}-bindings`,
+    payload: { settings: { ...settings, keyboardBindings } },
+  });
+  const current = settings.keyboardBindings;
+  assert.equal(current.dodge, 'ShiftLeft', 'the parent projects the child action map, dodge included');
+  assert.equal(validateParentMessage(parentInit()).ok, true, 'portal:init with the dodge binding');
+  for (const [type, validate] of [['portal:settings', validateParentMessage], ['game:settings', validateChildMessage]]) {
+    assert.equal(validate(envelopeFor(type, { ...current })).ok, true, `${type} with dodge`);
+    const { dodge, ...legacy } = current;
+    assert.equal(validate(envelopeFor(type, legacy)).ok, true, `${type} without dodge (older parent)`);
+    assert.match(validate(envelopeFor(type, { ...current, dodge: current.grenade })).error, /conflicts/, `${type} dodge conflict`);
+    assert.match(validate(envelopeFor(type, { ...current, dodge: 'Shift Left' })).error, /dodge is invalid/, `${type} malformed dodge`);
+    assert.match(validate(envelopeFor(type, { ...current, sprint: 'KeyV' })).error, /unexpected field: sprint/, `${type} unknown action`);
+    const { pause, ...missing } = current;
+    assert.match(validate(envelopeFor(type, missing)).error, /missing field: pause/, `${type} required action`);
+  }
+});
+
 test('portal init rejects wrong game identity and malformed canonical bindings', () => {
   assert.equal(validateParentMessage(parentInit({ gameId: 'unknown-game' })).ok, false);
   assert.equal(validateParentMessage(parentInit({ profile: { displayName: '<script>', locale: 'en' } })).ok, false);

@@ -264,7 +264,12 @@ test('K-3 live pause help retains mouse and alternate bindings after controls re
   assert.match(help('grenade'), /right click/i);
   ui.setSettings({ keyboardBindings: HMH_PLAYER_SETTINGS_DEFAULTS.controls.keyboardBindings });
   assert.match(help('grenade'), /(?:^| · )G(?: · |$)/);
-  assert.equal(elements.get('hmhControlsCard').querySelectorAll('button').length, 7, 'movement, grenade, swap and pause rows');
+  assert.equal(elements.get('hmhControlsCard').querySelectorAll('button').length, 8, 'movement, grenade, swap, pause and dodge rows');
+  // S1.1: the keyboard dodge is a rebindable row of the same panel.
+  const dodgeButton = elements.get('hmhControlsCard').children
+    .map((row) => row.querySelector('button')).find((button) => button?.dataset.actionId === 'dodge');
+  assert.equal(dodgeButton.textContent, 'Left Shift');
+  assert.match(help('dodge'), /^Right Shift$/);
   ui.destroy();
 });
 

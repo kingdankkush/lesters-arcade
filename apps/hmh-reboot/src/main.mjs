@@ -3,7 +3,7 @@ import { OBJECTIVE_REWARDS, objectiveRewardPlacements, collectibleIsAvailable, h
 import { canAcceptCollectible } from './collectible-capacity.mjs';
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { WORLD_DESTRUCTIBLE_PROPS, createWorldDestructibleState, worldDestructibleTargets, worldDestructibleHurtProfile, worldDestructibleCoverHit, applyWorldDestructibleDamage, worldDestructibleHiddenProps, stepWorldDestructibleSupplies } from './world-destructibles.mjs';
-import { automaticDodgeIntent } from './automatic-actions.mjs';
+import { resolveDodgeIntent } from './dodge-intent.mjs';
 import { loadRuntimeTelemetry } from './runtime-telemetry-loader.mjs';
 import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
@@ -1470,6 +1470,11 @@ async function boot() {
   let lastPlayerHit = null;
   let lowHealthWarned = false;
   let lastDashDirection = null;
+  // S1.1 manual dodge: the last non-zero move input (simulation state, from
+  // the input stream) and whether the latest tick's dodge was the keyboard's
+  // manual one (HUD label only).
+  let lastMoveDirection = null;
+  let lastTickManualDodge = false;
   // Cycle 074 game feel: encounter framing ease state and the level-up beat
   // stamped on the resume path. Both are render-side only.
   let framingState = createEncounterFramingState();
@@ -2405,6 +2410,12 @@ async function boot() {
           } else if (event.type === 'dash-ready') {
             combatVisuals.circle(center.x, center.y, 34 + age * 2.6)
               .stroke({ color: 0x8ff3ff, width: 4, alpha: alpha * 0.8 });
+          } else if (event.type === 'dash-blocked') {
+            // A refused manual dodge: a short red cross on the hero.
+            const arm = 12 * camera.zoom;
+            combatVisuals.moveTo(center.x - arm, center.y - arm).lineTo(center.x + arm, center.y + arm)
+              .moveTo(center.x + arm, center.y - arm).lineTo(center.x - arm, center.y + arm)
+              .stroke({ color: 0xff5c7a, width: 4, alpha: alpha * 0.9 });
           } else if (event.type === 'landing') {
             const spread = 18 + age * 3.2;
             combatVisuals.ellipse(center.x, center.y + 8, spread, Math.max(3, spread * 0.28))
@@ -2643,8 +2654,9 @@ async function boot() {
         : null;
       const weaponHud = weaponStatus?.hudLabel ?? 'NO WEAPON 0/0';
       const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
-      const dashHud = dashStatus?.active ? 'DODGING' : dashStatus?.ready ? 'AUTO DODGE' : `DODGE ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
-      const dashAccessible = dashStatus?.active ? 'Automatic dodge active' : dashStatus?.ready ? 'Automatic dodge ready' : `Automatic dodge ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
+      const dodgeName = lastTickManualDodge ? 'Dodge' : 'Automatic dodge';
+      const dashHud = dashStatus?.active ? 'DODGING' : dashStatus?.ready ? (lastTickManualDodge ? 'DODGE READY' : 'AUTO DODGE') : `DODGE ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
+      const dashAccessible = dashStatus?.active ? `${dodgeName} active` : dashStatus?.ready ? `${dodgeName} ready` : `${dodgeName} ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
       const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
       const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
       const powerupPresentation = buildTimedEffectPresentation(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
@@ -2953,6 +2965,8 @@ async function boot() {
     lastPlayerHit = null;
     lowHealthWarned = false;
     lastDashDirection = null;
+    lastMoveDirection = null;
+    lastTickManualDodge = false;
     framingState = createEncounterFramingState();
     lastLevelUpBeat = null;
     shakeStartTick = -1;
@@ -3352,11 +3366,21 @@ async function boot() {
       // and this was previously declared further down the same tick.
       const runEffects = getRunProgressionSnapshot(runProgression).effects;
       const progressionByWeapon = buildProgressionByWeapon(runProgression.ranks);
-      const autoDodge = !rosterPreviewEnabled ? automaticDodgeIntent({
-        tick,actor,move:tickInput.move,state:dashState,body:playerBody,bounds:WORLD_BOUNDS,
-        blockers:WORLD_BLOCKERS,queryGround,enemies:grayboxEnemies,
+      // S1.1 / 7.7: the desktop keyboard dodges on its dodge key and has no
+      // automatic dodge; touch and gamepad keep the automatic one. Both come
+      // from this tick's input, so a Ranked replay reproduces them.
+      const moveLength = Math.hypot(tickInput.move.x, tickInput.move.y);
+      if (moveLength > 0) lastMoveDirection = { x: tickInput.move.x / moveLength, y: tickInput.move.y / moveLength };
+      const dodgePressed = tickInput.dash === true && !previousDash;
+      previousDash = tickInput.dash === true;
+      lastTickManualDodge = tickInput.manualDodge === true;
+      const dodge = !rosterPreviewEnabled ? resolveDodgeIntent({
+        tick, input: { ...tickInput, dash: dodgePressed }, actor, state: dashState, body: playerBody, bounds: WORLD_BOUNDS,
+        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, lastMove: lastMoveDirection, aim: aimIntent.direction,
       }) : null;
-      const dashStart = autoDodge ? beginDash(dashState,{tick,direction:autoDodge}) : null;
+      // Under 48 safe units a manual dodge is refused: no cooldown, a flash.
+      if (dodge?.blocked) pushCombatVisualEvent({ type: 'dash-blocked', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 } });
+      const dashStart = dodge && !dodge.blocked ? beginDash(dashState, { tick, direction: dodge.direction, distance: dodge.distance }) : null;
       if (dashStart?.started) {
         motion.vx = 0;
         motion.vy = 0;
@@ -5203,7 +5227,10 @@ async function boot() {
     if (event.key !== 'Escape' || event.repeat) return;
     event.preventDefault();
     if (weaponWheel?.isOpen()) { closeWeaponWheel(0); return; }
-    if (event.shiftKey && bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
+    // Shift+Escape exits, but not mid-run: Shift is the keyboard dodge
+    // (package S1.1), so a dodge followed by Escape must pause, never quit.
+    const shiftExit = event.shiftKey && !['active', 'upgrade'].includes(simulation?.state);
+    if (shiftExit && bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
     else if (simulation?.state === 'paused') resumeRuntime('user');
     else pauseRuntime('user');
   };
