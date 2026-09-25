@@ -72,3 +72,18 @@ test('result perfect-clear claims cannot exceed total cleared lines',async()=>{
  assert.equal(validateStackedBridgeMessage(envelope('game:result',p)).ok,false);
 });
 
+test('effects preset, scene mode and reactive board are optional bounded presentation keys',async()=>{
+ const {validateStackedBridgeMessage,validateStackedBridgeSettings}=await load();
+ const request=extra=>envelope('game:preferences-request',{reduceMotion:false,reducedEffects:false,audioReactive:true,ghostPiece:true,gridLines:true,sfxEnabled:true,...extra});
+ for(const effectsPreset of ['off','calm','standard','full'])assert.equal(validateStackedBridgeMessage(request({effectsPreset})).ok,true,effectsPreset);
+ for(const scene of ['auto','off'])assert.equal(validateStackedBridgeMessage(request({scene})).ok,true,scene);
+ for(const reactiveBoard of [true,false])assert.equal(validateStackedBridgeMessage(request({reactiveBoard})).ok,true);
+ assert.equal(validateStackedBridgeMessage(request({effectsPreset:'full',scene:'auto',reactiveBoard:true,effectsIntensity:1,visualizer:'orbit',sfxVolume:0.5,colorblindPieces:false,reduceFlash:true,touchLeftHanded:false})).ok,true);
+ for(const bad of [{effectsPreset:'lively'},{effectsPreset:'toString'},{scene:'tunnel'},{scene:'horizon'},{reactiveBoard:'yes'},{reactiveBoard:1}])assert.equal(validateStackedBridgeMessage(request(bad)).ok,false,JSON.stringify(bad));
+ const s=settings();Object.assign(s.video,{effectsPreset:'calm',scene:'off',reactiveBoard:false});
+ assert.equal(validateStackedBridgeSettings(s),true);
+ assert.equal(validateStackedBridgeMessage(envelope('portal:settings',{settings:s})).ok,true);
+ assert.equal(validateStackedBridgeSettings({...structuredClone(s),startLevel:1},{initial:true}),true);
+ for(const [key,value] of [['scene','horizon'],['effectsPreset','lively'],['reactiveBoard','on']]){const bad=structuredClone(s);bad.video[key]=value;assert.equal(validateStackedBridgeSettings(bad),false,key);}
+ const extra=structuredClone(s);extra.video.sceneDeck='tunnel';assert.equal(validateStackedBridgeSettings(extra),false,'unknown video keys stay rejected');
+});

@@ -2,20 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createMusicMotion } from '../apps/stacked/src/render/music-motion.mjs';
 import { createMusicWorld } from '../apps/stacked/src/render/music-worlds.mjs';
+import * as playerSettings from '../apps/portal/src/stacked-player-settings.mjs';
 import { defaultStackedSettings, readStackedSettings, saveStackedSettings } from '../apps/portal/src/stacked-player-settings.mjs';
 import { validateStackedBridgeSettings, validateStackedBridgeMessage } from '../apps/portal/src/stacked-bridge-protocol.mjs';
 import { createStackedRuntime } from '../apps/portal/src/stacked-sim.mjs';
 
-test('all music world choices and intensity survive storage and the parent bridge', () => {
-  let raw; const storage = { setItem(k,v) { raw=v; }, getItem() { return raw; } };
+test('all music world choices and the effects preset survive storage and the parent bridge', () => {
+  let raw; const storage = { setItem(k,v) { raw=v; }, getItem(k) { return k === 'stacked-player-settings-v1' ? raw : null; } };
   for (const visualizer of ['journey','living','aurora','orbit','spectrum']) {
-    const settings = defaultStackedSettings(); settings.video.visualizer = visualizer; settings.video.effectsIntensity = 0.35;
+    const settings = defaultStackedSettings(); settings.video.visualizer = visualizer; Object.assign(settings.video, playerSettings.expandStackedEffectsPreset('calm'));
     settings.audio.sfxVolume = 0.2;
     saveStackedSettings(storage, settings);
     const restored = readStackedSettings(storage);
-    assert.equal(restored.video.visualizer, visualizer); assert.equal(restored.video.effectsIntensity, 0.35); assert.equal(restored.audio.sfxVolume, 0.2);
+    assert.equal(restored.video.visualizer, visualizer); assert.equal(restored.video.effectsPreset, 'calm');
+    assert.equal(restored.video.effectsIntensity, 0.4); assert.equal(restored.video.reducedEffects, true); assert.equal(restored.audio.sfxVolume, 0.2);
     assert.equal(validateStackedBridgeSettings(restored), true);
-    const payload = { reduceMotion:false,reducedEffects:false,audioReactive:true,ghostPiece:true,gridLines:true,sfxEnabled:true,visualizer,effectsIntensity:0.35,sfxVolume:0.2,colorblindPieces:true };
+    const payload = { reduceMotion:false,reducedEffects:true,audioReactive:false,ghostPiece:true,gridLines:true,sfxEnabled:true,effectsPreset:'calm',visualizer,effectsIntensity:0.4,sfxVolume:0.2,colorblindPieces:true };
     assert.equal(validateStackedBridgeMessage({protocol:'stacked-bridge/v1',type:'game:preferences-request',sessionId:'test-session',messageId:'game-1',payload}).ok,true);
   }
   raw = JSON.stringify({video:{visualizer:'unknown',effectsIntensity:99},audio:{sfxVolume:-1}});
