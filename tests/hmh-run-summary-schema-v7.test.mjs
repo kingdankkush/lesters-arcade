@@ -13,7 +13,11 @@ import {
   HMH_RUN_SUMMARY_CATALOGS_V6,
   HMH_RUN_SUMMARY_CATALOGS_V7,
   HMH_V7_HELD_PRISONER_BOSSES,
+  HMH_V7_PANEL_ONLY_EVOLUTIONS,
   HMH_V7_PROGRESSION_FIELDS,
+  HMH_V7_RESERVED_EVOLUTIONS,
+  HMH_V7_START_WEAPON,
+  HMH_V7_UPGRADE_WEAPON_GATES,
   hmhRunSummaryCatalogs,
   validateRunSummaryPayload,
 } from '../sdk/hmh-run-summary-schema-v7.mjs';
@@ -262,9 +266,31 @@ test('the v7 contract module is pure, clock-free and covers its catalogues', () 
   const rules = contract.HMH_V7_BOSS_RULES;
   assert.equal(rules.BOSS_MIN_FIGHT_TICKS, 300);
   assert.equal(rules.BOSS_MIN_FIGHT_TICKS, rules.BOSS_INTRO_MIN_TICKS + rules.BOSS_PHASE_THRESHOLDS * rules.BOSS_PHASE_HALT_TICKS);
+  // The Dark Pool start has no intro (package 4.3): the Liquidator's minimum is the two halts.
+  assert.equal(rules.BOSS_MIN_FIGHT_TICKS_WITHOUT_INTRO, rules.BOSS_PHASE_THRESHOLDS * rules.BOSS_PHASE_HALT_TICKS);
+  assert.deepEqual(C7.bosses.map((id) => contract.HMH_V7_BOSSES[id].minFightTicks), [300, 300, 300, 180]);
   assert.equal(rules.BOSS_REINITIATION_MIN_TICKS, 2_520);
-  assert.deepEqual([rules.BOSS_ADDS_FIRST, rules.BOSS_ADDS_PER_WINDOW, rules.BOSS_ADD_WINDOW_TICKS], [4, 4, 960]);
-  assert.equal(rules.BOSS_ADDS_PER_WINDOW / rules.BOSS_ADD_WINDOW_TICKS, 6 / 1_440, "v6's Liquidator add rate");
+  // Only a slot's first adds are outside the capacity bank, and none comes in an engagement's first halt-length.
+  assert.deepEqual([rules.BOSS_ADDS_FIRST, rules.BOSS_ADD_DELAY_TICKS], [4, 90]);
+  assert.ok(!('BOSS_ADDS_PER_WINDOW' in rules) && !('BOSS_ADD_WINDOW_TICKS' in rules), 'further adds draw from the capacity bank');
+  // Weapon gates and evolution rows: the schema's lists are the contract table's.
+  for (const id of C7.upgrades) assert.equal(HMH_V7_UPGRADE_WEAPON_GATES[id] ?? null, contract.HMH_V7_UPGRADES[id].requiresWeaponId, id);
+  assert.ok(Object.isFrozen(HMH_V7_UPGRADE_WEAPON_GATES));
+  assert.deepEqual(C7.evolutions.filter((id) => contract.HMH_V7_EVOLUTIONS[id].wave === 2), [...HMH_V7_RESERVED_EVOLUTIONS]);
+  assert.deepEqual(C7.evolutions.filter((id) => contract.HMH_V7_EVOLUTIONS[id].weaponId === HMH_V7_START_WEAPON), [...HMH_V7_PANEL_ONLY_EVOLUTIONS]);
+  assert.equal(HMH_V7_START_WEAPON, C7.weapons[0]);
+  // The build that may carry schema 7: a game version, read from the session build hash with no clock.
+  assert.equal(contract.HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION, '1.9.0');
+  assert.deepEqual(contract.hmhGameVersionOfBuild('site-1.8.1:game-1.8.1'), [1, 8, 1]);
+  assert.deepEqual(contract.hmhGameVersionOfBuild('game-2.10.3'), [2, 10, 3]);
+  for (const buildHash of ['site-1.9.0', 'site-1.9.0:game-1.9', 'site-1.9.0:game-1.9.0x', 'dev', '', null, 7]) assert.equal(contract.hmhGameVersionOfBuild(buildHash), null, String(buildHash));
+  for (const [buildHash, v7] of [['site-1.8.1:game-1.8.1', false], ['site-1.9.0:game-1.8.99', false], ['site-0.9.0:game-0.99.0', false], ['site-1.9.0:game-1.9.0', true],
+    ['site-1.8.1:game-1.9.0', true], ['site-2.0.0:game-1.10.0', true], ['site-2.0.0:game-2.0.0', true], ['site-9.9.9', false], ['dev', false]]) {
+    assert.equal(contract.isHmhV7Build(buildHash), v7, buildHash);
+  }
+  // Collectible pickups: at most 21 placements, re-armed every 7,200 ticks at the soonest.
+  assert.deepEqual({ ...contract.HMH_V7_COLLECTIBLE_RULES }, { MAX_PLACEMENTS: 21, MIN_REARM_TICKS: 7_200 });
+  assert.deepEqual([0, 7_199, 7_200, 64_800].map(contract.hmhV7CollectibleCapacity), [21, 21, 42, 210]);
   const run = contract.HMH_V7_RUN_RULES;
   assert.deepEqual(run.OBJECTIVE_XP_PER_LEVEL, { switch: 18, gate: 30, item: 12, secret: 60 });
   assert.deepEqual(Object.values(run.OBJECTIVE_XP_PER_LEVEL).map((perLevel) => perLevel / 300), [0.06, 0.1, 0.04, 0.2]);
@@ -449,6 +475,10 @@ test('S9: a held prisoner is freed only after its boss was initiated', () => {
   accepts((s) => { boss(s, 'rug-pull-baron', { first: 7_200 }); rescue(s, 'h1-baron-diggings', 7_200, 10); }, 'a champion arena frees it without a kill');
   refuses((s) => { boss(s, 'rug-pull-baron', { first: 27_000 }); rescue(s, 'h2-foreman-hoist-vault', 27_600, 18); }, message, 'the wrong boss');
   accepts((s) => { boss(s, 'fifty-one-percent-foreman', { first: 27_000, defeated: 27_400 }); seals(s, 1); rescue(s, 'h2-foreman-hoist-vault', 27_600, 18); });
+  // A defeated boss's cage is behind its reward gate: freed from the defeat on (red team: h2 freed while the Foreman lived).
+  accepts((s) => { boss(s, 'fifty-one-percent-foreman', { first: 27_000, defeated: 27_400 }); seals(s, 1); rescue(s, 'h2-foreman-hoist-vault', 27_400, 18); });
+  refuses((s) => { boss(s, 'fifty-one-percent-foreman', { first: 27_000, defeated: 27_400 }); seals(s, 1); rescue(s, 'h2-foreman-hoist-vault', 27_399, 18); }, message, 'freed during the fight');
+  refuses((s) => { boss(s, 'fifty-one-percent-foreman', { first: 27_000, defeated: 40_000 }); seals(s, 1); rescue(s, 'h2-foreman-hoist-vault', 29_400, 18); }, message, 'the red-team payload');
 });
 
 test('S10-S12: evolutions, Genesis Seals and the genesis-seal collectible agree', () => {
@@ -468,6 +498,15 @@ test('S10-S12: evolutions, Genesis Seals and the genesis-seal collectible agree'
   const pickups = 'game:run-summary genesis-seal pickups are inconsistent';
   refuses((s) => { defeatTwo(s); seals(s, 2); row(s.collectibles, 'effectId', 'genesis-seal').collected = 1; }, pickups);
   refuses((s) => { defeatTwo(s); seals(s, 2); row(s.collectibles, 'effectId', 'genesis-seal').activeTicks = 1; }, pickups);
+  // The wave-2 rows stay 0 (red team: lightning-network applied with a banked Seal).
+  accepts((s) => { defeatTwo(s); seals(s, 2, ['crit-candle']); }, 'a wave-1 evolution of an owned gun');
+  for (const id of HMH_V7_RESERVED_EVOLUTIONS) {
+    refuses((s) => { defeatTwo(s); seals(s, 2, [id]); }, evolutions, `${id} applied`);
+    refuses((s) => { defeatTwo(s); seals(s, 2); s.progression.evolutionOffersOpened = 1; row(s.evolutions, 'evolutionId', id).offered = 1; }, evolutions, `${id} shown`);
+  }
+  // The Pistol never evolves automatically: Settler Rail needs a panel that showed it (red team: applied, offered 0, no panel).
+  refuses((s) => { defeatTwo(s); seals(s, 2, ['settler-rail']); row(s.evolutions, 'evolutionId', 'settler-rail').offered = 0; s.progression.evolutionOffersOpened = 0; }, evolutions, 'the Pistol evolved without a panel');
+  accepts((s) => { defeatTwo(s); seals(s, 2, ['crit-candle']); row(s.evolutions, 'evolutionId', 'crit-candle').offered = 0; s.progression.evolutionOffersOpened = 0; }, 'a single mastered gun evolves at once, with no panel');
 });
 
 test('S13-S15: offers, picks, re-rolls and shown cards add up', () => {
@@ -480,13 +519,30 @@ test('S13-S15: offers, picks, re-rolls and shown cards add up', () => {
   refuses((s) => { s.progression.rerolls = 2 * s.progression.offersOpened + 1; }, rerolls);
   const cards = 'game:run-summary offered cards are inconsistent';
   assert.equal(sumOf(BASE.upgrades, 'offered'), 2 * BASE.progression.offersOpened, 'the base shows two cards per offer');
-  accepts((s) => { s.progression.rerolls = 3; row(s.upgrades, 'upgradeId', 'scatter-pump').offered = 3; });
-  refuses((s) => { s.progression.rerolls = 3; row(s.upgrades, 'upgradeId', 'scatter-pump').offered = 4; }, cards);
-  refuses((s) => { row(s.upgrades, 'upgradeId', 'scatter-pump').offered = 1; }, cards, 'a card shown with no offer or re-roll');
-  const withPanel = (s) => { boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 }); seals(s, 1); s.progression.evolutionOffersOpened = 1; };
-  accepts((s) => { withPanel(s); row(s.evolutions, 'evolutionId', 'settler-rail').offered = 2; });
-  refuses((s) => { withPanel(s); row(s.evolutions, 'evolutionId', 'settler-rail').offered = 3; }, cards);
-  accepts((s) => { withPanel(s); s.progression.rerolls = 1; row(s.evolutions, 'evolutionId', 'settler-rail').offered = 3; });
+  // rail-blocktime: a Railgun card, and the realistic run owns the Railgun.
+  accepts((s) => { s.progression.rerolls = 3; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 3; });
+  refuses((s) => { s.progression.rerolls = 3; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 4; }, cards);
+  refuses((s) => { row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 1; }, cards, 'a card shown with no offer or re-roll');
+  // Two panels, two different Pistol evolution cards at most: one card per panel.
+  const withPanels = (s, panels) => {
+    boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 });
+    boss(s, 'lockkeeper', { first: 18_000, defeated: 18_400 });
+    seals(s, 2);
+    s.progression.evolutionOffersOpened = panels;
+  };
+  accepts((s) => { withPanels(s, 1); row(s.evolutions, 'evolutionId', 'settler-rail').offered = 1; row(s.evolutions, 'evolutionId', 'crit-candle').offered = 1; });
+  accepts((s) => { withPanels(s, 2); row(s.evolutions, 'evolutionId', 'settler-rail').offered = 2; });
+  refuses((s) => { withPanels(s, 1); s.progression.rerolls = 1; row(s.evolutions, 'evolutionId', 'settler-rail').offered = 2; }, cards, 'a card shown twice in one panel');
+  refuses((s) => { withPanels(s, 2); row(s.evolutions, 'evolutionId', 'settler-rail').offered = 2; row(s.evolutions, 'evolutionId', 'crit-candle').offered = 3; }, cards);
+  // A card never comes back in its offer: at most one showing per offer (red team: diamond-hands shown 48 times in 23 offers).
+  const offered = row(BASE.upgrades, 'upgradeId', 'hardened-wallet').offered;
+  accepts((s) => { s.progression.rerolls = BASE.progression.offersOpened - offered; row(s.upgrades, 'upgradeId', 'hardened-wallet').offered = BASE.progression.offersOpened; });
+  refuses((s) => { s.progression.rerolls = BASE.progression.offersOpened - offered + 1; row(s.upgrades, 'upgradeId', 'hardened-wallet').offered = BASE.progression.offersOpened + 1; }, cards, 'one more showing than offers');
+  // A re-roll shows one card, in a level panel or an evolution panel, never both
+  // (red team: evolution cards counted against level-panel re-rolls, with no evolution panel).
+  refuses((s) => { withPanels(s, 0); s.progression.rerolls = 2; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 2; row(s.evolutions, 'evolutionId', 'settler-rail').offered = 1; }, cards, 'an evolution card with no evolution panel');
+  refuses((s) => { withPanels(s, 1); s.progression.rerolls = 2; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 2; row(s.evolutions, 'evolutionId', 'settler-rail').offered = 1; row(s.evolutions, 'evolutionId', 'crit-candle').offered = 1; row(s.evolutions, 'evolutionId', 'double-spend').offered = 1; row(s.weapons, 'weaponId', 'scatter-shotgun').pickups = 1; }, cards, 'the same re-rolls counted in both kinds of panel');
+  accepts((s) => { withPanels(s, 1); s.progression.rerolls = 2; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 1; row(s.evolutions, 'evolutionId', 'settler-rail').offered = 1; row(s.evolutions, 'evolutionId', 'crit-candle').offered = 1; row(s.evolutions, 'evolutionId', 'double-spend').offered = 1; row(s.weapons, 'weaponId', 'scatter-shotgun').pickups = 1; });
 });
 
 test('S16: the one revive is the Golden Parachute of a Dark Pool win', () => {
@@ -502,6 +558,50 @@ test('S16: the one revive is the Golden Parachute of a Dark Pool win', () => {
   refuses((s) => { boss(s, 'liquidator', { first: 36_000 }); complete(s, 'warehouse-logbook', 36_000, L); s.progression.revivesUsed = 1; }, message, 'the Liquidator not defeated');
   refuses((s) => { boss(s, 'liquidator', { first: 36_000, defeated: 36_400 }); seals(s, 1); s.progression.revivesUsed = 1; }, message, 'a Closing Bell win');
   refuses((s) => { darkPool(s, 36_001); s.progression.revivesUsed = 1; }, message, 'the logbook entered after the initiation');
+  accepts((s) => { darkPool(s, 30_000); s.progression.revivesUsed = 1; }, 'the logbook found earlier, the Dark Pool entered once the Liquidator was ready');
+  // The first trigger owns every later initiation (package 4.3): a Closing Bell
+  // start, a retreat, then the logbook, is still a Closing Bell fight.
+  const bellFirst = (s, logbookTick) => {
+    boss(s, 'liquidator', { initiations: 2, first: 36_000, last: 38_520, defeated: 38_920 });
+    complete(s, 'warehouse-logbook', logbookTick, L);
+    seals(s, 1);
+    s.progression.revivesUsed = 1;
+  };
+  refuses((s) => bellFirst(s, 37_000), message, 'the logbook between the first and the last initiation');
+  refuses((s) => bellFirst(s, 36_001), message);
+  accepts((s) => bellFirst(s, 36_000), 'a Dark Pool first initiation owns the re-initiation');
+});
+
+test('S17: a boss defeat needs a boss that was live then', () => {
+  const message = 'game:run-summary a boss defeat needs a live boss';
+  const killedBy = (s, tick) => { s.defeat = { kind: 'boss', causeId: 'boss-crash-lane', tick, damage: 25 }; };
+  // Red team: the districts run, the Liquidator never initiated, 'killed by boss-liquidator'.
+  refuses((s) => killedBy(s, T), message, 'no boss initiated');
+  accepts((s) => { boss(s, 'lockkeeper', { first: 60_000 }); killedBy(s, 60_000); });
+  refuses((s) => { boss(s, 'lockkeeper', { first: 60_001 }); killedBy(s, 60_000); }, message, 'initiated after the killing hit');
+  // A strike still resolving just after the boss falls, but not long after (red team: the districts run, both bosses fallen long before).
+  accepts((s) => { boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 }); seals(s, 1); killedBy(s, 7_900); });
+  refuses((s) => { boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 }); seals(s, 1); killedBy(s, 7_901); }, message, 'the Baron fell 301 ticks before');
+  refuses((s) => { boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 }); seals(s, 1); killedBy(s, T); }, message);
+  accepts((s) => { boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 }); boss(s, 'lockkeeper', { first: 60_000 }); seals(s, 1); killedBy(s, T); }, 'a boss still live at the end');
+});
+
+test('S18: a gun card or evolution is shown only for a gun the run owns', () => {
+  const message = 'game:run-summary a gun card was shown for a gun the run never owned';
+  const draw = (s, upgradeId) => { s.progression.rerolls = 1; row(s.upgrades, 'upgradeId', upgradeId).offered = 1; };
+  refuses((s) => draw(s, 'scatter-pump'), message, 'the Shotgun never picked up');
+  accepts((s) => { draw(s, 'scatter-pump'); row(s.weapons, 'weaponId', 'scatter-shotgun').pickups = 1; });
+  accepts((s) => draw(s, 'rail-blocktime'), 'the Railgun was picked up');
+  refuses((s) => { draw(s, 'ledger-voltage'); row(s.weapons, 'weaponId', 'lightning-ledger').pickups = 0; }, message, 'a 1.8.1 gun branch too');
+  // Red team: Double Spend applied with the Shotgun row at pickups 0 and equippedTicks 0.
+  const evolve = (s, id) => {
+    boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 });
+    seals(s, 1, [id]);
+  };
+  refuses((s) => evolve(s, 'double-spend'), message, 'the Shotgun evolved without being owned');
+  refuses((s) => { evolve(s, 'double-spend'); row(s.evolutions, 'evolutionId', 'double-spend').offered = 0; s.progression.evolutionOffersOpened = 0; }, message, 'and without a panel');
+  accepts((s) => { evolve(s, 'double-spend'); row(s.weapons, 'weaponId', 'scatter-shotgun').pickups = 1; });
+  accepts((s) => evolve(s, 'settler-rail'), 'the Pistol is owned from the start');
 });
 
 // ---------------------------------------------------------------------------
@@ -509,7 +609,10 @@ test('S16: the one revive is the Golden Parachute of a Dark Pool win', () => {
 // unchanged hmh-bridge/v1 limit of 65,536 bytes.
 function maximalPayload(C, version) {
   const big = 1_000_000_000;
-  const wide = 123456789.12345679; // 17 significant digits
+  // The widest JSON a finite float field in [0, 10^9] can print: 17 significant
+  // digits after five leading zeros (24 characters; smaller values switch to an
+  // exponent, which prints at most 23).
+  const wide = 1.2345678901234567e-6;
   const fields = (names) => Object.fromEntries(names.map((field) => [field, big]));
   const rowsOf = (ids, idKey, names) => ids.map((id) => ({ [idKey]: id, ...fields(names) }));
   const payload = {
@@ -545,6 +648,10 @@ const messageBytes = (payload) => new TextEncoder().encode(JSON.stringify(create
 
 test('a maximal schema-7 run summary message fits the hmh-bridge/v1 limit', () => {
   assert.equal(HMH_MAX_MESSAGE_BYTES, 65_536, 'the bridge limit is unchanged');
+  // No admitted float prints wider (red team: 123456789.12345679 was 5 characters short).
+  const widest = maximalPayload(C7, 7).totals.elapsedMs;
+  assert.equal(JSON.stringify(widest), '0.0000012345678901234567');
+  for (const value of [123456789.12345679, 1e9, 1.2345678901234567e-300, 2.2250738585072014e-308, 5e-324, 1.0000000000000002e-7, 9.999999999999998e-7]) assert.ok(JSON.stringify(value).length <= 24, String(value));
   const maximal = maximalPayload(C7, 7);
   // Every catalogue row is present: the maximal payload has the exact schema-7 shape.
   const shape = (value) => (Array.isArray(value) ? value.map(shape) : value && typeof value === 'object'

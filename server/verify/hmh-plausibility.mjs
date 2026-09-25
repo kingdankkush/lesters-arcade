@@ -40,24 +40,38 @@
 //
 // v7 rules: the same time, level, capacity and ceiling rejects with the v7
 // formulas, and per-boss timing in place of the 72,000-tick boss band:
-//   reject  boss-before-ready        a boss initiated before its readyTick
+//   reject  build-predates-schema-7  identity.buildHash names a game older
+//                                    than the first v7 child (1.9.0), or none
+//           boss-before-ready        a boss initiated before its readyTick
 //                                    (one entry per boss)
-//           boss-fight-too-short     a defeat less than 300 ticks after the
-//                                    boss's last initiation (the kit's
-//                                    invulnerable intro and two phase halts)
+//           boss-fight-too-short     a defeat sooner after the boss's last
+//                                    initiation than its minimum fight (300
+//                                    ticks: the invulnerable intro and two
+//                                    phase halts; 180 for the Liquidator, whose
+//                                    Dark Pool start has no intro)
 //           boss-reinitiation-too-soon  initiations of one boss less than
 //                                    2,520 ticks apart on average (retreat)
+//           boss-fights-overlap      two bosses live at once: two initiated on
+//                                    one tick, or one initiated during another's
+//                                    final fight
+//           collectibles-above-capacity  more collectible pickups than the
+//                                    authored placements can give in the run
+//           node-xp-above-level      node XP claimed at a level that the level
+//                                    cannot hold (the level's own 300 x L, or
+//                                    the XP gained at the final level)
 //   flag    near-ceiling and claimed-rank checks as in v6, plus
 //           upgrade-rank-above-max, evolution-without-mastery,
 //           node-level-inconsistent, objective-prerequisite-missing and
 //           node-in-unvisited-district. Those five cannot raise a ceiling (the
-//           hard ceilings use maximum ranks; districts and prerequisites are
-//           free to claim); each is one entry whose value is the number of
-//           offending rows and whose limit is 0.
+//           hard ceilings use maximum ranks, node-xp-above-level bounds the
+//           node levels, and districts and prerequisites are free to claim);
+//           each is one entry whose value is the number of offending rows and
+//           whose limit is 0.
 // Flags have the shape { id, severity, value, limit } on both paths.
 import { HMH_RUN_SUMMARY_CATALOGS_V6 } from '../../sdk/hmh-run-summary-schema.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../sdk/hmh-run-summary-schema-v7.mjs';
 import {
+  HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION,
   HMH_V7_BOSSES,
   HMH_V7_BOSS_RULES,
   HMH_V7_EVOLUTIONS,
@@ -67,9 +81,13 @@ import {
   HMH_V7_RUN_RULES,
   HMH_V7_UPGRADE_MAX_RANKS,
   dealHmhPrisoners,
+  hmhGameVersionOfBuild,
+  hmhV7CollectibleCapacity,
   hmhV7KillScore,
   hmhV7KillXp,
   hmhV7LevelForXp,
+  hmhV7LevelThreshold,
+  isHmhV7Build,
 } from '../../sdk/hmh-run-contract-v7.mjs';
 
 const freezeDeep = (value) => {
@@ -394,40 +412,103 @@ function measureV7Gains(ranks) {
 
 export const V7_MAX_GAINS = measureV7Gains(HMH_V7_UPGRADE_MAX_RANKS);
 
-// Length of the union of the boss windows [firstInitiatedTick, end], where end
-// is the defeat tick or, for a boss never defeated, the run's end. Boss slots
-// are live one at a time and each slot's engagements lie inside its window, so
-// the slots' active ticks add up to at most this union.
-export function hmhV7BossWindowTicks(bosses, runTicks) {
-  const windows = [];
-  for (const row of Array.isArray(bosses) ? bosses : []) {
-    if (!(row?.initiations > 0)) continue;
-    const start = row.firstInitiatedTick;
-    windows.push([start, Math.max(start, row.defeatedTick > 0 ? row.defeatedTick : runTicks)]);
+// The initiation ticks the row records (its first and last).
+const initiationTicks = (row) => (row.initiations > 0 ? [...new Set([row.firstInitiatedTick, row.lastInitiatedTick])] : []);
+
+// Whether boss slot `row` could insert its first adds (contract §5.3: none in
+// the first BOSS_ADD_DELAY_TICKS of an engagement). A defeat or a retreat
+// (a second initiation) means an engagement lasted at least the minimum fight
+// or the retreat ring; one undefeated engagement lasts until the run ends or,
+// at the latest, until another boss is initiated (one boss is live at a time).
+export function hmhV7BossCouldSummon(row, bosses, runTicks) {
+  if (!(row?.initiations > 0)) return false;
+  if (row.initiations >= 2 || row.defeatedTick > 0) return true;
+  let end = runTicks;
+  for (const other of bosses) {
+    if (other === row) continue;
+    for (const tick of initiationTicks(other)) if (tick > row.lastInitiatedTick) end = Math.min(end, tick);
   }
-  windows.sort(([a], [b]) => a - b);
-  let total = 0;
-  let reach = -Infinity;
-  for (const [start, end] of windows) {
-    if (end <= reach) continue;
-    total += end - Math.max(start, reach);
-    reach = end;
-  }
-  return total;
+  return end - row.lastInitiatedTick >= BOSS.BOSS_ADD_DELAY_TICKS;
 }
 
 // Kill capacity (contract §7.3): the opening enemies, every director schedule
-// slot (scripted bodies draw from the same capacity bank), one body per
-// defeated boss, and the boss adds: 4 per initiated slot, once, plus 4 per 960
-// ticks of the boss-window union (v6's own Liquidator rate of 1 per 240).
+// slot, one body per defeated boss, and the first BOSS_ADDS_FIRST adds of each
+// boss slot that could summon. Every other body (scripted bodies and every
+// further boss add) draws from the director's capacity bank, so no claimed
+// boss timing, overlap or initiation count adds anything beyond these.
 export function hmhV7KillCapacity(summary) {
   const runTicks = summary.totals.survivalTicks;
   let capacity = V7.OPENING_ENEMIES + directorSpawnCapacity(runTicks, V7.ENCOUNTER_BAND_SCHEDULE);
   for (const row of summary.bosses) {
     if (row.defeatedTick > 0) capacity += 1;
-    if (row.initiations > 0) capacity += BOSS.BOSS_ADDS_FIRST;
+    if (hmhV7BossCouldSummon(row, summary.bosses, runTicks)) capacity += BOSS.BOSS_ADDS_FIRST;
   }
-  return capacity + BOSS.BOSS_ADDS_PER_WINDOW * Math.floor(hmhV7BossWindowTicks(summary.bosses, runTicks) / BOSS.BOSS_ADD_WINDOW_TICKS);
+  return capacity;
+}
+
+// Pairs of bosses live at once (contract §5.3, one boss at a time): initiated
+// on one tick, or one initiated during the other's final fight, which runs
+// without a break from its last initiation to its defeat.
+export function hmhV7BossOverlaps(bosses) {
+  const initiated = bosses.filter((row) => row.initiations > 0);
+  const inFight = (row, tick) => row.defeatedTick > 0 && row.lastInitiatedTick < tick && tick < row.defeatedTick;
+  let pairs = 0;
+  for (let a = 0; a < initiated.length; a += 1) {
+    for (let b = a + 1; b < initiated.length; b += 1) {
+      const [left, right] = [initiated[a], initiated[b]];
+      const leftTicks = initiationTicks(left);
+      const rightTicks = initiationTicks(right);
+      if (leftTicks.some((tick) => rightTicks.includes(tick) || inFight(right, tick)) || rightTicks.some((tick) => inFight(left, tick))) pairs += 1;
+    }
+  }
+  return pairs;
+}
+
+// The XP that completes level l: 150 x l x (l + 1) - 150 x (l - 1) x l = 300 x l.
+const levelSpan = (level) => hmhV7LevelThreshold(level) - hmhV7LevelThreshold(level - 1);
+
+// Node grants by the level each was claimed at → Map(level → { sum, max }). An
+// objective grants its class's XP per level x that level through grantRunXp,
+// so it is multiplied by xm; an OG Miner grants exactly 300 x level, never
+// multiplied. The deal comes from the seed, never from the summary, so a rescue
+// in a slot the deal gives another kind grants nothing.
+function nodeGrantsByLevel(summary, xm) {
+  const deal = dealHmhPrisoners(summary.identity.seed);
+  const byLevel = new Map();
+  const add = (level, xp) => {
+    const entry = byLevel.get(level) ?? { sum: 0, max: 0 };
+    entry.sum += xp;
+    entry.max = Math.max(entry.max, xp);
+    byLevel.set(level, entry);
+  };
+  for (const row of summary.objectives) {
+    const node = HMH_V7_OBJECTIVES[row.objectiveId];
+    if (row.completed === 1 && node) add(row.levelAtCompletion, Math.round(V7.OBJECTIVE_XP_PER_LEVEL[node.class] * row.levelAtCompletion * xm));
+  }
+  for (const row of summary.prisoners) {
+    if (row.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === 'og-miner') add(row.levelAtRescue, V7.OG_MINER_XP_PER_LEVEL * row.levelAtRescue);
+  }
+  return byLevel;
+}
+
+// Node XP against the levels it was claimed at (contract §7.4). A node is
+// received at the level it claims and grants at least its x1 value (the
+// multiplier is at least 1). At a level l below the final level L, every grant
+// but the one that completes l fits in l's span of 300 x l XP; at L, every
+// grant fits in the XP gained since reaching L. → the first level whose node
+// XP does not fit, as { level, value, limit }, or null.
+export function hmhV7NodeLevelExcess(summary) {
+  const byLevel = nodeGrantsByLevel(summary, 1);
+  const finalLevel = summary.totals.level;
+  for (const level of [...byLevel.keys()].sort((a, b) => a - b)) {
+    const { sum, max } = byLevel.get(level);
+    if (level < finalLevel) {
+      if (sum - max > levelSpan(level) - 1) return { level, value: sum - max, limit: levelSpan(level) - 1 };
+    } else if (sum > summary.totals.xp - hmhV7LevelThreshold(level - 1)) {
+      return { level, value: sum, limit: summary.totals.xp - hmhV7LevelThreshold(level - 1) };
+    }
+  }
+  return null;
 }
 
 // XP and score ceilings at the given gains (contract §7.4, §7.5).
@@ -442,19 +523,12 @@ export function hmhV7Ceilings(summary, gains) {
   }
   const comboXp = Math.ceil(summary.kills.total * gains.comboRate);
   const cacheXp = Object.entries(gains.cacheXp).reduce((sum, [effectId, xp]) => sum + (collected[effectId] ?? 0) * xp, 0);
-  // Nodes: the class's XP per level, at the level before the node's own grant,
-  // multiplied like kill XP.
-  let objectiveXp = 0;
-  for (const row of summary.objectives) {
-    const node = HMH_V7_OBJECTIVES[row.objectiveId];
-    if (row.completed === 1 && node) objectiveXp += Math.round(V7.OBJECTIVE_XP_PER_LEVEL[node.class] * row.levelAtCompletion * gains.xm);
-  }
-  // OG Miners, unmultiplied. The deal comes from the seed, never from the
-  // summary, so a rescue in a slot the deal gives another kind adds nothing.
-  const deal = dealHmhPrisoners(summary.identity.seed);
-  let ogMinerXp = 0;
-  for (const row of summary.prisoners) {
-    if (row.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === 'og-miner') ogMinerXp += V7.OG_MINER_XP_PER_LEVEL * row.levelAtRescue;
+  // Nodes (objectives, and OG Miners from the seeded deal), level by level: at
+  // a level below the final one, the grants received there are at most the
+  // level's own span less one, plus the grant that completes it.
+  let nodeXp = 0;
+  for (const [level, { sum, max }] of nodeGrantsByLevel(summary, gains.xm)) {
+    nodeXp += level < summary.totals.level ? Math.min(sum, levelSpan(level) - 1 + max) : sum;
   }
   // Silver: at most one coin per ordinary kill, each defeated boss's burst (in
   // place of the 1.8.1 10-coin boss drop), and 20 per found secret.
@@ -467,7 +541,7 @@ export function hmhV7Ceilings(summary, gains) {
   const secretsFound = summary.milestones.secrets.reduce((sum, row) => sum + (row.found === 1 ? 1 : 0), 0);
   const silverCoins = Math.max(0, summary.kills.total - bossKills) * V7.SILVER_PER_ENEMY_KILL_MAX + bossBursts + V7.SILVER_PER_SECRET * secretsFound;
   return {
-    xp: killXp + comboXp + cacheXp + objectiveXp + ogMinerXp,
+    xp: killXp + comboXp + cacheXp + nodeXp,
     score: killScore + Math.ceil(silverCoins * gains.silverScorePerCoin),
   };
 }
@@ -484,31 +558,48 @@ export function validateV7RunPlausibility(runSummary) {
     reject('summary-unreadable', null, null);
     return done();
   }
-  checkRunTime(identity, totals, kills, V7.FIXED_STEP_MS, reject);
+  // Schema 7 comes only from a v7 child, which ships at game version 1.9.0 or
+  // later: the session's build hash (bound to the seed ticket) labels the run,
+  // so a 1.8.x-labelled run keeps the 1.8.x bounds. No clock is read.
+  if (!isHmhV7Build(identity.buildHash)) reject('build-predates-schema-7', hmhGameVersionOfBuild(identity.buildHash)?.join('.') ?? null, HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION);
+  const runTicks = checkRunTime(identity, totals, kills, V7.FIXED_STEP_MS, reject);
 
   const expectedLevel = hmhV7LevelForXp(totals.xp);
   if (totals.level !== expectedLevel) reject('level-xp-mismatch', totals.level, expectedLevel);
 
   // Per-boss timing replaces the 72,000-tick boss band: a boss exists from its
-  // readyTick, a fight lasts at least the kit's invulnerable intro and phase
-  // halts, and a retreat keeps a boss away for 2,520 ticks.
+  // readyTick, a fight lasts at least the kit's invulnerable intro (if its
+  // start has one) and phase halts, a retreat keeps a boss away for 2,520
+  // ticks, and only one boss is live at a time.
   for (const row of bosses) {
     const readyTick = HMH_V7_BOSSES[row.bossId]?.readyTick ?? Infinity;
     if (row.initiations > 0 && row.firstInitiatedTick < readyTick) reject('boss-before-ready', row.firstInitiatedTick, readyTick);
   }
   for (const row of bosses) {
     const fight = row.defeatedTick - row.lastInitiatedTick;
-    if (row.defeatedTick > 0 && fight < BOSS.BOSS_MIN_FIGHT_TICKS) reject('boss-fight-too-short', fight, BOSS.BOSS_MIN_FIGHT_TICKS);
+    const minimum = HMH_V7_BOSSES[row.bossId]?.minFightTicks ?? Infinity;
+    if (row.defeatedTick > 0 && fight < minimum) reject('boss-fight-too-short', fight, minimum);
   }
   for (const row of bosses) {
     const bound = (row.initiations - 1) * BOSS.BOSS_REINITIATION_MIN_TICKS;
     const span = row.lastInitiatedTick - row.firstInitiatedTick;
     if (row.initiations >= 2 && span < bound) reject('boss-reinitiation-too-soon', span, bound);
   }
+  const overlaps = hmhV7BossOverlaps(bosses);
+  if (overlaps) reject('boss-fights-overlap', overlaps, 0);
 
   const capacity = hmhV7KillCapacity(runSummary);
   if (kills.total > capacity) reject('kills-above-capacity', kills.total, capacity);
   else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
+
+  // Pickups come from at most 21 authored placements, re-armed no sooner than
+  // every 7,200 ticks; the Genesis Seal's pickups are the Seals (schema S12).
+  const pickups = collectibles.reduce((sum, row) => sum + (row.effectId === 'genesis-seal' ? 0 : row.collected), 0);
+  const pickupCapacity = hmhV7CollectibleCapacity(runTicks);
+  if (pickups > pickupCapacity) reject('collectibles-above-capacity', pickups, pickupCapacity);
+
+  const excess = hmhV7NodeLevelExcess(runSummary);
+  if (excess) reject('node-xp-above-level', excess.value, excess.limit);
 
   const hard = hmhV7Ceilings(runSummary, V7_MAX_GAINS);
   if (totals.xp > hard.xp) reject('xp-above-ceiling', totals.xp, hard.xp);

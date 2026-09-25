@@ -696,10 +696,13 @@ export const FIXTURE_NAMES = Object.freeze(Object.keys(FIXTURE_SPECS));
 
 // Run summary schema 7 (HMH v7 contract §13). Kept out of FIXTURE_NAMES: those
 // fixtures all verify end to end, while a Ranked schema-7 body is refused by
-// server/verify/hmh.mjs until that gate accepts schema 7 (contract §15).
+// server/verify/hmh.mjs until that gate accepts schema 7 (contract §15). A
+// schema-7 run comes from a build at or after the first v7 child (1.9.0).
+export const HMH_V7_FIXTURE_BUILD_HASH = 'site-1.9.0:game-1.9.0';
 export const HMH_V7_FIXTURE_SPECS = Object.freeze({
-  'hmh-v7-districts': Object.freeze({ gameId: 'lester-blaster', note: 'Run summary v7: 15 minutes through all six districts, 24 objectives, 7 prisoners, the Baron and the Lockkeeper (after one retreat) defeated and their Seals banked, no Liquidator.', evidence: { v7Plan: 'districts' } }),
-  'hmh-v7-four-bosses': Object.freeze({ gameId: 'lester-blaster', note: 'Run summary v7: 18 minutes, every objective and prisoner, all four bosses defeated (the Liquidator through the Dark Pool), the Pistol evolved with a Genesis Seal, three Seals banked and one Golden Parachute revive.', evidence: { v7Plan: 'four-bosses' } }),
+  'hmh-v7-districts': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, note: 'Run summary v7: 15 minutes through all six districts, 24 objectives, 7 prisoners, the Baron and the Lockkeeper (after one retreat) defeated and their Seals banked, no Liquidator.', evidence: { v7Plan: 'districts' } }),
+  // Salted for a seed whose offers master the Pistol before the last boss falls.
+  'hmh-v7-four-bosses': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, salt: fixtureSalt('hmh-v7-four-bosses:1'), note: 'Run summary v7: 18 minutes, every objective and prisoner, all four bosses defeated (the Liquidator through the Dark Pool), the Pistol evolved with a Genesis Seal, three Seals banked and one Golden Parachute revive.', evidence: { v7Plan: 'four-bosses' } }),
 });
 export const HMH_V7_FIXTURE_NAMES = Object.freeze(Object.keys(HMH_V7_FIXTURE_SPECS));
 
@@ -748,7 +751,7 @@ export async function fastestVerifyCpuMs(verifyOnce, { budgetMs, attempts = 5 } 
 async function buildHmhV7Fixture(name) {
   const spec = HMH_V7_FIXTURE_SPECS[name];
   const salt = spec.salt ?? fixtureSalt(name);
-  const { body, seed } = await buildFixtureBody({ gameId: spec.gameId, salt, evidence: spec.evidence });
+  const { body, seed } = await buildFixtureBody({ gameId: spec.gameId, salt, buildHash: spec.buildHash, evidence: spec.evidence });
   const bound = await bindRankedIdentity(body, fixtureVerifyOptions());
   if (!bound.ok) throw new Error(`fixture ${name} does not bind: ${JSON.stringify(bound)}`);
   const { runSummary } = body.evidence;

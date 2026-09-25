@@ -20,9 +20,11 @@ import {
   rebootLevelForXp,
   rebootLevelThreshold,
   V7_MAX_GAINS,
-  hmhV7BossWindowTicks,
+  hmhV7BossCouldSummon,
+  hmhV7BossOverlaps,
   hmhV7Ceilings,
   hmhV7KillCapacity,
+  hmhV7NodeLevelExcess,
   spawnCapacity,
   validateRebootRunPlausibility,
   validateV6RunPlausibility,
@@ -30,8 +32,10 @@ import {
 import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import {
   HMH_PRISONER_KINDS,
+  HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION,
   HMH_V7_BOSSES,
   HMH_V7_BOSS_RULES,
+  HMH_V7_COLLECTIBLE_RULES,
   HMH_V7_EVOLUTIONS,
   HMH_V7_OBJECTIVES,
   HMH_V7_PRISONER_SLOTS,
@@ -39,6 +43,7 @@ import {
   HMH_V7_RUN_RULES,
   HMH_V7_UPGRADES,
   dealHmhPrisoners,
+  hmhV7CollectibleCapacity,
   hmhV7LevelForXp,
   hmhV7LevelThreshold,
   seededUnit,
@@ -66,11 +71,11 @@ import {
 } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { ENCOUNTER_BANDS, createEncounterDirector, directorViewBounds, stepEncounterDirector } from '../apps/hmh-reboot/src/encounter-director.mjs';
 import { createEnemyPopulation, retireEnemyFromPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
-import { COLLECTIBLE_EFFECTS } from '../apps/hmh-reboot/src/collectible-system.mjs';
+import { COLLECTIBLE_EFFECTS, createCollectibleState } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import { addSilverDrop, createSilverDropState } from '../apps/hmh-reboot/src/silver-drops.mjs';
 import { FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
-import { HMH_V7_PLANS, buildFixtureBody, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { HMH_V7_FIXTURE_BUILD_HASH, HMH_V7_PLANS, buildFixtureBody, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 
 const MAIN_SOURCE = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const valid = readFixture('hmh-valid').body.evidence.runSummary;
@@ -570,15 +575,23 @@ test('v7: a boss initiated one tick before it is ready rejects; at its ready tic
   assert.deepEqual(rejectFlags(all).map((flag) => [flag.id, flag.limit]), [['boss-before-ready', 7_200], ['boss-before-ready', 18_000], ['boss-before-ready', 27_000], ['boss-before-ready', 36_000]]);
 });
 
-// Contract §8, nearest-impossible test 2: the minimum fight.
-test('v7: a defeat 299 ticks after the last initiation rejects; 300 passes', () => {
+// Contract §8, nearest-impossible test 2: the minimum fight, 300 ticks for a
+// start with an intro and 180 for the Liquidator, whose Dark Pool start has none.
+test('v7: a defeat one tick short of the minimum fight rejects; the minimum passes', () => {
   assert.equal(HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS, 300);
+  assert.equal(HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS_WITHOUT_INTRO, 180);
   for (const bossId of C7.bosses) {
+    const minimum = bossId === 'liquidator' ? 180 : 300;
+    assert.equal(HMH_V7_BOSSES[bossId].minFightTicks, minimum, bossId);
     const last = bossRow(fourBosses, bossId).lastInitiatedTick;
-    const short = plausible(clone(fourBosses, (s) => { bossRow(s, bossId).defeatedTick = last + 299; }));
-    assert.deepEqual(rejectFlags(short), [{ id: 'boss-fight-too-short', severity: 'reject', value: 299, limit: 300 }], bossId);
-    assert.deepEqual(rejects(plausible(clone(fourBosses, (s) => { bossRow(s, bossId).defeatedTick = last + 300; }))), [], bossId);
+    const short = plausible(clone(fourBosses, (s) => { bossRow(s, bossId).defeatedTick = last + minimum - 1; }));
+    assert.deepEqual(rejectFlags(short), [{ id: 'boss-fight-too-short', severity: 'reject', value: minimum - 1, limit: minimum }], bossId);
+    assert.deepEqual(rejects(plausible(clone(fourBosses, (s) => { bossRow(s, bossId).defeatedTick = last + minimum; }))), [], bossId);
   }
+  // Red team (W1): an honest Dark Pool kill needs only its two halts, 182 or 183
+  // ticks; the fixture's Dark Pool Liquidator killed 183 ticks in now passes.
+  const { lastInitiatedTick: pool } = bossRow(fourBosses, 'liquidator');
+  assert.deepEqual(rejects(plausible(clone(fourBosses, (s) => { bossRow(s, 'liquidator').defeatedTick = pool + 183; }))), []);
   // The fight counts from the last initiation: an earlier engagement before a retreat does not shorten it.
   const { lastInitiatedTick } = bossRow(districts, 'lockkeeper');
   assert.deepEqual(rejects(plausible(clone(districts, (s) => { bossRow(s, 'lockkeeper').defeatedTick = lastInitiatedTick + 299; }))), ['boss-fight-too-short']);
@@ -596,12 +609,13 @@ test('v7: re-initiations less than 2,520 ticks apart reject', () => {
   assert.equal(hmhV7KillCapacity(clone(districts, (s) => { bossRow(s, 'lockkeeper').initiations = 1_000; })), hmhV7KillCapacity(districts));
 });
 
-// Contract §8, nearest-impossible test 4: the earliest Liquidator kill is at 36,300.
-test('v7: a Liquidator kill in a run of 36,299 ticks rejects; at 36,300 it passes', async () => {
-  const rush = { ...HMH_V7_PLANS['four-bosses'], endTick: 36_300, caches: [], nodes: [], reviveTick: null, bosses: [{ bossId: 'liquidator', initiations: [36_000], defeatedTick: 36_300, adds: [] }] };
-  const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt('hmh-v7-liquidator-rush'), evidence: { v7Plan: rush } });
+// Contract §8, nearest-impossible test 4: the earliest Liquidator kill is at
+// 36,180 (ready at 36,000, then the Dark Pool fight's two halts).
+test('v7: a Liquidator kill in a run of 36,179 ticks rejects; at 36,180 it passes', async () => {
+  const rush = { ...HMH_V7_PLANS['four-bosses'], endTick: 36_180, caches: [], nodes: [], reviveTick: null, bosses: [{ bossId: 'liquidator', initiations: [36_000], defeatedTick: 36_180, adds: [] }] };
+  const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt('hmh-v7-liquidator-rush'), buildHash: HMH_V7_FIXTURE_BUILD_HASH, evidence: { v7Plan: rush } });
   const honest = body.evidence.runSummary;
-  assert.deepEqual([honest.identity.endTick, honest.kills.boss, bossRow(honest, 'liquidator').defeatedTick], [36_300, 1, 36_300]);
+  assert.deepEqual([honest.identity.endTick, honest.kills.boss, bossRow(honest, 'liquidator').defeatedTick], [36_180, 1, 36_180]);
   assert.deepEqual(rejects(plausible(honest)), []);
   const endingAt = (end, first = 36_000) => clone(honest, (s) => {
     s.identity.endTick = end;
@@ -612,9 +626,9 @@ test('v7: a Liquidator kill in a run of 36,299 ticks rejects; at 36,300 it passe
     s.milestones.firstLevelUpTick = Math.min(s.milestones.firstLevelUpTick, s.milestones.lastLevelUpTick);
     retimeBoss(s, 'liquidator', { first, defeated: end });
   });
-  assert.deepEqual(rejects(plausible(endingAt(36_299))), ['boss-fight-too-short']);
-  assert.deepEqual(rejects(plausible(endingAt(36_299, 35_999))), ['boss-before-ready']);
-  assert.deepEqual(rejects(plausible(endingAt(36_298, 35_999))), ['boss-before-ready', 'boss-fight-too-short']);
+  assert.deepEqual(rejects(plausible(endingAt(36_179))), ['boss-fight-too-short']);
+  assert.deepEqual(rejects(plausible(endingAt(36_179, 35_999))), ['boss-before-ready']);
+  assert.deepEqual(rejects(plausible(endingAt(36_178, 35_999))), ['boss-before-ready', 'boss-fight-too-short']);
 });
 
 // Contract §8, nearest-impossible test 5: kill capacity.
@@ -631,7 +645,9 @@ test('v7: one kill above the kill capacity of a four-boss run rejects', () => {
 
 // Contract §7.3: v7 capacity against v6 for fabricated boss claims (every boss
 // initiated at its ready tick, never defeated) and quick honest kills (each
-// defeated 302 ticks after its ready tick).
+// defeated 302 ticks after its ready tick). Beyond the director schedule v7
+// counts only the boss bodies and each slot's first four adds; every further
+// add draws from the capacity bank.
 test('v7 kill capacity reproduces the contract §7.3 table', () => {
   const capacityAt = (runTicks, defeatAfter) => hmhV7KillCapacity({ totals: { survivalTicks: runTicks }, bosses: C7.bosses.map((bossId) => {
     const ready = HMH_V7_BOSSES[bossId].readyTick;
@@ -639,23 +655,137 @@ test('v7 kill capacity reproduces the contract §7.3 table', () => {
     const defeated = initiated && defeatAfter !== null && ready + defeatAfter <= runTicks ? ready + defeatAfter : 0;
     return { bossId, initiations: initiated ? 1 : 0, firstInitiatedTick: initiated ? ready : 0, lastInitiatedTick: initiated ? ready : 0, defeatedTick: defeated };
   }) });
-  const table = [3_600, 10_800, 18_000, 36_000, 64_800, 108_000].map((runTicks) => [runTicks, spawnCapacity(runTicks), capacityAt(runTicks, null), capacityAt(runTicks, 302)]);
+  const table = [3_600, 7_200, 7_290, 10_800, 18_000, 36_000, 64_800, 72_000, 108_000].map((runTicks) => [runTicks, spawnCapacity(runTicks), capacityAt(runTicks, null), capacityAt(runTicks, 302)]);
   assert.deepEqual(table, [
     [3_600, 27, 27, 27],
-    [10_800, 107, 123, 112],
-    [18_000, 187, 239, 196],
-    [36_000, 487, 623, 506],
-    [64_800, 1_127, 1_383, 1_151],
-    [108_000, 2_572, 2_863, 2_451],
+    [7_200, 67, 67, 67],
+    [7_290, 68, 72, 72],
+    [10_800, 107, 111, 112],
+    [18_000, 187, 191, 192],
+    [36_000, 487, 499, 502],
+    [64_800, 1_127, 1_143, 1_147],
+    [72_000, 1_288, 1_303, 1_307],
+    [108_000, 2_572, 2_443, 2_447],
   ]);
-  // The worst loosening against v6 is under 28%, at 10 minutes.
-  for (const [, v6, fabricated] of table) assert.ok(fabricated <= v6 * 1.28, `${fabricated} against ${v6}`);
-  // The boss-window union counts overlapping claims once and ignores uninitiated rows.
-  assert.equal(hmhV7BossWindowTicks([
-    { initiations: 1, firstInitiatedTick: 100, defeatedTick: 400 },
-    { initiations: 2, firstInitiatedTick: 300, defeatedTick: 0 },
-    { initiations: 0, firstInitiatedTick: 0, defeatedTick: 0 },
-  ], 1_000), 900);
+  // At every run length, v7 is at most 20 kills (four bodies and four slots of
+  // four adds) above the director schedule, and so above v6 by at most 20.
+  for (let runTicks = 0; runTicks <= 200_000; runTicks += 30) {
+    const schedule = HMH_V7_RUN_RULES.OPENING_ENEMIES + directorSpawnCapacity(runTicks, HMH_V7_RUN_RULES.ENCOUNTER_BAND_SCHEDULE);
+    assert.ok(capacityAt(runTicks, 302) - schedule <= 20 && capacityAt(runTicks, 302) - spawnCapacity(runTicks) <= 20, `${runTicks}`);
+  }
+});
+
+// Red team (attack 0, finding 1): a boss never defeated used to add boss-add
+// capacity up to the end of the run, on top of the director slots of the same
+// ticks; the same claim with the fights nested inside one boss's fight did too.
+test('v7: claimed boss time buys no kill capacity beyond the first adds of each slot', () => {
+  const T = fourBosses.totals.survivalTicks;
+  const inflate = (s, total, score) => {
+    addOrdinaryKills(s, 'money-printer', total - s.kills.total);
+    s.totals.score = score;
+    return s;
+  };
+  // The Baron initiated at 7,200, never defeated; the other three as in the fixture.
+  const killWeapon = fourBosses.kills.byWeapon.find((entry) => entry.count > 0).weaponId;
+  const undefeatedBaron = (s) => {
+    Object.assign(bossRow(s, 'rug-pull-baron'), { defeatedTick: 0 });
+    v7Row(s.kills.byEnemyRole, 'enemyRoleId', 'rug-pull-baron').count = 0;
+    s.kills.total -= 1;
+    v7Row(s.kills.byWeapon, 'weaponId', killWeapon).count -= 1;
+    v7Row(s.weapons, 'weaponId', killWeapon).kills -= 1;
+    Object.assign(s.progression, { sealsFound: 3, sealsBanked: 2 });
+    v7Row(s.collectibles, 'effectId', 'genesis-seal').collected = 3;
+  };
+  const baron = clone(fourBosses, undefeatedBaron);
+  assert.deepEqual(rejects(plausible(baron)), []);
+  const schedule = HMH_V7_RUN_RULES.OPENING_ENEMIES + directorSpawnCapacity(T, HMH_V7_RUN_RULES.ENCOUNTER_BAND_SCHEDULE);
+  assert.equal(hmhV7KillCapacity(baron), schedule + 3 + 4 * 4, 'the schedule, three bodies and four slots of first adds');
+  // The red-team payload: 1,386 kills and score 602,974 now reject.
+  const redTeam = plausible(clone(baron, (s) => inflate(s, 1_386, 602_974)));
+  assert.deepEqual(rejectFlags(redTeam).map((flag) => [flag.id, flag.value, flag.limit]), [['kills-above-capacity', 1_386, hmhV7KillCapacity(baron)]]);
+  // One kill above the new capacity rejects; at it, it passes.
+  assert.deepEqual(rejects(plausible(clone(baron, (s) => addOrdinaryKills(s, 'forkrunner', hmhV7KillCapacity(baron) - s.kills.total)))), []);
+  assert.deepEqual(rejects(plausible(clone(baron, (s) => addOrdinaryKills(s, 'forkrunner', hmhV7KillCapacity(baron) - s.kills.total + 1)))), ['kills-above-capacity']);
+  // Variant A: the Baron's fight claimed to T - 1, the other three nested inside it
+  // (and the Baron's cage opened after it, as schema rule S9 now requires).
+  const nested = clone(fourBosses, (s) => {
+    bossRow(s, 'rug-pull-baron').defeatedTick = T - 1;
+    v7Row(s.prisoners, 'slotId', 'h1-baron-diggings').tick = T - 1;
+  });
+  assert.equal(hmhV7KillCapacity(nested), hmhV7KillCapacity(fourBosses), 'the fight length adds nothing');
+  assert.deepEqual(rejectFlags(plausible(nested)), [{ id: 'boss-fights-overlap', severity: 'reject', value: 3, limit: 0 }]);
+  assert.deepEqual(rejects(plausible(clone(nested, (s) => inflate(s, 1_383, 602_645)))), ['boss-fights-overlap', 'kills-above-capacity']);
+});
+
+// Red team (attack 0, finding 3): a slot with no time to summon buys no adds.
+test('v7: a boss initiated too late to summon adds no first adds', () => {
+  const T = districts.totals.survivalTicks;
+  const at = (tick) => ({ initiations: 1, firstInitiatedTick: tick, lastInitiatedTick: tick, defeatedTick: 0 });
+  const base = hmhV7KillCapacity(districts);
+  const withLiquidator = (tick) => clone(districts, (s) => { Object.assign(bossRow(s, 'liquidator'), at(tick)); s.milestones.bossEngagedTick = tick; });
+  assert.equal(hmhV7KillCapacity(withLiquidator(T)), base, 'initiated on the last tick');
+  assert.equal(hmhV7KillCapacity(withLiquidator(T - 89)), base, '89 ticks before the end');
+  assert.equal(hmhV7KillCapacity(withLiquidator(T - 90)), base + 4, 'the add delay fits');
+  // Ended by another boss's initiation within the delay: the first boss must
+  // have left its fight by then without a retreat, so it summoned nothing.
+  const bosses = [{ bossId: 'a', ...at(40_000) }, { bossId: 'b', ...at(40_089) }];
+  assert.equal(hmhV7BossCouldSummon(bosses[0], bosses, T), false);
+  bosses[1] = { bossId: 'b', ...at(40_090) };
+  assert.equal(hmhV7BossCouldSummon(bosses[0], bosses, T), true);
+  assert.equal(hmhV7BossCouldSummon({ initiations: 2, firstInitiatedTick: 40_000, lastInitiatedTick: T, defeatedTick: 0 }, [], T), true, 'a retreat means an engagement of 720 ticks or more');
+  // The red-team payload: Foreman and Liquidator both initiated at the last tick.
+  const both = plausible(clone(districts, (s) => {
+    Object.assign(bossRow(s, 'fifty-one-percent-foreman'), at(T));
+    Object.assign(bossRow(s, 'liquidator'), at(T));
+    s.milestones.bossEngagedTick = T;
+    addOrdinaryKills(s, 'forkrunner', base + 8 - s.kills.total);
+  }));
+  assert.deepEqual(rejects(both), ['boss-fights-overlap', 'kills-above-capacity']);
+});
+
+// Red team (attack 0 finding 4, attack 1 finding 2): one boss is live at a time.
+test('v7: two bosses live at once reject', () => {
+  const overlap = (mutate) => plausible(clone(fourBosses, mutate));
+  const logbookAt = (s, tick) => {
+    v7Row(s.objectives, 'objectiveId', 'warehouse-logbook').tick = tick;
+    v7Row(s.milestones.secrets, 'secretId', 'warehouse-logbook').tick = tick;
+  };
+  // The Liquidator fought inside the Foreman's fight (27,000 to 40,000), with h2 freed after the Foreman.
+  const nested = overlap((s) => {
+    retimeBoss(s, 'fifty-one-percent-foreman', { first: 27_000, defeated: 40_000 });
+    v7Row(s.prisoners, 'slotId', 'h2-foreman-hoist-vault').tick = 40_000;
+    retimeBoss(s, 'liquidator', { first: 36_000, defeated: 36_300 });
+    logbookAt(s, 36_000);
+  });
+  assert.deepEqual(rejectFlags(nested), [{ id: 'boss-fights-overlap', severity: 'reject', value: 1, limit: 0 }]);
+  // Every boss fought over the same 300 ticks (attack 1's payload shape): six pairs.
+  const together = overlap((s) => {
+    for (const bossId of C7.bosses) retimeBoss(s, bossId, { first: 36_000, defeated: 36_300 });
+    v7Row(s.prisoners, 'slotId', 'h1-baron-diggings').tick = 36_300;
+    v7Row(s.prisoners, 'slotId', 'h2-foreman-hoist-vault').tick = 36_300;
+    logbookAt(s, 36_000);
+  });
+  assert.deepEqual(rejectFlags(together).find((flag) => flag.id === 'boss-fights-overlap'), { id: 'boss-fights-overlap', severity: 'reject', value: 6, limit: 0 });
+  // Back to back is not an overlap: a boss may start on the tick another falls.
+  assert.equal(hmhV7BossOverlaps([
+    { initiations: 1, firstInitiatedTick: 18_000, lastInitiatedTick: 18_000, defeatedTick: 18_300 },
+    { initiations: 1, firstInitiatedTick: 18_300, lastInitiatedTick: 18_300, defeatedTick: 18_600 },
+  ]), 0);
+  assert.equal(hmhV7BossOverlaps([
+    { initiations: 1, firstInitiatedTick: 18_000, lastInitiatedTick: 18_000, defeatedTick: 18_300 },
+    { initiations: 1, firstInitiatedTick: 18_299, lastInitiatedTick: 18_299, defeatedTick: 18_600 },
+  ]), 1, 'one tick inside the fight');
+  assert.equal(hmhV7BossOverlaps([
+    { initiations: 1, firstInitiatedTick: 18_000, lastInitiatedTick: 18_000, defeatedTick: 0 },
+    { initiations: 1, firstInitiatedTick: 18_000, lastInitiatedTick: 18_000, defeatedTick: 0 },
+  ]), 1, 'two initiated on one tick');
+  // A retreat and a return around another boss's whole fight is honest.
+  assert.equal(hmhV7BossOverlaps([
+    { initiations: 2, firstInitiatedTick: 18_000, lastInitiatedTick: 30_000, defeatedTick: 30_400 },
+    { initiations: 1, firstInitiatedTick: 27_000, lastInitiatedTick: 27_000, defeatedTick: 27_400 },
+  ]), 0);
+  assert.equal(hmhV7BossOverlaps(districts.bosses), 0);
+  assert.equal(hmhV7BossOverlaps(fourBosses.bosses), 0);
 });
 
 // Contract §8, nearest-impossible test 7: OG Miner XP comes from the seeded deal only.
@@ -665,12 +795,15 @@ test('v7: an OG Miner rescue funds exactly 300 x level XP, and only in an OG Min
   const ogSlot = unheld('og-miner');
   const medicSlot = unheld('field-medic');
   assert.ok(ogSlot && medicSlot);
-  const level = fourBosses.totals.level;
-  const tick = fourBosses.identity.endTick - 60;
   const unrescue = (s, slotId) => Object.assign(v7Row(s.prisoners, 'slotId', slotId), { rescued: 0, tick: 0, levelAtRescue: 0 });
   const base = clone(fourBosses, (s) => { unrescue(s, ogSlot); unrescue(s, medicSlot); });
-  const rescuedIn = (slotId, xp) => clone(base, (s) => {
-    Object.assign(v7Row(s.prisoners, 'slotId', slotId), { rescued: 1, tick, levelAtRescue: level });
+  // A level below the run's own with no other node: its span completes it.
+  const used = new Set([...base.objectives.map((row) => row.levelAtCompletion), ...base.prisoners.map((row) => row.levelAtRescue)]);
+  const level = Array.from({ length: base.totals.level - 2 }, (_, index) => base.totals.level - 1 - index).find((candidate) => !used.has(candidate));
+  assert.ok(level > 1, 'a free level below the final one');
+  const tick = fourBosses.identity.endTick - 60;
+  const rescuedIn = (slotId, xp, at = level) => clone(base, (s) => {
+    Object.assign(v7Row(s.prisoners, 'slotId', slotId), { rescued: 1, tick, levelAtRescue: at });
     setV7Xp(s, xp);
   });
   const without = hmhV7Ceilings(base, V7_MAX_GAINS).xp;
@@ -681,6 +814,161 @@ test('v7: an OG Miner rescue funds exactly 300 x level XP, and only in an OG Min
   // The same claim in a slot the deal makes a Field Medic has no XP source.
   assert.equal(hmhV7Ceilings(rescuedIn(medicSlot, fourBosses.totals.xp), V7_MAX_GAINS).xp, without);
   assert.deepEqual(rejects(plausible(rescuedIn(medicSlot, withOgMiner))), ['xp-above-ceiling']);
+  // A span always completes the level it is granted at, so no OG Miner is
+  // rescued at the run's final level (red team: nodes claimed at the final level).
+  const L = fourBosses.totals.level;
+  const atFinal = plausible(rescuedIn(ogSlot, fourBosses.totals.xp, L));
+  assert.deepEqual(rejects(atFinal), ['node-xp-above-level']);
+  const excess = atFinal.flags.find((flag) => flag.id === 'node-xp-above-level');
+  assert.ok(excess.value >= 300 * L && excess.limit < 300 * L, JSON.stringify(excess));
+});
+
+// Red team (attack 0 finding 5, attack 2 finding 2): node levels are claims, so
+// the XP a level can hold bounds them.
+test('v7: node XP beyond what its level can hold rejects', () => {
+  // The fixtures' own node levels fit.
+  assert.equal(hmhV7NodeLevelExcess(districts), null);
+  assert.equal(hmhV7NodeLevelExcess(fourBosses), null);
+  // Every node claimed at the final level, with XP raised to the new ceiling.
+  for (const summary of [districts, fourBosses]) {
+    for (const lift of [0, 1, 5, 12]) {
+      const claimed = clone(summary, (s) => {
+        const L = s.totals.level + lift;
+        for (const row of s.objectives) if (row.completed) row.levelAtCompletion = L;
+        for (const row of s.prisoners) if (row.rescued) row.levelAtRescue = L;
+        setV7Xp(s, Math.min(hmhV7Ceilings(s, V7_MAX_GAINS).xp, hmhV7LevelThreshold(L) - 1));
+      });
+      if (claimed.totals.level !== summary.totals.level + lift) continue;
+      assert.ok(rejects(plausible(claimed)).includes('node-xp-above-level'), `${summary.identity.seed} +${lift}`);
+    }
+  }
+  // Attack 2 K3: every node moved to tick 53,800 at level 24 of the districts run.
+  const k3 = plausible(clone(districts, (s) => {
+    for (const row of s.objectives) if (row.completed) Object.assign(row, { tick: 53_800, levelAtCompletion: 24 });
+    for (const row of s.prisoners) if (row.rescued) Object.assign(row, { tick: 53_800, levelAtRescue: 24 });
+    for (const row of s.milestones.sites) if (row.operated) row.tick = 53_800;
+    for (const row of s.milestones.secrets) if (row.found) row.tick = 53_800;
+    setV7Xp(s, hmhV7LevelThreshold(23));
+    s.milestones.lastLevelUpTick = 53_760;
+  }));
+  assert.ok(rejects(k3).includes('node-xp-above-level'), JSON.stringify(k3.flags));
+  // At a level below the final one, all but the node that completes it fit in
+  // 300 x level: exactly 300 x level - 1 passes, 300 x level rejects.
+  const synthetic = (xps) => ({
+    identity: { seed: 0 }, totals: { level: 30, xp: hmhV7LevelThreshold(29) },
+    objectives: xps.map((perLevel, index) => ({ objectiveId: ['hashwood-lamp-oil', 'relay-power', 'relay-barn-doors', 'farmstead-hidden-supplies'][index], completed: 1, tick: 100 + index, levelAtCompletion: perLevel })),
+    prisoners: [],
+  });
+  // Level 10: item 120, switch 180, gate 300, secret 600; all but the largest = 600 < 3,000.
+  assert.equal(hmhV7NodeLevelExcess(synthetic([10, 10, 10, 10])), null);
+  const at = (level, count) => ({
+    identity: { seed: 0 }, totals: { level: 30, xp: hmhV7LevelThreshold(29) },
+    objectives: C7.objectives.filter((id) => HMH_V7_OBJECTIVES[id].class === 'secret').slice(0, count).map((objectiveId, index) => ({ objectiveId, completed: 1, tick: 100 + index, levelAtCompletion: level })),
+    prisoners: [],
+  });
+  // Six secrets at level 5: five of them are 5 x 300 = 1,500 = 300 x 5 → rejects; five secrets (1,200) pass.
+  assert.deepEqual(hmhV7NodeLevelExcess(at(5, 6)), { level: 5, value: 1_500, limit: 1_499 });
+  assert.equal(hmhV7NodeLevelExcess(at(5, 5)), null);
+  // At the final level every grant fits in the XP gained there.
+  const final = (xp) => ({ identity: { seed: 0 }, totals: { level: 5, xp }, objectives: at(5, 2).objectives, prisoners: [] });
+  assert.equal(hmhV7NodeLevelExcess(final(hmhV7LevelThreshold(4) + 600)), null);
+  assert.deepEqual(hmhV7NodeLevelExcess(final(hmhV7LevelThreshold(4) + 599)), { level: 5, value: 600, limit: 599 });
+  // Attack 2 K1: a 10-second, zero-kill run claiming all six secrets at level 1 with 299 XP.
+  const k1 = plausible(clone(districts, (s) => {
+    const T = 600;
+    s.identity.endTick = T;
+    s.totals.survivalTicks = T;
+    s.totals.elapsedMs = T * FIXED_STEP_MS;
+    Object.assign(s.totals, { score: 1_260, xp: 299, level: 1, litecoin: 0, currentCombo: 0, maxCombo: 0 });
+    s.kills.total = 0; s.kills.elite = 0; s.kills.boss = 0;
+    for (const row of s.kills.byEnemyRole) row.count = 0;
+    for (const row of s.kills.byWeapon) row.count = 0;
+    for (const row of s.weapons) row.kills = 0;
+    s.grenades.kills = 0;
+    for (const row of s.collectibles) row.collected = 0;
+    for (const row of s.upgrades) Object.assign(row, { offered: 0, selected: 0 });
+    for (const row of s.bosses) Object.assign(row, { initiations: 0, firstInitiatedTick: 0, lastInitiatedTick: 0, defeatedTick: 0 });
+    for (const row of s.prisoners) Object.assign(row, { rescued: 0, tick: 0, levelAtRescue: 0 });
+    for (const row of s.evolutions) Object.assign(row, { offered: 0, applied: 0 });
+    Object.keys(s.progression).forEach((key) => { s.progression[key] = 0; });
+    for (const row of s.objectives) Object.assign(row, HMH_V7_OBJECTIVES[row.objectiveId].class === 'secret' ? { completed: 1, tick: 60, levelAtCompletion: 1 } : { completed: 0, tick: 0, levelAtCompletion: 0 });
+    for (const row of s.milestones.sites) Object.assign(row, { operated: 0, tick: 0 });
+    for (const row of s.milestones.secrets) Object.assign(row, { found: 1, tick: 60 });
+    Object.assign(s.milestones, { levelUps: 0, firstLevelUpTick: 0, lastLevelUpTick: 0, bossEngagedTick: 0 });
+    s.defeat = { kind: 'enemy', causeId: 'enemy-bagholder-rusher', tick: T, damage: 10 };
+    Object.assign(s.exploration, { visitedDistrictMask: 63, revealedCells: 0, revealedPermille: 0, distanceMilli: 0 });
+    s.totals.distanceMilli = 0;
+  }));
+  assert.ok(rejects(k1).includes('node-xp-above-level'), JSON.stringify(k1.flags));
+});
+
+// The XP ceiling holds the same per-level bound: node XP counted at a level
+// below the final one is at most the level's span less one plus the grant that
+// completes it, so packing x1 node minimums into a level buys no x1.75 XP.
+test('v7: the XP ceiling counts at most one level span of node XP per level below the final one', () => {
+  const secretsAt = (level, count, finalLevel) => ({
+    identity: { seed: 0 }, totals: { level: finalLevel }, kills: { byEnemyRole: [], total: 0 }, collectibles: [], prisoners: [], bosses: [], milestones: { secrets: [] },
+    objectives: C7.objectives.filter((id) => HMH_V7_OBJECTIVES[id].class === 'secret').slice(0, count).map((objectiveId) => ({ objectiveId, completed: 1, tick: 100, levelAtCompletion: level })),
+  });
+  const grant = Math.round(60 * 5 * 1.75);
+  assert.equal(grant, 525);
+  assert.equal(hmhV7Ceilings(secretsAt(5, 1, 30), V7_MAX_GAINS).xp, grant);
+  assert.equal(hmhV7Ceilings(secretsAt(5, 5, 30), V7_MAX_GAINS).xp, 300 * 5 - 1 + grant, 'five at x1.75 would be 2,625');
+  assert.equal(hmhV7Ceilings(secretsAt(5, 5, 5), V7_MAX_GAINS).xp, 5 * grant, 'at the final level the reject bounds them');
+  // The fixtures' ceilings hold their own XP.
+  for (const summary of [districts, fourBosses]) assert.ok(summary.totals.xp <= hmhV7Ceilings(summary, V7_MAX_GAINS).xp);
+});
+
+// Red team (attack 0 finding 2, attack 1 finding 1): schema 7 only from a v7 build.
+test('v7: a schema-7 summary from a build older than the first v7 child rejects', () => {
+  assert.equal(HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION, '1.9.0');
+  assert.equal(fourBosses.identity.buildHash, HMH_V7_FIXTURE_BUILD_HASH);
+  const built = (buildHash) => plausible(clone(fourBosses, (s) => { s.identity.buildHash = buildHash; }));
+  for (const [buildHash, version] of [['site-1.8.1:game-1.8.1', '1.8.1'], ['site-1.9.0:game-1.8.99', '1.8.99'], ['site-1.7.0:game-1.7.0', '1.7.0'], ['dev-build', null]]) {
+    const result = built(buildHash);
+    assert.deepEqual(rejectFlags(result), [{ id: 'build-predates-schema-7', severity: 'reject', value: version, limit: '1.9.0' }], buildHash);
+  }
+  for (const buildHash of ['site-1.9.0:game-1.9.0', 'site-1.9.1:game-1.9.1', 'site-2.0.0:game-1.10.0', 'site-2.0.0:game-2.0.0']) assert.deepEqual(rejects(built(buildHash)), [], buildHash);
+  // The four-boss run labelled 1.8.1: its Liquidator kill at 56,400, before v6's boss band, no longer reaches a 1.8.x board.
+  assert.equal(built('site-1.8.1:game-1.8.1').verdict, 'rejected');
+  // A 1.8.x child cached under a newer portal still emits schema 6 with the
+  // portal's build hash: the v6 rules stay as they are under any build hash.
+  for (const buildHash of ['site-1.9.0:game-1.9.0', 'site-3.0.0:game-3.0.0', 'dev-build']) {
+    for (const summary of [valid, realistic, level90]) {
+      assert.deepEqual(validateRebootRunPlausibility(clone(summary, (s) => { s.identity.buildHash = buildHash; })), validateRebootRunPlausibility(summary), buildHash);
+    }
+  }
+});
+
+// Red team (attack 0 finding 6): collectible pickups are bounded by the placements.
+test('v7: more collectible pickups than the placements can give reject', () => {
+  // The 1.8.1 collectible system: at most 13 world placements and 8 objective
+  // rewards, and a placement re-arms after 7,200 or 10,800 ticks.
+  const placement = (index, extra = {}) => ({ id: `p${index}`, assetId: 'bonus-life', x: index, y: 0, ...extra });
+  const world = (count) => Array.from({ length: count }, (_, index) => placement(index));
+  const rewards = (count) => Array.from({ length: count }, (_, index) => placement(100 + index, { requiredObjective: `o${index}` }));
+  assert.doesNotThrow(() => createCollectibleState({ placements: world(13), objectivePlacements: rewards(8) }));
+  assert.throws(() => createCollectibleState({ placements: world(14), objectivePlacements: rewards(8) }));
+  assert.throws(() => createCollectibleState({ placements: world(13), objectivePlacements: rewards(9) }));
+  assert.throws(() => createCollectibleState({ placements: [placement(0, { respawnTicks: 7_199 }), ...world(12).slice(1)] }));
+  assert.doesNotThrow(() => createCollectibleState({ placements: [placement(0, { respawnTicks: 7_200 }), ...world(12).slice(1)] }));
+  assert.equal(HMH_V7_COLLECTIBLE_RULES.MAX_PLACEMENTS, 13 + 8);
+  assert.equal(HMH_V7_COLLECTIBLE_RULES.MIN_REARM_TICKS, 7_200);
+  const T = fourBosses.totals.survivalTicks;
+  const capacity = hmhV7CollectibleCapacity(T);
+  assert.equal(capacity, 21 * 10);
+  const pickups = (s) => s.collectibles.reduce((sum, row) => sum + (row.effectId === 'genesis-seal' ? 0 : row.collected), 0);
+  const withCandles = (count) => clone(fourBosses, (s) => { v7Row(s.collectibles, 'effectId', 'berserk-candle').collected += count; });
+  const room = capacity - pickups(fourBosses);
+  assert.deepEqual(rejects(plausible(withCandles(room))), []);
+  assert.deepEqual(rejectFlags(plausible(withCandles(room + 1))), [{ id: 'collectibles-above-capacity', severity: 'reject', value: capacity + 1, limit: capacity }]);
+  // The red-team payloads: 250 Berserk Candles, and a million Railgun cores funding level 1,000.
+  assert.ok(rejects(plausible(withCandles(250))).includes('collectibles-above-capacity'));
+  const cores = plausible(clone(fourBosses, (s) => {
+    v7Row(s.collectibles, 'effectId', 'hash-rail-core').collected = 1_000_000;
+    setV7Xp(s, 149_850_000);
+  }));
+  assert.ok(rejects(cores).includes('collectibles-above-capacity'), JSON.stringify(cores.flags));
 });
 
 // Contract §8, nearest-impossible test 8: a silver burst needs its defeated row.
@@ -739,7 +1027,7 @@ test('v7 soft flags flag and never reject', () => {
     to.offered = Math.max(to.offered, to.selected);
   }), 'upgrade-rank-above-max', 1);
   soft(clone(districts, (s) => {
-    Object.assign(v7Row(s.evolutions, 'evolutionId', 'double-spend'), { offered: 1, applied: 1 });
+    Object.assign(v7Row(s.evolutions, 'evolutionId', 'crit-candle'), { offered: 1, applied: 1 });
     Object.assign(s.progression, { evolutionOffersOpened: 1, evolutionsApplied: 1, sealsBanked: 1 });
   }), 'evolution-without-mastery', 1);
   soft(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'relay-power').levelAtCompletion = s.totals.level; }), 'node-level-inconsistent');
