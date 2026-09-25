@@ -90,6 +90,17 @@ export async function bootJackpotChain({ rules = {} } = {}) {
     const block = await provider.getBlock(receipt.blockNumber);
     return { sessionId, submittedAt: block.timestamp, signature };
   };
+  // The same in two steps: pay (open) during the week, publish later.
+  h.open = ({ player, sessionId, openAt = null }) => openLocalSession({ provider, record: suite, player, sessionId, openAt });
+  h.publish = async ({ player, sessionId, score, survivalSeconds = 120n, kills = 0n, maxCombo = 0n, settleAt = null }) => {
+    const { run } = await attestLocalRun({ provider, record: suite, player, verifierKey: h.verifierKey, sessionId, score, survivalSeconds });
+    run.kills = BigInt(kills);
+    run.maxCombo = BigInt(maxCombo);
+    const signed = await attestWithFields({ provider, suite, player, verifierKey: h.verifierKey, run });
+    if (settleAt !== null) await h.nextAt(settleAt);
+    const receipt = await (await localContracts(suite, provider).scores.connect(all.relayer).submitVerifiedSession(signed.run, [], signed.signature)).wait();
+    return { sessionId, submittedAt: (await provider.getBlock(receipt.blockNumber)).timestamp };
+  };
   h.fund = async (week, amount, from = funder) => {
     await (await deployed.token.connect(from).approve(h.contract, amount)).wait();
     return (await deployed.jackpot.connect(from).fund(week, amount)).wait();

@@ -9,7 +9,9 @@ import { ethers } from 'ethers';
 import { createCanonicalSessionIdentity } from '../../../apps/portal/src/session-integrity.mjs';
 import { deriveRankedSeed } from '../../../apps/portal/src/session-seed.mjs';
 import { canonicalSessionJson, sha256Hex } from '../../../apps/portal/src/session-integrity.mjs';
-import { simulateChikunRun } from '../../../apps/portal/src/chikun-cabinet.mjs';
+import { createChikunRuntime, simulateChikunRun } from '../../../apps/portal/src/chikun-cabinet.mjs';
+import { routePilot } from '../../../scripts/chikun-course-pilot.mjs';
+import { humanise, widenedView } from '../../../scripts/lib/chikun-evasion-pilots.mjs';
 import { reverifyStoredRun } from '../../../server/verify/index.mjs';
 import { issueSeedTicket } from '../../../server/verify/seed-ticket.mjs';
 import { migrate } from '../../../server/neon/migrations.mjs';
@@ -119,9 +121,17 @@ export async function seedJackpotRun(db, overrides = {}) {
     stats = fresh.stats;
     envelopeHash = overrides.envelopeHash ?? fresh.envelopeHash;
   }
+  // The chain side of the same run (the cron tests): open and settle it on
+  // the in-process chain at the given times, with the replayed fields.
+  // It may answer { confirmedAt } (the publishing block's time, unix ms).
+  let chainFacts = {};
+  if (typeof overrides.beforeInsert === 'function') {
+    chainFacts = (await overrides.beforeInsert({ identity, sessionId32: identity.sessionKey, wallet, fields: { score, kills, maxCombo, survivalSeconds }, openedAt })) ?? {};
+  }
   const verifiedAt = iso(overrides.verifiedAt ?? Date.parse(openedAt) + survivalSeconds * 1000 + 30_000);
   const status = overrides.status ?? 'confirmed';
-  const confirmedAt = Object.hasOwn(overrides, 'confirmedAt') ? iso(overrides.confirmedAt) : (status === 'confirmed' ? iso(Date.parse(verifiedAt) + 30_000) : null);
+  const confirmedAt = chainFacts.confirmedAt !== undefined ? iso(chainFacts.confirmedAt)
+    : Object.hasOwn(overrides, 'confirmedAt') ? iso(overrides.confirmedAt) : (status === 'confirmed' ? iso(Date.parse(verifiedAt) + 30_000) : null);
   const keys = periodKeysFor(Date.parse(openedAt));
   const sessionId32 = overrides.sessionId32 ?? identity.sessionKey;
   await db.query(
@@ -161,3 +171,18 @@ export async function seedDerivedSeed({ sessionHandle, wallet, seasonId = CHIKUN
 }
 
 export { ethers };
+
+// A longer human-like run at the given seed whose score grows with
+// `untilTick`: the naively humanised routePilot on the stock landscape view
+// (scripts/lib/chikun-evasion-pilots.mjs) flies until `untilTick`, then stops
+// flapping and crashes. Keep untilTick at or above 1,800 (a shorter run can
+// trip H5) and under 3 minutes (10,800 ticks, H6).
+export function pilotCutEvidence(seed, { untilTick = 3600 } = {}) {
+  const pilot = humanise(widenedView(routePilot, { widen: 1, delay: 8 }), { seed, label: 'fixture' });
+  const runtime = createChikunRuntime({ seed, maxTicks: 216_000 });
+  while (!runtime.terminal) {
+    const snapshot = runtime.snapshot();
+    runtime.step({ flap: snapshot.tick < untilTick ? pilot(snapshot) : false });
+  }
+  return runtime.result().evidence;
+}

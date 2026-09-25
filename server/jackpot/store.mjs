@@ -632,3 +632,16 @@ export async function writeCursor(db, stream, block) {
 }
 
 export { iso as isoTime, text as nullableText };
+
+// Owner recovery of a failed week (scripts/jackpot-ops.mjs requeue): its dead
+// actions back to pending and the week back to 'selecting', from where the
+// state machine re-screens, re-sends and re-decides idempotently.
+export async function requeueWeek(db, { contract = null, weekKey }) {
+  const actions = await requeueDeadActions(db, { contract, weekKey });
+  const rows = await db.query(
+    `UPDATE jackpot_weeks SET status = 'selecting', last_error = NULL, updated_at = now()
+     WHERE week_key = $1 AND status = 'failed' AND ($2::text IS NULL OR contract = $2) RETURNING contract`,
+    [requireWeekKey(weekKey), contract === null ? null : requireAddress(contract, 'contract')],
+  );
+  return { actions, weeks: rows.map((row) => row.contract) };
+}
