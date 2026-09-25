@@ -566,6 +566,15 @@ test('hosted entries keep only well-formed version labels', () => {
   for (const bad of [null, 7, '', ' ', 'v', 'Chikun v7 ', ' Chikun v7', 'Chikun version 7', 'Chikun v7.1.2', '<img src=x onerror=alert(1)> v1', `${'x'.repeat(13)} v1`, { toString: () => 'HMH v0.5' }]) {
     assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: bad }).versionLabel, null, String(bad));
   }
+  // Review finding (version-column fixer, round 2): only the three games'
+  // names, and on a board only that board's game.
+  for (const bad of ['Pong v1', 'Admin v1']) assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: bad }).versionLabel, null, bad);
+  const onBoard = (gameId, versionLabel) => hostedLeaderboardEntry({ ...e5Row(1, gameId), versionLabel }, { gameId }).versionLabel;
+  assert.equal(onBoard('lester-blaster', 'HMH v0.5'), 'HMH v0.5');
+  assert.equal(onBoard('lester-blaster', 'Chikun v0.5'), null, 'another game\'s label');
+  assert.equal(onBoard('chikun', 'STACKED v0.2'), null);
+  assert.equal(onBoard('stacked', 'v?'), null, 'a known game always names itself');
+  assert.equal(onBoard('stacked', 'STACKED v?'), 'STACKED v?');
 });
 
 // The rendered layout at 320-1440 px is measured in Chromium by

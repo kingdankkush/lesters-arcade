@@ -217,7 +217,7 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   // The game version the run was played on (E9 versionLabel, version-column);
   // a run whose version is unknown ('HMH v?': not recorded, or not a version
   // this deploy has shipped) lists none.
-  const versionLabel = versionLabelText(session.versionLabel);
+  const versionLabel = versionLabelText(session.versionLabel, gameId);
   if (versionLabel && !versionLabel.endsWith('v?')) statRows.push(['Version', versionLabel]);
   const pageUrl = `${SHARE_SITE_ORIGIN}/s/${shareId}`;
   const cardRev = /^[0-9a-f]{12}$/.test(String(session.cardRev ?? '')) ? session.cardRev : '';

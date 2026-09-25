@@ -566,7 +566,7 @@ export function createHostedProfileView({
       // decision 2026-09-25: no testnet season resets). It leads the status
       // line, so a missing label never moves the score or the game. An
       // unknown version ('HMH v?') is muted, as on the hosted board.
-      const version = versionLabelText(session.versionLabel);
+      const version = versionLabelText(session.versionLabel, session.gameId);
       if (version) {
         const unknown = version.endsWith('v?') ? ' is-unknown' : '';
         appendText(row, 'span', version, `game-history-version profile-session-version${unknown}`).title = versionLabelTitle(version);
