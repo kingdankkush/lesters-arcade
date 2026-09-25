@@ -112,14 +112,24 @@ export function ensureWalletPickerStyles(documentRef = globalThis.document) {
 // fallback styles.
 export const WALLET_STYLES_TIMEOUT_MS = 3000;
 
+// Links whose stylesheet already missed a wait (error or timeout): later
+// sheets use the fallback at once instead of waiting again, since a failed
+// <link> never fires another event.
+const stylesMissed = new WeakSet();
+
 // Resolves once the stylesheet applies (load or error), or after timeoutMs.
 // null when it already applies. A browser <link> exposes `sheet` (null until
 // loaded); test doubles without it count as loaded.
 export function walletPickerStylesPending(link, { timeoutMs = WALLET_STYLES_TIMEOUT_MS } = {}) {
   if (!link || !('sheet' in link) || link.sheet) return null;
+  if (stylesMissed.has(link)) return Promise.resolve();
   return new Promise((resolve) => {
     let timer = null;
-    const done = () => { if (timer !== null) clearTimeout(timer); resolve(); };
+    const done = () => {
+      if (timer !== null) clearTimeout(timer);
+      if (!link.sheet) stylesMissed.add(link);
+      resolve();
+    };
     timer = setTimeout(done, timeoutMs);
     link.addEventListener?.('load', done, { once: true });
     link.addEventListener?.('error', done, { once: true });

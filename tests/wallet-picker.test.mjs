@@ -239,8 +239,12 @@ test('until its stylesheet applies the picker dims the page and keeps the sheet 
   assert.equal(shown.style.visibility, '', 'shown on the fallback styles');
   assert.match(shown.style.cssText, /^position:fixed;/);
   // A stylesheet that arrives after the fallback showed still takes over.
-  failing.head.children[0].listeners.load();
-  assert.deepEqual(shown.style, {});
+  const failedLink = failing.head.children[0];
+  const next = showWalletToast({ documentRef: failing, message: 'Try again', timeoutMs: 0 });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(next.style.visibility, '', 'after one miss, later toasts use the fallback at once (a failed link fires no more events)');
+  failedLink.listeners.load();
+  assert.deepEqual(next.style, {});
 });
 
 test('the picker stylesheet keeps 44 px touch targets, thumb reach and a 320 px layout', () => {
