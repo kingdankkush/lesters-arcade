@@ -593,6 +593,53 @@ test('S13-S15: offers, picks, re-rolls and shown cards add up', () => {
   accepts((s) => { withPanels(s, 1); s.progression.rerolls = 2; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 1; row(s.evolutions, 'evolutionId', 'settler-rail').offered = 1; row(s.evolutions, 'evolutionId', 'crit-candle').offered = 1; row(s.evolutions, 'evolutionId', 'double-spend').offered = 1; row(s.weapons, 'weaponId', 'scatter-shotgun').pickups = 1; });
 });
 
+test('S10: a reserved evolution applied with no card shown still refuses', () => {
+  const evolutions = 'game:run-summary evolutions are invalid';
+  const defeatTwo = (s) => { boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 }); boss(s, 'lockkeeper', { first: 18_000, defeated: 18_400 }); };
+  for (const id of HMH_V7_RESERVED_EVOLUTIONS) {
+    refuses((s) => {
+      defeatTwo(s);
+      seals(s, 2, [id]);
+      row(s.evolutions, 'evolutionId', id).offered = 0;
+      s.progression.evolutionOffersOpened = 0;
+    }, evolutions, `${id} applied, offered 0`);
+  }
+});
+
+// S14 and S15 at their boundary for each kind of panel on its own: every
+// refusal below breaks one bound while the others hold.
+test('S14 and S15: each bound holds at its boundary for each kind of panel', () => {
+  const rerolls = 'game:run-summary rerolls are inconsistent';
+  const cards = 'game:run-summary offered cards are inconsistent';
+  const offers = BASE.progression.offersOpened;
+  const withPanels = (s, panels) => {
+    boss(s, 'rug-pull-baron', { first: 7_200, defeated: 7_600 });
+    boss(s, 'lockkeeper', { first: 18_000, defeated: 18_400 });
+    seals(s, 2);
+    s.progression.evolutionOffersOpened = panels;
+  };
+  // Distinct evolution cards, one showing each, for guns the run owns.
+  const evolutionCards = (s, count) => {
+    for (const id of ['settler-rail', 'crit-candle', 'double-spend'].slice(0, count)) row(s.evolutions, 'evolutionId', id).offered = 1;
+    row(s.weapons, 'weaponId', 'scatter-shotgun').pickups = 1;
+  };
+  // S14: two re-rolls per panel of either kind.
+  accepts((s) => { withPanels(s, 2); s.progression.rerolls = 2 * (offers + 2); });
+  refuses((s) => { withPanels(s, 2); s.progression.rerolls = 2 * (offers + 2) + 1; }, rerolls, 'one re-roll above two per level and evolution panel');
+  // S15, level cards alone: two per offer plus one per re-roll (an evolution
+  // panel with no card leaves the combined bound two cards of room).
+  accepts((s) => { withPanels(s, 1); s.progression.rerolls = 1; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 1; });
+  refuses((s) => { withPanels(s, 1); s.progression.rerolls = 1; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 2; }, cards, 'level cards over their own bound, under the combined one');
+  // S15, evolution cards alone: two per panel plus one per re-roll (one level
+  // card fewer leaves the combined bound room).
+  const spare = BASE.upgrades.find((entry) => entry.offered > entry.selected).upgradeId;
+  accepts((s) => { withPanels(s, 1); row(s.upgrades, 'upgradeId', spare).offered -= 1; evolutionCards(s, 2); });
+  refuses((s) => { withPanels(s, 1); row(s.upgrades, 'upgradeId', spare).offered -= 1; evolutionCards(s, 3); }, cards, 'evolution cards over their own bound, under the combined one');
+  // S15, combined: each kind within its own bound, the two together over theirs.
+  accepts((s) => { withPanels(s, 1); s.progression.rerolls = 1; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 1; evolutionCards(s, 2); });
+  refuses((s) => { withPanels(s, 1); s.progression.rerolls = 1; row(s.upgrades, 'upgradeId', 'rail-blocktime').offered = 1; evolutionCards(s, 3); }, cards, 'each kind within its own bound, both over the combined one');
+});
+
 test('S16: the one revive is the Golden Parachute of a Dark Pool win', () => {
   const message = 'game:run-summary the revive has no Golden Parachute';
   const darkPool = (s, logbookTick = 36_000) => {
