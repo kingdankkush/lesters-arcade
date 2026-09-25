@@ -1802,6 +1802,8 @@ On phone, each enemy's full set fits one 2048² page.
 | 7 | `source.autoGarbageCollect = false` on held-weapon and character atlas sources (the Pixi 8.19 `GCSystem` unloads after 60 s of disuse, which is a mid-fight re-upload hitch today) | performance | GPU upload counter |
 | 8 | **Physical iPhone XS Max** pressure-scene baseline | evidence | required before S4.1 ships |
 
+- **Built (build ledger slice 3).** Row 1 is built child-side: the child builds the result on the defeat tick and holds all four result messages for the 72 presentation ticks, so the parent must not add its own 1.2 s delay. Row 3 follows 7.7; the bridge's `settings.keyboardBindings` gains an optional `dodge` key.
+
 ### 7.3 Rig v2 (`HMH_HumanRig_v2`)
 
 - **Bones.** Adds clavicles, neck, arm and twist bones, 9 bones per hand, toes, per-hero baked spring chains and prop sockets. The weapon socket moves from `forearm.R` to `hand.R`, with `REFERENCE-CHARACTER-MODELS.md:47` updated in the same commit.
