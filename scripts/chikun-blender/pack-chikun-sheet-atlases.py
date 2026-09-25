@@ -6,7 +6,7 @@ Flight clips go to apps/portal/assets/generated/chikun-flight-v3/ (poster + char
 ground clips to chikun-ground-motion-v1/ (character.json with per-frame bounds), ragdoll
 parts to chikun-ragdoll-v1/ (manifest.json), and the provenance receipt to
 apps/chikun/assets/source/native-provenance.json. Contact sheets land in docs/chikun/.
-Existing flight audio under chikun-flight-v3/audio is untouched. Deterministic for a given
+Runtime flight audio (chikun-flight-v2/audio) is untouched. Deterministic for a given
 render directory: sheets are WEBP q88 m4 from LANCZOS 256->192 downsamples.
 """
 import argparse, json, hashlib, math

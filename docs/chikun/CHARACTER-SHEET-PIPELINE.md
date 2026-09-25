@@ -70,7 +70,8 @@ node build.mjs   # the portal serves apps/portal/dist/chikun/game.js
 
 Step 1 always starts from the tracked `Chikun-Ground-Sky-Rig.blend` and writes
 `Chikun-Sheet-Rig.blend` + `Chikun-Sheet-Animations.glb` beside it, so re-running never
-double-applies the paint or bones. The packer never touches `chikun-flight-v3/audio`.
+double-applies the paint or bones. The packer never touches the runtime flight audio, which
+lives in `chikun-flight-v2/audio` (`apps/chikun/src/audio.mjs`).
 
 ## Budgets (pinned in tests/chikun-character-sheet.test.mjs and chikun-facelift.test.mjs)
 
