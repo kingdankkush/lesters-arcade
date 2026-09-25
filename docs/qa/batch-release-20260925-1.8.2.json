@@ -1,0 +1,34 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-25",
+  "release": "1.8.2 lean portal",
+  "siteVersion": "1.8.2",
+  "cacheMarker": "lesters-arcade-v55-lean-portal",
+  "branch": "fable/master-list-20260916",
+  "source": "8d11971d",
+  "production": {
+    "deployment": "dpl_C8Zcbk2jTmKAM8ZRqWn4TwZLo33Y",
+    "immutableUrl": "https://lesters-arcade-mrm2yv604-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-uvadxu6jy-justin-agent-projects.vercel.app",
+    "previous": "dpl_4x5CB5EfB257TzrqvuDp9qRN66mv (1.8.1)",
+    "rollback": "Vercel Instant Rollback to dpl_4x5CB5EfB257TzrqvuDp9qRN66mv"
+  },
+  "contains": [
+    "retire-canvas-combat hand-off (d3dd645c): ~5,650 dead lines out of main.js, renderLeaderboard/emptyMini and other dead helpers, 27 source-only tests removed (listed in the hand-off commit messages); dist/main.js -16.7 KB",
+    "polish-2: keccak256.mjs replaces the static ethers import in game-manifest (portal and Chikun first paint -392 KB), truthful signed-in/out mode lines, profile VERIFIED BESTS from E6 games[].bests",
+    "J1 jackpot contracts staged: WeeklyJackpot + TestChikunToken, dry-run deploy/operator tools, generated litvm-jackpot.mjs undeployed (inert)",
+    "unified production-QA spawn timeout 900 s for slow local gates"
+  ],
+  "gates": {
+    "local": "PASS 4911 tests, 4860 passed, exactly 51 ledgered failures",
+    "vercel": "same gate PASS on the candidate build"
+  },
+  "verification": {
+    "publicFiles": "145/145 match the certified build",
+    "apiProbes": "attest 410, session nonce 200, leaderboard 200, profile 200, settle GET 405, unknown share 404, profile deep link 200",
+    "health": "healthy; index-chain 115 runs 0 failures; settle-retry 574 runs 0 failures; queue empty; index lag 875 blocks; relayer ~8 settles of buffer at ~1.45 gwei (each Ranked entry adds 0.002 zkLTC)",
+    "liveUiAudit": "234/234 on production"
+  },
+  "contractsUnchanged": "Ranked contracts, fees (85/15) and flags unchanged; no jackpot contract deployed"
+}

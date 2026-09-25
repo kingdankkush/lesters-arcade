@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.2: leaner portal, truthful copy, jackpot contracts staged
+# Lester's Arcade — 1.8.2 verified live: leaner portal, truthful copy, jackpot contracts staged
 
 Batch release after 1.8.1. The portal's and Chikun's first paint no longer download the 392 KB ethers library (a small built-in Keccak-256, proven byte-identical, computes the manifest hashes), and about 5,650 lines of unreachable legacy Canvas combat code and dead shell helpers are gone from `main.js` (no behaviour change). Signed-out game lines no longer claim an active session, and profiles show real bests ("Highest level", "Best combo") next to true totals. The Chikun Weekly Jackpot contracts (`WeeklyJackpot`, test token tCHIKUN) and their dry-run deploy and operator tools are in the repo but not deployed; nothing player-facing changes for the jackpot yet. Contracts, fees and flags of the live Ranked system are unchanged.
 
-Site/game version `1.8.2`; cache marker `lesters-arcade-v55-lean-portal`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_C8Zcbk2jTmKAM8ZRqWn4TwZLo33Y` (source `8d11971d`); site/game version `1.8.2`; cache marker `lesters-arcade-v55-lean-portal`. The local and Vercel gates pass 4,860 of 4,911 tests with exactly 51 unchanged retired exceptions; all 145 checked public files match; the live UI audit passes 234/234 and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260925-1.8.2.json). Rollback: Instant Rollback to `dpl_4x5CB5EfB257TzrqvuDp9qRN66mv`. Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.8.1 verified live: post-launch polish, health monitoring, faster first load
 
