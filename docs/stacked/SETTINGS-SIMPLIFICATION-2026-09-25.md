@@ -73,8 +73,10 @@ visuals when it is on.
 
 Everything is stored under `stacked-player-settings-v1`. The file stores
 `video.effectsPreset` and also the fields the preset expands to, so the saved
-object never contradicts itself and a 1.8.1 rollback reads fields it already
-knows.
+object never contradicts itself and a rollback to 1.8.2, the rollback target,
+reads fields it already knows. 1.8.1 and 1.8.2 ship the same pre-preset STACKED
+host, validator, settings and child files (no diff between 60ea173a and
+9e863ca2).
 
 `readStackedSettings(storage, reducedMotion, { prefersReducedMotion })`:
 
@@ -110,10 +112,10 @@ ignored. The bridge (`stacked-bridge-protocol.mjs`) accepts `effectsPreset`,
 
 ### Deploy skew
 
-An arcade tab that loaded the 1.8.1 `stacked-host.mjs` chunk before a deploy
-keeps the 1.8.1 exact-key validator in memory, but relaunching STACKED loads the
-new child. That validator rejects `effectsPreset`, `scene` and `reactiveBoard`.
-The rejection happens before the host advances its message sequence, so every
+An arcade tab that loaded a 1.8.1/1.8.2 (pre-preset) `stacked-host.mjs` chunk
+before a deploy keeps that exact-key validator in memory, but relaunching
+STACKED loads the new child. That validator rejects `effectsPreset`, `scene`
+and `reactiveBoard`. The rejection happens before the host advances its message sequence, so every
 later child message fails as out of order, including `game:result`, and a
 Ranked run would end "Not saved". A service-worker bump does not help, because
 the old host is already in memory.
@@ -122,21 +124,27 @@ the old host is already in memory.
 
 - `stackedParentKnowsPresets(init.settings)` is true only when the init
   settings carry a valid `effectsPreset`. Only such a parent is sent the three
-  preset keys. Any other parent gets exactly the 1.8.1 key set, which the
-  current host classifies back to the same preset (0 → off, minimal → calm,
-  0.7 → standard, 1 → full).
+  preset keys. Any other parent gets exactly the 1.8.1/1.8.2 (pre-preset) key
+  set, which the current host classifies back to the same preset (0 → off,
+  minimal → calm, 0.7 → standard, 1 → full).
 - `withStackedEffectsPreset` gives settings without a preset (from `portal:init`
   or a `portal:settings` echo) the nearest preset in the child's copy, so the
   radios, the backdrop and the board glow agree. Settings that already carry a
   preset are left exactly as the parent sent them.
+- In that same pre-preset branch, `sfxEnabled: false` sets the child copy's
+  `sfxVolume` to 0, as `readStackedSettings` does. A pre-preset host keeps the
+  old toggle beside the old volume, so without this a muted player saw the
+  slider at 35%, and changing any other setting turned game sound back on,
+  because the child derives `sfxEnabled` from the slider.
 
-`tests/stacked-preferences-bridge.test.mjs` pins the 1.8.1 request key set and
-round-trips every preset through a 1.8.1 host echo. The key set was also checked
-against the real 60ea173a validator.
+`tests/stacked-preferences-bridge.test.mjs` pins the pre-preset request key set,
+round-trips every preset through a pre-preset host echo, and keeps a muted
+pre-preset save muted through the next preferences request. The key set was also
+checked against the real 60ea173a (1.8.1) validator, which 1.8.2 ships unchanged.
 
-The reverse case is a 1.8.1 child with a new host. It needs the new portal chunk
-from the network and the old child from a cache, because the service worker is
-network-first for scripts and HTML. The 1.8.1 child then rejects the new
+The reverse case is a 1.8.1/1.8.2 (pre-preset) child with a new host. It needs
+the new portal chunk from the network and the old child from a cache, because the service worker is
+network-first for scripts and HTML. The pre-preset child then rejects the new
 `portal:init` with "Invalid parent message", so the launch fails before a run
 starts and no result is at stake. Reloading once the network is back fixes it.
 
@@ -258,9 +266,77 @@ These change what existing players see, so say so when this ships:
   on Reduced motion. Calm also drops music reactivity and scenes.
 - **Old looks are rounded to the nearest preset.** A saved intensity from 0.55
   up to 0.85 becomes Standard (0.7), and 0.85 or more becomes Full (1.0). So a
-  player who chose 0.55 sees about 0.15 more intensity. A 1.8.1 save with the
-  scene set to Off or the music-reactive board off becomes Calm, which also
+  player who chose 0.55 sees about 0.15 more intensity. A 1.8.1/1.8.2 save with
+  the scene set to Off or the music-reactive board off becomes Calm, which also
   turns off music reactivity and scenes.
+- **A saved fixed backdrop scene now follows the automatic scene deck under
+  Standard and Full.** The scene picker and Next scene are gone. A pinned Energy
+  tunnel, Particle drift or Synthwave horizon does not change which preset the
+  save becomes (the intensity and toggle rules above decide that). Under
+  Standard or Full the backdrop is `auto` and crossfades with the music; Calm
+  and Off show no scene.
+
+### Player notes for 1.8.3
+
+Paste-ready lines for the 1.8.3 player notes:
+
+- STACKED settings now fit on one card. A single Effects choice (Off, Calm,
+  Standard or Full) replaces the old Effect intensity, Minimal effects, React to
+  music, Music-reactive board and Backdrop scene controls.
+- Reduced flashes is still on by default, and it still allows a gentle glow: at
+  Standard and Full the board breathes softly with the music, never above 0.12
+  alpha and with no beat flashes. For no glow at all, choose Calm or Off, or turn
+  on Reduced motion.
+- If you pinned a backdrop scene (tunnel, particles or horizon), Standard and
+  Full now use the automatic scene deck, which changes with the music. Calm and
+  Off show no scene.
+- Game sounds is one slider. Slide it to 0 for Off. If you had game sounds
+  turned off, they stay off.
+
+## Scope
+
+Every file this change touches, against the base `da3c0756` (1.8.2 is
+`da3c0756` plus its release commit, with no STACKED file changes):
+
+Runtime:
+
+- `apps/portal/src/stacked-player-settings.mjs`: preset table, migration and the
+  host-side preference apply.
+- `apps/portal/src/stacked-bridge-protocol.mjs`: the host validator. Additive
+  optional keys only (`effectsPreset` one of the 4 presets, `scene` `auto` or
+  `off`, `reactiveBoard` a boolean) in `settings.video` and in
+  `game:preferences-request`. The exact-key checks, the required keys and
+  `version: 1` are unchanged.
+- `apps/portal/stacked/index.html`: the one-card Settings markup and the
+  Settings tile's `aria-expanded`/`aria-controls`.
+- `apps/portal/stacked/game.css`
+- `apps/stacked/src/main.mjs`
+- `apps/stacked/src/menu-navigation.mjs` (new)
+- `apps/stacked/src/preferences-bridge.mjs` (new)
+- `apps/stacked/src/render/board-pulse.mjs`
+
+Tests and smokes:
+
+- `tests/stacked-board-pulse.test.mjs`, `tests/stacked-bridge-protocol.test.mjs`,
+  `tests/stacked-menu-navigation.test.mjs` (new), `tests/stacked-music-scenes.test.mjs`,
+  `tests/stacked-music-worlds.test.mjs`, `tests/stacked-player-settings.test.mjs`,
+  `tests/stacked-preferences-bridge.test.mjs` (new), `tests/stacked-shell-ui.test.mjs`
+- `scripts/stacked-playable-browser-smoke.mjs`,
+  `scripts/stacked-reactive-evidence-smoke.mjs`,
+  `scripts/stacked-settings-gamepad-smoke.mjs` (new),
+  `scripts/stacked-visualizer-performance.mjs`
+- `scripts/syntax-check.mjs`: registers the new files.
+
+Docs:
+
+- `docs/stacked/SETTINGS-SIMPLIFICATION-2026-09-25.md` (this file, new),
+  `docs/stacked/SETTINGS.md` (new), `docs/stacked/REACTIVE-VISUALS-2026-09-16.md`
+
+Gate record:
+
+- `docs/testing/hmh-reboot-test-retirement-gate.json` was regenerated on this
+  branch. It is the only merge conflict with the release line; take the release
+  line's side and regenerate it once after integration.
 
 ## Follow-ups
 

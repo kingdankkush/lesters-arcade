@@ -68,6 +68,30 @@ test('settings from a 1.8.1 host gain the nearest preset in the child copy', () 
   assert.equal(withStackedEffectsPreset(undefined), undefined);
 });
 
+test('sound a 1.8.1/1.8.2 host saved as off stays off in the child and through the next preferences request', () => {
+  // A pre-preset host keeps the old toggle beside the volume, so a muted player
+  // arrives as sfxEnabled false with the default 35% volume. The child has one
+  // volume slider, and its change handler (main.mjs updatePreferences) derives
+  // sfxEnabled from the slider value, so the slider has to read zero here.
+  const muted = v181Settings(); muted.audio = { ...muted.audio, sfxEnabled: false, sfxVolume: 0.35 };
+  const child = withStackedEffectsPreset(structuredClone(muted));
+  assert.deepEqual([child.audio.sfxEnabled, child.audio.sfxVolume], [false, 0], 'the slider shows Off, as readStackedSettings reads the same saved object');
+  // The player changes an unrelated setting: the child re-reads the slider.
+  child.video.ghostPiece = false;
+  child.audio.sfxVolume = Math.round(child.audio.sfxVolume * 100) / 100; child.audio.sfxEnabled = child.audio.sfxVolume > 0;
+  const request = stackedPreferencesRequest(child, { presets: stackedParentKnowsPresets(muted) });
+  assert.equal(v181Accepts(request), true);
+  assert.deepEqual([request.sfxEnabled, request.sfxVolume], [false, 0], 'changing another setting does not turn game sound back on');
+  const echoed = v181Apply(muted, request);
+  assert.deepEqual([echoed.audio.sfxEnabled, echoed.audio.sfxVolume], [false, 0]);
+  // Sound that was on keeps its volume.
+  const audible = v181Settings(); audible.audio = { ...audible.audio, sfxEnabled: true, sfxVolume: 0.6 };
+  assert.deepEqual({ ...withStackedEffectsPreset(structuredClone(audible)).audio }, { ...audible.audio });
+  // A preset-aware parent already normalized its own copy; the child leaves it as sent.
+  const current = withPreset('standard'); current.audio = { ...current.audio, sfxEnabled: false, sfxVolume: 0.35 };
+  assert.deepEqual(withStackedEffectsPreset(structuredClone(current)), current);
+});
+
 test('every preset survives a round trip through a 1.8.1 host echo', () => {
   for (const preset of STACKED_EFFECTS_PRESETS) {
     let host = v181Settings();
