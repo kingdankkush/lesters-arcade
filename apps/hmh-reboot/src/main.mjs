@@ -7,19 +7,14 @@ import { automaticDodgeIntent } from './automatic-actions.mjs';
 import { loadRuntimeTelemetry } from './runtime-telemetry-loader.mjs';
 import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
-import { resolveLevelBriefing, applyLevelBriefing } from './level-briefing.mjs';
 import { selectLevelEntry } from './level-entry.mjs';
-import { createWorldDesignPacing, stepWorldDesignPacing } from './world-design-pacing.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
-import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } from './world-design-interactions.mjs';
-import { createWorldDesignLife, prepareWorldDesignEnemyPose } from './world-design-life.mjs';
 import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
 import { createHmhChildBridge } from './bridge.mjs';
-import { creatureAnimationTick, liquidatorPose } from './creature-presentation.mjs';
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
@@ -30,7 +25,6 @@ import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
 import { createCockpitUi } from './cockpit-ui.mjs';
 import { loadTripoPropAppearance } from './tripo-prop-appearance.mjs';
-import { loadWorldDesignAppearance } from './world-design-native-assets.mjs';
 import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from './world-design-layout.mjs';
 import { createWorldDepthLayer, worldDepthKey } from './world-depth.mjs';
 import { createHud } from './hud.mjs';
@@ -77,16 +71,6 @@ import {
   openingEnemyMovementEnabled,
 } from './opening-balance.mjs';
 import { createEncounterDirector, directorViewBounds, getEncounterSnapshot, stepEncounterDirector } from './encounter-director.mjs';
-import {
-  applyLiquidatorDamage,
-  createLiquidatorAddCandidates,
-  createLiquidatorBoss,
-  getLiquidatorPunishWindow,
-  getLiquidatorRoleCheck,
-  resolveLiquidatorAttack,
-  stepLiquidatorBoss,
-} from './liquidator-boss.mjs';
-import { renderLiquidatorTelegraph } from './liquidator-telegraph-renderer.mjs';
 import {
   DASH_COOLDOWN_TICKS_BY_TIER,
   beginDash,
@@ -272,6 +256,48 @@ import {
   worldToScreen,
 } from './world-space.mjs';
 
+// Design package S0.2 bundle offsets. The boss, objective (world-design
+// machinery), world-design life, briefing and level-up panel modules are
+// awaited dynamic imports, not part of the initial bundle. boot() starts the
+// loads before the renderer initialises and awaits them right after it, and
+// no session can start before boot() reaches the bridge or the standalone
+// session, so the fixed-step simulation only ever calls resident code: it
+// stays synchronous and deterministic. The bindings keep their imported names.
+let applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorPunishWindow,
+  getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss;
+let creatureAnimationTick, liquidatorPose, renderLiquidatorTelegraph;
+let createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
+let createWorldDesignLife, prepareWorldDesignEnemyPose, createWorldDesignPacing, stepWorldDesignPacing, loadWorldDesignAppearance;
+let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT;
+let lazyRuntimeModulesLoad = null;
+function loadLazyRuntimeModules() {
+  lazyRuntimeModulesLoad ??= Promise.all([
+    import('./liquidator-boss.mjs'),
+    import('./creature-presentation.mjs'),
+    import('./liquidator-telegraph-renderer.mjs'),
+    import('./world-design-interactions.mjs'),
+    import('./world-design-life.mjs'),
+    import('./world-design-pacing.mjs'),
+    import('./world-design-native-assets.mjs'),
+    import('./level-briefing.mjs'),
+    import('./upgrade-panel.mjs'),
+    import('./progression-content.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content]) => {
+    ({ applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorPunishWindow,
+      getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss } = boss);
+    ({ creatureAnimationTick, liquidatorPose } = creature);
+    ({ renderLiquidatorTelegraph } = telegraph);
+    ({ createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } = interactions);
+    ({ createWorldDesignLife, prepareWorldDesignEnemyPose } = life);
+    ({ createWorldDesignPacing, stepWorldDesignPacing } = pacing);
+    ({ loadWorldDesignAppearance } = nativeAssets);
+    ({ resolveLevelBriefing, applyLevelBriefing } = briefing);
+    ({ createUpgradePanel } = panel);
+    ({ RUN_UPGRADE_CONTENT } = content);
+  });
+  return lazyRuntimeModulesLoad;
+}
+
 const RUNTIME_VERSION = '0.5.0';
 const MAX_ACTIVE_PROJECTILES = RUNTIME_MAX_ACTIVE_PROJECTILES;
 // The archetype table tops out at threat 6; the Liquidator is the run's
@@ -379,6 +405,9 @@ function setStatus(status, detail = '') {
 
 async function boot() {
   if (!stageElement) throw new Error('HMH reboot stage is missing');
+  // S0.2: the lazy runtime chunks download while the renderer initialises.
+  const lazyRuntimeModules = loadLazyRuntimeModules();
+  lazyRuntimeModules.catch(() => {});
   const dataset = stageElement.dataset;
   const startupPanel = document.querySelector('#hmhStartup');
   const startupCopy = document.querySelector('#hmhStartupCopy');
@@ -459,6 +488,7 @@ async function boot() {
           app.ticker.stop();
           combatAudio.destroy();
           cockpit?.destroy();
+          upgradePanel?.destroy();
           hud?.destroy();
           stopCurrentSession();
           silverPresentation?.destroy();
@@ -479,6 +509,9 @@ async function boot() {
     powerPreference: 'high-performance',
   });
   app.ticker.stop();
+  // Every lazily bound module is resident from here on, before the renderer
+  // builds anything that calls one and long before a session can start.
+  await lazyRuntimeModules;
   // Adaptive sharpness (2026-09-16): a phone starts at the safe resolution and
   // earns one step up to 1.5 after ~4 s of fast frames; slow frames step it
   // back down for the rest of the session. Desktop keeps its profile value.
@@ -1282,6 +1315,7 @@ async function boot() {
   window.addEventListener('keydown', unlockCombatAudio, { once: true, capture: true });
   let elapsedMs = 0;
   let cockpit = null;
+  let upgradePanel = null;
   let hud = null;
   let sessionPayload = null;
   let simulation = null;
@@ -2914,7 +2948,7 @@ async function boot() {
     maxPlayerHealth = 100;
     runProgression = null;
     upgradePending = false;
-    cockpit?.hideUpgrade();
+    upgradePanel?.hideUpgrade();
     cockpit?.setPaused(false);
     runKills = 0;
     runCombo = 0;
@@ -4711,7 +4745,7 @@ async function boot() {
       recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
       combatAudio.pause();
       combatAudio.play('upgrade-offer', { volume: 0.14 });
-      cockpit?.showUpgrade(progressionSnapshot);
+      upgradePanel?.showUpgrade(progressionSnapshot);
       // Keep painting the loading panel until art is ready; the simulation
       // remains in its paused upgrade state throughout.
       app.ticker.start();
@@ -4871,10 +4905,10 @@ async function boot() {
     cockpit?.updateRun(selection.snapshot);
     if (selection.snapshot.pendingLevels > 0 && selection.snapshot.pendingChoices.length > 0) {
       recordRunUpgradeOffer(runSummaryAccumulator, selection.snapshot.pendingChoices.map((choice) => choice.id));
-      cockpit?.showUpgrade(selection.snapshot);
+      upgradePanel?.showUpgrade(selection.snapshot);
       return;
     }
-    cockpit?.hideUpgrade();
+    upgradePanel?.hideUpgrade();
     simulation.leaveUpgrade();
     // V-4 level-up beat: stamped on resume because the tick is frozen while
     // the panel is open, so a burst keyed on the offer would never animate.
@@ -4894,8 +4928,8 @@ async function boot() {
 
   cockpit = createCockpitUi({
     documentRef: document,
-    propIconUrl: (id) => tripoPropAppearance.get(id)?.itemUrl ?? authoredPropItemUrl(id),
     touchUiEnabled,
+    upgradeContent: RUN_UPGRADE_CONTENT,
     onMenuToggle: () => {
       if (simulation?.state === 'paused') resumeRuntime('user');
       else pauseRuntime('user');
@@ -4924,6 +4958,12 @@ async function boot() {
     onExit: () => {
       if (bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
     },
+  });
+  // The level-up panel is the lazy upgrade-panel chunk (S0.2), resident since
+  // boot awaited the runtime modules.
+  upgradePanel = createUpgradePanel({
+    documentRef: document,
+    propIconUrl: (id) => tripoPropAppearance.get(id)?.itemUrl ?? authoredPropItemUrl(id),
     onSelectUpgrade: applySelectedUpgrade,
   });
 
@@ -5056,7 +5096,7 @@ async function boot() {
         simulation.enterUpgrade();
         combatAudio.pause();
         combatAudio.play('upgrade-offer', { volume: 0.14 });
-        cockpit?.showUpgrade(progressionSnapshot);
+        upgradePanel?.showUpgrade(progressionSnapshot);
       }
     }
     elapsedMs = simulation.timeMs;

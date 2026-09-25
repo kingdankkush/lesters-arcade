@@ -7,6 +7,7 @@ import {
   createRunProgression,
   getRunProgressionSnapshot,
 } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 import { AUTHORED_PROP_ASSET_IDS, authoredPropItemUrl } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 
 /**
@@ -30,7 +31,7 @@ test('the catalog exposes a critical-chance and a critical-damage upgrade', () =
     assert.equal(upgrade.branch, 'power');
     assert.ok(upgrade.amount > 0, 'each rank must grant something');
     assert.ok(upgrade.maxRank >= 3, 'the branch needs real depth');
-    assert.ok(upgrade.title && upgrade.mechanicalLabel, 'players must see what it does');
+    assert.ok(RUN_UPGRADE_CONTENT[upgrade.id].title && RUN_UPGRADE_CONTENT[upgrade.id].mechanicalLabel, 'players must see what it does');
   }
 });
 
