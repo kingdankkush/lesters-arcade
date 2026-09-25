@@ -11,6 +11,7 @@ import {
   HMH_PRE_CABINET_VERSION,
   UNKNOWN_GAME_VERSION,
   versionLabelFor,
+  versionLabelText,
 } from '../apps/portal/src/game-version-labels.mjs';
 import { HMH_CABINET_VERSION } from '../apps/portal/src/hmh-cabinet-version.mjs';
 import { getPlaySessionIdentity } from '../apps/portal/src/arcade-core.mjs';
@@ -125,5 +126,17 @@ test('every label is short, printable ASCII (a compact column and a phone chip)'
   for (const label of samples) {
     assert.match(label, /^(?:(?:HMH|Chikun|STACKED) )?v(?:\d+(?:\.\d+)?|\?)$/, label);
     assert.ok(label.length <= 24, label);
+  }
+});
+
+test('versionLabelText accepts exactly the labels versionLabelFor writes', () => {
+  const written = [
+    hmh('site-1.8.1:game-1.8.1'), hmh('site-1.9.0:game-1.9.0:cabinet-0.6.0'), hmh(null), chikun('chikun:canvas-runtime-v7'), chikun(null),
+    stacked('site-1.8.1:game-1.8.1:cabinet-0.2.0'), stacked('site-9.9.9:game-9.9.9:cabinet-999999.999999.0'), versionLabelFor('pong'),
+  ];
+  for (const label of written) assert.equal(versionLabelText(label), label, label);
+  for (const bad of [undefined, null, 0, true, {}, ['HMH v0.5'], '', ' ', 'v', 'HMH', 'HMH v', 'HMH v0.5 ', ' HMH v0.5', 'HMH  v0.5', 'HMH v0.5.0',
+    'HMH v1234567', 'HMH v0.1234567', 'H-M-H v0.5', 'Chikun v7\n', '<b>HMH</b> v0.5', 'ABCDEFGHIJKLM v1', 'HMH v0.5<script>']) {
+    assert.equal(versionLabelText(bad), null, JSON.stringify(bad));
   }
 });

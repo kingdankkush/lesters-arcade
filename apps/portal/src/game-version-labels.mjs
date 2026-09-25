@@ -43,3 +43,11 @@ export function versionLabelFor(gameId, source = null) {
   const { buildHash = null, runtimeId = null } = source && typeof source === 'object' ? source : {};
   return `${GAME_VERSION_SHORT_NAMES[gameId]} ${versionOf(gameId, buildHash, runtimeId) ?? UNKNOWN_GAME_VERSION}`;
 }
+
+// A label as an API answer carries it, when it has the shape versionLabelFor
+// writes; anything else (absent from a body cached before the field existed,
+// or unexpected text) is null, and the hosted views show no version for it.
+const LABEL = /^(?:[A-Za-z]{1,12} )?v(?:\d{1,6}(?:\.\d{1,6})?|\?)$/;
+export function versionLabelText(value) {
+  return typeof value === 'string' && LABEL.test(value) ? value : null;
+}

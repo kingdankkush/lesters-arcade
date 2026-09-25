@@ -29,6 +29,31 @@ import {
 // marks it stale (markStale).
 export const HOSTED_BOARD_TTL_MS = 60_000;
 
+// Hosted boards add a Version column before Proof (owner decision 2026-09-25:
+// balance changes do not reset testnet seasons, so every verified score shows
+// the game version it was played on, from E5 versionLabel). A column on
+// desktop and tablets, a labelled chip on phones (styles-arcade-polish.css).
+export const HOSTED_VERSION_COLUMN = Object.freeze({ key: 'version', label: 'Version', title: 'Game version this run was played on', sortKey: null, align: 'center', kind: 'version', priority: 2 });
+
+export function hostedLeaderboardColumnsFor(gameId) {
+  const columns = [...leaderboardColumnsFor(gameId)];
+  const proof = columns.findIndex((column) => column.kind === 'trust');
+  columns.splice(proof < 0 ? columns.length : proof, 0, HOSTED_VERSION_COLUMN);
+  return Object.freeze(columns);
+}
+
+// A board holds one game, so its column shows the version alone ('v0.5' for
+// 'HMH v0.5'); the full label is the cell's tooltip. A row without a label
+// (an E5 body cached before the field existed) shows a dash.
+export function boardVersionText(versionLabel) {
+  return versionLabel ? versionLabel.slice(versionLabel.lastIndexOf(' ') + 1) : '—';
+}
+
+export function boardVersionTitle(versionLabel) {
+  if (!versionLabel || versionLabel.endsWith('v?')) return 'Game version not recorded for this run';
+  return `Played on ${versionLabel}`;
+}
+
 export function createHostedLeaderboardView({
   appendText,
   clearTimeoutImpl = (id) => globalThis.clearTimeout(id),
@@ -422,7 +447,7 @@ export function createHostedLeaderboardView({
     }
 
     // --- Rows ------------------------------------------------------------------
-    const columns = leaderboardColumnsFor(routeState.gameId);
+    const columns = hostedLeaderboardColumnsFor(routeState.gameId);
     const table = el('div', { className: 'leaderboard-table leaderboard-table-v10', role: 'table' });
     table.dataset.game = routeState.gameId;
     table.setAttribute('aria-label', `${title} ${periodTab.label.toLowerCase()} verified standing`);
@@ -462,6 +487,11 @@ export function createHostedLeaderboardView({
           appendText(cell, 'span', column.label, 'lt-cell-label');
           const value = appendText(cell, 'span', column.format(entry), `lt-stat lt-${column.key}`);
           if (column.title && column.title !== column.label) value.title = column.title;
+        } else if (column.kind === 'version') {
+          appendText(cell, 'span', column.label, 'lt-cell-label');
+          const known = Boolean(entry.versionLabel) && !entry.versionLabel.endsWith('v?');
+          const version = appendText(cell, 'span', boardVersionText(entry.versionLabel), `lt-version${known ? '' : ' is-unknown'}`);
+          version.title = boardVersionTitle(entry.versionLabel);
         } else if (column.kind === 'trust') {
           appendText(cell, 'span', 'Proof', 'lt-cell-label');
           cell.append(verifiedLink(entry));
