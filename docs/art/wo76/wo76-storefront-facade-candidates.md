@@ -2,7 +2,7 @@
 
 **HALT: Justin pick/reroll required.** These are candidate-only images for slot `storefront-facade`; none are approved anchors or runtime art.
 
-![WO-76 storefront facade contact sheet](wo76-storefront-facade-contact-sheet.png)
+The candidate contact sheet (`wo76-storefront-facade-contact-sheet.png`) was removed in the 2026-09-25 asset cleanup; it is in Git history at `0248cd4b`. The surviving candidates are in `wo76-storefront-facade-survivor-sheet.png`.
 
 - Candidate count: 12
 - Raw PNG staging: `.art-staging/wo76/storefront-facade/` (gitignored)
