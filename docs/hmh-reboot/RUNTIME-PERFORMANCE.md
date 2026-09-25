@@ -82,3 +82,66 @@ Measured on 2026-07-23:
 ## Deterministic soak evidence
 
 All existing soaks remain green. The 128-enemy, 3,600-tick soak produced equal hashes at 60/30/20 FPS partitions, only `558,256` bytes heap drift after GC, and average fixed-tick costs of approximately `1.00–1.03 ms`. Combat, projectile, Dash, Level 1 world, encounter director, and boss soaks also passed.
+
+## Crowded-combat bench and same-seed digests (2026-09-25 baseline, release 1.8.1)
+
+Tools:
+
+- `scripts/hmh-perf-crowd-bench.mjs` loads the real child inside a same-origin parent page that speaks `hmh-bridge/v1` (a portal Free session with the portal default `gore: true`). The crowd is the existing evidence-only `?evidenceSafe=1&endurancePressurePilot=1` scene: 128 endurance-band enemies around an invulnerable, auto-firing hero at tick 0, with no respawns. The portal host strips every runtime flag except `evidenceSafe`/`terminalPilot`, so none of this can reach a portal-hosted (ranked-capable) session. `tests/hmh-perf-crowd-bench.test.mjs` guards that.
+- Passes run one browser at a time. **timing** records rAF intervals over 20 active seconds, starting at tick 240, with no profiler and no telemetry. **profile** records the same window with a CDP CPU profile, resolved to source lines through `node build.mjs --sourcemap` maps. **census** runs `telemetry=1` on a fixed virtual clock (4 ticks per frame) to tick 1800. It records scene load per tick, WebGL texture and renderbuffer allocations, and a trace digest of the simulation fields.
+- The bench serves `apps/portal` itself: HTTP/1.1, ETag, `max-age`, byte ranges. Under SFX load, python's HTTP/1.0 server dropped requests. One dropped native-prop request left the child waiting on "Play with basic graphics".
+- On this hybrid P/E-core Windows host, pass `--affinity=0xFFFF`. Windowless headless renderers were observed drifting onto slow cores, which moved the 4x mean from ~33 ms to ~230 ms with no code change. The flag pins only the bench's own Chrome processes. A window where the rest of the host is busier than 30% is flagged and re-measured (`--retries`).
+- `scripts/hmh-sim-digest.mjs` is the headless same-seed digest. It drives the real simulation modules against the real Level 1 world, collision set and nav grid, in main-tick order, for 36,000 ticks. It covers a crowd scenario and a director-from-tick-0 scenario. It hashes the exact float bits of every enemy, projectile and the hero each tick, plus the finalized run-summary evidence. The existing 128-body endurance soak digest is included.
+
+Commands (from the repo root):
+
+```bash
+node build.mjs --sourcemap
+node scripts/hmh-perf-crowd-bench.mjs --suite --record --affinity=0xFFFF   # writes docs/testing/hmh-perf-crowd-baseline.json
+node scripts/hmh-perf-crowd-bench.mjs --mode=timing --profile=mobile --cpu=4 --affinity=0xFFFF
+node scripts/hmh-perf-crowd-bench.mjs --mode=census --profile=desktop     # real-runtime trace digest
+node scripts/hmh-sim-digest.mjs                                           # headless 36,000-tick digest
+```
+
+Baseline, recorded in `docs/testing/hmh-perf-crowd-baseline.json`. These are Chrome CPU-throttle proxies for an iPhone XS Max: GPU work is not throttled, so they are not physical-device evidence.
+
+| Pass (20 s window) | Viewport | Frames | Mean | p50 | p95 | p99 | Worst | > 33.3 ms | Sim speed |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| mobile, 4x CPU | 414×896 @3, profile `mobile`, canvas 414×896 | 599 | 33.44 ms | 27.9 | 48.6 | 96.9 | 139.0 | 49.1% | 0.975 |
+| mobile, 6x CPU | same | 261 | 77.54 ms | 76.4 | 97.3 | 165.8 | 208.4 | 100% | 0.822 |
+| desktop, 1x | 1440×900 @1 | 2,855 | 7.04 ms | 6.9 | 7.0 | 7.9 | 27.5 | 0% | 1.000 |
+
+Scene inside the mobile 4x window (ticks 245–1461):
+
+- 96–128 live enemies (mean 114.6), 32 of them animated;
+- up to 7 corpses, 30 gore marks and 15 silver drops;
+- up to 23 combat visual events;
+- about 92 contact shadows.
+
+The same-seed trace digest `449616fb1225777b…` is identical for the mobile census, the desktop census and a repeated desktop census. The simulation is therefore reproducible in the real runtime, and independent of the performance profile.
+
+Hotspots in the mobile 4x profile, as a share of busy main-thread time (the main thread was 99% busy):
+
+| Function | Location | Self | Total |
+|---|---|---:|---:|
+| Fixed-step simulation tick | `main.mjs:3260` | 2.3% | 32.0% |
+| `stepEnemyPopulation` | `enemy-simulation.mjs:541` | 2.2% | 19.5% |
+| `renderWorld` | `main.mjs:1536` | 3.0% | 18.6% |
+| Pixi render | — | — | 21.2% |
+| (program), native/non-JS | — | 21.3% | 21.3% |
+
+- The Pixi render share includes `Graphics` geometry rebuilt every frame: `updateGpuContext` 8.1%.
+- `freezeDeep` takes 4.0% self. Most of it is `elevation.mjs` `sampleSurface` deep-freezing every ground-query result.
+- `computeEnemySeparation` takes 3.9% self (4.3% total), and `sampleSurface` 3.6% self (5.5% total).
+- The terrain renderer (`world-production-art.mjs:1088`) re-queries ground for every static route node and surface vertex each frame.
+
+At 6x the fixed-step catch-up saturates: 244 four-step frames. The simulation's share rises to 43% of busy time.
+
+GPU texture residency at tick 1800:
+
+- mobile: 125,351,692 B in 22 textures, plus 1,760,256 B of multisampled renderbuffers and a 414×896 canvas;
+- desktop: 169,834,252 B in 25 textures.
+
+2048-class atlases hold most of it: nine hold 93.8% on mobile, and twelve hold 97.6% on desktop. The hero motion, prop, roster and native-roster pages are single-level, uncompressed RGBA.
+
+Initial JS at this base: 1,046,713 / 1,048,576 B (entry + shared chunks + vendor).
