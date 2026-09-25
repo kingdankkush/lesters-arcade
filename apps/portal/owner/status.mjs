@@ -2,8 +2,10 @@
 //
 // Reads GET /api/health, a public report of aggregate, non-secret facts, and
 // shows its numbers with plain warnings:
-//   - the relayer can pay for fewer than 50 more settles at the current base fee;
-//   - the settle queue has failed (retrying) or dead-letter rows;
+//   - the relayer can pay for fewer than 50 more settles at the current base fee,
+//     or has no zkLTC at all when there is no estimate;
+//   - the settle queue has failed (retrying) rows, or dead letters that can
+//     still be requeued (verified in the last 7 days);
 //   - the oldest unpublished run has waited more than 10 minutes;
 //   - the chain index is more than 20,000 blocks behind the chain head;
 //   - a cron's last error is newer than its last success (or it has stopped);
@@ -24,7 +26,12 @@ export const STATUS_THRESHOLDS = Object.freeze({
   staleCronSeconds: Object.freeze({ settleRetry: 10 * 60, indexChain: 30 * 60 }),
 });
 export const REFRESH_MS = 60_000;
-export const REQUEUE_COMMAND = 'node scripts/requeue-dead-letters.mjs';
+// The edge keeps a report for s-maxage=30 plus stale-while-revalidate=60 (server/ops/health.mjs).
+export const EDGE_CACHE_SECONDS = 90;
+// scripts/requeue-dead-letters.mjs: a dry run that lists the dead letters and their last errors,
+// then the requeue itself. Both read NEON_DATABASE_URL.
+export const REQUEUE_DRY_RUN_COMMAND = 'node scripts/requeue-dead-letters.mjs --all-dead';
+export const REQUEUE_APPLY_COMMAND = 'node scripts/requeue-dead-letters.mjs --all-dead --apply --confirm REQUEUE_DEAD_LETTERS';
 
 const ADDRESS_RE = /^0x[0-9a-f]{40}$/;
 const CRON_LABELS = Object.freeze({ indexChain: 'index-chain', settleRetry: 'settle-retry' });
@@ -75,7 +82,9 @@ function parseTime(iso) {
   return Number.isFinite(ms) ? ms : null;
 }
 
-// Seconds from `iso` to `nowIso` (the report's own checkedAt, so the browser clock never matters).
+// Seconds from `iso` to `nowIso`, never negative. Warnings measure against the report's own
+// checkedAt, so the browser clock never matters there; only the "Checked …" line uses the
+// browser clock, to show how old a cached or stale report is.
 export function ageSeconds(iso, nowIso) {
   const at = parseTime(iso);
   const now = parseTime(nowIso);
@@ -135,11 +144,14 @@ export function healthWarnings(report) {
     warnings.push({ id: 'relayer-not-allowed', text: 'The relayer is not allowed on the score registry. Every settle waits (relayer-not-allowed) until the operator allows it again.' });
   }
   if (isCount(relayer.estimatedSettlesLeft) && relayer.estimatedSettlesLeft < STATUS_THRESHOLDS.minSettlesLeft) {
-    warnings.push({ id: 'relayer-low', text: `The relayer can pay for about ${plural(relayer.estimatedSettlesLeft, 'more settle')} at the current base fee (under ${STATUS_THRESHOLDS.minSettlesLeft}). Send testnet zkLTC to ${relayer.address ?? 'the relayer'}.` });
+    warnings.push({ id: 'relayer-low', text: `The relayer can pay for about ${plural(relayer.estimatedSettlesLeft, 'more settle')} at the current base fee (under ${STATUS_THRESHOLDS.minSettlesLeft}). Settles stop a little before this reaches 0, because each send needs the full fee cap (about twice the base fee) in hand. Send testnet zkLTC to ${relayer.address ?? 'the relayer'}.` });
+  } else if (!isCount(relayer.estimatedSettlesLeft) && relayer.balanceWei === '0') {
+    // No estimate (a zero base fee): an empty balance still stops every priced send.
+    warnings.push({ id: 'relayer-empty', text: `The relayer has no zkLTC, so settles wait (relayer-underfunded) as soon as gas costs anything. Send testnet zkLTC to ${relayer.address ?? 'the relayer'}.` });
   }
-  if (isCount(queue.dead) && queue.dead > 0) {
-    const dead = queue.dead === 1 ? '1 run is a dead letter and will not retry on its own' : `${formatCount(queue.dead)} runs are dead letters and will not retry on their own`;
-    warnings.push({ id: 'queue-dead', text: `${dead}. Requeue with ${REQUEUE_COMMAND} (a dry run first, then --apply).` });
+  if (isCount(queue.deadRequeueable) && queue.deadRequeueable > 0) {
+    const dead = queue.deadRequeueable === 1 ? '1 run from the last 7 days is a dead letter and will not retry on its own' : `${formatCount(queue.deadRequeueable)} runs from the last 7 days are dead letters and will not retry on their own`;
+    warnings.push({ id: 'queue-dead', text: `${dead}. List them and their last errors with ${REQUEUE_DRY_RUN_COMMAND} (a dry run), fix the cause, then requeue with ${REQUEUE_APPLY_COMMAND}. Both read NEON_DATABASE_URL. Older dead letters cannot be requeued and are not warned about.` });
   }
   if (isCount(queue.failed) && queue.failed > 0) {
     warnings.push({ id: 'queue-failed', text: queue.failed === 1 ? '1 run failed to publish and will retry on its own.' : `${formatCount(queue.failed)} runs failed to publish and will retry on their own.` });
@@ -249,7 +261,7 @@ function cronRows(cron, report) {
   ];
 }
 
-function render(doc, state) {
+function render(doc, state, nowMs = Date.now) {
   const summary = doc.getElementById('status-summary');
   if (!summary) return;
   const report = state.report;
@@ -277,7 +289,9 @@ function render(doc, state) {
     refresh.textContent = state.phase === 'loading' ? 'Checking…' : 'Refresh';
   }
   const loaded = doc.getElementById('status-loaded');
-  if (loaded) loaded.textContent = report ? `Checked ${formatWhen(report.checkedAt, report.checkedAt)}${state.stale ? ' (stale)' : ''}. The API is cached for up to 30 s.` : '';
+  // The age is against the browser clock, so a cached or stale report shows how old it is.
+  const browserNow = new Date(nowMs()).toISOString();
+  if (loaded) loaded.textContent = report ? `Checked ${formatWhen(report.checkedAt, browserNow)}${state.stale ? ', stale: the last refresh failed' : ''}. The edge can serve a report up to about ${EDGE_CACHE_SECONDS} s old.` : '';
   if (!report) return;
 
   const relayer = report.relayer ?? {};
@@ -293,7 +307,7 @@ function render(doc, state) {
   ]);
   fillList(doc, 'status-relayer', [
     ['Address', relayerAddressNode(doc, relayer.address)],
-    ['Balance', formatZkltc(relayer.balanceWei)],
+    ['Balance', formatZkltc(relayer.balanceWei), has('relayer-empty') ? 'bad' : null],
     ['Allowed on registry', yesNo(relayer.allowed), relayer.allowed === false ? 'bad' : null],
     ['Settles left (est.)', formatCount(relayer.estimatedSettlesLeft), has('relayer-low') ? 'bad' : null],
   ]);
@@ -302,7 +316,8 @@ function render(doc, state) {
     ['Signed', formatCount(queue.signed)],
     ['Submitted', formatCount(queue.submitted)],
     ['Failed (retrying)', formatCount(queue.failed), has('queue-failed') ? 'warn' : null],
-    ['Dead letters', formatCount(queue.dead), has('queue-dead') ? 'bad' : null],
+    ['Dead letters', formatCount(queue.dead)],
+    ['Requeueable (7 days)', formatCount(queue.deadRequeueable), has('queue-dead') ? 'bad' : null],
     ['Oldest unpublished', Number.isFinite(queue.oldestUnconfirmedAgeSeconds) ? formatDuration(queue.oldestUnconfirmedAgeSeconds) : (queue.pending === null ? '—' : 'none'), has('queue-slow') ? 'bad' : null],
   ]);
   fillList(doc, 'status-index', [
@@ -314,10 +329,10 @@ function render(doc, state) {
   fillList(doc, 'status-cron-settle-retry', cronRows(report.crons?.settleRetry, report));
 }
 
-export function mountStatusPage(doc, win, { fetchImpl = win?.fetch?.bind(win) ?? globalThis.fetch } = {}) {
-  const controller = createStatusController({ fetchImpl, onChange: (state) => render(doc, state) });
+export function mountStatusPage(doc, win, { fetchImpl = win?.fetch?.bind(win) ?? globalThis.fetch, nowMs = () => Date.now() } = {}) {
+  const controller = createStatusController({ fetchImpl, onChange: (state) => render(doc, state, nowMs) });
   doc.getElementById('status-refresh')?.addEventListener('click', () => controller.refresh());
-  render(doc, controller.state);
+  render(doc, controller.state, nowMs);
   const done = controller.refresh();
   if (typeof win?.setInterval === 'function') {
     win.setInterval(() => {
