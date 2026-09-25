@@ -21,7 +21,7 @@ Current production rule: PixelLab may be used for high-end enemy/boss completion
 ## Ready-to-run pipelines
 
 - `scripts/pixellab-new-heroes-pipeline.py`: prompts for **lit-commando** and **lit-valkyrie** at `n_directions=8, size=96`, with full kit states: idle, walk, run, fire-pistol, melee-knife, throw-axe, fire-shotgun, fire-machinegun, hurt, stun, pickup, levelup, death. Run `create` to `poll-create` to `animate [--max-inflight N]` to `status`.
-- Other waves: `pixellab-hmh-environment-wave-3-replacement.py`, `pixellab-hmh-fx-powerups-wave.py`, `pixellab-hmh-isometric-production-wave.py`, etc.
+- Other waves: `pixellab-hmh-fx-powerups-wave.py`, `pixellab-hmh-isometric-production-wave.py`, etc.
 
 ## Pitfalls
 
