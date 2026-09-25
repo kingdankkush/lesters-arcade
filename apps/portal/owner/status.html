@@ -113,7 +113,7 @@
   <main id="owner-status-page">
     <p class="kicker">Lester's Arcade · owner tool</p>
     <h1>Ranked health</h1>
-    <p>A live read of <a href="/api/health">/api/health</a>: the relayer's gas, the settle queue, the chain index and the two crons. Warnings say what needs a look.</p>
+    <p>A live read of <a href="/api/health">/api/health</a>: the relayer's gas, the settle queue, the chain index, the crons and the weekly jackpot. Warnings say what needs a look.</p>
     <div id="status-summary" role="status" aria-live="polite">Loading…</div>
     <ul id="status-warnings" aria-label="Warnings"></ul>
     <div class="toolbar">
@@ -143,6 +143,12 @@
         <dl id="status-cron-index-chain"></dl>
         <h3>settle-retry · every minute</h3>
         <dl id="status-cron-settle-retry"></dl>
+        <h3>weekly-jackpot · every 5 min</h3>
+        <dl id="status-cron-weekly-jackpot"></dl>
+      </section>
+      <section aria-labelledby="status-jackpot-title">
+        <h2 id="status-jackpot-title">Weekly jackpot</h2>
+        <dl id="status-jackpot"></dl>
       </section>
     </div>
     <p class="note">Read-only: this page never asks for a key, never signs and never sends anything. The numbers are public, aggregate facts.</p>

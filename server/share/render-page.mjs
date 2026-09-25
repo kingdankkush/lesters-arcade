@@ -10,11 +10,13 @@
 // "Publishing to LitVM…", no transaction link, and noindex (S14, C16). A null
 // displayName (hidden profile or blocked name, A29) shows the short wallet and
 // the default avatar. og:image is the versioned card URL (?v=cardRev, §7.5).
+// A confirmed run that won a paid Chikun Weekly Jackpot week shows the
+// champion badge with its date range (design §C.7); a leader never shows.
 import { achievementById } from '../../apps/portal/src/achievements/index.mjs';
 import { LITVM_DEPLOYMENT } from '../../apps/portal/src/generated/litvm-addresses.mjs';
 import { versionLabelText } from '../../apps/portal/src/game-version-labels.mjs';
 import { INDEX_GAMES } from '../neon/rows.mjs';
-import { cardHandle, cardStandingText } from './render-card.mjs';
+import { cardChampionText, cardHandle, cardStandingText } from './render-card.mjs';
 
 export const SHARE_SITE_ORIGIN = 'https://lestersarcade.io';
 export const SHARE_SITE_NAME = "Lester's Arcade";
@@ -92,6 +94,7 @@ h1 small{font-size:.34em;color:var(--cyan);letter-spacing:.14em}
 .who{display:flex;align-items:center;gap:12px;margin:0;font:700 1.05rem "Lucida Console",Consolas,monospace;color:var(--cyan);overflow-wrap:anywhere}
 .who img{width:44px;height:44px;border-radius:50%;border:2px solid var(--cyan);background:#05070f}
 .standing{margin:0;color:var(--gold);font-weight:800}
+.champion{justify-self:start;margin:0;padding:8px 16px;border:2px solid var(--gold);border-radius:999px;color:var(--gold);background:rgba(40,30,4,.8);font-weight:900;letter-spacing:.06em}
 .status{justify-self:start;margin:0;padding:8px 16px;border-radius:999px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .status.verified{border:2px solid var(--green);color:var(--green);background:rgba(6,40,24,.8)}
 .status.pending{border:2px solid var(--amber);color:var(--amber);background:rgba(48,30,4,.8)}
@@ -212,6 +215,7 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   const avatar = hidden ? SHARE_DEFAULT_AVATAR : (avatarSrc(session.avatarUri) || SHARE_DEFAULT_AVATAR);
   const score = count(session.score);
   const standing = confirmed ? cardStandingText(session.standing) : '';
+  const champion = cardChampionText(session);
   const stats = session.stats && typeof session.stats === 'object' ? session.stats : {};
   const statRows = (PAGE_STATS[gameId] ?? []).map(([label, read]) => [label, read(stats)]);
   // The game version the run was played on (E9 versionLabel, version-column);
@@ -233,7 +237,7 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   const title = confirmed ? `${handle} scored ${score} in ${gameTitle}`
     : failed ? `${handle}'s ${gameTitle} run is not on LitVM yet` : `${handle}'s ${gameTitle} run is publishing to LitVM`;
   const description = confirmed
-    ? `Verified on LitVM · ${standing ? `${standing} · ` : ''}${headlineStats}. Can you beat it? Play free or Ranked at Lester's Arcade.`
+    ? `Verified on LitVM · ${champion ? `${champion} · ` : ''}${standing ? `${standing} · ` : ''}${headlineStats}. Can you beat it? Play free or Ranked at Lester's Arcade.`
     : `${failed ? 'Not on LitVM yet ·' : 'Publishing to LitVM…'} ${score} pts · ${headlineStats}. Play free or Ranked at Lester's Arcade.`;
   const pendingNote = failed
     ? 'The arcade server verified this run. It is not on LitVM yet.'
@@ -261,6 +265,7 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
 <img class="shot" src="${escapeHtml(cardPath)}" width="1200" height="630" alt="${escapeHtml(`${gameTitle} score card: ${score} points by ${handle}`)}">
 <h1 id="run-title">${escapeHtml(score)} <small>PTS</small></h1>
 <p class="who"><img src="${escapeHtml(avatar)}" alt="" width="44" height="44">${escapeHtml(handle)}</p>
+${champion ? `<p class="champion">${escapeHtml(champion)}</p>` : ''}
 ${standing ? `<p class="standing">${escapeHtml(standing)}</p>` : ''}
 ${confirmed
     ? `<p class="status verified">✓ Verified on LitVM</p>

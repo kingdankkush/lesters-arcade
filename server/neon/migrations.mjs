@@ -150,9 +150,152 @@ const MIGRATION_0002 = [
 )`,
 ];
 
+// Migration 3 (jackpot-server; Chikun Weekly Jackpot design §C.2, rev. 2):
+// the jackpot mirrors, keyed by contract (J7), the rules mirror and the
+// seed-ticket log, exactly the design's DDL. Additive only: seven new tables
+// and their indexes, nothing that touches a version-1 or version-2 object.
+// The version number lives in JACKPOT_MIGRATION_VERSION alone, so a merge
+// that finds 3 taken renumbers this migration in one place.
+export const JACKPOT_MIGRATION_VERSION = 3;
+export const JACKPOT_MIGRATION_NAME = `${String(JACKPOT_MIGRATION_VERSION).padStart(4, '0')}_weekly_jackpot`;
+export const JACKPOT_TABLES = Object.freeze(['jackpot_weeks', 'jackpot_candidates', 'jackpot_actions', 'jackpot_events', 'jackpot_wallet_flags', 'jackpot_rules', 'seed_ticket_log']);
+const MIGRATION_JACKPOT = [
+  `CREATE TABLE IF NOT EXISTS jackpot_weeks (
+  contract         TEXT NOT NULL CHECK (contract ~ '^0x[0-9a-f]{40}$'),
+  game_id          TEXT NOT NULL CHECK (game_id IN ('chikun')),
+  week_key         TEXT NOT NULL CHECK (week_key ~ '^[0-9]{4}-W[0-9]{2}$'),
+  week_index       INTEGER NOT NULL CHECK (week_index > 0),
+  token_address    TEXT NOT NULL CHECK (token_address ~ '^0x[0-9a-f]{40}$'),
+  token_symbol     TEXT NOT NULL CHECK (token_symbol ~ '^[A-Za-z0-9$]{1,16}$'),
+  token_decimals   INTEGER NOT NULL CHECK (token_decimals BETWEEN 0 AND 36),
+  token_testnet    BOOLEAN NOT NULL,
+  starts_at        TIMESTAMPTZ NOT NULL,
+  closes_at        TIMESTAMPTZ NOT NULL,
+  settle_cutoff_at TIMESTAMPTZ NOT NULL,
+  candidate_until  TIMESTAMPTZ NOT NULL,
+  payout_at        TIMESTAMPTZ NOT NULL,
+  status           TEXT NOT NULL CHECK (status IN ('open','closed','selecting','review','awaiting-admin','finalizing','paid','claim-pending','rolled','unfunded','failed')),
+  funded_wei       TEXT NOT NULL DEFAULT '0' CHECK (funded_wei ~ '^[0-9]{1,78}$'),
+  carried_in_wei   TEXT NOT NULL DEFAULT '0' CHECK (carried_in_wei ~ '^[0-9]{1,78}$'),
+  prize_wei        TEXT NULL CHECK (prize_wei IS NULL OR prize_wei ~ '^[0-9]{1,78}$'),
+  unclaimed_wei    TEXT NOT NULL DEFAULT '0' CHECK (unclaimed_wei ~ '^[0-9]{1,78}$'),
+  winner           TEXT NULL CHECK (winner IS NULL OR winner ~ '^0x[0-9a-f]{40}$'),
+  winning_session  TEXT NULL CHECK (winning_session IS NULL OR winning_session ~ '^0x[0-9a-f]{64}$'),
+  winning_score    BIGINT NULL,
+  finalize_tx_hash TEXT NULL CHECK (finalize_tx_hash IS NULL OR finalize_tx_hash ~ '^0x[0-9a-f]{64}$'),
+  finalized_at     TIMESTAMPTZ NULL,
+  rolled_to_week   TEXT NULL CHECK (rolled_to_week IS NULL OR rolled_to_week ~ '^[0-9]{4}-W[0-9]{2}$'),
+  held             BOOLEAN NOT NULL DEFAULT false,
+  extension_s      INTEGER NOT NULL DEFAULT 0 CHECK (extension_s BETWEEN 0 AND 259200),
+  last_error       TEXT NULL CHECK (last_error IS NULL OR last_error ~ '^[a-z0-9][a-z0-9_-]{1,63}$'),
+  admin_waiting_since TIMESTAMPTZ NULL,
+  updated_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (contract, week_key)
+)`,
+  `CREATE TABLE IF NOT EXISTS jackpot_candidates (
+  contract       TEXT NOT NULL CHECK (contract ~ '^0x[0-9a-f]{40}$'),
+  game_id        TEXT NOT NULL CHECK (game_id IN ('chikun')),
+  week_key       TEXT NOT NULL CHECK (week_key ~ '^[0-9]{4}-W[0-9]{2}$'),
+  session_id32   TEXT NOT NULL CHECK (session_id32 ~ '^0x[0-9a-f]{64}$'),
+  wallet         TEXT NOT NULL CHECK (wallet ~ '^0x[0-9a-f]{40}$'),
+  score          BIGINT NOT NULL CHECK (score BETWEEN 0 AND 10000000000),
+  submitted_at   TIMESTAMPTZ NULL,
+  source         TEXT NOT NULL CHECK (source IN ('keeper','public')),
+  on_chain       BOOLEAN NOT NULL DEFAULT false,
+  was_listed     BOOLEAN NOT NULL DEFAULT false,
+  chain_rank     INTEGER NULL CHECK (chain_rank IS NULL OR chain_rank BETWEEN 1 AND 5),
+  review         TEXT NOT NULL DEFAULT 'none' CHECK (review IN ('none','cleared','flagged','disqualified')),
+  review_reason  TEXT NULL CHECK (review_reason IS NULL OR review_reason ~ '^[a-z][a-z0-9-]{1,31}$'),
+  admin_reviewed BOOLEAN NOT NULL DEFAULT false,
+  screen         TEXT NOT NULL DEFAULT 'pending' CHECK (screen IN ('pending','pass','hold','integrity-fail','error')),
+  screen_codes   TEXT NOT NULL DEFAULT '' CHECK (screen_codes ~ '^[A-Z0-9,]{0,64}$'),
+  features       JSONB NULL,
+  screened_at    TIMESTAMPTZ NULL,
+  updated_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (contract, session_id32)
+)`,
+  `CREATE INDEX IF NOT EXISTS jc_week ON jackpot_candidates (contract, week_key, score DESC)`,
+  `CREATE TABLE IF NOT EXISTS jackpot_actions (
+  id              TEXT PRIMARY KEY CHECK (id ~ '^[a-z0-9:-]{8,160}$'),
+  contract        TEXT NOT NULL CHECK (contract ~ '^0x[0-9a-f]{40}$'),
+  game_id         TEXT NOT NULL CHECK (game_id IN ('chikun')),
+  week_key        TEXT NOT NULL CHECK (week_key ~ '^[0-9]{4}-W[0-9]{2}$'),
+  kind            TEXT NOT NULL CHECK (kind IN ('submit','clear','flag','finalize')),
+  session_id32    TEXT NULL CHECK (session_id32 IS NULL OR session_id32 ~ '^0x[0-9a-f]{64}$'),
+  reason          TEXT NULL CHECK (reason IS NULL OR reason ~ '^[a-z][a-z0-9-]{1,31}$'),
+  status          TEXT NOT NULL CHECK (status IN ('pending','signed','submitted','confirmed','skipped','failed','dead')),
+  keeper          TEXT NULL CHECK (keeper IS NULL OR keeper ~ '^0x[0-9a-f]{40}$'),
+  tx_hash         TEXT NULL CHECK (tx_hash IS NULL OR tx_hash ~ '^0x[0-9a-f]{64}$'),
+  tx_nonce        BIGINT NULL,
+  attempts        INTEGER NOT NULL DEFAULT 0,
+  infra_failures  INTEGER NOT NULL DEFAULT 0,
+  last_error      TEXT NULL CHECK (last_error IS NULL OR last_error ~ '^[a-z0-9][a-z0-9_-]{1,63}$'),
+  next_attempt_at TIMESTAMPTZ NULL,
+  submitted_at    TIMESTAMPTZ NULL,
+  confirmed_at    TIMESTAMPTZ NULL,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT ja_submitted_has_tx CHECK (status <> 'submitted' OR tx_hash IS NOT NULL)
+)`,
+  `CREATE INDEX IF NOT EXISTS ja_due ON jackpot_actions (status, next_attempt_at) WHERE status IN ('pending','signed','submitted','failed')`,
+  `CREATE TABLE IF NOT EXISTS jackpot_events (
+  tx_hash       TEXT NOT NULL CHECK (tx_hash ~ '^0x[0-9a-f]{64}$'),
+  log_index     INTEGER NOT NULL,
+  block_number  BIGINT NOT NULL,
+  block_time    TIMESTAMPTZ NOT NULL,
+  contract      TEXT NOT NULL CHECK (contract ~ '^0x[0-9a-f]{40}$'),
+  event         TEXT NOT NULL CHECK (event ~ '^[A-Za-z]{3,32}$'),
+  week_key      TEXT NULL CHECK (week_key IS NULL OR week_key ~ '^[0-9]{4}-W[0-9]{2}$'),
+  session_id32  TEXT NULL CHECK (session_id32 IS NULL OR session_id32 ~ '^0x[0-9a-f]{64}$'),
+  wallet        TEXT NULL CHECK (wallet IS NULL OR wallet ~ '^0x[0-9a-f]{40}$'),
+  amount_wei    TEXT NULL CHECK (amount_wei IS NULL OR amount_wei ~ '^[0-9]{1,78}$'),
+  reason        TEXT NULL CHECK (reason IS NULL OR reason ~ '^[a-z][a-z0-9-]{0,31}$'),
+  PRIMARY KEY (tx_hash, log_index)
+)`,
+  `CREATE INDEX IF NOT EXISTS je_week ON jackpot_events (contract, week_key, block_number)`,
+  `CREATE TABLE IF NOT EXISTS jackpot_wallet_flags (
+  contract    TEXT NOT NULL CHECK (contract ~ '^0x[0-9a-f]{40}$'),
+  wallet      TEXT NOT NULL CHECK (wallet ~ '^0x[0-9a-f]{40}$'),
+  blocked     BOOLEAN NOT NULL DEFAULT false,
+  staff_ever  BOOLEAN NOT NULL DEFAULT false,
+  reason      TEXT NULL CHECK (reason IS NULL OR reason ~ '^[a-z][a-z0-9-]{0,31}$'),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (contract, wallet)
+)`,
+  `CREATE TABLE IF NOT EXISTS jackpot_rules (
+  contract          TEXT NOT NULL CHECK (contract ~ '^0x[0-9a-f]{40}$'),
+  from_week         INTEGER NOT NULL CHECK (from_week > 0),
+  season_id32       TEXT NOT NULL CHECK (season_id32 ~ '^0x[0-9a-f]{64}$'),
+  alt_season_id32   TEXT NULL CHECK (alt_season_id32 IS NULL OR alt_season_id32 ~ '^0x[0-9a-f]{64}$'),
+  min_paid_wei      TEXT NOT NULL CHECK (min_paid_wei ~ '^[0-9]{1,78}$'),
+  max_survival_s    INTEGER NOT NULL CHECK (max_survival_s >= 0),
+  max_score         TEXT NOT NULL CHECK (max_score ~ '^[0-9]{1,78}$'),
+  max_prize_wei     TEXT NOT NULL CHECK (max_prize_wei ~ '^[0-9]{1,78}$'),
+  min_fund_wei      TEXT NOT NULL CHECK (min_fund_wei ~ '^[0-9]{1,78}$'),
+  admin_clear_only  BOOLEAN NOT NULL,
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (contract, from_week)
+)`,
+  `CREATE TABLE IF NOT EXISTS seed_ticket_log (
+  mac            TEXT PRIMARY KEY CHECK (mac ~ '^[0-9a-f]{64}$'),
+  wallet         TEXT NOT NULL CHECK (wallet ~ '^0x[0-9a-f]{40}$'),
+  session_handle TEXT NOT NULL CHECK (session_handle ~ '^game-session-[0-9a-f-]{36}$'),
+  game_id        TEXT NOT NULL CHECK (game_id ~ '^[a-z0-9-]{1,40}$'),
+  season_id      TEXT NOT NULL CHECK (length(season_id) BETWEEN 1 AND 80),
+  build_hash     TEXT NOT NULL CHECK (length(build_hash) BETWEEN 1 AND 120),
+  salt           TEXT NOT NULL CHECK (salt ~ '^[0-9a-f]{32}$'),
+  issued_at      TIMESTAMPTZ NOT NULL,
+  week_key       TEXT NOT NULL CHECK (week_key ~ '^[0-9]{4}-W[0-9]{2}$'),
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+)`,
+  `CREATE INDEX IF NOT EXISTS stl_session ON seed_ticket_log (wallet, session_handle)`,
+  `CREATE INDEX IF NOT EXISTS stl_week ON seed_ticket_log (game_id, week_key, wallet)`,
+];
+
 export const MIGRATIONS = Object.freeze([
   Object.freeze({ version: 1, name: '0001_ranked_index', statements: Object.freeze(MIGRATION_0001) }),
   Object.freeze({ version: 2, name: '0002_cron_runs', statements: Object.freeze(MIGRATION_0002) }),
+  Object.freeze({ version: JACKPOT_MIGRATION_VERSION, name: JACKPOT_MIGRATION_NAME, statements: Object.freeze(MIGRATION_JACKPOT) }),
 ]);
 
 export const LATEST_SCHEMA_VERSION = MIGRATIONS.reduce((max, migration) => Math.max(max, migration.version), 0);

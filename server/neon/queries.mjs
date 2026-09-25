@@ -7,6 +7,7 @@
 // because the Neon HTTP endpoint runs one statement per request.
 
 import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
+import { dateRangeLabel } from '../jackpot/weeks.mjs';
 import { periodKeysFor } from './period-keys.mjs';
 import {
   ALL_BEST_HEADLINE_KEYS, ALL_NUMERIC_HEADLINE_KEYS, BEST_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
@@ -188,6 +189,41 @@ function bestsSql() {
   }).join(',\n       ');
 }
 
+// The Chikun Weekly Jackpot weeks a wallet won (design §C.7): only paid or
+// claim-pending weeks with a prize above 0, newest first, with the token and
+// the date range from the week row (each instance has its own token).
+export const JACKPOT_WIN_STATUSES = Object.freeze(['paid', 'claim-pending']);
+export const JACKPOT_CHAMPION_TITLE = 'Weekly Jackpot Champion';
+
+function jackpotWinsSql(where) {
+  return `SELECT contract, week_key, ${isoSql('starts_at')} AS starts_at, ${isoSql('closes_at')} AS closes_at, prize_wei, unclaimed_wei, status,
+            token_symbol, token_decimals, token_testnet, winning_score::text AS winning_score, winning_session, finalize_tx_hash
+       FROM jackpot_weeks
+      WHERE ${where} AND status IN ('paid', 'claim-pending') AND prize_wei IS NOT NULL AND prize_wei::numeric > 0`;
+}
+
+function jackpotWinRow(row) {
+  return {
+    weekKey: row.week_key,
+    startsAt: row.starts_at,
+    closesAt: row.closes_at,
+    prizeWei: row.prize_wei,
+    unclaimedWei: row.unclaimed_wei ?? '0',
+    status: row.status,
+    token: { symbol: row.token_symbol, decimals: Number(row.token_decimals), testnet: row.token_testnet === true },
+    contract: row.contract,
+    score: numberOrNull(row.winning_score),
+    sessionId: row.winning_session ?? null,
+    finalizeTx: row.finalize_tx_hash ?? null,
+  };
+}
+
+// "Weekly Jackpot Champion · Sep 28 – Oct 4, 2026": a date range, never an ISO week key.
+export function jackpotChampionLabel(startsAt) {
+  const range = dateRangeLabel(startsAt);
+  return range ? `${JACKPOT_CHAMPION_TITLE} · ${range}` : '';
+}
+
 // E6 (§4.3.6). The public view shows only confirmed sessions; the self view
 // adds every non-pending status with retry details, the preferences and the
 // moderation reason. Run counts, totals and bests span every season; the best
@@ -196,7 +232,7 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
   const who = requireWallet(wallet);
   const keys = periodKeysFor(nowMs);
   const games = INDEX_GAME_IDS.map((gameId) => ({ gameId, seasonId: INDEX_GAMES[gameId].seasonId }));
-  const [profileRows, aggregateRows, bestRows, standings, recentRows, achievementRows, nftSets] = await Promise.all([
+  const [profileRows, aggregateRows, bestRows, standings, recentRows, achievementRows, nftSets, jackpotWinRows] = await Promise.all([
     db.query(
       `SELECT display_name, avatar_uri, hidden, name_blocked, preferences::text AS preferences,
               ${isoSql('onchain_updated_at')} AS onchain_updated_at, ${isoSql('updated_at')} AS updated_at
@@ -239,6 +275,7 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
       [who],
     ),
     nftIdSets(catalog),
+    db.query(`${jackpotWinsSql('winner = $1')} ORDER BY starts_at DESC, contract ASC`, [who]),
   ]);
   const profileRow = profileRows[0] ?? null;
   const display = publicDisplay({ hidden: profileRow?.hidden === true, displayName: profileRow?.display_name ?? null, avatarUri: profileRow?.avatar_uri ?? null });
@@ -295,12 +332,16 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
     })),
     preferences: self ? parseJsonText(profileRow?.preferences, {}) : null,
     updatedAt: profileRow?.updated_at ?? null,
+    // Always present (possibly empty), so the shape is stable.
+    jackpot: { wins: jackpotWinRows.map(jackpotWinRow) },
   };
 }
 
-// §7.5: a new card image URL whenever anything visible on it changes.
-export async function cardRevision({ status, displayName, avatarUri, hidden, verification }) {
-  const digest = await sha256Hex(canonicalSessionJson({ status, displayName, avatarUri, hidden, verification }));
+// §7.5: a new card image URL whenever anything visible on it changes. The
+// jackpot champion badge (design §C.7) joins the digest only when present, so
+// every card without one keeps its revision.
+export async function cardRevision({ status, displayName, avatarUri, hidden, verification, champion = null }) {
+  const digest = await sha256Hex(canonicalSessionJson({ status, displayName, avatarUri, hidden, verification, ...(champion ? { champion } : {}) }));
   return digest.slice(2, 14);
 }
 
@@ -322,14 +363,19 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
   );
   const row = rows[0];
   if (!row) return null;
-  const [achievementRows, nftSets] = await Promise.all([
+  const [achievementRows, nftSets, championRows] = await Promise.all([
     db.query(
       `SELECT achievement_id, tier, ${isoSql('unlocked_at')} AS unlocked_at, token_id
        FROM achievement_unlocks WHERE session_id32 = $1 ORDER BY unlocked_at ASC, achievement_id ASC`,
       [id],
     ),
     nftIdSets(catalog),
+    // Only a finished, paid (or claim-pending) week: never a volatile leader.
+    db.query(`${jackpotWinsSql('winning_session = $1 AND winner = $2')} ORDER BY starts_at DESC, contract ASC LIMIT 1`, [id, row.wallet]),
   ]);
+  const championRow = championRows[0] ?? null;
+  const championLabel = championRow ? jackpotChampionLabel(championRow.starts_at) : '';
+  const jackpotChampion = championLabel ? { weekKey: championRow.week_key, startsAt: championRow.starts_at, closesAt: championRow.closes_at, label: championLabel } : null;
   const standing = { weekly: null, monthly: null, allTime: null };
   if (row.status === 'confirmed' && row.board_excluded !== true) {
     const found = await readWalletStanding(db, { gameId: row.game_id, seasonId: row.season_id, wallet: row.wallet, weekKey: row.week_key, monthKey: row.month_key });
@@ -374,7 +420,8 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
     })),
     standing,
     verification,
-    cardRev: await cardRevision({ status: row.status, displayName: display.displayName, avatarUri: display.avatarUri, hidden: display.hidden, verification }),
+    jackpotChampion,
+    cardRev: await cardRevision({ status: row.status, displayName: display.displayName, avatarUri: display.avatarUri, hidden: display.hidden, verification, champion: jackpotChampion?.label ?? null }),
   };
 }
 

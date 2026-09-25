@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import * as indexCronApi from '../api/cron/index-chain.mjs';
 import * as retryCronApi from '../api/cron/settle-retry.mjs';
-import { LATEST_SCHEMA_VERSION, MIGRATIONS, ensureSchema, migrate, readSchemaVersion } from '../server/neon/migrations.mjs';
+import { JACKPOT_TABLES, LATEST_SCHEMA_VERSION, MIGRATIONS, ensureSchema, migrate, readSchemaVersion } from '../server/neon/migrations.mjs';
 import {
   CRON_ERROR_CODES, CRON_NAMES, allowlistedCronCode, cronOutcomeOf, readCronRuns, recordCronRun, thrownCronCode, withCronRun,
 } from '../server/ops/cron-runs.mjs';
@@ -49,15 +49,16 @@ async function cronRow(db, name) {
   return runs[name] ?? null;
 }
 
-test('migration 2 is the additive cron_runs table and a fresh database gets both versions', async () => withDb(async (db) => {
-  assert.equal(LATEST_SCHEMA_VERSION, 2);
-  assert.deepEqual(MIGRATIONS.map((migration) => [migration.version, migration.name]), [[1, '0001_ranked_index'], [2, '0002_cron_runs']]);
+test('migration 2 is the additive cron_runs table and a fresh database gets every version', async () => withDb(async (db) => {
+  // jackpot-server: migration 3 (0003_weekly_jackpot) follows; tests/jackpot-server-migration.test.mjs covers it.
+  assert.equal(LATEST_SCHEMA_VERSION, 3);
+  assert.deepEqual(MIGRATIONS.map((migration) => [migration.version, migration.name]), [[1, '0001_ranked_index'], [2, '0002_cron_runs'], [3, '0003_weekly_jackpot']]);
   const second = MIGRATIONS[1].statements;
   assert.equal(second.length, 1);
   assert.match(second[0], /^CREATE TABLE IF NOT EXISTS cron_runs \(/, 'additive and idempotent');
   for (const statement of second) assert.doesNotMatch(statement, /\b(ALTER|DROP|UPDATE|DELETE|TRUNCATE|RENAME)\b/i, 'migration 2 never changes a version-1 object');
 
-  assert.deepEqual(await migrate(db), { version: 2, applied: [1, 2] });
+  assert.deepEqual(await migrate(db), { version: 3, applied: [1, 2, 3] });
   const columns = (await db.query("SELECT column_name::text AS name FROM information_schema.columns WHERE table_name = 'cron_runs' ORDER BY ordinal_position")).map((row) => row.name);
   assert.deepEqual(columns, CRON_COLUMNS);
   const types = Object.fromEntries((await db.query("SELECT column_name::text AS name, data_type::text AS type FROM information_schema.columns WHERE table_name = 'cron_runs'")).map((row) => [row.name, row.type]));
@@ -66,7 +67,7 @@ test('migration 2 is the additive cron_runs table and a fresh database gets both
   await assert.rejects(db.query("INSERT INTO cron_runs (name) VALUES ('Index Chain')"), (error) => error.code === '23514');
   await assert.rejects(db.query("INSERT INTO cron_runs (name, last_error_code) VALUES ('index-chain', $1)", [`boom ${SECRET_URL}`]), (error) => error.code === '23514');
   await assert.rejects(db.query("INSERT INTO cron_runs (name, runs) VALUES ('index-chain', -1)"), (error) => error.code === '23514');
-  assert.deepEqual(await migrate(db), { version: 2, applied: [] }, 'applying twice is a no-op');
+  assert.deepEqual(await migrate(db), { version: 3, applied: [] }, 'applying twice is a no-op');
 }));
 
 test('migration 2 upgrades the live version-1 database without touching its rows', async () => withDb(async (db) => {
@@ -83,13 +84,26 @@ test('migration 2 upgrades the live version-1 database without touching its rows
   const before = await db.query('SELECT session_id32, status, attempts, last_error, score::text AS score FROM verified_sessions');
   const tablesBefore = await tableNames(db);
 
-  assert.deepEqual(await migrate(db), { version: 2, applied: [2] }, 'only migration 2 runs on a version-1 database');
+  assert.deepEqual(await migrate(db), { version: 3, applied: [2, 3] }, 'only migrations 2 and 3 run on a version-1 database');
   assert.deepEqual(await db.query('SELECT session_id32, status, attempts, last_error, score::text AS score FROM verified_sessions'), before, 'queue rows are untouched');
   assert.deepEqual(await db.query("SELECT last_block::text AS last_block FROM indexer_state"), [{ last_block: '54210000' }]);
   assert.deepEqual(await db.query('SELECT next_nonce::text AS next_nonce FROM relayer_lease'), [{ next_nonce: '7' }]);
-  assert.deepEqual(await tableNames(db), [...tablesBefore, 'cron_runs'].sort(), 'exactly one table is added');
+  assert.deepEqual(await tableNames(db), [...tablesBefore, 'cron_runs', ...JACKPOT_TABLES].sort(), 'only the cron_runs and jackpot tables are added');
   assert.deepEqual(await readCronRuns(db), {}, 'no run is recorded yet');
-  assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), [1, 2]);
+  assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), [1, 2, 3]);
+}));
+
+test('migration 3 upgrades a version-2 database alone and keeps its cron rows', async () => withDb(async (db) => {
+  await applyVersionOne(db);
+  for (const statement of MIGRATIONS[1].statements) await db.query(statement);
+  await db.query("INSERT INTO schema_migrations (version, name) VALUES (2, '0002_cron_runs')");
+  // A raw insert: recordCronRun would ensureSchema (and so migrate) first.
+  await db.query("INSERT INTO cron_runs (name, last_ok_at, runs, failures) VALUES ('index-chain', now(), 1, 0)");
+  const tablesBefore = await tableNames(db);
+  assert.deepEqual(await migrate(db), { version: 3, applied: [3] }, 'only migration 3 runs on a version-2 database');
+  assert.deepEqual(await tableNames(db), [...tablesBefore, ...JACKPOT_TABLES].sort());
+  assert.equal((await readCronRuns(db))['index-chain'].runs, 1, 'cron rows are untouched');
+  assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), [1, 2, 3]);
 }));
 
 test('the first request on a version-1 database migrates it through ensureSchema, race-safe', async () => withDb(async (db) => {
@@ -108,10 +122,10 @@ test('the first request on a version-1 database migrates it through ensureSchema
       return db.query(sql, params);
     },
   };
-  assert.equal(await ensureSchema(racing), 2);
+  assert.equal(await ensureSchema(racing), 3);
   assert.equal(raced, true);
   assert.ok((await tableNames(db)).includes('cron_runs'));
-  assert.equal(await ensureSchema(racing), 2, 'memoized');
+  assert.equal(await ensureSchema(racing), 3, 'memoized');
 }));
 
 test('recordCronRun counts runs and failures and keeps the latest times and code', async () => withDb(async (db) => {
@@ -204,7 +218,7 @@ test('the index-chain cron records its ok, error and thrown runs, and 401s recor
   assert.deepEqual(await tableNames(db), [], 'an unauthorized call touches nothing');
 
   const ok = await invoke(indexHandler({ db, clock }), { url: '/api/cron/index-chain', headers: AUTH });
-  assert.deepEqual([ok.status, ok.body.ok, ok.body.schemaVersion], [200, true, 2]);
+  assert.deepEqual([ok.status, ok.body.ok, ok.body.schemaVersion], [200, true, 3]);
   assert.deepEqual(await cronRow(db, CRON_NAMES.indexChain), { lastOkAt: '2026-09-24T18:00:00.000Z', lastErrorAt: null, lastErrorCode: null, runs: 1, failures: 0 });
 
   clockMs = NOW + 300_000;
