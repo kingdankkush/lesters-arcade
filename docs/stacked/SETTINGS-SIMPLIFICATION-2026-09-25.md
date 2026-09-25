@@ -138,7 +138,7 @@ The reverse case is a 1.8.1 child with a new host. It needs the new portal chunk
 from the network and the old child from a cache, because the service worker is
 network-first for scripts and HTML. The 1.8.1 child then rejects the new
 `portal:init` with "Invalid parent message", so the launch fails before a run
-starts and no result is at stake. A reload fixes it.
+starts and no result is at stake. Reloading once the network is back fixes it.
 
 A successful save is silent. A failed save is announced once through
 `#stackedStatus`, and `#settingsSaveNote` changes to "Couldn't save on this
@@ -220,6 +220,21 @@ this session:
   including the 2 × 2 segments.
 - A gamepad pass through the card.
 - A visual check that the gentle glow reads at Standard.
+
+## For the release notes
+
+These change what existing players see, so say so when this ships:
+
+- **Reduced flashes is softer than before, not stricter.** With it on, the
+  board glow cap rises from 0 to 0.12 alpha. At Standard and Full a gentle
+  halo now shows around the board and under the active piece while music
+  plays. A player who wants no glow at all should choose Calm or Off, or turn
+  on Reduced motion. Calm also drops music reactivity and scenes.
+- **Old looks are rounded to the nearest preset.** A saved intensity from 0.55
+  up to 0.85 becomes Standard (0.7), and 0.85 or more becomes Full (1.0). So a
+  player who chose 0.55 sees about 0.15 more intensity. A 1.8.1 save with the
+  scene set to Off or the music-reactive board off becomes Calm, which also
+  turns off music reactivity and scenes.
 
 ## Follow-ups
 
