@@ -716,12 +716,13 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 { "ok": true, "gameId": "chikun", "seasonId": "chikun-season-preview-1", "period": "weekly", "periodKey": "2026-W39",
   "resetsAt": "2026-09-28T00:00:00.000Z", "page": 1, "pageSize": 25, "total": 137,
   "rows": [ { "rank": 1, "wallet": "0x…", "walletShort": "0x1234…abcd", "displayName": "Chikun King", "avatarUri": null,
-              "score": 19475, "stats": { /* headline keys, §6.3 */ }, "sessionId32": "0x…", "shareId": "…",
+              "score": 19475, "stats": { /* headline keys, §6.3 */ }, "versionLabel": "Chikun v7", "sessionId32": "0x…", "shareId": "…",
               "txHash": "0x…", "explorerUrl": "https://liteforge.explorer.caldera.xyz/tx/0x…", "confirmedAt": "…" } ],
   "you": null }
 ```
 - `you` is `{ rank, score, sessionId32, shareId }` when `wallet` is given and has a row in the period, otherwise null.
 - `resetsAt` is null for `all-time`.
+- `versionLabel` (additive; added 2026-09-25 by version-column, owner decision: no testnet season resets, every score shows its game version) is `versionLabelFor(gameId, { buildHash: build_hash, runtimeId: runtime_id })` from `apps/portal/src/game-version-labels.mjs` for the ranked row: `HMH v0.5` (the cabinet major.minor of the HMH build hash; an HMH build without a cabinet segment is `HMH v0.5`), `Chikun v7` (from `chikun:canvas-runtime-v7`), `STACKED v0.2` (the cabinet major.minor), and `<Game> v?` when the version cannot be read (a `chain-index` row has no build hash). It is derived at read time from the migration-1 columns (nothing stored, no migration). The raw `build_hash` is never returned.
 
 **Errors:** 400 `invalid-game` | `invalid-period` | `invalid-period-key` | `invalid-page` | `invalid-query` | `invalid-wallet`; 503 `index-not-configured`.
 
@@ -737,7 +738,8 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
                                  "bests": { "maxCombo": 12, "level": 5 }, "lastPlayedAt": "…" },
              "chikun": { … }, "stacked": { … } },
   "recentSessions": [ { "sessionId32": "0x…", "shareId": "…", "gameId": "chikun", "score": 19475, "status": "confirmed",
-                        "txHash": "0x…", "explorerUrl": "…", "verifiedAt": "…", "confirmedAt": "…", "stats": { /* headline */ } } ],
+                        "txHash": "0x…", "explorerUrl": "…", "verifiedAt": "…", "confirmedAt": "…", "stats": { /* headline */ },
+                        "versionLabel": "Chikun v7" } ],
   "achievements": [ { "id": "chikun-reach-coast", "gameId": "chikun", "tier": "gold", "nft": false, "sessionId32": "0x…",
                       "unlockedAt": "…", "tokenId": null, "mintTxHash": null } ],
   "preferences": null, "updatedAt": "…" }
@@ -745,7 +747,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 - `profile` fields are null when there is no `wallet_profiles` row. When `hidden` is true, `displayName` and `avatarUri` are null. `profile.nameBlocked` (`'profanity'|'impersonation'|null`) is returned **only** in the self view, so the owner of the wallet learns why their name does not show.
 - `games` always contains all three gameIds, with zeros and nulls when empty.
 - `games[gameId].bests` (additive; added 2026-09-25 by the polish-2 fixer) holds, for each per-run-best headline key the game has (`maxCombo`, `bestCombo`, `level`: HMH `{ maxCombo, level }`, Chikun `{ bestCombo }`, STACKED `{ level, maxCombo }`), the highest value over the wallet's `confirmed` sessions in every season, in both views. A key is `null` when no confirmed session carries it, so an empty game, or one whose Ranked runs all failed or are still unconfirmed, answers `null`, never `0`. `totals` is unchanged: it still sums every numeric headline key, with `0` when empty. The hosted profile shows `bests` as "Highest level" and "Best combo", and sums only the true totals.
-- `recentSessions` holds at most 20, newest first. The public view lists only `confirmed` sessions. The self view (`&self=1`) lists every status except `pending`, with `retryable`, `lastError` and `nextAttemptAt`, which the D10 retry button needs (§7.8).
+- `recentSessions` holds at most 20, newest first. The public view lists only `confirmed` sessions. The self view (`&self=1`) lists every status except `pending`, with `retryable`, `lastError` and `nextAttemptAt`, which the D10 retry button needs (§7.8). Each session carries `versionLabel` in both views (additive, 2026-09-25, version-column; the E5 rule), and never `buildHash` or `runtimeId`.
 - `achievements` holds every unlock for the wallet, ordered by `unlocked_at`. `nft` in each entry is taken from the **current catalog** (A20), not the stored flag.
 - `preferences` is non-null only in the self view.
 - **Self view** `GET /api/profile?wallet=0x…&self=1`: requires a Bearer token for the same wallet (else `401 invalid-session`), and is always `private, no-store`. It is a distinct URL, so the CDN can never serve a cached public body to it.
@@ -769,12 +771,13 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
   ```
   { ok:true, session:{ sessionId32, shareId, gameId, gameTitle, wallet, walletShort, displayName, avatarUri,
                        score, stats, contract:{kills,maxCombo,survivalSeconds,bossId}, status, txHash, blockNumber,
-                       explorerUrl, verifiedAt, confirmedAt, seasonId, runtimeId,
+                       explorerUrl, verifiedAt, confirmedAt, seasonId, runtimeId, versionLabel,
                        achievements:[{ id, tier, nft, unlockedAt, tokenId }],
                        standing:{ weekly:number|null, monthly:number|null, allTime:number|null } } }
   ```
   `standing` is the rank of this session's wallet in each period, only when this session is that wallet's best and the wallet is not `board_excluded`; otherwise null per period.
 - `displayName` and `avatarUri` are null when the profile is `hidden` (A29); blocked names are already null. Consumers fall back to `walletShort`.
+- `versionLabel` (additive, 2026-09-25, version-column) follows the E5 rule; `runtimeId` stays, and the raw build hash is never returned.
 - `stats` is the §6.3 server stats only, as the headline subset (§6.3: "the `stats` subset in E5, E6 and E9 rows"); `client_claim` and `plausibility` are never included.
 - `verification`: `'replay'` for Chikun and STACKED, `'plausibility'` for HMH, `'chain-index'` for rows the indexer created.
 - `cardRev`: the card revision of §7.5, so the share page can build the versioned `og:image`.

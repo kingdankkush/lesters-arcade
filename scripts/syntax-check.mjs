@@ -82,6 +82,7 @@ const NODE_CHECK_FILES = [
   'tests/hmh-cabinet-version.test.mjs',
   'apps/portal/src/game-version-labels.mjs',
   'tests/game-version-labels.test.mjs',
+  'tests/version-column-api.test.mjs',
   'server/verify/verified-run.mjs',
   'server/verify/hmh-plausibility.mjs',
   'server/verify/chikun.mjs',
