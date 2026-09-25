@@ -14,7 +14,16 @@
 //   - review values in public are cleared | in-review | disqualified, with a
 //     reason only for disqualified rows;
 //   - every previous/history row carries its own token and contract from its
-//     week row, never the current module;
+//     week row, never the current module; `previous` is the week before the
+//     current one on the active instance, or on a retired one after an
+//     instance migration (design §A.19);
+//   - previous.candidates is bounded (MAX_PUBLIC_CANDIDATES = 10, the UI's
+//     limit): the listed rows by chain rank, then the newest disqualified
+//     rows that were listed;
+//   - `current` is null while the instance has no mirrored rules epoch (before
+//     the first index after a deployment; like the contract, a week before the
+//     first epoch reads epoch 0): the rules and the pot's `funded` cannot be
+//     stated without them, and the UI accepts a null `current`;
 //   - names go through publicDisplay (a hidden wallet shows only walletShort).
 
 import { isoSql } from '../neon/queries.mjs';
@@ -34,6 +43,9 @@ export const MAX_HISTORY = 26;
 export const EXPLORER_ORIGIN = 'https://liteforge.explorer.caldera.xyz';
 export const RULES_URL = '/jackpot/chikun';
 export const PUBLIC_WEEK_STATUSES = Object.freeze(['open', 'review', 'awaiting-admin', 'paid', 'claim-pending', 'rolled', 'unfunded']);
+// At most this many previous-week candidates in public (the jackpot-ui parser
+// rejects a longer list): up to 5 listed rows, then disqualified ones.
+export const MAX_PUBLIC_CANDIDATES = 10;
 const SESSION = /^0x[0-9a-f]{64}$/;
 
 // Internal week status → the public vocabulary (design §C.5). A week that
@@ -100,8 +112,9 @@ async function readPublicCandidates(db, { contract, weekKey }) {
             wp.display_name, coalesce(wp.hidden, false) AS hidden
      FROM jackpot_candidates c LEFT JOIN wallet_profiles wp ON wp.wallet = c.wallet
      WHERE c.contract = $1 AND c.week_key = $2 AND (c.on_chain OR (c.was_listed AND c.review = 'disqualified'))
-     ORDER BY c.on_chain DESC, c.chain_rank ASC NULLS LAST, c.score DESC, c.session_id32 ASC`,
-    [contract, weekKey],
+     ORDER BY c.on_chain DESC, c.chain_rank ASC NULLS LAST, c.updated_at DESC, c.score DESC, c.session_id32 ASC
+     LIMIT $3::int`,
+    [contract, weekKey, String(MAX_PUBLIC_CANDIDATES)],
   );
   return rows.map((raw, index) => {
     const display = publicDisplay({ hidden: raw.hidden === true, displayName: raw.display_name ?? null });
@@ -171,7 +184,7 @@ export async function jackpotApiBody(db, { config, deployment = null, nowMs, his
   const currentEntry = weeks.find((entry) => entry.row.contract === active.contract && entry.row.weekIndex === currentIndex);
   const bounds = boundsIsoOf(currentIndex, currentEntry?.row.extensionSeconds ?? 0);
   const cursor = await db.query('SELECT last_block::text AS last_block FROM indexer_state WHERE stream = $1', [jackpotStream(active.contract, chainId)]);
-  const current = {
+  const current = !rules ? null : {
     weekKey: currentKey,
     weekIndex: currentIndex,
     status: 'open',
@@ -180,22 +193,28 @@ export async function jackpotApiBody(db, { config, deployment = null, nowMs, his
     settleCutoffAt: bounds.settleCutoffAt,
     candidateUntil: bounds.candidateUntil,
     payoutAt: bounds.payoutAt,
-    rules: rules ? { minPaidWei: rules.minPaidWei, maxSurvivalSeconds: rules.maxSurvivalSeconds, minFundWei: rules.minFundWei, adminClearOnly: rules.adminClearOnly } : null,
+    rules: { minPaidWei: rules.minPaidWei, maxSurvivalSeconds: rules.maxSurvivalSeconds, minFundWei: rules.minFundWei, adminClearOnly: rules.adminClearOnly },
     pot: potFields({ fundedWei: currentEntry?.row.fundedWei ?? '0', carriedInWei: currentEntry?.row.carriedInWei ?? '0', rules }),
     leader: await openLeader(db, { instance: active, weekKey: currentKey, rules, deployment }),
   };
   const closed = weeks.filter((entry) => entry.row.weekIndex < currentIndex);
-  const previousEntry = closed.find((entry) => entry.row.contract === active.contract && entry.row.weekIndex === currentIndex - 1) ?? null;
+  // The active instance's week first; after an instance migration the last
+  // week of the retired instance (still in review or claim-pending) is the
+  // previous week until the new instance has one of its own.
+  const previousEntry = closed.find((entry) => entry.row.contract === active.contract && entry.row.weekIndex === currentIndex - 1)
+    ?? closed.find((entry) => entry.row.weekIndex === currentIndex - 1) ?? null;
   let previous = null;
   if (previousEntry) {
     const row = previousEntry.row;
-    const previousRules = rulesForWeek(rulesList, row.weekIndex);
+    const previousRulesList = row.contract === active.contract ? rulesList : await readRules(db, { contract: row.contract });
+    const previousRules = rulesForWeek(previousRulesList, row.weekIndex);
     const won = winnerOf(previousEntry);
     previous = {
       weekKey: row.weekKey,
       status: publicWeekStatus(row.status),
       payoutAt: row.payoutAt,
       token: tokenOf(row),
+      contract: row.contract,
       pot: potFields({ fundedWei: row.fundedWei, carriedInWei: row.carriedInWei, rules: previousRules }),
       candidates: await readPublicCandidates(db, { contract: row.contract, weekKey: row.weekKey }),
       winner: won,

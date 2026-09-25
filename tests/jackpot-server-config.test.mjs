@@ -95,6 +95,7 @@ test('jackpot variables never change settlement readiness', async () => {
 test('config.jackpot readiness follows the keeper key, the address check and the deployment', () => {
   const ready = readServerConfig(settlementEnv({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: JACKPOT.toUpperCase().replace('0X', '0x') }), { deployment: DEPLOYED, jackpotDeployment: jackpotDeploymentFixture() });
   assert.equal(ready.jackpot.ready, true, JSON.stringify(ready.jackpot.missing));
+  assert.equal(ready.jackpot.readable, true);
   assert.deepEqual([ready.jackpot.contract.address, ready.jackpot.contract.matchesDeployment], [JACKPOT, true]);
   assert.equal(ready.jackpot.maxTxFeeWei, DEFAULT_JACKPOT_MAX_TX_FEE_WEI);
   assert.equal(DEFAULT_JACKPOT_MAX_TX_FEE_WEI, '10000000000000000', '0.01 zkLTC');
@@ -103,15 +104,18 @@ test('config.jackpot readiness follows the keeper key, the address check and the
   // The committed module is undeployed, so without the seam nothing is ready.
   assert.equal(LITVM_JACKPOT.status, 'undeployed');
   const committed = readServerConfig(settlementEnv({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: JACKPOT }), { deployment: DEPLOYED });
-  assert.equal(committed.jackpot.ready, false);
+  assert.deepEqual([committed.jackpot.ready, committed.jackpot.readable], [false, false]);
   assert.ok(committed.jackpot.missing.includes('jackpot-not-deployed'));
   assert.equal(committed.jackpot.deployment, LITVM_JACKPOT);
 
   const mismatch = readServerConfig(settlementEnv({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: `0x${'99'.repeat(20)}` }), { deployment: DEPLOYED, jackpotDeployment: jackpotDeploymentFixture() });
-  assert.deepEqual([mismatch.jackpot.ready, mismatch.jackpot.contract.matchesDeployment], [false, false]);
+  assert.deepEqual([mismatch.jackpot.ready, mismatch.jackpot.readable, mismatch.jackpot.contract.matchesDeployment], [false, false, false]);
   assert.ok(mismatch.jackpot.missing.includes('jackpot-address-mismatch'));
   const noKey = readServerConfig(settlementEnv({ JACKPOT_CONTRACT_ADDRESS: JACKPOT }), { deployment: DEPLOYED, jackpotDeployment: jackpotDeploymentFixture() });
   assert.deepEqual([noKey.jackpot.ready, noKey.jackpot.keeper.configured, noKey.jackpot.keeper.address(ethers)], [false, false, null]);
+  // Reads need the contract, never the key: the read endpoints stay up without the keeper (design §C.1).
+  assert.equal(noKey.jackpot.readable, true);
+  assert.equal(noKey.jackpot.toJSON().readable, true);
   assert.throws(() => noKey.jackpot.keeper.createWallet(ethers, null), /keeper-not-configured/);
 
   const flags = readJackpotConfig({ JACKPOT_PAUSED: 'true', JACKPOT_UI_HIDDEN: 'true', JACKPOT_MAX_TX_FEE_WEI: '5000', JACKPOT_ADMIN_WALLET: `0x${'AB'.repeat(20)}` });

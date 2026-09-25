@@ -27,7 +27,7 @@ export async function jackpotReplayRequest({ query = {} } = {}, deps) {
   const sessionId32 = normalizeSessionId32(query.session);
   if (!sessionId32) return missing();
   const jackpot = deps.config.jackpot;
-  if (jackpot.uiHidden || !jackpot.ready || !deps.db) return missing();
+  if (jackpot.uiHidden || !jackpot.readable || !deps.db) return missing();
   await ensureSchema(deps.db);
   const contracts = jackpotInstances(jackpot.deployment).map((instance) => instance.contract);
   const body = await jackpotReplayBody(deps.db, { sessionId32, nowMs: deps.nowMs(), contracts });

@@ -2,6 +2,9 @@
 //
 // The owner's review data for one week. Gates, before anything is read:
 //   1. a valid Bearer session (bearerAuthHook; 401, or 503 without SESSION_SECRET);
+//   (the contract address must match LITVM_JACKPOT; the keeper key is not
+//   needed, so a keeper-key incident never locks the admin out: 503
+//   jackpot-not-configured only without a matching deployed contract);
 //   2. the session wallet equals the LIVE on-chain admin() of the active
 //      instance (one eth_call, cached in memory for 60 s, so after an
 //      emergency forceAdmin the old admin loses access within a minute
@@ -44,7 +47,7 @@ export async function reviewAdminGate(request, deps) {
   const auth = authenticateBearer(request.headers, deps);
   if (!auth.ok) return noStore(auth.status, { ok: false, error: auth.error });
   const jackpot = deps.config.jackpot;
-  if (!jackpot.ready) return noStore(503, { ok: false, error: 'jackpot-not-configured' });
+  if (!jackpot.readable) return noStore(503, { ok: false, error: 'jackpot-not-configured' });
   if (jackpot.adminWallet.invalid || (jackpot.adminWallet.address && jackpot.adminWallet.address !== auth.wallet)) return noStore(403, { ok: false, error: 'not-admin' });
   const chain = chainFor(deps);
   let admin;

@@ -8,10 +8,10 @@ import * as replayApi from '../api/jackpot-replay.mjs';
 import * as reviewApi from '../api/jackpot-review.mjs';
 import { importChikunReplay } from '../apps/chikun/src/replay-file.mjs';
 import { issueSessionToken } from '../apps/portal/src/server-session.mjs';
-import { JACKPOT_CACHE_CONTROL, REPLAY_CACHE_CONTROL, potFields, publicReview, publicWeekStatus } from '../server/jackpot/api-model.mjs';
+import { JACKPOT_CACHE_CONTROL, MAX_PUBLIC_CANDIDATES, REPLAY_CACHE_CONTROL, potFields, publicReview, publicWeekStatus } from '../server/jackpot/api-model.mjs';
 import { clearAdminCache } from '../server/jackpot/review-model.mjs';
-import { casWeekStatus, ensureWeekRow, updateWeek } from '../server/jackpot/store.mjs';
-import { boundsIsoOf, dateRangeLabel, weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
+import { casWeekStatus, ensureWeekRow, updateCandidate, updateWeek, upsertCandidate } from '../server/jackpot/store.mjs';
+import { boundsIsoOf, dateRangeLabel, weekIndexOf, weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
 import { cardRevision, readPublicProfile, readPublicSession } from '../server/neon/queries.mjs';
 import { buildShareCardElement } from '../server/share/render-card.mjs';
 import { renderSharePage } from '../server/share/render-page.mjs';
@@ -85,8 +85,8 @@ test('jackpot API shape, cache header and allowlist', async () => {
   assert.equal(body.current.leader, null);
   // The previous week: paid, with its own token, candidates with public review values, a hidden winner's name withheld.
   const previous = body.previous;
-  assert.deepEqual(Object.keys(previous), ['weekKey', 'status', 'payoutAt', 'token', 'pot', 'candidates', 'winner', 'prizeWei', 'unclaimedWei', 'finalizeTx']);
-  assert.deepEqual([previous.weekKey, previous.status, previous.prizeWei, previous.unclaimedWei], [weekKeyOfIndex(W), 'paid', (1_000n * TOKEN).toString(), '0']);
+  assert.deepEqual(Object.keys(previous), ['weekKey', 'status', 'payoutAt', 'token', 'contract', 'pot', 'candidates', 'winner', 'prizeWei', 'unclaimedWei', 'finalizeTx']);
+  assert.deepEqual([previous.weekKey, previous.status, previous.contract, previous.prizeWei, previous.unclaimedWei], [weekKeyOfIndex(W), 'paid', h.contract, (1_000n * TOKEN).toString(), '0']);
   assert.deepEqual(previous.token, { symbol: 'tCHIKUN', decimals: 18, testnet: true });
   assert.deepEqual(previous.winner, { walletShort: `${runA.wallet.slice(0, 6)}…${runA.wallet.slice(-4)}`, wallet: runA.wallet, displayName: null }, 'a hidden wallet shows only its short form');
   assert.match(previous.finalizeTx, /^0x[0-9a-f]{64}$/);
@@ -105,15 +105,26 @@ test('jackpot API shape, cache header and allowlist', async () => {
   }
   assert.equal((await call(jackpotApi, '/api/jackpot?game=chikun&history=0')).status, 200);
 
-  // live:false: the committed undeployed module, a missing keeper key, and JACKPOT_UI_HIDDEN.
+  // live:false: the committed undeployed module, no contract address, and JACKPOT_UI_HIDDEN.
   for (const [label, options] of [
     ['undeployed', { overrides: { jackpotDeployment: undefined } }],
-    ['unconfigured', { env: { JACKPOT_KEEPER_PRIVATE_KEY: '' } }],
+    ['unconfigured', { env: { JACKPOT_CONTRACT_ADDRESS: '' } }],
     ['hidden', { env: { JACKPOT_UI_HIDDEN: 'true' } }],
   ]) {
     const hidden = await call(jackpotApi, '/api/jackpot', options);
     assert.deepEqual([hidden.status, hidden.body, hidden.headers['cache-control']], [200, { ok: true, live: false, game: 'chikun' }, JACKPOT_CACHE_CONTROL], label);
   }
+  // Reads need the contract, never the keeper key (design §C.1 "reads continue"): clearing a leaked keeper
+  // key stops the cron but neither hides the jackpot nor locks the admin out of the review (§E stop 4).
+  const keyless = { env: { JACKPOT_KEEPER_PRIVATE_KEY: '' } };
+  const keylessBody = (await call(jackpotApi, '/api/jackpot', keyless)).body;
+  assert.deepEqual([keylessBody.live, keylessBody.previous.weekKey], [true, weekKeyOfIndex(W)]);
+  assert.equal((await call(replayApi, `/api/jackpot/replay?session=${runA.sessionId32}`, keyless)).status, 200);
+  clearAdminCache();
+  const reviewUrl = `/api/jackpot/review?week=${weekKeyOfIndex(W)}`;
+  assert.equal((await call(reviewApi, reviewUrl, { ...keyless, headers: bearer(h.wallets.developer.address) })).status, 200);
+  const noContract = await call(reviewApi, reviewUrl, { env: { JACKPOT_CONTRACT_ADDRESS: '' }, headers: bearer(h.wallets.developer.address) });
+  assert.deepEqual([noContract.status, noContract.body.error], [503, 'jackpot-not-configured']);
   // The jackpot handlers accept jackpotDeployment next to the A30 overrides; the index deps keep theirs.
   const deps = await jackpotApi.buildDeps(d.env(), { db, jackpotDeployment: h.jackpotDeployment, deployment: h.deployment });
   assert.deepEqual(Object.keys(deps).sort(), ['config', 'crypto', 'db', 'deployment', 'fetchImpl', 'nowMs', 'provider']);
@@ -276,7 +287,12 @@ test('share badge marks paid champions and busts the card cache', async () => {
   const champion = await readPublicSession(db, runA.sessionId32);
   const startsAt = boundsIsoOf(W).startsAt;
   const label = `Weekly Jackpot Champion · ${dateRangeLabel(startsAt)}`;
-  assert.match(label, /^Weekly Jackpot Champion · [A-Z][a-z]{2} \d{1,2} – ([A-Z][a-z]{2} )?\d{1,2}, \d{4}$/, 'a date range, never an ISO week key');
+  // W follows the wall clock (the local chain starts at it), so either form can come up: 'Oct 5 – 11, 2026'
+  // or, for a week across a year boundary, 'Dec 28, 2026 – Jan 3, 2027'.
+  assert.match(label, /^Weekly Jackpot Champion · [A-Z][a-z]{2} \d{1,2}(, \d{4})? – ([A-Z][a-z]{2} )?\d{1,2}, \d{4}$/, 'a date range, never an ISO week key');
+  const newYear = boundsIsoOf(weekIndexOf(Date.parse('2026-12-30T12:00:00.000Z') / 1000)).startsAt;
+  assert.equal(dateRangeLabel(newYear), 'Dec 28, 2026 – Jan 3, 2027', 'a week across New Year names both years');
+  assert.match(`Weekly Jackpot Champion · ${dateRangeLabel(newYear)}`, /^Weekly Jackpot Champion · [A-Z][a-z]{2} \d{1,2}(, \d{4})? – ([A-Z][a-z]{2} )?\d{1,2}, \d{4}$/);
   assert.deepEqual(champion.jackpotChampion, { weekKey: weekKeyOfIndex(W), startsAt, closesAt: boundsIsoOf(W).closesAt, label });
   const plain = { status: champion.status, displayName: champion.displayName, avatarUri: champion.avatarUri, hidden: true, verification: champion.verification };
   assert.equal(champion.cardRev, await cardRevision({ ...plain, champion: label }));
@@ -312,4 +328,69 @@ test('share badge marks paid champions and busts the card cache', async () => {
   } finally {
     await db.query('DELETE FROM jackpot_weeks WHERE contract = $1', [OTHER_CONTRACT]);
   }
+});
+
+test('review and public views of next-eligible, disqualified and retired-instance rows', async () => {
+  // The review test rotated the admin with forceAdmin.
+  const admin = await h.player(7);
+  assert.equal(ethers.getAddress(await h.jackpot.admin()), admin.address);
+  clearAdminCache();
+  const weekC = weekKeyOfIndex(W + 2);
+  const url = `/api/jackpot/review?week=${weekC}`;
+  // The open week W + 2: runC is eligible and not listed, so it is next for adminSubmit.
+  let review = await call(reviewApi, url, { headers: bearer(admin.address) });
+  assert.equal(review.status, 200, JSON.stringify(review.body));
+  assert.deepEqual(review.body.nextEligible.map((row) => [row.sessionId32, row.score, row.screen]), [[runC.sessionId32, runC.score, 'unscreened']]);
+  assert.deepEqual(Object.keys(review.body.nextEligible[0]).sort(), ['confirmedAt', 'explorer', 'score', 'screen', 'sessionId32', 'wallet', 'walletShort']);
+  // Its player lists it; the admin disqualifies it.
+  await (await h.jackpot.connect(await h.player(2)).submitCandidate(runC.sessionId32)).wait();
+  await (await h.jackpot.connect(admin).disqualify(runC.sessionId32, false, ethers.encodeBytes32String('automation'))).wait();
+  await d.cron();
+  review = await call(reviewApi, url, { headers: bearer(admin.address) });
+  const row = review.body.candidates.find((candidate) => candidate.sessionId32 === runC.sessionId32);
+  assert.deepEqual([row.listing, row.review, row.reviewReason, row.adminReviewed, row.wasListed, row.reviewSource], ['disqualified', 'disqualified', 'automation', true, true, 'chain']);
+  assert.deepEqual(review.body.nextEligible, [], 'a disqualified run is never eligible again');
+
+  // W + 3: W + 2 is the previous week; a disqualified row that was listed shows with its coarse reason.
+  await d.advance(h.bounds(W + 3).start + HOUR);
+  await d.cron();
+  let body = (await call(jackpotApi, '/api/jackpot')).body;
+  assert.deepEqual([body.previous.weekKey, body.previous.contract, body.previous.status], [weekC, h.contract, 'review']);
+  assert.deepEqual(body.previous.candidates.map((candidate) => [candidate.rank, candidate.score, candidate.review, candidate.reason]), [[null, runC.score, 'disqualified', 'automation']]);
+  assert.deepEqual(Object.keys(body.previous.candidates[0]), ['rank', 'walletShort', 'displayName', 'score', 'review', 'reason', 'replay']);
+  // Many disqualified rows never overflow the public list (the UI rejects more than 10): the listed rows
+  // by rank first, then the newest disqualified ones.
+  const fake = (n, length) => `0x${n.toString(16).padStart(2, '0').repeat(length)}`;
+  await upsertCandidate(db, { contract: h.contract, weekKey: weekC, sessionId32: fake(0x40, 32), wallet: fake(0x40, 20), score: 5, source: 'public', onChain: true, wasListed: true, chainRank: 1 });
+  for (let index = 0; index < 11; index += 1) {
+    await upsertCandidate(db, { contract: h.contract, weekKey: weekC, sessionId32: fake(0x50 + index, 32), wallet: fake(0x50 + index, 20), score: 1_000 + index, source: 'public', wasListed: true });
+    await updateCandidate(db, { contract: h.contract, sessionId32: fake(0x50 + index, 32), set: { review: 'disqualified', review_reason: 'multi-wallet' } });
+  }
+  body = (await call(jackpotApi, '/api/jackpot')).body;
+  assert.equal(MAX_PUBLIC_CANDIDATES, 10);
+  assert.equal(body.previous.candidates.length, MAX_PUBLIC_CANDIDATES);
+  assert.deepEqual([body.previous.candidates[0].rank, body.previous.candidates[0].score, body.previous.candidates[0].review], [1, 5, 'in-review'], 'the listed row first');
+  assert.ok(body.previous.candidates.slice(1).every((candidate) => candidate.rank === null && candidate.review === 'disqualified' && candidate.reason));
+  assert.equal(body.previous.candidates.some((candidate) => candidate.score === runC.score), false, 'the oldest disqualification is the one left out');
+
+  // After an instance migration (design §A.19) the retired instance's last week is the previous week
+  // until the new instance has one, with its own token and contract.
+  const retiredDeployment = {
+    ...h.jackpotDeployment,
+    instances: { chikun: { ...h.jackpotDeployment.instances.chikun, retired: [{ address: OTHER_CONTRACT, startBlock: 1, firstWeek: W - 30, endAfterWeek: W - 1, token: OTHER_TOKEN }] } },
+  };
+  try {
+    await otherWeek(W - 1, { status: 'claim-pending', prizeWei: '4200000000', unclaimedWei: '4200000000', winner: runB.wallet, session: `0x${'e3'.repeat(32)}`, score: '999' });
+    const migrated = (await call(jackpotApi, '/api/jackpot', { overrides: { jackpotDeployment: retiredDeployment, nowMs: () => (h.bounds(W).start + HOUR) * 1000 } })).body;
+    const previous = migrated.previous;
+    assert.deepEqual([previous.weekKey, previous.status, previous.contract, previous.token, previous.unclaimedWei, previous.winner.wallet],
+      [weekKeyOfIndex(W - 1), 'claim-pending', OTHER_CONTRACT, { symbol: 'CHIKUN', decimals: 9, testnet: false }, '4200000000', runB.wallet]);
+  } finally {
+    await db.query('DELETE FROM jackpot_weeks WHERE contract = $1', [OTHER_CONTRACT]);
+  }
+  // Before the first index after a deployment nothing of the new instance is mirrored, not even its rules:
+  // current is null (the UI accepts it) rather than a week without rules.
+  const undeployedYet = { ...h.jackpotDeployment, instances: { chikun: { ...h.jackpotDeployment.instances.chikun, address: OTHER_CONTRACT, retired: [] } } };
+  const early = (await call(jackpotApi, '/api/jackpot', { env: { JACKPOT_CONTRACT_ADDRESS: OTHER_CONTRACT }, overrides: { jackpotDeployment: undeployedYet } })).body;
+  assert.deepEqual([early.live, early.contract, early.current, early.previous, early.history], [true, OTHER_CONTRACT, null, null, []]);
 });

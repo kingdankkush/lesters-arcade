@@ -119,9 +119,15 @@ export function readJackpotConfig(source, { jackpotDeployment = null } = {}) {
   if (contractConfigured && deployed && !contract.matchesDeployment) missing.push('jackpot-address-mismatch');
   const missingList = Object.freeze(missing);
   const ready = keeperConfigured && contractConfigured && contract.matchesDeployment && deployed;
+  // The read endpoints (GET /api/jackpot, the replay, the owner review) need
+  // no key: they stay up without the keeper (design §C.1 "reads continue"),
+  // so clearing a leaked keeper key never hides the jackpot or locks the
+  // admin out of the review page (§E emergency stop 4). `ready` gates the cron.
+  const readable = contractConfigured && contract.matchesDeployment && deployed;
 
   const summary = () => ({
     ready,
+    readable,
     keeper: { configured: keeperConfigured },
     contract: { configured: contractConfigured, address: contractAddress, matchesDeployment: contract.matchesDeployment },
     paused: env.JACKPOT_PAUSED === 'true',
@@ -133,6 +139,7 @@ export function readJackpotConfig(source, { jackpotDeployment = null } = {}) {
   });
   return Object.freeze({
     ready,
+    readable,
     keeper,
     contract,
     paused: env.JACKPOT_PAUSED === 'true',

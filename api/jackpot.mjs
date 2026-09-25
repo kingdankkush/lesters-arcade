@@ -10,7 +10,9 @@
 // from jackpot_rules) and the provisional open-week leader. No RPC call.
 // { ok:true, live:false, game:'chikun' } while the jackpot is unconfigured or
 // undeployed, or JACKPOT_UI_HIDDEN=true (an emergency hide without a client
-// release: every surface disappears once the CDN copy expires).
+// release: every surface disappears once the CDN copy expires). It needs the
+// contract address (matching LITVM_JACKPOT), never the keeper key: reads
+// continue while the keeper is stopped (config.jackpot.readable).
 //
 // Test seam: buildDeps accepts jackpotDeployment next to the A30 overrides.
 
@@ -39,7 +41,7 @@ export async function jackpotRequest({ query = {} } = {}, deps) {
   const history = historyCount(query.history);
   if (game !== 'chikun' || history === null) return fail(400, 'invalid-query');
   const jackpot = deps.config.jackpot;
-  if (jackpot.uiHidden || !jackpot.ready) return cached(200, { ok: true, live: false, game: 'chikun' });
+  if (jackpot.uiHidden || !jackpot.readable) return cached(200, { ok: true, live: false, game: 'chikun' });
   if (!deps.db) return fail(503, 'index-not-configured');
   await ensureSchema(deps.db);
   const body = await jackpotApiBody(deps.db, { config: deps.config, deployment: deps.deployment, nowMs: deps.nowMs(), history, chainId: deps.config.chainId });
