@@ -111,7 +111,7 @@ test('recordScore counts flaps from v6 evidence', () => {
   const result = simulateChikunRun({ seed: session.seed, taps: [1, 18, 42, 68, 94, 120, 146], maxTicks: 300 });
   assert.equal(result.evidence.version, 'chikun-flap-evidence-v6');
   const replayClaim = buildChikunReplayClaim({ buildHash: session.buildHash, seasonId: session.seasonId, result });
-  assert.equal(session.buildHash, 'site-1.8.0:game-1.8.0:cabinet-0.9.0');
+  assert.equal(session.buildHash, 'site-1.8.1:game-1.8.1:cabinet-0.9.0');
   const accepted = recordScore(state, session, result.score, {
     elapsedSeconds: result.survivalTime, survivalTime: result.survivalTime, survivalTicks: result.survivalTicks,
     coinsCollected: result.coinsCollected, forksPassed: result.forksPassed, nearMisses: result.nearMisses, bestCombo: result.bestCombo,

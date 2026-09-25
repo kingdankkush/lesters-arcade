@@ -1,3 +1,9 @@
+# Lester's Arcade — 1.8.1: post-launch polish, health monitoring, faster first load
+
+Post-launch release on top of the verified 1.8.0 Ranked launch. The owner status page (`/owner/status.html`) and the public `/api/health` report relayer balance and estimated settlements left, the settle queue, index lag, cron outcomes and the current LiteForge base fee; every server 500 now logs a redacted cause class, and both crons record their runs (Neon migration 2). The Scores and Profile route modules load on demand, cutting `dist/main.js` by about 47 KB. A read-only audit of the live site fixed keyboard focus loss in leaderboard search and tabs, the unstyled first paint of the wallet picker, other players' profile headers, low-contrast buttons, STACKED's Ranked price line, recent-run layouts and wallet capitalisation. The simulated-wallet shell banner is restored for local previews. Contracts, fees and flags are unchanged from 1.8.0.
+
+Site/game version `1.8.1`; cache marker `lesters-arcade-v54-post-launch`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.8.0 verified live: Ranked on LitVM LiteForge
 
 Ranked Mode is live on the LitVM LiteForge testnet for all three games. Sign in once with a wallet (MetaMask and Rabby featured, WalletConnect on phones), pay a 0.102 zkLTC entry (0.1 zkLTC fee split 85% developer / 15% arcade, plus a 0.002 zkLTC settlement reserve), and the run starts as soon as the entry is broadcast. The arcade server checks every Ranked run (Chikun's Escape and STACKED are replayed from their inputs; Hard Money Heroes is plausibility-checked) and its relayer publishes the verified result to `ScoreSubmissionRegistry` on chain. A shared results screen follows the run on chain to "Published" with an explorer link, then offers X-first sharing (mentioning @LestersArcade, no hashtags) with a public session page and a generated score card.
@@ -38,7 +44,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v53-ranked-launch`
+**Production cache marker:** `lesters-arcade-v54-post-launch`
 
 # Lester's Arcade
 
