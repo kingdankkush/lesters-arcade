@@ -15,6 +15,8 @@ import {
   resolveUpgradeCardPresentation,
 } from '../apps/hmh-reboot/src/upgrade-card-presentation.mjs';
 import { createCockpitUi } from '../apps/hmh-reboot/src/cockpit-ui.mjs';
+import { createUpgradePanel } from '../apps/hmh-reboot/src/upgrade-panel.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 import { createBridgeEnvelope, validateChildMessage } from '../sdk/hmh-bridge-protocol.mjs';
 import { HMH_PLAYER_SETTINGS_DEFAULTS, mergeHmhRuntimeSettings } from '../apps/portal/src/hmh-player-settings.mjs';
 
@@ -24,6 +26,8 @@ const html = read('apps/portal/hmh-reboot/index.html');
 const css = read('apps/portal/hmh-reboot/styles.css');
 const main = read('apps/hmh-reboot/src/main.mjs');
 const cockpit = read('apps/hmh-reboot/src/cockpit-ui.mjs');
+// S0.2: the level-up panel is the lazy upgrade-panel chunk.
+const upgradePanel = read('apps/hmh-reboot/src/upgrade-panel.mjs');
 const ITEM_ROOT = path.join(root, 'apps/portal/assets/generated/hmh-reboot-authored-props/items');
 const catalog = Object.values(RUN_UPGRADE_CATALOG);
 
@@ -295,7 +299,7 @@ test('K-3 live pause help retains mouse and alternate bindings after controls re
 test('upgrade cards use the injected native item art without changing choices or controls', () => {
   const { documentRef, elements } = fakeCockpitDocument(); const calls = [];
   const propIconUrl = (id) => { calls.push(id); return `/assets/generated/hmh-reboot-tripo-props/items/tripo-${id === 'proof-of-work' ? '31' : '24'}.webp`; };
-  const ui = createCockpitUi({ documentRef, propIconUrl });
+  const ui = createUpgradePanel({ documentRef, propIconUrl });
   ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
   assert.deepEqual(calls, ['proof-of-work', 'diamond-hands']);
   const icons = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-choice__icon');
@@ -308,7 +312,7 @@ test('upgrade cards use the injected native item art without changing choices or
 test('upgrade pointer confirmation is single-shot just like keyboard and gamepad', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const selected = [];
-  const ui = createCockpitUi({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
+  const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
   ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
   const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('button');
   buttons[1].dispatch('click');
@@ -321,7 +325,7 @@ test('upgrade pointer confirmation is single-shot just like keyboard and gamepad
 
 test('repeated upgrade menus release detached listeners on hide, replacement and destroy', () => {
   const { documentRef, elements, pendingFrames } = fakeCockpitDocument();
-  const ui = createCockpitUi({ documentRef });
+  const ui = createUpgradePanel({ documentRef });
   let previous = [];
   const assertReleased = (nodes) => {
     for (const node of nodes) for (const callbacks of node.listeners.values()) assert.equal(callbacks.size, 0, `${node.tagName} retains a detached handler`);
@@ -344,7 +348,7 @@ test('repeated upgrade menus release detached listeners on hide, replacement and
 
 test('cards carry a tier band, a real icon, a hotkey chip and aria-keyshortcuts; the first card is armed and focused', () => {
   const { documentRef, elements } = fakeCockpitDocument();
-  const ui = createCockpitUi({ documentRef });
+  const ui = createUpgradePanel({ documentRef });
   ui.showUpgrade(upgradeSnapshot(['ledger-voltage', 'proof-of-network']));
   const choices = elements.get('hmhUpgradeChoices');
   const options = choices.children;
@@ -369,13 +373,17 @@ test('cards carry a tier band, a real icon, a hotkey chip and aria-keyshortcuts;
   assert.deepEqual(tiers.map((node) => node.textContent), [UPGRADE_TIER_LABELS.weapon, UPGRADE_TIER_LABELS.capstone]);
   // The button text order the smoke reads must still start with the branch label and title.
   assert.match(buttons[0].querySelector('.hmh-upgrade-choice__branch').textContent, /^lightning ledger · rank 1\/3$/i);
+  // The words come from the lazy progression-content chunk, never the choice.
+  assert.equal(buttons[0].querySelector('strong').textContent, RUN_UPGRADE_CONTENT['ledger-voltage'].title);
+  assert.equal(buttons[0].querySelector('b').textContent, RUN_UPGRADE_CONTENT['ledger-voltage'].mechanicalLabel);
+  assert.equal(choices.querySelectorAll('p')[1].textContent, RUN_UPGRADE_CONTENT['proof-of-network'].description);
   ui.destroy();
 });
 
 test('Digit1 / Digit2 select a card, arrows move the armed ring, Enter confirms, and a second confirm is ignored', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const selected = [];
-  const ui = createCockpitUi({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
+  const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
   ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
   const options = elements.get('hmhUpgradeChoices').children;
   const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('button');
@@ -430,7 +438,7 @@ test('gamepad selection polls only while the panel is open, moves on D-pad and s
   let pad = null;
   const { documentRef, elements, runFrame, pendingFrames } = fakeCockpitDocument({ gamepads: () => [pad] });
   const selected = [];
-  const ui = createCockpitUi({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
+  const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
   assert.equal(pendingFrames(), 0, 'no poll before the panel opens');
   ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
   assert.equal(pendingFrames(), 1, 'showUpgrade starts exactly one rAF poll');
@@ -491,7 +499,7 @@ test('re-showing the panel from inside the selection callback leaves exactly one
   const { documentRef, runFrame, pendingFrames } = fakeCockpitDocument({ gamepads: () => [pad] });
   let ui = null;
   const selected = [];
-  ui = createCockpitUi({
+  ui = createUpgradePanel({
     documentRef,
     onSelectUpgrade: (id) => {
       selected.push(id);
@@ -592,17 +600,19 @@ test('main.mjs: applyPauseLevel clamps and syncs sfxVolume, the pinned boolean p
   assert.doesNotMatch(main, /sfxVolume: [0-9.]+/, 'child default settings gain no sfxVolume key; the parent projection owns the default');
 });
 
-test('cockpit source: no innerHTML, spans-only chips, rAF poll owned by show/hide/destroy, onSettingLevel wired', () => {
+test('cockpit and panel source: no innerHTML, spans-only chips, rAF poll owned by show/hide/destroy, onSettingLevel wired', () => {
   assert.doesNotMatch(cockpit, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
-  assert.match(cockpit, /requestAnimationFrame/);
-  assert.match(cockpit, /cancelAnimationFrame/);
+  assert.doesNotMatch(upgradePanel, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
+  assert.match(upgradePanel, /requestAnimationFrame/);
+  assert.match(upgradePanel, /cancelAnimationFrame/);
   assert.match(cockpit, /onSettingLevel\(/);
-  assert.match(cockpit, /aria-keyshortcuts/);
-  assert.match(cockpit, /hmh-upgrade-option--armed/);
-  assert.match(cockpit, /option\.append\(button, detail\)/);
-  assert.match(cockpit, /detail\.append\(summary, description\)/);
-  assert.match(cockpit, /resolveUpgradeCardPresentation|resolveUpgradeTier/);
+  assert.match(upgradePanel, /aria-keyshortcuts/);
+  assert.match(upgradePanel, /hmh-upgrade-option--armed/);
+  assert.match(upgradePanel, /option\.append\(button, detail\)/);
+  assert.match(upgradePanel, /detail\.append\(summary, description\)/);
+  assert.match(upgradePanel, /resolveUpgradeCardPresentation|resolveUpgradeTier/);
   assert.doesNotMatch(cockpit, /Math\.random/);
+  assert.doesNotMatch(upgradePanel, /Math\.random/);
 });
 
 test('a numeric sfxVolume round-trips the existing channel without a schema change', () => {

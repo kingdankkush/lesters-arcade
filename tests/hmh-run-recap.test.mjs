@@ -24,7 +24,7 @@ import {
   formatRunClock,
   selectGameOverRecapFields,
 } from '../apps/portal/src/hmh-run-recap.mjs';
-import { RUN_UPGRADE_CATALOG } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 import { LIQUIDATOR_ATTACK_DEFINITIONS } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 import { WORLD_DESIGN_SECRETS } from '../apps/hmh-reboot/src/world-design-secrets.mjs';
@@ -108,7 +108,7 @@ test('recap label maps cover every catalog id the child can emit', () => {
   for (const secret of WORLD_DESIGN_SECRETS) assert.equal(SECRET_LABELS[secret.id], secret.name);
   // The portal copies upgrade titles instead of importing the child module
   // (bundle cap); this pin is what keeps the copy honest.
-  assert.deepEqual(UPGRADE_LABELS, Object.fromEntries(C.upgrades.map((upgradeId) => [upgradeId, RUN_UPGRADE_CATALOG[upgradeId].title])));
+  assert.deepEqual(UPGRADE_LABELS, Object.fromEntries(C.upgrades.map((upgradeId) => [upgradeId, RUN_UPGRADE_CONTENT[upgradeId].title])));
   assert.equal(formatRunClock(61 * 3600 + 5 * 60), '61:05');
   assert.equal(formatRunClock(-4), '0:00');
 });
