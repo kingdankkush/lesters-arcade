@@ -64,9 +64,10 @@ They are stored with the rest of the parent player settings under
 `stacked-player-settings-v1`, and the bridge accepts them as optional
 presentation keys.
 
-The old child key `stacked-visual-scenes-v1` is only read once, by
-`readStackedSettings`, to migrate it. It is never written or deleted, so a
-rollback keeps working.
+The old child key `stacked-visual-scenes-v1` is read by `readStackedSettings`
+only while the parent settings have no saved Effects preset, which means on each
+launch until the first save in the new version. It is never written or deleted,
+so a rollback keeps working.
 
 ## Verification
 

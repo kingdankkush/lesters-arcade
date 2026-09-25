@@ -5,7 +5,8 @@ export const STACKED_VISUALIZERS = Object.freeze(['journey', 'living', 'aurora',
 // beside the preset so a 1.8.1 rollback still reads a consistent object.
 export const STACKED_EFFECTS_PRESETS = Object.freeze(['off', 'calm', 'standard', 'full']);
 export const STACKED_SCENE_MODES = Object.freeze(['auto', 'off']);
-// Written by the 1.8.1 child; read here once for migration, never written or deleted.
+// Written by the 1.8.1 child. Read only while the parent key has no saved preset
+// (so until the first save in this version); never written or deleted.
 export const STACKED_LEGACY_SCENES_KEY = 'stacked-visual-scenes-v1';
 const LEGACY_SCENES = Object.freeze(['auto', 'tunnel', 'particles', 'horizon', 'off']);
 const EFFECTS_PRESET_FIELDS = Object.freeze({
@@ -51,7 +52,6 @@ export function readStackedSettings(storage, reducedMotion = false, { prefersRed
   // The arcade or OS reduced-motion setting seeds the value until the first STACKED save.
   const value = defaultStackedSettings(Boolean(reducedMotion || prefersReducedMotion));
   let saved = null;
-  const legacy = {};
   try {
     saved = JSON.parse(storage?.getItem(STACKED_PLAYER_SETTINGS_KEY) ?? 'null');
     // Only projection preferences are recovered until handling remapping has its own acceptance.
@@ -60,17 +60,21 @@ export function readStackedSettings(storage, reducedMotion = false, { prefersRed
     const volume = saved?.audio?.sfxVolume;
     if (typeof volume === 'number' && Number.isFinite(volume) && volume >= 0 && volume <= 1) value.audio.sfxVolume = volume;
   } catch { saved = null; /* unavailable or malformed device settings use safe defaults */ }
-  // Separate try: a malformed legacy key never drops the parent values above.
-  try {
-    const old = JSON.parse(storage?.getItem(STACKED_LEGACY_SCENES_KEY) ?? 'null');
-    if (LEGACY_SCENES.includes(old?.scene)) legacy.scene = old.scene;
-    if (typeof old?.reactiveBoard === 'boolean') legacy.reactiveBoard = old.reactiveBoard;
-  } catch { /* the legacy key is optional */ }
-  const savedPreset = saved?.video?.effectsPreset;
-  const preset = STACKED_EFFECTS_PRESETS.includes(savedPreset) ? savedPreset : stackedEffectsPresetFromLegacy({
-    effectsIntensity: saved?.video?.effectsIntensity, reducedEffects: saved?.video?.reducedEffects, audioReactive: saved?.video?.audioReactive,
-    scene: legacy.scene, reactiveBoard: legacy.reactiveBoard,
-  });
+  let preset = saved?.video?.effectsPreset;
+  if (!STACKED_EFFECTS_PRESETS.includes(preset)) {
+    // No saved preset yet: classify the 1.8.1 fields and the legacy child key. Separate
+    // try: a malformed legacy key never drops the parent values above.
+    const legacy = {};
+    try {
+      const old = JSON.parse(storage?.getItem(STACKED_LEGACY_SCENES_KEY) ?? 'null');
+      if (LEGACY_SCENES.includes(old?.scene)) legacy.scene = old.scene;
+      if (typeof old?.reactiveBoard === 'boolean') legacy.reactiveBoard = old.reactiveBoard;
+    } catch { /* the legacy key is optional */ }
+    preset = stackedEffectsPresetFromLegacy({
+      effectsIntensity: saved?.video?.effectsIntensity, reducedEffects: saved?.video?.reducedEffects, audioReactive: saved?.video?.audioReactive,
+      scene: legacy.scene, reactiveBoard: legacy.reactiveBoard,
+    });
+  }
   Object.assign(value.video, expandStackedEffectsPreset(preset));
   // One volume: zero means off, and an old disabled toggle reads as zero.
   if (saved?.audio?.sfxEnabled === false) value.audio.sfxVolume = 0;

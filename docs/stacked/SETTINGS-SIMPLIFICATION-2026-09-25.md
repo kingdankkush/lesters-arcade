@@ -84,11 +84,13 @@ knows.
    `ghostPiece`, `gridLines`, `musicEnabled`, `sfxEnabled`, `reduceMotion`,
    `reduceFlash`, `colorblindPieces` and `touchLeftHanded`, plus the
    `visualizer` and a finite `sfxVolume` between 0 and 1.
-3. Read the legacy child key in a separate `try`, so a malformed legacy value
-   never drops the parent values. Only a known scene name and a boolean
-   `reactiveBoard` are used.
-4. A saved `effectsPreset` wins. Without one, `stackedEffectsPresetFromLegacy`
-   classifies the old values:
+3. A saved `effectsPreset` wins, and then the legacy child key is not read at
+   all. So the legacy key is read on every launch until the first save in this
+   version, and never after it.
+4. Without a saved preset, read the legacy child key in a separate `try`, so a
+   malformed legacy value never drops the parent values. Only a known scene
+   name and a boolean `reactiveBoard` are used. `stackedEffectsPresetFromLegacy`
+   then classifies the old values:
    - intensity 0 → `off`
    - Minimal effects on, React to music off, intensity below 0.55, scene `off`,
      or reactive board off → `calm`

@@ -114,6 +114,20 @@ test('the legacy child scene key migrates into the parent settings read-only', (
   assert.deepEqual(readStackedSettings(undefined, false, noOs), defaultStackedSettings());
 });
 
+test('the legacy child key is consulted only until a preset is saved', () => {
+  const reading = initial => { const storage = memory(initial), reads = []; const getItem = storage.getItem; storage.getItem = key => { reads.push(key); return getItem(key); }; return { storage, reads }; };
+  const legacy = JSON.stringify({ scene: 'off', reactiveBoard: false });
+  const before = reading({ [LEGACY_KEY]: legacy, [PARENT_KEY]: JSON.stringify({ video: { effectsIntensity: 1 } }) });
+  assert.equal(readStackedSettings(before.storage, false, noOs).video.effectsPreset, 'calm');
+  assert.deepEqual(before.reads, [PARENT_KEY, LEGACY_KEY], 'a 1.8.1 save without a preset reads the legacy key');
+  const after = reading({ [LEGACY_KEY]: legacy, [PARENT_KEY]: JSON.stringify({ video: { effectsPreset: 'full' } }) });
+  assert.equal(readStackedSettings(after.storage, false, noOs).video.effectsPreset, 'full');
+  assert.deepEqual(after.reads, [PARENT_KEY], 'once a preset is saved the legacy key is never read again');
+  const stale = reading({ [LEGACY_KEY]: legacy, [PARENT_KEY]: JSON.stringify({ video: { effectsPreset: 'lively' } }) });
+  assert.equal(readStackedSettings(stale.storage, false, noOs).video.effectsPreset, 'calm');
+  assert.deepEqual(stale.reads, [PARENT_KEY, LEGACY_KEY], 'an unknown saved preset falls back to the migration path');
+});
+
 test('1.8.1 saves classify from their derived fields and keep every other preference', () => {
   const saved181 = { ...defaultStackedSettings(), video: { qualityTier: 'auto', reducedEffects: true, audioReactive: true, ghostPiece: false, gridLines: true, visualizer: 'aurora', effectsIntensity: 0.7 } };
   const read = readStackedSettings(memory({ [PARENT_KEY]: JSON.stringify(saved181) }), false, noOs);
