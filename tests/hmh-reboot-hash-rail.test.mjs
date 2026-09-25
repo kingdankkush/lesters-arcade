@@ -4,6 +4,7 @@ import test from 'node:test';
 import { COLLECTIBLE_EFFECTS } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import {
   HMH_WEAPON_DEFINITIONS,
+  HMH_WEAPON_ORDER,
   RAIL_FAR_DAMAGE_SCALE,
   applyWeaponProgression,
   createWeaponLoadout,
@@ -71,7 +72,9 @@ test('W8 Hash Rail pickup, audio, tracking, HUD, and VFX are wired as one slice'
   const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   const atlas = await readFile(new URL('../apps/hmh-reboot/src/authored-prop-layout.mjs', import.meta.url), 'utf8');
   const authoredManifest = JSON.parse(await readFile(new URL('../apps/hmh-reboot/assets/source/blender/hmh-authored-props.json', import.meta.url), 'utf8'));
-  assert.match(main, /WEAPON_ORDER[^\n]*'hash-rail'/);
+  // S0.2: the weapon order moved into the simulation (weapon-system.mjs).
+  assert.ok(HMH_WEAPON_ORDER.includes('hash-rail'));
+  assert.match(main, /HMH_WEAPON_ORDER as WEAPON_ORDER/);
   // Cycle 073 (V-1): the weapon colour table moved into weapon-vfx.mjs with
   // the rest of the per-weapon VFX identity; main aliases it as WEAPON_COLORS.
   const weaponVfx = await readFile(new URL('../apps/hmh-reboot/src/weapon-vfx.mjs', import.meta.url), 'utf8');
