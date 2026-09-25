@@ -44,8 +44,8 @@ test('every rock asset is on the world-prop roster', () => {
   }
 });
 
-// The 2026-09-25 asset cleanup removed the never-requested world-prop item PNGs. Only the power-up and
-// weapon icons ship, and tests/hmh-reboot-upgrade-cards-and-settings.test.mjs checks those on disk.
+// The 2026-09-25 asset cleanup removed the never-requested world-prop item PNGs. items/ keeps only the 12
+// power-up and 8 weapon icons; tests/hmh-reboot-upgrade-cards-and-settings.test.mjs pins that inventory on disk.
 test('every rock asset id forms a prop URL but no upgrade card requests its icon (world props ship no item PNG)', () => {
   for (const id of Object.keys(ROCKS)) {
     assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} is not a valid prop id`);
