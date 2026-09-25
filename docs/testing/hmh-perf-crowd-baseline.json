@@ -1,0 +1,4883 @@
+{
+  "schema": "hmh-perf-crowd-bench-v1",
+  "generatedAt": "2026-09-25T08:10:48.914Z",
+  "deviceAcceptance": false,
+  "note": "Chrome CPU-throttle proxy for an iPhone XS Max; GPU work is not throttled. Not physical-device evidence.",
+  "origin": "http://127.0.0.1:50662",
+  "seed": 1213024260,
+  "gore": true,
+  "weapon": "coin-blaster",
+  "windowSeconds": 20,
+  "warmupTicks": 240,
+  "affinity": "0xFFFF",
+  "bundleBytes": 360771,
+  "sourceMapsPresent": true,
+  "scenario": "evidenceSafe=1&endurancePressurePilot=1 (128 endurance-band enemies at tick 0, invulnerable auto-firing hero, no respawns), parent-hosted Free session",
+  "census": {
+    "ticks": 1800,
+    "ticksPerFrame": 4,
+    "mobileDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+    "desktopDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+    "desktopRepeatDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+    "reproducible": true,
+    "profileIndependent": true,
+    "timeline": [
+      {
+        "tick": 4,
+        "enemies": 128,
+        "projectiles": 1,
+        "corpses": 0,
+        "goreMarks": 0,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 12,
+        "combatEvents": 2,
+        "weaponVfx": 3
+      },
+      {
+        "tick": 64,
+        "enemies": 128,
+        "projectiles": 0,
+        "corpses": 0,
+        "goreMarks": 19,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 21,
+        "combatEvents": 6,
+        "weaponVfx": 4
+      },
+      {
+        "tick": 124,
+        "enemies": 128,
+        "projectiles": 0,
+        "corpses": 0,
+        "goreMarks": 30,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 29,
+        "combatEvents": 9,
+        "weaponVfx": 4
+      },
+      {
+        "tick": 184,
+        "enemies": 128,
+        "projectiles": 0,
+        "corpses": 0,
+        "goreMarks": 29,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 3,
+        "weaponVfx": 0
+      },
+      {
+        "tick": 244,
+        "enemies": 128,
+        "projectiles": 0,
+        "corpses": 0,
+        "goreMarks": 20,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 6,
+        "weaponVfx": 1
+      },
+      {
+        "tick": 304,
+        "enemies": 128,
+        "projectiles": 0,
+        "corpses": 0,
+        "goreMarks": 18,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 7,
+        "weaponVfx": 1
+      },
+      {
+        "tick": 364,
+        "enemies": 128,
+        "projectiles": 0,
+        "corpses": 0,
+        "goreMarks": 19,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 10,
+        "weaponVfx": 1
+      },
+      {
+        "tick": 424,
+        "enemies": 126,
+        "projectiles": 0,
+        "corpses": 2,
+        "goreMarks": 26,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 6,
+        "weaponVfx": 0
+      },
+      {
+        "tick": 484,
+        "enemies": 126,
+        "projectiles": 0,
+        "corpses": 2,
+        "goreMarks": 17,
+        "goreFragments": 0,
+        "silverActive": 0,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 11,
+        "weaponVfx": 4
+      },
+      {
+        "tick": 548,
+        "enemies": 124,
+        "projectiles": 0,
+        "corpses": 2,
+        "goreMarks": 16,
+        "goreFragments": 3,
+        "silverActive": 1,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 12,
+        "weaponVfx": 2
+      },
+      {
+        "tick": 608,
+        "enemies": 123,
+        "projectiles": 0,
+        "corpses": 3,
+        "goreMarks": 21,
+        "goreFragments": 0,
+        "silverActive": 2,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 8,
+        "weaponVfx": 2
+      },
+      {
+        "tick": 672,
+        "enemies": 121,
+        "projectiles": 0,
+        "corpses": 3,
+        "goreMarks": 11,
+        "goreFragments": 3,
+        "silverActive": 2,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 13,
+        "weaponVfx": 6
+      },
+      {
+        "tick": 732,
+        "enemies": 120,
+        "projectiles": 1,
+        "corpses": 3,
+        "goreMarks": 11,
+        "goreFragments": 3,
+        "silverActive": 3,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 12,
+        "weaponVfx": 7
+      },
+      {
+        "tick": 792,
+        "enemies": 119,
+        "projectiles": 1,
+        "corpses": 2,
+        "goreMarks": 11,
+        "goreFragments": 3,
+        "silverActive": 3,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 15,
+        "weaponVfx": 8
+      },
+      {
+        "tick": 856,
+        "enemies": 115,
+        "projectiles": 0,
+        "corpses": 5,
+        "goreMarks": 10,
+        "goreFragments": 4,
+        "silverActive": 5,
+        "killFxShards": 9,
+        "animatedEnemies": 32,
+        "combatEvents": 19,
+        "weaponVfx": 10
+      },
+      {
+        "tick": 916,
+        "enemies": 113,
+        "projectiles": 0,
+        "corpses": 6,
+        "goreMarks": 12,
+        "goreFragments": 4,
+        "silverActive": 6,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 12,
+        "weaponVfx": 6
+      },
+      {
+        "tick": 980,
+        "enemies": 110,
+        "projectiles": 0,
+        "corpses": 5,
+        "goreMarks": 13,
+        "goreFragments": 4,
+        "silverActive": 7,
+        "killFxShards": 3,
+        "animatedEnemies": 32,
+        "combatEvents": 17,
+        "weaponVfx": 8
+      },
+      {
+        "tick": 1040,
+        "enemies": 110,
+        "projectiles": 0,
+        "corpses": 3,
+        "goreMarks": 18,
+        "goreFragments": 0,
+        "silverActive": 7,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 12,
+        "weaponVfx": 5
+      },
+      {
+        "tick": 1100,
+        "enemies": 108,
+        "projectiles": 0,
+        "corpses": 2,
+        "goreMarks": 17,
+        "goreFragments": 3,
+        "silverActive": 8,
+        "killFxShards": 3,
+        "animatedEnemies": 32,
+        "combatEvents": 16,
+        "weaponVfx": 7
+      },
+      {
+        "tick": 1160,
+        "enemies": 105,
+        "projectiles": 0,
+        "corpses": 5,
+        "goreMarks": 12,
+        "goreFragments": 4,
+        "silverActive": 11,
+        "killFxShards": 6,
+        "animatedEnemies": 32,
+        "combatEvents": 19,
+        "weaponVfx": 10
+      },
+      {
+        "tick": 1224,
+        "enemies": 102,
+        "projectiles": 0,
+        "corpses": 6,
+        "goreMarks": 16,
+        "goreFragments": 4,
+        "silverActive": 14,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 6,
+        "weaponVfx": 1
+      },
+      {
+        "tick": 1284,
+        "enemies": 101,
+        "projectiles": 0,
+        "corpses": 4,
+        "goreMarks": 22,
+        "goreFragments": 3,
+        "silverActive": 14,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 10,
+        "weaponVfx": 1
+      },
+      {
+        "tick": 1344,
+        "enemies": 100,
+        "projectiles": 0,
+        "corpses": 2,
+        "goreMarks": 24,
+        "goreFragments": 0,
+        "silverActive": 14,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 7,
+        "weaponVfx": 0
+      },
+      {
+        "tick": 1408,
+        "enemies": 98,
+        "projectiles": 0,
+        "corpses": 3,
+        "goreMarks": 15,
+        "goreFragments": 3,
+        "silverActive": 15,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 9,
+        "weaponVfx": 3
+      },
+      {
+        "tick": 1468,
+        "enemies": 96,
+        "projectiles": 0,
+        "corpses": 4,
+        "goreMarks": 13,
+        "goreFragments": 4,
+        "silverActive": 15,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 13,
+        "weaponVfx": 2
+      },
+      {
+        "tick": 1528,
+        "enemies": 93,
+        "projectiles": 0,
+        "corpses": 5,
+        "goreMarks": 14,
+        "goreFragments": 4,
+        "silverActive": 17,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 10,
+        "weaponVfx": 2
+      },
+      {
+        "tick": 1588,
+        "enemies": 89,
+        "projectiles": 0,
+        "corpses": 7,
+        "goreMarks": 14,
+        "goreFragments": 4,
+        "silverActive": 21,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 7,
+        "weaponVfx": 0
+      },
+      {
+        "tick": 1652,
+        "enemies": 83,
+        "projectiles": 1,
+        "corpses": 10,
+        "goreMarks": 10,
+        "goreFragments": 4,
+        "silverActive": 27,
+        "killFxShards": 3,
+        "animatedEnemies": 32,
+        "combatEvents": 17,
+        "weaponVfx": 8
+      },
+      {
+        "tick": 1712,
+        "enemies": 82,
+        "projectiles": 1,
+        "corpses": 6,
+        "goreMarks": 20,
+        "goreFragments": 0,
+        "silverActive": 28,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 14,
+        "weaponVfx": 10
+      },
+      {
+        "tick": 1772,
+        "enemies": 81,
+        "projectiles": 0,
+        "corpses": 2,
+        "goreMarks": 23,
+        "goreFragments": 0,
+        "silverActive": 28,
+        "killFxShards": 0,
+        "animatedEnemies": 32,
+        "combatEvents": 11,
+        "weaponVfx": 6
+      }
+    ]
+  },
+  "textures": {
+    "mobile": {
+      "textures": [
+        {
+          "id": 20,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 21,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 23,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 29,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 28,
+          "width": 2048,
+          "height": 1520,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 12451840,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/validator-cultist/validator-cultist-native-roster.webp"
+          ]
+        },
+        {
+          "id": 27,
+          "width": 2048,
+          "height": 1328,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 10878976,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/whale-enforcer/whale-enforcer-native-roster.webp"
+          ]
+        },
+        {
+          "id": 24,
+          "width": 2048,
+          "height": 1216,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 9961472,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/liquidator-agent/liquidator-agent-native-roster.webp"
+          ]
+        },
+        {
+          "id": 25,
+          "width": 2048,
+          "height": 1152,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 9437184,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/gas-bomber/gas-bomber-native-roster.webp"
+          ]
+        },
+        {
+          "id": 26,
+          "width": 2048,
+          "height": 944,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 7733248,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/forkrunner/forkrunner-native-roster.webp"
+          ]
+        },
+        {
+          "id": 22,
+          "width": 1024,
+          "height": 1024,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 4194304,
+          "candidates": [
+            "/assets/generated/hmh-world-design/world-design-mobile.webp"
+          ]
+        },
+        {
+          "id": 17,
+          "width": 512,
+          "height": 512,
+          "source": "ImageBitmap",
+          "mipLevels": 10,
+          "bytes": 1398100,
+          "candidates": [
+            "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+            "/assets/generated/hmh-terrain-tiles/red-rock.png",
+            "/assets/generated/hmh-terrain-tiles/wet-bank.png",
+            "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+            "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+            "/assets/generated/hmh-terrain-tiles/industrial-slab.png",
+            "/assets/generated/hmh-terrain-tiles/road.png",
+            "/assets/generated/hmh-terrain-tiles/shallow-water.png",
+            "/assets/generated/hmh-terrain-tiles/water.png",
+            "/assets/generated/hmh-terrain-tiles/bridge-deck.png",
+            "/assets/generated/hmh-terrain-tiles/ledge-top.png"
+          ]
+        },
+        {
+          "id": 19,
+          "width": 512,
+          "height": 512,
+          "source": "ImageBitmap",
+          "mipLevels": 10,
+          "bytes": 1398100,
+          "candidates": [
+            "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+            "/assets/generated/hmh-terrain-tiles/red-rock.png",
+            "/assets/generated/hmh-terrain-tiles/wet-bank.png",
+            "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+            "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+            "/assets/generated/hmh-terrain-tiles/industrial-slab.png",
+            "/assets/generated/hmh-terrain-tiles/road.png",
+            "/assets/generated/hmh-terrain-tiles/shallow-water.png",
+            "/assets/generated/hmh-terrain-tiles/water.png",
+            "/assets/generated/hmh-terrain-tiles/bridge-deck.png",
+            "/assets/generated/hmh-terrain-tiles/ledge-top.png"
+          ]
+        },
+        {
+          "id": 18,
+          "width": 512,
+          "height": 128,
+          "source": "ImageBitmap",
+          "mipLevels": 10,
+          "bytes": 349532,
+          "candidates": [
+            "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/red-rock-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/industrial-slab-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/shallow-water-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/water-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/bridge-deck-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/ledge-top-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/road-shoulder.png",
+            "/assets/generated/hmh-terrain-tiles/shallows-band.png",
+            "/assets/generated/hmh-terrain-tiles/rock-face.png",
+            "/assets/generated/hmh-terrain-tiles/shore-band.png",
+            "/assets/generated/hmh-terrain-tiles/scree-skirt.png"
+          ]
+        },
+        {
+          "id": 2,
+          "width": 244,
+          "height": 122,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 119072,
+          "candidates": []
+        },
+        {
+          "id": 5,
+          "width": 232,
+          "height": 116,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 107648,
+          "candidates": []
+        },
+        {
+          "id": 13,
+          "width": 256,
+          "height": 96,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 98304,
+          "candidates": []
+        },
+        {
+          "id": 7,
+          "width": 118,
+          "height": 118,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 55696,
+          "candidates": []
+        },
+        {
+          "id": 9,
+          "width": 118,
+          "height": 118,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 55696,
+          "candidates": []
+        },
+        {
+          "id": 15,
+          "width": 24,
+          "height": 24,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 2304,
+          "candidates": []
+        },
+        {
+          "id": 11,
+          "width": 12,
+          "height": 28,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 1344,
+          "candidates": []
+        },
+        {
+          "id": 1,
+          "width": 1,
+          "height": 1,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 4,
+          "candidates": []
+        },
+        {
+          "id": 4,
+          "width": 1,
+          "height": 1,
+          "source": "Uint8Array",
+          "mipLevels": 1,
+          "bytes": 4,
+          "candidates": []
+        }
+      ],
+      "textureBytes": 125351692,
+      "renderbuffers": [
+        {
+          "width": 244,
+          "height": 122,
+          "samples": 4,
+          "bytes": 476288
+        },
+        {
+          "width": 232,
+          "height": 116,
+          "samples": 4,
+          "bytes": 430592
+        },
+        {
+          "width": 118,
+          "height": 118,
+          "samples": 4,
+          "bytes": 222784
+        },
+        {
+          "width": 118,
+          "height": 118,
+          "samples": 4,
+          "bytes": 222784
+        },
+        {
+          "width": 12,
+          "height": 28,
+          "samples": 4,
+          "bytes": 5376
+        },
+        {
+          "width": 256,
+          "height": 96,
+          "samples": 4,
+          "bytes": 393216
+        },
+        {
+          "width": 24,
+          "height": 24,
+          "samples": 4,
+          "bytes": 9216
+        }
+      ],
+      "renderbufferBytes": 1760256,
+      "canvas": {
+        "width": 414,
+        "height": 896
+      },
+      "textureCount": 22
+    },
+    "desktop": {
+      "textures": [
+        {
+          "id": 20,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-world-design/world-design-desktop.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 22,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-world-design/world-design-desktop.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 23,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-world-design/world-design-desktop.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 24,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-world-design/world-design-desktop.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 25,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-world-design/world-design-desktop.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 31,
+          "width": 2048,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 16777216,
+          "candidates": [
+            "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+            "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+            "/assets/generated/hmh-world-design/world-design-desktop.webp",
+            "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+            "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+            "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp"
+          ]
+        },
+        {
+          "id": 21,
+          "width": 1792,
+          "height": 2048,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 14680064,
+          "candidates": [
+            "/assets/generated/hmh-barriers/barriers-desktop.webp"
+          ]
+        },
+        {
+          "id": 28,
+          "width": 2048,
+          "height": 1520,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 12451840,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/validator-cultist/validator-cultist-native-roster.webp"
+          ]
+        },
+        {
+          "id": 30,
+          "width": 2048,
+          "height": 1328,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 10878976,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/whale-enforcer/whale-enforcer-native-roster.webp"
+          ]
+        },
+        {
+          "id": 26,
+          "width": 2048,
+          "height": 1216,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 9961472,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/liquidator-agent/liquidator-agent-native-roster.webp"
+          ]
+        },
+        {
+          "id": 27,
+          "width": 2048,
+          "height": 1152,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 9437184,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/gas-bomber/gas-bomber-native-roster.webp"
+          ]
+        },
+        {
+          "id": 29,
+          "width": 2048,
+          "height": 944,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 7733248,
+          "candidates": [
+            "/assets/generated/hmh-native-roster/forkrunner/forkrunner-native-roster.webp"
+          ]
+        },
+        {
+          "id": 17,
+          "width": 512,
+          "height": 512,
+          "source": "ImageBitmap",
+          "mipLevels": 10,
+          "bytes": 1398100,
+          "candidates": [
+            "/assets/generated/hmh-terrain-tiles/red-rock.png",
+            "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+            "/assets/generated/hmh-terrain-tiles/wet-bank.png",
+            "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+            "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+            "/assets/generated/hmh-terrain-tiles/industrial-slab.png",
+            "/assets/generated/hmh-terrain-tiles/road.png",
+            "/assets/generated/hmh-terrain-tiles/water.png",
+            "/assets/generated/hmh-terrain-tiles/shallow-water.png",
+            "/assets/generated/hmh-terrain-tiles/bridge-deck.png",
+            "/assets/generated/hmh-terrain-tiles/ledge-top.png"
+          ]
+        },
+        {
+          "id": 19,
+          "width": 512,
+          "height": 512,
+          "source": "ImageBitmap",
+          "mipLevels": 10,
+          "bytes": 1398100,
+          "candidates": [
+            "/assets/generated/hmh-terrain-tiles/red-rock.png",
+            "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+            "/assets/generated/hmh-terrain-tiles/wet-bank.png",
+            "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+            "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+            "/assets/generated/hmh-terrain-tiles/industrial-slab.png",
+            "/assets/generated/hmh-terrain-tiles/road.png",
+            "/assets/generated/hmh-terrain-tiles/water.png",
+            "/assets/generated/hmh-terrain-tiles/shallow-water.png",
+            "/assets/generated/hmh-terrain-tiles/bridge-deck.png",
+            "/assets/generated/hmh-terrain-tiles/ledge-top.png"
+          ]
+        },
+        {
+          "id": 32,
+          "width": 576,
+          "height": 192,
+          "source": "ImageBitmap",
+          "mipLevels": 1,
+          "bytes": 442368,
+          "candidates": [
+            "/assets/generated/hmh-silver-coin/silver-coin.png"
+          ]
+        },
+        {
+          "id": 18,
+          "width": 512,
+          "height": 128,
+          "source": "ImageBitmap",
+          "mipLevels": 10,
+          "bytes": 349532,
+          "candidates": [
+            "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/red-rock-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/industrial-slab-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/water-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/shallow-water-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/bridge-deck-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/ledge-top-fringe.png",
+            "/assets/generated/hmh-terrain-tiles/road-shoulder.png",
+            "/assets/generated/hmh-terrain-tiles/shallows-band.png",
+            "/assets/generated/hmh-terrain-tiles/rock-face.png",
+            "/assets/generated/hmh-terrain-tiles/shore-band.png",
+            "/assets/generated/hmh-terrain-tiles/scree-skirt.png"
+          ]
+        },
+        {
+          "id": 2,
+          "width": 244,
+          "height": 122,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 119072,
+          "candidates": []
+        },
+        {
+          "id": 5,
+          "width": 232,
+          "height": 116,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 107648,
+          "candidates": []
+        },
+        {
+          "id": 13,
+          "width": 256,
+          "height": 96,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 98304,
+          "candidates": []
+        },
+        {
+          "id": 7,
+          "width": 118,
+          "height": 118,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 55696,
+          "candidates": []
+        },
+        {
+          "id": 9,
+          "width": 118,
+          "height": 118,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 55696,
+          "candidates": []
+        },
+        {
+          "id": 15,
+          "width": 24,
+          "height": 24,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 2304,
+          "candidates": []
+        },
+        {
+          "id": 11,
+          "width": 12,
+          "height": 28,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 1344,
+          "candidates": []
+        },
+        {
+          "id": 1,
+          "width": 1,
+          "height": 1,
+          "source": "null",
+          "mipLevels": 1,
+          "bytes": 4,
+          "candidates": []
+        },
+        {
+          "id": 4,
+          "width": 1,
+          "height": 1,
+          "source": "Uint8Array",
+          "mipLevels": 1,
+          "bytes": 4,
+          "candidates": []
+        }
+      ],
+      "textureBytes": 169834252,
+      "renderbuffers": [
+        {
+          "width": 244,
+          "height": 122,
+          "samples": 4,
+          "bytes": 476288
+        },
+        {
+          "width": 232,
+          "height": 116,
+          "samples": 4,
+          "bytes": 430592
+        },
+        {
+          "width": 118,
+          "height": 118,
+          "samples": 4,
+          "bytes": 222784
+        },
+        {
+          "width": 118,
+          "height": 118,
+          "samples": 4,
+          "bytes": 222784
+        },
+        {
+          "width": 12,
+          "height": 28,
+          "samples": 4,
+          "bytes": 5376
+        },
+        {
+          "width": 256,
+          "height": 96,
+          "samples": 4,
+          "bytes": 393216
+        },
+        {
+          "width": 24,
+          "height": 24,
+          "samples": 4,
+          "bytes": 9216
+        }
+      ],
+      "renderbufferBytes": 1760256,
+      "canvas": {
+        "width": 1440,
+        "height": 900
+      },
+      "textureCount": 25
+    },
+    "images": [
+      {
+        "url": "/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.png",
+        "fileBytes": 637667,
+        "width": 2048,
+        "height": 2048,
+        "decodedRgbaBytes": 16777216
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/tripo-props-01.webp",
+        "fileBytes": 177792,
+        "width": 2048,
+        "height": 2048,
+        "decodedRgbaBytes": 16777216
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/tripo-props-00.webp",
+        "fileBytes": 1223114,
+        "width": 2048,
+        "height": 2048,
+        "decodedRgbaBytes": 16777216
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-atlas.webp",
+        "fileBytes": 3919100,
+        "width": 2048,
+        "height": 2048,
+        "decodedRgbaBytes": 16777216
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-atlas.png",
+        "fileBytes": 1622291,
+        "width": 2048,
+        "height": 2048,
+        "decodedRgbaBytes": 16777216
+      },
+      {
+        "url": "/assets/generated/hmh-hero-motion/lit-commando/lit-commando-motion.webp",
+        "fileBytes": 2841738,
+        "width": 2048,
+        "height": 2048,
+        "decodedRgbaBytes": 16777216
+      },
+      {
+        "url": "/assets/generated/hmh-native-roster/validator-cultist/validator-cultist-native-roster.webp",
+        "fileBytes": 2299388,
+        "width": 2048,
+        "height": 1520,
+        "decodedRgbaBytes": 12451840
+      },
+      {
+        "url": "/assets/generated/hmh-native-roster/whale-enforcer/whale-enforcer-native-roster.webp",
+        "fileBytes": 2267200,
+        "width": 2048,
+        "height": 1328,
+        "decodedRgbaBytes": 10878976
+      },
+      {
+        "url": "/assets/generated/hmh-native-roster/liquidator-agent/liquidator-agent-native-roster.webp",
+        "fileBytes": 1705000,
+        "width": 2048,
+        "height": 1216,
+        "decodedRgbaBytes": 9961472
+      },
+      {
+        "url": "/assets/generated/hmh-native-roster/gas-bomber/gas-bomber-native-roster.webp",
+        "fileBytes": 2151274,
+        "width": 2048,
+        "height": 1152,
+        "decodedRgbaBytes": 9437184
+      },
+      {
+        "url": "/assets/generated/hmh-native-roster/forkrunner/forkrunner-native-roster.webp",
+        "fileBytes": 1839298,
+        "width": 2048,
+        "height": 944,
+        "decodedRgbaBytes": 7733248
+      },
+      {
+        "url": "/assets/generated/hmh-world-design/world-design-mobile.webp",
+        "fileBytes": 493308,
+        "width": 1024,
+        "height": 1024,
+        "decodedRgbaBytes": 4194304
+      },
+      {
+        "url": "/assets/generated/hmh-barriers/barriers-mobile.webp",
+        "fileBytes": 241050,
+        "width": 896,
+        "height": 1024,
+        "decodedRgbaBytes": 3670016
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/packed-earth.png",
+        "fileBytes": 303004,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/red-rock.png",
+        "fileBytes": 301412,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/wet-bank.png",
+        "fileBytes": 254589,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/forest-floor.png",
+        "fileBytes": 288659,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/crushed-ore.png",
+        "fileBytes": 402124,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/industrial-slab.png",
+        "fileBytes": 265995,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/road.png",
+        "fileBytes": 240811,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/shallow-water.png",
+        "fileBytes": 224354,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/water.png",
+        "fileBytes": 222278,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/bridge-deck.png",
+        "fileBytes": 312048,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/ledge-top.png",
+        "fileBytes": 384781,
+        "width": 512,
+        "height": 512,
+        "decodedRgbaBytes": 1048576
+      },
+      {
+        "url": "/assets/generated/hmh-silver-coin/silver-coin.png",
+        "fileBytes": 81858,
+        "width": 576,
+        "height": 192,
+        "decodedRgbaBytes": 442368
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/packed-earth-fringe.png",
+        "fileBytes": 107487,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/red-rock-fringe.png",
+        "fileBytes": 107699,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/forest-floor-fringe.png",
+        "fileBytes": 103281,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/wet-bank-fringe.png",
+        "fileBytes": 96914,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/crushed-ore-fringe.png",
+        "fileBytes": 134625,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/industrial-slab-fringe.png",
+        "fileBytes": 94313,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/road-fringe.png",
+        "fileBytes": 93228,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/shallow-water-fringe.png",
+        "fileBytes": 90289,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/water-fringe.png",
+        "fileBytes": 89142,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/bridge-deck-fringe.png",
+        "fileBytes": 114737,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/ledge-top-fringe.png",
+        "fileBytes": 130294,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/road-shoulder.png",
+        "fileBytes": 101527,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/shallows-band.png",
+        "fileBytes": 91260,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/rock-face.png",
+        "fileBytes": 74402,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/shore-band.png",
+        "fileBytes": 87562,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-terrain-tiles/scree-skirt.png",
+        "fileBytes": 132140,
+        "width": 512,
+        "height": 128,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-25.webp",
+        "fileBytes": 19750,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-32.webp",
+        "fileBytes": 14848,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-23.webp",
+        "fileBytes": 23044,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-29.webp",
+        "fileBytes": 34168,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-27.webp",
+        "fileBytes": 28050,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-30.webp",
+        "fileBytes": 17928,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-31.webp",
+        "fileBytes": 8502,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-24.webp",
+        "fileBytes": 16700,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      },
+      {
+        "url": "/assets/generated/hmh-reboot-tripo-props/items/tripo-28.webp",
+        "fileBytes": 40348,
+        "width": 256,
+        "height": 256,
+        "decodedRgbaBytes": 262144
+      }
+    ]
+  },
+  "bootStalls": [],
+  "runs": [
+    {
+      "mode": "timing",
+      "profileId": "mobile",
+      "cpu": 4,
+      "seed": 1213024260,
+      "gore": true,
+      "weapon": "coin-blaster",
+      "bootMs": 18089,
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "abortedRequests": 0,
+      "host": {
+        "cpus": 24,
+        "busyPct": 35.04931917985055,
+        "benchChromePct": 6.951709532237996,
+        "otherBusyPct": 28.097609647612554,
+        "contended": false,
+        "pinning": {
+          "mask": "0xFFFF",
+          "applied": true,
+          "processes": [
+            {
+              "type": "browser",
+              "id": 55600
+            },
+            {
+              "type": "renderer",
+              "id": 46316
+            },
+            {
+              "type": "renderer",
+              "id": 13052
+            },
+            {
+              "type": "renderer",
+              "id": 39632
+            },
+            {
+              "type": "GPU",
+              "id": 2376
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "id": 57024
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "id": 34000
+            }
+          ]
+        }
+      },
+      "processCpuSeconds": {
+        "browser": 1.491477,
+        "renderer": 29.240928,
+        "GPU": 3.504749,
+        "network.mojom.NetworkService": 0.013988999999999974,
+        "storage.mojom.StorageService": 0.00004500000000000337,
+        "audio.mojom.AudioService": 0.44123499999999993
+      },
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "deviceScaleFactor": 3,
+      "renderResolution": null,
+      "adaptiveResolution": "1",
+      "canvas": {
+        "width": 414,
+        "height": 896
+      },
+      "ticks": {
+        "from": 245,
+        "to": 1461,
+        "advanced": 1216
+      },
+      "simSpeed": 0.9746541821194102,
+      "droppedMs": 405.33299999999997,
+      "catchUpSaturationFramesInWindow": 20,
+      "activeMs": 20058.000000000004,
+      "upgradePicks": 6,
+      "silverCoinsOnScreen": {
+        "mean": 6.841509433962264,
+        "max": 15
+      },
+      "frames": {
+        "frames": 599,
+        "meanMs": 33.43956594323873,
+        "p50Ms": 27.900000000001455,
+        "p95Ms": 48.60000000000218,
+        "p99Ms": 96.89999999999782,
+        "worstMs": 139,
+        "fpsMean": 29.904694388002174,
+        "over33Pct": 49.08180300500835,
+        "over50Pct": 3.33889816360601
+      },
+      "longTasks": {
+        "count": 23,
+        "over100": 3,
+        "maxMs": 134
+      },
+      "heap": {
+        "beforeUsed": 83728272,
+        "afterUsed": 80218344
+      },
+      "hotspots": null,
+      "cpuProfile": null,
+      "errors": [],
+      "screenshot": ".tmp/hmh-perf-crowd/timing-mobile-4x.png",
+      "scene": {
+        "samples": 298,
+        "enemies": {
+          "min": 96,
+          "mean": 114.63758389261746,
+          "max": 128
+        },
+        "projectiles": {
+          "min": 0,
+          "mean": 0.06711409395973154,
+          "max": 1
+        },
+        "animatedEnemies": {
+          "min": 32,
+          "mean": 32,
+          "max": 32
+        },
+        "corpses": {
+          "min": 0,
+          "mean": 2.9295302013422817,
+          "max": 7
+        },
+        "goreMarks": {
+          "min": 10,
+          "mean": 16.15771812080537,
+          "max": 30
+        },
+        "goreFragments": {
+          "min": 0,
+          "mean": 1.8557046979865772,
+          "max": 4
+        },
+        "silverActive": {
+          "min": 0,
+          "mean": 5.778523489932886,
+          "max": 15
+        },
+        "silverVisible": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "killFxShards": {
+          "min": 0,
+          "mean": 0.9060402684563759,
+          "max": 9
+        },
+        "combatEvents": {
+          "min": 3,
+          "mean": 12.506711409395972,
+          "max": 23
+        },
+        "weaponVfx": {
+          "min": 0,
+          "mean": 5.134228187919463,
+          "max": 16
+        },
+        "worldParticles": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "contactShadows": {
+          "min": 55,
+          "mean": 91.73489932885906,
+          "max": 106
+        },
+        "atmosphereSprites": {
+          "min": 1,
+          "mean": 1.912751677852349,
+          "max": 3
+        },
+        "pickupMarkers": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "enemyTells": {
+          "min": 8,
+          "mean": 13.25503355704698,
+          "max": 16
+        }
+      },
+      "discardedContendedAttempts": [
+        {
+          "hostBusyPct": 40.2704059073635,
+          "meanMs": 37.03747714808044,
+          "p95Ms": 76.40000000000146
+        },
+        {
+          "hostBusyPct": 40.61781303887517,
+          "meanMs": 37.58261682242991,
+          "p95Ms": 62.299999999995634
+        }
+      ]
+    },
+    {
+      "mode": "profile",
+      "profileId": "mobile",
+      "cpu": 4,
+      "seed": 1213024260,
+      "gore": true,
+      "weapon": "coin-blaster",
+      "bootMs": 25886,
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "abortedRequests": 0,
+      "host": {
+        "cpus": 24,
+        "busyPct": 35.79144206458999,
+        "benchChromePct": 7.165930336397451,
+        "otherBusyPct": 28.625511728192535,
+        "contended": false,
+        "pinning": {
+          "mask": "0xFFFF",
+          "applied": true,
+          "processes": [
+            {
+              "type": "browser",
+              "id": 8208
+            },
+            {
+              "type": "renderer",
+              "id": 48856
+            },
+            {
+              "type": "renderer",
+              "id": 53752
+            },
+            {
+              "type": "renderer",
+              "id": 35948
+            },
+            {
+              "type": "GPU",
+              "id": 46600
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "id": 20444
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "id": 56340
+            }
+          ]
+        }
+      },
+      "processCpuSeconds": {
+        "browser": 1.4504990000000002,
+        "renderer": 29.602712,
+        "GPU": 3.4548389999999998,
+        "network.mojom.NetworkService": 0.016120000000000023,
+        "storage.mojom.StorageService": 0.00003299999999999831,
+        "audio.mojom.AudioService": 0.462162
+      },
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "deviceScaleFactor": 3,
+      "renderResolution": null,
+      "adaptiveResolution": "1",
+      "canvas": {
+        "width": 414,
+        "height": 896
+      },
+      "ticks": {
+        "from": 251,
+        "to": 1430,
+        "advanced": 1179
+      },
+      "simSpeed": 0.9659342279899721,
+      "droppedMs": 664.133,
+      "catchUpSaturationFramesInWindow": 29,
+      "activeMs": 20155.200000000008,
+      "upgradePicks": 6,
+      "silverCoinsOnScreen": {
+        "mean": 6.389937106918239,
+        "max": 15
+      },
+      "frames": {
+        "frames": 550,
+        "meanMs": 35.58472727272729,
+        "p50Ms": 34.70000000000073,
+        "p95Ms": 55.599999999998545,
+        "p99Ms": 97.29999999999927,
+        "worstMs": 118.09999999999854,
+        "fpsMean": 28.101943632610503,
+        "over33Pct": 60,
+        "over50Pct": 6.545454545454546
+      },
+      "longTasks": {
+        "count": 30,
+        "over100": 2,
+        "maxMs": 107
+      },
+      "heap": {
+        "beforeUsed": 47226340,
+        "afterUsed": 65112588
+      },
+      "hotspots": {
+        "totalMs": 20963.677999999953,
+        "idleMs": 180.8710000000001,
+        "busyMs": 20782.806999999953,
+        "top": [
+          {
+            "functionName": "(program)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 4417.348000000004,
+            "selfPct": 21.254818947219274,
+            "totalMs": 4417.348000000004,
+            "totalPct": 21.254818947219274
+          },
+          {
+            "functionName": "n",
+            "originalName": "freezeDeep",
+            "source": "apps/hmh-reboot/src/value-guards.mjs:10",
+            "selfMs": 838.6060000000001,
+            "selfPct": 4.035094970568711,
+            "totalMs": 838.6060000000001,
+            "totalPct": 4.035094970568711
+          },
+          {
+            "functionName": "Ne",
+            "originalName": "computeEnemySeparation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:442",
+            "selfMs": 813.0099999999996,
+            "selfPct": 3.911935476280954,
+            "totalMs": 897.9989999999995,
+            "totalPct": 4.320874461279468
+          },
+          {
+            "functionName": "de",
+            "originalName": "sampleSurface",
+            "source": "apps/hmh-reboot/src/elevation.mjs:108",
+            "selfMs": 752.3269999999991,
+            "selfPct": 3.6199489318262,
+            "totalMs": 1151.5419999999988,
+            "totalPct": 5.540839598808772
+          },
+          {
+            "functionName": "Tn",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:1536",
+            "selfMs": 622.8760000000002,
+            "selfPct": 2.9970734944514548,
+            "totalMs": 3866.9379999999887,
+            "totalPct": 18.606427899753854
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:3260",
+            "selfMs": 477.5849999999995,
+            "selfPct": 2.29798121110397,
+            "totalMs": 6653.475999999982,
+            "totalPct": 32.01432799717573
+          },
+          {
+            "functionName": "nt",
+            "originalName": "stepEnemyPopulation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:541",
+            "selfMs": 455.8289999999995,
+            "selfPct": 2.1932985279611197,
+            "totalMs": 4059.0570000000016,
+            "totalPct": 19.530841045677857
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+            "selfMs": 382.61500000000007,
+            "selfPct": 1.8410169521374131,
+            "totalMs": 1200.4839999999992,
+            "totalPct": 5.776332330854066
+          },
+          {
+            "functionName": "query",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/blocker-bounds.mjs:42",
+            "selfMs": 361.52000000000004,
+            "selfPct": 1.7395147825796626,
+            "totalMs": 361.52000000000004,
+            "totalPct": 1.7395147825796626
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "ticker",
+            "source": "apps/hmh-reboot/src/main.mjs:4962",
+            "selfMs": 347.67399999999975,
+            "selfPct": 1.6728924057274868,
+            "totalMs": 11388.979000000036,
+            "totalPct": 54.80000367611585
+          },
+          {
+            "functionName": "(garbage collector)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 337.5260000000002,
+            "selfPct": 1.6240635829414236,
+            "totalMs": 337.5260000000002,
+            "totalPct": 1.6240635829414236
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/elevation.mjs:145",
+            "selfMs": 304.5650000000001,
+            "selfPct": 1.46546614227809,
+            "totalMs": 1139.9319999999987,
+            "totalPct": 5.484976115112849
+          },
+          {
+            "functionName": "Te",
+            "originalName": "resolveSweptCircleMotion",
+            "source": "apps/hmh-reboot/src/collision.mjs:311",
+            "selfMs": 286.2150000000001,
+            "selfPct": 1.3771720056872045,
+            "totalMs": 577.4949999999994,
+            "totalPct": 2.778715117741317
+          },
+          {
+            "functionName": "Yg",
+            "originalName": "buildLine",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:163",
+            "selfMs": 269.6069999999998,
+            "selfPct": 1.2972597974854907,
+            "totalMs": 352.395,
+            "totalPct": 1.695608297762669
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/simulation.mjs:153",
+            "selfMs": 257.80299999999994,
+            "selfPct": 1.2404628498931858,
+            "totalMs": 6959.094999999986,
+            "totalPct": 33.484865639179546
+          },
+          {
+            "functionName": "Zf",
+            "originalName": "updateTransformAndChildren",
+            "source": "node_modules/pixi.js/src/scene/container/utils/updateRenderGroupTransforms.ts:108",
+            "selfMs": 247.4409999999998,
+            "selfPct": 1.1906043298193567,
+            "totalMs": 405.7130000000001,
+            "totalPct": 1.9521568958418416
+          },
+          {
+            "functionName": "Ae",
+            "originalName": "resolveSweptTraversalPath",
+            "source": "apps/hmh-reboot/src/elevation.mjs:180",
+            "selfMs": 245.13199999999995,
+            "selfPct": 1.1794941847845697,
+            "totalMs": 854.7939999999985,
+            "totalPct": 4.112986277551442
+          },
+          {
+            "functionName": "packIndex",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:777",
+            "selfMs": 217.65100000000004,
+            "selfPct": 1.0472646933592777,
+            "totalMs": 217.65100000000004,
+            "totalPct": 1.0472646933592777
+          },
+          {
+            "functionName": "packAttributes",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/DefaultBatcher.ts:100",
+            "selfMs": 215.27100000000007,
+            "selfPct": 1.0358129197850925,
+            "totalMs": 221.3460000000001,
+            "totalPct": 1.0650438124166797
+          },
+          {
+            "functionName": "build",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:23",
+            "selfMs": 209.624,
+            "selfPct": 1.0086414217290305,
+            "totalMs": 209.624,
+            "totalPct": 1.0086414217290305
+          },
+          {
+            "functionName": "_e",
+            "originalName": "getEnemyFormationBias",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:71",
+            "selfMs": 196.90899999999996,
+            "selfPct": 0.9474610431593788,
+            "totalMs": 293.01199999999994,
+            "totalPct": 1.4098769237475988
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:58",
+            "selfMs": 196.285,
+            "selfPct": 0.944458561348332,
+            "totalMs": 2737.7409999999954,
+            "totalPct": 13.173105057464094
+          },
+          {
+            "functionName": "bufferSubData",
+            "originalName": null,
+            "source": "",
+            "selfMs": 176.84599999999998,
+            "selfPct": 0.8509245165968216,
+            "totalMs": 176.84599999999998,
+            "totalPct": 0.8509245165968216
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "node",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:1088",
+            "selfMs": 168.43900000000002,
+            "selfPct": 0.8104728105303599,
+            "totalMs": 567.105,
+            "totalPct": 2.72872187091956
+          },
+          {
+            "functionName": "Qt",
+            "originalName": "renderWorldProductionArt",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:912",
+            "selfMs": 164.34900000000002,
+            "selfPct": 0.790793081993209,
+            "totalMs": 1222.054999999998,
+            "totalPct": 5.880124855126648
+          },
+          {
+            "functionName": "lo",
+            "originalName": "screenBoundsVisible",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:287",
+            "selfMs": 141.17600000000002,
+            "selfPct": 0.6792922630711065,
+            "totalMs": 158.23000000000008,
+            "totalPct": 0.7613504759005866
+          },
+          {
+            "functionName": "$",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/enemy-navgrid.mjs:308",
+            "selfMs": 123.89300000000007,
+            "selfPct": 0.5961321779103291,
+            "totalMs": 123.89300000000007,
+            "totalPct": 0.5961321779103291
+          },
+          {
+            "functionName": "o_",
+            "originalName": "addShapePathToGeometryData",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:158",
+            "selfMs": 118.68000000000002,
+            "selfPct": 0.5710489444472072,
+            "totalMs": 1308.1909999999991,
+            "totalPct": 6.294582825120794
+          },
+          {
+            "functionName": "as",
+            "originalName": "toStrokeStyle",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/convertFillInputToFillStyle.ts:203",
+            "selfMs": 118.431,
+            "selfPct": 0.5698508387245296,
+            "totalMs": 172.15099999999998,
+            "totalPct": 0.8283337279704343
+          },
+          {
+            "functionName": "break",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:485",
+            "selfMs": 115.22400000000003,
+            "selfPct": 0.5544198144167931,
+            "totalMs": 688.9219999999999,
+            "totalPct": 3.3148650228046743
+          },
+          {
+            "functionName": "ne",
+            "originalName": "navLineBlocked",
+            "source": "apps/hmh-reboot/src/enemy-navgrid.mjs:660",
+            "selfMs": 114.45300000000002,
+            "selfPct": 0.5507100171791052,
+            "totalMs": 234.76399999999995,
+            "totalPct": 1.1296067946933275
+          },
+          {
+            "functionName": "triangulate",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:167",
+            "selfMs": 101.13400000000001,
+            "selfPct": 0.4866233901897864,
+            "totalMs": 101.13400000000001,
+            "totalPct": 0.4866233901897864
+          },
+          {
+            "functionName": "ye",
+            "originalName": "stableHash",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:48",
+            "selfMs": 99.72300000000003,
+            "selfPct": 0.4798341244279478,
+            "totalMs": 99.72300000000003,
+            "totalPct": 0.4798341244279478
+          },
+          {
+            "functionName": "al",
+            "originalName": "createMeleeTarget",
+            "source": "apps/hmh-reboot/src/melee.mjs:99",
+            "selfMs": 97.003,
+            "selfPct": 0.466746383200307,
+            "totalMs": 141.24399999999997,
+            "totalPct": 0.6796194566017973
+          },
+          {
+            "functionName": "Og",
+            "originalName": "buildSimpleUvs",
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/geometry/utils/buildUvs.ts:63",
+            "selfMs": 92.11900000000001,
+            "selfPct": 0.44324618902538154,
+            "totalMs": 92.11900000000001,
+            "totalPct": 0.44324618902538154
+          },
+          {
+            "functionName": "play",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/combat-audio.mjs:132",
+            "selfMs": 90.84600000000003,
+            "selfPct": 0.43712093366406296,
+            "totalMs": 154.29100000000005,
+            "totalPct": 0.7423973094683524
+          },
+          {
+            "functionName": "sortRenderLayerChildren",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/layers/RenderLayer.ts:508",
+            "selfMs": 90.26400000000002,
+            "selfPct": 0.4343205419749133,
+            "totalMs": 180.3230000000001,
+            "totalPct": 0.8676546916881849
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "enemy",
+            "source": "apps/hmh-reboot/src/main.mjs:1672",
+            "selfMs": 82.80099999999999,
+            "selfPct": 0.3984110519815739,
+            "totalMs": 108.543,
+            "totalPct": 0.5222730500264003
+          },
+          {
+            "functionName": "br",
+            "originalName": "round",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:83",
+            "selfMs": 82.78800000000003,
+            "selfPct": 0.3983485002771773,
+            "totalMs": 82.78800000000003,
+            "totalPct": 0.3983485002771773
+          },
+          {
+            "functionName": "updateLocalTransform",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/Container.ts:1805",
+            "selfMs": 80.45299999999999,
+            "selfPct": 0.3871132518335958,
+            "totalMs": 80.45299999999999,
+            "totalPct": 0.3871132518335958
+          }
+        ],
+        "topByTotal": [
+          {
+            "functionName": "_tick",
+            "originalName": "time",
+            "source": "node_modules/pixi.js/src/ticker/Ticker.ts:273",
+            "selfMs": 10.139,
+            "selfPct": 0.048785517759944656,
+            "totalMs": 15875.23300000011,
+            "totalPct": 76.38637552665598
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/ticker/Ticker.ts:643",
+            "selfMs": 1.534,
+            "selfPct": 0.00738110111882386,
+            "totalMs": 15831.263000000106,
+            "totalPct": 76.17480641570766
+          },
+          {
+            "functionName": "emit",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/ticker/TickerListener.ts:58",
+            "selfMs": 22.281,
+            "selfPct": 0.1072088096665674,
+            "totalMs": 15828.209000000104,
+            "totalPct": 76.16011157684397
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "ticker",
+            "source": "apps/hmh-reboot/src/main.mjs:4962",
+            "selfMs": 347.67399999999975,
+            "selfPct": 1.6728924057274868,
+            "totalMs": 11388.979000000036,
+            "totalPct": 54.80000367611585
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/simulation.mjs:153",
+            "selfMs": 257.80299999999994,
+            "selfPct": 1.2404628498931858,
+            "totalMs": 6959.094999999986,
+            "totalPct": 33.484865639179546
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:3260",
+            "selfMs": 477.5849999999995,
+            "selfPct": 2.29798121110397,
+            "totalMs": 6653.475999999982,
+            "totalPct": 32.01432799717573
+          },
+          {
+            "functionName": "(program)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 4417.348000000004,
+            "selfPct": 21.254818947219274,
+            "totalMs": 4417.348000000004,
+            "totalPct": 21.254818947219274
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/app/Application.ts:289",
+            "selfMs": 6.123,
+            "selfPct": 0.029461852770898626,
+            "totalMs": 4406.045999999996,
+            "totalPct": 21.200437457750564
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/system/AbstractRenderer.ts:308",
+            "selfMs": 8.883999999999999,
+            "selfPct": 0.042746872450867765,
+            "totalMs": 4399.922999999995,
+            "totalPct": 21.17097560497966
+          },
+          {
+            "functionName": "emit",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/system/SystemRunner.ts:64",
+            "selfMs": 23.305999999999997,
+            "selfPct": 0.1121407709747776,
+            "totalMs": 4389.508999999995,
+            "totalPct": 21.12086687808824
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:45",
+            "selfMs": 7.573,
+            "selfPct": 0.0364387736459277,
+            "totalMs": 4257.490999999995,
+            "totalPct": 20.48563988492991
+          },
+          {
+            "functionName": "nt",
+            "originalName": "stepEnemyPopulation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:541",
+            "selfMs": 455.8289999999995,
+            "selfPct": 2.1932985279611197,
+            "totalMs": 4059.0570000000016,
+            "totalPct": 19.530841045677857
+          },
+          {
+            "functionName": "Tn",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:1536",
+            "selfMs": 622.8760000000002,
+            "selfPct": 2.9970734944514548,
+            "totalMs": 3866.9379999999887,
+            "totalPct": 18.606427899753854
+          },
+          {
+            "functionName": "_updateRenderGroups",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:171",
+            "selfMs": 25.252000000000002,
+            "selfPct": 0.12150427995602354,
+            "totalMs": 3229.804999999995,
+            "totalPct": 15.540754432257403
+          },
+          {
+            "functionName": "_buildInstructions",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:246",
+            "selfMs": 9.468,
+            "selfPct": 0.04555688747915535,
+            "totalMs": 2756.5769999999948,
+            "totalPct": 13.263737665465502
+          },
+          {
+            "functionName": "collectRenderablesWithEffects",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:99",
+            "selfMs": 6.109,
+            "selfPct": 0.02939448939693283,
+            "totalMs": 2742.485999999995,
+            "totalPct": 13.195936429568928
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:84",
+            "selfMs": 74.68200000000003,
+            "selfPct": 0.35934510675098025,
+            "totalMs": 2737.7989999999954,
+            "totalPct": 13.173384134299093
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:58",
+            "selfMs": 196.285,
+            "selfPct": 0.944458561348332,
+            "totalMs": 2737.7409999999954,
+            "totalPct": 13.173105057464094
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/view/ViewContainer.ts:202",
+            "selfMs": 16.733999999999998,
+            "selfPct": 0.08051847856740448,
+            "totalMs": 2163.061999999996,
+            "totalPct": 10.407939601229039
+          },
+          {
+            "functionName": "addRenderable",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsPipe.ts:99",
+            "selfMs": 21.723000000000003,
+            "selfPct": 0.10452389804707347,
+            "totalMs": 1984.198999999996,
+            "totalPct": 9.547309947111573
+          },
+          {
+            "functionName": "updateGpuContext",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:189",
+            "selfMs": 70.17500000000001,
+            "selfPct": 0.33765891200356224,
+            "totalMs": 1684.287999999997,
+            "totalPct": 8.104237315007548
+          },
+          {
+            "functionName": "a_",
+            "originalName": "buildContextBatches",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:44",
+            "selfMs": 71.69600000000003,
+            "selfPct": 0.3449774614179893,
+            "totalMs": 1548.4879999999978,
+            "totalPct": 7.450812587539311
+          },
+          {
+            "functionName": "wy",
+            "originalName": "view",
+            "source": "apps/hmh-reboot/src/main.mjs:1500",
+            "selfMs": 59.04,
+            "selfPct": 0.2840809713529079,
+            "totalMs": 1317.9229999999989,
+            "totalPct": 6.34140999336616
+          },
+          {
+            "functionName": "o_",
+            "originalName": "addShapePathToGeometryData",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:158",
+            "selfMs": 118.68000000000002,
+            "selfPct": 0.5710489444472072,
+            "totalMs": 1308.1909999999991,
+            "totalPct": 6.294582825120794
+          },
+          {
+            "functionName": "Qt",
+            "originalName": "renderWorldProductionArt",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:912",
+            "selfMs": 164.34900000000002,
+            "selfPct": 0.790793081993209,
+            "totalMs": 1222.054999999998,
+            "totalPct": 5.880124855126648
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+            "selfMs": 382.61500000000007,
+            "selfPct": 1.8410169521374131,
+            "totalMs": 1200.4839999999992,
+            "totalPct": 5.776332330854066
+          },
+          {
+            "functionName": "de",
+            "originalName": "sampleSurface",
+            "source": "apps/hmh-reboot/src/elevation.mjs:108",
+            "selfMs": 752.3269999999991,
+            "selfPct": 3.6199489318262,
+            "totalMs": 1151.5419999999988,
+            "totalPct": 5.540839598808772
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/elevation.mjs:145",
+            "selfMs": 304.5650000000001,
+            "selfPct": 1.46546614227809,
+            "totalMs": 1139.9319999999987,
+            "totalPct": 5.484976115112849
+          },
+          {
+            "functionName": "ti",
+            "originalName": "executeInstructions",
+            "source": "node_modules/pixi.js/src/scene/container/utils/executeInstructions.ts:10",
+            "selfMs": 20.064,
+            "selfPct": 0.09654133823212642,
+            "totalMs": 1005.5109999999997,
+            "totalPct": 4.838186679980245
+          },
+          {
+            "functionName": "Ne",
+            "originalName": "computeEnemySeparation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:442",
+            "selfMs": 813.0099999999996,
+            "selfPct": 3.911935476280954,
+            "totalMs": 897.9989999999995,
+            "totalPct": 4.320874461279468
+          },
+          {
+            "functionName": "Ae",
+            "originalName": "resolveSweptTraversalPath",
+            "source": "apps/hmh-reboot/src/elevation.mjs:180",
+            "selfMs": 245.13199999999995,
+            "selfPct": 1.1794941847845697,
+            "totalMs": 854.7939999999985,
+            "totalPct": 4.112986277551442
+          },
+          {
+            "functionName": "n",
+            "originalName": "freezeDeep",
+            "source": "apps/hmh-reboot/src/value-guards.mjs:10",
+            "selfMs": 838.6060000000001,
+            "selfPct": 4.035094970568711,
+            "totalMs": 838.6060000000001,
+            "totalPct": 4.035094970568711
+          },
+          {
+            "functionName": "execute",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsPipe.ts:136",
+            "selfMs": 9.406,
+            "selfPct": 0.04525856396587825,
+            "totalMs": 783.8299999999995,
+            "totalPct": 3.771530958257954
+          },
+          {
+            "functionName": "execute",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/gl/GlGraphicsAdaptor.ts:65",
+            "selfMs": 3.0789999999999997,
+            "selfPct": 0.01481513060290656,
+            "totalMs": 758.2029999999996,
+            "totalPct": 3.6482223022135623
+          },
+          {
+            "functionName": "break",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:485",
+            "selfMs": 115.22400000000003,
+            "selfPct": 0.5544198144167931,
+            "totalMs": 688.9219999999999,
+            "totalPct": 3.3148650228046743
+          },
+          {
+            "functionName": "Te",
+            "originalName": "resolveSweptCircleMotion",
+            "source": "apps/hmh-reboot/src/collision.mjs:311",
+            "selfMs": 286.2150000000001,
+            "selfPct": 1.3771720056872045,
+            "totalMs": 577.4949999999994,
+            "totalPct": 2.778715117741317
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "node",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:1088",
+            "selfMs": 168.43900000000002,
+            "selfPct": 0.8104728105303599,
+            "totalMs": 567.105,
+            "totalPct": 2.72872187091956
+          },
+          {
+            "functionName": "_initContextRenderData",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:236",
+            "selfMs": 19.929,
+            "selfPct": 0.09589176284031335,
+            "totalMs": 535.8379999999997,
+            "totalPct": 2.578275398506087
+          },
+          {
+            "functionName": "Se",
+            "originalName": "planEnemyIntent",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:253",
+            "selfMs": 44.94300000000001,
+            "selfPct": 0.2162508654389184,
+            "totalMs": 532.0219999999999,
+            "totalPct": 2.559914067430839
+          },
+          {
+            "functionName": "eo",
+            "originalName": "prepareWorldDesignEnemyPose",
+            "source": "apps/hmh-reboot/src/world-design-life.mjs:26",
+            "selfMs": 71.827,
+            "selfPct": 0.3456077901315263,
+            "totalMs": 459.3060000000004,
+            "totalPct": 2.2100287030524868
+          }
+        ]
+      },
+      "cpuProfile": ".tmp/hmh-perf-crowd/profile-mobile-4x.cpuprofile",
+      "errors": [],
+      "screenshot": ".tmp/hmh-perf-crowd/profile-mobile-4x.png",
+      "scene": {
+        "samples": 289,
+        "enemies": {
+          "min": 98,
+          "mean": 115.07266435986159,
+          "max": 128
+        },
+        "projectiles": {
+          "min": 0,
+          "mean": 0.06920415224913495,
+          "max": 1
+        },
+        "animatedEnemies": {
+          "min": 32,
+          "mean": 32,
+          "max": 32
+        },
+        "corpses": {
+          "min": 0,
+          "mean": 2.944636678200692,
+          "max": 7
+        },
+        "goreMarks": {
+          "min": 10,
+          "mean": 16.169550173010382,
+          "max": 30
+        },
+        "goreFragments": {
+          "min": 0,
+          "mean": 1.8719723183391004,
+          "max": 4
+        },
+        "silverActive": {
+          "min": 0,
+          "mean": 5.567474048442906,
+          "max": 15
+        },
+        "silverVisible": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "killFxShards": {
+          "min": 0,
+          "mean": 0.8719723183391004,
+          "max": 9
+        },
+        "combatEvents": {
+          "min": 3,
+          "mean": 12.477508650519031,
+          "max": 23
+        },
+        "weaponVfx": {
+          "min": 0,
+          "mean": 5.114186851211072,
+          "max": 16
+        },
+        "worldParticles": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "contactShadows": {
+          "min": 57,
+          "mean": 92.12110726643598,
+          "max": 106
+        },
+        "atmosphereSprites": {
+          "min": 1,
+          "mean": 1.8823529411764706,
+          "max": 3
+        },
+        "pickupMarkers": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "enemyTells": {
+          "min": 9,
+          "mean": 13.26643598615917,
+          "max": 16
+        }
+      },
+      "discardedContendedAttempts": []
+    },
+    {
+      "mode": "timing",
+      "profileId": "mobile",
+      "cpu": 6,
+      "seed": 1213024260,
+      "gore": true,
+      "weapon": "coin-blaster",
+      "bootMs": 27943,
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "abortedRequests": 0,
+      "host": {
+        "cpus": 24,
+        "busyPct": 32.91024366207419,
+        "benchChromePct": 6.428767175374837,
+        "otherBusyPct": 26.48147648669935,
+        "contended": false,
+        "pinning": {
+          "mask": "0xFFFF",
+          "applied": true,
+          "processes": [
+            {
+              "type": "browser",
+              "id": 29376
+            },
+            {
+              "type": "renderer",
+              "id": 52404
+            },
+            {
+              "type": "renderer",
+              "id": 55040
+            },
+            {
+              "type": "renderer",
+              "id": 40648
+            },
+            {
+              "type": "GPU",
+              "id": 42036
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "id": 49976
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "id": 5384
+            }
+          ]
+        }
+      },
+      "processCpuSeconds": {
+        "browser": 1.4494,
+        "renderer": 29.080033,
+        "GPU": 2.1941789999999997,
+        "network.mojom.NetworkService": 0.011272999999999977,
+        "storage.mojom.StorageService": 0.000025000000000004186,
+        "audio.mojom.AudioService": 0.417008
+      },
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "deviceScaleFactor": 3,
+      "renderResolution": null,
+      "adaptiveResolution": "1",
+      "canvas": {
+        "width": 414,
+        "height": 896
+      },
+      "ticks": {
+        "from": 255,
+        "to": 1315,
+        "advanced": 1060
+      },
+      "simSpeed": 0.822214051796017,
+      "droppedMs": 3295.033,
+      "catchUpSaturationFramesInWindow": 244,
+      "activeMs": 20370.900000000005,
+      "upgradePicks": 5,
+      "silverCoinsOnScreen": {
+        "mean": 5.427312775330397,
+        "max": 15
+      },
+      "frames": {
+        "frames": 261,
+        "meanMs": 77.54367816091955,
+        "p50Ms": 76.40000000000146,
+        "p95Ms": 97.29999999999563,
+        "p99Ms": 165.79999999999563,
+        "worstMs": 208.39999999999782,
+        "fpsMean": 12.89595778426693,
+        "over33Pct": 100,
+        "over50Pct": 99.61685823754789
+      },
+      "longTasks": {
+        "count": 257,
+        "over100": 9,
+        "maxMs": 189
+      },
+      "heap": {
+        "beforeUsed": 71110752,
+        "afterUsed": 136469236
+      },
+      "hotspots": null,
+      "cpuProfile": null,
+      "errors": [],
+      "screenshot": ".tmp/hmh-perf-crowd/timing-mobile-6x.png",
+      "scene": {
+        "samples": 260,
+        "enemies": {
+          "min": 100,
+          "mean": 116.75384615384615,
+          "max": 128
+        },
+        "projectiles": {
+          "min": 0,
+          "mean": 0.07692307692307693,
+          "max": 1
+        },
+        "animatedEnemies": {
+          "min": 32,
+          "mean": 32,
+          "max": 32
+        },
+        "corpses": {
+          "min": 0,
+          "mean": 2.953846153846154,
+          "max": 7
+        },
+        "goreMarks": {
+          "min": 10,
+          "mean": 15.976923076923077,
+          "max": 30
+        },
+        "goreFragments": {
+          "min": 0,
+          "mean": 1.8269230769230769,
+          "max": 4
+        },
+        "silverActive": {
+          "min": 0,
+          "mean": 4.665384615384616,
+          "max": 14
+        },
+        "silverVisible": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "killFxShards": {
+          "min": 0,
+          "mean": 0.8884615384615384,
+          "max": 9
+        },
+        "combatEvents": {
+          "min": 3,
+          "mean": 12.553846153846154,
+          "max": 23
+        },
+        "weaponVfx": {
+          "min": 0,
+          "mean": 5.180769230769231,
+          "max": 16
+        },
+        "worldParticles": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "contactShadows": {
+          "min": 59,
+          "mean": 93.22692307692307,
+          "max": 106
+        },
+        "atmosphereSprites": {
+          "min": 1,
+          "mean": 1.7615384615384615,
+          "max": 3
+        },
+        "pickupMarkers": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "enemyTells": {
+          "min": 9,
+          "mean": 13.265384615384615,
+          "max": 16
+        }
+      },
+      "discardedContendedAttempts": [
+        {
+          "hostBusyPct": 39.62616425107081,
+          "meanMs": 88.14845814977974,
+          "p95Ms": 132.1999999999971
+        }
+      ]
+    },
+    {
+      "mode": "profile",
+      "profileId": "mobile",
+      "cpu": 6,
+      "seed": 1213024260,
+      "gore": true,
+      "weapon": "coin-blaster",
+      "bootMs": 44951,
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "abortedRequests": 0,
+      "host": {
+        "cpus": 24,
+        "busyPct": 27.879987272603547,
+        "benchChromePct": 6.529808740122905,
+        "otherBusyPct": 21.35017853248064,
+        "contended": false,
+        "pinning": {
+          "mask": "0xFFFF",
+          "applied": true,
+          "processes": [
+            {
+              "type": "browser",
+              "id": 36704
+            },
+            {
+              "type": "renderer",
+              "id": 57220
+            },
+            {
+              "type": "renderer",
+              "id": 860
+            },
+            {
+              "type": "renderer",
+              "id": 48748
+            },
+            {
+              "type": "GPU",
+              "id": 9300
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "id": 49348
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "id": 38940
+            }
+          ]
+        }
+      },
+      "processCpuSeconds": {
+        "browser": 1.445792,
+        "renderer": 28.250542999999993,
+        "GPU": 2.0583349999999996,
+        "network.mojom.NetworkService": 0.020526999999999962,
+        "storage.mojom.StorageService": 0.0006980000000000042,
+        "audio.mojom.AudioService": 0.390413
+      },
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "deviceScaleFactor": 3,
+      "renderResolution": null,
+      "adaptiveResolution": "1",
+      "canvas": {
+        "width": 414,
+        "height": 896
+      },
+      "ticks": {
+        "from": 260,
+        "to": 1303,
+        "advanced": 1043
+      },
+      "simSpeed": 0.8469222536758887,
+      "droppedMs": 2607.166,
+      "catchUpSaturationFramesInWindow": 236,
+      "activeMs": 20328.799999999996,
+      "upgradePicks": 5,
+      "silverCoinsOnScreen": {
+        "mean": 5.265486725663717,
+        "max": 14
+      },
+      "frames": {
+        "frames": 258,
+        "meanMs": 75.13139534883719,
+        "p50Ms": 69.59999999999854,
+        "p95Ms": 90.40000000000146,
+        "p99Ms": 166.59999999999854,
+        "worstMs": 194.70000000000437,
+        "fpsMean": 13.310015012458797,
+        "over33Pct": 100,
+        "over50Pct": 100
+      },
+      "longTasks": {
+        "count": 259,
+        "over100": 7,
+        "maxMs": 193
+      },
+      "heap": {
+        "beforeUsed": 54045172,
+        "afterUsed": 138755240
+      },
+      "hotspots": {
+        "totalMs": 21549.143999999502,
+        "idleMs": 307.9329999999998,
+        "busyMs": 21241.2109999995,
+        "top": [
+          {
+            "functionName": "(program)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 4889.264000000014,
+            "selfPct": 23.017821347380472,
+            "totalMs": 4889.264000000014,
+            "totalPct": 23.017821347380472
+          },
+          {
+            "functionName": "Ne",
+            "originalName": "computeEnemySeparation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:442",
+            "selfMs": 1157.3619999999999,
+            "selfPct": 5.4486629787728535,
+            "totalMs": 1263.4410000000005,
+            "totalPct": 5.94806482549432
+          },
+          {
+            "functionName": "n",
+            "originalName": "freezeDeep",
+            "source": "apps/hmh-reboot/src/value-guards.mjs:10",
+            "selfMs": 1035.6339999999996,
+            "selfPct": 4.875588308030196,
+            "totalMs": 1035.6339999999996,
+            "totalPct": 4.875588308030196
+          },
+          {
+            "functionName": "de",
+            "originalName": "sampleSurface",
+            "source": "apps/hmh-reboot/src/elevation.mjs:108",
+            "selfMs": 783.5439999999999,
+            "selfPct": 3.68879156654495,
+            "totalMs": 1254.540999999999,
+            "totalPct": 5.906165142844391
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:3260",
+            "selfMs": 609.2549999999997,
+            "selfPct": 2.868268668862684,
+            "totalMs": 8871.288000000064,
+            "totalPct": 41.764511448995414
+          },
+          {
+            "functionName": "nt",
+            "originalName": "stepEnemyPopulation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:541",
+            "selfMs": 584.1669999999996,
+            "selfPct": 2.750158642085017,
+            "totalMs": 5451.961000000009,
+            "totalPct": 25.666902889859422
+          },
+          {
+            "functionName": "Tn",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:1536",
+            "selfMs": 480.63899999999956,
+            "selfPct": 2.262766468446695,
+            "totalMs": 2924.264000000004,
+            "totalPct": 13.766936357819112
+          },
+          {
+            "functionName": "query",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/blocker-bounds.mjs:42",
+            "selfMs": 443.46,
+            "selfPct": 2.0877340750487834,
+            "totalMs": 443.46,
+            "totalPct": 2.0877340750487834
+          },
+          {
+            "functionName": "Ae",
+            "originalName": "resolveSweptTraversalPath",
+            "source": "apps/hmh-reboot/src/elevation.mjs:180",
+            "selfMs": 360.9849999999998,
+            "selfPct": 1.6994558361103247,
+            "totalMs": 1157.6069999999997,
+            "totalPct": 5.4498163970031035
+          },
+          {
+            "functionName": "Te",
+            "originalName": "resolveSweptCircleMotion",
+            "source": "apps/hmh-reboot/src/collision.mjs:311",
+            "selfMs": 350.9679999999998,
+            "selfPct": 1.6522975078963626,
+            "totalMs": 743.0879999999989,
+            "totalPct": 3.4983316158387407
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/elevation.mjs:145",
+            "selfMs": 343.95900000000006,
+            "selfPct": 1.619300330852173,
+            "totalMs": 1529.0279999999977,
+            "totalPct": 7.198403141892587
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/simulation.mjs:153",
+            "selfMs": 302.45799999999997,
+            "selfPct": 1.4239206983067354,
+            "totalMs": 9215.527000000091,
+            "totalPct": 43.38512997211085
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+            "selfMs": 291.76700000000005,
+            "selfPct": 1.3735892930022064,
+            "totalMs": 824.5569999999998,
+            "totalPct": 3.8818737782889077
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "ticker",
+            "source": "apps/hmh-reboot/src/main.mjs:4962",
+            "selfMs": 269.4119999999999,
+            "selfPct": 1.2683457642787233,
+            "totalMs": 12610.090000000177,
+            "totalPct": 59.36615384123096
+          },
+          {
+            "functionName": "_e",
+            "originalName": "getEnemyFormationBias",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:71",
+            "selfMs": 262.86099999999993,
+            "selfPct": 1.2375047731506745,
+            "totalMs": 391.3119999999998,
+            "totalPct": 1.84223018169731
+          },
+          {
+            "functionName": "(garbage collector)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 242.61699999999993,
+            "selfPct": 1.1421994725253923,
+            "totalMs": 242.61699999999993,
+            "totalPct": 1.1421994725253923
+          },
+          {
+            "functionName": "Zf",
+            "originalName": "updateTransformAndChildren",
+            "source": "node_modules/pixi.js/src/scene/container/utils/updateRenderGroupTransforms.ts:108",
+            "selfMs": 225.31899999999985,
+            "selfPct": 1.060763437640185,
+            "totalMs": 339.9999999999993,
+            "totalPct": 1.6006620338172213
+          },
+          {
+            "functionName": "packIndex",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:777",
+            "selfMs": 198.9790000000001,
+            "selfPct": 0.9367592083144636,
+            "totalMs": 198.9790000000001,
+            "totalPct": 0.9367592083144636
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:58",
+            "selfMs": 186.881,
+            "selfPct": 0.8798038868876374,
+            "totalMs": 1965.4410000000018,
+            "totalPct": 9.252961142375772
+          },
+          {
+            "functionName": "Yg",
+            "originalName": "buildLine",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:163",
+            "selfMs": 186.44899999999993,
+            "selfPct": 0.8777701045387869,
+            "totalMs": 238.23299999999983,
+            "totalPct": 1.1215603479481722
+          },
+          {
+            "functionName": "packAttributes",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/DefaultBatcher.ts:100",
+            "selfMs": 176.6620000000001,
+            "selfPct": 0.8316945771124077,
+            "totalMs": 187.43900000000008,
+            "totalPct": 0.8824308557549025
+          },
+          {
+            "functionName": "build",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:23",
+            "selfMs": 157.023,
+            "selfPct": 0.7392375133414177,
+            "totalMs": 157.023,
+            "totalPct": 0.7392375133414177
+          },
+          {
+            "functionName": "$",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/enemy-navgrid.mjs:308",
+            "selfMs": 139.05700000000002,
+            "selfPct": 0.6546566483427112,
+            "totalMs": 139.05700000000002,
+            "totalPct": 0.6546566483427112
+          },
+          {
+            "functionName": "ne",
+            "originalName": "navLineBlocked",
+            "source": "apps/hmh-reboot/src/enemy-navgrid.mjs:660",
+            "selfMs": 133.791,
+            "selfPct": 0.629865218136589,
+            "totalMs": 272.7230000000001,
+            "totalPct": 1.2839333877903973
+          },
+          {
+            "functionName": "al",
+            "originalName": "createMeleeTarget",
+            "source": "apps/hmh-reboot/src/melee.mjs:99",
+            "selfMs": 130.82400000000007,
+            "selfPct": 0.6158970879767784,
+            "totalMs": 200.66200000000003,
+            "totalPct": 0.9446824853818586
+          },
+          {
+            "functionName": "bufferSubData",
+            "originalName": null,
+            "source": "",
+            "selfMs": 121.49100000000006,
+            "selfPct": 0.5719589151484956,
+            "totalMs": 121.49100000000006,
+            "totalPct": 0.5719589151484956
+          },
+          {
+            "functionName": "xe",
+            "originalName": "contains",
+            "source": "apps/hmh-reboot/src/elevation.mjs:41",
+            "selfMs": 121.45600000000005,
+            "selfPct": 0.5717941411156026,
+            "totalMs": 121.45600000000005,
+            "totalPct": 0.5717941411156026
+          },
+          {
+            "functionName": "Bp",
+            "originalName": "validateLocalShape",
+            "source": "apps/hmh-reboot/src/projectile-physics.mjs:49",
+            "selfMs": 119.231,
+            "selfPct": 0.561319220453122,
+            "totalMs": 119.231,
+            "totalPct": 0.561319220453122
+          },
+          {
+            "functionName": "play",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/combat-audio.mjs:132",
+            "selfMs": 118.58000000000004,
+            "selfPct": 0.5582544234413133,
+            "totalMs": 208.53200000000004,
+            "totalPct": 0.9817331036352162
+          },
+          {
+            "functionName": "ye",
+            "originalName": "stableHash",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:48",
+            "selfMs": 97.698,
+            "selfPct": 0.45994552758786816,
+            "totalMs": 97.698,
+            "totalPct": 0.45994552758786816
+          },
+          {
+            "functionName": "rt",
+            "originalName": "allocateAttackTokens",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:397",
+            "selfMs": 96.72600000000001,
+            "selfPct": 0.4553695173029555,
+            "totalMs": 202.73,
+            "totalPct": 0.954418276811076
+          },
+          {
+            "functionName": "lo",
+            "originalName": "screenBoundsVisible",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:287",
+            "selfMs": 95.58900000000003,
+            "selfPct": 0.4500167151486903,
+            "totalMs": 104.81900000000005,
+            "totalPct": 0.4934699815373168
+          },
+          {
+            "functionName": "Se",
+            "originalName": "planEnemyIntent",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:253",
+            "selfMs": 91.54600000000003,
+            "selfPct": 0.43098296043479906,
+            "totalMs": 713.6909999999996,
+            "totalPct": 3.3599355516971996
+          },
+          {
+            "functionName": "om",
+            "originalName": "stepEnemyAttacks",
+            "source": "apps/hmh-reboot/src/enemy-combat.mjs:118",
+            "selfMs": 86.247,
+            "selfPct": 0.40603617185480634,
+            "totalMs": 359.1219999999997,
+            "totalPct": 1.6906851497309079
+          },
+          {
+            "functionName": "os",
+            "originalName": "createHurtTarget",
+            "source": "apps/hmh-reboot/src/projectile-physics.mjs:87",
+            "selfMs": 86.22400000000003,
+            "selfPct": 0.40592789177604827,
+            "totalMs": 205.45500000000004,
+            "totalPct": 0.9672471122291703
+          },
+          {
+            "functionName": "focus",
+            "originalName": null,
+            "source": "",
+            "selfMs": 84.036,
+            "selfPct": 0.3956271608054831,
+            "totalMs": 84.036,
+            "totalPct": 0.3956271608054831
+          },
+          {
+            "functionName": "Qt",
+            "originalName": "renderWorldProductionArt",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:912",
+            "selfMs": 82.52200000000002,
+            "selfPct": 0.38849950692548535,
+            "totalMs": 852.0229999999991,
+            "totalPct": 4.011179023644269
+          },
+          {
+            "functionName": "o_",
+            "originalName": "addShapePathToGeometryData",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:158",
+            "selfMs": 79.82999999999998,
+            "selfPct": 0.3758260298812618,
+            "totalMs": 851.2529999999998,
+            "totalPct": 4.007553994920627
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:84",
+            "selfMs": 76.57700000000003,
+            "selfPct": 0.3605114604812401,
+            "totalMs": 1965.4600000000019,
+            "totalPct": 9.253050591136484
+          },
+          {
+            "functionName": "break",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:485",
+            "selfMs": 74.82800000000002,
+            "selfPct": 0.3522774666661038,
+            "totalMs": 526.4809999999994,
+            "totalPct": 2.4785827889003684
+          }
+        ],
+        "topByTotal": [
+          {
+            "functionName": "_tick",
+            "originalName": "time",
+            "source": "node_modules/pixi.js/src/ticker/Ticker.ts:273",
+            "selfMs": 1.534,
+            "selfPct": 0.007221810470222419,
+            "totalMs": 15947.637000000199,
+            "totalPct": 75.07875610293864
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/ticker/Ticker.ts:643",
+            "selfMs": 1.536,
+            "selfPct": 0.007231226129244873,
+            "totalMs": 15933.745000000197,
+            "totalPct": 75.01335493536865
+          },
+          {
+            "functionName": "emit",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/ticker/TickerListener.ts:58",
+            "selfMs": 15.068999999999997,
+            "selfPct": 0.07094228290468162,
+            "totalMs": 15932.209000000197,
+            "totalPct": 75.00612370923942
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "ticker",
+            "source": "apps/hmh-reboot/src/main.mjs:4962",
+            "selfMs": 269.4119999999999,
+            "selfPct": 1.2683457642787233,
+            "totalMs": 12610.090000000177,
+            "totalPct": 59.36615384123096
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/simulation.mjs:153",
+            "selfMs": 302.45799999999997,
+            "selfPct": 1.4239206983067354,
+            "totalMs": 9215.527000000091,
+            "totalPct": 43.38512997211085
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:3260",
+            "selfMs": 609.2549999999997,
+            "selfPct": 2.868268668862684,
+            "totalMs": 8871.288000000064,
+            "totalPct": 41.764511448995414
+          },
+          {
+            "functionName": "nt",
+            "originalName": "stepEnemyPopulation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:541",
+            "selfMs": 584.1669999999996,
+            "selfPct": 2.750158642085017,
+            "totalMs": 5451.961000000009,
+            "totalPct": 25.666902889859422
+          },
+          {
+            "functionName": "(program)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 4889.264000000014,
+            "selfPct": 23.017821347380472,
+            "totalMs": 4889.264000000014,
+            "totalPct": 23.017821347380472
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/app/Application.ts:289",
+            "selfMs": 1.518,
+            "selfPct": 0.007146485198042784,
+            "totalMs": 3296.606999999994,
+            "totalPct": 15.51986372151791
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/system/AbstractRenderer.ts:308",
+            "selfMs": 13.421,
+            "selfPct": 0.06318377987017931,
+            "totalMs": 3295.088999999994,
+            "totalPct": 15.512717236319867
+          },
+          {
+            "functionName": "emit",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/system/SystemRunner.ts:64",
+            "selfMs": 10.796,
+            "selfPct": 0.0508257274032081,
+            "totalMs": 3280.130999999994,
+            "totalPct": 15.44229752249093
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:45",
+            "selfMs": 6.188,
+            "selfPct": 0.02913204901547348,
+            "totalMs": 3226.5879999999947,
+            "totalPct": 15.1902262069713
+          },
+          {
+            "functionName": "Tn",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:1536",
+            "selfMs": 480.63899999999956,
+            "selfPct": 2.262766468446695,
+            "totalMs": 2924.264000000004,
+            "totalPct": 13.766936357819112
+          },
+          {
+            "functionName": "_updateRenderGroups",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:171",
+            "selfMs": 7.684,
+            "selfPct": 0.03617496196426927,
+            "totalMs": 2364.0699999999947,
+            "totalPct": 11.129638512606697
+          },
+          {
+            "functionName": "_buildInstructions",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:246",
+            "selfMs": 3.0140000000000002,
+            "selfPct": 0.014189398146838573,
+            "totalMs": 1989.4800000000018,
+            "totalPct": 9.36613265599616
+          },
+          {
+            "functionName": "collectRenderablesWithEffects",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:99",
+            "selfMs": 7.198,
+            "selfPct": 0.033886956821812884,
+            "totalMs": 1968.003000000002,
+            "totalPct": 9.265022601583537
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:84",
+            "selfMs": 76.57700000000003,
+            "selfPct": 0.3605114604812401,
+            "totalMs": 1965.4600000000019,
+            "totalPct": 9.253050591136484
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:58",
+            "selfMs": 186.881,
+            "selfPct": 0.8798038868876374,
+            "totalMs": 1965.4410000000018,
+            "totalPct": 9.252961142375772
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/elevation.mjs:145",
+            "selfMs": 343.95900000000006,
+            "selfPct": 1.619300330852173,
+            "totalMs": 1529.0279999999977,
+            "totalPct": 7.198403141892587
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/view/ViewContainer.ts:202",
+            "selfMs": 17.048000000000002,
+            "selfPct": 0.08025907750740013,
+            "totalMs": 1467.9100000000012,
+            "totalPct": 6.910670017825423
+          },
+          {
+            "functionName": "addRenderable",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsPipe.ts:99",
+            "selfMs": 4.685,
+            "selfPct": 0.022056181260099107,
+            "totalMs": 1353.9970000000012,
+            "totalPct": 6.374387034713007
+          },
+          {
+            "functionName": "Ne",
+            "originalName": "computeEnemySeparation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:442",
+            "selfMs": 1157.3619999999999,
+            "selfPct": 5.4486629787728535,
+            "totalMs": 1263.4410000000005,
+            "totalPct": 5.94806482549432
+          },
+          {
+            "functionName": "de",
+            "originalName": "sampleSurface",
+            "source": "apps/hmh-reboot/src/elevation.mjs:108",
+            "selfMs": 783.5439999999999,
+            "selfPct": 3.68879156654495,
+            "totalMs": 1254.540999999999,
+            "totalPct": 5.906165142844391
+          },
+          {
+            "functionName": "updateGpuContext",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:189",
+            "selfMs": 29.087000000000007,
+            "selfPct": 0.13693663699306358,
+            "totalMs": 1170.136,
+            "totalPct": 5.508800792949269
+          },
+          {
+            "functionName": "Ae",
+            "originalName": "resolveSweptTraversalPath",
+            "source": "apps/hmh-reboot/src/elevation.mjs:180",
+            "selfMs": 360.9849999999998,
+            "selfPct": 1.6994558361103247,
+            "totalMs": 1157.6069999999997,
+            "totalPct": 5.4498163970031035
+          },
+          {
+            "functionName": "a_",
+            "originalName": "buildContextBatches",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:44",
+            "selfMs": 35.207,
+            "selfPct": 0.1657485536017736,
+            "totalMs": 1060.8549999999989,
+            "totalPct": 4.994324476132853
+          },
+          {
+            "functionName": "n",
+            "originalName": "freezeDeep",
+            "source": "apps/hmh-reboot/src/value-guards.mjs:10",
+            "selfMs": 1035.6339999999996,
+            "selfPct": 4.875588308030196,
+            "totalMs": 1035.6339999999996,
+            "totalPct": 4.875588308030196
+          },
+          {
+            "functionName": "wy",
+            "originalName": "view",
+            "source": "apps/hmh-reboot/src/main.mjs:1500",
+            "selfMs": 47.446999999999996,
+            "selfPct": 0.22337238681919364,
+            "totalMs": 932.0759999999988,
+            "totalPct": 4.388054899506534
+          },
+          {
+            "functionName": "Qt",
+            "originalName": "renderWorldProductionArt",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:912",
+            "selfMs": 82.52200000000002,
+            "selfPct": 0.38849950692548535,
+            "totalMs": 852.0229999999991,
+            "totalPct": 4.011179023644269
+          },
+          {
+            "functionName": "o_",
+            "originalName": "addShapePathToGeometryData",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:158",
+            "selfMs": 79.82999999999998,
+            "selfPct": 0.3758260298812618,
+            "totalMs": 851.2529999999998,
+            "totalPct": 4.007553994920627
+          },
+          {
+            "functionName": "ti",
+            "originalName": "executeInstructions",
+            "source": "node_modules/pixi.js/src/scene/container/utils/executeInstructions.ts:10",
+            "selfMs": 10.753,
+            "selfPct": 0.050623290734225335,
+            "totalMs": 831.8239999999983,
+            "totalPct": 3.9160855753469885
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+            "selfMs": 291.76700000000005,
+            "selfPct": 1.3735892930022064,
+            "totalMs": 824.5569999999998,
+            "totalPct": 3.8818737782889077
+          },
+          {
+            "functionName": "Te",
+            "originalName": "resolveSweptCircleMotion",
+            "source": "apps/hmh-reboot/src/collision.mjs:311",
+            "selfMs": 350.9679999999998,
+            "selfPct": 1.6522975078963626,
+            "totalMs": 743.0879999999989,
+            "totalPct": 3.4983316158387407
+          },
+          {
+            "functionName": "Se",
+            "originalName": "planEnemyIntent",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:253",
+            "selfMs": 91.54600000000003,
+            "selfPct": 0.43098296043479906,
+            "totalMs": 713.6909999999996,
+            "totalPct": 3.3599355516971996
+          },
+          {
+            "functionName": "execute",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsPipe.ts:136",
+            "selfMs": 10.969,
+            "selfPct": 0.05164018190865039,
+            "totalMs": 648.5089999999989,
+            "totalPct": 3.05306980849639
+          },
+          {
+            "functionName": "execute",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/gl/GlGraphicsAdaptor.ts:65",
+            "selfMs": 4.904,
+            "selfPct": 0.02308719592305785,
+            "totalMs": 634.7409999999988,
+            "totalPct": 2.988252411785815
+          },
+          {
+            "functionName": "break",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:485",
+            "selfMs": 74.82800000000002,
+            "selfPct": 0.3522774666661038,
+            "totalMs": 526.4809999999994,
+            "totalPct": 2.4785827889003684
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "node",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:1088",
+            "selfMs": 22.625999999999998,
+            "selfPct": 0.10651935052102504,
+            "totalMs": 446.2069999999998,
+            "totalPct": 2.1006664827161234
+          },
+          {
+            "functionName": "query",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/blocker-bounds.mjs:42",
+            "selfMs": 443.46,
+            "selfPct": 2.0877340750487834,
+            "totalMs": 443.46,
+            "totalPct": 2.0877340750487834
+          },
+          {
+            "functionName": "_initContextRenderData",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:236",
+            "selfMs": 28.854000000000003,
+            "selfPct": 0.13583971271694764,
+            "totalMs": 442.39499999999975,
+            "totalPct": 2.082720236619325
+          }
+        ]
+      },
+      "cpuProfile": ".tmp/hmh-perf-crowd/profile-mobile-6x.cpuprofile",
+      "errors": [],
+      "screenshot": ".tmp/hmh-perf-crowd/profile-mobile-6x.png",
+      "scene": {
+        "samples": 256,
+        "enemies": {
+          "min": 101,
+          "mean": 116.8984375,
+          "max": 128
+        },
+        "projectiles": {
+          "min": 0,
+          "mean": 0.078125,
+          "max": 1
+        },
+        "animatedEnemies": {
+          "min": 32,
+          "mean": 32,
+          "max": 32
+        },
+        "corpses": {
+          "min": 0,
+          "mean": 2.9609375,
+          "max": 7
+        },
+        "goreMarks": {
+          "min": 10,
+          "mean": 15.95703125,
+          "max": 30
+        },
+        "goreFragments": {
+          "min": 0,
+          "mean": 1.84375,
+          "max": 4
+        },
+        "silverActive": {
+          "min": 0,
+          "mean": 4.57421875,
+          "max": 14
+        },
+        "silverVisible": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "killFxShards": {
+          "min": 0,
+          "mean": 0.890625,
+          "max": 9
+        },
+        "combatEvents": {
+          "min": 3,
+          "mean": 12.5625,
+          "max": 23
+        },
+        "weaponVfx": {
+          "min": 0,
+          "mean": 5.19921875,
+          "max": 16
+        },
+        "worldParticles": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "contactShadows": {
+          "min": 60,
+          "mean": 93.46875,
+          "max": 106
+        },
+        "atmosphereSprites": {
+          "min": 1,
+          "mean": 1.74609375,
+          "max": 3
+        },
+        "pickupMarkers": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "enemyTells": {
+          "min": 9,
+          "mean": 13.28125,
+          "max": 16
+        }
+      },
+      "discardedContendedAttempts": [
+        {
+          "hostBusyPct": 37.98397424445577,
+          "meanMs": 89.92957746478866,
+          "p95Ms": 139
+        }
+      ]
+    },
+    {
+      "mode": "timing",
+      "profileId": "desktop",
+      "cpu": 1,
+      "seed": 1213024260,
+      "gore": true,
+      "weapon": "coin-blaster",
+      "bootMs": 21699,
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "abortedRequests": 0,
+      "host": {
+        "cpus": 24,
+        "busyPct": 32.96076486626485,
+        "benchChromePct": 6.37103007324146,
+        "otherBusyPct": 26.589734793023393,
+        "contended": false,
+        "pinning": {
+          "mask": "0xFFFF",
+          "applied": false,
+          "processes": [
+            {
+              "type": "browser",
+              "id": 18332
+            },
+            {
+              "type": "renderer",
+              "id": 30568
+            },
+            {
+              "type": "renderer",
+              "id": 36340
+            },
+            {
+              "type": "renderer",
+              "id": 36972
+            },
+            {
+              "type": "GPU",
+              "id": 38872
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "id": 54408
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "id": 50276
+            },
+            {
+              "type": "chrome.mojom.ProcessorMetrics",
+              "id": 16720
+            },
+            {
+              "type": "unzip.mojom.Unzipper",
+              "id": 18776
+            }
+          ]
+        }
+      },
+      "processCpuSeconds": {
+        "browser": 1.2128930000000002,
+        "renderer": 18.924455000000002,
+        "GPU": 10.083193000000001,
+        "network.mojom.NetworkService": 0.04547199999999996,
+        "storage.mojom.StorageService": 0.00003399999999999931,
+        "audio.mojom.AudioService": 0.5658139999999999
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 1,
+      "renderResolution": null,
+      "adaptiveResolution": "1",
+      "canvas": {
+        "width": 1440,
+        "height": 900
+      },
+      "ticks": {
+        "from": 698,
+        "to": 1908,
+        "advanced": 1210
+      },
+      "simSpeed": 1.0001272889264992,
+      "droppedMs": 0,
+      "catchUpSaturationFramesInWindow": 0,
+      "activeMs": 20099.599999999995,
+      "upgradePicks": 7,
+      "silverCoinsOnScreen": {
+        "mean": 14.893907563025211,
+        "max": 32
+      },
+      "frames": {
+        "frames": 2855,
+        "meanMs": 7.037723292469348,
+        "p50Ms": 6.900000000001455,
+        "p95Ms": 7,
+        "p99Ms": 7.899999999997817,
+        "worstMs": 27.5,
+        "fpsMean": 142.09140633165288,
+        "over33Pct": 0,
+        "over50Pct": 0
+      },
+      "longTasks": {
+        "count": 0,
+        "over100": 0,
+        "maxMs": 0
+      },
+      "heap": {
+        "beforeUsed": 156022464,
+        "afterUsed": 79911768
+      },
+      "hotspots": null,
+      "cpuProfile": null,
+      "errors": [],
+      "screenshot": ".tmp/hmh-perf-crowd/timing-desktop-1x.png",
+      "scene": {
+        "samples": 271,
+        "enemies": {
+          "min": 81,
+          "mean": 101.64944649446494,
+          "max": 121
+        },
+        "projectiles": {
+          "min": 0,
+          "mean": 0.07380073800738007,
+          "max": 1
+        },
+        "animatedEnemies": {
+          "min": 64,
+          "mean": 64,
+          "max": 64
+        },
+        "corpses": {
+          "min": 1,
+          "mean": 4.413284132841328,
+          "max": 10
+        },
+        "goreMarks": {
+          "min": 10,
+          "mean": 16.623616236162363,
+          "max": 39
+        },
+        "goreFragments": {
+          "min": 0,
+          "mean": 3.3431734317343174,
+          "max": 12
+        },
+        "silverActive": {
+          "min": 2,
+          "mean": 13.273062730627306,
+          "max": 29
+        },
+        "silverVisible": {
+          "min": 0,
+          "mean": 7.239852398523985,
+          "max": 29
+        },
+        "killFxShards": {
+          "min": 0,
+          "mean": 3.3948339483394836,
+          "max": 24
+        },
+        "combatEvents": {
+          "min": 3,
+          "mean": 12.391143911439114,
+          "max": 23
+        },
+        "weaponVfx": {
+          "min": 0,
+          "mean": 5.4944649446494465,
+          "max": 20
+        },
+        "worldParticles": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "contactShadows": {
+          "min": 94,
+          "mean": 117.08487084870849,
+          "max": 132
+        },
+        "atmosphereSprites": {
+          "min": 2,
+          "mean": 3.2583025830258303,
+          "max": 4
+        },
+        "pickupMarkers": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "enemyTells": {
+          "min": 8,
+          "mean": 13.280442804428045,
+          "max": 17
+        }
+      },
+      "discardedContendedAttempts": [
+        {
+          "hostBusyPct": 37.97362630302446,
+          "meanMs": 7.0749384019711155,
+          "p95Ms": 7
+        },
+        {
+          "hostBusyPct": 39.622818783896435,
+          "meanMs": 7.184208658623133,
+          "p95Ms": 7.19999999999709
+        }
+      ]
+    },
+    {
+      "mode": "profile",
+      "profileId": "desktop",
+      "cpu": 1,
+      "seed": 1213024260,
+      "gore": true,
+      "weapon": "coin-blaster",
+      "bootMs": 18956,
+      "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "abortedRequests": 0,
+      "host": {
+        "cpus": 24,
+        "busyPct": 33.0309527295482,
+        "benchChromePct": 6.336761210805446,
+        "otherBusyPct": 26.694191518742752,
+        "contended": false,
+        "pinning": {
+          "mask": "0xFFFF",
+          "applied": false,
+          "processes": [
+            {
+              "type": "browser",
+              "id": 50468
+            },
+            {
+              "type": "renderer",
+              "id": 50956
+            },
+            {
+              "type": "renderer",
+              "id": 35480
+            },
+            {
+              "type": "renderer",
+              "id": 56360
+            },
+            {
+              "type": "GPU",
+              "id": 38916
+            },
+            {
+              "type": "network.mojom.NetworkService",
+              "id": 37568
+            },
+            {
+              "type": "storage.mojom.StorageService",
+              "id": 32688
+            },
+            {
+              "type": "chrome.mojom.ProcessorMetrics",
+              "id": 48240
+            },
+            {
+              "type": "unzip.mojom.Unzipper",
+              "id": 20228
+            }
+          ]
+        }
+      },
+      "processCpuSeconds": {
+        "browser": 1.126922,
+        "renderer": 19.206160999999994,
+        "GPU": 9.670912,
+        "network.mojom.NetworkService": 0.00861400000000001,
+        "storage.mojom.StorageService": 0.00003199999999999731,
+        "audio.mojom.AudioService": 0.531714
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 1,
+      "renderResolution": null,
+      "adaptiveResolution": "1",
+      "canvas": {
+        "width": 1440,
+        "height": 900
+      },
+      "ticks": {
+        "from": 724,
+        "to": 1932,
+        "advanced": 1208
+      },
+      "simSpeed": 1.0024513587080792,
+      "droppedMs": 46.532999999999994,
+      "catchUpSaturationFramesInWindow": 1,
+      "activeMs": 20162,
+      "upgradePicks": 7,
+      "silverCoinsOnScreen": {
+        "mean": 15.527641707487753,
+        "max": 33
+      },
+      "frames": {
+        "frames": 2857,
+        "meanMs": 7.005985299264955,
+        "p50Ms": 6.900000000001455,
+        "p95Ms": 7,
+        "p99Ms": 7.100000000002183,
+        "worstMs": 34.79999999999927,
+        "fpsMean": 142.7350982459122,
+        "over33Pct": 0.03500175008750438,
+        "over50Pct": 0
+      },
+      "longTasks": {
+        "count": 0,
+        "over100": 0,
+        "maxMs": 0
+      },
+      "heap": {
+        "beforeUsed": 63840540,
+        "afterUsed": 178234032
+      },
+      "hotspots": {
+        "totalMs": 20259.373999999847,
+        "idleMs": 6826.956000000016,
+        "busyMs": 13432.41799999983,
+        "top": [
+          {
+            "functionName": "(program)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 2367.787000000003,
+            "selfPct": 17.627407068481883,
+            "totalMs": 2367.787000000003,
+            "totalPct": 17.627407068481883
+          },
+          {
+            "functionName": "(garbage collector)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 611.4529999999996,
+            "selfPct": 4.552069478481145,
+            "totalMs": 611.4529999999996,
+            "totalPct": 4.552069478481145
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+            "selfMs": 560.4580000000001,
+            "selfPct": 4.172428225506437,
+            "totalMs": 1779.486999999999,
+            "totalPct": 13.247704173589755
+          },
+          {
+            "functionName": "Tn",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:1536",
+            "selfMs": 512.5159999999993,
+            "selfPct": 3.815515568380955,
+            "totalMs": 3525.948999999991,
+            "totalPct": 26.249547922049743
+          },
+          {
+            "functionName": "break",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:485",
+            "selfMs": 457.21799999999956,
+            "selfPct": 3.403839874548315,
+            "totalMs": 880.9290000000003,
+            "totalPct": 6.5582309901315705
+          },
+          {
+            "functionName": "Yg",
+            "originalName": "buildLine",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:163",
+            "selfMs": 432.4699999999995,
+            "selfPct": 3.219599032728173,
+            "totalMs": 650.2799999999999,
+            "totalPct": 4.841123913803219
+          },
+          {
+            "functionName": "a_",
+            "originalName": "buildContextBatches",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:44",
+            "selfMs": 363.8230000000002,
+            "selfPct": 2.708544358878683,
+            "totalMs": 2213.398999999995,
+            "totalPct": 16.47803842911993
+          },
+          {
+            "functionName": "packAttributes",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/DefaultBatcher.ts:100",
+            "selfMs": 351.6959999999999,
+            "selfPct": 2.6182627729423276,
+            "totalMs": 351.6959999999999,
+            "totalPct": 2.6182627729423276
+          },
+          {
+            "functionName": "de",
+            "originalName": "sampleSurface",
+            "source": "apps/hmh-reboot/src/elevation.mjs:108",
+            "selfMs": 325.59799999999984,
+            "selfPct": 2.4239716185127946,
+            "totalMs": 517.075,
+            "totalPct": 3.8494558462966726
+          },
+          {
+            "functionName": "n",
+            "originalName": "freezeDeep",
+            "source": "apps/hmh-reboot/src/value-guards.mjs:10",
+            "selfMs": 321.05100000000004,
+            "selfPct": 2.390120676709168,
+            "totalMs": 321.05100000000004,
+            "totalPct": 2.390120676709168
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/layers/RenderLayer.ts:452",
+            "selfMs": 257.28499999999997,
+            "selfPct": 1.9154034664496236,
+            "totalMs": 531.9739999999996,
+            "totalPct": 3.960374074124304
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "ticker",
+            "source": "apps/hmh-reboot/src/main.mjs:4962",
+            "selfMs": 245.8499999999999,
+            "selfPct": 1.8302735963100836,
+            "totalMs": 4977.603999999999,
+            "totalPct": 37.056649070927236
+          },
+          {
+            "functionName": "Zf",
+            "originalName": "updateTransformAndChildren",
+            "source": "node_modules/pixi.js/src/scene/container/utils/updateRenderGroupTransforms.ts:108",
+            "selfMs": 245.511,
+            "selfPct": 1.8277498511437265,
+            "totalMs": 245.511,
+            "totalPct": 1.8277498511437265
+          },
+          {
+            "functionName": "build",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:23",
+            "selfMs": 219.62199999999987,
+            "selfPct": 1.6350146339996465,
+            "totalMs": 219.62199999999987,
+            "totalPct": 1.6350146339996465
+          },
+          {
+            "functionName": "br",
+            "originalName": "round",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:83",
+            "selfMs": 217.80999999999995,
+            "selfPct": 1.6215248810750431,
+            "totalMs": 217.80999999999995,
+            "totalPct": 1.6215248810750431
+          },
+          {
+            "functionName": "bufferSubData",
+            "originalName": null,
+            "source": "",
+            "selfMs": 197.3719999999999,
+            "selfPct": 1.4693705928448801,
+            "totalMs": 197.3719999999999,
+            "totalPct": 1.4693705928448801
+          },
+          {
+            "functionName": "As.d.applyPose",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/enemy-roster-atlas.mjs:273",
+            "selfMs": 176.53300000000007,
+            "selfPct": 1.3142309895359294,
+            "totalMs": 360.7549999999998,
+            "totalPct": 2.6857040928893396
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:58",
+            "selfMs": 174.80200000000002,
+            "selfPct": 1.3013442553678887,
+            "totalMs": 3613.206999999989,
+            "totalPct": 26.899155461064677
+          },
+          {
+            "functionName": "updateGpuContext",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:189",
+            "selfMs": 170.76099999999997,
+            "selfPct": 1.2712603196237797,
+            "totalMs": 2407.4479999999935,
+            "totalPct": 17.92267036359369
+          },
+          {
+            "functionName": "stroke",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContext.ts:384",
+            "selfMs": 160.89300000000003,
+            "selfPct": 1.1977962567871403,
+            "totalMs": 224.58700000000016,
+            "totalPct": 1.6719774503741842
+          },
+          {
+            "functionName": "Qt",
+            "originalName": "renderWorldProductionArt",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:912",
+            "selfMs": 143.77300000000008,
+            "selfPct": 1.0703434035480572,
+            "totalMs": 1055.4559999999997,
+            "totalPct": 7.857527959597542
+          },
+          {
+            "functionName": "wb",
+            "originalName": "resolveEnemyRosterPose",
+            "source": "apps/hmh-reboot/src/enemy-roster-atlas.mjs:164",
+            "selfMs": 141.53300000000007,
+            "selfPct": 1.0536673292924763,
+            "totalMs": 141.53300000000007,
+            "totalPct": 1.0536673292924763
+          },
+          {
+            "functionName": "Og",
+            "originalName": "buildSimpleUvs",
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/geometry/utils/buildUvs.ts:63",
+            "selfMs": 135.7630000000001,
+            "selfPct": 1.0107115487323415,
+            "totalMs": 135.7630000000001,
+            "totalPct": 1.0107115487323415
+          },
+          {
+            "functionName": "addRenderable",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/sprite/SpritePipe.ts:29",
+            "selfMs": 133.755,
+            "selfPct": 0.9957626393103735,
+            "totalMs": 133.755,
+            "totalPct": 0.9957626393103735
+          },
+          {
+            "functionName": "xe",
+            "originalName": "contains",
+            "source": "apps/hmh-reboot/src/elevation.mjs:41",
+            "selfMs": 121.00700000000003,
+            "selfPct": 0.9008579095737012,
+            "totalMs": 121.00700000000003,
+            "totalPct": 0.9008579095737012
+          },
+          {
+            "functionName": "triangulate",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:167",
+            "selfMs": 115.474,
+            "selfPct": 0.8596665172272144,
+            "totalMs": 115.474,
+            "totalPct": 0.8596665172272144
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:84",
+            "selfMs": 102.535,
+            "selfPct": 0.7633398543732133,
+            "totalMs": 3614.751999999989,
+            "totalPct": 26.910657485495427
+          },
+          {
+            "functionName": "fill",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContext.ts:323",
+            "selfMs": 99.47500000000002,
+            "selfPct": 0.7405591457919287,
+            "totalMs": 169.79600000000002,
+            "totalPct": 1.2640762072770677
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/elevation.mjs:145",
+            "selfMs": 91.937,
+            "selfPct": 0.6844411780514957,
+            "totalMs": 685.6490000000007,
+            "totalPct": 5.104434659493244
+          },
+          {
+            "functionName": "lo",
+            "originalName": "screenBoundsVisible",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:287",
+            "selfMs": 90.36500000000001,
+            "selfPct": 0.6727381473685613,
+            "totalMs": 107.30200000000004,
+            "totalPct": 0.798828624898372
+          },
+          {
+            "functionName": "_update",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/SchedulerSystem.ts:99",
+            "selfMs": 86.52400000000003,
+            "selfPct": 0.6441431468258442,
+            "totalMs": 91.24200000000003,
+            "totalPct": 0.6792671282266617
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:3260",
+            "selfMs": 85.27700000000002,
+            "selfPct": 0.6348596358451702,
+            "totalMs": 1051.7389999999984,
+            "totalPct": 7.829856098879678
+          },
+          {
+            "functionName": "Ne",
+            "originalName": "computeEnemySeparation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:442",
+            "selfMs": 79.74199999999999,
+            "selfPct": 0.5936533541466696,
+            "totalMs": 79.74199999999999,
+            "totalPct": 0.5936533541466696
+          },
+          {
+            "functionName": "requestAnimationFrame",
+            "originalName": null,
+            "source": "",
+            "selfMs": 78.52099999999997,
+            "selfPct": 0.5845634047421764,
+            "totalMs": 78.52099999999997,
+            "totalPct": 0.5845634047421764
+          },
+          {
+            "functionName": "packQuadAttributes",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/DefaultBatcher.ts:152",
+            "selfMs": 75.25999999999998,
+            "selfPct": 0.5602863162834936,
+            "totalMs": 75.25999999999998,
+            "totalPct": 0.5602863162834936
+          },
+          {
+            "functionName": "Be",
+            "originalName": "toFillStyle",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/convertFillInputToFillStyle.ts:156",
+            "selfMs": 74.23299999999999,
+            "selfPct": 0.5526406340243502,
+            "totalMs": 104.93199999999995,
+            "totalPct": 0.781184742761886
+          },
+          {
+            "functionName": "wy",
+            "originalName": "view",
+            "source": "apps/hmh-reboot/src/main.mjs:1500",
+            "selfMs": 71.58499999999997,
+            "selfPct": 0.532927131957931,
+            "totalMs": 1202.1059999999993,
+            "totalPct": 8.949289696017608
+          },
+          {
+            "functionName": "frame",
+            "originalName": null,
+            "source": "http://127.0.0.1:50662/hmh-reboot/index.html?evidenceSafe=1&endurancePressurePilot=1:128:17",
+            "selfMs": 71.494,
+            "selfPct": 0.5322496664412982,
+            "totalMs": 139.553,
+            "totalPct": 1.0389268707987032
+          },
+          {
+            "functionName": "_initContextRenderData",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:236",
+            "selfMs": 66.48399999999998,
+            "selfPct": 0.4949518396464495,
+            "totalMs": 717.4489999999997,
+            "totalPct": 5.341175356514433
+          },
+          {
+            "functionName": "eo",
+            "originalName": "prepareWorldDesignEnemyPose",
+            "source": "apps/hmh-reboot/src/world-design-life.mjs:26",
+            "selfMs": 65.44099999999999,
+            "selfPct": 0.4871870425711947,
+            "totalMs": 412.3959999999999,
+            "totalPct": 3.070154606564545
+          }
+        ],
+        "topByTotal": [
+          {
+            "functionName": "_tick",
+            "originalName": "time",
+            "source": "node_modules/pixi.js/src/ticker/Ticker.ts:273",
+            "selfMs": 33.002,
+            "selfPct": 0.24568919758155544,
+            "totalMs": 10299.935000000072,
+            "totalPct": 76.67967896770487
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/ticker/Ticker.ts:643",
+            "selfMs": 32.300999999999995,
+            "selfPct": 0.24047047970067936,
+            "totalMs": 10236.52100000007,
+            "totalPct": 76.20758228339974
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/app/Application.ts:289",
+            "selfMs": 3.101,
+            "selfPct": 0.023085940297569947,
+            "totalMs": 5138.933000000004,
+            "totalPct": 38.25769120645344
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/system/AbstractRenderer.ts:308",
+            "selfMs": 10.846,
+            "selfPct": 0.08074495597144266,
+            "totalMs": 5135.832000000003,
+            "totalPct": 38.23460526615586
+          },
+          {
+            "functionName": "emit",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/renderers/shared/system/SystemRunner.ts:64",
+            "selfMs": 11.916,
+            "selfPct": 0.08871075929888536,
+            "totalMs": 5121.797000000003,
+            "totalPct": 38.13011923839824
+          },
+          {
+            "functionName": "render",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:45",
+            "selfMs": 12.222,
+            "selfPct": 0.09098883015701383,
+            "totalMs": 5032.031999999999,
+            "totalPct": 37.46184789663382
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "ticker",
+            "source": "apps/hmh-reboot/src/main.mjs:4962",
+            "selfMs": 245.8499999999999,
+            "selfPct": 1.8302735963100836,
+            "totalMs": 4977.603999999999,
+            "totalPct": 37.056649070927236
+          },
+          {
+            "functionName": "_updateRenderGroups",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:171",
+            "selfMs": 10.967,
+            "selfPct": 0.08164576176828431,
+            "totalMs": 3928.526999999993,
+            "totalPct": 29.246610699578014
+          },
+          {
+            "functionName": "_buildInstructions",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/RenderGroupSystem.ts:246",
+            "selfMs": 0,
+            "selfPct": 0,
+            "totalMs": 3630.733999999989,
+            "totalPct": 27.02963829743859
+          },
+          {
+            "functionName": "collectRenderablesWithEffects",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:99",
+            "selfMs": 3.282,
+            "selfPct": 0.02443342665482895,
+            "totalMs": 3616.2979999999893,
+            "totalPct": 26.92216695460218
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:84",
+            "selfMs": 102.535,
+            "selfPct": 0.7633398543732133,
+            "totalMs": 3614.751999999989,
+            "totalPct": 26.910657485495427
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/container/container-mixins/collectRenderablesMixin.ts:58",
+            "selfMs": 174.80200000000002,
+            "selfPct": 1.3013442553678887,
+            "totalMs": 3613.206999999989,
+            "totalPct": 26.899155461064677
+          },
+          {
+            "functionName": "Tn",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:1536",
+            "selfMs": 512.5159999999993,
+            "selfPct": 3.815515568380955,
+            "totalMs": 3525.948999999991,
+            "totalPct": 26.249547922049743
+          },
+          {
+            "functionName": "collectRenderablesSimple",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/view/ViewContainer.ts:202",
+            "selfMs": 47.732,
+            "selfPct": 0.35534927516401443,
+            "totalMs": 2902.3959999999915,
+            "totalPct": 21.607397863884433
+          },
+          {
+            "functionName": "addRenderable",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsPipe.ts:99",
+            "selfMs": 59.07599999999999,
+            "selfPct": 0.43980167978692103,
+            "totalMs": 2698.6479999999906,
+            "totalPct": 20.090560016819197
+          },
+          {
+            "functionName": "updateGpuContext",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:189",
+            "selfMs": 170.76099999999997,
+            "selfPct": 1.2712603196237797,
+            "totalMs": 2407.4479999999935,
+            "totalPct": 17.92267036359369
+          },
+          {
+            "functionName": "(program)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 2367.787000000003,
+            "selfPct": 17.627407068481883,
+            "totalMs": 2367.787000000003,
+            "totalPct": 17.627407068481883
+          },
+          {
+            "functionName": "a_",
+            "originalName": "buildContextBatches",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:44",
+            "selfMs": 363.8230000000002,
+            "selfPct": 2.708544358878683,
+            "totalMs": 2213.398999999995,
+            "totalPct": 16.47803842911993
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+            "selfMs": 560.4580000000001,
+            "selfPct": 4.172428225506437,
+            "totalMs": 1779.486999999999,
+            "totalPct": 13.247704173589755
+          },
+          {
+            "functionName": "wy",
+            "originalName": "view",
+            "source": "apps/hmh-reboot/src/main.mjs:1500",
+            "selfMs": 71.58499999999997,
+            "selfPct": 0.532927131957931,
+            "totalMs": 1202.1059999999993,
+            "totalPct": 8.949289696017608
+          },
+          {
+            "functionName": "update",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/simulation.mjs:153",
+            "selfMs": 38.889,
+            "selfPct": 0.28951600523450427,
+            "totalMs": 1099.0809999999988,
+            "totalPct": 8.182301950400984
+          },
+          {
+            "functionName": "Qt",
+            "originalName": "renderWorldProductionArt",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:912",
+            "selfMs": 143.77300000000008,
+            "selfPct": 1.0703434035480572,
+            "totalMs": 1055.4559999999997,
+            "totalPct": 7.857527959597542
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/main.mjs:3260",
+            "selfMs": 85.27700000000002,
+            "selfPct": 0.6348596358451702,
+            "totalMs": 1051.7389999999984,
+            "totalPct": 7.829856098879678
+          },
+          {
+            "functionName": "execute",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsPipe.ts:136",
+            "selfMs": 7.694000000000001,
+            "selfPct": 0.05727933719751795,
+            "totalMs": 951.3339999999995,
+            "totalPct": 7.082373404401289
+          },
+          {
+            "functionName": "execute",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/gl/GlGraphicsAdaptor.ts:65",
+            "selfMs": 1.535,
+            "selfPct": 0.01142757767067716,
+            "totalMs": 934.3119999999996,
+            "totalPct": 6.955650129410887
+          },
+          {
+            "functionName": "break",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/Batcher.ts:485",
+            "selfMs": 457.21799999999956,
+            "selfPct": 3.403839874548315,
+            "totalMs": 880.9290000000003,
+            "totalPct": 6.5582309901315705
+          },
+          {
+            "functionName": "_initContextRenderData",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:236",
+            "selfMs": 66.48399999999998,
+            "selfPct": 0.4949518396464495,
+            "totalMs": 717.4489999999997,
+            "totalPct": 5.341175356514433
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/elevation.mjs:145",
+            "selfMs": 91.937,
+            "selfPct": 0.6844411780514957,
+            "totalMs": 685.6490000000007,
+            "totalPct": 5.104434659493244
+          },
+          {
+            "functionName": "Yg",
+            "originalName": "buildLine",
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:163",
+            "selfMs": 432.4699999999995,
+            "selfPct": 3.219599032728173,
+            "totalMs": 650.2799999999999,
+            "totalPct": 4.841123913803219
+          },
+          {
+            "functionName": "nt",
+            "originalName": "stepEnemyPopulation",
+            "source": "apps/hmh-reboot/src/enemy-simulation.mjs:541",
+            "selfMs": 56.42699999999999,
+            "selfPct": 0.4200807330444951,
+            "totalMs": 637.1940000000002,
+            "totalPct": 4.743702883576198
+          },
+          {
+            "functionName": "getContextRenderData",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContextSystem.ts:177",
+            "selfMs": 0,
+            "selfPct": 0,
+            "totalMs": 613.0809999999996,
+            "totalPct": 4.564189411020468
+          },
+          {
+            "functionName": "(garbage collector)",
+            "originalName": null,
+            "source": "",
+            "selfMs": 611.4529999999996,
+            "selfPct": 4.552069478481145,
+            "totalMs": 611.4529999999996,
+            "totalPct": 4.552069478481145
+          },
+          {
+            "functionName": "collectRenderables",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/layers/RenderLayer.ts:452",
+            "selfMs": 257.28499999999997,
+            "selfPct": 1.9154034664496236,
+            "totalMs": 531.9739999999996,
+            "totalPct": 3.960374074124304
+          },
+          {
+            "functionName": "de",
+            "originalName": "sampleSurface",
+            "source": "apps/hmh-reboot/src/elevation.mjs:108",
+            "selfMs": 325.59799999999984,
+            "selfPct": 2.4239716185127946,
+            "totalMs": 517.075,
+            "totalPct": 3.8494558462966726
+          },
+          {
+            "functionName": "(anonymous)",
+            "originalName": "node",
+            "source": "apps/hmh-reboot/src/world-production-art.mjs:1088",
+            "selfMs": 26.914,
+            "selfPct": 0.20036601005120852,
+            "totalMs": 433.072,
+            "totalPct": 3.224080727684364
+          },
+          {
+            "functionName": "eo",
+            "originalName": "prepareWorldDesignEnemyPose",
+            "source": "apps/hmh-reboot/src/world-design-life.mjs:26",
+            "selfMs": 65.44099999999999,
+            "selfPct": 0.4871870425711947,
+            "totalMs": 412.3959999999999,
+            "totalPct": 3.070154606564545
+          },
+          {
+            "functionName": "As.d.applyPose",
+            "originalName": null,
+            "source": "apps/hmh-reboot/src/enemy-roster-atlas.mjs:273",
+            "selfMs": 176.53300000000007,
+            "selfPct": 1.3142309895359294,
+            "totalMs": 360.7549999999998,
+            "totalPct": 2.6857040928893396
+          },
+          {
+            "functionName": "packAttributes",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/rendering/batcher/shared/DefaultBatcher.ts:100",
+            "selfMs": 351.6959999999999,
+            "selfPct": 2.6182627729423276,
+            "totalMs": 351.6959999999999,
+            "totalPct": 2.6182627729423276
+          },
+          {
+            "functionName": "n",
+            "originalName": "freezeDeep",
+            "source": "apps/hmh-reboot/src/value-guards.mjs:10",
+            "selfMs": 321.05100000000004,
+            "selfPct": 2.390120676709168,
+            "totalMs": 321.05100000000004,
+            "totalPct": 2.390120676709168
+          },
+          {
+            "functionName": "_callContextMethod",
+            "originalName": null,
+            "source": "node_modules/pixi.js/src/scene/graphics/shared/Graphics.ts:292",
+            "selfMs": 36.804,
+            "selfPct": 0.2739938557600014,
+            "totalMs": 297.04200000000026,
+            "totalPct": 2.211381450458168
+          }
+        ]
+      },
+      "cpuProfile": ".tmp/hmh-perf-crowd/profile-desktop-1x.cpuprofile",
+      "errors": [],
+      "screenshot": ".tmp/hmh-perf-crowd/profile-desktop-1x.png",
+      "scene": {
+        "samples": 265,
+        "enemies": {
+          "min": 81,
+          "mean": 101.22264150943396,
+          "max": 120
+        },
+        "projectiles": {
+          "min": 0,
+          "mean": 0.07169811320754717,
+          "max": 1
+        },
+        "animatedEnemies": {
+          "min": 64,
+          "mean": 64,
+          "max": 64
+        },
+        "corpses": {
+          "min": 1,
+          "mean": 4.456603773584906,
+          "max": 10
+        },
+        "goreMarks": {
+          "min": 10,
+          "mean": 16.637735849056604,
+          "max": 39
+        },
+        "goreFragments": {
+          "min": 0,
+          "mean": 3.3849056603773584,
+          "max": 12
+        },
+        "silverActive": {
+          "min": 3,
+          "mean": 13.516981132075472,
+          "max": 29
+        },
+        "silverVisible": {
+          "min": 0,
+          "mean": 7.40377358490566,
+          "max": 29
+        },
+        "killFxShards": {
+          "min": 0,
+          "mean": 3.3811320754716983,
+          "max": 24
+        },
+        "combatEvents": {
+          "min": 3,
+          "mean": 12.347169811320756,
+          "max": 23
+        },
+        "weaponVfx": {
+          "min": 0,
+          "mean": 5.471698113207547,
+          "max": 20
+        },
+        "worldParticles": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "contactShadows": {
+          "min": 94,
+          "mean": 116.78490566037736,
+          "max": 132
+        },
+        "atmosphereSprites": {
+          "min": 2,
+          "mean": 3.2641509433962264,
+          "max": 4
+        },
+        "pickupMarkers": {
+          "min": 0,
+          "mean": 0,
+          "max": 0
+        },
+        "enemyTells": {
+          "min": 8,
+          "mean": 13.28679245283019,
+          "max": 17
+        }
+      },
+      "discardedContendedAttempts": []
+    }
+  ]
+}
