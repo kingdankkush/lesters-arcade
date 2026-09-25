@@ -11,7 +11,7 @@
  "body": {
   "v": "lesters-ranked-settle-v1",
   "gameId": "lester-blaster",
-  "sessionId32": "0x57649d5ae29d0d6a5c7a5130272580d3c357684a8fd38d482eb3ab6564bd803f",
+  "sessionId32": "0x00ce1841650a2a8d1d3efbd87caa05498e644bcc870b20a743a69fd7a92b6a98",
   "identity": {
    "sessionId": "game-session-11111111-1111-4111-8111-111111111111",
    "chainId": 4441,
@@ -19,15 +19,15 @@
    "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
    "gameId": "lester-blaster",
    "seasonId": "hmh-season-1-2026",
-   "buildHash": "site-1.7.0:game-1.7.0",
-   "seed": 2678882094,
+   "buildHash": "site-1.9.0:game-1.9.0",
+   "seed": 455822019,
    "nonce": "11111111-1111-4111-8111-111111111111"
   },
   "seedTicket": {
    "v": "lesters-ranked-seed-v1",
    "salt": "985ff850e3afdc62805cf3ffb4b65d73",
    "issuedAt": 1790000000,
-   "mac": "741209bb44f075f61a5804daa6ab8bdb1132dbfd998a8488b3d9898f0708405c"
+   "mac": "873cb6f3a7080847007d1070c195510f8dbf07cc46bff06f9da7e3ce7b88d2da"
   },
   "entryTxHash": null,
   "evidence": {
@@ -35,8 +35,8 @@
    "runSummary": {
     "schemaVersion": 7,
     "identity": {
-     "seed": 2678882094,
-     "buildHash": "site-1.7.0:game-1.7.0",
+     "seed": 455822019,
+     "buildHash": "site-1.9.0:game-1.9.0",
      "mode": "ranked",
      "heroId": "lit-valkyrie",
      "startTick": 0,
@@ -47,8 +47,8 @@
      "survivalTicks": 54000,
      "elapsedMs": 900000.0000000001,
      "score": 69510,
-     "level": 24,
-     "xp": 83138,
+     "level": 23,
+     "xp": 78272,
      "litecoin": 0,
      "currentCombo": 5,
      "maxCombo": 31,
@@ -597,78 +597,78 @@
     "upgrades": [
      {
       "upgradeId": "proof-of-work",
-      "offered": 4,
+      "offered": 3,
       "selected": 3
      },
      {
       "upgradeId": "diamond-hands",
-      "offered": 7,
+      "offered": 2,
       "selected": 2
      },
      {
       "upgradeId": "gas-optimization",
-      "offered": 3,
+      "offered": 2,
       "selected": 2
      },
      {
       "upgradeId": "cold-storage",
-      "offered": 3,
+      "offered": 5,
       "selected": 3
      },
      {
       "upgradeId": "block-reward",
-      "offered": 5,
+      "offered": 6,
       "selected": 0
      },
      {
       "upgradeId": "validator-training",
-      "offered": 3,
+      "offered": 0,
       "selected": 0
      },
      {
       "upgradeId": "compound-interest",
       "offered": 4,
-      "selected": 2
-     },
-     {
-      "upgradeId": "precision-ledger",
-      "offered": 3,
-      "selected": 3
-     },
-     {
-      "upgradeId": "hard-fork-rounds",
-      "offered": 3,
-      "selected": 3
-     },
-     {
-      "upgradeId": "hot-wallet",
-      "offered": 4,
-      "selected": 3
-     },
-     {
-      "upgradeId": "layer-two",
-      "offered": 3,
       "selected": 1
      },
      {
-      "upgradeId": "hardened-wallet",
-      "offered": 3,
+      "upgradeId": "precision-ledger",
+      "offered": 4,
+      "selected": 1
+     },
+     {
+      "upgradeId": "hard-fork-rounds",
+      "offered": 2,
       "selected": 0
      },
      {
+      "upgradeId": "hot-wallet",
+      "offered": 3,
+      "selected": 2
+     },
+     {
+      "upgradeId": "layer-two",
+      "offered": 7,
+      "selected": 5
+     },
+     {
+      "upgradeId": "hardened-wallet",
+      "offered": 1,
+      "selected": 1
+     },
+     {
       "upgradeId": "ledger-conductivity",
-      "offered": 0,
+      "offered": 2,
       "selected": 0
      },
      {
       "upgradeId": "ledger-voltage",
-      "offered": 0,
+      "offered": 1,
       "selected": 0
      },
      {
       "upgradeId": "ledger-reconciliation",
-      "offered": 1,
-      "selected": 1
+      "offered": 2,
+      "selected": 2
      },
      {
       "upgradeId": "proof-of-network",
@@ -791,9 +791,9 @@
      "damage": 25
     },
     "milestones": {
-     "levelUps": 23,
+     "levelUps": 22,
      "firstLevelUpTick": 1860,
-     "lastLevelUpTick": 53760,
+     "lastLevelUpTick": 52440,
      "bossEngagedTick": 0,
      "sites": [
       {
@@ -890,7 +890,7 @@
       "objectiveId": "crossing-behind-the-falls",
       "completed": 1,
       "tick": 15000,
-      "levelAtCompletion": 9
+      "levelAtCompletion": 10
      },
      {
       "objectiveId": "crossing-mill-storeroom",
@@ -920,7 +920,7 @@
       "objectiveId": "hashwood-hollow-grove",
       "completed": 1,
       "tick": 28200,
-      "levelAtCompletion": 14
+      "levelAtCompletion": 15
      },
      {
       "objectiveId": "hashwood-lamp-oil",
@@ -938,7 +938,7 @@
       "objectiveId": "hashwood-log-pile",
       "completed": 1,
       "tick": 25800,
-      "levelAtCompletion": 13
+      "levelAtCompletion": 14
      },
      {
       "objectiveId": "hashwood-lookout",
@@ -962,13 +962,13 @@
       "objectiveId": "mining-valve",
       "completed": 1,
       "tick": 35400,
-      "levelAtCompletion": 16
+      "levelAtCompletion": 17
      },
      {
       "objectiveId": "ravine-rope-bridge",
       "completed": 1,
       "tick": 10200,
-      "levelAtCompletion": 7
+      "levelAtCompletion": 8
      },
      {
       "objectiveId": "ravine-surveyor-cache",
@@ -980,13 +980,13 @@
       "objectiveId": "ravine-winch",
       "completed": 1,
       "tick": 7080,
-      "levelAtCompletion": 5
+      "levelAtCompletion": 6
      },
      {
       "objectiveId": "ravine-winch-handle",
       "completed": 1,
       "tick": 6600,
-      "levelAtCompletion": 5
+      "levelAtCompletion": 6
      },
      {
       "objectiveId": "relay-barn-doors",
@@ -1028,7 +1028,7 @@
       "objectiveId": "yard-warehouse",
       "completed": 1,
       "tick": 46200,
-      "levelAtCompletion": 20
+      "levelAtCompletion": 21
      },
      {
       "objectiveId": "yard-warehouse-gate",
@@ -1042,7 +1042,7 @@
       "slotId": "h1-baron-diggings",
       "rescued": 1,
       "tick": 9600,
-      "levelAtRescue": 7
+      "levelAtRescue": 8
      },
      {
       "slotId": "h2-foreman-hoist-vault",
@@ -1084,7 +1084,7 @@
       "slotId": "p6-yard-warehouse-compound",
       "rescued": 1,
       "tick": 48600,
-      "levelAtRescue": 21
+      "levelAtRescue": 22
      }
     ],
     "bosses": [
@@ -1160,7 +1160,7 @@
      }
     ],
     "progression": {
-     "offersOpened": 23,
+     "offersOpened": 22,
      "evolutionOffersOpened": 0,
      "rerolls": 7,
      "sealsFound": 2,
@@ -1179,18 +1179,18 @@
      "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
      "gameId": "lester-blaster",
      "seasonId": "hmh-season-1-2026",
-     "buildHash": "site-1.7.0:game-1.7.0",
-     "seed": 2678882094,
+     "buildHash": "site-1.9.0:game-1.9.0",
+     "seed": 455822019,
      "nonce": "11111111-1111-4111-8111-111111111111",
-     "sessionKey": "0x57649d5ae29d0d6a5c7a5130272580d3c357684a8fd38d482eb3ab6564bd803f"
+     "sessionKey": "0x00ce1841650a2a8d1d3efbd87caa05498e644bcc870b20a743a69fd7a92b6a98"
     },
     "inputHash": "0x7fa9fb50b49ba3660e0e516718bb0d2c1a4abe75a6bf831260d0f1f5697b2c0c",
-    "eventHash": "0x5ecef7ac34b9c0621e9ee64d78248004b46616ebbe65c8704937429ca82a9c9b",
-    "finalStateHash": "0x6760da273bdd5bc2b610dccb315ea5e8d70a1982c768bc7d3a99df774fd4f846",
+    "eventHash": "0x1fc0baac9f6f577db6a91cc1140fbcd7a5169540c9b832bf5725a3c6a4f0f7a5",
+    "finalStateHash": "0x5f6d90e0ec6789e15add327f9574f0702287f436e51198a4ac97155c9bf95d0b",
     "inputTransitions": 90,
-    "gameplayEvents": 254,
-    "sessionKey": "0x57649d5ae29d0d6a5c7a5130272580d3c357684a8fd38d482eb3ab6564bd803f",
-    "envelopeHash": "0x0e112d6c1da4239f9ffe501a557b03843cb33764d9c5c93530820725ebd85917"
+    "gameplayEvents": 253,
+    "sessionKey": "0x00ce1841650a2a8d1d3efbd87caa05498e644bcc870b20a743a69fd7a92b6a98",
+    "envelopeHash": "0x3bfba33c0ac40fdec8c3af7228b4903acb241e7d8f29195f9571150300620ede"
    }
   },
   "claim": {
@@ -1199,9 +1199,9 @@
  },
  "expected": {
   "score": 69510,
-  "evidenceDigest": "0x325fe500ec107858d7d58b51c2727c983a7c8d3ed9fd051f0a7b2bc627dfe96d",
-  "evidenceBytes": 16371,
-  "seed": 2678882094,
+  "evidenceDigest": "0xdd24f10468bc8164752341cc699b0af407a779a66c2c68d44cdb5a69bf28d945",
+  "evidenceBytes": 16370,
+  "seed": 455822019,
   "plausibility": {
    "verdict": "ok",
    "flags": []

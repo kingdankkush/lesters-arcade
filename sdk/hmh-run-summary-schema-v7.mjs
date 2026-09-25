@@ -11,7 +11,7 @@
 //
 // Its validateRunSummaryPayload answers schema 1-6 exactly as the base module
 // (it delegates to it), and validates schema 7 against the V7 catalogues:
-// every v6 rule first, then the rows and rules S1-S16.
+// every v6 rule first, then the rows and rules S1-S18.
 import {
   HMH_RUN_SUMMARY_CATALOGS_V6,
   isRunSummaryInteger as integer,
@@ -125,17 +125,44 @@ export function hmhRunSummaryCatalogs(schemaVersion) {
 }
 
 // Held prisoners (contract §6 S9): the cage opens only after its boss's arena
-// was initiated (a champion arena frees it without a kill).
+// was initiated (a champion arena frees it without a kill), and after the
+// defeat when the boss was defeated.
 export const HMH_V7_HELD_PRISONER_BOSSES = Object.freeze({
   'h1-baron-diggings': 'rug-pull-baron',
   'h2-foreman-hoist-vault': 'fifty-one-percent-foreman',
 });
 export const HMH_V7_PROGRESSION_FIELDS = Object.freeze(['offersOpened', 'evolutionOffersOpened', 'rerolls', 'sealsFound', 'sealsBanked', 'evolutionsApplied', 'revivesUsed']);
 
+// The gun every run starts with: owned from tick 0, so it records no pickup
+// (rule S18). Every other gun records a pickup when the run first owns it.
+export const HMH_V7_START_WEAPON = 'coin-blaster';
+// Weapon-gated upgrades (rule S18): a gun's card is shown only while the run
+// owns the gun. sdk/hmh-run-contract-v7.mjs carries the same gates as
+// HMH_V7_UPGRADES requiresWeaponId and refuses to load if they differ.
+const gate = (weaponId, ids) => ids.map((id) => [id, weaponId]);
+export const HMH_V7_UPGRADE_WEAPON_GATES = Object.freeze(Object.fromEntries([
+  ...gate('lightning-ledger', ['ledger-conductivity', 'ledger-voltage', 'ledger-reconciliation', 'proof-of-network']),
+  ...gate('bear-market-burner', ['burner-liquidity', 'burner-volatility', 'burner-contagion', 'total-selloff']),
+  ...gate('forked-standard', ['standard-reach', 'standard-force', 'standard-tempo', 'canonical-fork']),
+  ...gate('scatter-shotgun', ['scatter-pump', 'scatter-dump', 'scatter-shells']),
+  ...gate('auto-miner', ['miner-hashrate', 'miner-asic', 'miner-pool']),
+  ...gate('hash-rail', ['rail-blocktime', 'rail-proof', 'rail-mempool']),
+  ...gate('launcher-rig', ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier']),
+]));
+// Evolution rows reserved for wave 2 (rule S10): they stay 0 until those guns'
+// policies accept evolutions.
+export const HMH_V7_RESERVED_EVOLUTIONS = Object.freeze(['lightning-network', 'burn-address', 'chain-split']);
+// A boss's strikes stop landing within this many ticks of its defeat (rule
+// S17; the child clears a fallen boss's telegraphs well inside it).
+export const HMH_V7_BOSS_STRIKE_AFTER_DEFEAT_TICKS = 300;
+// Evolutions applied only from an evolution panel (rule S10): the Pistol never
+// evolves automatically.
+export const HMH_V7_PANEL_ONLY_EVOLUTIONS = Object.freeze(['settler-rail']);
+
 const sum = (list, field) => list.reduce((total, row) => total + row[field], 0);
 const rowsById = (list, idKey) => Object.fromEntries(list.map((row) => [row[idKey], row]));
 
-// Schema 7 (contract §6, S1-S16). Structural only: the payload, catalogue sizes
+// Schema 7 (contract §6, S1-S18). Structural only: the payload, catalogue sizes
 // and small fixed caps. Runs after every v6 rule has passed with the V7
 // catalogues (S0), so the v6 rows are known to be dense and well formed here.
 function validateSchema7(payload, C) {
@@ -179,15 +206,22 @@ function validateSchema7(payload, C) {
   if (!payload.milestones.sites.every((row) => objectives[row.siteId].completed === row.operated && objectives[row.siteId].tick === row.tick)
     || !payload.milestones.secrets.every((row) => objectives[row.secretId].completed === row.found && objectives[row.secretId].tick === row.tick)) return 'game:run-summary milestones do not match the objectives';
 
-  // S9: a held prisoner is freed only after its boss's arena was initiated.
+  // S9: a held prisoner is freed only after its boss's arena was initiated,
+  // and, when the boss was defeated, only from its defeat (the cage is behind
+  // the boss-reward gate; a champion arena frees it without a kill).
   const prisoners = rowsById(payload.prisoners, 'slotId');
   for (const [slotId, bossId] of Object.entries(HMH_V7_HELD_PRISONER_BOSSES)) {
     const cage = prisoners[slotId];
-    if (cage.rescued === 1 && (bosses[bossId].initiations < 1 || cage.tick < bosses[bossId].firstInitiatedTick)) return 'game:run-summary a held prisoner was rescued before its boss';
+    const holder = bosses[bossId];
+    if (cage.rescued === 1 && (holder.initiations < 1 || cage.tick < holder.firstInitiatedTick || cage.tick < holder.defeatedTick)) return 'game:run-summary a held prisoner was rescued before its boss';
   }
 
-  // S10: an evolution applies once, and the rows add up to the counter.
-  if (!payload.evolutions.every((row) => row.applied <= 1) || sum(payload.evolutions, 'applied') !== progression.evolutionsApplied) return 'game:run-summary evolutions are invalid';
+  // S10: an evolution applies once, and the rows add up to the counter. The
+  // wave-2 rows stay 0, and the Pistol's evolution needs a panel that showed it.
+  const evolutions = rowsById(payload.evolutions, 'evolutionId');
+  if (!payload.evolutions.every((row) => row.applied <= 1) || sum(payload.evolutions, 'applied') !== progression.evolutionsApplied
+    || HMH_V7_RESERVED_EVOLUTIONS.some((id) => evolutions[id].offered !== 0 || evolutions[id].applied !== 0)
+    || HMH_V7_PANEL_ONLY_EVOLUTIONS.some((id) => evolutions[id].applied === 1 && evolutions[id].offered < 1)) return 'game:run-summary evolutions are invalid';
   // S11: at most one Genesis Seal per defeated boss; each Seal is applied or banked.
   const defeatedBosses = payload.bosses.filter((row) => row.defeatedTick > 0).length;
   if (progression.sealsFound > defeatedBosses || progression.evolutionsApplied > progression.sealsFound
@@ -200,14 +234,35 @@ function validateSchema7(payload, C) {
   if (progression.offersOpened > L - 1 || sum(payload.upgrades, 'selected') > progression.offersOpened) return 'game:run-summary level-up offers are inconsistent';
   // S14: one re-roll per card, two cards per offer.
   if (progression.rerolls > 2 * (progression.offersOpened + progression.evolutionOffersOpened)) return 'game:run-summary rerolls are inconsistent';
-  // S15: two cards per offer, plus one per re-roll.
-  if (sum(payload.upgrades, 'offered') > 2 * progression.offersOpened + progression.rerolls
-    || sum(payload.evolutions, 'offered') > 2 * progression.evolutionOffersOpened + progression.rerolls) return 'game:run-summary offered cards are inconsistent';
+  // S15: two cards per offer, plus one per re-roll, counted once across both
+  // kinds of panel; a card shown in an offer never comes back in that offer.
+  const upgradeCards = sum(payload.upgrades, 'offered');
+  const evolutionCards = sum(payload.evolutions, 'offered');
+  if (upgradeCards > 2 * progression.offersOpened + progression.rerolls
+    || evolutionCards > 2 * progression.evolutionOffersOpened + progression.rerolls
+    || upgradeCards + evolutionCards > 2 * (progression.offersOpened + progression.evolutionOffersOpened) + progression.rerolls
+    || payload.upgrades.some((row) => row.offered > progression.offersOpened)
+    || payload.evolutions.some((row) => row.offered > progression.evolutionOffersOpened)) return 'game:run-summary offered cards are inconsistent';
   // S16: the one revive is the Golden Parachute, which only a Dark Pool win
-  // grants: the Warehouse Logbook entered by the Liquidator's last initiation.
+  // grants. The trigger that first initiates the Liquidator owns every later
+  // initiation (package 4.3), and the mission step records the logbook before
+  // the tick's boss starts (package 3.2), so the Dark Pool owns the fight only
+  // when the Warehouse Logbook was entered by the first initiation.
   const logbook = rowsById(payload.milestones.secrets, 'secretId')['warehouse-logbook'];
   if (progression.revivesUsed > 1 || (progression.revivesUsed === 1 && !(bosses.liquidator.defeatedTick > 0
-    && logbook.found === 1 && logbook.tick <= bosses.liquidator.lastInitiatedTick))) return 'game:run-summary the revive has no Golden Parachute';
+    && logbook.found === 1 && logbook.tick <= bosses.liquidator.firstInitiatedTick))) return 'game:run-summary the revive has no Golden Parachute';
+  // S17: a boss defeat names a boss attack (its causeId is boss-<attackId>), so
+  // some boss was initiated by then and had not fallen more than
+  // HMH_V7_BOSS_STRIKE_AFTER_DEFEAT_TICKS earlier.
+  const tick = payload.defeat.tick;
+  if (payload.defeat.kind === 'boss' && !payload.bosses.some((row) => row.initiations > 0 && row.firstInitiatedTick <= tick
+    && (row.defeatedTick === 0 || tick <= row.defeatedTick + HMH_V7_BOSS_STRIKE_AFTER_DEFEAT_TICKS))) return 'game:run-summary a boss defeat needs a live boss';
+  // S18: a gun's upgrade cards and its evolution are shown only for a gun the
+  // run owns: the starting Pistol, or a gun with a recorded pickup.
+  const weapons = rowsById(payload.weapons, 'weaponId');
+  const owned = (weaponId) => weaponId === HMH_V7_START_WEAPON || weapons[weaponId].pickups >= 1;
+  if (payload.upgrades.some((row) => row.offered > 0 && Object.hasOwn(HMH_V7_UPGRADE_WEAPON_GATES, row.upgradeId) && !owned(HMH_V7_UPGRADE_WEAPON_GATES[row.upgradeId]))
+    || payload.evolutions.some((row, index) => (row.offered > 0 || row.applied > 0) && !owned(C.weapons[index]))) return 'game:run-summary a gun card was shown for a gun the run never owned';
   return '';
 }
 

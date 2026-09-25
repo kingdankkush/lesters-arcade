@@ -11,7 +11,14 @@
 // Every value here is part of the Ranked verifier contract. Changing one
 // changes what a v7 summary may claim, so it changes only together with
 // server/verify/hmh-plausibility.mjs and its tests.
-import { HMH_RUN_SUMMARY_CATALOGS_V7 as C7, HMH_V7_HELD_PRISONER_BOSSES } from './hmh-run-summary-schema-v7.mjs';
+import {
+  HMH_RUN_SUMMARY_CATALOGS_V7 as C7,
+  HMH_V7_HELD_PRISONER_BOSSES,
+  HMH_V7_PANEL_ONLY_EVOLUTIONS,
+  HMH_V7_RESERVED_EVOLUTIONS,
+  HMH_V7_START_WEAPON,
+  HMH_V7_UPGRADE_WEAPON_GATES,
+} from './hmh-run-summary-schema-v7.mjs';
 
 const freezeDeep = (value) => {
   for (const child of Object.values(value)) if (child && typeof child === 'object') freezeDeep(child);
@@ -26,6 +33,32 @@ const covering = (table, ids, label) => {
 };
 
 export const HMH_RUN_SUMMARY_V7_SCHEMA_VERSION = 7;
+
+// ---------------------------------------------------------------------------
+// §2.1 The build that may carry schema 7. The v7 child ships at this game
+// version or later, and a 1.8.x child never emits schema 7, so a schema-7
+// summary whose identity.buildHash names an older game (or no game version at
+// all) cannot come from a v7 child. The build hash is the session's
+// (site-X.Y.Z:game-X.Y.Z, bound to the seed ticket), so this reads no clock.
+// The converse is not a rule: a portal at this version can host a 1.8.x child
+// cached by the service worker, which still emits schema 6 (owner override 2).
+export const HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION = '1.9.0';
+const GAME_VERSION_IN_BUILD = /(?:^|:)game-(\d{1,9})\.(\d{1,9})\.(\d{1,9})(?=$|:)/;
+
+// → [major, minor, patch], or null when the build hash names no game version.
+export function hmhGameVersionOfBuild(buildHash) {
+  const match = typeof buildHash === 'string' ? GAME_VERSION_IN_BUILD.exec(buildHash) : null;
+  return match ? Object.freeze(match.slice(1, 4).map(Number)) : null;
+}
+
+// True when the build hash names a game version at or after the first v7 child.
+export function isHmhV7Build(buildHash) {
+  const version = hmhGameVersionOfBuild(buildHash);
+  if (!version) return false;
+  const minimum = HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION.split('.').map(Number);
+  for (let index = 0; index < 3; index += 1) if (version[index] !== minimum[index]) return version[index] > minimum[index];
+  return true;
+}
 
 // ---------------------------------------------------------------------------
 // §5.1 Run rules.
@@ -64,6 +97,24 @@ export const HMH_V7_RUN_RULES = freezeDeep({
   // An OG Miner rescue grants exactly 300 x level XP, never multiplied.
   OG_MINER_XP_PER_LEVEL: 300,
 });
+
+// §5.1 Collectible pickups (every collectibles row but genesis-seal, whose
+// pickups are the Seals of S11 and S12). Pickups come only from authored
+// placements: at most 13 world placements (10 authored and 3 scheduled rare)
+// and 8 objective-reward placements, and a placement that re-arms does so no
+// sooner than 7,200 ticks after its pickup (the 1.8.1 createCollectibleState
+// limits; parity test). Prisoner, strongbox, secret and haven grants are not
+// pickups (§11).
+export const HMH_V7_COLLECTIBLE_RULES = freezeDeep({
+  MAX_PLACEMENTS: 13 + 8,
+  MIN_REARM_TICKS: 7_200,
+});
+
+// At most this many collectible pickups (genesis-seal excluded) by `runTicks`.
+export function hmhV7CollectibleCapacity(runTicks) {
+  const rules = HMH_V7_COLLECTIBLE_RULES;
+  return rules.MAX_PLACEMENTS * (1 + Math.floor(runTicks / rules.MIN_REARM_TICKS));
+}
 
 // XP that completes level L; levels run to MAX_LEVEL.
 export function hmhV7LevelThreshold(level) {
@@ -104,8 +155,9 @@ export const HMH_V7_ROLE_THREAT = covering({
 // ---------------------------------------------------------------------------
 // §5.3 The shared boss kit, and the obligations it puts on the child. The
 // verifier's boss bounds are sound only while the child honours all of them:
-//   - Intro: a boss takes no damage of any kind (burn, DoT, hazards and the
-//     nuke included) at any tick t with t - initiationTick < BOSS_INTRO_MIN_TICKS.
+//   - Intro: a boss started with an intro (every start but the Dark Pool) takes
+//     no damage of any kind (burn, DoT, hazards and the nuke included) at any
+//     tick t with t - initiationTick < BOSS_INTRO_MIN_TICKS.
 //   - Phases: every v7 boss has exactly BOSS_PHASE_THRESHOLDS HP thresholds.
 //     Crossing one at tick t clamps the overshoot to the threshold, and the
 //     boss takes no damage at ticks t+1 ... t+BOSS_PHASE_HALT_TICKS.
@@ -113,14 +165,19 @@ export const HMH_V7_ROLE_THREAT = covering({
 //     engaged ticks, its channel takes at least BOSS_RETREAT_CHANNEL_TICKS, and
 //     the boss is ready again only BOSS_READY_AGAIN_TICKS after the retreat
 //     completes.
-//   - Adds: slot b inserts at most BOSS_ADDS_FIRST + BOSS_ADDS_PER_WINDOW x
-//     floor(activeTicks_b / BOSS_ADD_WINDOW_TICKS) adds over the whole run,
-//     where activeTicks_b sums (end - initiationTick) over b's engagements
-//     (end = defeat, retreat or run end). A retreat never refills the budget.
-//   - Scripted bodies (guard crews, secret ambushes, dormant Revenants,
-//     champion-arena waves) consume director capacity-bank slots, which accrue
-//     only from due, unused ENCOUNTER_BAND_SCHEDULE insertions.
-//   - At most one boss slot is live at a time.
+//   - Capacity bank: every insertion except the opening enemies, a boss body
+//     and the first BOSS_ADDS_FIRST adds a boss slot inserts in the whole run
+//     is made only while the number of such insertions so far is below
+//     directorSpawnCapacity(tick) over ENCOUNTER_BAND_SCHEDULE. The director's
+//     scheduled insertions, scripted bodies (guard crews, secret ambushes,
+//     dormant Revenants, champion-arena waves, paired spawns) and every further
+//     boss add draw from it; what the bank cannot cover waits or shrinks.
+//     While a boss is live the director is suppressed (package 4.1), so a
+//     fight refills the bank by at least one slot per 90 ticks (every band
+//     from 3,600 on). A retreat never refills a slot's first adds.
+//   - A slot inserts no add in the first BOSS_ADD_DELAY_TICKS of an engagement.
+//   - At most one boss slot is live at a time: no trigger starts a boss while
+//     another is live.
 //   - One Genesis Seal per boss id per run, dropped only by a real defeat
 //     (never by a champion arena), and the boss's silver burst replaces the
 //     1.8.1 boss drop of 10 coins.
@@ -138,14 +195,19 @@ export const HMH_V7_BOSS_RULES = (() => {
     // Intro plus one halt per threshold. An honest defeat is at least
     // intro + 1 + thresholds x (halt + 1) = 302 ticks after the initiation.
     BOSS_MIN_FIGHT_TICKS: intro + thresholds * halt,
+    // A start without an intro (the Dark Pool): the halts alone. An honest
+    // defeat is at least thresholds x (halt + 1) = 182 ticks after it.
+    BOSS_MIN_FIGHT_TICKS_WITHOUT_INTRO: thresholds * halt,
     BOSS_RETREAT_RING_TICKS: ring,
     BOSS_RETREAT_CHANNEL_TICKS: channel,
     BOSS_READY_AGAIN_TICKS: readyAgain,
     // Consecutive initiations of one boss are at least this far apart.
     BOSS_REINITIATION_MIN_TICKS: ring + channel + readyAgain,
+    // Adds beyond the capacity bank, once per slot per run.
     BOSS_ADDS_FIRST: 4,
-    BOSS_ADDS_PER_WINDOW: 4,
-    BOSS_ADD_WINDOW_TICKS: 960,
+    // No add in the first halt-length of an engagement: the intro bosses are
+    // passive for 120 ticks, and the Liquidator's first adds come in phase 2.
+    BOSS_ADD_DELAY_TICKS: halt,
     MAX_ACTIVE_BOSSES: 1,
     SEALS_PER_BOSS: 1,
   });
@@ -154,13 +216,15 @@ export const HMH_V7_BOSS_RULES = (() => {
 // The four bosses, west to east (V7 bosses catalogue order). Kill XP and score
 // come from the threat (hmhV7KillXp / hmhV7KillScore: 560 / 720 / 880 / 1,040
 // XP and 700 / 900 / 1,100 / 1,300 score before multipliers). HP thresholds
-// are fractions of maximum HP; targetSeconds feeds hmhV7BossHp.
+// are fractions of maximum HP; targetSeconds feeds hmhV7BossHp. minFightTicks
+// is the shortest defeat after the last initiation: the Liquidator's allows the
+// Dark Pool start, which has no intro (package 4.3).
 export const HMH_V7_BOSSES = covering({
-  'rug-pull-baron': { district: 'rugpull-ravine', readyTick: 7_200, threat: 24, silverBurst: 15, phaseThresholds: [0.6, 0.25], targetSeconds: 90 },
-  lockkeeper: { district: 'liquidity-crossing', readyTick: 18_000, threat: 32, silverBurst: 20, phaseThresholds: [0.65, 0.3], targetSeconds: 105 },
-  'fifty-one-percent-foreman': { district: 'mining-camp', readyTick: 27_000, threat: 40, silverBurst: 20, phaseThresholds: [0.65, 0.3], targetSeconds: 120 },
-  // One row for both triggers (Closing Bell and the Dark Pool).
-  liquidator: { district: 'liquidation-yard', readyTick: 36_000, threat: 48, silverBurst: 25, phaseThresholds: [0.66, 0.33], targetSeconds: 150 },
+  'rug-pull-baron': { district: 'rugpull-ravine', readyTick: 7_200, threat: 24, silverBurst: 15, phaseThresholds: [0.6, 0.25], targetSeconds: 90, minFightTicks: HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS },
+  lockkeeper: { district: 'liquidity-crossing', readyTick: 18_000, threat: 32, silverBurst: 20, phaseThresholds: [0.65, 0.3], targetSeconds: 105, minFightTicks: HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS },
+  'fifty-one-percent-foreman': { district: 'mining-camp', readyTick: 27_000, threat: 40, silverBurst: 20, phaseThresholds: [0.65, 0.3], targetSeconds: 120, minFightTicks: HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS },
+  // One row for both triggers (Closing Bell, with an intro, and the Dark Pool, without).
+  liquidator: { district: 'liquidation-yard', readyTick: 36_000, threat: 48, silverBurst: 25, phaseThresholds: [0.66, 0.33], targetSeconds: 150, minFightTicks: HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS_WITHOUT_INTRO },
 }, C7.bosses, 'HMH_V7_BOSSES');
 
 // A boss may be initiated at `tick` only once it is ready.
@@ -276,7 +340,8 @@ export function dealHmhPrisoners(seed) {
 // ---------------------------------------------------------------------------
 // §3.5 Evolutions (V7 evolutions catalogue order = weapon order). Mastery is
 // the upgrade ranks the gun needs (flag only). Wave 2 (rows 5-7) stays 0 until
-// those weapons' policies accept evolutions.
+// those weapons' policies accept evolutions (schema rule S10), and the Pistol
+// never evolves automatically, only from an evolution panel (package 8.4).
 export const HMH_V7_EVOLUTIONS = covering({
   'settler-rail': { weaponId: 'coin-blaster', wave: 1, mastery: { 'proof-of-work': 3, 'hot-wallet': 3, 'block-reward': 3 } },
   'double-spend': { weaponId: 'scatter-shotgun', wave: 1, mastery: { 'scatter-pump': 3, 'scatter-dump': 3, 'scatter-shells': 3 } },
@@ -287,6 +352,15 @@ export const HMH_V7_EVOLUTIONS = covering({
   'burn-address': { weaponId: 'bear-market-burner', wave: 2, mastery: { 'burner-liquidity': 3, 'burner-volatility': 3, 'burner-contagion': 3, 'total-selloff': 1 } },
   'chain-split': { weaponId: 'forked-standard', wave: 2, mastery: { 'standard-reach': 3, 'standard-force': 3, 'standard-tempo': 3, 'canonical-fork': 1 } },
 }, C7.evolutions, 'HMH_V7_EVOLUTIONS');
+
+// The schema's evolution rules (S10, S18) read these rows through catalogue
+// order, the reserved list and the panel-only list, or the module refuses to load.
+C7.evolutions.forEach((id, index) => {
+  const evolution = HMH_V7_EVOLUTIONS[id];
+  if (evolution.weaponId !== C7.weapons[index]
+    || (evolution.wave === 2) !== HMH_V7_RESERVED_EVOLUTIONS.includes(id)
+    || (evolution.weaponId === HMH_V7_START_WEAPON) !== HMH_V7_PANEL_ONLY_EVOLUTIONS.includes(id)) throw new Error(`HMH_V7_EVOLUTIONS ${id} must match the schema's evolution rules`);
+});
 
 // ---------------------------------------------------------------------------
 // §5.6 Upgrades: the 24 v6 ids keep their 1.8.1 maxRank and weapon gate; the
@@ -330,5 +404,10 @@ export const HMH_V7_UPGRADES = covering({
   'launcher-yield': { maxRank: 3, requiresWeaponId: 'launcher-rig' },
   'launcher-bandolier': { maxRank: 3, requiresWeaponId: 'launcher-rig' },
 }, C7.upgrades, 'HMH_V7_UPGRADES');
+
+// The schema's weapon gates (rule S18) are this table's, or the module refuses to load.
+for (const id of C7.upgrades) {
+  if (HMH_V7_UPGRADES[id].requiresWeaponId !== (HMH_V7_UPGRADE_WEAPON_GATES[id] ?? null)) throw new Error(`HMH_V7_UPGRADES ${id} must carry the schema's weapon gate`);
+}
 
 export const HMH_V7_UPGRADE_MAX_RANKS = Object.freeze(Object.fromEntries(C7.upgrades.map((id) => [id, HMH_V7_UPGRADES[id].maxRank])));
