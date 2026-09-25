@@ -32,15 +32,18 @@ function teaseHarness({ live, mode = 'ranked', answer = fixture('open-funded'), 
   const documentRef = fakeDocument();
   const modeTease = documentRef.body.appendChild(documentRef.createElement('ul'));
   const calls = [];
+  const intervals = [];
+  const clock = { now };
   const context = {
-    JACKPOT_LIVE: live, mode, modeTease, document: documentRef, jackpotTease: undefined,
+    JACKPOT_LIVE: live, mode, modeTease, document: documentRef, jackpotApi: undefined, jackpotSkew: 0,
     buildChikunModeTease, buildChikunJackpotTease, AbortSignal: { timeout: () => undefined },
-    Date: { now: () => now, parse: Date.parse },
+    Date: { now: () => clock.now, parse: Date.parse },
     Number, Math,
+    setInterval: (callback, ms) => intervals.push({ callback, ms }),
     fetch: async (url, init) => { calls.push({ url, init }); return responseOf(answer, headers); },
   };
   const render = runInNewContext(`${declaration('loadJackpotTease')}\n${declaration('renderModeTease')}\n;renderModeTease`, context);
-  return { render, modeTease, calls, context };
+  return { render, modeTease, calls, context, intervals, clock };
 }
 
 test('chikun child keeps the rewards tease while the flag is false', async () => {
@@ -114,6 +117,39 @@ test('chikun child shows the jackpot detail copy when live, funded or not', asyn
   failed.render();
   await flush(10);
   assert.equal(failed.modeTease.querySelectorAll('li').length, 1, 'only the daily tease');
+  // An answer the line cannot read (a fractional decimals) shows no rewards line, now or later.
+  const fractional = fixture('open-funded');
+  fractional.token.decimals = 1.5;
+  const unreadable = teaseHarness({ live: true, answer: fractional });
+  unreadable.render();
+  await flush(10);
+  unreadable.render();
+  assert.equal(unreadable.modeTease.querySelectorAll('li').length, 1);
+  assert.deepEqual(unreadable.intervals, []);
+});
+
+test('chikun child drops the jackpot line at the close on its corrected clock', async () => {
+  // Answered at 23:58 UTC on the week's last Sunday, read by a viewer clock 2 hours slow (Age-corrected).
+  const close = Date.parse(fixture('open-funded').current.closesAt);
+  const answeredAt = close - 2 * 60_000;
+  const answer = { ...fixture('open-funded'), serverTime: new Date(answeredAt).toISOString() };
+  const slow = 2 * 3_600_000;
+  const page = teaseHarness({ live: true, answer, headers: { age: '0' }, now: answeredAt - slow });
+  page.render();
+  await flush(10);
+  assert.equal(visibleText(page.modeTease.querySelectorAll('li')[1]), `Weekly Jackpot: 10,000 tCHIKUN (testnet token, no value) · closes in 0h 2m${CHIKUN_JACKPOT_DETAIL}`);
+  assert.deepEqual(page.intervals.map((entry) => entry.ms), [30_000], 'the start screen re-renders while it shows');
+  // One minute later the countdown moves; after the close the line is gone, never a stale prize.
+  page.clock.now += 60_000;
+  page.intervals[0].callback();
+  assert.match(visibleText(page.modeTease), /closes in 0h 1m/);
+  page.clock.now = close - slow + 3 * 3_600_000;
+  page.intervals[0].callback();
+  assert.equal(page.modeTease.querySelectorAll('li').length, 1, 'only the daily tease once the week closed');
+  assert.doesNotMatch(visibleText(page.modeTease), /Weekly Jackpot|tCHIKUN/);
+  page.render();
+  assert.doesNotMatch(visibleText(page.modeTease), /Weekly Jackpot/, 'a later render rebuilds from the answer too');
+  assert.equal(page.calls.length, 1, 'still one request per page');
 });
 
 test('chikun child imports only same-origin jackpot replays', async () => {

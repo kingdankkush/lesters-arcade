@@ -374,15 +374,20 @@ function setModePresentation() {
 }
 
 // Weekly Jackpot lines (jackpot design §D.3): Ranked only, while JACKPOT_LIVE; the child reads the
-// same-origin API itself (4 s timeout) and corrects its clock with the answer's Age header.
-let jackpotTease;
+// same-origin API itself (4 s timeout) and corrects its clock with the answer's Age header. The lines
+// are rebuilt from the answer on every render and every 30 s, so "closes in" counts down and the line
+// goes at closesAt on the corrected clock. An answer buildChikunJackpotTease cannot read throws here
+// once and is dropped.
+let jackpotApi, jackpotSkew = 0;
 function loadJackpotTease() {
-  if (jackpotTease !== undefined) return;
-  jackpotTease = null;
+  if (jackpotApi !== undefined) return;
+  jackpotApi = null;
   const asked = Date.now();
   fetch('/api/jackpot?game=chikun', { signal: AbortSignal.timeout?.(4000) }).then((response) => response.json().then((api) => {
     const skew = Date.parse(api.serverTime) + (response.headers.get('age') || 0) * 1000 - asked;
-    jackpotTease = buildChikunJackpotTease(api, Date.now() + (Math.abs(skew) > 5000 ? skew : 0));
+    buildChikunJackpotTease(api, Date.now() + (jackpotSkew = Math.abs(skew) > 5000 ? skew : 0));
+    jackpotApi = api;
+    setInterval(renderModeTease, 30000);
     renderModeTease();
   })).catch(() => {});
 }
@@ -394,7 +399,7 @@ function renderModeTease() {
   if (JACKPOT_LIVE && mode === 'ranked') {
     loadJackpotTease();
     // No jackpot line yet (or none to show): no rewards line either.
-    tease = { ...tease, rewards: '', ...jackpotTease };
+    tease = { ...tease, rewards: '', ...(jackpotApi && buildChikunJackpotTease(jackpotApi, Date.now() + jackpotSkew)) };
   }
   modeTease.replaceChildren();
   for (const [title, detail] of [[tease.daily, tease.dailyDetail], [tease.rewards, tease.rewardsDetail]]) {
