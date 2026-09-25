@@ -208,18 +208,44 @@ Unit tests, run in this change:
   `stacked-music-worlds`, `stacked-board-pulse`, `stacked-music-scenes`,
   `stacked-shell-ui`, `stacked-menu-navigation` and `stacked-preferences-bridge`
 
-Still owed, because browser runs and the release gate were not available in
-this session:
+Browser and build pass (2026-09-25, rebased on `da3c0756`):
 
-- `npm run build`. It includes the STACKED entry and initial JS caps. The entry
-  now imports `stacked-player-settings.mjs`, which the portal shares.
-- `scripts/stacked-playable-browser-smoke.mjs`, `scripts/stacked-reactive-evidence-smoke.mjs`
-  and `scripts/stacked-visualizer-performance.mjs`. They have been retargeted to
-  the new card but have not been run.
-- Screenshots of the closed and open card at desktop, 390 px and 320 px,
-  including the 2 × 2 segments.
-- A gamepad pass through the card.
-- A visual check that the gentle glow reads at Standard.
+- `npm run build` passes. STACKED initial JS is 574,752 B against the 607,000 B
+  cap, and the entry is 27,725 B against 29,000 B.
+- `scripts/stacked-playable-browser-smoke.mjs` passes all six Free profiles
+  (1440, 1024, 768, 844 × 390, 390 and 320) with no browser errors. The two
+  Ranked preview passes report NOT RUN, because the served portal has
+  `SETTLEMENT_LIVE = true`.
+- `scripts/stacked-reactive-evidence-smoke.mjs` passes at 1280 × 800 and
+  390 × 844. At Standard with Reduced flashes on, the board pulse read 0.05–0.07,
+  inside the 0.12 gentle ceiling. Calm and Off held the scene and the pulse at 0.
+  In the stills, the 6 px ring outside the well is about 7 levels brighter in
+  green and blue at Standard than at Calm or Off. The glow is visible but faint.
+- `scripts/stacked-visualizer-performance.mjs` ran with no long tasks. The Calm
+  pass (`mobile-minimal`) reports `audio: false`, so the host stops sampling as
+  designed.
+- `scripts/stacked-cabinet-browser-smoke.mjs`, `stacked-visualizer-browser-smoke`,
+  `stacked-music-worlds-browser` and `stacked-particles-browser` pass.
+- `scripts/stacked-settings-gamepad-smoke.mjs` is new. It uses a stubbed
+  standard pad at 1280 and 390. Down reaches the Settings tile and A opens the
+  card on the checked preset. Left and right are clamped, and the radio group
+  counts as one stop. Down and up wrap between Continue and Game sounds, and
+  Left-handed buttons is a stop only on touch. Every change reaches the parent
+  key, and the run never starts.
+
+The first browser run found two defects, which are now fixed:
+
+- The segment pills were 18 px tall inside 44 px hit areas. The generic `label`
+  rule centres its children, so the inset bar crossed the "Standard" text.
+  `.segment` now sets `align-items:stretch`. At 320, 390 and 1280 px every pill
+  measures 44 px tall and fills its target.
+- At 390 px the reactive smoke read `aria-expanded="false"` right after the
+  Settings tile opened the card. The `details` toggle event is queued, so the
+  tile click and the results screen now update the tile in the same task
+  (`mirrorSettingsTile`). The toggle listener still covers summary clicks.
+
+STACKED has no light theme (`game.css` has no `prefers-color-scheme` rule), so
+the card was checked in its single dark theme only.
 
 ## For the release notes
 

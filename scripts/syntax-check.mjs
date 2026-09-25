@@ -146,6 +146,7 @@ const NODE_CHECK_FILES = [
   'apps/stacked/src/preferences-bridge.mjs',
   'tests/stacked-preferences-bridge.test.mjs',
   'scripts/stacked-reactive-evidence-smoke.mjs',
+  'scripts/stacked-settings-gamepad-smoke.mjs',
   'tests/profile-sync-client.test.mjs',
   'tests/hmh-reboot-silver-score.test.mjs',
   'apps/hmh-reboot/src/pickup-banner.mjs',
