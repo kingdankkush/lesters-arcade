@@ -1,12 +1,6 @@
 const EPSILON = 1e-9;
 
-import { finite } from './value-guards.mjs';
-
-function nonNegative(value, name) {
-  finite(value, name);
-  if (value < 0) throw new TypeError(`${name} must be non-negative`);
-  return value;
-}
+import { finite, nonNegative } from './value-guards.mjs';
 
 function normalize(vector) {
   const x = finite(vector?.x ?? 0, 'vector.x');

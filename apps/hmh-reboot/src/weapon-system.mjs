@@ -13,7 +13,7 @@ import {
   resolveForkedStandardPolicy,
   stepForkedStandard,
 } from './forked-standard.mjs';
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, positive, validSeed } from './value-guards.mjs';
 import {
   LIGHTNING_LEDGER_CONFIG,
   createLightningLedgerState,
@@ -22,26 +22,14 @@ import {
   stepLightningLedger,
 } from './lightning-ledger.mjs';
 const TICKS_PER_SECOND = 60;
-const UINT32_MAX = 0xffff_ffff;
 const EPSILON = 1e-12;
 
 
 import { finite } from './value-guards.mjs';
 
-function positive(value, name) {
-  finite(value, name);
-  if (value <= 0) throw new TypeError(`${name} must be positive`);
-  return value;
-}
-
 function validTick(value, name = 'tick') {
   if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
   return value;
-}
-
-function validSeed(value) {
-  if (!Number.isInteger(value) || value < 0 || value > UINT32_MAX) throw new TypeError('seed must be an unsigned 32-bit integer');
-  return value >>> 0;
 }
 
 function normalize(direction) {

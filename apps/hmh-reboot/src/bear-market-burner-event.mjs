@@ -1,10 +1,9 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, lexical } from './value-guards.mjs';
 import { mix } from './deterministic-hash.mjs';
 
 export const BEAR_MARKET_BURNER_EVENT_BOUNDS = freezeDeep({ minTick: 7_200, maxTick: 32_400, protectedRadius: 140 });
 const DISTRICTS = new Set(['rugpull-ravine', 'mining-camp', 'liquidation-yard']);
 const OFFSETS = freezeDeep([{ x: 210, y: 0 }, { x: 0, y: 210 }, { x: -210, y: 0 }, { x: 0, y: -210 }]);
-const lexical = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 export function createBearMarketBurnerEvent({ seed, candidates, protectedPoints = [], queryGround, isBlocked, isRouteReachable } = {}) {
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
   if (!Array.isArray(candidates) || candidates.length < 1 || candidates.length > 64) throw new TypeError('one to 64 Burner event candidates are required');

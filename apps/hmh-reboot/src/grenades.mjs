@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegative, positive } from './value-guards.mjs';
 import { createProjectileState, resolveProjectilePath } from './projectile-physics.mjs';
 
 const EPSILON = 1e-9;
@@ -6,18 +6,6 @@ const FIXED_STEP_SECONDS = 1 / 60;
 
 
 import { finite } from './value-guards.mjs';
-
-function positive(value, name) {
-  finite(value, name);
-  if (value <= 0) throw new TypeError(`${name} must be positive`);
-  return value;
-}
-
-function nonNegative(value, name) {
-  finite(value, name);
-  if (value < 0) throw new TypeError(`${name} must be non-negative`);
-  return value;
-}
 
 function point3(value, name) {
   return {

@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, validSeed } from './value-guards.mjs';
 
 export const RUN_UPGRADE_CATALOG = freezeDeep({
   'proof-of-work': {
@@ -259,11 +259,6 @@ const EFFECT_DEFAULTS = Object.freeze({
 
 const COMBO_MILESTONE_XP = Object.freeze({ 5: 120, 10: 240, 20: 480, 30: 900 });
 export const comboMilestoneXp = (combo) => COMBO_MILESTONE_XP[combo] ?? 0;
-
-function validSeed(value) {
-  if (!Number.isInteger(value) || value < 0 || value > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
-  return value >>> 0;
-}
 
 function hashChoice(seed, value) {
   let hash = (seed ^ 0x811c9dc5) >>> 0;

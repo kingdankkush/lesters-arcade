@@ -13,7 +13,7 @@ import {
   grantRunXp,
   selectRunUpgrade,
 } from './run-progression.mjs';
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 import { createWeaponLoadout, stepWeaponLoadout } from './weapon-system.mjs';
 
 export const BASE_CRITICAL_CHANCE = 0.08;
@@ -27,11 +27,6 @@ const BUILD_SELECTIONS = freezeDeep({
   'mobility-control': 'gas-optimization',
   'precision-ledger': 'precision-ledger',
 });
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
 
 function roundDamage(value) {
   return Math.round(value * 1_000_000) / 1_000_000;

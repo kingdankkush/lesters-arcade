@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, positive } from './value-guards.mjs';
 export const WORLD_COORDINATES = Object.freeze({
   axes: Object.freeze({ x: 'right', y: 'down', z: 'up' }),
   depthAxis: 'y',
@@ -19,12 +19,6 @@ export const DEPTH_BANDS = Object.freeze({
 const DEFAULT_WORLD_BOUNDS = Object.freeze({ minX: 0, minY: 0, maxX: 4096, maxY: 4096 });
 
 import { clamp, finite } from './value-guards.mjs';
-
-function positive(value, name) {
-  finite(value, name);
-  if (value <= 0) throw new TypeError(`${name} must be positive`);
-  return value;
-}
 
 function finiteBounds(bounds = DEFAULT_WORLD_BOUNDS) {
   const result = {

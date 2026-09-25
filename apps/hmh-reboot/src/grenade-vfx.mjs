@@ -1,17 +1,6 @@
 const DEFAULT_SEGMENTS = 32;
 
-import { finite } from './value-guards.mjs';
-
-function positive(value, name) {
-  finite(value, name);
-  if (value <= 0) throw new TypeError(`${name} must be positive`);
-  return value;
-}
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
+import { finite, nonNegativeInteger, positive } from './value-guards.mjs';
 
 function clamp01(value) {
   return Math.max(0, Math.min(1, value));
