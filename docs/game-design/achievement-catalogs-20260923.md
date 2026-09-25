@@ -62,7 +62,7 @@
 
 ### HMH enemy families
 
-The three hunt achievements count families of reboot enemy roles (`HMH_ROLE_FAMILIES` in `hmh.mjs`). The boss (`liquidator`) belongs to no family. `familyKills` in the stats always has all four keys.
+The three hunt achievements count families of reboot enemy roles (`HMH_ROLE_FAMILIES` in `hmh.mjs`). The boss (`liquidator`) belongs to no family. Neither do the roles run summary schema 7 adds (the six new enemies and the three district bosses), so the hunt achievements keep their named-enemy meaning. `familyKills` in the stats always has all four keys.
 
 | Family | Reboot roles | Legacy resolver id | Hunt achievement |
 | --- | --- | --- | --- |
@@ -76,10 +76,12 @@ The three hunt achievements count families of reboot enemy roles (`HMH_ROLE_FAMI
 - **Grenade kills:** `grenades.kills`, which counts Satoshi Frag and Launcher Rig kills.
 - **Melee kills:** `kills.byWeapon` for `litecoin-knife` plus `forked-standard`.
 - **Weapons used:** the weapons with `equippedTicks > 0`, sorted.
-- **Power-ups:** every collectible except `litecoin-token` (weapon caches, bonus life, Hash Rail core, time dilation, Berserk Candle, nuke).
+- **Power-ups:** every collectible except `litecoin-token` and `genesis-seal` (weapon caches, bonus life, Hash Rail core, time dilation, Berserk Candle, nuke). The Genesis Seal is a schema-7 boss drop, not a power-up.
 - **Districts visited and POIs discovered:** the bits set in the exploration masks.
 - **`noDamage`:** `damageTaken === 0`. **`perfectBossKill`:** a boss kill with `noDamage`.
-- **`bossEngaged`:** `milestones.bossEngagedTick > 0` (schema 6), otherwise a boss kill.
+- **`bossEngaged`:** `milestones.bossEngagedTick > 0` (schema 6 and 7), otherwise a boss kill.
+- **Boss kills (`bossKills`):** `kills.boss`, the Liquidator. Run summary schema 7 adds three district bosses (the Rug Pull Baron, the Lockkeeper and the 51% Foreman) and pins `kills.boss` to the Liquidator's row (`docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md` §10), so for schema 7 as for schema 6, `beat-level-1-boss`, `boss-breaker`, `getaway-clear`, `boss-rush-ten` and `perfectBossKill` mean the Liquidator. District-boss kills are in `killsByRole` only and count toward no achievement until arcade-core and the parity tests gain per-boss inputs; `bossEngaged` likewise means the Liquidator's first initiation. The browser (`recordScore`) and the server agree on this run by run (`tests/server-verify-hmh-v7.test.mjs`).
+- **Catalogue per summary:** the mapper reads the catalogues of the summary's own schema version, so a schema-6 summary maps to the same keys, values and order as before schema 7 (`killsByRole` has 7 roles for schema 6, 16 for schema 7).
 
 ## Calibration sources
 
@@ -132,7 +134,7 @@ The ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test p
 | 5 | `ten-enemy-kills` | Ten-Enemy Cleanup | bronze | kill | `kills ≥ 10` in one run | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 6 | `first-grenade-kill` | Crypto Bomb Initiate | bronze | grenade | `grenadeKills` (sum + run) `≥ 1`; grenade kills are `grenades.kills` (Satoshi Frag and Launcher Rig kills) | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); cumulative, like the legacy resolver |
 | 7 | `first-powerup` | Pickup Ready | bronze | collection | `powerUpsCollected` (sum + run) `≥ 1`; every collectible except `litecoin-token` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); cumulative, like the legacy resolver |
-| 8 | `beat-level-1-boss` | Beat Level 1 Boss | bronze | boss | `bossKills ≥ 1` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); a boss kill now, not a boss encounter |
+| 8 | `beat-level-1-boss` | Beat Level 1 Boss | bronze | boss | `bossKills ≥ 1` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); a boss kill now, not a boss encounter; the Liquidator only, also in run summary schema 7 |
 | 9 | `five-minute-run` | Five-Minute Fighter | bronze | survival | `survivalSeconds ≥ 300` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 10 | `combo-starter` | Combo Starter | bronze | combo | `maxCombo ≥ 5` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 11 | `gas-beast-hunter` | Gas-Tax Hunter | silver | enemy-hunt | Σ `familyKills.gasBeast` (Gas Bomber kills) `≥ 50` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); family table above |
@@ -145,11 +147,11 @@ The ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test p
 | 18 | `powerup-collector` | Power-Up Collector | silver | collection | 3 or more distinct `uniquePowerUps` in one run | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 19 | `score-5000` | 5K Scorecard | silver | score | `score ≥ 5,000` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 20 | `score-10000` | 10K Neon Run | silver | score | `score ≥ 10,000` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
-| 21 | `boss-breaker` | Boss Breaker | gold | boss | `bossKills ≥ 1` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
+| 21 | `boss-breaker` | Boss Breaker | gold | boss | `bossKills ≥ 1` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); the Liquidator only, also in run summary schema 7 |
 | 22 | `no-damage-boss` | Untouchable Boss Clear | gold | skill | Intended: Beat a boss without taking damage during the boss phase. | **no**: The summary records no boss-phase damage, and every verified run ends `defeated` with damage taken, so "no damage" never holds. | no | Unavailable |
 | 23 | `slums-clear` | Wasteland Clear | gold | level-clear | `districtsVisited ≥ 2` (legacy stage 4) | yes | no | Legacy stage 4 mapped to districts (contract §6.4) |
 | 24 | `foundry-clear` | POI Clear | gold | level-clear | `districtsVisited ≥ 4` (legacy stage 8) | yes | no | Legacy stage 8 mapped to districts |
-| 25 | `getaway-clear` | Getaway Clear | gold | level-clear | `districtsVisited = 6` and `bossKills ≥ 1` (legacy stage 13 + boss) | yes | no | Legacy stage 13 mapped to districts; id kept (the Lester legacy migration key) |
+| 25 | `getaway-clear` | Getaway Clear | gold | level-clear | `districtsVisited = 6` and `bossKills ≥ 1` (legacy stage 13 + boss) | yes | no | Legacy stage 13 mapped to districts; id kept (the Lester legacy migration key); the boss is the Liquidator, also in run summary schema 7 |
 | 26 | `big-combo` | Big Combo | gold | combo | `maxCombo ≥ 15` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 27 | `damage-chain` | Damage Chain | gold | combo | `damageDealt ≥ 20,000` in one run | yes | no | **Remap, estimate**: the summary records no damage chains; 20,000 is roughly a 12-15 minute run on the reboot health curve (enemies reach their full 64-240 HP at minute 10) |
 | 28 | `weapon-collector` | Weapon Collector | gold | collection | `uniqueWeaponCount ≥ 3` in one run | yes | no | Remap: history keeps numeric sums only, so "three weapons across runs" became "three weapons in one run" |
@@ -166,7 +168,7 @@ The ids, titles and tiers are unchanged from `ACHIEVEMENT_DEFINITIONS` (a test p
 | 39 | `blade-samurai` | Blade Samurai | platinum | melee | Σ `meleeKills ≥ 250` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 40 | `powerup-hoarder` | Power-Up Hoarder | platinum | collection | Σ `powerUpsCollected ≥ 250` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
 | 41 | `ranked-regular` | Ranked Regular+ | diamond | volume | `history.runs + 1 ≥ 50` | yes | no | Server-counted verified runs (`history.runs + 1`) |
-| 42 | `boss-rush-ten` | Boss Rush Ten | diamond | boss | Σ `bossKills ≥ 10` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |
+| 42 | `boss-rush-ten` | Boss Rush Ten | diamond | boss | Σ `bossKills ≥ 10` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`); Liquidator kills only, also in run summary schema 7 |
 | 43 | `speed-clear` | Speed Clear | diamond | skill | Intended: Beat the Level 1 boss in under 8 minutes. | **no**: The boss band opens at tick 72,000 (20 minutes), so a boss kill under 8 minutes is impossible, and the summary has no boss-kill tick to remap to. | no | Unavailable |
 | 44 | `hard-fork-hero` | Hard Fork Hero | diamond | grenade | `districtsVisited = 6` and `grenadeKills ≥ 20` in one run | yes | no | Legacy stage 13 mapped to districts |
 | 45 | `max-combo-30` | 30-Combo Signal | diamond | combo | `maxCombo ≥ 30` | yes | no | Legacy threshold (`ACHIEVEMENT_DEFINITIONS`) |

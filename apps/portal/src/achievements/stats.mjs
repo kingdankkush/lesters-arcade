@@ -6,7 +6,7 @@
 // checks, so a throw there is a server-side inconsistency, not the player's
 // fault: it propagates and settle answers a retryable 500, never a 422 that
 // rejects the paid run (verify's policy, server/verify/verified-run.mjs).
-import { HMH_RUN_SUMMARY_CATALOGS } from '../../../../sdk/hmh-run-summary-schema.mjs';
+import { hmhRunSummaryCatalogs } from '../../../../sdk/hmh-run-summary-schema-v7.mjs';
 import { distanceAtTick } from '../chikun-ground-course.mjs';
 import { CHIKUN_REGIONS } from '../chikun-course-regions.mjs';
 import { zoneForTick } from '../stacked-sim.mjs';
@@ -87,10 +87,16 @@ export function statsFromStackedTuple(tuple) {
 }
 
 // ---------------------------------------------------------------------------
-// Hard Money Heroes: the canonical run summary (sdk/hmh-run-summary.mjs).
-const C = HMH_RUN_SUMMARY_CATALOGS;
+// Hard Money Heroes: the canonical run summary (sdk/hmh-run-summary.mjs). Each
+// summary reads its own schema version's catalogues, so a schema-6 summary maps
+// to the same keys, values and order as before schema 7 existed.
+//
+// bossKills is kills.boss, which counts the Liquidator (the Level 1 boss) in
+// every schema: schema 7 pins it to the Liquidator's row and keeps district
+// boss kills in kills.byEnemyRole only (run summary v7 contract §10).
 const MELEE_WEAPONS = Object.freeze(['litecoin-knife', 'forked-standard']);
-const NOT_POWER_UPS = Object.freeze(['litecoin-token']);
+// The Litecoin token and the Genesis Seal (a boss drop, schema 7) are not power-ups.
+const NOT_POWER_UPS = Object.freeze(['litecoin-token', 'genesis-seal']);
 
 function rowsById(rows, ids, idKey, label) {
   if (!Array.isArray(rows)) throw new TypeError(`${label} must be an array`);
@@ -106,6 +112,7 @@ function hmhParts(summary) {
   if (!summary || typeof summary !== 'object') throw new TypeError('HMH run summary must be an object');
   const { identity, totals, kills, weapons, grenades, collectibles, exploration } = summary;
   if (!identity || !totals || !kills || !grenades || !exploration) throw new TypeError('HMH run summary is incomplete');
+  const C = hmhRunSummaryCatalogs(summary.schemaVersion);
   const byRole = rowsById(kills.byEnemyRole, C.enemyRoles, 'enemyRoleId', 'kills.byEnemyRole');
   const byWeapon = rowsById(kills.byWeapon, C.weapons, 'weaponId', 'kills.byWeapon');
   const weaponRows = rowsById(weapons, C.weapons, 'weaponId', 'weapons');
