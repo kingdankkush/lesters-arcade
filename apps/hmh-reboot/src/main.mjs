@@ -428,6 +428,7 @@ async function boot() {
   // The enemy display pool is fetched beside the renderer init and awaited
   // before the first marker exists, so it stays out of the initial JS.
   const enemyDisplayPoolModule = import('./enemy-display-pool.mjs');
+  const staticWorldBakeModule = import('./world-static-bake.mjs');
   const app = new Application();
   let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
   let bridge = null;
@@ -744,6 +745,12 @@ async function boot() {
   let enemyHitFeedback = null, enemyHitFeedbackRequested = false;
   const enemyHitFeedbackById = new Map();
   app.stage.addChild(world, atmosphereTint, overlayVisuals, bossLabel);
+  // The static ground (and the decals on it) is drawn once around the camera
+  // and translated; only its animated pass draws every frame. Projection only.
+  const worldBake = (await staticWorldBakeModule).createStaticWorldBake({
+    worldProduction, world: LEVEL_ONE_WORLD, render: renderWorldProductionArt,
+    ContainerClass: Container, GraphicsClass: Graphics, extraLayers: [worldDecalLayer],
+  });
 
 
   const authoredPointOfInterestPlacements = buildAuthoredPointOfInterestPlacements(LEVEL_ONE_WORLD.pointsOfInterest);
@@ -1495,9 +1502,8 @@ async function boot() {
   const viewport = () => ({ width: app.screen.width, height: app.screen.height });
 
   let worldArtReport = null;
-  let decalsDrawn = 0;
   const renderAuthoredTerrain = (view) => {
-    worldArtReport = renderWorldProductionArt({
+    worldArtReport = worldBake.render({
       worldProduction,
       world: LEVEL_ONE_WORLD,
       camera,
@@ -1508,18 +1514,12 @@ async function boot() {
       performanceProfile,
       terrainTiles,
       nativeBlockerIds: new Set([...worldDesignBlockerIds, ...worldDesignState.openGates]),
-    });
-    // Decals draw immediately after the terrain material, into their own layer
-    // beneath every prop and actor. Culled to the viewport, so an off-screen
-    // mark costs a comparison rather than a path.
-    decalsDrawn = drawWorldDecals({
-      target: worldDecalLayer,
-      decals: worldDecals,
-      camera,
-      view,
-      project: worldToScreen,
-    });
-    dataset.worldDecalsVisible = String(decalsDrawn);
+    // Decals draw with the bake, into their own layer beneath every prop and
+    // actor, culled to the bake view, and move with the baked ground.
+    }, (bakeCamera, bakeView) => {
+      worldDecalLayer.clear();
+      dataset.worldDecalsVisible = String(drawWorldDecals({ target: worldDecalLayer, decals: worldDecals, camera: bakeCamera, view: bakeView, project: worldToScreen }));
+    }, worldDecals);
   };
 
   const renderAuthoredCollision = (view) => {
@@ -1532,21 +1532,21 @@ async function boot() {
 
 
 
+  // Clearing an already empty Graphics still marks it dirty, which rebuilds
+  // its GPU data and the stage's instruction set for nothing. Every path drawn
+  // into these layers ends in a fill or stroke, so no instructions means
+  // nothing to clear.
+  const wipe = (...graphics) => { for (const graphic of graphics) if (graphic.context.instructions.length) graphic.clear(); };
   const renderWorld = (renderState = renderActor ?? actor) => {
     const view = viewport();
-    backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 });
-    worldDecalLayer.clear();
+    const viewKey = `${view.width}x${view.height}`;
+    if (backdrop.drawnFor !== viewKey) backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 }).drawnFor = viewKey;
     contactShadowPool?.begin();
     weaponVfxPool?.begin();
     atmospherePool?.begin();
-    grid.clear();
-    collisionDebug.clear();
-    projectileTrails.clear();
+    wipe(grid, collisionDebug, projectileTrails, projectileImpacts, grenadeVisuals, combatVisuals);
     // Unlockable weapon skin (contract §7.9): a projection-only tint.
     heldWeaponLayer.tint = projectileTrails.tint = settings.cosmetics?.weaponTint ?? 0xffffff;
-    projectileImpacts.clear();
-    grenadeVisuals.clear();
-    combatVisuals.clear();
     if (gorePresentation && camera) {
       const goreFrame = gorePresentation.render({ground:goreGround,air:goreAir,tick:simulation?.tick ?? 0,
         settings,particleScale,camera,view,project:worldToScreen});
@@ -1657,10 +1657,7 @@ async function boot() {
       renderAuthoredCollision(view);
       const groundScreen = worldToScreen(getGroundContact(renderState), camera, view);
       const screen = worldToScreen(renderState, camera, view);
-      enemyTelegraphs.clear();
-      bossTelegraphs.clear();
-      eliteGroundLayer.clear();
-      overlayVisuals.clear();
+      wipe(enemyTelegraphs, bossTelegraphs, eliteGroundLayer, overlayVisuals);
       bossVisual.visible = false;
       if (releaseTelemetryEnabled) {
         dataset.gasCanisterProgress = '';

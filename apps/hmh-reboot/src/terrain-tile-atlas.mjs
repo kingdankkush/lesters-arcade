@@ -117,10 +117,16 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
   const overlayTextures = new Map();
   const failed = new Set();
   let manifest = null;
+  // Bumped whenever what the registry hands out changes, so a caller that
+  // caches drawn terrain (world-static-bake.mjs) knows to redraw.
+  let version = 0;
 
   return {
     get ready() {
       return textures.size > 0;
+    },
+    get version() {
+      return version;
     },
     get loadedIds() {
       return [...textures.keys()].sort();
@@ -130,6 +136,7 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
     },
     setManifest(value) {
       manifest = validateTerrainManifest(value);
+      version += 1;
       return manifest;
     },
     get tileSize() {
@@ -164,6 +171,7 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
       source.update?.();
       textures.set(materialId, texture);
       failed.delete(materialId);
+      version += 1;
       return texture;
     },
     registerFringe(materialId, texture) {
@@ -181,6 +189,7 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
       source.autoGenerateMipmaps = true;
       source.update?.();
       fringeTextures.set(materialId, texture);
+      version += 1;
       return texture;
     },
     fringeTextureFor(materialId) {
@@ -201,6 +210,7 @@ export function createTerrainTileRegistry({ TilingSpriteClass } = {}) {
       source.autoGenerateMipmaps = true;
       source.update?.();
       overlayTextures.set(overlayId, texture);
+      version += 1;
       return texture;
     },
     overlayTextureFor(overlayId) {

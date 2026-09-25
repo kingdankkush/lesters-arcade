@@ -802,6 +802,8 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/enemy-roster-atlas.mjs",
   "apps/hmh-reboot/src/enemy-display-pool.mjs",
   "tests/hmh-enemy-display-pool.test.mjs",
+  "apps/hmh-reboot/src/world-static-bake.mjs",
+  "tests/hmh-world-static-bake.test.mjs",
   "apps/hmh-reboot/src/authored-prop-atlas.mjs",
   "apps/hmh-reboot/src/tripo-prop-appearance.mjs",
   "apps/hmh-reboot/src/contact-shadows.mjs",
