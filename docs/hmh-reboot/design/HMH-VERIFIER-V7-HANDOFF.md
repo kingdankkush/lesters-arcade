@@ -7,8 +7,8 @@
 ## 1. Where things stand
 
 - The server can verify a run summary of **schema 7** at summary level: `validateRunSummaryPayload` from `sdk/hmh-run-summary-schema-v7.mjs`, then `validateRebootRunPlausibility`.
-- **Ranked still refuses schema 7**, and that is deliberate (fail-closed). `server/verify/hmh.mjs` validates with the base schema module and requires schema 6. It is outside this branch's scope; opening the gate is two lines (contract §15.1).
-- **The v6 path is byte-for-byte in behaviour what 1.8.1 shipped.** Two hashed corpora prove it against `60ea173a`: 288 plausibility mutations and 801 schema 1–6 cases.
+- **Ranked still refuses schema 7**, and that is deliberate (fail-closed). `server/verify/hmh.mjs` validates with the base schema module and requires schema 6. It is outside this branch's scope; opening the gate is two lines, once the contract §15.1 preconditions hold.
+- **The v6 path is in behaviour what 1.8.1 shipped, except four 1.8.4 rejects for fabricated inputs** (contract §16.5): `grenade-kills-above-weapon-kills`, `pickups-above-capacity`, `district-path-invalid` and `districts-before-travel-time`. They close a live 1.8.2 issue: a paid run of 36 kills verified with 250 grenade kills, 250 bonus lives and all six districts, and earned five achievements. Two hashed corpora prove the rest against `60ea173a`: the 288 plausibility mutations (with the four new flags removed) and the 801 schema 1–6 cases. A pinned 75-run honest corpus shows no honest 1.8.x run is touched.
 - The existing fixtures (`hmh-valid`, `hmh-realistic`, `hmh-level-90` and the Chikun and STACKED ones) are unchanged. The build-fixtures drift check passes for all nine.
 - Save schema 2, `hmh-bridge/v1`, the 65,536-byte message limit, the evidence encoding `hmh-run-summary-v6+json` and the runtimeId are unchanged. A maximal v7 bridge message is 21,235 bytes.
 
@@ -16,15 +16,23 @@
 
 **Commits (oldest first)**
 
+The hashes are the ones after the rebase onto `da3c0756`; the pre-rebase ones (`128f6a8e` … `2e5230f5`) are not ancestors of the branch.
+
 | Commit | Change |
 |---|---|
-| `128f6a8e` | The design package and the run summary v7 contract (docs only) |
-| `a0c62030` | Schema 7 in the new `sdk/hmh-run-summary-schema-v7.mjs`, and the shared contract module `sdk/hmh-run-contract-v7.mjs` |
-| `bcc8f793` | The v6 plausibility path frozen to literal 1.8.1 constants (`HMH_V6_RULES`); it no longer imports `apps/**` |
-| `9c5930d8` | The v7 plausibility rules and the two v7 fixtures |
-| `d4a03027` | Achievement stats map schema 7; the boss achievements mean the Liquidator |
-| `ff265ab8` | Contract §16: implementation decisions |
-| `2e5230f5` | Red-team fixes: capacity bank model, build gate, per-level node XP, collectible capacity, Dark Pool minimum fight, schema rules S9–S18 (contract §16.4) |
+| `6e6b477e` | The design package and the run summary v7 contract (docs only) |
+| `8e5ed6cb` | Schema 7 in the new `sdk/hmh-run-summary-schema-v7.mjs`, and the shared contract module `sdk/hmh-run-contract-v7.mjs` |
+| `59805173` | The v6 plausibility path frozen to literal 1.8.1 constants (`HMH_V6_RULES`); it no longer imports `apps/**` |
+| `5fecc073` | The v7 plausibility rules and the two v7 fixtures |
+| `d77f287d` | Achievement stats map schema 7; the boss achievements mean the Liquidator |
+| `3003a565` | Contract §16: implementation decisions (the red team attacked it as `ff265ab8`, before the rebase) |
+| `70fc12de` | Red-team fixes: capacity bank model, build gate, per-level node XP, collectible capacity, Dark Pool minimum fight, schema rules S9–S18 (contract §16.4) |
+| `8ad43cf8`, `b56de0e9`, `04532413` | This note, the regenerated release gate record, and the rebase results |
+| `ac99dde4` | The 1.8.4 v6 consistency rejects (contract §16.5), with parity pins, boundary tests and the 1.8.2 payload end to end; the fixture builder walks districts from the seed's entry |
+| `1c990b0a` | The pinned 75-run honest corpus for those rules |
+| `98da603c` | Each half of the v7 S8 comparison refused on its own, and the milestone-only A2-1 K1 variant |
+| `e3e6bd2e` | The v7 ceilings, kill capacity and cache room pinned as literals; a hashed v7 mutation corpus; boss-before-ready at tick 0; each soft-flag sub-condition; `grenade-kills-above-weapon-kills` on the v7 path |
+| `e8837bbf` | The S10 reserved rows with `applied = 1, offered = 0`; S14 and S15 per kind at their boundary |
 
 **By file**
 
@@ -33,7 +41,7 @@
 | `sdk/hmh-run-summary-schema.mjs` | Schema 1–6, unchanged in behaviour. The V6 catalogues are frozen. The rules are factored into `validateRunSummaryRules`, so schema 7 can reuse them. It stays small: the 1.8.x child and the portal load it on the HMH initial path (+48 bytes) |
 | `sdk/hmh-run-summary-schema-v7.mjs` (new) | The V7 catalogues and a validator for schema 1–7. It delegates 1–6 to the base module and checks rules S1–S18 for 7. It also holds the small constants those rules read: start weapon, weapon gates, reserved and panel-only evolutions, strike grace |
 | `sdk/hmh-run-contract-v7.mjs` (new) | The shared gameplay contract: run rules, threat for 16 roles, the boss kit and its obligations, the four bosses (ready ticks, minimum fights), objectives, prisoner slots and the seeded prisoner deal, evolutions, upgrades, collectible limits and the build gate. It is pure: no DOM, no clock, no `apps/**` import. It refuses to load if its tables disagree with the schema module |
-| `server/verify/hmh-plausibility.mjs` | The v6 path, frozen, and the v7 path. The summary's `schemaVersion` chooses between them |
+| `server/verify/hmh-plausibility.mjs` | The v6 path, frozen apart from the four 1.8.4 consistency rejects (`HMH_V6_CONSISTENCY_RULES`), and the v7 path. The summary's `schemaVersion` chooses between them |
 | `apps/portal/src/achievements/stats.mjs`, `hmh.mjs` | Each summary reads its own schema's catalogues. `genesis-seal` is not a power-up. `bossKills` and `bossId` stay the Liquidator |
 | `tests/fixtures/ranked/build-fixtures.mjs` + two JSON files | `hmh-v7-districts` and `hmh-v7-four-bosses`, built on `site-1.9.0:game-1.9.0` and listed apart as `HMH_V7_FIXTURE_NAMES` |
 | `docs/game-design/achievement-catalogs-20260923.md` | Schema-7 meaning of the boss achievements, and the updated `speed-clear` reason |
@@ -69,7 +77,9 @@
 | `boss-before-band` (dropped for v7) | A boss kill before tick 72,000 rejects | Per boss: initiated at or after `readyTick`, and defeated at least `minFightTicks` after the last initiation. Each kill is tied to its row (S4/S5). One boss is live at a time | A boss kill is a fixed bonus, once per boss (S5): about 8,440 score for all four together. An earlier tick cannot multiply it. The earliest claimable kills are the Baron at 7,500 and the Liquidator at 36,180, and one tick earlier rejects |
 | `HMH_BOSS_START_TICK` (not used for v7) | Liquidator body and adds counted from 72,000 | Bodies only for defeated rows. Beyond the director schedule, 4 adds per slot that could summon (none in an engagement's first 90 ticks), once per run. Every further add draws from the capacity bank | Claimed boss time, fight length, overlap or initiation count cannot add more than 20 kills to the schedule at any run length. Impossible timings reject outright (`boss-fights-overlap`, `boss-reinitiation-too-soon`). The red team's +83,448-score claim now rejects at a capacity of 1,146, under their own honest bound of 1,162 |
 | Liquidator minimum fight (300 → 180) | – | 180 for the Liquidator, because its Dark Pool start has no intro | The kill is still one fixed bonus per run, now claimable 120 ticks earlier, and nothing about it grows with time. An honest Dark Pool kill needs 182 ticks; a kill at 179 rejects. The old 300 would have rejected honest Dark Pool burst kills |
-| Schema 6 under any build hash (the converse of the build gate is not adopted) | – | Schema 7 needs a game version of 1.9.0 or later; schema 6 is accepted under any build hash | The build hash is the portal's. A newer portal can host a 1.8.x child cached by the service worker, and owner override 2 keeps that child valid. Such a run is held to the frozen 1.8.1 bounds |
+| Schema 6 under any build hash (the converse of the build gate is not adopted) | – | Schema 7 needs a game version of 1.9.0 or later; schema 6 is accepted under any build hash | The build hash is the portal's. A newer portal can host a 1.8.x child cached by the service worker, and owner override 2 keeps that child valid. Such a run is held to the frozen 1.8.1 bounds, plus the 1.8.4 consistency rejects |
+
+**`build-predates-schema-7` labels honest runs only; it is not a server gate.** The client chooses the build hash when it asks for the seed ticket, and the server checks only its format (`server/settle/seed.mjs:47` `validateSeedBody`, and `validateRankedIdentity` in `apps/portal/src/ranked-identity.mjs`). A fabricated run can therefore name `game-1.9.0`. So `server/verify/hmh.mjs` may accept schema 7 only in the deploy that serves the 1.9.0 child. If that ever cannot hold, first add a server check that the build's game version is no higher than the deployed `GAME_VERSION`, in both `validateSeedBody` and `validateRankedIdentity` (contract §15.1, precondition 1).
 
 The nearest-impossible rejection tests for each rule are listed in contract §8.
 
@@ -77,6 +87,7 @@ The nearest-impossible rejection tests for each rule are listed in contract §8.
 - **Role threat.** Kills are credited at each claimed role's threat, so a fabricated summary can put all its kills in the highest-threat ordinary role. v6 has the same rule.
 - **Secret silver.** It adds at most 2,160 score to a run, whatever the run's length. A time floor per secret would need positions and a speed cap that the contract does not have.
 - **Node levels.** Apart from the per-level XP bound, the level a node claims is free.
+- **v6 grenade kills** can still reach the run's kill total, by crediting every kill to a grenade weapon; **v6 districts** in a long run are free within the contiguity rule (all six in 3 minutes is honestly reachable). Contract §16.5.
 
 ## 4. Tests
 
@@ -86,6 +97,7 @@ The nearest-impossible rejection tests for each rule are listed in contract §8.
 |---|---|
 | `tests/hmh-run-summary-schema-v7.test.mjs` | The schema 1–6 corpus against the `60ea173a` digest, through both modules. The base module's bundle size. V6 and V7 catalogues. Contract constants, and the module's purity and freezing. S1–S18, each at its nearest boundary, including the red-team payloads. The maximal bridge message, using the widest admitted float |
 | `tests/server-verify-hmh-plausibility.test.mjs` | The v6 corpus digest, and v6 unchanged under any build hash. Frozen literals pinned against the 1.8.1 child modules. The v7 ceilings recomputed with `run-progression.mjs`. The prisoner deal (fixed vectors, 10,000 seeds, `seededUnit` parity). Every §8 nearest-impossible case. The §7.3 table, with the 20-kill bound checked at every run length. Every red-team payload: undefeated and nested boss windows, bosses initiated at the end, overlapping fights, nodes at the final level, the zero-kill six-secret run, a 1.8.1 build, a million Railgun cores and 250 candles. The `createCollectibleState` limits are pinned |
+| `tests/server-verify-hmh-honest-corpus.test.mjs` (new) | The 75-run honest corpus (`tests/fixtures/ranked/hmh-honest-corpus.mjs`): digest pinned; every run schema-valid, never rejected, free of consistency flags; each rule's neighbourhood reached |
 | `tests/server-verify-hmh-v7.test.mjs` | v7 fixtures bind, pass the schema and plausibility, keep the v6 evidence encoding and rebuild byte for byte. Ranked schema 7 is still refused (fail-closed). The fixtures fit `hmh-bridge/v1`. Schema-7 stats. Boss achievements on the device (`recordScore`) and the server, run by run over ten runs: district bosses unlock nothing, and the Liquidator unlocks them |
 
 **Commands run on this branch** (no browser runs and no full release gate):
@@ -98,9 +110,15 @@ The nearest-impossible rejection tests for each rule are listed in contract §8.
 - `node tests/fixtures/ranked/build-fixtures.mjs` with no flags: all nine fixtures are `ok`.
 - `node scripts/docs-link-check.mjs`: passes.
 
+**After the review fixes (`ac99dde4` to `e8837bbf`):**
+- The 42 verifier, ranked, settle, jackpot, achievement and integration-glue test files: 570 tests, 0 failures. The honest-corpus file takes about 6 s.
+- `node tests/fixtures/ranked/build-fixtures.mjs`: all nine fixtures `ok` (the builder's new district walk leaves every committed byte unchanged).
+- `npm run check` and `node scripts/docs-link-check.mjs`: pass.
+- The release gate was not rerun and its record not regenerated: the integration owner regenerates it once after merging.
+
 **Release gate, after the rebase onto `da3c0756`:**
 - `npm run check`: passes.
-- `npm run build`: passes its budgets. HMH initial JS + shared is 1,046,761 of 1,048,576 bytes (1.8 KB headroom); the base schema module adds 48 bytes to the HMH initial path, measured in `a0c62030`. The portal `main.js` takes the V7 catalogues through `achievements/stats.mjs`; the whole v7 schema module is 8,029 bytes minified with the base module left external.
+- `npm run build`: passes its budgets. HMH initial JS + shared is 1,046,761 of 1,048,576 bytes (1.8 KB headroom); the base schema module adds 48 bytes to the HMH initial path, measured in `8e5ed6cb` (`a0c62030` before the rebase). The portal `main.js` takes the V7 catalogues through `achievements/stats.mjs`; the whole v7 schema module is 8,029 bytes minified with the base module left external.
 - `npm run test:release`: PASS, 4,961 tests, 4,910 pass, exactly the 51 ledgered failures. The regenerated record is committed.
 - The verifier, ranked, settle, jackpot and achievement tests (38 files, 524 tests) pass, and the fixture drift check is `ok` for all nine fixtures.
 - `scripts/hmh-reboot-portal-e2e.mjs` (desktop): 7 flows pass, including `game-over-run-summary` with a schema-6 summary; `ranked-preview` is not run because the source has `SETTLEMENT_LIVE` on.
@@ -146,9 +164,10 @@ The child (`apps/hmh-reboot/src/**`, and a versioned `sdk/hmh-run-summary.mjs`) 
 
 ## 6. Outside this branch (contract §15)
 
-1. **`server/verify/hmh.mjs`.** Import `validateRunSummaryPayload` from `../../sdk/hmh-run-summary-schema-v7.mjs` and accept `schemaVersion` 6 or 7.
+1. **`server/verify/hmh.mjs`.** Import `validateRunSummaryPayload` from `../../sdk/hmh-run-summary-schema-v7.mjs` and accept `schemaVersion` 6 or 7, only once the contract §15.1 preconditions hold: the deploy that serves the 1.9.0 child (or a server-side game-version check), fixtures and an honest corpus from the real v7 accumulator, and the 1.8.4 pickup and district rules mirrored for v7.
    - The test `a Ranked schema-7 body is refused …` in `tests/server-verify-hmh-v7.test.mjs` then fails, as intended, and should be replaced by an end-to-end `verifyRankedRun` of the v7 fixtures.
    - `contract.bossId` needs no change.
-2. **The bridge and the portal** (`sdk/hmh-bridge-protocol.mjs`, `hmh-run-history.mjs`, `hmh-reboot-bridge.mjs`). Switch them to the v7 schema module when the child emits schema 7. The child's HMH initial-JS budget pays for about 8 KB (the v7 module, minified).
+2. **The bridge and the portal** (`sdk/hmh-bridge-protocol.mjs`, `hmh-run-history.mjs`, `hmh-reboot-bridge.mjs`). Switch them to the v7 schema module when the child emits schema 7. The child's HMH initial-JS budget pays for about 8 KB (the v7 module, minified, 8,029 bytes). Only 1,815 bytes of headroom are left, so that needs about 6.2 KB of HMH initial-JS cuts first, or the v7 module loaded lazily.
+   - The portal `main.js` already carries the V7 catalogues through `achievements/stats.mjs`: +3,030 bytes, measured (the contract's first estimate was about 2.2 KB).
 3. **arcade-core and `tests/achievement-derivation.test.mjs`.** Per-boss achievement inputs, if district bosses should ever count toward the boss achievements.
 4. **Parent consumers of the generic `boss-defeated` event.** Audit them before district bosses ship.
