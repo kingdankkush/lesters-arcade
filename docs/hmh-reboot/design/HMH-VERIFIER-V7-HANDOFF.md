@@ -1,0 +1,151 @@
+# HMH verifier v7: hand-off
+
+**Branch:** `fable/hmh-verifier-v7`, from release `60ea173a` (production 1.8.1). Not pushed.
+**Contract:** `docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md` (the authority; this note summarises it).
+**Design source:** `docs/hmh-reboot/design/LEVEL-1-DESIGN-PACKAGE-20260925.md`, with two owner overrides: no Ranked season or ruleset boundary, and the v6 path verifies 1.8.x children indefinitely with today's bounds (no clock anywhere in the verifier).
+
+## 1. Where things stand
+
+- The server can verify a run summary of **schema 7** at summary level: `validateRunSummaryPayload` from `sdk/hmh-run-summary-schema-v7.mjs`, then `validateRebootRunPlausibility`.
+- **Ranked still refuses schema 7**, and that is deliberate (fail-closed). `server/verify/hmh.mjs` validates with the base schema module and requires schema 6. It is outside this branch's scope; opening the gate is two lines (contract §15.1).
+- **The v6 path is byte-for-byte in behaviour what 1.8.1 shipped.** Two hashed corpora prove it against `60ea173a`: 288 plausibility mutations and 801 schema 1–6 cases.
+- The existing fixtures (`hmh-valid`, `hmh-realistic`, `hmh-level-90` and the Chikun and STACKED ones) are unchanged. The build-fixtures drift check passes for all nine.
+- Save schema 2, `hmh-bridge/v1`, the 65,536-byte message limit, the evidence encoding `hmh-run-summary-v6+json` and the runtimeId are unchanged. A maximal v7 bridge message is 21,235 bytes.
+
+## 2. What changed
+
+**Commits (oldest first)**
+
+| Commit | Change |
+|---|---|
+| `128f6a8e` | The design package and the run summary v7 contract (docs only) |
+| `a0c62030` | Schema 7 in the new `sdk/hmh-run-summary-schema-v7.mjs`, and the shared contract module `sdk/hmh-run-contract-v7.mjs` |
+| `bcc8f793` | The v6 plausibility path frozen to literal 1.8.1 constants (`HMH_V6_RULES`); it no longer imports `apps/**` |
+| `9c5930d8` | The v7 plausibility rules and the two v7 fixtures |
+| `d4a03027` | Achievement stats map schema 7; the boss achievements mean the Liquidator |
+| `ff265ab8` | Contract §16: implementation decisions |
+| `2e5230f5` | Red-team fixes: capacity bank model, build gate, per-level node XP, collectible capacity, Dark Pool minimum fight, schema rules S9–S18 (contract §16.4) |
+
+**By file**
+
+| File | What it now holds |
+|---|---|
+| `sdk/hmh-run-summary-schema.mjs` | Schema 1–6, unchanged in behaviour. The V6 catalogues are frozen. The rules are factored into `validateRunSummaryRules`, so schema 7 can reuse them. It stays small: the 1.8.x child and the portal load it on the HMH initial path (+48 bytes) |
+| `sdk/hmh-run-summary-schema-v7.mjs` (new) | The V7 catalogues and a validator for schema 1–7. It delegates 1–6 to the base module and checks rules S1–S18 for 7. It also holds the small constants those rules read: start weapon, weapon gates, reserved and panel-only evolutions, strike grace |
+| `sdk/hmh-run-contract-v7.mjs` (new) | The shared gameplay contract: run rules, threat for 16 roles, the boss kit and its obligations, the four bosses (ready ticks, minimum fights), objectives, prisoner slots and the seeded prisoner deal, evolutions, upgrades, collectible limits and the build gate. It is pure: no DOM, no clock, no `apps/**` import. It refuses to load if its tables disagree with the schema module |
+| `server/verify/hmh-plausibility.mjs` | The v6 path, frozen, and the v7 path. The summary's `schemaVersion` chooses between them |
+| `apps/portal/src/achievements/stats.mjs`, `hmh.mjs` | Each summary reads its own schema's catalogues. `genesis-seal` is not a power-up. `bossKills` and `bossId` stay the Liquidator |
+| `tests/fixtures/ranked/build-fixtures.mjs` + two JSON files | `hmh-v7-districts` and `hmh-v7-four-bosses`, built on `site-1.9.0:game-1.9.0` and listed apart as `HMH_V7_FIXTURE_NAMES` |
+| `docs/game-design/achievement-catalogs-20260923.md` | Schema-7 meaning of the boss achievements, and the updated `speed-clear` reason |
+
+**The v7 rules, briefly (contract §6–§7)**
+
+- **Schema, S1–S18.** New dense rows: objectives, prisoners, bosses, evolutions and progression.
+  - Each boss kill is tied to its own row, and `kills.boss` is the Liquidator.
+  - Held prisoners are freed only after their boss (after its defeat, if it was defeated).
+  - Seals, offers, re-rolls and shown cards must add up. A card is shown at most once per offer.
+  - The wave-2 evolution rows stay 0. The Pistol evolves only from a panel.
+  - The Golden Parachute needs the logbook by the Liquidator's first initiation.
+  - A boss defeat needs a boss that was live then.
+  - A gun's cards and evolution are shown only for a gun the run owns.
+- **Plausibility rejects.** The v6 time and level rejects, plus these:
+  - `build-predates-schema-7`;
+  - `boss-before-ready`;
+  - `boss-fight-too-short` (300 ticks; 180 for the Liquidator);
+  - `boss-reinitiation-too-soon` (2,520);
+  - `boss-fights-overlap`;
+  - `kills-above-capacity`;
+  - `collectibles-above-capacity`;
+  - `node-xp-above-level`;
+  - `xp-above-ceiling` and `score-above-ceiling`, with the v7 formulas.
+- **Capacity.** Opening enemies + director schedule + one body per defeated boss + 4 adds per boss slot that could summon. At any run length that is at most 20 above v6.
+- **XP ceiling.** Kill, combo and cache XP. Node XP is added level by level: an objective grants `k × 300 × level`, multiplied; an OG Miner grants exactly `300 × level`, only in slots that the seeded deal makes OG Miners.
+- **Score ceiling.** Kill score, plus silver: one coin per ordinary kill, each defeated boss's burst, and 20 coins per secret.
+
+## 3. Why no fabricated summary gains from the relaxed rules
+
+| Rule | v6 | v7 | Security argument |
+|---|---|---|---|
+| `boss-before-band` (dropped for v7) | A boss kill before tick 72,000 rejects | Per boss: initiated at or after `readyTick`, and defeated at least `minFightTicks` after the last initiation. Each kill is tied to its row (S4/S5). One boss is live at a time | A boss kill is a fixed bonus, once per boss (S5): about 8,440 score for all four together. An earlier tick cannot multiply it. The earliest claimable kills are the Baron at 7,500 and the Liquidator at 36,180, and one tick earlier rejects |
+| `HMH_BOSS_START_TICK` (not used for v7) | Liquidator body and adds counted from 72,000 | Bodies only for defeated rows. Beyond the director schedule, 4 adds per slot that could summon (none in an engagement's first 90 ticks), once per run. Every further add draws from the capacity bank | Claimed boss time, fight length, overlap or initiation count cannot add more than 20 kills to the schedule at any run length. Impossible timings reject outright (`boss-fights-overlap`, `boss-reinitiation-too-soon`). The red team's +83,448-score claim now rejects at a capacity of 1,146, under their own honest bound of 1,162 |
+| Liquidator minimum fight (300 → 180) | – | 180 for the Liquidator, because its Dark Pool start has no intro | The kill is still one fixed bonus per run, now claimable 120 ticks earlier, and nothing about it grows with time. An honest Dark Pool kill needs 182 ticks; a kill at 179 rejects. The old 300 would have rejected honest Dark Pool burst kills |
+| Schema 6 under any build hash (the converse of the build gate is not adopted) | – | Schema 7 needs a game version of 1.9.0 or later; schema 6 is accepted under any build hash | The build hash is the portal's. A newer portal can host a 1.8.x child cached by the service worker, and owner override 2 keeps that child valid. Such a run is held to the frozen 1.8.1 bounds |
+
+The nearest-impossible rejection tests for each rule are listed in contract §8.
+
+**Residuals, accepted and recorded (contract §16.4)**
+- **Role threat.** Kills are credited at each claimed role's threat, so a fabricated summary can put all its kills in the highest-threat ordinary role. v6 has the same rule.
+- **Secret silver.** It adds at most 2,160 score to a run, whatever the run's length. A time floor per secret would need positions and a speed cap that the contract does not have.
+- **Node levels.** Apart from the per-level XP bound, the level a node claims is free.
+
+## 4. Tests
+
+**Test files**
+
+| File | Covers |
+|---|---|
+| `tests/hmh-run-summary-schema-v7.test.mjs` | The schema 1–6 corpus against the `60ea173a` digest, through both modules. The base module's bundle size. V6 and V7 catalogues. Contract constants, and the module's purity and freezing. S1–S18, each at its nearest boundary, including the red-team payloads. The maximal bridge message, using the widest admitted float |
+| `tests/server-verify-hmh-plausibility.test.mjs` | The v6 corpus digest, and v6 unchanged under any build hash. Frozen literals pinned against the 1.8.1 child modules. The v7 ceilings recomputed with `run-progression.mjs`. The prisoner deal (fixed vectors, 10,000 seeds, `seededUnit` parity). Every §8 nearest-impossible case. The §7.3 table, with the 20-kill bound checked at every run length. Every red-team payload: undefeated and nested boss windows, bosses initiated at the end, overlapping fights, nodes at the final level, the zero-kill six-secret run, a 1.8.1 build, a million Railgun cores and 250 candles. The `createCollectibleState` limits are pinned |
+| `tests/server-verify-hmh-v7.test.mjs` | v7 fixtures bind, pass the schema and plausibility, keep the v6 evidence encoding and rebuild byte for byte. Ranked schema 7 is still refused (fail-closed). The fixtures fit `hmh-bridge/v1`. Schema-7 stats. Boss achievements on the device (`recordScore`) and the server, run by run over ten runs: district bosses unlock nothing, and the Liquidator unlocks them |
+
+**Commands run on this branch** (no browser runs and no full release gate):
+- The three files above. All pass.
+- `tests/server-verify-hmh.test.mjs` and `tests/server-verify-identity.test.mjs` (the import graph: nothing under `server/verify` loads arcade-core or DOM code). Pass.
+- `tests/achievement-derivation.test.mjs` and the other achievement tests. Pass.
+- Every `tests/*ranked*` and `tests/*settle*` file. Pass. There is no `*jackpot*` test file.
+- Every other test that reads `tests/fixtures/ranked`. Pass.
+- Total: 498 tests, 0 failures.
+- `node tests/fixtures/ranked/build-fixtures.mjs` with no flags: all nine fixtures are `ok`.
+- `node scripts/docs-link-check.mjs`: passes.
+
+**Still to run later:** the full release gate (`npm run test:release`, `npm run build`), which another workflow was using this machine for. It covers:
+- the HMH initial-JS budget: +48 bytes, measured in `a0c62030`;
+- the portal `main.js`, which takes the V7 catalogues through `achievements/stats.mjs`. The whole v7 schema module is 8,029 bytes minified with the base module left external: 1,768 bytes more than before the red-team fixes, and well inside the main-bundle budget.
+
+## 5. What the child branch must emit and honour
+
+The child (`apps/hmh-reboot/src/**`, and a versioned `sdk/hmh-run-summary.mjs`) is a later branch. It must emit exactly contract §4 and §11, and honour the boss kit in §5.3.
+
+**The summary**
+- `schemaVersion: 7`.
+- The 16 enemy-role rows, the 14 collectible rows (`genesis-seal` counts the Seals and is never timed), and the 36 upgrade rows.
+- Sites (11) and secrets (6) equal to their objectives.
+- Dense `objectives`, `prisoners`, `bosses`, `evolutions` and `progression` rows, with exactly the §4 semantics. In particular:
+  - `levelAtCompletion` and `levelAtRescue` are the level just before that node's own grant, after every earlier grant, including earlier grants on the same tick;
+  - `kills.boss` counts the Liquidator only;
+  - `bossEngagedTick` is the Liquidator's first initiation;
+  - `offered` counts each shown card once per offer, including cards shown by re-rolls ("Bank the Seal" is not counted).
+
+**The build**
+- The release that first emits schema 7 has game version 1.9.0 or later (`GAME_VERSION`, which appears as `game-X.Y.Z` in the build hash).
+- If it ships under a different version, `HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION` changes in the same commit.
+
+**Gameplay obligations that keep the bounds sound**
+- **Boss kit.**
+  - An intro start takes no damage for 120 ticks.
+  - Two HP thresholds, each clamped, then a 90-tick invulnerable halt.
+  - Retreat: the ring appears at 600 engaged ticks, the channel takes at least 120, and the boss is ready again 1,800 ticks later.
+  - Only one boss is live at a time: no trigger fires while another boss is live.
+  - One Seal per boss, and only on a real defeat. The silver burst replaces the 10-coin drop.
+- **Capacity bank.** Everything except the two opening enemies, the boss bodies and each slot's first 4 adds is inserted only while the number of such insertions stays below `directorSpawnCapacity(tick)`. That covers the director's own insertions, guard crews, ambushes, dormant Revenants, champion waves, paired spawns and every further boss add. No add is inserted in an engagement's first 90 ticks.
+- **Collectible pickups.** Only from at most 21 authored placements, each re-armed no sooner than 7,200 ticks after a pickup. Prisoner, strongbox, secret and haven grants are not pickups.
+- **Grants.**
+  - An objective grants `grantRunXp(OBJECTIVE_XP_PER_LEVEL[class] × level)`.
+  - An OG Miner grants exactly `300 × level`, unmultiplied.
+  - A secret grants exactly 20 silver.
+  - A defeated boss grants exactly its silver burst.
+- **Order within a tick.** The mission step records the logbook before the tick's boss starts. The first trigger keeps the Liquidator for the rest of the run.
+- **Weapons.** Every gun except the starting Pistol records a pickup the first time the run owns it, before any of its cards or its evolution is shown.
+- **Boss hits.** They keep `weaponId: 'boss-<attackId>'`. A fallen boss's strikes stop landing within 300 ticks of its defeat.
+- **Revive.** `recordRunRevive` clears the pending defeat.
+
+**Parity tests the child branch adds.** Its new archetypes, bosses, upgrades and collectible layout, pinned to `sdk/hmh-run-contract-v7.mjs`. The v7 fixtures should then be rebuilt from the real v7 accumulator.
+
+## 6. Outside this branch (contract §15)
+
+1. **`server/verify/hmh.mjs`.** Import `validateRunSummaryPayload` from `../../sdk/hmh-run-summary-schema-v7.mjs` and accept `schemaVersion` 6 or 7.
+   - The test `a Ranked schema-7 body is refused …` in `tests/server-verify-hmh-v7.test.mjs` then fails, as intended, and should be replaced by an end-to-end `verifyRankedRun` of the v7 fixtures.
+   - `contract.bossId` needs no change.
+2. **The bridge and the portal** (`sdk/hmh-bridge-protocol.mjs`, `hmh-run-history.mjs`, `hmh-reboot-bridge.mjs`). Switch them to the v7 schema module when the child emits schema 7. The child's HMH initial-JS budget pays for about 8 KB (the v7 module, minified).
+3. **arcade-core and `tests/achievement-derivation.test.mjs`.** Per-boss achievement inputs, if district bosses should ever count toward the boss achievements.
+4. **Parent consumers of the generic `boss-defeated` event.** Audit them before district bosses ship.
