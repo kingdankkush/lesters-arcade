@@ -209,6 +209,35 @@ test('no surface fetches the jackpot API while the flag is false', async () => {
   runInNewContext(`(${mainFunction('showEntryJackpot').replace(/\bimport\(/g, 'globalThis.import(')})`, liveContext)({ row, gameId: 'stacked' });
   runInNewContext(`(${mainFunction('showJackpotPromo').replace(/\bimport\(/g, 'globalThis.import(')})`, liveContext)();
   assert.deepEqual(imports, ['./src/jackpot/jackpot-entry-line.mjs', './src/jackpot/jackpot-home-promo.mjs'], 'Chikun only for the entry row');
+  // The loaders call each chunk's default export (a shorter glue in dist/main.js): the entry row's is
+  // showEntryJackpot, and the promo's renders into the page's own #jackpotPromo.
+  const handed = [];
+  const loaded = { './src/jackpot/jackpot-entry-line.mjs': { default: (options) => handed.push(['entry', options.gameId]) }, './src/jackpot/jackpot-home-promo.mjs': { default: (...args) => handed.push(['promo', args.length]) } };
+  const moduleContext = { ...liveContext, import: (path) => Promise.resolve(loaded[path]) };
+  runInNewContext(`(${mainFunction('showEntryJackpot').replace(/\bimport\(/g, 'globalThis.import(')})`, moduleContext)({ row: { hidden: false }, gameId: 'chikun' });
+  runInNewContext(`(${mainFunction('showJackpotPromo').replace(/\bimport\(/g, 'globalThis.import(')})`, moduleContext)();
+  await flush(5);
+  assert.deepEqual(handed, [['entry', 'chikun'], ['promo', 0]]);
+  const entryModule = await import('../apps/portal/src/jackpot/jackpot-entry-line.mjs');
+  assert.equal(entryModule.default, entryModule.showEntryJackpot);
+  const promoDocument = fakeDocument();
+  const promoSection = promoDocument.createElement('section');
+  promoSection.id = 'jackpotPromo';
+  promoDocument.body.append(promoSection);
+  const promoFetches = [];
+  const previousDocument = globalThis.document;
+  const previousFetch = globalThis.fetch;
+  globalThis.document = promoDocument;
+  globalThis.fetch = async (url) => { promoFetches.push(url); throw new Error('offline'); };
+  try {
+    resetJackpotMemo();
+    assert.equal(await (await import('../apps/portal/src/jackpot/jackpot-home-promo.mjs')).default(), null);
+    assert.deepEqual([promoFetches, promoSection.hidden], [['/api/jackpot?game=chikun'], true], 'the default export found #jackpotPromo and kept it hidden on a failed answer');
+  } finally {
+    globalThis.document = previousDocument;
+    globalThis.fetch = previousFetch;
+    resetJackpotMemo();
+  }
   // The results screen gets the flag from main.js, as it gets `live` and `hosted`: ranked-results.mjs
   // does not import the flag module (its chunk would import esbuild's empty shared flag chunk).
   assert.match(mainSource, /openRankedResults\(\{ \.\.\.event\.detail, [^}]*live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, jackpotLive: JACKPOT_LIVE,/);

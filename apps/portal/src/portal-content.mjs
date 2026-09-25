@@ -80,16 +80,21 @@ const joinList = items => items.length < 3 ? items.join(' and ') : items.slice(0
 // preview (profile sync only) and launch (both true). chikunJackpotLive adds the Weekly
 // Jackpot's live statements, only on top of live settlement (JACKPOT_LIVE => SETTLEMENT_LIVE).
 export function portalCopyFor({ settlementLive = false, hostedProfileSync = false, chikunJackpotLive = false } = {}) {
-  return siteCopy(settlementLive, hostedProfileSync, settlementLive === true && chikunJackpotLive === true ? jackpotLiveCopy() : null);
+  return siteCopy(settlementLive, hostedProfileSync, jackpotCopy(settlementLive === true && chikunJackpotLive === true));
 }
 
-// The Weekly Jackpot's live statements (design §D.6): the live noValue, the FAQ entry and one sentence
-// each for trustStatus and llmsScope. Only the page builder renders the FAQ, trust and llms copy, and
-// only it calls portalCopyFor, so esbuild leaves this function (and its strings) out of the SPA bundle:
-// PORTAL_COPY below is built without it.
-function jackpotLiveCopy() {
+// The Weekly Jackpot's copy for the pages (design §D.6). Whatever the flag: the serverRecords lines
+// (the seed-ticket log, and the jackpot review data with its published replays). When live: also the
+// live noValue, the FAQ entry and one sentence each for trustStatus and llmsScope. Only the page
+// builder renders the FAQ, trust and llms copy, and only it calls portalCopyFor, so esbuild leaves this
+// function (and its strings) out of the SPA bundle: PORTAL_COPY below is built without it, and its
+// builder-only fields (faq, trustStatus, trustStorage, llmsScope) are not the pages' copy.
+function jackpotCopy(live) {
+  const records = ['the seed tickets issued for your Ranked runs', "the Weekly Jackpot's review of your candidate runs, whose recorded inputs are published as replays once their week closes"];
+  if (!live) return { records };
   const pays = `The ${JACKPOT_NAME} pays the best verified Ranked Chikun's Escape score of each funded week in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value, after a review by a person`;
   return {
+    records,
     noValue: `Testnet zkLTC has no value. The only prize is the ${JACKPOT_NAME}, paid in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value; see the rules.`,
     faq: ['Is there a jackpot?', `Yes. ${pays}. Entry fees do not fund the prize. The rules are at lestersarcade.io${JACKPOT_RULES_URL_PATH}.`],
     trust: ' Weekly Jackpot candidates are checked automatically and reviewed by a person before any payout, and every review decision is published on LitVM.',
@@ -127,7 +132,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
     ['Does Ranked cost money or pay prizes?', live
       ? `${entryTerms} ${noValue} Testnet entries are not refunded. Free Mode is always free.`
       : "The current Ranked preview requires no entry fee and pays no prizes. No score transaction is sent. Lester's Arcade is developing its wallet features for LitVM LiteForge testnet."],
-    ...(jackpot ? [jackpot.faq] : []),
+    ...(jackpot?.faq ? [jackpot.faq] : []),
     ...(live ? [['How are Ranked runs checked and published?', "When a Ranked run ends, the arcade server checks it. Chikun's Escape and STACKED runs are replayed on the server from their recorded inputs. Hard Money Heroes runs are plausibility-checked against the game's limits; they are not replayed. The arcade's relayer then publishes the result on LitVM, and your results screen links to the transaction. "+retries]] : []),
     ['Can I play on my phone?', 'The three active games support on-screen touch controls as well as desktop input. A current browser is required. Performance varies by device; the games include settings for controls, audio, and visual effects.'],
   ];
@@ -136,8 +141,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
     ...(live ? [
       "your verified Ranked sessions with their evidence (the recorded inputs that replay a Chikun's Escape or STACKED run, or the run summary of a Hard Money Heroes run), scores, stats, check results, and publishing status",
       'the achievements recorded for your wallet',
-      'the seed tickets issued for your Ranked runs',
-      "the Weekly Jackpot's review of your candidate runs, whose recorded inputs are published as replays once their week closes",
+      ...(jackpot?.records ?? []),
     ] : []),
     'a copy of your on-chain display name and avatar',
     'your profile preferences',
@@ -275,7 +279,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
       "The arcade server checks each Ranked run, then the arcade's relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed on the server; Hard Money Heroes runs are plausibility-checked, not replayed.",
       "Global Weekly, Monthly, and All-time leaderboards rank each wallet's best verified score. Achievements are recorded against the wallet on the arcade server. Display names are set on chain and can be hidden by moderation.",
       `Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. ${noValue}`,
-      ...(jackpot ? [jackpot.scope] : []),
+      ...(jackpot?.scope ? [jackpot.scope] : []),
     ].join('\n') : hosted
       ? 'Wallet sign-in and online profiles are available. Ranked is a preview: runs stay in this browser, with no entry fees, prizes, or on-chain score publishing. LitVM LiteForge is a testnet.'
       : 'Profiles and Ranked preview results stay in this browser. No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available. LitVM LiteForge is a testnet.',
@@ -377,9 +381,10 @@ export function jackpotRulesCopy({ settlementLive = false, chikunJackpotLive = f
 }
 
 // The copy for the committed flags. PORTAL_DESCRIPTION and PORTAL_FAQ keep
-// their names for the builder and the SPA. It never carries the Weekly Jackpot's live statements
-// (jackpotLiveCopy), which only the builder renders (faq, trustStatus, llmsScope): the SPA reads none
-// of those fields (tests/jackpot-ui-rules-page.test.mjs), and this keeps their strings out of main.js.
+// their names for the builder and the SPA. It never carries the Weekly Jackpot's copy (jackpotCopy:
+// the live statements and the serverRecords lines), which only the builder renders (faq, trustStatus,
+// trustStorage, llmsScope): the SPA reads none of those fields (tests/jackpot-ui-rules-page.test.mjs),
+// and this keeps their strings out of main.js.
 export const PORTAL_COPY = siteCopy(PORTAL_FLAGS.settlementLive, PORTAL_FLAGS.hostedProfileSync, null);
 export const PORTAL_DESCRIPTION = PORTAL_COPY.description;
 export const PORTAL_FAQ = PORTAL_COPY.faq;

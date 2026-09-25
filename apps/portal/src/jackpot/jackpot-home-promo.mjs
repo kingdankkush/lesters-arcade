@@ -5,6 +5,10 @@
 import { JACKPOT_RULES_URL, currentPrize, fetchJackpot, phaseOf } from './jackpot-client.mjs';
 import { coin, ensureJackpotStylesheet, link, node } from './jackpot-view.mjs';
 
+// main.js's loader calls the default export, which finds the section itself: the portal entry's glue
+// stays small.
+export default () => renderJackpotHomePromo({ section: globalThis.document?.querySelector('#jackpotPromo') });
+
 export async function renderJackpotHomePromo({
   section,
   documentRef = section?.ownerDocument ?? globalThis.document,

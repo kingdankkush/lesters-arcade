@@ -9827,10 +9827,10 @@ window.addEventListener('orientationchange', () => {
 // their own modules). With the flag off nothing downloads and nothing asks /api/jackpot.
 function showEntryJackpot(options) {
   options.row.hidden = true;
-  if (JACKPOT_LIVE && options.gameId === 'chikun') import('./src/jackpot/jackpot-entry-line.mjs').then((line) => line.showEntryJackpot(options)).catch(() => {});
+  if (JACKPOT_LIVE && options.gameId === 'chikun') import('./src/jackpot/jackpot-entry-line.mjs').then((line) => line.default(options)).catch(() => {});
 }
 function showJackpotPromo() {
-  if (JACKPOT_LIVE) import('./src/jackpot/jackpot-home-promo.mjs').then((promo) => promo.renderJackpotHomePromo({ section: document.querySelector('#jackpotPromo') })).catch(() => {});
+  if (JACKPOT_LIVE) import('./src/jackpot/jackpot-home-promo.mjs').then((promo) => promo.default()).catch(() => {});
 }
 
 // Unlockables (contract §7.9, A7): lazy unlock cache and cosmetic picks (the store hears lesters:* itself); `var` reads null early, not a TDZ error.

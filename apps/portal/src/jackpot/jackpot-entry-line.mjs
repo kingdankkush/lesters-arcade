@@ -18,6 +18,9 @@ function wei(value) {
   try { return BigInt(String(value ?? '0')); } catch { return 0n; }
 }
 
+// main.js's loader calls the default export: the shorter name keeps the portal entry's glue small.
+export { showEntryJackpot as default };
+
 export async function showEntryJackpot({
   row,
   gameId,

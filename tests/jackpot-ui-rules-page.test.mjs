@@ -96,8 +96,9 @@ test('the live jackpot copy: noValue, the FAQ entry, trustStatus and llmsScope',
   }
 });
 
-test('the SPA copy leaves out the jackpot live lines, which only the page builder renders', async () => {
-  // The live jackpot changes only the builder's FAQ, trust and llms copy...
+test('the SPA copy leaves out the jackpot copy, which only the page builder renders', async () => {
+  // The live jackpot changes only the builder's FAQ, trust and llms copy (the serverRecords lines of its
+  // trust storage copy are there whatever the flag)...
   const changed = Object.keys(jackpotLive).filter((key) => JSON.stringify(jackpotLive[key]) !== JSON.stringify(launch[key])).sort();
   assert.deepEqual(changed, ['faq', 'llmsScope', 'trustStatus']);
   // ...which no SPA module reads (main.js and every browser module under apps/portal/src).
@@ -109,16 +110,17 @@ test('the SPA copy leaves out the jackpot live lines, which only the page builde
     }
   };
   walk('apps/portal/src');
-  for (const path of sources) assert.doesNotMatch(read(path), /\.(?:faq|trustStatus|llmsScope)\b|PORTAL_FAQ/, `${path} reads builder-only copy`);
+  for (const path of sources) assert.doesNotMatch(read(path), /\.(?:faq|trustStatus|trustStorage|llmsScope)\b|PORTAL_FAQ/, `${path} reads builder-only copy`);
   // So the SPA's PORTAL_COPY is built without them, and a minified bundle of it carries none of their
-  // strings (they stay out of dist/main.js whatever JACKPOT_LIVE says).
+  // strings (they stay out of dist/main.js whatever JACKPOT_LIVE says). Only the soft-launch noValue line
+  // stays: it replaces a false "there are no prizes" in the SPA copy too.
   const { build } = await import('esbuild');
   const result = await build({
     stdin: { contents: "import { PORTAL_COPY } from './apps/portal/src/portal-content.mjs'; globalThis.copy = PORTAL_COPY;", resolveDir: root, loader: 'js' },
     bundle: true, minify: true, treeShaking: true, format: 'esm', write: false, logLevel: 'silent',
   });
   const bundle = result.outputFiles[0].text;
-  for (const text of ['Is there a jackpot?', 'The only prize is', 'after a review by a person', 'Weekly Jackpot candidates are checked', 'Soft launch', 'LEGAL']) {
+  for (const text of ['Is there a jackpot?', 'The only prize is', 'after a review by a person', 'Weekly Jackpot candidates are checked', 'the seed tickets issued', "the Weekly Jackpot's review", 'Soft launch', 'LEGAL']) {
     assert.equal(bundle.includes(text), false, `the SPA bundle carries "${text}"`);
   }
   assert.ok(bundle.includes(SOFT_NO_VALUE), 'the flag-false honesty line stays in the SPA copy');
@@ -180,10 +182,12 @@ test('the rules page is noindex and out of the sitemap until live', () => {
   assert.doesNotMatch(page, /\d[\d,]* tCHIKUN/, 'no static amount');
   const module = read('apps/portal/jackpot/chikun-rules.mjs');
   assert.doesNotMatch(module, /\.innerHTML\s*=|\beval\s*\(|new Function\s*\(|document\.write/);
-  // Size. Design §D.3 budgets "static page + module <= 10 KB". The page (the 16 sections plus the
-  // verbatim §F.1 legal draft) and the module are about 18.6 KB raw: an accepted deviation recorded in the
-  // jackpot-ui handoff, not the design's meaning. This pins the transferred size (gzip) to the 10 KB row
-  // and the raw size to its current ceiling, so neither grows silently.
+  // Size. Design §D.3 budgets "static page + module <= 10 KB", in raw bytes like every other row. The
+  // page (the 16 sections plus the verbatim §F.1 legal draft) and the module are 18,635 B raw, so the raw
+  // row is NOT met: a deviation recorded, with its measurement and reason, in the hand-off section of
+  // docs/handoffs/jackpot-slices-20260924/jackpot-ui.md for the owner's or orchestrator's decision. The
+  // gzip line below is not the design's budget; it only pins the transferred size (6.3 KB) under 10 KB,
+  // and the raw line pins the current size, so neither grows silently.
   assert.ok(gzipSync(page).length + gzipSync(module).length <= 10_240, 'rules page + module, gzip');
   assert.ok(Buffer.byteLength(page) + Buffer.byteLength(module) <= 19_456, 'rules page + module, raw (19 KB ceiling; the 10 KB row is a recorded deviation)');
 });
