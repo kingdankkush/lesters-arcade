@@ -4,7 +4,9 @@ import { ethers } from 'ethers';
 
 import * as healthApi from '../api/health.mjs';
 import { SITE_VERSION } from '../apps/portal/src/version-tracking.mjs';
-import { SCORE_REGISTRY_ABI } from '../server/chain/abis.mjs';
+import { SCORE_REGISTRY_ABI, WEEKLY_JACKPOT_ABI } from '../server/chain/abis.mjs';
+import { casWeekStatus, ensureWeekRow, updateWeek } from '../server/jackpot/store.mjs';
+import { weekIndexOfMs, weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
 import { MIGRATIONS, migrate } from '../server/neon/migrations.mjs';
 import { recordCronRun } from '../server/ops/cron-runs.mjs';
 import { collectHealth, HEALTH_CACHE_CONTROL, HEALTH_PARTS, SETTLE_GAS_ESTIMATE } from '../server/ops/health.mjs';
@@ -37,7 +39,8 @@ const DEPLOYED = Object.freeze({
 const RPC_WITH_KEY = 'https://liteforge.rpc.example/v1/rk9-health-secret-key';
 const NEON_PASSWORD = `npg_health_${'Zq7'.repeat(3)}`;
 const registryIface = new ethers.Interface(SCORE_REGISTRY_ABI);
-const BODY_KEYS = ['ok', 'healthy', 'version', 'checkedAt', 'settlementReady', 'paused', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei'];
+const BODY_KEYS = ['ok', 'healthy', 'version', 'checkedAt', 'settlementReady', 'paused', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei', 'jackpot'];
+const NO_JACKPOT = Object.freeze({ configured: false, keeperAddress: null, keeperBalanceWei: null, paused: { env: false, onChain: null }, uiHidden: false, awaitingAdmin: 0, awaitingAdminOldestHours: null, claimPending: 0, failed: 0 });
 const ONE_ZKLTC = 10n ** 18n;
 const BASE_FEE = 1_500_000_000n; // 1.5 gwei
 
@@ -125,8 +128,10 @@ test('health reports the relayer, queue, index lag, crons and base fee as aggreg
     crons: {
       indexChain: { lastOkAt: '2026-09-24T17:58:00.000Z', lastErrorAt: null, lastErrorCode: null, runs: 1, failures: 0 },
       settleRetry: { lastOkAt: '2026-09-24T17:57:00.000Z', lastErrorAt: '2026-09-24T17:59:00.000Z', lastErrorCode: 'Error:57P01', runs: 2, failures: 1 },
+      weeklyJackpot: { lastOkAt: null, lastErrorAt: null, lastErrorCode: null, runs: 0, failures: 0 },
     },
     baseFeeGwei: 1.5,
+    jackpot: NO_JACKPOT,
   });
   assert.ok(provider.calls.includes(`balance:${RELAYER}`), 'the balance is the deployment relayer\'s');
   assert.ok(provider.calls.includes(`relayers:${REGISTRY}:${RELAYER}`), 'the allowance is ScoreSubmissionRegistry.relayers(relayer)');
@@ -184,12 +189,13 @@ test('failed reads are null with degraded parts, never a 500', async () => withD
   assert.equal(response.status, 200);
   assert.deepEqual(logged, [], 'a degraded part is not an internal error');
   assert.deepEqual([response.body.ok, response.body.degraded, response.body.healthy], [true, true, false], 'still a 200 report, but not healthy');
-  assert.deepEqual(response.body.degradedParts, ['queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
+  assert.deepEqual(response.body.degradedParts, ['queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed', 'jackpot']);
   assert.deepEqual(response.body.relayer, { address: RELAYER, balanceWei: null, allowed: null, estimatedSettlesLeft: null });
   assert.deepEqual(response.body.queue, { pending: null, signed: null, submitted: null, failed: null, dead: null, deadRequeueable: null, oldestUnconfirmedAgeSeconds: null });
   assert.deepEqual(response.body.index, { cursorBlock: null, headBlock: null, lagBlocks: null });
   assert.deepEqual(response.body.crons.settleRetry, { lastOkAt: null, lastErrorAt: null, lastErrorCode: null, runs: null, failures: null });
   assert.equal(response.body.baseFeeGwei, null);
+  assert.equal(response.body.jackpot, null, 'a failed jackpot read is null, never a guess');
   assert.doesNotMatch(JSON.stringify(response.body), /hunter2|postgres|npg_|rpc\.example/);
 
   // One failing read keeps every other field.
@@ -207,7 +213,7 @@ test('reads that hang are cut off at their deadline', async () => withDb(async (
   const report = await collectHealth(deps, { dbTimeoutMs: 60, chainTimeoutMs: 60 });
   assert.ok(Date.now() - started < 2_000, 'the report does not wait for a hung read');
   assert.equal(report.degraded, true);
-  assert.deepEqual(report.degradedParts, ['queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
+  assert.deepEqual(report.degradedParts, ['queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed', 'jackpot']);
 
   // A slow query after a fast schema check still meets the one database deadline.
   await migrate(db);
@@ -224,21 +230,21 @@ test('with no environment at all the report fails closed', async () => {
   const noEnv = await invoke(healthApi.createHandler(() => healthApi.buildDeps({}, { provider: fakeProvider({ fail: ['getBlock', 'getBalance', 'call'] }), deployment: DEPLOYED, nowMs: NOW })), { url: '/api/health' });
   assert.equal(noEnv.status, 200);
   assert.deepEqual([noEnv.body.ok, noEnv.body.healthy, noEnv.body.settlementReady, noEnv.body.paused, noEnv.body.degraded], [true, false, false, false, true], 'ok is the envelope flag; healthy is what a monitor reads');
-  assert.deepEqual(noEnv.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
+  assert.deepEqual(noEnv.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed', 'jackpot']);
 
   const undeployed = await invoke(healthApi.createHandler(() => healthApi.buildDeps({}, { provider: fakeProvider(), deployment: { ...DEPLOYED, status: 'predicted' }, nowMs: NOW })), { url: '/api/health' });
   assert.equal(undeployed.status, 200);
   assert.equal(undeployed.body.relayer.address, null, 'no relayer before the deployment');
-  assert.deepEqual(undeployed.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'relayer-address']);
+  assert.deepEqual(undeployed.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'relayer-address', 'jackpot']);
   for (const part of undeployed.body.degradedParts) assert.ok(HEALTH_PARTS.includes(part), part);
   assert.equal(undeployed.body.index.headBlock, 54_230_000, 'the chain head is still read');
 
   const badRpc = await invoke(healthApi.createHandler(() => healthApi.buildDeps({ RPC_URL: 'not a url' }, { deployment: DEPLOYED, nowMs: NOW })), { url: '/api/health' });
   assert.equal(badRpc.status, 200, 'a provider that cannot be built is a degraded part');
   assert.equal(badRpc.body.index.headBlock, null);
-  assert.deepEqual(badRpc.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
+  assert.deepEqual(badRpc.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed', 'jackpot']);
   const nothing = await invoke(healthApi.createHandler(() => healthApi.buildDeps({ RPC_URL: 'not a url' }, { deployment: { ...DEPLOYED, status: 'unavailable' }, nowMs: NOW })), { url: '/api/health' });
-  assert.deepEqual(nothing.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-address'], 'no relayer reads are expected without a relayer');
+  assert.deepEqual(nothing.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-address', 'jackpot'], 'no relayer reads are expected without a relayer');
 });
 
 test('settles-left rounds down and a zero base fee gives no estimate', async () => withDb(async (db) => {
@@ -292,3 +298,76 @@ test('unknown query parameters and other methods are rejected before any read', 
   assert.equal(touched, false);
   assert.deepEqual(provider.calls, []);
 });
+
+// jackpot-server (design §C.4 "Health and status page"): the weekly-jackpot
+// cron, the keeper's balance, both pauses, the awaiting-admin backlog (with
+// the oldest wait) and the claim-pending and failed weeks. The keeper's
+// address is public; its key never appears.
+const KEEPER_KEY = `0x${'5d'.repeat(32)}`;
+const KEEPER = new ethers.Wallet(KEEPER_KEY).address.toLowerCase();
+const JACKPOT = `0x${'ab12'.repeat(10)}`;
+const jackpotIface = new ethers.Interface(WEEKLY_JACKPOT_ABI);
+const TOKEN = Object.freeze({ address: `0x${'7e'.repeat(20)}`, symbol: 'tCHIKUN', decimals: 18, name: "Lester's Arcade Test CHIKUN (no value)", testnet: true });
+const JACKPOT_DEPLOYMENT = Object.freeze({
+  status: 'deployed', chainId: 4441,
+  instances: Object.freeze({ chikun: Object.freeze({ address: JACKPOT, startBlock: 100, firstWeek: 2961, admin: `0x${'07'.repeat(20)}`, keeper: KEEPER, residualRecipient: `0x${'07'.repeat(20)}`, token: TOKEN, retired: Object.freeze([]) }) }),
+});
+
+function jackpotProvider({ keeperBalance = 4n * 10n ** 16n, onChainPaused = false, failPaused = false } = {}) {
+  const provider = fakeProvider();
+  const relayersCall = provider.call;
+  provider.getBalance = async (address) => {
+    provider.calls.push(`balance:${String(address).toLowerCase()}`);
+    return String(address).toLowerCase() === KEEPER ? keeperBalance : ONE_ZKLTC;
+  };
+  provider.call = async (request) => {
+    if (String(request.to).toLowerCase() !== JACKPOT) return relayersCall(request);
+    const parsed = jackpotIface.parseTransaction({ data: request.data });
+    provider.calls.push(`jackpot:${parsed.name}`);
+    if (failPaused) throw Object.assign(new Error(`request failed ${RPC_WITH_KEY}`), { code: 'SERVER_ERROR' });
+    return jackpotIface.encodeFunctionResult('paused', [onChainPaused]);
+  };
+  return provider;
+}
+
+test('health and status report the jackpot cron, keeper and pauses', async () => withDb(async (db) => {
+  const env = envFor({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: JACKPOT, JACKPOT_PAUSED: 'true' });
+  const jackpotHandler = (provider, extra = {}) => healthApi.createHandler(() => healthApi.buildDeps({ ...env, ...extra }, { db, provider, deployment: DEPLOYED, jackpotDeployment: JACKPOT_DEPLOYMENT, nowMs: NOW }));
+  await migrate(db);
+  const week = weekIndexOfMs(NOW);
+  const statuses = [[week - 4, 'failed'], [week - 3, 'awaiting-admin', 50], [week - 2, 'awaiting-admin', 7], [week - 1, 'claim-pending'], [week - 5, 'paid']];
+  for (const [index, status, waitedHours] of statuses) {
+    await ensureWeekRow(db, { contract: JACKPOT, weekIndex: index, token: TOKEN });
+    if (status === 'paid') continue;
+    assert.equal(await casWeekStatus(db, { contract: JACKPOT, weekKey: weekKeyOfIndex(index), from: 'open', to: status }), true);
+    if (waitedHours) await updateWeek(db, { contract: JACKPOT, weekKey: weekKeyOfIndex(index), set: { admin_waiting_since: new Date(NOW - (waitedHours * 3_600_000) - 60_000).toISOString() } });
+  }
+  await recordCronRun(db, { name: 'weekly-jackpot', ok: true, nowMs: NOW - 240_000 });
+  await recordCronRun(db, { name: 'weekly-jackpot', ok: false, code: 'keeper-underfunded', nowMs: NOW - 60_000 });
+
+  const provider = jackpotProvider({ onChainPaused: true });
+  const response = await invoke(jackpotHandler(provider), { url: '/api/health' });
+  assert.equal(response.status, 200, JSON.stringify(response.body));
+  assert.deepEqual(response.body.degradedParts, []);
+  assert.equal(response.body.healthy, true, 'a paused jackpot is an owner-page warning, not an unhealthy settlement path');
+  assert.deepEqual(response.body.crons.weeklyJackpot, { lastOkAt: '2026-09-24T17:56:00.000Z', lastErrorAt: '2026-09-24T17:59:00.000Z', lastErrorCode: 'keeper-underfunded', runs: 2, failures: 1 });
+  assert.deepEqual(response.body.jackpot, {
+    configured: true, keeperAddress: KEEPER, keeperBalanceWei: String(4n * 10n ** 16n), paused: { env: true, onChain: true }, uiHidden: false,
+    awaitingAdmin: 2, awaitingAdminOldestHours: 50, claimPending: 1, failed: 1,
+  });
+  assert.ok(provider.calls.includes(`balance:${KEEPER}`), 'the balance is the keeper\'s');
+  assert.ok(provider.calls.includes('jackpot:paused'), 'the on-chain pause is WeeklyJackpot.paused()');
+  const text = JSON.stringify(response.body);
+  assert.equal(text.includes(KEEPER_KEY.slice(2)), false, 'the keeper key never appears');
+  assert.doesNotMatch(text, /JACKPOT_|rpc\.example/);
+
+  // A failed jackpot chain read degrades only the jackpot part.
+  const broken = await invoke(jackpotHandler(jackpotProvider({ failPaused: true }), { JACKPOT_PAUSED: '', JACKPOT_UI_HIDDEN: 'true' }), { url: '/api/health' });
+  assert.deepEqual([broken.status, broken.body.degradedParts, broken.body.jackpot, broken.body.relayer.allowed], [200, ['jackpot'], null, true]);
+
+  // Unconfigured, the jackpot reads nothing on chain and reports the backlog.
+  const bare = jackpotProvider();
+  const unconfigured = await invoke(healthApi.createHandler(() => healthApi.buildDeps(envFor(), { db, provider: bare, deployment: DEPLOYED, jackpotDeployment: JACKPOT_DEPLOYMENT, nowMs: NOW })), { url: '/api/health' });
+  assert.deepEqual(unconfigured.body.jackpot, { ...NO_JACKPOT, awaitingAdmin: 2, awaitingAdminOldestHours: 50, claimPending: 1, failed: 1 });
+  assert.equal(bare.calls.some((call) => call.startsWith('jackpot:') || call === `balance:${KEEPER}`), false);
+}));

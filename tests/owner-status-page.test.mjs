@@ -26,6 +26,8 @@ import {
   formatWhen,
   formatZkltc,
   healthWarnings,
+  JACKPOT_REVIEW_URL,
+  jackpotWarnings,
   loadHealth,
   mountStatusPage,
 } from '../apps/portal/owner/status.mjs';
@@ -377,4 +379,63 @@ test('the mounted page renders the numbers and warnings through the DOM', async 
   assert.deepEqual([controller.state.phase, controller.state.stale], ['error', true]);
   assert.equal(page.byId.get('status-loaded').textContent, 'Checked 2026-09-24 18:00 UTC (10 min ago), stale: the last refresh failed. The edge can serve a report up to about 90 s old.');
   assert.match(page.byId.get('status-summary').textContent, /The numbers below are from the last successful check\.$/);
+});
+
+// jackpot-server (design §C.4): the weekly-jackpot cron and the jackpot part.
+const KEEPER = `0x${'5d'.repeat(20)}`;
+function jackpotReport(jackpot = {}, weeklyJackpot = {}) {
+  const base = healthyReport();
+  return {
+    ...base,
+    crons: { ...base.crons, weeklyJackpot: { lastOkAt: '2026-09-24T17:56:00.000Z', lastErrorAt: null, lastErrorCode: null, runs: 30, failures: 0, ...weeklyJackpot } },
+    jackpot: { configured: true, keeperAddress: KEEPER, keeperBalanceWei: '50000000000000000', paused: { env: false, onChain: false }, uiHidden: false, awaitingAdmin: 0, awaitingAdminOldestHours: null, claimPending: 0, failed: 0, ...jackpot },
+  };
+}
+
+test('the jackpot warns on a low keeper, either pause, the admin backlog, claim-pending and failed weeks', () => {
+  assert.equal(STATUS_THRESHOLDS.staleCronSeconds.weeklyJackpot, 1200);
+  assert.deepEqual([STATUS_THRESHOLDS.minKeeperBalanceWei, STATUS_THRESHOLDS.awaitingAdminErrorHours, JACKPOT_REVIEW_URL], ['50000000000000000', 168, '/owner/jackpot.html']);
+  assert.deepEqual(ids(jackpotReport()), [], 'exactly 0.05 zkLTC does not warn');
+  assert.deepEqual(ids(jackpotReport({ keeperBalanceWei: '49999999999999999' })), ['jackpot-keeper-low']);
+  assert.match(healthWarnings(jackpotReport({ keeperBalanceWei: '10000000000000000' }))[0].text, new RegExp(`0\\.01 zkLTC \\(under 0\\.05 zkLTC\\).*Send testnet zkLTC to ${KEEPER}`));
+  assert.deepEqual(ids(jackpotReport({ configured: false, keeperBalanceWei: null })), [], 'an unconfigured jackpot has no keeper to fund');
+  assert.deepEqual(ids(jackpotReport({ paused: { env: true, onChain: false } })), ['jackpot-paused']);
+  assert.deepEqual(ids(jackpotReport({ paused: { env: false, onChain: true } })), ['jackpot-paused']);
+  assert.match(healthWarnings(jackpotReport({ paused: { env: true, onChain: true } }))[0].text, /JACKPOT_PAUSED in the server environment and the WeeklyJackpot contract/);
+  assert.deepEqual(ids(jackpotReport({ claimPending: 1 })), ['jackpot-claim-pending']);
+  assert.match(healthWarnings(jackpotReport({ claimPending: 1 }))[0].text, /180-day recycle/);
+  assert.deepEqual(ids(jackpotReport({ failed: 2 })), ['jackpot-failed']);
+  assert.match(healthWarnings(jackpotReport({ failed: 2 }))[0].text, /^2 jackpot weeks have failed/);
+
+  // Awaiting the admin: a warning with the review link, an error after 7 days.
+  const waiting = jackpotWarnings(jackpotReport({ awaitingAdmin: 1, awaitingAdminOldestHours: 30 }).jackpot);
+  assert.deepEqual(waiting.map((warning) => [warning.id, warning.level, warning.link.href]), [['jackpot-awaiting-admin', 'warn', '/owner/jackpot.html']]);
+  assert.match(waiting[0].text, /^1 jackpot week waits for the admin's review. The oldest has waited 30 h. Review it within 24 hours/);
+  const overdue = jackpotWarnings(jackpotReport({ awaitingAdmin: 2, awaitingAdminOldestHours: 168 }).jackpot);
+  assert.deepEqual([overdue[0].level, overdue[0].link.href], ['bad', JACKPOT_REVIEW_URL]);
+  assert.match(overdue[0].text, /^2 jackpot weeks wait .*past the 7-day limit: apply the documented default/);
+  assert.equal(jackpotWarnings(jackpotReport({ awaitingAdmin: 1, awaitingAdminOldestHours: 167 }).jackpot)[0].level, 'warn');
+
+  // The cron: stale after 20 minutes without a success, failing on a newer error.
+  assert.deepEqual(ids(jackpotReport({}, { lastOkAt: '2026-09-24T17:40:00.000Z' })), []);
+  assert.deepEqual(ids(jackpotReport({}, { lastOkAt: '2026-09-24T17:39:00.000Z' })), ['cron-weekly-jackpot-stale']);
+  assert.deepEqual(ids(jackpotReport({}, { lastErrorAt: '2026-09-24T17:59:00.000Z', lastErrorCode: 'keeper-underfunded', failures: 1 })), ['cron-weekly-jackpot-failing']);
+  // A degraded jackpot read is null: only the degraded warning, with its label.
+  const degraded = { ...jackpotReport(), jackpot: null, degraded: true, healthy: false, degradedParts: ['jackpot'] };
+  assert.deepEqual(ids(degraded), ['degraded']);
+  assert.match(healthWarnings(degraded)[0].text, /the weekly jackpot \(keeper, pause or weeks\)/);
+  // A report from before the jackpot (no part, no cron) has no jackpot warnings.
+  assert.deepEqual(ids(healthyReport()), []);
+});
+
+test('an overdue admin review turns the summary red and links the review page', async () => {
+  const page = fakeDocument();
+  const report = jackpotReport({ awaitingAdmin: 1, awaitingAdminOldestHours: 200 });
+  const { ready } = mountStatusPage(page.doc, {}, { fetchImpl: async () => ({ ok: true, status: 200, json: async () => report }), nowMs: () => Date.parse('2026-09-24T18:00:10.000Z') });
+  await ready;
+  assert.equal(page.byId.get('status-summary').dataset.level, 'bad');
+  const [item] = page.byId.get('status-warnings').children;
+  assert.deepEqual([item.attributes['data-warning'], item.attributes['data-level']], ['jackpot-awaiting-admin', 'bad']);
+  const link = item.children.find((child) => child.tagName === 'A');
+  assert.deepEqual([link.attributes.href, link.textContent], ['/owner/jackpot.html', 'Open the jackpot review page']);
 });
