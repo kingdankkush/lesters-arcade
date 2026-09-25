@@ -12,6 +12,7 @@ The cap is 1,048,576 B for the HMH child's entry + Pixi vendor + every chunk `ga
 | 1. Foundations: bundle offsets | 1,008,196 | −38,565 | 40,380 | Level-up panel, card text, boss, world-design objectives, world-design life, pacing, native world assets and the briefing become awaited dynamic imports |
 | 1. Foundations: offer inside its tick, projection observer | 1,008,613 | +417 | 39,963 | |
 | 1. Foundations: `HMH_WEAPON_ORDER` in the simulation, evolution tag refactor | 1,009,713 | +1,100 | 38,863 | `HMH_CHILD_EVOLUTIONS`, additive tags, armour flags |
+| 2. Progression harness | 1,009,713 | 0 | 38,863 | Tools and docs only. `boss-reference-dps.mjs` is new but nothing in the child imports it yet |
 
 ### What the offsets moved (slice 1)
 
@@ -41,8 +42,75 @@ Same-seed runs must stay identical. Gameplay slices may change results against 1
 | 1. Offer timing | A level-up offer (earned, or the progression pilot's forced level) opens at the end of the tick whose XP produced it and stops that frame's catch-up. In 1.8.1 it opened after the frame, so up to three more ticks could run between the level and the panel, and how many depended on the frame partition. The offer tick is now partition-independent. |
 | 1. Projection observer | none (new hook, no consumer yet) |
 | 1. Weapon order and evolutions | none. `HMH_WEAPON_ORDER` is the same list, now derived from the run-summary weapon catalogue in `weapon-system.mjs`. No evolution is reachable before the Genesis Seal slice, so the additive tags and the Settler Rail armour flag change nothing yet. Deep Proof's 0.6 boss armour penetration now keys on any `boss-` target; the Liquidator (`boss-liquidator`) is the only one. |
+| 2. Progression harness | none. No simulation module changed. The new `boss-reference-dps.mjs` holds constants and is not imported by the runtime yet. |
 
 `tests/hmh-reboot-foundations-determinism.test.mjs` is the same-seed check for this slice: a headless run of the real kernel, main.mjs's offer code, the weapon loadout, run progression and the run-summary accumulator gives one evidence digest for two runs of a seed, for render partitions 1 to 4 and two seeded mixed partitions, and with a (faulting) projection observer attached.
+
+## Progression harness and the 1.8.1 baseline (slice 2)
+
+Package S0.3, progression part. `scripts/hmh-progression-model.mjs` is a headless, deterministic model of one run. It is built on the game's own pure modules: run progression and the two-card offer, the weapon loadout (cadence, reload, reserve caps, fallback), projectile contacts on the ordinary-enemy hurtbox, the knife, hand and launcher grenades, seeded crits and armour, the director's bands, caps, archetype choice and health ramp, enemy attack tokens and tells, auto-aim, dash cooldowns, combo XP, and every pickup table (caches, havens, secrets, supplies, the three rare weapon events).
+
+The proxy parts are frozen in `MODEL_CONSTANTS`, and the baseline records their fingerprint:
+- **Route.** `x = tick / 6`, which reaches x 12,000 at 20:00. A pickup is taken when the route reaches it, within 2 minutes.
+- **Arena.** The hero stands at the origin. Enemies spawn 1,600 units out, which matches Level 1's authored spawn points on the district edges. Each spawns on a seeded bearing in the forward 120°, walks in at 60% of its speed, and queues in nine lanes. Spawn placement never fails.
+- **Evasion.** Every enemy with an attack token strikes on its real clock. A strike connects at `strikeConnectChance` 0.016, divided by the hero's movement multipliers. The chance is paid out by deterministic error diffusion, not a coin flip. The automatic dodge spends itself on a strike that connects.
+- **Aim and grenades.** Aim error is up to ±4°. A hand grenade is thrown when 4 or more bodies are near its landing point.
+- **No bosses.** The gate measures the hero against the horde. Boss slices measure their own fights.
+
+`strikeConnectChance` and the spawn distance were set once, against 1.8.1. They put the median death in the elite band (10:00 to 20:00). The director's settings are constant there, so the time of death depends on the hero's power, not on a band change. Constants main.mjs owns and does not export are mirrored in `MAIN_MIRROR`, and a test fails if main.mjs moves any of them.
+
+**Three pick policies.**
+- `seeded`: a seeded coin flip, like a casual player.
+- `power`: gun-tree cards first, then damage, then crits.
+- `survival`: health, dash and speed first.
+
+The re-roll rule is frozen now so the progression release cannot tune the policies to itself: `power` and `survival` re-roll a card below their tier 3, and `seeded` never re-rolls. 1.8.1 has no re-roll, so the rule is exercised only by its test until the release wires the new offer API into `runProgressionModel`.
+
+**Baseline** (`docs/testing/hmh-progression-baseline-1.8.1.json`):
+- Source: the 1.8.1 release commit `6c3779dd`, exported with `git archive` and run with `--root`.
+- Config: 16 fixed seeds × 3 policies over a 30:00 horizon, 48 runs. A run of all 48 takes about 95 s on an idle machine.
+- Run digest: `a58e6d2c…`. Re-running the first seed of each policy gives the same digests.
+- This branch reproduces the baseline bit for bit. The default command on the working tree gives the same 48 run digests and the same report digest (`a58e6d2c…`), so the gate reads 0% growth. The weapon order the foundations slice moved does not reach the model's evidence.
+
+| Survival (min) | Median | p10 | p25 | p75 | p90 |
+|---|---|---|---|---|---|
+| Pooled (48 runs, all died) | 16.85 | 11.45 | 15.83 | 17.84 | 20.80 |
+| `seeded` | 16.34 | 11.23 | 13.10 | 17.43 | 19.94 |
+| `power` | 17.57 | 13.89 | 16.28 | 18.81 | 20.82 |
+| `survival` | 16.85 | 11.44 | 16.55 | 17.33 | 18.13 |
+
+**XP income** (pooled medians):
+- Level at 1 / 2 / 5 / 10 / 15 minutes: 4 / 8 / 13 / 21 / 30.5.
+- Level 10 at 2:55, level 20 at 8:45, level 30 at 13:52.
+- XP comes 91.3% from kills, 8.3% from combo milestones and 0.4% from cache pickups. The median run makes 927 kills.
+
+**Offers.** A median of 30.5 offers per run, with no re-rolls in 1.8.1. Pistol mastery (all 9 Pistol ranks) is reached by 14 of 16 `power` runs after a median of 23.5 level-ups. The package's draw model gives 24.1. Only 2 of 16 `seeded` runs and 2 of 16 `survival` runs reach it.
+
+**Ammo** (pooled medians):
+- **Shotgun:** acquired at 0:35 from the relay reserve, 96 shells, all fired, 5 dry fallbacks, 14% of the run.
+- **Railgun:** acquired at 5:01 from the ravine winch, 30% of the run.
+- **Pistol:** 40% of the run.
+- **Arc Rifle** (39 runs), **Machine Gun** (36), **Flamethrower** (26), **War Fork** (25), **Grenade Launcher** (12): acquired only by runs that live long enough to reach them.
+
+**referenceDps(level) calibration** (package 4.1, boss HP):
+- Method: the Pistol's weapon-benchmark DPS (30 s at one static armour-1 target) times the run's outgoing damage multiplier, with the expected critical hit. It is measured once each new level's picks are made, and the median is taken over every run that reaches the level.
+- Result: the medians are convex (6.7 at level 1, 11.1 at 10, 27.2 at 20, 79.6 at 32), so no capped line fits them. A least-squares capped line had a negative base, and the package placeholder `min(47, 8 + 2.6 × (L − 1))` is off by 18.8 DPS RMS.
+- The calibration is therefore the table: levels 1 to 32 (the last level at least half the runs reach), non-decreasing, rounded to 0.1, and held past 32. `apps/hmh-reboot/src/boss-reference-dps.mjs` carries it as `referenceDps(level)` for `hmhV7BossHp`, and the test pins it to the baseline.
+- At the ready ticks (levels about 8, 13, 17 and 21), the Baron's 90 s gives about 800 HP, the Lockkeeper's 105 s about 1,420, the Foreman's 120 s about 2,280 and the Liquidator's 150 s about 4,640, against today's 12,000.
+
+**The gate** (package 8.3 and 9.2):
+- Command: `node scripts/hmh-progression-model.mjs` runs the working tree and compares it with the baseline. It exits 1 when the pooled median survival grows by more than 10%, or when the report cannot be compared.
+- Warnings: a policy whose median grows by more than 10%, or falls by more than 10%.
+- **Sensitivity.** The model's median moves little with power. On a copy of the 1.8.1 source with a flat +20% outgoing damage, the pooled median grew by 3.0% (`seeded` +5.4%, `power` +2.9%, `survival` +1.8%) and p10 by 38% (11.45 to 15.84 minutes). No 1.8.1 build kills as fast as the elite band spawns, so the horde keeps growing and extra power buys only a little time. The gate on the median is therefore lenient. The comparison also prints the growth of every pooled quantile and the mean (`pooledQuantiles`), and the progression slice should report them next to the gate.
+- If the model itself changes, bump `PROGRESSION_MODEL_VERSION` and regenerate the baseline: `git archive 6c3779dd apps/hmh-reboot/src sdk | tar -x -C <dir>`, then `node scripts/hmh-progression-model.mjs --root <dir> --write-baseline --source-label 1.8.1 --source-commit 6c3779dd980d0a2b56665a4fde666a3b6b46ff54`.
+- The progression release must extend `runProgressionModel` for card 2 and the re-roll. It may use `chooseReroll`, but it must not change `choosePick` or `chooseReroll`.
+
+**Found while building it (1.8.1 hazard, not fixed here).** `refillWeaponLoadout` and `grantWeaponPickup` throw ("cannot refill Lightning Ledger while channeling") when they refill the Arc Rifle while it is channeling. main.mjs calls them without a guard, inside the tick, for:
+- ammo havens and objective ammo rewards;
+- ammo secrets and supply crates;
+- an Arc Rifle cache.
+
+So an Arc Rifle player who channels while taking an ammo reward throws inside the simulation step. A direct call on the real module reproduces it: grant the Arc Rifle, channel for 6 ticks, then call `refillWeaponLoadout`. The model defers such a pickup to the first idle tick. The fix belongs to a gameplay slice, with a test and a browser check of how the kernel surfaces the throw.
 
 ## Requests for the parent (outside this branch's scope)
 
