@@ -1,9 +1,26 @@
-import { freezeDeep, nonNegative, point2 as point, positive } from './value-guards.mjs';
+// Verbatim copy of the 1.8.1 release (60ea173a) apps/hmh-reboot/src/elevation.mjs, kept as the
+// bit-identical reference for tests/hmh-sim-hot-path.test.mjs. Do not edit.
+import { freezeDeep } from './value-guards.mjs';
 import { blockerSweepMayOverlap, immutableBlockerIndex } from './blocker-bounds.mjs';
 const EPSILON = 1e-9;
 
-import { cellKey, clamp, finite } from './value-guards.mjs';
+import { clamp, finite } from './value-guards.mjs';
 
+function positive(value, name) {
+  finite(value, name);
+  if (value <= 0) throw new TypeError(`${name} must be positive`);
+  return value;
+}
+
+function nonNegative(value, name) {
+  finite(value, name);
+  if (value < 0) throw new TypeError(`${name} must be non-negative`);
+  return value;
+}
+
+function point(value, name) {
+  return Object.freeze({ x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) });
+}
 
 
 function validateArea(area) {
@@ -90,18 +107,9 @@ export function createElevationSurface({
   });
 }
 
-// Every flat sample shares one frozen up-normal. A ramp sample still gets its
-// own, computed with the exact operations it always used.
-const FLAT_NORMAL = Object.freeze({ x: 0, y: 0, z: 1 });
-
-// The ground query is the hottest call in the fixed step (every enemy, every
-// traversal sample, every projectile). A sample is assembled frozen: its only
-// nested objects are the normal (frozen here) and the authored one-way drop,
-// which createElevationSurface already deep-froze. freezeDeep stays on the drop
-// so a hand-built surface ends up exactly as frozen as the old deep walk left it.
 function sampleSurface(surface, x, y) {
   let groundZ = surface.groundZ;
-  let normal = FLAT_NORMAL;
+  let normal = { x: 0, y: 0, z: 1 };
   if (surface.kind === 'ramp' || surface.kind === 'stairs') {
     const bounds = boundsForArea(surface.area);
     const minimum = surface.axis === 'x' ? bounds.minX : bounds.minY;
@@ -112,11 +120,9 @@ function sampleSurface(surface, x, y) {
     const slope = (surface.toZ - surface.fromZ) / (maximum - minimum);
     const raw = surface.axis === 'x' ? { x: -slope, y: 0, z: 1 } : { x: 0, y: -slope, z: 1 };
     const magnitude = Math.hypot(raw.x, raw.y, raw.z);
-    normal = Object.freeze({ x: raw.x / magnitude, y: raw.y / magnitude, z: raw.z / magnitude });
+    normal = { x: raw.x / magnitude, y: raw.y / magnitude, z: raw.z / magnitude };
   }
-  const oneWayDrop = surface.oneWayDrop;
-  if (oneWayDrop !== null && typeof oneWayDrop === 'object') freezeDeep(oneWayDrop);
-  return Object.freeze({
+  return freezeDeep({
     x,
     y,
     groundZ,
@@ -128,63 +134,20 @@ function sampleSurface(surface, x, y) {
     normal,
     heightLayer: Math.round(groundZ / 24),
     ascentAllowed: surface.ascentAllowed,
-    oneWayDrop,
+    oneWayDrop: surface.oneWayDrop,
     visibleStepId: surface.visibleStepId,
     visibleTerrainId: surface.visibleTerrainId,
   });
-}
-
-// Coarse 256-unit cells listing, in priority order, every surface whose box
-// (padded far past the EPSILON a rectangle accepts and the few ulps a polygon
-// crossing can round) touches the cell. A surface containing a point is
-// always listed in that point's cell, so the first listed match is the first
-// match in priority order. Null (scan every surface) unless every surface is
-// frozen geometry of a reasonable size.
-function surfaceCellIndex(ordered) {
-  const cells = new Map();
-  let registered = 0;
-  for (const surface of ordered) {
-    const area = surface.area;
-    const polygon = area?.type === 'polygon';
-    if (!Object.isFrozen(area) || (polygon && !(Object.isFrozen(area.vertices) && area.vertices.every(Object.isFrozen)))) return null;
-    const box = polygon ? boundsForArea(area) : area.type === 'rect' ? area : null;
-    const pad = 1e-6 + 1e-9 * Math.max(Math.abs(box?.minX), Math.abs(box?.minY), Math.abs(box?.maxX), Math.abs(box?.maxY));
-    if (!(pad < Infinity)) return null;
-    const minX = Math.floor((box.minX - pad) / 256);
-    const minY = Math.floor((box.minY - pad) / 256);
-    const maxX = Math.floor((box.maxX + pad) / 256);
-    const maxY = Math.floor((box.maxY + pad) / 256);
-    registered += (maxX - minX + 1) * (maxY - minY + 1);
-    if (!(registered <= 262144)) return null;
-    for (let y = minY; y <= maxY; y += 1) {
-      for (let x = minX; x <= maxX; x += 1) {
-        const listed = cells.get(cellKey(x, y));
-        if (listed) listed.push(surface);
-        else cells.set(cellKey(x, y), [surface]);
-      }
-    }
-  }
-  return cells;
 }
 
 export function createAuthoredGroundQuery({ baseSurface, surfaces = [] } = {}) {
   if (!baseSurface?.area) throw new TypeError('baseSurface is required');
   if (!Array.isArray(surfaces)) throw new TypeError('surfaces must be an array');
   const ordered = [...surfaces].sort((a, b) => b.priority - a.priority || a.id.localeCompare(b.id));
-  const cells = surfaceCellIndex(ordered);
   return (x, y) => {
     finite(x, 'ground query x');
     finite(y, 'ground query y');
-    // The first match in priority order, as Array.prototype.find returned it.
-    const candidates = cells === null
-      ? ordered
-      : cells.get(cellKey(Math.floor(x / 256), Math.floor(y / 256)));
-    let surface = baseSurface;
-    if (candidates !== undefined) {
-      for (let index = 0; index < candidates.length; index += 1) {
-        if (contains(candidates[index].area, x, y)) { surface = candidates[index]; break; }
-      }
-    }
+    const surface = ordered.find((candidate) => contains(candidate.area, x, y)) ?? baseSurface;
     return sampleSurface(surface, x, y);
   };
 }
@@ -216,18 +179,6 @@ export function resolveTraversalTransition(current, next, movement = { x: 0, y: 
   return Object.freeze({ allowed: true, reason: 'continuous', deltaZ, dropped: false });
 }
 
-// freezeDeep unrolled for the traversal result: the position is always a fresh
-// point of numbers, and the ground samples keep freezeDeep, which returns at
-// once for the frozen samples createAuthoredGroundQuery builds and still
-// freezes a caller's mutable samples the way the old deep walk did.
-function freezeTraversalResult(result) {
-  freezeDeep(result.reason);
-  Object.freeze(result.position);
-  freezeDeep(result.ground);
-  freezeDeep(result.attemptedGround);
-  return Object.freeze(result);
-}
-
 export function resolveSweptTraversalPath({
   start,
   end,
@@ -255,7 +206,7 @@ export function resolveSweptTraversalPath({
       y: candidate.y - position.y,
     }, transitionOptions);
     if (!transition.allowed) {
-      return freezeTraversalResult({
+      return freezeDeep({
         allowed: false,
         reason: transition.reason,
         position,
@@ -273,7 +224,7 @@ export function resolveSweptTraversalPath({
     position = candidate;
     ground = candidateGround;
   }
-  return freezeTraversalResult({ allowed: true, reason: 'complete', position: target, ground, attemptedGround: ground, time: 1, dropped, dropDeltaZ });
+  return freezeDeep({ allowed: true, reason: 'complete', position: target, ground, attemptedGround: ground, time: 1, dropped, dropDeltaZ });
 }
 
 export function movementSpeedMultiplierForTransition(current, next, horizontalDistance) {

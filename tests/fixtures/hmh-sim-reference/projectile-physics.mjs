@@ -1,16 +1,36 @@
+// Verbatim copy of the 1.8.1 release (60ea173a) apps/hmh-reboot/src/projectile-physics.mjs, kept as the
+// bit-identical reference for tests/hmh-sim-hot-path.test.mjs. Do not edit.
 const EPSILON = 1e-9;
 const CONTACT_EPSILON = 1e-6;
 const SHARP_GROUND_DROP = 8;
 const GROUND_TRANSITION_SEARCH_STEPS = 16;
 const PROJECTILE_POLICIES = new Set(['stop', 'pierce', 'ricochet', 'splash', 'pellet', 'hitscan']);
 
-import { cellKey, clamp, finite, nonNegative, point2, point3, positive } from './value-guards.mjs';
-import { blockerSweepMayOverlap, immutableBlockerIndex } from './blocker-bounds.mjs';
+import { clamp, finite } from './value-guards.mjs';
 
-// A cover sweep reports contact while its start is up to sqrt(r^2 + 1e-9) - r
-// (at most ~3.2e-5) outside a shape, so the conservative cover prefilter pads
-// the projectile radius well past that on top of the box test's own margin.
-const COVER_PREFILTER_PAD = 1e-4;
+function nonNegative(value, name) {
+  finite(value, name);
+  if (value < 0) throw new TypeError(`${name} must be non-negative`);
+  return value;
+}
+
+function positive(value, name) {
+  finite(value, name);
+  if (value <= 0) throw new TypeError(`${name} must be positive`);
+  return value;
+}
+
+function point3(value, name) {
+  return Object.freeze({
+    x: finite(value?.x, `${name}.x`),
+    y: finite(value?.y, `${name}.y`),
+    z: finite(value?.z, `${name}.z`),
+  });
+}
+
+function point2(value, name) {
+  return Object.freeze({ x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) });
+}
 
 function validateHeightTransition(value) {
   if (value == null) return null;
@@ -28,21 +48,7 @@ function normalize(vector, fallbackId = 'vector') {
   return { x: Math.cos(angle), y: Math.sin(angle) };
 }
 
-// Hurt targets are rebuilt every tick from a few shared, frozen hurtbox
-// profiles. Validating a frozen shape always yields the same frozen result, so
-// it is validated once; mutable shapes are validated on every call.
-const VALIDATED_LOCAL_SHAPES = new WeakMap();
 function validateLocalShape(shape, name) {
-  const cached = VALIDATED_LOCAL_SHAPES.get(shape);
-  if (cached !== undefined) return cached;
-  const validated = validateLocalShapeOnce(shape, name);
-  if (Object.isFrozen(shape) && (shape.type !== 'capsule' || (Object.isFrozen(shape.a) && Object.isFrozen(shape.b)))) {
-    VALIDATED_LOCAL_SHAPES.set(shape, validated);
-  }
-  return validated;
-}
-
-function validateLocalShapeOnce(shape, name) {
   if (!shape || typeof shape !== 'object') throw new TypeError(`${name} is required`);
   if (shape.type === 'circle') {
     return Object.freeze({
@@ -268,31 +274,35 @@ export class UniformHurtboxGrid {
     this.cells = new Map();
     for (const target of targets) {
       if (!target.active || target.health <= 0) continue;
-      this.#forEachCell(targetSweptBounds(target), (key) => {
-        const ids = this.cells.get(key);
-        if (ids) ids.push(target.id);
-        else this.cells.set(key, [target.id]);
-      });
+      const bounds = targetSweptBounds(target);
+      for (const key of this.#keys(bounds)) {
+        const ids = this.cells.get(key) ?? [];
+        ids.push(target.id);
+        this.cells.set(key, ids);
+      }
     }
+    for (const ids of this.cells.values()) ids.sort();
   }
 
-  // Packed integer cell keys. Buckets are not sorted: a query sorts the ids it
-  // collects, so bucket order was never observable.
-  #forEachCell(bounds, visit) {
+  #keys(bounds) {
+    const keys = [];
+    const minCellX = Math.floor(bounds.minX / this.cellSize);
+    const minCellY = Math.floor(bounds.minY / this.cellSize);
     const maxCellX = Math.floor(bounds.maxX / this.cellSize);
     const maxCellY = Math.floor(bounds.maxY / this.cellSize);
-    for (let y = Math.floor(bounds.minY / this.cellSize); y <= maxCellY; y += 1) {
-      for (let x = Math.floor(bounds.minX / this.cellSize); x <= maxCellX; x += 1) visit(cellKey(x, y));
+    for (let y = minCellY; y <= maxCellY; y += 1) {
+      for (let x = minCellX; x <= maxCellX; x += 1) keys.push(`${x}:${y}`);
     }
+    return keys;
   }
 
   query(projectile) {
     if (!projectile?.previous || !projectile?.current) throw new TypeError('projectile is required');
     const bounds = projectileBounds(projectile);
     const candidateIds = new Set();
-    this.#forEachCell(bounds, (key) => {
+    for (const key of this.#keys(bounds)) {
       for (const id of this.cells.get(key) ?? []) candidateIds.add(id);
-    });
+    }
     return [...candidateIds]
       .sort()
       .map((id) => this.targetsById.get(id))
@@ -465,19 +475,7 @@ function collectSegmentEvents(projectile, targets, blockers, timeOffset, timeSca
     const hit = movingTargetHit(projectile, target, timeOffset, timeScale, segmentStart, segmentEnd);
     if (hit) events.push(hit);
   }
-  // Cover the segment cannot reach is skipped before its narrow phase: the
-  // immutable world index returns the nearby blockers in the caller's order,
-  // and the padded box test rejects the rest. A skipped blocker could only have
-  // returned no hit, so the event list is the one the full scan built.
-  const x = segmentStart.x;
-  const y = segmentStart.y;
-  const dx = segmentEnd.x - segmentStart.x;
-  const dy = segmentEnd.y - segmentStart.y;
-  const reach = projectile.radius + COVER_PREFILTER_PAD;
-  const nearby = immutableBlockerIndex(blockers)?.querySourceOrder(x, y, dx, dy, reach) ?? blockers;
-  for (const blocker of nearby) {
-    if (blocker?.solid === false || blocker?.combatCover !== true) continue;
-    if (!blockerSweepMayOverlap(blocker.shape, x, y, dx, dy, reach)) continue;
+  for (const blocker of blockers) {
     const hit = coverHit(projectile, blocker, timeOffset, timeScale, segmentStart, segmentEnd);
     if (hit) events.push(hit);
   }
@@ -597,10 +595,6 @@ export function resolveProjectilePath({ projectile, targets = [], blockers = [],
   const activeTargets = ['splash', 'ricochet'].includes(projectile.policy.type)
     ? targets.filter((target) => target.active && target.health > 0 && !excluded?.has(target.id)).sort((a, b) => a.id.localeCompare(b.id))
     : candidateTargets;
-  return resolveValidatedPath(projectile, activeTargets, blockers);
-}
-
-function resolveValidatedPath(projectile, activeTargets, blockers) {
   let resolution;
   if (projectile.policy.type === 'splash') resolution = resolveSplashPolicy(projectile, activeTargets, blockers);
   else if (projectile.policy.type === 'ricochet') resolution = resolveRicochetPolicy(projectile, activeTargets, blockers);
@@ -621,15 +615,6 @@ function resolveValidatedPath(projectile, activeTargets, blockers) {
   });
 }
 
-const byTargetId = (a, b) => a.id.localeCompare(b.id);
-
-// Resolves shots in id order against the targets still alive after the shots
-// before them. Each shot is resolved exactly as resolveProjectilePath would
-// resolve it with those live targets; what is done once per batch instead of
-// once per shot is only the work whose result cannot change between shots:
-// the id checks (the live targets are always a subset of the checked targets),
-// the id lookup, and the id sort (a filtered sorted list is the sorted filtered
-// list, because the sort is stable and localeCompare is consistent).
 export function resolveProjectileBatch({ projectiles = [], targets = [], blockers = [], broadphase = null } = {}) {
   if (!Array.isArray(projectiles)) throw new TypeError('projectiles must be an array');
   assertUniqueTargets(targets);
@@ -641,39 +626,9 @@ export function resolveProjectileBatch({ projectiles = [], targets = [], blocker
   const health = new Map(targets.map((target) => [target.id, target.health]));
   const damageEvents = [];
   const resolutions = [];
-  const targetById = new Map(targets.map((target) => [target.id, target]));
-  const targetsSortedById = [...targets].sort(byTargetId);
-  const isLive = (target) => target.active && health.get(target.id) > 0;
-  let liveSortedById = null;
-  let sharedInputsChecked = false;
   for (const shot of [...projectiles].sort((a, b) => a.id.localeCompare(b.id))) {
-    const projectile = createProjectileState(shot);
-    if (!sharedInputsChecked) {
-      // First shot: the checks resolveProjectilePath runs after the projectile.
-      assertUniqueIds(blockers, 'blocker');
-      if (broadphase !== null && typeof broadphase?.query !== 'function') {
-        throw new TypeError('broadphase must expose query(projectile)');
-      }
-      sharedInputsChecked = true;
-    }
-    liveSortedById ??= targetsSortedById.filter(isLive);
-    const excluded = projectile.excludeTargetIds.length ? new Set(projectile.excludeTargetIds) : null;
-    let activeTargets;
-    if (broadphase) {
-      // The broadphase is asked for every shot, as before, and keeps its order.
-      const queriedTargets = broadphase.query(projectile)
-        .map((candidate) => targetById.get(candidate.id))
-        .filter((target) => target && isLive(target));
-      activeTargets = excluded ? queriedTargets.filter((target) => !excluded.has(target.id)) : queriedTargets;
-    }
-    if (projectile.policy.type === 'splash' || projectile.policy.type === 'ricochet') {
-      activeTargets = liveSortedById.filter((target) => target.active && target.health > 0 && !excluded?.has(target.id));
-    } else if (!broadphase) {
-      const queryBounds = projectileBounds(projectile);
-      activeTargets = liveSortedById.filter((target) => target.active && target.health > 0
-        && boundsOverlap(queryBounds, targetSweptBounds(target)) && !excluded?.has(target.id));
-    }
-    const resolution = resolveValidatedPath(projectile, activeTargets, blockers);
+    const liveTargets = targets.filter((target) => target.active && health.get(target.id) > 0);
+    const resolution = resolveProjectilePath({ projectile: shot, targets: liveTargets, blockers, broadphase });
     resolutions.push(resolution);
     for (const hit of resolution.hits) {
       const currentHealth = health.get(hit.targetId) ?? 0;
@@ -681,13 +636,12 @@ export function resolveProjectileBatch({ projectiles = [], targets = [], blocker
       const nextHealth = Math.max(0, currentHealth - hit.damage);
       health.set(hit.targetId, nextHealth);
       damageEvents.push(Object.freeze({ ...hit, healthBefore: currentHealth, healthAfter: nextHealth, killed: nextHealth === 0 }));
-      if (nextHealth === 0) liveSortedById = null;
     }
   }
   return Object.freeze({
     resolutions: Object.freeze(resolutions),
     damageEvents: Object.freeze(damageEvents),
-    remainingHealth: Object.freeze(Object.fromEntries(targetsSortedById.map((target) => [target.id, health.get(target.id)]))),
+    remainingHealth: Object.freeze(Object.fromEntries([...health.entries()].sort(([a], [b]) => a.localeCompare(b)))),
   });
 }
 
