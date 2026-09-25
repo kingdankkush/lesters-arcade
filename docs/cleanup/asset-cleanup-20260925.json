@@ -856,7 +856,8 @@
         "The selector renders from models/tripo-gameplay/*.blend (sourceMode packed-gameplay-sources); tests/hmh-reboot-tripo-selector-source.test.mjs asserts sourceBlend is absent. No test, script or generated provenance names hmh-tripo-selector.blend or models/tripo-selector/.",
         "hmh-source-model-lfs-check walks models/ but asserts no count; it reads the index, so the staged deletion keeps it green.",
         "Same-commit edits: the .gitattributes LFS rule for the deleted blend, the stale BLENDER-ATLAS-PIPELINE.md paragraph (rewritten to the packed-gameplay-sources flow; every pinned runbook string kept), and the uncalled scene builder with its syntax-check entry. The live manifest has no sourceBuilder key. Dead code that still names the retired chain stays in place (leftInPlace L2-01-dead-code): the sourceBuilder allow-list entry in scripts/hmh_selector_native_sources.py:117-122, which checks the path form only and names the deleted builder, the static-textured-models mode it still accepts (:125-128), the matching branch in scripts/run-hmh-hero-selector-render.py:268-272 (sha256 of the deleted builder) and scripts/hmh-blender/export-hmh-hero-selector.py:164. All three scripts are sha256-pinned in the committed selector provenance, so they cannot be edited without a Blender re-render.",
-        "Deleting from the working tree does not shrink .git or the LFS store; no history rewrite was done."
+        "Deleting from the working tree does not shrink .git or the LFS store; no history rewrite was done.",
+        "Restore caveat: the removed .gitattributes line was the only LFS rule for blender/hmh-tripo-selector.blend (the models/**/*.blend rule does not cover blender/), so `git check-attr filter` reports it unspecified and a plain `git checkout 0248cd4b -- apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend` writes the ~130 B LFS pointer text, not the 83,367,740 B scene. Re-add the line from `git show 0248cd4b:.gitattributes` first, then check the blend out. The four GLBs are still covered by models/**/*.glb and restore directly. BLENDER-ATLAS-PIPELINE.md says so (f54081e5)."
       ],
       "paths": [
         {
@@ -888,6 +889,9 @@
           "bytes": 17156988,
           "lfs": true
         }
+      ],
+      "revisedBy": [
+        "f54081e5 documents the two-step .blend restore (the .gitattributes line first)"
       ]
     },
     {
@@ -956,7 +960,8 @@
         "combatArt.environmentStages is never filled and the stage builder is gone after the Canvas cleanup, so no environment PNG is ever fetched; the level editor that lists them only boots on localhost.",
         "Kept: the 12 PNGs tests/arcade-core.test.mjs checks on disk (manifest.assets.slice(0, 12)) and hmh-environment-manifest.mjs, which arcade-core.mjs imports.",
         "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader for the removed files.",
-        "Level-editor impact: the 136 removed environment/runtime PNGs are 136 of the 148 environment/runtime src entries in apps/portal/assets/hmh-level-editor/runtime-sprite-library.json (12 remain on disk). Together with L2-04-subset this slice removed 380 of the 655 editor sprites that still resolved at 0248cd4b; see leftInPlace L2-05."
+        "Level-editor impact: the 136 removed environment/runtime PNGs are 136 of the 148 environment/runtime src entries in apps/portal/assets/hmh-level-editor/runtime-sprite-library.json (12 remain on disk). Together with L2-04-subset this slice removed 380 of the 655 editor sprites that still resolved at 0248cd4b; see leftInPlace L2-05.",
+        "Owner checkpoint: the localhost level editor is kept as a live tool (leftInPlace L2-05), yet this unit removes part of its remaining palette; see ownerCheckpoints editor-palette."
       ],
       "paths": [
         {
@@ -1561,7 +1566,9 @@
         "Kept: the 193 files tests/arcade-core.test.mjs and scripts/verify-generated-assets.mjs read, and screens/ (boot-splash.png is the intro-video poster in index.html).",
         "The stills README deferred deletion until no runtime fallback used the stills; that is now true, and the README records the partial removal.",
         "Level-editor impact: 244 of the removed files (216 frames, 28 stills) are src entries in apps/portal/assets/hmh-level-editor/runtime-sprite-library.json, and all 11 hard-money-heroes/stills/lilly entries now miss. Together with L2-03-subset this slice removed 380 of the 655 editor sprites that still resolved at 0248cd4b (275 remain); see leftInPlace L2-05.",
-        "Inert data strings left: apps/portal/src/arcade-core.mjs (stills at :1371-1404, runtimeManifest at :1412) and apps/portal/assets/generated/hmh-expanded-pixel-pack.mjs (30 frame paths; only achievementBadges is read). See followUps arcade-core-dead-urls."
+        "Inert data strings left: apps/portal/src/arcade-core.mjs (stills at :1371-1404, runtimeManifest at :1412) and apps/portal/assets/generated/hmh-expanded-pixel-pack.mjs (30 frame paths; only achievementBadges is read). See followUps arcade-core-dead-urls.",
+        "Owner checkpoint: the localhost level editor is kept as a live tool (leftInPlace L2-05), yet this unit removes part of its remaining palette; see ownerCheckpoints editor-palette.",
+        "Owner checkpoint: rewriting stills/README.md overrides its \"deletion is intentionally deferred\" policy under the slice brief; the audit asked for owner sign-off (ownerCheckpoints stills-readme-policy)."
       ],
       "paths": [
         {
@@ -2584,7 +2591,8 @@
       "editedInSameCommit": [],
       "evidence": [
         "Every legacy loader imports the .mjs manifests; these JSON twins, job ledgers (public raw PixelLab job ids) and the four unused hmh-curated-level-art files have no reader.",
-        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader (the build also resolves no import to them)."
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader (the build also resolves no import to them).",
+        "The PixelLab job ledgers and jobs files in this unit are written straight back into apps/portal by their kept generators on any rerun, which republishes raw PixelLab job ids, and two kept helpers now fail on the missing input until their parent wave reruns; see leftInPlace pixellab-ledger-writers and followUps pixellab-wave-ledgers."
       ],
       "paths": [
         {
@@ -2680,7 +2688,8 @@
       "evidence": [
         "Runtime and tests import the .mjs twins; these JSON copies and PixelLab resume ledgers have no reader.",
         "Kept: level1-pixellab-candidates.manifest.json (the wo119 module reads it at import time) and every .mjs.",
-        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader.",
+        "The PixelLab job ledgers and jobs files in this unit are written straight back into apps/portal by their kept generators on any rerun, which republishes raw PixelLab job ids, and two kept helpers now fail on the missing input until their parent wave reruns; see leftInPlace pixellab-ledger-writers and followUps pixellab-wave-ledgers."
       ],
       "paths": [
         {
@@ -2828,8 +2837,9 @@
       "evidence": [
         "No runtime reader; the file is a public ledger of raw PixelLab job ids.",
         "The only gate reference was one existsSync line in the non-ledgered test \"WO-119 docs, proof, syntax gate, and PixelLab generator are wired\". The two ledgered WO-119 tests are untouched.",
-        "Fixer pass: the kept generator wrote LEDGER back into the deployed portal folder on every create, animate and collect. It now writes .hermes/tmp/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json (gitignored by .hermes/), and save_ledger no longer creates the portal output folder. A behaviour test (PixelLab quality-wave ledger lives in the gitignored QA lane, starts empty and never writes into apps/portal) imports the generator through Python and replaces the source regex the original commit added.",
-        "scripts/promote-hmh-aaa-wave-to-roster.py is retired with it: it could not run (its actors/ input and the roster-ledger.json it writes against no longer exist) and nothing references it."
+        "scripts/promote-hmh-aaa-wave-to-roster.py is retired with it: it could not run (its actors/ input and the roster-ledger.json it writes against no longer exist) and nothing references it.",
+        "Fixer pass (02c5beb7): only the job ledger moved. LEDGER is now .hermes/tmp/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json (gitignored by .hermes/) and save_ledger creates that folder, not the portal one. OUT is unchanged: collect still writes staged frames to apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave/actors/ (:661) and promotion reads them back (:810), so any collect run recreates the retired portal folder. The commit title \"keep the AAA quality-wave job ledger out of apps/portal\" is accurate for the ledger only. This is a behaviour change to a live generator, beyond the slice notes' asset-folder scope: the ledger that makes a wave resumable is now local to the checkout that ran it. Kept deliberately and recorded as ownerCheckpoints l2-10-ledger-lane; reverting 02c5beb7 restores the old path.",
+        "A behaviour test (PixelLab quality-wave ledger lives in the gitignored QA lane, starts empty and never writes into apps/portal) imports the generator through Python with Pillow and the MCP client blocked (55e3c64e; about 0.6 s instead of 5.6 to 15 s) and fails against the generator as it was before 02c5beb7."
       ],
       "paths": [
         {
@@ -2838,7 +2848,8 @@
         }
       ],
       "revisedBy": [
-        "02c5beb7 moves LEDGER to the gitignored QA lane and replaces the regex with a behaviour test"
+        "02c5beb7 moves LEDGER to the gitignored QA lane and replaces the regex with a behaviour test",
+        "55e3c64e blocks the optional Pillow and MCP imports in the ledger probe"
       ]
     },
     {
@@ -3267,10 +3278,11 @@
       ],
       "evidence": [
         "Upgrade-card icons resolve only AUTHORED_PROP_ASSETS.powerUps and .weapons ids (upgrade-card-presentation.mjs); no other code builds an items/ URL.",
-        "Kept: the 12 power-up and all 8 weapon icons (20 files, 5 more than the audit kept, because the weapon icon set is a live code-level reference).",
+        "Kept: the 12 power-up and all 8 weapon icons (20 files, 5 more than the audit kept). resolveUpgradeIconAssetId accepts every AUTHORED_PROP_ASSETS.powerUps id and every .weapons id, but the 24-upgrade catalog requests only 15 of them today (the 12 power-ups plus lightning-ledger, bear-market-burner and forked-standard). coin-blaster, scatter-shotgun, auto-miner, launcher-rig and hash-rail are kept on purpose, for a future upgrade whose requiresWeaponId names them; no card requests them now.",
         "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader.",
-        "Fixer pass: the six tests titled \"every tree/rock/camp/bridge/undergrowth/water asset resolves to an item icon\" only checked the id pattern, so they kept passing with every world-prop item PNG gone. They now state what they check (the id forms a prop URL and resolveUpgradeIconAssetId never returns it); tests/hmh-reboot-upgrade-cards-and-settings.test.mjs keeps the on-disk check for the 20 icons the UI requests.",
-        "Inert data strings left: hmh-authored-props-atlas.json keeps an itemUrl for 86 of the removed items (no reader; only scripts/run-hmh-authored-props-pipeline.py writes the field). hmh-level-one-world-v3-landmarks.mjs, hmh-asset-footprints.json and hmh-curated-level-art.mjs match the removed basenames only by substring and name other files (for example rugpull-gulch-sheriff-water-tower.png, level1-polish/mailbox-rural.png, 15-short-cliff-face.png)."
+        "Fixer pass (340d7192): the six tests titled \"every tree/rock/camp/bridge/undergrowth/water asset resolves to an item icon\" only checked the id pattern, so they kept passing with every world-prop item PNG gone. They now state what they check (the id forms a prop URL and resolveUpgradeIconAssetId never returns it). Renaming them is a deviation (ownerCheckpoints prop-test-renames).",
+        "Inert data strings left: hmh-authored-props-atlas.json keeps an itemUrl for 87 of the removed items (87 of its 107 frames) (no reader; only scripts/run-hmh-authored-props-pipeline.py writes the field). hmh-level-one-world-v3-landmarks.mjs, hmh-asset-footprints.json and hmh-curated-level-art.mjs match the removed basenames only by substring and name other files (for example rugpull-gulch-sheriff-water-tower.png, level1-polish/mailbox-rural.png, 15-short-cliff-face.png). hmh-authored-props-metrics.json keeps the contactSheetSha256 of the removed contact sheet; no gate compares it (scripts/hmh-reboot-production-asset-qa.mjs hashes the hero contact sheets, not this one).",
+        "Second fixer pass (114b514f): tests/hmh-reboot-upgrade-cards-and-settings.test.mjs checks on disk the 15 icons the catalog requests (\"resolveUpgradeIconAssetId returns an id whose item PNG exists for all 24 catalog upgrades\") and now also pins the folder: \"the authored-props items folder ships exactly the power-up and weapon icons and no contact sheet\" requires items/ to hold exactly the 20 resolvable icons, each non-empty, and hmh-authored-props-contact-sheet.png to be absent. A rerun of npm run assets:hmh:authored-props (scripts/run-hmh-authored-props-pipeline.py:149-153 writes one PNG per atlas frame; build_outputs writes the contact sheet) fails that test until the unrequested outputs are dropped. The pipeline itself is unchanged."
       ],
       "paths": [
         {
@@ -3627,7 +3639,9 @@
         }
       ],
       "revisedBy": [
-        "340d7192 retitles the six world-prop \"resolves to an item icon\" tests"
+        "340d7192 retitles the six world-prop \"resolves to an item icon\" tests",
+        "340d7192 renames the six world-prop icon tests",
+        "114b514f pins the items/ inventory and the absent contact sheet"
       ]
     },
     {
@@ -4198,7 +4212,7 @@
         "resolvableNow": 275,
         "missingAt0248cd4b": 16716,
         "missingNow": 17096,
-        "note": "tests/hmh-level-editor.test.mjs:141 (\"asset palette includes the actual HMH runtime sprite folders\") still requires the hard-money-heroes/stills/lilly (11 entries, 0 on disk) and environment/runtime (148 entries, 12 on disk) palette folders; it checks palette strings, not files, and is left unchanged."
+        "note": "tests/hmh-level-editor.test.mjs:141-157 (\"asset palette includes the actual HMH runtime sprite folders, not only setpiece manifests\") still requires palette sources for hard-money-heroes/stills/lilly (11 entries, 0 on disk; stills/ now holds only README.md, crypto-bro and gas-beast), hard-money-heroes/frames/lester (only attack and stab remain) and hard-money-heroes/environment/runtime (148 entries, 12 on disk) at :151-153. It checks palette strings from the stale runtime-sprite-library.json index, not files, so it keeps passing; it is left unchanged here (followUps level-editor-retirement)."
       },
       "reason": "Read at module top level by tests/hmh-level-editor.test.mjs and by the localhost-only level editor (apps/portal/editor.html, apps/portal/src/hmh-level-editor-*.mjs). The editor still boots, but its palette is almost entirely dangling: 17,096 of 17,371 sprite src entries (98.4%) miss on disk, 16,716 of them already at 0248cd4b and 380 removed by this slice (L2-03-subset and L2-04-subset), leaving 275 loadable sprites. Retiring the editor edits portal src and is the keystone that also holds parts of L2-03, L2-04, L2-06 and L2-07. Owner decision (followUps level-editor-retirement)."
     },
@@ -4635,62 +4649,94 @@
         "scripts/run-hmh-enemy-roster-pipeline.py",
         "scripts/generate-hmh-achievement-atlas.py"
       ],
-      "reason": "Live generators kept unchanged: a manual rerun writes the L2-13 maps, docs/chikun/chikun-sheet-clips.png, the authored-props contact sheet and items, the roster contact sheets and the achievement JSON twin again. That is expected regenerated output, not a regression. (The AAA PixelLab quality-wave generator no longer writes its ledger into apps/portal; see L2-10.)"
+      "reason": "Live generators kept; scripts/chikun-blender/pack-chikun-sheet-atlases.py has one docstring-only edit (949db019: the untouched flight audio is chikun-flight-v2/audio, not chikun-flight-v3/audio). A manual rerun writes the L2-13 maps, docs/chikun/chikun-sheet-clips.png, the roster contact sheets and the achievement JSON twin again; that is regenerated output, not a regression. A rerun of run-hmh-authored-props-pipeline.py also writes the 87 unrequested item PNGs and the contact sheet, which now fails the items inventory test (PA-08, 114b514f) until they are dropped. The PixelLab wave scripts are not in this group: their reruns republish raw PixelLab job ids (leftInPlace pixellab-ledger-writers). The AAA PixelLab quality-wave generator no longer writes its ledger into apps/portal (L2-10, 02c5beb7), but its collect step still recreates the portal staging folder."
+    },
+    {
+      "id": "pixellab-ledger-writers",
+      "paths": [
+        "scripts/generate-hmh-complete-animations.py",
+        "scripts/harvest-hmh-complete-animations.py",
+        "scripts/pixellab-coherent-world-assets.py",
+        "scripts/pixellab-hmh-crypto-wasteland-assets.py",
+        "scripts/pixellab-hmh-level1-asset-wave.py",
+        "scripts/pixellab-hmh-environment-wave-2.py",
+        "scripts/pixellab-hmh-isometric-production-wave.py",
+        "scripts/recover-pixellab-wave-rate-limits.py"
+      ],
+      "files": 8,
+      "bytes": 155920,
+      "bytesNote": "whole-file sizes; nothing in these scripts was edited",
+      "lines": {
+        "scripts/generate-hmh-complete-animations.py": ":23-24 OUT_DIR and LEDGER, :224 LEDGER.write_text",
+        "scripts/harvest-hmh-complete-animations.py": ":23-24, :51 unconditional LEDGER.read_text, :102 and :105 LEDGER.write_text",
+        "scripts/pixellab-coherent-world-assets.py": ":28-29 OUT_DIR and LEDGER, :108 LEDGER.write_text",
+        "scripts/pixellab-hmh-crypto-wasteland-assets.py": ":35-37 OUT_DIR and LEDGER, :205 LEDGER.write_text",
+        "scripts/pixellab-hmh-level1-asset-wave.py": ":26-28 PUBLIC_ROOT, OUT_ROOT and LEDGER_PATH, :66 LEDGER_PATH.write_text; npm run assets:hmh:level1:pixellab",
+        "scripts/pixellab-hmh-environment-wave-2.py": ":34-36 PUBLIC_ROOT, OUT_ROOT and JOBS_PATH, :363 JOBS_PATH.write_text",
+        "scripts/pixellab-hmh-isometric-production-wave.py": ":32-34 PUBLIC_ROOT, OUT_ROOT and JOBS_PATH, :377 JOBS_PATH.write_text; docs/handoffs/pixellab-access.md:24 still lists it as a ready-to-run wave",
+        "scripts/recover-pixellab-wave-rate-limits.py": ":18 JOBS, :28 unconditional JOBS.read_text"
+      },
+      "rerunEffect": {
+        "scripts/generate-hmh-complete-animations.py": "recreates apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json (L2-06-subset)",
+        "scripts/harvest-hmh-complete-animations.py": "fails with FileNotFoundError until generate-hmh-complete-animations.py recreates the ledger, then rewrites it into apps/portal",
+        "scripts/pixellab-coherent-world-assets.py": "recreates apps/portal/assets/generated/hmh-coherent-world/coherent-world-ledger.json (L2-07-subset)",
+        "scripts/pixellab-hmh-crypto-wasteland-assets.py": "recreates apps/portal/assets/generated/hmh-coherent-world/crypto-wasteland-ledger.json (L2-07-subset)",
+        "scripts/pixellab-hmh-level1-asset-wave.py": "recreates apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/pixellab-level1-asset-wave-ledger.json (L2-07-subset)",
+        "scripts/pixellab-hmh-environment-wave-2.py": "recreates apps/portal/assets/generated/hmh-environment-pixellab-wave-2/pixellab-environment-wave-2-jobs.json (L2-06-subset)",
+        "scripts/pixellab-hmh-isometric-production-wave.py": "recreates apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json (L2-06-subset), and its zip extraction (:595-600) can write the removed per-character extracted/.../metadata.json files back; it generates the retired isometric actor art AGENTS.md says not to reactivate",
+        "scripts/recover-pixellab-wave-rate-limits.py": "fails with FileNotFoundError until pixellab-hmh-isometric-production-wave.py recreates the jobs file"
+      },
+      "reason": "L2-06-subset and L2-07-subset removed 7 PixelLab job ledgers and jobs files (public raw PixelLab job ids) from apps/portal, but the generators that write them still point into the deployed portal folders. Any rerun writes them straight back, republishing raw job ids, contrary to the pixellab-access.md rule that raw harvest clutter stays out of git. Two helpers read the removed files as required input and fail until their parent wave reruns. The scripts were left unedited because those units were gate-safe subsets (no code edit) and the slice notes limit code edits to dead generator scripts: the kept .mjs manifests these waves also produce are still imported (L2-06-remainder, L2-07-remainder). Only the L2-10 generator was changed (02c5beb7, ownerCheckpoints l2-10-ledger-lane). No rerun is scheduled; the PixelLab MCP endpoint is not configured in this session, and every write needs a manual run with local PixelLab credentials.",
+      "followUp": "followUps pixellab-wave-ledgers"
     }
   ],
   "verification": {
-    "scope": "baseline, npmTest, testRelease, assetsVerify, check, contractsCheck, docsLinks, curatedLevelKitRuntime, build and browserPass record the implementer run on 31f21940; fixerPass and visualRegression record the final tree after the fixer pass (see top-level fixerPass).",
+    "scope": "Result of record: the fields below ran on f54081e5, the tree this report was committed on top of (the report commit changes only this file, which no test, build or gate reads). Integrate the branch head, not 31f21940. history keeps the implementer run on 31f21940 and the first fixer pass on 340d7192.",
     "baseline": {
       "commit": "0248cd4b",
       "testRelease": "PASS tests=4850 passed=4799 expected_failures=51"
     },
+    "head": "f54081e5",
     "npmTest": {
-      "tests": 4850,
-      "pass": 4799,
+      "tests": 4852,
+      "pass": 4801,
       "fail": 51,
       "cancelled": 0,
       "skipped": 0,
       "todo": 0,
       "failuresEqualLedger": true,
-      "note": "the 51 failing test names equal docs/hmh-reboot/LEGACY-TEST-RETIREMENT.json exactly (no unexpected, none missing)"
+      "note": "Taken from the test:release run, which runs the full node --test suite. Two tests more than 31f21940: the PixelLab ledger behaviour test (02c5beb7) and the authored-props items inventory test (114b514f)."
     },
     "testRelease": {
-      "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4850 passed=4799 expected_failures=51",
-      "counts": {
-        "tests": 4850,
-        "failed": 51,
-        "passed": 4799,
-        "cancelled": 0,
-        "skipped": 0,
-        "todo": 0,
-        "topLevel": 4783,
-        "suites": 8
-      },
+      "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4852 passed=4801 expected_failures=51",
       "errors": [],
       "note": "the regenerated docs/testing/hmh-reboot-test-retirement-gate.json was restored, not committed"
     },
-    "assetsVerify": "Generated sliced asset verification passed: 76 PNGs; production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames; arcade playlist=26 MP3s (unchanged from base)",
-    "check": "Syntax check passed: 925 JS modules + 118 Python scripts (119 at base; the retired Tripo selector scene builder left PY_COMPILE_FILES)",
-    "contractsCheck": "passed (2026-09 native-fee set)",
-    "docsLinks": "passed: 8 current/public documents",
-    "curatedLevelKitRuntime": "npm run assets:hmh:curated-level-kit-runtime regenerated hmh-curated-level-kit-runtime.mjs with no diff",
+    "touchedSuites": [
+      "tests/hmh-wo119-pixellab-aaa-wave.test.mjs: 7 pass, 2 fail (the two ledgered WO-119 tests, unchanged); the ledger-lane test takes about 0.6 s and fails against the generator before 02c5beb7",
+      "tests/hmh-reboot-upgrade-cards-and-settings.test.mjs and tests/hmh-reboot-{tree,rock,camp,bridge,undergrowth,water}-props.test.mjs: 80 pass; the new items inventory test fails when a removed item PNG or the contact sheet is put back",
+      "tests/hmh-reboot-hero-selector-render.test.mjs, hmh-source-model-lfs-policy.test.mjs, hmh-reboot-blender-pipeline.test.mjs and hmh-reboot-external-model-pipeline.test.mjs (the runbook readers): 35 pass"
+    ],
+    "check": "Syntax check passed: 925 JS modules + 118 Python scripts",
+    "contractsCheck": "Lester's Arcade contract structure check passed (2026-09 native-fee set)",
+    "assetsVerify": "Generated sliced asset verification passed: 76 PNGs (lester=16, enemies=16, icons=16, badges=16, level1Parallax=4); production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames/4320ms loop; arcade playlist=26 MP3s/71MB",
+    "docsLinks": "Ship documentation link check passed: 8 current/public documents",
     "build": {
-      "result": "pass, every budget",
+      "result": "pass, every budget, unchanged from the base",
       "hmhInitialPlusSharedBytes": 1046713,
       "hmhCapBytes": 1048576,
+      "hmhEntryBytes": 360738,
       "stackedEntryBytes": 27694,
       "stackedInitialBytes": 572902,
-      "totalEmittedJs": "10.94 MB across 248 files",
-      "delta": "0 B: no bundled module changed (the only deleted .mjs files, hmh-curated-ground-art.mjs and hmh-environment-pixellab-wave-3.mjs, were imported by nothing)"
+      "totalEmittedJs": "10.94 MB across 248 files"
     },
     "browserPass": {
-      "server": "python -m http.server 8891 --directory apps/portal (stopped afterwards)",
-      "origin": "http://127.0.0.1:8891",
+      "server": "python -m http.server 8891 --bind 127.0.0.1 --directory apps/portal (stopped afterwards), run after test:release finished (a suite test rebuilds apps/portal/dist, so a concurrent pass sees transient dist 404s)",
       "pages": [
         {
           "name": "home",
           "ok": true,
-          "requests": 79,
+          "requests": 60,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4701,7 +4747,7 @@
         {
           "name": "discover-games",
           "ok": true,
-          "requests": 82,
+          "requests": 63,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4712,7 +4758,7 @@
         {
           "name": "discover-hard-money-heroes",
           "ok": true,
-          "requests": 79,
+          "requests": 60,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4723,7 +4769,7 @@
         {
           "name": "discover-chikun",
           "ok": true,
-          "requests": 79,
+          "requests": 60,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4734,7 +4780,7 @@
         {
           "name": "discover-stacked",
           "ok": true,
-          "requests": 79,
+          "requests": 60,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4745,7 +4791,7 @@
         {
           "name": "hmh-free-start",
           "ok": true,
-          "requests": 351,
+          "requests": 200,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4756,7 +4802,7 @@
         {
           "name": "chikun-free-start",
           "ok": true,
-          "requests": 303,
+          "requests": 172,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4767,7 +4813,7 @@
         {
           "name": "stacked-free-start",
           "ok": true,
-          "requests": 174,
+          "requests": 108,
           "httpErrors": 0,
           "consoleErrors": 0,
           "pageErrors": 0,
@@ -4776,132 +4822,8 @@
           ]
         }
       ],
-      "serverLog": "913 requests, all 200/206/304, zero 404",
-      "note": "the one aborted request per page is the playlist MP3 media request cancelled by the audio element (net::ERR_ABORTED, not an HTTP error); console warnings are the pre-existing iframe sandbox and WebGL driver notices"
-    },
-    "fixerPass": {
-      "head": "340d7192 plus the report commit",
-      "npmTest": {
-        "tests": 4851,
-        "pass": 4800,
-        "fail": 51,
-        "cancelled": 0,
-        "skipped": 0,
-        "todo": 0,
-        "failuresEqualLedger": true,
-        "note": "Taken from the test:release run (the gate runs the full node --test suite). One test more than 31f21940: the new PixelLab ledger behaviour test."
-      },
-      "testRelease": {
-        "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4851 passed=4800 expected_failures=51",
-        "errors": [],
-        "note": "the regenerated docs/testing/hmh-reboot-test-retirement-gate.json was restored, not committed"
-      },
-      "touchedSuites": [
-        "tests/hmh-wo119-pixellab-aaa-wave.test.mjs: 7 pass, 2 fail (the two ledgered WO-119 tests, unchanged); the new ledger test fails against the previous generator",
-        "tests/hmh-reboot-{tree,rock,camp,bridge,undergrowth,water}-props.test.mjs and tests/hmh-reboot-upgrade-cards-and-settings.test.mjs: all pass",
-        "tests/hmh-wo90-placeholder-redo.test.mjs: the ledgered test still fails first on \"pickup-icons contact sheet exists\", as at 0248cd4b",
-        "tests/hmh-selector-packed-sources.test.py: 41 tests OK (scripts unchanged)"
-      ],
-      "check": "Syntax check passed: 925 JS modules + 118 Python scripts",
-      "contractsCheck": "Lester's Arcade contract structure check passed (2026-09 native-fee set)",
-      "assetsVerify": "Generated sliced asset verification passed: 76 PNGs; production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames; arcade playlist=26 MP3s",
-      "docsLinks": "Ship documentation link check passed: 8 current/public documents",
-      "build": "pass, every budget, unchanged: HMH initial+shared 1,046,713 B of 1,048,576; STACKED initial 572,902 B (entry 27,694 B); 10.94 MB emitted JS across 248 files",
-      "anchorAudit": "buildAnchorCandidateAudit() vs docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.{json,md}: differs only in rows already stale at 0248cd4b (followUps wo76-anchor-audit-refresh)",
-      "browserPass": {
-        "server": "python -m http.server 8891 --bind 127.0.0.1 --directory apps/portal (stopped afterwards), run after test:release finished (a suite test rebuilds apps/portal/dist, so a concurrent pass sees transient dist 404s)",
-        "pages": [
-          {
-            "name": "home",
-            "ok": true,
-            "requests": 60,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "discover-games",
-            "ok": true,
-            "requests": 63,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "discover-hard-money-heroes",
-            "ok": true,
-            "requests": 60,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "discover-chikun",
-            "ok": true,
-            "requests": 60,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "discover-stacked",
-            "ok": true,
-            "requests": 60,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "hmh-free-start",
-            "ok": true,
-            "requests": 200,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "chikun-free-start",
-            "ok": true,
-            "requests": 172,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          },
-          {
-            "name": "stacked-free-start",
-            "ok": true,
-            "requests": 108,
-            "httpErrors": 0,
-            "consoleErrors": 0,
-            "pageErrors": 0,
-            "abortedRequests": [
-              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
-            ]
-          }
-        ],
-        "serverLog": "908 requests: 879 x 200, 29 x 304"
-      }
+      "serverLog": "908 requests: 879 x 200, 29 x 304",
+      "tree": "Run by the first fixer pass on 340d7192. `git diff --stat 340d7192..f54081e5 -- apps/portal` is empty: the served tree of the result of record is identical, so the pass was not repeated."
     },
     "visualRegression": {
       "command": "npm run build && PORTAL_VISUAL_PORT=8891 node scripts/visual-regression.mjs (equivalent to npm run visual:regression on the private port)",
@@ -4925,6 +4847,176 @@
         ]
       },
       "conclusion": "Pre-existing: the WO-65 harness drives the retired legacy canvas start flow and cannot reach its one capture (seed-1337-render-anchor) at the base either. No capture or baseline was written. The two removed baselines were not compared by the harness in any case (it compares only the captures it writes, :184 and :331). Follow-up: followUps wo65-visual-harness."
+    },
+    "history": {
+      "implementerRun": {
+        "commit": "31f21940",
+        "npmTest": {
+          "tests": 4850,
+          "pass": 4799,
+          "fail": 51,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0,
+          "failuresEqualLedger": true,
+          "note": "the 51 failing test names equal docs/hmh-reboot/LEGACY-TEST-RETIREMENT.json exactly (no unexpected, none missing)"
+        },
+        "testRelease": {
+          "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4850 passed=4799 expected_failures=51",
+          "counts": {
+            "tests": 4850,
+            "failed": 51,
+            "passed": 4799,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0,
+            "topLevel": 4783,
+            "suites": 8
+          },
+          "errors": [],
+          "note": "the regenerated docs/testing/hmh-reboot-test-retirement-gate.json was restored, not committed"
+        },
+        "assetsVerify": "Generated sliced asset verification passed: 76 PNGs; production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames; arcade playlist=26 MP3s (unchanged from base)",
+        "check": "Syntax check passed: 925 JS modules + 118 Python scripts (119 at base; the retired Tripo selector scene builder left PY_COMPILE_FILES)",
+        "contractsCheck": "passed (2026-09 native-fee set)",
+        "docsLinks": "passed: 8 current/public documents",
+        "curatedLevelKitRuntime": "npm run assets:hmh:curated-level-kit-runtime regenerated hmh-curated-level-kit-runtime.mjs with no diff",
+        "build": {
+          "result": "pass, every budget",
+          "hmhInitialPlusSharedBytes": 1046713,
+          "hmhCapBytes": 1048576,
+          "stackedEntryBytes": 27694,
+          "stackedInitialBytes": 572902,
+          "totalEmittedJs": "10.94 MB across 248 files",
+          "delta": "0 B: no bundled module changed (the only deleted .mjs files, hmh-curated-ground-art.mjs and hmh-environment-pixellab-wave-3.mjs, were imported by nothing)"
+        },
+        "browserPass": {
+          "server": "python -m http.server 8891 --directory apps/portal (stopped afterwards)",
+          "origin": "http://127.0.0.1:8891",
+          "pages": [
+            {
+              "name": "home",
+              "ok": true,
+              "requests": 79,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "discover-games",
+              "ok": true,
+              "requests": 82,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "discover-hard-money-heroes",
+              "ok": true,
+              "requests": 79,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "discover-chikun",
+              "ok": true,
+              "requests": 79,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "discover-stacked",
+              "ok": true,
+              "requests": 79,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "hmh-free-start",
+              "ok": true,
+              "requests": 351,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "chikun-free-start",
+              "ok": true,
+              "requests": 303,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            },
+            {
+              "name": "stacked-free-start",
+              "ok": true,
+              "requests": 174,
+              "httpErrors": 0,
+              "consoleErrors": 0,
+              "pageErrors": 0,
+              "abortedRequests": [
+                "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+              ]
+            }
+          ],
+          "serverLog": "913 requests, all 200/206/304, zero 404",
+          "note": "the one aborted request per page is the playlist MP3 media request cancelled by the audio element (net::ERR_ABORTED, not an HTTP error); console warnings are the pre-existing iframe sandbox and WebGL driver notices"
+        }
+      },
+      "fixerPass1": {
+        "head": "340d7192 plus the report commit",
+        "npmTest": {
+          "tests": 4851,
+          "pass": 4800,
+          "fail": 51,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0,
+          "failuresEqualLedger": true,
+          "note": "Taken from the test:release run (the gate runs the full node --test suite). One test more than 31f21940: the new PixelLab ledger behaviour test."
+        },
+        "testRelease": {
+          "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4851 passed=4800 expected_failures=51",
+          "errors": [],
+          "note": "the regenerated docs/testing/hmh-reboot-test-retirement-gate.json was restored, not committed"
+        },
+        "touchedSuites": [
+          "tests/hmh-wo119-pixellab-aaa-wave.test.mjs: 7 pass, 2 fail (the two ledgered WO-119 tests, unchanged); the new ledger test fails against the previous generator",
+          "tests/hmh-reboot-{tree,rock,camp,bridge,undergrowth,water}-props.test.mjs and tests/hmh-reboot-upgrade-cards-and-settings.test.mjs: all pass",
+          "tests/hmh-wo90-placeholder-redo.test.mjs: the ledgered test still fails first on \"pickup-icons contact sheet exists\", as at 0248cd4b",
+          "tests/hmh-selector-packed-sources.test.py: 41 tests OK (scripts unchanged)"
+        ],
+        "check": "Syntax check passed: 925 JS modules + 118 Python scripts",
+        "contractsCheck": "Lester's Arcade contract structure check passed (2026-09 native-fee set)",
+        "assetsVerify": "Generated sliced asset verification passed: 76 PNGs; production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames; arcade playlist=26 MP3s",
+        "docsLinks": "Ship documentation link check passed: 8 current/public documents",
+        "build": "pass, every budget, unchanged: HMH initial+shared 1,046,713 B of 1,048,576; STACKED initial 572,902 B (entry 27,694 B); 10.94 MB emitted JS across 248 files",
+        "anchorAudit": "buildAnchorCandidateAudit() vs docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.{json,md}: differs only in rows already stale at 0248cd4b (followUps wo76-anchor-audit-refresh)"
+      }
     }
   },
   "followUps": [
@@ -4949,7 +5041,7 @@
         "tests/hmh-level-editor.test.mjs"
       ],
       "detail": "See leftInPlace L2-05 editorImpact: 275 of 17,371 palette sprites still load.",
-      "action": "Retire the localhost editor and its runtime-sprite-library.json, then the L2-03, L2-04, L2-06 and L2-07 remainders it holds."
+      "action": "Retire the localhost editor and its runtime-sprite-library.json, then the L2-03, L2-04, L2-06 and L2-07 remainders it holds. When the editor is retired or its index regenerated, drop or rewrite the three required palette sources in tests/hmh-level-editor.test.mjs:151-153 (hard-money-heroes/frames/lester, stills/lilly, environment/runtime), which pass only because the test reads the stale index."
     },
     {
       "id": "selector-static-mode",
@@ -4982,6 +5074,23 @@
       ],
       "detail": "Stale before this slice: regenerating at 0248cd4b already reports the production art-pass contact sheet and 13 candidate PNG rows missing and the final-paint assetCount as 18 (committed 21). This slice no longer changes it (PA-10 fixer pass).",
       "action": "Regenerate with npm run design:anchor-candidates if the WO-76 record should match the tree."
+    },
+    {
+      "id": "pixellab-wave-ledgers",
+      "owner": "owner decision (PixelLab pipeline)",
+      "paths": [
+        "scripts/generate-hmh-complete-animations.py",
+        "scripts/harvest-hmh-complete-animations.py",
+        "scripts/pixellab-coherent-world-assets.py",
+        "scripts/pixellab-hmh-crypto-wasteland-assets.py",
+        "scripts/pixellab-hmh-level1-asset-wave.py",
+        "scripts/pixellab-hmh-environment-wave-2.py",
+        "scripts/pixellab-hmh-isometric-production-wave.py",
+        "scripts/recover-pixellab-wave-rate-limits.py",
+        "docs/handoffs/pixellab-access.md"
+      ],
+      "detail": "See leftInPlace pixellab-ledger-writers: seven kept PixelLab wave scripts write their job ledgers or jobs files into apps/portal, and two helpers fail on the removed input.",
+      "action": "Either retire the legacy wave scripts (the isometric wave produces retired isometric actor art) with their package.json, syntax-check and pixellab-access.md entries, or move each ledger and jobs file to the gitignored .hermes/tmp lane the way 02c5beb7 did for the AAA quality wave. Until then, do not rerun them without deleting the ledger from apps/portal afterwards."
     }
   ],
   "integrationSteps": [
@@ -5024,8 +5133,8 @@
     },
     {
       "file": "apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json",
-      "removedPathsNamed": 86,
-      "kind": "itemUrl data field with no reader (PA-08)",
+      "removedPathsNamed": 87,
+      "kind": "itemUrl data field with no reader (PA-08); 87 of 107 frames",
       "examples": [
         "apps/portal/assets/generated/hmh-reboot-authored-props/items/awning-shopfront.png",
         "apps/portal/assets/generated/hmh-reboot-authored-props/items/balanced-boulder.png",
@@ -5173,7 +5282,7 @@
     {
       "file": "scripts/generate-hmh-complete-animations.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): recreates apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json (L2-06-subset)",
       "examples": [
         "apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json"
       ]
@@ -5270,7 +5379,7 @@
     {
       "file": "scripts/harvest-hmh-complete-animations.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): fails with FileNotFoundError until generate-hmh-complete-animations.py recreates the ledger, then rewrites it into apps/portal",
       "examples": [
         "apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json"
       ]
@@ -5323,7 +5432,7 @@
     {
       "file": "scripts/pixellab-coherent-world-assets.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): recreates apps/portal/assets/generated/hmh-coherent-world/coherent-world-ledger.json (L2-07-subset)",
       "examples": [
         "apps/portal/assets/generated/hmh-coherent-world/coherent-world-ledger.json"
       ]
@@ -5331,7 +5440,7 @@
     {
       "file": "scripts/pixellab-hmh-crypto-wasteland-assets.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): recreates apps/portal/assets/generated/hmh-coherent-world/crypto-wasteland-ledger.json (L2-07-subset)",
       "examples": [
         "apps/portal/assets/generated/hmh-coherent-world/crypto-wasteland-ledger.json"
       ]
@@ -5339,7 +5448,7 @@
     {
       "file": "scripts/pixellab-hmh-environment-wave-2.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): recreates apps/portal/assets/generated/hmh-environment-pixellab-wave-2/pixellab-environment-wave-2-jobs.json (L2-06-subset)",
       "examples": [
         "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/pixellab-environment-wave-2-jobs.json"
       ]
@@ -5347,7 +5456,7 @@
     {
       "file": "scripts/pixellab-hmh-isometric-production-wave.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): recreates apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json (L2-06-subset), and its zip extraction (:595-600) can write the removed per-character extracted/.../metadata.json files back; it generates the retired isometric actor art AGENTS.md says not to reactivate",
       "examples": [
         "apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json"
       ]
@@ -5355,7 +5464,7 @@
     {
       "file": "scripts/pixellab-hmh-level1-asset-wave.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): recreates apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/pixellab-level1-asset-wave-ledger.json (L2-07-subset)",
       "examples": [
         "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/pixellab-level1-asset-wave-ledger.json"
       ]
@@ -5363,7 +5472,7 @@
     {
       "file": "scripts/recover-pixellab-wave-rate-limits.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "PixelLab job-ledger path (leftInPlace pixellab-ledger-writers): fails with FileNotFoundError until pixellab-hmh-isometric-production-wave.py recreates the jobs file",
       "examples": [
         "apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json"
       ]
@@ -5371,7 +5480,7 @@
     {
       "file": "scripts/run-hmh-authored-props-pipeline.py",
       "removedPathsNamed": 1,
-      "kind": "generator input or output path; a rerun reads or recreates it",
+      "kind": "generator output path; a rerun recreates the contact sheet and the 87 unrequested item PNGs, which fails the items inventory test (PA-08, 114b514f)",
       "examples": [
         "apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-contact-sheet.png"
       ]
@@ -5387,24 +5496,121 @@
       ]
     }
   ],
-  "fixerPass": {
-    "date": "2026-09-25",
-    "from": "31f21940",
-    "commits": [
-      "431a0a2c chore(assets): restore the WO-90 achievement atlas contact sheet (+12,297 B)",
-      "767c49f9 chore(assets): restore the three WO-76 anchor-source contact sheets (+158,428 B)",
-      "02c5beb7 fix(pixellab): keep the AAA quality-wave job ledger out of apps/portal",
-      "340d7192 test(hmh): stop claiming world props ship item icons",
-      "this commit: report revision (units PA-09, PA-10, L2-01, L2-02, L2-03, L2-04, L2-10, L2-12, PA-01, PA-08; leftInPlace with real paths, files and bytes; followUps, integrationSteps, danglingReferences, verification.fixerPass and verification.visualRegression)"
-    ],
-    "restored": {
-      "files": 4,
-      "bytes": 170725
+  "ownerCheckpoints": [
+    {
+      "id": "PA-06-source-art",
+      "units": [
+        "PA-06"
+      ],
+      "what": "Nine Chikun Blender and GLB sources (15,088,729 B) removed. The audit marked the row an owner decision (source art); the slice brief directs removing every no-edit partial.",
+      "restore": "git checkout 0248cd4b -- apps/chikun/assets/source/Chikun-30-Animations.glb apps/chikun/assets/source/Chikun-Flight-Rig.blend apps/chikun/assets/source/Chikun-Ragdoll-Parts.blend apps/chikun/assets/source/Chikun-Sheet-Animations.glb apps/chikun/assets/source/Chikun-Superman-Animations.glb apps/chikun/assets/source/ground-sky/eagle-motion.blend apps/chikun/assets/source/ground-sky/hawk-motion.blend apps/chikun/assets/source/ground-sky/pelican-motion.blend apps/chikun/assets/source/ground-sky/shiba-motion.blend (plain Git blobs)"
     },
-    "declinedCodeEdits": [
-      "Removing the sourceBuilder allow-list entry and the static-textured-models branches (scripts/hmh_selector_native_sources.py, run-hmh-hero-selector-render.py, hmh-blender/export-hmh-hero-selector.py): all three are sha256-pinned in the committed selector provenance and asserted by tests/hmh-reboot-hero-selector-render.test.mjs:257/:259 and the selector --check, so an edit needs a Blender re-render (leftInPlace L2-01-dead-code).",
-      "Editing apps/portal/src/arcade-core.mjs or hmh-anchor-set.mjs: portal src belongs to the parallel version-column slice (followUps arcade-core-dead-urls; the anchor-set sheets were restored instead).",
-      "Regenerating docs/cleanup/repo-cdn-cleanup-gate.{json,md} in this branch: it walks the whole working tree, so it runs once on the integrated tree (integrationSteps repo-cdn-gate)."
-    ]
-  }
+    {
+      "id": "PA-01-promo-gif",
+      "units": [
+        "PA-01"
+      ],
+      "what": "The publicly deployed but unwired arcade-promo-loop.gif (4,174,352 B, added \"for reuse in marketing\") removed; the MP4 and poster stay.",
+      "restore": "git checkout 0248cd4b -- apps/portal/assets/video/arcade-promo-loop.gif"
+    },
+    {
+      "id": "stills-readme-policy",
+      "units": [
+        "L2-04-subset"
+      ],
+      "what": "apps/portal/assets/hard-money-heroes/stills/README.md said deletion of the stills was intentionally deferred until no runtime fallback used them. The slice removed 28 stills and rewrote the README to record the removal, overriding that policy under the brief. The audit asked for owner sign-off.",
+      "restore": "git checkout 0248cd4b -- apps/portal/assets/hard-money-heroes/stills (restores the README and every still)"
+    },
+    {
+      "id": "editor-palette",
+      "units": [
+        "L2-03-subset",
+        "L2-04-subset",
+        "L2-05"
+      ],
+      "what": "The localhost level editor is kept as a live tool (L2-05), but L2-03-subset and L2-04-subset removed 380 of the 655 palette sprites that still loaded at 0248cd4b (136 environment/runtime PNGs, 216 frames, 28 stills); 275 remain. All 11 hard-money-heroes/stills/lilly entries now miss.",
+      "restore": "git checkout 0248cd4b -- apps/portal/assets/hard-money-heroes/environment/runtime apps/portal/assets/hard-money-heroes/frames apps/portal/assets/hard-money-heroes/stills, or retire the editor (followUps level-editor-retirement)"
+    },
+    {
+      "id": "l2-10-ledger-lane",
+      "units": [
+        "L2-10"
+      ],
+      "what": "Fixer commit 02c5beb7 changed a live generator: scripts/pixellab-hmh-aaa-quality-wave.py now keeps its job ledger in the gitignored .hermes/tmp lane, so the ledger that makes a wave resumable is local to one checkout. Only the ledger moved; collect still recreates apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave/actors/. This is outside the slice notes' asset-folder scope and was kept deliberately (the alternative republishes raw job ids on every run). tests/hmh-wo119-pixellab-aaa-wave.test.mjs pins the new path.",
+      "restore": "git revert 55e3c64e 02c5beb7 (newest first; restores the portal ledger path and the 2ff8514a empty-ledger assertion in place of the ledger-lane test)"
+    },
+    {
+      "id": "prop-test-renames",
+      "units": [
+        "PA-08"
+      ],
+      "what": "Fixer commit 340d7192 renamed six non-ledgered tests from \"every <tree|rock|camp|bridge|undergrowth|water> asset resolves to an item icon\" to \"every <kind> asset id forms a prop URL but no upgrade card requests its icon (world props ship no item PNG)\" and added a resolveUpgradeIconAssetId import to each. The old titles no longer held after PA-08; nothing pins the old names. An integration diff will show the six renames.",
+      "restore": "git revert 340d7192 (the old titles would then describe icons that no longer ship)"
+    },
+    {
+      "id": "pixellab-ledger-writers",
+      "units": [
+        "L2-06-subset",
+        "L2-07-subset"
+      ],
+      "what": "Seven kept PixelLab wave scripts still write raw job-id ledgers into apps/portal on a rerun, and two helpers fail on the removed input (leftInPlace pixellab-ledger-writers).",
+      "restore": "Decide per followUps pixellab-wave-ledgers."
+    },
+    {
+      "id": "L2-01-lfs-restore",
+      "units": [
+        "L2-01"
+      ],
+      "what": "The retired selector .blend lost its only LFS rule with it. Restoring it needs the .gitattributes line back first, or Git writes the pointer text.",
+      "restore": "Re-add the hmh-tripo-selector.blend line from `git show 0248cd4b:.gitattributes`, then git checkout 0248cd4b -- apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend (BLENDER-ATLAS-PIPELINE.md)."
+    }
+  ],
+  "fixerPasses": [
+    {
+      "date": "2026-09-25",
+      "from": "31f21940",
+      "commits": [
+        "431a0a2c chore(assets): restore the WO-90 achievement atlas contact sheet (+12,297 B)",
+        "767c49f9 chore(assets): restore the three WO-76 anchor-source contact sheets (+158,428 B)",
+        "02c5beb7 fix(pixellab): keep the AAA quality-wave job ledger out of apps/portal",
+        "340d7192 test(hmh): stop claiming world props ship item icons",
+        "this commit: report revision (units PA-09, PA-10, L2-01, L2-02, L2-03, L2-04, L2-10, L2-12, PA-01, PA-08; leftInPlace with real paths, files and bytes; followUps, integrationSteps, danglingReferences, verification.fixerPass and verification.visualRegression)"
+      ],
+      "restored": {
+        "files": 4,
+        "bytes": 170725
+      },
+      "declinedCodeEdits": [
+        "Removing the sourceBuilder allow-list entry and the static-textured-models branches (scripts/hmh_selector_native_sources.py, run-hmh-hero-selector-render.py, hmh-blender/export-hmh-hero-selector.py): all three are sha256-pinned in the committed selector provenance and asserted by tests/hmh-reboot-hero-selector-render.test.mjs:257/:259 and the selector --check, so an edit needs a Blender re-render (leftInPlace L2-01-dead-code).",
+        "Editing apps/portal/src/arcade-core.mjs or hmh-anchor-set.mjs: portal src belongs to the parallel version-column slice (followUps arcade-core-dead-urls; the anchor-set sheets were restored instead).",
+        "Regenerating docs/cleanup/repo-cdn-cleanup-gate.{json,md} in this branch: it walks the whole working tree, so it runs once on the integrated tree (integrationSteps repo-cdn-gate)."
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "from": "6640a15e",
+      "commits": [
+        "55e3c64e test(hmh): stub Pillow and MCP in the PixelLab ledger probe",
+        "114b514f test(hmh): pin the authored-props item icon inventory on disk",
+        "f54081e5 docs(hmh): say how to restore the retired selector blend from LFS",
+        "this commit: report revision (verification of record on the final tree, ownerCheckpoints, leftInPlace pixellab-ledger-writers, PA-08 and L2-01 corrections)"
+      ],
+      "restored": {
+        "files": 0,
+        "bytes": 0
+      },
+      "fixed": [
+        "PA-08: items/ inventory and absent contact sheet pinned by a test; wrong comment in six prop tests and the PA-08 \"Kept\" reason corrected; 86 -> 87 dangling itemUrls",
+        "L2-01: two-step .blend restore documented (the .gitattributes line first)",
+        "L2-06/L2-07: PixelLab ledger writers and failing helpers listed (leftInPlace pixellab-ledger-writers, followUps pixellab-wave-ledgers)",
+        "L2-10: ledger probe no longer imports Pillow and MCP; report says only the ledger moved and records the change as an owner checkpoint",
+        "verification: result of record moved to the final tree; generator-reruns reason and L2-05/level-editor notes corrected; ownerCheckpoints added"
+      ],
+      "declined": [
+        "Editing the seven PixelLab wave scripts (moving their ledgers out of apps/portal): the gate-safe L2-06/L2-07 subsets carry no code edit and the slice notes limit code edits to dead generators; recorded as followUps pixellab-wave-ledgers.",
+        "Reverting 02c5beb7: kept as a recorded owner checkpoint (l2-10-ledger-lane) because the revert would put raw job ids back in the deployed folder on the next run.",
+        "Re-adding the .gitattributes rule for the deleted blend: the audit listed its removal as a same-commit caveat; the restore steps are documented instead."
+      ]
+    }
+  ]
 }
