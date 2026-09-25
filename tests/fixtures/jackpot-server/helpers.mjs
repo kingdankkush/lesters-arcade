@@ -9,8 +9,8 @@ import { ethers } from 'ethers';
 import { createCanonicalSessionIdentity } from '../../../apps/portal/src/session-integrity.mjs';
 import { deriveRankedSeed } from '../../../apps/portal/src/session-seed.mjs';
 import { canonicalSessionJson, sha256Hex } from '../../../apps/portal/src/session-integrity.mjs';
-import { replayChikunRun } from '../../../apps/portal/src/chikun-cabinet.mjs';
-import { statsFromChikunResult } from '../../../apps/portal/src/achievements/stats.mjs';
+import { simulateChikunRun } from '../../../apps/portal/src/chikun-cabinet.mjs';
+import { reverifyStoredRun } from '../../../server/verify/index.mjs';
 import { issueSeedTicket } from '../../../server/verify/seed-ticket.mjs';
 import { migrate } from '../../../server/neon/migrations.mjs';
 import { periodKeysFor } from '../../../server/neon/period-keys.mjs';
@@ -58,6 +58,23 @@ function iso(value) {
   return value === null || value === undefined ? null : new Date(value).toISOString();
 }
 
+// A short, human-like v6 run at the given seed: seeded irregular gaps (8-40 ticks),
+// stock maxTicks, so it ends in a crash within a minute or so and trips no
+// hold rule (entropy well over 3 bits, no fast pairs, too short for H6).
+export function humanLikeEvidence(seed, { flaps = 60, rngSeed = 7 } = {}) {
+  let state = (rngSeed ^ seed) >>> 0 || 1;
+  const next = () => {
+    state ^= state << 13; state >>>= 0;
+    state ^= state >>> 17;
+    state ^= state << 5; state >>>= 0;
+    return state / 4294967296;
+  };
+  const ticks = [];
+  for (let index = 0, tick = 20; index < flaps; index += 1, tick += 8 + Math.floor(next() * 33)) ticks.push(tick);
+  // The canonical evidence keeps only the flaps applied before the crash.
+  return simulateChikunRun({ seed, taps: ticks, maxTicks: 216_000 }).evidence;
+}
+
 // One Chikun Ranked row with stored evidence, as settle stores it: the
 // canonical identity (with its sessionKey = session_id32), the canonical
 // evidence text and digest. `replay: true` replays the evidence so the row's
@@ -84,26 +101,29 @@ export async function seedJackpotRun(db, overrides = {}) {
     seed = issued.seed;
   }
   const identity = await createCanonicalSessionIdentity({ sessionId: sessionHandle, chainId: 4441, scoreRegistryAddress: registry, wallet, gameId: 'chikun', seasonId, buildHash, seed, nonce: uuid });
-  const evidence = overrides.evidence ?? flapEvidence({ seed, ...(overrides.evidenceOptions ?? {}) });
+  const evidence = overrides.evidence ?? (typeof overrides.evidenceFor === 'function' ? overrides.evidenceFor(seed) : flapEvidence({ seed, ...(overrides.evidenceOptions ?? {}) }));
   let score = overrides.score ?? 1000;
   let survivalSeconds = overrides.survivalSeconds ?? 120;
   let kills = overrides.kills ?? 0;
   let maxCombo = overrides.maxCombo ?? 0;
   let stats = overrides.stats ?? { score, survivalSeconds, nearMisses: 0, flapCount: evidence.flapDeltas.length, terminalReason: 'forest', forksPassed: 10 };
+  let envelopeHash = overrides.envelopeHash ?? randomHex32();
   if (overrides.replay) {
-    const result = replayChikunRun(evidence);
-    score = result.score;
-    survivalSeconds = Math.floor(result.survivalTicks / 60);
-    kills = result.forksPassed;
-    maxCombo = result.bestCombo;
-    stats = statsFromChikunResult(result);
+    // Exactly what settle stores: the real verifier's VerifiedRun.
+    const fresh = await reverifyStoredRun({ gameId: 'chikun', identity, evidence: { encoding: 'chikun-flap-evidence-v6+json', text: canonicalSessionJson(evidence) } });
+    if (!fresh.ok) throw new Error(`fixture evidence does not verify: ${fresh.error}`);
+    score = fresh.score;
+    survivalSeconds = fresh.contract.survivalSeconds;
+    kills = fresh.contract.kills;
+    maxCombo = fresh.contract.maxCombo;
+    stats = fresh.stats;
+    envelopeHash = overrides.envelopeHash ?? fresh.envelopeHash;
   }
   const verifiedAt = iso(overrides.verifiedAt ?? Date.parse(openedAt) + survivalSeconds * 1000 + 30_000);
   const status = overrides.status ?? 'confirmed';
   const confirmedAt = Object.hasOwn(overrides, 'confirmedAt') ? iso(overrides.confirmedAt) : (status === 'confirmed' ? iso(Date.parse(verifiedAt) + 30_000) : null);
   const keys = periodKeysFor(Date.parse(openedAt));
   const sessionId32 = overrides.sessionId32 ?? identity.sessionKey;
-  const envelopeHash = overrides.envelopeHash ?? randomHex32();
   await db.query(
     `INSERT INTO verified_sessions (session_id32, session_handle, wallet, game_id, season_id, runtime_id, build_hash, seed,
         score, kills, max_combo, survival_seconds, boss_id, stats, envelope_hash, day_key, week_key, month_key, status, source,
