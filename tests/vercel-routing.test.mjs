@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 import * as verifiedSessionApi from '../api/verified-session.mjs';
+import { HEALTH_CHAIN_TIMEOUT_MS, HEALTH_DB_TIMEOUT_MS } from '../server/ops/health.mjs';
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 
@@ -257,6 +258,8 @@ test('crons and function limits are declared', () => {
     'api/share-page.mjs': { maxDuration: 10 },
     'api/share-card.mjs': { maxDuration: 20, memory: 1024, includeFiles: 'apps/portal/assets/share-cards/**' },
     'api/ranked-seed.mjs': { maxDuration: 10 },
+    // ops-health: two short-deadline read parts (Neon, RPC) in parallel.
+    'api/health.mjs': { maxDuration: 15 },
   });
   assert.deepEqual(vercel.crons, [
     { path: '/api/cron/settle-retry', schedule: '* * * * *' },
@@ -266,12 +269,31 @@ test('crons and function limits are declared', () => {
 });
 
 test('noindex covers profile, share and owner pages', () => {
-  for (const path of [`/profile/${WALLET}`, '/profile', `/s/${HEX64}`, '/owner/confirm-dev-wallet.html', '/play/chikun/ranked', '/leaderboards']) {
+  for (const path of [`/profile/${WALLET}`, '/profile', `/s/${HEX64}`, '/owner/confirm-dev-wallet.html', '/owner/status.html', '/owner/status.mjs', '/play/chikun/ranked', '/leaderboards']) {
     assert.equal(headersFor(path)['X-Robots-Tag'], 'noindex, follow', path);
   }
   assert.equal(headersFor('/owner/confirm-dev-wallet.html')['Cache-Control'], 'no-store');
+  assert.equal(headersFor('/owner/status.html')['Cache-Control'], 'no-store', 'the owner status page is never cached');
   assert.equal(headersFor('/games/chikun')['X-Robots-Tag'], undefined, 'discover pages stay indexable');
   assert.equal(headersFor('/')['X-Robots-Tag'], undefined);
+});
+
+test('the health function is served at its own path with no rewrite', () => {
+  assert.equal(rewrite('/api/health'), null, '/api/health is the function itself');
+  assert.equal(rewrite('/api/health?cb=1'), null);
+  assert.ok(existsSync(new URL('../api/health.mjs', import.meta.url)));
+  assert.equal(vercel.crons.some((cron) => cron.path === '/api/health'), false, 'health is read on demand, never scheduled');
+  assert.equal(headersFor('/api/health')['X-Robots-Tag'], undefined);
+});
+
+test('the health read deadlines end well inside the health function limit', () => {
+  // A hung Neon or RPC read must end as a degraded 200, never a Vercel 504.
+  const limitMs = vercel.functions['api/health.mjs'].maxDuration * 1000;
+  for (const [name, ms] of Object.entries({ HEALTH_DB_TIMEOUT_MS, HEALTH_CHAIN_TIMEOUT_MS })) {
+    assert.ok(Number.isSafeInteger(ms) && ms > 0 && ms <= 5_000, `${name} is a short deadline (${ms} ms)`);
+  }
+  // The parts run in parallel; even back to back they leave a cold-start margin.
+  assert.ok(HEALTH_DB_TIMEOUT_MS + HEALTH_CHAIN_TIMEOUT_MS + 5_000 <= limitMs, `${HEALTH_DB_TIMEOUT_MS} + ${HEALTH_CHAIN_TIMEOUT_MS} ms + 5 s margin fits ${limitMs} ms`);
 });
 
 test('every functions entry points at an existing file', () => {

@@ -373,7 +373,8 @@ test('a failing read answers 500 JSON and logs only the error name and code', as
     assert.deepEqual([response.status, response.json], [500, { ok: false, error: 'internal-error' }]);
     assert.equal(response.headers['cache-control'], 'no-store');
     assert.doesNotMatch(response.body.toString('utf8'), /hunter2|postgres:\/\/|NeonDbError/);
-    assert.deepEqual(logged, [['[share-card] internal-error', 'NeonDbError', '57P01']]);
+    assert.deepEqual(logged, [['[share-card] internal-error', { name: 'NeonDbError', code: '57P01', sqlstate: '57P01' }]]);
+    assert.deepEqual(Object.keys(logged[0][1]), ['name', 'code', 'sqlstate'], 'the logged object carries only the cause class');
   } finally {
     console.error = original;
     await db.close();

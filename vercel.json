@@ -49,6 +49,9 @@
     },
     "api/ranked-seed.mjs": {
       "maxDuration": 10
+    },
+    "api/health.mjs": {
+      "maxDuration": 15
     }
   },
   "crons": [

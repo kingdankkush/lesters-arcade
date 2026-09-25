@@ -611,7 +611,7 @@ test('a thrown core error is 500 internal-error with nothing but the name and co
   const throwing = (deps) => ({ ...deps, verify: { ...deps.verify, bindRankedIdentity: async () => { throw Object.assign(new TypeError(`boom ${neonUrl}`), { code: 'ERR_FIXTURE' }); } } });
   const logged = [];
   const original = console.error;
-  console.error = (...args) => logged.push(args.map(String).join(' '));
+  console.error = (...args) => logged.push(args);
   let response;
   try {
     response = await post(settleHandler(ctx, { wrap: throwing }), body);
@@ -620,7 +620,8 @@ test('a thrown core error is 500 internal-error with nothing but the name and co
   }
   assert.deepEqual([response.status, response.body], [500, { ok: false, error: 'internal-error' }]);
   assert.equal(response.headers['cache-control'], 'no-store');
-  assert.deepEqual(logged, ['[settle] internal-error TypeError ERR_FIXTURE']);
+  assert.deepEqual(logged, [['[settle] internal-error', { name: 'TypeError', code: 'ERR_FIXTURE', sqlstate: null }]]);
+  assert.doesNotMatch(JSON.stringify(logged), /hunter2|postgresql|boom/);
 }));
 
 test('a double-tapped POST records one row and sends one transaction', async () => scenario(async (ctx) => {
