@@ -81,4 +81,6 @@ lives in `chikun-flight-v2/audio` (`apps/chikun/src/audio.mjs`).
 - Every sheet < 140 KiB, >= 12 unique frames, silhouette never touches the frame edge.
 - 18 bones, 62,830 triangles, 39 provenance clips.
 
-Contact sheet of every clip: `docs/chikun/chikun-sheet-clips.png`.
+Each pack run writes a review contact sheet of every clip to `docs/chikun/chikun-sheet-clips.png`.
+It is write-only review output: the committed copy was removed in the 2026-09-25 asset
+cleanup (it remains in Git history at `0248cd4b`).
