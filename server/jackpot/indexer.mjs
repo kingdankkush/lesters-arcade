@@ -14,6 +14,17 @@
 //   stored as 'other', so a Disqualified or Flagged event is never lost.
 // - Mirrors are idempotent: an amount is applied only when its event row is
 //   new, so replaying a range yields the same rows.
+// - Who reviewed: a Cleared or Flagged `by` is the admin's decision (the row
+//   becomes admin_reviewed, which the keeper never overrides) unless `by` is a
+//   keeper. The keeper set is every keeper the instance ever had: the
+//   persisted KeeperUpdated events (the constructor emits the first), the
+//   committed instance keeper and the configured keeper address; the admin
+//   set likewise from AdminTransferred. A rotated keeper, or a retired
+//   instance (whose record has no keeper), is therefore never mistaken for
+//   the admin.
+// - Disqualified with wholeWalletForWeek marks every other row of that
+//   wallet in that week disqualified (the chain refuses them and finalize
+//   skips them); Reinstated lifts it by re-reading those rows' review.
 // - reconcileInstance() then reads candidatesOf, weekState, potOf, reviewOf
 //   and adminReviewed for the listed candidates of every non-terminal week,
 //   and rulesCount/rulesAt, and heals any missed or skipped log. The mirrors
@@ -21,8 +32,9 @@
 
 import { jackpotIface, reasonText } from './chain.mjs';
 import {
-  TERMINAL_WEEK_STATUSES, casWeekStatus, clearChainRanks, deleteRulesNotIn, ensureWeekRow, insertEvent, jackpotStream, readCandidate, readCursor,
-  readWeekRow, readWeekRows, replaceRulesFrom, updateCandidate, updateWeek, upsertCandidate, upsertRules, upsertWalletFlag, writeCursor,
+  TERMINAL_WEEK_STATUSES, casWeekStatus, clearChainRanks, deleteRulesNotIn, ensureWeekRow, insertEvent, jackpotStream, markWalletDisqualified, readCandidate,
+  readCursor, readRoleWallets, readWalletWeekDisqualified, readWeekRow, readWeekRows, replaceRulesFrom, updateCandidate, updateWeek, upsertCandidate,
+  upsertRules, upsertWalletFlag, writeCursor,
 } from './store.mjs';
 import { boundsIsoOf, weekKeyOfIndex } from './weeks.mjs';
 
@@ -85,7 +97,9 @@ export async function indexJackpotInstance({
   const stream = jackpotStream(contract, chainId);
   const started = monotonicMs();
   const counts = { events: 0, skipped: 0, failed: 0 };
-  const keeperSet = new Set([...keepers, instance.keeper].filter(Boolean).map(lower));
+  const roles = await readRoleWallets(db, { contract });
+  const keeperSet = new Set([...keepers, instance.keeper, ...roles.keepers].filter(Boolean).map(lower));
+  const adminSet = new Set([instance.admin, ...roles.admins].filter(Boolean).map(lower));
   const blockTimes = new Map();
   const blockTime = async (number) => {
     const key = Number(number);
@@ -187,10 +201,22 @@ export async function indexJackpotInstance({
         const reason = name === 'Flagged' ? reasonText(args.reason, { pattern: REVIEW_REASON }) : null;
         await record({ weekKey: weekKey ?? candidate?.weekKey ?? null, sessionId32: session, wallet: reviewer, reason: name === 'Flagged' ? reasonText(args.reason) : null });
         if (!candidate) break;
-        const byAdmin = name === 'Reinstated' || (reviewer && !keeperSet.has(reviewer));
+        const byAdmin = name === 'Reinstated' || (reviewer !== null && (adminSet.has(reviewer) || !keeperSet.has(reviewer)));
         const set = name === 'Cleared' ? { review: 'cleared', review_reason: null } : name === 'Flagged' ? { review: 'flagged', review_reason: reason } : { review: 'none', review_reason: null };
         if (byAdmin) set.admin_reviewed = true;
         await updateCandidate(db, { contract, sessionId32: session, set });
+        if (name === 'Reinstated') {
+          // reinstate() also lifts the wallet's disqualification for the week:
+          // its other rows take their own review back from the chain.
+          const rowWeek = weekKey ?? candidate.weekKey;
+          for (const other of await readWalletWeekDisqualified(db, { contract, weekKey: rowWeek, wallet: candidate.wallet })) {
+            if (other === session) continue;
+            const review = await chainRead(() => chain.reviewOf(other));
+            if (review === 'disqualified') continue;
+            const otherReason = review === 'flagged' ? await chainRead(() => chain.reviewReason(other)) : null;
+            await updateCandidate(db, { contract, sessionId32: other, set: { review, review_reason: otherReason && REVIEW_REASON.test(otherReason) ? otherReason : (otherReason ? 'other' : null) } });
+          }
+        }
         break;
       }
       case 'Disqualified': {
@@ -205,6 +231,9 @@ export async function indexJackpotInstance({
           await upsertCandidate(db, { contract, weekKey, sessionId32: session, wallet: player, score: Number(rows[0]?.score ?? 0), source: 'public' });
         }
         await updateCandidate(db, { contract, sessionId32: session, set: { review: 'disqualified', review_reason: reason, admin_reviewed: true, on_chain: false, chain_rank: null } });
+        // wholeWalletForWeek: the wallet's other rows of the week are out too
+        // (a replaced or displaced row of a flooding wallet is never re-listed).
+        if (args.wholeWalletForWeek === true && weekKey) await markWalletDisqualified(db, { contract, weekKey, wallet: player, reason, exceptSession: session });
         break;
       }
       case 'WalletBlocked': {
@@ -279,6 +308,7 @@ export async function indexJackpotInstance({
         const wallet = lower(name === 'KeeperUpdated' ? args.keeper : args.current);
         await record({ wallet: wallet === ZERO_ADDRESS ? null : wallet });
         if (name === 'KeeperUpdated' && wallet !== ZERO_ADDRESS) keeperSet.add(wallet);
+        if (name === 'AdminTransferred' && wallet !== ZERO_ADDRESS) adminSet.add(wallet);
         if (wallet !== ZERO_ADDRESS) await upsertWalletFlag(db, { contract, wallet, staffEver: true });
         break;
       }
@@ -313,7 +343,7 @@ export async function indexJackpotInstance({
     toBlock = to;
     from = to + 1;
   }
-  return { fromBlock, toBlock, headBlock: headNumber, ...counts, lagBlocks: Math.max(0, headNumber - toBlock), keepers: [...keeperSet] };
+  return { fromBlock, toBlock, headBlock: headNumber, ...counts, lagBlocks: Math.max(0, headNumber - toBlock), keepers: [...keeperSet], admins: [...adminSet] };
 }
 
 // The view read after indexing (design §C.3 last bullet): rules epochs, and

@@ -19,13 +19,24 @@
 //                   admin-reviewed or disqualified row
 //                   send due actions (<= 3 per week per run)
 //   selecting       every keeper action settled, now >= cutoff + 10 min
-//                   → one last re-select → review
+//                   → one last re-select → review (a keeper row still
+//                   unscreened blocks it, unless its screen has errored
+//                   SCREEN_ERROR_LIMIT times: it is still retried, and the
+//                   week carries last_error 'screen-errors', but it never pins
+//                   the week; the finalize check needs a cleared leader anyway)
 //   review/awaiting-admin  now < settle cutoff (a WeekExtended moved it) → selecting
 //   review/awaiting-admin  < 5 on-chain rows, a displaced was_listed row that is
 //                   not disqualified or integrity-failed, now < payout − 2 h
-//                   → re-list the best one (submit)
+//                   → re-list the best one (submit). Rows the chain would
+//                   refuse are never the "best one": a blocked, staff or
+//                   wallet-disqualified wallet, or a wallet whose listed row
+//                   already ranks at or above it (NOT_BETTER) is left out, and
+//                   the survivors are confirmed with checkEligibility (up to
+//                   RELIST_CHECKS_PER_WEEK per run), so a doomed row never
+//                   hides the next honest one (the flood defence)
 //   review          now >= payout_at: leaderOf cleared, or empty (the pot rolls
-//                   over), not held, not paused → finalize → finalizing;
+//                   over, whatever rows remain listed: every one is skipped),
+//                   not held, not paused → finalize → finalizing;
 //                   otherwise → awaiting-admin (admin_waiting_since set)
 //   awaiting-admin  re-evaluated every run (a superset of the design's trigger
 //                   list: Cleared, Flagged, Disqualified, Reinstated,
@@ -68,6 +79,7 @@ export const SCREEN_RESERVE_MS = 15_000;
 export const SEND_RESERVE_MS = 20_000;
 export const SEND_KEEP_MS = 5_000;
 export const SCREEN_ERROR_LIMIT = 6;
+export const RELIST_CHECKS_PER_WEEK = 5;
 export const ACTIVE_WEEK_STATUSES = Object.freeze(['selecting', 'review', 'awaiting-admin']);
 
 const ms = (iso) => Date.parse(iso ?? '');
@@ -83,6 +95,12 @@ function needsScreen(candidate, nowMs) {
   if (candidate.screen !== 'error') return false;
   const retryAt = ms(candidate.features?.retryAt);
   return !Number.isFinite(retryAt) || retryAt <= nowMs;
+}
+
+// A row whose screen errored SCREEN_ERROR_LIMIT times in a row: still
+// retried, but it no longer holds the week in 'selecting'.
+function screenGaveUp(candidate) {
+  return candidate.screen === 'error' && Number(candidate.features?.errors ?? 0) >= SCREEN_ERROR_LIMIT;
 }
 
 // Screening order (design §C.4): on-chain rows by chain rank, then keeper
@@ -242,13 +260,52 @@ async function sendDue(ctx, { instance, chain, week, rulesList, budget }) {
   return outcomes;
 }
 
-// A displaced row to re-list (design §C.4 relist row), or null.
-function relistCandidate(candidates) {
-  const onChain = candidates.filter((row) => row.onChain).length;
-  if (onChain >= 5) return null;
+// The contract's board order (_ranksAbove): score DESC, submittedAt ASC,
+// sessionId ASC. → true when `a` ranks above `b`.
+function ranksAbove(a, b) {
+  if (a.score !== b.score) return a.score > b.score;
+  const at = Date.parse(a.submittedAt ?? '');
+  const bt = Date.parse(b.submittedAt ?? '');
+  if (Number.isFinite(at) && Number.isFinite(bt) && at !== bt) return at < bt;
+  return a.sessionId32 < b.sessionId32;
+}
+
+// Pure: the displaced rows a re-list could bring back, best first (design
+// §C.4 relist row), without the rows the chain would refuse whatever the
+// order: disqualified (the session, or its wallet for the week) and
+// integrity-failed rows, blocked and staff wallets, and a row whose wallet
+// already has a listed row that ranks at or above it (NOT_BETTER, the normal
+// case of a player who improved their own row). [] when 5 rows are listed.
+export function relistCandidates(candidates, { blocked = new Set(), staff = new Set() } = {}) {
+  const listed = candidates.filter((row) => row.onChain);
+  if (listed.length >= 5) return [];
   return candidates
     .filter((row) => !row.onChain && row.wasListed && row.review !== 'disqualified' && row.screen !== 'integrity-fail')
-    .sort((a, b) => b.score - a.score || (a.sessionId32 < b.sessionId32 ? -1 : 1))[0] ?? null;
+    .filter((row) => !blocked.has(row.wallet) && !staff.has(row.wallet))
+    .filter((row) => !listed.some((other) => other.wallet === row.wallet && !ranksAbove(row, other)))
+    .sort((a, b) => (ranksAbove(a, b) ? -1 : 1));
+}
+
+// The best displaced row the chain would re-list now, or null: the pure
+// filter above, then checkEligibility (the authority) on up to
+// RELIST_CHECKS_PER_WEEK rows in order, so a row the mirror has not caught up
+// with is passed over for the next one instead of being re-sent every run.
+async function relistCandidate(ctx, { instance, chain, candidates }) {
+  const flags = await readWalletFlags(ctx.db, { contract: instance.contract });
+  const blocked = new Set(flags.filter((flag) => flag.blocked).map((flag) => flag.wallet));
+  const staff = roleWallets({ deployment: ctx.deps.deployment, jackpotInstance: instance });
+  for (const flag of flags) if (flag.staffEver) staff.add(flag.wallet);
+  for (const row of relistCandidates(candidates, { blocked, staff }).slice(0, RELIST_CHECKS_PER_WEEK)) {
+    let check;
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      check = await chain.checkEligibility(row.sessionId32);
+    } catch {
+      return null; // an RPC failure: no re-list this run
+    }
+    if (check.ok) return row;
+  }
+  return null;
 }
 
 async function relist(ctx, { instance, week, candidate }) {
@@ -258,18 +315,14 @@ async function relist(ctx, { instance, week, candidate }) {
 }
 
 // The finalize decision at payout (design §C.4 review rows). → 'finalize' | 'wait'
-async function finalizeDecision(chain, { week, candidates }) {
+// An empty leaderOf finalizes (the pot rolls over), whatever rows are still
+// listed: leaderOf skips exactly the rows finalize skips (blocked,
+// wallet-disqualified, staff), and after payout nothing can be re-listed.
+async function finalizeDecision(chain, { week }) {
   const [leader, state, paused] = await Promise.all([chain.leaderOf(week.weekIndex), chain.weekState(week.weekIndex), chain.paused()]);
   if (state.status !== 'open') return { decision: 'done' };
   if (state.held || paused) return { decision: 'wait', code: state.held ? 'week-held' : 'jackpot-paused' };
-  if (leader && leader.review === 'cleared') return { decision: 'finalize' };
-  if (!leader) {
-    // Blocked rows keep their slots (J1 note): a full list of skipped rows
-    // with an honest displaced row waiting is the admin's to free, not a
-    // rollover.
-    if (state.count > 0 && relistCandidate(candidates)) return { decision: 'wait', code: 'leader-not-cleared' };
-    return { decision: 'finalize' };
-  }
+  if (!leader || leader.review === 'cleared') return { decision: 'finalize' };
   return { decision: 'wait', code: 'leader-not-cleared' };
 }
 
@@ -315,7 +368,7 @@ async function processWeek(ctx, { instance, chain, weekIndex, rulesList }) {
     await screenRows(ctx, { instance, chain, week, rules, candidates });
     candidates = await readCandidates(db, { contract: instance.contract, weekKey: week.weekKey });
     if ((status === 'review' || status === 'awaiting-admin') && now < ms(week.payoutAt) - RELIST_MARGIN_SECONDS * 1000) {
-      const displaced = relistCandidate(candidates);
+      const displaced = await relistCandidate(ctx, { instance, chain, candidates });
       if (displaced) await relist(ctx, { instance, week, candidate: displaced });
     }
     const sent = await sendDue(ctx, { instance, chain, week, rulesList, budget });
@@ -327,7 +380,7 @@ async function processWeek(ctx, { instance, chain, weekIndex, rulesList }) {
     if (status === 'selecting' && now >= ms(week.settleCutoffAt) + RESELECT_AFTER_CUTOFF_SECONDS * 1000) {
       const actions = await readWeekActions(db, { contract: instance.contract, weekKey: week.weekKey });
       const open = actions.some((action) => ['pending', 'signed', 'submitted'].includes(action.status) || (action.status === 'failed' && action.nextAttemptAt));
-      const unscreened = candidates.some((row) => needsScreen(row, Infinity) && row.source === 'keeper');
+      const unscreened = candidates.some((row) => row.source === 'keeper' && needsScreen(row, Infinity) && !screenGaveUp(row));
       if (!open && !unscreened) {
         const picked = await select(ctx, instance, week, rules);
         code = picked.code ?? code;
@@ -335,7 +388,7 @@ async function processWeek(ctx, { instance, chain, weekIndex, rulesList }) {
       }
     }
     if ((status === 'review' || status === 'awaiting-admin') && now >= ms(week.payoutAt)) {
-      const verdict = await finalizeDecision(chain, { week, candidates });
+      const verdict = await finalizeDecision(chain, { week });
       if (verdict.decision === 'finalize') {
         if (status === 'awaiting-admin') status = await setStatus(ctx, instance, week, 'awaiting-admin', 'review');
         const created = await createAction(db, { contract: instance.contract, weekIndex, kind: 'finalize' });
@@ -376,6 +429,16 @@ async function requeueFinalize(ctx, action) {
   await casAction(ctx.db, { id: action.id, from: ['failed'], to: 'skipped', set: { next_attempt_at: null } });
 }
 
+// The configured keeper's address (never the key), for the indexer's keeper set.
+function configuredKeepers(deps) {
+  try {
+    const address = deps.config.jackpot.keeper.address(ethers);
+    return address ? [address] : [];
+  } catch {
+    return [];
+  }
+}
+
 // Retired instances whose weeks are all terminal are not serviced any more.
 async function instanceDone(db, instance) {
   if (instance.active || !instance.endAfterWeek) return false;
@@ -402,7 +465,7 @@ export async function runJackpot(deps, { budgetMs = JACKPOT_RUN_BUDGET_MS, monot
     const chain = createJackpotChain({ provider: () => deps.provider, contract: instance.contract, deployment: deps.deployment });
     try {
       // eslint-disable-next-line no-await-in-loop
-      await indexJackpotInstance({ db: deps.db, chain, instance, chainId: deps.config.chainId, monotonicMs, logger });
+      await indexJackpotInstance({ db: deps.db, chain, instance, keepers: configuredKeepers(deps), chainId: deps.config.chainId, monotonicMs, logger });
       // eslint-disable-next-line no-await-in-loop
       const endAfterWeek = instance.active ? await chain.endAfterWeek() : instance.endAfterWeek;
       const currentWeek = weekIndexOfMs(ctx.clock());

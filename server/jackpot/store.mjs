@@ -310,6 +310,34 @@ export async function updateCandidate(db, { contract, sessionId32, set = {}, whe
   return rows.length === 1;
 }
 
+// The mirror of disqualify(session, wholeWalletForWeek = true): every other
+// row of the wallet in that week reads as disqualified too (the chain refuses
+// them with DISQUALIFIED, and finalize skips them as "disqualified-wallet"),
+// so neither the relist nor the public list treats them as eligible.
+// admin_reviewed is left as it is: the chain's adminReviewed of those
+// sessions did not change. → the sessions marked.
+export async function markWalletDisqualified(db, { contract, weekKey, wallet, reason = null, exceptSession = null }) {
+  const rows = await db.query(
+    `UPDATE jackpot_candidates SET review = 'disqualified', review_reason = $4, on_chain = false, chain_rank = NULL, updated_at = now()
+     WHERE contract = $1 AND week_key = $2 AND wallet = $3 AND review <> 'disqualified' AND ($5::text IS NULL OR session_id32 <> $5)
+     RETURNING session_id32`,
+    [requireAddress(contract, 'contract'), requireWeekKey(weekKey), requireAddress(wallet, 'wallet'), reason === null ? null : (REASON.test(String(reason)) ? String(reason) : 'other'),
+      exceptSession === null ? null : requireSession(exceptSession)],
+  );
+  return rows.map((row) => row.session_id32);
+}
+
+// The disqualified rows of one wallet in one week (the Reinstated mirror
+// re-reads their review from the chain, since reinstate() also lifts the
+// wallet's disqualification for the week).
+export async function readWalletWeekDisqualified(db, { contract, weekKey, wallet }) {
+  const rows = await db.query(
+    "SELECT session_id32 FROM jackpot_candidates WHERE contract = $1 AND week_key = $2 AND wallet = $3 AND review = 'disqualified' ORDER BY session_id32",
+    [requireAddress(contract, 'contract'), requireWeekKey(weekKey), requireAddress(wallet, 'wallet')],
+  );
+  return rows.map((row) => row.session_id32);
+}
+
 // Rows of a week that are no longer in candidatesOf lose on_chain/chain_rank.
 export async function clearChainRanks(db, { contract, weekKey, keepSessions = [] }) {
   await db.query(
@@ -539,6 +567,20 @@ export async function upsertWalletFlag(db, { contract, wallet, blocked = null, s
     [requireAddress(contract, 'contract'), requireAddress(wallet, 'wallet'), blocked === null ? null : bool(blocked), staffEver === null ? null : bool(staffEver),
       reason === undefined || reason === null ? null : (SHORT_REASON.test(reason) ? reason : 'other'), bool(reason !== undefined)],
   );
+}
+
+// Every keeper and admin an instance ever had, from its persisted role events
+// (the constructor emits KeeperUpdated and AdminTransferred, so an instance
+// indexed from its start block has them all). → { keepers, admins } (Sets)
+export async function readRoleWallets(db, { contract }) {
+  const rows = await db.query(
+    "SELECT DISTINCT event, wallet FROM jackpot_events WHERE contract = $1 AND event IN ('KeeperUpdated', 'AdminTransferred') AND wallet IS NOT NULL ORDER BY event, wallet",
+    [requireAddress(contract, 'contract')],
+  );
+  const keepers = new Set();
+  const admins = new Set();
+  for (const row of rows) (row.event === 'KeeperUpdated' ? keepers : admins).add(row.wallet);
+  return { keepers, admins };
 }
 
 export async function readWalletFlags(db, { contract }) {
