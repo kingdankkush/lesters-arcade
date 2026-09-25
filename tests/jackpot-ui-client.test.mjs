@@ -11,7 +11,7 @@ import { SETTLEMENT_LIVE } from '../apps/portal/src/settlement.mjs';
 import { LITVM_JACKPOT } from '../apps/portal/src/generated/litvm-jackpot.mjs';
 import { formatResetCountdown } from '../apps/portal/src/leaderboard-view.mjs';
 import {
-  CLOCK_SKEW_THRESHOLD_MS, JACKPOT_API_PATH, JACKPOT_FETCH_TIMEOUT_MS, JACKPOT_MEMO_MS, TESTNET_TOKEN_NOTE,
+  CLOCK_SKEW_THRESHOLD_MS, JACKPOT_API_PATH, JACKPOT_RULES_URL, JACKPOT_FETCH_TIMEOUT_MS, JACKPOT_MEMO_MS, TESTNET_TOKEN_NOTE,
   countdownParts, currentPrize, explorerTxUrl, fetchJackpot, formatCountdown, formatTokenAmount, isoWeekKey,
   jackpotEntryFor, leaderScoreText, localAndUtcTime, noteJackpotEntry, parseJackpot, phaseOf, serverClock,
   tokenAmountText, watchReplayUrl, weekIndexOfMs, weekRangeText, weekStartOfKey, weekStatusText,
@@ -31,6 +31,7 @@ test('jackpot flag is false, the config imports nothing, and true implies settle
   assert.equal(JACKPOT_LIVE, false, 'committed literal false until the owner-approved flip (design §E E10)');
   assert.deepEqual([...JACKPOT_GAMES], ['chikun']);
   assert.equal(JACKPOT_RULES_PATH, '/jackpot/chikun');
+  assert.equal(JACKPOT_RULES_URL, JACKPOT_RULES_PATH, 'the lazy chunks carry the same path without importing the config');
   const source = readFileSync(new URL('../apps/portal/src/jackpot-config.mjs', import.meta.url), 'utf8');
   const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' });
   assert.deepEqual(ast.body.filter((node) => /^(Import|ExportAll)/.test(node.type) || node.source), [], 'no imports or re-exports');

@@ -4,10 +4,9 @@
 // the provisional top score, last week's outcome, a "Past winners" list (date range, name, score,
 // prize in its own token, transaction, "Watch" replay, "Claim pending"), and a note that the jackpot
 // leader can differ from board #1.
-import { JACKPOT_RULES_PATH } from '../jackpot-config.mjs';
 import {
-  countdownParts, currentPrize, explorerTxUrl, fetchJackpot, formatCountdown, leaderScoreText, localAndUtcTime,
-  phaseOf, tokenAmountText, watchReplayUrl, weekRangeText, weekStartOfKey, weekStatusText,
+  JACKPOT_RULES_URL, countdownParts, currentPrize, explorerTxUrl, fetchJackpot, formatCountdown, leaderScoreText,
+  localAndUtcTime, phaseOf, tokenAmountText, watchReplayUrl, weekRangeText, weekStartOfKey, weekStatusText,
 } from './jackpot-client.mjs';
 import { coin, ensureJackpotStylesheet, fillLine, link, node } from './jackpot-view.mjs';
 
@@ -104,7 +103,7 @@ export function createJackpotBoardHeader({
       list.append(...winners.map((row) => winnerRow(documentRef, row, noted)));
       const winnersTitle = node(documentRef, 'h4', '', 'Past winners');
       const note = node(documentRef, 'p', 'jackpot-note', `${JACKPOT_BOARD_NOTE} `);
-      note.append(link(documentRef, JACKPOT_RULES_PATH, 'Rules'));
+      note.append(link(documentRef, JACKPOT_RULES_URL, 'Rules'));
       card.append(title, ...lines, ...(winners.length ? [winnersTitle, list] : []), note);
       container.append(card);
       return card;

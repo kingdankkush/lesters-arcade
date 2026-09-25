@@ -7,8 +7,7 @@
 // the week is unfunded, and after closesAt on the corrected clock; in the last 5 minutes it says that
 // runs paid after 00:00 UTC count toward next week. It also notes the entry for the results line
 // (jackpot-client.mjs noteJackpotEntry), which checks the run's own paid amount and week.
-import { JACKPOT_RULES_PATH } from '../jackpot-config.mjs';
-import { currentPrize, fetchJackpot, noteJackpotEntry, phaseOf } from './jackpot-client.mjs';
+import { JACKPOT_RULES_URL, currentPrize, fetchJackpot, noteJackpotEntry, phaseOf } from './jackpot-client.mjs';
 import { ensureJackpotStylesheet, fillLine, link, node } from './jackpot-view.mjs';
 
 export const LAST_MINUTES_MS = 5 * 60_000;
@@ -57,7 +56,7 @@ export async function showEntryJackpot({
       prize.text({ first: true }),
       "Entries don't fund the prize",
       Date.parse(week.closesAt) - correctedNow <= LAST_MINUTES_MS ? NEXT_WEEK_NOTE : null,
-      link(documentRef, JACKPOT_RULES_PATH, 'Rules ↗', { newTab: true }),
+      link(documentRef, JACKPOT_RULES_URL, 'Rules ↗', { newTab: true }),
     ]);
     row.replaceChildren(node(documentRef, 'span', '', "This week's jackpot"), value);
     row.hidden = false;

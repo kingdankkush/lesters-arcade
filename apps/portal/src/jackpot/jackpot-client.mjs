@@ -16,6 +16,9 @@
 // that a week closed from closesAt on that clock, never from the cached status.
 
 export const JACKPOT_API_PATH = '/api/jackpot';
+// JACKPOT_RULES_PATH of jackpot-config.mjs as a literal (tests pin them equal): the lazy chunks do not
+// import jackpot-config.mjs, so it never becomes a shared chunk the portal entry and the Chikun child load.
+export const JACKPOT_RULES_URL = '/jackpot/chikun';
 export const JACKPOT_FETCH_TIMEOUT_MS = 4_000;
 export const JACKPOT_MEMO_MS = 30_000;
 export const CLOCK_SKEW_THRESHOLD_MS = 5_000;

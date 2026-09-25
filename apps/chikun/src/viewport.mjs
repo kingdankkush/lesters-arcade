@@ -18,7 +18,7 @@ export function buildChikunViewport(cssWidth, cssHeight, dpr = 1) {
 
 // Whether the draw loop may draw an obstacle: not beyond the view's right edge plus the margin.
 export function chikunForkInView(fork, view) {
-  return !(Number(fork?.x) > view.left + view.width + CHIKUN_DRAW_MARGIN_PX);
+  return !(fork.x > view.left + view.width + CHIKUN_DRAW_MARGIN_PX);
 }
 
 // Portrait "<KIND> AHEAD" preview. It names the next obstacle once it is within

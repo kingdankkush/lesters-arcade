@@ -1,8 +1,7 @@
 // The Chikun mode-select marquee (design §D.3), loaded by routes/official-play-routes.mjs only while
 // JACKPOT_LIVE: "WEEKLY JACKPOT · {prize} {symbol} · closes in 2d 4h · top score {score} (provisional) ·
 // Rules". It shows only a funded, open week (on the corrected clock); anything else hides it.
-import { JACKPOT_RULES_PATH } from '../jackpot-config.mjs';
-import { countdownParts, currentPrize, fetchJackpot, formatCountdown, leaderScoreText, phaseOf } from './jackpot-client.mjs';
+import { JACKPOT_RULES_URL, countdownParts, currentPrize, fetchJackpot, formatCountdown, leaderScoreText, phaseOf } from './jackpot-client.mjs';
 import { coin, ensureJackpotStylesheet, fillLine, link, node } from './jackpot-view.mjs';
 
 export const JACKPOT_MARQUEE_ID = 'chikunJackpotMarquee';
@@ -46,7 +45,7 @@ export default async function renderChikunJackpotPanel(mount, {
     prize.capNote,
     `closes in ${formatCountdown(countdownParts(week.closesAt, correctedNow))}`,
     week.leader ? leaderScoreText(week.leader) : null,
-    link(documentRef, JACKPOT_RULES_PATH, 'Rules'),
+    link(documentRef, JACKPOT_RULES_URL, 'Rules'),
   ]).prepend(coin(documentRef));
   panel.hidden = false;
   // Keep "closes in" current while the marquee is on screen.
