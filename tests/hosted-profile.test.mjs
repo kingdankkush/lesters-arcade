@@ -204,6 +204,50 @@ test('a hosted STACKED profile shows no device-local preview text', async () => 
   assert.doesNotMatch(shown, /Device-local|on this device\. Input labels|not online rankings|Local Ranked Runs|Score Source/i);
 });
 
+// polish-2 (live UI audit follow-up): "Verified totals" summed per-run bests
+// ("Combo total", "Levels"). Sums show only where they are true totals; a
+// combo or a level shows E6 `bests`, the highest verified value.
+test('verified totals show true totals only, and per-run bests read as bests', async () => {
+  const cells = (grid, className) => {
+    const block = byClass(grid, className)[0];
+    return block ? byClass(block, 'game-stat-cell').map((cell) => [cell.children[1].textContent, cell.children[0].textContent]) : null;
+  };
+  const answer = e6();
+  answer.games['lester-blaster'] = { ...answer.games['lester-blaster'], totals: { kills: 400, survivalSeconds: 3900, maxCombo: 95, level: 41, bossKills: 2 }, bests: { maxCombo: 30, level: 12 } };
+  answer.games.chikun = { ...answer.games.chikun, totals: { forksPassed: 60, nearMisses: 7, coinsCollected: 30, bestCombo: 19, survivalSeconds: 400, laps: 3 }, bests: { bestCombo: 11 } };
+  answer.games.stacked = { ...answer.games.chikun, totals: { lines: 120, level: 17, quadClears: 4, perfectClears: 1, maxCombo: 13, survivalSeconds: 900 }, bests: { level: 9, maxCombo: 6 } };
+  const h = hostedProfile({ answers: { [`${ME}|self`]: answer } });
+  await rendered(h);
+  assert.deepEqual(cells(h.grid, 'profile-totals-grid'), [['Kills', '400'], ['Time survived', '1h 05m'], ['Boss kills', '2']]);
+  assert.deepEqual(cells(h.grid, 'profile-bests-grid'), [['Highest level', '12'], ['Best combo', '30']], 'the highest verified values, not the sums (41, 95)');
+  const page = text(h.grid);
+  assert.match(page, /VERIFIED TOTALS/);
+  assert.match(page, /VERIFIED BESTS/);
+  assert.doesNotMatch(page, /Combo total|Levels\b/);
+
+  h.routeState.gameId = 'chikun';
+  h.route.renderProfile();
+  assert.deepEqual(cells(h.grid, 'profile-totals-grid'), [['Obstacles cleared', '60'], ['Near misses', '7'], ['Coins', '30'], ['Time survived', '6:40'], ['Laps', '3']]);
+  assert.deepEqual(cells(h.grid, 'profile-bests-grid'), [['Best combo', '11']]);
+
+  h.routeState.gameId = 'stacked';
+  h.route.renderProfile();
+  assert.deepEqual(cells(h.grid, 'profile-totals-grid'), [['Lines', '120'], ['Halvings', '4'], ['Perfect clears', '1'], ['Time survived', '15:00']]);
+  assert.deepEqual(cells(h.grid, 'profile-bests-grid'), [['Highest level', '9'], ['Best combo', '6']]);
+
+  // An answer from before the server sent `bests`: no best at all, never a
+  // sum under a best's label.
+  const older = e6();
+  older.games['lester-blaster'] = { ...older.games['lester-blaster'], totals: { kills: 400, maxCombo: 95, level: 41 } };
+  const before = hostedProfile({ answers: { [`${ME}|self`]: older } });
+  await rendered(before);
+  assert.deepEqual(cells(before.grid, 'profile-totals-grid'), [['Kills', '400']]);
+  assert.equal(cells(before.grid, 'profile-bests-grid'), null);
+  assert.doesNotMatch(text(before.grid), /VERIFIED BESTS|Best combo|Highest level|Combo total|Levels\b|\b95\b|\b41\b/);
+  assert.deepEqual(Object.keys(hostedProfileView.BEST_LABELS), ['level', 'maxCombo', 'bestCombo']);
+  for (const key of ['maxCombo', 'bestCombo', 'level']) assert.equal(Object.hasOwn(hostedProfileView.TOTAL_LABELS, key), false, `${key} is never summed on screen`);
+});
+
 test('own profile shows the on-chain name editor only when deployed', async () => {
   const deployed = await rendered(hostedProfile());
   assert.equal(buttons(deployed, 'Check name & fee').length, 1);

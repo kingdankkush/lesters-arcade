@@ -9,7 +9,7 @@
 import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
 import { periodKeysFor } from './period-keys.mjs';
 import {
-  ALL_NUMERIC_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
+  ALL_BEST_HEADLINE_KEYS, ALL_NUMERIC_HEADLINE_KEYS, BEST_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
   explorerUrlFor, headlineStats, leaderboardRow, numberOrNull, parseJsonText, publicDisplay, recentSessionRow,
   shareIdFor, verificationFor, walletShort,
 } from './rows.mjs';
@@ -177,10 +177,18 @@ function totalsSql() {
   }).join(',\n       ');
 }
 
+// The per-run bests beside the sums: the highest confirmed value of each.
+function bestsSql() {
+  return ALL_BEST_HEADLINE_KEYS.map((key, index) => {
+    if (!STAT_KEY.test(key)) throw new TypeError(`unsafe stats key ${key}`);
+    return `coalesce(max(CASE WHEN status = 'confirmed' AND jsonb_typeof(stats -> '${key}') = 'number' THEN (stats ->> '${key}')::numeric END), 0)::text AS b${index}`;
+  }).join(',\n       ');
+}
+
 // E6 (§4.3.6). The public view shows only confirmed sessions; the self view
 // adds every non-pending status with retry details, the preferences and the
-// moderation reason. Run counts and totals span every season; the best score
-// and ranks are for the game's current season (the boards' season).
+// moderation reason. Run counts, totals and bests span every season; the best
+// score and ranks are for the game's current season (the boards' season).
 export async function readPublicProfile(db, wallet, { self = false, nowMs = Date.now(), catalog } = {}) {
   const who = requireWallet(wallet);
   const keys = periodKeysFor(nowMs);
@@ -197,7 +205,8 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
               (count(*) FILTER (WHERE status <> 'pending'))::int AS ranked_runs,
               (count(*) FILTER (WHERE status = 'confirmed'))::int AS confirmed_runs,
               ${isoSql(`max(coalesce(opened_at, verified_at)) FILTER (WHERE status <> 'pending')`)} AS last_played_at,
-       ${totalsSql()}
+       ${totalsSql()},
+       ${bestsSql()}
        FROM verified_sessions WHERE wallet = $1 GROUP BY game_id`,
       [who],
     ),
@@ -248,6 +257,11 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
       const index = ALL_NUMERIC_HEADLINE_KEYS.indexOf(key);
       totals[key] = Number(aggregate?.[`t${index}`] ?? 0);
     }
+    const perRunBests = {};
+    for (const key of BEST_HEADLINE_KEYS[gameId]) {
+      const index = ALL_BEST_HEADLINE_KEYS.indexOf(key);
+      perRunBests[key] = Number(aggregate?.[`b${index}`] ?? 0);
+    }
     const standing = standings[gameId] ?? {};
     gamesOut[gameId] = {
       rankedRuns: Number(aggregate?.ranked_runs ?? 0),
@@ -256,6 +270,7 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
       bestSessionId32: best?.session_id32 ?? null,
       ranks: { weekly: standing.weekly?.rank ?? null, monthly: standing.monthly?.rank ?? null, allTime: standing.allTime?.rank ?? null },
       totals,
+      bests: perRunBests,
       lastPlayedAt: aggregate?.last_played_at ?? null,
     };
   }

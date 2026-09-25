@@ -256,6 +256,37 @@ test('rate limit counts per window and reports retry-after', async () => withDb(
   await assert.rejects(hitRateLimit(db, { bucket: 'x'.repeat(129), limit: 1, windowSeconds: 60, nowMs: start }), TypeError);
 }));
 
+// polish-2: 'Combo total' and 'Levels' summed per-run bests. E6 reports the
+// highest confirmed value of each per-run best as `bests`; `totals` still sums.
+test('profile bests are the highest confirmed per-run value, and totals still sum', async () => withDb(async (db) => {
+  const wallet = W(2);
+  const now = Date.parse('2026-09-23T12:00:00.000Z');
+  const stacked = (stats, extra = {}) => seedVerifiedSession(db, { wallet, gameId: 'stacked', stats: { score: 100, lines: 0, level: 1, quadClears: 0, perfectClears: 0, maxCombo: 0, survivalSeconds: 10, ...stats }, ...extra });
+  await stacked({ lines: 12, level: 3, maxCombo: 4 });
+  await stacked({ lines: 30, level: 9, maxCombo: 2 });
+  await stacked({ lines: 99, level: 20, maxCombo: 50 }, { status: 'failed', lastError: 'rpc-timeout' });
+  await stacked({ lines: 99, level: 21, maxCombo: 51 }, { status: 'pending' });
+  const hmh = (stats) => seedVerifiedSession(db, { wallet, gameId: 'lester-blaster', stats: { score: 500, kills: 0, survivalSeconds: 60, maxCombo: 0, level: 1, bossKills: 0, ...stats } });
+  await hmh({ kills: 10, level: 5, maxCombo: 7 });
+  await hmh({ kills: 20, level: 4, maxCombo: 12, bossKills: 1 });
+  await seedVerifiedSession(db, { wallet, gameId: 'chikun', stats: { score: 10, forksPassed: 5, nearMisses: 1, coinsCollected: 2, bestCombo: 3, survivalSeconds: 20, regionReached: 'coast', laps: 1 } });
+  await seedVerifiedSession(db, { wallet, gameId: 'chikun', stats: { score: 20, forksPassed: 8, nearMisses: 0, coinsCollected: 4, bestCombo: 8, survivalSeconds: 30, regionReached: 'coast', laps: 2 } });
+
+  for (const self of [false, true]) {
+    const { games } = await readPublicProfile(db, wallet, { self, nowMs: now });
+    assert.deepEqual(games.stacked.bests, { level: 9, maxCombo: 4 }, 'failed and pending runs never count');
+    assert.equal(games.stacked.totals.lines, 42);
+    assert.equal(games.stacked.totals.level, 12, 'totals keep summing every numeric headline key (contract §4.3.6)');
+    assert.deepEqual(games['lester-blaster'].bests, { maxCombo: 12, level: 5 });
+    assert.deepEqual([games['lester-blaster'].totals.kills, games['lester-blaster'].totals.bossKills], [30, 1]);
+    assert.deepEqual(games.chikun.bests, { bestCombo: 8 });
+    assert.deepEqual([games.chikun.totals.forksPassed, games.chikun.totals.laps], [13, 3]);
+  }
+  // A wallet with no runs reads zeros, like its totals.
+  const empty = await readPublicProfile(db, W(3), { nowMs: now });
+  assert.deepEqual(Object.fromEntries(Object.entries(empty.games).map(([gameId, game]) => [gameId, game.bests])), { 'lester-blaster': { maxCombo: 0, level: 0 }, chikun: { bestCombo: 0 }, stacked: { level: 0, maxCombo: 0 } });
+}));
+
 test('profile reads split the public and self views and take NFT flags from the catalog', async () => withDb(async (db) => {
   const wallet = W(1);
   const now = Date.parse('2026-09-23T12:00:00.000Z');
@@ -274,7 +305,7 @@ test('profile reads split the public and self views and take NFT flags from the 
   assert.deepEqual(publicView.recentSessions.map((row) => row.status), ['confirmed', 'confirmed'], 'the public view lists only confirmed sessions');
   assert.equal(publicView.preferences, null);
   assert.deepEqual(Object.keys(publicView.games).sort(), ['chikun', 'lester-blaster', 'stacked']);
-  assert.deepEqual(publicView.games['lester-blaster'], { rankedRuns: 0, confirmedRuns: 0, bestScore: null, bestSessionId32: null, ranks: { weekly: null, monthly: null, allTime: null }, totals: { kills: 0, survivalSeconds: 0, maxCombo: 0, level: 0, bossKills: 0 }, lastPlayedAt: null });
+  assert.deepEqual(publicView.games['lester-blaster'], { rankedRuns: 0, confirmedRuns: 0, bestScore: null, bestSessionId32: null, ranks: { weekly: null, monthly: null, allTime: null }, totals: { kills: 0, survivalSeconds: 0, maxCombo: 0, level: 0, bossKills: 0 }, bests: { maxCombo: 0, level: 0 }, lastPlayedAt: null });
   assert.equal(publicView.games.chikun.rankedRuns, 3, 'every verified run except pending counts');
   assert.equal(publicView.games.chikun.confirmedRuns, 1);
   assert.equal(publicView.games.chikun.bestScore, 700, 'unconfirmed scores never show publicly');
@@ -282,6 +313,8 @@ test('profile reads split the public and self views and take NFT flags from the 
   assert.deepEqual(publicView.games.chikun.ranks, { weekly: 1, monthly: 1, allTime: 1 });
   assert.equal(publicView.games.chikun.totals.forksPassed, 40);
   assert.equal(publicView.games.stacked.totals.survivalSeconds, 200.5);
+  assert.deepEqual(publicView.games.chikun.bests, { bestCombo: 6 }, 'bests hold only the per-run-best keys of the game');
+  assert.deepEqual(publicView.games.stacked.bests, { level: 3, maxCombo: 4 });
   assert.deepEqual(publicView.achievements.map((entry) => [entry.id, entry.nft, entry.tokenId]), [['chikun-first-flight', false, null], ['chikun-coast-legend', true, null]], 'nft comes from the current catalog, not the stored flag');
 
   const self = await readPublicProfile(db, wallet, { self: true, nowMs: now, catalog });

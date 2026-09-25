@@ -142,11 +142,17 @@ export function hostedSessionStatus(session = {}, { self = false, now = Date.now
   return Object.freeze({ tone: status === 'failed' ? 'retrying' : 'pending', label: status === 'failed' ? 'Waiting to retry' : 'Queued to publish', detail, retry, deadLetter: false });
 }
 
-const TOTAL_LABELS = Object.freeze({
-  kills: 'Kills', bossKills: 'Boss kills', survivalSeconds: 'Time survived', maxCombo: 'Combo total', level: 'Levels',
-  forksPassed: 'Obstacles cleared', nearMisses: 'Near misses', coinsCollected: 'Coins', bestCombo: 'Combo total', laps: 'Laps',
+// E6 `totals` sum every headline key across verified runs, but only these are
+// true totals. A combo or a level is a per-run best: its sum ("Combo total",
+// "Levels") meant nothing, so those show E6 `bests`, the highest verified
+// value, under their own heading (polish-2). An answer without `bests` (one
+// cached from before the server sent them) shows no best rather than a sum.
+export const TOTAL_LABELS = Object.freeze({
+  kills: 'Kills', bossKills: 'Boss kills', survivalSeconds: 'Time survived',
+  forksPassed: 'Obstacles cleared', nearMisses: 'Near misses', coinsCollected: 'Coins', laps: 'Laps',
   lines: 'Lines', quadClears: 'Halvings', perfectClears: 'Perfect clears',
 });
+export const BEST_LABELS = Object.freeze({ level: 'Highest level', maxCombo: 'Best combo', bestCombo: 'Best combo' });
 
 function formatDuration(seconds) {
   const total = Math.max(0, Math.round(Number(seconds) || 0));
@@ -512,10 +518,17 @@ export function createHostedProfileView({
       ['Verified Runs', Number(game.confirmedRuns || 0).toLocaleString()],
       ['Last Played', Number.isFinite(last) ? new Date(last).toLocaleDateString() : '—'],
     ]));
-    const totals = Object.entries(game.totals ?? {}).filter(([key, value]) => Object.hasOwn(TOTAL_LABELS, key) && Number.isFinite(Number(value)));
+    const shown = (values, labels) => Object.entries(values ?? {}).filter(([key, value]) => Object.hasOwn(labels, key) && value !== null && Number.isFinite(Number(value)));
+    const totals = shown(game.totals, TOTAL_LABELS);
     if (totals.length) {
       appendText(card, 'span', 'VERIFIED TOTALS', 'cabinet-status-label game-stats-subhead');
       card.append(statGrid('game-stats-grid profile-totals-grid', totals.map(([key, value]) => [TOTAL_LABELS[key], key === 'survivalSeconds' ? formatDuration(value) : Number(value).toLocaleString()])));
+    }
+    const bestOrder = Object.keys(BEST_LABELS);
+    const bests = shown(game.bests, BEST_LABELS).sort(([left], [right]) => bestOrder.indexOf(left) - bestOrder.indexOf(right));
+    if (bests.length) {
+      appendText(card, 'span', 'VERIFIED BESTS', 'cabinet-status-label game-stats-subhead');
+      card.append(statGrid('game-stats-grid profile-totals-grid profile-bests-grid', bests.map(([key, value]) => [BEST_LABELS[key], Number(value).toLocaleString()])));
     }
     dom.officialCabinetGrid.append(card);
   }
