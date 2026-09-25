@@ -118,6 +118,21 @@ test('the guest line says Sign in once hosted, and STACKED no longer falls back 
   assert.ok(PORTAL_COPY.modeSelect.stacked);
 });
 
+// Live UI audit review 2026-09-24: HMH's mode line opened with 'Your Lester’s
+// Arcade session is active.' for signed-out visitors too.
+test('no mode line tells a signed-out visitor a session is active', () => {
+  for (const [name, copy] of Object.entries({ preview, hostedPreview, launch })) {
+    for (const gameId of SITE_COPY_GAMES) {
+      const guest = renderModeSelect({ gameId, connectedWallet: null, portalCopy: copy });
+      assert.doesNotMatch(guest.mode, /session is active|already active/i, `${name} ${gameId}`);
+      assert.match(guest.mode, /^Choose Free Mode|^Public beta\./, `${name} ${gameId} starts with the choice`);
+    }
+  }
+  assert.equal(launch.modeSelect['lester-blaster'].copy, 'Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.');
+  const index = readFileSync(join(portal, 'index.html'), 'utf8');
+  assert.doesNotMatch(block(index, 'mode-copy'), /session is active/);
+});
+
 test('the prerendered mode-select blocks match what the SPA shows', () => {
   const index = readFileSync(join(portal, 'index.html'), 'utf8');
   assert.equal(block(index, 'mode-copy'), escapeHtml(PORTAL_COPY.modeSelect['lester-blaster'].copy));

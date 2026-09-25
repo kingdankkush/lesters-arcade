@@ -320,6 +320,23 @@ test('Scores: Show more leaves focus alone when the player moved it out of the b
   assert.equal(byClass(h.grid, 'leaderboard-show-more')[0]?.textContent, 'Show 10 more');
 });
 
+// Live UI audit LUA-05 and review 2026-09-24: the signed-out note says Sign
+// in, and a cabinet whose board was not fetched yet makes no claim about it
+// ('Verified · Weekly' beside 'No scores yet · weekly').
+test('Scores: a signed-out board says Sign in and unloaded cabinets read neutrally', async () => {
+  const h = hostedScores({ answers: emptyBoard });
+  h.route.renderLeaderboards();
+  const meta = (gameId) => byClass(byClass(h.grid, 'leaderboard-game-banner').find((tab) => tab.dataset.game === gameId), 'leaderboard-game-banner-meta')[0]?.textContent;
+  assert.equal(meta('lester-blaster'), 'Weekly board', 'the board on screen while it loads');
+  await h.answerAll();
+  assert.equal(byClass(h.grid, 'leaderboard-you-detail')[0]?.textContent, 'Sign in with a wallet to see your placement highlighted on this board.');
+  assert.equal(meta('lester-blaster'), 'No scores yet · weekly');
+  assert.equal(meta('chikun'), 'Weekly board', 'a board not fetched yet');
+  const monthly = h.grid.querySelector('button.pixel-button.leaderboard-cadence-tab.leaderboard-time-filter.leaderboard-filter-button[data-cadence="monthly"]');
+  monthly.listeners.click();
+  assert.equal(meta('chikun'), 'Monthly board');
+});
+
 // --- The hosted Profile page ------------------------------------------------
 test('Profile: a game tab keeps focus and reports its pressed state', async () => {
   const { doc, body, el, appendText } = miniDom();

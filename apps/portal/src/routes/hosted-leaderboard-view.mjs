@@ -254,7 +254,8 @@ export function createHostedLeaderboardView({
       detail: `${humanList(playableCabinetNames())} ${cabinets.length === 1 ? 'has a verified board' : 'have verified boards'}. Weekly, Monthly and All-time rank the best verified Ranked run per wallet.`,
       standingFor: (gameId) => {
         const cached = hostedBoards.get(hostedKey(gameId, { search: '' }).key);
-        if (cached?.status !== 'ready') return `Verified · ${periodTab.label}`;
+        // Not loaded yet: a neutral name, not a claim about its scores.
+        if (cached?.status !== 'ready') return `${periodTab.label} board`;
         return cached.total > 0
           ? `${cached.total.toLocaleString()} player${cached.total === 1 ? '' : 's'} · top ${Number(cached.rows[0]?.score ?? 0).toLocaleString()}`
           : `No scores yet · ${periodTab.label.toLowerCase()}`;

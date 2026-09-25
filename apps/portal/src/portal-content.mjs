@@ -139,12 +139,14 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     // flip cannot leave a preview card live. Every game has an entry: the live
     // UI audit (2026-09-24) found STACKED's Ranked card, still on its
     // descriptor in arcade-core.mjs, without the entry price. modeRanked is the
-    // game-neutral line for a page without an entry.
+    // game-neutral line for a page without an entry. The HMH line no longer
+    // opens with 'Your Lester’s Arcade session is active', which signed-out
+    // visitors read too (live UI audit review, 2026-09-24).
     modeSelect: Object.freeze({
       'lester-blaster': Object.freeze({
         copy: live
-          ? 'Your Lester’s Arcade session is active. Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'
-          : `Your Lester’s Arcade session is active. Choose Free Mode for local guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a Ranked preview.`,
+          ? 'Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'
+          : `Choose Free Mode for local guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a Ranked preview.`,
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.`
           : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
