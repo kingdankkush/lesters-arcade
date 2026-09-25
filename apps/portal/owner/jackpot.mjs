@@ -593,7 +593,7 @@ function render(doc, controller) {
     const wholeWallet = el(doc, 'input', { type: 'checkbox', 'aria-label': 'Also disqualify the wallet for the week' });
     const blockReason = select(doc, REASON_CODES.block, 'Block reason');
     const facts = [
-      ['Rank', chain ? `#${index + 1} on chain` : review?.onChain ? `#${review.rank}` : 'not listed (displaced or disqualified)'],
+      ['Rank', chain ? `#${index + 1} on chain` : review?.onChain ? `#${review.rank}` : `not listed (${review?.listing ?? 'displaced or disqualified'})`],
       ['Wallet', extLink(doc, explorerAddressUrl(wallet), wallet ?? '—')],
       ['Score', String(chain?.score ?? review?.score ?? '—')],
       ['Survival', review?.survivalSeconds !== null && review?.survivalSeconds !== undefined ? `${review.survivalSeconds} s` : '—'],
@@ -604,6 +604,8 @@ function render(doc, controller) {
       ['Seed provenance', review?.seedProvenance ?? '—'],
       ['Review on chain', `${chain?.review ?? review?.review ?? 'none'}${(chain?.adminReviewed ?? review?.adminReviewed) ? ' · admin-reviewed' : ''}${chain?.blocked ? ' · wallet BLOCKED' : ''}`],
       ['Listed before', String(chain?.wasListed ?? review?.wasListed ?? false)],
+      ['Keeper actions', review?.actions?.length ? el(doc, 'span', {}, review.actions.flatMap((item, at) => [at ? ' · ' : '', `${item.kind ?? 'action'} ${item.status ?? ''}${item.reason ? ` (${item.reason})` : ''} `, item.txHash ? extLink(doc, explorerTxUrl(item.txHash), 'tx') : ''])) : 'none'],
+      ['Recent runs', review?.history?.length ? review.history.slice(0, 5).map((run) => `${run.score ?? '—'} pts, ${run.survivalSeconds ?? '—'} s, ${run.weekKey ?? '—'}`).join(' · ') : '—'],
     ];
     const media = [];
     if (review?.replay) {

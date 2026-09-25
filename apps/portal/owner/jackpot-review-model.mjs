@@ -274,52 +274,99 @@ export function fundPlan({ week, currentWeek, firstWeek = 1, endAfterWeek = 0, a
 
 // ---------------------------------------------------------------------------------------------------
 // GET /api/jackpot/review (design §C.6). Lenient on extra fields, strict on the ones the page renders.
+// Field names follow the jackpot-server review model (server/jackpot/review-model.mjs): sessionId32,
+// chainRank, listing, soft ({ S4: { value, on }, ... }), provenance ({ status }), features
+// (evidenceDelaySeconds, survivalSeconds), recentRuns, and the timeline of reviewTimeline() (firstFlapTick
+// + intervals, obstacles with an 'unexplained' look-ahead verdict). The design-document spellings
+// (sessionId, rank, softSignals, seedProvenance, history, flapTicks) are read as fallbacks.
 
 const text = (value, max = 200) => (typeof value === 'string' ? value.slice(0, max) : null);
 const int = (value) => (Number.isSafeInteger(value) ? value : null);
+const finite = (...values) => values.find((value) => Number.isFinite(value)) ?? null;
+const REPLAY_PATH = /^\/api\/jackpot\/replay\?session=0x[0-9a-f]{64}$/;
 
 function normalizeTimeline(value) {
   if (!value || typeof value !== 'object') return null;
   const numbers = (list) => (Array.isArray(list) ? list.filter((item) => Number.isFinite(item)) : []);
+  let flapTicks = numbers(value.flapTicks);
+  if (!flapTicks.length && Number.isFinite(value.firstFlapTick)) {
+    // reviewTimeline(): the first flap tick, then the interval to each next flap.
+    let tick = value.firstFlapTick;
+    flapTicks = [tick];
+    for (const interval of numbers(value.intervals)) flapTicks.push((tick += interval));
+  }
   return Object.freeze({
     survivalTicks: int(value.survivalTicks) ?? 0,
     sampleEveryTicks: int(value.sampleEveryTicks) ?? 6,
     altitude: Object.freeze(numbers(value.altitude)),
-    flapTicks: Object.freeze(numbers(value.flapTicks)),
+    flapTicks: Object.freeze(flapTicks),
     fastPairs: Object.freeze((Array.isArray(value.fastPairs) ? value.fastPairs : []).filter((pair) => Number.isFinite(pair?.tick)).map((pair) => Object.freeze({ tick: pair.tick, gap: int(pair.gap), changedTrajectory: pair.changedTrajectory === true }))),
-    obstacles: Object.freeze((Array.isArray(value.obstacles) ? value.obstacles : []).filter((row) => Number.isFinite(row?.visibleTick)).map((row) => Object.freeze({
-      index: int(row.index), kind: text(row.kind, 24), visibleTick: row.visibleTick, commitTick: Number.isFinite(row.commitTick) ? row.commitTick : null, passTick: Number.isFinite(row.passTick) ? row.passTick : null,
-    }))),
+    obstacles: Object.freeze((Array.isArray(value.obstacles) ? value.obstacles : []).filter((row) => Number.isFinite(row?.visibleTick)).map((row) => {
+      const commitTick = Number.isFinite(row.commitTick) ? row.commitTick : null;
+      return Object.freeze({
+        index: int(row.index),
+        kind: text(row.kind, 24),
+        visibleTick: row.visibleTick,
+        commitTick,
+        passTick: Number.isFinite(row.passTick) ? row.passTick : null,
+        // The server's verdict (S8 unexplained descent) or a commit before the obstacle was visible.
+        lookAhead: row.unexplained === true || row.lookAhead === true || (commitTick !== null && commitTick < row.visibleTick),
+      });
+    })),
     viewEdge: int(value.viewEdge) ?? 1280,
   });
 }
 
+// Hold codes: [{ code, text }] or ['H2']. Soft signals: the server's { S9: { value, on } } object (only
+// the signals that are on), or a list like the hold codes.
+function codeList(list) {
+  return Object.freeze((Array.isArray(list) ? list : []).map((item) => (typeof item === 'string' ? { code: item } : item)).filter((item) => /^[HS]\d{1,2}$/.test(String(item?.code ?? ''))).map((item) => Object.freeze({
+    code: item.code,
+    text: text(item.text) ?? (HOLD_CODE_TEXT[item.code] ?? SOFT_SIGNAL_TEXT[item.code] ?? ''),
+    value: ['number', 'string', 'boolean'].includes(typeof item.value) ? item.value : null,
+  })));
+}
+function softList(row) {
+  if (Array.isArray(row.softSignals)) return codeList(row.softSignals);
+  const soft = row.soft && typeof row.soft === 'object' ? row.soft : {};
+  return codeList(Object.entries(soft).filter(([, signal]) => signal && typeof signal === 'object' && signal.on === true).map(([code, signal]) => ({ code, value: signal.value })));
+}
+function reviewState(value) {
+  if (REVIEW_STATES.includes(value)) return value;
+  const index = Number(value);
+  return Number.isInteger(index) && REVIEW_STATES[index] ? REVIEW_STATES[index] : 'none';
+}
+
 function normalizeCandidate(row) {
-  if (!row || !SESSION.test(String(row.sessionId ?? '')) || !ADDRESS.test(String(row.wallet ?? ''))) return null;
-  const codes = (list) => Object.freeze((Array.isArray(list) ? list : []).map((item) => (typeof item === 'string' ? { code: item } : item)).filter((item) => /^[HS]\d{1,2}$/.test(String(item?.code ?? ''))).map((item) => Object.freeze({ code: item.code, text: text(item.text) ?? (HOLD_CODE_TEXT[item.code] ?? SOFT_SIGNAL_TEXT[item.code] ?? ''), value: item.value ?? null })));
+  const sessionId = lower(row?.sessionId32 ?? row?.sessionId);
+  if (!row || !SESSION.test(sessionId) || !ADDRESS.test(String(row.wallet ?? ''))) return null;
+  const features = row.features && typeof row.features === 'object' ? row.features : null;
+  const provenance = typeof row.seedProvenance === 'string' ? row.seedProvenance : row.provenance?.status;
+  const replay = REPLAY_PATH.test(String(row.replay ?? '')) ? row.replay : '/api/jackpot/replay?session=' + sessionId;
   return Object.freeze({
-    sessionId: lower(row.sessionId),
+    sessionId,
     wallet: lower(row.wallet),
     displayName: text(row.displayName, 64),
     score: int(row.score),
-    survivalSeconds: Number.isFinite(row.survivalSeconds) ? row.survivalSeconds : null,
-    rank: int(row.rank),
+    survivalSeconds: finite(row.survivalSeconds, features?.survivalSeconds),
+    rank: int(row.rank ?? row.chainRank),
+    listing: text(row.listing, 16),
     onChain: row.onChain === true,
     wasListed: row.wasListed === true,
-    review: REVIEW_STATES.includes(row.review) ? row.review : 'none',
+    review: reviewState(row.review),
     reviewReason: text(row.reviewReason, 32),
     adminReviewed: row.adminReviewed === true,
     source: text(row.source, 16),
     screen: text(row.screen, 16) ?? 'pending',
-    holdCodes: codes(row.holdCodes),
-    softSignals: codes(row.softSignals),
-    evidenceDelaySeconds: Number.isFinite(row.evidenceDelaySeconds) ? row.evidenceDelaySeconds : null,
-    seedProvenance: text(row.seedProvenance, 32),
+    holdCodes: codeList(row.holdCodes),
+    softSignals: softList(row),
+    evidenceDelaySeconds: finite(row.evidenceDelaySeconds, features?.evidenceDelaySeconds, row.soft?.S9?.value),
+    seedProvenance: text(provenance, 32),
     integrity: row.integrity && typeof row.integrity === 'object' ? row.integrity : null,
-    features: row.features && typeof row.features === 'object' ? row.features : null,
+    features,
     actions: Object.freeze(Array.isArray(row.actions) ? row.actions.filter((action) => action && typeof action === 'object') : []),
-    history: Object.freeze(Array.isArray(row.history) ? row.history.slice(0, 20) : []),
-    replay: /^\/api\/jackpot\/replay\?session=0x[0-9a-f]{64}$/.test(String(row.replay ?? '')) ? row.replay : null,
+    history: Object.freeze((Array.isArray(row.recentRuns) ? row.recentRuns : Array.isArray(row.history) ? row.history : []).slice(0, 20)),
+    replay,
     timeline: normalizeTimeline(row.timeline),
   });
 }
@@ -327,16 +374,20 @@ function normalizeCandidate(row) {
 export function normalizeReview(json) {
   if (!json || json.ok !== true) return null;
   const candidates = (Array.isArray(json.candidates) ? json.candidates : []).map(normalizeCandidate).filter(Boolean);
-  const nextEligible = (Array.isArray(json.nextEligible) ? json.nextEligible : []).slice(0, 10).map((row) => (row && SESSION.test(String(row.sessionId ?? '')) && ADDRESS.test(String(row.wallet ?? ''))
-    ? Object.freeze({ sessionId: lower(row.sessionId), wallet: lower(row.wallet), score: int(row.score), screen: text(row.screen, 16) ?? 'pending' })
-    : null)).filter(Boolean);
-  return Object.freeze({ week: json.week && typeof json.week === 'object' ? json.week : null, candidates: Object.freeze(candidates), nextEligible: Object.freeze(nextEligible) });
+  const nextEligible = (Array.isArray(json.nextEligible) ? json.nextEligible : []).slice(0, 10).map((row) => {
+    const sessionId = lower(row?.sessionId32 ?? row?.sessionId);
+    return row && SESSION.test(sessionId) && ADDRESS.test(String(row.wallet ?? ''))
+      ? Object.freeze({ sessionId, wallet: lower(row.wallet), score: int(row.score), screen: text(row.screen, 16) ?? 'pending' })
+      : null;
+  }).filter(Boolean);
+  return Object.freeze({ weekKey: text(json.weekKey, 8), week: json.week && typeof json.week === 'object' ? json.week : null, candidates: Object.freeze(candidates), nextEligible: Object.freeze(nextEligible) });
 }
 
 // ---------------------------------------------------------------------------------------------------
 // The flap timeline (design §D.5): x is the run's tick, y the altitude (0 at the top of the 720 px
 // world). Obstacles show the tick each became visible at the stock view edge and the tick Chikun
-// committed to its route; a commitment before visibility is the look-ahead overlay. Fast pairs are marked
+// committed to its route; the look-ahead overlay marks the server's unexplained descents (S8) and any
+// commitment before visibility. Fast pairs are marked
 // by whether they changed the trajectory.
 export function timelineGeometry(timeline, { width = 720, height = 180, worldHeight = 720 } = {}) {
   const t = normalizeTimeline(timeline);
@@ -356,8 +407,8 @@ export function timelineGeometry(timeline, { width = 720, height = 180, worldHei
       visibleX: x(row.visibleTick),
       commitX: row.commitTick === null ? null : x(row.commitTick),
       passX: row.passTick === null ? null : x(row.passTick),
-      lookAhead: row.commitTick !== null && row.commitTick < row.visibleTick,
+      lookAhead: row.lookAhead,
     }))),
-    lookAheadCount: t.obstacles.filter((row) => row.commitTick !== null && row.commitTick < row.visibleTick).length,
+    lookAheadCount: t.obstacles.filter((row) => row.lookAhead).length,
   });
 }

@@ -1,78 +1,213 @@
 {
   "ok": true,
-  "game": "chikun",
   "contract": "0x1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d",
+  "token": {
+    "address": "0x7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c",
+    "symbol": "tCHIKUN",
+    "decimals": 18,
+    "testnet": true
+  },
+  "weekKey": "2026-W40",
+  "weekIndex": 2961,
+  "serverTime": "2026-10-05T14:00:00.000Z",
   "week": {
-    "weekKey": "2026-W40",
-    "weekIndex": 2961,
     "status": "review",
     "startsAt": "2026-09-28T00:00:00.000Z",
     "closesAt": "2026-10-05T00:00:00.000Z",
+    "settleCutoffAt": "2026-10-05T06:00:00.000Z",
+    "candidateUntil": "2026-10-05T12:00:00.000Z",
     "payoutAt": "2026-10-06T00:00:00.000Z",
     "held": false,
     "extensionSeconds": 0,
-    "adminWaitingSince": null
+    "adminWaitingSince": null,
+    "lastError": null,
+    "pot": {
+      "fundedWei": "1000000000000000000000",
+      "carriedInWei": "0",
+      "totalWei": "1000000000000000000000",
+      "prizeCapWei": null,
+      "prizeWei": "1000000000000000000000",
+      "carryOverWei": "0",
+      "funded": true
+    },
+    "winner": null,
+    "winningSession": null,
+    "prizeWei": null,
+    "unclaimedWei": "0",
+    "finalizeTx": null,
+    "finalizeTxUrl": null,
+    "finalizeAction": null
+  },
+  "rules": {
+    "fromWeek": 2961,
+    "maxSurvivalSeconds": 3599,
+    "adminClearOnly": false,
+    "minPaidWei": "100000000000000000",
+    "maxPrizeWei": "0",
+    "minFundWei": "100000000000000000000"
   },
   "candidates": [
     {
-      "sessionId": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "sessionId32": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
       "wallet": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "walletShort": "0xa1a1…a1a1",
       "displayName": "SkyChikun",
       "score": 51022,
-      "survivalSeconds": 690,
-      "rank": 1,
+      "source": "keeper",
       "onChain": true,
-      "wasListed": true,
+      "chainRank": 1,
+      "listing": "listed",
       "review": "cleared",
       "reviewReason": null,
       "adminReviewed": false,
-      "source": "keeper",
+      "wasListed": true,
+      "reviewSource": "chain",
       "screen": "pass",
+      "screenedAt": "2026-10-05T01:10:00.000Z",
       "holdCodes": [],
-      "softSignals": [
-        {
-          "code": "S1",
-          "value": 3
-        }
-      ],
-      "evidenceDelaySeconds": 42,
-      "seedProvenance": "ok",
-      "integrity": {
-        "replay": "match",
-        "chain": "match",
-        "maxTicks": 216000,
-        "seedTicket": "ok"
-      },
       "features": {
+        "survivalSeconds": 690,
         "fastPairs": 1,
         "topShare": 0.12,
         "longestSameRun": 4,
         "entropyBits": 5.6,
-        "flapsPerMinute": 55.1
+        "flapsPerMinute": 55.1,
+        "unexplainedDescents": 0,
+        "evidenceDelaySeconds": 42
       },
-      "actions": [
-        {
-          "kind": "submit",
-          "status": "confirmed",
-          "txHash": "0xc1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1"
+      "soft": {
+        "S1": {
+          "value": 3,
+          "on": true
         },
-        {
-          "kind": "clear",
-          "status": "confirmed",
-          "txHash": "0xc2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+        "S4": {
+          "value": 55.1,
+          "on": false
+        },
+        "S9": {
+          "value": 42,
+          "on": false
         }
-      ],
-      "history": [
-        {
-          "score": 41010,
-          "survivalSeconds": 540,
-          "weekKey": "2026-W39"
-        }
-      ],
-      "replay": "/api/jackpot/replay?session=0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      },
+      "integrity": {
+        "ok": true,
+        "replay": "match",
+        "chain": "match",
+        "maxTicks": 216000
+      },
+      "provenance": {
+        "status": "ok",
+        "tickets": 1,
+        "issuedAt": "2026-10-01T18:00:00.000Z",
+        "ticketToPaySeconds": 12
+      },
+      "eligibility": {
+        "ok": true,
+        "reason": ""
+      },
+      "flagReason": null,
       "timeline": {
-        "survivalTicks": 4140,
+        "version": 1,
         "sampleEveryTicks": 6,
+        "survivalTicks": 4140,
+        "viewEdge": 1280,
+        "orientation": "landscape",
+        "firstFlapTick": 30,
+        "intervals": [
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44,
+          44
+        ],
         "altitude": [
           360,
           367,
@@ -766,101 +901,115 @@
           178,
           174
         ],
-        "flapTicks": [
-          30,
-          74,
-          118,
-          162,
-          206,
-          250,
-          294,
-          338,
-          382,
-          426,
-          470,
-          514,
-          558,
-          602,
-          646,
-          690,
-          734,
-          778,
-          822,
-          866,
-          910,
-          954,
-          998,
-          1042,
-          1086,
-          1130,
-          1174,
-          1218,
-          1262,
-          1306,
-          1350,
-          1394,
-          1438,
-          1482,
-          1526,
-          1570,
-          1614,
-          1658,
-          1702,
-          1746,
-          1790,
-          1834,
-          1878,
-          1922,
-          1966,
-          2010,
-          2054,
-          2098,
-          2142,
-          2186,
-          2230,
-          2274,
-          2318,
-          2362,
-          2406,
-          2450,
-          2494,
-          2538,
-          2582,
-          2626,
-          2670,
-          2714,
-          2758,
-          2802,
-          2846,
-          2890,
-          2934,
-          2978,
-          3022,
-          3066,
-          3110,
-          3154,
-          3198,
-          3242,
-          3286,
-          3330,
-          3374,
-          3418,
-          3462,
-          3506,
-          3550,
-          3594,
-          3638,
-          3682,
-          3726,
-          3770,
-          3814,
-          3858,
-          3902,
-          3946,
-          3990,
-          4034,
-          4078,
-          4122
+        "obstacles": [
+          {
+            "index": 0,
+            "kind": "tree",
+            "route": "under",
+            "visibleTick": 200,
+            "passTick": 420,
+            "commitTick": 382,
+            "unexplained": false
+          },
+          {
+            "index": 1,
+            "kind": "drone",
+            "route": "over",
+            "visibleTick": 500,
+            "passTick": 720,
+            "commitTick": 690,
+            "unexplained": false
+          },
+          {
+            "index": 2,
+            "kind": "gap",
+            "route": "under",
+            "visibleTick": 800,
+            "passTick": 1020,
+            "commitTick": 998,
+            "unexplained": false
+          },
+          {
+            "index": 3,
+            "kind": "tree",
+            "route": "over",
+            "visibleTick": 1100,
+            "passTick": 1320,
+            "commitTick": 1306,
+            "unexplained": false
+          },
+          {
+            "index": 4,
+            "kind": "drone",
+            "route": "under",
+            "visibleTick": 1400,
+            "passTick": 1620,
+            "commitTick": 1614,
+            "unexplained": false
+          },
+          {
+            "index": 5,
+            "kind": "gap",
+            "route": "over",
+            "visibleTick": 1700,
+            "passTick": 1920,
+            "commitTick": 1878,
+            "unexplained": false
+          },
+          {
+            "index": 6,
+            "kind": "tree",
+            "route": "under",
+            "visibleTick": 2000,
+            "passTick": 2220,
+            "commitTick": 2186,
+            "unexplained": false
+          },
+          {
+            "index": 7,
+            "kind": "drone",
+            "route": "over",
+            "visibleTick": 2300,
+            "passTick": 2520,
+            "commitTick": 2494,
+            "unexplained": false
+          },
+          {
+            "index": 8,
+            "kind": "gap",
+            "route": "under",
+            "visibleTick": 2600,
+            "passTick": 2820,
+            "commitTick": 2802,
+            "unexplained": false
+          },
+          {
+            "index": 9,
+            "kind": "tree",
+            "route": "over",
+            "visibleTick": 2900,
+            "passTick": 3120,
+            "commitTick": 3110,
+            "unexplained": false
+          },
+          {
+            "index": 10,
+            "kind": "drone",
+            "route": "under",
+            "visibleTick": 3200,
+            "passTick": 3420,
+            "commitTick": 3418,
+            "unexplained": false
+          },
+          {
+            "index": 11,
+            "kind": "gap",
+            "route": "over",
+            "visibleTick": 3500,
+            "passTick": 3720,
+            "commitTick": 3682,
+            "unexplained": false
+          }
         ],
         "fastPairs": [
           {
@@ -873,156 +1022,264 @@
             "gap": 1,
             "changedTrajectory": false
           }
-        ],
-        "obstacles": [
-          {
-            "index": 0,
-            "kind": "tree",
-            "visibleTick": 200,
-            "commitTick": 240,
-            "passTick": 420
-          },
-          {
-            "index": 1,
-            "kind": "drone",
-            "visibleTick": 500,
-            "commitTick": 540,
-            "passTick": 720
-          },
-          {
-            "index": 2,
-            "kind": "gap",
-            "visibleTick": 800,
-            "commitTick": 840,
-            "passTick": 1020
-          },
-          {
-            "index": 3,
-            "kind": "tree",
-            "visibleTick": 1100,
-            "commitTick": 1140,
-            "passTick": 1320
-          },
-          {
-            "index": 4,
-            "kind": "drone",
-            "visibleTick": 1400,
-            "commitTick": 1440,
-            "passTick": 1620
-          },
-          {
-            "index": 5,
-            "kind": "gap",
-            "visibleTick": 1700,
-            "commitTick": 1740,
-            "passTick": 1920
-          },
-          {
-            "index": 6,
-            "kind": "tree",
-            "visibleTick": 2000,
-            "commitTick": 2040,
-            "passTick": 2220
-          },
-          {
-            "index": 7,
-            "kind": "drone",
-            "visibleTick": 2300,
-            "commitTick": 2340,
-            "passTick": 2520
-          },
-          {
-            "index": 8,
-            "kind": "gap",
-            "visibleTick": 2600,
-            "commitTick": 2640,
-            "passTick": 2820
-          },
-          {
-            "index": 9,
-            "kind": "tree",
-            "visibleTick": 2900,
-            "commitTick": 2940,
-            "passTick": 3120
-          },
-          {
-            "index": 10,
-            "kind": "drone",
-            "visibleTick": 3200,
-            "commitTick": 3240,
-            "passTick": 3420
-          },
-          {
-            "index": 11,
-            "kind": "gap",
-            "visibleTick": 3500,
-            "commitTick": 3540,
-            "passTick": 3720
-          }
-        ],
-        "viewEdge": 1280
-      }
+        ]
+      },
+      "actions": [
+        {
+          "id": 11,
+          "kind": "submit",
+          "status": "confirmed",
+          "reason": null,
+          "attempts": 1,
+          "lastError": null,
+          "txHash": "0xc1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+          "explorerUrl": "https://liteforge.explorer.caldera.xyz/tx/0xc1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1",
+          "nextAttemptAt": null
+        },
+        {
+          "id": 12,
+          "kind": "clear",
+          "status": "confirmed",
+          "reason": null,
+          "attempts": 1,
+          "lastError": null,
+          "txHash": "0xc2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+          "explorerUrl": "https://liteforge.explorer.caldera.xyz/tx/0xc2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2",
+          "nextAttemptAt": null
+        }
+      ],
+      "explorer": {
+        "wallet": "https://liteforge.explorer.caldera.xyz/address/0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      },
+      "recentRuns": [
+        {
+          "sessionId32": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "score": 51022,
+          "survivalSeconds": 690,
+          "weekKey": "2026-W40",
+          "status": "confirmed",
+          "source": "relay",
+          "playedAt": "2026-10-01T18:00:12.000Z"
+        },
+        {
+          "sessionId32": "0xa0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0",
+          "score": 41010,
+          "survivalSeconds": 540,
+          "weekKey": "2026-W39",
+          "status": "confirmed",
+          "source": "relay",
+          "playedAt": "2026-09-24T19:00:00.000Z"
+        }
+      ]
     },
     {
-      "sessionId": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "sessionId32": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
       "wallet": "0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "walletShort": "0xb2b2…b2b2",
       "displayName": null,
       "score": 47310,
-      "survivalSeconds": 1320,
-      "rank": 2,
+      "source": "public",
       "onChain": true,
-      "wasListed": true,
+      "chainRank": 2,
+      "listing": "listed",
       "review": "flagged",
       "reviewReason": "screen-hold",
       "adminReviewed": false,
-      "source": "public",
+      "wasListed": true,
+      "reviewSource": "chain",
       "screen": "hold",
+      "screenedAt": "2026-10-05T01:12:00.000Z",
       "holdCodes": [
         {
-          "code": "H2"
+          "code": "H2",
+          "text": "Survival over 18 minutes (1.15 × the harness p99)."
         },
         {
-          "code": "H9"
+          "code": "H9",
+          "text": "Late evidence: the run reached the server more than 20 minutes after it could have ended (a banked or long-paused session)."
         }
       ],
-      "softSignals": [
-        {
-          "code": "S8",
-          "value": 3
-        },
-        {
-          "code": "S9",
-          "value": 1500
-        }
-      ],
-      "evidenceDelaySeconds": 1500,
-      "seedProvenance": "ok",
-      "integrity": {
-        "replay": "match",
-        "chain": "match",
-        "maxTicks": 216000,
-        "seedTicket": "ok"
-      },
       "features": {
+        "survivalSeconds": 1320,
         "fastPairs": 0,
         "topShare": 0.2,
         "longestSameRun": 6,
         "entropyBits": 4.9,
         "flapsPerMinute": 60.2,
-        "unexplainedDescents": 3
+        "unexplainedDescents": 3,
+        "evidenceDelaySeconds": 1500
       },
-      "actions": [
-        {
-          "kind": "flag",
-          "status": "confirmed",
-          "txHash": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+      "soft": {
+        "S4": {
+          "value": 60.2,
+          "on": false
+        },
+        "S8": {
+          "value": 3,
+          "on": true
+        },
+        "S9": {
+          "value": 1500,
+          "on": false
         }
-      ],
-      "history": [],
-      "replay": "/api/jackpot/replay?session=0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      },
+      "integrity": {
+        "ok": true,
+        "replay": "match",
+        "chain": "match",
+        "maxTicks": 216000
+      },
+      "provenance": {
+        "status": "ok",
+        "tickets": 1,
+        "issuedAt": "2026-10-02T20:00:00.000Z",
+        "ticketToPaySeconds": 30
+      },
+      "eligibility": {
+        "ok": true,
+        "reason": ""
+      },
+      "flagReason": "late-evidence",
       "timeline": {
-        "survivalTicks": 7920,
+        "version": 1,
         "sampleEveryTicks": 6,
+        "survivalTicks": 7920,
+        "viewEdge": 1280,
+        "orientation": "landscape",
+        "firstFlapTick": 30,
+        "intervals": [
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60,
+          60
+        ],
         "altitude": [
           360,
           367,
@@ -2346,139 +2603,115 @@
           357,
           364
         ],
-        "flapTicks": [
-          30,
-          90,
-          150,
-          210,
-          270,
-          330,
-          390,
-          450,
-          510,
-          570,
-          630,
-          690,
-          750,
-          810,
-          870,
-          930,
-          990,
-          1050,
-          1110,
-          1170,
-          1230,
-          1290,
-          1350,
-          1410,
-          1470,
-          1530,
-          1590,
-          1650,
-          1710,
-          1770,
-          1830,
-          1890,
-          1950,
-          2010,
-          2070,
-          2130,
-          2190,
-          2250,
-          2310,
-          2370,
-          2430,
-          2490,
-          2550,
-          2610,
-          2670,
-          2730,
-          2790,
-          2850,
-          2910,
-          2970,
-          3030,
-          3090,
-          3150,
-          3210,
-          3270,
-          3330,
-          3390,
-          3450,
-          3510,
-          3570,
-          3630,
-          3690,
-          3750,
-          3810,
-          3870,
-          3930,
-          3990,
-          4050,
-          4110,
-          4170,
-          4230,
-          4290,
-          4350,
-          4410,
-          4470,
-          4530,
-          4590,
-          4650,
-          4710,
-          4770,
-          4830,
-          4890,
-          4950,
-          5010,
-          5070,
-          5130,
-          5190,
-          5250,
-          5310,
-          5370,
-          5430,
-          5490,
-          5550,
-          5610,
-          5670,
-          5730,
-          5790,
-          5850,
-          5910,
-          5970,
-          6030,
-          6090,
-          6150,
-          6210,
-          6270,
-          6330,
-          6390,
-          6450,
-          6510,
-          6570,
-          6630,
-          6690,
-          6750,
-          6810,
-          6870,
-          6930,
-          6990,
-          7050,
-          7110,
-          7170,
-          7230,
-          7290,
-          7350,
-          7410,
-          7470,
-          7530,
-          7590,
-          7650,
-          7710,
-          7770,
-          7830,
-          7890
+        "obstacles": [
+          {
+            "index": 0,
+            "kind": "tree",
+            "route": "under",
+            "visibleTick": 200,
+            "passTick": 420,
+            "commitTick": 390,
+            "unexplained": false
+          },
+          {
+            "index": 1,
+            "kind": "drone",
+            "route": "over",
+            "visibleTick": 500,
+            "passTick": 720,
+            "commitTick": 690,
+            "unexplained": false
+          },
+          {
+            "index": 2,
+            "kind": "gap",
+            "route": "under",
+            "visibleTick": 800,
+            "passTick": 1020,
+            "commitTick": 990,
+            "unexplained": true
+          },
+          {
+            "index": 3,
+            "kind": "tree",
+            "route": "over",
+            "visibleTick": 1100,
+            "passTick": 1320,
+            "commitTick": 1290,
+            "unexplained": false
+          },
+          {
+            "index": 4,
+            "kind": "drone",
+            "route": "under",
+            "visibleTick": 1400,
+            "passTick": 1620,
+            "commitTick": 1590,
+            "unexplained": false
+          },
+          {
+            "index": 5,
+            "kind": "gap",
+            "route": "over",
+            "visibleTick": 1700,
+            "passTick": 1920,
+            "commitTick": 1890,
+            "unexplained": true
+          },
+          {
+            "index": 6,
+            "kind": "tree",
+            "route": "under",
+            "visibleTick": 2000,
+            "passTick": 2220,
+            "commitTick": 2190,
+            "unexplained": false
+          },
+          {
+            "index": 7,
+            "kind": "drone",
+            "route": "over",
+            "visibleTick": 2300,
+            "passTick": 2520,
+            "commitTick": 2490,
+            "unexplained": false
+          },
+          {
+            "index": 8,
+            "kind": "gap",
+            "route": "under",
+            "visibleTick": 2600,
+            "passTick": 2820,
+            "commitTick": 2790,
+            "unexplained": false
+          },
+          {
+            "index": 9,
+            "kind": "tree",
+            "route": "over",
+            "visibleTick": 2900,
+            "passTick": 3120,
+            "commitTick": 3090,
+            "unexplained": true
+          },
+          {
+            "index": 10,
+            "kind": "drone",
+            "route": "under",
+            "visibleTick": 3200,
+            "passTick": 3420,
+            "commitTick": 3390,
+            "unexplained": false
+          },
+          {
+            "index": 11,
+            "kind": "gap",
+            "route": "over",
+            "visibleTick": 3500,
+            "passTick": 3720,
+            "commitTick": 3690,
+            "unexplained": false
+          }
         ],
         "fastPairs": [
           {
@@ -2491,149 +2724,112 @@
             "gap": 1,
             "changedTrajectory": true
           }
-        ],
-        "obstacles": [
-          {
-            "index": 0,
-            "kind": "tree",
-            "visibleTick": 200,
-            "commitTick": 240,
-            "passTick": 420
-          },
-          {
-            "index": 1,
-            "kind": "drone",
-            "visibleTick": 500,
-            "commitTick": 540,
-            "passTick": 720
-          },
-          {
-            "index": 2,
-            "kind": "gap",
-            "visibleTick": 800,
-            "commitTick": 710,
-            "passTick": 1020
-          },
-          {
-            "index": 3,
-            "kind": "tree",
-            "visibleTick": 1100,
-            "commitTick": 1140,
-            "passTick": 1320
-          },
-          {
-            "index": 4,
-            "kind": "drone",
-            "visibleTick": 1400,
-            "commitTick": 1440,
-            "passTick": 1620
-          },
-          {
-            "index": 5,
-            "kind": "gap",
-            "visibleTick": 1700,
-            "commitTick": 1610,
-            "passTick": 1920
-          },
-          {
-            "index": 6,
-            "kind": "tree",
-            "visibleTick": 2000,
-            "commitTick": 2040,
-            "passTick": 2220
-          },
-          {
-            "index": 7,
-            "kind": "drone",
-            "visibleTick": 2300,
-            "commitTick": 2340,
-            "passTick": 2520
-          },
-          {
-            "index": 8,
-            "kind": "gap",
-            "visibleTick": 2600,
-            "commitTick": 2640,
-            "passTick": 2820
-          },
-          {
-            "index": 9,
-            "kind": "tree",
-            "visibleTick": 2900,
-            "commitTick": 2810,
-            "passTick": 3120
-          },
-          {
-            "index": 10,
-            "kind": "drone",
-            "visibleTick": 3200,
-            "commitTick": 3240,
-            "passTick": 3420
-          },
-          {
-            "index": 11,
-            "kind": "gap",
-            "visibleTick": 3500,
-            "commitTick": 3540,
-            "passTick": 3720
-          }
-        ],
-        "viewEdge": 1280
-      }
+        ]
+      },
+      "actions": [
+        {
+          "id": 13,
+          "kind": "flag",
+          "status": "confirmed",
+          "reason": "late-evidence",
+          "attempts": 1,
+          "lastError": null,
+          "txHash": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "explorerUrl": "https://liteforge.explorer.caldera.xyz/tx/0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+          "nextAttemptAt": null
+        }
+      ],
+      "explorer": {
+        "wallet": "https://liteforge.explorer.caldera.xyz/address/0xb2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+      },
+      "recentRuns": []
     },
     {
-      "sessionId": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "sessionId32": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
       "wallet": "0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "walletShort": "0xc3c3…c3c3",
       "displayName": "Decoy",
       "score": 99999,
-      "survivalSeconds": 3599,
-      "rank": null,
+      "source": "public",
       "onChain": false,
-      "wasListed": true,
+      "chainRank": null,
+      "listing": "disqualified",
       "review": "disqualified",
       "reviewReason": "automation",
       "adminReviewed": true,
-      "source": "public",
+      "wasListed": true,
+      "reviewSource": "mirror",
       "screen": "hold",
+      "screenedAt": "2026-10-05T01:14:00.000Z",
       "holdCodes": [
         {
-          "code": "H4"
+          "code": "H4",
+          "text": "At least 5 fast pairs (flaps ≤ 2 ticks apart) and at least 1% of intervals. Humans can make these with two keys or a worn mouse: never disqualify on H4 alone."
         },
         {
-          "code": "H5"
+          "code": "H5",
+          "text": "Machine-regular timing: one interval ≥ 45% of all, a run of ≥ 25 equal intervals, or interval entropy under 3 bits."
         },
         {
-          "code": "H6"
+          "code": "H6",
+          "text": "At least 85 flaps per minute over at least 3 minutes (scripts fly at 90-95)."
         }
       ],
-      "softSignals": [],
-      "evidenceDelaySeconds": 30,
-      "seedProvenance": "missing",
+      "features": null,
+      "soft": null,
       "integrity": {
+        "ok": true,
         "replay": "match",
         "chain": "match",
-        "maxTicks": 216000,
-        "seedTicket": "missing"
+        "maxTicks": 216000
       },
-      "features": null,
+      "provenance": {
+        "status": "missing",
+        "tickets": 0
+      },
+      "eligibility": null,
+      "flagReason": "screen-hold",
+      "timeline": null,
       "actions": [],
-      "history": [],
-      "replay": "/api/jackpot/replay?session=0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
-      "timeline": null
+      "explorer": {
+        "wallet": "https://liteforge.explorer.caldera.xyz/address/0xc3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+      },
+      "recentRuns": []
     }
   ],
   "nextEligible": [
     {
-      "sessionId": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "sessionId32": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
       "wallet": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "walletShort": "0xd4d4…d4d4",
       "score": 45001,
-      "screen": "pending"
+      "confirmedAt": "2026-10-03T10:00:00.000Z",
+      "screen": "unscreened",
+      "explorer": {
+        "wallet": "https://liteforge.explorer.caldera.xyz/address/0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4"
+      }
     },
     {
-      "sessionId": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+      "sessionId32": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
       "wallet": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+      "walletShort": "0xe5e5…e5e5",
       "score": 44000,
-      "screen": "pass"
+      "confirmedAt": "2026-10-04T10:00:00.000Z",
+      "screen": "pass",
+      "explorer": {
+        "wallet": "https://liteforge.explorer.caldera.xyz/address/0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5"
+      }
     }
-  ]
+  ],
+  "holdRuleText": {
+    "H2": "Survival over 18 minutes (1.15 × the harness p99).",
+    "H4": "At least 5 fast pairs (flaps ≤ 2 ticks apart) and at least 1% of intervals. Humans can make these with two keys or a worn mouse: never disqualify on H4 alone.",
+    "H5": "Machine-regular timing: one interval ≥ 45% of all, a run of ≥ 25 equal intervals, or interval entropy under 3 bits.",
+    "H6": "At least 85 flaps per minute over at least 3 minutes (scripts fly at 90-95).",
+    "H9": "Late evidence: the run reached the server more than 20 minutes after it could have ended (a banked or long-paused session)."
+  },
+  "softSignalText": {
+    "S8": "Unexplained descents: route commitments before the obstacle was visible."
+  },
+  "rubric": "docs/web3/weekly-jackpot-operations.md#admin-review-rubric"
 }

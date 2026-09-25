@@ -441,15 +441,33 @@ test('owner jackpot page lets the connected winner claim a claim-pending prize',
 });
 
 test('owner jackpot page draws the server timeline without the runtime', async () => {
-  // The model's geometry: look-ahead commitments (before the obstacle was visible) are counted.
+  // The model reads the jackpot-server review payload (server/jackpot/review-model.mjs field names):
+  // sessionId32, chainRank, listing, soft { code: { value, on } }, provenance.status, features, recentRuns.
   const review = normalizeReview(reviewFixture);
+  const [cleared, flagged, disqualified] = review.candidates;
   assert.equal(review.candidates.length, 3);
-  assert.equal(review.nextEligible.length, 2);
-  const flagged = review.candidates[1];
+  assert.deepEqual(review.nextEligible.map((row) => [row.sessionId, row.screen]), [[`0x${'d4'.repeat(32)}`, 'unscreened'], [`0x${'e5'.repeat(32)}`, 'pass']]);
+  assert.deepEqual([cleared.sessionId, cleared.rank, cleared.survivalSeconds, cleared.evidenceDelaySeconds, cleared.seedProvenance], [`0x${'a1'.repeat(32)}`, 1, 690, 42, 'ok']);
+  assert.deepEqual(cleared.softSignals.map((item) => [item.code, item.value]), [['S1', 3]], 'only the soft signals that are on');
+  assert.equal(cleared.replay, `/api/jackpot/replay?session=0x${'a1'.repeat(32)}`, 'the replay path of the session');
+  assert.equal(cleared.history.length, 2);
   assert.deepEqual(flagged.holdCodes.map((item) => item.code), ['H2', 'H9']);
   assert.match(flagged.holdCodes[1].text, /Late evidence/);
+  assert.deepEqual(flagged.softSignals.map((item) => item.code), ['S8']);
+  assert.match(flagged.softSignals[0].text, /before the obstacle was visible/);
+  assert.deepEqual([disqualified.listing, disqualified.seedProvenance, disqualified.timeline, disqualified.review, disqualified.adminReviewed], ['disqualified', 'missing', null, 'disqualified', true]);
+  // The design-document spellings still read (sessionId, rank, softSignals, seedProvenance, flapTicks).
+  const legacy = normalizeReview({ ok: true, candidates: [{ sessionId: `0x${'f6'.repeat(32)}`, wallet: `0x${'f6'.repeat(20)}`, rank: 3, review: 2, softSignals: [{ code: 'S9', value: 700 }], evidenceDelaySeconds: 700, seedProvenance: 'ok', timeline: { survivalTicks: 600, altitude: [300], flapTicks: [10, 70], obstacles: [{ visibleTick: 200, commitTick: 150 }] } }] });
+  const [old] = legacy.candidates;
+  assert.deepEqual([old.rank, old.review, old.softSignals[0].code, old.timeline.flapTicks.length, timelineGeometry(old.timeline).lookAheadCount], [3, 'flagged', 'S9', 2, 1]);
+  // The timeline of reviewTimeline(): flaps rebuilt from firstFlapTick + intervals; the look-ahead
+  // overlay is the server's unexplained verdict.
+  const raw = reviewFixture.candidates[1].timeline;
+  assert.equal(flagged.timeline.flapTicks.length, raw.intervals.length + 1);
+  assert.equal(flagged.timeline.flapTicks.at(-1), raw.firstFlapTick + raw.intervals.reduce((sum, value) => sum + value, 0));
   const geometry = timelineGeometry(flagged.timeline);
   assert.equal(geometry.lookAheadCount, 3);
+  assert.equal(geometry.flaps.length, flagged.timeline.flapTicks.length);
   assert.equal(geometry.viewBox, '0 0 720 180');
   assert.ok(geometry.altitude.startsWith('M0 '));
   assert.equal(timelineGeometry(null), null);
@@ -502,7 +520,7 @@ test('owner jackpot page draws the server timeline without the runtime', async (
   assert.equal(cards.length, 3);
   const svgs = doc.getElementById('jo-candidates').querySelectorAll('svg');
   assert.equal(svgs.length, 2, 'two candidates carry a timeline; the third says so');
-  assert.equal(svgs[1].getAttribute('aria-label'), `Flap timeline of ${reviewFixture.candidates[1].sessionId.slice(0, 10)}: 3 look-ahead commitments`);
+  assert.equal(svgs[1].getAttribute('aria-label'), `Flap timeline of ${reviewFixture.candidates[1].sessionId32.slice(0, 10)}: 3 look-ahead commitments`);
   assert.equal(svgs[1].querySelectorAll('circle.jo-lookahead').length, 3);
   assert.equal(svgs[1].querySelectorAll('rect.jo-fast-changed').length, 1);
   const text = visibleText(doc.getElementById('jo-candidates'));
@@ -510,9 +528,15 @@ test('owner jackpot page draws the server timeline without the runtime', async (
   assert.match(text, /Evidence delay1500 s/);
   assert.match(text, /Seed provenancemissing/);
   assert.match(text, /disqualified · admin-reviewed/);
+  assert.match(text, /Ranknot listed \(disqualified\)/);
+  assert.match(text, /Soft signalsS1 The wallet's first Ranked run is less than 7 days old\. \(3\)/);
+  assert.match(text, /Keeper actionssubmit confirmed tx · clear confirmed tx/);
+  assert.match(text, /Recent runs51022 pts, 690 s, 2026-W40 · 41010 pts, 540 s, 2026-W39/);
   const links = doc.getElementById('jo-candidates').querySelectorAll('a').map((anchor) => anchor.getAttribute('href'));
-  assert.ok(links.includes(`/chikun/index.html?replay=${encodeURIComponent(reviewFixture.candidates[0].replay)}`), 'Watch in cabinet');
-  assert.ok(links.includes(reviewFixture.candidates[0].replay), 'Download replay');
+  const replayPath = `/api/jackpot/replay?session=${reviewFixture.candidates[0].sessionId32}`;
+  assert.ok(links.includes(`/chikun/index.html?replay=${encodeURIComponent(replayPath)}`), 'Watch in cabinet');
+  assert.ok(links.includes(replayPath), 'Download replay');
+  assert.ok(links.includes(`https://liteforge.explorer.caldera.xyz/tx/0x${'c2'.repeat(32)}`), 'keeper action explorer link');
   assert.ok(links.filter((href) => href === '#jackpot-rubric').length >= 6, 'a rubric link next to every Clear and Disqualify');
   assert.equal(doc.getElementById('jackpot-rubric-list').querySelectorAll('li').length, 6);
   assert.match(visibleText(doc.getElementById('jo-next')), /Add to list/);
