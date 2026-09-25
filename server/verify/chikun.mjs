@@ -3,7 +3,7 @@
 // The server replays the v6 flap evidence with the cabinet's own runtime and
 // reads the result (A9); the client's claim is never consulted. Importing this
 // module loads chikun-cabinet.mjs, which pulls in the obstacle JSON (import
-// attribute) and the vendored ethers used by game-manifest.mjs.
+// attribute) and game-manifest.mjs (its pure keccak256.mjs, not ethers).
 import {
   CHIKUN_EVIDENCE_VERSION,
   CHIKUN_FIXED_STEP_HZ,
