@@ -91,6 +91,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/owner/jackpot-review-model.mjs',
   'apps/portal/owner/jackpot.mjs',
   'tests/owner-jackpot-page.test.mjs',
+  'tests/jackpot-ui-server-contract.test.mjs',
   'apps/portal/src/verifier-attestation.mjs',
   'apps/portal/src/session-seed.mjs',
   'tests/session-seed.test.mjs',
