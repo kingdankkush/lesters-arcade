@@ -11,7 +11,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ethers } from 'ethers';
-import { activateLocalGames, deployLocalSuite, loadArtifact, localWalletKeys, serveJsonRpc, startLocalChain } from '../scripts/lib/local-chain.mjs';
+import { activateLocalGames, deployLocalSuite, localWalletKeys, serveJsonRpc, startLocalChain } from '../scripts/lib/local-chain.mjs';
 import { deployLocalJackpot, deployMockToken, derivedFixtureWallet, fastLocalProvider, fixtureKeyAt, jackpotAt, reconnectWallets, setChainTime, tokenAt, weekIndexOf, weekKeyOf, weekStartOf } from '../scripts/lib/local-jackpot.mjs';
 import { writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
 import {
@@ -33,7 +33,6 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const TOKEN = 10n ** 18n;
 const HOUR = 3600;
 const DAY = 24 * HOUR;
-const WEEK = 7 * DAY;
 const keys = localWalletKeys();
 const FUNDER_KEY = fixtureKeyAt(20);
 const SECRETS = [keys.operator, keys.developer, keys.attacker, keys.player1, FUNDER_KEY];
@@ -150,6 +149,19 @@ test('deploy dry run prints a manifest and sends nothing', async () => {
   assert.match(text, /^DRY RUN: deploy the Chikun Weekly Jackpot on chain 4441\. Nothing was signed or sent\./);
   assert.match(text, new RegExp(`--broadcast --confirm ${DEPLOY_JACKPOT_CONFIRM}`));
   assert.match(text, /creation eth_call ok/);
+  // --rules <file.json>: the same fields, seasons by name, fromWeek always the first week.
+  const rulesFile = join(dir, 'rules.json');
+  writeFileSync(rulesFile, JSON.stringify({ fromWeek: 1, season: 'chikun-season-preview-1', minPaidWei: '100000000000000000', maxSurvivalSeconds: 3599, adminClearOnly: false, maxPrizeWei: '5000000000000000000000', minFundWei: '200000000000000000000' }));
+  const fromFile = await runCli(runDeployJackpotCli, deployArgs(['--json']).map((arg, index, all) => (all[index - 1] === '--rules' ? rulesFile : arg)));
+  assert.equal(fromFile.code, 0, fromFile.output);
+  assert.deepEqual(JSON.parse(fromFile.output).jackpot.constructorArgs.rules, {
+    fromWeek: current + 1, maxSurvivalSeconds: 3599, adminClearOnly: false, minPaidWei: '100000000000000000', maxPrizeWei: '5000000000000000000000',
+    minFundWei: '200000000000000000000', maxScore: '0', seasonId: ethers.id('chikun-season-preview-1'), altSeasonId: ethers.ZeroHash,
+  });
+  writeFileSync(rulesFile, JSON.stringify({ season: 'chikun-season-preview-1', minFundWei: '0' }));
+  const badRules = await runCli(runDeployJackpotCli, deployArgs().map((arg, index, all) => (all[index - 1] === '--rules' ? rulesFile : arg)));
+  assert.equal(badRules.code, 2);
+  assert.match(badRules.output, /--rules .*minFundWei must be above 0/);
   // --token skips the tCHIKUN deploy and lists the token acceptance checklist.
   const mock = await deployMockToken('BlacklistToken', [], wallets.operator);
   const withToken = await runCli(runDeployJackpotCli, deployArgs(['--token', await mock.getAddress(), '--json']));
@@ -383,6 +395,13 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
     await chain.revert(snapshotId);
     snapshotId = await chain.snapshot();
   }
+  // schedule-rules from a JSON file, with an override on top.
+  const epochFile = join(dir, 'epoch.json');
+  writeFileSync(epochFile, JSON.stringify({ season: 'chikun-season-preview-1', minPaidWei: '100000000000000000', maxSurvivalSeconds: 3599, adminClearOnly: true, minFundWei: '150000000000000000000' }));
+  const fromEpochFile = await runCli(runJackpotCli, actions('schedule-rules', ['--from-week', weekKeyOf(W + 2), '--rules', epochFile, '--max-score', '9000', '--broadcast', '--confirm', 'SCHEDULE_JACKPOT_RULES_4441', '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']));
+  assert.equal(fromEpochFile.code, 0, fromEpochFile.output);
+  const epoch = await jackpot.rulesFor(W + 2);
+  assert.deepEqual([Number(epoch.fromWeek), epoch.minFundWei, epoch.maxScore, epoch.adminClearOnly], [W + 2, 150n * TOKEN, 9000n, true]);
   // The rest need chain history: the unpause and cancel-end twins, finalize, sweep, residue and refunds.
   const operatorRun = (action, args = []) => runCli(runJackpotCli, actions(action, [...args, '--broadcast', '--confirm', JACKPOT_ACTIONS[action].confirm, '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']));
   assert.equal((await operatorRun('operator-pause')).code, 0);

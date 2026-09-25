@@ -33,6 +33,7 @@
 // finalizes), --from <address> (dry-run balance checks), --json. --rpc and --deployment <litvm-jackpot
 // module> are honoured only with a loopback --rpc (the local chain). Every run first asks the RPC node for
 // its eth_chainId and stops unless it is 4441.
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
@@ -302,7 +303,6 @@ export async function planJackpotAction({ action, args = [], argv = [], provider
     let rules;
     if (base === 'launch') rules = launchRulesFor({ fromWeek: week });
     else if (base !== null) {
-      const { readFileSync } = await import('node:fs');
       let json;
       try { json = JSON.parse(readFileSync(base, 'utf8')); } catch (error) { blocked(`--rules ${base}: ${error?.code ?? 'not valid JSON'}`); }
       rules = json;

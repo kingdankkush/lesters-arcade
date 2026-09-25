@@ -24,6 +24,7 @@
 // - --rpc, --deployment (a LITVM_DEPLOYMENT module), --record and --module are honoured only with a
 //   loopback --rpc (the in-process chain); a loopback broadcast must name --record and --module, so a local
 //   run never overwrites the committed record or module. Against LiteForge the committed files are used.
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
@@ -189,7 +190,9 @@ async function creationFacts(provider, from, data) {
 }
 
 // Reads the chain and returns the dry-run manifest. Nothing is signed or sent.
-export async function planJackpotDeploy({ provider, deployment, options, previousRecord = null, readFile = (path) => '' }) {
+const readText = (path) => readFileSync(path, 'utf8');
+
+export async function planJackpotDeploy({ provider, deployment, options, previousRecord = null, readFile = readText }) {
   const chainId = await rpcChainId(provider);
   if (chainId !== JACKPOT_CHAIN_ID) blocked(`the RPC is on chain ${chainId}, expected ${JACKPOT_CHAIN_ID}`);
   if (deployment.status !== 'deployed') blocked(`the Ranked address module is '${deployment.status}': the jackpot reads the deployed 1.8.x registries, so they must be deployed first`);
@@ -318,7 +321,7 @@ export async function planJackpotDeploy({ provider, deployment, options, previou
 
 // Sends the deployment planned in `manifest` from `signer` (the operator), verifies it, and returns the
 // jackpot record (not yet written).
-export async function broadcastJackpotDeploy({ provider, signer, manifest, options, previousRecord = null, readFile = (path) => '', log = () => {} }) {
+export async function broadcastJackpotDeploy({ provider, signer, manifest, options, previousRecord = null, readFile = readText, log = () => {} }) {
   const signerAddress = (await signer.getAddress()).toLowerCase();
   if (signerAddress !== manifest.operator) blocked(`the key is for ${signerAddress}, but the operator is ${manifest.operator}. Nothing was sent.`);
   if (signerAddress !== manifest.operatorOnChain) blocked(`the key is not the score registry's on-chain operator ${manifest.operatorOnChain}. Nothing was sent.`);
@@ -419,7 +422,7 @@ export async function runDeployJackpotCli({
   env = process.env,
   log = console.log,
   providerFactory = (url) => new ethers.JsonRpcProvider(url, JACKPOT_CHAIN_ID, { staticNetwork: true, cacheTimeout: -1 }),
-  readFile = null,
+  readFile = readText,
 } = {}) {
   let options;
   try {
@@ -429,8 +432,7 @@ export async function runDeployJackpotCli({
     log(`Blocked: ${error.message}`);
     return 2;
   }
-  const { readFileSync } = await import('node:fs');
-  const read = readFile ?? ((path) => readFileSync(path, 'utf8'));
+  const read = readFile;
   if (options.broadcast) {
     // Every guard before the key is read.
     if (options.confirm !== DEPLOY_JACKPOT_CONFIRM) {
