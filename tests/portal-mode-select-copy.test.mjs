@@ -133,6 +133,28 @@ test('no mode line tells a signed-out visitor a session is active', () => {
   assert.doesNotMatch(block(index, 'mode-copy'), /session is active/);
 });
 
+test('the prerendered mode-select blocks match what the SPA shows', () => {
+  const index = readFileSync(join(portal, 'index.html'), 'utf8');
+  assert.equal(block(index, 'mode-copy'), escapeHtml(PORTAL_COPY.modeSelect['lester-blaster'].copy));
+  assert.equal(block(index, 'mode-ranked'), escapeHtml(PORTAL_COPY.modeSelect['lester-blaster'].ranked));
+  const dir = mkdtempSync(join(tmpdir(), 'portal-mode-select-'));
+  try {
+    buildPortalPages({ flags: 'live', outDir: dir });
+    for (const [pages, copy] of [[portal, PORTAL_COPY], [dir, launch]]) {
+      for (const game of PORTAL_GAMES) {
+        const html = readFileSync(join(pages, `discover/${game.slug}.html`), 'utf8');
+        const expected = copy.modeSelect[game.id]?.ranked ?? copy.modeRanked;
+        assert.equal(block(html, 'mode-ranked'), escapeHtml(expected), `${game.slug} Ranked card (${copy.state})`);
+        if (copy.modeSelect[game.id]) assert.equal(renderModeSelect({ gameId: game.id, portalCopy: copy }).ranked, expected);
+      }
+    }
+    assert.equal(block(readFileSync(join(dir, 'index.html'), 'utf8'), 'mode-ranked'), escapeHtml(launch.modeSelect['lester-blaster'].ranked));
+    assert.match(readFileSync(join(dir, `discover/${slugOf('stacked')}.html`), 'utf8'), /<!-- copy:mode-ranked:start -->0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.<!-- copy:mode-ranked:end -->/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // polish-2 (live UI audit follow-up): a signed-in player was told to sign in,
 // and Chikun's line offered "endless guest practice" to everyone. Each line
 // now has a signed-out form (prerendered) and a signed-in form.
