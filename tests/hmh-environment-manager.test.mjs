@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import {
   WEATHER_PRESETS,
@@ -79,17 +78,4 @@ test('WO-50 noir lighting plan supports BLACKOUT while preserving silhouette and
   assert.equal(blackout.perf.maxLightSources <= 14, true);
   assert.equal(blackout.perf.cacheStaticGradients, true);
   assert.deepEqual(blackout.layerOrder, ['night-tint', 'light-pools', 'colored-glow', 'silhouette-rim', 'weather-haze', 'edge-vignette']);
-});
-
-test('WO-50 runtime source consumes noir lighting plan and active BLACKOUT beat in drawSceneLighting', () => {
-  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  const lightingBlock = mainSource.slice(mainSource.indexOf('function drawSceneLighting'), mainSource.indexOf('function drawCombatScene'));
-
-  assert.match(mainSource, /buildNoirLightingPlan/);
-  assert.match(mainSource, /levelOneThreatBeatAt/);
-  assert.match(lightingBlock, /currentLevelOneThreatBeat\(/);
-  assert.match(lightingBlock, /lightingPlan\.blackout\.active/);
-  assert.match(lightingBlock, /lightingPlan\.perf\.maxLightSources/);
-  assert.match(lightingBlock, /silhouetteRimAlpha/);
-  assert.match(lightingBlock, /muzzleFlashBoost/);
 });

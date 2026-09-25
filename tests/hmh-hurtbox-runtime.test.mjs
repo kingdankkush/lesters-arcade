@@ -39,13 +39,11 @@ test('WO-108 generic adapter is deterministic for overlay captures', () => {
   assert.deepEqual(a, b);
 });
 
-test('WO-108 main runtime consumes hmh-hurtbox-runtime for enemy/boss hitboxes and debug overlays', () => {
+test('WO-108 main runtime consumes hmh-hurtbox-runtime for enemy/boss hitboxes', () => {
   const main = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
   assert.match(main, /hmh-hurtbox-runtime\.mjs/);
   assert.match(main, /runtimeEnemyHitbox\(/);
   assert.match(main, /runtimeBossHitbox\(/);
-  assert.match(main, /drawRuntimeHitboxOverlay\(/);
-  assert.match(main, /debugHitboxes/);
 });
 
 test('WO-108 runtime files are covered by the explicit syntax gate', () => {

@@ -379,7 +379,7 @@ test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic
   assert.equal(policy.requiredWorldSource, 'hmh-level-one-curated-world-contract');
 });
 
-test('main runtime consumes the curated visible runtime before generic sceneObjectsNear and disables Level 1 old enemy art fallbacks', () => {
+test('main runtime consumes the curated visible runtime before generic sceneObjectsNear', () => {
   const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
   assert.equal(source.includes('buildLevelOneWorldV3VisibleObjects'), true);
   assert.equal(source.includes('levelOneCuratedRuntimeArtPolicy'), true);
@@ -401,14 +401,9 @@ test('main runtime consumes the curated visible runtime before generic sceneObje
   assert.equal(visibleRuntimeSource.includes('LEVEL_ONE_AUTHORED_PREFAB_STAMPS'), true, 'Level 1 visible runtime should expose exact-key authored prefab stamps');
   assert.equal(visibleRuntimeSource.includes('levelOneWorldDressingChunkForCell'), false, 'WO-63 removes old hash-by-cell dressing selection');
   assert.equal(visibleRuntimeSource.includes('chunkHash('), false, 'WO-63 disables random-looking hashed chunk placement');
-
-  const enemyDraw = source.slice(source.indexOf('function drawSingleEnemy'), source.indexOf('function bossArtFor'));
-  assert.equal(enemyDraw.includes('const waveFrame = isLevelOneCuratedRuntime() ? null :'), true, 'Level 1 should not use old HMH_ENEMIES_WAVE fallback art');
-  assert.equal(enemyDraw.includes('const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null : enemyArtFor(enemy)'), true, 'Level 1 should not fall back to old combatArt enemy sprites');
-  assert.equal(enemyDraw.includes('if (isLevelOneCuratedRuntime()) return;'), true, 'Level 1 should suppress rectangle fallback enemies instead of showing bad placeholder art');
 });
 
-test('main runtime uses clean Level 1 loading art and authored opening ground roles', () => {
+test('main runtime uses clean Level 1 loading art', () => {
   const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
   assert.equal(source.includes('hmhLoadingBackgroundForLevel'), true, 'loading art should be selected through a level-aware helper');
   const loadingHelper = source.slice(source.indexOf('function hmhLoadingBackgroundForLevel'), source.indexOf('async function showHMHLoadingScreen'));
@@ -420,13 +415,6 @@ test('main runtime uses clean Level 1 loading art and authored opening ground ro
   assert.equal(loadingScreen.includes('hmhLoadingBackgroundForLevel(level)'), true, 'loading screen should not randomly choose legacy loading key art for every level');
   assert.equal(loadingScreen.includes('hmhNeutralLoadingBackground()'), true, 'Level 1 null art branch should render a neutral gradient backdrop');
   assert.equal(loadingScreen.includes('Math.random() * HMH_LOADING_KEYARTS.length'), false, 'random legacy loading-keyart selection must not be inline in showHMHLoadingScreen');
-
-  const tileDraw = source.slice(source.indexOf('function drawGroundPlanPatternTiles'), source.indexOf('function productionPropForIndex'));
-  assert.equal(tileDraw.includes('plan.cellAt(tile.worldX, tile.worldY)'), true, 'floor renderer should consume cached authored Level 1 terrain blob metadata instead of per-frame rebuilds or per-tile texture rolls');
-  assert.equal(tileDraw.includes('groundPlanPatternForGroup(ctx, group)'), true, 'floor renderer should fill batched zones with cached world-anchored texture patterns');
-  assert.equal(tileDraw.includes('drawLevelOneGroundEdgeBreakup'), false, 'WO-3 disables seam-breakup overlays until real border transitions land');
-  const enemyDraw = source.slice(source.indexOf('function drawSingleEnemy'), source.indexOf('function bossArtFor'));
-  assert.equal(enemyDraw.includes('drawLevelOneEnemyReadabilityAura'), true, 'enemy renderer should add Level 1 readable outlines/glows instead of relying on weak raw sprites only');
 });
 
 test('package check gate includes the visible runtime module and regression test', () => {

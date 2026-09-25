@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_FINAL_SETPIECE_KIT, finalSetpieceAssetByKey } from '../apps/portal/assets/generated/hmh-final-setpiece-kit/hmh-final-setpiece-kit-manifest.mjs';
@@ -98,14 +98,6 @@ test('enemy runtime art stays at 100 percent scale; size differences belong to a
   for (const id of groundedHumanScaleIds) {
     assert.equal(BESPOKE_ENEMY_VISUAL_KITS[id].spriteAuthoringScale >= 1, true, `${id} should use a full-size grounded human or zombie silhouette`);
   }
-});
-
-test('main runtime no longer randomizes enemy draw size between 50 and 150 percent', () => {
-  const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
-  assert.equal(source.includes('Math.random() * 0.75'), false);
-  assert.equal(source.includes('Math.random() * 0.7'), false);
-  assert.equal(source.includes('enemy.sizeScale'), false);
-  assert.equal(source.includes('const drawScaleMul = 1;'), true);
 });
 
 test('buildEncounterVisualPlan gives authored Dry Forest Cave, Oasis Lakeside, Crossroads, and Mesa visual staging', () => {

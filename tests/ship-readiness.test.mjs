@@ -55,7 +55,10 @@ test('brand tokens load before portal styles and public metadata is truthful', (
 test('fixed-step runtime recovers rare long frames without an unbounded catch-up spiral', () => {
   const main = repoFile('apps/portal/main.js');
   assert.match(main, /const MAX_FIXED_STEPS_PER_FRAME = 4;/);
-  assert.match(main, /const FIXED_STEP_MS = 1000 \/ LESTER_BLASTER_PERFORMANCE_TARGETS\.targetFps;/);
+  // The PixiJS HMH child owns the 60 Hz simulation step and its catch-up cap.
+  const simulation = repoFile('apps/hmh-reboot/src/simulation.mjs');
+  assert.match(simulation, /export const FIXED_STEP_MS = 1000 \/ 60;/);
+  assert.match(simulation, /export const MAX_CATCH_UP_STEPS = 4;/);
 });
 
 test('fullscreen auto-entry is persisted and uses the READY user gesture', () => {

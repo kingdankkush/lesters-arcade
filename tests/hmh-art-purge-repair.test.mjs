@@ -70,12 +70,10 @@ test('WO-18 purge/repair plan separates fixed actors, runtime repairs, and defer
   assert.ok(plan.runtimeGuardrails.every((entry) => actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[entry.resolvedKey])));
 });
 
-test('WO-18 runtime and CLI are wired for the purge/auto-repair pass', () => {
-  const main = repoText('apps/portal/main.js');
+test('WO-18 CLI is wired for the purge/auto-repair pass', () => {
   const packageJson = repoText('package.json');
   const syntaxCheck = repoText('scripts/syntax-check.mjs');
 
-  assert.equal(main.includes('repairRuntimeActorKey'), true, 'runtime roster selection should use repairRuntimeActorKey');
   assert.equal(packageJson.includes('design:art-repair'), true, 'package.json should expose npm run design:art-repair');
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-art-repair.mjs'), true, 'repair source should be syntax checked');
   assert.equal(syntaxCheck.includes('scripts/art-purge-repair.mjs'), true, 'repair CLI should be syntax checked');

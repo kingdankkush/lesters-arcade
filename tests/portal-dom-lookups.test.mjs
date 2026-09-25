@@ -22,7 +22,6 @@ const KNOWN_MISSING = new Map([
   ['runDetails', 'renderOfficialRunStatus() returns early without it'],
   ['leaderboardPanel', 'renderLeaderboard() has no caller'],
   ['combatCanvas', 'legacy Canvas combat loop, superseded by the PixiJS HMH child'],
-  ['fpsPill', 'legacy Canvas combat loop (drawCombatScene has no caller)'],
   ['combatRunStatus', 'legacy Canvas combat sandbox status'],
 ]);
 

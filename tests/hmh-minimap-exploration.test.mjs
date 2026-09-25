@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -8,8 +7,6 @@ import {
   buildLevelOneRunWorldDimensions,
   updateLevelOneExplorationTrail,
 } from '../apps/portal/src/arcade-core.mjs';
-
-const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-69 exploration fog model reveals only visited cells plus current player radius', () => {
   const world = buildLevelOneRunWorldDimensions({ width: 64, height: 64 });
@@ -48,10 +45,4 @@ test('WO-69 minimap model includes fog layer and hides unrevealed enemy/POI mark
   assert.deepEqual(model.enemies.map((enemy) => enemy.id), ['near-enemy']);
   assert.deepEqual(model.pois.map((poi) => poi.id), ['near-poi']);
   assert.match(model.legend.explorationLabel, /explored/i);
-});
-
-test('WO-69 runtime wires persistent exploration state into minimap drawing', () => {
-  assert.match(mainSource, /combat\.explorationVisitedCells/);
-  assert.match(mainSource, /updateLevelOneExplorationTrail/);
-  assert.match(mainSource, /model\.exploration\.fogCells/);
 });

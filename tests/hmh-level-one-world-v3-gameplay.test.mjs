@@ -241,12 +241,9 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   assert.match(main, /spawnLaneRole,/);
   assert.match(main, /spawnLaneRoleApplied/);
   assert.match(main, /levelOneSpawnLaneTelegraphForRole/);
-  assert.match(main, /drawLevelOneSpawnLaneTelegraph/);
-  assert.match(main, /if \(entity\.runtimeActorKey\) return safeRuntimeRosterKey\(entity\.runtimeActorKey\)/);
   assert.match(main, /spawnLaneTelegraphFrames = 24/);
   assert.match(main, /spawnLaneTelegraphStarted && \(enemy\.spawnLaneTelegraphFrames \?\? 0\) > 0/);
   assert.match(main, /if \(\(enemy\.spawnFrames \?\? 0\) > 0\) enemy\.spawnFrames -= 1/);
-  assert.match(main, /gameSettings\.reduceMotion\s*\?\s*0\.86/);
   assert.doesNotMatch(main, /eligibleEnemies\s*=\s*combat\.enemies\.filter/);
   assert.match(main, /excludedTargets:\s*bullet\.hitEnemies/);
   assert.match(main, /__hmhVisualDebugSpawnLaneRole/);

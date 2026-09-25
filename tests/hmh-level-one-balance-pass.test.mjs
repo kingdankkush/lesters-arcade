@@ -252,7 +252,5 @@ test('runtime consumes spawn budgets, attack tokens, measured capped steering, a
   assert.match(main, /spawnBurstCap/);
   assert.match(main, /attackTokenCap/);
   assert.match(main, /attackTokenHeld/);
-  assert.match(main, /Boolean\(enemy\.attackTokenHeld\)/);
-  assert.match(main, /ctx\.ellipse\(centerX, footY \+ 1/);
   assert.match(main, /enemyProjectileCap/);
 });

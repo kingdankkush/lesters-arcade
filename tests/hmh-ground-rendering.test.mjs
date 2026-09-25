@@ -63,66 +63,6 @@ test('actors and props share the rendered ground lattice instead of independent 
   assert.doesNotMatch(syncBody, /projected\.x - 18/);
 });
 
-test('roguelike ground pass batches diamonds by texture key and fills world-anchored patterns', () => {
-  assert.match(mainSource, /function drawGroundPlanPatternTiles\(/);
-  const body = functionBody('drawGroundPlanPatternTiles');
-  assert.match(body, /plan\.cellAt\(tile\.worldX, tile\.worldY\)/);
-  assert.doesNotMatch(body, /buildTerrainBlobCell\(/);
-  assert.match(body, /buildTerrainPresentationForCell\(terrainCell, \{[\s\S]*?overlayMode: isLevelOneCuratedRuntime\(\) \? 'texture-only' : 'full'/);
-  assert.match(body, /overlay\.id === 'bridge-deck-light'/);
-  assert.match(body, /overlay\.id === 'water-flow'/);
-  assert.match(body, /overlay\.id === 'terrain-shadow' \|\| overlay\.id === 'bridge-contact-shadow'/);
-  assert.match(body, /new Path2D\(/);
-  assert.match(mainSource, /function groundPlanPatternForGroup\(/);
-  assert.match(mainSource, /ctx\.createPattern\(source, 'repeat'\)/);
-  assert.match(body, /pattern\.setTransform\(new DOMMatrix\(\)\.translate\(/);
-  assert.match(body, /groundPatternAnchorForOrigin\(/);
-  assert.doesNotMatch(body, /translate\(-cameraWorldOffsetX, -cameraWorldOffsetY\)/);
-  assert.match(body, /const groupKey = `\$\{asset\.key \?\? terrainCell\.textureKey\}\|\$\{terrainPresentation\.elevationPx\}`/);
-  assert.match(body, /plan\.renderAssetForCell\?\.\(terrainCell\)/);
-  assert.match(body, /handledDirections\.includes\(edgeBlend\.direction\)/);
-  assert.doesNotMatch(body, /blob-\$\{terrainCell\.blob\.variantIndex\}/);
-  assert.doesNotMatch(body, /elev-\$\{terrainCell\.elevation\.band\}/);
-  assert.match(body, /groundPlanPatternForGroup\(/);
-  assert.match(body, /textureGroups\.get\(groupKey\)/);
-  assert.match(body, /ctx\.fill\(group\.path\)/);
-  assert.match(body, /const roadSupertileGroups = new Map\(\)/);
-  assert.match(body, /plan\.roadPresentationForCell\?\.\(terrainCell\)/);
-  assert.match(body, /plan\.bridgePresentationForCell\?\.\(terrainCell\)/);
-  assert.match(body, /for \(const roadAsset of \[roadPresentation\?\.shoulder, roadPresentation\?\.marking, bridgePresentation\?\.detail\]\)/);
-  assert.match(body, /roadSupertileGroups\.get\(roadKey\)/);
-  assert.match(body, /terrainPresentationStats\.roadShoulderCells/);
-  assert.match(body, /terrainPresentationStats\.roadMarkingCells/);
-  assert.match(body, /terrainPresentationStats\.bridgeDetailCells/);
-  assert.match(body, /for \(const group of roadSupertileGroups\.values\(\)\)/);
-  assert.doesNotMatch(body, /drawImage\([^)]*roadPresentation/);
-});
-
-test('drawProductionIsoTile no longer performs per-tile texture lookup or edge breakup for the roguelike path', () => {
-  const body = functionBody('drawProductionIsoTile');
-  assert.doesNotMatch(body, /sbsGroundTileForWorld\(/);
-  assert.doesNotMatch(body, /wave2TileImage\(/);
-  assert.doesNotMatch(body, /biomeGroundTileForWorld\(/);
-  assert.doesNotMatch(body, /drawLevelOneGroundEdgeBreakup\(/);
-  assert.match(body, /drawShadedIsoTile\(/);
-});
-
-test('curated Level 1 never substitutes polygon tiles for prerendered ground art', () => {
-  const body = functionBody('drawGroundPlanPatternTiles');
-  assert.doesNotMatch(body, /fallbackTiles/);
-  assert.doesNotMatch(body, /drawProductionIsoTile\(/);
-  assert.match(body, /curatedGroundFallbackPattern/);
-});
-
-test('WO-60 all ground-plane tile and road positions use the shared rounded lattice helper', () => {
-  const sceneBody = functionBody('drawRoguelikeScene');
-  const roadBody = functionBody('drawRoadsAndTransitions');
-  assert.match(sceneBody, /groundTileLatticePointForProjection\(projected\)/);
-  assert.match(roadBody, /groundTileLatticePointForProjection\(projected\)/);
-  assert.doesNotMatch(sceneBody, /projected\.y \+ 64/);
-  assert.doesNotMatch(roadBody, /projected\.y \+ 64/);
-});
-
 test('WO-62 loading screen prewarms deterministic Level 1 ground and prop image sets before reveal', () => {
   assert.match(mainSource, /async function decodeImageAsset\(/);
   const decodeBody = functionBody('decodeImageAsset');

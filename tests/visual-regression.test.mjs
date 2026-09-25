@@ -47,7 +47,7 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
   assert.match(visualScript, /heroVisual\?\.ready/);
   const obstacleRenderer = mainSource.slice(
     mainSource.indexOf('function buildObstacleRenderEntries'),
-    mainSource.indexOf('function currentLevelOneExplorationLayer'),
+    mainSource.indexOf('function selectHeroFrame'),
   );
   assert.doesNotMatch(obstacleRenderer, /if \(!worldProps\.length\) return \[\]/);
   assert.match(visualScript, /readyOverlay\.click\(\)/);
@@ -113,7 +113,7 @@ test('browser soak targets the current Pixi reboot and proves authored runtime t
   assert.doesNotMatch(browserSoakScript, /__hmhSoakStressBossSwarm/);
 });
 
-test('crowded boss combat keeps a bounded player locator above particles', () => {
+test('crowded boss combat plans a bounded player locator', () => {
   const quiet = buildCrowdedCombatPlayerMarkerPlan({ active: true, roguelikeRun: true, visibleEnemies: 17, bossEnemies: 0 });
   assert.equal(quiet.visible, false);
   const crowded = buildCrowdedCombatPlayerMarkerPlan({ active: true, roguelikeRun: true, visibleEnemies: 18, bossEnemies: 0, playerX: 100.4, playerY: 200.4, frame: 10 });
@@ -125,11 +125,6 @@ test('crowded boss combat keeps a bounded player locator above particles', () =>
   assert.equal(bossOverride.visible, true);
   assert.equal(bossOverride.pulse, 0);
   assert.equal(buildCrowdedCombatPlayerMarkerPlan({ active: false, roguelikeRun: true, visibleEnemies: 48, bossEnemies: 1 }).visible, false);
-  const particleDraw = mainSource.indexOf('  drawParticles(ctx);');
-  const markerDraw = mainSource.indexOf('  drawCrowdedCombatPlayerMarker(ctx);');
-  const floatingTextDraw = mainSource.indexOf('  drawFloatingTexts(ctx);');
-  assert.ok(particleDraw >= 0 && markerDraw > particleDraw, 'player locator must render after particles');
-  assert.ok(floatingTextDraw > markerDraw, 'player locator must remain below textual UI');
 });
 
 test('fixed-step catch-up is bounded and telemetry records discarded simulation time', () => {

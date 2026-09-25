@@ -349,7 +349,7 @@ test('main runtime wires interactive debris visuals and POI-specific SFX without
   assert.equal(hazardBlock.includes("levelOneInteractiveSfxCuePlan({ obstacle, event: 'hazard-pulse' })"), true, 'mushroom pulse should emit POI SFX');
   const stateBlock = source.slice(source.indexOf('function refreshLevelOneInteractiveObstacleState'), source.indexOf('function currentLevelOneInteractiveHazardPressure'));
   assert.equal(stateBlock.includes('playLevelOneInteractiveSfxCues'), true, 'gate/extraction state transitions should emit POI SFX');
-  const renderBlock = source.slice(source.indexOf('function buildObstacleRenderEntries'), source.indexOf('function drawRoguelikeScene'));
+  const renderBlock = source.slice(source.indexOf('function buildObstacleRenderEntries'), source.indexOf('function selectHeroFrame'));
   assert.equal(renderBlock.includes('drawLevelOneInteractiveDebris'), true, 'render path should draw debris over/after destroyed interactives');
   const hudBlock = source.slice(source.indexOf('function renderRoguelikeStatBar'), source.indexOf('function renderTacticalBalanceDebugOverlay'));
   assert.equal(hudBlock.includes('routeWorldState?.statusLabel'), true, 'stat bar objective should consume authored route-world status labels');

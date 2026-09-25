@@ -66,7 +66,6 @@ test('WO-110 runtime and checkpoint docs are wired', () => {
   assert.match(main, /wo110BossRuntimeFrame/);
   assert.match(main, /hmh\('HMH_WO110_BOSS_REDO'\)/);
   assert.doesNotMatch(main, /import \{ HMH_WO110_BOSS_REDO/);
-  assert.match(main, /WO110_TRUE_SCALE_MAX_PX = 256/);
   assert.equal(existsSync(new URL('../docs/game-design/PLAYTEST_CHECKPOINT_3_NOTICE.md', import.meta.url)), true);
   assert.equal(existsSync(new URL('../docs/game-design/wo110-boss-redo-checkpoint3/wo110-boss-checkpoint3-proof.png', import.meta.url)), true);
   const notice = readFileSync(new URL('../docs/game-design/PLAYTEST_CHECKPOINT_3_NOTICE.md', import.meta.url), 'utf8');
@@ -81,7 +80,6 @@ test('WO-110 is the active isometric signature boss rather than a proxy', () => 
   assert.equal(bossEntry?.animatedCuratedAssetKey, 'wo110/rug-pull-baron-phase-1');
   assert.match(main, /signatureBoss: true/);
   assert.match(main, /bossEnemy\.phase = directive\.phase\.phaseNumber/);
-  assert.match(main, /isSignatureBoss \? wo110BossRuntimeFrame\(enemy\) : null/);
   assert.match(main, /img: image/);
   assert.match(main, /ready: Boolean\(image\.complete && image\.naturalWidth > 0\)/);
   assert.match(main, /bossDeathSpectacle/);

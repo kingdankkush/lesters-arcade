@@ -45,7 +45,7 @@ test('WO-64 front-edge depth sorts wider/taller footprints in front of same-cent
 
 test('main renderer uses the WO-64 ground-contact, shadow, and front-edge depth helpers', () => {
   assert.match(mainSource, /hmh-prop-grounding\.mjs/);
-  const renderBody = mainSource.slice(mainSource.indexOf('function buildObstacleRenderEntries'), mainSource.indexOf('function drawRoguelikeMinimap'));
+  const renderBody = mainSource.slice(mainSource.indexOf('function buildObstacleRenderEntries'), mainSource.indexOf('function selectHeroFrame'));
   assert.match(renderBody, /propDrawRectForGroundContact\(/);
   assert.match(renderBody, /propShadowEllipseForGroundContact\(/);
   assert.match(renderBody, /propFrontEdgeDepth\(/);

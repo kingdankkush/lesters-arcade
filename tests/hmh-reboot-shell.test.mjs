@@ -251,7 +251,6 @@ test('portal main integrates the reboot host at the official combat mount', asyn
   assert.match(lifecycleSource, /message\.type === 'game:pause'/);
   assert.match(source, /onExit:[\s\S]*?returnToOfficialGameMenu\(\)/);
   assert.match(source, /onRunEvent:[\s\S]*?recordSessionEvent\(/);
-  assert.match(source, /function drawCombatScene[\s\S]*?if \(hmhRebootActive \|\| stackedHost\)\s*\{[\s\S]*?requestAnimationFrame\(drawCombatScene\);\s*return;/);
 });
 
 test('portal frame fills the active gameplay viewport without a fixed 72vh dead zone', async () => {

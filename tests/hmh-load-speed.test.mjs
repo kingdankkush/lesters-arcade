@@ -71,7 +71,6 @@ test('portal bootstrap does not eagerly import heavyweight canonical actor manif
   const source = repoText('apps/portal/main.js');
   const encounterVisuals = repoText('apps/portal/src/hmh-encounter-visuals.mjs');
   const combatArtInit = source.slice(source.indexOf('const combatArt ='), source.indexOf('function refreshHmhCombatArtPayload'));
-  assert.match(source, /from '\.\/src\/canonical-actor-routing\.mjs'/);
   assert.doesNotMatch(source, /CANONICAL_ACTOR_MANIFESTS/);
   assert.doesNotMatch(source, /hmh-bonus-enemies\//);
   assert.match(source, /const HMH_ACTOR_REGISTRY = new Map\(\)/);
@@ -80,10 +79,9 @@ test('portal bootstrap does not eagerly import heavyweight canonical actor manif
   assert.doesNotMatch(combatArtInit, /buildEnemyArtFromManifest\(/, 'portal boot must not fetch legacy enemy still libraries');
 });
 
-test('selected hero opening frame is decoded before READY and roguelike never draws the old block fallback', () => {
+test('selected hero opening frame is decoded before READY', () => {
   const source = repoText('apps/portal/main.js');
-  const rosterPreload = source.slice(source.indexOf('async function preloadHeroRoster'), source.indexOf('// --- Roguelike biome-themed enemy sprites'));
-  const drawPlayer = source.slice(source.indexOf('function drawPlayer(ctx)'), source.indexOf('function manifestEnemyKeyFor'));
+  const rosterPreload = source.slice(source.indexOf('async function preloadHeroRoster'), source.indexOf('function render()'));
   const beginLevel = source.slice(source.indexOf('async function beginOfficialLevel'), source.indexOf('async function advanceOfficialCampaignLevel'));
 
   assert.match(beginLevel, /await ensureHMHLoaded\(\)/, 'direct and deep-linked HMH starts must load the lazy roster payload');
@@ -91,29 +89,11 @@ test('selected hero opening frame is decoded before READY and roguelike never dr
   assert.match(rosterPreload, /await Promise\.all\(/);
   assert.match(source, /const preferredStates = \['idle', 'walk', 'run', 'shoot'\]/, 'decoded hold frames must prefer neutral locomotion instead of death/dash states');
   assert.equal(rosterPreload.includes('for (const dirs of Object.values(anims))'), false, 'startup must not decode every state and direction');
-  const noFallbackGuard = drawPlayer.indexOf('draw nothing rather than resurrecting old block art');
-  const oldBlockFallback = drawPlayer.indexOf("ctx.fillStyle = '#ff7b2f'");
-  assert.ok(noFallbackGuard >= 0 && noFallbackGuard < oldBlockFallback, 'roguelike guard must return before the legacy block fallback');
-});
-
-test('Level 1 scales complete hero frames and keeps muzzle/tracer VFX at weapon height', () => {
-  const source = repoText('apps/portal/main.js');
-  const drawPlayer = source.slice(source.indexOf('function drawPlayer(ctx)'), source.indexOf('function manifestEnemyKeyFor'));
-  const fireWeapon = source.slice(source.indexOf('function updateAutoFire'), source.indexOf('function openLevelUpMenu'));
-  const updateBullets = source.slice(source.indexOf('function updateRoguelikeBullets'), source.indexOf('function updateRoguelikeEnemies'));
-  const drawBullets = source.slice(source.indexOf('function drawBullets(ctx)'), source.indexOf('// Prefer repo-owned Art Redo Queue'));
-
-  assert.match(drawPlayer, /buildIsometricHeroDrawPlan\(/);
-  assert.match(drawPlayer, /ctx\.drawImage\(heroFrame,\s*source\.x,/);
-  assert.match(drawPlayer, /hero\?\.productionSlug/, 'lazy roster heroes must not dereference the retired legacy art object');
-  assert.match(fireWeapon, /projectPlayerShotScreenPoint\(/);
-  assert.match(updateBullets, /projectPlayerShotScreenPoint\(/);
-  assert.match(drawBullets, /projectPlayerShotScreenPoint\(/);
 });
 
 test('Level 1 prop rendering uses screen rectangles instead of pressure-dependent anchor radius culling', () => {
   const source = repoText('apps/portal/main.js');
-  const renderBody = source.slice(source.indexOf('function buildObstacleRenderEntries('), source.indexOf('function currentLevelOneExplorationLayer('));
+  const renderBody = source.slice(source.indexOf('function buildObstacleRenderEntries('), source.indexOf('function selectHeroFrame('));
   assert.match(renderBody, /drawRectIntersectsViewport\(/);
   assert.doesNotMatch(renderBody, /obstacleRenderRadiusWindowed|obstacleRenderRadiusFullscreen|Math\.abs\(o\.worldX - combat\.playerMapX\)/);
 });
@@ -123,54 +103,6 @@ test('Level 1 bullets use swept hit detection for both cover and enemies', () =>
   const bulletBody = source.slice(source.indexOf('function updateRoguelikeBullets('), source.indexOf('function trimLooseRoguelikeRewards('));
   assert.match(bulletBody, /circleTargetHitAlongSegment\(/);
   assert.doesNotMatch(bulletBody, /Math\.hypot\(enemy\.mapX - bullet\.worldX/);
-});
-
-test('Level 1 fog batches world and minimap cells instead of issuing hundreds of fills per frame', () => {
-  const source = repoText('apps/portal/main.js');
-  const visionFogBody = source.slice(source.indexOf('function drawLevelOneVisionFog('), source.indexOf('function drawRoguelikeMinimap('));
-  const minimapBody = source.slice(source.indexOf('function drawRoguelikeMinimap('), source.indexOf('function drawRoguelikeScene('));
-  assert.match(visionFogBody, /new Path2D\(\)/);
-  assert.match(visionFogBody, /ctx\.fill\(fogPath\)/);
-  assert.match(minimapBody, /new Path2D\(\)/);
-  assert.match(minimapBody, /ctx\.fill\(minimapFogPath\)/);
-  assert.doesNotMatch(minimapBody, /fillRect\(x \+ cell\.x/);
-});
-
-test('Level 1 roads use prewarmed texture masks and authored bridges instead of flat color diamonds', () => {
-  const source = repoText('apps/portal/main.js');
-  const roadBody = source.slice(source.indexOf('function drawRoadsAndTransitions('), source.indexOf('function drawProductionIsoProp('));
-  assert.match(roadBody, /const roadSurfaceGroups = new Map\(\)/);
-  assert.match(roadBody, /ROAD_SURFACE_TEXTURE/);
-  assert.match(roadBody, /ctx\.createPattern\(/);
-  assert.match(roadBody, /ctx\.fill\(group\.surfacePath\)/);
-  assert.doesNotMatch(roadBody, /ctx\.fillStyle = group\.style\.fill/);
-  assert.doesNotMatch(roadBody, /bridgeSurfacePath|bridgeWearPath/);
-  assert.doesNotMatch(roadBody, /traceIsoDiamond\(ctx, cx, cy, 9\)/);
-  assert.doesNotMatch(roadBody, /hmh-coherent-world\/construct\/wood-bridge\.png/);
-});
-
-test('curated Level 1 disables camera-relative animated prop scatter', () => {
-  const source = repoText('apps/portal/main.js');
-  const ambientBody = source.slice(source.indexOf('function collectAnimatedProps('), source.indexOf('const groundPlanPatternFrames'));
-  assert.match(ambientBody, /if \(isLevelOneCuratedRuntime\(\)\) return \[\];/);
-  assert.doesNotMatch(ambientBody, /environmentState\.wind\.x \* 0\.18/);
-  assert.doesNotMatch(ambientBody, /environmentState\.wind\.y \* 0\.12/);
-});
-
-test('Level 1 terrain renders to the actual canvas instead of a phantom 2560x1440 fullscreen target', () => {
-  const source = repoText('apps/portal/main.js');
-  const sceneBody = source.slice(source.indexOf('function drawRoguelikeScene('), source.indexOf('function drawEnvironmentLayer('));
-  assert.doesNotMatch(sceneBody, /Math\.max\(width,\s*2560\)|Math\.max\(height,\s*1440\)/);
-  assert.match(sceneBody, /const renderWidth = width/);
-  assert.match(sceneBody, /const renderHeight = height/);
-});
-
-test('Level 1 terrain stops at finite world bounds so edge collision has a visible map edge', () => {
-  const source = repoText('apps/portal/main.js');
-  const sceneBody = source.slice(source.indexOf('function drawRoguelikeScene('), source.indexOf('function drawEnvironmentLayer('));
-  assert.match(sceneBody, /const finiteWorld = [\s\S]*?buildLevelOneRunWorldDimensions/);
-  assert.match(sceneBody, /worldX < finiteWorld\.minX/);
-  assert.match(sceneBody, /worldY > finiteWorld\.maxY/);
 });
 
 test('WO-36 syntax gate includes load-speed report', () => {
