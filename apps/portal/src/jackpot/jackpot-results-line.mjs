@@ -36,6 +36,9 @@ export function jackpotStanding({ api, correctedNowMs, gameId, state, server, en
   return Object.freeze({ text: `${(leader.score - server.score).toLocaleString('en-US')} points behind the jackpot leader (provisional)`, label: null });
 }
 
+// The loader's entry (ranked-results.mjs): positional, so the results chunk's glue stays small.
+export default (mount, context, documentRef, fetchImpl, onChange) => createJackpotResultsLine({ mount, context, documentRef, fetchImpl, onChange });
+
 export function createJackpotResultsLine({
   mount,
   context = {},

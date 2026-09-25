@@ -774,11 +774,11 @@ export function createHostedProfileView({
 
   // Weekly Jackpot wins (design §D.3): lazy, only for a profile with wins; Claim for their own winner.
   function renderJackpotWins(target, response) {
-    const wins = response?.jackpot?.wins;
-    if (!jackpotLive || !wins?.length) return;
-    const mount = el('div', { className: 'jackpot-wins-mount' });
-    dom.officialCabinetGrid.append(mount);
-    import('../jackpot/jackpot-profile-wins.mjs').then((module) => module.renderJackpotWins({ mount, wins, wallet: target.wallet, own: target.own, connectedWallet: getContext().connectedWallet, walletProviderForAction })).catch(() => {});
+    if (jackpotLive && response?.jackpot?.wins?.length) {
+      const mount = el('div');
+      dom.officialCabinetGrid.append(mount);
+      import('../jackpot/jackpot-profile-wins.mjs').then((module) => module.default(mount, response, target, getContext, walletProviderForAction)).catch(() => {});
+    }
   }
 
   function renderHostedProfile() {

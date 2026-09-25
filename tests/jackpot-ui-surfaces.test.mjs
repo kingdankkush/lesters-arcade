@@ -203,6 +203,8 @@ test('no surface fetches the jackpot API while the flag is false', async () => {
   runInNewContext(`(${mainFunction('showEntryJackpot').replace(/\bimport\(/g, 'globalThis.import(')})`, liveContext)({ row, gameId: 'stacked' });
   runInNewContext(`(${mainFunction('showJackpotPromo').replace(/\bimport\(/g, 'globalThis.import(')})`, liveContext)();
   assert.deepEqual(imports, ['./src/jackpot/jackpot-entry-line.mjs', './src/jackpot/jackpot-home-promo.mjs'], 'Chikun only for the entry row');
+  // The wallet splash only wraps the shell's renderer while the flag is on (0 B in the flag-false build).
+  assert.match(mainSource, /const renderOfficialWalletSplash = JACKPOT_LIVE \? \(\) => \{ officialShellRoutes\.renderWalletSplash\(\); showJackpotPromo\(\); \} : officialShellRoutes\.renderWalletSplash;/);
 });
 
 test('no surface shows an amount for an unfunded, below-minimum or unavailable week', async () => {

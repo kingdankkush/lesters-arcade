@@ -103,7 +103,8 @@ export function createHostedLeaderboardView({
 
   // Weekly Jackpot header (design §D.3): lazy, shown on Chikun · Weekly; while it shows, the board's
   // "resets in" uses its corrected clock.
-  let jackpot = jackpotLive && import('../jackpot/jackpot-board-header.mjs').then((module) => { jackpot = module.createJackpotBoardHeader({ documentRef, now, onChange: rerenderIfShown }); rerenderIfShown(); }, () => { jackpot = null; });
+  // Until it loads (or if it fails) `jackpot` is false or the pending promise: neither has `shown`.
+  let jackpot = jackpotLive && import('../jackpot/jackpot-board-header.mjs').then((module) => { jackpot = module.default(documentRef, now, rerenderIfShown); rerenderIfShown(); }, () => {});
 
   // Whether a loaded board can be shown without asking E5 again.
   function boardIsFresh(board) {
@@ -253,8 +254,8 @@ export function createHostedLeaderboardView({
     const periodTab = leaderboardPeriodTab(spec.period);
     const activeCabinet = cabinets.find((cabinet) => cabinet.gameId === routeState.gameId);
     const title = activeCabinet?.title ?? getGame(routeState.gameId).title;
-    const jackpotHeader = jackpot?.shown?.(spec.gameId, spec.period);
-    const clock = jackpotHeader ? jackpotHeader.now() : now();
+    const jackpotHeader = jackpot.shown?.(spec);
+    const clock = jackpotHeader?.now() ?? now();
 
     const filterPanel = renderFilterPanel({
       cabinets,

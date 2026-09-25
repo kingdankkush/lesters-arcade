@@ -178,7 +178,7 @@ export function openRankedResults({
   hero.append(eyebrow, score, handleLine, standingLine);
   // Weekly Jackpot line (design §D.3): lazy, Chikun only; its label becomes the share standing.
   let jackpot = null;
-  if (jackpotLive && ctx.gameId === 'chikun') import('./jackpot/jackpot-results-line.mjs').then((module) => { jackpot = module.createJackpotResultsLine({ mount: hero, context: ctx, documentRef, fetchImpl, onChange: () => open && render() }); if (open) render(); }).catch(() => {});
+  if (jackpotLive && ctx.gameId === 'chikun') import('./jackpot/jackpot-results-line.mjs').then((module) => { jackpot = module.default(hero, ctx, documentRef, fetchImpl, () => open && render()); if (open) render(); }).catch(() => {});
 
   const banner = make('div', 'rr-banner');
   banner.setAttribute('role', 'status');

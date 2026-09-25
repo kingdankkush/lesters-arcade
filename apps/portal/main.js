@@ -4332,7 +4332,7 @@ const officialShellRoutes = createOfficialShellRoutes({
 const renderOfficialNav = officialShellRoutes.renderNav;
 // Unlockables panel (contract §7.9) under Settings and the player's own profile.
 const renderOfficialSettings = () => { officialShellRoutes.renderSettings(); showUnlockablesPanel('settings'); };
-const renderOfficialWalletSplash = () => { officialShellRoutes.renderWalletSplash(); showJackpotPromo(); };
+const renderOfficialWalletSplash = JACKPOT_LIVE ? () => { officialShellRoutes.renderWalletSplash(); showJackpotPromo(); } : officialShellRoutes.renderWalletSplash;
 
 // --- verified boards and profiles ------------------------------------------
 // The 200-session chain scan and its merge into local state are retired (guide

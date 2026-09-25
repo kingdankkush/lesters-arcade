@@ -39,6 +39,9 @@ function winnerRow(documentRef, week, noted) {
   return fillLine(documentRef, node(documentRef, 'li'), parts);
 }
 
+// The loader's entry (hosted-leaderboard-view.mjs): positional, so the view chunk's glue stays small.
+export default (documentRef, now, onChange) => createJackpotBoardHeader({ documentRef, now, onChange });
+
 export function createJackpotBoardHeader({
   documentRef = globalThis.document,
   fetchImpl = globalThis.fetch,
@@ -60,8 +63,10 @@ export function createJackpotBoardHeader({
   }
 
   const header = {
-    // The header for this board, or null (another game or period, nothing loaded yet, not live).
+    // The header for this board, or null (another game or period, nothing loaded yet, not live). The
+    // view passes its board spec ({ gameId, period }); tests may pass the two strings.
     shown(gameId, period) {
+      if (gameId && typeof gameId === 'object') ({ gameId, period } = gameId);
       if (gameId !== 'chikun' || period !== 'weekly') return null;
       refresh();
       return answer?.api?.live && answer.api.current ? header : null;

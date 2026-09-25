@@ -995,7 +995,7 @@ const JACKPOT_REPLAY_LINK=/^\/api\/jackpot\/replay\?session=0x[0-9a-f]{64}$/;
 function openJackpotReplayLink(search=location.search){
  const link=new URLSearchParams(search).get('replay');
  if(JACKPOT_REPLAY_LINK.test(link))fetch(link).then(response=>response.text())
-  .then(text=>{const imported=importChikunReplay(text);phase='game-over';startOverlay.classList.add('is-hidden');resultOverlay.classList.remove('is-hidden');showImportedReplay(imported);})
-  .catch(error=>{setLive(error.message);resultCopy.textContent=error.message;});
+  .then(replay=>{replay=importChikunReplay(replay);phase='game-over';startOverlay.classList.add('is-hidden');resultOverlay.classList.remove('is-hidden');showImportedReplay(replay);})
+  .catch(error=>setLive(resultCopy.textContent=error.message));
 }
 openJackpotReplayLink();

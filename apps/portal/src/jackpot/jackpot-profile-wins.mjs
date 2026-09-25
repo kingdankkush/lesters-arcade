@@ -9,6 +9,9 @@ import { coin, ensureJackpotStylesheet, fillLine, link, node } from './jackpot-v
 const WALLET = /^0x[0-9a-f]{40}$/;
 const loadClaim = () => import('./jackpot-profile-claim.mjs');
 
+// The loader's entry (hosted-profile-view.mjs): positional, so the view chunk's glue stays small.
+export default (mount, response, target, getContext, walletProviderForAction) => renderJackpotWins({ mount, wins: response?.jackpot?.wins, wallet: target?.wallet, own: target?.own === true, connectedWallet: getContext?.()?.connectedWallet, walletProviderForAction });
+
 export function renderJackpotWins({
   mount,
   wins = [],
