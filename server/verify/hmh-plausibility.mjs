@@ -3,15 +3,18 @@
 //
 // HMH is plausibility-checked, not replayed. This validator rejects only hard
 // impossibilities and flags everything else near a ceiling for owner review.
-// It reads no clock.
+// The summary's schemaVersion picks the rules, and neither path reads a clock
+// (run summary v7 contract, docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md):
 //
-// The v6 rules verify the 1.8.x children (run summary schema 1-6) with the
-// literal 1.8.1 constants of HMH_V6_RULES, indefinitely. Parity tests pin
-// every literal against the 1.8.1 child modules; from here on the literal, not
-// the live child, is the v6 authority, so a later child change cannot move a
-// v6 bound (run summary v7 contract, docs/hmh-reboot/design/
-// HMH-RUN-SUMMARY-V7-CONTRACT.md §9).
+//   - schema 1-6 (the 1.8.x children): the v6 rules, with the literal 1.8.1
+//     constants of HMH_V6_RULES, indefinitely. Parity tests pin every literal
+//     against the 1.8.1 child modules; from here on the literal, not the live
+//     child, is the v6 authority, so a later child change cannot move a v6
+//     bound (§9).
+//   - schema 7: the v7 rules (§7), computed only from the schema's V7
+//     catalogues and sdk/hmh-run-contract-v7.mjs, which the child imports too.
 //
+// v6 rules
 //   reject  start-tick-invalid       identity.startTick is not 0 (the reboot
 //                                    starts every run at simulation tick 0)
 //           progress-without-time    progress with zero elapsed time
@@ -34,8 +37,40 @@
 //                                    maximum score multiplier
 //   flag    anything within 10% of a ceiling, and cross-field inconsistencies
 //           an honest client never produces but that do not raise a ceiling.
-// Flags have the shape { id, severity, value, limit }.
+//
+// v7 rules: the same time, level, capacity and ceiling rejects with the v7
+// formulas, and per-boss timing in place of the 72,000-tick boss band:
+//   reject  boss-before-ready        a boss initiated before its readyTick
+//                                    (one entry per boss)
+//           boss-fight-too-short     a defeat less than 300 ticks after the
+//                                    boss's last initiation (the kit's
+//                                    invulnerable intro and two phase halts)
+//           boss-reinitiation-too-soon  initiations of one boss less than
+//                                    2,520 ticks apart on average (retreat)
+//   flag    near-ceiling and claimed-rank checks as in v6, plus
+//           upgrade-rank-above-max, evolution-without-mastery,
+//           node-level-inconsistent, objective-prerequisite-missing and
+//           node-in-unvisited-district. Those five cannot raise a ceiling (the
+//           hard ceilings use maximum ranks; districts and prerequisites are
+//           free to claim); each is one entry whose value is the number of
+//           offending rows and whose limit is 0.
+// Flags have the shape { id, severity, value, limit } on both paths.
 import { HMH_RUN_SUMMARY_CATALOGS_V6 } from '../../sdk/hmh-run-summary-schema.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../sdk/hmh-run-summary-schema-v7.mjs';
+import {
+  HMH_V7_BOSSES,
+  HMH_V7_BOSS_RULES,
+  HMH_V7_EVOLUTIONS,
+  HMH_V7_OBJECTIVES,
+  HMH_V7_PRISONER_SLOTS,
+  HMH_V7_ROLE_THREAT,
+  HMH_V7_RUN_RULES,
+  HMH_V7_UPGRADE_MAX_RANKS,
+  dealHmhPrisoners,
+  hmhV7KillScore,
+  hmhV7KillXp,
+  hmhV7LevelForXp,
+} from '../../sdk/hmh-run-contract-v7.mjs';
 
 const freezeDeep = (value) => {
   for (const child of Object.values(value)) if (child && typeof child === 'object') freezeDeep(child);
@@ -134,7 +169,8 @@ export const HMH_MAX_LEVEL = V6.maxLevel;
 export const NEAR_CEILING_FRACTION = 0.9;
 const ELAPSED_TOLERANCE_MS = 1;
 
-// The Liquidator starts at the boss band.
+// The Liquidator starts at the boss band (v6 only: a v7 boss has its own
+// readyTick in sdk/hmh-run-contract-v7.mjs).
 export const HMH_BOSS_START_TICK = V6.bossStartTick;
 
 // Threat per v6 summary enemy role: the archetype's costs.threat, and the boss's.
@@ -197,7 +233,8 @@ export function rebootLevelForXp(xp) {
 
 // Upper bound on encounter-director insertions by `endTick`: after an insertion
 // at tick t in band b the next one is due at t + b.spawnIntervalTicks, so a band
-// spanning s ticks holds at most floor(s / interval) + 1 of them.
+// spanning s ticks holds at most floor(s / interval) + 1 of them. The v7 path
+// passes its own, identical, HMH_V7_RUN_RULES.ENCOUNTER_BAND_SCHEDULE.
 export function directorSpawnCapacity(endTick, bands = V6.bands) {
   let total = 0;
   for (const band of bands) {
@@ -326,7 +363,216 @@ export function validateV6RunPlausibility(runSummary) {
   return done();
 }
 
-// → the verdict of the rules for the summary's schema version.
+// ---------------------------------------------------------------------------
+// The v7 path (contract §7). Inputs: the V7 catalogues and
+// sdk/hmh-run-contract-v7.mjs only.
+const V7 = HMH_V7_RUN_RULES;
+const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
+const BOSS = HMH_V7_BOSS_RULES;
+
+// Per-event gains at the given claimed ranks. `xm` also multiplies objective
+// XP, which depends on the node's level and is computed per row.
+function measureV7Gains(ranks) {
+  const xm = multiplierAt(clampedRank(ranks, 'validator-training', HMH_V7_UPGRADE_MAX_RANKS), V7.MULTIPLIER_PER_RANK);
+  const sm = multiplierAt(clampedRank(ranks, 'block-reward', HMH_V7_UPGRADE_MAX_RANKS), V7.MULTIPLIER_PER_RANK);
+  const killXp = {};
+  const killScore = {};
+  for (const [role, threat] of Object.entries(HMH_V7_ROLE_THREAT)) {
+    killXp[role] = Math.round(hmhV7KillXp(threat) * xm);
+    killScore[role] = Math.round(hmhV7KillScore(threat) * sm);
+  }
+  let comboXp = 0;
+  let comboRate = 0;
+  for (const [combo, baseXp] of Object.entries(V7.COMBO_MILESTONE_XP).map(([key, value]) => [Number(key), value]).sort(([a], [b]) => a - b)) {
+    comboXp += Math.round(baseXp * xm);
+    comboRate = Math.max(comboRate, comboXp / combo);
+  }
+  const cacheXp = Object.fromEntries(Object.entries(V7.CACHE_XP).map(([effectId, baseXp]) => [effectId, Math.round(baseXp * xm)]));
+  const silverScorePerCoin = V7.SILVER_SCORE_PER_COIN * sm + 0.5;
+  return Object.freeze({ xm, sm, killXp: Object.freeze(killXp), killScore: Object.freeze(killScore), comboRate, cacheXp: Object.freeze(cacheXp), silverScorePerCoin });
+}
+
+export const V7_MAX_GAINS = measureV7Gains(HMH_V7_UPGRADE_MAX_RANKS);
+
+// Length of the union of the boss windows [firstInitiatedTick, end], where end
+// is the defeat tick or, for a boss never defeated, the run's end. Boss slots
+// are live one at a time and each slot's engagements lie inside its window, so
+// the slots' active ticks add up to at most this union.
+export function hmhV7BossWindowTicks(bosses, runTicks) {
+  const windows = [];
+  for (const row of Array.isArray(bosses) ? bosses : []) {
+    if (!(row?.initiations > 0)) continue;
+    const start = row.firstInitiatedTick;
+    windows.push([start, Math.max(start, row.defeatedTick > 0 ? row.defeatedTick : runTicks)]);
+  }
+  windows.sort(([a], [b]) => a - b);
+  let total = 0;
+  let reach = -Infinity;
+  for (const [start, end] of windows) {
+    if (end <= reach) continue;
+    total += end - Math.max(start, reach);
+    reach = end;
+  }
+  return total;
+}
+
+// Kill capacity (contract §7.3): the opening enemies, every director schedule
+// slot (scripted bodies draw from the same capacity bank), one body per
+// defeated boss, and the boss adds: 4 per initiated slot, once, plus 4 per 960
+// ticks of the boss-window union (v6's own Liquidator rate of 1 per 240).
+export function hmhV7KillCapacity(summary) {
+  const runTicks = summary.totals.survivalTicks;
+  let capacity = V7.OPENING_ENEMIES + directorSpawnCapacity(runTicks, V7.ENCOUNTER_BAND_SCHEDULE);
+  for (const row of summary.bosses) {
+    if (row.defeatedTick > 0) capacity += 1;
+    if (row.initiations > 0) capacity += BOSS.BOSS_ADDS_FIRST;
+  }
+  return capacity + BOSS.BOSS_ADDS_PER_WINDOW * Math.floor(hmhV7BossWindowTicks(summary.bosses, runTicks) / BOSS.BOSS_ADD_WINDOW_TICKS);
+}
+
+// XP and score ceilings at the given gains (contract §7.4, §7.5).
+export function hmhV7Ceilings(summary, gains) {
+  const killsByRole = rowCounts(summary.kills.byEnemyRole, 'enemyRoleId', 'count');
+  const collected = rowCounts(summary.collectibles, 'effectId', 'collected');
+  let killXp = 0;
+  let killScore = 0;
+  for (const role of Object.keys(HMH_V7_ROLE_THREAT)) {
+    killXp += (killsByRole[role] ?? 0) * gains.killXp[role];
+    killScore += (killsByRole[role] ?? 0) * gains.killScore[role];
+  }
+  const comboXp = Math.ceil(summary.kills.total * gains.comboRate);
+  const cacheXp = Object.entries(gains.cacheXp).reduce((sum, [effectId, xp]) => sum + (collected[effectId] ?? 0) * xp, 0);
+  // Nodes: the class's XP per level, at the level before the node's own grant,
+  // multiplied like kill XP.
+  let objectiveXp = 0;
+  for (const row of summary.objectives) {
+    const node = HMH_V7_OBJECTIVES[row.objectiveId];
+    if (row.completed === 1 && node) objectiveXp += Math.round(V7.OBJECTIVE_XP_PER_LEVEL[node.class] * row.levelAtCompletion * gains.xm);
+  }
+  // OG Miners, unmultiplied. The deal comes from the seed, never from the
+  // summary, so a rescue in a slot the deal gives another kind adds nothing.
+  const deal = dealHmhPrisoners(summary.identity.seed);
+  let ogMinerXp = 0;
+  for (const row of summary.prisoners) {
+    if (row.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === 'og-miner') ogMinerXp += V7.OG_MINER_XP_PER_LEVEL * row.levelAtRescue;
+  }
+  // Silver: at most one coin per ordinary kill, each defeated boss's burst (in
+  // place of the 1.8.1 10-coin boss drop), and 20 per found secret.
+  let bossKills = 0;
+  let bossBursts = 0;
+  for (const row of summary.bosses) {
+    bossKills += killsByRole[row.bossId] ?? 0;
+    if (row.defeatedTick > 0) bossBursts += HMH_V7_BOSSES[row.bossId]?.silverBurst ?? 0;
+  }
+  const secretsFound = summary.milestones.secrets.reduce((sum, row) => sum + (row.found === 1 ? 1 : 0), 0);
+  const silverCoins = Math.max(0, summary.kills.total - bossKills) * V7.SILVER_PER_ENEMY_KILL_MAX + bossBursts + V7.SILVER_PER_SECRET * secretsFound;
+  return {
+    xp: killXp + comboXp + cacheXp + objectiveXp + ogMinerXp,
+    score: killScore + Math.ceil(silverCoins * gains.silverScorePerCoin),
+  };
+}
+
+const bitSet = (mask, bit) => bit >= 0 && Math.floor(mask / 2 ** bit) % 2 === 1;
+
+// → the same verdict shape as the v6 path. Expects a summary that already
+// passed validateRunSummaryPayload (schema 7).
+export function validateV7RunPlausibility(runSummary) {
+  const { reject, flag, done } = verdictCollector();
+  const { identity, totals, kills, milestones, upgrades, collectibles, exploration, objectives, prisoners, bosses, evolutions } = runSummary ?? {};
+  if (!identity || !totals || !kills || !Array.isArray(kills.byEnemyRole) || !milestones || !Array.isArray(milestones.secrets) || !Array.isArray(upgrades)
+    || !Array.isArray(collectibles) || !exploration || !Array.isArray(objectives) || !Array.isArray(prisoners) || !Array.isArray(bosses) || !Array.isArray(evolutions)) {
+    reject('summary-unreadable', null, null);
+    return done();
+  }
+  checkRunTime(identity, totals, kills, V7.FIXED_STEP_MS, reject);
+
+  const expectedLevel = hmhV7LevelForXp(totals.xp);
+  if (totals.level !== expectedLevel) reject('level-xp-mismatch', totals.level, expectedLevel);
+
+  // Per-boss timing replaces the 72,000-tick boss band: a boss exists from its
+  // readyTick, a fight lasts at least the kit's invulnerable intro and phase
+  // halts, and a retreat keeps a boss away for 2,520 ticks.
+  for (const row of bosses) {
+    const readyTick = HMH_V7_BOSSES[row.bossId]?.readyTick ?? Infinity;
+    if (row.initiations > 0 && row.firstInitiatedTick < readyTick) reject('boss-before-ready', row.firstInitiatedTick, readyTick);
+  }
+  for (const row of bosses) {
+    const fight = row.defeatedTick - row.lastInitiatedTick;
+    if (row.defeatedTick > 0 && fight < BOSS.BOSS_MIN_FIGHT_TICKS) reject('boss-fight-too-short', fight, BOSS.BOSS_MIN_FIGHT_TICKS);
+  }
+  for (const row of bosses) {
+    const bound = (row.initiations - 1) * BOSS.BOSS_REINITIATION_MIN_TICKS;
+    const span = row.lastInitiatedTick - row.firstInitiatedTick;
+    if (row.initiations >= 2 && span < bound) reject('boss-reinitiation-too-soon', span, bound);
+  }
+
+  const capacity = hmhV7KillCapacity(runSummary);
+  if (kills.total > capacity) reject('kills-above-capacity', kills.total, capacity);
+  else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
+
+  const hard = hmhV7Ceilings(runSummary, V7_MAX_GAINS);
+  if (totals.xp > hard.xp) reject('xp-above-ceiling', totals.xp, hard.xp);
+  else if (totals.xp > NEAR_CEILING_FRACTION * hard.xp) flag('xp-near-ceiling', totals.xp, hard.xp);
+  if (totals.score > hard.score) reject('score-above-ceiling', totals.score, hard.score);
+  else if (totals.score > NEAR_CEILING_FRACTION * hard.score) flag('score-near-ceiling', totals.score, hard.score);
+
+  // Soft cross-checks: they flag honest-client bugs for owner review and never
+  // reject, because none of them can raise a ceiling.
+  const selected = Object.fromEntries(upgrades.map((row) => [row.upgradeId, row.selected]));
+  const claimed = hmhV7Ceilings(runSummary, measureV7Gains(selected));
+  if (totals.xp > claimed.xp && totals.xp <= hard.xp) flag('xp-above-selected-upgrades', totals.xp, claimed.xp);
+  if (totals.score > claimed.score && totals.score <= hard.score) flag('score-above-selected-upgrades', totals.score, claimed.score);
+  if (totals.maxCombo > kills.total) flag('combo-exceeds-kills', totals.maxCombo, kills.total);
+
+  const aboveMaxRank = upgrades.filter((row) => row.selected > (HMH_V7_UPGRADE_MAX_RANKS[row.upgradeId] ?? Infinity)).length;
+  if (aboveMaxRank) flag('upgrade-rank-above-max', aboveMaxRank, 0);
+
+  const withoutMastery = evolutions.filter((row) => row.applied === 1
+    && Object.entries(HMH_V7_EVOLUTIONS[row.evolutionId]?.mastery ?? {}).some(([upgradeId, rank]) => !((selected[upgradeId] ?? 0) >= rank))).length;
+  if (withoutMastery) flag('evolution-without-mastery', withoutMastery, 0);
+
+  // Node levels (the level before each node's own grant) never fall as ticks
+  // rise, exceed 1 only from the first level-up, and stay below the final
+  // level only up to the last level-up.
+  const nodes = [
+    ...objectives.filter((row) => row.completed === 1).map((row) => ({ tick: row.tick, level: row.levelAtCompletion })),
+    ...prisoners.filter((row) => row.rescued === 1).map((row) => ({ tick: row.tick, level: row.levelAtRescue })),
+  ].sort((a, b) => a.tick - b.tick || a.level - b.level);
+  let levelBefore = 0;
+  let levelAtTick = 0;
+  let tick = -1;
+  let outOfOrder = 0;
+  for (const node of nodes) {
+    if (node.tick !== tick) {
+      levelBefore = Math.max(levelBefore, levelAtTick);
+      levelAtTick = 0;
+      tick = node.tick;
+    }
+    levelAtTick = Math.max(levelAtTick, node.level);
+    if (node.level < levelBefore
+      || (node.level >= 2 && node.tick < milestones.firstLevelUpTick)
+      || (node.level < totals.level && node.tick > milestones.lastLevelUpTick)) outOfOrder += 1;
+  }
+  if (outOfOrder) flag('node-level-inconsistent', outOfOrder, 0);
+
+  const objectiveRows = Object.fromEntries(objectives.map((row) => [row.objectiveId, row]));
+  const prerequisiteMissing = objectives.filter((row) => {
+    const requires = HMH_V7_OBJECTIVES[row.objectiveId]?.requires;
+    const before = requires ? objectiveRows[requires] : null;
+    return row.completed === 1 && requires && !(before?.completed === 1 && before.tick <= row.tick);
+  }).length;
+  if (prerequisiteMissing) flag('objective-prerequisite-missing', prerequisiteMissing, 0);
+
+  const visited = (district) => bitSet(exploration.visitedDistrictMask, C7.districts.indexOf(district));
+  const unvisited = objectives.filter((row) => row.completed === 1 && !visited(HMH_V7_OBJECTIVES[row.objectiveId]?.district)).length
+    + prisoners.filter((row) => row.rescued === 1 && !visited(HMH_V7_PRISONER_SLOTS[row.slotId]?.district)).length
+    + bosses.filter((row) => row.initiations > 0 && !visited(HMH_V7_BOSSES[row.bossId]?.district)).length;
+  if (unvisited) flag('node-in-unvisited-district', unvisited, 0);
+  return done();
+}
+
+// The summary's schemaVersion picks the rules: 7 runs the v7 path, anything
+// else the frozen v6 path.
 export function validateRebootRunPlausibility(runSummary) {
-  return validateV6RunPlausibility(runSummary);
+  return runSummary?.schemaVersion === 7 ? validateV7RunPlausibility(runSummary) : validateV6RunPlausibility(runSummary);
 }
