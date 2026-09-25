@@ -5,21 +5,36 @@
 //
 // Readability first: PULSE_CEILINGS are the most any node reaches at intensity
 // 1, the halo sits under the active piece so only a 3 px rim shows, and the
-// frame ring lives outside the opaque well. Off under reduceMotion, reduceFlash,
-// audioReactive = false or the "Music-reactive board" toggle.
+// frame ring lives outside the opaque well. Off under reduceMotion, zero
+// intensity, audioReactive = false or reactiveBoard = false (the Off and Calm
+// effects presets set both).
+//
+// Gentle mode (settings simplification 2026-09-24): under Reduced flashes, which
+// is on by default, the glow only breathes with the smoothed music level while
+// live music plays. No node exceeds GENTLE_PULSE_CEILINGS (0.12 alpha), the
+// level moves any node by at most 0.12 x GENTLE_SWING = 0.06 alpha, beat onsets
+// have no effect and the hue never shifts, so nothing can flash.
 import { boardCellToAuthored, PIECE_COLORS } from './board-view.mjs';
 
 export const PULSE_CEILINGS = Object.freeze({ frame: 0.2, piece: 0.26, tintMix: 0.35 });
+export const GENTLE_PULSE_CEILINGS = Object.freeze({ frame: 0.12, piece: 0.12, tintMix: 0 });
+export const GENTLE_SWING = 0.5; // share of the gentle ceiling that may move with the music
 const unit = n => Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 0;
 const mixColor = (a, b, t) => [16, 8, 0].reduce((n, shift) => n | Math.round(((a >> shift) & 255) * (1 - t) + ((b >> shift) & 255) * t) << shift, 0);
 
-export const boardPulseEnabled = settings => settings?.video?.reactiveBoard !== false && settings?.video?.audioReactive !== false && !settings?.accessibility?.reduceMotion && !settings?.accessibility?.reduceFlash;
+export const boardPulseEnabled = settings => settings?.video?.reactiveBoard !== false && settings?.video?.audioReactive !== false && !settings?.accessibility?.reduceMotion && (settings?.video?.effectsIntensity ?? 0.7) > 0;
 
 // Pure amplitude model shared by the renderer and the tests.
-export function boardPulseAmplitude({ level = 0, beat = 0, high = 0 } = {}, settings = {}) {
+export function boardPulseAmplitude({ level = 0, beat = 0, high = 0, available = false } = {}, settings = {}) {
   if (!boardPulseEnabled(settings)) return { frame: 0, piece: 0, mix: 0 };
   // Intensity eases the glow (70% reads as 80%); 0 switches it off.
   const raw = unit(settings.video?.effectsIntensity ?? 0.7), intensity = raw > 0 ? 0.35 + raw * 0.65 : 0, l = unit(level), b = unit(beat);
+  if (settings.accessibility?.reduceFlash) {
+    // Gentle mode: level only, no beat term, no tint mix, bounded swing.
+    if (!available) return { frame: 0, piece: 0, mix: 0 };
+    const breathe = (1 - GENTLE_SWING) + GENTLE_SWING * l;
+    return { frame: GENTLE_PULSE_CEILINGS.frame * intensity * breathe, piece: GENTLE_PULSE_CEILINGS.piece * intensity * breathe, mix: 0 };
+  }
   return {
     frame: PULSE_CEILINGS.frame * intensity * (0.4 * l + 0.6 * b),
     piece: PULSE_CEILINGS.piece * intensity * (0.35 * l + 0.65 * b),
