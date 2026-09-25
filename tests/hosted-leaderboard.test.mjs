@@ -565,7 +565,9 @@ test('hosted entries keep only well-formed version labels', () => {
   }
 });
 
-test('the hosted grids give the Version cell a track at every width and a chip on phones', async () => {
+// The rendered layout at 320-1440 px is measured in Chromium by
+// scripts/hosted-scores-version-layout-smoke.mjs; this pins the CSS shape.
+test('the hosted grids give the Version cell a place at every width and keep Published', async () => {
   const { readFileSync } = await import('node:fs');
   const css = readFileSync(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url), 'utf8');
   const section = css.slice(css.indexOf('/* ---- Game version per score (version-column, 2026-09-25)'));
@@ -580,18 +582,23 @@ test('the hosted grids give the Version cell a track at every width and a chip o
     assert.ok(start > 0, `a ${width}px rule`);
     blocks[width] = section.slice(start, section.indexOf('\n}\n', start));
   }
-  // Visible hosted cells: all eleven on desktops; 761-1199 without Published
-  // (and without Proof and the two secondary stats at 1080 and below); at
-  // 601-760 the version shares the score's track.
+  // Visible hosted cells: all eleven on desktops; at 601-1199 the version
+  // shares the score's track (a second line under it), so the other ten
+  // cells keep the tracks the board had (without Proof and the two secondary
+  // stats at 1080 and below, and without Published at 760 and below, as before).
   assert.equal(tracks(templateIn(blocks.desktop)), 11);
   assert.equal(tracks(templateIn(blocks[1199])), 10);
   assert.equal(tracks(templateIn(blocks[1080])), 7);
   assert.equal(tracks(templateIn(blocks[760])), 6);
-  assert.match(blocks[1199], /\.lt-cell-date \{ display: none; \}/);
-  assert.match(blocks[1080], /\.lt-cell-version \{ grid-column: -2; \}/);
-  assert.match(blocks[760], /\.th-cell-version \{ display: none; \}/);
-  assert.match(blocks[760], /\.lt-cell-version \{ grid-row: 2; grid-column: 3;/);
+  assert.match(blocks[1199], /\.th-cell-version \{ display: none; \}/);
+  assert.match(blocks[1199], /\.leaderboard-trow > \.leaderboard-td \{ grid-row: 1 \/ span 2; \}/);
+  assert.match(blocks[1199], /\.leaderboard-trow > \.lt-cell-score \{ grid-row: 1; align-self: end; \}/);
+  assert.match(blocks[1199], /\.lt-cell-version \{ grid-row: 2; grid-column: 3;/);
   assert.match(blocks[600], /\.lt-cell-label \+ \.lt-version/);
+  // Published (the date cells) is never hidden or moved by this section: the
+  // base rules still show it from 761 px up (review finding, version-column).
+  assert.doesNotMatch(section, /cell-date/);
+  assert.doesNotMatch(section, /grid-column: -2/);
   assert.match(section, /\.leaderboard-board-v10 \.lt-version \{[^}]*white-space: nowrap;[^}]*\}/);
   // Every grid rule of the section is scoped to hosted boards: the preview grid is untouched.
   assert.equal((section.match(/\.leaderboard-board-hosted\.leaderboard-board-v10 \.leaderboard-table-v10 \.leaderboard-trow \{/g) ?? []).length, 4);

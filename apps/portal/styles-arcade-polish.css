@@ -2718,13 +2718,14 @@ button[class="pixel-button"]:disabled,
 /* ---- Game version per score (version-column, 2026-09-25) ----------------- */
 /* No testnet season resets: every verified score shows the game version it
    was played on. Hosted Scores boards add a compact Version cell ('v0.5');
-   the preview board keeps its ten columns. Stat columns keep at least the
-   room they had, and no width runs a row past the card (the ten-track grid
-   did at 1081-1113 px):
+   the preview board keeps its ten columns. Every column the board showed
+   before stays at every width (Published from 761 px up), stat columns keep
+   at least the room they had, and no width runs a row past the card (the
+   ten-track grid did at 1081-1113 px):
    - 1200 px and up: a Version column before Proof;
-   - 761-1199 px: Version takes the place of Published (phones already hid it);
-   - 601-760 px: the version sits under the score, stats as before;
-   - phones: a labelled chip with the stats. */
+   - 601-1199 px: the version sits under the score;
+   - phones: a labelled chip with the stats.
+   scripts/hosted-scores-version-layout-smoke.mjs measures it in Chromium. */
 .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
 .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
   grid-template-columns: 48px minmax(130px, 1.9fr) 100px repeat(5, minmax(56px, 0.7fr)) 64px 92px 76px;
@@ -2751,20 +2752,20 @@ button[class="pixel-button"]:disabled,
 @media (max-width: 1199px) {
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
-    grid-template-columns: 48px minmax(150px, 1.9fr) 100px repeat(5, minmax(60px, 0.7fr)) 64px 96px;
+    grid-template-columns: 48px minmax(150px, 1.9fr) 100px repeat(5, minmax(60px, 0.7fr)) 92px 76px;
+    gap: 2px 8px;
   }
-  .leaderboard-board-hosted.leaderboard-board-v10 .th-cell-date,
-  .leaderboard-board-hosted.leaderboard-board-v10 .lt-cell-date { display: none; }
+  /* Under the score: every other cell spans both lines of the row. */
+  .leaderboard-board-hosted.leaderboard-board-v10 .th-cell-version { display: none; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .leaderboard-td { grid-row: 1 / span 2; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-score { grid-row: 1; align-self: end; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-version { grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; }
 }
 @media (max-width: 1080px) {
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
-    grid-template-columns: 48px minmax(150px, 1.9fr) 96px repeat(3, minmax(60px, 0.7fr)) 64px;
-    gap: 10px;
+    grid-template-columns: 48px minmax(150px, 1.9fr) 96px repeat(3, minmax(60px, 0.7fr)) 80px;
   }
-  /* The last track, also on boards with two key stats instead of three. */
-  .leaderboard-board-hosted.leaderboard-board-v10 .th-cell-version,
-  .leaderboard-board-hosted.leaderboard-board-v10 .lt-cell-version { grid-column: -2; }
 }
 @media (max-width: 760px) {
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
@@ -2772,10 +2773,6 @@ button[class="pixel-button"]:disabled,
     grid-template-columns: 44px minmax(0, 1fr) 88px repeat(3, minmax(48px, 0.6fr));
     gap: 2px 8px;
   }
-  .leaderboard-board-hosted.leaderboard-board-v10 .th-cell-version { display: none; }
-  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .leaderboard-td { grid-row: 1 / span 2; }
-  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-score { grid-row: 1; align-self: end; }
-  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-version { grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; }
 }
 @media (max-width: 600px) {
   .leaderboard-board-v10 .lt-version {

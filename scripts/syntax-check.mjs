@@ -83,6 +83,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/game-version-labels.mjs',
   'tests/game-version-labels.test.mjs',
   'tests/version-column-api.test.mjs',
+  'scripts/hosted-scores-version-layout-smoke.mjs',
   'server/verify/verified-run.mjs',
   'server/verify/hmh-plausibility.mjs',
   'server/verify/chikun.mjs',
