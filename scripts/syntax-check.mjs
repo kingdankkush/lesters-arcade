@@ -401,6 +401,8 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/name-claim-prompt.mjs',
   'apps/portal/src/routes/hosted-leaderboard-view.mjs',
   'apps/portal/src/routes/hosted-profile-view.mjs',
+  'apps/portal/src/routes/lazy-routes.mjs',
+  'tests/lazy-routes.test.mjs',
   'tests/index-api-client.test.mjs',
   'tests/profile-chain.test.mjs',
   'tests/hosted-leaderboard.test.mjs',

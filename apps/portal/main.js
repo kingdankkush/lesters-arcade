@@ -82,8 +82,8 @@ import { gameSlugFor, isGuestAllowedStep, buildPlatformShellModel } from './src/
 import { createPortalRouteController } from './src/routes/portal-route-controller.mjs';
 import { createOfficialShellRoutes } from './src/routes/official-shell-routes.mjs';
 import { createOfficialAppRoutes } from './src/routes/official-app-routes.mjs';
-import { createOfficialProfileRoute } from './src/routes/official-profile-route.mjs';
-import { createOfficialLeaderboardRoute } from './src/routes/official-leaderboard-route.mjs';
+import { createLazyLeaderboardRoute, createLazyProfileRoute } from './src/routes/lazy-routes.mjs';
+import { buildHmhRunDetailsModel, buildHmhRunHistoryModel } from './src/hmh-run-history.mjs';
 import { wireHmhFreeQuickplay } from './src/hmh-free-quickplay.mjs';
 import { createOfficialPlayRoutes } from './src/routes/official-play-routes.mjs';
 import {
@@ -5153,11 +5153,25 @@ const profileRouteState = {
   focusNameEditor: false,
 };
 
+// The Profile and Scores routes download on the first visit (contract §11
+// rule 5): same factories and deps, behind a loading card until they arrive
+// (with the hosted view, when hosted). routes/lazy-routes.mjs.
+const createOfficialProfileRoute = (deps) => createLazyProfileRoute(deps, {
+  load: () => import('./src/routes/official-profile-route.mjs'),
+  loadHostedView: () => import('./src/routes/hosted-profile-view.mjs'),
+});
+const createOfficialLeaderboardRoute = (deps) => createLazyLeaderboardRoute(deps, {
+  load: () => import('./src/routes/official-leaderboard-route.mjs'),
+  loadHostedView: () => import('./src/routes/hosted-leaderboard-view.mjs'),
+});
+
 const officialProfileRoute = createOfficialProfileRoute({
   ACHIEVEMENTS,
   ARCADE_GAMES,
   appendText,
   buildHardMoneyHeroesStatsModule,
+  buildHmhRunDetailsModel,
+  buildHmhRunHistoryModel,
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
   buildWalletConnectionModel,

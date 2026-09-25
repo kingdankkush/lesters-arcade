@@ -167,6 +167,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/reown-appkit-vendor.mjs",
     "apps/portal/src/routes/hosted-leaderboard-view.mjs",
     "apps/portal/src/routes/hosted-profile-view.mjs",
+    "apps/portal/src/routes/lazy-routes.mjs",
     "apps/portal/src/routes/official-app-routes.mjs",
     "apps/portal/src/routes/official-leaderboard-route.mjs",
     "apps/portal/src/routes/official-play-routes.mjs",
