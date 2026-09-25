@@ -86,6 +86,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/jackpot/jackpot-profile-wins.mjs',
   'apps/portal/src/jackpot/jackpot-profile-claim.mjs',
   'tests/jackpot-ui-surfaces.test.mjs',
+  'tests/chikun-stock-view.test.mjs',
   'apps/portal/src/verifier-attestation.mjs',
   'apps/portal/src/session-seed.mjs',
   'tests/session-seed.test.mjs',

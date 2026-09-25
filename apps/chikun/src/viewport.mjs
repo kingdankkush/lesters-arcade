@@ -1,12 +1,24 @@
+// Stock view (Weekly Jackpot design §B.4, AC2): the landscape camera is never wider than the stock
+// 1,280 view, so a CSS-widened frame letterboxes (main.mjs sets object-fit: contain) and shows open sky,
+// not more of the course. The stock 16:9 frame and every portrait size are unchanged. The draw loop
+// also skips obstacles more than CHIKUN_DRAW_MARGIN_PX past the view (chikunForkInView). Not flag-gated.
+export const CHIKUN_STOCK_VIEW_WIDTH = 1280;
+export const CHIKUN_DRAW_MARGIN_PX = 40;
+
 // Camera projection only: canonical coordinates, input ticks and scores stay
 // identical when the player rotates a phone or enters fullscreen.
 export function buildChikunViewport(cssWidth, cssHeight, dpr = 1) {
   const height = 720;
-  const width = height * Math.max(1, cssWidth) / Math.max(1, cssHeight);
+  const width = Math.min(CHIKUN_STOCK_VIEW_WIDTH, height * Math.max(1, cssWidth) / Math.max(1, cssHeight));
   const portrait = width < height;
   const density = Math.min(2, Math.max(.5, cssHeight / height * Math.min(2, dpr)));
   return Object.freeze({ width, height, portrait, left: portrait ? 280 - width * .26 : 0,
     density, pixelWidth: Math.round(width * density), pixelHeight: Math.round(height * density) });
+}
+
+// Whether the draw loop may draw an obstacle: not beyond the view's right edge plus the margin.
+export function chikunForkInView(fork, view) {
+  return !(Number(fork?.x) > view.left + view.width + CHIKUN_DRAW_MARGIN_PX);
 }
 
 // Portrait "<KIND> AHEAD" preview. It names the next obstacle once it is within

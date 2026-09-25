@@ -5,7 +5,7 @@ import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdol
 import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
-import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
+import { buildChikunViewport, chikunForkInView, upcomingChikunObstacle } from './viewport.mjs';
 import { createGuardedFrameLoop, finishRunSafely } from './frame-guard.mjs';
 import {
   CHIKUN_FIXED_STEP_HZ,
@@ -35,6 +35,8 @@ const canvas = document.querySelector('#chikunCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
 const shell = document.querySelector('#gameShell');
 let flightViewport = buildChikunViewport(1280, 720);
+// The camera is capped at the stock 1,280 view: a wider CSS box letterboxes instead of stretching.
+canvas.style.objectFit = 'contain';
 function resizeFlightViewport() {
   const rect = canvas.getBoundingClientRect();
   flightViewport = buildChikunViewport(rect.width, rect.height, window.devicePixelRatio || 1);
@@ -650,7 +652,7 @@ function draw(snapshot = latestSnapshot) {
   }
   drawSky(snapshot);
   if(snapshot?.chikun?.locomotion)drawGround(ctx,snapshot,{reduced:reduceMotion()});
-  for (const fork of snapshot?.forks ?? []) drawFork(fork);
+  for (const fork of snapshot?.forks ?? []) if (chikunForkInView(fork, flightViewport)) drawFork(fork);
   if (snapshot?.chikun) {
     drawChikun(snapshot);
   }
