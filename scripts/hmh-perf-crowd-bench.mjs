@@ -80,7 +80,7 @@ const SIM_FIELDS = Object.freeze(['tick', 'enemies', 'projectiles', 'score', 'xp
   'directorInsertions', 'weaponAmmo', 'silver']);
 const LOAD_FIELDS = Object.freeze(['enemies', 'projectiles', 'animatedEnemies', 'corpses', 'goreMarks', 'goreFragments',
   'silverActive', 'silverVisible', 'killFxShards', 'combatEvents', 'weaponVfx', 'worldParticles', 'contactShadows',
-  'atmosphereSprites', 'pickupMarkers', 'enemyTells']);
+  'atmosphereSprites', 'pickupMarkers', 'enemyTells', 'displaysCreated', 'displaysReused']);
 
 function parseArgs(argv) {
   const options = {};
@@ -417,6 +417,10 @@ function childInstrumentation(config) {
         worldParticles: Number(data.worldRenderedParticles ?? 0), contactShadows: Number(data.contactShadows ?? 0),
         atmosphereSprites: Number(data.atmosphereSprites ?? 0), pickupMarkers: Number(data.pickupMarkers ?? 0),
         resolution: Number(data.adaptiveResolution ?? data.renderResolution ?? 0),
+        // Enemy/corpse display pool counters (null on builds without the pool):
+        // construction should stop once the crowd is warm.
+        displaysCreated: data.enemyDisplaysCreated === undefined ? null : Number(data.enemyDisplaysCreated),
+        displaysReused: data.enemyDisplaysReused === undefined ? null : Number(data.enemyDisplaysReused),
       });
     }
     // Upgrade picks are paused time: excluded above, answered with the first
@@ -886,8 +890,8 @@ async function mainWithOrigin() {
         reproducible: censusDesktop.traceDigest === censusRepeat.traceDigest,
         profileIndependent: censusDesktop.traceDigest === censusMobile.traceDigest,
         timeline: censusMobile.samples.filter((_, index) => index % 15 === 0)
-          .map(({ tick, enemies, projectiles, corpses, goreMarks, goreFragments, silverActive, killFxShards, animatedEnemies, combatEvents, weaponVfx }) => (
-            { tick, enemies, projectiles, corpses, goreMarks, goreFragments, silverActive, killFxShards, animatedEnemies, combatEvents, weaponVfx })),
+          .map(({ tick, enemies, projectiles, corpses, goreMarks, goreFragments, silverActive, killFxShards, animatedEnemies, combatEvents, weaponVfx, displaysCreated, displaysReused }) => (
+            { tick, enemies, projectiles, corpses, goreMarks, goreFragments, silverActive, killFxShards, animatedEnemies, combatEvents, weaponVfx, displaysCreated, displaysReused })),
       },
       textures: {
         mobile: { ...censusMobile.textures, textures: censusMobile.textures.textures.slice(0, 40), textureCount: censusMobile.textures.textures.length },

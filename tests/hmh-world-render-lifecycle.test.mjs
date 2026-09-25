@@ -13,6 +13,7 @@ import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from '../apps/hmh-reboot/s
 import { worldDepthKey } from '../apps/hmh-reboot/src/world-depth.mjs';
 import { deterministicUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity, CORPSE_VISUAL_CAP, CORPSE_LIFETIME_MS } from '../apps/hmh-reboot/src/corpse-presentation.mjs';
+import { createEnemyDisplayPool } from '../apps/hmh-reboot/src/enemy-display-pool.mjs';
 import { createWorldDesignAppearance } from '../apps/hmh-reboot/src/world-design-native-assets.mjs';
 import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from '../apps/hmh-reboot/src/world-design-layout.mjs';
 
@@ -33,17 +34,23 @@ function corpseSubject() {
   // Projection hit descriptors (enemy-hit-feedback): a retiring body must
   // drop its entry so the corpse never inherits a knock offset or flash.
   const hitFeedback = new Map([['corpse-fixture', Object.freeze({ tick: 19 })]]);
+  // Corpses come from, and return to, the same projection display pool the
+  // live markers use.
+  const pool = createEnemyDisplayPool({
+    create: () => Object.assign(new Container(), { applyPose() {} }),
+    keyFor: (archetypeId, elite) => `${archetypeId}:${elite}`,
+  });
   const context = vm.createContext({
     worldDepthLayer: depth, worldDepthKey, enemyDeathVisuals: deaths, enemyDeathMarkers: markers,
     enemyHitFeedbackById: hitFeedback,
     enemyVisualFacing: new Map(), createCorpseClock, pruneCorpseCapacity,
     performance: {now:()=>1000}, isEliteEnemyProjection:()=>false,
     pushCombatVisualEvent:()=>{}, ENEMY_ARCHETYPES:{forkrunner:{visual:{color:0xffffff}}},
-    createRosterOrVectorDisplay:()=>new Container(),
+    enemyDisplayPool:pool,
     actor:{x:100,y:220}, deterministicUnit,
     combatAudio:{play:(cue, options)=>playedCues.push({cue,...options})},
   });
-  return { context, depth, deaths, markers, playedCues, hitFeedback, queue:callback(declaration('queueEnemyDeathVisual'),context), clear:callback(declaration('clearEnemyDeathMarkers'),context) };
+  return { context, depth, deaths, markers, playedCues, hitFeedback, pool, queue:callback(declaration('queueEnemyDeathVisual'),context), clear:callback(declaration('clearEnemyDeathMarkers'),context) };
 }
 
 test('queued corpses join the real ground-depth layer at their captured world Y', () => {
@@ -79,10 +86,14 @@ test('corpse capacity and reset leave no orphaned depth attachments', () => {
     for(let i=0;i<CORPSE_VISUAL_CAP+2;i++)s.queue({id:`corpse-${i}`,archetypeId:'forkrunner',x:100,y:200+i,groundZ:0},20+i);
     assert.equal(s.markers.size,CORPSE_VISUAL_CAP);assert.equal(s.depth.renderLayerChildren.length,CORPSE_VISUAL_CAP);
     s.clear();assert.equal(s.markers.size,0);assert.equal(s.depth.renderLayerChildren.length,0);
+    assert.equal(s.deaths.children.length,0,'reset leaves no corpse in the scene graph');
+    assert.equal(s.pool.stats.created,CORPSE_VISUAL_CAP,'a pruned corpse is recycled into the next one, never rebuilt');
+    assert.equal([...s.pool.idle.values()].flat().length,CORPSE_VISUAL_CAP,'reset returns every corpse to the pool');
+    assert.equal(s.pool.stats.disposed,0);
   } finally { s.clear();s.deaths.destroy({children:true});clearLayer(s.depth); }
 });
 
-test('the actual expiry loop detaches and destroys expired corpse graphics', () => {
+test('the actual expiry loop detaches expired corpse graphics and pools them for the next kill', () => {
   const s=corpseSubject();
   const loop=all.filter(node=>node.type==='ForOfStatement'&&source.slice(node.start,node.end).includes('const corpse = corpsePresentation')).sort((a,b)=>(a.end-a.start)-(b.end-b.start))[0];
   assert.ok(loop,'the real renderer expiry consumer must exist');
@@ -93,7 +104,13 @@ test('the actual expiry loop detaches and destroys expired corpse graphics', () 
     Object.assign(s.context,{corpsePresentation,simulation:{tick:20},corpseNowMs:1000+CORPSE_LIFETIME_MS});
     vm.runInContext(source.slice(loop.start,loop.end),s.context);
     assert.equal(s.markers.size,0);assert.equal(s.depth.renderLayerChildren.length,0);
-    assert.equal(s.deaths.children.length,0);assert.equal(graphic.destroyed,true);
+    assert.equal(s.deaths.children.length,0);assert.equal(graphic.parent,null);
+    assert.equal(graphic.destroyed,false,'an expired corpse is pooled, not destroyed');
+    assert.equal([...s.pool.idle.values()].flat().length,1);
+    s.queue({id:'next',archetypeId:'forkrunner',x:140,y:260,groundZ:0},40);
+    assert.equal(s.markers.get('next').graphic,graphic,'the next kill reuses the pooled corpse display');
+    assert.equal(graphic.zIndex,260);assert.equal(graphic.alpha,1);assert.ok(s.depth.renderLayerChildren.includes(graphic));
+    assert.equal(s.pool.stats.created,1,'no second corpse display is built');
   } finally {s.clear();s.deaths.destroy({children:true});clearLayer(s.depth);}
 });
 
