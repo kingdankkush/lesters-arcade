@@ -1,0 +1,4139 @@
+{
+  "schema": "lesters-arcade-asset-cleanup-v1",
+  "slice": "asset-cleanup",
+  "branch": "fable/pd-asset-cleanup",
+  "base": "0248cd4b (Merge the polish-2 slice; includes the Canvas-loop cleanup ae635081)",
+  "audit": "docs/cleanup/unused-assets-audit-20260925.{md,json} (read-only audit at 60ea173a)",
+  "generated": "2026-09-25",
+  "byteBasis": "Git blob bytes at 0248cd4b; LFS files at their smudged working-tree size. Deleting from the working tree does not shrink .git or the Git LFS store; no history was rewritten.",
+  "deployImpact": "Every removed path under apps/portal/** leaves the served file set (vercel.json outputDirectory apps/portal); the next deploy needs fresh certification. No runtime source, bundle or byte budget changed.",
+  "method": [
+    "Every candidate was re-verified against 0248cd4b, not taken from the audit or docs/cleanup/repo-cdn-cleanup-gate.json.",
+    "Static: git grep for the repo path, the portal-relative path, the folder name and each file basename (and parent/basename for generic names) across apps/, scripts/, tests/, sdk/, api/, server/, docs/testing, build.mjs, vercel.json, apps/portal/sw.js, .gitattributes, .gitignore and package.json; the curated level-kit runtime inventory was regenerated with no diff.",
+    "Dynamic: a node:fs and module-loader trace of the full node --test suite (4,850 tests) plus assets:verify, check, contracts:check, build and docs:links on the untouched base. Three processes walk whole trees without asserting on individual files (tests/hmh-native-enemy-source.test.mjs copying the repo for its clean-archive proof, tests/stacked-versus-table.test.mjs walking apps/ for imports, tests/hmh-security-audit-sweep.test.mjs scanning text files) and were excluded after review. Tests that spawn Python were read individually.",
+    "Gate: the full post-deletion verification below, compared with the base (4,850 tests, 51 ledgered failures)."
+  ],
+  "totals": {
+    "removedFiles": 757,
+    "removedBytes": 237032409,
+    "assetFiles": 749,
+    "assetBytes": 236916659,
+    "lfsFiles": 5,
+    "servedFromApps_portal": {
+      "files": 609,
+      "bytes": 57480360
+    }
+  },
+  "byList": {
+    "list-1": {
+      "units": 11,
+      "files": 137,
+      "bytes": 12320095
+    },
+    "list-2-whole-unit": {
+      "units": 2,
+      "files": 17,
+      "bytes": 151301622
+    },
+    "list-2-gate-safe-subset": {
+      "units": 8,
+      "files": 448,
+      "bytes": 46338128
+    },
+    "list-2-with-edit": {
+      "units": 1,
+      "files": 2,
+      "bytes": 375311
+    },
+    "partial-no-edit": {
+      "units": 14,
+      "files": 153,
+      "bytes": 26697253
+    }
+  },
+  "units": [
+    {
+      "id": "L1-chikun-flight-v1",
+      "list": "list-1",
+      "title": "Orphaned Chikun flight v1 atlases and audio",
+      "commitSubject": "remove the orphaned Chikun flight v1 atlases and audio",
+      "removedFiles": 41,
+      "removedBytes": 3272836,
+      "lfsFiles": 0,
+      "assetFiles": 41,
+      "assetBytes": 3272836,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "No reference by path, folder name or basename in apps/, scripts/, tests/, sdk/, api/, server/, build.mjs, vercel.json or apps/portal/sw.js; the Chikun runtime loads chikun-flight-v3 (character) and chikun-flight-v2/audio (sound).",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader.",
+        "Its audio blobs are byte-identical to the live chikun-flight-v2/audio, so no Git storage is freed; the public URLs stop resolving after the next deploy, and nothing requests them."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/apex.webp",
+          "bytes": 92910
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/air.wav",
+          "bytes": 384044
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/coin.wav",
+          "bytes": 22124
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/flap.wav",
+          "bytes": 10124
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/impact.wav",
+          "bytes": 38444
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/launch.wav",
+          "bytes": 36044
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/manifest.json",
+          "bytes": 807
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/near.wav",
+          "bytes": 20204
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/pass.wav",
+          "bytes": 17804
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/audio/streak.wav",
+          "bytes": 43244
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/bank_down.webp",
+          "bytes": 92112
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/bank_up.webp",
+          "bytes": 84624
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/brake.webp",
+          "bytes": 90436
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/celebrate.webp",
+          "bytes": 93750
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/character.json",
+          "bytes": 8593
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/collect.webp",
+          "bytes": 94656
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/death_fall.webp",
+          "bytes": 79846
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/death_tumble.webp",
+          "bytes": 79226
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/dive.webp",
+          "bytes": 86848
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/fall_fast.webp",
+          "bytes": 93778
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/fall_soft.webp",
+          "bytes": 91890
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/flap_power.webp",
+          "bytes": 91784
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/flap_soft.webp",
+          "bytes": 92312
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/glide.webp",
+          "bytes": 93432
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/glide_fast.webp",
+          "bytes": 85186
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/gust.webp",
+          "bytes": 93452
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/hit_ceiling.webp",
+          "bytes": 88698
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/hit_front.webp",
+          "bytes": 90716
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/hit_ground.webp",
+          "bytes": 87752
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/idle_breathe.webp",
+          "bytes": 88194
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/idle_hover.webp",
+          "bytes": 89388
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/idle_look.webp",
+          "bytes": 88264
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/idle_ready.webp",
+          "bytes": 91246
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/near_miss_high.webp",
+          "bytes": 86576
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/near_miss_low.webp",
+          "bytes": 90464
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/poster.webp",
+          "bytes": 7316
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/recover.webp",
+          "bytes": 92790
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/rise_fast.webp",
+          "bytes": 81642
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/rise_soft.webp",
+          "bytes": 91402
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/streak.webp",
+          "bytes": 93470
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v1/takeoff.webp",
+          "bytes": 87244
+        }
+      ]
+    },
+    {
+      "id": "L1-mobile-worlds-20260914",
+      "list": "list-1",
+      "title": "Mobile-worlds QA evidence folder",
+      "commitSubject": "remove the mobile-worlds 2026-09-14 QA evidence folder",
+      "removedFiles": 26,
+      "removedBytes": 3009939,
+      "lfsFiles": 0,
+      "assetFiles": 26,
+      "assetBytes": 3009939,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "docs/qa/mobile-worlds-20260914.md"
+      ],
+      "evidence": [
+        "Only docs/qa/mobile-worlds-20260914.md linked into the folder, and nothing links to that note.",
+        "Same-commit caveat applied: the two relative links in the note are rewritten as plain paths with a Git-history pointer.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/qa/mobile-worlds-20260914/baseline-pressure.json",
+          "bytes": 13368
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/chikun-art.json",
+          "bytes": 673
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/chikun-browser.json",
+          "bytes": 1205
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/chikun-forest.png",
+          "bytes": 182549
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/chikun-town.png",
+          "bytes": 22016
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/chikun-waterfall.png",
+          "bytes": 29988
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/crossing-water-desktop.png",
+          "bytes": 919967
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/final-pressure-repeat.json",
+          "bytes": 14613
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/final-pressure.json",
+          "bytes": 15167
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/frontier-relay-mobile.png",
+          "bytes": 351910
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/hmh-visual-accepted.json",
+          "bytes": 3824
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/hmh-visual-before-accept.json",
+          "bytes": 3836
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/liquidity-bridge-desktop.png",
+          "bytes": 1307977
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/local-discovery.json",
+          "bytes": 18056
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/opening-candidate.json",
+          "bytes": 4914
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/opening-live.json",
+          "bytes": 5020
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/optimization-attempts.json",
+          "bytes": 1880
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/performance-summary.json",
+          "bytes": 3045
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/shortlist-pressure.json",
+          "bytes": 13196
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/stacked-performance.json",
+          "bytes": 1027
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/stacked-phone-4.png",
+          "bytes": 45202
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/stacked-phone-lock.png",
+          "bytes": 40134
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/stacked-reform.json",
+          "bytes": 626
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/stacked-worlds.json",
+          "bytes": 4223
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/static-gates.json",
+          "bytes": 669
+        },
+        {
+          "path": "docs/qa/mobile-worlds-20260914/xs-max-opening.json",
+          "bytes": 4854
+        }
+      ]
+    },
+    {
+      "id": "L1-combined-arcade-20260913",
+      "list": "list-1",
+      "title": "Combined-arcade QA evidence folder",
+      "commitSubject": "remove the combined-arcade 2026-09-13 QA evidence folder",
+      "removedFiles": 28,
+      "removedBytes": 1941479,
+      "lfsFiles": 0,
+      "assetFiles": 28,
+      "assetBytes": 1941479,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Only path/SHA pins in docs/qa/combined-arcade-release-20260913.json and prose in three handoffs name it.",
+        "Same-commit caveat applied: the receipt docs/qa/combined-arcade-release-20260913.json stays (README.md links it and docs:links checks it).",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/qa/combined-arcade-20260913/cache-migration.json",
+          "bytes": 235
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/chikun-desktop.png",
+          "bytes": 660826
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/chikun-performance.json",
+          "bytes": 931
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/chikun-portrait.png",
+          "bytes": 628853
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/hmh-matched-comparison.json",
+          "bytes": 22048
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/hmh-mobile-performance.json",
+          "bytes": 4685
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/hosted-files.json",
+          "bytes": 64409
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/hosting-challenge-sanitized.json",
+          "bytes": 209
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/music-control-event-race.json",
+          "bytes": 421
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/music-dom-after.json",
+          "bytes": 286
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/music-dom-before.json",
+          "bytes": 170
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/music-dom-public.json",
+          "bytes": 288
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/music-fix-initial-checks.json",
+          "bytes": 226
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/music-fix-initial-gate.json",
+          "bytes": 1152
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-cabinet-network.json",
+          "bytes": 856
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-cabinet-retry.json",
+          "bytes": 5041
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-cache-network.json",
+          "bytes": 92
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-chikun-checkpoint.json",
+          "bytes": 801
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-chikun-mobile-fixed.json",
+          "bytes": 989
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-chikun-mobile-network.json",
+          "bytes": 479
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-icon-request-failure.json",
+          "bytes": 21601
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-initial-attempt.json",
+          "bytes": 583
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-music-initial-attempt.json",
+          "bytes": 618
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/public-retry-checks.json",
+          "bytes": 91
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/stacked-living-desktop.png",
+          "bytes": 428121
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/stacked-living-mobile.png",
+          "bytes": 95847
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/stacked-living-visuals.json",
+          "bytes": 626
+        },
+        {
+          "path": "docs/qa/combined-arcade-20260913/stacked-performance.json",
+          "bytes": 995
+        }
+      ]
+    },
+    {
+      "id": "L1-arcade-discovery-20260914",
+      "list": "list-1",
+      "title": "Arcade-discovery QA evidence folder",
+      "commitSubject": "remove the arcade-discovery 2026-09-14 QA evidence folder",
+      "removedFiles": 12,
+      "removedBytes": 1775330,
+      "lfsFiles": 0,
+      "assetFiles": 12,
+      "assetBytes": 1775330,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "The only path reference is the evidenceDirectory field of docs/qa/arcade-discovery-release-20260914.json, which no code reads.",
+        "Same-commit caveat applied: the ?v=arcade-discovery-20260914 cache token in index.html, discover/*.html and tests is untouched.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/qa/arcade-discovery-20260914/catalog-desktop.png",
+          "bytes": 611706
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/home-desktop.png",
+          "bytes": 780334
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/home-phone.png",
+          "bytes": 260251
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/local-discovery.json",
+          "bytes": 18056
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/local-games.json",
+          "bytes": 692
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/private-files.json",
+          "bytes": 32642
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/public-discovery.json",
+          "bytes": 18058
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/public-files.json",
+          "bytes": 32588
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/public-games.json",
+          "bytes": 518
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/public-route-headers.json",
+          "bytes": 1842
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/returning-cache.json",
+          "bytes": 545
+        },
+        {
+          "path": "docs/qa/arcade-discovery-20260914/served-manifest.json",
+          "bytes": 18098
+        }
+      ]
+    },
+    {
+      "id": "L1-chikun-flight-v3-audio",
+      "list": "list-1",
+      "title": "Unloaded Chikun flight v3 audio copy",
+      "commitSubject": "remove the unloaded Chikun flight v3 audio copy",
+      "removedFiles": 9,
+      "removedBytes": 572888,
+      "lfsFiles": 0,
+      "assetFiles": 9,
+      "assetBytes": 572888,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "docs/chikun/CHARACTER-SHEET-PIPELINE.md",
+        "scripts/chikun-blender/pack-chikun-sheet-atlases.py"
+      ],
+      "evidence": [
+        "apps/chikun/src/audio.mjs loads cues only from /assets/generated/chikun-flight-v2/audio/; no code on this base names chikun-flight-v3/audio.",
+        "Same-commit caveat applied: the stale prose in CHARACTER-SHEET-PIPELINE.md and the pack-chikun-sheet-atlases.py docstring now name the live v2 audio folder (docstring only, no behaviour change).",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/air.wav",
+          "bytes": 384044
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/coin.wav",
+          "bytes": 22124
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/flap.wav",
+          "bytes": 10124
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/impact.wav",
+          "bytes": 38444
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/launch.wav",
+          "bytes": 36044
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/manifest.json",
+          "bytes": 856
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/near.wav",
+          "bytes": 20204
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/pass.wav",
+          "bytes": 17804
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v3/audio/streak.wav",
+          "bytes": 43244
+        }
+      ]
+    },
+    {
+      "id": "L1-hmh-pixellab-sprite-expansion-500",
+      "list": "list-1",
+      "title": "Unstarted PixelLab 500-job ledger",
+      "commitSubject": "retire the unstarted PixelLab 500-job sprite expansion ledger and its generator",
+      "removedFiles": 3,
+      "removedBytes": 606065,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 568775,
+      "retiredCodeAndDocs": [
+        {
+          "path": "scripts/pixellab-hmh-sprite-expansion-500.py",
+          "bytes": 35094
+        },
+        {
+          "path": "docs/game-design/hard-money-heroes-pixellab-sprite-expansion-500.md",
+          "bytes": 2196
+        }
+      ],
+      "editedInSameCommit": [],
+      "evidence": [
+        "A ledger of 500 PixelLab jobs, all not_started, served publicly with account usage data; nothing reads it.",
+        "Same-commit caveat applied: the generator (its init step recreates the folder) and its design doc are retired; neither is in syntax-check, package.json or any test.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-pixellab-sprite-expansion-500/pixellab-sprite-expansion-500-jobs.json",
+          "bytes": 568775
+        }
+      ]
+    },
+    {
+      "id": "L1-hmh-combined-20260911",
+      "list": "list-1",
+      "title": "Orphan HMH combined QA screenshots",
+      "commitSubject": "remove the orphan HMH combined 2026-09-11 QA screenshots",
+      "removedFiles": 2,
+      "removedBytes": 329302,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 329302,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "No reference by name, path or folder anywhere in the repo.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/qa/hmh-combined-20260911/local-briefing-desktop.png",
+          "bytes": 118258
+        },
+        {
+          "path": "docs/qa/hmh-combined-20260911/local-hero-selector.png",
+          "bytes": 211044
+        }
+      ]
+    },
+    {
+      "id": "L1-wo102-megaprop-proof",
+      "list": "list-1",
+      "title": "WO-102 megaprop proof captures",
+      "commitSubject": "remove the WO-102 megaprop proof captures",
+      "removedFiles": 5,
+      "removedBytes": 270774,
+      "lfsFiles": 0,
+      "assetFiles": 5,
+      "assetBytes": 270774,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Only the folder's own capture-manifest.json names its files (and it exposed a local C:\\Users path).",
+        "Not the live wo102-megaprop runtime ids or apps/portal/assets/generated/hmh-wo102-megaprops, which stay.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/game-design/wo102-megaprop-proof/01-noodle-storefront.png",
+          "bytes": 78470
+        },
+        {
+          "path": "docs/game-design/wo102-megaprop-proof/02-forest-rock-outcrop.png",
+          "bytes": 82832
+        },
+        {
+          "path": "docs/game-design/wo102-megaprop-proof/03-farm-barn-silo.png",
+          "bytes": 104340
+        },
+        {
+          "path": "docs/game-design/wo102-megaprop-proof/README.md",
+          "bytes": 1518
+        },
+        {
+          "path": "docs/game-design/wo102-megaprop-proof/capture-manifest.json",
+          "bytes": 3614
+        }
+      ]
+    },
+    {
+      "id": "L1-hmh-quality-20260911",
+      "list": "list-1",
+      "title": "HMH quality-pass QA screenshots",
+      "commitSubject": "remove the HMH quality-pass 2026-09-11 QA screenshots",
+      "removedFiles": 4,
+      "removedBytes": 262837,
+      "lfsFiles": 0,
+      "assetFiles": 4,
+      "assetBytes": 262837,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Pinned only by path/SHA inside docs/qa/hmh-quality-release-20260911.json.",
+        "Same-commit caveat applied: that receipt stays (README.md links it and docs:links checks it). Two images were captures of a replaced production deploy; they remain in Git history.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/qa/hmh-quality-20260911/final-mobile-gameplay.png",
+          "bytes": 49263
+        },
+        {
+          "path": "docs/qa/hmh-quality-20260911/final-mobile-pause.png",
+          "bytes": 44989
+        },
+        {
+          "path": "docs/qa/hmh-quality-20260911/live-desktop-gameplay.png",
+          "bytes": 119049
+        },
+        {
+          "path": "docs/qa/hmh-quality-20260911/live-mobile-gameplay.png",
+          "bytes": 49536
+        }
+      ]
+    },
+    {
+      "id": "L1-hmh-environment-pixellab-wave-3",
+      "list": "list-1",
+      "title": "Never-imported PixelLab environment wave 3",
+      "commitSubject": "retire the never-imported PixelLab environment wave 3 and its generators",
+      "removedFiles": 6,
+      "removedBytes": 176813,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 107158,
+      "retiredCodeAndDocs": [
+        {
+          "path": "scripts/pixellab-hmh-environment-wave-3-replacement.py",
+          "bytes": 50268
+        },
+        {
+          "path": "scripts/pixellab-hmh-wave-3-animated-water-interiors.py",
+          "bytes": 10621
+        },
+        {
+          "path": "scripts/pixellab-hmh-wave-3-animated-water-only.py",
+          "bytes": 3226
+        },
+        {
+          "path": "docs/game-design/hard-money-heroes-pixellab-environment-wave-3.md",
+          "bytes": 5540
+        }
+      ],
+      "editedInSameCommit": [
+        "docs/handoffs/pixellab-access.md"
+      ],
+      "evidence": [
+        "An empty manifest plus a job log with 0 outputs; HMH_ENVIRONMENT_PIXELLAB_WAVE_3 is imported nowhere.",
+        "Same-commit caveat applied: the three orphan generators that only write into this folder and the wave-3 design doc are retired (none is in syntax-check, package.json or a test); the PixelLab access handoff no longer lists the retired generator.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-3/hmh-environment-pixellab-wave-3.mjs",
+          "bytes": 312
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-3/pixellab-environment-wave-3-jobs.json",
+          "bytes": 106846
+        }
+      ]
+    },
+    {
+      "id": "L1-docs-art-qa",
+      "list": "list-1",
+      "title": "Orphan world-v3 art QA contact sheet",
+      "commitSubject": "remove the orphan world-v3 art-wave-3 QA contact sheet",
+      "removedFiles": 1,
+      "removedBytes": 101832,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 101832,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "docs/game-design/hard-money-heroes-level-1-world-v3-infrastructure-wave-3-art-review.md"
+      ],
+      "evidence": [
+        "Named only in backtick prose in an unlinked art-review doc; that line now records the removal.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/art/qa/hmh-world-v3-art-wave-3-contact-sheet.png",
+          "bytes": 101832
+        }
+      ]
+    },
+    {
+      "id": "L2-01",
+      "list": "list-2-whole-unit",
+      "title": "Retired static Tripo selector chain (LFS)",
+      "commitSubject": "remove the retired static Tripo selector chain (LFS files only; history untouched)",
+      "removedFiles": 7,
+      "removedBytes": 150341857,
+      "lfsFiles": 5,
+      "assetFiles": 6,
+      "assetBytes": 150337026,
+      "retiredCodeAndDocs": [
+        {
+          "path": "scripts/hmh-blender/create-hmh-tripo-selector-scene.py",
+          "bytes": 4831
+        }
+      ],
+      "editedInSameCommit": [
+        ".gitattributes",
+        "docs/hmh-reboot/BLENDER-ATLAS-PIPELINE.md",
+        "scripts/syntax-check.mjs"
+      ],
+      "evidence": [
+        "The selector renders from models/tripo-gameplay/*.blend (sourceMode packed-gameplay-sources); tests/hmh-reboot-tripo-selector-source.test.mjs asserts sourceBlend is absent. No test, script or generated provenance names hmh-tripo-selector.blend or models/tripo-selector/.",
+        "hmh-source-model-lfs-check walks models/ but asserts no count; it reads the index, so the staged deletion keeps it green.",
+        "Same-commit edits: the .gitattributes LFS rule for the deleted blend, the stale BLENDER-ATLAS-PIPELINE.md paragraph (rewritten to the packed-gameplay-sources flow; every pinned runbook string kept), and the uncalled scene builder with its syntax-check entry. The live manifest has no sourceBuilder key; hmh_selector_native_sources.py keeps validating that optional legacy key by path only.",
+        "Deleting from the working tree does not shrink .git or the LFS store; no history rewrite was done."
+      ],
+      "paths": [
+        {
+          "path": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector-sources.json",
+          "bytes": 1966
+        },
+        {
+          "path": "apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend",
+          "bytes": 83367740,
+          "lfs": true
+        },
+        {
+          "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lester-original.glb",
+          "bytes": 16138564,
+          "lfs": true
+        },
+        {
+          "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lilly.glb",
+          "bytes": 16243508,
+          "lfs": true
+        },
+        {
+          "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lit-commando.glb",
+          "bytes": 17428260,
+          "lfs": true
+        },
+        {
+          "path": "apps/hmh-reboot/assets/source/models/tripo-selector/lit-valkyrie.glb",
+          "bytes": 17156988,
+          "lfs": true
+        }
+      ]
+    },
+    {
+      "id": "L2-02-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Unplayed music (4 of 5 MP3s)",
+      "commitSubject": "remove four unplayed music MP3s",
+      "removedFiles": 4,
+      "removedBytes": 12996964,
+      "lfsFiles": 0,
+      "assetFiles": 4,
+      "assetBytes": 12996964,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Nothing plays apps/portal/assets/audio/music; the only names are inert data strings in arcade-core.mjs (prototypeMusic, musicTracks) that no runtime reads.",
+        "No test or verify script checks these four files (fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader)."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
+          "bytes": 3236543
+        },
+        {
+          "path": "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
+          "bytes": 3366128
+        },
+        {
+          "path": "apps/portal/assets/audio/music/litvm-testnet-teaser.mp3",
+          "bytes": 1369382
+        },
+        {
+          "path": "apps/portal/assets/audio/music/rise-to-the-occasion.mp3",
+          "bytes": 5024911
+        }
+      ]
+    },
+    {
+      "id": "L2-03-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Legacy Level-1 environment trove (unchecked PNGs, JSON twin, contact sheets)",
+      "commitSubject": "remove the unread Level-1 environment trove PNGs, JSON twin and contact sheets",
+      "removedFiles": 145,
+      "removedBytes": 10709049,
+      "lfsFiles": 0,
+      "assetFiles": 145,
+      "assetBytes": 10709049,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "kept": [
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-001-03-23-57-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-002-03-24-02-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-003-03-24-07-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-004-03-24-13-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-005-03-24-39-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-006-03-25-07-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-007-03-26-13-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-008-03-26-50-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-009-03-27-25-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-010-03-28-19-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-011-03-28-30-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-012-03-28-34-pm.png"
+      ],
+      "evidence": [
+        "combatArt.environmentStages is never filled and the stage builder is gone after the Canvas cleanup, so no environment PNG is ever fetched; the level editor that lists them only boots on localhost.",
+        "Kept: the 12 PNGs tests/arcade-core.test.mjs checks on disk (manifest.assets.slice(0, 12)) and hmh-environment-manifest.mjs, which arcade-core.mjs imports.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader for the removed files."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/hmh-environment-manifest.json",
+          "bytes": 181463
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-079-04-03-49-pm.png",
+          "bytes": 53447
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-080-04-04-04-pm.png",
+          "bytes": 87704
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-081-04-04-22-pm.png",
+          "bytes": 53940
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-082-04-04-38-pm.png",
+          "bytes": 146300
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-083-04-05-44-pm.png",
+          "bytes": 63298
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-084-04-05-47-pm.png",
+          "bytes": 82821
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-085-04-05-50-pm.png",
+          "bytes": 96415
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-086-04-12-59-pm.png",
+          "bytes": 77416
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-087-04-13-20-pm.png",
+          "bytes": 57162
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-088-04-13-33-pm.png",
+          "bytes": 80199
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-089-04-13-48-pm.png",
+          "bytes": 58042
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-090-04-14-05-pm.png",
+          "bytes": 101677
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-091-04-14-24-pm.png",
+          "bytes": 70570
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-092-04-14-36-pm.png",
+          "bytes": 56149
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-093-04-14-46-pm.png",
+          "bytes": 72759
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-094-04-14-57-pm.png",
+          "bytes": 46687
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-095-04-15-11-pm.png",
+          "bytes": 72665
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-096-04-15-23-pm.png",
+          "bytes": 24851
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-097-04-15-38-pm.png",
+          "bytes": 66755
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-098-04-15-51-pm.png",
+          "bytes": 129590
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-099-04-16-07-pm.png",
+          "bytes": 70338
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-100-04-16-22-pm.png",
+          "bytes": 60705
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-101-04-16-37-pm.png",
+          "bytes": 76992
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-102-04-17-01-pm.png",
+          "bytes": 77879
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-103-04-17-41-pm.png",
+          "bytes": 132658
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-104-04-17-48-pm.png",
+          "bytes": 69074
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-013-03-28-38-pm.png",
+          "bytes": 70472
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-014-03-28-42-pm.png",
+          "bytes": 64808
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-015-03-29-11-pm.png",
+          "bytes": 63681
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-016-03-29-16-pm.png",
+          "bytes": 34736
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-017-03-30-31-pm.png",
+          "bytes": 63657
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-018-03-31-16-pm.png",
+          "bytes": 46257
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-019-03-31-20-pm.png",
+          "bytes": 25543
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-020-03-31-24-pm.png",
+          "bytes": 40659
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-021-03-31-45-pm.png",
+          "bytes": 69175
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-022-03-31-51-pm.png",
+          "bytes": 99480
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-023-03-32-57-pm.png",
+          "bytes": 64547
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-024-03-33-30-pm.png",
+          "bytes": 31083
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-025-03-33-53-pm.png",
+          "bytes": 69789
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-026-03-34-17-pm.png",
+          "bytes": 103386
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-027-03-34-33-pm.png",
+          "bytes": 100304
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-028-03-34-50-pm.png",
+          "bytes": 112027
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-029-03-35-13-pm.png",
+          "bytes": 29225
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-030-03-35-24-pm.png",
+          "bytes": 63328
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-031-03-35-53-pm.png",
+          "bytes": 83166
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-032-03-36-23-pm.png",
+          "bytes": 67985
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-033-03-36-43-pm.png",
+          "bytes": 128201
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-034-03-36-49-pm.png",
+          "bytes": 55208
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-035-03-37-22-pm.png",
+          "bytes": 65328
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-036-03-37-53-pm.png",
+          "bytes": 52873
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-037-03-38-16-pm.png",
+          "bytes": 71064
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-038-03-38-36-pm.png",
+          "bytes": 64392
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-039-03-39-37-pm.png",
+          "bytes": 55118
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-040-03-39-42-pm.png",
+          "bytes": 57821
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-041-03-40-06-pm.png",
+          "bytes": 68379
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-042-03-41-13-pm.png",
+          "bytes": 76221
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-043-03-42-02-pm.png",
+          "bytes": 44853
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-044-03-42-37-pm.png",
+          "bytes": 50325
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-045-03-42-48-pm.png",
+          "bytes": 86385
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-046-03-42-56-pm.png",
+          "bytes": 85561
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-047-03-43-41-pm.png",
+          "bytes": 57489
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-048-03-43-51-pm.png",
+          "bytes": 45736
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-049-03-43-55-pm.png",
+          "bytes": 112293
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-050-03-43-59-pm.png",
+          "bytes": 99775
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-051-03-44-04-pm.png",
+          "bytes": 145956
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-052-03-44-08-pm.png",
+          "bytes": 131604
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-053-03-50-02-pm.png",
+          "bytes": 64176
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-054-03-53-55-pm.png",
+          "bytes": 77997
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-055-03-53-58-pm.png",
+          "bytes": 83696
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-056-03-54-02-pm.png",
+          "bytes": 98341
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-057-03-54-05-pm.png",
+          "bytes": 112284
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-058-03-54-11-pm.png",
+          "bytes": 62730
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-059-03-54-15-pm.png",
+          "bytes": 62063
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-060-03-56-24-pm.png",
+          "bytes": 88164
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-061-03-56-28-pm.png",
+          "bytes": 106874
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-062-03-56-31-pm.png",
+          "bytes": 122092
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-063-03-56-35-pm.png",
+          "bytes": 100952
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-064-03-59-15-pm.png",
+          "bytes": 66555
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-065-03-59-38-pm.png",
+          "bytes": 113777
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-066-03-59-57-pm.png",
+          "bytes": 87308
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-067-04-00-15-pm.png",
+          "bytes": 63736
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-068-04-00-34-pm.png",
+          "bytes": 82773
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-069-04-01-01-pm.png",
+          "bytes": 86169
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-070-04-01-23-pm.png",
+          "bytes": 74827
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-071-04-01-55-pm.png",
+          "bytes": 61659
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-072-04-02-07-pm.png",
+          "bytes": 82443
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-073-04-02-22-pm.png",
+          "bytes": 55819
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-074-04-02-39-pm.png",
+          "bytes": 45680
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-075-04-02-57-pm.png",
+          "bytes": 63135
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-076-04-03-07-pm.png",
+          "bytes": 97059
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-077-04-03-22-pm.png",
+          "bytes": 143150
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/ghost_town/env-078-04-03-32-pm.png",
+          "bytes": 53940
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-127-04-24-12-pm.png",
+          "bytes": 46600
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-128-04-24-35-pm.png",
+          "bytes": 52054
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-129-04-25-56-pm.png",
+          "bytes": 60196
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-130-04-26-01-pm.png",
+          "bytes": 52859
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-131-04-26-18-pm.png",
+          "bytes": 131645
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-132-04-26-24-pm.png",
+          "bytes": 115882
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-133-04-27-24-pm.png",
+          "bytes": 83642
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-134-04-27-30-pm.png",
+          "bytes": 60104
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-135-04-27-35-pm.png",
+          "bytes": 133039
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-136-04-27-40-pm.png",
+          "bytes": 64451
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-137-04-27-48-pm.png",
+          "bytes": 54242
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-138-04-28-53-pm.png",
+          "bytes": 37501
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-139-04-29-08-pm.png",
+          "bytes": 17984
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-140-04-29-50-pm.png",
+          "bytes": 52947
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-141-04-29-55-pm.png",
+          "bytes": 94889
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-142-04-30-03-pm.png",
+          "bytes": 77703
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-143-04-30-08-pm.png",
+          "bytes": 44925
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-144-04-32-52-pm.png",
+          "bytes": 74802
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-145-04-32-56-pm.png",
+          "bytes": 12290
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-146-04-33-08-pm.png",
+          "bytes": 38446
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-147-04-33-13-pm.png",
+          "bytes": 47208
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/inner_city/env-148-04-33-20-pm.png",
+          "bytes": 24542
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-105-04-18-04-pm.png",
+          "bytes": 34555
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-106-04-18-17-pm.png",
+          "bytes": 91294
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-107-04-18-33-pm.png",
+          "bytes": 94714
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-108-04-18-54-pm.png",
+          "bytes": 90846
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-109-04-19-08-pm.png",
+          "bytes": 68177
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-110-04-19-29-pm.png",
+          "bytes": 70398
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-111-04-19-43-pm.png",
+          "bytes": 66368
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-112-04-19-58-pm.png",
+          "bytes": 56064
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-113-04-20-12-pm.png",
+          "bytes": 38834
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-114-04-20-24-pm.png",
+          "bytes": 59107
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-115-04-20-40-pm.png",
+          "bytes": 27542
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-116-04-20-44-pm.png",
+          "bytes": 30482
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-117-04-20-57-pm.png",
+          "bytes": 42902
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-118-04-21-11-pm.png",
+          "bytes": 152967
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-119-04-21-39-pm.png",
+          "bytes": 48464
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-120-04-21-57-pm.png",
+          "bytes": 41968
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-121-04-22-15-pm.png",
+          "bytes": 49170
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-122-04-22-30-pm.png",
+          "bytes": 114621
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-123-04-22-41-pm.png",
+          "bytes": 14391
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-124-04-23-37-pm.png",
+          "bytes": 73597
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-125-04-23-42-pm.png",
+          "bytes": 51384
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/environment/runtime/residential_edge/env-126-04-23-47-pm.png",
+          "bytes": 37193
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-01.png",
+          "bytes": 59710
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-02.png",
+          "bytes": 116086
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-03.png",
+          "bytes": 157143
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-04.png",
+          "bytes": 90071
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-05.png",
+          "bytes": 109839
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-06.png",
+          "bytes": 107773
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-07.png",
+          "bytes": 110081
+        },
+        {
+          "path": "docs/game-design/hmh-environment-contact-sheets/sheet-08.png",
+          "bytes": 42512
+        }
+      ]
+    },
+    {
+      "id": "L2-04-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Legacy HMH character art no gate reads (frames, stills, still source sheets, user-asset manifest)",
+      "commitSubject": "remove the legacy HMH character art no gate reads",
+      "removedFiles": 251,
+      "removedBytes": 9225280,
+      "lfsFiles": 0,
+      "assetFiles": 251,
+      "assetBytes": 9225280,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "apps/portal/assets/hard-money-heroes/stills/README.md"
+      ],
+      "evidence": [
+        "combatArt.hero and combatArt.characters are never built (the manifest builders are gone), so no frame or still is fetched; the arcade-core.mjs template strings are inert.",
+        "The set was derived from the trace: every file in frames/, stills/, lester-production/ and the user-asset manifest that no test, assets:verify or build touches. It equals the audit subset exactly (251 files, 9,225,280 B).",
+        "Kept: the 193 files tests/arcade-core.test.mjs and scripts/verify-generated-assets.mjs read, and screens/ (boot-splash.png is the intro-video poster in index.html).",
+        "The stills README deferred deletion until no runtime fallback used the stills; that is now true, and the README records the partial removal."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-04.png",
+          "bytes": 26857
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-05.png",
+          "bytes": 21867
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-06.png",
+          "bytes": 26857
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-07.png",
+          "bytes": 21867
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-04.png",
+          "bytes": 18487
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-05.png",
+          "bytes": 15988
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-06.png",
+          "bytes": 18487
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-07.png",
+          "bytes": 15988
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-04.png",
+          "bytes": 27042
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-05.png",
+          "bytes": 27042
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-06.png",
+          "bytes": 27042
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-07.png",
+          "bytes": 27042
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-04.png",
+          "bytes": 24485
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-05.png",
+          "bytes": 24485
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-06.png",
+          "bytes": 24485
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-07.png",
+          "bytes": 24485
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-04.png",
+          "bytes": 20881
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-05.png",
+          "bytes": 20881
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-06.png",
+          "bytes": 20881
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-07.png",
+          "bytes": 20881
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-00.png",
+          "bytes": 20949
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-01.png",
+          "bytes": 26376
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-02.png",
+          "bytes": 20121
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-03.png",
+          "bytes": 20949
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-04.png",
+          "bytes": 26376
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-05.png",
+          "bytes": 20121
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-06.png",
+          "bytes": 20949
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-07.png",
+          "bytes": 26376
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-00.png",
+          "bytes": 13146
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-01.png",
+          "bytes": 20829
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-02.png",
+          "bytes": 19356
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-03.png",
+          "bytes": 13146
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-04.png",
+          "bytes": 20829
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-05.png",
+          "bytes": 19356
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-06.png",
+          "bytes": 13146
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-07.png",
+          "bytes": 20829
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-00.png",
+          "bytes": 19913
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-01.png",
+          "bytes": 22694
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-02.png",
+          "bytes": 21843
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-03.png",
+          "bytes": 19913
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-04.png",
+          "bytes": 22694
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-05.png",
+          "bytes": 21843
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-06.png",
+          "bytes": 19913
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-07.png",
+          "bytes": 22694
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-00.png",
+          "bytes": 19061
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-01.png",
+          "bytes": 24293
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-02.png",
+          "bytes": 19061
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-03.png",
+          "bytes": 24293
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-04.png",
+          "bytes": 19061
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-05.png",
+          "bytes": 24293
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-06.png",
+          "bytes": 19061
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-07.png",
+          "bytes": 24293
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-00.png",
+          "bytes": 13333
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-01.png",
+          "bytes": 18181
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-02.png",
+          "bytes": 13333
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-03.png",
+          "bytes": 18181
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-04.png",
+          "bytes": 13333
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-05.png",
+          "bytes": 18181
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-06.png",
+          "bytes": 13333
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-07.png",
+          "bytes": 18181
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-04.png",
+          "bytes": 23002
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-05.png",
+          "bytes": 19174
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-06.png",
+          "bytes": 23002
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-07.png",
+          "bytes": 19174
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-04.png",
+          "bytes": 19954
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-05.png",
+          "bytes": 17236
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-06.png",
+          "bytes": 19954
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-07.png",
+          "bytes": 17236
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-04.png",
+          "bytes": 26756
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-05.png",
+          "bytes": 18726
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-06.png",
+          "bytes": 26756
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-07.png",
+          "bytes": 18726
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-04.png",
+          "bytes": 24926
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-05.png",
+          "bytes": 19185
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-06.png",
+          "bytes": 24926
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-07.png",
+          "bytes": 19185
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-04.png",
+          "bytes": 21726
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-05.png",
+          "bytes": 18780
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-06.png",
+          "bytes": 21726
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-07.png",
+          "bytes": 18780
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-04.png",
+          "bytes": 24104
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-05.png",
+          "bytes": 22987
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-06.png",
+          "bytes": 24104
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-07.png",
+          "bytes": 22987
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-00.png",
+          "bytes": 24864
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-01.png",
+          "bytes": 18608
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-02.png",
+          "bytes": 21512
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-03.png",
+          "bytes": 22621
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-04.png",
+          "bytes": 21512
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-05.png",
+          "bytes": 22368
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-06.png",
+          "bytes": 24602
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/idle/lester-idle-07.png",
+          "bytes": 24864
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-00.png",
+          "bytes": 21088
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-01.png",
+          "bytes": 18517
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-02.png",
+          "bytes": 21088
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-03.png",
+          "bytes": 18517
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-04.png",
+          "bytes": 21088
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-05.png",
+          "bytes": 18517
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-06.png",
+          "bytes": 21088
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/jump/lester-jump-07.png",
+          "bytes": 18517
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-00.png",
+          "bytes": 18798
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-01.png",
+          "bytes": 18798
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-02.png",
+          "bytes": 27960
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-03.png",
+          "bytes": 18798
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-04.png",
+          "bytes": 18798
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-05.png",
+          "bytes": 27960
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-06.png",
+          "bytes": 18798
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/run/lester-run-07.png",
+          "bytes": 18798
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-04.png",
+          "bytes": 23710
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-05.png",
+          "bytes": 23710
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-06.png",
+          "bytes": 23710
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-07.png",
+          "bytes": 23710
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-00.png",
+          "bytes": 18870
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-01.png",
+          "bytes": 26813
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-02.png",
+          "bytes": 24763
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-03.png",
+          "bytes": 18870
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-04.png",
+          "bytes": 26813
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-05.png",
+          "bytes": 24763
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-06.png",
+          "bytes": 18870
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lester/walk/lester-walk-07.png",
+          "bytes": 26813
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-04.png",
+          "bytes": 18871
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-05.png",
+          "bytes": 21012
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-06.png",
+          "bytes": 15332
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-07.png",
+          "bytes": 25506
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-04.png",
+          "bytes": 16006
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-05.png",
+          "bytes": 11984
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-06.png",
+          "bytes": 20613
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-07.png",
+          "bytes": 16154
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-04.png",
+          "bytes": 22693
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-05.png",
+          "bytes": 22773
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-06.png",
+          "bytes": 16135
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-07.png",
+          "bytes": 24620
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-04.png",
+          "bytes": 17830
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-05.png",
+          "bytes": 24240
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-06.png",
+          "bytes": 23334
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-07.png",
+          "bytes": 24379
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-04.png",
+          "bytes": 14771
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-05.png",
+          "bytes": 21087
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-06.png",
+          "bytes": 22498
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-07.png",
+          "bytes": 21762
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-00.png",
+          "bytes": 14648
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-01.png",
+          "bytes": 23910
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-02.png",
+          "bytes": 27591
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-03.png",
+          "bytes": 26805
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-04.png",
+          "bytes": 14648
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-05.png",
+          "bytes": 23910
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-06.png",
+          "bytes": 27591
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-07.png",
+          "bytes": 26805
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-00.png",
+          "bytes": 11821
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-01.png",
+          "bytes": 16983
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-02.png",
+          "bytes": 16829
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-03.png",
+          "bytes": 11821
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-04.png",
+          "bytes": 16983
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-05.png",
+          "bytes": 16829
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-06.png",
+          "bytes": 11821
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-07.png",
+          "bytes": 16983
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-00.png",
+          "bytes": 17242
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-01.png",
+          "bytes": 24031
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-02.png",
+          "bytes": 26560
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-03.png",
+          "bytes": 17242
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-04.png",
+          "bytes": 24031
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-05.png",
+          "bytes": 26560
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-06.png",
+          "bytes": 17242
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-07.png",
+          "bytes": 24031
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-00.png",
+          "bytes": 18741
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-01.png",
+          "bytes": 26322
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-02.png",
+          "bytes": 27890
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-03.png",
+          "bytes": 18741
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-04.png",
+          "bytes": 26322
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-05.png",
+          "bytes": 27890
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-06.png",
+          "bytes": 18741
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-07.png",
+          "bytes": 26322
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-00.png",
+          "bytes": 15156
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-01.png",
+          "bytes": 22817
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-02.png",
+          "bytes": 23099
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-03.png",
+          "bytes": 15156
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-04.png",
+          "bytes": 22817
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-05.png",
+          "bytes": 23099
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-06.png",
+          "bytes": 15156
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-07.png",
+          "bytes": 22817
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-00.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-01.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-02.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-03.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-04.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-05.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-06.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-07.png",
+          "bytes": 28733
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-01.png",
+          "bytes": 19936
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-02.png",
+          "bytes": 16491
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-03.png",
+          "bytes": 27869
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-04.png",
+          "bytes": 19936
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-05.png",
+          "bytes": 16491
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-06.png",
+          "bytes": 27869
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-07.png",
+          "bytes": 19936
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-01.png",
+          "bytes": 28615
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-02.png",
+          "bytes": 32501
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-03.png",
+          "bytes": 28615
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-04.png",
+          "bytes": 32501
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-05.png",
+          "bytes": 28615
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-06.png",
+          "bytes": 32501
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-07.png",
+          "bytes": 28615
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-01.png",
+          "bytes": 24572
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-02.png",
+          "bytes": 30545
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-03.png",
+          "bytes": 24572
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-04.png",
+          "bytes": 30545
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-05.png",
+          "bytes": 24572
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-06.png",
+          "bytes": 30545
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-07.png",
+          "bytes": 24572
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-01.png",
+          "bytes": 20283
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-02.png",
+          "bytes": 36932
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-03.png",
+          "bytes": 20283
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-04.png",
+          "bytes": 36932
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-05.png",
+          "bytes": 20283
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-06.png",
+          "bytes": 36932
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-07.png",
+          "bytes": 20283
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/hard-money-heroes-user-asset-manifest.json",
+          "bytes": 86992
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/evil-banker/evil-banker-00.png",
+          "bytes": 112703
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/evil-banker/evil-banker-01.png",
+          "bytes": 81470
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/evil-banker/evil-banker-02.png",
+          "bytes": 86760
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-grenadeFacing.png",
+          "bytes": 103887
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-grenadeLeft.png",
+          "bytes": 88220
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-grenadeRight.png",
+          "bytes": 83631
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-knifeFacing.png",
+          "bytes": 117248
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-knifeRight.png",
+          "bytes": 88627
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-machineGunFacing.png",
+          "bytes": 115445
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-machineGunLeft.png",
+          "bytes": 94415
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lester/lester-machineGunRight.png",
+          "bytes": 84208
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-grenadeFacing.png",
+          "bytes": 428778
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-grenadeLeft.png",
+          "bytes": 78500
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-grenadeRight.png",
+          "bytes": 74461
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-knifeFacing.png",
+          "bytes": 261515
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-knifeLeft.png",
+          "bytes": 85002
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-knifeRight.png",
+          "bytes": 76058
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-machineGunFacing.png",
+          "bytes": 115961
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-machineGunLeft.png",
+          "bytes": 81333
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-machineGunRight.png",
+          "bytes": 87257
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-pistolFacing.png",
+          "bytes": 99322
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/lilly/lilly-shotgunFacing.png",
+          "bytes": 127215
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/trench-degen/trench-degen-00.png",
+          "bytes": 124602
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/trench-degen/trench-degen-01.png",
+          "bytes": 249937
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/trench-degen/trench-degen-02.png",
+          "bytes": 91820
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-00.png",
+          "bytes": 251571
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-01.png",
+          "bytes": 257840
+        },
+        {
+          "path": "apps/portal/assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-02.png",
+          "bytes": 288694
+        },
+        {
+          "path": "apps/portal/assets/lester-production/source/Lester-Facing-Shotgun.png",
+          "bytes": 107337
+        },
+        {
+          "path": "apps/portal/assets/lester-production/source/Lester-Facing.png",
+          "bytes": 98658
+        },
+        {
+          "path": "apps/portal/assets/lester-production/source/Lester-Left-Side-Shotgun.png",
+          "bytes": 80490
+        },
+        {
+          "path": "apps/portal/assets/lester-production/source/Lester-Left-SideProfile.png",
+          "bytes": 85371
+        },
+        {
+          "path": "apps/portal/assets/lester-production/source/Lester-Right-Side-Shotgun.png",
+          "bytes": 84097
+        },
+        {
+          "path": "apps/portal/assets/lester-production/source/Lester-Right-SideProfile.png",
+          "bytes": 85577
+        }
+      ]
+    },
+    {
+      "id": "L2-06-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Legacy loader payload manifests (unread JSON twins, job ledgers, curated-level-art extras)",
+      "commitSubject": "remove unread legacy loader JSON twins and PixelLab job ledgers",
+      "removedFiles": 19,
+      "removedBytes": 3949974,
+      "lfsFiles": 0,
+      "assetFiles": 19,
+      "assetBytes": 3949974,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Every legacy loader imports the .mjs manifests; these JSON twins, job ledgers (public raw PixelLab job ids) and the four unused hmh-curated-level-art files have no reader.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader (the build also resolves no import to them)."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json",
+          "bytes": 498210
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-art.json",
+          "bytes": 863657
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-art.mjs",
+          "bytes": 863711
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.json",
+          "bytes": 3914
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-level-art.json",
+          "bytes": 1077680
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/pixellab-environment-wave-2-jobs.json",
+          "bytes": 265235
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-final-animation-completion/hmh-final-animation-completion-manifest.json",
+          "bytes": 73562
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-final-boss-animations/hmh-final-boss-animations-manifest.json",
+          "bytes": 62435
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/metadata.json",
+          "bytes": 1653
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/metadata.json",
+          "bytes": 1662
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/metadata.json",
+          "bytes": 1645
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/metadata.json",
+          "bytes": 1746
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/metadata.json",
+          "bytes": 1619
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/metadata.json",
+          "bytes": 1756
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/metadata.json",
+          "bytes": 1786
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/metadata.json",
+          "bytes": 1650
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/metadata.json",
+          "bytes": 1665
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/metadata.json",
+          "bytes": 1783
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json",
+          "bytes": 224605
+        }
+      ]
+    },
+    {
+      "id": "L2-07-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Legacy canvas Level-1 world data (unread JSON twins and resume ledgers)",
+      "commitSubject": "remove unread Level-1 world JSON twins and resume ledgers",
+      "removedFiles": 13,
+      "removedBytes": 248138,
+      "lfsFiles": 0,
+      "assetFiles": 13,
+      "assetBytes": 248138,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Runtime and tests import the .mjs twins; these JSON copies and PixelLab resume ledgers have no reader.",
+        "Kept: level1-pixellab-candidates.manifest.json (the wo119 module reads it at import time) and every .mjs.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/coherent-world-ledger.json",
+          "bytes": 19210
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/crypto-wasteland-ledger.json",
+          "bytes": 20053
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.json",
+          "bytes": 5098
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.json",
+          "bytes": 4524
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level1-polish/level1-polish-manifest.json",
+          "bytes": 6473
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-p0-terrain-candidates.manifest.json",
+          "bytes": 9734
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/pixellab-level1-asset-wave-ledger.json",
+          "bytes": 89033
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/level1-weak-terrain-regeneration-ledger.json",
+          "bytes": 6327
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level1-wo97-six-biome/level1-wo97-six-biome-manifest.json",
+          "bytes": 33311
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.json",
+          "bytes": 12481
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.json",
+          "bytes": 16717
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.json",
+          "bytes": 15278
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/wo103-continuous-ground-manifest.json",
+          "bytes": 9899
+        }
+      ]
+    },
+    {
+      "id": "L2-08-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Legacy enemy-roster atlases and contact sheets for the 6 native-migrated actors",
+      "commitSubject": "remove the legacy enemy-roster atlas PNGs and contact sheets of the 6 native-migrated actors",
+      "removedFiles": 12,
+      "removedBytes": 7693387,
+      "lfsFiles": 0,
+      "assetFiles": 12,
+      "assetBytes": 7693387,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "enemyRosterAsset() sends every actor except bagholder-rusher to hmh-native-roster, and hmh-reboot-production-asset-qa.mjs uses the same resolver, so these PNGs have no reader.",
+        "Kept: the six atlas JSONs (read by the role-profile tests), the metrics JSON and bagholder-rusher.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader; the Python-spawning roster tests only exercise helpers on synthetic images."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/forkrunner/forkrunner-roster-atlas.png",
+          "bytes": 819506
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/forkrunner/forkrunner-roster-contact-sheet.png",
+          "bytes": 92304
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/gas-bomber/gas-bomber-roster-atlas.png",
+          "bytes": 898834
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/gas-bomber/gas-bomber-roster-contact-sheet.png",
+          "bytes": 103572
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/liquidator-agent/liquidator-agent-roster-atlas.png",
+          "bytes": 903800
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/liquidator-agent/liquidator-agent-roster-contact-sheet.png",
+          "bytes": 94927
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/the-liquidator/the-liquidator-roster-atlas.png",
+          "bytes": 1998523
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/the-liquidator/the-liquidator-roster-contact-sheet.png",
+          "bytes": 182722
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/validator-cultist/validator-cultist-roster-atlas.png",
+          "bytes": 913115
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/validator-cultist/validator-cultist-roster-contact-sheet.png",
+          "bytes": 104632
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/whale-enforcer/whale-enforcer-roster-atlas.png",
+          "bytes": 1422023
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/whale-enforcer/whale-enforcer-roster-contact-sheet.png",
+          "bytes": 159429
+        }
+      ]
+    },
+    {
+      "id": "L2-10",
+      "list": "list-2-with-edit",
+      "title": "AAA PixelLab quality-wave job ledger",
+      "commitSubject": "retire the public AAA PixelLab quality-wave ledger",
+      "removedFiles": 2,
+      "removedBytes": 375311,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 371337,
+      "retiredCodeAndDocs": [
+        {
+          "path": "scripts/promote-hmh-aaa-wave-to-roster.py",
+          "bytes": 3974
+        }
+      ],
+      "editedInSameCommit": [
+        "tests/hmh-wo119-pixellab-aaa-wave.test.mjs"
+      ],
+      "evidence": [
+        "No runtime reader; the file is a public ledger of raw PixelLab job ids.",
+        "The only gate reference was one existsSync line in the non-ledgered test \"WO-119 docs, proof, syntax gate, and PixelLab generator are wired\"; it now asserts that the generator starts from an empty ledger when the file is absent (load_ledger fallback). The two ledgered WO-119 tests are untouched.",
+        "scripts/promote-hmh-aaa-wave-to-roster.py is retired with it: it could not run (its actors/ input and the roster-ledger.json it writes against no longer exist) and nothing references it."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json",
+          "bytes": 371337
+        }
+      ]
+    },
+    {
+      "id": "L2-11-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Unreferenced ad placeholder SVGs",
+      "commitSubject": "remove the unreferenced ad placeholder SVGs",
+      "removedFiles": 2,
+      "removedBytes": 5211,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 5211,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Zero references by name anywhere in the repo.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/ads/ad-placeholder-horizontal.svg",
+          "bytes": 2103
+        },
+        {
+          "path": "apps/portal/assets/ads/ad-placeholder-vertical.svg",
+          "bytes": 3108
+        }
+      ]
+    },
+    {
+      "id": "L2-12-subset",
+      "list": "list-2-gate-safe-subset",
+      "title": "Orphaned WO-65 visual baselines",
+      "commitSubject": "remove two orphaned WO-65 visual baselines",
+      "removedFiles": 2,
+      "removedBytes": 1510125,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 1510125,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "scripts/visual-regression.mjs has not written seed-1337-spawn.png or seed-1337-stationary-repeat.png since 12a4fd2a (2026-07-09); nothing names them.",
+        "Kept: seed-1337-render-anchor.png, which the harness still writes and AGENTS.md documents."
+      ],
+      "paths": [
+        {
+          "path": "docs/testing/VISUAL_BASELINES/hmh-level-1/seed-1337-spawn.png",
+          "bytes": 754690
+        },
+        {
+          "path": "docs/testing/VISUAL_BASELINES/hmh-level-1/seed-1337-stationary-repeat.png",
+          "bytes": 755435
+        }
+      ]
+    },
+    {
+      "id": "L2-13",
+      "list": "list-2-whole-unit",
+      "title": "World-blueprint-v3 preview images",
+      "commitSubject": "remove the world-blueprint-v3 preview images",
+      "removedFiles": 10,
+      "removedBytes": 959765,
+      "lfsFiles": 0,
+      "assetFiles": 10,
+      "assetBytes": 959765,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "docs/game-design/hard-money-heroes-level-1-world-blueprint-v3.md",
+        "docs/game-design/hard-money-heroes-level-1-world-blueprint-v3-art-review.md"
+      ],
+      "evidence": [
+        "Only its write-only producer scripts/build-hmh-level-one-world-blueprint-v3.py and two design docs mention it; nothing reads it.",
+        "The two docs now record the removal. The generator is left as is (it is live for the blueprint JSON), so a manual assets:hmh:level1:world-v3 run writes the maps again; approval-samples.png and seam-followup-samples.png cannot be regenerated from the repo and remain in Git history."
+      ],
+      "paths": [
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/approval-samples.png",
+          "bytes": 415822
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/biome-map.png",
+          "bytes": 13664
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/blueprint-contact-sheet.png",
+          "bytes": 84252
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/encounter-map.png",
+          "bytes": 11330
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/hydrology-map.png",
+          "bytes": 13605
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/isometric-preview.png",
+          "bytes": 19588
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/navigation-map.png",
+          "bytes": 14441
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/route-map.png",
+          "bytes": 14475
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/seam-followup-samples.png",
+          "bytes": 355775
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/terrain-map.png",
+          "bytes": 16813
+        }
+      ]
+    },
+    {
+      "id": "PA-01",
+      "list": "partial-no-edit",
+      "title": "Unwired arcade promo GIF",
+      "commitSubject": "remove the unwired arcade promo GIF",
+      "removedFiles": 1,
+      "removedBytes": 4174352,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 4174352,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "No reference outside the stale docs/cleanup CDN report; added \"for reuse in marketing\" and never wired. The MP4 and poster stay.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/video/arcade-promo-loop.gif",
+          "bytes": 4174352
+        }
+      ]
+    },
+    {
+      "id": "PA-02",
+      "list": "partial-no-edit",
+      "title": "Unreferenced stacked logo",
+      "commitSubject": "remove the unreferenced stacked logo",
+      "removedFiles": 1,
+      "removedBytes": 48589,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 48589,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Zero references; the horizontal logo stays.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/brand/lesters-arcade-logo-stacked.png",
+          "bytes": 48589
+        }
+      ]
+    },
+    {
+      "id": "PA-03",
+      "list": "partial-no-edit",
+      "title": "Swapped-out Chikun mode-select art",
+      "commitSubject": "remove the swapped-out Chikun mode-select art",
+      "removedFiles": 1,
+      "removedBytes": 142716,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 142716,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Lost its runtime references in 54aab311; only a handoff names it. The free/ranked mode banners stay.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/chikun-mode-select/chikun-mode-select-art.webp",
+          "bytes": 142716
+        }
+      ]
+    },
+    {
+      "id": "PA-04",
+      "list": "partial-no-edit",
+      "title": "Chikun flight v2 clip atlases and character.json (runtime base is v3)",
+      "commitSubject": "remove the Chikun flight v2 clip atlases and character.json",
+      "removedFiles": 19,
+      "removedBytes": 2054486,
+      "lfsFiles": 0,
+      "assetFiles": 19,
+      "assetBytes": 2054486,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "The Chikun character base is chikun-flight-v3 (apps/chikun/src/character.mjs); tests hash only v3 and ground-motion-v1.",
+        "Kept: poster.webp (apps/portal/sw.js precaches it; cache.addAll is all-or-nothing) and the seven live audio cues.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/accelerate.webp",
+          "bytes": 110980
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/barrel_roll.webp",
+          "bytes": 120192
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/brake.webp",
+          "bytes": 118056
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/character.json",
+          "bytes": 5472
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/climb.webp",
+          "bytes": 108416
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/collect.webp",
+          "bytes": 110826
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/crest.webp",
+          "bytes": 113190
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/cruise.webp",
+          "bytes": 110608
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/descend.webp",
+          "bytes": 113634
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/dive.webp",
+          "bytes": 114254
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/dodge_high.webp",
+          "bytes": 118908
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/dodge_low.webp",
+          "bytes": 111862
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/fall.webp",
+          "bytes": 114842
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/impact.webp",
+          "bytes": 115122
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/ready.webp",
+          "bytes": 113568
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/recover.webp",
+          "bytes": 116114
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/squeeze.webp",
+          "bytes": 106176
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/takeoff.webp",
+          "bytes": 113802
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/tumble.webp",
+          "bytes": 118464
+        }
+      ]
+    },
+    {
+      "id": "PA-05",
+      "list": "partial-no-edit",
+      "title": "Never-fetched Chikun air.wav and audio manifest",
+      "commitSubject": "remove the never-fetched Chikun air.wav and audio manifest",
+      "removedFiles": 2,
+      "removedBytes": 384851,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 384851,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "CUES excludes air, and tests/chikun-audio.test.mjs asserts air.wav is never fetched (still true); manifest.json is generator output nothing reads.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/audio/air.wav",
+          "bytes": 384044
+        },
+        {
+          "path": "apps/portal/assets/generated/chikun-flight-v2/audio/manifest.json",
+          "bytes": 807
+        }
+      ]
+    },
+    {
+      "id": "PA-06",
+      "list": "partial-no-edit",
+      "title": "Chikun Blender/GLB sources nothing reads",
+      "commitSubject": "remove Chikun Blender and GLB sources nothing reads",
+      "removedFiles": 9,
+      "removedBytes": 15088729,
+      "lfsFiles": 0,
+      "assetFiles": 9,
+      "assetBytes": 15088729,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Only manual Blender scripts write them (build-chikun-ragdoll-parts.py, build-chikun-sheet-rig.py, build-chikun-character.py, animate-chikun-ground-props.py) or handoffs name them; no runtime, test or gate reads them. Plain Git blobs, recoverable from 0248cd4b.",
+        "Kept: Chikun-Ground-Sky-Rig.blend, Chikun-Sheet-Rig.blend, Chikun-Superman-Rig.blend, the ground-sky prop blends, open-air/ and native-provenance.json.",
+        "The audit flagged this row as a source-art owner decision; the slice brief directs removing every no-edit partial.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/chikun/assets/source/Chikun-30-Animations.glb",
+          "bytes": 2409820
+        },
+        {
+          "path": "apps/chikun/assets/source/Chikun-Flight-Rig.blend",
+          "bytes": 2501625
+        },
+        {
+          "path": "apps/chikun/assets/source/Chikun-Ragdoll-Parts.blend",
+          "bytes": 4192070
+        },
+        {
+          "path": "apps/chikun/assets/source/Chikun-Sheet-Animations.glb",
+          "bytes": 3011764
+        },
+        {
+          "path": "apps/chikun/assets/source/Chikun-Superman-Animations.glb",
+          "bytes": 2439640
+        },
+        {
+          "path": "apps/chikun/assets/source/ground-sky/eagle-motion.blend",
+          "bytes": 133994
+        },
+        {
+          "path": "apps/chikun/assets/source/ground-sky/hawk-motion.blend",
+          "bytes": 132890
+        },
+        {
+          "path": "apps/chikun/assets/source/ground-sky/pelican-motion.blend",
+          "bytes": 133974
+        },
+        {
+          "path": "apps/chikun/assets/source/ground-sky/shiba-motion.blend",
+          "bytes": 132952
+        }
+      ]
+    },
+    {
+      "id": "PA-07",
+      "list": "partial-no-edit",
+      "title": "Bagholder roster contact sheet",
+      "commitSubject": "remove the bagholder roster contact sheet",
+      "removedFiles": 1,
+      "removedBytes": 155905,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 155905,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Written and hashed only by run-hmh-enemy-roster-pipeline.py; nothing checks it against disk.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-enemy-roster/bagholder-rusher/bagholder-rusher-roster-contact-sheet.png",
+          "bytes": 155905
+        }
+      ]
+    },
+    {
+      "id": "PA-08",
+      "list": "partial-no-edit",
+      "title": "Authored-props contact sheet and never-requested item PNGs",
+      "commitSubject": "remove the authored-props contact sheet and never-requested item PNGs",
+      "removedFiles": 88,
+      "removedBytes": 1083972,
+      "lfsFiles": 0,
+      "assetFiles": 88,
+      "assetBytes": 1083972,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "kept": [
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/auto-miner.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/bear-market-burner.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/block-reward.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/coin-blaster.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/cold-storage.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/compound-interest.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/diamond-hands.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/forked-standard.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/gas-optimization.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/hard-fork-rounds.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/hardened-wallet.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/hash-rail.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/hot-wallet.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/launcher-rig.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/layer-two.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/lightning-ledger.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/precision-ledger.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/proof-of-work.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/scatter-shotgun.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/validator-training.png"
+      ],
+      "evidence": [
+        "Upgrade-card icons resolve only AUTHORED_PROP_ASSETS.powerUps and .weapons ids (upgrade-card-presentation.mjs); no other code builds an items/ URL.",
+        "Kept: the 12 power-up and all 8 weapon icons (20 files, 5 more than the audit kept, because the weapon icon set is a live code-level reference).",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-contact-sheet.png",
+          "bytes": 555052
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/awning-shopfront.png",
+          "bytes": 6931
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/balanced-boulder.png",
+          "bytes": 4421
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bear-market-burner-cache.png",
+          "bytes": 4018
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bedroll-cluster.png",
+          "bytes": 3228
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/berserk-candle.png",
+          "bytes": 2248
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/birch-cluster.png",
+          "bytes": 9728
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bonus-life.png",
+          "bytes": 1019
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bridge-bollard.png",
+          "bytes": 1647
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bridge-pier.png",
+          "bytes": 3744
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bridge-truss.png",
+          "bytes": 5129
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/bridge-warning-sign.png",
+          "bytes": 1954
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/burned-snag.png",
+          "bytes": 6669
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/campfire-ring.png",
+          "bytes": 2887
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/canopy-edge-tree.png",
+          "bytes": 5973
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/cargo-container.png",
+          "bytes": 6564
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/chain-fence-gate.png",
+          "bytes": 4158
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/chain-fence.png",
+          "bytes": 7323
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/cliff-face.png",
+          "bytes": 4826
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/corrugated-lean-to.png",
+          "bytes": 4978
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/crystal-cluster.png",
+          "bytes": 1872
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/dead-pine.png",
+          "bytes": 6321
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/dock-post.png",
+          "bytes": 3669
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/driftwood-log.png",
+          "bytes": 9984
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/faction-banner.png",
+          "bytes": 3689
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/fallen-trunk.png",
+          "bytes": 4864
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/fern-cluster.png",
+          "bytes": 8478
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/flowering-weeds.png",
+          "bytes": 4761
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/forked-spire-setpiece.png",
+          "bytes": 18271
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/forked-standard-cache.png",
+          "bytes": 2131
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/fuel-drum.png",
+          "bytes": 2197
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/fuel-pump-island.png",
+          "bytes": 5635
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/granite-boulder.png",
+          "bytes": 5380
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/grass-tuft.png",
+          "bytes": 4451
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/handrail-post.png",
+          "bytes": 3442
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/hanging-vines.png",
+          "bytes": 7603
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/hash-rail-core.png",
+          "bytes": 4812
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/hashwood-beacon-setpiece.png",
+          "bytes": 29596
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/hashwood-pine.png",
+          "bytes": 17032
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/hashwood-stump.png",
+          "bytes": 1953
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/hashwood-tree.png",
+          "bytes": 16474
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/lightning-ledger-cache.png",
+          "bytes": 1458
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/lily-pads.png",
+          "bytes": 5737
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/liquidation-terminal.png",
+          "bytes": 522
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/liquidation-tower-setpiece.png",
+          "bytes": 14366
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/loader-barrel.png",
+          "bytes": 2136
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/mailbox.png",
+          "bytes": 2747
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/market-stall.png",
+          "bytes": 5730
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/miners-shack.png",
+          "bytes": 6052
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/mining-headframe-setpiece.png",
+          "bytes": 23522
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/moss-boulder.png",
+          "bytes": 5276
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/nuke-liquidation.png",
+          "bytes": 3057
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/ore-cart.png",
+          "bytes": 2605
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/ore-conveyor.png",
+          "bytes": 7191
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/ore-vein-rock.png",
+          "bytes": 3105
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/plank-deck-broken.png",
+          "bytes": 3214
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/porch-stoop.png",
+          "bytes": 4324
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/proof-bridge-setpiece.png",
+          "bytes": 18717
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/proof-pylon.png",
+          "bytes": 1844
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/reed-cluster.png",
+          "bytes": 7856
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/relay-console.png",
+          "bytes": 534
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/relay-tower-setpiece.png",
+          "bytes": 19686
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/rock-shelf.png",
+          "bytes": 3686
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/rock-spire.png",
+          "bytes": 4471
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/rope-bridge-anchor.png",
+          "bytes": 6447
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/rugpull-barricade.png",
+          "bytes": 2519
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/ruined-tenement.png",
+          "bytes": 9350
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/ruined-wall.png",
+          "bytes": 6643
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/salvage-crate.png",
+          "bytes": 337
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/sandbag-nest.png",
+          "bytes": 2950
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/sapling-thicket.png",
+          "bytes": 5018
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/scrap-barricade.png",
+          "bytes": 5067
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/scree-pile.png",
+          "bytes": 3372
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/scrub-bush.png",
+          "bytes": 5076
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/stacked-crates.png",
+          "bytes": 3908
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/stepping-stones.png",
+          "bytes": 3178
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/streetlamp.png",
+          "bytes": 2794
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/submerged-log.png",
+          "bytes": 2893
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/thorn-bramble.png",
+          "bytes": 6324
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/time-dilation.png",
+          "bytes": 2573
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/town-billboard.png",
+          "bytes": 6814
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/warning-beacon.png",
+          "bytes": 1502
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/watch-platform.png",
+          "bytes": 8390
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/watchtower.png",
+          "bytes": 13345
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/water-grass.png",
+          "bytes": 5644
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/water-tower.png",
+          "bytes": 16941
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/wetland-hummock.png",
+          "bytes": 2878
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/wrecked-sedan.png",
+          "bytes": 7061
+        }
+      ]
+    },
+    {
+      "id": "PA-09",
+      "list": "partial-no-edit",
+      "title": "Achievement atlas JSON twin and contact sheet",
+      "commitSubject": "remove the achievement atlas JSON twin and contact sheet",
+      "removedFiles": 2,
+      "removedBytes": 72549,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 72549,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Every reader imports hmh-achievement-atlas-manifest.mjs; the contact sheet is named only by WO-90 cert data, whose test is ledgered and keeps failing the same way.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-contact-sheet.png",
+          "bytes": 12297
+        },
+        {
+          "path": "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.json",
+          "bytes": 60252
+        }
+      ]
+    },
+    {
+      "id": "PA-10",
+      "list": "partial-no-edit",
+      "title": "Unread docs/game-design contact sheets",
+      "commitSubject": "remove unread docs/game-design contact sheets",
+      "removedFiles": 18,
+      "removedBytes": 939032,
+      "lfsFiles": 0,
+      "assetFiles": 18,
+      "assetBytes": 939032,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Named only by docs, write-only generators and the WO-76 anchor audit, which reports contactSheetExists without asserting it.",
+        "Kept: the 11 contact sheets passing tests check (wo52, wo103, the 7 wo97 and 2 wo99 sheets).",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader except the anchor audit report."
+      ],
+      "paths": [
+        {
+          "path": "docs/game-design/assets/hmh-canonical-actor-contact-sheet.png",
+          "bytes": 113222
+        },
+        {
+          "path": "docs/game-design/assets/hmh-final-ambient-world-contact-sheet.png",
+          "bytes": 14038
+        },
+        {
+          "path": "docs/game-design/assets/hmh-final-animation-completion-contact-sheet.png",
+          "bytes": 48068
+        },
+        {
+          "path": "docs/game-design/assets/hmh-final-boss-animation-contact-sheet.png",
+          "bytes": 34810
+        },
+        {
+          "path": "docs/game-design/assets/hmh-final-combat-vfx-contact-sheet.png",
+          "bytes": 13001
+        },
+        {
+          "path": "docs/game-design/assets/hmh-final-setpiece-kit-contact-sheet.png",
+          "bytes": 46310
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-final-animated-props-contact-sheet.png",
+          "bytes": 19822
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png",
+          "bytes": 76819
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-polish-assets-contact-sheet.png",
+          "bytes": 31448
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-sbs-ground-contact-sheet.png",
+          "bytes": 82220
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level-1-sketch-asset-wave-contact-sheet.png",
+          "bytes": 52146
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level2-final-city-contact-sheet.png",
+          "bytes": 35299
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level3-final-getaway-contact-sheet.png",
+          "bytes": 37808
+        },
+        {
+          "path": "docs/game-design/assets/hmh-level3-final-ground-contact-sheet.png",
+          "bytes": 37934
+        },
+        {
+          "path": "docs/game-design/assets/hmh-playable-reference-contact-sheet.json",
+          "bytes": 8774
+        },
+        {
+          "path": "docs/game-design/assets/hmh-playable-reference-contact-sheet.png",
+          "bytes": 117928
+        },
+        {
+          "path": "docs/game-design/assets/hmh-playable-runtime-full-coverage-contact-sheet.png",
+          "bytes": 135613
+        },
+        {
+          "path": "docs/game-design/assets/hmh-wo104-106-world-kit-contact-sheet.png",
+          "bytes": 33772
+        }
+      ]
+    },
+    {
+      "id": "PA-11",
+      "list": "partial-no-edit",
+      "title": "WO-76 QA and contact-sheet PNGs",
+      "commitSubject": "remove WO-76 QA and contact-sheet PNGs",
+      "removedFiles": 6,
+      "removedBytes": 1449641,
+      "lfsFiles": 0,
+      "assetFiles": 6,
+      "assetBytes": 1449641,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "docs/art/ANCHOR_SET.md",
+        "docs/art/wo76/wo76-bank-deco-corner-candidates.md",
+        "docs/art/wo76/wo76-bank-deco-corner-review.md",
+        "docs/art/wo76/wo76-storefront-facade-candidates.md"
+      ],
+      "evidence": [
+        "Only ANCHOR_SET.md and wo76 markdown mention them; tests/hmh-anchor-set.test.mjs reads the approved anchors, the review report JSON and the survivor sheet, which stay.",
+        "Same-commit caveat applied: the four dead image embeds now say the sheet was removed and where it is in history.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/art/wo76/wo76-approved-anchor-set.png",
+          "bytes": 187998
+        },
+        {
+          "path": "docs/art/wo76/wo76-bank-deco-corner-contact-sheet.png",
+          "bytes": 341440
+        },
+        {
+          "path": "docs/art/wo76/wo76-final-anchor-pass-slots-03-10.png",
+          "bytes": 228473
+        },
+        {
+          "path": "docs/art/wo76/wo76-reroll-qa-slots-04-10.png",
+          "bytes": 42895
+        },
+        {
+          "path": "docs/art/wo76/wo76-storefront-facade-all-20-qa-sheet.png",
+          "bytes": 348310
+        },
+        {
+          "path": "docs/art/wo76/wo76-storefront-facade-contact-sheet.png",
+          "bytes": 300525
+        }
+      ]
+    },
+    {
+      "id": "PA-12",
+      "list": "partial-no-edit",
+      "title": "Duplicate Lester reference sprite sheets",
+      "commitSubject": "remove the duplicate Lester reference sprite sheets",
+      "removedFiles": 2,
+      "removedBytes": 435158,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 435158,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Byte-identical to lester-sprites-sheet-01/02.png (no Git saving). The only names are HARD_MONEY_HEROES_CANON.spriteReferences strings in arcade-core.mjs:213-214, which nothing reads (not repointed: portal src is outside this slice).",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "apps/portal/assets/reference/lester-reference-sprites-01.png",
+          "bytes": 242312
+        },
+        {
+          "path": "apps/portal/assets/reference/lester-reference-sprites-02.png",
+          "bytes": 192846
+        }
+      ]
+    },
+    {
+      "id": "PA-13",
+      "list": "partial-no-edit",
+      "title": "Superseded barrier library v1 blend",
+      "commitSubject": "remove the superseded barrier library v1 blend",
+      "removedFiles": 1,
+      "removedBytes": 158493,
+      "lfsFiles": 0,
+      "assetFiles": 1,
+      "assetBytes": 158493,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [],
+      "evidence": [
+        "Superseded by barrier-library-v2.blend, which the hmh-native-barriers tests hash; v1 is referenced nowhere.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "assets-source/hmh-barriers/barrier-library.blend",
+          "bytes": 158493
+        }
+      ]
+    },
+    {
+      "id": "PA-14",
+      "list": "partial-no-edit",
+      "title": "Chikun write-only clip contact sheet and orphan backlog",
+      "commitSubject": "remove the write-only Chikun clip contact sheet and orphan backlog",
+      "removedFiles": 2,
+      "removedBytes": 508780,
+      "lfsFiles": 0,
+      "assetFiles": 2,
+      "assetBytes": 508780,
+      "retiredCodeAndDocs": [],
+      "editedInSameCommit": [
+        "docs/chikun/CHARACTER-SHEET-PIPELINE.md"
+      ],
+      "evidence": [
+        "chikun-sheet-clips.png is write-only pack output; UPGRADE-BACKLOG.md has no inbound reference now or in history.",
+        "Same-commit caveat applied: CHARACTER-SHEET-PIPELINE.md says the pack run writes the sheet and the committed copy was removed.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+      ],
+      "paths": [
+        {
+          "path": "docs/chikun/UPGRADE-BACKLOG.md",
+          "bytes": 5421
+        },
+        {
+          "path": "docs/chikun/chikun-sheet-clips.png",
+          "bytes": 503359
+        }
+      ]
+    }
+  ],
+  "leftInPlace": [
+    {
+      "id": "L1-chikun-ground-audio-v1",
+      "paths": [
+        "apps/portal/assets/generated/chikun-ground-audio-v1",
+        "scripts/build-chikun-ground-audio.py"
+      ],
+      "bytes": 705238,
+      "reason": "Brief exception: the HMH roadmap session keeps it for the Chikun sound pass. Its generator and PY_COMPILE_FILES entry stay with it."
+    },
+    {
+      "id": "L1-receipts-and-tokens",
+      "paths": [
+        "docs/qa/combined-arcade-release-20260913.json",
+        "docs/qa/hmh-quality-release-20260911.json",
+        "?v=arcade-discovery-20260914 cache token"
+      ],
+      "reason": "Same-commit caveats of list 1: README.md links both receipts and docs:links checks them; the cache token is used by live HTML and tests. Their evidence pins now point into Git history."
+    },
+    {
+      "id": "L2-02-remainder",
+      "paths": [
+        "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3"
+      ],
+      "bytes": 3389726,
+      "reason": "tests/arcade-core.test.mjs checks it on disk, and apps/portal/src/arcade-core.mjs still carries the prototypeMusic/musicTracks data strings for all five tracks. Retiring the unit means editing arcade-core.mjs, which is portal src owned by the parallel version-column slice; the brief allows removal only when the dead code is retired in the same commit."
+    },
+    {
+      "id": "L2-03-remainder",
+      "paths": [
+        "apps/portal/assets/hard-money-heroes/environment/hmh-environment-manifest.mjs",
+        "12 desert_approach runtime PNGs (manifest.assets.slice(0, 12))"
+      ],
+      "reason": "arcade-core.mjs imports the .mjs manifest (eagerly bundled) and tests/arcade-core.test.mjs checks the first 12 PNGs on disk. Needs arcade-core.mjs, main.js and editor edits (portal src). Follow-up: retire HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST with the legacy editor."
+    },
+    {
+      "id": "L2-04-remainder",
+      "paths": [
+        "apps/portal/assets/hard-money-heroes/frames (72 files)",
+        "apps/portal/assets/hard-money-heroes/stills (6 files + README.md)",
+        "apps/portal/assets/hard-money-heroes/screens",
+        "apps/portal/assets/lester-production (111 files)"
+      ],
+      "reason": "scripts/verify-generated-assets.mjs (assets:verify, inside vercel:build) validates lester-production, tests/arcade-core.test.mjs checks the remaining frames and stills, and screens/boot-splash.png is the intro-video poster in index.html and discover/*.html. Removal needs arcade-core.mjs, main.js, index.html and verify edits; the stills README defers to the owner."
+    },
+    {
+      "id": "L2-05",
+      "paths": [
+        "apps/portal/assets/hmh-level-editor/runtime-sprite-library.json"
+      ],
+      "bytes": 6656588,
+      "reason": "Read at module top level by tests/hmh-level-editor.test.mjs and by the localhost-only level editor (apps/portal/editor.html, apps/portal/src/hmh-level-editor-*.mjs). That is a working dev tool, not dead code, and retiring it edits portal src; it is the keystone that also holds parts of L2-03, L2-04, L2-06 and L2-07. Owner decision."
+    },
+    {
+      "id": "L2-06-remainder",
+      "paths": [
+        "hmh-animated-roster",
+        "hmh-complete-animations/hmh-complete-animations.mjs",
+        "hmh-final-animation-completion/*.mjs",
+        "hmh-final-boss-animations/*.mjs",
+        "hmh-environment-pixellab-wave-2/*.mjs",
+        "hmh-isometric-pixellab/*.mjs",
+        "hmh-level-environment",
+        "hmh-curated-level-art/{hmh-curated-level-art.mjs,hmh-curated-ground-runtime.mjs}",
+        "pixellab-calibration"
+      ],
+      "reason": "Imported by apps/portal/src/games/hmh/loader.mjs (esbuild fails on a missing target), main.js, hmh-ground-plan.mjs, the editor generated library and about 22 tests; pixellab-calibration is validated by assets:verify. Ledger overlap: tolerated failures sit in files that import them, so removal needs a re-ledger. Do with the canvas-retirement follow-up."
+    },
+    {
+      "id": "L2-07-remainder",
+      "paths": [
+        "hmh-coherent-world (*.mjs, level2-final-city JSON, level1-pixellab-candidates.manifest.json)",
+        "hmh-level-one-ground (*.mjs, final-paint JSON)",
+        "hmh-wo102-megaprops"
+      ],
+      "reason": "main.js still imports these manifests statically, the wo119 module reads level1-pixellab-candidates.manifest.json at import time, and 16 ledgered failures (13 coherent-world, 3 level-one-ground) would turn into module-load errors ('missing ledger failure'). Never re-ledgered here."
+    },
+    {
+      "id": "L2-08-remainder",
+      "paths": [
+        "hmh-reboot-enemy-roster/{forkrunner,liquidator-agent,whale-enforcer,gas-bomber,validator-cultist,the-liquidator}/*-roster-atlas.json",
+        "hmh-reboot-enemy-roster/hmh-enemy-roster-metrics.json"
+      ],
+      "reason": "The role animation, damage, detail and cycle-007 tests read these JSONs as data (not only to check the files), hmh-reboot-production-asset-qa.mjs asserts the metrics (actorCount 7, totalFrames 1368), and hmh-enemy-roster.json plus run-hmh-enemy-roster-pipeline.py would recreate them. Repointing the tests to hmh-native-roster is a test rewrite and a pipeline decision (audit slice F)."
+    },
+    {
+      "id": "L2-09",
+      "paths": [
+        "apps/portal/assets/generated/hmh-reboot-hero-selector",
+        "apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs"
+      ],
+      "bytes": 1805701,
+      "reason": "tests/hmh-reboot-hero-selector-render.test.mjs and the selector --check hash every file, production QA checks them, and hmh-hero-portraits.py imports the selector runner. Retiring the Blender selector pipeline is an owner decision."
+    },
+    {
+      "id": "L2-11-remainder",
+      "paths": [
+        "apps/portal/assets/ads/ad-horizontal-bg.jpg",
+        "apps/portal/assets/ads/ad-vertical-bg.jpg"
+      ],
+      "bytes": 353869,
+      "reason": "Referenced by the dead .ad-banner* block in apps/portal/styles-arcade-polish.css (no element matches it since 6fe83eb6). Removing the JPGs means deleting that CSS block, a portal runtime file outside this slice's asset/script/test scope."
+    },
+    {
+      "id": "L2-12-remainder",
+      "paths": [
+        "docs/testing/VISUAL_BASELINES/hmh-level-1/seed-1337-render-anchor.png"
+      ],
+      "reason": "scripts/visual-regression.mjs still writes it, package.json visual:regression/visual:accept, ship-gate.mjs and AGENTS.md document the harness, and src modules pin the command strings. Retiring the WO-65 harness is a process change for the owner."
+    },
+    {
+      "id": "PA-15..PA-20",
+      "paths": [
+        "hmh-reboot-tripo-props contact sheet + 44 unrequested webps (PA-15)",
+        "hmh-held-weapons contact sheets (PA-16)",
+        "hmh-reboot-production-heroes contact sheets (PA-17)",
+        "sliced level parallax layers (PA-18)",
+        "hard-money-heroes cabinet source PNG (PA-19)",
+        "hmh-production-art-pass.mjs (PA-20)"
+      ],
+      "reason": "Partials that need a test, QA or verify edit are outside the brief (it covers only the no-edit partials). PA-15 also needs the runtime validator's assetCount, PA-16/PA-17 are contact sheets AGENTS.md asks to keep in the repo (deploy exclusion is the audit's alternative), PA-18 cannot be regenerated, and PA-20 needs the L2-06 loader edits."
+    },
+    {
+      "id": "generator-reruns",
+      "paths": [
+        "scripts/build-hmh-level-one-world-blueprint-v3.py",
+        "scripts/chikun-blender/pack-chikun-sheet-atlases.py",
+        "scripts/run-hmh-authored-props-pipeline.py",
+        "scripts/run-hmh-enemy-roster-pipeline.py",
+        "scripts/generate-hmh-achievement-atlas.py"
+      ],
+      "reason": "Live generators kept unchanged: a manual rerun writes the L2-13 maps, docs/chikun/chikun-sheet-clips.png, the authored-props contact sheet and items, the roster contact sheets and the achievement JSON twin/contact sheet again. That is expected regenerated output, not a regression."
+    }
+  ],
+  "verification": {
+    "baseline": {
+      "commit": "0248cd4b",
+      "testRelease": "PASS tests=4850 passed=4799 expected_failures=51"
+    },
+    "npmTest": {
+      "tests": 4850,
+      "pass": 4799,
+      "fail": 51,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "failuresEqualLedger": true,
+      "note": "the 51 failing test names equal docs/hmh-reboot/LEGACY-TEST-RETIREMENT.json exactly (no unexpected, none missing)"
+    },
+    "testRelease": {
+      "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4850 passed=4799 expected_failures=51",
+      "counts": {
+        "tests": 4850,
+        "failed": 51,
+        "passed": 4799,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 4783,
+        "suites": 8
+      },
+      "errors": [],
+      "note": "the regenerated docs/testing/hmh-reboot-test-retirement-gate.json was restored, not committed"
+    },
+    "assetsVerify": "Generated sliced asset verification passed: 76 PNGs; production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames; arcade playlist=26 MP3s (unchanged from base)",
+    "check": "Syntax check passed: 925 JS modules + 118 Python scripts (119 at base; the retired Tripo selector scene builder left PY_COMPILE_FILES)",
+    "contractsCheck": "passed (2026-09 native-fee set)",
+    "docsLinks": "passed: 8 current/public documents",
+    "curatedLevelKitRuntime": "npm run assets:hmh:curated-level-kit-runtime regenerated hmh-curated-level-kit-runtime.mjs with no diff",
+    "build": {
+      "result": "pass, every budget",
+      "hmhInitialPlusSharedBytes": 1046713,
+      "hmhCapBytes": 1048576,
+      "stackedEntryBytes": 27694,
+      "stackedInitialBytes": 572902,
+      "totalEmittedJs": "10.94 MB across 248 files",
+      "delta": "0 B: no bundled module changed (the only deleted .mjs files, hmh-curated-ground-art.mjs and hmh-environment-pixellab-wave-3.mjs, were imported by nothing)"
+    },
+    "browserPass": {
+      "server": "python -m http.server 8891 --directory apps/portal (stopped afterwards)",
+      "origin": "http://127.0.0.1:8891",
+      "pages": [
+        {
+          "name": "home",
+          "ok": true,
+          "requests": 79,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "discover-games",
+          "ok": true,
+          "requests": 82,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "discover-hard-money-heroes",
+          "ok": true,
+          "requests": 79,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "discover-chikun",
+          "ok": true,
+          "requests": 79,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "discover-stacked",
+          "ok": true,
+          "requests": 79,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "hmh-free-start",
+          "ok": true,
+          "requests": 351,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "chikun-free-start",
+          "ok": true,
+          "requests": 303,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        },
+        {
+          "name": "stacked-free-start",
+          "ok": true,
+          "requests": 174,
+          "httpErrors": 0,
+          "consoleErrors": 0,
+          "pageErrors": 0,
+          "abortedRequests": [
+            "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+          ]
+        }
+      ],
+      "serverLog": "913 requests, all 200/206/304, zero 404",
+      "note": "the one aborted request per page is the playlist MP3 media request cancelled by the audio element (net::ERR_ABORTED, not an HTTP error); console warnings are the pre-existing iframe sandbox and WebGL driver notices"
+    }
+  }
+}
