@@ -104,6 +104,34 @@ test('icon fallback prefers the upgrade\'s own power-up art and only falls back 
   assert.equal(resolveUpgradeIconAssetId({ id: '../fake-prop' }), null);
 });
 
+// The 2026-09-25 asset cleanup (PA-08) kept only the item PNGs an upgrade card can paint and removed the
+// contact sheet. resolveUpgradeIconAssetId accepts every power-up id and every weapon id, so all 20 ship even
+// though today's catalog requests 15 (the 5 extra weapon icons are kept for a future requiresWeaponId, not
+// because a card asks for them). A rerun of npm run assets:hmh:authored-props writes one PNG per atlas frame
+// and the contact sheet again; this test fails until those unrequested outputs are dropped.
+test('the authored-props items folder ships exactly the power-up and weapon icons and no contact sheet', () => {
+  const powerUps = [...AUTHORED_PROP_ASSETS.powerUps];
+  const weapons = [...AUTHORED_PROP_ASSETS.weapons];
+  const resolvable = [...powerUps, ...weapons];
+  assert.equal(new Set(resolvable).size, 20, 'power-up and weapon ids must be 20 distinct icons');
+  for (const id of powerUps) assert.equal(resolveUpgradeIconAssetId({ id }), id, `${id} is a power-up icon`);
+  for (const id of weapons) {
+    assert.equal(resolveUpgradeIconAssetId({ id: 'unlisted-branch', requiresWeaponId: id }), id, `${id} is a weapon icon`);
+  }
+
+  const onDisk = fs.readdirSync(ITEM_ROOT).sort();
+  assert.deepEqual(onDisk, resolvable.map((id) => `${id}.png`).sort(), 'items/ must hold exactly the resolvable icons');
+  for (const name of onDisk) {
+    assert.ok(fs.statSync(path.join(ITEM_ROOT, name)).size > 0, `${name} is empty`);
+  }
+
+  const requested = new Set(catalog.map((upgrade) => resolveUpgradeIconAssetId(upgrade)));
+  for (const id of requested) assert.ok(resolvable.includes(id), `${id} is requested but not a resolvable icon`);
+
+  const contactSheet = path.join(ITEM_ROOT, '..', 'hmh-authored-props-contact-sheet.png');
+  assert.equal(fs.existsSync(contactSheet), false, 'the authored-props contact sheet has no reader and must not ship');
+});
+
 test('resolveUpgradeCardPresentation bundles tier, token, label and icon as a frozen record', () => {
   const card = resolveUpgradeCardPresentation(RUN_UPGRADE_CATALOG['proof-of-network'], 1);
   assert.deepEqual(card, {

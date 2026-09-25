@@ -57,7 +57,9 @@ def require_mcp_client() -> None:
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave"
 QA_OUT = ROOT / ".hermes/tmp/hmh-aaa-pixellab-quality-wave"
-LEDGER = OUT / "aaa-quality-wave-ledger.json"
+# The job ledger holds raw PixelLab job ids and has no runtime reader, so it lives in the
+# gitignored QA lane, never in the deployed portal folder (retired there 2026-09-25).
+LEDGER = QA_OUT / "aaa-quality-wave-ledger.json"
 ROSTER_ROOT = ROOT / "apps/portal/assets/generated/hmh-animated-roster"
 ROSTER_MANIFEST = ROSTER_ROOT / "hmh-animated-roster.mjs"
 UUID_RE = re.compile(r"[0-9a-fA-F-]{36}")
@@ -307,7 +309,7 @@ def load_ledger() -> dict[str, Any]:
 
 
 def save_ledger(ledger: dict[str, Any]) -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
     LEDGER.write_text(json.dumps(ledger, indent=2) + "\n", encoding="utf-8")
 
 

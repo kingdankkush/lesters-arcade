@@ -9,6 +9,7 @@ import {
   buildAuthoredEncampmentPlacements,
   AUTHORED_CAMP_KIT,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { resolveUpgradeIconAssetId } from '../apps/hmh-reboot/src/upgrade-card-presentation.mjs';
 import { LEVEL_ONE_WORLD } from '../apps/hmh-reboot/src/level-one-world.mjs';
 
 const manifest = JSON.parse(readFileSync(
@@ -46,9 +47,12 @@ test('every camp asset is on the world-prop roster', () => {
   }
 });
 
-test('every camp asset resolves to an item icon', () => {
+// The 2026-09-25 asset cleanup removed the never-requested world-prop item PNGs. items/ keeps only the 12
+// power-up and 8 weapon icons; tests/hmh-reboot-upgrade-cards-and-settings.test.mjs pins that inventory on disk.
+test('every camp asset id forms a prop URL but no upgrade card requests its icon (world props ship no item PNG)', () => {
   for (const id of Object.keys(CAMP)) {
-    assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} has no icon`);
+    assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} is not a valid prop id`);
+    assert.equal(resolveUpgradeIconAssetId({ id, requiresWeaponId: id }), null, `${id} would paint a missing item PNG on an upgrade card`);
   }
 });
 

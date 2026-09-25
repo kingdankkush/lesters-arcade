@@ -15,7 +15,7 @@
 | `world-v3-infrastructure/crossroads-wagon-trading-post` | `infrastructure/crossroads-wagon-trading-post.png` | Crossroads focal landmark |
 | `world-v3-infrastructure/rugpull-gulch-sheriff-water-tower` | `infrastructure/rugpull-gulch-sheriff-water-tower.png` | boss-yard perimeter landmark |
 
-The normalized runtime contact sheet is `docs/art/qa/hmh-world-v3-art-wave-3-contact-sheet.png`.
+The normalized runtime contact sheet was `docs/art/qa/hmh-world-v3-art-wave-3-contact-sheet.png`; nothing read it, and it was removed in the 2026-09-25 asset cleanup (it remains in Git history at `0248cd4b`).
 
 ## Generation and provenance
 

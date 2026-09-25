@@ -79,7 +79,6 @@ test('WO-119 docs, proof, syntax gate, and PixelLab generator are wired', () => 
   assert.equal(syntax.includes('scripts/write-wo119-pixellab-aaa-wave.py'), true);
 
   assert.equal(existsSync(repoUrl('scripts/pixellab-hmh-aaa-quality-wave.py')), true);
-  assert.equal(existsSync(repoUrl('apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json')), true);
 
   const generator = readText('scripts/pixellab-hmh-aaa-quality-wave.py');
   for (const actor of ['coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake', 'scorpion-ambusher', 'sybil-drone']) {
@@ -203,6 +202,59 @@ test('promoted influencer camera operator ships a complete human 8-state runtime
       assert.ok(actor.animations[state][direction].length >= 6, `${state}/${direction} needs at least six frames`);
     }
   }
+});
+
+// The raw PixelLab job ledger has no runtime reader and was retired from the deployed portal folder in the
+// 2026-09-25 asset cleanup. The generator keeps it in the gitignored .hermes/tmp QA lane, starts from an empty
+// ledger when the file is absent, and saving it never recreates the portal output folder. load_ledger and
+// save_ledger need neither Pillow nor the MCP client, so the probe blocks both imports like the probes above;
+// importing the real packages made this test several times slower than its siblings.
+test('PixelLab quality-wave ledger lives in the gitignored QA lane, starts empty and never writes into apps/portal', () => {
+  const scriptPath = fileURLToPath(repoUrl('scripts/pixellab-hmh-aaa-quality-wave.py'));
+  const repoRoot = fileURLToPath(new URL('..', import.meta.url));
+  const probe = spawnSync('python', ['-c', String.raw`
+import builtins, importlib.util, json, os, tempfile
+from pathlib import Path
+path = Path(os.environ['HMH_WAVE_SCRIPT'])
+spec = importlib.util.spec_from_file_location('hmh_wave', path)
+m = importlib.util.module_from_spec(spec)
+real_import = builtins.__import__
+def optional_deps_absent(name, *args, **kwargs):
+    if name.split('.')[0] in {'PIL', 'mcp'}:
+        raise ModuleNotFoundError(name)
+    return real_import(name, *args, **kwargs)
+builtins.__import__ = optional_deps_absent
+try:
+    spec.loader.exec_module(m)
+finally:
+    builtins.__import__ = real_import
+assert m.Image is None and m.ClientSession is None, 'the probe must not import Pillow or the MCP client'
+ledger_rel = m.LEDGER.relative_to(m.ROOT).as_posix()
+assert ledger_rel == '.hermes/tmp/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json', ledger_rel
+assert m.LEDGER.parent == m.QA_OUT, (m.LEDGER, m.QA_OUT)
+assert not ledger_rel.startswith('apps/'), ledger_rel
+with tempfile.TemporaryDirectory() as tmp:
+    tmp = Path(tmp)
+    m.OUT = tmp / 'portal-out'
+    m.LEDGER = tmp / 'qa' / 'nested' / 'aaa-quality-wave-ledger.json'
+    empty = m.load_ledger()
+    assert empty == {'id': 'hmh-aaa-pixellab-quality-wave-v1', 'style': m.STYLE, 'targets': {}}, empty
+    assert not m.LEDGER.exists(), 'loading must not create the ledger'
+    empty['targets']['paper-hand'] = {'status': 'queued', 'animations': {}}
+    m.save_ledger(empty)
+    assert m.LEDGER.is_file(), 'save_ledger must create the QA lane directory'
+    assert not m.OUT.exists(), 'save_ledger must not recreate the portal output folder'
+    assert m.load_ledger()['targets'] == {'paper-hand': {'status': 'queued', 'animations': {}}}
+    m.LEDGER.write_text(json.dumps({'targets': {'x': {}}}), encoding='utf-8')
+    partial = m.load_ledger()
+    assert partial['id'] == 'hmh-aaa-pixellab-quality-wave-v1' and partial['style'] == m.STYLE, partial
+    assert partial['targets'] == {'x': {}}, partial
+`], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    env: { ...process.env, HMH_WAVE_SCRIPT: scriptPath },
+  });
+  assert.equal(probe.status, 0, probe.stderr || probe.stdout);
 });
 
 test('PixelLab ledger compaction preserves resumability while dropping raw responses and staging manifests', () => {

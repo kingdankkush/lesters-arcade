@@ -411,6 +411,8 @@ Directory:
 
 `docs/game-design/assets/hmh-level-1-world-blueprint-v3/`
 
+The committed preview images were removed from the working tree in the 2026-09-25 asset cleanup because nothing reads them; they remain in Git history at `0248cd4b`, and a manual `npm run assets:hmh:level1:world-v3` run writes the maps again.
+
 Files:
 
 - `terrain-map.png`

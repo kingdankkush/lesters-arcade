@@ -19,7 +19,7 @@ This document is the style-lock registry for WO-76. All ten anchors have approve
 | 09 | Micro-scene composition, tipped delivery cart plus spilled crates plus rat | `docs/art/anchors/micro-scene-composition.png` | `docs/art/anchors/micro-scene-composition.provenance.json` |
 | 10 | UI chrome sample, draft card frame plus HP bar segment | `docs/art/anchors/ui-chrome-sample.png` | `docs/art/anchors/ui-chrome-sample.provenance.json` |
 
-![WO-76 approved anchor set](wo76/wo76-approved-anchor-set.png)
+The approved anchor contact sheet (`wo76/wo76-approved-anchor-set.png`) was removed in the 2026-09-25 asset cleanup; the ten approved anchors themselves are in `docs/art/anchors/`, and the sheet is in Git history at `0248cd4b`.
 
 ## Quality decisions
 
@@ -33,10 +33,10 @@ This document is the style-lock registry for WO-76. All ten anchors have approve
 
 - Seed audit: `docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.md`
 - Approved 10-anchor summary: `docs/art/wo76/wo76-approved-anchor-set.json`
-- Approved anchor contact sheet: `docs/art/wo76/wo76-approved-anchor-set.png`
+- Approved anchor contact sheet: `docs/art/wo76/wo76-approved-anchor-set.png` (removed 2026-09-25; in Git history at `0248cd4b`)
 - Storefront candidate/review artifacts: `docs/art/wo76/wo76-storefront-*`
 - Bank candidate/review artifacts: `docs/art/wo76/wo76-bank-deco-corner-*`
-- Final pass/reroll QA artifacts: `docs/art/wo76/wo76-final-anchor-pass-slots-03-10.png`, `docs/art/wo76/wo76-reroll-qa-slots-04-10.png`
+- Final pass/reroll QA artifacts: `docs/art/wo76/wo76-final-anchor-pass-slots-03-10.png`, `docs/art/wo76/wo76-reroll-qa-slots-04-10.png` (removed 2026-09-25; in Git history at `0248cd4b`)
 
 ## Approval checklist
 

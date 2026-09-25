@@ -2,7 +2,7 @@
 
 **Approved winner:** candidate `09`
 
-![Bank Deco corner candidate sheet](wo76-bank-deco-corner-contact-sheet.png)
+The candidate sheet (`wo76-bank-deco-corner-contact-sheet.png`) was removed in the 2026-09-25 asset cleanup; it is in Git history at `0248cd4b`.
 
 Candidate `09` was selected as the best high-bit/noir bank-district anchor because its circular vault door and stepped Deco crown read as a financial landmark rather than a generic shopfront. Runners-up: `12`, `10`, `05`.
 

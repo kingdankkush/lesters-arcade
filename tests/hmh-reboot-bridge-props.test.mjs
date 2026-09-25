@@ -6,6 +6,7 @@ import {
   authoredPropItemUrl,
   buildAuthoredWorldPropPlacements,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { resolveUpgradeIconAssetId } from '../apps/hmh-reboot/src/upgrade-card-presentation.mjs';
 
 const repoUrl = (path) => fileURLToPath(new URL(`../${path}`, import.meta.url));
 const manifest = JSON.parse(readFileSync(repoUrl('apps/hmh-reboot/assets/source/blender/hmh-authored-props.json'), 'utf8'));
@@ -54,9 +55,12 @@ test('every bridge asset is on the world-prop roster', () => {
   }
 });
 
-test('every bridge asset resolves to an item icon', () => {
+// The 2026-09-25 asset cleanup removed the never-requested world-prop item PNGs. items/ keeps only the 12
+// power-up and 8 weapon icons; tests/hmh-reboot-upgrade-cards-and-settings.test.mjs pins that inventory on disk.
+test('every bridge asset id forms a prop URL but no upgrade card requests its icon (world props ship no item PNG)', () => {
   for (const id of Object.keys(BRIDGE)) {
-    assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} has no icon`);
+    assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} is not a valid prop id`);
+    assert.equal(resolveUpgradeIconAssetId({ id, requiresWeaponId: id }), null, `${id} would paint a missing item PNG on an upgrade card`);
   }
 });
 

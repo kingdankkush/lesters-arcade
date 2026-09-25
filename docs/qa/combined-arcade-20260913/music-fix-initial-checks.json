@@ -1,1 +1,0 @@
-{"running": null, "results": [{"name": "curated", "exit": 0, "seconds": 0.32}, {"name": "generated", "exit": 0, "seconds": 0.25}, {"name": "build", "exit": 0, "seconds": 0.71}, {"name": "tests", "exit": 1, "seconds": 323.89}]}
