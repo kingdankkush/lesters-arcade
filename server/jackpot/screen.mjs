@@ -29,8 +29,8 @@ import { classifyJackpotError } from './errors.mjs';
 import {
   analyzeChikunEvidence, computeFeatures, flagReasonFor, holdCodes, pureSoftSignals, reviewTimeline, STOCK_MAX_TICKS, THRESHOLDS,
 } from './plausibility.mjs';
-import { countWalletTickets, readSessionTickets } from './ticket-log.mjs';
-import { weekIndexOf } from './weeks.mjs';
+import { countWalletTickets, readSessionTickets, readTicketLogSince } from './ticket-log.mjs';
+import { weekIndexOf, weekIndexOfKey } from './weeks.mjs';
 
 export const TICKET_EARLY_SECONDS = 120; // openedAt >= issuedAt - 120 (A26)
 export const TICKET_LATE_SECONDS = 1800; // openedAt <= issuedAt + 1800 (A26)
@@ -100,13 +100,22 @@ export async function readScreenRow(db, sessionId32) {
 // The seed-provenance check (design §B.3): a logged ticket whose MAC
 // recomputes with SESSION_SECRET, whose salt re-derives the stored identity's
 // seed, and whose issuedAt bounds openedAt (A26). → { status, ... }
-//   'ok' | 'missing' (H10) | 'invalid' (integrity) ; throws when no secret.
+//   'ok' | 'missing' (H10) | 'unlogged' | 'invalid' (integrity) ; throws when no secret.
+// 'unlogged': no ticket, but the run's week is older than the oldest logged
+// ticket, so it predates the log (design §B.4 H10 applies only to weeks at or
+// after the week the log shipped; runbook E6 normally makes this empty). An
+// empty log is 'missing': with the jackpot live, the log should be writing.
 export async function checkSeedProvenance(db, { row, identity, openedAtSeconds, secret }) {
   const key = typeof secret === 'function' ? secret() : secret;
   if (typeof key !== 'string' || key.length < 32) throw Object.assign(new Error('session secret unavailable'), { code: 'SECRET_UNAVAILABLE' });
   const handle = identity?.sessionId ?? row.sessionHandle;
   const tickets = await readSessionTickets(db, { wallet: row.wallet, sessionHandle: handle, gameId: row.gameId, seasonId: identity?.seasonId ?? row.seasonId, buildHash: identity?.buildHash ?? row.buildHash });
-  if (!tickets.length) return { status: 'missing', tickets: 0 };
+  if (!tickets.length) {
+    const since = await readTicketLogSince(db, { gameId: row.gameId });
+    const sinceWeek = since === null ? null : weekIndexOfKey(since);
+    if (sinceWeek !== null && Number.isFinite(openedAtSeconds) && weekIndexOf(openedAtSeconds) < sinceWeek) return { status: 'unlogged', tickets: 0, logSince: since };
+    return { status: 'missing', tickets: 0, logSince: since };
+  }
   const expectedSeed = Number(identity?.seed ?? row.seed);
   let macValid = false;
   for (const ticket of tickets) {

@@ -121,6 +121,16 @@ export async function readSessionTickets(db, { wallet, sessionHandle, gameId = '
   return rows.map(ticketRowFrom);
 }
 
+// The week the log shipped, as far as the log can tell: the week key of the
+// oldest logged ticket of a game, or null when nothing was ever logged. H10
+// applies only to runs of that week or later (design §B.4: "for weeks at or
+// after the week the log shipped"); prune-tickets only drops tickets older
+// than 60 days, long after their weeks are terminal. Served by stl_week.
+export async function readTicketLogSince(db, { gameId = 'chikun' } = {}) {
+  const rows = await db.query('SELECT week_key FROM seed_ticket_log WHERE game_id = $1 ORDER BY week_key ASC LIMIT 1', [String(gameId)]);
+  return rows[0]?.week_key ?? null;
+}
+
 // Tickets issued to a wallet for a game in one week (S11).
 export async function countWalletTickets(db, { wallet, gameId = 'chikun', weekKey }) {
   const rows = await db.query('SELECT count(*)::int AS n FROM seed_ticket_log WHERE game_id = $1 AND week_key = $2 AND wallet = $3', [String(gameId), String(weekKey), String(wallet).toLowerCase()]);

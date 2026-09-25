@@ -12,6 +12,7 @@ import {
 } from '../server/jackpot/plausibility.mjs';
 import { crossWalletFunding, sameRun, screenCandidate } from '../server/jackpot/screen.mjs';
 import { upsertCandidate } from '../server/jackpot/store.mjs';
+import { weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
 import { pilotFor } from '../scripts/chikun-difficulty-harness.mjs';
 import { createPgliteClient, seedWalletProfile } from './helpers/pglite-client.mjs';
 import { CHIKUN, FIXTURE_SESSION_SECRET, ensureMigrated, flapEvidence, humanLikeEvidence, launchRulesRow, seedJackpotRun, seedTicketRow } from './fixtures/jackpot-server/helpers.mjs';
@@ -186,6 +187,18 @@ test('late evidence, missing tickets and non-stock clients are held or flagged',
     const truncated = await honestRun(db, { wallet: wallet(7), evidenceFor: (seed) => ({ ...humanLikeEvidence(seed), maxTicks: 30_000 }) });
     const truncatedScreen = await screen(db, truncated);
     assert.deepEqual([truncatedScreen.result, truncatedScreen.integrity.code, truncatedScreen.codes], ['integrity-fail', 'non-stock-client', ['H7']]);
+  });
+
+  // H10 holds only runs of weeks at or after the week the log shipped (design §B.4): the log's oldest ticket.
+  await withDb(async (db) => {
+    const early = await honestRun(db, { wallet: wallet(8), logTicket: false });
+    const emptyLog = await screen(db, early);
+    assert.deepEqual([emptyLog.result, emptyLog.codes, emptyLog.provenance.status, emptyLog.provenance.logSince], ['hold', ['H10'], 'missing', null], 'an empty log is not an excuse: it should be writing');
+    // Every logged ticket is from a later week: the run predates the log, so nothing is held on H10.
+    const later = await honestRun(db, { wallet: wallet(9), logTicket: false });
+    await seedTicketRow(db, { wallet: later.wallet, sessionHandle: later.sessionHandle, ticket: later.ticket, weekKey: weekKeyOfIndex(W40 + 1) });
+    const predates = await screen(db, early);
+    assert.deepEqual([predates.result, predates.codes, predates.provenance.status, predates.provenance.logSince], ['pass', [], 'unlogged', weekKeyOfIndex(W40 + 1)]);
   });
 });
 

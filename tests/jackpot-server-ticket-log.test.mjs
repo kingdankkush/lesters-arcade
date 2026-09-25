@@ -158,6 +158,27 @@ test('the ticket log is best effort, validated and prunable', async () => {
     assert.equal(await pruneTickets(db, { beforeIso: '2026-09-01T00:00:00Z' }), 0);
     assert.equal(await pruneTickets(db, { beforeIso: '2026-10-01T00:00:00Z' }), 1);
     assert.equal(await countWalletTickets(db, { wallet: PLAYER, weekKey: '2026-W40' }), 0);
+
+    // Where the Vercel runtime exposes a request context, the insert is handed to its waitUntil, so a
+    // function frozen after the response still finishes it (the promise is never awaited on the path).
+    const CONTEXT = Symbol.for('@vercel/request-context');
+    const registered = [];
+    const entry = (mac) => ({ wallet: PLAYER, sessionId: SESSION, gameId: 'chikun', seasonId: BODY.seasonId, buildHash: BODY.buildHash, seedTicket: { mac, salt: 'cd'.repeat(16), issuedAt: NOW / 1000 } });
+    globalThis[CONTEXT] = { get: () => ({ waitUntil: (promise) => { registered.push(promise); } }) };
+    try {
+      const background = logSeedTicketInBackground(db, entry('9a'.repeat(32)));
+      assert.deepEqual([registered.length, registered[0] === background], [1, true]);
+      assert.deepEqual(await background, { logged: true });
+    } finally {
+      delete globalThis[CONTEXT];
+    }
+    // A context that throws is plain fire and forget.
+    globalThis[CONTEXT] = { get: () => { throw new Error('no context'); } };
+    try {
+      assert.deepEqual(await logSeedTicketInBackground(db, entry('9b'.repeat(32))), { logged: true });
+    } finally {
+      delete globalThis[CONTEXT];
+    }
   } finally {
     await db.close();
   }
