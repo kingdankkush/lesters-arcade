@@ -205,7 +205,7 @@ test('the runtime loads the resolver as a dynamic chunk, records hits after the 
   assert.ok(prune > deathVisual && prune < source.indexOf('enemyDeathMarkers.has(enemy.id)', deathVisual), 'pruned before the corpse is queued');
   const reset = source.indexOf('lastEnemyAttack = null;\n    lastEnemyStrike = null;');
   assert.ok(reset >= 0);
-  assert.ok(source.indexOf('enemyHitFeedbackById.clear();', reset) < source.indexOf('resetEnemyMarkers([]);', reset), 'cleared in the run reset block');
+  assert.ok(source.indexOf('enemyHitFeedbackById.clear();', reset) < source.indexOf('syncEnemyMarkers([]);', reset), 'cleared in the run reset block');
 
   // Applied after the pinned scale.set, as separate multiplies, with the
   // pinned reduce-motion idiom and the reduce-flash setting.

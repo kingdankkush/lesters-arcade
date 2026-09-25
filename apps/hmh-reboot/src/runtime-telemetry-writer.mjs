@@ -35,6 +35,7 @@ export function writeRuntimeTelemetry({
   encounterDirector,
   endurancePressurePilotEnabled,
   enemyDeathMarkers,
+  enemyDisplayPool,
   enemyMarkers,
   enemyPopulation,
   enemyRosterIndexes,
@@ -279,6 +280,12 @@ export function writeRuntimeTelemetry({
   dataset.enemyAttackDrops = String(lastEnemyAttack?.droppedEvents ?? 0);
   dataset.enemyDeathVisuals = String(enemyDeathMarkers.size);
   dataset.enemyEliteVisuals = String([...enemyMarkers.values()].filter((enemyMarker) => enemyMarker.eliteProjection).length);
+  // Display pool pressure: construction should stop once a crowd is warm.
+  if (enemyDisplayPool) {
+    dataset.enemyDisplaysCreated = String(enemyDisplayPool.stats.created);
+    dataset.enemyDisplaysReused = String(enemyDisplayPool.stats.reused);
+    dataset.enemyDisplaysIdle = String([...enemyDisplayPool.idle.values()].reduce((sum, bucket) => sum + bucket.length, 0));
+  }
   const encounterSnapshot = runtimeEncounterSnapshot(simulation?.tick ?? 0);
   dataset.encounterBand = encounterSnapshot.bandId;
   dataset.endurancePressurePilot = String(endurancePressurePilotEnabled);

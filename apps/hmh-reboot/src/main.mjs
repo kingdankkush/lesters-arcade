@@ -425,6 +425,9 @@ async function boot() {
   const DISMEMBER_POLICY_TYPES = new Set(['splash', 'pierce', 'pellet']);
   const killDismembers = (weaponId) => DISMEMBER_POLICY_TYPES.has(HMH_WEAPON_DEFINITIONS[weaponId]?.policy?.type) || /grenade|nuke|launcher/.test(String(weaponId ?? ''));
   const claimTouchOnboarding = createTouchOnboardingGate(touchUiEnabled);
+  // The enemy display pool is fetched beside the renderer init and awaited
+  // before the first marker exists, so it stays out of the initial JS.
+  const enemyDisplayPoolModule = import('./enemy-display-pool.mjs');
   const app = new Application();
   let handleBridgeProtocolError = (error) => setStatus('Bridge protocol error', error.message);
   let bridge = null;
@@ -1007,9 +1010,9 @@ async function boot() {
       Assets.load(asset.imageUrl),
     ]).then(([metadata, texture]) => {
       // Validate and build one display before publishing to the shared maps.
-      // Publishing first meant a bad atlas threw from inside resetEnemyMarkers
-      // after the old markers were already destroyed, leaving every enemy
-      // permanently invisible behind a swallowed exception.
+      // Publishing first meant a bad atlas threw from inside the marker
+      // rebuild after the old markers were already destroyed, leaving every
+      // enemy permanently invisible behind a swallowed exception.
       const index = createEnemyRosterAtlasIndex(metadata, archetypeId);
       createEnemyRosterDisplay({
         index,
@@ -1022,7 +1025,7 @@ async function boot() {
       enemyRosterIndexes.set(archetypeId, index);
       enemyRosterTextures.set(archetypeId, texture);
       // Rebuild live bodies so the authored art appears without a restart.
-      if (grayboxEnemies.length > 0) resetEnemyMarkers(grayboxEnemies);
+      syncEnemyMarkers(grayboxEnemies, true);
       if (archetypeId === 'the-liquidator') {
         // The boss previously proxied whale-enforcer poses; it now has its own
         // authored crown-rig silhouette.
@@ -1116,8 +1119,6 @@ async function boot() {
       .stroke({ color: ELITE_RING_COLOR, width: 2.5, alpha: 0.5 + pulse * 0.4 });
   };
 
-  const createEnemyMarker = (enemy) => createRosterOrVectorDisplay(enemy.archetypeId, isEliteEnemyProjection(enemy.id));
-
   // Telemetry only. Screen rectangles of the enemy and boss bodies actually
   // drawn this frame, so the visual gate can crop and compare sprite lighting,
   // which the whole-frame luminance signature cannot resolve. Read-only
@@ -1136,22 +1137,24 @@ async function boot() {
     return rects;
   };
 
-  const resetEnemyMarkers = (enemies) => {
-    for (const child of enemyVisuals.removeChildren()) { worldDepthLayer.detach(child); child.destroy(); }
-    enemyMarkers.clear();
-    for (const enemy of enemies) {
-      const graphic = createEnemyMarker(enemy);
-      enemyMarkers.set(enemy.id, graphic);
-      enemyVisuals.addChild(graphic);
-      worldDepthLayer.attach(graphic);
-    }
-  };
+  // Projection only. Live markers and corpses come from per-archetype pools
+  // and are reset to their freshly built state on reuse, instead of every
+  // spawn and kill destroying and rebuilding every enemy display. The key
+  // changes exactly when createRosterOrVectorDisplay would build another
+  // kind: a roster index and its texture are published and withdrawn together.
+  const { createEnemyDisplayPool } = await enemyDisplayPoolModule;
+  const enemyDisplayPool = createEnemyDisplayPool({
+    create: createRosterOrVectorDisplay,
+    keyFor: (archetypeId, elite) => enemyRosterIndexes.get(archetypeId) ?? `${archetypeId}:${elite}`,
+    eliteOf: isEliteEnemyProjection,
+    markers: enemyMarkers,
+    parent: enemyVisuals,
+    depthLayer: worldDepthLayer,
+  });
+  const syncEnemyMarkers = enemyDisplayPool.sync;
 
   const clearEnemyDeathMarkers = () => {
-    for (const child of enemyDeathVisuals.removeChildren()) {
-      worldDepthLayer.detach(child);
-      child.destroy();
-    }
+    for (const death of enemyDeathMarkers.values()) enemyDisplayPool.release(death.graphic);
     enemyDeathMarkers.clear();
   };
 
@@ -1172,12 +1175,8 @@ async function boot() {
       dismember: cause?.dismember === true,
       direction: cause?.direction ?? null,
     });
-    pruneCorpseCapacity(enemyDeathMarkers, (oldest) => {
-      worldDepthLayer.detach(oldest.graphic);
-      enemyDeathVisuals.removeChild(oldest.graphic);
-      oldest.graphic.destroy();
-    });
-    const graphic = createRosterOrVectorDisplay(enemy.archetypeId, eliteProjection);
+    pruneCorpseCapacity(enemyDeathMarkers, (oldest) => enemyDisplayPool.release(oldest.graphic));
+    const graphic = enemyDisplayPool.acquire(enemy.archetypeId, eliteProjection);
     graphic.zIndex = worldDepthKey(enemy.y);
     enemyDeathMarkers.set(enemy.id, {
       graphic,
@@ -1824,9 +1823,7 @@ async function boot() {
       for (const [enemyId, death] of enemyDeathMarkers) {
         const corpse = corpsePresentation(death, simulation?.tick ?? 0, corpseNowMs);
         if (corpse.expired) {
-          worldDepthLayer.detach(death.graphic);
-          enemyDeathVisuals.removeChild(death.graphic);
-          death.graphic.destroy();
+          enemyDisplayPool.release(death.graphic);
           enemyDeathMarkers.delete(enemyId);
           continue;
         }
@@ -2757,6 +2754,7 @@ async function boot() {
           encounterDirector,
           endurancePressurePilotEnabled,
           enemyDeathMarkers,
+          enemyDisplayPool,
           enemyMarkers,
           enemyPopulation,
           enemyRosterIndexes,
@@ -2857,7 +2855,7 @@ async function boot() {
     lastEnemyAttack = null;
     lastEnemyStrike = null;
     enemyHitFeedbackById.clear();
-    resetEnemyMarkers([]);
+    syncEnemyMarkers([]);
     clearEnemyDeathMarkers();
     enemyVisualFacing.clear();
     enemyTelegraphs.clear();
@@ -3089,7 +3087,7 @@ async function boot() {
       groundZ: queryGround(bossSpawn.x, bossSpawn.y).groundZ,
       startTick: bossDebugEnabled ? 1 : 72_000,
     });
-    resetEnemyMarkers(grayboxEnemies);
+    syncEnemyMarkers(grayboxEnemies);
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: LEVEL_ONE_WORLD.player.radius, minZ: 0, maxZ: 56 });
     previousGrenade = false;
     previousDash = false;
@@ -3505,7 +3503,7 @@ async function boot() {
           isRouteReachable: (point) => point.routeValid === true,
           visualMode: 'normal',
         });
-      if (lastDirectorStep.inserted) resetEnemyMarkers(grayboxEnemies);
+      if (lastDirectorStep.inserted) syncEnemyMarkers(grayboxEnemies);
 
       lastBossStep = liquidatorBoss.active && tick >= liquidatorBoss.startTick
         ? stepLiquidatorBoss({ boss: liquidatorBoss, tick, player: { x: actor.x, y: actor.y, groundZ: actor.groundZ } })
@@ -4310,7 +4308,7 @@ async function boot() {
               schedule.burstRemaining = 1;
             }
           }
-          if (inserted) resetEnemyMarkers(grayboxEnemies);
+          if (inserted) syncEnemyMarkers(grayboxEnemies);
           continue;
         }
         if (event.type !== 'attack') continue;
@@ -4647,7 +4645,7 @@ async function boot() {
           }
           retiredEnemies = retireEnemyFromPopulation(enemyPopulation, scoreEvent.enemyId, { tick, reason: 'defeated' }).retired || retiredEnemies;
         }
-        if (retiredEnemies) resetEnemyMarkers(grayboxEnemies);
+        if (retiredEnemies) syncEnemyMarkers(grayboxEnemies);
         const defeatTransition = playerDefeatController.resolve({
           health: playerHealth,
           kills: runKills,
