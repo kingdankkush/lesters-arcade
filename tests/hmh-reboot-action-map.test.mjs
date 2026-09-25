@@ -15,14 +15,40 @@ import { InputState } from '../apps/hmh-reboot/src/input.mjs';
 
 test('M3 one canonical action map names keyboard, gamepad, touch, and help text', () => {
   assert.deepEqual(Object.keys(HMH_ACTION_MAP), [
-    'moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause',
+    'moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause', 'dodge',
   ]);
   for (const action of Object.values(HMH_ACTION_MAP)) {
     assert.ok(action.label);
     assert.ok(action.keyboard);
-    assert.ok(action.gamepad || action.touch || action.id.startsWith('move') || action.id.startsWith('weaponSlot'));
+    // Dodge is the one keyboard-only action: touch and gamepad dodge automatically.
+    assert.ok(action.gamepad || action.touch || action.id.startsWith('move') || action.id === 'dodge');
     assert.ok(action.help);
   }
+});
+
+test('S1.1 the dodge row: Left Shift, Right Shift alternate, keyboard only, rebindable and Ranked-locked', () => {
+  const dodge = HMH_ACTION_MAP.dodge;
+  assert.equal(dodge.keyboard, 'ShiftLeft');
+  assert.equal(dodge.gamepad, '', 'no gamepad binding: the gamepad keeps the automatic dodge');
+  assert.equal(dodge.touch, '', 'no touch binding: mobile controls are unchanged');
+  assert.equal(DEFAULT_KEYBOARD_BINDINGS.dodge, 'ShiftLeft');
+  for (const code of ['ShiftLeft', 'ShiftRight']) assert.equal(keyboardActionPressed(new Set([code]), DEFAULT_KEYBOARD_BINDINGS, 'dodge'), true, code);
+  assert.equal(keyboardActionPressed(new Set(['Space']), DEFAULT_KEYBOARD_BINDINGS, 'dodge'), false, 'Space never dodges');
+  const help = Object.fromEntries(actionHelpRows().map((row) => [row.id, row]));
+  assert.deepEqual(help.dodge.keyboardAlternates, ['ShiftRight']);
+
+  const rebound = rebindKeyboardAction(DEFAULT_KEYBOARD_BINDINGS, 'dodge', 'KeyC');
+  assert.equal(rebound.dodge, 'KeyC');
+  assert.equal(keyboardActionPressed(new Set(['ShiftLeft']), rebound, 'dodge'), false, 'a rebound dodge drops its default alternate');
+  assert.throws(() => rebindKeyboardAction(DEFAULT_KEYBOARD_BINDINGS, 'dodge', 'KeyC', { rankedActive: true }), /locked during an active ranked run/i);
+
+  // Bindings saved before the dodge existed gain the default; a Left Shift
+  // already taken by another action falls back to Right Shift, never Space.
+  const legacy = { moveUp: 'KeyW', moveDown: 'KeyS', moveLeft: 'KeyA', moveRight: 'KeyD', grenade: 'KeyF', weaponNext: 'KeyQ', pause: 'Escape' };
+  assert.equal(normalizeKeyboardBindings(legacy).dodge, 'ShiftLeft');
+  const shiftGrenade = normalizeKeyboardBindings({ ...legacy, grenade: 'ShiftLeft' });
+  assert.equal(shiftGrenade.grenade, 'ShiftLeft', 'an older binding keeps its key');
+  assert.equal(shiftGrenade.dodge, 'ShiftRight');
 });
 
 test('M4 keyboard remapping resolves conflicts deterministically and locks ranked runs', () => {

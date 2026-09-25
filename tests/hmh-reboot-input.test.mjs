@@ -114,7 +114,9 @@ test('keyboard pointer touch and gamepad produce parity-equivalent canonical act
   const pointerActions = canonical(keyboard);
   const touchActions = canonical(touch);
   const gamepadActions = canonical(gamepad);
-  const gameplay = ({ aimAssist, aimDevice, ...actions }) => actions;
+  // Device-mode fields: aim assist, the aim device, and whether the dodge is
+  // the keyboard's manual one (package S1.1) or the automatic one.
+  const gameplay = ({ aimAssist, aimDevice, manualDodge, ...actions }) => actions;
   assert.deepEqual(gameplay(pointerActions), gameplay(touchActions));
   assert.deepEqual(gameplay(touchActions), gameplay(gamepadActions));
   assert.equal(pointerActions.aimAssist, false);
@@ -149,6 +151,7 @@ test('reset clears sticky movement aim and actions after blur visibility or poin
 test('rapid one-shot combat taps survive a zero-step render frame and are consumed by exactly one fixed tick', () => {
   const bindings = [
     ['KeyF', 'grenade'],
+    ['ShiftLeft', 'dash'],
   ];
   for (const [code, action] of bindings) {
     const input = new InputState();
@@ -176,7 +179,7 @@ test('rapid one-shot combat taps survive a zero-step render frame and are consum
 });
 
 test('released buffered combat taps enter only the first tick of a four-step catch-up frame', () => {
-  for (const [code, action] of [['KeyF', 'grenade']]) {
+  for (const [code, action] of [['KeyF', 'grenade'], ['ShiftLeft', 'dash']]) {
     const input = new InputState();
     const simulation = new DeterministicSimulation();
     const observed = [];
@@ -418,4 +421,60 @@ test('zero remaining touches releases every engaged control (dropped-pointerup g
   const source = await (await import('node:fs/promises')).readFile(new URL('../apps/hmh-reboot/src/touch-controls.mjs', import.meta.url), 'utf8');
   assert.match(source, /surfaceListen\('touchend', releaseWhenNoTouchesRemain\)/);
   assert.match(source, /surfaceListen\('touchcancel', releaseWhenNoTouchesRemain\)/);
+});
+
+test('S1.1 the keyboard dodge is one buffered edge per press and the dodge mode follows the active device', () => {
+  const input = new InputState();
+  const simulation = new DeterministicSimulation();
+  const observed = [];
+  simulation.onStep(({ input: actions }) => observed.push([actions.dash, actions.manualDodge]));
+  simulation.start();
+  const frame = (nowMs, steps = 1) => {
+    const snapshot = input.snapshot({ ...context, nowMs });
+    const result = simulation.update(FIXED_STEP_MS * steps, snapshot.actions, snapshot.heldActions);
+    if (result.steps > 0) input.consumeBufferedActions(snapshot.sequence);
+    return snapshot;
+  };
+  input.setKey('KeyD', true, 1);
+  frame(2);
+  input.setKey('ShiftLeft', true, 3);
+  frame(4, 3);
+  // Held Shift never repeats the dodge, even after the cooldown could expire.
+  for (let now = 5; now < 40; now += 1) frame(now);
+  input.setKey('ShiftLeft', false, 41);
+  input.setKey('ShiftLeft', true, 42);
+  frame(43);
+  const dodges = observed.filter(([dash]) => dash).length;
+  assert.equal(dodges, 2, 'two presses, two dodge ticks');
+  assert.deepEqual(observed.slice(1, 4), [[true, true], [false, true], [false, true]], 'catch-up ticks never replay the press');
+  assert.ok(observed.every(([, manual]) => manual === true), 'keyboard play is manual dodge throughout');
+
+  const fresh = new InputState();
+  assert.equal(fresh.snapshot({ ...context, nowMs: 1 }).actions.manualDodge, false, 'no device yet: automatic');
+  fresh.setTouch({ moveX: 1, moveY: 0 }, 2);
+  assert.equal(fresh.snapshot({ ...context, nowMs: 3 }).actions.manualDodge, false, 'touch keeps the automatic dodge');
+  fresh.setKey('KeyW', true, 4);
+  assert.equal(fresh.snapshot({ ...context, nowMs: 5 }).actions.manualDodge, true, 'the keyboard switches it off');
+  fresh.setGamepad({ moveX: 1, moveY: 0 }, 6);
+  assert.equal(fresh.snapshot({ ...context, nowMs: 7 }).actions.manualDodge, false, 'the gamepad keeps the automatic dodge');
+  fresh.setPointer({ screenX: 500, screenY: 300 }, 8);
+  assert.equal(fresh.snapshot({ ...context, nowMs: 9 }).actions.manualDodge, true, 'the mouse is the keyboard-mouse device');
+  const padOnly = mapGamepadSnapshot({ axes: [0, 0, 0, 0], buttons: Array.from({ length: 16 }, () => ({ pressed: true })) });
+  assert.equal(padOnly.actions.dash, false, 'no gamepad dodge binding');
+  fresh.setTouch({ moveX: 1, moveY: 0, dash: true }, 10);
+  assert.equal(fresh.snapshot({ ...context, nowMs: 11 }).actions.dash, false, 'no touch dodge binding');
+});
+
+test('S1.1 the dodge mode survives an input reset: a keyboard player stays on the manual dodge after a level-up pick or a blur', () => {
+  const input = new InputState();
+  input.setKey('KeyW', true, 1);
+  for (const [reason, at] of [['upgrade-select', 2], ['blur', 3], ['artwork-ready', 4]]) {
+    input.reset(reason, at);
+    const { actions, metadata } = input.snapshot({ ...context, nowMs: at + 1 });
+    assert.equal(metadata.lastActiveDevice, 'none', `${reason} still clears the active device`);
+    assert.equal(actions.manualDodge, true, `${reason}: no automatic-dodge window until the next key`);
+  }
+  input.setTouch({ moveX: 1, moveY: 0 }, 10);
+  input.reset('blur', 11);
+  assert.equal(input.snapshot({ ...context, nowMs: 12 }).actions.manualDodge, false, 'a touch player keeps the automatic dodge across a reset');
 });

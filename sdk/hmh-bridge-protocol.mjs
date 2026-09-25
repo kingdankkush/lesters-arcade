@@ -75,8 +75,12 @@ function validateSettings(value) {
     for (const key in cosmetics) if (cosmetics[key] !== null && !integerInRange(cosmetics[key], 0, 0xffffff)) return 'settings.cosmetics is invalid';
   }
   if (Object.hasOwn(value, 'keyboardBindings')) {
-    const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
-    const bindingError = exactKeys(value.keyboardBindings, actionIds, 'settings.keyboardBindings');
+    const requiredActionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
+    // The keyboard dodge (HMH design package S1.1) is optional so a seven-key
+    // map from an older parent stays valid; the child fills its default.
+    const bindings = value.keyboardBindings;
+    const actionIds = isPlainRecord(bindings) && Object.hasOwn(bindings, 'dodge') ? [...requiredActionIds, 'dodge'] : requiredActionIds;
+    const bindingError = exactKeys(bindings, actionIds, 'settings.keyboardBindings');
     if (bindingError) return bindingError;
     const unique = new Set();
     for (const actionId of actionIds) {

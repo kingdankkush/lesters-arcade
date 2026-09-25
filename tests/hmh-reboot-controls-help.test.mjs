@@ -52,6 +52,10 @@ test('the first-run hint follows canonical touch mode and only names active touc
   const desktop = resolveControlsHint({ touchUiEnabled: false });
   assert.equal(desktop.mode, 'desktop');
   assert.match(desktop.text, /WASD/i);
+  // S1.1: the desktop keyboard's manual dodge is named; touch has none.
+  assert.match(desktop.text, /Shift dodge/);
+  assert.doesNotMatch(touch.text, /shift|dodge/i);
+  assert.match(resolveControlsHint({ keyboardBindings: { ...DEFAULT_KEYBOARD_BINDINGS, dodge: 'KeyC' } }).text, / C dodge /);
   assert.equal(desktop.lifetimeMs, CONTROLS_HINT_LIFETIME_MS.desktop);
 });
 

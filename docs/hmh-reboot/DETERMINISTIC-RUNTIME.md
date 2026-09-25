@@ -20,6 +20,7 @@ Status: reboot foundation contract for `apps/hmh-reboot`
 - The same seed and action sequence must produce the same tick event sequence regardless of render-frame partitioning.
 - Encounter and drop randomness use independently consumed named streams. Reading one stream must never advance the other.
 - Wall-clock timestamps and input-latency diagnostics are metadata and never enter deterministic gameplay inputs.
+- The keyboard dodge (design package S1.1) travels in the tick input like every other action: `dash` is a buffered edge that one admitted tick sees per press, and `manualDodge` is true while the keyboard and mouse are the last-used device, across input resets (the automatic dodge is then off). Both are plain booleans in the replay tick, so a replayed input stream reproduces every manual, refused and automatic dodge.
 
 ## World coordinates
 

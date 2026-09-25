@@ -23,7 +23,7 @@ export function resolveControlsHint({ touchUiEnabled = false, keyboardBindings }
   const move = ['moveUp', 'moveLeft', 'moveDown', 'moveRight'].map((id) => keyboardHintLabel(help[id].keyboard)).join('');
   return Object.freeze({
     mode: 'desktop',
-    text: `${move} move · Mouse aim · Right click grenade · ${keyboardHintLabel(help.weaponNext.keyboard)} swap · Tab wheel · ${keyboardHintLabel(help.pause.keyboard)} menu`,
+    text: `${move} move · Mouse aim · Right click grenade · ${keyboardHintLabel(help.dodge.keyboard)} dodge · ${keyboardHintLabel(help.weaponNext.keyboard)} swap · Tab wheel · ${keyboardHintLabel(help.pause.keyboard)} menu`,
     lifetimeMs: CONTROLS_HINT_LIFETIME_MS.desktop,
   });
 }
@@ -193,7 +193,7 @@ export function createCockpitUi({
       wrapper.append(label, value);
       elements.controlsCard.append(wrapper);
     }
-    for (const [label, text] of [['Aim', 'Mouse or AIM stick. Release AIM for automatic targeting and firing.'], ['Automatic actions', 'Approach machinery to activate it. Collect supplies and power-ups by walking over them. Close combat and safe dodges happen as you move.']]) {
+    for (const [label, text] of [['Aim', 'Mouse or AIM stick. Release AIM for automatic targeting and firing.'], ['Automatic actions', 'Approach machinery to activate it. Collect supplies and power-ups by walking over them. Close combat happens as you move. With a keyboard you dodge with the Dodge key; on touch or a gamepad, safe dodges happen as you move.']]) {
       const row = createSafeTextElement(documentRef, 'div');
       row.append(createSafeTextElement(documentRef, 'dt', { text: label }), createSafeTextElement(documentRef, 'dd', { text }));
       elements.controlsCard.append(row);

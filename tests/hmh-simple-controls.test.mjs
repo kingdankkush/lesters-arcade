@@ -9,7 +9,7 @@ import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounte
 
 test('only movement, aim, grenade, swap and the menu are exposed; old gestures never emit extra actions',()=>{
   assert.deepEqual(TOUCH_CONTROL_SPEC.buttons.map(b=>b.action),['grenade','weaponNext','pause']);
-  assert.deepEqual(actionHelpRows().map(r=>r.id),['moveUp','moveDown','moveLeft','moveRight','grenade','weaponNext','pause']);
+  assert.deepEqual(actionHelpRows().map(r=>r.id),['moveUp','moveDown','moveLeft','moveRight','grenade','weaponNext','pause','dodge']);
   assert.doesNotMatch(touchControlsHintText(),/double.tap|power|melee/i);
   assert.match(touchControlsHintText(),/SWAP/);
   let now=0;const touch=new TouchControlState({now:()=>now});
@@ -17,8 +17,11 @@ test('only movement, aim, grenade, swap and the menu are exposed; old gestures n
     touch.beginStick(1,role,{x:0,y:0});now+=30;touch.endPointer(1);now+=30;
     assert.equal(touch.snapshot().dash,false);assert.equal(touch.snapshot().melee,false);
   }
-  const old=keyboardActionRecord(new Set(['Space','KeyE','ShiftLeft','KeyQ','Digit2']),DEFAULT_KEYBOARD_BINDINGS);
+  const old=keyboardActionRecord(new Set(['Space','KeyE','KeyQ','Digit2']),DEFAULT_KEYBOARD_BINDINGS);
   for(const key of ['fire','melee','dash']) assert.equal(old[key],false);
+  // S1.1 (owner decision 2026-09-25): Left Shift is the desktop keyboard's
+  // manual dodge. Touch and gamepad still never emit a dash.
+  assert.equal(keyboardActionRecord(new Set(['ShiftLeft']),DEFAULT_KEYBOARD_BINDINGS).dash,true,'Left Shift dodges on a keyboard');
   assert.equal(old.weaponNext,true,'Q is the keyboard swap');
   assert.equal(old.weaponSlot,0);
   const pad=mapGamepadSnapshot({buttons:Array.from({length:16},()=>({pressed:true})),axes:[0,0,0,0]});
