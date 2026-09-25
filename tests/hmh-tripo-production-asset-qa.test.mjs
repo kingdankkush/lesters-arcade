@@ -96,7 +96,9 @@ test('rehashing a corrupted atlas does not bypass exact per-frame reconstruction
 });
 
 test('unified production QA actually includes the native package report', () => {
-  const result = spawnSync(process.execPath, ['scripts/hmh-reboot-production-asset-qa.mjs'], {cwd:root,encoding:'utf8',timeout:300000});
+  // 15 min: the spawned QA runs Python atlas reports and took 5.7-7.1 min on the owner's machine under
+  // a busy local gate (2026-09-25); Vercel's build machine finishes it well inside the old 300 s limit.
+  const result = spawnSync(process.execPath, ['scripts/hmh-reboot-production-asset-qa.mjs'], {cwd:root,encoding:'utf8',timeout:900000});
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const report = JSON.parse(result.stdout.trim().split('\n').at(-1));
   assert.equal(report.nativePropReport?.assetCount, 56, 'unified production QA omitted the native Tripo package');
