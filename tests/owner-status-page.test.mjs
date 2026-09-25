@@ -36,7 +36,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const html = readFileSync(join(root, 'apps', 'portal', 'owner', 'status.html'), 'utf8');
 const pageModule = readFileSync(join(root, 'apps', 'portal', 'owner', 'status.mjs'), 'utf8');
 const RELAYER = '0x494af36ea4958c417260faf3efb3b672b343eaf6';
-const IDS = ['owner-status-page', 'status-summary', 'status-warnings', 'status-refresh', 'status-loaded', 'status-service', 'status-relayer', 'status-queue', 'status-index', 'status-cron-index-chain', 'status-cron-settle-retry'];
+const IDS = ['owner-status-page', 'status-summary', 'status-warnings', 'status-refresh', 'status-loaded', 'status-service', 'status-relayer', 'status-queue', 'status-index', 'status-cron-index-chain', 'status-cron-settle-retry', 'status-cron-weekly-jackpot', 'status-jackpot'];
 
 // A healthy /api/health report (the shape api/health.mjs answers).
 function healthyReport(overrides = {}) {
@@ -438,4 +438,21 @@ test('an overdue admin review turns the summary red and links the review page', 
   assert.deepEqual([item.attributes['data-warning'], item.attributes['data-level']], ['jackpot-awaiting-admin', 'bad']);
   const link = item.children.find((child) => child.tagName === 'A');
   assert.deepEqual([link.attributes.href, link.textContent], ['/owner/jackpot.html', 'Open the jackpot review page']);
+  // status.html has the jackpot cron list and the jackpot facts list, so both render (not only the warnings).
+  assert.deepEqual(page.rows('status-cron-weekly-jackpot'), [
+    ['Last success', '2026-09-24 17:56 UTC (4 min ago)', ''],
+    ['Last error', 'none', ''],
+    ['Runs / failures', '30 / 0', ''],
+  ]);
+  assert.deepEqual(page.rows('status-jackpot').map(([label, value, level]) => [label, label === 'Keeper' ? value.startsWith(KEEPER) : value, level]), [
+    ['Configured', 'yes', ''],
+    ['Keeper', true, ''],
+    ['Keeper balance', '0.05 zkLTC', ''],
+    ['Paused (env / chain)', 'no / no', ''],
+    ['Awaiting admin', '1', 'warn'],
+    ['Claim pending', '0', ''],
+    ['Failed weeks', '0', ''],
+  ]);
+  assert.match(html, /<h3>weekly-jackpot · every 5 min<\/h3>\s*<dl id="status-cron-weekly-jackpot"><\/dl>/);
+  assert.match(html, /<h2 id="status-jackpot-title">Weekly jackpot<\/h2>\s*<dl id="status-jackpot"><\/dl>/);
 });
