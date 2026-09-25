@@ -84,8 +84,12 @@ test('the menu has a hero with inline vector art, four big tiles and a device sc
 });
 
 test('the runtime toggles the settings card from its tile, reports only failed saves and navigates the card by gamepad', () => {
-  assert.match(main, /\$\('preferencePanel'\)\.addEventListener\('toggle'/, 'the tile mirrors the card state in aria-expanded');
-  assert.match(main, /setAttribute\('aria-expanded', String\(\$\('preferencePanel'\)\.open\)\)/);
+  assert.match(main, /\$\('preferencePanel'\)\.addEventListener\('toggle', mirrorSettingsTile\)/, 'the tile mirrors the card state in aria-expanded, including summary clicks');
+  assert.match(main, /const mirrorSettingsTile = \(\) => \$\('settingsTile'\)\.setAttribute\('aria-expanded', String\(\$\('preferencePanel'\)\.open\)\);/);
+  // The details toggle event is queued, not synchronous: code that opens or closes the card itself
+  // updates the tile in the same task (the reactive smoke at 390 px read a stale 'false' otherwise).
+  assert.match(main, /panel\.open = !panel\.open;\s*mirrorSettingsTile\(\);/, 'the tile click updates aria-expanded in the same task');
+  assert.match(main, /\$\('preferencePanel'\)\.open = false; mirrorSettingsTile\(\);/, 'the results screen closes the card and the tile together');
   assert.match(main, /input\[name=effectsPreset\]:checked/, 'opening from the tile lands on the checked effects preset');
   assert.match(main, /import \{ applyMenuAction \} from '\.\/menu-navigation\.mjs';/);
   assert.match(main, /applyMenuAction\(overlay, action, document\.activeElement\)/);
@@ -118,6 +122,9 @@ test('the stylesheet keeps 44 px targets, visible focus, a 320 px column and red
   // The effects segmented control: 44 px segments, full-size hit area, 2 x 2 on phones, visible focus, not colour alone.
   assert.match(css, /\.segmented\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   assert.match(css, /\.segment\{[^}]*min-height:44px/);
+  // The generic label rule centres its children; the visible pill must fill the 44 px target, not
+  // shrink to its text (the first browser run showed 18 px pills with the inset bar through "Standard").
+  assert.match(css, /\.segment\{[^}]*align-items:stretch/);
   assert.match(css, /\.segment input\{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0/);
   assert.match(css, /@media \(max-width:440px\)\{\.segmented\{grid-template-columns:1fr 1fr\}\}/);
   assert.match(css, /\.segment input:checked\+span\{[^}]*font-weight:800/);

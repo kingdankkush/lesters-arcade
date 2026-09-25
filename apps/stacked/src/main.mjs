@@ -37,6 +37,7 @@ const SAVE_NOTE = 'Changes save automatically on this device. Every setting here
 const SAVE_FAILED = 'Couldn’t save on this device. Your changes still apply to this run.';
 const effectRadios = () => [$('effectsOff'), $('effectsCalm'), $('effectsStandard'), $('effectsFull')];
 const effectsPreset = () => STACKED_EFFECTS_PRESETS.includes(settings?.video?.effectsPreset) ? settings.video.effectsPreset : 'standard';
+const mirrorSettingsTile = () => $('settingsTile').setAttribute('aria-expanded', String($('preferencePanel').open));
 let lastFeedback = '';
 let counters = { hardDrops: 0, spinClears: 0, allClearStreakMax: 0 }, allClearStreak = 0;
 const reportError = error => { status.textContent = error.message; $('overlayTitle').textContent = 'Unable to continue'; $('overlayCopy').textContent = error.message; overlay.hidden = false; $('continueButton').hidden = true; };
@@ -121,7 +122,7 @@ async function finish() {
   if (submitted) return; submitted = true; input.clear(); state();
   const s = run.snapshot;
   $('overlayTitle').textContent = s.terminalReason === 'tick-ceiling' ? 'Ledger complete' : 'Run complete';
-  $('preferencePanel').open = false;
+  $('preferencePanel').open = false; mirrorSettingsTile();
   $('overlayCopy').textContent = run.assisted ? 'Assisted Free practice. No profile or leaderboard write.' : 'Verifying your recorded run…';
   $('resultScore').textContent = s.score.toLocaleString();
   for (const [id, value] of [['statLines', s.lines], ['statLevel', s.level], ['statTime', Math.floor(s.tick / 3600) + ':' + String(Math.floor(s.tick / 60) % 60).padStart(2, '0')], ['statHalvings', s.quadClears], ['statCombo', s.maxCombo]]) $(id).textContent = String(value);
@@ -256,13 +257,15 @@ function updatePreferences() {
 for (const id of ['motionToggle', 'ghostToggle', 'gridToggle', 'visualizerSelect', 'pieceMarksToggle', 'flashToggle', 'leftHandToggle', 'volumeRange', 'effectsOff', 'effectsCalm', 'effectsStandard', 'effectsFull']) $(id).addEventListener('change', updatePreferences);
 $('volumeRange').addEventListener('input', showVolume);
 // The Settings tile opens and closes the card; the tile mirrors it in aria-expanded,
-// including summary clicks and the results screen closing it.
+// including summary clicks and the results screen closing it. The details toggle
+// event is queued, so code that sets `open` itself mirrors the tile in the same task.
 $('settingsTile').addEventListener('click', () => {
   const panel = $('preferencePanel');
   panel.open = !panel.open;
+  mirrorSettingsTile();
   if (panel.open) overlay.querySelector('input[name=effectsPreset]:checked')?.focus();
 });
-$('preferencePanel').addEventListener('toggle', () => $('settingsTile').setAttribute('aria-expanded', String($('preferencePanel').open)));
+$('preferencePanel').addEventListener('toggle', mirrorSettingsTile);
 $('scoresTile').addEventListener('click', () => {
   const shelf = $('scoreShelf'), open = shelf.hidden;
   if (open) {
