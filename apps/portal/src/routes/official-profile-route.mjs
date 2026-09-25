@@ -7,6 +7,8 @@ import { LITVM_DEPLOYMENT } from '../generated/litvm-addresses.mjs';
 // and passes the run-history builders in: importing hmh-run-history.mjs from
 // this lazy chunk would split the chunk the HMH child shares with the portal
 // (its run-summary schema and combo modules) and grow the child's initial JS.
+// So buildHmhRunHistoryModel and buildHmhRunDetailsModel are required deps
+// with no default: the device-local profile and the run details call them.
 
 const formatPermille = (value) => `${(Math.max(0, Number(value) || 0) / 10).toFixed(1)}%`;
 const titleCase = (value) => String(value ?? '').split('-').map((part) => part[0]?.toUpperCase() + part.slice(1)).join(' ');

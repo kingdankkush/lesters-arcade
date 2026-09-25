@@ -264,8 +264,29 @@ async function staticGraph(entry) {
   return new Set(Object.keys(result.metafile.inputs));
 }
 
+const mainUrl = new URL('../apps/portal/main.js', import.meta.url);
+
+// The two factories main.js builds its routes with, run from main.js's own
+// text: each import() is recorded and resolved against main.js, so a swapped
+// or wrong specifier loads the wrong chunk here exactly as it would live.
+async function mainRouteFactories() {
+  const main = readFileSync(mainUrl, 'utf8').replace(/\r\n/g, '\n');
+  const block = main.match(/^const createOfficialProfileRoute = \(deps\) => [\s\S]*?^\}\);\nconst createOfficialLeaderboardRoute = \(deps\) => [\s\S]*?^\}\);$/m)?.[0];
+  assert.ok(block, 'main.js defines both factories, one after the other');
+  const source = [
+    `import { createLazyLeaderboardRoute, createLazyProfileRoute } from ${JSON.stringify(new URL('../apps/portal/src/routes/lazy-routes.mjs', import.meta.url).href)};`,
+    'export function factories(importFromMain) {',
+    block.replace(/\bimport\(/g, 'importFromMain('),
+    '  return { createOfficialProfileRoute, createOfficialLeaderboardRoute };',
+    '}',
+  ].join('\n');
+  const { factories } = await import(`data:text/javascript,${encodeURIComponent(source)}`);
+  const specifiers = [];
+  return { specifiers, ...factories((specifier) => { specifiers.push(specifier); return import(new URL(specifier, mainUrl).href); }) };
+}
+
 test('main.js reaches the Scores and Profile routes only through dynamic import()', async () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  const main = readFileSync(mainUrl, 'utf8').replace(/\r\n/g, '\n');
   assert.doesNotMatch(main, /^import [^;]*from '\.\/src\/routes\/official-(profile|leaderboard)-route\.mjs';$/m, 'no static import of either route');
   assert.match(main, /load: \(\) => import\('\.\/src\/routes\/official-profile-route\.mjs'\),/);
   assert.match(main, /load: \(\) => import\('\.\/src\/routes\/official-leaderboard-route\.mjs'\),/);
@@ -274,6 +295,12 @@ test('main.js reaches the Scores and Profile routes only through dynamic import(
   const from = main.indexOf('const officialProfileRoute = createOfficialProfileRoute({');
   const call = main.slice(from, main.indexOf('\n});', from));
   assert.match(call, /\n {2}buildHmhRunDetailsModel,\n {2}buildHmhRunHistoryModel,\n/, 'main.js hands the run-history builders to the lazy profile route');
+  // The factories are code, so they live beside their call site, not inside
+  // the static import block (contract §10.3 keeps that block import-only).
+  const lastImport = [...main.matchAll(/^import [^\n]*$|^\} from '[^']+';$/gm)].at(-1).index;
+  assert.ok(main.indexOf('\nconst createOfficialProfileRoute = ') > lastImport, 'the Profile factory is below the import block');
+  assert.ok(main.indexOf('\nconst createOfficialLeaderboardRoute = ') > lastImport, 'the Scores factory is below the import block');
+  assert.ok(main.indexOf('\nconst createOfficialLeaderboardRoute = ') < from, 'both factories are defined before the routes are built');
 
   const initial = await staticGraph('apps/portal/main.js');
   assert.ok(initial.has('apps/portal/src/routes/lazy-routes.mjs'));
@@ -285,6 +312,31 @@ test('main.js reaches the Scores and Profile routes only through dynamic import(
     'apps/portal/src/leaderboard-view.mjs',
     'apps/portal/src/stacked-profile.mjs',
   ]) assert.equal(initial.has(lazy), false, `${lazy} is not in the portal's initial JS`);
+});
+
+test('main.js builds Profile from the profile chunk and Scores from the scores chunk', async () => {
+  const main = await mainRouteFactories();
+  const cases = [
+    ['Profile preview', () => previewProfileDeps(), main.createOfficialProfileRoute, (route) => route.renderProfile(), /CANONICAL RUN HISTORY/,
+      ['./src/routes/official-profile-route.mjs']],
+    ['Profile hosted', () => hostedProfileDeps(), main.createOfficialProfileRoute, (route) => route.renderProfile(), /Your Verified Profile/,
+      ['./src/routes/official-profile-route.mjs', './src/routes/hosted-profile-view.mjs']],
+    ['Scores preview', () => boardDeps({ hosted: false }), main.createOfficialLeaderboardRoute, (route) => route.renderLeaderboards(), /Preview · this device/,
+      ['./src/routes/official-leaderboard-route.mjs']],
+    ['Scores hosted', () => boardDeps({ hosted: true }), main.createOfficialLeaderboardRoute, (route) => route.renderLeaderboards(), /Pilot 1/,
+      ['./src/routes/official-leaderboard-route.mjs', './src/routes/hosted-leaderboard-view.mjs']],
+  ];
+  for (const [name, fixture, create, render, shows, chunks] of cases) {
+    main.specifiers.length = 0;
+    const h = fixture();
+    const route = create(h.deps);
+    render(route);
+    await route.hydrate();
+    await settle();
+    assert.equal(buttons(h.grid, 'Try again').length, 0, `${name}: the factory's chunk has the route it builds`);
+    assert.match(text(h.grid), shows, name);
+    assert.deepEqual(main.specifiers, chunks, `${name}: the chunks main.js downloads for it`);
+  }
 });
 
 test('the lazy route chunks share no module with the HMH or STACKED children', async () => {
