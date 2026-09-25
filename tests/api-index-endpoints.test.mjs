@@ -295,12 +295,13 @@ test('E9 never returns client claims or plausibility flags', async () => withFre
   assert.equal('plausibility' in session, false);
   assert.equal(session.verification, 'plausibility', 'the only plausibility on E9 is the verification label');
   assert.deepEqual(Object.keys(session).sort(), [
-    'achievements', 'avatarUri', 'cardRev', 'confirmedAt', 'contract', 'displayName', 'explorerUrl', 'gameId', 'gameTitle', 'runtimeId', 'score',
+    'achievements', 'avatarUri', 'cardRev', 'confirmedAt', 'contract', 'displayName', 'explorerUrl', 'gameId', 'gameTitle', 'jackpotChampion', 'runtimeId', 'score',
     'seasonId', 'sessionId32', 'shareId', 'standing', 'stats', 'status', 'txHash', 'blockNumber', 'verification', 'verifiedAt', 'wallet', 'walletShort',
   ].sort());
   assert.deepEqual(session.contract, { kills: 300, maxCombo: 30, survivalSeconds: 1080, bossId: 'boss-liquidator' });
   assert.equal(session.verification, 'plausibility');
   assert.deepEqual(session.standing, { weekly: 1, monthly: 1, allTime: 1 });
+  assert.equal(session.jackpotChampion, null, 'no jackpot week was won (jackpot-server, design §C.7)');
   const hidden = await invoke(handler, { url: `/api/verified-session?id=${pending.sessionId32}` });
   assert.deepEqual([hidden.status, hidden.headers['cache-control']], [404, 'public, s-maxage=30'], 'a pending run reads as missing');
   const unpublished = await invoke(handler, { url: `/api/verified-session?id=${submitted.sessionId32}` });

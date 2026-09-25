@@ -10,7 +10,11 @@ import { importChikunReplay } from '../apps/chikun/src/replay-file.mjs';
 import { issueSessionToken } from '../apps/portal/src/server-session.mjs';
 import { JACKPOT_CACHE_CONTROL, REPLAY_CACHE_CONTROL, potFields, publicReview, publicWeekStatus } from '../server/jackpot/api-model.mjs';
 import { clearAdminCache } from '../server/jackpot/review-model.mjs';
-import { weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
+import { casWeekStatus, ensureWeekRow, updateWeek } from '../server/jackpot/store.mjs';
+import { boundsIsoOf, dateRangeLabel, weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
+import { cardRevision, readPublicProfile, readPublicSession } from '../server/neon/queries.mjs';
+import { buildShareCardElement } from '../server/share/render-card.mjs';
+import { renderSharePage } from '../server/share/render-page.mjs';
 import { createPgliteClient, seedWalletProfile } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import { SETTLE_SESSION_VALUE } from './helpers/settle-fixtures.mjs';
@@ -21,7 +25,9 @@ import { createCronDriver } from './fixtures/jackpot-server/cron-driver.mjs';
  * jackpot-server AC11-AC13 (design §C.5, §C.6): GET /api/jackpot has the
  * exact shape the jackpot-ui slice builds against, from the Neon mirrors
  * only; the replay endpoint serves closed-week candidates only; the review
- * endpoint answers only the live on-chain admin.
+ * endpoint answers only the live on-chain admin. AC15 (design §C.7): the
+ * profile's jackpot.wins and the share champion badge come from finished,
+ * paid (or claim-pending) weeks with a prize above 0 only.
  */
 
 let h;
@@ -221,4 +227,89 @@ test('review endpoint requires the current on-chain admin', async () => {
   assert.equal((await call(reviewApi, url, { headers: bearer(admin.address) })).status, 403, 'the rotated-out admin');
   assert.equal((await call(reviewApi, url, { headers: bearer(newAdmin.address) })).status, 200, 'the new admin');
   assert.equal(ethers.getAddress(await h.jackpot.admin()), newAdmin.address);
+});
+
+// A week row of another (retired) instance, straight into the mirror: its
+// own token, any status, prize and winner.
+const OTHER_CONTRACT = `0x${'c3'.repeat(20)}`;
+const OTHER_TOKEN = Object.freeze({ address: `0x${'d4'.repeat(20)}`, symbol: 'CHIKUN', decimals: 9, testnet: false });
+async function otherWeek(index, { status, prizeWei = null, unclaimedWei = '0', winner = null, session = null, score = null }) {
+  await ensureWeekRow(db, { contract: OTHER_CONTRACT, weekIndex: index, token: OTHER_TOKEN });
+  const weekKey = weekKeyOfIndex(index);
+  const current = (await db.query('SELECT status FROM jackpot_weeks WHERE contract = $1 AND week_key = $2', [OTHER_CONTRACT, weekKey]))[0].status;
+  if (current !== status) assert.equal(await casWeekStatus(db, { contract: OTHER_CONTRACT, weekKey, from: current, to: status }), true);
+  await updateWeek(db, { contract: OTHER_CONTRACT, weekKey, set: { prize_wei: prizeWei, unclaimed_wei: unclaimedWei, winner, winning_session: session, winning_score: score } });
+}
+
+test('profile lists jackpot wins with their own token and never zero-prize weeks', async () => {
+  const paid = await d.week(W);
+  assert.equal(paid.status, 'paid');
+  // A zero-prize "paid" week, a rolled week and a still-open week of the same wallet never list.
+  await otherWeek(W - 12, { status: 'paid', prizeWei: '0', winner: runA.wallet, session: `0x${'e1'.repeat(32)}`, score: '5' });
+  await otherWeek(W - 11, { status: 'rolled', prizeWei: '0', winner: null });
+  await otherWeek(W - 10, { status: 'review', winner: null });
+  // A claim-pending win on the other instance lists with that instance's token.
+  await otherWeek(W - 9, { status: 'claim-pending', prizeWei: '4200000000', unclaimedWei: '4200000000', winner: runA.wallet, session: `0x${'e2'.repeat(32)}`, score: '321' });
+  try {
+    const profile = await readPublicProfile(db, runA.wallet, { nowMs: d.clockMs, catalog: null });
+    const bounds = boundsIsoOf(W);
+    assert.deepEqual(profile.jackpot.wins, [
+      {
+        weekKey: weekKeyOfIndex(W), startsAt: bounds.startsAt, closesAt: bounds.closesAt, prizeWei: (1_000n * TOKEN).toString(), unclaimedWei: '0', status: 'paid',
+        token: { symbol: 'tCHIKUN', decimals: 18, testnet: true }, contract: h.contract, score: runA.score, sessionId: runA.sessionId32, finalizeTx: paid.finalizeTxHash,
+      },
+      {
+        weekKey: weekKeyOfIndex(W - 9), startsAt: boundsIsoOf(W - 9).startsAt, closesAt: boundsIsoOf(W - 9).closesAt, prizeWei: '4200000000', unclaimedWei: '4200000000', status: 'claim-pending',
+        token: { symbol: 'CHIKUN', decimals: 9, testnet: false }, contract: OTHER_CONTRACT, score: 321, sessionId: `0x${'e2'.repeat(32)}`, finalizeTx: null,
+      },
+    ]);
+    assert.match(paid.finalizeTxHash, /^0x[0-9a-f]{64}$/);
+    // Every profile has the field, so the shape is stable.
+    assert.deepEqual((await readPublicProfile(db, runB.wallet, { nowMs: d.clockMs, catalog: null })).jackpot, { wins: [] });
+    assert.deepEqual((await readPublicProfile(db, `0x${'0f'.repeat(20)}`, { nowMs: d.clockMs, catalog: null })).jackpot, { wins: [] });
+  } finally {
+    await db.query('DELETE FROM jackpot_weeks WHERE contract = $1', [OTHER_CONTRACT]);
+  }
+});
+
+test('share badge marks paid champions and busts the card cache', async () => {
+  const champion = await readPublicSession(db, runA.sessionId32);
+  const startsAt = boundsIsoOf(W).startsAt;
+  const label = `Weekly Jackpot Champion · ${dateRangeLabel(startsAt)}`;
+  assert.match(label, /^Weekly Jackpot Champion · [A-Z][a-z]{2} \d{1,2} – ([A-Z][a-z]{2} )?\d{1,2}, \d{4}$/, 'a date range, never an ISO week key');
+  assert.deepEqual(champion.jackpotChampion, { weekKey: weekKeyOfIndex(W), startsAt, closesAt: boundsIsoOf(W).closesAt, label });
+  const plain = { status: champion.status, displayName: champion.displayName, avatarUri: champion.avatarUri, hidden: true, verification: champion.verification };
+  assert.equal(champion.cardRev, await cardRevision({ ...plain, champion: label }));
+  assert.notEqual(champion.cardRev, await cardRevision(plain), 'the badge changes the card revision, so cached cards refresh');
+  const page = renderSharePage({ session: champion });
+  assert.ok(page.html.includes(`<p class="champion">${label}</p>`), 'the share page shows the badge');
+  assert.ok(page.html.includes(`?v=${champion.cardRev}`), 'og:image carries the new revision');
+  assert.ok(JSON.stringify(buildShareCardElement({ session: champion })).includes(label), 'the card shows the badge');
+  assert.doesNotMatch(page.html, /\d{4}-W\d{2}/, 'no ISO week key on the page');
+
+  // A non-winning run has no badge and keeps its revision.
+  const other = await readPublicSession(db, runB.sessionId32);
+  assert.equal(other.jackpotChampion, null);
+  assert.equal(other.cardRev, await cardRevision({ status: other.status, displayName: other.displayName, avatarUri: other.avatarUri, hidden: false, verification: other.verification }));
+  assert.equal(renderSharePage({ session: other }).html.includes('Jackpot'), false);
+
+  // A leader, a zero-prize week or an unconfirmed run never shows the badge on a cached asset.
+  const before = other.cardRev;
+  try {
+    await otherWeek(W - 8, { status: 'review', winner: runB.wallet, session: runB.sessionId32, score: String(runB.score) });
+    assert.equal((await readPublicSession(db, runB.sessionId32)).jackpotChampion, null, 'a week under review has no champion');
+    await otherWeek(W - 8, { status: 'paid', prizeWei: '0', winner: runB.wallet, session: runB.sessionId32, score: String(runB.score) });
+    assert.equal((await readPublicSession(db, runB.sessionId32)).cardRev, before, 'a zero-prize week is not a win');
+    await otherWeek(W - 8, { status: 'paid', prizeWei: '7', winner: `0x${'0f'.repeat(20)}`, session: runB.sessionId32, score: String(runB.score) });
+    assert.equal((await readPublicSession(db, runB.sessionId32)).jackpotChampion, null, 'the badge belongs to the winning wallet only');
+    await otherWeek(W - 8, { status: 'paid', prizeWei: '7', winner: runB.wallet, session: runB.sessionId32, score: String(runB.score) });
+    const now = await readPublicSession(db, runB.sessionId32);
+    assert.equal(now.jackpotChampion.label, `Weekly Jackpot Champion · ${dateRangeLabel(boundsIsoOf(W - 8).startsAt)}`);
+    assert.notEqual(now.cardRev, before, 'a new win busts the card cache');
+    const unconfirmed = { ...now, status: 'submitted' };
+    assert.equal(renderSharePage({ session: unconfirmed }).html.includes('Jackpot Champion'), false, 'only a confirmed run carries the badge');
+    assert.equal(JSON.stringify(buildShareCardElement({ session: unconfirmed })).includes('Jackpot'), false);
+  } finally {
+    await db.query('DELETE FROM jackpot_weeks WHERE contract = $1', [OTHER_CONTRACT]);
+  }
 });
