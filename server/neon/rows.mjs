@@ -142,8 +142,10 @@ export function verificationFor(gameId, source) {
 // public in E5 and E6; the raw build hash is never returned. The build hash is
 // the client's (format-checked, A11), so an HMH or STACKED cabinet this deploy
 // has not shipped reads '<Game> v?' (game-version-labels.mjs SHIPPED_CABINETS).
+// A chain-index row stores no build hash; it reads the game's only shipped
+// cabinet while there is one ('HMH v0.5', 'STACKED v0.2'), else '<Game> v?'.
 export function rowVersionLabel(gameId, row) {
-  return versionLabelFor(gameId, { buildHash: row?.build_hash ?? null, runtimeId: row?.runtime_id ?? null });
+  return versionLabelFor(gameId, row ? { buildHash: row.build_hash ?? null, runtimeId: row.runtime_id ?? null } : null);
 }
 
 export function leaderboardRow(gameId, row) {

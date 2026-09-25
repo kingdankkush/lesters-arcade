@@ -756,6 +756,8 @@ test('profile session history shows the game version of each run', async () => {
     session(5, { gameId: 'lester-blaster', versionLabel: 'HMH v?' }),
     session(6, { gameId: 'chikun' }), // an E6 body cached before the field existed
     session(7, { gameId: 'chikun', versionLabel: '<b>v7</b>' }), // never shown
+    session(8, { gameId: 'chikun', versionLabel: 'HMH v0.5' }), // another game's label: never shown
+    session(9, { gameId: 'stacked', versionLabel: 'Pong v1' }), // not one of the three games
   ];
   for (const [label, options] of [['public', { viewedWallet: OTHER, answers: { [`${OTHER}|public`]: e6({ wallet: OTHER, sessions }) } }], ['self', { answers: { [`${ME}|self`]: e6({ self: true, sessions }) } }]]) {
     const h = hostedProfile(options);
@@ -763,7 +765,7 @@ test('profile session history shows the game version of each run', async () => {
     const rows = byClass(grid, 'profile-session-row');
     assert.equal(rows.length, sessions.length, label);
     const shown = rows.map((row) => byClass(row, 'profile-session-version').map((chip) => chip.textContent));
-    assert.deepEqual(shown, [['HMH v0.5'], ['Chikun v7'], ['STACKED v0.2'], ['HMH v0.6'], ['HMH v?'], [], []], `${label}: one full label per run, none when absent or malformed`);
+    assert.deepEqual(shown, [['HMH v0.5'], ['Chikun v7'], ['STACKED v0.2'], ['HMH v0.6'], ['HMH v?'], [], [], [], []], `${label}: one full label per run, none when absent, malformed or another game's`);
     for (const row of rows.slice(0, 5)) {
       const chip = byClass(row, 'profile-session-version')[0];
       // An unknown version is muted with the hosted board's tooltip; a known

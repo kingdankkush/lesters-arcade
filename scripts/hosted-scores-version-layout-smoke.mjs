@@ -3,7 +3,10 @@
 // shows the game version it was played on).
 //
 //   npm run build   # apps/portal/index.html loads dist/main.js
-//   PLAYWRIGHT_PACKAGE_PATH=<path to playwright/index.mjs> node scripts/hosted-scores-version-layout-smoke.mjs
+//   PLAYWRIGHT_PACKAGE_PATH=<path to playwright/index.mjs> npm run smoke:scores-version
+//
+// A manual pre-merge check (npm test pins only the CSS text): run it after
+// any change to the hosted Scores or profile layout.
 //
 // Offline: it serves apps/portal itself as the web root on 127.0.0.1 (an
 // extensionless path such as /scores or /profile/0x… gets index.html, the way
@@ -19,7 +22,11 @@
 //     scrolls sideways;
 //   - every row has its version, and no version text is clipped;
 //   - Published shows from 761 px up (as before the version cell existed),
-//     the Version column header from 1200 px up;
+//     and the Version header from 601 px up (under SCORE below 1200 px), with
+//     the head as tall as the one-line desktop head;
+//   - above 600 px, the accessibility tree (Chromium CDP) gives every row one
+//     column header per cell, so a screen reader names each cell's column
+//     (on phones the head is hidden and each chip carries its own label);
 //   - an unknown version ('v?', or a body without the field) is muted;
 //   - the console stays clean.
 // It prints one JSON summary and exits 1 on any failure.
@@ -208,8 +215,35 @@ function measureBoard() {
     issues,
     publishedCells: rows.filter((row) => [...row.querySelectorAll('.lt-cell-date')].some(visible)).length,
     versionHeader: Boolean(head && [...head.querySelectorAll('.th-cell-version')].some(visible)),
+    headHeight: head && visible(head) ? Math.round(box(head).height * 10) / 10 : 0,
     versions: rows.map((row) => row.querySelector('.lt-version')?.textContent ?? null),
     pageOverflow: document.scrollingElement.scrollWidth - window.innerWidth,
+  };
+}
+
+// The hosted table as a screen reader gets it: Chromium's accessibility tree
+// (CDP), the column headers of the head row and the cell count of each row.
+export async function accessibleTable(cdp, name) {
+  const { nodes } = await cdp.send('Accessibility.getFullAXTree');
+  const byId = new Map(nodes.map((node) => [node.nodeId, node]));
+  const roleOf = (node) => node?.role?.value;
+  const table = nodes.find((node) => !node.ignored && roleOf(node) === 'table' && String(node.name?.value ?? '').includes(name));
+  if (!table) return null;
+  // Exposed descendants with one of the roles, not looking inside a match.
+  const collect = (node, roles, out = []) => {
+    for (const id of node.childIds ?? []) {
+      const child = byId.get(id);
+      if (!child) continue;
+      if (!child.ignored && roles.includes(roleOf(child))) out.push(child);
+      else collect(child, roles, out);
+    }
+    return out;
+  };
+  const rows = collect(table, ['row']);
+  const headerRows = rows.filter((row) => collect(row, ['columnheader']).length > 0);
+  return {
+    headers: headerRows.flatMap((row) => collect(row, ['columnheader']).map((cell) => String(cell.name?.value ?? '').trim())),
+    cells: rows.filter((row) => !headerRows.includes(row)).map((row) => collect(row, ['cell']).length),
   };
 }
 
@@ -243,6 +277,9 @@ export async function runLayoutSmoke({ origin, chromium, executablePath } = {}) 
   try {
     const context = await browser.newContext({ deviceScaleFactor: 1, serviceWorkers: 'block' });
     const page = await context.newPage();
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Accessibility.enable');
+    const headHeights = new Map();
     const consoleIssues = [];
     page.on('pageerror', (error) => consoleIssues.push(`pageerror: ${error.message}`));
     page.on('console', (message) => { if (message.type() === 'error') consoleIssues.push(`console: ${message.text()}`); });
@@ -259,8 +296,27 @@ export async function runLayoutSmoke({ origin, chromium, executablePath } = {}) 
         if (result.pageOverflow > EPSILON) failures.push(`${where}: the page scrolls ${result.pageOverflow} px sideways`);
         const published = width >= 761 ? result.rows : 0;
         if (result.publishedCells !== published) failures.push(`${where}: Published shows on ${result.publishedCells} rows, expected ${published}`);
-        if (result.versionHeader !== (width >= 1200)) failures.push(`${where}: Version header ${result.versionHeader ? 'shown' : 'hidden'}`);
-        boards.push({ gameId, width, publishedCells: result.publishedCells, versionHeader: result.versionHeader, versions: result.versions.slice(0, 5) });
+        if (result.versionHeader !== (width > 600)) failures.push(`${where}: Version header ${result.versionHeader ? 'shown' : 'hidden'}`);
+        let a11y = null;
+        if (width > 600) {
+          headHeights.set(`${gameId}@${width}`, result.headHeight);
+          a11y = await accessibleTable(cdp, 'verified standing');
+          if (!a11y) failures.push(`${where}: no accessible table`);
+          else {
+            if (!a11y.headers.includes('VERSION')) failures.push(`${where}: no VERSION column header in the accessibility tree (${a11y.headers.join(' | ')})`);
+            if (a11y.cells.length !== 10) failures.push(`${where}: ${a11y.cells.length} accessible rows`);
+            a11y.cells.forEach((count, index) => {
+              if (count !== a11y.headers.length) failures.push(`${where}: row ${index + 1} has ${count} accessible cells for ${a11y.headers.length} column headers (${a11y.headers.join(' | ')})`);
+            });
+          }
+        }
+        boards.push({ gameId, width, publishedCells: result.publishedCells, versionHeader: result.versionHeader, headHeight: result.headHeight, columnHeaders: a11y?.headers.length ?? null, versions: result.versions.slice(0, 5) });
+      }
+      // Below 1200 px the VERSION header sits under SCORE without growing the head.
+      const desktopHead = headHeights.get(`${gameId}@1200`);
+      for (const width of BOARD_WIDTHS.filter((candidate) => candidate > 600 && candidate < 1200)) {
+        const height = headHeights.get(`${gameId}@${width}`);
+        if (!(Math.abs(height - desktopHead) <= 1)) failures.push(`${gameId} @ ${width} px: the head is ${height} px tall, ${desktopHead} px at 1200 px`);
       }
     }
     for (const width of PROFILE_WIDTHS) {

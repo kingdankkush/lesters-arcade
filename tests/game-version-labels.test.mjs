@@ -3,7 +3,8 @@
 // buildHash or runtimeId into 'HMH v0.5', 'Chikun v7' or 'STACKED v0.2', and
 // anything unexpected into a '<Game> v?' / 'v?' fallback, never a throw. An
 // HMH or STACKED cabinet (client-asserted, contract A11) is shown only inside
-// the range this deploy has shipped.
+// the range this deploy has shipped, and a row with no build hash reads the
+// game's only shipped cabinet while there is just one.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -148,7 +149,8 @@ test('STACKED reads the cabinet major.minor', () => {
   // STACKED always had a cabinet segment: without one the version is unknown.
   assert.equal(stacked('site-1.8.1:game-1.8.1'), 'STACKED v?');
   // The runtime id does not decide a STACKED label.
-  assert.equal(versionLabelFor('stacked', { runtimeId: 'stacked:stacked-result-v1' }), 'STACKED v?');
+  assert.equal(versionLabelFor('stacked', { buildHash: 'site-1.8.1:game-1.8.1', runtimeId: 'stacked:stacked-result-v1' }), 'STACKED v?');
+  assert.equal(versionLabelFor('stacked', { buildHash: 'site-1.8.1:game-1.8.1:cabinet-0.2.0', runtimeId: 'stacked:stacked-result-v9' }), 'STACKED v0.2');
 });
 
 test('every live build and runtime gets its own label', () => {
@@ -162,7 +164,7 @@ test('every live build and runtime gets its own label', () => {
 
 test('unexpected inputs fall back to "<Game> v?" and never throw', () => {
   const malformedBuilds = [
-    null, undefined, '', ' ', 42, {}, [], true,
+    '', ' ', 42, {}, [], true,
     'site-1.8.1:game-1.8.1:cabinet-0.5', // two-part cabinet
     'site-1.8.1:game-1.8.1:cabinet-', 'site-1.8.1:game-1.8.1:cabinet-a.b.c',
     'site-1.8.1:game-1.8.1:cabinet-0.5.0:cabinet-0.6.0', 'site-1.8.1:game-1.8.1:cab-0.5.0',
@@ -190,8 +192,39 @@ test('unexpected inputs fall back to "<Game> v?" and never throw', () => {
     assert.equal(versionLabelFor('stacked', source), 'STACKED v?', String(source));
   }
   assert.equal(versionLabelFor('lester-blaster'), 'HMH v?');
-  // A row the chain indexer created carries no build hash (contract §4.3.10).
-  assert.equal(versionLabelFor('lester-blaster', { buildHash: null, runtimeId: RANKED_GAMES['lester-blaster'].runtimeId }), 'HMH v?');
+});
+
+// Review finding (version-column fixer, round 2): the relayed agreement reads
+// "rows without a cabinet segment also HMH v0.5". A chain-index row (the
+// indexer mirrors a published run whose Neon row was lost, contract
+// §4.3.10) stores no build hash at all. HMH and STACKED have each shipped one
+// cabinet so far, so every ranked run of them was played on it.
+test('a row with no build hash reads the only cabinet its game has shipped, else "<Game> v?"', () => {
+  assert.equal(SHIPPED_CABINETS['lester-blaster'].first, SHIPPED_CABINETS['lester-blaster'].current, 'HMH has shipped one cabinet');
+  assert.equal(SHIPPED_CABINETS.stacked.first, SHIPPED_CABINETS.stacked.current, 'STACKED has shipped one cabinet');
+  for (const source of [{ buildHash: null }, { buildHash: undefined }, {}, { buildHash: null, runtimeId: RANKED_GAMES['lester-blaster'].runtimeId }, { runtimeId: '0x7a49' }]) {
+    assert.equal(versionLabelFor('lester-blaster', source), 'HMH v0.5', JSON.stringify(source));
+    assert.equal(versionLabelFor('stacked', source), 'STACKED v0.2', JSON.stringify(source));
+  }
+  // Chikun reads its runtime id, never a cabinet.
+  assert.equal(versionLabelFor('chikun', { buildHash: null }), 'Chikun v?');
+  assert.equal(versionLabelFor('chikun', { buildHash: null, runtimeId: 'chikun:canvas-runtime-v7' }), 'Chikun v7');
+  // Once a second cabinet ships, such a row can no longer be dated.
+  const bumped = { cabinets: { 'lester-blaster': { first: '0.5', current: '0.6' }, stacked: { first: '0.2', current: '0.3' } } };
+  assert.equal(hmh(null, bumped), 'HMH v?');
+  assert.equal(stacked(null, bumped), 'STACKED v?');
+  assert.equal(hmh('site-1.8.1:game-1.8.1', bumped), 'HMH v0.5', 'a build without the segment still dates itself');
+  // A missing, malformed or oversized range shows nothing; leading zeros normalize.
+  for (const cabinets of [{}, { 'lester-blaster': null }, { 'lester-blaster': { first: 'x', current: 'x' } }, { 'lester-blaster': { first: '0.5' } },
+    { 'lester-blaster': { first: '1234567.0', current: '1234567.0' } }, { 'lester-blaster': { first: 5, current: 5 } }]) {
+    assert.equal(hmh(null, { cabinets }), 'HMH v?', JSON.stringify(cabinets));
+  }
+  assert.equal(hmh(null, { cabinets: { 'lester-blaster': { first: '00.05', current: '00.05' } } }), 'HMH v0.5');
+  // Anything but a plain object is not a stored run.
+  for (const source of [undefined, null, [], 'site-1.8.1:game-1.8.1', 0, false]) {
+    assert.equal(versionLabelFor('lester-blaster', source), 'HMH v?', String(source));
+    assert.equal(versionLabelFor('stacked', source), 'STACKED v?', String(source));
+  }
 });
 
 test('every label is short, printable ASCII (a compact column and a phone chip)', () => {
@@ -214,9 +247,33 @@ test('versionLabelText accepts exactly the labels versionLabelFor writes', () =>
   ];
   for (const label of written) assert.equal(versionLabelText(label), label, label);
   for (const bad of [undefined, null, 0, true, {}, ['HMH v0.5'], '', ' ', 'v', 'HMH', 'HMH v', 'HMH v0.5 ', ' HMH v0.5', 'HMH  v0.5', 'HMH v0.5.0',
-    'HMH v1234567', 'HMH v0.1234567', 'H-M-H v0.5', 'Chikun v7\n', '<b>HMH</b> v0.5', 'ABCDEFGHIJKLM v1', 'HMH v0.5<script>']) {
+    'HMH v1234567', 'HMH v0.1234567', 'H-M-H v0.5', 'Chikun v7\n', '<b>HMH</b> v0.5', 'ABCDEFGHIJKLM v1', 'HMH v0.5<script>',
+    // Review finding (version-column fixer, round 2): only the three games' names.
+    'Pong v1', 'Admin v1', 'Hmh v0.5', 'hmh v0.5', 'CHIKUN v7', 'Stacked v0.2', 'Lester v0.5', 'HMHS v0.5', 'XHMH v0.5']) {
     assert.equal(versionLabelText(bad), null, JSON.stringify(bad));
   }
+  for (const name of Object.values(GAME_VERSION_SHORT_NAMES)) assert.equal(versionLabelText(`${name} v1`), `${name} v1`);
+});
+
+test('versionLabelText with the row game accepts only that game\'s labels', () => {
+  const games = { 'lester-blaster': ['HMH v0.5', 'HMH v?'], chikun: ['Chikun v7', 'Chikun v?'], stacked: ['STACKED v0.2', 'STACKED v?'] };
+  for (const [gameId, labels] of Object.entries(games)) {
+    for (const label of labels) assert.equal(versionLabelText(label, gameId), label, `${gameId} ${label}`);
+    for (const [otherId, otherLabels] of Object.entries(games)) {
+      if (otherId === gameId) continue;
+      for (const label of otherLabels) assert.equal(versionLabelText(label, gameId), null, `${label} on a ${gameId} row`);
+    }
+    assert.equal(versionLabelText('v?', gameId), null, 'a known game always names itself');
+    const live = versionLabelFor(gameId, { buildHash: getPlaySessionIdentity(gameId).buildHash, runtimeId: RANKED_GAMES[gameId].runtimeId });
+    assert.equal(versionLabelText(live, gameId), live, `${gameId}: its live label`);
+  }
+  // An unknown game's only label is 'v?' alone, as versionLabelFor writes it.
+  for (const gameId of ['pong', '', 7, {}, '__proto__', 'constructor']) {
+    assert.equal(versionLabelText('v?', gameId), 'v?', String(gameId));
+    assert.equal(versionLabelText('HMH v0.5', gameId), null, String(gameId));
+  }
+  // No game given: any of the three games' shapes.
+  for (const gameId of [null, undefined]) assert.equal(versionLabelText('Chikun v7', gameId), 'Chikun v7');
 });
 
 // Review finding (version-column fixer): the board, the profile and the share

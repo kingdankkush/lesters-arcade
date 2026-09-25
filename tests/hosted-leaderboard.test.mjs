@@ -527,6 +527,9 @@ test('hosted boards show the game version of each run in a Version column before
     const rows = rowsOf(board);
     assert.equal(rows.length, 4);
     rows.forEach((row, index) => {
+      // One header per cell, in the same order (screen readers pair them by position).
+      const rowCells = find(row, (candidate) => candidate.role === 'cell');
+      assert.deepEqual(rowCells.map((cell) => /\blt-cell-(\S+)/.exec(cell.className)[1]), headers.map((cell) => /\bth-cell-(\S+)/.exec(cell.className)[1]), `${gameId} row ${index + 1}`);
       const cells = find(row, (candidate) => String(candidate.className ?? '').includes('lt-cell-version'));
       assert.equal(cells.length, 1, `${gameId} row ${index + 1}: one version cell`);
       assert.equal(byClass(cells[0], 'lt-cell-label')[0].textContent, 'Version', 'the phone chip is labelled');
@@ -563,6 +566,15 @@ test('hosted entries keep only well-formed version labels', () => {
   for (const bad of [null, 7, '', ' ', 'v', 'Chikun v7 ', ' Chikun v7', 'Chikun version 7', 'Chikun v7.1.2', '<img src=x onerror=alert(1)> v1', `${'x'.repeat(13)} v1`, { toString: () => 'HMH v0.5' }]) {
     assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: bad }).versionLabel, null, String(bad));
   }
+  // Review finding (version-column fixer, round 2): only the three games'
+  // names, and on a board only that board's game.
+  for (const bad of ['Pong v1', 'Admin v1']) assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: bad }).versionLabel, null, bad);
+  const onBoard = (gameId, versionLabel) => hostedLeaderboardEntry({ ...e5Row(1, gameId), versionLabel }, { gameId }).versionLabel;
+  assert.equal(onBoard('lester-blaster', 'HMH v0.5'), 'HMH v0.5');
+  assert.equal(onBoard('lester-blaster', 'Chikun v0.5'), null, 'another game\'s label');
+  assert.equal(onBoard('chikun', 'STACKED v0.2'), null);
+  assert.equal(onBoard('stacked', 'v?'), null, 'a known game always names itself');
+  assert.equal(onBoard('stacked', 'STACKED v?'), 'STACKED v?');
 });
 
 // The rendered layout at 320-1440 px is measured in Chromium by
@@ -590,10 +602,18 @@ test('the hosted grids give the Version cell a place at every width and keep Pub
   assert.equal(tracks(templateIn(blocks[1199])), 10);
   assert.equal(tracks(templateIn(blocks[1080])), 7);
   assert.equal(tracks(templateIn(blocks[760])), 6);
-  assert.match(blocks[1199], /\.th-cell-version \{ display: none; \}/);
   assert.match(blocks[1199], /\.leaderboard-trow > \.leaderboard-td \{ grid-row: 1 \/ span 2; \}/);
   assert.match(blocks[1199], /\.leaderboard-trow > \.lt-cell-score \{ grid-row: 1; align-self: end; \}/);
   assert.match(blocks[1199], /\.lt-cell-version \{ grid-row: 2; grid-column: 3;/);
+  // Review finding (version-column fixer, round 2): the head mirrors the rows
+  // (VERSION under SCORE) instead of hiding the Version header, so every row
+  // keeps one column header per cell for screen readers at 601-1199 px. The
+  // two stacked headers drop the 44 px minimum so the head keeps its height.
+  assert.match(blocks[1199], /\.leaderboard-table-head > \.leaderboard-th-cell \{ grid-row: 1 \/ span 2; \}/);
+  assert.match(blocks[1199], /\.leaderboard-table-head > \.th-cell-score \{ grid-row: 1; align-self: end; \}/);
+  assert.match(blocks[1199], /\.leaderboard-table-head > \.th-cell-version \{ grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; \}/);
+  assert.match(blocks[1199], /\.th-cell-version > \.leaderboard-th \{ min-height: 0;/);
+  assert.doesNotMatch(section, /version[^{}]*\{[^}]*(?:display:\s*none|visibility:\s*hidden)/, 'no version header or cell is ever hidden');
   assert.match(blocks[600], /\.lt-cell-label \+ \.lt-version/);
   // Published (the date cells) is never hidden or moved by this section: the
   // base rules still show it from 761 px up (review finding, version-column).
