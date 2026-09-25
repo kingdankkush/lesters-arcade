@@ -102,8 +102,11 @@ function weekToken(value, { withAddress = false } = {}) {
 }
 
 // Design §C.5 "Pot fields (rev. 2)": prizeWei = min(total, cap) (or total without a cap), carryOverWei
-// = total - prize, funded = total >= the week's minFundWei.
-function pot(value, minFundWei = null) {
+// = total - prize, funded = total >= the week's minFundWei. `funded: false` is always accepted (it only
+// hides the amount): the server also reports false for a week without a rules row or with a zero
+// minFundWei. `funded: true` must be backed by a positive minimum the pot reaches (`minFundWei` is
+// undefined for a previous week, whose rules the answer does not carry).
+function pot(value, minFundWei) {
   shape(value, ['fundedWei', 'carriedInWei', 'totalWei', 'prizeCapWei', 'prizeWei', 'carryOverWei', 'funded']);
   for (const key of ['fundedWei', 'carriedInWei', 'totalWei', 'prizeWei', 'carryOverWei']) wei(value[key]);
   weiOrNull(value.prizeCapWei);
@@ -113,7 +116,7 @@ function pot(value, minFundWei = null) {
   const cap = value.prizeCapWei === null ? null : BigInt(value.prizeCapWei);
   const prize = cap !== null && cap < total ? cap : total;
   check(BigInt(value.prizeWei) === prize && BigInt(value.carryOverWei) === total - prize);
-  if (minFundWei !== null) check(value.funded === total >= BigInt(minFundWei));
+  if (value.funded && minFundWei !== undefined) check(minFundWei !== null && BigInt(minFundWei) > 0n && total >= BigInt(minFundWei));
 }
 
 function winner(value) {
@@ -158,12 +161,16 @@ function current(value) {
   const start = Date.parse(value.startsAt);
   check(Date.parse(value.closesAt) === start + WEEK_MS && isoWeekKey(start) === value.weekKey && weekIndexOfMs(start) === value.weekIndex);
   check(Date.parse(value.settleCutoffAt) > Date.parse(value.closesAt) && Date.parse(value.payoutAt) >= Date.parse(value.candidateUntil));
-  shape(value.rules, ['minPaidWei', 'maxSurvivalSeconds', 'minFundWei', 'adminClearOnly']);
-  wei(value.rules.minPaidWei);
-  wei(value.rules.minFundWei);
-  int(value.rules.maxSurvivalSeconds, 0);
-  check(typeof value.rules.adminClearOnly === 'boolean');
-  pot(value.pot, value.rules.minFundWei);
+  // `rules` is null while the server's rules mirror has no row for the week: the pot is then unfunded
+  // (checked below) and the surfaces that need the minimum or the survival cap show nothing.
+  if (value.rules !== null) {
+    shape(value.rules, ['minPaidWei', 'maxSurvivalSeconds', 'minFundWei', 'adminClearOnly']);
+    wei(value.rules.minPaidWei);
+    wei(value.rules.minFundWei);
+    int(value.rules.maxSurvivalSeconds, 0);
+    check(typeof value.rules.adminClearOnly === 'boolean');
+  }
+  pot(value.pot, value.rules?.minFundWei ?? null);
   // The open week's leader is unscreened: a score only, never a wallet or a name (design §C.5, F9).
   if (value.leader !== null) {
     shape(value.leader, ['score', 'provisional', 'screened']);
@@ -183,7 +190,10 @@ function previous(value) {
   if (value.contract !== undefined) check(typeof value.contract === 'string' && ADDRESS.test(value.contract));
   weekToken(value.token);
   pot(value.pot);
-  check(Array.isArray(value.candidates) && value.candidates.length <= 10);
+  // No length cap: the server lists every on-chain row (at most 5) and every listed-then-disqualified
+  // row, and a decoy attack (design §A.7) can push that past any small bound. Rows are validated, and no
+  // surface renders the list itself (only the winner's row is looked up).
+  check(Array.isArray(value.candidates));
   value.candidates.forEach(candidate);
   outcome(value);
 }

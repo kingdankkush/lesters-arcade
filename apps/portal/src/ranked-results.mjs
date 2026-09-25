@@ -26,7 +26,6 @@
 // DOM: createElement and textContent only (§11 rule 6).
 import { DAILY_STANDING_ENABLED, buildRankedResultsModel, standingForRun } from './ranked-results-model.mjs';
 import { buildShareLinks, createShareRow } from './share-links.mjs';
-import { JACKPOT_LIVE } from './jackpot-config.mjs';
 
 export const RANKED_RESULTS_STYLESHEET = './src/styles/ranked-results.css?v=ranked-results-20260923b';
 export const RESULTS_COMPANION_CLASSES = Object.freeze(['name-claim-toast']);
@@ -113,8 +112,9 @@ export function openRankedResults({
   onClose = null,
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   clearTimeoutImpl = (timer) => globalThis.clearTimeout(timer),
-  // Weekly Jackpot line (jackpot-ui): tests switch it on here, never by editing the flag.
-  jackpotLive = JACKPOT_LIVE,
+  // Weekly Jackpot line (jackpot-ui): main.js passes JACKPOT_LIVE, as it passes `live` and `hosted`, so
+  // this chunk does not import the flag module (a shared chunk esbuild would import here too).
+  jackpotLive = false,
 } = {}) {
   if (!documentRef?.createElement) throw new TypeError('openRankedResults needs a document');
   activeView?.close({ restoreFocus: false });
@@ -380,8 +380,9 @@ export function openRankedResults({
   }
 
   function render() {
-    const model = buildRankedResultsModel({ snapshot: currentSnapshot(), context: ctx, standing, standingLabel: jackpot?.label });
-    jackpot?.update(model, currentSnapshot());
+    const snapshot = currentSnapshot();
+    // The jackpot line updates first, so the model's share text carries the label it settles on.
+    const model = buildRankedResultsModel({ snapshot, context: ctx, standing, standingLabel: jackpot?.update(snapshot) });
     lastModel = model;
     root.dataset.state = model.state;
     dialog.dataset.state = model.state;

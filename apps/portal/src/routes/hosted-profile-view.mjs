@@ -772,15 +772,6 @@ export function createHostedProfileView({
     }
   }
 
-  // Weekly Jackpot wins (design §D.3): lazy, only for a profile with wins; Claim for their own winner.
-  function renderJackpotWins(target, response) {
-    if (jackpotLive && response?.jackpot?.wins?.length) {
-      const mount = el('div');
-      dom.officialCabinetGrid.append(mount);
-      import('../jackpot/jackpot-profile-wins.mjs').then((module) => module.default(mount, response, target, getContext, walletProviderForAction)).catch(() => {});
-    }
-  }
-
   function renderHostedProfile() {
     const target = viewedTarget();
     dom.officialCabinetGrid.replaceChildren();
@@ -824,7 +815,12 @@ export function createHostedProfileView({
         renderLocalUsernameEditor();
       }
     }
-    renderJackpotWins(target, response);
+    // Weekly Jackpot wins (design §D.3): lazy, only for a profile with wins; Claim for their own winner.
+    if (jackpotLive && response.jackpot?.wins[0]) {
+      const mount = el('div');
+      dom.officialCabinetGrid.append(mount);
+      import('../jackpot/jackpot-profile-wins.mjs').then((module) => module.default(mount, response, target, walletProviderForAction), () => {});
+    }
     renderHostedGames(response);
     renderHostedSessions(target, response);
     renderHostedAchievements(target, response);

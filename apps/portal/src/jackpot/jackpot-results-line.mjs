@@ -2,9 +2,12 @@
 // while JACKPOT_LIVE. It compares the run with the jackpot's own provisional leader, never the board
 // rank (the board also ranks staff, over-cap, late and chain-index rows):
 //   - the run is jackpot-eligible (verified by the server, paid at least the week's minPaidWei in the
-//     current week, survival within the week's cap) and at or above the leader's score:
+//     current week, survival within the week's cap) and above the leader's score (design §D.3):
 //     "You'd lead this week's jackpot race (pending review)", and the share label
 //     "Jackpot lead (pending)" (22 characters, the existing standingLabel; share-links.mjs unchanged);
+//   - eligible and level with the leader: "Tied with the jackpot leader (provisional)" and no share label.
+//     A tie goes to the earlier on-chain publish, and the open-week leader carries no session id, so the
+//     client cannot tell whether the leader is this run or an earlier one;
 //   - eligible and below: "{n} points behind the jackpot leader (provisional)";
 //   - anything else, an unfunded or closed week, or a failed read: nothing.
 // The leader can be up to 150 s stale, so a new record compares against the run's own score first.
@@ -13,6 +16,7 @@ import { ensureJackpotStylesheet, node } from './jackpot-view.mjs';
 
 export const JACKPOT_LEAD_LABEL = 'Jackpot lead (pending)';
 export const JACKPOT_LEAD_TEXT = "You'd lead this week's jackpot race (pending review)";
+export const JACKPOT_TIE_TEXT = 'Tied with the jackpot leader (provisional)';
 const VERIFIED_STATES = new Set(['queued', 'publishing', 'published']);
 
 function wei(value) {
@@ -32,7 +36,8 @@ export function jackpotStanding({ api, correctedNowMs, gameId, state, server, en
   const survival = server.contract?.survivalSeconds;
   if (!Number.isFinite(survival) || (week.rules.maxSurvivalSeconds > 0 && survival > week.rules.maxSurvivalSeconds)) return null;
   const leader = week.leader;
-  if (!leader || server.score >= leader.score) return Object.freeze({ text: JACKPOT_LEAD_TEXT, label: JACKPOT_LEAD_LABEL });
+  if (!leader || server.score > leader.score) return Object.freeze({ text: JACKPOT_LEAD_TEXT, label: JACKPOT_LEAD_LABEL });
+  if (server.score === leader.score) return Object.freeze({ text: JACKPOT_TIE_TEXT, label: null });
   return Object.freeze({ text: `${(leader.score - server.score).toLocaleString('en-US')} points behind the jackpot leader (provisional)`, label: null });
 }
 
@@ -55,35 +60,40 @@ export function createJackpotResultsLine({
   let answer = null;
   let requested = false;
   let current = null;
-  let last = { model: null, snapshot: null };
+  let last = null;
 
-  function apply() {
+  // `notify` is false inside update(): the caller is rendering and reads the returned label, so a
+  // nested render could only repaint with the model it is about to replace.
+  function apply(notify) {
     const next = answer ? jackpotStanding({
       api: answer.api,
       correctedNowMs: answer.clock.now(now()),
-      gameId: last.model?.gameId ?? context.gameId,
-      state: last.model?.state,
-      server: last.snapshot?.server ?? null,
+      gameId: context.gameId ?? last?.gameId,
+      state: last?.state,
+      server: last?.server ?? null,
       entry: jackpotEntryFor(context.sessionId),
     }) : null;
     const changed = next?.text !== current?.text || next?.label !== current?.label;
     current = next;
     line.textContent = next?.text ?? '';
     line.hidden = !next;
-    if (changed) onChange();
+    if (changed && notify) onChange();
+    return current?.label ?? null;
   }
 
   return Object.freeze({
     element: line,
     get label() { return current?.label ?? null; },
     get text() { return current?.text ?? null; },
-    update(model, snapshot) {
-      last = { model, snapshot };
+    // Called by ranked-results.mjs render() with the run's snapshot BEFORE it builds the model; returns
+    // the share label for that model. The answer's arrival re-renders through onChange.
+    update(snapshot) {
+      last = snapshot;
       if (!requested) {
         requested = true;
-        void fetchJackpot({ fetchImpl, now }).then((result) => { answer = result; apply(); });
+        void fetchJackpot({ fetchImpl, now }).then((result) => { answer = result; apply(true); });
       }
-      if (answer) apply();
+      return apply(false);
     },
   });
 }

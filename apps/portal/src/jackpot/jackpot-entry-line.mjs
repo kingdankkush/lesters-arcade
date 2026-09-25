@@ -31,14 +31,21 @@ export async function showEntryJackpot({
 } = {}) {
   if (!row) return null;
   row.hidden = true;
-  if (gameId !== 'chikun') return null;
+  // While the modal is still open the entry is not paid yet, so it is paid no earlier than this. (A
+  // modal already closed when this chunk arrives gives no bound: nothing is noted.)
+  const openedAt = now();
+  if (gameId !== 'chikun' || !open()) return null;
   const answer = await fetchJackpot({ fetchImpl, now });
   const api = answer?.api;
   const week = api?.live ? api.current : null;
-  if (!week || !open()) return null;
-  // The last time the modal was seen open (refreshed below) bounds when the entry was paid.
+  if (!week) return null;
+  // For the results line, the latest time the modal was seen open, on the corrected clock: a lower bound
+  // of the payment (refreshed below while the modal stays open). It is noted even when the player paid
+  // and the modal closed before the answer arrived. A lower bound can only move a run paid just after a
+  // close into the closed week, which hides the line; it never claims a race for the wrong week.
   const note = (seenAtMs) => noteJackpotEntry(session?.sessionId, { session, seenAtMs });
-  note(answer.clock.now(now()));
+  note(answer.clock.now(openedAt));
+  if (!open()) return null;
   const prize = currentPrize(api);
   if (!prize) return null;
   ensureJackpotStylesheet(documentRef);

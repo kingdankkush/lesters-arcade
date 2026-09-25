@@ -39,8 +39,13 @@ function winnerRow(documentRef, week, noted) {
   return fillLine(documentRef, node(documentRef, 'li'), parts);
 }
 
-// The loader's entry (hosted-leaderboard-view.mjs): positional, so the view chunk's glue stays small.
-export default (documentRef, now, onChange) => createJackpotBoardHeader({ documentRef, now, onChange });
+// The loader's entry (hosted-leaderboard-view.mjs): positional, so the view chunk's glue stays small. It
+// also asks the view to render once, a microtask later, when the view already holds the header: the
+// loader then needs no render call of its own.
+export default (documentRef, now, onChange) => {
+  queueMicrotask(onChange);
+  return createJackpotBoardHeader({ documentRef, now, onChange });
+};
 
 export function createJackpotBoardHeader({
   documentRef = globalThis.document,

@@ -37,13 +37,9 @@ const claims = new Map(); // `${contract}:${weekKey}` -> { to, busy, message, to
 
 async function sendClaim({ provider, from, call }) {
   const request = (method, params = []) => provider.request({ method, params });
-  try {
-    await request('wallet_switchEthereumChain', [{ chainId: LITEFORGE_CHAIN_HEX }]);
-  } catch (error) {
-    if ((error?.code ?? error?.data?.originalError?.code) !== 4902) throw error;
-    await request('wallet_addEthereumChain', [{ chainId: LITEFORGE_CHAIN_HEX, chainName: 'LitVM LiteForge', nativeCurrency: { name: 'zkLTC', symbol: 'zkLTC', decimals: 18 }, rpcUrls: ['https://liteforge.rpc.caldera.xyz/http'], blockExplorerUrls: ['https://liteforge.explorer.caldera.xyz'] }]);
-    await request('wallet_switchEthereumChain', [{ chainId: LITEFORGE_CHAIN_HEX }]);
-  }
+  // A winner paid a Ranked entry on LiteForge from this wallet, so the wallet already knows the chain (no
+  // add-chain fallback). A refused or failed switch ends at the chain check below, with plain words.
+  await request('wallet_switchEthereumChain', [{ chainId: LITEFORGE_CHAIN_HEX }]).catch(() => {});
   if (String(await request('eth_chainId')).toLowerCase() !== LITEFORGE_CHAIN_HEX) throw new Error('Switch your wallet to LitVM LiteForge (chain 4441), then claim again.');
   const latest = await request('eth_getBlockByNumber', ['latest', false]).catch(() => null);
   const maxFee = liteForgeMaxFeePerGas(latest?.baseFeePerGas ?? null);

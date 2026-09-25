@@ -10,10 +10,10 @@ import { parse } from 'acorn';
 import { ethers } from 'ethers';
 
 import { JACKPOT_LIVE } from '../apps/portal/src/jackpot-config.mjs';
-import { jackpotEntryFor, noteJackpotEntry, resetJackpotMemo } from '../apps/portal/src/jackpot/jackpot-client.mjs';
+import { jackpotEntryFor, noteJackpotEntry, resetJackpotMemo, weekRangeText } from '../apps/portal/src/jackpot/jackpot-client.mjs';
 import renderChikunJackpotPanel, { JACKPOT_MARQUEE_ID } from '../apps/portal/src/jackpot/chikun-jackpot-panel.mjs';
 import { LAST_MINUTES_MS, NEXT_WEEK_NOTE, showEntryJackpot } from '../apps/portal/src/jackpot/jackpot-entry-line.mjs';
-import { JACKPOT_LEAD_LABEL, JACKPOT_LEAD_TEXT, createJackpotResultsLine, jackpotStanding } from '../apps/portal/src/jackpot/jackpot-results-line.mjs';
+import { JACKPOT_LEAD_LABEL, JACKPOT_LEAD_TEXT, JACKPOT_TIE_TEXT, createJackpotResultsLine, jackpotStanding } from '../apps/portal/src/jackpot/jackpot-results-line.mjs';
 import { renderJackpotHomePromo } from '../apps/portal/src/jackpot/jackpot-home-promo.mjs';
 import { JACKPOT_BOARD_NOTE, createJackpotBoardHeader } from '../apps/portal/src/jackpot/jackpot-board-header.mjs';
 import { renderJackpotWins } from '../apps/portal/src/jackpot/jackpot-profile-wins.mjs';
@@ -26,6 +26,12 @@ import { formatResetCountdown } from '../apps/portal/src/leaderboard-view.mjs';
 import { fakeDocument, flush, visibleText } from './helpers/jackpot-fake-dom.mjs';
 
 const E18 = 10n ** 18n;
+// Week ranges in the host's own date format (the surfaces format with the viewer's locale), so the
+// assertions hold on an en-GB or de-DE machine too.
+const range = (startsAt, closesAt, year = false) => weekRangeText(startsAt, closesAt, { year });
+const W38 = range('2026-09-14T00:00:00.000Z', '2026-09-21T00:00:00.000Z', true);
+const W39 = range('2026-09-21T00:00:00.000Z', '2026-09-28T00:00:00.000Z', true);
+const W40 = range('2026-09-28T00:00:00.000Z', '2026-10-05T00:00:00.000Z');
 const fixture = (name) => JSON.parse(readFileSync(new URL(`./fixtures/jackpot/${name}.json`, import.meta.url), 'utf8'));
 const NOW = Date.parse('2026-10-01T12:00:00.000Z');
 const CLOSE = Date.parse('2026-10-05T00:00:00.000Z');
@@ -203,6 +209,10 @@ test('no surface fetches the jackpot API while the flag is false', async () => {
   runInNewContext(`(${mainFunction('showEntryJackpot').replace(/\bimport\(/g, 'globalThis.import(')})`, liveContext)({ row, gameId: 'stacked' });
   runInNewContext(`(${mainFunction('showJackpotPromo').replace(/\bimport\(/g, 'globalThis.import(')})`, liveContext)();
   assert.deepEqual(imports, ['./src/jackpot/jackpot-entry-line.mjs', './src/jackpot/jackpot-home-promo.mjs'], 'Chikun only for the entry row');
+  // The results screen gets the flag from main.js, as it gets `live` and `hosted`: ranked-results.mjs
+  // does not import the flag module (its chunk would import esbuild's empty shared flag chunk).
+  assert.match(mainSource, /openRankedResults\(\{ \.\.\.event\.detail, [^}]*live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, jackpotLive: JACKPOT_LIVE,/);
+  assert.doesNotMatch(readFileSync(new URL('../apps/portal/src/ranked-results.mjs', import.meta.url), 'utf8'), /jackpot-config/);
   // The wallet splash only wraps the shell's renderer while the flag is on (0 B in the flag-false build).
   assert.match(mainSource, /const renderOfficialWalletSplash = JACKPOT_LIVE \? \(\) => \{ officialShellRoutes\.renderWalletSplash\(\); showJackpotPromo\(\); \} : officialShellRoutes\.renderWalletSplash;/);
 });
@@ -242,6 +252,27 @@ test('no surface shows an amount for an unfunded, below-minimum or unavailable w
     }
     for (const node of documentRef.body.all()) assert.doesNotMatch(node === mount ? visibleText(node) : '', /tCHIKUN/);
   }
+});
+
+test('a week without a rules row shows no amount and no race', async () => {
+  const body = fixture('open-funded');
+  body.current.rules = null;
+  body.current.pot.funded = false;
+  const { fetchImpl } = spyFetch(body);
+  const documentRef = fakeDocument();
+  const mount = documentRef.body.appendChild(documentRef.createElement('section'));
+  mount.dataset.gameId = 'chikun';
+  assert.equal(await renderChikunJackpotPanel(mount, { gameId: 'chikun', documentRef, fetchImpl, now }), null);
+  const row = documentRef.body.appendChild(documentRef.createElement('div'));
+  await showEntryJackpot({ row, gameId: 'chikun', quote: () => '102000000000000000', documentRef, fetchImpl, now, setTimeoutImpl: () => 0 });
+  assert.equal(row.hidden, true);
+  const header = createJackpotBoardHeader({ documentRef, fetchImpl, now });
+  header.shown('chikun', 'weekly');
+  await flush();
+  const card = header.shown('chikun', 'weekly').render(documentRef.body);
+  assert.match(visibleText(card), /No jackpot funded this week/);
+  assert.doesNotMatch(visibleText(card).split('Past winners')[0], /\d[\d,]* tCHIKUN|top score/);
+  assert.equal(jackpotStanding({ api: { ...JSON.parse(JSON.stringify(body)) }, correctedNowMs: NOW, gameId: 'chikun', state: 'published', server: { score: 90000, contract: { survivalSeconds: 60 } }, entry: { session: { entryReceipt: { amountWei: '102000000000000000' } }, seenAtMs: NOW - 60_000 } }), null);
 });
 
 test('surfaces show the capped prize and the rollover note', async () => {
@@ -312,7 +343,7 @@ test('leader wording stays provisional until the week is paid and the open-week 
   header.shown('chikun', 'weekly');
   await flush();
   const text = visibleText(header.shown('chikun', 'weekly').render(documentRef.body));
-  assert.match(text, /Last week \(Sep 28 – Oct 4\): pending review/, 'a reviewed week with a clear leader is still pending, and names nobody');
+  assert.ok(text.includes(`Last week (${W40}): pending review`), 'a reviewed week with a clear leader is still pending, and names nobody');
   assert.doesNotMatch(text, /SkyChikun/);
 });
 
@@ -366,6 +397,23 @@ test('entry modal jackpot row never delays the entry, opens rules in a new tab a
   assert.equal(lateTicks.length, 1);
   lateTicks.shift()();
   assert.equal(lateTicks.length, 0);
+  // A player who confirms the payment before the answer arrives (the modal closes first) still gets
+  // the entry noted, with the time the modal was seen open as a lower bound of the payment.
+  resetJackpotMemo();
+  let modalOpen = true;
+  let answer;
+  const quick = { sessionId: 'game-session-jackpot-quick', entryReceipt: { amountWei: '102000000000000000' } };
+  const pendingAnswer = showEntryJackpot({ row: documentRef.body.appendChild(documentRef.createElement('div')), gameId: 'chikun', session: quick, quote: () => '102000000000000000', open: () => modalOpen, documentRef, fetchImpl: (url, init) => new Promise((resolve) => { answer = () => resolve(fetchImpl(url, init)); }), now, setTimeoutImpl: () => 0 });
+  modalOpen = false;
+  answer();
+  assert.equal(await pendingAnswer, null, 'nothing to show in a closed modal');
+  assert.equal(jackpotEntryFor(quick.sessionId)?.seenAtMs, NOW, 'noted for the results line all the same');
+  const standing = jackpotStanding({ api: fixture('open-funded'), correctedNowMs: NOW + 600_000, gameId: 'chikun', state: 'published', server: { score: 60000, contract: { survivalSeconds: 600 } }, entry: jackpotEntryFor(quick.sessionId) });
+  assert.equal(standing.label, JACKPOT_LEAD_LABEL);
+  // A modal already closed when the chunk arrives gives no bound on the payment: nothing is noted.
+  const late2 = { sessionId: 'game-session-jackpot-late' };
+  await showEntryJackpot({ row: documentRef.body.appendChild(documentRef.createElement('div')), gameId: 'chikun', session: late2, open: () => false, documentRef, fetchImpl, now });
+  assert.equal(jackpotEntryFor(late2.sessionId), null);
   // Other games get nothing.
   const hmh = documentRef.body.appendChild(documentRef.createElement('div'));
   assert.equal(await showEntryJackpot({ row: hmh, gameId: 'lester-blaster', documentRef, fetchImpl, now }), null);
@@ -379,7 +427,11 @@ test('results line compares against the jackpot leader, not the board rank', asy
   const server = (score, survivalSeconds = 900) => ({ score, contract: { survivalSeconds } });
   const base = { api, correctedNowMs: NOW, gameId: 'chikun', state: 'published' };
   assert.deepEqual({ ...jackpotStanding({ ...base, server: server(50000), entry: entry() }) }, { text: JACKPOT_LEAD_TEXT, label: JACKPOT_LEAD_LABEL });
-  assert.deepEqual({ ...jackpotStanding({ ...base, server: server(48213), entry: entry() }) }, { text: JACKPOT_LEAD_TEXT, label: JACKPOT_LEAD_LABEL }, 'a stale leader that is this run still reads as the lead');
+  // A tie is not a lead: the earlier on-chain publish wins it, and the open-week leader has no session
+  // id, so the client cannot tell this run from an earlier one with the same score (design §D.3 "above").
+  assert.deepEqual({ ...jackpotStanding({ ...base, server: server(48213), entry: entry() }) }, { text: JACKPOT_TIE_TEXT, label: null }, 'a tie reads as a tie, with no share label');
+  assert.equal(JACKPOT_TIE_TEXT, 'Tied with the jackpot leader (provisional)');
+  assert.deepEqual({ ...jackpotStanding({ ...base, server: server(48214), entry: entry() }) }, { text: JACKPOT_LEAD_TEXT, label: JACKPOT_LEAD_LABEL }, 'one point above leads');
   assert.deepEqual({ ...jackpotStanding({ ...base, server: server(40000), entry: entry() }) }, { text: '8,213 points behind the jackpot leader (provisional)', label: null });
   // Ineligible runs get nothing, whatever their board rank.
   assert.equal(jackpotStanding({ ...base, server: server(90000, 3600), entry: entry() }), null, 'over the survival cap');
@@ -421,6 +473,30 @@ test('results line uses the existing share label and leaves share-links unchange
   assert.equal(line.textContent, JACKPOT_LEAD_TEXT);
   assert.match(screen.model.share.text, /50,000 pts · Jackpot lead \(pending\)/);
   screen.close();
+
+  // The run goes straight from verifying to published (POST /api/settle waits for the receipt) after
+  // the jackpot answer loaded: the render that reaches 'published' also settles the label, and the share
+  // text of that same render carries it (no nested render overwritten by a stale model). Not hosted, so
+  // no later standing render could hide a lost label.
+  resetJackpotMemo();
+  const direct = fakeDocument();
+  const run = { ...snapshot, state: 'verifying', server: null };
+  let notify = () => {};
+  const flipping = { get snapshot() { return run; }, subscribe: (listener) => { notify = listener; return () => {}; } };
+  const answered = spyFetch(fixture('open-funded'));
+  const directScreen = openRankedResults({
+    handle: flipping, jackpotLive: true, hosted: false, documentRef: direct, mount: direct.body, windowRef: {},
+    context: { gameId: 'chikun', sessionId, wallet: `0x${'a1'.repeat(20)}` },
+    fetchImpl: answered.fetchImpl,
+  });
+  await flush(20);
+  assert.equal(jackpotCalls(answered.calls).length, 1, 'the answer is loaded while the run verifies');
+  assert.equal(direct.body.querySelector('.rr-jackpot').hidden, true, 'nothing to say before the run is verified');
+  Object.assign(run, { state: 'published', server: snapshot.server });
+  notify(run);
+  assert.equal(direct.body.querySelector('.rr-jackpot').textContent, JACKPOT_LEAD_TEXT);
+  assert.match(directScreen.model.share.text, /50,000 pts · Jackpot lead \(pending\)/, 'the share text of the render that reached published');
+  directScreen.close();
   // Another game never loads the line.
   resetJackpotMemo();
   const other = fakeDocument();
@@ -443,14 +519,15 @@ test('scores header shows history with date ranges, replay and transaction links
   assert.ok(header, 'the header renders on Chikun · Weekly');
   const text = visibleText(header);
   assert.match(text, /10,000 tCHIKUN \(testnet token, no value\)/);
-  assert.match(text, /Sep 28 – Oct 4 · closes in 3d 12h · closes .+ · Mon 00:00 UTC/, 'the local close time next to UTC (the local zone is the machine one)');
+  assert.ok(text.includes(`${W40} · closes in 3d 12h · closes `), text);
+  assert.match(text, /closes in 3d 12h · closes .+ · Mon 00:00 UTC/, 'the local close time next to UTC (the local zone is the machine one)');
   assert.match(text, /top score 48,213 \(provisional\)/);
   assert.match(text, new RegExp(JACKPOT_BOARD_NOTE.replace(/[.()]/g, '\\$&')));
   assert.doesNotMatch(text, /2026-W\d\d/, 'no ISO week keys');
   const rows = header.querySelectorAll('li');
   assert.equal(rows.length, 2);
-  assert.equal(visibleText(rows[0]), 'Sep 21 – Sep 27, 2026 · SkyChikun · 51,022 pts · 8,000 tCHIKUN · Claim pending · Transaction · Watch', 'the testnet note went with this week\'s prize');
-  assert.match(visibleText(rows[1]), /^Sep 14 – Sep 20, 2026 · Lester Fan · 50,110 pts · 5,000 tCHIKUN · Claim pending · Transaction · Watch$/);
+  assert.equal(visibleText(rows[0]), `${W39} · SkyChikun · 51,022 pts · 8,000 tCHIKUN · Claim pending · Transaction · Watch`, 'the testnet note went with this week\'s prize');
+  assert.equal(visibleText(rows[1]), `${W38} · Lester Fan · 50,110 pts · 5,000 tCHIKUN · Claim pending · Transaction · Watch`);
   const links = rows[0].querySelectorAll('a');
   assert.equal(links[0].href, `https://liteforge.explorer.caldera.xyz/tx/0x${'9f'.repeat(32)}`);
   assert.equal(links[1].href, `/chikun/index.html?replay=${encodeURIComponent(`/api/jackpot/replay?session=0x${'a1'.repeat(32)}`)}`);
@@ -523,8 +600,8 @@ test('profile lists jackpot wins and offers claim to a claim-pending winner', as
   const card = mount.querySelector('.jackpot-wins');
   assert.match(visibleText(card), /^ŁJackpot Champion/);
   const rows = card.querySelectorAll('li');
-  assert.match(visibleText(rows[0]), /^Sep 21 – Sep 27, 2026 · 8,000 tCHIKUN \(testnet token, no value\) · 51,022 pts · Claim pending · Transaction/);
-  assert.match(visibleText(rows[1]), /^Sep 14 – Sep 20, 2026 · 5,000 tCHIKUN · 50,110 pts · Transaction$/);
+  assert.ok(visibleText(rows[0]).startsWith(`${W39} · 8,000 tCHIKUN (testnet token, no value) · 51,022 pts · Claim pending · Transaction`), visibleText(rows[0]));
+  assert.equal(visibleText(rows[1]), `${W38} · 5,000 tCHIKUN · 50,110 pts · Transaction`);
   assert.equal(rows[1].querySelector('form'), null, 'a paid win has nothing to claim');
   const input = rows[0].querySelector('input');
   assert.equal(input.value, winner, 'to defaults to the connected wallet');
@@ -542,6 +619,15 @@ test('profile lists jackpot wins and offers claim to a claim-pending winner', as
   assert.deepEqual(iface.decodeFunctionData('claim', sent[0].data).map(String), ['2960', ethers.getAddress(`0x${'c3'.repeat(20)}`)]);
   const status = mount.querySelector('.jackpot-status');
   assert.match(visibleText(status), /Claim sent/);
+  // A wallet that stays on another chain gets plain words and sends nothing.
+  const offChain = { async request({ method }) { if (method === 'wallet_switchEthereumChain') throw Object.assign(new Error('rejected'), { code: 4001 }); if (method === 'eth_chainId') return '0x1'; throw new Error(`unexpected ${method}`); } };
+  const offDoc = fakeDocument();
+  const offMount = offDoc.body.appendChild(offDoc.createElement('div'));
+  renderJackpotWins({ mount: offMount, wins: [{ ...wins[0], weekKey: '2026-W39-off' }], wallet: winner, own: true, connectedWallet: winner, walletProviderForAction: async () => offChain, deployment, documentRef: offDoc, loadClaimForm });
+  await flush(10);
+  await offMount.querySelector('button').click();
+  await flush(10);
+  assert.match(visibleText(offMount.querySelector('.jackpot-status')), /Switch your wallet to LitVM LiteForge \(chain 4441\), then claim again\./);
   assert.equal(status.querySelector('a').href, `https://liteforge.explorer.caldera.xyz/tx/0x${'77'.repeat(32)}`);
 
   // Another viewer (or a signed-out visitor) sees the win without a Claim button.

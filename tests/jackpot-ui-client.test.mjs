@@ -62,7 +62,9 @@ test('parseJackpot accepts the documented shape and rejects deviations', () => {
     'a total that is not funded + carried': (api) => { api.current.pot.totalWei = '1'; },
     'a prize above the pot': (api) => { api.current.pot.prizeWei = (10001n * E18).toString(); },
     'funded below the minimum fund': (api) => { api.current.rules.minFundWei = (20000n * E18).toString(); },
-    'unfunded above the minimum fund': (api) => { api.current.pot.funded = false; },
+    'funded with a zero minimum fund': (api) => { api.current.rules.minFundWei = '0'; },
+    'funded without a rules row': (api) => { api.current.rules = null; },
+    'rules that are not an object': (api) => { api.current.rules = 'launch'; },
     'a named open-week leader': (api) => { api.current.leader.displayName = 'Solver'; },
     'a wallet on the open-week leader': (api) => { api.current.leader.wallet = `0x${'ab'.repeat(20)}`; },
     'a leader that is not provisional': (api) => { api.current.leader.provisional = false; },
@@ -88,6 +90,31 @@ test('parseJackpot accepts the documented shape and rejects deviations', () => {
     assert.equal(parseJackpot(api), null, label);
   }
   for (const junk of [null, undefined, 'x', 42, [], {}, { ok: true, live: true, game: 'chikun' }]) assert.equal(parseJackpot(junk), null);
+
+  // What the jackpot-server's handler really sends in its edge cases (server/jackpot/api-model.mjs) parses:
+  // - every on-chain row plus every listed-then-disqualified row, with no length cap (design §A.7 decoys);
+  const decoys = clone(base);
+  const row = decoys.previous.candidates[0];
+  decoys.previous.candidates = [
+    ...Array.from({ length: 5 }, (_, index) => ({ ...row, rank: index + 1, score: 60000 - index })),
+    ...Array.from({ length: 9 }, (_, index) => ({ ...row, rank: null, score: 90000 - index, review: 'disqualified', reason: 'multi-wallet' })),
+  ];
+  assert.equal(parseJackpot(decoys)?.previous.candidates.length, 14, 'fourteen public candidate rows still parse');
+  // - `rules: null` while the rules mirror has no row for the week, with an unfunded pot;
+  const noRules = clone(base);
+  noRules.current.rules = null;
+  noRules.current.pot.funded = false;
+  assert.equal(parseJackpot(noRules)?.current.rules, null);
+  // - `funded: false` for a zero minFundWei, or for a pot the index has not caught up with (only ever
+  //   hides the amount).
+  const zeroMinimum = clone(base);
+  zeroMinimum.current.rules.minFundWei = '0';
+  zeroMinimum.current.pot.funded = false;
+  assert.ok(parseJackpot(zeroMinimum));
+  const underReported = clone(base);
+  underReported.current.pot.funded = false;
+  assert.ok(parseJackpot(underReported));
+  for (const api of [noRules, zeroMinimum, underReported]) assert.equal(currentPrize(parseJackpot(api)), null, 'no amount for a pot the server does not call funded');
 });
 
 test('token amounts format exactly with 18 decimals', () => {

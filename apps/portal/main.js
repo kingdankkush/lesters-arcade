@@ -9849,7 +9849,7 @@ function showUnlockablesPanel(view) {
 }
 
 // Ranked results screen (results-share slice, contract §7.3, §7.7): lazy-loaded once per finished Ranked run.
-window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, onClose: () => rankedResultsClosed() }))).catch((error) => console.error('[Ranked results]', error)); });
+window.addEventListener('lesters:ranked-run', (event) => { void import('./src/ranked-results.mjs').then(({ openRankedResults }) => showRankedResults(openRankedResults({ ...event.detail, documentRef: document, mount: dom.officialGameplay ?? document.body, live: SETTLEMENT_LIVE, hosted: HOSTED_PROFILE_SYNC, jackpotLive: JACKPOT_LIVE, onClose: () => rankedResultsClosed() }))).catch((error) => console.error('[Ranked results]', error)); });
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 portalRouteController.applyLocation();

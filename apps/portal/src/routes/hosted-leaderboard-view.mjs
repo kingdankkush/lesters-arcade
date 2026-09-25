@@ -104,7 +104,8 @@ export function createHostedLeaderboardView({
   // Weekly Jackpot header (design §D.3): lazy, shown on Chikun · Weekly; while it shows, the board's
   // "resets in" uses its corrected clock.
   // Until it loads (or if it fails) `jackpot` is false or the pending promise: neither has `shown`.
-  let jackpot = jackpotLive && import('../jackpot/jackpot-board-header.mjs').then((module) => { jackpot = module.default(documentRef, now, rerenderIfShown); rerenderIfShown(); }, () => {});
+  // The header's factory re-renders the view once it is held here (jackpot-board-header.mjs default).
+  let jackpot = jackpotLive && import('../jackpot/jackpot-board-header.mjs').then((module) => (jackpot = module.default(documentRef, now, rerenderIfShown)), () => {});
 
   // Whether a loaded board can be shown without asking E5 again.
   function boardIsFresh(board) {
