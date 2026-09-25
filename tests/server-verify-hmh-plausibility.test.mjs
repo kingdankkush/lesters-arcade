@@ -1,13 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import {
   COMBO_MILESTONES,
   HMH_BOSS_START_TICK,
+  HMH_MAX_LEVEL,
   HMH_ROLE_THREAT,
+  HMH_V6_RULES,
   LIQUIDATOR_THREAT_COST,
   MAX_GAINS,
   MAX_UPGRADE_RANKS,
+  OBJECTIVE_REWARD_SCORE,
   OBJECTIVE_REWARD_XP,
   SILVER_PER_BOSS_KILL,
   SILVER_PER_ENEMY_KILL,
@@ -18,7 +22,25 @@ import {
   spawnCapacity,
   validateRebootRunPlausibility,
 } from '../server/verify/hmh-plausibility.mjs';
-import { createRunProgression, getRunProgressionSnapshot, grantRunXp } from '../apps/hmh-reboot/src/run-progression.mjs';
+import {
+  RUN_UPGRADE_CATALOG,
+  SILVER_SCORE_PER_COIN,
+  comboMilestoneXp,
+  createRunProgression,
+  getRunProgressionSnapshot,
+  grantRunSilver,
+  grantRunXp,
+  recordRunDefeat,
+} from '../apps/hmh-reboot/src/run-progression.mjs';
+import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
+import { HMH_OPENING_ENEMY_ARCHETYPE_IDS } from '../apps/hmh-reboot/src/opening-balance.mjs';
+import {
+  LIQUIDATOR_ATTACK_PLAN,
+  LIQUIDATOR_ENDLESS_CYCLE,
+  LIQUIDATOR_ENDLESS_CYCLE_TICKS,
+  LIQUIDATOR_ENDLESS_LOOP_START_TICK,
+  LIQUIDATOR_READABILITY_BUDGET,
+} from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { ENCOUNTER_BANDS, createEncounterDirector, directorViewBounds, stepEncounterDirector } from '../apps/hmh-reboot/src/encounter-director.mjs';
 import { createEnemyPopulation, retireEnemyFromPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { COLLECTIBLE_EFFECTS } from '../apps/hmh-reboot/src/collectible-system.mjs';
@@ -109,6 +131,74 @@ test('ceilings are the reboot gains at the maximum ranks (§5.3 formulas)', () =
   assert.equal(MAX_GAINS.silverScorePerCoin, 10 * scoreMultiplier + 0.5);
 });
 
+// The v6 path reads literal 1.8.1 values (HMH_V6_RULES), never the live child,
+// so a later child change cannot move a v6 bound. These pins hold each literal
+// to the 1.8.1 module it was read from. When the child branch legitimately
+// changes one of those modules, re-point the pin at the literal (the literal is
+// the v6 authority) instead of changing HMH_V6_RULES.
+test('the frozen v6 literals equal the 1.8.1 child modules', () => {
+  assert.equal(HMH_V6_RULES.fixedStepMs, FIXED_STEP_MS);
+  assert.equal(HMH_MAX_LEVEL, 1000);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/run-progression.mjs', import.meta.url), 'utf8'), /while \(state\.level < 1000 && state\.xp >= nextLevelThreshold\(state\.level\)\)/);
+  assert.deepEqual(HMH_V6_RULES.bands, ENCOUNTER_BANDS.map(({ id, minTick, maxTick, spawnIntervalTicks }) => ({ id, minTick, maxTick, spawnIntervalTicks })));
+  assert.equal(HMH_V6_RULES.openingEnemies, HMH_OPENING_ENEMY_ARCHETYPE_IDS.length);
+  for (const [role, threat] of Object.entries(HMH_ROLE_THREAT)) {
+    assert.equal(threat, role === 'liquidator' ? LIQUIDATOR_THREAT_COST : ENEMY_ARCHETYPES[role].costs.threat, role);
+  }
+  assert.deepEqual(Object.keys(MAX_UPGRADE_RANKS), Object.keys(RUN_UPGRADE_CATALOG));
+  assert.deepEqual(MAX_UPGRADE_RANKS, Object.fromEntries(Object.values(RUN_UPGRADE_CATALOG).map((upgrade) => [upgrade.id, upgrade.maxRank])));
+  const multipliers = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => /^(xp|score)Multiplier$/.test(upgrade.effect));
+  assert.deepEqual(multipliers.map(({ id, effect, amount }) => [id, effect, amount]), [['block-reward', 'scoreMultiplier', HMH_V6_RULES.multiplierPerRank], ['validator-training', 'xpMultiplier', HMH_V6_RULES.multiplierPerRank]]);
+  const milestones = Array.from({ length: 10_000 }, (_, index) => index + 1).filter((combo) => comboMilestoneXp(combo) > 0).map((combo) => [combo, comboMilestoneXp(combo)]);
+  assert.deepEqual(HMH_V6_RULES.comboMilestones, milestones);
+  assert.deepEqual(HMH_V6_RULES.cacheXp, Object.fromEntries(Object.values(COLLECTIBLE_EFFECTS).filter((effect) => effect.xpGain > 0).map((effect) => [effect.effectId, effect.xpGain])));
+  assert.equal(HMH_V6_RULES.silverScorePerCoin, SILVER_SCORE_PER_COIN);
+  assert.equal(OBJECTIVE_REWARD_XP, Math.max(0, ...objectiveRewardPlacements().map((placement) => placement.xpGain ?? 0)));
+  assert.equal(OBJECTIVE_REWARD_SCORE, 0);
+  const isSummon = (entry) => entry.attackId === 'bad-debt-summon';
+  assert.deepEqual(HMH_V6_RULES.liquidatorAdds, {
+    summonTicks: LIQUIDATOR_ATTACK_PLAN.filter(isSummon).map((entry) => entry.startTick),
+    endlessLoopStartTick: LIQUIDATOR_ENDLESS_LOOP_START_TICK,
+    endlessCycleTicks: LIQUIDATOR_ENDLESS_CYCLE_TICKS,
+    endlessCycleSummonOffsets: LIQUIDATOR_ENDLESS_CYCLE.filter(isSummon).map((entry) => entry.offset),
+    addsPerSummon: LIQUIDATOR_READABILITY_BUDGET.activeAdds,
+  });
+  assert.ok(LIQUIDATOR_ATTACK_PLAN.every((entry) => entry.startTick < LIQUIDATOR_ENDLESS_LOOP_START_TICK), 'the authored plan ends before the loop');
+});
+
+// The 1.8.1 verifier measured its gains by running the reboot's own
+// progression functions at the given ranks; the frozen formulas must give the
+// same numbers.
+function measuredGains(ranks) {
+  const progression = () => {
+    const state = createRunProgression({ seed: 0 });
+    for (const [id, rank] of Object.entries(ranks)) if (Object.hasOwn(state.ranks, id)) state.ranks[id] = Math.max(0, Math.min(MAX_UPGRADE_RANKS[id], rank));
+    return state;
+  };
+  const killXp = {};
+  const killScore = {};
+  for (const [role, threat] of Object.entries(HMH_ROLE_THREAT)) {
+    const snapshot = recordRunDefeat(progression(), { enemyId: 'plausibility-probe', threatCost: threat, tick: 0 });
+    killXp[role] = snapshot.xp;
+    killScore[role] = snapshot.score;
+  }
+  let comboXp = 0;
+  let comboRate = 0;
+  for (const { combo, baseXp } of COMBO_MILESTONES) {
+    comboXp += grantRunXp(progression(), baseXp, 0).xp;
+    comboRate = Math.max(comboRate, comboXp / combo);
+  }
+  const cacheXp = Object.fromEntries(Object.entries(HMH_V6_RULES.cacheXp).map(([effectId, baseXp]) => [effectId, grantRunXp(progression(), baseXp, 0).xp]));
+  const silver = grantRunSilver(progression(), 1, 0).score;
+  return { killXp, killScore, comboRate, cacheXp, silverScorePerCoin: SILVER_SCORE_PER_COIN * getRunProgressionSnapshot(progression()).effects.scoreMultiplier + 0.5, silver };
+}
+
+test('the frozen v6 gains equal the gains measured with run-progression', () => {
+  const { silver, ...measured } = measuredGains(MAX_UPGRADE_RANKS);
+  assert.deepEqual({ ...MAX_GAINS }, measured);
+  assert.ok(silver <= MAX_GAINS.silverScorePerCoin);
+});
+
 test('objective rewards grant no XP or score', () => {
   assert.equal(OBJECTIVE_REWARD_XP, 0);
   assert.ok(objectiveRewardPlacements().every((placement) => placement.xpGain === 0));
@@ -167,9 +257,16 @@ test('spawn capacity bounds the real encounter director', () => {
 });
 
 test('fixtures pass, and each hard impossibility rejects', () => {
-  assert.equal(validateRebootRunPlausibility(valid).verdict, 'ok');
-  assert.equal(validateRebootRunPlausibility(realistic).verdict, 'ok');
-  assert.notEqual(validateRebootRunPlausibility(level90).verdict, 'rejected');
+  assert.deepEqual(validateRebootRunPlausibility(valid), { verdict: 'ok', flags: [] });
+  assert.deepEqual(validateRebootRunPlausibility(realistic), { verdict: 'ok', flags: [] });
+  // The level-90 run's 1.8.1 result, value for value.
+  assert.deepEqual(validateRebootRunPlausibility(level90), {
+    verdict: 'flagged',
+    flags: [
+      { id: 'xp-near-ceiling', severity: 'flag', value: 1_204_660, limit: 1_305_994 },
+      { id: 'score-near-ceiling', severity: 'flag', value: 1_273_095, limit: 1_279_663 },
+    ],
+  });
 
   assert.deepEqual(rejects(validateRebootRunPlausibility(clone(valid, (s) => { s.totals.elapsedMs = 0; }))), ['progress-without-time', 'elapsed-time-mismatch']);
   const noTime = validateRebootRunPlausibility(clone(valid, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; }));
@@ -216,4 +313,65 @@ test('soft cross-checks flag without rejecting', () => {
   assert.ok(flagIds(clone(level90, (s) => { s.kills.boss = 0; })).includes('boss-count-mismatch'));
   assert.ok(flagIds(clone(valid, (s) => { s.milestones.bossEngagedTick = 600; })).includes('boss-engaged-before-band'));
   assert.ok(flagIds(clone(realistic, (s) => { s.totals.xp = Math.floor(s.totals.xp * 1.3); s.totals.level = rebootLevelForXp(s.totals.xp); })).includes('xp-above-selected-upgrades'));
+});
+
+// ---------------------------------------------------------------------------
+// The v6 path is frozen (run summary v7 contract §9): every schema-6 summary
+// must get the result it got at 60ea173a (production 1.8.1), before the v7
+// rules and the literal v6 table existed. The corpus below covers every rule
+// and flag of the v6 path; its results were hashed with the 60ea173a module.
+const V6_CORPUS_DIGEST = 'accf51dd54eb915ac643884ca6ab6886158b53531d67aa11461c6c0246faf439';
+function v6Corpus() {
+  const cases = [];
+  const add = (name, base, mutate = () => {}) => cases.push([name, clone(base, mutate)]);
+  const bases = [['valid', valid], ['realistic', realistic], ['level-90', level90]];
+  const roles = ['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'whale-enforcer', 'gas-bomber', 'validator-cultist', 'liquidator'];
+  const withXp = (s, xp) => { s.totals.xp = xp; s.totals.level = rebootLevelForXp(xp); };
+  const rank = (s, id, selected) => { const row = s.upgrades.find((entry) => entry.upgradeId === id); row.offered = Math.max(row.offered, selected); row.selected = selected; };
+  for (const [name, base] of bases) {
+    add(name, base);
+    add(`${name} elapsed 0`, base, (s) => { s.totals.elapsedMs = 0; });
+    add(`${name} no ticks`, base, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; });
+    add(`${name} half elapsed`, base, (s) => { s.totals.elapsedMs = s.totals.survivalTicks * FIXED_STEP_MS / 2; });
+    add(`${name} elapsed +5 s`, base, (s) => { s.totals.elapsedMs += 5_000; });
+    add(`${name} elapsed +1 ms`, base, (s) => { s.totals.elapsedMs += 1; });
+    add(`${name} elapsed +1.5 ms`, base, (s) => { s.totals.elapsedMs += 1.5; });
+    add(`${name} level +1`, base, (s) => { s.totals.level += 1; });
+    add(`${name} level -1`, base, (s) => { s.totals.level -= 1; });
+    add(`${name} one Liquidator kill`, base, (s) => { setRoleKills(s, 'liquidator', 1); s.kills.boss = 1; });
+    add(`${name} two Liquidator kills`, base, (s) => { setRoleKills(s, 'liquidator', 2); s.kills.boss = 2; });
+    add(`${name} boss flag only`, base, (s) => { s.kills.boss = 1; });
+    add(`${name} boss role only`, base, (s) => { setRoleKills(s, 'liquidator', 1); s.kills.boss = 0; });
+    for (const role of roles) {
+      for (const extra of [1, 50, 65, 400, 750, 2_000]) add(`${name} +${extra} ${role}`, base, (s) => setRoleKills(s, role, s.kills.byEnemyRole.find((row) => row.enemyRoleId === role).count + extra));
+    }
+    for (const factor of [0.5, 0.9, 1.1, 1.3, 1.6, 2, 3, 5]) {
+      add(`${name} xp x${factor}`, base, (s) => withXp(s, Math.floor(s.totals.xp * factor)));
+      add(`${name} score x${factor}`, base, (s) => { s.totals.score = Math.floor(s.totals.score * factor); });
+    }
+    for (const selected of [0, 1, 2, 3, 4, 7]) {
+      add(`${name} validator-training ${selected}`, base, (s) => rank(s, 'validator-training', selected));
+      add(`${name} block-reward ${selected}`, base, (s) => rank(s, 'block-reward', selected));
+    }
+    add(`${name} +20 picks`, base, (s) => { s.upgrades[0].offered += 20; s.upgrades[0].selected += 20; });
+    add(`${name} combo above kills`, base, (s) => { s.totals.maxCombo = s.kills.total + 5; s.totals.currentCombo = 0; });
+    add(`${name} engaged at 600`, base, (s) => { s.milestones.bossEngagedTick = 600; });
+    add(`${name} engaged at 72,000`, base, (s) => { s.milestones.bossEngagedTick = Math.min(72_000, s.identity.endTick); });
+    add(`${name} boss flag cleared`, base, (s) => { s.kills.boss = 0; });
+    add(`${name} engagement cleared`, base, (s) => { s.milestones.bossEngagedTick = 0; });
+    for (const span of [60, 1_200, 36_000]) {
+      if (span < base.identity.endTick) cases.push([`${name} squeezed to ${span}`, shiftedStart(base, span)]);
+    }
+    add(`${name} start 1`, base, (s) => { s.identity.startTick = 1; s.totals.survivalTicks -= 1; });
+    add(`${name} caches x3`, base, (s) => { for (const row of s.collectibles) row.collected *= 3; });
+    add(`${name} litecoin`, base, (s) => { s.totals.litecoin = 3; });
+  }
+  cases.push(['null', null], ['empty', {}], ['no roles', clone(valid, (s) => { delete s.kills.byEnemyRole; })], ['no upgrades', clone(valid, (s) => { delete s.upgrades; })]);
+  return cases;
+}
+
+test('the v6 path gives every schema-6 summary its 1.8.1 result (frozen)', () => {
+  const results = v6Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
+  const digest = createHash('sha256').update(JSON.stringify(results)).digest('hex');
+  assert.equal(digest, V6_CORPUS_DIGEST, `${results.length} cases`);
 });
