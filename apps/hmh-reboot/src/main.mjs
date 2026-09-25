@@ -4,6 +4,7 @@ import { canAcceptCollectible } from './collectible-capacity.mjs';
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
 import { WORLD_DESTRUCTIBLE_PROPS, createWorldDestructibleState, worldDestructibleTargets, worldDestructibleHurtProfile, worldDestructibleCoverHit, applyWorldDestructibleDamage, worldDestructibleHiddenProps, stepWorldDestructibleSupplies } from './world-destructibles.mjs';
 import { resolveDodgeIntent } from './dodge-intent.mjs';
+import { createDeathCamera } from './death-camera.mjs';
 import { loadRuntimeTelemetry } from './runtime-telemetry-loader.mjs';
 import { stepWorldExplosions } from './world-explosives.mjs';
 import { createStartupArtGate } from './startup-art.mjs';
@@ -2509,8 +2510,10 @@ async function boot() {
                 : pistolFireAge >= 0 && pistolFireAge < 12
                   ? 'pistol-fire'
                   : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : interactionSite ? 'interact' : 'aim';
+        // The death clip runs on the death camera's presentation ticks: the
+        // simulation is frozen on the defeat tick (package 7.2 #1).
         const productionActionTick = productionAction === 'death'
-          ? Math.max(0, visualTick - (lastPlayerHit?.tick ?? visualTick))
+          ? Math.max(0, visualTick + deathCamera.ticks - (lastPlayerHit?.tick ?? visualTick))
           : productionAction === 'melee'
             ? meleeAge
             : productionAction === 'grenade'
@@ -2544,7 +2547,9 @@ async function boot() {
         const externalWeaponAuthoritative = Boolean(authoredHeldWeaponDisplay)
           && !actionOwnsWeaponLayer
           && !nativeWeaponOwnsLayer;
-        productionHeroDisplay.setLayerVisible('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative);
+        // Package 7.2 #2: the death clip shows no weapon (it used to show
+        // the Coin Blaster whatever the hero carried).
+        productionHeroDisplay.setLayerVisible('weapon', productionAction !== 'interact' && productionAction !== 'death' && !externalWeaponAuthoritative);
         // Reload presentation: the weapon layer dips while a magazine reloads
         // and snaps level on the completion tick. Only the 'aim' / 'hurt'
         // poses may carry it, so the 12-tick pistol-fire clip plays out first
@@ -2906,7 +2911,29 @@ async function boot() {
     atmospherePool?.finish();
   };
 
+  // Design package 7.2 #1 (S1.1): the death camera. The defeat tick freezes
+  // the simulation and builds the run's result there; the ticker keeps
+  // drawing for 72 presentation ticks so the death clip plays, and only then
+  // do the four result messages reach the parent, in the 1.8.1 order, and the
+  // ticker stops. A hidden tab, an exit request or a session end flushes the
+  // held result at once; a backstop timer covers a page that draws nothing.
+  const deathCamera = createDeathCamera({
+    release: (resultMessages) => {
+      if (resultMessages && bridge?.initialized) {
+        bridge.send('game:state', resultMessages.state);
+        bridge.send('game:run-summary', resultMessages.runSummary);
+        bridge.send('game:score-result', resultMessages.scoreResult);
+        bridge.send('game:game-over', resultMessages.gameOver);
+      }
+      if (simulation?.state === 'game-over') app.ticker.stop();
+    },
+    setTimer: (callback, ms) => window.setTimeout(callback, ms),
+    clearTimer: (id) => window.clearTimeout(id),
+  });
+
   const stopCurrentSession = () => {
+    deathCamera.flush('session-end');
+    deathCamera.reset();
     touchController?.destroy();
     touchController = null;
     inputController?.destroy();
@@ -4748,11 +4775,13 @@ async function boot() {
           elapsedMs: simulation.timeMs,
         });
         if (defeatTransition) {
+          // The ticker keeps drawing for the death camera, which stops it
+          // once the clip has played and the result has been handed over.
           simulation.gameOver();
-          app.ticker.stop();
           combatAudio.setMusicEnabled(false);
           combatAudio.play('game-over', { volume: 0.18 });
           setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
+          let heldResult = null;
           if (bridge?.initialized) {
             const runSnapshot = getRunProgressionSnapshot(runProgression);
             const runSummary = finalizeRunSummary(runSummaryAccumulator, {
@@ -4774,11 +4803,16 @@ async function boot() {
               elapsedMs: simulation.timeMs,
               runSummary,
             });
-            bridge.send('game:state', statePayload('game-over'));
-            bridge.send('game:run-summary', resultMessages.runSummary);
-            bridge.send('game:score-result', resultMessages.scoreResult);
-            bridge.send('game:game-over', resultMessages.gameOver);
+            // Built on the defeat tick, so score, summary and evidence are
+            // exactly the 1.8.1 ones; only their delivery waits.
+            heldResult = Object.freeze({
+              state: statePayload('game-over'),
+              runSummary: resultMessages.runSummary,
+              scoreResult: resultMessages.scoreResult,
+              gameOver: resultMessages.gameOver,
+            });
           }
+          deathCamera.begin({ messages: heldResult });
         }
       } else {
         lastCombatResolution = null;
@@ -5028,7 +5062,10 @@ async function boot() {
   });
 
   const handleVisibilityChange = () => {
-    if (document.visibilityState === 'hidden') pauseRuntime('visibility');
+    if (document.visibilityState === 'hidden') {
+      deathCamera.flush('visibility');
+      pauseRuntime('visibility');
+    }
   };
   document.addEventListener('visibilitychange', handleVisibilityChange);
 
@@ -5097,6 +5134,14 @@ async function boot() {
       requestEnemyRosterAtlas('liquidator-agent');
       if (simulation.state !== 'active') app.ticker.stop();
       else combatAudio.resume();
+    }
+    // The death camera draws the frozen defeat tick with the death clip on
+    // its own presentation clock; its last frame hands the result over.
+    if (simulation?.state === 'game-over' && deathCamera.active && actor && camera) {
+      deathCamera.advance(ticker.deltaMS);
+      dataset.deathCameraTicks = String(deathCamera.ticks);
+      renderWorld(actor);
+      return;
     }
     if (!simulation || simulation.state !== 'active' || !actor || !camera) {
       // Keep the state mirror truthful while a menu/upgrade hold skips the frame.
@@ -5230,8 +5275,10 @@ async function boot() {
     // Shift+Escape exits, but not mid-run: Shift is the keyboard dodge
     // (package S1.1), so a dodge followed by Escape must pause, never quit.
     const shiftExit = event.shiftKey && !['active', 'upgrade'].includes(simulation?.state);
-    if (shiftExit && bridge?.initialized) bridge.send('game:exit', { reason: 'menu' });
-    else if (simulation?.state === 'paused') resumeRuntime('user');
+    if (shiftExit && bridge?.initialized) {
+      deathCamera.flush('exit');
+      bridge.send('game:exit', { reason: 'menu' });
+    } else if (simulation?.state === 'paused') resumeRuntime('user');
     else pauseRuntime('user');
   };
   window.addEventListener('keydown', handleExitKey);

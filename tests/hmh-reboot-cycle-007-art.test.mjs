@@ -178,7 +178,8 @@ test('Cycle 007 gives one weapon renderer authority at a time', async () => {
   assert.match(runtime, /const externalWeaponAuthoritative = Boolean\(authoredHeldWeaponDisplay\)/);
   assert.match(runtime, /const actionOwnsWeaponLayer = \['melee', 'grenade', 'death', 'interact'\]\.includes\(productionAction\)/);
   assert.match(runtime, /&& !actionOwnsWeaponLayer\s*&& !nativeWeaponOwnsLayer/);
-  assert.match(runtime, /setLayerVisible\('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative\)/);
+  // Design package 7.2 #2 (S1.1): the death clip shows no weapon either.
+  assert.match(runtime, /setLayerVisible\('weapon', productionAction !== 'interact' && productionAction !== 'death' && !externalWeaponAuthoritative\)/);
   assert.match(runtime, /authoredHeldWeaponDisplay\.container\.visible = externalWeaponAuthoritative/);
 });
 

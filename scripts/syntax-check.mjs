@@ -850,6 +850,8 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/dodge-intent.mjs",
   "tests/hmh-reboot-manual-dodge.test.mjs",
   "tests/hmh-reboot-dodge-determinism.test.mjs",
+  "apps/hmh-reboot/src/death-camera.mjs",
+  "tests/hmh-reboot-death-camera.test.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
   "apps/hmh-reboot/src/world-atmosphere.mjs",
