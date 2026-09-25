@@ -118,6 +118,19 @@ const jackpotSource = readFileSync(join(root, 'contracts/src/WeeklyJackpot.sol')
 for (const signal of jackpotForbidden) {
   if (jackpotSource.includes(signal)) throw new Error(`WeeklyJackpot.sol must not contain ${signal} (no native value, no upgrade path, immutable token)`);
 }
+// Design §A.12: each of these nine carries nonReentrant in its own header (one signal for the file is not enough).
+export const JACKPOT_NON_REENTRANT = Object.freeze(['fund', 'submitCandidate', 'adminSubmit', 'finalize', 'claim', 'recycleUnclaimed', 'refundAfterEnd', 'recoverResidual', 'sweepStray']);
+export function jackpotReentrancyProblems(source) {
+  const problems = [];
+  for (const name of JACKPOT_NON_REENTRANT) {
+    const header = new RegExp(`function ${name}\\([^)]*\\)([^{;]*)\\{`).exec(source);
+    if (!header) problems.push(`function ${name} is missing`);
+    else if (!/\bexternal\b/.test(header[1]) || !/\bnonReentrant\b/.test(header[1])) problems.push(`function ${name} must be external nonReentrant (design §A.12)`);
+  }
+  return problems;
+}
+const reentrancyProblems = jackpotReentrancyProblems(jackpotSource);
+if (reentrancyProblems.length) throw new Error(`WeeklyJackpot.sol: ${reentrancyProblems.join('; ')}`);
 
 // The read interfaces repeat the deployed struct field orders exactly (the calls are ABI-decoded).
 function structFields(source, name) {
@@ -133,7 +146,7 @@ for (const [name, deployedFile] of [['ScoreRecord', 'ScoreSubmissionRegistry.sol
   }
 }
 // Test-only mocks never live under contracts/src.
-for (const mock of ['FeeOnTransferToken.sol', 'BlacklistToken.sol', 'ReentrantToken.sol', 'MaxTxToken.sol', 'SenderFeeToken.sol', 'DoubleEntryToken.sol', 'MockRankedReaders.sol']) {
+for (const mock of ['FeeOnTransferToken.sol', 'BlacklistToken.sol', 'ReentrantToken.sol', 'MaxTxToken.sol', 'SenderFeeToken.sol', 'DoubleEntryToken.sol', 'MockRankedReaders.sol', 'MetadataToken.sol']) {
   if (existsSync(join(root, 'contracts/src', mock))) throw new Error(`Test mock ${mock} must stay under contracts/test/mocks`);
 }
 

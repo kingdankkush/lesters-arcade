@@ -20,6 +20,7 @@ import {
   weekIndexOf,
   weekStartOf,
 } from '../scripts/lib/local-jackpot.mjs';
+import { JACKPOT_NON_REENTRANT, jackpotReentrancyProblems } from '../scripts/contract-structure-check.mjs';
 
 const TOKEN = 10n ** 18n;
 const HOUR = 3600;
@@ -233,6 +234,9 @@ test('a zero pot records no winner', async () => {
   await at(close(W) + 2 * HOUR);
   await listAndClear([a]);
   await at(payoutAt(W));
+  // leaderOf still names the cleared top row of an unfunded week: it is not the week's champion (design J13).
+  const leader = await jackpot.leaderOf(W);
+  assert.deepEqual([leader.sessionId, Number(leader.review), (await jackpot.potOf(W)).total], [a, 1, 0n]);
   const receipt = await mined(jackpot.connect(p4).finalize(W));
   assert.deepEqual(eventsOf(receipt).map((event) => event.name), ['Finalized']);
   const [finalized] = eventsOf(receipt, 'Finalized');
@@ -564,11 +568,77 @@ test('a reentrant token cannot re-enter fund, finalize or claim', async () => {
   await assertAccounting(instance, mock, W + 3);
 });
 
+test('recoverResidual keeps the balance at or above liabilities, even for a sender-fee token', async () => {
+  const { instance, mock } = await mockInstance('SenderFeeToken', [100n]); // 1% charged to the sender
+  const address = await instance.getAddress();
+  await fund(W, 1_000n * TOKEN, { instance, prize: mock });
+  await fund(W + 1, 200n * TOKEN, { instance, prize: mock, from: funder2 }); // after the end below: still owed to funder2
+  await mined(instance.connect(operator).scheduleEnd(W));
+  await at(payoutAt(W));
+  const rolled = await mined(instance.connect(p4).finalize(W)); // no candidate: the final pot becomes the residue
+  assert.equal(Number(eventsOf(rolled, 'RolledOver')[0].args.toWeek), 0);
+  assert.deepEqual([await instance.residual(), await instance.liabilities(), await mock.balanceOf(address)], [1_000n * TOKEN, 1_200n * TOKEN, 1_200n * TOKEN]);
+  await at(Number(await instance.residualAvailableAt()));
+  // Sending the 1,000 residue costs the jackpot 1,010, which would leave 190 against the 200 funder2 is owed.
+  await expectRevert(instance.connect(operator).recoverResidual(), 'LIABILITIES_BREACHED');
+  assert.equal(await instance.residual(), 1_000n * TOKEN, 'nothing moved');
+  await assertAccounting(instance, mock, W + 2, 'after the refused recovery');
+  // Once stray tokens cover the fee, the residue goes out and the post-condition holds exactly.
+  await mined(mock.connect(funder).transfer(address, 10n * TOKEN));
+  await mined(instance.connect(operator).recoverResidual());
+  assert.deepEqual([await instance.residual(), await instance.liabilities(), await mock.balanceOf(address)], [0n, 200n * TOKEN, 200n * TOKEN]);
+  await assertAccounting(instance, mock, W + 2, 'after the recovery');
+});
+
+test('a reentrant token cannot re-enter refundAfterEnd, a prize-transfer callback sees the prize paid, and all nine guards are in place', async () => {
+  const { instance, mock } = await mockInstance('ReentrantToken');
+  const address = await instance.getAddress();
+  await fund(W, 500n * TOKEN, { instance, prize: mock });
+  await fund(W + 1, 300n * TOKEN, { instance, prize: mock });
+  await mined(instance.connect(operator).scheduleEnd(W));
+  const a = await playRun(p1, { score: 900n, openAt: start(W) + HOUR });
+  await at(close(W) + 2 * HOUR);
+  await listAndClear([a], instance);
+  // Checks-effects-interactions (design §A.12): during the prize transfer the prize is already booked as paid,
+  // so a token callback reads liabilities that the balance covers (300 still owed for W + 1, not 800).
+  await mined(mock.arm(address, IFACE.encodeFunctionData('liabilities')));
+  await at(payoutAt(W));
+  await mined(instance.connect(p4).finalize(W));
+  assert.equal(await mock.lastHookOk(), true);
+  const [during] = IFACE.decodeFunctionResult('liabilities', await mock.lastHookReturn());
+  assert.equal(during, 300n * TOKEN);
+  assert.equal(await mock.balanceOf(p1.address), 500n * TOKEN);
+  // refundAfterEnd -> transfer -> hook -> refundAfterEnd again: refused by the guard.
+  await mined(mock.arm(address, IFACE.encodeFunctionData('refundAfterEnd', [W + 1])));
+  await mined(instance.connect(funder).refundAfterEnd(W + 1));
+  assert.equal(await mock.hookCalls(), 2n);
+  assert.equal(await mock.lastHookOk(), false);
+  assert.equal(await mock.lastHookReturn(), REENTRANT_CALL);
+  assert.equal(await instance.liabilities(), 0n);
+  await assertAccounting(instance, mock, W + 2);
+  // The operator-only and token-free guarded functions cannot be re-entered by a token at all, so the source
+  // check (npm run contracts:check) pins nonReentrant on each of the nine functions of design §A.12.
+  const source = readFileSync(new URL('../contracts/src/WeeklyJackpot.sol', import.meta.url), 'utf8').replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, '');
+  assert.deepEqual(jackpotReentrancyProblems(source), []);
+  assert.equal(JACKPOT_NON_REENTRANT.length, 9);
+  for (const name of JACKPOT_NON_REENTRANT) {
+    const dropped = source.replace(new RegExp(`(function ${name}\\([^)]*\\)[^{]*?)\\s+nonReentrant`), '$1');
+    assert.notEqual(dropped, source, name);
+    assert.deepEqual(jackpotReentrancyProblems(dropped), [`function ${name} must be external nonReentrant (design §A.12)`]);
+  }
+});
+
+// JACKPOT_RANDOM_SEEDS=1,2,3 JACKPOT_RANDOM_VERBOSE=1 explores other seeds (and prints what each run reached).
+const RANDOM_SEEDS = process.env.JACKPOT_RANDOM_SEEDS ? process.env.JACKPOT_RANDOM_SEEDS.split(',').map(Number) : [0x5eed1e5, 0x0c0ffee];
+const RANDOM_STEPS = Number(process.env.JACKPOT_RANDOM_STEPS ?? 120);
+
 test('randomized sequences keep balance at or above liabilities and the accounting identity exact', async () => {
-  // Two seeded runs (reproducible), each from the same starting state.
-  for (const seed of [0x5eed1e5, 0x0c0ffee]) {
+  // Seeded runs from the same starting state. They are reproducible: the choices come from the seed, session ids
+  // are derived from it, and chain time moves only through setChainTime plus one second per mined block. The
+  // identity is checked after every step, and each run must pass through every accounting transition (below).
+  for (const seed of RANDOM_SEEDS) {
     const runSnapshot = await chain.snapshot();
-    await randomRun(seed, 60);
+    await randomRun(seed, RANDOM_STEPS);
     await chain.revert(runSnapshot);
   }
 });
@@ -588,87 +658,129 @@ async function randomRun(initialSeed, steps) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
   const pick = (items) => items[Math.floor(random() * items.length)];
-  const tryTx = async (promise) => { try { await mined(promise); return true; } catch { return false; } };
+  // Every accounting transition a receipt shows (design §A.6, §A.9, §A.10).
+  const outcomes = { paid: 0, claimPending: 0, claimed: 0, rolledOver: 0, capExcess: 0, recycled: 0, refunded: 0, recovered: 0 };
+  const note = (receipt) => {
+    const events = eventsOf(receipt);
+    const failed = events.some((event) => event.name === 'PrizeTransferFailed');
+    for (const event of events) {
+      if (event.name === 'Finalized' && event.args.winner !== ethers.ZeroAddress && !failed) outcomes.paid += 1;
+      else if (event.name === 'PrizeTransferFailed') outcomes.claimPending += 1;
+      else if (event.name === 'PrizeClaimed') outcomes.claimed += 1;
+      else if (event.name === 'RolledOver' && event.args.amount > 0n) outcomes.rolledOver += 1;
+      else if (event.name === 'CapExcessCarried') outcomes.capExcess += 1;
+      else if (event.name === 'UnclaimedRecycled') outcomes.recycled += 1;
+      else if (event.name === 'RefundedAfterEnd') outcomes.refunded += 1;
+      else if (event.name === 'ResidualRecovered') outcomes.recovered += 1;
+    }
+    return receipt;
+  };
+  const tryTx = async (promise) => { try { return note(await mined(promise)); } catch { return null; } };
+  const counts = {}; // successful actions only
+  const done = (action, ok = true) => { if (ok) counts[action] = (counts[action] ?? 0) + 1; };
+  const openDueWeeks = async (now) => {
+    const due = [];
+    for (let week = W; payoutAt(week) <= now; week += 1) {
+      if (Number((await instance.weekState(week)).status) === 0) due.push(week);
+    }
+    return due;
+  };
   await at(start(W) + HOUR);
+  // A prize cap from W + 1 on: a pot above it pays the cap and carries the excess into the current week.
+  await mined(instance.connect(operator).scheduleRules({ ...launchRules(suite), adminClearOnly: false, fromWeek: W + 1, maxPrizeWei: 400n * TOKEN }));
   const openPots = new Map(); // week -> last seen open total (an open week's pot never decreases)
   const finalizedWeeks = new Set();
   let lastWeek = W + 1;
-  let endScheduled = false;
-  const counts = {};
   for (let step = 0; step < steps; step += 1) {
     const now = await chainNow();
     const current = weekIndexOf(now);
     lastWeek = Math.max(lastWeek, current + 4);
     const roll = random();
     let action;
-    if (roll < 0.16) {
+    if (roll < 0.14) {
       action = 'fund';
       const week = current + Math.floor(random() * 3);
-      await tryTx(instance.connect(pick(funders)).fund(week, MIN_FUND + BigInt(Math.floor(random() * 500)) * TOKEN));
-    } else if (roll < 0.2) {
+      done(action, await tryTx(instance.connect(pick(funders)).fund(week, MIN_FUND + BigInt(Math.floor(random() * 500)) * TOKEN)));
+    } else if (roll < 0.17) {
       action = 'stray';
       await mined(mock.connect(pick(funders)).transfer(address, BigInt(1 + Math.floor(random() * 9)) * TOKEN));
-    } else if (roll < 0.42) {
+      done(action);
+    } else if (roll < 0.39) {
       action = 'play';
       const player = pick(players);
       if (!(await mock.blacklisted(player.address))) {
-        const id = await playRun(player, { score: BigInt(1 + Math.floor(random() * 10_000)) });
+        const id = await playRun(player, { sessionId: ethers.id(`random-${initialSeed}-${step}`), score: BigInt(1 + Math.floor(random() * 10_000)) });
+        done(action);
         const [ok] = await instance.checkEligibility(id);
-        if (ok) await mined(instance.connect(pick([keeper, p4, player])).submitCandidate(id));
+        if (ok) done('submit', await tryTx(instance.connect(pick([keeper, p4, player])).submitCandidate(id)));
       }
-    } else if (roll < 0.58) {
+    } else if (roll < 0.53) {
       action = 'review';
-      const week = pick([current, current - 1]);
-      const rows = await instance.candidatesOf(week);
+      const rows = await instance.candidatesOf(pick([current, current - 1]));
       if (rows.length) {
         const row = pick(rows);
         const choice = random();
-        if (choice < 0.5) await tryTx(instance.connect(keeper).clear(row.sessionId));
-        else if (choice < 0.65) await tryTx(instance.connect(keeper).flag(row.sessionId, b32('screen-hold')));
-        else if (choice < 0.85) await tryTx(instance.connect(admin).clear(row.sessionId));
-        else await tryTx(instance.connect(admin).disqualify(row.sessionId, random() < 0.5, b32('other')));
+        if (choice < 0.5) done(action, await tryTx(instance.connect(keeper).clear(row.sessionId)));
+        else if (choice < 0.65) done(action, await tryTx(instance.connect(keeper).flag(row.sessionId, b32('screen-hold'))));
+        else if (choice < 0.85) done(action, await tryTx(instance.connect(admin).clear(row.sessionId)));
+        else done(action, await tryTx(instance.connect(admin).disqualify(row.sessionId, random() < 0.5, b32('other'))));
       }
-    } else if (roll < 0.63) {
+    } else if (roll < 0.58) {
+      // The token freezes the leader of a due week (its payout then fails), or toggles a random wallet.
       action = 'blacklist';
-      const player = pick(players);
-      await mined(mock.setBlacklisted(player.address, !(await mock.blacklisted(player.address))));
-    } else if (roll < 0.8) {
+      const due = await openDueWeeks(now);
+      const leader = due.length && random() < 0.6 ? (await instance.leaderOf(pick(due))).player : ethers.ZeroAddress;
+      if (leader !== ethers.ZeroAddress) await mined(mock.setBlacklisted(leader, true));
+      else {
+        const player = pick(players);
+        await mined(mock.setBlacklisted(player.address, !(await mock.blacklisted(player.address))));
+      }
+      done(action);
+    } else if (roll < 0.78) {
+      // Time: often straight past the next payout time, so weeks close and pay within the run.
       action = 'time';
-      await at(now + HOUR + Math.floor(random() * 2 * DAY));
-    } else if (roll < 0.92) {
+      const nextPayout = payoutAt(current - 1) > now ? payoutAt(current - 1) : payoutAt(current);
+      await at(random() < 0.35 ? nextPayout + Math.floor(random() * 6 * HOUR) : now + 3 * HOUR + Math.floor(random() * 33 * HOUR));
+      done(action);
+    } else if (roll < 0.9) {
+      // Payouts: the admin decides an uncleared leader (clear, or disqualify so the next row leads); sometimes the
+      // token freezes a cleared winner first, so the prize is left claim-pending.
       action = 'finalize';
-      for (let week = W; week < current; week += 1) {
-        const state = await instance.weekState(week);
-        if (Number(state.status) !== 0) continue;
-        if (await tryTx(instance.connect(p4).finalize(week))) {
-          assert.equal(finalizedWeeks.has(week), false, 'a week finalizes once');
-          finalizedWeeks.add(week);
-          continue;
-        }
+      for (const week of await openDueWeeks(now)) {
         const leader = await instance.leaderOf(week);
         if (leader.sessionId !== ethers.ZeroHash && Number(leader.review) !== 1) {
           await tryTx(random() < 0.7 ? instance.connect(admin).clear(leader.sessionId) : instance.connect(admin).disqualify(leader.sessionId, false, b32('other')));
         }
+        const payee = await instance.leaderOf(week);
+        if (payee.sessionId !== ethers.ZeroHash && Number(payee.review) === 1 && random() < 0.35) await mined(mock.setBlacklisted(payee.player, true));
+        if (await tryTx(instance.connect(p4).finalize(week))) {
+          assert.equal(finalizedWeeks.has(week), false, 'a week finalizes once');
+          finalizedWeeks.add(week);
+          done(action);
+        }
       }
-    } else if (roll < 0.97) {
+    } else if (roll < 0.96) {
       action = 'claim';
       for (let week = W; week < current; week += 1) {
         const state = await instance.weekState(week);
         if (state.unclaimed === 0n) continue;
         const winner = players.find((player) => player.address === state.winner);
         const to = pick(players);
-        if (winner && !(await mock.blacklisted(to.address))) await tryTx(instance.connect(winner).claim(week, to.address));
+        if (winner && !(await mock.blacklisted(to.address))) done(action, await tryTx(instance.connect(winner).claim(week, to.address)));
       }
     } else {
       action = 'sweep';
-      await mined(instance.connect(operator).sweepStray(await mock.getAddress()));
+      note(await mined(instance.connect(operator).sweepStray(await mock.getAddress())));
+      done(action);
     }
-    if (step === steps - 20 && !endScheduled) {
-      await mined(instance.connect(operator).scheduleEnd(current + 1));
-      endScheduled = true;
+    if (step === steps - 20) {
+      // The end, announced while a funder has already paid into a week after it (design §A.10: refundable).
+      const endWeek = weekIndexOf(await chainNow()) + 1;
+      note(await mined(instance.connect(funder2).fund(endWeek + 1, MIN_FUND)));
+      await mined(instance.connect(operator).scheduleEnd(endWeek));
+      done('scheduleEnd');
     }
-    counts[action] = (counts[action] ?? 0) + 1;
-    const { rows } = await assertAccounting(instance, mock, lastWeek, `after step ${step} (${action})`);
+    const { rows } = await assertAccounting(instance, mock, lastWeek, `after step ${step} (${action}, seed ${initialSeed})`);
     const end = Number(await instance.endAfterWeek());
     for (const [pot, state, week] of rows) {
       if (Number(state.status) !== 0 || (end !== 0 && week > end)) continue;
@@ -676,31 +788,57 @@ async function randomRun(initialSeed, steps) {
       openPots.set(week, pot.total);
     }
   }
-  // Wind down: past the end, finalize what is due, refund later-week funding, recover the residue.
+  const randomPhase = { ...outcomes };
+  // Wind-down, past the end: the admin clears every open week's leader so winners are paid (or left
+  // claim-pending by a frozen wallet); every claim-pending prize is claimed except the last, which recycles into
+  // the residue after 180 days; funders refund their later-week funding; the residue is recovered.
   const end = Number(await instance.endAfterWeek());
-  await at(payoutAt(end) + HOUR);
+  const later = async (seconds) => at(Math.max(seconds, (await chainNow()) + 1));
+  await later(payoutAt(end) + HOUR);
   for (let week = W; week <= end; week += 1) {
     if (Number((await instance.weekState(week)).status) !== 0) continue;
-    await mined(instance.connect(admin).holdWeek(week, b32('investigation')));
-    for (const row of await instance.candidatesOf(week)) await mined(instance.connect(admin).disqualify(row.sessionId, false, b32('other')));
-    await mined(instance.connect(admin).releaseWeek(week));
-    await mined(instance.connect(p4).finalize(week));
+    const leader = await instance.leaderOf(week);
+    if (leader.sessionId !== ethers.ZeroHash && Number(leader.review) !== 1) await mined(instance.connect(admin).clear(leader.sessionId));
+    note(await mined(instance.connect(p4).finalize(week)));
     await assertAccounting(instance, mock, lastWeek, `wind-down finalize ${week}`);
+  }
+  const pending = [];
+  for (let week = W; week <= end; week += 1) if ((await instance.weekState(week)).unclaimed > 0n) pending.push(week);
+  // The last claim-pending prize recycles instead, unless no prize was claimed yet.
+  const recycle = pending.length > 1 || (pending.length === 1 && outcomes.claimed > 0) ? pending.at(-1) : null;
+  for (const week of pending.filter((entry) => entry !== recycle)) {
+    const { winner: winnerAddress } = await instance.weekState(week);
+    const winner = players.find((player) => player.address === winnerAddress);
+    note(await mined(instance.connect(winner).claim(week, funder.address)));
+    await assertAccounting(instance, mock, lastWeek, `wind-down claim ${week}`);
+  }
+  if (recycle !== null) {
+    const week = recycle;
+    await later(Number((await instance.weekState(week)).finalizedAt) + 180 * DAY);
+    note(await mined(instance.connect(p4).recycleUnclaimed(week)));
+    await assertAccounting(instance, mock, lastWeek, `wind-down recycle ${week}`);
   }
   for (let week = end + 1; week <= lastWeek; week += 1) {
     for (const wallet of funders) {
-      if ((await instance.fundedBy(week, wallet.address)) > 0n) await mined(instance.connect(wallet).refundAfterEnd(week));
+      if ((await instance.fundedBy(week, wallet.address)) > 0n) note(await mined(instance.connect(wallet).refundAfterEnd(week)));
     }
   }
   if ((await instance.residual()) > 0n) {
-    await nextAt(Number(await instance.residualAvailableAt()));
-    await mined(instance.connect(operator).recoverResidual());
+    const availableAt = Number(await instance.residualAvailableAt());
+    if (availableAt > (await chainNow())) await nextAt(availableAt);
+    note(await mined(instance.connect(operator).recoverResidual()));
   }
   const final = await assertAccounting(instance, mock, lastWeek, 'after the wind-down');
   assert.equal(final.open, 0n, 'every open pot was paid, rolled into the residue or refunded');
-  assert.equal(final.residual, 0n);
-  assert.equal(final.liabilities, final.unclaimed, 'only claim-pending prizes remain owed');
-  assert.ok(counts.play > 5 && counts.finalize > 3 && counts.fund > 5, `a varied run (seed ${initialSeed}): ${JSON.stringify(counts)}`);
+  assert.deepEqual([final.residual, final.unclaimed, final.liabilities], [0n, 0n, 0n], 'nothing is owed at the end');
+  const label = `seed ${initialSeed}: random phase ${JSON.stringify(randomPhase)}, total ${JSON.stringify(outcomes)}, successful actions ${JSON.stringify(counts)}`;
+  if (process.env.JACKPOT_RANDOM_VERBOSE) console.log(label);
+  // The random phase itself pays a winner directly, leaves a prize claim-pending, carries cap excess and rolls a
+  // pot over; over the whole run a claim-pending prize is claimed, later-week funding is refunded and the residue
+  // is recovered. (Not every seed reaches all of them: a new seed must be checked with JACKPOT_RANDOM_VERBOSE=1.)
+  assert.ok(randomPhase.paid >= 1 && randomPhase.claimPending >= 1 && randomPhase.capExcess >= 1 && randomPhase.rolledOver >= 1, label);
+  assert.ok(outcomes.claimed >= 1 && outcomes.refunded >= 1 && outcomes.recovered >= 1, label);
+  assert.ok(counts.finalize >= 3 && counts.fund >= 5 && counts.submit >= 5, label);
 }
 
 test('native zkLTC is refused', async () => {

@@ -336,11 +336,19 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   const ids = {};
   // Phase A, still in W - 1: a pre-first-week run, the rules of W + 1 / W + 2, and an unpaid settle.
   ids.beforeFirstWeek = await playRun(p1, { score: 900n });
+  ids.beforeFirstWeekWrongSeason = await playRun(p2, { score: 900n, seasonId: ethers.id('chikun-season-other') });
   await mined(jackpot.connect(operator).scheduleRules({ ...base, fromWeek: W + 1, minPaidWei: ethers.parseEther('0.2') }));
   await mined(jackpot.connect(operator).scheduleRules({ ...base, fromWeek: W + 2, maxScore: 10_000n }));
+  // Two paid sessions that a zero Chikun fee lets another run ride: one paid by another wallet, one paid for
+  // another game (design §A.7 step 2 checks the player and the game of the paid session, not only that it exists).
+  ids.paidByOtherWallet = await openRun(p1);
+  ids.paidForOtherGame = await openRun(p2, { game: 'lester-blaster' });
   // With a zero entry fee, settlement skips isPaid, so a run can settle without any paid session.
   await mined(gameRegistry.connect(operator).setEntryFee(chikunId, 0n));
   ids.notPaid = await playRun(p3, { score: 5_000n, open: false });
+  await settleRun(p3, ids.paidByOtherWallet, { score: 5_000n });
+  await settleRun(p2, ids.paidForOtherGame, { score: 5_000n });
+  assert.equal((await localContracts(suite, provider).rankedEntry.getPaidSession(ids.paidByOtherWallet)).player, p1.address);
   await mined(gameRegistry.connect(operator).setEntryFee(chikunId, ethers.parseEther('0.1')));
 
   // Phase B, week W: every run is opened (and, except two, settled) inside the week.
@@ -355,6 +363,7 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   ids.admin = await playRun(admin, { score: 5_000n });
   ids.operator = await playRun(operator, { score: 5_000n });
   ids.blocked = await playRun(extra[9], { score: 5_000n });
+  ids.blockedAndDisqualified = await playRun(extra[9], { score: 4_500n });
   ids.disqualified = await playRun(extra[0], { score: 5_000n });
   ids.walletDisqualified = await playRun(extra[1], { score: 5_000n });
   ids.walletDisqualifiedOther = await playRun(extra[1], { score: 6_000n });
@@ -366,6 +375,8 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   ids.late = await openRun(extra[7]);
 
   await mined(jackpot.connect(admin).setBlocked(extra[9].address, true, b32('cheating')));
+  await mined(jackpot.connect(admin).disqualify(ids.blockedAndDisqualified, false, b32('automation')));
+  await mined(jackpot.connect(admin).setBlocked(keeper.address, true, b32('staff')));
   await mined(jackpot.connect(admin).disqualify(ids.disqualified, false, b32('automation')));
   await mined(jackpot.connect(admin).disqualify(ids.walletDisqualifiedOther, true, b32('multi-wallet')));
 
@@ -384,20 +395,24 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   await settleRun(keeper, ids.staffLate, { score: 5_000n, settleAt: close(W) + 6 * HOUR + 1 });
   await settleRun(extra[7], ids.late, { score: 5_000n });
 
-  // Steps 1-6, then step 7, in order.
+  // Steps 1-6, then step 7, in order. A run that fails two checks reports the earlier one.
   await expectSubmit(ids.wrongGame, 'WRONG_GAME');
   await expectSubmit(ids.notPaid, 'NOT_PAID');
+  await expectSubmit(ids.paidByOtherWallet, 'NOT_PAID');
+  await expectSubmit(ids.paidForOtherGame, 'NOT_PAID');
   await expectSubmit(ids.beforeFirstWeek, 'BEFORE_FIRST_WEEK');
+  await expectSubmit(ids.beforeFirstWeekWrongSeason, 'BEFORE_FIRST_WEEK'); // the week before the rules
   await expectSubmit(ids.wrongSeason, 'WRONG_SEASON');
   await expectSubmit(ids.wrongSeasonAndSurvival, 'WRONG_SEASON'); // the earlier check wins
   await expectSubmit(ids.survival, 'SURVIVAL_CAP');
   await expectSubmit(ids.zero, 'ZERO_SCORE');
   await expectSubmit(ids.staffLate, 'SETTLED_LATE'); // timing is checked before the player
   await expectSubmit(ids.late, 'SETTLED_LATE');
-  await expectSubmit(ids.staff, 'STAFF_WALLET');
+  await expectSubmit(ids.staff, 'STAFF_WALLET'); // the keeper is also blocked: staff is checked first
   await expectSubmit(ids.admin, 'STAFF_WALLET');
   await expectSubmit(ids.operator, 'STAFF_WALLET');
   await expectSubmit(ids.blocked, 'WALLET_BLOCKED');
+  await expectSubmit(ids.blockedAndDisqualified, 'WALLET_BLOCKED'); // the block is checked before the disqualification
   await expectSubmit(ids.disqualified, 'DISQUALIFIED');
   await expectSubmit(ids.walletDisqualified, 'DISQUALIFIED');
   await expectSubmit(ids.ok, '');
@@ -428,6 +443,39 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   await expectSubmit(scoreAtCap, '');
   const afterEnd = await playRun(p2, { score: 5_000n, openAt: start(W + 3) + HOUR });
   await expectSubmit(afterEnd, 'AFTER_END');
+  // AFTER_END is checked before the week's rules: a W + 3 run paid below minPaidWei (the reserve only, with a
+  // zero flat fee) still reports AFTER_END.
+  await mined(gameRegistry.connect(operator).setEntryFee(chikunId, 0n));
+  const afterEndBelowMinPaid = await playRun(p3, { score: 5_000n });
+  assert.equal((await localContracts(suite, provider).rankedEntry.getPaidSession(afterEndBelowMinPaid)).amountWei, ethers.parseEther('0.002'));
+  await expectSubmit(afterEndBelowMinPaid, 'AFTER_END');
+});
+
+test('an alternate season counts only in weeks whose rules name it', async () => {
+  const other = ethers.id('chikun-season-other');
+  const third = ethers.id('chikun-season-third');
+  await at(start(W) + HOUR);
+  await mined(jackpot.connect(operator).scheduleRules({ ...baseRules(), fromWeek: W + 1, altSeasonId: other }));
+  assert.equal((await jackpot.rulesFor(W + 1)).altSeasonId, other);
+  assert.equal((await jackpot.rulesFor(W)).altSeasonId, ethers.ZeroHash);
+  // Week W (no alternate season): only the main season counts, and a run with no season never matches the
+  // unset alternate.
+  const mainW = await playRun(p1, { score: 500n });
+  const otherW = await playRun(p2, { score: 500n, seasonId: other });
+  const noSeasonW = await playRun(p3, { score: 500n, seasonId: ethers.ZeroHash });
+  await expectSubmit(otherW, 'WRONG_SEASON');
+  await expectSubmit(noSeasonW, 'WRONG_SEASON');
+  await expectSubmit(mainW, '');
+  // Week W + 1 (a season change mid-week): the main and the alternate season count, nothing else does.
+  const mainNext = await playRun(p1, { score: 600n, openAt: start(W + 1) + HOUR });
+  const otherNext = await playRun(p2, { score: 700n, seasonId: other });
+  const thirdNext = await playRun(p3, { score: 800n, seasonId: third });
+  const noSeasonNext = await playRun(p4, { score: 800n, seasonId: ethers.ZeroHash });
+  await expectSubmit(thirdNext, 'WRONG_SEASON');
+  await expectSubmit(noSeasonNext, 'WRONG_SEASON');
+  await expectSubmit(mainNext, '');
+  await expectSubmit(otherNext, '');
+  assert.deepEqual(await listOf(W + 1), [otherNext, mainNext]);
 });
 
 test('zero-fee and below-minimum sessions are ineligible', async () => {
@@ -482,6 +530,36 @@ test('a run settled after the cutoff is rejected and an extension moves the cuto
   await mined(jackpot.connect(admin).extendWeek(W, 0));
   await nextAt(payoutAt(W, 72 * HOUR));
   await expectRevert(jackpot.connect(admin).extendWeek(W, 0), 'TOO_LATE');
+});
+
+test('an extension moves the candidate window and the re-list deadline with the payout time', async () => {
+  const players = [p1, p2, p3, p4, extra[0]];
+  const listed = [];
+  for (const [index, player] of players.entries()) {
+    listed.push(await playRun(player, { score: BigInt(500 - index * 100), openAt: index === 0 ? start(W) + HOUR : null }));
+  }
+  const top = await playRun(extra[1], { score: 600n });
+  const lateEntry = await playRun(extra[2], { score: 1_000n });
+  const neverListed = await playRun(extra[3], { score: 2_000n });
+  for (const id of [...listed, top]) await expectSubmit(id, '');
+  assert.deepEqual(await listOf(W), [top, ...listed.slice(0, 4)], 'the fifth row was displaced');
+  await at(close(W) + 11 * HOUR);
+  await mined(jackpot.connect(admin).extendWeek(W, HOUR));
+  // The window now closes at C + 13 h: a new run still enters at C + 12 h 30 min (and displaces listed[3]).
+  await at(close(W) + 12 * HOUR + 30 * 60);
+  await expectSubmit(lateEntry, '');
+  assert.deepEqual(await listOf(W), [lateEntry, top, ...listed.slice(0, 3)]);
+  await nextAt(close(W) + 13 * HOUR);
+  await expectRevert(jackpot.connect(p4).submitCandidate(neverListed), 'WINDOW_CLOSED');
+  // The re-list deadline moves with the payout time: payoutAt(W) + 1 h - 2 h = C + 23 h.
+  await mined(jackpot.connect(admin).disqualify(top, false, b32('automation')));
+  await mined(jackpot.connect(admin).disqualify(listed[0], false, b32('automation')));
+  await nextAt(payoutAt(W, HOUR) - 2 * HOUR - 1);
+  const relisted = await mined(jackpot.connect(p4).submitCandidate(listed[3]));
+  assert.equal((await provider.getBlock(relisted.blockNumber)).timestamp, close(W) + 23 * HOUR - 1, 'after the unextended deadline C + 22 h');
+  await nextAt(payoutAt(W, HOUR) - 2 * HOUR);
+  await expectRevert(jackpot.connect(p4).submitCandidate(listed[4]), 'WINDOW_CLOSED');
+  assert.deepEqual(await listOf(W), [lateEntry, listed[1], listed[2], listed[3]]);
 });
 
 test('candidates are ordered like the board and kept one per wallet', async () => {
@@ -766,6 +844,36 @@ test('five decoys displace the honest list, the admin disqualifies them, and the
   assert.equal(await token.balanceOf(p1.address), balanceBefore + 1_000n * TOKEN);
 });
 
+test('blocking listed wallets keeps their slots; disqualifying the whole wallet frees them for the honest run', async () => {
+  // setBlocked never touches a list (finalize skips blocked rows, design §A.8). Against listed decoys the admin
+  // disqualifies with wholeWalletForWeek, which removes the rows, and then blocks.
+  const honest = await playRun(p1, { score: 100n, openAt: start(W) + HOUR });
+  const decoyPlayers = [p2, p3, p4, extra[0], extra[1]];
+  const decoys = [];
+  for (const [index, player] of decoyPlayers.entries()) decoys.push(await playRun(player, { score: BigInt(1_000 + index) }));
+  await fund(W, 500n * TOKEN);
+  await expectSubmit(honest, '', { from: keeper });
+  await mined(jackpot.connect(keeper).clear(honest));
+  for (const id of decoys) await expectSubmit(id, '', { from: keeper });
+  assert.equal((await listOf(W)).includes(honest), false, 'the decoys displaced the honest run');
+  await at(close(W) + 13 * HOUR);
+  for (const player of decoyPlayers) await mined(jackpot.connect(admin).setBlocked(player.address, true, b32('cheating')));
+  // Blocked rows keep their slots: finalize would skip all five and roll the pot over, and nothing can enter.
+  assert.equal((await listOf(W)).length, 5);
+  assert.equal((await jackpot.leaderOf(W)).sessionId, ethers.ZeroHash, 'every listed row is skipped');
+  await expectSubmit(honest, 'NOT_IN_TOP', { from: keeper });
+  await expectRevert(jackpot.connect(admin).adminSubmit(honest), 'LIST_FULL');
+  // wholeWalletForWeek disqualifications free the slots; the honest run is re-listed with its clear and paid.
+  for (const id of decoys) await mined(jackpot.connect(admin).disqualify(id, true, b32('multi-wallet')));
+  assert.deepEqual(await listOf(W), []);
+  await expectSubmit(honest, '', { from: keeper });
+  assert.equal(Number(await jackpot.reviewOf(honest)), 1, 'it returns with its clear');
+  await at(payoutAt(W));
+  const receipt = await mined(jackpot.connect(keeper).finalize(W));
+  const [finalized] = eventsOf(receipt, 'Finalized');
+  assert.deepEqual([finalized.args.winner, finalized.args.sessionId, finalized.args.prize], [p1.address, honest, 500n * TOKEN]);
+});
+
 test('adminSubmit fills a short list after the window and cannot displace anyone', async () => {
   const players = [p1, p2, p3, p4, extra[0], extra[1], extra[3]];
   const ids = [];
@@ -945,6 +1053,17 @@ test('funding below minFundWei is refused and no funding can block scheduleEnd',
   await expectRevert(jackpot.connect(operator).cancelEnd(), 'END_FINAL');
   await expectRevert(jackpot.connect(operator).scheduleEnd(W + 5), 'END_FINAL');
   await expectRevert(jackpot.connect(funder).fund(W + 2, MIN_FUND), 'FUNDED_AFTER_END');
+});
+
+test('a fund meets the minFundWei of the week it funds, not of the current week', async () => {
+  await at(start(W) + HOUR);
+  await mined(jackpot.connect(operator).scheduleRules({ ...baseRules(), fromWeek: W + 1, minFundWei: 150n * TOKEN }));
+  await mined(token.connect(funder).approve(await jackpot.getAddress(), 10_000n * TOKEN));
+  await expectRevert(jackpot.connect(funder).fund(W + 1, 120n * TOKEN), 'BELOW_MIN_FUND');
+  await expectRevert(jackpot.connect(funder).fund(W + 8, 149n * TOKEN), 'BELOW_MIN_FUND');
+  await mined(jackpot.connect(funder).fund(W, 120n * TOKEN)); // the current week keeps its 100 minimum
+  await mined(jackpot.connect(funder).fund(W + 1, 150n * TOKEN));
+  assert.deepEqual([(await jackpot.potOf(W)).funded, (await jackpot.potOf(W + 1)).funded], [120n * TOKEN, 150n * TOKEN]);
 });
 
 test('role checks use the house revert strings', async () => {

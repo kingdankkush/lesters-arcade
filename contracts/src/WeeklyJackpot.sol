@@ -509,6 +509,10 @@ contract WeeklyJackpot is ReentrancyGuard {
         _insert(week, candidate, msg.sender);
     }
 
+    /// @notice Global block list. finalize skips a blocked player's listed rows (CandidateSkipped "blocked"), but a
+    ///         block does NOT remove them: they keep their slots, so a full list stays full and a displaced honest
+    ///         run cannot be re-listed. To free a cheating wallet's slots, disqualify its session with
+    ///         wholeWalletForWeek (per open week) first, then block the wallet.
     function setBlocked(address wallet, bool isBlocked, bytes32 reason) external onlyAdmin {
         _require(wallet != address(0), "ZERO_ADDRESS");
         blocked[wallet] = isBlocked;
@@ -540,9 +544,11 @@ contract WeeklyJackpot is ReentrancyGuard {
     // Finalize, claim, recycle (§A.9)
     // ---------------------------------------------------------------------
 
+    /// @notice Pays the week's cleared leader, or rolls the pot over (§A.9). A week after a scheduled end only
+    ///         holds refundable funding and never finalizes: it reverts AFTER_END, which callers treat as
+    ///         terminal (the week stays Open until its funders refundAfterEnd).
     function finalize(uint64 week) external nonReentrant {
         _require(week >= firstWeek, "BAD_WEEK");
-        // A week after a scheduled end only holds refundable funding; it never finalizes.
         _require(endAfterWeek == 0 || week <= endAfterWeek, "AFTER_END");
         Week storage wk = _weeks[week];
         _require(wk.status == WeekStatus.Open, "WEEK_SETTLED");
@@ -580,16 +586,17 @@ contract WeeklyJackpot is ReentrancyGuard {
         wk.winner = leader.player;
         wk.winningSession = leader.sessionId;
         wk.prize = prize;
-        wk.unclaimed = prize;
         if (pot > prize) {
             uint64 target = _carry(pot - prize);
             emit CapExcessCarried(week, target, pot - prize);
         }
         emit Finalized(week, leader.player, leader.sessionId, leader.score, prize);
-        if (token.trySafeTransfer(leader.player, prize)) {
-            wk.unclaimed = 0;
-            liabilities -= prize;
-        } else {
+        // Checks-effects-interactions: the prize is booked as paid before the transfer, and booked back as
+        // claimable only if the token refuses it (a blacklist, pause or transfer limit).
+        liabilities -= prize;
+        if (!token.trySafeTransfer(leader.player, prize)) {
+            wk.unclaimed = prize;
+            liabilities += prize;
             emit PrizeTransferFailed(week, leader.player, prize);
         }
     }
@@ -754,7 +761,10 @@ contract WeeklyJackpot is ReentrancyGuard {
         for (uint256 i; i < n; ++i) list[i] = _candidates[week][i];
     }
 
-    /// @notice The candidate finalize would pay, with the same skip rules (no events). Zeros when none.
+    /// @notice The highest listed candidate that finalize would not skip (the same skip rules, no events), with its
+    ///         review state; zeros when there is none. finalize pays it only if it is Cleared AND the week's pot
+    ///         (funded + carriedIn) is above zero: an unfunded week records no winner (§A.9), so this row is not
+    ///         the week's champion unless the pot is funded.
     function leaderOf(uint64 week)
         external
         view
@@ -833,6 +843,8 @@ contract WeeklyJackpot is ReentrancyGuard {
         if (blocked[player]) return "blocked";
         if (walletDisqualified[week][player]) return "disqualified-wallet";
         if (staffEver[player]) return "staff";
+        // Unreachable today (disqualify removes a listed session, and a Disqualified one is never listed); kept
+        // so finalize can never pay a Disqualified row.
         if (reviewOf[c.sessionId] == Review.Disqualified) return "disqualified";
         return bytes32(0);
     }
