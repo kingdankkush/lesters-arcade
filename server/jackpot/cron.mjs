@@ -53,6 +53,7 @@ import { createJackpotChain } from './chain.mjs';
 import { createKeeper } from './keeper.mjs';
 import { indexJackpotInstance, jackpotInstances, openWeekIndexes, reconcileInstance } from './indexer.mjs';
 import { KEEPER_KEEP, KEEPER_SELECT_LIMIT, roleWallets, selectCandidates } from './select.mjs';
+import { h11ActiveFor } from './plausibility.mjs';
 import { createFundingLookup, screenCandidate } from './screen.mjs';
 import {
   TERMINAL_WEEK_STATUSES, casAction, casWeekStatus, createAction, listDueActions, readAction, readCandidates, readRules, readWalletFlags,
@@ -163,7 +164,7 @@ async function screenRows(ctx, { instance, chain, week, rules, candidates }) {
   const now = ctx.clock();
   const due = screeningOrder(candidates.filter((row) => needsScreen(row, now))).slice(0, SCREENS_PER_WEEK);
   const outcomes = [];
-  const h11Active = rules.adminClearOnly === true || instance.token.testnet !== true;
+  const h11Active = h11ActiveFor({ adminClearOnly: rules.adminClearOnly === true, testnetToken: instance.token.testnet === true });
   for (const candidate of due) {
     if (ctx.remaining() < SCREEN_RESERVE_MS) break;
     // eslint-disable-next-line no-await-in-loop

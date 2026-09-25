@@ -8,7 +8,7 @@ import * as verify from '../server/verify/index.mjs';
 import { issueSeedTicket } from '../server/verify/seed-ticket.mjs';
 import { resignRow } from '../server/settle/attestation.mjs';
 import {
-  HOLD_RULE_TEXT, SOFT_SIGNAL_TEXT, THRESHOLDS, analyzeChikunEvidence, computeFeatures, flagReasonFor, holdCodes, reviewTimeline, screenRun, stockViewEdge,
+  H11_CALIBRATED, HOLD_RULE_TEXT, SOFT_SIGNAL_TEXT, THRESHOLDS, analyzeChikunEvidence, computeFeatures, flagReasonFor, h11ActiveFor, holdCodes, reviewTimeline, screenRun, stockViewEdge,
 } from '../server/jackpot/plausibility.mjs';
 import { crossWalletFunding, sameRun, screenCandidate } from '../server/jackpot/screen.mjs';
 import { upsertCandidate } from '../server/jackpot/store.mjs';
@@ -147,6 +147,10 @@ test('late evidence, missing tickets and non-stock clients are held or flagged',
   assert.deepEqual(holdCodes({ ...base, unexplainedDescents: 2 }), [], 'H11 is off unless adminClearOnly or a real token');
   assert.deepEqual(holdCodes({ ...base, unexplainedDescents: 2 }, { h11Active: true }), ['H11']);
   assert.deepEqual(holdCodes({ ...base, unexplainedDescents: 1 }, { h11Active: true }), []);
+  // H11 needs calibration first (OJ2): off everywhere until the constant flips in a reviewed commit.
+  assert.equal(H11_CALIBRATED, false);
+  assert.deepEqual([h11ActiveFor({ adminClearOnly: true }), h11ActiveFor({ testnetToken: false })], [false, false]);
+  assert.deepEqual([h11ActiveFor({ adminClearOnly: true, calibrated: true }), h11ActiveFor({ testnetToken: false, calibrated: true }), h11ActiveFor({ calibrated: true })], [true, true, false]);
   assert.equal(flagReasonFor({ result: 'hold', codes: ['H2', 'H9'] }), 'late-evidence');
   assert.equal(flagReasonFor({ result: 'hold', codes: ['H9', 'H8'] }), 'excluded-wallet');
   assert.equal(flagReasonFor({ result: 'hold', codes: ['H4'] }), 'screen-hold');

@@ -278,6 +278,18 @@ export function computeFeatures({ evidence, analysis, row = {} }) {
   };
 }
 
+// H11 (S8 as a hold rule) applies only under adminClearOnly or a non-testnet
+// token, and only AFTER calibration (design §B.4 H11, OJ2, OJ6). The first
+// receipt (docs/qa/chikun-plausibility-calibration-20260925.json) shows S8
+// does not separate yet: the bot human models and the reflex bots reach 9-11
+// unexplained descents, as many as the widened-view pilot. Until a calibrated
+// S8 lands and flips this constant in a reviewed commit, H11 stays off and S8
+// is a soft signal on the review page only.
+export const H11_CALIBRATED = false;
+export function h11ActiveFor({ adminClearOnly = false, testnetToken = true, calibrated = H11_CALIBRATED } = {}) {
+  return calibrated === true && (adminClearOnly === true || testnetToken !== true);
+}
+
 // Hold codes (H1-H6, H8-H11) for a features object.
 //   boardExcluded   H8
 //   ticketMissing   H10 (no seed_ticket_log row)

@@ -17,6 +17,7 @@ import { issueSeedTicket } from '../../../server/verify/seed-ticket.mjs';
 import { migrate } from '../../../server/neon/migrations.mjs';
 import { periodKeysFor } from '../../../server/neon/period-keys.mjs';
 import { INDEX_GAMES } from '../../../server/neon/rows.mjs';
+import { THRESHOLDS, intervalStats } from '../../../server/jackpot/plausibility.mjs';
 import { upsertRules } from '../../../server/jackpot/store.mjs';
 import { randomHex32 } from '../../helpers/pglite-client.mjs';
 
@@ -175,14 +176,30 @@ export { ethers };
 // A longer human-like run at the given seed whose score grows with
 // `untilTick`: the naively humanised routePilot on the stock landscape view
 // (scripts/lib/chikun-evasion-pilots.mjs) flies until `untilTick`, then stops
-// flapping and crashes. Keep untilTick at or above 1,800 (a shorter run can
-// trip H5) and under 3 minutes (10,800 ticks, H6).
+// flapping and crashes. Keep untilTick under 3 minutes (10,800 ticks, H6).
+// The seed comes from a freshly issued ticket (a random salt), and about 2-3%
+// of seeds give a short run with too regular a timing (H5, entropy under
+// 3 bits). The fixture then replays the same seed with the next jitter stream
+// (deterministic per seed) until the timing passes H4 and H5, so a test that
+// wants a clean run never flakes.
+function timingHolds(evidence) {
+  const stats = intervalStats(evidence.flapDeltas);
+  const h4 = stats.fastPairs >= THRESHOLDS.H4.min && stats.intervals > 0 && stats.fastPairs >= THRESHOLDS.H4.share * stats.intervals;
+  const h5 = stats.topShare >= THRESHOLDS.H5.topShare || stats.longestSameRun >= THRESHOLDS.H5.longestSameRun || stats.entropyBits < THRESHOLDS.H5.entropyBits;
+  return h4 || h5;
+}
+
 export function pilotCutEvidence(seed, { untilTick = 3600 } = {}) {
-  const pilot = humanise(widenedView(routePilot, { widen: 1, delay: 8 }), { seed, label: 'fixture' });
-  const runtime = createChikunRuntime({ seed, maxTicks: 216_000 });
-  while (!runtime.terminal) {
-    const snapshot = runtime.snapshot();
-    runtime.step({ flap: snapshot.tick < untilTick ? pilot(snapshot) : false });
+  let evidence = null;
+  for (let variant = 0; variant < 8; variant += 1) {
+    const pilot = humanise(widenedView(routePilot, { widen: 1, delay: 8 }), { seed, label: variant === 0 ? 'fixture' : `fixture-${variant}` });
+    const runtime = createChikunRuntime({ seed, maxTicks: 216_000 });
+    while (!runtime.terminal) {
+      const snapshot = runtime.snapshot();
+      runtime.step({ flap: snapshot.tick < untilTick ? pilot(snapshot) : false });
+    }
+    evidence = runtime.result().evidence;
+    if (!timingHolds(evidence)) return evidence;
   }
-  return runtime.result().evidence;
+  return evidence;
 }
