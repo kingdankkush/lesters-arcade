@@ -1369,3 +1369,155 @@ test('v7 soft flags flag and never reject', () => {
   soft(clone(districts, (s) => { s.totals.score = Math.floor(s.totals.score * 1.3); }), 'score-above-selected-upgrades');
   soft(clone(districts, (s) => { s.totals.maxCombo = s.kills.total + 1; s.totals.currentCombo = 0; }), 'combo-exceeds-kills');
 });
+
+// ---------------------------------------------------------------------------
+// v7 values pinned independently of hmhV7Ceilings (review: every boundary test
+// computed its limit with the function it tested, and the fixtures sit far
+// below the XP ceiling, so dropping or doubling a term changed no verdict).
+const V7_PINNED = Object.freeze({
+  'hmh-v7-districts': Object.freeze({ ceilings: { xp: 143_274, score: 122_348 }, killCapacity: 897 }),
+  'hmh-v7-four-bosses': Object.freeze({ ceilings: { xp: 260_219, score: 237_389 }, killCapacity: 1_147 }),
+});
+
+test('v7: the ceilings and kill capacity of both fixtures are pinned literals', () => {
+  for (const [name, summary] of [['hmh-v7-districts', districts], ['hmh-v7-four-bosses', fourBosses]]) {
+    assert.deepEqual(hmhV7Ceilings(summary, V7_MAX_GAINS), V7_PINNED[name].ceilings, name);
+    assert.equal(hmhV7KillCapacity(summary), V7_PINNED[name].killCapacity, name);
+  }
+});
+
+test('v7: one more cache pickup adds exactly its grantRunXp at the maximum ranks to the XP ceiling', () => {
+  // The reboot's own grant at the maximum XP rank (the v7 maximum equals 1.8.1's).
+  assert.equal(HMH_V7_UPGRADES['validator-training'].maxRank, MAX_UPGRADE_RANKS['validator-training']);
+  const atMaximumRanks = () => {
+    const state = createRunProgression({ seed: 0 });
+    for (const id of Object.keys(state.ranks)) state.ranks[id] = MAX_UPGRADE_RANKS[id];
+    return state;
+  };
+  const rooms = {};
+  for (const summary of [districts, fourBosses]) {
+    const before = hmhV7Ceilings(summary, V7_MAX_GAINS);
+    for (const [effectId, baseXp] of Object.entries(HMH_V7_RUN_RULES.CACHE_XP)) {
+      const room = grantRunXp(atMaximumRanks(), baseXp, 0).xp;
+      rooms[effectId] = room;
+      const after = hmhV7Ceilings(clone(summary, (s) => { v7Row(s.collectibles, 'effectId', effectId).collected += 1; }), V7_MAX_GAINS);
+      assert.deepEqual({ xp: after.xp - before.xp, score: after.score - before.score }, { xp: room, score: 0 }, effectId);
+    }
+  }
+  assert.deepEqual(rooms, { 'hash-rail-core': 280, 'lightning-ledger-cache': 385, 'bear-market-burner-cache': 455, 'forked-standard-cache': 420 });
+});
+
+test("v7: grenade kills above the grenade weapons' kills reject; equality passes", () => {
+  for (const base of [districts, fourBosses]) {
+    for (const weaponId of V6C.grenadeWeapons) {
+      const at = clone(base, (s) => { creditWeapon(s, weaponId, 25); s.grenades.kills = 25; });
+      assert.deepEqual(rejects(plausible(at)), []);
+      const above = plausible(clone(at, (s) => { s.grenades.kills = 26; }));
+      assert.deepEqual(rejectFlags(above), [{ id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: 26, limit: 25 }]);
+    }
+  }
+  // The review's case: 250 grenade kills claimed with no grenade kill at all.
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.grenades.kills = 250; }))), ['grenade-kills-above-weapon-kills']);
+});
+
+test('v7: a boss initiated at tick 0 rejects boss-before-ready', () => {
+  for (const bossId of C7.bosses) {
+    const result = plausible(clone(fourBosses, (s) => retimeBoss(s, bossId, { first: 0 })));
+    assert.deepEqual(result.flags.filter((flag) => flag.id === 'boss-before-ready'), [{ id: 'boss-before-ready', severity: 'reject', value: 0, limit: HMH_V7_BOSSES[bossId].readyTick }], bossId);
+  }
+});
+
+// One case per sub-condition of each soft flag, each with one offending row
+// unless stated (districts: level 23, level-ups from 1,860 to 52,440).
+test('v7 soft flags: each sub-condition flags on its own and never rejects', () => {
+  const only = (summary, id, value) => {
+    const result = plausible(summary);
+    assert.deepEqual(rejects(result), [], id);
+    assert.deepEqual(result.flags.filter((flag) => flag.id === id).map((flag) => [flag.value, flag.limit]), [[value, 0]], `${id}: ${JSON.stringify(result.flags)}`);
+  };
+  const uncomplete = (s, objectiveId) => {
+    Object.assign(v7Row(s.objectives, 'objectiveId', objectiveId), { completed: 0, tick: 0, levelAtCompletion: 0 });
+    const site = v7Row(s.milestones.sites, 'siteId', objectiveId);
+    if (site) Object.assign(site, { operated: 0, tick: 0 });
+    const secret = v7Row(s.milestones.secrets, 'secretId', objectiveId);
+    if (secret) Object.assign(secret, { found: 0, tick: 0 });
+  };
+  const unrescue = (s, slotId) => Object.assign(v7Row(s.prisoners, 'slotId', slotId), { rescued: 0, tick: 0, levelAtRescue: 0 });
+  const districtBit = (district) => 2 ** C7.districts.indexOf(district);
+  // node-level-inconsistent: a node below an earlier tick's level (the gate at
+  // 46,800 claims level 20 after the warehouse at 46,200 claimed 21) ...
+  only(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'yard-warehouse-gate').levelAtCompletion = 20; }), 'node-level-inconsistent', 1);
+  // ... above level 1 before the first level-up (1,800 < 1,860) ...
+  only(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'relay-power').levelAtCompletion = 2; }), 'node-level-inconsistent', 1);
+  // ... and below the final level after the last level-up (the run's highest node, level 22, moved to 52,500).
+  only(clone(districts, (s) => { v7Row(s.prisoners, 'slotId', 'p6-yard-warehouse-compound').tick = 52_500; }), 'node-level-inconsistent', 1);
+  // objective-prerequisite-missing: the prerequisite never completed (the other sub-condition, completed later, is in the test above).
+  only(clone(districts, (s) => uncomplete(s, 'ravine-winch-handle')), 'objective-prerequisite-missing', 1);
+  // node-in-unvisited-district, per kind of node: Hashwood's seven objectives alone ...
+  only(clone(districts, (s) => { unrescue(s, 'p4-hashwood-logging-camp'); s.exploration.visitedDistrictMask -= districtBit('hashwood'); }), 'node-in-unvisited-district', 7);
+  // ... its prisoner alone ...
+  only(clone(districts, (s) => {
+    for (const id of C7.objectives.filter((objectiveId) => HMH_V7_OBJECTIVES[objectiveId].district === 'hashwood')) uncomplete(s, id);
+    s.exploration.visitedDistrictMask -= districtBit('hashwood');
+  }), 'node-in-unvisited-district', 1);
+  // ... and a boss alone (the Baron's ravine, with no ravine objective or prisoner).
+  only(clone(fourBosses, (s) => {
+    for (const id of C7.objectives.filter((objectiveId) => HMH_V7_OBJECTIVES[objectiveId].district === 'rugpull-ravine')) uncomplete(s, id);
+    for (const slotId of C7.prisonerSlots.filter((id) => HMH_V7_PRISONER_SLOTS[id].district === 'rugpull-ravine')) unrescue(s, slotId);
+    s.exploration.visitedDistrictMask -= districtBit('rugpull-ravine');
+  }), 'node-in-unvisited-district', 1);
+});
+
+// The v7 path's results over a mutation corpus of both v7 fixtures, hashed
+// like the v6 corpus: a change to any v7 rule or formula moves the digest.
+const V7_CORPUS_DIGEST = '0b1e66b431662f446ab301a512daf12d78040f7dcef52bf72a0d975438d44fa1';
+function v7Corpus() {
+  const cases = [];
+  const add = (name, base, mutate = () => {}) => cases.push([name, clone(base, mutate)]);
+  const ordinaryRoles = C7.enemyRoles.filter((role) => !C7.bosses.includes(role));
+  const rank = (s, id, selected) => { const row = v7Row(s.upgrades, 'upgradeId', id); row.offered = Math.max(row.offered, selected); row.selected = selected; };
+  for (const [name, base] of [['districts', districts], ['four-bosses', fourBosses]]) {
+    add(name, base);
+    add(`${name} elapsed 0`, base, (s) => { s.totals.elapsedMs = 0; });
+    add(`${name} no ticks`, base, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; });
+    add(`${name} elapsed +1.5 ms`, base, (s) => { s.totals.elapsedMs += 1.5; });
+    add(`${name} start 1`, base, (s) => { s.identity.startTick = 1; s.totals.survivalTicks -= 1; });
+    add(`${name} squeezed to 600`, base, (s) => { s.identity.startTick = s.identity.endTick - 600; s.totals.survivalTicks = 600; s.totals.elapsedMs = 600 * FIXED_STEP_MS; });
+    add(`${name} build 1.8.2`, base, (s) => { s.identity.buildHash = 'site-1.8.2:game-1.8.2'; });
+    add(`${name} level +1`, base, (s) => { s.totals.level += 1; });
+    for (const role of ordinaryRoles) for (const extra of [1, 60, 400]) add(`${name} +${extra} ${role}`, base, (s) => addOrdinaryKills(s, role, extra));
+    for (const factor of [0.5, 0.9, 1.3, 2, 5]) {
+      add(`${name} xp x${factor}`, base, (s) => setV7Xp(s, Math.floor(s.totals.xp * factor)));
+      add(`${name} score x${factor}`, base, (s) => { s.totals.score = Math.floor(s.totals.score * factor); });
+    }
+    for (const selected of [0, 3, 4]) {
+      add(`${name} validator-training ${selected}`, base, (s) => rank(s, 'validator-training', selected));
+      add(`${name} block-reward ${selected}`, base, (s) => rank(s, 'block-reward', selected));
+    }
+    for (const bossId of C7.bosses) {
+      const { readyTick, minFightTicks } = HMH_V7_BOSSES[bossId];
+      add(`${name} ${bossId} at ready - 1`, base, (s) => retimeBoss(s, bossId, { first: readyTick - 1 }));
+      add(`${name} ${bossId} at 0`, base, (s) => retimeBoss(s, bossId, { first: 0 }));
+      add(`${name} ${bossId} short fight`, base, (s) => { const row = bossRow(s, bossId); if (row.initiations > 0 && row.defeatedTick > 0) row.defeatedTick = row.lastInitiatedTick + minFightTicks - 1; });
+      add(`${name} ${bossId} quick return`, base, (s) => { const row = bossRow(s, bossId); if (row.initiations > 0) Object.assign(row, { initiations: row.initiations + 1, lastInitiatedTick: row.firstInitiatedTick + 60 }); });
+    }
+    add(`${name} bosses on one tick`, base, (s) => { for (const row of s.bosses) if (row.initiations > 0) Object.assign(row, { firstInitiatedTick: 40_000, lastInitiatedTick: 40_000 + (row.initiations > 1 ? 2_520 * (row.initiations - 1) : 0) }); });
+    add(`${name} caches x3`, base, (s) => { for (const row of s.collectibles) row.collected *= 3; });
+    add(`${name} +21 of every pickup`, base, (s) => { for (const row of s.collectibles) if (row.effectId !== 'genesis-seal') row.collected += 21; });
+    add(`${name} every node at the final level`, base, (s) => { for (const row of s.objectives) if (row.completed) row.levelAtCompletion = s.totals.level; for (const row of s.prisoners) if (row.rescued) row.levelAtRescue = s.totals.level; });
+    add(`${name} every secret found`, base, (s) => { for (const id of C7.secrets) { Object.assign(v7Row(s.objectives, 'objectiveId', id), { completed: 1, tick: 60, levelAtCompletion: 1 }); Object.assign(v7Row(s.milestones.secrets, 'secretId', id), { found: 1, tick: 60 }); } });
+    add(`${name} grenade kills +1`, base, (s) => { s.grenades.kills += 1; });
+    add(`${name} 30 satoshi-frag kills`, base, (s) => { creditWeapon(s, 'satoshi-frag', 30); s.grenades.kills = 30; });
+    add(`${name} no districts`, base, (s) => { s.exploration.visitedDistrictMask = 0; });
+    add(`${name} combo above kills`, base, (s) => { s.totals.maxCombo = s.kills.total + 1; s.totals.currentCombo = 0; });
+  }
+  cases.push(['null', null], ['empty', { schemaVersion: 7 }]);
+  return cases;
+}
+
+test('the v7 path gives its mutation corpus the pinned results', () => {
+  const results = v7Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
+  assert.equal(results.length, 172);
+  const digest = createHash('sha256').update(JSON.stringify(results)).digest('hex');
+  assert.equal(digest, V7_CORPUS_DIGEST, `${results.length} cases`);
+});

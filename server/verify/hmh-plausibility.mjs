@@ -64,6 +64,9 @@
 //           node-xp-above-level      node XP claimed at a level that the level
 //                                    cannot hold (the level's own 300 x L, or
 //                                    the XP gained at the final level)
+//           grenade-kills-above-weapon-kills  as on the v6 path: grenades.kills
+//                                    above the grenade weapons' kills (contract
+//                                    §15.1; the v7 child keeps the v6 count)
 //   flag    near-ceiling and claimed-rank checks as in v6, plus
 //           upgrade-rank-above-max, evolution-without-mastery,
 //           node-level-inconsistent, objective-prerequisite-missing and
@@ -732,7 +735,8 @@ export function validateV7RunPlausibility(runSummary) {
   const { reject, flag, done } = verdictCollector();
   const { identity, totals, kills, milestones, upgrades, collectibles, exploration, objectives, prisoners, bosses, evolutions } = runSummary ?? {};
   if (!identity || !totals || !kills || !Array.isArray(kills.byEnemyRole) || !milestones || !Array.isArray(milestones.secrets) || !Array.isArray(upgrades)
-    || !Array.isArray(collectibles) || !exploration || !Array.isArray(objectives) || !Array.isArray(prisoners) || !Array.isArray(bosses) || !Array.isArray(evolutions)) {
+    || !Array.isArray(collectibles) || !exploration || !Array.isArray(objectives) || !Array.isArray(prisoners) || !Array.isArray(bosses) || !Array.isArray(evolutions)
+    || !Array.isArray(kills.byWeapon) || !runSummary.grenades) {
     reject('summary-unreadable', null, null);
     return done();
   }
@@ -769,6 +773,12 @@ export function validateV7RunPlausibility(runSummary) {
   const capacity = hmhV7KillCapacity(runSummary);
   if (kills.total > capacity) reject('kills-above-capacity', kills.total, capacity);
   else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
+
+  // A grenade kill is a kill of a grenade weapon (the v6 accumulator's rule,
+  // which the v7 child keeps; HMH_V6_CONSISTENCY_RULES.grenadeWeapons).
+  const weaponKills = rowCounts(kills.byWeapon, 'weaponId', 'count');
+  const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
+  if (runSummary.grenades.kills > grenadeWeaponKills) reject('grenade-kills-above-weapon-kills', runSummary.grenades.kills, grenadeWeaponKills);
 
   // Pickups come from at most 21 authored placements, re-armed no sooner than
   // every 7,200 ticks; the Genesis Seal's pickups are the Seals (schema S12).
