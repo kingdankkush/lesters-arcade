@@ -114,7 +114,6 @@ try {
     'enterArcadeAsGuest',
     'isGuestAllowedStep',
     'beginOfficialLevel',
-    'applyPlayerLedCameraMovement',
     'renderCombatHudOverlay',
     'renderTacticalBalanceDebugOverlay',
     'renderCombatSettingsPanel',

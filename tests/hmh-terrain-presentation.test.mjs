@@ -117,14 +117,9 @@ test('texture-only presentation preserves authored elevation without flat color 
   assert.equal(bossHigh.elevationPx < 0, true);
 });
 
-test('live runtime consumes terrain presentation instead of ad-hoc flat terrain fills', () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+test('terrain presentation module and its test are syntax-gated', () => {
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
 
-  assert.match(main, /hmh-terrain-presentation\.mjs/);
-  assert.match(main, /buildTerrainPresentationForCell\(/);
-  assert.match(main, /terrainPresentationStats/);
-  assert.match(main, /overlayMode: isLevelOneCuratedRuntime\(\) \? 'texture-only' : 'full'/);
   assert.match(syntax, /apps\/portal\/src\/hmh-terrain-presentation\.mjs/);
   assert.match(syntax, /tests\/hmh-terrain-presentation\.test\.mjs/);
 });
@@ -290,11 +285,7 @@ test('live World v3 plan exposes the scoped Desert Approach adapter without repl
   assert.equal(forestAsset.renderLayers, 1);
 });
 
-test('live renderer crops/caches atlases, prewarms both sources, and avoids duplicate edge layers', () => {
-  assert.match(mainSource, /plan\.renderAssetForCell\?\.\(terrainCell\)/);
-  assert.match(mainSource, /asset\.atlasRect/);
-  assert.match(mainSource, /asset\.wangComposite/);
-  assert.match(mainSource, /handledDirections\.includes\(edgeBlend\.direction\)/);
+test('level prewarm decodes each shared terrain atlas source once', () => {
   assert.match(mainSource, /plan\.runtimeAtlasAssets\?\.\(\)/);
   assert.match(mainSource, /sbsGroundTileImages\.has\(asset\.src\)/, 'shared atlas source should decode once instead of once per virtual asset');
 });

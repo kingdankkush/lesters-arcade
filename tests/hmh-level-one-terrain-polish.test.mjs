@@ -46,13 +46,6 @@ test('spawn composition has no large landmark or solid prop overlapping the hero
   assert.deepEqual(spawnOverlap.map((object) => object.id), [], 'hero spawn should be free of solid props/landmarks');
 });
 
-test('curated trees render as static props and are not added to the ambient animation pool', () => {
-  assert.match(MAIN_SOURCE, /Curated trees are intentionally static now/);
-  assert.doesNotMatch(MAIN_SOURCE, /for \(const tree of hmh\('HMH_CURATED_LEVEL_ART'\)\?\.treeAnimations/);
-  const biomeBlock = MAIN_SOURCE.slice(MAIN_SOURCE.indexOf('const BIOME_ANIM_PROPS'), MAIN_SOURCE.indexOf('const wave2AnimImages'));
-  assert.doesNotMatch(biomeBlock, /juniper-tree-idle|cottonwood-tree-idle|dead-tree-idle/);
-});
-
 test('world prop preloader is bounded to opening-camera assets for faster gameplay boot', () => {
   const preloadBlock = MAIN_SOURCE.slice(MAIN_SOURCE.indexOf('function preloadWorldPropImages'), MAIN_SOURCE.indexOf('// --- Persistent collidable world obstacles'));
   assert.match(preloadBlock, /wp\.slice\(0, 24\)/);

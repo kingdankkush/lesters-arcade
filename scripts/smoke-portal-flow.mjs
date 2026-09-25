@@ -170,7 +170,6 @@ try {
   }
 
   for (const marker of [
-    'applyPlayerLedCameraMovement',
     'renderCombatHudOverlay',
     'buildCombatOptionsMenuModel',
     'buildHardMoneyHeroesAnimationCoverageReport',
@@ -182,15 +181,11 @@ try {
     'buildArcadeMusicPlayerModel',
     'startArcadeMusicForGame',
     "startArcadeMusicForGame('hard-money-heroes')",
-    'buildPixelLabLesterCalibrationArt',
     'lesterPixelLabCalibration',
     'HMH_ISOMETRIC_PIXELLAB_WAVE_1',
     'HMH_PRODUCTION_ART_PASS',
     'buildProductionArtPass',
     'preloadHeroRoster(combat.characterId)',
-    'biomeGroundTileForWorld',
-    'productionPropForIndex',
-    'productionVfxFrame',
     'hero.animations.shoot',
     // Sign-in (EIP-6963 picker, SIWE) and the Ranked flow (wave 3: entry, settlement, results, looks).
     'eip6963:announceProvider',

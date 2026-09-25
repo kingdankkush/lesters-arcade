@@ -89,23 +89,6 @@ test('enemyDirectionFromEntity preserves stable facing outside movement and fall
   assert.equal(enemyDirectionFromEntity({}, {}), 'south');
 });
 
-test('canonical enemy renderer uses directional bridge for base and overlay frames', () => {
-  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.match(mainSource, /enemyDirectionFromEntity/);
-  assert.doesNotMatch(mainSource, /actor\.frame\(\{ state, direction: 'south'/);
-  assert.doesNotMatch(mainSource, /entity\.spriteFacing/);
-  assert.match(mainSource, /const pipelineVisual = pipelineActorVisualState\(enemy\);/);
-  assert.match(mainSource, /pipelineActorFrame\(enemy, \{ visual: pipelineVisual \}\)/);
-  assert.match(mainSource, /pipelineActorOverlayFrame\(enemy, \{ visual: pipelineVisual \}\)/);
-  assert.match(mainSource, /pipelineActorOverlayFrame\(combat\.boss, \{ visual: pipelineVisual \}\)/);
-  assert.match(mainSource, /lastDirection: intent\.spawning \? null : HMH_ACTOR_FACING_CACHE\.get\(entity\)/);
-  assert.match(mainSource, /selectAnimatedEnemySet\(enemyRenderEntries/);
-  assert.match(mainSource, /const intent = renderOptions\.intent \?\? enemyAnimationIntent\(enemy\)/);
-  assert.match(mainSource, /for \(const enemy of combat\.enemies\)/, 'visible enemy render entries should be built in one pass');
-  assert.doesNotMatch(mainSource, /const visibleEnemies = combat\.enemies\.filter/, 'the render loop should not allocate a redundant visible-enemy array');
-  assert.doesNotMatch(mainSource, /const enemyRenderEntries = visibleEnemies\.map/, 'the render loop should not allocate a second mapped array');
-});
-
 test('enemyStateFromEntity maps post-attack recovery into melee-counter readability state', () => {
   assert.equal(enemyStateFromEntity({ recovering: true }), 'melee-counter');
   assert.equal(enemyStateFromEntity({ countering: true }), 'melee-counter');

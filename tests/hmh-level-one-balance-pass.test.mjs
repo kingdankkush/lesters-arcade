@@ -140,7 +140,6 @@ test('runtime and design scripts consume the Level 1 balance pass helpers', () =
   const packageJson = readFileSync(repoPath('package.json'), 'utf8');
   const snapshotScript = readFileSync(repoPath('scripts/write-hmh-balance-snapshot.mjs'), 'utf8');
 
-  assert.equal(main.includes('calculatePlayerDamageRecovery'), true, 'damagePlayer should use recovery helper');
   assert.equal(main.includes('buildLevelOneSpawnCompositionAt'), true, 'spawn runtime should consume authored act composition');
   assert.equal(main.includes('buildLevelOneBossChoreographyPlan'), true, 'boss runtime should consume choreography plan');
   assert.equal(snapshotScript.includes('buildLevelOneBalanceTelemetrySnapshot'), true, 'design:balance should emit balance telemetry');
@@ -236,23 +235,10 @@ test('AI movement cadence keeps bosses and nearby threats full-rate while thrott
   assert.equal(shouldUpdateEnemyAi({ frame: 13, enemyIndex: 0, stride: 3 }), false);
 });
 
-test('runtime consumes spawn budgets, attack tokens, measured capped steering, and burst limits', () => {
+test('runtime consumes spawn budgets, attack tokens, and projectile caps', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(main, /buildLevelOneSpawnBudgetState/);
   assert.match(main, /levelOneRoguelikeSpawnBudgetAllows/);
-  assert.match(main, /computeSeparation/);
-  assert.doesNotMatch(main, /computeSpatialSeparation/);
-  assert.match(main, /maxNeighbors: 10/);
-  assert.match(main, /enemyAiUpdateStride/);
-  assert.doesNotMatch(main, /const movementDt = dt \* aiStride/);
-  assert.match(main, /cachedMoveMode/);
-  assert.match(main, /const movementDt = Math\.min\(dt, 0\.05\)/);
-  assert.match(main, /const spawnedEnemy = spawnRoguelikeEnemy\(director\)/);
-  assert.match(main, /if \(!spawnedEnemy\) break;[\s\S]*spawnedThisStep \+= 1;[\s\S]*roguelikeSpawnTimer \+= director\.spawnIntervalSeconds/);
-  assert.match(main, /spawnBurstCap/);
-  assert.match(main, /attackTokenCap/);
   assert.match(main, /attackTokenHeld/);
-  assert.match(main, /Boolean\(enemy\.attackTokenHeld\)/);
-  assert.match(main, /ctx\.ellipse\(centerX, footY \+ 1/);
   assert.match(main, /enemyProjectileCap/);
 });

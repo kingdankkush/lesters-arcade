@@ -845,13 +845,6 @@
 .podium-rank-3 .podium-stand { height: 32px; }
 .podium-stand-rank { padding-top: 6px; font-weight: 800; color: rgba(255,255,255,0.7); font-size: 0.9rem; }
 .leaderboard-list { display: flex; flex-direction: column; gap: 6px; }
-.leaderboard-entry {
-  display: grid; grid-template-columns: 36px 26px 1fr auto auto; align-items: center; gap: 10px;
-  padding: 8px 12px; background: rgba(8,14,32,0.55); border: 1px solid rgba(25,247,255,0.12);
-  border-radius: 10px; transition: border-color 0.12s ease, transform 0.12s ease;
-}
-.leaderboard-entry:hover { border-color: rgba(25,247,255,0.4); transform: translateX(2px); }
-.leaderboard-entry.is-current-player { border-color: rgba(255,232,77,0.7); background: rgba(255,232,77,0.08); }
 .leaderboard-rank { font-weight: 800; color: #9fe9ff; font-size: 0.82rem; }
 .leaderboard-name { color: #d6f6ff; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .leaderboard-settled { color: #45ff8a; font-weight: 800; }

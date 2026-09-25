@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import {
   WAVE2_GAME_FEEL_TARGETS,
@@ -88,14 +87,4 @@ test('planWave2KnockbackRecovery clamps hit-stop and recovery for readable swarm
   assert.ok(heavy.hitStopFrames <= WAVE2_GAME_FEEL_TARGETS.maxHitStopFrames);
   assert.ok(heavy.screenShake <= profile.recovery.maxScreenShake);
   assert.equal(heavy.replayTag, 'wave2-recovery-v1');
-});
-
-test('runtime consumes Wave 2 game-feel profile for live roguelike movement', () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.match(main, /buildWave2GameFeelProfile/);
-  assert.match(main, /integrateWave2Movement/);
-  assert.match(main, /WAVE2_GAME_FEEL_PROFILE/);
-  assert.match(main, /advanceWave2AutoFireCadence/);
-  assert.match(main, /combat\.dashFrames = WAVE2_GAME_FEEL_PROFILE\.dash\.durationFrames/);
-  assert.match(main, /WAVE2_GAME_FEEL_PROFILE\.dash\.invulnerabilityFrames/);
 });

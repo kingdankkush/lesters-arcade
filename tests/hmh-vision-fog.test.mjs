@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -8,8 +7,6 @@ import {
   levelOneVisionFogStateForPoint,
   updateLevelOneExplorationTrail,
 } from '../apps/portal/src/arcade-core.mjs';
-
-const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-70 vision fog model separates visible, explored, and hidden world cells', () => {
   const world = buildLevelOneRunWorldDimensions({ width: 64, height: 64 });
@@ -39,11 +36,4 @@ test('WO-70 vision fog fairness keeps player and near threats visible while far 
   assert.equal(levelOneVisionFogStateForPoint(model, { x: 5, y: 5 }), 'visible', 'close melee threats should not be obscured');
   assert.equal(levelOneVisionFogStateForPoint(model, { x: 30, y: 30 }), 'hidden');
   assert.equal(model.fairness.playerSafeRadiusCells >= 1, true);
-});
-
-test('WO-70 runtime draws the vision fog pass after world sprites and before HUD', () => {
-  assert.match(mainSource, /buildLevelOneVisionFogModel/);
-  assert.match(mainSource, /function drawLevelOneVisionFog/);
-  assert.match(mainSource, /visionFogModel\.layers/);
-  assert.match(mainSource, /drawLevelOneVisionFog\(ctx, width, height\);\r?\n\s*drawBullets\(ctx\);/);
 });

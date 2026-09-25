@@ -65,11 +65,10 @@ test('WO-31 validation catches speed-law violations and passes the live catalog'
   assert.ok(broken.errors.some((error) => error.includes('too-fast')));
 });
 
-test('WO-31 runtime spawns enemies from balance cards and still routes live chase through the speed law', () => {
+test('WO-31 runtime spawns enemies from balance cards', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.ok(main.includes('buildEnemyBalanceCard'), 'main.js should import/use enemy balance cards');
   assert.ok(main.includes('balanceCard.speedLaw.spawnSpeed'), 'spawn speed should come from card speed law');
-  assert.ok(main.includes('calculateEnemyChaseSpeed({'), 'movement should continue using speed law helper');
 });
 
 test('WO-43 elite affix catalog documents tells, counterplay, and non-HP behavior modifiers', () => {

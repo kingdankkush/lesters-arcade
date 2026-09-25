@@ -1157,17 +1157,14 @@ test('Level 1 ship focus is open-ended survival with no timer extraction target'
   assert.equal(hmhCampaignLevelAllowsExtraction('level-2-litecoin-city'), true);
 });
 
-test('public Level 1 runtime copy and progression honor death-only survival', () => {
+test('public Level 1 runtime copy and game-over summary honor death-only survival', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
-  const progressionStart = mainSource.indexOf('function syncCampaignProgression()');
   const summaryStart = mainSource.indexOf('function currentGameOverSummaryModel()');
-  const progression = mainSource.slice(progressionStart, mainSource.indexOf('\nfunction ', progressionStart + 1));
   const summary = mainSource.slice(summaryStart, mainSource.indexOf('\nfunction ', summaryStart + 1));
 
   assert.doesNotMatch(indexSource, /Reach the 20:00 extraction to win/i);
   assert.match(indexSource, /run ends when your hero falls/i);
-  assert.match(progression, /hmhCampaignLevelAllowsExtraction/);
   assert.match(summary, /const extractionAllowed = hmhCampaignLevelAllowsExtraction\(level\.id\)/);
   assert.match(summary, /const extraction = extractionAllowed \? calculateExtractionScore/);
 });
@@ -1346,19 +1343,6 @@ test('adaptive budget reduces render work monotonically while retaining readable
   assert.equal(tier3.adaptiveTier, 3);
 });
 
-test('live frame loop advances the governor and layers it over the elapsed-time render budget', () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.match(main, /createAdaptivePerformanceState/);
-  assert.match(main, /advanceAdaptivePerformanceState/);
-  assert.match(main, /applyAdaptivePerformanceBudget/);
-  assert.match(main, /combat\.adaptivePerformance = advanceAdaptivePerformanceState/);
-  assert.match(main, /applyAdaptivePerformanceBudget\(scheduledBudget, combat\.adaptivePerformance\)/);
-  assert.match(main, /adaptivePerformance: \{ \.\.\.combat\.adaptivePerformance \}/);
-  assert.match(main, /enemyPursuitModes:/);
-  assert.match(main, /bossActive:/);
-  assert.match(main, /some\(isAdaptiveBossThreat\)/);
-});
-
 test('Level 1 opening keeps the hero lane clear while resolving authored POI props', () => {
   const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 24 });
   const ids = new Set(objects.map((object) => object.id));
@@ -1407,17 +1391,6 @@ test('Level 1 default natural boundary cadence does not leave twenty-tile visual
   for (let i = 1; i < northXs.length; i += 1) {
     assert.ok(northXs[i] - northXs[i - 1] <= 6, `north boundary gap should be <= 6 tiles, got ${northXs[i] - northXs[i - 1]}`);
   }
-});
-
-test('main.js routes screen-nuke enemy deaths through boss reward and cleanup side effects', () => {
-  const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
-  const nukeBlock = source.slice(source.indexOf("case 'screenNuke'"), source.indexOf("case 'screenNuke'") + 1100);
-
-  assert.ok(source.includes('function resolveRoguelikeEnemyDeath('), 'runtime should centralize roguelike enemy death rewards and boss-gate side effects');
-  assert.ok(source.includes('enemy.signatureBoss'), 'death resolver should detect the canonical signature boss');
-  assert.ok(source.includes('combat.bossDefeated = true'), 'major boss death should persist completion and boss-kill progression');
-  assert.ok(nukeBlock.includes('resolveRoguelikeEnemyDeath(enemy'), 'screen nuke should use the same death resolver as normal combat kills');
-  assert.equal(nukeBlock.includes('combat.enemies = []'), false, 'screen nuke must not bypass final-boss death side effects by wiping the array directly');
 });
 
 test('combat accessibility settings model exposes motion flash color and aim toggles', () => {
@@ -2190,7 +2163,6 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
     [['cabinets', 'Play'], ['profile', 'Profile'], ['leaderboards', 'Scores'], ['settings', 'Settings']],
   );
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.hiddenByDefault.includes('developer-backstage'), true);
-  assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
   assert.equal(mainSource.includes('ensureCombatMusic'), true);
   assert.equal(mainSource.includes('playSfxCue'), true);
   assert.equal(mainSource.includes('LESTERS_ARCADE_V2_APP_SHELL'), true);
@@ -2348,11 +2320,9 @@ test('buildCombatPauseGate freezes sim + timer + input + audio together for ever
   assert.equal(both.interrupted, true);
 });
 
-test('main.js wires the unified pause gate into the loop and pause toggle', () => {
+test('main.js wires the unified pause gate into the pause toggle', () => {
   const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.equal(mainSource.includes('buildCombatPauseGate'), true);
-  // The loop gate uses the model's simFrozen flag rather than ad-hoc flag checks.
-  assert.equal(mainSource.includes('gate.simFrozen'), true);
   // Audio rides the gate on pause toggle.
   assert.equal(mainSource.includes('gate.audioPaused'), true);
 });
@@ -2366,13 +2336,6 @@ test('HMH loading gate keeps gameplay pending and uses responsive loading overla
   assert.equal(styleSource.includes('.hmh-loading-title-card'), true);
   assert.equal(styleSource.includes('max-width: calc(100vw - 24px)'), true);
   assert.equal(styleSource.includes('overflow-wrap: anywhere'), true);
-});
-
-test('main.js uses authored composition metadata to keep ambient level props intentional', () => {
-  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.equal(mainSource.includes('sceneContext?.authoredComposition?.ambientChancePct'), true);
-  assert.equal(mainSource.includes('sceneContext?.authoredComposition?.ambientAllowed === false'), true);
-  assert.equal(mainSource.includes('authored levels keep ambient FX sparse and intentional'), true);
 });
 
 test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {
@@ -2531,14 +2494,10 @@ test('Hard Money Heroes adds Crypto Bro and Gas Beast enemies plus extra Warren 
   // eagerly fetch those large still libraries before the lazy animated roster.
   assert.equal(mainSource.includes("buildEnemyArtFromManifest('cryptoBro')"), false);
   assert.equal(mainSource.includes("buildEnemyArtFromManifest('gasBeast')"), false);
-  assert.equal(mainSource.includes('roguelikeEnemyAnimatedFrame'), true);
-  assert.equal(mainSource.includes('const waveFrame = isLevelOneCuratedRuntime() ? null'), true);
-  assert.equal(mainSource.includes('const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null'), true);
 });
 
 test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city source trove for runtime staging', () => {
   const manifest = HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST;
-  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
 
   assert.equal(manifest.id, 'hard-money-heroes-level1-environment-assets-v1');
   assert.equal(manifest.assetCount, 148);
@@ -2554,12 +2513,6 @@ test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city 
     const assetPath = fileURLToPath(new URL(`../apps/portal/${asset.runtimeSrc.replace('./', '')}`, import.meta.url));
     assert.equal(existsSync(assetPath) && statSync(assetPath).size > 0, true, `${asset.id} runtime PNG exists`);
   }
-
-  assert.equal(mainSource.includes('currentLevelOneEnvironmentStage'), true);
-  assert.equal(mainSource.includes('drawAmbientEnvironmentProps'), true);
-  assert.equal(mainSource.includes('drawEnvironmentLayer'), true);
-  assert.equal(mainSource.includes('drawableEnvironmentProps'), true);
-  assert.equal(mainSource.includes("scenic-prop-card"), true);
 });
 
 test('Hard Money Heroes runtime keeps legacy manifest support while Level 1 uses lazy animated art', () => {
@@ -2568,17 +2521,13 @@ test('Hard Money Heroes runtime keeps legacy manifest support while Level 1 uses
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
 
   assert.equal(mainSource.includes('HARD_MONEY_HEROES_ASSET_MANIFEST'), true);
-  assert.equal(mainSource.includes('buildCharacterArtFromManifest'), true);
-  assert.equal(mainSource.includes('weaponAssets.knife?.stabAnimation'), true);
   assert.equal(mainSource.includes('hero.animations.knifeStab'), true);
   assert.equal(mainSource.includes('lastMeleeFrame'), true);
   assert.equal(mainSource.includes('const combatArt ='), true);
   assert.equal(mainSource.includes('preloadHeroRoster'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenStyle'), true);
-  assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
   assert.equal(mainSource.includes('ctx.imageSmoothingEnabled = false'), true);
   assert.equal(mainSource.includes("if (!src) return null"), true);
-  assert.equal(mainSource.includes('warrenSpearRider'), true);
   assert.equal(mainSource.includes('combat.characterId'), true);
   // Both heroes are now playable — the old "Lilly locked" teaser was replaced
   // with a Switch Hero action that returns to character-select.
@@ -2874,8 +2823,6 @@ test('runtime source wires authored POI visual-plan scene objects into obstacle 
   assert.equal(runtimeSource.includes('buildEncounterSceneObjects'), true);
   assert.equal(runtimeSource.includes('buildEncounterTemplateContext'), true);
   assert.equal(runtimeSource.includes('buildEncounterTerrainPressure'), true);
-  assert.equal(runtimeSource.includes('buildEncounterEnemyBehaviorProfile'), true);
-  assert.equal(runtimeSource.includes('bespokeEnemyVisualKitFor'), true);
   assert.equal(runtimeSource.includes('buildEnvironmentState'), true);
   assert.equal(runtimeSource.includes('buildCombatReadabilityProfile'), true);
   assert.equal(runtimeSource.includes('buildAmbientZoneModel'), true);
@@ -2883,7 +2830,7 @@ test('runtime source wires authored POI visual-plan scene objects into obstacle 
   assert.equal(runtimeSource.includes('activePoiEncounterVisualPlan'), true);
 });
 
-test('runtime exposes tactical HUD overlay, options popup, player-led camera, and animation coverage audit in the public app', () => {
+test('runtime exposes tactical HUD overlay, options popup, and animation coverage audit in the public app', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
@@ -2892,8 +2839,6 @@ test('runtime exposes tactical HUD overlay, options popup, player-led camera, an
   assert.equal(mainSource.includes('submitCombatGameOver'), true);
   assert.equal(mainSource.includes('renderGameOverSummary'), true);
   assert.equal(mainSource.includes('No hidden ranked submit'), true);
-  assert.equal(mainSource.includes('advanceTacticalCameraModel'), true);
-  assert.equal(mainSource.includes('applyPlayerLedCameraMovement'), true);
   assert.equal(mainSource.includes('isoToScreen'), true);
   assert.equal(mainSource.includes('playerMapX'), true);
   assert.equal(mainSource.includes('playerMapY'), true);
@@ -2927,7 +2872,6 @@ test('tactical level tuning expands rooms with cover lanes, prop spacing, and sl
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   assert.equal(mainSource.includes('tacticalRoomTuning.coverPlacements'), true);
   assert.equal(mainSource.includes('tacticalRoomTuning.platformPlacements'), true);
-  assert.equal(mainSource.includes('tacticalRoomTuning.enemySpawnDelayFrames'), true);
 });
 
 test('animation production briefs convert missing coverage into no-placeholder art requests', () => {

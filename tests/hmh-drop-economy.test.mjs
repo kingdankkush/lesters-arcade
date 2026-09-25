@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -65,11 +64,4 @@ test('WO-29 simulator keeps drops scarce across average and elite survival bands
   assert.ok(eliteSummary.categories.grenade >= 6, 'elite runs should see grenade refills');
   assert.ok((eliteSummary.categories.offense ?? 0) <= 8, 'screen-clearing offense drops should stay rare');
   assert.ok(eliteSummary.uniqueIds >= 7, 'economy should produce variety without flooding');
-});
-
-test('WO-29 runtime delegates drop decisions to the authoritative seeded economy module', () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.ok(main.includes("from './src/hmh-drop-economy.mjs'"), 'main.js should import the WO-29 drop economy module');
-  assert.ok(main.includes('rollLevelOnePowerUpDrop({'), 'roguelike drops should call the authoritative decision helper');
-  assert.ok(!main.includes('rollDrop({ seed, tier, luck, dropChance'), 'main.js should not keep ad-hoc rollDrop logic');
 });

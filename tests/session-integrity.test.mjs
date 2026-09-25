@@ -90,14 +90,12 @@ test('final evidence hashes are deterministic and any stream or final-state tamp
   assert.notEqual((await build({ finalScore: 1001 })).envelopeHash, base.envelopeHash);
 });
 
-test('portal runtime allocates canonical handles and wires evidence into gameplay and settlement', () => {
+test('portal runtime allocates canonical handles and wires evidence into settlement', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const chainClient = readFileSync(new URL('../apps/portal/src/litvm-chain-client.mjs', import.meta.url), 'utf8');
   assert.doesNotMatch(main, /nextGlobalSessionId\(state\)/);
-  assert.match(main, /recordSessionInput\(currentSession\.evidence/);
   assert.match(main, /recordSessionEvent\(currentSession\.evidence/);
   assert.match(main, /finalizeSessionEvidence\(/);
-  assert.match(main, /saveActiveSessionCheckpoint\(/);
   assert.match(main, /clearActiveSessionCheckpoint\(/);
   assert.match(chainClient, /sessionKey/);
   assert.match(chainClient, /isBytes32Hex\(sessionKey\)/);

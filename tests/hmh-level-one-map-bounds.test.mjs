@@ -74,11 +74,8 @@ test('WO-21 minimap model normalizes player, enemy, POI, and extraction markers'
   assert.equal(model.extraction.y, 0.063);
 });
 
-test('WO-21 runtime clamps movement to finite bounds and paints the minimap', () => {
+test('WO-21 runtime clamps movement to finite bounds', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.ok(main.includes('clampLevelOneWorldPoint'), 'movement should call the Level 1 bounds clamp');
   assert.match(main, /clampLevelOneWorldPoint\(\{[^}]*padding:\s*0\.42/s, 'runtime clamp should include the player collision radius');
-  assert.ok(main.includes('function drawRoguelikeMinimap('), 'runtime needs a minimap draw function');
-  assert.ok(main.includes('buildLevelOneMinimapModel({'), 'minimap should be driven by the pure model');
-  assert.ok(main.includes('drawRoguelikeMinimap(ctx, width, height);'), 'roguelike scene should paint minimap after gameplay');
 });

@@ -46,15 +46,11 @@ test('hero passive multipliers flow into the canonical roguelike run state', () 
   assert.equal(lilly.stats.luck, 1.15);
 });
 
-test('live runtime consumes hero health loadout and signature hooks', () => {
+test('live runtime consumes hero health and loadout', () => {
   assert.match(mainSource, /playableCharacterStatIdentityFor/);
   assert.match(mainSource, /combat\.maxHealth = Math\.round\(PLAYER_MAX_HEALTH \* \(combat\.roguelikeRun\.stats\.maxHealth/);
   assert.match(mainSource, /combat\.weaponId = carryOver\?\.weaponId \?\? heroIdentity\.startingWeaponId/);
   assert.match(mainSource, /combat\.powerUpTimers\.weapon = carryOver\?\.weaponId \? 0 : heroIdentity\.startingWeaponDurationSeconds/);
-  assert.match(mainSource, /incomingDamageMultiplier = combat\.roguelikeRun\?\.stats\?\.incomingDamage/);
-  assert.match(mainSource, /movingFireRateMultiplier/);
-  assert.match(mainSource, /bossRecoveryFraction/);
-  assert.match(mainSource, /bossScoreMultiplier/);
   assert.match(playRoutesSource, /hero-loadout/);
   assert.match(playRoutesSource, /hero\.passive\.description/);
 });

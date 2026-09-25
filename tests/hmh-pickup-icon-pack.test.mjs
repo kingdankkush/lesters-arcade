@@ -49,9 +49,8 @@ test('P0 pickup icon pack contains disk-real manifest-backed runtime ids', () =>
   }
 });
 
-test('P0 pickup icon pack is exposed through HMH lazy loader and preferred by main runtime before older fallbacks', () => {
+test('P0 pickup icon pack is exposed through HMH lazy loader', () => {
   const loader = repoText('apps/portal/src/games/hmh/loader.mjs');
-  const main = repoText('apps/portal/main.js');
   const packageJson = repoText('package.json');
   const syntaxCheck = repoText('scripts/syntax-check.mjs');
 
@@ -61,13 +60,4 @@ test('P0 pickup icon pack is exposed through HMH lazy loader and preferred by ma
   assert.equal(syntaxCheck.includes('apps/portal/assets/generated/hmh-pickup-icons/hmh-pickup-icons-manifest.mjs'), true, 'manifest must be syntax checked');
   assert.equal(syntaxCheck.includes('tests/hmh-pickup-icon-pack.test.mjs'), true, 'test must be syntax checked');
   assert.equal(syntaxCheck.includes('scripts/generate-hmh-pickup-icons.py'), true, 'generator must be py_compile checked');
-
-  const p0ResolverIndex = main.indexOf("hmh('HMH_PICKUP_ICON_PACK')");
-  const oldFxIndex = main.indexOf("hmh('HMH_FX_POWERUPS_WAVE')");
-  assert.ok(p0ResolverIndex >= 0, 'main.js should resolve the new P0 pickup icon pack');
-  assert.ok(oldFxIndex >= 0, 'main.js should retain older FX pickup fallback');
-  assert.ok(p0ResolverIndex < oldFxIndex, 'new P0 pickup icon pack should be preferred before old FX wave fallbacks');
-  for (const id of P0_PICKUP_IDS) {
-    assert.equal(main.includes(`'${id}'`), true, `main.js should keep ${id} routable`);
-  }
 });

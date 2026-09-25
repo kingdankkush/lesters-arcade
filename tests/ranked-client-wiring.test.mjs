@@ -342,7 +342,7 @@ test('lastSettlement state resets at the start of every run', () => {
   assert.equal(context.lastSettlementSucceeded, false);
   assert.equal(context.lastSettlementQueued, false);
   assert.equal(context.combat.gameOverSubmitted, false, 'a new Ranked run can be submitted after a restart through the entry modal');
-  const startMode = PORTAL_MAIN.slice(PORTAL_MAIN.indexOf('async function startMode('), PORTAL_MAIN.indexOf('async function completePrototypeRun('));
+  const startMode = PORTAL_MAIN.slice(PORTAL_MAIN.indexOf('async function startMode('), PORTAL_MAIN.indexOf('async function startCombat('));
   assert.match(startMode, /resetRankedRunState\(\);\s+captureRankedResultContext\(currentSession\);/);
 });
 

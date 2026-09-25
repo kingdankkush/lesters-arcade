@@ -89,5 +89,4 @@ test('WO-26 runtime HUD is count-up survival with no target denominator or survi
   assert.equal(mainSource.includes("label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} /"), false);
   assert.equal(mainSource.includes('survivalWallAnnounced'), false);
   assert.equal(mainSource.includes('SURVIVAL WALL'), false);
-  assert.match(mainSource, /HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE/);
 });

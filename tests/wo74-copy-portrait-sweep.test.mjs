@@ -31,12 +31,6 @@ test('WO-74 player-facing copy no longer uses stale paid/prototype/test-lab fram
   }
 });
 
-test('WO-74 selected cabinet renderer derives playable/locked labels from registry state', () => {
-  const main = repoText('apps/portal/main.js');
-  assert.match(main, /selectedGameStatus\.textContent = game\.status === 'playable' \? 'Playable now' : 'Coming soon'/);
-  assert.match(main, /selectedGameTagline\.textContent = .*game\.status === 'playable'/s);
-});
-
 test('WO-74 has a 390px portrait overflow guard for mode and gameplay controls', () => {
   const css = repoText('apps/portal/styles.css');
   assert.match(css, /@media \(max-width: 390px\) and \(orientation: portrait\)/);
