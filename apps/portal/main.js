@@ -5234,6 +5234,9 @@ window.addEventListener('lesters:wallet-session', () => {
   setTimeout(() => {
     if (officialAppStep === 'profile') hydrateProfileFromIndex();
     if (officialAppStep === 'leaderboards') hydrateLeaderboardFromIndex();
+    // The mode line has a signed-in form: a sign-in from the Ranked entry
+    // modal, or a dropped session, re-renders it (polish-2).
+    if (officialAppStep === 'mode-select') officialPlayRoutes.renderModeSelect();
   }, 0);
 });
 window.addEventListener('lesters:profile-changed', (event) => {

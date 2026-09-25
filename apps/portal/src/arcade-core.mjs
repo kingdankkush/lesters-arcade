@@ -572,7 +572,7 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       bannerAsset: './assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp',
       bannerPosition: 'center center',
       bannerAlt: "Chikun flying through a bright blue sky between green pipes for Free Mode",
-      copy: 'Guest practice with a local score only. No profile progress, leaderboard placement, or chain writes.',
+      copy: 'Practice with a local score only. No profile progress, leaderboard placement, or chain writes.',
     }),
     ranked: Object.freeze({
       label: 'Play Ranked',
