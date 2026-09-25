@@ -79,6 +79,8 @@ export class DeterministicSimulation {
     this.lossMetrics = zeroLossMetrics();
     this.stepCallbacks = new Set();
     this.replayCallbacks = new Set();
+    this.projectionCallbacks = new Set();
+    this.projectionFaults = 0;
     this.randomStates = new Map([
       ['encounters', hashStreamSeed(this.seed, 'encounters')],
       ['drops', hashStreamSeed(this.seed, 'drops')],
@@ -170,7 +172,9 @@ export class DeterministicSimulation {
     if (accumulatorOverflowMs > 0) this.accumulatorMs = accumulatorCeilingMs;
 
     let steps = 0;
-    while (this.accumulatorMs + FLOAT_EPSILON >= this.fixedStepMs && steps < this.maxCatchUpSteps) {
+    // A step callback that enters a modal state (level-up offer, menu, pause,
+    // game over) ends the batch on that tick: nothing runs behind the modal.
+    while (this.state === 'active' && this.accumulatorMs + FLOAT_EPSILON >= this.fixedStepMs && steps < this.maxCatchUpSteps) {
       this.accumulatorMs -= this.fixedStepMs;
       if (Math.abs(this.accumulatorMs) < FLOAT_EPSILON) this.accumulatorMs = 0;
       this.tick += 1;
@@ -186,6 +190,18 @@ export class DeterministicSimulation {
 
       const replayEvent = Object.freeze({ type: 'tick', ...step });
       for (const callback of [...this.replayCallbacks]) callback(replayEvent);
+
+      // Projection observers (design package 7.9) are stepped once per tick,
+      // catch-up included, after the simulation. They hold presentation state
+      // only (leg distance, aim hysteresis, facing), so a fault is counted and
+      // swallowed: art can never stop or change a run.
+      for (const callback of [...this.projectionCallbacks]) {
+        try {
+          callback(step);
+        } catch {
+          this.projectionFaults += 1;
+        }
+      }
     }
 
     this.interpolationAlpha = Math.max(0, Math.min(1 - Number.EPSILON, this.accumulatorMs / this.fixedStepMs));
@@ -227,6 +243,16 @@ export class DeterministicSimulation {
     if (typeof callback !== 'function') throw new TypeError('replay callback must be a function');
     this.replayCallbacks.add(callback);
     return () => this.replayCallbacks.delete(callback);
+  }
+
+  onProjectionStep(callback) {
+    if (typeof callback !== 'function') throw new TypeError('projection callback must be a function');
+    this.projectionCallbacks.add(callback);
+    return () => this.projectionCallbacks.delete(callback);
+  }
+
+  getProjectionFaultCount() {
+    return this.projectionFaults;
   }
 
   nextRandom(streamName) {

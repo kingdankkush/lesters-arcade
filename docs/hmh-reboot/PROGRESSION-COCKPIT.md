@@ -43,7 +43,7 @@ The six authored upgrades are:
 
 Exactly three eligible choices are derived from the session seed, level, pending queue, and selection sequence. Selection never consumes the simulation encounter or drop RNG streams.
 
-The simulation enters its explicit `upgrade` state only after the current fixed-step batch finishes. Fixed steps and run time stop; Pixi rendering continues so the modal cannot interrupt renderer initialization. Combat audio pauses until the queue is resolved.
+The simulation enters its explicit `upgrade` state at the end of the tick whose XP produced the level (design package 8.3 timing fix, S0.2), unless the run ended on that tick. Entering it stops the catch-up batch, so the offer tick does not depend on the frame partition. The frame loop only paints the panel. Fixed steps and run time stop; Pixi rendering continues so the modal cannot interrupt renderer initialization. Combat audio pauses until the queue is resolved. The panel is the lazy `upgrade-panel.mjs` chunk and its card text is `progression-content.mjs`.
 
 ## Cockpit
 

@@ -1376,6 +1376,33 @@ async function boot() {
   };
   let maxPlayerHealth = 100;
   let upgradePending = false;
+  // Design package 8.3 timing fix (S0.2). A level offer, earned or forced,
+  // opens at the end of the tick whose XP produced the level, inside that
+  // tick, unless the run ended on it. enterUpgrade() stops the catch-up loop,
+  // so no later tick of the frame runs behind the panel and the offer tick no
+  // longer depends on how many catch-up steps a frame took. The frame loop
+  // only paints the offer (presentUpgradeOffer). The upgrade-offer cue is gone
+  // (owner audio list).
+  let pendingUpgradeOfferPaint = null;
+  const openPendingUpgradeOffer = (tick) => {
+    if (!upgradePending || simulation?.state !== 'active') return false;
+    // The evidence progression pilot grants its level before tick 1 and offers it on tick 2.
+    if (progressionPilotEnabled && tick < 2) return false;
+    upgradePending = false;
+    const snapshot = getRunProgressionSnapshot(runProgression);
+    if (snapshot.pendingLevels <= 0 || snapshot.pendingChoices.length === 0) return false;
+    recordRunUpgradeOffer(runSummaryAccumulator, snapshot.pendingChoices.map((choice) => choice.id));
+    simulation.enterUpgrade();
+    pendingUpgradeOfferPaint = snapshot;
+    return true;
+  };
+  const presentUpgradeOffer = () => {
+    if (!pendingUpgradeOfferPaint || simulation?.state !== 'upgrade') return;
+    const snapshot = pendingUpgradeOfferPaint;
+    pendingUpgradeOfferPaint = null;
+    combatAudio.pause();
+    upgradePanel?.showUpgrade(snapshot);
+  };
   let actor = null;
   let motion = null;
   let aimState = null;
@@ -2948,6 +2975,7 @@ async function boot() {
     maxPlayerHealth = 100;
     runProgression = null;
     upgradePending = false;
+    pendingUpgradeOfferPaint = null;
     upgradePanel?.hideUpgrade();
     cockpit?.setPaused(false);
     runKills = 0;
@@ -4736,6 +4764,7 @@ async function boot() {
         });
       }
       lastDashReady = dashStatusAfterStep.ready;
+      openPendingUpgradeOffer(tick);
     });
     simulation.start();
     if (releaseAnchorEnabled) {
@@ -4743,9 +4772,8 @@ async function boot() {
       upgradePending = false;
       simulation.enterUpgrade();
       recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
-      combatAudio.pause();
-      combatAudio.play('upgrade-offer', { volume: 0.14 });
-      upgradePanel?.showUpgrade(progressionSnapshot);
+      pendingUpgradeOfferPaint = progressionSnapshot;
+      presentUpgradeOffer();
       // Keep painting the loading panel until art is ready; the simulation
       // remains in its paused upgrade state throughout.
       app.ticker.start();
@@ -5088,17 +5116,8 @@ async function boot() {
     dataset.simulationCatchUpSaturationFrames = String(catchUpSaturationFrames);
     dataset.simulationDroppedMs = simulationLoss.totalDroppedMs.toFixed(3);
     if (frame.steps > 0) input.consumeBufferedActions(snapshot.sequence);
-    if (upgradePending && simulation.state === 'active' && (!progressionPilotEnabled || simulation.tick >= 2)) {
-      const progressionSnapshot = getRunProgressionSnapshot(runProgression);
-      upgradePending = false;
-      if (progressionSnapshot.pendingLevels > 0 && progressionSnapshot.pendingChoices.length > 0) {
-        recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
-        simulation.enterUpgrade();
-        combatAudio.pause();
-        combatAudio.play('upgrade-offer', { volume: 0.14 });
-        upgradePanel?.showUpgrade(progressionSnapshot);
-      }
-    }
+    // An offer opened inside one of this frame's ticks is painted here.
+    presentUpgradeOffer();
     elapsedMs = simulation.timeMs;
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);
     // V-6 encounter framing and boss-phase beat. Render zoom only: the
