@@ -102,8 +102,8 @@
       "severity": "medium",
       "area": "Sign-in wallet picker (every page), toast",
       "found": "On a first visit the picker opened before src/styles/wallet-picker.css (loaded on first use) applied, and painted as page content under the footer: a bullet list with browser-grey buttons ('WCWALLETCONNECT…') and run-together links. Seen live on /games/stacked at 390 px; reproduced on / with the CSS delayed.",
-      "fix": "Until the stylesheet applies, inline stand-ins make the backdrop a fixed dimmed layer at once while the sheet stays hidden; the CSS then takes over (inline styles dropped). After 3 s or on a CSS error the sheet shows on a legible fallback, never as page content; focus moves in once it shows.",
-      "commits": ["55f72d78", "40d8f6ce"],
+      "fix": "Until the stylesheet applies, inline stand-ins make the backdrop a fixed dimmed layer at once while the sheet stays hidden; the CSS then takes over (inline styles dropped). After 3 s or on a CSS error the sheet shows on a legible fallback, never as page content, and later sheets on that page skip the wait; focus moves in once it shows.",
+      "commits": ["55f72d78", "40d8f6ce", "9f7cf4a4"],
       "tests": ["tests/wallet-picker.test.mjs"]
     },
     {
@@ -118,10 +118,10 @@
     {
       "id": "LUA-04",
       "severity": "medium",
-      "area": "Generic buttons: profile Share profile, View Leaderboard, View my profile, Try again, Sign in, Retry, Retry saved runs; Ranked entry Switch network / Get zkLTC / Check again",
+      "area": "Generic buttons: profile Share profile, View Leaderboard, View my profile, Try again, Sign in, Retry, Retry saved runs; Ranked entry Switch network / Get zkLTC / Check again; the first-Ranked name toast's Not now",
       "found": "Buttons with only the pixel-button class had no style: browser-grey fill under the dark global button text, 3.76:1 (under 4.5:1), reading as disabled.",
       "fix": "Cyan-outline arcade button for them (text 17:1 on its base, 44 px target, gold focus ring); avatar options get an outlined tile. A test keeps every pixel-button variant styled.",
-      "commits": ["77a385ab"],
+      "commits": ["77a385ab", "c46a6f9a"],
       "tests": ["tests/live-ui-audit-polish.test.mjs"]
     },
     {
