@@ -1,0 +1,34 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-25",
+  "release": "1.8.3 version column",
+  "siteVersion": "1.8.3",
+  "cacheMarker": "lesters-arcade-v56-version-column",
+  "branch": "fable/master-list-20260916",
+  "source": "f890c549",
+  "production": {
+    "deployment": "dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK",
+    "immutableUrl": "https://lesters-arcade-3h9f0dnge-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-iue9krb9h-justin-agent-projects.vercel.app (dpl_BMHYZDvLHV87uMCf58LsAXA1vFxC)",
+    "previous": "dpl_C8Zcbk2jTmKAM8ZRqWn4TwZLo33Y (1.8.2)",
+    "rollback": "Instant Rollback to dpl_C8Zcbk2jTmKAM8ZRqWn4TwZLo33Y is NOT drop-in: 1.8.2 refuses HMH build hashes with the new :cabinet- segment (terminal 400). Pause Ranked first, roll back, then resume (contract section 13 step 4)."
+  },
+  "contains": [
+    "version-column (613d83cb, round 2 30a58e27): every verified score shows the game version it was played on; Version column on hosted Scores boards (chip on phones), a label per run in profile history and on share pages; HMH build hashes gain :cabinet-0.5.0 (HMH_CABINET_VERSION); 1.8.x hashes without it stay valid; labels derive from the migration-1 build_hash/runtime_id columns (no migration)",
+    "asset-cleanup (88ac494b): 753 unreferenced generated-art files and dead generator scripts removed (-236,861,684 B), two adversarial review rounds; report docs/cleanup/unused-assets-audit-20260925.md",
+    "jackpot-server J2 (f63fea80), inert: Neon migration 3 (jackpot tables), config.jackpot, indexer/selection/screen/keeper, GET /api/jackpot (answers live:false), replay and review endpoints, weekly-jackpot cron (*/5, recorded no-op while litvm-jackpot.mjs is undeployed), health/status reporting, profile jackpot.wins, share-page champion badge; JACKPOT_LIVE false"
+  ],
+  "gates": {
+    "local": "PASS 5002 tests, 4951 passed, exactly 51 ledgered failures (npm run vercel:build)",
+    "slices": "asset-cleanup PASS 4852/51 and jackpot-server PASS 4966/51 gated separately before merge; version-column verified by an independent verifier (round 1) and its round-2 suites rerun at merge",
+    "vercel": "candidate build READY with the same gate"
+  },
+  "verification": {
+    "publicFiles": "149/149 match the certified build",
+    "apiProbes": "attest 410, session nonce 200, leaderboard 200, profile 200, settle GET 405, health 200, jackpot 200 {live:false}, weekly-jackpot cron without secret 401, unknown share 404, profile deep link 200",
+    "versionLabels": "live rows read 'Chikun v7' and 'HMH v0.5'; profile recent sessions carry versionLabel; profile carries jackpot.wins []",
+    "health": "healthy, version 1.8.3, degradedParts []; index-chain 228 runs 0 failures; settle-retry 1136 runs 0 failures; weeklyJackpot 1 run 0 failures (no-op); jackpot configured false, awaitingAdmin 0"
+  },
+  "contractsUnchanged": "Ranked contracts, fees (85/15) and flags unchanged; no jackpot contract deployed"
+}

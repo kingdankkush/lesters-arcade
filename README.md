@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.3: game version on every score, 237 MB lighter, jackpot server staged
+# Lester's Arcade — 1.8.3 verified live: game version on every score, 237 MB lighter, jackpot server staged
 
 Batch release after 1.8.2. Every verified score now shows the game version it was played on (owner decision: no testnet season resets): a Version column on the Scores boards (a chip on phones), a label per run in profile history and a line on share pages. HMH build hashes gain a cabinet segment (`HMH v0.5`); earlier hashes stay valid. About 237 MB of unreferenced generated art and dead generator scripts are removed (753 files; report `docs/cleanup/unused-assets-audit-20260925.md`). The Chikun Weekly Jackpot server is in (Neon migration 3, a keeper cron that is a recorded no-op until the jackpot contract is deployed, `/api/jackpot` answering not-configured); nothing player-facing changes for the jackpot yet and `JACKPOT_LIVE` stays false. Contracts, fees and flags of the live Ranked system are unchanged.
 
-Site/game version `1.8.3`; cache marker `lesters-arcade-v56-version-column`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK` (source `f890c549`); site/game version `1.8.3`; cache marker `lesters-arcade-v56-version-column`. The local and Vercel gates pass 4,951 of 5,002 tests with exactly 51 unchanged retired exceptions; all 149 checked public files match and `/api/health` reports healthy (the weekly-jackpot cron runs as a no-op). [Release receipt](docs/qa/batch-release-20260925-1.8.3.json). Rollback to `dpl_C8Zcbk2jTmKAM8ZRqWn4TwZLo33Y` needs Ranked paused first (1.8.2 refuses the new HMH cabinet build hashes). Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.8.2 verified live: leaner portal, truthful copy, jackpot contracts staged
 
