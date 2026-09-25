@@ -70,7 +70,8 @@ node build.mjs   # the portal serves apps/portal/dist/chikun/game.js
 
 Step 1 always starts from the tracked `Chikun-Ground-Sky-Rig.blend` and writes
 `Chikun-Sheet-Rig.blend` + `Chikun-Sheet-Animations.glb` beside it, so re-running never
-double-applies the paint or bones. The packer never touches `chikun-flight-v3/audio`.
+double-applies the paint or bones. The packer never touches the runtime flight audio, which
+lives in `chikun-flight-v2/audio` (`apps/chikun/src/audio.mjs`).
 
 ## Budgets (pinned in tests/chikun-character-sheet.test.mjs and chikun-facelift.test.mjs)
 
@@ -80,4 +81,6 @@ double-applies the paint or bones. The packer never touches `chikun-flight-v3/au
 - Every sheet < 140 KiB, >= 12 unique frames, silhouette never touches the frame edge.
 - 18 bones, 62,830 triangles, 39 provenance clips.
 
-Contact sheet of every clip: `docs/chikun/chikun-sheet-clips.png`.
+Each pack run writes a review contact sheet of every clip to `docs/chikun/chikun-sheet-clips.png`.
+It is write-only review output: the committed copy was removed in the 2026-09-25 asset
+cleanup (it remains in Git history at `0248cd4b`).

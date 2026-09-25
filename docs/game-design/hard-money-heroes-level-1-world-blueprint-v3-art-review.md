@@ -18,7 +18,7 @@ Source URL: <https://v3b.fal.media/files/b/0aa1ec1a/5aC1ZEu8fAV71ngNeb0KS_OFFeTV
 
 The raw generation is retained in the private project vault outside the repository.
 
-Combined contact sheet:
+Combined contact sheet (removed in the 2026-09-25 asset cleanup; in Git history at `0248cd4b`):
 
 `docs/game-design/assets/hmh-level-1-world-blueprint-v3/approval-samples.png`
 
@@ -162,7 +162,7 @@ Demonstrates:
 - separated cliff, cave, water, path, tree, and overhang reads
 - compatibility with the same wilderness kit
 
-Combined contact sheet:
+Combined contact sheet (removed in the 2026-09-25 asset cleanup; in Git history at `0248cd4b`):
 
 `docs/game-design/assets/hmh-level-1-world-blueprint-v3/seam-followup-samples.png`
 

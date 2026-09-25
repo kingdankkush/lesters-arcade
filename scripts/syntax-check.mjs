@@ -1108,7 +1108,6 @@ const PY_COMPILE_FILES = [
   "scripts/hmh_textured_action_polish.py",
   "scripts/run-hmh-tripo-gameplay-pilot.py",
   "scripts/hmh-blender/export-hmh-hero-selector.py",
-  "scripts/hmh-blender/create-hmh-tripo-selector-scene.py",
   "scripts/run-hmh-hero-selector-render.py",
   "scripts/hmh_selector_native_sources.py",
   "tests/hmh-selector-packed-sources.test.py",

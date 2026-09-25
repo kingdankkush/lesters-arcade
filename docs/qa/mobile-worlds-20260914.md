@@ -14,7 +14,7 @@ Site/game version 1.5.0 separates current scores while preserving historical rec
 
 ## Evidence and limits
 
-[Performance measurements](mobile-worlds-20260914/performance-summary.json) preserve both opening gains and failed stress samples. Opening A/B at 390×844 and CPU throttle 4 improved mean frame interval from 28.05ms to 19.55ms. An artificial 128-enemy stress load still spikes, including a 100.49ms outlier and 46.00ms repeat. This does not establish physical iPhone performance or a universal 60fps guarantee. The 414×896 sample is separate. [Attempt log](mobile-worlds-20260914/optimization-attempts.json) records retained and reverted work.
+Performance measurements (`mobile-worlds-20260914/performance-summary.json`) preserve both opening gains and failed stress samples. Opening A/B at 390×844 and CPU throttle 4 improved mean frame interval from 28.05ms to 19.55ms. An artificial 128-enemy stress load still spikes, including a 100.49ms outlier and 46.00ms repeat. This does not establish physical iPhone performance or a universal 60fps guarantee. The 414×896 sample is separate. An attempt log (`mobile-worlds-20260914/optimization-attempts.json`) records retained and reverted work. The evidence folder was removed from the working tree in the 2026-09-25 asset cleanup; it remains in Git history at `0248cd4b`.
 
 STACKED's 12-second slowed mobile test kept music available, 721 simulation ticks and zero long tasks; p95 callback time was 7.6ms. Six playable browser sizes and four particle/effect layouts pass. Chikun's desktop/portrait/landscape checks pass input, pause, results, replay and retry. Native barrier renders pass exact A/B pixel repeatability with a seeded CPU Cycles recipe and remain inside the 900k/300k delivery budgets.
 
