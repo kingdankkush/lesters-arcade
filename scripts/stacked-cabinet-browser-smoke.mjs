@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { startPortalStaticServer } from './hmh-reboot-portal-e2e.mjs';
+import { PORTAL_COPY } from '../apps/portal/src/portal-content.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const evidenceDir = path.resolve(process.env.STACKED_CABINET_EVIDENCE_DIR || path.join(root, 'outputs/stacked-cabinet-browser'));
@@ -104,9 +105,10 @@ try {
     // Check the actual cabinet click still reaches the public beta mode flow.
     await card.click();
     assert.equal(await page.locator('#officialModeTitle').textContent(), 'STACKED');
-    // Ranked-client rewrote the Ranked tile: a wallet-bound, replay-verified run (no "Local Only" tag).
+    // A wallet-bound, replay-verified run (no "Local Only" tag). The Ranked card is the flag-driven
+    // site copy (A33; live UI audit 2026-09-24), no longer the descriptor's 'replay verification'.
     assert.equal((await page.locator('#officialRankedModeTitle').textContent()).trim(), 'Play Ranked');
-    assert.match(await page.locator('#officialRankedModeCopy').textContent(), /replay verification/);
+    assert.equal(await page.locator('#officialRankedModeCopy').textContent(), PORTAL_COPY.modeSelect.stacked.ranked);
     assert.equal(await page.locator('#officialFreeModeButton').isEnabled(), true);
     await page.locator('#officialFreeModeButton').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();

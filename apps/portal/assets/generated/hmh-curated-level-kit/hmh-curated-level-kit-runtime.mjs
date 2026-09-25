@@ -60,6 +60,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/district-generator.mjs",
     "apps/portal/src/drop-tables.mjs",
     "apps/portal/src/enemy-steering.mjs",
+    "apps/portal/src/focus-keeper.mjs",
     "apps/portal/src/game-adapter.mjs",
     "apps/portal/src/game-manifest.mjs",
     "apps/portal/src/game-registry.mjs",

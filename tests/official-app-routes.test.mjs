@@ -11,7 +11,7 @@ function panel() {
 
 const launchCopy = portalCopyFor({ settlementLive: true, hostedProfileSync: true });
 
-function harness({ step = 'settings', connectedWallet = null, guestAllowed = true, portalCopy } = {}) {
+function harness({ step = 'settings', connectedWallet = null, guestAllowed = true, portalCopy, viewedWallet = null } = {}) {
   const state = { step };
   const calls = [];
   const toggles = [];
@@ -36,6 +36,7 @@ function harness({ step = 'settings', connectedWallet = null, guestAllowed = tru
     getStep: () => state.step,
     setStep: (next) => { state.step = next; },
     getConnectedWallet: () => connectedWallet,
+    getViewedProfileWallet: () => viewedWallet,
     ...(portalCopy ? { portalCopy } : {}),
     isGuestAllowedStep: () => guestAllowed,
     isSimulatedWalletActive: () => false,
@@ -117,6 +118,43 @@ test('the Scores and Profile headers render the launch copy once the flags flip'
   guest.routes.renderApp();
   assert.equal(guest.dom.officialProfileCopy.textContent, launchCopy.profileGuestView);
   for (const h of [scores, wallet, guest]) assert.doesNotMatch(h.dom.officialProfileCopy.textContent, /device-local|preview|No score transaction/i);
+});
+
+// Live UI audit 2026-09-24: /profile/<wallet> for someone else's wallet was
+// headed "Guest Practice Profile" with the guest sign-in lead.
+test('another wallet’s public profile is headed as that player, not a guest session', () => {
+  const other = '0x8841ae6244dba71f620de450e71b0ef7e0cce824';
+  for (const connectedWallet of [null, '0x1234567890abcdef1234567890abcdef12345678']) {
+    const h = harness({ step: 'profile', connectedWallet, viewedWallet: other.toUpperCase().replace('0X', '0x'), portalCopy: launchCopy });
+    h.routes.renderApp();
+    assert.equal(h.dom.officialProfileTitle.textContent, 'Player Profile');
+    assert.equal(h.dom.officialProfileEyebrow.textContent, 'Public profile · 0x8841…e824');
+    assert.equal(h.dom.officialProfileCopy.textContent, launchCopy.profilePublicView);
+    assert.doesNotMatch(h.dom.officialProfileTitle.textContent + h.dom.officialProfileEyebrow.textContent + h.dom.officialProfileCopy.textContent, /guest|practice|sign in/i);
+    assert.ok(h.calls.includes('profile'));
+  }
+  // The viewer's own wallet (any case), or no wallet, keeps the usual header.
+  const own = harness({ step: 'profile', connectedWallet: other, viewedWallet: other.toUpperCase().replace('0X', '0x'), portalCopy: launchCopy });
+  own.routes.renderApp();
+  assert.equal(own.dom.officialProfileTitle.textContent, 'Wallet Profile');
+  assert.equal(own.dom.officialProfileCopy.textContent, launchCopy.profileWalletView);
+  const guest = harness({ step: 'profile', viewedWallet: 'not-a-wallet', portalCopy: launchCopy });
+  guest.routes.renderApp();
+  assert.equal(guest.dom.officialProfileTitle.textContent, 'Guest Practice Profile');
+  // Other pages never take the profile header.
+  const scores = harness({ step: 'leaderboards', viewedWallet: other, portalCopy: launchCopy });
+  scores.routes.renderApp();
+  assert.equal(scores.dom.officialProfileTitle.textContent, 'Leaderboards');
+  assert.equal(scores.dom.officialProfileEyebrow.textContent, 'Guest practice session');
+  // The copy follows the flags (contract A33).
+  assert.match(launchCopy.profilePublicView, /public profile: its best scores, verified Ranked runs published on LitVM/);
+  assert.match(portalCopyFor({ settlementLive: false, hostedProfileSync: true }).profilePublicView, /Verified Ranked publishing is not available yet/);
+  assert.match(portalCopyFor({ settlementLive: false, hostedProfileSync: false }).profilePublicView, /this device/);
+});
+
+test('main passes the viewed profile wallet to the app routes', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.match(main, /createOfficialAppRoutes\(\{[\s\S]*?getViewedProfileWallet: \(\) => profileRouteState\.viewedWallet \?\? null,/);
 });
 
 test('app dispatcher applies guest gating before route selection', () => {

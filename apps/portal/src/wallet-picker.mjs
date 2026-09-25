@@ -95,13 +95,95 @@ export function buildWalletPickerModel({ providers = [], isMobile = false, host 
 
 // ---------------------------------------------------------------- DOM ----
 
+// Returns the picker's <link> (main.js may have added it first, same id).
 export function ensureWalletPickerStyles(documentRef = globalThis.document) {
-  if (!documentRef?.head || documentRef.getElementById?.(STYLESHEET_ID)) return;
+  if (!documentRef?.head) return null;
+  const existing = documentRef.getElementById?.(STYLESHEET_ID);
+  if (existing) return existing;
   const link = documentRef.createElement('link');
   link.id = STYLESHEET_ID;
   link.rel = 'stylesheet';
   link.href = WALLET_PICKER_STYLESHEET;
   documentRef.head.append(link);
+  return link;
+}
+
+// How long a sheet waits for wallet-picker.css before it shows on its inline
+// fallback styles.
+export const WALLET_STYLES_TIMEOUT_MS = 3000;
+
+// What each picker <link> did: 'loaded', or 'missed' (an error, or a wait that
+// timed out). The events decide, not `link.sheet`: Chromium gives a <link>
+// whose request failed (404, network error) an empty, non-null sheet.
+const stylesOutcome = new WeakMap();
+const stylesTracked = new WeakSet();
+
+function trackStyles(link) {
+  if (stylesTracked.has(link)) return;
+  stylesTracked.add(link);
+  link.addEventListener?.('load', () => stylesOutcome.set(link, 'loaded'));
+  link.addEventListener?.('error', () => stylesOutcome.set(link, 'missed'));
+}
+
+// 'loaded', 'missed' or 'pending'. A link whose events fired before anything
+// listened (main.js may add it first) is read from its sheet: wallet-picker.css
+// is same-origin and never empty, so readable rules mean it loaded and an
+// empty or unreadable sheet means it failed. Doubles without `sheet` count as
+// loaded.
+function stylesStatus(link) {
+  if (!link || !('sheet' in link)) return 'loaded';
+  const known = stylesOutcome.get(link);
+  if (known) return known;
+  if (!link.sheet) return 'pending';
+  try { return link.sheet.cssRules?.length > 0 ? 'loaded' : 'missed'; } catch { return 'missed'; }
+}
+
+// Resolves once the stylesheet loads or fails, or after timeoutMs; null when
+// it already applies. After one miss, later sheets resolve at once instead of
+// waiting again, since a failed <link> never fires another event.
+export function walletPickerStylesPending(link, { timeoutMs = WALLET_STYLES_TIMEOUT_MS } = {}) {
+  const status = stylesStatus(link);
+  if (status === 'loaded') return null;
+  trackStyles(link);
+  if (status === 'missed') return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      clearTimeout(timer);
+      if (!stylesOutcome.has(link)) stylesOutcome.set(link, 'missed');
+      resolve();
+    };
+    const timer = setTimeout(done, timeoutMs);
+    link.addEventListener?.('load', done, { once: true });
+    link.addEventListener?.('error', done, { once: true });
+  });
+}
+
+// Live UI audit 2026-09-24: on a phone with a cold cache the picker first
+// painted unstyled at the bottom of the page (a bullet list of plain grey
+// buttons under the footer) until wallet-picker.css arrived. Until the
+// stylesheet applies, inline stand-ins make the backdrop dim the page at once
+// (the tap visibly did something) while the sheet or toast stays hidden; the
+// stylesheet then takes over and the inline styles are dropped. A stylesheet
+// slower than WALLET_STYLES_TIMEOUT_MS shows the sheet on the legible
+// fallback instead, and still takes over whenever it arrives.
+export const WALLET_FALLBACK_STYLES = Object.freeze({
+  overlay: 'position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(3,7,17,0.82)',
+  sheet: 'box-sizing:border-box;width:min(420px,100%);max-height:calc(100vh - 32px);overflow-y:auto;padding:22px;border:1px solid rgba(25,247,255,0.4);border-radius:18px;background:#0b1024;color:#f9f7ff;font-family:system-ui,sans-serif;visibility:hidden',
+  toast: 'position:fixed;z-index:130;left:50%;bottom:16px;transform:translateX(-50%);width:min(460px,calc(100vw - 32px));padding:12px 14px;border-radius:12px;border:1px solid rgba(25,247,255,0.4);background:#0b1024;color:#f9f7ff;visibility:hidden',
+});
+
+function styleUntilLoaded(link, parts) {
+  const pending = walletPickerStylesPending(link);
+  if (!pending) return null;
+  const styled = parts.filter(([element]) => element?.style);
+  for (const [element, css] of styled) element.style.cssText = css;
+  const handOver = () => { for (const [element] of styled) element.removeAttribute?.('style'); };
+  return pending.then(() => {
+    if (stylesStatus(link) === 'loaded') { handOver(); return; }
+    for (const [element] of styled) element.style.visibility = '';
+    // A stylesheet that arrives late still takes over from the fallback.
+    link.addEventListener?.('load', handOver, { once: true });
+  });
 }
 
 function node(documentRef, tag, { className = '', text = null, attrs = {} } = {}) {
@@ -120,7 +202,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
 // A modal sheet over the page: focus trapped inside, Escape and the backdrop
 // close it, focus returns to the opener afterwards.
 function openSheet(documentRef, { labelledBy, className = '', onClose }) {
-  ensureWalletPickerStyles(documentRef);
+  const stylesheet = ensureWalletPickerStyles(documentRef);
   const previous = documentRef.activeElement;
   const overlay = node(documentRef, 'div', { className: `wallet-sheet-overlay ${className}`.trim() });
   const sheet = node(documentRef, 'div', { className: 'wallet-sheet', attrs: { role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': labelledBy } });
@@ -145,10 +227,21 @@ function openSheet(documentRef, { labelledBy, className = '', onClose }) {
     else if (!event.shiftKey && documentRef.activeElement === last) { event.preventDefault(); first.focus(); }
     else if (!sheet.contains(documentRef.activeElement)) { event.preventDefault(); first.focus(); }
   };
-  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(null); });
+  // While the sheet waits hidden for its stylesheet, a tap on the dimmed page
+  // (a player on a slow connection tapping again) must not cancel sign-in.
+  let waiting = false;
+  overlay.addEventListener('click', (event) => { if (event.target === overlay && !waiting) close(null); });
   documentRef.addEventListener('keydown', onKey, true);
+  const styled = styleUntilLoaded(stylesheet, [[overlay, WALLET_FALLBACK_STYLES.overlay], [sheet, WALLET_FALLBACK_STYLES.sheet]]);
+  if (styled) { waiting = true; void styled.then(() => { waiting = false; }); }
   documentRef.body.append(overlay);
-  return { overlay, sheet, close, focusFirst: () => sheet.querySelector(FOCUSABLE)?.focus?.() };
+  // A hidden control cannot take focus: focus moves in once the sheet shows.
+  const focusFirst = () => {
+    const move = () => { if (!closed) sheet.querySelector(FOCUSABLE)?.focus?.(); };
+    if (styled) void styled.then(move);
+    else move();
+  };
+  return { overlay, sheet, close, focusFirst };
 }
 
 function header(documentRef, id, title, lead) {
@@ -235,7 +328,7 @@ export function openChainExplainer({ documentRef = globalThis.document, networkN
 // A short, dismissable status line for sign-in outcomes (declined, cancelled,
 // service down). role=status so screen readers hear it.
 export function showWalletToast({ documentRef = globalThis.document, message, tone = 'info', actions = [], timeoutMs = 7000 } = {}) {
-  ensureWalletPickerStyles(documentRef);
+  const stylesheet = ensureWalletPickerStyles(documentRef);
   documentRef.querySelector?.('.wallet-toast')?.remove();
   const toast = node(documentRef, 'div', { className: `wallet-toast wallet-toast-${tone}`, attrs: { role: 'status', 'aria-live': 'polite' } });
   toast.append(node(documentRef, 'span', { className: 'wallet-toast-text', text: message }));
@@ -247,6 +340,7 @@ export function showWalletToast({ documentRef = globalThis.document, message, to
   const dismiss = node(documentRef, 'button', { className: 'wallet-toast-close', text: '×', attrs: { type: 'button', 'aria-label': 'Dismiss' } });
   dismiss.addEventListener('click', () => toast.remove());
   toast.append(dismiss);
+  void styleUntilLoaded(stylesheet, [[toast, WALLET_FALLBACK_STYLES.toast]]);
   documentRef.body.append(toast);
   if (timeoutMs > 0) setTimeout(() => toast.remove(), timeoutMs);
   return toast;

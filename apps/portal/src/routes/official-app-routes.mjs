@@ -6,6 +6,8 @@ export function createOfficialAppRoutes({
   getStep,
   setStep,
   getConnectedWallet,
+  // The wallet a /profile/<wallet> link is showing (null: the viewer's own).
+  getViewedProfileWallet = () => null,
   portalCopy = PORTAL_COPY,
   isGuestAllowedStep,
   isSimulatedWalletActive,
@@ -36,9 +38,18 @@ export function createOfficialAppRoutes({
     }
   }
 
+  // Another wallet's public profile is on screen: its header describes that
+  // wallet, not the viewer's guest session (live UI audit 2026-09-24).
+  function publicProfileWallet(connectedWallet) {
+    const viewed = String(getViewedProfileWallet() ?? '');
+    if (!/^0x[0-9a-fA-F]{40}$/.test(viewed)) return null;
+    return viewed.toLowerCase() === String(connectedWallet ?? '').toLowerCase() ? null : viewed.toLowerCase();
+  }
+
   function renderArcadeFloor() {
     const step = getStep();
     const connectedWallet = getConnectedWallet();
+    const viewedWallet = step === 'profile' ? publicProfileWallet(connectedWallet) : null;
     if (!['cabinet-select', 'arcade-walk-in'].includes(step)) applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, step === 'settings' ? 'options' : 'mainMenu');
     dom.officialCabinetGrid.classList.toggle('profile-command-grid', step === 'profile');
     dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', step === 'leaderboards');
@@ -48,7 +59,7 @@ export function createOfficialAppRoutes({
     const titleByStep = {
       'arcade-walk-in': 'Entering the Arcade...',
       'cabinet-select': 'Pick your cabinet.',
-      profile: connectedWallet ? 'Wallet Profile' : 'Guest Practice Profile',
+      profile: viewedWallet ? 'Player Profile' : connectedWallet ? 'Wallet Profile' : 'Guest Practice Profile',
       leaderboards: 'Leaderboards',
       settings: 'Settings',
     };
@@ -59,15 +70,17 @@ export function createOfficialAppRoutes({
       'cabinet-select': connectedWallet
         ? 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Your next run starts here.'
         : 'A survival shooter, a run through Ground & Sky, and a puzzle with its own rhythm. Choose a game and play Free.',
-      profile: connectedWallet
+      profile: viewedWallet ? portalCopy.profilePublicView : connectedWallet
         ? portalCopy.profileWalletView
         : portalCopy.profileGuestView,
       leaderboards: portalCopy.scoresView,
       settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
     };
-    dom.officialProfileEyebrow.textContent = simulatedWallet
-      ? 'Simulated wallet session'
-      : connectedWallet ? 'Wallet profile connected' : 'Guest practice session';
+    dom.officialProfileEyebrow.textContent = viewedWallet
+      ? `Public profile · ${viewedWallet.slice(0, 6)}…${viewedWallet.slice(-4)}`
+      : simulatedWallet
+        ? 'Simulated wallet session'
+        : connectedWallet ? 'Wallet profile connected' : 'Guest practice session';
     dom.officialProfileTitle.textContent = titleByStep[step] ?? titleByStep['cabinet-select'];
     dom.officialProfileCopy.textContent = copyByStep[step] ?? copyByStep['cabinet-select'];
     if (step === 'profile') renderProfile();

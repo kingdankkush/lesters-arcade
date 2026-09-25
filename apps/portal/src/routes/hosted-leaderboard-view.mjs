@@ -7,6 +7,7 @@
 // renders again.
 
 import { arcadeAvatarForUri } from '../arcade-avatars.mjs';
+import { renderKeepingFocus } from '../focus-keeper.mjs';
 import {
   HOSTED_LEADERBOARD_NOTICE,
   HOSTED_LEADERBOARD_PAGE_SIZE,
@@ -84,8 +85,17 @@ export function createHostedLeaderboardView({
     return hostedBoards.get(spec.key);
   }
 
+  // Renders that rebuild the board keep keyboard focus on the control that had
+  // it (the search box while its results arrive, a period or cabinet tab).
+  // When it is gone, focus lands on a stable target: Try again once it is
+  // back, else the state card (Loading…, empty), else the row count (Show
+  // more ran out, Back to the top left with page 1).
+  function keepingFocus(render) {
+    return renderKeepingFocus(dom.officialCabinetGrid, render, { documentRef, fallback: ['.leaderboard-retry', '.leaderboard-empty-state', '.leaderboard-table-count'] });
+  }
+
   function rerenderIfShown() {
-    if (isActive()) renderPage();
+    if (isActive()) keepingFocus(renderPage);
   }
 
   // Whether a loaded board can be shown without asking E5 again.
@@ -203,10 +213,11 @@ export function createHostedLeaderboardView({
   function renderStateCard(board, copy, { onRetry = null, onPlay = null, onClear = null } = {}) {
     const card = el('div', { className: `leaderboard-empty-state leaderboard-state-${copy.kind}` });
     card.setAttribute('role', copy.kind === 'loading' ? 'status' : 'note');
+    card.setAttribute('tabindex', '-1');
     appendText(card, 'strong', copy.title, 'leaderboard-empty-title');
     appendText(card, 'span', copy.copy, 'leaderboard-empty-copy');
     if (copy.action === 'retry' && onRetry) {
-      const retry = el('button', { className: 'pixel-button leaderboard-empty-action', type: 'button', textContent: 'Try again' });
+      const retry = el('button', { className: 'pixel-button leaderboard-empty-action leaderboard-retry', type: 'button', textContent: 'Try again' });
       retry.addEventListener('click', onRetry);
       card.append(retry);
     }
@@ -243,7 +254,8 @@ export function createHostedLeaderboardView({
       detail: `${humanList(playableCabinetNames())} ${cabinets.length === 1 ? 'has a verified board' : 'have verified boards'}. Weekly, Monthly and All-time rank the best verified Ranked run per wallet.`,
       standingFor: (gameId) => {
         const cached = hostedBoards.get(hostedKey(gameId, { search: '' }).key);
-        if (cached?.status !== 'ready') return `Verified · ${periodTab.label}`;
+        // Not loaded yet: a neutral name, not a claim about its scores.
+        if (cached?.status !== 'ready') return `${periodTab.label} board`;
         return cached.total > 0
           ? `${cached.total.toLocaleString()} player${cached.total === 1 ? '' : 's'} · top ${Number(cached.rows[0]?.score ?? 0).toLocaleString()}`
           : `No scores yet · ${periodTab.label.toLowerCase()}`;
@@ -367,14 +379,14 @@ export function createHostedLeaderboardView({
     } else if (connectedWallet) {
       appendText(you, 'small', board.status === 'ready' ? `No verified run on ${periodTab.board} yet. Play Ranked to post one.` : 'Looking for your verified runs…', 'leaderboard-you-detail');
     } else {
-      appendText(you, 'small', 'Connect a wallet to see your placement highlighted on this board.', 'leaderboard-you-detail');
+      appendText(you, 'small', 'Sign in with a wallet to see your placement highlighted on this board.', 'leaderboard-you-detail');
     }
     card.append(you);
 
     // --- Loading, failure and empty states -----------------------------------
     const statusCopy = board.rows.length === 0 ? hostedLeaderboardStatusCopy(board.status === 'idle' ? 'loading' : board.status) : null;
     if (statusCopy) {
-      renderStateCard(card, statusCopy, { onRetry: () => { board.status = 'idle'; rerender(); void hydrate(); } });
+      renderStateCard(card, statusCopy, { onRetry: () => { board.status = 'idle'; keepingFocus(() => rerender()); void hydrate(); } });
       dom.officialCabinetGrid.append(card);
       return;
     }
@@ -468,19 +480,24 @@ export function createHostedLeaderboardView({
     const footer = el('div', { className: 'leaderboard-table-footer' });
     const firstRank = board.rows[0]?.rank ?? 1;
     const lastRank = board.rows.at(-1)?.rank ?? 0;
-    appendText(footer, 'span', spec.q
+    const count = appendText(footer, 'span', spec.q
       ? `Showing ${board.rows.length} of ${board.total.toLocaleString()} matching player${board.total === 1 ? '' : 's'}`
       : `Showing ranks ${firstRank}–${lastRank} of ${board.total.toLocaleString()} player${board.total === 1 ? '' : 's'}`, 'leaderboard-table-count');
+    count.setAttribute('tabindex', '-1');
     if (board.nextPage) {
       const shown = (board.firstPage - 1) * board.pageSize + board.rows.length;
       const remaining = Math.max(1, Math.min(board.pageSize, board.total - shown));
       const label = board.loadingMore ? 'Loading…' : board.moreFailed ? 'Could not load more. Try again' : `Show ${remaining} more`;
       const more = el('button', { className: 'pixel-button leaderboard-show-more', type: 'button', textContent: label });
-      more.disabled = board.loadingMore;
+      // aria-disabled, not disabled: a disabled button cannot hold focus, so
+      // a keyboard press would drop focus to the page while the page loads.
+      more.setAttribute('aria-disabled', board.loadingMore ? 'true' : 'false');
       more.addEventListener('click', () => {
         if (board.loadingMore || !board.nextPage) return;
+        // The last page removes the button: keepingFocus hands focus to the
+        // row count ("Showing ranks 1–30 of 30") instead of the page.
         void loadHostedPage(board, board.nextPage);
-        rerender();
+        keepingFocus(() => rerender());
       });
       footer.append(more);
     }

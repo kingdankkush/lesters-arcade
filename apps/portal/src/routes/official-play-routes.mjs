@@ -321,9 +321,9 @@ export function createOfficialPlayRoutes({
     dom.officialRankedModeButton.disabled = false;
     dom.officialFreeModeBanner.hidden = false;
     dom.officialRankedModeBanner.hidden = false;
-    // Contract A33: what the HMH and Chikun cards say about Ranked comes from
-    // the flag-driven site copy, like the prerendered page, so the step-7 flip
-    // cannot leave preview wording live. Other games keep their descriptor.
+    // Contract A33: what the cards say about Ranked comes from the flag-driven
+    // site copy, like the prerendered page, so the step-7 flip cannot leave
+    // preview wording live. A game without an entry keeps its descriptor.
     const siteCopy = portalCopy.modeSelect?.[modeSelect.gameId];
     const ranked = siteCopy ? { ...modeSelect.ranked, copy: siteCopy.ranked } : modeSelect.ranked;
     applyGameModeSelectBackground(dom.officialModeSelect, modeSelect);
@@ -355,7 +355,7 @@ export function createOfficialPlayRoutes({
     dom.officialRankedTooltip.dataset.state = connectedWallet ? '' : 'guest';
     if (!connectedWallet) {
       appendText(dom.officialRankedTooltip, 'strong', `${modeSelect.free.label} is open to guests`);
-      appendText(dom.officialRankedTooltip, 'span', `${modeSelect.free.copy} Connect a wallet when you want ${ranked.label}.`);
+      appendText(dom.officialRankedTooltip, 'span', `${modeSelect.free.copy} ${portalCopy.modeGuestRanked ?? `Connect a wallet when you want ${ranked.label}.`}`);
     } else {
       appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: ${portalCopy.modeRankedTooltip}`);
       appendText(dom.officialRankedTooltip, 'span', ranked.copy);

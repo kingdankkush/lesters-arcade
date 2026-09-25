@@ -136,14 +136,17 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
       : 'Connect a wallet to identify your local profile and Ranked preview runs.',
     // Mode select. The builder prerenders these and the SPA mode-select route
     // (routes/official-play-routes.mjs) shows the same per-game lines, so the
-    // flip cannot leave a preview card live. STACKED's runtime cards come from
-    // its own descriptor in arcade-core.mjs (ranked-client, contract §10.2);
-    // pages without a per-game entry prerender the game-neutral modeRanked.
+    // flip cannot leave a preview card live. Every game has an entry: the live
+    // UI audit (2026-09-24) found STACKED's Ranked card, still on its
+    // descriptor in arcade-core.mjs, without the entry price. modeRanked is the
+    // game-neutral line for a page without an entry. The HMH line no longer
+    // opens with 'Your Lester’s Arcade session is active', which signed-out
+    // visitors read too (live UI audit review, 2026-09-24).
     modeSelect: Object.freeze({
       'lester-blaster': Object.freeze({
         copy: live
-          ? 'Your Lester’s Arcade session is active. Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'
-          : `Your Lester’s Arcade session is active. Choose Free Mode for local guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a Ranked preview.`,
+          ? 'Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'
+          : `Choose Free Mode for local guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a Ranked preview.`,
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.`
           : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
@@ -156,7 +159,17 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play with replay verification. Accepted scores are saved on this device; nothing is published on chain yet.',
       }),
+      stacked: Object.freeze({
+        copy: live
+          ? 'Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: sign in and choose Play Ranked to compete on the LitVM testnet.'
+          : `Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a replay-verified Ranked preview.`,
+        ranked: live
+          ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
+          : 'Wallet-bound play from level 1 with no undo, checked by replay. Accepted scores are saved on this device; nothing is published on chain yet.',
+      }),
     }),
+    // The guest line under the mode-select cards.
+    modeGuestRanked: hosted ? 'Sign in with a wallet when you want to play Ranked.' : 'Connect a wallet when you want to play Ranked.',
     modeRanked: live
       ? `${total} testnet zkLTC per run. The arcade server checks your run and publishes it on LitVM.`
       : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
@@ -183,6 +196,10 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     profileGuestView: live ? 'Sign in with a wallet to see your verified Ranked runs and achievements on any device. Every wallet’s profile is public.'
       : hosted ? 'Sign in with a wallet to see your profile on any device. Verified Ranked publishing is not available yet.'
       : 'Guest stats are local to this browser. Permanent or cross-device history and verified Ranked publishing are not available yet.',
+    // SPA header of another wallet's public profile (/profile/<wallet>).
+    profilePublicView: live ? 'This wallet’s public profile: its best scores, verified Ranked runs published on LitVM, and the achievements the arcade server recorded for it.'
+      : hosted ? 'This wallet’s public profile. Verified Ranked publishing is not available yet, so it lists no verified runs.'
+      : 'Public wallet profiles open when verified Ranked publishing goes live. This preview only shows the profile recorded on this device.',
     // trust.html paragraphs. `text` in backticks renders as <code>.
     trustStatus: Object.freeze(live ? [
       `Ranked is live on the LitVM LiteForge testnet. A Ranked run costs ${total} zkLTC: a ${fee} zkLTC entry, split ${developer}% to the game's developer and ${arcade}% to the arcade, plus a ${reserve} zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.`,

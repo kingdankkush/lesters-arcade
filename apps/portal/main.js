@@ -5741,6 +5741,7 @@ const officialAppRoutes = createOfficialAppRoutes({
   getStep: () => officialAppStep,
   setStep: (step) => { officialAppStep = step; },
   getConnectedWallet: () => connectedWallet,
+  getViewedProfileWallet: () => profileRouteState.viewedWallet ?? null,
   isGuestAllowedStep,
   isSimulatedWalletActive,
   playableCabinetNames,

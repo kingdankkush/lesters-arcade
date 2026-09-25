@@ -81,6 +81,7 @@ body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,rgba(2
 main{width:min(880px,100%);margin:0 auto;padding:clamp(16px,4vw,32px) 16px 48px;display:grid;gap:18px}
 a{color:var(--cyan)}
 .top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.top a{display:inline-flex;align-items:center;min-height:44px}
 .brand{color:var(--gold);font:900 .8rem/1.2 "Lucida Console",Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;text-decoration:none}
 .panel{display:grid;gap:14px;padding:clamp(16px,4vw,28px);border:1px solid var(--edge);border-radius:24px;background:radial-gradient(circle at top right,rgba(255,232,77,.1),transparent 12rem),var(--panel);box-shadow:0 0 32px rgba(25,247,255,.12),inset 0 0 24px rgba(255,61,242,.06)}
 .shot{width:100%;height:auto;aspect-ratio:1200/630;border-radius:16px;border:1px solid var(--edge);background:#05070f}
