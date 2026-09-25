@@ -211,7 +211,17 @@ test('owner jackpot page is noindex, CSP-safe and module-only', async () => {
   assert.equal(scripts[0][2].trim(), '');
   assert.doesNotMatch(html, /\son[a-z]+\s*=|javascript:/i);
   assert.doesNotMatch(html, /(?:src|href)="(?:https?:)?\/\//i, 'no cross-origin resources');
-  assert.match(html, /@media \(max-width: 400px\)/, 'works at 320 px (checked in a browser at 320 px: no horizontal scroll)');
+  // Works at 320 px (review finding 22). The browser check (brief step 6) measures no horizontal scroll at
+  // 320 px with the real review payload; this pins the rules that keep it so: nothing is wider than the
+  // phone, long values wrap, the timeline scales, and the fact grid and action rows stack.
+  const css = html.match(/<style>([\s\S]*?)<\/style>/)[1];
+  for (const [, property, value] of css.matchAll(/(?<![-\w])((?:min-)?width)\s*:\s*(\d+)px/g)) assert.ok(Number(value) <= 320, `${property}: ${value}px fits a 320 px viewport`);
+  assert.doesNotMatch(css, /white-space\s*:\s*(?:nowrap|pre)\b/, 'no unbreakable lines');
+  assert.match(css, /body\s*\{[^}]*overflow-wrap:\s*anywhere/, 'addresses, hashes and reasons wrap');
+  assert.match(css, /\.jo-timeline\s*\{[^}]*width:\s*100%/, 'the flap timeline scales to the card');
+  const phone = css.match(/@media \(max-width: 400px\)\s*\{([\s\S]*?)\n {4}\}/)?.[1] ?? '';
+  assert.match(phone, /dl\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\);\s*\}/, 'the fact grid is one column on a phone');
+  assert.match(phone, /\.jo-row > \*\s*\{\s*flex:\s*1 1 100%;\s*\}/, 'each action takes its own row on a phone');
   for (const source of [pageModule, modelModule]) {
     assert.doesNotMatch(source, /\.innerHTML\s*=|\beval\s*\(|new Function\s*\(|document\.write/);
     assert.doesNotMatch(source, /privateKey|mnemonic|signTypedData|eth_sign\b/);
