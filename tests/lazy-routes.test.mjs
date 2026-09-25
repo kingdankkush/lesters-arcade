@@ -490,6 +490,46 @@ test('Profile and Scores: an inactive page is not painted when the chunk fails',
   }
 });
 
+test('Profile: once loaded, invalidate and markStale reach the route with their wallet', async () => {
+  let active = true;
+  const h = hostedProfileDeps();
+  h.deps.isActive = () => active;
+  const loader = deferredLoader(profileRouteModule);
+  const route = createLazyProfileRoute(h.deps, { load: loader.load });
+  route.renderProfile();
+  const hydrated = route.hydrate();
+  loader.resolve();
+  await hydrated;
+  await settle();
+  assert.deepEqual(h.calls.profile, [[ME, { self: true }]]);
+  assert.equal(route.cachedSelfProfile(ME)?.wallet, ME);
+  const reads = async (step) => { await step(); await route.hydrate(); await settle(); return h.calls.profile.length; };
+
+  assert.equal(await reads(() => {}), 1, 'a fresh profile is not read again');
+  // lesters:ranked-run and lesters:ranked-pending (main.js) mark the player's
+  // profile stale: the next visit reads E6 again.
+  active = false;
+  assert.equal(await reads(() => route.markStale(OTHER)), 1, 'another wallet\'s run leaves this profile fresh');
+  assert.equal(await reads(() => route.markStale(ME)), 2, 'markStale(wallet) reaches the route');
+  assert.equal(await reads(() => route.markStale()), 3, 'markStale() marks every wallet');
+  // The profile on screen reads again at once.
+  active = true;
+  route.markStale(ME);
+  await settle();
+  assert.equal(h.calls.profile.length, 4, 'markStale on the page on screen reloads it');
+  // lesters:wallet-session (sign-in, sign-out, a 401) drops the cached views.
+  active = false;
+  assert.equal(await reads(() => route.invalidate(OTHER)), 4, 'another wallet\'s invalidate keeps this profile');
+  assert.equal(route.cachedSelfProfile(ME)?.wallet, ME);
+  route.invalidate(ME);
+  assert.equal(route.cachedSelfProfile(ME), null, 'invalidate(wallet) drops that wallet\'s self view');
+  assert.equal(await reads(() => {}), 5);
+  route.invalidate();
+  assert.equal(route.cachedSelfProfile(ME), null, 'invalidate() drops every self view');
+  assert.equal(await reads(() => {}), 6);
+  assert.ok(h.calls.profile.every(([wallet]) => wallet === ME));
+});
+
 // --- Scores ------------------------------------------------------------------
 
 test('Scores preview: a loading card, then the same board as the route itself', async () => {
@@ -592,6 +632,38 @@ test('Scores: the hosted failure card is the route\'s own', async () => {
   loader.reject(new Error('chunk 404'));
   await settle();
   assert.equal(page(lazy.grid), page(broken.grid));
+});
+
+test('Scores: once loaded, invalidate and markStale reach the route with their game', async () => {
+  let active = true;
+  const h = boardDeps({ hosted: true });
+  h.deps.isActive = () => active;
+  const loader = deferredLoader(leaderboardRouteModule);
+  const route = createLazyLeaderboardRoute(h.deps, { load: loader.load });
+  assert.equal(route.markStale('lester-blaster'), undefined, 'before the chunk there is nothing to mark');
+  route.renderLeaderboards();
+  const hydrated = route.hydrate();
+  loader.resolve();
+  await hydrated;
+  await settle();
+  assert.equal(h.calls.leaderboard.length, 1);
+  const reads = async (step) => { await step(); await route.hydrate(); await settle(); return h.calls.leaderboard.length; };
+
+  assert.equal(await reads(() => {}), 1, 'a fresh board is not read again');
+  // lesters:ranked-run marks that game's boards stale; ranked-pending and
+  // profile-changed mark every board.
+  active = false;
+  assert.equal(await reads(() => route.markStale('chikun')), 1, 'another game\'s run leaves this board fresh');
+  assert.equal(await reads(() => route.markStale('lester-blaster')), 2, 'markStale(gameId) reaches the route');
+  assert.equal(await reads(() => route.markStale()), 3, 'markStale() marks every board');
+  active = true;
+  route.markStale('lester-blaster');
+  await settle();
+  assert.equal(h.calls.leaderboard.length, 4, 'markStale on the board on screen reloads it');
+  // lesters:wallet-session drops every cached board.
+  active = false;
+  assert.equal(await reads(() => route.invalidate()), 5, 'invalidate() reaches the route');
+  assert.ok(h.calls.leaderboard.every(({ game }) => game === 'lester-blaster'));
 });
 
 // --- Deep links (A6) -----------------------------------------------------------
