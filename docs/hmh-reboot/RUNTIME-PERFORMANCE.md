@@ -27,6 +27,8 @@ The world renderer now skips offscreen:
 
 Bounds use inclusive viewport margins and preserve geometry crossing the viewport even when all endpoints sit outside it.
 
+Since perf step 2, the static ground (terrain, roads, surfaces, strips, blockers, destructibles, depth fallbacks and decals) is culled against the bake view (the view plus a 320 px margin) and drawn only when it re-bakes. The animated pass (water shimmer, landmarks, POIs, hazards and their particles) is still culled against the view every frame.
+
 The actor renderer:
 
 - hides offscreen enemy displays and avoids pose recomposition;
@@ -163,3 +165,43 @@ Evidence: `docs/testing/hmh-perf-step1-enemy-display-pool.json`.
 - In the mobile census, the pool built 3 displays during the measured window (256 → 259) and reused one for every corpse. The old code rebuilt about 100–128 displays per kill. At boot, the five atlas-arrival rebuilds reused 640 displays.
 - CPU profile, mobile 4x, 20 s window: roster display construction fell from 88–99 ms to 3.3 ms; frame-texture creation from 103–121 ms to 36–43 ms; Pixi destroy, `removeChildren` and render-group add/remove from about 25 ms to at most 2 ms; GC from 1.6–1.9% to 1.5% of busy time. At 6x, construction fell from 134 ms to 6 ms. The total is roughly 1% of main-thread busy time.
 - Frame times: the host carried 28–46% unrelated load throughout, so an interleaved A/B was used instead of the recorded baseline. Mean of three means: 4x base 35.13 ms vs step 1 35.32 ms; 6x base 85.19 ms vs step 1 82.33 ms. Both differences are within run-to-run noise (±3 ms at 4x, ±8 ms at 6x), so this step does not move mean frame time measurably. Desktop 1x stayed at 7.00 ms.
+
+## Perf step 2: static world bake (2026-09-25)
+
+Change: `renderWorldProductionArt` re-projected every route node, surface vertex and blocker, cleared and re-tessellated every ground `Graphics` (including the road, path and ramp stencil masks) and re-placed every tile and strip sprite on every frame. The ground only ever moves with the camera. Now:
+
+- `renderWorldProductionArt` takes an optional `pass`. `'static'` draws the ground: terrain, roads, surfaces, strips, masks, blockers and depth fallbacks. `'dynamic'` draws only what animates: water shimmer, landmarks, interactions, particles, lighting and the vignette. With `pass` omitted it draws both, exactly as before. Surface cues are static except the water shimmer. With `cues`/`shimmers`, each water surface gets its own shimmer target between two static cue targets, so the cue draw order is unchanged.
+- `apps/hmh-reboot/src/world-static-bake.mjs` is a lazy chunk fetched beside `app.init`. It regroups the static layers into two Pixi render groups, draws the static pass around the camera into the view plus a 320 px margin, and afterwards only translates them. It also translates the extra cue segments, the depth-sorted fallback features and the decal layer. Moving a render group is one matrix on the GPU: no geometry, and the stage's per-frame instruction rebuild skips the grouped layers.
+- A re-bake happens when the camera leaves the margin, or when the zoom, view, terrain textures (the registry now has a `version`), fallback-blocker set, town-fallback visibility or decal set change. While the zoom animates, the bake has no margin, so an animating zoom costs what every frame used to.
+- `worldToScreen` lifts geometry by `camera.groundZ`, but the camera-anchored tile pattern ignores it. The bake corrects the tile phase when the camera changes height.
+- The screen-space vignette and backdrop redraw only when the view changes. Empty overlay `Graphics` are no longer cleared: a clear marks them dirty, which rebuilds their GPU data and the stage's instruction set for nothing.
+
+Exactness:
+
+- `tests/hmh-world-static-bake.test.mjs` proves that the static and dynamic passes together reproduce the full render draw for draw in ten scenes, and that each pass leaves the other's layers alone.
+- It proves that grouping keeps the draw order.
+- Along walked camera paths, including height changes, it proves that a translated bake puts every on-screen shape and tile phase where the per-frame renderer drew it.
+- It pins the re-bake policy.
+
+In the browser, paused frames were rendered twice in the same page, once through the bake and once through the direct renderer, with the camera away from the bake camera. The ground differs only by isolated 1–2 level texel or edge rounding, because the render-group transform is applied in float32 in the shader. The visual gate passed all 12 scenes, with pixel differences from the step-1 screenshots at the level of run-to-run noise.
+
+One visible difference is deliberate: decals were culled per frame by their centre with 160 px padding, so long tire ruts popped in at the screen edge. Against the bake view they are already there.
+
+Evidence: `docs/testing/hmh-perf-step2-static-world-bake.json`.
+
+- Headless digest `2488a609…` and browser census trace `449616fb…` (mobile and desktop) are unchanged.
+- Initial JS is 1,047,594 B (+862 B; 982 B of headroom). The bake chunk (2,522 B) is lazy.
+- The bench gained `--walk`: the hero walks a square through the window, so the crowd follows and the camera scrolls.
+- The host carried 28–48% unrelated load, so the step-1 and step-2 builds were alternated under the same conditions:
+
+| Mobile crowd, mean of runs | Step 1 | Step 2 |
+|---|---:|---:|
+| 4x, static camera (3 runs each): mean / p95 / p99 | 35.47 / 50.9 / 64.9 ms | 30.40 / 44.0 / 67.1 ms |
+| 4x, frames over 33.3 ms | 65.3% | 35.9% |
+| 6x, static camera (3 runs each): mean / p95 / p99 | 94.42 / 127.4 / 185.3 ms | 86.46 / 115.7 / 155.1 ms |
+| 4x, walking (2 runs each): mean / p95 | 50.39 / 79.9 ms | 44.06 / 76.5 ms |
+| Desktop 1x (1 run each) | 7.04 ms | 7.11 ms |
+
+- An instrumented build measured per-frame main-thread work at mobile 4x in the static crowd. The world renderer's JS fell from 2.6–2.7 ms to 0.33 ms. Pixi `render` fell from 10.2–11.8 ms to 7.1–7.6 ms, including instruction rebuilds from 6.4–7.5 ms to 4.5–4.7 ms. World-art tessellation fell from 0.4 ms to 0.02 ms.
+- Walking the crowd triggers about 0.7 re-bakes per second. Each costs 6.6–11.3 ms of JS at 4x, the same range as the step-1 renderer's per-frame maximum. Amortized world JS is 0.5–0.8 ms per frame against 2.7–3.2 ms.
+- rAF intervals are vsync-quantised, and the 6x third run of step 2 landed in a heavier host window (103 ms, sim speed 0.63). The per-frame work figures are the more direct measure.

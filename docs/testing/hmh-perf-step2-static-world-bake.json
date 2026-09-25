@@ -1,0 +1,1120 @@
+{
+  "schema": "hmh-perf-step-evidence-v1",
+  "step": "static-world-bake (2/8)",
+  "generatedAt": "2026-09-25T13:14:28.846Z",
+  "commit": "1083b106",
+  "harnessCommit": "d4c11091 (bench --walk)",
+  "base": "42c0e64c (step 1)",
+  "deviceAcceptance": false,
+  "note": "Chrome CPU-throttle proxy for an iPhone XS Max (414x896 @3, mobile profile); GPU work is not throttled. The host carried 28-48% unrelated load throughout, so the step-1 and step-2 builds were alternated under the same conditions instead of comparing with docs/testing/hmh-perf-crowd-baseline.json. rAF intervals are vsync-quantised (16.7/27.8/34.7/41.7 ms steps), so the per-frame work probe below is the more direct measure.",
+  "change": {
+    "renderer": "renderWorldProductionArt({ pass: \"static\" | \"dynamic\", cues, shimmers }); with pass omitted it draws everything exactly as before",
+    "bake": "apps/hmh-reboot/src/world-static-bake.mjs, a lazy chunk fetched beside app.init. The static layers sit in two render groups that are translated per frame. It re-bakes on margin exit (320 px), zoom, view, terrain registry version, fallback blockers, town fallback visibility or decal set, bakes the bare view while the zoom animates, and corrects the tile phase for camera.groundZ.",
+    "main": "Decals are drawn once per bake and move with it; the backdrop and vignette redraw on resize only; empty overlay Graphics are no longer cleared."
+  },
+  "determinism": {
+    "simDigestCombined": "2488a609eb1ceadd27edb83a91d5ffed3423dac198d19badbc667c25eb4f92f2",
+    "simDigestCrowd": "50f3f6127b5e92fa237aa415d1e8188a2f6e2816c53801ad2e055f4ee1f67367",
+    "simDigestDirector": "7f38bb3e763081b2a195c118bf0f84dee4d5486f50242806bc8e597bede5af70",
+    "enduranceSoak": "2e38a09a",
+    "browserCensusTraceDigestMobile": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+    "browserCensusTraceDigestDesktop": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+    "matchesBaseline": true
+  },
+  "initialJs": {
+    "step1": 1046732,
+    "step2": 1047594,
+    "cap": 1048576,
+    "headroom": 982,
+    "lazyBakeChunkBytes": 2522,
+    "note": "npm run build, entry + shared chunks + vendor. world-production-art.mjs +564 B (pass split), main.mjs about +250 B, terrain-tile-atlas.mjs +48 B (registry version)."
+  },
+  "timingAB": {
+    "desktop-1x": {
+      "step1": {
+        "runs": 1,
+        "meanOfMeansMs": 7.04,
+        "meanP95Ms": 7.1,
+        "meanP99Ms": 7.4,
+        "meanOver33Pct": 0,
+        "meanFps": 141.9,
+        "meanSimSpeed": 1
+      },
+      "step2": {
+        "runs": 1,
+        "meanOfMeansMs": 7.11,
+        "meanP95Ms": 7.1,
+        "meanP99Ms": 13.9,
+        "meanOver33Pct": 0,
+        "meanFps": 140.7,
+        "meanSimSpeed": 1
+      }
+    },
+    "mobile-4x": {
+      "step1": {
+        "runs": 3,
+        "meanOfMeansMs": 35.47,
+        "meanP95Ms": 50.93,
+        "meanP99Ms": 64.87,
+        "meanOver33Pct": 65.3,
+        "meanFps": 28.3,
+        "meanSimSpeed": 0.98
+      },
+      "step2": {
+        "runs": 3,
+        "meanOfMeansMs": 30.4,
+        "meanP95Ms": 44.03,
+        "meanP99Ms": 67.13,
+        "meanOver33Pct": 35.93,
+        "meanFps": 32.93,
+        "meanSimSpeed": 0.99
+      }
+    },
+    "mobile-4x-walk": {
+      "step1": {
+        "runs": 2,
+        "meanOfMeansMs": 50.39,
+        "meanP95Ms": 79.9,
+        "meanP99Ms": 100.75,
+        "meanOver33Pct": 97.5,
+        "meanFps": 19.95,
+        "meanSimSpeed": 0.95
+      },
+      "step2": {
+        "runs": 2,
+        "meanOfMeansMs": 44.06,
+        "meanP95Ms": 76.5,
+        "meanP99Ms": 107.6,
+        "meanOver33Pct": 82.25,
+        "meanFps": 23.4,
+        "meanSimSpeed": 0.94
+      }
+    },
+    "mobile-6x": {
+      "step1": {
+        "runs": 3,
+        "meanOfMeansMs": 94.42,
+        "meanP95Ms": 127.4,
+        "meanP99Ms": 185.33,
+        "meanOver33Pct": 100,
+        "meanFps": 10.6,
+        "meanSimSpeed": 0.69
+      },
+      "step2": {
+        "runs": 3,
+        "meanOfMeansMs": 86.46,
+        "meanP95Ms": 115.73,
+        "meanP99Ms": 155.13,
+        "meanOver33Pct": 100,
+        "meanFps": 11.8,
+        "meanSimSpeed": 0.76
+      }
+    }
+  },
+  "perFrameWorkProbe": {
+    "note": "Instrumented builds (not committed): wall time per rendered frame, mobile 4x, 20 s window. terrain = renderAuthoredTerrain (world art, decals and bake bookkeeping); render = Pixi renderer.render; build = instruction-set rebuilds inside render; tessWorldArt = Graphics tessellation under the world-art root.",
+    "staticCrowd": [
+      {
+        "build": "step1",
+        "terrainMs": 2.73,
+        "terrainMaxMs": 6.3,
+        "renderMs": 11.75,
+        "buildMs": 7.54,
+        "tessWorldArtMs": 0.42,
+        "frameMeanMs": 54.46,
+        "hostOtherPct": 40.3
+      },
+      {
+        "build": "step1",
+        "terrainMs": 2.57,
+        "terrainMaxMs": 6.8,
+        "renderMs": 10.19,
+        "buildMs": 6.44,
+        "tessWorldArtMs": 0.39,
+        "frameMeanMs": 49.04,
+        "hostOtherPct": 41.1
+      },
+      {
+        "build": "step2",
+        "terrainMs": 0.34,
+        "terrainMaxMs": 0.8,
+        "renderMs": 7.64,
+        "buildMs": 4.72,
+        "tessWorldArtMs": 0.02,
+        "frameMeanMs": 31.62,
+        "hostOtherPct": 33.3,
+        "bakesInWindow": 0
+      },
+      {
+        "build": "step2",
+        "terrainMs": 0.33,
+        "terrainMaxMs": 2.3,
+        "renderMs": 7.13,
+        "buildMs": 4.46,
+        "tessWorldArtMs": 0.02,
+        "frameMeanMs": 28.49,
+        "hostOtherPct": 27.6,
+        "bakesInWindow": 0
+      }
+    ],
+    "walkingCrowd": [
+      {
+        "build": "step1",
+        "terrainMs": 2.85,
+        "terrainMaxMs": 6.3,
+        "renderMs": 11.11,
+        "buildMs": 7.12,
+        "frameMeanMs": 49.98,
+        "hostOtherPct": 42.1
+      },
+      {
+        "build": "step1",
+        "terrainMs": 3.18,
+        "terrainMaxMs": 12,
+        "renderMs": 11.34,
+        "buildMs": 7.19,
+        "frameMeanMs": 55.89,
+        "hostOtherPct": 44.4
+      },
+      {
+        "build": "step1",
+        "terrainMs": 2.69,
+        "terrainMaxMs": 6.6,
+        "renderMs": 10.51,
+        "buildMs": 6.62,
+        "frameMeanMs": 49.3,
+        "hostOtherPct": 41.2
+      },
+      {
+        "build": "step1",
+        "terrainMs": 2.7,
+        "terrainMaxMs": 8.7,
+        "renderMs": 10.12,
+        "buildMs": 6.38,
+        "frameMeanMs": 44.35,
+        "hostOtherPct": 38.8
+      },
+      {
+        "build": "step2",
+        "terrainMs": 0.74,
+        "terrainMaxMs": 7.4,
+        "renderMs": 11.37,
+        "buildMs": 6.37,
+        "frameMeanMs": 58.18,
+        "hostOtherPct": 47.9,
+        "bakesInWindow": 13
+      },
+      {
+        "build": "step2",
+        "terrainMs": 0.78,
+        "terrainMaxMs": 11.3,
+        "renderMs": 11.3,
+        "buildMs": 6.34,
+        "frameMeanMs": 57.9,
+        "hostOtherPct": 44.6,
+        "bakesInWindow": 14
+      },
+      {
+        "build": "step2",
+        "terrainMs": 0.61,
+        "terrainMaxMs": 9.6,
+        "renderMs": 8.83,
+        "buildMs": 5.08,
+        "frameMeanMs": 41.16,
+        "hostOtherPct": 37.9,
+        "bakesInWindow": 14
+      },
+      {
+        "build": "step2",
+        "terrainMs": 0.47,
+        "terrainMaxMs": 6.6,
+        "renderMs": 7.21,
+        "buildMs": 4.17,
+        "frameMeanMs": 31.08,
+        "hostOtherPct": 30.3,
+        "bakesInWindow": 14
+      }
+    ],
+    "rebakes": "Walking the crowd: 13-14 re-bakes per 20 s window (about 0.7 per second). A re-bake frame costs 6.6-11.3 ms of terrain JS at 4x, the same range as the per-frame maximum of the step-1 renderer (6.3-12.0 ms). The first two step-2 walking windows ran under 45-48% unrelated host load and their render time did not drop; the next two (30-38%) show render 7.2-8.8 ms against step 1 at 10.1-10.5 ms."
+  },
+  "visual": {
+    "gate": "npm run visual:reboot passed, 12 scenes unchanged",
+    "pixelDiffVsStep1Screenshots": [
+      {
+        "scene": "combat-engaged-desktop.enemy-crops",
+        "diffPx": 337,
+        "diffPct": 0.026,
+        "maxDelta": 1
+      },
+      {
+        "scene": "combat-engaged-desktop",
+        "diffPx": 337,
+        "diffPct": 0.026,
+        "maxDelta": 1
+      },
+      {
+        "scene": "crossing-water-desktop",
+        "diffPx": 18,
+        "diffPct": 0.001,
+        "maxDelta": 1
+      },
+      {
+        "scene": "frontier-relay-desktop.enemy-crops",
+        "diffPx": 7,
+        "diffPct": 0.001,
+        "maxDelta": 1
+      },
+      {
+        "scene": "frontier-relay-desktop",
+        "diffPx": 15,
+        "diffPct": 0.001,
+        "maxDelta": 4
+      },
+      {
+        "scene": "frontier-relay-mobile.enemy-crops",
+        "diffPx": 621,
+        "diffPct": 0.189,
+        "maxDelta": 1
+      },
+      {
+        "scene": "frontier-relay-mobile",
+        "diffPx": 606,
+        "diffPct": 0.184,
+        "maxDelta": 1
+      },
+      {
+        "scene": "hashwood-camp-desktop",
+        "diffPx": 0,
+        "diffPct": 0,
+        "maxDelta": 0
+      },
+      {
+        "scene": "hashwood-foliage-desktop",
+        "diffPx": 0,
+        "diffPct": 0,
+        "maxDelta": 0
+      },
+      {
+        "scene": "liquidation-market-desktop",
+        "diffPx": 89,
+        "diffPct": 0.007,
+        "maxDelta": 1
+      },
+      {
+        "scene": "liquidation-residential-desktop",
+        "diffPx": 40,
+        "diffPct": 0.003,
+        "maxDelta": 1
+      },
+      {
+        "scene": "liquidation-yard-desktop",
+        "diffPx": 202,
+        "diffPct": 0.016,
+        "maxDelta": 2
+      },
+      {
+        "scene": "liquidity-bridge-desktop",
+        "diffPx": 27,
+        "diffPct": 0.002,
+        "maxDelta": 1
+      },
+      {
+        "scene": "mining-camp-desktop",
+        "diffPx": 111,
+        "diffPct": 0.009,
+        "maxDelta": 3
+      },
+      {
+        "scene": "ravine-overlook-desktop",
+        "diffPx": 9,
+        "diffPct": 0.001,
+        "maxDelta": 6
+      }
+    ],
+    "baseNoise": "Two step-1 runs of the same gate differ by up to 60 px per scene at max delta 1 (one scene 15 px at max 4).",
+    "inPageAB": {
+      "note": "Paused frames rendered twice in the same page: once through the bake, once through the direct per-frame renderer (temporary probe build, not committed). Ground only: backdrop and world-art root; decals are covered by decalNote. The camera walked through each scene between frames, so bake offsets and camera.groundZ differ from the bake camera.",
+      "frames": [
+        {
+          "frame": "bridge-desktop#0",
+          "bakeOffsetPx": [
+            -621,
+            -320
+          ],
+          "cameraGroundZ": 16,
+          "diffPx": 2101,
+          "maxDelta": 8,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "bridge-desktop#1",
+          "bakeOffsetPx": [
+            -320,
+            -110
+          ],
+          "cameraGroundZ": 16,
+          "diffPx": 511,
+          "maxDelta": 2,
+          "directVsDirectDiffPx": 109,
+          "directVsDirectMax": 1
+        },
+        {
+          "frame": "bridge-desktop#2",
+          "bakeOffsetPx": [
+            -414,
+            -335
+          ],
+          "cameraGroundZ": 2,
+          "diffPx": 1166,
+          "maxDelta": 2,
+          "directVsDirectDiffPx": 267,
+          "directVsDirectMax": 1
+        },
+        {
+          "frame": "bridge-desktop#3",
+          "bakeOffsetPx": [
+            -320,
+            -365
+          ],
+          "cameraGroundZ": 1.9,
+          "diffPx": 1779,
+          "maxDelta": 2,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "bridge-desktop#4",
+          "bakeOffsetPx": [
+            -305,
+            -320
+          ],
+          "cameraGroundZ": 16,
+          "diffPx": 286,
+          "maxDelta": 2,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "ravine-desktop#0",
+          "bakeOffsetPx": [
+            -239,
+            -326
+          ],
+          "cameraGroundZ": 60.9,
+          "diffPx": 137,
+          "maxDelta": 10,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "ravine-desktop#1",
+          "bakeOffsetPx": [
+            -320,
+            -574
+          ],
+          "cameraGroundZ": 60.9,
+          "diffPx": 3706,
+          "maxDelta": 1,
+          "directVsDirectDiffPx": 39,
+          "directVsDirectMax": 1
+        },
+        {
+          "frame": "ravine-desktop#2",
+          "bakeOffsetPx": [
+            -550,
+            -320
+          ],
+          "cameraGroundZ": 64,
+          "diffPx": 578,
+          "maxDelta": 15,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "ravine-desktop#3",
+          "bakeOffsetPx": [
+            -320,
+            -160
+          ],
+          "cameraGroundZ": 64,
+          "diffPx": 13,
+          "maxDelta": 2,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "crossing-mobile#0",
+          "bakeOffsetPx": [
+            -311,
+            -320
+          ],
+          "cameraGroundZ": 1.2,
+          "diffPx": 241,
+          "maxDelta": 1,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "crossing-mobile#1",
+          "bakeOffsetPx": [
+            -311,
+            -634
+          ],
+          "cameraGroundZ": 0,
+          "diffPx": 180,
+          "maxDelta": 1,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "crossing-mobile#2",
+          "bakeOffsetPx": [
+            -134,
+            -320
+          ],
+          "cameraGroundZ": 0,
+          "diffPx": 12,
+          "maxDelta": 1,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "crossing-mobile#3",
+          "bakeOffsetPx": [
+            -390,
+            -5
+          ],
+          "cameraGroundZ": 11.5,
+          "diffPx": 172,
+          "maxDelta": 1,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "mining-mobile#0",
+          "bakeOffsetPx": [
+            -320,
+            -318
+          ],
+          "cameraGroundZ": 48,
+          "diffPx": 0,
+          "maxDelta": 0,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "mining-mobile#1",
+          "bakeOffsetPx": [
+            -333,
+            -320
+          ],
+          "cameraGroundZ": 48,
+          "diffPx": 0,
+          "maxDelta": 0,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        },
+        {
+          "frame": "mining-mobile#2",
+          "bakeOffsetPx": [
+            -320,
+            -345
+          ],
+          "cameraGroundZ": 48,
+          "diffPx": 147,
+          "maxDelta": 1,
+          "directVsDirectDiffPx": 0,
+          "directVsDirectMax": 0
+        }
+      ],
+      "summary": "The differences are isolated 1-2 level texel and edge rounding from the render-group transform (applied in float32 in the shader instead of pre-multiplied on the CPU). At most 5 pixels per frame reach 3-15 levels, and all of them are single anti-aliased edge pixels."
+    },
+    "decalNote": "Decals were culled per frame by their centre (160 px padding), so a long tire rut whose centre sat beyond the padding popped in at the screen edge. The bake culls against the enlarged bake view, so such ruts are now present at the edge instead of popping in (up to about 3,700 px of one rut in one frame of the in-page A/B). This is the only visible difference, and it removes an edge pop-in."
+  },
+  "gpuMemory": {
+    "censusTextureBytesMobile": 125794060,
+    "censusTextureBytesDesktop": 171581884,
+    "note": "Against the 1.8.1 baseline census, mobile is +442,368 B: the silver-coin sheet, which now uploads inside the census window as it always did in timing passes. Desktop also uploads one 512x512 terrain tile (1,398,100 B) and one 512x128 overlay (349,532 B) earlier, because the bake margin reaches a neighbouring material. No render textures are used: the bake keeps geometry, not pixels."
+  },
+  "tests": {
+    "added": "tests/hmh-world-static-bake.test.mjs (23 tests)",
+    "suite": "node --test tests/*.test.mjs: 51 failures on step 1 and the same 51 on step 2 (pre-existing, mostly art-asset presence). One run had one extra failure, tests/server-relayer.test.mjs, a timing flake that passes 3/3 alone."
+  },
+  "rows": [
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 7.04,
+      "p50Ms": 6.900000000001455,
+      "p95Ms": 7.099999999998545,
+      "p99Ms": 7.399999999997817,
+      "worstMs": 62.5,
+      "over33Pct": 0,
+      "fpsMean": 141.9,
+      "frames": 2863,
+      "simSpeed": 0.999,
+      "droppedMs": 0,
+      "hostOtherBusyPct": 34.6
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 7.11,
+      "p50Ms": 6.900000000001455,
+      "p95Ms": 7.099999999998545,
+      "p99Ms": 13.899999999999636,
+      "worstMs": 62.5,
+      "over33Pct": 0,
+      "fpsMean": 140.7,
+      "frames": 2832,
+      "simSpeed": 1,
+      "droppedMs": 0,
+      "hostOtherBusyPct": 42.3
+    },
+    {
+      "build": "step1",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 47.79,
+      "p50Ms": 41.80000000000291,
+      "p95Ms": 69.60000000000218,
+      "p99Ms": 90.40000000000146,
+      "worstMs": 152.79999999999927,
+      "over33Pct": 96.1,
+      "fpsMean": 20.9,
+      "frames": 412,
+      "simSpeed": 0.948,
+      "droppedMs": 859,
+      "hostOtherBusyPct": 43.7,
+      "busyMsPerFrame": 51.7,
+      "hotspots": {
+        "renderWorldProductionArt": {
+          "totalMs": 960.7,
+          "totalPct": 4.51,
+          "selfPct": 0.59
+        },
+        "renderWorld": {
+          "totalMs": 3456.9,
+          "totalPct": 16.23,
+          "selfPct": 2.87
+        },
+        "collectRenderables": {
+          "totalMs": 2512.8,
+          "totalPct": 11.8,
+          "selfPct": 0.8
+        },
+        "buildContextBatches": {
+          "totalMs": 1267.7,
+          "totalPct": 5.95,
+          "selfPct": 0.29
+        },
+        "updateGpuContext": {
+          "totalMs": 1391.1,
+          "totalPct": 6.53,
+          "selfPct": 0.24
+        },
+        "sampleSurface": {
+          "totalMs": 1122.3,
+          "totalPct": 5.27,
+          "selfPct": 3.53
+        },
+        "garbageCollector": {
+          "totalMs": 332.2,
+          "totalPct": 1.56,
+          "selfPct": 1.56
+        },
+        "program": {
+          "totalMs": 4682.2,
+          "totalPct": 21.98,
+          "selfPct": 21.98
+        }
+      }
+    },
+    {
+      "build": "step2",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 50.94,
+      "p50Ms": 48.599999999998545,
+      "p95Ms": 90.29999999999927,
+      "p99Ms": 111,
+      "worstMs": 125,
+      "over33Pct": 95.6,
+      "fpsMean": 19.6,
+      "frames": 383,
+      "simSpeed": 0.93,
+      "droppedMs": 1232,
+      "hostOtherBusyPct": 43.9,
+      "busyMsPerFrame": 55.02,
+      "hotspots": {
+        "renderWorldProductionArt": null,
+        "renderWorld": null,
+        "collectRenderables": {
+          "totalMs": 2308.9,
+          "totalPct": 10.96,
+          "selfPct": 0.61
+        },
+        "buildContextBatches": {
+          "totalMs": 1082,
+          "totalPct": 5.13,
+          "selfPct": 0.16
+        },
+        "updateGpuContext": {
+          "totalMs": 1219,
+          "totalPct": 5.78,
+          "selfPct": 0.28
+        },
+        "sampleSurface": {
+          "totalMs": 789.5,
+          "totalPct": 3.75,
+          "selfPct": 2.44
+        },
+        "garbageCollector": {
+          "totalMs": 278.4,
+          "totalPct": 1.32,
+          "selfPct": 1.32
+        },
+        "program": {
+          "totalMs": 5165.5,
+          "totalPct": 24.51,
+          "selfPct": 24.51
+        }
+      }
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 33.22,
+      "p50Ms": 34.69999999999709,
+      "p95Ms": 48.5,
+      "p99Ms": 55.70000000000073,
+      "worstMs": 138.90000000000146,
+      "over33Pct": 55.6,
+      "fpsMean": 30.1,
+      "frames": 610,
+      "simSpeed": 0.985,
+      "droppedMs": 185,
+      "hostOtherBusyPct": 38.8
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": true,
+      "meanMs": 53.76,
+      "p50Ms": 48.69999999999709,
+      "p95Ms": 90.30000000000291,
+      "p99Ms": 118.19999999999709,
+      "worstMs": 152.90000000000146,
+      "over33Pct": 97.1,
+      "fpsMean": 18.6,
+      "frames": 373,
+      "simSpeed": 0.924,
+      "droppedMs": 1271,
+      "hostOtherBusyPct": 45
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 38.5,
+      "p50Ms": 34.79999999999927,
+      "p95Ms": 55.60000000000218,
+      "p99Ms": 76.5,
+      "worstMs": 145.89999999999782,
+      "over33Pct": 76,
+      "fpsMean": 26,
+      "frames": 525,
+      "simSpeed": 0.976,
+      "droppedMs": 359,
+      "hostOtherBusyPct": 43.7
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": true,
+      "meanMs": 47.03,
+      "p50Ms": 41.79999999999927,
+      "p95Ms": 69.5,
+      "p99Ms": 83.29999999999927,
+      "worstMs": 139,
+      "over33Pct": 97.9,
+      "fpsMean": 21.3,
+      "frames": 432,
+      "simSpeed": 0.973,
+      "droppedMs": 452,
+      "hostOtherBusyPct": 41.2
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 34.7,
+      "p50Ms": 34.70000000000073,
+      "p95Ms": 48.70000000000073,
+      "p99Ms": 62.399999999999636,
+      "worstMs": 125.10000000000036,
+      "over33Pct": 64.3,
+      "fpsMean": 28.8,
+      "frames": 577,
+      "simSpeed": 0.985,
+      "droppedMs": 199,
+      "hostOtherBusyPct": 42.2
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 30.65,
+      "p50Ms": 27.80000000000291,
+      "p95Ms": 41.79999999999927,
+      "p99Ms": 76.40000000000146,
+      "worstMs": 125,
+      "over33Pct": 39.1,
+      "fpsMean": 32.6,
+      "frames": 653,
+      "simSpeed": 0.985,
+      "droppedMs": 261,
+      "hostOtherBusyPct": 38.7
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": true,
+      "meanMs": 51.81,
+      "p50Ms": 48.599999999998545,
+      "p95Ms": 104.29999999999927,
+      "p99Ms": 152.70000000000073,
+      "worstMs": 284.7999999999993,
+      "over33Pct": 90.8,
+      "fpsMean": 19.3,
+      "frames": 391,
+      "simSpeed": 0.9,
+      "droppedMs": 1114,
+      "hostOtherBusyPct": 45.6
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 29.06,
+      "p50Ms": 27.799999999999272,
+      "p95Ms": 41.69999999999891,
+      "p99Ms": 62.399999999999636,
+      "worstMs": 138.90000000000146,
+      "over33Pct": 28.2,
+      "fpsMean": 34.4,
+      "frames": 695,
+      "simSpeed": 0.988,
+      "droppedMs": 213,
+      "hostOtherBusyPct": 40.3
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": true,
+      "meanMs": 36.31,
+      "p50Ms": 34.70000000000073,
+      "p95Ms": 48.70000000000073,
+      "p99Ms": 62.5,
+      "worstMs": 145.89999999999782,
+      "over33Pct": 73.7,
+      "fpsMean": 27.5,
+      "frames": 552,
+      "simSpeed": 0.989,
+      "droppedMs": 118,
+      "hostOtherBusyPct": 39.9
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 31.49,
+      "p50Ms": 27.80000000000291,
+      "p95Ms": 48.60000000000218,
+      "p99Ms": 62.599999999998545,
+      "worstMs": 138.89999999999782,
+      "over33Pct": 40.5,
+      "fpsMean": 31.8,
+      "frames": 642,
+      "simSpeed": 0.984,
+      "droppedMs": 214,
+      "hostOtherBusyPct": 43.1
+    },
+    {
+      "build": "step1",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 118.42,
+      "p50Ms": 104.29999999999563,
+      "p95Ms": 201.40000000000146,
+      "p99Ms": 263.8999999999942,
+      "worstMs": 326.5,
+      "over33Pct": 100,
+      "fpsMean": 8.4,
+      "frames": 160,
+      "simSpeed": 0.553,
+      "droppedMs": 4792,
+      "hostOtherBusyPct": 39,
+      "busyMsPerFrame": 132.57,
+      "hotspots": {
+        "renderWorldProductionArt": {
+          "totalMs": 732.6,
+          "totalPct": 3.45,
+          "selfPct": 0.47
+        },
+        "renderWorld": {
+          "totalMs": 2987.3,
+          "totalPct": 14.08,
+          "selfPct": 2.5
+        },
+        "collectRenderables": {
+          "totalMs": 1878.3,
+          "totalPct": 8.86,
+          "selfPct": 0.72
+        },
+        "buildContextBatches": {
+          "totalMs": 952.5,
+          "totalPct": 4.49,
+          "selfPct": 0.18
+        },
+        "updateGpuContext": {
+          "totalMs": 1051,
+          "totalPct": 4.96,
+          "selfPct": 0.23
+        },
+        "sampleSurface": {
+          "totalMs": 1028.6,
+          "totalPct": 4.85,
+          "selfPct": 2.93
+        },
+        "garbageCollector": {
+          "totalMs": 388.5,
+          "totalPct": 1.83,
+          "selfPct": 1.83
+        },
+        "program": {
+          "totalMs": 5202.4,
+          "totalPct": 24.53,
+          "selfPct": 24.53
+        }
+      }
+    },
+    {
+      "build": "step2",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 114.13,
+      "p50Ms": 111.09999999999854,
+      "p95Ms": 159.70000000000437,
+      "p99Ms": 187.60000000000582,
+      "worstMs": 298.8000000000029,
+      "over33Pct": 100,
+      "fpsMean": 8.8,
+      "frames": 166,
+      "simSpeed": 0.574,
+      "droppedMs": 5201,
+      "hostOtherBusyPct": 39.7,
+      "busyMsPerFrame": 128.57,
+      "hotspots": {
+        "renderWorldProductionArt": null,
+        "renderWorld": null,
+        "collectRenderables": {
+          "totalMs": 1787.9,
+          "totalPct": 8.38,
+          "selfPct": 0.86
+        },
+        "buildContextBatches": {
+          "totalMs": 879.6,
+          "totalPct": 4.12,
+          "selfPct": 0.2
+        },
+        "updateGpuContext": {
+          "totalMs": 960.2,
+          "totalPct": 4.5,
+          "selfPct": 0.13
+        },
+        "sampleSurface": {
+          "totalMs": 870.9,
+          "totalPct": 4.08,
+          "selfPct": 2.66
+        },
+        "garbageCollector": {
+          "totalMs": 374.8,
+          "totalPct": 1.76,
+          "selfPct": 1.76
+        },
+        "program": {
+          "totalMs": 5581.8,
+          "totalPct": 26.15,
+          "selfPct": 26.15
+        }
+      }
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 92.59,
+      "p50Ms": 90.19999999999709,
+      "p95Ms": 139,
+      "p99Ms": 201.5,
+      "worstMs": 208.5,
+      "over33Pct": 100,
+      "fpsMean": 10.8,
+      "frames": 217,
+      "simSpeed": 0.701,
+      "droppedMs": 4748,
+      "hostOtherBusyPct": 41.8
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 92.52,
+      "p50Ms": 90.29999999999927,
+      "p95Ms": 118.09999999999854,
+      "p99Ms": 173.6999999999971,
+      "worstMs": 243.09999999999854,
+      "over33Pct": 100,
+      "fpsMean": 10.8,
+      "frames": 218,
+      "simSpeed": 0.71,
+      "droppedMs": 5023,
+      "hostOtherBusyPct": 44.1
+    },
+    {
+      "build": "step1",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 98.15,
+      "p50Ms": 97.19999999999709,
+      "p95Ms": 125.09999999999854,
+      "p99Ms": 180.79999999999927,
+      "worstMs": 201.29999999999927,
+      "over33Pct": 100,
+      "fpsMean": 10.2,
+      "frames": 206,
+      "simSpeed": 0.661,
+      "droppedMs": 5615,
+      "hostOtherBusyPct": 41.3
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 77.69,
+      "p50Ms": 76.40000000000146,
+      "p95Ms": 104.10000000000582,
+      "p99Ms": 118.19999999999709,
+      "worstMs": 173.70000000000073,
+      "over33Pct": 100,
+      "fpsMean": 12.9,
+      "frames": 259,
+      "simSpeed": 0.819,
+      "droppedMs": 3304,
+      "hostOtherBusyPct": 41
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 78.34,
+      "p50Ms": 76.40000000000146,
+      "p95Ms": 97.20000000000073,
+      "p99Ms": 166.70000000000073,
+      "worstMs": 243.09999999999854,
+      "over33Pct": 100,
+      "fpsMean": 12.8,
+      "frames": 257,
+      "simSpeed": 0.82,
+      "droppedMs": 3222,
+      "hostOtherBusyPct": 42
+    },
+    {
+      "build": "step2",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 103.36,
+      "p50Ms": 97.30000000000291,
+      "p95Ms": 145.90000000000146,
+      "p99Ms": 180.5,
+      "worstMs": 194.60000000000218,
+      "over33Pct": 100,
+      "fpsMean": 9.7,
+      "frames": 194,
+      "simSpeed": 0.628,
+      "droppedMs": 5739,
+      "hostOtherBusyPct": 37.8
+    }
+  ]
+}
