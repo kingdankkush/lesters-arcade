@@ -17,7 +17,7 @@ import {
 import { jackpotModuleValue } from '../scripts/generate-litvm-jackpot.mjs';
 import {
   ERC20_FRAGMENTS, JACKPOT_ACTIONS, JACKPOT_FRAGMENTS, REASON_CODES, actionAllowed, encodeJackpotCall, extensionRemaining, fundPlan,
-  isoWeekKeyOf, normalizeReview, timelineGeometry,
+  integrityText, isoWeekKeyOf, normalizeReview, timelineGeometry,
 } from '../apps/portal/owner/jackpot-review-model.mjs';
 import { createJackpotOwnerController, mountJackpotOwnerPage, renderTimeline } from '../apps/portal/owner/jackpot.mjs';
 import { fakeDocument, flush, mountById, visibleText } from './helpers/jackpot-fake-dom.mjs';
@@ -211,7 +211,7 @@ test('owner jackpot page is noindex, CSP-safe and module-only', async () => {
   assert.equal(scripts[0][2].trim(), '');
   assert.doesNotMatch(html, /\son[a-z]+\s*=|javascript:/i);
   assert.doesNotMatch(html, /(?:src|href)="(?:https?:)?\/\//i, 'no cross-origin resources');
-  assert.match(html, /@media \(max-width: 400px\)/, 'works at 320 px');
+  assert.match(html, /@media \(max-width: 400px\)/, 'works at 320 px (checked in a browser at 320 px: no horizontal scroll)');
   for (const source of [pageModule, modelModule]) {
     assert.doesNotMatch(source, /\.innerHTML\s*=|\beval\s*\(|new Function\s*\(|document\.write/);
     assert.doesNotMatch(source, /privateKey|mnemonic|signTypedData|eth_sign\b/);
@@ -457,9 +457,28 @@ test('owner jackpot page draws the server timeline without the runtime', async (
   assert.match(flagged.softSignals[0].text, /before the obstacle was visible/);
   assert.deepEqual([disqualified.listing, disqualified.seedProvenance, disqualified.timeline, disqualified.review, disqualified.adminReviewed], ['disqualified', 'missing', null, 'disqualified', true]);
   // The design-document spellings still read (sessionId, rank, softSignals, seedProvenance, flapTicks).
-  const legacy = normalizeReview({ ok: true, candidates: [{ sessionId: `0x${'f6'.repeat(32)}`, wallet: `0x${'f6'.repeat(20)}`, rank: 3, review: 2, softSignals: [{ code: 'S9', value: 700 }], evidenceDelaySeconds: 700, seedProvenance: 'ok', timeline: { survivalTicks: 600, altitude: [300], flapTicks: [10, 70], obstacles: [{ visibleTick: 200, commitTick: 150 }] } }] });
+  const legacy = normalizeReview({ ok: true, candidates: [{ sessionId: `0x${'f6'.repeat(32)}`, wallet: `0x${'f6'.repeat(20)}`, rank: 3, review: 2, softSignals: [{ code: 'S9', value: 700 }], evidenceDelaySeconds: 700, seedProvenance: 'ok', timeline: { survivalTicks: 600, altitude: [300], flapTicks: [10, 70], obstacles: [{ visibleTick: 200, commitTick: 150, lookAhead: true }, { visibleTick: 400, commitTick: 350 }] } }] });
   const [old] = legacy.candidates;
   assert.deepEqual([old.rank, old.review, old.softSignals[0].code, old.timeline.flapTicks.length, timelineGeometry(old.timeline).lookAheadCount], [3, 'flagged', 'S9', 2, 1]);
+  // The overlay is the server's verdict only. reviewTimeline()'s commitTick is the last flap before the
+  // pass, so an honest run that glides past or under an obstacle without flapping after it came into
+  // view also has commitTick < visibleTick: neutral data, never a red mark (the rubric disqualifies on
+  // look-ahead marks, so a geometric guess would steer a wrongful disqualification).
+  const glide = timelineGeometry({ survivalTicks: 900, altitude: [300, 320], obstacles: [
+    { index: 0, kind: 'storm', route: 'ground', visibleTick: 300, passTick: 520, commitTick: 180, unexplained: false },
+    { index: 1, kind: 'hawk', route: 'choice', visibleTick: 600, passTick: 820, commitTick: 560, unexplained: true },
+  ] });
+  assert.equal(glide.lookAheadCount, 1);
+  assert.deepEqual(glide.obstacles.map((row) => [row.commitX < row.visibleX, row.lookAhead]), [[true, false], [true, true]]);
+  const glideSvg = renderTimeline(fakeDocument(), { survivalTicks: 900, altitude: [300], obstacles: [{ visibleTick: 300, passTick: 520, commitTick: 180, unexplained: false }] });
+  assert.equal(glideSvg.querySelectorAll('circle.jo-commit').length, 1, 'the commit tick is still drawn');
+  assert.equal(glideSvg.querySelectorAll('circle.jo-lookahead').length, 0);
+  assert.equal(glideSvg.getAttribute('aria-label'), 'Flap timeline: 0 unexplained descents');
+  // Integrity in plain words (the screen's { ok, code, detail } result).
+  assert.match(integrityText({ ok: true, code: null, chain: {} }), /^passed: the server replay, the on-chain record, the stock client \(maxTicks\) and the seed ticket agree$/);
+  assert.equal(integrityText({ ok: false, code: 'non-stock-client', detail: '999999' }), 'FAILED (H7): the run came from a non-stock client (maxTicks) (999999)');
+  assert.equal(integrityText({ ok: false, code: 'replay-mismatch' }), 'FAILED (H7): the server replay does not match the recorded result');
+  assert.equal(integrityText(null), null);
   // The timeline of reviewTimeline(): flaps rebuilt from firstFlapTick + intervals; the look-ahead
   // overlay is the server's unexplained verdict.
   const raw = reviewFixture.candidates[1].timeline;
@@ -520,12 +539,13 @@ test('owner jackpot page draws the server timeline without the runtime', async (
   assert.equal(cards.length, 3);
   const svgs = doc.getElementById('jo-candidates').querySelectorAll('svg');
   assert.equal(svgs.length, 2, 'two candidates carry a timeline; the third says so');
-  assert.equal(svgs[1].getAttribute('aria-label'), `Flap timeline of ${reviewFixture.candidates[1].sessionId32.slice(0, 10)}: 3 look-ahead commitments`);
+  assert.equal(svgs[1].getAttribute('aria-label'), `Flap timeline of ${reviewFixture.candidates[1].sessionId32.slice(0, 10)}: 3 unexplained descents`);
   assert.equal(svgs[1].querySelectorAll('circle.jo-lookahead').length, 3);
   assert.equal(svgs[1].querySelectorAll('rect.jo-fast-changed').length, 1);
   const text = visibleText(doc.getElementById('jo-candidates'));
   assert.match(text, /Late evidence/);
   assert.match(text, /Evidence delay1500 s/);
+  assert.match(text, /Integritypassed: the server replay, the on-chain record, the stock client \(maxTicks\) and the seed ticket agree/, 'the rubric asks for the integrity results first');
   assert.match(text, /Seed provenancemissing/);
   assert.match(text, /disqualified · admin-reviewed/);
   assert.match(text, /Ranknot listed \(disqualified\)/);
@@ -555,4 +575,141 @@ test('owner jackpot page draws the server timeline without the runtime', async (
   await refused.signIn();
   assert.equal(refused.state.review, null);
   assert.match(refused.state.message, /not the on-chain jackpot admin/);
+  assert.equal(refused.state.session, null, 'a refused session is dropped, so the sign-in button returns');
+});
+
+test('owner jackpot page ties the review session to the wallet that signed in', async () => {
+  // One browser wallet whose account the owner switches in the extension: a non-admin first, then the
+  // admin, then back. The server answers review data only to the admin's session.
+  const accounts = { stranger: { address: wallets.player1.address, key: keys.player1 }, admin: { address: wallets.developer.address, key: keys.developer } };
+  let current = accounts.stranger;
+  const handlers = {};
+  const ethereum = {
+    on: (event, handler) => { handlers[event] = handler; },
+    request: ({ method, params = [] }) => fakeEthereum(current).request({ method, params }),
+  };
+  const reviews = [];
+  const fetchImpl = async (url, init = {}) => {
+    const reply = (status, body) => ({ ok: status < 300, status, json: async () => body });
+    if (url === '/api/session/nonce') return reply(200, { ok: true, nonce: 'cd'.repeat(36), issuedAt: new Date().toISOString() });
+    if (url === '/api/session') {
+      const { challenge, signature } = JSON.parse(init.body);
+      const wallet = ethers.verifyMessage(challenge.message, signature).toLowerCase();
+      return reply(200, { ok: true, wallet, token: `token-for-${wallet}` });
+    }
+    if (url.startsWith('/api/jackpot/review?week=')) {
+      reviews.push(init.headers.authorization);
+      return init.headers.authorization === `Bearer token-for-${accounts.admin.address.toLowerCase()}` ? reply(200, reviewFixture) : reply(403, { ok: false, error: 'not-admin' });
+    }
+    throw new Error(`unexpected request ${url}`);
+  };
+  const doc = ownerDocument();
+  const controller = mountJackpotOwnerPage(doc, { ethereum }, { deployment: jackpotModuleValue(null), fetchImpl, domain: 'lestersarcade.io', now: () => Date.parse('2026-10-06T12:00:00.000Z'), loadEthers: () => ethers, createReadProvider: () => provider });
+  const signInButton = () => doc.getElementById('jo-connect').querySelectorAll('button').find((node) => node.textContent === 'Sign in to read review data') ?? null;
+  await controller.connect();
+  await controller.signIn();
+  assert.equal(controller.state.session, null, 'the stranger was refused');
+  assert.match(controller.state.message, /not the on-chain jackpot admin/);
+  assert.equal(controller.state.phase, 'undeployed', 'the refused sign-in does not leave the page signing in');
+  assert.ok(signInButton(), 'the sign-in button is back');
+  // The owner switches to the admin account: accountsChanged reconnects, then the admin signs in.
+  current = accounts.admin;
+  handlers.accountsChanged();
+  await flush(10);
+  assert.equal(controller.state.account, accounts.admin.address.toLowerCase());
+  await signInButton().click();
+  await flush(5);
+  assert.equal(controller.state.session.wallet, accounts.admin.address.toLowerCase());
+  assert.equal(controller.state.review.candidates.length, 3);
+  assert.equal(reviews.at(-1), `Bearer token-for-${accounts.admin.address.toLowerCase()}`, 'the admin reads with its own session');
+  // Back to the stranger: the admin's session and its review data go with the switch.
+  current = accounts.stranger;
+  handlers.accountsChanged();
+  await flush(10);
+  assert.equal(controller.state.account, accounts.stranger.address.toLowerCase());
+  assert.equal(controller.state.session, null);
+  assert.equal(controller.state.review, null);
+  assert.equal(doc.getElementById('jo-candidates').querySelectorAll('svg').length, 0, 'no review data under a read-only account');
+  assert.ok(signInButton());
+});
+
+test('owner jackpot page refuses adminSubmit on a full list or a failing admin check, and disqualifies a whole wallet', async () => {
+  const snapshot = await chain.snapshot();
+  try {
+    const jackpot = deployed.jackpot;
+    const keeper = deployed.wallets.keeper;
+    const start = weekStartOf(W);
+    const close = start + WEEK;
+    const play = async (player, score, openAt) => (await settleLocalRun({ provider, record: suite, player, relayer: wallets.relayer, verifierKey: keys.verifier, score: BigInt(score), openAt })).sessionId;
+    await at(start + HOUR);
+    const extra = [await derivedFixtureWallet(provider, 24), await derivedFixtureWallet(provider, 25)];
+    const p1 = await play(wallets.player1, 900, start + 2 * HOUR);
+    const p1Second = await play(wallets.player1, 850, start + 3 * HOUR);
+    const listed = [p1, await play(wallets.player2, 800, start + 4 * HOUR), await play(deployed.wallets.player3, 700, start + 5 * HOUR), await play(wallets.attacker, 600, start + 6 * HOUR), await play(extra[0], 500, start + 7 * HOUR)];
+    const sixth = await play(extra[1], 400, start + 8 * HOUR);
+    await at(close + 2 * HOUR);
+    for (const id of listed) await (await jackpot.connect(keeper).submitCandidate(id)).wait();
+    assert.equal(Number((await jackpot.weekState(W)).count), 5);
+
+    // The page with the review's nextEligible rows: Add to list is disabled on a full list.
+    const admin = wallets.developer;
+    const nextEligible = [{ sessionId32: sixth, wallet: extra[1].address.toLowerCase(), score: 400, screen: 'pass' }, { sessionId32: p1Second, wallet: wallets.player1.address.toLowerCase(), score: 850, screen: 'pass' }];
+    const fetchImpl = async (url, init = {}) => {
+      const reply = (status, body) => ({ ok: status < 300, status, json: async () => body });
+      if (url === '/api/session/nonce') return reply(200, { ok: true, nonce: 'ef'.repeat(36), issuedAt: new Date().toISOString() });
+      if (url === '/api/session') return reply(200, { ok: true, wallet: admin.address.toLowerCase(), token: 'admin-token' });
+      if (url.startsWith('/api/jackpot/review?week=')) return reply(200, { ok: true, weekKey: isoWeekKeyOf(W), candidates: [], nextEligible });
+      throw new Error(`unexpected request ${url}`);
+    };
+    await chain.impersonate(admin.address, { fund: false });
+    const ethereum = fakeEthereum({ address: admin.address, key: keys.developer });
+    const doc = ownerDocument();
+    const owner = mountJackpotOwnerPage(doc, { ethereum }, { deployment, fetchImpl, domain: 'lestersarcade.io', loadEthers: () => ethers, createReadProvider: () => provider, sleep: async () => {}, receiptPollMs: 1 });
+    await owner.connect();
+    await owner.signIn();
+    await flush(5);
+    assert.equal(owner.state.isAdmin, true);
+    const addButtons = () => doc.getElementById('jo-next').querySelectorAll('button').filter((node) => node.textContent === 'Add to list');
+    assert.equal(addButtons().length, 2);
+    assert.ok(addButtons().every((node) => node.disabled), 'Add to list is disabled while the list holds 5 rows');
+    assert.match(visibleText(doc.getElementById('jo-next')), /The list holds 5 rows/);
+    await owner.act('adminSubmit', { sessionId: sixth });
+    assert.match(owner.state.message, /LIST_FULL/);
+    assert.deepEqual(ethereum.sent, [], 'nothing reaches the wallet on a full list');
+
+    // Disqualify the session and its wallet for the week (multi-wallet): the slot frees and the wallet's
+    // other session of the week is excluded too.
+    await owner.act('disqualify', { sessionId: p1, wholeWalletForWeek: true, reason: 'multi-wallet' });
+    assert.equal(owner.state.phase, 'ready', owner.state.message);
+    assert.equal(Number(await jackpot.reviewOf(p1)), 3);
+    assert.equal(await jackpot.walletDisqualified(W, wallets.player1.address), true);
+    assert.equal(ethers.decodeBytes32String(await jackpot.reviewReason(p1)), 'multi-wallet');
+    assert.equal((await jackpot.checkEligibility(p1Second)).reason, 'DISQUALIFIED', "the wallet's other session is out for the week");
+    assert.equal(Number((await jackpot.weekState(W)).count), 4);
+    assert.ok(addButtons().every((node) => !node.disabled), 'Add to list opens below 5 rows');
+
+    // After the candidate window checkEligibility says WINDOW_CLOSED for everyone, so the page simulates
+    // adminSubmit itself: the excluded wallet's session is refused with the contract's own reason.
+    await at(close + 13 * HOUR);
+    assert.equal((await jackpot.checkEligibility(p1Second)).reason, 'WINDOW_CLOSED');
+    const before = ethereum.sent.length;
+    await owner.act('adminSubmit', { sessionId: p1Second });
+    assert.match(owner.state.message, /adminSubmit would revert: DISQUALIFIED\. Nothing was sent\./);
+    assert.equal(ethereum.sent.length, before);
+    await owner.act('adminSubmit', { sessionId: sixth });
+    assert.equal(owner.state.phase, 'ready', owner.state.message);
+    assert.equal(Number((await jackpot.weekState(W)).count), 5);
+    assert.ok((await jackpot.candidatesOf(W)).some((row) => row.sessionId === sixth), 'the eligible session is listed');
+    assert.ok(addButtons().every((node) => node.disabled), 'full again');
+    // Past the payout time (the week not held) adminSubmit is TOO_LATE: the simulation refuses it too.
+    await owner.act('disqualify', { sessionId: sixth, wholeWalletForWeek: false, reason: 'automation' });
+    assert.equal(Number((await jackpot.weekState(W)).count), 4);
+    await at(close + 24 * HOUR + HOUR);
+    const late = ethereum.sent.length;
+    await owner.act('adminSubmit', { sessionId: listed[1] });
+    assert.match(owner.state.message, /adminSubmit would revert: TOO_LATE\. Nothing was sent\./);
+    assert.equal(ethereum.sent.length, late);
+  } finally {
+    await chain.revert(snapshot);
+  }
 });

@@ -22,7 +22,7 @@ import { LITEFORGE_CHAIN, addChainParams, explorerTxUrl, shortAddress } from './
 import {
   ERC20_FRAGMENTS, HOLD_CODE_TEXT, JACKPOT_ACTIONS, JACKPOT_FRAGMENTS, MAX_CANDIDATES, REASON_CODES, REVIEW_RUBRIC,
   REVIEW_STATES, SOFT_SIGNAL_TEXT, WEEK_STATUSES, actionAllowed, decodeReason, encodeJackpotCall, extensionRemaining,
-  fundPlan, isoWeekKeyOf, normalizeReview, timelineGeometry, weekIndexOf,
+  fundPlan, integrityText, isoWeekKeyOf, normalizeReview, timelineGeometry, weekIndexOf,
 } from './jackpot-review-model.mjs';
 
 const ADDRESS = /^0x[0-9a-fA-F]{40}$/;
@@ -37,6 +37,10 @@ function walletErrorMessage(error) {
   if (code === -32002) return 'Your wallet already has a request open. Finish or close it in the wallet, then try again.';
   const reason = error?.reason ?? error?.info?.error?.message ?? error?.shortMessage ?? error?.message ?? error;
   return `The wallet reported an error: ${String(reason).slice(0, 160)}`;
+}
+// The revert string of a simulated call (an ethers CALL_EXCEPTION), for the refusal message.
+function revertReason(error) {
+  return String(error?.reason ?? error?.revert?.args?.[0] ?? error?.shortMessage ?? 'reverted').slice(0, 80);
 }
 
 // Decimal token text (BigInt, truncated) for the page.
@@ -128,6 +132,9 @@ export function createJackpotOwnerController({
     const accounts = await request('eth_accounts');
     state.accountRaw = accounts?.[0] ?? null;
     state.account = accounts?.[0] ? lower(accounts[0]) : null;
+    // The review session belongs to the wallet that signed in: another account (a switch in the
+    // extension) drops it and its review data, so the page asks that account to sign in.
+    if (state.session && state.session.wallet !== state.account) Object.assign(state, { session: null, review: null, reviewWeek: null });
     if (!state.account) {
       set({ phase: 'idle', message: 'Connect a wallet first.' });
       return false;
@@ -282,22 +289,26 @@ export function createJackpotOwnerController({
   async function loadReview() {
     if (!state.session) return state;
     const key = isoWeekKeyOf(state.selectedWeek);
+    // A sign-in ends here whatever the answer, so its phase never sticks.
+    const phase = () => (state.phase === 'signing-in' ? (state.contract ? 'ready' : 'undeployed') : state.phase);
     try {
       const response = await fetchImpl(`/api/jackpot/review?week=${key}`, { cache: 'no-store', headers: { accept: 'application/json', authorization: `Bearer ${state.session.token}` } });
       const body = await response.json().catch(() => null);
       if (response.status === 401) {
         state.session = null;
-        set({ review: null, message: 'The sign-in expired. Sign in again to read review data.' });
+        set({ review: null, phase: phase(), message: 'The sign-in expired. Sign in again to read review data.' });
         return state;
       }
       if (response.status === 403) {
-        set({ review: null, message: 'The arcade server refused review data: this wallet is not the on-chain jackpot admin.' });
+        // Dropped, so the sign-in button returns for the admin account.
+        state.session = null;
+        set({ review: null, phase: phase(), message: 'The arcade server refused review data: this wallet is not the on-chain jackpot admin. Switch to the admin wallet and sign in again.' });
         return state;
       }
       const review = response.ok ? normalizeReview(body) : null;
-      set({ review, reviewWeek: key, phase: state.phase === 'signing-in' ? (state.contract ? 'ready' : 'undeployed') : state.phase, message: review ? `Review data for ${key} loaded.` : 'Review data could not be read. Try again in a moment.' });
+      set({ review, reviewWeek: key, phase: phase(), message: review ? `Review data for ${key} loaded.` : 'Review data could not be read. Try again in a moment.' });
     } catch {
-      set({ review: null, message: 'Review data could not be read. Try again in a moment.' });
+      set({ review: null, phase: phase(), message: 'Review data could not be read. Try again in a moment.' });
     }
     return state;
   }
@@ -335,11 +346,23 @@ export function createJackpotOwnerController({
       return { note };
     }
     if (action === 'adminSubmit') {
-      const [ok, , reason] = await jackpot.checkEligibility(params.sessionId);
-      const count = Number((await jackpot.weekState(state.selectedWeek)).count);
+      const [ok, runWeek, reason] = await jackpot.checkEligibility(params.sessionId);
+      const count = Number((await jackpot.weekState(Number(runWeek) || state.selectedWeek)).count);
       if (count >= MAX_CANDIDATES) return { refuse: `The list already holds ${MAX_CANDIDATES} rows (LIST_FULL). Disqualify a decoy first. Nothing was sent.` };
       if (!ok && reason !== 'WINDOW_CLOSED') return { refuse: `checkEligibility: ${reason}. Nothing was sent.` };
-      return { note: `checkEligibility: ${ok ? 'eligible' : `${reason} (adminSubmit skips the window)`}.` };
+      // checkEligibility runs the permissionless submit checks, which stop at WINDOW_CLOSED once the 12 h
+      // candidate window ends, exactly when adminSubmit is used, before the player and payout checks. So
+      // adminSubmit itself is simulated from this account (eth_call, nothing sent): the contract's admin
+      // checks (TOO_LATE, STAFF_WALLET, WALLET_BLOCKED, DISQUALIFIED, NOT_BETTER, ...) answer first.
+      const call = encodeJackpotCall(await ethersLib(), 'adminSubmit', params, { jackpot: state.contract });
+      try {
+        await (await reader()).call({ from: state.account, to: call.to, data: call.data });
+      } catch (error) {
+        // A revert is the contract's answer; anything else (the public RPC failing) is not a verdict.
+        if (error?.code === 'CALL_EXCEPTION') return { refuse: `adminSubmit would revert: ${revertReason(error)}. Nothing was sent.` };
+        return { refuse: `Could not simulate adminSubmit over LiteForge's public RPC (${String(error?.shortMessage ?? error?.message ?? error).slice(0, 80)}). Nothing was sent; try again.` };
+      }
+      return { note: `checkEligibility: ${ok ? 'eligible' : `${reason} (adminSubmit skips the window)`}; the simulated adminSubmit passes.` };
     }
     if (action === 'block' || action === 'unblock') {
       const blocked = await jackpot.blocked(params.wallet);
@@ -490,13 +513,13 @@ const button = (doc, text, onClick, { disabled = false, className = '' } = {}) =
 const select = (doc, options, label) => el(doc, 'select', { 'aria-label': label }, options.map((option) => el(doc, 'option', { value: option, text: option })));
 
 // The flap timeline: altitude, flaps, fast pairs (changed the trajectory or not) and, per obstacle, the
-// tick it became visible against the tick Chikun committed to its route (look-ahead in red).
+// tick it became visible against the last flap before its pass; red marks only the server's verdict.
 export function renderTimeline(doc, timeline, { label = 'Flap timeline' } = {}) {
   const geometry = timelineGeometry(timeline);
   if (!geometry) return el(doc, 'p', { className: 'jo-note', text: 'No timeline for this run yet.' });
-  const root = svg(doc, 'svg', { viewBox: geometry.viewBox, role: 'img', 'aria-label': `${label}: ${geometry.lookAheadCount} look-ahead commitments`, class: 'jo-timeline', preserveAspectRatio: 'none' });
+  const root = svg(doc, 'svg', { viewBox: geometry.viewBox, role: 'img', 'aria-label': `${label}: ${geometry.lookAheadCount} unexplained descents`, class: 'jo-timeline', preserveAspectRatio: 'none' });
   const title = svg(doc, 'title');
-  title.textContent = `${label}. Blue: altitude. Ticks: flaps. Dashed: obstacle visible at the stock view edge. Dots: route commitment (red when before the obstacle was visible). Diamonds: fast pairs (orange when they changed the trajectory).`;
+  title.textContent = `${label}. Blue: altitude. Ticks: flaps. Dashed: obstacle visible at the stock view edge. Dots: the last flap before the obstacle was passed (red only for the server's unexplained descents, S8). Diamonds: fast pairs (orange when they changed the trajectory).`;
   root.append(title);
   root.append(svg(doc, 'path', { d: geometry.altitude, class: 'jo-altitude', fill: 'none' }));
   for (const x of geometry.flaps) root.append(svg(doc, 'line', { x1: x, x2: x, y1: geometry.height - 8, y2: geometry.height, class: 'jo-flap' }));
@@ -601,6 +624,7 @@ function render(doc, controller) {
       ['Hold codes', review ? codesList(doc, review.holdCodes, HOLD_CODE_TEXT) : '—'],
       ['Soft signals', review ? codesList(doc, review.softSignals, SOFT_SIGNAL_TEXT) : '—'],
       ['Evidence delay', review?.evidenceDelaySeconds !== null && review?.evidenceDelaySeconds !== undefined ? `${review.evidenceDelaySeconds} s` : '—'],
+      ['Integrity', review ? integrityText(review.integrity) ?? 'not screened yet' : 'sign in to read'],
       ['Seed provenance', review?.seedProvenance ?? '—'],
       ['Review on chain', `${chain?.review ?? review?.review ?? 'none'}${(chain?.adminReviewed ?? review?.adminReviewed) ? ' · admin-reviewed' : ''}${chain?.blocked ? ' · wallet BLOCKED' : ''}`],
       ['Listed before', String(chain?.wasListed ?? review?.wasListed ?? false)],

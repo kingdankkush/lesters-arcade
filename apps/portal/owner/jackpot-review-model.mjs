@@ -309,8 +309,11 @@ function normalizeTimeline(value) {
         visibleTick: row.visibleTick,
         commitTick,
         passTick: Number.isFinite(row.passTick) ? row.passTick : null,
-        // The server's verdict (S8 unexplained descent) or a commit before the obstacle was visible.
-        lookAhead: row.unexplained === true || row.lookAhead === true || (commitTick !== null && commitTick < row.visibleTick),
+        // Only the server's verdict (S8, an unexplained descent) marks a look-ahead. The commit tick is
+        // the last flap before the pass (reviewTimeline), so an honest run that passes under or glides
+        // past an obstacle without a new flap after it came into view also has commitTick < visibleTick:
+        // that is drawn as neutral data, never as a look-ahead.
+        lookAhead: row.unexplained === true || row.lookAhead === true,
       });
     })),
     viewEdge: int(value.viewEdge) ?? 1280,
@@ -383,12 +386,29 @@ export function normalizeReview(json) {
   return Object.freeze({ weekKey: text(json.weekKey, 8), week: json.week && typeof json.week === 'object' ? json.week : null, candidates: Object.freeze(candidates), nextEligible: Object.freeze(nextEligible) });
 }
 
+// The screen's integrity result (design §C.6: replay, chain, maxTicks, seed ticket) in plain words, or
+// null before the run is screened. The server sends { ok, code, detail?, chain? } (server/jackpot/screen).
+const INTEGRITY_TEXT = Object.freeze({
+  'evidence-missing': 'the recorded evidence is missing',
+  'replay-mismatch': 'the server replay does not match the recorded result',
+  'chain-mismatch': 'the on-chain record does not match the run',
+  'non-stock-client': 'the run came from a non-stock client (maxTicks)',
+  'ticket-invalid': 'the seed ticket is invalid (MAC or seed mismatch)',
+});
+export function integrityText(integrity) {
+  if (!integrity || typeof integrity !== 'object' || typeof integrity.ok !== 'boolean') return null;
+  if (integrity.ok) return 'passed: the server replay, the on-chain record, the stock client (maxTicks) and the seed ticket agree';
+  const code = text(integrity.code, 32);
+  const detail = text(integrity.detail, 60);
+  return `FAILED (H7): ${INTEGRITY_TEXT[code] ?? code ?? 'unknown failure'}${detail ? ` (${detail})` : ''}`;
+}
+
 // ---------------------------------------------------------------------------------------------------
 // The flap timeline (design §D.5): x is the run's tick, y the altitude (0 at the top of the 720 px
 // world). Obstacles show the tick each became visible at the stock view edge and the tick Chikun
-// committed to its route; the look-ahead overlay marks the server's unexplained descents (S8) and any
-// commitment before visibility. Fast pairs are marked
-// by whether they changed the trajectory.
+// committed to its route (the last flap before the pass, neutral data); the look-ahead overlay marks
+// only the server's unexplained descents (S8). Fast pairs are marked by whether they changed the
+// trajectory.
 export function timelineGeometry(timeline, { width = 720, height = 180, worldHeight = 720 } = {}) {
   const t = normalizeTimeline(timeline);
   if (!t || t.survivalTicks <= 0) return null;
