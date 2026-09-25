@@ -138,6 +138,11 @@ test('API, share and profile deep links route to their functions', () => {
     [`/api/share-card/${HEX64}.png?v=0123456789ab`, `/api/share-card?id=${HEX64}&v=0123456789ab`],
     ['/games/chikun', '/discover/chikun.html'],
     ['/play/hard-money-heroes/ranked', '/index.html?path=hard-money-heroes/ranked'],
+    // jackpot-server (design §C.5, §C.6): the replay and review endpoints and the rules page
+    // (apps/portal/jackpot/chikun.html comes from jackpot-ui; until then the target 404s harmlessly).
+    [`/api/jackpot/replay?session=0x${HEX64}`, `/api/jackpot-replay?session=0x${HEX64}`],
+    ['/api/jackpot/review?week=2026-W40', '/api/jackpot-review?week=2026-W40'],
+    ['/jackpot/chikun', '/jackpot/chikun.html'],
   ];
   for (const [url, destination] of cases) assert.equal(rewrite(url)?.destination, destination, url);
   for (const url of [`/s/${HEX64.slice(2)}`, `/s/${HEX64}0`, '/profile/0x1234', `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, '/api/session']) {
@@ -146,6 +151,8 @@ test('API, share and profile deep links route to their functions', () => {
   const sources = vercel.rewrites.map((rule) => rule.source);
   assert.ok(sources.indexOf('/api/session/nonce') < sources.indexOf('/api/session/:id((?:0x)?[0-9a-fA-F]{64})'), 'nonce is routed before the share id');
   assert.ok(sources.indexOf('/api/share-card/:id([0-9a-fA-F]{64}).png') < sources.indexOf('/games/:path*'), 'the new rewrites come before /games/:path*');
+  for (const source of ['/api/jackpot/replay', '/api/jackpot/review', '/jackpot/chikun']) assert.ok(sources.indexOf(source) >= 0 && sources.indexOf(source) < sources.indexOf('/games/:path*'), `${source} comes before /games/:path*`);
+  assert.equal(rewrite('/api/jackpot'), null, '/api/jackpot is the function itself');
   assert.equal(vercel.rewrites.find((rule) => rule.source.startsWith('/api/share-card/')).destination, '/api/share-card?id=:id', 'the card rewrite declares only id, so ?v=<rev> reaches the handler from the original query');
   for (const rule of vercel.rewrites.filter((entry) => entry.destination.startsWith('/api/'))) {
     const file = `${rule.destination.split('?')[0].slice(1)}.mjs`;
@@ -169,6 +176,9 @@ const VERCEL_COMPILED = Object.freeze([
   { source: '/api/profile/refresh', destination: '/api/profile-refresh', src: '^/api/profile/refresh$', dest: '/api/profile-refresh' },
   { source: '/api/ranked/seed', destination: '/api/ranked-seed', src: '^/api/ranked/seed$', dest: '/api/ranked-seed' },
   { source: '/api/share-card/:id([0-9a-fA-F]{64}).png', destination: '/api/share-card?id=:id', src: '^/api/share-card(?:/([0-9a-fA-F]{64}))\\.png$', dest: '/api/share-card?id=$1' },
+  // jackpot-server: plain paths, so the original query (session, week) is merged as is.
+  { source: '/api/jackpot/replay', destination: '/api/jackpot-replay', src: '^/api/jackpot/replay$', dest: '/api/jackpot-replay' },
+  { source: '/api/jackpot/review', destination: '/api/jackpot-review', src: '^/api/jackpot/review$', dest: '/api/jackpot-review' },
 ]);
 
 // Routes a URL through the compiled table; Vercel merges the original query
@@ -209,6 +219,8 @@ test('rewrites give API functions only the query keys they declare, as Vercel co
     [`/api/share-card/${HEX64}.png?v=0123456789ab`, `/api/share-card?id=${HEX64}&v=0123456789ab`],
     [`/api/settle/status?sessionId32=0x${HEX64}`, `/api/settle-status?sessionId32=0x${HEX64}`],
     [`/api/profile/refresh?wallet=${WALLET}`, `/api/profile-refresh?wallet=${WALLET}`],
+    [`/api/jackpot/replay?session=0x${HEX64}`, `/api/jackpot-replay?session=0x${HEX64}`],
+    ['/api/jackpot/review?week=2026-W40', '/api/jackpot-review?week=2026-W40'],
   ];
   for (const [url, destination] of cases) {
     assert.equal(vercelRoute(url), destination, `${url} (compiled)`);
@@ -248,6 +260,10 @@ test('crons and function limits are declared', () => {
     // 300 s (Pro): the indexer stops starting chunks after 45 s, but one slow public-RPC chunk can run
     // past a 60 s limit (2026-09-24 production: 504 Task timed out after 60 seconds).
     'api/cron/index-chain.mjs': { maxDuration: 300 },
+    // jackpot-server (design §C.4): 300 s (Pro) like index-chain after its 2026-09-24 production 504s; a
+    // 60 s limit would kill a run mid-RPC and skip the withCronRun bookkeeping, so the status page would
+    // show a stale cron instead of an error. The re-replay needs the obstacle shapes (else verify-unavailable).
+    'api/cron/weekly-jackpot.mjs': { maxDuration: 300, memory: 1024, includeFiles: chikunShapes },
     'api/settle-status.mjs': { maxDuration: 15 },
     'api/leaderboard.mjs': { maxDuration: 10 },
     'api/profile.mjs': { maxDuration: 10 },
@@ -260,10 +276,16 @@ test('crons and function limits are declared', () => {
     'api/ranked-seed.mjs': { maxDuration: 10 },
     // ops-health: two short-deadline read parts (Neon, RPC) in parallel.
     'api/health.mjs': { maxDuration: 15 },
+    // jackpot-server: the public read and replay endpoints (Neon only), and the owner review, which
+    // replays up to three timelines the cron has not stored yet.
+    'api/jackpot.mjs': { maxDuration: 10 },
+    'api/jackpot-replay.mjs': { maxDuration: 10 },
+    'api/jackpot-review.mjs': { maxDuration: 30, memory: 1024, includeFiles: chikunShapes },
   });
   assert.deepEqual(vercel.crons, [
     { path: '/api/cron/settle-retry', schedule: '* * * * *' },
     { path: '/api/cron/index-chain', schedule: '*/5 * * * *' },
+    { path: '/api/cron/weekly-jackpot', schedule: '*/5 * * * *' },
   ]);
   for (const cron of vercel.crons) assert.ok(vercel.functions[`${cron.path.slice(1)}.mjs`], `${cron.path} has a function entry`);
 });

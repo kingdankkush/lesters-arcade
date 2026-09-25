@@ -25,7 +25,7 @@
 
 import { ethers } from 'ethers';
 import { SITE_VERSION } from '../../apps/portal/src/version-tracking.mjs';
-import { SCORE_REGISTRY_ABI } from '../chain/abis.mjs';
+import { SCORE_REGISTRY_ABI, WEEKLY_JACKPOT_ABI } from '../chain/abis.mjs';
 import { INDEXER_STREAM } from '../indexer/index-chain.mjs';
 import { ensureSchema } from '../neon/migrations.mjs';
 import { CRON_NAMES, readCronRuns } from './cron-runs.mjs';
@@ -46,12 +46,14 @@ export const HEALTH_CHAIN_TIMEOUT_MS = 4_000;
 // Dead letters verified this recently can still be requeued
 // (server/settle/store.mjs requeueDeadLetters, the D10 stale window).
 export const REQUEUE_WINDOW_DAYS = 7;
-// The fixed vocabulary of degradedParts.
-export const HEALTH_PARTS = Object.freeze(['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-address', 'relayer-balance', 'relayer-allowed']);
+// The fixed vocabulary of degradedParts. 'jackpot' is the Chikun Weekly
+// Jackpot part (jackpot-server, design §C.4 "Health and status page").
+export const HEALTH_PARTS = Object.freeze(['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-address', 'relayer-balance', 'relayer-allowed', 'jackpot']);
 
 const registryIface = new ethers.Interface(SCORE_REGISTRY_ABI);
+const jackpotIface = new ethers.Interface(WEEKLY_JACKPOT_ABI);
 const ADDRESS = /^0x[0-9a-f]{40}$/;
-const CRON_KEYS = Object.freeze({ indexChain: CRON_NAMES.indexChain, settleRetry: CRON_NAMES.settleRetry });
+const CRON_KEYS = Object.freeze({ indexChain: CRON_NAMES.indexChain, settleRetry: CRON_NAMES.settleRetry, weeklyJackpot: CRON_NAMES.weeklyJackpot });
 const EMPTY_CRON = Object.freeze({ lastOkAt: null, lastErrorAt: null, lastErrorCode: null, runs: 0, failures: 0 });
 const UNKNOWN_CRON = Object.freeze({ lastOkAt: null, lastErrorAt: null, lastErrorCode: null, runs: null, failures: null });
 
@@ -122,6 +124,28 @@ export async function readQueueHealth(db, { nowMs }) {
   };
 }
 
+// The jackpot weeks that need the owner (every instance): awaiting the admin
+// (with the oldest wait in hours), claim-pending and failed. One statement,
+// int4 columns only (A15).
+export async function readJackpotWeekHealth(db, { nowMs }) {
+  const rows = await db.query(
+    `SELECT count(*) FILTER (WHERE status = 'awaiting-admin')::int AS awaiting_admin,
+            coalesce(floor(extract(epoch FROM ($1::timestamptz - min(admin_waiting_since) FILTER (WHERE status = 'awaiting-admin'))) / 3600)::int, -1) AS oldest_hours,
+            count(*) FILTER (WHERE status = 'claim-pending')::int AS claim_pending,
+            count(*) FILTER (WHERE status = 'failed')::int AS failed
+       FROM jackpot_weeks`,
+    [new Date(Number(nowMs)).toISOString()],
+  );
+  const row = rows[0] ?? {};
+  const oldest = Number(row.oldest_hours ?? -1);
+  return {
+    awaitingAdmin: nonNegativeInt(row.awaiting_admin) ?? 0,
+    awaitingAdminOldestHours: oldest >= 0 ? oldest : null,
+    claimPending: nonNegativeInt(row.claim_pending) ?? 0,
+    failed: nonNegativeInt(row.failed) ?? 0,
+  };
+}
+
 // The indexer's cursor (last indexed block), or null before its first chunk.
 export async function readIndexCursor(db) {
   const rows = await db.query('SELECT last_block::text AS last_block FROM indexer_state WHERE stream = $1', [INDEXER_STREAM]);
@@ -129,22 +153,52 @@ export async function readIndexCursor(db) {
 }
 
 async function readDatabasePart(db, { nowMs, deadlineMs }) {
-  const failed = { queue: null, cursor: { ok: false, value: null }, crons: null, parts: ['queue', 'index-cursor', 'crons'] };
+  const failed = { queue: null, cursor: { ok: false, value: null }, crons: null, jackpotWeeks: null, parts: ['queue', 'index-cursor', 'crons', 'jackpot'] };
   if (!db) return { ...failed, parts: ['database', ...failed.parts] };
   const started = Date.now();
   const left = () => deadlineMs - (Date.now() - started);
   const schema = await settle(() => ensureSchema(db), left());
   if (!schema.ok) return failed;
-  const [queue, cursor, crons] = await Promise.all([
+  const [queue, cursor, crons, jackpotWeeks] = await Promise.all([
     settle(() => readQueueHealth(db, { nowMs }), left()),
     settle(() => readIndexCursor(db), left()),
     settle(() => readCronRuns(db), left()),
+    settle(() => readJackpotWeekHealth(db, { nowMs }), left()),
   ]);
   const parts = [];
   if (!queue.ok) parts.push('queue');
   if (!cursor.ok) parts.push('index-cursor');
   if (!crons.ok) parts.push('crons');
-  return { queue: queue.ok ? queue.value : null, cursor, crons: crons.ok ? crons.value : null, parts };
+  if (!jackpotWeeks.ok) parts.push('jackpot');
+  return { queue: queue.ok ? queue.value : null, cursor, crons: crons.ok ? crons.value : null, jackpotWeeks: jackpotWeeks.ok ? jackpotWeeks.value : null, parts };
+}
+
+// The jackpot's chain facts: the keeper's zkLTC balance and the on-chain
+// pause (admin or operator). Read only when the jackpot is configured.
+async function readJackpotChainPart(deps, { deadlineMs }) {
+  const jackpot = deps?.config?.jackpot;
+  if (!jackpot?.ready) return { keeperAddress: null, balance: { ok: true, value: null }, paused: { ok: true, value: null }, parts: [] };
+  let keeperAddress = null;
+  try {
+    keeperAddress = jackpot.keeper.address(ethers);
+  } catch {
+    keeperAddress = null;
+  }
+  let provider = null;
+  try {
+    provider = deps.provider;
+  } catch {
+    provider = null;
+  }
+  if (!provider || !keeperAddress) return { keeperAddress, balance: { ok: false, value: null }, paused: { ok: false, value: null }, parts: ['jackpot'] };
+  const [balance, paused] = await Promise.all([
+    settle(() => provider.getBalance(keeperAddress), deadlineMs),
+    settle(async () => {
+      const [value] = jackpotIface.decodeFunctionResult('paused', await provider.call({ to: jackpot.contract.address, data: jackpotIface.encodeFunctionData('paused', []) }));
+      return value === true;
+    }, deadlineMs),
+  ]);
+  return { keeperAddress, balance, paused, parts: balance.ok && paused.ok ? [] : ['jackpot'] };
 }
 
 async function readChainPart(deps, { relayer, registry, deadlineMs }) {
@@ -202,9 +256,10 @@ export async function collectHealth(deps, { dbTimeoutMs = HEALTH_DB_TIMEOUT_MS, 
   const relayer = deployment.status === 'deployed' ? lowerAddress(deployment.relayer) : null;
   const registry = deployment.status === 'deployed' ? lowerAddress(deployment.addresses?.scoreSubmissionRegistry) : null;
 
-  const [database, chain] = await Promise.all([
+  const [database, chain, jackpotChain] = await Promise.all([
     readDatabasePart(deps?.db ?? null, { nowMs, deadlineMs: dbTimeoutMs }),
     readChainPart(deps, { relayer, registry, deadlineMs: chainTimeoutMs }),
+    readJackpotChainPart(deps, { deadlineMs: chainTimeoutMs }),
   ]);
 
   const block = chain.head.value;
@@ -218,7 +273,7 @@ export async function collectHealth(deps, { dbTimeoutMs = HEALTH_DB_TIMEOUT_MS, 
   const allowed = chain.allowed.ok ? chain.allowed.value === true : null;
 
   // A readable head without a base fee is a failed base-fee read.
-  const degradedParts = [...(relayer ? [] : ['relayer-address']), ...database.parts, ...chain.parts, ...(block && baseFee === null ? ['chain-head'] : [])];
+  const degradedParts = [...(relayer ? [] : ['relayer-address']), ...database.parts, ...chain.parts, ...jackpotChain.parts, ...(block && baseFee === null ? ['chain-head'] : [])];
   const ordered = HEALTH_PARTS.filter((part) => degradedParts.includes(part));
   const settlementReady = config.settlementReady === true;
   const paused = config.paused === true;
@@ -246,7 +301,21 @@ export async function collectHealth(deps, { dbTimeoutMs = HEALTH_DB_TIMEOUT_MS, 
     crons: {
       indexChain: cronView(database.crons, 'indexChain'),
       settleRetry: cronView(database.crons, 'settleRetry'),
+      weeklyJackpot: cronView(database.crons, 'weeklyJackpot'),
     },
     baseFeeGwei: baseFee === null ? null : Number(ethers.formatUnits(baseFee, 'gwei')),
+    // The Chikun Weekly Jackpot (design §C.4): null when a read failed (then
+    // 'jackpot' is in degradedParts), never a 500.
+    jackpot: ordered.includes('jackpot') ? null : {
+      configured: config.jackpot?.ready === true,
+      keeperAddress: jackpotChain.keeperAddress,
+      keeperBalanceWei: jackpotChain.balance.value === null ? null : String(jackpotChain.balance.value),
+      paused: { env: config.jackpot?.paused === true, onChain: jackpotChain.paused.value },
+      uiHidden: config.jackpot?.uiHidden === true,
+      awaitingAdmin: database.jackpotWeeks.awaitingAdmin,
+      awaitingAdminOldestHours: database.jackpotWeeks.awaitingAdminOldestHours,
+      claimPending: database.jackpotWeeks.claimPending,
+      failed: database.jackpotWeeks.failed,
+    },
   };
 }

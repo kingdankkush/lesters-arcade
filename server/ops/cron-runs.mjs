@@ -18,13 +18,16 @@
 import { errorLogFields } from '../http.mjs';
 import { ensureSchema } from '../neon/migrations.mjs';
 import { ERROR_CODE_ALLOWLIST } from '../settle/errors.mjs';
+import { JACKPOT_ERROR_CODES } from '../jackpot/errors.mjs';
 
-export const CRON_NAMES = Object.freeze({ indexChain: 'index-chain', settleRetry: 'settle-retry' });
+export const CRON_NAMES = Object.freeze({ indexChain: 'index-chain', settleRetry: 'settle-retry', weeklyJackpot: 'weekly-jackpot' });
 
-// Error codes a cron answer can carry, plus the relayer allowlist of §4.4.
+// Error codes a cron answer can carry, plus the relayer allowlist of §4.4 and
+// the jackpot allowlist (design §C.4 "Codes"; otherwise a jackpot failure
+// would be stored as unknown-error).
 export const CRON_ERROR_CODES = Object.freeze([...new Set([
   'index-not-configured', 'settlement-not-configured', 'settlement-paused', 'address-mismatch', 'chain-read-failed',
-  'verify-unavailable', 'achievements-unavailable', 'internal-error', ...ERROR_CODE_ALLOWLIST,
+  'verify-unavailable', 'achievements-unavailable', 'internal-error', ...ERROR_CODE_ALLOWLIST, ...JACKPOT_ERROR_CODES,
 ])]);
 const ALLOWED_CODES = new Set(CRON_ERROR_CODES);
 // Settle-gate details that name a failed module rather than env names.

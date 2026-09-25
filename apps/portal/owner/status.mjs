@@ -10,7 +10,13 @@
 //   - the chain index is more than 20,000 blocks behind the chain head;
 //   - a cron's last error is newer than its last success (or it has stopped);
 //   - settlement is unconfigured or paused, the relayer is not allowed, or a
-//     health read failed (degraded).
+//     health read failed (degraded);
+//   - the Chikun Weekly Jackpot (jackpot-server, design §C.4): the keeper has
+//     under 0.05 zkLTC, the jackpot is paused (env or on chain; a skipped cron
+//     run is recorded as a success, so this is the only signal), a week waits
+//     for the admin (a link to /owner/jackpot.html; an error after 7 days, when
+//     the documented default applies), a prize is claim-pending, or a week
+//     failed.
 //
 // It never asks for a key, never signs and never writes. CSP-safe: one module
 // script, same-origin fetch only, no imports, DOM built with createElement and
@@ -23,8 +29,13 @@ export const STATUS_THRESHOLDS = Object.freeze({
   maxOldestUnconfirmedSeconds: 10 * 60,
   maxIndexLagBlocks: 20_000,
   // A cron with no success for this long has stopped (it runs every minute / every 5 minutes).
-  staleCronSeconds: Object.freeze({ settleRetry: 10 * 60, indexChain: 30 * 60 }),
+  staleCronSeconds: Object.freeze({ settleRetry: 10 * 60, indexChain: 30 * 60, weeklyJackpot: 20 * 60 }),
+  // The keeper pays for every jackpot send (design §E E11: keep it above 0.05 zkLTC).
+  minKeeperBalanceWei: '50000000000000000',
+  // An awaiting-admin week escalates to an error after 7 days (the review SLA default).
+  awaitingAdminErrorHours: 7 * 24,
 });
+export const JACKPOT_REVIEW_URL = '/owner/jackpot.html';
 export const REFRESH_MS = 60_000;
 // The edge keeps a report for s-maxage=30 plus stale-while-revalidate=60 (server/ops/health.mjs).
 export const EDGE_CACHE_SECONDS = 90;
@@ -34,7 +45,7 @@ export const REQUEUE_DRY_RUN_COMMAND = 'node scripts/requeue-dead-letters.mjs --
 export const REQUEUE_APPLY_COMMAND = 'node scripts/requeue-dead-letters.mjs --all-dead --apply --confirm REQUEUE_DEAD_LETTERS';
 
 const ADDRESS_RE = /^0x[0-9a-f]{40}$/;
-const CRON_LABELS = Object.freeze({ indexChain: 'index-chain', settleRetry: 'settle-retry' });
+const CRON_LABELS = Object.freeze({ indexChain: 'index-chain', settleRetry: 'settle-retry', weeklyJackpot: 'weekly-jackpot' });
 const PART_LABELS = Object.freeze({
   database: 'the database (not configured)',
   queue: 'the settle queue',
@@ -44,6 +55,7 @@ const PART_LABELS = Object.freeze({
   'relayer-address': 'the relayer address (no deployment)',
   'relayer-balance': 'the relayer balance',
   'relayer-allowed': 'the relayer allowance',
+  jackpot: 'the weekly jackpot (keeper, pause or weeks)',
 });
 
 const isCount = (value) => Number.isSafeInteger(value) && value >= 0;
@@ -127,7 +139,40 @@ function cronWarnings(key, cron, report) {
   return out;
 }
 
-// Plain-language warnings for a /api/health report: [{ id, text }], most urgent first.
+const isWeiText = (value) => typeof value === 'string' && /^[0-9]{1,78}$/.test(value);
+
+// The Chikun Weekly Jackpot warnings (design §C.4, §E E11). A warning may carry
+// level 'bad' (an error) and a same-origin link.
+export function jackpotWarnings(jackpot) {
+  if (!jackpot || typeof jackpot !== 'object') return [];
+  const out = [];
+  if (jackpot.paused?.env === true || jackpot.paused?.onChain === true) {
+    const which = [jackpot.paused?.env === true ? 'JACKPOT_PAUSED in the server environment' : null, jackpot.paused?.onChain === true ? 'the WeeklyJackpot contract (admin or operator pause)' : null].filter(Boolean).join(' and ');
+    out.push({ id: 'jackpot-paused', text: `The weekly jackpot is paused (${which}). The keeper sends nothing, so candidates, clears and payouts wait until the pause is lifted.` });
+  }
+  if (jackpot.configured === true && isWeiText(jackpot.keeperBalanceWei) && BigInt(jackpot.keeperBalanceWei) < BigInt(STATUS_THRESHOLDS.minKeeperBalanceWei)) {
+    out.push({ id: 'jackpot-keeper-low', text: `The jackpot keeper has ${formatZkltc(jackpot.keeperBalanceWei)} (under ${formatZkltc(STATUS_THRESHOLDS.minKeeperBalanceWei)}). Its sends stop (keeper-underfunded) when it cannot pay the fee cap. Send testnet zkLTC to ${jackpot.keeperAddress ?? 'the keeper'}.` });
+  }
+  if (isCount(jackpot.awaitingAdmin) && jackpot.awaitingAdmin > 0) {
+    const hours = isCount(jackpot.awaitingAdminOldestHours) ? jackpot.awaitingAdminOldestHours : null;
+    const overdue = hours !== null && hours >= STATUS_THRESHOLDS.awaitingAdminErrorHours;
+    const weeks = jackpot.awaitingAdmin === 1 ? '1 jackpot week waits' : `${formatCount(jackpot.awaitingAdmin)} jackpot weeks wait`;
+    const waited = hours === null ? '' : ` The oldest has waited ${formatDuration(hours * 3600)}.`;
+    const next = overdue
+      ? ' It is past the 7-day limit: apply the documented default (disqualify the uncleared leader with reason other and a published note, so the pot rolls over).'
+      : ' Review it within 24 hours with the admin wallet.';
+    out.push({ id: 'jackpot-awaiting-admin', level: overdue ? 'bad' : 'warn', text: `${weeks} for the admin's review.${waited}${next}`, link: { href: JACKPOT_REVIEW_URL, text: 'Open the jackpot review page' } });
+  }
+  if (isCount(jackpot.claimPending) && jackpot.claimPending > 0) {
+    out.push({ id: 'jackpot-claim-pending', text: `${jackpot.claimPending === 1 ? '1 jackpot prize' : `${formatCount(jackpot.claimPending)} jackpot prizes`} could not be transferred and wait${jackpot.claimPending === 1 ? 's' : ''} for the winner to claim. Contact the winner well before the 180-day recycle.` });
+  }
+  if (isCount(jackpot.failed) && jackpot.failed > 0) {
+    out.push({ id: 'jackpot-failed', text: `${jackpot.failed === 1 ? '1 jackpot week has' : `${formatCount(jackpot.failed)} jackpot weeks have`} failed and will not move on their own. Check them with node scripts/jackpot-ops.mjs status, then requeue.` });
+  }
+  return out;
+}
+
+// Plain-language warnings for a /api/health report: [{ id, text, level?, link? }], most urgent first.
 export function healthWarnings(report) {
   if (!report || typeof report !== 'object') return [];
   const warnings = [];
@@ -162,6 +207,7 @@ export function healthWarnings(report) {
   if (isCount(index.lagBlocks) && index.lagBlocks > STATUS_THRESHOLDS.maxIndexLagBlocks) {
     warnings.push({ id: 'index-lag', text: `The chain index is ${plural(index.lagBlocks, 'block')} behind the chain head (over ${STATUS_THRESHOLDS.maxIndexLagBlocks.toLocaleString('en-US')}), so boards and profiles can miss recent runs.` });
   }
+  warnings.push(...jackpotWarnings(report.jackpot));
   for (const key of Object.keys(CRON_LABELS)) warnings.push(...cronWarnings(key, report.crons?.[key], report));
   if (report.degraded === true) {
     const parts = (Array.isArray(report.degradedParts) ? report.degradedParts : []).map((part) => PART_LABELS[part]).filter(Boolean);
@@ -277,11 +323,16 @@ function render(doc, state, nowMs = Date.now) {
     summary.dataset.level = 'ok';
   } else {
     summary.textContent = `${plural(count, 'warning')} need${count === 1 ? 's' : ''} a look.`;
-    summary.dataset.level = 'warn';
+    summary.dataset.level = state.warnings.some((warning) => warning.level === 'bad') ? 'bad' : 'warn';
   }
 
   const warnings = doc.getElementById('status-warnings');
-  warnings?.replaceChildren(...state.warnings.map((warning) => el(doc, 'li', { 'data-warning': warning.id, text: warning.text })));
+  warnings?.replaceChildren(...state.warnings.map((warning) => {
+    const attrs = { 'data-warning': warning.id, text: warning.text };
+    if (warning.level) attrs['data-level'] = warning.level;
+    const link = warning.link && typeof warning.link.href === 'string' && warning.link.href.startsWith('/') ? el(doc, 'a', { href: warning.link.href, text: warning.link.text }) : null;
+    return el(doc, 'li', attrs, link ? [doc.createTextNode ? doc.createTextNode(' ') : null, link] : []);
+  }));
 
   const refresh = doc.getElementById('status-refresh');
   if (refresh) {
@@ -327,6 +378,18 @@ function render(doc, state, nowMs = Date.now) {
   ]);
   fillList(doc, 'status-cron-index-chain', cronRows(report.crons?.indexChain, report));
   fillList(doc, 'status-cron-settle-retry', cronRows(report.crons?.settleRetry, report));
+  // The jackpot rows fill only where the page has their lists.
+  fillList(doc, 'status-cron-weekly-jackpot', cronRows(report.crons?.weeklyJackpot, report));
+  const jackpot = report.jackpot ?? null;
+  fillList(doc, 'status-jackpot', [
+    ['Configured', yesNo(jackpot?.configured)],
+    ['Keeper', relayerAddressNode(doc, jackpot?.keeperAddress ?? null)],
+    ['Keeper balance', formatZkltc(jackpot?.keeperBalanceWei ?? null), has('jackpot-keeper-low') ? 'bad' : null],
+    ['Paused (env / chain)', `${yesNo(jackpot?.paused?.env)} / ${yesNo(jackpot?.paused?.onChain)}`, has('jackpot-paused') ? 'warn' : null],
+    ['Awaiting admin', formatCount(jackpot?.awaitingAdmin), has('jackpot-awaiting-admin') ? 'warn' : null],
+    ['Claim pending', formatCount(jackpot?.claimPending), has('jackpot-claim-pending') ? 'warn' : null],
+    ['Failed weeks', formatCount(jackpot?.failed), has('jackpot-failed') ? 'bad' : null],
+  ]);
 }
 
 export function mountStatusPage(doc, win, { fetchImpl = win?.fetch?.bind(win) ?? globalThis.fetch, nowMs = () => Date.now() } = {}) {

@@ -1,0 +1,1445 @@
+{
+  "version": "chikun-plausibility-calibration-v1",
+  "plausibilityVersion": "chikun-plausibility-v1",
+  "evasionPilotVersion": "chikun-evasion-pilots-v1",
+  "generatedAt": "2026-09-25T14:47:24.306Z",
+  "command": "node scripts/chikun-plausibility-calibrate.mjs --probe --bots 4 --seed-variance",
+  "capMinutes": null,
+  "thresholds": {
+    "H1": [
+      "run-complete",
+      "flap-limit"
+    ],
+    "H2": 1080,
+    "H3": 80000,
+    "H4": {
+      "gapTicks": 2,
+      "min": 5,
+      "share": 0.01
+    },
+    "H5": {
+      "topShare": 0.45,
+      "longestSameRun": 25,
+      "entropyBits": 3
+    },
+    "H6": {
+      "flapsPerMinute": 85,
+      "minMinutes": 3
+    },
+    "H9": 1200,
+    "H11": 2,
+    "S1": 604800,
+    "S2": {
+      "ratio": 1.5,
+      "minRuns": 5
+    },
+    "S3": 40,
+    "S4": [
+      35,
+      75
+    ],
+    "S5": 0.35,
+    "S6": 1.5,
+    "S9": [
+      300,
+      1200
+    ],
+    "S10": {
+      "maxCalls": 20,
+      "weeks": 8,
+      "hops": 2
+    },
+    "S8": {
+      "airborneAboveY": 400,
+      "leadTicks": 60
+    }
+  },
+  "sets": {
+    "a": {
+      "name": "must-hold",
+      "gated": true,
+      "n": 11,
+      "held": 11,
+      "heldRate": 1,
+      "pass": true,
+      "runs": [
+        {
+          "label": "routePilotLandscape seed 1",
+          "set": "a",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H4",
+            "H5",
+            "H6"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 10.32,
+            "score": 40173,
+            "survivalSeconds": 619,
+            "flaps": 947,
+            "flapsPerMinute": 91.8,
+            "minDelta": 1,
+            "fastPairs": 19,
+            "topShare": 0.828,
+            "longestSameRun": 89,
+            "entropyBits": 1.07,
+            "adjSimilar": 0.888,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 5,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotPortrait seed 1",
+          "set": "a",
+          "source": "live",
+          "orientation": "portrait",
+          "codes": [
+            "H4",
+            "H5"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "canopy",
+            "minutes": 2.8,
+            "score": 10863,
+            "survivalSeconds": 168,
+            "flaps": 252,
+            "flapsPerMinute": 90,
+            "minDelta": 1,
+            "fastPairs": 6,
+            "topShare": 0.793,
+            "longestSameRun": 90,
+            "entropyBits": 1.18,
+            "adjSimilar": 0.864,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 5,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotLandscape seed 2",
+          "set": "a",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H4",
+            "H5",
+            "H6"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 8.25,
+            "score": 32154,
+            "survivalSeconds": 494,
+            "flaps": 753,
+            "flapsPerMinute": 91.3,
+            "minDelta": 1,
+            "fastPairs": 15,
+            "topShare": 0.83,
+            "longestSameRun": 79,
+            "entropyBits": 1.04,
+            "adjSimilar": 0.892,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 2,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotPortrait seed 2",
+          "set": "a",
+          "source": "live",
+          "orientation": "portrait",
+          "codes": [
+            "H5"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 1.77,
+            "score": 6827,
+            "survivalSeconds": 106,
+            "flaps": 162,
+            "flapsPerMinute": 91.5,
+            "minDelta": 1,
+            "fastPairs": 4,
+            "topShare": 0.807,
+            "longestSameRun": 56,
+            "entropyBits": 1.02,
+            "adjSimilar": 0.887,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 3,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotLandscape seed 3",
+          "set": "a",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H4",
+            "H5",
+            "H6"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 10.04,
+            "score": 39114,
+            "survivalSeconds": 602,
+            "flaps": 920,
+            "flapsPerMinute": 91.7,
+            "minDelta": 1,
+            "fastPairs": 18,
+            "topShare": 0.826,
+            "longestSameRun": 82,
+            "entropyBits": 1.09,
+            "adjSimilar": 0.887,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 4,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotPortrait seed 3",
+          "set": "a",
+          "source": "live",
+          "orientation": "portrait",
+          "codes": [
+            "H4",
+            "H5"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 2.61,
+            "score": 10090,
+            "survivalSeconds": 156,
+            "flaps": 236,
+            "flapsPerMinute": 90.3,
+            "minDelta": 1,
+            "fastPairs": 5,
+            "topShare": 0.791,
+            "longestSameRun": 52,
+            "entropyBits": 1.2,
+            "adjSimilar": 0.859,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 4,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotFullSnapshot seed 1",
+          "set": "a",
+          "source": "tests/fixtures/jackpot-server/run-complete-solver.json",
+          "orientation": "landscape",
+          "codes": [
+            "H1",
+            "H2",
+            "H3",
+            "H4",
+            "H5",
+            "H6"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "run-complete",
+            "minutes": 60,
+            "score": 239120,
+            "survivalSeconds": 3600,
+            "flaps": 5700,
+            "flapsPerMinute": 95,
+            "minDelta": 1,
+            "fastPairs": 107,
+            "topShare": 0.831,
+            "longestSameRun": 95,
+            "entropyBits": 1.11,
+            "adjSimilar": 0.887,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 93,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotFullSnapshot seed 2",
+          "set": "a",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H1",
+            "H2",
+            "H3",
+            "H4",
+            "H5",
+            "H6"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "run-complete",
+            "minutes": 60,
+            "score": 239275,
+            "survivalSeconds": 3600,
+            "flaps": 5689,
+            "flapsPerMinute": 94.8,
+            "minDelta": 1,
+            "fastPairs": 107,
+            "topShare": 0.829,
+            "longestSameRun": 95,
+            "entropyBits": 1.13,
+            "adjSimilar": 0.884,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 94,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "routePilotFullSnapshot seed 3",
+          "set": "a",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H1",
+            "H2",
+            "H3",
+            "H4",
+            "H5",
+            "H6"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "run-complete",
+            "minutes": 60,
+            "score": 239430,
+            "survivalSeconds": 3600,
+            "flaps": 5704,
+            "flapsPerMinute": 95.1,
+            "minDelta": 1,
+            "fastPairs": 107,
+            "topShare": 0.833,
+            "longestSameRun": 95,
+            "entropyBits": 1.09,
+            "adjSimilar": 0.889,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 93,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "truncated client (intermediate model, maxTicks 10800)",
+          "set": "a",
+          "source": "tests/fixtures/chikun-v6-replays.json",
+          "orientation": "landscape",
+          "codes": [
+            "H1",
+            "H7"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "run-complete",
+            "minutes": 3,
+            "score": 12435,
+            "survivalSeconds": 180,
+            "flaps": 151,
+            "flapsPerMinute": 50.3,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.067,
+            "longestSameRun": 3,
+            "entropyBits": 5.78,
+            "adjSimilar": 0.067,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 0,
+            "maxTicks": 10800
+          }
+        },
+        {
+          "label": "late evidence (hardcore model, +1500 s)",
+          "set": "a",
+          "source": "tests/fixtures/chikun-v6-replays.json",
+          "orientation": "landscape",
+          "codes": [
+            "H9"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 10.04,
+            "score": 42649,
+            "survivalSeconds": 602,
+            "flaps": 568,
+            "flapsPerMinute": 56.6,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.192,
+            "longestSameRun": 5,
+            "entropyBits": 5.31,
+            "adjSimilar": 0.219,
+            "evidenceDelaySeconds": 1500,
+            "unexplainedDescents": 1,
+            "maxTicks": 216000
+          }
+        }
+      ]
+    },
+    "b": {
+      "name": "known-evasion",
+      "gated": false,
+      "n": 10,
+      "missed": 8,
+      "missRate": 0.8,
+      "byPilot": {
+        "exceptional bot": {
+          "n": 4,
+          "missed": 4,
+          "missRate": 1
+        },
+        "humanisedSolver": {
+          "n": 3,
+          "missed": 1,
+          "missRate": 0.3333
+        },
+        "widenedViewPilot": {
+          "n": 3,
+          "missed": 3,
+          "missRate": 1
+        }
+      },
+      "note": "Reported, not gated: these are what the screen cannot catch. Human review, caps and, for real value, personhood or winner verification are the defence (design B.5).",
+      "runs": [
+        {
+          "label": "exceptional bot seed 3144846624",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 12.01,
+            "score": 53480,
+            "survivalSeconds": 720,
+            "flaps": 627,
+            "flapsPerMinute": 52.2,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.179,
+            "longestSameRun": 6,
+            "entropyBits": 5.36,
+            "adjSimilar": 0.219,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 1,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "exceptional bot seed 422250483",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "canopy",
+            "minutes": 11.16,
+            "score": 48749,
+            "survivalSeconds": 669,
+            "flaps": 594,
+            "flapsPerMinute": 53.2,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.164,
+            "longestSameRun": 6,
+            "entropyBits": 5.17,
+            "adjSimilar": 0.243,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 3,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "exceptional bot seed 4293106050",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 12.11,
+            "score": 53934,
+            "survivalSeconds": 726,
+            "flaps": 672,
+            "flapsPerMinute": 55.5,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.218,
+            "longestSameRun": 7,
+            "entropyBits": 5.13,
+            "adjSimilar": 0.236,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 3,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "exceptional bot seed 1570247253",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 14.18,
+            "score": 61226,
+            "survivalSeconds": 850,
+            "flaps": 787,
+            "flapsPerMinute": 55.5,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.174,
+            "longestSameRun": 4,
+            "entropyBits": 5.18,
+            "adjSimilar": 0.256,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 9,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "humanisedSolver seed 1",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H2",
+            "H3"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "canopy",
+            "minutes": 29.95,
+            "score": 118260,
+            "survivalSeconds": 1797,
+            "flaps": 2527,
+            "flapsPerMinute": 84.4,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.143,
+            "longestSameRun": 5,
+            "entropyBits": 3.76,
+            "adjSimilar": 0.465,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 41,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "humanisedSolver seed 2",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 12.48,
+            "score": 48758,
+            "survivalSeconds": 748,
+            "flaps": 1035,
+            "flapsPerMinute": 82.9,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.158,
+            "longestSameRun": 6,
+            "entropyBits": 3.63,
+            "adjSimilar": 0.471,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 10,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "humanisedSolver seed 3",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [
+            "H2",
+            "H3"
+          ],
+          "held": true,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 27.87,
+            "score": 110071,
+            "survivalSeconds": 1672,
+            "flaps": 2356,
+            "flapsPerMinute": 84.5,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.143,
+            "longestSameRun": 8,
+            "entropyBits": 3.72,
+            "adjSimilar": 0.465,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 37,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "widenedViewPilot seed 1",
+          "set": "b",
+          "source": "tests/fixtures/jackpot-server/widened-view-pilot.json",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 12.39,
+            "score": 48593,
+            "survivalSeconds": 743,
+            "flaps": 1029,
+            "flapsPerMinute": 83.1,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.149,
+            "longestSameRun": 5,
+            "entropyBits": 3.7,
+            "adjSimilar": 0.444,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 9,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "widenedViewPilot seed 2",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 12.48,
+            "score": 48938,
+            "survivalSeconds": 748,
+            "flaps": 1041,
+            "flapsPerMinute": 83.4,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.172,
+            "longestSameRun": 7,
+            "entropyBits": 3.63,
+            "adjSimilar": 0.487,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 10,
+            "maxTicks": 216000
+          }
+        },
+        {
+          "label": "widenedViewPilot seed 3",
+          "set": "b",
+          "source": "live",
+          "orientation": "landscape",
+          "codes": [],
+          "held": false,
+          "features": {
+            "terminalReason": "storm",
+            "minutes": 7.96,
+            "score": 31032,
+            "survivalSeconds": 477,
+            "flaps": 644,
+            "flapsPerMinute": 80.9,
+            "minDelta": 6,
+            "fastPairs": 0,
+            "topShare": 0.141,
+            "longestSameRun": 5,
+            "entropyBits": 3.79,
+            "adjSimilar": 0.442,
+            "evidenceDelaySeconds": null,
+            "unexplainedDescents": 1,
+            "maxTicks": 216000
+          }
+        }
+      ]
+    },
+    "c": {
+      "name": "human",
+      "gated": true,
+      "n": 0,
+      "fromDir": 0,
+      "fromNeonVouched": 0,
+      "rejectedFiles": [],
+      "longRuns": 0,
+      "people": null,
+      "peopleNote": "At least 5 people known to the owner, with a screen recording of each session kept by the owner (not committed); the owner attests the count.",
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H2": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H3": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H4": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H5": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H6": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H7": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H8": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H9": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H10": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H11": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        }
+      },
+      "h4h6Holds": 0,
+      "runs": []
+    },
+    "neonUnvouched": {
+      "name": "neon rows not vouched for",
+      "gated": false,
+      "n": 0,
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H2": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H3": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H4": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H5": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H6": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H7": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H8": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H9": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H10": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        },
+        "H11": {
+          "holds": 0,
+          "rate": null,
+          "upper95": null
+        }
+      },
+      "note": "Never in a gate denominator: a live cheater would poison the human set."
+    }
+  },
+  "probe": [
+    {
+      "name": "Bot \"human models\" (novice → exceptional)",
+      "n": 23,
+      "minutes": [
+        1.42,
+        14.18
+      ],
+      "flapsPerMinute": [
+        50.2,
+        59.9
+      ],
+      "minDelta": [
+        6,
+        6
+      ],
+      "fastPairs": [
+        0,
+        0
+      ],
+      "topShare": [
+        0.038,
+        0.218
+      ],
+      "longestSameRun": [
+        2,
+        7
+      ],
+      "entropyBits": [
+        5.13,
+        6.24
+      ],
+      "unexplainedDescents": [
+        0,
+        9
+      ],
+      "held": 0,
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H2": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H3": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H4": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H5": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H6": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H7": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H8": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H9": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H10": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        },
+        "H11": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.1221
+        }
+      }
+    },
+    {
+      "name": "Reflex bots (reaction 1-3 ticks, jitter 0.5, in-viewport)",
+      "n": 12,
+      "minutes": [
+        10.04,
+        13.33
+      ],
+      "flapsPerMinute": [
+        52.4,
+        56.2
+      ],
+      "minDelta": [
+        6,
+        6
+      ],
+      "fastPairs": [
+        0,
+        0
+      ],
+      "topShare": [
+        0.22,
+        0.257
+      ],
+      "longestSameRun": [
+        6,
+        8
+      ],
+      "entropyBits": [
+        4.52,
+        4.81
+      ],
+      "unexplainedDescents": [
+        1,
+        11
+      ],
+      "held": 0,
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H2": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H3": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H4": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H5": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H6": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H7": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H8": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H9": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H10": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        },
+        "H11": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.2209
+        }
+      }
+    },
+    {
+      "name": "Scripted pilots, visible view (routePilot landscape and portrait)",
+      "n": 6,
+      "minutes": [
+        1.77,
+        10.32
+      ],
+      "flapsPerMinute": [
+        90,
+        91.8
+      ],
+      "minDelta": [
+        1,
+        1
+      ],
+      "fastPairs": [
+        4,
+        19
+      ],
+      "topShare": [
+        0.791,
+        0.83
+      ],
+      "longestSameRun": [
+        52,
+        90
+      ],
+      "entropyBits": [
+        1.02,
+        1.2
+      ],
+      "unexplainedDescents": [
+        2,
+        5
+      ],
+      "held": 6,
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H2": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H3": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H4": {
+          "holds": 5,
+          "rate": 0.8333,
+          "upper95": 0.9915
+        },
+        "H5": {
+          "holds": 6,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H6": {
+          "holds": 3,
+          "rate": 0.5,
+          "upper95": 0.8468
+        },
+        "H7": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H8": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H9": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H10": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        },
+        "H11": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.393
+        }
+      }
+    },
+    {
+      "name": "Solver (routePilotFullSnapshot)",
+      "n": 3,
+      "minutes": [
+        60,
+        60
+      ],
+      "flapsPerMinute": [
+        94.8,
+        95.1
+      ],
+      "minDelta": [
+        1,
+        1
+      ],
+      "fastPairs": [
+        107,
+        107
+      ],
+      "topShare": [
+        0.829,
+        0.833
+      ],
+      "longestSameRun": [
+        95,
+        95
+      ],
+      "entropyBits": [
+        1.09,
+        1.13
+      ],
+      "unexplainedDescents": [
+        93,
+        94
+      ],
+      "held": 3,
+      "holdsByRule": {
+        "H1": {
+          "holds": 3,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H2": {
+          "holds": 3,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H3": {
+          "holds": 3,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H4": {
+          "holds": 3,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H5": {
+          "holds": 3,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H6": {
+          "holds": 3,
+          "rate": 1,
+          "upper95": 1
+        },
+        "H7": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H8": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H9": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H10": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H11": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        }
+      }
+    },
+    {
+      "name": "Humanised solver (jitter, >= 6-tick gap)",
+      "n": 3,
+      "minutes": [
+        12.48,
+        29.95
+      ],
+      "flapsPerMinute": [
+        82.9,
+        84.5
+      ],
+      "minDelta": [
+        6,
+        6
+      ],
+      "fastPairs": [
+        0,
+        0
+      ],
+      "topShare": [
+        0.143,
+        0.158
+      ],
+      "longestSameRun": [
+        5,
+        8
+      ],
+      "entropyBits": [
+        3.63,
+        3.76
+      ],
+      "unexplainedDescents": [
+        10,
+        41
+      ],
+      "held": 2,
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H2": {
+          "holds": 2,
+          "rate": 0.6667,
+          "upper95": 0.983
+        },
+        "H3": {
+          "holds": 2,
+          "rate": 0.6667,
+          "upper95": 0.983
+        },
+        "H4": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H5": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H6": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H7": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H8": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H9": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H10": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H11": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        }
+      }
+    },
+    {
+      "name": "Widened-view pilot (2.5x stock view, humanised)",
+      "n": 3,
+      "minutes": [
+        7.96,
+        12.48
+      ],
+      "flapsPerMinute": [
+        80.9,
+        83.4
+      ],
+      "minDelta": [
+        6,
+        6
+      ],
+      "fastPairs": [
+        0,
+        0
+      ],
+      "topShare": [
+        0.141,
+        0.172
+      ],
+      "longestSameRun": [
+        5,
+        7
+      ],
+      "entropyBits": [
+        3.63,
+        3.79
+      ],
+      "unexplainedDescents": [
+        1,
+        10
+      ],
+      "held": 0,
+      "holdsByRule": {
+        "H1": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H2": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H3": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H4": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H5": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H6": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H7": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H8": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H9": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H10": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        },
+        "H11": {
+          "holds": 0,
+          "rate": 0,
+          "upper95": 0.6316
+        }
+      }
+    }
+  ],
+  "seedVariance": {
+    "profile": "expert",
+    "seeds": 4,
+    "noiseVariants": 4,
+    "capMinutes": null,
+    "bySeed": [
+      {
+        "seed": 3144846624,
+        "minutes": [
+          7.49,
+          5.53,
+          8.15,
+          5.53
+        ],
+        "mean": 6.68
+      },
+      {
+        "seed": 422250483,
+        "minutes": [
+          6.74,
+          8.81,
+          6.18,
+          5.81
+        ],
+        "mean": 6.88
+      },
+      {
+        "seed": 4293106050,
+        "minutes": [
+          7.96,
+          7.96,
+          7.49,
+          5.53
+        ],
+        "mean": 7.24
+      },
+      {
+        "seed": 1570247253,
+        "minutes": [
+          5.81,
+          5.81,
+          6.74,
+          5.81
+        ],
+        "mean": 6.04
+      }
+    ],
+    "grandMeanMinutes": 6.71,
+    "totalVariance": 1.158,
+    "betweenSeedVariance": 0.19,
+    "seedShare": 0.164,
+    "spreadOfSeedMeans": [
+      6.04,
+      7.24
+    ],
+    "note": "seedShare near 0: the course seed explains little of the survival spread (seed shopping is a small edge); near 1: the seed dominates."
+  },
+  "gate": {
+    "setAAllHeld": true,
+    "setBMissRatesRecorded": true,
+    "humanRuns": 0,
+    "humanRunsNeeded": 40,
+    "humanLongRuns": 0,
+    "humanLongRunsNeeded": 15,
+    "humanH4H6Holds": 0,
+    "humanH4H6Zero": null,
+    "ready": false,
+    "notes": [
+      "The human set is incomplete (0 of 40 runs, 0 of 15 of 8+ minutes): OJ2 stays open.",
+      "H2/H3/H9 human hold rates are recorded above; a human record in the first weeks is meant to be reviewed rather than auto-paid."
+    ]
+  },
+  "elapsedSeconds": 250.6
+}

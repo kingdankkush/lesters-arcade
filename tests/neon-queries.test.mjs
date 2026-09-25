@@ -319,6 +319,7 @@ test('profile reads split the public and self views and take NFT flags from the 
   assert.deepEqual(publicView.profile, { displayName: 'Lit Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, onchainUpdatedAt: null });
   assert.deepEqual(publicView.recentSessions.map((row) => row.status), ['confirmed', 'confirmed'], 'the public view lists only confirmed sessions');
   assert.equal(publicView.preferences, null);
+  assert.deepEqual(publicView.jackpot, { wins: [] }, 'jackpot.wins is always present (jackpot-server, design §C.7)');
   assert.deepEqual(Object.keys(publicView.games).sort(), ['chikun', 'lester-blaster', 'stacked']);
   assert.deepEqual(publicView.games['lester-blaster'], { rankedRuns: 0, confirmedRuns: 0, bestScore: null, bestSessionId32: null, ranks: { weekly: null, monthly: null, allTime: null }, totals: { kills: 0, survivalSeconds: 0, maxCombo: 0, level: 0, bossKills: 0 }, bests: { maxCombo: null, level: null }, lastPlayedAt: null });
   assert.equal(publicView.games.chikun.rankedRuns, 3, 'every verified run except pending counts');
@@ -397,6 +398,8 @@ test('session reads hide pending rows, private columns and hidden names, and ver
   assert.equal(session.cardRev, expectedCardRev({ status: 'confirmed', displayName: null, avatarUri: null, hidden: false, verification: 'replay' }));
   assert.equal(session.cardRev, '9aad35cebaa9', 'literal fixture for a confirmed, unnamed Chikun run');
   assert.equal(await cardRevision({ status: 'confirmed', displayName: null, avatarUri: null, hidden: false, verification: 'replay' }), '9aad35cebaa9');
+  assert.equal(await cardRevision({ status: 'confirmed', displayName: null, avatarUri: null, hidden: false, verification: 'replay', champion: null }), '9aad35cebaa9', 'no champion badge keeps every existing revision');
+  assert.equal(session.jackpotChampion, null);
   assert.deepEqual((await readPublicSession(db, lower.sessionId32, { catalog })).standing, { weekly: null, monthly: null, allTime: null }, 'standing only for the wallet\'s best session');
   assert.equal((await readPublicSession(db, submitted.sessionId32, { catalog })).status, 'submitted');
   assert.equal((await readPublicSession(db, indexed.sessionId32, { catalog })).verification, 'chain-index');

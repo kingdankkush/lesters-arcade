@@ -18,6 +18,11 @@
     "api/cron/index-chain.mjs": {
       "maxDuration": 300
     },
+    "api/cron/weekly-jackpot.mjs": {
+      "maxDuration": 300,
+      "memory": 1024,
+      "includeFiles": "apps/chikun/assets/obstacle-shapes.json"
+    },
     "api/settle-status.mjs": {
       "maxDuration": 15
     },
@@ -52,6 +57,17 @@
     },
     "api/health.mjs": {
       "maxDuration": 15
+    },
+    "api/jackpot.mjs": {
+      "maxDuration": 10
+    },
+    "api/jackpot-replay.mjs": {
+      "maxDuration": 10
+    },
+    "api/jackpot-review.mjs": {
+      "maxDuration": 30,
+      "memory": 1024,
+      "includeFiles": "apps/chikun/assets/obstacle-shapes.json"
     }
   },
   "crons": [
@@ -61,6 +77,10 @@
     },
     {
       "path": "/api/cron/index-chain",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/weekly-jackpot",
       "schedule": "*/5 * * * *"
     }
   ],
@@ -263,6 +283,18 @@
     {
       "source": "/api/share-card/:id([0-9a-fA-F]{64}).png",
       "destination": "/api/share-card?id=:id"
+    },
+    {
+      "source": "/api/jackpot/replay",
+      "destination": "/api/jackpot-replay"
+    },
+    {
+      "source": "/api/jackpot/review",
+      "destination": "/api/jackpot-review"
+    },
+    {
+      "source": "/jackpot/chikun",
+      "destination": "/jackpot/chikun.html"
     },
     {
       "source": "/games/:path*",

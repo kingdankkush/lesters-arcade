@@ -18,6 +18,7 @@ import { authenticateBearer, bearerAuthHook } from '../auth/bearer.mjs';
 import { RANKED_GAMES, RANKED_SESSION_HANDLE_PATTERN } from '../../apps/portal/src/ranked-identity.mjs';
 import { ensureSchema } from '../neon/migrations.mjs';
 import { hitRateLimit, rateLimitedResult } from '../neon/rate-limit.mjs';
+import { logSeedTicketInBackground } from '../jackpot/ticket-log.mjs';
 import { logSafeError } from './errors.mjs';
 import { heroPolicyFrom, moduleGate, optionalImport, settlementGate } from './settle-core.mjs';
 
@@ -102,6 +103,14 @@ export async function seedRequest({ headers = {}, body = null, ip = 'unknown' } 
     seasonId: body.seasonId,
     buildHash: body.buildHash,
   });
+  // Seed-ticket log (jackpot-server; design §C.4 "Seed tickets"): one
+  // best-effort background insert. It is never awaited, never throws, is a
+  // no-op without the table, and never changes this response or its timing.
+  try {
+    logSeedTicketInBackground(db, { wallet: auth.wallet, sessionId: body.sessionId, gameId: body.gameId, seasonId: body.seasonId, buildHash: body.buildHash, seedTicket: issued.seedTicket });
+  } catch (error) {
+    logSafeError('ranked-seed:ticket-log', error);
+  }
   return json(200, { ok: true, seedTicket: issued.seedTicket, seed: issued.seed });
 }
 

@@ -4,7 +4,9 @@
 // JSX) for a 1200×630 card: the game's key-art background, score, handle (or
 // the short wallet when the profile is hidden or the name blocked), standing,
 // three headline stats, up to four badges, and "Verified on LitVM" ONLY when
-// the session is confirmed ("Publishing to LitVM…" otherwise).
+// the session is confirmed ("Publishing to LitVM…" otherwise). A confirmed
+// run that won a paid Chikun Weekly Jackpot week also shows the champion
+// badge with its date range (design §C.7); a volatile leader never shows.
 //
 // Satori rules this file follows: every element with more than one child is
 // display:flex; images are data URIs (a URL would make Satori fetch); text is
@@ -68,6 +70,15 @@ export function cardStandingText(standing) {
   return parts.join(' · ');
 }
 
+// The jackpot champion badge of a confirmed run: "Weekly Jackpot Champion ·
+// Sep 28 – Oct 4, 2026" (readPublicSession's jackpotChampion.label), or ''.
+export const CHAMPION_PREFIX = 'Weekly Jackpot Champion · ';
+export function cardChampionText(session) {
+  if (session?.status !== 'confirmed') return '';
+  const label = cardText(session?.jackpotChampion?.label ?? '', 80);
+  return label.startsWith(CHAMPION_PREFIX) && label.length > CHAMPION_PREFIX.length ? label : '';
+}
+
 // Name on the card and page: the display name, or the short wallet when the
 // name is null (hidden profile or blocked name, A29).
 export function cardHandle(session) {
@@ -109,6 +120,7 @@ export function buildShareCardElement({ session, background = null, badgeImages 
   const stats = session.stats && typeof session.stats === 'object' ? session.stats : {};
   const headline = (HEADLINE_STATS[gameId] ?? []).map(([label, read]) => [label, read(stats)]);
   const standing = cardStandingText(session.standing);
+  const champion = cardChampionText(session);
   const handle = cardHandle(session);
   const badges = (Array.isArray(session.achievements) ? session.achievements : []).slice(0, SHARE_CARD_MAX_BADGES).map((item) => {
     let entry = null;
@@ -133,6 +145,7 @@ export function buildShareCardElement({ session, background = null, badgeImages 
       flex({ flexDirection: 'column' }, [
         text({ fontSize: 22, color: CYAN, letterSpacing: 6 }, "LESTER'S ARCADE · RANKED"),
         text({ fontSize: 44, color: INK, marginTop: 6 }, title),
+        ...(champion ? [text({ alignSelf: 'flex-start', marginTop: 12, padding: '6px 16px', borderRadius: 999, border: `3px solid ${GOLD}`, backgroundColor: 'rgba(40, 30, 4, 0.85)', color: GOLD, fontSize: 24, letterSpacing: 2 }, champion)] : []),
       ]),
       status,
     ]),
