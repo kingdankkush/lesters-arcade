@@ -467,6 +467,29 @@ test('Profile: an inactive page is not painted when the chunk arrives', async ()
   assert.equal(loader.calls, 1);
 });
 
+test('Profile and Scores: an inactive page is not painted when the chunk fails', async () => {
+  for (const [name, make, render] of [
+    ['Profile', (deps, options) => createLazyProfileRoute(deps, options), (route) => route.renderProfile()],
+    ['Scores', (deps, options) => createLazyLeaderboardRoute(deps, options), (route) => route.renderLeaderboards()],
+  ]) {
+    let active = true;
+    const h = name === 'Profile' ? hostedProfileDeps() : boardDeps({ hosted: true });
+    h.deps.isActive = () => active;
+    const loader = deferredLoader(name === 'Profile' ? profileRouteModule : leaderboardRouteModule);
+    const route = make(h.deps, { load: loader.load, warn: () => {}, reload: () => assert.fail('no reload') });
+    render(route);
+    const loading = page(h.grid);
+    active = false; // the player left the page
+    loader.reject(new Error('chunk 404'));
+    await settle();
+    assert.equal(page(h.grid), loading, `${name}: the failure card is not painted over the page that owns the grid now`);
+    active = true;
+    render(route);
+    assert.equal(buttons(h.grid, 'Try again').length, 1, `${name}: the next visit shows Try again`);
+    assert.equal(loader.calls, 1, `${name}: the visit itself does not retry`);
+  }
+});
+
 // --- Scores ------------------------------------------------------------------
 
 test('Scores preview: a loading card, then the same board as the route itself', async () => {
@@ -672,6 +695,44 @@ test('Try again reloads the page when the import fails again (a failed module fe
     await settle();
     assert.deepEqual([loads, reloads], [2, 1], `${name}: one more import, then one reload`);
     assert.equal(buttons(h.grid, 'Try again').length, 1, `${name}: the card stays until the page reloads`);
+  }
+});
+
+test('Try again never reloads the portal under a player who left before the retry failed', async () => {
+  for (const [name, make, render] of [
+    ['Profile', (deps, options) => createLazyProfileRoute(deps, options), (route) => route.renderProfile()],
+    ['Scores', (deps, options) => createLazyLeaderboardRoute(deps, options), (route) => route.renderLeaderboards()],
+  ]) {
+    let step = name === 'Profile' ? 'profile' : 'leaderboards';
+    const own = step;
+    const h = name === 'Profile' ? hostedProfileDeps() : boardDeps({ hosted: true });
+    h.deps.isActive = () => step === own; // main.js: officialAppStep === '<page>'
+    const loader = deferredLoader(name === 'Profile' ? profileRouteModule : leaderboardRouteModule);
+    let reloads = 0;
+    const route = make(h.deps, { load: loader.load, warn: () => {}, reload: () => { reloads += 1; } });
+    render(route);
+    loader.reject(new Error('Failed to fetch dynamically imported module'));
+    await settle();
+    buttons(h.grid, 'Try again')[0].listeners.click();
+    assert.equal(loader.calls, 2, `${name}: Try again imports again`);
+    // A slow retry: the player starts a run before it fails.
+    step = 'gameplay';
+    const gameplay = node('gameplay');
+    h.grid.replaceChildren(gameplay);
+    loader.reject(new Error('Failed to fetch dynamically imported module'));
+    await settle();
+    assert.equal(reloads, 0, `${name}: no reload while step = gameplay`);
+    assert.deepEqual(h.grid.children, [gameplay], `${name}: the run keeps the screen`);
+
+    // Back on the page, the card offers Try again; a retry that fails there reloads.
+    step = own;
+    render(route);
+    assert.equal(buttons(h.grid, 'Try again').length, 1, `${name}: the next visit shows Try again`);
+    assert.equal(loader.calls, 2, `${name}: the visit itself does not retry`);
+    buttons(h.grid, 'Try again')[0].listeners.click();
+    loader.reject(new Error('Failed to fetch dynamically imported module'));
+    await settle();
+    assert.equal(reloads, 1, `${name}: a retry that fails on screen reloads`);
   }
 });
 

@@ -12,9 +12,11 @@
 // In hosted mode the hosted view downloads beside the route and the page waits
 // for both, so the two chunks never queue and a failure of either lands here.
 // A failed download shows Try again instead of a blank page. Try again imports
-// again, and reloads the page when that fails too: browsers keep a failed
-// module fetch in their module map, so only a reload fetches it afresh (and a
-// tab left open across a deploy needs the new main.js anyway).
+// again, and reloads the page when that fails too while the page is still on
+// screen: browsers keep a failed module fetch in their module map, so only a
+// reload fetches it afresh (and a tab left open across a deploy needs the new
+// main.js anyway). A player who left meanwhile (to start a run) is never
+// reloaded; the next visit shows Try again.
 
 export const LAZY_ROUTE_COPY = Object.freeze({
   profile: Object.freeze({
@@ -144,11 +146,13 @@ function renderPendingCard({ dom, el, appendText }, { className, failed, copy, o
 }
 
 // Try again: import again (and read the page when hosted), and reload when the
-// import fails again.
-function retryHandler({ loader, hydrate, render, reload, warn, label }) {
+// import fails again, only if this page still owns the screen: a slow retry
+// that fails after the player moved on (a run, a Ranked session) must not
+// reload the portal under them.
+function retryHandler({ loader, hydrate, render, reload, warn, label, isActive }) {
   return () => {
     hydrate()
-      .then(() => { if (loader.failed()) reload(); })
+      .then(() => { if (loader.failed() && isActive()) reload(); })
       .catch((error) => warn(`[${label}] page could not load:`, error?.message || error));
     render();
   };
@@ -184,7 +188,7 @@ export function createLazyProfileRoute(deps = {}, { load, loadHostedView = null,
       className: { card: `profile-state-card profile-state-${failed ? 'error' : 'loading'}` },
       failed,
       copy,
-      onRetry: retryHandler({ loader, hydrate, render: () => renderProfile(), reload, warn, label: 'Profile' }),
+      onRetry: retryHandler({ loader, hydrate, render: () => renderProfile(), reload, warn, label: 'Profile', isActive }),
     });
   }
 
@@ -250,7 +254,7 @@ export function createLazyLeaderboardRoute(deps = {}, { load, loadHostedView = n
       detailTag: 'span',
       detailClass: 'leaderboard-empty-copy',
       buttonClass: 'pixel-button leaderboard-empty-action',
-      onRetry: retryHandler({ loader, hydrate, render: () => renderLeaderboards(), reload, warn, label: 'Scores' }),
+      onRetry: retryHandler({ loader, hydrate, render: () => renderLeaderboards(), reload, warn, label: 'Scores', isActive }),
     });
   }
 
