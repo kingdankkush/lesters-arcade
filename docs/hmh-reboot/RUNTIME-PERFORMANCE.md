@@ -145,3 +145,21 @@ GPU texture residency at tick 1800:
 2048-class atlases hold most of it: nine hold 93.8% on mobile, and twelve hold 97.6% on desktop. The hero motion, prop, roster and native-roster pages are single-level, uncompressed RGBA.
 
 Initial JS at this base: 1,046,713 / 1,048,576 B (entry + shared chunks + vendor).
+
+## Perf step 1: enemy and corpse display pool (2026-09-25)
+
+Change: `apps/hmh-reboot/src/enemy-display-pool.mjs`, a lazy chunk fetched beside `app.init`. Before it, every enemy insert or retirement ran `resetEnemyMarkers`. That destroyed and rebuilt every live enemy display (about 100–128 containers, each with a body sprite, a rim sprite, a crown `Graphics` and its own frame textures), and its container-only `destroy()` left the child sprites and crown `Graphics` undestroyed. Every corpse was also built per kill and destroyed on expiry. Now:
+
+- Displays live in per-key pools: the roster index per archetype, or archetype plus elite flag for the vector fallback, which bakes its elite default. A reused display is reset to exactly what the factory returns: origin, build scale, upright, opaque, shown, `zIndex` 0, no pose memo, idle pose with the body's elite flag.
+- Markers sync incrementally by enemy id, and corpses use the same pools. An arriving roster atlas still rebuilds every live body, as before. Displays whose kind went stale are destroyed. At most 96 idle displays are kept per key.
+- Every display cut from one roster atlas shares one frame-texture cache (source, then frame record, then `Texture`).
+
+Visual parity with the old rebuild is exact. A kept marker drops its `zIndex` and pose memo, because a new display has neither, so budget-frozen bodies re-pose on the same frames as before. Every live marker is re-attached to the depth `RenderLayer` in population order, so the layer's stable sort breaks exact depth ties the same way. `tests/hmh-enemy-display-pool.test.mjs` replays a seeded crowd (spawns, kills, corpses, two atlas arrivals, depth ties on a 25 px grid) through the old wiring and the pool. It requires the same drawn layer order, poses, transforms and elite telemetry on all 400 frames. Removing any of the parity steps fails it.
+
+Evidence: `docs/testing/hmh-perf-step1-enemy-display-pool.json`.
+
+- Headless digest `2488a609…` and browser census trace `449616fb…` are both unchanged.
+- Initial JS is 1,046,732 B (+19 B).
+- In the mobile census, the pool built 3 displays during the measured window (256 → 259) and reused one for every corpse. The old code rebuilt about 100–128 displays per kill. At boot, the five atlas-arrival rebuilds reused 640 displays.
+- CPU profile, mobile 4x, 20 s window: roster display construction fell from 88–99 ms to 3.3 ms; frame-texture creation from 103–121 ms to 36–43 ms; Pixi destroy, `removeChildren` and render-group add/remove from about 25 ms to at most 2 ms; GC from 1.6–1.9% to 1.5% of busy time. At 6x, construction fell from 134 ms to 6 ms. The total is roughly 1% of main-thread busy time.
+- Frame times: the host carried 28–46% unrelated load throughout, so an interleaved A/B was used instead of the recorded baseline. Mean of three means: 4x base 35.13 ms vs step 1 35.32 ms; 6x base 85.19 ms vs step 1 82.33 ms. Both differences are within run-to-run noise (±3 ms at 4x, ±8 ms at 6x), so this step does not move mean frame time measurably. Desktop 1x stayed at 7.00 ms.
