@@ -87,4 +87,54 @@ if (!existsSync(join(root, 'contracts/archive/2026-06-legacy/README.md'))) {
   throw new Error('contracts/archive/2026-06-legacy/README.md is required to document the archived design.');
 }
 
+// Chikun Weekly Jackpot (design docs/game-design/chikun-weekly-jackpot-design-20260924.md §A). A new contract
+// that only READS the deployed 1.8.x registries; checked in its own block so the lists above stay as they are.
+const jackpotSignals = new Map([
+  ['contracts/src/WeeklyJackpot.sol', [
+    'is ReentrancyGuard', 'using SafeERC20 for IERC20', 'IERC20 public immutable token', 'uint64 public immutable firstWeek',
+    'function submitCandidate', 'function checkEligibility', 'function finalize', 'trySafeTransfer', 'nonReentrant',
+    'function claim', 'function recycleUnclaimed', 'function refundAfterEnd', 'function recoverResidual', 'function sweepStray',
+    'residualRecipient', 'function nominateResidualRecipient', 'function acceptResidualRecipient', '"LIABILITIES_BREACHED"',
+    'mapping(address => bool) public staffEver', 'mapping(bytes32 => bool) public adminReviewed', 'mapping(bytes32 => bool) public wasListed',
+    'function forceAdmin', 'function operatorPause', '"OPERATOR_LOCK"', 'function adminSubmit', 'function reinstate',
+    'function scheduleRules', 'function rulesFor', 'RELIST_MARGIN = 2 hours', 'MAX_FUND_AHEAD_WEEKS = 8', 'MAX_PENDING_EPOCHS = 8',
+    '"Only platform operator"', '"Only pending operator"',
+  ]],
+  ['contracts/src/TestChikunToken.sol', ['is ERC20', 'ERC20("Lester\'s Arcade Test CHIKUN (no value)", "tCHIKUN")', 'function mint', 'onlyMinter', '10_000_000e18', 'function transferMinter', 'function acceptMinter']],
+  ['contracts/src/interfaces/IRankedReaders.sol', ['interface IRankedScoreReader', 'interface IRankedEntryReader', 'function getSession(bytes32', 'function getPaidSession(bytes32']],
+]);
+const jackpotForbidden = ['selfdestruct', 'delegatecall', 'receive()', 'fallback()', 'payable', 'function setToken'];
+
+for (const [relative, signals] of jackpotSignals) {
+  const content = readFileSync(join(root, relative), 'utf8');
+  for (const signal of signals) {
+    if (!content.includes(signal)) throw new Error(`${relative} is missing required signal: ${signal}`);
+  }
+  if (!content.includes('// SPDX-License-Identifier: MIT') || !content.includes('pragma solidity ^0.8.24;')) {
+    throw new Error(`${relative} needs the MIT SPDX line and pragma solidity ^0.8.24`);
+  }
+}
+const jackpotSource = readFileSync(join(root, 'contracts/src/WeeklyJackpot.sol'), 'utf8').replace(/\/\/[^\n]*|\/\*[\s\S]*?\*\//g, '');
+for (const signal of jackpotForbidden) {
+  if (jackpotSource.includes(signal)) throw new Error(`WeeklyJackpot.sol must not contain ${signal} (no native value, no upgrade path, immutable token)`);
+}
+
+// The read interfaces repeat the deployed struct field orders exactly (the calls are ABI-decoded).
+function structFields(source, name) {
+  const match = new RegExp(`struct ${name} \{([^}]*)\}`).exec(source);
+  if (!match) throw new Error(`struct ${name} not found`);
+  return match[1].split(';').map((field) => field.replace(/\/\/[^\n]*/g, '').trim().replace(/\s+/g, ' ')).filter(Boolean);
+}
+const readers = readFileSync(join(root, 'contracts/src/interfaces/IRankedReaders.sol'), 'utf8');
+for (const [name, deployedFile] of [['ScoreRecord', 'ScoreSubmissionRegistry.sol'], ['PaidSession', 'ArcadeRankedEntry.sol']]) {
+  const deployed = structFields(readFileSync(join(root, 'contracts/src', deployedFile), 'utf8'), name);
+  if (JSON.stringify(structFields(readers, name)) !== JSON.stringify(deployed)) {
+    throw new Error(`IRankedReaders.sol ${name} must repeat the field order of ${deployedFile} exactly`);
+  }
+}
+// Test-only mocks never live under contracts/src.
+for (const mock of ['FeeOnTransferToken.sol', 'BlacklistToken.sol', 'ReentrantToken.sol', 'MaxTxToken.sol', 'SenderFeeToken.sol', 'DoubleEntryToken.sol', 'MockRankedReaders.sol']) {
+  if (existsSync(join(root, 'contracts/src', mock))) throw new Error(`Test mock ${mock} must stay under contracts/test/mocks`);
+}
+
 console.log("Lester's Arcade contract structure check passed (2026-09 native-fee set).");

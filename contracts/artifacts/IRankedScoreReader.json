@@ -1,0 +1,100 @@
+{
+  "sourcePath": "contracts/src/interfaces/IRankedReaders.sol",
+  "contractName": "IRankedScoreReader",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "sessionId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getSession",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "sessionId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "player",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "gameId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "score",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint64",
+              "name": "kills",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "maxCombo",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "survivalSeconds",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "bossId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "runtimeId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "seasonId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint64",
+              "name": "submittedAt",
+              "type": "uint64"
+            },
+            {
+              "internalType": "bool",
+              "name": "verified",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "exists",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct IRankedScoreReader.ScoreRecord",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "evm": {
+    "bytecode": {
+      "object": ""
+    },
+    "deployedBytecode": {
+      "object": ""
+    }
+  }
+}
