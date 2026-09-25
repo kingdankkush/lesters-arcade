@@ -75,13 +75,20 @@ try {
     await page.locator('#officialFreeModeButton').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await frame.waitForSelector('#stackedStage[data-assets-ready="true"]', { timeout: 30000 });
-    await frame.locator('#soundToggle').focus();
+    // The settings card starts closed (settings simplification 2026-09-24); the Settings tile opens it.
+    assert.equal(await frame.locator('#preferencePanel').evaluate(panel => panel.open), false, 'the settings card starts closed');
+    await frame.locator('#settingsTile').click();
+    assert.equal(await frame.locator('#settingsTile').getAttribute('aria-expanded'), 'true');
+    assert.equal(await frame.evaluate(() => document.activeElement.id), 'effectsStandard', 'the tile lands on the checked effects preset');
+    await frame.locator('#volumeRange').focus();
     await page.keyboard.press('Tab');
     assert.equal(await frame.evaluate(() => document.activeElement.id), 'continueButton', 'dialog focus wraps to its first control');
     await page.keyboard.press('Shift+Tab');
-    assert.equal(await frame.evaluate(() => document.activeElement.id), 'soundToggle', 'dialog focus wraps backwards');
+    assert.equal(await frame.evaluate(() => document.activeElement.id), 'volumeRange', 'dialog focus wraps backwards');
+    const savedSettings = () => frame.evaluate(() => JSON.parse(localStorage.getItem('stacked-player-settings-v1') ?? 'null'));
     await frame.locator('#motionToggle').check();
-    await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
+    await frame.waitForFunction(() => JSON.parse(localStorage.getItem('stacked-player-settings-v1') ?? 'null')?.accessibility?.reduceMotion === true);
+    assert.equal(await frame.locator('#settingsSaveNote').textContent(), 'Changes save automatically on this device. Every setting here is allowed in Ranked.', 'successful saves are silent');
     await frame.locator('#motionToggle').uncheck();
     await frame.locator('#flashToggle').uncheck();
     if(mobile) await frame.locator('#leftHandToggle').check();
@@ -97,15 +104,13 @@ try {
       assert.equal(await frame.locator('#stackedStage').getAttribute('data-rendered-particles'),'432');
       assert.equal(await frame.locator('#stackedStage').getAttribute('data-particle-capacity'),'256');
     }
-    // Scene deck and menu tiles (owner direction 2026-09-16): the choice reaches the renderer and persists on this device.
-    await frame.locator('#sceneSelect').selectOption('horizon');
-    await frame.waitForFunction(() => document.querySelector('#stackedStage').dataset.visualizerScene === 'horizon');
+    // Standard (the default preset) runs the backdrop scene deck in auto mode; menu tiles still work.
+    await frame.waitForFunction(() => ['tunnel', 'particles', 'horizon'].includes(document.querySelector('#stackedStage').dataset.visualizerScene));
+    assert.equal(await frame.locator('#effectsStandard').isChecked(), true);
     await frame.locator('#scoresTile').click();
     assert.equal(await frame.locator('#scoreShelf').isVisible(), true, 'the Scores tile opens the device shelf');
     await frame.locator('#scoresTile').click();
     assert.equal(await frame.locator('#freeModeTile').getAttribute('aria-current'), 'true');
-    await frame.locator('#intensityRange').fill('55');
-    await frame.locator('#intensityRange').dispatchEvent('change');
     await frame.locator('#volumeRange').fill('20');
     await frame.locator('#volumeRange').dispatchEvent('change');
     await page.screenshot({ path: path.join(evidenceDir, name + '-music-settings.png') });
@@ -148,20 +153,22 @@ try {
     assert.equal(shelf.runs, 1);
     await page.screenshot({ path: path.join(evidenceDir, name + '-result.png') });
     await frame.locator('#preferencePanel > summary').click();
-    await frame.locator('#effectsToggle').check();
-    await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
+    await frame.locator('#effectsCalm').check();
+    await frame.waitForFunction(() => JSON.parse(localStorage.getItem('stacked-player-settings-v1') ?? 'null')?.video?.effectsPreset === 'calm');
+    const stored = await savedSettings();
+    assert.deepEqual([stored.video.scene, stored.video.reactiveBoard, stored.video.effectsIntensity], ['off', false, 0.4], 'the preset expansion is stored with the parent settings');
+    assert.equal(await frame.evaluate(() => localStorage.getItem('stacked-visual-scenes-v1')), null, 'the child keeps no settings key of its own');
     await frame.locator('#restartButton').click();
     await page.waitForTimeout(600);
     const restarted = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await restarted.waitForSelector('#stackedStage[data-assets-ready="true"]');
-    assert.equal(await restarted.locator('#effectsToggle').isChecked(), true, 'preferences persist across a fresh run');
+    assert.equal(await restarted.locator('#effectsCalm').isChecked(), true, 'the effects preset persists across a fresh run');
     assert.equal(await restarted.locator('#visualizerSelect').inputValue(), mobile ? 'living' : 'orbit');
-    assert.equal(await restarted.locator('#intensityRange').inputValue(), '55');
     assert.equal(await restarted.locator('#volumeRange').inputValue(), '20');
     assert.equal(await restarted.locator('#flashToggle').isChecked(),false);
     assert.equal(await restarted.locator('#leftHandToggle').isChecked(),mobile);
-    assert.equal(await restarted.locator('#sceneSelect').inputValue(), 'horizon', 'the backdrop scene persists on this device');
-    assert.equal(await restarted.locator('#boardPulseToggle').isChecked(), true);
+    await restarted.waitForFunction(() => document.querySelector('#stackedStage').dataset.visualizerScene === 'off');
+    assert.equal(await restarted.locator('#preferencePanel').evaluate(panel => panel.open), false, 'a fresh run starts with the card closed');
     await restarted.locator('#overlayExitButton').click();
     await page.waitForSelector('#officialWalletSplash:not([hidden])');
     assert.equal(await page.locator('iframe.stacked-game-frame').count(), 0);
