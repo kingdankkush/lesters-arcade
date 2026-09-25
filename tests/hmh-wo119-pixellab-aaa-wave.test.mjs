@@ -206,17 +206,29 @@ test('promoted influencer camera operator ships a complete human 8-state runtime
 
 // The raw PixelLab job ledger has no runtime reader and was retired from the deployed portal folder in the
 // 2026-09-25 asset cleanup. The generator keeps it in the gitignored .hermes/tmp QA lane, starts from an empty
-// ledger when the file is absent, and saving it never recreates the portal output folder.
+// ledger when the file is absent, and saving it never recreates the portal output folder. load_ledger and
+// save_ledger need neither Pillow nor the MCP client, so the probe blocks both imports like the probes above;
+// importing the real packages made this test several times slower than its siblings.
 test('PixelLab quality-wave ledger lives in the gitignored QA lane, starts empty and never writes into apps/portal', () => {
   const scriptPath = fileURLToPath(repoUrl('scripts/pixellab-hmh-aaa-quality-wave.py'));
   const repoRoot = fileURLToPath(new URL('..', import.meta.url));
   const probe = spawnSync('python', ['-c', String.raw`
-import importlib.util, json, os, tempfile
+import builtins, importlib.util, json, os, tempfile
 from pathlib import Path
 path = Path(os.environ['HMH_WAVE_SCRIPT'])
 spec = importlib.util.spec_from_file_location('hmh_wave', path)
 m = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(m)
+real_import = builtins.__import__
+def optional_deps_absent(name, *args, **kwargs):
+    if name.split('.')[0] in {'PIL', 'mcp'}:
+        raise ModuleNotFoundError(name)
+    return real_import(name, *args, **kwargs)
+builtins.__import__ = optional_deps_absent
+try:
+    spec.loader.exec_module(m)
+finally:
+    builtins.__import__ = real_import
+assert m.Image is None and m.ClientSession is None, 'the probe must not import Pillow or the MCP client'
 ledger_rel = m.LEDGER.relative_to(m.ROOT).as_posix()
 assert ledger_rel == '.hermes/tmp/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json', ledger_rel
 assert m.LEDGER.parent == m.QA_OUT, (m.LEDGER, m.QA_OUT)
