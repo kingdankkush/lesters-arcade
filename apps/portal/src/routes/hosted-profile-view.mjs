@@ -524,8 +524,10 @@ export function createHostedProfileView({
       appendText(card, 'span', 'VERIFIED TOTALS', 'cabinet-status-label game-stats-subhead');
       card.append(statGrid('game-stats-grid profile-totals-grid', totals.map(([key, value]) => [TOTAL_LABELS[key], key === 'survivalSeconds' ? formatDuration(value) : Number(value).toLocaleString()])));
     }
+    // A best exists only once a run is verified: rankedRuns also counts
+    // failed and unconfirmed runs, and the server sends null for no best.
     const bestOrder = Object.keys(BEST_LABELS);
-    const bests = shown(game.bests, BEST_LABELS).sort(([left], [right]) => bestOrder.indexOf(left) - bestOrder.indexOf(right));
+    const bests = Number(game.confirmedRuns) > 0 ? shown(game.bests, BEST_LABELS).sort(([left], [right]) => bestOrder.indexOf(left) - bestOrder.indexOf(right)) : [];
     if (bests.length) {
       appendText(card, 'span', 'VERIFIED BESTS', 'cabinet-status-label game-stats-subhead');
       card.append(statGrid('game-stats-grid profile-totals-grid profile-bests-grid', bests.map(([key, value]) => [BEST_LABELS[key], Number(value).toLocaleString()])));

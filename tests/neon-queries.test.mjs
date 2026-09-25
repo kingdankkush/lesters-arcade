@@ -282,9 +282,24 @@ test('profile bests are the highest confirmed per-run value, and totals still su
     assert.deepEqual(games.chikun.bests, { bestCombo: 8 });
     assert.deepEqual([games.chikun.totals.forksPassed, games.chikun.totals.laps], [13, 3]);
   }
-  // A wallet with no runs reads zeros, like its totals.
+  // A wallet with no runs has no best: null, never 0 (its totals, true sums, stay 0).
   const empty = await readPublicProfile(db, W(3), { nowMs: now });
-  assert.deepEqual(Object.fromEntries(Object.entries(empty.games).map(([gameId, game]) => [gameId, game.bests])), { 'lester-blaster': { maxCombo: 0, level: 0 }, chikun: { bestCombo: 0 }, stacked: { level: 0, maxCombo: 0 } });
+  assert.deepEqual(Object.fromEntries(Object.entries(empty.games).map(([gameId, game]) => [gameId, game.bests])), { 'lester-blaster': { maxCombo: null, level: null }, chikun: { bestCombo: null }, stacked: { level: null, maxCombo: null } });
+  assert.equal(empty.games.stacked.totals.level, 0);
+
+  // Ranked runs but none confirmed (polish-2 review): rankedRuns counts them,
+  // so the profile shows the game, but there is no verified best to show.
+  const unlucky = W(4);
+  await seedVerifiedSession(db, { wallet: unlucky, gameId: 'stacked', status: 'failed', lastError: 'rpc-timeout', stats: { score: 100, lines: 40, level: 7, quadClears: 0, perfectClears: 0, maxCombo: 5, survivalSeconds: 10 } });
+  await seedVerifiedSession(db, { wallet: unlucky, gameId: 'stacked', status: 'submitted', stats: { score: 120, lines: 44, level: 8, quadClears: 0, perfectClears: 0, maxCombo: 6, survivalSeconds: 12 } });
+  await seedVerifiedSession(db, { wallet: unlucky, gameId: 'lester-blaster', status: 'pending', stats: { score: 500, kills: 9, survivalSeconds: 60, maxCombo: 9, level: 3, bossKills: 0 } });
+  for (const self of [false, true]) {
+    const { games } = await readPublicProfile(db, unlucky, { self, nowMs: now });
+    assert.deepEqual([games.stacked.rankedRuns, games.stacked.confirmedRuns], [2, 0]);
+    assert.deepEqual(games.stacked.bests, { level: null, maxCombo: null }, `${self ? 'self' : 'public'}: no confirmed run, no best`);
+    assert.equal(games.stacked.totals.lines, 0);
+    assert.deepEqual(games['lester-blaster'].bests, { maxCombo: null, level: null });
+  }
 }));
 
 test('profile reads split the public and self views and take NFT flags from the catalog', async () => withDb(async (db) => {
@@ -305,7 +320,7 @@ test('profile reads split the public and self views and take NFT flags from the 
   assert.deepEqual(publicView.recentSessions.map((row) => row.status), ['confirmed', 'confirmed'], 'the public view lists only confirmed sessions');
   assert.equal(publicView.preferences, null);
   assert.deepEqual(Object.keys(publicView.games).sort(), ['chikun', 'lester-blaster', 'stacked']);
-  assert.deepEqual(publicView.games['lester-blaster'], { rankedRuns: 0, confirmedRuns: 0, bestScore: null, bestSessionId32: null, ranks: { weekly: null, monthly: null, allTime: null }, totals: { kills: 0, survivalSeconds: 0, maxCombo: 0, level: 0, bossKills: 0 }, bests: { maxCombo: 0, level: 0 }, lastPlayedAt: null });
+  assert.deepEqual(publicView.games['lester-blaster'], { rankedRuns: 0, confirmedRuns: 0, bestScore: null, bestSessionId32: null, ranks: { weekly: null, monthly: null, allTime: null }, totals: { kills: 0, survivalSeconds: 0, maxCombo: 0, level: 0, bossKills: 0 }, bests: { maxCombo: null, level: null }, lastPlayedAt: null });
   assert.equal(publicView.games.chikun.rankedRuns, 3, 'every verified run except pending counts');
   assert.equal(publicView.games.chikun.confirmedRuns, 1);
   assert.equal(publicView.games.chikun.bestScore, 700, 'unconfirmed scores never show publicly');

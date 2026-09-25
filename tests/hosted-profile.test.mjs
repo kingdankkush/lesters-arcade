@@ -246,6 +246,21 @@ test('verified totals show true totals only, and per-run bests read as bests', a
   assert.doesNotMatch(text(before.grid), /VERIFIED BESTS|Best combo|Highest level|Combo total|Levels\b|\b95\b|\b41\b/);
   assert.deepEqual(Object.keys(hostedProfileView.BEST_LABELS), ['level', 'maxCombo', 'bestCombo']);
   for (const key of ['maxCombo', 'bestCombo', 'level']) assert.equal(Object.hasOwn(hostedProfileView.TOTAL_LABELS, key), false, `${key} is never summed on screen`);
+
+  // Ranked runs but none verified (polish-2 review): the game shows, with no
+  // best, whether the server sends null (it does) or a stray 0.
+  for (const bests of [{ level: null, maxCombo: null }, { level: 0, maxCombo: 0 }]) {
+    const unverified = e6();
+    unverified.games.stacked = { ...unverified.games.stacked, rankedRuns: 2, confirmedRuns: 0, totals: { lines: 0, level: 0, maxCombo: 0 }, bests };
+    const view = hostedProfile({ answers: { [`${ME}|self`]: unverified } });
+    await rendered(view);
+    view.routeState.gameId = 'stacked';
+    view.route.renderProfile();
+    const page = text(view.grid);
+    assert.match(page, /Ranked Runs/, 'the game has Ranked runs, so its card shows');
+    assert.equal(cells(view.grid, 'profile-bests-grid'), null, JSON.stringify(bests));
+    assert.doesNotMatch(page, /VERIFIED BESTS|Highest level|Best combo/);
+  }
 });
 
 test('own profile shows the on-chain name editor only when deployed', async () => {

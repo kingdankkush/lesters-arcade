@@ -732,7 +732,8 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
   "profile": { "displayName": "Lit Pilot", "avatarUri": "lestersarcade:avatar/lester", "hidden": false, "onchainUpdatedAt": "…" },
   "games": { "lester-blaster": { "rankedRuns": 4, "confirmedRuns": 4, "bestScore": 48210, "bestSessionId32": "0x…",
                                  "ranks": { "weekly": 3, "monthly": 5, "allTime": 12 },
-                                 "totals": { /* sums of §6.3 headline numeric keys */ }, "lastPlayedAt": "…" },
+                                 "totals": { /* sums of §6.3 headline numeric keys */ },
+                                 "bests": { "maxCombo": 12, "level": 5 }, "lastPlayedAt": "…" },
              "chikun": { … }, "stacked": { … } },
   "recentSessions": [ { "sessionId32": "0x…", "shareId": "…", "gameId": "chikun", "score": 19475, "status": "confirmed",
                         "txHash": "0x…", "explorerUrl": "…", "verifiedAt": "…", "confirmedAt": "…", "stats": { /* headline */ } } ],
@@ -742,6 +743,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 ```
 - `profile` fields are null when there is no `wallet_profiles` row. When `hidden` is true, `displayName` and `avatarUri` are null. `profile.nameBlocked` (`'profanity'|'impersonation'|null`) is returned **only** in the self view, so the owner of the wallet learns why their name does not show.
 - `games` always contains all three gameIds, with zeros and nulls when empty.
+- `games[gameId].bests` (additive; added 2026-09-25 by the polish-2 fixer) holds, for each per-run-best headline key the game has (`maxCombo`, `bestCombo`, `level`: HMH `{ maxCombo, level }`, Chikun `{ bestCombo }`, STACKED `{ level, maxCombo }`), the highest value over the wallet's `confirmed` sessions in every season, in both views. A key is `null` when no confirmed session carries it, so an empty game, or one whose Ranked runs all failed or are still unconfirmed, answers `null`, never `0`. `totals` is unchanged: it still sums every numeric headline key, with `0` when empty. The hosted profile shows `bests` as "Highest level" and "Best combo", and sums only the true totals.
 - `recentSessions` holds at most 20, newest first. The public view lists only `confirmed` sessions. The self view (`&self=1`) lists every status except `pending`, with `retryable`, `lastError` and `nextAttemptAt`, which the D10 retry button needs (§7.8).
 - `achievements` holds every unlock for the wallet, ordered by `unlocked_at`. `nft` in each entry is taken from the **current catalog** (A20), not the stored flag.
 - `preferences` is non-null only in the self view.

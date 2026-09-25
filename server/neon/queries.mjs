@@ -178,10 +178,12 @@ function totalsSql() {
 }
 
 // The per-run bests beside the sums: the highest confirmed value of each.
+// Unlike a sum, the maximum of no runs is not 0: a game with no confirmed run
+// (every Ranked run failed, or none yet) answers null, never a best of 0.
 function bestsSql() {
   return ALL_BEST_HEADLINE_KEYS.map((key, index) => {
     if (!STAT_KEY.test(key)) throw new TypeError(`unsafe stats key ${key}`);
-    return `coalesce(max(CASE WHEN status = 'confirmed' AND jsonb_typeof(stats -> '${key}') = 'number' THEN (stats ->> '${key}')::numeric END), 0)::text AS b${index}`;
+    return `max(CASE WHEN status = 'confirmed' AND jsonb_typeof(stats -> '${key}') = 'number' THEN (stats ->> '${key}')::numeric END)::text AS b${index}`;
   }).join(',\n       ');
 }
 
@@ -260,7 +262,7 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
     const perRunBests = {};
     for (const key of BEST_HEADLINE_KEYS[gameId]) {
       const index = ALL_BEST_HEADLINE_KEYS.indexOf(key);
-      perRunBests[key] = Number(aggregate?.[`b${index}`] ?? 0);
+      perRunBests[key] = numberOrNull(aggregate?.[`b${index}`]);
     }
     const standing = standings[gameId] ?? {};
     gamesOut[gameId] = {
