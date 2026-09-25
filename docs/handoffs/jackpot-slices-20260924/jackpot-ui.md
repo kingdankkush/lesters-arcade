@@ -231,3 +231,119 @@ Also close the CSS look-ahead cheat in the Chikun child (design §B.4). Everythi
 - The listed tests pass.
 - `npm test`, `npm run check`, `npm run contracts:check` and `npm run build` pass, and `npm run test:release` shows exactly 51. Do not commit the gate JSON.
 - The browser checks have a clean console, with the portal served as the web root.
+
+## Hand-off record (2026-09-25)
+
+Code head: `a759f54f` on `fable/pd-jackpot-ui`. It contains the integration release commit `3cbd2538` (1.8.3, version-column included) and `fable/pd-jackpot-server` (`55072d09`). Both came in as merges (`9cfea667`, `760d31cd`, `a759f54f`), not as a rebase, because pushed history must not be rewritten. `JACKPOT_LIVE` is committed `false`, and the rules page keeps the design §F.1 legal draft verbatim with its `LEGAL-REVIEW-PENDING` comment.
+
+**Not all budgets are met.** Four deviations remain open (D1-D4 below) and need an owner or orchestrator decision. Until then, "Budgets are met" in the Definition of done does not hold.
+
+### Review findings on `233f2314` (23)
+
+| # | Finding | Result |
+| --- | --- | --- |
+| 1 | The owner timeline marked honest runs as look-ahead | Fixed in `d10d1a18`: only the server verdict is marked. `5ac3adea` checks this on the real v6 replays: the hardcore bot now shows 1 mark (the server's count) instead of 7. |
+| 2, 10, 17 | AC10 budgets | `dist/main.js` is now +444 B (it was +1,229 B), fixed in `957da5f4` and `d597b4d1`. The hosted views are +200 B each (fixed in `401fcc51`). The claim chunk is 3,837 B (fixed in `401fcc51`). The rules page is still over its budget: see D1. The optional main.js budget assertion was not added, because `build.mjs` is outside this slice's files. |
+| 3 | Not rebased onto jackpot-server; only hand-built fixtures were tested | Fixed. jackpot-server was merged in `760d31cd`. `5ac3adea` (`tests/jackpot-ui-server-contract.test.mjs`) runs the real `/api/jackpot`, review and profile handlers, the cron and the real replays. |
+| 4, 11 | A nested render lost the share label | Fixed in `401fcc51`. It is tested on the direct verifying to published path with `hosted: false`. |
+| 5, 9 | `parseJackpot` was stricter than the server (10-row cap, `rules: null`, zero `minFundWei`) | Fixed in `401fcc51`. It is tested with 14 candidate rows and with the real handler output. |
+| 6 | Integrity results were not shown | Fixed in `d10d1a18`: each candidate card has an Integrity row. |
+| 7 | The builder wrote pages before the rules guard ran | Fixed in `957da5f4`: every page is rendered in memory and written only after all guards pass. |
+| 8 | Edits outside the assigned ranges, and the rules page was exempt from the preview sweep | Sweep fixed in `957da5f4`: the preview banner changed, and the rules page is swept except its legal block. The out-of-range edits are kept and listed under D5 for acknowledgement. |
+| 12, 21 | A tie with the leader was shown as a lead | Fixed in `401fcc51`. A tie now reads "Tied with the jackpot leader (provisional)" and has no share label. |
+| 13 | The SIWE session survived an account switch | Fixed in `d10d1a18`. An account switch or a 403 answer drops the session. |
+| 14 | The `adminSubmit` pre-check was weak after the window closed | Fixed in `d10d1a18`. The page runs `eth_call` on `adminSubmit` from the admin account and refuses with the revert reason. |
+| 15 | Empty `jackpot-config` shared chunk | Partly fixed in `401fcc51`: ranked-results no longer imports it. The rest is declined, see D4. |
+| 16 | The child's jackpot line stayed frozen after the close | Fixed in `e1621e5e`. The line is rebuilt on every render and every 30 s, and a test covers the close. |
+| 18 | The rules-page test redefined the budget as gzip | Fixed in `d597b4d1`. The test says the raw 10 KB row is not met. Its gzip check and its 19 KB raw ceiling only stop the size from growing unnoticed. |
+| 19 | The byte record left out the shared client chunk | Fixed by this record (see the table below). |
+| 20 | An entry was not noted if the modal closed before the answer arrived | Fixed in `401fcc51`, with a test. |
+| 22 | Owner-page behaviours without tests | Fixed in `d10d1a18`: a full list of 5, the `LIST_FULL` refusal, a whole-wallet disqualify, and a simulated `TOO_LATE` refusal. `031475be` adds the 320 px layout rules. |
+| 23 | Tests depended on the host locale | Fixed in `401fcc51`. The tests build their expected ranges in the host's own format, or pass `en-US`. |
+
+### Byte deltas
+
+Method: `node build.mjs --metafile` on a `git archive` of each tree. The base is `3cbd2538` and the head is `a759f54f`. Each build swaps in a deployed-shaped `litvm-jackpot.mjs` for the measurement only. `JACKPOT_LIVE` is false, as committed. A throwaway copy with the flag flipped to true was measured as well; its only use is to show the size at the E10 flip. Sizes are raw bytes, with gzip at the default level in brackets.
+
+| Item | Base | Head | Delta | Budget (design §D.3) | Met |
+| --- | --- | --- | --- | --- | --- |
+| `dist/main.js` | 1,160,924 (225,286) | 1,161,368 (225,504) | +444 | ≤ +600 | yes; at the flip +643, see D3 |
+| main.js initial static closure | 2,202,251 | 2,203,174 | +923 | – | the entry, plus +479 in the curated-inventory chunk, plus the 0 B jackpot-config chunk (26 static chunks, was 25) |
+| `hosted-leaderboard-view` | 14,764 | 14,964 | +200 | ≤ +200 | yes |
+| `hosted-profile-view` | 24,664 | 24,864 | +200 | ≤ +200 | yes |
+| `ranked-results` | 23,367 | 23,613 | +246 | ≤ +300 | yes |
+| Chikun child `chikun/game.js` | 42,573 (16,332) | 44,054 (17,074) | +1,481 | ≤ +1,500 (stock-view cap and cull included) | yes; at the flip +1,547, see D3 |
+| HMH child entry | 360,738 | 360,738 | +0 | +0 | yes |
+| HMH initial JS + shared | 1,046,713 | 1,046,713 | +0 | ≤ 1,048,576, no growth | yes |
+| STACKED entry | 27,694 | 27,694 | +0 | +0 (`share-links.mjs` untouched) | yes |
+
+Lazy jackpot chunks. None of them exists on the base, and none is fetched while the flag is false.
+
+| Chunk | Raw (gzip) | Row limit | Met |
+| --- | --- | --- | --- |
+| `chikun-jackpot-panel` (mode select) | 1,283 (733) | ≤ 5 KB | yes, counting its own chunk only |
+| `jackpot-entry-line` | 1,276 (800) | ≤ 3 KB | yes, counting its own chunk only |
+| `jackpot-results-line` | 2,103 (1,098) | ≤ 3 KB | yes, counting its own chunk only |
+| `jackpot-board-header` | 2,723 (1,501) | ≤ 6 KB | yes, counting its own chunk only |
+| `jackpot-profile-wins` | 1,754 (958) | ≤ 4 KB | yes, counting its own chunk only |
+| `jackpot-profile-claim` | 3,837 (1,941) | the profile row's ≤ 4 KB | yes on its own; with the wins chunk 5,591, see D2 |
+| `jackpot-home-promo` | 923 (568) | ≤ 3 KB | yes, counting its own chunk only |
+| shared `jackpot-client.mjs` + `jackpot-view.mjs` chunk | 11,807 (4,581) | no row | see D2 |
+| `jackpot-config.mjs` shared chunk | 0 | – | empty; see D4 |
+
+Rules page (`/jackpot/chikun`): `chikun.html` is 12,211 B (3,807 gzip) and `chikun-rules.mjs` is 6,424 B (2,477 gzip), 18,635 B raw (6,284 gzip) in total, against "static page + module ≤ 10 KB". **Not met**, see D1.
+
+The owner page is not in any bundle.
+
+### Open deviations (need an owner or orchestrator decision)
+
+- **D1. The rules page is 18,635 B raw, against a 10 KB budget.**
+  - Where the bytes go: `<main>` holds 9,912 B (the 16 sections the design requires, the §F.1 legal draft at 1,562 B, and 1,530 B of `copy:` markers the builder and the flip guard need). The page head and shell are 2,299 B. The module is 6,424 B (local times, history and contracts).
+  - The budget cannot be met without cutting required copy.
+  - Measured as transferred, it is 6,284 B gzip. The test pins that value and a 19 KB raw ceiling; neither is the design's budget.
+- **D2. The design has no row for the shared client (design §D.2), and each placement budgets only its own chunk.**
+  - Each surface's first jackpot load also downloads the shared chunk once per page: 11,807 B (4,581 gzip).
+  - Counted against every row, every row is over. For example, the entry row loads 1,276 + 11,807 = 13,083 B against its 3 KB limit.
+  - The profile's claim chunk loads only for the connected winner of a claim-pending week, on top of the wins chunk: 1,754 + 3,837 = 5,591 B against 4 KB.
+- **D3. At the E10 flip, two totals go over budget.**
+  - `dist/main.js` grows to +643 B (budget +600) and the Chikun child to +1,547 B (budget 1,500).
+  - The cause is the live-only branches that esbuild drops while `JACKPOT_LIVE` is false: +199 B in main.js and +66 B in the child.
+  - The committed build meets both budgets. The flip commit must either trim these bytes or get them accepted.
+- **D4. The empty `jackpot-config` chunk (the rest of finding 15).**
+  - esbuild still keeps a 0 B shared chunk for `jackpot-config.mjs`.
+  - `dist/main.js`, the Chikun child and both hosted views import it, at 28-36 B per import statement. The deltas above already include this cost. It adds one extra module request per page.
+  - The chunk should fold into the chunk that only `main.js` and the Chikun child share if the hosted views took the flag from their route modules; esbuild groups modules by the entries that reach them. This was not verified with a build. That fix needs edits in `official-leaderboard-route.mjs`, `official-profile-route.mjs` and main.js's route deps, all outside this slice's files, so it is declined here.
+- **D5. Edits outside the brief's file list, kept for acknowledgement at merge.**
+  - `main.js` has a static `import { JACKPOT_LIVE } from './src/jackpot-config.mjs'` beside the settlement import. The three glue sites need it.
+  - The test helper `tests/helpers/jackpot-fake-dom.mjs`.
+  - Updated pins in `tests/portal-copy.test.mjs` and `tests/portal-trust-surface.test.mjs`. The text is unchanged; only its source moved to the builder-only `jackpotCopy()`.
+  - `tests/portal-pages-build.test.mjs` now also checks the rules page for preview wording. Only its legal block is skipped.
+- **D6. The Chikun child's `?replay=` deep link is not flag-gated** (carried over from `233f2314`).
+  - It asks `/api/jackpot/replay` only when a strict same-origin link is opened.
+  - No surface asks `/api/jackpot` while the flag is false.
+
+### Verification
+
+All results below are from the code head `a759f54f`.
+
+| Check | Result |
+| --- | --- |
+| Jackpot, Chikun, portal copy/pages/trust and ranked-results suites | 138 tests, all pass |
+| Owner page and server-contract suites | 12 tests, all pass |
+| `npm run check` | passes (994 JS modules) |
+| `npm run contracts:check` | passes |
+| `npm run build` | passes |
+| `npm run test:release` | `PASS tests=5053 passed=5002 expected_failures=51` |
+
+The gate JSON was restored with `git checkout` and is not committed.
+
+The last browser check ran on `031475be`, the commit just before the 1.8.3 merge. `apps/portal` was served as the web root, with the real jackpot-server review payload. It found:
+- Home, Chikun mode select and Scores: no `/api/jackpot` request, the promo and entry row stay hidden, and there is no marquee.
+- `/jackpot/chikun.html` at 1,280 and 320 px: `noindex`, no request, and no horizontal scroll.
+- The Chikun cabinet at 21:9 with `aspect-ratio` removed: a 1600 × 900 canvas with `object-fit: contain`.
+- `/owner/jackpot.html`: the install-a-wallet state. With a stubbed session, both candidates render at 1,280 and 320 px, each with a timeline marking 0 unexplained descents (the server's count) and a passed Integrity row. There is no horizontal scroll.
+- The console had no app errors on any page.
+
+The check was not re-run on `a759f54f`, for two reasons:
+- That merge changed only integration files: the version marker, `sw.js`, and retired or regenerated asset files and manifests. None of this slice's files changed.
+- An integration gate and a Playwright perf bench were running on this machine, and browser smokes must never run in parallel.
