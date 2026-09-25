@@ -158,8 +158,9 @@ test('E15 checks the session handle, season and build hash with the verifier\'s 
       }
     }
   }
-  // Both cabinet build hashes fit Chikun and STACKED; one fits HMH.
-  assert.equal(accepted, 5);
+  // Both cabinet build hashes fit Chikun and STACKED; all three fit HMH,
+  // whose cabinet segment is optional (version-column, 2026-09-25).
+  assert.equal(accepted, 7);
 });
 
 // --- The settle test double against the real verify functions (DoD 2) --------
@@ -181,7 +182,7 @@ const bindingChecks = (gameId) => [
   ['identity-registry-mismatch', (body) => { body.identity.scoreRegistryAddress = `0x${'5'.repeat(40)}`; }],
   ['identity-wallet-mismatch', (body) => { body.identity.wallet = `0x${'3c'.repeat(20)}`; }],
   ['identity-season-mismatch', (body) => { body.identity.seasonId = RANKED_GAMES[gameId === 'chikun' ? 'stacked' : 'chikun'].seasonId; }],
-  ['identity-buildhash-invalid', (body) => { body.identity.buildHash = gameId === 'lester-blaster' ? FIXTURE_BUILD_HASHES.chikun : FIXTURE_BUILD_HASHES['lester-blaster']; }],
+  ['identity-buildhash-invalid', (body) => { body.identity.buildHash = gameId === 'lester-blaster' ? 'site-1.7.0:game-1.7.0:cabinet-0.9' : FIXTURE_BUILD_HASHES['lester-blaster']; }],
   ['identity-session-invalid', (body) => { body.identity.sessionId = 'game-session-000000001'; }],
   ['identity-nonce-mismatch', (body) => { body.identity.nonce = '22222222-2222-4222-8222-222222222222'; }],
   ['seed-ticket-invalid', (body) => { body.seedTicket.mac = flipHex(body.seedTicket.mac); }],

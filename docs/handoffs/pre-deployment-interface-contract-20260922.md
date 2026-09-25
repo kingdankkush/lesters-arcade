@@ -82,6 +82,7 @@ A cached grant is acceptable for **cosmetics** only. The HMH heroes Lester and L
 **A11. `buildHash` is format-checked, not allowlisted.** Seed unpredictability comes from the server-issued seed ticket (A25), not from the build. An allowlist would add no protection, and it would reject runs whose entry was paid just before a deploy.
 
 - The server requires `^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+$` for `lester-blaster`, and the same with `:cabinet-\d+\.\d+\.\d+` for `chikun` and `stacked`.
+- **HMH cabinet segment** (added 2026-09-25 by version-column, owner decision: no testnet season resets; every score shows its game version): the `lester-blaster` pattern also accepts an optional `:cabinet-\d+\.\d+\.\d+`, so it is `^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+(?::cabinet-\d+\.\d+\.\d+)?$`. New HMH builds carry `HMH_CABINET_VERSION` (`apps/portal/src/hmh-cabinet-version.mjs`, first `0.5.0`; the HMH roadmap session owns bumps), and 1.8.x runs without the segment stay valid. The browser and the server share the one pattern in `RANKED_GAMES` (§7.1), which E3 (`bindRankedIdentity`) and E15 (`validateSeedBody`) apply.
 - Replay compatibility is gated by evidence version: ranked Chikun accepts only `chikun-flap-evidence-v6`, and STACKED only SIC1 codec 1.
 
 **A12. Contract bounds.**
