@@ -11,6 +11,8 @@ Status: reboot foundation contract for `apps/hmh-reboot`
 - Loss metrics persist until `takeLossMetrics()` marks an explicit certified measurement boundary.
 - Rendering uses interpolation alpha to blend immutable previous/current spatial transforms. Interpolation never changes authoritative state.
 - `start`, `active`, `paused`, `upgrade`, `game-over`, and `exit` are explicit states. Paused, hidden, upgrade, game-over, and exited frames do not accumulate future catch-up.
+- A step that enters a modal state (a level-up offer, the weapon wheel, pause, game over) ends the catch-up batch on that tick: no later tick of the frame runs behind the modal (design package S0.2).
+- Projection observers (`onProjectionStep`) are stepped once per tick, catch-up included, after the step and replay callbacks. They hold presentation state only; a fault is counted (`getProjectionFaultCount()`) and never stops or changes the simulation.
 
 ## Replay and randomness
 

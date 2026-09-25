@@ -933,6 +933,7 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/upgrade-panel.mjs",
   "apps/hmh-reboot/src/progression-content.mjs",
   "tests/hmh-reboot-bundle-offsets.test.mjs",
+  "tests/hmh-reboot-level-offer-tick.test.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
   "apps/hmh-reboot/src/world-atmosphere.mjs",

@@ -10,6 +10,7 @@ The cap is 1,048,576 B for the HMH child's entry + Pixi vendor + every chunk `ga
 |---|---|---|---|---|
 | Base: `f9d6daa1` (1.8.1 + verifier v7) | 1,046,761 | – | 1,815 | |
 | 1. Foundations: bundle offsets | 1,008,196 | −38,565 | 40,380 | Level-up panel, card text, boss, world-design objectives, world-design life, pacing, native world assets and the briefing become awaited dynamic imports |
+| 1. Foundations: offer inside its tick, projection observer | 1,008,613 | +417 | 39,963 | |
 
 ### What the offsets moved (slice 1)
 
@@ -36,3 +37,5 @@ Same-seed runs must stay identical. Gameplay slices may change results against 1
 | Slice | Change against 1.8.1 |
 |---|---|
 | 1. Bundle offsets | none (loading only) |
+| 1. Offer timing | A level-up offer (earned, or the progression pilot's forced level) opens at the end of the tick whose XP produced it and stops that frame's catch-up. In 1.8.1 it opened after the frame, so up to three more ticks could run between the level and the panel, and how many depended on the frame partition. The offer tick is now partition-independent. |
+| 1. Projection observer | none (new hook, no consumer yet) |

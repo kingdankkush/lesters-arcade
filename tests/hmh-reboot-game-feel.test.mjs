@@ -380,7 +380,10 @@ test('the level-up beat fires on the applied-upgrade resume path, never while th
   const pick = source.slice(source.indexOf('const applySelectedUpgrade = '), source.indexOf('app.ticker.start();', source.indexOf('const applySelectedUpgrade = ')));
   assert.match(pick, /lastLevelUpBeat = \{ tick: simulation\.tick/);
   assert.ok(pick.indexOf('lastLevelUpBeat = {') > pick.indexOf('simulation.leaveUpgrade()'), 'the beat is stamped after the simulation leaves the upgrade state');
-  const offer = source.slice(source.indexOf('if (upgradePending && simulation.state === '), source.indexOf('renderActor = interpolateSpatialState'));
+  // S0.2: the offer opens inside its tick and the frame loop only paints it.
+  const offerStart = source.indexOf('const openPendingUpgradeOffer = ');
+  const offer = source.slice(offerStart, source.indexOf('let actor = null;', offerStart));
+  assert.match(offer, /const presentUpgradeOffer = /);
   assert.doesNotMatch(offer, /lastLevelUpBeat/);
   assert.match(source, /resolveLevelUpBurst\(\{/);
   assert.match(source, /resolvePickupSparkle\(\{/);
