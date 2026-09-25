@@ -82,6 +82,10 @@ A cached grant is acceptable for **cosmetics** only. The HMH heroes Lester and L
 **A11. `buildHash` is format-checked, not allowlisted.** Seed unpredictability comes from the server-issued seed ticket (A25), not from the build. An allowlist would add no protection, and it would reject runs whose entry was paid just before a deploy.
 
 - The server requires `^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+$` for `lester-blaster`, and the same with `:cabinet-\d+\.\d+\.\d+` for `chikun` and `stacked`.
+- **HMH cabinet segment** (added 2026-09-25 by version-column, owner decision: no testnet season resets; every score shows its game version): the `lester-blaster` pattern also accepts an optional `:cabinet-\d+\.\d+\.\d+`, so it is `^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+(?::cabinet-\d+\.\d+\.\d+)?$`. New HMH builds carry `HMH_CABINET_VERSION` (`apps/portal/src/hmh-cabinet-version.mjs`, first `0.5.0`; the HMH roadmap session owns bumps), and 1.8.x runs without the segment stay valid. The browser and the server share the one pattern in `RANKED_GAMES` (§7.1), which E3 (`bindRankedIdentity`) and E15 (`validateSeedBody`) apply.
+  - **Version labels trust only shipped cabinets** (added 2026-09-25 by the version-column fixer, review finding): the client chooses the `buildHash`, and this format check cannot prove its cabinet, so the E5, E6 and E9 `versionLabel` (§4.3.5) shows an HMH or STACKED cabinet only inside the range the deploy has shipped (`SHIPPED_CABINETS` in `apps/portal/src/game-version-labels.mjs`: HMH `0.5` up to `HMH_CABINET_VERSION`, STACKED `0.2` up to `STACKED_CABINET_VERSION`, major.minor). Anything else, such as a future, oversized or never-shipped cabinet, reads `<Game> v?`. The server still accepts and stores such a build, which keeps this rule's promise never to reject a run for its build. E3 and E15 do not reject a cabinet newer than the server's either, because a rollback would then refuse paid runs from the newer client. Chikun needs no range: its label comes from the `runtime_id` the server sets. The residual risk is in §12.
+  - **A cabinet bump moves two constants** (same fixer): `HMH_CABINET_VERSION` and the HMH child's `RUNTIME_VERSION` (`apps/hmh-reboot/src/main.mjs`, reported as `runtimeInfo.runtimeVersion`) name the same game version. They must share major.minor, and `tests/hmh-cabinet-version.test.mjs` fails when they drift.
+  - **HMH Free challenge links** (same fixer, review finding): the segment changes the live HMH build hash just as every release's `SITE_VERSION` bump does. So HMH Free challenge links shared before the deploy are refused as "a different build", and the picker offers a current course instead. The daily and weekly courses of the current period also reseed, because the challenge seed hashes the build (`apps/portal/src/hmh-challenges.mjs`). This break is not new: `version-tracking.mjs` bumps `SITE_VERSION` on every deploy that changes the site, and each bump does the same. A test in `tests/hmh-cabinet-version.test.mjs` pins the behaviour.
 - Replay compatibility is gated by evidence version: ranked Chikun accepts only `chikun-flap-evidence-v6`, and STACKED only SIC1 codec 1.
 
 **A12. Contract bounds.**
@@ -715,12 +719,14 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 { "ok": true, "gameId": "chikun", "seasonId": "chikun-season-preview-1", "period": "weekly", "periodKey": "2026-W39",
   "resetsAt": "2026-09-28T00:00:00.000Z", "page": 1, "pageSize": 25, "total": 137,
   "rows": [ { "rank": 1, "wallet": "0x…", "walletShort": "0x1234…abcd", "displayName": "Chikun King", "avatarUri": null,
-              "score": 19475, "stats": { /* headline keys, §6.3 */ }, "sessionId32": "0x…", "shareId": "…",
+              "score": 19475, "stats": { /* headline keys, §6.3 */ }, "versionLabel": "Chikun v7", "sessionId32": "0x…", "shareId": "…",
               "txHash": "0x…", "explorerUrl": "https://liteforge.explorer.caldera.xyz/tx/0x…", "confirmedAt": "…" } ],
   "you": null }
 ```
 - `you` is `{ rank, score, sessionId32, shareId }` when `wallet` is given and has a row in the period, otherwise null.
 - `resetsAt` is null for `all-time`.
+- `versionLabel` (additive; added 2026-09-25 by version-column, owner decision: no testnet season resets, every score shows its game version) is `versionLabelFor(gameId, { buildHash: build_hash, runtimeId: runtime_id })` from `apps/portal/src/game-version-labels.mjs` for the ranked row: `HMH v0.5` (the cabinet major.minor of the HMH build hash; an HMH build without a cabinet segment is `HMH v0.5`), `Chikun v7` (from `chikun:canvas-runtime-v7`), `STACKED v0.2` (the cabinet major.minor), and `<Game> v?` when the version cannot be read (a `chain-index` row has no build hash). It is derived at read time from the migration-1 columns (nothing stored, no migration). The raw `build_hash` is never returned.
+  - *Clarified 2026-09-25 by the version-column fixer (review findings):* only the build-hash games fall back to `v?` on a `chain-index` row (`HMH v?`, `STACKED v?`). A Chikun `chain-index` row still reads `Chikun v7`, because the indexer stores the reverse-mapped `runtime_id` (`server/indexer/index-chain.mjs`). An HMH or STACKED cabinet outside the deploy's shipped range (A11) also reads `<Game> v?`. A label is therefore always a version this deploy has shipped, or `v?`. The hosted board and profile mute `v?` with the tooltip "Game version unknown for this run", and the share page (E10) lists no version for it. A body without the field (cached before it existed) shows a muted dash on the board and no chip on the profile.
 
 **Errors:** 400 `invalid-game` | `invalid-period` | `invalid-period-key` | `invalid-page` | `invalid-query` | `invalid-wallet`; 503 `index-not-configured`.
 
@@ -736,7 +742,8 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
                                  "bests": { "maxCombo": 12, "level": 5 }, "lastPlayedAt": "…" },
              "chikun": { … }, "stacked": { … } },
   "recentSessions": [ { "sessionId32": "0x…", "shareId": "…", "gameId": "chikun", "score": 19475, "status": "confirmed",
-                        "txHash": "0x…", "explorerUrl": "…", "verifiedAt": "…", "confirmedAt": "…", "stats": { /* headline */ } } ],
+                        "txHash": "0x…", "explorerUrl": "…", "verifiedAt": "…", "confirmedAt": "…", "stats": { /* headline */ },
+                        "versionLabel": "Chikun v7" } ],
   "achievements": [ { "id": "chikun-reach-coast", "gameId": "chikun", "tier": "gold", "nft": false, "sessionId32": "0x…",
                       "unlockedAt": "…", "tokenId": null, "mintTxHash": null } ],
   "preferences": null, "updatedAt": "…" }
@@ -744,7 +751,7 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
 - `profile` fields are null when there is no `wallet_profiles` row. When `hidden` is true, `displayName` and `avatarUri` are null. `profile.nameBlocked` (`'profanity'|'impersonation'|null`) is returned **only** in the self view, so the owner of the wallet learns why their name does not show.
 - `games` always contains all three gameIds, with zeros and nulls when empty.
 - `games[gameId].bests` (additive; added 2026-09-25 by the polish-2 fixer) holds, for each per-run-best headline key the game has (`maxCombo`, `bestCombo`, `level`: HMH `{ maxCombo, level }`, Chikun `{ bestCombo }`, STACKED `{ level, maxCombo }`), the highest value over the wallet's `confirmed` sessions in every season, in both views. A key is `null` when no confirmed session carries it, so an empty game, or one whose Ranked runs all failed or are still unconfirmed, answers `null`, never `0`. `totals` is unchanged: it still sums every numeric headline key, with `0` when empty. The hosted profile shows `bests` as "Highest level" and "Best combo", and sums only the true totals.
-- `recentSessions` holds at most 20, newest first. The public view lists only `confirmed` sessions. The self view (`&self=1`) lists every status except `pending`, with `retryable`, `lastError` and `nextAttemptAt`, which the D10 retry button needs (§7.8).
+- `recentSessions` holds at most 20, newest first. The public view lists only `confirmed` sessions. The self view (`&self=1`) lists every status except `pending`, with `retryable`, `lastError` and `nextAttemptAt`, which the D10 retry button needs (§7.8). Each session carries `versionLabel` in both views (additive, 2026-09-25, version-column; the E5 rule), and never `buildHash` or `runtimeId`.
 - `achievements` holds every unlock for the wallet, ordered by `unlocked_at`. `nft` in each entry is taken from the **current catalog** (A20), not the stored flag.
 - `preferences` is non-null only in the self view.
 - **Self view** `GET /api/profile?wallet=0x…&self=1`: requires a Bearer token for the same wallet (else `401 invalid-session`), and is always `private, no-store`. It is a distinct URL, so the CDN can never serve a cached public body to it.
@@ -768,12 +775,13 @@ A test proves the ordering: an unpaid body gets 402 with the verifier spy never 
   ```
   { ok:true, session:{ sessionId32, shareId, gameId, gameTitle, wallet, walletShort, displayName, avatarUri,
                        score, stats, contract:{kills,maxCombo,survivalSeconds,bossId}, status, txHash, blockNumber,
-                       explorerUrl, verifiedAt, confirmedAt, seasonId, runtimeId,
+                       explorerUrl, verifiedAt, confirmedAt, seasonId, runtimeId, versionLabel,
                        achievements:[{ id, tier, nft, unlockedAt, tokenId }],
                        standing:{ weekly:number|null, monthly:number|null, allTime:number|null } } }
   ```
   `standing` is the rank of this session's wallet in each period, only when this session is that wallet's best and the wallet is not `board_excluded`; otherwise null per period.
 - `displayName` and `avatarUri` are null when the profile is `hidden` (A29); blocked names are already null. Consumers fall back to `walletShort`.
+- `versionLabel` (additive, 2026-09-25, version-column) follows the E5 rule; `runtimeId` stays, and the raw build hash is never returned.
 - `stats` is the §6.3 server stats only, as the headline subset (§6.3: "the `stats` subset in E5, E6 and E9 rows"); `client_claim` and `plausibility` are never included.
 - `verification`: `'replay'` for Chikun and STACKED, `'plausibility'` for HMH, `'chain-index'` for rows the indexer created.
 - `cardRev`: the card revision of §7.5, so the share page can build the versioned `og:image`.
@@ -1721,6 +1729,7 @@ No slice edits `main.js` in waves 1, 2 or 3b except as listed. Wave-3 slices tou
 - **Unearnable HMH achievements.** Level 2, speed-clear and all-bosses entries ship `available:false`.
 - **Byte budgets.** The STACKED entry has 1,244 B and the HMH child 2,147 B of headroom; the per-slice budgets of §11 rule 5 leave little slack.
 - **Period edge.** Period keys come from `openedAt`, so a run opened before a weekly reset and published after it lands on the previous week's board, and the results screen shows no weekly standing for it.
+- **HMH and STACKED version labels are client-asserted within the shipped range** (added 2026-09-25 by the version-column fixer). The `versionLabel` of an HMH or STACKED run comes from the cabinet in the client's `buildHash`, which the server only format-checks (A11). The label never shows a version the deploy has not shipped. A cabinet that is still within the shipped range cannot be disproved, though. A modified client can label a run with an older shipped cabinet. STACKED replays every run under the rules deployed at settle time, whatever cabinet it names. A run stored today with a future cabinet will show that version once a later deploy ships it. Chikun labels come from the server's `runtime_id` and are not affected. Mitigation: HMH and STACKED have shipped one cabinet each so far (`0.5`, `0.2`), so today every accepted claim is the true version.
 
 ---
 

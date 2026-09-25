@@ -2714,3 +2714,88 @@ button[class="pixel-button"]:disabled,
 @media (max-width: 560px) {
   .achievements-grid.profile-achievement-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 }
+
+/* ---- Game version per score (version-column, 2026-09-25) ----------------- */
+/* No testnet season resets: every verified score shows the game version it
+   was played on. Hosted Scores boards add a compact Version cell ('v0.5');
+   the preview board keeps its ten columns. Every column the board showed
+   before stays at every width (Published from 761 px up), stat columns keep
+   at least the room they had, and no width runs a row past the card (the
+   ten-track grid did at 1081-1113 px):
+   - 1200 px and up: a Version column before Proof;
+   - 601-1199 px: the version sits under the score;
+   - phones: a labelled chip with the stats.
+   scripts/hosted-scores-version-layout-smoke.mjs measures it in Chromium. */
+.leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
+.leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
+  grid-template-columns: 48px minmax(130px, 1.9fr) 100px repeat(5, minmax(56px, 0.7fr)) 64px 92px 76px;
+  gap: 8px;
+}
+.leaderboard-board-v10 .lt-version {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 2px 7px;
+  border: 1px solid rgba(159, 233, 255, 0.3);
+  border-radius: 999px;
+  color: #9fe9ff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.leaderboard-board-v10 .lt-version.is-unknown { border-color: transparent; color: #8b9bc0; }
+.lb-align-center { justify-content: center; text-align: center; }
+@media (max-width: 1199px) {
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
+    grid-template-columns: 48px minmax(150px, 1.9fr) 100px repeat(5, minmax(60px, 0.7fr)) 92px 76px;
+    gap: 2px 8px;
+  }
+  /* Under the score: every other cell spans both lines of the row. */
+  .leaderboard-board-hosted.leaderboard-board-v10 .th-cell-version { display: none; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .leaderboard-td { grid-row: 1 / span 2; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-score { grid-row: 1; align-self: end; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-version { grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; }
+}
+@media (max-width: 1080px) {
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
+    grid-template-columns: 48px minmax(150px, 1.9fr) 96px repeat(3, minmax(60px, 0.7fr)) 80px;
+  }
+}
+@media (max-width: 760px) {
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
+    grid-template-columns: 44px minmax(0, 1fr) 88px repeat(3, minmax(48px, 0.6fr));
+    gap: 2px 8px;
+  }
+}
+@media (max-width: 600px) {
+  .leaderboard-board-v10 .lt-version {
+    padding: 3px 8px;
+    border: 0;
+    background: rgba(25, 247, 255, 0.08);
+    font-size: 0.68rem;
+  }
+  .leaderboard-board-v10 .lt-cell-label + .lt-version { border-radius: 0 999px 999px 0; padding-left: 5px; }
+}
+
+/* Profile: the version leads each run's status line. */
+.profile-session-row > .profile-session-version {
+  padding: 2px 8px;
+  border: 1px solid rgba(159, 233, 255, 0.3);
+  border-radius: 999px;
+  color: #9fe9ff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* An unknown version ('HMH v?') is muted, as on the hosted board. */
+.profile-session-row > .profile-session-version.is-unknown { border-color: transparent; color: #8b9bc0; }

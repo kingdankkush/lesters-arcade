@@ -66,8 +66,15 @@ test('ranked games table matches session identities and on-chain ids', () => {
   assert.deepEqual(Object.fromEntries(RANKED_GAME_IDS.map((g) => [g, RANKED_GAMES[g].evidenceEncoding])), {
     'lester-blaster': 'hmh-run-summary-v6+json', chikun: 'chikun-flap-evidence-v6+json', stacked: 'stacked-sic1+base64',
   });
-  // A11: HMH has no cabinet part; the cabinet games require one.
-  assert.equal(RANKED_GAMES['lester-blaster'].buildHashPattern.test('site-1.7.0:game-1.7.0:cabinet-0.9.0'), false);
+  // A11: the cabinet games require a cabinet part; HMH accepts an optional one
+  // (version-column, 2026-09-25), so 1.8.x runs without it stay valid.
+  const hmhBuild = RANKED_GAMES['lester-blaster'].buildHashPattern;
+  assert.equal(hmhBuild.test('site-1.8.2:game-1.8.2:cabinet-0.5.0'), true);
+  assert.equal(hmhBuild.test('site-1.8.1:game-1.8.1'), true);
+  for (const bad of ['site-1.8.1:game-1.8.1:cabinet-0.5', 'site-1.8.1:game-1.8.1:cabinet-', 'site-1.8.1:game-1.8.1:cabinet-0.5.0:cabinet-0.6.0',
+    'site-1.8.1:game-1.8.1:cab-0.5.0', 'site-1.8.1:game-1.8.1:cabinet-0.5.0 ', 'site-1.8.1:game-1.8.1:cabinet-a.b.c', 'site-1.8.1:game-1.8.1:']) {
+    assert.equal(hmhBuild.test(bad), false, bad);
+  }
   assert.equal(RANKED_GAMES.chikun.buildHashPattern.test('site-1.7.0:game-1.7.0'), false);
   assert.equal(RANKED_GAMES.stacked.buildHashPattern.test('site-1.7:game-1.7.0:cabinet-0.2.0'), false);
 });

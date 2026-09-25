@@ -12,6 +12,7 @@
 // the default avatar. og:image is the versioned card URL (?v=cardRev, §7.5).
 import { achievementById } from '../../apps/portal/src/achievements/index.mjs';
 import { LITVM_DEPLOYMENT } from '../../apps/portal/src/generated/litvm-addresses.mjs';
+import { versionLabelText } from '../../apps/portal/src/game-version-labels.mjs';
 import { INDEX_GAMES } from '../neon/rows.mjs';
 import { cardHandle, cardStandingText } from './render-card.mjs';
 
@@ -213,6 +214,11 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   const standing = confirmed ? cardStandingText(session.standing) : '';
   const stats = session.stats && typeof session.stats === 'object' ? session.stats : {};
   const statRows = (PAGE_STATS[gameId] ?? []).map(([label, read]) => [label, read(stats)]);
+  // The game version the run was played on (E9 versionLabel, version-column);
+  // a run whose version is unknown ('HMH v?': not recorded, or not a version
+  // this deploy has shipped) lists none.
+  const versionLabel = versionLabelText(session.versionLabel);
+  if (versionLabel && !versionLabel.endsWith('v?')) statRows.push(['Version', versionLabel]);
   const pageUrl = `${SHARE_SITE_ORIGIN}/s/${shareId}`;
   const cardRev = /^[0-9a-f]{12}$/.test(String(session.cardRev ?? '')) ? session.cardRev : '';
   const cardPath = `/api/share-card/${shareId}.png${cardRev ? `?v=${cardRev}` : ''}`;

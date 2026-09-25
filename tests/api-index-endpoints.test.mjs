@@ -296,7 +296,7 @@ test('E9 never returns client claims or plausibility flags', async () => withFre
   assert.equal(session.verification, 'plausibility', 'the only plausibility on E9 is the verification label');
   assert.deepEqual(Object.keys(session).sort(), [
     'achievements', 'avatarUri', 'cardRev', 'confirmedAt', 'contract', 'displayName', 'explorerUrl', 'gameId', 'gameTitle', 'runtimeId', 'score',
-    'seasonId', 'sessionId32', 'shareId', 'standing', 'stats', 'status', 'txHash', 'blockNumber', 'verification', 'verifiedAt', 'wallet', 'walletShort',
+    'seasonId', 'sessionId32', 'shareId', 'standing', 'stats', 'status', 'txHash', 'blockNumber', 'verification', 'verifiedAt', 'versionLabel', 'wallet', 'walletShort',
   ].sort());
   assert.deepEqual(session.contract, { kills: 300, maxCombo: 30, survivalSeconds: 1080, bossId: 'boss-liquidator' });
   assert.equal(session.verification, 'plausibility');

@@ -6,6 +6,8 @@
 // selected game round-trips through the URL, and what the empty states say.
 // Everything here is DOM-free so it can be unit-tested with node --test.
 
+import { versionLabelText } from './game-version-labels.mjs';
+
 export const LEADERBOARD_PAGE_SIZE = 10;
 export const LEADERBOARD_MAX_ROWS = 50;
 export const LEADERBOARD_GAME_PREFERENCE_KEY = 'lesters-arcade-scores-game-v1';
@@ -94,6 +96,8 @@ export function hostedLeaderboardEntry(row = {}, { connectedWallet = null } = {}
     runStats: row.stats && typeof row.stats === 'object' ? row.stats : {},
     recordedAt: row.confirmedAt ?? null,
     explorerUrl: verifiedExplorerUrl(row.explorerUrl),
+    // The game version the run was played on (E5 versionLabel), or null.
+    versionLabel: versionLabelText(row.versionLabel),
     shareId: row.shareId ?? null,
     sessionId32: row.sessionId32 ?? null,
     isCurrentPlayer: you,

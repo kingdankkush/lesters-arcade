@@ -10,6 +10,7 @@
 import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
 import { ARCADE_AVATARS, ARCADE_AVATAR_URI_PREFIX, arcadeAvatarForUri } from '../arcade-avatars.mjs';
 import { verifiedExplorerUrl } from '../leaderboard-view.mjs';
+import { versionLabelText, versionLabelTitle } from '../game-version-labels.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
 
 export const PROFILE_SHARE_ORIGIN = 'https://lestersarcade.io';
@@ -561,6 +562,15 @@ export function createHostedProfileView({
       appendText(row, 'span', `${Number(session.score ?? 0).toLocaleString()} pts`, 'game-history-score');
       const when = Date.parse(String(session.confirmedAt ?? session.verifiedAt ?? ''));
       appendText(row, 'span', `${gameTitleFor(session.gameId)}${Number.isFinite(when) ? ` · ${new Date(when).toLocaleDateString()}` : ''}`, 'game-history-detail');
+      // The game version the run was played on (E6 versionLabel; owner
+      // decision 2026-09-25: no testnet season resets). It leads the status
+      // line, so a missing label never moves the score or the game. An
+      // unknown version ('HMH v?') is muted, as on the hosted board.
+      const version = versionLabelText(session.versionLabel);
+      if (version) {
+        const unknown = version.endsWith('v?') ? ' is-unknown' : '';
+        appendText(row, 'span', version, `game-history-version profile-session-version${unknown}`).title = versionLabelTitle(version);
+      }
       appendText(row, 'span', status.label, `game-history-chain trust-${status.tone}`);
       const explorerUrl = verifiedExplorerUrl(session.explorerUrl);
       if (status.tone === 'verified' && explorerUrl) {

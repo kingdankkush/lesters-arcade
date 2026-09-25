@@ -10,6 +10,7 @@ import { buildAchievementProgress, normalizeAchievementUnlockDate } from './achi
 import { resolveHmhChallenge } from './hmh-challenges.mjs';
 import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, flapTicksOf, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
 import { STACKED_CABINET_VERSION } from './stacked-cabinet.mjs';
+import { HMH_CABINET_VERSION } from './hmh-cabinet-version.mjs';
 import { replayStackedRun } from './stacked-sim.mjs';
 import { compareStackedRows } from './stacked-score-order.mjs';
 import {
@@ -2199,6 +2200,9 @@ export const ARCADE_GAMES = Object.freeze([
     livesFree: Infinity,
     tagline: 'Fight through Litecoin City After Dark with sparks-only defaults and optional pre-run gore.',
     systemRole: 'child-dapp-cartridge',
+    // New HMH buildHashes read site-X:game-Y:cabinet-<HMH_CABINET_VERSION>
+    // (owner decision 2026-09-25: every score shows its game version).
+    cabinetVersion: HMH_CABINET_VERSION,
     parentSystem: 'Lester\'s Arcade',
     gameplay: LESTER_BLASTER_GAMEPLAY,
     presentation: Object.freeze({
