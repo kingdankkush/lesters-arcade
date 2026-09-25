@@ -468,6 +468,54 @@ test('S8: the machines and secrets say what their objectives say', () => {
   refuses((s) => { complete(s, 'warehouse-logbook', 600, 2); Object.assign(row(s.milestones.secrets, 'secretId', 'warehouse-logbook'), { found: 0, tick: 0 }); }, message);
 });
 
+// S8 is the only guard of the A2-1 fix (secret silver needs the secret's
+// objective, whose node XP is bounded), so each half of each row comparison
+// is refused on its own: every payload below breaks exactly one of `completed
+// === found/operated` and `tick === tick`, and passes every earlier clause
+// (an untouched row is 0 at tick 0; a completed node may sit at tick 0).
+test('S8: each half of the machine and secret comparison refuses on its own', () => {
+  const message = 'game:run-summary milestones do not match the objectives';
+  const secret = (s, id, found, tick) => Object.assign(row(s.milestones.secrets, 'secretId', id), { found, tick });
+  const site = (s, id, operated, tick) => Object.assign(row(s.milestones.sites, 'siteId', id), { operated, tick });
+  const objective = (s, id, completed, tick, level) => Object.assign(row(s.objectives, 'objectiveId', id), { completed, tick, levelAtCompletion: level });
+  for (const id of C7.secrets) {
+    // found = 1 at tick 0 while the objective is untouched (0 at tick 0): only `found` differs.
+    refuses((s) => secret(s, id, 1, 0), message, `${id}: found without its objective`);
+    // The objective completed at tick 0 while the secret row is untouched: only `found` differs, at matching ticks.
+    refuses((s) => objective(s, id, 1, 0, 1), message, `${id}: objective without the secret`);
+    // Both say found and completed; only the tick differs.
+    refuses((s) => { complete(s, id, 600, 2); secret(s, id, 1, 601); }, message, `${id}: tick only`);
+    // The matching pairs pass.
+    accepts((s) => { objective(s, id, 1, 0, 1); secret(s, id, 1, 0); }, `${id} at tick 0`);
+    accepts((s) => complete(s, id, 600, 2), id);
+  }
+  for (const id of C7.worldSites) {
+    refuses((s) => site(s, id, 1, 0), message, `${id}: operated without its objective`);
+    refuses((s) => objective(s, id, 1, 0, 1), message, `${id}: objective without the machine`);
+    refuses((s) => { complete(s, id, 600, 2); site(s, id, 1, 599); }, message, `${id}: tick only`);
+    accepts((s) => { objective(s, id, 1, 0, 1); site(s, id, 1, 0); }, `${id} at tick 0`);
+  }
+});
+
+// Attack 2 K1 claimed all six secrets (their silver) in a zero-kill run; the
+// plausibility rules reject it through the secrets' node XP
+// (tests/server-verify-hmh-plausibility.test.mjs). Its milestone-only
+// variant claims the secrets in milestones.secrets alone, so no objective
+// grants node XP to bound; the schema refuses it, and only by S8.
+test('S8 refuses the milestone-only variant of the A2-1 K1 payload', () => {
+  const message = 'game:run-summary milestones do not match the objectives';
+  const k1 = (s, { objectives }) => {
+    for (const id of C7.secrets) {
+      Object.assign(row(s.milestones.secrets, 'secretId', id), { found: 1, tick: 60 });
+      if (objectives) Object.assign(row(s.objectives, 'objectiveId', id), { completed: 1, tick: 60, levelAtCompletion: 1 });
+    }
+  };
+  accepts((s) => k1(s, { objectives: true }), 'the K1 payload itself is schema-valid');
+  refuses((s) => k1(s, { objectives: false }), message, 'the milestone-only variant');
+  // One secret claimed through its milestone alone is enough to refuse.
+  refuses((s) => { k1(s, { objectives: true }); Object.assign(row(s.objectives, 'objectiveId', 'mining-collapsed-adit'), { completed: 0, tick: 0, levelAtCompletion: 0 }); }, message);
+});
+
 test('S9: a held prisoner is freed only after its boss was initiated', () => {
   const message = 'game:run-summary a held prisoner was rescued before its boss';
   refuses((s) => rescue(s, 'h1-baron-diggings', 9_000, 10), message, 'the Baron never initiated');
