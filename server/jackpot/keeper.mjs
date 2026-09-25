@@ -24,7 +24,10 @@
 //      submitted with tx_hash and tx_nonce BEFORE broadcasting, with the lease
 //      checked before and after.
 //   6. Broadcast; nonce errors retry inside the lease; an ambiguous transport
-//      failure keeps the hash as broadcast.
+//      failure keeps the hash as broadcast. Every RPC call has its own
+//      timeout, the nonce re-reads of a retry and the revert decode's
+//      getTransaction included: a hung node never holds the lease or the run
+//      past its budget (a timed-out re-read is a wait, nothing is sent).
 //   7. Release the lease with nextNonce, then wait up to 15 s for the receipt.
 //   8. Success → confirmed; a revert → decoded and classified (errors.mjs);
 //      no receipt 180 s after submitted_at → the chain state is read: done →
@@ -178,7 +181,7 @@ export function createKeeper({
     }
     let failure = { class: 'wait', code: 'unknown-error' };
     try {
-      const tx = await provider.getTransaction(receipt.hash ?? action.txHash);
+      const tx = await chain.withTimeout(() => provider.getTransaction(receipt.hash ?? action.txHash), 'getTransaction');
       if (tx) await chain.withTimeout(() => provider.call({ from: tx.from, to: tx.to, data: tx.data, blockTag: receipt.blockNumber }), 'replay-call');
     } catch (error) {
       failure = classifyJackpotError(error, { kind: action.kind });
@@ -292,15 +295,24 @@ export function createKeeper({
           // eslint-disable-next-line no-await-in-loop
           await casAction(db, { id: action.id, from: ['submitted'], to: 'signed', set: { tx_hash: null, tx_nonce: null, submitted_at: null } });
           expected = ['signed'];
-          if (kind === 'too-low') {
-            // eslint-disable-next-line no-await-in-loop
-            nonce = Math.max(nonce + 1, Number(await provider.getTransactionCount(wallet.address, 'pending')));
-            continue;
-          }
-          if (kind === 'too-high' && !tooHighRetried) {
-            tooHighRetried = true;
-            // eslint-disable-next-line no-await-in-loop
-            nonce = Number(await provider.getTransactionCount(wallet.address, 'latest'));
+          if (kind === 'too-low' || (kind === 'too-high' && !tooHighRetried)) {
+            // The retry inside the lease re-reads the nonce, under its own
+            // timeout like every other RPC call: a hung node must not hold the
+            // lease and the run past its budget.
+            let count;
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              count = Number(await chain.withTimeout(() => provider.getTransactionCount(wallet.address, kind === 'too-low' ? 'pending' : 'latest'), 'nonce'));
+            } catch (readError) {
+              // eslint-disable-next-line no-await-in-loop
+              outcome = await settleWithoutSending({ ...action, status: 'signed' }, classifyJackpotError(readError, { kind: action.kind }), ['signed']);
+              return outcome;
+            }
+            if (kind === 'too-low') nonce = Math.max(nonce + 1, count);
+            else {
+              tooHighRetried = true;
+              nonce = count;
+            }
             continue;
           }
           if (kind === 'replacement') {

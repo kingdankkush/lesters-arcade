@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import { readLease } from '../server/settle/relayer.mjs';
 import { createJackpotChain } from '../server/jackpot/chain.mjs';
 import { JACKPOT_REVERTS, NEVER_SENT_REVERTS, allowlistedJackpotCode, classifyJackpotError, classifyJackpotRevert } from '../server/jackpot/errors.mjs';
-import { FAULT_STAGES, createKeeper, keeperFeeFields } from '../server/jackpot/keeper.mjs';
+import { FAULT_STAGES, GAS_MULTIPLIER_PERCENT, KEEPER_LEASE_MS, MIN_BROADCAST_LEASE_MS, NONCE_GAP_GUARD, createKeeper, keeperFeeFields } from '../server/jackpot/keeper.mjs';
 import { actionFailureTransition, createAction, readAction, upsertRules } from '../server/jackpot/store.mjs';
 import { weekKeyOfIndex } from '../server/jackpot/weeks.mjs';
 import { CRON_ERROR_CODES } from '../server/ops/cron-runs.mjs';
@@ -42,13 +42,27 @@ after(async () => {
   await h?.close();
 });
 
-function keeperWith({ fault = null, maxTxFeeWei = '10000000000000000', wallet = null, holderId = 'test:keeper', rulesFor = null } = {}) {
-  const chain = createJackpotChain({ provider: h.provider, contract: h.contract, deployment: h.deployment });
+function keeperWith({
+  fault = null, maxTxFeeWei = '10000000000000000', wallet = null, holderId = 'test:keeper', rulesFor = null, provider = h.provider, timeoutMs = undefined, monotonicMs = undefined,
+} = {}) {
+  const chain = createJackpotChain({ provider, contract: h.contract, deployment: h.deployment, ...(timeoutMs ? { timeoutMs } : {}) });
   return createKeeper({
-    db, provider: h.provider, wallet: wallet ?? new ethers.Wallet(h.keeperKey, h.provider), chain, maxTxFeeWei, holderId, nowMs: () => clockMs,
-    receiptTimeoutMs: 3_000, keeperFault: fault, rulesFor, sleep: async () => {},
+    db, provider, wallet: wallet ?? new ethers.Wallet(h.keeperKey, h.provider), chain, maxTxFeeWei, holderId, nowMs: () => clockMs,
+    receiptTimeoutMs: 3_000, keeperFault: fault, rulesFor, sleep: async () => {}, ...(monotonicMs ? { monotonicMs } : {}),
   });
 }
+
+// The in-process provider with some methods replaced (spies, hung or failing RPC calls).
+function wrapProvider(overrides) {
+  return new Proxy(h.provider, {
+    get(target, prop) {
+      if (Object.hasOwn(overrides, prop)) return overrides[prop];
+      const value = Reflect.get(target, prop, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+  });
+}
+const hang = () => new Promise(() => {});
 
 // Rising scores, so every new run enters the top 5.
 async function settled(playerIndex, score = 1_000n + BigInt(playerIndex) * 10n) {
@@ -157,14 +171,19 @@ test('keeper waits on fee spikes and low balance', async () => {
   stored = await readAction(db, submit.id);
   assert.deepEqual([stored.attempts, stored.infraFailures, stored.lastError], [0, 2, 'keeper-underfunded']);
   assert.equal(Date.parse(stored.nextAttemptAt) - clockMs, 120_000);
-  const sent = await keeperWith().send(stored);
+  // The keeper's own estimate, seen through a spy on the provider.
+  const estimates = [];
+  const spying = wrapProvider({ estimateGas: async (request) => { const value = await h.provider.estimateGas(request); estimates.push(value); return value; } });
+  const sent = await keeperWith({ provider: spying }).send(stored);
   assert.equal(sent.status, 'confirmed');
   // The transaction the keeper sent carries the LiteForge fee fields and a 1.25 × gas limit.
   const tx = await h.provider.getTransaction((await readAction(db, submit.id)).txHash);
   assert.equal(tx.maxPriorityFeePerGas, 0n);
   assert.ok(tx.maxFeePerGas >= 5_000_000_000n);
-  const estimate = await h.provider.estimateGas({ from: tx.from, to: tx.to, data: tx.data, blockTag: tx.blockNumber - 1 }).catch(() => null);
-  if (estimate) assert.ok(tx.gasLimit >= estimate, 'at least the estimate');
+  assert.equal(estimates.length, 1, 'one estimate per send');
+  assert.equal(GAS_MULTIPLIER_PERCENT, 125n);
+  assert.equal(tx.gasLimit, (estimates[0] * 125n + 99n) / 100n, 'estimateGas × 1.25, rounded up');
+  assert.ok(tx.gasLimit > estimates[0]);
 });
 
 test('keeper never overrides an admin decision', async () => {
@@ -270,6 +289,11 @@ test('revert strings map to already-done, skipped, wait and deterministic', asyn
   await db.query("UPDATE jackpot_actions SET status = 'submitted', tx_hash = $2, submitted_at = now() WHERE id = $1", [finalize.id, mined.hash.toLowerCase()]);
   const decoded = await keeper.checkSubmitted(await readAction(db, finalize.id));
   assert.deepEqual([decoded.status, decoded.code], ['failed', 'payout-not-due']);
+  // The same receipt with a hung getTransaction: the decode read times out on its own deadline (a wait, never a verdict).
+  await db.query("UPDATE jackpot_actions SET status = 'submitted', next_attempt_at = NULL WHERE id = $1", [finalize.id]);
+  const stalled = keeperWith({ provider: wrapProvider({ getTransaction: () => hang() }), timeoutMs: 1_000 });
+  const hungDecode = await stalled.checkSubmitted(await readAction(db, finalize.id));
+  assert.deepEqual([hungDecode.status, hungDecode.code], ['failed', 'rpc-timeout']);
 
   // A submit after the candidate window of a never-listed session: skipped without a send.
   const { sessionId } = await settled(11);
@@ -277,4 +301,84 @@ test('revert strings map to already-done, skipped, wait and deterministic', asyn
   const late = await keeper.send(await action('submit', sessionId));
   assert.deepEqual(late, { status: 'skipped', code: 'window-closed' });
   assert.equal(weekKeyOfIndex(h.W), (await readAction(db, ghost.id)).weekKey);
+});
+
+test('keeper guards the nonce, retries nonce errors inside the lease and keeps an ambiguous broadcast', async () => {
+  // (The candidate window of week W has closed in the test above: these sends are keeper flags.)
+  const keeperAddress = new ethers.Wallet(h.keeperKey).address;
+  const lease = () => readLease(db, keeperAddress.toLowerCase());
+  const latestNonce = () => h.provider.getTransactionCount(keeperAddress, 'latest');
+
+  // The gap guard: a lease next_nonce more than 8 ahead of the chain is a stale lease, not a nonce to use.
+  const { sessionId: first } = await settled(12);
+  const latest = await latestNonce();
+  await db.query('UPDATE relayer_lease SET next_nonce = $2::bigint WHERE relayer = $1', [keeperAddress.toLowerCase(), String(latest + NONCE_GAP_GUARD + 40)]);
+  const guarded = await action('flag', first, 'screen-hold');
+  assert.equal((await keeperWith().send(guarded)).status, 'confirmed');
+  assert.equal((await readAction(db, guarded.id)).txNonce, latest, 'the pending count, not the stale lease nonce');
+  assert.equal((await lease()).nextNonce, latest + 1);
+
+  // A nonce taken by someone else between the read and the broadcast: re-read and retried inside the same lease.
+  const { sessionId: second } = await settled(13);
+  const racer = new ethers.Wallet(h.keeperKey, h.provider);
+  let raced = 0;
+  const racing = wrapProvider({
+    broadcastTransaction: async (raw) => {
+      if (raced === 0) {
+        raced += 1;
+        const parsed = ethers.Transaction.from(raw);
+        await (await racer.sendTransaction({ to: racer.address, value: 0n, nonce: parsed.nonce, type: 2, gasLimit: 21_000n, maxFeePerGas: parsed.maxFeePerGas, maxPriorityFeePerGas: 0n })).wait();
+        throw Object.assign(new Error('nonce too low'), { code: 'NONCE_EXPIRED' });
+      }
+      return h.provider.broadcastTransaction(raw);
+    },
+  });
+  const before = await latestNonce();
+  const retry = await action('flag', second, 'screen-hold');
+  assert.equal((await keeperWith({ provider: racing }).send(retry)).status, 'confirmed');
+  assert.deepEqual([raced, (await readAction(db, retry.id)).txNonce, (await lease()).nextNonce], [1, before + 1, before + 2]);
+  assert.equal(await h.jackpot.reviewOf(second), 2n, 'Flagged');
+
+  // An ambiguous broadcast (the node took it, the answer was lost): the hash is kept and its receipt confirms it.
+  const { sessionId: third } = await settled(14);
+  const lost = wrapProvider({
+    broadcastTransaction: async (raw) => {
+      await h.provider.broadcastTransaction(raw);
+      throw Object.assign(new Error('socket hang up'), { code: 'NETWORK_ERROR' });
+    },
+  });
+  const ambiguous = await action('flag', third, 'screen-hold');
+  assert.equal((await keeperWith({ provider: lost }).send(ambiguous)).status, 'confirmed');
+  assert.ok(await h.provider.getTransaction((await readAction(db, ambiguous.id)).txHash), 'the kept hash is the broadcast transaction');
+
+  // A nonce error whose re-read hangs: the read times out on its own deadline, nothing is sent, the lease is released.
+  const { sessionId: fourth } = await settled(15);
+  let counts = 0;
+  const stuck = wrapProvider({
+    broadcastTransaction: async () => { throw Object.assign(new Error('nonce too low'), { code: 'NONCE_EXPIRED' }); },
+    getTransactionCount: (address, tag) => { counts += 1; return counts > 2 ? hang() : h.provider.getTransactionCount(address, tag); },
+  });
+  const hung = await action('flag', fourth, 'screen-hold');
+  const nonceBefore = await latestNonce();
+  const timedOut = await keeperWith({ provider: stuck, timeoutMs: 1_000 }).send(hung);
+  assert.deepEqual([timedOut.status, timedOut.code], ['failed', 'rpc-timeout']);
+  const waiting = await readAction(db, hung.id);
+  assert.deepEqual([waiting.status, waiting.txHash, waiting.attempts, waiting.infraFailures], ['failed', null, 0, 1]);
+  assert.equal((await lease()).holder, null, 'the lease is released');
+  assert.equal(await latestNonce(), nonceBefore);
+
+  // The lease deadline is checked before the CAS (nothing recorded) and after it (back to signed, nothing broadcast).
+  const { sessionId: fifth } = await settled(16);
+  const late = await action('flag', fifth, 'screen-hold');
+  let mono = 0;
+  const beforeCas = await keeperWith({ monotonicMs: () => { const value = mono; mono += KEEPER_LEASE_MS - MIN_BROADCAST_LEASE_MS + 1_000; return value; } }).send(late);
+  assert.deepEqual(beforeCas, { status: 'pending', code: 'lease-busy' });
+  assert.deepEqual([(await readAction(db, late.id)).status, (await readAction(db, late.id)).txHash], ['pending', null]);
+  let clock = 0;
+  const afterCas = await keeperWith({ monotonicMs: () => clock, fault: (stage) => { if (stage === 'after-cas') clock += KEEPER_LEASE_MS - MIN_BROADCAST_LEASE_MS + 1_000; } }).send(late);
+  assert.deepEqual(afterCas, { status: 'signed', code: 'lease-busy' });
+  const signed = await readAction(db, late.id);
+  assert.deepEqual([signed.status, signed.txHash, signed.attempts], ['signed', null, 0]);
+  assert.equal(await latestNonce(), nonceBefore, 'nothing was broadcast');
+  assert.equal((await keeperWith().send(signed)).status, 'confirmed');
 });
