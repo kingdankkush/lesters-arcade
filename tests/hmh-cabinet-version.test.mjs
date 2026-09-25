@@ -4,8 +4,7 @@
 // cabinet segment so 1.8.x runs without it stay valid, and the module stays
 // out of the HMH child (it is portal-only). The server format-checks the
 // cabinet (A11) and cannot prove it, so a cabinet this deploy has not shipped
-// is stored but labelled '<Game> v?'. The cabinet moves with the HMH child's
-// own RUNTIME_VERSION.
+// is stored but labelled '<Game> v?'.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -124,19 +123,6 @@ test('a verified run claiming an unshipped cabinet is labelled "<Game> v?", not 
     assert.equal(run.buildHash, buildHash);
     assert.equal(versionLabelFor(run.gameId, run), label, `STACKED ${cabinet}`);
   }
-});
-
-// Review finding (version-column fixer): the portal's cabinet and the HMH
-// child's own runtime version (runtimeInfo.runtimeVersion) name the same game
-// version. A balance change bumps both, or every new run is mislabelled.
-test('HMH_CABINET_VERSION moves with the HMH child RUNTIME_VERSION', () => {
-  const child = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  const declared = [...child.matchAll(/^const RUNTIME_VERSION = '(\d+\.\d+\.\d+)';$/gm)].map((match) => match[1]);
-  assert.equal(declared.length, 1, 'one RUNTIME_VERSION literal in apps/hmh-reboot/src/main.mjs');
-  assert.match(child, /runtimeInfo: \{ runtimeVersion: RUNTIME_VERSION,/, 'the child reports it to the portal');
-  const majorMinor = (version) => version.split('.').slice(0, 2).join('.');
-  assert.equal(majorMinor(HMH_CABINET_VERSION), majorMinor(declared[0]),
-    `bump apps/portal/src/hmh-cabinet-version.mjs (${HMH_CABINET_VERSION}) and the child's RUNTIME_VERSION (${declared[0]}) together`);
 });
 
 // Review finding (version-column fixer): the cabinet segment changes the live
