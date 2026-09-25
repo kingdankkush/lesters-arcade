@@ -11,17 +11,19 @@
     "Every candidate was re-verified against 0248cd4b, not taken from the audit or docs/cleanup/repo-cdn-cleanup-gate.json.",
     "Static: git grep for the repo path, the portal-relative path, the folder name and each file basename (and parent/basename for generic names) across apps/, scripts/, tests/, sdk/, api/, server/, docs/testing, build.mjs, vercel.json, apps/portal/sw.js, .gitattributes, .gitignore and package.json; the curated level-kit runtime inventory was regenerated with no diff.",
     "Dynamic: a node:fs and module-loader trace of the full node --test suite (4,850 tests) plus assets:verify, check, contracts:check, build and docs:links on the untouched base. Three processes walk whole trees without asserting on individual files (tests/hmh-native-enemy-source.test.mjs copying the repo for its clean-archive proof, tests/stacked-versus-table.test.mjs walking apps/ for imports, tests/hmh-security-audit-sweep.test.mjs scanning text files) and were excluded after review. Tests that spawn Python were read individually.",
+    "Limit: the fs-trace records only reads that run. A ledgered test stops at its first failing assertion, so reads it would make afterwards are invisible to the trace and to the gate. The adversarial review re-ran all 51 ledgered tests on a clean archive of 0248cd4b with non-throwing asserts and a node:fs trace and found one such read of a removed file (the WO-90 achievement contact sheet), now restored. A static scan of the 51 ledgered test files and the modules they import (two levels) against the final removal list finds no other asserted path.",
+    "Fixer pass: a strict scan of every tracked .mjs/.js/.json/.py/.html/.css file outside docs/ for the removed paths (full path, portal-relative path, last three segments, or a unique basename in quotes) produced danglingReferences below; every hit was classified, and none is requested by the portal pages or the HMH, Chikun and STACKED Free starts of the browser pass (zero 404s).",
     "Gate: the full post-deletion verification below, compared with the base (4,850 tests, 51 ledgered failures)."
   ],
   "totals": {
-    "removedFiles": 757,
-    "removedBytes": 237032409,
-    "assetFiles": 749,
-    "assetBytes": 236916659,
+    "removedFiles": 753,
+    "removedBytes": 236861684,
+    "assetFiles": 745,
+    "assetBytes": 236745934,
     "lfsFiles": 5,
     "servedFromApps_portal": {
-      "files": 609,
-      "bytes": 57480360
+      "files": 608,
+      "bytes": 57468063
     }
   },
   "byList": {
@@ -47,8 +49,8 @@
     },
     "partial-no-edit": {
       "units": 14,
-      "files": 153,
-      "bytes": 26697253
+      "files": 149,
+      "bytes": 26526528
     }
   },
   "units": [
@@ -853,7 +855,7 @@
       "evidence": [
         "The selector renders from models/tripo-gameplay/*.blend (sourceMode packed-gameplay-sources); tests/hmh-reboot-tripo-selector-source.test.mjs asserts sourceBlend is absent. No test, script or generated provenance names hmh-tripo-selector.blend or models/tripo-selector/.",
         "hmh-source-model-lfs-check walks models/ but asserts no count; it reads the index, so the staged deletion keeps it green.",
-        "Same-commit edits: the .gitattributes LFS rule for the deleted blend, the stale BLENDER-ATLAS-PIPELINE.md paragraph (rewritten to the packed-gameplay-sources flow; every pinned runbook string kept), and the uncalled scene builder with its syntax-check entry. The live manifest has no sourceBuilder key; hmh_selector_native_sources.py keeps validating that optional legacy key by path only.",
+        "Same-commit edits: the .gitattributes LFS rule for the deleted blend, the stale BLENDER-ATLAS-PIPELINE.md paragraph (rewritten to the packed-gameplay-sources flow; every pinned runbook string kept), and the uncalled scene builder with its syntax-check entry. The live manifest has no sourceBuilder key. Dead code that still names the retired chain stays in place (leftInPlace L2-01-dead-code): the sourceBuilder allow-list entry in scripts/hmh_selector_native_sources.py:117-122, which checks the path form only and names the deleted builder, the static-textured-models mode it still accepts (:125-128), the matching branch in scripts/run-hmh-hero-selector-render.py:268-272 (sha256 of the deleted builder) and scripts/hmh-blender/export-hmh-hero-selector.py:164. All three scripts are sha256-pinned in the committed selector provenance, so they cannot be edited without a Blender re-render.",
         "Deleting from the working tree does not shrink .git or the LFS store; no history rewrite was done."
       ],
       "paths": [
@@ -902,7 +904,8 @@
       "editedInSameCommit": [],
       "evidence": [
         "Nothing plays apps/portal/assets/audio/music; the only names are inert data strings in arcade-core.mjs (prototypeMusic, musicTracks) that no runtime reads.",
-        "No test or verify script checks these four files (fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader)."
+        "No test or verify script checks these four files (fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader).",
+        "docs/cleanup/repo-cdn-cleanup-gate.{json,md} still list litvm-going-to-the-moon-new-2.mp3 and rise-to-the-occasion.mp3; the report is regenerated on the integrated tree (integrationSteps repo-cdn-gate)."
       ],
       "paths": [
         {
@@ -952,7 +955,8 @@
       "evidence": [
         "combatArt.environmentStages is never filled and the stage builder is gone after the Canvas cleanup, so no environment PNG is ever fetched; the level editor that lists them only boots on localhost.",
         "Kept: the 12 PNGs tests/arcade-core.test.mjs checks on disk (manifest.assets.slice(0, 12)) and hmh-environment-manifest.mjs, which arcade-core.mjs imports.",
-        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader for the removed files."
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader for the removed files.",
+        "Level-editor impact: the 136 removed environment/runtime PNGs are 136 of the 148 environment/runtime src entries in apps/portal/assets/hmh-level-editor/runtime-sprite-library.json (12 remain on disk). Together with L2-04-subset this slice removed 380 of the 655 editor sprites that still resolved at 0248cd4b; see leftInPlace L2-05."
       ],
       "paths": [
         {
@@ -1555,7 +1559,9 @@
         "combatArt.hero and combatArt.characters are never built (the manifest builders are gone), so no frame or still is fetched; the arcade-core.mjs template strings are inert.",
         "The set was derived from the trace: every file in frames/, stills/, lester-production/ and the user-asset manifest that no test, assets:verify or build touches. It equals the audit subset exactly (251 files, 9,225,280 B).",
         "Kept: the 193 files tests/arcade-core.test.mjs and scripts/verify-generated-assets.mjs read, and screens/ (boot-splash.png is the intro-video poster in index.html).",
-        "The stills README deferred deletion until no runtime fallback used the stills; that is now true, and the README records the partial removal."
+        "The stills README deferred deletion until no runtime fallback used the stills; that is now true, and the README records the partial removal.",
+        "Level-editor impact: 244 of the removed files (216 frames, 28 stills) are src entries in apps/portal/assets/hmh-level-editor/runtime-sprite-library.json, and all 11 hard-money-heroes/stills/lilly entries now miss. Together with L2-03-subset this slice removed 380 of the 655 editor sprites that still resolved at 0248cd4b (275 remain); see leftInPlace L2-05.",
+        "Inert data strings left: apps/portal/src/arcade-core.mjs (stills at :1371-1404, runtimeManifest at :1412) and apps/portal/assets/generated/hmh-expanded-pixel-pack.mjs (30 frame paths; only achievementBadges is read). See followUps arcade-core-dead-urls."
       ],
       "paths": [
         {
@@ -2816,11 +2822,13 @@
         }
       ],
       "editedInSameCommit": [
-        "tests/hmh-wo119-pixellab-aaa-wave.test.mjs"
+        "tests/hmh-wo119-pixellab-aaa-wave.test.mjs",
+        "scripts/pixellab-hmh-aaa-quality-wave.py (fixer pass, 02c5beb7)"
       ],
       "evidence": [
         "No runtime reader; the file is a public ledger of raw PixelLab job ids.",
-        "The only gate reference was one existsSync line in the non-ledgered test \"WO-119 docs, proof, syntax gate, and PixelLab generator are wired\"; it now asserts that the generator starts from an empty ledger when the file is absent (load_ledger fallback). The two ledgered WO-119 tests are untouched.",
+        "The only gate reference was one existsSync line in the non-ledgered test \"WO-119 docs, proof, syntax gate, and PixelLab generator are wired\". The two ledgered WO-119 tests are untouched.",
+        "Fixer pass: the kept generator wrote LEDGER back into the deployed portal folder on every create, animate and collect. It now writes .hermes/tmp/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json (gitignored by .hermes/), and save_ledger no longer creates the portal output folder. A behaviour test (PixelLab quality-wave ledger lives in the gitignored QA lane, starts empty and never writes into apps/portal) imports the generator through Python and replaces the source regex the original commit added.",
         "scripts/promote-hmh-aaa-wave-to-roster.py is retired with it: it could not run (its actors/ input and the roster-ledger.json it writes against no longer exist) and nothing references it."
       ],
       "paths": [
@@ -2828,6 +2836,9 @@
           "path": "apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave/aaa-quality-wave-ledger.json",
           "bytes": 371337
         }
+      ],
+      "revisedBy": [
+        "02c5beb7 moves LEDGER to the gitignored QA lane and replaces the regex with a behaviour test"
       ]
     },
     {
@@ -2870,8 +2881,9 @@
       "retiredCodeAndDocs": [],
       "editedInSameCommit": [],
       "evidence": [
-        "scripts/visual-regression.mjs has not written seed-1337-spawn.png or seed-1337-stationary-repeat.png since 12a4fd2a (2026-07-09); nothing names them.",
-        "Kept: seed-1337-render-anchor.png, which the harness still writes and AGENTS.md documents."
+        "scripts/visual-regression.mjs has not written seed-1337-spawn.png or seed-1337-stationary-repeat.png since 12a4fd2a (2026-07-09); nothing names them. The harness compares only the captures it writes (visual-regression.mjs:184 builds the baseline path from the capture name) and seed-1337-render-anchor is its only capture (:331).",
+        "AGENTS.md asks for `npm run visual:regression` when docs/testing/VISUAL_BASELINES/ changes: it was run in the fixer pass and fails at its boot gate, identically at 0248cd4b (verification.visualRegression). The failure is pre-existing and unrelated to the deleted baselines.",
+        "Kept: seed-1337-render-anchor.png, the harness's one compared capture (leftInPlace L2-12-remainder)."
       ],
       "paths": [
         {
@@ -2960,7 +2972,8 @@
       "editedInSameCommit": [],
       "evidence": [
         "No reference outside the stale docs/cleanup CDN report; added \"for reuse in marketing\" and never wired. The MP4 and poster stay.",
-        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader.",
+        "docs/cleanup/repo-cdn-cleanup-gate.{json,md} still list arcade-promo-loop.gif; the audit asked to regenerate them with `npm run repo:cdn-gate`. That is recorded as integrationSteps repo-cdn-gate (the report walks the whole working tree and would be stale again once the parallel slices merge)."
       ],
       "paths": [
         {
@@ -3255,7 +3268,9 @@
       "evidence": [
         "Upgrade-card icons resolve only AUTHORED_PROP_ASSETS.powerUps and .weapons ids (upgrade-card-presentation.mjs); no other code builds an items/ URL.",
         "Kept: the 12 power-up and all 8 weapon icons (20 files, 5 more than the audit kept, because the weapon icon set is a live code-level reference).",
-        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader.",
+        "Fixer pass: the six tests titled \"every tree/rock/camp/bridge/undergrowth/water asset resolves to an item icon\" only checked the id pattern, so they kept passing with every world-prop item PNG gone. They now state what they check (the id forms a prop URL and resolveUpgradeIconAssetId never returns it); tests/hmh-reboot-upgrade-cards-and-settings.test.mjs keeps the on-disk check for the 20 icons the UI requests.",
+        "Inert data strings left: hmh-authored-props-atlas.json keeps an itemUrl for 86 of the removed items (no reader; only scripts/run-hmh-authored-props-pipeline.py writes the field). hmh-level-one-world-v3-landmarks.mjs, hmh-asset-footprints.json and hmh-curated-level-art.mjs match the removed basenames only by substring and name other files (for example rugpull-gulch-sheriff-water-tower.png, level1-polish/mailbox-rural.png, 15-short-cliff-face.png)."
       ],
       "paths": [
         {
@@ -3610,33 +3625,36 @@
           "path": "apps/portal/assets/generated/hmh-reboot-authored-props/items/wrecked-sedan.png",
           "bytes": 7061
         }
+      ],
+      "revisedBy": [
+        "340d7192 retitles the six world-prop \"resolves to an item icon\" tests"
       ]
     },
     {
       "id": "PA-09",
       "list": "partial-no-edit",
-      "title": "Achievement atlas JSON twin and contact sheet",
+      "title": "Achievement atlas JSON twin",
       "commitSubject": "remove the achievement atlas JSON twin and contact sheet",
-      "removedFiles": 2,
-      "removedBytes": 72549,
+      "removedFiles": 1,
+      "removedBytes": 60252,
       "lfsFiles": 0,
-      "assetFiles": 2,
-      "assetBytes": 72549,
+      "assetFiles": 1,
+      "assetBytes": 60252,
       "retiredCodeAndDocs": [],
       "editedInSameCommit": [],
       "evidence": [
-        "Every reader imports hmh-achievement-atlas-manifest.mjs; the contact sheet is named only by WO-90 cert data, whose test is ledgered and keeps failing the same way.",
-        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader."
+        "Every reader imports hmh-achievement-atlas-manifest.mjs; nothing reads the JSON twin.",
+        "Fixer pass: the contact sheet the original commit also removed is restored. The WO-90 certification data (hmh-wo90-placeholder-redo.mjs:45) names it, and the ledgered test \"WO-90 certifies all placeholder redo packs and contact sheets\" (tests/hmh-wo90-placeholder-redo.test.mjs:25-26) asserts it with existsSync. That test stops at the pickup-icons sheet, which was already missing at 0248cd4b, so neither the gate nor the fs-trace could see the deletion; it still added a hidden second failure inside a ledgered test. See leftInPlace PA-09-remainder.",
+        "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader of the JSON twin."
       ],
       "paths": [
-        {
-          "path": "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-contact-sheet.png",
-          "bytes": 12297
-        },
         {
           "path": "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.json",
           "bytes": 60252
         }
+      ],
+      "revisedBy": [
+        "431a0a2c restores the contact sheet (+12,297 B)"
       ]
     },
     {
@@ -3644,16 +3662,17 @@
       "list": "partial-no-edit",
       "title": "Unread docs/game-design contact sheets",
       "commitSubject": "remove unread docs/game-design contact sheets",
-      "removedFiles": 18,
-      "removedBytes": 939032,
+      "removedFiles": 15,
+      "removedBytes": 780604,
       "lfsFiles": 0,
-      "assetFiles": 18,
-      "assetBytes": 939032,
+      "assetFiles": 15,
+      "assetBytes": 780604,
       "retiredCodeAndDocs": [],
       "editedInSameCommit": [],
       "evidence": [
-        "Named only by docs, write-only generators and the WO-76 anchor audit, which reports contactSheetExists without asserting it.",
-        "Kept: the 11 contact sheets passing tests check (wo52, wo103, the 7 wo97 and 2 wo99 sheets).",
+        "The 15 removed sheets are named only by docs, write-only generators (generate-hmh-final-*.py, generate-hmh-level-one-*.py, generate-hmh-level3-getaway-art.py, generate-hmh-wo104-106-world-kit.py, ingest-hmh-sbs-isometric-tiles.py) and one inert data string: sketch-level1-asset-manifest.mjs contactSheet (hmh-level-1-sketch-asset-wave-contact-sheet.png), which tests/scene-templates.test.mjs imports but never checks on disk.",
+        "Fixer pass: the three sheets apps/portal/src/hmh-anchor-set.mjs:139, :148 and :157 name (level-one-final-paint-ground, level-two-final-city, final-setpiece-kit) are restored. Removing them made the committed docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.{json,md} report three present sheets that a regeneration would report missing, and the module is portal src outside this slice. With them back, `npm run design:anchor-candidates` differs from the committed audit only where it already differed at 0248cd4b (the production art-pass contact sheet, 13 candidate PNG rows and the final-paint assetCount 21 vs 18); the audit is not regenerated here.",
+        "Kept: the 11 contact sheets passing tests check (wo52, wo103, the 7 wo97 and 2 wo99 sheets) and the three restored anchor-source sheets (leftInPlace PA-10-remainder).",
         "fs-trace of the full node --test suite, assets:verify, check, contracts:check, build and docs:links at 0248cd4b (three whole-tree walkers excluded: the hmh-native-enemy-source clean-archive copy, the stacked-versus-table import walk and the security sweep) found no reader except the anchor audit report."
       ],
       "paths": [
@@ -3678,16 +3697,8 @@
           "bytes": 13001
         },
         {
-          "path": "docs/game-design/assets/hmh-final-setpiece-kit-contact-sheet.png",
-          "bytes": 46310
-        },
-        {
           "path": "docs/game-design/assets/hmh-level-1-final-animated-props-contact-sheet.png",
           "bytes": 19822
-        },
-        {
-          "path": "docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png",
-          "bytes": 76819
         },
         {
           "path": "docs/game-design/assets/hmh-level-1-polish-assets-contact-sheet.png",
@@ -3700,10 +3711,6 @@
         {
           "path": "docs/game-design/assets/hmh-level-1-sketch-asset-wave-contact-sheet.png",
           "bytes": 52146
-        },
-        {
-          "path": "docs/game-design/assets/hmh-level2-final-city-contact-sheet.png",
-          "bytes": 35299
         },
         {
           "path": "docs/game-design/assets/hmh-level3-final-getaway-contact-sheet.png",
@@ -3729,6 +3736,9 @@
           "path": "docs/game-design/assets/hmh-wo104-106-world-kit-contact-sheet.png",
           "bytes": 33772
         }
+      ],
+      "revisedBy": [
+        "767c49f9 restores the three WO-76 anchor-source contact sheets (+158,428 B)"
       ]
     },
     {
@@ -3868,83 +3878,447 @@
         "apps/portal/assets/generated/chikun-ground-audio-v1",
         "scripts/build-chikun-ground-audio.py"
       ],
-      "bytes": 705238,
+      "files": 13,
+      "bytes": 707619,
+      "fileList": [
+        "apps/portal/assets/generated/chikun-ground-audio-v1/drone.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/forest.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/gore.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/industry.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/jump.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/land.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/manifest.json",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/menu.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/splash.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/step.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/water.wav",
+        "apps/portal/assets/generated/chikun-ground-audio-v1/wood.wav",
+        "scripts/build-chikun-ground-audio.py"
+      ],
       "reason": "Brief exception: the HMH roadmap session keeps it for the Chikun sound pass. Its generator and PY_COMPILE_FILES entry stay with it."
     },
     {
       "id": "L1-receipts-and-tokens",
       "paths": [
         "docs/qa/combined-arcade-release-20260913.json",
-        "docs/qa/hmh-quality-release-20260911.json",
-        "?v=arcade-discovery-20260914 cache token"
+        "docs/qa/hmh-quality-release-20260911.json"
       ],
-      "reason": "Same-commit caveats of list 1: README.md links both receipts and docs:links checks them; the cache token is used by live HTML and tests. Their evidence pins now point into Git history."
+      "files": 2,
+      "bytes": 113594,
+      "fileList": [
+        "docs/qa/combined-arcade-release-20260913.json",
+        "docs/qa/hmh-quality-release-20260911.json"
+      ],
+      "cacheTokens": [
+        {
+          "token": "?v=arcade-discovery-20260914",
+          "usedIn": [
+            "apps/portal/discover/chikun.html",
+            "apps/portal/discover/games.html",
+            "apps/portal/discover/hard-money-heroes.html",
+            "apps/portal/discover/stacked.html",
+            "apps/portal/index.html",
+            "docs/qa/arcade-discovery-release-20260914.json",
+            "docs/qa/step7-dry-run-20260923.json",
+            "scripts/smoke-portal-flow.mjs",
+            "scripts/smoke-portal-interactions.mjs",
+            "tests/arcade-core.test.mjs",
+            "tests/hmh-load-speed.test.mjs",
+            "tests/hmh-playable-release.test.mjs",
+            "tests/portal-service-worker-cache.test.mjs"
+          ]
+        }
+      ],
+      "reason": "Same-commit caveats of list 1: README.md links both receipts and docs:links checks them; the cache token is used by live HTML, smokes and tests. Their evidence pins now point into Git history."
     },
     {
       "id": "L2-02-remainder",
       "paths": [
+        "apps/portal/assets/audio/music"
+      ],
+      "files": 1,
+      "bytes": 3389726,
+      "fileList": [
         "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3"
       ],
-      "bytes": 3389726,
-      "reason": "tests/arcade-core.test.mjs checks it on disk, and apps/portal/src/arcade-core.mjs still carries the prototypeMusic/musicTracks data strings for all five tracks. Retiring the unit means editing arcade-core.mjs, which is portal src owned by the parallel version-column slice; the brief allows removal only when the dead code is retired in the same commit."
+      "reason": "tests/arcade-core.test.mjs checks it on disk, and apps/portal/src/arcade-core.mjs still carries the prototypeMusic/musicTracks data strings for all five tracks. Retiring the unit means editing arcade-core.mjs, which is portal src owned by the parallel version-column slice; the brief allows removal only when the dead code is retired in the same commit. Follow-up: followUps arcade-core-dead-urls."
     },
     {
       "id": "L2-03-remainder",
       "paths": [
-        "apps/portal/assets/hard-money-heroes/environment/hmh-environment-manifest.mjs",
-        "12 desert_approach runtime PNGs (manifest.assets.slice(0, 12))"
+        "apps/portal/assets/hard-money-heroes/environment",
+        "docs/game-design/hmh-environment-contact-sheets"
       ],
-      "reason": "arcade-core.mjs imports the .mjs manifest (eagerly bundled) and tests/arcade-core.test.mjs checks the first 12 PNGs on disk. Needs arcade-core.mjs, main.js and editor edits (portal src). Follow-up: retire HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST with the legacy editor."
+      "files": 13,
+      "bytes": 850798,
+      "fileList": [
+        "apps/portal/assets/hard-money-heroes/environment/hmh-environment-manifest.mjs",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-001-03-23-57-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-002-03-24-02-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-003-03-24-07-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-004-03-24-13-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-005-03-24-39-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-006-03-25-07-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-007-03-26-13-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-008-03-26-50-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-009-03-27-25-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-010-03-28-19-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-011-03-28-30-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/desert_approach/env-012-03-28-34-pm.png"
+      ],
+      "reason": "arcade-core.mjs imports hmh-environment-manifest.mjs (eagerly bundled) and tests/arcade-core.test.mjs checks the first 12 desert_approach PNGs on disk (manifest.assets.slice(0, 12)). Removal needs arcade-core.mjs, main.js and editor edits (portal src). The .mjs manifest still names the 136 removed PNGs as inert strings. Follow-up: retire HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST with the legacy editor (followUps level-editor-retirement)."
     },
     {
       "id": "L2-04-remainder",
       "paths": [
-        "apps/portal/assets/hard-money-heroes/frames (72 files)",
-        "apps/portal/assets/hard-money-heroes/stills (6 files + README.md)",
+        "apps/portal/assets/hard-money-heroes/frames",
+        "apps/portal/assets/hard-money-heroes/stills",
         "apps/portal/assets/hard-money-heroes/screens",
-        "apps/portal/assets/lester-production (111 files)"
+        "apps/portal/assets/lester-production"
+      ],
+      "files": 194,
+      "bytes": 8251800,
+      "fileList": [
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/attack/lester-attack-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lester/stab/lester-stab-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/attack/lilly-attack-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/idle/lilly-idle-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/jump/lilly-jump-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/run/lilly-run-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-01.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-02.png",
+        "apps/portal/assets/hard-money-heroes/frames/lilly/walk/lilly-walk-03.png",
+        "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-00.png",
+        "apps/portal/assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-00.png",
+        "apps/portal/assets/hard-money-heroes/screens/boot-splash.png",
+        "apps/portal/assets/hard-money-heroes/screens/main-menu.png",
+        "apps/portal/assets/hard-money-heroes/screens/mode-select.png",
+        "apps/portal/assets/hard-money-heroes/screens/options.png",
+        "apps/portal/assets/hard-money-heroes/stills/README.md",
+        "apps/portal/assets/hard-money-heroes/stills/crypto-bro/crypto-bro-00.png",
+        "apps/portal/assets/hard-money-heroes/stills/crypto-bro/crypto-bro-01.png",
+        "apps/portal/assets/hard-money-heroes/stills/crypto-bro/crypto-bro-02.png",
+        "apps/portal/assets/hard-money-heroes/stills/gas-beast/gas-beast-00.png",
+        "apps/portal/assets/hard-money-heroes/stills/gas-beast/gas-beast-01.png",
+        "apps/portal/assets/hard-money-heroes/stills/gas-beast/gas-beast-02.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-00.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-01.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-02.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-03.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-04.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-05.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-06.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-07.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-08.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-09.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-10.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-11.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-12.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-13.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-14.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-15.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-16.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-17.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-18.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-19.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-20.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-21.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-22.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-23.png",
+        "apps/portal/assets/lester-production/frames/idle/lester-idle-24.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-00.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-01.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-02.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-03.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-04.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-05.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-06.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-07.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-08.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-09.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-10.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-11.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-12.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-13.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-14.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-15.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-16.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-17.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-18.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-19.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-20.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-21.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-22.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-23.png",
+        "apps/portal/assets/lester-production/frames/jump/lester-jump-24.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-00.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-01.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-02.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-03.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-04.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-05.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-06.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-07.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-08.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-09.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-10.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-11.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-12.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-13.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-14.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-15.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-16.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-17.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-18.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-19.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-20.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-21.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-22.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-23.png",
+        "apps/portal/assets/lester-production/frames/run/lester-run-24.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-00.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-01.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-02.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-03.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-04.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-05.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-06.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-07.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-08.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-09.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-10.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-11.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-12.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-13.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-14.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-15.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-16.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-17.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-18.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-19.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-20.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-21.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-22.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-23.png",
+        "apps/portal/assets/lester-production/frames/walk/lester-walk-24.png",
+        "apps/portal/assets/lester-production/lester-production-sprite-manifest.json",
+        "apps/portal/assets/lester-production/source/Lester-idle.png",
+        "apps/portal/assets/lester-production/source/Lester-jump.png",
+        "apps/portal/assets/lester-production/source/Lester-run.png",
+        "apps/portal/assets/lester-production/source/Lester-walk.png",
+        "apps/portal/assets/lester-production/stills/lester-facing-shotgun.png",
+        "apps/portal/assets/lester-production/stills/lester-facing.png",
+        "apps/portal/assets/lester-production/stills/lester-left-side-profile.png",
+        "apps/portal/assets/lester-production/stills/lester-left-side-shotgun.png",
+        "apps/portal/assets/lester-production/stills/lester-right-side-profile.png",
+        "apps/portal/assets/lester-production/stills/lester-right-side-shotgun.png"
       ],
       "reason": "scripts/verify-generated-assets.mjs (assets:verify, inside vercel:build) validates lester-production, tests/arcade-core.test.mjs checks the remaining frames and stills, and screens/boot-splash.png is the intro-video poster in index.html and discover/*.html. Removal needs arcade-core.mjs, main.js, index.html and verify edits; the stills README defers to the owner."
     },
     {
       "id": "L2-05",
       "paths": [
+        "apps/portal/assets/hmh-level-editor"
+      ],
+      "files": 1,
+      "bytes": 6656588,
+      "fileList": [
         "apps/portal/assets/hmh-level-editor/runtime-sprite-library.json"
       ],
-      "bytes": 6656588,
-      "reason": "Read at module top level by tests/hmh-level-editor.test.mjs and by the localhost-only level editor (apps/portal/editor.html, apps/portal/src/hmh-level-editor-*.mjs). That is a working dev tool, not dead code, and retiring it edits portal src; it is the keystone that also holds parts of L2-03, L2-04, L2-06 and L2-07. Owner decision."
+      "editorImpact": {
+        "spriteLibrarySrcEntries": 17371,
+        "resolvableAt0248cd4b": 655,
+        "removedByThisSlice": 380,
+        "removedByUnit": {
+          "L2-03-subset (hard-money-heroes/environment/runtime)": 136,
+          "L2-04-subset (hard-money-heroes/frames)": 216,
+          "L2-04-subset (hard-money-heroes/stills)": 28
+        },
+        "resolvableNow": 275,
+        "missingAt0248cd4b": 16716,
+        "missingNow": 17096,
+        "note": "tests/hmh-level-editor.test.mjs:141 (\"asset palette includes the actual HMH runtime sprite folders\") still requires the hard-money-heroes/stills/lilly (11 entries, 0 on disk) and environment/runtime (148 entries, 12 on disk) palette folders; it checks palette strings, not files, and is left unchanged."
+      },
+      "reason": "Read at module top level by tests/hmh-level-editor.test.mjs and by the localhost-only level editor (apps/portal/editor.html, apps/portal/src/hmh-level-editor-*.mjs). The editor still boots, but its palette is almost entirely dangling: 17,096 of 17,371 sprite src entries (98.4%) miss on disk, 16,716 of them already at 0248cd4b and 380 removed by this slice (L2-03-subset and L2-04-subset), leaving 275 loadable sprites. Retiring the editor edits portal src and is the keystone that also holds parts of L2-03, L2-04, L2-06 and L2-07. Owner decision (followUps level-editor-retirement)."
     },
     {
       "id": "L2-06-remainder",
       "paths": [
-        "hmh-animated-roster",
-        "hmh-complete-animations/hmh-complete-animations.mjs",
-        "hmh-final-animation-completion/*.mjs",
-        "hmh-final-boss-animations/*.mjs",
-        "hmh-environment-pixellab-wave-2/*.mjs",
-        "hmh-isometric-pixellab/*.mjs",
-        "hmh-level-environment",
-        "hmh-curated-level-art/{hmh-curated-level-art.mjs,hmh-curated-ground-runtime.mjs}",
-        "pixellab-calibration"
+        "apps/portal/assets/generated/hmh-animated-roster",
+        "apps/portal/assets/generated/hmh-complete-animations",
+        "apps/portal/assets/generated/hmh-final-animation-completion",
+        "apps/portal/assets/generated/hmh-final-boss-animations",
+        "apps/portal/assets/generated/hmh-environment-pixellab-wave-2",
+        "apps/portal/assets/generated/hmh-isometric-pixellab",
+        "apps/portal/assets/generated/hmh-level-environment",
+        "apps/portal/assets/generated/hmh-curated-level-art",
+        "apps/portal/assets/generated/pixellab-calibration"
+      ],
+      "files": 46,
+      "bytes": 3585106,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs",
+        "apps/portal/assets/generated/hmh-complete-animations/hmh-complete-animations.mjs",
+        "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.mjs",
+        "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-level-art.mjs",
+        "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs",
+        "apps/portal/assets/generated/hmh-final-animation-completion/hmh-final-animation-completion-manifest.mjs",
+        "apps/portal/assets/generated/hmh-final-boss-animations/hmh-final-boss-animations-manifest.mjs",
+        "apps/portal/assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs",
+        "apps/portal/assets/generated/hmh-level-environment/hmh-level-environment.mjs",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/00.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/01.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/02.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/03.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/04.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/05.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/06.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/07.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/idle-combat-ready-east.gif",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/00.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/01.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/02.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/03.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/04.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/05.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/run-side-scroll-east.gif",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/00.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/01.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/02.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/03.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/04.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/05.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/06.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/07.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/08.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/shoot-blaster-east.gif",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/hmh-pixellab-lester-calibration-contact-sheet.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/manifest.json",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/east.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/north-east.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/north-west.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/north.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/south-east.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/south-west.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/south.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/west.png",
+        "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs"
       ],
       "reason": "Imported by apps/portal/src/games/hmh/loader.mjs (esbuild fails on a missing target), main.js, hmh-ground-plan.mjs, the editor generated library and about 22 tests; pixellab-calibration is validated by assets:verify. Ledger overlap: tolerated failures sit in files that import them, so removal needs a re-ledger. Do with the canvas-retirement follow-up."
     },
     {
       "id": "L2-07-remainder",
       "paths": [
-        "hmh-coherent-world (*.mjs, level2-final-city JSON, level1-pixellab-candidates.manifest.json)",
-        "hmh-level-one-ground (*.mjs, final-paint JSON)",
-        "hmh-wo102-megaprops"
+        "apps/portal/assets/generated/hmh-coherent-world",
+        "apps/portal/assets/generated/hmh-level-one-ground",
+        "apps/portal/assets/generated/hmh-wo102-megaprops"
+      ],
+      "files": 16,
+      "bytes": 242272,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs",
+        "apps/portal/assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs",
+        "apps/portal/assets/generated/hmh-coherent-world/level1-polish/level1-polish-manifest.mjs",
+        "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-pixellab-candidates.manifest.json",
+        "apps/portal/assets/generated/hmh-coherent-world/level1-wo97-six-biome/level1-wo97-six-biome-manifest.mjs",
+        "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.json",
+        "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.mjs",
+        "apps/portal/assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.mjs",
+        "apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs",
+        "apps/portal/assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.json",
+        "apps/portal/assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs",
+        "apps/portal/assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs",
+        "apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/wo103-continuous-ground-manifest.mjs",
+        "apps/portal/assets/generated/hmh-wo102-megaprops/processed/wo102-farm-barn-silo-cluster/candidate-09.png",
+        "apps/portal/assets/generated/hmh-wo102-megaprops/processed/wo102-forest-rock-outcrop/candidate-09.png",
+        "apps/portal/assets/generated/hmh-wo102-megaprops/processed/wo102-noodle-bar-storefront/candidate-01.png"
       ],
       "reason": "main.js still imports these manifests statically, the wo119 module reads level1-pixellab-candidates.manifest.json at import time, and 16 ledgered failures (13 coherent-world, 3 level-one-ground) would turn into module-load errors ('missing ledger failure'). Never re-ledgered here."
     },
     {
       "id": "L2-08-remainder",
       "paths": [
-        "hmh-reboot-enemy-roster/{forkrunner,liquidator-agent,whale-enforcer,gas-bomber,validator-cultist,the-liquidator}/*-roster-atlas.json",
-        "hmh-reboot-enemy-roster/hmh-enemy-roster-metrics.json"
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/forkrunner",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/liquidator-agent",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/whale-enforcer",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/gas-bomber",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/validator-cultist",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/the-liquidator",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/hmh-enemy-roster-metrics.json"
       ],
-      "reason": "The role animation, damage, detail and cycle-007 tests read these JSONs as data (not only to check the files), hmh-reboot-production-asset-qa.mjs asserts the metrics (actorCount 7, totalFrames 1368), and hmh-enemy-roster.json plus run-hmh-enemy-roster-pipeline.py would recreate them. Repointing the tests to hmh-native-roster is a test rewrite and a pipeline decision (audit slice F)."
+      "files": 7,
+      "bytes": 850044,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/forkrunner/forkrunner-roster-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/gas-bomber/gas-bomber-roster-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/liquidator-agent/liquidator-agent-roster-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/the-liquidator/the-liquidator-roster-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/validator-cultist/validator-cultist-roster-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/whale-enforcer/whale-enforcer-roster-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/hmh-enemy-roster-metrics.json"
+      ],
+      "reason": "The role animation, damage, detail and cycle-007 tests read the six atlas JSONs as data (not only to check the files), hmh-reboot-production-asset-qa.mjs asserts the metrics (actorCount 7, totalFrames 1368), and hmh-enemy-roster.json plus run-hmh-enemy-roster-pipeline.py would recreate them. Each atlas JSON still names its removed atlas PNG as an inert image field. Repointing the tests to hmh-native-roster is a test rewrite and a pipeline decision (audit slice F)."
     },
     {
       "id": "L2-09",
@@ -3952,8 +4326,42 @@
         "apps/portal/assets/generated/hmh-reboot-hero-selector",
         "apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs"
       ],
-      "bytes": 1805701,
+      "files": 6,
+      "bytes": 1810886,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json",
+        "apps/portal/assets/generated/hmh-reboot-hero-selector/lester-original-selector-atlas.png",
+        "apps/portal/assets/generated/hmh-reboot-hero-selector/lilly-selector-atlas.png",
+        "apps/portal/assets/generated/hmh-reboot-hero-selector/lit-commando-selector-atlas.png",
+        "apps/portal/assets/generated/hmh-reboot-hero-selector/lit-valkyrie-selector-atlas.png",
+        "apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs"
+      ],
       "reason": "tests/hmh-reboot-hero-selector-render.test.mjs and the selector --check hash every file, production QA checks them, and hmh-hero-portraits.py imports the selector runner. Retiring the Blender selector pipeline is an owner decision."
+    },
+    {
+      "id": "L2-01-dead-code",
+      "paths": [
+        "scripts/hmh_selector_native_sources.py",
+        "scripts/run-hmh-hero-selector-render.py",
+        "scripts/hmh-blender/export-hmh-hero-selector.py"
+      ],
+      "files": 3,
+      "bytes": 71346,
+      "bytesNote": "whole-file sizes of the three live scripts; only the listed lines are dead code",
+      "lines": {
+        "scripts/hmh_selector_native_sources.py": [
+          "117-122 (sourceBuilder allow-list entry naming the deleted scripts/hmh-blender/create-hmh-tripo-selector-scene.py; source_path checks the path form only)",
+          "125-128 (static-textured-models mode, source_input_path(sourceBlend))"
+        ],
+        "scripts/run-hmh-hero-selector-render.py": [
+          "268-272 (static-textured-models provenance: sourceBuilder and sha256_file of the deleted builder)"
+        ],
+        "scripts/hmh-blender/export-hmh-hero-selector.py": [
+          "164 (static_sources branch)"
+        ]
+      },
+      "reason": "Dead code for the retired static Tripo selector chain (L2-01). It is not removed because all three scripts are sha256-pinned in the committed selector provenance (apps/portal/assets/generated/hmh-reboot-hero-selector/hmh-reboot-hero-selector-atlas.json sources.runnerSha256, exporterSha256, sourceHelperSha256): tests/hmh-reboot-hero-selector-render.test.mjs:257 and :259 assert the runner and helper hashes, and the selector --check reports provenance drift on any edit. Changing them needs a Blender re-render of the L2-09 atlas, which is the owner decision above; hand-editing the recorded hashes would falsify render provenance. tests/hmh-selector-packed-sources.test.py:351 and :813 exercise the static mode in private capsules and would change with it.",
+      "followUp": "When the owner decides L2-09: drop the sourceBuilder entry and the static-textured-models mode (with the matching tests/hmh-selector-packed-sources.test.py expectations), then re-render the selector or retire it."
     },
     {
       "id": "L2-11-remainder",
@@ -3961,7 +4369,12 @@
         "apps/portal/assets/ads/ad-horizontal-bg.jpg",
         "apps/portal/assets/ads/ad-vertical-bg.jpg"
       ],
+      "files": 2,
       "bytes": 353869,
+      "fileList": [
+        "apps/portal/assets/ads/ad-horizontal-bg.jpg",
+        "apps/portal/assets/ads/ad-vertical-bg.jpg"
+      ],
       "reason": "Referenced by the dead .ad-banner* block in apps/portal/styles-arcade-polish.css (no element matches it since 6fe83eb6). Removing the JPGs means deleting that CSS block, a portal runtime file outside this slice's asset/script/test scope."
     },
     {
@@ -3969,19 +4382,240 @@
       "paths": [
         "docs/testing/VISUAL_BASELINES/hmh-level-1/seed-1337-render-anchor.png"
       ],
-      "reason": "scripts/visual-regression.mjs still writes it, package.json visual:regression/visual:accept, ship-gate.mjs and AGENTS.md document the harness, and src modules pin the command strings. Retiring the WO-65 harness is a process change for the owner."
+      "files": 1,
+      "bytes": 621886,
+      "fileList": [
+        "docs/testing/VISUAL_BASELINES/hmh-level-1/seed-1337-render-anchor.png"
+      ],
+      "reason": "The only baseline scripts/visual-regression.mjs compares (writeCapture seed-1337-render-anchor, :331). package.json visual:regression/visual:accept, ship-gate.mjs and AGENTS.md document the harness, and src modules pin the command strings. The harness currently fails at its boot gate before that capture, at 0248cd4b as well (verification.visualRegression), so the baseline is not exercised today; repairing or retiring the WO-65 harness is a process decision for the owner (followUps wo65-visual-harness)."
     },
     {
-      "id": "PA-15..PA-20",
+      "id": "PA-09-remainder",
       "paths": [
-        "hmh-reboot-tripo-props contact sheet + 44 unrequested webps (PA-15)",
-        "hmh-held-weapons contact sheets (PA-16)",
-        "hmh-reboot-production-heroes contact sheets (PA-17)",
-        "sliced level parallax layers (PA-18)",
-        "hard-money-heroes cabinet source PNG (PA-19)",
-        "hmh-production-art-pass.mjs (PA-20)"
+        "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-contact-sheet.png"
       ],
-      "reason": "Partials that need a test, QA or verify edit are outside the brief (it covers only the no-edit partials). PA-15 also needs the runtime validator's assetCount, PA-16/PA-17 are contact sheets AGENTS.md asks to keep in the repo (deploy exclusion is the audit's alternative), PA-18 cannot be regenerated, and PA-20 needs the L2-06 loader edits."
+      "files": 1,
+      "bytes": 12297,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-contact-sheet.png"
+      ],
+      "reason": "Named by the WO-90 certification data (apps/portal/assets/generated/hmh-wo90-placeholder-redo/hmh-wo90-placeholder-redo.mjs:45) and asserted with existsSync by the ledgered test \"WO-90 certifies all placeholder redo packs and contact sheets\". Removing it changes a ledgered test (hidden behind the first failing pickup-icons assertion), so it stays until WO-90 is retired. Removed in 4d8d7feb, restored in 431a0a2c."
+    },
+    {
+      "id": "PA-10-remainder",
+      "paths": [
+        "docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png",
+        "docs/game-design/assets/hmh-level2-final-city-contact-sheet.png",
+        "docs/game-design/assets/hmh-final-setpiece-kit-contact-sheet.png"
+      ],
+      "files": 3,
+      "bytes": 158428,
+      "fileList": [
+        "docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png",
+        "docs/game-design/assets/hmh-level2-final-city-contact-sheet.png",
+        "docs/game-design/assets/hmh-final-setpiece-kit-contact-sheet.png"
+      ],
+      "reason": "Named by apps/portal/src/hmh-anchor-set.mjs:139, :148 and :157 (portal src, outside this slice) and recorded as present in docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.{json,md}. Removed in 2ae33ca3, restored in 767c49f9."
+    },
+    {
+      "id": "PA-15",
+      "paths": [
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/labelled-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-01.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-02.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-03.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-04.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-05.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-06.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-07.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-08.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-09.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-10.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-11.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-12.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-13.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-14.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-15.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-16.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-17.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-18.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-19.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-20.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-33.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-34.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-35.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-36.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-37.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-38.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-39.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-40.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-41.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-42.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-43.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-44.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-45.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-46.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-47.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-48.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-49.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-50.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-51.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-52.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-53.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-54.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-55.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-56.webp"
+      ],
+      "files": 45,
+      "bytes": 2109926,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/labelled-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-01.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-02.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-03.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-04.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-05.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-06.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-07.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-08.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-09.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-10.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-11.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-12.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-13.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-14.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-15.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-16.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-17.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-18.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-19.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-20.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-33.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-34.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-35.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-36.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-37.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-38.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-39.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-40.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-41.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-42.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-43.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-44.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-45.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-46.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-47.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-48.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-49.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-50.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-51.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-52.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-53.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-54.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-55.webp",
+        "apps/portal/assets/generated/hmh-reboot-tripo-props/items/tripo-56.webp"
+      ],
+      "folder": "apps/portal/assets/generated/hmh-reboot-tripo-props (KEEP: live atlas pages)",
+      "reason": "Needs a test, QA or verify edit, which the brief does not cover (it removes only the no-edit partials): the 44 unrequested webps also need the runtime validator's assetCount changed."
+    },
+    {
+      "id": "PA-16",
+      "paths": [
+        "apps/portal/assets/generated/hmh-held-weapons/lester-original/lester-original-held-weapons-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-held-weapons/lilly/lilly-held-weapons-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-held-weapons/lit-commando/lit-commando-held-weapons-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-held-weapons/lit-valkyrie/lit-valkyrie-held-weapons-contact-sheet.png"
+      ],
+      "files": 4,
+      "bytes": 5672383,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-held-weapons/lester-original/lester-original-held-weapons-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-held-weapons/lilly/lilly-held-weapons-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-held-weapons/lit-commando/lit-commando-held-weapons-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-held-weapons/lit-valkyrie/lit-valkyrie-held-weapons-contact-sheet.png"
+      ],
+      "folder": "apps/portal/assets/generated/hmh-held-weapons/* (KEEP)",
+      "reason": "Needs a test, QA or verify edit, which the brief does not cover (it removes only the no-edit partials); the audit's alternative is a deploy exclusion."
+    },
+    {
+      "id": "PA-17",
+      "paths": [
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png"
+      ],
+      "files": 4,
+      "bytes": 13285971,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lester-original/lester-original-production-pilot-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lilly/lilly-production-pilot-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-commando/lit-commando-production-pilot-contact-sheet.png",
+        "apps/portal/assets/generated/hmh-reboot-production-heroes/lit-valkyrie/lit-valkyrie-production-pilot-contact-sheet.png"
+      ],
+      "folder": "apps/portal/assets/generated/hmh-reboot-production-heroes/* (KEEP)",
+      "reason": "Needs a test, QA or verify edit, which the brief does not cover (it removes only the no-edit partials); the audit's alternative is a deploy exclusion."
+    },
+    {
+      "id": "PA-18",
+      "paths": [
+        "apps/portal/assets/generated/sliced/level1-underchain-midground.png",
+        "apps/portal/assets/generated/sliced/level1-underchain-sky.png",
+        "apps/portal/assets/generated/sliced/level1-underchain-skyline.png",
+        "apps/portal/assets/generated/sliced/level1-underchain-street.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-midground.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-sky.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-skyline.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-street.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-midground.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-sky.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-skyline.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-street.png"
+      ],
+      "files": 12,
+      "bytes": 871790,
+      "fileList": [
+        "apps/portal/assets/generated/sliced/level1-underchain-midground.png",
+        "apps/portal/assets/generated/sliced/level1-underchain-sky.png",
+        "apps/portal/assets/generated/sliced/level1-underchain-skyline.png",
+        "apps/portal/assets/generated/sliced/level1-underchain-street.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-midground.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-sky.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-skyline.png",
+        "apps/portal/assets/generated/sliced/level2-foundry-street.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-midground.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-sky.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-skyline.png",
+        "apps/portal/assets/generated/sliced/level3-getaway-street.png"
+      ],
+      "folder": "apps/portal/assets/generated/sliced (KEEP: 6 icons load on every portal page)",
+      "reason": "Needs a test, QA or verify edit, which the brief does not cover, and the sliced layers cannot be regenerated."
+    },
+    {
+      "id": "PA-19",
+      "paths": [
+        "apps/portal/assets/hard-money-heroes/cabinet/source/Hard-Money-Heroes-ArcadeCabinet.png"
+      ],
+      "files": 1,
+      "bytes": 395035,
+      "fileList": [
+        "apps/portal/assets/hard-money-heroes/cabinet/source/Hard-Money-Heroes-ArcadeCabinet.png"
+      ],
+      "folder": "apps/portal/assets/hard-money-heroes/cabinet (KEEP: rotation frames live)",
+      "reason": "Needs a test, QA or verify edit, which the brief does not cover (it removes only the no-edit partials)."
+    },
+    {
+      "id": "PA-20",
+      "paths": [
+        "apps/portal/assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs"
+      ],
+      "files": 1,
+      "bytes": 171148,
+      "fileList": [
+        "apps/portal/assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs"
+      ],
+      "folder": "apps/portal/assets/generated/hmh-production-art-pass (KEEP: ui/pause-menu-panel.png is live via styles.css:2924)",
+      "reason": "Needs the L2-06 loader edits (portal src) and a test edit, which the brief does not cover."
     },
     {
       "id": "generator-reruns",
@@ -3992,10 +4626,20 @@
         "scripts/run-hmh-enemy-roster-pipeline.py",
         "scripts/generate-hmh-achievement-atlas.py"
       ],
-      "reason": "Live generators kept unchanged: a manual rerun writes the L2-13 maps, docs/chikun/chikun-sheet-clips.png, the authored-props contact sheet and items, the roster contact sheets and the achievement JSON twin/contact sheet again. That is expected regenerated output, not a regression."
+      "files": 5,
+      "bytes": 120161,
+      "fileList": [
+        "scripts/build-hmh-level-one-world-blueprint-v3.py",
+        "scripts/chikun-blender/pack-chikun-sheet-atlases.py",
+        "scripts/run-hmh-authored-props-pipeline.py",
+        "scripts/run-hmh-enemy-roster-pipeline.py",
+        "scripts/generate-hmh-achievement-atlas.py"
+      ],
+      "reason": "Live generators kept unchanged: a manual rerun writes the L2-13 maps, docs/chikun/chikun-sheet-clips.png, the authored-props contact sheet and items, the roster contact sheets and the achievement JSON twin again. That is expected regenerated output, not a regression. (The AAA PixelLab quality-wave generator no longer writes its ledger into apps/portal; see L2-10.)"
     }
   ],
   "verification": {
+    "scope": "baseline, npmTest, testRelease, assetsVerify, check, contractsCheck, docsLinks, curatedLevelKitRuntime, build and browserPass record the implementer run on 31f21940; fixerPass and visualRegression record the final tree after the fixer pass (see top-level fixerPass).",
     "baseline": {
       "commit": "0248cd4b",
       "testRelease": "PASS tests=4850 passed=4799 expected_failures=51"
@@ -4134,6 +4778,633 @@
       ],
       "serverLog": "913 requests, all 200/206/304, zero 404",
       "note": "the one aborted request per page is the playlist MP3 media request cancelled by the audio element (net::ERR_ABORTED, not an HTTP error); console warnings are the pre-existing iframe sandbox and WebGL driver notices"
+    },
+    "fixerPass": {
+      "head": "340d7192 plus the report commit",
+      "npmTest": {
+        "tests": 4851,
+        "pass": 4800,
+        "fail": 51,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "failuresEqualLedger": true,
+        "note": "Taken from the test:release run (the gate runs the full node --test suite). One test more than 31f21940: the new PixelLab ledger behaviour test."
+      },
+      "testRelease": {
+        "result": "HMH_REBOOT_TEST_RETIREMENT_GATE PASS tests=4851 passed=4800 expected_failures=51",
+        "errors": [],
+        "note": "the regenerated docs/testing/hmh-reboot-test-retirement-gate.json was restored, not committed"
+      },
+      "touchedSuites": [
+        "tests/hmh-wo119-pixellab-aaa-wave.test.mjs: 7 pass, 2 fail (the two ledgered WO-119 tests, unchanged); the new ledger test fails against the previous generator",
+        "tests/hmh-reboot-{tree,rock,camp,bridge,undergrowth,water}-props.test.mjs and tests/hmh-reboot-upgrade-cards-and-settings.test.mjs: all pass",
+        "tests/hmh-wo90-placeholder-redo.test.mjs: the ledgered test still fails first on \"pickup-icons contact sheet exists\", as at 0248cd4b",
+        "tests/hmh-selector-packed-sources.test.py: 41 tests OK (scripts unchanged)"
+      ],
+      "check": "Syntax check passed: 925 JS modules + 118 Python scripts",
+      "contractsCheck": "Lester's Arcade contract structure check passed (2026-09 native-fee set)",
+      "assetsVerify": "Generated sliced asset verification passed: 76 PNGs; production Lester=100 frames/6 stills; PixelLab Lester calibration=23 frames/8 rotations; HMH cabinet=6 frames; arcade playlist=26 MP3s",
+      "docsLinks": "Ship documentation link check passed: 8 current/public documents",
+      "build": "pass, every budget, unchanged: HMH initial+shared 1,046,713 B of 1,048,576; STACKED initial 572,902 B (entry 27,694 B); 10.94 MB emitted JS across 248 files",
+      "anchorAudit": "buildAnchorCandidateAudit() vs docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.{json,md}: differs only in rows already stale at 0248cd4b (followUps wo76-anchor-audit-refresh)",
+      "browserPass": {
+        "server": "python -m http.server 8891 --bind 127.0.0.1 --directory apps/portal (stopped afterwards), run after test:release finished (a suite test rebuilds apps/portal/dist, so a concurrent pass sees transient dist 404s)",
+        "pages": [
+          {
+            "name": "home",
+            "ok": true,
+            "requests": 60,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "discover-games",
+            "ok": true,
+            "requests": 63,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "discover-hard-money-heroes",
+            "ok": true,
+            "requests": 60,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "discover-chikun",
+            "ok": true,
+            "requests": 60,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "discover-stacked",
+            "ok": true,
+            "requests": 60,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "hmh-free-start",
+            "ok": true,
+            "requests": 200,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "chikun-free-start",
+            "ok": true,
+            "requests": 172,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          },
+          {
+            "name": "stacked-free-start",
+            "ok": true,
+            "requests": 108,
+            "httpErrors": 0,
+            "consoleErrors": 0,
+            "pageErrors": 0,
+            "abortedRequests": [
+              "net::ERR_ABORTED http://127.0.0.1:8891/assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+            ]
+          }
+        ],
+        "serverLog": "908 requests: 879 x 200, 29 x 304"
+      }
+    },
+    "visualRegression": {
+      "command": "npm run build && PORTAL_VISUAL_PORT=8891 node scripts/visual-regression.mjs (equivalent to npm run visual:regression on the private port)",
+      "why": "AGENTS.md requires it for any change to docs/testing/VISUAL_BASELINES/; L2-12-subset (c4fda2c9) removed two baselines there.",
+      "head": {
+        "runs": 3,
+        "result": "exit 1 every run, at the boot gate (visual-regression.mjs:259) before any capture or comparison",
+        "errors": [
+          "Error: Uncaught (in promise)",
+          "Error: Uncaught (in promise) Error: missing #hmhReadyOverlay",
+          "Error: Inspected target navigated or closed"
+        ]
+      },
+      "base": {
+        "tree": "0248cd4b apps/portal and docs/testing/VISUAL_BASELINES/hmh-level-1 from git archive, with the same built dist (build output is identical) and the identical harness script, in a scratch directory",
+        "runs": 2,
+        "result": "exit 1 every run, same boot-gate failure",
+        "errors": [
+          "Error: Inspected target navigated or closed",
+          "Error: Uncaught (in promise) Error: missing #hmhReadyOverlay"
+        ]
+      },
+      "conclusion": "Pre-existing: the WO-65 harness drives the retired legacy canvas start flow and cannot reach its one capture (seed-1337-render-anchor) at the base either. No capture or baseline was written. The two removed baselines were not compared by the harness in any case (it compares only the captures it writes, :184 and :331). Follow-up: followUps wo65-visual-harness."
     }
+  },
+  "followUps": [
+    {
+      "id": "arcade-core-dead-urls",
+      "owner": "after the version-column slice merges (it owns apps/portal/src)",
+      "paths": [
+        "apps/portal/src/arcade-core.mjs",
+        "apps/portal/assets/generated/hmh-expanded-pixel-pack.mjs",
+        "tests/arcade-core.test.mjs"
+      ],
+      "detail": "arcade-core.mjs is bundled and still advertises removed URLs: HARD_MONEY_HEROES_CANON.spriteReferences :213-214 (lester-reference-sprites-01/02.png, PA-12), the Lester and Lilly stills :1371-1404 and runtimeManifest :1412 (hard-money-heroes-user-asset-manifest.json, L2-04), and HARD_MONEY_HEROES_ASSET_MANIFEST.audio.musicTracks :1458-1461 (the four L2-02 MP3s). Nothing fetches them, but buildHardMoneyHeroesAnimationCoverageReport counts coverage from files that no longer exist. hmh-expanded-pixel-pack.mjs names 30 removed frames; arcade-core reads only its achievementBadges.",
+      "action": "Strip the dead audio, stills, runtimeManifest and spriteReferences entries (and the expanded pack frame lists), then update tests/arcade-core.test.mjs (musicTracks.length >= 4 at :1479 and :2453). Retiring L2-02-remainder rides on the same edit."
+    },
+    {
+      "id": "level-editor-retirement",
+      "owner": "owner decision",
+      "paths": [
+        "apps/portal/editor.html",
+        "apps/portal/assets/hmh-level-editor",
+        "apps/portal/src/hmh-level-editor-*.mjs",
+        "tests/hmh-level-editor.test.mjs"
+      ],
+      "detail": "See leftInPlace L2-05 editorImpact: 275 of 17,371 palette sprites still load.",
+      "action": "Retire the localhost editor and its runtime-sprite-library.json, then the L2-03, L2-04, L2-06 and L2-07 remainders it holds."
+    },
+    {
+      "id": "selector-static-mode",
+      "owner": "owner decision on L2-09",
+      "paths": [
+        "scripts/hmh_selector_native_sources.py",
+        "scripts/run-hmh-hero-selector-render.py",
+        "scripts/hmh-blender/export-hmh-hero-selector.py",
+        "tests/hmh-selector-packed-sources.test.py"
+      ],
+      "detail": "See leftInPlace L2-01-dead-code.",
+      "action": "Remove the sourceBuilder allow-list entry and the static-textured-models mode together with a selector re-render or retirement."
+    },
+    {
+      "id": "wo65-visual-harness",
+      "owner": "owner / process",
+      "paths": [
+        "scripts/visual-regression.mjs",
+        "docs/testing/VISUAL_BASELINES/hmh-level-1/seed-1337-render-anchor.png"
+      ],
+      "detail": "npm run visual:regression fails at its boot gate at 0248cd4b and at this branch (verification.visualRegression); the harness drives the retired legacy canvas start flow (#hmhLoadingOverlay, #hmhReadyOverlay).",
+      "action": "Repair the harness for the reboot start flow, or retire it with its baseline and the AGENTS.md instruction."
+    },
+    {
+      "id": "wo76-anchor-audit-refresh",
+      "owner": "optional",
+      "paths": [
+        "docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.json",
+        "docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.md"
+      ],
+      "detail": "Stale before this slice: regenerating at 0248cd4b already reports the production art-pass contact sheet and 13 candidate PNG rows missing and the final-paint assetCount as 18 (committed 21). This slice no longer changes it (PA-10 fixer pass).",
+      "action": "Regenerate with npm run design:anchor-candidates if the WO-76 record should match the tree."
+    }
+  ],
+  "integrationSteps": [
+    {
+      "id": "repo-cdn-gate",
+      "command": "npm run repo:cdn-gate",
+      "outputs": [
+        "docs/cleanup/repo-cdn-cleanup-gate.json",
+        "docs/cleanup/repo-cdn-cleanup-gate.md"
+      ],
+      "why": "The committed reports (generated 2026-09-14) still list three paths this slice removed: apps/portal/assets/video/arcade-promo-loop.gif (PA-01), apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3 and rise-to-the-occasion.mp3 (L2-02-subset). The generator walks the whole working tree, so run it once on the integrated tree after every slice has merged and commit the result; tests/repo-cdn-cleanup-gate.test.mjs only checks that the files exist."
+    },
+    {
+      "id": "retirement-gate-json",
+      "command": "npm run test:release",
+      "outputs": [
+        "docs/testing/hmh-reboot-test-retirement-gate.json"
+      ],
+      "why": "Contract §10.4 rule 2: the orchestrator regenerates and commits it once per integration; this slice restored it after every run."
+    }
+  ],
+  "danglingReferences": [
+    {
+      "file": "apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs",
+      "removedPathsNamed": 1,
+      "kind": "contactSheet string, not checked on disk (PA-10)",
+      "examples": [
+        "docs/game-design/assets/hmh-level-1-sketch-asset-wave-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-expanded-pixel-pack.mjs",
+      "removedPathsNamed": 30,
+      "kind": "bundled data imported by arcade-core.mjs; only achievementBadges is read (followUps arcade-core-dead-urls)",
+      "examples": [
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-04.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-04.png",
+        "apps/portal/assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-04.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-atlas.json",
+      "removedPathsNamed": 86,
+      "kind": "itemUrl data field with no reader (PA-08)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/awning-shopfront.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/balanced-boulder.png",
+        "apps/portal/assets/generated/hmh-reboot-authored-props/items/bear-market-burner-cache.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-enemy-roster/forkrunner/forkrunner-roster-atlas.json",
+      "removedPathsNamed": 1,
+      "kind": "atlas image field; the JSON is read as data by tests (leftInPlace L2-08-remainder)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/forkrunner/forkrunner-roster-atlas.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-enemy-roster/gas-bomber/gas-bomber-roster-atlas.json",
+      "removedPathsNamed": 1,
+      "kind": "atlas image field; the JSON is read as data by tests (leftInPlace L2-08-remainder)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/gas-bomber/gas-bomber-roster-atlas.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-enemy-roster/liquidator-agent/liquidator-agent-roster-atlas.json",
+      "removedPathsNamed": 1,
+      "kind": "atlas image field; the JSON is read as data by tests (leftInPlace L2-08-remainder)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/liquidator-agent/liquidator-agent-roster-atlas.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-enemy-roster/the-liquidator/the-liquidator-roster-atlas.json",
+      "removedPathsNamed": 1,
+      "kind": "atlas image field; the JSON is read as data by tests (leftInPlace L2-08-remainder)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/the-liquidator/the-liquidator-roster-atlas.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-enemy-roster/validator-cultist/validator-cultist-roster-atlas.json",
+      "removedPathsNamed": 1,
+      "kind": "atlas image field; the JSON is read as data by tests (leftInPlace L2-08-remainder)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/validator-cultist/validator-cultist-roster-atlas.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/generated/hmh-reboot-enemy-roster/whale-enforcer/whale-enforcer-roster-atlas.json",
+      "removedPathsNamed": 1,
+      "kind": "atlas image field; the JSON is read as data by tests (leftInPlace L2-08-remainder)",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-enemy-roster/whale-enforcer/whale-enforcer-roster-atlas.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/hard-money-heroes/environment/hmh-environment-manifest.mjs",
+      "removedPathsNamed": 144,
+      "kind": "bundled legacy environment manifest; no runtime fetch (leftInPlace L2-03-remainder)",
+      "examples": [
+        "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-079-04-03-49-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-080-04-04-04-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-081-04-04-22-pm.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/hmh-level-editor/runtime-sprite-library.json",
+      "removedPathsNamed": 380,
+      "kind": "localhost level-editor palette (leftInPlace L2-05)",
+      "examples": [
+        "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-079-04-03-49-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-080-04-04-04-pm.png",
+        "apps/portal/assets/hard-money-heroes/environment/runtime/country_road/env-081-04-04-22-pm.png"
+      ]
+    },
+    {
+      "file": "apps/portal/assets/lester-production/lester-production-sprite-manifest.json",
+      "removedPathsNamed": 6,
+      "kind": "source-sheet provenance strings; assets:verify does not check them (L2-04-subset)",
+      "examples": [
+        "apps/portal/assets/lester-production/source/Lester-Facing-Shotgun.png",
+        "apps/portal/assets/lester-production/source/Lester-Facing.png",
+        "apps/portal/assets/lester-production/source/Lester-Left-Side-Shotgun.png"
+      ]
+    },
+    {
+      "file": "apps/portal/src/arcade-core.mjs",
+      "removedPathsNamed": 19,
+      "kind": "bundled portal data (followUps arcade-core-dead-urls)",
+      "examples": [
+        "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
+        "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
+        "apps/portal/assets/audio/music/litvm-testnet-teaser.mp3"
+      ]
+    },
+    {
+      "file": "scripts/build-chikun-character.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/chikun/assets/source/Chikun-Superman-Animations.glb"
+      ]
+    },
+    {
+      "file": "scripts/build-chikun-ragdoll-parts.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/chikun/assets/source/Chikun-Ragdoll-Parts.blend"
+      ]
+    },
+    {
+      "file": "scripts/build-hmh-level-one-world-blueprint-v3.py",
+      "removedPathsNamed": 8,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "docs/game-design/assets/hmh-level-1-world-blueprint-v3/biome-map.png",
+        "docs/game-design/assets/hmh-level-1-world-blueprint-v3/blueprint-contact-sheet.png",
+        "docs/game-design/assets/hmh-level-1-world-blueprint-v3/encounter-map.png"
+      ]
+    },
+    {
+      "file": "scripts/chikun-blender/build-chikun-sheet-rig.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/chikun/assets/source/Chikun-Sheet-Animations.glb"
+      ]
+    },
+    {
+      "file": "scripts/chikun-blender/pack-chikun-sheet-atlases.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "docs/chikun/chikun-sheet-clips.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-achievement-atlas.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.json"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-complete-animations.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-final-animation-completion.py",
+      "removedPathsNamed": 2,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-final-animation-completion/hmh-final-animation-completion-manifest.json",
+        "docs/game-design/assets/hmh-final-animation-completion-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-final-boss-and-level2-city.py",
+      "removedPathsNamed": 2,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-final-boss-animations/hmh-final-boss-animations-manifest.json",
+        "docs/game-design/assets/hmh-final-boss-animation-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-final-vfx-and-ambient.py",
+      "removedPathsNamed": 3,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.json",
+        "docs/game-design/assets/hmh-final-ambient-world-contact-sheet.png",
+        "docs/game-design/assets/hmh-final-combat-vfx-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-level-one-final-animated-props.py",
+      "removedPathsNamed": 2,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.json",
+        "docs/game-design/assets/hmh-level-1-final-animated-props-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-level-one-polish-assets.py",
+      "removedPathsNamed": 2,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/level1-polish/level1-polish-manifest.json",
+        "docs/game-design/assets/hmh-level-1-polish-assets-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-level-one-sketch-assets.py",
+      "removedPathsNamed": 2,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.json",
+        "docs/game-design/assets/hmh-level-1-sketch-asset-wave-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-level3-getaway-art.py",
+      "removedPathsNamed": 3,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.json",
+        "docs/game-design/assets/hmh-level3-final-getaway-contact-sheet.png",
+        "docs/game-design/assets/hmh-level3-final-ground-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-wo104-106-world-kit.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "docs/game-design/assets/hmh-wo104-106-world-kit-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/generate-hmh-wo97-world-assets.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/level1-wo97-six-biome/level1-wo97-six-biome-manifest.json"
+      ]
+    },
+    {
+      "file": "scripts/generate-wo103-continuous-ground.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/wo103-continuous-ground-manifest.json"
+      ]
+    },
+    {
+      "file": "scripts/harvest-hmh-complete-animations.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-complete-animations/complete-animations-ledger.json"
+      ]
+    },
+    {
+      "file": "scripts/hmh_selector_native_sources.py",
+      "removedPathsNamed": 1,
+      "kind": "dead allow-list entry (leftInPlace L2-01-dead-code)",
+      "examples": [
+        "scripts/hmh-blender/create-hmh-tripo-selector-scene.py"
+      ]
+    },
+    {
+      "file": "scripts/ingest-hard-money-heroes-user-assets.py",
+      "removedPathsNamed": 5,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
+        "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
+        "apps/portal/assets/audio/music/litvm-testnet-teaser.mp3"
+      ]
+    },
+    {
+      "file": "scripts/ingest-hmh-curated-level-art.py",
+      "removedPathsNamed": 4,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-art.json",
+        "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-art.mjs",
+        "apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.json"
+      ]
+    },
+    {
+      "file": "scripts/ingest-hmh-environment-assets.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/hard-money-heroes/environment/hmh-environment-manifest.json"
+      ]
+    },
+    {
+      "file": "scripts/ingest-hmh-sbs-isometric-tiles.py",
+      "removedPathsNamed": 2,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.json",
+        "docs/game-design/assets/hmh-level-1-sbs-ground-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/pixellab-coherent-world-assets.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/coherent-world-ledger.json"
+      ]
+    },
+    {
+      "file": "scripts/pixellab-hmh-crypto-wasteland-assets.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/crypto-wasteland-ledger.json"
+      ]
+    },
+    {
+      "file": "scripts/pixellab-hmh-environment-wave-2.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/pixellab-environment-wave-2-jobs.json"
+      ]
+    },
+    {
+      "file": "scripts/pixellab-hmh-isometric-production-wave.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json"
+      ]
+    },
+    {
+      "file": "scripts/pixellab-hmh-level1-asset-wave.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/pixellab-level1-asset-wave-ledger.json"
+      ]
+    },
+    {
+      "file": "scripts/recover-pixellab-wave-rate-limits.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json"
+      ]
+    },
+    {
+      "file": "scripts/run-hmh-authored-props-pipeline.py",
+      "removedPathsNamed": 1,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/generated/hmh-reboot-authored-props/hmh-authored-props-contact-sheet.png"
+      ]
+    },
+    {
+      "file": "scripts/slice-lester-production-sprites.py",
+      "removedPathsNamed": 6,
+      "kind": "generator input or output path; a rerun reads or recreates it",
+      "examples": [
+        "apps/portal/assets/lester-production/source/Lester-Facing-Shotgun.png",
+        "apps/portal/assets/lester-production/source/Lester-Facing.png",
+        "apps/portal/assets/lester-production/source/Lester-Left-Side-Shotgun.png"
+      ]
+    }
+  ],
+  "fixerPass": {
+    "date": "2026-09-25",
+    "from": "31f21940",
+    "commits": [
+      "431a0a2c chore(assets): restore the WO-90 achievement atlas contact sheet (+12,297 B)",
+      "767c49f9 chore(assets): restore the three WO-76 anchor-source contact sheets (+158,428 B)",
+      "02c5beb7 fix(pixellab): keep the AAA quality-wave job ledger out of apps/portal",
+      "340d7192 test(hmh): stop claiming world props ship item icons",
+      "this commit: report revision (units PA-09, PA-10, L2-01, L2-02, L2-03, L2-04, L2-10, L2-12, PA-01, PA-08; leftInPlace with real paths, files and bytes; followUps, integrationSteps, danglingReferences, verification.fixerPass and verification.visualRegression)"
+    ],
+    "restored": {
+      "files": 4,
+      "bytes": 170725
+    },
+    "declinedCodeEdits": [
+      "Removing the sourceBuilder allow-list entry and the static-textured-models branches (scripts/hmh_selector_native_sources.py, run-hmh-hero-selector-render.py, hmh-blender/export-hmh-hero-selector.py): all three are sha256-pinned in the committed selector provenance and asserted by tests/hmh-reboot-hero-selector-render.test.mjs:257/:259 and the selector --check, so an edit needs a Blender re-render (leftInPlace L2-01-dead-code).",
+      "Editing apps/portal/src/arcade-core.mjs or hmh-anchor-set.mjs: portal src belongs to the parallel version-column slice (followUps arcade-core-dead-urls; the anchor-set sheets were restored instead).",
+      "Regenerating docs/cleanup/repo-cdn-cleanup-gate.{json,md} in this branch: it walks the whole working tree, so it runs once on the integrated tree (integrationSteps repo-cdn-gate)."
+    ]
   }
 }
