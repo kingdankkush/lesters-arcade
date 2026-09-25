@@ -19,9 +19,32 @@ import {
   liquidatorAddCapacity,
   rebootLevelForXp,
   rebootLevelThreshold,
+  V7_MAX_GAINS,
+  hmhV7BossWindowTicks,
+  hmhV7Ceilings,
+  hmhV7KillCapacity,
   spawnCapacity,
   validateRebootRunPlausibility,
+  validateV6RunPlausibility,
 } from '../server/verify/hmh-plausibility.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
+import {
+  HMH_PRISONER_KINDS,
+  HMH_V7_BOSSES,
+  HMH_V7_BOSS_RULES,
+  HMH_V7_EVOLUTIONS,
+  HMH_V7_OBJECTIVES,
+  HMH_V7_PRISONER_SLOTS,
+  HMH_V7_ROLE_THREAT,
+  HMH_V7_RUN_RULES,
+  HMH_V7_UPGRADES,
+  dealHmhPrisoners,
+  hmhV7LevelForXp,
+  hmhV7LevelThreshold,
+  seededUnit,
+} from '../sdk/hmh-run-contract-v7.mjs';
+import { seededUnit as childSeededUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
+import { HMH_WEAPON_EVOLUTIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import {
   RUN_UPGRADE_CATALOG,
   SILVER_SCORE_PER_COIN,
@@ -47,7 +70,7 @@ import { COLLECTIBLE_EFFECTS } from '../apps/hmh-reboot/src/collectible-system.m
 import { objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import { addSilverDrop, createSilverDropState } from '../apps/hmh-reboot/src/silver-drops.mjs';
 import { FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
-import { readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { HMH_V7_PLANS, buildFixtureBody, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 
 const MAIN_SOURCE = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const valid = readFixture('hmh-valid').body.evidence.runSummary;
@@ -374,4 +397,356 @@ test('the v6 path gives every schema-6 summary its 1.8.1 result (frozen)', () =>
   const results = v6Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
   const digest = createHash('sha256').update(JSON.stringify(results)).digest('hex');
   assert.equal(digest, V6_CORPUS_DIGEST, `${results.length} cases`);
+});
+
+// ---------------------------------------------------------------------------
+// Run summary v7 (contract §5, §7 and §8).
+const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
+const districts = readFixture('hmh-v7-districts').body.evidence.runSummary;
+const fourBosses = readFixture('hmh-v7-four-bosses').body.evidence.runSummary;
+const v7Row = (rows, key, id) => rows.find((entry) => entry[key] === id);
+const bossRow = (summary, bossId) => v7Row(summary.bosses, 'bossId', bossId);
+const flagIds = (result) => result.flags.map((flag) => flag.id);
+const rejectFlags = (result) => result.flags.filter((flag) => flag.severity === 'reject');
+// The mutation stays schema-valid, so a rejection comes from plausibility.
+const plausible = (summary) => {
+  assert.equal(validateRunSummaryPayload(summary), '', 'the schema accepts the mutation');
+  return validateRebootRunPlausibility(summary);
+};
+// Moves a boss's initiation; for the Liquidator the milestone, and a Dark Pool
+// logbook entered at the initiation, move with it.
+function retimeBoss(summary, bossId, { first, last = first, defeated }) {
+  const row = bossRow(summary, bossId);
+  const previousFirst = row.firstInitiatedTick;
+  Object.assign(row, { firstInitiatedTick: first, lastInitiatedTick: last, ...(defeated === undefined ? {} : { defeatedTick: defeated }) });
+  if (bossId !== 'liquidator') return;
+  summary.milestones.bossEngagedTick = first;
+  const logbook = v7Row(summary.objectives, 'objectiveId', 'warehouse-logbook');
+  if (logbook.completed === 1 && logbook.tick === previousFirst) {
+    logbook.tick = first;
+    v7Row(summary.milestones.secrets, 'secretId', 'warehouse-logbook').tick = first;
+  }
+}
+function setV7Xp(summary, xp) {
+  summary.totals.xp = xp;
+  summary.totals.level = hmhV7LevelForXp(xp);
+  summary.milestones.levelUps = summary.totals.level - 1;
+}
+function addOrdinaryKills(summary, role, count) {
+  summary.kills.total += count;
+  v7Row(summary.kills.byEnemyRole, 'enemyRoleId', role).count += count;
+  v7Row(summary.kills.byWeapon, 'weaponId', 'coin-blaster').count += count;
+  v7Row(summary.weapons, 'weaponId', 'coin-blaster').kills += count;
+}
+
+test('the v7 contract values equal the 1.8.1 child where they are unchanged', () => {
+  const run = HMH_V7_RUN_RULES;
+  assert.equal(run.FIXED_STEP_MS, FIXED_STEP_MS);
+  assert.equal(run.MAX_LEVEL, HMH_MAX_LEVEL);
+  for (const level of [1, 2, 23, 90, 999]) assert.equal(hmhV7LevelThreshold(level), rebootLevelThreshold(level));
+  for (const xp of [0, 299, 300, 81_340, 1_204_660, 1e12]) assert.equal(hmhV7LevelForXp(xp), rebootLevelForXp(xp), `xp ${xp}`);
+  for (const id of ['validator-training', 'block-reward']) {
+    assert.equal(run.MULTIPLIER_MAX_RANK, RUN_UPGRADE_CATALOG[id].maxRank, id);
+    assert.equal(run.MULTIPLIER_PER_RANK, RUN_UPGRADE_CATALOG[id].amount, id);
+  }
+  assert.equal(run.XP_MULTIPLIER_MAX, 1.75);
+  assert.equal(run.SCORE_MULTIPLIER_MAX, 1.75);
+  assert.deepEqual(Object.entries(run.COMBO_MILESTONE_XP).map(([combo, xp]) => [Number(combo), xp]), HMH_V6_RULES.comboMilestones);
+  assert.deepEqual(run.CACHE_XP, HMH_V6_RULES.cacheXp);
+  assert.equal(run.SILVER_SCORE_PER_COIN, SILVER_SCORE_PER_COIN);
+  const drops = createSilverDropState();
+  addSilverDrop(drops, { sequence: 1, tick: 0, x: 0, y: 0 });
+  assert.equal(run.SILVER_PER_ENEMY_KILL_MAX, drops.dropped);
+  assert.equal(run.OPENING_ENEMIES, HMH_OPENING_ENEMY_ARCHETYPE_IDS.length);
+  assert.deepEqual(run.ENCOUNTER_BAND_SCHEDULE, ENCOUNTER_BANDS.map(({ id, minTick, maxTick, spawnIntervalTicks }) => ({ id, minTick, maxTick, spawnIntervalTicks })));
+  // The six 1.8.1 archetypes and the Liquidator keep their threat.
+  for (const role of HMH_RUN_SUMMARY_CATALOGS_V6.enemyRoles) assert.equal(HMH_V7_ROLE_THREAT[role], role === 'liquidator' ? LIQUIDATOR_THREAT_COST : ENEMY_ARCHETYPES[role].costs.threat, role);
+  // Kill rewards before multipliers are recordRunDefeat's 80 + 20t and 100 + 25t.
+  for (const threat of new Set(Object.values(HMH_V7_ROLE_THREAT))) {
+    const snapshot = recordRunDefeat(createRunProgression({ seed: 0 }), { enemyId: 'contract-probe', threatCost: threat, tick: 0 });
+    assert.deepEqual([snapshot.xp, snapshot.score], [80 + 20 * threat, 100 + 25 * threat], `threat ${threat}`);
+  }
+  // The 24 v6 upgrades keep their maxRank and weapon gate.
+  assert.equal(Object.values(RUN_UPGRADE_CATALOG).length, 24);
+  for (const upgrade of Object.values(RUN_UPGRADE_CATALOG)) {
+    assert.deepEqual(HMH_V7_UPGRADES[upgrade.id], { maxRank: upgrade.maxRank, requiresWeaponId: upgrade.requiresWeaponId ?? null }, upgrade.id);
+  }
+  // Evolution rows 0, 2, 3 and 4 are today's HMH_WEAPON_EVOLUTIONS ids.
+  assert.deepEqual([0, 2, 3, 4].map((index) => C7.evolutions[index]).sort(), Object.values(HMH_WEAPON_EVOLUTIONS).map((evolution) => evolution.id).sort());
+  assert.equal(HMH_V7_EVOLUTIONS['settler-rail'].weaponId, 'coin-blaster');
+  // A v7 boss's silver burst replaces the 1.8.1 drop of 10 coins, which the v6 path keeps.
+  assert.equal(SILVER_PER_BOSS_KILL, 10);
+  assert.deepEqual(C7.bosses.map((bossId) => HMH_V7_BOSSES[bossId].silverBurst), [15, 20, 20, 25]);
+});
+
+test('the v7 ceilings are the run-progression gains at the maximum ranks', () => {
+  const maxed = () => {
+    const state = createRunProgression({ seed: 0 });
+    state.ranks['validator-training'] = 3;
+    state.ranks['block-reward'] = 3;
+    return state;
+  };
+  assert.deepEqual([V7_MAX_GAINS.xm, V7_MAX_GAINS.sm], [getRunProgressionSnapshot(maxed()).effects.xpMultiplier, getRunProgressionSnapshot(maxed()).effects.scoreMultiplier]);
+  for (const [role, threat] of Object.entries(HMH_V7_ROLE_THREAT)) {
+    const snapshot = recordRunDefeat(maxed(), { enemyId: 'ceiling-probe', threatCost: threat, tick: 0 });
+    assert.deepEqual([V7_MAX_GAINS.killXp[role], V7_MAX_GAINS.killScore[role]], [snapshot.xp, snapshot.score], role);
+  }
+  // Contract table 5.2, the bosses.
+  assert.deepEqual(C7.bosses.map((id) => [V7_MAX_GAINS.killXp[id], V7_MAX_GAINS.killScore[id]]), [[980, 1_225], [1_260, 1_575], [1_540, 1_925], [1_820, 2_275]]);
+  assert.equal(V7_MAX_GAINS.comboRate, MAX_GAINS.comboRate);
+  assert.deepEqual(V7_MAX_GAINS.cacheXp, MAX_GAINS.cacheXp);
+  assert.equal(V7_MAX_GAINS.silverScorePerCoin, 18);
+  for (const coins of [1, 15, 20, 25]) assert.ok(grantRunSilver(maxed(), coins, 0).score <= coins * V7_MAX_GAINS.silverScorePerCoin, `${coins} coins`);
+  // Objective XP is grantRunXp(perLevel x L), multiplied like kill XP.
+  for (const [kind, perLevel] of Object.entries(HMH_V7_RUN_RULES.OBJECTIVE_XP_PER_LEVEL)) {
+    for (const level of [1, 7, 23, 90, 999]) assert.equal(grantRunXp(maxed(), perLevel * level, 0).xp, Math.round(perLevel * level * 1.75), `${kind} at ${level}`);
+  }
+  // An OG Miner span granted at validator-training rank 0 is exactly 300 x L.
+  for (const level of [1, 17, 999]) assert.equal(grantRunXp(createRunProgression({ seed: 0 }), 300 * level, 0).xp, 300 * level);
+});
+
+test('the prisoner deal: vectors, 10,000 seeds and the seededUnit copy', () => {
+  assert.deepEqual(dealHmhPrisoners(0), ['pawnbroker', 'field-medic', 'quartermaster', 'field-medic', 'og-miner', 'quartermaster', 'og-miner', 'pawnbroker']);
+  assert.deepEqual(dealHmhPrisoners(1337), ['og-miner', 'field-medic', 'quartermaster', 'field-medic', 'pawnbroker', 'quartermaster', 'og-miner', 'pawnbroker']);
+  assert.ok(Object.isFrozen(dealHmhPrisoners(0)));
+  // The two districts with two slots are exactly the repaired pairs.
+  const slotsByDistrict = {};
+  C7.prisonerSlots.forEach((slotId, index) => { (slotsByDistrict[HMH_V7_PRISONER_SLOTS[slotId].district] ??= []).push(index); });
+  const pairs = Object.values(slotsByDistrict).filter((slots) => slots.length > 1);
+  assert.deepEqual(pairs, [[0, 3], [1, 6]]);
+  const frequency = Array.from({ length: 8 }, () => Object.fromEntries(HMH_PRISONER_KINDS.map((kind) => [kind, 0])));
+  let repaired = 0;
+  for (let seed = 0; seed < 10_000; seed += 1) {
+    const deal = dealHmhPrisoners(seed);
+    for (const kind of HMH_PRISONER_KINDS) assert.equal(deal.filter((entry) => entry === kind).length, 2, `seed ${seed}: ${kind} twice`);
+    for (const [a, b] of pairs) assert.notEqual(deal[a], deal[b], `seed ${seed}: no district holds two of one kind`);
+    deal.forEach((kind, slot) => { frequency[slot][kind] += 1; });
+    // The shuffle before its repair, to count the repaired seeds.
+    const kinds = ['field-medic', 'field-medic', 'quartermaster', 'quartermaster', 'pawnbroker', 'pawnbroker', 'og-miner', 'og-miner'];
+    for (let i = 7; i > 0; i -= 1) {
+      const j = Math.floor(seededUnit(seed, `prisoner:${i}`) * (i + 1));
+      [kinds[i], kinds[j]] = [kinds[j], kinds[i]];
+    }
+    if (pairs.some(([a, b]) => kinds[a] === kinds[b])) repaired += 1;
+    assert.equal(seededUnit(seed * 7_919, `prisoner:${seed % 8}`), childSeededUnit(seed * 7_919, `prisoner:${seed % 8}`));
+  }
+  assert.equal(repaired, 2_554);
+  const shares = frequency.flatMap((slot) => Object.values(slot)).map((count) => count / 10_000);
+  assert.ok(Math.min(...shares) >= 0.188 && Math.max(...shares) <= 0.311, `${Math.min(...shares)} to ${Math.max(...shares)}`);
+  for (const [seed, key] of [[0, ''], [0xffff_ffff, 'prisoner:7'], [123_456_789, 'spread:weapon:42'], [-1, 'x'], [2 ** 33 + 5, 'overflow']]) {
+    assert.equal(seededUnit(seed, key), childSeededUnit(seed, key), `${seed} ${key}`);
+  }
+});
+
+test('v7 fixtures are plausible, and the schema version picks the rules', () => {
+  assert.deepEqual(validateRebootRunPlausibility(districts), { verdict: 'ok', flags: [] });
+  assert.deepEqual(validateRebootRunPlausibility(districts), readFixture('hmh-v7-districts').expected.plausibility);
+  assert.deepEqual(validateRebootRunPlausibility(fourBosses), readFixture('hmh-v7-four-bosses').expected.plausibility);
+  assert.deepEqual(flagIds(validateRebootRunPlausibility(fourBosses)), ['score-near-ceiling'], 'Block Reward at rank 3 early: flagged, never rejected');
+  // The four-boss run kills the Liquidator at 56,400, before the v6 boss band:
+  // the v6 rules reject that, the v7 rules (per-boss readiness) accept it.
+  assert.ok(fourBosses.identity.endTick < HMH_BOSS_START_TICK);
+  assert.ok(flagIds(validateV6RunPlausibility(fourBosses)).includes('boss-before-band'));
+  assert.equal(validateRebootRunPlausibility(clone(fourBosses, (s) => { s.schemaVersion = 6; })).verdict, 'rejected', 'the schemaVersion, not the shape, picks the rules');
+  // The retired v6 boss flags never appear on the v7 path.
+  for (const summary of [districts, fourBosses]) {
+    for (const id of ['boss-before-band', 'boss-count-mismatch', 'boss-engaged-before-band', 'boss-kill-without-engagement', 'upgrades-exceed-levels']) {
+      assert.ok(!flagIds(validateRebootRunPlausibility(summary)).includes(id), id);
+    }
+  }
+  assert.deepEqual(validateRebootRunPlausibility({ schemaVersion: 7 }), { verdict: 'rejected', flags: [{ id: 'summary-unreadable', severity: 'reject', value: null, limit: null }] });
+});
+
+// Contract §8, nearest-impossible test 1: readiness, per boss.
+test('v7: a boss initiated one tick before it is ready rejects; at its ready tick it passes', () => {
+  for (const bossId of C7.bosses) {
+    const { readyTick } = HMH_V7_BOSSES[bossId];
+    const early = plausible(clone(fourBosses, (s) => retimeBoss(s, bossId, { first: readyTick - 1 })));
+    assert.deepEqual(rejectFlags(early), [{ id: 'boss-before-ready', severity: 'reject', value: readyTick - 1, limit: readyTick }], bossId);
+    assert.deepEqual(rejects(plausible(clone(fourBosses, (s) => retimeBoss(s, bossId, { first: readyTick })))), [], bossId);
+  }
+  // One entry per offending boss, in catalogue order.
+  const all = plausible(clone(fourBosses, (s) => { for (const bossId of C7.bosses) retimeBoss(s, bossId, { first: HMH_V7_BOSSES[bossId].readyTick - 1 }); }));
+  assert.deepEqual(rejectFlags(all).map((flag) => [flag.id, flag.limit]), [['boss-before-ready', 7_200], ['boss-before-ready', 18_000], ['boss-before-ready', 27_000], ['boss-before-ready', 36_000]]);
+});
+
+// Contract §8, nearest-impossible test 2: the minimum fight.
+test('v7: a defeat 299 ticks after the last initiation rejects; 300 passes', () => {
+  assert.equal(HMH_V7_BOSS_RULES.BOSS_MIN_FIGHT_TICKS, 300);
+  for (const bossId of C7.bosses) {
+    const last = bossRow(fourBosses, bossId).lastInitiatedTick;
+    const short = plausible(clone(fourBosses, (s) => { bossRow(s, bossId).defeatedTick = last + 299; }));
+    assert.deepEqual(rejectFlags(short), [{ id: 'boss-fight-too-short', severity: 'reject', value: 299, limit: 300 }], bossId);
+    assert.deepEqual(rejects(plausible(clone(fourBosses, (s) => { bossRow(s, bossId).defeatedTick = last + 300; }))), [], bossId);
+  }
+  // The fight counts from the last initiation: an earlier engagement before a retreat does not shorten it.
+  const { lastInitiatedTick } = bossRow(districts, 'lockkeeper');
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { bossRow(s, 'lockkeeper').defeatedTick = lastInitiatedTick + 299; }))), ['boss-fight-too-short']);
+});
+
+// Contract §8, nearest-impossible test 3: re-initiation after a retreat.
+test('v7: re-initiations less than 2,520 ticks apart reject', () => {
+  const { firstInitiatedTick } = bossRow(districts, 'lockkeeper');
+  const retry = (initiations, span, defeated = 24_000) => plausible(clone(districts, (s) => Object.assign(bossRow(s, 'lockkeeper'), { initiations, lastInitiatedTick: firstInitiatedTick + span, defeatedTick: defeated })));
+  assert.deepEqual(rejectFlags(retry(2, 2_519)), [{ id: 'boss-reinitiation-too-soon', severity: 'reject', value: 2_519, limit: 2_520 }]);
+  assert.deepEqual(rejects(retry(2, 2_520)), []);
+  assert.deepEqual(rejectFlags(retry(3, 5_039)), [{ id: 'boss-reinitiation-too-soon', severity: 'reject', value: 5_039, limit: 5_040 }]);
+  assert.deepEqual(rejects(retry(3, 5_040)), []);
+  // Extra initiations add no kill capacity: the add budget is per slot, once.
+  assert.equal(hmhV7KillCapacity(clone(districts, (s) => { bossRow(s, 'lockkeeper').initiations = 1_000; })), hmhV7KillCapacity(districts));
+});
+
+// Contract §8, nearest-impossible test 4: the earliest Liquidator kill is at 36,300.
+test('v7: a Liquidator kill in a run of 36,299 ticks rejects; at 36,300 it passes', async () => {
+  const rush = { ...HMH_V7_PLANS['four-bosses'], endTick: 36_300, caches: [], nodes: [], reviveTick: null, bosses: [{ bossId: 'liquidator', initiations: [36_000], defeatedTick: 36_300, adds: [] }] };
+  const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt('hmh-v7-liquidator-rush'), evidence: { v7Plan: rush } });
+  const honest = body.evidence.runSummary;
+  assert.deepEqual([honest.identity.endTick, honest.kills.boss, bossRow(honest, 'liquidator').defeatedTick], [36_300, 1, 36_300]);
+  assert.deepEqual(rejects(plausible(honest)), []);
+  const endingAt = (end, first = 36_000) => clone(honest, (s) => {
+    s.identity.endTick = end;
+    s.totals.survivalTicks = end;
+    s.totals.elapsedMs = end * FIXED_STEP_MS;
+    s.defeat.tick = Math.min(s.defeat.tick, end);
+    s.milestones.lastLevelUpTick = Math.min(s.milestones.lastLevelUpTick, end);
+    s.milestones.firstLevelUpTick = Math.min(s.milestones.firstLevelUpTick, s.milestones.lastLevelUpTick);
+    retimeBoss(s, 'liquidator', { first, defeated: end });
+  });
+  assert.deepEqual(rejects(plausible(endingAt(36_299))), ['boss-fight-too-short']);
+  assert.deepEqual(rejects(plausible(endingAt(36_299, 35_999))), ['boss-before-ready']);
+  assert.deepEqual(rejects(plausible(endingAt(36_298, 35_999))), ['boss-before-ready', 'boss-fight-too-short']);
+});
+
+// Contract §8, nearest-impossible test 5: kill capacity.
+test('v7: one kill above the kill capacity of a four-boss run rejects', () => {
+  const capacity = hmhV7KillCapacity(fourBosses);
+  const room = capacity - fourBosses.kills.total;
+  assert.ok(room > 0);
+  const atCapacity = plausible(clone(fourBosses, (s) => addOrdinaryKills(s, 'forkrunner', room)));
+  assert.deepEqual(rejects(atCapacity), []);
+  assert.ok(flagIds(atCapacity).includes('kills-near-capacity'));
+  const above = plausible(clone(fourBosses, (s) => addOrdinaryKills(s, 'forkrunner', room + 1)));
+  assert.deepEqual(rejectFlags(above), [{ id: 'kills-above-capacity', severity: 'reject', value: capacity + 1, limit: capacity }]);
+});
+
+// Contract §7.3: v7 capacity against v6 for fabricated boss claims (every boss
+// initiated at its ready tick, never defeated) and quick honest kills (each
+// defeated 302 ticks after its ready tick).
+test('v7 kill capacity reproduces the contract §7.3 table', () => {
+  const capacityAt = (runTicks, defeatAfter) => hmhV7KillCapacity({ totals: { survivalTicks: runTicks }, bosses: C7.bosses.map((bossId) => {
+    const ready = HMH_V7_BOSSES[bossId].readyTick;
+    const initiated = ready <= runTicks;
+    const defeated = initiated && defeatAfter !== null && ready + defeatAfter <= runTicks ? ready + defeatAfter : 0;
+    return { bossId, initiations: initiated ? 1 : 0, firstInitiatedTick: initiated ? ready : 0, lastInitiatedTick: initiated ? ready : 0, defeatedTick: defeated };
+  }) });
+  const table = [3_600, 10_800, 18_000, 36_000, 64_800, 108_000].map((runTicks) => [runTicks, spawnCapacity(runTicks), capacityAt(runTicks, null), capacityAt(runTicks, 302)]);
+  assert.deepEqual(table, [
+    [3_600, 27, 27, 27],
+    [10_800, 107, 123, 112],
+    [18_000, 187, 239, 196],
+    [36_000, 487, 623, 506],
+    [64_800, 1_127, 1_383, 1_151],
+    [108_000, 2_572, 2_863, 2_451],
+  ]);
+  // The worst loosening against v6 is under 28%, at 10 minutes.
+  for (const [, v6, fabricated] of table) assert.ok(fabricated <= v6 * 1.28, `${fabricated} against ${v6}`);
+  // The boss-window union counts overlapping claims once and ignores uninitiated rows.
+  assert.equal(hmhV7BossWindowTicks([
+    { initiations: 1, firstInitiatedTick: 100, defeatedTick: 400 },
+    { initiations: 2, firstInitiatedTick: 300, defeatedTick: 0 },
+    { initiations: 0, firstInitiatedTick: 0, defeatedTick: 0 },
+  ], 1_000), 900);
+});
+
+// Contract §8, nearest-impossible test 7: OG Miner XP comes from the seeded deal only.
+test('v7: an OG Miner rescue funds exactly 300 x level XP, and only in an OG Miner slot', () => {
+  const deal = dealHmhPrisoners(fourBosses.identity.seed);
+  const unheld = (kind) => C7.prisonerSlots.find((slotId, index) => deal[index] === kind && !HMH_V7_PRISONER_SLOTS[slotId].heldBy);
+  const ogSlot = unheld('og-miner');
+  const medicSlot = unheld('field-medic');
+  assert.ok(ogSlot && medicSlot);
+  const level = fourBosses.totals.level;
+  const tick = fourBosses.identity.endTick - 60;
+  const unrescue = (s, slotId) => Object.assign(v7Row(s.prisoners, 'slotId', slotId), { rescued: 0, tick: 0, levelAtRescue: 0 });
+  const base = clone(fourBosses, (s) => { unrescue(s, ogSlot); unrescue(s, medicSlot); });
+  const rescuedIn = (slotId, xp) => clone(base, (s) => {
+    Object.assign(v7Row(s.prisoners, 'slotId', slotId), { rescued: 1, tick, levelAtRescue: level });
+    setV7Xp(s, xp);
+  });
+  const without = hmhV7Ceilings(base, V7_MAX_GAINS).xp;
+  const withOgMiner = hmhV7Ceilings(rescuedIn(ogSlot, fourBosses.totals.xp), V7_MAX_GAINS).xp;
+  assert.equal(withOgMiner - without, 300 * level, 'the span is 300 x level, unmultiplied');
+  assert.deepEqual(rejects(plausible(rescuedIn(ogSlot, withOgMiner))), []);
+  assert.deepEqual(rejects(plausible(rescuedIn(ogSlot, withOgMiner + 1))), ['xp-above-ceiling']);
+  // The same claim in a slot the deal makes a Field Medic has no XP source.
+  assert.equal(hmhV7Ceilings(rescuedIn(medicSlot, fourBosses.totals.xp), V7_MAX_GAINS).xp, without);
+  assert.deepEqual(rejects(plausible(rescuedIn(medicSlot, withOgMiner))), ['xp-above-ceiling']);
+});
+
+// Contract §8, nearest-impossible test 8: a silver burst needs its defeated row.
+test('v7: score from the silver burst of a boss that was not defeated rejects', () => {
+  // The Lockkeeper initiated but not defeated: no body, no kill score, no burst, no Seal.
+  const undefeated = clone(districts, (s) => {
+    bossRow(s, 'lockkeeper').defeatedTick = 0;
+    v7Row(s.kills.byEnemyRole, 'enemyRoleId', 'lockkeeper').count = 0;
+    s.kills.total -= 1;
+    v7Row(s.kills.byWeapon, 'weaponId', 'hash-rail').count -= 1;
+    v7Row(s.weapons, 'weaponId', 'hash-rail').kills -= 1;
+    Object.assign(s.progression, { sealsFound: 1, sealsBanked: 1 });
+    v7Row(s.collectibles, 'effectId', 'genesis-seal').collected = 1;
+  });
+  const ceiling = hmhV7Ceilings(undefeated, V7_MAX_GAINS).score;
+  const burstScore = HMH_V7_BOSSES.lockkeeper.silverBurst * V7_MAX_GAINS.silverScorePerCoin;
+  assert.equal(hmhV7Ceilings(districts, V7_MAX_GAINS).score - ceiling, V7_MAX_GAINS.killScore.lockkeeper + burstScore, 'the defeat funds its kill score and its burst');
+  assert.deepEqual(rejects(plausible(clone(undefeated, (s) => { s.totals.score = ceiling; }))), []);
+  assert.deepEqual(rejects(plausible(clone(undefeated, (s) => { s.totals.score = ceiling + 1; }))), ['score-above-ceiling']);
+  assert.deepEqual(rejects(plausible(clone(undefeated, (s) => { s.totals.score = ceiling + burstScore; }))), ['score-above-ceiling']);
+  // Each found secret funds 20 coins; an unfound one funds nothing.
+  const unfound = clone(districts, (s) => {
+    Object.assign(v7Row(s.objectives, 'objectiveId', 'hashwood-hollow-grove'), { completed: 0, tick: 0, levelAtCompletion: 0 });
+    Object.assign(v7Row(s.milestones.secrets, 'secretId', 'hashwood-hollow-grove'), { found: 0, tick: 0 });
+  });
+  assert.equal(hmhV7Ceilings(districts, V7_MAX_GAINS).score - hmhV7Ceilings(unfound, V7_MAX_GAINS).score, HMH_V7_RUN_RULES.SILVER_PER_SECRET * V7_MAX_GAINS.silverScorePerCoin);
+});
+
+test('v7: the time, level and ceiling rejects hold at their boundaries', () => {
+  const hard = hmhV7Ceilings(districts, V7_MAX_GAINS);
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => setV7Xp(s, hard.xp)))), []);
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => setV7Xp(s, hard.xp + 1)))), ['xp-above-ceiling']);
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.totals.score = hard.score; }))), []);
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.totals.score = hard.score + 1; }))), ['score-above-ceiling']);
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.totals.level += 1; s.milestones.levelUps += 1; }))), ['level-xp-mismatch']);
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.totals.elapsedMs += 1.5; }))), ['elapsed-time-mismatch']);
+  assert.deepEqual(rejects(validateRebootRunPlausibility(clone(districts, (s) => { s.identity.startTick = 1; s.totals.survivalTicks -= 1; }))), ['start-tick-invalid', 'elapsed-time-mismatch']);
+});
+
+test('v7 soft flags flag and never reject', () => {
+  const soft = (summary, id, value) => {
+    const result = plausible(summary);
+    assert.equal(result.verdict, 'flagged', id);
+    assert.deepEqual(rejects(result), [], id);
+    const entry = result.flags.find((flag) => flag.id === id);
+    assert.ok(entry, `${id}: ${JSON.stringify(result.flags)}`);
+    if (value !== undefined) assert.deepEqual([entry.value, entry.limit], [value, 0], id);
+  };
+  // A fourth rank of a rank-3 upgrade, taken in place of another pick.
+  soft(clone(districts, (s) => {
+    const to = s.upgrades.find((row) => row.selected === 3 && HMH_V7_UPGRADES[row.upgradeId].maxRank === 3);
+    const from = s.upgrades.find((row) => row.selected > 0 && row !== to);
+    from.selected -= 1;
+    from.offered -= 1;
+    to.selected += 1;
+    to.offered = Math.max(to.offered, to.selected);
+  }), 'upgrade-rank-above-max', 1);
+  soft(clone(districts, (s) => {
+    Object.assign(v7Row(s.evolutions, 'evolutionId', 'double-spend'), { offered: 1, applied: 1 });
+    Object.assign(s.progression, { evolutionOffersOpened: 1, evolutionsApplied: 1, sealsBanked: 1 });
+  }), 'evolution-without-mastery', 1);
+  soft(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'relay-power').levelAtCompletion = s.totals.level; }), 'node-level-inconsistent');
+  soft(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'ravine-winch-handle').tick = v7Row(s.objectives, 'objectiveId', 'ravine-winch').tick + 60; }), 'objective-prerequisite-missing', 1);
+  const hashwood = C7.objectives.filter((id) => HMH_V7_OBJECTIVES[id].district === 'hashwood').length + 1; // and the logging-camp prisoner
+  soft(clone(districts, (s) => { s.exploration.visitedDistrictMask -= 2 ** C7.districts.indexOf('hashwood'); }), 'node-in-unvisited-district', hashwood);
+  soft(clone(districts, (s) => setV7Xp(s, Math.floor(s.totals.xp * 1.3))), 'xp-above-selected-upgrades');
+  soft(clone(districts, (s) => { s.totals.score = Math.floor(s.totals.score * 1.3); }), 'score-above-selected-upgrades');
+  soft(clone(districts, (s) => { s.totals.maxCombo = s.kills.total + 1; s.totals.currentCombo = 0; }), 'combo-exceeds-kills');
 });
