@@ -33,6 +33,9 @@
 // Options: --seconds=20 --warmup-ticks=240 --census-ticks=1800 --gore=1
 //   --weapon=coin-blaster|lightning-ledger|bear-market-burner|forked-standard
 //   --seed=<u32> --origin=<url> --out=<dir> --retries=3 --verbose
+//   --walk  (timing/profile only) hold D, S, A, W in turn for 1.5 s each over
+//           the window, so the hero drags the crowd and the camera scrolls.
+//           Key timing is wall-clock, so walked runs are not tick-reproducible.
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -161,6 +164,9 @@ const censusTicks = Number(options['census-ticks'] ?? 1800);
 const censusTicksPerFrame = Number(options['census-ticks-per-frame'] ?? 4);
 const retries = Number(options.retries ?? 3);
 const affinity = options.affinity ? String(options.affinity) : null;
+const walk = Boolean(options.walk);
+const WALK_KEYS = Object.freeze(['KeyD', 'KeyS', 'KeyA', 'KeyW']);
+const WALK_LEG_MS = 1500;
 assert.ok(affinity === null || /^0x[0-9a-f]+$/i.test(affinity), 'affinity must be a hex core mask such as 0xFFFF');
 assert.ok(Number.isInteger(seed) && seed >= 0 && seed <= 0xffff_ffff, 'seed must be an unsigned 32-bit integer');
 assert.ok(Object.hasOwn(WEAPON_PILOTS, weapon), `weapon must be one of ${Object.keys(WEAPON_PILOTS).join(', ')}`);
@@ -717,12 +723,21 @@ async function runPass({ mode, profileId, cpu = 1 }) {
     });
     const windowMs = windowSeconds * 1000;
     const deadline = Date.now() + Math.max(120_000, windowMs * 6);
+    let walkLeg = -1;
+    let walkLegAt = 0;
     for (;;) {
       const activeMs = await frame.evaluate(() => globalThis.__hmhBench.activeMs);
       if (activeMs >= windowMs) break;
       if (Date.now() > deadline) throw new Error(`active window stalled at ${activeMs} ms`);
+      if (walk && Date.now() - walkLegAt >= WALK_LEG_MS) {
+        if (walkLeg >= 0) await page.keyboard.up(WALK_KEYS[walkLeg % WALK_KEYS.length]);
+        walkLeg += 1;
+        walkLegAt = Date.now();
+        await page.keyboard.down(WALK_KEYS[walkLeg % WALK_KEYS.length]);
+      }
       await page.waitForTimeout(250);
     }
+    if (walkLeg >= 0) await page.keyboard.up(WALK_KEYS[walkLeg % WALK_KEYS.length]);
     const after = await frame.evaluate(() => {
       const bench = globalThis.__hmhBench;
       bench.recording = false;
@@ -759,7 +774,7 @@ async function runPass({ mode, profileId, cpu = 1 }) {
     }
     const wallMs = after.wall - before.wall;
     return {
-      mode, profileId, cpu, seed, gore, weapon, bootMs,
+      mode, profileId, cpu, seed, gore, weapon, walk, bootMs,
       gpu: await webglRenderer(frame),
       abortedRequests: network.aborted,
       host: (() => {
