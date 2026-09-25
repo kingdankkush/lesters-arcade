@@ -1,0 +1,14 @@
+# Slice brief: version-column (owner decision 2026-09-25: no testnet season resets; show the game version per score)
+
+**Worktree:** `C:/Users/just_/lesters-arcade-wt/version-column`, branch `fable/pd-version-column`. Production is live (1.8.1, flags true). Base contains polish-2.
+**Read first:** contract §2.1-§2.4 (identifiers, buildHash, A11), §4.3.5-§4.3.8 (E5, E6, E9), §7.8; `server/verify/**` (bindRankedIdentity, buildHash patterns), `apps/portal/src/ranked-identity.mjs`, `arcade-core.mjs` game entries (CHIKUN_CABINET_VERSION near :2294), `server/neon/queries.mjs`, the hosted leaderboard and profile views.
+
+## Owner decision
+Balance changes do NOT reset seasons on testnet (reset only at mainnet). Instead, every score shows the game version it was made on, as a column on leaderboard rows and in profile session history.
+
+## Acceptance criteria
+1. **HMH cabinet version.** New one-line module `apps/portal/src/hmh-cabinet-version.mjs` exporting `HMH_CABINET_VERSION = '0.5.0'` (the HMH roadmap session owns later bumps). The HMH game entry in `arcade-core.mjs` gets `cabinetVersion` from it, so new HMH buildHashes read `site-X:game-Y:cabinet-0.5.0`. The lester-blaster buildHash pattern accepts an optional `:cabinet-\d+\.\d+\.\d+` on both server (`server/verify`) and browser (`ranked-identity.mjs` / RANKED_GAMES), so 1.8.x rows without it stay valid. Keep the module out of the HMH child initial JS (it is portal-only).
+2. **One pure label module** `apps/portal/src/game-version-labels.mjs` shared by server and browser: `versionLabelFor(gameId, { buildHash, runtimeId })` returns `HMH v0.5` / `HMH v0.6` (cabinet major.minor; no cabinet segment → `HMH v0.5`), `Chikun v7` (from runtimeId `chikun:canvas-runtime-vN`), `STACKED v0.2` (cabinet major.minor), and a safe fallback for anything unexpected. Exhaustive unit tests.
+3. **Server.** E5 leaderboard rows, E6 profile recent sessions and E9 session reads carry `versionLabel` (and the raw `runtimeId`/`buildHash` only where already public). Find where the build hash is stored for verified sessions; if it is not queryable, derive it from the stored identity/evidence or add an additive migration (coordinate numbering: ops-health took migration 2; the Chikun jackpot slice plans migration 3, so use 3 only if the jackpot has not merged yet, otherwise the next free number, and keep it additive and A15-safe with a backfill for existing rows). Cache headers unchanged.
+4. **UI.** Hosted Scores rows show a compact version column (desktop) / chip (phone, 320 px safe); profile session history shows the label per run; share page optional (only if trivial). Retro styling consistent; no layout shift; tests for both hosted views.
+5. Gate: `npm test`, `npm run check`, `npm run build` (HMH initial + shared must not grow; report bytes), `npm run test:release` (exactly 51), curated inventory regenerated for new src modules.
