@@ -189,6 +189,8 @@ const NODE_CHECK_FILES = [
   'server/jackpot/select.mjs',
   'tests/jackpot-server-select.test.mjs',
   'tests/fixtures/jackpot-server/helpers.mjs',
+  'server/jackpot/ticket-log.mjs',
+  'tests/jackpot-server-ticket-log.test.mjs',
   'apps/stacked/src/render/lock-projection.mjs',
   'apps/portal/src/stacked-profile.mjs',
   'scripts/stacked-particles-qa-entry.mjs',
