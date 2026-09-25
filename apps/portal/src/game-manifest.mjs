@@ -12,7 +12,9 @@
 //   - the third-party intake + security-review pipeline (audit §5.2)
 //   - the on-chain registry (manifest checksum)
 
-import { id as keccakUtf8 } from '../vendor/ethers.min.js';
+// keccakUtf8 equals the vendored ethers `id` (tests/keccak256.test.mjs), without
+// pulling ethers into the first paint of every page that validates a manifest.
+import { keccakUtf8 } from './keccak256.mjs';
 
 // The SDK contract version this platform implements. A manifest must target a
 // compatible major. Bumping the major means breaking SDK changes.

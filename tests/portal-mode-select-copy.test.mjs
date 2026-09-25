@@ -4,7 +4,9 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
+import { PORTAL_AST, PORTAL_MAIN, portalCallback, portalFunctionSource } from './helpers/ranked-client-vm.mjs';
 import { createOfficialPlayRoutes } from '../apps/portal/src/routes/official-play-routes.mjs';
 import { buildGameModeSelectModel } from '../apps/portal/src/arcade-core.mjs';
 import { PORTAL_COPY, PORTAL_FLAGS, PORTAL_GAMES, escapeHtml, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
@@ -30,12 +32,12 @@ function node(tag = 'div', props = {}) {
   };
 }
 
-function renderModeSelect({ gameId, connectedWallet = '0xabc', portalCopy } = {}) {
+function mountModeSelect({ gameId, getContext, portalCopy } = {}) {
   const keys = ['officialModeSelect', 'officialModeEyebrow', 'officialModeTitle', 'officialModeCopy', 'officialModeArtNote', 'officialFreeModeButton', 'officialRankedModeButton', 'officialFreeModeBanner', 'officialRankedModeBanner', 'officialFreeModeTitle', 'officialRankedModeTitle', 'officialFreeModeCopy', 'officialRankedModeCopy', 'officialRankedTooltip'];
   const dom = Object.fromEntries(keys.map(key => [key, node(key)]));
   const routes = createOfficialPlayRoutes({
     dom,
-    getContext: () => ({ connectedWallet }),
+    getContext,
     selectedGame: () => ({ id: gameId }),
     buildGameModeSelectModel,
     applyGameModeSelectBackground: () => {},
@@ -44,9 +46,14 @@ function renderModeSelect({ gameId, connectedWallet = '0xabc', portalCopy } = {}
     SETTLEMENT_LIVE: false,
     ...(portalCopy ? { portalCopy } : {}),
   });
+  const read = () => ({ mode: dom.officialModeCopy.textContent, ranked: dom.officialRankedModeCopy.textContent, free: dom.officialFreeModeCopy.textContent, tooltip: dom.officialRankedTooltip.children.map(child => child.textContent) });
+  return { routes, read };
+}
+
+function renderModeSelect({ gameId, connectedWallet = '0xabc', walletSignedIn, portalCopy } = {}) {
+  const { routes, read } = mountModeSelect({ gameId, portalCopy, getContext: () => ({ connectedWallet, ...(walletSignedIn === undefined ? {} : { walletSignedIn }) }) });
   routes.renderModeSelect();
-  const tooltip = dom.officialRankedTooltip.children.map(child => child.textContent);
-  return { mode: dom.officialModeCopy.textContent, ranked: dom.officialRankedModeCopy.textContent, free: dom.officialFreeModeCopy.textContent, tooltip };
+  return read();
 }
 
 const block = (html, key) => html.match(new RegExp(`<!-- copy:${key}:start -->([\\s\\S]*?)<!-- copy:${key}:end -->`))?.[1];
@@ -153,4 +160,139 @@ test('the prerendered mode-select blocks match what the SPA shows', () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+// polish-2 (live UI audit follow-up): a signed-in player was told to sign in,
+// and Chikun's line offered "endless guest practice" to everyone. Each line
+// now has a signed-out form (prerendered) and a signed-in form.
+const main = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8').replace(/\r\n/g, '\n');
+
+test('a signed-in player reads a mode line with no guest or sign-in wording', () => {
+  for (const [name, copy] of Object.entries({ preview, hostedPreview, launch })) {
+    for (const gameId of SITE_COPY_GAMES) {
+      const entry = copy.modeSelect[gameId];
+      const signedIn = renderModeSelect({ gameId, walletSignedIn: true, portalCopy: copy });
+      assert.equal(signedIn.mode, entry.copySignedIn, `${name} ${gameId}`);
+      assert.doesNotMatch(signedIn.mode, /sign in|connect|guest|without a wallet|endless|session is active/i, `${name} ${gameId}`);
+      assert.match(signedIn.mode, /^Choose Free Mode|^Public beta\./);
+      assert.match(signedIn.mode, /Play Ranked/);
+      // The Free card under it is shown to everyone: no guest wording there either.
+      assert.doesNotMatch(signedIn.free, /guest|sign in|without a wallet/i, `${name} ${gameId} Free card`);
+      // A wallet that is connected but not signed in still reads the
+      // signed-out line: Ranked asks it to sign in first.
+      assert.equal(renderModeSelect({ gameId, walletSignedIn: false, portalCopy: copy }).mode, entry.copy, `${name} ${gameId} connected, not signed in`);
+      assert.equal(renderModeSelect({ gameId, connectedWallet: null, portalCopy: copy }).mode, entry.copy, `${name} ${gameId} signed out`);
+    }
+  }
+  assert.equal(launch.modeSelect['lester-blaster'].copySignedIn, 'Choose Free Mode for practice, or Play Ranked to compete on the LitVM testnet.');
+  assert.equal(launch.modeSelect.chikun.copySignedIn, 'Choose Free Mode for practice, or Play Ranked to compete on the LitVM testnet.');
+  assert.equal(launch.modeSelect.stacked.copySignedIn, 'Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: choose Play Ranked to compete on the LitVM testnet.');
+  assert.match(hostedPreview.modeSelect.chikun.copySignedIn, /for a replay-verified Ranked preview\.$/);
+  assert.match(preview.modeSelect['lester-blaster'].copySignedIn, /^Choose Free Mode for local practice/);
+});
+
+test('no mode line offers endless guest practice, and the signed-out lines stay truthful', () => {
+  for (const [name, copy] of Object.entries({ preview, hostedPreview, launch })) {
+    for (const gameId of SITE_COPY_GAMES) {
+      const entry = copy.modeSelect[gameId];
+      for (const line of [entry.copy, entry.copySignedIn]) assert.doesNotMatch(line, /endless/i, `${name} ${gameId}`);
+      const action = copy === launch ? /sign in and choose Play Ranked/ : copy === hostedPreview ? /sign in with a wallet and choose Play Ranked/ : /connect a wallet and choose Play Ranked/;
+      assert.match(entry.copy, action, `${name} ${gameId}`);
+    }
+  }
+  assert.equal(launch.modeSelect.chikun.copy, 'Choose Free Mode to practice without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.');
+  assert.equal(hostedPreview.modeSelect.chikun.copy, 'Choose Free Mode for local guest practice, or sign in with a wallet and choose Play Ranked for a replay-verified Ranked preview.');
+});
+
+test('main.js tells the mode-select route whether the wallet is signed in', () => {
+  const from = main.indexOf('const officialPlayRoutes = createOfficialPlayRoutes({');
+  assert.ok(from > 0);
+  const call = main.slice(from, main.indexOf('\n});', from));
+  // Hosted: a live session for this wallet. The local preview: a connected wallet.
+  assert.match(call, /\n {4}walletSignedIn: Boolean\(connectedWallet\) && \(!HOSTED_PROFILE_SYNC \|\| walletSessionAuthenticated\(connectedWallet\)\),\n/);
+  // Without the flag the route shows the signed-out line (never claims a sign-in).
+  for (const gameId of SITE_COPY_GAMES) assert.equal(renderModeSelect({ gameId, portalCopy: launch }).mode, launch.modeSelect[gameId].copy);
+});
+
+// polish-2 review: the pages prerender the signed-out line in every flag
+// state; the signed-in form exists only in the SPA.
+test('the prerendered mode line is the signed-out one, never the signed-in one', () => {
+  const pages = [['committed', portal, PORTAL_COPY]];
+  const dirs = [];
+  try {
+    for (const [name, flags, copy] of [['preview', { settlementLive: false, hostedProfileSync: false }, preview], ['hostedPreview', { settlementLive: false, hostedProfileSync: true }, hostedPreview], ['launch', 'live', launch]]) {
+      const dir = mkdtempSync(join(tmpdir(), 'portal-mode-line-'));
+      dirs.push(dir);
+      buildPortalPages({ flags, outDir: dir });
+      pages.push([name, dir, copy]);
+    }
+    for (const [name, dir, copy] of pages) {
+      const entry = copy.modeSelect['lester-blaster'];
+      assert.notEqual(entry.copy, entry.copySignedIn);
+      for (const file of ['index.html', 'discover/games.html']) {
+        const line = block(readFileSync(join(dir, file), 'utf8'), 'mode-copy');
+        assert.equal(line, escapeHtml(entry.copy), `${name} ${file}`);
+        assert.notEqual(line, escapeHtml(entry.copySignedIn), `${name} ${file}`);
+      }
+    }
+  } finally {
+    for (const dir of dirs) rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// polish-2 review: the line was right on the first render only. A sign-in
+// from the Ranked entry modal's own button, or a dropped session (a 401),
+// announces lesters:wallet-session while the mode select stays on screen.
+// main.js's own listener, getContext and walletSessionAuthenticated run here
+// in a VM against the real route.
+function hostedModeSelectPage({ gameId, portalCopy, step = 'mode-select' }) {
+  const wallet = `0x${'ab'.repeat(20)}`;
+  const session = { authenticated: false };
+  const timers = [];
+  const context = vm.createContext({
+    HOSTED_PROFILE_SYNC: true,
+    officialAppStep: step,
+    connectedWallet: wallet,
+    walletSession: { isAuthenticated: address => session.authenticated && address === wallet },
+    combat: {}, hmhRebootActive: false, officialSelectedMode: null, state: {},
+    officialProfileRoute: { invalidate() {} },
+    officialLeaderboardRoute: { invalidate() {} },
+    hydrateProfileFromIndex() {},
+    hydrateLeaderboardFromIndex() {},
+    setTimeout: fn => { timers.push(fn); return timers.length; },
+    window: new EventTarget(),
+  });
+  vm.runInContext(portalFunctionSource('walletSessionAuthenticated'), context);
+  const view = mountModeSelect({ gameId, portalCopy, getContext: portalCallback('createOfficialPlayRoutes', 'getContext', context) });
+  context.officialPlayRoutes = view.routes;
+  const listener = PORTAL_AST.body.find(entry => entry.type === 'ExpressionStatement'
+    && PORTAL_MAIN.slice(entry.start, entry.end).startsWith("window.addEventListener('lesters:wallet-session'"));
+  assert.ok(listener, 'main.js registers the wallet-session listener at the top level');
+  vm.runInContext(PORTAL_MAIN.slice(listener.start, listener.end), context);
+  const announce = authenticated => {
+    session.authenticated = authenticated;
+    context.window.dispatchEvent(new Event('lesters:wallet-session'));
+    while (timers.length) timers.shift()();
+  };
+  return { view, announce };
+}
+
+test('an in-page sign-in or a dropped session re-renders the mode line', () => {
+  for (const [name, copy] of Object.entries({ hostedPreview, launch })) {
+    for (const gameId of SITE_COPY_GAMES) {
+      const entry = copy.modeSelect[gameId];
+      const page = hostedModeSelectPage({ gameId, portalCopy: copy });
+      page.view.routes.renderModeSelect();
+      assert.equal(page.view.read().mode, entry.copy, `${name} ${gameId}: connected, not signed in`);
+      page.announce(true); // signed in from the entry modal, which is then cancelled
+      assert.equal(page.view.read().mode, entry.copySignedIn, `${name} ${gameId}: signed in`);
+      page.announce(false); // a 401 drops the token; the wallet stays connected
+      assert.equal(page.view.read().mode, entry.copy, `${name} ${gameId}: session dropped`);
+    }
+  }
+  // Off the mode-select step the listener leaves the (hidden) line alone.
+  const away = hostedModeSelectPage({ gameId: 'chikun', portalCopy: launch, step: 'profile' });
+  away.view.routes.renderModeSelect();
+  away.announce(true);
+  assert.equal(away.view.read().mode, launch.modeSelect.chikun.copy);
 });

@@ -142,19 +142,29 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     // game-neutral line for a page without an entry. The HMH line no longer
     // opens with 'Your Lester’s Arcade session is active', which signed-out
     // visitors read too (live UI audit review, 2026-09-24).
+    // `copy` is the signed-out line (the prerendered pages carry it);
+    // `copySignedIn` is what a signed-in player reads (a connected wallet in
+    // the local preview): no guest wording, nothing to sign in to, and no claim
+    // about the session, which can end while the page stays open (polish-2).
     modeSelect: Object.freeze({
       'lester-blaster': Object.freeze({
         copy: live
           ? 'Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'
           : `Choose Free Mode for local guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a Ranked preview.`,
+        copySignedIn: live
+          ? 'Choose Free Mode for practice, or Play Ranked to compete on the LitVM testnet.'
+          : 'Choose Free Mode for local practice, or Play Ranked for a Ranked preview.',
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.`
           : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
       }),
       chikun: Object.freeze({
         copy: live
-          ? 'Choose Free Mode for endless guest practice, or sign in and choose Play Ranked to compete on the LitVM testnet.'
-          : `Choose Free Mode for endless guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a replay-verified Ranked preview.`,
+          ? 'Choose Free Mode to practice without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.'
+          : `Choose Free Mode for local guest practice, or ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a replay-verified Ranked preview.`,
+        copySignedIn: live
+          ? 'Choose Free Mode for practice, or Play Ranked to compete on the LitVM testnet.'
+          : 'Choose Free Mode for local practice, or Play Ranked for a replay-verified Ranked preview.',
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play with replay verification. Accepted scores are saved on this device; nothing is published on chain yet.',
@@ -163,6 +173,9 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
         copy: live
           ? 'Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: sign in and choose Play Ranked to compete on the LitVM testnet.'
           : `Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: ${hosted ? 'sign in with' : 'connect'} a wallet and choose Play Ranked for a replay-verified Ranked preview.`,
+        copySignedIn: live
+          ? 'Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: choose Play Ranked to compete on the LitVM testnet.'
+          : 'Public beta. Free Mode lets you pick your starting level. Ranked starts at level 1 with no undo: choose Play Ranked for a replay-verified Ranked preview.',
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play from level 1 with no undo, checked by replay. Accepted scores are saved on this device; nothing is published on chain yet.',

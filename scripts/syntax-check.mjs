@@ -362,6 +362,8 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/combat-damage.mjs",
   "apps/portal/src/combat-physics.mjs",
   "apps/portal/src/game-manifest.mjs",
+  'apps/portal/src/keccak256.mjs',
+  'tests/keccak256.test.mjs',
   "apps/portal/src/arcade-sdk.mjs",
   "apps/portal/src/arcade-sandbox.mjs",
   "apps/portal/src/arcade-security-review.mjs",

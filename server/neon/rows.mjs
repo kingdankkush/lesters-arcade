@@ -52,6 +52,15 @@ export const NUMERIC_HEADLINE_KEYS = Object.freeze(Object.fromEntries(
 
 export const ALL_NUMERIC_HEADLINE_KEYS = Object.freeze([...new Set(Object.values(NUMERIC_HEADLINE_KEYS).flat())]);
 
+// Headline keys that are a per-run best, where a sum across runs means
+// nothing (a combo total, the levels added up): E6 also reports their maximum
+// as `bests` (polish-2). `totals` keeps summing every numeric key (§4.3.6).
+export const PER_RUN_BEST_KEYS = Object.freeze(['maxCombo', 'bestCombo', 'level']);
+export const BEST_HEADLINE_KEYS = Object.freeze(Object.fromEntries(
+  Object.entries(NUMERIC_HEADLINE_KEYS).map(([gameId, keys]) => [gameId, Object.freeze(keys.filter((key) => PER_RUN_BEST_KEYS.includes(key)))]),
+));
+export const ALL_BEST_HEADLINE_KEYS = Object.freeze(ALL_NUMERIC_HEADLINE_KEYS.filter((key) => PER_RUN_BEST_KEYS.includes(key)));
+
 // game= accepts a gameId or a route slug; answers always carry the gameId.
 export function resolveGameId(value) {
   const text = String(value ?? '').trim().toLowerCase();

@@ -145,6 +145,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-wo98-world-assembly.mjs",
     "apps/portal/src/hmh-world-scale.mjs",
     "apps/portal/src/index-api-client.mjs",
+    "apps/portal/src/keccak256.mjs",
     "apps/portal/src/leaderboard-engine.mjs",
     "apps/portal/src/leaderboard-seed.mjs",
     "apps/portal/src/leaderboard-view.mjs",
