@@ -205,3 +205,61 @@ Evidence: `docs/testing/hmh-perf-step2-static-world-bake.json`.
 - An instrumented build measured per-frame main-thread work at mobile 4x in the static crowd. The world renderer's JS fell from 2.6–2.7 ms to 0.33 ms. Pixi `render` fell from 10.2–11.8 ms to 7.1–7.6 ms, including instruction rebuilds from 6.4–7.5 ms to 4.5–4.7 ms. World-art tessellation fell from 0.4 ms to 0.02 ms.
 - Walking the crowd triggers about 0.7 re-bakes per second. Each costs 6.6–11.3 ms of JS at 4x, the same range as the step-1 renderer's per-frame maximum. Amortized world JS is 0.5–0.8 ms per frame against 2.7–3.2 ms.
 - rAF intervals are vsync-quantised, and the 6x third run of step 2 landed in a heavier host window (103 ms, sim speed 0.63). The per-frame work figures are the more direct measure.
+
+## Perf step 3: simulation hot path (2026-09-25)
+
+Change (`c31b5990`, `948bef42`): cut per-tick simulation work without changing a single result. Arithmetic, iteration order and tie breaking are the release ones; only redundant work goes.
+
+- **Shared guards.** `positive`, `nonNegative`, `nonNegativeInteger`, `positiveInteger`, `validSeed`, `point2`/`point3` and the `lexical` id comparator were copied into up to twelve simulation modules. They now live once in `value-guards.mjs` with identical bodies and messages. `value-guards` also gains `cellKey`, a collision-free packed integer key for grid cells within ±8191 (an `"x,y"` string beyond that).
+- **Ground queries.** `sampleSurface` builds its sample frozen, with a shared flat up-normal, instead of deep-walking it with `freezeDeep`. `createAuthoredGroundQuery` looks up a 256-unit cell list of the surfaces whose padded box touches the cell, in priority order, so the first listed match is the old first match. It falls back to the full scan unless every surface is frozen geometry. Swept traversal results freeze field by field.
+- **Crowd separation.** Packed integer cell keys, one neighbourhood list per occupied cell, scratch arrays instead of one object per candidate, and a k-smallest cut instead of sorting every candidate. The neighbour rule is unchanged: rank by squared distance, keep the rounding neighbourhood at the cut, take the exact `Math.hypot` distance, order by (distance, id), truncate. `stepEnemyPopulation` reads deltas by index (with an id-keyed fallback for repeated ids), skips the formation map's id re-sort, memoizes `stableHash`, and freezes intents and step results shallowly where every nested value is already frozen.
+- **Blocker index.** Buckets merge with a per-index stamp and packed keys instead of a `Set`, string keys and a sort. `querySourceOrder` returns the candidates in the caller's array order.
+- **Projectiles.** Cover is narrow-phased only when the immutable blocker index and a padded box test say the segment can reach it, visited in the caller's order; a skipped blocker could only have returned no hit. `resolveProjectileBatch` validates ids, builds the id map and sorts the targets once per batch instead of once per shot. The hurtbox grid uses packed keys without a per-bucket sort (queries sort what they collect). Frozen hurtbox profile shapes are validated once.
+- **Melee.** `createMeleeTarget` freezes shallowly: both grounds are frozen points.
+
+Exactness:
+
+- `tests/hmh-sim-hot-path.test.mjs` (13 tests) runs every changed function beside a verbatim copy of its 1.8.1 module in `tests/fixtures/hmh-sim-reference/`. Only the header comment and import paths differ from `60ea173a`. It compares float bits (`Object.is`), key order, Map/Set order and frozen state at every node. It covers Level 1 ground queries, traversal, collision and line of sight, the blocker index, dense/sparse/off-origin/duplicate-id crowds, a 900-tick 128-body Level 1 crowd stepped in lockstep with the release modules, intents, every projectile policy with and without the hurtbox grid, the release validation errors, and melee.
+- The headless digest is `2488a609…` on five runs of step 3 and four of step 2. The browser census trace is `449616fb…` on mobile and desktop, measured on the plain build of `948bef42`.
+- The determinism suites pass 39/39: hot path, digest, deterministic hash, run summary, endurance soak. Every test file that imports a module changed since step 2 passes: 106 files, 923 tests. The full `node --test` run shows the same 51 pre-existing art-asset-presence failures as steps 1 and 2.
+- Left unchanged on purpose: the projectile hurtbox-grid threshold (`PROJECTILE_GRID_THRESHOLD`, 64 targets). `UniformHurtboxGrid.query` orders candidates by code-unit `sort()`, but the no-grid path orders by `localeCompare`. Moving the threshold could therefore reorder simultaneous hits for some id sets, so it is not a proven no-op.
+
+Evidence: `docs/testing/hmh-perf-step3-sim-hot-path.json`.
+
+- Initial JS is 1,047,622 B: +28 B over step 2, 954 B of headroom. The guard refactor freed 1,695 B, which paid for the hot-path code.
+- Headless simulation cost (`hmh-sim-digest`, pinned to the P-cores at High priority, builds alternated):
+  - crowd: 0.684–0.687 → 0.383–0.413 ms per tick (−42%);
+  - director: 0.241–0.252 → 0.139–0.147 ms per tick (−41%).
+- CPU profiles give the in-browser cost per fixed tick. Each A/B round has one profile pair per scenario:
+
+| Per fixed tick, from the CPU profile | Step 2 | Step 3 |
+|---|---:|---:|
+| Mobile 4x: simulation `update` | 6.71 / 6.22 ms | 4.01 / 4.13 ms |
+| Mobile 4x: `stepEnemyPopulation` | 4.00 / 3.70 ms | 1.98 / 2.01 ms |
+| Mobile 6x: simulation `update` | 13.28 / 11.31 ms | 6.63 / 6.05 ms |
+| Mobile 6x: `stepEnemyPopulation` | 7.83 / 6.88 ms | 3.17 / 3.07 ms |
+| Desktop 1x: simulation `update` | 1.85 / 1.40 ms | 1.12 / 1.11 ms |
+
+  Over a 20 s mobile window, the functions this step targeted fell as follows:
+  - `sampleSurface`: from 781–963 ms to 99–139 ms;
+  - `freezeDeep`: from 765–903 ms to 249–291 ms;
+  - swept traversal: from 911–1,137 ms to 203–336 ms;
+  - separation: from 0.84–1.72 ms to 0.45–0.69 ms per tick.
+- Frame timing. Other sessions kept the host 22–66% busy, so the two builds were alternated in two rounds. Round 1 used `--retries=2` with `--sourcemap` builds; round 2 used `--retries=1`, plain builds for timing passes and `--sourcemap` builds for profile passes.
+
+| Mobile crowd, mean of runs | Step 2 | Step 3 |
+|---|---:|---:|
+| 4x, static camera (6 runs each): mean / p95 / p99 | 35.76 / 52.1 / 70.7 ms | 31.65 / 52.1 / 77.6 ms |
+| 4x, frames over 33.3 ms | 59.3% | 35.8% |
+| 6x, static camera (6 runs each): mean / p95 / p99 | 93.77 / 133.2 / 173.7 ms | 68.00 / 101.9 / 125.1 ms |
+| 6x, fps / sim speed | 10.8 / 0.70 | 15.3 / 0.85 |
+| 4x, walking (2 runs each): mean / p95 | 54.94 / 90.3 ms | 46.28 / 79.9 ms |
+| Desktop 1x (6 runs each) | 7.20 ms | 7.65 ms |
+
+- The 6x crowd is simulation-bound, and it gains most: 27% lower mean frame time, and the simulation falls behind real time less (sim speed 0.70 → 0.85). One step-3 6x run landed in a heavy host window (98.7 ms, 38% other load). Its paired step-2 run was just as slow (102.4 ms).
+- At 4x, the mean and the share of frames over 33.3 ms improve, but the tail does not. In round 2 (quieter host) the p99 is equal (67.2 ms both). Round 1 had step 3's p99 worse, with the host 42–47% busy. After this step, the remaining 4x frame cost is mostly rendering and native work.
+- Desktop 1x is vsync-bound at 144 Hz (6.94 ms). In the first four timing pairs, the step-3 pass drew the busier host window each time, and its missed-vsync frames rose with it. The last two pairs ran at 26–33% host load and measured 7.02 and 7.03 ms against 7.10 and 6.98 ms. The desktop profile pairs show lower simulation cost and 4.74–5.29 ms of main-thread busy time per frame, against 4.59–6.25 ms for step 2.
+- Still open after this step:
+  - the hurtbox grid is rebuilt on every tick with a projectile in flight;
+  - `freezeDeep` still costs 112–291 ms per window: combat-hit and snapshot results, plus the `main.mjs` tick glue;
+  - the `main.mjs` glue still allocates its target lists every tick.
