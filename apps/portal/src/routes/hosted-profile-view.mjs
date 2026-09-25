@@ -204,8 +204,10 @@ export function createHostedProfileView({
   const nameEditor = { wallet: null, raw: null, avatarUri: null, prepared: null, busy: false, message: '', tone: '' };
 
   // Every render rebuilds the grid; keyboard focus stays on the control that
-  // had it (a game tab just pressed, Retry, the avatar picker).
-  const renderOfficialProfile = () => renderKeepingFocus(dom.officialCabinetGrid, renderPage);
+  // had it (a game tab just pressed, Retry, the avatar picker). When it is
+  // gone (Try again became the Loading card, which became the profile), focus
+  // lands on Try again, the state card or the player's name.
+  const renderOfficialProfile = () => renderKeepingFocus(dom.officialCabinetGrid, renderPage, { fallback: ['.profile-state-retry', '.profile-state-card', '.profile-hero-name'] });
 
   function rerenderIfShown() {
     if (isActive()) renderOfficialProfile();
@@ -417,7 +419,8 @@ export function createHostedProfileView({
     const top = el('div', { className: 'profile-hero-topline' });
     top.append(hostedAvatar(profile.avatarUri, name, 'profile-hero-avatar'));
     const identity = el('div', { className: 'profile-hero-identity' });
-    appendText(identity, 'strong', name, profile.displayName ? 'profile-hero-name' : 'profile-hero-name profile-hero-name-wallet');
+    const heroName = appendText(identity, 'strong', name, profile.displayName ? 'profile-hero-name' : 'profile-hero-name profile-hero-name-wallet');
+    heroName.setAttribute('tabindex', '-1'); // where focus lands when Try again loads the profile
     appendText(identity, 'small', `${shortWallet(target.wallet)}${target.own ? ' · this is you' : ''} · verified Ranked runs on LitVM`);
     if (target.own && target.self && profile.nameBlocked) appendText(identity, 'p', BLOCKED_NAME_COPY, 'profile-name-blocked username-feedback');
     top.append(identity);
@@ -766,10 +769,11 @@ export function createHostedProfileView({
     if (!response) {
       const state = el('article', { className: `official-info-card profile-state-card profile-state-${entry.status}` });
       state.setAttribute('role', 'status');
+      state.setAttribute('tabindex', '-1');
       if (entry.status === 'offline' || entry.status === 'error') {
         appendText(state, 'strong', entry.status === 'offline' ? 'You appear to be offline.' : 'This profile is unavailable right now.');
         appendText(state, 'small', 'Verified profiles load from the arcade index. Try again in a moment.');
-        const retry = el('button', { className: 'pixel-button', type: 'button', textContent: 'Try again' });
+        const retry = el('button', { className: 'pixel-button profile-state-retry', type: 'button', textContent: 'Try again' });
         retry.addEventListener('click', () => { entry.status = 'idle'; void hydrate(); renderOfficialProfile(); });
         state.append(retry);
       } else {

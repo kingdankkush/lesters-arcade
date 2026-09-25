@@ -61,11 +61,29 @@ export function restoreFocus(key, root) {
   return true;
 }
 
+// Focuses the first control a selector in `selectors` finds in `root`.
+export function focusFallback(selectors, root) {
+  for (const selector of [selectors ?? []].flat()) {
+    const target = root?.querySelector?.(selector);
+    if (target && typeof target.focus === 'function' && !target.disabled) {
+      target.focus({ preventScroll: true });
+      return true;
+    }
+  }
+  return false;
+}
+
 // Runs render() (which rebuilds `root`'s children) and puts focus back on the
-// control that had it. `documentRef` defaults to the root's owner document.
-export function renderKeepingFocus(root, render, { documentRef = root?.ownerDocument ?? null } = {}) {
+// control that had it. When that control is gone (Try again became a Loading
+// card, Back to the top left with page 1), focus goes to the first of
+// `fallback` (selectors, in order) instead of dropping to the page. Focus
+// that was outside `root` is never touched. `documentRef` defaults to the
+// root's owner document.
+export function renderKeepingFocus(root, render, { documentRef = root?.ownerDocument ?? null, fallback = null } = {}) {
   const key = focusKeyFor(documentRef?.activeElement ?? null, root);
   const result = render();
-  if (key && documentRef?.activeElement !== undefined && !root.contains?.(documentRef.activeElement)) restoreFocus(key, root);
+  if (key && documentRef?.activeElement !== undefined && !root.contains?.(documentRef.activeElement)) {
+    if (!restoreFocus(key, root)) focusFallback(fallback, root);
+  }
   return result;
 }

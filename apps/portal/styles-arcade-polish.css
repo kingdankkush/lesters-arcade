@@ -2600,6 +2600,7 @@ a[class="pixel-button"],
 .pixel-button.profile-share-button,
 .pixel-button.profile-session-retry,
 .pixel-button.profile-retry-saved,
+.pixel-button.profile-state-retry,
 .pixel-button.name-claim-later {
   display: inline-flex;
   align-items: center;
@@ -2621,6 +2622,7 @@ a[class="pixel-button"]:hover,
 .pixel-button.profile-share-button:hover:not(:disabled),
 .pixel-button.profile-session-retry:hover:not(:disabled),
 .pixel-button.profile-retry-saved:hover:not(:disabled),
+.pixel-button.profile-state-retry:hover:not(:disabled),
 .pixel-button.name-claim-later:hover {
   border-color: #19f7ff;
   color: #fff;
@@ -2631,6 +2633,7 @@ a[class="pixel-button"]:focus-visible,
 .pixel-button.profile-share-button:focus-visible,
 .pixel-button.profile-session-retry:focus-visible,
 .pixel-button.profile-retry-saved:focus-visible,
+.pixel-button.profile-state-retry:focus-visible,
 .pixel-button.name-claim-later:focus-visible { outline: 2px solid #ffe84d; outline-offset: 3px; }
 button[class="pixel-button"]:disabled,
 .pixel-button.profile-session-retry:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }

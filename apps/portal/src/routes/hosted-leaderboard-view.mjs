@@ -87,8 +87,11 @@ export function createHostedLeaderboardView({
 
   // Renders that rebuild the board keep keyboard focus on the control that had
   // it (the search box while its results arrive, a period or cabinet tab).
+  // When it is gone, focus lands on a stable target: Try again once it is
+  // back, else the state card (Loading…, empty), else the row count (Show
+  // more ran out, Back to the top left with page 1).
   function keepingFocus(render) {
-    return renderKeepingFocus(dom.officialCabinetGrid, render, { documentRef });
+    return renderKeepingFocus(dom.officialCabinetGrid, render, { documentRef, fallback: ['.leaderboard-retry', '.leaderboard-empty-state', '.leaderboard-table-count'] });
   }
 
   function rerenderIfShown() {
@@ -210,10 +213,11 @@ export function createHostedLeaderboardView({
   function renderStateCard(board, copy, { onRetry = null, onPlay = null, onClear = null } = {}) {
     const card = el('div', { className: `leaderboard-empty-state leaderboard-state-${copy.kind}` });
     card.setAttribute('role', copy.kind === 'loading' ? 'status' : 'note');
+    card.setAttribute('tabindex', '-1');
     appendText(card, 'strong', copy.title, 'leaderboard-empty-title');
     appendText(card, 'span', copy.copy, 'leaderboard-empty-copy');
     if (copy.action === 'retry' && onRetry) {
-      const retry = el('button', { className: 'pixel-button leaderboard-empty-action', type: 'button', textContent: 'Try again' });
+      const retry = el('button', { className: 'pixel-button leaderboard-empty-action leaderboard-retry', type: 'button', textContent: 'Try again' });
       retry.addEventListener('click', onRetry);
       card.append(retry);
     }
@@ -489,18 +493,10 @@ export function createHostedLeaderboardView({
       more.setAttribute('aria-disabled', board.loadingMore ? 'true' : 'false');
       more.addEventListener('click', () => {
         if (board.loadingMore || !board.nextPage) return;
-        const hadFocus = documentRef?.activeElement === more;
-        const loading = loadHostedPage(board, board.nextPage);
+        // The last page removes the button: keepingFocus hands focus to the
+        // row count ("Showing ranks 1–30 of 30") instead of the page.
+        void loadHostedPage(board, board.nextPage);
         keepingFocus(() => rerender());
-        // The last page removes the button: hand focus to the row count
-        // ("Showing ranks 1–30 of 30") instead of dropping it to the page.
-        if (hadFocus) {
-          void loading.then(() => {
-            const active = documentRef?.activeElement;
-            if (active && active !== documentRef.body && dom.officialCabinetGrid.contains?.(active)) return;
-            dom.officialCabinetGrid.querySelector?.('.leaderboard-table-count')?.focus?.({ preventScroll: true });
-          });
-        }
       });
       footer.append(more);
     }

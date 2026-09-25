@@ -129,8 +129,35 @@ test('renderKeepingFocus puts focus back after the render rebuilt the view', () 
   assert.equal(rendered, 1);
 });
 
+// Review 2026-09-24: restoring only worked while the focused control survived
+// the render; Try again became a Loading card and focus fell to <body>.
+test('renderKeepingFocus falls back to a stable target when the focused control is gone', () => {
+  const { doc, el, body } = miniDom();
+  const grid = el('div');
+  body.append(grid);
+  const fallback = ['.leaderboard-retry', '.leaderboard-empty-state'];
+  grid.replaceChildren(el('button', { className: 'pixel-button leaderboard-retry' }));
+  grid.children[0].focus();
+  renderKeepingFocus(grid, () => grid.replaceChildren(el('div', { className: 'leaderboard-empty-state leaderboard-state-loading' })), { fallback });
+  assert.equal(doc.activeElement, grid.children[0], 'the Loading card has focus, not the page');
+  renderKeepingFocus(grid, () => grid.replaceChildren(el('div', { className: 'leaderboard-empty-state leaderboard-state-error' }), el('button', { className: 'pixel-button leaderboard-retry' })), { fallback });
+  assert.equal(doc.activeElement, grid.children[1], 'the first fallback that exists wins: Try again is back');
+  // A disabled fallback is skipped; no match leaves focus where the render put it.
+  renderKeepingFocus(grid, () => grid.replaceChildren(el('button', { className: 'leaderboard-retry', disabled: true }), el('div', { className: 'leaderboard-empty-state' })), { fallback });
+  assert.equal(doc.activeElement, grid.children[1]);
+  renderKeepingFocus(grid, () => grid.replaceChildren(el('p')), { fallback });
+  assert.equal(doc.activeElement, doc.body);
+  // Focus outside the view is never moved.
+  grid.replaceChildren(el('button', { className: 'pixel-button leaderboard-retry' }));
+  const outside = el('a', { className: 'portal-brand' });
+  body.append(outside);
+  outside.focus();
+  renderKeepingFocus(grid, () => grid.replaceChildren(el('div', { className: 'leaderboard-empty-state' })), { fallback });
+  assert.equal(doc.activeElement, outside);
+});
+
 // --- The hosted Scores page -------------------------------------------------
-function hostedScores({ answers }) {
+function hostedScores({ answers, connectedWallet = null }) {
   const { doc, body, el, appendText } = miniDom();
   const grid = el('div', { className: 'official-cabinet-grid' });
   body.append(grid);
@@ -149,7 +176,7 @@ function hostedScores({ answers }) {
     routeState,
     storage: null,
     windowRef: { location: { pathname: '/scores', search: '' }, history: { state: null, replaceState() {} } },
-    getContext: () => ({ connectedWallet: null, state: { profiles: {} } }),
+    getContext: () => ({ connectedWallet, state: { profiles: {} } }),
     appendText,
     el,
     now: () => Date.parse('2026-09-24T12:00:00.000Z'),
@@ -163,10 +190,17 @@ function hostedScores({ answers }) {
     clearTimeoutImpl: () => {},
   });
   const answerAll = async () => { while (pending.length) pending.shift()(); await settle(); await settle(); };
-  return { doc, grid, route, routeState, timers, answerAll };
+  return { doc, body, el, grid, route, routeState, timers, answerAll };
 }
 
 const emptyBoard = (params) => ({ ok: true, gameId: params.game, period: params.period, periodKey: '2026-W39', resetsAt: '2026-09-28T00:00:00.000Z', page: 1, pageSize: 25, total: 0, rows: [], you: null });
+// Page `page` of a 60-player board, 25 a page.
+const boardRows = (page) => Array.from({ length: Math.min(25, 60 - (page - 1) * 25) }, (_, index) => {
+  const rank = (page - 1) * 25 + index + 1;
+  const hex = rank.toString(16).padStart(64, '0');
+  return { rank, wallet: `0x${rank.toString(16).padStart(40, '0')}`, walletShort: '0x…', displayName: `Pilot ${rank}`, avatarUri: null, score: 100_000 - rank, stats: {}, sessionId32: `0x${hex}`, shareId: hex, txHash: `0x${hex}`, explorerUrl: `https://liteforge.explorer.caldera.xyz/tx/0x${hex}`, confirmedAt: '2026-09-24T10:00:00.000Z' };
+});
+const sixtyBoard = (params) => ({ ...emptyBoard(params), page: params.page, total: 60, rows: boardRows(params.page ?? 1) });
 
 test('Scores: the search box keeps focus and caret when its results arrive', async () => {
   const h = hostedScores({ answers: emptyBoard });
@@ -208,12 +242,7 @@ test('Scores: period and cabinet tabs keep focus after their board loads', async
 });
 
 test('Scores: Show more keeps focus while the next page loads', async () => {
-  const rows = (page) => Array.from({ length: Math.min(25, 60 - (page - 1) * 25) }, (_, index) => {
-    const rank = (page - 1) * 25 + index + 1;
-    const hex = rank.toString(16).padStart(64, '0');
-    return { rank, wallet: `0x${rank.toString(16).padStart(40, '0')}`, walletShort: '0x…', displayName: `Pilot ${rank}`, avatarUri: null, score: 100_000 - rank, stats: {}, sessionId32: `0x${hex}`, shareId: hex, txHash: `0x${hex}`, explorerUrl: `https://liteforge.explorer.caldera.xyz/tx/0x${hex}`, confirmedAt: '2026-09-24T10:00:00.000Z' };
-  });
-  const h = hostedScores({ answers: (params) => ({ ...emptyBoard(params), page: params.page, total: 60, rows: rows(params.page ?? 1) }) });
+  const h = hostedScores({ answers: sixtyBoard });
   h.route.renderLeaderboards();
   await h.answerAll();
   const more = byClass(h.grid, 'leaderboard-show-more')[0];
@@ -233,6 +262,62 @@ test('Scores: Show more keeps focus while the next page loads', async () => {
   assert.equal(h.doc.activeElement?.className, 'leaderboard-table-count');
   assert.equal(h.doc.activeElement.attributes.tabindex, '-1');
   assert.match(h.doc.activeElement.textContent, /Showing ranks 1–60 of 60 players/);
+});
+
+// Review 2026-09-24: Try again rendered the Loading card and focus stayed on
+// <body> even after the retry failed again and a new Try again appeared.
+test('Scores: Try again keeps focus through Loading, a second failure and the loaded board', async () => {
+  let answer = () => ({ ok: false, status: 503, error: 'index-not-configured' });
+  const h = hostedScores({ answers: (params) => answer(params) });
+  h.route.renderLeaderboards();
+  await h.answerAll();
+  const retry = () => byClass(h.grid, 'leaderboard-retry')[0];
+  assert.equal(retry()?.textContent, 'Try again');
+  retry().focus();
+  retry().listeners.click();
+  const loading = h.doc.activeElement;
+  assert.match(loading?.className ?? '', /leaderboard-empty-state leaderboard-state-loading/, 'the Loading card has focus, not the page');
+  assert.deepEqual([loading.attributes.role, loading.attributes.tabindex], ['status', '-1']);
+  await h.answerAll(); // the retry fails again
+  assert.equal(h.doc.activeElement, retry(), 'the new Try again has focus');
+  answer = emptyBoard;
+  retry().listeners.click();
+  await h.answerAll();
+  assert.match(h.doc.activeElement?.className ?? '', /leaderboard-empty-state leaderboard-state-empty/, 'the loaded board card has focus');
+});
+
+test('Scores: Back to the top hands focus to the row count', async () => {
+  const wallet = `0x${(55).toString(16).padStart(40, '0')}`;
+  const h = hostedScores({ connectedWallet: wallet, answers: (params) => ({ ...sixtyBoard(params), you: { rank: 55, score: 100_000 - 55, sessionId32: `0x${'0'.repeat(62)}37`, shareId: `${'0'.repeat(62)}37` } }) });
+  h.route.renderLeaderboards();
+  await h.answerAll();
+  byClass(h.grid, 'leaderboard-jump-button')[0].listeners.click();
+  await h.answerAll();
+  const back = byClass(h.grid, 'leaderboard-show-less')[0];
+  assert.equal(back?.textContent, 'Back to the top');
+  back.focus();
+  back.listeners.click();
+  await h.answerAll();
+  assert.equal(byClass(h.grid, 'leaderboard-show-less').length, 0, 'page 1 has no Back to the top');
+  assert.equal(h.doc.activeElement?.className, 'leaderboard-table-count');
+  assert.match(h.doc.activeElement.textContent, /Showing ranks 1–25 of 60 players/);
+});
+
+// Review 2026-09-24: the Show more handler pulled focus back into the board
+// after every page, even when the player had moved on.
+test('Scores: Show more leaves focus alone when the player moved it out of the board', async () => {
+  const h = hostedScores({ answers: sixtyBoard });
+  h.route.renderLeaderboards();
+  await h.answerAll();
+  const more = byClass(h.grid, 'leaderboard-show-more')[0];
+  more.focus();
+  more.listeners.click();
+  const brand = h.el('a', { className: 'portal-brand' });
+  h.body.append(brand);
+  brand.focus();
+  await h.answerAll();
+  assert.equal(h.doc.activeElement, brand, 'focus stays on the header link');
+  assert.equal(byClass(h.grid, 'leaderboard-show-more')[0]?.textContent, 'Show 10 more');
 });
 
 // --- The hosted Profile page ------------------------------------------------
@@ -267,4 +352,43 @@ test('Profile: a game tab keeps focus and reports its pressed state', async () =
   assert.equal(doc.activeElement, tabs()[2], 'the pressed tab still has focus after the profile re-rendered');
   assert.equal(doc.activeElement.dataset.game, 'stacked');
   assert.deepEqual(tabs().map((tab) => tab.attributes['aria-pressed']), ['false', 'false', 'true']);
+});
+
+// Review 2026-09-24: the profile's Try again dropped focus to <body> too.
+test('Profile: Try again keeps focus through Loading, a second failure and the loaded profile', async () => {
+  const { doc, body, el, appendText } = miniDom();
+  const grid = el('div');
+  body.append(grid);
+  const wallet = `0x${'cd'.repeat(20)}`;
+  const answers = [];
+  let view = null;
+  view = createHostedProfileView({
+    appendText,
+    el,
+    dom: { officialCabinetGrid: grid },
+    getContext: () => ({ connectedWallet: null }),
+    indexApi: { profile: () => new Promise((resolve) => { answers.push(resolve); }) },
+    playSfxCue: () => {},
+    renderAvatarChip: () => el('img'),
+    renderAchievementIcon: () => el('img'),
+    renderPage: () => view.render(),
+    routeState: { gameId: 'lester-blaster', viewedWallet: wallet },
+    setView: () => {},
+  });
+  const answer = async (value) => { answers.shift()(value); await settle(); await settle(); };
+  view.render();
+  await answer({ ok: false, error: 'index-unavailable' });
+  const retry = () => byClass(grid, 'profile-state-retry')[0];
+  assert.equal(retry()?.textContent, 'Try again');
+  retry().focus();
+  retry().listeners.click();
+  assert.match(doc.activeElement?.className ?? '', /profile-state-card profile-state-loading/, 'the Loading card has focus, not the page');
+  assert.equal(doc.activeElement.attributes.tabindex, '-1');
+  await answer({ ok: false, error: 'index-unavailable' });
+  assert.equal(doc.activeElement, retry(), 'the new Try again has focus after a second failure');
+  retry().listeners.click();
+  await answer({ ok: true, wallet, profile: { displayName: 'Lilly', avatarUri: null }, games: {}, recentSessions: [], achievements: [] });
+  assert.equal(doc.activeElement?.className, 'profile-hero-name', 'the loaded profile name has focus');
+  assert.equal(doc.activeElement.textContent, 'Lilly');
+  assert.equal(doc.activeElement.attributes.tabindex, '-1');
 });
