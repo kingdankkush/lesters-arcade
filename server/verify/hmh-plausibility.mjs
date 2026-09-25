@@ -2,7 +2,15 @@
 // §5.3, A9; feasibility review F1). Server only.
 //
 // HMH is plausibility-checked, not replayed. This validator rejects only hard
-// impossibilities and flags everything else near a ceiling for owner review:
+// impossibilities and flags everything else near a ceiling for owner review.
+// It reads no clock.
+//
+// The v6 rules verify the 1.8.x children (run summary schema 1-6) with the
+// literal 1.8.1 constants of HMH_V6_RULES, indefinitely. Parity tests pin
+// every literal against the 1.8.1 child modules; from here on the literal, not
+// the live child, is the v6 authority, so a later child change cannot move a
+// v6 bound (run summary v7 contract, docs/hmh-reboot/design/
+// HMH-RUN-SUMMARY-V7-CONTRACT.md §9).
 //
 //   reject  start-tick-invalid       identity.startTick is not 0 (the reboot
 //                                    starts every run at simulation tick 0)
@@ -26,108 +34,150 @@
 //                                    maximum score multiplier
 //   flag    anything within 10% of a ceiling, and cross-field inconsistencies
 //           an honest client never produces but that do not raise a ceiling.
-//
-// Every ceiling is computed by the pure reboot modules themselves: the per-kill,
-// combo, cache and silver gains are measured by running recordRunDefeat,
-// grantRunXp and grantRunSilver on a progression state whose upgrade ranks are
-// all at maxRank. The few constants that live only in the reboot's main.mjs (a
-// Pixi/DOM module) are copied below and pinned by parity tests.
-import {
-  RUN_UPGRADE_CATALOG,
-  SILVER_SCORE_PER_COIN,
-  comboMilestoneXp,
-  createRunProgression,
-  getRunProgressionSnapshot,
-  grantRunXp,
-  recordRunDefeat,
-} from '../../apps/hmh-reboot/src/run-progression.mjs';
-import { ENEMY_ARCHETYPES } from '../../apps/hmh-reboot/src/enemy-archetypes.mjs';
-import { COLLECTIBLE_EFFECTS } from '../../apps/hmh-reboot/src/collectible-system.mjs';
-import { ENCOUNTER_BANDS } from '../../apps/hmh-reboot/src/encounter-director.mjs';
-import { objectiveRewardPlacements } from '../../apps/hmh-reboot/src/objective-rewards.mjs';
-import { HMH_OPENING_ENEMY_ARCHETYPE_IDS } from '../../apps/hmh-reboot/src/opening-balance.mjs';
-import {
-  LIQUIDATOR_ATTACK_PLAN,
-  LIQUIDATOR_ENDLESS_CYCLE,
-  LIQUIDATOR_ENDLESS_CYCLE_TICKS,
-  LIQUIDATOR_ENDLESS_LOOP_START_TICK,
-  LIQUIDATOR_READABILITY_BUDGET,
-} from '../../apps/hmh-reboot/src/liquidator-boss.mjs';
-import { FIXED_STEP_MS } from '../../apps/hmh-reboot/src/simulation.mjs';
-import { HMH_RUN_SUMMARY_CATALOGS } from '../../sdk/hmh-run-summary-schema.mjs';
+// Flags have the shape { id, severity, value, limit }.
+import { HMH_RUN_SUMMARY_CATALOGS_V6 } from '../../sdk/hmh-run-summary-schema.mjs';
 
-// Copied from apps/hmh-reboot/src/main.mjs (parity tests read that source):
-// `const LIQUIDATOR_THREAT_COST = 48;`, the boss silver drop `value:10`, and the
-// enemy drop that uses addSilverDrop's default value of 1 (silver-drops.mjs).
-export const LIQUIDATOR_THREAT_COST = 48;
-export const SILVER_PER_BOSS_KILL = 10;
-export const SILVER_PER_ENEMY_KILL = 1;
+const freezeDeep = (value) => {
+  for (const child of Object.values(value)) if (child && typeof child === 'object') freezeDeep(child);
+  return Object.freeze(value);
+};
+
+// ---------------------------------------------------------------------------
+// The v6 path: literal 1.8.1 constants. Each is pinned by a parity test in
+// tests/server-verify-hmh-plausibility.test.mjs against the module it was
+// read from:
+//   bands, openingEnemies     encounter-director ENCOUNTER_BANDS, opening-balance
+//   roleThreat                enemy-archetypes costs.threat; main.mjs
+//                             LIQUIDATOR_THREAT_COST for the boss
+//   multiplierPerRank,        run-progression RUN_UPGRADE_CATALOG
+//   maxUpgradeRanks
+//   comboMilestones           run-progression comboMilestoneXp
+//   cacheXp                   collectible-system COLLECTIBLE_EFFECTS xpGain
+//   silver*                   run-progression SILVER_SCORE_PER_COIN; main.mjs
+//                             boss drop value:10; silver-drops default value 1
+//   objectiveReward*          objective-rewards placements (xpGain 0)
+//   bossStartTick             the boss band; main.mjs startTick 72_000
+//   liquidatorAdds            liquidator-boss attack plan, endless cycle and
+//                             readability budget (activeAdds)
+//   fixedStepMs, maxLevel     simulation FIXED_STEP_MS; run-progression applyRunXp
+export const HMH_V6_RULES = freezeDeep({
+  fixedStepMs: 1000 / 60,
+  maxLevel: 1000,
+  bands: [
+    { id: 'opening', minTick: 0, maxTick: 3_599, spawnIntervalTicks: 150 },
+    { id: 'build', minTick: 3_600, maxTick: 17_999, spawnIntervalTicks: 90 },
+    { id: 'pressure', minTick: 18_000, maxTick: 35_999, spawnIntervalTicks: 60 },
+    { id: 'elite', minTick: 36_000, maxTick: 71_999, spawnIntervalTicks: 45 },
+    { id: 'boss', minTick: 72_000, maxTick: 75_599, spawnIntervalTicks: 60 },
+    { id: 'endurance', minTick: 75_600, maxTick: Infinity, spawnIntervalTicks: 30 },
+  ],
+  openingEnemies: 2,
+  roleThreat: {
+    'bagholder-rusher': 2,
+    forkrunner: 3,
+    'liquidator-agent': 4,
+    'whale-enforcer': 6,
+    'gas-bomber': 5,
+    'validator-cultist': 5,
+    liquidator: 48,
+  },
+  // validator-training (xpMultiplier) and block-reward (scoreMultiplier) add
+  // this per rank; no other upgrade touches XP or score.
+  multiplierPerRank: 0.25,
+  maxUpgradeRanks: {
+    'proof-of-work': 3,
+    'diamond-hands': 3,
+    'gas-optimization': 2,
+    'cold-storage': 3,
+    'block-reward': 3,
+    'validator-training': 3,
+    'compound-interest': 25,
+    'precision-ledger': 3,
+    'hard-fork-rounds': 3,
+    'hot-wallet': 3,
+    'layer-two': 25,
+    'hardened-wallet': 25,
+    'ledger-conductivity': 3,
+    'ledger-voltage': 3,
+    'ledger-reconciliation': 3,
+    'proof-of-network': 1,
+    'burner-liquidity': 3,
+    'burner-volatility': 3,
+    'burner-contagion': 3,
+    'total-selloff': 1,
+    'standard-reach': 3,
+    'standard-force': 3,
+    'standard-tempo': 3,
+    'canonical-fork': 1,
+  },
+  comboMilestones: [[5, 120], [10, 240], [20, 480], [30, 900]],
+  cacheXp: { 'hash-rail-core': 160, 'lightning-ledger-cache': 220, 'bear-market-burner-cache': 260, 'forked-standard-cache': 240 },
+  silverScorePerCoin: 10,
+  silverPerBossKill: 10,
+  silverPerEnemyKill: 1,
+  objectiveRewardXp: 0,
+  objectiveRewardScore: 0,
+  bossStartTick: 72_000,
+  // Bad-debt summons by boss-elapsed tick: two in the authored plan (before the
+  // endless loop), then one per endless cycle at its offset; each inserts at
+  // most addsPerSummon adds.
+  liquidatorAdds: { summonTicks: [1_800, 2_820], endlessLoopStartTick: 3_600, endlessCycleTicks: 1_440, endlessCycleSummonOffsets: [1_020], addsPerSummon: 6 },
+});
+const V6 = HMH_V6_RULES;
+
+export const LIQUIDATOR_THREAT_COST = V6.roleThreat.liquidator;
+export const SILVER_PER_BOSS_KILL = V6.silverPerBossKill;
+export const SILVER_PER_ENEMY_KILL = V6.silverPerEnemyKill;
 
 export const HMH_BOSS_ROLE_ID = 'liquidator';
-export const HMH_MAX_LEVEL = 1000;
+export const HMH_MAX_LEVEL = V6.maxLevel;
 export const NEAR_CEILING_FRACTION = 0.9;
 const ELAPSED_TOLERANCE_MS = 1;
 
-const BOSS_BAND = ENCOUNTER_BANDS.find((band) => band.id === 'boss');
-if (!BOSS_BAND) throw new Error('encounter-director has no boss band');
-// The Liquidator starts at the boss band (main.mjs createLiquidatorBoss startTick 72_000; parity test).
-export const HMH_BOSS_START_TICK = BOSS_BAND.minTick;
+// The Liquidator starts at the boss band.
+export const HMH_BOSS_START_TICK = V6.bossStartTick;
 
-// Threat per summary enemy role: the archetype's costs.threat, and the boss's.
-export const HMH_ROLE_THREAT = Object.freeze(Object.fromEntries(HMH_RUN_SUMMARY_CATALOGS.enemyRoles.map((role) => {
-  if (role === HMH_BOSS_ROLE_ID) return [role, LIQUIDATOR_THREAT_COST];
-  const archetype = ENEMY_ARCHETYPES[role];
-  if (!Number.isInteger(archetype?.costs?.threat)) throw new Error(`enemy role ${role} has no archetype threat`);
-  return [role, archetype.costs.threat];
+// Threat per v6 summary enemy role: the archetype's costs.threat, and the boss's.
+export const HMH_ROLE_THREAT = Object.freeze(Object.fromEntries(HMH_RUN_SUMMARY_CATALOGS_V6.enemyRoles.map((role) => {
+  if (!Number.isInteger(V6.roleThreat[role])) throw new Error(`enemy role ${role} has no v6 threat`);
+  return [role, V6.roleThreat[role]];
 })));
 
-// XP-granting caches by summary effect id (objective placements grant 0; this
-// bound counts every collection, which is generous).
-const CACHE_XP_BASE = Object.freeze(Object.fromEntries(Object.values(COLLECTIBLE_EFFECTS)
-  .filter((effect) => Number.isInteger(effect.xpGain) && effect.xpGain > 0)
-  .map((effect) => [effect.effectId, effect.xpGain])));
-// Objective rewards grant items only: objectiveRewardPlacements() carries xpGain 0
-// and nothing in the reboot turns an objective into score. Kept as a term so a
-// future grant shows up in the parity test.
-export const OBJECTIVE_REWARD_XP = Math.max(0, ...objectiveRewardPlacements().map((placement) => placement.xpGain ?? 0));
-export const OBJECTIVE_REWARD_SCORE = 0;
+// Objective rewards grant items only (the 1.8.1 placements carry xpGain 0).
+// Kept as terms of the ceilings.
+export const OBJECTIVE_REWARD_XP = V6.objectiveRewardXp;
+export const OBJECTIVE_REWARD_SCORE = V6.objectiveRewardScore;
 
-// Combo milestones: every combo value with a non-zero comboMilestoneXp.
-const COMBO_SCAN_LIMIT = 10_000;
-export const COMBO_MILESTONES = Object.freeze(Array.from({ length: COMBO_SCAN_LIMIT }, (_, index) => index + 1)
-  .filter((combo) => comboMilestoneXp(combo) > 0)
-  .map((combo) => Object.freeze({ combo, baseXp: comboMilestoneXp(combo) })));
+export const COMBO_MILESTONES = Object.freeze(V6.comboMilestones.map(([combo, baseXp]) => Object.freeze({ combo, baseXp })));
 
-export const MAX_UPGRADE_RANKS = Object.freeze(Object.fromEntries(Object.values(RUN_UPGRADE_CATALOG).map((upgrade) => [upgrade.id, upgrade.maxRank])));
+export const MAX_UPGRADE_RANKS = V6.maxUpgradeRanks;
 
-function progressionWithRanks(ranks) {
-  const state = createRunProgression({ seed: 0 });
-  for (const [id, rank] of Object.entries(ranks)) {
-    if (Object.hasOwn(state.ranks, id)) state.ranks[id] = Math.max(0, Math.min(MAX_UPGRADE_RANKS[id], rank));
-  }
-  return state;
-}
+// A claimed rank as run-progression applies it: clamped to [0, maxRank], and a
+// multiplier of 1 + 0.25 x rank for a positive rank, 1 otherwise.
+const clampedRank = (ranks, id, maxRanks) => (Object.hasOwn(ranks, id) ? Math.max(0, Math.min(maxRanks[id], ranks[id])) : 0);
+const multiplierAt = (rank, perRank) => (rank <= 0 ? 1 : 1 + perRank * rank);
 
-// Per-event gains measured with the reboot's own functions at the given ranks.
+// Per-event gains at the given ranks, by the 1.8.1 run-progression formulas:
+// kill XP round((80 + 20t) x xm), kill score round((100 + 25t) x sm), a grant
+// round(base x xm), and one silver grant of c coins round(c x 10 x sm), which is
+// at most c x (10 x sm + 0.5) for c >= 1.
 function measureGains(ranks) {
+  const xm = multiplierAt(clampedRank(ranks, 'validator-training', MAX_UPGRADE_RANKS), V6.multiplierPerRank);
+  const sm = multiplierAt(clampedRank(ranks, 'block-reward', MAX_UPGRADE_RANKS), V6.multiplierPerRank);
   const killXp = {};
   const killScore = {};
   for (const [role, threat] of Object.entries(HMH_ROLE_THREAT)) {
-    const snapshot = recordRunDefeat(progressionWithRanks(ranks), { enemyId: 'plausibility-probe', threatCost: threat, tick: 0 });
-    killXp[role] = snapshot.xp;
-    killScore[role] = snapshot.score;
+    killXp[role] = Math.round((80 + threat * 20) * xm);
+    killScore[role] = Math.round((100 + threat * 25) * sm);
   }
   let comboXp = 0;
   let comboRate = 0;
   for (const { combo, baseXp } of COMBO_MILESTONES) {
-    comboXp += grantRunXp(progressionWithRanks(ranks), baseXp, 0).xp;
+    comboXp += Math.round(baseXp * xm);
     comboRate = Math.max(comboRate, comboXp / combo);
   }
-  const cacheXp = Object.fromEntries(Object.entries(CACHE_XP_BASE).map(([effectId, baseXp]) => [effectId, grantRunXp(progressionWithRanks(ranks), baseXp, 0).xp]));
-  const { scoreMultiplier } = getRunProgressionSnapshot(progressionWithRanks(ranks)).effects;
-  // One silver grant of c coins is round(c x SILVER_SCORE_PER_COIN x multiplier),
-  // at most c x (SILVER_SCORE_PER_COIN x multiplier + 0.5) for c >= 1.
-  const silverScorePerCoin = SILVER_SCORE_PER_COIN * scoreMultiplier + 0.5;
+  const cacheXp = Object.fromEntries(Object.entries(V6.cacheXp).map(([effectId, baseXp]) => [effectId, Math.round(baseXp * xm)]));
+  const silverScorePerCoin = V6.silverScorePerCoin * sm + 0.5;
   return Object.freeze({ killXp: Object.freeze(killXp), killScore: Object.freeze(killScore), comboRate, cacheXp: Object.freeze(cacheXp), silverScorePerCoin });
 }
 
@@ -148,9 +198,9 @@ export function rebootLevelForXp(xp) {
 // Upper bound on encounter-director insertions by `endTick`: after an insertion
 // at tick t in band b the next one is due at t + b.spawnIntervalTicks, so a band
 // spanning s ticks holds at most floor(s / interval) + 1 of them.
-export function directorSpawnCapacity(endTick) {
+export function directorSpawnCapacity(endTick, bands = V6.bands) {
   let total = 0;
-  for (const band of ENCOUNTER_BANDS) {
+  for (const band of bands) {
     if (endTick < band.minTick) break;
     const last = Math.min(endTick, band.maxTick);
     total += Math.floor((last - band.minTick) / band.spawnIntervalTicks) + 1;
@@ -159,23 +209,22 @@ export function directorSpawnCapacity(endTick) {
 }
 
 // Liquidator bad-debt summons up to `bossElapsed` boss ticks, each inserting at
-// most LIQUIDATOR_READABILITY_BUDGET.activeAdds adds.
+// most addsPerSummon adds.
 export function liquidatorAddCapacity(bossElapsed) {
   if (bossElapsed < 0) return 0;
-  const isSummon = (entry) => entry.attackId === 'bad-debt-summon';
-  let summons = LIQUIDATOR_ATTACK_PLAN.filter((entry) => isSummon(entry) && entry.startTick <= Math.min(bossElapsed, LIQUIDATOR_ENDLESS_LOOP_START_TICK - 1)).length;
-  if (bossElapsed >= LIQUIDATOR_ENDLESS_LOOP_START_TICK) {
-    const loopTick = bossElapsed - LIQUIDATOR_ENDLESS_LOOP_START_TICK;
-    const perCycle = LIQUIDATOR_ENDLESS_CYCLE.filter(isSummon);
-    summons += Math.floor(loopTick / LIQUIDATOR_ENDLESS_CYCLE_TICKS) * perCycle.length
-      + perCycle.filter((entry) => entry.offset <= loopTick % LIQUIDATOR_ENDLESS_CYCLE_TICKS).length;
+  const plan = V6.liquidatorAdds;
+  let summons = plan.summonTicks.filter((tick) => tick <= Math.min(bossElapsed, plan.endlessLoopStartTick - 1)).length;
+  if (bossElapsed >= plan.endlessLoopStartTick) {
+    const loopTick = bossElapsed - plan.endlessLoopStartTick;
+    summons += Math.floor(loopTick / plan.endlessCycleTicks) * plan.endlessCycleSummonOffsets.length
+      + plan.endlessCycleSummonOffsets.filter((offset) => offset <= loopTick % plan.endlessCycleTicks).length;
   }
-  return summons * LIQUIDATOR_READABILITY_BUDGET.activeAdds;
+  return summons * plan.addsPerSummon;
 }
 
 export function spawnCapacity(endTick) {
   const bossPresent = endTick >= HMH_BOSS_START_TICK;
-  return HMH_OPENING_ENEMY_ARCHETYPE_IDS.length
+  return V6.openingEnemies
     + directorSpawnCapacity(endTick)
     + (bossPresent ? 1 + liquidatorAddCapacity(endTick - HMH_BOSS_START_TICK) : 0);
 }
@@ -205,16 +254,38 @@ function ceilings(summary, gains) {
   };
 }
 
-// → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
-// Expects a summary that already passed validateRunSummaryPayload (schema 6).
-export function validateRebootRunPlausibility(runSummary) {
+function verdictCollector() {
   const flags = [];
-  const reject = (id, value, limit) => flags.push(Object.freeze({ id, severity: 'reject', value, limit }));
-  const flag = (id, value, limit) => flags.push(Object.freeze({ id, severity: 'flag', value, limit }));
-  const done = () => Object.freeze({
-    verdict: flags.some((entry) => entry.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok',
-    flags: Object.freeze(flags),
-  });
+  return {
+    reject: (id, value, limit) => flags.push(Object.freeze({ id, severity: 'reject', value, limit })),
+    flag: (id, value, limit) => flags.push(Object.freeze({ id, severity: 'flag', value, limit })),
+    done: () => Object.freeze({
+      verdict: flags.some((entry) => entry.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok',
+      flags: Object.freeze(flags),
+    }),
+  };
+}
+
+// The run-time rejects, in their original order. → the run's elapsed ticks.
+function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
+  // The reboot creates the accumulator with startTick: 0 on a fresh
+  // DeterministicSimulation for every run (main.mjs; parity test), so a
+  // non-zero start is fabricated: it would let a summary claim the end tick
+  // (spawn capacity, boss timing) of a long run with the elapsed time of a
+  // short one. Every tick bound uses the run's elapsed ticks, never endTick.
+  if (identity.startTick !== 0) reject('start-tick-invalid', identity.startTick, 0);
+  const runTicks = totals.survivalTicks;
+  const progress = kills.total > 0 || totals.score > 0 || totals.xp > 0 || totals.level > 1 || totals.litecoin > 0;
+  if (progress && (runTicks === 0 || totals.elapsedMs === 0)) reject('progress-without-time', totals.elapsedMs, 0);
+  const expectedMs = runTicks * fixedStepMs;
+  if (Math.abs(totals.elapsedMs - expectedMs) > ELAPSED_TOLERANCE_MS) reject('elapsed-time-mismatch', totals.elapsedMs, expectedMs);
+  return runTicks;
+}
+
+// → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
+// Expects a summary that already passed validateRunSummaryPayload (schema 1-6).
+export function validateV6RunPlausibility(runSummary) {
+  const { reject, flag, done } = verdictCollector();
   const { identity, totals, kills, milestones, upgrades } = runSummary ?? {};
   if (!identity || !totals || !kills || !Array.isArray(kills.byEnemyRole) || !milestones || !Array.isArray(upgrades)) {
     reject('summary-unreadable', null, null);
@@ -222,20 +293,7 @@ export function validateRebootRunPlausibility(runSummary) {
   }
   const killsByRole = rowCounts(kills.byEnemyRole, 'enemyRoleId', 'count');
   const bossRoleKills = killsByRole[HMH_BOSS_ROLE_ID] ?? 0;
-
-  // The reboot creates the accumulator with startTick: 0 on a fresh
-  // DeterministicSimulation for every run (main.mjs; parity test), so a
-  // non-zero start is fabricated: it would let a summary claim the end tick
-  // (spawn capacity, boss band) of a long run with the elapsed time of a short
-  // one. Every tick bound below uses the run's elapsed ticks, never endTick.
-  if (identity.startTick !== 0) reject('start-tick-invalid', identity.startTick, 0);
-  const runTicks = totals.survivalTicks;
-
-  const progress = kills.total > 0 || totals.score > 0 || totals.xp > 0 || totals.level > 1 || totals.litecoin > 0;
-  if (progress && (runTicks === 0 || totals.elapsedMs === 0)) reject('progress-without-time', totals.elapsedMs, 0);
-
-  const expectedMs = runTicks * FIXED_STEP_MS;
-  if (Math.abs(totals.elapsedMs - expectedMs) > ELAPSED_TOLERANCE_MS) reject('elapsed-time-mismatch', totals.elapsedMs, expectedMs);
+  const runTicks = checkRunTime(identity, totals, kills, V6.fixedStepMs, reject);
 
   if ((kills.boss > 0 || bossRoleKills > 0) && runTicks < HMH_BOSS_START_TICK) reject('boss-before-band', runTicks, HMH_BOSS_START_TICK);
 
@@ -266,4 +324,9 @@ export function validateRebootRunPlausibility(runSummary) {
   if (milestones.bossEngagedTick > 0 && milestones.bossEngagedTick < HMH_BOSS_START_TICK) flag('boss-engaged-before-band', milestones.bossEngagedTick, HMH_BOSS_START_TICK);
   if (kills.boss > 0 && milestones.bossEngagedTick === 0) flag('boss-kill-without-engagement', kills.boss, 0);
   return done();
+}
+
+// → the verdict of the rules for the summary's schema version.
+export function validateRebootRunPlausibility(runSummary) {
+  return validateV6RunPlausibility(runSummary);
 }
