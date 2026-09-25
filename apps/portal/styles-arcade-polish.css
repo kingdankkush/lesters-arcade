@@ -2723,9 +2723,9 @@ button[class="pixel-button"]:disabled,
    at least the room they had, and no width runs a row past the card (the
    ten-track grid did at 1081-1113 px):
    - 1200 px and up: a Version column before Proof;
-   - 601-1199 px: the version sits under the score;
+   - 601-1199 px: the version sits under the score, its header under SCORE;
    - phones: a labelled chip with the stats.
-   scripts/hosted-scores-version-layout-smoke.mjs measures it in Chromium. */
+   npm run smoke:scores-version measures it in Chromium, headers included. */
 .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,
 .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-trow {
   grid-template-columns: 48px minmax(130px, 1.9fr) 100px repeat(5, minmax(56px, 0.7fr)) 64px 92px 76px;
@@ -2755,11 +2755,17 @@ button[class="pixel-button"]:disabled,
     grid-template-columns: 48px minmax(150px, 1.9fr) 100px repeat(5, minmax(60px, 0.7fr)) 92px 76px;
     gap: 2px 8px;
   }
-  /* Under the score: every other cell spans both lines of the row. */
-  .leaderboard-board-hosted.leaderboard-board-v10 .th-cell-version { display: none; }
+  /* Under the score: every other cell spans both lines of the row. The head
+     mirrors it (VERSION under SCORE), so every row has one column header per
+     cell for screen readers, and the head keeps its height. */
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .leaderboard-td { grid-row: 1 / span 2; }
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-score { grid-row: 1; align-self: end; }
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-trow > .lt-cell-version { grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-head > .leaderboard-th-cell { grid-row: 1 / span 2; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-head > .th-cell-score { grid-row: 1; align-self: end; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-head > .th-cell-version { grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; }
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-head > .th-cell-score > .leaderboard-th,
+  .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-head > .th-cell-version > .leaderboard-th { min-height: 0; padding-top: 2px; padding-bottom: 2px; }
 }
 @media (max-width: 1080px) {
   .leaderboard-board-hosted.leaderboard-board-v10 .leaderboard-table-v10 .leaderboard-table-head,

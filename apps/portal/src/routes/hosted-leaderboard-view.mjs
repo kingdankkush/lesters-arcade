@@ -33,9 +33,10 @@ export const HOSTED_BOARD_TTL_MS = 60_000;
 // Hosted boards add a Version column before Proof (owner decision 2026-09-25:
 // balance changes do not reset testnet seasons, so every verified score shows
 // the game version it was played on, from E5 versionLabel). A column from
-// 1200 px up, under the score at 601-1199 px (so Published keeps its place),
-// a labelled chip on phones (styles-arcade-polish.css). The server orders the
-// board, so no sort key.
+// 1200 px up, under the score at 601-1199 px with its header under SCORE (so
+// Published keeps its place and every cell keeps a column header), a labelled
+// chip on phones (styles-arcade-polish.css). The server orders the board, so
+// no sort key.
 export const HOSTED_VERSION_COLUMN = Object.freeze({ key: 'version', label: 'Version', title: 'Game version this run was played on', sortKey: null, align: 'center', kind: 'version', priority: 2 });
 
 export function hostedLeaderboardColumnsFor(gameId) {
@@ -164,7 +165,7 @@ export function createHostedLeaderboardView({
       rerenderIfShown();
       return board;
     }
-    const rows = (Array.isArray(answer.rows) ? answer.rows : []).map((row) => hostedLeaderboardEntry(row, { connectedWallet: board.wallet }));
+    const rows = (Array.isArray(answer.rows) ? answer.rows : []).map((row) => hostedLeaderboardEntry(row, { connectedWallet: board.wallet, gameId: board.gameId }));
     if (replace || page === 1) {
       board.rows = rows;
       board.firstPage = page;
