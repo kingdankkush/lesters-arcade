@@ -1,7 +1,9 @@
-import { freezeDeep, nonNegativeInteger, positiveInteger } from './value-guards.mjs';
+// Verbatim copy of the 1.8.1 release (60ea173a) apps/hmh-reboot/src/enemy-simulation.mjs, kept as the
+// bit-identical reference for tests/hmh-sim-hot-path.test.mjs. Do not edit.
+import { freezeDeep } from './value-guards.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from './collision.mjs';
 import { resolveSweptTraversalPath } from './elevation.mjs';
-import { getEnemyArchetype } from './enemy-archetypes.mjs';
+import { getEnemyArchetype } from '../../../apps/hmh-reboot/src/enemy-archetypes.mjs';
 
 const EPSILON = 1e-9;
 export const ENEMY_CAPACITY = 192;
@@ -13,6 +15,7 @@ export const MAX_ENEMY_FORMATION_BIAS = 0.18;
 export const RANGED_BACKOFF_PROBE_DISTANCE = 60;
 export const ENEMY_RING_MIN_MEMBERS = 6;
 export const ENEMY_RING_DISTANCE_TOLERANCE = 32;
+const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 export const AI_LOD_BANDS = Object.freeze([
   Object.freeze({ id: 'near', maxDistance: 640, cadenceTicks: 1 }),
   Object.freeze({ id: 'mid', maxDistance: 1400, cadenceTicks: 3 }),
@@ -20,7 +23,17 @@ export const AI_LOD_BANDS = Object.freeze([
 ]);
 export const DEFAULT_ATTACK_TOKEN_BUDGET = Object.freeze({ melee: 3, ranged: 2, area: 1, support: 1 });
 
-import { cellKey, finite, lexical } from './value-guards.mjs';
+import { finite } from './value-guards.mjs';
+
+function nonNegativeInteger(value, name) {
+  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
+  return value;
+}
+
+function positiveInteger(value, name) {
+  if (!Number.isInteger(value) || value <= 0) throw new TypeError(`${name} must be a positive integer`);
+  return value;
+}
 
 function validId(value, name = 'enemy id') {
   if (typeof value !== 'string' || !value.trim()) throw new TypeError(`${name} must be a non-empty string`);
@@ -34,18 +47,9 @@ function normalize(x, y, fallback = { x: 1, y: 0 }) {
   return { x: x / magnitude, y: y / magnitude };
 }
 
-// Pure per id and asked for several times per enemy per tick (formation
-// rings, every planner side pick), so results are memoized. The cache is
-// cleared when it fills, which only costs a recomputation.
-const STABLE_HASHES = new Map();
 function stableHash(id) {
-  const key = String(id);
-  let hash = STABLE_HASHES.get(key);
-  if (hash !== undefined) return hash;
-  hash = 2166136261;
-  for (const char of key) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
-  if (STABLE_HASHES.size >= 4096) STABLE_HASHES.clear();
-  STABLE_HASHES.set(key, hash);
+  let hash = 2166136261;
+  for (const char of String(id)) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
   return hash;
 }
 
@@ -63,17 +67,10 @@ function stableNormal(idA, idB = '') {
 export function getEnemyLod(distance) {
   finite(distance, 'distance');
   if (distance < 0) throw new TypeError('distance must be non-negative');
-  for (const band of AI_LOD_BANDS) if (distance <= band.maxDistance) return band;
-  return AI_LOD_BANDS.at(-1);
+  return AI_LOD_BANDS.find((band) => distance <= band.maxDistance) ?? AI_LOD_BANDS.at(-1);
 }
 
-export function getEnemyFormationBias(enemies, options = {}) {
-  const biases = formationBiasById(enemies, options);
-  return new Map([...biases.entries()].sort(([leftId], [rightId]) => lexical(leftId, rightId)));
-}
-
-// The bias per id in ring-scan order; getEnemyFormationBias returns it id-sorted.
-function formationBiasById(enemies, {
+export function getEnemyFormationBias(enemies, {
   player,
   minimumRingMembers = ENEMY_RING_MIN_MEMBERS,
   ringTolerance = ENEMY_RING_DISTANCE_TOLERANCE,
@@ -110,7 +107,7 @@ function formationBiasById(enemies, {
     const magnitude = maxBias * (0.6 + ((hash >>> 1) % 3) * 0.2);
     biases.set(radial[index].id, (hash & 1) === 0 ? magnitude : -magnitude);
   }
-  return biases;
+  return new Map([...biases.entries()].sort(([leftId], [rightId]) => lexical(leftId, rightId)));
 }
 
 export function createEnemyState({
@@ -255,8 +252,6 @@ export function retireEnemyFromPopulation(population, id, { tick, reason = 'reti
   return freezeDeep({ retired: true, id: enemy.id, archetypeId: enemy.archetypeId, tick, reason: reason.trim() });
 }
 
-const COVER_ROLES = new Set(['suppressor', 'demolition', 'support']);
-
 export function planEnemyIntent(enemy, { player, tick, navigation = null, formationBias = 0 } = {}) {
   const archetype = getEnemyArchetype(enemy?.archetypeId);
   nonNegativeInteger(tick, 'tick');
@@ -277,9 +272,6 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
   const tangent = { x: -direct.y * stableSign(enemy.id), y: direct.x * stableSign(enemy.id) };
   const formationTangent = { x: -direct.y, y: direct.x };
   let direction = direct;
-  // Every heading is a fresh vector except a lane direction taken as-is from
-  // the navigation sampler, which keeps the deep freeze it always got.
-  let directionFromNavigation = false;
   let hazardAvoiding = false;
   let coverSeeking = false;
   let coverTarget = null;
@@ -296,11 +288,12 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       hazardAvoiding = true;
     }
   }
-  const directLineBlocked = COVER_ROLES.has(archetype.role)
+  const coverRoles = ['suppressor', 'demolition', 'support'];
+  const directLineBlocked = coverRoles.includes(archetype.role)
     && enemy.attackPhase !== 'tell'
     && navigation && typeof navigation.lineBlocked === 'function'
     && navigation.lineBlocked(enemy.x, enemy.y, player.x, player.y);
-  if (!hazardAvoiding && COVER_ROLES.has(archetype.role) && enemy.attackPhase !== 'tell' && !directLineBlocked
+  if (!hazardAvoiding && coverRoles.includes(archetype.role) && enemy.attackPhase !== 'tell' && !directLineBlocked
     && navigation && typeof navigation.coverDirectionAt === 'function'
     && distance >= archetype.preferredDistance - 70) {
     const cover = navigation.coverDirectionAt(enemy.x, enemy.y, player.x, player.y, { stableSide: stableSign(enemy.id) });
@@ -335,7 +328,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
     } else {
       direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
     }
-  } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && COVER_ROLES.has(archetype.role)) {
+  } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
     // Ranged roles had the same unvalidated steering as the flanker, in two
     // places: the near-range backoff drove straight away from the player
     // without checking what was behind it, and the mid-range strafe blended a
@@ -359,7 +352,6 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       if (backoffBlocked && lane) {
         // Backing into a blocker reads as bumping a wall; sidestep instead.
         direction = lane.direction;
-        directionFromNavigation = true;
         flankLaneSeeking = true;
         flankLaneTarget = freezeDeep({ ...lane.target });
       } else {
@@ -380,18 +372,16 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       direction.x + formationTangent.x * formationBias,
       direction.y + formationTangent.y * formationBias,
     );
-    directionFromNavigation = false;
     formationAdjusted = true;
   }
-  const velocity = Object.freeze(chokepointHolding
+  const velocity = chokepointHolding
     ? { x: 0, y: 0 }
-    : { x: direction.x * archetype.speed, y: direction.y * archetype.speed });
-  // The targets are frozen copies already; the rest are primitives.
-  return Object.freeze({
+    : { x: direction.x * archetype.speed, y: direction.y * archetype.speed };
+  return freezeDeep({
     tick,
     role: archetype.role,
     velocity,
-    facing: directionFromNavigation ? freezeDeep(direction) : Object.freeze(direction),
+    facing: direction,
     distance,
     lod: getEnemyLod(distance).id,
     hazardAvoiding,
@@ -470,141 +460,67 @@ export function computeEnemySeparation(enemies, {
   if (strength < 0 || strength > 1) throw new TypeError('strength must be in [0, 1]');
   const ordered = enemies.filter((enemy) => enemy?.active).sort((a, b) => lexical(a.id, b.id));
   if (ordered.length > ENEMY_CAPACITY) throw new TypeError(`active enemy count cannot exceed capacity ${ENEMY_CAPACITY}`);
-  const separation = separateOrderedEnemies(ordered, neighborRadius, maxNeighbors, strength, maxStep, cellSize);
-  const deltas = new Map();
-  for (let index = 0; index < ordered.length; index += 1) {
-    deltas.set(ordered[index].id, Object.freeze({ x: separation.x[index], y: separation.y[index] }));
-  }
-  return Object.freeze({
-    deltas,
-    maxNeighborsObserved: separation.maxNeighborsObserved,
-    broadphaseCandidateChecks: separation.broadphaseCandidateChecks,
-    naiveCandidateChecks: ordered.length * Math.max(0, ordered.length - 1),
-  });
-}
-
-
-// Candidate scratch reused by every call, in place of one object per
-// candidate. Plain arrays, so they grow when a far-out grid revisits one cell.
-const SEPARATION_OTHER = [];
-const SEPARATION_DX = [];
-const SEPARATION_DY = [];
-const SEPARATION_SQUARED = [];
-const SEPARATION_DISTANCE = [];
-const SEPARATION_SLOTS = [];
-const SEPARATION_SMALLEST = [];
-
-// Stable insertion sort of a few candidate slots, by one scratch array then id.
-function sortSlots(length, values) {
-  for (let index = 1; index < length; index += 1) {
-    const slot = SEPARATION_SLOTS[index];
-    let cursor = index - 1;
-    while (cursor >= 0 && (values[SEPARATION_SLOTS[cursor]] - values[slot]
-      || lexical(SEPARATION_OTHER[SEPARATION_SLOTS[cursor]].id, SEPARATION_OTHER[slot].id)) > 0) {
-      SEPARATION_SLOTS[cursor + 1] = SEPARATION_SLOTS[cursor];
-      cursor -= 1;
-    }
-    SEPARATION_SLOTS[cursor + 1] = slot;
-  }
-}
-
-// The separation deltas for bodies already filtered to active and id-sorted,
-// as x/y arrays aligned with that order.
-//
-// Candidates are visited in the order the pre-optimization neighbourhood
-// arrays held them (cell rows, then columns, then each cell's bodies in id
-// order). The neighbour rule is the old one without sorting every candidate:
-// the cut is the maxNeighbors-th smallest squared distance (the largest when
-// there are fewer candidates); everything within the rounding neighbourhood of
-// the cut is taken in (squared, id) order, gets the exact Math.hypot distance
-// and stays if inside the radius; survivors are ordered by (distance, id) and
-// truncated. Both sorts are stable, like the Array.prototype.sort calls they
-// replace, so even duplicate ids keep the old order. When a squared distance
-// overflows (coordinates beyond ~1e154) every candidate is measured unranked,
-// as before.
-function separateOrderedEnemies(ordered, neighborRadius, maxNeighbors, strength, maxStep, cellSize) {
-  const count = ordered.length;
   const grid = new Map();
-  const cells = [];
+  const cellKey = (x, y) => `${x},${y}`;
   for (const enemy of ordered) {
-    if (!Number.isFinite(enemy.x)) finite(enemy.x, `${enemy.id}.x`);
-    const x = Math.floor(enemy.x / cellSize);
-    if (!Number.isFinite(enemy.y)) finite(enemy.y, `${enemy.id}.y`);
-    const y = Math.floor(enemy.y / cellSize);
-    const key = cellKey(x, y);
-    let cell = grid.get(key);
-    if (cell === undefined) grid.set(key, cell = { x, y, members: [], near: null, size: 0 });
-    cell.members.push(enemy);
-    cells.push(cell);
+    const cellX = Math.floor(finite(enemy.x, `${enemy.id}.x`) / cellSize);
+    const cellY = Math.floor(finite(enemy.y, `${enemy.id}.y`) / cellSize);
+    const key = cellKey(cellX, cellY);
+    const bucket = grid.get(key) ?? [];
+    bucket.push(enemy);
+    grid.set(key, bucket);
   }
-  const reach = Math.ceil(neighborRadius / cellSize);
-  const radiusSquared = neighborRadius * neighborRadius;
-  const candidateLimit = radiusSquared * (1 + Number.EPSILON * 8);
-  const deltaX = new Float64Array(count);
-  const deltaY = new Float64Array(count);
+  const cellReach = Math.ceil(neighborRadius / cellSize);
+  const neighborhoodByCell=new Map();
+  for(const [key,bucket]of grid){
+    const cellX=Math.floor(bucket[0].x/cellSize),cellY=Math.floor(bucket[0].y/cellSize),neighbors=[];
+    for(let y=-cellReach;y<=cellReach;y++)for(let x=-cellReach;x<=cellReach;x++){
+      const candidates=grid.get(cellKey(cellX+x,cellY+y));if(candidates)neighbors.push(...candidates);
+    }
+    neighborhoodByCell.set(key,neighbors);
+  }
+  const deltas = new Map();
   let maxNeighborsObserved = 0;
   let broadphaseCandidateChecks = 0;
-  for (let index = 0; index < count; index += 1) {
-    const enemy = ordered[index];
-    const cell = cells[index];
-    if (cell.near === null) {
-      cell.near = [];
-      for (let y = -reach; y <= reach; y += 1) {
-        for (let x = -reach; x <= reach; x += 1) {
-          const other = grid.get(cellKey(cell.x + x, cell.y + y));
-          if (other !== undefined) { cell.near.push(other.members); cell.size += other.members.length; }
-        }
-      }
+  for (const enemy of ordered) {
+    const cellX = Math.floor(enemy.x / cellSize);
+    const cellY = Math.floor(enemy.y / cellSize);
+    const localCandidates=neighborhoodByCell.get(cellKey(cellX,cellY));
+    broadphaseCandidateChecks += localCandidates.length-1;
+    // Rank inexpensive squared distances first. Only the nearest candidates
+    // need the exact Math.hypot used by canonical overlap correction. Include
+    // the rounding neighborhood at the cut so ties retain exact ID ordering.
+    const radiusSquared=neighborRadius*neighborRadius;
+    const candidates=[];
+    for(const other of localCandidates){
+      if(other===enemy)continue;
+      const dx=enemy.x-other.x,dy=enemy.y-other.y;
+      if(Math.abs(dx)>neighborRadius||Math.abs(dy)>neighborRadius)continue;
+      const squared=dx*dx+dy*dy;
+      if(squared>radiusSquared*(1+Number.EPSILON*8))continue;
+      candidates.push({other,dx,dy,squared});
     }
-    broadphaseCandidateChecks += cell.size - 1;
-    let candidates = 0;
-    let uncertain = !Number.isFinite(radiusSquared);
-    for (const members of cell.near) {
-      for (const other of members) {
-        if (other === enemy) continue;
-        const dx = enemy.x - other.x;
-        const dy = enemy.y - other.y;
-        if (Math.abs(dx) > neighborRadius || Math.abs(dy) > neighborRadius) continue;
-        const squared = dx * dx + dy * dy;
-        if (squared > candidateLimit) continue;
-        if (!Number.isFinite(squared)) uncertain = true;
-        SEPARATION_OTHER[candidates] = other;
-        SEPARATION_DX[candidates] = dx;
-        SEPARATION_DY[candidates] = dy;
-        SEPARATION_SQUARED[candidates] = squared;
-        candidates += 1;
-      }
+    const uncertain=candidates.some(c=>!Number.isFinite(c.squared))||!Number.isFinite(radiusSquared);
+    if(!uncertain)candidates.sort((a,b)=>a.squared-b.squared||lexical(a.other.id,b.other.id));
+    const cutoff=candidates[Math.min(maxNeighbors,candidates.length)-1]?.squared??0;
+    const neighbors=[];
+    for(const c of candidates){
+      if(!uncertain&&c.squared>cutoff*(1+Number.EPSILON*8))break;
+      c.distance=Math.hypot(c.dx,c.dy);
+      if(c.distance<=neighborRadius)neighbors.push(c);
     }
-    let shortlisted = 0;
-    if (uncertain) {
-      for (; shortlisted < candidates; shortlisted += 1) SEPARATION_SLOTS[shortlisted] = shortlisted;
-    } else if (candidates > 0) {
-      const limit = smallestSquared(candidates, Math.min(maxNeighbors, candidates)) * (1 + Number.EPSILON * 8);
-      for (let candidate = 0; candidate < candidates; candidate += 1) {
-        if (SEPARATION_SQUARED[candidate] <= limit) SEPARATION_SLOTS[shortlisted++] = candidate;
-      }
-      sortSlots(shortlisted, SEPARATION_SQUARED);
-    }
-    let neighbors = 0;
-    for (let rank = 0; rank < shortlisted; rank += 1) {
-      const candidate = SEPARATION_SLOTS[rank];
-      const distance = SEPARATION_DISTANCE[candidate] = Math.hypot(SEPARATION_DX[candidate], SEPARATION_DY[candidate]);
-      if (distance <= neighborRadius) SEPARATION_SLOTS[neighbors++] = candidate;
-    }
-    sortSlots(neighbors, SEPARATION_DISTANCE);
-    neighbors = Math.min(neighbors, maxNeighbors);
-    maxNeighborsObserved = Math.max(maxNeighborsObserved, neighbors);
+    neighbors.sort((a,b)=>a.distance-b.distance||lexical(a.other.id,b.other.id));
+    if(neighbors.length>maxNeighbors)neighbors.length=maxNeighbors;
+    maxNeighborsObserved = Math.max(maxNeighborsObserved, neighbors.length);
     let x = 0;
     let y = 0;
-    for (let rank = 0; rank < neighbors; rank += 1) {
-      const candidate = SEPARATION_SLOTS[rank];
-      const other = SEPARATION_OTHER[candidate];
-      const distance = SEPARATION_DISTANCE[candidate];
-      const overlap = Math.max(0, enemy.radius + other.radius - distance);
+    for (const neighbor of neighbors) {
+      const required = enemy.radius + neighbor.other.radius;
+      const overlap = Math.max(0, required - neighbor.distance);
       if (overlap <= 0) continue;
-      const normal = distance > EPSILON
-        ? { x: SEPARATION_DX[candidate] / distance, y: SEPARATION_DY[candidate] / distance }
-        : stableNormal(enemy.id, other.id);
+      const normal = neighbor.distance > EPSILON
+        ? { x: neighbor.dx / neighbor.distance, y: neighbor.dy / neighbor.distance }
+        : stableNormal(enemy.id, neighbor.other.id);
       x += normal.x * overlap * strength;
       y += normal.y * overlap * strength;
     }
@@ -614,33 +530,14 @@ function separateOrderedEnemies(ordered, neighborRadius, maxNeighbors, strength,
       x *= scale;
       y *= scale;
     }
-    deltaX[index] = x;
-    deltaY[index] = y;
+    deltas.set(enemy.id, Object.freeze({ x, y }));
   }
-  SEPARATION_OTHER.length = 0;
-  return { x: deltaX, y: deltaY, maxNeighborsObserved, broadphaseCandidateChecks };
-}
-
-// The rank-th smallest squared distance (1-based), kept in a sorted buffer of
-// the rank smallest values seen so far.
-function smallestSquared(candidates, rank) {
-  const smallest = SEPARATION_SMALLEST;
-  let filled = 0;
-  for (let candidate = 0; candidate < candidates; candidate += 1) {
-    const value = SEPARATION_SQUARED[candidate];
-    if (filled === rank) {
-      if (!(value < smallest[rank - 1])) continue;
-      filled -= 1;
-    }
-    let cursor = filled - 1;
-    while (cursor >= 0 && smallest[cursor] > value) {
-      smallest[cursor + 1] = smallest[cursor];
-      cursor -= 1;
-    }
-    smallest[cursor + 1] = value;
-    filled += 1;
-  }
-  return smallest[rank - 1];
+  return Object.freeze({
+    deltas,
+    maxNeighborsObserved,
+    broadphaseCandidateChecks,
+    naiveCandidateChecks: ordered.length * Math.max(0, ordered.length - 1),
+  });
 }
 
 export function stepEnemyPopulation({
@@ -668,37 +565,20 @@ export function stepEnemyPopulation({
   nonNegativeInteger(fullAiCap, 'fullAiCap');
 
   const ordered = population.active.filter((enemy) => enemy.active && enemy.health > 0).sort((a, b) => lexical(a.id, b.id));
-  // computeEnemySeparation(ordered), without re-filtering and re-sorting a list
-  // that is already active-only and id-sorted, and without its id-keyed Map.
-  if (ordered.length > ENEMY_CAPACITY) throw new TypeError(`active enemy count cannot exceed capacity ${ENEMY_CAPACITY}`);
-  const separation = separateOrderedEnemies(ordered, 96, 8, 0.35, MAX_ENEMY_SEPARATION_STEP, ENEMY_SPATIAL_CELL_SIZE);
-  // The Map was read by id, so a repeated id read the last body's delta. With
-  // unique string ids (always, in play) a body's slot is its own index.
-  let separationSlotById = null;
-  for (let index = 1; index < ordered.length; index += 1) {
-    const left = ordered[index - 1].id;
-    const right = ordered[index].id;
-    if (typeof left !== 'string' || typeof right !== 'string' || !(left < right)) {
-      separationSlotById = new Map(ordered.map((enemy, slot) => [enemy.id, slot]));
-      break;
-    }
-  }
-  // Only looked up by id here, so the id-sorted copy the export returns is skipped.
-  const formationBiases = formationBiasById(ordered, { player });
-  const decisionCandidates = [];
-  for (const enemy of ordered) {
-    if (enemy.attackPhase !== 'tell' && (!enemy.intent || tick >= enemy.nextDecisionTick)) {
-      // The attack phase is fixed for the whole sort, so its priority is read once.
-      const priority = enemy.attackPhase === 'tell' || enemy.attackPhase === 'attack' ? 0 : 1;
-      decisionCandidates.push({ enemy, distance: Math.hypot(player.x - enemy.x, player.y - enemy.y), priority });
-    }
-  }
-  decisionCandidates.sort((a, b) => a.priority - b.priority
-    || a.enemy.nextDecisionTick - b.enemy.nextDecisionTick
-    || a.distance - b.distance
-    || lexical(a.enemy.id, b.enemy.id));
-  const decisionIds = new Set();
-  for (let index = 0; index < decisionCandidates.length && index < fullAiCap; index += 1) decisionIds.add(decisionCandidates[index].enemy.id);
+  const separation = computeEnemySeparation(ordered);
+  const formationBiases = getEnemyFormationBias(ordered, { player });
+  const decisionCandidates = ordered
+    .filter((enemy) => enemy.attackPhase !== 'tell' && (!enemy.intent || tick >= enemy.nextDecisionTick))
+    .map((enemy) => ({ enemy, distance: Math.hypot(player.x - enemy.x, player.y - enemy.y) }))
+    .sort((a, b) => {
+      const aPriority = ['tell', 'attack'].includes(a.enemy.attackPhase) ? 0 : 1;
+      const bPriority = ['tell', 'attack'].includes(b.enemy.attackPhase) ? 0 : 1;
+      return aPriority - bPriority
+        || a.enemy.nextDecisionTick - b.enemy.nextDecisionTick
+        || a.distance - b.distance
+        || lexical(a.enemy.id, b.enemy.id);
+    });
+  const decisionIds = new Set(decisionCandidates.slice(0, fullAiCap).map(({ enemy }) => enemy.id));
   let decisions = 0;
   let safetySteps = 0;
   let collisionContacts = 0;
@@ -711,8 +591,7 @@ export function stepEnemyPopulation({
   let flankLaneSeeking = 0;
   let formationAdjusted = 0;
 
-  for (let index = 0; index < ordered.length; index += 1) {
-    const enemy = ordered[index];
+  for (const enemy of ordered) {
     if (!preservePrevious) {
       enemy.previousX = enemy.x;
       enemy.previousY = enemy.y;
@@ -741,13 +620,11 @@ export function stepEnemyPopulation({
     const currentGround = queryGround(enemy.x, enemy.y);
     const archetype = getEnemyArchetype(enemy.archetypeId);
     const waterMultiplier = currentGround.kind === 'shallow-water' ? archetype.movement.shallowWaterMultiplier : 1;
-    const separationSlot = separationSlotById === null ? index : separationSlotById.get(enemy.id);
-    const separationDeltaX = separation.x[separationSlot];
-    const separationDeltaY = separation.y[separationSlot];
+    const separationDelta = separation.deltas.get(enemy.id) ?? { x: 0, y: 0 };
     const field = fieldAt ? fieldAt(enemy.x, enemy.y, currentGround) : null;
     const requested = movementLocked ? { x: 0, y: 0 } : {
-      x: enemy.velocity.x * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.x ?? 0) * dtSeconds + separationDeltaX,
-      y: enemy.velocity.y * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.y ?? 0) * dtSeconds + separationDeltaY,
+      x: enemy.velocity.x * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.x ?? 0) * dtSeconds + separationDelta.x,
+      y: enemy.velocity.y * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.y ?? 0) * dtSeconds + separationDelta.y,
     };
     const collision = resolveSweptCircleMotion({
       body: enemy.collisionBody,
@@ -796,8 +673,7 @@ export function stepEnemyPopulation({
     }
   }
 
-  // Every field is a number, so a shallow freeze is the whole deep freeze.
-  return Object.freeze({
+  return freezeDeep({
     tick,
     activeCount: ordered.length,
     decisions,

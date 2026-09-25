@@ -1,10 +1,26 @@
-import { freezeDeep, point3, positive } from './value-guards.mjs';
+// Verbatim copy of the 1.8.1 release (60ea173a) apps/hmh-reboot/src/melee.mjs, kept as the
+// bit-identical reference for tests/hmh-sim-hot-path.test.mjs. Do not edit.
+import { freezeDeep } from './value-guards.mjs';
 import { createProjectileState, resolveProjectilePath } from './projectile-physics.mjs';
 
 const EPSILON = 1e-9;
 
 
 import { clamp, finite } from './value-guards.mjs';
+
+function positive(value, name) {
+  finite(value, name);
+  if (value <= 0) throw new TypeError(`${name} must be positive`);
+  return value;
+}
+
+function point3(value, name) {
+  return Object.freeze({
+    x: finite(value?.x, `${name}.x`),
+    y: finite(value?.y, `${name}.y`),
+    z: finite(value?.z, `${name}.z`),
+  });
+}
 
 function normalize(value) {
   const x = finite(value?.x, 'direction.x');
@@ -96,9 +112,7 @@ export function createMeleeTarget({
   const upper = finite(maxZ, 'melee target maxZ');
   if (upper <= lower) throw new TypeError('melee target height range must be positive');
   if (typeof active !== 'boolean') throw new TypeError('melee target active must be boolean');
-  // Both grounds are frozen points and the rest are primitives, so a shallow
-  // freeze is the whole deep freeze. Built for every enemy every tick.
-  return Object.freeze({
+  return freezeDeep({
     id,
     previousGround: point3(previousGround, 'melee target previousGround'),
     currentGround: point3(currentGround, 'melee target currentGround'),
