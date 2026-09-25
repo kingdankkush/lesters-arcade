@@ -4,7 +4,8 @@
 // cabinet segment so 1.8.x runs without it stay valid, and the module stays
 // out of the HMH child (it is portal-only). The server format-checks the
 // cabinet (A11) and cannot prove it, so a cabinet this deploy has not shipped
-// is stored but labelled '<Game> v?'.
+// is stored but labelled '<Game> v?'. The cabinet moves with the HMH child's
+// own RUNTIME_VERSION.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -18,6 +19,7 @@ import { STACKED_CABINET_VERSION } from '../apps/portal/src/stacked-cabinet.mjs'
 import { GAME_VERSION, SITE_VERSION } from '../apps/portal/src/version-tracking.mjs';
 import { RANKED_GAMES, rankedIdentityFor, validateRankedIdentity } from '../apps/portal/src/ranked-identity.mjs';
 import { versionLabelFor } from '../apps/portal/src/game-version-labels.mjs';
+import { buildHmhChallenge, buildHmhChallengeUrl, readHmhChallengeSearch, resolveHmhChallenge } from '../apps/portal/src/hmh-challenges.mjs';
 import { bindRankedIdentity, verifyRankedRun } from '../server/verify/index.mjs';
 import { validateSeedBody } from '../server/settle/seed.mjs';
 import { FIXTURE_BUILD_HASHES, FIXTURE_REGISTRY, FIXTURE_WALLET, buildFixtureBody, fixtureVerifyOptions } from './fixtures/ranked/build-fixtures.mjs';
@@ -121,6 +123,45 @@ test('a verified run claiming an unshipped cabinet is labelled "<Game> v?", not 
     assert.equal(run.ok, true, `STACKED ${cabinet}: ${JSON.stringify(run)}`);
     assert.equal(run.buildHash, buildHash);
     assert.equal(versionLabelFor(run.gameId, run), label, `STACKED ${cabinet}`);
+  }
+});
+
+// Review finding (version-column fixer): the portal's cabinet and the HMH
+// child's own runtime version (runtimeInfo.runtimeVersion) name the same game
+// version. A balance change bumps both, or every new run is mislabelled.
+test('HMH_CABINET_VERSION moves with the HMH child RUNTIME_VERSION', () => {
+  const child = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  const declared = [...child.matchAll(/^const RUNTIME_VERSION = '(\d+\.\d+\.\d+)';$/gm)].map((match) => match[1]);
+  assert.equal(declared.length, 1, 'one RUNTIME_VERSION literal in apps/hmh-reboot/src/main.mjs');
+  assert.match(child, /runtimeInfo: \{ runtimeVersion: RUNTIME_VERSION,/, 'the child reports it to the portal');
+  const majorMinor = (version) => version.split('.').slice(0, 2).join('.');
+  assert.equal(majorMinor(HMH_CABINET_VERSION), majorMinor(declared[0]),
+    `bump apps/portal/src/hmh-cabinet-version.mjs (${HMH_CABINET_VERSION}) and the child's RUNTIME_VERSION (${declared[0]}) together`);
+});
+
+// Review finding (version-column fixer): the cabinet segment changes the live
+// HMH build hash the way the SITE_VERSION bump of every release does. HMH Free
+// challenge links shared before the deploy name the old build, so they are
+// refused as another build (the picker offers a current course), and the
+// daily and weekly courses of the current period reseed. Contract A11 records it.
+test('pre-cabinet HMH challenge links are refused as another build, like any release bump', () => {
+  const { buildHash, seasonId } = getPlaySessionIdentity('lester-blaster');
+  const now = Date.parse('2026-09-25T12:00:00.000Z');
+  const identity = { mode: 'free', gameId: 'lester-blaster', buildHash, seasonId, now };
+  for (const cadence of ['daily', 'weekly']) {
+    const before = buildHmhChallenge({ cadence, buildHash: `site-${SITE_VERSION}:game-${GAME_VERSION}`, seasonId, now });
+    const link = buildHmhChallengeUrl(before, 'https://lestersarcade.io/');
+    const request = readHmhChallengeSearch(new URL(link).search);
+    assert.equal(request.buildHash, `site-${SITE_VERSION}:game-${GAME_VERSION}`);
+    assert.throws(() => resolveHmhChallenge(request, identity), /This challenge uses a different build/, `${cadence}: an old link`);
+    const current = resolveHmhChallenge({ cadence }, identity);
+    assert.equal(current.buildHash, buildHash);
+    assert.equal(current.periodStart, before.periodStart, `${cadence}: the same period`);
+    assert.notEqual(current.seed, before.seed, `${cadence}: the in-period course reseeds`);
+    assert.deepEqual(resolveHmhChallenge(readHmhChallengeSearch(new URL(buildHmhChallengeUrl(current, 'https://lestersarcade.io/')).search), identity), current, `${cadence}: a link shared after the deploy resolves`);
+    // The same happens on every release: a link from the previous site version is another build.
+    const previousRelease = { ...request, buildHash: 'site-1.8.0:game-1.8.0' };
+    assert.throws(() => resolveHmhChallenge(previousRelease, { ...identity, buildHash: 'site-1.8.1:game-1.8.1' }), /This challenge uses a different build/);
   }
 });
 
