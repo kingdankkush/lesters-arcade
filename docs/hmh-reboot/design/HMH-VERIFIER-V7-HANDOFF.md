@@ -1,6 +1,6 @@
 # HMH verifier v7: hand-off
 
-**Branch:** `fable/hmh-verifier-v7`, from release `60ea173a` (production 1.8.1). Not pushed.
+**Branch:** `fable/hmh-verifier-v7`, written from release `60ea173a` (production 1.8.1), rebased onto integration `da3c0756` (the jackpot-contracts merge) and pushed to `origin`.
 **Contract:** `docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md` (the authority; this note summarises it).
 **Design source:** `docs/hmh-reboot/design/LEVEL-1-DESIGN-PACKAGE-20260925.md`, with two owner overrides: no Ranked season or ruleset boundary, and the v6 path verifies 1.8.x children indefinitely with today's bounds (no clock anywhere in the verifier).
 
@@ -98,9 +98,12 @@ The nearest-impossible rejection tests for each rule are listed in contract §8.
 - `node tests/fixtures/ranked/build-fixtures.mjs` with no flags: all nine fixtures are `ok`.
 - `node scripts/docs-link-check.mjs`: passes.
 
-**Still to run later:** the full release gate (`npm run test:release`, `npm run build`), which another workflow was using this machine for. It covers:
-- the HMH initial-JS budget: +48 bytes, measured in `a0c62030`;
-- the portal `main.js`, which takes the V7 catalogues through `achievements/stats.mjs`. The whole v7 schema module is 8,029 bytes minified with the base module left external: 1,768 bytes more than before the red-team fixes, and well inside the main-bundle budget.
+**Release gate, after the rebase onto `da3c0756`:**
+- `npm run check`: passes.
+- `npm run build`: passes its budgets. HMH initial JS + shared is 1,046,761 of 1,048,576 bytes (1.8 KB headroom); the base schema module adds 48 bytes to the HMH initial path, measured in `a0c62030`. The portal `main.js` takes the V7 catalogues through `achievements/stats.mjs`; the whole v7 schema module is 8,029 bytes minified with the base module left external.
+- `npm run test:release`: PASS, 4,961 tests, 4,910 pass, exactly the 51 ledgered failures. The regenerated record is committed.
+- The verifier, ranked, settle, jackpot and achievement tests (38 files, 524 tests) pass, and the fixture drift check is `ok` for all nine fixtures.
+- `scripts/hmh-reboot-portal-e2e.mjs` (desktop): 7 flows pass, including `game-over-run-summary` with a schema-6 summary; `ranked-preview` is not run because the source has `SETTLEMENT_LIVE` on.
 
 ## 5. What the child branch must emit and honour
 
