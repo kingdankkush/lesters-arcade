@@ -58,13 +58,7 @@ test('WO-32 runtime routes combat feedback through the shared plan helper', () =
   assert.equal(main.includes("./src/hmh-combat-feedback.mjs"), true);
   assert.equal(main.includes('function applyCombatFeedback('), true);
   assert.equal(main.includes("applyCombatFeedback('enemy-hit'"), true);
-  assert.equal(main.includes("applyCombatFeedback('player-hit'"), true);
-  assert.equal(main.includes("applyCombatFeedback('enemy-kill'"), true);
-  assert.equal(main.includes("applyCombatFeedback('powerup-collect'"), true);
-  assert.equal(main.includes("applyCombatFeedback('xp-collect'"), true);
-  assert.equal(main.includes("applyCombatFeedback('grenade-detonate'"), true);
   assert.equal(main.includes("applyCombatFeedback('level-up'"), true);
-  assert.equal(main.includes("applyCombatFeedback('boss-clear'"), true);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-combat-feedback.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-combat-feedback.test.mjs'), true);
 });

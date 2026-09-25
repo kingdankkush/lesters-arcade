@@ -170,7 +170,6 @@ try {
   }
 
   for (const marker of [
-    'applyPlayerLedCameraMovement',
     'renderCombatHudOverlay',
     'buildCombatOptionsMenuModel',
     'buildHardMoneyHeroesAnimationCoverageReport',

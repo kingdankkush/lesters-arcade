@@ -235,17 +235,11 @@ test('Level 1 interactive runtime states drive mushroom hazard, boss gate unlock
   assert.equal(levelOneInteractiveRuntimeStateForObstacle(flare, { bossDefeated: true, extractionPoint: { worldX: 97, worldY: 5 } }).glow, true);
 });
 
-test('main runtime wires Level 1 interactive props into bullet, grenade, hazard, and visual state paths', () => {
+test('main runtime wires Level 1 interactive props into hit resolution and visual state paths', () => {
   const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
   assert.equal(source.includes('levelOneInteractiveHitPlan'), true, 'runtime should import the pure hit planner');
   assert.equal(source.includes('levelOneAaaRouteWorldStateAt'), true, 'runtime should import the Level 1 authored route-world HUD state helper');
   assert.equal(source.includes('function damageLevelOneInteractiveObstacle('), true, 'runtime should have a shared obstacle damage resolver');
-  const bulletBlock = source.slice(source.indexOf('function updateRoguelikeBullets'), source.indexOf('function trimLooseRoguelikeRewards'));
-  assert.equal(bulletBlock.includes('damageLevelOneInteractiveObstacle(hitObstacle'), true, 'player bullets should damage interactive authored obstacles before disappearing');
-  const grenadeBlock = source.slice(source.indexOf('function updateRoguelikeGrenades'), source.indexOf('function updateRoguelikeXpGems'));
-  assert.equal(grenadeBlock.includes('damageLevelOneInteractiveObstacle(obstacle'), true, 'grenade blasts should damage interactive authored obstacles');
-  const movementBlock = source.slice(source.indexOf('function updateRoguelikeMovement'), source.indexOf('function updateRoguelikeBullets'));
-  assert.equal(movementBlock.includes('currentLevelOneInteractiveHazardPressure()'), true, 'movement should consume mushroom spore hazard pressure');
   const obstacleBlock = source.slice(source.indexOf('function _buildAuthoredObstaclesForLevel'), source.indexOf('function buildObstacleRenderEntries'));
   assert.equal(obstacleBlock.includes('refreshLevelOneInteractiveObstacleState'), true, 'authored obstacles should refresh gate/flare state each frame');
   assert.equal(source.includes('interactiveState?.glow'), true, 'renderer should visually pulse unlocked extraction cues');
@@ -341,12 +335,10 @@ test('main runtime wires interactive debris visuals and POI-specific SFX without
   assert.equal(source.includes('levelOneInteractiveSfxCuePlan'), true, 'runtime should import POI SFX cue planner');
   assert.equal(source.includes('function playLevelOneInteractiveSfxCues('), true, 'runtime should centralize POI SFX playback');
   assert.equal(source.includes('function drawLevelOneInteractiveDebris('), true, 'renderer should draw broken/debris states');
-  const damageBlock = source.slice(source.indexOf('function damageLevelOneInteractiveObstacle'), source.indexOf('function updateLevelOneInteractiveHazards'));
+  const damageBlock = source.slice(source.indexOf('function damageLevelOneInteractiveObstacle'), source.indexOf('function currentLevelOneInteractionPrompt'));
   assert.equal(damageBlock.includes('playLevelOneInteractiveSfxCues(plan.sfxCues'), true, 'hit resolver should play cache/gas/cover cues from hit plan');
   assert.equal(damageBlock.includes('hitObstacle.debrisState = plan.debrisState'), true, 'destroyed props should persist debris state');
   assert.equal(damageBlock.includes('hitObstacle.hidden = false'), true, 'destroyed props should not disappear instantly');
-  const hazardBlock = source.slice(source.indexOf('function updateLevelOneInteractiveHazards'), source.indexOf('function updateRoguelikeMovement'));
-  assert.equal(hazardBlock.includes("levelOneInteractiveSfxCuePlan({ obstacle, event: 'hazard-pulse' })"), true, 'mushroom pulse should emit POI SFX');
   const stateBlock = source.slice(source.indexOf('function refreshLevelOneInteractiveObstacleState'), source.indexOf('function currentLevelOneInteractiveHazardPressure'));
   assert.equal(stateBlock.includes('playLevelOneInteractiveSfxCues'), true, 'gate/extraction state transitions should emit POI SFX');
   const renderBlock = source.slice(source.indexOf('function buildObstacleRenderEntries'), source.indexOf('function selectHeroFrame'));

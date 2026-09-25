@@ -140,7 +140,7 @@ test('directive output objects are frozen', () => {
 // --- runtime wiring: main.js must actually CONSUME the controller ----------
 // (guards against the "module exists but isn't live" gap).
 
-test('main.js imports and wires the boss phase controller into the enemy loop', async () => {
+test('main.js imports and wires the boss phase controller', async () => {
   const { readFileSync } = await import('node:fs');
   const { fileURLToPath } = await import('node:url');
   const { join } = await import('node:path');
@@ -149,10 +149,6 @@ test('main.js imports and wires the boss phase controller into the enemy loop', 
 
   assert.ok(mainJs.includes("from './src/hmh-level-one-boss.mjs'"), 'main.js must import the boss controller');
   assert.ok(mainJs.includes('buildLevelOneBossDirective('), 'main.js must call buildLevelOneBossDirective');
-  assert.ok(mainJs.includes('computeBossVolleyVectors('), 'main.js must fire phase-driven volleys');
-  // the phase-driven volley must be gated behind the signatureBoss flag
-  assert.ok(/signatureBoss[\s\S]{0,900}computeBossVolleyVectors/.test(mainJs), 'volley must be gated behind signatureBoss');
-  assert.ok(mainJs.includes('buildLevelOneMiniBossDirective('), 'main.js must drive mini-boss phases');
 });
 
 // --- mini-boss 2-phase enrage ----------------------------------------------

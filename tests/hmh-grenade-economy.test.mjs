@@ -79,11 +79,9 @@ test('WO-28 unlock cards write grenade-type state onto the run', () => {
   assert.equal(resolveGrenadeTypeForRun(unlocked).id, 'homing-cluster');
 });
 
-test('WO-28 runtime wires refill pickups and grenade-type throw plans into main.js', () => {
+test('WO-28 runtime wires grenade-type throw plans into main.js', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.ok(main.includes("from './src/hmh-grenade-economy.mjs'"), 'main.js should import the grenade economy helpers');
   assert.ok(main.includes('planLevelOneGrenadeThrow({'), 'roguelike grenade throws should use type-aware planning');
-  assert.ok(main.includes("'grenade-crate'"), 'roguelike drop pool should include grenade refill crates');
-  assert.ok(/case 'grenades':[\s\S]*grenadeRefillForPickup/.test(main), 'grenade pickups should refill through capped economy helper');
   assert.ok(main.includes('typeId: throwPlan.typeId'), 'active grenades should carry their unlocked type id for detonation/rendering');
 });

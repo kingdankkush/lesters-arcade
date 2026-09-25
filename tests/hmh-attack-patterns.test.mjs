@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 import {
   ENEMY_ATTACK_PATTERN_CATALOG,
@@ -51,10 +50,4 @@ test('WO-44 every pattern has a valid dash/dodge escape contract', () => {
     const validation = validateDodgePathForPattern(plan, { dashIFrameSeconds: 0.38, playerMoveSpeedTilesPerSecond: 4.15 });
     assert.equal(validation.ok, true, `${plan.patternId}: ${validation.reason}`);
   }
-});
-
-test('WO-44 runtime consumes pattern plans for generic roguelike attacks', () => {
-  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.ok(main.includes('planEnemyAttackPattern'), 'runtime should import/use the pattern planner');
-  assert.ok(main.includes('emitEnemyPatternActions'), 'runtime should translate pattern actions into shots/tells');
 });

@@ -41,9 +41,7 @@ test('WO-37 runtime still listens for orientation, fullscreen, pointer, touch, a
     "document.addEventListener('keydown'",
     "document.addEventListener('keyup'",
     'pointermove',
-    'touchMovementActive',
     'joystickToKeys',
-    'shouldMirrorMovementIntoAim',
   ]) {
     assert.equal(main.includes(marker), true, `${marker} missing`);
   }

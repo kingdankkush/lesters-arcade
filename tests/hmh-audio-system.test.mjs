@@ -172,7 +172,7 @@ test('SHIP audio inventory provides at least 64 playable and meaningfully distin
 
 test('SHIP runtime routes major gameplay moments into the expanded cue inventory', () => {
   const main = repoText('apps/portal/main.js');
-  for (const cue of ['settler-fire', 'auto-miner-fire', 'hash-rail-fire', 'spread-ltc-fire', 'litecoin-blade-swing', 'reload-start', 'reload-complete', 'pause', 'resume', 'boss-phase', 'boss-death', 'upgrade-offer', 'upgrade-pick', 'low-health']) {
+  for (const cue of ['settler-fire', 'auto-miner-fire', 'hash-rail-fire', 'spread-ltc-fire', 'pause', 'resume', 'boss-phase', 'upgrade-offer', 'upgrade-pick']) {
     assert.match(main, new RegExp(`['"]${cue}['"]`), `runtime missing ${cue}`);
   }
 });

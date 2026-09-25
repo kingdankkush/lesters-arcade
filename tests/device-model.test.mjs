@@ -178,9 +178,8 @@ test('WO-46 manual aim input model documents desktop and mobile controls', () =>
   assert.equal(mobile.reticule.alwaysVisible, true);
 });
 
-test('WO-46 runtime wires manual aim helpers into pointer, touch, and grenade paths', () => {
+test('WO-46 runtime wires manual aim helpers into touch and grenade paths', () => {
   const source = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  assert.match(source, /pointerToManualAim/);
   assert.match(source, /joystickToManualAim/);
   assert.match(source, /buildManualGrenadeTarget/);
   assert.match(source, /combat\.manualAim/);

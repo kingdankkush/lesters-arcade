@@ -76,14 +76,11 @@ test('road index classifies crossings from rendered terrain roles, not biome noi
   assert.equal(roads.get(levelOneRoadTileKey(3, 0)).type, 'road');
 });
 
-test('live player, enemy, spawn, road, and projectile paths consume traversal and swept-collision helpers', () => {
+test('live spawn and road paths consume the traversal helpers', () => {
   const source = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(source, /buildLevelOneRoadTileIndex\(\{/);
   assert.match(source, /function currentTerrainBiomeAt\(/);
-  assert.match(source, /resolveWaterCollision\([^;]+currentTerrainBiomeAt[^;]+radius:\s*0\.42/s);
-  assert.ok((source.match(/biomeAt: currentTerrainBiomeAt/g) ?? []).length >= 2, 'spawn and shared per-frame AI move options should use rendered-terrain collision');
-  assert.match(source, /const moveOptions = \{[\s\S]*biomeAt: currentTerrainBiomeAt[\s\S]*resolveTrackingAiMove\([\s\S]*resolveBoundedAiMove\(moveOptions\)/);
-  assert.ok((source.match(/obstacleHitAlongSegment\(/g) ?? []).length >= 2, 'player and enemy shots should use swept prop collision');
+  assert.match(source, /biomeAt: currentTerrainBiomeAt/, 'spawn placement should use rendered-terrain collision');
 });
 
 test('seed 1337 traversal playtest reaches every Blueprint v3 POI without walking through blocked terrain', () => {

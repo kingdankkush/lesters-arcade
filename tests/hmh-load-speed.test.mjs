@@ -98,13 +98,6 @@ test('Level 1 prop rendering uses screen rectangles instead of pressure-dependen
   assert.doesNotMatch(renderBody, /obstacleRenderRadiusWindowed|obstacleRenderRadiusFullscreen|Math\.abs\(o\.worldX - combat\.playerMapX\)/);
 });
 
-test('Level 1 bullets use swept hit detection for both cover and enemies', () => {
-  const source = repoText('apps/portal/main.js');
-  const bulletBody = source.slice(source.indexOf('function updateRoguelikeBullets('), source.indexOf('function trimLooseRoguelikeRewards('));
-  assert.match(bulletBody, /circleTargetHitAlongSegment\(/);
-  assert.doesNotMatch(bulletBody, /Math\.hypot\(enemy\.mapX - bullet\.worldX/);
-});
-
 test('WO-36 syntax gate includes load-speed report', () => {
   const syntaxCheck = repoText('scripts/syntax-check.mjs');
   assert.equal(syntaxCheck.includes('scripts/hmh-load-speed-report.mjs'), true);

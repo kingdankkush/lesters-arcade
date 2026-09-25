@@ -56,7 +56,7 @@ test('WO-23 finite spawn resolver searches legal in-map arc when desired point c
 
 test('WO-23 runtime routes roguelike enemy spawns through finite Level 1 bounds', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
-  const spawnBlock = main.slice(main.indexOf('function spawnRoguelikeEnemy'), main.indexOf('function updateCampaignPoiEncounter'));
+  const spawnBlock = main.slice(main.indexOf('function spawnRoguelikeEnemy'), main.indexOf('function playLevelOneInteractiveSfxCues'));
 
   assert.ok(spawnBlock.includes('worldBounds:'), 'spawn resolver should receive finite world bounds');
   assert.ok(spawnBlock.includes('buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight })'), 'runtime should derive spawn bounds from live Level 1 dimensions');
