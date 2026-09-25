@@ -2,11 +2,13 @@
 // slice; report: docs/qa/live-ui-audit-20260924.json).
 //
 //   PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/live-ui-audit.mjs \
-//     [--site https://lestersarcade.io] [--out <dir>] [--viewports desktop,phone]
+//     [--site https://lestersarcade.io] [--out <dir>] [--viewports desktop,phone,narrow]
 //
-// It never signs, never sends a transaction and never writes to the site:
-// every request that is not GET or HEAD to the audited host, and any /api/
-// request that is not GET or HEAD, is aborted and listed in `blockedNonGet`.
+// All three viewports run by default (the report's check counts). It never
+// signs, never sends a transaction and never writes to the site: in every
+// browser context it opens, each request that is not GET or HEAD to the
+// audited host, and any /api/ request that is not GET or HEAD, is aborted and
+// listed in `blockedNonGet`.
 // There is no wallet in the browser, so Sign in can only show the picker.
 // Screenshots and the JSON report go to --out (default: a new folder in the
 // OS temp directory), never into the repo. Exit code 0 when every check
@@ -82,8 +84,10 @@ export function parseCssColor(value) {
   return { rgb: parts.slice(0, 3), alpha: parts[3] ?? 1 };
 }
 
+export const DEFAULT_VIEWPORTS = Object.freeze(['desktop', 'phone', 'narrow']);
+
 export function parseArgs(argv) {
-  const options = { site: DEFAULT_SITE, out: null, viewports: ['desktop', 'phone'] };
+  const options = { site: DEFAULT_SITE, out: null, viewports: [...DEFAULT_VIEWPORTS] };
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     const value = argv[index + 1];
@@ -104,16 +108,22 @@ export function summarizeChecks(checks) {
 
 // ---------------------------------------------------------------- browser --
 
-async function auditViewport(browser, { site, viewportName, out, blocked, checks, pages }) {
-  const context = await browser.newContext(VIEWPORTS[viewportName]);
-  await context.route('**/*', (route) => {
+// The route handler every browser context installs first: it aborts and
+// records each request the read-only guarantee forbids.
+function readOnlyGuard({ site, blocked, label }) {
+  return (route) => {
     const request = route.request();
     if (isBlockedRequest({ method: request.method(), url: request.url(), site })) {
-      blocked.push(`${viewportName} ${request.method()} ${new URL(request.url()).pathname}`);
+      blocked.push(`${label} ${request.method()} ${new URL(request.url()).pathname}`);
       return route.abort();
     }
     return route.fallback();
-  });
+  };
+}
+
+async function auditViewport(browser, { site, viewportName, out, blocked, checks, pages }) {
+  const context = await browser.newContext(VIEWPORTS[viewportName]);
+  await context.route('**/*', readOnlyGuard({ site, blocked, label: viewportName }));
   const check = (id, ok, detail = null) => checks.push({ viewport: viewportName, id, ok, detail });
 
   async function visit(route, run) {
@@ -193,32 +203,51 @@ async function auditViewport(browser, { site, viewportName, out, blocked, checks
     return { picker, after };
   });
 
-  // The picker is never painted before its stylesheet applies (slow CSS, a
-  // first visit: no HTTP cache and no service worker).
-  {
+  // The picker is never painted as page content, before or without its
+  // stylesheet (a first visit: no HTTP cache and no service worker). 'slow'
+  // delays wallet-picker.css 2.5 s; 'abort' and 'not-found' fail it, since
+  // Chromium gives a failed <link> an empty, non-null sheet (review of
+  // 2026-09-24). Each run opens the picker, then closes it and opens it again.
+  async function coldPicker(mode) {
     const cold = await browser.newContext({ ...VIEWPORTS[viewportName], serviceWorkers: 'block' });
-    await cold.route('**/*', (route) => (isBlockedRequest({ method: route.request().method(), url: route.request().url(), site }) ? route.abort() : route.fallback()));
+    await cold.route('**/*', readOnlyGuard({ site, blocked, label: `${viewportName} cold` }));
     const page = await cold.newPage();
-    await page.route('**/src/styles/wallet-picker.css*', async (route) => { await new Promise((resolve) => setTimeout(resolve, 2500)); return route.fallback(); });
+    await page.route('**/src/styles/wallet-picker.css*', async (route) => {
+      if (mode === 'abort') return route.abort();
+      if (mode === 'not-found') return route.fulfill({ status: 404, contentType: 'text/html', body: 'Not found' });
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+      return route.fallback();
+    });
     await page.goto(`${site}/`, { waitUntil: 'load', timeout: 60_000 });
     await page.waitForTimeout(1500);
+    // 'unstyled': the sheet shows as page content (the overlay is not a fixed
+    // layer); 'waiting': the page is dimmed and the sheet hidden; 'styled':
+    // a fixed overlay with the sheet showing (stylesheet or fallback).
+    const sample = () => page.evaluate(() => {
+      const overlay = document.querySelector('.wallet-sheet-overlay');
+      const sheet = document.querySelector('.wallet-sheet');
+      if (!overlay || !sheet) return 'none';
+      if (getComputedStyle(sheet).visibility === 'hidden' || getComputedStyle(overlay).visibility === 'hidden') return 'waiting';
+      return getComputedStyle(overlay).position === 'fixed' ? 'styled' : 'unstyled';
+    });
     await page.click('#officialConnectButton');
     const samples = [];
     for (let index = 0; index < 6; index += 1) {
       await page.waitForTimeout(250);
-      // 'unstyled': the sheet shows as page content (the overlay is not a
-      // fixed layer); 'waiting': the page is dimmed and the sheet hidden.
-      samples.push(await page.evaluate(() => {
-        const overlay = document.querySelector('.wallet-sheet-overlay');
-        const sheet = document.querySelector('.wallet-sheet');
-        if (!overlay || !sheet) return 'none';
-        if (getComputedStyle(sheet).visibility === 'hidden' || getComputedStyle(overlay).visibility === 'hidden') return 'waiting';
-        return getComputedStyle(overlay).position === 'fixed' ? 'styled' : 'unstyled';
-      }));
+      samples.push(await sample());
     }
-    check('signin:picker-never-unstyled', !samples.includes('unstyled'), samples);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+    await page.click('#officialConnectButton');
+    await page.waitForTimeout(400);
+    const reopened = await sample();
     await cold.close();
+    return { samples, reopened };
   }
+  const slow = await coldPicker('slow');
+  check('signin:picker-never-unstyled', !slow.samples.includes('unstyled') && slow.reopened !== 'unstyled', slow);
+  const failed = { abort: await coldPicker('abort'), notFound: await coldPicker('not-found') };
+  check('signin:picker-legible-when-css-fails', Object.values(failed).every(({ samples, reopened }) => !samples.includes('unstyled') && samples.at(-1) === 'styled' && reopened === 'styled'), failed);
 
   // Game pages: the Ranked card states the launch terms; guests read Sign in.
   for (const game of AUDIT_GAMES) {
@@ -339,7 +368,7 @@ async function auditViewport(browser, { site, viewportName, out, blocked, checks
   await context.close();
 }
 
-export async function runAudit({ site = DEFAULT_SITE, out, viewports = ['desktop', 'phone'], chromium } = {}) {
+export async function runAudit({ site = DEFAULT_SITE, out, viewports = DEFAULT_VIEWPORTS, chromium } = {}) {
   mkdirSync(out, { recursive: true });
   const browser = await chromium.launch();
   const checks = [];

@@ -10,6 +10,7 @@ import {
   AUDIT_SHARE_IDS,
   AUDIT_WALLET,
   DEFAULT_SITE,
+  DEFAULT_VIEWPORTS,
   VIEWPORTS,
   contrastRatio,
   forbiddenWording,
@@ -34,6 +35,12 @@ test('the audit never writes to the site: only GET and HEAD reach it', () => {
   assert.equal(isBlockedRequest({ method: 'POST', url: 'not a url' }), true, 'an unparsable request is blocked');
   const source = readFileSync(new URL('../scripts/live-ui-audit.mjs', import.meta.url), 'utf8');
   assert.match(source, /if \(isBlockedRequest\(\{ method: request\.method\(\), url: request\.url\(\), site \}\)\) \{\s*blocked\.push/);
+  // Review 2026-09-24: the cold-cache picker context aborted writes without
+  // counting them. Every context the audit opens installs the counting guard.
+  const contexts = source.match(/browser\.newContext\(/g) ?? [];
+  const guarded = source.match(/\.route\('\*\*\/\*', readOnlyGuard\(\{ site, blocked, label: /g) ?? [];
+  assert.ok(contexts.length >= 2);
+  assert.equal(guarded.length, contexts.length, 'one counting guard per browser context');
   assert.doesNotMatch(source, /eth_sendTransaction|personal_sign|eth_requestAccounts|process\.env\.\w*(KEY|SECRET)/);
 });
 
@@ -59,7 +66,9 @@ test('contrast math matches WCAG and the grey buttons found live', () => {
 });
 
 test('arguments, targets and the summary', () => {
-  assert.deepEqual(parseArgs([]), { site: DEFAULT_SITE, out: null, viewports: ['desktop', 'phone'] });
+  // The three viewports the report counts run by default (review 2026-09-24).
+  assert.deepEqual(parseArgs([]), { site: DEFAULT_SITE, out: null, viewports: ['desktop', 'phone', 'narrow'] });
+  assert.deepEqual([...DEFAULT_VIEWPORTS], Object.keys(VIEWPORTS));
   assert.deepEqual(parseArgs(['--site', 'https://lestersarcade.io/', '--out', 'x', '--viewports', 'narrow,bogus,desktop']), { site: 'https://lestersarcade.io', out: 'x', viewports: ['narrow', 'desktop'] });
   assert.throws(() => parseArgs(['--broadcast']), /Unknown argument/);
   assert.throws(() => parseArgs(['--site', 'lestersarcade.io']), /http\(s\) origin/);
@@ -73,4 +82,17 @@ test('arguments, targets and the summary', () => {
     { viewport: 'phone', id: 'b', ok: false },
     { viewport: 'phone', id: 'c', ok: null },
   ]), { total: 3, passed: 1, failed: 1, notRun: 1, failedIds: ['phone:b'] });
+});
+
+// Review 2026-09-24: the cold-cache check only delayed the stylesheet, so a
+// failed one (which Chromium answers with an empty, non-null sheet) passed
+// while the picker painted as page content.
+test('the cold picker check covers a slow and a failed stylesheet, and a second open', () => {
+  const source = readFileSync(new URL('../scripts/live-ui-audit.mjs', import.meta.url), 'utf8');
+  assert.match(source, /check\('signin:picker-never-unstyled'/);
+  assert.match(source, /check\('signin:picker-legible-when-css-fails'/);
+  assert.match(source, /coldPicker\('abort'\)/);
+  assert.match(source, /coldPicker\('not-found'\)/);
+  assert.match(source, /route\.fulfill\(\{ status: 404/);
+  assert.match(source, /const reopened = await sample\(\);/);
 });
