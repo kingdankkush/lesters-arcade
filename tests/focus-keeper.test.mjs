@@ -208,7 +208,7 @@ test('Scores: period and cabinet tabs keep focus after their board loads', async
 });
 
 test('Scores: Show more keeps focus while the next page loads', async () => {
-  const rows = (page) => Array.from({ length: 25 }, (_, index) => {
+  const rows = (page) => Array.from({ length: Math.min(25, 60 - (page - 1) * 25) }, (_, index) => {
     const rank = (page - 1) * 25 + index + 1;
     const hex = rank.toString(16).padStart(64, '0');
     return { rank, wallet: `0x${rank.toString(16).padStart(40, '0')}`, walletShort: '0x…', displayName: `Pilot ${rank}`, avatarUri: null, score: 100_000 - rank, stats: {}, sessionId32: `0x${hex}`, shareId: hex, txHash: `0x${hex}`, explorerUrl: `https://liteforge.explorer.caldera.xyz/tx/0x${hex}`, confirmedAt: '2026-09-24T10:00:00.000Z' };
@@ -226,6 +226,13 @@ test('Scores: Show more keeps focus while the next page loads', async () => {
   await h.answerAll();
   assert.equal(h.doc.activeElement?.className, 'pixel-button leaderboard-show-more');
   assert.equal(h.doc.activeElement.textContent, 'Show 10 more');
+  // The last page removes the button; focus lands on the row count.
+  h.doc.activeElement.listeners.click();
+  await h.answerAll();
+  assert.equal(byClass(h.grid, 'leaderboard-show-more').length, 0);
+  assert.equal(h.doc.activeElement?.className, 'leaderboard-table-count');
+  assert.equal(h.doc.activeElement.attributes.tabindex, '-1');
+  assert.match(h.doc.activeElement.textContent, /Showing ranks 1–60 of 60 players/);
 });
 
 // --- The hosted Profile page ------------------------------------------------

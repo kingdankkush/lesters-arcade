@@ -2641,6 +2641,8 @@ button[class="pixel-button"]:disabled,
 .pixel-button.profile-avatar-option:focus-visible { outline: 2px solid #ffe84d; outline-offset: 2px; }
 /* Show more stays focusable while its page loads (aria-disabled, not disabled). */
 .leaderboard-show-more[aria-disabled="true"] { opacity: 0.7; cursor: progress; }
+/* After the last page loads, focus moves to the row count. */
+.leaderboard-table-count:focus-visible { outline: 2px solid #19f7ff; outline-offset: 3px; border-radius: 4px; }
 
 /* The board title's trophy sat raised against the first letter. */
 .leaderboard-title { display: flex; align-items: center; gap: 0.45em; }

@@ -475,9 +475,10 @@ export function createHostedLeaderboardView({
     const footer = el('div', { className: 'leaderboard-table-footer' });
     const firstRank = board.rows[0]?.rank ?? 1;
     const lastRank = board.rows.at(-1)?.rank ?? 0;
-    appendText(footer, 'span', spec.q
+    const count = appendText(footer, 'span', spec.q
       ? `Showing ${board.rows.length} of ${board.total.toLocaleString()} matching player${board.total === 1 ? '' : 's'}`
       : `Showing ranks ${firstRank}–${lastRank} of ${board.total.toLocaleString()} player${board.total === 1 ? '' : 's'}`, 'leaderboard-table-count');
+    count.setAttribute('tabindex', '-1');
     if (board.nextPage) {
       const shown = (board.firstPage - 1) * board.pageSize + board.rows.length;
       const remaining = Math.max(1, Math.min(board.pageSize, board.total - shown));
@@ -488,8 +489,18 @@ export function createHostedLeaderboardView({
       more.setAttribute('aria-disabled', board.loadingMore ? 'true' : 'false');
       more.addEventListener('click', () => {
         if (board.loadingMore || !board.nextPage) return;
-        void loadHostedPage(board, board.nextPage);
+        const hadFocus = documentRef?.activeElement === more;
+        const loading = loadHostedPage(board, board.nextPage);
         keepingFocus(() => rerender());
+        // The last page removes the button: hand focus to the row count
+        // ("Showing ranks 1–30 of 30") instead of dropping it to the page.
+        if (hadFocus) {
+          void loading.then(() => {
+            const active = documentRef?.activeElement;
+            if (active && active !== documentRef.body && dom.officialCabinetGrid.contains?.(active)) return;
+            dom.officialCabinetGrid.querySelector?.('.leaderboard-table-count')?.focus?.({ preventScroll: true });
+          });
+        }
       });
       footer.append(more);
     }
