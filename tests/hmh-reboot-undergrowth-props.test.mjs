@@ -6,6 +6,7 @@ import {
   authoredPropItemUrl,
   buildAuthoredWorldPropPlacements,
 } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
+import { resolveUpgradeIconAssetId } from '../apps/hmh-reboot/src/upgrade-card-presentation.mjs';
 
 const manifest = JSON.parse(readFileSync(
   fileURLToPath(new URL('../apps/hmh-reboot/assets/source/blender/hmh-authored-props.json', import.meta.url)),
@@ -41,9 +42,12 @@ test('every undergrowth asset is on the world-prop roster', () => {
 // The Cycle 038 lesson, generalised: authoredPropItemUrl throws on an unknown
 // id and callers set that URL inside render loops, so a roster entry without
 // art breaks a panel silently rather than loudly.
-test('every undergrowth asset resolves to an item icon', () => {
+// The 2026-09-25 asset cleanup removed the never-requested world-prop item PNGs. Only the power-up and
+// weapon icons ship, and tests/hmh-reboot-upgrade-cards-and-settings.test.mjs checks those on disk.
+test('every undergrowth asset id forms a prop URL but no upgrade card requests its icon (world props ship no item PNG)', () => {
   for (const id of Object.keys(UNDERGROWTH)) {
-    assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} has no icon`);
+    assert.doesNotThrow(() => authoredPropItemUrl(id), `${id} is not a valid prop id`);
+    assert.equal(resolveUpgradeIconAssetId({ id, requiresWeaponId: id }), null, `${id} would paint a missing item PNG on an upgrade card`);
   }
 });
 
