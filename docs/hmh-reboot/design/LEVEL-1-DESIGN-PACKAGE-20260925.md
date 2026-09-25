@@ -767,6 +767,7 @@ Both are picked up and used automatically.
 - `HP = round(targetSeconds × referenceDps(level at trigger))`, frozen at trigger.
 - Target seconds: Baron 90, Lockkeeper 105, Foreman 120, Liquidator 150.
 - **Placeholder** `referenceDps(L) = min(47, 8 + 2.6 × (L − 1))`. It is calibrated by the S0.3 progression harness against the benchmark's 6.4–46.9 sustained DPS. For comparison, today's 12,000 HP is a fight of more than 4 minutes even at 46.9 DPS.
+- **Calibrated (S0.3, build ledger slice 2).** The 1.8.1 medians are convex, so no capped line fits them. `referenceDps(L)` is now a per-level table (levels 1–32: 6.7 at level 1, 11.1 at 10, 27.2 at 20, 79.6 at 32, held after 32) in `apps/hmh-reboot/src/boss-reference-dps.mjs`, from `docs/testing/hmh-progression-baseline-1.8.1.json`.
 
 **Lifecycle**
 1. **Readiness.** Before `readyTick` the trigger shows a red lamp and "Opens at M:SS".
