@@ -12,6 +12,10 @@ import { validateRebootRunPlausibility } from '../server/verify/hmh-plausibility
 import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import { HMH_BRIDGE_PROTOCOL, HMH_MAX_MESSAGE_BYTES, createBridgeEnvelope, validateChildMessage } from '../sdk/hmh-bridge-protocol.mjs';
 import { FIXTURE_NAMES, HMH_V7_FIXTURE_NAMES, buildFixture, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
+import { catalogFor, deriveEarnedAchievements, emptyHistory, historyFieldsFor } from '../apps/portal/src/achievements/index.mjs';
+import { statAt } from '../apps/portal/src/achievements/entry.mjs';
+import { hmhRecordScoreInputsFromRunSummary, hmhResolverInputsFromRunSummary, statsFromHmhRunSummary } from '../apps/portal/src/achievements/stats.mjs';
 
 const fixtures = Object.fromEntries(HMH_V7_FIXTURE_NAMES.map((name) => [name, readFixture(name)]));
 
@@ -84,5 +88,102 @@ test('v7 fixtures fit hmh-bridge/v1 as game:run-summary messages', () => {
     assert.deepEqual(validateChildMessage(message), { ok: false, error: 'game:run-summary schemaVersion is invalid' }, name);
     assert.equal(validateRunSummaryPayload(message.payload), '', name);
     assert.equal(validateChildMessage({ ...message, payload: { ...message.payload, schemaVersion: 6 } }).error, 'game:run-summary payload must contain exact fields', `${name}: only the payload schema stops it`);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Stats and achievements (contract §10). bossKills is kills.boss, which schema 7
+// pins to the Liquidator, so the boss achievements mean the Liquidator on the
+// device (arcade-core recordScore) and on the server (catalog derivation) alike.
+const WALLET = `0x${'cd'.repeat(20)}`;
+const HMH_STATS_KEYS = ['score', 'kills', 'bossKills', 'eliteKills', 'maxCombo', 'level', 'xp', 'survivalTicks', 'elapsedMs', 'survivalSeconds',
+  'damageTaken', 'damageDealt', 'healing', 'litecoin', 'grenadeKills', 'meleeKills', 'weaponsUsed', 'uniqueWeaponCount', 'powerUpsCollected',
+  'uniquePowerUps', 'districtsVisited', 'poisDiscovered', 'revealedPermille', 'killsByRole', 'familyKills', 'noDamage', 'perfectBossKill',
+  'bossEngaged', 'heroId', 'terminalReason'];
+const districts = fixtures['hmh-v7-districts'].body.evidence.runSummary;
+const fourBosses = fixtures['hmh-v7-four-bosses'].body.evidence.runSummary;
+const row = (rows, key, id) => rows.find((entry) => entry[key] === id);
+// The districts run without the Lockkeeper: the Baron is its only boss kill.
+const baronOnly = structuredClone(districts);
+Object.assign(row(baronOnly.bosses, 'bossId', 'lockkeeper'), { initiations: 0, firstInitiatedTick: 0, lastInitiatedTick: 0, defeatedTick: 0 });
+row(baronOnly.kills.byEnemyRole, 'enemyRoleId', 'lockkeeper').count = 0;
+baronOnly.kills.total -= 1;
+row(baronOnly.kills.byWeapon, 'weaponId', 'hash-rail').count -= 1;
+row(baronOnly.weapons, 'weaponId', 'hash-rail').kills -= 1;
+Object.assign(baronOnly.progression, { sealsFound: 1, sealsBanked: 1 });
+row(baronOnly.collectibles, 'effectId', 'genesis-seal').collected = 1;
+
+const BOSS_IDS = ['beat-level-1-boss', 'boss-breaker', 'getaway-clear'];
+const PARITY_EXEMPT = new Set([...catalogFor('lester-blaster').filter((entry) => !entry.available).map((entry) => entry.id), 'cabinet-pioneer']);
+const comparable = (list) => list.filter((id) => !PARITY_EXEMPT.has(id)).sort();
+function browserProfile() {
+  const state = createInitialArcadeState();
+  return (summary) => {
+    const { score, runStats } = hmhRecordScoreInputsFromRunSummary(summary);
+    return recordScore(state, startPlaySession({ wallet: WALLET, gameId: 'lester-blaster', mode: 'paid' }), score, runStats).unlockedAchievements;
+  };
+}
+function serverProfile() {
+  let prior = emptyHistory(WALLET, 'lester-blaster');
+  return (summary) => {
+    const stats = statsFromHmhRunSummary(summary);
+    const earned = deriveEarnedAchievements('lester-blaster', { gameId: 'lester-blaster', wallet: WALLET, score: stats.score, stats }, prior).map((entry) => entry.id);
+    const { sum, max } = historyFieldsFor('lester-blaster');
+    prior = {
+      ...prior,
+      runs: prior.runs + 1,
+      sums: Object.fromEntries(sum.map((path) => [path, prior.sums[path] + statAt(stats, path)])),
+      maxima: Object.fromEntries(max.map((path) => [path, Math.max(prior.maxima[path], statAt(stats, path))])),
+      unlockedIds: [...prior.unlockedIds, ...earned],
+    };
+    return earned;
+  };
+}
+
+test('schema-7 stats: the contract keys, 16 roles, the Liquidator as the boss, no Genesis Seal power-up', () => {
+  assert.equal(validateRunSummaryPayload(baronOnly), '', 'the Baron-only run is a valid schema-7 summary');
+  for (const [name, summary] of [['districts', districts], ['four bosses', fourBosses], ['baron only', baronOnly]]) {
+    const stats = statsFromHmhRunSummary(summary);
+    assert.deepEqual(Object.keys(stats), HMH_STATS_KEYS, name);
+    assert.equal(Object.keys(stats.killsByRole).length, 16, name);
+    assert.deepEqual(Object.keys(stats.familyKills), ['goblin', 'drone', 'gasBeast', 'enforcer'], name);
+    assert.ok(!stats.uniquePowerUps.includes('genesis-seal'), name);
+    assert.ok(Object.values(stats).every((value) => typeof value !== 'number' || Number.isFinite(value)), name);
+  }
+  const districtStats = statsFromHmhRunSummary(districts);
+  assert.deepEqual([districtStats.bossKills, districtStats.bossEngaged, districtStats.perfectBossKill, districtStats.districtsVisited], [0, 0, 0, 6]);
+  assert.deepEqual([districtStats.killsByRole['rug-pull-baron'], districtStats.killsByRole.lockkeeper], [1, 1], 'district boss kills stay in killsByRole');
+  assert.equal(hmhResolverInputsFromRunSummary(districts).bossId, null);
+  const fourBossStats = statsFromHmhRunSummary(fourBosses);
+  assert.deepEqual([fourBossStats.bossKills, fourBossStats.bossEngaged], [1, 1]);
+  assert.equal(hmhResolverInputsFromRunSummary(fourBosses).bossId, 'boss-liquidator');
+  // A Genesis Seal pickup is not a power-up pickup.
+  const sealsOnly = structuredClone(fourBosses);
+  row(sealsOnly.collectibles, 'effectId', 'genesis-seal').collected += 10;
+  assert.equal(statsFromHmhRunSummary(sealsOnly).powerUpsCollected, fourBossStats.powerUpsCollected);
+});
+
+test('schema 7: district bosses unlock no boss achievement, on the device or the server; the Liquidator unlocks them on both', () => {
+  for (const [name, summary, expected] of [['baron only', baronOnly, false], ['districts', districts, false], ['four bosses', fourBosses, true]]) {
+    const local = browserProfile()(summary);
+    const remote = serverProfile()(summary);
+    assert.deepEqual(comparable(local), comparable(remote), `${name}: the same ids`);
+    for (const id of BOSS_IDS) {
+      assert.equal(local.includes(id), expected, `${name}: ${id} on the device`);
+      assert.equal(remote.includes(id), expected, `${name}: ${id} on the server`);
+    }
+  }
+  // All six districts visited without the Liquidator is not a Getaway Clear.
+  assert.equal(statsFromHmhRunSummary(districts).districtsVisited, 6);
+  // Run by run, district bosses never add to Boss Rush Ten; ten Liquidator runs do, on both sides.
+  for (const [summary, unlocksAt] of [[districts, null], [baronOnly, null], [fourBosses, 9]]) {
+    const browser = browserProfile();
+    const server = serverProfile();
+    for (let run = 0; run < 10; run += 1) {
+      const local = browser(summary);
+      const remote = server(summary);
+      assert.deepEqual(comparable(local), comparable(remote), `run ${run + 1}`);
+      assert.equal(remote.includes('boss-rush-ten'), run === unlocksAt, `boss-rush-ten at run ${run + 1}`);
+    }
   }
 });

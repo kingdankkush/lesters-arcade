@@ -6,7 +6,9 @@
 import { best, defineCatalog, runs, total, when } from './entry.mjs';
 
 // Reboot enemy roles (sdk/hmh-run-summary-schema.mjs enemyRoles) grouped into
-// the legacy hunt families. The boss ('liquidator') belongs to no family.
+// the legacy hunt families. The boss ('liquidator') belongs to no family, and
+// neither do the run summary v7 roles (the six new enemies and the three
+// district bosses), so the hunt achievements keep their named-enemy meaning.
 export const HMH_ROLE_FAMILIES = Object.freeze({
   'bagholder-rusher': 'goblin',
   forkrunner: 'goblin',
@@ -23,6 +25,10 @@ export const HMH_DISTRICT_STAGES = Object.freeze([Object.freeze([6, 13]), Object
 // Remapped damage-chain threshold (one run's damageDealt); the legacy resolver reads the same value.
 export const HMH_DAMAGE_CHAIN_DAMAGE = 20_000;
 
+// bossKills (kills.boss) counts the Liquidator only, in run summary schema 6 and
+// 7 alike: beat-level-1-boss, boss-breaker, getaway-clear, boss-rush-ten and
+// perfectBossKill mean the Liquidator, never a district boss, until arcade-core
+// and the parity tests gain per-boss inputs (run summary v7 contract §10).
 const bossDown = (s) => s.bossKills >= 1;
 const soon = null; // unavailable: the reason is recorded in the catalog design doc
 
