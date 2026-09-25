@@ -41,7 +41,7 @@ export {
 const root = fileURLToPath(new URL('../..', import.meta.url));
 
 export const JACKPOT_FIXTURE_INDEXES = Object.freeze({ keeper: 8, player3: 9 });
-export const MOCK_TOKEN_NAMES = Object.freeze(['FeeOnTransferToken', 'BlacklistToken', 'ReentrantToken', 'MaxTxToken', 'SenderFeeToken', 'DoubleEntryToken', 'DoubleEntrySecondary', 'MockRankedReaders']);
+export const MOCK_TOKEN_NAMES = Object.freeze(['FeeOnTransferToken', 'BlacklistToken', 'ReentrantToken', 'MaxTxToken', 'SenderFeeToken', 'DoubleEntryToken', 'DoubleEntrySecondary', 'MockRankedReaders', 'MetadataToken']);
 export const JACKPOT_ARTIFACT_NAMES = Object.freeze(['WeeklyJackpot', 'TestChikunToken']);
 
 let accountsNode = null;

@@ -24,6 +24,14 @@
 // - --rpc, --deployment (a LITVM_DEPLOYMENT module), --record and --module are honoured only with a
 //   loopback --rpc (the in-process chain); a loopback broadcast must name --record and --module, so a local
 //   run never overwrites the committed record or module. Against LiteForge the committed files are used.
+// - --token must answer like an ERC-20 with metadata the record accepts (a 1-64 character ASCII name, a
+//   Neon-safe symbol, decimals 0-36), checked in the dry run before anything is signed. Without
+//   --token-testnet it is a real-value token, which needs adminClearOnly and a prize cap (design J16, OJ6).
+// - A rules file (--rules <file.json>) states adminClearOnly, maxSurvivalSeconds, minPaidWei and minFundWei.
+// - The Chikun developer wallet (the owner's, design §H.1) must be the admin, operator or keeper, so it is
+//   staffEver and can never win; otherwise the manifest warns and a broadcast is refused.
+// - A failure after a transaction was sent exits 3 ("STRANDED ON CHAIN") with every address, transaction
+//   hash and the recovery steps, instead of a bare error.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -38,7 +46,9 @@ import {
   launchRulesFor,
   loadContractArtifact as loadArtifact,
   normalizeRules,
+  normalizeTokenInfo,
   readJackpotRecord,
+  realValueRuleProblems,
   rulesFromChain,
   rulesToJson,
   weekIndexOf,
@@ -75,8 +85,29 @@ export class DeployBlocked extends Error {
   }
 }
 
+// A failure AFTER a transaction was sent: something is on chain that the record and module do not show.
+// The message names every address and transaction hash, and how to recover (exit code 3).
+export class DeployStranded extends DeployBlocked {
+  constructor(message, onChain) {
+    super(message);
+    this.name = 'DeployStranded';
+    this.onChain = onChain;
+  }
+}
+
 function blocked(message) {
   throw new DeployBlocked(message);
+}
+
+function strandedError(error, onChain) {
+  const reason = error?.shortMessage ?? error?.message ?? String(error);
+  const sent = [];
+  if (onChain.tokenTx) sent.push(`TestChikunToken ${onChain.token ?? '(not confirmed)'} in tx ${onChain.tokenTx}`);
+  if (onChain.jackpotTx) sent.push(`WeeklyJackpot ${onChain.jackpot ?? '(not confirmed)'} in tx ${onChain.jackpotTx}`);
+  const recovery = onChain.jackpot
+    ? 'The jackpot is ON CHAIN but not in contracts/deployment-record.jackpot.json or the module, so the keeper, the UI and the owner page ignore it. Nobody funds an instance nobody sees, and an unfunded week never records a winner. Keep this output, record the stranded address in the release notes, fix the cause, and only then deploy again (with a later --first-week if in doubt). Never fund the stranded instance.'
+    : `No jackpot was deployed. ${onChain.token ? `Re-run with --token ${onChain.token} --token-testnet to reuse the deployed tCHIKUN (its minter is the operator), or deploy a fresh one.` : 'Fix the cause and re-run.'}`;
+  return new DeployStranded(`${reason}. Sent before the failure: ${sent.join('; ')}. The record and module were NOT written. ${recovery}`, { ...onChain });
 }
 
 function address(value, flag) {
@@ -159,18 +190,32 @@ export function resolveRules(spec, firstWeek, readFile) {
     blocked(`--rules ${spec}: ${error?.code ?? 'not valid JSON'}`);
   }
   try {
-    return normalizeRules(json, { fromWeek: firstWeek });
+    // strict: a rules file states adminClearOnly, maxSurvivalSeconds, minPaidWei and minFundWei explicitly.
+    return normalizeRules(json, { fromWeek: firstWeek, strict: true });
   } catch (error) {
     blocked(`--rules ${spec}: ${error.message}`);
   }
   return null;
 }
 
-async function tokenFacts(provider, tokenAddress) {
+// ERC-20 metadata and shape of an existing token (null for anything that does not answer).
+async function tokenFacts(provider, tokenAddress, holder) {
   const erc20 = new ethers.Contract(tokenAddress, loadArtifact('TestChikunToken').abi, provider);
-  const read = async (method) => { try { return await erc20[method](); } catch { return null; } };
-  const [name, symbol, decimals] = await Promise.all([read('name'), read('symbol'), read('decimals')]);
-  return { name, symbol, decimals: decimals === null ? null : Number(decimals) };
+  const read = async (method, ...args) => { try { return await erc20[method](...args); } catch { return null; } };
+  const [name, symbol, decimals, totalSupply, balance, allowance] = await Promise.all([
+    read('name'), read('symbol'), read('decimals'), read('totalSupply'), read('balanceOf', holder), read('allowance', holder, holder),
+  ]);
+  return { name, symbol, decimals: decimals === null ? null : Number(decimals), erc20Shape: totalSupply !== null && balance !== null && allowance !== null };
+}
+
+// Refuses (before anything is signed) a token whose facts the record written after the broadcast would reject.
+export function checkTokenFacts(facts, tokenAddress, testnet) {
+  if (!facts.erc20Shape) blocked(`--token ${tokenAddress} does not answer totalSupply(), balanceOf() and allowance() like an ERC-20. Nothing was signed or sent.`);
+  try {
+    normalizeTokenInfo({ address: tokenAddress, name: facts.name, symbol: facts.symbol, decimals: facts.decimals, testnet, deployTx: null }, '--token');
+  } catch (error) {
+    blocked(`${error.message.replace(/^litvm jackpot: /, '')} (read ${JSON.stringify({ name: facts.name, symbol: facts.symbol, decimals: facts.decimals })}); the jackpot record would refuse this token after the broadcast. Nothing was signed or sent.`);
+  }
 }
 
 async function creationFacts(provider, from, data) {
@@ -248,7 +293,12 @@ export async function planJackpotDeploy({ provider, deployment, options, previou
     };
   } else {
     if (!(await hasCode(provider, options.token))) blocked(`no contract code at --token ${options.token}`);
-    tokenSection = { deploy: false, address: options.token.toLowerCase(), ...(await tokenFacts(provider, options.token)), testnet: options.tokenTestnet, acceptanceChecklist: TOKEN_ACCEPTANCE_CHECKLIST.map((item, index) => ({ item: index + 1, check: item, ownerSignOff: 'required' })) };
+    const facts = await tokenFacts(provider, options.token, operator);
+    checkTokenFacts(facts, options.token, options.tokenTestnet);
+    tokenSection = { deploy: false, address: options.token.toLowerCase(), ...facts, testnet: options.tokenTestnet, acceptanceChecklist: TOKEN_ACCEPTANCE_CHECKLIST.map((item, index) => ({ item: index + 1, check: item, ownerSignOff: 'required' })) };
+    // Design J16 / OJ6: a real-value token (no --token-testnet) needs adminClearOnly and a prize cap.
+    const problems = options.tokenTestnet ? [] : realValueRuleProblems(rules);
+    if (problems.length) blocked(`--token ${options.token} without --token-testnet is a real-value prize token, and design J16/OJ6 make ${problems.join(' and ')} mandatory for it. Pass --rules <file.json> with adminClearOnly true and maxPrizeWei at most the token's max-transaction amount.`);
   }
   const tokenAddress = ethers.getAddress(deployToken ? tokenSection.predictedAddress : options.token);
   const jackpotNonce = pendingNonce + (deployToken ? 1 : 0);
@@ -280,6 +330,12 @@ export async function planJackpotDeploy({ provider, deployment, options, previou
     if (value === operator) warnings.push(`the ${role} is the operator`);
   }
   if (options.keeper === options.admin) warnings.push('the keeper is the admin');
+  // Design §H.1: the owner's wallet (Chikun's developer wallet, which GameRegistry cannot change) can never
+  // win. The constructor makes the admin, the operator and the keeper staffEver, so it must be one of them.
+  const devWallet = ethers.getAddress(game.devWallet);
+  const devWalletIsStaff = [operator, options.admin, options.keeper].includes(devWallet);
+  if (!devWalletIsStaff) warnings.push(`the Chikun developer wallet ${devWallet} (the owner's wallet) is not the admin, operator or keeper, so it would NOT be staffEver and could win (design §H.1): a broadcast is refused. Pass --admin ${devWallet}.`);
+  if (!rules.adminClearOnly) warnings.push('adminClearOnly is false for the first epoch, so a keeper clear alone pays the first week (design §A.5 launches with adminClearOnly true)');
   if (!jackpotSection.creationCall?.ok || (deployToken && !tokenSection.creationCall?.ok)) warnings.push('an eth_call of a creation code failed: the bytecode does not deploy on this chain as is');
   const [quote, balance, feeData] = await Promise.all([
     rankedEntry.quoteEntry(CHIKUN_GAME_ID32).then((row) => row.totalWei.toString()).catch(() => null),
@@ -306,6 +362,8 @@ export async function planJackpotDeploy({ provider, deployment, options, previou
       chikunPlayable: game.playable,
       chikunEntryFeeWei: game.entryFeeWei.toString(),
       chikunQuoteTotalWei: quote,
+      chikunDevWallet: devWallet.toLowerCase(),
+      chikunDevWalletIsStaff: devWalletIsStaff,
     },
     currentWeek: { index: currentWeek, key: weekKeyOf(currentWeek) },
     firstWeek: { index: firstWeek, key: weekKeyOf(firstWeek), startsAt: new Date(weekStartOf(firstWeek) * 1000).toISOString() },
@@ -325,24 +383,38 @@ export async function broadcastJackpotDeploy({ provider, signer, manifest, optio
   const signerAddress = (await signer.getAddress()).toLowerCase();
   if (signerAddress !== manifest.operator) blocked(`the key is for ${signerAddress}, but the operator is ${manifest.operator}. Nothing was sent.`);
   if (signerAddress !== manifest.operatorOnChain) blocked(`the key is not the score registry's on-chain operator ${manifest.operatorOnChain}. Nothing was sent.`);
+  if (manifest.ranked.chikunDevWalletIsStaff !== true) blocked(`the Chikun developer wallet ${manifest.ranked.chikunDevWallet} (the owner's wallet) is not the admin, operator or keeper, so it could win (design §H.1). Pass --admin ${manifest.ranked.chikunDevWallet}. Nothing was sent.`);
   const rules = resolveRules(options.rules, manifest.firstWeek.index, readFile);
+  // What is on chain so far: any failure after the first transaction is reported with it (DeployStranded).
+  const onChain = { token: null, tokenTx: null, jackpot: null, jackpotTx: null };
+  try {
+    return await deployAndRecord({ provider, signer, manifest, rules, previousRecord, log, onChain });
+  } catch (error) {
+    if (error instanceof DeployStranded || (onChain.tokenTx === null && onChain.jackpotTx === null)) throw error;
+    throw strandedError(error, onChain);
+  }
+}
+
+async function deployAndRecord({ provider, signer, manifest, rules, previousRecord, log, onChain }) {
   let tokenAddress = manifest.token.deploy ? null : ethers.getAddress(manifest.token.address);
-  let tokenDeployTx = null;
   if (manifest.token.deploy) {
     const contract = await artifactFactory('TestChikunToken').connect(signer).deploy(signer.address, { nonce: manifest.token.nonce });
+    onChain.tokenTx = contract.deploymentTransaction().hash;
     const receipt = await contract.deploymentTransaction().wait();
     tokenAddress = await contract.getAddress();
-    tokenDeployTx = receipt.hash;
-    if (tokenAddress.toLowerCase() !== manifest.token.predictedAddress) blocked(`tCHIKUN landed at ${tokenAddress}, not the predicted ${manifest.token.predictedAddress}`);
-    log(`deployed TestChikunToken ${tokenAddress.toLowerCase()} (${receipt.hash})`);
+    onChain.token = tokenAddress.toLowerCase();
+    if (onChain.token !== manifest.token.predictedAddress) blocked(`tCHIKUN landed at ${onChain.token}, not the predicted ${manifest.token.predictedAddress}`);
+    log(`deployed TestChikunToken ${onChain.token} (${receipt.hash})`);
   }
   const args = manifest.jackpot.constructorArgs;
   const contract = await artifactFactory('WeeklyJackpot').connect(signer).deploy(
     args.gameId, tokenAddress, args.scoreRegistry, args.rankedEntry, args.firstWeek, args.operator, args.admin, args.keeper, args.residualRecipient, rules,
     { nonce: manifest.jackpot.nonce },
   );
+  onChain.jackpotTx = contract.deploymentTransaction().hash;
   const receipt = await contract.deploymentTransaction().wait();
   const jackpotAddress = (await contract.getAddress()).toLowerCase();
+  onChain.jackpot = jackpotAddress;
   if (jackpotAddress !== manifest.jackpot.predictedAddress) blocked(`WeeklyJackpot landed at ${jackpotAddress}, not the predicted ${manifest.jackpot.predictedAddress}`);
   log(`deployed WeeklyJackpot ${jackpotAddress} (${receipt.hash})`);
 
@@ -364,11 +436,11 @@ export async function broadcastJackpotDeploy({ provider, signer, manifest, optio
     staffEver: (await jackpot.staffEver(args.operator)) && (await jackpot.staffEver(args.admin)) && (await jackpot.staffEver(args.keeper)),
   };
   const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([key]) => key);
-  if (failed.length) blocked(`read-back mismatch after deploy: ${failed.join(', ')}; the record was not written`);
-  const facts = await tokenFacts(provider, tokenAddress);
+  if (failed.length) blocked(`read-back mismatch after deploy: ${failed.join(', ')}`);
+  const facts = await tokenFacts(provider, tokenAddress, signer.address);
   if (manifest.token.deploy) {
     const minter = await new ethers.Contract(tokenAddress, loadArtifact('TestChikunToken').abi, provider).minter();
-    if (!same(minter, args.operator)) blocked('tCHIKUN minter read-back mismatch; the record was not written');
+    if (!same(minter, args.operator)) blocked('tCHIKUN minter read-back mismatch');
   }
   const previousEndAfterWeek = manifest.retirePrevious?.endAfterWeek ?? null;
   const record = buildJackpotRecord({
@@ -376,7 +448,7 @@ export async function broadcastJackpotDeploy({ provider, signer, manifest, optio
       game: 'chikun',
       gameId: args.gameId,
       address: jackpotAddress,
-      token: { address: tokenAddress, name: facts.name, symbol: facts.symbol, decimals: facts.decimals, testnet: manifest.token.deploy ? true : manifest.token.testnet, deployTx: tokenDeployTx },
+      token: { address: tokenAddress, name: facts.name, symbol: facts.symbol, decimals: facts.decimals, testnet: manifest.token.deploy ? true : manifest.token.testnet, deployTx: onChain.tokenTx },
       startBlock: receipt.blockNumber,
       deployTx: receipt.hash,
       firstWeek: args.firstWeek,
@@ -392,7 +464,7 @@ export async function broadcastJackpotDeploy({ provider, signer, manifest, optio
     previousEndAfterWeek,
     deployedAt: new Date((await provider.getBlock(receipt.blockNumber)).timestamp * 1000).toISOString(),
   });
-  return { record, jackpotAddress, tokenAddress: tokenAddress.toLowerCase(), receipts: { token: tokenDeployTx, jackpot: receipt.hash } };
+  return { record, jackpotAddress, tokenAddress: tokenAddress.toLowerCase(), receipts: { token: onChain.tokenTx, jackpot: receipt.hash } };
 }
 
 const toJson = (value) => JSON.stringify(value, (_key, item) => (typeof item === 'bigint' ? item.toString() : item), 2);
@@ -458,13 +530,25 @@ export async function runDeployJackpotCli({
     const signer = new ethers.Wallet(key, provider);
     log(`Operator signer ${signer.address}.`);
     const result = await broadcastJackpotDeploy({ provider, signer, manifest, options, previousRecord, readFile: read, log });
-    const written = writeJackpotRecord({ record: result.record, recordPath: options.recordPath });
-    const module = writeLitvmJackpotModule({ record: result.record, outPath: options.modulePath });
+    let written;
+    let module;
+    try {
+      written = writeJackpotRecord({ record: result.record, recordPath: options.recordPath });
+      module = writeLitvmJackpotModule({ record: result.record, outPath: options.modulePath });
+    } catch (error) {
+      // The jackpot is deployed and verified: print the record so it can be saved by hand.
+      log(toJson(result.record));
+      throw new DeployStranded(`writing the record or module failed (${error?.code ?? error?.message ?? error}). WeeklyJackpot ${result.jackpotAddress} (tx ${result.receipts.jackpot}) is ON CHAIN and verified; the record above is complete. Save it as ${options.recordPath ?? 'contracts/deployment-record.jackpot.json'}, run node scripts/generate-litvm-jackpot.mjs, and do not deploy again.`, { token: result.tokenAddress, tokenTx: result.receipts.token, jackpot: result.jackpotAddress, jackpotTx: result.receipts.jackpot });
+    }
     log(`Wrote ${options.recordPath ?? 'contracts/deployment-record.jackpot.json'} and ${options.modulePath ?? module.relativePath} (status '${module.status}').`);
     if (options.json) log(toJson({ jackpot: result.jackpotAddress, token: result.tokenAddress, receipts: result.receipts, record: written.path }));
     log('Next (runbook E5): block the role and test wallets from the owner page; JACKPOT_LIVE stays false.');
     return 0;
   } catch (error) {
+    if (error instanceof DeployStranded) {
+      log(`STRANDED ON CHAIN: ${error.message}`);
+      return 3;
+    }
     if (error instanceof DeployBlocked || error instanceof SecretSourceError) {
       log(`Blocked: ${error.message}`);
       return 2;

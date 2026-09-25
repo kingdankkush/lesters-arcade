@@ -37,6 +37,7 @@ const mockFiles = [
   'contracts/test/mocks/SenderFeeToken.sol',
   'contracts/test/mocks/DoubleEntryToken.sol',
   'contracts/test/mocks/MockRankedReaders.sol',
+  'contracts/test/mocks/MetadataToken.sol',
 ];
 const compiledFiles = mocksMode ? mockFiles : contractFiles;
 const emitPrefix = mocksMode ? 'contracts/test/mocks/' : 'contracts/src/';

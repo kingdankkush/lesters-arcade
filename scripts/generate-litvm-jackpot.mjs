@@ -129,6 +129,8 @@ const ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 const TX_HASH_RE = /^0x[0-9a-fA-F]{64}$/;
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?Z$/;
 const TEXT_RE = /^[\x20-\x7e]{1,64}$/;
+// The Neon mirror's token_symbol CHECK (design §C.2, jackpot_weeks), so a recorded token always fits it.
+const SYMBOL_RE = /^[A-Za-z0-9$]{1,16}$/;
 
 function fail(message) {
   throw new Error(`litvm jackpot: ${message}`);
@@ -152,9 +154,19 @@ export function seasonId32(value) {
   return BYTES32_RE.test(text) ? text.toLowerCase() : ethers.id(text);
 }
 
-// Canonical rules with bigint numbers (the shape ethers encodes for the Rules struct).
-export function normalizeRules(input, { fromWeek = null } = {}) {
+// Fields a hand-written rules file (--rules <file.json>) must state explicitly: a missing one would otherwise
+// default to the weakest value (adminClearOnly false, no survival cap, zero-fee sessions eligible).
+export const RULES_FILE_REQUIRED_FIELDS = Object.freeze(['adminClearOnly', 'maxSurvivalSeconds', 'minPaidWei', 'minFundWei']);
+
+// Canonical rules with bigint numbers (the shape ethers encodes for the Rules struct). With `strict` (rules
+// files), every RULES_FILE_REQUIRED_FIELDS entry and a season must be present.
+export function normalizeRules(input, { fromWeek = null, strict = false } = {}) {
   if (!input || typeof input !== 'object') fail('rules are required');
+  if (strict) {
+    const missing = RULES_FILE_REQUIRED_FIELDS.filter((field) => input[field] === undefined || input[field] === null);
+    if ((input.seasonId ?? input.season ?? null) === null) missing.push('season (or seasonId)');
+    if (missing.length) fail(`a rules file must state ${missing.join(', ')} explicitly (no silent defaults)`);
+  }
   const rules = {
     fromWeek: uint(fromWeek ?? input.fromWeek ?? 0, 'rules.fromWeek', 2n ** 64n - 1n),
     maxSurvivalSeconds: uint(input.maxSurvivalSeconds ?? 0, 'rules.maxSurvivalSeconds', 2n ** 64n - 1n),
@@ -203,6 +215,16 @@ export function rulesFromChain(result) {
   });
 }
 
+// Design J16 / OJ6: a real-value prize token needs adminClearOnly (every payout is the owner's click) and a
+// prize cap. Returns what is missing ([] when the rules qualify).
+export function realValueRuleProblems(input) {
+  const rules = normalizeRules(input);
+  const problems = [];
+  if (!rules.adminClearOnly) problems.push('adminClearOnly true');
+  if (rules.maxPrizeWei === 0n) problems.push('a prize cap (maxPrizeWei > 0)');
+  return problems;
+}
+
 // Design §A.5 recommended launch rules: Chikun preview-1, the flat fee as minPaidWei, the 3599 s survival
 // cap, no score cap, no prize cap (testnet), 100 tCHIKUN minFundWei and adminClearOnly for the first epoch.
 export function launchRulesFor({ fromWeek = 0, minPaidWei = LAUNCH_MIN_PAID_WEI } = {}) {
@@ -241,6 +263,11 @@ function text(value, label) {
   return value;
 }
 
+function symbolText(value, label) {
+  if (typeof value !== 'string' || !SYMBOL_RE.test(value)) fail(`${label} must be 1-16 characters of A-Z, a-z, 0-9 or $`);
+  return value;
+}
+
 export function normalizeTokenInfo(token, label = 'token') {
   if (!token || typeof token !== 'object') fail(`${label} is required`);
   const decimals = safeInt(token.decimals, `${label}.decimals`);
@@ -251,7 +278,7 @@ export function normalizeTokenInfo(token, label = 'token') {
   return {
     address: lowerAddress(token.address, `${label}.address`),
     name: text(token.name, `${label}.name`),
-    symbol: text(token.symbol, `${label}.symbol`),
+    symbol: symbolText(token.symbol, `${label}.symbol`),
     decimals,
     testnet: token.testnet,
     deployTx: deployTx === null ? null : deployTx.toLowerCase(),
@@ -462,7 +489,7 @@ export function normalizeJackpotModule(value) {
   if (!chikun) fail('LITVM_JACKPOT.instances.chikun is required');
   const token = (entry, label) => ({
     address: lowerAddress(entry?.address, `${label}.address`),
-    symbol: text(entry?.symbol, `${label}.symbol`),
+    symbol: symbolText(entry?.symbol, `${label}.symbol`),
     decimals: safeInt(entry?.decimals, `${label}.decimals`),
     name: text(entry?.name, `${label}.name`),
     testnet: entry?.testnet === true,

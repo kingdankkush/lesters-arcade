@@ -6,14 +6,14 @@
 import test, { after, afterEach, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { ethers } from 'ethers';
 import { activateLocalGames, deployLocalSuite, localWalletKeys, serveJsonRpc, startLocalChain } from '../scripts/lib/local-chain.mjs';
-import { deployLocalJackpot, deployMockToken, derivedFixtureWallet, fastLocalProvider, fixtureKeyAt, jackpotAt, reconnectWallets, setChainTime, tokenAt, weekIndexOf, weekKeyOf, weekStartOf } from '../scripts/lib/local-jackpot.mjs';
-import { writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
+import { deployLocalJackpot, deployMockToken, derivedFixtureWallet, fastLocalProvider, fixtureKeyAt, jackpotAt, reconnectWallets, setChainTime, settleLocalRun, tokenAt, weekIndexOf, weekKeyOf, weekStartOf } from '../scripts/lib/local-jackpot.mjs';
+import { loadLitvmDeployment, writeLitvmAddressModule } from '../scripts/generate-litvm-addresses.mjs';
 import {
   JACKPOT_MODULE_BANNER,
   checkLitvmJackpotModule,
@@ -25,9 +25,9 @@ import {
   writeJackpotRecord,
   writeLitvmJackpotModule,
 } from '../scripts/generate-litvm-jackpot.mjs';
-import { DEPLOY_JACKPOT_CONFIRM, TOKEN_ACCEPTANCE_CHECKLIST, runDeployJackpotCli } from '../scripts/deploy-weekly-jackpot.mjs';
+import { DEPLOY_JACKPOT_CONFIRM, DeployStranded, TOKEN_ACCEPTANCE_CHECKLIST, broadcastJackpotDeploy, parseDeployArgs, planJackpotDeploy, runDeployJackpotCli } from '../scripts/deploy-weekly-jackpot.mjs';
 import { JACKPOT_ACTIONS, SET_KEEPER_REMINDER, runJackpotCli } from '../scripts/jackpot-actions.mjs';
-import { runKeeperKeyCli } from '../scripts/jackpot-keeper-key.mjs';
+import { isInside, runKeeperKeyCli } from '../scripts/jackpot-keeper-key.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const TOKEN = 10n ** 18n;
@@ -141,6 +141,9 @@ test('deploy dry run prints a manifest and sends nothing', async () => {
     minFundWei: '100000000000000000000', maxScore: '0', seasonId: ethers.id('chikun-season-preview-1'), altSeasonId: ethers.ZeroHash,
   });
   assert.equal(manifest.confirm, DEPLOY_JACKPOT_CONFIRM);
+  // Design §H.1: the owner's wallet (Chikun's developer wallet) is the admin, so it is staffEver and never wins.
+  assert.deepEqual([manifest.ranked.chikunDevWallet, manifest.ranked.chikunDevWalletIsStaff], [wallets.developer.address.toLowerCase(), true]);
+  assert.deepEqual(manifest.warnings, []);
   assert.deepEqual([await operatorNonce(), await provider.getBlockNumber()], [nonceBefore, blockBefore], 'nothing was sent or mined');
   // The human manifest, through the real HTTP JSON-RPC path.
   const human = [];
@@ -158,20 +161,70 @@ test('deploy dry run prints a manifest and sends nothing', async () => {
     fromWeek: current + 1, maxSurvivalSeconds: 3599, adminClearOnly: false, minPaidWei: '100000000000000000', maxPrizeWei: '5000000000000000000000',
     minFundWei: '200000000000000000000', maxScore: '0', seasonId: ethers.id('chikun-season-preview-1'), altSeasonId: ethers.ZeroHash,
   });
-  writeFileSync(rulesFile, JSON.stringify({ season: 'chikun-season-preview-1', minFundWei: '0' }));
-  const badRules = await runCli(runDeployJackpotCli, deployArgs().map((arg, index, all) => (all[index - 1] === '--rules' ? rulesFile : arg)));
+  assert.match(JSON.parse(fromFile.output).warnings.join('\n'), /adminClearOnly is false for the first epoch/);
+  const withRulesFile = (rules, extra = []) => {
+    writeFileSync(rulesFile, JSON.stringify(rules));
+    return runCli(runDeployJackpotCli, deployArgs(extra).map((arg, index, all) => (all[index - 1] === '--rules' ? rulesFile : arg)));
+  };
+  const safety = { season: 'chikun-season-preview-1', minPaidWei: '100000000000000000', maxSurvivalSeconds: 3599, adminClearOnly: true };
+  const badRules = await withRulesFile({ ...safety, minFundWei: '0' });
   assert.equal(badRules.code, 2);
   assert.match(badRules.output, /--rules .*minFundWei must be above 0/);
+  // A rules file states every safety field: an omitted one would silently become the weakest value.
+  const silent = await withRulesFile({ season: 'chikun-season-preview-1', minFundWei: '100000000000000000000' });
+  assert.equal(silent.code, 2);
+  assert.match(silent.output, /must state adminClearOnly, maxSurvivalSeconds, minPaidWei explicitly/);
   // --token skips the tCHIKUN deploy and lists the token acceptance checklist.
   const mock = await deployMockToken('BlacklistToken', [], wallets.operator);
-  const withToken = await runCli(runDeployJackpotCli, deployArgs(['--token', await mock.getAddress(), '--json']));
+  const withToken = await runCli(runDeployJackpotCli, deployArgs(['--token', await mock.getAddress(), '--token-testnet', '--json']));
   const tokenManifest = JSON.parse(withToken.lines.join('\n'));
   const nonce = await provider.getTransactionCount(wallets.operator.address, 'pending');
   assert.equal(tokenManifest.token.deploy, false);
   assert.equal(tokenManifest.token.symbol, 'BLKMOCK');
+  assert.deepEqual([tokenManifest.token.testnet, tokenManifest.token.erc20Shape], [true, true]);
   assert.equal(tokenManifest.token.acceptanceChecklist.length, 10);
   assert.equal(TOKEN_ACCEPTANCE_CHECKLIST.length, 10);
   assert.equal(tokenManifest.jackpot.predictedAddress, ethers.getCreateAddress({ from: wallets.operator.address, nonce }).toLowerCase());
+  // Without --token-testnet the token carries real value: design J16/OJ6 require adminClearOnly and a prize cap.
+  const realLaunch = await runCli(runDeployJackpotCli, deployArgs(['--token', await mock.getAddress()]));
+  assert.equal(realLaunch.code, 2, realLaunch.output);
+  assert.match(realLaunch.output, /real-value prize token, and design J16\/OJ6 make a prize cap \(maxPrizeWei > 0\) mandatory/);
+  const realUncleared = await withRulesFile({ ...safety, adminClearOnly: false, maxPrizeWei: '0', minFundWei: '100' }, ['--token', await mock.getAddress()]);
+  assert.match(realUncleared.output, /make adminClearOnly true and a prize cap \(maxPrizeWei > 0\) mandatory/);
+  const realCapped = await withRulesFile({ ...safety, maxPrizeWei: '1000000000000000000000', minFundWei: '100' }, ['--token', await mock.getAddress(), '--json']);
+  assert.equal(realCapped.code, 0, realCapped.output);
+  assert.deepEqual([JSON.parse(realCapped.output).token.testnet, JSON.parse(realCapped.output).jackpot.constructorArgs.rules.maxPrizeWei], [false, '1000000000000000000000']);
+});
+
+test('deploy refuses a token the jackpot record would reject, before anything is signed', async () => {
+  const nonceBefore = await operatorNonce();
+  const refuse = async (tokenAddress, pattern, extra = []) => {
+    const { code, output } = await runCli(runDeployJackpotCli, deployArgs(['--token', tokenAddress, '--token-testnet', ...extra]));
+    assert.equal(code, 2, output);
+    assert.match(output, pattern);
+  };
+  await refuse(wallets.player1.address, /no contract code at --token/);
+  // A contract without the ERC-20 surface (the score registry): name(), decimals() and balanceOf() all fail.
+  await refuse(suite.addresses.scoreSubmissionRegistry, /does not answer totalSupply\(\), balanceOf\(\) and allowance\(\) like an ERC-20\. Nothing was signed or sent/);
+  const tokenWith = async (name, symbol, decimals) => (await deployMockToken('MetadataToken', [name, symbol, decimals], wallets.operator)).getAddress();
+  await refuse(await tokenWith('A'.repeat(65), 'LONG', 18), /--token\.name must be 1-64 printable ASCII characters .*Nothing was signed or sent/);
+  await refuse(await tokenWith('Chikun \u{1F414}', 'CHIKUN', 18), /--token\.name must be 1-64 printable ASCII characters/);
+  await refuse(await tokenWith('Chikun', 'T-CHIKUN', 18), /--token\.symbol must be 1-16 characters of A-Z, a-z, 0-9 or \$/);
+  await refuse(await tokenWith('Chikun', 'CHIKUNCHIKUNCHIKUN', 18), /--token\.symbol must be 1-16 characters/);
+  await refuse(await tokenWith('Chikun', 'CHIKUN', 37), /--token\.decimals is out of range/);
+  // The same checks stop a broadcast before the key signs anything.
+  const recordPath = join(dir, 'refused-token.jackpot.json');
+  const modulePath = join(dir, 'refused-token.litvm-jackpot.mjs');
+  const emoji = await tokenWith('Chikun \u{1F414}', 'CHIKUN', 18);
+  const nonceBeforeBroadcast = await operatorNonce();
+  await refuse(emoji, /printable ASCII/, ['--broadcast', '--confirm', DEPLOY_JACKPOT_CONFIRM, '--record', recordPath, '--module', modulePath, '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']);
+  assert.equal(await operatorNonce(), nonceBeforeBroadcast, 'nothing was sent');
+  assert.equal(existsSync(recordPath) || existsSync(modulePath), false);
+  // A clean token passes (6 decimals, a $ in the symbol).
+  const ok = await runCli(runDeployJackpotCli, deployArgs(['--token', await tokenWith('Chikun Test', '$CHIKUN', 6), '--token-testnet', '--json']));
+  assert.equal(ok.code, 0, ok.output);
+  assert.deepEqual([JSON.parse(ok.output).token.symbol, JSON.parse(ok.output).token.decimals], ['$CHIKUN', 6]);
+  assert.equal(await operatorNonce(), nonceBefore + 7, 'only the seven mock tokens of this test were deployed');
 });
 
 test('deploy refuses a current or past first week and an overlapping retire-previous', async () => {
@@ -223,6 +276,24 @@ test('deploy broadcast needs the confirm phrase and the operator key', async () 
   const broadcast = ['--broadcast', '--confirm', DEPLOY_JACKPOT_CONFIRM, '--record', recordPath, '--module', modulePath];
   await blockedRun([...broadcast, '--key-env', 'JACKPOT_TEST_MISSING_KEY'], /environment variable JACKPOT_TEST_MISSING_KEY is not set/, ENV);
   await blockedRun([...broadcast, '--key-env', 'JACKPOT_TEST_ATTACKER_KEY'], /the key is for 0x[0-9a-fA-F]{40}, but the operator is/, ENV);
+  // A deployment module whose deployer is not the score registry's on-chain operator: the key matches the module
+  // but not the chain, so the dry run warns and the broadcast is refused.
+  const strangerModule = writeLitvmAddressModule({ root, mode: 'deployed', record: { ...suite, deployer: wallets.attacker.address }, outPath: join(dir, 'litvm-addresses.stranger.mjs') }).path;
+  const withModule = (extra) => deployArgs(extra).map((arg, index, all) => (all[index - 1] === '--deployment' ? strangerModule : arg));
+  const strangerDry = await runCli(runDeployJackpotCli, withModule(['--json']));
+  assert.equal(strangerDry.code, 0, strangerDry.output);
+  assert.match(JSON.parse(strangerDry.output).warnings.join('\n'), /the score registry's on-chain operator is 0x[0-9a-fA-F]{40}, not the module's .*: a broadcast is refused/);
+  const stranger = await runCli(runDeployJackpotCli, withModule([...broadcast, '--key-env', 'JACKPOT_TEST_ATTACKER_KEY']), ENV);
+  assert.equal(stranger.code, 2, stranger.output);
+  assert.match(stranger.output, /the key is not the score registry's on-chain operator 0x[0-9a-f]{40}\. Nothing was sent\./);
+  // Design §H.1: the owner's wallet (Chikun's developer wallet) must be a staff role, or it could win.
+  const withAdmin = (extra) => deployArgs(extra).map((arg, index, all) => (all[index - 1] === '--admin' ? wallets.player1.address : arg));
+  const eligibleOwner = await runCli(runDeployJackpotCli, withAdmin(['--json']));
+  assert.equal(JSON.parse(eligibleOwner.output).ranked.chikunDevWalletIsStaff, false);
+  assert.match(JSON.parse(eligibleOwner.output).warnings.join('\n'), /Chikun developer wallet 0x[0-9a-fA-F]{40} \(the owner's wallet\) is not the admin, operator or keeper, so it would NOT be staffEver and could win/);
+  const eligibleBroadcast = await runCli(runDeployJackpotCli, withAdmin([...broadcast, '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']), ENV);
+  assert.equal(eligibleBroadcast.code, 2, eligibleBroadcast.output);
+  assert.match(eligibleBroadcast.output, /developer wallet .* could win \(design §H\.1\)\. Pass --admin 0x[0-9a-f]{40}\. Nothing was sent\./);
   assert.equal(await operatorNonce(), nonceBefore, 'nothing was sent');
   assert.equal(existsSync(recordPath) || existsSync(modulePath), false, 'nothing was written');
   // The operator key from a key file (the vault shape), and the broadcast goes through.
@@ -262,6 +333,52 @@ test('deploy broadcast needs the confirm phrase and the operator key', async () 
   assert.deepEqual(migrated.instances.chikun.retired, [{ address: instance.address, token: instance.token, startBlock: instance.startBlock, firstWeek: instance.firstWeek, endAfterWeek: instance.firstWeek + 1 }]);
   const { LITVM_JACKPOT: after } = await import(`${pathToFileURL(modulePath).href}?migrated`);
   assert.deepEqual(after.instances.chikun.retired.map((entry) => [entry.address, entry.endAfterWeek]), [[instance.address, instance.firstWeek + 1]]);
+});
+
+test('a failure after a deploy transaction is reported as stranded, with every address and hash', async () => {
+  const options = parseDeployArgs(deployArgs(['--record', join(dir, 'stranded.jackpot.json'), '--module', join(dir, 'stranded.litvm-jackpot.mjs')]));
+  const deployment = await loadLitvmDeployment(suiteModule);
+  const plan = async () => planJackpotDeploy({ provider, deployment, options });
+  const signer = new ethers.Wallet(keys.operator, provider);
+  // 1. Both contracts land, then the read-back fails (an RPC outage): the jackpot is on chain but unrecorded.
+  const manifest = await plan();
+  const reads = fastLocalProvider(chain);
+  reads.call = async () => { throw new Error('RPC read failed (test)'); };
+  let stranded = null;
+  try {
+    await broadcastJackpotDeploy({ provider: reads, signer, manifest, options });
+  } catch (error) {
+    stranded = error;
+  }
+  assert.ok(stranded instanceof DeployStranded, String(stranded));
+  const { onChain } = stranded;
+  assert.equal(onChain.token, manifest.token.predictedAddress);
+  assert.equal(onChain.jackpot, manifest.jackpot.predictedAddress);
+  assert.notEqual(await provider.getCode(onChain.jackpot), '0x');
+  for (const fact of [onChain.token, onChain.tokenTx, onChain.jackpot, onChain.jackpotTx]) assert.ok(stranded.message.includes(fact), fact);
+  assert.match(stranded.message, /^RPC read failed \(test\)\. Sent before the failure: .*The record and module were NOT written\. The jackpot is ON CHAIN .*Never fund the stranded instance\./);
+  // 2. The token lands, the jackpot deploy is refused before it is sent: the note says how to reuse the token.
+  const second = await plan();
+  const refused = { ...second, jackpot: { ...second.jackpot, constructorArgs: { ...second.jackpot.constructorArgs, firstWeek: second.currentWeek.index } } };
+  let tokenOnly = null;
+  try {
+    await broadcastJackpotDeploy({ provider, signer, manifest: refused, options });
+  } catch (error) {
+    tokenOnly = error;
+  }
+  assert.ok(tokenOnly instanceof DeployStranded, String(tokenOnly));
+  assert.deepEqual([tokenOnly.onChain.token, tokenOnly.onChain.jackpotTx, tokenOnly.onChain.jackpot], [second.token.predictedAddress, null, null]);
+  assert.match(tokenOnly.message, new RegExp(`BAD_WEEK.*No jackpot was deployed\\. Re-run with --token ${second.token.predictedAddress} --token-testnet`));
+  // 3. Through the CLI: the deploy succeeds but the record cannot be written. Exit 3, and the complete record is
+  // printed so it can be saved by hand.
+  const blockerFile = join(dir, 'not-a-directory');
+  writeFileSync(blockerFile, 'x');
+  const cli = await runCli(runDeployJackpotCli, deployArgs(['--broadcast', '--confirm', DEPLOY_JACKPOT_CONFIRM, '--record', join(blockerFile, 'record.json'), '--module', join(dir, 'unwritten.litvm-jackpot.mjs'), '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']));
+  assert.equal(cli.code, 3, cli.output);
+  assert.match(cli.output, /STRANDED ON CHAIN: writing the record or module failed .*WeeklyJackpot 0x[0-9a-f]{40} \(tx 0x[0-9a-f]{64}\) is ON CHAIN and verified; the record above is complete/);
+  const printed = JSON.parse(cli.output.slice(cli.output.indexOf('{\n'), cli.output.lastIndexOf('\n}') + 2));
+  assert.equal(normalizeJackpotRecord(printed).instances.chikun.address, printed.instances.chikun.address);
+  assert.notEqual(await provider.getCode(printed.instances.chikun.address), '0x');
 });
 
 test('the record and generated module round-trip and --check detects drift', async () => {
@@ -395,6 +512,20 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
     await chain.revert(snapshotId);
     snapshotId = await chain.snapshot();
   }
+  // Every other action refuses a broadcast without its own phrase too (checked before the key or the chain is read).
+  const others = [
+    ['fund', ['--week', 'current', '--amount', '100']], ['operator-unpause', []], ['cancel-end', []], ['recover-residual', []],
+    ['sweep-stray', [wallets.player1.address]], ['finalize', [weekKeyOf(W)]], ['refund-after-end', [weekKeyOf(W)]],
+  ];
+  assert.deepEqual([...cases.map(([action]) => action), ...others.map(([action]) => action)].sort(), Object.keys(JACKPOT_ACTIONS).filter((action) => action !== 'status').sort(), 'every action is covered');
+  for (const [action, args] of others) {
+    for (const confirm of [[], ['--confirm', 'WRONG_PHRASE_4441']]) {
+      const refusedPhrase = await runCli(runJackpotCli, actions(action, [...args, '--broadcast', ...confirm, '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']));
+      assert.equal(refusedPhrase.code, 2, refusedPhrase.output);
+      assert.match(refusedPhrase.output, new RegExp(`broadcast blocked: ${action} needs --confirm ${JACKPOT_ACTIONS[action].confirm}`));
+    }
+  }
+  assert.equal(await provider.getBlockNumber(), blockBefore, 'nothing was sent without a phrase');
   // schedule-rules from a JSON file, with an override on top.
   const epochFile = join(dir, 'epoch.json');
   writeFileSync(epochFile, JSON.stringify({ season: 'chikun-season-preview-1', minPaidWei: '100000000000000000', maxSurvivalSeconds: 3599, adminClearOnly: true, minFundWei: '150000000000000000000' }));
@@ -402,9 +533,33 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
   assert.equal(fromEpochFile.code, 0, fromEpochFile.output);
   const epoch = await jackpot.rulesFor(W + 2);
   assert.deepEqual([Number(epoch.fromWeek), epoch.minFundWei, epoch.maxScore, epoch.adminClearOnly], [W + 2, 150n * TOKEN, 9000n, true]);
+  // A rules file that leaves out a safety field is refused, unless the flag states it.
+  writeFileSync(epochFile, JSON.stringify({ season: 'chikun-season-preview-1', minPaidWei: '100000000000000000', minFundWei: '150000000000000000000' }));
+  const silentEpoch = await runCli(runJackpotCli, actions('schedule-rules', ['--from-week', weekKeyOf(W + 3), '--rules', epochFile, '--admin-clear-only', 'true']));
+  assert.equal(silentEpoch.code, 2, silentEpoch.output);
+  assert.match(silentEpoch.output, /the rules are invalid: .*must state maxSurvivalSeconds explicitly/);
+  const statedEpoch = await runCli(runJackpotCli, actions('schedule-rules', ['--from-week', weekKeyOf(W + 3), '--rules', epochFile, '--admin-clear-only', 'true', '--max-survival', '3599']));
+  assert.equal(statedEpoch.code, 0, statedEpoch.output);
+  // On an instance whose token is not a test token, every epoch keeps adminClearOnly and a prize cap (J16, OJ6).
+  const realRecord = structuredClone(local.record);
+  realRecord.instances.chikun.token.testnet = false;
+  const realModule = writeLitvmJackpotModule({ root, record: realRecord, outPath: join(dir, 'litvm-jackpot.real.mjs') }).path;
+  const realActions = (action, extra) => [action, ...extra, '--rpc', bridge.url, '--deployment', realModule];
+  const uncapped = await runCli(runJackpotCli, realActions('schedule-rules', ['--from-week', weekKeyOf(W + 3)]));
+  assert.equal(uncapped.code, 2, uncapped.output);
+  assert.match(uncapped.output, /is not a test token, and design J16\/OJ6 make a prize cap \(maxPrizeWei > 0\) mandatory/);
+  const unreviewed = await runCli(runJackpotCli, realActions('schedule-rules', ['--from-week', weekKeyOf(W + 3), '--max-prize', '500', '--admin-clear-only', 'false']));
+  assert.match(unreviewed.output, /make adminClearOnly true mandatory/);
+  const realOk = await runCli(runJackpotCli, realActions('schedule-rules', ['--from-week', weekKeyOf(W + 3), '--max-prize', '500']));
+  assert.equal(realOk.code, 0, realOk.output);
+  assert.match(realOk.output, /DRY RUN: schedule-rules would send 1 transaction/);
   // The rest need chain history: the unpause and cancel-end twins, finalize, sweep, residue and refunds.
   const operatorRun = (action, args = []) => runCli(runJackpotCli, actions(action, [...args, '--broadcast', '--confirm', JACKPOT_ACTIONS[action].confirm, '--key-env', 'JACKPOT_TEST_OPERATOR_KEY']));
   assert.equal((await operatorRun('operator-pause')).code, 0);
+  const unpauseByAttacker = await runCli(runJackpotCli, actions('operator-unpause', ['--broadcast', '--confirm', 'PAUSE_JACKPOT_4441', '--key-env', 'JACKPOT_TEST_ATTACKER_KEY']));
+  assert.equal(unpauseByAttacker.code, 2, unpauseByAttacker.output);
+  assert.match(unpauseByAttacker.output, /is not the jackpot operator/);
+  assert.equal(await jackpot.operatorPaused(), true);
   assert.equal((await operatorRun('operator-unpause')).code, 0);
   assert.equal(await jackpot.operatorPaused(), false);
   const idle = await runCli(runJackpotCli, actions('operator-unpause'));
@@ -415,6 +570,15 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
   await mined(jackpot.connect(funder).fund(W, 300n * TOKEN));
   await mined(jackpot.connect(funder).fund(W + 3, 200n * TOKEN));
   assert.equal((await operatorRun('schedule-end', [weekKeyOf(W + 2)])).code, 0);
+  const wrongKey = (action, args = []) => runCli(runJackpotCli, actions(action, [...args, '--broadcast', '--confirm', JACKPOT_ACTIONS[action].confirm, '--key-env', 'JACKPOT_TEST_ATTACKER_KEY']));
+  const notOperator = async (action, args = []) => {
+    const before = await provider.getBlockNumber();
+    const result = await wrongKey(action, args);
+    assert.equal(result.code, 2, result.output);
+    assert.match(result.output, /the signer 0x[0-9a-f]{40} is not the jackpot operator \(0x[0-9a-f]{40}\)/, action);
+    assert.equal(await provider.getBlockNumber(), before, `${action}: nothing was sent`);
+  };
+  await notOperator('cancel-end');
   assert.equal((await operatorRun('cancel-end')).code, 0);
   assert.equal(Number(await jackpot.endAfterWeek()), 0);
   assert.equal((await operatorRun('schedule-end', [weekKeyOf(W + 1)])).code, 0);
@@ -422,7 +586,7 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
   await mined(token.connect(funder).transfer(await jackpot.getAddress(), 9n * TOKEN));
   const sweepDry = await runCli(runJackpotCli, actions('sweep-stray', [await token.getAddress()]));
   assert.match(sweepDry.output, /sweeps 9000000000000000000 base units/);
-  assert.equal((await runCli(runJackpotCli, actions('sweep-stray', [await token.getAddress(), '--broadcast', '--confirm', 'RECOVER_JACKPOT_4441', '--key-env', 'JACKPOT_TEST_ATTACKER_KEY']))).code, 2);
+  await notOperator('sweep-stray', [await token.getAddress()]);
   assert.equal((await operatorRun('sweep-stray', [await token.getAddress()])).code, 0);
   assert.equal(await token.balanceOf(await jackpot.getAddress()), 500n * TOKEN);
   // finalize from any key: W rolls into W + 1, then W + 1 (the last week) rolls into the residue.
@@ -449,6 +613,7 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
   assert.equal(tooEarly.code, 2);
   assert.match(tooEarly.output, /TOO_EARLY/);
   await at(Number(await jackpot.residualAvailableAt()));
+  await notOperator('recover-residual');
   const recipientBefore = await token.balanceOf(wallets.developer.address);
   assert.equal((await operatorRun('recover-residual')).code, 0);
   assert.equal(await token.balanceOf(wallets.developer.address), recipientBefore + 300n * TOKEN);
@@ -462,6 +627,65 @@ test('jackpot actions dry-run by default and act only with the phrase', async ()
   const help = await runCli(runJackpotCli, ['transfer-admin']);
   assert.equal(help.code, 2, 'there is no operator transfer-admin action');
   assert.equal(Object.keys(JACKPOT_ACTIONS).includes('transfer-admin'), false);
+});
+
+test('status reports the pots, prizes and candidates of the current and previous week', async () => {
+  const jackpot = local.jackpot;
+  const token = local.token;
+  const [player, runner] = [wallets.player1, wallets.player2];
+  await mined(token.connect(wallets.operator).mint(funder.address, 10_000n * TOKEN));
+  await mined(token.connect(funder).approve(await jackpot.getAddress(), 10_000n * TOKEN));
+  // Week W: funded, one cleared run, paid at C + 24 h. Week W + 1: funded, a flagged leader and a second row.
+  await at(weekStartOf(W) + HOUR);
+  await mined(jackpot.connect(funder).fund(W, 300n * TOKEN));
+  const play = async (wallet, score) => (await settleLocalRun({ provider, record: suite, player: wallet, relayer: wallets.relayer, verifierKey: keys.verifier, score })).sessionId;
+  const won = await play(player, 700n);
+  await mined(jackpot.connect(local.wallets.keeper).submitCandidate(won));
+  await mined(jackpot.connect(wallets.developer).clear(won)); // adminClearOnly (launch rules): the admin clears
+  await at(weekStartOf(W + 1) + DAY);
+  await mined(jackpot.connect(funder).finalize(W));
+  await mined(jackpot.connect(funder).fund(W + 1, 200n * TOKEN));
+  const lead = await play(runner, 900n);
+  const second = await play(player, 400n);
+  for (const id of [lead, second]) await mined(jackpot.connect(local.wallets.keeper).submitCandidate(id));
+  await mined(jackpot.connect(local.wallets.keeper).flag(lead, ethers.encodeBytes32String('screen-hold')));
+  const { code, lines } = await runCli(runJackpotCli, actions('status', ['--json']));
+  assert.equal(code, 0);
+  const status = JSON.parse(lines.join('\n'));
+  assert.deepEqual([status.currentWeek.index, status.weeks.map((week) => week.week)], [W + 1, [W + 1, W]]);
+  const [current, previous] = status.weeks;
+  assert.deepEqual([current.status, current.funded, current.pot, current.payable, current.fundedEnough, current.winner], ['open', (200n * TOKEN).toString(), (200n * TOKEN).toString(), (200n * TOKEN).toString(), true, null]);
+  assert.deepEqual(current.candidates.map((row) => [row.rank, row.sessionId, row.player, row.score, row.review, row.adminReviewed]), [
+    [1, lead, runner.address.toLowerCase(), '900', 'flagged', false],
+    [2, second, player.address.toLowerCase(), '400', 'none', false],
+  ]);
+  assert.deepEqual([previous.status, previous.winner, previous.prize, previous.unclaimed, previous.candidates.map((row) => [row.sessionId, row.review, row.adminReviewed])], ['paid', player.address.toLowerCase(), (300n * TOKEN).toString(), '0', [[won, 'cleared', true]]]);
+  assert.equal(status.liabilities, (200n * TOKEN).toString());
+  assert.deepEqual([status.rules.inForce.adminClearOnly, status.rules.epochs.length], [true, 1]);
+  const human = await runCli(runJackpotCli, actions('status'));
+  assert.match(human.output, new RegExp(`${weekKeyOf(W + 1)}: open · pot 200\\.0 tCHIKUN .*winner can receive 200\\.0 tCHIKUN`));
+  assert.match(human.output, new RegExp(`#1 ${runner.address.toLowerCase()} score 900 flagged ${lead}`));
+  assert.match(human.output, new RegExp(`${weekKeyOf(W)}: paid · .* winner ${player.address.toLowerCase()} prize 300\\.0 tCHIKUN`));
+});
+
+test('the local helper retires a previous instance and sets chain time from an ISO string', async () => {
+  // setChainTime takes an ISO string, unix seconds or a Date, and mines a block at exactly that time.
+  const target = new Date((weekStartOf(W) + 2 * DAY) * 1000).toISOString();
+  assert.equal(await setChainTime(provider, target), weekStartOf(W) + 2 * DAY);
+  assert.equal((await provider.getBlock('latest')).timestamp, weekStartOf(W) + 2 * DAY);
+  await assert.rejects(setChainTime(provider, 'not a time'), /setChainTime: not a time/);
+  // retirePrevious needs a scheduled end on the previous instance and a first week after it.
+  await assert.rejects(deployLocalJackpot({ provider, wallets, record: suite, firstWeek: W + 3, retirePrevious: local.record }), /retirePrevious: the previous instance has no scheduled end/);
+  await mined(local.jackpot.connect(wallets.operator).scheduleEnd(W + 1));
+  await assert.rejects(deployLocalJackpot({ provider, wallets, record: suite, firstWeek: W + 1, retirePrevious: local.record }), /retirePrevious: firstWeek \d+ must be after the previous endAfterWeek \d+/);
+  const mock = await deployMockToken('BlacklistToken', [], wallets.operator);
+  const next = await deployLocalJackpot({ provider, wallets, record: suite, firstWeek: W + 2, token: await mock.getAddress(), tokenTestnet: true, retirePrevious: local.record });
+  const previous = local.record.instances.chikun;
+  const instance = next.record.instances.chikun;
+  assert.deepEqual([instance.address, instance.firstWeek, instance.token.symbol], [(await next.jackpot.getAddress()).toLowerCase(), W + 2, 'BLKMOCK']);
+  assert.deepEqual(instance.retired, [{ address: previous.address, token: previous.token, startBlock: previous.startBlock, firstWeek: previous.firstWeek, endAfterWeek: W + 1 }]);
+  const moduleValue = jackpotModuleValue(next.record).instances.chikun;
+  assert.deepEqual(moduleValue.retired.map((entry) => [entry.address, entry.endAfterWeek, entry.token.symbol]), [[previous.address, W + 1, 'tCHIKUN']]);
 });
 
 test('fund approves the exact amount and credits the chosen week', async () => {
@@ -527,6 +751,21 @@ test('keeper key generator writes a new file, prints only the address, and never
     assert.equal(runKeeperKeyCli({ argv: ['--out', join(root, 'contracts', 'keeper.json')], log: (line) => inRepo.push(line) }), 2);
     assert.match(inRepo.join('\n'), /inside the repository/);
     assert.equal(existsSync(join(root, 'contracts', 'keeper.json')), false);
+    // A directory whose NAME starts with '..' is still inside the repository, and so is a junction into it.
+    const fakeRepo = join(keyDir, 'fake-repo');
+    mkdirSync(join(fakeRepo, '..keys'), { recursive: true });
+    const refusedInside = [];
+    assert.equal(runKeeperKeyCli({ root: fakeRepo, argv: ['--out', join(fakeRepo, '..keys', 'jackpot-keeper.json')], log: (line) => refusedInside.push(line) }), 2);
+    assert.match(refusedInside.join('\n'), /inside the repository/);
+    assert.equal(existsSync(join(fakeRepo, '..keys', 'jackpot-keeper.json')), false);
+    symlinkSync(join(fakeRepo, '..keys'), join(keyDir, 'looks-outside'), 'junction');
+    const refusedLink = [];
+    assert.equal(runKeeperKeyCli({ root: fakeRepo, argv: ['--out', join(keyDir, 'looks-outside', 'jackpot-keeper.json')], log: (line) => refusedLink.push(line) }), 2);
+    assert.match(refusedLink.join('\n'), /resolves to .*inside the repository/);
+    assert.equal(existsSync(join(fakeRepo, '..keys', 'jackpot-keeper.json')), false);
+    // A sibling of the repository is outside (a relative path that climbs out).
+    assert.equal(runKeeperKeyCli({ root: fakeRepo, argv: ['--out', join(keyDir, 'sibling.json')], log: () => {} }), 0);
+    assert.deepEqual([isInside(fakeRepo, fakeRepo), isInside(fakeRepo, join(fakeRepo, '..keys', 'k.json')), isInside(fakeRepo, join(fakeRepo, '..', 'k.json')), isInside(fakeRepo, keyDir)], [true, true, false, false]);
     // As a real process: stdout carries the address and nothing else secret.
     const second = join(keyDir, 'second.json');
     const child = await new Promise((resolveRun, rejectRun) => {

@@ -25,7 +25,9 @@
 //
 // schedule-rules starts from the epoch that would otherwise apply to --from-week (or --rules launch|<json>)
 // and applies --admin-clear-only true|false, --max-prize <tokens>, --min-fund <tokens>, --min-paid-wei <wei>,
-// --max-survival <seconds>, --max-score <n>, --season <name|0x…> and --alt-season <name|0x…|none>.
+// --max-survival <seconds>, --max-score <n>, --season <name|0x…> and --alt-season <name|0x…|none>. A rules
+// file must state adminClearOnly, maxSurvivalSeconds, minPaidWei and minFundWei (the flags count), and on an
+// instance whose token is not a test token every epoch needs adminClearOnly and a prize cap (J16, OJ6).
 // The admin's own actions (clear, flag, disqualify, reinstate, adminSubmit, block, hold, extend, pause,
 // transferAdmin) are on the owner page, because the admin is a browser wallet.
 //
@@ -46,6 +48,7 @@ import {
   loadContractArtifact,
   loadLitvmJackpot,
   normalizeRules,
+  realValueRuleProblems,
   rulesFromChain,
   rulesToJson,
   seasonId32,
@@ -300,9 +303,10 @@ export async function planJackpotAction({ action, args = [], argv = [], provider
     if (week > current + MAX_FUND_AHEAD_WEEKS) blocked(`--from-week ${weekKeyOf(week)} is more than ${MAX_FUND_AHEAD_WEEKS} weeks ahead (RULES_TOO_FAR)`);
     if (week < firstWeek) blocked(`--from-week ${weekKeyOf(week)} is before the instance's first week ${weekKeyOf(firstWeek)}`);
     const base = flagValue(argv, '--rules');
+    const fromFile = base !== null && base !== 'launch';
     let rules;
     if (base === 'launch') rules = launchRulesFor({ fromWeek: week });
-    else if (base !== null) {
+    else if (fromFile) {
       let json;
       try { json = JSON.parse(readFileSync(base, 'utf8')); } catch (error) { blocked(`--rules ${base}: ${error?.code ?? 'not valid JSON'}`); }
       rules = json;
@@ -318,10 +322,14 @@ export async function planJackpotAction({ action, args = [], argv = [], provider
     if (value('--season') !== null) overrides.seasonId = seasonId32(value('--season'));
     if (value('--alt-season') !== null) overrides.altSeasonId = value('--alt-season') === 'none' ? ethers.ZeroHash : seasonId32(value('--alt-season'));
     try {
-      rules = normalizeRules({ ...rules, ...overrides }, { fromWeek: week });
+      // A rules file (with the flags on top) must state every safety field: no silent weakest defaults.
+      rules = normalizeRules({ ...rules, ...overrides }, { fromWeek: week, strict: fromFile });
     } catch (error) {
       blocked(`the rules are invalid: ${error.message}`);
     }
+    // Design J16 / OJ6: on a real-value token instance every epoch keeps adminClearOnly and a prize cap.
+    const problems = instance.token.testnet === true ? [] : realValueRuleProblems(rules);
+    if (problems.length) blocked(`this instance's token ${instance.token.symbol} is not a test token, and design J16/OJ6 make ${problems.join(' and ')} mandatory for real-value prizes`);
     const pending = [];
     for (let index = 0; index < Number(await jackpot.rulesCount()); index += 1) {
       const epoch = await jackpot.rulesAt(index);

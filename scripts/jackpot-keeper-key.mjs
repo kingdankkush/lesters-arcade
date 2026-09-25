@@ -6,13 +6,22 @@
 // file system supports it) and prints only the address, which the owner then funds with 0.1 testnet zkLTC.
 // It never overwrites an existing file, never writes inside this repository (a key must never be
 // committed), and never prints the private key. The keeper key is separate from the settle relayer's key.
-import { chmodSync, existsSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, isAbsolute, relative, resolve } from 'node:path';
+import { chmodSync, existsSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 import { flagValue } from './lib/key-source.mjs';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
+
+// True when `target` is `root` itself or below it. Only a relative path that climbs out ('..' or '../…') or
+// lands on another drive is outside: a directory NAMED '..keys' inside the repository is inside.
+export function isInside(root, target) {
+  const rel = relative(root, target);
+  if (rel === '') return true;
+  if (isAbsolute(rel)) return false;
+  return !(rel === '..' || rel.startsWith(`..${sep}`));
+}
 
 // Returns the exit code. `createWallet` and `root` are injectable for tests.
 export function runKeeperKeyCli({ argv = process.argv.slice(2), log = console.log, createWallet = () => ethers.Wallet.createRandom(), root = repoRoot } = {}) {
@@ -32,13 +41,26 @@ export function runKeeperKeyCli({ argv = process.argv.slice(2), log = console.lo
     return 2;
   }
   const target = resolve(out);
-  const inside = relative(resolve(root), target);
-  if (inside === '' || (!inside.startsWith('..') && !isAbsolute(inside))) {
+  if (isInside(resolve(root), target)) {
     log(`Blocked: ${target} is inside the repository; write the key to the vault, never to a file that could be committed.`);
     return 2;
   }
   if (!existsSync(dirname(target)) || !statSync(dirname(target)).isDirectory()) {
     log(`Blocked: the directory ${dirname(target)} does not exist.`);
+    return 2;
+  }
+  // The same check on the real paths, so a junction or symlink into the repository is refused too.
+  let realTarget;
+  let realRoot;
+  try {
+    realRoot = realpathSync.native(resolve(root));
+    realTarget = join(realpathSync.native(dirname(target)), basename(target));
+  } catch (error) {
+    log(`Blocked: cannot resolve ${dirname(target)} (${error?.code ?? 'error'}).`);
+    return 2;
+  }
+  if (isInside(realRoot, realTarget)) {
+    log(`Blocked: ${target} resolves to ${realTarget}, inside the repository; write the key to the vault, never to a file that could be committed.`);
     return 2;
   }
   if (existsSync(target)) {
