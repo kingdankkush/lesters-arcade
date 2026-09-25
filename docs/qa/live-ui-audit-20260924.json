@@ -1,0 +1,206 @@
+{
+  "schema": "lesters-live-ui-audit-v1",
+  "date": "2026-09-24",
+  "slice": "live-ui-audit",
+  "branch": "fable/pd-live-ui-audit",
+  "base": "93729732",
+  "status": "defects-fixed-on-branch-pending-deploy",
+  "production": {
+    "url": "https://lestersarcade.io",
+    "release": "1.8.0 (docs/qa/ranked-launch-release-20260924.json)",
+    "flags": "SETTLEMENT_LIVE and HOSTED_PROFILE_SYNC true"
+  },
+  "method": {
+    "browser": "Playwright Chromium (benchmarks/hmh-engine-bakeoff/node_modules/playwright)",
+    "viewports": ["desktop 1440x1000", "phone 390x844 (mobile, touch)", "narrow 320x640 (mobile, touch)"],
+    "readOnly": "Every request that was not GET or HEAD to lestersarcade.io, and every /api/ write, was aborted and counted: 0 were attempted. No wallet existed in the browser, so nothing could be signed or sent. Production API reads were GET only (E5 leaderboard, E6 profile public view, E9 session, E11 share card). No cron endpoint, vault file or secret was touched.",
+    "script": "scripts/live-ui-audit.mjs (committed on this branch; re-run after deploy: PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/live-ui-audit.mjs --viewports desktop,phone,narrow)",
+    "extraProbes": [
+      "keyboard focus retention (type, wait for the index answer, type again; press tabs with Enter)",
+      "visible focus: every Tab stop on /, /scores, the profile, /games/stacked and a share page compared focused vs blurred computed style (no stop without a visible change)",
+      "text contrast by sampling the rendered background around each text box (desktop and phone)",
+      "picker first paint with src/styles/wallet-picker.css delayed 2.5 s, service worker blocked",
+      "Ranked results screen opened locally from the production E9 record of the HMH run (1440, 390, 320): focus trapped, Escape returns focus, no overflow",
+      "populated boards (30-row E5 fixture) rendered locally at 1440 and 320, since every production board is empty"
+    ],
+    "screenshots": "Scratchpad only (not committed): C:/Users/just_/AppData/Local/Temp/claude/C--Users-just--lesters-arcade/d933c6b9-f792-4607-bd00-d6886cb70ae5/scratchpad/live-ui-audit/{final-prod,final-local,final-local-populated,audit-out,audit-out2,local-out}/*.png, plus fouc-tile.png (production vs fixed picker first paint) and results-tile.png (results screen)."
+  },
+  "results": {
+    "productionBeforeFixes": {
+      "ranAt": "2026-09-25T01:04:57Z",
+      "checks": 231,
+      "passed": 191,
+      "failed": 40,
+      "blockedNonGet": 0,
+      "failedChecks": "The 13 defect checks below at each of the three viewports, plus profile:recent-sessions-with-tx-links at 320 px (rows overflow the card).",
+      "consoleErrors": 0,
+      "pageErrors": 0,
+      "failedRequests": 0
+    },
+    "localBuildOfThisBranch": {
+      "how": "apps/portal served on 127.0.0.1:8862 (python http.server), /api stubbed with the production GET answers captured during the audit, /s/<id> rendered by this branch's server/share/render-page.mjs from the production E9 records, two stand-in EIP-6963 wallets so the picker opens on localhost",
+      "checks": 231,
+      "passed": 229,
+      "failed": 2,
+      "failedChecks": "phone and narrow home:sign-in-picker only: localhost offers no WalletConnect and the stand-in wallets are injected, so the picker correctly shows no phone deep links there. Production shows them (verified live).",
+      "populatedBoards": "154 checks at 1440 and 320 with a 30-row board: 153 passed, the same localhost-only picker miss.",
+      "contrastSampling": "0 text boxes under 4.5:1 (3:1 large) on /, /scores (30-row board), the profile, /games/stacked and a share page, desktop and phone. The same sampling on production (empty boards) failed only the two grey profile buttons (LUA-04).",
+      "visibleFocus": "No Tab stop without a visible focus change on /scores (40 stops), the profile (39) and a share page (34)."
+    }
+  },
+  "checklist": {
+    "homeAndGames": [
+      { "item": "Sign in button opens the wallet picker", "ok": true, "evidence": "Dialog 'Choose your wallet' (role=dialog, labelled) at every viewport; desktop: WalletConnect 'Scan with a phone wallet' plus Get MetaMask and Get Rabby; phone and 320: WalletConnect 'Open a wallet app on this phone', Open in MetaMask, Open in Trust Wallet, Get MetaMask, Get Rabby. Focus starts inside, Tab is trapped, Escape closes and returns focus to Sign in." },
+      { "item": "Picker styled on first open", "ok": false, "fixed": "LUA-02" },
+      { "item": "Ranked entry points", "ok": true, "evidence": "Each game page has a Play Ranked card (WALLET REQUIRED chip); signed out, pressing it opens the sign-in picker and no Ranked modal or wallet prompt." },
+      { "item": "Launch copy: 0.102 zkLTC, no NFT wording, no hashtags", "ok": false, "evidence": "No NFT, soulbound or hashtag text on any audited page; HMH and Chikun cards say '0.102 testnet zkLTC per run'. STACKED's card had no price.", "fixed": "LUA-05" },
+      { "item": "Console clean", "ok": true, "evidence": "0 console errors, 0 warnings, 0 page errors, 0 failed requests on every audited page at every viewport (the jukebox and splash-film preloads the browser cancels are ignored)." }
+    ],
+    "scores": [
+      { "item": "Weekly (default), Monthly, All-time tabs", "ok": true, "evidence": "Tabs WEEKLY (aria-pressed) / MONTHLY / ALL-TIME; each asks E5 for its period (GET /api/leaderboard?game=lester-blaster&period=…, 200)." },
+      { "item": "Reset time", "ok": true, "evidence": "'Resets Monday 00:00 UTC · resets in 2d 22h', 'Resets on the 1st, 00:00 UTC · resets in 5d 22h', 'All-time never resets.'" },
+      { "item": "Per-game banners", "ok": true, "evidence": "Cabinet 01-03 banners with art; choosing one updates ?game= and the board; arrow-key tablist with roving tabindex." },
+      { "item": "Empty state with Play Ranked", "ok": true, "evidence": "'Be the first on this week's board' (month's / all-time board) with a Play Ranked button that opens /play/<game> mode select. The only real rows belong to the excluded test wallet, so all 3 boards x 3 periods are empty; search 0x8841 returns 0 players." },
+      { "item": "Search input", "ok": false, "evidence": "Labelled, debounced, server-side; a no-match search shows 'No players match … Clear search'. Focus was lost when the results arrived.", "fixed": "LUA-01" },
+      { "item": "No Daily/Yearly/House/Local Preview remnants", "ok": true, "evidence": "None on the page at any viewport." }
+    ],
+    "profile": [
+      { "item": "Verified bests per game and run counts", "ok": true, "evidence": "HMH 6,210 / Chikun 6,684 / STACKED 229,008; 1 ranked and 1 verified run each; hero totals 3 runs, 24 achievements." },
+      { "item": "Recent sessions with explorer tx links", "ok": true, "evidence": "3 rows, 'Published on LitVM', '⛓ verified' linking https://liteforge.explorer.caldera.xyz/tx/0x… (the three settle txs of the release receipt) and 'Run page' linking /s/<shareId>. Layout defect fixed as LUA-06." },
+      { "item": "Achievements list (24) with badge art and tiers", "ok": true, "evidence": "24 cards, every badge image loaded (HMH per-achievement art; Chikun and STACKED per-tier art), tier borders bronze/silver/gold, 'Unlocked 2026-09-24 UTC'. Readability fixed as LUA-08." },
+      { "item": "No device-local or NFT wording", "ok": true, "evidence": "None." },
+      { "item": "No standing for an excluded wallet", "ok": true, "evidence": "Weekly, Monthly and All-time rank read '—' for all three games (E6 ranks null)." },
+      { "item": "Header of a public profile", "ok": false, "fixed": "LUA-03" }
+    ],
+    "sharePages": [
+      { "item": "Pages render", "ok": true, "evidence": "All three /s/<id> return 200 with the card, score, short wallet, '✓ Verified on LitVM', verification note, stats and 8 / 5 / 11 achievement badges." },
+      { "item": "Tags", "ok": true, "evidence": "og:type website, og:site_name Lester's Arcade, og:url and canonical https://lestersarcade.io/s/<id>, og:image https://lestersarcade.io/api/share-card/<id>.png?v=<cardRev 12 hex>, og:image 1200x630, twitter:card summary_large_image, twitter:site @LestersArcade; X-Robots-Tag noindex, follow (vercel.json /s/(.*))." },
+      { "item": "Card images load", "ok": true, "evidence": "Each card is a 1200x630 PNG (415-519 KB), image/png, cached (public). Art, score, short wallet, three stats, badges and the Verified on LitVM badge render." },
+      { "item": "Play buttons route correctly", "ok": true, "evidence": "/play/hard-money-heroes, /play/chikun and /play/stacked open each game's mode select." },
+      { "item": "320 px layout", "ok": true, "evidence": "No horizontal scroll; stats and badges reflow to one or two columns. Header link targets fixed as LUA-09." }
+    ],
+    "accessibility": [
+      { "item": "Keyboard focus order", "ok": true, "evidence": "Skip link, brand, nav (Play, Profile, Scores, Settings), then page content in reading order on every page; the picker and the results screen trap focus and return it on Escape." },
+      { "item": "Visible focus", "ok": true, "evidence": "Every Tab stop checked changes its outline, ring, border or background when focused." },
+      { "item": "Focus kept across re-renders", "ok": false, "fixed": "LUA-01" },
+      { "item": "Contrast of key text", "ok": false, "evidence": "All sampled text passed except the grey profile buttons.", "fixed": "LUA-04" },
+      { "item": "Button labels", "ok": true, "evidence": "No visible button, link or input without an accessible name; images carry alt text (decorative ones alt='')." }
+    ]
+  },
+  "defects": [
+    {
+      "id": "LUA-01",
+      "severity": "high",
+      "area": "/scores search, period and cabinet tabs, Show more; profile game tabs",
+      "found": "The hosted views rebuild their DOM on every render and render again when the index answers, dropping keyboard focus to <body>. On /scores, typing '0x88', waiting for the results and typing '41' left the box at '0x88': the later keys went nowhere. Period tabs and cabinet banners lost focus after their board loaded, Show more at once, and the profile game tabs the moment they were pressed.",
+      "fix": "New lazy apps/portal/src/focus-keeper.mjs restores the focused control (and caret) after each hosted re-render; Show more uses aria-disabled while loading and hands focus to the row count after the last page; profile tabs gain data-game, aria-pressed and a labelled group.",
+      "commits": ["ce8b72c5", "1e8a3295"],
+      "tests": ["tests/focus-keeper.test.mjs"]
+    },
+    {
+      "id": "LUA-02",
+      "severity": "medium",
+      "area": "Sign-in wallet picker (every page), toast",
+      "found": "On a first visit the picker opened before src/styles/wallet-picker.css (loaded on first use) applied, and painted as page content under the footer: a bullet list with browser-grey buttons ('WCWALLETCONNECT…') and run-together links. Seen live on /games/stacked at 390 px; reproduced on / with the CSS delayed.",
+      "fix": "Until the stylesheet applies, inline stand-ins make the backdrop a fixed dimmed layer at once while the sheet stays hidden; the CSS then takes over (inline styles dropped). After 3 s or on a CSS error the sheet shows on a legible fallback, never as page content; focus moves in once it shows.",
+      "commits": ["55f72d78", "40d8f6ce"],
+      "tests": ["tests/wallet-picker.test.mjs"]
+    },
+    {
+      "id": "LUA-03",
+      "severity": "medium",
+      "area": "/profile/<wallet> header",
+      "found": "Another wallet's public profile was headed 'Guest Practice Profile' under 'Guest practice session', with the lead 'Sign in with a wallet to see your verified Ranked runs…'.",
+      "fix": "Header 'Player Profile', eyebrow 'Public profile · 0x8841…e824', flag-aware PORTAL_COPY.profilePublicView lead; the viewer's own and the signed-out /profile keep theirs.",
+      "commits": ["cd2ca25d"],
+      "tests": ["tests/official-app-routes.test.mjs", "tests/portal-copy.test.mjs"]
+    },
+    {
+      "id": "LUA-04",
+      "severity": "medium",
+      "area": "Generic buttons: profile Share profile, View Leaderboard, View my profile, Try again, Sign in, Retry, Retry saved runs; Ranked entry Switch network / Get zkLTC / Check again",
+      "found": "Buttons with only the pixel-button class had no style: browser-grey fill under the dark global button text, 3.76:1 (under 4.5:1), reading as disabled.",
+      "fix": "Cyan-outline arcade button for them (text 17:1 on its base, 44 px target, gold focus ring); avatar options get an outlined tile. A test keeps every pixel-button variant styled.",
+      "commits": ["77a385ab"],
+      "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    },
+    {
+      "id": "LUA-05",
+      "severity": "medium",
+      "area": "/games/stacked Ranked card; guest line on all three games; hosted board placement note",
+      "found": "STACKED's Play Ranked card read 'Wallet-bound Ranked run. Start at level 1 with no undo…' with no entry price (HMH and Chikun show '0.102 testnet zkLTC per run…', and STACKED's own prerendered page showed a different line). The guest line said 'Connect a wallet when you want Play Ranked.' and the board 'Connect a wallet to see your placement…' while the site's action is Sign in.",
+      "fix": "Flag-aware STACKED entry in PORTAL_COPY.modeSelect (SPA and discover/stacked.html now agree), PORTAL_COPY.modeGuestRanked 'Sign in with a wallet when you want to play Ranked.', board note 'Sign in with a wallet…'.",
+      "commits": ["88cd345e"],
+      "tests": ["tests/portal-mode-select-copy.test.mjs", "tests/portal-copy.test.mjs", "scripts/stacked-playable-browser-smoke.mjs (assertions follow the site copy)"]
+    },
+    {
+      "id": "LUA-06",
+      "severity": "medium",
+      "area": "Profile Recent Ranked runs",
+      "found": "Desktop: content pushed to the bottom of the card (a tall empty band). 390 px: five inline items squeezed into columns ('Run / verifiedpage'). 320 px: rows overflowed the card (right edge 331 px).",
+      "fix": "Cards start at the top; each run is two wrapping lines (score and game, then a coloured status and the links).",
+      "commits": ["77a385ab"],
+      "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    },
+    {
+      "id": "LUA-07",
+      "severity": "low",
+      "area": "Profile name; board row wallet line",
+      "found": "A wallet shown in place of a display name was uppercased to '0X8841…E824'; board rows uppercased their wallet line the same way.",
+      "fix": "profile-hero-name-wallet keeps hex case (monospace, fits 320 px on one line); the row wallet line too.",
+      "commits": ["77a385ab"],
+      "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    },
+    {
+      "id": "LUA-08",
+      "severity": "low",
+      "area": "Profile achievement cards",
+      "found": "Titles were 9-10 px, smaller than the game/tier line under them; phones had three 84 px columns of wrapped text.",
+      "fix": "Titles lead (0.86rem bold), tier line in its tier colour, two columns on phones.",
+      "commits": ["77a385ab"],
+      "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    },
+    {
+      "id": "LUA-09",
+      "severity": "low",
+      "area": "Share pages /s/<id>",
+      "found": "Header links 'Lester's Arcade' and 'Visit the arcade' were 15 px and 23 px tall (under 24 px, WCAG 2.5.8).",
+      "fix": "44 px flex targets (one inline CSS rule in server/share/render-page.mjs).",
+      "commits": ["cbe692f9"],
+      "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    },
+    {
+      "id": "LUA-10",
+      "severity": "low",
+      "area": "Scores board title",
+      "found": "The trophy icon sat raised against the first letter of the game title.",
+      "fix": "Flex alignment with a gap.",
+      "commits": ["77a385ab"],
+      "tests": ["tests/live-ui-audit-polish.test.mjs"]
+    }
+  ],
+  "notDefects": [
+    "The only live rows belong to the board-excluded test wallet, so every board is empty: expected (checkpoint O2).",
+    "Chikun and STACKED badges use per-tier art (chikun/bronze.png, stacked/silver.png…) while HMH has per-achievement art: that is the achievements slice's art set, and every image loads.",
+    "Share pages carry X-Robots-Tag noindex, follow for every status: the vercel.json rule the index slice pinned.",
+    "Share cards of the Chikun and STACKED runs share cardRev 9aad35cebaa9: the revision hashes status, name, avatar, hidden and verification only (contract §7.5); the card URL still carries each share id."
+  ],
+  "followUps": [
+    "Deploy, then re-run scripts/live-ui-audit.mjs against production: it should pass 231/231 (it fails exactly the defects above today).",
+    "Scores cabinet banners show 'Verified · Weekly' for boards not fetched yet and 'No scores yet · weekly' for the one on screen. Prefetching the other two boards (two cacheable E5 GETs) would make them agree; it changes the request counts that tests/hosted-leaderboard.test.mjs pins, so it is left for the perf-lazy-hosted or profile-boards owner.",
+    "Profile 'Verified totals' sums per-run bests (HMH 'Combo total', STACKED 'Levels'); consider max-style labels ('Best combo', 'Highest level') once players have several runs (owner copy decision).",
+    "The HMH and Chikun mode lines still say 'Your Lester's Arcade session is active' / 'endless guest practice' to signed-out visitors; the first is pinned by tests/portal-trust-copy.test.mjs (site-copy owner)."
+  ],
+  "bytes": {
+    "distMainJs": { "base": 1222120, "branch": 1223702, "delta": 1582, "why": "portal-content (+1,198: STACKED mode copy, profilePublicView and modeGuestRanked in three flag states), official-app-routes (+311), official-play-routes (+24), main.js (+49)" },
+    "lazyChunks": {
+      "hosted-leaderboard-view": { "base": 13709, "branch": 14127, "delta": 418 },
+      "hosted-profile-view": { "base": 23618, "branch": 23899, "delta": 281 },
+      "focus-keeper (new shared lazy chunk)": { "base": 0, "branch": 1494, "delta": 1494 },
+      "wallet-picker": { "base": 6834, "branch": 8189, "delta": 1355 }
+    },
+    "hmhChildInitialPlusShared": { "base": 1046713, "branch": 1046713, "delta": 0 },
+    "stackedEntry": { "base": 27694, "branch": 27694, "delta": 0 },
+    "stylesArcadePolishCss": { "base": 88509, "branch": 94453, "delta": 5944 }
+  }
+}
