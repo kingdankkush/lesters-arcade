@@ -6,6 +6,7 @@ import { ethers } from 'ethers';
 
 import * as retryCronApi from '../api/cron/settle-retry.mjs';
 import { LITVM_JACKPOT } from '../apps/portal/src/generated/litvm-jackpot.mjs';
+import { JACKPOT_APPLY_CONFIRM, JACKPOT_SECRET_NAMES, runJackpotSecrets } from '../scripts/jackpot-secrets.mjs';
 import { DEFAULT_JACKPOT_MAX_TX_FEE_WEI, JACKPOT_ENV_NAMES, buildBaseDeps, readJackpotConfig, readServerConfig } from '../server/config.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
@@ -56,7 +57,7 @@ test('jackpot variables never change settlement readiness', async () => {
   const variants = [
     {},
     { JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY },
-    { JACKPOT_KEEPER_PRIVATE_KEY: 'not-a-key' },
+    { JACKPOT_KEEPER_PRIVATE_KEY: 'bad-key' },
     { JACKPOT_CONTRACT_ADDRESS: 'nope' },
     { JACKPOT_CONTRACT_ADDRESS: `0x${'99'.repeat(20)}`, JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY },
     { JACKPOT_PAUSED: 'true', JACKPOT_UI_HIDDEN: 'true', JACKPOT_MAX_TX_FEE_WEI: '-1', JACKPOT_ADMIN_WALLET: 'garbage' },
@@ -160,4 +161,97 @@ test('LITVM_JACKPOT is imported statically so the Vercel tracer bundles it', () 
   const source = readFileSync(new URL('../server/config.mjs', import.meta.url), 'utf8');
   assert.match(source, /^import \{ LITVM_JACKPOT \} from '\.\.\/apps\/portal\/src\/generated\/litvm-jackpot\.mjs';$/m);
   assert.doesNotMatch(source, /import\(\s*['"][^'"]*litvm-jackpot/, 'never a dynamic import');
+});
+
+// AC17 (contract §11 rule 13): scripts/jackpot-secrets.mjs. A fake Vercel CLI
+// records every call; the key file is read through the injected reader.
+test('jackpot secrets travel only over stdin', async () => {
+  assert.equal(JACKPOT_APPLY_CONFIRM, 'SET_JACKPOT_SECRETS');
+  assert.deepEqual(JACKPOT_SECRET_NAMES, ['JACKPOT_KEEPER_PRIVATE_KEY', 'JACKPOT_CONTRACT_ADDRESS']);
+  const keeperAddress = new ethers.Wallet(KEEPER_KEY).address.toLowerCase();
+  const OPERATOR_KEY = `0x${'6e'.repeat(32)}`;
+  const files = { 'C:/vault/jackpot-keeper.json': JSON.stringify({ address: keeperAddress, privateKey: KEEPER_KEY, operator: OPERATOR_KEY, deployer: OPERATOR_KEY }) };
+  const readFile = (path) => {
+    if (!Object.hasOwn(files, path)) throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+    return files[path];
+  };
+  function fakeVercel() {
+    const calls = [];
+    const names = new Set(['SESSION_SECRET']);
+    const runVercel = async (args, { stdin = null } = {}) => {
+      calls.push({ args: [...args], stdin });
+      if (args[0] === 'env' && args[1] === 'ls') return { code: 0, stdout: JSON.stringify({ envs: [...names].map((key) => ({ key })) }), stderr: '' };
+      if (args[0] === 'env' && args[1] === 'add') {
+        names.add(args[2]);
+        return { code: 0, stdout: '', stderr: '' };
+      }
+      return { code: 1, stdout: '', stderr: 'unexpected' };
+    };
+    return { calls, runVercel };
+  }
+  const run = async (argv, extra = {}) => {
+    const vercel = fakeVercel();
+    const logs = [];
+    const code = await runJackpotSecrets({ argv, env: {}, runVercel: vercel.runVercel, readFile, log: (line) => logs.push(line), deployment: DEPLOYED, jackpotModule: jackpotDeploymentFixture(), allowJackpotOverride: true, ...extra });
+    return { code, calls: vercel.calls, logs, text: logs.join('\n') };
+  };
+  const neverLeaks = (result) => {
+    const everything = JSON.stringify(result.calls.map((call) => call.args)) + result.text;
+    for (const secret of [KEEPER_KEY, KEEPER_KEY.slice(2), OPERATOR_KEY, OPERATOR_KEY.slice(2)]) assert.equal(everything.includes(secret), false, 'no key in an argument or a log line');
+  };
+
+  // The dry run (default): names only, nothing added.
+  const dry = await run(['--key-file', 'C:/vault/jackpot-keeper.json']);
+  assert.equal(dry.code, 0, dry.text);
+  assert.deepEqual(dry.calls.map((call) => call.args.slice(0, 3).join(' ')), ['env ls production']);
+  assert.match(dry.text, /would set JACKPOT_KEEPER_PRIVATE_KEY in production \(--key-file field "privateKey" \(address 0x[0-9a-f]{40}\)\)/);
+  assert.match(dry.text, new RegExp(`would set JACKPOT_CONTRACT_ADDRESS in production`));
+  assert.match(dry.text, /DRY RUN: names only/);
+  neverLeaks(dry);
+
+  // Every refusal happens before any env add.
+  for (const [argv, expected, extra] of [
+    [['--key-file', 'C:/vault/jackpot-keeper.json', '--apply'], /Apply blocked: add --confirm SET_JACKPOT_SECRETS/],
+    [['--key-file', 'C:/vault/jackpot-keeper.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS', '--jackpot', 'x.mjs'], /--jackpot is for dry runs/],
+    [['--apply', '--confirm', 'SET_JACKPOT_SECRETS'], /--key-file .* is required/],
+    [['--key-file', 'C:/vault/jackpot-keeper.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS'], /the jackpot module is 'undeployed'/, { jackpotModule: jackpotDeploymentFixture({ status: 'undeployed' }) }],
+    [['--key-file', 'C:/vault/jackpot-keeper.json', '--key', KEEPER_KEY], /unknown option --key/],
+  ]) {
+    // eslint-disable-next-line no-await-in-loop
+    const refused = await run(argv, extra);
+    assert.equal(refused.code, 2, refused.text);
+    assert.match(refused.text, expected);
+    assert.equal(refused.calls.some((call) => call.args[1] === 'add'), false);
+    neverLeaks(refused);
+  }
+  // A key field named like another role's is refused before the file is read.
+  for (const field of ['operator', 'deployer', 'operatorKey', 'admin', 'relayer']) {
+    // eslint-disable-next-line no-await-in-loop
+    await assert.rejects(run(['--key-file', 'C:/vault/jackpot-keeper.json', '--key-field', field, '--apply', '--confirm', 'SET_JACKPOT_SECRETS']), /refusing --key-field .*the operator key never does/, field);
+  }
+  // A key that is not the module's keeper, or is the settle relayer's, is refused.
+  files['C:/vault/other.json'] = JSON.stringify({ privateKey: `0x${'4b'.repeat(32)}` });
+  await assert.rejects(run(['--key-file', 'C:/vault/other.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS']), /but the jackpot module's keeper is/);
+  await assert.rejects(run(['--key-file', 'C:/vault/other.json'], { deployment: { ...DEPLOYED, relayer: new ethers.Wallet(`0x${'4b'.repeat(32)}`).address.toLowerCase() } }), /the settle relayer's/);
+
+  // Apply: each value goes to its own vercel env add, on stdin only, then the listing is checked.
+  const applied = await run(['--key-file', 'C:/vault/jackpot-keeper.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS']);
+  assert.equal(applied.code, 0, applied.text);
+  const adds = applied.calls.filter((call) => call.args[1] === 'add');
+  assert.deepEqual(adds.map((call) => call.args), [
+    ['env', 'add', 'JACKPOT_KEEPER_PRIVATE_KEY', 'production', '--sensitive', '--force', '--yes'],
+    ['env', 'add', 'JACKPOT_CONTRACT_ADDRESS', 'production', '--sensitive', '--force', '--yes'],
+  ]);
+  assert.deepEqual(adds.map((call) => call.stdin), [KEEPER_KEY, JACKPOT]);
+  assert.deepEqual(applied.calls.map((call) => call.args.slice(0, 2).join(' ')), ['env ls', 'env add', 'env add', 'env ls']);
+  assert.match(applied.text, /Verified: production has JACKPOT_KEEPER_PRIVATE_KEY, JACKPOT_CONTRACT_ADDRESS/);
+  assert.equal(applied.calls.some((call) => call.args.some((arg) => /JACKPOT_(PAUSED|UI_HIDDEN)|JACKPOT_LIVE/.test(arg))), false, 'never flips a flag');
+  neverLeaks(applied);
+
+  // The committed module (undeployed today) blocks --apply without the test override.
+  const committed = await run(['--key-file', 'C:/vault/jackpot-keeper.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS'], { allowJackpotOverride: false });
+  assert.deepEqual([committed.code, LITVM_JACKPOT.status], [2, 'undeployed']);
+  assert.match(committed.text, /Apply blocked: the jackpot module is 'undeployed'/);
+  const source = readFileSync(new URL('../scripts/jackpot-secrets.mjs', import.meta.url), 'utf8');
+  assert.match(source, /from '\.\/vercel-secrets\.mjs'/, 'reuses the vercel-secrets runner and listing parser');
 });

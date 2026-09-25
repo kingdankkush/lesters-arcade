@@ -10,6 +10,10 @@ import { seedTicketMacInput } from '../server/verify/seed-ticket.mjs';
 import {
   countTicketsBefore, countWalletTickets, logSeedTicket, logSeedTicketInBackground, pruneTickets, readSessionTickets, settleTicketLogs,
 } from '../server/jackpot/ticket-log.mjs';
+import { MIN_PRUNE_DAYS, parseJackpotOpsArgs, runJackpotOps } from '../scripts/jackpot-ops.mjs';
+import { migrate } from '../server/neon/migrations.mjs';
+import { casAction, casWeekStatus, createAction, ensureWeekRow, readAction, readCandidate, readWeekRow, upsertCandidate } from '../server/jackpot/store.mjs';
+import { weekIndexOfKey } from '../server/jackpot/weeks.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import { createCatalogDouble, createVerifyDouble, fixtureEnv, SETTLE_SESSION_VALUE } from './helpers/settle-fixtures.mjs';
@@ -19,7 +23,9 @@ import { createCatalogDouble, createVerifyDouble, fixtureEnv, SETTLE_SESSION_VAL
  * ticket to seed_ticket_log with one best-effort background call. The row is
  * written, and a database failure, a missing table or a hung insert still
  * answers 200 with the very same ticket, at once. The seed tests in
- * tests/server-settle-core.test.mjs run unchanged.
+ * tests/server-settle-core.test.mjs run unchanged. AC17: scripts/jackpot-ops.mjs
+ * is a dry run by default, needs each command's confirm phrase, refuses while
+ * the schema is behind and never rescreens an admin-reviewed session.
  */
 
 const REGISTRY = '0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55';
@@ -164,4 +170,82 @@ test('the settle path gains exactly one best-effort call', () => {
   const call = source.indexOf('logSeedTicketInBackground(db');
   assert.ok(call > source.indexOf('await issueSeedTicket('), 'after issueSeedTicket succeeds');
   assert.ok(source.lastIndexOf('try {', call) > source.indexOf('await issueSeedTicket('), 'inside its own try/catch');
+});
+
+test('jackpot ops: dry runs, confirm phrases, the schema guard and the admin lock', async () => {
+  const db = createPgliteClient();
+  const lines = [];
+  const ops = (argv) => runJackpotOps({ argv, db, out: (line) => lines.push(line), nowMs: NOW });
+  const CONTRACT = `0x${'ab12'.repeat(10)}`;
+  const TOKEN = { address: `0x${'7e'.repeat(20)}`, symbol: 'tCHIKUN', decimals: 18, testnet: true };
+  const FAILED_WEEK = '2026-W39';
+  const REVIEW_WEEK = '2026-W40';
+  const session = (byte) => `0x${byte.repeat(32)}`;
+  try {
+    // Argument checks never touch the database.
+    for (const argv of [[], ['nope'], ['requeue'], ['requeue', '--week', '2026-40'], ['rescreen', '--session', '0x12'], ['prune-tickets', '--older-than', '30d'], ['prune-tickets', '--older-than', '60'], ['status', '--apply']]) {
+      assert.equal(parseJackpotOpsArgs(argv).ok, false, JSON.stringify(argv));
+    }
+    assert.equal(MIN_PRUNE_DAYS, 60);
+    assert.deepEqual((await ops(['requeue', '--week', FAILED_WEEK, '--apply', '--confirm', 'WRONG'])).exitCode, 2);
+    assert.match(lines.at(-1), /--apply needs --confirm REQUEUE_JACKPOT; nothing was written\./);
+    assert.equal((await runJackpotOps({ argv: ['status'], env: {}, out: (line) => lines.push(line) })).exitCode, 2, 'no NEON_DATABASE_URL');
+
+    // The schema guard: an unmigrated database is never read or written.
+    assert.deepEqual(await ops(['status']), { exitCode: 1, changed: false });
+    assert.match(lines.at(-1), /^schema not migrated \(version 0 of 3\)/);
+    await migrate(db);
+
+    // A failed week with a dead finalize, and a review week with two candidates.
+    await ensureWeekRow(db, { contract: CONTRACT, weekIndex: weekIndexOfKey(FAILED_WEEK), token: TOKEN });
+    assert.equal(await casWeekStatus(db, { contract: CONTRACT, weekKey: FAILED_WEEK, from: 'open', to: 'failed' }), true);
+    const { action } = await createAction(db, { contract: CONTRACT, weekIndex: weekIndexOfKey(FAILED_WEEK), kind: 'finalize' });
+    assert.equal(await casAction(db, { id: action.id, from: 'pending', to: 'dead', set: { last_error: 'rpc-timeout' } }), true);
+    await ensureWeekRow(db, { contract: CONTRACT, weekIndex: weekIndexOfKey(REVIEW_WEEK), token: TOKEN });
+    assert.equal(await casWeekStatus(db, { contract: CONTRACT, weekKey: REVIEW_WEEK, from: 'open', to: 'review' }), true);
+    for (const [byte, score] of [['c1', 900], ['c2', 800]]) {
+      await upsertCandidate(db, { contract: CONTRACT, weekKey: REVIEW_WEEK, sessionId32: session(byte), wallet: `0x${byte.repeat(20)}`, score, source: 'keeper' });
+    }
+    await db.query("UPDATE jackpot_candidates SET screen = 'hold', screen_codes = 'H3', review = 'flagged', admin_reviewed = true WHERE session_id32 = $1", [session('c1')]);
+    await db.query("UPDATE jackpot_candidates SET screen = 'pass', review = 'cleared' WHERE session_id32 = $1", [session('c2')]);
+
+    lines.length = 0;
+    assert.deepEqual(await ops(['status']), { exitCode: 0, changed: false });
+    assert.ok(lines.some((line) => line.startsWith(`${REVIEW_WEEK} ${CONTRACT.slice(0, 10)}… review`)), lines.join('\n'));
+    assert.ok(lines.some((line) => line.includes(`${FAILED_WEEK}`) && line.includes('failed') && line.includes('dead 1')), lines.join('\n'));
+
+    // requeue: a dry run changes nothing; the phrase moves the dead action and the failed week.
+    assert.deepEqual(await ops(['requeue', '--week', FAILED_WEEK]), { exitCode: 0, changed: false });
+    assert.equal((await readAction(db, action.id)).status, 'dead');
+    assert.deepEqual(await ops(['requeue', '--week', FAILED_WEEK, '--apply', '--confirm', 'REQUEUE_JACKPOT']), { exitCode: 0, changed: true });
+    assert.equal((await readAction(db, action.id)).status, 'pending');
+    assert.equal((await readWeekRow(db, { contract: CONTRACT, weekKey: FAILED_WEEK })).status, 'selecting');
+
+    // rescreen: never an admin-reviewed session; a dry run first; the phrase resets the screen.
+    lines.length = 0;
+    assert.deepEqual(await ops(['rescreen', '--session', session('c1'), '--apply', '--confirm', 'RESCREEN_JACKPOT']), { exitCode: 1, changed: false });
+    assert.match(lines.join('\n'), /Refusing: the admin reviewed or disqualified this session/);
+    assert.equal((await readCandidate(db, { contract: CONTRACT, sessionId32: session('c1') })).screen, 'hold');
+    assert.deepEqual(await ops(['rescreen', '--session', session('c2')]), { exitCode: 0, changed: false });
+    assert.equal((await readCandidate(db, { contract: CONTRACT, sessionId32: session('c2') })).screen, 'pass');
+    assert.deepEqual(await ops(['rescreen', '--session', session('c2'), '--apply', '--confirm', 'RESCREEN_JACKPOT']), { exitCode: 0, changed: true });
+    assert.equal((await readCandidate(db, { contract: CONTRACT, sessionId32: session('c2') })).screen, 'pending');
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM jackpot_actions WHERE session_id32 IS NOT NULL'))[0].n, 0, 'a rescreen creates no clear or flag itself');
+    assert.equal((await ops(['rescreen', '--session', session('d9')])).exitCode, 1, 'not a candidate');
+
+    // prune-tickets: counts first, deletes only with the phrase.
+    await db.query(`INSERT INTO seed_ticket_log (mac, wallet, session_handle, game_id, season_id, build_hash, salt, week_key, issued_at)
+      VALUES ($1, $2, $3, 'chikun', 'chikun-season-preview-1', 'site-1', $5, '2026-W27', $4::timestamptz)`, ['ab'.repeat(32), PLAYER, SESSION, new Date(NOW - 61 * 86_400_000).toISOString(), 'cd'.repeat(16)]);
+    const before = await countTicketsBefore(db, { beforeIso: new Date(NOW - 60 * 86_400_000).toISOString() });
+    assert.equal(before, 1, 'the 61-day-old row');
+    lines.length = 0;
+    assert.deepEqual(await ops(['prune-tickets', '--older-than', '60d']), { exitCode: 0, changed: false });
+    assert.match(lines[0], new RegExp(`^seed_ticket_log: ${before} row\\(s\\) issued before`));
+    assert.equal(await countTicketsBefore(db, { beforeIso: new Date(NOW - 60 * 86_400_000).toISOString() }), before);
+    assert.equal((await ops(['prune-tickets', '--older-than', '60d', '--apply', '--confirm', 'PRUNE_TICKET_LOG'])).exitCode, 0);
+    assert.equal(await countTicketsBefore(db, { beforeIso: new Date(NOW - 60 * 86_400_000).toISOString() }), 0);
+    assert.doesNotMatch(lines.join('\n'), /postgres|npg_|NEON_DATABASE_URL=/);
+  } finally {
+    await db.close();
+  }
 });
