@@ -158,7 +158,7 @@ test('the first request migrates an unmigrated or a version-1 database (A34)', a
     assert.equal(response.status, 200);
     assert.deepEqual([response.body.degraded, response.body.queue.pending, response.body.queue.oldestUnconfirmedAgeSeconds, response.body.index.cursorBlock, response.body.index.lagBlocks], [false, 0, null, null, null], 'an empty queue and no cursor are facts, not failures');
     assert.deepEqual(response.body.crons.indexChain, { lastOkAt: null, lastErrorAt: null, lastErrorCode: null, runs: 0, failures: 0 });
-    assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), [1, 2]);
+    assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), [1, 2, 3]);
   });
   await withDb(async (db) => {
     for (const statement of MIGRATIONS[0].statements) await db.query(statement);

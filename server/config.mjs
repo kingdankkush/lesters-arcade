@@ -6,13 +6,26 @@
 // relayer.createWallet(ethers, provider) and cron.matches(header). toJSON,
 // toString and the util.inspect hook all return a redacted summary, so a
 // config that slips into a log or a response leaks nothing.
+//
+// config.jackpot (Chikun Weekly Jackpot design §C.1) is a separate frozen
+// part: the keeper key lives only in the closure keeper.createWallet(ethers,
+// provider), JACKPOT_CONTRACT_ADDRESS is cross-checked against the statically
+// imported LITVM_JACKPOT (so the Vercel file tracer bundles it), and nothing
+// jackpot-related ever reaches `missing` or `settlementReady`: a jackpot
+// misconfiguration can never 503 /api/settle or the settle-retry cron.
+// Test seam (J2 → J3): readServerConfig(env, { deployment, jackpotDeployment })
+// overrides the committed (undeployed) LITVM_JACKPOT; never read from env.
 
 import * as nodeCrypto from 'node:crypto';
 import { createNeonClient, neonSchemaKeyFor } from '../apps/portal/src/server-neon.mjs';
+import { LITVM_JACKPOT } from '../apps/portal/src/generated/litvm-jackpot.mjs';
 import { loadDeployment, UNAVAILABLE_DEPLOYMENT } from './deployment.mjs';
 
 export const DEFAULT_RPC_URL = 'https://liteforge.rpc.caldera.xyz/http';
 export const DEFAULT_MIN_PAID_WEI = '102000000000000000';
+// 0.01 zkLTC per keeper transaction (design §C.1, JACKPOT_MAX_TX_FEE_WEI).
+export const DEFAULT_JACKPOT_MAX_TX_FEE_WEI = '10000000000000000';
+export const JACKPOT_ENV_NAMES = Object.freeze(['JACKPOT_KEEPER_PRIVATE_KEY', 'JACKPOT_CONTRACT_ADDRESS', 'JACKPOT_PAUSED', 'JACKPOT_UI_HIDDEN', 'JACKPOT_MAX_TX_FEE_WEI', 'JACKPOT_ADMIN_WALLET']);
 export const LEGACY_ENV_NAMES = Object.freeze(['VERIFIER_PRIVATE_KEY', 'RELAYER_PRIVATE_KEY', 'SCORE_REGISTRY_ADDRESS']);
 export const PRODUCTION_SESSION_DOMAINS = Object.freeze(['lestersarcade.io', 'www.lestersarcade.io']);
 const LOCAL_SESSION_DOMAINS = Object.freeze(['localhost', '127.0.0.1']);
@@ -52,7 +65,89 @@ function parsePostgresUrl(value) {
   }
 }
 
-export function readServerConfig(env = process.env, { deployment = null } = {}) {
+// The jackpot part of the config (design §C.1). Secrets stay in closures; the
+// frozen object carries only public facts. `jackpotDeployment` overrides the
+// statically imported LITVM_JACKPOT (tests and the local rehearsal only).
+export function readJackpotConfig(source, { jackpotDeployment = null } = {}) {
+  const env = source && typeof source === 'object' ? source : {};
+  const dep = jackpotDeployment && typeof jackpotDeployment === 'object' ? jackpotDeployment : LITVM_JACKPOT;
+  const instance = dep?.instances?.chikun ?? null;
+  const deployed = dep?.status === 'deployed';
+
+  const keeperKey = text(env.JACKPOT_KEEPER_PRIVATE_KEY);
+  const keeperConfigured = PRIVATE_KEY.test(keeperKey);
+  const keeper = Object.freeze({
+    configured: keeperConfigured,
+    // The keeper wallet, created only when a send is due (A28 pattern).
+    createWallet(ethers, provider) {
+      if (!keeperConfigured) throw new Error('keeper-not-configured');
+      return new ethers.Wallet(keeperKey, provider);
+    },
+    // The keeper's public address (lowercase), or null; never the key.
+    address(ethers) {
+      if (!keeperConfigured) return null;
+      return ethers.computeAddress(keeperKey).toLowerCase();
+    },
+  });
+
+  const contractText = text(env.JACKPOT_CONTRACT_ADDRESS);
+  const contractConfigured = ADDRESS.test(contractText);
+  const contractAddress = contractConfigured ? contractText.toLowerCase() : null;
+  const deployedAddress = String(instance?.address ?? '').toLowerCase();
+  const contract = Object.freeze({
+    configured: contractConfigured,
+    address: contractAddress,
+    matchesDeployment: Boolean(deployed && contractAddress && ADDRESS.test(deployedAddress) && contractAddress === deployedAddress),
+  });
+
+  const feeText = text(env.JACKPOT_MAX_TX_FEE_WEI);
+  const maxTxFeeWei = /^[0-9]{1,78}$/.test(feeText) && BigInt(feeText) > 0n ? feeText : DEFAULT_JACKPOT_MAX_TX_FEE_WEI;
+  // JACKPOT_ADMIN_WALLET is an extra constraint on the review API, never the
+  // only gate. A value that is present but not an address locks the review
+  // API for everyone (fail closed).
+  const adminText = text(env.JACKPOT_ADMIN_WALLET);
+  const adminWallet = Object.freeze({
+    configured: adminText !== '',
+    address: ADDRESS.test(adminText) ? adminText.toLowerCase() : null,
+    invalid: adminText !== '' && !ADDRESS.test(adminText),
+  });
+
+  const missing = [];
+  if (!keeperConfigured) missing.push('JACKPOT_KEEPER_PRIVATE_KEY');
+  if (!contractConfigured) missing.push('JACKPOT_CONTRACT_ADDRESS');
+  if (!deployed) missing.push('jackpot-not-deployed');
+  if (contractConfigured && deployed && !contract.matchesDeployment) missing.push('jackpot-address-mismatch');
+  const missingList = Object.freeze(missing);
+  const ready = keeperConfigured && contractConfigured && contract.matchesDeployment && deployed;
+
+  const summary = () => ({
+    ready,
+    keeper: { configured: keeperConfigured },
+    contract: { configured: contractConfigured, address: contractAddress, matchesDeployment: contract.matchesDeployment },
+    paused: env.JACKPOT_PAUSED === 'true',
+    uiHidden: env.JACKPOT_UI_HIDDEN === 'true',
+    maxTxFeeWei,
+    adminWallet: { configured: adminWallet.configured, address: adminWallet.address, invalid: adminWallet.invalid },
+    deployment: { status: dep?.status ?? 'unavailable', chainId: dep?.chainId ?? null },
+    missing: [...missingList],
+  });
+  return Object.freeze({
+    ready,
+    keeper,
+    contract,
+    paused: env.JACKPOT_PAUSED === 'true',
+    uiHidden: env.JACKPOT_UI_HIDDEN === 'true',
+    maxTxFeeWei,
+    adminWallet,
+    deployment: dep,
+    missing: missingList,
+    toJSON: summary,
+    toString: () => `JackpotConfig ${JSON.stringify(summary())}`,
+    [INSPECT]: () => `JackpotConfig ${JSON.stringify(summary())}`,
+  });
+}
+
+export function readServerConfig(env = process.env, { deployment = null, jackpotDeployment = null } = {}) {
   const source = env && typeof env === 'object' ? env : {};
   const environment = text(source.VERCEL_ENV) || 'production';
   const isProduction = environment === 'production';
@@ -146,6 +241,8 @@ export function readServerConfig(env = process.env, { deployment = null } = {}) 
   if (registryConfigured && dep?.status === 'deployed' && !scoreRegistry.matchesDeployment) missing.push('address-mismatch');
   const missingList = Object.freeze(missing);
   const settlementReady = missingList.length === 0;
+  // Separate from `missing` and `settlementReady` by construction (§C.1).
+  const jackpot = readJackpotConfig(source, { jackpotDeployment });
 
   const summary = () => ({
     chainId,
@@ -165,6 +262,7 @@ export function readServerConfig(env = process.env, { deployment = null } = {}) 
     settlementReady,
     missing: [...missingList],
     legacyEnvPresent: [...legacyEnvPresent],
+    jackpot: jackpot.toJSON(),
   });
   const redacted = () => `ServerConfig ${JSON.stringify(summary())}`;
 
@@ -186,6 +284,7 @@ export function readServerConfig(env = process.env, { deployment = null } = {}) 
     settlementReady,
     missing: missingList,
     legacyEnvPresent,
+    jackpot,
     toJSON: summary,
     toString: redacted,
     [INSPECT]: redacted,
@@ -201,10 +300,11 @@ function nowFunction(value) {
 // Shared deps for the index endpoints (A30). `cache` is the calling module's
 // own module-scope object, so each function keeps one Neon client per
 // process and the ensureSchema memo hits (A34). Overrides are exactly db,
-// provider, deployment, nowMs, fetchImpl and crypto.
+// provider, deployment, nowMs, fetchImpl and crypto; the jackpot handlers
+// also pass jackpotDeployment (design §C.1), which only reaches the config.
 export async function buildBaseDeps(env = process.env, overrides = {}, cache = {}) {
   const deployment = overrides.deployment ?? await loadDeployment();
-  const config = readServerConfig(env, { deployment });
+  const config = readServerConfig(env, { deployment, jackpotDeployment: overrides.jackpotDeployment ?? null });
   const fetchImpl = overrides.fetchImpl ?? globalThis.fetch;
   let db = null;
   if (Object.hasOwn(overrides, 'db')) {

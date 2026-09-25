@@ -57,7 +57,7 @@ test('a moderation run on an unmigrated database only reads and never migrates',
       const spy = spyClient(db);
       const log = recorder();
       assert.deepEqual(await runModerateProfile({ argv, db: spy, out: log.out }), { exitCode: 1, changed: false }, argv.join(' '));
-      assert.match(log.text(), /schema not migrated \(version 0 of 2\); run the E12 cron or scripts\/neon-migrate\.mjs first\. Nothing was written\./);
+      assert.match(log.text(), /schema not migrated \(version 0 of 3\); run the E12 cron or scripts\/neon-migrate\.mjs first\. Nothing was written\./);
       assert.deepEqual([...new Set(spy.statements)], ['SELECT'], `${argv.join(' ')} sent only SELECT statements`);
     }
     assert.deepEqual(await publicTables(db), [], 'no table was created');
@@ -132,8 +132,8 @@ test('neon-migrate is a dry run by default and needs the confirm phrase to apply
   try {
     const spy = spyClient(db);
     const dry = recorder();
-    assert.deepEqual(await runNeonMigrate({ argv: [], db: spy, out: dry.out }), { exitCode: 0, version: 0, pending: [1, 2], applied: [] });
-    assert.deepEqual(dry.lines, ['pending migrations: 1, 2', 'schema version: 0', 'dry run: nothing was migrated. Re-run with --apply --confirm APPLY_MIGRATIONS to apply.']);
+    assert.deepEqual(await runNeonMigrate({ argv: [], db: spy, out: dry.out }), { exitCode: 0, version: 0, pending: [1, 2, 3], applied: [] });
+    assert.deepEqual(dry.lines, ['pending migrations: 1, 2, 3', 'schema version: 0', 'dry run: nothing was migrated. Re-run with --apply --confirm APPLY_MIGRATIONS to apply.']);
     assert.deepEqual([...new Set(spy.statements)], ['SELECT'], 'the dry run only reads');
     assert.deepEqual(await publicTables(db), [], 'the dry run created nothing');
     for (const argv of [['--apply'], ['--apply', '--confirm', 'HIDE_PROFILE'], ['--confirm', 'APPLY_MIGRATIONS', '--apply=yes'], ['--force']]) {
@@ -151,14 +151,14 @@ test('neon-migrate applies versions once and never prints the URL', async () => 
   const db = createPgliteClient();
   try {
     const first = recorder();
-    assert.deepEqual(await runNeonMigrate({ argv: APPLY, db, out: first.out }), { exitCode: 0, version: 2, pending: [], applied: [1, 2] });
-    assert.deepEqual(first.lines, ['applied migrations: 1, 2', 'schema version: 2']);
+    assert.deepEqual(await runNeonMigrate({ argv: APPLY, db, out: first.out }), { exitCode: 0, version: 3, pending: [], applied: [1, 2, 3] });
+    assert.deepEqual(first.lines, ['applied migrations: 1, 2, 3', 'schema version: 3']);
     const second = recorder();
-    assert.deepEqual(await runNeonMigrate({ argv: APPLY, db, out: second.out }), { exitCode: 0, version: 2, pending: [], applied: [] });
-    assert.deepEqual(second.lines, ['no migrations to apply', 'schema version: 2']);
+    assert.deepEqual(await runNeonMigrate({ argv: APPLY, db, out: second.out }), { exitCode: 0, version: 3, pending: [], applied: [] });
+    assert.deepEqual(second.lines, ['no migrations to apply', 'schema version: 3']);
     const dry = recorder();
-    assert.deepEqual(await runNeonMigrate({ argv: [], db, out: dry.out }), { exitCode: 0, version: 2, pending: [], applied: [] });
-    assert.deepEqual(dry.lines, ['no migrations to apply', 'schema version: 2']);
+    assert.deepEqual(await runNeonMigrate({ argv: [], db, out: dry.out }), { exitCode: 0, version: 3, pending: [], applied: [] });
+    assert.deepEqual(dry.lines, ['no migrations to apply', 'schema version: 3']);
   } finally {
     await db.close();
   }

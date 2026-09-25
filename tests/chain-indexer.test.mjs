@@ -328,14 +328,14 @@ test('the cron migrates first and reports the schema version', async () => {
     const response = await invoke(cronHandler({ db, chain }), { url: '/api/cron/index-chain', headers: { Authorization: `Bearer ${CRON_VALUE}` } });
     assert.equal(response.status, 200, JSON.stringify(response.body));
     assert.equal(response.headers['cache-control'], 'no-store');
-    assert.equal(response.body.schemaVersion, 2);
-    assert.deepEqual(response.body.appliedMigrations, [1, 2], 'the unmigrated database was migrated by the cron');
+    assert.equal(response.body.schemaVersion, 3);
+    assert.deepEqual(response.body.appliedMigrations, [1, 2, 3], 'the unmigrated database was migrated by the cron');
     assert.deepEqual(
       [response.body.fromBlock, response.body.toBlock, response.body.scores, response.body.achievements, response.body.profiles, response.body.skipped, response.body.mismatches, response.body.lagBlocks],
       [1, 10, 1, 0, 0, 0, 0, 0],
     );
     const again = await invoke(cronHandler({ db, chain }), { url: '/api/cron/index-chain', headers: { authorization: `Bearer ${CRON_VALUE}` } });
-    assert.deepEqual([again.body.schemaVersion, again.body.appliedMigrations], [2, []]);
+    assert.deepEqual([again.body.schemaVersion, again.body.appliedMigrations], [3, []]);
     const failing = await invoke(cronHandler({ db, chain: fakeChain({ failGetLogs: true, head: 20 }) }), { url: '/api/cron/index-chain', headers: { authorization: `Bearer ${CRON_VALUE}` } });
     assert.deepEqual([failing.status, failing.body.error], [502, 'chain-read-failed']);
   } finally {
@@ -370,7 +370,7 @@ test('not-deployed skips cleanly', async () => {
       assert.equal(response.status, 200);
       assert.equal(response.body.ok, true);
       assert.equal(response.body.skipped, 'not-deployed');
-      assert.equal(response.body.schemaVersion, 2);
+      assert.equal(response.body.schemaVersion, 3);
     }
     assert.equal(chain.filters.length, 0, 'no chain reads before deployment');
     assert.equal((await db.query('SELECT count(*)::int AS n FROM verified_sessions')).at(0).n, 0);
@@ -389,10 +389,10 @@ test('the cron needs RANKED_SCORE_REGISTRY_ADDRESS to match the deployment', asy
     const { RANKED_SCORE_REGISTRY_ADDRESS: _unused, ...withoutRegistry } = env;
     const absent = await invoke(cronHandler({ db, chain, envOverride: withoutRegistry }), { url: '/api/cron/index-chain', headers });
     assert.deepEqual([absent.status, absent.body.error, absent.body.detail], [503, 'settlement-not-configured', 'RANKED_SCORE_REGISTRY_ADDRESS']);
-    assert.deepEqual([absent.body.schemaVersion, absent.body.appliedMigrations], [2, [1, 2]], 'the migration step still runs (§13 step 8b)');
+    assert.deepEqual([absent.body.schemaVersion, absent.body.appliedMigrations], [3, [1, 2, 3]], 'the migration step still runs (§13 step 8b)');
     assert.equal(absent.headers['cache-control'], 'no-store');
     const other = await invoke(cronHandler({ db, chain, envOverride: { ...env, RANKED_SCORE_REGISTRY_ADDRESS: `0x${'9f'.repeat(20)}` } }), { url: '/api/cron/index-chain', headers });
-    assert.deepEqual([other.status, other.body.error, other.body.schemaVersion], [503, 'address-mismatch', 2]);
+    assert.deepEqual([other.status, other.body.error, other.body.schemaVersion], [503, 'address-mismatch', 3]);
     const malformed = await invoke(cronHandler({ db, chain, envOverride: { ...env, RANKED_SCORE_REGISTRY_ADDRESS: 'not-an-address' } }), { url: '/api/cron/index-chain', headers });
     assert.deepEqual([malformed.status, malformed.body.error], [503, 'settlement-not-configured']);
     assert.equal(chain.filters.length, 0, 'nothing is indexed from a misconfigured environment');
