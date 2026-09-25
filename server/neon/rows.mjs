@@ -4,6 +4,8 @@
 // The game table mirrors RANKED_GAMES (verify slice, ranked-identity.mjs); a
 // test pins the 32-byte ids against ethers.id so the two cannot drift.
 
+import { versionLabelFor } from '../../apps/portal/src/game-version-labels.mjs';
+
 export const EXPLORER_TX_BASE = 'https://liteforge.explorer.caldera.xyz/tx/';
 
 export const INDEX_GAMES = Object.freeze({
@@ -135,6 +137,17 @@ export function verificationFor(gameId, source) {
   return INDEX_GAMES[gameId]?.verification ?? 'replay';
 }
 
+// The game version a run was played on (owner decision 2026-09-25: no testnet
+// season resets), from its stored build_hash and runtime_id. Only the label is
+// public in E5 and E6; the raw build hash is never returned. The build hash is
+// the client's (format-checked, A11), so an HMH or STACKED cabinet this deploy
+// has not shipped reads '<Game> v?' (game-version-labels.mjs SHIPPED_CABINETS).
+// A chain-index row stores no build hash; it reads the game's only shipped
+// cabinet while there is one ('HMH v0.5', 'STACKED v0.2'), else '<Game> v?'.
+export function rowVersionLabel(gameId, row) {
+  return versionLabelFor(gameId, row ? { buildHash: row.build_hash ?? null, runtimeId: row.runtime_id ?? null } : null);
+}
+
 export function leaderboardRow(gameId, row) {
   const display = publicDisplay({ hidden: row.hidden, displayName: row.display_name, avatarUri: row.avatar_uri });
   return {
@@ -145,6 +158,7 @@ export function leaderboardRow(gameId, row) {
     avatarUri: display.avatarUri,
     score: Number(row.score),
     stats: headlineStats(gameId, parseJsonText(row.stats, {})),
+    versionLabel: rowVersionLabel(gameId, row),
     sessionId32: row.session_id32,
     shareId: shareIdFor(row.session_id32),
     txHash: row.tx_hash ?? null,
@@ -165,6 +179,7 @@ export function recentSessionRow(row, { self = false } = {}) {
     verifiedAt: row.verified_at ?? null,
     confirmedAt: row.confirmed_at ?? null,
     stats: headlineStats(row.game_id, parseJsonText(row.stats, {})),
+    versionLabel: rowVersionLabel(row.game_id, row),
   };
   if (self) {
     out.retryable = isRetryable(row.status, row.next_attempt_at);

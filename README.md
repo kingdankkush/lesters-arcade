@@ -1,3 +1,9 @@
+# Lester's Arcade — 1.8.2 verified live: leaner portal, truthful copy, jackpot contracts staged
+
+Batch release after 1.8.1. The portal's and Chikun's first paint no longer download the 392 KB ethers library (a small built-in Keccak-256, proven byte-identical, computes the manifest hashes), and about 5,650 lines of unreachable legacy Canvas combat code and dead shell helpers are gone from `main.js` (no behaviour change). Signed-out game lines no longer claim an active session, and profiles show real bests ("Highest level", "Best combo") next to true totals. The Chikun Weekly Jackpot contracts (`WeeklyJackpot`, test token tCHIKUN) and their dry-run deploy and operator tools are in the repo but not deployed; nothing player-facing changes for the jackpot yet. Contracts, fees and flags of the live Ranked system are unchanged.
+
+Production deployment `dpl_C8Zcbk2jTmKAM8ZRqWn4TwZLo33Y` (source `8d11971d`); site/game version `1.8.2`; cache marker `lesters-arcade-v55-lean-portal`. The local and Vercel gates pass 4,860 of 4,911 tests with exactly 51 unchanged retired exceptions; all 145 checked public files match; the live UI audit passes 234/234 and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260925-1.8.2.json). Rollback: Instant Rollback to `dpl_4x5CB5EfB257TzrqvuDp9qRN66mv`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.8.1 verified live: post-launch polish, health monitoring, faster first load
 
 Post-launch release on top of the verified 1.8.0 Ranked launch. The owner status page (`/owner/status.html`) and the public `/api/health` report relayer balance and estimated settlements left, the settle queue, index lag, cron outcomes and the current LiteForge base fee; every server 500 now logs a redacted cause class, and both crons record their runs (Neon migration 2). The Scores and Profile route modules load on demand, cutting `dist/main.js` by about 47 KB. A read-only audit of the live site fixed keyboard focus loss in leaderboard search and tabs, the unstyled first paint of the wallet picker, other players' profile headers, low-contrast buttons, STACKED's Ranked price line, recent-run layouts and wallet capitalisation. The simulated-wallet shell banner is restored for local previews. Contracts, fees and flags are unchanged from 1.8.0.
@@ -44,7 +50,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v54-post-launch`
+**Production cache marker:** `lesters-arcade-v55-lean-portal`
 
 # Lester's Arcade
 

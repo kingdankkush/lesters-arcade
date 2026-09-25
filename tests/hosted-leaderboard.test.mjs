@@ -493,3 +493,134 @@ test('the hosted board loads on demand and preview never downloads it', async ()
   preview.markStale();
   assert.equal(loads, 0);
 });
+
+// version-column (owner decision 2026-09-25: no testnet season resets): every
+// verified score shows the game version it was played on, from E5 versionLabel.
+const VERSION_LABELS = Object.freeze({ 'lester-blaster': ['HMH v0.5', 'HMH v0.6', 'HMH v?'], chikun: ['Chikun v7', 'Chikun v6'], stacked: ['STACKED v0.2'] });
+
+function labelledFixture(gameId, total = 4) {
+  const { calls, indexApi } = e5Fixture({ total });
+  // The last row stands for an E5 body cached before the field existed.
+  const leaderboard = async (params) => {
+    const answer = await indexApi.leaderboard(params);
+    const labels = VERSION_LABELS[gameId];
+    return { ...answer, rows: answer.rows.map((row, index) => (row.rank === total ? row : { ...row, versionLabel: labels[index % labels.length] })) };
+  };
+  return { calls, indexApi: { leaderboard } };
+}
+
+test('hosted boards show the game version of each run in a Version column before Proof', async () => {
+  const { HOSTED_VERSION_COLUMN, boardVersionText, boardVersionTitle, hostedLeaderboardColumnsFor } = hostedLeaderboardView;
+  for (const gameId of ['lester-blaster', 'chikun', 'stacked']) {
+    const { indexApi } = labelledFixture(gameId);
+    const h = hostedRoute({ indexApi, routeState: { gameId } });
+    h.route.renderLeaderboards();
+    await h.route.hydrate();
+    const board = h.grid.children[1];
+    const headers = find(board, (candidate) => candidate.role === 'columnheader');
+    const labels = headers.map((cell) => text(cell));
+    assert.equal(labels.indexOf('VERSION'), labels.indexOf('PROOF') - 1, `${gameId}: Version sits right before Proof`);
+    assert.equal(headers.length, 11, `${gameId}: the hosted grid has eleven columns`);
+    const versionHead = headers[labels.indexOf('VERSION')];
+    assert.match(versionHead.className, /\bth-cell-version\b/);
+    assert.match(versionHead.className, /\blb-priority-2\b/, 'never hidden with the secondary stats');
+    const rows = rowsOf(board);
+    assert.equal(rows.length, 4);
+    rows.forEach((row, index) => {
+      // One header per cell, in the same order (screen readers pair them by position).
+      const rowCells = find(row, (candidate) => candidate.role === 'cell');
+      assert.deepEqual(rowCells.map((cell) => /\blt-cell-(\S+)/.exec(cell.className)[1]), headers.map((cell) => /\bth-cell-(\S+)/.exec(cell.className)[1]), `${gameId} row ${index + 1}`);
+      const cells = find(row, (candidate) => String(candidate.className ?? '').includes('lt-cell-version'));
+      assert.equal(cells.length, 1, `${gameId} row ${index + 1}: one version cell`);
+      assert.equal(byClass(cells[0], 'lt-cell-label')[0].textContent, 'Version', 'the phone chip is labelled');
+      const value = byClass(cells[0], 'lt-version')[0];
+      const label = index === 3 ? null : VERSION_LABELS[gameId][index % VERSION_LABELS[gameId].length];
+      assert.equal(value.textContent, label ? label.slice(label.indexOf(' ') + 1) : '—', `${gameId} row ${index + 1}: the board shows the version alone`);
+      // An unknown version and a body without the field (cached before it
+      // existed) are both muted; only the unknown one says so.
+      const title = !label ? 'Game version unavailable' : label.endsWith('v?') ? 'Game version unknown for this run' : `Played on ${label}`;
+      assert.equal(value.title, title, `${gameId} row ${index + 1}`);
+      assert.equal(String(value.className).includes('is-unknown'), !label || label.endsWith('v?'));
+    });
+  }
+  // The column helpers.
+  assert.deepEqual(hostedLeaderboardColumnsFor('chikun').map((column) => column.key), ['rank', 'name', 'score', 'obstacles', 'nearMisses', 'survive', 'coins', 'combo', 'version', 'trust', 'date']);
+  assert.equal(hostedLeaderboardColumnsFor('stacked').at(-3), HOSTED_VERSION_COLUMN);
+  assert.equal(HOSTED_VERSION_COLUMN.sortKey, null, 'the server orders the board');
+  const { leaderboardColumnsFor } = await import('../apps/portal/src/leaderboard-view.mjs');
+  for (const gameId of ['lester-blaster', 'chikun', 'stacked']) {
+    assert.equal(leaderboardColumnsFor(gameId).some((column) => column.kind === 'version'), false, 'the preview board keeps its ten columns');
+  }
+  assert.deepEqual(['HMH v0.5', 'HMH v0.6', 'Chikun v7', 'STACKED v0.2', 'HMH v?', 'v?', null].map(boardVersionText), ['v0.5', 'v0.6', 'v7', 'v0.2', 'v?', 'v?', '—']);
+  assert.equal(boardVersionTitle('STACKED v0.2'), 'Played on STACKED v0.2');
+  assert.equal(boardVersionTitle('Chikun v?'), 'Game version unknown for this run');
+  assert.equal(boardVersionTitle(null), 'Game version unavailable');
+  const { versionLabelTitle } = await import('../apps/portal/src/game-version-labels.mjs');
+  assert.equal(boardVersionTitle, versionLabelTitle, 'the board and the profile share one tooltip');
+});
+
+test('hosted entries keep only well-formed version labels', () => {
+  assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: 'Chikun v7' }).versionLabel, 'Chikun v7');
+  assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'lester-blaster'), versionLabel: 'HMH v?' }).versionLabel, 'HMH v?');
+  assert.equal(hostedLeaderboardEntry(e5Row(1, 'chikun')).versionLabel, null, 'a body without the field');
+  for (const bad of [null, 7, '', ' ', 'v', 'Chikun v7 ', ' Chikun v7', 'Chikun version 7', 'Chikun v7.1.2', '<img src=x onerror=alert(1)> v1', `${'x'.repeat(13)} v1`, { toString: () => 'HMH v0.5' }]) {
+    assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: bad }).versionLabel, null, String(bad));
+  }
+  // Review finding (version-column fixer, round 2): only the three games'
+  // names, and on a board only that board's game.
+  for (const bad of ['Pong v1', 'Admin v1']) assert.equal(hostedLeaderboardEntry({ ...e5Row(1, 'chikun'), versionLabel: bad }).versionLabel, null, bad);
+  const onBoard = (gameId, versionLabel) => hostedLeaderboardEntry({ ...e5Row(1, gameId), versionLabel }, { gameId }).versionLabel;
+  assert.equal(onBoard('lester-blaster', 'HMH v0.5'), 'HMH v0.5');
+  assert.equal(onBoard('lester-blaster', 'Chikun v0.5'), null, 'another game\'s label');
+  assert.equal(onBoard('chikun', 'STACKED v0.2'), null);
+  assert.equal(onBoard('stacked', 'v?'), null, 'a known game always names itself');
+  assert.equal(onBoard('stacked', 'STACKED v?'), 'STACKED v?');
+});
+
+// The rendered layout at 320-1440 px is measured in Chromium by
+// scripts/hosted-scores-version-layout-smoke.mjs; this pins the CSS shape.
+test('the hosted grids give the Version cell a place at every width and keep Published', async () => {
+  const { readFileSync } = await import('node:fs');
+  const css = readFileSync(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url), 'utf8');
+  const section = css.slice(css.indexOf('/* ---- Game version per score (version-column, 2026-09-25)'));
+  const tracks = (template) => template
+    .replace(/repeat\((\d+),\s*(minmax\([^)]*\)|[^)]+)\)/g, (_match, count, track) => Array(Number(count)).fill(track.replace(/\s+/g, '')).join(' '))
+    .replace(/minmax\([^)]*\)/g, (track) => track.replace(/\s+/g, ''))
+    .trim().split(/\s+/).length;
+  const templateIn = (block) => /grid-template-columns:\s*([^;]+);/.exec(block)?.[1];
+  const blocks = { desktop: section.slice(0, section.indexOf('@media')) };
+  for (const width of [1199, 1080, 760, 600]) {
+    const start = section.indexOf(`@media (max-width: ${width}px)`);
+    assert.ok(start > 0, `a ${width}px rule`);
+    blocks[width] = section.slice(start, section.indexOf('\n}\n', start));
+  }
+  // Visible hosted cells: all eleven on desktops; at 601-1199 the version
+  // shares the score's track (a second line under it), so the other ten
+  // cells keep the tracks the board had (without Proof and the two secondary
+  // stats at 1080 and below, and without Published at 760 and below, as before).
+  assert.equal(tracks(templateIn(blocks.desktop)), 11);
+  assert.equal(tracks(templateIn(blocks[1199])), 10);
+  assert.equal(tracks(templateIn(blocks[1080])), 7);
+  assert.equal(tracks(templateIn(blocks[760])), 6);
+  assert.match(blocks[1199], /\.leaderboard-trow > \.leaderboard-td \{ grid-row: 1 \/ span 2; \}/);
+  assert.match(blocks[1199], /\.leaderboard-trow > \.lt-cell-score \{ grid-row: 1; align-self: end; \}/);
+  assert.match(blocks[1199], /\.lt-cell-version \{ grid-row: 2; grid-column: 3;/);
+  // Review finding (version-column fixer, round 2): the head mirrors the rows
+  // (VERSION under SCORE) instead of hiding the Version header, so every row
+  // keeps one column header per cell for screen readers at 601-1199 px. The
+  // two stacked headers drop the 44 px minimum so the head keeps its height.
+  assert.match(blocks[1199], /\.leaderboard-table-head > \.leaderboard-th-cell \{ grid-row: 1 \/ span 2; \}/);
+  assert.match(blocks[1199], /\.leaderboard-table-head > \.th-cell-score \{ grid-row: 1; align-self: end; \}/);
+  assert.match(blocks[1199], /\.leaderboard-table-head > \.th-cell-version \{ grid-row: 2; grid-column: 3; align-self: start; justify-content: flex-end; \}/);
+  assert.match(blocks[1199], /\.th-cell-version > \.leaderboard-th \{ min-height: 0;/);
+  assert.doesNotMatch(section, /version[^{}]*\{[^}]*(?:display:\s*none|visibility:\s*hidden)/, 'no version header or cell is ever hidden');
+  assert.match(blocks[600], /\.lt-cell-label \+ \.lt-version/);
+  // Published (the date cells) is never hidden or moved by this section: the
+  // base rules still show it from 761 px up (review finding, version-column).
+  assert.doesNotMatch(section, /cell-date/);
+  assert.doesNotMatch(section, /grid-column: -2/);
+  assert.match(section, /\.leaderboard-board-v10 \.lt-version \{[^}]*white-space: nowrap;[^}]*\}/);
+  // Every grid rule of the section is scoped to hosted boards: the preview grid is untouched.
+  assert.equal((section.match(/\.leaderboard-board-hosted\.leaderboard-board-v10 \.leaderboard-table-v10 \.leaderboard-trow \{/g) ?? []).length, 4);
+  assert.equal((section.match(/grid-template-columns/g) ?? []).length, 4);
+});

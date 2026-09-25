@@ -840,7 +840,7 @@ test('the seed endpoint issues tickets only to signed-in wallets and stops when 
     { ...request, seasonId: 'hmh-season-1-2026' },
     { ...request, sessionId: 'game-session-123' },
     { ...request, buildHash: 'site-1.7.0:game-1.7.0' },
-    { ...request, gameId: 'lester-blaster', seasonId: 'hmh-season-1-2026', buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0' },
+    { ...request, gameId: 'lester-blaster', seasonId: 'hmh-season-1-2026', buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9' },
     { ...request, extra: 1 },
     { gameId: 'chikun' },
     [request],
@@ -850,6 +850,9 @@ test('the seed endpoint issues tickets only to signed-in wallets and stops when 
   }
   const hmh = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.7.0:game-1.7.0' });
   assert.equal(hmh.status, 200);
+  // The HMH cabinet segment is optional (version-column, 2026-09-25).
+  const hmhCabinet = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.8.2:game-1.8.2:cabinet-0.5.0' });
+  assert.equal(hmhCabinet.status, 200);
   assert.deepEqual((await call({ ...request, pad: 'x'.repeat(2100) })).body, { ok: false, error: 'body-too-large' });
   const unavailable = await invoke(seedHandler(ctx, { issue: null }), { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(player.address) }, body: request });
   assert.deepEqual([unavailable.status, unavailable.body.detail], [503, 'seed-ticket-unavailable'], 'no ticket without the verify slice');

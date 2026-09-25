@@ -1,0 +1,312 @@
+// The version column on the server (version-column brief, acceptance 3): E5
+// leaderboard rows, E6 recent sessions (public and self views) and E9
+// session reads carry `versionLabel`, derived from the stored build_hash and
+// runtime_id (no migration: both columns exist since migration 1). The raw
+// build hash is never returned, runtimeId stays only where it was already
+// public (E9), and every cache header is unchanged.
+import assert from 'node:assert/strict';
+import { createHmac, timingSafeEqual } from 'node:crypto';
+import test from 'node:test';
+import { ethers } from 'ethers';
+
+import { issueSessionToken } from '../apps/portal/src/server-session.mjs';
+import { versionLabelFor } from '../apps/portal/src/game-version-labels.mjs';
+import { HMH_CABINET_VERSION } from '../apps/portal/src/hmh-cabinet-version.mjs';
+import { STACKED_CABINET_VERSION } from '../apps/portal/src/stacked-cabinet.mjs';
+import { RANKED_ENTRY_ABI, SCORE_REGISTRY_ABI } from '../server/chain/abis.mjs';
+import { indexChain } from '../server/indexer/index-chain.mjs';
+import { MIGRATIONS, migrate } from '../server/neon/migrations.mjs';
+import { readLeaderboard, readPublicProfile, readPublicSession } from '../server/neon/queries.mjs';
+import { INDEX_GAMES, leaderboardRow, recentSessionRow, rowVersionLabel } from '../server/neon/rows.mjs';
+import * as leaderboardApi from '../api/leaderboard.mjs';
+import * as profileApi from '../api/profile.mjs';
+import * as sessionApi from '../api/verified-session.mjs';
+import * as sharePageApi from '../api/share-page.mjs';
+import { renderSharePage } from '../server/share/render-page.mjs';
+import { createPgliteClient, randomHex32, seedVerifiedSession } from './helpers/pglite-client.mjs';
+import { fakeRequest, fakeResponse, invoke } from './helpers/fake-http.mjs';
+
+const SESSION_VALUE = `session-fixture-${'c7'.repeat(16)}`;
+const NOW = Date.parse('2026-09-25T12:00:00.000Z');
+const env = Object.freeze({ VERCEL_ENV: 'development', SESSION_SECRET: SESSION_VALUE });
+const DEPLOYED = Object.freeze({
+  status: 'deployed', chainId: 4441, startBlock: 1,
+  addresses: Object.freeze({
+    gameRegistry: '0xcb0b695ebee650afcce93f566259cb477b19bf23', playerProfileRegistry: '0x3eb9e9f2620940496a2b8ed6f7384e6687587c94',
+    arcadeRankedEntry: '0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190', scoreSubmissionRegistry: '0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55',
+    achievementRegistries: Object.freeze({ 'lester-blaster': '0xc1a383cb7521978f429424443fdd69bdd71ff737', chikun: '0xf6cd1cf7e1accaea93accdfb911034b3e8eb6f93', stacked: '0x5430f8c142ca7ec8971a447cc09ae63f8860a8a7' }),
+  }),
+});
+const W = (n) => `0x${String(n).padStart(2, '0').repeat(20)}`;
+const ME = W(1);
+
+// The next minor of a cabinet: a version this deploy has not shipped. The
+// server format-checks a buildHash (A11) and stores it as sent, so a row can
+// claim one; its label reads '<Game> v?' instead (game-version-labels.mjs).
+const unshipped = (cabinet) => { const [major, minor] = cabinet.split('.').map(Number); return `${major}.${minor + 1}.0`; };
+
+// One HMH row per build era (and a chain-index one), one Chikun row per
+// runtime, one STACKED row, and rows claiming cabinets this deploy has not
+// shipped. The indexer's own rows are in the last test.
+const HMH_ROWS = Object.freeze([
+  { wallet: W(1), score: 9000, buildHash: 'site-1.8.1:game-1.8.1', label: 'HMH v0.5' },
+  { wallet: W(2), score: 8000, buildHash: 'site-1.8.2:game-1.8.2:cabinet-0.5.0', label: 'HMH v0.5' },
+  { wallet: W(3), score: 7000, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(HMH_CABINET_VERSION)}`, label: 'HMH v?', claimed: true },
+  { wallet: W(7), score: 6500, buildHash: 'site-1.8.1:game-1.8.1:cabinet-999999.999999.0', label: 'HMH v?', claimed: true },
+  // A chain-index row stores no build hash: HMH has shipped one cabinet, so it is 0.5.
+  { wallet: W(4), score: 6000, buildHash: null, source: 'chain-index', label: 'HMH v0.5' },
+]);
+const CHIKUN_ROWS = Object.freeze([
+  { wallet: W(1), score: 5000, runtimeId: 'chikun:canvas-runtime-v7', label: 'Chikun v7' },
+  { wallet: W(5), score: 4000, runtimeId: 'chikun:canvas-runtime-v6', label: 'Chikun v6' },
+]);
+const STACKED_ROWS = Object.freeze([
+  { wallet: W(1), score: 3000, buildHash: 'site-1.8.1:game-1.8.1:cabinet-0.2.0', label: 'STACKED v0.2' },
+  { wallet: W(6), score: 2000, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(STACKED_CABINET_VERSION)}`, label: 'STACKED v?', claimed: true },
+  { wallet: W(8), score: 1000, buildHash: 'site-1.8.1:game-1.8.1:cabinet-9.9.0', label: 'STACKED v?', claimed: true },
+]);
+
+async function seedEras(db) {
+  const seeded = [];
+  let minute = 0;
+  const at = () => new Date(Date.parse('2026-09-24T10:00:00.000Z') + (minute += 1) * 60_000).toISOString();
+  for (const row of HMH_ROWS) {
+    // A chain-index row has no handle, build hash or seed (contract §4.3.10).
+    const indexed = row.source === 'chain-index' ? { source: 'chain-index', sessionHandle: null, seed: null } : {};
+    seeded.push({ ...row, gameId: 'lester-blaster', ...(await seedVerifiedSession(db, { gameId: 'lester-blaster', wallet: row.wallet, score: row.score, buildHash: row.buildHash, openedAt: at(), ...indexed })) });
+  }
+  for (const row of CHIKUN_ROWS) {
+    seeded.push({ ...row, gameId: 'chikun', ...(await seedVerifiedSession(db, { gameId: 'chikun', wallet: row.wallet, score: row.score, runtimeId: row.runtimeId, openedAt: at() })) });
+  }
+  for (const row of STACKED_ROWS) {
+    seeded.push({ ...row, gameId: 'stacked', ...(await seedVerifiedSession(db, { gameId: 'stacked', wallet: row.wallet, score: row.score, buildHash: row.buildHash, openedAt: at() })) });
+  }
+  return seeded;
+}
+
+async function withDb(run, { migrated = true } = {}) {
+  const db = createPgliteClient();
+  try {
+    if (migrated) await migrate(db);
+    await run(db);
+  } finally {
+    await db.close();
+  }
+}
+
+function mount(api, db) {
+  return api.createHandler(() => api.buildDeps(env, { db, deployment: DEPLOYED, nowMs: NOW }));
+}
+
+function bearer(wallet) {
+  const { token } = issueSessionToken({ createHmac, timingSafeEqual }, { secret: SESSION_VALUE, wallet, nowMs: NOW, audience: 'lestersarcade:development' });
+  return `Bearer ${token}`;
+}
+
+// No public body carries a raw build hash, under any spelling.
+function assertNoBuildHash(body, label) {
+  const text = JSON.stringify(body);
+  for (const secret of ['build_hash', 'buildHash', 'site-1.', ':cabinet-']) assert.equal(text.includes(secret), false, `${label}: ${secret}`);
+}
+
+test('no migration is needed: build_hash and runtime_id are migration-1 columns', () => {
+  const first = MIGRATIONS.find((migration) => migration.version === 1);
+  const table = first.statements.find((statement) => /CREATE TABLE IF NOT EXISTS verified_sessions/.test(statement));
+  assert.match(table, /\bruntime_id\s+TEXT NOT NULL/);
+  assert.match(table, /\bbuild_hash\s+TEXT NULL/);
+  assert.equal(MIGRATIONS.some((migration) => migration.statements.some((statement) => /version_label/i.test(statement))), false, 'the label is derived, never stored');
+});
+
+test('the row mappers label every game from the stored build hash and runtime id', () => {
+  const base = { rank: 1, wallet: ME, score: '10', stats: '{}', session_id32: `0x${'ab'.repeat(32)}`, tx_hash: null, confirmed_at: null };
+  for (const row of [...HMH_ROWS.map((entry) => ({ ...entry, gameId: 'lester-blaster' })), ...CHIKUN_ROWS.map((entry) => ({ ...entry, gameId: 'chikun' })), ...STACKED_ROWS.map((entry) => ({ ...entry, gameId: 'stacked' }))]) {
+    const stored = { ...base, game_id: row.gameId, build_hash: row.buildHash ?? null, runtime_id: row.runtimeId ?? INDEX_GAMES[row.gameId].runtimeId };
+    assert.equal(rowVersionLabel(row.gameId, stored), row.label);
+    assert.equal(leaderboardRow(row.gameId, stored).versionLabel, row.label);
+    assert.equal(recentSessionRow(stored).versionLabel, row.label);
+    assert.equal(recentSessionRow(stored, { self: true }).versionLabel, row.label);
+    assert.equal(rowVersionLabel(row.gameId, stored), versionLabelFor(row.gameId, { buildHash: stored.build_hash, runtimeId: stored.runtime_id }), 'one shared module');
+  }
+  assert.equal(rowVersionLabel('chikun', {}), 'Chikun v?');
+  assert.equal(rowVersionLabel('lester-blaster', null), 'HMH v?', 'no row at all');
+  assert.equal(rowVersionLabel('lester-blaster', { build_hash: null }), 'HMH v0.5', 'a row without a build hash');
+  assert.equal(rowVersionLabel('stacked', { build_hash: null, runtime_id: INDEX_GAMES.stacked.runtimeId }), 'STACKED v0.2');
+});
+
+test('E5 rows carry the label of the run that ranks, never the raw build hash', async () => withDb(async (db) => {
+  await seedEras(db);
+  for (const [gameId, rows] of [['lester-blaster', HMH_ROWS], ['chikun', CHIKUN_ROWS], ['stacked', STACKED_ROWS]]) {
+    const board = await readLeaderboard(db, { gameId, seasonId: INDEX_GAMES[gameId].seasonId, period: 'all-time' });
+    assert.deepEqual(board.rows.map((row) => [row.wallet, row.versionLabel]), rows.map((row) => [row.wallet, row.label]), gameId);
+    for (const row of board.rows) {
+      assert.equal('buildHash' in row || 'runtimeId' in row || 'build_hash' in row, false, 'only the label is public in E5');
+    }
+    assertNoBuildHash(board, gameId);
+  }
+  // The label follows the wallet's best run: a better run on a newer build relabels the row.
+  await seedVerifiedSession(db, { gameId: 'chikun', wallet: W(5), score: 6000, runtimeId: 'chikun:canvas-runtime-v7' });
+  const chikun = await readLeaderboard(db, { gameId: 'chikun', seasonId: INDEX_GAMES.chikun.seasonId, period: 'all-time' });
+  assert.deepEqual([chikun.rows[0].wallet, chikun.rows[0].score, chikun.rows[0].versionLabel], [W(5), 6000, 'Chikun v7']);
+  // A better run claiming a cabinet this deploy has not shipped ranks (A11
+  // format-checks the build only) but never shows the claimed version.
+  await seedVerifiedSession(db, { gameId: 'lester-blaster', wallet: W(1), score: 9500, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(HMH_CABINET_VERSION)}` });
+  const board = await readLeaderboard(db, { gameId: 'lester-blaster', seasonId: INDEX_GAMES['lester-blaster'].seasonId, period: 'all-time' });
+  assert.deepEqual([board.rows[0].wallet, board.rows[0].score, board.rows[0].versionLabel], [W(1), 9500, 'HMH v?']);
+  for (const row of board.rows) assert.match(row.versionLabel, /^HMH v(?:0\.5|\?)$/, 'only shipped HMH versions are shown');
+}));
+
+test('E6 recent sessions carry a label per run in the public and self views', async () => withDb(async (db) => {
+  await seedEras(db);
+  await seedVerifiedSession(db, { gameId: 'lester-blaster', wallet: ME, score: 10, status: 'failed', buildHash: 'site-1.8.2:game-1.8.2:cabinet-0.5.0', nextAttemptAt: '2026-09-25T13:00:00.000Z', lastError: 'rpc-timeout' });
+  const expected = new Map([
+    ['lester-blaster', 'HMH v0.5'], ['chikun', 'Chikun v7'], ['stacked', 'STACKED v0.2'],
+  ]);
+  const publicView = await readPublicProfile(db, ME, { nowMs: NOW, catalog: null });
+  assert.equal(publicView.recentSessions.length, 3, 'confirmed runs only');
+  for (const session of publicView.recentSessions) {
+    assert.equal(session.versionLabel, expected.get(session.gameId), session.gameId);
+    assert.equal('runtimeId' in session || 'buildHash' in session, false, 'runtimeId and buildHash were never public in E6');
+  }
+  assertNoBuildHash(publicView, 'E6 public');
+  const selfView = await readPublicProfile(db, ME, { self: true, nowMs: NOW, catalog: null });
+  assert.equal(selfView.recentSessions.length, 4);
+  const failed = selfView.recentSessions.find((session) => session.status === 'failed');
+  assert.deepEqual([failed.versionLabel, failed.retryable, failed.lastError], ['HMH v0.5', true, 'rpc-timeout'], 'unpublished runs are labelled too');
+  assertNoBuildHash(selfView, 'E6 self');
+  // Runs claiming a cabinet this deploy has not shipped read '<Game> v?'.
+  for (const row of [...HMH_ROWS, ...STACKED_ROWS].filter((entry) => entry.claimed)) {
+    const view = await readPublicProfile(db, row.wallet, { nowMs: NOW, catalog: null });
+    const claimed = view.recentSessions.find((session) => session.score === row.score);
+    assert.equal(claimed.versionLabel, row.label, row.buildHash);
+    assertNoBuildHash(view, `E6 ${row.buildHash}`);
+  }
+}));
+
+test('E9 carries the label beside the already public runtimeId', async () => withDb(async (db) => {
+  const seeded = await seedEras(db);
+  for (const row of seeded) {
+    const session = await readPublicSession(db, row.sessionId32, { catalog: null });
+    assert.equal(session.versionLabel, row.label, `${row.gameId} ${row.buildHash ?? row.runtimeId ?? 'chain-index'}`);
+    assert.equal(session.runtimeId, row.runtimeId ?? INDEX_GAMES[row.gameId].runtimeId);
+    assert.equal('buildHash' in session, false);
+    assertNoBuildHash(session, 'E9');
+  }
+  const indexed = seeded.find((row) => row.source === 'chain-index');
+  assert.equal((await readPublicSession(db, indexed.sessionId32, { catalog: null })).verification, 'chain-index');
+}));
+
+test('E5, E6 and E9 answer through the real handlers with unchanged cache headers', async () => withDb(async (db) => {
+  const seeded = await seedEras(db);
+  const board = await invoke(mount(leaderboardApi, db), { url: '/api/leaderboard?game=hard-money-heroes&period=all-time' });
+  assert.equal(board.status, 200, JSON.stringify(board.body));
+  assert.equal(board.headers['cache-control'], 'public, s-maxage=15, stale-while-revalidate=60');
+  assert.deepEqual(board.body.rows.map((row) => row.versionLabel), HMH_ROWS.map((row) => row.label));
+  assertNoBuildHash(board.body, 'E5 handler');
+
+  const profile = await invoke(mount(profileApi, db), { url: `/api/profile?wallet=${ME}` });
+  assert.equal(profile.status, 200, JSON.stringify(profile.body));
+  assert.equal(profile.headers['cache-control'], 'public, s-maxage=10, stale-while-revalidate=30');
+  assert.deepEqual(profile.body.recentSessions.map((session) => session.versionLabel).sort(), ['Chikun v7', 'HMH v0.5', 'STACKED v0.2']);
+  assertNoBuildHash(profile.body, 'E6 handler');
+  const self = await invoke(mount(profileApi, db), { url: `/api/profile?wallet=${ME}&self=1`, headers: { authorization: bearer(ME) } });
+  assert.equal(self.status, 200, JSON.stringify(self.body));
+  assert.equal(self.headers['cache-control'], 'private, no-store');
+  assert.equal(self.body.recentSessions.every((session) => typeof session.versionLabel === 'string'), true);
+
+  const chikun = seeded.find((row) => row.gameId === 'chikun' && row.label === 'Chikun v6');
+  const session = await invoke(mount(sessionApi, db), { url: `/api/verified-session?id=${chikun.sessionId32.slice(2)}` });
+  assert.equal(session.status, 200, JSON.stringify(session.body));
+  assert.equal(session.headers['cache-control'], 'public, s-maxage=300, stale-while-revalidate=86400');
+  assert.deepEqual([session.body.session.versionLabel, session.body.session.runtimeId], ['Chikun v6', 'chikun:canvas-runtime-v6']);
+}, { migrated: false }));
+
+test('the share page lists the version with the run stats (E10, from E9)', async () => withDb(async (db) => {
+  const seeded = await seedEras(db);
+  const handler = mount(sharePageApi, db);
+  for (const row of seeded) {
+    const res = fakeResponse();
+    await handler(fakeRequest({ url: `/api/share-page?id=${row.sessionId32.slice(2)}` }), res);
+    assert.equal(res.statusCode, 200, row.label);
+    assert.equal(res.headers['cache-control'], 'public, s-maxage=300, stale-while-revalidate=86400', 'confirmed page cache unchanged');
+    if (row.label.endsWith('v?')) {
+      assert.doesNotMatch(res.text, /<dt>Version<\/dt>/, 'an unknown version (unrecorded or unshipped) is not listed');
+      assert.doesNotMatch(res.text, /v999999|v9\.9|:cabinet-/, 'a claimed cabinet never reaches the page');
+      continue;
+    }
+    const escaped = row.label.replace(/[.?]/g, (ch) => `[${ch}]`);
+    assert.match(res.text, new RegExp(`<dt>Version</dt><dd>${escaped}</dd></div></dl>`), `${row.label}: the last entry of the stats list`);
+  }
+  const hmh = seeded.find((row) => row.buildHash === 'site-1.8.2:game-1.8.2:cabinet-0.5.0');
+  const session = await readPublicSession(db, hmh.sessionId32, { catalog: null });
+  assert.match(renderSharePage({ session }).html, /<dt>Version<\/dt><dd>HMH v0\.5<\/dd>/);
+  for (const other of ['Chikun v7', 'STACKED v0.2', 'Pong v1']) {
+    assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: other } }).html, /<dt>Version<.dt>/, `an HMH run never lists ${other}`);
+  }
+  assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: undefined } }).html, /<dt>Version<\/dt>/, 'an E9 body without the field shows no row');
+  assert.doesNotMatch(renderSharePage({ session: { ...session, versionLabel: '<script>alert(1)</script> v1' } }).html, /<dt>Version<\/dt>|alert\(1\)/);
+}, { migrated: false }));
+
+// Review finding (version-column fixer, round 2): contract §4.3.5 says a
+// Chikun chain-index row still reads 'Chikun v7' because the indexer stores
+// the reverse-mapped runtime_id. This runs the real indexer (E12) over
+// ScoreSubmitted logs for runs with no Neon row, then reads E5, E6, E9 and E10.
+const scoreIface = new ethers.Interface(SCORE_REGISTRY_ABI);
+const entryIface = new ethers.Interface(RANKED_ENTRY_ABI);
+
+function chainOf(logs) {
+  return {
+    async getLogs(filter) {
+      const topic0s = [filter.topics[0]].flat();
+      return logs.filter((log) => log.blockNumber >= filter.fromBlock && log.blockNumber <= filter.toBlock && topic0s.includes(log.topics[0]));
+    },
+    async getBlock(tag) {
+      const number = tag === 'latest' ? 100 : Number(tag);
+      return { number, timestamp: Date.parse('2026-09-24T10:00:00.000Z') / 1000 + number * 2 };
+    },
+    async call({ data }) {
+      if (data.startsWith(entryIface.getFunction('getPaidSession').selector)) {
+        return entryIface.encodeFunctionResult('getPaidSession', [[ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, false]]);
+      }
+      if (data.startsWith(scoreIface.getFunction('sessionEnvelopeHash').selector)) {
+        const [id] = scoreIface.decodeFunctionData('sessionEnvelopeHash', data);
+        return scoreIface.encodeFunctionResult('sessionEnvelopeHash', [ethers.id(`envelope:${id}`)]);
+      }
+      throw new Error('unexpected call');
+    },
+  };
+}
+
+function indexedScore({ gameId, wallet, score, runtimeId32 = INDEX_GAMES[gameId].runtimeId32, blockNumber, index }) {
+  const game = INDEX_GAMES[gameId];
+  const sessionId32 = randomHex32();
+  const { topics, data } = scoreIface.encodeEventLog('ScoreSubmitted', [
+    sessionId32, wallet, game.gameId32, BigInt(score), 12n, 4n, 180n, ethers.ZeroHash, runtimeId32, game.seasonId32,
+  ]);
+  return { address: DEPLOYED.addresses.scoreSubmissionRegistry, topics, data, blockNumber, index, transactionHash: randomHex32(), sessionId32 };
+}
+
+test('chain-index rows the indexer creates carry the right label in E5, E6, E9 and E10', async () => withDb(async (db) => {
+  const unknownRuntime = ethers.id('chikun:canvas-runtime-v99');
+  const runs = [
+    { gameId: 'chikun', wallet: W(11), score: 700, label: 'Chikun v7', runtimeId: INDEX_GAMES.chikun.runtimeId },
+    { gameId: 'chikun', wallet: W(12), score: 600, runtimeId32: unknownRuntime, label: 'Chikun v?', runtimeId: unknownRuntime },
+    { gameId: 'stacked', wallet: W(13), score: 500, label: 'STACKED v0.2', runtimeId: INDEX_GAMES.stacked.runtimeId },
+    { gameId: 'lester-blaster', wallet: W(14), score: 400, label: 'HMH v0.5', runtimeId: INDEX_GAMES['lester-blaster'].runtimeId },
+  ].map((run, index) => ({ ...run, log: indexedScore({ ...run, blockNumber: 10 + index, index }) }));
+  const chain = chainOf(runs.map((run) => run.log));
+  const counts = await indexChain({ db, deployment: DEPLOYED, getLogs: chain.getLogs, getBlock: chain.getBlock, call: chain.call, nowMs: () => NOW, catalog: { catalogFor: () => [] }, logger: null });
+  assert.deepEqual([counts.scores, counts.skipped, counts.mismatches], [runs.length, 0, 0], JSON.stringify(counts));
+  for (const run of runs) {
+    const [stored] = await db.query('SELECT source, build_hash, runtime_id FROM verified_sessions WHERE session_id32 = $1', [run.log.sessionId32]);
+    assert.deepEqual([stored.source, stored.build_hash, stored.runtime_id], ['chain-index', null, run.runtimeId], run.label);
+    const board = await readLeaderboard(db, { gameId: run.gameId, seasonId: INDEX_GAMES[run.gameId].seasonId, period: 'all-time' });
+    assert.equal(board.rows.find((row) => row.wallet === run.wallet).versionLabel, run.label, `E5 ${run.label}`);
+    const profile = await readPublicProfile(db, run.wallet, { nowMs: NOW, catalog: null });
+    assert.deepEqual(profile.recentSessions.map((session) => session.versionLabel), [run.label], `E6 ${run.label}`);
+    const session = await readPublicSession(db, run.log.sessionId32, { catalog: null });
+    assert.deepEqual([session.versionLabel, session.verification, session.runtimeId], [run.label, 'chain-index', run.runtimeId], `E9 ${run.label}`);
+    const page = renderSharePage({ session }).html;
+    if (run.label.endsWith('v?')) assert.doesNotMatch(page, /<dt>Version<\/dt>/, `E10 ${run.label}`);
+    else assert.match(page, new RegExp(`<dt>Version</dt><dd>${run.label.replace(/[.?]/g, (ch) => `[${ch}]`)}</dd>`), `E10 ${run.label}`);
+  }
+}));

@@ -24,7 +24,9 @@ export const RANKED_GAMES = Object.freeze({
     title: 'Hard Money Heroes',
     seasonId: 'hmh-season-1-2026',
     runtimeId: 'lester-blaster:hmh-run-summary-v6',
-    buildHashPattern: Object.freeze(/^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+$/),
+    // The cabinet segment is optional (owner decision 2026-09-25): new HMH
+    // builds carry HMH_CABINET_VERSION, and 1.8.x runs without it stay valid.
+    buildHashPattern: Object.freeze(/^site-\d+\.\d+\.\d+:game-\d+\.\d+\.\d+(?::cabinet-\d+\.\d+\.\d+)?$/),
     evidenceEncoding: 'hmh-run-summary-v6+json',
   }),
   chikun: Object.freeze({

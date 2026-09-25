@@ -11,7 +11,7 @@ import { periodKeysFor } from './period-keys.mjs';
 import {
   ALL_BEST_HEADLINE_KEYS, ALL_NUMERIC_HEADLINE_KEYS, BEST_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
   explorerUrlFor, headlineStats, leaderboardRow, numberOrNull, parseJsonText, publicDisplay, recentSessionRow,
-  shareIdFor, verificationFor, walletShort,
+  rowVersionLabel, shareIdFor, verificationFor, walletShort,
 } from './rows.mjs';
 
 export const LEADERBOARD_PAGE_SIZE = 25;
@@ -89,14 +89,14 @@ export async function readLeaderboard(db, { gameId, seasonId, period, periodKey,
   const you = wallet ? requireWallet(wallet) : null;
   const rows = await db.query(
     `WITH best AS (
-       SELECT DISTINCT ON (vs.wallet) vs.wallet, vs.session_id32, vs.score, vs.stats, vs.tx_hash, vs.confirmed_at
+       SELECT DISTINCT ON (vs.wallet) vs.wallet, vs.session_id32, vs.score, vs.stats, vs.tx_hash, vs.confirmed_at, vs.build_hash, vs.runtime_id
        FROM verified_sessions vs
        WHERE vs.game_id = $1 AND vs.season_id = $2 AND vs.status = 'confirmed'
          AND (CASE $3::text WHEN 'weekly' THEN vs.week_key = $4 WHEN 'monthly' THEN vs.month_key = $4 WHEN 'daily' THEN vs.day_key = $4 ELSE true END)
          AND NOT EXISTS (SELECT 1 FROM wallet_profiles x WHERE x.wallet = vs.wallet AND x.board_excluded)
        ORDER BY vs.wallet, vs.score DESC, vs.confirmed_at ASC, vs.session_id32 ASC
      ), ranked AS (
-       SELECT b.wallet, b.session_id32, b.score, b.stats, b.tx_hash, b.confirmed_at,
+       SELECT b.wallet, b.session_id32, b.score, b.stats, b.tx_hash, b.confirmed_at, b.build_hash, b.runtime_id,
               (ROW_NUMBER() OVER (ORDER BY b.score DESC, b.confirmed_at ASC, b.session_id32 ASC))::int AS rank,
               wp.display_name, wp.avatar_uri, coalesce(wp.hidden, false) AS hidden
        FROM best b LEFT JOIN wallet_profiles wp ON wp.wallet = b.wallet
@@ -111,7 +111,8 @@ export async function readLeaderboard(db, { gameId, seasonId, period, periodKey,
        (SELECT coalesce(json_agg(json_build_object(
            'rank', p.rank, 'wallet', p.wallet, 'session_id32', p.session_id32, 'score', p.score::text,
            'stats', p.stats, 'tx_hash', p.tx_hash, 'confirmed_at', ${isoSql('p.confirmed_at')},
-           'display_name', p.display_name, 'avatar_uri', p.avatar_uri, 'hidden', p.hidden) ORDER BY p.rank), '[]'::json)::text
+           'display_name', p.display_name, 'avatar_uri', p.avatar_uri, 'hidden', p.hidden,
+           'build_hash', p.build_hash, 'runtime_id', p.runtime_id) ORDER BY p.rank), '[]'::json)::text
         FROM (SELECT * FROM matched ORDER BY rank LIMIT $7::int OFFSET $8::int) p) AS rows,
        (SELECT json_build_object('rank', y.rank, 'score', y.score::text, 'session_id32', y.session_id32)::text
         FROM ranked y WHERE $9::text IS NOT NULL AND y.wallet = $9::text) AS you`,
@@ -224,7 +225,7 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
     db.query(
       `SELECT session_id32, game_id, score::text AS score, status, tx_hash, stats::text AS stats,
               ${isoSql('verified_at')} AS verified_at, ${isoSql('confirmed_at')} AS confirmed_at,
-              last_error, ${isoSql('next_attempt_at')} AS next_attempt_at
+              last_error, ${isoSql('next_attempt_at')} AS next_attempt_at, build_hash, runtime_id
        FROM verified_sessions
        WHERE wallet = $1 AND (CASE WHEN $2::text = 'true' THEN status <> 'pending' ELSE status = 'confirmed' END)
        ORDER BY verified_at DESC, session_id32 DESC
@@ -310,7 +311,7 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
   const id = String(sessionId32 ?? '').toLowerCase();
   if (!SESSION_ID32.test(id)) throw new TypeError('sessionId32 must be 0x + 64 lowercase hex');
   const rows = await db.query(
-    `SELECT vs.session_id32, vs.wallet, vs.game_id, vs.season_id, vs.runtime_id, vs.score::text AS score,
+    `SELECT vs.session_id32, vs.wallet, vs.game_id, vs.season_id, vs.runtime_id, vs.build_hash, vs.score::text AS score,
             vs.kills::text AS kills, vs.max_combo::text AS max_combo, vs.survival_seconds::text AS survival_seconds,
             vs.boss_id, vs.stats::text AS stats, vs.status, vs.source, vs.tx_hash, vs.block_number::text AS block_number,
             ${isoSql('vs.verified_at')} AS verified_at, ${isoSql('vs.confirmed_at')} AS confirmed_at, vs.week_key, vs.month_key,
@@ -363,6 +364,7 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
     confirmedAt: row.confirmed_at ?? null,
     seasonId: row.season_id,
     runtimeId: row.runtime_id,
+    versionLabel: rowVersionLabel(row.game_id, row),
     achievements: achievementRows.map((entry) => ({
       id: entry.achievement_id,
       tier: entry.tier,

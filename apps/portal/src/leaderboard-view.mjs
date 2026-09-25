@@ -6,6 +6,8 @@
 // selected game round-trips through the URL, and what the empty states say.
 // Everything here is DOM-free so it can be unit-tested with node --test.
 
+import { versionLabelText } from './game-version-labels.mjs';
+
 export const LEADERBOARD_PAGE_SIZE = 10;
 export const LEADERBOARD_MAX_ROWS = 50;
 export const LEADERBOARD_GAME_PREFERENCE_KEY = 'lesters-arcade-scores-game-v1';
@@ -78,7 +80,7 @@ export function verifiedExplorerUrl(value) {
 
 // One E5 row as a board entry. Names are the index's sanitized values: a
 // hidden or blocked name is null there and shows as the short wallet here.
-export function hostedLeaderboardEntry(row = {}, { connectedWallet = null } = {}) {
+export function hostedLeaderboardEntry(row = {}, { connectedWallet = null, gameId = null } = {}) {
   const wallet = String(row.wallet ?? '').toLowerCase();
   const you = Boolean(connectedWallet) && wallet === String(connectedWallet).toLowerCase();
   const walletShort = row.walletShort || (wallet ? `${wallet.slice(0, 6)}…${wallet.slice(-4)}` : '');
@@ -94,6 +96,9 @@ export function hostedLeaderboardEntry(row = {}, { connectedWallet = null } = {}
     runStats: row.stats && typeof row.stats === 'object' ? row.stats : {},
     recordedAt: row.confirmedAt ?? null,
     explorerUrl: verifiedExplorerUrl(row.explorerUrl),
+    // The game version the run was played on (E5 versionLabel), or null;
+    // given the board's game, another game's label is null too.
+    versionLabel: versionLabelText(row.versionLabel, gameId),
     shareId: row.shareId ?? null,
     sessionId32: row.sessionId32 ?? null,
     isCurrentPlayer: you,

@@ -743,3 +743,53 @@ test('the hosted profile loads on demand and preview never downloads it', async 
   assert.equal(preview.cachedSelfProfile(ME), null);
   assert.equal(loads, 0, 'preview never requests the hosted module');
 });
+
+// version-column (owner decision 2026-09-25: no testnet season resets): each
+// run in the profile history shows the game version it was played on, from
+// E6 versionLabel, at the start of its status line.
+test('profile session history shows the game version of each run', async () => {
+  const sessions = [
+    session(1, { gameId: 'lester-blaster', versionLabel: 'HMH v0.5' }),
+    session(2, { gameId: 'chikun', versionLabel: 'Chikun v7' }),
+    session(3, { gameId: 'stacked', versionLabel: 'STACKED v0.2' }),
+    session(4, { gameId: 'lester-blaster', versionLabel: 'HMH v0.6' }),
+    session(5, { gameId: 'lester-blaster', versionLabel: 'HMH v?' }),
+    session(6, { gameId: 'chikun' }), // an E6 body cached before the field existed
+    session(7, { gameId: 'chikun', versionLabel: '<b>v7</b>' }), // never shown
+    session(8, { gameId: 'chikun', versionLabel: 'HMH v0.5' }), // another game's label: never shown
+    session(9, { gameId: 'stacked', versionLabel: 'Pong v1' }), // not one of the three games
+  ];
+  for (const [label, options] of [['public', { viewedWallet: OTHER, answers: { [`${OTHER}|public`]: e6({ wallet: OTHER, sessions }) } }], ['self', { answers: { [`${ME}|self`]: e6({ self: true, sessions }) } }]]) {
+    const h = hostedProfile(options);
+    const grid = await rendered(h);
+    const rows = byClass(grid, 'profile-session-row');
+    assert.equal(rows.length, sessions.length, label);
+    const shown = rows.map((row) => byClass(row, 'profile-session-version').map((chip) => chip.textContent));
+    assert.deepEqual(shown, [['HMH v0.5'], ['Chikun v7'], ['STACKED v0.2'], ['HMH v0.6'], ['HMH v?'], [], [], [], []], `${label}: one full label per run, none when absent, malformed or another game's`);
+    for (const row of rows.slice(0, 5)) {
+      const chip = byClass(row, 'profile-session-version')[0];
+      // An unknown version is muted with the hosted board's tooltip; a known
+      // one says what the run was played on (review finding, version-column).
+      const unknown = chip.textContent.endsWith('v?');
+      assert.equal(chip.title, unknown ? 'Game version unknown for this run' : `Played on ${chip.textContent}`, `${label}: ${chip.textContent}`);
+      assert.equal(String(chip.className).split(/\s+/).includes('is-unknown'), unknown, `${label}: ${chip.textContent} muted`);
+      const children = row.children.map((child) => String(child.className));
+      const at = children.findIndex((className) => className.includes('profile-session-version'));
+      assert.equal(at, 2, 'after the score and the game, before the status');
+      assert.match(children[at + 1], /game-history-chain/);
+    }
+    assert.doesNotMatch(text(grid), /<b>/);
+  }
+});
+
+test('the profile version chip is styled on the status line and never wraps inside', () => {
+  const css = readFileSync(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url), 'utf8');
+  const rule = /\.profile-session-row > \.profile-session-version \{([^}]*)\}/.exec(css)?.[1] ?? '';
+  assert.match(rule, /white-space: nowrap;/);
+  assert.match(rule, /border-radius: 999px;/);
+  // Muted like the board's unknown version (.lt-version.is-unknown).
+  const muted = /\.profile-session-row > \.profile-session-version\.is-unknown \{([^}]*)\}/.exec(css)?.[1] ?? '';
+  const board = /\.leaderboard-board-v10 \.lt-version\.is-unknown \{([^}]*)\}/.exec(css)?.[1] ?? '';
+  assert.match(muted, /color: #8b9bc0;/);
+  assert.equal(muted.trim(), board.trim(), 'the same muted look on the profile and the board');
+});
