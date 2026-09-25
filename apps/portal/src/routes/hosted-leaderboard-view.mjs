@@ -31,8 +31,9 @@ export const HOSTED_BOARD_TTL_MS = 60_000;
 
 // Hosted boards add a Version column before Proof (owner decision 2026-09-25:
 // balance changes do not reset testnet seasons, so every verified score shows
-// the game version it was played on, from E5 versionLabel). A column on
-// desktop and tablets, a labelled chip on phones (styles-arcade-polish.css).
+// the game version it was played on, from E5 versionLabel). A column from
+// 761 px up, under the score at 601-760 px, a labelled chip on phones
+// (styles-arcade-polish.css). The server orders the board, so no sort key.
 export const HOSTED_VERSION_COLUMN = Object.freeze({ key: 'version', label: 'Version', title: 'Game version this run was played on', sortKey: null, align: 'center', kind: 'version', priority: 2 });
 
 export function hostedLeaderboardColumnsFor(gameId) {
