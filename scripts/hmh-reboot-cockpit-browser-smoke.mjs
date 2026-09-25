@@ -111,7 +111,9 @@ async function inspect(name, viewport) {
   assert.equal(await settingsInputs.count(), settingIds.length);
   const buildText = (await page.locator('#hmhBuildSummary').innerText()).trim();
   assert.match(buildText, /Rank 1\/3/);
-  assert.match(buildText, /Validator Training|Gas Optimization|Block Reward/);
+  // The picked card's current title (validator-training, gas-optimization and
+  // block-reward were retitled to their mechanical names in a6ac4087).
+  assert.match(buildText, /XP Gain|Dash Recharge|Score & Magazine/);
   assert.equal(await page.locator('#hmhSettingMusic').isChecked(), false);
   if (viewport.width <= 900) {
     const settingRows = await page.locator('.hmh-setting-toggle').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().height));
