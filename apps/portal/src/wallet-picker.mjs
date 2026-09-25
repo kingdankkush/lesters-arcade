@@ -112,25 +112,47 @@ export function ensureWalletPickerStyles(documentRef = globalThis.document) {
 // fallback styles.
 export const WALLET_STYLES_TIMEOUT_MS = 3000;
 
-// Links whose stylesheet already missed a wait (error or timeout): later
-// sheets use the fallback at once instead of waiting again, since a failed
-// <link> never fires another event.
-const stylesMissed = new WeakSet();
+// What each picker <link> did: 'loaded', or 'missed' (an error, or a wait that
+// timed out). The events decide, not `link.sheet`: Chromium gives a <link>
+// whose request failed (404, network error) an empty, non-null sheet.
+const stylesOutcome = new WeakMap();
+const stylesTracked = new WeakSet();
 
-// Resolves once the stylesheet applies (load or error), or after timeoutMs.
-// null when it already applies. A browser <link> exposes `sheet` (null until
-// loaded); test doubles without it count as loaded.
+function trackStyles(link) {
+  if (stylesTracked.has(link)) return;
+  stylesTracked.add(link);
+  link.addEventListener?.('load', () => stylesOutcome.set(link, 'loaded'));
+  link.addEventListener?.('error', () => stylesOutcome.set(link, 'missed'));
+}
+
+// 'loaded', 'missed' or 'pending'. A link whose events fired before anything
+// listened (main.js may add it first) is read from its sheet: wallet-picker.css
+// is same-origin and never empty, so readable rules mean it loaded and an
+// empty or unreadable sheet means it failed. Doubles without `sheet` count as
+// loaded.
+function stylesStatus(link) {
+  if (!link || !('sheet' in link)) return 'loaded';
+  const known = stylesOutcome.get(link);
+  if (known) return known;
+  if (!link.sheet) return 'pending';
+  try { return link.sheet.cssRules?.length > 0 ? 'loaded' : 'missed'; } catch { return 'missed'; }
+}
+
+// Resolves once the stylesheet loads or fails, or after timeoutMs; null when
+// it already applies. After one miss, later sheets resolve at once instead of
+// waiting again, since a failed <link> never fires another event.
 export function walletPickerStylesPending(link, { timeoutMs = WALLET_STYLES_TIMEOUT_MS } = {}) {
-  if (!link || !('sheet' in link) || link.sheet) return null;
-  if (stylesMissed.has(link)) return Promise.resolve();
+  const status = stylesStatus(link);
+  if (status === 'loaded') return null;
+  trackStyles(link);
+  if (status === 'missed') return Promise.resolve();
   return new Promise((resolve) => {
-    let timer = null;
     const done = () => {
-      if (timer !== null) clearTimeout(timer);
-      if (!link.sheet) stylesMissed.add(link);
+      clearTimeout(timer);
+      if (!stylesOutcome.has(link)) stylesOutcome.set(link, 'missed');
       resolve();
     };
-    timer = setTimeout(done, timeoutMs);
+    const timer = setTimeout(done, timeoutMs);
     link.addEventListener?.('load', done, { once: true });
     link.addEventListener?.('error', done, { once: true });
   });
@@ -157,7 +179,7 @@ function styleUntilLoaded(link, parts) {
   for (const [element, css] of styled) element.style.cssText = css;
   const handOver = () => { for (const [element] of styled) element.removeAttribute?.('style'); };
   return pending.then(() => {
-    if (link.sheet) { handOver(); return; }
+    if (stylesStatus(link) === 'loaded') { handOver(); return; }
     for (const [element] of styled) element.style.visibility = '';
     // A stylesheet that arrives late still takes over from the fallback.
     link.addEventListener?.('load', handOver, { once: true });
@@ -205,9 +227,13 @@ function openSheet(documentRef, { labelledBy, className = '', onClose }) {
     else if (!event.shiftKey && documentRef.activeElement === last) { event.preventDefault(); first.focus(); }
     else if (!sheet.contains(documentRef.activeElement)) { event.preventDefault(); first.focus(); }
   };
-  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(null); });
+  // While the sheet waits hidden for its stylesheet, a tap on the dimmed page
+  // (a player on a slow connection tapping again) must not cancel sign-in.
+  let waiting = false;
+  overlay.addEventListener('click', (event) => { if (event.target === overlay && !waiting) close(null); });
   documentRef.addEventListener('keydown', onKey, true);
   const styled = styleUntilLoaded(stylesheet, [[overlay, WALLET_FALLBACK_STYLES.overlay], [sheet, WALLET_FALLBACK_STYLES.sheet]]);
+  if (styled) { waiting = true; void styled.then(() => { waiting = false; }); }
   documentRef.body.append(overlay);
   // A hidden control cannot take focus: focus moves in once the sheet shows.
   const focusFirst = () => {

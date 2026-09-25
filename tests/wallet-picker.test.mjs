@@ -110,7 +110,13 @@ function fakeDocument() {
     remove() { if (this.parent) this.parent.children = this.parent.children.filter((child) => child !== this); this.parent = null; }
     setAttribute(key, value) { this.attributes[key] = value; if (key === 'id') this.id = value; }
     removeAttribute(key) { delete this.attributes[key]; if (key === 'style') this.style = {}; }
-    addEventListener(type, fn) { this.listeners[type] = fn; }
+    // Every listener of a type runs, in order (the picker and its stylesheet
+    // tracking both listen to the same <link>).
+    addEventListener(type, fn) {
+      const handlers = (this.handlers ??= {})[type] ??= [];
+      handlers.push(fn);
+      this.listeners[type] = (event) => { for (const handler of [...handlers]) handler(event); };
+    }
     click() { this.listeners.click?.({ target: this }); }
     focus() { doc.activeElement = this; }
     contains(node) { for (let n = node; n; n = n.parent) if (n === this) return true; return false; }
@@ -177,36 +183,55 @@ test('the picker sits over the page, traps focus and closes on Escape', async ()
 
 // Live UI audit 2026-09-24: on a phone with a cold cache the picker painted
 // unstyled under the page footer until wallet-picker.css arrived.
-test('until its stylesheet applies the picker dims the page and keeps the sheet hidden', async () => {
-  const { openWalletPicker, showWalletToast, walletPickerStylesPending, WALLET_FALLBACK_STYLES, WALLET_STYLES_TIMEOUT_MS } = await import('../apps/portal/src/wallet-picker.mjs');
-  assert.equal(WALLET_STYLES_TIMEOUT_MS, 3000);
-  assert.match(WALLET_FALLBACK_STYLES.overlay, /^position:fixed;inset:0;/, 'the fallback is an overlay, never page content');
-  assert.match(WALLET_FALLBACK_STYLES.sheet, /visibility:hidden$/);
+//
+// A document whose picker <link> behaves like Chromium's: `sheet` is null
+// while the CSS loads; a load gives a sheet with rules; a failed request (404
+// or network error) fires `error` and then exposes an EMPTY, non-null sheet.
+function chromiumLinkDocument() {
   const doc = fakeDocument();
   const createElement = doc.createElement;
   doc.createElement = (tag) => {
     const node = createElement(tag);
-    if (tag === 'link') node.sheet = null; // a browser <link> before its CSS loads
+    if (tag === 'link') node.sheet = null;
     return node;
   };
-  const opener = createElement('button');
+  const link = () => doc.head.children.find((node) => node.tagName === 'LINK');
+  doc.cssLoads = () => { link().sheet = { cssRules: [{ selectorText: '.wallet-sheet' }] }; link().listeners.load?.(); };
+  doc.cssFails = () => { link().listeners.error?.(); link().sheet = { cssRules: [] }; };
+  return doc;
+}
+const settleMicrotasks = () => new Promise((resolve) => setImmediate(resolve));
+const pickerModel = () => buildWalletPickerModel({ providers: [announce('u-4', 'MetaMask', 'io.metamask')], host: 'lestersarcade.io' });
+
+test('until its stylesheet applies the picker dims the page and keeps the sheet hidden', async () => {
+  const { openWalletPicker, showWalletToast, WALLET_FALLBACK_STYLES, WALLET_STYLES_TIMEOUT_MS } = await import('../apps/portal/src/wallet-picker.mjs');
+  assert.equal(WALLET_STYLES_TIMEOUT_MS, 3000);
+  assert.match(WALLET_FALLBACK_STYLES.overlay, /^position:fixed;inset:0;/, 'the fallback is an overlay, never page content');
+  assert.match(WALLET_FALLBACK_STYLES.sheet, /visibility:hidden$/);
+  const doc = chromiumLinkDocument();
+  const opener = doc.createElement('button');
   doc.body.append(opener);
   opener.focus();
-  const model = buildWalletPickerModel({ providers: [announce('u-4', 'MetaMask', 'io.metamask')], host: 'lestersarcade.io' });
-  const pending = openWalletPicker({ documentRef: doc, model });
-  const link = doc.head.children[0];
+  const model = pickerModel();
+  let picked = 'open';
+  const pending = openWalletPicker({ documentRef: doc, model, onPick: (value) => { picked = value; } });
   const overlay = doc.body.children.at(-1);
   const sheet = overlay.children[0];
   assert.equal(overlay.style.cssText, WALLET_FALLBACK_STYLES.overlay, 'the backdrop dims the page at once');
   assert.equal(sheet.style.cssText, WALLET_FALLBACK_STYLES.sheet, 'the sheet waits, hidden');
   assert.equal(doc.activeElement, opener, 'focus waits for the sheet to show');
-  link.sheet = {};
-  link.listeners.load();
-  await new Promise((resolve) => setImmediate(resolve));
+  // Review 2026-09-24: a second tap on the dimmed page, before the sheet
+  // showed, silently cancelled sign-in.
+  overlay.click();
+  assert.equal(picked, 'open', 'a backdrop tap while the sheet is hidden does not cancel sign-in');
+  assert.equal(overlay.parent, doc.body);
+  doc.cssLoads();
+  await settleMicrotasks();
   assert.deepEqual([overlay.style, sheet.style], [{}, {}], 'the stylesheet takes over: inline styles dropped');
   assert.equal(doc.activeElement, sheet.querySelectorAll('a[href], button')[0], 'focus moves into the dialog');
-  doc.key('Escape');
-  assert.equal(await pending, null);
+  overlay.click();
+  assert.equal(await pending, null, 'once the sheet shows, a backdrop tap closes it');
+  assert.equal(picked, null);
 
   // Once loaded, later sheets and toasts carry no inline styles at all.
   const again = openWalletPicker({ documentRef: doc, model });
@@ -215,36 +240,103 @@ test('until its stylesheet applies the picker dims the page and keeps the sheet 
   await again;
   const toast = showWalletToast({ documentRef: doc, message: 'Signed in', timeoutMs: 0 });
   assert.equal(toast.style.cssText, undefined);
+});
 
-  // A stylesheet that stalls or fails never keeps a sheet hidden for good.
+// Review 2026-09-24: Chromium gives a failed <link> an empty, non-null sheet,
+// so reading `link.sheet` as "applied" stripped the fallback and painted the
+// picker as page content, the very defect LUA-02 fixes.
+test('a stylesheet that fails shows the picker and toasts on the fallback, never as page content', async () => {
+  const { openWalletPicker, showWalletToast, WALLET_FALLBACK_STYLES } = await import('../apps/portal/src/wallet-picker.mjs');
+  const doc = chromiumLinkDocument();
+  const model = pickerModel();
+  const first = openWalletPicker({ documentRef: doc, model });
+  const overlay = doc.body.children.at(-1);
+  const sheet = overlay.children[0];
+  doc.cssFails();
+  assert.deepEqual(doc.head.children[0].sheet, { cssRules: [] }, 'the double behaves like Chromium');
+  await settleMicrotasks();
+  assert.equal(overlay.style.cssText, WALLET_FALLBACK_STYLES.overlay, 'still a fixed overlay after the error');
+  assert.match(sheet.style.cssText, /^box-sizing:border-box;/);
+  assert.equal(sheet.style.visibility, '', 'shown on the fallback styles');
+  assert.equal(doc.activeElement, sheet.querySelectorAll('a[href], button')[0], 'focus moves in once it shows');
+  doc.key('Escape');
+  assert.equal(await first, null);
+
+  // Later sheets and toasts on this page use the fallback at once.
+  const second = openWalletPicker({ documentRef: doc, model });
+  const nextOverlay = doc.body.children.at(-1);
+  assert.equal(nextOverlay.style.cssText, WALLET_FALLBACK_STYLES.overlay, 'a second open is an overlay too');
+  await settleMicrotasks();
+  assert.equal(nextOverlay.children[0].style.visibility, '');
+  doc.key('Escape');
+  await second;
+  const toast = showWalletToast({ documentRef: doc, message: 'Sign-in declined', timeoutMs: 0 });
+  assert.match(toast.style.cssText, /^position:fixed;/);
+  await settleMicrotasks();
+  assert.equal(toast.style.visibility, '', 'the toast shows on its fallback');
+});
+
+test('a stalled stylesheet shows the sheet on the fallback after the timeout, then hands over when it loads', async (t) => {
+  const { openWalletPicker, WALLET_FALLBACK_STYLES, WALLET_STYLES_TIMEOUT_MS } = await import('../apps/portal/src/wallet-picker.mjs');
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const doc = chromiumLinkDocument();
+  const model = pickerModel();
+  const first = openWalletPicker({ documentRef: doc, model });
+  const overlay = doc.body.children.at(-1);
+  const sheet = overlay.children[0];
+  t.mock.timers.tick(WALLET_STYLES_TIMEOUT_MS - 1);
+  await settleMicrotasks();
+  assert.match(sheet.style.cssText, /visibility:hidden/, 'still waiting just before the timeout');
+  t.mock.timers.tick(1);
+  await settleMicrotasks();
+  assert.equal(sheet.style.visibility, '', 'shown on the fallback after the timeout');
+  assert.equal(overlay.style.cssText, WALLET_FALLBACK_STYLES.overlay);
+  assert.equal(doc.activeElement, sheet.querySelectorAll('a[href], button')[0]);
+  // The stylesheet arrives late: it takes over from the fallback.
+  doc.cssLoads();
+  assert.deepEqual([overlay.style, sheet.style], [{}, {}]);
+  doc.key('Escape');
+  await first;
+  const again = openWalletPicker({ documentRef: doc, model });
+  assert.equal(doc.body.children.at(-1).style.cssText, undefined, 'after the late load no fallback is needed');
+  doc.key('Escape');
+  await again;
+});
+
+test('walletPickerStylesPending reads the link events, not whether a sheet exists', async () => {
+  const { openWalletPicker, walletPickerStylesPending, WALLET_FALLBACK_STYLES } = await import('../apps/portal/src/wallet-picker.mjs');
   assert.equal(walletPickerStylesPending(null), null);
-  assert.equal(walletPickerStylesPending({ sheet: {} }), null);
+  assert.equal(walletPickerStylesPending({}), null, 'a double without `sheet` counts as loaded');
+  // A link main.js added before the picker module loaded, whose events fired
+  // before anything listened: its sheet says what happened.
+  assert.equal(walletPickerStylesPending({ sheet: { cssRules: [{}] } }), null, 'loaded: readable rules');
+  assert.ok(walletPickerStylesPending({ sheet: { cssRules: [] } }) instanceof Promise, 'failed (404): an empty sheet is a miss');
+  assert.ok(walletPickerStylesPending({ sheet: { get cssRules() { throw new Error('SecurityError'); } } }) instanceof Promise, 'aborted: an unreadable sheet is a miss');
   const stalled = { sheet: null, addEventListener() {} };
   const started = Date.now();
   await walletPickerStylesPending(stalled, { timeoutMs: 20 });
   assert.ok(Date.now() - started >= 15, 'a stalled stylesheet resolves after the timeout');
-  const failed = { sheet: null, listeners: {}, addEventListener(type, fn) { this.listeners[type] = fn; } };
+  const failed = { sheet: null, handlers: [], addEventListener(type, fn) { this.handlers.push([type, fn]); }, fire(type) { for (const [name, fn] of this.handlers) if (name === type) fn(); } };
   const waiting = walletPickerStylesPending(failed, { timeoutMs: 60_000 });
-  failed.listeners.error();
+  failed.fire('error');
+  failed.sheet = { cssRules: [] };
   await waiting;
+  assert.ok(walletPickerStylesPending(failed) instanceof Promise, 'after an error the non-null sheet still counts as a miss');
 
-  // A failed stylesheet: the toast shows on its legible fallback.
-  const failing = fakeDocument();
-  const make = failing.createElement;
-  failing.createElement = (tag) => { const node = make(tag); if (tag === 'link') node.sheet = null; return node; };
-  const shown = showWalletToast({ documentRef: failing, message: 'Sign-in declined', timeoutMs: 0 });
-  assert.match(shown.style.cssText, /visibility:hidden/);
-  failing.head.children[0].listeners.error();
-  await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(shown.style.visibility, '', 'shown on the fallback styles');
-  assert.match(shown.style.cssText, /^position:fixed;/);
-  // A stylesheet that arrives after the fallback showed still takes over.
-  const failedLink = failing.head.children[0];
-  const next = showWalletToast({ documentRef: failing, message: 'Try again', timeoutMs: 0 });
-  await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(next.style.visibility, '', 'after one miss, later toasts use the fallback at once (a failed link fires no more events)');
-  failedLink.listeners.load();
-  assert.deepEqual(next.style, {});
+  // A failed link already in the page: the first sheet shows on the fallback at once.
+  const doc = chromiumLinkDocument();
+  const early = doc.createElement('link');
+  early.setAttribute('id', 'walletPickerStyles');
+  early.sheet = { cssRules: [] };
+  doc.head.append(early);
+  const pending = openWalletPicker({ documentRef: doc, model: pickerModel() });
+  assert.equal(doc.head.children.length, 1, 'the existing link is reused');
+  const overlay = doc.body.children.at(-1);
+  assert.equal(overlay.style.cssText, WALLET_FALLBACK_STYLES.overlay);
+  await settleMicrotasks();
+  assert.equal(overlay.children[0].style.visibility, '');
+  doc.key('Escape');
+  await pending;
 });
 
 test('the picker stylesheet keeps 44 px touch targets, thumb reach and a 320 px layout', () => {
