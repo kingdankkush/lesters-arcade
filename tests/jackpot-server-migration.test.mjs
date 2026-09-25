@@ -12,6 +12,9 @@ import { createPgliteClient, randomHex32 } from './helpers/pglite-client.mjs';
  * jackpot-server AC1 (design §C.2): migration 3 is exactly the design's DDL,
  * it applies to fresh, version-1 and version-2 databases and is idempotent,
  * and the action id format passes its own CHECK for every kind.
+ *
+ * The number lives in JACKPOT_MIGRATION_VERSION alone (a merge may renumber
+ * it): this file derives every version from it and LATEST_SCHEMA_VERSION.
  */
 
 const CONTRACT = `0x${'1a2b3c4d'.repeat(5)}`;
@@ -54,10 +57,10 @@ test('migration 3 is exactly the design §C.2 DDL', () => {
   const expected = designDdlStatements();
   assert.equal(expected.length, 12, 'seven tables and five indexes');
   const migration = MIGRATIONS.find((entry) => entry.version === JACKPOT_MIGRATION_VERSION);
-  assert.equal(JACKPOT_MIGRATION_VERSION, 3);
-  assert.equal(migration.name, '0003_weekly_jackpot');
-  assert.equal(JACKPOT_MIGRATION_NAME, '0003_weekly_jackpot');
-  assert.equal(LATEST_SCHEMA_VERSION, 3);
+  const name = `${String(JACKPOT_MIGRATION_VERSION).padStart(4, '0')}_weekly_jackpot`;
+  assert.ok(JACKPOT_MIGRATION_VERSION >= 3 && JACKPOT_MIGRATION_VERSION <= LATEST_SCHEMA_VERSION, 'after 0002_cron_runs');
+  assert.deepEqual([migration.name, JACKPOT_MIGRATION_NAME], [name, name]);
+  assert.deepEqual(MIGRATIONS.map((entry) => entry.version), Array.from({ length: LATEST_SCHEMA_VERSION }, (_, index) => index + 1), 'contiguous versions');
   assert.deepEqual(migration.statements.map(normalize), expected);
   for (const statement of migration.statements) {
     assert.match(statement, /^CREATE (TABLE|INDEX) IF NOT EXISTS /, 'additive and idempotent');
@@ -100,18 +103,20 @@ async function insertOneRowEach(db) {
 }
 
 test('jackpot migration applies to fresh and older databases, is idempotent, and accepts every action id kind', async () => {
+  const versions = MIGRATIONS.map((entry) => entry.version);
+  const jackpotMigration = MIGRATIONS.find((entry) => entry.version === JACKPOT_MIGRATION_VERSION);
   // Fresh.
   await withDb(async (db) => {
-    assert.deepEqual(await migrate(db), { version: 3, applied: [1, 2, 3] });
+    assert.deepEqual(await migrate(db), { version: LATEST_SCHEMA_VERSION, applied: versions });
     const tables = await tableNames(db);
     for (const table of JACKPOT_TABLES) assert.ok(tables.includes(table), table);
     const indexes = (await db.query("SELECT indexname::text AS name FROM pg_indexes WHERE schemaname = 'public'")).map((row) => row.name);
     for (const index of INDEXES) assert.ok(indexes.includes(index), index);
     const constraints = (await db.query("SELECT conname::text AS name FROM pg_constraint WHERE conrelid = 'jackpot_actions'::regclass")).map((row) => row.name);
     assert.ok(constraints.includes('ja_submitted_has_tx'));
-    assert.deepEqual(await migrate(db), { version: 3, applied: [] }, 'applying twice is a no-op');
-    for (const statement of MIGRATIONS[2].statements) await db.query(statement);
-    assert.equal(await readSchemaVersion(db), 3);
+    assert.deepEqual(await migrate(db), { version: LATEST_SCHEMA_VERSION, applied: [] }, 'applying twice is a no-op');
+    for (const statement of jackpotMigration.statements) await db.query(statement);
+    assert.equal(await readSchemaVersion(db), LATEST_SCHEMA_VERSION);
 
     const session = await insertOneRowEach(db);
     // One real action id of every kind, with and without a session.
@@ -146,17 +151,18 @@ test('jackpot migration applies to fresh and older databases, is idempotent, and
     await rejects("UPDATE seed_ticket_log SET session_handle = 'not-a-handle'", [], 'session handle shape');
   });
 
-  // Version 1 (the live schema before 1.8.1) and version 2 (live today).
-  for (const upTo of [1, 2]) {
+  // Every older schema: version 1 (the live schema before 1.8.1), version 2 (live today), and any
+  // migration a merge puts before the jackpot migration.
+  for (const upTo of versions.filter((version) => version < JACKPOT_MIGRATION_VERSION)) {
     await withDb(async (db) => {
       for (const migration of MIGRATIONS.filter((entry) => entry.version <= upTo)) {
         for (const statement of migration.statements) await db.query(statement);
         await db.query('INSERT INTO schema_migrations (version, name) VALUES ($1::int, $2)', [String(migration.version), migration.name]);
       }
       assert.equal(await readSchemaVersion(db), upTo);
-      const expected = upTo === 1 ? [2, 3] : [3];
-      assert.deepEqual(await ensureSchema(db), 3);
-      assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), [1, 2, 3]);
+      const expected = versions.filter((version) => version > upTo);
+      assert.deepEqual(await ensureSchema(db), LATEST_SCHEMA_VERSION);
+      assert.deepEqual((await db.query('SELECT version::int AS v FROM schema_migrations ORDER BY 1')).map((row) => row.v), versions);
       const tables = await tableNames(db);
       for (const table of JACKPOT_TABLES) assert.ok(tables.includes(table), `${table} after upgrading v${upTo} (${expected.join(', ')})`);
       await insertOneRowEach(db);

@@ -23,7 +23,9 @@
 // the humanised solver and the widened-view pilot). --seed-variance runs the fixed-seed, varied-noise
 // pass (how much of the survival spread is the seed alone; B.5 item 4).
 // --cap-minutes stops the scripted INPUTS at M minutes (the run then plays out with no presses, so its
-// evidence stays stock and canonical); the committed receipt runs uncapped.
+// evidence stays stock and canonical); the committed receipt runs uncapped. The solver's set (a) row always
+// replays the committed 60-minute fixture, except that a caller (the test) may pass `solver: { evidence,
+// source }` to runCalibration: the suite replays that fixture once, in tests/jackpot-server-screen.test.mjs.
 //
 // The gate for JACKPOT_LIVE (design §B.4): 100% of (a) held; 0 human holds on H4-H6 with at least 40 human
 // runs (15 of them 8 minutes or longer; at least 5 people, attested by the owner); every other rule's
@@ -149,7 +151,7 @@ function readJson(path, root = repoRoot) {
 // --- Populations -----------------------------------------------------------------
 
 // Set (a): must hold, gated at 100%.
-export function mustHoldSet({ pilotSeeds = [1, 2, 3], capMinutes = null, root = repoRoot } = {}) {
+export function mustHoldSet({ pilotSeeds = [1, 2, 3], capMinutes = null, root = repoRoot, solver = null } = {}) {
   const cap = capTicksOf(capMinutes);
   const out = [];
   for (const seed of pilotSeeds) {
@@ -158,8 +160,8 @@ export function mustHoldSet({ pilotSeeds = [1, 2, 3], capMinutes = null, root = 
       out.push(screenEvidence(result.evidence, { label: `${name} seed ${seed}`, set: 'a', source: cap ? `live, inputs capped at ${capMinutes} min` : 'live', orientation }));
     }
   }
-  const solver = readJson(FIXTURE_PATHS.solver, root).evidence;
-  out.push(screenEvidence(solver, { label: 'routePilotFullSnapshot seed 1', set: 'a', source: FIXTURE_PATHS.solver }));
+  const solverRun = solver?.evidence ? solver : { evidence: readJson(FIXTURE_PATHS.solver, root).evidence, source: FIXTURE_PATHS.solver };
+  out.push(screenEvidence(solverRun.evidence, { label: 'routePilotFullSnapshot seed 1', set: 'a', source: solverRun.source ?? 'injected' }));
   for (const seed of pilotSeeds.filter((value) => value !== 1).slice(0, cap ? 0 : 2)) {
     const result = playDecider(pilotFor('routePilotFullSnapshot'), { seed });
     out.push(screenEvidence(result.evidence, { label: `routePilotFullSnapshot seed ${seed}`, set: 'a', source: 'live' }));
@@ -380,11 +382,11 @@ export function seedVariancePass({ profileName = 'expert', seeds = 4, noise = 4,
 
 export async function runCalibration({
   probe = false, bots = 0, seedVariance = false, humanDir = null, fromNeon = false, vouched = null, db = null, env = process.env, fetchImpl = globalThis.fetch,
-  capMinutes = null, pilotSeeds = [1, 2, 3], neonLimit = 500, root = repoRoot, nowMs = Date.now(), command = null, log = () => {},
+  capMinutes = null, pilotSeeds = [1, 2, 3], neonLimit = 500, root = repoRoot, nowMs = Date.now(), command = null, log = () => {}, solver = null,
 } = {}) {
   const started = Date.now();
   log('set (a): must-hold');
-  const setA = mustHoldSet({ pilotSeeds, capMinutes, root });
+  const setA = mustHoldSet({ pilotSeeds, capMinutes, root, solver });
   log('set (b): known evasion');
   const setB = knownEvasionSet({ bots, capMinutes, evasionSeeds: pilotSeeds, root });
   log('set (c): human');

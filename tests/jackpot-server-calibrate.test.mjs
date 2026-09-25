@@ -5,8 +5,9 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 import {
-  CALIBRATION_VERSION, FIXTURE_PATHS, HUMAN_GATE, clopperPearsonUpper, parseCalibrateArgs, parseVouched, runCalibration,
+  CALIBRATION_VERSION, FIXTURE_PATHS, HUMAN_GATE, clopperPearsonUpper, parseCalibrateArgs, parseVouched, playDecider, runCalibration,
 } from '../scripts/chikun-plausibility-calibrate.mjs';
+import { pilotFor } from '../scripts/chikun-difficulty-harness.mjs';
 import { EVASION_PILOTS, HUMAN_MIN_PRESS_GAP_TICKS } from '../scripts/lib/chikun-evasion-pilots.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
 import { humanLikeEvidence, seedJackpotRun } from './fixtures/jackpot-server/helpers.mjs';
@@ -18,7 +19,8 @@ import { humanLikeEvidence, seedJackpotRun } from './fixtures/jackpot-server/hel
  * (b) (the humanised solver and the widened-view pilot) is REPORTED, a miss
  * being expected; the bot human models show the H4-H6 separation of B.4;
  * unvouched Neon rows never enter a gate denominator and no wallet reaches
- * the receipt. Pilot inputs are capped at 3 minutes to keep the file fast.
+ * the receipt. Pilot inputs are capped at 3 minutes to keep the file fast, the solver's included: the
+ * suite's one 60-minute (H1) replay of the committed solver fixture is in jackpot-server-screen.test.mjs.
  */
 
 const MODELS = JSON.parse(readFileSync(new URL(`../${FIXTURE_PATHS.botModels}`, import.meta.url), 'utf8')).runs;
@@ -37,7 +39,8 @@ test('calibration tool gates the must-hold set and reports the known-evasion set
     await seedJackpotRun(db, { wallet: VOUCHED, seed: 4242, evidence: humanLikeEvidence(4242), replay: false });
     await seedJackpotRun(db, { wallet: STRANGER, seed: 4343, evidence: humanLikeEvidence(4343), replay: false });
 
-    const receipt = await runCalibration({ probe: true, capMinutes: 3, pilotSeeds: [1], humanDir, fromNeon: true, db, vouched: new Set([VOUCHED]), nowMs: Date.parse('2026-09-25T12:00:00.000Z') });
+    const solver = { evidence: playDecider(pilotFor('routePilotFullSnapshot'), { seed: 1, capTicks: 3 * 3600 }).evidence, source: 'test: inputs capped at 3 min' };
+    const receipt = await runCalibration({ probe: true, capMinutes: 3, pilotSeeds: [1], humanDir, fromNeon: true, db, vouched: new Set([VOUCHED]), nowMs: Date.parse('2026-09-25T12:00:00.000Z'), solver });
     assert.equal(receipt.version, CALIBRATION_VERSION);
 
     // (a) must-hold: 100% held, each for the reason B.4 gives.
@@ -48,7 +51,7 @@ test('calibration tool gates the must-hold set and reports the known-evasion set
       assert.ok(codesOf(pilot).some((code) => ['H4', 'H5', 'H6'].includes(code)), `${pilot} holds on H4-H6 (${codesOf(pilot)})`);
       assert.ok(codesOf(pilot).includes('H5'), `${pilot} is machine-regular`);
     }
-    assert.ok(codesOf('routePilotFullSnapshot').includes('H1'), 'the solver completes the run');
+    assert.equal(a.runs.find((run) => run.label.startsWith('routePilotFullSnapshot')).source, 'test: inputs capped at 3 min', 'no second 60-minute replay');
     assert.ok(codesOf('truncated client').includes('H7'), 'a non-stock maxTicks is an integrity hold');
     assert.deepEqual(codesOf('late evidence'), ['H9'], 'late evidence alone');
 
