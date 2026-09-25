@@ -1,0 +1,34 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-25",
+  "release": "1.8.1 post-launch polish",
+  "siteVersion": "1.8.1",
+  "cacheMarker": "lesters-arcade-v54-post-launch",
+  "branch": "fable/master-list-20260916",
+  "source": "60ea173a",
+  "production": {
+    "deployment": "dpl_4x5CB5EfB257TzrqvuDp9qRN66mv",
+    "immutableUrl": "https://lesters-arcade-fdqgyxymw-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-cmdcpf6ui-justin-agent-projects.vercel.app",
+    "previous": "dpl_D8RR6Xm9T2ZC8ZhDMrr697WW9jMu (1.8.0 + cron fix)",
+    "rollback": "Vercel Instant Rollback to dpl_D8RR6Xm9T2ZC8ZhDMrr697WW9jMu"
+  },
+  "contains": [
+    "ops-health: /api/health, owner/status.html, cron_runs (Neon migration 2), redacted 500 logging",
+    "perf-lazy-hosted: Scores/Profile route modules lazy (dist/main.js -47 KB)",
+    "live-ui-audit: 15 production defects fixed (focus retention, wallet picker first paint, profile header, contrast, STACKED Ranked price, layouts, wallet case)",
+    "simulated-wallet shell banner restored (peer session merge 1a99875a)"
+  ],
+  "gates": {
+    "local": "PASS 4860 tests, 4809 passed, exactly 51 ledgered failures",
+    "vercel": "same gate PASS on the candidate build"
+  },
+  "verification": {
+    "publicFiles": "146/146 match the certified local build",
+    "apiProbes": "attest 410, session nonce 200, leaderboard 200, profile 200, settle GET 405, unknown share 404, profile deep link 200",
+    "health": "healthy; relayer 0.0055 zkLTC (~112 settles); queue empty; index lag 1167 blocks; migration 2 applied",
+    "liveUiAudit": "scripts/live-ui-audit.mjs 234/234 on production (desktop, phone, narrow)"
+  },
+  "contractsUnchanged": "contracts/deployment-record.hardened.json (1.8.0 deployment), fees 85% developer / 15% arcade, reserve 0.002 zkLTC"
+}

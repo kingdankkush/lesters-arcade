@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.1: post-launch polish, health monitoring, faster first load
+# Lester's Arcade — 1.8.1 verified live: post-launch polish, health monitoring, faster first load
 
 Post-launch release on top of the verified 1.8.0 Ranked launch. The owner status page (`/owner/status.html`) and the public `/api/health` report relayer balance and estimated settlements left, the settle queue, index lag, cron outcomes and the current LiteForge base fee; every server 500 now logs a redacted cause class, and both crons record their runs (Neon migration 2). The Scores and Profile route modules load on demand, cutting `dist/main.js` by about 47 KB. A read-only audit of the live site fixed keyboard focus loss in leaderboard search and tabs, the unstyled first paint of the wallet picker, other players' profile headers, low-contrast buttons, STACKED's Ranked price line, recent-run layouts and wallet capitalisation. The simulated-wallet shell banner is restored for local previews. Contracts, fees and flags are unchanged from 1.8.0.
 
-Site/game version `1.8.1`; cache marker `lesters-arcade-v54-post-launch`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_4x5CB5EfB257TzrqvuDp9qRN66mv` (source `60ea173a`); site/game version `1.8.1`; cache marker `lesters-arcade-v54-post-launch`. The local and Vercel gates pass 4,809 of 4,860 tests with exactly 51 unchanged retired exceptions; all 146 checked public files match; the live UI audit passes 234/234 and `/api/health` reports healthy. [Release receipt](docs/qa/post-launch-release-20260925.json). Rollback: Instant Rollback to `dpl_D8RR6Xm9T2ZC8ZhDMrr697WW9jMu`. Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.8.0 verified live: Ranked on LitVM LiteForge
 
