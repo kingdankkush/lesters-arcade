@@ -81,3 +81,11 @@ const LABEL = /^(?:[A-Za-z]{1,12} )?v(?:\d{1,6}(?:\.\d{1,6})?|\?)$/;
 export function versionLabelText(value) {
   return typeof value === 'string' && LABEL.test(value) ? value : null;
 }
+
+// One tooltip for every hosted view: the version a run was played on, an
+// unknown one ('<Game> v?': not recorded, or not a version this deploy has
+// shipped), or none at all (null: a body cached before the field existed).
+export function versionLabelTitle(label) {
+  if (!label) return 'Game version unavailable';
+  return label.endsWith(UNKNOWN_GAME_VERSION) ? 'Game version unknown for this run' : `Played on ${label}`;
+}

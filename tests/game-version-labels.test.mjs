@@ -15,6 +15,7 @@ import {
   UNKNOWN_GAME_VERSION,
   versionLabelFor,
   versionLabelText,
+  versionLabelTitle,
 } from '../apps/portal/src/game-version-labels.mjs';
 import { HMH_CABINET_VERSION } from '../apps/portal/src/hmh-cabinet-version.mjs';
 import { getPlaySessionIdentity } from '../apps/portal/src/arcade-core.mjs';
@@ -216,4 +217,14 @@ test('versionLabelText accepts exactly the labels versionLabelFor writes', () =>
     'HMH v1234567', 'HMH v0.1234567', 'H-M-H v0.5', 'Chikun v7\n', '<b>HMH</b> v0.5', 'ABCDEFGHIJKLM v1', 'HMH v0.5<script>']) {
     assert.equal(versionLabelText(bad), null, JSON.stringify(bad));
   }
+});
+
+// Review finding (version-column fixer): the board, the profile and the share
+// page treated an unknown version three ways. The hosted views now share one
+// tooltip; the share page lists no unknown version at all.
+test('versionLabelTitle: played on, unknown, or unavailable', () => {
+  assert.equal(versionLabelTitle('HMH v0.5'), 'Played on HMH v0.5');
+  assert.equal(versionLabelTitle('Chikun v7'), 'Played on Chikun v7');
+  for (const unknown of ['HMH v?', 'STACKED v?', 'v?']) assert.equal(versionLabelTitle(unknown), 'Game version unknown for this run', unknown);
+  for (const missing of [null, undefined, '']) assert.equal(versionLabelTitle(missing), 'Game version unavailable', String(missing));
 });

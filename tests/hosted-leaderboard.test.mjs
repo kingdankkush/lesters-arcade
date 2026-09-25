@@ -533,7 +533,10 @@ test('hosted boards show the game version of each run in a Version column before
       const value = byClass(cells[0], 'lt-version')[0];
       const label = index === 3 ? null : VERSION_LABELS[gameId][index % VERSION_LABELS[gameId].length];
       assert.equal(value.textContent, label ? label.slice(label.indexOf(' ') + 1) : '—', `${gameId} row ${index + 1}: the board shows the version alone`);
-      assert.equal(value.title, label && !label.endsWith('v?') ? `Played on ${label}` : 'Game version not recorded for this run');
+      // An unknown version and a body without the field (cached before it
+      // existed) are both muted; only the unknown one says so.
+      const title = !label ? 'Game version unavailable' : label.endsWith('v?') ? 'Game version unknown for this run' : `Played on ${label}`;
+      assert.equal(value.title, title, `${gameId} row ${index + 1}`);
       assert.equal(String(value.className).includes('is-unknown'), !label || label.endsWith('v?'));
     });
   }
@@ -547,7 +550,10 @@ test('hosted boards show the game version of each run in a Version column before
   }
   assert.deepEqual(['HMH v0.5', 'HMH v0.6', 'Chikun v7', 'STACKED v0.2', 'HMH v?', 'v?', null].map(boardVersionText), ['v0.5', 'v0.6', 'v7', 'v0.2', 'v?', 'v?', '—']);
   assert.equal(boardVersionTitle('STACKED v0.2'), 'Played on STACKED v0.2');
-  assert.equal(boardVersionTitle('Chikun v?'), 'Game version not recorded for this run');
+  assert.equal(boardVersionTitle('Chikun v?'), 'Game version unknown for this run');
+  assert.equal(boardVersionTitle(null), 'Game version unavailable');
+  const { versionLabelTitle } = await import('../apps/portal/src/game-version-labels.mjs');
+  assert.equal(boardVersionTitle, versionLabelTitle, 'the board and the profile share one tooltip');
 });
 
 test('hosted entries keep only well-formed version labels', () => {

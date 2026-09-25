@@ -8,6 +8,7 @@
 
 import { arcadeAvatarForUri } from '../arcade-avatars.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
+import { versionLabelTitle } from '../game-version-labels.mjs';
 import {
   HOSTED_LEADERBOARD_NOTICE,
   HOSTED_LEADERBOARD_PAGE_SIZE,
@@ -45,15 +46,13 @@ export function hostedLeaderboardColumnsFor(gameId) {
 
 // A board holds one game, so its column shows the version alone ('v0.5' for
 // 'HMH v0.5'); the full label is the cell's tooltip. A row without a label
-// (an E5 body cached before the field existed) shows a dash.
+// (an E5 body cached before the field existed) shows a dash. Both that and
+// an unknown version ('v?') are muted, with the profile's tooltips.
 export function boardVersionText(versionLabel) {
   return versionLabel ? versionLabel.slice(versionLabel.lastIndexOf(' ') + 1) : '—';
 }
 
-export function boardVersionTitle(versionLabel) {
-  if (!versionLabel || versionLabel.endsWith('v?')) return 'Game version not recorded for this run';
-  return `Played on ${versionLabel}`;
-}
+export const boardVersionTitle = versionLabelTitle;
 
 export function createHostedLeaderboardView({
   appendText,

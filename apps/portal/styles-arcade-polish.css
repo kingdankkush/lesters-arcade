@@ -2800,3 +2800,5 @@ button[class="pixel-button"]:disabled,
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+/* An unknown version ('HMH v?') is muted, as on the hosted board. */
+.profile-session-row > .profile-session-version.is-unknown { border-color: transparent; color: #8b9bc0; }

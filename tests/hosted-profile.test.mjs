@@ -766,7 +766,11 @@ test('profile session history shows the game version of each run', async () => {
     assert.deepEqual(shown, [['HMH v0.5'], ['Chikun v7'], ['STACKED v0.2'], ['HMH v0.6'], ['HMH v?'], [], []], `${label}: one full label per run, none when absent or malformed`);
     for (const row of rows.slice(0, 5)) {
       const chip = byClass(row, 'profile-session-version')[0];
-      assert.equal(chip.title, 'Game version this run was played on');
+      // An unknown version is muted with the hosted board's tooltip; a known
+      // one says what the run was played on (review finding, version-column).
+      const unknown = chip.textContent.endsWith('v?');
+      assert.equal(chip.title, unknown ? 'Game version unknown for this run' : `Played on ${chip.textContent}`, `${label}: ${chip.textContent}`);
+      assert.equal(String(chip.className).split(/\s+/).includes('is-unknown'), unknown, `${label}: ${chip.textContent} muted`);
       const children = row.children.map((child) => String(child.className));
       const at = children.findIndex((className) => className.includes('profile-session-version'));
       assert.equal(at, 2, 'after the score and the game, before the status');
@@ -781,4 +785,9 @@ test('the profile version chip is styled on the status line and never wraps insi
   const rule = /\.profile-session-row > \.profile-session-version \{([^}]*)\}/.exec(css)?.[1] ?? '';
   assert.match(rule, /white-space: nowrap;/);
   assert.match(rule, /border-radius: 999px;/);
+  // Muted like the board's unknown version (.lt-version.is-unknown).
+  const muted = /\.profile-session-row > \.profile-session-version\.is-unknown \{([^}]*)\}/.exec(css)?.[1] ?? '';
+  const board = /\.leaderboard-board-v10 \.lt-version\.is-unknown \{([^}]*)\}/.exec(css)?.[1] ?? '';
+  assert.match(muted, /color: #8b9bc0;/);
+  assert.equal(muted.trim(), board.trim(), 'the same muted look on the profile and the board');
 });
