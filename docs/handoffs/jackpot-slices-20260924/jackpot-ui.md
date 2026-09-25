@@ -86,7 +86,7 @@ Also close the CSS look-ahead cheat in the Chikun child (design §B.4). Everythi
    - local-time rendering of the close and payout times in the lazy module;
    - while the flag is false: noindex, the soft-launch banner, and not in the sitemap;
    - when true: indexed, and listed in `sitemap.xml` and `llms.txt`;
-   - the legal block defaults to text containing `LEGAL-REVIEW-PENDING`.
+   - the legal block uses the owner-requested draft in design §F.1 verbatim, with an adjacent HTML comment `<!-- LEGAL-REVIEW-PENDING: owner confirms at E10 -->` so the guard still blocks a live flip until the owner confirms the text (then the comment is removed in the E10 commit).
    - **Guard test:** building with `chikunJackpotLive:true` fails if the built rules page still contains `LEGAL-REVIEW-PENDING` **or lacks any section marker** (the test uses a fixture legal text to show the success path).
 8. **Copy plumbing** (design §D.6):
    - `portalCopyFor({ …, chikunJackpotLive })`;

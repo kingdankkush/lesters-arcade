@@ -1440,6 +1440,20 @@ OJ3's checklist includes items 1-5 above.
 
 ---
 
+### F.1 Draft legal block for the rules page (owner-requested, 2026-09-25; not legal advice)
+
+The jackpot-ui slice uses this text for the `copy:jackpot-legal` block. It keeps the `LEGAL-REVIEW-PENDING` guard marker in an HTML comment beside the block until the owner confirms the text at E10.
+
+> **Weekly Jackpot rules**
+> - **Skill contest.** The eligible wallet with the highest verified Ranked Chikun's Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week's funded prize, paid on chain after a 24-hour review.
+> - **Entry.** Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.
+> - **Prizes.** A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.
+> - **Fair play.** Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.
+> - **Eligibility.** You must be 18 or older (or the age of majority where you live). Lester's Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you.
+> - **Testnet.** During the LiteForge testnet, prizes are testnet tokens with no monetary value. Real $CHIKUN prizes will come with updated rules.
+> - **Changes.** We may change, pause or end the Weekly Jackpot at any time; prizes already paid are unaffected.
+> - Nothing here is financial advice. Memecoins are volatile.
+
 ## G. Slice plan
 
 Briefs: `docs/handoffs/jackpot-slices-20260924/{jackpot-contracts,jackpot-server,jackpot-ui,jackpot-rehearsal}.md`.
@@ -1510,6 +1524,16 @@ Briefs: `docs/handoffs/jackpot-slices-20260924/{jackpot-contracts,jackpot-server
 | OJ5 | before E8 | The prize schedule (tCHIKUN amounts per week), the cap policy, and `minFundWei` |
 | OJ6 | when $CHIKUN launches | The token acceptance checklist (A.11, including memecoin transfer limits and exemptions), mainnet timing, and the **mandatory** real-value set: `adminClearOnly = true`, a prize cap, H11 on, personhood gating or winner verification, sanctions screening |
 | OJ7 | whenever Louie's wallet is ready | How Louie receives Chikun's developer share. Recommended: off-chain forwarding until mainnet, and a dev-wallet update function (or a splitter) in the mainnet `GameRegistry`. Re-registering Chikun on testnet splits the board and ends this jackpot instance (§A.19). |
+
+### H.1 Owner answers (Justin, 2026-09-25)
+
+- **OJ1 approved** as designed, with these specifics:
+  - **Can never win:** the owner/admin wallet `0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26`, the operator `0x6Ac08Bed727A6951D755F0674f096E6A8AC06bfF` and the keeper wallet (plus the verifier, relayer and any wallet that ever held a role, per J-rules).
+  - **Louie's wallet is not blocked** and not configured anywhere yet: the address is not known.
+  - **Leftover / residual recipient:** deferred by the owner ("until we load it up first"). The tCHIKUN testnet instance uses the owner wallet above as its fixed recipient; the real $CHIKUN instance is a new deployment and decides its recipient then.
+- **OJ2:** the owner is recruiting players to play Ranked and submit scores; the calibration set is collected from production evidence once enough human runs exist. `JACKPOT_LIVE` stays false until OJ2 is met.
+- **OJ3:** the owner asked the orchestrator to draft the legal block, short and concise. The draft is in §F.1; it is not legal advice, and the owner confirms it (or supplies reviewed text) at E10.
+- **OJ5:** the prize schedule is set when the owner and Louie fund a week.
 
 **Open or UNVERIFIED:**
 - LitVM `block.timestamp` semantics at the boundary.
