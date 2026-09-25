@@ -35,6 +35,11 @@
 //           score-above-ceiling      score above kills by role and threat,
 //                                    silver coins and objective rewards at the
 //                                    maximum score multiplier
+//           grenade-kills-above-weapon-kills, pickups-above-capacity,
+//           district-path-invalid, districts-before-travel-time
+//                                    the 1.8.4 consistency rules for the fields
+//                                    the achievement stats read directly (see
+//                                    HMH_V6_CONSISTENCY_RULES)
 //   flag    anything within 10% of a ceiling, and cross-field inconsistencies
 //           an honest client never produces but that do not raise a ceiling.
 //
@@ -337,12 +342,184 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
   return runTicks;
 }
 
+// ---------------------------------------------------------------------------
+// v6 consistency rules (added for 1.8.4). Three summary fields reach the
+// achievement stats directly (statsFromHmhRunSummary: grenadeKills,
+// powerUpsCollected, districtsVisited), and no v6 ceiling bounded them: a paid
+// 1.8.2 run of 36 kills verified with 250 grenade kills, 250 bonus lives and
+// all six districts. Each rule is a hard impossibility for the 1.8.x child
+// (apps/hmh-reboot/src and sdk/hmh-run-summary.mjs are identical from 1.8.0 to
+// 1.8.3), states why every honest run meets it, and carries its margin.
+// tests/server-verify-hmh-plausibility.test.mjs pins each literal against the
+// child and runs the honest pilot corpus (tests/fixtures/ranked/
+// hmh-honest-corpus.mjs) through them.
+//
+//   reject  grenade-kills-above-weapon-kills  grenades.kills above the kills of
+//                                    the two grenade weapons. recordRunKill adds
+//                                    a grenade kill exactly when the killing
+//                                    weapon is satoshi-frag or launcher-rig, and
+//                                    nothing else writes the count, so an honest
+//                                    summary has equality. Only the excess
+//                                    rejects, so no margin is needed.
+//           pickups-above-capacity   more pickups of an effect than its
+//                                    placements can give by the run's last tick
+//                                    (value and limit: the offending effects'
+//                                    pickups and their capacity). A pickup is
+//                                    only a collectible:collected event of
+//                                    stepCollectibles, which gives a placement
+//                                    once, or again only after its re-arm ticks.
+//                                    Margin: every placement counts as available
+//                                    from tick 0, unlocked, and re-armed at the
+//                                    first possible tick, with no travel between.
+//           district-path-invalid    the visited districts are not one
+//                                    contiguous run of strips that contains the
+//                                    seed's entry strip (value: the mask; limit:
+//                                    the entry's bit). The strips tile the world
+//                                    along x, every entry lies 250 units or more
+//                                    inside its strip, and a tick moves the
+//                                    player far less than a strip is wide, so
+//                                    the first recorded tick is in the entry
+//                                    strip and each later strip is entered from
+//                                    a neighbour. A mask of 0 (no tick recorded)
+//                                    passes.
+//           districts-before-travel-time  fewer ticks than the travel from the
+//                                    entry to the far ends of the visited strips
+//                                    needs at travel.maxStepPx a tick after a
+//                                    one-off travel.allowancePx (value: the
+//                                    run's ticks; limit: the fewest ticks that
+//                                    cover it). Margin: 48 px a tick is twice a
+//                                    dash tick (192 px over 8 ticks) and over
+//                                    five times the fastest running tick
+//                                    (240 px/s x 1.68 at the maximum movement
+//                                    ranks x 1.2 time dilation x 1.04 downhill =
+//                                    8.4 px); a maximum recoil impulse (74 px/s,
+//                                    8.9 px in all) and the one conveyor
+//                                    (150 px/s along 320 px) keep a running tick
+//                                    under 20 px.
+// Every rule reads only the summary and the literals below, never a clock.
+export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
+  grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
+  // Per collectible effect, one entry per placement that gives it: 0 for a
+  // one-shot placement, else its re-arm ticks. The 21 placements are the ten
+  // authored points of interest (authored-prop-layout
+  // POINT_OF_INTEREST_ASSET_BY_ID; main.mjs re-arms six of their assets every
+  // 10,800 ticks), the three seeded weapon events (one-shot) and the eight
+  // objective rewards (objective-rewards OBJECTIVE_REWARDS).
+  pickupPlacements: {
+    'bonus-life': [0, 0, 7_200],
+    'coin-blaster-cache': [7_200, 10_800],
+    'scatter-shotgun-cache': [0, 10_800],
+    'auto-miner-cache': [10_800],
+    'launcher-rig-cache': [10_800],
+    'litecoin-token': [],
+    'hash-rail-core': [0, 0],
+    'lightning-ledger-cache': [0, 0],
+    'bear-market-burner-cache': [0, 0],
+    'forked-standard-cache': [0],
+    'time-dilation': [10_800],
+    'berserk-candle': [10_800, 10_800],
+    'nuke-liquidation': [0, 7_200],
+  },
+  // level-one-world DISTRICTS as [id, minX, maxX], each the full world height;
+  // getLevelOneDistrictAt returns the first strip with minX <= x <= maxX.
+  districtStrips: [
+    ['frontier-relay', 0, 1_800],
+    ['rugpull-ravine', 1_800, 3_800],
+    ['liquidity-crossing', 3_800, 6_000],
+    ['hashwood', 6_000, 8_000],
+    ['mining-camp', 8_000, 10_000],
+    ['liquidation-yard', 10_000, 12_000],
+  ],
+  // level-entry LEVEL_ONE_ENTRIES as [id, x, y]; selectLevelEntry(seed) picks one.
+  levelEntries: [
+    ['relay', 800, 2_400],
+    ['ravine', 2_100, 2_300],
+    ['hashwood', 6_900, 2_250],
+    ['mining', 8_250, 2_350],
+    ['yard', 10_400, 2_450],
+  ],
+  travel: { maxStepPx: 48, allowancePx: 480 },
+});
+const V6C = HMH_V6_CONSISTENCY_RULES;
+
+export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze(['grenade-kills-above-weapon-kills', 'pickups-above-capacity', 'district-path-invalid', 'districts-before-travel-time']);
+
+// A placement gives one pickup, plus one per full re-arm period of the run.
+export function hmhV6PickupCapacity(effectId, runTicks) {
+  const placements = V6C.pickupPlacements[effectId] ?? [];
+  return placements.reduce((sum, rearmTicks) => sum + 1 + (rearmTicks > 0 ? Math.floor(runTicks / rearmTicks) : 0), 0);
+}
+
+// → { value, limit } summed over the effects above their capacity, or null.
+export function hmhV6PickupExcess(collectibles, runTicks) {
+  let value = 0;
+  let limit = 0;
+  for (const row of collectibles) {
+    const capacity = hmhV6PickupCapacity(row?.effectId, runTicks);
+    if (row?.collected > capacity) {
+      value += row.collected;
+      limit += capacity;
+    }
+  }
+  return value > 0 ? { value, limit } : null;
+}
+
+// level-entry selectLevelEntry: FNV-1a over `level-1-entry:${seed}`, and the
+// strip the entry lies in.
+export function hmhV6LevelEntry(seed) {
+  let hash = 2166136261;
+  for (const character of `level-1-entry:${seed}`) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619) >>> 0;
+  const [id, x, y] = V6C.levelEntries[hash % V6C.levelEntries.length];
+  return Object.freeze({ id, x, y, strip: V6C.districtStrips.findIndex(([, minX, maxX]) => x >= minX && x <= maxX) });
+}
+
+// The visited mask against the seed's entry → { pathValid, entryBit, travelPx }.
+// travelPx is the shortest travel from the entry that reaches both ends of the
+// visited run of strips: a strip left of the entry is reached at its maxX, one
+// right of it at its minX, and the nearer end is walked twice.
+export function hmhV6DistrictTravel(seed, visitedDistrictMask) {
+  const entry = hmhV6LevelEntry(seed);
+  const entryBit = 2 ** entry.strip;
+  if (visitedDistrictMask === 0) return { pathValid: true, entryBit, travelPx: 0 };
+  const strips = V6C.districtStrips;
+  const visited = strips.map((_, index) => Math.floor(visitedDistrictMask / 2 ** index) % 2 === 1);
+  const first = visited.indexOf(true);
+  const last = visited.lastIndexOf(true);
+  const contiguous = Number.isSafeInteger(visitedDistrictMask) && visitedDistrictMask > 0 && visitedDistrictMask < 2 ** strips.length
+    && visited.slice(first, last + 1).every(Boolean);
+  if (!contiguous || first > entry.strip || last < entry.strip) return { pathValid: false, entryBit, travelPx: 0 };
+  const left = first < entry.strip ? entry.x - strips[first][2] : 0;
+  const right = last > entry.strip ? strips[last][1] - entry.x : 0;
+  return { pathValid: true, entryBit, travelPx: left + right + Math.min(left, right) };
+}
+
+// The fewest ticks in which the travel budget covers `travelPx`.
+export function hmhV6MinTicksForTravel(travelPx) {
+  return Math.max(0, Math.ceil((travelPx - V6C.travel.allowancePx) / V6C.travel.maxStepPx));
+}
+
+function checkV6Consistency(runSummary, runTicks, reject) {
+  const { identity, kills, grenades, collectibles, exploration } = runSummary;
+  const weaponKills = rowCounts(kills.byWeapon, 'weaponId', 'count');
+  const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
+  if (grenades.kills > grenadeWeaponKills) reject('grenade-kills-above-weapon-kills', grenades.kills, grenadeWeaponKills);
+
+  const pickups = hmhV6PickupExcess(collectibles, runTicks);
+  if (pickups) reject('pickups-above-capacity', pickups.value, pickups.limit);
+
+  const districts = hmhV6DistrictTravel(identity.seed, exploration.visitedDistrictMask);
+  const minTicks = hmhV6MinTicksForTravel(districts.travelPx);
+  if (!districts.pathValid) reject('district-path-invalid', exploration.visitedDistrictMask, districts.entryBit);
+  else if (runTicks < minTicks) reject('districts-before-travel-time', runTicks, minTicks);
+}
+
 // → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
 // Expects a summary that already passed validateRunSummaryPayload (schema 1-6).
 export function validateV6RunPlausibility(runSummary) {
   const { reject, flag, done } = verdictCollector();
   const { identity, totals, kills, milestones, upgrades } = runSummary ?? {};
-  if (!identity || !totals || !kills || !Array.isArray(kills.byEnemyRole) || !milestones || !Array.isArray(upgrades)) {
+  if (!identity || !totals || !kills || !Array.isArray(kills.byEnemyRole) || !milestones || !Array.isArray(upgrades)
+    || !Array.isArray(kills.byWeapon) || !runSummary.grenades || !Array.isArray(runSummary.collectibles) || !runSummary.exploration) {
     reject('summary-unreadable', null, null);
     return done();
   }
@@ -378,6 +555,7 @@ export function validateV6RunPlausibility(runSummary) {
   if (kills.boss !== bossRoleKills) flag('boss-count-mismatch', kills.boss, bossRoleKills);
   if (milestones.bossEngagedTick > 0 && milestones.bossEngagedTick < HMH_BOSS_START_TICK) flag('boss-engaged-before-band', milestones.bossEngagedTick, HMH_BOSS_START_TICK);
   if (kills.boss > 0 && milestones.bossEngagedTick === 0) flag('boss-kill-without-engagement', kills.boss, 0);
+  checkV6Consistency(runSummary, runTicks, reject);
   return done();
 }
 

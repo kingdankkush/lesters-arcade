@@ -70,6 +70,8 @@ import { ENEMY_ARCHETYPES } from '../../../apps/hmh-reboot/src/enemy-archetypes.
 import { COLLECTIBLE_EFFECTS } from '../../../apps/hmh-reboot/src/collectible-system.mjs';
 import { getEncounterBand } from '../../../apps/hmh-reboot/src/encounter-director.mjs';
 import { FIXED_STEP_MS } from '../../../apps/hmh-reboot/src/simulation.mjs';
+import { selectLevelEntry } from '../../../apps/hmh-reboot/src/level-entry.mjs';
+import { getLevelOneDistrictAt } from '../../../apps/hmh-reboot/src/level-one-world.mjs';
 import { createSessionEvidenceState, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from '../../../apps/portal/src/session-integrity.mjs';
 import { RANKED_GAMES, RANKED_SETTLE_VERSION, rankedSessionKey } from '../../../apps/portal/src/ranked-identity.mjs';
 import { issueSeedTicket } from '../../../server/verify/seed-ticket.mjs';
@@ -147,6 +149,16 @@ export function buildStackedEvidence({ seed, buildHash, seasonId, topOutAtTick =
 
 const THREAT_OF_ROLE = (role) => (role === 'liquidator' ? LIQUIDATOR_THREAT_COST : ENEMY_ARCHETYPES[role].costs.threat);
 const DISTRICTS = Object.freeze(['frontier-relay', 'rugpull-ravine', 'liquidity-crossing', 'hashwood', 'mining-camp', 'liquidation-yard']);
+// The run walks one district per 7,200-tick leg from the strip of its seeded
+// level entry (selectLevelEntry), east to the last strip, then west to the
+// first and back, so the visited strips stay one contiguous run around the
+// entry, as in a real run (the district-path-invalid rule). The committed
+// fixtures keep their bytes: hmh-valid enters at the Frontier Relay and walks
+// its first two strips as before, and the longer runs still visit all six.
+const legDistrict = (entryStrip, leg) => {
+  const turn = (entryStrip + leg) % (2 * (DISTRICTS.length - 1));
+  return DISTRICTS[turn < DISTRICTS.length ? turn : 2 * (DISTRICTS.length - 1) - turn];
+};
 const CACHE_WEAPON = Object.freeze(Object.fromEntries(Object.values(COLLECTIBLE_EFFECTS).filter((effect) => effect.weaponId).map((effect) => [effect.effectId, effect])));
 
 export const HMH_PLANS = Object.freeze({
@@ -208,6 +220,8 @@ export async function buildHmhEvidence({ seed, buildHash, identity, plan = 'vali
   let enemySequence = 0;
   let endTick = spec.endTick ?? null;
   let position = { x: 1200, y: 2400 };
+  const entry = selectLevelEntry(seed);
+  const entryStrip = DISTRICTS.indexOf(getLevelOneDistrictAt(entry.x, entry.y).id);
 
   const settleLevels = (tick) => {
     for (let guard = 0; guard < 1000; guard += 1) {
@@ -241,7 +255,7 @@ export async function buildHmhEvidence({ seed, buildHash, identity, plan = 'vali
   const cacheQueue = [...spec.caches];
   for (let tick = 60; ; tick += 60) {
     const level = getRunProgressionSnapshot(progression).level;
-    const districtId = DISTRICTS[Math.floor(tick / 7_200) % DISTRICTS.length];
+    const districtId = legDistrict(entryStrip, Math.floor(tick / 7_200));
     position = { x: position.x + 3, y: position.y + (tick % 120 === 0 ? 2 : -1) };
     const bossEngaged = !bossDown && spec.bossKillTick !== undefined && tick >= HMH_BOSS_START_TICK;
     recordRunTick(accumulator, { tick, position, activeWeaponId, districtId, level, bossEngaged, discoveredPoiIds: tick === 3_600 ? ['relay-cache'] : [] });

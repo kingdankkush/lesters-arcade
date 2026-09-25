@@ -122,6 +122,30 @@ test('a boss kill before the boss band is rejected', async () => {
   assert.ok(run.flags.some((flag) => flag.id === 'boss-before-band' && flag.severity === 'reject'), JSON.stringify(run.flags));
 });
 
+// The 1.8.2 live issue: this body verified with no flags and earned
+// grenade-demolitionist, powerup-hoarder, grenade-century, slums-clear and
+// foundry-clear in one paid run. From 1.8.4 it is a 422, before any stats.
+test('grenade kills and pickups no 1.8.x run can produce are a 422, before any achievement stats', async () => {
+  const body = bodyWith(valid, (summary) => {
+    summary.grenades.kills = 250;
+    row(summary.collectibles, 'effectId', 'bonus-life').collected = 250;
+    summary.exploration.visitedDistrictMask = 63;
+  });
+  assert.equal(validateRunSummaryPayload(body.evidence.runSummary), '', 'the schema accepts the payload');
+  const run = await verify(body);
+  assert.equal(run.ok, false);
+  assert.equal(run.status, 422);
+  assert.equal(run.error, 'implausible-run');
+  assert.deepEqual(run.flags.map((flag) => [flag.id, flag.severity]), [['grenade-kills-above-weapon-kills', 'reject'], ['pickups-above-capacity', 'reject']]);
+  assert.equal(run.stats, undefined);
+  // A district mask that skips a strip, or leaves out the seed's entry strip.
+  for (const mask of [0b000101, 0b111110]) {
+    const skipped = await verify(bodyWith(valid, (summary) => { summary.exploration.visitedDistrictMask = mask; }));
+    assert.equal(skipped.status, 422);
+    assert.deepEqual(skipped.flags.map((flag) => flag.id), ['district-path-invalid']);
+  }
+});
+
 test('a summary that does not start at tick 0 is rejected', async () => {
   // A far end tick with a short elapsed span: the level-90 boss run as 1 s, the realistic run as 20 s.
   for (const [fixture, span] of [[level90, 60], [realistic, 1_200]]) {

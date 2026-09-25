@@ -28,6 +28,13 @@ import {
   spawnCapacity,
   validateRebootRunPlausibility,
   validateV6RunPlausibility,
+  HMH_V6_CONSISTENCY_REJECTS,
+  HMH_V6_CONSISTENCY_RULES,
+  hmhV6DistrictTravel,
+  hmhV6LevelEntry,
+  hmhV6MinTicksForTravel,
+  hmhV6PickupCapacity,
+  hmhV6PickupExcess,
 } from '../server/verify/hmh-plausibility.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import {
@@ -49,7 +56,7 @@ import {
   seededUnit,
 } from '../sdk/hmh-run-contract-v7.mjs';
 import { seededUnit as childSeededUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
-import { HMH_WEAPON_EVOLUTIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import { HMH_WEAPON_DEFINITIONS, HMH_WEAPON_EVOLUTIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import {
   RUN_UPGRADE_CATALOG,
   SILVER_SCORE_PER_COIN,
@@ -71,11 +78,20 @@ import {
 } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { ENCOUNTER_BANDS, createEncounterDirector, directorViewBounds, stepEncounterDirector } from '../apps/hmh-reboot/src/encounter-director.mjs';
 import { createEnemyPopulation, retireEnemyFromPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
-import { COLLECTIBLE_EFFECTS, createCollectibleState } from '../apps/hmh-reboot/src/collectible-system.mjs';
+import { COLLECTIBLE_EFFECTS, createCollectibleState, stepCollectibles } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import { addSilverDrop, createSilverDropState } from '../apps/hmh-reboot/src/silver-drops.mjs';
 import { FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
 import { HMH_V7_FIXTURE_BUILD_HASH, HMH_V7_PLANS, buildFixtureBody, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { HMH_CHILD_REARMED_ASSETS, HMH_CHILD_REARM_TICKS, hmhChildCollectibleState } from './fixtures/ranked/hmh-honest-corpus.mjs';
+import { LEVEL_ONE_WORLD, getLevelOneDistrictAt } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { LEVEL_ONE_ENTRIES, selectLevelEntry } from '../apps/hmh-reboot/src/level-entry.mjs';
+import { DASH_DISTANCE, DASH_DURATION_TICKS } from '../apps/hmh-reboot/src/dash.mjs';
+import { createPlayerMotionState } from '../apps/hmh-reboot/src/movement.mjs';
+import { movementSpeedMultiplierForTransition, resolveHeightAdvantage } from '../apps/hmh-reboot/src/elevation.mjs';
+import { WORLD_HAZARD_RULES } from '../apps/hmh-reboot/src/world-hazards.mjs';
+import { HMH_GRENADE_DEFINITION } from '../apps/hmh-reboot/src/grenades.mjs';
+import { createRunSummaryAccumulator, finalizeRunSummary, recordRunGrenade, recordRunKill } from '../sdk/hmh-run-summary.mjs';
 
 const MAIN_SOURCE = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const valid = readFixture('hmh-valid').body.evidence.runSummary;
@@ -322,9 +338,9 @@ test('a run that does not start at tick 0 is rejected, and every tick bound uses
   // Moving the start without the time: the elapsed time no longer matches the run's ticks.
   assert.deepEqual(rejects(validateRebootRunPlausibility(clone(valid, (s) => { s.identity.startTick = 1; s.totals.survivalTicks -= 1; }))), ['start-tick-invalid', 'elapsed-time-mismatch']);
   // The level-90 boss run squeezed into one second: a far end tick buys neither
-  // the kill capacity nor the boss band.
+  // the kill capacity nor the boss band (nor, since 1.8.4, the districts).
   const squeezed = validateRebootRunPlausibility(shiftedStart(level90, 60));
-  assert.deepEqual(rejects(squeezed), ['start-tick-invalid', 'boss-before-band', 'kills-above-capacity']);
+  assert.deepEqual(rejects(squeezed), ['start-tick-invalid', 'boss-before-band', 'kills-above-capacity', 'districts-before-travel-time']);
   assert.deepEqual(squeezed.flags.find((flag) => flag.id === 'kills-above-capacity').limit, spawnCapacity(60));
   // The realistic run claimed as 20 seconds.
   assert.deepEqual(rejects(validateRebootRunPlausibility(shiftedStart(realistic, 1_200))), ['start-tick-invalid', 'kills-above-capacity']);
@@ -348,7 +364,22 @@ test('soft cross-checks flag without rejecting', () => {
 // must get the result it got at 60ea173a (production 1.8.1), before the v7
 // rules and the literal v6 table existed. The corpus below covers every rule
 // and flag of the v6 path; its results were hashed with the 60ea173a module.
+//
+// 1.8.4 deliberately changes v6 for fabricated inputs only: the four
+// consistency rejects of HMH_V6_CONSISTENCY_RULES. With those flags taken out
+// (and the verdict recomputed) the corpus still hashes to the 60ea173a digest,
+// so no 1.8.1 result moved; with them in, it hashes to V6_CORPUS_DIGEST_1_8_4.
+// Seven results gained a flag (V6_CORPUS_CHANGED_1_8_4) and two of them changed
+// verdict (V6_VERDICTS_CHANGED_1_8_4): tripling every cache pickup claims three
+// Hash Rail Cores (two one-shot placements) and, in the realistic run, three
+// Forked Standard caches (one event). The other five were already rejected (no
+// ticks: progress-without-time; squeezed: start-tick-invalid) and now also
+// reject districts-before-travel-time, since their districts lie farther from
+// the entry than 0 or 60 ticks can cover.
 const V6_CORPUS_DIGEST = 'accf51dd54eb915ac643884ca6ab6886158b53531d67aa11461c6c0246faf439';
+const V6_CORPUS_DIGEST_1_8_4 = 'e5475eb02125f258e285f874244b475c1492534c37cab9eac4dfc8393da93c4c';
+const V6_CORPUS_CHANGED_1_8_4 = Object.freeze(['valid no ticks', 'realistic no ticks', 'realistic squeezed to 60', 'realistic caches x3', 'level-90 no ticks', 'level-90 squeezed to 60', 'level-90 caches x3']);
+const V6_VERDICTS_CHANGED_1_8_4 = Object.freeze(['realistic caches x3', 'level-90 caches x3']);
 function v6Corpus() {
   const cases = [];
   const add = (name, base, mutate = () => {}) => cases.push([name, clone(base, mutate)]);
@@ -398,10 +429,310 @@ function v6Corpus() {
   return cases;
 }
 
-test('the v6 path gives every schema-6 summary its 1.8.1 result (frozen)', () => {
+// A result without the 1.8.4 consistency flags, with its verdict recomputed.
+const withoutConsistency = (result) => {
+  const flags = result.flags.filter((flag) => !HMH_V6_CONSISTENCY_REJECTS.includes(flag.id));
+  return { verdict: flags.some((flag) => flag.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok', flags };
+};
+
+test('the v6 path gives every schema-6 summary its 1.8.1 result (frozen), apart from the 1.8.4 consistency rejects', () => {
   const results = v6Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
   const digest = createHash('sha256').update(JSON.stringify(results)).digest('hex');
-  assert.equal(digest, V6_CORPUS_DIGEST, `${results.length} cases`);
+  assert.equal(digest, V6_CORPUS_DIGEST_1_8_4, `${results.length} cases`);
+  const asAt181 = results.map(([name, result]) => [name, withoutConsistency(result)]);
+  assert.equal(createHash('sha256').update(JSON.stringify(asAt181)).digest('hex'), V6_CORPUS_DIGEST, 'without the consistency flags, every result is the 1.8.1 result');
+  const changed = results.filter(([, result], index) => JSON.stringify(result) !== JSON.stringify(asAt181[index][1])).map(([name]) => name);
+  assert.deepEqual(changed, V6_CORPUS_CHANGED_1_8_4);
+  const verdictChanged = results.filter(([, result], index) => result.verdict !== asAt181[index][1].verdict).map(([name]) => name);
+  assert.deepEqual(verdictChanged, V6_VERDICTS_CHANGED_1_8_4);
+  for (const [name, result] of results) {
+    if (V6_VERDICTS_CHANGED_1_8_4.includes(name)) assert.deepEqual(result.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id), ['pickups-above-capacity'], name);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// The v6 consistency rules (1.8.4): grenade kills, pickups and districts.
+const C6 = HMH_RUN_SUMMARY_CATALOGS_V6;
+const V6C = HMH_V6_CONSISTENCY_RULES;
+const rowOf = (rows, key, id) => rows.find((entry) => entry[key] === id);
+const consistencyRejects = (result) => rejects(result).filter((id) => HMH_V6_CONSISTENCY_REJECTS.includes(id));
+// The first seed that enters at each level entry, in LEVEL_ONE_ENTRIES order.
+const ENTRY_SEEDS = Object.freeze(LEVEL_ONE_ENTRIES.map(({ id }) => {
+  for (let seed = 1; ; seed += 1) if (selectLevelEntry(seed).id === id) return seed;
+}));
+// A run of `ticks` ticks at `seed` with no progress at all.
+function idleRun(ticks, { seed = valid.identity.seed, mask = 0 } = {}) {
+  return clone(valid, (s) => {
+    s.identity.seed = seed;
+    s.identity.endTick = ticks;
+    Object.assign(s.totals, { survivalTicks: ticks, elapsedMs: ticks * FIXED_STEP_MS, score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0 });
+    s.kills.total = 0;
+    s.kills.elite = 0;
+    s.kills.boss = 0;
+    for (const entry of [...s.kills.byEnemyRole, ...s.kills.byWeapon]) entry.count = 0;
+    for (const weapon of s.weapons) weapon.kills = 0;
+    for (const upgrade of s.upgrades) { upgrade.offered = 0; upgrade.selected = 0; }
+    s.grenades.kills = 0;
+    s.exploration.visitedDistrictMask = mask;
+    Object.assign(s.milestones, { levelUps: 0, firstLevelUpTick: 0, lastLevelUpTick: 0 });
+  });
+}
+// Moves `count` of the summary's kills from the Coin Blaster to `weaponId`.
+function creditWeapon(summary, weaponId, count) {
+  for (const [rows, field] of [[summary.kills.byWeapon, 'count'], [summary.weapons, 'kills']]) {
+    rowOf(rows, 'weaponId', 'coin-blaster')[field] -= count;
+    rowOf(rows, 'weaponId', weaponId)[field] += count;
+  }
+}
+
+test('the v6 consistency literals equal the 1.8.x child', () => {
+  // Grenade kills: recordRunKill counts one exactly when the killing weapon is
+  // a grenade weapon, and no other accumulator call writes the count.
+  const accumulator = createRunSummaryAccumulator({ seed: 1, buildHash: 'site-1.8.2:game-1.8.2', mode: 'ranked', heroId: 'lit-commando', startPosition: { x: 800, y: 2_400 } });
+  C6.weapons.forEach((weaponId, index) => {
+    for (let kill = 0; kill <= index; kill += 1) recordRunKill(accumulator, { enemyRoleId: 'forkrunner', weaponId });
+  });
+  const summary = finalizeRunSummary(accumulator, { endTick: 0, elapsedMs: 0, terminalReason: 'defeated', score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 0 });
+  const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + rowOf(summary.kills.byWeapon, 'weaponId', weaponId).count, 0);
+  assert.equal(summary.grenades.kills, grenadeWeaponKills);
+  assert.equal(grenadeWeaponKills, (C6.weapons.indexOf('satoshi-frag') + 1) + (C6.weapons.indexOf('launcher-rig') + 1));
+  assert.throws(() => recordRunGrenade(accumulator, { type: 'kills' }), /unknown grenade event/);
+  const accumulatorSource = readFileSync(new URL('../sdk/hmh-run-summary.mjs', import.meta.url), 'utf8');
+  assert.deepEqual(accumulatorSource.match(/grenades\[3\][^;]*;/g), ['grenades[3] += 1;']);
+  assert.match(accumulatorSource, /if \(weaponId === 'satoshi-frag' \|\| weaponId === 'launcher-rig'\) state\.grenades\[3\] \+= 1;/);
+
+  // Pickups: the 21 placements main.mjs gives the collectible system, per
+  // effect, with their re-arm ticks, and the one place a pickup is recorded.
+  const rearmed = HMH_CHILD_REARMED_ASSETS.map((id) => `'${id}'`).join(',');
+  assert.ok(MAIN_SOURCE.includes(`const collectiblePlacements = [...authoredPointOfInterestPlacements.map(p=>[${rearmed}].includes(p.assetId)?Object.freeze({...p,respawnTicks:${HMH_CHILD_REARM_TICKS}}):p), ...scheduledCollectiblePlacements];`));
+  assert.ok(MAIN_SOURCE.includes('const scheduledCollectiblePlacements = [lightningLedgerEventPlacement, bearMarketBurnerEventPlacement, forkedStandardEventPlacement];'));
+  assert.equal(MAIN_SOURCE.match(/createCollectibleState\(/g).length, 1);
+  assert.ok(MAIN_SOURCE.includes('collectibleState = createCollectibleState({ placements: collectiblePlacements, objectivePlacements: objectiveRewardPlacements() });'));
+  assert.equal(MAIN_SOURCE.match(/recordRunCollectible\(runSummaryAccumulator/g).length, 1);
+  assert.match(MAIN_SOURCE, /if \(event\.type !== 'collectible:collected'\) continue;\s*recordRunCollectible\(runSummaryAccumulator, \{ effectId: event\.effectId \}\);/);
+  const sorted = (table) => Object.fromEntries(Object.entries(table).map(([id, list]) => [id, [...list].sort((a, b) => a - b)]));
+  for (const seed of [1, 123, 0xdead_beef]) {
+    const table = Object.fromEntries(C6.collectibles.map((effectId) => [effectId, []]));
+    for (const { placement, effect } of hmhChildCollectibleState(seed).entries) table[effect.effectId].push(placement.respawnTicks ?? 0);
+    assert.deepEqual(sorted(table), sorted(V6C.pickupPlacements), `seed ${seed}`);
+  }
+  assert.deepEqual(Object.keys(V6C.pickupPlacements), [...C6.collectibles]);
+
+  // Districts and entries.
+  assert.deepEqual(V6C.districtStrips, LEVEL_ONE_WORLD.districts.map(({ id, area }) => [id, area.minX, area.maxX]));
+  assert.ok(LEVEL_ONE_WORLD.districts.every(({ area }) => area.minY === LEVEL_ONE_WORLD.bounds.minY && area.maxY === LEVEL_ONE_WORLD.bounds.maxY));
+  assert.deepEqual(V6C.districtStrips.map(([id]) => id), [...C6.districts]);
+  assert.equal(getLevelOneDistrictAt(1_800, 2_400).id, 'frontier-relay', 'a seam belongs to the strip west of it');
+  assert.deepEqual(V6C.levelEntries, LEVEL_ONE_ENTRIES.map(({ id, x, y }) => [id, x, y]));
+  for (let index = 0; index < 20_000; index += 1) {
+    const seed = (index * 2_654_435_761) >>> 0;
+    assert.equal(hmhV6LevelEntry(seed).id, selectLevelEntry(seed).id, `seed ${seed}`);
+  }
+  for (const seed of [0, 1, 0xffff_ffff]) assert.equal(hmhV6LevelEntry(seed).id, selectLevelEntry(seed).id);
+  // Every entry lies at least 250 units inside its strip, far beyond one tick of travel.
+  for (const [, x] of V6C.levelEntries) {
+    const [, minX, maxX] = V6C.districtStrips.find(([, low, high]) => x >= low && x <= high);
+    assert.ok(Math.min(x - minX, maxX - x) >= 250 && Math.min(x - minX, maxX - x) > V6C.travel.maxStepPx);
+  }
+  assert.ok(MAIN_SOURCE.includes('if (!evidenceSafeEnabled) runtimePlayerSpawn = selectLevelEntry(payload.session.seed);'));
+  assert.ok(MAIN_SOURCE.includes('actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });'));
+  assert.ok(MAIN_SOURCE.includes("districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',"));
+  assert.equal(MAIN_SOURCE.match(/recordRunTick\(/g).length, 1);
+
+  // Travel: twice the fastest tick the child allows. A dash tick moves
+  // DASH_DISTANCE / DASH_DURATION_TICKS; a running tick moves at most the top
+  // speed at the maximum movement ranks, time dilation and the steepest
+  // downhill, plus the one conveyor's push, plus a fresh maximum recoil or
+  // knockback impulse every tick (whose decaying velocity moves the player
+  // impulse x recoilDecayTime in all).
+  const moveRanks = 1 + Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.effect === 'moveSpeedMultiplier').reduce((sum, upgrade) => sum + upgrade.amount * upgrade.maxRank, 0);
+  const downhill = Math.max(...[0.01, 0.5, 1, 10, 1_000].map((drop) => movementSpeedMultiplierForTransition({ groundZ: drop, kind: 'ground' }, { groundZ: 0, kind: 'ground' }, 1)));
+  assert.equal(downhill, 1.04);
+  const runTick = LEVEL_ONE_WORLD.player.maxSpeed * moveRanks * COLLECTIBLE_EFFECTS['time-dilation'].speedMultiplier * downhill / 60;
+  assert.match(MAIN_SOURCE, /magnitude: 70,/);
+  assert.match(MAIN_SOURCE, /knockback: event\.role === 'bruiser' \? 32 : 12,/);
+  assert.match(MAIN_SOURCE, /knockback: event\.attackId\.includes\('super'\) \? 36 : 20,/);
+  const heightBonus = resolveHeightAdvantage({ sourceZ: 1_000, targetZ: 0, baseRange: 1, baseKnockback: 1 }).knockback;
+  const impulse = Math.max(...Object.values(HMH_WEAPON_DEFINITIONS).map((weapon) => weapon.recoil ?? 0), 70, 36 * heightBonus, HMH_GRENADE_DEFINITION.knockback);
+  assert.equal(impulse, 74);
+  const recoilTick = impulse * createPlayerMotionState().recoilDecayTime;
+  const conveyorTick = WORLD_HAZARD_RULES['moving-hazard'].push / 60;
+  const dashTick = DASH_DISTANCE / DASH_DURATION_TICKS;
+  assert.equal(dashTick, 24);
+  assert.ok(runTick + recoilTick + conveyorTick < 20, `a running tick moves at most ${runTick + recoilTick + conveyorTick}`);
+  assert.equal(V6C.travel.maxStepPx, 2 * Math.max(dashTick, runTick + recoilTick + conveyorTick));
+});
+
+test("grenade kills above the grenade weapons' kills reject; equality passes", () => {
+  for (const base of [valid, realistic, level90]) {
+    for (const weaponId of V6C.grenadeWeapons) {
+      const credited = Math.min(20, base.kills.total);
+      const at = clone(base, (s) => { creditWeapon(s, weaponId, credited); s.grenades.kills = credited; });
+      assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(at)), []);
+      const above = validateRebootRunPlausibility(clone(at, (s) => { s.grenades.kills += 1; }));
+      assert.deepEqual(above.flags.filter((flag) => flag.id === 'grenade-kills-above-weapon-kills'), [{ id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: credited + 1, limit: credited }]);
+    }
+  }
+  // Both grenade weapons count; no other weapon does.
+  const both = clone(realistic, (s) => { creditWeapon(s, 'satoshi-frag', 30); creditWeapon(s, 'launcher-rig', 12); creditWeapon(s, 'nuke-liquidation', 40); s.grenades.kills = 42; });
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(both)), []);
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(clone(both, (s) => { s.grenades.kills = 43; }))), ['grenade-kills-above-weapon-kills']);
+});
+
+test('the 1.8.2 grenade, pickup and district payload rejects', () => {
+  // From hmh-valid (36 kills, 3 minutes from the Frontier Relay entry), only
+  // these three fields change; the run verified with no flags in 1.8.2.
+  const payload = clone(valid, (s) => {
+    s.grenades.kills = 250;
+    rowOf(s.collectibles, 'effectId', 'bonus-life').collected = 250;
+    s.exploration.visitedDistrictMask = 63;
+  });
+  assert.deepEqual(validateRebootRunPlausibility(payload), {
+    verdict: 'rejected',
+    flags: [
+      { id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: 250, limit: 0 },
+      { id: 'pickups-above-capacity', severity: 'reject', value: 250, limit: hmhV6PickupCapacity('bonus-life', valid.totals.survivalTicks) },
+    ],
+  });
+  // All six districts in 3 minutes from the relay is honest: the 9,200 units
+  // of travel take about 38 s at 240 units/s, so that field alone passes.
+  assert.deepEqual(validateRebootRunPlausibility(clone(valid, (s) => { s.exploration.visitedDistrictMask = 63; })), { verdict: 'ok', flags: [] });
+});
+
+test('pickups above what the placements can give reject, per effect and at each re-arm boundary', () => {
+  assert.equal(hmhV6PickupCapacity('bonus-life', 7_199), 3);
+  assert.equal(hmhV6PickupCapacity('bonus-life', 7_200), 4);
+  assert.equal(hmhV6PickupCapacity('berserk-candle', 10_799), 2);
+  assert.equal(hmhV6PickupCapacity('berserk-candle', 10_800), 4);
+  assert.equal(hmhV6PickupCapacity('litecoin-token', 1_000_000), 0);
+  assert.equal(hmhV6PickupCapacity('forked-standard-cache', 1_000_000), 1);
+  const total = (ticks) => C6.collectibles.reduce((sum, effectId) => sum + hmhV6PickupCapacity(effectId, ticks), 0);
+  assert.equal(total(0), 21);
+  assert.equal(total(10_800), 21 + 7 + 3);
+  assert.equal(total(64_800), 21 + 7 * 6 + 3 * 9);
+  for (const base of [valid, realistic, level90]) {
+    const ticks = base.totals.survivalTicks;
+    const withPickups = (effectId, collected) => clone(base, (s) => {
+      rowOf(s.collectibles, 'effectId', effectId).collected = collected;
+      if (effectId === 'litecoin-token') s.totals.litecoin = collected;
+    });
+    for (const effectId of C6.collectibles) {
+      const capacity = hmhV6PickupCapacity(effectId, ticks);
+      assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(withPickups(effectId, capacity))), [], effectId);
+      assert.deepEqual(validateRebootRunPlausibility(withPickups(effectId, capacity + 1)).flags.filter((flag) => flag.id === 'pickups-above-capacity'),
+        [{ id: 'pickups-above-capacity', severity: 'reject', value: capacity + 1, limit: capacity }], effectId);
+    }
+    // Every effect at its capacity at once passes.
+    const full = clone(base, (s) => { for (const row of s.collectibles) row.collected = hmhV6PickupCapacity(row.effectId, ticks); });
+    assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(full)), []);
+  }
+  // Two effects above capacity: the flag sums both.
+  assert.deepEqual(hmhV6PickupExcess(clone(valid, (s) => {
+    rowOf(s.collectibles, 'effectId', 'hash-rail-core').collected = 3;
+    rowOf(s.collectibles, 'effectId', 'time-dilation').collected = 5;
+  }).collectibles, valid.totals.survivalTicks), { value: 8, limit: 2 + 2 });
+  // A re-arm boundary through the whole verdict: 7,199 ticks allow three bonus lives, 7,200 four.
+  const lives = (ticks, collected) => consistencyRejects(validateRebootRunPlausibility(clone(idleRun(ticks), (s) => { rowOf(s.collectibles, 'effectId', 'bonus-life').collected = collected; })));
+  assert.deepEqual(lives(7_199, 3), []);
+  assert.deepEqual(lives(7_199, 4), ['pickups-above-capacity']);
+  assert.deepEqual(lives(7_200, 4), []);
+});
+
+test('the fastest collector through the real stepCollectibles reaches the pickup capacity and never passes it', () => {
+  // For each placement alone: a player standing on it with every objective
+  // unlocked, collecting on the first tick each pickup is available (and
+  // collecting nothing one tick before). Placements do not interact, so the
+  // sum per effect is the most any run can collect.
+  const lastTick = 60_000;
+  const checkpoints = [1, 3_599, 7_199, 7_200, 10_799, 10_800, 21_600, 36_000, 43_200, lastTick];
+  for (const seed of [1, 123, 0xdead_beef]) {
+    const ticksByEffect = Object.fromEntries(C6.collectibles.map((effectId) => [effectId, []]));
+    const entries = hmhChildCollectibleState(seed).entries;
+    for (const { placement } of entries) {
+      const state = hmhChildCollectibleState(seed);
+      for (const { placement: other } of state.entries) if (other.requiredObjective) state.unlockedObjectives.add(other.requiredObjective);
+      const mine = (frame) => frame.events.filter((event) => event.type === 'collectible:collected' && event.placementId === placement.id);
+      for (let tick = Math.max(1, placement.availableTick); tick <= lastTick; tick += placement.respawnTicks) {
+        if (tick - 1 > Math.max(0, state.lastTick)) assert.deepEqual(mine(stepCollectibles(state, { tick: tick - 1, player: placement })), [], `${placement.id} early at ${tick - 1}`);
+        const collected = mine(stepCollectibles(state, { tick, player: placement }));
+        assert.equal(collected.length, 1, `${placement.id} at ${tick}`);
+        ticksByEffect[collected[0].effectId].push(tick);
+        if (!placement.respawnTicks) break;
+      }
+    }
+    // The simulation's first tick is 1, so a placement available from tick a
+    // gives 1 + floor((T - a) / r) pickups by tick T; the capacity counts
+    // 1 + floor(T / r) from tick 0 and ignores a.
+    for (const ticks of checkpoints) {
+      for (const effectId of C6.collectibles) {
+        const most = ticksByEffect[effectId].filter((tick) => tick <= ticks).length;
+        const exact = entries.filter(({ effect }) => effect.effectId === effectId).reduce((sum, { placement }) => {
+          const first = Math.max(1, placement.availableTick);
+          return sum + (ticks < first ? 0 : placement.respawnTicks ? 1 + Math.floor((ticks - first) / placement.respawnTicks) : 1);
+        }, 0);
+        assert.equal(most, exact, `seed ${seed}, ${effectId} at ${ticks}`);
+        assert.ok(exact <= hmhV6PickupCapacity(effectId, ticks), `seed ${seed}, ${effectId} at ${ticks}`);
+        if (ticks % 7_200 !== 0 && ticks % 10_800 !== 0 && entries.every(({ effect, placement }) => effect.effectId !== effectId || placement.availableTick <= 1)) {
+          assert.equal(exact, hmhV6PickupCapacity(effectId, ticks), `tight: seed ${seed}, ${effectId} at ${ticks}`);
+        }
+      }
+    }
+  }
+});
+
+test("the visited districts must be one run of strips around the seed's entry", () => {
+  const contiguousAround = (mask, strip) => mask === 0 || (/^0*1+0*$/.test(mask.toString(2).padStart(6, '0')) && Math.floor(mask / 2 ** strip) % 2 === 1);
+  LEVEL_ONE_ENTRIES.forEach((entry, index) => {
+    const seed = ENTRY_SEEDS[index];
+    const strip = V6C.districtStrips.findIndex(([id]) => id === getLevelOneDistrictAt(entry.x, entry.y).id);
+    assert.equal(hmhV6LevelEntry(seed).strip, strip);
+    for (let mask = 0; mask < 64; mask += 1) {
+      const { pathValid, entryBit } = hmhV6DistrictTravel(seed, mask);
+      assert.equal(pathValid, contiguousAround(mask, strip), `${entry.id} mask ${mask}`);
+      assert.equal(entryBit, 2 ** strip);
+      // Through the verdict, with all the time in the world.
+      const result = validateRebootRunPlausibility(idleRun(216_000, { seed, mask }));
+      assert.deepEqual(result.flags.filter((flag) => HMH_V6_CONSISTENCY_REJECTS.includes(flag.id)),
+        pathValid ? [] : [{ id: 'district-path-invalid', severity: 'reject', value: mask, limit: 2 ** strip }], `${entry.id} mask ${mask}`);
+    }
+  });
+});
+
+test("visited districts farther from the entry than the run's ticks can cover reject, at the boundary", () => {
+  const [relay, ravine, hashwood, mining, yard] = ENTRY_SEEDS;
+  // The travel to both ends of the run of strips, by hand.
+  assert.equal(hmhV6DistrictTravel(relay, 63).travelPx, 10_000 - 800);
+  assert.equal(hmhV6DistrictTravel(relay, 1).travelPx, 0);
+  assert.equal(hmhV6DistrictTravel(ravine, 3).travelPx, 2_100 - 1_800);
+  assert.equal(hmhV6DistrictTravel(hashwood, 63).travelPx, (6_900 - 1_800) + (10_000 - 6_900) + (10_000 - 6_900));
+  assert.equal(hmhV6DistrictTravel(mining, 0b111000).travelPx, (8_250 - 8_000) + (10_000 - 8_250) + (8_250 - 8_000));
+  assert.equal(hmhV6DistrictTravel(yard, 63).travelPx, 10_400 - 1_800);
+  assert.equal(hmhV6MinTicksForTravel(9_200), Math.ceil((9_200 - 480) / 48));
+  assert.equal(hmhV6MinTicksForTravel(480), 0);
+  for (const seed of ENTRY_SEEDS) {
+    for (let mask = 1; mask < 64; mask += 1) {
+      const { pathValid, travelPx } = hmhV6DistrictTravel(seed, mask);
+      if (!pathValid) continue;
+      const minTicks = hmhV6MinTicksForTravel(travelPx);
+      const covered = (ticks) => ticks * V6C.travel.maxStepPx + V6C.travel.allowancePx >= travelPx;
+      assert.ok(covered(minTicks) && (minTicks === 0 || !covered(minTicks - 1)));
+      assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(idleRun(minTicks, { seed, mask }))), [], `seed ${seed} mask ${mask} at ${minTicks}`);
+      if (minTicks === 0) continue;
+      const short = validateRebootRunPlausibility(idleRun(minTicks - 1, { seed, mask }));
+      assert.deepEqual(short.flags.filter((flag) => HMH_V6_CONSISTENCY_REJECTS.includes(flag.id)),
+        [{ id: 'districts-before-travel-time', severity: 'reject', value: minTicks - 1, limit: minTicks }], `seed ${seed} mask ${mask}`);
+    }
+  }
+});
+
+test("the committed v6 fixtures and the fixture builder's walk meet the consistency rules", () => {
+  for (const summary of [valid, realistic, level90]) assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(summary)), []);
+  // The builder walks one strip per 7,200 ticks from the seed's entry; from
+  // the Frontier Relay that is the walk the fixtures were built with.
+  assert.equal(hmhV6LevelEntry(valid.identity.seed).id, 'relay');
+  assert.equal(valid.exploration.visitedDistrictMask, 0b11);
+  assert.equal(realistic.exploration.visitedDistrictMask, 63);
+  assert.equal(level90.exploration.visitedDistrictMask, 63);
 });
 
 // ---------------------------------------------------------------------------
