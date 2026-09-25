@@ -36,15 +36,19 @@ test('generic pixel buttons get the arcade style with readable text (was browser
   assert.match(polish, /button\[class="pixel-button"\]:focus-visible[^{]*\{[^}]*outline: 2px solid/);
 
   // Every pixel-button variant in the portal UI has a style of its own or is in the generic list.
-  const sources = ['apps/portal/main.js', ...readdirSync(path.join(root, 'apps/portal/src/routes')).map((file) => `apps/portal/src/routes/${file}`)]
+  const sources = ['apps/portal/main.js',
+    ...readdirSync(path.join(root, 'apps/portal/src')).map((file) => `apps/portal/src/${file}`),
+    ...readdirSync(path.join(root, 'apps/portal/src/routes')).map((file) => `apps/portal/src/routes/${file}`)]
     .filter((file) => file.endsWith('.js') || file.endsWith('.mjs'));
   const variants = new Set();
+  const add = (classes) => variants.add(classes.trim().split(/\s+/).filter((name) => name && name !== 'is-active').join(' '));
   for (const file of sources) {
-    for (const [, classes] of read(file).matchAll(/className: [`'"]pixel-button([^`'"$]*)/g)) {
-      const names = classes.trim().split(/\s+/).filter((name) => name && name !== 'is-active');
-      variants.add(names.join(' '));
-    }
+    const source = read(file);
+    for (const [, classes] of source.matchAll(/className: [`'"]pixel-button([^`'"$]*)/g)) add(classes);
+    // name-claim-prompt.mjs builds its buttons through button(documentRef, '<classes>', …).
+    if (source.includes('className = `pixel-button ${className}`')) for (const [, classes] of source.matchAll(/button\(documentRef, '([^']+)'/g)) add(classes);
   }
+  assert.ok(variants.has('name-claim-later'), 'the name toast buttons are scanned');
   assert.ok(variants.has(''), 'plain pixel-button buttons exist');
   for (const variant of variants) {
     if (!variant) continue;

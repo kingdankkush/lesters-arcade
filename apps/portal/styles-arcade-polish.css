@@ -2591,15 +2591,16 @@
 /* ---- Live UI audit 2026-09-24 (docs/qa/live-ui-audit-20260924.json) ------ */
 /* Generic arcade buttons. A button or link that carries only the
    pixel-button class (Share profile, View Leaderboard, Try again, Sign in,
-   Retry, the Ranked entry network and funds guard) had no style of its own:
-   the browser's grey fill under the dark global button text, 3.8:1, reading
-   as a disabled control. Variant classes (leaderboard-*, profile-action-*)
-   keep their own look. */
+   Retry, the Ranked entry network and funds guard, the name toast's Not now)
+   had no style of its own: the browser's grey fill under the dark global
+   button text, 3.8:1, reading as a disabled control. Variant classes
+   (leaderboard-*, profile-action-*) keep their own look. */
 button[class="pixel-button"],
 a[class="pixel-button"],
 .pixel-button.profile-share-button,
 .pixel-button.profile-session-retry,
-.pixel-button.profile-retry-saved {
+.pixel-button.profile-retry-saved,
+.pixel-button.name-claim-later {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2619,7 +2620,8 @@ button[class="pixel-button"]:hover:not(:disabled),
 a[class="pixel-button"]:hover,
 .pixel-button.profile-share-button:hover:not(:disabled),
 .pixel-button.profile-session-retry:hover:not(:disabled),
-.pixel-button.profile-retry-saved:hover:not(:disabled) {
+.pixel-button.profile-retry-saved:hover:not(:disabled),
+.pixel-button.name-claim-later:hover {
   border-color: #19f7ff;
   color: #fff;
   box-shadow: 0 0 18px rgba(25, 247, 255, 0.32);
@@ -2628,7 +2630,8 @@ button[class="pixel-button"]:focus-visible,
 a[class="pixel-button"]:focus-visible,
 .pixel-button.profile-share-button:focus-visible,
 .pixel-button.profile-session-retry:focus-visible,
-.pixel-button.profile-retry-saved:focus-visible { outline: 2px solid #ffe84d; outline-offset: 3px; }
+.pixel-button.profile-retry-saved:focus-visible,
+.pixel-button.name-claim-later:focus-visible { outline: 2px solid #ffe84d; outline-offset: 3px; }
 button[class="pixel-button"]:disabled,
 .pixel-button.profile-session-retry:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 .pixel-button.profile-avatar-option {
