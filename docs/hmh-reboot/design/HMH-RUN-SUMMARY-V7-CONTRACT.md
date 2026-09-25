@@ -1,6 +1,6 @@
 # HMH run summary v7 contract
 
-**Status:** contract for the verifier-first slice (branch `fable/hmh-verifier-v7`, base release `60ea173a`, production 1.8.1). The child (`apps/hmh-reboot/src/**`) is a later branch and must emit exactly this.
+**Status:** contract for the verifier-first slice (branch `fable/hmh-verifier-v7`, base release `60ea173a`, production 1.8.1), implemented on that branch; section 16 records where the implementation had to settle something this contract left open or could not do as written (the schema-7 validator lives in its own sdk module because of the HMH initial-JS budget). The child (`apps/hmh-reboot/src/**`) is a later branch and must emit exactly this.
 **Source:** `docs/hmh-reboot/design/LEVEL-1-DESIGN-PACKAGE-20260925.md` sections 3.7, 3.8, 3.9, 4.1, 4.2, 4.7, 5.x, 8.x and 9.4, read against today's `sdk/hmh-run-summary-schema.mjs`, `sdk/hmh-run-summary.mjs`, `server/verify/hmh-plausibility.mjs`, `server/verify/hmh.mjs`, `apps/portal/src/achievements/{stats,hmh}.mjs`, `tests/achievement-derivation.test.mjs`, `tests/server-verify-identity.test.mjs` and the 1.8.1 child (`main.mjs`, `run-progression.mjs`, `encounter-director.mjs`, `liquidator-boss.mjs`, `collectible-system.mjs`, `deterministic-hash.mjs`).
 
 **Owner overrides of the package (binding):**
@@ -597,8 +597,39 @@ The tests to run are the touched files, `tests/*ranked*`, `*settle*` and `*jackp
 
 ## 15. Required changes outside this branch's agreed scope
 
-1. **`server/verify/hmh.mjs:67`** must accept `schemaVersion ∈ {6, 7}`. It is a one-line change and is neither in scope nor forbidden. `contract.bossId` needs no change (D2). Until this change lands, Ranked v7 is refused (fail-closed).
+1. **`server/verify/hmh.mjs`** must validate with the schema-7 module and accept `schemaVersion ∈ {6, 7}`: two lines, the import at `:7` (`validateRunSummaryPayload` from `../../sdk/hmh-run-summary-schema-v7.mjs`, see 16.1) and the gate at `:67`. Neither is in scope nor forbidden. `contract.bossId` needs no change (D2). Until both land, Ranked v7 is refused (fail-closed) with `run-summary-invalid` / `game:run-summary schemaVersion is invalid`; `tests/server-verify-hmh-v7.test.mjs` pins that answer, so it fails, as it should, when the gate opens.
+6. **The bridge and the portal** (`sdk/hmh-bridge-protocol.mjs`, `apps/portal/src/hmh-run-history.mjs`, `apps/portal/src/hmh-reboot-bridge.mjs`): they validate run summaries with the base schema module, which accepts schema 1-6 only (16.1). The child branch switches them to `sdk/hmh-run-summary-schema-v7.mjs` when the child starts emitting schema 7, and funds the bytes (about 5.8 KB minified) from its own HMH initial-JS budget.
 2. **Child branch** (`apps/hmh-reboot/src/**`, and versioning `sdk/hmh-run-summary.mjs`): sections 5.3 and 11, plus parity tests pinning the new archetypes, bosses and upgrades to `sdk/hmh-run-contract-v7.mjs`.
 3. **Portal displays** (`hmh-run-recap.mjs`, `hmh-run-history.mjs`): district-boss kills are not shown. Their existing "Liquidator defeated" semantics stay correct by D2.
 4. **arcade-core and `tests/achievement-derivation.test.mjs`**: per-boss achievement inputs (so `boss-breaker` and `boss-rush-ten` can count district bosses) and fencing of the legacy evolution map (8.1). Both files are forbidden or out of scope here.
 5. **Parent consumers of the generic `boss-defeated` run event**: audit that none assumes the Liquidator before the child ships district bosses.
+
+---
+
+## 16. Implementation record (branch `fable/hmh-verifier-v7`)
+
+Where the implementation settled a point this contract left open, or could not follow it as written.
+
+### 16.1 The schema-7 validator is its own sdk module (D1 amended)
+
+- **Finding.** `sdk/hmh-run-summary-schema.mjs` is on the initial path of the 1.8.x child (`apps/hmh-reboot/src/bridge.mjs` validates its own messages with `validateChildMessage`) and of the portal (`hmh-run-history.mjs`), in a shared chunk that `build.mjs` counts against the 1,048,576-byte HMH initial-JS cap. At `60ea173a` the build measured 1,046,713 bytes, so 1,863 bytes of headroom. Putting the V7 catalogues and the S1-S16 rules in that module adds 5,812 bytes minified, and the build then fails (`1,052,556 > 1,048,576`).
+- **Decision.** `sdk/hmh-run-summary-schema.mjs` keeps a `validateRunSummaryPayload` that accepts schema 1-6 (its rules factored into an exported `validateRunSummaryRules(payload, catalogs, laterFields)`), exports `HMH_RUN_SUMMARY_CATALOGS_V6` and keeps `HMH_RUN_SUMMARY_CATALOGS` as the same object. **`sdk/hmh-run-summary-schema-v7.mjs`** holds `HMH_RUN_SUMMARY_CATALOGS_V7`, `hmhRunSummaryCatalogs`, `HMH_V7_HELD_PRISONER_BOSSES`, `HMH_V7_PROGRESSION_FIELDS`, and a `validateRunSummaryPayload` that accepts schema 1-7: it delegates 1-6 to the base module (the same answer, word for word) and validates 7 with the v6 rules on the V7 catalogues, then S1-S16.
+- **Cost.** The factoring adds 48 bytes to the HMH initial JS (1,046,713 → 1,046,761; 1,815 bytes of headroom left); the child entry is unchanged (360,738 of 480,000). The V7 catalogues reach the portal's `main.js` only, through `achievements/stats.mjs` (about 2.2 KB minified, against the 2,710,000-byte main-bundle budget of `scripts/hmh-load-speed-report.mjs`; `main.js` measured 1,176,793 bytes at `60ea173a`), outside the HMH budget.
+- **Guards.** `tests/hmh-run-summary-schema-v7.test.mjs` bundles what the child and the portal take from the base module with `build.mjs`'s esbuild options and holds it within 64 bytes of the 10,802 it measured at `60ea173a`, checks that the base module carries no V7 catalogue, and runs the 801-case schema 1-6 corpus through both validators against the digest taken at `60ea173a`.
+- **Consequences.** Section 15 items 1 and 6.
+
+### 16.2 Choices the contract left open
+
+- **New soft flags.** `upgrade-rank-above-max`, `evolution-without-mastery`, `node-level-inconsistent`, `objective-prerequisite-missing` and `node-in-unvisited-district` are one entry each; `value` is the number of offending rows and `limit` is 0. The flag shape `{id, severity, value, limit}` is unchanged.
+- **Boss window length.** `U` sums `end − start` over the merged windows `[firstInitiatedTick, end_b]`. The child's `activeTicks_b` (5.3) must use the same convention: the sum of `end − initiationTick` over the slot's engagements.
+- **Prisoner kinds** are `HMH_PRISONER_KINDS` in `sdk/hmh-run-contract-v7.mjs`; they are not a summary catalogue (the summary never carries a kind), so V7 has the four new catalogues of 3.1 and no fifth.
+- **Boss HP.** `hmhV7BossHp(bossId, referenceDps)` takes the child's calibrated reference DPS; the verifier never reads HP (7.2).
+- **Node-level flag (b)** compares a node's tick with `milestones.firstLevelUpTick`, which the 1.8.1 accumulator stamps at the next `recordRunTick` after the level-up. A node completed in the same tick as the kill that caused the first level-up can therefore raise it for an honest run; it is a soft flag only. The child branch should stamp the level-up tick where it happens.
+- **Maximal bridge message.** With a 128-character `sessionId` and a 64-character `messageId`: 21,217 bytes for schema 7 and 14,277 for schema 6 (12 cites about 21,087 and 14,351).
+
+### 16.3 Fixtures
+
+- `hmh-v7-districts` (verdict ok): 15 minutes through all six districts, 24 objectives, 7 prisoners (two OG Miners at this seed), the Baron and the Lockkeeper (after one retreat) defeated, two Seals banked, no Liquidator.
+- `hmh-v7-four-bosses` (verdict flagged, `score-near-ceiling` only): 18 minutes, every objective and prisoner, all four bosses (the Baron at exactly its ready tick, the Liquidator through the Dark Pool at 55,200), the Pistol mastered and evolved (Settler Rail) with the Liquidator's Seal, three Seals banked, one Golden Parachute revive. Block Reward is offered only three times at this seed, so mastery takes it early and the honest score sits near its ceiling, as in `hmh-level-90`.
+- Both are the real 1.8.1 accumulator's summary extended to schema 7 by `tests/fixtures/ranked/build-fixtures.mjs` (the accumulator is versioned in the child branch), with XP, level and score from `run-progression.mjs`. They are listed as `HMH_V7_FIXTURE_NAMES`, apart from `FIXTURE_NAMES`, and record the binding, the plausibility verdict and the evidence digest instead of a VerifiedRun until the gate of 15.1 opens.
+
