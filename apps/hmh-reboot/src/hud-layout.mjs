@@ -1,4 +1,4 @@
-import { finite, freezeDeep } from './value-guards.mjs';
+import { finite, freezeDeep, lexical } from './value-guards.mjs';
 export const COMPACT_LANDSCAPE_MAX_HEIGHT = 520;
 export const COMPACT_LANDSCAPE_MINIMAP_WIDTH = 140;
 // The minimap's distance from the viewport edge, and the padding of its frame.
@@ -20,7 +20,6 @@ const TIMED_EFFECT_IDENTITY = Object.freeze({
   'berserk-candle': Object.freeze({ color: 0xff6b35, accentColor: 0xffd166, silhouette: 'spiked-ring', pulsePeriodTicks: 30, radius: 34, audioCue: 'berserk-activate' }),
   'time-dilation': Object.freeze({ color: 0x6fd8ff, accentColor: 0xc9f4ff, silhouette: 'clock-orbit', pulsePeriodTicks: 60, radius: 40, audioCue: 'time-dilation-activate' }),
 });
-const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 const chipText = (hud, effect) => `${hud} ${effect.remainingSeconds}S${effect.refreshCount > 0 ? ` R${effect.refreshCount}` : ''}`;
 
 export function buildTimedEffectIdentity(snapshot = {}) {

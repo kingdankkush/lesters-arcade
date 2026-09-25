@@ -2,7 +2,7 @@ import { roundedRoadNodes } from './road-presentation.mjs';
 const ROAD_NODE_CACHE=new WeakMap();
 import { WORLD_DESIGN_GROUND_PATHS } from './world-design-layout.mjs';
 import { exposedWaterEdges, clipHorizontalWaterLine } from './world-design-water.mjs';
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 import { isScreenPointVisible } from './runtime-performance.mjs';
 import {
   DISTRICT_TERRAIN_MATERIAL,
@@ -94,11 +94,6 @@ export function resolveWorldSurfaceBase({ kind, districtId } = {}) {
 
 function finiteNumber(value, name) {
   if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
-  return value;
-}
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
   return value;
 }
 

@@ -1,4 +1,4 @@
-import { clamp, finite } from './value-guards.mjs';
+import { clamp, finite, nonNegativeInteger, positive } from './value-guards.mjs';
 import { feedbackUnit } from './deterministic-hash.mjs';
 
 // V-3. Grenade feedback set, projection-only.
@@ -62,17 +62,6 @@ const BODY_LIFT_SCALE = 0.4;
 // that lands exactly on it.
 const FRAGMENT_REACH_RATIO = 0.85;
 const RING_START_RATIO = 0.2;
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
-
-function positive(value, name) {
-  finite(value, name);
-  if (value <= 0) throw new TypeError(`${name} must be positive`);
-  return value;
-}
 
 const easeOutCubic = (t) => 1 - (1 - t) ** 3;
 

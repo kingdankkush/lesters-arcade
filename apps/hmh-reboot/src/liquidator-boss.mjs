@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 import { traceHeightAwareLineOfSight } from './elevation.mjs';
 const EPSILON = 1e-9;
 export const LIQUIDATOR_TARGET_FIGHT_TICKS = 3_600;
@@ -17,11 +17,6 @@ export const LIQUIDATOR_READABILITY_BUDGET = freezeDeep({
 });
 
 import { finite } from './value-guards.mjs';
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
 
 export const LIQUIDATOR_PHASES = freezeDeep([
   { id: 'market-open', minTick: 0, maxTick: 1_199, arena: 'open-floor' },

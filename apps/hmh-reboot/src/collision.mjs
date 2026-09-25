@@ -3,24 +3,9 @@ const CONTACT_SKIN = 1e-6;
 const MAX_DEPENETRATION_PASSES = 6;
 const MAX_SLIDE_ITERATIONS = 6;
 
-import { clamp, finite } from './value-guards.mjs';
+import { clamp, finite, nonNegative, point2 as point, positive } from './value-guards.mjs';
 import { blockerSweepMayOverlap, immutableBlockerIndex } from './blocker-bounds.mjs';
 
-function positive(value, name) {
-  finite(value, name);
-  if (value <= 0) throw new TypeError(`${name} must be positive`);
-  return value;
-}
-
-function nonNegative(value, name) {
-  finite(value, name);
-  if (value < 0) throw new TypeError(`${name} must be non-negative`);
-  return value;
-}
-
-function point(value, name) {
-  return Object.freeze({ x: finite(value?.x, `${name}.x`), y: finite(value?.y, `${name}.y`) });
-}
 
 function normalize(vector, fallbackId = 'normal') {
   const magnitude = Math.hypot(vector.x, vector.y);

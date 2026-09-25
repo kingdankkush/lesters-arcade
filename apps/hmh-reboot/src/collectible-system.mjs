@@ -1,6 +1,5 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, lexical } from './value-guards.mjs';
 import { collectibleIsAvailable } from './objective-rewards.mjs';
-const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 function validTick(value) {
   if (!Number.isInteger(value) || value < 0) throw new TypeError('tick must be a non-negative integer');

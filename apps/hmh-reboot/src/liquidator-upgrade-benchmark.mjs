@@ -14,7 +14,7 @@ import {
   grantRunXp,
   selectRunUpgrade,
 } from './run-progression.mjs';
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 
 export const CANONICAL_CRIT_UPGRADE_ID = 'precision-ledger';
 export const FIRST_LEVEL_XP = 300;
@@ -24,11 +24,6 @@ export const ORDINARY_PISTOL_DISTANCE = 200;
 export const BASE_CRITICAL_CHANCE = 0.08;
 export const BASE_CRITICAL_MULTIPLIER = 1.75;
 export const CRITICAL_CHANCE_CAP = 0.45;
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
 
 function resolveCriticalStats(effects) {
   return {

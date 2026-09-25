@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
 import { allocateAttackTokens, DEFAULT_ATTACK_TOKEN_BUDGET } from './enemy-simulation.mjs';
 import { traceHeightAwareLineOfSight } from './elevation.mjs';
@@ -16,11 +16,6 @@ export const ENEMY_SUPPORT_ARMOR_MULTIPLIER = 1.15;
 export const ENEMY_SUPPORT_ARMOR_DURATION_TICKS = 180;
 
 import { finite } from './value-guards.mjs';
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
 
 
 function point(value, name) {

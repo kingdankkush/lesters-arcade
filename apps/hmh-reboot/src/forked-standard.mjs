@@ -1,8 +1,7 @@
 import { resolveMeleeAttack } from './melee.mjs';
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, lexical } from './value-guards.mjs';
 
 const TICKS_PER_SECOND = 60;
-const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 export const FORKED_STANDARD_CONFIG = freezeDeep({
   id: 'forked-standard',
