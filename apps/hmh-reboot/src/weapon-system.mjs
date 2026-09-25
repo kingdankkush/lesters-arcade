@@ -6,6 +6,7 @@ import {
   stepBearMarketBurner,
 } from './bear-market-burner.mjs';
 import { seededUnit } from './deterministic-hash.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS } from '../../../sdk/hmh-run-summary-schema.mjs';
 import {
   FORKED_STANDARD_CONFIG,
   createForkedStandardState,
@@ -245,13 +246,39 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   },
 });
 
-// The score multipliers are retained compatibility data for the parent portal.
-// The child simulation never applies or settles them.
+// The simulation's weapon order (design package 8.3, moved from main.mjs):
+// the swap cycle, the wheel slots, the HUD and card 2's candidate order. It is
+// the run-summary weapon catalogue's carryable guns, in catalogue order, so the
+// evidence rows and the wheel can never disagree.
+export const HMH_WEAPON_ORDER = Object.freeze(HMH_RUN_SUMMARY_CATALOGS.weapons.filter((id) => Object.hasOwn(HMH_WEAPON_DEFINITIONS, id)));
+
+// LEGACY, fenced (design package 8.1/8.4). Retained byte-identical as parent
+// compatibility data: the portal's legacy upgrade runtime still names these ids
+// with its own score multipliers. The child simulation never reads this map;
+// its evolutions are HMH_CHILD_EVOLUTIONS below, and it never applies or
+// settles a score multiplier.
 export const HMH_WEAPON_EVOLUTIONS = freezeDeep({
   'coin-blaster': { id: 'settler-rail', projectileTag: 'rail-dividend', scoreMultiplier: 1.35 },
   'auto-miner': { id: 'hashstorm-overdrive', projectileTag: 'overdrive-barrage', scoreMultiplier: 1.3 },
   'hash-rail': { id: 'crit-candle', projectileTag: 'gold-crit', scoreMultiplier: 1.4 },
   'crypto-bombs': { id: 'crypto-bomb-orbit', projectileTag: 'orbit-bomb', scoreMultiplier: 1.25 },
+});
+
+// The child's evolutions, keyed by weapon id (design package 8.5). The ids are
+// the run summary v7 evolutions catalogue (sdk/hmh-run-contract-v7.mjs
+// HMH_V7_EVOLUTIONS; tests pin the parity). evolutionTag is the projection
+// identity an evolved shot carries next to its special's projectileTag. The
+// wave-2 guns keep refusing evolutions in their policy resolvers until those
+// policies accept them.
+export const HMH_CHILD_EVOLUTIONS = freezeDeep({
+  'coin-blaster': { id: 'settler-rail', evolutionTag: 'rail-dividend' },
+  'scatter-shotgun': { id: 'double-spend', evolutionTag: 'double-spend' },
+  'auto-miner': { id: 'hashstorm-overdrive', evolutionTag: 'overdrive-barrage' },
+  'launcher-rig': { id: 'crypto-bomb-orbit', evolutionTag: 'orbit-bomb' },
+  'hash-rail': { id: 'crit-candle', evolutionTag: 'gold-crit' },
+  'lightning-ledger': { id: 'lightning-network', evolutionTag: 'lightning-network' },
+  'bear-market-burner': { id: 'burn-address', evolutionTag: 'burn-address' },
+  'forked-standard': { id: 'chain-split', evolutionTag: 'chain-split' },
 });
 
 const UPGRADE_TREES = freezeDeep({
@@ -325,7 +352,8 @@ export const progressionByWeapon = (ranks = {}) => ({
 const SPECIAL_EFFECTS = freezeDeep({
   // Rounds punch through a target and keep going.
   'armor-piercing': { policy: { type: 'pierce', maxTargets: 3 } },
-  'deep-proof': { policy: { type: 'pierce', maxTargets: 7, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } }, projectileTag: 'deep-proof' },
+  // Boss armour penetration is a policy flag: it applies to any boss target.
+  'deep-proof': { policy: { type: 'pierce', maxTargets: 7, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } }, projectileTag: 'deep-proof', bossArmorPenetration: 0.6 },
   ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
   // Shells detonate on impact.
   explosive: { policy: { type: 'splash', radius: 58 } },
@@ -348,10 +376,6 @@ function tierNode(tree, branch, value) {
   if (value === undefined || value === null || value === 0) return null;
   if (!Number.isInteger(value) || value < 0 || value > 3) throw new TypeError(`${branch} tier must be an integer from zero to three`);
   return tree?.[branch]?.[value - 1] ?? null;
-}
-
-function evolutionFamilyForWeapon(weaponId) {
-  return weaponId === 'launcher-rig' ? 'crypto-bombs' : weaponId;
 }
 
 export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = null, capstoneId = null } = {}) {
@@ -379,6 +403,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       burstCount: 1,
       burstIntervalTicks: 0,
       projectileTag: null,
+      evolutionId: null,
+      evolutionTag: null,
+      armorPiercing: false,
+      bossArmorPenetration: 0,
       projectilePolicy: definition.policy,
       shock: null,
       heatPerShot: 0,
@@ -409,6 +437,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       burstCount: 1,
       burstIntervalTicks: 0,
       projectileTag: null,
+      evolutionId: null,
+      evolutionTag: null,
+      armorPiercing: false,
+      bossArmorPenetration: 0,
       projectilePolicy: definition.policy,
       shock: null,
       heatPerShot: 0,
@@ -439,6 +471,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       burstCount: 1,
       burstIntervalTicks: 0,
       projectileTag: null,
+      evolutionId: null,
+      evolutionTag: null,
+      armorPiercing: false,
+      bossArmorPenetration: 0,
       projectilePolicy: STOP_POLICY,
       shock: null,
       heatPerShot: 0,
@@ -461,8 +497,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (branch === 'reloadSpeed') reloadMultiplier *= node.multiplier ?? 1;
     if (node.special) specials.push(node.special);
   }
-  const family = evolutionFamilyForWeapon(weaponId);
-  const evolution = HMH_WEAPON_EVOLUTIONS[family] ?? null;
+  const evolution = evolutionId === null ? null : HMH_CHILD_EVOLUTIONS[weaponId] ?? null;
   if (evolutionId !== null && evolution?.id !== evolutionId) throw new TypeError(`evolution ${String(evolutionId)} is not valid for ${weaponId}`);
   let clipSize = definition.clipSize;
   if (specials.includes('extended-mag')) clipSize = 12;
@@ -478,6 +513,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   let burstCount = 1;
   let burstIntervalTicks = 0;
   let shock = null;
+  let bossArmorPenetration = 0;
   for (const special of specials) {
     const effect = SPECIAL_EFFECTS[special];
     if (!effect) continue;
@@ -491,6 +527,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (effect.burstIntervalTicks) burstIntervalTicks = effect.burstIntervalTicks;
     if (effect.clipSize) clipSize = effect.clipSize;
     if (effect.shock) shock = effect.shock;
+    if (effect.bossArmorPenetration) bossArmorPenetration = effect.bossArmorPenetration;
   }
 
   const crowdControlCapstone = weaponId === 'coin-blaster'
@@ -519,8 +556,14 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     range,
     burstCount,
     burstIntervalTicks,
-    projectileTag: evolutionId ? evolution.projectileTag : specialTag,
+    // Tags are additive: the special keeps its tag and an evolution adds its own.
+    projectileTag: specialTag,
+    evolutionId,
+    evolutionTag: evolution?.evolutionTag ?? null,
     projectilePolicy,
+    // Settler Rail's heavy slugs ignore armour (package 8.5).
+    armorPiercing: evolutionId === 'settler-rail',
+    bossArmorPenetration,
     shock,
     heatPerShot: (definition.heatPerShot ?? 0) * (specials.includes('overheat-reduction') ? 0.72 : 1),
     maxHeat: definition.maxHeat ?? 0,
@@ -708,7 +751,7 @@ export function selectWeapon(state, weaponId, { tick } = {}) {
 // The next owned weapon after the active one in the runtime's display order,
 // or null when nothing else is carried. Pure: the wheel and the SWAP edge
 // both go through here so they can never disagree.
-export function nextOwnedWeaponId(state, order) {
+export function nextOwnedWeaponId(state, order = HMH_WEAPON_ORDER) {
   if (!Array.isArray(order) || order.length === 0) throw new TypeError('weapon order must be a non-empty array');
   const start = order.indexOf(state.activeWeaponId);
   for (let offset = 1; offset <= order.length; offset += 1) {
@@ -911,6 +954,9 @@ function buildShots({ definition, progression, state, direction, attackId }) {
       damage: progression.damage,
       policy: progression.projectilePolicy,
       projectileTag: progression.projectileTag,
+      evolutionTag: progression.evolutionTag,
+      armorPiercing: progression.armorPiercing,
+      bossArmorPenetration: progression.bossArmorPenetration,
       shock,
       knockbackMultiplier: shock ? progression.shock[1] : 1,
     });

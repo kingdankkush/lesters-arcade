@@ -241,6 +241,7 @@ import {
   grantWeaponPickup,
   laneDamageScale,
   nextOwnedWeaponId,
+  HMH_WEAPON_ORDER as WEAPON_ORDER,
   refillWeaponLoadout,
   progressionByWeapon as buildProgressionByWeapon,
   selectWeapon,
@@ -306,6 +307,9 @@ const LIQUIDATOR_THREAT_COST = 48;
 // Bullets fly at chest height above whatever ground is beneath them, so firing
 // from an authored ledge still connects with targets on the level below.
 const PROJECTILE_FLIGHT_HEIGHT = 34;
+// Boss hurt targets carry a `boss-` id (the v7 run summary counts boss hits the
+// same way), so boss-only policy flags never need a boss's own id.
+const isBossTargetId = (targetId) => typeof targetId === 'string' && targetId.startsWith('boss-');
 
 function firstInteractiveFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
@@ -329,7 +333,6 @@ const CRITICAL_CHANCE_CAP = 0.45;
 const BASE_CRITICAL_CHANCE = 0.08;
 const BASE_CRITICAL_MULTIPLIER = 1.75;
 
-const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard']);
 const WEAPON_KNOCKBACK = Object.freeze({
   'coin-blaster': 8,
   'scatter-shotgun': 18,
@@ -1958,7 +1961,7 @@ async function boot() {
         // rounds still read as upgraded: the capstone tracer round and the
         // pierce lance override the weapon's own style (the weapon-capstone
         // tests pin the tag this reads).
-        const tracer = resolveTracer({ weaponId: shot.weaponId, policyType: shot.policy?.type, projectileTag: shot.projectileTag, reduceFlash: settings.reduceFlash });
+        const tracer = resolveTracer({ weaponId: shot.weaponId, policyType: shot.policy?.type, projectileTag: shot.projectileTag, evolutionTag: shot.evolutionTag, reduceFlash: settings.reduceFlash });
         if (tracer.style === 'none') continue;
         const dx = to.x - from.x;
         const dy = to.y - from.y;
@@ -3842,8 +3845,10 @@ async function boot() {
               damage: hit.damage,
               criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
               criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
-              armorPiercing: shot.projectileTag === 'armor-piercing',
-              armorPenetration: shot.projectileTag === 'deep-proof' && hit.targetId === 'boss-liquidator' ? 0.6 : 0,
+              // Package 8.5 policy flags: Settler Rail ignores armour, and
+              // Deep Proof's boss penetration applies to any boss target.
+              armorPiercing: shot.armorPiercing === true,
+              armorPenetration: isBossTargetId(hit.targetId) ? shot.bossArmorPenetration : 0,
               direction: { x: shot.vx, y: shot.vy },
               knockback: (WEAPON_KNOCKBACK[shot.weaponId] ?? 6) * shot.knockbackMultiplier,
               point: hit.point,
@@ -4202,6 +4207,9 @@ async function boot() {
             policy: shot.policy,
             pierceHitIds: shot.policy?.type === 'pierce' ? [] : null,
             projectileTag: shot.projectileTag ?? null,
+            evolutionTag: shot.evolutionTag ?? null,
+            armorPiercing: shot.armorPiercing === true,
+            bossArmorPenetration: shot.bossArmorPenetration ?? 0,
             shock: shot.shock,
             knockbackMultiplier: shot.knockbackMultiplier,
             range: shot.range,

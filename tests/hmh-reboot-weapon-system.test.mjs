@@ -198,7 +198,10 @@ test('weapon upgrade branches match the retained upgrade tree and evolution tags
   assert.deepEqual(actual.specials, expected.specials);
   assert.equal(actual.damage, 8);
   assert.equal(actual.clipSize, 8);
-  assert.equal(actual.projectileTag, 'rail-dividend');
+  // S0.2: tags are additive. The specials here carry no projectile tag, and
+  // the evolution adds its own evolutionTag.
+  assert.equal(actual.projectileTag, null);
+  assert.equal(actual.evolutionTag, 'rail-dividend');
   assert.equal('score' in actual, false);
   assert.throws(() => applyWeaponProgression('coin-blaster', { evolutionId: 'hashstorm-overdrive' }), /evolution/i);
 });
