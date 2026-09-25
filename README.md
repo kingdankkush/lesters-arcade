@@ -1,3 +1,9 @@
+# Lester's Arcade — 1.8.3: game version on every score, 237 MB lighter, jackpot server staged
+
+Batch release after 1.8.2. Every verified score now shows the game version it was played on (owner decision: no testnet season resets): a Version column on the Scores boards (a chip on phones), a label per run in profile history and a line on share pages. HMH build hashes gain a cabinet segment (`HMH v0.5`); earlier hashes stay valid. About 237 MB of unreferenced generated art and dead generator scripts are removed (753 files; report `docs/cleanup/unused-assets-audit-20260925.md`). The Chikun Weekly Jackpot server is in (Neon migration 3, a keeper cron that is a recorded no-op until the jackpot contract is deployed, `/api/jackpot` answering not-configured); nothing player-facing changes for the jackpot yet and `JACKPOT_LIVE` stays false. Contracts, fees and flags of the live Ranked system are unchanged.
+
+Site/game version `1.8.3`; cache marker `lesters-arcade-v56-version-column`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.8.2 verified live: leaner portal, truthful copy, jackpot contracts staged
 
 Batch release after 1.8.1. The portal's and Chikun's first paint no longer download the 392 KB ethers library (a small built-in Keccak-256, proven byte-identical, computes the manifest hashes), and about 5,650 lines of unreachable legacy Canvas combat code and dead shell helpers are gone from `main.js` (no behaviour change). Signed-out game lines no longer claim an active session, and profiles show real bests ("Highest level", "Best combo") next to true totals. The Chikun Weekly Jackpot contracts (`WeeklyJackpot`, test token tCHIKUN) and their dry-run deploy and operator tools are in the repo but not deployed; nothing player-facing changes for the jackpot yet. Contracts, fees and flags of the live Ranked system are unchanged.
@@ -50,7 +56,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v55-lean-portal`
+**Production cache marker:** `lesters-arcade-v56-version-column`
 
 # Lester's Arcade
 
