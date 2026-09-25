@@ -251,7 +251,9 @@ function achievementsFor(gameId, server) {
   }).filter((item) => item.id);
 }
 
-export function buildRankedResultsModel({ snapshot, context = {}, standing = null } = {}) {
+// `standingLabel` overrides the share text's standing (the Weekly Jackpot's "Jackpot lead (pending)",
+// jackpot design §D.3), passed through buildRankedShareText's existing standingLabel.
+export function buildRankedResultsModel({ snapshot, context = {}, standing = null, standingLabel = null } = {}) {
   const snap = snapshot ?? { state: 'preview' };
   const state = KNOWN_STATES.has(snap.state) ? snap.state : 'verifying';
   const gameId = context?.gameId ?? snap.gameId ?? null;
@@ -283,7 +285,7 @@ export function buildRankedResultsModel({ snapshot, context = {}, standing = nul
   if (canShareRanked) {
     share = Object.freeze({
       template: 'ranked',
-      text: buildRankedShareText(gameId, { score, standingLabel: ranks.share, stats: statsSource, personalBest: personalBestDelta !== null }),
+      text: buildRankedShareText(gameId, { score, standingLabel: typeof standingLabel === 'string' && standingLabel ? standingLabel : ranks.share, stats: statsSource, personalBest: personalBestDelta !== null }),
       url: sharePageUrl(sessionId32),
     });
   } else if (canShareFree) {

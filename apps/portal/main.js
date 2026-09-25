@@ -211,6 +211,7 @@ import {
   buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
+import { JACKPOT_LIVE } from './src/jackpot-config.mjs';
 import { finalizeSessionEvidence, recordSessionEvent } from './src/session-integrity.mjs';
 // Namespace imports: other wave-3 slices may import single names from these
 // modules at their own anchors, and a second `import { rankedIdentityFor }`
@@ -4331,7 +4332,7 @@ const officialShellRoutes = createOfficialShellRoutes({
 const renderOfficialNav = officialShellRoutes.renderNav;
 // Unlockables panel (contract §7.9) under Settings and the player's own profile.
 const renderOfficialSettings = () => { officialShellRoutes.renderSettings(); showUnlockablesPanel('settings'); };
-const renderOfficialWalletSplash = officialShellRoutes.renderWalletSplash;
+const renderOfficialWalletSplash = () => { officialShellRoutes.renderWalletSplash(); showJackpotPromo(); };
 
 // --- verified boards and profiles ------------------------------------------
 // The 200-session chain scan and its merge into local state are retired (guide
@@ -5144,6 +5145,9 @@ function requestRankedEntry(pendingSession = null) {
     dom.rankedEntryApprove.disabled = true;
     const copyNode = modal.querySelector?.('#rankedEntryCopy');
     const footnote = modal.querySelector?.('#rankedEntryFootnote');
+    // Weekly Jackpot row (jackpot-ui, design §D.3): lazy, never awaited, so it cannot delay payment.
+    const jackpotRow = modal.querySelector?.('#rankedEntryJackpot');
+    if (jackpotRow) showEntryJackpot({ row: jackpotRow, gameId: requestedGameId, session: pendingSession, quote: () => entryTotalWei, open: () => !closed });
     if (SETTLEMENT_LIVE) {
       if (copyNode) copyNode.textContent = 'One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.';
       if (footnote) footnote.textContent = 'The entry contract quotes the exact total. Testnet entries are not refunded.';
@@ -9817,6 +9821,17 @@ window.addEventListener('orientationchange', () => {
     scheduleCombatViewportRelayout(220);
   }, 200);
 });
+
+// Weekly Jackpot (jackpot-ui, design §D.3): the entry-modal row and the home promo, lazy and only
+// while JACKPOT_LIVE (the Scores header, profile wins, results line and mode-select marquee load from
+// their own modules). With the flag off nothing downloads and nothing asks /api/jackpot.
+function showEntryJackpot(options) {
+  options.row.hidden = true;
+  if (JACKPOT_LIVE && options.gameId === 'chikun') import('./src/jackpot/jackpot-entry-line.mjs').then((line) => line.showEntryJackpot(options)).catch(() => {});
+}
+function showJackpotPromo() {
+  if (JACKPOT_LIVE) import('./src/jackpot/jackpot-home-promo.mjs').then((promo) => promo.renderJackpotHomePromo({ section: document.querySelector('#jackpotPromo') })).catch(() => {});
+}
 
 // Unlockables (contract §7.9, A7): lazy unlock cache and cosmetic picks (the store hears lesters:* itself); `var` reads null early, not a TDZ error.
 var unlockables = null;

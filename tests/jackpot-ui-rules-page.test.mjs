@@ -17,7 +17,7 @@ import {
   JACKPOT_LEGAL_PENDING, JACKPOT_RULES_FILE, PORTAL_FLAG_OVERRIDES, PORTAL_GENERATED_FILES, buildPortalPages,
   parsePortalPagesArgs, renderJackpotRules, resolvePortalFlags, runPortalPagesCli, stalePortalPages,
 } from '../scripts/build-portal-pages.mjs';
-import { JACKPOT_LIVE } from '../apps/portal/src/jackpot-config.mjs';
+import { JACKPOT_LIVE, JACKPOT_RULES_PATH } from '../apps/portal/src/jackpot-config.mjs';
 import { mountJackpotRules, nextCloseOf } from '../apps/portal/jackpot/chikun-rules.mjs';
 import { resetJackpotMemo } from '../apps/portal/src/jackpot/jackpot-client.mjs';
 import { fakeDocument, mountById, visibleText } from './helpers/jackpot-fake-dom.mjs';
@@ -64,6 +64,7 @@ test('copy plumbing: the jackpot flag, the optional third boolean and the jackpo
   // The live copy needs live settlement too (JACKPOT_LIVE => SETTLEMENT_LIVE).
   assert.deepEqual(portalCopyFor({ settlementLive: false, hostedProfileSync: true, chikunJackpotLive: true }), portalCopyFor({ settlementLive: false, hostedProfileSync: true }));
   assert.equal(jackpotRulesCopy({ settlementLive: false, chikunJackpotLive: true }).live, false);
+  assert.ok(portalCopyFor(PORTAL_FLAG_OVERRIDES.jackpot).llmsScope.includes(`https://lestersarcade.io${JACKPOT_RULES_PATH}.`), 'the copy links the rules path of jackpot-config.mjs');
   assert.equal(JACKPOT_TEST_TOKEN_SYMBOL, /ERC20\("[^"]+", "([^"]+)"\)/.exec(read('contracts/src/TestChikunToken.sol'))[1], 'the copy names the deployed test token');
 });
 
@@ -74,9 +75,8 @@ test('the soft-launch noValue line replaces "there are no prizes", and serverRec
     assert.doesNotMatch(text, /there are no prizes/);
   }
   const storage = launch.trustStorage.join(' ');
-  assert.match(storage, /the seed tickets issued to your wallet for Ranked runs/);
-  assert.match(storage, /the Weekly Jackpot's review of your runs that become candidates/);
-  assert.match(storage, /published as downloadable replays once their week closes/);
+  assert.match(storage, /the seed tickets issued for your Ranked runs/);
+  assert.match(storage, /the Weekly Jackpot's review of your candidate runs, whose recorded inputs are published as replays once their week closes/);
   // Flag-independent: the lines are the same whatever JACKPOT_LIVE says.
   assert.equal(jackpotLive.trustStorage[0], launch.trustStorage[0]);
   assert.equal(launch.faq.some(([question]) => /jackpot/i.test(question)), false, 'no jackpot FAQ while the flag is off');
@@ -85,12 +85,12 @@ test('the soft-launch noValue line replaces "there are no prizes", and serverRec
 test('the live jackpot copy: noValue, the FAQ entry, trustStatus and llmsScope', () => {
   const faq = new Map(jackpotLive.faq);
   assert.ok(faq.get('Does Ranked cost money or pay prizes?').includes(LIVE_NO_VALUE));
-  assert.match(faq.get('Is there a jackpot?'), /^Yes\. The Chikun's Escape Weekly Jackpot pays the best verified Ranked Chikun's Escape score of each week that has a funded prize, after a review by a person\. Prizes are paid in tCHIKUN, a testnet token with no value, and entry fees do not fund them\. The rules are at lestersarcade\.io\/jackpot\/chikun\.$/);
+  assert.match(faq.get('Is there a jackpot?'), /^Yes\. The Chikun's Escape Weekly Jackpot pays the best verified Ranked Chikun's Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person\. Entry fees do not fund the prize\. The rules are at lestersarcade\.io\/jackpot\/chikun\.$/);
   assert.deepEqual(jackpotLive.faq.map(([question]) => question).slice(3, 5), ['Does Ranked cost money or pay prizes?', 'Is there a jackpot?']);
   assert.equal(jackpotLive.trustStatus.length, launch.trustStatus.length);
   assert.ok(jackpotLive.trustStatus[2].endsWith(`${LIVE_NO_VALUE} Weekly Jackpot candidates are checked automatically and reviewed by a person before any payout, and every review decision is published on LitVM.`));
   assert.equal(jackpotLive.llmsScope.split('\n').length, launch.llmsScope.split('\n').length + 1, 'llmsScope gains one sentence');
-  assert.match(jackpotLive.llmsScope, /The Chikun's Escape Weekly Jackpot pays the best verified Ranked Chikun's Escape score of each funded week in tCHIKUN, a testnet token with no value, after review; its rules are at https:\/\/lestersarcade\.io\/jackpot\/chikun\.$/);
+  assert.match(jackpotLive.llmsScope, /The Chikun's Escape Weekly Jackpot pays the best verified Ranked Chikun's Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person; its rules are at https:\/\/lestersarcade\.io\/jackpot\/chikun\.$/);
   for (const text of [jackpotLive.faq.flat().join(' '), jackpotLive.trustStatus.join(' '), jackpotLive.llmsScope]) {
     assert.doesNotMatch(text, /\d[\d,]* tCHIKUN|guarantee|profit|invest|!/i, 'no amount and plain wording');
   }
@@ -106,8 +106,8 @@ test('flag-false portal pages change only the named honesty lines', () => {
     assert.doesNotMatch(text, /there are no prizes/, name);
     assert.doesNotMatch(text, /tCHIKUN|\/jackpot\/chikun|Is there a jackpot/i, `${name} names no jackpot while the flag is off`);
     const traces = text
-      .replace(/the Weekly Jackpot(?:&#39;|')s review of your runs that become candidates/g, '')
-      .replace(/<section id="jackpotPromo" class="jackpot-promo portal-section" aria-label="Weekly Jackpot" hidden><\/section>/g, '')
+      .replace(/the Weekly Jackpot(?:&#39;|')s review of your candidate runs/g, '')
+      .replace(/<section id="jackpotPromo" class="jackpot-promo" aria-label="Weekly Jackpot" hidden><\/section>/g, '')
       .replace(/<div id="rankedEntryJackpot" class="ranked-entry-row ranked-entry-jackpot" hidden><\/div>/g, '');
     assert.doesNotMatch(traces, /jackpot/i, `${name}: only the named lines mention the jackpot`);
   }

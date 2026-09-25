@@ -28,14 +28,19 @@ export class FakeNode {
     this.listeners = new Map();
     this.hidden = false;
     this.disabled = false;
-    this.ownText = '';
     this.className = '';
     this.id = '';
     this.value = '';
     this.classList = new FakeClassList(this);
   }
-  get textContent() { return this.ownText + this.children.map((child) => child.textContent).join(''); }
-  set textContent(value) { this.ownText = String(value ?? ''); for (const child of this.children) child.parentNode = null; this.children = []; }
+  // Like the DOM, setting textContent replaces the children with one text node.
+  get textContent() { return this.children.map((child) => child.textContent).join(''); }
+  set textContent(value) {
+    for (const child of this.children) child.parentNode = null;
+    this.children = [];
+    const text = String(value ?? '');
+    if (text) this.appendChild(this.ownerDocument.createTextNode(text));
+  }
   get isConnected() {
     let node = this;
     while (node.parentNode) node = node.parentNode;
@@ -71,7 +76,6 @@ export class FakeNode {
   replaceChildren(...nodes) {
     for (const child of this.children) child.parentNode = null;
     this.children = [];
-    this.ownText = '';
     this.append(...nodes);
   }
   remove() {
@@ -176,7 +180,7 @@ export function mountById(documentRef, tag, id, { hidden = false, className = ''
 export function visibleText(node) {
   if (!node || node.hidden) return '';
   if (!(node instanceof FakeNode)) return node.textContent ?? '';
-  return node.ownText + node.children.map((child) => visibleText(child)).join('');
+  return node.children.map((child) => visibleText(child)).join('');
 }
 
 export const settle = () => new Promise((resolve) => setImmediate(resolve));

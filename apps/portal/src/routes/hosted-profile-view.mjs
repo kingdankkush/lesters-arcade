@@ -11,6 +11,7 @@ import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
 import { ARCADE_AVATARS, ARCADE_AVATAR_URI_PREFIX, arcadeAvatarForUri } from '../arcade-avatars.mjs';
 import { verifiedExplorerUrl } from '../leaderboard-view.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
+import { JACKPOT_LIVE } from '../jackpot-config.mjs';
 
 export const PROFILE_SHARE_ORIGIN = 'https://lestersarcade.io';
 export const LITEFORGE_EXPLORER = 'https://liteforge.explorer.caldera.xyz';
@@ -199,6 +200,8 @@ export function createHostedProfileView({
   // read or write: a restored WalletConnect session creates its provider here
   // (main.js walletProviderForAction awaits ensureWalletProvider).
   walletProviderForAction = async () => detectEthereumProvider?.() ?? null,
+  // Weekly Jackpot wins (jackpot-ui): tests switch them on here, never by editing the flag.
+  jackpotLive = JACKPOT_LIVE,
 } = {}) {
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
   const heldTokens = new Map(); // wallet -> { status, confirmed: Set('<gameId>:<id>') }
@@ -769,6 +772,15 @@ export function createHostedProfileView({
     }
   }
 
+  // Weekly Jackpot wins (design §D.3): lazy, only for a profile with wins; Claim for their own winner.
+  function renderJackpotWins(target, response) {
+    const wins = response?.jackpot?.wins;
+    if (!jackpotLive || !wins?.length) return;
+    const mount = el('div', { className: 'jackpot-wins-mount' });
+    dom.officialCabinetGrid.append(mount);
+    import('../jackpot/jackpot-profile-wins.mjs').then((module) => module.renderJackpotWins({ mount, wins, wallet: target.wallet, own: target.own, connectedWallet: getContext().connectedWallet, walletProviderForAction })).catch(() => {});
+  }
+
   function renderHostedProfile() {
     const target = viewedTarget();
     dom.officialCabinetGrid.replaceChildren();
@@ -812,6 +824,7 @@ export function createHostedProfileView({
         renderLocalUsernameEditor();
       }
     }
+    renderJackpotWins(target, response);
     renderHostedGames(response);
     renderHostedSessions(target, response);
     renderHostedAchievements(target, response);

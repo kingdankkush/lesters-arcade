@@ -26,6 +26,7 @@
 // DOM: createElement and textContent only (§11 rule 6).
 import { DAILY_STANDING_ENABLED, buildRankedResultsModel, standingForRun } from './ranked-results-model.mjs';
 import { buildShareLinks, createShareRow } from './share-links.mjs';
+import { JACKPOT_LIVE } from './jackpot-config.mjs';
 
 export const RANKED_RESULTS_STYLESHEET = './src/styles/ranked-results.css?v=ranked-results-20260923b';
 export const RESULTS_COMPANION_CLASSES = Object.freeze(['name-claim-toast']);
@@ -112,6 +113,8 @@ export function openRankedResults({
   onClose = null,
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   clearTimeoutImpl = (timer) => globalThis.clearTimeout(timer),
+  // Weekly Jackpot line (jackpot-ui): tests switch it on here, never by editing the flag.
+  jackpotLive = JACKPOT_LIVE,
 } = {}) {
   if (!documentRef?.createElement) throw new TypeError('openRankedResults needs a document');
   activeView?.close({ restoreFocus: false });
@@ -173,6 +176,9 @@ export function openRankedResults({
   handleLine.id = `${id}-handle`;
   const standingLine = make('p', 'rr-standing');
   hero.append(eyebrow, score, handleLine, standingLine);
+  // Weekly Jackpot line (design §D.3): lazy, Chikun only; its label becomes the share standing.
+  let jackpot = null;
+  if (jackpotLive && ctx.gameId === 'chikun') import('./jackpot/jackpot-results-line.mjs').then((module) => { jackpot = module.createJackpotResultsLine({ mount: hero, context: ctx, documentRef, fetchImpl, onChange: () => open && render() }); if (open) render(); }).catch(() => {});
 
   const banner = make('div', 'rr-banner');
   banner.setAttribute('role', 'status');
@@ -374,7 +380,8 @@ export function openRankedResults({
   }
 
   function render() {
-    const model = buildRankedResultsModel({ snapshot: currentSnapshot(), context: ctx, standing });
+    const model = buildRankedResultsModel({ snapshot: currentSnapshot(), context: ctx, standing, standingLabel: jackpot?.label });
+    jackpot?.update(model, currentSnapshot());
     lastModel = model;
     root.dataset.state = model.state;
     dialog.dataset.state = model.state;

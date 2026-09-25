@@ -3,7 +3,7 @@
 // generated address module, so this module is for the browser and the page
 // builder only: server/** and api/** never import it (tests/portal-copy.test.mjs).
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
-import { JACKPOT_LIVE, JACKPOT_RULES_PATH } from './jackpot-config.mjs';
+import { JACKPOT_LIVE } from './jackpot-config.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
 export const PORTAL_GAMES = Object.freeze([
@@ -68,6 +68,9 @@ export const RANKED_LAUNCH_TERMS = Object.freeze({
 // instance, new rules and new copy (design §A.19, §F).
 export const JACKPOT_TEST_TOKEN_SYMBOL = 'tCHIKUN';
 export const JACKPOT_NAME = "Chikun's Escape Weekly Jackpot";
+// JACKPOT_RULES_PATH of jackpot-config.mjs, as a literal: an import would add a shared chunk to the
+// initial bundle (tests/jackpot-ui-rules-page.test.mjs pins the two equal).
+const JACKPOT_RULES_URL_PATH = '/jackpot/chikun';
 
 const joinList = items => items.length < 3 ? items.join(' and ') : items.slice(0, -1).join('; ')+'; and '+items[items.length-1];
 
@@ -93,6 +96,8 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
   const noValue = jackpot
     ? `Testnet zkLTC has no value. The only prize is the ${JACKPOT_NAME}, paid in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value; see the rules.`
     : 'Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.';
+  // One sentence shared by the live FAQ entry and llmsScope (portal-content.mjs ships in the initial bundle).
+  const jackpotPays = `The ${JACKPOT_NAME} pays the best verified Ranked Chikun's Escape score of each funded week in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value, after a review by a person`;
   const boards = 'Each game has global Weekly, Monthly, and All-time leaderboards that rank the best verified Ranked score of each wallet.';
   const resets = 'Weekly boards reset on Monday at 00:00 UTC and monthly boards on the 1st at 00:00 UTC.';
   const names = "You choose your display name and avatar on chain, with a small transaction you pay for. Names that break the arcade's rules are hidden on its pages by moderation.";
@@ -109,7 +114,7 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     ['Does Ranked cost money or pay prizes?', live
       ? `${entryTerms} ${noValue} Testnet entries are not refunded. Free Mode is always free.`
       : "The current Ranked preview requires no entry fee and pays no prizes. No score transaction is sent. Lester's Arcade is developing its wallet features for LitVM LiteForge testnet."],
-    ...(jackpot ? [['Is there a jackpot?', `Yes. The ${JACKPOT_NAME} pays the best verified Ranked Chikun's Escape score of each week that has a funded prize, after a review by a person. Prizes are paid in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value, and entry fees do not fund them. The rules are at lestersarcade.io${JACKPOT_RULES_PATH}.`]] : []),
+    ...(jackpot ? [['Is there a jackpot?', `Yes. ${jackpotPays}. Entry fees do not fund the prize. The rules are at lestersarcade.io${JACKPOT_RULES_URL_PATH}.`]] : []),
     ...(live ? [['How are Ranked runs checked and published?', "When a Ranked run ends, the arcade server checks it. Chikun's Escape and STACKED runs are replayed on the server from their recorded inputs. Hard Money Heroes runs are plausibility-checked against the game's limits; they are not replayed. The arcade's relayer then publishes the result on LitVM, and your results screen links to the transaction. "+retries]] : []),
     ['Can I play on my phone?', 'The three active games support on-screen touch controls as well as desktop input. A current browser is required. Performance varies by device; the games include settings for controls, audio, and visual effects.'],
   ];
@@ -118,8 +123,8 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     ...(live ? [
       "your verified Ranked sessions with their evidence (the recorded inputs that replay a Chikun's Escape or STACKED run, or the run summary of a Hard Money Heroes run), scores, stats, check results, and publishing status",
       'the achievements recorded for your wallet',
-      'the seed tickets issued to your wallet for Ranked runs (which session each was for, and when it was issued)',
-      "the Weekly Jackpot's review of your runs that become candidates (check results and review decisions), including their recorded inputs, which are published as downloadable replays once their week closes",
+      'the seed tickets issued for your Ranked runs',
+      "the Weekly Jackpot's review of your candidate runs, whose recorded inputs are published as replays once their week closes",
     ] : []),
     'a copy of your on-chain display name and avatar',
     'your profile preferences',
@@ -257,7 +262,7 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
       "The arcade server checks each Ranked run, then the arcade's relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed on the server; Hard Money Heroes runs are plausibility-checked, not replayed.",
       "Global Weekly, Monthly, and All-time leaderboards rank each wallet's best verified score. Achievements are recorded against the wallet on the arcade server. Display names are set on chain and can be hidden by moderation.",
       `Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. ${noValue}`,
-      ...(jackpot ? [`The ${JACKPOT_NAME} pays the best verified Ranked Chikun's Escape score of each funded week in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value, after review; its rules are at https://lestersarcade.io${JACKPOT_RULES_PATH}.`] : []),
+      ...(jackpot ? [`${jackpotPays}; its rules are at https://lestersarcade.io${JACKPOT_RULES_URL_PATH}.`] : []),
     ].join('\n') : hosted
       ? 'Wallet sign-in and online profiles are available. Ranked is a preview: runs stay in this browser, with no entry fees, prizes, or on-chain score publishing. LitVM LiteForge is a testnet.'
       : 'Profiles and Ranked preview results stay in this browser. No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available. LitVM LiteForge is a testnet.',
@@ -271,22 +276,23 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
 // out of the sitemap until the jackpot is live (live settlement and JACKPOT_LIVE), and while it is off
 // it carries the soft-launch banner (design §D.6). Nothing here states an amount: amounts come only from
 // the API, in the page's lazy module.
-export const JACKPOT_RULES_SECTIONS = Object.freeze(['what', 'eligible', 'winner', 'timeline', 'verification', 'disqualification', 'challenges', 'rollover', 'funding', 'claims', 'end', 'published', 'no-guarantee', 'testnet', 'legal', 'history']);
+export const JACKPOT_RULES_SECTIONS = /* @__PURE__ */ Object.freeze(['what', 'eligible', 'winner', 'timeline', 'verification', 'disqualification', 'challenges', 'rollover', 'funding', 'claims', 'end', 'published', 'no-guarantee', 'testnet', 'legal', 'history']);
 export const JACKPOT_CONTACT = 'kingdankkush420@gmail.com';
 
 // Design §F.1: the owner-requested draft legal block (2026-09-25; not legal advice), verbatim. The
+// @__PURE__ marks keep these constants out of the SPA bundle, which never renders the rules page. The
 // rules template keeps <!-- LEGAL-REVIEW-PENDING: owner confirms at E10 --> beside it, and a live
 // build refuses the page until the owner confirms the text and the E10 commit removes that comment.
-export const JACKPOT_LEGAL_DRAFT = Object.freeze({
+export const JACKPOT_LEGAL_DRAFT = /* @__PURE__ */ Object.freeze({
   title: 'Weekly Jackpot rules',
-  items: Object.freeze([
-    Object.freeze(['Skill contest.', "The eligible wallet with the highest verified Ranked Chikun's Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week's funded prize, paid on chain after a 24-hour review."]),
-    Object.freeze(['Entry.', 'Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.']),
-    Object.freeze(['Prizes.', 'A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.']),
-    Object.freeze(['Fair play.', 'Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.']),
-    Object.freeze(['Eligibility.', "You must be 18 or older (or the age of majority where you live). Lester's Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you."]),
-    Object.freeze(['Testnet.', 'During the LiteForge testnet, prizes are testnet tokens with no monetary value. Real $CHIKUN prizes will come with updated rules.']),
-    Object.freeze(['Changes.', 'We may change, pause or end the Weekly Jackpot at any time; prizes already paid are unaffected.']),
+  items: /* @__PURE__ */ Object.freeze([
+    /* @__PURE__ */ Object.freeze(['Skill contest.', "The eligible wallet with the highest verified Ranked Chikun's Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week's funded prize, paid on chain after a 24-hour review."]),
+    /* @__PURE__ */ Object.freeze(['Entry.', 'Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.']),
+    /* @__PURE__ */ Object.freeze(['Prizes.', 'A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.']),
+    /* @__PURE__ */ Object.freeze(['Fair play.', 'Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.']),
+    /* @__PURE__ */ Object.freeze(['Eligibility.', "You must be 18 or older (or the age of majority where you live). Lester's Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you."]),
+    /* @__PURE__ */ Object.freeze(['Testnet.', 'During the LiteForge testnet, prizes are testnet tokens with no monetary value. Real $CHIKUN prizes will come with updated rules.']),
+    /* @__PURE__ */ Object.freeze(['Changes.', 'We may change, pause or end the Weekly Jackpot at any time; prizes already paid are unaffected.']),
     'Nothing here is financial advice. Memecoins are volatile.',
   ]),
 });
