@@ -2433,9 +2433,10 @@ async function boot() {
       }
       // Owner playtest 2026-08-02: no more aim line from the hero. Pointer
       // aim shows a crosshair reticle at the cursor; gamepad/touch aim shows
-      // the same reticle at the projected aim point. Projection-only.
+      // the same reticle at the projected aim point. Projection-only. The
+      // death camera (package 7.2) draws neither it nor the rail charge line.
       aimLine.clear();
-      if (aimIntent) {
+      if (aimIntent && playerHealth > 0) {
         const reticleColor = aimIntent.fire ? 0xffd166 : 0x49ddff;
         const reticle = aimIntent.source === 'pointer' && pointerReticleScreen
           ? pointerReticleScreen
@@ -2475,7 +2476,7 @@ async function boot() {
       if (authoredHeldWeaponDisplay && heldWeapon) {
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
-        if (heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
+        if (playerHealth > 0 && heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
           const chargeRatio = Math.min(1, ((simulation?.tick ?? 0) - heldWeapon.chargeStartedTick) / HMH_WEAPON_DEFINITIONS['hash-rail'].chargeTicks);
           const chargeEnd = worldToScreen({ x: renderState.x + heldAim.x * 900, y: renderState.y + heldAim.y * 900, z: renderState.z + 44 }, camera, view);
           aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)

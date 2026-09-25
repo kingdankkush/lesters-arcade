@@ -145,3 +145,12 @@ test('main.mjs: the weapon layer is hidden during death (package 7.2 #2)', () =>
   assert.match(mainSource, /productionHeroDisplay\.setLayerVisible\('weapon', productionAction !== 'interact' && productionAction !== 'death' && !externalWeaponAuthoritative\)/);
   assert.match(mainSource, /const actionOwnsWeaponLayer = \['melee', 'grenade', 'death', 'interact'\]\.includes\(productionAction\)/, 'the external prop overlay stays hidden too');
 });
+
+test('main.mjs: the death camera draws no aim reticle and no rail charge line over the dead hero', () => {
+  // The death camera keeps drawing for 1.2 s. The weapon is gone, so the aim
+  // reticle and the Settler Rail's charge line go with it (projection only).
+  const reticle = mainSource.indexOf('aimLine.clear();');
+  assert.ok(reticle > 0);
+  assert.match(mainSource.slice(reticle, reticle + 80), /aimLine\.clear\(\);\s*if \(aimIntent && playerHealth > 0\) \{/);
+  assert.match(mainSource, /if \(playerHealth > 0 && heldWeapon\.id === 'hash-rail' && heldWeapon\.chargeStartedTick !== null\) \{/);
+});
