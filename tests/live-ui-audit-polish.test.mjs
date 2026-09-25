@@ -71,7 +71,11 @@ test('recent runs start at the top of their card and wrap on phones', () => {
   const row = ruleFor(polish, '.game-history-row.profile-session-row');
   assert.match(row, /flex-wrap: wrap/);
   assert.match(ruleFor(polish, '.profile-session-row > .game-history-detail'), /min-width: 0/);
-  assert.match(ruleFor(polish, '.profile-session-row > .game-history-link'), /white-space: nowrap/);
+  const link = ruleFor(polish, '.profile-session-row > .game-history-link');
+  assert.match(link, /white-space: nowrap/);
+  // Review 2026-09-24: the run links ('⛓ verified', 'Run page') were 32 px,
+  // under the 44 px the share page links got in this same audit.
+  assert.match(link, /min-height: 44px/, '44 px touch targets for the run links');
 });
 
 test('achievement titles lead their card and phones get two columns', () => {

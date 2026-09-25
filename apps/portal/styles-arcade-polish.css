@@ -2701,7 +2701,7 @@ button[class="pixel-button"]:disabled,
 .profile-session-row > .game-history-link {
   display: inline-flex;
   align-items: center;
-  min-height: 32px;
+  min-height: 44px;
   color: #19f7ff;
   font-size: 0.8rem;
   font-weight: 700;
