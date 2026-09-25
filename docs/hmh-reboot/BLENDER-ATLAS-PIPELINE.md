@@ -210,6 +210,11 @@ checks. The retired static Tripo selector scene (`hmh-tripo-selector.blend`, its
 four textured GLBs, the `hmh-tripo-selector-sources.json` hash ledger and the
 `create-hmh-tripo-selector-scene.py` builder) was removed from the working tree in
 the 2026-09-25 asset cleanup; it remains in Git history and LFS at `0248cd4b`.
+Its `.gitattributes` line for `blender/hmh-tripo-selector.blend` went with it (the
+GLBs stay covered by the `models/**/*.glb` rule). To restore the scene, re-add that
+line from `git show 0248cd4b:.gitattributes` first, then run
+`git checkout 0248cd4b -- apps/hmh-reboot/assets/source/blender/hmh-tripo-selector.blend`;
+without the line Git writes the LFS pointer text, not the 83 MB scene.
 Directions follow the selector spin order
 `east, north-east, north, north-west, west, south-west, south, south-east`; the
 rest frame shown under `prefers-reduced-motion` is `south`.
