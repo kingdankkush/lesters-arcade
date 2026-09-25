@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
-  PORTAL_GENERATED_FILES, buildPortalPages, parsePortalPagesArgs, renderCopyBlock, resolvePortalFlags, runPortalPagesCli, stalePortalPages,
+  JACKPOT_RULES_FILE, PORTAL_GENERATED_FILES, buildPortalPages, parsePortalPagesArgs, renderCopyBlock, resolvePortalFlags, runPortalPagesCli, stalePortalPages,
 } from '../scripts/build-portal-pages.mjs';
 import { PORTAL_FLAGS, PORTAL_GAMES, escapeHtml, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
 
@@ -123,6 +123,9 @@ test('the preview render keeps the preview wording and names no board period', (
     assert.match(block(pages['trust.html'], 'ranked-storage'), /stay in this browser/);
     assert.match(pages['llms.txt'], /No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available\./);
     for (const [name, text] of Object.entries(pages)) {
+      // The Weekly Jackpot rules page quotes the owner's legal draft verbatim (jackpot design §F.1, with
+      // the 0.102 Ranked price); it is noindex and can only go live on top of live settlement.
+      if (name === JACKPOT_RULES_FILE) continue;
       assert.doesNotMatch(withoutModal(text), /\byearly\b|0\.102|Neon Postgres|plausibility/i, name);
     }
   });
