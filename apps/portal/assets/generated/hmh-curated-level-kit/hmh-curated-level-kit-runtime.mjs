@@ -69,6 +69,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/generated/hmh-hero-portraits.mjs",
     "apps/portal/src/generated/hmh-reboot-hero-selector-atlas.mjs",
     "apps/portal/src/generated/litvm-addresses.mjs",
+    "apps/portal/src/generated/litvm-jackpot.mjs",
     "apps/portal/src/gore-system.mjs",
     "apps/portal/src/hmh-ambient-life.mjs",
     "apps/portal/src/hmh-anchor-set.mjs",

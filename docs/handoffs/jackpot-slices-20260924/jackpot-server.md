@@ -87,7 +87,7 @@ Make the jackpot automatic and observable on the server:
    - the nonce with gap guard;
    - CAS to `submitted` with `tx_hash` **before** broadcasting;
    - the dropped-transaction check after 180 s;
-   - `JACKPOT_REVERTS` classification per design §A.15 (rev. 2 table);
+   - `JACKPOT_REVERTS` classification per design §A.15 (rev. 2 table, with the J1 amendments of 2026-09-25: `AFTER_END` on finalize and `NOTHING_TO_CLAIM` are `already-done`; `BAD_RULES`, `END_FINAL` and `EMPTY_GAME_ID` are never sent by the keeper). The contracts slice lists every contract detail the server mirrors in `docs/web3/weekly-jackpot-operations.md`, "Interface notes for jackpot-server": a week after `endAfterWeek` is refund-only and never finalized, `toWeek == 0` means the residue (`rolled_to_week` NULL), and `leaderOf` of an unfunded week is not a champion;
    - backoff copied from `failureTransition`;
    - dead after 3 deterministic failures;
    - codes on the jackpot allowlist;
