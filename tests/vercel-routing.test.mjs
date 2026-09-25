@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 import * as verifiedSessionApi from '../api/verified-session.mjs';
+import { HEALTH_CHAIN_TIMEOUT_MS, HEALTH_DB_TIMEOUT_MS } from '../server/ops/health.mjs';
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 
@@ -283,6 +284,16 @@ test('the health function is served at its own path with no rewrite', () => {
   assert.ok(existsSync(new URL('../api/health.mjs', import.meta.url)));
   assert.equal(vercel.crons.some((cron) => cron.path === '/api/health'), false, 'health is read on demand, never scheduled');
   assert.equal(headersFor('/api/health')['X-Robots-Tag'], undefined);
+});
+
+test('the health read deadlines end well inside the health function limit', () => {
+  // A hung Neon or RPC read must end as a degraded 200, never a Vercel 504.
+  const limitMs = vercel.functions['api/health.mjs'].maxDuration * 1000;
+  for (const [name, ms] of Object.entries({ HEALTH_DB_TIMEOUT_MS, HEALTH_CHAIN_TIMEOUT_MS })) {
+    assert.ok(Number.isSafeInteger(ms) && ms > 0 && ms <= 5_000, `${name} is a short deadline (${ms} ms)`);
+  }
+  // The parts run in parallel; even back to back they leave a cold-start margin.
+  assert.ok(HEALTH_DB_TIMEOUT_MS + HEALTH_CHAIN_TIMEOUT_MS + 5_000 <= limitMs, `${HEALTH_DB_TIMEOUT_MS} + ${HEALTH_CHAIN_TIMEOUT_MS} ms + 5 s margin fits ${limitMs} ms`);
 });
 
 test('every functions entry points at an existing file', () => {
