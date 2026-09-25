@@ -136,14 +136,17 @@ test('the renderer, shell and syntax gate wire the music-reactive board', () => 
   const renderer = readFileSync(new URL('../apps/stacked/src/render/renderer.mjs', import.meta.url), 'utf8');
   const main = readFileSync(new URL('../apps/stacked/src/main.mjs', import.meta.url), 'utf8');
   const html = readFileSync(new URL('../apps/portal/stacked/index.html', import.meta.url), 'utf8');
+  const settingsModule = readFileSync(new URL('../apps/portal/src/stacked-player-settings.mjs', import.meta.url), 'utf8');
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
   assert.match(renderer, /createBoardPulse\(\{ board, Graphics, geometry \}\)/);
   assert.match(renderer, /pulse\.draw\(\{ settings, signals: info\.signals \?\? undefined, palette: info\.palette \?\? undefined, snapshot \}\)/);
   assert.match(renderer, /dataset\.boardPulse=/);
   assert.match(renderer, /pulse\.destroy\(\)/);
-  assert.match(main, /local\.reactiveBoard = \$\('boardPulseToggle'\)\.checked/);
-  assert.match(main, /settings\.video\.reactiveBoard = local\.reactiveBoard/);
-  assert.match(html, /<input id="boardPulseToggle" type="checkbox" checked> Music-reactive board/);
+  // The board glow follows the Effects preset, stored with the parent settings.
+  assert.match(main, /import \{ STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset \} from '\.\.\/\.\.\/portal\/src\/stacked-player-settings\.mjs';/);
+  assert.match(main, /Object\.assign\(settings\.video, expandStackedEffectsPreset\(/);
+  assert.doesNotMatch(html, /boardPulseToggle/);
+  assert.match(settingsModule, /reactiveBoard: true/);
   assert.match(syntax, /apps\/stacked\/src\/render\/board-pulse\.mjs/);
   assert.match(syntax, /tests\/stacked-board-pulse\.test\.mjs/);
 });

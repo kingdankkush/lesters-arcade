@@ -53,25 +53,41 @@
     <nav id="menuTiles" class="menu-tiles" aria-label="Menu">
       <button id="freeModeTile" type="button" class="tile" data-mode="free"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/><rect x="8" y="3" width="8" height="8" rx="2"/></svg><span class="tile-label">Free</span><span class="tile-hint">Practice &amp; medals</span></button>
       <button id="rankedModeTile" type="button" class="tile" data-mode="ranked"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20V9l4 3 2-7 2 7 4-3v11"/></svg><span class="tile-label">Ranked</span><span class="tile-hint">Verified runs</span></button>
-      <button id="settingsTile" type="button" class="tile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span class="tile-label">Settings</span><span class="tile-hint">Visuals, audio, access</span></button>
+      <button id="settingsTile" type="button" class="tile" aria-expanded="false" aria-controls="preferencePanel"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span class="tile-label">Settings</span><span class="tile-hint">Effects, access, sound</span></button>
       <button id="scoresTile" type="button" class="tile" aria-expanded="false" aria-controls="scoreShelf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span class="tile-label">Scores</span><span class="tile-hint">Bests on this device</span></button>
     </nav>
     <div id="shareRow" class="share-row-mount" aria-label="Share this run" hidden></div>
     <section id="freeMedalShelf" class="medal-shelf" aria-labelledby="freeMedalTitle" hidden><h3 id="freeMedalTitle">Free Mode medal shelf</h3><p id="practiceBest"></p><p id="freeMedalSummary" role="status"></p><details><summary>View all 16 medals &amp; progress</summary><ul id="freeMedalList"></ul></details><p class="fine-print">Practice-only. No profile badges or Ranked progress.</p></section>
     <section id="scoreShelf" class="score-shelf" aria-labelledby="scoreShelfTitle" hidden><h3 id="scoreShelfTitle">Scores on this device</h3><dl class="score-grid"><div><dt>Practice best</dt><dd id="scoreBest">—</dd></div><div><dt>Free runs</dt><dd id="scoreRuns">0</dd></div><div><dt>Medals</dt><dd id="scoreMedals">0 / 16</dd></div></dl><p id="scoreNote" class="fine-print">Practice scores and medals are kept on this device. Ranked results are on your arcade profile.</p></section>
-    <details id="preferencePanel" open><summary><span>Settings</span><span class="summary-hint">Gameplay · Visuals · Accessibility · Audio</span></summary>
+    <details id="preferencePanel"><summary><span>Settings</span><span class="summary-hint">Effects · Play · Accessibility · Sound</span></summary>
       <div id="visualPreferences">
-        <fieldset class="pref-group"><legend>Gameplay</legend><label><input id="ghostToggle" type="checkbox" checked> Landing guide</label><label><input id="gridToggle" type="checkbox" checked> Board grid</label><label class="mobile-hand-option"><input id="leftHandToggle" type="checkbox"> Left-handed controls</label></fieldset>
-        <fieldset class="pref-group pref-visuals"><legend>Visuals</legend>
+        <fieldset class="pref-group pref-visuals"><legend>Effects</legend>
+          <span id="effectsLabel" class="pref-label">Visual effects</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="effectsLabel" aria-describedby="effectsHint">
+            <label class="segment"><input id="effectsOff" type="radio" name="effectsPreset" value="off"><span>Off</span></label>
+            <label class="segment"><input id="effectsCalm" type="radio" name="effectsPreset" value="calm"><span>Calm</span></label>
+            <label class="segment"><input id="effectsStandard" type="radio" name="effectsPreset" value="standard" checked><span>Standard</span></label>
+            <label class="segment"><input id="effectsFull" type="radio" name="effectsPreset" value="full"><span>Full</span></label>
+          </div>
+          <p id="effectsHint" class="pref-note">Recommended. Your music world, backdrop scenes that change with the song, and a board that glows with the music.</p>
           <div class="world-picker"><label for="visualizerSelect">Music world</label><select id="visualizerSelect" aria-describedby="visualizerHint"><option value="journey">Journey · follow the zones</option><option value="living">Living field</option><option value="aurora">Aurora</option><option value="orbit">Orbit</option><option value="spectrum">Spectrum</option></select>
           <div class="world-preview"><canvas id="visualizerPreview" width="800" height="260" aria-hidden="true"></canvas><span>MOTION PREVIEW</span></div><p id="visualizerHint">Every clear reshapes your world.</p></div>
-          <div class="scene-picker"><label for="sceneSelect">Backdrop scene</label><div class="scene-row"><select id="sceneSelect" aria-describedby="sceneHint"><option value="auto">Auto · change with the music</option><option value="tunnel">Energy tunnel</option><option value="particles">Particle drift</option><option value="horizon">Synthwave horizon</option><option value="off">Off</option></select><button id="sceneNextButton" type="button" aria-describedby="sceneHint">Next scene</button></div><p id="sceneHint">Scenes crossfade when the music changes section, every 64 beats, or on a Halving.</p></div>
-          <p class="mobile-effects-note">Ocean creatures move with your music. Clear lines for colorful bursts, and lock a piece for a one-second glow.</p>
-          <div class="range-control"><label for="intensityRange">Effect intensity <output id="intensityValue" for="intensityRange">70%</output></label><input id="intensityRange" type="range" min="0" max="100" step="5" value="70"></div>
-          <label><input id="effectsToggle" type="checkbox"> Minimal effects</label><label class="desktop-reactive"><input id="reactiveToggle" type="checkbox" checked> React to music</label><label><input id="boardPulseToggle" type="checkbox" checked> Music-reactive board</label><p id="boardPulseNote" class="pref-note">The frame and falling piece glow gently with the beat.</p>
         </fieldset>
-        <fieldset class="pref-group"><legend>Accessibility</legend><label><input id="motionToggle" type="checkbox"> Reduced motion</label><label><input id="flashToggle" type="checkbox" checked> Reduced flashes</label><label><input id="pieceMarksToggle" type="checkbox"> Piece markings</label></fieldset>
-        <fieldset class="pref-group"><legend>Audio</legend><div class="range-control"><label for="volumeRange">Game sound volume <output id="volumeValue" for="volumeRange">35%</output></label><input id="volumeRange" type="range" min="0" max="100" step="5" value="35"></div><label><input id="soundToggle" type="checkbox" checked> Game sound effects</label></fieldset>
+        <fieldset class="pref-group"><legend>Play</legend>
+          <label><input id="ghostToggle" type="checkbox" checked> Landing guide</label>
+          <label><input id="gridToggle" type="checkbox" checked> Board grid</label>
+          <label class="mobile-hand-option"><input id="leftHandToggle" type="checkbox"> <span>Left-handed buttons<span class="pref-sub">Moves DROP to the left edge and the arrow buttons to the right.</span></span></label>
+        </fieldset>
+        <fieldset class="pref-group"><legend>Accessibility</legend>
+          <label><input id="motionToggle" type="checkbox"> <span>Reduced motion<span class="pref-sub">Holds the background still and stops moving effects, shake and the board glow.</span></span></label>
+          <label><input id="flashToggle" type="checkbox" checked> <span>Reduced flashes<span class="pref-sub">Softens bright bursts. The board glow breathes slowly instead of pulsing. On by default.</span></span></label>
+          <label><input id="pieceMarksToggle" type="checkbox"> <span>Piece patterns<span class="pref-sub">Adds a pattern to each piece so color isn't the only cue.</span></span></label>
+        </fieldset>
+        <fieldset class="pref-group pref-sound"><legend>Sound</legend>
+          <div class="range-control"><label for="volumeRange">Game sounds <output id="volumeValue" for="volumeRange">35%</output></label><input id="volumeRange" type="range" min="0" max="100" step="5" value="35" aria-describedby="soundNote"></div>
+          <p id="soundNote" class="fine-print">Game sounds only. Arcade music has its own setting.</p>
+        </fieldset>
+        <p id="settingsSaveNote" class="fine-print">Changes save automatically on this device. Every setting here is allowed in Ranked.</p>
       </div>
     </details></div>
   </section>
