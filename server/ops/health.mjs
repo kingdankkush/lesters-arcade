@@ -7,11 +7,20 @@
 // index lag, the last outcome of each cron, and the latest base fee.
 //
 // Every read has a short deadline. A part that cannot be read (no database
-// configured, a Neon or RPC failure, a timeout) reports null for its fields,
-// is named in `degradedParts`, and sets `degraded: true`; the report itself is
-// always produced, so the endpoint never answers 500 because a dependency is
-// down. Nothing here reads a secret: the relayer address is the deployment's
-// public one (scripts/vercel-secrets.mjs refuses a relayer key for any other
+// configured, a Neon or RPC failure, a timeout, a head block with no base fee)
+// reports null for its fields, is named in `degradedParts`, and sets
+// `degraded: true`; the report itself is always produced, so the endpoint
+// never answers 500 because a dependency is down.
+//
+// `ok` is the API envelope flag, as on every other endpoint: true on every
+// report, false only on an error body. `healthy` is the one boolean for an
+// uptime monitor: settlement is configured and not paused, every part was
+// read, the relayer is allowed on the registry and can pay for at least one
+// more settle. Judgement thresholds (settles left under 50, queue age, index
+// lag, cron failures) stay the owner page's warnings. Both keep HTTP 200.
+//
+// Nothing here reads a secret: the relayer address is the deployment's public
+// one (scripts/vercel-secrets.mjs refuses a relayer key for any other
 // address), and chain reads go through the server's public provider.
 
 import { ethers } from 'ethers';
@@ -22,10 +31,21 @@ import { ensureSchema } from '../neon/migrations.mjs';
 import { CRON_NAMES, readCronRuns } from './cron-runs.mjs';
 
 export const HEALTH_CACHE_CONTROL = 'public, s-maxage=30, stale-while-revalidate=60';
-// Gas one submitVerifiedSession is budgeted at for the settles-left estimate.
+// Gas one submitVerifiedSession is budgeted at for the settles-left estimate
+// (balance / (475k gas x base fee), rounded down). The relayer refuses to send
+// unless it holds gasLimit x maxFeePerGas (about twice the base fee plus the
+// tip, server/settle/relayer.mjs), so settles stop a little before the
+// estimate reaches 0; the owner page says so.
 export const SETTLE_GAS_ESTIMATE = 475_000n;
+// Each part's read deadline. The two parts run in parallel, and even run back
+// to back they stay well inside vercel.json's maxDuration for api/health.mjs
+// (15 s), so a hung read is a degraded 200, never a 504
+// (tests/vercel-routing.test.mjs pins this).
 export const HEALTH_DB_TIMEOUT_MS = 4_000;
 export const HEALTH_CHAIN_TIMEOUT_MS = 4_000;
+// Dead letters verified this recently can still be requeued
+// (server/settle/store.mjs requeueDeadLetters, the D10 stale window).
+export const REQUEUE_WINDOW_DAYS = 7;
 // The fixed vocabulary of degradedParts.
 export const HEALTH_PARTS = Object.freeze(['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-address', 'relayer-balance', 'relayer-allowed']);
 
@@ -67,10 +87,13 @@ function nonNegativeInt(value) {
 }
 
 // Settle queue counts by status (§3.3): failed rows that will retry are
-// `failed`, dead letters (failed with no next attempt) are `dead`. The oldest
-// unconfirmed row is the oldest one still being worked on (dead letters wait
-// for the operator and are counted, not aged). One statement, on the vs_queue
-// partial index; int4 and text columns only (A15).
+// `failed`, dead letters (failed with no next attempt) are `dead`, and
+// `deadRequeueable` is the part of `dead` that scripts/requeue-dead-letters.mjs
+// can still requeue (source 'settle', verified in the last 7 days; older ones
+// are permanent, so only these are worth a warning). The oldest unconfirmed
+// row is the oldest one still being worked on (dead letters wait for the
+// operator and are counted, not aged). One statement, on the vs_queue partial
+// index; int4 and text columns only (A15).
 export async function readQueueHealth(db, { nowMs }) {
   const rows = await db.query(
     `SELECT count(*) FILTER (WHERE status = 'pending')::int AS pending,
@@ -78,6 +101,8 @@ export async function readQueueHealth(db, { nowMs }) {
             count(*) FILTER (WHERE status = 'submitted')::int AS submitted,
             count(*) FILTER (WHERE status = 'failed' AND next_attempt_at IS NOT NULL)::int AS failed,
             count(*) FILTER (WHERE status = 'failed' AND next_attempt_at IS NULL)::int AS dead,
+            count(*) FILTER (WHERE status = 'failed' AND next_attempt_at IS NULL AND source = 'settle'
+                             AND verified_at >= $1::timestamptz - interval '${REQUEUE_WINDOW_DAYS} days')::int AS dead_requeueable,
             coalesce(floor(extract(epoch FROM ($1::timestamptz
                  - min(verified_at) FILTER (WHERE status <> 'failed' OR next_attempt_at IS NOT NULL))))::bigint::text, '') AS oldest_age_seconds
        FROM verified_sessions
@@ -92,6 +117,7 @@ export async function readQueueHealth(db, { nowMs }) {
     submitted: nonNegativeInt(row.submitted) ?? 0,
     failed: nonNegativeInt(row.failed) ?? 0,
     dead: nonNegativeInt(row.dead) ?? 0,
+    deadRequeueable: nonNegativeInt(row.dead_requeueable) ?? 0,
     oldestUnconfirmedAgeSeconds: Number.isFinite(age) ? age : null,
   };
 }
@@ -187,24 +213,31 @@ export async function collectHealth(deps, { dbTimeoutMs = HEALTH_DB_TIMEOUT_MS, 
   const balance = chain.balance.ok ? bigintOrNull(chain.balance.value) : null;
   const cursorBlock = database.cursor.ok ? database.cursor.value : null;
   const settlesLeft = balance !== null && baseFee !== null && baseFee > 0n ? balance / (SETTLE_GAS_ESTIMATE * baseFee) : null;
+  // With no estimate (a zero base fee) only an empty balance is known to stop settles.
+  const funded = balance !== null && (settlesLeft !== null ? settlesLeft > 0n : balance > 0n);
+  const allowed = chain.allowed.ok ? chain.allowed.value === true : null;
 
-  const degradedParts = [...(relayer ? [] : ['relayer-address']), ...database.parts, ...chain.parts];
+  // A readable head without a base fee is a failed base-fee read.
+  const degradedParts = [...(relayer ? [] : ['relayer-address']), ...database.parts, ...chain.parts, ...(block && baseFee === null ? ['chain-head'] : [])];
   const ordered = HEALTH_PARTS.filter((part) => degradedParts.includes(part));
+  const settlementReady = config.settlementReady === true;
+  const paused = config.paused === true;
   return {
     ok: true,
+    healthy: settlementReady && !paused && ordered.length === 0 && allowed === true && funded,
     version: SITE_VERSION,
     checkedAt: new Date(nowMs).toISOString(),
-    settlementReady: config.settlementReady === true,
-    paused: config.paused === true,
+    settlementReady,
+    paused,
     degraded: ordered.length > 0,
     degradedParts: ordered,
     relayer: {
       address: relayer,
       balanceWei: balance === null ? null : balance.toString(),
-      allowed: chain.allowed.ok ? chain.allowed.value === true : null,
+      allowed,
       estimatedSettlesLeft: settlesLeft === null ? null : Number(settlesLeft),
     },
-    queue: database.queue ?? { pending: null, signed: null, submitted: null, failed: null, dead: null, oldestUnconfirmedAgeSeconds: null },
+    queue: database.queue ?? { pending: null, signed: null, submitted: null, failed: null, dead: null, deadRequeueable: null, oldestUnconfirmedAgeSeconds: null },
     index: {
       cursorBlock,
       headBlock,

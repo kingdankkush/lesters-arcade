@@ -18,8 +18,9 @@ import { fixtureEnv, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE } from './helpers/s
  * relayer's public address, balance, allowance and estimated settles left,
  * the settle queue by status, the index lag, each cron's last outcome and the
  * base fee. Every read has a short deadline; a failed part is null with
- * degraded: true, never a 500. It is edge-cached for 30 s and rejects any
- * query parameter. Handler tests start from an unmigrated PGlite (A34).
+ * degraded: true, never a 500. `ok` is the envelope flag; `healthy` is the
+ * monitor boolean. It is edge-cached for 30 s and rejects any query
+ * parameter. Handler tests start from an unmigrated PGlite (A34).
  */
 
 const NOW = Date.parse('2026-09-24T18:00:00.000Z');
@@ -36,7 +37,7 @@ const DEPLOYED = Object.freeze({
 const RPC_WITH_KEY = 'https://liteforge.rpc.example/v1/rk9-health-secret-key';
 const NEON_PASSWORD = `npg_health_${'Zq7'.repeat(3)}`;
 const registryIface = new ethers.Interface(SCORE_REGISTRY_ABI);
-const BODY_KEYS = ['ok', 'version', 'checkedAt', 'settlementReady', 'paused', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei'];
+const BODY_KEYS = ['ok', 'healthy', 'version', 'checkedAt', 'settlementReady', 'paused', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei'];
 const ONE_ZKLTC = 10n ** 18n;
 const BASE_FEE = 1_500_000_000n; // 1.5 gwei
 
@@ -78,15 +79,23 @@ async function withDb(run) {
 }
 
 const minutesAgo = (minutes) => new Date(NOW - minutes * 60_000).toISOString();
+const WEEK_MINUTES = 7 * 24 * 60;
 
 test('health reports the relayer, queue, index lag, crons and base fee as aggregate facts', async () => withDb(async (db) => {
   const wallet = `0x${'c4'.repeat(20)}`;
   await seedVerifiedSession(db, { wallet, status: 'pending', verifiedAt: minutesAgo(12) });
   await seedVerifiedSession(db, { wallet, status: 'signed', verifiedAt: minutesAgo(3) });
   await seedVerifiedSession(db, { wallet, status: 'submitted', verifiedAt: minutesAgo(2) });
+  // Unequal counts, so swapping the retrying and dead-letter filters, or
+  // counting a dead letter twice, changes the answer: 2 retrying, 3 dead of
+  // which 2 can still be requeued (verified within 7 days).
   await seedVerifiedSession(db, { wallet, status: 'failed', verifiedAt: minutesAgo(5), attempts: 1, lastError: 'rpc-timeout', nextAttemptAt: NOW + 60_000 });
+  await seedVerifiedSession(db, { wallet, status: 'failed', verifiedAt: minutesAgo(7), attempts: 0, lastError: 'relayer-underfunded', nextAttemptAt: NOW - 30_000 });
   await seedVerifiedSession(db, { wallet, status: 'failed', verifiedAt: minutesAgo(600), attempts: 3, lastError: 'session-not-paid', nextAttemptAt: null });
+  await seedVerifiedSession(db, { wallet, status: 'failed', verifiedAt: minutesAgo(WEEK_MINUTES - 1), attempts: 3, lastError: 'session-not-paid', nextAttemptAt: null });
+  await seedVerifiedSession(db, { wallet, status: 'failed', verifiedAt: minutesAgo(WEEK_MINUTES + 1), attempts: 0, lastError: 'stale', nextAttemptAt: null });
   await seedVerifiedSession(db, { wallet, status: 'confirmed', verifiedAt: minutesAgo(900) });
+  await seedVerifiedSession(db, { wallet, status: 'confirmed', source: 'chain-index', verifiedAt: minutesAgo(30) });
   await db.query("INSERT INTO indexer_state (stream, last_block) VALUES ('litvm-4441', 54229000)");
   await recordCronRun(db, { name: 'index-chain', ok: true, nowMs: NOW - 120_000 });
   await recordCronRun(db, { name: 'settle-retry', ok: true, nowMs: NOW - 180_000 });
@@ -103,6 +112,7 @@ test('health reports the relayer, queue, index lag, crons and base fee as aggreg
   assert.equal(expectedLeft, 1403, '1 zkLTC / (475k gas x 1.5 gwei), rounded down');
   assert.deepEqual(response.body, {
     ok: true,
+    healthy: true,
     version: SITE_VERSION,
     checkedAt: '2026-09-24T18:00:00.000Z',
     settlementReady: true,
@@ -110,7 +120,7 @@ test('health reports the relayer, queue, index lag, crons and base fee as aggreg
     degraded: false,
     degradedParts: [],
     relayer: { address: RELAYER, balanceWei: ONE_ZKLTC.toString(), allowed: true, estimatedSettlesLeft: expectedLeft },
-    queue: { pending: 1, signed: 1, submitted: 1, failed: 1, dead: 1, oldestUnconfirmedAgeSeconds: 720 },
+    queue: { pending: 1, signed: 1, submitted: 1, failed: 2, dead: 3, deadRequeueable: 2, oldestUnconfirmedAgeSeconds: 720 },
     index: { cursorBlock: 54_229_000, headBlock: 54_230_000, lagBlocks: 1000 },
     crons: {
       indexChain: { lastOkAt: '2026-09-24T17:58:00.000Z', lastErrorAt: null, lastErrorCode: null, runs: 1, failures: 0 },
@@ -137,8 +147,9 @@ test('the report never carries a secret, an env name or the missing list', async
   }
   const legacy = await invoke(handlerFor({ db, env: { ...env, RELAYER_PRIVATE_KEY: env.RANKED_RELAYER_PRIVATE_KEY } }), { url: '/api/health' });
   assert.equal(legacy.body.settlementReady, false, 'settlementReady is a boolean only');
+  assert.equal(legacy.body.healthy, false, 'unconfigured settlement is not healthy');
   const paused = await invoke(handlerFor({ db, env: { ...env, SETTLEMENT_PAUSED: 'true' } }), { url: '/api/health' });
-  assert.deepEqual([paused.body.settlementReady, paused.body.paused], [true, true]);
+  assert.deepEqual([paused.body.settlementReady, paused.body.paused, paused.body.healthy], [true, true, false]);
 }));
 
 test('the first request migrates an unmigrated or a version-1 database (A34)', async () => {
@@ -172,10 +183,10 @@ test('failed reads are null with degraded parts, never a 500', async () => withD
   }
   assert.equal(response.status, 200);
   assert.deepEqual(logged, [], 'a degraded part is not an internal error');
-  assert.equal(response.body.degraded, true);
+  assert.deepEqual([response.body.ok, response.body.degraded, response.body.healthy], [true, true, false], 'still a 200 report, but not healthy');
   assert.deepEqual(response.body.degradedParts, ['queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
   assert.deepEqual(response.body.relayer, { address: RELAYER, balanceWei: null, allowed: null, estimatedSettlesLeft: null });
-  assert.deepEqual(response.body.queue, { pending: null, signed: null, submitted: null, failed: null, dead: null, oldestUnconfirmedAgeSeconds: null });
+  assert.deepEqual(response.body.queue, { pending: null, signed: null, submitted: null, failed: null, dead: null, deadRequeueable: null, oldestUnconfirmedAgeSeconds: null });
   assert.deepEqual(response.body.index, { cursorBlock: null, headBlock: null, lagBlocks: null });
   assert.deepEqual(response.body.crons.settleRetry, { lastOkAt: null, lastErrorAt: null, lastErrorCode: null, runs: null, failures: null });
   assert.equal(response.body.baseFeeGwei, null);
@@ -183,7 +194,7 @@ test('failed reads are null with degraded parts, never a 500', async () => withD
 
   // One failing read keeps every other field.
   const partial = await invoke(handlerFor({ db, provider: fakeProvider({ fail: ['getBalance'] }) }), { url: '/api/health' });
-  assert.deepEqual(partial.body.degradedParts, ['relayer-balance']);
+  assert.deepEqual([partial.body.degradedParts, partial.body.healthy], [['relayer-balance'], false]);
   assert.deepEqual(partial.body.relayer, { address: RELAYER, balanceWei: null, allowed: true, estimatedSettlesLeft: null });
   assert.equal(partial.body.baseFeeGwei, 1.5);
   assert.equal(partial.body.queue.pending, 0);
@@ -212,7 +223,7 @@ test('reads that hang are cut off at their deadline', async () => withDb(async (
 test('with no environment at all the report fails closed', async () => {
   const noEnv = await invoke(healthApi.createHandler(() => healthApi.buildDeps({}, { provider: fakeProvider({ fail: ['getBlock', 'getBalance', 'call'] }), deployment: DEPLOYED, nowMs: NOW })), { url: '/api/health' });
   assert.equal(noEnv.status, 200);
-  assert.deepEqual([noEnv.body.ok, noEnv.body.settlementReady, noEnv.body.paused, noEnv.body.degraded], [true, false, false, true]);
+  assert.deepEqual([noEnv.body.ok, noEnv.body.healthy, noEnv.body.settlementReady, noEnv.body.paused, noEnv.body.degraded], [true, false, false, false, true], 'ok is the envelope flag; healthy is what a monitor reads');
   assert.deepEqual(noEnv.body.degradedParts, ['database', 'queue', 'index-cursor', 'crons', 'chain-head', 'relayer-balance', 'relayer-allowed']);
 
   const undeployed = await invoke(healthApi.createHandler(() => healthApi.buildDeps({}, { provider: fakeProvider(), deployment: { ...DEPLOYED, status: 'predicted' }, nowMs: NOW })), { url: '/api/health' });
@@ -232,11 +243,35 @@ test('with no environment at all the report fails closed', async () => {
 
 test('settles-left rounds down and a zero base fee gives no estimate', async () => withDb(async (db) => {
   const tight = await invoke(handlerFor({ db, provider: fakeProvider({ balance: (SETTLE_GAS_ESTIMATE * BASE_FEE * 49n) + (SETTLE_GAS_ESTIMATE * BASE_FEE) - 1n }) }), { url: '/api/health' });
-  assert.equal(tight.body.relayer.estimatedSettlesLeft, 49);
+  assert.deepEqual([tight.body.relayer.estimatedSettlesLeft, tight.body.healthy], [49, true], 'a low estimate is the owner page warning, not unhealthy');
   const free = await invoke(handlerFor({ db, provider: fakeProvider({ baseFee: 0n }) }), { url: '/api/health' });
-  assert.deepEqual([free.body.relayer.estimatedSettlesLeft, free.body.baseFeeGwei, free.body.degraded], [null, 0, false]);
+  assert.deepEqual([free.body.relayer.estimatedSettlesLeft, free.body.baseFeeGwei, free.body.degraded, free.body.healthy], [null, 0, false, true]);
   const notAllowed = await invoke(handlerFor({ db, provider: fakeProvider({ allowed: false, head: 10 }) }), { url: '/api/health' });
-  assert.equal(notAllowed.body.relayer.allowed, false);
+  assert.deepEqual([notAllowed.body.relayer.allowed, notAllowed.body.degraded, notAllowed.body.healthy], [false, false, false]);
+}));
+
+test('an empty relayer is never healthy, with or without an estimate', async () => withDb(async (db) => {
+  const short = await invoke(handlerFor({ db, provider: fakeProvider({ balance: (SETTLE_GAS_ESTIMATE * BASE_FEE) - 1n }) }), { url: '/api/health' });
+  assert.deepEqual([short.body.relayer.estimatedSettlesLeft, short.body.degraded, short.body.healthy], [0, false, false]);
+  const one = await invoke(handlerFor({ db, provider: fakeProvider({ balance: SETTLE_GAS_ESTIMATE * BASE_FEE }) }), { url: '/api/health' });
+  assert.deepEqual([one.body.relayer.estimatedSettlesLeft, one.body.healthy], [1, true]);
+  // A zero base fee gives no estimate; an empty balance still stops every priced send.
+  const emptyFree = await invoke(handlerFor({ db, provider: fakeProvider({ baseFee: 0n, balance: 0n }) }), { url: '/api/health' });
+  assert.deepEqual([emptyFree.body.relayer.estimatedSettlesLeft, emptyFree.body.relayer.balanceWei, emptyFree.body.degraded, emptyFree.body.healthy], [null, '0', false, false]);
+}));
+
+test('a head block with no base fee is a degraded chain-head read', async () => withDb(async (db) => {
+  for (const baseFee of [null, undefined, -1n]) {
+    const provider = fakeProvider();
+    provider.getBlock = async () => ({ number: 54_230_000, timestamp: NOW / 1000, baseFeePerGas: baseFee });
+    // eslint-disable-next-line no-await-in-loop
+    const response = await invoke(handlerFor({ db, provider }), { url: '/api/health' });
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.body.degradedParts, ['chain-head'], String(baseFee));
+    assert.deepEqual([response.body.degraded, response.body.healthy, response.body.baseFeeGwei, response.body.relayer.estimatedSettlesLeft], [true, false, null, null]);
+    assert.equal(response.body.index.headBlock, 54_230_000, 'the head block number is still reported');
+    assert.equal(response.body.relayer.balanceWei, ONE_ZKLTC.toString());
+  }
 }));
 
 test('unknown query parameters and other methods are rejected before any read', async () => {
