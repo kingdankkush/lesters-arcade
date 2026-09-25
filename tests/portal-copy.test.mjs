@@ -60,7 +60,9 @@ test('every flag state provides each block the builder and the SPA render', () =
 
 test('the exported copy follows the committed settlement flags', () => {
   assert.deepEqual(PORTAL_FLAGS, { settlementLive: SETTLEMENT_LIVE, hostedProfileSync: HOSTED_PROFILE_SYNC, chikunJackpotLive: JACKPOT_LIVE });
-  assert.deepEqual(PORTAL_COPY, portalCopyFor(PORTAL_FLAGS));
+  // PORTAL_COPY leaves out only the Weekly Jackpot's builder-only live lines (FAQ, trust and llms copy,
+  // which the SPA never renders; tests/jackpot-ui-rules-page.test.mjs), so it equals the copy without them.
+  assert.deepEqual(PORTAL_COPY, portalCopyFor({ ...PORTAL_FLAGS, chikunJackpotLive: false }));
   assert.equal(PORTAL_DESCRIPTION, PORTAL_COPY.description);
   assert.equal(PORTAL_FAQ, PORTAL_COPY.faq);
   assert.equal(portalPageMeta('/').description, PORTAL_COPY.description);

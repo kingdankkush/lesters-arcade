@@ -122,11 +122,13 @@ test('the preview render keeps the preview wording and names no board period', (
     assert.match(block(pages['trust.html'], 'ranked-status'), /<code>SETTLEMENT_LIVE=false<\/code>/);
     assert.match(block(pages['trust.html'], 'ranked-storage'), /stay in this browser/);
     assert.match(pages['llms.txt'], /No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available\./);
+    // The Weekly Jackpot rules page is swept too, except its legal block: the owner's draft quoted
+    // verbatim (jackpot design §F.1) names the 0.102 Ranked price. The preview banner pays nothing.
+    assert.match(pages[JACKPOT_RULES_FILE], /The Weekly Jackpot is not running: Ranked runs are not published on LitVM yet, so no prizes are paid\./);
+    assert.doesNotMatch(pages[JACKPOT_RULES_FILE], /Soft launch/);
     for (const [name, text] of Object.entries(pages)) {
-      // The Weekly Jackpot rules page quotes the owner's legal draft verbatim (jackpot design §F.1, with
-      // the 0.102 Ranked price); it is noindex and can only go live on top of live settlement.
-      if (name === JACKPOT_RULES_FILE) continue;
-      assert.doesNotMatch(withoutModal(text), /\byearly\b|0\.102|Neon Postgres|plausibility/i, name);
+      const page = name === JACKPOT_RULES_FILE ? text.replace(/<!-- copy:jackpot-legal:start -->[\s\S]*?<!-- copy:jackpot-legal:end -->/, '') : text;
+      assert.doesNotMatch(withoutModal(page), /\byearly\b|0\.102|Neon Postgres|plausibility/i, name);
     }
   });
 });

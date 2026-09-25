@@ -2,7 +2,7 @@
 // /jackpot/chikun (design §D.4) with its legal and section guard, and the page's lazy module.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -96,6 +96,34 @@ test('the live jackpot copy: noValue, the FAQ entry, trustStatus and llmsScope',
   }
 });
 
+test('the SPA copy leaves out the jackpot live lines, which only the page builder renders', async () => {
+  // The live jackpot changes only the builder's FAQ, trust and llms copy...
+  const changed = Object.keys(jackpotLive).filter((key) => JSON.stringify(jackpotLive[key]) !== JSON.stringify(launch[key])).sort();
+  assert.deepEqual(changed, ['faq', 'llmsScope', 'trustStatus']);
+  // ...which no SPA module reads (main.js and every browser module under apps/portal/src).
+  const sources = ['apps/portal/main.js'];
+  const walk = (dir) => {
+    for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
+      const path = `${dir}/${entry.name}`;
+      if (entry.isDirectory()) { if (entry.name !== 'generated') walk(path); } else if (/\.m?js$/.test(entry.name) && path !== 'apps/portal/src/portal-content.mjs') sources.push(path);
+    }
+  };
+  walk('apps/portal/src');
+  for (const path of sources) assert.doesNotMatch(read(path), /\.(?:faq|trustStatus|llmsScope)\b|PORTAL_FAQ/, `${path} reads builder-only copy`);
+  // So the SPA's PORTAL_COPY is built without them, and a minified bundle of it carries none of their
+  // strings (they stay out of dist/main.js whatever JACKPOT_LIVE says).
+  const { build } = await import('esbuild');
+  const result = await build({
+    stdin: { contents: "import { PORTAL_COPY } from './apps/portal/src/portal-content.mjs'; globalThis.copy = PORTAL_COPY;", resolveDir: root, loader: 'js' },
+    bundle: true, minify: true, treeShaking: true, format: 'esm', write: false, logLevel: 'silent',
+  });
+  const bundle = result.outputFiles[0].text;
+  for (const text of ['Is there a jackpot?', 'The only prize is', 'after a review by a person', 'Weekly Jackpot candidates are checked', 'Soft launch', 'LEGAL']) {
+    assert.equal(bundle.includes(text), false, `the SPA bundle carries "${text}"`);
+  }
+  assert.ok(bundle.includes(SOFT_NO_VALUE), 'the flag-false honesty line stays in the SPA copy');
+});
+
 test('flag-false portal pages change only the named honesty lines', () => {
   // The committed flags keep JACKPOT_LIVE false: the committed pages equal the builder output, and the
   // only jackpot traces outside the rules page are the named lines and the hidden, empty containers.
@@ -152,8 +180,12 @@ test('the rules page is noindex and out of the sitemap until live', () => {
   assert.doesNotMatch(page, /\d[\d,]* tCHIKUN/, 'no static amount');
   const module = read('apps/portal/jackpot/chikun-rules.mjs');
   assert.doesNotMatch(module, /\.innerHTML\s*=|\beval\s*\(|new Function\s*\(|document\.write/);
-  // Page + module stay small (design §D.3: static page + module <= 10 KB, as transferred: gzip).
+  // Size. Design §D.3 budgets "static page + module <= 10 KB". The page (the 16 sections plus the
+  // verbatim §F.1 legal draft) and the module are about 18.6 KB raw: an accepted deviation recorded in the
+  // jackpot-ui handoff, not the design's meaning. This pins the transferred size (gzip) to the 10 KB row
+  // and the raw size to its current ceiling, so neither grows silently.
   assert.ok(gzipSync(page).length + gzipSync(module).length <= 10_240, 'rules page + module, gzip');
+  assert.ok(Buffer.byteLength(page) + Buffer.byteLength(module) <= 19_456, 'rules page + module, raw (19 KB ceiling; the 10 KB row is a recorded deviation)');
 });
 
 test('a live build refuses a rules page with the legal placeholder or a missing section', () => {
@@ -183,6 +215,8 @@ test('a live build refuses a rules page with the legal placeholder or a missing 
     const result = spawnSync(process.execPath, [builder, '--flags', 'jackpot', '--out', dir], { encoding: 'utf8' });
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /LEGAL-REVIEW-PENDING/);
+    // Every page renders before any is written: a refused flip leaves no half-flipped page behind.
+    assert.deepEqual(readdirSync(dir), []);
   });
   const lines = [];
   assert.equal(runPortalPagesCli(['--flags', 'jackpot'], { log: (line) => lines.push(line), error: (line) => lines.push(line) }), 1);

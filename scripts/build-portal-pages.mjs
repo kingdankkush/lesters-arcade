@@ -109,18 +109,14 @@ function renderManifest(text,copy){
 // during npm test while other test files read the same pages, and an in-place
 // rewrite would briefly expose a truncated file to them. `sources` replaces a source file's text by its
 // path (tests only: a fixture rules template with reviewed legal text shows the live path).
+// Every page renders in memory first and is written only once all of them rendered, so a guard that
+// throws (the live rules page's legal and section checks) leaves no page half-flipped.
 export function buildPortalPages({flags,outDir=portal,sources={}}={}){
   const resolved=resolvePortalFlags(flags);
   const copy=portalCopyFor(resolved);
   const rules=jackpotRulesCopy(resolved);
-  const write=(name,text)=>{
-    const target=resolve(outDir,name);
-    let current=null;
-    try{current=readFileSync(target,'utf8');}catch{}
-    if(current!==text)writeFileSync(target,text);
-  };
-  mkdirSync(resolve(outDir,'discover'),{recursive:true});
-  mkdirSync(resolve(outDir,'jackpot'),{recursive:true});
+  const pages=new Map();
+  const write=(name,text)=>pages.set(name,text);
   const home=renderHome(readFileSync(resolve(portal,'index.html'),'utf8'),copy);
   write('index.html',home);
   let catalog=home.replace('data-step="wallet-splash"','data-step="cabinet-select"')
@@ -152,6 +148,14 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
   // policy; this adds only sitemap discovery, no training/search bot directives.
   write('robots.txt','Sitemap: https://lestersarcade.io/sitemap.xml\n');
   write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)"+(rules.live?"\n- [Weekly Jackpot rules](https://lestersarcade.io"+JACKPOT_RULES_PATH+"): "+rules.description:'')+"\n\n## Current scope\n"+copy.llmsScope+"\n");
+  mkdirSync(resolve(outDir,'discover'),{recursive:true});
+  mkdirSync(resolve(outDir,'jackpot'),{recursive:true});
+  for(const [name,text] of pages){
+    const target=resolve(outDir,name);
+    let current=null;
+    try{current=readFileSync(target,'utf8');}catch{}
+    if(current!==text)writeFileSync(target,text);
+  }
   return urls;
 }
 

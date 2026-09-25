@@ -80,9 +80,26 @@ const joinList = items => items.length < 3 ? items.join(' and ') : items.slice(0
 // preview (profile sync only) and launch (both true). chikunJackpotLive adds the Weekly
 // Jackpot's live statements, only on top of live settlement (JACKPOT_LIVE => SETTLEMENT_LIVE).
 export function portalCopyFor({ settlementLive = false, hostedProfileSync = false, chikunJackpotLive = false } = {}) {
+  return siteCopy(settlementLive, hostedProfileSync, settlementLive === true && chikunJackpotLive === true ? jackpotLiveCopy() : null);
+}
+
+// The Weekly Jackpot's live statements (design §D.6): the live noValue, the FAQ entry and one sentence
+// each for trustStatus and llmsScope. Only the page builder renders the FAQ, trust and llms copy, and
+// only it calls portalCopyFor, so esbuild leaves this function (and its strings) out of the SPA bundle:
+// PORTAL_COPY below is built without it.
+function jackpotLiveCopy() {
+  const pays = `The ${JACKPOT_NAME} pays the best verified Ranked Chikun's Escape score of each funded week in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value, after a review by a person`;
+  return {
+    noValue: `Testnet zkLTC has no value. The only prize is the ${JACKPOT_NAME}, paid in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value; see the rules.`,
+    faq: ['Is there a jackpot?', `Yes. ${pays}. Entry fees do not fund the prize. The rules are at lestersarcade.io${JACKPOT_RULES_URL_PATH}.`],
+    trust: ' Weekly Jackpot candidates are checked automatically and reviewed by a person before any payout, and every review decision is published on LitVM.',
+    scope: `${pays}; its rules are at https://lestersarcade.io${JACKPOT_RULES_URL_PATH}.`,
+  };
+}
+
+function siteCopy(settlementLive, hostedProfileSync, jackpot) {
   const live = settlementLive === true;
   const hosted = live || hostedProfileSync === true;
-  const jackpot = live && chikunJackpotLive === true;
   const { feeZkLtc: fee, reserveZkLtc: reserve, totalZkLtc: total, developerPercent: developer, arcadePercent: arcade } = RANKED_LAUNCH_TERMS;
   const games = "Play Hard Money Heroes, Chikun's Escape, and STACKED Free";
   const description = "Lester's Arcade is a browser arcade inspired by Litecoin culture. "+games+(live
@@ -93,11 +110,7 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
   const retries = 'If publishing fails, it retries automatically, and you can retry it from your profile.';
   // Design §D.6: while the jackpot flag is off, the soft-launch week (§E E9) may pay a test prize, so
   // the copy never says "there are no prizes".
-  const noValue = jackpot
-    ? `Testnet zkLTC has no value. The only prize is the ${JACKPOT_NAME}, paid in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value; see the rules.`
-    : 'Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.';
-  // One sentence shared by the live FAQ entry and llmsScope (portal-content.mjs ships in the initial bundle).
-  const jackpotPays = `The ${JACKPOT_NAME} pays the best verified Ranked Chikun's Escape score of each funded week in ${JACKPOT_TEST_TOKEN_SYMBOL}, a testnet token with no value, after a review by a person`;
+  const noValue = jackpot?.noValue ?? 'Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.';
   const boards = 'Each game has global Weekly, Monthly, and All-time leaderboards that rank the best verified Ranked score of each wallet.';
   const resets = 'Weekly boards reset on Monday at 00:00 UTC and monthly boards on the 1st at 00:00 UTC.';
   const names = "You choose your display name and avatar on chain, with a small transaction you pay for. Names that break the arcade's rules are hidden on its pages by moderation.";
@@ -114,7 +127,7 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     ['Does Ranked cost money or pay prizes?', live
       ? `${entryTerms} ${noValue} Testnet entries are not refunded. Free Mode is always free.`
       : "The current Ranked preview requires no entry fee and pays no prizes. No score transaction is sent. Lester's Arcade is developing its wallet features for LitVM LiteForge testnet."],
-    ...(jackpot ? [['Is there a jackpot?', `Yes. ${jackpotPays}. Entry fees do not fund the prize. The rules are at lestersarcade.io${JACKPOT_RULES_URL_PATH}.`]] : []),
+    ...(jackpot ? [jackpot.faq] : []),
     ...(live ? [['How are Ranked runs checked and published?', "When a Ranked run ends, the arcade server checks it. Chikun's Escape and STACKED runs are replayed on the server from their recorded inputs. Hard Money Heroes runs are plausibility-checked against the game's limits; they are not replayed. The arcade's relayer then publishes the result on LitVM, and your results screen links to the transaction. "+retries]] : []),
     ['Can I play on my phone?', 'The three active games support on-screen touch controls as well as desktop input. A current browser is required. Performance varies by device; the games include settings for controls, audio, and visual effects.'],
   ];
@@ -241,7 +254,7 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
     trustStatus: Object.freeze(live ? [
       `Ranked is live on the LitVM LiteForge testnet. A Ranked run costs ${total} zkLTC: a ${fee} zkLTC entry, split ${developer}% to the game's developer and ${arcade}% to the arcade, plus a ${reserve} zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.`,
       "The arcade server checks every Ranked run before its relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed from their recorded inputs; a replay proves that a run follows the game's rules, not who played it. Hard Money Heroes runs are plausibility-checked against the game's limits and are not replayed; the check rejects impossible results but cannot prove how a run was played.",
-      `${retries} Testnet entries are not refunded. ${noValue}`+(jackpot ? ' Weekly Jackpot candidates are checked automatically and reviewed by a person before any payout, and every review decision is published on LitVM.' : ''),
+      `${retries} Testnet entries are not refunded. ${noValue}${jackpot?.trust ?? ''}`,
     ] : [
       'Live settlement is disabled in this candidate: `SETTLEMENT_LIVE=false`. Local Ranked previews and locally cached sessions are not proof of verified settlement. A connected wallet alone does not make a result official.',
     ]),
@@ -262,7 +275,7 @@ export function portalCopyFor({ settlementLive = false, hostedProfileSync = fals
       "The arcade server checks each Ranked run, then the arcade's relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed on the server; Hard Money Heroes runs are plausibility-checked, not replayed.",
       "Global Weekly, Monthly, and All-time leaderboards rank each wallet's best verified score. Achievements are recorded against the wallet on the arcade server. Display names are set on chain and can be hidden by moderation.",
       `Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. ${noValue}`,
-      ...(jackpot ? [`${jackpotPays}; its rules are at https://lestersarcade.io${JACKPOT_RULES_URL_PATH}.`] : []),
+      ...(jackpot ? [jackpot.scope] : []),
     ].join('\n') : hosted
       ? 'Wallet sign-in and online profiles are available. Ranked is a preview: runs stay in this browser, with no entry fees, prizes, or on-chain score publishing. LitVM LiteForge is a testnet.'
       : 'Profiles and Ranked preview results stay in this browser. No entry fees, prizes, global rankings, cross-device history, or on-chain score publishing are available. LitVM LiteForge is a testnet.',
@@ -306,10 +319,13 @@ export function jackpotRulesCopy({ settlementLive = false, chikunJackpotLive = f
     live,
     title: `${JACKPOT_NAME} rules`,
     description: `How the ${JACKPOT_NAME} works: who can win, how runs are checked, when prizes are paid, and what is published.`,
-    // Design §D.6: the soft-launch banner while the flag is off.
+    // Design §D.6: the soft-launch banner while the flag is off. Without live settlement (the preview
+    // render) no Ranked run is published, so nothing can be paid and the banner says so.
     banner: live
       ? `The Weekly Jackpot runs on the LitVM LiteForge testnet. Prizes are paid in ${token}, a testnet token with no value.`
-      : `Soft launch: test prizes in ${token}, a token with no value, may be paid to the week's top eligible Ranked Chikun player. Every payout is reviewed by hand.`,
+      : settlementLive === true
+        ? `Soft launch: test prizes in ${token}, a token with no value, may be paid to the week's top eligible Ranked Chikun player. Every payout is reviewed by hand.`
+        : 'The Weekly Jackpot is not running: Ranked runs are not published on LitVM yet, so no prizes are paid.',
     sections: Object.freeze({
       what: section('What it is',
         `The ${JACKPOT_NAME} is a weekly high-score prize for Ranked Chikun's Escape. Each week, the eligible run with the best verified score wins that week's funded prize.`,
@@ -361,8 +377,10 @@ export function jackpotRulesCopy({ settlementLive = false, chikunJackpotLive = f
 }
 
 // The copy for the committed flags. PORTAL_DESCRIPTION and PORTAL_FAQ keep
-// their names for the builder and the SPA.
-export const PORTAL_COPY = portalCopyFor(PORTAL_FLAGS);
+// their names for the builder and the SPA. It never carries the Weekly Jackpot's live statements
+// (jackpotLiveCopy), which only the builder renders (faq, trustStatus, llmsScope): the SPA reads none
+// of those fields (tests/jackpot-ui-rules-page.test.mjs), and this keeps their strings out of main.js.
+export const PORTAL_COPY = siteCopy(PORTAL_FLAGS.settlementLive, PORTAL_FLAGS.hostedProfileSync, null);
 export const PORTAL_DESCRIPTION = PORTAL_COPY.description;
 export const PORTAL_FAQ = PORTAL_COPY.faq;
 
