@@ -234,7 +234,7 @@ Also close the CSS look-ahead cheat in the Chikun child (design §B.4). Everythi
 
 ## Hand-off record (2026-09-25)
 
-Code head: `a759f54f` on `fable/pd-jackpot-ui`. It contains the integration release commit `3cbd2538` (1.8.3, version-column included) and `fable/pd-jackpot-server` (`55072d09`). Both came in as merges (`9cfea667`, `760d31cd`, `a759f54f`), not as a rebase, because pushed history must not be rewritten. `JACKPOT_LIVE` is committed `false`, and the rules page keeps the design §F.1 legal draft verbatim with its `LEGAL-REVIEW-PENDING` comment.
+Code head: `6e782161` on `fable/pd-jackpot-ui` (the finding-23 repair on top of `a759f54f`; see the finding table and the repair re-check below). It contains the integration release commit `3cbd2538` (1.8.3, version-column included) and `fable/pd-jackpot-server` (`55072d09`). Both came in as merges (`9cfea667`, `760d31cd`, `a759f54f`), not as a rebase, because pushed history must not be rewritten. `JACKPOT_LIVE` is committed `false`, and the rules page keeps the design §F.1 legal draft verbatim with its `LEGAL-REVIEW-PENDING` comment.
 
 **Not all budgets are met.** Four deviations remain open (D1-D4 below) and need an owner or orchestrator decision. Until then, "Budgets are met" in the Definition of done does not hold.
 
@@ -259,7 +259,7 @@ Code head: `a759f54f` on `fable/pd-jackpot-ui`. It contains the integration rele
 | 19 | The byte record left out the shared client chunk | Fixed by this record (see the table below). |
 | 20 | An entry was not noted if the modal closed before the answer arrived | Fixed in `401fcc51`, with a test. |
 | 22 | Owner-page behaviours without tests | Fixed in `d10d1a18`: a full list of 5, the `LIST_FULL` refusal, a whole-wallet disqualify, and a simulated `TOO_LATE` refusal. `031475be` adds the 320 px layout rules. |
-| 23 | Tests depended on the host locale | Fixed in `401fcc51`. The tests build their expected ranges in the host's own format, or pass `en-US`. |
+| 23 | Tests depended on the host locale | Partly fixed in `401fcc51`: the tests build their expected ranges in the host's own format, or pass `en-US`. That was not enough for the rules page. `chikun-rules.mjs` accepted a `locale` but never passed it to its two week ranges (this week's line and the past weeks), so its live test still failed with the host's default locale forced to en-GB or de-DE. Fixed in `6e782161`: both ranges take the page's locale. The test pins the en-US ranges with an explicit `en-US` and checks that a de-DE locale reaches this week's range and every past week's range; it fails against the old module. |
 
 ### Byte deltas
 
@@ -291,16 +291,16 @@ Lazy jackpot chunks. None of them exists on the base, and none is fetched while 
 | shared `jackpot-client.mjs` + `jackpot-view.mjs` chunk | 11,807 (4,581) | no row | see D2 |
 | `jackpot-config.mjs` shared chunk | 0 | – | empty; see D4 |
 
-Rules page (`/jackpot/chikun`): `chikun.html` is 12,211 B (3,807 gzip) and `chikun-rules.mjs` is 6,424 B (2,477 gzip), 18,635 B raw (6,284 gzip) in total, against "static page + module ≤ 10 KB". **Not met**, see D1.
+Rules page (`/jackpot/chikun`): `chikun.html` is 12,211 B (3,807 gzip) and `chikun-rules.mjs` is 6,463 B (2,485 gzip), 18,674 B raw (6,292 gzip) in total, measured at `6e782161` (the locale fix added 39 B to the module), against "static page + module ≤ 10 KB". **Not met**, see D1.
 
 The owner page is not in any bundle.
 
 ### Open deviations (need an owner or orchestrator decision)
 
-- **D1. The rules page is 18,635 B raw, against a 10 KB budget.**
-  - Where the bytes go: `<main>` holds 9,912 B (the 16 sections the design requires, the §F.1 legal draft at 1,562 B, and 1,530 B of `copy:` markers the builder and the flip guard need). The page head and shell are 2,299 B. The module is 6,424 B (local times, history and contracts).
+- **D1. The rules page is 18,674 B raw, against a 10 KB budget.**
+  - Where the bytes go: `<main>` holds 9,912 B (the 16 sections the design requires, the §F.1 legal draft at 1,562 B, and 1,530 B of `copy:` markers the builder and the flip guard need). The page head and shell are 2,299 B. The module is 6,463 B (local times, history and contracts).
   - The budget cannot be met without cutting required copy.
-  - Measured as transferred, it is 6,284 B gzip. The test pins that value and a 19 KB raw ceiling; neither is the design's budget.
+  - Measured as transferred, it is 6,292 B gzip. The test pins that value and a 19 KB raw ceiling; neither is the design's budget.
 - **D2. The design has no row for the shared client (design §D.2), and each placement budgets only its own chunk.**
   - Each surface's first jackpot load also downloads the shared chunk once per page: 11,807 B (4,581 gzip).
   - Counted against every row, every row is over. For example, the entry row loads 1,276 + 11,807 = 13,083 B against its 3 KB limit.
@@ -347,3 +347,21 @@ The last browser check ran on `031475be`, the commit just before the 1.8.3 merge
 The check was not re-run on `a759f54f`, for two reasons:
 - That merge changed only integration files: the version marker, `sw.js`, and retired or regenerated asset files and manifests. None of this slice's files changed.
 - An integration gate and a Playwright perf bench were running on this machine, and browser smokes must never run in parallel.
+
+### Repair re-check on `6e782161` (finding 23)
+
+The verifier forced the default `Intl` locale to en-GB, and separately to de-DE, and the live rules-page test failed under both. `6e782161` passes the page's locale to both week ranges in `chikun-rules.mjs` and tightens the test. Results at `6e782161`:
+
+| Check | Result |
+| --- | --- |
+| New test assertions against the old module (en-US host) | fail, as expected |
+| The slice's seven test files (the five `jackpot-ui-*` suites, `owner-jackpot-page` and `chikun-stock-view`), default locale forced to en-GB, then de-DE | 50 of 50 pass under each |
+| Jackpot (UI, server, weekly, deploy tooling), owner page, Chikun, hosted, version-column, portal copy/pages/trust and ranked-results suites (29 files) | 278 tests, all pass |
+| `npm run check` | passes (994 JS modules) |
+| `npm run contracts:check` | passes |
+| `npm run build` | passes. `dist/main.js` 1,161,368 B and `chikun/game.js` 44,054 B, both unchanged. HMH initial JS + shared is 1,046,713 B, unchanged. |
+| `npm run test:release` (run after the wait rule: no other gate was running) | `PASS tests=5053 passed=5002 expected_failures=51` |
+
+The gate JSON was restored with `git checkout` and is not committed. The only size change is the rules module (+39 B; see D1).
+
+Browser check: `apps/portal` was served on `127.0.0.1:8797`, and the server was stopped afterwards. `/jackpot/chikun.html` is `noindex`, shows the local close times and "Contract: Not deployed yet.", keeps the live summary and history hidden, and makes no `/api` request. At 320 px there is no horizontal scroll. Every one of the rules page's own requests returned 200. The console errors came from other sources: the Browser pane's service-worker registration, and requests left over from an earlier session after its server had stopped.
