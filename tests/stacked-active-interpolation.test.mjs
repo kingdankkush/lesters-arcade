@@ -13,7 +13,8 @@ import { createStackedBoardView, boardCellToAuthored } from '../apps/stacked/src
 import { createStackedRenderer } from '../apps/stacked/src/render/renderer.mjs';
 import { createStackedPlaySession } from '../apps/stacked/src/play-session.mjs';
 import { PIECE_CELLS, cellsFor, collides, createStackedRuntime, replayStackedRun } from '../apps/portal/src/stacked-sim.mjs';
-import { CELL_PX } from '../apps/portal/src/stacked-contracts.mjs';
+import { BOARD_VISIBLE_ROWS, CELL_PX } from '../apps/portal/src/stacked-contracts.mjs';
+import { createBoardPulse } from '../apps/stacked/src/render/board-pulse.mjs';
 
 const geometry = Object.freeze({ PIECE_CELLS, cellsFor, collides });
 const near = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-9, `${message ?? ''} expected ${expected}, got ${actual}`);
@@ -26,7 +27,7 @@ test('TICK_MS is the fixed 60 Hz step the frame loop accumulates', () => {
 });
 
 test('a one-row gravity fall interpolates from the previous row toward the current one', () => {
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   interpolation.step(base(), after({}, { y: 16 }));
   const at = alpha => interpolation.offset(after({}, { y: 16 }), alpha, true);
   near(at(0).y, 1, 'alpha 0 renders the previous row');
@@ -37,7 +38,7 @@ test('a one-row gravity fall interpolates from the previous row toward the curre
 });
 
 test('a horizontal shift interpolates along x and soft-drop falls are capped at one cell', () => {
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   interpolation.step(base(), after({}, { x: 4 }));
   near(interpolation.offset(after({}, { x: 4 }), 0.25, true).x, -0.75, 'previous column is one cell to the left');
   near(interpolation.offset(after({}, { x: 4 }), 0.25, true).y, 0);
@@ -60,19 +61,19 @@ test('lock, hard drop, rotation, hold, spawn, game over and a missing piece snap
     'no piece': after({ active: null }),
   };
   for (const [name, next] of Object.entries(cases)) {
-    const interpolation = createActiveInterpolation();
+    const interpolation = createActiveInterpolation({ geometry });
     interpolation.step(base(), next);
     const offset = interpolation.offset(next, 0, true);
     assert.equal(offset.x, 0, `${name} must not slide along x`);
     assert.equal(offset.y, 0, `${name} must not slide along y`);
   }
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   interpolation.step({ ...base(), active: null }, after({}, { y: 16 }));
   assert.equal(interpolation.offset(after({}, { y: 16 }), 0, true).y, 0, 'no previous piece means nothing to travel from');
 });
 
 test('reduced motion, a foreign snapshot, alpha at or past one, and reset all yield the tick state', () => {
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   const fallen = after({}, { y: 16 });
   interpolation.step(base(), fallen);
   assert.equal(interpolation.offset(fallen, 0.25, false).y, 0, 'reduced motion switches interpolation off');
@@ -91,7 +92,7 @@ test('reduced motion, a foreign snapshot, alpha at or past one, and reset all yi
 });
 
 test('the offset is a reused object: no allocation per frame', () => {
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   const fallen = after({}, { y: 16 });
   interpolation.step(base(), fallen);
   const first = interpolation.offset(fallen, 0.2, true);
@@ -101,9 +102,39 @@ test('the offset is a reused object: no allocation per frame', () => {
   assert.equal(interpolation.offset(fallen, 0.6, true), first);
 });
 
+test('a fall whose cells would emerge from above the well rim snaps its vertical travel and keeps the horizontal one', () => {
+  const interpolation = createActiveInterpolation({ geometry });
+  // Every non-I piece spawns on rows 20 and 19; the board culls row 20. Sliding the row-20 cells down into row 19
+  // would draw them over the rim, so the fall renders on its tick rows instead.
+  const spawned = { ...base(), active: { kind: 'Z', rotation: 0, x: 3, y: 18 } };
+  const fallen = after({}, { kind: 'Z', y: 17 });
+  interpolation.step(spawned, fallen);
+  assert.equal(interpolation.offset(fallen, 0.05, true).y, 0, 'no vertical travel from above the rim');
+  const shifted = after({}, { kind: 'Z', x: 4, y: 17 });
+  interpolation.step(spawned, shifted);
+  const both = interpolation.offset(shifted, 0.5, true);
+  near(both.x, -0.5, 'the horizontal travel of the same tick is kept');
+  assert.equal(both.y, 0);
+  // A level-15 two-row fall from the same spawn lands the top cells on row 18: their capped one-cell travel starts on
+  // row 19, inside the well, so it still interpolates.
+  const fast = after({}, { kind: 'Z', y: 16 });
+  interpolation.step(spawned, fast);
+  near(interpolation.offset(fast, 0, true).y, 1, 'travel that starts on a visible row is untouched');
+  // The I piece spawns on row 19: its first fall never leaves the well.
+  const bar = { ...base(), active: { kind: 'I', rotation: 0, x: 3, y: 17 } }, barFall = after({}, { kind: 'I', y: 16 });
+  interpolation.step(bar, barFall);
+  near(interpolation.offset(barFall, 0, true).y, 1);
+  // A vertical I whose top cell sits on row 20 (near block-out) is caught too.
+  const tall = { ...base(), active: { kind: 'I', rotation: 1, x: 3, y: 17 } }, tallFall = after({}, { kind: 'I', rotation: 1, y: 16 });
+  interpolation.step(tall, tallFall);
+  assert.equal(interpolation.offset(tallFall, 0, true).y, 0);
+  assert.throws(() => createActiveInterpolation(), TypeError, 'the rim rule needs the canonical piece geometry');
+  assert.throws(() => createActiveInterpolation({ geometry: {} }), TypeError);
+});
+
 test('canonical runtime snapshots produce the same deltas and snaps as the synthetic ones', () => {
   const runtime = createStackedRuntime({ seed: 0x51a2 });
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   let before = runtime.snapshot();
   let next = runtime.step(2); // right
   interpolation.step(before, next);
@@ -113,16 +144,24 @@ test('canonical runtime snapshots produce the same deltas and snaps as the synth
   interpolation.step(before, next);
   assert.notEqual(next.active.rotation, before.active.rotation);
   assert.equal(interpolation.offset(next, 0, true).x + interpolation.offset(next, 0, true).y, 0, 'a real rotation snaps');
-  // Level-1 gravity crosses one row every 61 ticks: the fall tick interpolates, the ticks around it do not.
+  // Level-1 gravity crosses one row every 61 ticks: the ticks around a fall never travel. The rotated Z still has a
+  // cell on row 20, so its first fall would draw that cell sliding in over the rim and snaps vertically; the second
+  // fall, entirely inside the well, interpolates.
   let falls = 0;
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 130; i++) {
     before = next; next = runtime.step(0);
     interpolation.step(before, next);
     const offset = interpolation.offset(next, 0, true);
-    if (next.active.y === before.active.y - 1) { falls++; near(offset.y, 1, `fall at tick ${next.tick}`); }
+    if (next.active.y === before.active.y - 1) {
+      falls++;
+      if (falls === 1) {
+        assert.ok(cellsFor(before.active.kind, before.active.rotation, before.active.x, before.active.y).some(([, y]) => y >= BOARD_VISIBLE_ROWS), 'the first fall starts with a cell above the rim');
+        assert.equal(offset.y, 0, `first fall at tick ${next.tick} snaps instead of crossing the rim`);
+      } else near(offset.y, 1, `fall at tick ${next.tick}`);
+    }
     else assert.equal(offset.y, 0, `no travel at tick ${next.tick}`);
   }
-  assert.equal(falls, 1);
+  assert.equal(falls, 2);
   before = next; next = runtime.step(128); // hold
   interpolation.step(before, next);
   assert.equal(next.holdsUsed, before.holdsUsed + 1);
@@ -143,7 +182,7 @@ test('interpolating never changes the inputs, evidence, replay or result of a ru
   const masks = Array.from({ length: 900 }, (_, i) => i % 97 === 0 ? 8 : i % 31 === 0 ? 16 : i % 13 === 0 ? 2 : i % 17 === 0 ? 1 : i % 41 === 0 ? 128 : i % 7 === 0 ? 4 : 0);
   const drive = withInterpolation => {
     const run = createStackedPlaySession({ seed: 4242, mode: 'ranked' });
-    const interpolation = withInterpolation ? createActiveInterpolation() : null;
+    const interpolation = withInterpolation ? createActiveInterpolation({ geometry }) : null;
     const chain = [];
     for (const mask of masks) {
       if (run.snapshot.terminal) break;
@@ -254,6 +293,43 @@ test('frame(snapshot, now, settings, alpha) interpolates the active piece record
   renderer.frame(next, 183, settings, 0);
   assert.deepEqual(renderer.board.activeOffset, { x: 0, y: 0 }, 'undo resets the pending delta with the effects');
   renderer.destroy();
+});
+
+test('the first fall of a freshly spawned piece never draws an active cell or its halo above the well rim', () => {
+  const app = fakeApp(), stageElement = { dataset: {} };
+  const renderer = createStackedRenderer({ app, stageElement, geometry, ...constructors, isMobile: () => false });
+  const runtime = createStackedRuntime({ seed: 0x51a2 });
+  const settings = settingsFor(false);
+  const rows = piece => cellsFor(piece.kind, piece.rotation, piece.x, piece.y).map(([, y]) => y);
+  let before = runtime.snapshot(), next = before;
+  assert.equal(before.active.kind, 'Z');
+  assert.ok(rows(before.active).some(y => y >= BOARD_VISIBLE_ROWS), 'the Z spawns with its top cells on row 20, which the board culls');
+  while (next.active.y === before.active.y) { before = next; next = runtime.step(0); }
+  assert.equal(next.tick, 61); assert.equal(next.active.y, before.active.y - 1);
+  // The music-reactive halo rides board.activeOffset, so it is checked against the same frames.
+  const pulse = createBoardPulse({ board: renderer.board, Graphics, geometry });
+  const pulseSettings = { ...settings, video: { ...settings.video, reactiveBoard: true, audioReactive: true, effectsIntensity: 1 }, accessibility: { ...settings.accessibility, reduceFlash: false } };
+  for (const alpha of [0.05, 0.5, 0.95]) {
+    renderer.gameplay(before, next, 100, settings);
+    renderer.frame(next, 100, settings, alpha);
+    const visuals = footprint(renderer.board.layers.activeLayer);
+    assert.equal(visuals.length, 4, 'all four cells sit on visible rows after the fall');
+    for (const [, y] of visuals) assert.ok(y >= 0, `alpha ${alpha}: an active cell was drawn above the rim at authored y ${y}`);
+    assert.deepEqual(visuals, authored(next.active), `alpha ${alpha}: the piece stays rigid on its tick rows`);
+    pulse.draw({ settings: pulseSettings, signals: { level: 0.5, beat: 1, high: 0 }, palette: {}, snapshot: next });
+    const halos = pulse.halos.filter(halo => halo.visible);
+    assert.equal(halos.length, 4);
+    for (const halo of halos) assert.ok(halo.position.y >= 0, `alpha ${alpha}: the halo overshot the rim at authored y ${halo.position.y}`);
+  }
+  // The next fall, entirely inside the well, still interpolates.
+  do { before = next; next = runtime.step(0); } while (next.active.y === before.active.y);
+  assert.ok(rows(before.active).every(y => y < BOARD_VISIBLE_ROWS));
+  renderer.gameplay(before, next, 200, settings);
+  renderer.frame(next, 200, settings, 0.5);
+  assert.deepEqual(footprint(renderer.board.layers.activeLayer), authored(next.active, 0, -0.5 * CELL_PX), 'a mid-well fall reads half a cell above its tick rows');
+  pulse.draw({ settings: pulseSettings, signals: { level: 0.5, beat: 1, high: 0 }, palette: {}, snapshot: next });
+  assert.deepEqual(pulse.halos.filter(halo => halo.visible).map(halo => [halo.position.x, halo.position.y]).sort((a, b) => a[0] - b[0] || a[1] - b[1]), authored(next.active, 0, -0.5 * CELL_PX), 'and the halo travels with it');
+  pulse.destroy(); renderer.destroy();
 });
 
 test('the frame loop passes accumulator / TICK_MS as alpha only while the run is stepping', async () => {

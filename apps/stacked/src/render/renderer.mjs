@@ -20,7 +20,7 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
   // Music-reactive board: frame ring and active-piece halo (owner direction 2026-09-16).
   const pulse = createBoardPulse({ board, Graphics, geometry });
   // Sub-tick travel of the active piece between the tick snapshots gameplay() sees (projection only).
-  const interpolation = createActiveInterpolation();
+  const interpolation = createActiveInterpolation({ geometry });
   const sharedHud = new Text({ text: 'RENDER-ONLY QA SCENE · AWAITING PARENT RUNTIME', style: { fill:'#9db4c8', fontFamily:'system-ui, sans-serif', fontSize:18, fontWeight:'700' } });
   sharedHud.anchor?.set?.(0.5);
   sharedHud.text='';

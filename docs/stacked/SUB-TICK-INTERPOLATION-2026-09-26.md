@@ -15,6 +15,20 @@ tick cells by the frame loop's leftover time. This is projection only.
 ## What snaps to the tick cell
 
 Lock, hard drop, rotation, hold or swap, spawn, game over and a missing piece.
+
+A fall whose cells would emerge from above the well rim snaps its vertical
+travel and keeps its horizontal travel. The board culls rows at or above
+`BOARD_VISIBLE_ROWS` (20), and every non-I piece spawns with its top cells on
+row 20, so on its first fall (y 18 to 17 at one row per tick) those cells reach
+row 19, authored y 0, and an offset of up to one cell would draw them over the
+rim stroke and the backdrop; the halo would follow. The rule in
+`active-interpolation.step()` is: if any cell of the current piece would start
+its travel on a culled row (`y + dy >= BOARD_VISIBLE_ROWS`, with `dy` the capped
+travel), `dy` is 0 for that tick. Travel that starts on a visible row is
+untouched, so the I piece (spawns on row 19) and a level-15 two-row fall whose
+capped travel starts on row 19 still interpolate. The controller therefore takes
+the canonical `geometry` (`cellsFor`) and throws without it.
+
 The ghost piece, locked cells, previews and effects never move with it.
 Reduced motion switches interpolation off and renders whole-tick steps.
 
@@ -49,10 +63,11 @@ the board rebuild while only the offset changes.
 
 ## Verification
 
-- `node --test tests/stacked-active-interpolation.test.mjs` (12 tests: alpha
-  reaches the renderer, interpolated position formula and snaps, zero-step
-  frames reuse the last snapshot, reduced motion, reused offset object,
-  canonical runtime deltas, determinism and replay proof).
+- `node --test tests/stacked-active-interpolation.test.mjs` (14 tests: alpha
+  reaches the renderer, interpolated position formula and snaps, the rim rule
+  on synthetic pieces and on the real seed `0x51a2` first fall through the real
+  renderer and halo, zero-step frames reuse the last snapshot, reduced motion,
+  reused offset object, canonical runtime deltas, determinism and replay proof).
 - `node --test tests/stacked-*.test.mjs tests/server-verify-stacked.test.mjs`.
 - `npm run check` (module and test registered in `scripts/syntax-check.mjs`).
 - `scripts/stacked-playable-browser-smoke.mjs` against a local `apps/portal`
