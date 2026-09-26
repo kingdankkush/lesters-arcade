@@ -31,12 +31,22 @@ if not body: raise ValueError('Native body mesh is missing')
 for obj in list(bpy.data.objects):
     if obj.type in {'CAMERA','LIGHT'}: bpy.data.objects.remove(obj,do_unlink=True)
 camera_data=bpy.data.cameras.new('HMH_Native_Camera'); camera=bpy.data.objects.new('HMH_Native_Camera',camera_data)
-scene.collection.objects.link(camera); camera_data.type='ORTHO'; camera_data.ortho_scale=3.8
-target=Vector((0,0,.88)); camera.location=target+Vector((0,-4,5.712))
+scene.collection.objects.link(camera); camera_data.type='ORTHO'
+# Optional per-source render contract (art wave 1). Absent keys reproduce the
+# shipped roster exactly: 55 degree pitch, ortho 3.8, enemy light energy.
+# New actors declare the 35 degree hero pitch and the hero light energy from
+# the shared rig, per LEVEL-1-DESIGN-PACKAGE 5.10 / 6. Projection-only.
+render_contract=receipt.get('renderContract',{})
+camera_data.ortho_scale=render_contract.get('cameraOrthoScale',3.8)
+pitch=math.radians(render_contract.get('cameraPitchDegrees',55))
+target=Vector((0,0,render_contract.get('cameraTargetZ',.88)))
+camera.location=target+Vector((0,-7*math.cos(pitch),7*math.sin(pitch))) if render_contract else target+Vector((0,-4,5.712))
 camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler(); scene.camera=camera
 light_rig=json.loads((ROOT/'scripts/hmh-blender/hmh-light-rig.json').read_text())
+light_family=render_contract.get('lightRigFamily','enemy')
+if light_family not in light_rig['energy']: raise ValueError('Unknown shared light-rig family: '+light_family)
 for channel,position in [('key',(-3,-4,5)),('fill',(3,-2,3)),('rim',(0,3,4))]:
-    data=bpy.data.lights.new('HMH_Native_'+channel,'AREA'); data.energy=light_rig['energy']['enemy'][channel]
+    data=bpy.data.lights.new('HMH_Native_'+channel,'AREA'); data.energy=light_rig['energy'][light_family][channel]
     data.color=light_rig['colors'][channel]; data.shape='DISK'; data.size=3
     obj=bpy.data.objects.new(data.name,data); scene.collection.objects.link(obj); obj.location=position
     obj.rotation_euler=(target-obj.location).to_track_quat('-Z','Y').to_euler()
@@ -44,7 +54,7 @@ world=bpy.data.worlds.new('HMH_Native_World'); world.use_nodes=True
 world.node_tree.nodes['Background'].inputs['Color'].default_value=(.015,.02,.04,1)
 world.node_tree.nodes['Background'].inputs['Strength'].default_value=.25; scene.world=world
 scene.render.engine='BLENDER_EEVEE'; scene.render.film_transparent=True; scene.render.dither_intensity=0
-size=512 if args.preview else 192 if receipt.get('boss') else 256
+size=512 if args.preview else render_contract.get('frameSize',192 if receipt.get('boss') else 256)
 scene.render.resolution_x=scene.render.resolution_y=size; scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG'; scene.render.image_settings.color_mode='RGBA'
 scene.render.image_settings.color_depth='8'; scene.render.image_settings.compression=20
@@ -60,8 +70,12 @@ for phase,style in phases.items():
     if obj.get('hmh_visible_phases'): obj.hide_render=phase not in obj['hmh_visible_phases'].split(',')
  if style:
     color=tuple(int(style['accent'][i:i+2],16)/255 for i in (1,3,5))+(1,)
-    node=bpy.data.materials[receipt['actorId']+'_RoleLight'].node_tree.nodes.get('Principled BSDF')
-    node.inputs['Base Color'].default_value=color; node.inputs['Emission Color'].default_value=color
+    material=bpy.data.materials[receipt['actorId']+'_RoleLight']
+    node=material.node_tree.nodes.get('Principled BSDF')
+    # Emission-led accents (art wave 1) keep their dimmed base through the phase
+    # swap; the shipped derivatives carry no property and recolour as before.
+    base_scale=material.get('hmh_accent_base_scale',1.0)
+    node.inputs['Base Color'].default_value=tuple(v*base_scale for v in color[:3])+(1,); node.inputs['Emission Color'].default_value=color
  for state,(count,fps) in clips.items():
     action=bpy.data.actions[receipt['clipActions'][state]]
     rig.animation_data.action=action

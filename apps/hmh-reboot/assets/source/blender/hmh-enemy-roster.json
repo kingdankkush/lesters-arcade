@@ -7,7 +7,8 @@
   "notes": [
     "Every actor here must read as a human survivor or a zombie. Collision radius, damage, AI and spawn behaviour come from enemy-archetypes.mjs and are never derived from this file.",
     "Actors share one rig and one body builder; identity comes from proportions, palette and a single silhouette prop so the roster stays coherent and reproducible.",
-    "Cycle 074: tell/attack poses are authored in the module named by poseAuthoring; each ordinary role carries one emissive silhouetteAccent at a role-specific height so roles separate in grayscale. Both are projection-only."
+    "Cycle 074: tell/attack poses are authored in the module named by poseAuthoring; each ordinary role carries one emissive silhouetteAccent at a role-specific height so roles separate in grayscale. Both are projection-only.",
+    "Art wave 1 (2026-09-26): the-liquidator is a human executive on his own Tripo-sourced rig (nativeSource); the zombie Bagholder-based derivative is retired. Its palette and build fields remain for the retired procedural builder only."
   ],
   "directions": [
     "south",
@@ -407,7 +408,7 @@
     },
     {
       "actorId": "the-liquidator",
-      "identityForm": "zombie",
+      "identityForm": "human",
       "silhouette": "crown",
       "boss": true,
       "build": {
@@ -417,7 +418,7 @@
         "stoop": 0.1
       },
       "palette": {
-        "skin": "#5e8570",
+        "skin": "#d8b39c",
         "primary": "#3a1128",
         "secondary": "#6d1f3f",
         "accent": "#ff496c",
@@ -445,7 +446,23 @@
       "frameSize": [
         128,
         128
-      ]
+      ],
+      "renderContract": {
+        "cameraPitchDegrees": 35,
+        "lightRigFamily": "hero",
+        "cameraOrthoScale": 4.15,
+        "cameraTargetZ": 0.88,
+        "frameSize": 192,
+        "note": "LEVEL-1-DESIGN-PACKAGE 4.1/5.10: bosses render on the hero camera (35 degrees below the horizon) with the shared light rig. Read by export-hmh-native-roster.py through the derivative source receipt; projection-only. Ortho 4.15 is the largest value whose 840 frames (three phases, six states, eight directions) shelf-pack into one 2048 px page under the 4 MiB native-atlas cap; the design size (about 90-95 world px) needs the boss-schema extension (ART-WAVE-1-20260926.md)."
+      },
+      "nativeSource": {
+        "kind": "tripo-rigged-glb-normalised",
+        "path": "apps/hmh-reboot/assets/source/models/the-liquidator/the-liquidator.glb",
+        "builder": "scripts/hmh-blender/build-hmh-tripo-native-derivative.py",
+        "targetHeight": 2.4,
+        "concept": "docs/hmh-reboot/design/CASTING-DECISIONS-20260926.md section 2.1 (redo, head 1 the Receiver)",
+        "ledger": "docs/hmh-reboot/TRIPO-SPEND-LEDGER.md"
+      }
     }
   ],
   "materialPolicy": {
