@@ -6,6 +6,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { FAUCET_CHIP_TEXT, FAUCET_LINK_TEXT, RANKED_FACTS, RANKED_WORDING } from '../apps/portal/src/ranked-facts.mjs';
+import * as fee from '../apps/portal/src/ranked-fee.mjs';
+import * as core from '../apps/portal/src/arcade-core.mjs';
 import { LITEFORGE_FAUCET_URL } from '../apps/portal/src/wallet-config.mjs';
 import {
   DEFAULT_REVENUE_SPLIT_BPS, LITVM_LITEFORGE_NETWORK, RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_WEI,
@@ -106,9 +108,10 @@ test('the canonical wording is plain: no jackpot, prizes, NFTs, dates or hype', 
   assert.equal(RANKED_WORDING.proof, "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.");
 });
 
-// fable/ranked-fee-001 made arcade-core.mjs the single source of the fee (tests/ranked-fee-source-of-truth.test.mjs):
-// the facts module reads the fee, the reserve, the split and the network from it and restates none of them.
-test('the price, the split and the network come from arcade-core, the single source of the fee', () => {
+// fable/ranked-fee-001 made one place the source of the fee (tests/ranked-fee-source-of-truth.test.mjs). That
+// place is the leaf ranked-fee.mjs, which arcade-core.mjs re-exports: the facts module reads the price from it
+// and restates no fee or reserve.
+test('the price comes from ranked-fee.mjs, the single source of the fee that arcade-core re-exports', () => {
   assert.deepEqual(
     [RANKED_FACTS.entryWei, RANKED_FACTS.publishWei, RANKED_FACTS.totalWei],
     [RANKED_ENTRY_FEE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_WEI, RANKED_ENTRY_TOTAL_WEI],
@@ -117,11 +120,22 @@ test('the price, the split and the network come from arcade-core, the single sou
     [RANKED_FACTS.entryZkLtc, RANKED_FACTS.publishZkLtc, RANKED_FACTS.totalZkLtc],
     [RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC],
   );
+  for (const name of Object.keys(fee)) assert.equal(core[name], fee[name], `arcade-core re-exports ${name} from ranked-fee.mjs`);
   assert.deepEqual([RANKED_FACTS.developerPercent * 100, RANKED_FACTS.arcadePercent * 100], [DEFAULT_REVENUE_SPLIT_BPS.dev, DEFAULT_REVENUE_SPLIT_BPS.treasury]);
   const source = readFileSync(new URL('../apps/portal/src/ranked-facts.mjs', import.meta.url), 'utf8');
-  assert.deepEqual([...source.matchAll(/^import\b[\s\S]*?from '([^']+)';/gm)].map((match) => match[1]), ['./arcade-core.mjs'], 'reads only arcade-core');
-  assert.doesNotMatch(source, /\b(?:entry|publish|total)(?:Wei|ZkLtc): ['`\d]|\b(?:developerPercent|arcadePercent|chainId): \d|faucetUrl: '/, 'no restated fee, reserve, split, chain or faucet literal');
+  assert.doesNotMatch(source, /\b(?:entry|publish|total)(?:Wei|ZkLtc): ['`\d]/, 'no restated fee or reserve literal');
   assert.doesNotMatch(source, /\b(?:window|document|process|localStorage|fetch)\b/);
-  // arcade-core imports the HMH copy sheet: the sheet must not import the facts (the cycle would read them early).
-  assert.doesNotMatch(readFileSync(new URL('../apps/portal/src/hmh-copy-sheet.mjs', import.meta.url), 'utf8'), /from '\.\/ranked-facts\.mjs'/);
+});
+
+// owner/jackpot.mjs loads wallet-auth.mjs unbundled, and arcade-core.mjs's graph imports JSON a browser cannot
+// load that way (tests/owner-jackpot-page.test.mjs): the fee, the facts and wallet-auth stay off arcade-core.
+test('wallet-auth, the facts and the fee never reach arcade-core', () => {
+  const importsOf = (file) => [...readFileSync(new URL(`../apps/portal/src/${file}`, import.meta.url), 'utf8').matchAll(/^\s*(?:import|export)\b[^;]*?\bfrom\s*'\.\/([^']+)'/gm)].map((match) => match[1]);
+  assert.deepEqual(importsOf('ranked-fee.mjs'), [], 'ranked-fee.mjs is a leaf');
+  assert.deepEqual(importsOf('ranked-facts.mjs'), ['ranked-fee.mjs']);
+  const seen = new Set();
+  const walk = (file) => { if (seen.has(file)) return; seen.add(file); importsOf(file).forEach(walk); };
+  walk('wallet-auth.mjs');
+  assert.ok(!seen.has('arcade-core.mjs'), [...seen].join(', '));
+  assert.deepEqual([...seen].sort(), ['ranked-facts.mjs', 'ranked-fee.mjs', 'wallet-auth.mjs']);
 });

@@ -10,7 +10,9 @@
 // everything here is pure so it can be unit-tested in Node and reused by both
 // the runtime and any future third-party adapter.
 
-import { RANKED_ENTRY_TOTAL_ZKLTC } from './arcade-core.mjs';
+// Leaf modules only: owner/jackpot.mjs loads this file unbundled, and arcade-core.mjs's graph
+// imports JSON a browser cannot load that way (tests/owner-jackpot-page.test.mjs).
+import { RANKED_ENTRY_TOTAL_ZKLTC } from './ranked-fee.mjs';
 import { FAUCET_LINK_TEXT } from './ranked-facts.mjs';
 
 // Shared by the browser and the server (contract A13): the server rebuilds the
@@ -222,7 +224,7 @@ export function walletErrorAction(classified, { totalZkLtc = null, balanceZkLtc 
     case 'insufficient-funds':
       return Object.freeze({
         kind,
-        // The fallback is the static total (arcade-core.mjs); the modal passes the quoted amount.
+        // The fallback is the static total (ranked-fee.mjs); the modal passes the quoted amount.
         // The faucet label names the amount per request (ranked-onboarding, 2026-09-26).
         message: `You need about ${totalZkLtc ?? RANKED_ENTRY_TOTAL_ZKLTC} zkLTC. Balance ${balanceZkLtc ?? 'unknown'}.`,
         actions: Object.freeze([Object.freeze({ id: 'faucet', label: FAUCET_LINK_TEXT }), Object.freeze({ id: 'recheck', label: 'Re-check' })]),

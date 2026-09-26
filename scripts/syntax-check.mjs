@@ -40,6 +40,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/cabinet-presentation.mjs',
   'scripts/build-portal-pages.mjs',
   'apps/portal/src/ranked-facts.mjs',
+  'apps/portal/src/ranked-fee.mjs',
   'apps/portal/src/ranked-guide-content.mjs',
   'tests/ranked-facts.test.mjs',
   'tests/ranked-guide-page.test.mjs',
