@@ -245,16 +245,17 @@ export function createAtmosphere({ makeCanvas }) {
       ctx.drawImage(s.rays, Math.round(x), Math.round(y), s.rays.width * 4, s.rays.height * 4);
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     },
-    // Time-of-day grade and transition veil on the backdrop canvas.
-    grade(bctx, bus, veil, veilTint) {
-      const g = bus.rig.grade, w = bctx.canvas.width, h = bctx.canvas.height;
+    // Time-of-day grade and transition veil on backdrop rows [y0, y1).
+    grade(bctx, bus, veil, veilTint, y0 = 0, y1 = bctx.canvas.height) {
+      const g = bus.rig.grade, w = bctx.canvas.width, h = y1 - y0;
+      if (h <= 0) return;
       bctx.globalCompositeOperation = 'source-atop';
-      if (g.w > 0.002) { bctx.fillStyle = rgba(g.W, g.w); bctx.fillRect(0, 0, w, h); }
-      if (g.a > 0.002) { bctx.fillStyle = rgba(g.D, g.a); bctx.fillRect(0, 0, w, h); }
+      if (g.w > 0.002) { bctx.fillStyle = rgba(g.W, g.w); bctx.fillRect(0, y0, w, h); }
+      if (g.a > 0.002) { bctx.fillStyle = rgba(g.D, g.a); bctx.fillRect(0, y0, w, h); }
       if (veil > 0.003) {
         const hz = bus.rig.horizon, t = veilTint;
         if (t) { veilColour[0] = (hz[0] + t[0]) / 2; veilColour[1] = (hz[1] + t[1]) / 2; veilColour[2] = (hz[2] + t[2]) / 2; }
-        bctx.fillStyle = rgba(t ? veilColour : hz, veil); bctx.fillRect(0, 0, w, h);
+        bctx.fillStyle = rgba(t ? veilColour : hz, veil); bctx.fillRect(0, y0, w, h);
       }
       bctx.globalCompositeOperation = 'source-over';
     },

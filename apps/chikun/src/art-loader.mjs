@@ -3,18 +3,28 @@
 // * Tier: t2 (2x art) when the canvas density is above 1.3, otherwise t1.
 // * Images load through Image + decode() so the service worker's cache-first
 //   image rule and the HTTP cache apply; two at a time, 12 s timeout, no retry
-//   storm. A failure affects only that asset: its layer keeps the code-drawn
-//   painter.
+//   storm. A failed sprite or light only loses that piece. The backdrop
+//   switches to art as a unit, so a failed far, mid or near strip or ground
+//   keeps the whole region on the code-drawn painters (a failed cut face only
+//   sends the running line back to the code strip).
 // * Each decoded image is prescaled ONCE into a canvas at the exact device size
 //   (pump() spends a small time budget per frame on it), then the source image
 //   is dropped. Drawing is always 1:1.
+// * A density change (rotation, resize, zoom, a mobile address bar) waits
+//   until the density has been stable for `settleMs`, then re-prescales asset
+//   by asset from the HTTP-cached sources, or switches tier. There is at most
+//   one pending job per asset, and a job is prescaled at the latest density
+//   when it lands. Until each replacement lands, the old canvas keeps drawing
+//   (scaled), so a rotation never drops the region back to the painters.
 // * At most `maxResident` regions stay resident; evicting zeroes the canvases.
 import { SCENERY_CATALOG } from './scenery-catalog.mjs';
 
 export const T2_DENSITY = 1.3;
+export const SETTLE_MS = 200;
 export const tierFor = density => density > T2_DENSITY ? 't2' : 't1';
 const TIER_SCALE = { t1: 1, t2: 2 };
 export const CORE_LAYERS = Object.freeze(['far', 'mid', 'near']);
+const same = (a, b) => Math.abs(a - b) <= 1e-3;
 
 function defaultLoadImage(url, timeoutMs) {
   return new Promise((resolve, reject) => {
@@ -40,77 +50,108 @@ function defaultMakeCanvas(w, h) {
 
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
 
-export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = defaultLoadImage, makeCanvas = defaultMakeCanvas, maxResident = 2, concurrency = 2, timeoutMs = 12000, clock = now } = {}) {
+export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = defaultLoadImage, makeCanvas = defaultMakeCanvas, maxResident = 2, concurrency = 2, timeoutMs = 12000, clock = now, settleMs = SETTLE_MS } = {}) {
   const regions = new Map();   // id -> entry
-  const queue = [];            // pending downloads: {entry, key, url}
+  const queue = [];            // jobs waiting for a download slot
   let active = 0;
-  const stats = { requested: 0, loaded: 0, failed: 0, prescaled: 0, evicted: 0, residentBytes: 0, failures: [] };
+  const stats = { requested: 0, loaded: 0, failed: 0, prescaled: 0, evicted: 0, retargets: 0, residentBytes: 0, failures: [] };
 
   function describe(id) {
     return catalog?.regions?.[id] ?? null;
   }
 
+  // Every downloadable piece of a region at a tier; the far layer and the
+  // lights ship t1 only, so they fall back to it.
   function assetsOf(desc, tier) {
+    const pick = tiers => tiers[tier] ? tier : 't1';
     const out = [];
     for (const [name, layer] of Object.entries(desc.layers)) {
-      const t = layer.tiers[tier] ?? layer.tiers.t1;
-      out.push({ key: name, src: t.src, logical: [layer.width, layer.height], scale: TIER_SCALE[layer.tiers[tier] ? tier : 't1'], kind: 'strip' });
+      const lt = pick(layer.tiers);
+      out.push({ key: name, src: layer.tiers[lt].src, tier: lt, logical: [layer.width, layer.height], scale: TIER_SCALE[lt], kind: 'strip' });
       for (const sp of layer.sprites ?? []) {
-        const st = sp.tiers[tier] ?? sp.tiers.t1;
-        out.push({ key: name + ':sprite:' + sp.id, src: st.src, logical: [sp.w, sp.h], scale: TIER_SCALE[sp.tiers[tier] ? tier : 't1'], kind: 'strip' });
+        const st = pick(sp.tiers);
+        out.push({ key: name + ':sprite:' + sp.id, src: sp.tiers[st].src, tier: st, logical: [sp.w, sp.h], scale: TIER_SCALE[st], kind: 'strip' });
       }
       if (layer.emit) {
-        const et = layer.emit.tiers[tier] ?? layer.emit.tiers.t1;
-        out.push({ key: name + '-emit', src: et.src, kind: 'emit', layer: name, scale: TIER_SCALE[layer.emit.tiers[tier] ? tier : 't1'], w: et.w, h: et.h });
+        const et = pick(layer.emit.tiers), t = layer.emit.tiers[et];
+        out.push({ key: name + '-emit', src: t.src, tier: et, kind: 'emit', layer: name, scale: TIER_SCALE[et], w: t.w, h: t.h });
       }
     }
-    if (desc.ground) out.push({ key: 'ground', src: desc.ground.tiers[tier].src, kind: 'ground', scale: TIER_SCALE[tier] });
+    if (desc.ground) {
+      const gt = pick(desc.ground.tiers);
+      out.push({ key: 'ground', src: desc.ground.tiers[gt].src, tier: gt, kind: 'ground', scale: TIER_SCALE[gt] });
+    }
     return out;
+  }
+
+  // A job is current while it is the one pending job for its asset; a job
+  // superseded by a tier switch (or by its region's eviction) is dropped when it lands.
+  const current = job => !job.entry.evicted && job.entry.pending.get(job.key) === job;
+  const release = img => { try { if (img) img.src = ''; } catch {} };
+
+  function enqueue(entry, asset) {
+    const job = { entry, key: asset.key, src: asset.src, asset, img: null };
+    entry.pending.set(asset.key, job);
+    entry.failed.delete(asset.key);
+    queue.push(job);
   }
 
   function pumpDownloads() {
     while (active < concurrency && queue.length) {
       const job = queue.shift();
-      if (job.entry.evicted) continue;
+      if (!current(job)) continue;
       active++;
       stats.requested++;
       loadImage(catalog.base + job.src, timeoutMs).then(img => {
         active--;
-        if (job.entry.evicted) { pumpDownloads(); return; }
-        job.entry.images.set(job.key, img);
-        job.entry.tasks.push(job.key);
-        stats.loaded++;
+        if (current(job)) { job.img = img; job.entry.tasks.push(job); stats.loaded++; }
+        else release(img);
         pumpDownloads();
       }, error => {
         active--;
-        job.entry.failed.add(job.key);
-        stats.failed++;
-        if (stats.failures.length < 32) stats.failures.push(`${job.entry.id}/${job.key}: ${error?.message ?? 'error'}`);
+        if (current(job)) {
+          job.entry.pending.delete(job.key);
+          job.entry.failed.add(job.key);
+          stats.failed++;
+          if (stats.failures.length < 32) stats.failures.push(`${job.entry.id}/${job.key}: ${error?.message ?? 'error'}`);
+        }
         pumpDownloads();
       });
     }
   }
 
+  // Bring a resident region to its settled density: switch tier if needed and
+  // queue every asset whose canvas does not match, unless its job is pending.
+  function retarget(entry) {
+    const tier = tierFor(entry.want);
+    if (tier !== entry.tier) { entry.tier = tier; entry.assets = assetsOf(entry.desc, tier); }
+    entry.density = entry.want;
+    stats.retargets++;
+    for (const a of entry.assets) {
+      const job = entry.pending.get(a.key);
+      if (job && job.src === a.src) continue;
+      const p = entry.prepared[a.key];
+      // Lights stay at their 1x source size whatever the density.
+      if (!job && p && p.src === a.src && (a.kind === 'emit' || same(p.density, entry.density))) continue;
+      enqueue(entry, a);
+    }
+    pumpDownloads();
+  }
+
   function request(id, density) {
     const desc = describe(id);
     if (!desc) return null;
-    const tier = tierFor(density);
     let entry = regions.get(id);
-    if (entry && entry.tier === tier) {
-      if (Math.abs(entry.density - density) > 1e-3) {
-        // Rotation or zoom: re-prescale from the (HTTP-cached) sources. The old
-        // canvases keep drawing, scaled, until each replacement is ready.
-        entry.density = density;
-        for (const a of entry.assets) queue.push({ entry, key: a.key, src: a.src });
-        pumpDownloads();
-      }
+    if (!entry) {
+      const tier = tierFor(density), at = clock();
+      entry = { id, desc, tier, density, want: density, wantAt: at, pending: new Map(), tasks: [], failed: new Set(), prepared: {}, evicted: false, requestedAt: at, assets: assetsOf(desc, tier) };
+      regions.set(id, entry);
+      for (const a of entry.assets) enqueue(entry, a);
+      pumpDownloads();
       return entry;
     }
-    if (entry) evict(id);
-    entry = { id, desc, tier, density, images: new Map(), tasks: [], failed: new Set(), prepared: {}, evicted: false, requestedAt: clock(), assets: assetsOf(desc, tier) };
-    regions.set(id, entry);
-    for (const a of entry.assets) queue.push({ entry, key: a.key, src: a.src });
-    pumpDownloads();
+    if (!same(density, entry.want)) { entry.want = density; entry.wantAt = clock(); }
+    if ((!same(entry.want, entry.density) || tierFor(entry.want) !== entry.tier) && clock() - entry.wantAt >= settleMs) retarget(entry);
     return entry;
   }
 
@@ -142,7 +183,7 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
   }
 
   function prescaleGround(entry, asset, img, d) {
-    const g = entry.desc.ground, t = g.tiers[entry.tier], s = asset.scale, pad = g.pad;
+    const g = entry.desc.ground, t = g.tiers[asset.tier], s = asset.scale, pad = g.pad;
     const bands = [];
     let bytes = 0;
     for (let i = 0; i < g.bands.length; i++) {
@@ -163,27 +204,27 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
     return { bands, density: d, bytes };
   }
 
-  // Prescale decoded images within a time budget (ms). Returns tasks done.
+  // Prescale landed images within a time budget (ms), each at its region's
+  // latest density. Returns tasks done.
   function pump(budgetMs = 2) {
     const start = clock();
     let done = 0;
     for (const entry of regions.values()) {
       while (entry.tasks.length) {
         if (done > 0 && clock() - start > budgetMs) return done;
-        const key = entry.tasks.shift();
-        const img = entry.images.get(key);
-        const asset = entry.assets.find(a => a.key === key);
-        entry.images.delete(key);
-        if (!img || !asset) continue;
+        const job = entry.tasks.shift();
+        if (!current(job)) { release(job.img); job.img = null; continue; }
+        entry.pending.delete(job.key);
+        const asset = job.asset, img = job.img;
         let prepared = null;
         try {
-          prepared = asset.kind === 'strip' ? prescaleStrip(entry, asset, img, entry.density)
-            : asset.kind === 'emit' ? prescaleEmit(entry, asset, img, entry.density)
-              : prescaleGround(entry, asset, img, entry.density);
+          prepared = asset.kind === 'strip' ? prescaleStrip(entry, asset, img, entry.want)
+            : asset.kind === 'emit' ? prescaleEmit(entry, asset, img, entry.want)
+              : prescaleGround(entry, asset, img, entry.want);
         } catch { prepared = null; }
-        if (prepared) { freePrepared(entry.prepared[key]); entry.prepared[key] = prepared; stats.prescaled++; }
-        else { entry.failed.add(key); stats.failed++; }
-        try { img.src = ''; } catch {}
+        if (prepared) { prepared.src = job.src; freePrepared(entry.prepared[job.key]); entry.prepared[job.key] = prepared; stats.prescaled++; }
+        else { entry.failed.add(job.key); stats.failed++; }
+        release(img); job.img = null;
         done++;
       }
     }
@@ -203,7 +244,9 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
     entry.evicted = true;
     for (const p of Object.values(entry.prepared)) freePrepared(p);
     entry.prepared = {};
-    entry.images.clear();
+    for (const job of entry.tasks) { release(job.img); job.img = null; }
+    entry.tasks.length = 0;
+    entry.pending.clear();
     regions.delete(id);
     stats.evicted++;
   }
@@ -238,10 +281,11 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
     failed(id, key) { return regions.get(id)?.failed.has(key) ?? false; },
     // The region's backdrop is art-ready once the three strips and the ground are prescaled.
     ready(id) { const e = regions.get(id); return Boolean(e && CORE_LAYERS.every(k => e.prepared[k]) && (!e.desc.ground || e.prepared.ground)); },
-    stale(id, density) { const e = regions.get(id); return Boolean(e && Math.abs(e.density - density) > 1e-3); },
+    // True while the region is not yet (re)prescaled for `density`.
+    stale(id, density) { const e = regions.get(id); return Boolean(e && (!same(e.density, density) || e.pending.size > 0)); },
     resident() { return [...regions.keys()]; },
     entryFor,
-    stats() { return { ...stats, resident: [...regions.keys()], residentBytes: residentBytes(), queued: queue.length, active }; },
+    stats() { return { ...stats, resident: [...regions.keys()], residentBytes: residentBytes(), queued: queue.filter(current).length, active }; },
     dispose() { for (const id of [...regions.keys()]) evict(id); queue.length = 0; },
   };
 }

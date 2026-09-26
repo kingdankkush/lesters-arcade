@@ -18,31 +18,33 @@ const VIEWS = { desktop: buildChikunViewport(1920, 1080, 2), portrait: buildChik
 const canvases = [];
 const makeCanvas = (w, h) => { const c = createRecordingCanvas(Math.max(1, Math.round(w)), Math.max(1, Math.round(h))); canvases.push(c); return c; };
 
-function artLoader({ fail = () => false } = {}) {
+function artLoader({ fail = () => false, clock, make = makeCanvas } = {}) {
   const dims = new Map();
   for (const region of Object.values(SCENERY_CATALOG.regions)) {
     for (const layer of Object.values(region.layers)) { for (const t of Object.values(layer.tiers)) dims.set(t.src, t); for (const t of Object.values(layer.emit?.tiers ?? {})) dims.set(t.src, t); for (const sp of layer.sprites ?? []) for (const t of Object.values(sp.tiers)) dims.set(t.src, t); }
     for (const t of Object.values(region.ground?.tiers ?? {})) dims.set(t.src, t);
   }
-  return createArtLoader({ makeCanvas, loadImage: url => { const src = url.slice(SCENERY_CATALOG.base.length), d = dims.get(src); return fail(src) || !d ? Promise.reject(new Error('404')) : Promise.resolve({ width: d.w, height: d.h, label: src }); } });
+  return createArtLoader({ makeCanvas: make, ...(clock ? { clock } : {}), loadImage: url => { const src = url.slice(SCENERY_CATALOG.base.length), d = dims.get(src); return fail(src) || !d ? Promise.reject(new Error('404')) : Promise.resolve({ width: d.w, height: d.h, label: src }); } });
 }
 const snapshot = tick => ({ tick, distancePixels: distanceAtTick(tick), terrain: 'grass', chikun: { x: 280, y: 690, velocityY: 0, locomotion: 'run' }, forks: [], groundCoins: [] });
 
-function frame(world, view, tick) {
+function frame(world, view, tick, { idleTime = 0, log } = {}) {
   const canvas = createRecordingCanvas(view.pixelWidth, view.pixelHeight);
-  const ctx = createRecordingContext(canvas, { transform: [view.density, 0, 0, view.density, -view.left * view.density, 0] });
+  const ctx = createRecordingContext(canvas, { transform: [view.density, 0, 0, view.density, -view.left * view.density, 0], ...(log ? { log } : {}) });
   const mark = canvases.map(c => c.getContext().log.length);
-  world.draw(ctx, snapshot(tick), { view, mode: 'ranked', idleTime: 0 });
+  world.draw(ctx, snapshot(tick), { view, mode: 'ranked', idleTime });
   drawGround(ctx, snapshot(tick), {});
   const offscreen = canvases.flatMap((c, i) => c.getContext().log.slice(mark[i] ?? 0));
   return { main: ctx.log, offscreen, ctx };
 }
 
-async function warmWorld(view, loader, tick = 1500) {
-  const world = createChikunWorld({ loader, makeCanvas });
-  for (let i = 0; i < 20; i++) { frame(world, view, tick); await flush(); }
+async function warmWorld(view, loader, tick = 1500, { clock, make = makeCanvas, idleTime = 0 } = {}) {
+  const world = createChikunWorld({ loader, makeCanvas: make, ...(clock ? { clock } : {}) });
+  for (let i = 0; i < 20; i++) { frame(world, view, tick, { idleTime }); clock?.advance(50); await flush(); }
   return world;
 }
+// A controllable clock for the loader's settle delay and the art fade-in.
+function fakeClock() { let now = 0; const clock = () => now; clock.advance = ms => { now += ms; }; return clock; }
 
 test('with art: every blit is 1:1, no blur or filters, bounded calls, no gradients once warm', async () => {
   // Farmland at noon, and the city at night (the densest lights on the loop).
@@ -137,15 +139,83 @@ test('the sky costs a bounded amount of memory at density 2', async () => {
 });
 
 test('after a rotation the previous prescale keeps drawing (scaled) until the new one lands', async () => {
-  const loader = artLoader();
-  const world = await warmWorld(VIEWS.portrait, loader, 1500);
+  const clock = fakeClock(), loader = artLoader({ clock });
+  const world = await warmWorld(VIEWS.portrait, loader, 1500, { clock });
   const rotated = buildChikunViewport(1280, 720, 1.5);
   assert.equal(loader.tier(rotated.density), loader.tier(VIEWS.portrait.density), 'same tier: a re-prescale, not a reload');
   const { offscreen, main } = frame(world, rotated, 1500);
   const fills = offscreen.filter(e => e.op === 'fillRect' && e.fill?.kind === 'pattern');
   assert.ok(fills.length >= 20, `${fills.length} ground bands still drawn`);
   assert.ok(drawImageCalls(main).some(c => c.image.label === undefined && c.dw !== c.sw), 'the cut face draws the old prescale scaled');
-  await flush(); loader.pump(1e9); await flush(); loader.pump(1e9);
+  for (let i = 0; i < 30; i++) { frame(world, rotated, 1500); clock.advance(16); await flush(); loader.pump(1e9); }
   assert.ok(Math.abs(loader.layer('farmland', 'mid').density - rotated.density) < 1e-9, 'the replacement lands');
+  world.dispose();
+});
+
+test('rotating a phone across the tier line never brings back the code-drawn painters', async () => {
+  const clock = fakeClock(), loader = artLoader({ clock });
+  const world = await warmWorld(VIEWS.portrait, loader, 1500, { clock });
+  // Portrait lands on density 2 (2x art); this landscape lands on ~0.94 (1x art).
+  const rotated = buildChikunViewport(844, 340, 3);
+  assert.notEqual(loader.tier(rotated.density), loader.tier(VIEWS.portrait.density), 'the rotation crosses the tier line');
+  const builds = world.stats().painterBuilds;
+  for (let i = 0; i < 40; i++) {
+    const { offscreen } = frame(world, rotated, 1500 + i);
+    assert.equal(loader.ready('farmland'), true, `frame ${i}: farmland stays art-ready`);
+    assert.equal(world.stats().painterBuilds, builds, `frame ${i}: a code-drawn painter was rebuilt`);
+    assert.ok(offscreen.filter(e => e.op === 'fillRect' && e.fill?.kind === 'pattern').length >= 20, `frame ${i}: ground bands drawn`);
+    clock.advance(16); await flush(); loader.pump(1e9);
+  }
+  const mid = loader.layer('farmland', 'mid');
+  assert.ok(Math.abs(mid.density - rotated.density) < 1e-9 && mid.src.includes('/t1/'), 'the 1x art lands at the landscape density');
+  world.dispose();
+});
+
+test('the ready screen at tick 0 keeps the first region\'s ground however long the session has idled', async () => {
+  const view = VIEWS.landscape, loader = artLoader();
+  const world = await warmWorld(view, loader, 0);
+  assert.equal(loader.ready('farmland'), true); assert.equal(loader.ready('forest'), true);
+  const owner = new Map();
+  for (const id of ['farmland', 'forest']) {
+    for (const b of loader.ground(id).bands) owner.set(b.canvas, id);
+    const face = loader.layer(id, 'front');
+    if (face) owner.set(face.canvas, id);
+  }
+  // idleTime * 40 px of idle scroll passes the farmland -> forest boundary (7926 px) after ~200 s.
+  for (const idleTime of [0, 180, 200, 600, 3600]) {
+    const { main, offscreen } = frame(world, view, 0, { idleTime });
+    const bands = offscreen.filter(e => e.op === 'fillRect' && e.fill?.kind === 'pattern').map(e => owner.get(e.fill.image));
+    assert.ok(bands.length >= 20, `idle ${idleTime} s: ${bands.length} band fills`);
+    assert.deepEqual([...new Set(bands)], ['farmland'], `idle ${idleTime} s: ground bands from ${[...new Set(bands)]}`);
+    const faces = drawImageCalls(main).map(c => owner.get(c.image)).filter(Boolean);
+    assert.deepEqual([...new Set(faces)], ['farmland'], `idle ${idleTime} s: cut face from ${[...new Set(faces)]}`);
+  }
+  world.dispose();
+});
+
+test('night lights stay on their own depth: each layer\'s lights are added before any nearer layer is drawn over them', async () => {
+  const shared = [];
+  const make = (w, h) => createRecordingCanvas(Math.max(1, Math.round(w)), Math.max(1, Math.round(h)), { log: shared });
+  const view = VIEWS.desktop, loader = artLoader({ make });
+  const world = await warmWorld(view, loader, 7400, { make });
+  assert.equal(loader.ready('city'), true);
+  shared.length = 0;
+  frame(world, view, 7405, { log: shared });
+  const first = img => shared.findIndex(e => e.op === 'drawImage' && e.args[0] === img);
+  const lit = img => shared.flatMap((e, i) => e.op === 'drawImage' && e.args[0] === img && e.composite === 'lighter' ? [i] : []);
+  const strip = name => loader.layer('city', name).canvas;
+  const backdrop = shared.flatMap((e, i) => e.op === 'drawImage' && e.args[0]?.width === view.pixelWidth && e.args[0]?.height === Math.ceil(414 * view.density) ? [i] : []);
+  for (const [name, nearer] of [['far', ['mid', 'near']], ['mid', ['near']]]) {
+    const em = loader.emit('city', name);
+    assert.ok(em, `the city's ${name} layer has lights`);
+    const lights = lit(em.canvas);
+    assert.ok(lights.length > 0, `${name} lights drawn at night`);
+    assert.ok(Math.min(...lights) > first(strip(name)), `${name} lights come after the ${name} strip`);
+    for (const n of nearer) {
+      const at = first(strip(n));
+      assert.ok(at >= 0 && Math.max(...lights) < at, `${name} lights are added before the ${n} strip is drawn`);
+      assert.ok(backdrop.some(i => i > at), `the ${n} strip is composited over the ${name} lights`);
+    }
+  }
   world.dispose();
 });

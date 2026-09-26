@@ -13,6 +13,7 @@ export function createSceneBus() {
     shakeX: 0, shakeY: 0,
     canvasWidth: 1280, canvasHeight: 720,
     tick: 0, time: 0, distance: 0, reduced: false,
+    seamDistance: 0,       // course distance for region seams (no idle drift)
     region: null,          // courseRegionState() result for this frame
     rig: null,             // computeLightRig() result for this frame
     transition: null,      // see parallax.mjs transitionState()

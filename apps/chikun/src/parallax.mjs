@@ -4,6 +4,13 @@
 // canvas, so fog, the time-of-day grade and the transition veil ('source-atop'
 // fills) touch backdrop pixels only; world.mjs composites it over the sky.
 //
+// Lights: when a layer has lit windows or lamps, the backdrop is composited in
+// depth groups. The group ending with that layer takes the fog still to come
+// from the nearer layers, is graded, composited and cleared, and its lights are
+// added ('lighter') straight after; the nearer layers then composite over them.
+// The lights stay ungraded (they are the light sources) and never shine through
+// a nearer building, hill or the ground in front of them.
+//
 // Depth model: horizon y = 560, running line y = 690. A layer with scroll rate r
 // stands on y = 560 + 130 r and shows strip column u = x + D r at screen x (D =
 // course distance). A region boundary at distance Db reaches Chikun (x = 280)
@@ -94,7 +101,10 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
   const emitQueue = Array.from({ length: 12 }, () => ({ region: '', layer: '', alpha: 0, scroll: 0, y: 0, period: 0, anchors: null }));
   let beam = null, beamDensity = 0;
   let emitCount = 0;
-  const stats = { painterBuilds: 0, bandFills: 0, blits: 0 };
+  const stats = { painterBuilds: 0, bandFills: 0, blits: 0, groups: 0 };
+  // Device rows of the backdrop drawn since the last group was composited.
+  const rows = { y0: Infinity, y1: -Infinity };
+  const mark = (y, h) => { if (y < rows.y0) rows.y0 = y; if (y + h > rows.y1) rows.y1 = y + h; };
 
   function painter(regionIndex, depth, density) {
     const key = regionIndex + ':' + depth;
@@ -144,16 +154,16 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       const scroll = (bus.distance * g.rate + bus.view.left - bus.shakeX * k) * d;
       const y = Math.round((g.top - BACKDROP_TOP + bus.shakeY * k) * d);
       ctx.globalAlpha = alpha * art;
-      if (Math.abs(strip.density - d) < 1e-3) stats.blits += blitPeriodic(ctx, strip.canvas, strip.w, scroll, y, 0, cw, g.rate >= 0.2);
-      else {
-        // Transient after a rotation: the old prescale drawn scaled until the new one lands.
-        const s = d / strip.density, period = strip.w * s;
-        for (let x = -((scroll % period) + period) % period; x < cw; x += period) ctx.drawImage(strip.canvas, x, y, period, strip.h * s);
-      }
-      if (g.sprites) drawSprites(ctx, bus, id, name, g, scroll, y, strip.w);
+      // 1:1 normally; after a rotation or a tier switch the old prescale is
+      // drawn scaled until its replacement lands.
+      const s = Math.abs(strip.density - d) < 1e-3 ? 1 : d / strip.density, period = strip.w * s;
+      if (s === 1) stats.blits += blitPeriodic(ctx, strip.canvas, strip.w, scroll, y, 0, cw, g.rate >= 0.2);
+      else for (let x = -((scroll % period) + period) % period; x < cw; x += period) ctx.drawImage(strip.canvas, x, y, period, strip.h * s);
+      mark(y, strip.h * s);
+      if (g.sprites) drawSprites(ctx, bus, id, name, g, scroll, y, period);
       if (emitCount < emitQueue.length && (loader.emit(id, name) || g.anchors)) {
         const e = emitQueue[emitCount++];
-        e.region = id; e.layer = name; e.alpha = alpha * art; e.scroll = scroll; e.y = y + Math.round(BACKDROP_TOP * d); e.period = strip.w; e.anchors = g.anchors ?? null;
+        e.region = id; e.layer = name; e.alpha = alpha * art; e.scroll = scroll; e.y = y + Math.round(BACKDROP_TOP * d); e.period = period; e.anchors = g.anchors ?? null;
       }
     }
     if (art < 1) {
@@ -162,7 +172,9 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
         const k = Math.max(size.rate, 0.2) * shakeK;
         const scroll = (bus.distance * size.rate + bus.view.left - bus.shakeX * k) * d;
         ctx.globalAlpha = alpha * (1 - art);
-        stats.blits += blitPeriodic(ctx, p.canvas, p.canvas.width, scroll, Math.round((size.top - BACKDROP_TOP + bus.shakeY * k) * d), 0, cw, true);
+        const y = Math.round((size.top - BACKDROP_TOP + bus.shakeY * k) * d);
+        stats.blits += blitPeriodic(ctx, p.canvas, p.canvas.width, scroll, y, 0, cw, true);
+        mark(y, p.canvas.height);
       }
     }
     ctx.globalAlpha = 1;
@@ -180,6 +192,7 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       let x = Math.round(sp.u * d) - (((scroll % period) + period) % period);
       while (x + r > 0) x -= period;
       x += period;
+      mark(y + sp.y * d - r, 2 * r);
       for (; x - r < cw; x += period) {
         ctx.save();
         ctx.translate(x, y + sp.y * d); ctx.rotate(angle);
@@ -265,6 +278,7 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       // After a rotation the old bands draw scaled until the re-prescale lands (never a hole).
       const s = Math.abs(ground.density - d) > 1e-3 ? d / ground.density : 1;
       stats.bandFills += fillPeriodicBand(ctx, bandPattern(ctx, b), b.w, scroll, y, y2 - y, Math.max(0, Math.floor(x0)), Math.min(bus.canvasWidth, Math.ceil(x1)), s);
+      mark(y, y2 - y);
     }
     ctx.globalAlpha = 1;
   }
@@ -277,8 +291,8 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       if (t.seams && rate >= TRANSITION.seamRate) {
         // Spatial seams: previous | current | next region along x.
         const toDev = x => (x - bus.view.left + bus.shakeX * Math.max(rate, 0.2)) * d;
-        const xp = Number.isFinite(t.Dprev) ? toDev(seamX(t.Dprev, bus.distance, rate)) : -Infinity;
-        const xn = toDev(seamX(t.Dnext, bus.distance, rate));
+        const xp = Number.isFinite(t.Dprev) ? toDev(seamX(t.Dprev, bus.seamDistance, rate)) : -Infinity;
+        const xn = toDev(seamX(t.Dnext, bus.seamDistance, rate));
         const a = clamp(xp, 0, cw), b = clamp(xn, 0, cw);
         if (a > 0) drawBands(ctx, bus, t.prev, i, i + 1, 1, 0, a, t);
         drawBands(ctx, bus, t.cur, i, i + 1, 1, a, b, t);
@@ -291,12 +305,30 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
     }
   }
 
-  function fog(ctx, bus, alpha, h) {
-    if (alpha <= 0.002) return;
+  // Fog on everything drawn since the last group (a 'source-atop' fill).
+  function fog(ctx, bus, alpha) {
+    if (alpha <= 0.002 || rows.y1 <= rows.y0) return;
+    const y0 = Math.max(0, Math.floor(rows.y0)), y1 = Math.min(ctx.canvas.height, Math.ceil(rows.y1));
+    if (y1 <= y0) return;
     ctx.globalCompositeOperation = 'source-atop';
     ctx.fillStyle = rgba(bus.rig.fogColor, alpha);
-    ctx.fillRect(0, 0, bus.canvasWidth, h);
+    ctx.fillRect(0, y0, bus.canvasWidth, y1 - y0);
     ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // Hand the rows drawn since the last group to `flush(y0, y1, lo, hi)`, which
+  // grades and composites them and then adds the lights of layers lo..hi.
+  function group(ctx, flush, lo, hi) {
+    let y0 = 0, y1 = 0;
+    if (rows.y1 > rows.y0) { y0 = Math.max(0, Math.floor(rows.y0)); y1 = Math.max(y0, Math.min(ctx.canvas.height, Math.ceil(rows.y1))); }
+    rows.y0 = Infinity; rows.y1 = -Infinity;
+    stats.groups++;
+    flush(y0, y1, lo, hi);
+  }
+
+  function hasLights(name) {
+    for (let i = 0; i < emitCount; i++) if (emitQueue[i].layer === name) return true;
+    return false;
   }
 
   return {
@@ -306,20 +338,29 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
     schedule(bus, t) {
       if (!loader) return;
       const ids = CHIKUN_REGIONS.map(r => r.id);
-      const seamPrevVisible = Number.isFinite(t.Dprev) && bus.distance - t.Dprev < 420 + (280 - bus.view.left);
+      const seamPrevVisible = Number.isFinite(t.Dprev) && bus.seamDistance - t.Dprev < 420 + (280 - bus.view.left);
       const keep = seamPrevVisible ? [ids[t.prev], ids[t.cur]] : [ids[t.cur], ids[t.next]];
       for (const id of keep) if (loader.has(id)) loader.request(id, bus.density);
       loader.retain(keep);
       for (let i = 0; i < CHIKUN_REGIONS.length; i++) if (loader.ready(ids[i]) && artLevel(ids[i], bus.reduced) >= 1) freePainters(i);
     },
-    draw(ctx, bus, t) {
+    // Back to front into the offscreen backdrop `ctx`. With `flush`, the
+    // backdrop is handed over in depth groups (see the header): a group ends
+    // after each layer that carries lights, and flush(y0, y1, lo, hi) must
+    // grade and composite rows [y0, y1), clear them, then draw the lights of
+    // strip layers lo..hi (drawEmissive). Without it the caller composites the
+    // whole canvas and calls drawEmissive() afterwards.
+    draw(ctx, bus, t, flush = null) {
       emitCount = 0;
-      const h = ctx.canvas.height;
+      rows.y0 = Infinity; rows.y1 = -Infinity;
       const edges = SCENERY_CATALOG.spec?.groundEdges ?? [];
       const artCur = artLevel(CHIKUN_REGIONS[t.cur].id, bus.reduced), artNext = t.mix.far > 0 || t.mix.near > 0 ? artLevel(CHIKUN_REGIONS[t.next].id, bus.reduced) : 0;
-      let band = 0;
+      const lit = Boolean(flush) && bus.rig.lightsOn > 0.01;
+      const last = STRIP_LAYERS.length - 1;
+      let band = 0, from = 0;
       const nb = Math.max(0, edges.length - 1);
-      for (const name of STRIP_LAYERS) {
+      for (let li = 0; li <= last; li++) {
+        const name = STRIP_LAYERS[li];
         const g = layerGeometry(CHIKUN_REGIONS[t.cur].id, name);
         const baseline = HORIZON_Y + (RUN_Y - HORIZON_Y) * g.rate;
         let upto = band;
@@ -328,19 +369,31 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
         const m = t.mix[name];
         if (m < 1) drawStrip(ctx, bus, t.cur, name, 1 - m, artCur);
         if (m > 0) drawStrip(ctx, bus, t.next, name, m, artNext);
-        fog(ctx, bus, bus.rig.fog[name], h);
+        fog(ctx, bus, bus.rig.fog[name]);
+        if (lit && hasLights(name) && (li < last || band < nb)) {
+          // The nearer layers' fog would have covered this group too.
+          let keep = 1;
+          for (let j = li + 1; j <= last; j++) keep *= 1 - bus.rig.fog[STRIP_LAYERS[j]];
+          fog(ctx, bus, 1 - keep);
+          group(ctx, flush, from, li);
+          from = li + 1;
+        }
       }
       if (band < nb) bandsFor(ctx, bus, t, band, nb);
+      if (flush) group(ctx, flush, from, last);
     },
-    // Lit windows and lamps, added onto the main canvas after the backdrop.
-    drawEmissive(ctx, bus) {
+    // Lit windows and lamps of strip layers lo..hi (indices into STRIP_LAYERS),
+    // added onto the main canvas once their depth group is composited.
+    drawEmissive(ctx, bus, lo = 0, hi = STRIP_LAYERS.length - 1) {
       const on = bus.rig.lightsOn;
-      if (on <= 0.01 || !loader) return 0;
+      if (on <= 0.01 || !loader || hi < lo) return 0;
       let calls = 0;
       const cw = bus.canvasWidth;
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < emitCount; i++) {
-        const e = emitQueue[i], em = loader.emit(e.region, e.layer);
+        const e = emitQueue[i], depth = PAINTER_DEPTH[e.layer];
+        if (depth < lo || depth > hi) continue;
+        const em = loader.emit(e.region, e.layer);
         if (e.anchors) calls += drawBeams(ctx, bus, e, on);
         if (!em) continue;
         const fogLeft = e.layer === 'far' ? 1 - bus.rig.fog.far - bus.rig.fog.mid : e.layer === 'mid' ? 1 - bus.rig.fog.mid - bus.rig.fog.near * 0.5 : 1 - bus.rig.fog.near;

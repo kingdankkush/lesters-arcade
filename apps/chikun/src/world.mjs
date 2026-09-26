@@ -7,8 +7,10 @@
 //   2. the parallax backdrop (Blender layers, perspective ground bands) into a
 //      transparent offscreen canvas, with per-depth fog, the time-of-day grade
 //      and the region-transition veil applied as 'source-atop' fills;
-//   3. that canvas composited over the sky, then lit windows and lamps
-//      ('lighter'), light shafts, a soft top vignette and the region title card.
+//   3. that canvas composited over the sky in depth groups: a layer with lit
+//      windows or lamps closes a group, whose lights are added ('lighter')
+//      right after it is composited, so nearer layers cover them (parallax.mjs);
+//   4. light shafts, a soft top vignette and the region title card.
 // Everything draws at the device resolution with an identity transform; the
 // art is prescaled once per density (art-loader.mjs). The code-drawn painters
 // (painters.mjs) remain the fallback while art loads or if it fails.
@@ -66,16 +68,30 @@ function debugFlag(name) {
   try { return typeof location !== 'undefined' && Boolean(new URLSearchParams(location.search).get('chikunDebug')?.split(',').includes(name)); } catch { return false; }
 }
 
-export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanvas } = {}) {
+export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanvas, clock = null } = {}) {
   loadPropArt();
   const art = loader ?? createArtLoader({ makeCanvas });
-  const parallax = createParallax({ loader: art, makeCanvas });
+  const parallax = createParallax({ loader: art, makeCanvas, ...(clock ? { clock } : {}) });
   const atmosphere = createAtmosphere({ makeCanvas });
   const state = {}, rig = createLightRig(), transition = createTransition();
   const bus = sceneBus;
   let backdrop = null, bctx = null;
   const title = { alpha: 0, name: '', detail: '', ranked: false, key: '' };
   const debugArt = debugFlag('art');
+  let frameCtx = null;
+
+  // One depth group of the backdrop (parallax.draw): grade and veil rows
+  // [y0, y1), composite them 1:1 onto the frame, clear them for the next
+  // group, then add the lights of strip layers lo..hi on top.
+  function compose(y0, y1, lo, hi) {
+    const bus = sceneBus, t = bus.transition;
+    if (y1 > y0) {
+      atmosphere.grade(bctx, bus, t.veil, t.veilTint, y0, y1);
+      frameCtx.drawImage(backdrop, 0, y0, backdrop.width, y1 - y0, 0, Math.round(BACKDROP_TOP * bus.density) + y0, backdrop.width, y1 - y0);
+      bctx.clearRect(0, y0, backdrop.width, y1 - y0);
+    }
+    parallax.drawEmissive(frameCtx, bus, lo, hi);
+  }
 
   function backdropCanvas(cw, d) {
     const h = Math.ceil((BACKDROP_BOTTOM - BACKDROP_TOP) * d);
@@ -102,14 +118,17 @@ export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanva
       const sky = chikunSkyState(time, reduced);
       courseRegionState(tick, state);
       // Parallax follows the canonical distance so the scenery speeds up with the run.
-      const distance = reduced ? 0 : (snapshot?.distancePixels ?? tick * 2.4) + (tick === 0 ? idleTime * 40 : 0);
+      // On the ready screen (tick 0) it drifts with the idle clock, but region
+      // seams always follow the course distance: the menu keeps the first region.
+      const course = reduced ? 0 : (snapshot?.distancePixels ?? tick * 2.4);
+      const distance = course + (!reduced && tick === 0 ? idleTime * 40 : 0);
       bus.frame++;
-      bus.view = view; bus.tick = tick; bus.time = time; bus.distance = distance; bus.reduced = reduced; bus.region = state; bus.art = art;
+      bus.view = view; bus.tick = tick; bus.time = time; bus.distance = distance; bus.seamDistance = course; bus.reduced = reduced; bus.region = state; bus.art = art;
       readDeviceFrame(ctx, view, bus);
       if (reduced) { bus.shakeX = 0; bus.shakeY = 0; }
       bus.tier = art.tier(bus.density);
       bus.rig = computeLightRig(sky, state, view, rig);
-      bus.transition = transitionState(state, distance, reduced, transition);
+      bus.transition = transitionState(state, course, reduced, transition);
       parallax.schedule(bus, transition);
       art.pump(2);
 
@@ -122,11 +141,10 @@ export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanva
         b.setTransform(1, 0, 0, 1, 0, 0);
         b.globalAlpha = 1; b.globalCompositeOperation = 'source-over';
         b.clearRect(0, 0, backdrop.width, backdrop.height);
-        parallax.draw(b, bus, transition);
-        atmosphere.grade(b, bus, transition.veil, transition.veilTint);
-        ctx.drawImage(backdrop, 0, Math.round(BACKDROP_TOP * bus.density));
+        frameCtx = ctx;
+        parallax.draw(b, bus, transition, compose);
+        frameCtx = null;
       }
-      parallax.drawEmissive(ctx, bus);
       atmosphere.drawRays(ctx, bus);
       if (!snapshot?.chikun?.locomotion) {
         // Floor for legacy flight snapshots; ground-world paints the canonical strip.
@@ -139,6 +157,8 @@ export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanva
       if (debugArt && typeof window !== 'undefined') window.__chikunArtStats = { ...art.stats(), tier: bus.tier, density: bus.density, parallax: { ...parallax.stats } };
     },
     regionState() { return state; },
+    // Renderer counters (painter rebuilds, blits, band fills, depth groups).
+    stats() { return { ...parallax.stats }; },
     art,
     dispose() { art.dispose(); parallax.dispose(); atmosphere.dispose(); if (backdrop) { backdrop.width = 0; backdrop.height = 0; } backdrop = null; bctx = null; },
   };

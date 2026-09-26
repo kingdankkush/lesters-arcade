@@ -4,9 +4,10 @@ keys (noon, golden hour, night, dawn) the way the runtime does, without a browse
     python scripts/build-chikun-review-plates.py [--regions farmland,forest] [--distance 3000]
 
 Uses the shipped T1 WebP layers, the catalog geometry and the runtime light rig
-(scripts/lib/chikun-rig-dump.mjs prints computeLightRig() for each key), then:
+(scripts/chikun-blender/chikun-rig-dump.mjs prints computeLightRig() for each key), then:
 sky gradient, stars, sun or moon, procedural clouds, ground bands and strips with
-per-depth fog, the time-of-day grade, lit windows, the running line's cut face,
+per-depth fog, the time-of-day grade, lit windows (composited in depth groups
+like parallax.mjs, so nearer layers cover them), the running line's cut face,
 the 1.8.2 obstacle sprites for scale, and Chikun. Each obstacle's luminance
 contrast against a 12 px ring around it is measured (target >= 3:1).
 
@@ -35,7 +36,7 @@ def catalog():
 
 
 def rigs():
-    out = subprocess.run(['node', str(ROOT / 'scripts/lib/chikun-rig-dump.mjs')], capture_output=True, text=True, check=True, cwd=ROOT)
+    out = subprocess.run(['node', str(ROOT / 'scripts/chikun-blender/chikun-rig-dump.mjs')], capture_output=True, text=True, check=True, cwd=ROOT)
     return json.loads(out.stdout)
 
 
@@ -221,8 +222,22 @@ def plate(region, layers, ground, rig, D, width, props, chikun):
             periodic(back, tile, scroll, b['y0'] - BACK_TOP)
             bi += 1
 
+    g = rig['grade']
+    order = ('far', 'mid', 'near')
+    lit = rig['lightsOn'] > 0.01
     emits = []
-    for name in ('far', 'mid', 'near'):
+
+    def compose():
+        # One depth group (parallax.mjs): grade, composite, clear, then its lights.
+        atop(back, g['W'], g['w']); atop(back, g['D'], g['a'])
+        over(canvas, back, 0, BACK_TOP)
+        back[...] = 0
+        for L, scroll, top, name in emits:
+            left_fog = {'far': 1 - fog['far'] - fog['mid'], 'mid': 1 - fog['mid'] - fog['near'] * 0.5, 'near': 1 - fog['near']}[name]
+            emit_layer(canvas, L, scroll, top, rig['lightsOn'] * max(0.2, left_fog) * {'far': 0.6, 'mid': 0.8, 'near': 1.0}[name])
+        emits.clear()
+
+    for i, name in enumerate(order):
         L = layers.get(name)
         if not L: continue
         m = L['meta']
@@ -234,15 +249,15 @@ def plate(region, layers, ground, rig, D, width, props, chikun):
             x = int(round(sp['u'] - (scroll % period) - sp['px']))
             for k in (-1, 0, 1):
                 over(back, simg, x + k * period, int(round(m['top'] - BACK_TOP + sp['y'] - sp['py'])))
-        emits.append((L, scroll, m['top'], name))
+        if L.get('emit'): emits.append((L, scroll, m['top'], name))
         atop(back, fogc, fog[name])
+        if lit and L.get('emit') and (i < len(order) - 1 or (ground and bi < len(ground))):
+            keep = 1.0
+            for later in order[i + 1:]: keep *= 1 - fog[later]
+            atop(back, fogc, 1 - keep)
+            compose()
     if ground: draw_bands(10_000)
-    g = rig['grade']
-    atop(back, g['W'], g['w']); atop(back, g['D'], g['a'])
-    over(canvas, back, 0, BACK_TOP)
-    for L, scroll, top, name in emits:
-        left_fog = {'far': 1 - fog['far'] - fog['mid'], 'mid': 1 - fog['mid'] - fog['near'] * 0.5, 'near': 1 - fog['near']}[name]
-        emit_layer(canvas, L, scroll, top, rig['lightsOn'] * max(0.2, left_fog) * {'far': 0.6, 'mid': 0.8, 'near': 1.0}[name])
+    compose()
     # Front face.
     if 'front' in layers:
         F = layers['front']

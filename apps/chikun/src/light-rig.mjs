@@ -10,7 +10,11 @@
 // of the view), matching the character's baked lighting.
 
 const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v;
+const smoothstep = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 const TAU = Math.PI * 2;
+// Day-clock altitudes (see chikunSkyState) where the sun is fully gone and the
+// moon starts to show; the gap between them keeps the two out of the sky together.
+export const SUN_GONE = -0.20, MOON_SHOWS = -0.24;
 
 // The 180 s day clock (unchanged from 1.8.2): noon at t = 0, pinned by tests.
 const mixC = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
@@ -106,10 +110,13 @@ export function computeLightRig(sky, region, view, out = createLightRig()) {
   out.fog.far = clamp(FOG_BY_DEPTH.far * regionFog, 0, 0.8); out.fog.mid = clamp(FOG_BY_DEPTH.mid * regionFog, 0, 0.6); out.fog.near = clamp(FOG_BY_DEPTH.near * regionFog, 0, 0.4);
   out.lightsOn = clamp(lights / fs); out.rimAlpha = rimAlpha / fs; out.shadowAlpha = shadowAlpha / fs; out.stars = clamp(stars / fs); out.rays = clamp(rays / fs);
   out.night = sky.night; out.day = sky.day; out.dusk = sky.dusk;
-  // Sun and moon arc through the upper-left third of the view.
+  // Sun and moon arc through the upper-left third of the view. They never
+  // share the sky: the sun has faded out (altitude SUN_GONE) before the moon
+  // starts to show (MOON_SHOWS), and it returns only after the moon has gone,
+  // so dawn and dusk never read as two suns side by side at the same height.
   const left = view?.left ?? 0, width = view?.width ?? 1280, s = Math.sin(sky.phase * TAU);
-  out.sun.x = left + width * (0.20 + 0.12 * s); out.sun.y = 390 - sky.altitude * 217; out.sun.alpha = clamp(sky.day * 1.25);
-  out.moon.x = left + width * (0.20 - 0.12 * s); out.moon.y = 390 + sky.altitude * 225; out.moon.alpha = clamp(sky.night * 1.25);
+  out.sun.x = left + width * (0.20 + 0.12 * s); out.sun.y = 390 - sky.altitude * 217; out.sun.alpha = Math.min(clamp(sky.day * 1.25), smoothstep(SUN_GONE, 0.06, sky.altitude));
+  out.moon.x = left + width * (0.20 - 0.12 * s); out.moon.y = 390 + sky.altitude * 225; out.moon.alpha = Math.min(clamp(sky.night * 1.25), smoothstep(MOON_SHOWS, -0.50, sky.altitude));
   // Buckets: gradients and colour strings are rebuilt only when these change.
   out.phaseBucket = Math.floor(clamp(sky.phase, 0, 0.999999) * PHASE_BUCKETS);
   out.blendBucket = Math.round(blend * BLEND_BUCKETS);
