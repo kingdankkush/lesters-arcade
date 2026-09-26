@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   aggregateCpuProfile,
+  aggregateHeapProfile,
   createSourceMapLookup,
   estimateTextureBytes,
   readImageDimensions,
@@ -54,6 +55,38 @@ test('cpu profile aggregation counts self time per function and inclusive time o
   assert.equal(a.totalPct, 100);
   assert.equal(result.functions[0].selfMs >= result.functions[1].selfMs, true);
   assert.equal(result.functions.some((entry) => entry.functionName === '(idle)'), false);
+});
+
+test('heap profile aggregation counts sampled bytes per function, inclusive once per stack', () => {
+  // root -> a (64) -> b (128) ; root -> a -> a (32, recursion) ; root -> (V8 API) (16)
+  const frame = (functionName, columnNumber, url = 'http://x/game.js') => ({ functionName, url, lineNumber: 0, columnNumber, scriptId: '1' });
+  const profile = {
+    head: {
+      id: 1, callFrame: frame('(root)', -1, ''), selfSize: 0, children: [
+        { id: 2, callFrame: frame('a', 10), selfSize: 64, children: [
+          { id: 3, callFrame: frame('b', 50), selfSize: 128, children: [] },
+          { id: 4, callFrame: frame('a', 10), selfSize: 32, children: [] },
+        ] },
+        { id: 5, callFrame: frame('(V8 API)', -1, ''), selfSize: 16, children: [] },
+      ],
+    },
+    samples: [],
+  };
+  const result = aggregateHeapProfile(profile, {
+    resolve: (url, line, column) => (column === 50 ? { source: 'apps/hmh-reboot/src/main.mjs', line: 7, name: 'renderWorld' } : null),
+  });
+  assert.equal(result.totalBytes, 240);
+  const a = result.functions.find((entry) => entry.functionName === 'a');
+  const b = result.functions.find((entry) => entry.functionName === 'b');
+  assert.equal(a.selfBytes, 96, 'both a frames allocate as a');
+  assert.equal(a.totalBytes, 224, 'recursive frames must not double count');
+  assert.equal(b.selfBytes, 128);
+  assert.equal(b.totalBytes, 128);
+  assert.equal(b.source, 'apps/hmh-reboot/src/main.mjs:7');
+  assert.equal(b.originalName, 'renderWorld');
+  assert.equal(b.selfPct, (128 / 240) * 100);
+  assert.deepEqual(result.functions.map((entry) => entry.functionName), ['b', 'a', '(V8 API)'], 'sorted by self bytes');
+  assert.equal(result.functions.some((entry) => entry.functionName === '(root)'), false);
 });
 
 test('cpu profile aggregation resolves minified frames through a lookup', () => {
