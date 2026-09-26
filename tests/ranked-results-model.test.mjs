@@ -269,6 +269,27 @@ test('share is enabled only once published', () => {
   assert.equal(noKey.actions.share, false);
 });
 
+// Weekly Jackpot (jackpot design §D.3): the results line's "Jackpot lead (pending)" reaches the share
+// text through the existing standingLabel, so share-links.mjs (shared with the Chikun and STACKED
+// children) stays untouched; the board rank never decides it.
+test('a standingLabel override replaces the share standing, only for a published run', () => {
+  const standing = { weekly: { rank: 3, score: 48210, sessionId32: SESSION_ID32 } };
+  const label = 'Jackpot lead (pending)';
+  assert.ok(label.length <= 24, 'fits safeShareFragment without truncation');
+  const plain = buildRankedResultsModel({ snapshot: snapshotFor('published'), context: contextFor(), standing });
+  assert.match(plain.share.text, /48,210 pts · Rank 3 this week/);
+  const jackpot = buildRankedResultsModel({ snapshot: snapshotFor('published'), context: contextFor(), standing, standingLabel: label });
+  assert.match(jackpot.share.text, /48,210 pts · Jackpot lead \(pending\)/);
+  assert.doesNotMatch(jackpot.share.text, /Rank 3/);
+  assert.equal(jackpot.standing.text, plain.standing.text, 'the screen keeps its own standing line');
+  assert.doesNotMatch(jackpot.share.text, /#/, 'no hashtag');
+  for (const empty of [null, undefined, '', 42]) assert.equal(buildRankedResultsModel({ snapshot: snapshotFor('published'), context: contextFor(), standing, standingLabel: empty }).share.text, plain.share.text);
+  for (const state of STATES.filter((value) => value !== 'published')) {
+    const model = buildRankedResultsModel({ snapshot: snapshotFor(state), context: contextFor(), standingLabel: label });
+    assert.doesNotMatch(model.share?.text ?? '', /Jackpot/, state);
+  }
+});
+
 test('NFT-flagged unlocks show no NFT wording without a token id', () => {
   const nftId = nftAchievementIds('chikun')[0];
   const plainId = catalogFor('chikun').find((entry) => !entry.nft).id;

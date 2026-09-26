@@ -1,4 +1,5 @@
 import { PORTAL_COPY, gameFor } from '../portal-content.mjs';
+import { JACKPOT_LIVE } from '../jackpot-config.mjs';
 import {
   HERO_SELECT_STAT_MAX,
   activeCarouselIndex,
@@ -26,6 +27,8 @@ export function createOfficialPlayRoutes({
   HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
   HERO_ROSTER_BASE,
   heroRotationSprite,
+  // Weekly Jackpot marquee (jackpot-ui): tests switch it on here, never by editing the flag.
+  jackpotLive = JACKPOT_LIVE,
   LESTERS_ARCADE_V2_APP_SHELL,
   loadChikunGame,
   persistArcadeStateSoon,
@@ -348,6 +351,8 @@ export function createOfficialPlayRoutes({
     };
     syncModeCard(dom.officialFreeModeButton, dom.officialFreeModeBanner, dom.officialFreeModeTitle, dom.officialFreeModeCopy, modeSelect.free);
     syncModeCard(dom.officialRankedModeButton, dom.officialRankedModeBanner, dom.officialRankedModeTitle, dom.officialRankedModeCopy, ranked);
+    // Weekly Jackpot marquee (design §D.3): lazy, Chikun only; the panel hides itself for other games.
+    if (jackpotLive) import('../jackpot/chikun-jackpot-panel.mjs').then((panel) => panel.default(dom.officialModeSelect)).catch(() => {});
 
     // Guest-aware ranked card: surface that ranked needs a wallet, but keep it
     // clickable so the tap triggers the connect flow (guest-first).

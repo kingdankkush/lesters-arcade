@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Owner · Weekly Jackpot review · Lester's Arcade</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07060f;
+      --panel: #120f24;
+      --ink: #f2efff;
+      --muted: #a79fd0;
+      --neon: #3cf2ff;
+      --pink: #ff4fd8;
+      --gold: #ffd35c;
+      --ok: #5cff9d;
+      --bad: #ff6b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% -20%, #231a52 0%, var(--bg) 60%);
+      color: var(--ink);
+      font: 15px/1.5 ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      padding: 16px 12px 48px;
+      overflow-wrap: anywhere;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      box-shadow: 0 0 24px rgba(255, 211, 92, 0.22), inset 0 0 40px rgba(255, 79, 216, 0.08);
+      padding: 16px;
+    }
+    h1 { margin: 0 0 4px; font-size: 1.3rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); text-shadow: 0 0 8px rgba(255, 211, 92, 0.5); }
+    h2 { margin: 24px 0 8px; font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--neon); }
+    h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--gold); }
+    .kicker { margin: 0 0 12px; color: var(--pink); font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    p { margin: 0 0 10px; color: var(--muted); }
+    dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 4px 12px; margin: 0 0 12px; font-size: 0.85rem; }
+    dt { color: var(--muted); }
+    dd { margin: 0; min-width: 0; }
+    a { color: var(--neon); }
+    #jo-status { min-height: 3em; margin: 0 0 12px; padding: 10px; border: 1px dashed var(--muted); border-radius: 8px; color: var(--ink); }
+    #jo-status[data-phase="error"], #jo-status[data-phase="no-wallet"], #jo-status[data-phase="undeployed"] { border-color: var(--bad); }
+    #jo-status[data-phase="wrong-chain"] { border-color: var(--gold); }
+    #jo-status[data-phase="ready"] { border-color: var(--ok); }
+    .jo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 8px; }
+    .jo-note { font-size: 0.8rem; }
+    .jo-candidate { margin: 0 0 14px; padding: 12px; border: 1px solid rgba(255, 211, 92, 0.35); border-radius: 10px; background: rgba(0, 0, 0, 0.3); }
+    .jo-codes { margin: 0; padding-left: 1.1em; }
+    .jo-timeline { display: block; width: 100%; height: 140px; margin: 8px 0; border: 1px solid rgba(60, 242, 255, 0.35); border-radius: 6px; background: #05040c; }
+    .jo-altitude { stroke: var(--neon); stroke-width: 1.2; }
+    .jo-flap { stroke: var(--muted); stroke-width: 0.6; }
+    .jo-visible { stroke: var(--gold); stroke-width: 0.8; }
+    .jo-commit { fill: var(--ok); }
+    .jo-lookahead { fill: var(--bad); }
+    .jo-fast { fill: var(--muted); }
+    .jo-fast-changed { fill: #ff9d2f; }
+    button {
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      border: 0;
+      border-radius: 8px;
+      min-height: 44px;
+      padding: 8px 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b3861f;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid var(--neon); outline-offset: 2px; }
+    input, select { font: inherit; min-height: 44px; max-width: 100%; padding: 6px 8px; color: var(--ink); background: #05040c; border: 1px solid var(--muted); border-radius: 6px; }
+    input[type="number"] { width: 7em; }
+    #jo-last-tx { font-size: 0.85rem; }
+    .note { font-size: 0.8rem; }
+    @media (max-width: 400px) {
+      body { padding: 8px 6px 32px; font-size: 14px; }
+      main { padding: 10px; }
+      dl { grid-template-columns: minmax(0, 1fr); }
+      .jo-row > * { flex: 1 1 100%; }
+    }
+  </style>
+  <script type="module" src="./jackpot.mjs"></script>
+</head>
+<body>
+  <main id="jackpot-owner">
+    <p class="kicker">Lester's Arcade · owner tool</p>
+    <h1>Weekly Jackpot review</h1>
+    <p>Review, fund and settle the Chikun's Escape Weekly Jackpot on LitVM LiteForge. Authority is on chain: only the jackpot admin can review; anyone can fund, and anyone can finalize a week once its payout is due.</p>
+    <dl>
+      <dt>Contract</dt><dd id="jo-contract">…</dd>
+      <dt>Connected</dt><dd id="jo-account">not connected</dd>
+      <dt>Roles</dt><dd id="jo-roles">—</dd>
+    </dl>
+    <div id="jo-status" role="status" aria-live="polite">Loading…</div>
+    <div id="jo-connect" class="jo-row"></div>
+
+    <section aria-labelledby="jo-week-title">
+      <h2 id="jo-week-title">Week</h2>
+      <div id="jo-week"></div>
+    </section>
+    <section aria-labelledby="jo-candidates-title">
+      <h2 id="jo-candidates-title">Candidates</h2>
+      <div id="jo-candidates"></div>
+    </section>
+    <section aria-labelledby="jo-next-title">
+      <h2 id="jo-next-title">Next eligible sessions</h2>
+      <div id="jo-next"></div>
+    </section>
+    <section aria-labelledby="jo-block-title">
+      <h2 id="jo-block-title">Block or unblock a wallet</h2>
+      <p class="jo-note">A block never frees a listed row: against listed decoys, disqualify with the whole wallet for the week first, then block.</p>
+      <div id="jo-block"></div>
+    </section>
+    <section aria-labelledby="jo-fund-title">
+      <h2 id="jo-fund-title">Fund</h2>
+      <div id="jo-fund"></div>
+    </section>
+    <section aria-labelledby="jo-refund-title">
+      <h2 id="jo-refund-title">Refund after an end</h2>
+      <div id="jo-refund"></div>
+    </section>
+    <section aria-labelledby="jo-claim-title">
+      <h2 id="jo-claim-title">Claim</h2>
+      <div id="jo-claim"></div>
+    </section>
+    <section id="jackpot-rubric" aria-labelledby="jo-rubric-title">
+      <h2 id="jo-rubric-title">Review rubric</h2>
+      <ol id="jackpot-rubric-list"></ol>
+    </section>
+    <p id="jo-last-tx"></p>
+    <p class="note">This page never asks for a seed phrase or a private key, and it sends nothing without your wallet's confirmation.</p>
+    <noscript><p>This page needs JavaScript and a browser wallet (MetaMask or Rabby).</p></noscript>
+  </main>
+</body>
+</html>

@@ -16,4 +16,4 @@ Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Mone
 Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve for publishing. Free Mode is always free and needs no wallet.
 The arcade server checks each Ranked run, then the arcade's relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed on the server; Hard Money Heroes runs are plausibility-checked, not replayed.
 Global Weekly, Monthly, and All-time leaderboards rank each wallet's best verified score. Achievements are recorded against the wallet on the arcade server. Display names are set on chain and can be hidden by moderation.
-Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. Testnet zkLTC has no value, and there are no prizes.
+Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.

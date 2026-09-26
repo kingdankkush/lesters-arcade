@@ -6,6 +6,7 @@ import {
   escapeHtml, portalCopyFor, portalPageMeta, portalSchema, renderGameDetails,
 } from '../apps/portal/src/portal-content.mjs';
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from '../apps/portal/src/settlement.mjs';
+import { JACKPOT_LIVE } from '../apps/portal/src/jackpot-config.mjs';
 import { DEFAULT_REVENUE_SPLIT_BPS, RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI } from '../apps/portal/src/arcade-core.mjs';
 import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 import { LITVM_DEPLOYMENT } from '../apps/portal/src/generated/litvm-addresses.mjs';
@@ -58,8 +59,14 @@ test('every flag state provides each block the builder and the SPA render', () =
 });
 
 test('the exported copy follows the committed settlement flags', () => {
-  assert.deepEqual(PORTAL_FLAGS, { settlementLive: SETTLEMENT_LIVE, hostedProfileSync: HOSTED_PROFILE_SYNC });
-  assert.deepEqual(PORTAL_COPY, portalCopyFor(PORTAL_FLAGS));
+  assert.deepEqual(PORTAL_FLAGS, { settlementLive: SETTLEMENT_LIVE, hostedProfileSync: HOSTED_PROFILE_SYNC, chikunJackpotLive: JACKPOT_LIVE });
+  // PORTAL_COPY leaves out only the Weekly Jackpot's builder-only copy (the live FAQ, trust and llms
+  // lines and the two serverRecords lines, which the SPA never renders; tests/jackpot-ui-rules-page.test.mjs),
+  // so it equals the pages' copy without them.
+  const pages = portalCopyFor({ ...PORTAL_FLAGS, chikunJackpotLive: false });
+  const jackpotRecords = /; the seed tickets issued for your Ranked runs; the Weekly Jackpot's review of your candidate runs, whose recorded inputs are published as replays once their week closes/;
+  assert.deepEqual({ ...PORTAL_COPY, trustStorage: null }, { ...pages, trustStorage: null });
+  assert.deepEqual(PORTAL_COPY.trustStorage, pages.trustStorage.map((line) => line.replace(jackpotRecords, '')));
   assert.equal(PORTAL_DESCRIPTION, PORTAL_COPY.description);
   assert.equal(PORTAL_FAQ, PORTAL_COPY.faq);
   assert.equal(portalPageMeta('/').description, PORTAL_COPY.description);
@@ -93,7 +100,9 @@ test('launch copy states the fee, the split and the testnet', () => {
   assert.match(launch.llmsScope, terms);
   for (const text of [fee, launch.trustStatus.join(' '), launch.llmsScope]) {
     assert.match(text, /Free Mode is always free/);
-    assert.match(text, /Testnet zkLTC has no value, and there are no prizes\./);
+    // Soft-launch honesty (jackpot design §D.6): a test prize may be paid while JACKPOT_LIVE is false.
+    assert.match(text, /Testnet zkLTC has no value\. Any test prizes are paid in testnet tokens that also have no value\./);
+    assert.doesNotMatch(text, /there are no prizes/);
     assert.match(text, /Testnet entries are not refunded\./);
   }
   assert.match(answer(launch, /wallet to play/), /Free Mode is always free and needs no wallet/);
@@ -158,14 +167,14 @@ test('launch copy covers boards, achievements, names, retries and refunds', () =
 // new text is quoted and reviewed again.
 test('the launch wording quoted for owner review is what the flip ships', () => {
   assert.equal(answer(launch, /cost money/),
-    "Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Testnet zkLTC has no value, and there are no prizes. Testnet entries are not refunded. Free Mode is always free.");
+    "Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value. Testnet entries are not refunded. Free Mode is always free.");
   assert.deepEqual([...launch.trustStatus], [
     "Ranked is live on the LitVM LiteForge testnet. A Ranked run costs 0.102 zkLTC: a 0.1 zkLTC entry, split 85% to the game's developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade's relayer to publish your result. Free Mode is always free and needs no wallet.",
     "The arcade server checks every Ranked run before its relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed from their recorded inputs; a replay proves that a run follows the game's rules, not who played it. Hard Money Heroes runs are plausibility-checked against the game's limits and are not replayed; the check rejects impossible results but cannot prove how a run was played.",
-    'If publishing fails, it retries automatically, and you can retry it from your profile. Testnet entries are not refunded. Testnet zkLTC has no value, and there are no prizes.',
+    'If publishing fails, it retries automatically, and you can retry it from your profile. Testnet entries are not refunded. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.',
   ]);
   assert.deepEqual([...launch.trustStorage], [
-    "Signing in and playing Ranked also stores data on the arcade server, in a Neon Postgres database: your wallet address; your verified Ranked sessions with their evidence (the recorded inputs that replay a Chikun's Escape or STACKED run, or the run summary of a Hard Money Heroes run), scores, stats, check results, and publishing status; the achievements recorded for your wallet; a copy of your on-chain display name and avatar; your profile preferences; and the one-time codes used to sign in. Rate limiting stores keyed hashes (HMAC) of IP addresses in short time windows, not raw IP addresses.",
+    "Signing in and playing Ranked also stores data on the arcade server, in a Neon Postgres database: your wallet address; your verified Ranked sessions with their evidence (the recorded inputs that replay a Chikun's Escape or STACKED run, or the run summary of a Hard Money Heroes run), scores, stats, check results, and publishing status; the achievements recorded for your wallet; the seed tickets issued for your Ranked runs; the Weekly Jackpot's review of your candidate runs, whose recorded inputs are published as replays once their week closes; a copy of your on-chain display name and avatar; your profile preferences; and the one-time codes used to sign in. Rate limiting stores keyed hashes (HMAC) of IP addresses in short time windows, not raw IP addresses.",
     'Your wallet address, display name, best scores, verified runs, and achievements are public on your profile and the leaderboards. Published results are also public records on the LitVM LiteForge testnet, which the arcade cannot delete.',
   ]);
 });

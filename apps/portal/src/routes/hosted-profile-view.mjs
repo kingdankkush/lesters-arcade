@@ -12,6 +12,7 @@ import { ARCADE_AVATARS, ARCADE_AVATAR_URI_PREFIX, arcadeAvatarForUri } from '..
 import { verifiedExplorerUrl } from '../leaderboard-view.mjs';
 import { versionLabelText, versionLabelTitle } from '../game-version-labels.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
+import { JACKPOT_LIVE } from '../jackpot-config.mjs';
 
 export const PROFILE_SHARE_ORIGIN = 'https://lestersarcade.io';
 export const LITEFORGE_EXPLORER = 'https://liteforge.explorer.caldera.xyz';
@@ -200,6 +201,8 @@ export function createHostedProfileView({
   // read or write: a restored WalletConnect session creates its provider here
   // (main.js walletProviderForAction awaits ensureWalletProvider).
   walletProviderForAction = async () => detectEthereumProvider?.() ?? null,
+  // Weekly Jackpot wins (jackpot-ui): tests switch them on here, never by editing the flag.
+  jackpotLive = JACKPOT_LIVE,
 } = {}) {
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
   const heldTokens = new Map(); // wallet -> { status, confirmed: Set('<gameId>:<id>') }
@@ -821,6 +824,12 @@ export function createHostedProfileView({
       } else {
         renderLocalUsernameEditor();
       }
+    }
+    // Weekly Jackpot wins (design §D.3): lazy, only for a profile with wins; Claim for their own winner.
+    if (jackpotLive && response.jackpot?.wins[0]) {
+      const mount = el('div');
+      dom.officialCabinetGrid.append(mount);
+      import('../jackpot/jackpot-profile-wins.mjs').then((module) => module.default(mount, response, target, walletProviderForAction), () => {});
     }
     renderHostedGames(response);
     renderHostedSessions(target, response);

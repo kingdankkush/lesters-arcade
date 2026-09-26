@@ -9,6 +9,7 @@
 import { arcadeAvatarForUri } from '../arcade-avatars.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
 import { versionLabelTitle } from '../game-version-labels.mjs';
+import { JACKPOT_LIVE } from '../jackpot-config.mjs';
 import {
   HOSTED_LEADERBOARD_NOTICE,
   HOSTED_LEADERBOARD_PAGE_SIZE,
@@ -78,6 +79,8 @@ export function createHostedLeaderboardView({
   routeState,
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   viewProfile = null,
+  // Weekly Jackpot header (jackpot-ui): tests switch it on here, never by editing the flag.
+  jackpotLive = JACKPOT_LIVE,
 } = {}) {
   // Boards, keyed by game, period, search and viewer.
   const hostedBoards = new Map();
@@ -124,6 +127,12 @@ export function createHostedLeaderboardView({
   function rerenderIfShown() {
     if (isActive()) keepingFocus(renderPage);
   }
+
+  // Weekly Jackpot header (design §D.3): lazy, shown on Chikun · Weekly; while it shows, the board's
+  // "resets in" uses its corrected clock.
+  // Until it loads (or if it fails) `jackpot` is false or the pending promise: neither has `shown`.
+  // The header's factory re-renders the view once it is held here (jackpot-board-header.mjs default).
+  let jackpot = jackpotLive && import('../jackpot/jackpot-board-header.mjs').then((module) => (jackpot = module.default(documentRef, now, rerenderIfShown)), () => {});
 
   // Whether a loaded board can be shown without asking E5 again.
   function boardIsFresh(board) {
@@ -273,7 +282,8 @@ export function createHostedLeaderboardView({
     const periodTab = leaderboardPeriodTab(spec.period);
     const activeCabinet = cabinets.find((cabinet) => cabinet.gameId === routeState.gameId);
     const title = activeCabinet?.title ?? getGame(routeState.gameId).title;
-    const clock = now();
+    const jackpotHeader = jackpot.shown?.(spec);
+    const clock = jackpotHeader?.now() ?? now();
 
     const filterPanel = renderFilterPanel({
       cabinets,
@@ -363,6 +373,7 @@ export function createHostedLeaderboardView({
       : 'Loading the board');
     filterPanel.append(filterSummary);
     dom.officialCabinetGrid.append(filterPanel);
+    jackpotHeader?.render(dom.officialCabinetGrid);
 
     // --- Board card ------------------------------------------------------------
     const card = el('article', { className: `official-info-card leaderboard-board-card leaderboard-board-v9 leaderboard-board-v10 leaderboard-board-hosted leaderboard-board-${routeState.gameId} hmh-visual-polish-v12` });

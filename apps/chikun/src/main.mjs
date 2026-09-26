@@ -5,7 +5,7 @@ import { loadRagdollArt, createChikunRagdoll, drawChikunRagdoll } from './ragdol
 import { createChikunCharacter, chikunCoatFilter, chikunTrailParticles, CHIKUN_FLOURISHES, milestoneFlourish } from './character.mjs';
 import { createChikunWorld, drawChikunObstacle } from './world.mjs';
 import { createChikunAudio } from './audio.mjs';
-import { buildChikunViewport, upcomingChikunObstacle } from './viewport.mjs';
+import { buildChikunViewport, chikunForkInView, upcomingChikunObstacle } from './viewport.mjs';
 import { createGuardedFrameLoop, finishRunSafely } from './frame-guard.mjs';
 import {
   CHIKUN_FIXED_STEP_HZ,
@@ -20,7 +20,8 @@ import {
   validateChikunChildMessage,
 } from '../../portal/src/chikun-bridge-protocol.mjs';
 import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
-import { buildChikunReplayTimeline, buildChikunShareText, buildChikunModeTease } from './presentation.mjs';
+import { buildChikunReplayTimeline, buildChikunShareText, buildChikunModeTease, buildChikunJackpotTease } from './presentation.mjs';
+import { JACKPOT_LIVE } from '../../portal/src/jackpot-config.mjs';
 import { buildShareLinks, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
 import { createChikunReplayPlayback, replayPlayheadRatio } from './replay-viewer.mjs';
 import {
@@ -35,6 +36,8 @@ const canvas = document.querySelector('#chikunCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
 const shell = document.querySelector('#gameShell');
 let flightViewport = buildChikunViewport(1280, 720);
+// The camera is capped at the stock 1,280 view: a wider CSS box letterboxes instead of stretching.
+canvas.style.objectFit = 'contain';
 function resizeFlightViewport() {
   const rect = canvas.getBoundingClientRect();
   flightViewport = buildChikunViewport(rect.width, rect.height, window.devicePixelRatio || 1);
@@ -370,10 +373,34 @@ function setModePresentation() {
   renderModeTease();
 }
 
+// Weekly Jackpot lines (jackpot design §D.3): Ranked only, while JACKPOT_LIVE; the child reads the
+// same-origin API itself (4 s timeout) and corrects its clock with the answer's Age header. The lines
+// are rebuilt from the answer on every render and every 30 s, so "closes in" counts down and the line
+// goes at closesAt on the corrected clock. An answer buildChikunJackpotTease cannot read throws here
+// once and is dropped.
+let jackpotApi, jackpotSkew = 0;
+function loadJackpotTease() {
+  if (jackpotApi !== undefined) return;
+  jackpotApi = null;
+  const asked = Date.now();
+  fetch('/api/jackpot?game=chikun', { signal: AbortSignal.timeout?.(4000) }).then((response) => response.json().then((api) => {
+    const skew = Date.parse(api.serverTime) + (response.headers.get('age') || 0) * 1000 - asked;
+    buildChikunJackpotTease(api, Date.now() + (jackpotSkew = Math.abs(skew) > 5000 ? skew : 0));
+    jackpotApi = api;
+    setInterval(renderModeTease, 30000);
+    renderModeTease();
+  })).catch(() => {});
+}
+
 // Start-screen teases only; nothing here reaches the gameplay HUD.
 function renderModeTease() {
   if (!modeTease) return;
-  const tease = buildChikunModeTease(mode);
+  let tease = buildChikunModeTease(mode);
+  if (JACKPOT_LIVE && mode === 'ranked') {
+    loadJackpotTease();
+    // No jackpot line yet (or none to show): no rewards line either.
+    tease = { ...tease, rewards: '', ...(jackpotApi && buildChikunJackpotTease(jackpotApi, Date.now() + jackpotSkew)) };
+  }
   modeTease.replaceChildren();
   for (const [title, detail] of [[tease.daily, tease.dailyDetail], [tease.rewards, tease.rewardsDetail]]) {
     if (!title) continue;
@@ -650,7 +677,7 @@ function draw(snapshot = latestSnapshot) {
   }
   drawSky(snapshot);
   if(snapshot?.chikun?.locomotion)drawGround(ctx,snapshot,{reduced:reduceMotion()});
-  for (const fork of snapshot?.forks ?? []) drawFork(fork);
+  for (const fork of snapshot?.forks ?? []) if (chikunForkInView(fork, flightViewport)) drawFork(fork);
   if (snapshot?.chikun) {
     drawChikun(snapshot);
   }
@@ -953,13 +980,27 @@ document.querySelector('#exportReplayButton').addEventListener('click',()=>{
  a.href=url;a.download='chikun-replay.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setLive('Replay downloaded. It contains inputs and a course seed, without your wallet or account identity.');
 });
 document.querySelector('#importReplayButton').addEventListener('click',()=>document.querySelector('#replayFile').click());
+function showImportedReplay(imported){
+ stopReplayViewer();lastCompletedResult=imported;ragdoll?.dispose();ragdoll=null;
+ renderReplayTimeline(imported.evidence);resultScore.textContent=String(imported.score);resultStats.replaceChildren();document.querySelector('#runObjectives').textContent='';
+ resultEyebrow.textContent=['chikun-flap-evidence-v3','chikun-flap-evidence-v5','chikun-flap-evidence-v6'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
+ resultCopy.textContent='Playback only. This replay does not write a score, best, achievement or profile record.';startReplayViewer();
+}
 document.querySelector('#replayFile').addEventListener('change',async event=>{
  const file=event.target.files?.[0];event.target.value='';if(!file)return;
  try{
   if(file.size>REPLAY_FILE_LIMIT)throw new Error('Replay file must be smaller than 256 KB.');
-  const imported=importChikunReplay(await file.text());stopReplayViewer();lastCompletedResult=imported;ragdoll?.dispose();ragdoll=null;
-  renderReplayTimeline(imported.evidence);resultScore.textContent=String(imported.score);resultStats.replaceChildren();document.querySelector('#runObjectives').textContent='';
-  resultEyebrow.textContent=['chikun-flap-evidence-v3','chikun-flap-evidence-v5','chikun-flap-evidence-v6'].includes(imported.evidence.version)?'Imported replay · Ground & Sky':'Imported historical flight';
-  resultCopy.textContent='Playback only. This replay does not write a score, best, achievement or profile record.';startReplayViewer();
+  showImportedReplay(importChikunReplay(await file.text()));
  }catch(error){setLive(error.message);resultCopy.textContent=error.message;}
 });
+// Jackpot review deep link (design §D.3, §D.5): ?replay=/api/jackpot/replay?session=0x… opens a published
+// candidate replay, same origin only. Not flag-gated: the owner reviews the soft-launch week first. An
+// error answer (404 not-available) fails importChikunReplay like any bad file, and its message shows.
+const JACKPOT_REPLAY_LINK=/^\/api\/jackpot\/replay\?session=0x[0-9a-f]{64}$/;
+function openJackpotReplayLink(search=location.search){
+ const link=new URLSearchParams(search).get('replay');
+ if(JACKPOT_REPLAY_LINK.test(link))fetch(link).then(response=>response.text())
+  .then(replay=>{replay=importChikunReplay(replay);phase='game-over';startOverlay.classList.add('is-hidden');resultOverlay.classList.remove('is-hidden');showImportedReplay(replay);})
+  .catch(error=>setLive(resultCopy.textContent=error.message));
+}
+openJackpotReplayLink();

@@ -1,0 +1,185 @@
+/* Chikun's Escape Weekly Jackpot (design §D.2): the lazy surfaces' retro arcade styling.
+   Loaded once through link[data-jackpot-css] (src/jackpot/jackpot-view.mjs) and by the rules page.
+   A neon "coin-slot" marquee, the monospace pixel face of the design tokens and a gold coin glyph.
+   Works at 320 px; no motion unless the viewer allows it. */
+
+.jackpot-marquee,
+.jackpot-card,
+.jackpot-board-header,
+.jackpot-wins {
+  --jackpot-gold: var(--brass-bright, #ffe84d);
+  --jackpot-neon: var(--crypto-cyan, #19f7ff);
+  --jackpot-pink: var(--fiat-magenta, #ff3df2);
+  box-sizing: border-box;
+  max-width: 100%;
+  color: var(--text-primary, #f9f7ff);
+  font-family: var(--font-mono, "Lucida Console", monospace);
+  overflow-wrap: anywhere;
+}
+
+/* The marquee: a slot-shaped neon strip (mode select, entry modal, results line). */
+.jackpot-marquee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border: 2px solid var(--jackpot-gold);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(40, 24, 4, 0.92), rgba(12, 6, 26, 0.94));
+  box-shadow: 0 0 0 2px #05070f, 0 0 14px rgba(255, 232, 77, 0.35), inset 0 0 16px rgba(255, 61, 242, 0.12);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.jackpot-marquee strong,
+.jackpot-amount {
+  color: var(--jackpot-gold);
+  text-shadow: 0 0 6px rgba(255, 232, 77, 0.55);
+}
+.jackpot-sep { color: var(--jackpot-pink); }
+.jackpot-coin {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  margin-right: 2px;
+  border: 2px solid #8a6414;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff6b0, var(--jackpot-gold, #ffe84d) 45%, #b8860b);
+  color: #3d2a00;
+  font-size: 0.75em;
+  font-weight: 900;
+  text-shadow: none;
+}
+.jackpot-marquee a,
+.jackpot-card a,
+.jackpot-board-header a,
+.jackpot-wins a { color: var(--jackpot-neon); text-underline-offset: 0.2em; }
+.jackpot-note { color: var(--text-secondary, #b4aed4); font-size: 0.75rem; text-transform: none; letter-spacing: 0; }
+
+/* Entry modal row: a quiet line inside .ranked-entry-rows; never a call to action. */
+.ranked-entry-row.ranked-entry-jackpot { flex-wrap: wrap; gap: 4px 8px; }
+.ranked-entry-row.ranked-entry-jackpot strong { font-weight: 700; text-align: right; }
+
+/* Results screen line. */
+.rr-jackpot { margin: 6px 0 0; color: var(--brass-bright, #ffe84d); font-family: var(--font-mono, monospace); font-size: 0.85rem; }
+.rr-jackpot[hidden] { display: none; }
+
+/* Home promo card and Scores header. */
+.jackpot-card,
+.jackpot-board-header {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border: 2px solid var(--jackpot-gold);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(34, 20, 6, 0.95), rgba(10, 8, 30, 0.95));
+  box-shadow: 0 0 0 2px #05070f, 0 0 18px rgba(255, 232, 77, 0.28);
+}
+.jackpot-card h2,
+.jackpot-board-header h3,
+.jackpot-wins h3 {
+  margin: 0 0 6px;
+  color: var(--jackpot-gold);
+  font-family: var(--font-display, "Trebuchet MS", sans-serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.jackpot-card p,
+.jackpot-board-header p { margin: 4px 0; }
+.jackpot-play {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 0 16px;
+  border: 2px solid #05070f;
+  border-radius: 999px;
+  background: var(--jackpot-gold);
+  color: #1b1200 !important;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 #05070f;
+}
+.jackpot-play:focus-visible { outline: 3px solid var(--jackpot-neon); outline-offset: 3px; }
+.jackpot-history { display: grid; gap: 6px; margin: 8px 0 0; padding: 0; list-style: none; }
+.jackpot-history li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 232, 77, 0.28);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 0.8rem;
+}
+.jackpot-history li a { display: inline-flex; align-items: center; min-height: 24px; }
+.jackpot-badge {
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--jackpot-pink);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+/* Profile "Jackpot Champion" section. */
+.jackpot-wins { display: grid; gap: 8px; }
+.jackpot-wins form { display: grid; gap: 6px; margin-top: 6px; }
+.jackpot-wins label { display: grid; gap: 4px; font-size: 0.8rem; }
+.jackpot-wins input {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 2px solid var(--jackpot-neon);
+  border-radius: 8px;
+  background: #05070f;
+  color: var(--text-primary, #f9f7ff);
+  font: inherit;
+}
+.jackpot-wins button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid #05070f;
+  border-radius: 8px;
+  background: var(--jackpot-gold);
+  color: #1b1200;
+  font: inherit;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.jackpot-wins button:disabled { opacity: 0.6; cursor: wait; }
+.jackpot-wins button:focus-visible,
+.jackpot-wins input:focus-visible { outline: 3px solid var(--jackpot-neon); outline-offset: 2px; }
+.jackpot-status { min-height: 1.2em; margin: 0; font-size: 0.8rem; }
+.jackpot-status[data-tone="error"] { color: var(--fiat-red, #ff476f); }
+.jackpot-status[data-tone="ok"] { color: var(--crypto-green, #45ff8a); }
+
+/* Rules page (apps/portal/jackpot/chikun.html). */
+.jackpot-rules .jackpot-banner {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--brass-bright, #ffe84d);
+  border-radius: 10px;
+  background: rgba(255, 232, 77, 0.08);
+}
+.jackpot-rules .jackpot-live { min-height: 1.5em; }
+.jackpot-rules dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 4px 12px; }
+.jackpot-rules dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 400px) {
+  .jackpot-rules dl { grid-template-columns: minmax(0, 1fr); }
+  .jackpot-marquee { font-size: 0.72rem; padding: 6px 8px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .jackpot-marquee .jackpot-coin { animation: jackpot-coin-spin 2.4s steps(8) infinite; }
+}
+@keyframes jackpot-coin-spin {
+  0%, 60% { transform: scaleX(1); }
+  80% { transform: scaleX(0.15); }
+  100% { transform: scaleX(1); }
+}

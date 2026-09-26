@@ -1,0 +1,124 @@
+{
+  "ok": true,
+  "live": true,
+  "game": "chikun",
+  "chainId": 4441,
+  "contract": "0x2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e",
+  "explorer": "https://liteforge.explorer.caldera.xyz",
+  "token": {
+    "address": "0x9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d",
+    "symbol": "CHIKUN",
+    "decimals": 18,
+    "testnet": false
+  },
+  "serverTime": "2026-10-01T12:00:00.000Z",
+  "indexedBlock": 54400000,
+  "current": {
+    "weekKey": "2026-W40",
+    "weekIndex": 2961,
+    "status": "open",
+    "startsAt": "2026-09-28T00:00:00.000Z",
+    "closesAt": "2026-10-05T00:00:00.000Z",
+    "settleCutoffAt": "2026-10-05T06:00:00.000Z",
+    "candidateUntil": "2026-10-05T12:00:00.000Z",
+    "payoutAt": "2026-10-06T00:00:00.000Z",
+    "rules": {
+      "minPaidWei": "100000000000000000",
+      "maxSurvivalSeconds": 3599,
+      "minFundWei": "100000000000000000000",
+      "adminClearOnly": false
+    },
+    "pot": {
+      "fundedWei": "10000000000000000000000",
+      "carriedInWei": "0",
+      "totalWei": "10000000000000000000000",
+      "prizeCapWei": null,
+      "prizeWei": "10000000000000000000000",
+      "carryOverWei": "0",
+      "funded": true
+    },
+    "leader": {
+      "score": 48213,
+      "provisional": true,
+      "screened": false
+    }
+  },
+  "previous": {
+    "weekKey": "2026-W39",
+    "status": "paid",
+    "payoutAt": "2026-09-29T00:00:00.000Z",
+    "token": {
+      "symbol": "CHIKUN",
+      "decimals": 18,
+      "testnet": false
+    },
+    "pot": {
+      "fundedWei": "8000000000000000000000",
+      "carriedInWei": "0",
+      "totalWei": "8000000000000000000000",
+      "prizeCapWei": null,
+      "prizeWei": "8000000000000000000000",
+      "carryOverWei": "0",
+      "funded": true
+    },
+    "candidates": [],
+    "winner": {
+      "walletShort": "0xa1a1…a1a1",
+      "wallet": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "displayName": "SkyChikun"
+    },
+    "prizeWei": "2500000000000000000000",
+    "unclaimedWei": "0",
+    "finalizeTx": "0xabababababababababababababababababababababababababababababababab",
+    "contract": "0x2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e"
+  },
+  "history": [
+    {
+      "weekKey": "2026-W38",
+      "startsAt": "2026-09-14T00:00:00.000Z",
+      "closesAt": "2026-09-21T00:00:00.000Z",
+      "status": "paid",
+      "token": {
+        "symbol": "CHIKUN",
+        "decimals": 18,
+        "testnet": false
+      },
+      "contract": "0x2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e",
+      "winner": {
+        "walletShort": "0xd4d4…d4d4",
+        "wallet": "0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+        "displayName": "Lester Fan"
+      },
+      "score": 45000,
+      "prizeWei": "1500000000000000000000",
+      "unclaimedWei": "0",
+      "finalizeTx": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+      "replay": "/api/jackpot/replay?session=0xd4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "rolledTo": null
+    },
+    {
+      "weekKey": "2026-W37",
+      "startsAt": "2026-09-07T00:00:00.000Z",
+      "closesAt": "2026-09-14T00:00:00.000Z",
+      "status": "paid",
+      "token": {
+        "symbol": "tCHIKUN",
+        "decimals": 18,
+        "testnet": true
+      },
+      "contract": "0x1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d",
+      "winner": {
+        "walletShort": "0xb7b7…b7b7",
+        "wallet": "0xb7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7",
+        "displayName": null
+      },
+      "score": 61234,
+      "prizeWei": "9000000000000000000000",
+      "unclaimedWei": "0",
+      "finalizeTx": "0xe5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+      "replay": "/api/jackpot/replay?session=0xb7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7",
+      "rolledTo": null
+    }
+  ],
+  "rulesUrl": "/jackpot/chikun"
+}

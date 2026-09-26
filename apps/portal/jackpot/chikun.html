@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#05070f" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="How the Chikun&#39;s Escape Weekly Jackpot works: who can win, how runs are checked, when prizes are paid, and what is published." />
+  <title>Chikun&#39;s Escape Weekly Jackpot rules | Lester&#39;s Arcade</title>
+  <link rel="canonical" href="https://lestersarcade.io/jackpot/chikun" />
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <link rel="stylesheet" href="/src/design-tokens.css" />
+  <link rel="stylesheet" href="/trust.css" />
+  <link rel="stylesheet" href="/src/styles/jackpot.css?v=jackpot-ui-20260925" />
+  <script type="module" src="/jackpot/chikun-rules.mjs"></script>
+</head>
+<body class="jackpot-rules">
+  <!-- Generated in place by scripts/build-portal-pages.mjs from portal-content.mjs jackpotRulesCopy(): edit the
+       copy there, then run node scripts/build-portal-pages.mjs. Served at /jackpot/chikun (vercel.json rewrite). -->
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="trust-header">
+    <a href="/">Back to the arcade</a>
+    <p class="eyebrow">Lester's Arcade · Chikun's Escape</p>
+    <h1><!-- copy:jackpot-rules-title:start -->Chikun&#39;s Escape Weekly Jackpot rules<!-- copy:jackpot-rules-title:end --></h1>
+    <p class="jackpot-banner" id="jackpotRulesBanner"><!-- copy:jackpot-rules-banner:start -->Soft launch: test prizes in tCHIKUN, a token with no value, may be paid to the week&#39;s top eligible Ranked Chikun player. Every payout is reviewed by hand.<!-- copy:jackpot-rules-banner:end --></p>
+    <p class="jackpot-live" id="jackpotRulesNow" role="status" aria-live="polite" hidden></p>
+    <nav aria-label="Rules sections">
+      <a href="#rules-eligible">Who can win</a>
+      <a href="#rules-timeline">Timeline</a>
+      <a href="#rules-verification">Checks</a>
+      <a href="#rules-claims">Claims</a>
+      <a href="#rules-legal">Legal</a>
+      <a href="#rules-history">Past weeks</a>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+    <section id="rules-what" aria-labelledby="rules-what-title">
+      <!-- copy:jackpot-rules-what:start -->
+      <h2 id="rules-what-title">What it is</h2>
+      <p>The Chikun&#39;s Escape Weekly Jackpot is a weekly high-score prize for Ranked Chikun&#39;s Escape. Each week, the eligible run with the best verified score wins that week&#39;s funded prize.</p>
+      <p>Lester&#39;s Arcade and Louie, Chikun&#39;s original developer, fund the prizes together. Questions and disputes: kingdankkush420@gmail.com.</p>
+      <!-- copy:jackpot-rules-what:end -->
+    </section>
+    <section id="rules-eligible" aria-labelledby="rules-eligible-title">
+      <!-- copy:jackpot-rules-eligible:start -->
+      <h2 id="rules-eligible-title">Who can win</h2>
+      <ul><li>Ranked Chikun&#39;s Escape runs of that week only, counted by the time the entry was paid (Monday 00:00 UTC to the next Monday 00:00 UTC), with a paid entry of at least the Ranked flat fee and in that week&#39;s Ranked season.</li><li>Runs that reach the 60-minute limit are not eligible (the survival cap is 3,599 seconds).</li><li>One person, one wallet: a person found using several wallets is disqualified on all of them.</li><li>Lester&#39;s Arcade staff, the game&#39;s developers, prize funders and their households cannot win, as people and not only as wallets. Test wallets and blocked wallets cannot win.</li><li>Entry fees do not fund the prize.</li></ul>
+      <!-- copy:jackpot-rules-eligible:end -->
+    </section>
+    <section id="rules-winner" aria-labelledby="rules-winner-title">
+      <!-- copy:jackpot-rules-winner:start -->
+      <h2 id="rules-winner-title">How the winner is chosen</h2>
+      <p>The highest verified score wins. A tie goes to the run published on LitVM first, then to the lower session id.</p>
+      <!-- copy:jackpot-rules-winner:end -->
+    </section>
+    <section id="rules-timeline" aria-labelledby="rules-timeline-title">
+      <!-- copy:jackpot-rules-timeline:start -->
+      <h2 id="rules-timeline-title">Timeline</h2>
+      <p>The week closes every Monday at 00:00 UTC. A run must be published on LitVM within 6 hours of the close. For 12 hours after the close, anyone can add a better eligible run to the candidate list. The prize is paid 24 hours after the close.</p>
+      <p>For an incident, such as a publishing outage near the close, the organiser can extend one week by up to 72 hours in total, and announces the extension.</p>
+      <!-- copy:jackpot-rules-timeline:end -->
+      <p class="jackpot-note" id="jackpotRulesTimes" hidden></p>
+    </section>
+    <section id="rules-verification" aria-labelledby="rules-verification-title">
+      <!-- copy:jackpot-rules-verification:start -->
+      <h2 id="rules-verification-title">How runs are checked</h2>
+      <p>The arcade server replays every Ranked run from its recorded inputs before it is published on LitVM. Candidate runs are checked again: the replay, the on-chain record, and automated checks.</p>
+      <p>The automated checks catch only unsophisticated automation; a person reviews the leading runs and decides. &quot;In review&quot; means a run is waiting for that review. Runs that finish long after their entry was paid are always reviewed by a person.</p>
+      <!-- copy:jackpot-rules-verification:end -->
+    </section>
+    <section id="rules-disqualification" aria-labelledby="rules-disqualification-title">
+      <!-- copy:jackpot-rules-disqualification:start -->
+      <h2 id="rules-disqualification-title">Disqualification</h2>
+      <p>A run can be disqualified for automation, for failing the integrity checks, for breaking these rules, for an excluded wallet, or for one person using several wallets. The organiser may disqualify a run it believes was not played by a person in real time.</p>
+      <p>Every decision is published on LitVM with its reason. Decisions are final: send a dispute to kingdankkush420@gmail.com within 7 days, and the organiser&#39;s answer is final.</p>
+      <!-- copy:jackpot-rules-disqualification:end -->
+    </section>
+    <section id="rules-challenges" aria-labelledby="rules-challenges-title">
+      <!-- copy:jackpot-rules-challenges:start -->
+      <h2 id="rules-challenges-title">Challenges</h2>
+      <p>Anyone can put an eligible, better run of the week on the candidate list until 12 hours after the close. The best run that passes review is paid.</p>
+      <!-- copy:jackpot-rules-challenges:end -->
+    </section>
+    <section id="rules-rollover" aria-labelledby="rules-rollover-title">
+      <!-- copy:jackpot-rules-rollover:start -->
+      <h2 id="rules-rollover-title">Rollover and caps</h2>
+      <p>A week&#39;s pot that nobody wins rolls into the next week, with no time limit. When a week has a prize cap, the part of the pot above the cap rolls over too.</p>
+      <!-- copy:jackpot-rules-rollover:end -->
+    </section>
+    <section id="rules-funding" aria-labelledby="rules-funding-title">
+      <!-- copy:jackpot-rules-funding:start -->
+      <h2 id="rules-funding-title">Funding</h2>
+      <p>Lester&#39;s Arcade and Louie fund each week&#39;s prize in tCHIKUN through the jackpot contract. Fund only through the contract: tokens sent to its address directly count toward no week.</p>
+      <p>The rules of a week funded in advance can still change before that week starts.</p>
+      <!-- copy:jackpot-rules-funding:end -->
+      <dl id="jackpotRulesContracts" hidden></dl>
+    </section>
+    <section id="rules-claims" aria-labelledby="rules-claims-title">
+      <!-- copy:jackpot-rules-claims:start -->
+      <h2 id="rules-claims-title">Unclaimed prizes</h2>
+      <p>If the token refuses to transfer a prize, the winner can claim it to another address from their profile. A prize still unclaimed 180 days after the payout returns to the prize pool.</p>
+      <!-- copy:jackpot-rules-claims:end -->
+    </section>
+    <section id="rules-end" aria-labelledby="rules-end-title">
+      <!-- copy:jackpot-rules-end:start -->
+      <h2 id="rules-end-title">End of the jackpot</h2>
+      <p>The jackpot ends only with at least one week of notice. Funders get back what they paid in for weeks after the end. A final pot that nobody wins goes to the published contest wallet 30 days after the end.</p>
+      <!-- copy:jackpot-rules-end:end -->
+    </section>
+    <section id="rules-published" aria-labelledby="rules-published-title">
+      <!-- copy:jackpot-rules-published:start -->
+      <h2 id="rules-published-title">What is published</h2>
+      <p>The winning and candidate wallets, their display names (unless a name is hidden), their scores, replays of candidate runs that anyone can download once the week closes, and every review decision, which stays on LitVM permanently.</p>
+      <!-- copy:jackpot-rules-published:end -->
+    </section>
+    <section id="rules-no-guarantee" aria-labelledby="rules-no-guarantee-title">
+      <!-- copy:jackpot-rules-no-guarantee:start -->
+      <h2 id="rules-no-guarantee-title">No promised prize</h2>
+      <p>A week may have no prize, or its pot may roll over, be held for review, or be paused. The Weekly Jackpot is provided as is.</p>
+      <!-- copy:jackpot-rules-no-guarantee:end -->
+    </section>
+    <section id="rules-testnet" aria-labelledby="rules-testnet-title">
+      <!-- copy:jackpot-rules-testnet:start -->
+      <h2 id="rules-testnet-title">Testnet</h2>
+      <p>tCHIKUN is a testnet token with no value. It cannot be redeemed or exchanged through the arcade. Testnet records are wiped at mainnet. Real $CHIKUN prizes need a new contract, new rules and a legal review.</p>
+      <!-- copy:jackpot-rules-testnet:end -->
+    </section>
+    <section id="rules-legal" aria-labelledby="rules-legal-title">
+      <!-- copy:jackpot-rules-legal:start -->
+      <h2 id="rules-legal-title">Taxes, eligibility and age</h2>
+      <!-- copy:jackpot-rules-legal:end -->
+      <!-- LEGAL-REVIEW-PENDING: owner confirms at E10 -->
+      <!-- copy:jackpot-legal:start -->
+      <p><strong>Weekly Jackpot rules</strong></p>
+      <ul><li><strong>Skill contest.</strong> The eligible wallet with the highest verified Ranked Chikun&#39;s Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week&#39;s funded prize, paid on chain after a 24-hour review.</li><li><strong>Entry.</strong> Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.</li><li><strong>Prizes.</strong> A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.</li><li><strong>Fair play.</strong> Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.</li><li><strong>Eligibility.</strong> You must be 18 or older (or the age of majority where you live). Lester&#39;s Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you.</li><li><strong>Testnet.</strong> During the LiteForge testnet, prizes are testnet tokens with no monetary value. Real $CHIKUN prizes will come with updated rules.</li><li><strong>Changes.</strong> We may change, pause or end the Weekly Jackpot at any time; prizes already paid are unaffected.</li><li>Nothing here is financial advice. Memecoins are volatile.</li></ul>
+      <!-- copy:jackpot-legal:end -->
+    </section>
+    <section id="rules-history" aria-labelledby="rules-history-title">
+      <!-- copy:jackpot-rules-history:start -->
+      <h2 id="rules-history-title">Past weeks</h2>
+      <p>Past weeks are listed here once the Weekly Jackpot is live.</p>
+      <!-- copy:jackpot-rules-history:end -->
+      <ol class="jackpot-history" id="jackpotRulesHistory" hidden></ol>
+    </section>
+  </main>
+  <footer class="trust-footer">
+    <a href="/trust.html">Support &amp; trust</a>
+  </footer>
+</body>
+</html>

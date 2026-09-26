@@ -2,16 +2,19 @@ import { readFileSync,writeFileSync,mkdirSync,mkdtempSync,rmSync } from 'node:fs
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { join,resolve } from 'node:path';
-import { PORTAL_GAMES, PORTAL_FLAGS, escapeHtml, portalCopyFor, portalPageMeta, portalSchema, renderCatalog, renderGameDetails } from '../apps/portal/src/portal-content.mjs';
+import { JACKPOT_RULES_SECTIONS, PORTAL_GAMES, PORTAL_FLAGS, escapeHtml, jackpotRulesCopy, portalCopyFor, portalPageMeta, portalSchema, renderCatalog, renderGameDetails } from '../apps/portal/src/portal-content.mjs';
+import { JACKPOT_RULES_PATH } from '../apps/portal/src/jackpot-config.mjs';
 
 const portal=fileURLToPath(new URL('../apps/portal/',import.meta.url));
 
 // Contract A33: the public copy follows SETTLEMENT_LIVE and HOSTED_PROFILE_SYNC in
 // apps/portal/src/settlement.mjs. The override exists only for tests and the
-// rehearsal's step-7 dry run; committed pages are always built from the real flags.
+// rehearsal's step-7 dry run; committed pages are always built from the real flags. `jackpot` is the
+// Weekly Jackpot flip dry run (design §E E10): live settlement plus JACKPOT_LIVE (chikunJackpotLive).
 export const PORTAL_FLAG_OVERRIDES=Object.freeze({
   live:Object.freeze({settlementLive:true,hostedProfileSync:true}),
   preview:Object.freeze({settlementLive:false,hostedProfileSync:false}),
+  jackpot:Object.freeze({settlementLive:true,hostedProfileSync:true,chikunJackpotLive:true}),
 });
 export function resolvePortalFlags(flags){
   if(flags===undefined||flags===null)return PORTAL_FLAGS;
@@ -19,7 +22,10 @@ export function resolvePortalFlags(flags){
     if(!Object.hasOwn(PORTAL_FLAG_OVERRIDES,flags))throw new RangeError('--flags must be live or preview, got '+JSON.stringify(flags));
     return PORTAL_FLAG_OVERRIDES[flags];
   }
-  if(typeof flags==='object'&&typeof flags.settlementLive==='boolean'&&typeof flags.hostedProfileSync==='boolean')return Object.freeze({settlementLive:flags.settlementLive,hostedProfileSync:flags.hostedProfileSync});
+  // chikunJackpotLive is an optional third boolean (default false).
+  if(typeof flags==='object'&&typeof flags.settlementLive==='boolean'&&typeof flags.hostedProfileSync==='boolean'&&(flags.chikunJackpotLive===undefined||typeof flags.chikunJackpotLive==='boolean')){
+    return Object.freeze({settlementLive:flags.settlementLive,hostedProfileSync:flags.hostedProfileSync,...(flags.chikunJackpotLive===undefined?{}:{chikunJackpotLive:flags.chikunJackpotLive})});
+  }
   throw new TypeError('flags must be live, preview or {settlementLive, hostedProfileSync} booleans');
 }
 
@@ -64,6 +70,33 @@ function renderTrust(html,copy){
   html=renderCopyBlock(html,'ranked-storage','\n      '+paragraphs(copy.trustStorage)+'\n      ','trust.html');
   return renderCopyBlock(html,'ranked-status','\n      '+paragraphs(copy.trustStatus)+'\n      ','trust.html');
 }
+// The Weekly Jackpot rules page (design §D.4): the 16 marked sections, the §F.1 legal block, and noindex
+// with the soft-launch banner until the jackpot is live. A live build refuses a page that still carries
+// the LEGAL-REVIEW-PENDING comment beside the legal block or lacks a section marker.
+export const JACKPOT_RULES_FILE='jackpot/chikun.html';
+export const JACKPOT_LEGAL_PENDING='LEGAL-REVIEW-PENDING';
+const rulesBlocks=blocks=>blocks.map(block=>typeof block==='string'?'<p>'+escapeHtml(block)+'</p>'
+  :block.lead?'<p><strong>'+escapeHtml(block.lead)+'</strong></p>'
+  :'<ul>'+block.list.map(item=>'<li>'+(Array.isArray(item)?'<strong>'+escapeHtml(item[0])+'</strong> '+escapeHtml(item[1]):escapeHtml(item))+'</li>').join('')+'</ul>').join('\n      ');
+export function renderJackpotRules(html,rules,file=JACKPOT_RULES_FILE){
+  html=html.replace(/<meta name="robots" content="[^"]*" \/>/,'<meta name="robots" content="'+(rules.live?'index, follow':'noindex')+'" />')
+    .replace(/<meta name="description" content="[^"]*" \/>/,'<meta name="description" content="'+escapeHtml(rules.description)+'" />')
+    .replace(/<title>[\s\S]*?<\/title>/,'<title>'+escapeHtml(rules.title+" | Lester's Arcade")+'</title>');
+  html=renderCopyBlock(html,'jackpot-rules-title',escapeHtml(rules.title),file);
+  html=renderCopyBlock(html,'jackpot-rules-banner',escapeHtml(rules.banner),file);
+  for(const id of JACKPOT_RULES_SECTIONS){
+    const section=rules.sections[id];
+    html=renderCopyBlock(html,'jackpot-rules-'+id,'\n      <h2 id="rules-'+id+'-title">'+escapeHtml(section.title)+'</h2>'+(section.blocks.length?'\n      '+rulesBlocks(section.blocks):'')+'\n      ',file);
+  }
+  html=renderCopyBlock(html,'jackpot-legal','\n      '+rulesBlocks(rules.legalBlocks)+'\n      ',file);
+  if(rules.live){
+    if(html.includes(JACKPOT_LEGAL_PENDING))throw new Error(file+' still carries '+JACKPOT_LEGAL_PENDING+': the owner confirms the legal text (design §E E10) and the flip commit removes the comment before the jackpot goes live');
+    const missing=JACKPOT_RULES_SECTIONS.filter(id=>!html.includes('<!-- copy:jackpot-rules-'+id+':start -->'));
+    if(missing.length)throw new Error(file+' lacks the rules sections '+missing.join(', ')+' (design §D.4)');
+  }
+  return html;
+}
+
 function renderManifest(text,copy){
   const next=text.replace(/("description":\s*)"(?:[^"\\]|\\.)*"/,(_,prefix)=>prefix+JSON.stringify(copy.manifestDescription));
   if(JSON.parse(next).description!==copy.manifestDescription)throw new Error('manifest.webmanifest needs a "description" field');
@@ -74,16 +107,16 @@ function renderManifest(text,copy){
 // go to outDir (apps/portal by default, so the committed pages are rewritten in place).
 // A file whose content is already current is not rewritten: build.mjs runs this
 // during npm test while other test files read the same pages, and an in-place
-// rewrite would briefly expose a truncated file to them.
-export function buildPortalPages({flags,outDir=portal}={}){
-  const copy=portalCopyFor(resolvePortalFlags(flags));
-  const write=(name,text)=>{
-    const target=resolve(outDir,name);
-    let current=null;
-    try{current=readFileSync(target,'utf8');}catch{}
-    if(current!==text)writeFileSync(target,text);
-  };
-  mkdirSync(resolve(outDir,'discover'),{recursive:true});
+// rewrite would briefly expose a truncated file to them. `sources` replaces a source file's text by its
+// path (tests only: a fixture rules template with reviewed legal text shows the live path).
+// Every page renders in memory first and is written only once all of them rendered, so a guard that
+// throws (the live rules page's legal and section checks) leaves no page half-flipped.
+export function buildPortalPages({flags,outDir=portal,sources={}}={}){
+  const resolved=resolvePortalFlags(flags);
+  const copy=portalCopyFor(resolved);
+  const rules=jackpotRulesCopy(resolved);
+  const pages=new Map();
+  const write=(name,text)=>pages.set(name,text);
   const home=renderHome(readFileSync(resolve(portal,'index.html'),'utf8'),copy);
   write('index.html',home);
   let catalog=home.replace('data-step="wallet-splash"','data-step="cabinet-select"')
@@ -107,17 +140,27 @@ export function buildPortalPages({flags,outDir=portal}={}){
   }
   write('trust.html',renderTrust(readFileSync(resolve(portal,'trust.html'),'utf8'),copy));
   write('manifest.webmanifest',renderManifest(readFileSync(resolve(portal,'manifest.webmanifest'),'utf8'),copy));
-  const urls=['/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),'/trust.html'];
+  write(JACKPOT_RULES_FILE,renderJackpotRules(sources[JACKPOT_RULES_FILE]??readFileSync(resolve(portal,JACKPOT_RULES_FILE),'utf8'),rules));
+  // The rules page joins the sitemap and llms.txt only once the jackpot is live (design §D.4).
+  const urls=['/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),'/trust.html',...(rules.live?[JACKPOT_RULES_PATH]:[])];
   write('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls.map(path=>'<url><loc>https://lestersarcade.io'+path+'</loc></url>').join('\n')+'\n</urlset>\n');
   // The previous site had no robots file. An empty rule set preserves its access
   // policy; this adds only sitemap discovery, no training/search bot directives.
   write('robots.txt','Sitemap: https://lestersarcade.io/sitemap.xml\n');
-  write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)\n\n## Current scope\n"+copy.llmsScope+"\n");
+  write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)"+(rules.live?"\n- [Weekly Jackpot rules](https://lestersarcade.io"+JACKPOT_RULES_PATH+"): "+rules.description:'')+"\n\n## Current scope\n"+copy.llmsScope+"\n");
+  mkdirSync(resolve(outDir,'discover'),{recursive:true});
+  mkdirSync(resolve(outDir,'jackpot'),{recursive:true});
+  for(const [name,text] of pages){
+    const target=resolve(outDir,name);
+    let current=null;
+    try{current=readFileSync(target,'utf8');}catch{}
+    if(current!==text)writeFileSync(target,text);
+  }
   return urls;
 }
 
 // Files written by buildPortalPages, relative to its outDir.
-export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt']);
+export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt',JACKPOT_RULES_FILE]);
 
 // Renders into a scratch directory and returns the generated files under outDir
 // that differ from that render. Nothing under outDir is written.
@@ -153,7 +196,7 @@ export function runPortalPagesCli(argv,output=console){
   const options=parsePortalPagesArgs(argv);
   const flags=resolvePortalFlags(options.flags);
   const state=portalCopyFor(flags).state;
-  const overridden=flags.settlementLive!==PORTAL_FLAGS.settlementLive||flags.hostedProfileSync!==PORTAL_FLAGS.hostedProfileSync;
+  const overridden=flags.settlementLive!==PORTAL_FLAGS.settlementLive||flags.hostedProfileSync!==PORTAL_FLAGS.hostedProfileSync||Boolean(flags.chikunJackpotLive)!==Boolean(PORTAL_FLAGS.chikunJackpotLive);
   const render=state+' copy'+(options.flags?' from --flags '+options.flags:' from settlement.mjs');
   if(options.check){
     const stale=stalePortalPages(options);
@@ -169,7 +212,7 @@ export function runPortalPagesCli(argv,output=console){
     return 1;
   }
   buildPortalPages(options);
-  output.log('Generated homepage metadata, four discovery pages, trust copy, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
+  output.log('Generated homepage metadata, four discovery pages, trust copy, the Weekly Jackpot rules page, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
   return 0;
 }
 

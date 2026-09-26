@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
-import { PORTAL_COPY, escapeHtml, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
+import { PORTAL_FLAGS, escapeHtml, portalCopyFor } from '../apps/portal/src/portal-content.mjs';
 
 const portal = new URL('../apps/portal/', import.meta.url);
 const sections = ['support', 'privacy', 'terms', 'accessibility', 'testnet'];
@@ -44,8 +44,11 @@ test('the trust page Ranked status and storage disclosure follow the settlement 
   const between = key => page.match(new RegExp(`<!-- copy:${key}:start -->([\\s\\S]*?)<!-- copy:${key}:end -->`))?.[1] ?? '';
   assert.ok(page.indexOf('id="privacy"') < page.indexOf('copy:ranked-storage:start') && page.indexOf('copy:ranked-storage:end') < page.indexOf('id="terms"'), 'storage disclosure sits in the privacy section');
   assert.ok(page.indexOf('id="testnet"') < page.indexOf('copy:ranked-status:start'), 'status line sits in the testnet notice');
-  assert.equal(between('ranked-status').trim(), PORTAL_COPY.trustStatus.map(paragraph).join('\n      '));
-  assert.equal(between('ranked-storage').trim(), PORTAL_COPY.trustStorage.map(paragraph).join('\n      '));
+  // The builder renders portalCopyFor(PORTAL_FLAGS); the SPA's PORTAL_COPY leaves out the builder-only
+  // Weekly Jackpot lines (portal-content.mjs jackpotCopy).
+  const pages = portalCopyFor(PORTAL_FLAGS);
+  assert.equal(between('ranked-status').trim(), pages.trustStatus.map(paragraph).join('\n      '));
+  assert.equal(between('ranked-storage').trim(), pages.trustStorage.map(paragraph).join('\n      '));
 
   const preview = portalCopyFor({ settlementLive: false, hostedProfileSync: false });
   assert.equal(preview.trustStatus.map(paragraph)[0].includes('<code>SETTLEMENT_LIVE=false</code>'), true);

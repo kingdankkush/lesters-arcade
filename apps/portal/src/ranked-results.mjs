@@ -112,6 +112,9 @@ export function openRankedResults({
   onClose = null,
   setTimeoutImpl = (callback, ms) => globalThis.setTimeout(callback, ms),
   clearTimeoutImpl = (timer) => globalThis.clearTimeout(timer),
+  // Weekly Jackpot line (jackpot-ui): main.js passes JACKPOT_LIVE, as it passes `live` and `hosted`, so
+  // this chunk does not import the flag module (a shared chunk esbuild would import here too).
+  jackpotLive = false,
 } = {}) {
   if (!documentRef?.createElement) throw new TypeError('openRankedResults needs a document');
   activeView?.close({ restoreFocus: false });
@@ -173,6 +176,9 @@ export function openRankedResults({
   handleLine.id = `${id}-handle`;
   const standingLine = make('p', 'rr-standing');
   hero.append(eyebrow, score, handleLine, standingLine);
+  // Weekly Jackpot line (design §D.3): lazy, Chikun only; its label becomes the share standing.
+  let jackpot = null;
+  if (jackpotLive && ctx.gameId === 'chikun') import('./jackpot/jackpot-results-line.mjs').then((module) => { jackpot = module.default(hero, ctx, documentRef, fetchImpl, () => open && render()); if (open) render(); }).catch(() => {});
 
   const banner = make('div', 'rr-banner');
   banner.setAttribute('role', 'status');
@@ -374,7 +380,9 @@ export function openRankedResults({
   }
 
   function render() {
-    const model = buildRankedResultsModel({ snapshot: currentSnapshot(), context: ctx, standing });
+    const snapshot = currentSnapshot();
+    // The jackpot line updates first, so the model's share text carries the label it settles on.
+    const model = buildRankedResultsModel({ snapshot, context: ctx, standing, standingLabel: jackpot?.update(snapshot) });
     lastModel = model;
     root.dataset.state = model.state;
     dialog.dataset.state = model.state;
