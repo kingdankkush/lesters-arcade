@@ -614,6 +614,7 @@ const NODE_CHECK_FILES = [
   'tests/jackpot-live-dry-run.test.mjs',
   'scripts/rehearse-jackpot-week.mjs',
   'tests/jackpot-api-contract.test.mjs',
+  'scripts/jackpot-flag-flip-dry-run.mjs',
   "scripts/verify-generated-assets.mjs",
   "scripts/sprite-qa.mjs",
   "scripts/ground-texture-audit.mjs",

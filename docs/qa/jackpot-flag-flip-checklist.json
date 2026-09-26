@@ -1,0 +1,493 @@
+{
+  "schema": "lesters-jackpot-flag-flip-checklist-v1",
+  "generatedAt": "2026-09-26T02:32:22.297Z",
+  "head": "56dd9fbc",
+  "scriptSha256": "9224391c0fb55d49207d0a0619ecd76dac3a4b34fc3e78f39951b72d4a2b1691",
+  "command": "node scripts/jackpot-flag-flip-dry-run.mjs --confirm-throwaway",
+  "partial": false,
+  "note": "Throwaway worktree under the OS temp directory, removed at the end. Nothing was committed, pushed or deployed; the jackpot deployment record is a local Hardhat deploy from the real operator and admin addresses. JACKPOT_LIVE was flipped only in the throwaway copy. Local paths are written as <throwaway>, <repo> and ~.",
+  "e4": {
+    "what": "runbook E4: contracts/deployment-record.jackpot.json (a local deploy) and the regenerated module and curated inventory, flag still false",
+    "commands": [
+      {
+        "command": "node scripts/generate-litvm-jackpot.mjs",
+        "exitCode": 0,
+        "output": [
+          "Wrote apps/portal/src/generated/litvm-jackpot.mjs (status 'deployed')."
+        ]
+      },
+      {
+        "command": "npm run assets:hmh:curated-level-kit-runtime",
+        "exitCode": 0,
+        "output": [
+          "  \"assets\": 74,",
+          "  \"missing\": []",
+          "}"
+        ]
+      }
+    ],
+    "files": [
+      {
+        "file": "apps/portal/src/generated/litvm-jackpot.mjs",
+        "removed": 13,
+        "added": 13
+      },
+      {
+        "file": "contracts/deployment-record.jackpot.json",
+        "newFile": true,
+        "removed": 0,
+        "added": 43
+      }
+    ],
+    "suite": {
+      "files": 633,
+      "counts": {
+        "tests": 5118,
+        "failed": 54,
+        "passed": 5064,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 5051,
+        "suites": 8
+      },
+      "ms": 786405
+    },
+    "failuresOutsideLedger": [
+      {
+        "file": "tests/jackpot-server-config.test.mjs",
+        "name": "config.jackpot readiness follows the keeper key, the address check and the deployment",
+        "line": 105,
+        "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'deployed'\n- 'undeployed'\n"
+      },
+      {
+        "file": "tests/jackpot-server-config.test.mjs",
+        "name": "jackpot secrets travel only over stdin",
+        "line": 199,
+        "message": "the key (field \"privateKey\") is for 0x01b573f89af22a95e7c03ffd5cb08afc36dca9f7, but the jackpot module's keeper is 0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f"
+      },
+      {
+        "file": "tests/jackpot-ui-rules-page.test.mjs",
+        "name": "the rules module renders local close times and addresses without a request while the flag is off",
+        "line": 244,
+        "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Contract0xe4230b5aba9f9431b0f5a718b99544f69330ae9cPrize tokentCHIKUN 0x18314f7d76faf933f3d5f233374c1978710a83a9'\n- 'ContractNot deployed yet.'\n"
+      }
+    ],
+    "note": "These are the E4 commit's own test updates (the E4 session makes them with the record and the module); the flip below is measured against this state."
+  },
+  "flip": {
+    "edits": [
+      {
+        "file": "apps/portal/src/jackpot-config.mjs",
+        "line": 14,
+        "find": "export const JACKPOT_LIVE = false;",
+        "replace": "export const JACKPOT_LIVE = true;",
+        "reason": "design J14 / §E E10: the client flag, the only literal the flip changes by hand",
+        "applied": true,
+        "error": null
+      },
+      {
+        "file": "apps/portal/jackpot/chikun.html",
+        "line": 132,
+        "find": "      <!-- LEGAL-REVIEW-PENDING: owner confirms at E10 -->",
+        "replace": "",
+        "reason": "design §D.4 guard: the owner confirms the legal block at E10 (the §F.1 draft or reviewed text in portal-content.mjs jackpotRulesCopy) and the flip commit removes the pending comment; a live build refuses the page while it is there",
+        "applied": true,
+        "error": null
+      }
+    ],
+    "buildCommand": "node scripts/build-portal-pages.mjs",
+    "build": {
+      "exitCode": 0,
+      "output": [
+        "Generated homepage metadata, four discovery pages, trust copy, the Weekly Jackpot rules page, sitemap, and text reference (launch copy)."
+      ]
+    },
+    "inventoryCommand": "npm run assets:hmh:curated-level-kit-runtime",
+    "inventory": {
+      "exitCode": 0,
+      "output": [
+        "  \"missing\": []",
+        "}"
+      ]
+    },
+    "filesChanged": [
+      {
+        "file": "apps/portal/discover/chikun.html",
+        "removed": 1,
+        "added": 2
+      },
+      {
+        "file": "apps/portal/discover/games.html",
+        "removed": 1,
+        "added": 2
+      },
+      {
+        "file": "apps/portal/discover/hard-money-heroes.html",
+        "removed": 1,
+        "added": 2
+      },
+      {
+        "file": "apps/portal/discover/stacked.html",
+        "removed": 1,
+        "added": 2
+      },
+      {
+        "file": "apps/portal/index.html",
+        "removed": 1,
+        "added": 2
+      },
+      {
+        "file": "apps/portal/jackpot/chikun.html",
+        "removed": 4,
+        "added": 3
+      },
+      {
+        "file": "apps/portal/llms.txt",
+        "removed": 1,
+        "added": 3
+      },
+      {
+        "file": "apps/portal/sitemap.xml",
+        "removed": 0,
+        "added": 1
+      },
+      {
+        "file": "apps/portal/src/jackpot-config.mjs",
+        "removed": 1,
+        "added": 1
+      },
+      {
+        "file": "apps/portal/trust.html",
+        "removed": 1,
+        "added": 1
+      }
+    ],
+    "literalsChanged": [
+      {
+        "file": "apps/portal/discover/chikun.html",
+        "changes": [
+          {
+            "before": "…our result. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value. Testnet entries are not refunded. Free…",
+            "after": "…our result. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Testnet entries are not refunded. Free…"
+          },
+          {
+            "before": null,
+            "after": "<details><summary>Is there a jackpot?</summary><p>Yes. The Chikun&#39;s Escape Weekly Jackpot pays the best verified Ranked Chikun&#39;s Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person. Entry fees do not fund the prize. The rules are at lestersarcade.io/jackpot/chi…"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/discover/games.html",
+        "changes": [
+          {
+            "before": "…our result. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value. Testnet entries are not refunded. Free…",
+            "after": "…our result. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Testnet entries are not refunded. Free…"
+          },
+          {
+            "before": null,
+            "after": "<details><summary>Is there a jackpot?</summary><p>Yes. The Chikun&#39;s Escape Weekly Jackpot pays the best verified Ranked Chikun&#39;s Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person. Entry fees do not fund the prize. The rules are at lestersarcade.io/jackpot/chi…"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/discover/hard-money-heroes.html",
+        "changes": [
+          {
+            "before": "…our result. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value. Testnet entries are not refunded. Free…",
+            "after": "…our result. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Testnet entries are not refunded. Free…"
+          },
+          {
+            "before": null,
+            "after": "<details><summary>Is there a jackpot?</summary><p>Yes. The Chikun&#39;s Escape Weekly Jackpot pays the best verified Ranked Chikun&#39;s Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person. Entry fees do not fund the prize. The rules are at lestersarcade.io/jackpot/chi…"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/discover/stacked.html",
+        "changes": [
+          {
+            "before": "…our result. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value. Testnet entries are not refunded. Free…",
+            "after": "…our result. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Testnet entries are not refunded. Free…"
+          },
+          {
+            "before": null,
+            "after": "<details><summary>Is there a jackpot?</summary><p>Yes. The Chikun&#39;s Escape Weekly Jackpot pays the best verified Ranked Chikun&#39;s Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person. Entry fees do not fund the prize. The rules are at lestersarcade.io/jackpot/chi…"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/index.html",
+        "changes": [
+          {
+            "before": "…our result. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value. Testnet entries are not refunded. Free…",
+            "after": "…our result. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Testnet entries are not refunded. Free…"
+          },
+          {
+            "before": null,
+            "after": "<details><summary>Is there a jackpot?</summary><p>Yes. The Chikun&#39;s Escape Weekly Jackpot pays the best verified Ranked Chikun&#39;s Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person. Entry fees do not fund the prize. The rules are at lestersarcade.io/jackpot/chi…"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/jackpot/chikun.html",
+        "changes": [
+          {
+            "before": "  <meta name=\"robots\" content=\"noindex\" />",
+            "after": "  <meta name=\"robots\" content=\"index, follow\" />"
+          },
+          {
+            "before": "…<!-- copy:jackpot-rules-banner:start -->Soft launch: test prizes in tCHIKUN, a token with no value, may be paid to the week&#39;s top eligible Ranked Chikun player. Every payout is reviewed by hand.<!-- copy:jackpot-rules-banner:end --><…",
+            "after": "…<!-- copy:jackpot-rules-banner:start -->The Weekly Jackpot runs on the LitVM LiteForge testnet. Prizes are paid in tCHIKUN, a testnet token with no value.<!-- copy:jackpot-rules-banner:end --><…"
+          },
+          {
+            "before": "      <!-- LEGAL-REVIEW-PENDING: owner confirms at E10 -->",
+            "after": "      <p>Past weeks, their winners and their replays load from the arcade server.</p>"
+          },
+          {
+            "before": "<p>Past weeks are listed here once the Weekly Jackpot is live.</p>",
+            "after": null
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/llms.txt",
+        "changes": [
+          {
+            "before": "Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.",
+            "after": "- [Weekly Jackpot rules](https://lestersarcade.io/jackpot/chikun): How the Chikun's Escape Weekly Jackpot works: who can win, how runs are checked, when prizes are paid, and what is published."
+          },
+          {
+            "before": null,
+            "after": "Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. Testnet zkLTC has no value. The only prize is the Chikun's Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules."
+          },
+          {
+            "before": null,
+            "after": "The Chikun's Escape Weekly Jackpot pays the best verified Ranked Chikun's Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person; its rules are at https://lestersarcade.io/jackpot/chikun."
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/sitemap.xml",
+        "changes": [
+          {
+            "before": null,
+            "after": "<url><loc>https://lestersarcade.io/jackpot/chikun</loc></url>"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/src/jackpot-config.mjs",
+        "changes": [
+          {
+            "before": "export const JACKPOT_LIVE = false;",
+            "after": "export const JACKPOT_LIVE = true;"
+          }
+        ]
+      },
+      {
+        "file": "apps/portal/trust.html",
+        "changes": [
+          {
+            "before": "…t refunded. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.</p>",
+            "after": "…t refunded. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Weekly Jackpot candidates are checked automatically and reviewed by a person before any payout, and every review decision is published on LitVM.</p>"
+          }
+        ]
+      }
+    ],
+    "suite": {
+      "files": 633,
+      "counts": {
+        "tests": 5118,
+        "failed": 63,
+        "passed": 5055,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0,
+        "topLevel": 5051,
+        "suites": 8
+      },
+      "ms": 816360
+    },
+    "testsToUpdate": [
+      {
+        "file": "tests/jackpot-ui-chikun-child.test.mjs",
+        "name": "chikun child keeps the rewards tease while the flag is false",
+        "line": 50,
+        "source": "assert.equal(JACKPOT_LIVE, false);",
+        "message": "Expected values to be strictly equal:\n\ntrue !== false\n",
+        "expected": false,
+        "actual": true
+      },
+      {
+        "file": "tests/jackpot-ui-client.test.mjs",
+        "name": "jackpot flag is false, the config imports nothing, and true implies settlement and a deployed jackpot module",
+        "line": 31,
+        "source": "assert.equal(JACKPOT_LIVE, false, 'committed literal false until the owner-approved flip (design §E E10)');",
+        "message": "committed literal false until the owner-approved flip (design §E E10)\n\ntrue !== false\n",
+        "expected": false,
+        "actual": true
+      },
+      {
+        "file": "tests/jackpot-ui-rules-page.test.mjs",
+        "name": "a live build refuses a rules page with the legal placeholder or a missing section",
+        "line": 197,
+        "source": "assert.throws(() => buildPortalPages({ flags: 'jackpot', outDir: dir }), new RegExp(`${JACKPOT_LEGAL_PENDING}.*E10`));",
+        "message": "Missing expected exception.",
+        "expected": {},
+        "actual": "undefined"
+      },
+      {
+        "file": "tests/jackpot-ui-rules-page.test.mjs",
+        "name": "flag-false portal pages change only the named honesty lines",
+        "line": 137,
+        "source": "assert.doesNotMatch(text, /tCHIKUN|\\/jackpot\\/chikun|Is there a jackpot/i, `${name} names no jackpot while the flag is off`);",
+        "message": "index.html names no jackpot while the flag is off",
+        "expected": {},
+        "actual": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <base href=\"/\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\" />\n    <meta name=\"mobile-web-app-capable\" content=\"yes\" />\n    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n    <meta name=\"theme-color\" content=\"#05070f\" />\n    <link rel=\"manifest\" href=\"./manifest.webmanifest\" />\n    <link rel=\"apple-touch-icon\" href=\"./assets/lester-pilot.svg\" />\n    <title>Lester&#39;s Arcade — Free Browser Games</title>\n    <meta name=\"description\" content=\"Lester&#39;s Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun&#39;s Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\" />\n    <meta name=\"author\" content=\"Lester's Arcade\" />\n    <meta name=\"robots\" content=\"index, follow\" />\n    <link rel=\"canonical\" href=\"https://lestersarcade.io/\" />\n\n    <!-- Open Graph / Social Media -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:url\" content=\"https://lestersarcade.io/\" />\n    <meta property=\"og:title\" content=\"Lester&#39;s Arcade — Free Browser Games\" />\n    <meta property=\"og:description\" content=\"Lester&#39;s Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun&#39;s Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\" />\n    <meta property=\"og:image\" content=\"https://lestersarcade.io/assets/video/arcade-splash-poster.jpg\" />\n    <meta property=\"og:site_name\" content=\"Lester's Arcade\" />\n\n    <!-- Twitter Card -->\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"twitter:url\" content=\"https://lestersarcade.io/\" />\n    <meta name=\"twitter:title\" content=\"Lester&#39;s Arcade — Free Browser Games\" />\n    <meta name=\"twitter:description\" content=\"Lester&#39;s Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun&#39;s Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\" />\n    <meta name=\"twitter:image\" content=\"https://lestersarcade.io/assets/video/arcade-splash-poster.jpg\" />\n\n    <!-- Favicon -->\n    <link rel=\"icon\" type=\"image/svg+xml\" href=\"./assets/favicon.svg\" />\n    <link rel=\"apple-touch-icon\" href=\"./assets/lester-pilot.svg\" />\n<!-- Critical CSS inline (first 2KB) to avoid render blocking -->\n    <style>\n      body { margin: 0; background: var(--navy-950, #05070f); color: var(--text-primary, #e4e4e7); font-family: var(--font-ui, system-ui, sans-serif); }\n      .arcade-shell { min-height: 100vh; }\n      .official-app { position: relative; }\n      .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }\n    </style>\n    <link rel=\"stylesheet\" href=\"./src/design-tokens.css?v=arcade-discovery-20260914\" />\n    <link rel=\"preload\" href=\"./assets/video/arcade-splash-poster.jpg\" as=\"image\" fetchpriority=\"high\" />\n    <link rel=\"modulepreload\" href=\"./dist/main.js?v=arcade-discovery-20260914\" />\n    <link rel=\"stylesheet\" href=\"/portal-discovery.css?v=arcade-discovery-20260914\" />\n    <!-- Deferred stylesheets -->\n    <link rel=\"preload\" href=\"./styles.css?v=arcade-discovery-20260914\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\" />\n    <link rel=\"preload\" href=\"./styles-arcade-polish.css?v=arcade-discovery-20260914\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\" />\n    <noscript>\n      <link rel=\"stylesheet\" href=\"./styles.css?v=arcade-discovery-20260914\" />\n      <link rel=\"stylesheet\" href=\"./styles-arcade-polish.css?v=arcade-discovery-20260914\" />\n    </noscript>\n    <script id=\"portalStructuredData\" type=\"application/ld+json\">{\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://lestersarcade.io/#organization\",\"name\":\"Lester's Arcade\",\"url\":\"https://lestersarcade.io/\",\"logo\":\"https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png\"},{\"@type\":\"WebSite\",\"@id\":\"https://lestersarcade.io/#website\",\"name\":\"Lester's Arcade\",\"url\":\"https://lestersarcade.io/\",\"description\":\"Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\",\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"},\"inLanguage\":\"en\"},{\"@type\":\"WebPage\",\"@id\":\"https://lestersarcade.io/#webpage\",\"url\":\"https://lestersarcade.io/\",\"name\":\"Lester's Arcade — Free Browser Games\",\"description\":\"Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.\",\"isPartOf\":{\"@id\":\"https://lestersarcade.io/#website\"}},{\"@type\":\"VideoGame\",\"@id\":\"https://lestersarcade.io/games/hard-money-heroes#game\",\"name\":\"Hard Money Heroes\",\"url\":\"https://lestersarcade.io/games/hard-money-heroes\",\"description\":\"Fight through the Crypto Wasteland in a top-down roguelite. Choose a hero, collect weapons, complete field objectives, and hold out against the horde.\",\"genre\":\"Survival shooter\",\"image\":\"https://lestersarcade.io/assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg\",\"gamePlatform\":\"Web browser\",\"applicationCategory\":\"Game\",\"operatingSystem\":\"Web browser\",\"playMode\":\"SinglePlayer\",\"isAccessibleForFree\":true,\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"}},{\"@type\":\"VideoGame\",\"@id\":\"https://lestersarcade.io/games/chikun#game\",\"name\":\"Chikun's Escape\",\"url\":\"https://lestersarcade.io/games/chikun\",\"description\":\"Run, jump, and fly through the Ground & Sky course. Time your taps, collect coins, and find a way through hazards as the pace picks up.\",\"genre\":\"Run & fly\",\"image\":\"https://lestersarcade.io/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp\",\"gamePlatform\":\"Web browser\",\"applicationCategory\":\"Game\",\"operatingSystem\":\"Web browser\",\"playMode\":\"SinglePlayer\",\"isAccessibleForFree\":true,\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"}},{\"@type\":\"VideoGame\",\"@id\":\"https://lestersarcade.io/games/stacked#game\",\"name\":\"STACKED\",\"url\":\"https://lestersarcade.io/games/stacked\",\"description\":\"Stack, spin, and seal falling ledger blocks to the arcade soundtrack. Chase cleaner clears while music-driven worlds react around the board.\",\"genre\":\"Falling-block puzzle\",\"image\":\"https://lestersarcade.io/assets/stacked-mode-select/stacked-free-v1.png\",\"gamePlatform\":\"Web browser\",\"applicationCategory\":\"Game\",\"operatingSystem\":\"Web browser\",\"playMode\":\"SinglePlayer\",\"isAccessibleForFree\":true,\"publisher\":{\"@id\":\"https://lestersarcade.io/#organization\"}}]}</script>\n  </head>\n  <body>\n    <a class=\"portal-skip\" href=\"#officialApp\">Skip to arcade content</a>\n    <div class=\"crt-overlay\" aria-hidden=\"true\"></div>\n    <main class=\"arcade-shell official-shell\">\n      <section id=\"officialApp\" class=\"official-app\" tabindex=\"-1\" data-step=\"wallet-splash\" aria-label=\"Lester's Arcade official app\">\n        <div class=\"official-scanline\" aria-hidden=\"true\"></div>\n\n        <div id=\"rankedEntryModal\" class=\"ranked-entry-overlay\" hidden role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"rankedEntryTitle\">\n          <div class=\"ranked-entry-card\">\n            <p class=\"eyebrow\" id=\"rankedEntryTitle\">Ranked · Entry</p>\n            <p class=\"ranked-entry-copy\" id=\"rankedEntryCopy\"><!-- copy:entry-copy:start -->One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.<!-- copy:entry-copy:end --></p>\n            <div class=\"ranked-entry-rows\">\n              <div class=\"ranked-entry-row\"><span>Network</span><strong id=\"rankedEntryNetwork\">LitVM LiteForge · 4441</strong></div>\n              <div class=\"ranked-entry-row\"><span>Wallet</span><strong id=\"rankedEntryWallet\">—</strong></div>\n              <div class=\"ranked-entry-row\"><span>zkLTC balance</span><strong id=\"rankedEntryBalance\">Checking…</strong></div>\n              <div class=\"ranked-entry-row\"><span>Entry</span><strong id=\"rankedEntryFee\">0.1 zkLTC</strong></div>\n              <div class=\"ranked-entry-row\"><span>Settlement reserve<small class=\"ranked-entry-row-note\">pays the relayer that publishes your score on LitVM</small></span><strong id=\"rankedEntryReserve\">0.002 zkLTC</strong></div>\n              <div class=\"ranked-entry-row ranked-entry-row-total\"><span>Total</span><strong id=\"rankedEntryTotal\">0.102 zkLTC</strong></div>\n              <div class=\"ranked-entry-row ranked-entry-row-split\"><span>Where it goes</span><strong>85% to the game's developer · 15% to the arcade</strong></div>\n              <div id=\"rankedEntryJackpot\" class=\"ranked-entry-row ranked-entry-jackpot\" hidden></div>\n            </div>\n            <div id=\"rankedEntryChainGuard\" class=\"ranked-entry-chainguard\" hidden></div>\n            <p id=\"rankedEntryStatus\" class=\"ranked-entry-status\" role=\"status\" aria-live=\"polite\"></p>\n            <div class=\"ranked-entry-actions\">\n              <button id=\"rankedEntryCancel\" class=\"back-nav-button\" type=\"button\">Cancel</button>\n              <button id=\"rankedEntryApprove\" class=\"primary-button big-action\" type=\"button\">Start Ranked Run</button>\n            </div>\n            <a id=\"rankedEntryFreeLink\" class=\"ranked-entry-free-link\" href=\"/games\">Free Mode is always free</a>\n            <p class=\"tiny-note\" id=\"rankedEntryFootnote\"><!-- copy:entry-footnote:start -->The entry contract quotes the exact total. Testnet entries are not refunded.<!-- copy:entry-footnote:end --></p>\n          </div>\n        </div>\n\n        <nav class=\"official-nav official-simplified-nav\" aria-label=\"Lester's Arcade main navigation\">\n          <a class=\"portal-brand\" href=\"/\" aria-label=\"Lester's Arcade home\"><img src=\"/assets/brand/lesters-arcade-logo-horizontal.png\" alt=\"Lester's Arcade\" width=\"600\" height=\"223\"></a>\n          <div id=\"officialNavTabs\" class=\"official-nav-tabs\"><a class=\"official-nav-tab\" href=\"/games\">Games</a><a class=\"official-nav-tab\" href=\"/profile\">Profile</a><a class=\"official-nav-tab\" href=\"/scores\">Scores</a><a class=\"official-nav-tab\" href=\"/settings\">Settings</a></div>\n        </nav>\n\n        <!-- U11a. Shown whenever the arcade fell back to the local test identity\n             because no browser wallet answered. It lives in the app shell rather\n             than on one route so the state is legible on every screen. -->\n        <div id=\"simulatedWalletBanner\" class=\"simulated-wallet-banner\" role=\"status\" hidden></div>\n\n\n\n        <section id=\"officialWalletSplash\" class=\"official-view wallet-splash-view portal-home\">\n          <div class=\"portal-hero\">\n            <div class=\"portal-hero-copy\">\n              <p class=\"portal-kicker\"><span class=\"portal-open-dot\" aria-hidden=\"true\"></span> Browser games. Litecoin culture.</p>\n              <h1>Good games.<br><em>One more run.</em></h1>\n              <p class=\"portal-lead\">Welcome to Lester's Arcade. Survive the wasteland, make your escape, or find your rhythm in falling blocks. Pick a cabinet and play Free, right here in your browser.</p>\n              <div class=\"portal-actions\">\n                <a id=\"officialGuestEnterButton\" class=\"portal-button\" href=\"/games\">Browse Arcade</a>\n                <button id=\"officialConnectButton\" class=\"portal-button portal-button-outline\" type=\"button\">Sign in</button>\n              </div>\n              <p class=\"portal-entry-note\">Free play needs no wallet. No download. Just a browser.</p>\n              <button id=\"officialHmhFreeQuickplayButton\" class=\"portal-text-link\" type=\"button\">Play Hard Money Heroes Free</button>\n              <p id=\"officialGuestQuickplayStatus\" class=\"tiny-note\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\" hidden></p>\n            </div>\n            <figure class=\"portal-hero-film\">\n              <div class=\"portal-film-label\"><span>Lester &amp; Lilly welcome you</span><span aria-hidden=\"true\">↗</span></div>\n              <div class=\"splash-marquee\">\n                <video id=\"splashLoopVideo\" class=\"splash-marquee-art splash-loop-video\" data-portal-video data-src=\"/assets/video/arcade-splash-loop.mp4\" poster=\"/assets/video/arcade-splash-poster.jpg\" loop muted playsinline preload=\"none\" aria-label=\"Lester and Lilly in a neon-lit arcade\"></video>\n              </div>\n              <figcaption><span>The arcade is open.</span><button class=\"portal-media-toggle\" type=\"button\" data-video-toggle=\"splashLoopVideo\" aria-pressed=\"false\">Play film</button></figcaption>\n            </figure>\n          </div>\n          <div class=\"portal-ticker\" aria-label=\"Available games\"><span>Now playing</span><a href=\"/games/hard-money-heroes\">Hard Money Heroes</a><span aria-hidden=\"true\">✦</span><a href=\"/games/chikun\">Chikun's Escape</a><span aria-hidden=\"true\">✦</span><a href=\"/games/stacked\">STACKED</a></div>\n\n          <section class=\"portal-section\" aria-labelledby=\"homeGamesTitle\">\n            <div class=\"portal-section-heading\"><div><p class=\"portal-kicker\">01 / On the floor</p><h2 id=\"homeGamesTitle\">Three ways to lose track of time.</h2></div><a class=\"portal-text-link\" href=\"/games\">Meet the cabinets ↗</a></div>\n            <div class=\"portal-game-previews\">\n              <a href=\"/games/hard-money-heroes\" class=\"portal-game-preview\"><div class=\"portal-preview-art\"><img src=\"/assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg\" alt=\"Hard Money Heroes wasteland key art\" width=\"1200\" height=\"675\" loading=\"lazy\" decoding=\"async\"></div><div class=\"portal-preview-caption\"><span class=\"portal-kicker\">Survival shooter</span><h3>Hard Money Heroes <span aria-hidden=\"true\">↗</span></h3><p>Choose your hero. Build your loadout. Hold off the horde.</p></div></a>\n              <a href=\"/games/chikun\" class=\"portal-game-preview\"><div class=\"portal-preview-art\"><img src=\"/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp\" alt=\"Chikun's Escape game artwork\" width=\"1200\" height=\"675\" loading=\"lazy\" decoding=\"async\"></div><div class=\"portal-preview-caption\"><span class=\"portal-kicker\">Run &amp; fly</span><h3>Chikun's Escape <span aria-hidden=\"true\">↗</span></h3><p>Run, jump, and flap your way through Ground &amp; Sky.</p></div></a>\n              <a href=\"/games/stacked\" class=\"portal-game-preview\"><div class=\"portal-preview-art\"><img src=\"/assets/stacked-mode-select/stacked-free-v1.png\" alt=\"Glowing falling blocks in a STACKED music world\" width=\"1672\" height=\"941\" loading=\"lazy\" decoding=\"async\"></div><div class=\"portal-preview-caption\"><span class=\"portal-kicker\">Falling-block puzzle · Beta</span><h3>STACKED <span aria-hidden=\"true\">↗</span></h3><p>Stack, spin, and seal blocks to the arcade soundtrack.</p></div></a>\n            </div>\n          </section>\n\n          <section id=\"how-it-works\" class=\"portal-section portal-how\" aria-labelledby=\"howTitle\">\n            <div class=\"portal-how-intro\"><p class=\"portal-kicker\">02 / Make yourself at home</p><h2 id=\"howTitle\">How does Lester's Arcade work?</h2><p><!-- copy:how-intro:start -->Lester&#39;s Arcade brings original browser games, a shared jukebox, and wallet-based player profiles into one arcade. Start with Free Mode. Sign in with a wallet when you&#39;re ready to play Ranked on the LitVM testnet.<!-- copy:how-intro:end --></p><a class=\"portal-text-link\" href=\"/games\">Find your first game →</a><img src=\"/assets/generated/lesters-arcade-parent-portal-hero-textfree-web.jpg\" alt=\"Illustrated neon arcade cabinet row\" width=\"1024\" height=\"576\" loading=\"lazy\" decoding=\"async\"></div>\n            <ol class=\"portal-steps\">\n              <li><span class=\"portal-step-number\" aria-hidden=\"true\">01</span><div><h3>Walk in. Pick a cabinet.</h3><p>Every active game has Free Mode. Try a survival run, a quick escape, or a puzzle session. Keyboard, mouse, and touch controls are supported.</p></div></li>\n              <li><span class=\"portal-step-number\" aria-hidden=\"true\">02</span><div><h3><!-- copy:how-connect-title:start -->Sign in with your wallet.<!-- copy:how-connect-title:end --></h3><p><!-- copy:how-connect:start -->Choose your wallet and sign one message. Signing in costs nothing and sends no transaction. Each Ranked run then costs 0.102 testnet zkLTC, confirmed once in your wallet.<!-- copy:how-connect:end --></p><button class=\"portal-text-link\" type=\"button\" data-portal-connect><!-- copy:how-connect-action:start -->Sign in with a wallet →<!-- copy:how-connect-action:end --></button></div></li>\n              <li><span class=\"portal-step-number\" aria-hidden=\"true\">03</span><div><h3>Put your name on your runs.</h3><p><!-- copy:how-profile:start -->Choose a display name and avatar on chain; each change is a small transaction you pay for. Your public profile shows your best scores, verified Ranked runs, and the achievements recorded for your wallet.<!-- copy:how-profile:end --></p><a class=\"portal-text-link\" href=\"/profile\">Explore player profiles →</a></div></li>\n            </ol>\n          </section>\n\n          <section class=\"portal-section portal-scores-story\" aria-labelledby=\"scoresTitle\">\n            <div class=\"portal-score-art\" aria-hidden=\"true\"><span class=\"portal-kicker\">Your next personal best</span><div class=\"portal-score-lines\"><span>YOUR NAME</span><span>YOUR RUN</span><span>YOUR NEXT TRY</span></div><span class=\"portal-score-stamp\">ONE MORE?</span></div>\n            <div><p class=\"portal-kicker\">03 / Chase your next best</p><h2 id=\"scoresTitle\">Every run gives you something to beat.</h2><p><!-- copy:scores-lead:start -->Each game has global Weekly, Monthly, and All-time leaderboards that rank the best verified Ranked score of each wallet. Revisit a run, change your approach, and come back for another try.<!-- copy:scores-lead:end --></p><p class=\"portal-note\"><!-- copy:scores-note:start -->Ranked runs are checked by the arcade server and published on the LitVM LiteForge testnet, and each leaderboard row links to its transaction. Weekly boards reset on Monday at 00:00 UTC and monthly boards on the 1st at 00:00 UTC.<!-- copy:scores-note:end --></p><div class=\"portal-actions\"><a class=\"portal-button\" href=\"/scores\">View scoreboards ↗</a><a class=\"portal-text-link\" href=\"/profile\">Your profile →</a></div><p id=\"officialWalletCopy\" class=\"portal-note\"><!-- copy:scores-wallet:start -->Sign in with a wallet to play Ranked and follow your runs on your profile.<!-- copy:scores-wallet:end --></p><section id=\"jackpotPromo\" class=\"jackpot-promo\" aria-label=\"Weekly Jackpot\" hidden></section></div>\n          </section>\n\n          <section class=\"portal-section portal-jukebox-story\" aria-labelledby=\"jukeboxTitle\"><figure><video id=\"portalPromoVideo\" data-portal-video data-src=\"/assets/video/arcade-promo-loop.mp4\" poster=\"/assets/video/arcade-promo-poster.jpg\" loop muted playsinline preload=\"none\" aria-label=\"Lester and Lilly playing air hockey\"></video><figcaption><span>A little arcade atmosphere.</span><button type=\"button\" class=\"portal-media-toggle\" data-video-toggle=\"portalPromoVideo\" aria-pressed=\"false\">Play film</button></figcaption></figure><div><p class=\"portal-kicker\">Sound on, when you're ready</p><h2 id=\"jukeboxTitle\">The jukebox is part of the ritual.</h2><p>Queue up the Lester's Arcade playlist. Skip tracks, shuffle the mix, and set the volume from the shared music player. The games bring their own rhythm; you choose the soundtrack.</p><button type=\"button\" class=\"portal-text-link\" data-open-jukebox>Open the jukebox →</button></div></section>\n\n          <section class=\"portal-section portal-faq\" aria-labelledby=\"faqTitle\"><div><p class=\"portal-kicker\">Before your first run</p><h2 id=\"faqTitle\">A few things to know.</h2><a class=\"portal-text-link\" href=\"/trust.html#support\">Need a hand? →</a></div><div id=\"portalFaqList\"><details><summary>Do I need a wallet to play?</summary><p>No. Free Mode is always free and needs no wallet. Browse the cabinets, choose a game, and start playing in your browser. You need a wallet only for Ranked.</p></details>\n<details><summary>What does signing in with a wallet do?</summary><p>You sign one message to prove the wallet is yours. Signing in costs nothing and sends no transaction. Your wallet address is your player identity, so your profile, Ranked runs, and achievements follow you to any device.</p></details>\n<details><summary>Are profiles and leaderboards online?</summary><p>Yes. Each game has global Weekly, Monthly, and All-time leaderboards that rank the best verified Ranked score of each wallet. Weekly boards reset on Monday at 00:00 UTC and monthly boards on the 1st at 00:00 UTC. Every wallet has a public profile with its best scores, verified runs, and the achievements the arcade server recorded for it. You choose your display name and avatar on chain, with a small transaction you pay for. Names that break the arcade&#39;s rules are hidden on its pages by moderation.</p></details>\n<details><summary>Does Ranked cost money or pay prizes?</summary><p>Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC entry, split 85% to the game&#39;s developer and 15% to the arcade, plus a 0.002 zkLTC settlement reserve that pays the arcade&#39;s relayer to publish your result. Testnet zkLTC has no value. The only prize is the Chikun&#39;s Escape Weekly Jackpot, paid in tCHIKUN, a testnet token with no value; see the rules. Testnet entries are not refunded. Free Mode is always free.</p></details>\n<details><summary>Is there a jackpot?</summary><p>Yes. The Chikun&#39;s Escape Weekly Jackpot pays the best verified Ranked Chikun&#39;s Escape score of each funded week in tCHIKUN, a testnet token with no value, after a review by a person. Entry fees do not fund the prize. The rules are at lestersarcade.io/jackpot/chikun.</p></details>\n<details><summary>How are Ranked runs checked and published?</summary><p>When a Ranked run ends, the arcade server checks it. Chikun&#39;s Escape and STACKED runs are replayed on the server from their recorded inputs. Hard Money Heroes runs are plausibility-checked against the game&#39;s limits; they are not replayed. The arcade&#39;s relayer then publishes the result on LitVM, and your results screen links to the transaction. If publishing fails, it retries automatically, and you can retry it from your profile.</p></details>\n<details><summary>Can I play on my phone?</summary><p>The three active games support on-screen touch controls as well as desktop input. A current browser is required. Performance varies by device; the games include settings for controls, audio, and visual effects.</p></details></div></section>\n          <div class=\"portal-final-cta\"><p>Found your game?</p><a class=\"portal-button\" href=\"/games\">Step into the arcade ↗</a></div>\n          <a id=\"adBannerHorizontal\" class=\"portal-partner\" href=\"mailto:kingdankkush420@gmail.com?subject=Lester%27s%20Arcade%20Ad%20Space\" rel=\"sponsored\" data-ad-slot=\"horizontal-bottom\"><span class=\"portal-kicker\">Partner with the arcade</span><span>Put your brand on the floor.</span><span>Ask about ad space ↗</span></a>\n        </section>\n\n        <section id=\"officialArcadeFloor\" class=\"official-view arcade-floor-view\" hidden>\n          <div class=\"arcade-walk-in\">\n            <p id=\"officialProfileEyebrow\" class=\"eyebrow\">Guest practice session</p>\n            <h1 id=\"officialProfileTitle\">Pick your cabinet.</h1>\n            <p id=\"officialProfileCopy\">Loading cabinet access, local practice history, and testnet mode options.</p>\n          </div>\n          <div class=\"cabinet-motion-toolbar\"><p class=\"portal-catalog-note\">Free to play · Keyboard &amp; touch · No wallet needed</p>\n            <button id=\"cabinetMotionToggle\" class=\"secondary-button\" type=\"button\" aria-controls=\"officialCabinetGrid\" aria-pressed=\"false\">Pause cabinet rotation</button>\n          </div>\n          <div id=\"officialCabinetGrid\" class=\"official-cabinet-grid official-key-art-grid\" aria-label=\"Arcade cabinet selection\"></div>\n        </section>\n\n        <section id=\"officialGameIntroSplash\" class=\"official-view game-intro-splash-view\" hidden>\n          <div class=\"game-intro-shell\">\n            <div class=\"game-intro-heading\">\n              <p class=\"eyebrow\">Cabinet Boot Sequence</p>\n              <h2>Hard Money Heroes</h2>\n              <p id=\"hardMoneyHeroesIntroStatus\" class=\"machine-copy\">Loading Lester’s intro transmission. The clip fades to black before the game menu appears.</p>\n            </div>\n            <div class=\"game-intro-video-frame\" aria-label=\"Hard Money Heroes intro splash video\">\n              <video id=\"hardMoneyHeroesIntroVideo\" class=\"game-intro-video\" src=\"./assets/video/hard-money-heroes-intro.mp4\" poster=\"./assets/hard-money-heroes/screens/boot-splash.png\" preload=\"none\" playsinline controls></video>\n              <div id=\"hardMoneyHeroesIntroFade\" class=\"game-intro-fade\" aria-hidden=\"true\"></div>\n            </div>\n            <div class=\"game-intro-controls\">\n              <button id=\"hardMoneyHeroesIntroSkipButton\" class=\"primary-button big-action\" type=\"button\">Skip to Game Menu</button>\n              <p class=\"tiny-note\">Free play needs no wallet, and Hard Money Heroes never interrupts it with a wallet prompt.</p>\n            </div>\n          </div>\n        </section>\n\n        <section id=\"officialModeSelect\" class=\"official-view mode-select-view\" hidden>\n          <button id=\"officialModeBackButton\" class=\"back-nav-button\" type=\"button\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#back\"></use></svg> Back to Cabinets</button>\n          <div class=\"mode-select-heading\">\n            <p id=\"officialModeEyebrow\" class=\"eyebrow\">Selected Cabinet</p>\n            <h1 id=\"officialModeTitle\">Hard Money Heroes</h1>\n            <p id=\"officialModeCopy\" class=\"machine-copy\"><!-- copy:mode-copy:start -->Choose Free Mode to play without a wallet, or sign in and choose Play Ranked to compete on the LitVM testnet.<!-- copy:mode-copy:end --></p>\n            <p id=\"officialModeArtNote\" class=\"mode-art-note\" hidden>Temporary derived art is active in the development harness. Final production art is still required.</p>\n          </div>\n          <div class=\"official-mode-grid\">\n            <button id=\"officialFreeModeButton\" class=\"mode-card\" type=\"button\">\n              <img id=\"officialFreeModeBanner\" class=\"mode-card-banner\" src=\"./assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg\" alt=\"Hard Money Heroes Free Mode key art\" loading=\"lazy\" decoding=\"async\" />\n              <svg class=\"arcade-svg-icon arcade-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#infinity\"></use></svg>\n              <strong id=\"officialFreeModeTitle\">Free Mode</strong>\n              <span id=\"officialFreeModeCopy\">Practice only. No official score, progress, achievements, or chain writes.</span>\n            </button>\n            <button id=\"officialRankedModeButton\" class=\"mode-card ranked-card\" type=\"button\">\n              <img id=\"officialRankedModeBanner\" class=\"mode-card-banner\" src=\"./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg\" alt=\"Hard Money Heroes Ranked key art\" loading=\"lazy\" decoding=\"async\" />\n              <svg class=\"arcade-svg-icon arcade-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#star\"></use></svg>\n              <strong id=\"officialRankedModeTitle\">Play Ranked</strong>\n              <span id=\"officialRankedModeCopy\"><!-- copy:mode-ranked:start -->0.102 testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.<!-- copy:mode-ranked:end --></span>\n            </button>\n          </div>\n          <fieldset id=\"hmhChallengePanel\" class=\"hmh-challenge-panel\" hidden>\n            <legend>Free practice course</legend>\n            <label for=\"hmhChallengeChoice\">Choose a seed schedule</label>\n            <select id=\"hmhChallengeChoice\" aria-describedby=\"hmhChallengeStatus\">\n              <option value=\"random\">Fresh seed each run</option>\n              <option value=\"daily\">Daily UTC challenge</option>\n              <option value=\"weekly\">Weekly UTC challenge (Monday start)</option>\n              <option id=\"hmhChallengeSharedOption\" value=\"shared\" hidden>Shared course</option>\n            </select>\n            <p id=\"hmhChallengeStatus\" class=\"tiny-note\" role=\"status\" aria-live=\"polite\"></p>\n            <div class=\"hmh-challenge-share\">\n              <label for=\"hmhChallengeLink\">Shareable course link</label>\n              <input id=\"hmhChallengeLink\" type=\"url\" readonly spellcheck=\"false\" aria-describedby=\"hmhChallengeStatus\" />\n              <button id=\"hmhChallengeCopy\" type=\"button\" disabled>Copy challenge link</button>\n            </div>\n          </fieldset>\n          <div id=\"officialRankedTooltip\" class=\"ranked-tooltip\"></div>\n          <div id=\"portalGameDetails\"></div>\n        </section>\n\n        <section id=\"officialCharacterSelect\" class=\"official-view character-select-view\" hidden>\n          <button id=\"officialCharacterBackButton\" class=\"back-nav-button\" type=\"button\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#back\"></use></svg> Back to Mode Select</button>\n          <div class=\"char-select-head\">\n            <p class=\"eyebrow\">Choose Your Hero</p>\n            <h2>Hard Money Heroes</h2>\n            <p class=\"machine-copy\">Pick the hero for your run. More heroes unlock as Lester's Arcade grows.</p>\n          </div>\n          <p class=\"hero-carousel-hint\" aria-hidden=\"true\">Swipe to browse all four heroes <span>→</span></p>\n          <div id=\"officialCharacterRoster\" class=\"character-roster\" aria-label=\"Hero selection\"></div>\n        </section>\n\n        <section id=\"officialLevelIntro\" class=\"official-view level-intro-view\" hidden>\n          <div class=\"level-intro-card\">\n            <button id=\"officialLevelBackButton\" class=\"back-nav-button\" type=\"button\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#back\"></use></svg> Back to Hero Select</button>\n            <p class=\"eyebrow\">Level 1 // Into the Forked Frontier</p>\n            <h2>Level 1: The Crypto Wasteland</h2>\n          <p>The relay has gone silent. Beyond it lie broken roads, overgrown settlements and the Liquidator's yard. Your approach changes each run. Follow glowing supplies, find stronger weapons and keep moving as the horde closes in. The run ends when your hero falls. The next screen prepares your hero and the world while you review your insertion point and field tips.</p>\n            <div class=\"level-control-strip\">\n              <span>⌨ WASD / arrows: move (default keys)</span>\n              <span>🖱 Mouse: aim — gun auto-fires</span>\n              <span>📱 MOVE: move · AIM: aim manually</span>\n              <span>🎯 Release AIM: automatic targeting resumes</span>\n              <span>💣 Grenade: right click / F · 📱 GRENADE</span>\n              <span>⚡ Dodge, close combat and machinery: automatic</span>\n              <span>⬆ Level-up: choose an upgrade · ⎋ Esc / pause button: menu</span>\n            </div>\n            <p class=\"tiny-note\">Collect pickups as you move. Walk near machinery to activate it. You can change supported keyboard bindings in Settings.</p>\n            <button id=\"officialBeginLevelButton\" class=\"primary-button big-action\" type=\"button\">Begin Level 1: The Crypto Wasteland</button>\n          </div>\n        </section>\n\n        <section id=\"officialGameplay\" class=\"official-view gameplay-view\" hidden>\n          <button id=\"combatMenuIconButton\" class=\"combat-menu-icon-button\" type=\"button\" aria-label=\"Pause and open game menu\" aria-haspopup=\"dialog\"><svg class=\"arcade-svg-icon arcade-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#menu\"></use></svg></button>\n          <div class=\"gameplay-topbar\">\n            <div>\n              <p class=\"eyebrow\">Hard Money Heroes</p>\n              <h2 id=\"officialGameModeTitle\">Level 1: The Crypto Wasteland // Free Mode</h2>\n            </div>\n            <p id=\"officialGameStateCopy\" class=\"tiny-note\">Free practice stays local. Ranked testnet runs submit only from the game-over screen.</p>\n          </div>\n          <div id=\"roguelikeStatBar\" class=\"roguelike-stat-bar\" aria-label=\"Run stats\" aria-live=\"polite\" hidden></div>\n          <div id=\"officialGameplayControls\" class=\"gameplay-control-bar\" aria-label=\"Hard Money Heroes gameplay menu controls\">\n            <button id=\"combatPauseButton\" class=\"secondary-button\" type=\"button\">Pause</button>\n            <button id=\"combatRestartButton\" class=\"secondary-button\" type=\"button\">Restart</button>\n            <button id=\"combatMusicButton\" class=\"secondary-button\" type=\"button\">Music On</button>\n            <button id=\"combatShakeButton\" class=\"secondary-button\" type=\"button\" aria-label=\"Toggle screen shake\">Shake On</button>\n            <button id=\"combatGoreButton\" class=\"secondary-button\" type=\"button\" aria-label=\"Toggle gore effects\">Gore On</button>\n            <button id=\"combatCharacterButton\" class=\"secondary-button\" type=\"button\" aria-label=\"Switch hero\">Switch Hero</button>\n            <button id=\"combatViewportButton\" class=\"secondary-button\" type=\"button\">Fullscreen</button>\n            <button id=\"combatReturnMenuButton\" class=\"secondary-button\" type=\"button\">Game Menu</button>\n            <button id=\"combatExitButton\" class=\"secondary-button\" type=\"button\">Exit Game</button>\n          </div>\n          <div id=\"combatMenuPanel\" class=\"combat-menu-panel\" hidden>\n            <p class=\"eyebrow\">Game Menu</p>\n            <h3 id=\"combatMenuTitle\">Paused</h3>\n            <p id=\"combatMenuCopy\">Restart, music, switch hero, and exit controls are always available during gameplay.</p>\n            <div id=\"combatGameOverSummary\" class=\"game-over-summary\" hidden aria-live=\"polite\"></div>\n            <div id=\"combatMenuActionGrid\" class=\"combat-menu-action-grid\" aria-label=\"Pause and game-over actions\"></div>\n            <div id=\"combatSettingsPanel\" class=\"combat-settings-panel\" hidden aria-label=\"Gameplay settings\"></div>\n          </div>\n          <div id=\"combatHudOverlay\" class=\"combat-hud-overlay\" aria-label=\"Hard Money Heroes health score timer power-ups and status\" aria-live=\"polite\"></div>\n          <aside id=\"tacticalBalanceDebugOverlay\" class=\"tactical-debug-overlay\" hidden aria-label=\"Developer tactical balance debug overlay\"></aside>\n          <div id=\"officialCombatMount\" class=\"official-combat-mount\"></div>\n        </section>\n\n<aside id=\"arcadeMusicPlayer\" class=\"arcade-music-player\" data-expanded=\"false\" data-playing=\"false\" data-muted=\"false\" aria-label=\"Lester's Arcade music player\">\n          <audio id=\"arcadeMusicAudio\" preload=\"metadata\"></audio>\n          <div class=\"arcade-music-now\">\n            <span class=\"arcade-music-kicker\">Arcade Jukebox</span>\n            <strong id=\"arcadeMusicTitle\">Lester's Arcade Playlist</strong>\n            <span id=\"arcadeMusicTime\" class=\"arcade-music-time\">0:00 / 0:00</span>\n          </div>\n          <label class=\"arcade-music-progress\">\n            <span class=\"arcade-music-sr-only\">Seek arcade music</span>\n            <span id=\"arcadeMusicProgressFill\" class=\"arcade-music-progress-fill\"></span>\n            <input id=\"arcadeMusicSeek\" type=\"range\" min=\"0\" max=\"1000\" step=\"1\" value=\"0\" aria-label=\"Seek arcade music\">\n          </label>\n          <div class=\"arcade-music-controls\" aria-label=\"Arcade music controls\">\n            <button id=\"arcadeMusicPreviousButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Previous song\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#previous\"></use></svg></button>\n            <button id=\"arcadeMusicPlayButton\" class=\"arcade-music-button primary\" type=\"button\" aria-label=\"Play arcade music\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#play\"></use></svg></button>\n            <button id=\"arcadeMusicMuteButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Mute arcade music\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#volume\"></use></svg></button>\n            <button id=\"arcadeMusicNextButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Next song\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#next\"></use></svg></button>\n            <button id=\"arcadeMusicShuffleButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Turn shuffle on\" aria-pressed=\"false\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#shuffle\"></use></svg></button>\n            <button id=\"arcadeMusicExpandButton\" class=\"arcade-music-button\" type=\"button\" aria-label=\"Expand arcade music player\"><svg class=\"arcade-svg-icon\" aria-hidden=\"true\" focusable=\"false\"><use href=\"./assets/icons/arcade-ui.svg#chevron-down\"></use></svg></button>\n          </div>\n          <div class=\"arcade-music-expanded-panel\">\n            <div class=\"arcade-music-volume-row\">\n              <label for=\"arcadeMusicVolume\">Volume</label>\n              <input id=\"arcadeMusicVolume\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"70\">\n              <output id=\"arcadeMusicVolumeValue\" for=\"arcadeMusicVolume\">70%</output>\n            </div>\n            <span class=\"arcade-music-duration-label\">Length <strong id=\"arcadeMusicDuration\">0:00</strong></span>\n            <ol id=\"arcadeMusicQueueList\" class=\"arcade-music-queue\"></ol>\n          </div>\n        </aside>\n        <noscript><p class=\"portal-noscript\">You can browse the arcade and game guides without JavaScript. Enable JavaScript to play games, connect a wallet, or open your profile.</p></noscript>\n        <footer class=\"official-footer\" aria-label=\"Lester's Arcade footer\">\n          <span>Copyright 2026</span>\n          <span>Designed by: <strong>KingDankKush</strong></span>\n          <nav class=\"official-footer-links\" aria-label=\"Support and policies\">\n            <a href=\"./trust.html#support\">Support</a>\n            <a href=\"./trust.html#privacy\">Privacy</a>\n            <a href=\"./trust.html#terms\">Terms</a>\n            <a href=\"./trust.html#accessibility\">Accessibility</a>\n            <a href=\"./trust.html#testnet\">Testnet notice</a>\n          </nav>\n        </footer>\n      </section>\n    </main>\n\n    <script type=\"module\" src=\"./dist/main.js?v=arcade-discovery-20260914\"></script>\n    <script>\n      // Register the service worker for offline + repeat-visit caching. Fails\n      // silently on unsupported browsers / file:// and never blocks the app.\n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});\n        });\n      }\n    </script>\n  </body>\n</html>\n"
+      },
+      {
+        "file": "tests/jackpot-ui-rules-page.test.mjs",
+        "name": "the rules page is noindex and out of the sitemap until live",
+        "line": null,
+        "source": null,
+        "message": "The input did not match the regular expression /<meta name=\"robots\" content=\"noindex\" \\/>/. Input:\n\n'<!doctype html>\\n' +\n  '<html lang=\"en\">\\n' +\n  '<head>\\n' +\n  '  <meta charset=\"utf-8\" />\\n' +\n  '  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\\n' +\n  '  <meta name=\"theme-color\" content=\"#05070f\" />\\n' +\n  '  <meta name=\"robots\" content=\"index, follow\" />\\n' +\n  '  <meta name=\"description\" content=\"How the Chikun&#39;s Escape Weekly Jackpot works: who can win, how runs are checked, when prizes are paid, and what is published.\" />\\n' +\n  '  <title>Chikun&#39;s Escape",
+        "expected": {},
+        "actual": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <meta name=\"theme-color\" content=\"#05070f\" />\n  <meta name=\"robots\" content=\"index, follow\" />\n  <meta name=\"description\" content=\"How the Chikun&#39;s Escape Weekly Jackpot works: who can win, how runs are checked, when prizes are paid, and what is published.\" />\n  <title>Chikun&#39;s Escape Weekly Jackpot rules | Lester&#39;s Arcade</title>\n  <link rel=\"canonical\" href=\"https://lestersarcade.io/jackpot/chikun\" />\n  <link rel=\"icon\" type=\"image/svg+xml\" href=\"/assets/favicon.svg\" />\n  <link rel=\"stylesheet\" href=\"/src/design-tokens.css\" />\n  <link rel=\"stylesheet\" href=\"/trust.css\" />\n  <link rel=\"stylesheet\" href=\"/src/styles/jackpot.css?v=jackpot-ui-20260925\" />\n  <script type=\"module\" src=\"/jackpot/chikun-rules.mjs\"></script>\n</head>\n<body class=\"jackpot-rules\">\n  <!-- Generated in place by scripts/build-portal-pages.mjs from portal-content.mjs jackpotRulesCopy(): edit the\n       copy there, then run node scripts/build-portal-pages.mjs. Served at /jackpot/chikun (vercel.json rewrite). -->\n  <a class=\"skip-link\" href=\"#main\">Skip to content</a>\n  <header class=\"trust-header\">\n    <a href=\"/\">Back to the arcade</a>\n    <p class=\"eyebrow\">Lester's Arcade · Chikun's Escape</p>\n    <h1><!-- copy:jackpot-rules-title:start -->Chikun&#39;s Escape Weekly Jackpot rules<!-- copy:jackpot-rules-title:end --></h1>\n    <p class=\"jackpot-banner\" id=\"jackpotRulesBanner\"><!-- copy:jackpot-rules-banner:start -->The Weekly Jackpot runs on the LitVM LiteForge testnet. Prizes are paid in tCHIKUN, a testnet token with no value.<!-- copy:jackpot-rules-banner:end --></p>\n    <p class=\"jackpot-live\" id=\"jackpotRulesNow\" role=\"status\" aria-live=\"polite\" hidden></p>\n    <nav aria-label=\"Rules sections\">\n      <a href=\"#rules-eligible\">Who can win</a>\n      <a href=\"#rules-timeline\">Timeline</a>\n      <a href=\"#rules-verification\">Checks</a>\n      <a href=\"#rules-claims\">Claims</a>\n      <a href=\"#rules-legal\">Legal</a>\n      <a href=\"#rules-history\">Past weeks</a>\n    </nav>\n  </header>\n  <main id=\"main\" tabindex=\"-1\">\n    <section id=\"rules-what\" aria-labelledby=\"rules-what-title\">\n      <!-- copy:jackpot-rules-what:start -->\n      <h2 id=\"rules-what-title\">What it is</h2>\n      <p>The Chikun&#39;s Escape Weekly Jackpot is a weekly high-score prize for Ranked Chikun&#39;s Escape. Each week, the eligible run with the best verified score wins that week&#39;s funded prize.</p>\n      <p>Lester&#39;s Arcade and Louie, Chikun&#39;s original developer, fund the prizes together. Questions and disputes: kingdankkush420@gmail.com.</p>\n      <!-- copy:jackpot-rules-what:end -->\n    </section>\n    <section id=\"rules-eligible\" aria-labelledby=\"rules-eligible-title\">\n      <!-- copy:jackpot-rules-eligible:start -->\n      <h2 id=\"rules-eligible-title\">Who can win</h2>\n      <ul><li>Ranked Chikun&#39;s Escape runs of that week only, counted by the time the entry was paid (Monday 00:00 UTC to the next Monday 00:00 UTC), with a paid entry of at least the Ranked flat fee and in that week&#39;s Ranked season.</li><li>Runs that reach the 60-minute limit are not eligible (the survival cap is 3,599 seconds).</li><li>One person, one wallet: a person found using several wallets is disqualified on all of them.</li><li>Lester&#39;s Arcade staff, the game&#39;s developers, prize funders and their households cannot win, as people and not only as wallets. Test wallets and blocked wallets cannot win.</li><li>Entry fees do not fund the prize.</li></ul>\n      <!-- copy:jackpot-rules-eligible:end -->\n    </section>\n    <section id=\"rules-winner\" aria-labelledby=\"rules-winner-title\">\n      <!-- copy:jackpot-rules-winner:start -->\n      <h2 id=\"rules-winner-title\">How the winner is chosen</h2>\n      <p>The highest verified score wins. A tie goes to the run published on LitVM first, then to the lower session id.</p>\n      <!-- copy:jackpot-rules-winner:end -->\n    </section>\n    <section id=\"rules-timeline\" aria-labelledby=\"rules-timeline-title\">\n      <!-- copy:jackpot-rules-timeline:start -->\n      <h2 id=\"rules-timeline-title\">Timeline</h2>\n      <p>The week closes every Monday at 00:00 UTC. A run must be published on LitVM within 6 hours of the close. For 12 hours after the close, anyone can add a better eligible run to the candidate list. The prize is paid 24 hours after the close.</p>\n      <p>For an incident, such as a publishing outage near the close, the organiser can extend one week by up to 72 hours in total, and announces the extension.</p>\n      <!-- copy:jackpot-rules-timeline:end -->\n      <p class=\"jackpot-note\" id=\"jackpotRulesTimes\" hidden></p>\n    </section>\n    <section id=\"rules-verification\" aria-labelledby=\"rules-verification-title\">\n      <!-- copy:jackpot-rules-verification:start -->\n      <h2 id=\"rules-verification-title\">How runs are checked</h2>\n      <p>The arcade server replays every Ranked run from its recorded inputs before it is published on LitVM. Candidate runs are checked again: the replay, the on-chain record, and automated checks.</p>\n      <p>The automated checks catch only unsophisticated automation; a person reviews the leading runs and decides. &quot;In review&quot; means a run is waiting for that review. Runs that finish long after their entry was paid are always reviewed by a person.</p>\n      <!-- copy:jackpot-rules-verification:end -->\n    </section>\n    <section id=\"rules-disqualification\" aria-labelledby=\"rules-disqualification-title\">\n      <!-- copy:jackpot-rules-disqualification:start -->\n      <h2 id=\"rules-disqualification-title\">Disqualification</h2>\n      <p>A run can be disqualified for automation, for failing the integrity checks, for breaking these rules, for an excluded wallet, or for one person using several wallets. The organiser may disqualify a run it believes was not played by a person in real time.</p>\n      <p>Every decision is published on LitVM with its reason. Decisions are final: send a dispute to kingdankkush420@gmail.com within 7 days, and the organiser&#39;s answer is final.</p>\n      <!-- copy:jackpot-rules-disqualification:end -->\n    </section>\n    <section id=\"rules-challenges\" aria-labelledby=\"rules-challenges-title\">\n      <!-- copy:jackpot-rules-challenges:start -->\n      <h2 id=\"rules-challenges-title\">Challenges</h2>\n      <p>Anyone can put an eligible, better run of the week on the candidate list until 12 hours after the close. The best run that passes review is paid.</p>\n      <!-- copy:jackpot-rules-challenges:end -->\n    </section>\n    <section id=\"rules-rollover\" aria-labelledby=\"rules-rollover-title\">\n      <!-- copy:jackpot-rules-rollover:start -->\n      <h2 id=\"rules-rollover-title\">Rollover and caps</h2>\n      <p>A week&#39;s pot that nobody wins rolls into the next week, with no time limit. When a week has a prize cap, the part of the pot above the cap rolls over too.</p>\n      <!-- copy:jackpot-rules-rollover:end -->\n    </section>\n    <section id=\"rules-funding\" aria-labelledby=\"rules-funding-title\">\n      <!-- copy:jackpot-rules-funding:start -->\n      <h2 id=\"rules-funding-title\">Funding</h2>\n      <p>Lester&#39;s Arcade and Louie fund each week&#39;s prize in tCHIKUN through the jackpot contract. Fund only through the contract: tokens sent to its address directly count toward no week.</p>\n      <p>The rules of a week funded in advance can still change before that week starts.</p>\n      <!-- copy:jackpot-rules-funding:end -->\n      <dl id=\"jackpotRulesContracts\" hidden></dl>\n    </section>\n    <section id=\"rules-claims\" aria-labelledby=\"rules-claims-title\">\n      <!-- copy:jackpot-rules-claims:start -->\n      <h2 id=\"rules-claims-title\">Unclaimed prizes</h2>\n      <p>If the token refuses to transfer a prize, the winner can claim it to another address from their profile. A prize still unclaimed 180 days after the payout returns to the prize pool.</p>\n      <!-- copy:jackpot-rules-claims:end -->\n    </section>\n    <section id=\"rules-end\" aria-labelledby=\"rules-end-title\">\n      <!-- copy:jackpot-rules-end:start -->\n      <h2 id=\"rules-end-title\">End of the jackpot</h2>\n      <p>The jackpot ends only with at least one week of notice. Funders get back what they paid in for weeks after the end. A final pot that nobody wins goes to the published contest wallet 30 days after the end.</p>\n      <!-- copy:jackpot-rules-end:end -->\n    </section>\n    <section id=\"rules-published\" aria-labelledby=\"rules-published-title\">\n      <!-- copy:jackpot-rules-published:start -->\n      <h2 id=\"rules-published-title\">What is published</h2>\n      <p>The winning and candidate wallets, their display names (unless a name is hidden), their scores, replays of candidate runs that anyone can download once the week closes, and every review decision, which stays on LitVM permanently.</p>\n      <!-- copy:jackpot-rules-published:end -->\n    </section>\n    <section id=\"rules-no-guarantee\" aria-labelledby=\"rules-no-guarantee-title\">\n      <!-- copy:jackpot-rules-no-guarantee:start -->\n      <h2 id=\"rules-no-guarantee-title\">No promised prize</h2>\n      <p>A week may have no prize, or its pot may roll over, be held for review, or be paused. The Weekly Jackpot is provided as is.</p>\n      <!-- copy:jackpot-rules-no-guarantee:end -->\n    </section>\n    <section id=\"rules-testnet\" aria-labelledby=\"rules-testnet-title\">\n      <!-- copy:jackpot-rules-testnet:start -->\n      <h2 id=\"rules-testnet-title\">Testnet</h2>\n      <p>tCHIKUN is a testnet token with no value. It cannot be redeemed or exchanged through the arcade. Testnet records are wiped at mainnet. Real $CHIKUN prizes need a new contract, new rules and a legal review.</p>\n      <!-- copy:jackpot-rules-testnet:end -->\n    </section>\n    <section id=\"rules-legal\" aria-labelledby=\"rules-legal-title\">\n      <!-- copy:jackpot-rules-legal:start -->\n      <h2 id=\"rules-legal-title\">Taxes, eligibility and age</h2>\n      <!-- copy:jackpot-rules-legal:end -->\n      <!-- copy:jackpot-legal:start -->\n      <p><strong>Weekly Jackpot rules</strong></p>\n      <ul><li><strong>Skill contest.</strong> The eligible wallet with the highest verified Ranked Chikun&#39;s Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week&#39;s funded prize, paid on chain after a 24-hour review.</li><li><strong>Entry.</strong> Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.</li><li><strong>Prizes.</strong> A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.</li><li><strong>Fair play.</strong> Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.</li><li><strong>Eligibility.</strong> You must be 18 or older (or the age of majority where you live). Lester&#39;s Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you.</li><li><strong>Testnet.</strong> During the LiteForge testnet, prizes are testnet tokens with no monetary value. Real $CHIKUN prizes will come with updated rules.</li><li><strong>Changes.</strong> We may change, pause or end the Weekly Jackpot at any time; prizes already paid are unaffected.</li><li>Nothing here is financial advice. Memecoins are volatile.</li></ul>\n      <!-- copy:jackpot-legal:end -->\n    </section>\n    <section id=\"rules-history\" aria-labelledby=\"rules-history-title\">\n      <!-- copy:jackpot-rules-history:start -->\n      <h2 id=\"rules-history-title\">Past weeks</h2>\n      <p>Past weeks, their winners and their replays load from the arcade server.</p>\n      <!-- copy:jackpot-rules-history:end -->\n      <ol class=\"jackpot-history\" id=\"jackpotRulesHistory\" hidden></ol>\n    </section>\n  </main>\n  <footer class=\"trust-footer\">\n    <a href=\"/trust.html\">Support &amp; trust</a>\n  </footer>\n</body>\n</html>\n"
+      },
+      {
+        "file": "tests/jackpot-ui-surfaces.test.mjs",
+        "name": "no surface fetches the jackpot API while the flag is false",
+        "line": 167,
+        "source": "assert.equal(JACKPOT_LIVE, false);",
+        "message": "Expected values to be strictly equal:\n\ntrue !== false\n",
+        "expected": false,
+        "actual": true
+      },
+      {
+        "file": "tests/jackpot-ui-surfaces.test.mjs",
+        "name": "profile lists jackpot wins and offers claim to a claim-pending winner",
+        "line": null,
+        "source": null,
+        "message": "Array buffer allocation failed",
+        "expected": "undefined",
+        "actual": "undefined"
+      },
+      {
+        "file": "tests/portal-discovery.test.mjs",
+        "name": "home discovery is readable before JavaScript and primary links precede optional media",
+        "line": 56,
+        "source": "for (const [question, answer] of PORTAL_COPY.faq) assert.ok(html.includes(`<summary>${escapeHtml(question)}</summary><p>${escapeHtml(answer)}</p>`), question);",
+        "message": "Does Ranked cost money or pay prizes?",
+        "expected": true,
+        "actual": false
+      },
+      {
+        "file": "tests/portal-pages-build.test.mjs",
+        "name": "check mode reports stale pages without writing anything, whichever flags are committed",
+        "line": 170,
+        "source": "assert.ok(!staleForOther.includes('sitemap.xml') && !staleForOther.includes('robots.txt'), 'the sitemap and robots file do not depend on the flags');",
+        "message": "the sitemap and robots file do not depend on the flags",
+        "expected": true,
+        "actual": false
+      }
+    ],
+    "subtestFailures": 0,
+    "passingOnlyAfterFlip": []
+  },
+  "checklist": {
+    "filesToEdit": [
+      {
+        "file": "apps/portal/src/jackpot-config.mjs",
+        "change": "export const JACKPOT_LIVE = false; → export const JACKPOT_LIVE = true;",
+        "why": "design J14 / §E E10: the client flag, the only literal the flip changes by hand"
+      },
+      {
+        "file": "apps/portal/jackpot/chikun.html",
+        "change": "remove <!-- LEGAL-REVIEW-PENDING: owner confirms at E10 -->",
+        "why": "design §D.4 guard: the owner confirms the legal block at E10 (the §F.1 draft or reviewed text in portal-content.mjs jackpotRulesCopy) and the flip commit removes the pending comment; a live build refuses the page while it is there"
+      },
+      {
+        "file": "every test listed in flip.testsToUpdate",
+        "change": "update the pinned literal to the live copy (flip.testsToUpdate carries expected and actual)",
+        "why": "contract §11 rule 10: pinned literals change in the same commit"
+      }
+    ],
+    "regenerate": [
+      "node scripts/build-portal-pages.mjs",
+      "npm run assets:hmh:curated-level-kit-runtime"
+    ],
+    "generatedFiles": [
+      "apps/portal/discover/chikun.html",
+      "apps/portal/discover/games.html",
+      "apps/portal/discover/hard-money-heroes.html",
+      "apps/portal/discover/stacked.html",
+      "apps/portal/index.html",
+      "apps/portal/llms.txt",
+      "apps/portal/sitemap.xml",
+      "apps/portal/trust.html"
+    ],
+    "testsToUpdate": [
+      "tests/jackpot-ui-chikun-child.test.mjs",
+      "tests/jackpot-ui-client.test.mjs",
+      "tests/jackpot-ui-rules-page.test.mjs",
+      "tests/jackpot-ui-surfaces.test.mjs",
+      "tests/portal-discovery.test.mjs",
+      "tests/portal-pages-build.test.mjs"
+    ],
+    "preconditions": [
+      {
+        "id": "funded-current-week",
+        "text": "potOf(currentWeek).total >= rulesFor(currentWeek).minFundWei on chain (J13: never claim an unfunded prize)",
+        "proof": "node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io (checks pot-current and rules-in-force) and node scripts/jackpot-actions.mjs status"
+      },
+      {
+        "id": "legal-text",
+        "text": "no LEGAL-REVIEW-PENDING: the owner confirmed the §F.1 draft or supplied reviewed text for the legal block (OJ3)",
+        "proof": "node scripts/build-portal-pages.mjs refuses a live rules page that still carries the comment"
+      },
+      {
+        "id": "rules-sections",
+        "text": "every rules-page section marker is present: <!-- copy:jackpot-rules-<id>:start --> for what, eligible, winner, timeline, verification, disqualification, challenges, rollover, funding, claims, end, published, no-guarantee, testnet, legal, history",
+        "proof": "node scripts/build-portal-pages.mjs refuses a live rules page with a missing marker; tests/jackpot-ui-rules-page.test.mjs"
+      },
+      {
+        "id": "oj2-calibration",
+        "text": "the OJ2 calibration receipt (docs/qa/chikun-plausibility-calibration-<date>.json) is present with the gate met: a human set of >= 40 runs from >= 5 people (>= 15 of 8 minutes or more), 0 human holds on H4-H6, 100% of set (a) held, set (b) miss rates recorded",
+        "proof": "node scripts/chikun-plausibility-calibrate.mjs --probe --bots 4 --seed-variance --human-dir tests/fixtures/chikun-human-calibration"
+      },
+      {
+        "id": "j17-coupling",
+        "text": "the J17 coupling checks pass: quoteEntry(chikun).totalWei >= minPaidWei, ScoreSubmissionRegistry.rankedEntry() == jackpot.rankedEntry(), the server season in rulesFor(currentWeek), Chikun registered and playable",
+        "proof": "node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io (j17-quote, j17-ranked-entry, j17-season, j17-game-id, j17-game-registered)"
+      },
+      {
+        "id": "open-epoch",
+        "text": "an epoch with adminClearOnly = false is scheduled for the flip week (runbook E4 note), or the owner documents the decision to keep every payout manual",
+        "proof": "node scripts/jackpot-actions.mjs schedule-rules --from-week <flip week> --admin-clear-only false (operator; SCHEDULE_JACKPOT_RULES_4441), then jackpot-actions status"
+      },
+      {
+        "id": "e4-committed",
+        "text": "runbook E4 is committed: contracts/deployment-record.jackpot.json and the regenerated apps/portal/src/generated/litvm-jackpot.mjs (status deployed); tests/jackpot-ui-client.test.mjs pins JACKPOT_LIVE => SETTLEMENT_LIVE && LITVM_JACKPOT deployed",
+        "proof": "node scripts/generate-litvm-jackpot.mjs --check"
+      }
+    ],
+    "commit": "one commit: the two edits, the regenerated pages and inventory, and the listed test updates; then npm run test:release shows exactly the 51 ledgered failures (restore docs/testing/hmh-reboot-test-retirement-gate.json unless the orchestrator commits it)",
+    "release": "the next version with a cache-marker bump, npm run vercel:build, deploy, promote (owner-approved, runbook E10 ⚠)",
+    "postReleaseSmokes": [
+      "node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io --expect-live true (every check, JACKPOT_LIVE served true, the rules page indexable)",
+      "https://lestersarcade.io/jackpot/chikun: no robots noindex, no soft-launch banner, all 16 sections, the legal block, the history list from /api/jackpot",
+      "sitemap.xml and llms.txt list /jackpot/chikun",
+      "Chikun mode select (/games/chikun): the WEEKLY JACKPOT marquee with the funded prize and \"(testnet token, no value)\", the countdown and the provisional top score",
+      "Chikun cabinet start screen, Ranked: \"Weekly Jackpot: {prize} tCHIKUN (testnet token, no value) · closes in …\" and \"Top verified Ranked score of the week wins. See the rules.\"",
+      "Ranked entry modal for Chikun: the #rankedEntryJackpot row (\"Entries don't fund the prize\", Rules opens in a new tab); hidden for other games",
+      "A Chikun Ranked result: the jackpot line (\"You'd lead…\" or \"{n} points behind…\") and the \"Jackpot lead (pending)\" share label only for an eligible run",
+      "Scores → Chikun · Weekly: the jackpot header (prize, countdown, provisional top score, Past winners, the board-vs-jackpot note)",
+      "A winner's profile: the Jackpot Champion section; a claim-pending win shows the Claim button to its connected owner only",
+      "The home page promo card in the scores section while the week is funded",
+      "The share page of a paid winning session: \"Weekly Jackpot Champion · <date range>\"",
+      "/owner/status.html: the weekly-jackpot cron fresh, no jackpot warning"
+    ],
+    "rollback": "set JACKPOT_UI_HIDDEN=true and redeploy the current release (surfaces disappear within about 150 s), then a release with JACKPOT_LIVE=false if the hide is long-term (emergency stop 6)"
+  }
+}

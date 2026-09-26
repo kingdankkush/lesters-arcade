@@ -8,6 +8,11 @@ import {
   DAY, HOUR, TOKEN, createChainClock, evidenceForSeed, parseTimeTarget, revertReasonOf, startJackpotStack,
 } from '../scripts/lib/jackpot-rehearsal-driver.mjs';
 import { FAST_SUBSET, REHEARSAL_RECEIPT_SCHEMA, REHEARSAL_SCRIPT_RELATIVE_PATH, SCENARIOS, runScenario } from '../scripts/rehearse-jackpot-week.mjs';
+import {
+  BUILD_COMMAND, FLIP_CHECKLIST_RELATIVE_PATH, FLIP_CHECKLIST_SCHEMA, FLIP_EDITS, FLIP_PRECONDITIONS, FLIP_SCRIPT_RELATIVE_PATH, GENERATE_MODULE_COMMAND, INVENTORY_COMMAND,
+  POST_RELEASE_SMOKES, causedFailures, changedSegments, runFlagFlipDryRun,
+} from '../scripts/jackpot-flag-flip-dry-run.mjs';
+import { sha256Text } from '../scripts/rehearse-step7-dry-run.mjs';
 import { replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 
 /**
@@ -192,4 +197,53 @@ test('the committed full rehearsal receipt passes R1-R20 with R16 as the expecte
   assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\|\/)|AppData|\/home\/|\/Users\//, 'no local path in the committed receipt');
   const script = readFileSync(new URL(`../${REHEARSAL_SCRIPT_RELATIVE_PATH}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert.equal(receipt.scriptSha256, createHash('sha256').update(script, 'utf8').digest('hex'), 'the receipt was made by this script: re-run node scripts/rehearse-jackpot-week.mjs after editing it');
+});
+
+test('the flag-flip dry run: the committed checklist is complete and made by this script', () => {
+  const text = readFileSync(new URL(`../${FLIP_CHECKLIST_RELATIVE_PATH}`, import.meta.url), 'utf8');
+  const checklist = JSON.parse(text);
+  assert.equal(checklist.schema, FLIP_CHECKLIST_SCHEMA);
+  assert.equal(checklist.partial, false, 'a --tests (partial) dry run is never committed');
+  assert.equal(checklist.scriptSha256, sha256Text(readFileSync(new URL(`../${FLIP_SCRIPT_RELATIVE_PATH}`, import.meta.url), 'utf8')), 'the dry-run script changed: re-run node scripts/jackpot-flag-flip-dry-run.mjs --confirm-throwaway');
+  // No local absolute path (the throwaway, the repo, the home directory) reaches the committed evidence.
+  assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\|\/)|AppData|lesters-jackpot-flip-[A-Za-z0-9]{6}(?![A-Za-z0-9-])|\/home\/|\/Users\//);
+  // E4 first (the record and the deployed module), then the flip's two edits and a live build that passed.
+  assert.deepEqual(checklist.e4.commands.map((command) => [command.command, command.exitCode]), [[GENERATE_MODULE_COMMAND, 0], [INVENTORY_COMMAND, 0]]);
+  assert.ok(checklist.e4.files.some((entry) => entry.file === 'contracts/deployment-record.jackpot.json'));
+  assert.deepEqual(checklist.flip.edits.map((edit) => [edit.file, edit.applied]), FLIP_EDITS.map((edit) => [edit.file, true]));
+  assert.equal(checklist.flip.build.exitCode, 0, 'the live rules page passed the builder guard (legal text confirmed, every section marker present)');
+  // The generated literals the flip changes: the FAQ entry, the sitemap and llms.txt, the rules page, trust.
+  const files = checklist.flip.filesChanged.map((entry) => entry.file);
+  for (const file of ['apps/portal/sitemap.xml', 'apps/portal/llms.txt', 'apps/portal/jackpot/chikun.html', 'apps/portal/index.html', 'apps/portal/trust.html']) assert.ok(files.includes(file), file);
+  const literals = JSON.stringify(checklist.flip.literalsChanged);
+  assert.match(literals, /Is there a jackpot\?/);
+  assert.match(literals, /jackpot\/chikun/);
+  // The pinned tests the E10 commit updates, each with what it expected and what the flip gives.
+  assert.ok(checklist.flip.testsToUpdate.length > 0);
+  assert.ok(checklist.flip.testsToUpdate.some((entry) => entry.file === 'tests/jackpot-ui-client.test.mjs'), 'the JACKPOT_LIVE pin');
+  for (const entry of checklist.flip.testsToUpdate) {
+    const source = readFileSync(new URL(`../${entry.file}`, import.meta.url), 'utf8');
+    assert.ok(source.includes(JSON.stringify(entry.name).slice(1, -1)) || source.includes(entry.name), `${entry.file} still has "${entry.name}"`);
+    assert.ok(entry.message || entry.expected !== null, 'each carries its expected literal or message');
+  }
+  assert.deepEqual(checklist.checklist.testsToUpdate, [...new Set(checklist.flip.testsToUpdate.map((entry) => entry.file))]);
+  assert.deepEqual(checklist.checklist.preconditions.map((entry) => entry.id), FLIP_PRECONDITIONS.map((entry) => entry.id));
+  assert.deepEqual(checklist.checklist.postReleaseSmokes, [...POST_RELEASE_SMOKES]);
+  assert.deepEqual(checklist.checklist.regenerate, [BUILD_COMMAND, INVENTORY_COMMAND]);
+});
+
+test('the flag-flip dry run refuses without --confirm-throwaway, and its diff helpers', async () => {
+  const lines = [];
+  assert.equal(await runFlagFlipDryRun({ argv: [], log: (line) => lines.push(line) }), 2);
+  assert.match(lines.join('\n'), /--confirm-throwaway/);
+  const before = [{ file: 'tests/a.test.mjs', name: 'x' }, { file: 'tests/b.test.mjs', name: 'y' }];
+  const after = [{ file: 'tests/b.test.mjs', name: 'y' }, { file: 'tests/c.test.mjs', name: 'z', nesting: 0 }];
+  assert.deepEqual(causedFailures(before, after).map((failure) => failure.name), ['z']);
+  assert.deepEqual(causedFailures(after, before).map((failure) => failure.name), ['x']);
+  const nl = String.fromCharCode(10);
+  const segments = changedSegments(['<p>Testnet zkLTC has no value. Any test prizes are paid in testnet tokens.</p>', 'same'].join(nl), ['<p>Testnet zkLTC has no value. The only prize is the Weekly Jackpot.</p>', 'same', '<url>/jackpot/chikun</url>'].join(nl), { context: 6 });
+  assert.deepEqual(segments, [
+    { before: '…alue. Any test prizes are paid in testnet tokens.</p>', after: '…alue. The only prize is the Weekly Jackpot.</p>' },
+    { before: null, after: '<url>/jackpot/chikun</url>' },
+  ]);
 });
