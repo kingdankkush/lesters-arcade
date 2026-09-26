@@ -1,4 +1,8 @@
-import {courseRegionState} from '../../portal/src/chikun-course-regions.mjs';
+import {CHIKUN_REGIONS,courseRegionState} from '../../portal/src/chikun-course-regions.mjs';
+import {sceneBus} from './scene-bus.mjs';
+import {readDeviceFrame,blitPeriodic} from './device-blit.mjs';
+import {seamX} from './parallax.mjs';
+import {rgba} from './light-rig.mjs';
 const TAU=Math.PI*2;
 const propNames=['willow','cherry','maple','oak','rock','log','crate','hurdle','thorn','shiba','hawk','eagle','pelican','plane'];
 const art=new Map();
@@ -13,27 +17,96 @@ const colors={
  dirt:[[170,128,81],[210,169,107],[103,67,46]],
 };
 const URBAN=new Set(['asphalt','concrete','cobble','pavement']);
-const regionScratch={};
+const regionScratch={},frameScratch={};
 const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
 const blendColor=(a,b,t)=>t<=0?'rgb('+a[0]+','+a[1]+','+a[2]+')':'rgb('+lerp(a[0],b[0],t)+','+lerp(a[1],b[1],t)+','+lerp(a[2],b[2],t)+')';
 const detail={grass:['#9aad53','#527542'],loam:['#8f9c58','#5c4a30'],sand:['#e6d7a0','#b89a5c'],dirt:['#c9a570','#7a5236']};
-export function drawGround(ctx,snapshot,{reduced=false}={}){
- const distance=snapshot.distancePixels??0,state=courseRegionState(snapshot.tick??0,regionScratch);
- const from=colors[snapshot.terrain]??colors[state.terrain]??colors.grass,to=colors[state.nextTerrain]??from,t=state.blend;
+const FRONT_TOP=686,MAX_GAPS=6;
+const gaps=new Float64Array(MAX_GAPS*2);let gapCount=0;
+const pmod=(a,n)=>((a%n)+n)%n;
+// Gaps inside the view only: the ground reacts to an obstacle once it is on
+// screen, never earlier (look-ahead guard).
+function collectGaps(forks,view){
+ gapCount=0;const left=view.left,right=view.left+view.width;
+ for(const o of forks??[]){if(o.family!=='gap'||o.x>=right||o.x+o.width<=left)continue;if(gapCount<MAX_GAPS){gaps[gapCount*2]=o.x;gaps[gapCount*2+1]=o.x+o.width;gapCount++;}}
+}
+function inGap(x,pad=0){for(let i=0;i<gapCount;i++)if(x>gaps[i*2]-pad&&x<gaps[i*2+1]+pad)return true;return false;}
+// The code-drawn strip (the fallback when the front-face art is missing), clipped to [x0, x1) logical.
+function drawCodeStrip(ctx,terrainFrom,terrainTo,t,distance,x0,x1){
+ if(x1<=x0)return;
+ const from=colors[terrainFrom]??colors.grass,to=colors[terrainTo]??from;
  const base=blendColor(from[0],to[0],t),edge=blendColor(from[1],to[1],t),under=blendColor(from[2],to[2],t);
- const terrain=t<.5?state.terrain:state.nextTerrain,urban=URBAN.has(terrain),[tuftA,tuftB]=detail[terrain]??detail.grass;
- ctx.fillStyle=under;ctx.fillRect(0,690,1280,30);ctx.fillStyle=base;ctx.fillRect(0,690,1280,13);ctx.fillStyle=edge;ctx.fillRect(0,690,1280,3);
- for(let i=0;i<35;i++){
-  const world=Math.floor(distance/43)+i,x=world*43-distance;
-  if(snapshot.forks?.some(o=>o.family==='gap'&&x>o.x-8&&x<o.x+o.width+8))continue;
-  if(urban){ctx.strokeStyle=under;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,705);ctx.lineTo(x+16,707);ctx.lineTo(x+19,720);ctx.stroke();if(world%5===0){ctx.fillStyle=edge;ctx.fillRect(x,714,32,2);}if(terrain==='cobble'&&world%2===0){ctx.fillStyle=edge;ctx.fillRect(x+4,696,12,4);}}
-  else if(terrain==='sand'){if(world%2===0){ctx.strokeStyle=tuftA;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,697);ctx.quadraticCurveTo(x+10,694,x+20,697);ctx.stroke();}if(world%5===0){ctx.fillStyle=tuftB;ctx.beginPath();ctx.arc(x+8,700,2,0,TAU);ctx.fill();}ctx.fillStyle=under;ctx.fillRect(x+12,706,4+world%5,2);}
+ const terrain=t<.5?terrainFrom:terrainTo,urban=URBAN.has(terrain),[tuftA,tuftB]=detail[terrain]??detail.grass;
+ ctx.fillStyle=under;ctx.fillRect(x0,690,x1-x0,30);ctx.fillStyle=base;ctx.fillRect(x0,690,x1-x0,13);ctx.fillStyle=edge;ctx.fillRect(x0,690,x1-x0,3);
+ const first=Math.floor((x0+distance)/43)-1,last=Math.ceil((x1+distance)/43)+1;
+ for(let world=first;world<=last;world++){
+  const x=world*43-distance;
+  if(x<x0-20||x>x1||inGap(x,8))continue;
+  if(urban){ctx.strokeStyle=under;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,705);ctx.lineTo(x+16,707);ctx.lineTo(x+19,720);ctx.stroke();if(pmod(world,5)===0){ctx.fillStyle=edge;ctx.fillRect(x,714,32,2);}if(terrain==='cobble'&&pmod(world,2)===0){ctx.fillStyle=edge;ctx.fillRect(x+4,696,12,4);}}
+  else if(terrain==='sand'){if(pmod(world,2)===0){ctx.strokeStyle=tuftA;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,697);ctx.quadraticCurveTo(x+10,694,x+20,697);ctx.stroke();}if(pmod(world,5)===0){ctx.fillStyle=tuftB;ctx.beginPath();ctx.arc(x+8,700,2,0,TAU);ctx.fill();}ctx.fillStyle=under;ctx.fillRect(x+12,706,4+pmod(world,5),2);}
   else{
-   ctx.strokeStyle=world%3===0?tuftA:tuftB;ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(x,690);ctx.lineTo(x-4,681);ctx.moveTo(x+2,690);ctx.lineTo(x+5,680);ctx.stroke();
-   if(world%4===0&&terrain==='grass'){ctx.fillStyle=['#f0c865','#e8a4bc','#d5d5b2'][world%3];ctx.beginPath();ctx.arc(x+5,680,2.4,0,TAU);ctx.fill();}
-   ctx.fillStyle=under;ctx.fillRect(x+12,702,5+world%7,2);
+   ctx.strokeStyle=pmod(world,3)===0?tuftA:tuftB;ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(x,690);ctx.lineTo(x-4,681);ctx.moveTo(x+2,690);ctx.lineTo(x+5,680);ctx.stroke();
+   if(pmod(world,4)===0&&terrain==='grass'){ctx.fillStyle=['#f0c865','#e8a4bc','#d5d5b2'][pmod(world,3)];ctx.beginPath();ctx.arc(x+5,680,2.4,0,TAU);ctx.fill();}
+   ctx.fillStyle=under;ctx.fillRect(x+12,702,5+pmod(world,7),2);
   }
  }
+}
+// Front-face art for one region between device x0 and x1, skipping in-view gaps.
+function drawFrontArt(ctx,bus,face,frame,distance,x0,x1,alpha){
+ const d=frame.density;
+ const scroll=(distance+frame.viewLeft-frame.shakeX)*d;
+ const y=Math.round((FRONT_TOP+frame.shakeY)*d);
+ ctx.globalAlpha=alpha;
+ let from=x0;
+ for(let i=0;i<=gapCount;i++){
+  const g0=i<gapCount?(gaps[i*2]-frame.viewLeft+frame.shakeX)*d:x1,g1=i<gapCount?(gaps[i*2+1]-frame.viewLeft+frame.shakeX)*d:x1;
+  const to=Math.min(x1,g0);
+  if(to>from)blitPeriodic(ctx,face.canvas,face.w,scroll,y,Math.floor(from),Math.ceil(to),true);
+  from=Math.max(from,g1);
+ }
+ ctx.globalAlpha=1;
+}
+export function drawGround(ctx,snapshot,{reduced=false,view=null}={}){
+ const bus=sceneBus,v=view??bus.view,distance=snapshot.distancePixels??0,tick=snapshot.tick??0,state=courseRegionState(tick,regionScratch);
+ collectGaps(snapshot.forks,v);
+ const frame=readDeviceFrame(ctx,v,frameScratch);frame.viewLeft=v.left;
+ const sameFrame=Boolean(bus.tick===tick&&bus.region&&bus.transition&&bus.view===v);
+ const t=sameFrame?bus.transition:null,loader=sameFrame?bus.art:null;
+ const faceOf=index=>{const f=loader?.layer(CHIKUN_REGIONS[index].id,'front');return f&&Math.abs(f.density-frame.density)<1e-3?f:null;};
+ // Segments of the running line by region: previous | current | next, split at the seams.
+ const segs=[];
+ if(t&&t.seams&&!reduced){
+  const toDev=x=>(x-v.left+frame.shakeX)*frame.density;
+  const xp=Number.isFinite(t.Dprev)?Math.max(0,Math.min(frame.canvasWidth,toDev(seamX(t.Dprev,distance,1)))):0;
+  const xn=Math.max(0,Math.min(frame.canvasWidth,toDev(seamX(t.Dnext,distance,1))));
+  if(xp>0)segs.push([t.prev,0,xp,1]);
+  if(xn>xp)segs.push([t.cur,xp,xn,1]);
+  if(xn<frame.canvasWidth)segs.push([t.next,xn,frame.canvasWidth,1]);
+ }else{
+  segs.push([state.index,0,frame.canvasWidth,1]);
+  if(state.blend>0)segs.push([state.nextIndex,0,frame.canvasWidth,state.blend]);
+ }
+ if(segs.some(s=>faceOf(s[0]))){
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);
+  for(const [index,x0,x1,alpha] of segs){
+   const face=faceOf(index);
+   if(face)drawFrontArt(ctx,bus,face,frame,distance,x0,x1,alpha);
+   else{
+    // Missing art for this segment: the code strip, drawn in logical space.
+    ctx.save();ctx.setTransform(frame.density,0,0,frame.density,(-v.left+frame.shakeX)*frame.density,frame.shakeY*frame.density);
+    ctx.globalAlpha=alpha;const tr=CHIKUN_REGIONS[index].terrain;
+    drawCodeStrip(ctx,tr,tr,0,distance,x0/frame.density+v.left-frame.shakeX,x1/frame.density+v.left-frame.shakeX);ctx.restore();
+   }
+  }
+  // Time-of-day grade on the opaque cut face (ground class strength 0.85).
+  const g=bus.rig?.grade;
+  if(g){
+   const y=Math.round((690+frame.shakeY)*frame.density),h=frame.canvasHeight-y;
+   if(g.w>.002){ctx.fillStyle=rgba(g.W,g.w*.85);ctx.fillRect(0,y,frame.canvasWidth,h);}
+   if(g.a>.002){ctx.fillStyle=rgba(g.D,g.a*.85);ctx.fillRect(0,y,frame.canvasWidth,h);}
+  }
+  ctx.restore();
+ }else drawCodeStrip(ctx,snapshot.terrain??state.terrain,state.nextTerrain,state.blend,distance,v.left-4,v.left+v.width+4);
  const c=snapshot.chikun;
  if(c&&!snapshot.terminal){const altitude=690-c.y;ctx.fillStyle='rgba(10,25,24,.20)';ctx.beginPath();ctx.ellipse(c.x,693,Math.max(9,25-altitude*.028),3,0,0,TAU);ctx.fill();}
  for(const coin of snapshot.groundCoins??[])if(!coin.collected)drawGroundCoin(ctx,coin,snapshot.tick,reduced);

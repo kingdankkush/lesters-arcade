@@ -1,0 +1,31 @@
+{
+  "schema": "chikun-scenery-spec-v1",
+  "notes": "Single source of truth for the scenery layer geometry. Blender scripts frame their cameras from it, the packer cuts and validates against it, and it is copied into apps/chikun/src/scenery-catalog.mjs for the runtime. Units are logical canvas pixels (the 720-tall play space).",
+  "horizonY": 560,
+  "runY": 690,
+  "canvasHeight": 720,
+  "marginPx": 64,
+  "tiers": { "t1": 1, "t2": 2 },
+  "layers": {
+    "far": { "top": 330, "height": 236, "rate": 0.03, "width": 1280, "tiers": ["t1"], "fog": 0.30 },
+    "mid": { "top": 320, "height": 260, "rate": 0.12, "width": 1280, "tiers": ["t1", "t2"], "fog": 0.18 },
+    "near": { "top": 440, "height": 162, "rate": 0.30, "width": 2560, "tiers": ["t1", "t2"], "fog": 0.08 },
+    "front": { "top": 686, "height": 34, "rate": 1.0, "width": 1280, "tiers": ["t1", "t2"], "fog": 0 }
+  },
+  "ground": {
+    "top": 560,
+    "bottom": 690,
+    "period": 1280,
+    "edges": [560, 562, 565, 569, 574, 580, 587, 593, 599, 604, 609, 615, 621, 628, 635, 642, 649, 656, 663, 670, 677, 684, 690],
+    "tiers": ["t1", "t2"]
+  },
+  "regions": {
+    "farmland": { "far": { "rate": 0.03 } },
+    "forest": { "far": { "rate": 0.03 } },
+    "town": { "far": { "rate": 0.03 } },
+    "city": { "far": { "rate": 0.02, "top": 300, "height": 266 }, "mid": { "top": 290, "height": 290 } },
+    "industrial": { "far": { "rate": 0.03 } },
+    "suburbs": { "far": { "rate": 0.03 } },
+    "coast": { "far": { "rate": 0.015 } }
+  }
+}

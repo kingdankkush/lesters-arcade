@@ -1,0 +1,89 @@
+// Frame contract for the scenery: 1:1 device blits (no per-frame scaling), no
+// shadowBlur or filters, no gradients created per frame once warm, a bounded
+// number of draw calls, and the code-drawn painters when art is missing.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createRecordingCanvas, createRecordingContext, drawImageCalls } from './chikun-recording-ctx.mjs';
+import { buildChikunViewport } from '../apps/chikun/src/viewport.mjs';
+import { createArtLoader } from '../apps/chikun/src/art-loader.mjs';
+import { SCENERY_CATALOG } from '../apps/chikun/src/scenery-catalog.mjs';
+import { distanceAtTick } from '../apps/portal/src/chikun-ground-course.mjs';
+
+globalThis.document ??= { createElement: () => createRecordingCanvas(1, 1) };
+const { createChikunWorld } = await import('../apps/chikun/src/world.mjs');
+const { drawGround } = await import('../apps/chikun/src/ground-world.mjs');
+const flush = () => new Promise(resolve => setImmediate(resolve));
+
+const VIEWS = { desktop: buildChikunViewport(1920, 1080, 2), portrait: buildChikunViewport(390, 844, 3), landscape: buildChikunViewport(844, 390, 3) };
+const canvases = [];
+const makeCanvas = (w, h) => { const c = createRecordingCanvas(Math.max(1, Math.round(w)), Math.max(1, Math.round(h))); canvases.push(c); return c; };
+
+function artLoader({ fail = () => false } = {}) {
+  const dims = new Map();
+  for (const region of Object.values(SCENERY_CATALOG.regions)) {
+    for (const layer of Object.values(region.layers)) { for (const t of Object.values(layer.tiers)) dims.set(t.src, t); for (const t of Object.values(layer.emit?.tiers ?? {})) dims.set(t.src, t); }
+    for (const t of Object.values(region.ground?.tiers ?? {})) dims.set(t.src, t);
+  }
+  return createArtLoader({ makeCanvas, loadImage: url => { const src = url.slice(SCENERY_CATALOG.base.length), d = dims.get(src); return fail(src) || !d ? Promise.reject(new Error('404')) : Promise.resolve({ width: d.w, height: d.h, label: src }); } });
+}
+const snapshot = tick => ({ tick, distancePixels: distanceAtTick(tick), terrain: 'grass', chikun: { x: 280, y: 690, velocityY: 0, locomotion: 'run' }, forks: [], groundCoins: [] });
+
+function frame(world, view, tick) {
+  const canvas = createRecordingCanvas(view.pixelWidth, view.pixelHeight);
+  const ctx = createRecordingContext(canvas, { transform: [view.density, 0, 0, view.density, -view.left * view.density, 0] });
+  const mark = canvases.map(c => c.getContext().log.length);
+  world.draw(ctx, snapshot(tick), { view, mode: 'ranked', idleTime: 0 });
+  drawGround(ctx, snapshot(tick), {});
+  const offscreen = canvases.flatMap((c, i) => c.getContext().log.slice(mark[i] ?? 0));
+  return { main: ctx.log, offscreen, ctx };
+}
+
+async function warmWorld(view, loader) {
+  const world = createChikunWorld({ loader, makeCanvas });
+  for (let i = 0; i < 20; i++) { frame(world, view, 1500); await flush(); }
+  return world;
+}
+
+test('with art: every blit is 1:1, no blur or filters, bounded calls, no gradients once warm', async () => {
+  const farmland = Object.keys(SCENERY_CATALOG.regions)[0];
+  assert.equal(farmland, 'farmland');
+  for (const [name, view] of Object.entries(VIEWS)) {
+    const loader = artLoader();
+    const world = await warmWorld(view, loader);
+    assert.equal(loader.ready('farmland'), true, `${name}: farmland art ready`);
+    for (let tick = 1500; tick < 1510; tick++) {
+      const { main, offscreen } = frame(world, view, tick);
+      const all = [...main, ...offscreen];
+      assert.equal(all.filter(e => e.op === 'createLinearGradient' || e.op === 'createRadialGradient').length, 0, `${name} tick ${tick}: gradient created per frame`);
+      assert.ok(all.every(e => e.shadowBlur === 0 && (e.filter === 'none' || e.filter === undefined)), `${name}: no shadowBlur or filter`);
+      const draws = drawImageCalls(all);
+      for (const c of draws) assert.ok(Math.abs(c.sw - c.dw) < 1e-6 && Math.abs(c.sh - c.dh) < 1e-6, `${name}: scaled blit ${c.image.label ?? c.image.width + 'x' + c.image.height} ${c.sw}x${c.sh} -> ${c.dw}x${c.dh}`);
+      assert.ok(draws.length <= 160, `${name}: ${draws.length} drawImage calls`);
+      const W = view.pixelWidth, H = view.pixelHeight;
+      const big = all.filter(e => e.op === 'fillRect' && Math.abs(e.args[2] * e.args[3]) > W * H * 0.25).length;
+      assert.ok(big <= 16, `${name}: ${big} large fills`);
+    }
+    world.dispose();
+  }
+});
+
+test('without art the code-drawn painters draw the backdrop and the code strip draws the ground', async () => {
+  const view = VIEWS.portrait;
+  const loader = artLoader({ fail: () => true });
+  const world = await warmWorld(view, loader);
+  assert.equal(loader.ready('farmland'), false);
+  const { main, offscreen } = frame(world, view, 900);
+  const blits = drawImageCalls(offscreen).filter(c => !c.image.label);
+  assert.ok(blits.length >= 3, 'painter canvases are blitted into the backdrop');
+  assert.ok(main.some(e => e.op === 'fillRect' && e.args[1] === 690), 'the code-drawn strip still paints the running line');
+  world.dispose();
+});
+
+test('reduced motion: nothing scrolls, the day is frozen at noon', async () => {
+  const view = VIEWS.landscape, loader = artLoader();
+  const world = await warmWorld(view, loader);
+  const log = tick => { const canvas = createRecordingCanvas(view.pixelWidth, view.pixelHeight), ctx = createRecordingContext(canvas, { transform: [view.density, 0, 0, view.density, 0, 0] }); world.draw(ctx, snapshot(tick), { view, reduced: true }); return JSON.stringify(ctx.log.map(e => [e.op, e.args.map(a => typeof a === 'object' ? 'img' : a)])); };
+  log(1200); // warm the reduced-motion (noon) gradient
+  assert.equal(log(1200), log(1800), 'no drift between frames under reduced motion');
+  world.dispose();
+});
