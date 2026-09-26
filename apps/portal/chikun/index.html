@@ -40,6 +40,16 @@
         <button class="primary-button" id="startButton" type="button">Start Running</button>
         <p class="asset-status" id="assetStatus" role="status">Loading Chikun…</p>
         <small>Space · ↑ · Enter · click · tap to jump / fly · P/Esc pause · M mute</small>
+        <details class="ranked-help" id="rankedHelp">
+          <summary>Free and Ranked <span>0.012 zkLTC per run</span></summary>
+          <div class="ranked-help-body">
+            <p>Free play needs no wallet and never touches the chain.</p>
+            <p>Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain.</p>
+            <p>Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs): <a href="https://liteforge.hub.caldera.xyz" target="_blank" rel="noopener noreferrer">liteforge.hub.caldera.xyz</a></p>
+            <p>Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements. Testnet zkLTC has no monetary value.</p>
+            <p><a href="/how-ranked-works" target="_blank" rel="noopener noreferrer">How Ranked works</a></p>
+          </div>
+        </details>
       </div>
       <div class="overlay is-hidden" id="pauseOverlay">
         <p class="eyebrow">Flight suspended</p>
@@ -71,6 +81,7 @@
           <button class="secondary-button" id="resultExitButton" type="button">Exit to Arcade</button>
         </div>
         <div class="share-row-mount" id="shareRow" aria-label="Share this run"></div>
+        <p class="ranked-hint" id="rankedHint">Free play needs no wallet and never touches the chain. <a href="/how-ranked-works" target="_blank" rel="noopener noreferrer">How Ranked works</a></p>
       </div>
       <p class="sr-only" id="liveStatus" aria-live="polite">Waiting for Lester's Arcade.</p>
     </section>

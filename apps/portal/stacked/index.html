@@ -52,11 +52,20 @@
     <div class="result-actions"><button id="continueButton" type="button" class="primary">Start game</button><button id="restartButton" type="button" class="primary" hidden>Play again</button><button id="overlayExitButton" type="button">Back to arcade</button></div>
     <nav id="menuTiles" class="menu-tiles" aria-label="Menu">
       <button id="freeModeTile" type="button" class="tile" data-mode="free"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/><rect x="8" y="3" width="8" height="8" rx="2"/></svg><span class="tile-label">Free</span><span class="tile-hint">Practice &amp; medals</span></button>
-      <button id="rankedModeTile" type="button" class="tile" data-mode="ranked"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20V9l4 3 2-7 2 7 4-3v11"/></svg><span class="tile-label">Ranked</span><span class="tile-hint">Verified runs</span></button>
+      <button id="rankedModeTile" type="button" class="tile" data-mode="ranked"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 20V9l4 3 2-7 2 7 4-3v11"/></svg><span class="tile-label">Ranked</span><span class="tile-hint">0.012 zkLTC per run</span></button>
       <button id="settingsTile" type="button" class="tile" aria-expanded="false" aria-controls="preferencePanel"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg><span class="tile-label">Settings</span><span class="tile-hint">Effects, access, sound</span></button>
       <button id="scoresTile" type="button" class="tile" aria-expanded="false" aria-controls="scoreShelf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span class="tile-label">Scores</span><span class="tile-hint">Bests on this device</span></button>
     </nav>
     <div id="shareRow" class="share-row-mount" aria-label="Share this run" hidden></div>
+    <p id="rankedHint" class="ranked-hint"><span class="free-line">Free play needs no wallet and never touches the chain.</span> <a href="/how-ranked-works" target="_blank" rel="noopener noreferrer">How Ranked works</a></p>
+    <details id="rankedHelp" class="ranked-help"><summary><span>Free and Ranked</span><span class="summary-hint">0.012 zkLTC per run</span></summary>
+      <div class="ranked-help-body">
+        <p>Free play needs no wallet and never touches the chain.</p>
+        <p>Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain.</p>
+        <p>Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs): <a href="https://liteforge.hub.caldera.xyz" target="_blank" rel="noopener noreferrer">liteforge.hub.caldera.xyz</a></p>
+        <p>Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements. Testnet zkLTC has no monetary value.</p>
+      </div>
+    </details>
     <section id="freeMedalShelf" class="medal-shelf" aria-labelledby="freeMedalTitle" hidden><h3 id="freeMedalTitle">Free Mode medal shelf</h3><p id="practiceBest"></p><p id="freeMedalSummary" role="status"></p><details><summary>View all 16 medals &amp; progress</summary><ul id="freeMedalList"></ul></details><p class="fine-print">Practice-only. No profile badges or Ranked progress.</p></section>
     <section id="scoreShelf" class="score-shelf" aria-labelledby="scoreShelfTitle" hidden><h3 id="scoreShelfTitle">Scores on this device</h3><dl class="score-grid"><div><dt>Practice best</dt><dd id="scoreBest">—</dd></div><div><dt>Free runs</dt><dd id="scoreRuns">0</dd></div><div><dt>Medals</dt><dd id="scoreMedals">0 / 16</dd></div></dl><p id="scoreNote" class="fine-print">Practice scores and medals are kept on this device. Ranked results are on your arcade profile.</p></section>
     <details id="preferencePanel"><summary><span>Settings</span><span class="summary-hint">Effects · Play · Accessibility · Sound</span></summary>

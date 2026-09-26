@@ -1055,7 +1055,8 @@ const NODE_CHECK_FILES = [
   "tests/stacked-bridge-protocol.test.mjs",
   "tests/stacked-autoshift.test.mjs",
   "tests/stacked-audio.test.mjs",
-  "tests/stacked-adapter-review-regressions.test.mjs"
+  "tests/stacked-adapter-review-regressions.test.mjs",
+  "tests/ranked-in-game-copy.test.mjs"
 ];
 
 // Every Python script that must compile (python -m py_compile).

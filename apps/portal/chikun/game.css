@@ -149,3 +149,21 @@ button:focus-visible,select:focus-visible,.replay-timeline:focus-visible{outline
 @media(max-height:260px){.mode-tease{display:none}}
 @media(orientation:portrait){.mode-tease{justify-content:center;max-width:290px}.mode-tease li{text-align:center;align-items:center}}
 .run-objectives{font:11px/1.6 system-ui;color:#d9d9bd;max-width:500px;margin:0 0 8px}.result-actions{flex-wrap:wrap}
+
+/* Ranked onboarding copy (2026-09-26): start-overlay explainer and the Free results hint. Copy only. */
+.ranked-help{width:100%;max-width:390px;margin:12px 0 0;text-align:left;font:12px/1.55 ui-sans-serif,system-ui;color:#d6e2df}
+.ranked-help summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-height:44px;padding:6px 0;border-top:1px solid #d6c39a55;cursor:pointer;list-style:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#efe0bd}
+.ranked-help summary::-webkit-details-marker{display:none}
+.ranked-help summary::before{content:"";width:0;height:0;border:4px solid transparent;border-left:6px solid #e0c08b;transition:transform .15s}
+.ranked-help[open] summary::before{transform:rotate(90deg)}
+.ranked-help summary span{font-weight:400;letter-spacing:.02em;text-transform:none;color:#d6e2df}
+.ranked-help summary:focus-visible{outline:3px solid #ffe0a1;outline-offset:3px}
+.ranked-help-body p{margin:6px 0;font-size:inherit;font-weight:400;line-height:inherit;color:inherit;overflow-wrap:anywhere}
+.ranked-help a,#resultOverlay>p.ranked-hint a{color:#f4e4c1;text-decoration:underline;text-underline-offset:3px}
+.ranked-help a:focus-visible,#resultOverlay>p.ranked-hint a:focus-visible{outline:3px solid #ffe0a1;outline-offset:3px}
+#resultOverlay>p.ranked-hint{width:min(680px,90%);max-width:none;margin:12px 0 0;font:600 12px/1.5 ui-sans-serif,system-ui;color:#d6e2df}
+.game-shell[data-mode="ranked"] .ranked-hint{display:none}
+@media(max-width:700px){.ranked-help{max-width:95%;margin-top:6px;font-size:9px;line-height:1.35}.ranked-help summary{min-height:40px;padding:4px 0;font-size:8px}#resultOverlay>p.ranked-hint{width:98%;margin-top:8px;font-size:10px}}
+@media(orientation:portrait){.ranked-help{max-width:290px;font-size:11px;line-height:1.45}.ranked-help[open] .ranked-help-body{max-height:34dvh;overflow-y:auto}}
+@media(max-height:450px){.ranked-help{margin-top:4px;font-size:9px;line-height:1.3}.ranked-help summary{min-height:32px;padding:2px 0;font-size:7px}}
+@media(max-height:260px){.ranked-help{display:none}}

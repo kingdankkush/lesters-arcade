@@ -37,3 +37,8 @@ label{font-size:13px;display:flex;align-items:center;gap:10px}.panel label{min-h
 @media (max-width:440px){.segmented{grid-template-columns:1fr 1fr}}
 @media (forced-colors:active){.segment input:checked+span{border:3px solid Highlight}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Ranked onboarding copy (2026-09-26): Free hint + guide link after the share row, collapsed explainer. Copy only. */
+.panel .ranked-hint{margin:0 0 12px;font-size:12px;line-height:1.55;color:#9bb5c4}.panel .ranked-hint a,.panel .ranked-help a{color:#c9f6ff;text-decoration:underline;text-underline-offset:3px}.panel .ranked-hint a:hover,.panel .ranked-help a:hover{color:#fff}
+#menuTiles:has(#rankedModeTile[aria-current="true"])~.ranked-hint .free-line{display:none}
+.ranked-help .summary-hint{font-size:11px;letter-spacing:.04em;text-transform:none}.ranked-help-body{padding:0 0 12px}.panel .ranked-help-body p{margin:6px 0;font-size:13px;line-height:1.6;overflow-wrap:anywhere}

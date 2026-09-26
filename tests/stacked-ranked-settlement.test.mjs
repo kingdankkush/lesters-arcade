@@ -197,7 +197,7 @@ test('child Ranked copy is true with settlement off and on', () => {
   assert.match(stacked, /Ranked has a shared 15-minute pause allowance/, 'the pause allowance copy stays');
   assert.doesNotMatch(stacked, /RANKED PREVIEW|Ranked preview is active on this device/);
   const page = read('../apps/portal/stacked/index.html');
-  assert.match(page, /<span class="tile-label">Ranked<\/span><span class="tile-hint">Verified runs<\/span>/);
+  assert.match(page, /<span class="tile-label">Ranked<\/span><span class="tile-hint">0\.012 zkLTC per run<\/span>/);
   assert.doesNotMatch(page, /tile-hint">Local ledger/);
   const chikun = read('../apps/chikun/src/main.mjs');
   assert.match(chikun, /'Ranked run sent to Lester’s Arcade for verification\.'/);
