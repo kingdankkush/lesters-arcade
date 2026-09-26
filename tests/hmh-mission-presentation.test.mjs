@@ -4,6 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createWorldDesignLife, missionChevron, missionSafeBand, MISSION_RING_CAP, MISSION_BEAM_CAP } from '../apps/hmh-reboot/src/world-design-life.mjs';
 import { MISSION_OBJECTIVES, createMissionState, stepMissionObjectives } from '../apps/hmh-reboot/src/mission-objectives.mjs';
+import { createCollectibleState, stepCollectibles } from '../apps/hmh-reboot/src/collectible-system.mjs';
+import { OBJECTIVE_REWARDS, objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 
 class FakeGraphics {
   constructor() { this.commands = []; }
@@ -86,4 +88,67 @@ test('the chevron sits on the edge of the safe band toward an off-screen node an
   assert.equal(south.y, band.bottom - 16);
   assert.deepEqual(missionSafeBand({ width: 390, height: 844 }), { top: 266, bottom: 604 });
   assert.deepEqual(missionSafeBand({ width: 900, height: 420 }), { top: 118, bottom: 140 });
+});
+
+// Priority 4 in the runtime: once a district's chain is done the pill tracks
+// the station its machine opened, read from the real collectible state and
+// the same capacity check the collection step uses.
+const collectiblesFor = () => createCollectibleState({
+  placements: Array.from({ length: 10 }, (_, index) => ({ id: `base:${index}`, assetId: 'bonus-life', x: 20000 + index * 200, y: 0 })),
+  objectivePlacements: objectiveRewardPlacements(),
+});
+// Stands in a machine's ring until it completes, unlocking its rewards the
+// way main does on a switch's objective-completed event.
+function operate(mission, collectibles, id) {
+  const node = row(id);
+  const player = { x: node.operate.x, y: node.operate.y, groundZ: 0 };
+  for (let guard = 0; guard < 600 && !mission.completed.has(id); guard += 1) {
+    for (const event of stepMissionObjectives(mission, { tick: mission.lastTick + 1, player, queryGround: flat }).events) {
+      if (event.objectiveClass === 'switch') collectibles.unlockedObjectives.add(event.objectiveId);
+    }
+  }
+  assert.ok(mission.completed.has(id), `${id} completes`);
+  return player;
+}
+const reward = (id) => OBJECTIVE_REWARDS.find((candidate) => candidate.id === id);
+
+test('with the relay done the pill tracks the Silver Reserve, and hides once it is taken or cannot be taken', () => {
+  const mission = createMissionState(1);
+  const collectibles = collectiblesFor();
+  const actor = { x: row('relay-power').operate.x, y: row('relay-power').operate.y, groundZ: 0 };
+  const guidance = { districtId: 'frontier-relay', collectibles, canCollect: () => true };
+  assert.equal(render({ mission, actor, guidance }).report.trackedId, 'relay-power', 'the chain comes first');
+  operate(mission, collectibles, 'relay-power');
+  const tick = mission.lastTick;
+  const tracked = render({ mission, actor, guidance, tick });
+  assert.equal(tracked.report.trackedId, 'reward:relay-reserve');
+  assert.equal(tracked.tracker.visible, true);
+  assert.match(tracked.tracker.text, /^Silver Reserve · Shotgun · \d+ m /);
+  const full = render({ mission, actor, guidance: { ...guidance, canCollect: () => false }, tick });
+  assert.equal(full.report.trackedId, null, 'a station the hero cannot take now is not tracked');
+  assert.equal(full.tracker.visible, false);
+  assert.equal(render({ mission, actor, guidance: { districtId: 'frontier-relay' }, tick }).tracker.visible, false, 'no collectible state, no station');
+  const silver = reward('reward:relay-reserve');
+  const [taken] = stepCollectibles(collectibles, { tick: tick + 1, player: silver }).events;
+  assert.equal(taken.placementId, silver.id);
+  const after = render({ mission, actor, guidance, tick: tick + 1 });
+  assert.equal(after.report.trackedId, null, 'a first-clear cache is tracked until it is collected');
+  assert.equal(after.tracker.visible, false);
+});
+
+test('a haven is tracked with the effect the collection step checks, hides while it restocks and returns on its ready tick', () => {
+  const mission = createMissionState(1);
+  const collectibles = collectiblesFor();
+  const actor = operate(mission, collectibles, 'crossing-pump');
+  const checked = [];
+  const guidance = { districtId: 'liquidity-crossing', collectibles, canCollect: (effect, placement) => { checked.push([placement.id, effect.kind]); return true; } };
+  const tick = mission.lastTick;
+  assert.equal(render({ mission, actor, guidance, tick }).report.trackedId, 'reward:crossing-supply');
+  assert.deepEqual(checked, [['reward:crossing-supply', 'ammo-refill']], 'the placement kind, as stepCollectibles sees it');
+  const haven = reward('reward:crossing-supply');
+  stepCollectibles(collectibles, { tick: tick + 1, player: haven });
+  const readyTick = collectibles.readyTicks.get(haven.id);
+  assert.equal(readyTick, tick + 1 + haven.respawnTicks);
+  assert.equal(render({ mission, actor, guidance, tick: readyTick - 1 }).tracker.visible, false, 'no pill while the haven restocks');
+  assert.equal(render({ mission, actor, guidance, tick: readyTick }).report.trackedId, haven.id);
 });
