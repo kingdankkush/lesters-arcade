@@ -482,7 +482,7 @@ test('ranked sessions use one UUID-backed canonical id across routing and eviden
   assert.equal(session.canonicalContext.wallet, wallet);
   assert.equal(session.canonicalContext.gameId, 'lester-blaster');
   // HMH builds carry the cabinet version (version-column, 2026-09-25).
-  assert.equal(session.canonicalContext.buildHash, `site-1.8.3:game-1.8.3:cabinet-${HMH_CABINET_VERSION}`);
+  assert.equal(session.canonicalContext.buildHash, `site-1.8.4:game-1.8.4:cabinet-${HMH_CABINET_VERSION}`);
   assert.equal(ARCADE_GAMES.find((game) => game.id === 'lester-blaster').cabinetVersion, HMH_CABINET_VERSION);
 });
 
@@ -502,7 +502,7 @@ test('parent session allocator issues deterministic seed, build, and season bind
   assert.notEqual(a.seed, changed.seed);
   assert.equal(Number.isInteger(a.seed), true);
   assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
-  assert.equal(a.buildHash, 'site-1.8.3:game-1.8.3:cabinet-0.9.0');
+  assert.equal(a.buildHash, 'site-1.8.4:game-1.8.4:cabinet-0.9.0');
   assert.equal(a.seasonId, 'chikun-season-preview-1');
   assert.equal(a.canonicalContext.seed, a.seed);
   assert.equal(a.canonicalContext.buildHash, a.buildHash);

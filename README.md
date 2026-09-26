@@ -1,3 +1,9 @@
+# Lester's Arcade — 1.8.4: fairer HMH Ranked, two HMH freezes fixed, faster crowds, simpler STACKED effects, jackpot UI staged
+
+Batch release after 1.8.3. Hard Money Heroes Ranked verification refuses twelve impossible run-summary combinations (grenade kills, detonations and throws beyond what the run could produce, pickups beyond what the sites, vault and events offered, activity in zero-length runs), which closes the 1.8.x path that let a fabricated summary earn five achievements in one paid run; 68 real runs of the 1.8.3 game all still pass. Ranked HMH now ignores the `?evidenceSafe` test switch, so every Ranked run starts at its seeded level entry. Two HMH freezes are fixed (a Burner or Lightning Ledger hit on the not-yet-active Liquidator, and an ammo refill while the Ledger channels). HMH crowds render faster (pooled enemy displays and a ground drawn once instead of every frame; same-seed results unchanged). STACKED's settings become one effects preset (Reduced, Standard, Full) with an automatic scene deck. The Chikun Weekly Jackpot's pages and owner review page are in, hidden behind `JACKPOT_LIVE` (false): nothing player-facing changes for the jackpot yet. Contracts, fees and flags of the live Ranked system are unchanged.
+
+Site/game version `1.8.4`; cache marker `lesters-arcade-v57-fair-play`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.8.3 verified live: game version on every score, 237 MB lighter, jackpot server staged
 
 Batch release after 1.8.2. Every verified score now shows the game version it was played on (owner decision: no testnet season resets): a Version column on the Scores boards (a chip on phones), a label per run in profile history and a line on share pages. HMH build hashes gain a cabinet segment (`HMH v0.5`); earlier hashes stay valid. About 237 MB of unreferenced generated art and dead generator scripts are removed (753 files; report `docs/cleanup/unused-assets-audit-20260925.md`). The Chikun Weekly Jackpot server is in (Neon migration 3, a keeper cron that is a recorded no-op until the jackpot contract is deployed, `/api/jackpot` answering not-configured); nothing player-facing changes for the jackpot yet and `JACKPOT_LIVE` stays false. Contracts, fees and flags of the live Ranked system are unchanged.
@@ -56,7 +62,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v56-version-column`
+**Production cache marker:** `lesters-arcade-v57-fair-play`
 
 # Lester's Arcade
 
