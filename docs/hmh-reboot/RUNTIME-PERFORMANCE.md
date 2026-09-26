@@ -298,3 +298,39 @@ Evidence: `docs/testing/hmh-perf-step4-render-alloc.json`.
   - Pixi `Graphics` tessellation is the largest allocator, about 2.25 MB per frame: `buildLine`, circle and rounded-rectangle triangulation and `buildContextBatches` are about half of all sampled bytes. They come from the immediate-mode layers redrawn every frame (health pips, elite rings, tells, gore, combat effects, world life, reticle), which need pooled sprites or retained geometry;
   - renderer private memory grows 50–65 MB over the long run in both builds while the JS heap grows 2 MB, so it is outside the JS heap (per-cue `HTMLAudioElement` players and decoded images are the candidates);
   - the hero atlas still builds string keys and a joined frame-id string every frame, and world life queries the ground for every site every frame.
+
+## Perf step 5: Web Audio SFX engine (2026-09-25)
+
+Change (`8a2795a2`; tooling `17728eb0`): every SFX cue used to construct a new `HTMLAudioElement(url)`, which meant a media element, a media pipeline, a revalidation of a `max-age=0` asset and a decoder start, up to 16 voices deep in a crowded fight. iOS also ignores element `volume`, so the SFX and UI sliders did nothing on an iPhone.
+
+- **Engine.** `apps/hmh-reboot/src/combat-audio.mjs` creates one `AudioContext` in the first gesture. It fetches and decodes each sample a cue can reach in the current mode once, four at a time, into an `AudioBuffer`. A cue is an `AudioBufferSourceNode` into a per-voice `GainNode` (cue plan volume × boss duck), then the SFX or UI bus `GainNode` (slider level × dynamic range), then the destination. The registry gate, cooldowns, the 16-voice cap, priority stealing, 4 s reaping, the 600 ms boss duck (×0.7; boss, damage and UI exempt), the pause allow-list and reduce-motion attenuation are unchanged. Standalone music is still a media element; embedded HMH music stays with the parent's player. Audio remains projection-only.
+- **Gestures and lifecycle.** `pointerdown`, `pointerup`, `touchend` and `keydown` listeners stay attached. The first one unlocks: `resume()` and a one-sample buffer started inside the gesture, as iOS requires. A touch `pointerdown` is not a user activation, which is why the old once-only `pointerdown`/`keydown` unlock never fired on an iOS tap. Later gestures resume a context that iOS interrupted (a call, Siri or another app). A hidden page suspends the context and a visible page resumes it. `destroy()` closes the context and removes every listener. `main.mjs` now only passes `gestureTarget: window` and `visibilityTarget: document`.
+- **Dropped, not late.** A cue is refused while the context is locked or suspended, or while its sample is still decoding. A requested sample moves to the front of the decode queue. A failed fetch or decode leaves that cue silent without leaking a voice.
+- **Owner decision: no footsteps and no voice lines.** `footstep-dirt` and `footstep-road` are refused in every mode (`cue-retired`) and never fetched, and the unused `worldDesignFootstep` selector is gone. The child has no voice-line cues. The footstep WAVs, their manifest and registry entries and their generator recipe are portal-owned or shared, so they are on the cleanup list in the evidence file rather than deleted here.
+- **Tooling.** Telemetry adds `audioContext`, `audioSamplesReady` and `audioSamplesFailed`. The crowd bench counts media-element plays, buffer-source starts and SFX requests inside each window, so an A/B can prove both builds played the same cue stream. The leak probe gives each mounted child one trusted key press. The weapon-SFX smoke presses Shift and asserts a running context and zero failed samples.
+
+Exactness:
+
+- `scripts/hmh-action-audio-audit.mjs`, run through the old engine and through this one, gives bit-identical routed gains for all 35 live manifest cues. The 154-event dense-mix WAV and the audition WAV are byte-identical.
+- `tests/hmh-reboot-combat-audio-webaudio.test.mjs` has 17 tests, 16 of them red before the change. The four suites that drove an `HTMLAudioElement` fake now drive `tests/helpers/fake-web-audio.mjs` with the same assertions, made on source buffers and graph gain.
+- The headless digest matches (`2488a609…`), and the browser census trace at tick 1800 is `449616fb…` on mobile and desktop. `scripts/hmh-weapon-sfx-browser-smoke.mjs` passes in Chrome with a running context, 0 failed samples, 0 registry refusals and at most 2 voices.
+
+Evidence: `docs/testing/hmh-perf-step5-audio-webaudio.json`.
+
+- Initial JS is 1,044,564 B, 284 B less than step 4 (4,012 B of headroom). The lazy `combat-audio` chunk grows by about 1.9 KB.
+- Both builds start 344–366 cue voices per 20 s window. Step 4 does it with media-element plays; this build does it with buffer sources, fetches 35 samples once at unlock and makes no SFX requests inside the window.
+- Frame timing: step-4 and step-5 builds alternated over two rounds. The table uses only pairs whose host-load windows matched (the host carried 25–60% unrelated load; mismatched runs are kept in the evidence file).
+
+| Mobile crowd | Step 4 | Step 5 |
+|---|---:|---:|
+| 4x mean (3 pairs, 26–27% load) | 23.59 ms | 20.69 ms (−12.3%) |
+| 4x p95 / p99 | 34.7–41.7 / 41.7–62.5 ms | 27.8–27.9 / 34.7–41.7 ms |
+| 4x frames over 33.3 ms | 5.4–13.3% | 1.7–4.7% |
+| 6x mean (2 pairs) | 57.65 ms | 48.49 ms (−15.9%) |
+| 6x p99 | 118.1 / 125.1 ms | 90.4 / 90.3 ms |
+| 6x sim speed | 0.917 / 0.910 | 0.961 / 0.948 |
+
+- CPU profiles at matched load: busy time per frame at 4x is 28.99 and 27.93 ms → 26.75 and 24.31 ms, and at 6x 58.31 → 49.60 ms. The whole drop is native main-thread work, the `(program)` bucket: 7.72 and 7.53 → 4.98 and 4.49 ms per frame at 4x (27% → 18.5% of busy time), and 16.92 → 8.53 ms at 6x. The JS side of `play()` costs about the same in both engines. Desktop 1x stays vsync-bound (7.03 vs 6.99 ms).
+- Long run (21,600 ticks, leak probe `--long`): renderer private memory grows about the same with either engine (+63.8 MB on step 4, +65.8 MB here), and the retained JS heap stays at 16–18 MB. So per-cue media elements were not the source of that growth; decoded images and GPU-side resources remain. The decoded SFX buffers take about 3.5 MB.
+- Not verified on an iPhone: the unlock on the Enter tap, recovery after an interruption, and the ring/silent switch. With `navigator.audioSession` left at its default, WebKit may treat Web Audio as ambient and mute SFX with the silent switch while the parent's music keeps playing. Setting `navigator.audioSession.type = 'playback'` would change that; it is an owner decision.
+- Owner target: at 4x the crowd now averages about 48 fps, with 1.7–4.7% of frames slower than 30 fps. At 6x it is about 20–21 fps.
