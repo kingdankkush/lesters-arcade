@@ -24,7 +24,8 @@ export const COLLECTIBLE_EFFECTS = freezeDeep({
   'forked-standard-cache': { effectId: 'forked-standard-cache', kind: 'weapon-cache', weaponId: 'forked-standard', xpGain: 240 },
   'time-dilation': { effectId: 'time-dilation', kind: 'timed', durationTicks: 600, speedMultiplier: 1.2 },
   'berserk-candle': { effectId: 'berserk-candle', kind: 'timed', durationTicks: 600, damageMultiplier: 2 },
-  'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999 },
+  // Package 8.6: the nuke reaches about 1,100 around the hero, not the map.
+  'nuke-liquidation': { effectId: 'nuke-liquidation', kind: 'nuke', damage: 999, radius: 1_100 },
 });
 
 export function createCollectibleState({ placements, objectivePlacements = [], collectionRadius = 80 } = {}) {

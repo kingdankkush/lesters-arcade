@@ -31,7 +31,8 @@ export function resolveLightningLedgerUpgradePolicy({ branches = {}, capstoneId 
     maxTargets: conductivity >= 3 ? 8 : conductivity >= 2 ? 7 : 6,
     jumpRange: LIGHTNING_LEDGER_CONFIG.jumpRange + conductivity * 40,
     lateChainRetentionPermille: conductivity >= 3 ? 940 : conductivity >= 2 ? 860 : 780,
-    contactDamagePermille: voltage >= 1 ? 1150 : 1000,
+    // Package 8.6: every Arc Damage rank adds contact damage.
+    contactDamagePermille: [1000, 1100, 1150, 1200][voltage],
     rampDurationTicks: voltage >= 2 ? 150 : LIGHTNING_LEDGER_CONFIG.overheatTicks,
     lastArcKnockbackMultiplier: voltage >= 3 ? 1.5 : 1,
     reserveAmmoGrant: 12 + reconciliation * 2,

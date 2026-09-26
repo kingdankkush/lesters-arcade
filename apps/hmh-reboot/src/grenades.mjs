@@ -123,6 +123,17 @@ export function rechargeHandGrenades(system, { tick, amount = 1 } = {}) {
   return freezeDeep({ type: 'grenade:pickup-refill', tick, amount: system.handCharges - previousCharges, handCharges: system.handCharges });
 }
 
+// Extra Grenade (package 8.6): each rank raises the maximum by one and fills
+// the new slot, instead of overflowing the old maximum.
+export function raiseHandGrenadeMaximum(system, { amount = 1 } = {}) {
+  if (!Number.isInteger(amount) || amount <= 0 || amount > 16) throw new TypeError('grenade maximum amount must be a positive bounded integer');
+  system.maxHandCharges += amount;
+  system.handCharges = Math.min(system.maxHandCharges, system.handCharges + amount);
+  return freezeDeep({ handCharges: system.handCharges, maxHandCharges: system.maxHandCharges });
+}
+
+// damage and blastRadius default to the hand grenade; the Grenade Launcher
+// passes its upgraded shell (package 8.2: Blast Damage, Shaped Charge).
 export function throwGrenade(system, {
   tick,
   mode = 'hand',
@@ -130,11 +141,15 @@ export function throwGrenade(system, {
   direction,
   ownerId = 'player',
   damageMultiplier = 1,
+  damage = HMH_GRENADE_DEFINITION.damage,
+  blastRadius = HMH_GRENADE_DEFINITION.blastRadius,
 } = {}) {
   if (!Number.isInteger(tick) || tick < 0) throw new TypeError('tick must be a non-negative integer');
   if (tick < system.lastStepTick) throw new TypeError('grenade spawn tick cannot precede the last simulation step');
   if (!['hand', 'launcher'].includes(mode)) throw new TypeError('grenade mode must be hand or launcher');
   positive(damageMultiplier, 'damageMultiplier');
+  positive(damage, 'grenade damage');
+  positive(blastRadius, 'grenade blastRadius');
   if (system.active.length >= system.capacity) {
     system.droppedSpawns += 1;
     return freezeDeep({ spawned: false, reason: 'capacity', tick, mode });
@@ -154,7 +169,8 @@ export function throwGrenade(system, {
     velocity: { x: forward.x * horizontalSpeed, y: forward.y * horizontalSpeed, z: verticalSpeed },
     spawnTick: tick,
     detonateTick: tick + HMH_GRENADE_DEFINITION.fuseTicks,
-    damage: HMH_GRENADE_DEFINITION.damage * damageMultiplier,
+    damage: damage * damageMultiplier,
+    blastRadius,
   });
   system.active.push(grenade);
   if (mode === 'hand') system.handCharges -= 1;

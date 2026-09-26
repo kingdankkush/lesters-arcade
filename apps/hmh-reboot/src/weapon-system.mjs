@@ -300,7 +300,7 @@ const UPGRADE_TREES = freezeDeep({
   'hash-rail': {
     rateOfFire: [{ multiplier: 1.08 }, { multiplier: 1.18 }, { multiplier: 1.3, special: 'fast-rounds' }],
     damage: [{ flatBonus: 6 }, { flatBonus: 12 }, { flatBonus: 20, special: 'deep-proof' }],
-    reloadSpeed: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.45, special: 'extended-mag' }],
+    reloadSpeed: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.45, special: 'capacitor-bank' }],
   },
   // The launcher was the only carryable weapon with no upgrade path at all.
   'launcher-rig': {
@@ -318,8 +318,20 @@ export const pistolProgressionByWeapon = (ranks = {}) => ({
   } },
 });
 
+// Package 8.2: each finite gun's three cards are its rate-of-fire, damage and
+// Magazine & Salvage (reloadSpeed) branches.
+const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
+  rateOfFire: ranks[rateOfFire] ?? 0,
+  damage: ranks[damage] ?? 0,
+  reloadSpeed: ranks[reloadSpeed] ?? 0,
+} });
+
 export const progressionByWeapon = (ranks = {}) => ({
   ...pistolProgressionByWeapon(ranks),
+  'scatter-shotgun': gunBranches(ranks, ['scatter-pump', 'scatter-dump', 'scatter-shells']),
+  'auto-miner': gunBranches(ranks, ['miner-hashrate', 'miner-asic', 'miner-pool']),
+  'hash-rail': gunBranches(ranks, ['rail-blocktime', 'rail-proof', 'rail-mempool']),
+  'launcher-rig': gunBranches(ranks, ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier']),
   'lightning-ledger': {
     branches: {
       conductivity: ranks['ledger-conductivity'] ?? 0,
@@ -355,12 +367,13 @@ const SPECIAL_EFFECTS = freezeDeep({
   // Boss armour penetration is a policy flag: it applies to any boss target.
   'deep-proof': { policy: { type: 'pierce', maxTargets: 7, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } }, projectileTag: 'deep-proof', bossArmorPenetration: 0.6 },
   ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
-  // Shells detonate on impact.
-  explosive: { policy: { type: 'splash', radius: 58 } },
+  // Package 8.2: the centre pellet detonates (radius 72); the rest stay pellets.
+  explosive: { centrePelletPolicy: { type: 'splash', radius: 72 } },
   'shaped-charge': { policy: { type: 'splash', radius: 210 } },
   // Both barrels at once: more pellets across the same arc.
   'double-barrel': { pelletCountBonus: 6 },
-  'twin-tube': { pelletCountBonus: 1, spreadRadiansOverride: Math.PI * 7 / 180 },
+  // Two shells exactly 7 degrees apart (no pellet jitter).
+  'twin-tube': { pelletCountBonus: 1, spreadRadiansOverride: Math.PI * 7 / 180, exactSpread: true },
   // Flatter, faster rounds that reach further.
   'tracer-rounds': { projectileSpeedMultiplier: 1.35, rangeMultiplier: 1.25, projectileTag: 'tracer-round' },
   // A fast three-round burst, then the normal cadence gap.
@@ -370,7 +383,28 @@ const SPECIAL_EFFECTS = freezeDeep({
   'shock-rounds': { shock: [0.12, 1.5] },
   'extended-mag': { clipSize: 12, shock: [0.18, 1.75] },
   bandolier: { clipSize: 7 },
+  'capacitor-bank': { clipSize: 5 },
 });
+
+// Package 8.2 Magazine & Salvage (each finite gun's reloadSpeed branch): the
+// reserve grant is ceil(pickupReserveAmmo x multiplier) and the reserve cap is
+// twice the grant; from rank 2, kills credited to the gun add per-mille that
+// turns into whole reserve rounds (creditWeaponKills).
+const RESERVE_GRANT_MULTIPLIERS = Object.freeze([1, 1.25, 1.5, 2]);
+const SALVAGE_PERMILLE = freezeDeep({
+  'scatter-shotgun': [0, 0, 250, 500],
+  'auto-miner': [0, 0, 2_000, 4_000],
+  'hash-rail': [0, 0, 150, 250],
+  'launcher-rig': [0, 0, 150, 250],
+});
+// The Machine Gun's heat per round by Fire Rate rank (package 8.2).
+const MINER_HEAT_MULTIPLIERS = Object.freeze([1, 0.9, 0.8, 0.72]);
+
+// Package 8.6 (owner decision 12): the run's critical chance and damage reach
+// these held weapons' direct hits: Arc Rifle pulses, flame contact, launcher
+// blasts and War Fork strikes. The knife, hand grenades and burn ticks keep
+// their own values.
+export const HMH_CRITICAL_HELD_WEAPON_IDS = Object.freeze(['lightning-ledger', 'bear-market-burner', 'launcher-rig', 'forked-standard']);
 
 function tierNode(tree, branch, value) {
   if (value === undefined || value === null || value === 0) return null;
@@ -514,6 +548,8 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   let burstIntervalTicks = 0;
   let shock = null;
   let bossArmorPenetration = 0;
+  let centrePelletPolicy = null;
+  let exactSpread = false;
   for (const special of specials) {
     const effect = SPECIAL_EFFECTS[special];
     if (!effect) continue;
@@ -528,6 +564,8 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (effect.clipSize) clipSize = effect.clipSize;
     if (effect.shock) shock = effect.shock;
     if (effect.bossArmorPenetration) bossArmorPenetration = effect.bossArmorPenetration;
+    if (effect.centrePelletPolicy) centrePelletPolicy = effect.centrePelletPolicy;
+    if (effect.exactSpread) exactSpread = true;
   }
 
   const crowdControlCapstone = weaponId === 'coin-blaster'
@@ -540,6 +578,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   const projectilePolicy = evolutionId === 'settler-rail'
     ? freezeDeep({ type: 'pierce', maxTargets: 8, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } })
     : specialPolicy ?? definition.policy;
+  const reserveTier = branches?.reloadSpeed ?? 0;
   return freezeDeep({
     weaponId,
     damage: definition.damage + damageFlatBonus,
@@ -548,7 +587,11 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     reloadMultiplier,
     cadenceTicks: Math.max(1, Math.ceil(TICKS_PER_SECOND / (definition.fireRatePerSecond * fireRateMultiplier))),
     reloadTicks: Math.max(1, Math.ceil(definition.reloadSeconds * TICKS_PER_SECOND / reloadMultiplier)),
+    // Package 8.2 Charge Speed: the Railgun's charge shortens with its rate.
+    chargeTicks: definition.chargeTicks ? Math.ceil(definition.chargeTicks / fireRateMultiplier) : 0,
     clipSize,
+    reserveAmmoGrant: definition.pickupReserveAmmo === null ? null : Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier]),
+    salvagePermille: SALVAGE_PERMILLE[weaponId]?.[reserveTier] ?? 0,
     specials,
     pelletCount,
     spreadRadians,
@@ -556,6 +599,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     range,
     burstCount,
     burstIntervalTicks,
+    centrePelletPolicy,
+    exactSpread,
+    // The launcher's blast (package 8.2: Shaped Charge widens it to 210).
+    blastRadius: definition.kind === 'grenade-launch' ? projectilePolicy.radius : null,
     // Tags are additive: the special keeps its tag and an evolution adds its own.
     projectileTag: specialTag,
     evolutionId,
@@ -565,7 +612,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     armorPiercing: evolutionId === 'settler-rail',
     bossArmorPenetration,
     shock,
-    heatPerShot: (definition.heatPerShot ?? 0) * (specials.includes('overheat-reduction') ? 0.72 : 1),
+    heatPerShot: (definition.heatPerShot ?? 0) * MINER_HEAT_MULTIPLIERS[branches?.rateOfFire ?? 0],
     maxHeat: definition.maxHeat ?? 0,
     heatRecoveryPerTick: definition.heatRecoveryPerTick ?? 0,
     heatResumeThreshold: definition.heatResumeThreshold ?? 0,
@@ -596,6 +643,7 @@ function createPerWeaponState(id, { owned = false } = {}) {
     burstRemaining: 0,
     chargeStartedTick: null,
     chargeReadyAnnounced: false,
+    salvagePermille: 0,
     channelState: definition.kind === 'channel' ? createLightningLedgerState({ cellsRemaining: progression.clipSize }) : null,
     burnerState: definition.kind === 'flame-channel'
       ? createBearMarketBurnerState({ fuel: progression.clipSize, reserveFuel: isOwned ? progression.reserveAmmoGrant : 0 })
@@ -813,7 +861,9 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     weapon.burnerState = burnerState;
   }
   const previousWeaponId = state.activeWeaponId;
-  if (select) {
+  // 'if-new' (package 8.6): a cache selects its gun only when it is newly owned.
+  const selected = select === 'if-new' ? !alreadyOwned : Boolean(select);
+  if (selected) {
     state.weapons[previousWeaponId].chargeStartedTick = null;
     state.weapons[previousWeaponId].chargeReadyAnnounced = false;
     state.activeWeaponId = id;
@@ -828,7 +878,38 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     reserveAmmo: weapon.reserveAmmo,
     previousWeaponId,
     activeWeaponId: state.activeWeaponId,
-    readyTick: select ? state.switchReadyTick : tick,
+    readyTick: selected ? state.switchReadyTick : tick,
+  });
+}
+
+// Package 8.2 Salvage. Kills resolved in tick t are credited right after kill
+// resolution (after the weapon step of t) and so are read from the weapon
+// step of t+1. Each whole 1,000 per-mille moves one round into reserve, never
+// the clip, up to the reserve cap; no RNG. Returns null for a weapon with no
+// salvage (the Pistol, the knife, grenades, a gun below rank 2).
+export function creditWeaponKills(state, { tick, weaponId, count = 1, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('weapon kill credit tick cannot precede the weapon step');
+  if (!Number.isInteger(count) || count < 1 || count > 4_096) throw new TypeError('kill count must be a bounded positive integer');
+  const weapon = Object.hasOwn(SALVAGE_PERMILLE, weaponId) ? state.weapons?.[weaponId] : null;
+  if (!weapon?.owned || weapon.reserveAmmo === null) return null;
+  const progression = applyWeaponProgression(weaponId, progressionByWeapon?.[weaponId]);
+  if (progression.salvagePermille <= 0) return null;
+  weapon.salvagePermille += progression.salvagePermille * count;
+  const rounds = Math.floor(weapon.salvagePermille / 1_000);
+  weapon.salvagePermille -= rounds * 1_000;
+  const before = weapon.reserveAmmo;
+  weapon.reserveAmmo = Math.min(progression.reserveAmmoGrant * 2, weapon.reserveAmmo + rounds);
+  return freezeDeep({ type: 'weapon:salvage', tick, weaponId, rounds: weapon.reserveAmmo - before, reserveAmmo: weapon.reserveAmmo });
+}
+
+// The guns card 2 may focus (package 8.3): owned, with ammo in the clip or the
+// reserve. The War Fork needs none; the Flamethrower counts while it has fuel.
+export function weaponIdsWithAmmo(state) {
+  return HMH_WEAPON_ORDER.filter((id) => {
+    const weapon = state.weapons?.[id];
+    if (!weapon?.owned) return false;
+    return HMH_WEAPON_DEFINITIONS[id].ammoModel === 'none' || weapon.reserveAmmo === null || weapon.ammoInClip > 0 || weapon.reserveAmmo > 0;
   });
 }
 
@@ -936,6 +1017,7 @@ function spreadOffsets(profile, state, attackId) {
   const interval = profile.spreadRadians / Math.max(1, count - 1);
   return Array.from({ length: count }, (_, index) => {
     const base = -profile.spreadRadians * 0.5 + interval * index;
+    if (profile.exactSpread) return base;
     const jitter = (seededUnit(state.seed, `${attackId}:pellet:${index}`) - 0.5) * interval * 0.32;
     return base + jitter;
   });
@@ -943,6 +1025,7 @@ function spreadOffsets(profile, state, attackId) {
 
 function buildShots({ definition, progression, state, direction, attackId }) {
   const shock = (progression.shock?.[0] ?? 0) > seededUnit(state.seed, `${attackId}:shock`);
+  const centrePellet = Math.floor((progression.pelletCount - 1) / 2);
   return Object.freeze(spreadOffsets(progression, state, attackId).map((angleOffset, pelletIndex) => {
     const shotDirection = rotate(direction, angleOffset);
     const id = `${attackId}:${String(pelletIndex).padStart(2, '0')}`;
@@ -959,7 +1042,8 @@ function buildShots({ definition, progression, state, direction, attackId }) {
       range: progression.range,
       radius: definition.projectileRadius,
       damage: progression.damage,
-      policy: progression.projectilePolicy,
+      policy: progression.centrePelletPolicy && pelletIndex === centrePellet ? progression.centrePelletPolicy : progression.projectilePolicy,
+      blastRadius: progression.blastRadius,
       projectileTag: progression.projectileTag,
       evolutionTag: progression.evolutionTag,
       armorPiercing: progression.armorPiercing,
@@ -1144,15 +1228,15 @@ export function stepWeaponLoadout(state, {
     return freezeDeep({ tick, events });
   }
   if (tick < weapon.nextFireTick) return freezeDeep({ tick, events });
-  if (definition.chargeTicks) {
+  if (progression.chargeTicks) {
     let chargedRelease = false;
     if (fire) {
       if (weapon.chargeStartedTick === null) {
         weapon.chargeStartedTick = tick;
         weapon.chargeReadyAnnounced = false;
-        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + definition.chargeTicks }));
+        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + progression.chargeTicks }));
         return freezeDeep({ tick, events });
-      } else if (tick - weapon.chargeStartedTick >= definition.chargeTicks) {
+      } else if (tick - weapon.chargeStartedTick >= progression.chargeTicks) {
         if (!releaseCharged) {
           if (!weapon.chargeReadyAnnounced) {
             weapon.chargeReadyAnnounced = true;
@@ -1170,7 +1254,7 @@ export function stepWeaponLoadout(state, {
       const chargeTicks = tick - weapon.chargeStartedTick;
       weapon.chargeStartedTick = null;
       weapon.chargeReadyAnnounced = false;
-      if (chargeTicks < definition.chargeTicks) {
+      if (chargeTicks < progression.chargeTicks) {
         events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks }));
         return freezeDeep({ tick, events });
       }

@@ -34,8 +34,10 @@ test('explosive shotgun shells detonate, and shaped-charge widens the launcher b
   const tierTwo = applyWeaponProgression('scatter-shotgun', { branches: { damage: 2 } });
   const capstone = applyWeaponProgression('scatter-shotgun', { branches: { damage: 3 } });
   assert.equal(tierTwo.projectilePolicy.type, 'pellet');
-  assert.equal(capstone.projectilePolicy.type, 'splash');
-  assert.ok(capstone.projectilePolicy.radius > 0);
+  assert.equal(tierTwo.centrePelletPolicy, null);
+  // Design package 8.2: only the centre pellet detonates (radius 72).
+  assert.equal(capstone.projectilePolicy.type, 'pellet');
+  assert.deepEqual(capstone.centrePelletPolicy, { type: 'splash', radius: 72 });
 
   const launcher = applyWeaponProgression('launcher-rig', { branches: { damage: 3 } });
   assert.equal(launcher.projectilePolicy.type, 'splash');
@@ -131,14 +133,14 @@ test('burst-fire fires a real burst: short gaps inside it, full cadence after', 
 
 test('every named capstone in the tree actually resolves to an effect', () => {
   // Guards against adding another inert tag, which is the defect this covers.
-  const weapons = ['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig'];
+  const weapons = ['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail'];
   for (const weaponId of weapons) {
     for (const branch of Object.keys(MAX)) {
       const capstone = applyWeaponProgression(weaponId, { branches: { [branch]: 3 } });
       const tierTwo = applyWeaponProgression(weaponId, { branches: { [branch]: 2 } });
       const special = capstone.specials.find((tag) => !tierTwo.specials.includes(tag));
       assert.ok(special, `${weaponId} ${branch} tier three must grant a named capstone`);
-      const differs = ['projectilePolicy', 'pelletCount', 'projectileSpeed', 'range', 'clipSize', 'burstCount', 'projectileTag', 'heatPerShot', 'spreadRadians']
+      const differs = ['projectilePolicy', 'centrePelletPolicy', 'pelletCount', 'projectileSpeed', 'range', 'clipSize', 'burstCount', 'projectileTag', 'heatPerShot', 'spreadRadians']
         .some((key) => JSON.stringify(capstone[key]) !== JSON.stringify(tierTwo[key]));
       assert.ok(differs, `${weaponId} ${branch} capstone "${special}" changes nothing beyond its numbers`);
     }

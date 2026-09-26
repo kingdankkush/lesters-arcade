@@ -171,8 +171,11 @@ test('the frozen v6 literals equal the 1.8.1 child modules', () => {
   for (const [role, threat] of Object.entries(HMH_ROLE_THREAT)) {
     assert.equal(threat, role === 'liquidator' ? LIQUIDATOR_THREAT_COST : ENEMY_ARCHETYPES[role].costs.threat, role);
   }
-  assert.deepEqual(Object.keys(MAX_UPGRADE_RANKS), Object.keys(RUN_UPGRADE_CATALOG));
-  assert.deepEqual(MAX_UPGRADE_RANKS, Object.fromEntries(Object.values(RUN_UPGRADE_CATALOG).map((upgrade) => [upgrade.id, upgrade.maxRank])));
+  // The progression release (package 8.2) appends twelve v7 gun cards; the v6
+  // literal pins the 24 v6 cards, whose ranks the child keeps.
+  assert.deepEqual(Object.keys(MAX_UPGRADE_RANKS), [...HMH_RUN_SUMMARY_CATALOGS_V6.upgrades]);
+  assert.deepEqual(Object.keys(RUN_UPGRADE_CATALOG).slice(0, 24), [...HMH_RUN_SUMMARY_CATALOGS_V6.upgrades]);
+  assert.deepEqual(MAX_UPGRADE_RANKS, Object.fromEntries(HMH_RUN_SUMMARY_CATALOGS_V6.upgrades.map((id) => [id, RUN_UPGRADE_CATALOG[id].maxRank])));
   const multipliers = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => /^(xp|score)Multiplier$/.test(upgrade.effect));
   assert.deepEqual(multipliers.map(({ id, effect, amount }) => [id, effect, amount]), [['block-reward', 'scoreMultiplier', HMH_V6_RULES.multiplierPerRank], ['validator-training', 'xpMultiplier', HMH_V6_RULES.multiplierPerRank]]);
   const milestones = Array.from({ length: 10_000 }, (_, index) => index + 1).filter((combo) => comboMilestoneXp(combo) > 0).map((combo) => [combo, comboMilestoneXp(combo)]);
@@ -471,8 +474,9 @@ test('the v7 contract values equal the 1.8.1 child where they are unchanged', ()
     const snapshot = recordRunDefeat(createRunProgression({ seed: 0 }), { enemyId: 'contract-probe', threatCost: threat, tick: 0 });
     assert.deepEqual([snapshot.xp, snapshot.score], [80 + 20 * threat, 100 + 25 * threat], `threat ${threat}`);
   }
-  // The 24 v6 upgrades keep their maxRank and weapon gate.
-  assert.equal(Object.values(RUN_UPGRADE_CATALOG).length, 24);
+  // The 24 v6 upgrades keep their maxRank and weapon gate, and the progression
+  // release's twelve gun cards carry the contract's rank 3 and gun gate.
+  assert.equal(Object.values(RUN_UPGRADE_CATALOG).length, 36);
   for (const upgrade of Object.values(RUN_UPGRADE_CATALOG)) {
     assert.deepEqual(HMH_V7_UPGRADES[upgrade.id], { maxRank: upgrade.maxRank, requiresWeaponId: upgrade.requiresWeaponId ?? null }, upgrade.id);
   }

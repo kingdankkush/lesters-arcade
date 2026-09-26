@@ -93,7 +93,7 @@ import {
 } from './elevation.mjs';
 import { InputState, createBrowserInputController, mapGamepadSnapshot } from './input.mjs';
 import { rebindKeyboardAction, normalizeKeyboardBindings } from './action-map.mjs';
-import { createGrenadeSystem, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
+import { createGrenadeSystem, raiseHandGrenadeMaximum, rechargeHandGrenades, stepGrenadeSystem, throwGrenade } from './grenades.mjs';
 import { buildGrenadeDangerProjection } from './grenade-vfx.mjs';
 // grenade feedback (V-3): pure projection resolvers for the arc shadow, fuse
 // blink, bounce puffs, fragment burst, shockwave ring and per-class shake.
@@ -146,8 +146,11 @@ import {
   getRunProgressionSnapshot,
   grantRunXp,
   grantRunSilver,
+  openRunUpgradeOffer,
   recordRunDefeat,
+  rerollRunUpgradeSlot,
   selectRunUpgrade,
+  setRunUpgradeFocus,
   unlockRunProgressionWeapon,
 } from './run-progression.mjs';
 import { resolveComboFeedback } from './combo-feedback.mjs';
@@ -175,6 +178,7 @@ import {
   recordRunWeaponLifecycleEvent,
   recordRunWeaponTriggerContact,
 } from '../../../sdk/hmh-run-summary.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS } from '../../../sdk/hmh-run-summary-schema.mjs';
 import {
   COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
   MAX_ACTIVE_PROJECTILES as RUNTIME_MAX_ACTIVE_PROJECTILES,
@@ -234,9 +238,11 @@ import {
   renderWorldProductionArt,
 } from './world-production-art.mjs';
 import {
+  HMH_CRITICAL_HELD_WEAPON_IDS,
   HMH_WEAPON_DEFINITIONS,
   applyWeaponProgression,
   createWeaponLoadout,
+  creditWeaponKills,
   getActiveWeaponState,
   getWeaponReadabilityStatus,
   grantWeaponPickup,
@@ -248,6 +254,7 @@ import {
   selectWeapon,
   stepWeaponLoadout,
   switchWeapon,
+  weaponIdsWithAmmo,
 } from './weapon-system.mjs';
 import {
   createActorSpatialState,
@@ -353,6 +360,9 @@ const HIT_FEEDBACK_TICKS = COMBAT_VISUAL_EVENT_LIFETIME_TICKS;
 const CRITICAL_CHANCE_CAP = 0.45;
 const BASE_CRITICAL_CHANCE = 0.08;
 const BASE_CRITICAL_MULTIPLIER = 1.75;
+const NO_CRITICAL = Object.freeze({ criticalChance: 0, criticalMultiplier: 1 });
+// The v6 run summary's upgrade catalogue (the 24 1.8.1 cards).
+const V6_UPGRADE_IDS = new Set(HMH_RUN_SUMMARY_CATALOGS.upgrades);
 
 const WEAPON_KNOCKBACK = Object.freeze({
   'coin-blaster': 8,
@@ -1431,16 +1441,24 @@ async function boot() {
   // only paints the offer (presentUpgradeOffer). The upgrade-offer cue is gone
   // (owner audio list).
   let pendingUpgradeOfferPaint = null;
+  // Package 8.3: each pending level is its own offer, opened once, with card 2
+  // drawn from the guns that have ammo on the offer's tick. The v6 summary
+  // cannot name the twelve v7 gun cards, so it records the v6 ids only; the
+  // full v7 counts live in run progression (runUpgradeRows) for schema 7.
+  const recordV6UpgradeOffer = (ids) => recordRunUpgradeOffer(runSummaryAccumulator, ids.filter((id) => V6_UPGRADE_IDS.has(id)));
+  const openLevelOffer = () => {
+    const choices = openRunUpgradeOffer(runProgression, { armedWeaponIds: weaponIdsWithAmmo(weaponLoadout) });
+    if (choices) recordV6UpgradeOffer(choices.map((choice) => choice.id));
+    return choices;
+  };
   const openPendingUpgradeOffer = (tick) => {
     if (!upgradePending || simulation?.state !== 'active') return false;
     // The evidence progression pilot grants its level before tick 1 and offers it on tick 2.
     if (progressionPilotEnabled && tick < 2) return false;
     upgradePending = false;
-    const snapshot = getRunProgressionSnapshot(runProgression);
-    if (snapshot.pendingLevels <= 0 || snapshot.pendingChoices.length === 0) return false;
-    recordRunUpgradeOffer(runSummaryAccumulator, snapshot.pendingChoices.map((choice) => choice.id));
+    if (!openLevelOffer()) return false;
     simulation.enterUpgrade();
-    pendingUpgradeOfferPaint = snapshot;
+    pendingUpgradeOfferPaint = getRunProgressionSnapshot(runProgression);
     return true;
   };
   const presentUpgradeOffer = () => {
@@ -2587,7 +2605,8 @@ async function boot() {
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
         if (playerHealth > 0 && heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
-          const chargeRatio = Math.min(1, ((simulation?.tick ?? 0) - heldWeapon.chargeStartedTick) / HMH_WEAPON_DEFINITIONS['hash-rail'].chargeTicks);
+          const chargeTicks = applyWeaponProgression('hash-rail', runProgression ? buildProgressionByWeapon(runProgression.ranks)['hash-rail'] : undefined).chargeTicks;
+          const chargeRatio = Math.min(1, ((simulation?.tick ?? 0) - heldWeapon.chargeStartedTick) / chargeTicks);
           const chargeEnd = worldToScreen({ x: renderState.x + heldAim.x * 900, y: renderState.y + heldAim.y * 900, z: renderState.z + 44 }, camera, view);
           aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)
             .stroke({ color: 0x8ff3ff, width: 1 + chargeRatio, alpha: 0.18 + chargeRatio * 0.42 });
@@ -3526,6 +3545,13 @@ async function boot() {
       // and this was previously declared further down the same tick.
       const runEffects = getRunProgressionSnapshot(runProgression).effects;
       const progressionByWeapon = buildProgressionByWeapon(runProgression.ranks);
+      // The run's critical hit, for projectiles and (package 8.6) the held
+      // weapons' direct hits; the knife, hand grenades and burn ticks keep theirs.
+      const playerCritical = {
+        criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
+        criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
+      };
+      const heldCritical = (weaponId) => (HMH_CRITICAL_HELD_WEAPON_IDS.includes(weaponId) ? playerCritical : NO_CRITICAL);
       // S1.1 / 7.7: the desktop keyboard dodges on its dodge key and has no
       // automatic dodge; touch and gamepad keep the automatic one. Both come
       // from this tick's input, so a Ranked replay reproduces them.
@@ -3553,7 +3579,6 @@ async function boot() {
         motion.recoilVy = 0;
         lastDashReady = false;
         lastDashDirection = { ...dashState.direction };
-        combatAudio.play('dash', { volume: 0.12 });
       }
       const dashFrame = stepDash(dashState, { tick });
       if (dashFrame.active) {
@@ -3988,7 +4013,6 @@ async function boot() {
       });
       for(const {placement} of collectibleState.entries){
         if(collectibleState.readyTicks.get(placement.id)===tick&&Math.hypot(actor.x-placement.x,actor.y-placement.y)<400){
-          combatAudio.play('supply-ready',{volume:.10});
           setAccessibleCombatStatus('Nearby supplies have restocked. Open the field map for details.');
         }
       }
@@ -4012,7 +4036,7 @@ async function boot() {
         } else if (event.kind === 'weapon-cache') {
           // A weapon cache grants ownership plus authored finite reserve.
           const previousWeaponId = weaponLoadout.activeWeaponId;
-          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true, progressionByWeapon });
+          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: 'if-new', progressionByWeapon });
           unlockRunProgressionWeapon(runProgression, event.weaponId);
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.weaponId });
           if (event.bonusWeaponId) {
@@ -4029,6 +4053,7 @@ async function boot() {
           rechargeHandGrenades(grenadeSystem, { tick, amount: 1 });
           for (const target of hurtTargets) {
             if (isBreakableTargetId(target.id)) continue;
+            if (Math.hypot(target.currentGround.x - actor.x, target.currentGround.y - actor.y) > event.radius) continue;
             combatHitIntents.push({
               id: `${event.id}:${target.id}`,
               tick,
@@ -4139,8 +4164,7 @@ async function boot() {
               sourceId: 'player',
               weaponId: shot.weaponId,
               damage: hit.damage,
-              criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
-              criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
+              ...playerCritical,
               // Package 8.5 policy flags: Settler Rail ignores armour, and
               // Deep Proof's boss penetration applies to any boss target.
               armorPiercing: shot.armorPiercing === true,
@@ -4237,7 +4261,7 @@ async function boot() {
         const switched = switchWeapon(weaponLoadout, requestedWeaponId, { tick });
         if (switched) {
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
-          combatAudio.play('menu-click', { volume: 0.07 });
+          setRunUpgradeFocus(runProgression, requestedWeaponId);
           setAccessibleCombatStatus(`${HMH_WEAPON_DEFINITIONS[requestedWeaponId].displayName} armed.`);
         }
       }
@@ -4285,9 +4309,9 @@ async function boot() {
         } else if (event.type === 'weapon:reload-start') {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
         } else if (event.type === 'weapon:reload-complete') {
-          combatAudio.play('reload-complete', { volume: 0.18 });
           // Projection-only: the chamber glow and the weapon snap-back key
-          // off this tick so they land with the cue and the HUD ring flash.
+          // off this tick so they land with the HUD ring flash (the
+          // reload-complete cue is off the owner's audio list).
           lastReloadComplete = { tick, weaponId: event.weaponId };
         } else if (event.type === 'weapon:auto-fallback') {
           combatAudio.play('hmh-weapon-empty', { volume: HMH_WEAPON_SFX['hmh-weapon-empty'].gain });
@@ -4324,8 +4348,7 @@ async function boot() {
             sourceId: 'player',
             weaponId: event.weaponId,
             damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
-            criticalChance: 0,
-            criticalMultiplier: 1,
+            ...heldCritical(event.weaponId),
             armorPiercing: false,
             direction: { x: dx / length, y: dy / length },
             knockback: WEAPON_KNOCKBACK[event.weaponId] * (hit.knockbackMultiplier ?? 1),
@@ -4361,7 +4384,7 @@ async function boot() {
             id: hit.id, tick, time: 0, targetId: hit.targetId, sourceId: 'player', weaponId: event.weaponId,
             provokesAmbient: hit.provokesAmbient,
             damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
-            criticalChance: 0, criticalMultiplier: 1, armorPiercing: false,
+            ...heldCritical(event.weaponId), armorPiercing: false,
             direction: { x: dx / length, y: dy / length },
             knockback: WEAPON_KNOCKBACK[event.weaponId],
             point: { ...hit.point, z: hit.point.z + 22 },
@@ -4403,6 +4426,7 @@ async function boot() {
           sourceId: 'player',
           weaponId: event.weaponId,
           damage: hit.damage * (collectibleSnapshot?.damageMultiplier ?? 1),
+          ...heldCritical(event.weaponId),
         });
         combatAudio.play(weaponFireCueId(event.weaponId), { volume: weaponFireGain(event.weaponId) });
         pushCombatVisualEvent({
@@ -4455,19 +4479,27 @@ async function boot() {
           });
         }
         if (event.weaponId === 'launcher-rig') {
-          const launch = throwGrenade(grenadeSystem, {
-            tick,
-            mode: 'launcher',
-            origin: {
-              x: actor.x + aimIntent.direction.x * 28,
-              y: actor.y + aimIntent.direction.y * 28,
-              z: actor.groundZ + 32,
-            },
-            direction: aimIntent.direction,
-            damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
-          });
-          recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: launch.spawned ? 1 : 0, attackId: event.attackId });
-          if (!launch.spawned && launch.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
+          // Package 8.2: one shell per shot (Twin Tube fires two), carrying the
+          // upgraded blast damage and radius.
+          let emitted = 0;
+          for (const shot of event.shots) {
+            const launch = throwGrenade(grenadeSystem, {
+              tick,
+              mode: 'launcher',
+              origin: {
+                x: actor.x + shot.direction.x * 28,
+                y: actor.y + shot.direction.y * 28,
+                z: actor.groundZ + 32,
+              },
+              direction: shot.direction,
+              damage: shot.damage,
+              blastRadius: shot.blastRadius,
+              damageMultiplier: collectibleSnapshot?.damageMultiplier ?? 1,
+            });
+            if (launch.spawned) emitted += 1;
+            else if (launch.reason === 'capacity') recordRunGrenade(runSummaryAccumulator, { type: 'overflow' });
+          }
+          recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted, attackId: event.attackId });
           continue;
         }
         recordRunWeaponFire(runSummaryAccumulator, { weaponId: event.weaponId, emitted: Math.min(event.shots.length, MAX_ACTIVE_PROJECTILES - activeProjectiles.length), attackId: event.attackId });
@@ -4595,7 +4627,9 @@ async function boot() {
         const mode = grenadeModeFromId(detonation.grenadeId);
         pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius, mode });
         triggerCameraShake(tick, grenadeBlastShake({ mode, radius: detonation.radius }));
-        for (const hit of detonation.hits) combatHitIntents.push({ ...hit, tick });
+        // Launcher blasts crit like the held weapon they are; hand grenades and
+        // a blast's own self-damage do not.
+        for (const hit of detonation.hits) combatHitIntents.push(hit.targetId === 'player' ? { ...hit, tick } : { ...hit, tick, ...heldCritical(hit.weaponId) });
       }
 
       const openingAttacksAllowed = (!rosterPreviewEnabled || rosterCombatEnabled) && openingEnemyAttacksEnabled(tick);
@@ -4608,13 +4642,6 @@ async function boot() {
         });
       } else {
         lastEnemyAttack = Object.freeze({ tick, tokens: Object.freeze([]), events: Object.freeze([]), droppedEvents: 0 });
-      }
-      for (const enemy of grayboxEnemies) {
-        if (enemy.attackTellStartedTick !== tick || Math.hypot(enemy.x-actor.x,enemy.y-actor.y)>900) continue;
-        const ranged = ['ranged','area','support'].includes(ENEMY_ARCHETYPES[enemy.archetypeId]?.attack.tokenFamily);
-        combatAudio.play(ranged ? 'enemy-ranged-tell' : 'enemy-melee-tell', {
-          volume:.1, playbackRate:.85+deterministicUnit(enemy.id)*.3,
-        });
       }
       for (const event of lastEnemyAttack.events) {
         lastEnemyStrike = event;
@@ -4999,6 +5026,8 @@ async function boot() {
             weaponId: scoreEvent.weaponId,
             elite: isEliteEnemyProjection(defeatedEnemy.id),
           });
+          // Package 8.2 Salvage: read from the weapon step of the next tick.
+          creditWeaponKills(weaponLoadout, { tick, weaponId: scoreEvent.weaponId, count: 1, progressionByWeapon });
           queueEnemyDeathVisual(defeatedEnemy, tick, { dismember: killDismembers(scoreEvent.weaponId), direction: { x: defeatedEnemy.x - actor.x, y: defeatedEnemy.y - actor.y } });
           runKills += 1;
           addSilverDrop(silverDropState,{sequence:runKills,tick,x:defeatedEnemy.x,y:defeatedEnemy.y});
@@ -5081,7 +5110,6 @@ async function boot() {
         : meleeFrame.attacked ? 'melee' : 'ready';
       const dashStatusAfterStep = getDashStatus(dashState, tick);
       if (dashStatusAfterStep.ready && !lastDashReady && dashState.startedTick >= 0) {
-        combatAudio.play('resume', { volume: 0.055 });
         pushCombatVisualEvent({
           type: 'dash-ready',
           tick,
@@ -5093,11 +5121,10 @@ async function boot() {
     });
     simulation.start();
     if (releaseAnchorEnabled) {
-      const progressionSnapshot = getRunProgressionSnapshot(runProgression);
       upgradePending = false;
       simulation.enterUpgrade();
-      recordRunUpgradeOffer(runSummaryAccumulator, progressionSnapshot.pendingChoices.map((choice) => choice.id));
-      pendingUpgradeOfferPaint = progressionSnapshot;
+      openLevelOffer();
+      pendingUpgradeOfferPaint = getRunProgressionSnapshot(runProgression);
       presentUpgradeOffer();
       // Keep painting the loading panel until art is ready; the simulation
       // remains in its paused upgrade state throughout.
@@ -5244,8 +5271,7 @@ async function boot() {
     // still held from the pick must not sit in the input state when the ticker
     // restarts, or the first resumed tick would swap weapons or dash.
     if (input) input.reset('upgrade-select', performance.now());
-    combatAudio.play('upgrade-pick', { volume: 0.13 });
-    recordRunUpgradeSelection(runSummaryAccumulator, upgradeId);
+    if (V6_UPGRADE_IDS.has(upgradeId)) recordRunUpgradeSelection(runSummaryAccumulator, upgradeId);
     const healthGain = selection.effects.maxHealthBonus - before.effects.maxHealthBonus;
     const grenadeGain = selection.effects.bonusGrenadeCharges - before.effects.bonusGrenadeCharges;
     if (healthGain > 0) {
@@ -5254,11 +5280,11 @@ async function boot() {
       playerDefeatController = createPlayerDefeatController({ maxHealth: maxPlayerHealth });
     }
     if (dashState) dashState.cooldownTier = selection.effects.dashCooldownTier;
-    if (grenadeSystem && grenadeGain > 0) grenadeSystem.handCharges += grenadeGain;
+    // Package 8.6: Extra Grenade raises the maximum instead of overflowing it.
+    if (grenadeSystem && grenadeGain > 0) raiseHandGrenadeMaximum(grenadeSystem, { amount: grenadeGain });
     cockpit?.updateRun(selection.snapshot);
-    if (selection.snapshot.pendingLevels > 0 && selection.snapshot.pendingChoices.length > 0) {
-      recordRunUpgradeOffer(runSummaryAccumulator, selection.snapshot.pendingChoices.map((choice) => choice.id));
-      upgradePanel?.showUpgrade(selection.snapshot);
+    if (selection.snapshot.pendingLevels > 0 && openLevelOffer()) {
+      upgradePanel?.showUpgrade(getRunProgressionSnapshot(runProgression));
       return;
     }
     upgradePanel?.hideUpgrade();
@@ -5269,6 +5295,16 @@ async function boot() {
     combatAudio.resume();
     app.ticker.start();
     if (bridge?.initialized) bridge.send('game:state', statePayload('running'));
+  };
+
+  // Package 8.3 re-roll: one per card per offer. It never selects, closes the
+  // panel or advances a tick, and it is silent.
+  const applyUpgradeReroll = (slot) => {
+    if (simulation?.state !== 'upgrade' || !runProgression?.offer) return;
+    const choice = rerollRunUpgradeSlot(runProgression, slot);
+    if (!choice) return;
+    recordV6UpgradeOffer([choice.id]);
+    upgradePanel?.showUpgrade(getRunProgressionSnapshot(runProgression), { rerolledSlot: slot });
   };
 
   hud = createHud({ documentRef: document, weaponOrder: WEAPON_ORDER });
@@ -5318,6 +5354,8 @@ async function boot() {
     documentRef: document,
     propIconUrl: (id) => tripoPropAppearance.get(id)?.itemUrl ?? authoredPropItemUrl(id),
     onSelectUpgrade: applySelectedUpgrade,
+    onRerollUpgrade: applyUpgradeReroll,
+    weaponName: (weaponId) => HMH_WEAPON_DEFINITIONS[weaponId]?.displayName ?? weaponId,
   });
 
   const handleVisibilityChange = () => {

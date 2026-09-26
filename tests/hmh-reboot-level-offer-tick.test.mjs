@@ -11,7 +11,9 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from 'acorn';
 import { FIXED_STEP_MS, MAX_CATCH_UP_STEPS, DeterministicSimulation } from '../apps/hmh-reboot/src/simulation.mjs';
-import { createRunProgression, getRunProgressionSnapshot, recordRunDefeat } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { createRunProgression, getRunProgressionSnapshot, openRunUpgradeOffer, recordRunDefeat } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { HMH_WEAPON_ORDER, createWeaponLoadout, weaponIdsWithAmmo } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
 
 const mainSource = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 const mainAst = parse(mainSource, { sourceType: 'module', ecmaVersion: 'latest' });
@@ -143,6 +145,10 @@ function offerHarness({ progressionPilotEnabled = false } = {}) {
     runProgression: createRunProgression({ seed: 7 }),
     runSummaryAccumulator: { offers: [] },
     getRunProgressionSnapshot,
+    openRunUpgradeOffer,
+    weaponIdsWithAmmo,
+    weaponLoadout: createWeaponLoadout({ weaponIds: HMH_WEAPON_ORDER, seed: 7 }),
+    V6_UPGRADE_IDS: new Set(HMH_RUN_SUMMARY_CATALOGS.upgrades),
     recordRunUpgradeOffer: (accumulator, ids) => accumulator.offers.push([...ids]),
     combatAudio: {
       pause: () => calls.push(['audio-pause']),
@@ -151,7 +157,7 @@ function offerHarness({ progressionPilotEnabled = false } = {}) {
     upgradePanel: { showUpgrade: (snapshot) => calls.push(['show', snapshot.pendingChoices.map((choice) => choice.id)]) },
   };
   vm.createContext(context);
-  for (const name of ['openPendingUpgradeOffer', 'presentUpgradeOffer']) {
+  for (const name of ['recordV6UpgradeOffer', 'openLevelOffer', 'openPendingUpgradeOffer', 'presentUpgradeOffer']) {
     const init = declaratorNamed(name);
     context[name] = vm.runInContext(`(${mainSource.slice(init.start, init.end)})`, context);
   }

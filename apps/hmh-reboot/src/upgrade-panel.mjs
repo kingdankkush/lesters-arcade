@@ -1,12 +1,30 @@
 // The level-up panel (design package S0.2 bundle offset). It used to live in
 // cockpit-ui.mjs on the initial path; it is now a lazy chunk that main.mjs
 // loads before a run starts. Presentation only: a pick calls onSelectUpgrade
-// with an upgrade id, and the simulation applies it. Card text comes from
-// progression-content.mjs, never from the simulation's choices.
+// with an upgrade id and a re-roll calls onRerollUpgrade with a card slot; the
+// simulation applies both. Card text comes from progression-content.mjs, never
+// from the simulation's choices.
 import { authoredPropItemUrl } from './authored-prop-layout.mjs';
 import { createSafeTextElement } from './cockpit-ui.mjs';
 import { runUpgradeContent } from './progression-content.mjs';
 import { resolveUpgradeCardPresentation } from './upgrade-card-presentation.mjs';
+
+// Package 8.3: the re-roll strip under each card. It is a sibling of the
+// select button, never nested in it, 36 px tall behind an 8 px dead zone.
+// The portal stylesheet owns the look; these inline values keep the geometry
+// when it has no rule for the strip yet.
+const REROLL_LABELS = Object.freeze({ ready: 'Re-roll', used: 'Re-roll used', none: 'No other upgrades' });
+const REROLL_STRIP_STYLE = Object.freeze({
+  display: 'block', width: '100%', height: '36px', marginTop: '8px', padding: '0 15px',
+  border: '0', borderTop: '1px solid rgba(143,243,255,0.13)', background: 'transparent',
+  color: 'var(--cyan)', font: 'inherit', fontSize: '0.68rem', fontWeight: '900',
+  letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',
+});
+const VISUALLY_HIDDEN = Object.freeze({
+  position: 'absolute', width: '1px', height: '1px', overflow: 'hidden',
+  clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', margin: '-1px', padding: '0', border: '0',
+});
+const GAMEPAD_REROLL_BUTTON = 2;
 
 function required(documentRef, id) {
   const element = documentRef.getElementById(id);
@@ -18,6 +36,10 @@ export function createUpgradePanel({
   documentRef = document,
   propIconUrl = authoredPropItemUrl,
   onSelectUpgrade = () => {},
+  onRerollUpgrade = () => {},
+  // The gun's display name for card 2's chip. Injected by main.mjs so this
+  // lazy chunk never imports the simulation's weapon tables.
+  weaponName = (weaponId) => String(weaponId).replaceAll('-', ' '),
 } = {}) {
   const elements = {
     menu: required(documentRef, 'hmhMenuToggle'),
@@ -28,6 +50,13 @@ export function createUpgradePanel({
   };
   const listeners = [];
   const upgradeListeners = [];
+  // A polite live region that announces a re-rolled card (package 8.3).
+  const announcer = documentRef.createElement('span');
+  announcer.className = 'hmh-upgrade-announcer';
+  announcer.setAttribute('role', 'status');
+  announcer.setAttribute('aria-live', 'polite');
+  Object.assign(announcer.style, VISUALLY_HIDDEN);
+  elements.upgradePanel.append(announcer);
   const clearUpgradeListeners = () => { for (const remove of upgradeListeners.splice(0)) remove(); };
   const listen = (element, type, handler, lifetime = listeners) => {
     element.addEventListener(type, handler);
@@ -66,6 +95,15 @@ export function createUpgradePanel({
     onSelectUpgrade(card.choice.id);
     return true;
   };
+  // A re-roll never selects or closes the panel; the host re-shows it with
+  // the new card, and it is silent.
+  const rerollUpgradeAt = (index) => {
+    if (!upgradeOpen() || selectionLatched) return false;
+    const card = upgradeCards[index];
+    if (!card || card.choice.rerollState !== 'ready') return false;
+    onRerollUpgrade(card.choice.slot);
+    return true;
+  };
   const handleUpgradeKey = (event) => {
     if (!upgradeOpen() || event.repeat) return;
     const code = event.code;
@@ -84,6 +122,11 @@ export function createUpgradePanel({
       event.preventDefault();
       event.stopPropagation();
       selectUpgradeAt(armedIndex);
+    } else if (code === 'KeyR') {
+      // Package 8.3: R re-rolls the armed card.
+      event.preventDefault();
+      event.stopPropagation();
+      rerollUpgradeAt(armedIndex);
     }
     // Space is the fire key and is deliberately not a card shortcut.
   };
@@ -97,7 +140,7 @@ export function createUpgradePanel({
     stopGamepadPoll();
     if (typeof view?.requestAnimationFrame !== 'function' || typeof view?.navigator?.getGamepads !== 'function') return;
     const generation = pollGeneration;
-    const held = { select: false, previous: false, next: false, axisAt: -Infinity };
+    const held = { select: false, reroll: false, previous: false, next: false, axisAt: -Infinity };
     const pressed = (buttons, index) => buttons?.[index]?.pressed === true || Number(buttons?.[index]?.value ?? 0) > 0.5;
     const poll = (now) => {
       if (generation !== pollGeneration) return;
@@ -106,6 +149,7 @@ export function createUpgradePanel({
       const pad = [...(view.navigator.getGamepads() ?? [])].find(Boolean);
       if (pad) {
         const select = pressed(pad.buttons, 0);
+        const reroll = pressed(pad.buttons, GAMEPAD_REROLL_BUTTON);
         const previous = pressed(pad.buttons, 14) || pressed(pad.buttons, 12);
         const next = pressed(pad.buttons, 15) || pressed(pad.buttons, 13);
         const axis = Number(pad.axes?.[0] ?? 0);
@@ -120,10 +164,14 @@ export function createUpgradePanel({
           held.axisAt = -Infinity;
         }
         const release = held.select && !select;
+        const rerollRelease = held.reroll && !reroll;
         held.select = select;
+        held.reroll = reroll;
         held.previous = previous;
         held.next = next;
         if (release) selectUpgradeAt(armedIndex);
+        // Gamepad X re-rolls the armed card on release (package 8.3).
+        else if (rerollRelease) rerollUpgradeAt(armedIndex);
       }
       if (generation === pollGeneration && upgradeOpen()) gamepadFrame = view.requestAnimationFrame(poll);
     };
@@ -142,7 +190,9 @@ export function createUpgradePanel({
   };
 
   return Object.freeze({
-    showUpgrade(snapshot) {
+    // rerolledSlot: the card slot a re-roll just replaced; focus moves to the
+    // new card and the live region names it.
+    showUpgrade(snapshot, { rerolledSlot = null } = {}) {
       clearUpgradeListeners();
       elements.pausePanel.hidden = true;
       elements.menu.setAttribute('aria-expanded', 'false');
@@ -175,6 +225,13 @@ export function createUpgradePanel({
           text: `${prettyBranch(choice.branch)} · rank ${choice.nextRank}/${choice.maxRank}`,
         });
         meta.append(tier, branch);
+        // Card 2's gun chip, e.g. SHOTGUN 4/9 (a gun with a capstone counts 10).
+        if (choice.weaponId && choice.mastery) {
+          meta.append(createSafeTextElement(documentRef, 'span', {
+            className: 'hmh-upgrade-choice__gun',
+            text: `${String(weaponName(choice.weaponId)).toUpperCase()} ${choice.mastery.ranks}/${choice.mastery.total}`,
+          }));
+        }
         const title = createSafeTextElement(documentRef, 'strong', { text: content.title });
         const mechanical = createSafeTextElement(documentRef, 'b', { text: content.mechanicalLabel });
         button.append(icon, meta, title, mechanical);
@@ -186,6 +243,16 @@ export function createUpgradePanel({
         }
         const choiceIndex = upgradeCards.length;
         listen(button, 'click', () => selectUpgradeAt(choiceIndex), upgradeListeners);
+        const rerollState = Object.hasOwn(REROLL_LABELS, choice.rerollState) ? choice.rerollState : 'none';
+        const strip = createSafeTextElement(documentRef, 'button', { className: 'hmh-upgrade-reroll', text: REROLL_LABELS[rerollState] });
+        strip.type = 'button';
+        strip.dataset.slot = String(choice.slot ?? choiceIndex);
+        strip.dataset.rerollState = rerollState;
+        strip.disabled = rerollState !== 'ready';
+        strip.setAttribute('aria-label', `${REROLL_LABELS[rerollState]}: card ${choiceIndex + 1}`);
+        if (rerollState === 'ready') strip.setAttribute('aria-keyshortcuts', 'R');
+        Object.assign(strip.style, REROLL_STRIP_STYLE, rerollState === 'ready' ? {} : { cursor: 'default', opacity: '0.55' });
+        listen(strip, 'click', () => rerollUpgradeAt(choiceIndex), upgradeListeners);
         upgradeCards.push({ option, button, choice });
 
         const detail = createSafeTextElement(documentRef, 'details', { className: 'hmh-upgrade-details' });
@@ -200,12 +267,18 @@ export function createUpgradePanel({
           summary.textContent = detail.open ? 'Hide details' : 'Upgrade details';
         }, upgradeListeners);
         detail.append(summary, description);
-        option.append(button, detail);
+        option.append(button, strip, detail);
         elements.upgradeChoices.append(option);
       }
       // The first card is armed and focused, so a click on the first button
-      // and a bare Enter both pick it, exactly as before.
-      armUpgrade(0);
+      // and a bare Enter both pick it, exactly as before. After a re-roll the
+      // new card is armed and focused instead, and announced.
+      const rerolledIndex = rerolledSlot === null ? -1 : upgradeCards.findIndex((card) => card.choice.slot === rerolledSlot);
+      armUpgrade(Math.max(0, rerolledIndex));
+      if (rerolledIndex >= 0) {
+        const rerolled = upgradeCards[rerolledIndex].choice;
+        announcer.textContent = `Card ${rerolledIndex + 1} re-rolled: ${runUpgradeContent(rerolled.id).title}, rank ${rerolled.nextRank} of ${rerolled.maxRank}.`;
+      }
       startGamepadPoll();
     },
     hideUpgrade,
@@ -213,6 +286,7 @@ export function createUpgradePanel({
     destroy() {
       hideUpgrade();
       for (const remove of listeners.splice(0)) remove();
+      announcer.remove?.();
     },
   });
 }
