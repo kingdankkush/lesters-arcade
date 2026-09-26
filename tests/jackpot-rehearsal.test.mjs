@@ -5,11 +5,15 @@ import { ethers } from 'ethers';
 import {
   DAY, HOUR, TOKEN, createChainClock, evidenceForSeed, parseTimeTarget, revertReasonOf, startJackpotStack,
 } from '../scripts/lib/jackpot-rehearsal-driver.mjs';
+import { FAST_SUBSET, SCENARIOS, runScenario } from '../scripts/rehearse-jackpot-week.mjs';
 import { replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 
 /**
- * jackpot-rehearsal AC1: the driver (the local stack + the jackpot, the chain-bound server clock, the cron
- * with the jackpotSelect / keeperFault seams, the owner page's call encoding) on ONE stack in this file.
+ * jackpot-rehearsal AC1 and AC3: the driver (the local stack + the jackpot, the chain-bound server clock,
+ * the cron with the jackpotSelect / keeperFault seams, the owner page's call encoding) and the fast subset
+ * of the rehearsal scenarios, R1, R3a, R5, R10, R13, R15 and R17, on ONE stack in this file. Bot runs are
+ * capped at 1.5 minutes as E2E_EVIDENCE does, and R13's decoys are 1-minute pilots. The full set, R1-R20,
+ * runs from scripts/rehearse-jackpot-week.mjs.
  * Keys: the public Hardhat test mnemonic only. Offline: in-process chain, PGlite, in-process handlers.
  */
 
@@ -49,6 +53,9 @@ test('the driver helpers: time targets, revert reasons and the chain-bound clock
 });
 
 let js;
+const shared = { fast: true };
+const results = new Map();
+
 before(async () => {
   js = await startJackpotStack();
 });
@@ -56,6 +63,18 @@ before(async () => {
 after(async () => {
   await js?.close();
 });
+
+async function scenario(id) {
+  const spec = SCENARIOS.find((entry) => entry.id === id);
+  const result = await runScenario(js, { ...spec, shared });
+  results.set(id, result);
+  const failed = result.checks.filter((check) => !check.ok);
+  assert.equal(result.status, 'passed', `${id}: ${JSON.stringify(result.failure)} ${JSON.stringify(failed).slice(0, 1500)}`);
+  assert.ok(result.invariant.every((entry) => entry.ok && BigInt(entry.balanceWei) >= BigInt(entry.liabilitiesWei)), 'balanceOf(jackpot) >= liabilities');
+  return result;
+}
+
+const checkIds = (result) => result.checks.map((check) => check.id);
 
 test('the stack: launch rules, the flip-week epoch from the operator CLI, E5 on chain and the chain-bound clock', async () => {
   const first = js.firstWeek;
@@ -94,4 +113,53 @@ test('the driver walks one funded week with one Ranked player to paid on the rea
   assert.ok((await js.cronUntil(async () => (await js.weekRow(week)).status === 'paid', { max: 4 })) !== null);
   assert.equal(await js.tokenBalance(run.wallet), 150n * TOKEN);
   assert.ok((await js.invariant()).ok);
+});
+
+test('a funded week pays the top eligible wallet at the payout time', async () => {
+  const result = await scenario('R1');
+  for (const id of ['finalize-early-reverts', 'finalize-by-anyone-at-payout', 'board-top-is-winner', 'profile-win', 'share-champion-badge', 'seed-tickets-logged', 'api-open-leader']) {
+    assert.ok(checkIds(result).includes(id), id);
+  }
+  assert.ok(result.transactions.keeper >= 6, 'the keeper cleared and submitted three runs');
+  assert.ok(BigInt(result.keeperGasUsed) > 0n);
+});
+
+test('a flagged leader waits for the admin and a disqualification pays the next', async () => {
+  const result = await scenario('R3a');
+  for (const id of ['pilot-held-by-h4-h6', 'awaiting-admin', 'finalize-reverts-leader-not-cleared', 'status-page-warns', 'review-api', 'admin-disqualifies', 'api-shows-disqualified-reason']) {
+    assert.ok(checkIds(result).includes(id), id);
+  }
+});
+
+test('an unwon week rolls into the next week\'s pot', async () => {
+  const result = await scenario('R5');
+  assert.equal(result.weekKeys.length, 2);
+  for (const id of ['keeper-finalized-empty-leader', 'rolled-on-chain', 'carried-into-next-week', 'api-next-week-pot', 'winner-balance']) assert.ok(checkIds(result).includes(id), id);
+});
+
+test('a crashed keeper resumes without duplicate transactions', async () => {
+  const result = await scenario('R10');
+  for (const id of ['killed-after-cas', 'killed-after-broadcast', 'killed-before-receipt', 'cas-without-broadcast', 'nonce-advances-by-distinct-actions', 'no-duplicate-transactions', 'no-nonce-gap', 'dropped-detected']) {
+    assert.ok(checkIds(result).includes(id), id);
+  }
+});
+
+test('five decoys cannot push the honest leader out of the prize', async () => {
+  const result = await scenario('R13');
+  for (const id of ['honest-hold-top-5', 'decoys-outscore-honest', 'honest-displaced', 'decoys-screened-first-and-flagged', 'keeper-relists-honest', 'relists-before-payout-minus-2h', 'winner-balance', 'decoys-cannot-return']) {
+    assert.ok(checkIds(result).includes(id), id);
+  }
+});
+
+test('a non-stock client is never submitted and is flagged if submitted', async () => {
+  const result = await scenario('R15');
+  for (const id of ['settled-through-verifier', 'never-submitted-by-keeper', 'flagged-integrity', 'no-keeper-submit', 'never-auto-paid']) assert.ok(checkIds(result).includes(id), id);
+});
+
+test('a stale keeper action never overrides the admin', async () => {
+  const result = await scenario('R17');
+  for (const id of ['flag-dropped', 'admin-clears', 'rescreen-applied-on-stale-mirror', 'dropped-flag-resigned-then-skipped', 'rescreen-created-no-review-action', 'rescreen-refused-once-mirrored', 'keeper-flag-reverts-review-locked', 'winner-balance']) {
+    assert.ok(checkIds(result).includes(id), id);
+  }
+  assert.deepEqual([...results.keys()], FAST_SUBSET.filter((id) => results.has(id)), 'the fast subset ran in order');
 });
