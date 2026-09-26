@@ -51,6 +51,19 @@ const SAMPLE_PATHS = Object.freeze({
   'game-over': '../assets/audio/sfx/game-over.ogg',
   'menu-click': '../assets/audio/sfx/menu-click.ogg',
 });
+// Owner audio decision (2026-09-25; design package decision 13), the game's
+// audio mode (gameplayOnly): gunfire and the guns' own sounds, Litecoin/silver
+// pickups, power-up and weapon pickups (health and ammo pickups count as
+// pickups), grenades, enemy hits and enemy deaths. Nothing else plays: no
+// voices, footsteps or movement cues, and no level-up, objective, tell,
+// reload-complete, arena-change, restock or status chimes. Boss hits and
+// deaths use the enemy cues.
+export const HMH_GAMEPLAY_AUDIO_CUES = Object.freeze(new Set([
+  ...Object.keys(HMH_WEAPON_SFX),
+  'weapon-fire', 'melee', 'grenade', 'grenade-boom',
+  'enemy-hit', 'player-hit', 'enemy-death',
+  'silver-collect', 'pickup', 'health-pickup', 'ammo-pickup', 'time-dilation-activate', 'berserk-activate',
+]));
 // 'pickup' is allowed while paused so the pause-menu SFX slider can preview the
 // new bus level (Cycle 073, U-5); nothing can be picked up while paused.
 const PAUSED_CUE_ALLOWLIST = new Set(['pause', 'upgrade-offer', 'pickup']);
@@ -130,7 +143,7 @@ export function createCombatAudio({
   };
 
   const play = (cue, { now = globalThis.performance?.now?.() ?? Date.now(), volume = 0.1, playbackRate = 1 } = {}) => {
-    if(gameplayOnly && /^(footstep-|dash$|land$|combo-|level-up$|upgrade-|powerup-expire$|pause$|resume$|low-health$|game-over$|menu-click$)/.test(cue))return Object.freeze({played:false,reason:'presentation-cue-disabled'});
+    if (gameplayOnly && !HMH_GAMEPLAY_AUDIO_CUES.has(cue)) return Object.freeze({ played: false, reason: 'presentation-cue-disabled' });
     if (paused && !PAUSED_CUE_ALLOWLIST.has(cue)) return Object.freeze({ played: false, reason: 'paused' });
     const samplePath = SAMPLE_PATHS[cue];
     if (!samplePath || !HMH_SFX_CUE_REGISTRY[cue]) {
