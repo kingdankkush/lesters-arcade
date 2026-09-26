@@ -219,3 +219,32 @@ test('night lights stay on their own depth: each layer\'s lights are added befor
   }
   world.dispose();
 });
+
+test('the lighthouse lamp flash is a soft radial glow centred on the lamp, never a slice of the beam cone', async () => {
+  // Portrait, coast at night, with the lamp just off the left edge (verify capture
+  // 17-coast-night-lap1 at 390x844): a slice of the cone showed as a hard bright block.
+  const made = [];
+  const make = (w, h) => { const c = createRecordingCanvas(Math.max(1, Math.round(w)), Math.max(1, Math.round(h))); made.push(c); return c; };
+  const view = VIEWS.portrait, loader = artLoader({ make });
+  const world = await warmWorld(view, loader, 14380, { make });
+  assert.equal(loader.ready('coast'), true);
+  const d = view.density, glowR = Math.round(18 * d);
+  const beam = made.find(c => c.width === Math.round(460 * d) && c.height === Math.round(44 * d));
+  assert.ok(beam, 'the beam cone sprite exists at this density');
+  const { main } = frame(world, view, 14380);
+  const beamDraws = main.filter(e => e.op === 'drawImage' && e.args[0] === beam);
+  assert.ok(beamDraws.length > 0, 'the coast lighthouse beam is drawn at night');
+  assert.ok(beamDraws.every(e => e.args.length === 3), 'the cone is only ever drawn whole (no 9-argument slice of it for the flash)');
+  const flash = made.find(c => c.width === glowR * 2 && c.height === glowR * 2 && c.getContext().log.some(e => e.op === 'createRadialGradient'));
+  assert.ok(flash, 'a radial-gradient flash sprite of 2 x 18 px (device) exists');
+  const flashDraws = main.filter(e => e.op === 'drawImage' && e.args[0] === flash);
+  assert.ok(flashDraws.length > 0, 'the flash is drawn');
+  const lamps = main.filter(e => e.op === 'translate').map(e => e.args);
+  for (const e of flashDraws) {
+    assert.equal(e.composite, 'lighter');
+    assert.ok(e.alpha > 0 && e.alpha <= 1);
+    assert.deepEqual(e.args.slice(3), [glowR * 2, glowR * 2], 'the flash is drawn whole at its own size');
+    assert.ok(lamps.some(([x, y]) => x === e.args[1] + glowR && y === e.args[2] + glowR), `the flash is centred on a lamp: ${JSON.stringify(e.args.slice(1))}`);
+  }
+  world.dispose();
+});

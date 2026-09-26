@@ -99,7 +99,7 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
   const painterOrder = [];
   const readyAt = new Map();      // region id -> clock ms when art became ready
   const emitQueue = Array.from({ length: 12 }, () => ({ region: '', layer: '', alpha: 0, scroll: 0, y: 0, period: 0, anchors: null }));
-  let beam = null, beamDensity = 0;
+  let beam = null, beamDensity = 0, flash = null, flashDensity = 0;
   let emitCount = 0;
   const stats = { painterBuilds: 0, bandFills: 0, blits: 0, groups: 0 };
   // Device rows of the backdrop drawn since the last group was composited.
@@ -220,13 +220,29 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
     return c;
   }
 
+  // The lamp flash: a soft radial glow centred on the lamp. A slice of the cone
+  // read as a hard bright block when the lamp sat just off a screen edge.
+  function flashSprite(d) {
+    if (flash && flashDensity === d) return flash;
+    const R = Math.round(18 * d);
+    const c = makeCanvas(R * 2, R * 2);
+    if (!c) return null;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(R, R, 0, R, R, R);
+    g.addColorStop(0, 'rgba(255,240,200,.95)'); g.addColorStop(0.3, 'rgba(255,230,180,.5)'); g.addColorStop(1, 'rgba(255,220,160,0)');
+    x.fillStyle = g; x.fillRect(0, 0, R * 2, R * 2);
+    if (flash) { flash.width = 0; flash.height = 0; }
+    flash = c; flashDensity = d;
+    return c;
+  }
+
   function drawBeams(ctx, bus, e, on) {
     let calls = 0;
     const d = bus.density, cw = bus.canvasWidth;
     for (const a of e.anchors) {
       if (a.kind !== 'beam' || on < 0.1) continue;
-      const img = beamSprite(d);
-      if (!img) continue;
+      const img = beamSprite(d), glow = flashSprite(d);
+      if (!img || !glow) continue;
       const theta = bus.reduced ? Math.PI / 2 : bus.time * 0.9;
       const facing = Math.max(0, Math.sin(theta)), sweep = Math.cos(theta);
       let x = Math.round(a.u * d) - (((e.scroll % e.period) + e.period) % e.period);
@@ -238,10 +254,10 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
         ctx.save(); ctx.translate(x, y); ctx.scale(sweep, 1);
         ctx.drawImage(img, 0, -img.height / 2);
         ctx.restore();
-        // Lamp flash: the beam's bright root, drawn small around the lamp.
+        // Lamp flash: the soft glow around the lamp, brightest as it faces the camera.
         ctx.globalAlpha = clamp(on * e.alpha * (0.25 + 0.6 * facing));
-        const glowR = Math.round(18 * d);
-        ctx.drawImage(img, 0, 0, Math.round(img.height / 2), img.height, x - glowR, y - glowR, glowR * 2, glowR * 2);
+        const glowR = glow.width >> 1;
+        ctx.drawImage(glow, x - glowR, y - glowR, glowR * 2, glowR * 2);
         calls += 2;
       }
     }
