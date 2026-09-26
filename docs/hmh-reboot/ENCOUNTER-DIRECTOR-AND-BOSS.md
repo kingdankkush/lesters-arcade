@@ -57,7 +57,9 @@ District role gates are deterministic. If a requested role is unavailable in the
 
 ## Liquidator boss
 
-`apps/hmh-reboot/src/liquidator-boss.mjs` defines a 3,600-tick, one-minute target fight with a 12,000-health prototype boss.
+> **Superseded (2026-09-25, Level 1 design package slice S1.5).** The Liquidator no longer arrives on a 72,000-tick timer and no longer runs the fixed 3,600-tick plan below. The player starts him (the Closing Bell on the Margin Floor, or the secret Dark Pool), his HP is frozen at the trigger from the level-based reference DPS, his phases change at 66% and 33% HP with 90-tick Trading Halts, and his kit is table-driven on the shared boss geometry kit (`boss-geometry.mjs`, `boss-slots.mjs`, `boss-arenas.mjs`). See `docs/hmh-reboot/design/LEVEL-1-BUILD-LEDGER.md`, "Boss kit and the reworked Liquidator (slice 5)". The sections below record the 1.8.1 prototype, which the v6 verifier path still bounds.
+
+`apps/hmh-reboot/src/liquidator-boss.mjs` defined (1.8.1) a 3,600-tick, one-minute target fight with a 12,000-health prototype boss.
 
 ### Concept selection
 

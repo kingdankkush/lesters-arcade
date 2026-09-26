@@ -871,6 +871,7 @@ Both are picked up and used automatically.
   - The bell goes at the far edge from the street mouths.
   - The Dark Pool becomes a z0 walled court behind a cracked container in the east back alley (about 11,820, 2,300).
   - The `yard` entry (10,400, 2,450) moves at least 920 from the anchor, for example to (10,250, 1,600).
+  - **Built (S1.5, build ledger slice 5).** The floor is x 10,475–11,525, y 2,170–2,630 (460 tall, so the Candle Chart's three rows fit the walk budget), the bell is at (11,380, 2,400), the Dark Pool is a walled court x 11,592–11,976, y 1,916–2,684 entered from the north through a cracked container, and the `yard` entry is (10,060, 2,505) (on the main route, 946 from the anchor).
 
 **Triggers**
 - **A: the Closing Bell.**
