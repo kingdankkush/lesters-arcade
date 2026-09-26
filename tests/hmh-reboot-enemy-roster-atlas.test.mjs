@@ -373,7 +373,9 @@ test('actual roster/fallback wiring carries the actor scale into existing camera
       assert.equal(display.scale.y, expected * zoom);
     }
   }
-  assert.match(source, /enemyMarker\.scale\.set\(\(enemyMarker\.rosterScale \?\? 1\) \* camera\.zoom\)/);
+  // Bodies are placed by the lazily loaded enemy render pass.
+  const pass = await readFile(new URL('../apps/hmh-reboot/src/enemy-render-pass.mjs', import.meta.url), 'utf8');
+  assert.match(pass, /enemyMarker\.scale\.set\(\(enemyMarker\.rosterScale \?\? 1\) \* camera\.zoom\)/);
 });
 
 test('native hit peak and recovery both occur inside every existing short hit window', async () => {

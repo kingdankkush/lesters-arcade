@@ -258,16 +258,23 @@ export function setCameraShake(camera, { x = 0, y = 0 } = {}) {
   return camera;
 }
 
-export function worldToScreen(point, camera, viewport) {
-  const view = finiteViewport(viewport);
+// Writes the projection into `out` and returns it. The render path projects
+// hundreds of points a frame; the viewport is validated in place rather than
+// copied, so a projection allocates nothing beyond what the caller asks for.
+export function worldToScreenInto(out, point, camera, viewport) {
+  const width = positive(viewport?.width, 'viewport.width');
+  const height = positive(viewport?.height, 'viewport.height');
   const x = finite(point?.x, 'world.x');
   const y = finite(point?.y, 'world.y');
   const z = finite(point?.z ?? 0, 'world.z');
   const visualLiftZ = finite(point?.visualLiftZ ?? 0, 'world.visualLiftZ');
-  return {
-    x: (x - camera.x) * camera.zoom + view.width / 2 + camera.shakeX,
-    y: (y - camera.y - (z + visualLiftZ - (camera.groundZ ?? 0)) * WORLD_COORDINATES.heightToScreenY) * camera.zoom + view.height / 2 + camera.shakeY,
-  };
+  out.x = (x - camera.x) * camera.zoom + width / 2 + camera.shakeX;
+  out.y = (y - camera.y - (z + visualLiftZ - (camera.groundZ ?? 0)) * WORLD_COORDINATES.heightToScreenY) * camera.zoom + height / 2 + camera.shakeY;
+  return out;
+}
+
+export function worldToScreen(point, camera, viewport) {
+  return worldToScreenInto({ x: 0, y: 0 }, point, camera, viewport);
 }
 
 export function screenToGround(point, camera, viewport, { z = 0, visualLiftZ = 0 } = {}) {

@@ -9,6 +9,9 @@ import { createProductionEnemyDisplay } from '../apps/hmh-reboot/src/enemy-produ
 
 const moduleUrl = new URL('../apps/hmh-reboot/src/enemy-hit-feedback.mjs', import.meta.url);
 const mainUrl = new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url);
+// The per-frame body loop, and so the reaction, lives in the lazily loaded
+// enemy render pass since the render-alloc perf step.
+const passUrl = new URL('../apps/hmh-reboot/src/enemy-render-pass.mjs', import.meta.url);
 const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//gu, '').replace(/^\s*\/\/.*$/gmu, '');
 
 const BASE = Object.freeze({
@@ -208,21 +211,29 @@ test('the runtime loads the resolver as a dynamic chunk, records hits after the 
   assert.ok(source.indexOf('enemyHitFeedbackById.clear();', reset) < source.indexOf('syncEnemyMarkers([]);', reset), 'cleared in the run reset block');
 
   // Applied after the pinned scale.set, as separate multiplies, with the
-  // pinned reduce-motion idiom and the reduce-flash setting.
-  const scaleSet = source.indexOf('enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);');
+  // pinned reduce-motion idiom and the reduce-flash setting. main.mjs hands
+  // both settings to the body pass, which runs the reaction.
+  const passCall = source.indexOf('enemyRenderPass.render({');
+  assert.ok(passCall >= 0);
+  const passArgs = source.slice(passCall, source.indexOf('});', passCall));
+  assert.match(passArgs, /hitFeedback: enemyHitFeedback,/);
+  assert.match(passArgs, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0,/);
+  assert.match(passArgs, /reduceFlash: settings\.reduceFlash,/);
+  const pass = stripComments(await readFile(passUrl, 'utf8'));
+  const scaleSet = pass.indexOf('enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);');
   assert.ok(scaleSet >= 0);
-  const call = source.indexOf('enemyHitFeedback.resolveEnemyHitReaction({', scaleSet);
+  const call = pass.indexOf('hitFeedback.resolveEnemyHitReaction({', scaleSet);
   assert.ok(call > scaleSet);
-  const feel = source.slice(call, call + 600);
-  assert.match(feel, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0/);
-  assert.match(feel, /reduceFlash: settings\.reduceFlash/);
+  const feel = pass.slice(call, call + 600);
+  assert.match(feel, /\breduceMotion,/);
+  assert.match(feel, /\breduceFlash,/);
   assert.match(feel, /seed: `\$\{enemy\.id\}:\$\{hit\.tick\}`/);
-  const squashX = source.indexOf('enemyMarker.scale.x *= reaction.squashX;', scaleSet);
-  const squashY = source.indexOf('enemyMarker.scale.y *= reaction.squashY;', scaleSet);
-  const offset = source.indexOf('enemyMarker.position.set(enemyScreen.x + reaction.offsetX, enemyScreen.y + reaction.offsetY);', scaleSet);
+  const squashX = pass.indexOf('enemyMarker.scale.x *= reaction.squashX;', scaleSet);
+  const squashY = pass.indexOf('enemyMarker.scale.y *= reaction.squashY;', scaleSet);
+  const offset = pass.indexOf('enemyMarker.position.set(enemyScreen.x + reaction.offsetX, enemyScreen.y + reaction.offsetY);', scaleSet);
   assert.ok(offset > scaleSet && squashX > offset && squashY > squashX, 'offset then squash, all after the pinned scale');
-  assert.ok(squashY < source.indexOf('enemyMarker.alpha = 1;', scaleSet), 'inside the visible-marker branch');
-  assert.match(source.slice(scaleSet, squashY + 400), /enemyMarker\.setTint\(reaction\?\.tint \?\? null\);/, 'the tint is handed back every frame');
+  assert.ok(squashY < pass.indexOf('enemyMarker.alpha = 1;', scaleSet), 'inside the visible-marker branch');
+  assert.match(pass.slice(scaleSet, squashY + 400), /enemyMarker\.setTint\(reaction\?\.tint \?\? null\);/, 'the tint is handed back every frame');
   assert.doesNotMatch(feel, /\.arc\(/);
   // The Map is projection state: nothing under the simulation directory reads it.
   for (const file of ['enemy-combat.mjs', 'enemy-simulation.mjs', 'enemy-archetypes.mjs', 'combat-events.mjs']) {
@@ -232,16 +243,16 @@ test('the runtime loads the resolver as a dynamic chunk, records hits after the 
 });
 
 // Executed harness for the runtime integration. The source pins above fix
-// the statement order; this runs the real marker-branch slice of main.mjs
+// the statement order; this runs the real marker-branch slice of the body pass
 // (from the Map read to the tint hand-back) against the real resolver, so a
 // wrong hit age, a dropped resolver call or a mis-applied offset/squash/tint
 // fails here instead of hiding behind substring pins.
-const REACTION_SLICE_START = 'const hit = enemyHitFeedback && enemyHitFeedbackById.get(enemy.id);';
+const REACTION_SLICE_START = 'const hit = hitFeedback && hitFeedbackById.get(enemy.id);';
 const REACTION_SLICE_END = 'enemyMarker.setTint(reaction?.tint ?? null);';
 const HIT = Object.freeze({ tick: 100, knockback: { x: 12, y: 0 }, knockbackResistance: 1, damageApplied: 16, maxHealth: 80, critical: false, shielded: false, armor: 1.35, supportArmored: false });
 
 async function reactionSubject({ hit = HIT, loaded = true, settings = {}, particlesPerHazard = 10 } = {}) {
-  const source = await readFile(mainUrl, 'utf8');
+  const source = await readFile(passUrl, 'utf8');
   const start = source.indexOf(REACTION_SLICE_START);
   const end = source.indexOf(REACTION_SLICE_END, start);
   assert.ok(start >= 0 && end > start, 'the marker-branch reaction slice exists');
@@ -254,17 +265,19 @@ async function reactionSubject({ hit = HIT, loaded = true, settings = {}, partic
   const glows = [];
   const enemyMarker = { rosterScale: 0.5, position: new FakePoint(0, 0), scale: new FakePoint(1), setTint: (color) => tints.push(color) };
   const context = vm.createContext({
-    enemyHitFeedback: loaded ? enemyHitFeedbackModule : null,
-    enemyHitFeedbackById: new Map(hit ? [['enemy-1', hit]] : []),
+    hitFeedback: loaded ? enemyHitFeedbackModule : null,
+    hitFeedbackById: new Map(hit ? [['enemy-1', hit]] : []),
   });
-  const apply = vm.runInContext(`(function (enemy, enemyMarker, enemyScreen, simulation, camera, settings, performanceProfile, particleScale, placeWeaponGlow) {\n${slice}\n})`, context);
+  const apply = vm.runInContext(`(function (enemy, enemyMarker, enemyScreen, tick, camera, reduceMotion, reduceFlash, particleScale, placeWeaponGlow) {\n${slice}\n})`, context);
   const run = (tick) => {
     tints.length = 0;
     glows.length = 0;
     // The two pinned statements that precede the slice every frame.
     enemyMarker.position.set(enemyScreen.x, enemyScreen.y);
     enemyMarker.scale.set((enemyMarker.rosterScale ?? 1) * camera.zoom);
-    apply({ id: 'enemy-1', archetypeId: 'forkrunner' }, enemyMarker, enemyScreen, { tick }, camera, settings, { particlesPerHazard }, 10, (...args) => glows.push(args));
+    // main.mjs derives both flags exactly like this (pinned above).
+    apply({ id: 'enemy-1', archetypeId: 'forkrunner' }, enemyMarker, enemyScreen, tick, camera,
+      settings.reduceMotion || particlesPerHazard === 0, settings.reduceFlash, 10, (...args) => glows.push(args));
     return { position: { x: enemyMarker.position.x, y: enemyMarker.position.y }, scale: { x: enemyMarker.scale.x, y: enemyMarker.scale.y }, tints: [...tints], glows: [...glows] };
   };
   return { run, enemyScreen, baseScale: (enemyMarker.rosterScale ?? 1) * camera.zoom };

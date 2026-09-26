@@ -26,7 +26,10 @@ export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,
 export function prepareWorldDesignEnemyPose(marker, animate, pose) {
   const previous=marker.worldDesignPoseInput;
   // Budgeting freezes in-between frames, never attack warnings or a new pose.
-  const changed=!previous || ['state','direction','phase','elite'].some(key=>pose[key]!==previous[key])
+  // Runs per visible body per frame, so the key checks are spelled out. The
+  // memo below is a copy, so a caller may reuse one pose object for every body.
+  const changed=!previous || pose.state!==previous.state || pose.direction!==previous.direction
+    || pose.phase!==previous.phase || pose.elite!==previous.elite
     || (Number.isFinite(pose.phaseTick)&&Number.isFinite(previous.phaseTick)&&pose.phaseTick<previous.phaseTick);
   if(animate || !marker.worldDesignLastPose || changed) {
     marker.worldDesignLastPose=marker.applyPose(pose);

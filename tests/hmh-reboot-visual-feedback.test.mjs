@@ -1,4 +1,4 @@
-import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
+import { enemyRenderPassSource, runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -20,8 +20,11 @@ test('combat feedback never conveys health through transparency', async () => {
   const source = await readMain();
   assert.ok(!/enemyMarker\.alpha = Math\.max\(0\.35/.test(source), 'health must not drive enemy alpha');
   assert.ok(!/bossVisual\.alpha = Math\.max\(0\.38/.test(source), 'health must not drive boss alpha');
-  assert.match(source, /enemyMarker\.alpha = 1;/, 'living enemies render at full opacity');
-  assert.match(source, /enemyHealthPips\.push/, 'health reads from a dedicated pip');
+  // Enemy bodies and their pips are drawn by the lazily loaded body pass.
+  assert.ok(!/enemyMarker\.alpha = Math\.max/.test(enemyRenderPassSource), 'health must not drive enemy alpha');
+  assert.match(enemyRenderPassSource, /enemyMarker\.alpha = 1;/, 'living enemies render at full opacity');
+  assert.match(enemyRenderPassSource, /pipRatio\[pipCount\] = healthRatio;/, 'health reads from a dedicated pip');
+  assert.match(source, /enemyRenderPass\.drawHealthPips\(overlayVisuals,/, 'the pips reach the overlay');
 });
 
 test('kills, impacts, and player damage each have a distinct visual response', async () => {
@@ -99,7 +102,7 @@ test('the shipped player identity is the production atlas, not the prototype gra
 test('enemy depth sorting and combat VFX draw order are explicit', async () => {
   const source = await readMain();
   assert.match(source, /enemyVisuals\.sortableChildren = true/);
-  assert.match(source, /enemyMarker\.zIndex = worldDepthKey\(enemy\.y\)/);
+  assert.match(enemyRenderPassSource, /enemyMarker\.zIndex = worldDepthKey\(enemy\.y\)/);
   assert.match(source, /worldDepthLayer\.attach\(graphic\)/);
   const childOrder = source.slice(source.indexOf('world.addChild('), source.indexOf('app.stage.addChild('));
   assert.ok(

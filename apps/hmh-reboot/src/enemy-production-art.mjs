@@ -149,15 +149,17 @@ export function resolveEnemyAttackPhaseTick(enemy, tick) {
 // Roster-only selection: the six-state resolver above is unchanged for the
 // vector fallback. Recovery is shown as the held final attack frame unless a
 // hit reaction or death outranks it, exactly as the six-state order does.
+// selectEnemyRosterPose writes the selection into `out` for the per-frame body
+// pass, which already holds the six-state result.
+export function selectEnemyRosterPose(out, enemy, tick, state = resolveEnemyRuntimeVisualState(enemy, tick)) {
+  const recovering = enemy.attackPhase === 'recovery' && state !== 'death' && state !== 'hit';
+  out.state = recovering ? 'attack' : state;
+  out.phaseTick = recovering || state === 'tell' || state === 'attack' ? resolveEnemyAttackPhaseTick(enemy, tick) : null;
+  return out;
+}
+
 export function resolveEnemyRosterPoseSelection(enemy, tick) {
-  const state = resolveEnemyRuntimeVisualState(enemy, tick);
-  if (state === 'tell' || state === 'attack') {
-    return Object.freeze({ state, phaseTick: resolveEnemyAttackPhaseTick(enemy, tick) });
-  }
-  if (enemy.attackPhase === 'recovery' && state !== 'death' && state !== 'hit') {
-    return Object.freeze({ state: 'attack', phaseTick: resolveEnemyAttackPhaseTick(enemy, tick) });
-  }
-  return Object.freeze({ state, phaseTick: null });
+  return Object.freeze(selectEnemyRosterPose({ state: null, phaseTick: null }, enemy, tick));
 }
 
 export function isEliteEnemyProjection(enemyId) {
