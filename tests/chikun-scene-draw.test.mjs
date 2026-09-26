@@ -21,7 +21,7 @@ const makeCanvas = (w, h) => { const c = createRecordingCanvas(Math.max(1, Math.
 function artLoader({ fail = () => false } = {}) {
   const dims = new Map();
   for (const region of Object.values(SCENERY_CATALOG.regions)) {
-    for (const layer of Object.values(region.layers)) { for (const t of Object.values(layer.tiers)) dims.set(t.src, t); for (const t of Object.values(layer.emit?.tiers ?? {})) dims.set(t.src, t); }
+    for (const layer of Object.values(region.layers)) { for (const t of Object.values(layer.tiers)) dims.set(t.src, t); for (const t of Object.values(layer.emit?.tiers ?? {})) dims.set(t.src, t); for (const sp of layer.sprites ?? []) for (const t of Object.values(sp.tiers)) dims.set(t.src, t); }
     for (const t of Object.values(region.ground?.tiers ?? {})) dims.set(t.src, t);
   }
   return createArtLoader({ makeCanvas, loadImage: url => { const src = url.slice(SCENERY_CATALOG.base.length), d = dims.get(src); return fail(src) || !d ? Promise.reject(new Error('404')) : Promise.resolve({ width: d.w, height: d.h, label: src }); } });
@@ -86,5 +86,34 @@ test('reduced motion: nothing scrolls, the day is frozen at noon', async () => {
   const log = tick => { const canvas = createRecordingCanvas(view.pixelWidth, view.pixelHeight), ctx = createRecordingContext(canvas, { transform: [view.density, 0, 0, view.density, 0, 0] }); world.draw(ctx, snapshot(tick), { view, reduced: true }); return JSON.stringify(ctx.log.map(e => [e.op, e.args.map(a => typeof a === 'object' ? 'img' : a)])); };
   log(1200); // warm the reduced-motion (noon) gradient
   assert.equal(log(1200), log(1800), 'no drift between frames under reduced motion');
+  world.dispose();
+});
+
+test('the ground bands cover the full width through a region switch (no holes at the seams)', async () => {
+  const { regionSwitchTick, REGION_SCHEDULE } = await import('../apps/portal/src/chikun-course-regions.mjs');
+  const view = VIEWS.landscape, loader = artLoader();
+  const S = regionSwitchTick(REGION_SCHEDULE[1].startSlot);
+  const world = await warmWorld(view, loader, S - 220);
+  for (let tick = S - 220; tick <= S + 160; tick += 6) {
+    const { offscreen } = frame(world, view, tick);
+    await flush(); loader.pump(1e9);
+    const rows = new Map();
+    let tx = 0, ty = 0;
+    for (const e of offscreen) {
+      if (e.op === 'setTransform') { tx = e.args[4]; ty = e.args[5]; }
+      else if (e.op === 'fillRect' && typeof e.fill === 'object' && e.fill?.kind === 'pattern') {
+        const x0 = e.args[0] + tx, x1 = x0 + e.args[2];
+        if (!rows.has(ty)) rows.set(ty, []);
+        rows.get(ty).push([x0, x1]);
+      }
+    }
+    assert.ok(rows.size >= 20, `tick ${tick}: ${rows.size} band rows drawn`);
+    for (const [y, spans] of rows) {
+      spans.sort((a, b) => a[0] - b[0]);
+      let reach = 0;
+      for (const [a, b] of spans) { assert.ok(a <= reach + 1, `tick ${tick} band y ${y}: hole at ${reach}..${a}`); reach = Math.max(reach, b); }
+      assert.ok(reach >= view.pixelWidth - 1, `tick ${tick} band y ${y}: covered to ${reach} of ${view.pixelWidth}`);
+    }
+  }
   world.dispose();
 });

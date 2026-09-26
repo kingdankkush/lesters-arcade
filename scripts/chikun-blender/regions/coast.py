@@ -116,7 +116,7 @@ def mid(ctx):
     nav = shading.lamp('nav', color='#ffe7b0', body='#dddddd', strength=1.0)
     for bx in (360, 720, 860, 1200):
         sailboat(coll, rng.choice(hull), sail, bx, rng.uniform(40, 110), rng.uniform(0.9, 1.2), rng, lit=nav)
-    return {'emissive': True, 'landmarks': [{'id': 'lighthouse', 'u': lx}]}
+    return {'emissive': True, 'landmarks': [{'id': 'lighthouse', 'u': lx}], 'anchors': [dict(id='lighthouse', kind='beam', at=(lx, ly - 4.5, lz + 75.5))]}
 
 
 # ---------------------------------------------------------------- NEAR

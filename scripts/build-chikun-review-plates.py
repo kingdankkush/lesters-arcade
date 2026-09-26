@@ -155,6 +155,7 @@ def load_region(cat, region):
     for name, layer in reg['layers'].items():
         t = layer['tiers']['t1']
         layers[name] = dict(meta=layer, img=premul(img(ART / t['src'])))
+        layers[name]['sprites'] = [(sp, premul(img(ART / sp['tiers']['t1']['src']))) for sp in layer.get('sprites', [])]
         if layer.get('emit'):
             e = layer['emit']
             layers[name]['emit'] = dict(chunks=e['chunks'], img=premul(img(ART / e['tiers']['t1']['src'])))
@@ -228,6 +229,11 @@ def plate(region, layers, ground, rig, D, width, props, chikun):
         if ground: draw_bands(m['baseline'])
         scroll = D * m['rate'] + left
         periodic(back, L['img'], scroll, m['top'] - BACK_TOP)
+        period = L['img'].shape[1]
+        for sp, simg in L.get('sprites', []):
+            x = int(round(sp['u'] - (scroll % period) - sp['px']))
+            for k in (-1, 0, 1):
+                over(back, simg, x + k * period, int(round(m['top'] - BACK_TOP + sp['y'] - sp['py'])))
         emits.append((L, scroll, m['top'], name))
         atop(back, fogc, fog[name])
     if ground: draw_bands(10_000)

@@ -15,6 +15,7 @@ function sizes() {
     for (const layer of Object.values(region.layers)) {
       for (const t of Object.values(layer.tiers)) out.set(t.src, t);
       for (const t of Object.values(layer.emit?.tiers ?? {})) out.set(t.src, t);
+      for (const sp of layer.sprites ?? []) for (const t of Object.values(sp.tiers)) out.set(t.src, t);
     }
     for (const t of Object.values(region.ground?.tiers ?? {})) out.set(t.src, t);
   }

@@ -91,7 +91,8 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
   const painterCache = new Map(); // `${regionIndex}:${depth}` -> {canvas, density}
   const painterOrder = [];
   const readyAt = new Map();      // region id -> clock ms when art became ready
-  const emitQueue = Array.from({ length: 12 }, () => ({ region: '', layer: '', alpha: 0, scroll: 0, y: 0, period: 0 }));
+  const emitQueue = Array.from({ length: 12 }, () => ({ region: '', layer: '', alpha: 0, scroll: 0, y: 0, period: 0, anchors: null }));
+  let beam = null, beamDensity = 0;
   let emitCount = 0;
   const stats = { painterBuilds: 0, bandFills: 0, blits: 0 };
 
@@ -149,9 +150,10 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
         const s = d / strip.density, period = strip.w * s;
         for (let x = -((scroll % period) + period) % period; x < cw; x += period) ctx.drawImage(strip.canvas, x, y, period, strip.h * s);
       }
-      if (emitCount < emitQueue.length && loader.emit(id, name)) {
+      if (g.sprites) drawSprites(ctx, bus, id, name, g, scroll, y, strip.w);
+      if (emitCount < emitQueue.length && (loader.emit(id, name) || g.anchors)) {
         const e = emitQueue[emitCount++];
-        e.region = id; e.layer = name; e.alpha = alpha * art; e.scroll = scroll; e.y = y + Math.round(BACKDROP_TOP * d); e.period = strip.w;
+        e.region = id; e.layer = name; e.alpha = alpha * art; e.scroll = scroll; e.y = y + Math.round(BACKDROP_TOP * d); e.period = strip.w; e.anchors = g.anchors ?? null;
       }
     }
     if (art < 1) {
@@ -166,22 +168,97 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
     ctx.globalAlpha = 1;
   }
 
+  // Animated landmark parts (the windmill rotor), drawn on their strip's copies.
+  function drawSprites(ctx, bus, id, name, g, scroll, y, period) {
+    const d = bus.density, cw = bus.canvasWidth;
+    for (const sp of g.sprites) {
+      const img = loader.sprite(id, name, sp.id);
+      if (!img || Math.abs(img.density - d) > 1e-3) continue;
+      const angle = sp.motion === 'spin' && !bus.reduced ? (bus.time * sp.speed * Math.PI * 2) % (Math.PI * 2) : 0;
+      const r = Math.hypot(Math.max(sp.px, sp.w - sp.px), Math.max(sp.py, sp.h - sp.py)) * d;
+      let x = Math.round(sp.u * d) - (((scroll % period) + period) % period);
+      while (x + r > 0) x -= period;
+      x += period;
+      for (; x - r < cw; x += period) {
+        ctx.save();
+        ctx.translate(x, y + sp.y * d); ctx.rotate(angle);
+        ctx.drawImage(img.canvas, -sp.px * d, -sp.py * d);
+        ctx.restore();
+        stats.blits++;
+      }
+    }
+  }
+
+  // A lighthouse beam sweeping round: from the side it reads as a light cone
+  // that lengthens, shortens and flips, with a flash as it faces the camera.
+  function beamSprite(d) {
+    if (beam && beamDensity === d) return beam;
+    const L = Math.round(460 * d), H = Math.round(44 * d);
+    const c = makeCanvas(L, H);
+    if (!c) return null;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, L, 0);
+    g.addColorStop(0, 'rgba(255,236,190,.9)'); g.addColorStop(0.35, 'rgba(255,226,170,.35)'); g.addColorStop(1, 'rgba(255,220,160,0)');
+    x.fillStyle = g; x.beginPath(); x.moveTo(0, H / 2 - 2 * d); x.lineTo(L, 0); x.lineTo(L, H); x.lineTo(0, H / 2 + 2 * d); x.closePath(); x.fill();
+    if (beam) { beam.width = 0; beam.height = 0; }
+    beam = c; beamDensity = d;
+    return c;
+  }
+
+  function drawBeams(ctx, bus, e, on) {
+    let calls = 0;
+    const d = bus.density, cw = bus.canvasWidth;
+    for (const a of e.anchors) {
+      if (a.kind !== 'beam' || on < 0.1) continue;
+      const img = beamSprite(d);
+      if (!img) continue;
+      const theta = bus.reduced ? Math.PI / 2 : bus.time * 0.9;
+      const facing = Math.max(0, Math.sin(theta)), sweep = Math.cos(theta);
+      let x = Math.round(a.u * d) - (((e.scroll % e.period) + e.period) % e.period);
+      while (x + img.width > 0) x -= e.period;
+      x += e.period;
+      for (; x - img.width < cw; x += e.period) {
+        const y = e.y + a.y * d;
+        ctx.globalAlpha = clamp(on * e.alpha * 0.18);
+        ctx.save(); ctx.translate(x, y); ctx.scale(sweep, 1);
+        ctx.drawImage(img, 0, -img.height / 2);
+        ctx.restore();
+        // Lamp flash: the beam's bright root, drawn small around the lamp.
+        ctx.globalAlpha = clamp(on * e.alpha * (0.25 + 0.6 * facing));
+        const glowR = Math.round(18 * d);
+        ctx.drawImage(img, 0, 0, Math.round(img.height / 2), img.height, x - glowR, y - glowR, glowR * 2, glowR * 2);
+        calls += 2;
+      }
+    }
+    return calls;
+  }
+
   function bandPattern(ctx, band) {
     if (!band.pattern) band.pattern = ctx.createPattern(band.canvas, 'repeat-x');
     return band.pattern;
   }
 
-  // Bands [i0, i1) of one region between device x0 and x1.
-  function drawBands(ctx, bus, regionIndex, i0, i1, alpha, x0, x1) {
+  // Bands [i0, i1) of one region between device x0 and x1. A region whose art
+  // is not ready (a seek, a slow network) borrows a neighbour's ground so the
+  // seam never opens a hole; with no art at all the painters cover the ground.
+  function drawBands(ctx, bus, regionIndex, i0, i1, alpha, x0, x1, t = null) {
     if (alpha <= 0.003 || x1 <= x0) return;
-    const id = CHIKUN_REGIONS[regionIndex].id, ground = loader?.ground(id);
+    let id = CHIKUN_REGIONS[regionIndex].id, ground = loader?.ground(id);
+    if ((!ground || artLevel(id, bus.reduced) <= 0) && t && regionIndex !== t.cur && artLevel(CHIKUN_REGIONS[t.cur].id, bus.reduced) > 0) {
+      for (const other of [t.cur, t.next, t.prev]) {
+        const oid = CHIKUN_REGIONS[other].id, g = loader?.ground(oid);
+        if (g && artLevel(oid, bus.reduced) > 0) { id = oid; ground = g; break; }
+      }
+    }
     if (!ground || artLevel(id, bus.reduced) <= 0) return;
     const d = bus.density, k = bus.reduced ? 0 : 1;
     ctx.globalAlpha = alpha * artLevel(id, bus.reduced);
+    const drift = SCENERY_CATALOG.regions?.[id]?.ground?.drift;
     for (let i = i0; i < i1 && i < ground.bands.length; i++) {
       const b = ground.bands[i];
       const kk = Math.max(b.rate, 0.2) * k;
-      const scroll = (bus.distance * b.rate + bus.view.left - bus.shakeX * kk) * d;
+      // Sea bands also drift slowly with the tick clock (frozen under reduced motion).
+      const scroll = (bus.distance * b.rate + bus.view.left - bus.shakeX * kk - (drift ? drift[i] * bus.time * b.rate : 0)) * d;
       const y = Math.round((b.y0 - BACKDROP_TOP + bus.shakeY * kk) * d), y2 = Math.round((b.y1 - BACKDROP_TOP + bus.shakeY * kk) * d);
       if (Math.abs(ground.density - d) > 1e-3) continue; // re-prescaling after a rotation
       stats.bandFills += fillPeriodicBand(ctx, bandPattern(ctx, b), b.w, scroll, y, y2 - y, Math.max(0, Math.floor(x0)), Math.min(bus.canvasWidth, Math.ceil(x1)));
@@ -200,9 +277,9 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
         const xp = Number.isFinite(t.Dprev) ? toDev(seamX(t.Dprev, bus.distance, rate)) : -Infinity;
         const xn = toDev(seamX(t.Dnext, bus.distance, rate));
         const a = clamp(xp, 0, cw), b = clamp(xn, 0, cw);
-        if (a > 0) drawBands(ctx, bus, t.prev, i, i + 1, 1, 0, a);
-        drawBands(ctx, bus, t.cur, i, i + 1, 1, a, b);
-        if (b < cw) drawBands(ctx, bus, t.next, i, i + 1, 1, b, cw);
+        if (a > 0) drawBands(ctx, bus, t.prev, i, i + 1, 1, 0, a, t);
+        drawBands(ctx, bus, t.cur, i, i + 1, 1, a, b, t);
+        if (b < cw) drawBands(ctx, bus, t.next, i, i + 1, 1, b, cw, t);
       } else {
         const m = t.mix.bands;
         if (m < 1) drawBands(ctx, bus, t.cur, i, i + 1, 1, 0, cw); // opaque: next fades in over it
@@ -261,6 +338,7 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < emitCount; i++) {
         const e = emitQueue[i], em = loader.emit(e.region, e.layer);
+        if (e.anchors) calls += drawBeams(ctx, bus, e, on);
         if (!em) continue;
         const fogLeft = e.layer === 'far' ? 1 - bus.rig.fog.far - bus.rig.fog.mid : e.layer === 'mid' ? 1 - bus.rig.fog.mid - bus.rig.fog.near * 0.5 : 1 - bus.rig.fog.near;
         ctx.globalAlpha = clamp(on * e.alpha * EMIT_GAIN[e.layer] * clamp(fogLeft, 0.2, 1) * (1 - 0.6 * (bus.transition?.veil ?? 0)));

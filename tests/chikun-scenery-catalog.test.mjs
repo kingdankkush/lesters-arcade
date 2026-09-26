@@ -27,6 +27,7 @@ function files(region) {
   for (const layer of Object.values(region.layers)) {
     for (const [tier, t] of Object.entries(layer.tiers)) out.push([tier, t]);
     for (const [tier, t] of Object.entries(layer.emit?.tiers ?? {})) out.push([tier, t]);
+    for (const sp of layer.sprites ?? []) for (const [tier, t] of Object.entries(sp.tiers)) out.push([tier, t]);
   }
   for (const [tier, t] of Object.entries(region.ground?.tiers ?? {})) out.push([tier, t]);
   return out;

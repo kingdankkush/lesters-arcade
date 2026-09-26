@@ -125,6 +125,7 @@ def mid(ctx):
     kit.box('mill_door', coll, door, wx, wy - 9.4, wz, 5, 1, 9)
     sail = shading.flat('sail', '#d9d1bd', rough=0.9, jitter=0.1)
     hub = Vector((wx, wy - 9.5, wz + 64))
+    rotor = []
     for k in range(4):
         # Blades lie in the x-z plane (facing the camera) and turn about the view axis.
         blade = kit.box(f'sail{k}', coll, sail, 2.6, 0, 3, 7, 0.8, 44)
@@ -132,8 +133,10 @@ def mid(ctx):
         for o in (blade, spar):
             o.location = hub
             o.rotation_euler = (0, math.radians(45 + 90 * k), 0)
-    kit.sphere('mill_hub', coll, m['dark'], hub.x, hub.y - 1, hub.z, 2.4)
-    return {'emissive': True, 'landmarks': [{'id': 'windmill', 'u': wx}]}
+            rotor.append(o.name)
+    rotor.append(kit.sphere('mill_hub', coll, m['dark'], hub.x, hub.y - 1, hub.z, 2.4).name)
+    # The rotor ships as its own sprite and turns at runtime (0.25 rev/s).
+    return {'emissive': True, 'landmarks': [{'id': 'windmill', 'u': wx}], 'sprites': [dict(id='windmill', objects=rotor, pivot=tuple(hub), motion='spin', speed=0.25)]}
 
 
 # ---------------------------------------------------------------- NEAR

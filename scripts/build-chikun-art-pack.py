@@ -71,23 +71,27 @@ def lab_to_rgb(lab):
     return linear_to_srgb(xyz @ M_RGB.T)
 
 
-def compress_values(rgba, layer):
-    """Value-compress opaque pixels around their median and scale chroma."""
+def compress_values(rgba, layer, params=None):
+    """Value-compress opaque pixels around their median and scale chroma.
+    Pass `params` (from a previous call) to apply the same mapping to a
+    sprite that belongs to that layer."""
     a = rgba[..., 3]
     mask = a > 0.5
     if not mask.any(): return rgba, {}
     lab = rgb_to_lab(rgba[..., :3])
     L = lab[..., 0][mask]
-    lo, med, hi = np.percentile(L, [2, 50, 98])
-    cap = L_RANGE[layer]
-    k = min(1.0, cap / max(1e-3, hi - lo))
+    if params is None:
+        lo, med, hi = np.percentile(L, [2, 50, 98])
+        k = min(1.0, L_RANGE[layer] / max(1e-3, hi - lo))
+    else:
+        lo, med, hi = params['lBefore']; k = params['scale']
     lab[..., 0] = med + (lab[..., 0] - med) * k
     lmin, lmax = L_BOUNDS[layer]
     lab[..., 0] = np.clip(lab[..., 0], lmin, lmax)
     lab[..., 1:] *= CHROMA[layer]
     out = rgba.copy(); out[..., :3] = lab_to_rgb(lab)
     after = lab[..., 0][mask]
-    return out, dict(lBefore=[round(float(lo), 1), round(float(med), 1), round(float(hi), 1)], lAfter=[round(float(np.percentile(after, 2)), 1), round(float(np.percentile(after, 50)), 1), round(float(np.percentile(after, 98)), 1)], chroma=CHROMA[layer], scale=round(k, 3))
+    return out, dict(lBefore=[round(float(lo), 3), round(float(med), 3), round(float(hi), 3)], lAfter=[round(float(np.percentile(after, 2)), 1), round(float(np.percentile(after, 50)), 1), round(float(np.percentile(after, 98)), 1)], chroma=CHROMA[layer], scale=round(k, 5))
 
 
 # ---------------------------------------------------------------- image helpers
@@ -189,7 +193,31 @@ def pack_strip(region, layer, cache, receipts):
     emit = cache / region / f'{layer}-emit.png'
     if emit.exists():
         out['emit'] = pack_emit(region, layer, load(emit)[:, m:m + W], ls, tier)
+    if meta.get('anchors'):
+        out['anchors'] = [dict(id=a['id'], kind=a['kind'], u=round(((a['pivotPx'][0] / tier) - SPEC['marginPx']) % ls['width'], 3), y=round(a['pivotPx'][1] / tier, 3)) for a in meta['anchors']]
+    if meta.get('sprites'):
+        out['sprites'] = [pack_sprite(region, layer, sp, cache, ls, tier, m, values) for sp in meta['sprites']]
     return out
+
+
+def pack_sprite(region, layer, sp, cache, ls, tier, m, values):
+    """An animated landmark part: cropped to its alpha, pivot recorded in strip
+    coordinates, graded with its layer's value mapping."""
+    img = load(cache / region / f"{layer}-sprite-{sp['id']}.png")
+    ys, xs = np.where(img[..., 3] > 0.01)
+    pad = 4 * tier
+    x0 = int(max(0, (xs.min() - pad) // tier * tier)); y0 = int(max(0, (ys.min() - pad) // tier * tier))
+    x1 = int(min(img.shape[1], -(-(xs.max() + pad) // tier) * tier)); y1 = int(min(img.shape[0], -(-(ys.max() + pad) // tier) * tier))
+    crop, _ = compress_values(img[y0:y1, x0:x1].copy(), layer, values)
+    crop = bleed(crop)
+    px, py = sp['pivotPx']
+    entry = dict(id=sp['id'], motion=sp['motion'], speed=sp['speed'], u=round(((px / tier) - SPEC['marginPx']) % ls['width'], 3), y=round(py / tier, 3),
+                 px=round(float(px - x0) / tier, 3), py=round(float(py - y0) / tier, 3), w=int((x1 - x0) // tier), h=int((y1 - y0) // tier), tiers={})
+    for t in ls['tiers']:
+        scale = SPEC['tiers'][t]
+        im = crop if scale == tier else downsample(crop, (entry['w'] * scale, entry['h'] * scale))
+        entry['tiers'][t] = encode(im, OUT / region / t / f"{layer}-sprite-{sp['id']}.webp", QUALITY[layer], alpha_quality=90)
+    return entry
 
 
 def merge_chunks(chunks, waste=0.3, max_w=256):
@@ -315,7 +343,11 @@ def pack_ground(region, cache, receipts):
         tiers[t] = encode(atlas, OUT / region / t / 'ground.webp', QUALITY['ground'], alpha_quality=90)
         tiers[t]['rects'] = rects
     receipts[f'{region}/ground'] = dict(render=dict(blender=meta.get('blender'), seconds=meta.get('renderSeconds'), scripts=meta.get('scripts')), bands=len(bands))
-    return dict(bands=[[y0, y1, rate] for y0, y1, rate in bands], pad=PAD, period=period, tiers=tiers)
+    drift = SPEC['regions'].get(region, {}).get('ground', {}).get('drift', [])
+    out = dict(bands=[[y0, y1, rate] for y0, y1, rate in bands], pad=PAD, period=period, tiers=tiers)
+    if drift:
+        out['drift'] = [next((d for a, b, d in drift if y0 >= a and y1 <= b), 0) for y0, y1, _ in bands]
+    return out
 
 
 # ---------------------------------------------------------------- catalog
@@ -325,6 +357,7 @@ def bytes_for(region_entry, tier):
         t = layer['tiers'].get(tier) or layer['tiers'].get('t1')
         total += t['bytes']
         if layer.get('emit'): total += (layer['emit']['tiers'].get(tier) or layer['emit']['tiers']['t1'])['bytes']
+        for sp in layer.get('sprites', []): total += (sp['tiers'].get(tier) or sp['tiers']['t1'])['bytes']
     if region_entry.get('ground'): total += region_entry['ground']['tiers'][tier]['bytes']
     return total
 
@@ -339,6 +372,7 @@ def logical_px(region_entry):
     px = 0
     for name, layer in region_entry['layers'].items():
         px += layer['width'] * layer['height']
+        px += sum(sp['w'] * sp['h'] for sp in layer.get('sprites', []))
     if region_entry.get('ground'):
         g = region_entry['ground']
         px += sum((round(g['period'] * r) + 2 * PAD) * (y1 - y0 + 1) for y0, y1, r in g['bands'])
