@@ -2162,8 +2162,8 @@
       "src": "town/t1/ground.webp",
       "w": 1266,
       "h": 196,
-      "bytes": 2502,
-      "sha256": "f3d53707112291ac962dbc78184f66fdf5c416435a73688c8ce34393a9a0bb73",
+      "bytes": 11776,
+      "sha256": "0dde0d4f2a375e2a7e1364aad7aa958b83f7a61a9a643a90eca7643e8c678617",
       "rects": [
        [
         8,
@@ -2303,8 +2303,8 @@
       "src": "town/t2/ground.webp",
       "w": 2517,
       "h": 326,
-      "bytes": 7148,
-      "sha256": "f789d21cfc7b82359e84d00b4d10003d4c38886bcbd2015d73ce3fec2f8c6784",
+      "bytes": 36518,
+      "sha256": "6ab17e6bdc60f6e5d7fb2dd27d99551f9db64a22316107bf1cbe0597abecf219",
       "rects": [
        [
         8,
@@ -2443,8 +2443,8 @@
     }
    },
    "bytes": {
-    "t1": 243348,
-    "t2": 340446
+    "t1": 252622,
+    "t2": 369816
    },
    "logicalPx": 1191418,
    "emitPx": 563200
@@ -3284,8 +3284,8 @@
       "src": "city/t1/ground.webp",
       "w": 1266,
       "h": 196,
-      "bytes": 4190,
-      "sha256": "77865609a101207d441b564b34c2fdcfc7645022fa5d1ca9c07e59361ff73c1b",
+      "bytes": 7372,
+      "sha256": "7c1e50c919bdfd4fa061cff6061529bd92420ca48b9776b19c1832412c73917a",
       "rects": [
        [
         8,
@@ -3425,8 +3425,8 @@
       "src": "city/t2/ground.webp",
       "w": 2517,
       "h": 326,
-      "bytes": 8802,
-      "sha256": "ec269e488ae34846ecc5a2a0fd797856d982d855913a0376dab8f23429c7d05e",
+      "bytes": 18068,
+      "sha256": "d422d22af5e1e9ed7547f9bcdacaf157afb40ab658f2a3a04534c8c5e9d0a1d7",
       "rects": [
        [
         8,
@@ -3565,8 +3565,8 @@
     }
    },
    "bytes": {
-    "t1": 379268,
-    "t2": 474960
+    "t1": 382450,
+    "t2": 484226
    },
    "logicalPx": 1268218,
    "emitPx": 1071104
@@ -3958,8 +3958,8 @@
       "src": "industrial/t1/ground.webp",
       "w": 1266,
       "h": 196,
-      "bytes": 2470,
-      "sha256": "9573a118f47bbf60a22a7455ce87bdd9f54802bd6d7b6987c27d1bcc01464b06",
+      "bytes": 5272,
+      "sha256": "0b2e0d8958bb07a00a5d96888bcf5df426c9f24298971482f9c4c91100846870",
       "rects": [
        [
         8,
@@ -4099,8 +4099,8 @@
       "src": "industrial/t2/ground.webp",
       "w": 2517,
       "h": 326,
-      "bytes": 6718,
-      "sha256": "1f70658b4ff363eecf3ecc2d6a0402ab4175516dadfeed33fb81796d97aca2eb",
+      "bytes": 15186,
+      "sha256": "e774865516b421d901e7158917a3fa7a6bc676960af5a4573cbe32ef82ca06a3",
       "rects": [
        [
         8,
@@ -4239,8 +4239,8 @@
     }
    },
    "bytes": {
-    "t1": 51394,
-    "t2": 89604
+    "t1": 54196,
+    "t2": 98072
    },
    "logicalPx": 1191418,
    "emitPx": 59392
@@ -6130,9 +6130,9 @@
    },
    "values": {
     "lBefore": [
-     41.7,
-     67.6,
-     72.9
+     41.678,
+     67.552,
+     72.948
     ],
     "lAfter": [
      44.4,
@@ -6140,7 +6140,7 @@
      72.4
     ],
     "chroma": 0.7,
-    "scale": 0.895
+    "scale": 0.89541
    },
    "render": {
     "blender": "5.1.2",
@@ -6166,9 +6166,9 @@
    },
    "values": {
     "lBefore": [
-     21.6,
-     35.3,
-     55.8
+     21.555,
+     35.283,
+     55.822
     ],
     "lAfter": [
      32.0,
@@ -6176,7 +6176,7 @@
      55.7
     ],
     "chroma": 0.85,
-    "scale": 0.992
+    "scale": 0.99219
    },
    "render": {
     "blender": "5.1.2",
@@ -6202,9 +6202,9 @@
    },
    "values": {
     "lBefore": [
-     21.2,
-     31.5,
-     49.3
+     21.23,
+     31.549,
+     49.349
     ],
     "lAfter": [
      26.0,
@@ -6238,9 +6238,9 @@
    },
    "values": {
     "lBefore": [
-     8.8,
-     13.7,
-     48.2
+     8.822,
+     13.686,
+     48.152
     ],
     "lAfter": [
      8.8,
@@ -6290,9 +6290,9 @@
    },
    "values": {
     "lBefore": [
-     54.6,
-     59.9,
-     77.1
+     54.641,
+     59.922,
+     77.057
     ],
     "lAfter": [
      54.6,
@@ -6326,9 +6326,9 @@
    },
    "values": {
     "lBefore": [
-     32.2,
-     55.9,
-     84.4
+     32.198,
+     55.896,
+     84.395
     ],
     "lAfter": [
      40.5,
@@ -6336,7 +6336,7 @@
      74.5
     ],
     "chroma": 0.85,
-    "scale": 0.651
+    "scale": 0.65138
    },
    "render": {
     "blender": "5.1.2",
@@ -6362,9 +6362,9 @@
    },
    "values": {
     "lBefore": [
-     20.5,
-     53.7,
-     91.8
+     20.463,
+     53.678,
+     91.833
     ],
     "lAfter": [
      34.1,
@@ -6372,7 +6372,7 @@
      76.1
     ],
     "chroma": 0.95,
-    "scale": 0.588
+    "scale": 0.58848
    },
    "render": {
     "blender": "5.1.2",
@@ -6398,9 +6398,9 @@
    },
    "values": {
     "lBefore": [
-     24.1,
-     40.2,
-     66.1
+     24.084,
+     40.172,
+     66.098
     ],
     "lAfter": [
      24.1,
@@ -6428,15 +6428,18 @@
   "town/ground": {
    "render": {
     "blender": "5.1.2",
-    "seconds": 2.07,
+    "seconds": 3.18,
     "scripts": {
-     "scripts/chikun-blender/build-chikun-scenery.py": "a09806ec29ebdd9608e75ab41aa6e2198bde9a6799f81ca5c881f27f094298f3",
-     "scripts/chikun-blender/chikun_lib/core.py": "472c14614799a5314c24607cb0761515cdb5f11fcf1ac594546ae65a9f417c1e",
+     "scripts/chikun-blender/build-chikun-scenery.py": "313f0a1b8c952eed0ecea86a5db5503a9091f6b204140000138f94c8ebe9e66c",
+     "scripts/chikun-blender/chikun_lib/core.py": "b35b7c0418fe2c660f0d13c4e135406cbabb5a4f236634c95fbcca47503690dc",
      "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
-     "scripts/chikun-blender/chikun_lib/kit.py": "df6f9e3bea4260d48fcd24b7a91104b586068e0341e88da8b2c75467a9dd9d61",
+     "scripts/chikun-blender/chikun_lib/kit.py": "efdf133a0182cf7042347b4c93bdfd212b4909f314aa7a4affec3a88a6a208a1",
      "scripts/chikun-blender/chikun_lib/periodic.py": "c6a8ad7819ed94ff7d37d4879acd778b69583a98358182715f6a4fce85f6d6eb",
-     "scripts/chikun-blender/regions/town.py": "18f44a373f701760af9aedf8c7a67deb057268a41dcf3ffed28f1eaa091d2c56",
-     "scripts/chikun-blender/scenery-spec.json": "0c9e8e2e82fd602b4214c4c6813e8ead45550386552935e94b84b7edb15d8a21"
+     "scripts/chikun-blender/regions/town.py": "259bfaeb6404406048bc972f7ad4d6b8ddf295608d06291b7cfa4990bdea49f7",
+     "scripts/chikun-blender/regions/common.py": "8293997d1f999d89679ad28d948a6cec7edef0e8fb03d3af94c69e4f48ba7c9d",
+     "scripts/chikun-blender/regions/groundkit.py": "c35cdeedb1e1e7ab14c340703a74ea23ad98652502bf6ef265b2f5da0dd0d7b5",
+     "scripts/chikun-blender/regions/urbankit.py": "3c139b37cfd27353672389c6f31bafa9de199529a4b3c66d26d584d09999a63c",
+     "scripts/chikun-blender/scenery-spec.json": "e7fd8d7bba6b4e6d99b136785dda63343dbbc9456befbea2a927d223066df84a"
     }
    },
    "bands": 22
@@ -6450,9 +6453,9 @@
    },
    "values": {
     "lBefore": [
-     44.9,
-     58.6,
-     70.9
+     44.92,
+     58.634,
+     70.924
     ],
     "lAfter": [
      44.9,
@@ -6486,9 +6489,9 @@
    },
    "values": {
     "lBefore": [
-     32.8,
-     46.4,
-     69.2
+     32.797,
+     46.41,
+     69.184
     ],
     "lAfter": [
      33.7,
@@ -6496,7 +6499,7 @@
      67.7
     ],
     "chroma": 0.85,
-    "scale": 0.934
+    "scale": 0.9344
    },
    "render": {
     "blender": "5.1.2",
@@ -6522,9 +6525,9 @@
    },
    "values": {
     "lBefore": [
-     15.2,
-     39.9,
-     81.7
+     15.209,
+     39.931,
+     81.734
     ],
     "lAfter": [
      26.0,
@@ -6532,7 +6535,7 @@
      66.3
     ],
     "chroma": 0.95,
-    "scale": 0.631
+    "scale": 0.63135
    },
    "render": {
     "blender": "5.1.2",
@@ -6558,9 +6561,9 @@
    },
    "values": {
     "lBefore": [
-     18.3,
-     26.8,
-     68.7
+     18.308,
+     26.832,
+     68.653
     ],
     "lAfter": [
      18.3,
@@ -6588,15 +6591,18 @@
   "city/ground": {
    "render": {
     "blender": "5.1.2",
-    "seconds": 1.84,
+    "seconds": 2.72,
     "scripts": {
-     "scripts/chikun-blender/build-chikun-scenery.py": "a09806ec29ebdd9608e75ab41aa6e2198bde9a6799f81ca5c881f27f094298f3",
-     "scripts/chikun-blender/chikun_lib/core.py": "472c14614799a5314c24607cb0761515cdb5f11fcf1ac594546ae65a9f417c1e",
+     "scripts/chikun-blender/build-chikun-scenery.py": "313f0a1b8c952eed0ecea86a5db5503a9091f6b204140000138f94c8ebe9e66c",
+     "scripts/chikun-blender/chikun_lib/core.py": "b35b7c0418fe2c660f0d13c4e135406cbabb5a4f236634c95fbcca47503690dc",
      "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
-     "scripts/chikun-blender/chikun_lib/kit.py": "df6f9e3bea4260d48fcd24b7a91104b586068e0341e88da8b2c75467a9dd9d61",
+     "scripts/chikun-blender/chikun_lib/kit.py": "efdf133a0182cf7042347b4c93bdfd212b4909f314aa7a4affec3a88a6a208a1",
      "scripts/chikun-blender/chikun_lib/periodic.py": "c6a8ad7819ed94ff7d37d4879acd778b69583a98358182715f6a4fce85f6d6eb",
-     "scripts/chikun-blender/regions/city.py": "f321e55b2991ee3ad6dd3d87eeff4d353921592afa25e8b4f8875ca32548f44d",
-     "scripts/chikun-blender/scenery-spec.json": "0c9e8e2e82fd602b4214c4c6813e8ead45550386552935e94b84b7edb15d8a21"
+     "scripts/chikun-blender/regions/city.py": "04d62d2adab3bef97a01c090d7ee8f31bf82e2c1a1197b9d22c2404241dc8b0d",
+     "scripts/chikun-blender/regions/common.py": "8293997d1f999d89679ad28d948a6cec7edef0e8fb03d3af94c69e4f48ba7c9d",
+     "scripts/chikun-blender/regions/groundkit.py": "c35cdeedb1e1e7ab14c340703a74ea23ad98652502bf6ef265b2f5da0dd0d7b5",
+     "scripts/chikun-blender/regions/urbankit.py": "3c139b37cfd27353672389c6f31bafa9de199529a4b3c66d26d584d09999a63c",
+     "scripts/chikun-blender/scenery-spec.json": "e7fd8d7bba6b4e6d99b136785dda63343dbbc9456befbea2a927d223066df84a"
     }
    },
    "bands": 22
@@ -6610,9 +6616,9 @@
    },
    "values": {
     "lBefore": [
-     50.8,
-     63.6,
-     84.3
+     50.813,
+     63.618,
+     84.286
     ],
     "lAfter": [
      52.9,
@@ -6620,7 +6626,7 @@
      80.9
     ],
     "chroma": 0.7,
-    "scale": 0.836
+    "scale": 0.83648
    },
    "render": {
     "blender": "5.1.2",
@@ -6646,9 +6652,9 @@
    },
    "values": {
     "lBefore": [
-     43.8,
-     59.0,
-     89.6
+     43.806,
+     58.979,
+     89.559
     ],
     "lAfter": [
      47.7,
@@ -6656,7 +6662,7 @@
      81.7
     ],
     "chroma": 0.85,
-    "scale": 0.743
+    "scale": 0.74313
    },
    "render": {
     "blender": "5.1.2",
@@ -6682,9 +6688,9 @@
    },
    "values": {
     "lBefore": [
-     30.8,
-     51.8,
-     60.5
+     30.778,
+     51.826,
+     60.48
     ],
     "lAfter": [
      30.8,
@@ -6718,9 +6724,9 @@
    },
    "values": {
     "lBefore": [
-     31.0,
-     46.7,
-     73.8
+     30.998,
+     46.728,
+     73.845
     ],
     "lAfter": [
      31.0,
@@ -6748,15 +6754,18 @@
   "industrial/ground": {
    "render": {
     "blender": "5.1.2",
-    "seconds": 1.85,
+    "seconds": 1.9,
     "scripts": {
-     "scripts/chikun-blender/build-chikun-scenery.py": "a09806ec29ebdd9608e75ab41aa6e2198bde9a6799f81ca5c881f27f094298f3",
-     "scripts/chikun-blender/chikun_lib/core.py": "472c14614799a5314c24607cb0761515cdb5f11fcf1ac594546ae65a9f417c1e",
+     "scripts/chikun-blender/build-chikun-scenery.py": "313f0a1b8c952eed0ecea86a5db5503a9091f6b204140000138f94c8ebe9e66c",
+     "scripts/chikun-blender/chikun_lib/core.py": "b35b7c0418fe2c660f0d13c4e135406cbabb5a4f236634c95fbcca47503690dc",
      "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
-     "scripts/chikun-blender/chikun_lib/kit.py": "df6f9e3bea4260d48fcd24b7a91104b586068e0341e88da8b2c75467a9dd9d61",
+     "scripts/chikun-blender/chikun_lib/kit.py": "efdf133a0182cf7042347b4c93bdfd212b4909f314aa7a4affec3a88a6a208a1",
      "scripts/chikun-blender/chikun_lib/periodic.py": "c6a8ad7819ed94ff7d37d4879acd778b69583a98358182715f6a4fce85f6d6eb",
-     "scripts/chikun-blender/regions/industrial.py": "f5925b4df34daadf6e732e7894e5977e1ca300f65bd351661ad0eb7a4e738576",
-     "scripts/chikun-blender/scenery-spec.json": "0c9e8e2e82fd602b4214c4c6813e8ead45550386552935e94b84b7edb15d8a21"
+     "scripts/chikun-blender/regions/industrial.py": "ff53472963ff7c6e83405c6efb6428a21f7614c639eb2305af423c9d5338c624",
+     "scripts/chikun-blender/regions/common.py": "8293997d1f999d89679ad28d948a6cec7edef0e8fb03d3af94c69e4f48ba7c9d",
+     "scripts/chikun-blender/regions/groundkit.py": "c35cdeedb1e1e7ab14c340703a74ea23ad98652502bf6ef265b2f5da0dd0d7b5",
+     "scripts/chikun-blender/regions/urbankit.py": "3c139b37cfd27353672389c6f31bafa9de199529a4b3c66d26d584d09999a63c",
+     "scripts/chikun-blender/scenery-spec.json": "e7fd8d7bba6b4e6d99b136785dda63343dbbc9456befbea2a927d223066df84a"
     }
    },
    "bands": 22
@@ -6770,9 +6779,9 @@
    },
    "values": {
     "lBefore": [
-     61.5,
-     77.0,
-     80.5
+     61.532,
+     76.971,
+     80.463
     ],
     "lAfter": [
      61.5,
@@ -6806,9 +6815,9 @@
    },
    "values": {
     "lBefore": [
-     40.5,
-     63.6,
-     91.0
+     40.532,
+     63.632,
+     90.97
     ],
     "lAfter": [
      48.1,
@@ -6816,7 +6825,7 @@
      82.1
     ],
     "chroma": 0.85,
-    "scale": 0.674
+    "scale": 0.67409
    },
    "render": {
     "blender": "5.1.2",
@@ -6842,9 +6851,9 @@
    },
    "values": {
     "lBefore": [
-     27.4,
-     64.9,
-     99.4
+     27.352,
+     64.899,
+     99.351
     ],
     "lAfter": [
      43.0,
@@ -6852,7 +6861,7 @@
      82.0
     ],
     "chroma": 0.95,
-    "scale": 0.583
+    "scale": 0.58334
    },
    "render": {
     "blender": "5.1.2",
@@ -6878,9 +6887,9 @@
    },
    "values": {
     "lBefore": [
-     41.9,
-     59.2,
-     80.5
+     41.937,
+     59.187,
+     80.476
     ],
     "lAfter": [
      41.9,

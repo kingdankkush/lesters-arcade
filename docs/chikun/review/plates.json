@@ -151,15 +151,15 @@
   "noon": [
    {
     "prop": "oak",
-    "contrast": 1.86
+    "contrast": 1.84
    },
    {
     "prop": "rock",
-    "contrast": 1.22
+    "contrast": 1.3
    },
    {
     "prop": "crate",
-    "contrast": 1.03
+    "contrast": 1.09
    },
    {
     "prop": "hawk",
@@ -169,15 +169,15 @@
   "golden": [
    {
     "prop": "oak",
-    "contrast": 1.53
+    "contrast": 1.52
    },
    {
     "prop": "rock",
-    "contrast": 1.32
+    "contrast": 1.39
    },
    {
     "prop": "crate",
-    "contrast": 1.13
+    "contrast": 1.18
    },
    {
     "prop": "hawk",
@@ -187,15 +187,15 @@
   "night": [
    {
     "prop": "oak",
-    "contrast": 1.21
+    "contrast": 1.22
    },
    {
     "prop": "rock",
-    "contrast": 2.44
+    "contrast": 2.52
    },
    {
     "prop": "crate",
-    "contrast": 2.09
+    "contrast": 2.15
    },
    {
     "prop": "hawk",
@@ -205,11 +205,11 @@
   "dawn": [
    {
     "prop": "oak",
-    "contrast": 1.84
+    "contrast": 1.82
    },
    {
     "prop": "rock",
-    "contrast": 1.15
+    "contrast": 1.21
    },
    {
     "prop": "crate",
@@ -225,15 +225,15 @@
   "noon": [
    {
     "prop": "oak",
-    "contrast": 1.51
+    "contrast": 1.5
    },
    {
     "prop": "rock",
-    "contrast": 1.4
+    "contrast": 1.42
    },
    {
     "prop": "crate",
-    "contrast": 1.3
+    "contrast": 1.31
    },
    {
     "prop": "hawk",
@@ -247,11 +247,11 @@
    },
    {
     "prop": "rock",
-    "contrast": 1.49
+    "contrast": 1.51
    },
    {
     "prop": "crate",
-    "contrast": 1.37
+    "contrast": 1.38
    },
    {
     "prop": "hawk",
@@ -265,11 +265,11 @@
    },
    {
     "prop": "rock",
-    "contrast": 2.63
+    "contrast": 2.65
    },
    {
     "prop": "crate",
-    "contrast": 2.36
+    "contrast": 2.37
    },
    {
     "prop": "hawk",
@@ -279,15 +279,15 @@
   "dawn": [
    {
     "prop": "oak",
-    "contrast": 1.62
+    "contrast": 1.61
    },
    {
     "prop": "rock",
-    "contrast": 1.3
+    "contrast": 1.31
    },
    {
     "prop": "crate",
-    "contrast": 1.19
+    "contrast": 1.2
    },
    {
     "prop": "hawk",
@@ -307,7 +307,7 @@
    },
    {
     "prop": "crate",
-    "contrast": 1.22
+    "contrast": 1.21
    },
    {
     "prop": "hawk",
@@ -321,11 +321,11 @@
    },
    {
     "prop": "rock",
-    "contrast": 1.12
+    "contrast": 1.13
    },
    {
     "prop": "crate",
-    "contrast": 1.06
+    "contrast": 1.05
    },
    {
     "prop": "hawk",
@@ -339,11 +339,11 @@
    },
    {
     "prop": "rock",
-    "contrast": 2.15
+    "contrast": 2.16
    },
    {
     "prop": "crate",
-    "contrast": 1.83
+    "contrast": 1.84
    },
    {
     "prop": "hawk",
@@ -361,7 +361,7 @@
    },
    {
     "prop": "crate",
-    "contrast": 1.21
+    "contrast": 1.2
    },
    {
     "prop": "hawk",

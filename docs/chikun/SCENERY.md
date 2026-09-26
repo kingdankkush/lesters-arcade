@@ -95,16 +95,20 @@ python scripts/build-chikun-review-plates.py [--regions farmland]
 |---|---|---|---|---|---|---|
 | farmland | 199 KB | 108 KB | 1.198 M | 26 K | 18.4 MB | 5.4 MB |
 | forest | 207 KB | 107 KB | 1.191 M | 35 K | 18.3 MB | 5.4 MB |
-| town | 340 KB | 243 KB | 1.191 M | 563 K | 20.3 MB | 7.4 MB |
-| city | 475 KB | 379 KB | 1.268 M | 1.071 M | 23.4 MB | 9.7 MB |
-| industrial | 90 KB | 51 KB | 1.191 M | 59 K | 18.4 MB | 5.5 MB |
+| town | 370 KB | 253 KB | 1.191 M | 563 K | 20.3 MB | 7.4 MB |
+| city | 484 KB | 382 KB | 1.268 M | 1.071 M | 23.4 MB | 9.7 MB |
+| industrial | 98 KB | 54 KB | 1.191 M | 59 K | 18.4 MB | 5.5 MB |
 | suburbs | 207 KB | 130 KB | 1.191 M | 208 K | 19.0 MB | 6.1 MB |
 | coast | 74 KB | 45 KB | 1.191 M | 57 K | 18.4 MB | 5.5 MB |
 
-The whole loop is 1.6 MB at t2. Caps enforced by
+The whole loop is 1.64 MB at t2. Caps enforced by
 `tests/chikun-scenery-catalog.test.mjs`: 1.5 MB per region at t2, 0.5 MB at t1,
 1.65 M prescaled logical px and 28 MB decoded at density 2. Two regions are
-resident at most, plus a 1280 x 414 logical offscreen backdrop canvas.
+resident at most, plus a 1280 x 414 logical offscreen backdrop canvas (8.5 MB
+at density 2 in a 16:9 landscape) and about 6.5 MB of sky sprites (the star
+tile, sun disc and moon at full density; glows, light shafts and clouds at low
+resolution, drawn scaled). Steady state at density 2 is therefore roughly
+40 MB of region art plus 15 MB for the sky and the offscreen canvas.
 
 Browser-measured frame times, heap and network bytes belong to the Verify
 phase (not run in this slice; one browser at a time on this machine).
