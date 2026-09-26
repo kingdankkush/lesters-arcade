@@ -23,7 +23,15 @@ export function gameDetailsNode(documentRef,slug,copy=PORTAL_COPY) {
     const ranked=node('section','','game-detail-ranked');ranked.setAttribute('aria-labelledby','gameRanked-'+game.slug);
     const heading=node('h3','Ranked');heading.setAttribute('id','gameRanked-'+game.slug);
     const facts=node('dl','');
-    for(const [label,text] of rows){const row=node('div','');row.append(node('dt',label),node('dd',text));facts.append(row);}
+    for(const [label,text,link] of rows){
+      // A linked row reads "text <a>label</a>", like the prerendered row.
+      const row=node('div',''),value=node('dd',link ? text+' ' : text);
+      if(link){
+        const anchor=node('a',link[0]);anchor.setAttribute('href',link[1]);anchor.setAttribute('target','_blank');anchor.setAttribute('rel','noopener noreferrer');
+        anchor.append(node('span',' (opens in a new tab)','visually-hidden'));value.append(anchor);
+      }
+      row.append(node('dt',label),value);facts.append(row);
+    }
     const guide=node('a',RANKED_GUIDE_LINK_TEXT,'portal-text-link');guide.setAttribute('href',RANKED_FACTS.guidePath);
     ranked.append(heading,facts,guide);section.append(ranked);
   }

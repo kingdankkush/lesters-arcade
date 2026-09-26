@@ -657,3 +657,38 @@ test('the "Free Mode is always free" link closes the modal and starts Free', asy
   await tick();
   assert.equal(modal.order.includes('send'), false);
 });
+
+// ranked-onboarding (2026-09-26): the cost breakdown is the entry contract's
+// quote. When the operator retunes the fee (0.1 -> 0.01 zkLTC), the Entry row
+// follows the quote, not the client constant the pending session carries.
+test('the Entry, Publishing and Total rows show the quote, not the client constant', async () => {
+  const quote = { ...FUNDED.contractGate, entryFeeWei: 10_000_000_000_000_000n, entryTotalWei: 12_000_000_000_000_000n };
+  const modal = liveModal({
+    seedResponses: [freshTicket()],
+    readiness: { ...FUNDED, needWei: 12_500_000_000_000_000n, contractGate: quote },
+    peek: { entryFeeWei: 10_000_000_000_000_000n, entryTotalWei: 12_000_000_000_000_000n, settlementGasReserveWei: 2_000_000_000_000_000n, balanceWei: 10n ** 18n },
+  });
+  // The cached pre-flight answers synchronously; the client constant never shows once a quote exists.
+  assert.deepEqual([modal.dom.rankedEntryFee.textContent, modal.dom.rankedEntryReserve.textContent, modal.dom.rankedEntryTotal.textContent], ['0.01 zkLTC', '0.002 zkLTC', '0.012 zkLTC']);
+  await until(() => approveEnabled(modal), 'the fresh check');
+  assert.deepEqual([modal.dom.rankedEntryFee.textContent, modal.dom.rankedEntryReserve.textContent, modal.dom.rankedEntryTotal.textContent], ['0.01 zkLTC', '0.002 zkLTC', '0.012 zkLTC']);
+  modal.dom.rankedEntryCancel.click();
+  assert.equal(await modal.promise, false);
+
+  // Without a quote yet, the rows show the pending session's fee plus the client reserve.
+  const unquoted = liveModal({ seedResponses: [freshTicket()], readiness: () => new Promise(() => {}) });
+  assert.deepEqual([unquoted.dom.rankedEntryFee.textContent, unquoted.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.102 zkLTC']);
+  unquoted.dom.rankedEntryCancel.click();
+  assert.equal(await unquoted.promise, false);
+});
+
+test('the static modal explains the price, what happens next and links the guide', () => {
+  const html = readFileSync(new URL('../apps/portal/index.html', import.meta.url), 'utf8');
+  const modal = html.match(/<div id="rankedEntryModal"[\s\S]*?(?=<nav\b)/)[0];
+  assert.match(modal, /<span>Entry<\/span><strong id="rankedEntryFee">/);
+  assert.match(modal, /<span>Publishing<small class="ranked-entry-row-note">pays the arcade's relayer to publish your score on LitVM<\/small><\/span><strong id="rankedEntryReserve">/);
+  assert.match(modal, /<span>Where the entry goes<\/span>/);
+  assert.match(modal, /<p id="rankedEntryNextTitle" class="ranked-entry-next-title">What happens next<\/p><!-- copy:entry-next:start --><ol class="ranked-entry-next-list">(?:<li>[^<]+<\/li>){3}<\/ol><!-- copy:entry-next:end -->/);
+  assert.match(modal, /<a id="rankedEntryGuideLink" class="ranked-entry-guide-link" href="\/how-ranked-works" target="_blank" rel="noopener noreferrer">How Ranked works<span class="visually-hidden"> \(opens in a new tab\)<\/span><\/a>/);
+  assert.match(modal, /<a id="rankedEntryFreeLink" class="ranked-entry-free-link" href="\/games">Free Mode is always free<\/a>/);
+});

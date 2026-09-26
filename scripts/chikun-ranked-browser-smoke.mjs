@@ -179,10 +179,10 @@ async function runPreviewSmoke() {
       await page.click('#officialRankedModeButton');
       await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible' });
       entryModal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
-      // The entry modal (signin-entry): eyebrow, the 0.1 + 0.002 = 0.102 zkLTC quote, preview wording.
+      // The entry modal (signin-entry): eyebrow, the entry + publishing = total quote, preview wording.
       assert.match(entryModal, /Ranked · Entry/i);
       assert.match(entryModal, /Entry 0\.1 zkLTC/);
-      assert.match(entryModal, /Settlement reserve/);
+      assert.match(entryModal, /Publishing/);
       assert.match(entryModal, /0\.002 zkLTC/);
       assert.match(entryModal, /Total 0\.102 zkLTC/);
       assert.match(entryModal, /no transaction is sent/i);

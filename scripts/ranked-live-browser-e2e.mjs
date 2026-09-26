@@ -17,7 +17,7 @@
 // 4. per game, in a fresh browser context with the fixture wallet (scripts/lib/fixture-wallet.mjs,
 //    EIP-6963, Hardhat account player1; it answers the site's top frame only and signs no transaction
 //    but ArcadeRankedEntry.openSession for at most the quoted total): Sign in (server nonce, one
-//    signature), open Ranked (the 'Ranked · Entry' modal, its 'Settlement reserve' row and the
+//    signature), open Ranked (the 'Ranked · Entry' modal, its 'Publishing' row and the
 //    0.1 + 0.002 = 0.102 zkLTC quote), confirm the entry after exactly one seed ticket
 //    (POST /api/ranked/seed, A25), play a short run (Chikun: start and let it fall; STACKED: hard drops
 //    to a top-out; HMH: the evidence-safe terminal pilot), then assert:
@@ -765,7 +765,7 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     const modal = await openRankedModal(page, gameId, { timeoutMs: timeouts.stepMs });
     out.modal = modal;
     expect('entry-modal-eyebrow', modal.eyebrow === 'Ranked · Entry', { eyebrow: modal.eyebrow });
-    expect('entry-modal-reserve-label', modal.reserveLabel === 'Settlement reserve', { reserveLabel: modal.reserveLabel });
+    expect('entry-modal-reserve-label', modal.reserveLabel === 'Publishing', { reserveLabel: modal.reserveLabel });
     expect('entry-modal-quote', /0\.102/.test(modal.total ?? '') && /0\.1\b/.test(modal.fee ?? '') && /0\.002/.test(modal.reserve ?? ''), { fee: modal.fee, reserve: modal.reserve, total: modal.total });
     // The launch copy (contract A33): the landing meta and FAQ, the mode select and the entry modal.
     const copyText = [landing.description, landing.faq, modal.rankedTitle, modal.rankedCopy, modal.copy, modal.footnote].join(' \n ');

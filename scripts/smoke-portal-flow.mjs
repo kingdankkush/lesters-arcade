@@ -151,7 +151,7 @@ try {
     'rankedEntryApprove',
     'rankedEntryCancel',
     'rankedEntryReserve',
-    'Settlement reserve',
+    '<span>Publishing<',
     'rankedEntryTotal',
     'rankedEntryFreeLink',
     // Generated public copy blocks (site-copy slice, contract A33).

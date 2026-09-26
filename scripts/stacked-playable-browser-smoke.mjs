@@ -238,7 +238,7 @@ try {
     await page.locator('#officialRankedModeButton').click();
     await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible' });
     const entryModal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
-    for (const expected of [/Ranked · Entry/i, /Entry 0\.1 zkLTC/, /Settlement reserve/, /0\.002 zkLTC/, /Total 0\.102 zkLTC/, /no transaction is sent/i]) assert.match(entryModal, expected);
+    for (const expected of [/Ranked · Entry/i, /Entry 0\.1 zkLTC/, /Publishing/, /0\.002 zkLTC/, /Total 0\.102 zkLTC/, /no transaction is sent/i]) assert.match(entryModal, expected);
     await page.locator('#rankedEntryApprove').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await frame.waitForSelector('#stackedStage[data-assets-ready="true"]', { timeout: 30000 });
