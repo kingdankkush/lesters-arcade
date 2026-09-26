@@ -1,0 +1,2629 @@
+{
+ "schema": "chikun-obstacles-v2",
+ "kits": {
+  "common": {
+   "sprites": {
+    "bird-eagle": {
+     "anchor": "flyer",
+     "kind": "eagle",
+     "x": 2,
+     "y": -43,
+     "w": 111,
+     "h": 74,
+     "frames": 8,
+     "fps": 12,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/bird-eagle.webp",
+       "w": 1804,
+       "h": 148,
+       "bytes": 32210,
+       "sha256": "53e8d62f361f8ed25290725ce5a6f9ba31ef9cd7114298ecae3c7c60de79493e"
+      },
+      "t1": {
+       "src": "common/t1/bird-eagle.webp",
+       "w": 902,
+       "h": 74,
+       "bytes": 15600,
+       "sha256": "eccb86493920cf6474a5dffecae561181ef57683a89693e41bf245801773f2b0"
+      }
+     }
+    },
+    "bird-hawk": {
+     "anchor": "flyer",
+     "kind": "hawk",
+     "x": 2,
+     "y": -43,
+     "w": 111,
+     "h": 74,
+     "frames": 8,
+     "fps": 12,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/bird-hawk.webp",
+       "w": 1804,
+       "h": 148,
+       "bytes": 35584,
+       "sha256": "9cd966bafb007e8440726edcc3e03ed699e4f14c5ee3aca4c3deb782d5a477a7"
+      },
+      "t1": {
+       "src": "common/t1/bird-hawk.webp",
+       "w": 902,
+       "h": 74,
+       "bytes": 16982,
+       "sha256": "3b5f95d5f6d4a8fdfa107e84b3f710f5f63f7822d4103b5de493f499853447fc"
+      }
+     }
+    },
+    "bird-pelican": {
+     "anchor": "flyer",
+     "kind": "pelican",
+     "x": -10,
+     "y": -43,
+     "w": 123,
+     "h": 74,
+     "frames": 8,
+     "fps": 12,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/bird-pelican.webp",
+       "w": 1996,
+       "h": 148,
+       "bytes": 34238,
+       "sha256": "c6a3a37ce3c2f092364f45a0452bc09b81b3e0099bcb67fa1a08a1f595d4acb0"
+      },
+      "t1": {
+       "src": "common/t1/bird-pelican.webp",
+       "w": 998,
+       "h": 74,
+       "bytes": 17588,
+       "sha256": "9b14bc3f50687a610af1a3f519740bb1ba47b432dd6f135516f2b8345eed67b3"
+      }
+     }
+    },
+    "coin": {
+     "anchor": "coin",
+     "kind": "coin",
+     "x": -21,
+     "y": -22,
+     "w": 42,
+     "h": 44,
+     "frames": 12,
+     "fps": 12,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/coin.webp",
+       "w": 1052,
+       "h": 88,
+       "bytes": 15960,
+       "sha256": "a47842de951ce2a28fb6165e25c2e260a71836223e24bde093adf0e0a8db6028"
+      },
+      "t1": {
+       "src": "common/t1/coin.webp",
+       "w": 526,
+       "h": 44,
+       "bytes": 7798,
+       "sha256": "ce93a9f0b3d8d3b50f6adb5136c289657510badc4ee4cec208ceab9615f40291"
+      }
+     }
+    },
+    "crate-boxes": {
+     "anchor": "ground",
+     "kind": "crate",
+     "x": 4,
+     "y": -79,
+     "w": 70,
+     "h": 82,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crate-boxes.webp",
+       "w": 140,
+       "h": 164,
+       "bytes": 2818,
+       "sha256": "03e05cbf3236b2fe689b9bcbcf9f0d48908aed29e169d6b6ce1bb34acd8efebd"
+      },
+      "t1": {
+       "src": "common/t1/crate-boxes.webp",
+       "w": 70,
+       "h": 82,
+       "bytes": 1562,
+       "sha256": "b8ff2401d7cefd29ebf7e57d087b66ea139f89f6e0a0f86c51ab7e555bcabbf0"
+      }
+     }
+    },
+    "crate-steel": {
+     "anchor": "ground",
+     "kind": "crate",
+     "x": 3,
+     "y": -79,
+     "w": 72,
+     "h": 83,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crate-steel.webp",
+       "w": 144,
+       "h": 166,
+       "bytes": 2832,
+       "sha256": "be1f828c270b7c66c02ed0f174ec6810564c5bdae2cf8d604a52e32386a7ab22"
+      },
+      "t1": {
+       "src": "common/t1/crate-steel.webp",
+       "w": 72,
+       "h": 83,
+       "bytes": 1524,
+       "sha256": "1d2fb9d55d1d1759a2100f54a033d1c08c885dd572a929e3ad9b0232825c8a46"
+      }
+     }
+    },
+    "crate-wood": {
+     "anchor": "ground",
+     "kind": "crate",
+     "x": 4,
+     "y": -77,
+     "w": 70,
+     "h": 80,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crate-wood.webp",
+       "w": 140,
+       "h": 160,
+       "bytes": 5554,
+       "sha256": "7173f1f2225f875168b3c7fd64ad53179f793d247f3036c83f1f54bb4d482315"
+      },
+      "t1": {
+       "src": "common/t1/crate-wood.webp",
+       "w": 70,
+       "h": 80,
+       "bytes": 2612,
+       "sha256": "0d7a7e343a7f1ac8872e627e7962eb7c62237b5167876445004036c8ca974337"
+      }
+     }
+    },
+    "crown-cherry": {
+     "anchor": "crown",
+     "kind": "cherry",
+     "x": -3,
+     "y": 3,
+     "w": 160,
+     "h": 149,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crown-cherry.webp",
+       "w": 320,
+       "h": 298,
+       "bytes": 34350,
+       "sha256": "8b59059be84238e1d208eba12615cdbd64ad23175f8c1afb3453731322fa616c"
+      },
+      "t1": {
+       "src": "common/t1/crown-cherry.webp",
+       "w": 160,
+       "h": 149,
+       "bytes": 12024,
+       "sha256": "0b337761c0d2fdc4840baaa2ddf95b38f4e18aceaa9b50b603289ffec2caa099"
+      }
+     }
+    },
+    "crown-maple": {
+     "anchor": "crown",
+     "kind": "maple",
+     "x": -2,
+     "y": 4,
+     "w": 160,
+     "h": 146,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crown-maple.webp",
+       "w": 320,
+       "h": 292,
+       "bytes": 31816,
+       "sha256": "9751934bccc2380d9ec999a70a527e49555fa8c1127887c9fe65fdea85a12a5f"
+      },
+      "t1": {
+       "src": "common/t1/crown-maple.webp",
+       "w": 160,
+       "h": 146,
+       "bytes": 11500,
+       "sha256": "8b1f2fe3eaf9dcf7dbcfddf902254630bdf569b0c13f8dd95c70c3812e2b8c3d"
+      }
+     }
+    },
+    "crown-oak": {
+     "anchor": "crown",
+     "kind": "oak",
+     "x": -4,
+     "y": 3,
+     "w": 163,
+     "h": 147,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crown-oak.webp",
+       "w": 326,
+       "h": 294,
+       "bytes": 29162,
+       "sha256": "ad29fbf4e4535a8b2a902e4dbd980626ee025159763c1ba9b96a51ef661c0807"
+      },
+      "t1": {
+       "src": "common/t1/crown-oak.webp",
+       "w": 163,
+       "h": 147,
+       "bytes": 10398,
+       "sha256": "a24a4aa1909def7bbb609f188ee05789b1fa02c1fec841db105d5b5a1cf2702d"
+      }
+     }
+    },
+    "crown-willow": {
+     "anchor": "crown",
+     "kind": "willow",
+     "x": -3,
+     "y": -9,
+     "w": 189,
+     "h": 172,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/crown-willow.webp",
+       "w": 378,
+       "h": 344,
+       "bytes": 42886,
+       "sha256": "534f755c92f8b85a13021b6f10d59a94bac5fabb6b5204e42b416a0b0c20bc3f"
+      },
+      "t1": {
+       "src": "common/t1/crown-willow.webp",
+       "w": 189,
+       "h": 172,
+       "bytes": 15092,
+       "sha256": "2f4c0ef38162ac5a3d12b934775b93568d9707c42b8ef8318e531f3592f4e9d4"
+      }
+     }
+    },
+    "drone": {
+     "anchor": "flyer",
+     "kind": "drone",
+     "x": 0,
+     "y": -29,
+     "w": 154,
+     "h": 59,
+     "frames": 4,
+     "fps": 24,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/drone.webp",
+       "w": 1244,
+       "h": 118,
+       "bytes": 19150,
+       "sha256": "2e10f97b1c9ea21af105b488c173719d1ed5011ff40d0add3d1986e3c5b7870d"
+      },
+      "t1": {
+       "src": "common/t1/drone.webp",
+       "w": 622,
+       "h": 59,
+       "bytes": 9920,
+       "sha256": "3c8e8ecf48d06d597ec1b5e90d46d7d22ac7627692c5a411ea70a128985d99fa"
+      }
+     },
+     "emit": {
+      "src": "common/t1/drone-emit.webp",
+      "w": 622,
+      "h": 59,
+      "bytes": 964,
+      "sha256": "0fce7aa27ffad32c5cf3a5dde81d4b5b3ded86d35617e43bae3d9285ee4852c3"
+     }
+    },
+    "hurdle-barrels": {
+     "anchor": "ground",
+     "kind": "hurdle",
+     "x": 4,
+     "y": -78,
+     "w": 82,
+     "h": 80,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/hurdle-barrels.webp",
+       "w": 164,
+       "h": 160,
+       "bytes": 6982,
+       "sha256": "a3a6d8085cb8969fad8d025481d557059bafe99f5f7c3c70c356cbd97df52665"
+      },
+      "t1": {
+       "src": "common/t1/hurdle-barrels.webp",
+       "w": 82,
+       "h": 80,
+       "bytes": 3134,
+       "sha256": "3cebc8e29a38b102b508eb6350ad74d333927148757d77adca8463d000dcbcaf"
+      }
+     }
+    },
+    "hurdle-drums": {
+     "anchor": "ground",
+     "kind": "hurdle",
+     "x": 3,
+     "y": -76,
+     "w": 84,
+     "h": 79,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/hurdle-drums.webp",
+       "w": 168,
+       "h": 158,
+       "bytes": 6868,
+       "sha256": "eff1226e8863b1f9909618d3af5bc40a50003119dd822ea8090e586bccd658f6"
+      },
+      "t1": {
+       "src": "common/t1/hurdle-drums.webp",
+       "w": 84,
+       "h": 79,
+       "bytes": 3230,
+       "sha256": "eb435be18d7927ca13219ea8b303f571983f2853bf747f564179501b12002bc0"
+      }
+     }
+    },
+    "hurdle-hay": {
+     "anchor": "ground",
+     "kind": "hurdle",
+     "x": -1,
+     "y": -81,
+     "w": 92,
+     "h": 84,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/hurdle-hay.webp",
+       "w": 184,
+       "h": 168,
+       "bytes": 8768,
+       "sha256": "674e6fc65a926e36f8421a118604f933642a974684c4761e49ff3a02b62fffea"
+      },
+      "t1": {
+       "src": "common/t1/hurdle-hay.webp",
+       "w": 92,
+       "h": 84,
+       "bytes": 3910,
+       "sha256": "2038defe1732329a7c56ea2000107a2619890de00b85dd93d0147a860abcb957"
+      }
+     }
+    },
+    "hurdle-hedge": {
+     "anchor": "ground",
+     "kind": "hurdle",
+     "x": 3,
+     "y": -79,
+     "w": 84,
+     "h": 82,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/hurdle-hedge.webp",
+       "w": 168,
+       "h": 164,
+       "bytes": 10942,
+       "sha256": "11c50068383491efc05fe6f4a42fc3cb2f55e125a682bce8ab449e608a7e94c7"
+      },
+      "t1": {
+       "src": "common/t1/hurdle-hedge.webp",
+       "w": 84,
+       "h": 82,
+       "bytes": 3790,
+       "sha256": "b1781ea39b91995b6195c637e531dc08d202bde5690011d7b2411076326506fe"
+      }
+     }
+    },
+    "hurdle-jersey": {
+     "anchor": "ground",
+     "kind": "hurdle",
+     "x": 4,
+     "y": -78,
+     "w": 82,
+     "h": 81,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/hurdle-jersey.webp",
+       "w": 164,
+       "h": 162,
+       "bytes": 4246,
+       "sha256": "897e7bcc1949d11ae1ff2687a03353a6ec9e406b215ff6099d5ed4753f536611"
+      },
+      "t1": {
+       "src": "common/t1/hurdle-jersey.webp",
+       "w": 82,
+       "h": 81,
+       "bytes": 2128,
+       "sha256": "ae253c63cfcf235619b2b2c953122b09fed0ac07804069665cd772daf0431def"
+      }
+     }
+    },
+    "log-drift": {
+     "anchor": "ground",
+     "kind": "log",
+     "x": -1,
+     "y": -52,
+     "w": 115,
+     "h": 55,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/log-drift.webp",
+       "w": 230,
+       "h": 110,
+       "bytes": 8466,
+       "sha256": "f0f80307b44a68a4856b37b6a85a55086b35b2ad6d59abc5fea889a0dc8cda6c"
+      },
+      "t1": {
+       "src": "common/t1/log-drift.webp",
+       "w": 115,
+       "h": 55,
+       "bytes": 3416,
+       "sha256": "696dce8775c431a096dabad8d6452558c430f7676947c32df9e2957a31923291"
+      }
+     }
+    },
+    "log-mossy": {
+     "anchor": "ground",
+     "kind": "log",
+     "x": -1,
+     "y": -59,
+     "w": 115,
+     "h": 62,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/log-mossy.webp",
+       "w": 230,
+       "h": 124,
+       "bytes": 8710,
+       "sha256": "10ecd02cd3a00ef28ff354d2835330bf54d4a0e771e13b65a6594967e4814fe4"
+      },
+      "t1": {
+       "src": "common/t1/log-mossy.webp",
+       "w": 115,
+       "h": 62,
+       "bytes": 3546,
+       "sha256": "286eb74a17b3488ccb3ccff5cbedd908af7a1ac2a3fbe4c1c7ab4cb78e900867"
+      }
+     }
+    },
+    "log-oak": {
+     "anchor": "ground",
+     "kind": "log",
+     "x": -1,
+     "y": -51,
+     "w": 115,
+     "h": 54,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/log-oak.webp",
+       "w": 230,
+       "h": 108,
+       "bytes": 7714,
+       "sha256": "ab438ad7519316963a609ad6599c8079e0ebe4f927188e2ec7eb0c00f03cf646"
+      },
+      "t1": {
+       "src": "common/t1/log-oak.webp",
+       "w": 115,
+       "h": 54,
+       "bytes": 3000,
+       "sha256": "9d2e9850d749b260efe148a6cb14262fc4ff9aeb340bb5ef720680580a48f8bf"
+      }
+     }
+    },
+    "log-timber": {
+     "anchor": "ground",
+     "kind": "log",
+     "x": 3,
+     "y": -52,
+     "w": 105,
+     "h": 55,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/log-timber.webp",
+       "w": 210,
+       "h": 110,
+       "bytes": 4488,
+       "sha256": "62491889289fec3e8c6be7718a91d59915f67075ff4c3765ab75d18cf70d25a0"
+      },
+      "t1": {
+       "src": "common/t1/log-timber.webp",
+       "w": 105,
+       "h": 55,
+       "bytes": 2252,
+       "sha256": "aaf4743e31042ac83904d764a315df0c2109b2b9f3b2e7790bc5c8a497621de1"
+      }
+     }
+    },
+    "plane": {
+     "anchor": "flyer",
+     "kind": "plane",
+     "x": -6,
+     "y": -35,
+     "w": 243,
+     "h": 67,
+     "frames": 4,
+     "fps": 24,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/plane.webp",
+       "w": 1956,
+       "h": 134,
+       "bytes": 23550,
+       "sha256": "e7a9e496975e9ee75a96050006c2feb74b608e45db86af809e18b6452b83dc17"
+      },
+      "t1": {
+       "src": "common/t1/plane.webp",
+       "w": 978,
+       "h": 67,
+       "bytes": 13236,
+       "sha256": "38bb66296432abc1d79777512816893988706eb1c4fe80eaab492e704c4c1522"
+      }
+     },
+     "emit": {
+      "src": "common/t1/plane-emit.webp",
+      "w": 978,
+      "h": 67,
+      "bytes": 1816,
+      "sha256": "f33624ef8ee392ac49aa8780a80bf2d7da2c9abc9b4d47ab66e9b23e383b4354"
+     }
+    },
+    "rock-coastal": {
+     "anchor": "ground",
+     "kind": "rock",
+     "x": 0,
+     "y": -55,
+     "w": 78,
+     "h": 64,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/rock-coastal.webp",
+       "w": 156,
+       "h": 128,
+       "bytes": 5348,
+       "sha256": "0513cc2520743f2112b0ddd21e83dca86294501cfe70780d2b4c96e713c36df4"
+      },
+      "t1": {
+       "src": "common/t1/rock-coastal.webp",
+       "w": 78,
+       "h": 64,
+       "bytes": 2318,
+       "sha256": "9a6c507a4fc5721d5bc0f12d82edfbbaf601adc0535ba21c8073244b655613d4"
+      }
+     }
+    },
+    "rock-mossy": {
+     "anchor": "ground",
+     "kind": "rock",
+     "x": -2,
+     "y": -54,
+     "w": 85,
+     "h": 63,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/rock-mossy.webp",
+       "w": 170,
+       "h": 126,
+       "bytes": 6218,
+       "sha256": "fd308e877daca99ea46edf3f4e569e637627d327a4b6f54dd525111b77a17cc6"
+      },
+      "t1": {
+       "src": "common/t1/rock-mossy.webp",
+       "w": 85,
+       "h": 63,
+       "bytes": 2690,
+       "sha256": "038c9d5d62e6d1a28e7d541eeb2b8c3b6b7ed69a0050d45e388d36352e7202fe"
+      }
+     }
+    },
+    "shiba": {
+     "anchor": "ground",
+     "kind": "shiba",
+     "x": 4,
+     "y": -74,
+     "w": 109,
+     "h": 79,
+     "frames": 12,
+     "fps": 12,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/shiba.webp",
+       "w": 2660,
+       "h": 158,
+       "bytes": 55994,
+       "sha256": "405a22e00bcc19d1cd0a20cca85bbfc325fc262402f55b2ec06308bd83af8257"
+      },
+      "t1": {
+       "src": "common/t1/shiba.webp",
+       "w": 1330,
+       "h": 79,
+       "bytes": 28726,
+       "sha256": "3cd6d2231f5cca5daa5685cf2a534629dfbb20b67d794a50e425dc466c58340a"
+      }
+     }
+    },
+    "storm": {
+     "anchor": "ceiling",
+     "kind": "storm",
+     "x": -13,
+     "y": -601,
+     "w": 306,
+     "h": 626,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/storm.webp",
+       "w": 612,
+       "h": 1252,
+       "bytes": 63342,
+       "sha256": "01d956bb4ca3451aab7ab5ff06ccf0e22c216ed67d509aca885d8062df17a942"
+      },
+      "t1": {
+       "src": "common/t1/storm.webp",
+       "w": 306,
+       "h": 626,
+       "bytes": 19918,
+       "sha256": "947cdf09dffa95f4d6ed4eb1a7d37eaf82f9ef4910c4ca777eb0401db6cda807"
+      }
+     }
+    },
+    "thorn-bramble": {
+     "anchor": "ground",
+     "kind": "thorn",
+     "x": 2,
+     "y": -71,
+     "w": 96,
+     "h": 73,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/thorn-bramble.webp",
+       "w": 192,
+       "h": 146,
+       "bytes": 13578,
+       "sha256": "705281eaae672ae6030c3c0a568f395ec62956567e5d5dfa95d90df4fd0098fb"
+      },
+      "t1": {
+       "src": "common/t1/thorn-bramble.webp",
+       "w": 96,
+       "h": 73,
+       "bytes": 4958,
+       "sha256": "9d4c7d305afbbeb5a69fc85ed03d9f4cf82cc8fe2d4e8430cb2957a75c59775d"
+      }
+     }
+    },
+    "trunk-cherry": {
+     "anchor": "ground",
+     "kind": "cherry",
+     "x": 33,
+     "y": -337,
+     "w": 89,
+     "h": 346,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/trunk-cherry.webp",
+       "w": 178,
+       "h": 692,
+       "bytes": 15256,
+       "sha256": "dc2790e7617d62901ec3eb09f15244c178b07e433e4d32c2c68a6aba771aba6f"
+      },
+      "t1": {
+       "src": "common/t1/trunk-cherry.webp",
+       "w": 89,
+       "h": 346,
+       "bytes": 6124,
+       "sha256": "df0f57ae87cda613f542a796a88ba82f50a73be3602fce81ec1b56e066b8f2e5"
+      }
+     }
+    },
+    "trunk-maple": {
+     "anchor": "ground",
+     "kind": "maple",
+     "x": 35,
+     "y": -337,
+     "w": 85,
+     "h": 346,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/trunk-maple.webp",
+       "w": 170,
+       "h": 692,
+       "bytes": 15986,
+       "sha256": "7911e29da2f95543b47c5c099b71780f130b6cfcfe27bc75c898b6f7f11425de"
+      },
+      "t1": {
+       "src": "common/t1/trunk-maple.webp",
+       "w": 85,
+       "h": 346,
+       "bytes": 6300,
+       "sha256": "26f36daa48c1716fa4d01d3c250b9379e8107d614f285ce6d8b22385fbd5a586"
+      }
+     }
+    },
+    "trunk-oak": {
+     "anchor": "ground",
+     "kind": "oak",
+     "x": 34,
+     "y": -337,
+     "w": 88,
+     "h": 346,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/trunk-oak.webp",
+       "w": 176,
+       "h": 692,
+       "bytes": 15892,
+       "sha256": "5d77622677a49eb4e7321944fe8c2df8ffa77a4947a7d8ec513b99337823ef6b"
+      },
+      "t1": {
+       "src": "common/t1/trunk-oak.webp",
+       "w": 88,
+       "h": 346,
+       "bytes": 6198,
+       "sha256": "d8e73d049fc6e1d996919962b87aa31d06bc25d6e400ada0b76d53ce42643c8b"
+      }
+     }
+    },
+    "trunk-willow": {
+     "anchor": "ground",
+     "kind": "willow",
+     "x": 49,
+     "y": -337,
+     "w": 87,
+     "h": 346,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "common/t2/trunk-willow.webp",
+       "w": 174,
+       "h": 692,
+       "bytes": 16432,
+       "sha256": "69498d6210ff85fcdbd959e2dc9b7368bc7b6125e4c80c04b9cdd3bafe2c4d1d"
+      },
+      "t1": {
+       "src": "common/t1/trunk-willow.webp",
+       "w": 87,
+       "h": 346,
+       "bytes": 6306,
+       "sha256": "34f4af9a2d545a1c7e1b1e442183b9b6682d6ef9d76a2799056158d3308f67e9"
+      }
+     }
+    }
+   },
+   "bytes": {
+    "t1": 250560,
+    "t2": 588120
+   },
+   "logicalPx": 941760
+  },
+  "farmland": {
+   "sprites": {
+    "pit-soil": {
+     "anchor": "ground",
+     "kind": "pit",
+     "x": -34,
+     "y": -25,
+     "w": 487,
+     "h": 58,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "farmland/t2/pit-soil.webp",
+       "w": 974,
+       "h": 116,
+       "bytes": 23784,
+       "sha256": "e530767495040220b1e6b334ba3b8954ec54ee9a923048f7ddbceeb065a24706"
+      },
+      "t1": {
+       "src": "farmland/t1/pit-soil.webp",
+       "w": 487,
+       "h": 58,
+       "bytes": 9320,
+       "sha256": "b9cda9818f5d08eff30858792f07da639f36cc6ec40ffd4df675a1fae4ad8496"
+      }
+     }
+    }
+   },
+   "bytes": {
+    "t1": 9320,
+    "t2": 23784
+   },
+   "logicalPx": 28246
+  },
+  "forest": {
+   "sprites": {
+    "canopy-forest": {
+     "anchor": "ceiling",
+     "kind": "canopy",
+     "x": -11,
+     "y": -601,
+     "w": 352,
+     "h": 614,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/canopy-forest.webp",
+       "w": 704,
+       "h": 1228,
+       "bytes": 170224,
+       "sha256": "b80732d496ad70b2dd87e58dd3abc01ace9673328101e4b343224dd162d64331"
+      },
+      "t1": {
+       "src": "forest/t1/canopy-forest.webp",
+       "w": 352,
+       "h": 614,
+       "bytes": 59694,
+       "sha256": "849eece4e5d8c1a7346dc2fa069b801f172515007d68f4b6742fadb407d9e8db"
+      }
+     }
+    },
+    "forest-base": {
+     "anchor": "ground",
+     "kind": "forest",
+     "x": -11,
+     "y": -41,
+     "w": 139,
+     "h": 45,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/forest-base.webp",
+       "w": 278,
+       "h": 90,
+       "bytes": 6706,
+       "sha256": "91cab797c7764d72d5ad7476bdf3e06c85d532acb5244d0263dfa391ec79a7e8"
+      },
+      "t1": {
+       "src": "forest/t1/forest-base.webp",
+       "w": 139,
+       "h": 45,
+       "bytes": 2484,
+       "sha256": "81d95e11295b855cbfe2a7d47fd37d7c38c8c975ad88b814e410deb98bdabb5a"
+      }
+     }
+    },
+    "forest-column-a": {
+     "anchor": "top",
+     "kind": "forest",
+     "x": -11,
+     "y": -11,
+     "w": 139,
+     "h": 412,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/forest-column-a.webp",
+       "w": 278,
+       "h": 824,
+       "bytes": 58696,
+       "sha256": "f1ff29bff5e56ed880e0597bf18e3e6d25b08f35e271cb060dba23b4350439b0"
+      },
+      "t1": {
+       "src": "forest/t1/forest-column-a.webp",
+       "w": 139,
+       "h": 412,
+       "bytes": 20736,
+       "sha256": "0a9557b6ad7852a1ca255d5fd36625a135aab3e24743888603ca757d1ea84aee"
+      }
+     }
+    },
+    "forest-column-b": {
+     "anchor": "top",
+     "kind": "forest",
+     "x": -11,
+     "y": -10,
+     "w": 139,
+     "h": 411,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/forest-column-b.webp",
+       "w": 278,
+       "h": 822,
+       "bytes": 58702,
+       "sha256": "daa266c4d7ab20a0c22b717f7df8db8b13d7323b2164010e6df32296586cbf6a"
+      },
+      "t1": {
+       "src": "forest/t1/forest-column-b.webp",
+       "w": 139,
+       "h": 411,
+       "bytes": 21294,
+       "sha256": "db734d207dbb42f616bac3980b978707366a216ae3e4fa27b0712a570da4d9d2"
+      }
+     }
+    },
+    "pit-loam": {
+     "anchor": "ground",
+     "kind": "pit",
+     "x": -34,
+     "y": -25,
+     "w": 487,
+     "h": 58,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/pit-loam.webp",
+       "w": 974,
+       "h": 116,
+       "bytes": 21090,
+       "sha256": "cb8cada727fe313a7b05c014b6e56a7b172662353de6f30353c9ee5b188e60ae"
+      },
+      "t1": {
+       "src": "forest/t1/pit-loam.webp",
+       "w": 487,
+       "h": 58,
+       "bytes": 8094,
+       "sha256": "c1fd3ad4ef39d3fcd168f0aabe88865dc1c4234f1868377f656d5c8ce57ccc92"
+      }
+     }
+    },
+    "waterfall-mossy": {
+     "anchor": "ground",
+     "kind": "waterfall",
+     "x": -37,
+     "y": -186,
+     "w": 594,
+     "h": 217,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/waterfall-mossy.webp",
+       "w": 1188,
+       "h": 434,
+       "bytes": 61268,
+       "sha256": "f9d7cc8e46082495af8e4bd4c9ebebd2b963d8d87e04425c8de9451ce94b057b"
+      },
+      "t1": {
+       "src": "forest/t1/waterfall-mossy.webp",
+       "w": 594,
+       "h": 217,
+       "bytes": 20920,
+       "sha256": "b4c8f04118c2fd9079938ccc90b98dd2b9b68e9942fc26b618ebc0efccca64d6"
+      }
+     }
+    },
+    "waterfall-sheet-mossy": {
+     "anchor": "sheet",
+     "kind": "waterfall",
+     "x": 0,
+     "y": 0,
+     "w": 240,
+     "h": 64,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "forest/t2/waterfall-sheet-mossy.webp",
+       "w": 480,
+       "h": 128,
+       "bytes": 24038,
+       "sha256": "e34b8487530456f06c6549734b3ef785a022a7e1091fa767bc482b27a6b61850"
+      },
+      "t1": {
+       "src": "forest/t1/waterfall-sheet-mossy.webp",
+       "w": 240,
+       "h": 64,
+       "bytes": 7204,
+       "sha256": "5d160b32683df4b8ea0ec7f78e09cb83f5d1e8e51a9fbbb35a8f182ce83a5953"
+      }
+     }
+    }
+   },
+   "bytes": {
+    "t1": 140426,
+    "t2": 400724
+   },
+   "logicalPx": 509284
+  },
+  "town": {
+   "sprites": {
+    "cap-town-stone": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -6,
+     "y": -15,
+     "w": 162,
+     "h": 68,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "town/t2/cap-town-stone.webp",
+       "w": 324,
+       "h": 136,
+       "bytes": 6166,
+       "sha256": "f01a798f95af5930bfd0ce63a031e5fa78ace65fa32c0d5ff1b6cae80cdc616e"
+      },
+      "t1": {
+       "src": "town/t1/cap-town-stone.webp",
+       "w": 162,
+       "h": 68,
+       "bytes": 3158,
+       "sha256": "7927e10d3e025177f0e1eb01e85fe9bb382f8e6c8f7c2988980a2b9e8126d836"
+      }
+     }
+    },
+    "cap-town-terracotta": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -15,
+     "w": 160,
+     "h": 68,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "town/t2/cap-town-terracotta.webp",
+       "w": 320,
+       "h": 136,
+       "bytes": 5190,
+       "sha256": "ff52c630f7f2f9f84048c324ab35aef5706c0c1336c2cc77f0198f23db7e9275"
+      },
+      "t1": {
+       "src": "town/t1/cap-town-terracotta.webp",
+       "w": 160,
+       "h": 68,
+       "bytes": 2392,
+       "sha256": "cdb6df460dfc207c2ec298d08695ce6e611161e794091a1a11c2f0d2645d86dd"
+      }
+     },
+     "emit": {
+      "src": "town/t1/cap-town-terracotta-emit.webp",
+      "w": 160,
+      "h": 68,
+      "bytes": 358,
+      "sha256": "5fb4529f93b7f4685b931276ae0c2f3d3ba94916fb681b9a0fb576b134584ca0"
+     }
+    },
+    "cap-town-timber": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -15,
+     "w": 160,
+     "h": 68,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "town/t2/cap-town-timber.webp",
+       "w": 320,
+       "h": 136,
+       "bytes": 3814,
+       "sha256": "f223d37cee3a138414fe81bb062090585dce602542428a73c21357457edc6d9d"
+      },
+      "t1": {
+       "src": "town/t1/cap-town-timber.webp",
+       "w": 160,
+       "h": 68,
+       "bytes": 1848,
+       "sha256": "e0c66fa693aec9abf12fd89362b2f79bded2f66ca654946f944300f1d3121ebc"
+      }
+     },
+     "emit": {
+      "src": "town/t1/cap-town-timber-emit.webp",
+      "w": 160,
+      "h": 68,
+      "bytes": 358,
+      "sha256": "5fb4529f93b7f4685b931276ae0c2f3d3ba94916fb681b9a0fb576b134584ca0"
+     }
+    },
+    "facade-town-stone": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 355,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "town/t2/facade-town-stone.webp",
+       "w": 316,
+       "h": 710,
+       "bytes": 29874,
+       "sha256": "206ae7e24baf18da4692df47404bf5988575751c98a44868b132cf9af0a56633"
+      },
+      "t1": {
+       "src": "town/t1/facade-town-stone.webp",
+       "w": 158,
+       "h": 355,
+       "bytes": 14904,
+       "sha256": "330678ddf65b88e580d0e5a8d7ba8cddd8fcec2b4fe9818fe6e9f486f9d426b1"
+      }
+     },
+     "emit": {
+      "src": "town/t1/facade-town-stone-emit.webp",
+      "w": 158,
+      "h": 355,
+      "bytes": 7968,
+      "sha256": "79a5e03cd7af70cd4e7ea08f5350e9065767c1b8577f0a457d059f512f089cb5"
+     }
+    },
+    "facade-town-terracotta": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 355,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "town/t2/facade-town-terracotta.webp",
+       "w": 316,
+       "h": 710,
+       "bytes": 28672,
+       "sha256": "73981fa3f17d8bb19f9eda69b5ae6aad80659a4a024b24afe194c17321308513"
+      },
+      "t1": {
+       "src": "town/t1/facade-town-terracotta.webp",
+       "w": 158,
+       "h": 355,
+       "bytes": 13834,
+       "sha256": "92ba25d83e386b20af6654725491083dcf492f9661d657880690b74a9ce28403"
+      }
+     },
+     "emit": {
+      "src": "town/t1/facade-town-terracotta-emit.webp",
+      "w": 158,
+      "h": 355,
+      "bytes": 5578,
+      "sha256": "7593f2a02f1b0c5ad91dd3dbe80bd382102e40b32082b3f6b11e3e2cdad448bf"
+     }
+    },
+    "facade-town-timber": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 355,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "town/t2/facade-town-timber.webp",
+       "w": 316,
+       "h": 710,
+       "bytes": 29042,
+       "sha256": "63f8241cade8f7d8a65ff11a457ec825abfa525bbad0116a69d7bea212f5e189"
+      },
+      "t1": {
+       "src": "town/t1/facade-town-timber.webp",
+       "w": 158,
+       "h": 355,
+       "bytes": 14274,
+       "sha256": "b6ac90e58f69c4882549477fede62cdc157961a3bba3c3935b820fff31cd2fce"
+      }
+     },
+     "emit": {
+      "src": "town/t1/facade-town-timber-emit.webp",
+      "w": 158,
+      "h": 355,
+      "bytes": 2864,
+      "sha256": "6fa56d3ec44c2298a1acbb306aea6fb8033803bad20e0c237c974a6af2705d2e"
+     }
+    }
+   },
+   "bytes": {
+    "t1": 67536,
+    "t2": 119884
+   },
+   "logicalPx": 201046
+  },
+  "city": {
+   "sprites": {
+    "canopy-scaffold": {
+     "anchor": "ceiling",
+     "kind": "canopy",
+     "x": -8,
+     "y": -601,
+     "w": 346,
+     "h": 617,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/canopy-scaffold.webp",
+       "w": 692,
+       "h": 1234,
+       "bytes": 68140,
+       "sha256": "a93332472a7b04d50f52a22d27477c6914799036c5b16ba621dfc2002cb44b79"
+      },
+      "t1": {
+       "src": "city/t1/canopy-scaffold.webp",
+       "w": 346,
+       "h": 617,
+       "bytes": 33368,
+       "sha256": "7ddd1b5b6dfd19da5d0d2caef4b561238230a79e82bdb2a8f1066c0aff260b43"
+      }
+     }
+    },
+    "cap-city-brick": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -12,
+     "w": 160,
+     "h": 65,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/cap-city-brick.webp",
+       "w": 320,
+       "h": 130,
+       "bytes": 14204,
+       "sha256": "0d69ccadb53841fc0feead8301cdfa893d6c972e1360a8726b8690d6adcc4a6d"
+      },
+      "t1": {
+       "src": "city/t1/cap-city-brick.webp",
+       "w": 160,
+       "h": 65,
+       "bytes": 4002,
+       "sha256": "dd04c6176ae108c7a1a32cdddd4067d2649631c7e293d10a3170b09900f6fd1a"
+      }
+     }
+    },
+    "cap-city-concrete": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -12,
+     "w": 160,
+     "h": 65,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/cap-city-concrete.webp",
+       "w": 320,
+       "h": 130,
+       "bytes": 3524,
+       "sha256": "310236cf492d6bda34d72a656e2b6fe1208ff1a0a907585bdd25b03ffe5d033e"
+      },
+      "t1": {
+       "src": "city/t1/cap-city-concrete.webp",
+       "w": 160,
+       "h": 65,
+       "bytes": 1870,
+       "sha256": "2b6fbbc8f59f93daf0a2736bd157c5a70ae6bae7e487f0c83b70a4ab7efea77f"
+      }
+     }
+    },
+    "cap-city-glass": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -13,
+     "w": 160,
+     "h": 66,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/cap-city-glass.webp",
+       "w": 320,
+       "h": 132,
+       "bytes": 3334,
+       "sha256": "727f54849a61e53b4297661ed102a5f124877412521f179e0459be5e267d5514"
+      },
+      "t1": {
+       "src": "city/t1/cap-city-glass.webp",
+       "w": 160,
+       "h": 66,
+       "bytes": 1758,
+       "sha256": "dd3d203a2258972cdd19225dbbe2346d2a5ff1e6d2919ec62e52f94885defe82"
+      }
+     }
+    },
+    "facade-city-brick": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 355,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/facade-city-brick.webp",
+       "w": 316,
+       "h": 710,
+       "bytes": 51112,
+       "sha256": "81231fef7c1b22d5fdcc05fce7962646df870c07fd086b0a263522e149f2458d"
+      },
+      "t1": {
+       "src": "city/t1/facade-city-brick.webp",
+       "w": 158,
+       "h": 355,
+       "bytes": 16816,
+       "sha256": "2d7b95e9fbf46a8dfbafdd9b6edbc3a8158fde62e82820d0a898f951c96ea3dd"
+      }
+     },
+     "emit": {
+      "src": "city/t1/facade-city-brick-emit.webp",
+      "w": 158,
+      "h": 355,
+      "bytes": 7142,
+      "sha256": "e94f96be00de96463e6a1edc193b3aa88ab2f8d81b025cfdb94bb593f442a45a"
+     }
+    },
+    "facade-city-concrete": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 355,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/facade-city-concrete.webp",
+       "w": 316,
+       "h": 710,
+       "bytes": 15100,
+       "sha256": "fbf1a537d3534c75d65fdc19e9f09ec344e00ba2b990525029989b9d018870a5"
+      },
+      "t1": {
+       "src": "city/t1/facade-city-concrete.webp",
+       "w": 158,
+       "h": 355,
+       "bytes": 7488,
+       "sha256": "44ddea50b69688c93f970b2b415bfc66a1f61c52b8fac4f2ff6ec441812a1641"
+      }
+     },
+     "emit": {
+      "src": "city/t1/facade-city-concrete-emit.webp",
+      "w": 158,
+      "h": 355,
+      "bytes": 2292,
+      "sha256": "56e698c525418076e3d7fab675c047ed6c0aeb7255d50d8561f771dfa9c2db54"
+     }
+    },
+    "facade-city-glass": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 357,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/facade-city-glass.webp",
+       "w": 316,
+       "h": 714,
+       "bytes": 18946,
+       "sha256": "afe8796143f6f69b4ed1b86b8364d32ce317720ac47ce873f2f87c4644bbf696"
+      },
+      "t1": {
+       "src": "city/t1/facade-city-glass.webp",
+       "w": 158,
+       "h": 357,
+       "bytes": 9928,
+       "sha256": "f5f16a39c073658d184ca6a68f555c02092a1af93b3e1479fdfd8c5eb9bb2e7c"
+      }
+     },
+     "emit": {
+      "src": "city/t1/facade-city-glass-emit.webp",
+      "w": 158,
+      "h": 357,
+      "bytes": 2194,
+      "sha256": "f8b93022ac72711e07fef55716c69ed6e12255eaac541e076979243c540c37b4"
+     }
+    },
+    "pipe-green": {
+     "anchor": "ground",
+     "kind": "pipe",
+     "x": -5,
+     "y": -241,
+     "w": 105,
+     "h": 244,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/pipe-green.webp",
+       "w": 210,
+       "h": 488,
+       "bytes": 13660,
+       "sha256": "d92042a66ec2821c4e092bccc2f895cd3746e7dfaa35991a90e7765c2a7f439e"
+      },
+      "t1": {
+       "src": "city/t1/pipe-green.webp",
+       "w": 105,
+       "h": 244,
+       "bytes": 5786,
+       "sha256": "426c139f0b57a174b584b4199bc9a0462ed59560613f4b1f526798de8230b003"
+      }
+     }
+    },
+    "pipe-green-cap": {
+     "anchor": "top",
+     "kind": "pipe",
+     "x": -2,
+     "y": -3,
+     "w": 99,
+     "h": 38,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "city/t2/pipe-green-cap.webp",
+       "w": 198,
+       "h": 76,
+       "bytes": 2690,
+       "sha256": "86afc5dfbc5b244a7c312d31a0c324115c63c803c188f4a090eb03a3f5264c1d"
+      },
+      "t1": {
+       "src": "city/t1/pipe-green-cap.webp",
+       "w": 99,
+       "h": 38,
+       "bytes": 1548,
+       "sha256": "ac02cda53f00989095aeec94562318c965bde931826d06083ffe23dd1bb46cef"
+      }
+     }
+    }
+   },
+   "bytes": {
+    "t1": 94192,
+    "t2": 202338
+   },
+   "logicalPx": 442810
+  },
+  "industrial": {
+   "sprites": {
+    "canopy-rack": {
+     "anchor": "ceiling",
+     "kind": "canopy",
+     "x": -11,
+     "y": -601,
+     "w": 352,
+     "h": 618,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "industrial/t2/canopy-rack.webp",
+       "w": 704,
+       "h": 1236,
+       "bytes": 55778,
+       "sha256": "cb2e3df27ba7ddddb55dac12dfeb9fb7df5eb596d46d73746b2237932a52a15d"
+      },
+      "t1": {
+       "src": "industrial/t1/canopy-rack.webp",
+       "w": 352,
+       "h": 618,
+       "bytes": 25258,
+       "sha256": "13deb89fdeea16ad4c3ce7f6660bc25eb66a2613a95fd54bb2d6e4f58f1f2cbb"
+      }
+     },
+     "emit": {
+      "src": "industrial/t1/canopy-rack-emit.webp",
+      "w": 352,
+      "h": 618,
+      "bytes": 1138,
+      "sha256": "37d62543693a228f14259d21bfab697b9becb8ee6553e7be41cc6474e2d9bb7d"
+     }
+    },
+    "pipe-rust": {
+     "anchor": "ground",
+     "kind": "pipe",
+     "x": -5,
+     "y": -241,
+     "w": 105,
+     "h": 244,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "industrial/t2/pipe-rust.webp",
+       "w": 210,
+       "h": 488,
+       "bytes": 18140,
+       "sha256": "8f159e5687727f91e93ff6203e3032bf51d294e6c9718d671b6624bb506e6eeb"
+      },
+      "t1": {
+       "src": "industrial/t1/pipe-rust.webp",
+       "w": 105,
+       "h": 244,
+       "bytes": 7608,
+       "sha256": "23726f55b53e48e1b08437a40c36061897e51fb884842b87a7c3bbc431c9350b"
+      }
+     }
+    },
+    "pipe-rust-cap": {
+     "anchor": "top",
+     "kind": "pipe",
+     "x": -2,
+     "y": -3,
+     "w": 99,
+     "h": 38,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "industrial/t2/pipe-rust-cap.webp",
+       "w": 198,
+       "h": 76,
+       "bytes": 2886,
+       "sha256": "e0ee07ffeb0c4adae3ef2843ea59f941f82f7c38fdcd765a3518c21254a89699"
+      },
+      "t1": {
+       "src": "industrial/t1/pipe-rust-cap.webp",
+       "w": 99,
+       "h": 38,
+       "bytes": 1696,
+       "sha256": "14eaa981a8101036068ab7280d7d6b2f6bf7d89b520786a7743539111db18cdf"
+      }
+     }
+    },
+    "pit-concrete": {
+     "anchor": "ground",
+     "kind": "pit",
+     "x": -22,
+     "y": -22,
+     "w": 464,
+     "h": 55,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "industrial/t2/pit-concrete.webp",
+       "w": 928,
+       "h": 110,
+       "bytes": 15118,
+       "sha256": "35f55d44367b049b5d4f7f12a618dca8abb95abfe1aa088813e2fe9fa0cf9af9"
+      },
+      "t1": {
+       "src": "industrial/t1/pit-concrete.webp",
+       "w": 464,
+       "h": 55,
+       "bytes": 6480,
+       "sha256": "9440f2dd662cb607487497674eedf037e4cc12d9d705400fdef9eaeb6028a90b"
+      }
+     }
+    }
+   },
+   "bytes": {
+    "t1": 42180,
+    "t2": 93060
+   },
+   "logicalPx": 272438
+  },
+  "suburbs": {
+   "sprites": {
+    "cap-suburb-blush": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -4,
+     "w": 160,
+     "h": 57,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "suburbs/t2/cap-suburb-blush.webp",
+       "w": 320,
+       "h": 114,
+       "bytes": 13858,
+       "sha256": "03cc393d9905614ccb34bcabe7d39c1b39b487346323f95ee4c635c981874fe8"
+      },
+      "t1": {
+       "src": "suburbs/t1/cap-suburb-blush.webp",
+       "w": 160,
+       "h": 57,
+       "bytes": 3712,
+       "sha256": "76dd984ab12c6116c2e483bafee1a373b62b50cdff06b50256b09b3ae6650f18"
+      }
+     }
+    },
+    "cap-suburb-butter": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -4,
+     "w": 160,
+     "h": 57,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "suburbs/t2/cap-suburb-butter.webp",
+       "w": 320,
+       "h": 114,
+       "bytes": 3260,
+       "sha256": "e4172a8d8cf429259ffecf07c242b70645c9baab2c5ccd408d995ed1bff9a276"
+      },
+      "t1": {
+       "src": "suburbs/t1/cap-suburb-butter.webp",
+       "w": 160,
+       "h": 57,
+       "bytes": 1960,
+       "sha256": "38e25408bfd0ab0afa6ee1a33143d5f4569fac5988b4f626ab34c0e8963396d5"
+      }
+     }
+    },
+    "cap-suburb-mint": {
+     "anchor": "top",
+     "kind": "town",
+     "x": -5,
+     "y": -15,
+     "w": 160,
+     "h": 68,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "suburbs/t2/cap-suburb-mint.webp",
+       "w": 320,
+       "h": 136,
+       "bytes": 4116,
+       "sha256": "f5a2b1d56742427765bc896ae98f06b295720d44b36128a22c97860de595d8ca"
+      },
+      "t1": {
+       "src": "suburbs/t1/cap-suburb-mint.webp",
+       "w": 160,
+       "h": 68,
+       "bytes": 2068,
+       "sha256": "0ac0ad1ec237b34a945681ecb7aaa2bba49f96c7f7fd0ad94d8e2c8963bdbd82"
+      }
+     }
+    },
+    "facade-suburb-blush": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 355,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "suburbs/t2/facade-suburb-blush.webp",
+       "w": 316,
+       "h": 710,
+       "bytes": 49368,
+       "sha256": "5869383ce9b118a8c576f73e254f709669352b605d77d682b692ecfba0cf6bf3"
+      },
+      "t1": {
+       "src": "suburbs/t1/facade-suburb-blush.webp",
+       "w": 158,
+       "h": 355,
+       "bytes": 15060,
+       "sha256": "a4d81bad4cbc6e1c55f24785113c10c69852a4a7e02fa53c4afb6e488404190b"
+      }
+     },
+     "emit": {
+      "src": "suburbs/t1/facade-suburb-blush-emit.webp",
+      "w": 158,
+      "h": 355,
+      "bytes": 3358,
+      "sha256": "9ff693141d15842995ffeab1b5a79050a6485586ca86e48b63cb16e3c9748076"
+     }
+    },
+    "facade-suburb-butter": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 359,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "suburbs/t2/facade-suburb-butter.webp",
+       "w": 316,
+       "h": 718,
+       "bytes": 19350,
+       "sha256": "e1f864eb7575801c556e52fd313b04d7fc3b2ae00b2c19a29a9ea947c1978a97"
+      },
+      "t1": {
+       "src": "suburbs/t1/facade-suburb-butter.webp",
+       "w": 158,
+       "h": 359,
+       "bytes": 9578,
+       "sha256": "2f24d8ebe4dc2b14254450d588c41d12cdf8e4a8db6016be62645d0ebaa82e70"
+      }
+     },
+     "emit": {
+      "src": "suburbs/t1/facade-suburb-butter-emit.webp",
+      "w": 158,
+      "h": 359,
+      "bytes": 3146,
+      "sha256": "427176699bf82d443bcf40864964ce3e127458f094f1087e6c72305672af1bb8"
+     }
+    },
+    "facade-suburb-mint": {
+     "anchor": "ground",
+     "kind": "town",
+     "x": -4,
+     "y": -353,
+     "w": 158,
+     "h": 359,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "suburbs/t2/facade-suburb-mint.webp",
+       "w": 316,
+       "h": 718,
+       "bytes": 20540,
+       "sha256": "4e547bec28764dd68154e12686e5f6f7427b65efc43ab03805d8dcfb311b6c1d"
+      },
+      "t1": {
+       "src": "suburbs/t1/facade-suburb-mint.webp",
+       "w": 158,
+       "h": 359,
+       "bytes": 10388,
+       "sha256": "163a69ad396b2e00d613c82944d9727f49b1f9d87c841154d5aba162593d7bfa"
+      }
+     },
+     "emit": {
+      "src": "suburbs/t1/facade-suburb-mint-emit.webp",
+      "w": 158,
+      "h": 359,
+      "bytes": 4146,
+      "sha256": "4eb6b294461d57b2603725dbb5a5af6a5e02d0b963e58d33531cf6906192899f"
+     }
+    }
+   },
+   "bytes": {
+    "t1": 53416,
+    "t2": 121142
+   },
+   "logicalPx": 198654
+  },
+  "coast": {
+   "sprites": {
+    "pit-tidal": {
+     "anchor": "ground",
+     "kind": "pit",
+     "x": -17,
+     "y": -22,
+     "w": 454,
+     "h": 55,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "coast/t2/pit-tidal.webp",
+       "w": 908,
+       "h": 110,
+       "bytes": 18928,
+       "sha256": "b92c3cba1d2a7dce2887add9acc721e774d379e41c188a4bc810a3ee29c00c81"
+      },
+      "t1": {
+       "src": "coast/t1/pit-tidal.webp",
+       "w": 454,
+       "h": 55,
+       "bytes": 7388,
+       "sha256": "ad56247a2a8c1f2135eb372c212aaf08a81a4623d8ee5d812c4f37c8381ae4a3"
+      }
+     }
+    },
+    "waterfall-basalt": {
+     "anchor": "ground",
+     "kind": "waterfall",
+     "x": -37,
+     "y": -186,
+     "w": 594,
+     "h": 217,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "coast/t2/waterfall-basalt.webp",
+       "w": 1188,
+       "h": 434,
+       "bytes": 53196,
+       "sha256": "4995c23e12a2831bc27516fe11e546b13cb2d42f81c6fe7b9a38c8eb052f95cd"
+      },
+      "t1": {
+       "src": "coast/t1/waterfall-basalt.webp",
+       "w": 594,
+       "h": 217,
+       "bytes": 18904,
+       "sha256": "e9bf2153671fcb72d342d4279718b6375f36e78c71529ac9c30a3f4b071a3f31"
+      }
+     }
+    },
+    "waterfall-sheet-basalt": {
+     "anchor": "sheet",
+     "kind": "waterfall",
+     "x": 0,
+     "y": 0,
+     "w": 240,
+     "h": 64,
+     "frames": 1,
+     "fps": 0,
+     "gap": 2,
+     "tiers": {
+      "t2": {
+       "src": "coast/t2/waterfall-sheet-basalt.webp",
+       "w": 480,
+       "h": 128,
+       "bytes": 24040,
+       "sha256": "7c2ae43008bfc817b3736e6dfd7b91e94ad59d5f1ff654c8f6f2df8e6987a8ae"
+      },
+      "t1": {
+       "src": "coast/t1/waterfall-sheet-basalt.webp",
+       "w": 240,
+       "h": 64,
+       "bytes": 7204,
+       "sha256": "5d160b32683df4b8ea0ec7f78e09cb83f5d1e8e51a9fbbb35a8f182ce83a5953"
+      }
+     }
+    }
+   },
+   "bytes": {
+    "t1": 33496,
+    "t2": 96164
+   },
+   "logicalPx": 169228
+  }
+ },
+ "receipts": {
+  "bird-eagle": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.6,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "bird-hawk": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.74,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "bird-pelican": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.75,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "coin": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 5.9,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crate-boxes": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.69,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crate-steel": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.73,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crate-wood": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.03,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crown-cherry": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.26,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crown-maple": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.42,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crown-oak": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.13,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "crown-willow": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.33,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "drone": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.04,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "hurdle-barrels": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.71,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "hurdle-drums": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.7,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "hurdle-hay": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.66,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "hurdle-hedge": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.77,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "hurdle-jersey": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.72,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "log-drift": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.64,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "log-mossy": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.66,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "log-oak": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.65,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "log-timber": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.66,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "plane": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.48,
+   "contour": true,
+   "note": "shallower 7 degree pitch: a high wing seen from 19 degrees would hide the cabin",
+   "scriptSet": 0
+  },
+  "rock-coastal": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.62,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "rock-mossy": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.64,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "shiba": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 7.64,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "storm": {
+   "blender": "5.1.2",
+   "samples": 128,
+   "device": "GPU",
+   "renderSeconds": 31.7,
+   "contour": false,
+   "note": "",
+   "scriptSet": 0
+  },
+  "thorn-bramble": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.9,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "trunk-cherry": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.84,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "trunk-maple": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.82,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "trunk-oak": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.81,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "trunk-willow": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.91,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pit-soil": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.93,
+   "contour": false,
+   "note": "",
+   "scriptSet": 0
+  },
+  "canopy-forest": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 15.07,
+   "contour": true,
+   "note": "",
+   "scriptSet": 1
+  },
+  "forest-base": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.69,
+   "contour": false,
+   "note": "",
+   "scriptSet": 0
+  },
+  "forest-column-a": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.89,
+   "contour": false,
+   "note": "",
+   "scriptSet": 1
+  },
+  "forest-column-b": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.75,
+   "contour": false,
+   "note": "",
+   "scriptSet": 1
+  },
+  "pit-loam": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.91,
+   "contour": false,
+   "note": "",
+   "scriptSet": 0
+  },
+  "waterfall-mossy": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.43,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "waterfall-sheet-mossy": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.84,
+   "contour": false,
+   "note": "vertically periodic (64 px): scrolled over the curtain by the runtime",
+   "scriptSet": 0
+  },
+  "cap-town-stone": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.16,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-town-terracotta": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.9,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-town-timber": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.94,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-town-stone": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.9,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-town-terracotta": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.57,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-town-timber": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 3.31,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "canopy-scaffold": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 7.76,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-city-brick": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.13,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-city-concrete": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.14,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-city-glass": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.57,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-city-brick": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.49,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-city-concrete": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.12,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-city-glass": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.32,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pipe-green": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.84,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pipe-green-cap": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.56,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "canopy-rack": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 5.53,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pipe-rust": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.81,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pipe-rust-cap": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.54,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pit-concrete": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 0.99,
+   "contour": false,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-suburb-blush": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.06,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-suburb-butter": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.09,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "cap-suburb-mint": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.15,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-suburb-blush": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.07,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-suburb-butter": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.11,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "facade-suburb-mint": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 2.14,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "pit-tidal": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.25,
+   "contour": false,
+   "note": "",
+   "scriptSet": 0
+  },
+  "waterfall-basalt": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 4.47,
+   "contour": true,
+   "note": "",
+   "scriptSet": 0
+  },
+  "waterfall-sheet-basalt": {
+   "blender": "5.1.2",
+   "samples": 96,
+   "device": "GPU",
+   "renderSeconds": 1.16,
+   "contour": false,
+   "note": "vertically periodic (64 px): scrolled over the curtain by the runtime",
+   "scriptSet": 0
+  }
+ },
+ "scriptSets": [
+  {
+   "scripts/chikun-blender/build-chikun-obstacles.py": "36927d0381fe09a16f6e382b6c92d4c92cb4b7d5b38622c9062b622c764689d8",
+   "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
+   "scripts/chikun-blender/obstacles/__init__.py": "39fe21ead70642da40fe6e1da1d28adc6dc2fd59cca67590242928d867b90181",
+   "scripts/chikun-blender/obstacles/creatures.py": "e59b155d4b53a645c9dff7852f1aab56f04bbad9b0ff40ca1c89b3ee0d1fd64f",
+   "scripts/chikun-blender/obstacles/fit.py": "f8362d06339beadfa87a78eb39dd449680fe012e2313ecb79e9d3b81c12e8552",
+   "scripts/chikun-blender/obstacles/geo.py": "f7c7dbba21642bcfaf5cde8fe7c6394623b28562a7d9fa5a7c4d79384ef419f6",
+   "scripts/chikun-blender/obstacles/machines.py": "3e9899d678a519e24dd68216ecef33d2c40209bb90a1a8080ad1fdd8d0f7e887",
+   "scripts/chikun-blender/obstacles/mats.py": "5778053f4b746291a288b5c45ee163927bd1b8df520020eff0a8dd1193a538b0",
+   "scripts/chikun-blender/obstacles/props.py": "2f552345ff949a08c950df5c474dfda0192a56dd4ac13ad8046f90025d1ff55e",
+   "scripts/chikun-blender/obstacles/registry.py": "34419da108eb641c4d6be7c9b5cef97dfbfe322a3fbe39a20933b39fb972b6d0",
+   "scripts/chikun-blender/obstacles/rig.py": "d78aa96b5ed2fdf12de4a2735bdabf4787357406c7c52ad3464b4d644c20e3d7",
+   "scripts/chikun-blender/obstacles/structures.py": "fc2a8d57ab75a39c8a37d63ac5ede9d077fa234d20205ab17c69cb7bc9dc9b66",
+   "scripts/chikun-blender/obstacles/terrain.py": "94b6cf9db3407811a34e0751dbce6c490dfeee2f5114ae8427e7ca5b65bd673f",
+   "scripts/chikun-blender/obstacles/trees.py": "b47852b749764e5974c702ca8cd757ea63117d12eff96b760d7d26078ef74d6d"
+  },
+  {
+   "scripts/chikun-blender/build-chikun-obstacles.py": "36927d0381fe09a16f6e382b6c92d4c92cb4b7d5b38622c9062b622c764689d8",
+   "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
+   "scripts/chikun-blender/obstacles/__init__.py": "39fe21ead70642da40fe6e1da1d28adc6dc2fd59cca67590242928d867b90181",
+   "scripts/chikun-blender/obstacles/creatures.py": "e59b155d4b53a645c9dff7852f1aab56f04bbad9b0ff40ca1c89b3ee0d1fd64f",
+   "scripts/chikun-blender/obstacles/fit.py": "f8362d06339beadfa87a78eb39dd449680fe012e2313ecb79e9d3b81c12e8552",
+   "scripts/chikun-blender/obstacles/geo.py": "f7c7dbba21642bcfaf5cde8fe7c6394623b28562a7d9fa5a7c4d79384ef419f6",
+   "scripts/chikun-blender/obstacles/machines.py": "3e9899d678a519e24dd68216ecef33d2c40209bb90a1a8080ad1fdd8d0f7e887",
+   "scripts/chikun-blender/obstacles/mats.py": "5778053f4b746291a288b5c45ee163927bd1b8df520020eff0a8dd1193a538b0",
+   "scripts/chikun-blender/obstacles/props.py": "2f552345ff949a08c950df5c474dfda0192a56dd4ac13ad8046f90025d1ff55e",
+   "scripts/chikun-blender/obstacles/registry.py": "34419da108eb641c4d6be7c9b5cef97dfbfe322a3fbe39a20933b39fb972b6d0",
+   "scripts/chikun-blender/obstacles/rig.py": "d78aa96b5ed2fdf12de4a2735bdabf4787357406c7c52ad3464b4d644c20e3d7",
+   "scripts/chikun-blender/obstacles/structures.py": "103bf8a827131779fbd745a6322003686ba65703da9fd0a703a6f63ce705b9f8",
+   "scripts/chikun-blender/obstacles/terrain.py": "94b6cf9db3407811a34e0751dbce6c490dfeee2f5114ae8427e7ca5b65bd673f",
+   "scripts/chikun-blender/obstacles/trees.py": "5f41b2c2a053387bb8175158d272f842fddbdf742add6aa84bc50b71d74166e6"
+  }
+ ],
+ "tool": {
+  "script": "scripts/build-chikun-obstacle-pack.py",
+  "sha256": "9a1695ce9d2e5cf3fd5ecb9720b1c26cb07eabad6fa06f17abb3ffeac6b2d9ab",
+  "pillow": "12.2.0",
+  "numpy": "2.5.1"
+ }
+}

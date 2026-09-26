@@ -3,13 +3,26 @@ import {sceneBus} from './scene-bus.mjs';
 import {readDeviceFrame,blitPeriodic} from './device-blit.mjs';
 import {seamX} from './parallax.mjs';
 import {rgba} from './light-rig.mjs';
+import {prefetchObstacleArt,scheduleObstacleArt,drawObstacleArt,drawCoinArt,drawLowPassageHint,drawStormWeather,obstacleArt} from './obstacle-art.mjs';
 const TAU=Math.PI*2;
+// Obstacles draw from the rendered v2 kits (obstacle-art.mjs). The 1.8.2
+// sprites (chikun-ground-props-v1) are only the fallback: they download when a
+// v2 kit fails, never alongside it.
 const propNames=['willow','cherry','maple','oak','rock','log','crate','hurdle','thorn','shiba','hawk','eagle','pelican','plane'];
 const art=new Map();
-export function loadGroundArt(){
- if(typeof Image==='undefined')return Promise.resolve();
+let legacyRequested=false;
+function loadLegacyArt(){
+ if(legacyRequested||typeof Image==='undefined')return Promise.resolve();
+ legacyRequested=true;
  return Promise.allSettled(propNames.filter(n=>!art.has(n)).map(async name=>{const img=new Image();img.src='/assets/generated/chikun-ground-props-v1/'+name+'.webp';try{await img.decode();art.set(name,img);}catch{}}));
 }
+// main.mjs calls this at boot: start the common and first-region obstacle kits.
+export function loadGroundArt(){
+ try{prefetchObstacleArt();}catch{}
+ return Promise.resolve();
+}
+function debugFlag(name){try{return typeof location!=='undefined'&&Boolean(new URLSearchParams(location.search).get('chikunDebug')?.split(',').includes(name));}catch{return false;}}
+const debugHitbox=debugFlag('hitbox');
 // Terrain strips per region (RGB so the blend between regions costs nothing).
 const colors={
  grass:[[87,108,50],[141,165,75],[66,53,34]],loam:[[96,82,52],[140,120,76],[58,44,30]],cobble:[[122,116,104],[168,160,144],[70,66,60]],
@@ -77,6 +90,8 @@ export function drawGround(ctx,snapshot,{reduced=false,view=null}={}){
  const bus=sceneBus,v=view??bus.view,distance=snapshot.distancePixels??0,tick=snapshot.tick??0,state=courseRegionState(tick,regionScratch);
  collectGaps(snapshot.forks,v);
  const frame=readDeviceFrame(ctx,v,frameScratch);frame.viewLeft=v.left;
+ // Obstacle kits follow the scenery clock (never the obstacle list).
+ try{scheduleObstacleArt(tick,frame.density);}catch{}
  const sameFrame=Boolean(bus.tick===tick&&bus.region&&bus.transition&&bus.view===v);
  const t=sameFrame?bus.transition:null,loader=sameFrame?bus.art:null;
  const faceOf=index=>loader?.layer(CHIKUN_REGIONS[index].id,'front')??null;
@@ -119,13 +134,36 @@ export function drawGround(ctx,snapshot,{reduced=false,view=null}={}){
  for(const coin of snapshot.groundCoins??[])if(!coin.collected)drawGroundCoin(ctx,coin,snapshot.tick,reduced);
 }
 export function drawGroundCoin(ctx,c,tick=0,reduced=false){
+ if(drawCoinArt(ctx,c,tick,reduced))return;
  ctx.save();ctx.translate(c.x,c.y);ctx.scale(reduced?1:.86+.14*Math.cos(tick*.07+c.x*.01),1);ctx.fillStyle='#d8e4e2';ctx.strokeStyle='#7caaa8';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,c.radius,0,TAU);ctx.fill();ctx.stroke();ctx.fillStyle='#35656b';ctx.font=`800 ${c.radius*1.35}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Ł',0,1);ctx.restore();
 }
 function shapeFallback(ctx,o){
  ctx.fillStyle=o.family==='tree'?'#507642':'#a59572';ctx.strokeStyle=ctx.fillStyle;
  for(const s of o.shapes){if(s.type==='rect')ctx.fillRect(s.x,s.y,s.width,s.height);else if(s.type==='circle'){ctx.beginPath();ctx.arc(s.x,s.y,s.radius,0,TAU);ctx.fill();}else{ctx.lineWidth=s.radius*2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(s.ax,s.ay);ctx.lineTo(s.bx,s.by);ctx.stroke();}}ctx.lineCap='butt';
 }
+// Collision outlines for the Verify phase (?chikunDebug=hitbox), never in Ranked.
+function drawHitbox(ctx,o){
+ ctx.save();ctx.strokeStyle='rgba(255,40,80,.95)';ctx.lineWidth=1.5;
+ for(const s of o.shapes){ctx.beginPath();if(s.type==='rect')ctx.rect(s.x,s.y,s.width,s.height);else if(s.type==='circle')ctx.arc(s.x,s.y,s.radius,0,TAU);else{const dx=s.bx-s.ax,dy=s.by-s.ay,a=Math.atan2(dy,dx);ctx.arc(s.ax,s.ay,s.radius,a+Math.PI/2,a+Math.PI*1.5);ctx.arc(s.bx,s.by,s.radius,a-Math.PI/2,a+Math.PI/2);ctx.closePath();}ctx.stroke();}
+ ctx.restore();
+}
 export function drawGroundObstacle(ctx,o,tick=0,reduced=false){
+ // Nothing is drawn for an obstacle outside the view (main draws every fork).
+ const v=sceneBus.view;
+ if(o.x-48>=v.left+v.width||o.x+o.width+48<=v.left)return;
+ if(drawObstacleArt(ctx,o,tick,reduced)){
+  drawStormWeather(ctx,o,tick,reduced);
+  drawLowPassageHint(ctx,o,tick,reduced);
+  if(!o.coin.collected)drawGroundCoin(ctx,o.coin,tick,reduced);
+  if(debugHitbox&&sceneBus.mode!=='ranked')drawHitbox(ctx,o);
+  return;
+ }
+ if(!legacyRequested&&obstacleArt().failedAny())loadLegacyArt();
+ drawLegacyObstacle(ctx,o,tick,reduced);
+ if(debugHitbox&&sceneBus.mode!=='ranked')drawHitbox(ctx,o);
+}
+// The 1.8.2 code-drawn obstacles: the fallback while a kit loads or if it fails.
+function drawLegacyObstacle(ctx,o,tick=0,reduced=false){
  const img=art.get(o.variant),x=o.x,w=o.width;
  if(o.family==='forest'){
   const varieties=['oak','maple','willow','cherry'];

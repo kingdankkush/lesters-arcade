@@ -23,6 +23,7 @@ import { readDeviceFrame } from './device-blit.mjs';
 import { createArtLoader } from './art-loader.mjs';
 import { createParallax, createTransition, transitionState, BACKDROP_TOP, BACKDROP_BOTTOM } from './parallax.mjs';
 import { createAtmosphere, timeOfDayLabel } from './atmosphere.mjs';
+import { obstacleArt } from './obstacle-art.mjs';
 
 export { chikunSkyState, REGION_LAYERS, paintRegionLayer };
 const TAU = Math.PI * 2;
@@ -123,7 +124,7 @@ export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanva
       const course = reduced ? 0 : (snapshot?.distancePixels ?? tick * 2.4);
       const distance = course + (!reduced && tick === 0 ? idleTime * 40 : 0);
       bus.frame++;
-      bus.view = view; bus.tick = tick; bus.time = time; bus.distance = distance; bus.seamDistance = course; bus.reduced = reduced; bus.region = state; bus.art = art;
+      bus.view = view; bus.tick = tick; bus.time = time; bus.distance = distance; bus.seamDistance = course; bus.reduced = reduced; bus.region = state; bus.art = art; bus.mode = mode;
       readDeviceFrame(ctx, view, bus);
       if (reduced) { bus.shakeX = 0; bus.shakeY = 0; }
       bus.tier = art.tier(bus.density);
@@ -154,7 +155,7 @@ export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanva
       }
       atmosphere.drawOverlay(ctx, bus, updateTitle(mode));
       ctx.restore();
-      if (debugArt && typeof window !== 'undefined') window.__chikunArtStats = { ...art.stats(), tier: bus.tier, density: bus.density, parallax: { ...parallax.stats } };
+      if (debugArt && typeof window !== 'undefined') window.__chikunArtStats = { ...art.stats(), tier: bus.tier, density: bus.density, parallax: { ...parallax.stats }, obstacles: obstacleArt().stats() };
     },
     regionState() { return state; },
     // Renderer counters (painter rebuilds, blits, band fills, depth groups).

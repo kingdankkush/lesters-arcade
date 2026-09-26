@@ -1,0 +1,1911 @@
+{
+ "schema": "chikun-obstacle-templates-v1",
+ "generatedBy": "scripts/build-chikun-hitbox-templates.mjs",
+ "groundY": 690,
+ "kinds": {
+  "rock": {
+   "family": "ground",
+   "route": "choice",
+   "width": 76,
+   "anchor": "ground",
+   "height": {
+    "min": 50,
+    "max": 50
+   },
+   "shapesAtMin": [
+    {
+     "type": "circle",
+     "x": 38,
+     "y": 670,
+     "radius": 32
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "circle",
+     "x": 38,
+     "y": 670,
+     "radius": 32
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 50,
+     "shapes": [
+      {
+       "type": "circle",
+       "x": 38,
+       "y": 670,
+       "radius": 32
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 50,
+     "shapes": [
+      {
+       "type": "circle",
+       "x": 38,
+       "y": 670,
+       "radius": 32
+      }
+     ]
+    }
+   ]
+  },
+  "log": {
+   "family": "ground",
+   "route": "choice",
+   "width": 112,
+   "anchor": "ground",
+   "height": {
+    "min": 48,
+    "max": 48
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 642,
+     "width": 98,
+     "height": 48
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 642,
+     "width": 98,
+     "height": 48
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 48,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 642,
+       "width": 98,
+       "height": 48
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 48,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 642,
+       "width": 98,
+       "height": 48
+      }
+     ]
+    }
+   ]
+  },
+  "thorn": {
+   "family": "ground",
+   "route": "choice",
+   "width": 100,
+   "anchor": "ground",
+   "height": {
+    "min": 64,
+    "max": 64
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 626,
+     "width": 86,
+     "height": 64
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 626,
+     "width": 86,
+     "height": 64
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 64,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 626,
+       "width": 86,
+       "height": 64
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 64,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 626,
+       "width": 86,
+       "height": 64
+      }
+     ]
+    }
+   ]
+  },
+  "hurdle": {
+   "family": "ground",
+   "route": "choice",
+   "width": 90,
+   "anchor": "ground",
+   "height": {
+    "min": 76,
+    "max": 76
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 614,
+     "width": 76,
+     "height": 76
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 614,
+     "width": 76,
+     "height": 76
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 76,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 614,
+       "width": 76,
+       "height": 76
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 76,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 614,
+       "width": 76,
+       "height": 76
+      }
+     ]
+    }
+   ]
+  },
+  "crate": {
+   "family": "ground",
+   "route": "choice",
+   "width": 78,
+   "anchor": "ground",
+   "height": {
+    "min": 76,
+    "max": 76
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 614,
+     "width": 64,
+     "height": 76
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 614,
+     "width": 64,
+     "height": 76
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 76,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 614,
+       "width": 64,
+       "height": 76
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 76,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 614,
+       "width": 64,
+       "height": 76
+      }
+     ]
+    }
+   ]
+  },
+  "shiba": {
+   "family": "ground",
+   "route": "choice",
+   "width": 110,
+   "anchor": "ground",
+   "height": {
+    "min": 65,
+    "max": 65
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 625,
+     "width": 96,
+     "height": 65
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 7,
+     "y": 625,
+     "width": 96,
+     "height": 65
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 65,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 625,
+       "width": 96,
+       "height": 65
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 65,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 7,
+       "y": 625,
+       "width": 96,
+       "height": 65
+      }
+     ]
+    }
+   ]
+  },
+  "pit": {
+   "family": "gap",
+   "route": "flight",
+   "width": 420,
+   "anchor": "ground",
+   "height": {
+    "min": 36,
+    "max": 36
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 697,
+     "width": 420,
+     "height": 200
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 697,
+     "width": 420,
+     "height": 200
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 36,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 697,
+       "width": 420,
+       "height": 200
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 36,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 697,
+       "width": 420,
+       "height": 200
+      }
+     ]
+    }
+   ]
+  },
+  "waterfall": {
+   "family": "gap",
+   "route": "flight",
+   "width": 520,
+   "anchor": "ground",
+   "height": {
+    "min": 180,
+    "max": 180
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 697,
+     "width": 520,
+     "height": 200
+    },
+    {
+     "type": "rect",
+     "x": 24,
+     "y": 510,
+     "width": 472,
+     "height": 380
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 697,
+     "width": 520,
+     "height": 200
+    },
+    {
+     "type": "rect",
+     "x": 24,
+     "y": 510,
+     "width": 472,
+     "height": 380
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 180,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 697,
+       "width": 520,
+       "height": 200
+      },
+      {
+       "type": "rect",
+       "x": 24,
+       "y": 510,
+       "width": 472,
+       "height": 380
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 180,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 697,
+       "width": 520,
+       "height": 200
+      },
+      {
+       "type": "rect",
+       "x": 24,
+       "y": 510,
+       "width": 472,
+       "height": 380
+      }
+     ]
+    }
+   ]
+  },
+  "willow": {
+   "family": "tree",
+   "route": "flight",
+   "width": 185,
+   "anchor": "ground",
+   "height": {
+    "min": 200,
+    "max": 415
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 92.5,
+     "ay": 690,
+     "bx": 92.5,
+     "by": 538.008,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 92.5,
+     "y": 551.008,
+     "radius": 74
+    },
+    {
+     "type": "circle",
+     "x": 51.8,
+     "y": 584.008,
+     "radius": 49.95
+    },
+    {
+     "type": "circle",
+     "x": 135.05,
+     "y": 589.008,
+     "radius": 48.1
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 92.5,
+     "ay": 690,
+     "bx": 92.5,
+     "by": 494.024,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 92.5,
+     "y": 507.024,
+     "radius": 74
+    },
+    {
+     "type": "circle",
+     "x": 51.8,
+     "y": 540.024,
+     "radius": 49.95
+    },
+    {
+     "type": "circle",
+     "x": 135.05,
+     "y": 545.024,
+     "radius": 48.1
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 206.992,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 92.5,
+       "ay": 690,
+       "bx": 92.5,
+       "by": 538.008,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 92.5,
+       "y": 551.008,
+       "radius": 74
+      },
+      {
+       "type": "circle",
+       "x": 51.8,
+       "y": 584.008,
+       "radius": 49.95
+      },
+      {
+       "type": "circle",
+       "x": 135.05,
+       "y": 589.008,
+       "radius": 48.1
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 250.976,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 92.5,
+       "ay": 690,
+       "bx": 92.5,
+       "by": 494.024,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 92.5,
+       "y": 507.024,
+       "radius": 74
+      },
+      {
+       "type": "circle",
+       "x": 51.8,
+       "y": 540.024,
+       "radius": 49.95
+      },
+      {
+       "type": "circle",
+       "x": 135.05,
+       "y": 545.024,
+       "radius": 48.1
+      }
+     ]
+    }
+   ]
+  },
+  "cherry": {
+   "family": "tree",
+   "route": "flight",
+   "width": 155,
+   "anchor": "ground",
+   "height": {
+    "min": 200,
+    "max": 415
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 77.5,
+     "ay": 690,
+     "bx": 77.5,
+     "by": 538.008,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 77.5,
+     "y": 551.008,
+     "radius": 62
+    },
+    {
+     "type": "circle",
+     "x": 43.4,
+     "y": 584.008,
+     "radius": 41.85
+    },
+    {
+     "type": "circle",
+     "x": 113.15,
+     "y": 589.008,
+     "radius": 40.3
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 77.5,
+     "ay": 690,
+     "bx": 77.5,
+     "by": 494.024,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 77.5,
+     "y": 507.024,
+     "radius": 62
+    },
+    {
+     "type": "circle",
+     "x": 43.4,
+     "y": 540.024,
+     "radius": 41.85
+    },
+    {
+     "type": "circle",
+     "x": 113.15,
+     "y": 545.024,
+     "radius": 40.3
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 206.992,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 77.5,
+       "ay": 690,
+       "bx": 77.5,
+       "by": 538.008,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 77.5,
+       "y": 551.008,
+       "radius": 62
+      },
+      {
+       "type": "circle",
+       "x": 43.4,
+       "y": 584.008,
+       "radius": 41.85
+      },
+      {
+       "type": "circle",
+       "x": 113.15,
+       "y": 589.008,
+       "radius": 40.3
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 250.976,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 77.5,
+       "ay": 690,
+       "bx": 77.5,
+       "by": 494.024,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 77.5,
+       "y": 507.024,
+       "radius": 62
+      },
+      {
+       "type": "circle",
+       "x": 43.4,
+       "y": 540.024,
+       "radius": 41.85
+      },
+      {
+       "type": "circle",
+       "x": 113.15,
+       "y": 545.024,
+       "radius": 40.3
+      }
+     ]
+    }
+   ]
+  },
+  "maple": {
+   "family": "tree",
+   "route": "flight",
+   "width": 155,
+   "anchor": "ground",
+   "height": {
+    "min": 200,
+    "max": 415
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 77.5,
+     "ay": 690,
+     "bx": 77.5,
+     "by": 538.008,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 77.5,
+     "y": 551.008,
+     "radius": 62
+    },
+    {
+     "type": "circle",
+     "x": 43.4,
+     "y": 584.008,
+     "radius": 41.85
+    },
+    {
+     "type": "circle",
+     "x": 113.15,
+     "y": 589.008,
+     "radius": 40.3
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 77.5,
+     "ay": 690,
+     "bx": 77.5,
+     "by": 494.024,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 77.5,
+     "y": 507.024,
+     "radius": 62
+    },
+    {
+     "type": "circle",
+     "x": 43.4,
+     "y": 540.024,
+     "radius": 41.85
+    },
+    {
+     "type": "circle",
+     "x": 113.15,
+     "y": 545.024,
+     "radius": 40.3
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 206.992,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 77.5,
+       "ay": 690,
+       "bx": 77.5,
+       "by": 538.008,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 77.5,
+       "y": 551.008,
+       "radius": 62
+      },
+      {
+       "type": "circle",
+       "x": 43.4,
+       "y": 584.008,
+       "radius": 41.85
+      },
+      {
+       "type": "circle",
+       "x": 113.15,
+       "y": 589.008,
+       "radius": 40.3
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 250.976,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 77.5,
+       "ay": 690,
+       "bx": 77.5,
+       "by": 494.024,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 77.5,
+       "y": 507.024,
+       "radius": 62
+      },
+      {
+       "type": "circle",
+       "x": 43.4,
+       "y": 540.024,
+       "radius": 41.85
+      },
+      {
+       "type": "circle",
+       "x": 113.15,
+       "y": 545.024,
+       "radius": 40.3
+      }
+     ]
+    }
+   ]
+  },
+  "oak": {
+   "family": "tree",
+   "route": "flight",
+   "width": 155,
+   "anchor": "ground",
+   "height": {
+    "min": 200,
+    "max": 415
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 77.5,
+     "ay": 690,
+     "bx": 77.5,
+     "by": 538.008,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 77.5,
+     "y": 551.008,
+     "radius": 62
+    },
+    {
+     "type": "circle",
+     "x": 43.4,
+     "y": 584.008,
+     "radius": 41.85
+    },
+    {
+     "type": "circle",
+     "x": 113.15,
+     "y": 589.008,
+     "radius": 40.3
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 77.5,
+     "ay": 690,
+     "bx": 77.5,
+     "by": 494.024,
+     "radius": 12
+    },
+    {
+     "type": "circle",
+     "x": 77.5,
+     "y": 507.024,
+     "radius": 62
+    },
+    {
+     "type": "circle",
+     "x": 43.4,
+     "y": 540.024,
+     "radius": 41.85
+    },
+    {
+     "type": "circle",
+     "x": 113.15,
+     "y": 545.024,
+     "radius": 40.3
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 206.992,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 77.5,
+       "ay": 690,
+       "bx": 77.5,
+       "by": 538.008,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 77.5,
+       "y": 551.008,
+       "radius": 62
+      },
+      {
+       "type": "circle",
+       "x": 43.4,
+       "y": 584.008,
+       "radius": 41.85
+      },
+      {
+       "type": "circle",
+       "x": 113.15,
+       "y": 589.008,
+       "radius": 40.3
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 250.976,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 77.5,
+       "ay": 690,
+       "bx": 77.5,
+       "by": 494.024,
+       "radius": 12
+      },
+      {
+       "type": "circle",
+       "x": 77.5,
+       "y": 507.024,
+       "radius": 62
+      },
+      {
+       "type": "circle",
+       "x": 43.4,
+       "y": 540.024,
+       "radius": 41.85
+      },
+      {
+       "type": "circle",
+       "x": 113.15,
+       "y": 545.024,
+       "radius": 40.3
+      }
+     ]
+    }
+   ]
+  },
+  "drone": {
+   "family": "sky",
+   "route": "choice",
+   "width": 154,
+   "anchor": "flyer",
+   "height": {
+    "min": 38,
+    "max": 38
+   },
+   "y": {
+    "min": 328.072,
+    "max": 421.93
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 134,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 134,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 134,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 134,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    }
+   ]
+  },
+  "hawk": {
+   "family": "sky",
+   "route": "choice",
+   "width": 110,
+   "anchor": "flyer",
+   "height": {
+    "min": 38,
+    "max": 38
+   },
+   "y": {
+    "min": 398.072,
+    "max": 491.93
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 90,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 90,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 90,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 90,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    }
+   ]
+  },
+  "eagle": {
+   "family": "sky",
+   "route": "choice",
+   "width": 110,
+   "anchor": "flyer",
+   "height": {
+    "min": 38,
+    "max": 38
+   },
+   "y": {
+    "min": 398.072,
+    "max": 491.93
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 90,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 90,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 90,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 90,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    }
+   ]
+  },
+  "pelican": {
+   "family": "sky",
+   "route": "choice",
+   "width": 110,
+   "anchor": "flyer",
+   "height": {
+    "min": 38,
+    "max": 38
+   },
+   "y": {
+    "min": 398.072,
+    "max": 491.93
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 90,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 90,
+     "by": 0,
+     "radius": 19
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 90,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 38,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 90,
+       "by": 0,
+       "radius": 19
+      }
+     ]
+    }
+   ]
+  },
+  "plane": {
+   "family": "sky",
+   "route": "choice",
+   "width": 235,
+   "anchor": "flyer",
+   "height": {
+    "min": 45,
+    "max": 45
+   },
+   "y": {
+    "min": 88.051,
+    "max": 161.949
+   },
+   "shapesAtMin": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 215,
+     "by": 0,
+     "radius": 22.5
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "capsule",
+     "ax": 20,
+     "ay": 0,
+     "bx": 215,
+     "by": 0,
+     "radius": 22.5
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 45,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 215,
+       "by": 0,
+       "radius": 22.5
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 45,
+     "shapes": [
+      {
+       "type": "capsule",
+       "ax": 20,
+       "ay": 0,
+       "bx": 215,
+       "by": 0,
+       "radius": 22.5
+      }
+     ]
+    }
+   ]
+  },
+  "storm": {
+   "family": "sky",
+   "route": "ground",
+   "width": 280,
+   "anchor": "ceiling",
+   "height": {
+    "min": 440,
+    "max": 580
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 280,
+     "height": 440
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 280,
+     "height": 580
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 440,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 0,
+       "width": 280,
+       "height": 440
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 580,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 0,
+       "width": 280,
+       "height": 580
+      }
+     ]
+    }
+   ]
+  },
+  "pipe": {
+   "family": "ground",
+   "route": "flight",
+   "width": 95,
+   "anchor": "ground",
+   "height": {
+    "min": 120,
+    "max": 230
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 565.921,
+     "width": 95,
+     "height": 124.079
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 542.012,
+     "width": 95,
+     "height": 147.988
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 124.079,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 565.921,
+       "width": 95,
+       "height": 124.079
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 147.988,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 542.012,
+       "width": 95,
+       "height": 147.988
+      }
+     ]
+    }
+   ]
+  },
+  "forest": {
+   "family": "forest",
+   "route": "flight",
+   "width": 470,
+   "anchor": "ground",
+   "height": {
+    "min": 250,
+    "max": 375
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 437.669,
+     "width": 117.5,
+     "height": 252.331
+    },
+    {
+     "type": "rect",
+     "x": 117.5,
+     "y": 475.669,
+     "width": 117.5,
+     "height": 214.331
+    },
+    {
+     "type": "rect",
+     "x": 235,
+     "y": 437.669,
+     "width": 117.5,
+     "height": 252.331
+    },
+    {
+     "type": "rect",
+     "x": 352.5,
+     "y": 475.669,
+     "width": 117.5,
+     "height": 214.331
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 374.231,
+     "width": 117.5,
+     "height": 315.769
+    },
+    {
+     "type": "rect",
+     "x": 117.5,
+     "y": 412.231,
+     "width": 117.5,
+     "height": 277.769
+    },
+    {
+     "type": "rect",
+     "x": 235,
+     "y": 374.231,
+     "width": 117.5,
+     "height": 315.769
+    },
+    {
+     "type": "rect",
+     "x": 352.5,
+     "y": 412.231,
+     "width": 117.5,
+     "height": 277.769
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 252.331,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 437.669,
+       "width": 117.5,
+       "height": 252.331
+      },
+      {
+       "type": "rect",
+       "x": 117.5,
+       "y": 475.669,
+       "width": 117.5,
+       "height": 214.331
+      },
+      {
+       "type": "rect",
+       "x": 235,
+       "y": 437.669,
+       "width": 117.5,
+       "height": 252.331
+      },
+      {
+       "type": "rect",
+       "x": 352.5,
+       "y": 475.669,
+       "width": 117.5,
+       "height": 214.331
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 315.769,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 374.231,
+       "width": 117.5,
+       "height": 315.769
+      },
+      {
+       "type": "rect",
+       "x": 117.5,
+       "y": 412.231,
+       "width": 117.5,
+       "height": 277.769
+      },
+      {
+       "type": "rect",
+       "x": 235,
+       "y": 374.231,
+       "width": 117.5,
+       "height": 315.769
+      },
+      {
+       "type": "rect",
+       "x": 352.5,
+       "y": 412.231,
+       "width": 117.5,
+       "height": 277.769
+      }
+     ]
+    }
+   ]
+  },
+  "town": {
+   "family": "town",
+   "route": "flight",
+   "width": 450,
+   "anchor": "ground",
+   "height": {
+    "min": 220,
+    "max": 340
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 467.669,
+     "width": 150,
+     "height": 222.331
+    },
+    {
+     "type": "rect",
+     "x": 150,
+     "y": 505.669,
+     "width": 150,
+     "height": 184.331
+    },
+    {
+     "type": "rect",
+     "x": 300,
+     "y": 467.669,
+     "width": 150,
+     "height": 222.331
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 413.787,
+     "width": 150,
+     "height": 276.213
+    },
+    {
+     "type": "rect",
+     "x": 150,
+     "y": 451.787,
+     "width": 150,
+     "height": 238.213
+    },
+    {
+     "type": "rect",
+     "x": 300,
+     "y": 413.787,
+     "width": 150,
+     "height": 276.213
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 222.331,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 467.669,
+       "width": 150,
+       "height": 222.331
+      },
+      {
+       "type": "rect",
+       "x": 150,
+       "y": 505.669,
+       "width": 150,
+       "height": 184.331
+      },
+      {
+       "type": "rect",
+       "x": 300,
+       "y": 467.669,
+       "width": 150,
+       "height": 222.331
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 276.213,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 413.787,
+       "width": 150,
+       "height": 276.213
+      },
+      {
+       "type": "rect",
+       "x": 150,
+       "y": 451.787,
+       "width": 150,
+       "height": 238.213
+      },
+      {
+       "type": "rect",
+       "x": 300,
+       "y": 413.787,
+       "width": 150,
+       "height": 276.213
+      }
+     ]
+    }
+   ]
+  },
+  "canopy": {
+   "family": "sky",
+   "route": "ground",
+   "width": 330,
+   "anchor": "ceiling",
+   "height": {
+    "min": 440,
+    "max": 580
+   },
+   "shapesAtMin": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 330,
+     "height": 440
+    }
+   ],
+   "shapesAtMax": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 330,
+     "height": 580
+    }
+   ],
+   "samples": [
+    {
+     "index": 0,
+     "difficulty": 0,
+     "height": 440,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 0,
+       "width": 330,
+       "height": 440
+      }
+     ]
+    },
+    {
+     "index": 48,
+     "difficulty": 1,
+     "height": 580,
+     "shapes": [
+      {
+       "type": "rect",
+       "x": 0,
+       "y": 0,
+       "width": 330,
+       "height": 580
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "legacy": {
+  "source": "apps/chikun/assets/obstacle-shapes.json",
+  "geometry": {
+   "tree": {
+    "frameWidth": 3.2,
+    "frameHeight": 4.8,
+    "crown": [
+     [
+      0,
+      3.4,
+      0.86
+     ],
+     [
+      -0.63,
+      2.91,
+      0.7
+     ],
+     [
+      0.62,
+      3.06,
+      0.72
+     ],
+     [
+      -0.55,
+      3.61,
+      0.65
+     ],
+     [
+      0.45,
+      3.82,
+      0.63
+     ]
+    ],
+    "trunk": [
+     0,
+     0.08,
+     0,
+     3.1,
+     0.16
+    ]
+   },
+   "drone": {
+    "frameWidth": 4,
+    "frameHeight": 2,
+    "body": [
+     -1.28,
+     0,
+     1.28,
+     0,
+     0.27
+    ]
+   }
+  },
+  "tree": {
+   "render": {
+    "x": 0,
+    "y": 370.086,
+    "width": 213.276,
+    "height": 319.914
+   },
+   "shapes": [
+    {
+     "type": "circle",
+     "x": 106.638,
+     "y": 463.394,
+     "radius": 51.586
+    },
+    {
+     "type": "circle",
+     "x": 64.649,
+     "y": 496.052,
+     "radius": 41.989
+    },
+    {
+     "type": "circle",
+     "x": 147.96,
+     "y": 486.055,
+     "radius": 43.188
+    },
+    {
+     "type": "circle",
+     "x": 69.981,
+     "y": 449.398,
+     "radius": 38.99
+    },
+    {
+     "type": "circle",
+     "x": 136.63,
+     "y": 435.402,
+     "radius": 37.79
+    },
+    {
+     "type": "capsule",
+     "ax": 106.638,
+     "ay": 684.668,
+     "bx": 106.638,
+     "by": 483.389,
+     "radius": 10.664
+    }
+   ]
+  },
+  "drone": {
+   "render": {
+    "x": 0,
+    "y": -46,
+    "width": 184,
+    "height": 92
+   },
+   "shapes": [
+    {
+     "type": "capsule",
+     "ax": 33.12,
+     "ay": 0,
+     "bx": 150.88,
+     "by": 0,
+     "radius": 12.42
+    }
+   ]
+  }
+ }
+}

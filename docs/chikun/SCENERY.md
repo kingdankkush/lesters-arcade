@@ -154,11 +154,11 @@ there in particular:
 golden hour, night and dawn; portrait strip below), composited without a
 browser from the shipped t1 art and the runtime light rig.
 `docs/chikun/review/plates.json` records each 1.8.2 obstacle sprite's
-luminance contrast against a 12 px ring. Many are below 3:1 today (the old
-obstacle art is mid-grey on mid-value ground); raising them is slice 2's job
-(ink contour, rim light, contact shadows, grading) and must land before Verify
-and any push (review of slice 1: forest oak 1.05, industrial rock 1.02, town
-crate 1.09 at noon).
+luminance contrast against a 12 px ring (review of slice 1: forest oak 1.05,
+industrial rock 1.02, town crate 1.09 at noon). Slice 2 replaced those sprites:
+see `OBSTACLES.md` and `docs/chikun/review/obstacles-<region>.webp` /
+`obstacles.json` for the rendered obstacle art over these backdrops and its
+contrast receipts.
 
 ## Not in this slice
 
