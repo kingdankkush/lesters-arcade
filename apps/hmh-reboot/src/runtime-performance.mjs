@@ -29,6 +29,7 @@ export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
     worldCullMargin: 192,
     enemyCullMargin: 224,
     maxAnimatedEnemies: 96,
+    maxGoreMarks: 48,
   }),
   mobile: Object.freeze({
     id: 'mobile',
@@ -37,7 +38,10 @@ export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
     particlesPerHazard: 4,
     worldCullMargin: 128,
     enemyCullMargin: 160,
-    maxAnimatedEnemies: 32,
+    // Perf step 6: purely visual phone caps (1.8.1 had 32 animated bodies and
+    // the full 48 blood marks).
+    maxAnimatedEnemies: 24,
+    maxGoreMarks: 16,
   }),
   reducedMotion: Object.freeze({
     id: 'reduced-motion',
@@ -47,6 +51,7 @@ export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
     worldCullMargin: 96,
     enemyCullMargin: 128,
     maxAnimatedEnemies: 48,
+    maxGoreMarks: 48,
   }),
 });
 

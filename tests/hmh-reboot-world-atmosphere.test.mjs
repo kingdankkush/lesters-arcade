@@ -119,7 +119,8 @@ test('the atmosphere table covers exactly the Level 1 districts with capped, fro
 
 test('the atmosphere budget is derived from the existing particle tiers and never adds a profile field', () => {
   assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.desktop), { fog: 10, motes: 30 });
-  assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.mobile), { fog: 4, motes: 12 });
+  // Perf step 6: phones draw half of each bank (1.8.1: 4 fog, 12 motes).
+  assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.mobile), { fog: 2, motes: 6 });
   assert.deepEqual(resolveAtmosphereBudget(RUNTIME_PERFORMANCE_PROFILES.reducedMotion), { fog: 0, motes: 0 });
   for (const profile of Object.values(RUNTIME_PERFORMANCE_PROFILES)) {
     const budget = resolveAtmosphereBudget(profile);
@@ -420,7 +421,7 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
   assert.match(source, /app\.stage\.addChild\(world, atmosphereTint, overlayVisuals, bossLabel\)/u);
   assert.equal((source.match(/app\.stage\.addChild\(/gu) ?? []).length, 1);
   for (const pin of [
-    /createAtmosphereTextures\(\{ renderer: app\.renderer, GraphicsClass: Graphics \}\)/u,
+    /createAtmosphereTextures\(\{ renderer: app\.renderer, GraphicsClass: Graphics, antialias: performanceProfile\.antialias \}\)/u,
     /createAtmospherePool\(\{/u,
     /atmospherePool\?\.begin\(\)/u,
     /atmospherePool\?\.finish\(\)/u,
