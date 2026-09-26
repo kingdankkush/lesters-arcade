@@ -1,7 +1,9 @@
 // Sky, sun, moon, stars, clouds, light shafts, the backdrop grade and the
-// region title card. Sprites (glows, discs, stars, clouds) are generated once
-// per device density and drawn 1:1; clouds are re-graded into a small cache
-// only when the light bucket changes. Everything is a pure function of the
+// region title card. Sprites are generated once per device density. Sharp ones
+// (sun disc, moon, the star tile) are drawn 1:1; soft ones (glows, light
+// shafts, clouds) are kept at low resolution and drawn scaled, which costs
+// nothing visible and keeps the sky under ~10 MB at density 2. Clouds are
+// re-graded into a small cache only when the light bucket changes. Everything is a pure function of the
 // tick time and the course distance, so replay seeks are stable. Reduced
 // motion freezes the day at noon and stops all drift.
 import { rgba } from './light-rig.mjs';
@@ -22,13 +24,28 @@ export const CLOUDS = Object.freeze(Array.from({ length: 9 }, (_, i) => Object.f
   offset: hash01(i + 13) * 2400,
 })));
 const CLOUD_SPAN = 2400;
+export const CLOUD_RES = 0.5;      // cloud sprites at half the device density
+export const STAR_TILE = 512;      // logical width of the repeating star tile
+const GLOW_PX = 128;               // every radial glow is a 128 px source
+const soft = c => { if (c) c.soft = true; return c; };
 
-function glowSprite(make, r, stops) {
-  const c = make(Math.ceil(r * 2), Math.ceil(r * 2));
+function glowSprite(make, stops) {
+  const r = GLOW_PX / 2, c = make(GLOW_PX, GLOW_PX);
   if (!c) return null;
   const x = c.getContext('2d'), g = x.createRadialGradient(r, r, 0, r, r, r);
   for (const [o, col] of stops) g.addColorStop(o, col);
-  x.fillStyle = g; x.fillRect(0, 0, r * 2, r * 2);
+  x.fillStyle = g; x.fillRect(0, 0, GLOW_PX, GLOW_PX);
+  return soft(c);
+}
+// Soft sprite drawn centred at (x, y) with a device radius r.
+function drawGlow(ctx, img, x, y, r) { ctx.drawImage(img, Math.round(x - r), Math.round(y - r), Math.round(r * 2), Math.round(r * 2)); }
+
+function sunDisc(make, r) {
+  const size = Math.ceil(r * 2), c = make(size, size);
+  if (!c) return null;
+  const x = c.getContext('2d'), g = x.createRadialGradient(r, r, 0, r, r, r);
+  for (const [o, col] of [[0, 'rgba(255,253,240,1)'], [0.78, 'rgba(255,246,214,1)'], [0.86, 'rgba(255,236,190,.5)'], [1, 'rgba(255,230,180,0)']]) g.addColorStop(o, col);
+  x.fillStyle = g; x.fillRect(0, 0, size, size);
   return c;
 }
 
@@ -64,6 +81,7 @@ function starSprite(make, w, h, d, seed) {
 
 // A lit cumulus: shadowed body, then light from the upper left added on top.
 function cloudSprite(make, cloud, d) {
+  d *= CLOUD_RES;
   const w = Math.round(cloud.w * d), h = Math.round(cloud.h * d);
   const c = make(w, h);
   if (!c) return null;
@@ -96,10 +114,11 @@ function cloudSprite(make, cloud, d) {
   fade.addColorStop(0, 'rgba(0,0,0,0)'); fade.addColorStop(1, 'rgba(0,0,0,1)');
   x.fillStyle = fade; x.fillRect(0, base - H * 0.05, W, H);
   x.globalCompositeOperation = 'source-over';
-  return c;
+  return soft(c);
 }
 
 function raySprite(make, d) {
+  d *= 0.25;
   const L = 900 * d, c = make(Math.ceil(L), Math.ceil(L * 0.8));
   if (!c) return null;
   const x = c.getContext('2d');
@@ -110,7 +129,7 @@ function raySprite(make, d) {
     x.fillStyle = g; x.beginPath(); x.moveTo(0, 0);
     x.lineTo(Math.cos(a - spread) * L, Math.sin(a - spread) * L); x.lineTo(Math.cos(a + spread) * L, Math.sin(a + spread) * L); x.closePath(); x.fill();
   }
-  return c;
+  return soft(c);
 }
 
 const TIME_LABEL = { noon: 'DAYLIGHT', golden: 'GOLDEN HOUR', night: 'MOONLIGHT', dawn: 'DAWN' };
@@ -125,20 +144,20 @@ export function createAtmosphere({ makeCanvas }) {
   const s = {};
   const cloudCache = []; let cloudBucket = -1;
   let skyGradient = null, skyBucket = -1, vignette = null;
+  const veilColour = [0, 0, 0];
 
   function rebuild(d, cw, ch) {
     density = d; canvasW = cw; canvasH = ch;
     for (const key of Object.keys(s)) { const v = s[key]; for (const c of Array.isArray(v) ? v : [v]) if (c) { c.width = 0; c.height = 0; } delete s[key]; }
     for (const c of cloudCache) if (c) { c.width = 0; c.height = 0; }
     cloudCache.length = 0; cloudBucket = -1; skyGradient = null; skyBucket = -1; vignette = null;
-    s.sunGlow = glowSprite(makeCanvas, 240 * d, [[0, 'rgba(255,236,196,.55)'], [0.18, 'rgba(255,220,168,.32)'], [0.5, 'rgba(255,206,150,.10)'], [1, 'rgba(255,200,140,0)']]);
-    s.sunGlowWarm = glowSprite(makeCanvas, 300 * d, [[0, 'rgba(255,170,96,.6)'], [0.25, 'rgba(255,140,80,.28)'], [0.6, 'rgba(240,110,80,.08)'], [1, 'rgba(230,100,80,0)']]);
-    s.sunDisc = glowSprite(makeCanvas, 40 * d, [[0, 'rgba(255,253,240,1)'], [0.78, 'rgba(255,246,214,1)'], [0.86, 'rgba(255,236,190,.5)'], [1, 'rgba(255,230,180,0)']]);
-    s.moonGlow = glowSprite(makeCanvas, 190 * d, [[0, 'rgba(170,205,235,.30)'], [0.3, 'rgba(140,180,220,.12)'], [1, 'rgba(120,160,210,0)']]);
+    s.sunGlow = glowSprite(makeCanvas, [[0, 'rgba(255,236,196,.55)'], [0.18, 'rgba(255,220,168,.32)'], [0.5, 'rgba(255,206,150,.10)'], [1, 'rgba(255,200,140,0)']]);
+    s.sunGlowWarm = glowSprite(makeCanvas, [[0, 'rgba(255,170,96,.6)'], [0.25, 'rgba(255,140,80,.28)'], [0.6, 'rgba(240,110,80,.08)'], [1, 'rgba(230,100,80,0)']]);
+    s.sunDisc = sunDisc(makeCanvas, 40 * d);
+    s.moonGlow = glowSprite(makeCanvas, [[0, 'rgba(170,205,235,.30)'], [0.3, 'rgba(140,180,220,.12)'], [1, 'rgba(120,160,210,0)']]);
     s.moon = moonSprite(makeCanvas, 26 * d);
-    const sh = Math.round(430 * d);
-    s.starsA = starSprite(makeCanvas, cw, sh, d, 811);
-    s.starsB = starSprite(makeCanvas, cw, sh, d, 1811);
+    const sh = Math.round(430 * d), tw = Math.round(STAR_TILE * d);
+    s.stars = starSprite(makeCanvas, tw, sh, d, 811);
     s.rays = raySprite(makeCanvas, d);
     s.clouds = CLOUDS.map(c => cloudSprite(makeCanvas, c, d));
   }
@@ -151,7 +170,7 @@ export function createAtmosphere({ makeCanvas }) {
       const src = s.clouds[i];
       if (!src) continue;
       let c = cloudCache[i];
-      if (!c) { c = cloudCache[i] = makeCanvas(src.width, src.height); if (!c) continue; }
+      if (!c) { c = cloudCache[i] = soft(makeCanvas(src.width, src.height)); if (!c) continue; }
       const x = c.getContext('2d');
       x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1;
       x.clearRect(0, 0, c.width, c.height);
@@ -178,23 +197,29 @@ export function createAtmosphere({ makeCanvas }) {
         skyGradient.addColorStop(1, rgba(rig.skyBottom));
       }
       ctx.fillStyle = skyGradient; ctx.fillRect(0, 0, cw, ch);
-      if (rig.stars > 0.02 && s.starsA) {
-        ctx.globalAlpha = rig.stars * (0.72 + 0.28 * Math.sin(time * 1.3)); ctx.drawImage(s.starsA, 0, 0);
-        ctx.globalAlpha = rig.stars * (0.72 + 0.28 * Math.cos(time * 1.7)); ctx.drawImage(s.starsB, 0, 0);
+      if (rig.stars > 0.02 && s.stars) {
+        // One star tile drawn twice, offset, twinkling against itself; it repeats across the view.
+        const tw = s.stars.width, dy = Math.round(53 * d);
+        ctx.globalAlpha = rig.stars * (0.72 + 0.28 * Math.sin(time * 1.3));
+        for (let x = 0; x < cw; x += tw) ctx.drawImage(s.stars, x, 0);
+        ctx.globalAlpha = rig.stars * (0.6 + 0.3 * Math.cos(time * 1.7));
+        for (let x = -Math.round(tw * 0.37); x < cw; x += tw) ctx.drawImage(s.stars, x, dy);
         ctx.globalAlpha = 1;
       }
       if (rig.moon.alpha > 0.01 && s.moon) {
         const mx = (rig.moon.x - view.left) * d, my = rig.moon.y * d;
         ctx.globalAlpha = rig.moon.alpha;
-        ctx.drawImage(s.moonGlow, Math.round(mx - s.moonGlow.width / 2), Math.round(my - s.moonGlow.height / 2));
+        ctx.globalCompositeOperation = 'lighter'; drawGlow(ctx, s.moonGlow, mx, my, 190 * d); ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(s.moon, Math.round(mx - s.moon.width / 2), Math.round(my - s.moon.height / 2));
         ctx.globalAlpha = 1;
       }
       if (rig.sun.alpha > 0.01 && s.sunDisc) {
         const sx = (rig.sun.x - view.left) * d, sy = rig.sun.y * d;
         const warm = clamp(rig.dusk * 1.4);
-        ctx.globalAlpha = rig.sun.alpha * (1 - 0.6 * warm); ctx.drawImage(s.sunGlow, Math.round(sx - s.sunGlow.width / 2), Math.round(sy - s.sunGlow.height / 2));
-        if (warm > 0.01) { ctx.globalAlpha = rig.sun.alpha * warm; ctx.drawImage(s.sunGlowWarm, Math.round(sx - s.sunGlowWarm.width / 2), Math.round(sy - s.sunGlowWarm.height / 2)); }
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = rig.sun.alpha * (1 - 0.6 * warm); drawGlow(ctx, s.sunGlow, sx, sy, 240 * d);
+        if (warm > 0.01) { ctx.globalAlpha = rig.sun.alpha * warm; drawGlow(ctx, s.sunGlowWarm, sx, sy, 300 * d); }
+        ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = rig.sun.alpha; ctx.drawImage(s.sunDisc, Math.round(sx - s.sunDisc.width / 2), Math.round(sy - s.sunDisc.height / 2));
         ctx.globalAlpha = 1;
       }
@@ -204,10 +229,10 @@ export function createAtmosphere({ makeCanvas }) {
         const c = CLOUDS[i], img = cloudCache[i];
         if (!img) continue;
         const u = mod(c.offset - time * c.wind - bus.distance * c.rate, span) - 350;
-        const x = Math.round((u) * d), y = Math.round(c.y * d);
-        if (x > cw || x + img.width < 0) continue;
+        const x = Math.round(u * d), y = Math.round(c.y * d), w = Math.round(c.w * d), h = Math.round(c.h * d);
+        if (x > cw || x + w < 0) continue;
         ctx.globalAlpha = i < 5 ? 0.78 : 0.92;
-        ctx.drawImage(img, x, y);
+        ctx.drawImage(img, x, y, w, h);
       }
       ctx.globalAlpha = 1;
     },
@@ -217,7 +242,7 @@ export function createAtmosphere({ makeCanvas }) {
       if (rig.rays <= 0.02 || !s.rays || rig.sun.alpha <= 0.02) return;
       const d = bus.density, x = (rig.sun.x - bus.view.left) * d, y = rig.sun.y * d;
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = clamp(rig.rays * rig.sun.alpha * 0.16);
-      ctx.drawImage(s.rays, Math.round(x), Math.round(y));
+      ctx.drawImage(s.rays, Math.round(x), Math.round(y), s.rays.width * 4, s.rays.height * 4);
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     },
     // Time-of-day grade and transition veil on the backdrop canvas.
@@ -228,8 +253,8 @@ export function createAtmosphere({ makeCanvas }) {
       if (g.a > 0.002) { bctx.fillStyle = rgba(g.D, g.a); bctx.fillRect(0, 0, w, h); }
       if (veil > 0.003) {
         const hz = bus.rig.horizon, t = veilTint;
-        const col = t ? [(hz[0] + t[0]) / 2, (hz[1] + t[1]) / 2, (hz[2] + t[2]) / 2] : hz;
-        bctx.fillStyle = rgba(col, veil); bctx.fillRect(0, 0, w, h);
+        if (t) { veilColour[0] = (hz[0] + t[0]) / 2; veilColour[1] = (hz[1] + t[1]) / 2; veilColour[2] = (hz[2] + t[2]) / 2; }
+        bctx.fillStyle = rgba(t ? veilColour : hz, veil); bctx.fillRect(0, 0, w, h);
       }
       bctx.globalCompositeOperation = 'source-over';
     },

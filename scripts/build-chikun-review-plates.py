@@ -194,13 +194,13 @@ def plate(region, layers, ground, rig, D, width, props, chikun):
             add(canvas, np.array([[[0.9, 0.95, 1.0, 1.0]]]) * (0.35 + 0.6 * b), int(x), int(y), rig['stars'])
     if rig['moon']['alpha'] > 0.01:
         mx, my = rig['moon']['x'] - left, rig['moon']['y']
-        over(canvas, radial(380, [(0, [170, 205, 235, .3]), (0.3, [140, 180, 220, .12]), (1, [120, 160, 210, 0])]), int(mx - 190), int(my - 190), rig['moon']['alpha'])
+        add(canvas, radial(380, [(0, [170, 205, 235, .3]), (0.3, [140, 180, 220, .12]), (1, [120, 160, 210, 0])]), int(mx - 190), int(my - 190), rig['moon']['alpha'])
         over(canvas, radial(52, [(0, [246, 248, 242, 1]), (0.7, [223, 230, 228, 1]), (0.97, [184, 198, 201, 1]), (1, [184, 198, 201, 0])]), int(mx - 26), int(my - 26), rig['moon']['alpha'])
     if rig['sun']['alpha'] > 0.01:
         sx, sy = rig['sun']['x'] - left, rig['sun']['y']
         warm = min(1.0, rig['dusk'] * 1.4)
-        over(canvas, radial(480, [(0, [255, 236, 196, .55]), (0.18, [255, 220, 168, .32]), (0.5, [255, 206, 150, .10]), (1, [255, 200, 140, 0])]), int(sx - 240), int(sy - 240), rig['sun']['alpha'] * (1 - 0.6 * warm))
-        if warm > 0.01: over(canvas, radial(600, [(0, [255, 170, 96, .6]), (0.25, [255, 140, 80, .28]), (0.6, [240, 110, 80, .08]), (1, [230, 100, 80, 0])]), int(sx - 300), int(sy - 300), rig['sun']['alpha'] * warm)
+        add(canvas, radial(480, [(0, [255, 236, 196, .55]), (0.18, [255, 220, 168, .32]), (0.5, [255, 206, 150, .10]), (1, [255, 200, 140, 0])]), int(sx - 240), int(sy - 240), rig['sun']['alpha'] * (1 - 0.6 * warm))
+        if warm > 0.01: add(canvas, radial(600, [(0, [255, 170, 96, .6]), (0.25, [255, 140, 80, .28]), (0.6, [240, 110, 80, .08]), (1, [230, 100, 80, 0])]), int(sx - 300), int(sy - 300), rig['sun']['alpha'] * warm)
         over(canvas, radial(80, [(0, [255, 253, 240, 1]), (0.78, [255, 246, 214, 1]), (0.86, [255, 236, 190, .5]), (1, [255, 230, 180, 0])]), int(sx - 40), int(sy - 40), rig['sun']['alpha'])
     span = max(2400, width + 700)
     for s, c in CLOUDS:

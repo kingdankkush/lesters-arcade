@@ -209,7 +209,7 @@ def ground(ctx):
         (618, 632, [(0.3, '#5c5750'), (0.6, '#6b655c'), (0.9, '#797269')], 0.8),
         (632, 666, conc, 1.0),
         (666, 693, [(0.25, '#6c6a62'), (0.55, '#7a776e'), (0.85, '#88857b')], 1.0),
-    ], scale=0.25, stripes=[(632, 666, 70.0, '#5b5953', 0.6), (666, 693, 45.0, '#5e5c56', 0.5)])
+    ], scale=0.25, stripes=[(632, 666, 70.0, '#5b5953', 0.6)], cobbles=(666, 693, 40.0, '#55534d', 0.14))
     groundkit.plane(root, mat)
     yellow = shading.flat('safety', '#d0a332', rough=0.6, jitter=0.05)
     steel = shading.flat('railsteel', '#8d8f8c', rough=0.3, spec=0.7)

@@ -57,7 +57,9 @@ test('with art: every blit is 1:1, no blur or filters, bounded calls, no gradien
       assert.ok(all.every(e => e.shadowBlur === 0 && (e.filter === 'none' || e.filter === undefined)), `${name}: no shadowBlur or filter`);
       const draws = drawImageCalls(all);
       // Lights ('lighter') stay at their 1x source size and are the one scaled draw.
-      for (const c of draws.filter(c => c.composite !== 'lighter')) assert.ok(Math.abs(c.sw - c.dw) < 1e-6 && Math.abs(c.sh - c.dh) < 1e-6, `${name}: scaled blit ${c.image.label ?? c.image.width + 'x' + c.image.height} ${c.sw}x${c.sh} -> ${c.dw}x${c.dh}`);
+      // Additive lights and soft sprites (glows, shafts, clouds) are kept at low
+      // resolution and scaled; every piece of scenery art is drawn 1:1.
+      for (const c of draws.filter(c => c.composite !== 'lighter' && !c.image.soft)) assert.ok(Math.abs(c.sw - c.dw) < 1e-6 && Math.abs(c.sh - c.dh) < 1e-6, `${name}: scaled blit ${c.image.label ?? c.image.width + 'x' + c.image.height} ${c.sw}x${c.sh} -> ${c.dw}x${c.dh}`);
       assert.ok(draws.length <= 160, `${name}: ${draws.length} drawImage calls`);
       if (region === 'city') assert.ok(draws.some(c => c.composite === 'lighter'), `${name}: the city's lights are drawn at night`);
       const W = view.pixelWidth, H = view.pixelHeight;
@@ -116,4 +118,20 @@ test('the ground bands cover the full width through a region switch (no holes at
     }
   }
   world.dispose();
+});
+
+test('the sky costs a bounded amount of memory at density 2', async () => {
+  const { createAtmosphere } = await import('../apps/chikun/src/atmosphere.mjs');
+  const { computeLightRig, chikunSkyState } = await import('../apps/chikun/src/light-rig.mjs');
+  const { courseRegionState } = await import('../apps/portal/src/chikun-course-regions.mjs');
+  const made = [];
+  const atmosphere = createAtmosphere({ makeCanvas: (w, h) => { const c = createRecordingCanvas(Math.max(1, Math.round(w)), Math.max(1, Math.round(h))); made.push(c); return c; } });
+  const view = VIEWS.desktop, state = courseRegionState(5400, {});
+  for (const t of [0, 45, 90]) {
+    const bus = { density: view.density, canvasWidth: view.pixelWidth, canvasHeight: view.pixelHeight, view, distance: 0, rig: computeLightRig(chikunSkyState(t), state, view) };
+    atmosphere.drawSky(createRecordingContext(createRecordingCanvas(view.pixelWidth, view.pixelHeight)), bus, t);
+  }
+  const bytes = made.filter(c => c.width > 0).reduce((a, c) => a + c.width * c.height * 4, 0);
+  assert.equal(view.density, 2);
+  assert.ok(bytes <= 12 * 1024 * 1024, `sky sprites use ${(bytes / 1048576).toFixed(1)} MB`);
 });

@@ -30,7 +30,7 @@ def plane(coll, mat, y0=1200.0, y1=1.5e6, half=2.0e5):
     return kit.mesh_object('groundplane', bm, coll, mat)
 
 
-def ground_material(name, base_stops, bands, scale=0.08, stripes=None, speckle=None, bump=0.35):
+def ground_material(name, base_stops, bands, scale=0.08, stripes=None, speckle=None, bump=0.35, cobbles=None):
     """bands: [(row_top, row_bottom, stops, soft_rows)] painted over the base in
     screen-row terms (converted to depth). stripes: (row_top, row_bottom, pitch_units,
     colour, strength) furrow lines parallel to the run."""
@@ -61,6 +61,22 @@ def ground_material(name, base_stops, bands, scale=0.08, stripes=None, speckle=N
             v = nb.voronoi(vec, scale=sc, w=w, feature='F1')
             dots = nb.math('LESS_THAN', v.outputs['Distance'], density)
             c = nb.mix(c, col, nb.math('MULTIPLY', dots, 0.85))
+        if cobbles:
+            # Setts: Voronoi cells with dark joints and a per-stone tone, only
+            # between two screen rows. Squashed by the grazing view into
+            # horizontal courses, which is exactly what the band cut needs.
+            top, bottom, size, joint, spread = cobbles
+            yf, yn = depth_of_row(top), depth_of_row(bottom)
+            inside = nb.math('MULTIPLY', nb.math('GREATER_THAN', y, yn), nb.math('LESS_THAN', y, yf))
+            cells = nb.voronoi(vec, scale=1.0 / size, w=w, feature='DISTANCE_TO_EDGE', randomness=0.9)
+            tone = nb.voronoi(vec, scale=1.0 / size, w=w, feature='F1', randomness=0.9).outputs['Color']
+            gap = nb.maprange(cells.outputs['Distance'], 0.0, 0.08, 1.0, 0.0, smooth=True)
+            shade = nb.math('MULTIPLY', nb.math('SUBTRACT', nb.separate(tone)[0], 0.5), spread)
+            stone = nb.mix(c, (0, 0, 0), nb.math('MAXIMUM', nb.math('MULTIPLY', shade, -1.0), 0.0))
+            stone = nb.mix(stone, (1, 1, 1), nb.math('MAXIMUM', shade, 0.0))
+            stone = nb.mix(stone, joint, gap)
+            c = nb.mix(c, stone, inside)
+            n = nb.math('ADD', n, nb.math('MULTIPLY', gap, -0.6))
         normal = nb.bump(n, strength=bump, distance=1.0)
         return dict(color=c, rough=0.92, normal=normal, spec=0.12)
     return shading.material(name, build, haze=False)

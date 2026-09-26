@@ -162,7 +162,7 @@ def ground(ctx):
         (610, 662, asphalt, 0.8),
         (662, 666, [(0.3, '#9a9892'), (0.6, '#aaa89f'), (0.9, '#bab7ad')], 0.5),
         (666, 693, [(0.25, '#6a6c6d'), (0.55, '#77797a'), (0.85, '#858786')], 1.0),
-    ], scale=0.25, stripes=[(666, 693, 45.0, '#55585a', 0.5), (598, 610, 60.0, '#5e6061', 0.4)])
+    ], scale=0.25, stripes=[(598, 610, 60.0, '#5e6061', 0.4)], cobbles=(666, 693, 26.0, '#4b4e50', 0.18))
     groundkit.plane(root, mat)
     rng = random.Random('city-ground')
     paint = shading.flat('lanepaint', '#d8d4c2', rough=0.6, jitter=0.05)
