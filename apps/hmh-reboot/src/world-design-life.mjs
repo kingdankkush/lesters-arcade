@@ -2,7 +2,17 @@ import { WORLD_DESIGN_SITES, WORLD_DESIGN_EXPLORATION_PATHS } from './world-desi
 import { worldDesignHazardPhase } from './world-design-interactions.mjs';
 import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
 import { buildCoverBreakPresentation } from './cover-break-presentation.mjs';
-import { OBJECTIVE_REWARDS, objectiveRewardStatus } from './objective-rewards.mjs';
+import { missionPresentation } from './mission-objectives.mjs';
+import { selectMissionTrack } from './mission-guidance.mjs';
+import { MISSION_PALETTE } from './mission-palette.mjs';
+
+// Package §3.3 performance caps: rings and beams on screen.
+export const MISSION_RING_CAP = 6;
+export const MISSION_BEAM_CAP = Object.freeze({ desktop: 4, mobile: 3 });
+// Screen bands the pill and chevrons keep clear of (the cockpit above, the
+// controls hint or touch controls below), matching the old site prompt.
+export const missionSafeBand = (view) => view.height <= 520 ? { top: 118, bottom: 140 }
+  : view.width < 600 ? { top: 266, bottom: view.height - 240 } : { top: 185, bottom: view.height - 95 };
 
 export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,camera,view,tick,particleBudget=0,reduceMotion=false,reduceFlash=false}) {
   const fires=[],embers=[],budget=Math.min(12,Math.max(0,Math.floor(particleBudget)));
@@ -60,48 +70,131 @@ export function worldDesignFootstep(world, ground, point) {
   return {cue:'footstep-dirt',rate:point.x>=6000&&point.x<8000?.77:.92,volume:.022};
 }
 
+// A polyline arc, so the renderer needs only moveTo and lineTo.
+function arcPath(graphics, x, y, radius, from, to, segments = 24) {
+  const steps = Math.max(2, Math.ceil(segments * Math.abs(to - from) / (Math.PI * 2)));
+  graphics.moveTo(x + Math.cos(from) * radius, y + Math.sin(from) * radius);
+  for (let index = 1; index <= steps; index += 1) {
+    const angle = from + (to - from) * index / steps;
+    graphics.lineTo(x + Math.cos(angle) * radius, y + Math.sin(angle) * radius);
+  }
+  return graphics;
+}
+
+// A status lamp pairs a shape with a colour: red X missing, amber ! ready,
+// green check done (package §3.3).
+function drawLamp(graphics, x, y, z, lamp) {
+  const colour = MISSION_PALETTE.lamp[lamp];
+  graphics.circle(x, y, 8 * z).fill({ color: MISSION_PALETTE.panel, alpha: 0.85 }).stroke({ color: colour, width: 2 * z });
+  if (lamp === 'missing') {
+    graphics.moveTo(x - 3.5 * z, y - 3.5 * z).lineTo(x + 3.5 * z, y + 3.5 * z).moveTo(x + 3.5 * z, y - 3.5 * z).lineTo(x - 3.5 * z, y + 3.5 * z).stroke({ color: colour, width: 2 * z });
+  } else if (lamp === 'ready') {
+    graphics.moveTo(x, y - 4.5 * z).lineTo(x, y + z).stroke({ color: colour, width: 2 * z });
+    graphics.circle(x, y + 3.5 * z, 1.2 * z).fill({ color: colour });
+  } else {
+    graphics.moveTo(x - 3.5 * z, y).lineTo(x - z, y + 3 * z).lineTo(x + 4 * z, y - 3.5 * z).stroke({ color: colour, width: 2 * z });
+  }
+}
+
+// The tracked node's chevron on the edge of the safe band, pointing at it.
+export function missionChevron({ target, view, band }) {
+  if (target.x >= 32 && target.x <= view.width - 32 && target.y >= band.top && target.y <= band.bottom) return null;
+  const cx = view.width / 2;
+  const cy = (band.top + band.bottom) / 2;
+  const dx = target.x - cx;
+  const dy = target.y - cy;
+  const scale = Math.min(dx ? Math.abs((view.width / 2 - 36) / dx) : Infinity, dy ? Math.abs(((band.bottom - band.top) / 2 - 16) / dy) : Infinity);
+  return { x: cx + dx * scale, y: cy + dy * scale, angle: Math.atan2(dy, dx) };
+}
+
 export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) {
-  const ground=new GraphicsClass(), effects=new GraphicsClass(), overlay=new ContainerClass();
+  const ground=new GraphicsClass(), effects=new GraphicsClass(), pill=new GraphicsClass(), overlay=new ContainerClass();
   const prompt=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:13,fontWeight:'700',fill:0xeef6e9,stroke:{color:0x12211e,width:4},align:'center'}});
-  prompt.anchor.set(.5,1); overlay.addChild(effects,prompt);
+  const tracker=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:13,fontWeight:'700',fill:MISSION_PALETTE.mechanism.ring,align:'center'}});
+  const needs=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:12,fontWeight:'700',fill:0xeef6e9,stroke:{color:0x12211e,width:4},align:'center'}});
+  prompt.anchor.set(.5,1); tracker.anchor.set(.5,.5); needs.anchor.set(.5,0);
+  overlay.addChild(effects,pill,prompt,tracker,needs);
   ground.label='world-interaction-ground'; overlay.label='world-interaction-prompts';
-  let lastPrompt='';
+  let lastPrompt='', lastTracker='', lastNeeds='', lastTrack=null;
   const lastWarned=new Map();
-  const render=({state,secretState,destructibleState,collectibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null})=>{
-    ground.clear(); effects.clear(); prompt.visible=false;
-    if(!state||!actor) return {visibleSites:0,particles:0,hazardTelegraphs:[]};
+  const render=({mission,destructibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null,guidance=null,bossArena=null,mobile=false})=>{
+    ground.clear(); effects.clear(); pill.clear(); prompt.visible=false; tracker.visible=false; needs.visible=false;
+    if(!mission||!actor) return {visibleSites:0,particles:0,hazardTelegraphs:[],beams:0,trackedId:null,trackerText:''};
     const project=(x,y,z=0)=>worldToScreen({x,y,z},camera,view);
-    let visibleSites=0,particles=0;
+    const z=camera.zoom;
+    const onScreen=(p,margin=180)=>p.x>=-margin*z&&p.x<=view.width+margin*z&&p.y>=-margin*z&&p.y<=view.height+margin*z;
+    // Rings inside a live boss arena are hidden for the whole fight.
+    const hidden=(x,y)=>Boolean(bossArena)&&Math.hypot(x-bossArena.x,y-bossArena.y)<=bossArena.radius;
+    let visibleSites=0,particles=0,beams=0;
     const dot=(x,y,r,color,alpha)=>effects.circle(x,y,r).fill({color,alpha});
-    for(const site of WORLD_DESIGN_SITES) {
-      const groundZ=queryGround(site.x,site.y).groundZ,p=project(site.x,site.y,groundZ),z=camera.zoom;
-      if(p.x < -180*z || p.x > view.width+180*z || p.y < -260*z || p.y > view.height+180*z) continue;
+    const ivory=MISSION_PALETTE.mechanism.ring, outline=MISSION_PALETTE.mechanism.outline;
+    const presentation=missionPresentation(mission);
+    // Machine rings, nearest first, at most six on screen. A secret's pry spot
+    // shows nothing until the hero kneels there.
+    const rings=presentation.zones
+      .filter(zone=>zone.state!=='done'&&(zone.kind!=='pry'||zone.state==='filling')&&!hidden(zone.x,zone.y))
+      .map(zone=>({zone,p:project(zone.x,zone.y,queryGround(zone.x,zone.y).groundZ),d:Math.hypot(actor.x-zone.x,actor.y-zone.y)}))
+      .filter(entry=>onScreen(entry.p))
+      .sort((a,b)=>a.d-b.d||(a.zone.zoneId<b.zone.zoneId?-1:1))
+      .slice(0,MISSION_RING_CAP);
+    let nearestLocked=null;
+    for(const {zone,p,d} of rings) {
       visibleSites++;
-      const done=state.completed.has(site.id),near=Math.hypot(actor.x-site.x,actor.y-site.y)<230;
-      // A painted service pad, with a ring and segmented charge indicator.
-      ground.roundRect(p.x-31*z,p.y-22*z,62*z,44*z,7*z).fill({color:0x142a2a,alpha:.65}).stroke({color:site.color,width:2*z,alpha:done?.45:.85});
-      ground.moveTo(p.x-11*z,p.y).lineTo(p.x-2*z,p.y+9*z).lineTo(p.x+15*z,p.y-10*z).stroke({color:site.color,width:3*z,alpha:done?1:.18});
-      if(!done) ground.circle(p.x,p.y,40*z).stroke({color:site.color,width:2*z,alpha:.32});
-      if(state.targetId===site.id) {
-        const progress=state.progress/site.holdTicks;
-        ground.roundRect(p.x-36*z,p.y+31*z,72*z,5*z,2*z).fill({color:0x10221f,alpha:.95});
-        ground.roundRect(p.x-36*z,p.y+31*z,Math.max(1,72*z*progress),5*z,2*z).fill({color:site.color});
+      const r=zone.ringRadius*z;
+      if(zone.state==='locked') {
+        // Grey ring, padlock, red X; the label names the missing item.
+        ground.circle(p.x,p.y,r).stroke({color:outline,width:5*z,alpha:.5}).stroke({color:MISSION_PALETTE.locked.ring,width:2.5*z,alpha:.85});
+        effects.roundRect(p.x-7*z,p.y-4*z,14*z,11*z,2*z).fill({color:MISSION_PALETTE.locked.ring,alpha:.95});
+        arcPath(effects,p.x,p.y-4*z,5*z,Math.PI,Math.PI*2,8).stroke({color:MISSION_PALETTE.locked.ring,width:2*z});
+        drawLamp(effects,p.x+r*.72,p.y-r*.72,z,'missing');
+        if(!nearestLocked||d<nearestLocked.d) nearestLocked={zone,p,d};
+        continue;
       }
-      if(near) {
-        const actions={generator:'Restore power',winch:'Open salvage court',pump:'Start pump · supplies',shrine:'Rest · recover health',vent:'Release steam · keep clear',cache:'Open supplies'};
-        const rewards=OBJECTIVE_REWARDS.filter(r=>r.objectiveId===site.id);
-        const text=done?`${site.name}\n${rewards.map(r=>`${r.rewardName} · ${objectiveRewardStatus(collectibleState,r.id,tick)}`).join('\n')||'Reward · collected'}`:state.activating.has(site.id)?`${site.name} · activating`:`${site.name}\nApproach · ${actions[site.kind].toLowerCase()}${rewards.length?`\nReward: ${rewards.map(r=>r.rewardName).join(' + ')}`:''}`;
-        if(lastPrompt!==text) {prompt.text=text;lastPrompt=text;}
-        prompt.style.fontSize=view.width<600||view.height<500?11:13;
-        const safeTop=view.height<500?125:view.width<600?266:185;
-        const safeBottom=view.height<500?140:Math.max(safeTop,view.height-(view.width<600?240:95));
-        prompt.position.set(Math.max(view.width<600?135:160,Math.min(view.width-(view.width<600?135:160),p.x)),Math.max(safeTop,Math.min(safeBottom,p.y-64*z)));
-        prompt.visible=true;
+      // Ivory dashed ring over a dark outline, with four hazard chevrons.
+      ground.circle(p.x,p.y,r).stroke({color:outline,width:5*z,alpha:.45});
+      for(let dash=0;dash<16;dash+=2) arcPath(ground,p.x,p.y,r,dash*Math.PI/8,(dash+1)*Math.PI/8,3).stroke({color:ivory,width:2.5*z,alpha:zone.state==='filling'?1:.8});
+      for(let side=0;side<4;side++) {
+        const a=side*Math.PI/2+Math.PI/4,cx=p.x+Math.cos(a)*(r+7*z),cy=p.y+Math.sin(a)*(r+7*z),tx=-Math.sin(a),ty=Math.cos(a);
+        ground.moveTo(cx+tx*5*z-Math.cos(a)*4*z,cy+ty*5*z-Math.sin(a)*4*z).lineTo(cx,cy).lineTo(cx-tx*5*z-Math.cos(a)*4*z,cy-ty*5*z-Math.sin(a)*4*z).stroke({color:ivory,width:2*z,alpha:.7});
       }
-      if(done) {
-        ground.circle(p.x,p.y,65*z).fill({color:site.color,alpha:.06});
-        // Powered machinery has a small fixed light; motion is optional.
-        dot(p.x,p.y-16*z,3*z,site.color,.8);
+      // The fill, as an arc from twelve o'clock; a hit pause dims it
+      // (reduceFlash keeps it steady).
+      if(zone.progress>0) arcPath(ground,p.x,p.y,r+3*z,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,zone.progress),32).stroke({color:ivory,width:4*z,alpha:zone.paused&&!reduceFlash?.55:1});
+      // Glyph: a cog for a machine, a pry bar for a seal.
+      if(zone.kind==='pry') effects.moveTo(p.x-6*z,p.y+6*z).lineTo(p.x+6*z,p.y-6*z).stroke({color:ivory,width:2.5*z});
+      else {
+        effects.circle(p.x,p.y,5*z).stroke({color:ivory,width:2*z});
+        for(let spoke=0;spoke<6;spoke++){const a=spoke*Math.PI/3;effects.moveTo(p.x+Math.cos(a)*5*z,p.y+Math.sin(a)*5*z).lineTo(p.x+Math.cos(a)*8*z,p.y+Math.sin(a)*8*z).stroke({color:ivory,width:2*z});}
+      }
+      drawLamp(effects,p.x+r*.72,p.y-r*.72,z,'ready');
+    }
+    if(nearestLocked&&nearestLocked.d<400) {
+      const text=`Needs ${mission.rowsById.get(nearestLocked.zone.requires)?.name??'an item'}`;
+      if(lastNeeds!==text){needs.text=text;lastNeeds=text;}
+      needs.position.set(nearestLocked.p.x,nearestLocked.p.y+nearestLocked.zone.ringRadius*z+6*z);needs.visible=true;
+    }
+    // Items: an ivory ring, a key glyph and a beam (at most 4, 3 on a phone;
+    // reduceMotion holds the beam still).
+    const beamCap=mobile?MISSION_BEAM_CAP.mobile:MISSION_BEAM_CAP.desktop;
+    for(const row of mission.objectives) {
+      if(row.mode!=='touch'||mission.completed.has(row.id)||hidden(row.anchor.x,row.anchor.y)) continue;
+      const p=project(row.anchor.x,row.anchor.y,queryGround(row.anchor.x,row.anchor.y).groundZ);
+      if(!onScreen(p,260)) continue;
+      ground.circle(p.x,p.y,row.ringRadius*z).stroke({color:outline,width:5*z,alpha:.45}).stroke({color:ivory,width:2.5*z,alpha:.9});
+      effects.circle(p.x-4*z,p.y,4*z).stroke({color:ivory,width:2*z});
+      effects.moveTo(p.x,p.y).lineTo(p.x+9*z,p.y).lineTo(p.x+9*z,p.y+4*z).stroke({color:ivory,width:2*z});
+      if(beams<beamCap) {
+        const sway=reduceMotion?0:Math.sin(tick/40)*.08;
+        effects.moveTo(p.x,p.y).lineTo(p.x,p.y-150*z).stroke({color:ivory,width:3*z,alpha:.32+sway});
+        beams++;
+      }
+    }
+    for(const site of WORLD_DESIGN_SITES) {
+      const groundZ=queryGround(site.x,site.y).groundZ,p=project(site.x,site.y,groundZ);
+      if(!onScreen(p,260)) continue;
+      if(mission.completed.has(site.id)&&!hidden(site.x,site.y)) {
+        drawLamp(effects,p.x,p.y-24*z,z,'done');
+        // Powered machinery keeps a small fixed light; motion is optional.
         if(!reduceMotion && particles<particleBudget && ['generator','pump'].includes(site.kind)) {
           for(let i=0;i<3&&particles<particleBudget;i++) {
             const phase=((tick+i*43)%150)/150;
@@ -110,7 +203,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
         }
       }
       if(site.hazard) {
-        const phase=worldDesignHazardPhase(state,site,tick),h=site.hazard,hp=project(h.x,h.y,queryGround(h.x,h.y).groundZ);
+        const phase=worldDesignHazardPhase(mission,site,tick),h=site.hazard,hp=project(h.x,h.y,queryGround(h.x,h.y).groundZ);
         const active=phase.phase==='active',warning=phase.phase==='warning';
         if(active||warning) {
           ground.circle(hp.x,hp.y,h.radius*z).fill({color:0xffad54,alpha:active?.18:.07}).stroke({color:0x121c20,width:6*z}).stroke({color:0xffcd86,width:3*z});
@@ -121,6 +214,28 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
             dot(hp.x+Math.sin(i*2.4)*55*z,hp.y-(phase*75)*z,(5+phase*12)*z,0xe6e9df,(1-phase)*.16);particles++;
           }
         }
+      }
+    }
+    // The tracker pill: one line, hidden while a boss bar shows; compact
+    // landscape keeps only the glyph, the distance and the arrow. A chevron
+    // on the edge of the safe band points at the tracked node off screen.
+    const track=guidance?selectMissionTrack(mission,{player:actor,districtId:guidance.districtId,stations:guidance.stations??[],previous:lastTrack,bossBarVisible:guidance.bossBarVisible}):null;
+    lastTrack=track;
+    if(track) {
+      const band=missionSafeBand(view),compact=view.height<=520;
+      const text=compact?track.compactText:track.text;
+      if(lastTracker!==text){tracker.text=text;lastTracker=text;}
+      tracker.style.fontSize=compact||view.width<600?11:13;
+      const width=Math.min(view.width-32,(compact?96:Math.max(160,text.length*(view.width<600?6.2:7.2)))+30);
+      const y=compact?band.top+11:band.bottom-16;
+      pill.roundRect(view.width/2-width/2,y-12,width,24,12).fill({color:MISSION_PALETTE.panel,alpha:.82}).stroke({color:outline,width:2});
+      pill.circle(view.width/2-width/2+13,y,4.5).fill({color:track.glyph==='station'?MISSION_PALETTE.lamp.done:ivory});
+      tracker.position.set(view.width/2+7,y);tracker.visible=true;
+      const chevron=missionChevron({target:project(track.x,track.y,queryGround(track.x,track.y).groundZ),view,band});
+      if(chevron) {
+        const {x,y:cy,angle:a}=chevron,size=10;
+        pill.moveTo(x+Math.cos(a)*size,cy+Math.sin(a)*size).lineTo(x+Math.cos(a+2.5)*size,cy+Math.sin(a+2.5)*size).lineTo(x+Math.cos(a-2.5)*size,cy+Math.sin(a-2.5)*size).lineTo(x+Math.cos(a)*size,cy+Math.sin(a)*size)
+          .fill({color:ivory,alpha:.9}).stroke({color:outline,width:2});
       }
     }
     // Authored hazard telegraphs: every stroke is a function of (hazard, tick,
@@ -204,7 +319,10 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       }
     }
     for(const e of campfires.embers)dot(e.x,e.y,e.radius,0xffc277,e.alpha);
-    const notice=(destructibleState?.lastNotice?.tick??-1)>(secretState?.lastNotice?.tick??-1)?destructibleState.lastNotice:secretState?.lastNotice;
+    // The latest found secret's lore, or a broken cover's note, for 8 seconds.
+    let secretNotice=null;
+    for(const row of mission.objectives) if(row.objectiveClass==='secret'&&mission.completed.has(row.id)&&(!secretNotice||mission.completed.get(row.id)>secretNotice.tick)) secretNotice={text:row.lore,tick:mission.completed.get(row.id)};
+    const notice=(destructibleState?.lastNotice?.tick??-1)>(secretNotice?.tick??-1)?destructibleState.lastNotice:secretNotice;
     if(notice && tick-notice.tick<480) {
       const text=notice.text;
       if(lastPrompt!==text){prompt.text=text;lastPrompt=text;}
@@ -212,7 +330,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       prompt.style.wordWrap=true;prompt.style.wordWrapWidth=Math.min(430,view.width-48);
       prompt.position.set(view.width/2,view.height<500?145:view.width<600?280:190);prompt.visible=true;
     }
-    return {visibleSites,particles:particles+campfires.embers.length,campfireLights:campfires.fires.length,campfireEmbers:campfires.embers.length,hazardTelegraphs};
+    return {visibleSites,particles:particles+campfires.embers.length,campfireLights:campfires.fires.length,campfireEmbers:campfires.embers.length,hazardTelegraphs,beams,trackedId:track?.id??null,trackerText:track?lastTracker:''};
   };
   return {ground,overlay,render};
 }

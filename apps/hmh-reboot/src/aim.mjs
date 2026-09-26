@@ -80,11 +80,18 @@ export function createAimState({
   };
 }
 
+// Breakables (secret seals and supply cover) are the lowest-priority automatic
+// target: within this range, in sight, and only while no enemy is targetable
+// (design package §3.3). Manual aim is never pulled toward one.
+export const BREAKABLE_AIM_RANGE = 200;
+
 export function resolveAimIntent(state, {
   tick,
   actor,
   input,
   targets,
+  fallbackTargets = [],
+  fallbackLineOfSight = () => true,
   device = 'keyboard',
   lineOfSight,
 } = {}) {
@@ -92,6 +99,9 @@ export function resolveAimIntent(state, {
   if (tick <= state.lastTick) throw new TypeError('tick must be monotonic');
   state.lastTick = tick;
   const target = selectNearestValidTarget(actor, targets, { maxRange: state.maxRange, lineOfSight });
+  const fallback = !target && fallbackTargets.length > 0
+    ? selectNearestValidTarget(actor, fallbackTargets, { maxRange: Math.min(state.maxRange, BREAKABLE_AIM_RANGE), lineOfSight: fallbackLineOfSight })
+    : null;
   const manualDirection = input?.aim?.active ? normalize(input.aim) : { x: 0, y: 0 };
   const manualActive = Math.hypot(manualDirection.x, manualDirection.y) > EPSILON;
   let source = 'stable';
@@ -112,10 +122,11 @@ export function resolveAimIntent(state, {
   } else if (tick <= state.manualUntilTick) {
     direction = state.lastManualDirection;
     source = 'manual-hold';
-  } else if (state.autoFireEnabled && target) {
-    direction = normalize({ x: target.x - actor.x, y: target.y - actor.y });
+  } else if (state.autoFireEnabled && (target || fallback)) {
+    const automaticTarget = target ?? fallback;
+    direction = normalize({ x: automaticTarget.x - actor.x, y: automaticTarget.y - actor.y });
     source = 'autofire';
-    targetId = String(target.id);
+    targetId = String(automaticTarget.id);
   }
 
   state.stableDirection = direction;
@@ -124,6 +135,6 @@ export function resolveAimIntent(state, {
     source,
     automatic: source !== 'manual' && source !== 'manual-hold',
     targetId,
-    fire: Boolean(input?.fire) || (state.autoFireEnabled && (manualActive || Boolean(target))),
+    fire: Boolean(input?.fire) || (state.autoFireEnabled && (manualActive || Boolean(target) || source === 'autofire')),
   });
 }

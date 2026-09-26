@@ -7,7 +7,8 @@ import { createMeleeTarget, stepMeleeState, createMeleeState } from '../apps/hmh
 import { resolveGrenadeBlast, createGrenadeState } from '../apps/hmh-reboot/src/grenades.mjs';
 import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
 import { createEnemyNavGrid, computeEnemyFlowField } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
-import { createWorldDesignState, worldDesignActiveBlockers, refreshWorldDesignGateNavigation } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { refreshWorldDesignGateNavigation } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { createMissionState, missionActiveBlockers } from '../apps/hmh-reboot/src/mission-objectives.mjs';
 const queryGround = createLevelOneGroundQuery();
 const point = d => ({...d.anchor,z:0});
 const hurt = (d,id=d.id,p=point(d)) => createHurtTarget({id,bodyShape:{type:'circle',radius:d.radius},hurtShape:{type:'circle',radius:d.radius},previousGround:p,currentGround:p,minZ:0,maxZ:d.maxZ,health:d.hitPoints});
@@ -61,14 +62,14 @@ test('same-seed damage breaks cover once, opens navigation and resets in a new r
   }
   const a=run(),b=run();assert.deepEqual(a,b);assert.equal(a.events.length,8);assert.ok(a.events.every(e=>e.tick===7));
   assert.deepEqual(a.events.map(e=>e.id),a.events.map(e=>e.id).sort());
-  const gates=createWorldDesignState(),grid=createEnemyNavGrid({world,queryGround});
+  const gates=createMissionState(1),grid=createEnemyNavGrid({world,queryGround});
   for(const d of cover.WORLD_DESTRUCTIBLES){
-    gates.openGates.add(d.id);const blockers=worldDesignActiveBlockers(gates,world.collisionBlockers);
+    gates.openGates.add(d.id);const blockers=missionActiveBlockers(gates,world.collisionBlockers);
     refreshWorldDesignGateNavigation(grid,world,queryGround,d.id,blockers);
     assert.ok(!blockers.some(b=>b.id===d.id));
   }
   assert.equal(cover.worldDestructibleTargets(cover.createWorldDestructibleState()).length,8+cover.WORLD_FUEL_DRUMS.length);
-  assert.equal(worldDesignActiveBlockers(createWorldDesignState(),world.collisionBlockers).length,world.collisionBlockers.length);
+  assert.equal(missionActiveBlockers(createMissionState(1),world.collisionBlockers).length,world.collisionBlockers.length);
 });
 
 test('supplies require destruction, nearby same-height contact and line of sight, then collect once',()=>{

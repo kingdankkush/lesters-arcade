@@ -6,7 +6,8 @@ import { WORLD_HAZARD_RULES, WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardPhase, wor
 import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
 import { createWorldDesignLife } from '../apps/hmh-reboot/src/world-design-life.mjs';
-import { createWorldDesignState } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { createMissionState } from '../apps/hmh-reboot/src/mission-objectives.mjs';
+import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 
 const HAZARDS = LEVEL_ONE_WORLD.interactions.hazards;
 const byKind = (kind) => HAZARDS.find((h) => h.kind === kind);
@@ -104,9 +105,10 @@ test('the movement field slows inside the spore bed, drifts inside the conveyor 
   const inside = worldHazardField(stacked, { x: spore.anchor.x, y: spore.anchor.y, groundZ: 0 });
   assert.ok(Math.abs(inside.speed - 0.55 * 0.55) < 1e-12);
   assert.deepEqual(inside.drift, { x: 150, y: 0 });
-  // The hashwood shrine stays outside the bed so resting there is never slowed.
+  // The hashwood shrine's operate spot stays outside the bed so cranking it is never slowed.
   const query = createLevelOneGroundQuery();
-  assert.equal(worldHazardField(HAZARDS, { x: 7380, y: 3450, groundZ: query(7380, 3450).groundZ }).speed, 1);
+  const shrine = WORLD_DESIGN_SITES.find((site) => site.id === 'hashwood-shrine');
+  assert.equal(worldHazardField(HAZARDS, { x: shrine.x, y: shrine.y, groundZ: query(shrine.x, shrine.y).groundZ }).speed, 1);
   assert.deepEqual([...WORLD_ENVIRONMENT_WEAPON_IDS], ['world-steam', 'world-rockfall', 'world-grid', 'world-fuel']);
   for (const id of WORLD_ENVIRONMENT_WEAPON_IDS) assert.ok(!(id in HMH_RUN_SUMMARY_CATALOGS.weapons) && !Object.values(HMH_RUN_SUMMARY_CATALOGS.weapons).includes(id), `${id} must stay off the run-summary weapon catalog`);
 });
@@ -120,7 +122,8 @@ class FakeContainer { constructor() { this.children = []; } addChild(...c) { thi
 class FakeText { constructor() { this.anchor = { set() {} }; this.position = { set() {} }; this.style = {}; this.text = ''; this.visible = false; } }
 
 function renderAt({ tick, actor, hazards = HAZARDS, announce = null, life = createWorldDesignLife({ ContainerClass: FakeContainer, GraphicsClass: FakeGraphics, TextClass: FakeText }), particleBudget = 10, reduceMotion = false, reduceFlash = false }) {
-  const report = life.render({ state: createWorldDesignState(), actor, camera: { zoom: 1 }, view: { width: 20_000, height: 20_000 }, worldToScreen: (p) => ({ x: p.x, y: p.y - p.z }), queryGround: flat, tick, particleBudget, reduceMotion, reduceFlash, hazards, announce });
+  // A mission with no objectives isolates the hazard layers from rings and lamps.
+  const report = life.render({ mission: createMissionState(0, { objectives: Object.freeze([]) }), actor, camera: { zoom: 1 }, view: { width: 20_000, height: 20_000 }, worldToScreen: (p) => ({ x: p.x, y: p.y - p.z }), queryGround: flat, tick, particleBudget, reduceMotion, reduceFlash, hazards, announce });
   return { report, ground: JSON.stringify(life.ground.commands), commands: life.ground.commands, effects: JSON.stringify(life.overlay.children[0].commands), life };
 }
 
@@ -223,7 +226,7 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   assert.equal(source.match(/const playerInvulnerable = evidenceSafeEnabled \|\| isDashInvulnerable\(dashState, tick\);/g).length, 1);
   const hoisted = source.indexOf('const playerInvulnerable = evidenceSafeEnabled');
   const targets = source.indexOf('const hazardTargets = [');
-  const steam = source.indexOf('buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,');
+  const steam = source.indexOf('buildWorldDesignHazardHits(missionState,{tick,targets:hazardTargets,');
   const hazards = source.indexOf('buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround })');
   const hurt = source.indexOf('const playerHurtTarget = playerHealth > 0 && !playerInvulnerable');
   assert.ok(hoisted > 0 && hoisted < targets && targets < steam && steam < hazards && hazards < hurt);

@@ -4,8 +4,7 @@ import { TouchControlState, TOUCH_CONTROL_SPEC, touchControlsHintText } from '..
 import { InputState, mapGamepadSnapshot } from '../apps/hmh-reboot/src/input.mjs';
 import { actionHelpRows, keyboardActionRecord, DEFAULT_KEYBOARD_BINDINGS } from '../apps/hmh-reboot/src/action-map.mjs';
 import { createAimState, resolveAimIntent } from '../apps/hmh-reboot/src/aim.mjs';
-import { createWorldDesignState, stepWorldDesign } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
-import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
+import { MISSION_OBJECTIVES, MISSION_RULES, createMissionState, stepMissionObjectives } from '../apps/hmh-reboot/src/mission-objectives.mjs';
 
 test('only movement, aim, grenade, swap and the menu are exposed; old gestures never emit extra actions',()=>{
   assert.deepEqual(TOUCH_CONTROL_SPEC.buttons.map(b=>b.action),['grenade','weaponNext','pause']);
@@ -48,16 +47,26 @@ test('releasing a touch stick cannot resurrect a recent mouse aim',()=>{
   input.setTouch({aimX:0,aimY:0},20);assert.equal(input.snapshot(context).actions.aim.active,false);
 });
 
-test('walking past an accessible control activates it once and machinery finishes without waiting',()=>{
-  const state=createWorldDesignState(),site=WORLD_DESIGN_SITES[0];
-  const step=(tick,player,blocked=false)=>stepWorldDesign(state,{tick,player,queryGround:()=>({groundZ:0}),lineBlocked:()=>blocked});
-  step(0,{...site,vx:240});
-  assert.equal(state.activating.get(site.id),0);
-  const events=[];
-  for(let tick=1;tick<site.holdTicks;tick++) events.push(...step(tick,{x:site.x+500,y:site.y,vx:240}).events);
-  assert.equal(events.length,1);assert.ok(state.openGates.has(site.gateId));
-  step(site.holdTicks,{...site});assert.equal(state.activating.size,0);
-  const blocked=createWorldDesignState();
-  stepWorldDesign(blocked,{tick:0,player:site,queryGround:()=>({groundZ:0}),lineBlocked:()=>true});
-  assert.equal(blocked.activating.size,0);
+test('walking through a quick ring commits it and the machinery finishes without waiting; a channel never fills on the move',()=>{
+  // Mission core v2 (S1.4): no button. A quick node commits after 12 ticks in
+  // its ring and then finishes on its own; a channel fills only standing still.
+  const quick=MISSION_OBJECTIVES.find(row=>row.mode==='quick'),channel=MISSION_OBJECTIVES.find(row=>row.mode==='channel'&&!row.requires);
+  const walk=(state,node,{blocked=false}={})=>{
+    const events=[],speed=4,start=node.operate.x-node.ringRadius-8;
+    for(let tick=0;tick<220;tick++){
+      const player={x:start+tick*speed,y:node.operate.y,groundZ:0};
+      events.push(...stepMissionObjectives(state,{tick,player,move:{x:1,y:0},queryGround:()=>({groundZ:0}),lineClear:()=>!blocked}).events);
+    }
+    return events;
+  };
+  const state=createMissionState(1);
+  const events=walk(state,quick);
+  assert.deepEqual(events.filter(e=>e.type==='objective-completed').map(e=>e.objectiveId).slice(0,1),[quick.id]);
+  assert.ok(state.openGates.has(quick.effects[0].gateId));
+  assert.ok(Math.ceil(2*quick.ringRadius/4)>=MISSION_RULES.quick.commitTicks,'a run through the ring always commits');
+  assert.equal(walk(createMissionState(1),quick,{blocked:true}).length,0,'a wall between the hero and the spot blocks it');
+  const moving=createMissionState(1);
+  walk(moving,channel);
+  assert.equal(moving.completed.has(channel.id),false);
+  assert.equal(moving.zoneState.get(channel.id).progress,0);
 });

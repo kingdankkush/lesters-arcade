@@ -27,6 +27,9 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'level-briefing.mjs',
   'upgrade-panel.mjs',
   'progression-content.mjs',
+  // Mission core v2 (S1.4): the objective simulation and, through it, the v7
+  // contract; guidance and the palette travel with the lazy world life.
+  'mission-objectives.mjs',
 ]);
 
 function walk(node, visit) {
@@ -69,6 +72,9 @@ test('the HMH initial static graph leaves the panel, card text, boss, objective 
     assert.equal(graph.has(`apps/hmh-reboot/src/${module}`), false, `${module} must not be on the initial static path`);
   }
   assert.equal(graph.has('apps/hmh-reboot/src/upgrade-card-presentation.mjs'), false, 'card presentation travels with the lazy panel');
+  for (const module of ['apps/hmh-reboot/src/mission-guidance.mjs', 'apps/hmh-reboot/src/mission-palette.mjs', 'sdk/hmh-run-contract-v7.mjs', 'sdk/hmh-run-summary-schema-v7.mjs']) {
+    assert.equal(graph.has(module), false, `${module} stays off the initial path`);
+  }
   // The simulation's own modules stay on the initial path.
   for (const module of ['simulation.mjs', 'run-progression.mjs', 'weapon-system.mjs', 'cockpit-ui.mjs', 'level-one-world.mjs']) {
     assert.equal(graph.has(`apps/hmh-reboot/src/${module}`), true, `${module} stays static`);
@@ -101,8 +107,8 @@ test('boot awaits the lazy runtime modules before any lazily bound code runs or 
   assert.ok(start >= 0 && awaitAt > start, 'boot starts the loads and awaits them');
   assert.ok(start < bootSource.indexOf('await app.init('), 'the chunks download while the renderer initialises');
   // Every call to a lazily bound function in boot comes after the await.
-  const lazyNames = ['createWorldDesignLife', 'createWorldDesignState', 'createWorldDesignPacing', 'createUpgradePanel', 'loadWorldDesignAppearance',
-    'createLiquidatorBoss', 'stepLiquidatorBoss', 'stepWorldDesign', 'resolveLevelBriefing', 'applyLevelBriefing', 'liquidatorPose', 'creatureAnimationTick',
+  const lazyNames = ['createWorldDesignLife', 'createMissionState', 'createWorldDesignPacing', 'createUpgradePanel', 'loadWorldDesignAppearance',
+    'createLiquidatorBoss', 'stepLiquidatorBoss', 'stepMissionObjectives', 'resolveLevelBriefing', 'applyLevelBriefing', 'liquidatorPose', 'creatureAnimationTick',
     'renderLiquidatorTelegraph', 'prepareWorldDesignEnemyPose', 'stepWorldDesignPacing'];
   const bootAst = parse(`(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)})`, { ecmaVersion: 'latest' });
   const awaitInWrapped = `(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)}`.indexOf('await lazyRuntimeModules;');

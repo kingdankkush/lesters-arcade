@@ -5,6 +5,7 @@ import {chromium} from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright
 import {startPortalStaticServer} from './hmh-reboot-portal-e2e.mjs';
 import {OBJECTIVE_REWARDS} from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import {WORLD_DESIGN_SITES, WORLD_DESIGN_COURTS} from '../apps/hmh-reboot/src/world-design-encounters.mjs';
+import {MISSION_OBJECTIVES} from '../apps/hmh-reboot/src/mission-objectives.mjs';
 
 // Walks every gated destination from discovery (task prompt on approach) to
 // unlock (gate segments removed) to pickup (registry count 1) and back out of
@@ -63,9 +64,21 @@ try {
         await page.mouse.down();await page.waitForTimeout(ms);await page.mouse.up();
       }
     };
-    // Approach: the site is a straight walk along one axis from the tour spawn.
+    // S1.4 mission core: the Winch Handle opens the winch; fetch it first.
+    const needs=MISSION_OBJECTIVES.find(row=>row.id===siteId)?.requires;
+    if(needs){
+      const item=MISSION_OBJECTIVES.find(row=>row.id===needs).anchor;
+      await move('y',item.y);await move('x',item.x);
+      await page.waitForFunction(id=>JSON.parse(document.querySelector('#hmhRebootStage').dataset.missionCompleted??'[]').includes(id),needs);
+      await move('x',site.x);await move('y',site.y+(siteId==='crossing-pump'?-100:100));
+    }
+    // Approach: the operate spot is a straight walk along one axis from the
+    // tour spawn. The hero stops on it: a quick node commits on arrival, a
+    // channel fills while the hero stands still (released keys or stick).
     await move('y',site.y);
-    await page.waitForFunction(id=>JSON.parse(document.querySelector('#hmhRebootStage').dataset.worldOpenGates).includes(id),site.gateId);
+    await page.waitForFunction(id=>JSON.parse(document.querySelector('#hmhRebootStage').dataset.worldOpenGates).includes(id),site.gateId,{timeout:15000});
+    // Step off the prop's line (it stands 46 units along the facing).
+    await move('y',site.y+60);
     await shot('open');
     if(siteId==='mining-valve'){
       // The trap vents across the mouth for warning + duration = 240 ticks.

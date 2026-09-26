@@ -797,10 +797,13 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   // The pickup includes a loaded weapon plus an authored reserve. Repeat
   // pickups add reserve, bounded at twice the authored grant so hoarding
   // cannot trivialize the finite-ammo economy.
-  weapon.ammoInClip = progression.clipSize;
-  if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
-  weapon.reloadStartedTick = null;
-  weapon.reloadCompleteTick = null;
+  // As in refillWeaponLoadout, a live channel keeps its cells.
+  if (!weapon.channelState?.active) {
+    weapon.ammoInClip = progression.clipSize;
+    if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
+    weapon.reloadStartedTick = null;
+    weapon.reloadCompleteTick = null;
+  }
   if (authored !== null) {
     weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
   }
@@ -843,6 +846,10 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     if (authored !== null) {
       weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
     }
+    // A live Arc Rifle channel keeps its cells (the ledger cannot be refilled
+    // mid-channel); the grant still tops up the reserve, and the clip refills
+    // on the next reload. 1.8.1 threw here inside the fixed step.
+    if (weapon.channelState?.active) continue;
     weapon.ammoInClip = progression.clipSize;
     if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
     if (weapon.burnerState) {
@@ -979,9 +986,13 @@ export function stepWeaponLoadout(state, {
   meleeTargets = [],
   meleeBlockers = [],
   meleeDownwardDropDirection = null,
+  // Mission channels stow the weapon (design package §3.2): nothing fires, and
+  // a charge in flight is cancelled rather than released.
+  stowed = false,
 } = {}) {
   assertMonotonic(state, tick);
   const events = [];
+  if (stowed) fire = false;
   coolWeaponHeat(state, tick, progressionByWeapon, events);
   completeReloads(state, tick, progressionByWeapon, events);
   // Owner playtest 2026-08-02: an exhausted pickup stranded the player
@@ -1004,6 +1015,11 @@ export function stepWeaponLoadout(state, {
   const weapon = state.weapons[state.activeWeaponId];
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
+  if (stowed && weapon.chargeStartedTick !== null) {
+    events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks: tick - weapon.chargeStartedTick }));
+    weapon.chargeStartedTick = null;
+    weapon.chargeReadyAnnounced = false;
+  }
   if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
   if (definition.kind === 'melee-alternating') {
     const standardFrame = stepForkedStandard(weapon.standardState, {
