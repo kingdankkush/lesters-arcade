@@ -73,10 +73,11 @@ visuals when it is on.
 
 Everything is stored under `stacked-player-settings-v1`. The file stores
 `video.effectsPreset` and also the fields the preset expands to, so the saved
-object never contradicts itself and a rollback to 1.8.2, the rollback target,
-reads fields it already knows. 1.8.1 and 1.8.2 ship the same pre-preset STACKED
-host, validator, settings and child files (no diff between 60ea173a and
-9e863ca2).
+object never contradicts itself and a rollback to 1.8.3, the rollback target,
+reads fields it already knows. 1.8.1, 1.8.2 and 1.8.3 ship the same pre-preset
+STACKED host, validator, settings and child files (no diff between 60ea173a,
+9e863ca2, 3cbd2538 and the integration head b7c8307a this branch is rebased on).
+1.8.3 went live without this change, so it ships in 1.8.4 at the earliest.
 
 `readStackedSettings(storage, reducedMotion, { prefersReducedMotion })`:
 
@@ -112,7 +113,7 @@ ignored. The bridge (`stacked-bridge-protocol.mjs`) accepts `effectsPreset`,
 
 ### Deploy skew
 
-An arcade tab that loaded a 1.8.1/1.8.2 (pre-preset) `stacked-host.mjs` chunk
+An arcade tab that loaded a 1.8.1–1.8.3 (pre-preset) `stacked-host.mjs` chunk
 before a deploy keeps that exact-key validator in memory, but relaunching
 STACKED loads the new child. That validator rejects `effectsPreset`, `scene`
 and `reactiveBoard`. The rejection happens before the host advances its message sequence, so every
@@ -124,7 +125,7 @@ the old host is already in memory.
 
 - `stackedParentKnowsPresets(init.settings)` is true only when the init
   settings carry a valid `effectsPreset`. Only such a parent is sent the three
-  preset keys. Any other parent gets exactly the 1.8.1/1.8.2 (pre-preset) key
+  preset keys. Any other parent gets exactly the 1.8.1–1.8.3 (pre-preset) key
   set, which the current host classifies back to the same preset (0 → off,
   minimal → calm, 0.7 → standard, 1 → full).
 - `withStackedEffectsPreset` gives settings without a preset (from `portal:init`
@@ -140,9 +141,10 @@ the old host is already in memory.
 `tests/stacked-preferences-bridge.test.mjs` pins the pre-preset request key set,
 round-trips every preset through a pre-preset host echo, and keeps a muted
 pre-preset save muted through the next preferences request. The key set was also
-checked against the real 60ea173a (1.8.1) validator, which 1.8.2 ships unchanged.
+checked against the real 60ea173a (1.8.1) validator, which 1.8.2 and 1.8.3 ship
+unchanged.
 
-The reverse case is a 1.8.1/1.8.2 (pre-preset) child with a new host. It needs
+The reverse case is a 1.8.1–1.8.3 (pre-preset) child with a new host. It needs
 the new portal chunk from the network and the old child from a cache, because the service worker is
 network-first for scripts and HTML. The pre-preset child then rejects the new
 `portal:init` with "Invalid parent message", so the launch fails before a run
@@ -241,6 +243,16 @@ Browser and build pass (2026-09-25, rebased on `da3c0756`):
   Left-handed buttons is a stop only on touch. Every change reaches the parent
   key, and the run never starts.
 
+Release gate after the rebase onto the integration head `b7c8307a` (2026-09-25):
+
+- `npm run check` passes (1,008 JS modules and 118 Python scripts).
+- `npm run build` passes. STACKED initial JS is 574,802 B against the 607,000 B
+  cap, and the entry is 27,775 B against 29,000 B.
+- `npm run test:release`: PASS, 5,125 tests, 5,074 passed, exactly the 51
+  ledgered failures.
+- The browser smokes above were not rerun: no STACKED file changed in the
+  rebase, and the only conflict was the gate record.
+
 The first browser run found two defects, which are now fixed:
 
 - The segment pills were 18 px tall inside 44 px hit areas. The generic `label`
@@ -266,7 +278,7 @@ These change what existing players see, so say so when this ships:
   on Reduced motion. Calm also drops music reactivity and scenes.
 - **Old looks are rounded to the nearest preset.** A saved intensity from 0.55
   up to 0.85 becomes Standard (0.7), and 0.85 or more becomes Full (1.0). So a
-  player who chose 0.55 sees about 0.15 more intensity. A 1.8.1/1.8.2 save with
+  player who chose 0.55 sees about 0.15 more intensity. A 1.8.1–1.8.3 save with
   the scene set to Off or the music-reactive board off becomes Calm, which also
   turns off music reactivity and scenes.
 - **A saved fixed backdrop scene now follows the automatic scene deck under
@@ -276,9 +288,10 @@ These change what existing players see, so say so when this ships:
   Standard or Full the backdrop is `auto` and crossfades with the music; Calm
   and Off show no scene.
 
-### Player notes for 1.8.3
+### Player notes for the release that ships this
 
-Paste-ready lines for the 1.8.3 player notes:
+1.8.3 went live without this change, so these lines belong in the player notes
+of the release that ships it (1.8.4 at the earliest). Paste-ready:
 
 - STACKED settings now fit on one card. A single Effects choice (Off, Calm,
   Standard or Full) replaces the old Effect intensity, Minimal effects, React to
@@ -296,7 +309,9 @@ Paste-ready lines for the 1.8.3 player notes:
 ## Scope
 
 Every file this change touches, against the base `da3c0756` (1.8.2 is
-`da3c0756` plus its release commit, with no STACKED file changes):
+`da3c0756` plus its release commit, with no STACKED file changes). After the
+rebase onto the integration head `b7c8307a` (1.8.3 plus the 1.8.4 perf and
+jackpot-ui merges, again with no STACKED file changes) the file list is the same:
 
 Runtime:
 
@@ -334,9 +349,11 @@ Docs:
 
 Gate record:
 
-- `docs/testing/hmh-reboot-test-retirement-gate.json` was regenerated on this
-  branch. It is the only merge conflict with the release line; take the release
-  line's side and regenerate it once after integration.
+- `docs/testing/hmh-reboot-test-retirement-gate.json`. The branch's first
+  regenerated record was dropped in the rebase onto `b7c8307a` (the release
+  line's side was taken), and the record from the rebased branch's gate run is
+  committed on top. If it conflicts at merge, take the release line's side and
+  regenerate it once after integration.
 
 ## Follow-ups
 
