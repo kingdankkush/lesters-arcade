@@ -230,6 +230,10 @@ export function writeRuntimeTelemetry({
   dataset.collectibleSpeedMultiplier = String(collectibleSnapshot?.speedMultiplier ?? 1);
   dataset.audioVoices = String(combatAudio.status().activeVoices);
   dataset.audioUnknownCues = String(combatAudio.status().unknownCues);
+  // Web Audio engine state (perf step 5/8): 'locked' until the first gesture.
+  dataset.audioContext = audioSnapshot.contextState ?? '';
+  dataset.audioSamplesReady = String(audioSnapshot.samplesReady ?? 0);
+  dataset.audioSamplesFailed = String(audioSnapshot.samplesFailed ?? 0);
   dataset.lastWeaponFire = lastWeaponFire?.weaponId ?? '';
   dataset.lastMeleeTick = lastMeleeAttack ? String(lastMeleeAttack.tick) : '';
   dataset.lastMeleeHits = String(lastMeleeAttack?.hits ?? 0);

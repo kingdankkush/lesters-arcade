@@ -74,6 +74,16 @@ game.on('console', (message) => { if (message.type() === 'error') gameErrors.pus
 await game.goto(`${origin}/hmh-reboot/index.html?debugGrid=1&evidenceSafe=1&weaponPilot=1`, { waitUntil: 'networkidle' });
 await game.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.weaponId === 'coin-blaster', null, { timeout: 30_000 });
 await game.locator('canvas').focus();
+// SFX run on Web Audio (perf step 5/8): the context opens on the first
+// trusted gesture, as it does for a player. Shift is unbound in the game.
+const unlockAudio = async () => {
+  await game.keyboard.press('ShiftLeft');
+  await game.waitForFunction(() => {
+    const data = document.querySelector('#hmhRebootStage')?.dataset ?? {};
+    return data.audioContext === 'running' && Number(data.audioSamplesReady) > 0;
+  }, null, { timeout: 30_000 });
+};
+await unlockAudio();
 await game.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === 'coin-blaster', null, { timeout: 30_000 });
 
 const stageState = () => game.locator('#hmhRebootStage').evaluate((stage) => ({
@@ -81,6 +91,8 @@ const stageState = () => game.locator('#hmhRebootStage').evaluate((stage) => ({
   lastWeaponFire: stage.dataset.lastWeaponFire,
   audioVoices: Number(stage.dataset.audioVoices),
   audioUnknownCues: stage.dataset.audioUnknownCues,
+  audioContext: stage.dataset.audioContext,
+  audioSamplesFailed: stage.dataset.audioSamplesFailed,
 }));
 const fired = { 'coin-blaster': await stageState() };
 // Weapons now equip through pickups and fire automatically. Exercise those
@@ -88,6 +100,7 @@ const fired = { 'coin-blaster': await stageState() };
 for (const [siteId, weaponId] of [['ravine-salvage', 'scatter-shotgun'], ['yard-extraction-console', 'launcher-rig'], ['mining-control-room', 'auto-miner']]) {
   await game.goto(`${origin}/hmh-reboot/index.html?evidenceSafe=1&telemetry=1&worldTour=collectible-${siteId}`, { waitUntil: 'networkidle' });
   await game.waitForFunction((expected) => document.querySelector('#hmhRebootStage')?.dataset.weaponId === expected, weaponId, { timeout: 30_000 });
+  await unlockAudio();
   await game.mouse.move(1_050, 450);
   await game.waitForFunction((expected) => document.querySelector('#hmhRebootStage')?.dataset.lastWeaponFire === expected, weaponId, { timeout: 10_000 });
   fired[weaponId] = await stageState();
@@ -114,6 +127,8 @@ const routed = { fired, voiceWindow, errors: gameErrors };
 for (const [weaponId, state] of Object.entries(fired)) {
   assert.equal(state.lastWeaponFire, weaponId, `${weaponId} did not fire`);
   assert.equal(state.audioUnknownCues, '0', `${weaponId}: the child refused ${state.audioUnknownCues} cue(s) at the registry gate`);
+  assert.equal(state.audioContext, 'running', `${weaponId}: the Web Audio context is ${state.audioContext}`);
+  assert.equal(state.audioSamplesFailed, '0', `${weaponId}: ${state.audioSamplesFailed} sample(s) failed to fetch or decode`);
 }
 assert.equal(voiceWindow.unknownCues, '0', 'registry refusals during the auto-miner hold');
 assert.ok(voiceWindow.maxVoices >= 1, 'weapon fire must occupy at least one voice');

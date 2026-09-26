@@ -15,33 +15,27 @@ import test from 'node:test';
 import { createCombatAudio } from '../apps/hmh-reboot/src/combat-audio.mjs';
 import { HMH_WEAPON_SFX } from '../apps/hmh-reboot/src/weapon-audio.mjs';
 import { HMH_AUDIO_MIX, HMH_SFX_CUE_REGISTRY, validateHmhAudioSystem } from '../apps/portal/src/hmh-audio-system.mjs';
+import {
+  FakeAudioContext,
+  FakeMusic,
+  effectiveGain,
+  fakeSampleFetch,
+  resetFakeAudio,
+  startedSources,
+} from './helpers/fake-web-audio.mjs';
 
-class FakeAudio {
-  static instances = [];
-
-  constructor(src) {
-    this.src = src;
-    this.volume = 1;
-    this.ended = false;
-    this.paused = true;
-    this.pauseCalls = 0;
-    FakeAudio.instances.push(this);
-  }
-
-  play() {
-    this.paused = false;
-    return Promise.resolve();
-  }
-
-  pause() {
-    this.pauseCalls += 1;
-    this.paused = true;
-  }
-}
-
-function fresh(options = {}) {
-  FakeAudio.instances = [];
-  return createCombatAudio({ AudioCtor: FakeAudio, ...options });
+// Perf step 5/8: SFX are Web Audio buffer sources. A source's buffer carries
+// the sample path; effectiveGain() is what the old element `volume` reported.
+async function fresh(options = {}) {
+  resetFakeAudio();
+  const audio = createCombatAudio({
+    AudioCtor: FakeMusic,
+    AudioContextCtor: FakeAudioContext,
+    fetchSample: fakeSampleFetch().fetchSample,
+    ...options,
+  });
+  await audio.unlock();
+  return audio;
 }
 
 function repoText(relativePath) {
@@ -57,8 +51,8 @@ function childRuntimeCueIds() {
   return [...new Set([...literalCues, ...Object.keys(HMH_WEAPON_SFX)])].sort();
 }
 
-test('S-2: every synthesised weapon cue is registered and plays through the registry', () => {
-  const audio = fresh();
+test('S-2: every synthesised weapon cue is registered and plays through the registry', async () => {
+  const audio = await fresh();
   const silent = [];
   let now = 0;
   for (const [cueId, cue] of Object.entries(HMH_WEAPON_SFX)) {
@@ -67,8 +61,8 @@ test('S-2: every synthesised weapon cue is registered and plays through the regi
     if (!result.played) silent.push(`${cueId}: ${result.reason}`);
   }
   assert.deepEqual(silent, [], 'synthesised cues that the registry gate refuses');
-  assert.equal(FakeAudio.instances.length, Object.keys(HMH_WEAPON_SFX).length);
-  for (const instance of FakeAudio.instances) assert.match(instance.src, /^\.\.\/assets\/audio\/sfx\/hmh-[a-z-]+\.wav$/);
+  assert.equal(startedSources().length, Object.keys(HMH_WEAPON_SFX).length);
+  for (const source of startedSources()) assert.match(source.buffer.src, /^\.\.\/assets\/audio\/sfx\/hmh-[a-z-]+\.wav$/);
 });
 
 test('S-2: the child runtime cue set validates against the portal registry', () => {
@@ -98,29 +92,29 @@ test('S-2: the portal-side coverage floors survive the additions', () => {
   for (const family of families) assert.ok(HMH_AUDIO_MIX.familyCaps[family] > 0, `${family} has no cap`);
 });
 
-test('S-2: reduceMotion from the settings channel dampens heavy-family cues like the portal player does', () => {
-  const plain = fresh();
+test('S-2: reduceMotion from the settings channel dampens heavy-family cues like the portal player does', async () => {
+  const plain = await fresh();
   plain.play('player-hit', { now: 1_000, volume: 0.1 });
-  const plainVolume = FakeAudio.instances[0].volume;
+  const plainVolume = effectiveGain(startedSources()[0]);
 
-  const reduced = fresh();
+  const reduced = await fresh();
   // Same object the child passes today: combatAudio.setBusLevels(settings).
   reduced.setBusLevels({ musicEnabled: true, screenShake: true, gore: false, reduceMotion: true, reduceFlash: false, colorblindTags: false });
   reduced.play('player-hit', { now: 1_000, volume: 0.1 });
-  const reducedVolume = FakeAudio.instances[0].volume;
+  const reducedVolume = effectiveGain(startedSources()[0]);
 
   assert.ok(plainVolume > 0);
   assert.ok(Math.abs(reducedVolume - plainVolume * HMH_AUDIO_MIX.accessibility.reduceMotionVolumeMul) < 1e-3,
     `expected ${plainVolume} x 0.82, received ${reducedVolume}`);
 
   // Non-heavy families are untouched by the accessibility multiplier.
-  const reducedWeapon = fresh();
+  const reducedWeapon = await fresh();
   reducedWeapon.setBusLevels({ reduceMotion: true });
   reducedWeapon.play('weapon-fire', { now: 1_000, volume: 0.1 });
-  const reducedWeaponVolume = FakeAudio.instances[0].volume;
-  const plainWeapon = fresh();
+  const reducedWeaponVolume = effectiveGain(startedSources()[0]);
+  const plainWeapon = await fresh();
   plainWeapon.play('weapon-fire', { now: 1_000, volume: 0.1 });
-  assert.equal(reducedWeaponVolume, FakeAudio.instances[0].volume);
+  assert.equal(reducedWeaponVolume, effectiveGain(startedSources()[0]));
   assert.equal(reducedWeaponVolume, 0.068);
   assert.equal(reducedWeapon.status().reduceMotion, true);
   assert.equal(plainWeapon.status().reduceMotion, false);
@@ -128,57 +122,61 @@ test('S-2: reduceMotion from the settings channel dampens heavy-family cues like
   assert.deepEqual(Object.keys(plainWeapon.status().buses), ['music', 'sfx', 'ui', 'dynamicRange']);
 });
 
-test('S-2: a live boss cue ducks weapon, movement and reward cues for a bounded window', () => {
-  const audio = fresh();
+test('S-2: a live boss cue ducks weapon, movement and reward cues for a bounded window', async () => {
+  const audio = await fresh();
   assert.equal(audio.play('boss-phase', { now: 1_000, volume: 0.14 }).played, true);
   audio.play('weapon-fire', { now: 1_100, volume: 0.1 });
   audio.play('dash', { now: 1_150, volume: 0.1 });
   audio.play('pickup', { now: 1_200, volume: 0.1 });
   audio.play('player-hit', { now: 1_250, volume: 0.1 });
   audio.play('menu-click', { now: 1_300, volume: 0.1 });
-  const [, weapon, dash, pickup, damage, ui] = FakeAudio.instances;
+  const [, weapon, dash, pickup, damage, ui] = startedSources().map(effectiveGain);
+  // The reference run below resets the fake; keep the boss run's context.
+  const bossRun = FakeAudioContext.instances.at(-1);
 
-  const reference = fresh();
+  const reference = await fresh();
   reference.play('weapon-fire', { now: 1_100, volume: 0.1 });
   reference.play('dash', { now: 1_150, volume: 0.1 });
   reference.play('pickup', { now: 1_200, volume: 0.1 });
   reference.play('player-hit', { now: 1_250, volume: 0.1 });
   reference.play('menu-click', { now: 1_300, volume: 0.1 });
-  const [refWeapon, refDash, refPickup, refDamage, refUi] = FakeAudio.instances;
+  const [refWeapon, refDash, refPickup, refDamage, refUi] = startedSources().map(effectiveGain);
 
   const close = (a, b) => Math.abs(a - b) < 1e-3;
-  assert.ok(close(weapon.volume, refWeapon.volume * 0.7), `weapon ${weapon.volume} vs ${refWeapon.volume}`);
-  assert.ok(close(dash.volume, refDash.volume * 0.7), `movement ${dash.volume} vs ${refDash.volume}`);
-  assert.ok(close(pickup.volume, refPickup.volume * 0.7), `reward ${pickup.volume} vs ${refPickup.volume}`);
-  assert.equal(damage.volume, refDamage.volume, 'damage is never ducked');
-  assert.equal(ui.volume, refUi.volume, 'ui is never ducked');
+  assert.ok(refWeapon > 0 && refDash > 0 && refPickup > 0 && refDamage > 0 && refUi > 0);
+  assert.ok(close(weapon, refWeapon * 0.7), `weapon ${weapon} vs ${refWeapon}`);
+  assert.ok(close(dash, refDash * 0.7), `movement ${dash} vs ${refDash}`);
+  assert.ok(close(pickup, refPickup * 0.7), `reward ${pickup} vs ${refPickup}`);
+  assert.equal(damage, refDamage, 'damage is never ducked');
+  assert.equal(ui, refUi, 'ui is never ducked');
 
   // The window is time-based, not voice-lifetime-based: a boss voice that
   // never reports `ended` cannot hold the duck past the window.
   audio.play('weapon-fire', { now: 1_700, volume: 0.1 });
-  const late = FakeAudio.instances.at(-1);
-  assert.equal(late.volume, refWeapon.volume, 'duck must release after the window even while the boss voice is held');
+  const late = bossRun.sources.at(-1);
+  assert.equal(effectiveGain(late), refWeapon, 'duck must release after the window even while the boss voice is held');
 });
 
-test('S-2: the boss cue itself keeps its 0.16 clamp and is never ducked by another boss voice', () => {
-  const reference = fresh();
+test('S-2: the boss cue itself keeps its 0.16 clamp and is never ducked by another boss voice', async () => {
+  const reference = await fresh();
   reference.play('combo-boss-threshold', { now: 1_100, volume: 0.14 });
-  const referenceVolume = FakeAudio.instances[0].volume;
-  const audio = fresh();
+  const referenceVolume = effectiveGain(startedSources()[0]);
+  const audio = await fresh();
   audio.play('boss-phase', { now: 1_000, volume: 0.14 });
   audio.play('combo-boss-threshold', { now: 1_100, volume: 0.14 });
-  assert.equal(FakeAudio.instances[0].volume, 0.16);
-  assert.equal(FakeAudio.instances[1].volume, referenceVolume);
+  const [boss, threshold] = startedSources();
+  assert.equal(effectiveGain(boss), 0.16);
+  assert.equal(effectiveGain(threshold), referenceVolume);
   assert.ok(referenceVolume > 0.15);
 });
 
-test('S-2: status counts registry-gate refusals so a browser gate can assert zero', () => {
-  const audio = fresh();
+test('S-2: status counts registry-gate refusals so a browser gate can assert zero', async () => {
+  const audio = await fresh();
   assert.equal(audio.status().unknownCues, 0);
   assert.deepEqual(audio.play('not-a-cue', { now: 1 }), { played: false, reason: 'unknown-cue' });
   assert.deepEqual(audio.play('also-not-a-cue', { now: 2 }), { played: false, reason: 'unknown-cue' });
   assert.equal(audio.status().unknownCues, 2);
-  assert.equal(FakeAudio.instances.length, 0);
+  assert.equal(startedSources().length, 0);
   audio.play('weapon-fire', { now: 3, volume: 0.1 });
   assert.equal(audio.status().unknownCues, 2, 'a played cue does not change the refusal count');
 });
@@ -200,8 +198,10 @@ test('S-2: the registry gate itself is kept -- routing is the fix, not a wider g
 });
 
 test('production gameplay audio excludes footsteps, movement and status jingles but keeps combat and pickups',async()=>{
- const audio=fresh({gameplayOnly:true});await audio.unlock();
- for(const cue of ['footstep-dirt','footstep-road','dash','land','level-up','combo-milestone','upgrade-offer','low-health','game-over','menu-click'])assert.equal(audio.play(cue,{now:1000}).reason,'presentation-cue-disabled',cue);
+ const audio=await fresh({gameplayOnly:true});
+ // Owner decision (2026-09-25): footsteps are retired in every mode.
+ for(const cue of ['footstep-dirt','footstep-road'])assert.equal(audio.play(cue,{now:1000}).reason,'cue-retired',cue);
+ for(const cue of ['dash','land','level-up','combo-milestone','upgrade-offer','low-health','game-over','menu-click'])assert.equal(audio.play(cue,{now:1000}).reason,'presentation-cue-disabled',cue);
  for(const [i,cue]of ['weapon-fire','reload-complete','enemy-hit','pickup','silver-collect'].entries())assert.equal(audio.play(cue,{now:2000+i*500}).played,true,cue);
  audio.destroy();
 });

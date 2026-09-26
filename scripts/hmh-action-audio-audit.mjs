@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCombatAudio } from '../apps/hmh-reboot/src/combat-audio.mjs';
 import { HMH_WEAPON_SFX } from '../apps/hmh-reboot/src/weapon-audio.mjs';
+import { FakeAudioContext, FakeMusic, effectiveGain, fakeSampleFetch, resetFakeAudio } from '../tests/helpers/fake-web-audio.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const portal = path.join(root, 'apps/portal');
@@ -49,40 +50,44 @@ function reconstructedPeak(data) {
   return peak;
 }
 
-class AudioProbe {
-  static instances = [];
-  static now = 0;
-  constructor(src) {
-    this.src = src;
-    this.startedAt = AudioProbe.now;
-    this.stoppedAt = Infinity;
-    this.ended = false;
-    this.paused = true;
-    AudioProbe.instances.push(this);
-  }
-  play() { this.paused = false; return Promise.resolve(); }
-  pause() { this.paused = true; this.stoppedAt = AudioProbe.now; }
+// The real player on the fake Web Audio graph the unit tests use (perf step
+// 5/8): a source's buffer names its sample, its gain is read from the graph at
+// start (a released voice is disconnected), and the fake context clock gives
+// start/stop times for the offline mix.
+async function realPlayer() {
+  resetFakeAudio();
+  const audio = createCombatAudio({ AudioCtor: FakeMusic, AudioContextCtor: FakeAudioContext, fetchSample: fakeSampleFetch().fetchSample });
+  await audio.unlock();
+  return { audio, context: FakeAudioContext.instances.at(-1) };
 }
+const lastVoice = (context) => {
+  const voice = context.sources.at(-1);
+  voice.routedGain ??= effectiveGain(voice);
+  return voice;
+};
 
 const samples = new Map();
 const rows = [];
+// Owner decision (2026-09-25): footsteps are retired from playback; their
+// manifest entries remain until the portal-owned manifest is cleaned up.
+const retired = [];
 for (const [id, spec] of Object.entries(manifest.cues)) {
-  AudioProbe.instances = [];
-  const audio = createCombatAudio({ AudioCtor: AudioProbe });
+  if (/^footstep-/.test(spec.runtimeCue)) { retired.push(id); continue; }
+  const { audio, context } = await realPlayer();
   const requestedVolume = HMH_WEAPON_SFX[id]?.gain ?? (spec.runtimeCue === 'reload-complete' ? .18 : .14);
   const played = audio.play(spec.runtimeCue, { now: 1000, volume: requestedVolume });
   assert.equal(played.played, true, `${spec.runtimeCue}: ${played.reason}`);
-  const voice = AudioProbe.instances.at(-1);
-  const { bytes, data } = decode(voice.src);
+  const voice = lastVoice(context);
+  const { bytes, data } = decode(voice.buffer.src);
   assert.equal(createHash('sha256').update(bytes).digest('hex'), spec.sha256, `${id}: runtime path does not match manifest`);
   const peak = peakOf(data);
   const oversampledPeak = reconstructedPeak(data);
   assert.ok(peak <= .781 && oversampledPeak < .9, `${id}: sample peak ${peak}, reconstructed peak ${oversampledPeak}`);
   assert.ok(rms(data) > .02, `${id}: nearly silent`);
-  samples.set(voice.src, data);
+  samples.set(voice.buffer.src, data);
   rows.push({ id, runtimeCue: spec.runtimeCue, sha256: spec.sha256, bytes: bytes.length,
     durationMs: spec.durationMs, peak: rounded(peak), reconstructedPeak4x: rounded(oversampledPeak),
-    rms: rounded(rms(data)), routedVolume: voice.volume, routedRms: rounded(rms(data)*voice.volume) });
+    rms: rounded(rms(data)), routedVolume: voice.routedGain, routedRms: rounded(rms(data)*voice.routedGain) });
   audio.destroy();
 }
 
@@ -109,26 +114,25 @@ for (const at of [800, 2200, 4300]) schedule.push({ at, cue: 'grenade-boom', vol
 schedule.push({ at: 1200, cue: 'health-pickup', volume: .16 }, { at: 2500, cue: 'berserk-activate', volume: .16 },
   { at: 5500, cue: 'upgrade-pick', volume: .13 });
 schedule.sort((a, b) => a.at - b.at);
-AudioProbe.instances = [];
-const audio = createCombatAudio({ AudioCtor: AudioProbe });
+const { audio, context } = await realPlayer();
+const voices = () => context.sources.filter(voice => voice.started && !voice.buffer?.priming);
 let maxVoices = 0;
 for (const event of schedule) {
-  AudioProbe.now = event.at;
-  for (const voice of AudioProbe.instances) {
-    if (!voice.ended && voice.startedAt + samples.get(voice.src).length / rate * 1000 <= event.at) {
-      voice.ended = true;
-      voice.onended?.();
+  context.clock = event.at;
+  for (const voice of voices()) {
+    if (!voice.ended && voice.stoppedAt === null && voice.startedAt + samples.get(voice.buffer.src).length / rate * 1000 <= event.at) {
+      voice.finish();
     }
   }
-  audio.play(event.cue, { now: event.at, volume: event.volume });
+  if (audio.play(event.cue, { now: event.at, volume: event.volume }).played) lastVoice(context);
   maxVoices = Math.max(maxVoices, audio.status().activeVoices);
 }
 const mix = new Float64Array(rate * 8);
-for (const voice of AudioProbe.instances) {
-  const data = samples.get(voice.src);
+for (const voice of voices()) {
+  const data = samples.get(voice.buffer.src);
   const start = Math.round(voice.startedAt / 1000 * rate);
-  const count = Math.min(data.length, Math.round((voice.stoppedAt - voice.startedAt) / 1000 * rate));
-  for (let i = 0; i < count && start + i < mix.length; i++) mix[start+i] += data[i] * voice.volume;
+  const count = Math.min(data.length, Math.round(((voice.stoppedAt ?? Infinity) - voice.startedAt) / 1000 * rate));
+  for (let i = 0; i < count && start + i < mix.length; i++) mix[start+i] += data[i] * voice.routedGain;
 }
 assert.ok(maxVoices <= 16);
 assert.equal(audio.status().unknownCues, 0);
@@ -153,7 +157,7 @@ wav(audition, path.join(output, 'action-sfx-audition.wav'));
 const report = {
   schema: 'hmh-action-audio-audit-v1', pipelineId: manifest.pipelineId,
   scope: 'Actual routed mono PCM samples and synthetic overlapping combat mix; no music, device or human listening certification.',
-  totalBytes: rows.reduce((sum, cue) => sum + cue.bytes, 0), sampleRate: rate, cues: rows,
+  totalBytes: rows.reduce((sum, cue) => sum + cue.bytes, 0), sampleRate: rate, cues: rows, retiredFromPlayback: retired,
   denseMix: { attemptedEvents: schedule.length, maxVoices, unknownCues: audio.status().unknownCues,
     peak: rounded(mixPeak), rms: rounded(rms(mix)), clippedSamples: 0, file: 'action-combat-mix.wav' },
   audition: { file: 'action-sfx-audition.wav', cueSpacingSeconds: 1.4, gain: 'actual routed volume; no normalization', order },

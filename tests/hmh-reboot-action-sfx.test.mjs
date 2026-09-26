@@ -5,15 +5,31 @@ import { createHash } from 'node:crypto';
 import { createCombatAudio } from '../apps/hmh-reboot/src/combat-audio.mjs';
 import { weaponFireGain } from '../apps/hmh-reboot/src/weapon-audio.mjs';
 import { createWeaponLoadout, stepWeaponLoadout } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import {
+  FakeAudioContext,
+  FakeMusic,
+  effectiveGain,
+  fakeSampleFetch,
+  resetFakeAudio,
+  startedSources,
+} from './helpers/fake-web-audio.mjs';
 
 const root = new URL('../apps/portal/', import.meta.url);
 const manifest = JSON.parse(readFileSync(new URL('assets/audio/sfx/hmh-weapon-sfx-manifest.json', root)));
-class AudioProbe {
-  static voices = [];
-  constructor(src) { this.src = src; this.paused = true; this.ended = false; AudioProbe.voices.push(this); }
-  play() { this.paused = false; return Promise.resolve(); }
-  pause() { this.paused = true; }
+// The real player on a fake Web Audio graph (perf step 5/8): each started
+// source's buffer names the sample file it was decoded from.
+async function realPlayer(options = {}) {
+  resetFakeAudio();
+  const player = createCombatAudio({
+    AudioCtor: FakeMusic,
+    AudioContextCtor: FakeAudioContext,
+    fetchSample: fakeSampleFetch().fetchSample,
+    ...options,
+  });
+  await player.unlock();
+  return player;
 }
+const voiceSources = () => startedSources().map(source => source.buffer.src);
 function pcm(src) {
   const bytes = readFileSync(new URL(src.replace('../assets/', 'assets/'), root));
   assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
@@ -34,15 +50,14 @@ test('pistol and automatic fire carry a sustained pressure body as well as an in
   }
 });
 
-test('hits, reloads, power-ups and reward choices reach distinct authored samples through the real player', () => {
-  AudioProbe.voices = [];
-  const player = createCombatAudio({ AudioCtor: AudioProbe });
+test('hits, reloads, power-ups and reward choices reach distinct authored samples through the real player', async () => {
+  const player = await realPlayer();
   const cues = ['hmh-weapon-reload', 'reload-complete', 'enemy-hit', 'player-hit', 'grenade', 'grenade-boom',
     'health-pickup', 'ammo-pickup', 'time-dilation-activate', 'berserk-activate', 'pickup', 'upgrade-offer', 'upgrade-pick'];
   cues.forEach((cue, index) => assert.equal(player.play(cue, { now: index * 1000, volume: .14 }).played, true));
-  const hashes = AudioProbe.voices.map(voice => {
-    assert.match(voice.src, /\/hmh-[a-z-]+\.wav$/, voice.src);
-    return createHash('sha256').update(pcm(voice.src).bytes).digest('hex');
+  const hashes = voiceSources().map(src => {
+    assert.match(src, /\/hmh-[a-z-]+\.wav$/, src);
+    return createHash('sha256').update(pcm(src).bytes).digest('hex');
   });
   assert.equal(new Set(hashes).size, cues.length, 'different combat/reward events must be distinguishable by sound');
   player.destroy();
@@ -80,30 +95,32 @@ test('authored sample manifest binds shipped PCM and leaves clean attack/tail an
   assert.ok(totalBytes <= 1_750_000, `short mono sample budget exceeded: ${totalBytes}`);
 });
 
-test('rapid combat audio respects the voice cap, protects damage, and still obeys mute and pause', () => {
-  AudioProbe.voices = [];
-  const player = createCombatAudio({ AudioCtor: AudioProbe, maxVoices: 16 });
+test('rapid combat audio respects the voice cap, protects damage, and still obeys mute and pause', async () => {
+  const player = await realPlayer({ maxVoices: 16 });
   for (let i = 0; i < 96; i++) {
     player.play(i % 2 ? 'enemy-hit' : 'hmh-fire-auto-miner', { now: i * 50, volume: .22 });
     assert.ok(player.status().activeVoices <= 16);
   }
   assert.equal(player.play('player-hit', { now: 4900, volume: .14 }).played, true);
-  assert.ok(AudioProbe.voices.filter(voice => !voice.paused).length <= 16);
+  const live = () => startedSources().filter(source => !source.stopped && !source.ended);
+  assert.ok(live().length <= 16);
   player.setBusLevels({ sfxVolume: 0 });
   player.play('hmh-fire-coin-blaster', { now: 5000, volume: .22 });
-  assert.equal(AudioProbe.voices.at(-1).volume, 0);
+  assert.equal(effectiveGain(startedSources().at(-1)), 0);
   player.pause();
-  assert.ok(AudioProbe.voices.every(voice => voice.paused));
+  assert.equal(live().length, 0);
   assert.equal(player.play('hmh-fire-coin-blaster', { now: 6000 }).played, false);
   player.destroy();
 });
 
-test('creature deaths, melee and ranged warnings, and each boss beat have distinct original samples', () => {
-  AudioProbe.voices=[];
-  const player=createCombatAudio({AudioCtor:AudioProbe});
-  const cues=['enemy-death','enemy-melee-tell','enemy-ranged-tell','boss-phase','boss-hit','boss-death','dash','footstep-dirt','footstep-road'];
+test('creature deaths, melee and ranged warnings, and each boss beat have distinct original samples', async () => {
+  const player=await realPlayer();
+  // Owner decision (2026-09-25): no footsteps, so the two footstep samples are
+  // no longer part of the distinct set; they are refused instead.
+  const cues=['enemy-death','enemy-melee-tell','enemy-ranged-tell','boss-phase','boss-hit','boss-death','dash'];
   for(const [i,cue] of cues.entries())assert.equal(player.play(cue,{now:i*1500}).played,true,cue);
-  const hashes=AudioProbe.voices.map(voice=>createHash('sha256').update(pcm(voice.src).bytes).digest('hex'));
+  for(const cue of ['footstep-dirt','footstep-road'])assert.equal(player.play(cue,{now:20000}).reason,'cue-retired',cue);
+  const hashes=voiceSources().map(src=>createHash('sha256').update(pcm(src).bytes).digest('hex'));
   assert.equal(new Set(hashes).size,cues.length);
   player.destroy();
 });
