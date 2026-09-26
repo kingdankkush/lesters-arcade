@@ -12,7 +12,9 @@ import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import {
   HMH_V6_CONSISTENCY_REJECTS,
+  HMH_V6_CONSISTENCY_RULES,
   hmhV6LevelEntry,
+  hmhV6MeleeCadenceLimit,
   validateRebootRunPlausibility,
 } from '../server/verify/hmh-plausibility.mjs';
 import { HMH_RUN_SUMMARY_SCHEMA_VERSION } from '../server/verify/hmh.mjs';
@@ -39,6 +41,7 @@ const EXPECTED_FLAGS = Object.freeze({
   '1.8.4/r70-knifer-hashwood-110000': ['kills-near-capacity'],
 });
 
+const V6C = HMH_V6_CONSISTENCY_RULES;
 const corpora = readdirSync(CORPUS_DIR)
   .filter((name) => /^real-child-\d+\.\d+\.\d+\.json$/.test(name))
   .sort()
@@ -89,6 +92,60 @@ test('no real honest run is rejected, and each carries exactly the flags listed 
   }
   for (const name of Object.keys(EXPECTED_FLAGS)) assert.ok(seen.has(name), `${name} is in the corpus`);
   t.diagnostic(`verdicts ${JSON.stringify(verdicts)}`);
+});
+
+// Round 3, item 1: the melee-trail rules were written from what the child
+// records for the knife and the Forked Standard in these runs, so the corpus
+// must keep holding the play they bound, and every run must show the trail the
+// rules rest on.
+test('melee trail: the corpus holds knife-heavy and Forked Standard play, and every run shows the trail the rules rest on', (t) => {
+  const runs = corpora.flatMap((corpus) => corpus.runs.map((run) => ({ ...run, release: corpus.child.release })));
+  const knife = (summary) => summary.weapons.find((row) => row.weaponId === V6C.melee.knifeWeapon);
+  const standard = (summary) => summary.weapons.find((row) => row.weaponId === V6C.melee.standardWeapon);
+  let knifeKillRuns = 0;
+  let worstKnifeCadence = 0;
+  let worstStandardCadence = 0;
+  let mostKnifeKills = 0;
+  for (const run of runs) {
+    const name = `${run.release}/${run.label}`;
+    const { runSummary: summary } = run;
+    const ticks = summary.totals.survivalTicks;
+    const k = knife(summary);
+    const f = standard(summary);
+    // The knife swings only with a hit (stepMeleeState: automatic && no hit is
+    // no attack), so its triggers are its trigger contacts; every hit is a
+    // contact, and a kill is a hit.
+    assert.equal(k.triggers, k.triggerContacts, `${name}: knife swings all hit`);
+    assert.ok(k.projectileContacts >= k.triggerContacts, name);
+    assert.ok(k.kills <= k.projectileContacts, `${name}: knife kills ${k.kills} of ${k.projectileContacts} contacts`);
+    assert.ok(k.triggers <= hmhV6MeleeCadenceLimit(ticks, V6C.melee.knifeCooldownTicks), name);
+    // The Standard: one trigger per strike, recorded in the weapon row and in
+    // the forkedStandard block alike; a kill is a hit, a hit is a contact.
+    assert.equal(f.triggers, summary.forkedStandard.attacks, `${name}: Standard strikes`);
+    assert.equal(f.projectileContacts, summary.forkedStandard.contacts, `${name}: Standard contacts`);
+    assert.equal(summary.forkedStandard.whiffs, summary.forkedStandard.attacks - f.triggerContacts, `${name}: Standard whiffs`);
+    assert.ok(f.kills <= f.projectileContacts, `${name}: Standard kills ${f.kills} of ${f.projectileContacts} contacts`);
+    assert.ok(f.triggers <= hmhV6MeleeCadenceLimit(ticks, V6C.melee.standardCooldownTicks), name);
+    if (k.kills > 0) knifeKillRuns += 1;
+    mostKnifeKills = Math.max(mostKnifeKills, k.kills);
+    worstKnifeCadence = Math.max(worstKnifeCadence, k.triggers / hmhV6MeleeCadenceLimit(Math.max(ticks, 1), V6C.melee.knifeCooldownTicks));
+    worstStandardCadence = Math.max(worstStandardCadence, f.triggers / hmhV6MeleeCadenceLimit(Math.max(ticks, 1), V6C.melee.standardCooldownTicks));
+  }
+  const knifers = runs.filter((run) => run.style === 'knifer');
+  const standards = runs.filter((run) => run.style === 'standard');
+  const holders = standards.filter((run) => standard(run.runSummary).pickups > 0);
+  const standardKillers = standards.filter((run) => standard(run.runSummary).kills > 0);
+  assert.ok(knifers.length >= 10, `knifer runs: ${knifers.length}`);
+  assert.ok(knifers.filter((run) => knife(run.runSummary).kills > 0).length >= 8, 'at least eight knife-heavy runs with knife kills');
+  assert.ok(standards.length >= 20, `standard runs: ${standards.length}`);
+  assert.ok(holders.length >= 8, `at least eight runs held the Forked Standard: ${holders.length}`);
+  assert.ok(standardKillers.length >= 5, `at least five runs killed with the Forked Standard: ${standardKillers.length}`);
+  assert.ok(knifeKillRuns >= 60, `runs with a knife kill: ${knifeKillRuns}`);
+  assert.ok(mostKnifeKills >= 40, `the most knife kills in one run: ${mostKnifeKills}`);
+  // Honest play stays far under both cadence bounds, point-blank play included.
+  assert.ok(worstKnifeCadence <= 0.2, `knife swings at ${worstKnifeCadence} of the cadence bound`);
+  assert.ok(worstStandardCadence <= 0.2, `Standard strikes at ${worstStandardCadence} of the cadence bound`);
+  t.diagnostic(`knife kills in ${knifeKillRuns} runs (most ${mostKnifeKills}); Standard held in ${holders.length} of ${standards.length} standard runs, killing in ${standardKillers.length}; worst cadence ratios knife ${worstKnifeCadence.toFixed(4)} Standard ${worstStandardCadence.toFixed(4)}`);
 });
 
 test('the corpus covers every level entry, both heroes and every pilot style, and ends by death', (t) => {

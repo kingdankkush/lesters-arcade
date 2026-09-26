@@ -54,6 +54,10 @@ export function printReport({ runs }, log = console.log) {
   best('grenades-thrown-above-supply (slack)', done.map((r) => ({ key: m(r).grenadeSupply.slack, label: r.label, text: `${m(r).grenadeSupply.thrown}/${m(r).grenadeSupply.supply}` })));
   log(`  damage-dealt-mismatch: nonzero diffs=${done.filter((r) => m(r).damage.diff !== 0).length}`);
   best('combo-above-kills (kills-maxCombo)', done.map((r) => ({ key: m(r).combo.kills - m(r).combo.maxCombo, label: r.label, text: `${m(r).combo.maxCombo}/${m(r).combo.kills}` })));
+  best('knife-kills-above-contacts (contacts-kills)', done.map((r) => m(r).knifeContacts && ({ key: m(r).knifeContacts.slack, label: r.label, text: `${m(r).knifeContacts.kills}/${m(r).knifeContacts.contacts} (swings ${m(r).knifeContacts.triggers}, hitting ${m(r).knifeContacts.triggerContacts})` })));
+  log(`  melee-contacts-without-trigger: offending rows=${done.reduce((a, r) => a + (m(r).meleeContactsWithoutTrigger?.length ?? 0), 0)}`);
+  best('knife-triggers-above-cadence (ratio)', done.map((r) => m(r).knifeCadence && ({ key: -(m(r).knifeCadence.ratio ?? 0), label: r.label, text: `${m(r).knifeCadence.triggers}/${m(r).knifeCadence.limit} (${m(r).knifeCadence.ratio})` })));
+  best('standard-triggers-above-cadence (ratio)', done.map((r) => m(r).standardCadence && ({ key: -(m(r).standardCadence.ratio ?? 0), label: r.label, text: `${m(r).standardCadence.strikes}/${m(r).standardCadence.limit} (${m(r).standardCadence.ratio}; contacts ${m(r).standardCadence.contacts}, kills ${m(r).standardCadence.kills})` })));
   best('kills-above-capacity (ratio)', done.map((r) => ({ key: -m(r).killsCapacity.ratio, label: r.label, text: `${m(r).killsCapacity.kills}/${m(r).killsCapacity.capacity} (${m(r).killsCapacity.ratio})` })));
   best('xp-above-ceiling (ratio)', done.map((r) => ({ key: -(m(r).xpCeiling.ratio ?? 0), label: r.label, text: `${m(r).xpCeiling.xp}/${m(r).xpCeiling.ceiling} (${m(r).xpCeiling.ratio})` })));
   best('score-above-ceiling (ratio)', done.map((r) => ({ key: -(m(r).scoreCeiling.ratio ?? 0), label: r.label, text: `${m(r).scoreCeiling.score}/${m(r).scoreCeiling.ceiling} (${m(r).scoreCeiling.ratio})` })));

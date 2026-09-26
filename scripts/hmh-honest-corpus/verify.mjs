@@ -16,6 +16,7 @@ import {
   hmhV6DistrictTravel,
   hmhV6HandGrenadeSupply,
   hmhV6LevelEntry,
+  hmhV6MeleeCadenceLimit,
   hmhV6MinTicksForTravel,
   hmhV6ObjectiveUnlocks,
   hmhV6PickupCapacity,
@@ -70,6 +71,14 @@ export function margins(summary) {
   const weaponSource = summary.weapons.filter((row) => row.pickups > 0 || row.equippedTicks > 0 || row.kills > 0).map((row) => ({
     weaponId: row.weaponId, pickups: row.pickups, cacheCollected: V6C.weaponCaches[row.weaponId] ? (collected[V6C.weaponCaches[row.weaponId]] ?? 0) : null, equippedTicks: row.equippedTicks, kills: row.kills,
   }));
+  // The melee trail (round 3, item 1): the knife's kills against its contacts,
+  // both melee rows' contacts against their trigger contacts, and each melee
+  // weapon's swings against its cadence bound.
+  const knife = summary.weapons.find((row) => row.weaponId === V6C.melee.knifeWeapon);
+  const standard = summary.weapons.find((row) => row.weaponId === V6C.melee.standardWeapon);
+  const knifeCadence = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.knifeCooldownTicks);
+  const standardCadence = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.standardCooldownTicks);
+  const standardStrikes = Math.max(standard.triggers, summary.forkedStandard?.attacks ?? 0);
   return {
     runTicks,
     grenadeKillsVsWeaponKills: { grenadeKills: summary.grenades.kills, grenadeWeaponKills },
@@ -84,6 +93,10 @@ export function margins(summary) {
     grenadeSupply: { thrown: summary.grenades.thrown, supply, slack: supply - summary.grenades.thrown },
     damage: { damageDealt: summary.totals.damageDealt, weaponDamage, diff: summary.totals.damageDealt - weaponDamage },
     combo: { maxCombo: summary.totals.maxCombo, kills: summary.kills.total },
+    knifeContacts: { kills: knife.kills, contacts: knife.projectileContacts, triggerContacts: knife.triggerContacts, triggers: knife.triggers, slack: knife.projectileContacts - knife.kills },
+    meleeContactsWithoutTrigger: [knife, standard].filter((row) => row.projectileContacts > 0 && row.triggerContacts === 0).map((row) => row.weaponId),
+    knifeCadence: { triggers: knife.triggers, limit: knifeCadence, ratio: knifeCadence ? Number((knife.triggers / knifeCadence).toFixed(4)) : null },
+    standardCadence: { strikes: standardStrikes, triggers: standard.triggers, attacks: summary.forkedStandard?.attacks ?? 0, contacts: standard.projectileContacts, kills: standard.kills, limit: standardCadence, ratio: standardCadence ? Number((standardStrikes / standardCadence).toFixed(4)) : null },
     killsCapacity: { kills: summary.kills.total, capacity, ratio: Number((summary.kills.total / capacity).toFixed(4)) },
     xpCeiling: { xp: summary.totals.xp, ceiling: ceilings.xp, ratio: ceilings.xp ? Number((summary.totals.xp / ceilings.xp).toFixed(4)) : null },
     scoreCeiling: { score: summary.totals.score, ceiling: ceilings.score, ratio: ceilings.score ? Number((summary.totals.score / ceilings.score).toFixed(4)) : null },

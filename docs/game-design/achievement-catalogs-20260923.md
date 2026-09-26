@@ -74,7 +74,7 @@ The three hunt achievements count families of reboot enemy roles (`HMH_ROLE_FAMI
 ### HMH stats definitions (choices recorded for review)
 
 - **Grenade kills:** `grenades.kills`, which counts Satoshi Frag and Launcher Rig kills.
-- **Melee kills:** `kills.byWeapon` for `litecoin-knife` plus `forked-standard`.
+- **Melee kills:** `kills.byWeapon` for `litecoin-knife` plus `forked-standard`. Since verifier round 3 (item 1, `HMH-VERIFIER-R3-HANDOFF.md`) the knife's kills are bounded by its recorded contacts and both melee weapons' swings by their cadence (`knife-kills-above-contacts`, `melee-contacts-without-trigger`, `knife-triggers-above-cadence`, `standard-triggers-above-cadence`); the Standard's kills against its contacts is a documented residual until the `hmh-realistic` fixture and the scripted model record Standard contacts.
 - **Weapons used:** the weapons with `equippedTicks > 0`, sorted.
 - **Power-ups:** every collectible except `litecoin-token` and `genesis-seal` (weapon caches, bonus life, Hash Rail core, time dilation, Berserk Candle, nuke). The Genesis Seal is a schema-7 boss drop, not a power-up.
 - **Districts visited and POIs discovered:** the bits set in the exploration masks.
