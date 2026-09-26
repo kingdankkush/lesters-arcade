@@ -81,21 +81,126 @@ def mid(ctx):
     cab = shading.wall('cab', '#6b5236', window=dict(w=3.4, h=3.6, cols_px=4.5, rows_px=6.0, x0=0.0, z0=0.0, z_min=0.5, z_max=6.0, glass='#20262a', lit='#ffc27a', lit_prob=0.95))
     kit.box('cab', coll, cab, lx, ly, lz + 72, 14, 11, 7)
     kit.gable_roof('cabroof', coll, shading.roof('shingle', '#3d2e26', tile=1.5), lx, ly, lz + 79, 14, 11, 5, overhang=1.5, hip=True)
-    # Landmark waterfall: a cliff with a white sheet and a plunge pool of mist.
+    # Landmark waterfall: a two-tier fall in a notch of a stepped, mossy cliff,
+    # white water at the lip and the ledge, a foaming plunge pool and boulders.
     wx, wy = 980, 120; wz = h(wx, wy)
-    cliff = common.mountain_material(W, rock=('#3f4944', '#6a756c'), snow='#6a756c', snow_line=999, name='cliff')
-    bm = bmesh.new()
-    ret = bmesh.ops.create_cube(bm, size=1.0, matrix=Matrix.Translation((wx, wy + 16, wz + 50)) @ Matrix.Diagonal((130, 30, 100, 1)))
-    bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=6, use_grid_fill=True)
-    from mathutils import noise
-    for v in bm.verts:
-        v.co += Vector((noise.noise(v.co * 0.05) * 6, noise.noise(v.co * 0.05 + Vector((3, 1, 2))) * 4, noise.noise(v.co * 0.07 + Vector((7, 2, 5))) * 5))
-    kit.mesh_object('cliff', bm, coll, cliff, smooth=True)
-    water = shading.material('falls', lambda nb: dict(color=nb.ramp(nb.noise(nb.vmath('MULTIPLY', nb.texcoord().outputs['Object'], (1.0, 1.0, 0.08)), scale=0.6, detail=5.0), [(0.3, '#b8d6dc'), (0.7, '#f4fafa')]), rough=0.2, spec=0.5))
-    kit.box('falls', coll, water, wx, wy - 0.5, wz - 2, 24, 2, 100)
-    kit.sphere('mist', coll, shading.flat('mistball', '#e6eff0', rough=1.0, jitter=0.02), wx, wy - 12, wz + 2, 20, subdiv=3, squash=(1.6, 0.8, 0.45), displace=0.3, seed=5)
-    conifer_band(coll, protos, lambda x, y: h(x, y) + (80 if abs(x - wx) < 64 and abs(y - wy - 16) < 16 else 0), wy + 2, wy + 30, 6.0, random.Random('falls'), scale=(0.5, 0.8))
+    waterfall(coll, W, wx, wy, wz, h)
+    conifer_band(coll, protos, lambda x, y: h(x, y) + (96 if abs(x - wx) < 64 and abs(y - wy - 16) < 16 else 0), wy + 2, wy + 30, 6.0, random.Random('falls'), scale=(0.5, 0.8))
     return {'emissive': True, 'landmarks': [{'id': 'waterfall', 'u': wx}]}
+
+
+def cliff_material(name='cliff'):
+    """Dark wet rock in horizontal strata, moss on every upward-facing ledge."""
+    def build(nb):
+        pos = nb.texcoord().outputs['Object']
+        x, y, z = nb.separate(pos)
+        n = nb.noise(pos, scale=0.07, detail=6.0, rough=0.62)
+        strata = nb.noise(nb.combine(nb.math('MULTIPLY', x, 0.05), nb.math('MULTIPLY', y, 0.05), z), scale=0.17, detail=3.0, distortion=0.6)
+        big = nb.noise(pos, scale=0.018, detail=2.0)
+        f = nb.math('ADD', nb.math('ADD', nb.math('MULTIPLY', n, 0.6), nb.math('MULTIPLY', strata, 0.32)), nb.math('MULTIPLY', nb.math('SUBTRACT', big, 0.5), 0.5))
+        rock = nb.ramp(f, [(0.32, '#1f2623'), (0.5, '#3a433e'), (0.68, '#5d675f'), (0.8, '#737d72')])
+        up = nb.separate(nb.geometry().outputs['Normal'])[2]
+        moss_mask = nb.maprange(nb.math('ADD', up, nb.math('MULTIPLY', nb.math('SUBTRACT', n, 0.5), 0.9)), 0.42, 0.72, 0.0, 1.0, smooth=True)
+        moss = nb.ramp(n, [(0.35, '#26391f'), (0.55, '#3d5a2c'), (0.72, '#5e7a3c')])
+        c = nb.mix(rock, moss, moss_mask)
+        normal = nb.bump(nb.math('ADD', n, strata), strength=0.9, distance=2.0)
+        return dict(color=c, rough=0.9, normal=normal, spec=0.3)
+    return shading.material(name, build)
+
+
+def falls_material(z0, z1, name='falls'):
+    """Falling water: broad vertical streaks from slate shadow to white, with
+    white water where it leaves the lip (z1) and where it lands (z0)."""
+    def build(nb):
+        pos = nb.texcoord().outputs['Object']
+        x, y, z = nb.separate(pos)
+        streak = nb.noise(nb.combine(x, y, nb.math('MULTIPLY', z, 0.03)), scale=0.3, detail=3.0, rough=0.55)
+        fine = nb.noise(nb.combine(nb.math('MULTIPLY', x, 1.7), y, nb.math('MULTIPLY', z, 0.09)), scale=0.45, detail=2.0)
+        f = nb.math('ADD', nb.math('MULTIPLY', streak, 0.75), nb.math('MULTIPLY', fine, 0.25))
+        c = nb.ramp(f, [(0.34, '#4f7684'), (0.45, '#8fb6c0'), (0.55, '#d4e8ec'), (0.64, '#ffffff')])
+        churn = nb.noise(pos, scale=0.35, detail=3.0)
+        white = nb.math('MAXIMUM', nb.maprange(z, z1 - 9.0, z1 - 1.0, 0.0, 1.0, smooth=True), nb.maprange(z, z0 + 12.0, z0 + 2.0, 0.0, 1.0, smooth=True))
+        white = nb.math('MULTIPLY', white, nb.maprange(churn, 0.35, 0.6, 0.55, 1.0))
+        c = nb.mix(c, '#f7fbfb', white)
+        return dict(color=c, rough=0.22, spec=0.55)
+    return shading.material(name, build)
+
+
+def rock_mass(name, coll, mat, cx, cy, z0, w, d, h, seed, cuts=10, amp=(9.0, 5.0, 7.0), terrace=10.0, taper=0.26):
+    """A displaced block of rock whose front face steps back in ledges."""
+    from mathutils import noise
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0, matrix=Matrix.Translation((cx, cy, z0 + h / 2)) @ Matrix.Diagonal((w, d, h, 1)))
+    bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=cuts, use_grid_fill=True)
+    off = Vector((seed * 3.1, seed * 1.7, seed * 2.3))
+    for v in bm.verts:
+        p = v.co.copy()
+        n1, n2 = noise.noise(p * 0.045 + off), noise.noise(p * 0.12 + off * 1.3)
+        up = max(0.0, (p.z - z0) / h)
+        t = ((p.z - z0) / terrace + 0.37 * n1) % 1.0
+        ledge = 3.2 * t ** 3 if p.y < cy else 0.0
+        k = 1.0 - taper * up
+        v.co = Vector((cx + (p.x - cx) * k + (n1 + 0.35 * n2) * amp[0],
+                       p.y + (n1 + 0.4 * n2) * amp[1] + ledge,
+                       p.z + (noise.noise(p * 0.05 + off * 0.7) * amp[2] if p.z > z0 + 1 else -2.0)))
+    bm.normal_update()
+    return kit.mesh_object(name, bm, coll, mat, smooth=True)
+
+
+def falls_sheet(name, coll, mat, cx, y, z0, z1, w0, w1, seed, lip=4.0):
+    """A thin sheet of falling water, widening as it falls, arcing out over its lip."""
+    from mathutils import noise
+    bm = bmesh.new()
+    cols, rows = 8, 24
+    grid = []
+    for j in range(rows + 1):
+        z = z1 + (z0 - z1) * j / rows
+        s = (z - z0) / max(1e-6, z1 - z0)
+        width = w0 + (w1 - w0) * s
+        out = lip * (1.0 - smoothstep(0.0, 0.3, 1.0 - s))
+        row = []
+        for i in range(cols + 1):
+            u = i / cols - 0.5
+            wob = noise.noise(Vector((u * 3.0 + seed, z * 0.08, seed))) * 0.8
+            row.append(bm.verts.new((cx + u * width + wob, y - out - 0.6 * (1 - 4 * u * u), z)))
+        grid.append(row)
+    for j in range(rows):
+        for i in range(cols):
+            bm.faces.new((grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]))
+    bm.normal_update()
+    return kit.mesh_object(name, bm, coll, mat, smooth=True)
+
+
+def waterfall(coll, W, wx, wy, wz, h):
+    cliff = cliff_material()
+    rock_mass('cliff', coll, cliff, wx, wy + 18, wz - 2, 150, 32, 112, seed=3, cuts=12)
+    # Buttresses either side put the falls in a notch the water has cut.
+    rock_mass('buttressL', coll, cliff, wx - 30, wy + 4, wz - 2, 30, 18, 96, seed=5, cuts=8, amp=(6.0, 4.0, 6.0), terrace=8.0, taper=0.34)
+    rock_mass('buttressR', coll, cliff, wx + 33, wy + 5, wz - 2, 28, 18, 104, seed=7, cuts=8, amp=(6.0, 4.0, 6.0), terrace=9.0, taper=0.34)
+    rock_mass('ledge', coll, cliff, wx + 2, wy + 2, wz - 2, 30, 14, 56, seed=9, cuts=5, amp=(3.0, 2.0, 2.0), terrace=14.0, taper=0.05)
+    lip, step, foot = wz + 108, wz + 58, wz + 1
+    # Each tier is its own object with its own white water at the lip and the foot.
+    falls_sheet('fallsUpper', coll, falls_material(step, lip, 'fallsUpper'), wx - 1, wy - 3.0, step - 2, lip, 16.0, 20.0, seed=1.3, lip=3.0)
+    falls_sheet('fallsLower', coll, falls_material(foot, step + 2, 'fallsLower'), wx + 2, wy - 5.5, foot, step + 2, 22.0, 30.0, seed=4.1, lip=5.0)
+    foam = shading.flat('foam', '#eef5f5', rough=0.55, jitter=0.16, scale=0.2)
+    rng = random.Random('falls-foam')
+    # White water churning on the ledge and around the landing.
+    for i in range(6):
+        kit.sphere(f'ledgefoam{i}', coll, foam, wx - 9 + i * 3.6 + rng.uniform(-1, 1), wy - 2 + rng.uniform(-1.5, 1.5), step + rng.uniform(-1, 1.5), rng.uniform(2.4, 3.6), subdiv=2, squash=(1.3, 0.9, 0.7), displace=0.35, seed=20 + i)
+    for i in range(18):
+        u = (i + 0.5) / 18 - 0.5
+        x = wx + 2 + u * 44 + rng.uniform(-2, 2)
+        y = wy - 12 + rng.uniform(-5, 4) + 8 * abs(u)
+        r = rng.uniform(2.5, 6.0) * (1.0 - 0.9 * abs(u))
+        kit.sphere(f'foam{i}', coll, foam, x, y, h(x, y) + r * 0.25, max(1.6, r), subdiv=2, squash=(1.4, 0.9, 0.6), displace=0.4, seed=40 + i)
+    pool = shading.water('pool', '#1b3a44', '#5d8f98', W, scale=0.09)
+    px, py = wx + 2, wy - 16
+    bm = bmesh.new()
+    bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=40, radius1=36, radius2=36, depth=1.2, matrix=Matrix.Translation((px, py, h(px, py))) @ Matrix.Diagonal((1.0, 0.42, 1.0, 1.0)))
+    kit.mesh_object('pool', bm, coll, pool, smooth=True)
+    boulder = cliff_material('boulder')
+    for i, (bx, by, br) in enumerate(((wx - 34, wy - 20, 7.5), (wx - 22, wy - 27, 4.5), (wx + 30, wy - 22, 6.5), (wx + 40, wy - 13, 8.0), (wx + 14, wy - 29, 3.8))):
+        kit.sphere(f'boulder{i}', coll, boulder, bx, by, h(bx, by) + br * 0.3, br, subdiv=2, squash=(1.25, 0.9, 0.75), displace=0.3, seed=60 + i)
 
 
 # ---------------------------------------------------------------- NEAR

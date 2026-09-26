@@ -169,7 +169,7 @@
   "golden": [
    {
     "prop": "oak",
-    "contrast": 1.52
+    "contrast": 1.51
    },
    {
     "prop": "rock",
@@ -187,7 +187,7 @@
   "night": [
    {
     "prop": "oak",
-    "contrast": 1.22
+    "contrast": 1.23
    },
    {
     "prop": "rock",
@@ -243,7 +243,7 @@
   "golden": [
    {
     "prop": "oak",
-    "contrast": 1.31
+    "contrast": 1.28
    },
    {
     "prop": "rock",
@@ -261,7 +261,7 @@
   "night": [
    {
     "prop": "oak",
-    "contrast": 1.12
+    "contrast": 1.21
    },
    {
     "prop": "rock",
@@ -279,7 +279,7 @@
   "dawn": [
    {
     "prop": "oak",
-    "contrast": 1.61
+    "contrast": 1.59
    },
    {
     "prop": "rock",
@@ -391,7 +391,7 @@
   "golden": [
    {
     "prop": "oak",
-    "contrast": 1.88
+    "contrast": 1.87
    },
    {
     "prop": "rock",
@@ -409,7 +409,7 @@
   "night": [
    {
     "prop": "oak",
-    "contrast": 1.11
+    "contrast": 1.13
    },
    {
     "prop": "rock",
@@ -427,7 +427,7 @@
   "dawn": [
    {
     "prop": "oak",
-    "contrast": 2.22
+    "contrast": 2.21
    },
    {
     "prop": "rock",

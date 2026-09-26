@@ -59,6 +59,24 @@ test('sun and moon stay in the upper-left third of every view', () => {
   }
 });
 
+test('never two suns: the sun has set before the moon appears, and it rises only after the moon has gone', () => {
+  for (const view of VIEWS) {
+    let prev = null;
+    for (let tick = 0; tick <= 180 * 60; tick++) {
+      const rig = computeLightRig(chikunSkyState(tick / 60), regionState(2), view);
+      assert.ok(Math.min(rig.sun.alpha, rig.moon.alpha) <= 1e-6, `t=${(tick / 60).toFixed(2)}: sun ${rig.sun.alpha.toFixed(2)} and moon ${rig.moon.alpha.toFixed(2)} both visible`);
+      if (prev) assert.ok(Math.abs(rig.sun.alpha - prev.sun) < 0.03 && Math.abs(rig.moon.alpha - prev.moon) < 0.03, `tick ${tick}: sun or moon pops`);
+      prev = { sun: rig.sun.alpha, moon: rig.moon.alpha };
+    }
+  }
+  // A full sun through the day and a full moon through the night.
+  assert.equal(computeLightRig(chikunSkyState(0), regionState(0), VIEWS[0]).sun.alpha, 1);
+  assert.equal(computeLightRig(chikunSkyState(90), regionState(0), VIEWS[0]).moon.alpha, 1);
+  // The golden-hour sun keeps its 1.8.2 strength (the rays and glows were tuned on it).
+  const golden = computeLightRig(chikunSkyState(44), regionState(0), VIEWS[0]);
+  assert.ok(golden.sun.alpha > 0.35, `golden-hour sun ${golden.sun.alpha.toFixed(2)}`);
+});
+
 test('reduced motion freezes the light at noon', () => {
   const a = computeLightRig(chikunSkyState(15, true), regionState(4), VIEWS[0]);
   const b = computeLightRig(chikunSkyState(120, true), regionState(4), VIEWS[0], createLightRig());

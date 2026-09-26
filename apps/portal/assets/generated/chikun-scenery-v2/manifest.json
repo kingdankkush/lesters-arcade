@@ -589,15 +589,15 @@
        "src": "forest/t1/mid.webp",
        "w": 1280,
        "h": 260,
-       "bytes": 21830,
-       "sha256": "b82ce8f4fd6a0b246cad9f7cd6be9e523078436e4839ad29fdebc22d99ee2246"
+       "bytes": 22798,
+       "sha256": "07139d7fd85dab1404502ba8122277ccd083893eb0dc310ca6f20fcc5987f3e2"
       },
       "t2": {
        "src": "forest/t2/mid.webp",
        "w": 2560,
        "h": 520,
-       "bytes": 45442,
-       "sha256": "b542147ea9746b8b7f34ac3cd6bda17e85c3c50f9936578c929403c64f0dbc5d"
+       "bytes": 47084,
+       "sha256": "d1008f71543732c232cdcc4c2ffb5e21032b9c43d03d14fde295f3da82e3c4a8"
       }
      },
      "emit": null
@@ -1201,8 +1201,8 @@
     }
    },
    "bytes": {
-    "t1": 107442,
-    "t2": 207352
+    "t1": 108410,
+    "t2": 208994
    },
    "logicalPx": 1191418,
    "emitPx": 34816
@@ -6167,29 +6167,32 @@
    "values": {
     "lBefore": [
      21.555,
-     35.283,
-     55.822
+     35.173,
+     55.21
     ],
     "lAfter": [
      32.0,
-     35.3,
-     55.7
+     35.2,
+     55.2
     ],
     "chroma": 0.85,
-    "scale": 0.99219
+    "scale": 1.0
    },
    "render": {
     "blender": "5.1.2",
     "samples": 64,
-    "seconds": 2.69,
+    "seconds": 5.78,
     "scripts": {
-     "scripts/chikun-blender/build-chikun-scenery.py": "a09806ec29ebdd9608e75ab41aa6e2198bde9a6799f81ca5c881f27f094298f3",
-     "scripts/chikun-blender/chikun_lib/core.py": "472c14614799a5314c24607cb0761515cdb5f11fcf1ac594546ae65a9f417c1e",
+     "scripts/chikun-blender/build-chikun-scenery.py": "313f0a1b8c952eed0ecea86a5db5503a9091f6b204140000138f94c8ebe9e66c",
+     "scripts/chikun-blender/chikun_lib/core.py": "b35b7c0418fe2c660f0d13c4e135406cbabb5a4f236634c95fbcca47503690dc",
      "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
-     "scripts/chikun-blender/chikun_lib/kit.py": "df6f9e3bea4260d48fcd24b7a91104b586068e0341e88da8b2c75467a9dd9d61",
+     "scripts/chikun-blender/chikun_lib/kit.py": "efdf133a0182cf7042347b4c93bdfd212b4909f314aa7a4affec3a88a6a208a1",
      "scripts/chikun-blender/chikun_lib/periodic.py": "c6a8ad7819ed94ff7d37d4879acd778b69583a98358182715f6a4fce85f6d6eb",
-     "scripts/chikun-blender/regions/forest.py": "b54f3a375c7656136c9edaaee961cfa22fcba7389e165a21f3b551595fb70c20",
-     "scripts/chikun-blender/scenery-spec.json": "0c9e8e2e82fd602b4214c4c6813e8ead45550386552935e94b84b7edb15d8a21"
+     "scripts/chikun-blender/regions/forest.py": "94779fbaf7cdaf39812dba500566aeb021e3f91df65c4cb7a50d1892d8c0e504",
+     "scripts/chikun-blender/regions/common.py": "8293997d1f999d89679ad28d948a6cec7edef0e8fb03d3af94c69e4f48ba7c9d",
+     "scripts/chikun-blender/regions/groundkit.py": "c35cdeedb1e1e7ab14c340703a74ea23ad98652502bf6ef265b2f5da0dd0d7b5",
+     "scripts/chikun-blender/regions/urbankit.py": "3c139b37cfd27353672389c6f31bafa9de199529a4b3c66d26d584d09999a63c",
+     "scripts/chikun-blender/scenery-spec.json": "e7fd8d7bba6b4e6d99b136785dda63343dbbc9456befbea2a927d223066df84a"
     }
    }
   },

@@ -264,7 +264,7 @@ const NODE_CHECK_FILES = [
   'tests/chikun-transitions.test.mjs',
   'tests/chikun-scene-draw.test.mjs',
   'tests/chikun-scenery-catalog.test.mjs',
-  'scripts/lib/chikun-rig-dump.mjs',
+  'scripts/chikun-blender/chikun-rig-dump.mjs',
   'apps/chikun/src/viewport.mjs',
   'tests/chikun-viewport.test.mjs',
   'apps/chikun/src/audio.mjs',
