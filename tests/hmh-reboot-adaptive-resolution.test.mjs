@@ -47,7 +47,9 @@ test('mixed windows use the 95th percentile, ignore bad samples, and desktop nev
 test('the runtime samples the ticker delta and applies a change through the renderer', async () => {
   const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(main, /createAdaptiveResolution\(\{\s*base: performanceProfile\.resolution,/);
-  assert.match(main, /max: performanceProfile\.id === 'mobile' \? Math\.min\(1\.5,/);
+  // Perf step 7: only the Auto graphics tier steps up; an explicit tier is a
+  // fixed resolution (tests/hmh-graphics-quality.test.mjs).
+  assert.match(main, /max: graphicsQuality === 'auto' && performanceProfile\.id === 'mobile' \? Math\.min\(1\.5,/);
   assert.match(main, /const nextResolution = adaptiveResolution\.sample\(ticker\.deltaMS\);/);
   assert.match(main, /app\.renderer\.resolution = nextResolution;/);
   assert.match(main, /dataset\.adaptiveResolution = String\(nextResolution\);/);

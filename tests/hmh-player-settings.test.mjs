@@ -10,10 +10,11 @@ import {
   rebindHmhPlayerKeyboard,
 } from '../apps/portal/src/hmh-player-settings.mjs';
 
-test('M5 persisted settings schema owns controls, gameplay, audio, and accessibility domains', () => {
+test('M5 persisted settings schema owns controls, gameplay, audio, accessibility and graphics domains', () => {
   const settings = normalizeHmhPlayerSettings();
   assert.equal(settings.version, HMH_PLAYER_SETTINGS_VERSION);
-  assert.deepEqual(Object.keys(settings), ['version', 'controls', 'gameplay', 'audio', 'accessibility']);
+  // Perf step 7 added the graphics domain (tests/hmh-graphics-quality.test.mjs).
+  assert.deepEqual(Object.keys(settings), ['version', 'controls', 'gameplay', 'audio', 'accessibility', 'graphics']);
   assert.equal(settings.controls.keyboardBindings.grenade, 'KeyF');
   assert.equal(settings.audio.dynamicRange, 'standard');
   assert.equal(settings.accessibility.hudScale, 1);

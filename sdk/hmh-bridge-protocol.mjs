@@ -48,7 +48,7 @@ function serializedSize(value) {
 
 function validateSettings(value) {
   const booleanFields = ['musicEnabled', 'screenShake', 'gore', 'reduceMotion', 'reduceFlash', 'colorblindTags'];
-  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio', 'cosmetics'];
+  const optionalFields = ['keyboardBindings', 'gamepadDeadzone', 'gamepadSensitivity', 'touchSensitivity', 'touchScale', 'touchLeftHanded', 'aimAssistStrength', 'autoAimAssist', 'musicVolume', 'sfxVolume', 'uiVolume', 'dynamicRange', 'hudScale', 'captionCriticalAudio', 'cosmetics', 'graphicsQuality'];
   if (!isPlainRecord(value)) return 'settings must be a plain object';
   const allowed = new Set([...booleanFields, ...optionalFields]);
   for (const key of Object.keys(value)) if (!allowed.has(key)) return `settings has unexpected field: ${key}`;
@@ -67,6 +67,9 @@ function validateSettings(value) {
     if (Object.hasOwn(value, field) && (!Number.isFinite(value[field]) || value[field] < min || value[field] > max)) return `settings.${field} is out of range`;
   }
   if (Object.hasOwn(value, 'dynamicRange') && !['standard', 'night', 'wide'].includes(value.dynamicRange)) return 'settings.dynamicRange is invalid';
+  // Perf step 7: the Graphics Quality tier, projection-only in the child.
+  // Optional, so a parent that never sends it leaves the child on Auto.
+  if (Object.hasOwn(value, 'graphicsQuality') && !['auto', 'low', 'medium', 'high'].includes(value.graphicsQuality)) return 'settings.graphicsQuality is invalid';
   // Unlockable tints (contract §7.9): the parent resolves them from its own
   // allowlist; the child draws them and never records them.
   if (Object.hasOwn(value, 'cosmetics')) {

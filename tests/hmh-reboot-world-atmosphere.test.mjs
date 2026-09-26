@@ -434,7 +434,8 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
     /dataset\.atmosphereSprites = String\(/u,
     /dataset\.atmosphereDropped = String\(/u,
     /dataset\.atmosphereTint = /u,
-    /const atmosphereBudget = resolveAtmosphereBudget\(performanceProfile\)/u,
+    // `let` since perf step 7: a Graphics Quality change re-reads the budget.
+    /let atmosphereBudget = resolveAtmosphereBudget\(performanceProfile\)/u,
   ]) {
     assert.match(pin.source.includes('dataset') ? runtimeTelemetrySource : source, pin, `runtime is missing ${pin}`);
   }

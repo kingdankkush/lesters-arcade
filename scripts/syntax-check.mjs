@@ -959,6 +959,7 @@ const NODE_CHECK_FILES = [
   "tests/helpers/fake-web-audio.mjs",
   "tests/hmh-mobile-half-res-textures.test.mjs",
   "tests/hmh-mobile-visual-caps.test.mjs",
+  "tests/hmh-graphics-quality.test.mjs",
   "scripts/hmh-hero-atlas-format-harness.mjs",
   "tests/hmh-hero-atlas-format-harness.test.mjs",
   "apps/hmh-reboot/src/deterministic-hash.mjs",

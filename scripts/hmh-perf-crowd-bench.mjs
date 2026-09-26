@@ -41,6 +41,9 @@
 //           Key timing is wall-clock, so walked runs are not tick-reproducible.
 //   --gpu=swiftshader  render WebGL on the CPU (ANGLE SwiftShader) so texture
 //           size and fill cost reach the frame time; compare builds only.
+//   --graphics=auto|low|medium|high  pin the child's Graphics Quality tier
+//           (perf step 7) through `?graphics=`, which the child honours over
+//           the settings channel; the result records the tier it reported.
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -555,7 +558,7 @@ async function runPass({ mode, profileId, cpu = 1 }) {
   const profile = PROFILES[profileId];
   assert.ok(profile, `unknown profile ${profileId}`);
   const census = mode === 'census';
-  const query = `evidenceSafe=1&endurancePressurePilot=1${WEAPON_PILOTS[weapon]}${census ? '&telemetry=1' : ''}`;
+  const query = `evidenceSafe=1&endurancePressurePilot=1${WEAPON_PILOTS[weapon]}${census ? '&telemetry=1' : ''}${options.graphics ? `&graphics=${options.graphics}` : ''}`;
   const session = {
     sessionId: `hmh-perf-crowd-${mode}-${profileId}-${cpu}x`,
     gameId: 'lester-blaster',
@@ -799,7 +802,7 @@ async function runPass({ mode, profileId, cpu = 1 }) {
         tick: Number(data.simulationStepsTotal), droppedMs: Number(data.simulationDroppedMs), wall: performance.now(),
         frames: bench.frames, frameTicks: bench.frameTicks, activeMs: bench.activeMs, longTasks: bench.longTasks,
         silverVisible: bench.silverVisible.length ? { mean: bench.silverVisible.reduce((a, b) => a + b, 0) / bench.silverVisible.length, max: Math.max(...bench.silverVisible) } : null,
-        upgradePicks: bench.upgradePicks, performanceProfile: data.performanceProfile,
+        upgradePicks: bench.upgradePicks, performanceProfile: data.performanceProfile, graphicsQuality: data.graphicsQuality ?? null,
         renderResolution: Number(data.renderResolution), adaptiveResolution: data.adaptiveResolution ?? null,
         catchUpSaturationFrames: Number(data.simulationCatchUpSaturationFrames),
         audio: { ...bench.audio },
@@ -849,6 +852,7 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       processCpuSeconds,
       viewport: profile.viewport, deviceScaleFactor: profile.deviceScaleFactor,
       performanceProfile: after.performanceProfile, renderResolution: after.renderResolution,
+      graphics: options.graphics ?? null, graphicsQuality: after.graphicsQuality,
       adaptiveResolution: after.adaptiveResolution, canvas: after.canvas,
       ticks: { from: before.tick, to: after.tick, advanced: after.tick - before.tick },
       simSpeed: (after.tick - before.tick) / (wallMs / FIXED_STEP_MS),

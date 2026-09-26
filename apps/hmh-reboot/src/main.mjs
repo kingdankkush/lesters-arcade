@@ -199,6 +199,8 @@ import {
   selectRuntimePerformanceProfile,
   createAdaptiveResolution,
   createProfileTextureLoader,
+  normalizeGraphicsQuality,
+  resolveGraphicsQualityProfile,
 } from './runtime-performance.mjs';
 import { createTouchControlAdapter, createTouchOnboardingGate, isTouchUiEnabled } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid, measureMinimumPrototypeBodyHeight } from './prototype-actor-art.mjs';
@@ -386,14 +388,22 @@ async function boot() {
   const startupContinue = document.querySelector('#hmhStartupContinue');
   let startupGate = null;
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  const performanceProfile = selectRuntimePerformanceProfile({
+  const autoPerformanceProfile = selectRuntimePerformanceProfile({
     width: window.innerWidth,
     devicePixelRatio: window.devicePixelRatio || 1,
     coarsePointer,
     reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   });
-  // Perf step 6: phones load half-size (@0.5x) actor, prop and terrain pages.
-  const textureAssets = createProfileTextureLoader(Assets, performanceProfile);
+  // Perf step 7: the Graphics Quality tier picks the profile. Auto is the
+  // device selection above; Low / Medium / High pin a profile. `?graphics=`
+  // (bench, standalone) wins, then the parent's persisted setting from the
+  // portal:init parked below, then Auto. Resolved before the renderer and the
+  // texture loader exist, so antialias and texture pages follow the tier too.
+  let performanceProfile = autoPerformanceProfile;
+  const runtimeParams = new URLSearchParams(window.location.search);
+  const graphicsOverride = runtimeParams.get('graphics');
+  let resolveBootSettings = () => {};
+  const bootSettings = new Promise((resolve) => { resolveBootSettings = resolve; });
   const touchUiEnabled = isTouchUiEnabled({ coarsePointer, width: window.innerWidth });
   // Owner direction 2026-09-16: desktop mouse wheel zooms +10% / -30% from the
   // readable default; phones keep the default (frame rate first).
@@ -442,6 +452,7 @@ async function boot() {
       expectedParentOrigin: window.location.origin,
       runtimeInfo: { runtimeVersion: RUNTIME_VERSION, renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements'] },
       deferInitialization: true,
+      onInitPending: (payload) => resolveBootSettings(payload.settings),
       onInit: (payload) => {
         initializeSession(payload);
         setStatus('Portal session connected', `${payload.mode.toUpperCase()} // ${payload.heroId} // seed ${payload.session.seed}`);
@@ -475,6 +486,20 @@ async function boot() {
     });
     bridge.start();
   }
+  // The parent sends portal:init in the same turn as its connect (the frame's
+  // load event), so an embedded child normally has the tier within a few
+  // milliseconds; the budget only bounds a parent that never connects, and a
+  // tier that arrives later still applies live (caps, budgets, resolution).
+  // A standalone page never waits.
+  const bootGraphicsQuality = graphicsOverride ?? (bridge
+    ? (await Promise.race([bootSettings, new Promise((resolve) => setTimeout(resolve, 750))]))?.graphicsQuality
+    : undefined);
+  performanceProfile = resolveGraphicsQualityProfile({ quality: bootGraphicsQuality, autoProfile: autoPerformanceProfile, devicePixelRatio: window.devicePixelRatio || 1 });
+  let graphicsQuality = normalizeGraphicsQuality(bootGraphicsQuality);
+  dataset.graphicsQuality = graphicsQuality;
+  // Perf step 6: phones (and the Low and Medium tiers) load half-size (@0.5x)
+  // actor, prop and terrain pages.
+  const textureAssets = createProfileTextureLoader(Assets, performanceProfile);
   await app.init({
     resizeTo: stageElement,
     background: '#071522',
@@ -488,16 +513,17 @@ async function boot() {
   // Adaptive sharpness (2026-09-16): a phone starts at the safe resolution and
   // earns one step up to 1.5 after ~4 s of fast frames; slow frames step it
   // back down for the rest of the session. Desktop keeps its profile value.
-  const adaptiveResolution = createAdaptiveResolution({
+  // Perf step 7: only Auto steps up; an explicit tier is a fixed resolution.
+  const createResolutionPolicy = () => createAdaptiveResolution({
     base: performanceProfile.resolution,
-    max: performanceProfile.id === 'mobile' ? Math.min(1.5, Math.max(performanceProfile.resolution, window.devicePixelRatio || 1)) : performanceProfile.resolution,
+    max: graphicsQuality === 'auto' && performanceProfile.id === 'mobile' ? Math.min(1.5, Math.max(performanceProfile.resolution, window.devicePixelRatio || 1)) : performanceProfile.resolution,
   });
+  let adaptiveResolution = createResolutionPolicy();
   dataset.adaptiveResolution = String(adaptiveResolution.resolution);
   app.canvas.tabIndex = 0;
   app.canvas.setAttribute('aria-label', 'Hard Money Heroes gameplay canvas');
   stageElement.replaceChildren(app.canvas);
 
-  const runtimeParams = new URLSearchParams(window.location.search);
   const pipelinePilotEnabled = runtimeParams.get('pipelinePilot') === '1';
   // The certified four-layer production hero atlas is the shipped player
   // identity. It used to require ?productionPilot=1, which the portal never
@@ -552,7 +578,11 @@ async function boot() {
     contactShadowPool = null;
     console.warn('[HMH] contact shadows disabled', error);
   }
-  const groundShadowLayer = contactShadowPool?.container ?? new Container();
+  // Perf step 7: the Low tier draws no contact shadows. The bake is kept so a
+  // tier change can turn them back on without touching the renderer.
+  const bakedContactShadowPool = contactShadowPool;
+  if (performanceProfile.contactShadows === false) contactShadowPool = null;
+  const groundShadowLayer = bakedContactShadowPool?.container ?? new Container();
   // V-1/V-2: per-weapon muzzle, tracer, casing and surface-typed impact art.
   // Soft cores, dust puffs and casings are baked once and drawn from a capped
   // sprite pool; the same failure rule as the shadows applies.
@@ -583,7 +613,7 @@ async function boot() {
     console.warn('[HMH] world atmosphere disabled', error);
   }
   const atmosphereLayer = atmospherePool?.container ?? new Container();
-  const atmosphereBudget = resolveAtmosphereBudget(performanceProfile);
+  let atmosphereBudget = resolveAtmosphereBudget(performanceProfile);
   // The grade is one flat sprite on the stage: it does not shake with the
   // world container and the on-canvas HUD draws over it.
   const atmosphereTint = new Sprite({ texture: Texture.WHITE });
@@ -1324,10 +1354,33 @@ async function boot() {
   let simulation = null;
   let runProgression = null;
   const PAUSE_SETTING_KEYS = new Set(['musicEnabled', 'screenShake', 'reduceMotion', 'reduceFlash']);
+  // Perf step 7: a tier change re-reads the projection caps, the atmosphere
+  // budget, the particle scale, the contact shadows and the resolution at
+  // once. Antialias and texture pages belong to the renderer and the loaded
+  // atlases, so they follow the tier at the next launch. Nothing here is read
+  // by the simulation. `?graphics=` keeps winning over the settings channel.
+  const applyGraphicsQuality = (requested) => {
+    const quality = normalizeGraphicsQuality(graphicsOverride ?? requested);
+    if (quality === graphicsQuality) return;
+    graphicsQuality = quality;
+    performanceProfile = resolveGraphicsQualityProfile({ quality, autoProfile: autoPerformanceProfile, devicePixelRatio: window.devicePixelRatio || 1 });
+    atmosphereBudget = resolveAtmosphereBudget(performanceProfile);
+    particleScale = performanceProfile.particlesPerHazard;
+    contactShadowPool = performanceProfile.contactShadows === false ? null : bakedContactShadowPool;
+    groundShadowLayer.visible = contactShadowPool !== null;
+    adaptiveResolution = createResolutionPolicy();
+    if (app.renderer.resolution !== adaptiveResolution.resolution) {
+      app.renderer.resolution = adaptiveResolution.resolution;
+      app.resize?.();
+    }
+    dataset.adaptiveResolution = String(adaptiveResolution.resolution);
+    dataset.graphicsQuality = quality;
+  };
   const syncRuntimeSettings = (nextSettings, { notify = false } = {}) => {
     const rankedActive = Boolean(sessionPayload?.mode === 'ranked' && simulation);
     const keyboardBindings = rankedActive ? sessionPayload.settings.keyboardBindings : nextSettings.keyboardBindings;
     settings = { ...settings, ...nextSettings, keyboardBindings };
+    applyGraphicsQuality(settings.graphicsQuality);
     const briefingBindings = normalizeKeyboardBindings(keyboardBindings);
     const keyName = code => code.replace(/^Key|^Digit/, '').replace('Arrow', '');
     const moveCopy = startupPanel?.querySelector?.('[data-briefing-move]');
@@ -1376,6 +1429,14 @@ async function boot() {
     const level = Math.min(1, Math.max(0, Number(value) || 0));
     syncRuntimeSettings({ ...settings, sfxVolume: level }, { notify: true });
     combatAudio.play('pickup', { volume: 0.12 });
+  };
+  // Perf step 7: the Graphics Quality select. An allowed string on
+  // game:settings, persisted by the portal like sfxVolume; standalone it lives
+  // for the session.
+  const applyPauseChoice = (key, value) => {
+    if (key !== 'graphicsQuality') throw new TypeError(`unsupported pause choice ${String(key)}`);
+    syncRuntimeSettings({ ...settings, graphicsQuality: normalizeGraphicsQuality(value) }, { notify: true });
+    combatAudio.play('menu-click', { volume: 0.08 });
   };
   let maxPlayerHealth = 100;
   let upgradePending = false;
@@ -1451,7 +1512,7 @@ async function boot() {
   let shakeMagnitude = 0;
   // Combat sparks and debris inherit the active quality tier, so the
   // reduced-motion profile (0 particles per hazard) emits none.
-  const particleScale = performanceProfile.particlesPerHazard;
+  let particleScale = performanceProfile.particlesPerHazard;
   const triggerCameraShake = (tick, magnitude) => {
     // A stronger impulse overrides a weaker one still decaying.
     if (tick === shakeStartTick && magnitude <= shakeMagnitude) return;
@@ -4827,6 +4888,7 @@ async function boot() {
     onMusicToggle: (enabled) => applyPauseSetting('musicEnabled', enabled),
     onSettingToggle: (key, enabled) => applyPauseSetting(key, enabled),
     onSettingLevel: applyPauseLevel,
+    onSettingChoice: applyPauseChoice,
     onBindingChange: (actionId, code) => {
       const keyboardBindings = rebindKeyboardAction(settings.keyboardBindings, actionId, code, {
         rankedActive: sessionPayload?.mode === 'ranked',

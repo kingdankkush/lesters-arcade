@@ -20,6 +20,19 @@ export const RUNTIME_PRESSURE_LIMITS = Object.freeze({
   visualEventLifetimeTicks: COMBAT_VISUAL_EVENT_LIFETIME_TICKS,
 });
 
+const MOBILE_PROFILE = Object.freeze({
+  id: 'mobile',
+  resolutionCap: 1,
+  antialias: false,
+  particlesPerHazard: 4,
+  worldCullMargin: 128,
+  enemyCullMargin: 160,
+  // Perf step 6: purely visual phone caps (1.8.1 had 32 animated bodies and
+  // the full 48 blood marks).
+  maxAnimatedEnemies: 24,
+  maxGoreMarks: 16,
+});
+
 export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
   desktop: Object.freeze({
     id: 'desktop',
@@ -31,18 +44,7 @@ export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
     maxAnimatedEnemies: 96,
     maxGoreMarks: 48,
   }),
-  mobile: Object.freeze({
-    id: 'mobile',
-    resolutionCap: 1,
-    antialias: false,
-    particlesPerHazard: 4,
-    worldCullMargin: 128,
-    enemyCullMargin: 160,
-    // Perf step 6: purely visual phone caps (1.8.1 had 32 animated bodies and
-    // the full 48 blood marks).
-    maxAnimatedEnemies: 24,
-    maxGoreMarks: 16,
-  }),
+  mobile: MOBILE_PROFILE,
   reducedMotion: Object.freeze({
     id: 'reduced-motion',
     resolutionCap: 1,
@@ -52,6 +54,17 @@ export const RUNTIME_PERFORMANCE_PROFILES = Object.freeze({
     enemyCullMargin: 128,
     maxAnimatedEnemies: 48,
     maxGoreMarks: 48,
+  }),
+  // Perf step 7: the Low graphics tier. Never chosen by the device: only the
+  // player's Graphics Quality setting selects it. The mobile caps, margins and
+  // half pages with fewer particles and blood marks, no contact shadows, and a
+  // resolution pinned at 1 (no adaptive step up).
+  low: Object.freeze({
+    ...MOBILE_PROFILE,
+    id: 'low',
+    particlesPerHazard: 2,
+    maxGoreMarks: 8,
+    contactShadows: false,
   }),
 });
 
@@ -77,19 +90,47 @@ export function selectRuntimePerformanceProfile({ width, devicePixelRatio, coars
 // scripts/build-hmh-mobile-half-res.py writes the files and their manifest.
 const HALF_RES_PAGE = /^((?:\.\.)?\/assets\/generated\/hmh-(?:native-roster|reboot-enemy-roster\/bagholder-rusher|reboot-production-heroes|hero-motion|held-weapons|reboot-authored-props|reboot-tripo-props|terrain-tiles)\/[\w/-]+)\.(?:png|webp)(\?[^#]*)?$/;
 
+// Perf step 7: the Low tier shares the mobile pages.
+const halfPages = (profile) => profile?.id === 'mobile' || profile?.id === 'low';
+
 export function profileTextureUrl(url, profile) {
-  return profile?.id === 'mobile' ? String(url).replace(HALF_RES_PAGE, '$1@0.5x.webp$2') : url;
+  return halfPages(profile) ? String(url).replace(HALF_RES_PAGE, '$1@0.5x.webp$2') : url;
 }
 
 // Desktop keeps Pixi's Assets. A variant that fails to load falls back to the
 // full page, so a phone never loses art to a missing half page.
 export function createProfileTextureLoader(Assets, profile) {
-  if (profile?.id !== 'mobile') return Assets;
+  if (!halfPages(profile)) return Assets;
   return Object.freeze({
     load(url) {
       const variant = profileTextureUrl(url, profile);
       return variant === url ? Assets.load(url) : Assets.load(variant).catch(() => Assets.load(url));
     },
+  });
+}
+
+// Perf step 7: the player-facing Graphics Quality setting. Auto is the device
+// selection above (with adaptive sharpness in main.mjs); Low, Medium and High
+// pin the low, mobile and desktop profiles at the device's pixel ratio. An
+// explicit tier keeps the OS reduced-motion stillness (particles stay at 0):
+// that is an accessibility choice, not a quality one. Projection only: no
+// value here is read by the simulation.
+export const GRAPHICS_QUALITY_TIERS = Object.freeze(['auto', 'low', 'medium', 'high']);
+
+export function normalizeGraphicsQuality(value) {
+  return GRAPHICS_QUALITY_TIERS.includes(value) ? value : 'auto';
+}
+
+export function resolveGraphicsQualityProfile({ quality, autoProfile, devicePixelRatio } = {}) {
+  if (typeof autoProfile?.id !== 'string') throw new TypeError('autoProfile is required');
+  const tier = normalizeGraphicsQuality(quality);
+  if (tier === 'auto') return autoProfile;
+  positiveFinite(devicePixelRatio, 'devicePixelRatio');
+  const base = RUNTIME_PERFORMANCE_PROFILES[{ low: 'low', medium: 'mobile', high: 'desktop' }[tier]];
+  return Object.freeze({
+    ...base,
+    particlesPerHazard: autoProfile.id === 'reduced-motion' ? 0 : base.particlesPerHazard,
+    resolution: Math.min(base.resolutionCap, devicePixelRatio),
   });
 }
 

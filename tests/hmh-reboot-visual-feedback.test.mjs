@@ -69,7 +69,8 @@ test('shake and spark randomness is deterministic, never Math.random', async () 
 
 test('visual effects respect the active performance profile', async () => {
   const source = await readMain();
-  assert.match(source, /const particleScale = performanceProfile\.particlesPerHazard/);
+  // `let` since perf step 7: a Graphics Quality change re-reads the scale.
+  assert.match(source, /let particleScale = performanceProfile\.particlesPerHazard/);
   assert.match(source, /particleScale > 0 \? \(event\.critical \? 8 : 4\) : 0/, 'sparks degrade with the quality tier');
 });
 

@@ -189,6 +189,21 @@
                   <output id="hmhSettingSfxVolumeValue" for="hmhSettingSfxVolume" aria-hidden="true">100%</output>
                   <input id="hmhSettingSfxVolume" type="range" min="0" max="1" step="0.05" value="1" aria-label="SFX volume">
                 </label>
+                <!-- Perf step 7: Graphics Quality. Auto keeps the device profile and
+                     adaptive sharpness; Low / Medium / High pin a runtime profile.
+                     Caps, budgets and resolution change at once; antialias and
+                     texture pages follow the tier at the next launch. Rides
+                     game:settings (graphicsQuality, an optional string) and the
+                     portal persists it in 'hmh-settings'; no save-schema change. -->
+                <label class="hmh-setting-range hmh-setting-choice">
+                  <span><strong>Graphics quality</strong><small>Auto follows the device. Texture detail and edge smoothing apply on the next launch.</small></span>
+                  <select id="hmhSettingGraphicsQuality" aria-label="Graphics quality">
+                    <option value="auto">Auto</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </label>
               </div>
             </section>
             <section aria-labelledby="hmhBuildTitle">
