@@ -33,7 +33,8 @@ L_RANGE = dict(far=28.0, mid=34.0, near=42.0, front=60.0)
 CHROMA = dict(far=0.7, mid=0.85, near=0.95, front=1.0)
 L_BOUNDS = dict(far=(40.0, 92.0), mid=(32.0, 84.0), near=(26.0, 82.0), front=(8.0, 80.0))
 PAD = 8          # wrap padding around each ground band, in tier pixels
-EMIT_CHUNK = 64  # emissive chunk width, logical px
+EMIT_CHUNK = 32  # emissive chunk width, logical px
+EMIT_GAP = 10    # unlit rows that split a chunk column into separate runs
 
 
 def layer_spec(region, layer):
@@ -141,15 +142,22 @@ def encode(rgba, path, quality, alpha_quality=90, lossless_alpha=False):
     return dict(src=path.relative_to(OUT).as_posix(), w=im.width, h=im.height, bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
 
 
-def seam_receipt(full, m, W):
-    """The render is periodic: the right overscan must repeat the tile's left edge."""
-    a = full[:, m:m + m]; b = full[:, m + W:m + W + m]
-    alpha = np.maximum(a[..., 3], b[..., 3])
-    wrap = float((np.abs(a[..., :3] - b[..., :3]).mean(-1) * alpha).sum() / max(1.0, alpha.sum()))
-    cols = np.abs(np.diff(full[:, m:m + W, :3], axis=1)).mean(-1).mean(0)
-    interior = float(np.median(cols))
-    ok = wrap <= max(1.5 * interior, 4 / 255)
-    return dict(wrapDelta=round(wrap, 5), interiorMedian=round(interior, 5), ok=bool(ok))
+def seam_receipt(tile):
+    """The wrap column pair (last -> first) must look like interior column pairs.
+    Robust to an object edge that happens to land on the wrap: the score is the
+    median over opaque rows, so a lighting or texture seam (every row a little
+    off) fails while a single flower edge does not."""
+    a = tile[:, -1]; b = tile[:, 0]
+    opaque = np.maximum(a[..., 3], b[..., 3]) > 0.5
+    if opaque.sum() < 4: return dict(wrapDelta=0.0, interiorP95=0.0, ok=True)
+    wrap = float(np.median(np.abs(a[opaque, :3] - b[opaque, :3]).mean(-1)))
+    d = np.abs(np.diff(tile[..., :3], axis=1)).mean(-1)
+    op = (np.maximum(tile[:, 1:, 3], tile[:, :-1, 3]) > 0.5)
+    step = max(1, d.shape[1] // 400)
+    cols = [float(np.median(d[op[:, i], i])) for i in range(0, d.shape[1], step) if op[:, i].sum() >= 4]
+    p95 = float(np.percentile(cols, 95)); med = float(np.median(cols))
+    ok = wrap <= max(p95, 2.0 * med, 3 / 255)
+    return dict(wrapDelta=round(wrap, 5), interiorMedian=round(med, 5), interiorP95=round(p95, 5), ok=bool(ok))
 
 
 # ---------------------------------------------------------------- strips
@@ -161,9 +169,9 @@ def pack_strip(region, layer, cache, receipts):
     tier = meta['tier']; m = SPEC['marginPx'] * tier; W = ls['width'] * tier; H = ls['height'] * tier
     full = load(src)
     assert full.shape[1] == W + 2 * m and full.shape[0] == H, f'{region}/{layer}: render is {full.shape}, expected {(H, W + 2 * m)}'
-    seam = seam_receipt(full, m, W)
-    if not seam['ok']: raise SystemExit(f'SEAM GATE FAILED {region}/{layer}: {seam}')
     tile = full[:, m:m + W].copy()
+    seam = seam_receipt(tile)
+    if not seam['ok']: raise SystemExit(f'SEAM GATE FAILED {region}/{layer}: {seam}')
     base_row = (ls['baseline'] - ls['top']) * tier
     rows = np.arange(H)[:, None]
     if layer != 'front':
@@ -184,25 +192,52 @@ def pack_strip(region, layer, cache, receipts):
     return out
 
 
+def merge_chunks(chunks, waste=0.3, max_w=256):
+    """Greedily merge horizontally adjacent runs whose bounding box wastes at
+    most `waste` of its area: far fewer draw calls for a little more memory."""
+    out = []
+    for u, y, w, h in sorted(chunks, key=lambda c: (c[0], c[1])):
+        best = None
+        for c in out:
+            if c[0] + c[2] != u or c[2] + w > max_w: continue
+            y0, y1 = min(c[1], y), max(c[1] + c[3], y + h)
+            union = (c[2] + w) * (y1 - y0)
+            if union - (c[2] * c[3] + w * h) <= waste * union and (best is None or union < best[1]):
+                best = (c, union, y0, y1)
+        if best:
+            c, _, y0, y1 = best
+            c[1], c[2], c[3] = y0, c[2] + w, y1 - y0
+        else:
+            out.append([u, y, w, h])
+    return sorted(out, key=lambda c: (c[0], c[1]))
+
+
 def pack_emit(region, layer, rgba, ls, tier):
     """Additive light: alpha = brightest channel. Split into EMIT_CHUNK columns,
     crop each to its lit rows, shelf-pack into one atlas per tier."""
     light = rgba[..., :3] * rgba[..., 3:4]
     glow = np.stack([np.asarray(Image.fromarray((light[..., i] * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(3 * tier))) / 255.0 for i in range(3)], -1)
-    light = np.clip(light + glow * 0.9, 0, 1)
+    light = np.clip(light + glow * 0.35, 0, 1)
     H, W = light.shape[:2]
     lum = light.max(-1)
     chunks = []
     cw = EMIT_CHUNK
     for u in range(0, ls['width'], cw):
         col = lum[:, u * tier:(u + cw) * tier]
-        rows = np.where(col.max(1) > 6 / 255)[0]
+        lit = col.reshape(ls['height'], tier, -1).max(axis=(1, 2)) > 6 / 255   # per logical row
+        rows = np.where(lit)[0]
         if not len(rows): continue
-        y0 = max(0, rows[0] // tier - 1); y1 = min(ls['height'], rows[-1] // tier + 2)
-        chunks.append([u, int(y0), cw, int(y1 - y0)])
+        start = prev = rows[0]
+        for r in list(rows[1:]) + [None]:
+            if r is None or r - prev > EMIT_GAP:
+                y0 = max(0, int(start) - 1); y1 = min(ls['height'], int(prev) + 2)
+                chunks.append([u, y0, cw, y1 - y0])
+                if r is not None: start = r
+            if r is not None: prev = r
     if not chunks: return None
-    # Shelf pack at logical scale (atlas width 512 logical).
-    AW, x, y, shelf = 512, 0, 0, 0
+    chunks = merge_chunks(chunks)
+    # Shelf pack at logical scale (atlas width 1024 logical).
+    AW, x, y, shelf = 1024, 0, 0, 0
     placed = []
     for u, cy, w, h in sorted(chunks, key=lambda c: -c[3]):
         if x + w + 2 > AW: x = 0; y += shelf + 2; shelf = 0
@@ -215,11 +250,13 @@ def pack_emit(region, layer, rgba, ls, tier):
         a = piece.max(-1, keepdims=True)
         rgb = np.where(a > 1e-4, piece / np.maximum(a, 1e-4), 0)
         atlas[ay * tier:(ay + h) * tier, ax * tier:(ax + w) * tier] = np.concatenate([rgb, a], -1)
+    # Lights ship at 1x only: the loader prescales them to the device once, and
+    # a soft upscale reads as bloom. This quarters their bytes at t2.
     out = dict(chunks=placed, tiers={})
-    for t in ls['tiers']:
-        scale = SPEC['tiers'][t]
-        img = atlas if scale == tier else downsample(atlas, (AW * scale, AH * scale))
-        out['tiers'][t] = encode(img, OUT / region / t / f'{layer}-emit.webp', QUALITY['emit'], alpha_quality=85)
+    img = downsample(atlas, (AW, AH)) if tier != 1 else atlas
+    out['tiers']['t1'] = encode(img, OUT / region / 't1' / f'{layer}-emit.webp', QUALITY['emit'], alpha_quality=80)
+    stale = OUT / region / 't2' / f'{layer}-emit.webp'
+    if stale.exists(): stale.unlink()
     return out
 
 
@@ -292,12 +329,16 @@ def bytes_for(region_entry, tier):
     return total
 
 
+def emit_px(region_entry):
+    """Light atlases stay at their 1x source size (drawn scaled, additive)."""
+    return sum(l['emit']['tiers']['t1']['w'] * l['emit']['tiers']['t1']['h'] for l in region_entry['layers'].values() if l.get('emit'))
+
+
 def logical_px(region_entry):
     """Decoded logical pixels once prescaled (device px = logical * density^2)."""
     px = 0
     for name, layer in region_entry['layers'].items():
         px += layer['width'] * layer['height']
-        if layer.get('emit'): px += sum(c[2] * c[3] for c in layer['emit']['chunks'])
     if region_entry.get('ground'):
         g = region_entry['ground']
         px += sum((round(g['period'] * r) + 2 * PAD) * (y1 - y0 + 1) for y0, y1, r in g['bands'])
@@ -335,9 +376,10 @@ def main():
         entry = dict(layers=layers, ground=ground)
         entry['bytes'] = dict(t1=bytes_for(entry, 't1'), t2=bytes_for(entry, 't2'))
         entry['logicalPx'] = logical_px(entry)
+        entry['emitPx'] = emit_px(entry)
         manifest['regions'][region] = entry
         manifest['receipts'].update(receipts)
-        print(region, 'bytes t1', entry['bytes']['t1'], 't2', entry['bytes']['t2'], 'logical px', entry['logicalPx'])
+        print(region, 'bytes t1', entry['bytes']['t1'], 't2', entry['bytes']['t2'], 'logical px', entry['logicalPx'], 'emit px', entry['emitPx'])
     manifest['tool'] = dict(script='scripts/build-chikun-art-pack.py', sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), pillow=Image.__version__, numpy=np.__version__)
     ordered = {r: manifest['regions'][r] for r in REGIONS if r in manifest['regions']}
     manifest['regions'] = ordered

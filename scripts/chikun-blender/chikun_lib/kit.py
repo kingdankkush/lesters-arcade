@@ -10,7 +10,14 @@ from mathutils import Vector, Matrix, noise
 UP = Vector((0, 0, 1))
 
 
+_COUNTER = [0]
+
+
 def link(obj, coll):
+    # Deterministic per-object index (creation order) for colour variation;
+    # see shading.NB.object_random().
+    _COUNTER[0] += 1
+    obj.pass_index = (_COUNTER[0] * 7919) % 32749
     coll.objects.link(obj)
     return obj
 
@@ -62,7 +69,23 @@ def heightfield(name, coll, mat, x0, x1, y0, y1, step_x, step_y, hfn, skirt=0.0)
         for i in range(nx - 1):
             bm.faces.new((front[i + 1], front[i], grid[0][i], grid[0][i + 1]))
     bm.normal_update()
-    return mesh_object(name, bm, coll, mat, smooth=True)
+    bm.verts.index_update()
+    # Normals from the height function itself (central differences), not from
+    # the mesh: at the tile edges the mesh only sees one side, which would
+    # leave a lighting seam where the strip wraps.
+    ex, ey = (x1 - x0) / (nx - 1) * 0.5, (y1 - y0) / (ny - 1) * 0.5
+    normals = []
+    for v in bm.verts:
+        x, y = v.co.x, v.co.y
+        if v.index >= nx * ny:
+            normals.append((0.0, -1.0, 0.0)); continue
+        dzx = (hfn(x + ex, y) - hfn(x - ex, y)) / (2 * ex)
+        dzy = (hfn(x, min(y1, y + ey)) - hfn(x, max(y0, y - ey))) / (min(y1, y + ey) - max(y0, y - ey))
+        n = Vector((-dzx, -dzy, 1.0)).normalized()
+        normals.append(tuple(n))
+    obj = mesh_object(name, bm, coll, mat, smooth=True)
+    obj.data.normals_split_custom_set_from_vertices(normals)
+    return obj
 
 
 def ridge_profile(name, coll, mat, period, hfn, y, depth=40.0, base=-20.0, step=4.0):
@@ -148,7 +171,7 @@ def tree_proto(name, coll, trunk_mat, leaf_mat, kind='round', height=40.0, seed=
     trunk_r = height * (0.045 if kind != 'palm' else 0.03)
     if kind != 'bush':
         bmesh.ops.create_cone(bm, cap_ends=True, segments=7, radius1=trunk_r, radius2=trunk_r * 0.6, depth=trunk_h + height * 0.1, matrix=Matrix.Translation((0, 0, (trunk_h + height * 0.1) / 2)))
-    trunk_faces = len(bm.faces)
+    trunk = set(bm.faces)  # faces of the trunk; everything added later is foliage
     off = Vector((seed * 3.1, seed * 1.7, seed * 5.3))
 
     def clump(c, r, squash=(1, 1, 1), disp=0.28, sub=2):
@@ -198,9 +221,10 @@ def tree_proto(name, coll, trunk_mat, leaf_mat, kind='round', height=40.0, seed=
             a = i / 8 * math.tau
             c = Vector((math.cos(a) * height * 0.22, math.sin(a) * height * 0.22, top - height * 0.06))
             clump(c, height * 0.2, (1.4, 0.35, 0.18), disp=0.1, sub=1)
-    for i, f in enumerate(bm.faces):
-        f.material_index = 0 if i < trunk_faces else 1
-        f.smooth = i >= trunk_faces
+    for f in bm.faces:
+        is_trunk = f in trunk
+        f.material_index = 0 if is_trunk else 1
+        f.smooth = not is_trunk
     me = bpy.data.meshes.new(name)
     bm.normal_update(); bm.to_mesh(me); bm.free()
     me.materials.append(trunk_mat); me.materials.append(leaf_mat)
@@ -264,3 +288,26 @@ def house(coll, name, cx, cy, w, d, h, wall_mat, roof_mat, roof_h=None, roof='ga
     if chimney_mat is not None and roof in ('gable', 'hip'):
         objs.append(box(name + '.chimney', coll, chimney_mat, cx + w * rng.uniform(-0.3, 0.3), cy + d * 0.15, h, w * 0.08, w * 0.08, rh * 0.9))
     return objs
+
+
+def island(name, coll, mat, cx, cy, rx, ry, hfn, rings=18, segs=64, rim=-2.0):
+    """A polar-grid landmass (headland, island): z = hfn(x, y) inside the ellipse,
+    sinking to `rim` at its edge, so no flat plane surrounds it."""
+    bm = bmesh.new()
+    centre = bm.verts.new((cx, cy, hfn(cx, cy)))
+    prev = None
+    for i in range(1, rings + 1):
+        t = i / rings
+        ring = []
+        for k in range(segs):
+            a = k / segs * math.tau
+            x, y = cx + math.cos(a) * rx * t, cy + math.sin(a) * ry * t
+            edge = (t ** 3)
+            ring.append(bm.verts.new((x, y, hfn(x, y) * (1 - edge) + rim * edge)))
+        if prev is None:
+            for k in range(segs): bm.faces.new((centre, ring[k], ring[(k + 1) % segs]))
+        else:
+            for k in range(segs): bm.faces.new((prev[k], ring[k], ring[(k + 1) % segs], prev[(k + 1) % segs]))
+        prev = ring
+    bm.normal_update()
+    return mesh_object(name, bm, coll, mat, smooth=True)

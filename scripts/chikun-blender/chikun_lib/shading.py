@@ -9,6 +9,7 @@ Every material shares two global controls:
 import bpy, math
 
 HAZE = dict(color=(0.74, 0.80, 0.86), y0=0.0, y1=1000.0, near=0.0, far=0.0)
+TILE = dict(period=0.0)  # set by regions.common.tile(): the strip's wrap period
 
 
 def srgb(hex_value):
@@ -80,7 +81,15 @@ class NB:
         return self.new('ShaderNodeTexCoord')
 
     def object_random(self):
-        return self.new('ShaderNodeObjectInfo').outputs['Random']
+        # Object Info > Random differs between collection-instance copies (it
+        # would put a colour seam where the strip wraps), and many kit objects
+        # sit at the origin, so a location hash is useless. kit.link() gives
+        # every object a deterministic pass index instead: identical in every
+        # instance copy, distinct per object.
+        idx = self.new('ShaderNodeObjectInfo').outputs['Object Index']
+        n = self.new('ShaderNodeTexWhiteNoise'); n.noise_dimensions = '1D'
+        self.put(n.inputs['W'], self.math('MULTIPLY', idx, 0.7310585))
+        return n.outputs['Value']
 
     def periodic(self, pos, period):
         """Circle-map x so any 4D texture repeats exactly every `period` units."""
@@ -213,11 +222,16 @@ def material(name, build, haze=True, emissive=False):
 
 # ---------------------------------------------------------------- material library
 
-def flat(name, color, rough=0.85, jitter=0.06, scale=0.05, spec=0.2):
-    """Solid colour with a little per-object and per-surface variation."""
+def flat(name, color, rough=0.85, jitter=0.06, scale=0.05, spec=0.2, period=None):
+    """Solid colour with a little per-object and per-surface variation. Objects
+    that span the whole tile must pass `period` so the variation wraps."""
     def build(nb):
         pos = nb.texcoord().outputs['Object']
-        n = nb.noise(pos, scale=scale, detail=3.0)
+        if period:
+            vec, w = nb.periodic(pos, period)
+            n = nb.noise(vec, scale=scale, detail=3.0, w=w)
+        else:
+            n = nb.noise(pos, scale=scale, detail=3.0)
         r = nb.object_random()
         base = nb.rgb(color)
         dark = nb.mix(base, (0.0, 0.0, 0.0), jitter, 'MIX')
@@ -311,7 +325,7 @@ def fields(name, period, cell_w, row_depth, palette, hedge='#3c5530', hedge_w=1.
     return material(name, build)
 
 
-def wall(name, color, window=None, trim=None, rough=0.85, grime=0.12):
+def wall(name, color, window=None, trim=None, rough=0.85, grime=0.12, timber=None):
     """Facade with a window grid on the camera-facing (x, z) plane.
     window = dict(w, h, cols_px, rows_px, x0, z0, z1, glass, lit, lit_prob, frame)."""
     def build(nb):
@@ -321,6 +335,7 @@ def wall(name, color, window=None, trim=None, rough=0.85, grime=0.12):
         base = nb.mix(nb.rgb(color), (0, 0, 0), nb.math('MULTIPLY', n, grime))
         base = nb.mix(base, (1, 1, 1), nb.math('MULTIPLY', nb.object_random(), 0.08))
         emit = None
+        wmask = None
         if window:
             cw, ch = window['cols_px'], window['rows_px']
             fx = nb.math('FRACT', nb.math('DIVIDE', nb.math('SUBTRACT', x, window.get('x0', 0.0)), cw))
@@ -332,6 +347,7 @@ def wall(name, color, window=None, trim=None, rough=0.85, grime=0.12):
             nrm = nb.geometry().outputs['Normal']
             facing = nb.math('LESS_THAN', nb.separate(nrm)[1], -0.5)
             mask = nb.math('MULTIPLY', nb.math('MULTIPLY', mx, mz), nb.math('MULTIPLY', band, facing))
+            wmask = mask
             cell = nb.combine(nb.math('FLOOR', nb.math('DIVIDE', nb.math('SUBTRACT', x, window.get('x0', 0.0)), cw)), nb.math('FLOOR', nb.math('DIVIDE', nb.math('SUBTRACT', z, window.get('z0', 0.0)), ch)), nb.object_random())
             rnd, rcol = nb.white(cell)
             glass = nb.mix(window.get('glass', '#27323c'), window.get('glass_hi', '#5d7486'), nb.math('MULTIPLY', rnd, 0.6))
@@ -341,13 +357,27 @@ def wall(name, color, window=None, trim=None, rough=0.85, grime=0.12):
                 fr = nb.math('MULTIPLY', nb.math('SUBTRACT', fr, mask), nb.math('MULTIPLY', band, facing))
                 base = nb.mix(base, window.get('frame_color', '#e8e2d2'), nb.math('MAXIMUM', fr, 0.0))
             lit = nb.math('LESS_THAN', rnd, window.get('lit_prob', 0.55))
+            if window.get('building_lit', 1.0) < 1.0:
+                # Whole buildings dark or lit: fewer, calmer lights and sparser emissive chunks.
+                lit = nb.math('MULTIPLY', lit, nb.math('LESS_THAN', nb.object_random(), window['building_lit']))
             warm = nb.mix(window.get('lit', '#ffc877'), window.get('lit2', '#ffe3a8'), nb.separate(rcol)[1])
             emit = nb.mix((0, 0, 0), warm, nb.math('MULTIPLY', mask, lit))
+        if timber:
+            # Half-timbering: posts, floor beams and braces in dark oak.
+            sp, fh, tw = timber.get('spacing', 12.0), timber.get('floor', 14.0), timber.get('width', 0.9)
+            px = nb.math('FRACT', nb.math('DIVIDE', x, sp)); pz = nb.math('FRACT', nb.math('DIVIDE', z, fh))
+            post = nb.math('LESS_THAN', nb.math('MINIMUM', nb.math('MULTIPLY', px, sp), nb.math('MULTIPLY', nb.math('SUBTRACT', 1.0, px), sp)), tw)
+            beam = nb.math('LESS_THAN', nb.math('MINIMUM', nb.math('MULTIPLY', pz, fh), nb.math('MULTIPLY', nb.math('SUBTRACT', 1.0, pz), fh)), tw)
+            brace = nb.math('LESS_THAN', nb.math('ABSOLUTE', nb.math('SUBTRACT', nb.math('MULTIPLY', px, sp), nb.math('MULTIPLY', pz, sp))), tw * 1.2)
+            frame = nb.math('MINIMUM', nb.math('ADD', nb.math('ADD', post, beam), brace), 1.0)
+            above = nb.math('GREATER_THAN', z, timber.get('from', fh))
+            if wmask is not None: frame = nb.math('MULTIPLY', frame, nb.math('SUBTRACT', 1.0, wmask))
+            base = nb.mix(base, timber.get('color', '#3b2a20'), nb.math('MULTIPLY', frame, above))
         if trim:
             for z0, z1, col in trim:
                 f = nb.math('MULTIPLY', nb.math('GREATER_THAN', z, z0), nb.math('LESS_THAN', z, z1))
                 base = nb.mix(base, col, f)
-        return dict(color=base, rough=rough, emit=emit, emit_strength=2.2, spec=0.2)
+        return dict(color=base, rough=rough, emit=emit, emit_strength=window.get('strength', 1.0) if window else 1.0, spec=0.2)
     return material(name, build, emissive=bool(window))
 
 
@@ -364,7 +394,7 @@ def roof(name, color, tile=6.0, rough=0.8):
     return material(name, build)
 
 
-def lamp(name, color='#ffd9a0', body='#3a3c40', strength=6.0):
+def lamp(name, color='#ffd9a0', body='#3a3c40', strength=1.2):
     """Unlit fixture by day, bright source in the emission pass."""
     def build(nb):
         return dict(color=nb.rgb(body), rough=0.5, emit=nb.rgb(color), emit_strength=strength)

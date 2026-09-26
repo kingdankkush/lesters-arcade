@@ -38,27 +38,28 @@ function frame(world, view, tick) {
   return { main: ctx.log, offscreen, ctx };
 }
 
-async function warmWorld(view, loader) {
+async function warmWorld(view, loader, tick = 1500) {
   const world = createChikunWorld({ loader, makeCanvas });
-  for (let i = 0; i < 20; i++) { frame(world, view, 1500); await flush(); }
+  for (let i = 0; i < 20; i++) { frame(world, view, tick); await flush(); }
   return world;
 }
 
 test('with art: every blit is 1:1, no blur or filters, bounded calls, no gradients once warm', async () => {
-  const farmland = Object.keys(SCENERY_CATALOG.regions)[0];
-  assert.equal(farmland, 'farmland');
-  for (const [name, view] of Object.entries(VIEWS)) {
+  // Farmland at noon, and the city at night (the densest lights on the loop).
+  for (const [region, start] of [['farmland', 1500], ['city', 7400]]) for (const [name, view] of Object.entries(VIEWS)) {
     const loader = artLoader();
-    const world = await warmWorld(view, loader);
-    assert.equal(loader.ready('farmland'), true, `${name}: farmland art ready`);
-    for (let tick = 1500; tick < 1510; tick++) {
+    const world = await warmWorld(view, loader, start);
+    assert.equal(loader.ready(region), true, `${name}: ${region} art ready`);
+    for (let tick = start; tick < start + 10; tick++) {
       const { main, offscreen } = frame(world, view, tick);
       const all = [...main, ...offscreen];
       assert.equal(all.filter(e => e.op === 'createLinearGradient' || e.op === 'createRadialGradient').length, 0, `${name} tick ${tick}: gradient created per frame`);
       assert.ok(all.every(e => e.shadowBlur === 0 && (e.filter === 'none' || e.filter === undefined)), `${name}: no shadowBlur or filter`);
       const draws = drawImageCalls(all);
-      for (const c of draws) assert.ok(Math.abs(c.sw - c.dw) < 1e-6 && Math.abs(c.sh - c.dh) < 1e-6, `${name}: scaled blit ${c.image.label ?? c.image.width + 'x' + c.image.height} ${c.sw}x${c.sh} -> ${c.dw}x${c.dh}`);
+      // Lights ('lighter') stay at their 1x source size and are the one scaled draw.
+      for (const c of draws.filter(c => c.composite !== 'lighter')) assert.ok(Math.abs(c.sw - c.dw) < 1e-6 && Math.abs(c.sh - c.dh) < 1e-6, `${name}: scaled blit ${c.image.label ?? c.image.width + 'x' + c.image.height} ${c.sw}x${c.sh} -> ${c.dw}x${c.dh}`);
       assert.ok(draws.length <= 160, `${name}: ${draws.length} drawImage calls`);
+      if (region === 'city') assert.ok(draws.some(c => c.composite === 'lighter'), `${name}: the city's lights are drawn at night`);
       const W = view.pixelWidth, H = view.pixelHeight;
       const big = all.filter(e => e.op === 'fillRect' && Math.abs(e.args[2] * e.args[3]) > W * H * 0.25).length;
       assert.ok(big <= 16, `${name}: ${big} large fills`);

@@ -70,11 +70,11 @@ def setup_render(scene, width, height, engine='EEVEE', samples=64, transparent=T
         r.engine = 'BLENDER_EEVEE'
         e = scene.eevee
         e.taa_render_samples = samples
-        e.use_raytracing = True
+        e.use_raytracing = os.environ.get("CHIKUN_RT", "1") == "1"
         e.use_shadows = True
         e.shadow_ray_count = 2
         e.shadow_step_count = 8
-        e.use_fast_gi = True
+        e.use_fast_gi = os.environ.get("CHIKUN_GI", "1") == "1"
         e.fast_gi_distance = 40.0
         e.fast_gi_method = 'GLOBAL_ILLUMINATION'
         e.shadow_resolution_scale = 1.0
@@ -99,14 +99,15 @@ def _camera(scene, name, kind):
 
 
 def strip_camera(scene, ls, spec, tier):
-    """Orthographic camera pitched 19 degrees down, yaw 0. World (x, 0, 0) with
-    0 <= x < width lands on the layer baseline row, column margin + x."""
+    """Orthographic camera pitched 19 degrees down (or the layer's `pitch`), yaw 0.
+    World (x, 0, 0) with 0 <= x < width lands on the layer baseline row, column
+    margin + x. Sea layers use pitch 0 so everything stands on the horizon."""
     m = spec['marginPx']
     W, H, T, B = ls['width'], ls['height'], ls['top'], ls['baseline']
     obj = _camera(scene, 'StripCamera', 'ORTHO')
     obj.data.ortho_scale = W + 2 * m
     obj.data.sensor_fit = 'HORIZONTAL'
-    th = math.radians(90 - PITCH_DEG)
+    th = math.radians(90 - ls.get('pitch', PITCH_DEG))
     obj.rotation_euler = (th, 0, 0)
     up_y, up_z = math.cos(th), math.sin(th)
     cy = -4000.0

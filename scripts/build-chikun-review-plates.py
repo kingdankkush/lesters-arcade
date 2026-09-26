@@ -236,7 +236,7 @@ def plate(region, layers, ground, rig, D, width, props, chikun):
     over(canvas, back, 0, BACK_TOP)
     for L, scroll, top, name in emits:
         left_fog = {'far': 1 - fog['far'] - fog['mid'], 'mid': 1 - fog['mid'] - fog['near'] * 0.5, 'near': 1 - fog['near']}[name]
-        emit_layer(canvas, L, scroll, top, rig['lightsOn'] * max(0.2, left_fog))
+        emit_layer(canvas, L, scroll, top, rig['lightsOn'] * max(0.2, left_fog) * {'far': 0.6, 'mid': 0.8, 'near': 1.0}[name])
     # Front face.
     if 'front' in layers:
         F = layers['front']

@@ -123,22 +123,18 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
     return { canvas, w, h, period: w, density: d };
   }
 
+  // Lights stay at their 1x source size: they are small additive glows drawn
+  // scaled by the density (a soft upscale reads as bloom), which keeps their
+  // memory independent of the device density.
   function prescaleEmit(entry, asset, img, d) {
     const layer = entry.desc.layers[asset.layer];
     const s = asset.scale;
-    const AW = img.width / s, AH = img.height / s;
-    const w = Math.round(AW * d), h = Math.round(AH * d);
-    const canvas = makeCanvas(w, h);
+    const canvas = makeCanvas(img.width, img.height);
     if (!canvas) return null;
-    const cx = canvas.getContext('2d');
-    cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = 'high';
-    cx.drawImage(img, 0, 0, w, h);
-    // [u, y, w, h, ax, ay] logical -> device source rects (sw == dw).
-    const chunks = layer.emit.chunks.map(([u, y, cw, ch, ax, ay]) => {
-      const sx = Math.round(ax * d), sy = Math.round(ay * d), sw = Math.round((ax + cw) * d) - sx, sh = Math.round((ay + ch) * d) - sy;
-      return [u, y, cw, ch, sx, sy, sw, sh];
-    });
-    return { canvas, chunks, density: d };
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    // [u, y, w, h, ax, ay] logical -> source rects in atlas px.
+    const chunks = layer.emit.chunks.map(([u, y, cw, ch, ax, ay]) => [u, y, cw, ch, ax * s, ay * s, cw * s, ch * s]);
+    return { canvas, chunks, density: d, sourceScale: s };
   }
 
   function prescaleGround(entry, asset, img, d) {

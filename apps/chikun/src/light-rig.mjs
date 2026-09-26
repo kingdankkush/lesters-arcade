@@ -33,7 +33,7 @@ export const RIG_KEYS = Object.freeze({
 export const RIG_KEY_NAMES = Object.freeze(['noon', 'golden', 'night', 'dawn']);
 // Per-depth fog by day; the fills accumulate (far gets far + mid + near).
 export const FOG_BY_DEPTH = Object.freeze({ far: 0.30, mid: 0.18, near: 0.08 });
-export const REGION_FOG = Object.freeze({ farmland: 1.0, forest: 1.3, town: 0.8, city: 1.0, industrial: 1.4, suburbs: 0.8, coast: 1.1 });
+export const REGION_FOG = Object.freeze({ farmland: 1.0, forest: 1.12, town: 0.8, city: 1.0, industrial: 1.15, suburbs: 0.8, coast: 1.1 });
 export const PHASE_BUCKETS = 720;   // 0.25 s of a 180 s day
 export const BLEND_BUCKETS = 32;
 
