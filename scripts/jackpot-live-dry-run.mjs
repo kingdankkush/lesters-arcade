@@ -3,33 +3,48 @@
 // site (jackpot-rehearsal slice; design §E E7, E9, E11, J17; brief AC5).
 //
 //   node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io [--rpc <url>] [--expect-live true|false]
-//        [--funder <address> ...] [--json]
+//        [--require-funded] [--expect-paused true|false] [--logs-from <block>] [--funder <address> ...] [--json]
 //   (loopback --rpc only: --deployment <litvm-addresses module> --jackpot-module <litvm-jackpot module>
 //    --record <deployment-record.jackpot.json>, for the local stack)
 //
 // It only reads: JSON-RPC eth_chainId, eth_blockNumber, eth_getBlockByNumber, eth_getBalance, eth_call,
 // eth_getCode and eth_getLogs (any other method is refused inside the provider), and HTTP GETs of
-// /api/jackpot, /api/health, /api/leaderboard, /src/jackpot-config.mjs and /jackpot/chikun. It prints a
-// JSON checklist and exits 0 when every check passes, 1 when one fails (2 for a usage error):
+// /api/jackpot, /api/health, /api/leaderboard, /src/jackpot-config.mjs, /src/version-tracking.mjs and
+// /jackpot/chikun. It prints a JSON checklist and exits 0 when every check passes, 1 when one fails (2 for a
+// usage error). A check it cannot verify fails; nothing is reported as passed because it was skipped:
 //   - code at the module's jackpot and token addresses, and at every retired[] instance;
 //   - the immutables (gameId, token, scoreRegistry, rankedEntry, firstWeek) and the roles (admin, keeper,
 //     operator, residual recipient) equal contracts/deployment-record.jackpot.json;
 //   - weekOf(now) equals the server's current week key;
 //   - the rules in force, and rulesFor(currentWeek).minFundWei > 0;
-//   - J17 coupling: ArcadeRankedEntry.quoteEntry(chikun).totalWei >= rulesFor(currentWeek).minPaidWei;
+//   - J17 coupling: ArcadeRankedEntry.quoteEntry(chikun).totalWei >= rulesFor(currentWeek).minPaidWei, and
+//     >= the server's settle floor (/api/health settleMinPaidWei, RANKED_MIN_PAID_WEI: below it /api/settle
+//     refuses a run paid at the quote with 402 entry-underpaid);
 //     ScoreSubmissionRegistry.rankedEntry() == jackpot.rankedEntry() (and the jackpot reads the registry the
 //     site uses); the Chikun game id is the jackpot's and the season the server uses is in
 //     rulesFor(currentWeek); the Chikun game is registered and playable;
-//   - the pot, prize and funded flag of the current and previous week from the chain equal /api/jackpot;
-//   - paused() and operatorPaused() as /api/health reports them (and the env pause);
+//   - the pot, prize and funded flag of the current and previous week from the chain equal /api/jackpot
+//     (the previous week read from the instance /api/jackpot names: after an instance migration, the
+//     retired one);
+//   - pot-funded: potOf(currentWeek).total >= rulesFor(currentWeek).minFundWei on chain; a failure with
+//     --require-funded (runbook E9, the E10 precondition and the post-release smoke), a reported fact without;
+//   - no pause, unless --expect-paused true: the env pause (JACKPOT_PAUSED, which stops the keeper) off,
+//     paused(), adminPaused() and operatorPaused() false, and /api/health agreeing with the chain;
 //   - the keeper holds at least 0.05 zkLTC;
-//   - /api/health reports the weekly-jackpot cron fresh (20 minutes), no week awaiting the admin for more
-//     than 24 h, none claim-pending and none failed;
+//   - /api/health reports the weekly-jackpot cron fresh (20 minutes) and actually working (under the env
+//     pause every run answers skipped 'jackpot-paused', a success in cron_runs that sends nothing), no week
+//     awaiting the admin for more than 24 h (or of unknown age), none claim-pending and none failed;
 //   - the E5 block list is blocked on chain (the test wallet 0x8841…ce824, the verifier, the relayer, each
 //     --funder) and the residual recipient is blocked or staff; the admin, operator and keeper are staffEver,
-//     and so is every address the role events ever named (a rotated-out keeper or admin);
+//     and so is every address the role events named (a rotated-out keeper or admin) from the instance's
+//     startBlock, or from --logs-from (the previous run's `scannedTo + 1`: staffEver is never unset, so what
+//     an earlier run verified stays verified), in at most MAX_LOG_CHUNKS getLogs calls; a longer range
+//     fails as unverified and names the cursor to pass;
 //   - JACKPOT_LIVE in the served /src/jackpot-config.mjs matches --expect-live, and the rules page's
-//     robots noindex agrees with it.
+//     robots noindex agrees with it. The browser runs the esbuild bundle (dist/), where the literal is
+//     inlined and minified away, so the source module is a proxy: it holds because Vercel builds the bundle
+//     from the same apps/portal tree in the same deployment. The check also requires the served
+//     /src/version-tracking.mjs SITE_VERSION to equal the version /api/health reports (the same release).
 // The owner session runs it live at runbook E7, E9 and E11 (and before and after any J17 change). It never
 // signs, sends or writes anything, never reads a key, and never prints the RPC URL (only its host).
 
@@ -57,8 +72,9 @@ export const ROLE_EVENTS = Object.freeze(['KeeperUpdated', 'AdminTransferred', '
 // The checklist ids, in order (tests pin that every one is reported).
 export const LIVE_CHECK_IDS = Object.freeze([
   'rpc-chain', 'jackpot-deployed', 'code-jackpot', 'code-token', 'code-retired', 'immutables', 'roles', 'api-live', 'week-key', 'rules-in-force',
-  'j17-quote', 'j17-ranked-entry', 'j17-season', 'j17-game-id', 'j17-game-registered', 'pot-current', 'pot-previous', 'pause', 'keeper-balance',
-  'cron-fresh', 'admin-backlog', 'no-failed-weeks', 'block-list', 'residual-recipient', 'staff-ever', 'staff-history', 'jackpot-live-flag',
+  'j17-quote', 'j17-settle-floor', 'j17-ranked-entry', 'j17-season', 'j17-game-id', 'j17-game-registered', 'pot-current', 'pot-previous', 'pot-funded',
+  'pause', 'keeper-balance', 'cron-fresh', 'admin-backlog', 'no-failed-weeks', 'block-list', 'residual-recipient', 'staff-ever', 'staff-history',
+  'jackpot-live-flag',
 ]);
 
 const lower = (value) => String(value ?? '').toLowerCase();
@@ -134,7 +150,12 @@ export async function runJackpotLiveDryRun({
   jackpotModule = null,
   record = undefined,
   expectLive = false,
+  requireFunded = false,
+  expectPaused = false,
+  logsFrom = null,
   funders = [],
+  logChunkBlocks = LOG_CHUNK_BLOCKS,
+  maxLogChunks = MAX_LOG_CHUNKS,
   log = () => {},
 } = {}) {
   const chain = provider ?? new ReadOnlyProvider(rpc);
@@ -166,6 +187,7 @@ export async function runJackpotLiveDryRun({
       generatedAt: new Date().toISOString(),
       site: http.origin,
       rpcHost,
+      expectations: { live: expectLive, requireFunded, paused: expectPaused, logsFrom },
       readOnly: { rpcMethods: [...(chain.methods ?? [])].sort(), httpMethods: [...new Set(http.requests.map((entry) => entry.method))] },
       ok: failures.length === 0,
       checks,
@@ -258,10 +280,22 @@ export async function runJackpotLiveDryRun({
     });
 
     // J17: the Ranked settings the jackpot's rules depend on.
+    let quoteTotal = null;
     await step('j17-quote', async () => {
       const entry = contractAt('ArcadeRankedEntry', deployment.addresses.arcadeRankedEntry, chain);
       const quote = await entry.quoteEntry(onChain?.gameId ?? ethers.id('chikun'));
-      add('j17-quote', rules !== null && BigInt(quote.totalWei) >= BigInt(rules.minPaidWei), { quoteTotalWei: BigInt(quote.totalWei).toString(), minPaidWei: rules?.minPaidWei ?? null });
+      quoteTotal = BigInt(quote.totalWei);
+      add('j17-quote', rules !== null && quoteTotal >= BigInt(rules.minPaidWei), { quoteTotalWei: quoteTotal.toString(), minPaidWei: rules?.minPaidWei ?? null });
+    });
+    // The server's settle floor: a run paid at the chain's quote must clear it, or /api/settle refuses it
+    // (402 entry-underpaid) and the player cannot play for the jackpot at all (rehearsal R20).
+    await step('j17-settle-floor', async () => {
+      const floorText = health?.settleMinPaidWei ?? null;
+      const floor = /^[0-9]{1,78}$/.test(String(floorText ?? '')) ? BigInt(floorText) : null;
+      add('j17-settle-floor', quoteTotal !== null && floor !== null && quoteTotal >= floor, {
+        quoteTotalWei: quoteTotal === null ? null : quoteTotal.toString(), settleMinPaidWei: floorText,
+        ...(floor === null ? { note: '/api/health does not report settleMinPaidWei' } : {}),
+      });
     });
     await step('j17-ranked-entry', async () => {
       const registry = contractAt('ScoreSubmissionRegistry', deployment.addresses.scoreSubmissionRegistry, chain);
@@ -284,40 +318,72 @@ export async function runJackpotLiveDryRun({
       add('j17-game-registered', game.exists === true && game.playable === true, { exists: game.exists, playable: game.playable });
     });
 
-    // The pots of the current and previous week, chain against /api/jackpot.
-    for (const [id, week, served] of [['pot-current', currentWeek, api?.current?.pot ?? null], ['pot-previous', currentWeek - 1, api?.previous?.pot ?? null]]) {
+    // The pots of the current and previous week, chain against /api/jackpot. The previous week is read from
+    // the instance /api/jackpot names for it: after an instance migration (design §A.19) that is the retired
+    // instance's last week until the new one has a week of its own.
+    const retiredAddresses = new Set((instance.retired ?? []).map((entry) => lower(entry.address)));
+    const activeAddress = lower(instance.address);
+    const previousContract = api?.previous?.contract ? lower(api.previous.contract) : activeAddress;
+    const potChecks = [['pot-current', currentWeek, api?.current?.pot ?? null, activeAddress], ['pot-previous', currentWeek - 1, api?.previous?.pot ?? null, previousContract]];
+    for (const [id, week, served, source] of potChecks) {
       // eslint-disable-next-line no-await-in-loop
       await step(id, async () => {
-        const [pot, weekRules] = await Promise.all([jackpot.potOf(week), jackpot.rulesFor(week)]);
+        const retired = source !== activeAddress;
+        if (retired && !retiredAddresses.has(source)) {
+          add(id, false, { week: weekKeyOf(week), contract: source, note: '/api/jackpot names a contract that is neither the active instance nor in retired[]' });
+          return;
+        }
+        const reader = retired ? contractAt('WeeklyJackpot', source, chain) : jackpot;
+        const [pot, weekRules] = await Promise.all([reader.potOf(week), reader.rulesFor(week)]);
         const expected = potFromChain(pot, rulesToJson(rulesFromChain(weekRules)));
-        const beforeFirst = onChain && week < onChain.firstWeek;
+        const beforeFirst = !retired && onChain && week < onChain.firstWeek;
         const same = served ? ['totalWei', 'prizeWei', 'funded'].every((key) => served[key] === expected[key]) : beforeFirst || (expected.totalWei === '0' && id === 'pot-previous');
-        add(id, same, { week: weekKeyOf(week), chain: expected, api: served });
+        add(id, same, { week: weekKeyOf(week), contract: source, ...(retired ? { retired: true } : {}), chain: expected, api: served });
       });
     }
+    // J13 and the E10 precondition: the current week is funded ON CHAIN (total >= minFundWei, never > 0).
+    await step('pot-funded', async () => {
+      const [pot, weekRules] = await Promise.all([jackpot.potOf(currentWeek), jackpot.rulesFor(currentWeek)]);
+      const minFund = BigInt(weekRules.minFundWei);
+      const total = BigInt(pot.total);
+      const funded = minFund > 0n && total >= minFund;
+      add('pot-funded', funded || !requireFunded, { week: weekKeyOf(currentWeek), totalWei: total.toString(), minFundWei: minFund.toString(), funded, required: requireFunded });
+    });
 
+    // No pause unless one is expected (emergency stops 1 and 3): the env pause stops the keeper, the on-chain
+    // one (admin or operator) stops payouts and keeper clears. /api/health must agree with the chain either way.
     await step('pause', async () => {
       const [paused, adminPaused, operatorPaused] = await Promise.all([jackpot.paused(), jackpot.adminPaused(), jackpot.operatorPaused()]);
       const reported = health?.jackpot?.paused ?? null;
-      add('pause', reported !== null && reported.onChain === paused, { chain: { paused, adminPaused, operatorPaused }, health: reported });
+      const agrees = reported !== null && reported.onChain === paused;
+      const anyPause = paused || adminPaused || operatorPaused || reported?.env === true;
+      add('pause', agrees && (expectPaused ? anyPause : !anyPause), { expected: expectPaused, chain: { paused, adminPaused, operatorPaused }, health: reported });
     });
     await step('keeper-balance', async () => {
       const keeper = onChain?.keeper ?? null;
       const balance = keeper && keeper !== lower(ethers.ZeroAddress) ? BigInt(await chain.getBalance(keeper)) : 0n;
       add('keeper-balance', balance >= MIN_KEEPER_BALANCE_WEI, { keeper, balanceWei: balance.toString(), minimumWei: MIN_KEEPER_BALANCE_WEI.toString() });
     });
+    // Fresh AND working: under the env pause every run answers 200 { skipped: 'jackpot-paused' }, which
+    // cron_runs records as a success, so a fresh lastOkAt alone would hide a stopped keeper.
     await step('cron-fresh', async () => {
       const cron = health?.crons?.weeklyJackpot ?? null;
       const checkedAt = Date.parse(health?.checkedAt ?? '');
       const lastOk = Date.parse(cron?.lastOkAt ?? '');
       const age = Number.isFinite(checkedAt) && Number.isFinite(lastOk) ? Math.round((checkedAt - lastOk) / 1000) : null;
-      add('cron-fresh', age !== null && age <= CRON_STALE_SECONDS, { lastOkAt: cron?.lastOkAt ?? null, lastErrorCode: cron?.lastErrorCode ?? null, ageSeconds: age });
+      const skipping = health?.jackpot?.paused?.env === true;
+      add('cron-fresh', age !== null && age <= CRON_STALE_SECONDS && (!skipping || expectPaused), {
+        lastOkAt: cron?.lastOkAt ?? null, lastErrorCode: cron?.lastErrorCode ?? null, ageSeconds: age,
+        ...(skipping ? { note: 'JACKPOT_PAUSED is on: every run answers skipped jackpot-paused and sends nothing' } : {}),
+      });
     });
     await step('admin-backlog', async () => {
       const part = health?.jackpot ?? null;
       const awaiting = Number(part?.awaitingAdmin ?? NaN);
       const oldest = part?.awaitingAdminOldestHours ?? null;
-      add('admin-backlog', part !== null && (awaiting === 0 || (Number.isFinite(Number(oldest)) && Number(oldest) <= ADMIN_SLA_HOURS)) && Number(part.claimPending) === 0, {
+      // A waiting week of unknown age is not within the SLA (Number(null) would read as 0 hours).
+      const withinSla = awaiting === 0 || (oldest !== null && Number.isFinite(Number(oldest)) && Number(oldest) <= ADMIN_SLA_HOURS);
+      add('admin-backlog', part !== null && withinSla && Number(part.claimPending) === 0, {
         awaitingAdmin: part?.awaitingAdmin ?? null, awaitingAdminOldestHours: oldest, claimPending: part?.claimPending ?? null,
       });
     });
@@ -355,18 +421,28 @@ export async function runJackpotLiveDryRun({
     });
     await step('staff-history', async () => {
       const head = await chain.getBlockNumber();
-      const from = Number(instance.startBlock ?? 0);
-      const chunks = Math.ceil((head - from + 1) / LOG_CHUNK_BLOCKS);
-      if (chunks > MAX_LOG_CHUNKS) {
-        add('staff-history', true, { skipped: `the range ${from}-${head} needs ${chunks} getLogs calls (limit ${MAX_LOG_CHUNKS})` });
+      const startBlock = Number(instance.startBlock ?? 0);
+      const from = logsFrom === null ? startBlock : Math.max(startBlock, Number(logsFrom));
+      if (from > head + 1) {
+        add('staff-history', false, { from, head, note: '--logs-from is after the chain head' });
+        return;
+      }
+      const chunks = Math.ceil((head - from + 1) / logChunkBlocks);
+      if (chunks > maxLogChunks) {
+        // Never a pass it did not earn: the range is unverified. The previous run's scannedTo + 1 is the
+        // cursor to pass (staffEver is never unset, so what an earlier run verified stays verified).
+        add('staff-history', false, {
+          unverified: `the range ${from}-${head} needs ${chunks} getLogs calls (limit ${maxLogChunks})`,
+          hint: `re-run with --logs-from <the previous run's scannedTo + 1> (at most ${maxLogChunks * logChunkBlocks} blocks)`,
+        });
         return;
       }
       const iface = jackpot.interface;
       const topics = ROLE_EVENTS.map((name) => iface.getEvent(name).topicHash);
       const named = new Set();
-      for (let start = from; start <= head; start += LOG_CHUNK_BLOCKS) {
+      for (let start = from; start <= head; start += logChunkBlocks) {
         // eslint-disable-next-line no-await-in-loop
-        const logs = await chain.getLogs({ address: instance.address, fromBlock: start, toBlock: Math.min(head, start + LOG_CHUNK_BLOCKS - 1), topics: [topics] });
+        const logs = await chain.getLogs({ address: instance.address, fromBlock: start, toBlock: Math.min(head, start + logChunkBlocks - 1), topics: [topics] });
         for (const entry of logs) {
           if (lower(entry.address) !== lower(instance.address)) continue;
           const parsed = iface.parseLog(entry);
@@ -379,16 +455,28 @@ export async function runJackpotLiveDryRun({
         // eslint-disable-next-line no-await-in-loop
         found.push({ address, staffEver: await jackpot.staffEver(address) });
       }
-      add('staff-history', found.length > 0 && found.every((entry) => entry.staffEver === true), found);
+      // From startBlock the constructor's role events are in range, so an empty scan means a broken read;
+      // from a cursor, no role change since the last run is the normal answer.
+      const complete = logsFrom !== null || found.length > 0;
+      add('staff-history', complete && found.every((entry) => entry.staffEver === true), { from, scannedTo: head, named: found });
     });
 
-    // The client flag as served, against the expectation.
+    // The client flag as served, against the expectation. The source module is a proxy for the bundle (the
+    // header says why); the served SITE_VERSION equal to the server's ties it to the running release.
     await step('jackpot-live-flag', async () => {
-      const [config, rulesPage] = await Promise.all([http.get('/src/jackpot-config.mjs', { json: false }), http.get('/jackpot/chikun', { json: false })]);
+      const [config, rulesPage, version] = await Promise.all([
+        http.get('/src/jackpot-config.mjs', { json: false }), http.get('/jackpot/chikun', { json: false }), http.get('/src/version-tracking.mjs', { json: false }),
+      ]);
       const match = config.status === 200 ? /export const JACKPOT_LIVE = (true|false);/.exec(config.body) : null;
       const served = match ? match[1] === 'true' : null;
       const noindex = rulesPage.status === 200 ? /<meta name="robots" content="noindex/.test(rulesPage.body) : null;
-      add('jackpot-live-flag', served === expectLive && noindex === !expectLive, { expected: expectLive, served, rulesPageNoindex: noindex, status: { config: config.status, rulesPage: rulesPage.status } });
+      const versionMatch = version.status === 200 ? /export const SITE_VERSION = '([^']+)';/.exec(version.body) : null;
+      const sourceVersion = versionMatch ? versionMatch[1] : null;
+      const serverVersion = typeof health?.version === 'string' ? health.version : null;
+      add('jackpot-live-flag', served === expectLive && noindex === !expectLive && sourceVersion !== null && sourceVersion === serverVersion, {
+        expected: expectLive, served, rulesPageNoindex: noindex, sourceVersion, serverVersion, proxy: '/src/jackpot-config.mjs (the bundle inlines the literal)',
+        status: { config: config.status, rulesPage: rulesPage.status, version: version.status },
+      });
     });
     return report();
   }
@@ -397,14 +485,20 @@ export async function runJackpotLiveDryRun({
 // ---------------------------------------------------------------------------------------------------
 // CLI.
 
-const VALUE_FLAGS = new Set(['--site', '--rpc', '--expect-live', '--funder', '--deployment', '--jackpot-module', '--record']);
+const VALUE_FLAGS = new Set(['--site', '--rpc', '--expect-live', '--expect-paused', '--logs-from', '--funder', '--deployment', '--jackpot-module', '--record']);
 
 export function parseLiveDryRunArgs(argv = []) {
-  const options = { site: null, rpc: DEFAULT_RPC_URL, expectLive: false, funders: [], deployment: null, jackpotModule: null, record: null, json: false };
+  const options = {
+    site: null, rpc: DEFAULT_RPC_URL, expectLive: false, requireFunded: false, expectPaused: false, logsFrom: null, funders: [], deployment: null, jackpotModule: null, record: null, json: false,
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--json') {
       options.json = true;
+      continue;
+    }
+    if (arg === '--require-funded') {
+      options.requireFunded = true;
       continue;
     }
     if (!VALUE_FLAGS.has(arg)) return { ok: false, error: `unknown argument ${arg}` };
@@ -416,6 +510,12 @@ export function parseLiveDryRunArgs(argv = []) {
     else if (arg === '--expect-live') {
       if (value !== 'true' && value !== 'false') return { ok: false, error: '--expect-live is true or false' };
       options.expectLive = value === 'true';
+    } else if (arg === '--expect-paused') {
+      if (value !== 'true' && value !== 'false') return { ok: false, error: '--expect-paused is true or false' };
+      options.expectPaused = value === 'true';
+    } else if (arg === '--logs-from') {
+      if (!/^[0-9]{1,15}$/.test(value)) return { ok: false, error: '--logs-from must be a block number' };
+      options.logsFrom = Number(value);
     } else if (arg === '--funder') {
       if (!/^0x[0-9a-fA-F]{40}$/.test(value)) return { ok: false, error: '--funder must be a 0x address' };
       options.funders.push(value);
@@ -429,7 +529,7 @@ export function parseLiveDryRunArgs(argv = []) {
   return { ok: true, ...options };
 }
 
-export const USAGE = 'usage: node scripts/jackpot-live-dry-run.mjs --site <origin> [--rpc <url>] [--expect-live true|false] [--funder <address> ...] [--json]';
+export const USAGE = 'usage: node scripts/jackpot-live-dry-run.mjs --site <origin> [--rpc <url>] [--expect-live true|false] [--require-funded] [--expect-paused true|false] [--logs-from <block>] [--funder <address> ...] [--json]';
 
 export async function runLiveDryRunCli({ argv = process.argv.slice(2), out = console.log, fetchImpl = globalThis.fetch } = {}) {
   const args = parseLiveDryRunArgs(argv);
@@ -441,7 +541,10 @@ export async function runLiveDryRunCli({ argv = process.argv.slice(2), out = con
   const deployment = args.deployment ? (await import(pathToFileURL(resolve(args.deployment)).href)).LITVM_DEPLOYMENT : LITVM_DEPLOYMENT;
   const jackpotModule = args.jackpotModule ? await loadLitvmJackpot(args.jackpotModule) : null;
   const record = args.record ? JSON.parse(readFileSync(resolve(args.record), 'utf8')) : undefined;
-  const result = await runJackpotLiveDryRun({ site: args.site, rpc: args.rpc, fetchImpl, deployment, jackpotModule, record, expectLive: args.expectLive, funders: args.funders, log: args.json ? () => {} : out });
+  const result = await runJackpotLiveDryRun({
+    site: args.site, rpc: args.rpc, fetchImpl, deployment, jackpotModule, record, expectLive: args.expectLive, requireFunded: args.requireFunded, expectPaused: args.expectPaused,
+    logsFrom: args.logsFrom, funders: args.funders, log: args.json ? () => {} : out,
+  });
   out(JSON.stringify(result, null, 2));
   return result.ok ? 0 : 1;
 }
