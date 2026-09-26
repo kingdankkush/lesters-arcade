@@ -260,10 +260,17 @@ export function createWorldProductionLayers({ ContainerClass, GraphicsClass, Til
   });
 }
 
-export function clearWorldProductionLayers(worldProduction) {
+// Animated layers redraw every frame. Everything else is static ground a
+// caller may draw once and translate (world-static-bake.mjs). The vignette
+// depends on the view alone and redraws itself only when the view changes.
+const ANIMATED_LAYERS = ['landmarks', 'interactions', 'particles', 'lighting'];
+
+export function clearWorldProductionLayers(worldProduction, { statics = true, animated = true } = {}) {
   if (!worldProduction?.layers) throw new TypeError('worldProduction layers are required');
-  for (const layer of Object.values(worldProduction.layers)) layer.clear();
-  worldProduction.surfaceCues?.clear();
+  for (const [name, layer] of Object.entries(worldProduction.layers)) {
+    if (name !== 'vignette' && (ANIMATED_LAYERS.includes(name) ? animated : statics)) layer.clear();
+  }
+  if (statics) worldProduction.surfaceCues?.clear();
 }
 
 function rectVertices(area) {
@@ -909,14 +916,25 @@ function createStripPlacer({ container, TilingSpriteClass, camera, view, cullMar
   };
 }
 
-export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick, performanceProfile, terrainTiles = null, nativeBlockerIds = new Set() }) {
+/**
+ * `pass` splits one frame in two. 'static' draws only the ground that does not
+ * animate (terrain, roads, surfaces, strips, blockers, depth fallbacks) and
+ * 'dynamic' only what does (water shimmer, landmarks, interactions, particles,
+ * lighting, vignette); omitted, both draw. Surface cues are static except the
+ * water shimmer, so with `cues`/`shimmers` a caller gets one cue target per
+ * water surface boundary and the two interleave in the original draw order.
+ */
+export function renderWorldProductionArt({ worldProduction, world, camera, view, queryGround, worldToScreen, tick, performanceProfile, terrainTiles = null, nativeBlockerIds = new Set(), pass, cues, shimmers }) {
   if (!worldProduction?.layers || !world || !camera || !view) throw new TypeError('world renderer inputs are required');
   if (typeof queryGround !== 'function' || typeof worldToScreen !== 'function') throw new TypeError('world projection functions are required');
   if (!performanceProfile || !Number.isInteger(performanceProfile.particlesPerHazard)) throw new TypeError('performance profile is required');
   nonNegativeInteger(tick, 'tick');
-  clearWorldProductionLayers(worldProduction);
+  const drawStatic = pass !== 'dynamic';
+  const drawDynamic = pass !== 'static';
+  clearWorldProductionLayers(worldProduction, { statics: drawStatic, animated: drawDynamic });
+  for (const cue of [...(drawStatic && cues || []), ...(drawDynamic && shimmers || [])]) cue.clear();
   const layers = worldProduction.layers;
-  const depthState = worldProduction.depthFeatureState;
+  const depthState = drawStatic ? worldProduction.depthFeatureState : null;
   if (depthState && depthState.world !== world) {
     for (const node of depthState.nodes.values()) {
       worldProduction.depthLayer?.detach(node);
@@ -951,15 +969,16 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   const project = (point, activeCamera = camera) => worldToScreen(point, activeCamera, view);
   const tilePlacer = createTerrainSpritePlacer({ container: worldProduction.terrainSprites, terrainTiles, camera, view });
   const surfacePlacer = createTerrainSpritePlacer({ container: worldProduction.surfaceSprites, terrainTiles, camera, view });
-  const cueLayer = worldProduction.surfaceCues ?? layers.surfaces;
-  const roadMaskGraphic = worldProduction.roadMask ?? null;
+  const surfaceCueLayer = worldProduction.surfaceCues ?? layers.surfaces;
+  // Masks belong to the static pass; the animated pass never touches them.
+  const roadMaskGraphic = drawStatic ? worldProduction.roadMask ?? null : null;
   roadMaskGraphic?.clear();
   // Hidden unless it is actually consumed as a mask below; an unassigned mask
   // is just a white stroke on screen.
   if (roadMaskGraphic) roadMaskGraphic.visible = false;
   const roadPlacer = createTerrainSpritePlacer({ container: worldProduction.roadSprites, terrainTiles, camera, view });
   const roadTiled = Boolean(terrainTiles?.ready && terrainTiles.textureFor?.('road'));
-  const pathMaskGraphic = worldProduction.pathMask ?? null;
+  const pathMaskGraphic = drawStatic ? worldProduction.pathMask ?? null : null;
   pathMaskGraphic?.clear();
   if (pathMaskGraphic) pathMaskGraphic.visible = false;
   const pathPlacer = createTerrainSpritePlacer({ container: worldProduction.pathSprites, terrainTiles, camera, view });
@@ -1006,7 +1025,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   });
   // Ramp masks are re-traced by whichever sprite owns them; hidden until then,
   // because an unassigned mask is a white fill on screen.
-  for (const mask of worldProduction.rampMasks?.children ?? []) {
+  if (drawStatic) for (const mask of worldProduction.rampMasks?.children ?? []) {
     mask.clear();
     mask.visible = false;
   }
@@ -1021,7 +1040,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   const districtAt = (x) => world.districts.find((district) => x >= district.area.minX && x <= district.area.maxX) ?? world.districts[0];
   const shaderByDistrict = new Map(world.districts.map((district) => [district.id, resolveWorldShaderState({ tick, districtId: district.id })]));
 
-  for (const district of world.districts) {
+  if (drawStatic) for (const district of world.districts) {
     const kit = DISTRICT_PRODUCTION_MATERIALS[district.id];
     const a = project({ x: district.area.minX, y: district.area.minY, z: 0 });
     const b = project({ x: district.area.maxX, y: district.area.maxY, z: 0 });
@@ -1044,7 +1063,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   const fringeContainer = worldProduction.fringeSprites;
   const FRINGE_WORLD_DEPTH = 46;
   let fringeCursor = 0;
-  if (fringeContainer && terrainTiles?.ready) {
+  if (drawStatic && fringeContainer && terrainTiles?.ready) {
     const ordered = [...world.districts].sort((left, right) => left.area.minX - right.area.minX);
     for (let index = 0; index + 1 < ordered.length; index += 1) {
       const west = ordered[index];
@@ -1076,13 +1095,13 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       sprite.tileScale?.set?.(tileWorldScale, depth / (terrainTiles.fringeHeight || 64));
     }
   }
-  if (fringeContainer) {
+  if (drawStatic && fringeContainer) {
     for (let index = fringeCursor; index < fringeContainer.children.length; index += 1) {
       fringeContainer.children[index].visible = false;
     }
   }
 
-  for (const route of [...world.routes,...WORLD_DESIGN_GROUND_PATHS]) {
+  if (drawStatic) for (const route of [...world.routes,...WORLD_DESIGN_GROUND_PATHS]) {
     let routeNodes=ROAD_NODE_CACHE.get(route);
     if(!routeNodes){routeNodes=roundedRoadNodes(route.points??route.nodeIds.map(id=>world.routeGraph.nodes.find(n=>n.id===id)),route.width);ROAD_NODE_CACHE.set(route,routeNodes);}
     const routePoints = routeNodes.map((node) => {
@@ -1114,7 +1133,13 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
+  let segment = 0;
   for (const surface of world.surfaces) {
+    const cueLayer = cues?.[segment] ?? surfaceCueLayer;
+    const shimmerLayer = shimmers?.[segment] ?? surfaceCueLayer;
+    const watery = surface.kind.includes('water');
+    if (watery) segment += 1;
+    if (!drawStatic && !watery) continue;
     const vertices=rectVertices(surface.area);
     const points=vertices.map((vertex)=>{const sampled=queryGround(vertex.x,vertex.y); return project({...vertex,z:surface.waterLevel??sampled.groundZ});});
     if (!screenBoundsVisible(points, view, performanceProfile.worldCullMargin)) continue;
@@ -1129,14 +1154,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     // W-11: the camera-facing wall of a ledge or the flank of a ramp. A bridge
     // deck over water gets none: the water tile above `surfaces` would cover
     // it, so it keeps the lip cue alone.
-    const face = surface.kind === 'ledge' || isRamp ? resolveRaisedFace({ surface, points, queryGround, project }) : null;
-    if (isRaised) {
-      const lift = Math.max(4, 9 * camera.zoom);
-      // The whole mass casts, from the deck's north edge down past the foot.
-      const footprint = face ? [points[0], points[1], face.footEast, face.footWest] : points;
-      const shadow = footprint.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
-      tracePolygon(layers.surfaces, shadow).fill({ color: 0x03070b, alpha: 0.42 });
-    }
+    const face = drawStatic && (surface.kind === 'ledge' || isRamp) ? resolveRaisedFace({ surface, points, queryGround, project }) : null;
     // W-4: once a waterline carries an authored wet-sand band the bright hairline
     // outline is what made it read as a map overlay, so it drops to a hint.
     // Raised surfaces and ramps keep a thin one: with the wall drawn under the
@@ -1149,100 +1167,109 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     const ford = surface.kind === 'shallow-water';
     const fordBanded = ford && Boolean(shallowsTexture);
     const outlined = isRaised || isRamp;
-    tracePolygon(layers.surfaces,points)
-      .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
-      .stroke({color:surfaceBase.strokeColor,width:outlined||bandedShore||fordBanded?2:3,alpha:fordBanded?0.2:isWater?0:outlined?0.55:0.9});
-    if (face) {
-      drawRaisedFace({
-        layers,
-        cueLayer,
-        face,
-        baseColor: kit.groundColor,
-        capColor: mixColor(surfaceBase.color, 0xffffff, 0.5),
-        camera,
-        facePlacer,
-        texture: faceTexture,
-        tint: faceTint(kit.groundColor),
-        stripDefaults,
-        worldProduction,
-        // A flank tapers to nothing at the low end, so it gets no foot band.
-        contact: !isRamp,
-      });
-    }
-    // Authored material over the flat base for rectangular surfaces; the base
-    // colour remains visible for non-rect shapes and when tiles are absent.
-    const surfaceMaterial = SURFACE_TERRAIN_MATERIAL[surface.kind];
-    if (surfaceMaterial && points.length >= 3) {
-      const minX = Math.min(...points.map((point) => point.x));
-      const maxX = Math.max(...points.map((point) => point.x));
-      const minY = Math.min(...points.map((point) => point.y));
-      const maxY = Math.max(...points.map((point) => point.y));
-      if (isRamp || surface.area.type !== 'rect') {
-        // A ramp's projected outline is a parallelogram (its high corners sit
-        // higher on screen), so the tile is clipped to that polygon instead of
-        // overpainting two triangles of ground outside it.
-        const rampTile = rampPlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha) ?? null;
-        if (rampTile) clipToPolygon(rampTile, points, worldProduction);
-      } else {
-        surfacePlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha);
+    if (drawStatic) {
+      if (isRaised) {
+        const lift = Math.max(4, 9 * camera.zoom);
+        // The whole mass casts, from the deck's north edge down past the foot.
+        const footprint = face ? [points[0], points[1], face.footEast, face.footWest] : points;
+        const shadow = footprint.map((point) => ({ x: point.x + lift * 0.55, y: point.y + lift }));
+        tracePolygon(layers.surfaces, shadow).fill({ color: 0x03070b, alpha: 0.42 });
       }
-    }
-    if (isRamp && points.length >= 4) drawRampGrade(cueLayer, surface, points, camera.zoom);
-    if (surface.kind === 'water' && shoreTexture && stripPlacer) {
-      for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
-        if (edge.a.y === edge.b.y && (edge.a.y<=worldMinY || edge.a.y>=worldMaxY)) continue;
-        stripPlacer.placeStrip(shoreTexture,project({...edge.a,z:edge.z}),project({...edge.b,z:edge.z}),{
-          ...stripDefaults,depthWorld:SHORE_WORLD_DEPTH,side:-1,alpha:0.94,
+      tracePolygon(layers.surfaces,points)
+        .fill({color:surfaceBase.color,alpha:surfaceBase.alpha})
+        .stroke({color:surfaceBase.strokeColor,width:outlined||bandedShore||fordBanded?2:3,alpha:fordBanded?0.2:isWater?0:outlined?0.55:0.9});
+      if (face) {
+        drawRaisedFace({
+          layers,
+          cueLayer,
+          face,
+          baseColor: kit.groundColor,
+          capColor: mixColor(surfaceBase.color, 0xffffff, 0.5),
+          camera,
+          facePlacer,
+          texture: faceTexture,
+          tint: faceTint(kit.groundColor),
+          stripDefaults,
+          worldProduction,
+          // A flank tapers to nothing at the low end, so it gets no foot band.
+          contact: !isRamp,
         });
       }
-    }
-    if (fordBanded && waterStripPlacer && surface.area.type === 'rect' && points.length >= 4) {
-      // The band lies INSIDE the shallows on its two long edges: opaque deep
-      // tone on the boundary (side 1 points into the rect) dissolving into the
-      // shallow bed, stopping exactly at the bank corners where the river's
-      // own shore strips take over. Nothing is drawn in the deep channel.
-      for (const [from, to, worldY] of [[0, 1, surface.area.minY], [2, 3, surface.area.maxY]]) {
-        if (worldY <= worldMinY || worldY >= worldMaxY) continue;
-        waterStripPlacer.placeStrip(shallowsTexture, points[from], points[to], {
+      // Authored material over the flat base for rectangular surfaces; the base
+      // colour remains visible for non-rect shapes and when tiles are absent.
+      const surfaceMaterial = SURFACE_TERRAIN_MATERIAL[surface.kind];
+      if (surfaceMaterial && points.length >= 3) {
+        const minX = Math.min(...points.map((point) => point.x));
+        const maxX = Math.max(...points.map((point) => point.x));
+        const minY = Math.min(...points.map((point) => point.y));
+        const maxY = Math.max(...points.map((point) => point.y));
+        if (isRamp || surface.area.type !== 'rect') {
+          // A ramp's projected outline is a parallelogram (its high corners sit
+          // higher on screen), so the tile is clipped to that polygon instead of
+          // overpainting two triangles of ground outside it.
+          const rampTile = rampPlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha) ?? null;
+          if (rampTile) clipToPolygon(rampTile, points, worldProduction);
+        } else {
+          surfacePlacer?.place(surfaceMaterial, minX, minY, maxX - minX, maxY - minY, surfaceBase.alpha);
+        }
+      }
+      if (isRamp && points.length >= 4) drawRampGrade(cueLayer, surface, points, camera.zoom);
+      if (surface.kind === 'water' && shoreTexture && stripPlacer) {
+        for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
+          if (edge.a.y === edge.b.y && (edge.a.y<=worldMinY || edge.a.y>=worldMaxY)) continue;
+          stripPlacer.placeStrip(shoreTexture,project({...edge.a,z:edge.z}),project({...edge.b,z:edge.z}),{
+            ...stripDefaults,depthWorld:SHORE_WORLD_DEPTH,side:-1,alpha:0.94,
+          });
+        }
+      }
+      if (fordBanded && waterStripPlacer && surface.area.type === 'rect' && points.length >= 4) {
+        // The band lies INSIDE the shallows on its two long edges: opaque deep
+        // tone on the boundary (side 1 points into the rect) dissolving into the
+        // shallow bed, stopping exactly at the bank corners where the river's
+        // own shore strips take over. Nothing is drawn in the deep channel.
+        for (const [from, to, worldY] of [[0, 1, surface.area.minY], [2, 3, surface.area.maxY]]) {
+          if (worldY <= worldMinY || worldY >= worldMaxY) continue;
+          waterStripPlacer.placeStrip(shallowsTexture, points[from], points[to], {
+            ...stripDefaults,
+            depthWorld: SHALLOWS_WORLD_DEPTH,
+            side: 1,
+            overlapWorld: 0,
+            alpha: 0.9,
+          });
+        }
+      }
+      if (isRaised && surface.kind === 'ledge' && screeTexture && stripPlacer && points.length >= 4) {
+        // W-4: the debris a ledge front sheds onto the ground below it, deeper
+        // under a taller deck. W-11 moved it from the lip to the foot of the
+        // wall: anchored at the lip it hung down the unrendered face and never
+        // reached the ground it is supposed to lie on.
+        stripPlacer.placeStrip(screeTexture, face?.footEast ?? points[2], face?.footWest ?? points[3], {
           ...stripDefaults,
-          depthWorld: SHALLOWS_WORLD_DEPTH,
-          side: 1,
-          overlapWorld: 0,
+          depthWorld: SCREE_WORLD_DEPTH + Math.min(28, (surface.groundZ ?? 0) * 0.32),
+          side: -1,
           alpha: 0.9,
         });
       }
     }
-    if (isRaised && surface.kind === 'ledge' && screeTexture && stripPlacer && points.length >= 4) {
-      // W-4: the debris a ledge front sheds onto the ground below it, deeper
-      // under a taller deck. W-11 moved it from the lip to the foot of the
-      // wall: anchored at the lip it hung down the unrendered face and never
-      // reached the ground it is supposed to lie on.
-      stripPlacer.placeStrip(screeTexture, face?.footEast ?? points[2], face?.footWest ?? points[3], {
-        ...stripDefaults,
-        depthWorld: SCREE_WORLD_DEPTH + Math.min(28, (surface.groundZ ?? 0) * 0.32),
-        side: -1,
-        alpha: 0.9,
-      });
-    }
     if (isWater && !ford) {
-      for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
+      if (drawStatic) for (const edge of exposedWaterEdges(world.surfaces).filter(e=>e.surfaceId===surface.id)) {
         if (edge.a.y === edge.b.y && (edge.a.y<=worldMinY || edge.a.y>=worldMaxY)) continue;
         const a=project({...edge.a,z:edge.z}),b=project({...edge.b,z:edge.z});
         cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0xcdf6ff,width:Math.max(2,3*camera.zoom),alpha:0.18});
         cueLayer.moveTo(a.x,a.y).lineTo(b.x,b.y).stroke({color:0x7fdcf0,width:Math.max(1,1.2*camera.zoom),alpha:0.3});
       }
-      if (surface.area.type !== 'rect') {
+      if (drawDynamic && surface.area.type !== 'rect') {
         const step=70*camera.zoom, minY=Math.max(-step,Math.min(...points.map(p=>p.y))), maxY=Math.min(view.height+step,Math.max(...points.map(p=>p.y)));
         for (let y=Math.ceil(minY/step)*step;y<maxY;y+=step) {
           for (const [left,right] of clipHorizontalWaterLine(points,y)) {
             if(right-left<24*camera.zoom) continue;
             const inset=12*camera.zoom;
-            cueLayer.moveTo(left+inset,y).lineTo(right-inset,y).stroke({color:0xbaf5ff,width:Math.max(1,1.2*camera.zoom),alpha:0.045+shader.waterShimmer*0.06});
+            shimmerLayer.moveTo(left+inset,y).lineTo(right-inset,y).stroke({color:0xbaf5ff,width:Math.max(1,1.2*camera.zoom),alpha:0.045+shader.waterShimmer*0.06});
           }
         }
       }
     }
-    if (isRaised && points.length >= 4) {
+    if (drawStatic && isRaised && points.length >= 4) {
       // Lit top edge and shaded front lip.
       cueLayer.moveTo(points[0].x, points[0].y).lineTo(points[1].x, points[1].y)
         .stroke({ color: mixColor(kit.detailColor, 0xffffff, 0.4), width: Math.max(2, 3 * camera.zoom), alpha: 0.7 });
@@ -1271,16 +1298,16 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
       // takes none.
       const midY = (top + bottom) / 2;
       const depthBand = Math.max(1, (bottom - top) * 0.5);
-      if (!ford) {
+      if (drawStatic && !ford) {
         cueLayer.rect(left, midY - depthBand * 0.5, right - left, depthBand)
           .fill({ color: 0x062b3d, alpha: 0.12 });
       }
       const step = BAND * camera.zoom;
-      for (let y = Math.ceil(visibleTop / step) * step; y < visibleBottom; y += step) {
+      if (drawDynamic) for (let y = Math.ceil(visibleTop / step) * step; y < visibleBottom; y += step) {
         const phase = shader.waterShimmer * Math.PI * 2 + y * 0.02;
         const drift = Math.sin(phase) * 26 * camera.zoom;
         const inset = 18 * camera.zoom;
-        cueLayer.moveTo(left + inset + drift, y)
+        shimmerLayer.moveTo(left + inset + drift, y)
           .bezierCurveTo(
             left + (right - left) * 0.35, y - 6 * camera.zoom,
             left + (right - left) * 0.65, y + 6 * camera.zoom,
@@ -1291,7 +1318,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
         const fleckSeed = fnv1a(`${surface.id ?? 'water'}:${Math.round(y)}`);
         const fleckX = left + inset + ((fleckSeed & 0xff) / 255) * Math.max(1, right - left - inset * 2);
         const fleckLength = (10 + ((fleckSeed >>> 9) & 15)) * camera.zoom;
-        cueLayer.moveTo(fleckX - drift * 0.6, y + step * 0.5)
+        shimmerLayer.moveTo(fleckX - drift * 0.6, y + step * 0.5)
           .lineTo(fleckX - drift * 0.6 + fleckLength, y + step * 0.5)
           .stroke({ color: 0xe6ffff, width: Math.max(1, 1.4 * camera.zoom), alpha: 0.08 + shader.waterShimmer * 0.1 });
       }
@@ -1300,7 +1327,7 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
-  for (const feature of world.blockers) {
+  if (drawStatic) for (const feature of world.blockers) {
     if (nativeBlockerIds.has(feature.id)) continue;
     const townFeature = feature.id.startsWith('town-');
     if (townFeature && !layers.townBlockers.visible) continue;
@@ -1351,14 +1378,14 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
-  for (const destructible of world.interactions.destructibles) {
+  if (drawStatic) for (const destructible of world.interactions.destructibles) {
     if(nativeBlockerIds.has(destructible.id))continue;
     const ground=queryGround(destructible.anchor.x,destructible.anchor.y); const center=project({...destructible.anchor,z:ground.groundZ}); const s=18*camera.zoom;
     if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     layers.details.roundRect(center.x-s,center.y-s*0.7,s*2,s*1.4,4).fill({color:0x5c4433,alpha:1}).stroke({color:0xd7a766,width:3});
     layers.details.moveTo(center.x-s,center.y).lineTo(center.x+s,center.y).moveTo(center.x,center.y-s*0.7).lineTo(center.x,center.y+s*0.7).stroke({color:0x2e211a,width:2,alpha:0.7});
   }
-  for (const zone of world.interactions.explosiveZones) {
+  if (drawStatic) for (const zone of world.interactions.explosiveZones) {
     for(const [index,[dx,dy]] of [[-40,0],[0,-38],[40,0]].entries()){
       if(nativeBlockerIds.has(`${zone.id}:drum-${index}`))continue;
       const x=zone.anchor.x+dx,y=zone.anchor.y+dy,center=project({x,y,z:queryGround(x,y).groundZ}),s=14*camera.zoom;
@@ -1367,20 +1394,20 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
     }
   }
 
-  for (const landmark of world.landmarks) {
+  if (drawDynamic) for (const landmark of world.landmarks) {
     const ground=queryGround(landmark.anchor.x,landmark.anchor.y); const center=project({...landmark.anchor,z:ground.groundZ}); const kit=LANDMARK_PRODUCTION_KITS[landmark.visualKind]; const glow=shaderByDistrict.get(landmark.districtId).beaconGlow;
     if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     drawLandmark(layers.landmarks,landmark,kit,center,camera.zoom,glow);
     layers.lighting.circle(center.x,center.y,(44+glow*16)*camera.zoom).fill({color:kit.accentColor,alpha:0.035+glow*0.045});
   }
 
-  for (const poi of world.pointsOfInterest) {
+  if (drawDynamic) for (const poi of world.pointsOfInterest) {
     const ground=queryGround(poi.anchor.x,poi.anchor.y); const center=project({...poi.anchor,z:ground.groundZ});
     if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     drawInteraction(layers.interactions,center,INTERACTION_PRODUCTION_KITS[poi.hook],camera.zoom,0,false);
   }
   let renderedParticleCount = 0;
-  for (const hazard of world.interactions.hazards) {
+  if (drawDynamic) for (const hazard of world.interactions.hazards) {
     const ground=queryGround(hazard.anchor.x,hazard.anchor.y); const center=project({...hazard.anchor,z:ground.groundZ}); const shader=shaderByDistrict.get(hazard.districtId); const kit=INTERACTION_PRODUCTION_KITS[hazard.kind];
     if (!isScreenPointVisible(center, view, performanceProfile.worldCullMargin)) continue;
     drawInteraction(layers.interactions,center,kit,camera.zoom,shader.hazardPulse,true);
@@ -1392,44 +1419,51 @@ export function renderWorldProductionArt({ worldProduction, world, camera, view,
   // direction and was effectively invisible. It now draws on its own
   // normal-blended layer, in graduated bands so the frame edge falls off
   // smoothly instead of showing a hard 36px border.
+  const vignette=layers.vignette,vignetteView=`${view.width}x${view.height}`;
   const vignetteDepth=Math.max(48,Math.min(view.width,view.height)*0.14);
   const BANDS=12;
-  for(let band=0;band<BANDS;band+=1){
-    const inset=vignetteDepth*(band/BANDS);
-    const thickness=vignetteDepth/BANDS;
-    const alpha=0.1*(1-band/BANDS)**2;
-    layers.vignette.rect(0,inset,view.width,thickness).fill({color:0x03080e,alpha});
-    layers.vignette.rect(0,view.height-inset-thickness,view.width,thickness).fill({color:0x03080e,alpha});
-    layers.vignette.rect(inset,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
-    layers.vignette.rect(view.width-inset-thickness,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
-  }
-  tilePlacer?.finish();
-  surfacePlacer?.finish();
-  rampPlacer?.finish();
-  stripPlacer?.finish();
-  waterStripPlacer?.finish();
-  facePlacer?.finish();
-  blockerFacePlacer?.finish();
-  if (pathPlacer && pathMaskGraphic) {
-    const pathSprite = pathPlacer.place('packed-earth', 0, 0, view.width, view.height, 0.98);
-    if (pathSprite) {
-      // Compacted earth stays legible even where the surrounding district
-      // shares this soil texture; the tint adds no extra material request.
-      pathSprite.tint = 0xd4c4ab;
-      pathSprite.mask = pathMaskGraphic;
-      pathMaskGraphic.visible = true;
+  // Screen-space and a function of the view alone, so it redraws on resize only.
+  if(drawDynamic&&vignette.drawnFor!==vignetteView){
+    vignette.clear().drawnFor=vignetteView;
+    for(let band=0;band<BANDS;band+=1){
+      const inset=vignetteDepth*(band/BANDS);
+      const thickness=vignetteDepth/BANDS;
+      const alpha=0.1*(1-band/BANDS)**2;
+      vignette.rect(0,inset,view.width,thickness).fill({color:0x03080e,alpha});
+      vignette.rect(0,view.height-inset-thickness,view.width,thickness).fill({color:0x03080e,alpha});
+      vignette.rect(inset,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
+      vignette.rect(view.width-inset-thickness,0,thickness,view.height).fill({color:0x03080e,alpha:alpha*0.85});
     }
-    pathPlacer.finish();
   }
-  if (roadPlacer && roadMaskGraphic) {
-    const roadSprite = roadPlacer.place('road', 0, 0, view.width, view.height, 0.96);
-    if (roadSprite) {
-      roadSprite.mask = roadMaskGraphic;
-      // Pixi excludes an assigned mask from the colour buffer, so this is safe
-      // only after the assignment above.
-      roadMaskGraphic.visible = true;
+  if (drawStatic) {
+    tilePlacer?.finish();
+    surfacePlacer?.finish();
+    rampPlacer?.finish();
+    stripPlacer?.finish();
+    waterStripPlacer?.finish();
+    facePlacer?.finish();
+    blockerFacePlacer?.finish();
+    if (pathPlacer && pathMaskGraphic) {
+      const pathSprite = pathPlacer.place('packed-earth', 0, 0, view.width, view.height, 0.98);
+      if (pathSprite) {
+        // Compacted earth stays legible even where the surrounding district
+        // shares this soil texture; the tint adds no extra material request.
+        pathSprite.tint = 0xd4c4ab;
+        pathSprite.mask = pathMaskGraphic;
+        pathMaskGraphic.visible = true;
+      }
+      pathPlacer.finish();
     }
-    roadPlacer.finish();
+    if (roadPlacer && roadMaskGraphic) {
+      const roadSprite = roadPlacer.place('road', 0, 0, view.width, view.height, 0.96);
+      if (roadSprite) {
+        roadSprite.mask = roadMaskGraphic;
+        // Pixi excludes an assigned mask from the colour buffer, so this is safe
+        // only after the assignment above.
+        roadMaskGraphic.visible = true;
+      }
+      roadPlacer.finish();
+    }
   }
   return freezeDeep({
     artId: WORLD_PRODUCTION_ART.id,

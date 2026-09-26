@@ -195,6 +195,10 @@ const ELITE_CROWN_FILL = 0xffe27a;
 const ELITE_CROWN_EDGE = 0x3a2a05;
 const ELITE_CROWN_LIFT = 3;
 
+// Atlas texture source -> (frame record -> Texture). Weak on both levels so a
+// reloaded atlas or index takes its textures with it.
+const FRAME_TEXTURES_BY_ATLAS = new WeakMap();
+
 function drawEliteCrown(graphic) {
   graphic.clear()
     .poly([-7, 0, -7, -9, -3.5, -4, 0, -12, 3.5, -4, 7, -9, 7, 0])
@@ -225,15 +229,19 @@ export function createEnemyRosterDisplay({
   container.productionAuthority = 'projection-only';
   container.scale.set(scale);
 
-  const textureByFrameId = new Map();
+  // One frame-texture cache per atlas, shared by every display cut from it,
+  // keyed by the index's own frame record so a frame is cut exactly once.
+  let frameTextures = FRAME_TEXTURES_BY_ATLAS.get(atlasTexture.source);
+  if (!frameTextures) FRAME_TEXTURES_BY_ATLAS.set(atlasTexture.source, frameTextures = new WeakMap());
   const textureFor = (frame) => {
-    if (!textureByFrameId.has(frame.id)) {
-      textureByFrameId.set(frame.id, new TextureClass({
+    let texture = frameTextures.get(frame);
+    if (!texture) {
+      frameTextures.set(frame, texture = new TextureClass({
         source: atlasTexture.source,
         frame: new RectangleClass(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h),
       }));
     }
-    return textureByFrameId.get(frame.id);
+    return texture;
   };
 
   const initialPhase = index.phases[0];

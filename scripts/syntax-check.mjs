@@ -20,6 +20,11 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/hmh-perf-crowd-bench.mjs',
+  'scripts/lib/hmh-perf-analysis.mjs',
+  'tests/hmh-perf-crowd-bench.test.mjs',
+  'scripts/hmh-sim-digest.mjs',
+  'tests/hmh-sim-digest.test.mjs',
   'apps/hmh-reboot/src/road-presentation.mjs',
   'apps/portal/src/chikun-ground-v3-course.mjs',
   'apps/portal/src/chikun-ground-v3-runtime.mjs',
@@ -845,6 +850,10 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-hud.test.mjs",
   "apps/hmh-reboot/src/production-hero-atlas.mjs",
   "apps/hmh-reboot/src/enemy-roster-atlas.mjs",
+  "apps/hmh-reboot/src/enemy-display-pool.mjs",
+  "tests/hmh-enemy-display-pool.test.mjs",
+  "apps/hmh-reboot/src/world-static-bake.mjs",
+  "tests/hmh-world-static-bake.test.mjs",
   "apps/hmh-reboot/src/authored-prop-atlas.mjs",
   "apps/hmh-reboot/src/tripo-prop-appearance.mjs",
   "apps/hmh-reboot/src/contact-shadows.mjs",

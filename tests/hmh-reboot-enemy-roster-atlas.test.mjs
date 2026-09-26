@@ -404,6 +404,37 @@ test('native hit peak and recovery both occur inside every existing short hit wi
   }
 });
 
+test('every display cut from one atlas shares a single frame-texture cache', async () => {
+  const { createEnemyRosterDisplay } = await import('../apps/hmh-reboot/src/enemy-roster-atlas.mjs');
+  const index = createEnemyRosterAtlasIndex(await loadMetadata('forkrunner'), 'forkrunner');
+  const fake = makeFakePixi();
+  let constructed = 0;
+  class CountingTexture extends fake.FakeTexture {
+    constructor(options) { super(options); constructed += 1; }
+  }
+  const make = (atlasTexture) => createEnemyRosterDisplay({ index, atlasTexture,
+    ContainerClass: fake.FakeContainer, SpriteClass: fake.FakeSprite,
+    TextureClass: CountingTexture, RectangleClass: fake.FakeRectangle,
+    GraphicsClass: fake.FakeGraphics, scale: 1 });
+  const body = (display) => display.children.find((child) => child.label === 'roster-body-forkrunner');
+  const atlas = { source: {} };
+  const first = make(atlas);
+  const perDisplay = constructed;
+  assert.ok(perDisplay > 0);
+  const second = make(atlas);
+  assert.equal(body(second).texture, body(first).texture, 'two bodies on the same frame share one Texture');
+  assert.equal(constructed, perDisplay, 'a second display builds no frame textures of its own');
+  const pose = { state: 'run', tick: 12, direction: 3 };
+  first.applyPose(pose);
+  second.applyPose(pose);
+  assert.equal(body(second).texture, body(first).texture);
+  assert.equal(constructed, perDisplay + 1, 'each distinct frame is cut once per atlas');
+  const otherAtlas = { source: {} };
+  const other = make(otherAtlas);
+  assert.equal(body(other).texture.source, otherAtlas.source, 'a different atlas keeps its own textures');
+  assert.equal(constructed, perDisplay * 2 + 1);
+});
+
 test('rendered enemy frame evidence follows the actual texture selection', async () => {
   const { createEnemyRosterDisplay } = await import('../apps/hmh-reboot/src/enemy-roster-atlas.mjs');
   const index = createEnemyRosterAtlasIndex(await loadMetadata('bagholder-rusher'), 'bagholder-rusher');
