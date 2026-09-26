@@ -1,3 +1,9 @@
+# Lester's Arcade — 1.8.5: smoother HMH crowds, working iPhone sound, jackpot contracts deployed (idle)
+
+Batch release after 1.8.4. Hard Money Heroes runs its simulation 34–50% cheaper per tick with every result bit-identical, draws its enemy crowd without per-frame allocations, and plays sound effects through Web Audio, so the effect and interface volume sliders now work on iPhone (footstep sounds are retired, per the owner's cue list). The Chikun Weekly Jackpot and its test token are deployed on LiteForge (`WeeklyJackpot` `0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e`, tCHIKUN `0xe4230b5aba9f9431b0f5a718b99544f69330ae9c`) but idle: the owner put the live jackpot on hold until mainnet and the $CHIKUN launch, so `JACKPOT_LIVE` stays false and nothing player-facing changes. The operator tool gains an `entry-fee` action that refuses a price below the server's settle floor, for the upcoming owner-approved fee change. Contracts, fees and flags of the live Ranked system are unchanged.
+
+Site/game version `1.8.5`; cache marker `lesters-arcade-v58-smooth-crowds`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.8.4 verified live: fairer HMH Ranked, two HMH freezes fixed, faster crowds, simpler STACKED effects, jackpot UI staged
 
 Batch release after 1.8.3. Hard Money Heroes Ranked verification refuses twelve impossible run-summary combinations (grenade kills, detonations and throws beyond what the run could produce, pickups beyond what the sites, vault and events offered, activity in zero-length runs), which closes the 1.8.x path that let a fabricated summary earn five achievements in one paid run; 68 real runs of the 1.8.3 game all still pass. Ranked HMH now ignores the `?evidenceSafe` test switch, so every Ranked run starts at its seeded level entry. Two HMH freezes are fixed (a Burner or Lightning Ledger hit on the not-yet-active Liquidator, and an ammo refill while the Ledger channels). HMH crowds render faster (pooled enemy displays and a ground drawn once instead of every frame; same-seed results unchanged). STACKED's settings become one effects preset (Reduced, Standard, Full) with an automatic scene deck. The Chikun Weekly Jackpot's pages and owner review page are in, hidden behind `JACKPOT_LIVE` (false): nothing player-facing changes for the jackpot yet. Contracts, fees and flags of the live Ranked system are unchanged.
@@ -62,7 +68,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v57-fair-play`
+**Production cache marker:** `lesters-arcade-v58-smooth-crowds`
 
 # Lester's Arcade
 
