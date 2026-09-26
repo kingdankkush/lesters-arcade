@@ -1,4 +1,11 @@
-export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
+// Run summary catalogues (schema 1-6). A summary carries catalogue indices and
+// ids only, never authored world coordinates. This object is the 1.8.1
+// catalogue set, frozen: schema versions 1-6 validate against it forever.
+// Schema 7 appends to it in sdk/hmh-run-summary-schema-v7.mjs, a separate
+// module so the 1.8.x child and portal bundles, which load this one, do not
+// grow (run summary v7 contract, docs/hmh-reboot/design/
+// HMH-RUN-SUMMARY-V7-CONTRACT.md §2, §3 and §16).
+export const HMH_RUN_SUMMARY_CATALOGS_V6 = Object.freeze({
   enemyRoles: Object.freeze([
     'bagholder-rusher',
     'forkrunner',
@@ -102,6 +109,7 @@ export const HMH_RUN_SUMMARY_CATALOGS = Object.freeze({
   // 'none' is reserved for runs that did not end in a defeat.
   defeatKinds: Object.freeze(['none', 'enemy', 'boss', 'hazard', 'self', 'unknown']),
 });
+export const HMH_RUN_SUMMARY_CATALOGS = HMH_RUN_SUMMARY_CATALOGS_V6;
 
 // Bounded catalog-style ids (heroId, defeat causeId); shared with the child
 // accumulator so an unattributable killer is reported rather than transmitted.
@@ -130,14 +138,27 @@ const rows = (value, ids, idKey, fields, label) => {
   }
   return '';
 };
+// Shared with sdk/hmh-run-summary-schema-v7.mjs.
+export { keys as runSummaryFieldsError, rows as runSummaryRowsError, integer as isRunSummaryInteger };
 
+// Schema 1-6. Schema 7 is validated by the validateRunSummaryPayload of
+// sdk/hmh-run-summary-schema-v7.mjs, which answers exactly as this one for 1-6.
 export function validateRunSummaryPayload(payload) {
   if (![1, 2, 3, 4, 5, 6].includes(payload?.schemaVersion)) return 'game:run-summary schemaVersion is invalid';
+  return validateRunSummaryRules(payload, HMH_RUN_SUMMARY_CATALOGS_V6);
+}
+
+// The rules of schema versions up to 6 against the catalogues `C`, for a
+// payload whose schemaVersion the caller already accepted. A later schema
+// passes its catalogues and its extra top-level fields, and checks those
+// fields itself afterwards.
+export function validateRunSummaryRules(payload, C, laterFields = []) {
   const payloadFields = ['schemaVersion', 'identity', 'totals', 'kills', 'weapons', 'grenades', 'collectibles', 'upgrades', 'exploration'];
   if (payload.schemaVersion >= 3) payloadFields.push('lightningLedger');
   if (payload.schemaVersion >= 4) payloadFields.push('bearMarketBurner');
   if (payload.schemaVersion >= 5) payloadFields.push('forkedStandard');
   if (payload.schemaVersion >= 6) payloadFields.push('defeat', 'milestones');
+  payloadFields.push(...laterFields);
   let error = keys(payload, payloadFields, 'game:run-summary payload');
   if (error) return error;
   const identityFields = ['seed', 'buildHash', 'mode', 'heroId', 'terminalReason', 'startTick', 'endTick'];
@@ -161,9 +182,9 @@ export function validateRunSummaryPayload(payload) {
   error = keys(payload.kills, ['total', 'byEnemyRole', 'byWeapon', 'elite', 'boss'], 'game:run-summary kills');
   if (error) return error;
   for (const field of ['total', 'elite', 'boss']) if (!integer(payload.kills[field], 10_000_000)) return `game:run-summary kills.${field} is invalid`;
-  error = rows(payload.kills.byEnemyRole, HMH_RUN_SUMMARY_CATALOGS.enemyRoles, 'enemyRoleId', ['count'], 'game:run-summary kills.byEnemyRole');
+  error = rows(payload.kills.byEnemyRole, C.enemyRoles, 'enemyRoleId', ['count'], 'game:run-summary kills.byEnemyRole');
   if (error) return error;
-  error = rows(payload.kills.byWeapon, HMH_RUN_SUMMARY_CATALOGS.weapons, 'weaponId', ['count'], 'game:run-summary kills.byWeapon');
+  error = rows(payload.kills.byWeapon, C.weapons, 'weaponId', ['count'], 'game:run-summary kills.byWeapon');
   if (error) return error;
   if (payload.kills.byEnemyRole.reduce((sum, row) => sum + row.count, 0) !== payload.kills.total
     || payload.kills.byWeapon.reduce((sum, row) => sum + row.count, 0) !== payload.kills.total
@@ -171,7 +192,7 @@ export function validateRunSummaryPayload(payload) {
 
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill'];
   if (payload.schemaVersion >= 2) weaponFields.push('chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped');
-  error = rows(payload.weapons, HMH_RUN_SUMMARY_CATALOGS.weapons, 'weaponId', weaponFields, 'game:run-summary weapons');
+  error = rows(payload.weapons, C.weapons, 'weaponId', weaponFields, 'game:run-summary weapons');
   if (error) return error;
   for (let index = 0; index < payload.weapons.length; index += 1) {
     const weapon = payload.weapons[index];
@@ -231,14 +252,14 @@ export function validateRunSummaryPayload(payload) {
     const milestones = payload.milestones;
     error = keys(defeat, ['kind', 'causeId', 'tick', 'damage'], 'game:run-summary defeat')
       || keys(milestones, ['levelUps', 'firstLevelUpTick', 'lastLevelUpTick', 'bossEngagedTick', 'sites', 'secrets'], 'game:run-summary milestones')
-      || rows(milestones.sites, HMH_RUN_SUMMARY_CATALOGS.worldSites, 'siteId', ['operated', 'tick'], 'game:run-summary sites')
-      || rows(milestones.secrets, HMH_RUN_SUMMARY_CATALOGS.secrets, 'secretId', ['found', 'tick'], 'game:run-summary secrets');
+      || rows(milestones.sites, C.worldSites, 'siteId', ['operated', 'tick'], 'game:run-summary sites')
+      || rows(milestones.secrets, C.secrets, 'secretId', ['found', 'tick'], 'game:run-summary secrets');
     if (error) return error;
     // Every tick sits inside the run; an event that never fired (flag 0, no
     // defeat, no level-up) carries tick 0, and a flag is only ever 0 or 1.
     const inRun = (tick, flag = 1) => integer(tick, identity.endTick) && (flag === 1 || !(flag || tick));
     const none = defeat.kind === 'none';
-    if (!HMH_RUN_SUMMARY_CATALOGS.defeatKinds.includes(defeat.kind)
+    if (!C.defeatKinds.includes(defeat.kind)
       || typeof defeat.causeId !== 'string' || !HMH_RUN_SUMMARY_ID_PATTERN.test(defeat.causeId)
       || !inRun(defeat.tick, +!none) || !finite(defeat.damage)
       || none !== (identity.terminalReason !== 'defeated')
@@ -255,9 +276,9 @@ export function validateRunSummaryPayload(payload) {
   error = keys(payload.grenades, ['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'], 'game:run-summary grenades');
   if (error) return error;
   for (const field of Object.keys(payload.grenades)) if (!integer(payload.grenades[field])) return `game:run-summary grenades.${field} is invalid`;
-  error = rows(payload.collectibles, HMH_RUN_SUMMARY_CATALOGS.collectibles, 'effectId', ['collected', 'activeTicks'], 'game:run-summary collectibles');
+  error = rows(payload.collectibles, C.collectibles, 'effectId', ['collected', 'activeTicks'], 'game:run-summary collectibles');
   if (error) return error;
-  error = rows(payload.upgrades, HMH_RUN_SUMMARY_CATALOGS.upgrades, 'upgradeId', ['offered', 'selected'], 'game:run-summary upgrades');
+  error = rows(payload.upgrades, C.upgrades, 'upgradeId', ['offered', 'selected'], 'game:run-summary upgrades');
   if (error) return error;
   for (const upgrade of payload.upgrades) if (upgrade.selected > upgrade.offered) return 'game:run-summary upgrade totals are inconsistent';
 
@@ -265,8 +286,8 @@ export function validateRunSummaryPayload(payload) {
   if (error) return error;
   for (const field of Object.keys(payload.exploration)) if (!integer(payload.exploration[field])) return `game:run-summary exploration.${field} is invalid`;
   const exploration = payload.exploration;
-  if (exploration.visitedDistrictMask >= 2 ** HMH_RUN_SUMMARY_CATALOGS.districts.length
-    || exploration.discoveredPoiMask >= 2 ** HMH_RUN_SUMMARY_CATALOGS.pointsOfInterest.length
+  if (exploration.visitedDistrictMask >= 2 ** C.districts.length
+    || exploration.discoveredPoiMask >= 2 ** C.pointsOfInterest.length
     || exploration.revealedCells > exploration.totalCells
     || exploration.revealedPermille > 1000
     || exploration.revealedPermille !== (exploration.totalCells === 0 ? 0 : Math.round(exploration.revealedCells * 1000 / exploration.totalCells))

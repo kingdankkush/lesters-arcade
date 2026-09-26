@@ -1238,9 +1238,14 @@ async function boot() {
   const worldTourId = runtimeParams.get('worldTour');
   const tourModule = evidenceSafeEnabled ? await import('./world-tour-spawns.mjs') : null;
   const worldTourSpawns = tourModule?.createWorldTourSpawns(authoredPointOfInterestPlacements) ?? {};
-  let runtimePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
+  const evidencePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
     ? worldTourSpawns[worldTourId]
     : LEVEL_ONE_WORLD.player.spawn;
+  let runtimePlayerSpawn = evidencePlayerSpawn;
+  // The portal forwards evidenceSafe in any mode, so its gameplay effects (the
+  // evidence spawn and an invulnerable hero) apply only outside Ranked: a
+  // Ranked run is a real run whatever the URL says. Set per session.
+  let evidenceGameplayEnabled = false;
   const authoredSpawnPoints = LEVEL_ONE_WORLD.spawnPoints;
   const spawnPointBlocked = (point) => WORLD_BLOCKERS.some((blocker) => {
     const shape = blocker.shape;
@@ -2933,7 +2938,8 @@ async function boot() {
     const navGrid = navGridAuthority.require();
     stopCurrentSession();
     combatAudio.pause();
-    if (!evidenceSafeEnabled) runtimePlayerSpawn = selectLevelEntry(payload.session.seed);
+    evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';
+    runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);
     revealState = createLevelOneRevealState();
     revealLevelOneAt(revealState, runtimePlayerSpawn);
     revealSnapshot = getLevelOneRevealSnapshot(revealState);
@@ -3588,7 +3594,7 @@ async function boot() {
       // Hoisted ahead of the hazard hooks: evidence tours spawn the hero on
       // the rockfall anchor, and dash i-frames dodge falling rock the same
       // way they dodge shots.
-      const playerInvulnerable = evidenceSafeEnabled || isDashInvulnerable(dashState, tick);
+      const playerInvulnerable = evidenceGameplayEnabled || isDashInvulnerable(dashState, tick);
       const hazardTargets = [
         ...(playerInvulnerable ? [] : [{ ...actor, id: 'player' }]),
         ...grayboxEnemies,
