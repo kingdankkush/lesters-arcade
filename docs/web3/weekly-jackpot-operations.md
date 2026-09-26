@@ -345,4 +345,108 @@ From design §E, step E11:
 
 ## Rehearsal and go-live
 
-_Written by the jackpot-rehearsal slice: the rehearsal commands and receipts, the runbook with exact commands, the J17 weekly check and the flag flip (design §E, §G)._
+_Written by the jackpot-rehearsal slice (design §E, §G; brief jackpot-rehearsal): the rehearsal commands and receipts, the runbook with exact commands, the J17 weekly check and the emergency stops._
+
+Everything in the rehearsal runs in process: the Hardhat chain (4441), PGlite for Neon and every `api/*.mjs` handler, with public fixture keys. Nothing touches LiteForge, Vercel or production Neon, nothing reads the vault, and `JACKPOT_LIVE` is never flipped in a committed file. Only the live dry run (below) reads production, and only the owner session runs it, read-only.
+
+### Rehearsal commands
+
+| Command | What it does | Time |
+| --- | --- | --- |
+| `node scripts/rehearse-jackpot-week.mjs` | Runs R1-R20 (plus R3b and R13v) on one local stack, each scenario in its own weeks, and writes `docs/qa/jackpot-rehearsal-<YYYYMMDD>.json`. `--only R1,R13` runs a subset, `--no-write` skips the receipt, `--out <path>` writes elsewhere, `--json` prints it. Exit 1 when a scenario fails. | about 1 minute |
+| `node --test tests/jackpot-rehearsal.test.mjs` | The driver checks and the fast subset R1, R3a, R5, R10, R13, R15 and R17 (it also runs inside `npm test` and the release gate), plus the committed receipt and checklist checks. | about 25 s |
+| `node --test tests/jackpot-api-contract.test.mjs` | The real `/api/jackpot` at every lifecycle stage through the UI's `parseJackpot` and surfaces, and the real review API through the owner model's timeline geometry. | about 10 s |
+| `node --test tests/jackpot-live-dry-run.test.mjs` | The live dry run against a local HTTP server and the in-process chain (read-only proof, every check, J17 drift). | about 10 s |
+| `node scripts/jackpot-flag-flip-dry-run.mjs --confirm-throwaway` | The E10 commit rehearsed in a throwaway worktree (E4 first, then the flip, the whole suite at each state); writes `docs/qa/jackpot-flag-flip-checklist.json`. Refuses the main worktree. | about 25 minutes |
+| `node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io [--expect-live false\|true] [--funder <address> ...]` | The read-only live checklist (below). The owner session only; exit 1 when a check fails. | seconds |
+
+The driver (`scripts/lib/jackpot-rehearsal-driver.mjs`) is reusable for new scenarios: `startJackpotStack()`, `playRankedChikunRun({ player, openedAt, profile | pilot | evidence, maxMinutes, maxTicks, settleAt })`, `advanceTo(t)` (chain and server clock together), `runJackpotCron(times, { select, fault })`, `admin(action, params)` (the owner page's encoding), `operatorAction(action, { args, argv })` (`jackpot-actions.mjs`), `jackpotOps(argv)`, `fund`, `claim`, `submitCandidate`, and the reads (`weekRow`, `candidateRows`, `actionRows`, `chainWeek`, `jackpotApi`, `reviewApi`, `health`, `profile`, `invariant`).
+
+### Reading the receipts
+
+`docs/qa/jackpot-rehearsal-<date>.json` (schema `lesters-jackpot-rehearsal-v2`):
+
+- `ok`, `summary` (scenarios, passed, failed ids, expected misses), `head`, `scriptSha256` (the receipt belongs to exactly that script; `tests/jackpot-rehearsal.test.mjs` refuses a stale receipt) and `stack` (the local addresses, the launch rules, the E5 list).
+- `scenarios[]`, one per scenario: `status`, `weekKeys`, every `checks[]` entry (`id`, `ok`, `detail`), `transactions` by role (keeper, relayer, operator, admin, funder, players, and how many reverted on purpose), `keeperGasUsed`, `finalBalances`, `invariant` (for every instance the scenario used: `balanceOf(jackpot) >= liabilities`) and `notes` (findings worth reading).
+- `expectedMisses`: runs the screen is known not to catch (design §B.5). **An expected miss is not a failure.** R16 records one: an exceptional-model bot on a real seed passes the screen, is cleared by the keeper and is paid. For tCHIKUN that residual is accepted; for real value, `adminClearOnly`, a prize cap and human review are mandatory (J16, OJ6).
+- `productBugs`: anything a scenario exposed in the product, with the fixing commit. An entry that is not `fixed` means the rehearsal is not done.
+
+What each scenario proves:
+
+| Id | Proves |
+| --- | --- |
+| R1 | A funded week: the keeper selects at C + 2 h, screens, submits and clears; `finalize` reverts `PAYOUT_NOT_DUE` at C + 24 h − 1 s and anyone may call it at C + 24 h; the board's top eligible wallet is paid; the profile and the share page show the win |
+| R2 | A censored keeper (`jackpotSelect` drops the best run): the player submits it at C + 8 h, the keeper clears it within three runs, it is paid |
+| R3a / R3b | A scripted-pilot leader is held (H4-H6) and flagged; the week waits for the admin (`LEADER_NOT_CLEARED`, the status page warns); a disqualification pays #2, a clear pays the leader |
+| R4 | A record without stored evidence (a forged attestation) is never selected; submitted publicly, it is flagged `integrity` and never auto-paid |
+| R5 | An unwon funded week: the keeper finalizes the empty leader, the pot rolls into the next week, which pays both |
+| R6 | A relayer outage: a run posted on time is published at C + 6 h + 1 s; `SETTLED_LATE` on chain, excluded by the keeper, still on the weekly board (the documented divergence) |
+| R7 | The admin extends that week by 12 h; the keeper re-selects, the late run is paid at C + 36 h |
+| R8 | A prize cap scheduled the week before: `/api/jackpot` shows the cap and the carry-over, the cap is paid, the excess is paid out the next week |
+| R9 | A blacklist-token instance: the winner is `claim-pending` (API, profile, status page), claims to another address, then `paid` |
+| R10 | The keeper killed at `after-cas`, `after-broadcast` and `before-receipt`: no duplicate transaction, no nonce gap; the keeper's nonce moves by exactly the distinct actions |
+| R11 | A pause stops payouts and keeper clears, not submissions or funding; a hold waits; staff (admin, operator, rotated-out and current keeper) and blocked wallets (test wallet, verifier, relayer, funder) are never candidates |
+| R12 | An unfunded week: no keeper transaction, no amount in the API or the UI; stray tokens are swept to the residual recipient only above liabilities |
+| R13 / R13v | Five decoy wallets displace the honest top 5; the keeper flags them first; the admin disqualifies them (`multi-wallet`, whole wallet); the keeper re-lists the honest rows before payout − 2 h; the honest leader is paid. R13v: the literal C + 11 h 59 min timing, and the never-listed honest #6 added with `adminSubmit` and paid |
+| R14 | A Sunday session settled at C + 5 h just above the public leader is held by H9 (`late-evidence`), never auto-paid |
+| R15 | A non-stock client (`maxTicks` 108,000) settles through the verifier but is never submitted by the keeper; submitted publicly, it is flagged `integrity` |
+| R16 | The expected miss (above) |
+| R17 | A dropped keeper flag, re-signed after the admin cleared the run, and a `jackpot-ops rescreen` never override the admin: the flag ends `skipped`/`review-locked`, the keeper's on-chain `flag` reverts `REVIEW_LOCKED`, the leader is paid |
+| R18 | A compromised admin: `operator-pause` holds against its `unpause`; its `transferAdmin` reverts `OPERATOR_LOCK`; `force-admin` succeeds in one transaction; the review API refuses the old admin within 60 s; the new admin reinstates and clears; the operator unpauses |
+| R19 | Dust and end of life: `BELOW_MIN_FUND`; `scheduleEnd` with future weeks funded; `refund-after-end` returns each funder's own funding; the unwon final pot becomes residual after 30 days; `sweepStray` of a double-entry token reverts `LIABILITIES_BREACHED` |
+| R20 | Ranked-setting drift: a reserve of 0 keeps runs eligible; a repointed `rankedEntry` and fees off fail the live checker; the entry-modal row hides below `minPaidWei` |
+
+Findings the rehearsal recorded (none is a product bug; each is in the receipt's `notes`):
+
+- **Decoys meet the keeper first (R13).** Decoy runs settled before the cutoff are in the keeper's own last re-select (cutoff + 10 min), so the keeper lists and flags them about 5 h before an attacker could list them at C + 11 h 59 min. The defence is the same either way; R13v forces the literal timing.
+- **A pause holds a week in `selecting` (R11).** While paused, the keeper's clears wait, so the week does not reach `awaiting-admin` (and its SLA clock) until the pause is lifted; `finalize` reverts `PAUSED` and the status page shows the pause the whole time.
+- **The settle floor is part of J17 (R20).** A reserve cut to 0 keeps runs jackpot-eligible (`minPaidWei` is the flat 0.1 fee), but the server refuses entries paid 0.1 zkLTC with `402 entry-underpaid` until `RANKED_MIN_PAID_WEI` is lowered to match (default 0.102). The same Monday step changes both.
+- **A role change needs the record updated (R11, R18).** After `set-keeper` or `force-admin`, commit the updated `contracts/deployment-record.jackpot.json` (`keeper` or `admin`) and regenerate the module with `node scripts/generate-litvm-jackpot.mjs`; until then the live dry run's `roles` check fails, which is how drift is noticed.
+
+`docs/qa/jackpot-flag-flip-checklist.json` (schema `lesters-jackpot-flag-flip-checklist-v1`): `e4` (what runbook E4 itself changes in the tree and which tests the E4 commit updates), `flip` (the two edits, the build, every file the flip changes with the changed literals in `literalsChanged`, and `testsToUpdate` with the file, test, line, expected and actual), and `checklist` (files to edit, commands, preconditions, the commit, the release, the post-release smokes and the rollback).
+
+### The live dry run
+
+`node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io` reads only (JSON-RPC `eth_chainId`, `eth_blockNumber`, `eth_getBlockByNumber`, `eth_getBalance`, `eth_call`, `eth_getCode`, `eth_getLogs`; HTTP GETs) and prints a JSON checklist; exit 0 means every check passed. It never prints the RPC URL. The checks, in order:
+
+`rpc-chain`, `jackpot-deployed`, `code-jackpot`, `code-token`, `code-retired`, `immutables`, `roles` (against `contracts/deployment-record.jackpot.json`), `api-live`, `week-key` (`weekOf(now)` against the server's week), `rules-in-force` (`minFundWei > 0`), `j17-quote`, `j17-ranked-entry`, `j17-season`, `j17-game-id`, `j17-game-registered`, `pot-current`, `pot-previous` (chain against `/api/jackpot`), `pause` (chain against `/api/health`), `keeper-balance` (≥ 0.05 zkLTC), `cron-fresh` (20 min), `admin-backlog` (no week awaiting the admin over 24 h, none claim-pending), `no-failed-weeks`, `block-list` (the test wallet `0x8841…ce824`, the verifier, the relayer, each `--funder`), `residual-recipient` (blocked or staff), `staff-ever` (admin, operator, keeper), `staff-history` (every address the role events named), `jackpot-live-flag` (the served `JACKPOT_LIVE` and the rules page's `noindex` against `--expect-live`).
+
+`--deployment`, `--jackpot-module` and `--record` override the committed files only with a loopback `--rpc` (the local stack).
+
+### The runbook with exact commands (design §E)
+
+⚠ marks a step the owner approves in the moment. `<vault>` is `C:/Users/just_/lesters-arcade-vault`; only the owner session reads it.
+
+| Step | Commands |
+| --- | --- |
+| E0 | The four jackpot slices merged, the integration gate green (exactly 51). OJ1 approved, OJ2 receipt present (before E10), OJ3 legal text supplied (before E10). `node scripts/jackpot-actions.mjs status` works on the undeployed module. |
+| E1 | `node scripts/rehearse-jackpot-week.mjs` → commit `docs/qa/jackpot-rehearsal-<date>.json` (R1-R20 passed; R16 as the expected miss). |
+| E2 ⚠ | `node scripts/jackpot-keeper-key.mjs --out <vault>/keys/jackpot-keeper.json` (prints the address only). The owner sends 0.1 testnet zkLTC to it (MetaMask: max base fee 5 gwei, priority 0). |
+| E3 | `node scripts/deploy-weekly-jackpot.mjs --game chikun --first-week next --admin 0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26 --keeper <keeper> --residual <recipient> --rules launch` (dry run: the manifest, predicted addresses, gas, and the read-only `eth_call` of both creation codes on LiteForge). The launch rules make the first epoch `adminClearOnly = true`. |
+| E4 ⚠ | The same with `--broadcast --confirm DEPLOY_WEEKLY_JACKPOT_4441 --key-file <vault>/<keys file> --key-field keys.operator`; then commit `contracts/deployment-record.jackpot.json`, the regenerated `apps/portal/src/generated/litvm-jackpot.mjs` (check with `node scripts/generate-litvm-jackpot.mjs --check`) and the inventory from `npm run assets:hmh:curated-level-kit-runtime`, with the test updates listed in the checklist's `e4.failuresOutsideLedger`. `JACKPOT_LIVE` stays false. Once OJ2 is met: `node scripts/jackpot-actions.mjs schedule-rules --from-week <flip week> --admin-clear-only false --broadcast --confirm SCHEDULE_JACKPOT_RULES_4441 --key-file <vault>/<keys file> --key-field keys.operator`. |
+| E5 ⚠ | On `/owner/jackpot.html` (served with `python -m http.server 8791 --directory apps/portal`, or production after E6), from the admin wallet: block the test wallet `0x8841ae6244dba71f620de450e71b0ef7e0cce824` (`test-wallet`), the verifier and the relayer (`staff`), the residual recipient if it is not staff (`staff`), named funders (`funder`; Louie's wallet is not configured yet, design §H.1), other staff or test wallets (`staff`). Then `node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io` shows `block-list`, `residual-recipient` and `staff-ever` passing (after E6 for the API checks). |
+| E6 ⚠ | `node scripts/jackpot-secrets.mjs --key-file <vault>/keys/jackpot-keeper.json` (names only), then `--apply --confirm SET_JACKPOT_SECRETS`. The next release (version and cache-marker bump, `npm run vercel:build`, deploy, promote) before `firstWeek` starts. |
+| E7 | `node scripts/live-cron.mjs --site https://lestersarcade.io --path /api/cron/index-chain --secret-file <vault>/keys/cron-secret.txt` (the jackpot's `schemaVersion`), then `--path /api/cron/weekly-jackpot` (`ok`; note the replay time for the §C.4 budget); `/api/health` shows `crons.weeklyJackpot`, the keeper balance and `paused: { env: false, onChain: false }`; `node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io` passes. |
+| E8 ⚠ | `node scripts/jackpot-actions.mjs mint-test --to <owner or Louie> --amount 1000000 --broadcast --confirm MINT_TCHIKUN_4441 --key-file <vault>/<keys file> --key-field keys.operator`; the owner funds the soft-launch week from `/owner/jackpot.html` (or `jackpot-actions fund --week current --amount 10000 --broadcast --confirm FUND_JACKPOT_4441` from the funder's own key). |
+| E9 | The soft-launch week (flag false, `adminClearOnly = true`): run `node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io` at C + 2 h (selection), C + 12 h (window closed) and C + 24 h (payout); the admin clears the top eligible run under the rubric (never disqualify to steer the winner). Receipt `docs/qa/jackpot-soft-launch-<date>.json`. |
+| E10 ⚠ | Follow `docs/qa/jackpot-flag-flip-checklist.json`: check every `checklist.preconditions` entry, make the two edits (`JACKPOT_LIVE = true`; remove the `LEGAL-REVIEW-PENDING` comment with the confirmed legal text in place), run `node scripts/build-portal-pages.mjs` and `npm run assets:hmh:curated-level-kit-runtime`, update exactly `flip.testsToUpdate`, commit, `npm run test:release` (exactly 51), release, then the `checklist.postReleaseSmokes` and `node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io --expect-live true`. |
+| E11 | Weekly: funders fund the next week before Monday (at most one or two weeks ahead); the live dry run before and after any Ranked setting change (below); review any `awaiting-admin` week within 24 h under the rubric (the 7-day default applies after that); contact a `claim-pending` winner well before the 180-day recycle; keep the keeper above 0.05 zkLTC. |
+
+### The J17 weekly check
+
+Every Ranked setting the jackpot depends on changes only at a Monday 00:00 UTC, together with a matching `schedule-rules`, with `node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io` before and after:
+
+- the entry fee, the settlement reserve, fees on or off: `j17-quote` needs `quoteEntry(chikun).totalWei >= minPaidWei` of the new week. **A reserve change also changes what the server accepts**: lower `RANKED_MIN_PAID_WEI` in the same step (R20), or new 0.1 entries are refused with `entry-underpaid`;
+- the Chikun season: `j17-season` needs the server's season in `rulesFor(currentWeek)` (use `altSeasonId` for a week that spans a change);
+- `ScoreSubmissionRegistry.setRankedEntry` or a new Chikun registration (game id): `j17-ranked-entry` / `j17-game-id` fail, and every new run becomes ineligible; these need a new instance (design §A.19, emergency stop 7);
+- a new Chikun runtime version: on a Monday, so one week is never judged across two runtimes.
+
+### Emergency stops
+
+1. **Stop payouts:** `pause` from `/owner/jackpot.html` (admin), or `node scripts/jackpot-actions.mjs operator-pause --broadcast --confirm PAUSE_JACKPOT_4441 --key-file <vault>/<keys file> --key-field keys.operator` (the admin cannot lift it). Funding, submissions and claims continue; the week waits in `selecting` or `awaiting-admin` (R11).
+2. **Stop one week:** `holdWeek` from the owner page; `releaseWeek` to continue.
+3. **Stop the keeper:** `JACKPOT_PAUSED=true` in production env and redeploy the current release (the status page shows it).
+4. **Keeper key leaked:** `node scripts/jackpot-actions.mjs set-keeper <new> --broadcast --confirm SET_JACKPOT_KEEPER_4441 --key-file <vault>/<keys file> --key-field keys.operator`, block the old keeper from the owner page (`staff`), rotate the env with `jackpot-secrets.mjs`, update the record and module, check the weeks it touched.
+5. **Admin wallet compromised:** `operator-pause`, then `node scripts/jackpot-actions.mjs force-admin <new> --broadcast --confirm FORCE_JACKPOT_ADMIN_4441 --key-file <vault>/<keys file> --key-field keys.operator` (one step; the review API drops the old admin within 60 s), the new admin reviews every decision the old one made (reinstate, clear), update the record and module, then `operator-unpause` (R18).
+6. **Hide the UI:** `JACKPOT_UI_HIDDEN=true` and redeploy the current release (surfaces disappear within about 150 s); a release with `JACKPOT_LIVE=false` if the hide is long-term.
+7. **New instance** (real $CHIKUN, a new Chikun game id, a repointed `rankedEntry`): `node scripts/jackpot-actions.mjs schedule-end <last week> --broadcast --confirm END_JACKPOT_4441 …`, then `node scripts/deploy-weekly-jackpot.mjs --token <address> --first-week <after the end> --retire-previous …` after the token acceptance checklist; the cron keeps servicing the retired instance; funders run `refund-after-end <week>` from their own keys (R19; the API keeps each week's own token, `tests/jackpot-api-contract.test.mjs`).
