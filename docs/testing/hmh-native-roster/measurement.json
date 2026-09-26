@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "local-browser-reviewed",
+  "status": "local-browser-review-pending",
   "actors": [
     {
       "status": "verified-private-candidate",
@@ -380,8 +380,8 @@
     {
       "status": "verified-private-candidate",
       "actorId": "the-liquidator",
-      "sourceSha256": "56a9e240a8cc053f09e2ef95046bf84520ffa65ec561c5dec5e1f46c6ebed574",
-      "exporterSha256": "0d6ed303ee2ad2ab3f2960d10d8b4b203edc91b38f0f9f63f57c8dd67087014b",
+      "sourceSha256": "ed69e387823a275e12a8665919cc7dcffaa1ef0c2f8376dddd8c61ec82d67d87",
+      "exporterSha256": "697fd9ec5af05d2dfba9215f769796f73b631ca7d5031ee8f036a0e954d6d369",
       "frames": 840,
       "uniquePoses": {
         "market-open|idle|south": 3,
@@ -432,14 +432,14 @@
         "market-open|death|north-west": 6,
         "market-open|death|west": 6,
         "market-open|death|south-west": 6,
-        "margin-call|idle|south": 3,
+        "margin-call|idle|south": 4,
         "margin-call|idle|south-east": 3,
         "margin-call|idle|east": 3,
-        "margin-call|idle|north-east": 4,
+        "margin-call|idle|north-east": 3,
         "margin-call|idle|north": 3,
         "margin-call|idle|north-west": 3,
-        "margin-call|idle|west": 4,
-        "margin-call|idle|south-west": 4,
+        "margin-call|idle|west": 3,
+        "margin-call|idle|south-west": 3,
         "margin-call|run|south": 12,
         "margin-call|run|south-east": 12,
         "margin-call|run|east": 12,
@@ -530,25 +530,25 @@
         "total-liquidation|death|south-west": 6
       },
       "repeatability": {
-        "maxChangedVisiblePixels": 3,
-        "maxChannelDelta": 1,
-        "maxTotalChannelDelta": 3,
-        "worstFrameId": "the-liquidator__body__margin-call__attack__south__002"
+        "maxChangedVisiblePixels": 4,
+        "maxChannelDelta": 2,
+        "maxTotalChannelDelta": 6,
+        "worstFrameId": "the-liquidator__body__margin-call__run__north__009"
       },
-      "imageSha256": "90d8fef901649e2caf0a41020a5aae3e7727b06c59a460011a7435e461862416",
-      "metadataSha256": "80227f8faa21bf2b18ff69c177166dc50504e24a24b3b7fdadb4e675fb752bb8",
-      "imageBytes": 3271236,
+      "imageSha256": "f370f73adf79a11839fdbf9bae86ad58604f3cfd01d61fb7f64e05c674ac6a32",
+      "metadataSha256": "dbe73a1fccc3e5a1d873a2336563eaa88986fd24b5f24b26dc694231da41e540",
+      "imageBytes": 3007902,
       "dimensions": {
         "width": 2048,
-        "height": 2032
+        "height": 1936
       },
-      "decodedBytes": 16646144,
+      "decodedBytes": 15859712,
       "sourceUnchanged": true,
       "pixelReconstructionChanged": 0,
       "canonicalAdoption": true,
-      "browserReview": "desktop-mobile-runtime-reviewed"
+      "browserReview": "pending"
     }
   ],
-  "totalImageBytes": 13533396,
-  "totalDecodedBytes": 67108864
+  "totalImageBytes": 13270062,
+  "totalDecodedBytes": 66322432
 }

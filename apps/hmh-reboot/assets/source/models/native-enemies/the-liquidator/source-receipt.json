@@ -2,7 +2,7 @@
   "schema": 1,
   "status": "editable-native-candidate",
   "actorId": "the-liquidator",
-  "identityForm": "zombie",
+  "identityForm": "human",
   "boss": true,
   "phaseVisuals": {
     "market-open": {
@@ -18,17 +18,18 @@
       "silhouetteCue": "liquidation-halo"
     }
   },
-  "baseSource": "apps/hmh-reboot/assets/source/models/native-enemies/bagholder-rusher/bagholder-rusher-packed.blend",
-  "baseSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+  "baseSource": "apps/hmh-reboot/assets/source/models/the-liquidator/the-liquidator.glb",
+  "baseSha256": "864b07255c8675be5c6f29df829bac1aad3c3edd273b2d80806db6b237374434",
   "sourceUnchanged": true,
+  "baseSourceKind": "tripo-rigged-glb-normalised",
   "source": "the-liquidator.blend",
-  "sourceSha256": "56a9e240a8cc053f09e2ef95046bf84520ffa65ec561c5dec5e1f46c6ebed574",
-  "sourceBytes": 17601526,
+  "sourceSha256": "ed69e387823a275e12a8665919cc7dcffaa1ef0c2f8376dddd8c61ec82d67d87",
+  "sourceBytes": 17491507,
   "armature": "the-liquidator Native Rig",
-  "bones": 19,
-  "nativeBodyVertices": 62277,
-  "costumeMeshes": 1,
-  "gearMeshes": 50,
+  "bones": 47,
+  "nativeBodyVertices": 82207,
+  "costumeMeshes": 0,
+  "gearMeshes": 19,
   "clipActions": {
     "idle": "HMH_the-liquidator_idle",
     "run": "HMH_the-liquidator_run",
@@ -38,11 +39,16 @@
     "death": "HMH_the-liquidator_death"
   },
   "runtimeAuthority": "projection-only",
-  "height": 1.7478000354766845,
+  "height": 2.3498536777496337,
   "animationProfile": {},
-  "builderSha256": "025ce0e983c561cc82aab2863e4bc199f88f971a961fecdffce5a90c08b5fb75",
-  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648",
-  "reviewedCandidateSha256": "b1c1314f77496b5e82454bf2e4299abf2b63d65f732227d05ad832e0c6ef099a",
-  "storageCompactorSha256": "84d30936601ea3a3873936d9ecadf718a9987c5becdf13744486c766a23c47a7",
-  "reviewedCandidateUnchanged": true
+  "renderContract": {
+    "cameraPitchDegrees": 35,
+    "lightRigFamily": "hero",
+    "cameraOrthoScale": 4.15,
+    "cameraTargetZ": 0.88,
+    "frameSize": 192,
+    "note": "LEVEL-1-DESIGN-PACKAGE 4.1/5.10: bosses render on the hero camera (35 degrees below the horizon) with the shared light rig. Read by export-hmh-native-roster.py through the derivative source receipt; projection-only. Ortho 4.15 is the largest value whose 840 frames (three phases, six states, eight directions) shelf-pack into one 2048 px page under the 4 MiB native-atlas cap; the design size (about 90-95 world px) needs the boss-schema extension (ART-WAVE-1-20260926.md)."
+  },
+  "builderSha256": "049aa883403b248046fd67f00f176fd6949edd7e825667e34bab3109f1c4da4c",
+  "poseAuthorSha256": "113c81d1514ec7768361332c9191436ea5171b3fef1d9028aa556711b88c7648"
 }
