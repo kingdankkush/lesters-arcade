@@ -3,6 +3,12 @@
 Status: **compiled and gated, NOT deployed.** Branch `fable/master-list-20260916`. Nothing in this
 document authorises a deployment or a transaction; see "Owner decisions" below.
 
+> **Amendment 2026-09-26 (owner decision):** the flat Ranked entry drops from 0.1 to **0.01 zkLTC**
+> (`entryFeeWei 10000000000000000`), so a run costs 0.012 zkLTC with the unchanged 0.002 zkLTC settlement
+> reserve and the server settle floor follows it. The operator applies it on chain (`setEntryFee`) after the
+> release that carries it. The 0.1 / 0.102 figures below are the launch record. Player-facing numbers come
+> from `apps/portal/src/ranked-facts.mjs`; the player guide is https://lestersarcade.io/how-ranked-works.
+
 **Epoch policy.** Everything this document deploys is a **testnet epoch** (LitVM LiteForge, chainId 4441).
 It runs until mainnet. At mainnet every contract, score, session, paid entry and soulbound achievement from
 this epoch is wiped: mainnet is a **fresh deployment set** (new addresses, empty registries, re-defined

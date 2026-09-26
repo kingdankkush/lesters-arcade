@@ -15,7 +15,7 @@ player data (score, achievements, stats) on-chain to the LitVM testnet.
 | RPC URL | **https://liteforge.rpc.caldera.xyz/http** | docs.litvm.com/deploy-on-testnet/hardhat |
 | Explorer | **https://liteforge.explorer.caldera.xyz/** (Blockscout) | testnet.litvm.com |
 | Explorer API | https://liteforge.explorer.caldera.xyz/api | docs |
-| Faucet | https://testnet.litvm.com/ → "Get zkLTC" | testnet.litvm.com |
+| Faucet | **https://liteforge.hub.caldera.xyz** (0.05 zkLTC per request; the arcade links it as `LITEFORGE_FAUCET_URL`) | owner, 2026-09-26 |
 | Typical gas | ~0.3 Gwei | explorer gas tracker |
 
 ### wallet_addEthereumChain payload

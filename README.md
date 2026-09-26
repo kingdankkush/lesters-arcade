@@ -4,6 +4,24 @@ Batch release after 1.8.3. Hard Money Heroes Ranked verification refuses twelve 
 
 Production deployment `dpl_61u26aJuaoPMoEGthLcqp7MTUh6N` (source `4f947386`); site/game version `1.8.4`; cache marker `lesters-arcade-v57-fair-play`. The local and Vercel gates pass 5,168 of 5,219 tests with exactly 51 unchanged retired exceptions; all 160 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260926-1.8.4.json). Rollback: Instant Rollback to `dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK` (1.8.3). Continue on `fable/master-list-20260916`.
 
+## How to play
+
+Every game at [lestersarcade.io](https://lestersarcade.io) has two modes. Free play needs no wallet and never touches the chain. Ranked puts your runs on the leaderboards.
+
+**Free:** open [lestersarcade.io/games](https://lestersarcade.io/games), pick a game and choose Free Mode. No wallet, no sign-up, no download.
+
+**Ranked** (LitVM LiteForge testnet, chain 4441):
+
+1. Connect a wallet: MetaMask, Rabby, OKX Wallet or another browser wallet, or WalletConnect on a phone. The site adds the LitVM LiteForge network for you.
+2. Get free testnet zkLTC from the [LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for 4 Ranked runs).
+3. Sign in with one free signature. It costs nothing and sends no transaction.
+4. Open a game, choose Play Ranked and confirm the total once in your wallet.
+5. Play. The arcade's server checks your run and its relayer publishes it on LitVM, usually within about a minute. It then shows on the leaderboards, your profile and your achievements.
+
+Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain. The entry is split 85% to the game's developer and 15% to the arcade. Testnet zkLTC has no monetary value. The player guide at [lestersarcade.io/how-ranked-works](https://lestersarcade.io/how-ranked-works) covers every step, what is checked for each game, the Weekly, Monthly and All-time boards, the FAQ and fixes for common problems.
+
+For maintainers: the owner lowered the entry from 0.1 to 0.01 zkLTC on 2026-09-26. The operator sets it on chain after the release that carries it; the Ranked window always shows the entry contract's live quote. Every static number on the site comes from [`apps/portal/src/ranked-facts.mjs`](apps/portal/src/ranked-facts.mjs) (tied to the deploy config, the server settle floor, the faucet and the achievement catalogs by `tests/ranked-facts.test.mjs`); the guide page is generated from [`apps/portal/src/ranked-guide-content.mjs`](apps/portal/src/ranked-guide-content.mjs) by `node scripts/build-portal-pages.mjs`.
+
 # Lester's Arcade — 1.8.3 verified live: game version on every score, 237 MB lighter, jackpot server staged
 
 Batch release after 1.8.2. Every verified score now shows the game version it was played on (owner decision: no testnet season resets): a Version column on the Scores boards (a chip on phones), a label per run in profile history and a line on share pages. HMH build hashes gain a cabinet segment (`HMH v0.5`); earlier hashes stay valid. About 237 MB of unreferenced generated art and dead generator scripts are removed (753 files; report `docs/cleanup/unused-assets-audit-20260925.md`). The Chikun Weekly Jackpot server is in (Neon migration 3, a keeper cron that is a recorded no-op until the jackpot contract is deployed, `/api/jackpot` answering not-configured); nothing player-facing changes for the jackpot yet and `JACKPOT_LIVE` stays false. Contracts, fees and flags of the live Ranked system are unchanged.

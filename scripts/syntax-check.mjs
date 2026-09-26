@@ -43,6 +43,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/ranked-guide-content.mjs',
   'tests/ranked-facts.test.mjs',
   'tests/ranked-guide-page.test.mjs',
+  'tests/ranked-onboarding-surfaces.test.mjs',
   'tests/portal-copy.test.mjs',
   'tests/portal-pages-build.test.mjs',
   'tests/portal-mode-select-copy.test.mjs',

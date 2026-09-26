@@ -6,7 +6,8 @@ Lester's Arcade runs on **LitVM LiteForge testnet** (chainId 4441, Arbitrum Orbi
 **zkLTC**, 18 decimals). Free Mode never touches the chain. **Ranked Mode** is a paid, verified, on-chain
 mode:
 
-1. the player pays **0.1 zkLTC in the native token** when the ranked session opens,
+1. the player pays a flat entry **in the native token** when the ranked session opens (0.01 zkLTC since the
+   owner's 2026-09-26 decision, 0.1 zkLTC before, plus the 0.002 zkLTC settlement reserve),
 2. that fee is split instantly to the cabinet developer and platform vaults (it funds the settlement
    of the run on chain),
 3. after the run, a **trusted verifier** signs an EIP-712 attestation of the run,
