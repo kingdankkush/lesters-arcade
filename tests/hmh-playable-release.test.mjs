@@ -17,14 +17,14 @@ test('playable update gives all linked startup resources the same fresh cache to
 
 test('playable update invalidates the prior service-worker asset cache', () => {
   const sw = read('apps/portal/sw.js');
-  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v57-fair-play';/);
+  assert.match(sw, /const CACHE_VERSION = 'lesters-arcade-v58-smooth-crowds';/);
   assert.doesNotMatch(sw, /lesters-arcade-v32-hmh-gameplan-defects/);
   assert.doesNotMatch(sw, /lesters-arcade-v36-hmh-package/);
 });
 
 test('playable update versions canonical sessions without deleting historical versions', () => {
-  assert.equal(SITE_VERSION, '1.8.4');
-  assert.equal(GAME_VERSION, '1.8.4');
+  assert.equal(SITE_VERSION, '1.8.5');
+  assert.equal(GAME_VERSION, '1.8.5');
   const retained = Object.freeze({ siteVersion: '1.3.0', gameVersion: '1.3.0' });
   assert.equal(isCurrentVersion(retained), false);
   assert.deepEqual(retained, { siteVersion: '1.3.0', gameVersion: '1.3.0' });
