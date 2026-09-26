@@ -25,7 +25,7 @@
       "ranked": {
         "label": "Play Ranked",
         "eyebrow": "Official Testnet Run",
-        "copy": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM.",
+        "copy": "Ranked runs cost testnet zkLTC, free from the LiteForge faucet. The arcade server checks each run and publishes it on LitVM.",
         "cta": "Start Ranked Run"
       }
     },
@@ -59,7 +59,7 @@
       {
         "id": "ranked",
         "term": "Play Ranked",
-        "approved": "A testnet run for 0.012 zkLTC, checked by the arcade server and published on LitVM."
+        "approved": "A testnet run that costs zkLTC, checked by the arcade server and published on LitVM."
       },
       {
         "id": "gas",
@@ -88,7 +88,7 @@
         "id": "mode-ranked",
         "file": "apps/portal/src/arcade-core.mjs",
         "surface": "Mode select card",
-        "text": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM."
+        "text": "Ranked runs cost testnet zkLTC, free from the LiteForge faucet. The arcade server checks each run and publishes it on LitVM."
       },
       {
         "id": "level-intro-goal",
@@ -179,7 +179,7 @@
     },
     {
       "path": "modeSelect.ranked.copy",
-      "text": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM."
+      "text": "Ranked runs cost testnet zkLTC, free from the LiteForge faucet. The arcade server checks each run and publishes it on LitVM."
     },
     {
       "path": "modeSelect.ranked.cta",
@@ -259,7 +259,7 @@
     },
     {
       "path": "glossary.1.approved",
-      "text": "A testnet run for 0.012 zkLTC, checked by the arcade server and published on LitVM."
+      "text": "A testnet run that costs zkLTC, checked by the arcade server and published on LitVM."
     },
     {
       "path": "glossary.2.id",
@@ -327,7 +327,7 @@
     },
     {
       "path": "surfaces.1.text",
-      "text": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM."
+      "text": "Ranked runs cost testnet zkLTC, free from the LiteForge faucet. The arcade server checks each run and publishes it on LitVM."
     },
     {
       "path": "surfaces.2.id",

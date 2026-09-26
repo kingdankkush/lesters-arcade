@@ -1,11 +1,11 @@
-import { RANKED_FACTS, RANKED_WORDING } from './ranked-facts.mjs';
-
 const freezeArray = (items) => Object.freeze(items.map((item) => Object.freeze(item)));
 
 // The mode-select fallback lines (arcade-core's HMH descriptor; the SPA shows the per-game site copy
-// of portal-content.mjs over them). Numbers come from ranked-facts.mjs (ranked-onboarding, 2026-09-26).
-const FREE_MODE_COPY = `${RANKED_WORDING.free} It costs nothing, and runs are not ranked.`;
-const RANKED_MODE_COPY = `Ranked costs ${RANKED_FACTS.totalZkLtc} testnet zkLTC per run. Get zkLTC free from the ${RANKED_FACTS.faucetName}. The arcade server checks your run and publishes it on LitVM.`;
+// of portal-content.mjs, with the price, over them). arcade-core.mjs imports this module, so it
+// cannot read the fee or ranked-facts.mjs (the import cycle would read them before they exist): the
+// lines name no number (ranked-onboarding, 2026-09-26).
+const FREE_MODE_COPY = 'Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked.';
+const RANKED_MODE_COPY = 'Ranked runs cost testnet zkLTC, free from the LiteForge faucet. The arcade server checks each run and publishes it on LitVM.';
 
 export const HMH_COPY_STYLE_RULES = Object.freeze({
   maxHeadlineChars: 42,
@@ -65,8 +65,8 @@ export const HMH_COPY_SHEET = Object.freeze({
   }),
   glossary: freezeArray([
     { id: 'free-mode', term: 'Free Mode', approved: 'Free play. No wallet, never touches the chain, never ranks.' },
-    { id: 'ranked', term: 'Play Ranked', approved: `A testnet run for ${RANKED_FACTS.totalZkLtc} zkLTC, checked by the arcade server and published on LitVM.` },
-    { id: 'gas', term: 'zkLTC', approved: `The LitVM LiteForge testnet token, free from the ${RANKED_FACTS.faucetName}. ${RANKED_WORDING.value}` },
+    { id: 'ranked', term: 'Play Ranked', approved: 'A testnet run that costs zkLTC, checked by the arcade server and published on LitVM.' },
+    { id: 'gas', term: 'zkLTC', approved: 'The LitVM LiteForge testnet token, free from the LiteForge faucet. Testnet zkLTC has no monetary value.' },
     { id: 'level-one', term: 'Crypto Wasteland', approved: 'Open survival route with boss beats.' },
     { id: 'boss-beat', term: 'Boss beat', approved: 'Scheduled mini-boss or major boss pressure spike.' },
   ]),

@@ -7,7 +7,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { FAUCET_CHIP_TEXT, FAUCET_LINK_TEXT, RANKED_FACTS, RANKED_WORDING } from '../apps/portal/src/ranked-facts.mjs';
 import { LITEFORGE_FAUCET_URL } from '../apps/portal/src/wallet-config.mjs';
-import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
+import {
+  DEFAULT_REVENUE_SPLIT_BPS, LITVM_LITEFORGE_NETWORK, RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_WEI,
+  RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC,
+} from '../apps/portal/src/arcade-core.mjs';
 import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 import { ACHIEVEMENT_GAME_IDS, catalogFor } from '../apps/portal/src/achievements/index.mjs';
 import { DEFAULT_LEADERBOARD_PERIOD, leaderboardPeriodTabs } from '../apps/portal/src/leaderboard-view.mjs';
@@ -103,9 +106,22 @@ test('the canonical wording is plain: no jackpot, prizes, NFTs, dates or hype', 
   assert.equal(RANKED_WORDING.proof, "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.");
 });
 
-test('the facts module stays a pure leaf the SPA can afford', () => {
+// fable/ranked-fee-001 made arcade-core.mjs the single source of the fee (tests/ranked-fee-source-of-truth.test.mjs):
+// the facts module reads the fee, the reserve, the split and the network from it and restates none of them.
+test('the price, the split and the network come from arcade-core, the single source of the fee', () => {
+  assert.deepEqual(
+    [RANKED_FACTS.entryWei, RANKED_FACTS.publishWei, RANKED_FACTS.totalWei],
+    [RANKED_ENTRY_FEE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_WEI, RANKED_ENTRY_TOTAL_WEI],
+  );
+  assert.deepEqual(
+    [RANKED_FACTS.entryZkLtc, RANKED_FACTS.publishZkLtc, RANKED_FACTS.totalZkLtc],
+    [RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC],
+  );
+  assert.deepEqual([RANKED_FACTS.developerPercent * 100, RANKED_FACTS.arcadePercent * 100], [DEFAULT_REVENUE_SPLIT_BPS.dev, DEFAULT_REVENUE_SPLIT_BPS.treasury]);
   const source = readFileSync(new URL('../apps/portal/src/ranked-facts.mjs', import.meta.url), 'utf8');
-  assert.doesNotMatch(source, /^\s*import\b/m, 'no imports');
+  assert.deepEqual([...source.matchAll(/^import\b[\s\S]*?from '([^']+)';/gm)].map((match) => match[1]), ['./arcade-core.mjs'], 'reads only arcade-core');
+  assert.doesNotMatch(source, /\b(?:entry|publish|total)(?:Wei|ZkLtc): ['`\d]|\b(?:developerPercent|arcadePercent|chainId): \d|faucetUrl: '/, 'no restated fee, reserve, split, chain or faucet literal');
   assert.doesNotMatch(source, /\b(?:window|document|process|localStorage|fetch)\b/);
-  assert.ok(Buffer.byteLength(source) < 6_000, 'small enough for the wallet chunks');
+  // arcade-core imports the HMH copy sheet: the sheet must not import the facts (the cycle would read them early).
+  assert.doesNotMatch(readFileSync(new URL('../apps/portal/src/hmh-copy-sheet.mjs', import.meta.url), 'utf8'), /from '\.\/ranked-facts\.mjs'/);
 });
