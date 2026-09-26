@@ -1,20 +1,21 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test, { after, before } from 'node:test';
+import { setTimeout as delay } from 'node:timers/promises';
 
 import { DAY, HOUR, MINUTE, TOKEN, jackpotContract, startJackpotStack } from '../scripts/lib/jackpot-rehearsal-driver.mjs';
 import { createHandlerMounts, createInProcessApi, REPO_ROOT } from '../scripts/lib/local-stack.mjs';
 import { deployLocalJackpot, deployMockToken, launchRules } from '../scripts/lib/local-jackpot.mjs';
 import { jackpotModuleValue } from '../scripts/generate-litvm-jackpot.mjs';
 import {
-  currentPrize, explorerTxUrl, fetchJackpot, leaderScoreText, parseJackpot, phaseOf, resetJackpotMemo, watchReplayUrl, weekRangeText, weekStatusText,
+  JACKPOT_FETCH_TIMEOUT_MS, currentPrize, explorerTxUrl, fetchJackpot, leaderScoreText, parseJackpot, phaseOf, resetJackpotMemo, watchReplayUrl, weekRangeText, weekStatusText,
 } from '../apps/portal/src/jackpot/jackpot-client.mjs';
 import { createJackpotBoardHeader } from '../apps/portal/src/jackpot/jackpot-board-header.mjs';
 import { renderJackpotWins } from '../apps/portal/src/jackpot/jackpot-profile-wins.mjs';
 import { integrityText, normalizeReview, timelineGeometry } from '../apps/portal/owner/jackpot-review-model.mjs';
 import { buildChikunJackpotTease } from '../apps/chikun/src/presentation.mjs';
 import { createPgliteClient } from './helpers/pglite-client.mjs';
-import { fakeDocument, flush, visibleText } from './helpers/jackpot-fake-dom.mjs';
+import { fakeDocument, visibleText } from './helpers/jackpot-fake-dom.mjs';
 
 /**
  * jackpot-rehearsal AC4: the API contract between jackpot-server and jackpot-ui (design §C.5, §G). The REAL
@@ -116,12 +117,17 @@ async function stage(name, { fixtureName = null, api = js.api, check = () => {} 
   const fetched = await fetchJackpot({ fetchImpl: inProcessFetch(api), now: () => js.nowMs() });
   const withoutTime = (value) => (value?.live ? { ...value, serverTime: null } : value);
   assert.deepEqual(withoutTime(fetched?.api), withoutTime(parsed), `${name}: fetchJackpot`);
-  // The Scores header renders from it.
+  // The Scores header renders from it. Its own fetch runs the real handler in process (PGlite, the chain),
+  // which a loaded machine stretches past any fixed number of ticks: wait for the answer itself (the
+  // header's onChange), bounded by the client's own fetch timeout, never by a tick count.
   resetJackpotMemo();
   const documentRef = fakeDocument();
-  const header = createJackpotBoardHeader({ documentRef, fetchImpl: inProcessFetch(api), now: () => js.nowMs() });
+  let answered = false;
+  const header = createJackpotBoardHeader({ documentRef, fetchImpl: inProcessFetch(api), now: () => js.nowMs(), onChange: () => { answered = true; } });
   header.shown('chikun', 'weekly');
-  await flush(20);
+  const deadline = Date.now() + JACKPOT_FETCH_TIMEOUT_MS + 2_000;
+  while (!answered && Date.now() < deadline) await delay(5);
+  assert.ok(answered, `${name}: the Scores header got no answer from the real API`);
   const container = documentRef.createElement('div');
   const shown = header.shown('chikun', 'weekly');
   const text = shown ? visibleText(shown.render(container) ?? container) : '';
