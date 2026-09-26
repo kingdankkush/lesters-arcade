@@ -48,6 +48,13 @@
  *     the pressure is constant and survival is graded by the hero's power
  *     rather than by a band change; the 30:00 horizon stays well above it.
  *
+ * The progression release (package S1.3) extended the model without changing
+ * what it does on a 1.8.1 tree: every new path is taken only when the source
+ * tree provides it (the offer and re-roll API, the focus gun, the grenade
+ * maximum, per-shot launcher shells, held-weapon crits, salvage credit and the
+ * nuke radius), so a 1.8.1 checkout reproduces the committed baseline bit for
+ * bit and the working tree is measured with the release's own rules.
+ *
  * Outputs: XP income (by minute and source), the offers and picks of three
  * pick policies, the ammo economy per weapon, the survival proxy, and the
  * referenceDps(level) calibration for boss HP (package 4.1).
@@ -535,7 +542,8 @@ export function runProgressionModel(M, {
       healed += health - before;
     } else if (kind === 'weapon-cache') {
       const before = heldBefore();
-      W.grantWeaponPickup(loadout, { tick, weaponId: pickup.effect.weaponId, select: true, progressionByWeapon });
+      // 'if-new' is main.mjs's cache rule since the release; a 1.8.1 tree reads it as true.
+      W.grantWeaponPickup(loadout, { tick, weaponId: pickup.effect.weaponId, select: 'if-new', progressionByWeapon });
       P.unlockRunProgressionWeapon(progression, pickup.effect.weaponId);
       noteGrants(before);
       acquire(pickup.effect.weaponId, tick);
@@ -548,6 +556,8 @@ export function runProgressionModel(M, {
     } else if (kind === 'nuke') {
       G.rechargeHandGrenades(grenades, { tick, amount: 1 });
       for (const enemy of bodies) {
+        // The release limits the nuke to its radius around the hero (package 8.6).
+        if (pickup.effect.radius !== undefined && Math.hypot(enemy.x, enemy.y) > pickup.effect.radius) continue;
         hits.push({ id: `${pickup.id}:${enemy.id}`, tick, time: 0, targetId: enemy.id, sourceId: 'player', weaponId: 'nuke-liquidation', damage: pickup.effect.damage, criticalChance: 0, criticalMultiplier: 1, armorPiercing: true, direction: { x: 1, y: 0 }, knockback: 0 });
       }
     } else if (kind === 'timed') {
@@ -582,6 +592,12 @@ export function runProgressionModel(M, {
     }
     return target;
   };
+
+  // The run's critical hit. The release (package 8.6) extends it from
+  // projectiles to the held weapons' direct hits; a 1.8.1 tree has no list.
+  const heldCritical = (weaponId, effects) => (W.HMH_CRITICAL_HELD_WEAPON_IDS?.includes(weaponId)
+    ? { criticalChance: Math.min(MAIN_MIRROR.criticalChanceCap, MAIN_MIRROR.baseCriticalChance + effects.criticalChanceBonus), criticalMultiplier: MAIN_MIRROR.baseCriticalMultiplier + effects.criticalDamageBonus }
+    : null);
 
   const resolveShot = (shot, tick, effects, timedDamage, hits) => {
     const direction = shot.direction;
@@ -707,7 +723,7 @@ export function runProgressionModel(M, {
     if (loadout.activeWeaponId === 'coin-blaster' && tick > loadout.switchReadyTick) {
       const candidate = [...acquisition].reverse().find((id) => id !== 'coin-blaster' && loadout.weapons[id].owned
         && (W.HMH_WEAPON_DEFINITIONS[id].ammoModel === 'none' || roundsHeld(loadout.weapons[id]) > 0));
-      if (candidate) W.switchWeapon(loadout, candidate, { tick });
+      if (candidate && W.switchWeapon(loadout, candidate, { tick })) P.setRunUpgradeFocus?.(progression, candidate);
     }
     const held = heldBefore();
     const activeId = loadout.activeWeaponId;
@@ -740,27 +756,33 @@ export function runProgressionModel(M, {
       } else if (event.type === 'weapon:fire') {
         ammo[event.weaponId].shots += 1;
         if (event.weaponId === 'launcher-rig') {
-          G.throwGrenade(grenades, {
-            tick,
-            mode: 'launcher',
-            origin: { x: direction.x * MAIN_MIRROR.muzzleOffset, y: direction.y * MAIN_MIRROR.muzzleOffset, z: MAIN_MIRROR.launcherOriginZ },
-            direction,
-            damageMultiplier: timedDamage,
-          });
+          // The release throws one shell per shot with its damage and blast
+          // radius (shots carry blastRadius); 1.8.1 threw one default grenade.
+          const shells = event.shots[0]?.blastRadius != null ? event.shots : null;
+          for (const shell of shells ?? [null]) {
+            G.throwGrenade(grenades, {
+              tick,
+              mode: 'launcher',
+              origin: { x: (shell ?? { direction }).direction.x * MAIN_MIRROR.muzzleOffset, y: (shell ?? { direction }).direction.y * MAIN_MIRROR.muzzleOffset, z: MAIN_MIRROR.launcherOriginZ },
+              direction: shell ? shell.direction : direction,
+              damageMultiplier: timedDamage,
+              ...(shell ? { damage: shell.damage, blastRadius: shell.blastRadius } : {}),
+            });
+          }
           continue;
         }
         for (const shot of event.shots) resolveShot(shot, tick, effects, timedDamage, hits);
       } else if (event.type === 'weapon:channel-pulse' || event.type === 'weapon:flame-pulse') {
         ammo[event.weaponId].shots += 1;
         for (const hit of event.hits) {
-          hits.push({ id: hit.id, tick, time: 0, targetId: hit.targetId, sourceId: 'player', weaponId: event.weaponId, damage: hit.damage * timedDamage, criticalChance: 0, criticalMultiplier: 1, armorPiercing: false, direction: { x: 1, y: 0 }, knockback: 0 });
+          hits.push({ id: hit.id, tick, time: 0, targetId: hit.targetId, sourceId: 'player', weaponId: event.weaponId, damage: hit.damage * timedDamage, criticalChance: 0, criticalMultiplier: 1, ...heldCritical(event.weaponId, effects), armorPiercing: false, direction: { x: 1, y: 0 }, knockback: 0 });
         }
       } else if (event.type === 'burner:burn-tick') {
         if (!bodies.some((enemy) => enemy.id === event.targetId)) continue;
         hits.push({ id: `burner-dot:${event.targetId}:${tick}`, tick, time: 0, targetId: event.targetId, sourceId: 'player', weaponId: 'bear-market-burner', damage: event.damage * timedDamage, criticalChance: 0, criticalMultiplier: 1, armorPiercing: false, direction: { x: 0, y: 0 }, knockback: 0 });
       } else if (event.type === 'weapon:melee-strike') {
         ammo[event.weaponId].shots += 1;
-        for (const hit of event.hits) hits.push({ ...hit, tick, sourceId: 'player', weaponId: event.weaponId, damage: hit.damage * timedDamage });
+        for (const hit of event.hits) hits.push({ ...hit, tick, sourceId: 'player', weaponId: event.weaponId, damage: hit.damage * timedDamage, ...heldCritical(event.weaponId, effects) });
       }
     }
     ammo[loadout.activeWeaponId].activeTicks += 1;
@@ -797,7 +819,7 @@ export function runProgressionModel(M, {
     }
     const blastTargets = grenades.active.length === 0 ? [] : bodies.filter((enemy) => grenades.active.some((grenade) => Math.hypot(enemy.x - grenade.position.x, enemy.y - grenade.position.y) <= grenade.blastRadius + 160)).map(hurtTarget);
     const grenadeFrame = G.stepGrenadeSystem(grenades, { tick, queryGround: flatGround, blockers: [], targets: blastTargets });
-    for (const detonation of grenadeFrame.detonations) for (const hit of detonation.hits) hits.push({ ...hit, tick });
+    for (const detonation of grenadeFrame.detonations) for (const hit of detonation.hits) hits.push({ ...hit, tick, ...heldCritical(hit.weaponId, effects) });
 
     // Enemy attacks: real tokens, tells and strikes; the model decides whether
     // a strike connects (evasion proxy) and spends the automatic dodge on it.
@@ -855,6 +877,12 @@ export function runProgressionModel(M, {
         const threatCost = A.ENEMY_ARCHETYPES[enemy.archetypeId].costs.threat;
         const before = progression.xp;
         P.recordRunDefeat(progression, { enemyId: enemy.id, threatCost, tick });
+        // The release's Magazine & Salvage: kills refund reserve to their gun.
+        const salvage = W.creditWeaponKills?.(loadout, { tick, weaponId: death.weaponId, count: 1, progressionByWeapon });
+        if (salvage?.rounds > 0) {
+          ammo[salvage.weaponId].granted += salvage.rounds;
+          ammo[salvage.weaponId].maxReserve = Math.max(ammo[salvage.weaponId].maxReserve, salvage.reserveAmmo);
+        }
         xpBySource.kills += progression.xp - before;
         killsByArchetype[enemy.archetypeId] = (killsByArchetype[enemy.archetypeId] ?? 0) + 1;
         const feedback = CO.resolveComboFeedback({ previous: combo, current: combo + 1 });
@@ -872,14 +900,33 @@ export function runProgressionModel(M, {
     }
 
     // Level-ups: the offer opens inside the tick and the policy picks at once.
+    // With the release's API each pending level opens its own offer, card 2
+    // drawn from the guns with ammo, and the policy re-rolls by the frozen
+    // chooseReroll rule before it picks.
     const levelBefore = levelTicks.at(-1).level;
     if (progression.pendingLevels > 0) snapshot = snapshotNow();
     while (snapshot.pendingLevels > 0 && snapshot.pendingChoices.length > 0) {
-      const cards = readOffer(M, progression);
+      if (P.openRunUpgradeOffer && !P.openRunUpgradeOffer(progression, { armedWeaponIds: W.weaponIdsWithAmmo(loadout) })) break;
+      let cards = readOffer(M, progression);
+      const shown = cards.map((card) => card.id);
+      let rerolls = 0;
+      if (P.rerollRunUpgradeSlot) {
+        const rerolledSlots = new Set();
+        for (;;) {
+          const slot = chooseReroll(policy, cards, { seed, level: progression.level, selectionSequence: progression.selectionSequence, weaponCardIds: weaponCardIds(cards), rerolledSlots });
+          if (slot < 0) break;
+          rerolledSlots.add(slot);
+          const replacement = P.rerollRunUpgradeSlot(progression, cards[slot].slot);
+          if (!replacement) continue;
+          rerolls += 1;
+          shown.push(replacement.id);
+          cards = readOffer(M, progression);
+        }
+      }
       const index = choosePick(policy, cards, { seed, level: progression.level, selectionSequence: progression.selectionSequence, weaponCardIds: weaponCardIds(cards) });
       const before = snapshot.effects;
       const selection = P.selectRunUpgrade(progression, cards[index].id);
-      offers.push({ tick, level: progression.level, offered: cards.map((card) => card.id), picked: cards[index].id, rerolls: 0 });
+      offers.push({ tick, level: progression.level, offered: cards.map((card) => card.id), picked: cards[index].id, rerolls, ...(P.rerollRunUpgradeSlot ? { shown } : {}) });
       const healthGain = selection.effects.maxHealthBonus - before.maxHealthBonus;
       if (healthGain > 0) {
         maxHealth += healthGain;
@@ -887,7 +934,9 @@ export function runProgressionModel(M, {
       }
       dashTier = selection.effects.dashCooldownTier;
       const grenadeGain = selection.effects.bonusGrenadeCharges - before.bonusGrenadeCharges;
-      if (grenadeGain > 0) grenades.handCharges += grenadeGain; // main.mjs lets this overflow the maximum
+      // The release raises the maximum (package 8.6); 1.8.1 let the charges overflow it.
+      if (grenadeGain > 0 && G.raiseHandGrenadeMaximum) G.raiseHandGrenadeMaximum(grenades, { amount: grenadeGain });
+      else if (grenadeGain > 0) grenades.handCharges += grenadeGain;
       snapshot = selection.snapshot;
     }
     if (progression.level > levelBefore) progressionByWeapon = W.progressionByWeapon(progression.ranks);
