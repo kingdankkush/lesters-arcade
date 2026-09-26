@@ -22,6 +22,7 @@ Failed publishes retry automatically and can be retried from the profile. Testne
 ## How Ranked works
 Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain.
 Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs).
+Faucet: https://liteforge.hub.caldera.xyz. Player guide: https://lestersarcade.io/how-ranked-works.
 Free play needs no wallet and never touches the chain.
 Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.
 Steps: play Free; connect a wallet; the site adds the LitVM LiteForge testnet (chain 4441); get free zkLTC from the LiteForge faucet; sign in with one free signature; choose Ranked and confirm 0.012 zkLTC; play while the server checks the run; the relayer publishes it on LitVM, usually within about a minute.

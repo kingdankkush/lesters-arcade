@@ -273,6 +273,7 @@ export function rankedSurfaceCopy({ settlementLive = false } = {}) {
     llmsSection: live ? Object.freeze([
       W.price,
       W.faucet,
+      `Faucet: ${F.faucetUrl}. Player guide: ${F.guideUrl}.`,
       W.free,
       W.proof,
       `Steps: play Free; connect a wallet; the site adds the ${F.networkName} (chain ${F.chainId}); get free zkLTC from the ${F.faucetName}; sign in with one free signature; choose Ranked and confirm ${F.totalZkLtc} zkLTC; play while the server checks the run; the relayer publishes it on LitVM, usually within about a minute.`,
