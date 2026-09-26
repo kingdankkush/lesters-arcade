@@ -165,7 +165,7 @@ test('operator actions dry-run by default and need the confirm phrase', async ()
     // Confirm phrases and help text.
     assert.deepEqual(Object.fromEntries(Object.entries(OPERATOR_ACTIONS).map(([name, action]) => [name, action.confirm])), {
       status: null, activate: 'ACTIVATE_GAMES_4441', 'pause-games': 'PAUSE_GAMES_4441', 'fees-on': 'FEES_ON_4441', 'fees-off': 'FEES_OFF_4441',
-      reserve: 'SET_RESERVE_4441', 'relayer-off': 'RELAYER_OFF_4441', 'rotate-verifier': 'ROTATE_VERIFIER_4441',
+      reserve: 'SET_RESERVE_4441', 'entry-fee': 'SET_ENTRY_FEE_4441', 'relayer-off': 'RELAYER_OFF_4441', 'rotate-verifier': 'ROTATE_VERIFIER_4441',
     });
     assert.match(operatorHelp(), /fees-off is NOT an emergency stop/);
     assert.match(FEES_OFF_WARNING, /SETTLEMENT_PAUSED=true/);
@@ -219,6 +219,24 @@ test('activate, pause-games, relayer-off and rotate-verifier change the local ch
     await act('reserve', ['200000000000000']);
     assert.equal(await rankedEntry.settlementGasReserveWei(), 200_000_000_000_000n);
     await assert.rejects(act('reserve', ['0.0002']), /decimal wei/);
+
+    // entry-fee (owner-approved 0.1 -> 0.01 zkLTC, 2026-09-26): never plans a price under the settle floor.
+    const reserveNow = BigInt(await rankedEntry.settlementGasReserveWei());
+    const feeAct = (wei, settleFloorWei) => runOperatorAction({ action: 'entry-fee', args: [wei], deployment, provider: chain.provider, signer: chain.wallets.operator, broadcast: true, confirm: 'SET_ENTRY_FEE_4441', settleFloorWei });
+    const nonceBefore = await chain.provider.getTransactionCount(chain.wallets.operator.address);
+    await assert.rejects(feeAct('10000000000000000', '102000000000000000'), /below the server's settle floor 102000000000000000/);
+    assert.equal(await chain.provider.getTransactionCount(chain.wallets.operator.address), nonceBefore, 'a refused fee sends nothing');
+    await assert.rejects(feeAct('0', '0'), /positive decimal wei/);
+    await assert.rejects(feeAct('0.01', '0'), /positive decimal wei/);
+    await assert.rejects(feeAct(String(10n ** 18n + 1n), '0'), /above 1 zkLTC/);
+    const lowered = await feeAct('10000000000000000', String(10_000_000_000_000_000n + reserveNow));
+    assert.equal(lowered.receipts.length, 3);
+    for (const game of record.games) {
+      assert.equal((await gameRegistry.getGame(game.gameId)).entryFeeWei, 10_000_000_000_000_000n);
+      const [fee, reserveQuoted, total] = await rankedEntry.quoteEntry(game.gameId);
+      assert.deepEqual([fee, reserveQuoted, total], [10_000_000_000_000_000n, reserveNow, 10_000_000_000_000_000n + reserveNow]);
+    }
+    assert.equal((await feeAct('10000000000000000', '0')).receipts.length, 0, 'idempotent');
 
     await act('relayer-off');
     assert.equal(await scores.relayers(chain.wallets.relayer.address), false);

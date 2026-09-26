@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 import { flagValue, hasFlag, readSecret } from './lib/key-source.mjs';
 import { LITVM_GAME_SLUGS, loadLitvmDeployment } from './generate-litvm-addresses.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 
@@ -41,6 +42,7 @@ export const OPERATOR_ACTIONS = Object.freeze({
   'fees-on': Object.freeze({ confirm: 'FEES_ON_4441', usage: 'fees-on', summary: 'setEntryFeeEnabled(true)' }),
   'fees-off': Object.freeze({ confirm: 'FEES_OFF_4441', usage: 'fees-off', summary: 'setEntryFeeEnabled(false) (never a stop)' }),
   reserve: Object.freeze({ confirm: 'SET_RESERVE_4441', usage: 'reserve <wei>', summary: 'setSettlementGasReserve(wei)' }),
+  'entry-fee': Object.freeze({ confirm: 'SET_ENTRY_FEE_4441', usage: 'entry-fee <wei>', summary: 'setEntryFee(id, wei) for every registered game' }),
   'relayer-off': Object.freeze({ confirm: 'RELAYER_OFF_4441', usage: 'relayer-off [--relayer <address>]', summary: 'setRelayer(relayer, false) on the score registry' }),
   'rotate-verifier': Object.freeze({ confirm: 'ROTATE_VERIFIER_4441', usage: 'rotate-verifier <address>', summary: 'setTrustedVerifier(address) on the score registry' }),
 });
@@ -152,7 +154,9 @@ function call(target, contract, method, args, extra = {}) {
 }
 
 // Reads the chain and returns the calls an action would send (no-ops are left out, with a note).
-export async function planOperatorAction({ action, args = [], deployment, provider, relayer = deployment.relayer }) {
+// `settleFloorWei` is the server's settle floor (RANKED_MIN_PAID_WEI, default DEFAULT_MIN_PAID_WEI): a paid
+// session below it is refused at settle (402 entry-underpaid), so entry-fee never plans a price under it.
+export async function planOperatorAction({ action, args = [], deployment, provider, relayer = deployment.relayer, settleFloorWei = DEFAULT_MIN_PAID_WEI }) {
   const spec = OPERATOR_ACTIONS[action];
   if (!spec || action === 'status') throw new Error(`unknown action ${JSON.stringify(action)}\n${operatorHelp()}`);
   const { gameRegistry, rankedEntry, scores } = contracts(deployment, provider);
@@ -181,6 +185,23 @@ export async function planOperatorAction({ action, args = [], deployment, provid
     if (BigInt(wei) > 0n && (await rankedEntry.relayerVault()) === ethers.ZeroAddress) throw new Error('the relayer vault is unset, so a non-zero reserve would revert (RELAYER_VAULT_UNSET)');
     if ((await rankedEntry.settlementGasReserveWei()).toString() === wei) notes.push(`reserve already ${wei} wei`);
     else calls.push(call('rankedEntry', rankedEntry, 'setSettlementGasReserve', [BigInt(wei)]));
+  } else if (action === 'entry-fee') {
+    const wei = String(args[0] ?? '');
+    if (!/^[1-9]\d*$/.test(wei)) throw new Error('entry-fee needs a positive decimal wei amount, for example: entry-fee 10000000000000000');
+    if (BigInt(wei) > 10n ** 18n) throw new Error('refusing an entry fee above 1 zkLTC');
+    const reserve = BigInt(await rankedEntry.settlementGasReserveWei());
+    const total = BigInt(wei) + reserve;
+    if (total < BigInt(settleFloorWei)) {
+      throw new Error(`refusing entry-fee ${wei}: a run would pay ${total} wei (fee + reserve ${reserve}), below the server's settle floor ${settleFloorWei} wei, so every new paid run would be refused at settle. Release a server whose RANKED_MIN_PAID_WEI / DEFAULT_MIN_PAID_WEI is at most ${total} first.`);
+    }
+    notes.push(`a run will pay ${total} wei (fee ${wei} + reserve ${reserve}); the deployed server's settle floor must be at most that (this checkout's floor is ${settleFloorWei})`);
+    for (const gameId of LITVM_GAME_SLUGS) {
+      const gameId32 = ethers.id(gameId);
+      const game = await gameRegistry.getGame(gameId32);
+      if (!game.exists) notes.push(`${gameId}: not registered, skipped`);
+      else if (game.entryFeeWei.toString() === wei) notes.push(`${gameId}: entry fee already ${wei} wei`);
+      else calls.push(call('gameRegistry', gameRegistry, 'setEntryFee', [gameId32, BigInt(wei)], { gameId }));
+    }
   } else if (action === 'relayer-off') {
     if (!ethers.isAddress(relayer)) throw new Error('relayer-off needs a relayer address');
     if (!(await scores.relayers(relayer))) notes.push(`relayer ${relayer} is already not allowed`);
@@ -195,7 +216,7 @@ export async function planOperatorAction({ action, args = [], deployment, provid
 }
 
 // Dry run unless `broadcast`; a broadcast needs the confirm phrase, a deployed module and the operator.
-export async function runOperatorAction({ action, args = [], deployment, provider, signer = null, broadcast = false, confirm = null, relayer = deployment?.relayer, log = () => {} }) {
+export async function runOperatorAction({ action, args = [], deployment, provider, signer = null, broadcast = false, confirm = null, relayer = deployment?.relayer, settleFloorWei = DEFAULT_MIN_PAID_WEI, log = () => {} }) {
   const spec = OPERATOR_ACTIONS[action];
   if (!spec) throw new Error(`unknown action ${JSON.stringify(action)}\n${operatorHelp()}`);
   const chainId = await rpcChainId(provider);
@@ -206,7 +227,7 @@ export async function runOperatorAction({ action, args = [], deployment, provide
     if (deployment.status !== 'deployed') throw new Error(`broadcast blocked: the address module is '${deployment.status}', not 'deployed'`);
     if (!signer) throw new Error('broadcast blocked: no operator signer');
   }
-  const plan = await planOperatorAction({ action, args, deployment, provider, relayer });
+  const plan = await planOperatorAction({ action, args, deployment, provider, relayer, settleFloorWei });
   for (const note of plan.notes) log(note);
   if (!broadcast) return { action, dryRun: true, plan, receipts: [] };
   const signerAddress = (await signer.getAddress()).toLowerCase();
