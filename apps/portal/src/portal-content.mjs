@@ -277,7 +277,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
       ? `Free Mode is open to everyone and needs no wallet. Ranked costs ${total} testnet zkLTC per run; the arcade server ${game.id === 'lester-blaster' ? 'plausibility-checks each run (it is not replayed)' : 'replays each run from your inputs'} before publishing it on LitVM.`
       : 'Free Mode is open to guests. Wallet-connected Ranked is a device-local preview with no fees or prizes.']))),
     // Game details "Ranked" rows (discover pages and the SPA game view): live only, since a preview has
-    // no price, publishing or achievements to state. Each row is [label, text].
+    // no price, publishing or achievements to state. Each row is [label, text] or [label, text, [link label, href]].
     rankedSection: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live ? rankedSectionFor(game.id) : null]))),
     // SPA headers of the Scores and Profile pages, and the splash wallet note.
     scoresView: hosted ? 'Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs, best score per wallet.' : 'Browse the device-local Ranked preview records saved in this browser.',
