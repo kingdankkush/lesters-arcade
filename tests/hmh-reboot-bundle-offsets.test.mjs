@@ -115,7 +115,7 @@ test('boot awaits the lazy runtime modules before any lazily bound code runs or 
   const lazyNames = ['createWorldDesignLife', 'createMissionState', 'createWorldDesignPacing', 'createUpgradePanel', 'loadWorldDesignAppearance',
     'createLiquidatorBoss', 'stepLiquidatorBoss', 'stepMissionObjectives', 'resolveLevelBriefing', 'applyLevelBriefing', 'liquidatorPose', 'creatureAnimationTick',
     'renderLiquidatorTelegraph', 'prepareWorldDesignEnemyPose', 'stepWorldDesignPacing',
-    'createBossSlots', 'stepBossSlots', 'bossZoneArming', 'bossDirectorOverlay', 'directorBankFull', 'bossAddAllowance', 'defeatBossSlot',
+    'createBossSlots', 'stepBossSlots', 'bossZoneArming', 'bossDirectorOverlay', 'directorBankFull', 'insertBossAdds', 'defeatBossSlot',
     'consumeGoldenParachute', 'bossHudState', 'forceBossStart', 'isLiquidatorTargetable', 'getLiquidatorVulnerability', 'liquidatorOpenArena',
     'insideBossArena', 'bossShapeDodgeDanger'];
   const bootAst = parse(`(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)})`, { ecmaVersion: 'latest' });

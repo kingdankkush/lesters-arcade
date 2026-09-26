@@ -155,11 +155,15 @@ export function createLiquidatorBoss({
   entry = 'bell',
   arena = null,
   seed = 0,
+  // Add waves his slot has already issued this run: his Enforcement Orders
+  // number on from here (boss-slots.mjs addWaves).
+  wave = 0,
 } = {}) {
   if (typeof id !== 'string' || id.trim().length === 0) throw new TypeError('boss id is required');
   if (!Number.isInteger(maxHealth) || maxHealth <= 0) throw new TypeError('maxHealth must be a positive integer (package 4.1 HP formula)');
   if (!['bell', 'dark-pool'].includes(entry)) throw new TypeError('entry must be bell or dark-pool');
   nonNegativeInteger(startTick, 'startTick');
+  nonNegativeInteger(wave, 'wave');
   const floor = arena ?? liquidatorOpenArena({ x: finite(x, 'boss.x'), y: finite(y, 'boss.y') });
   const introTicks = entry === 'bell' ? LIQUIDATOR_BELL_INTRO_TICKS : 0;
   return {
@@ -216,7 +220,7 @@ export function createLiquidatorBoss({
     lastAttackId: null,
     cooldownUntil: {},
     circuitCount: 0,
-    wave: 0,
+    wave,
     nextActionTick: startTick + introTicks + (entry === 'dark-pool' ? LIQUIDATOR_DARK_POOL_FIRST_ACTION_TICKS : 30),
     motion: null,
     lastResolved: null,
