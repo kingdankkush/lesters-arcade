@@ -6,8 +6,10 @@
 // damage stream and his strikes resolved every tick.
 //
 // Two scripts: the bell (ring it at 10:00, fight on the Margin Floor, win),
-// and the Dark Pool (enter it, retreat through the ring, come back after the
-// cooldown, win, keep the Golden Parachute). One seed gives one digest for
+// and the Dark Pool (enter it, fight into Margin Call and his first adds,
+// retreat through the ring, come back after the cooldown, win, keep the
+// Golden Parachute). Adds go through the runtime's add path into a real
+// enemy population. One seed gives one digest for
 // every render partition, the recorded input stream replays the run one tick
 // per frame, and another seed changes the fight.
 import test from 'node:test';
@@ -22,17 +24,17 @@ import { seededUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
 import { createMissionState, missionActiveBlockers, missionDockStep, stepMissionObjectives } from '../apps/hmh-reboot/src/mission-objectives.mjs';
 import { BOSS_LOCK_BLOCKERS, LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR } from '../apps/hmh-reboot/src/boss-arenas.mjs';
 import {
-  bossAddAllowance,
   bossRunRows,
   bossZoneArming,
   consumeGoldenParachute,
   createBossSlots,
   defeatBossSlot,
+  insertBossAdds,
   stepBossSlots,
 } from '../apps/hmh-reboot/src/boss-slots.mjs';
+import { createEnemyPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import {
   applyLiquidatorDamage,
-  createLiquidatorAddCandidates,
   isLiquidatorTargetable,
   resolveLiquidatorAttack,
   stepLiquidatorBoss,
@@ -62,10 +64,11 @@ const SCRIPTS = Object.freeze({
     legs: [
       { tick: 36_200, target: { x: 11_790, y: 2_020 } },
       { tick: 36_400, orbit: LIQUIDATOR_DARK_POOL },
-      // 600 engaged ticks on, the retreat ring: stand in it for 120.
-      { tick: 37_000, target: poolRetreat },
+      // Past Margin Call and his first Enforcement Order, the retreat ring:
+      // stand in it for 120.
+      { tick: 38_000, target: poolRetreat },
       // Wait out the 1,800-tick cooldown in the court, then fight to a win.
-      { tick: 37_400, orbit: LIQUIDATOR_DARK_POOL },
+      { tick: 38_400, orbit: LIQUIDATOR_DARK_POOL },
     ],
     end: 47_000,
   },
@@ -76,6 +79,7 @@ function headlessRun({ seed, script, partition = 1, replay = null }) {
   const simulation = new DeterministicSimulation({ seed, maxFrameDeltaMs: 100 });
   const mission = createMissionState(seed);
   const slots = createBossSlots({ seed });
+  const population = createEnemyPopulation();
   const actor = { ...plan.start, groundZ: 0, vx: 0, vy: 0 };
   const worldBlockers = missionActiveBlockers({ openGates: new Set(['dark-pool-container']) }, LEVEL_ONE_WORLD.collisionBlockers);
   const evidence = { lines: [], inputs: [], health: 100, hits: 0, adds: [], rewards: null, revives: 0 };
@@ -130,10 +134,14 @@ function headlessRun({ seed, script, partition = 1, replay = null }) {
       for (const event of report.events) {
         evidence.lines.push(`${tick}:boss:${event.type}:${event.attackId ?? event.phaseId ?? ''}`);
         if (event.type === 'add-wave') {
-          for (const candidate of createLiquidatorAddCandidates({ event, alive: evidence.adds.length })) {
-            if (!bossAddAllowance(slots, { bossId: 'liquidator', tick, directorInserted: 400 })) break;
-            evidence.adds.push(candidate.id);
-          }
+          // The runtime's add path into a real population (the troops never
+          // die in these scripts, so they count as alive).
+          const result = insertBossAdds(slots, {
+            bossId: 'liquidator', event, tick, population, alive: evidence.adds.length, directorInserted: 400,
+            place: (candidate) => queryGround(candidate.x, candidate.y).groundZ,
+          });
+          for (const add of result.inserted) evidence.adds.push(`${add.id}:${add.allowance}`);
+          for (const refused of result.rejected) evidence.lines.push(`${tick}:add-refused:${refused.id}:${refused.reason}`);
         }
         if (event.type !== 'attack') continue;
         const resolved = resolveLiquidatorAttack({ event, player: actor, blockers });
@@ -185,7 +193,8 @@ test('the Closing Bell script: rung at 10:00, locked, fought through both halts 
   assert.ok(evidence.lines.some((line) => line.endsWith(':cross:margin-call')) && evidence.lines.some((line) => line.endsWith(':cross:total-liquidation')));
   assert.equal(evidence.rewards.goldenParachute, false);
   assert.ok(evidence.hits > 0, 'his strikes landed on the hero');
-  assert.ok(evidence.adds.length > 0 && evidence.adds.every((id) => /^boss:liquidator:w\d+:\d+$/.test(id)));
+  assert.ok(evidence.adds.length > 0 && evidence.adds.every((id) => /^boss:liquidator:w\d+:\d+:(free|bank)$/.test(id)));
+  assert.deepEqual(evidence.lines.filter((line) => line.includes(':add-refused:')), [], 'every add the allowance paid for entered the population');
   assert.equal(slots.slots.liquidator.closedWalls.length, 0, 'the gates open on his defeat');
   // No strike before the bell, none during the intro.
   const initiated = liquidator.firstInitiatedTick;
@@ -205,6 +214,13 @@ test('the Dark Pool script: logbook then start, a retreat, a legal re-initiation
   assert.equal(evidence.rewards.goldenParachute, true);
   assert.equal(slots.parachute.held, true);
   assert.ok(evidence.lines.filter((line) => line.endsWith(':slot:boss-initiated:dark-pool')).length === 2);
+  // His troops before the retreat and after the re-initiation both enter the
+  // population: the second boss numbers his waves on from the first.
+  const waves = evidence.lines.filter((line) => line.endsWith(':boss:add-wave:enforcement-order')).map((line) => Number(line.split(':')[0]));
+  const retreat = Number(evidence.lines.find((line) => line.endsWith(':slot:boss-withdrawn:retreat')).split(':')[0]);
+  assert.ok(waves.some((tick) => tick < retreat) && waves.some((tick) => tick > liquidator.lastInitiatedTick));
+  assert.deepEqual(evidence.adds, ['boss:liquidator:w1:0:free', 'boss:liquidator:w1:1:free', 'boss:liquidator:w2:0:free', 'boss:liquidator:w2:1:free']);
+  assert.deepEqual(evidence.lines.filter((line) => line.includes(':add-refused:')), []);
 });
 
 test('two runs of one seed give one digest for every render partition, catch-up included', () => {

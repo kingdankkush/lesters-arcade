@@ -24,7 +24,8 @@ import {
   pastDarkPoolThreshold,
 } from './boss-arenas.mjs';
 import { referenceDps } from './boss-reference-dps.mjs';
-import { LIQUIDATOR_TARGET_ID, createLiquidatorBoss } from './liquidator-boss.mjs';
+import { LIQUIDATOR_TARGET_ID, createLiquidatorAddCandidates, createLiquidatorBoss } from './liquidator-boss.mjs';
+import { attemptScheduledEnemyInsertion } from './enemy-simulation.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_RUN_RULES, hmhV7BossHp } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
 
@@ -82,6 +83,10 @@ export function createBossSlots({ seed = 0 } = {}) {
       closedWalls: [],
       locked: false,
       freeAdds: RULES.BOSS_ADDS_FIRST,
+      // Add waves this slot's bosses have issued in the run. Each new boss
+      // counts on from here, so add ids (boss:<id>:w<n>:<k>) never repeat
+      // across a retreat or a call-off: the population refuses a seen id.
+      addWaves: 0,
     }])),
     bankedAdds: 0,
     graceUntil: -1,
@@ -142,6 +147,7 @@ function initiate(slots, slot, { trigger, tick, level, events }) {
     seed: slots.seed,
     // Package 4.1: HP frozen at the trigger from the level at the trigger.
     maxHealth: hmhV7BossHp(slot.bossId, referenceDps(Math.max(1, Math.min(1_000, level)))),
+    wave: slot.addWaves,
   });
   events.push({ type: 'boss-initiated', bossId: slot.bossId, trigger, tick, arenaId: arena.id, maxHealth: slot.boss.maxHealth });
 }
@@ -150,6 +156,8 @@ function withdraw(slots, slot, { tick, reason, readyAt, events, opened }) {
   opened.push(...slot.closedWalls);
   slot.closedWalls = [];
   slot.locked = false;
+  // Waves issued but not yet resolved count too: their ids are skipped, never reused.
+  slot.addWaves = Math.max(slot.addWaves, slot.boss?.wave ?? 0);
   slot.boss = null;
   slot.status = 'cooldown';
   slot.readyAt = readyAt;
@@ -191,8 +199,14 @@ export function stepBossSlots(slots, {
     if (event.zoneKind === 'trigger' && triggerArmed(slots, slot, event.trigger, tick)) initiate(slots, slot, { trigger: event.trigger, tick, level, events });
     else if (event.zoneKind === 'retreat' && slot.status === 'live' && slot.arena?.id === event.arena && slot.boss?.active) {
       // The boss withdraws with its HP restored and is ready again 1,800
-      // ticks later (package 4.1 decision 4); no reward, no penalty.
-      withdraw(slots, slot, { tick, reason: 'retreat', readyAt: tick + RULES.BOSS_READY_AGAIN_TICKS, events, opened });
+      // ticks later (package 4.1 decision 4); no reward, no penalty. The ring
+      // counts its first armed tick (initiation + 600), so an unbroken channel
+      // fills at +719 and 1,800 on is +2,519; the verifier spaces initiations
+      // 2,520 apart, and the Dark Pool, which has no ring, re-initiates on the
+      // first ready tick. The later of the two keeps the spacing however the
+      // channel fills.
+      const readyAt = Math.max(tick + RULES.BOSS_READY_AGAIN_TICKS, slot.initiatedTick + RULES.BOSS_REINITIATION_MIN_TICKS);
+      withdraw(slots, slot, { tick, reason: 'retreat', readyAt, events, opened });
     }
   }
   // The Dark Pool: the logbook found (this tick or earlier) and the hero 48
@@ -252,7 +266,7 @@ export function forceBossStart(slots, { bossId, tick, arena, level = 1 }) {
   const events = [];
   initiate(slots, slot, { trigger: 'bell', tick, level, events });
   slot.arena = arena;
-  slot.boss = createLiquidatorBoss({ arena, entry: 'bell', startTick: tick, seed: slots.seed, maxHealth: slot.boss.maxHealth });
+  slot.boss = createLiquidatorBoss({ arena, entry: 'bell', startTick: tick, seed: slots.seed, maxHealth: slot.boss.maxHealth, wave: slot.addWaves });
   slot.locked = true;
   return slot.boss;
 }
@@ -308,6 +322,48 @@ export function bossAddAllowance(slots, { bossId, tick, directorInserted }) {
     return 'bank';
   }
   return null;
+}
+
+// Hands back an allowance whose insertion the population refused, so the free
+// four count real insertions and the bank counts only adds that exist. It
+// never lifts a slot above its first four or the bank below zero.
+function refundBossAddAllowance(slots, { bossId, allowance }) {
+  const slot = slots.slots[bossId];
+  if (allowance === 'free' && slot) slot.freeAdds = Math.min(RULES.BOSS_ADDS_FIRST, slot.freeAdds + 1);
+  else if (allowance === 'bank') slots.bankedAdds = Math.max(0, slots.bankedAdds - 1);
+}
+
+// A resolved Enforcement Order's troops into the enemy population. `place`
+// gives a candidate's groundZ, or null where it cannot stand (deep water, a
+// blocker), and such a spot takes no allowance. Each add takes its allowance
+// just before its insertion and returns it if the population refuses the add
+// (a duplicate id, the body or threat capacity). The live boss reserves its
+// adds' bodies and threat apart from the band caps; the population capacity
+// (192) still holds.
+export function insertBossAdds(slots, { bossId, event, tick, population, alive, directorInserted, place }) {
+  const inserted = [];
+  const rejected = [];
+  for (const candidate of createLiquidatorAddCandidates({ event, alive })) {
+    const groundZ = place(candidate);
+    if (groundZ === null) continue;
+    const allowance = bossAddAllowance(slots, { bossId, tick, directorInserted });
+    if (!allowance) break;
+    const result = attemptScheduledEnemyInsertion({
+      population,
+      schedule: { nextSpawnTick: tick, intervalTicks: 1, burstRemaining: 1 },
+      candidate: { ...candidate, groundZ },
+      tick,
+      placementAllowed: true,
+      visualMode: 'normal',
+      threatRemaining: null,
+    });
+    if (result.inserted) inserted.push({ id: result.enemyId, allowance });
+    else {
+      refundBossAddAllowance(slots, { bossId, allowance });
+      rejected.push({ id: candidate.id, reason: result.reason });
+    }
+  }
+  return freezeDeep({ inserted, rejected });
 }
 
 // The director's view of the bosses: suppressed while one lives and during a

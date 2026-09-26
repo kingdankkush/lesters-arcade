@@ -4,6 +4,7 @@
 // overlay, the add allowance, rewards and the v7 bosses rows.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   BOSS_DEFINITIONS,
@@ -16,14 +17,22 @@ import {
   createBossSlots,
   defeatBossSlot,
   directorSpawnCapacityV7,
+  insertBossAdds,
   stepBossSlots,
 } from '../apps/hmh-reboot/src/boss-slots.mjs';
 import { LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR } from '../apps/hmh-reboot/src/boss-arenas.mjs';
 import { referenceDps } from '../apps/hmh-reboot/src/boss-reference-dps.mjs';
-import { applyLiquidatorDamage } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
-import { directorSpawnCapacity } from '../server/verify/hmh-plausibility.mjs';
+import { applyLiquidatorDamage, stepLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { createMissionState, stepMissionObjectives } from '../apps/hmh-reboot/src/mission-objectives.mjs';
+import { createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { createEnemyPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
+import { directorSpawnCapacity, validateV7RunPlausibility } from '../server/verify/hmh-plausibility.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_RUN_RULES, hmhV7BossHp } from '../sdk/hmh-run-contract-v7.mjs';
-import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../sdk/hmh-run-summary-schema-v7.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
+
+// The committed v7 fixture with a Dark Pool Liquidator (read as JSON: the
+// fixture builder pulls in the other cabinets).
+const fourBossesSummary = () => JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-four-bosses.json', import.meta.url), 'utf8')).body.evidence.runSummary;
 
 const BELL = 'liquidator-closing-bell';
 const inPlaza = { x: 11_300, y: 2_400, groundZ: 0, radius: 24 };
@@ -137,6 +146,123 @@ test('after 600 engaged ticks a 120-tick retreat ring appears; retreating restor
   assert.ok(row.lastInitiatedTick - row.firstInitiatedTick >= HMH_V7_BOSS_RULES.BOSS_REINITIATION_MIN_TICKS);
   assert.equal(slots.slots.liquidator.boss.health, slots.slots.liquidator.boss.maxHealth, 'HP restored, and frozen at the new trigger');
   assert.equal(slots.slots.liquidator.boss.maxHealth, hmhV7BossHp('liquidator', referenceDps(23)));
+});
+
+test('a Dark Pool retreat filled on its first armed tick still spaces the re-initiation 2,520 ticks (real mission step, verifier rules)', () => {
+  // The hero finds the logbook, starts him in the Dark Pool at 10:00, waits
+  // on the retreat spot for its ring and never leaves the court (the spot is
+  // past the threshold). The ring counts its first armed tick, so it fills at
+  // +719, not +720; the pool has no ring of its own and re-initiates him on
+  // his first ready tick.
+  const { BOSS_RETREAT_RING_TICKS, BOSS_RETREAT_CHANNEL_TICKS, BOSS_REINITIATION_MIN_TICKS } = HMH_V7_BOSS_RULES;
+  const queryGround = createLevelOneGroundQuery();
+  const missionState = createMissionState(11);
+  const slots = createBossSlots({ seed: 11 });
+  const logbook = { x: 11_790, y: 2_000, groundZ: 0, radius: 24 };
+  const ring = { x: LIQUIDATOR_DARK_POOL.retreat.x, y: LIQUIDATOR_DARK_POOL.retreat.y, groundZ: 0, radius: 24 };
+  const lines = [];
+  for (let tick = 35_990; tick <= 39_000; tick += 1) {
+    const player = tick < 36_000 ? logbook : ring;
+    const arming = bossZoneArming(slots, tick);
+    missionState.bossZoneArmed = arming.armed;
+    missionState.bossZoneStatus = arming.status;
+    const missionFrame = stepMissionObjectives(missionState, { tick, player, queryGround });
+    for (const event of missionFrame.events) lines.push(`${tick}:${event.type}:${event.objectiveId ?? event.zoneId}`);
+    const frame = stepBossSlots(slots, { tick, player, missionEvents: missionFrame.events, mission: missionState, level: 21 });
+    for (const event of frame.events) if (event.type === 'boss-initiated' || event.type === 'boss-withdrawn') lines.push(`${tick}:${event.type}:${event.trigger ?? event.reason}`);
+  }
+  const retreatTick = 36_000 + BOSS_RETREAT_RING_TICKS + BOSS_RETREAT_CHANNEL_TICKS - 1;
+  assert.deepEqual(lines, [
+    '35990:objective-completed:warehouse-logbook',
+    '36000:boss-initiated:dark-pool',
+    `${retreatTick}:boss-zone:liquidator-retreat-dark-pool`,
+    `${retreatTick}:boss-withdrawn:retreat`,
+    `${36_000 + BOSS_REINITIATION_MIN_TICKS}:boss-initiated:dark-pool`,
+  ]);
+  const row = bossRunRows(slots).find((entry) => entry.bossId === 'liquidator');
+  assert.equal(row.initiations, 2);
+  assert.ok(row.lastInitiatedTick - row.firstInitiatedTick >= BOSS_REINITIATION_MIN_TICKS);
+  // The verifier's boss rules on these rows: the committed fixture's Dark Pool
+  // Liquidator replaced by this pair of engagements and an honest kill.
+  const summary = fourBossesSummary();
+  Object.assign(summary.bosses.find((entry) => entry.bossId === 'liquidator'), { ...row, defeatedTick: row.lastInitiatedTick + 183 });
+  summary.milestones.bossEngagedTick = row.firstInitiatedTick;
+  summary.objectives.find((entry) => entry.objectiveId === 'warehouse-logbook').tick = 35_990;
+  summary.milestones.secrets.find((entry) => entry.secretId === 'warehouse-logbook').tick = 35_990;
+  assert.equal(validateRunSummaryPayload(summary), '');
+  assert.deepEqual(validateV7RunPlausibility(summary).flags.filter((flag) => flag.severity === 'reject'), []);
+});
+
+// Steps the slot and the boss from `from` (crossing into Margin Call at
+// `crossAt`) until his first Enforcement Order resolves, and puts its troops
+// through the slot's add path into `population`.
+function fightToFirstOrder(slots, population, from, crossAt) {
+  for (let tick = from; tick < from + 4_000; tick += 1) {
+    if (tick > from) step(slots, tick);
+    const boss = slots.slots.liquidator.boss;
+    if (tick === crossAt) assert.equal(applyLiquidatorDamage({ boss, amount: boss.maxHealth * 0.4, tick }).phaseCrossed, 'margin-call');
+    const order = stepLiquidatorBoss({ boss, tick, player: inPlaza, addsAlive: 0 }).events.find((event) => event.type === 'add-wave');
+    if (order) return { tick, order, result: insertBossAdds(slots, { bossId: 'liquidator', event: order, tick, population, alive: 0, directorInserted: 0, place: () => 0 }) };
+  }
+  return assert.fail('no Enforcement Order');
+}
+const retreatEvent = (tick) => ({ type: 'boss-zone', zoneId: 'liquidator-retreat-margin-floor', bossId: 'liquidator', zoneKind: 'retreat', arena: 'margin-floor', tick });
+const addsOf = (result) => result.inserted.map((add) => [add.id, add.allowance]);
+
+test('a re-initiated Liquidator keeps numbering his Enforcement Orders, so his phase-2 troops enter a real population', () => {
+  const slots = createBossSlots({ seed: 5 });
+  const population = createEnemyPopulation();
+  step(slots, 36_500, { missionEvents: [bellEvent(36_500)] });
+  const first = fightToFirstOrder(slots, population, 36_500, 36_700);
+  assert.equal(first.order.wave, 1);
+  assert.deepEqual(addsOf(first.result), [['boss:liquidator:w1:0', 'free'], ['boss:liquidator:w1:1', 'free']]);
+  // He is left with his first troops alive; the hero retreats through the ring.
+  const retreatTick = first.tick + 1;
+  assert.ok(retreatTick - 36_500 >= HMH_V7_BOSS_RULES.BOSS_RETREAT_RING_TICKS);
+  step(slots, retreatTick, { missionEvents: [retreatEvent(retreatTick)] });
+  assert.equal(slots.slots.liquidator.status, 'cooldown');
+  const ready = slots.slots.liquidator.readyAt;
+  step(slots, ready, { missionEvents: [bellEvent(ready)] });
+  assert.equal(slots.slots.liquidator.boss.wave, 1, 'the new boss carries the slot\'s wave count');
+  const second = fightToFirstOrder(slots, population, ready, ready + 200);
+  assert.equal(second.order.wave, 2);
+  assert.deepEqual(addsOf(second.result), [['boss:liquidator:w2:0', 'free'], ['boss:liquidator:w2:1', 'free']]);
+  assert.deepEqual(second.result.rejected, []);
+  assert.deepEqual(population.active.map((enemy) => enemy.id), ['boss:liquidator:w1:0', 'boss:liquidator:w1:1', 'boss:liquidator:w2:0', 'boss:liquidator:w2:1']);
+  assert.equal(slots.slots.liquidator.freeAdds, 0, 'the free four went to four real insertions');
+});
+
+test('an add the population refuses hands its allowance back, free or banked', () => {
+  const slots = createBossSlots({ seed: 5 });
+  step(slots, 36_500, { missionEvents: [bellEvent(36_500)] });
+  const event = {
+    type: 'add-wave', attackId: 'enforcement-order', wave: 1, groundZ: 0,
+    adds: [
+      { id: 'boss:liquidator:w1:0', archetypeId: 'liquidator-agent', x: 10_560, y: 2_240 },
+      { id: 'boss:liquidator:w1:1', archetypeId: 'gas-bomber', x: 11_440, y: 2_240 },
+    ],
+  };
+  const population = createEnemyPopulation({ capacity: 1 });
+  const tick = 36_600;
+  const refused = insertBossAdds(slots, { bossId: 'liquidator', event, tick, population, alive: 0, directorInserted: 0, place: () => 0 });
+  assert.deepEqual(addsOf(refused), [['boss:liquidator:w1:0', 'free']]);
+  assert.deepEqual(refused.rejected, [{ id: 'boss:liquidator:w1:1', reason: 'body-capacity' }]);
+  assert.equal(slots.slots.liquidator.freeAdds, HMH_V7_BOSS_RULES.BOSS_ADDS_FIRST - 1);
+  // A spot where the add cannot stand takes no allowance at all.
+  const unplaced = insertBossAdds(slots, { bossId: 'liquidator', event, tick, population: createEnemyPopulation(), alive: 0, directorInserted: 0, place: () => null });
+  assert.deepEqual([unplaced.inserted, unplaced.rejected], [[], []]);
+  assert.equal(slots.slots.liquidator.freeAdds, HMH_V7_BOSS_RULES.BOSS_ADDS_FIRST - 1);
+  // With the free adds gone, a refused add returns its bank slot.
+  for (let index = 1; index < HMH_V7_BOSS_RULES.BOSS_ADDS_FIRST; index += 1) assert.equal(bossAddAllowance(slots, { bossId: 'liquidator', tick, directorInserted: 0 }), 'free');
+  const banked = insertBossAdds(slots, { bossId: 'liquidator', event, tick, population, alive: 0, directorInserted: 0, place: () => 0 });
+  assert.deepEqual(banked.inserted, []);
+  assert.deepEqual(banked.rejected.map((entry) => entry.reason), ['duplicate-id', 'body-capacity']);
+  assert.equal(slots.slots.liquidator.freeAdds, 0);
+  assert.equal(slots.bankedAdds, 0);
+  // Once there is room, the same bank slot pays for a real insertion.
+  const room = insertBossAdds(slots, { bossId: 'liquidator', event: { ...event, adds: [{ ...event.adds[1], id: 'boss:liquidator:w2:0' }] }, tick, population: createEnemyPopulation(), alive: 0, directorInserted: 0, place: () => 0 });
+  assert.deepEqual(addsOf(room), [['boss:liquidator:w2:0', 'bank']]);
+  assert.equal(slots.bankedAdds, 1);
 });
 
 test('the Dark Pool starts him with no intro once the logbook is found and the hero is 48 past its threshold', () => {

@@ -265,11 +265,11 @@ import {
 // no session can start before boot() reaches the bridge or the standalone
 // session, so the fixed-step simulation only ever calls resident code: it
 // stays synchronous and deterministic. The bindings keep their imported names.
-let applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorVulnerability,
+let applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
   getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena;
 // Boss kit (design package S1.5): the registry and lifecycle, the arenas and
 // their locks, and the geometry kit's dodge predicate.
-let createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, bossAddAllowance, defeatBossSlot,
+let createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
   consumeGoldenParachute, bossHudState, forceBossStart, BOSS_LOCK_BLOCKERS = Object.freeze([]), insideBossArena, bossShapeDodgeDanger;
 let creatureAnimationTick, liquidatorPose, renderLiquidatorTelegraph;
 let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
@@ -296,9 +296,9 @@ function loadLazyRuntimeModules() {
     import('./boss-arenas.mjs'),
     import('./boss-geometry.mjs'),
   ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry]) => {
-    ({ applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorVulnerability,
+    ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
-    ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, bossAddAllowance, defeatBossSlot,
+    ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
       consumeGoldenParachute, bossHudState, forceBossStart } = slots);
     ({ BOSS_LOCK_BLOCKERS, insideBossArena } = arenas);
     ({ bossShapeDodgeDanger } = geometry);
@@ -4658,32 +4658,18 @@ async function boot() {
           continue;
         }
         if (event.type === 'add-wave') {
-          const schedule = { nextSpawnTick: tick, intervalTicks: 1, burstRemaining: 1 };
-          let inserted = false;
-          for (const candidate of createLiquidatorAddCandidates({ event, alive: bossAddsAlive })) {
-            const ground = queryGround(candidate.x, candidate.y);
-            if (ground.kind === 'deep-water' || spawnPointBlocked(candidate)) continue;
-            // A slot's first four adds are free once per run; every further
-            // add draws from the director's capacity bank (contract 5.3).
-            if (!bossAddAllowance(bossSlots, { bossId: 'liquidator', tick, directorInserted: encounterDirector.insertedCount })) break;
-            const result = attemptScheduledEnemyInsertion({
-              population: enemyPopulation,
-              schedule,
-              candidate: { ...candidate, groundZ: ground.groundZ },
-              tick,
-              placementAllowed: true,
-              visualMode: 'normal',
-              // The live boss reserves its adds' bodies and threat apart from
-              // the band caps; the population capacity (192) still holds.
-              threatRemaining: null,
-            });
-            if (result.inserted) {
-              inserted = true;
-              schedule.nextSpawnTick = tick;
-              schedule.burstRemaining = 1;
-            }
-          }
-          if (inserted) syncEnemyMarkers(grayboxEnemies);
+          // A slot's first four adds are free once per run; every further add
+          // draws from the director's capacity bank (contract 5.3). An add the
+          // population refuses returns its allowance.
+          const adds = insertBossAdds(bossSlots, {
+            bossId: 'liquidator', event, tick, population: enemyPopulation, alive: bossAddsAlive,
+            directorInserted: encounterDirector.insertedCount,
+            place: (candidate) => {
+              const ground = queryGround(candidate.x, candidate.y);
+              return ground.kind === 'deep-water' || spawnPointBlocked(candidate) ? null : ground.groundZ;
+            },
+          });
+          if (adds.inserted.length) syncEnemyMarkers(grayboxEnemies);
           continue;
         }
         if (event.type !== 'attack') continue;
