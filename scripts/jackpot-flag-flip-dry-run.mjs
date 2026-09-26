@@ -21,7 +21,8 @@
 //      with the pending comment or a missing section marker), the curated inventory regenerated; then the
 //      whole suite again. The failures the flip causes (failing now, passing at E4) are the pinned tests the
 //      E10 commit updates; the generated pages' changed lines are the literals it changes;
-//   3. EVERY pinned assertion of each such test: a test stops at its first failing assertion, so each one is
+//   3. EVERY pinned assertion of each such test (confirmed by running its file alone; one that then passes
+//      was a load flake and is set aside under `flakes`): a test stops at its first failing assertion, so each one is
 //      re-run with the failing assertion neutralised (in the throwaway copy only) until it passes, and every
 //      assertion line it stopped at is listed. The suites run with a preload (CHEAP_ASSERT_SOURCE) that gives
 //      a failing equality assertion on an object with no message of its own a short message instead of
@@ -470,8 +471,17 @@ export async function runFlagFlipDryRun({ argv = process.argv.slice(2), log = co
     const flipSuite = runSuite(wt, reporter, files);
     const caused = causedFailures(e4Suite.failures, flipSuite.failures);
     const fixedByFlip = causedFailures(flipSuite.failures, e4Suite.failures);
-    const topLevel = caused.filter((failure) => (failure.nesting ?? 0) === 0);
-    log(`3. every pinned assertion of the ${topLevel.length} test(s) the flip breaks (each re-run with the failing assertion neutralised)`);
+    // A failure the flip caused must fail again when its file runs alone after the flip: one that passes
+    // was a load flake of the whole-suite run (the machine may run other gates), never a test to update.
+    const rerunByFile = new Map();
+    const failsAlone = (failure) => {
+      if (!rerunByFile.has(failure.file)) rerunByFile.set(failure.file, runSuite(wt, reporter, [failure.file]));
+      return rerunByFile.get(failure.file).failures.some((entry) => keyOf(entry) === keyOf(failure));
+    };
+    const causedTop = caused.filter((failure) => (failure.nesting ?? 0) === 0);
+    const topLevel = causedTop.filter(failsAlone);
+    const flakes = causedTop.filter((failure) => !topLevel.includes(failure));
+    log(`3. every pinned assertion of the ${topLevel.length} test(s) the flip breaks (each re-run with the failing assertion neutralised)${flakes.length ? `; ${flakes.length} flake(s) set aside` : ''}`);
     const pinned = topLevel.map((failure) => pinnedAssertions(wt, reporter, failure));
     report.flip = {
       edits,
@@ -486,7 +496,8 @@ export async function runFlagFlipDryRun({ argv = process.argv.slice(2), log = co
         file: failure.file, name: failure.name, line: failure.line, source: failure.source, message: failure.message, expected: failure.expected, actual: failure.actual,
         assertions: pinned[index].assertions, complete: pinned[index].complete, ...(pinned[index].stoppedBecause ? { stoppedBecause: pinned[index].stoppedBecause } : {}),
       })),
-      subtestFailures: caused.length - topLevel.length,
+      subtestFailures: caused.length - causedTop.length,
+      flakes: flakes.map((failure) => ({ file: failure.file, name: failure.name, message: failure.message, note: 'failed in the whole-suite run after the flip, passed when its file ran alone: not a test to update' })),
       passingOnlyAfterFlip: fixedByFlip.filter((failure) => (failure.nesting ?? 0) === 0).map((failure) => ({ file: failure.file, name: failure.name })),
     };
     report.checklist = {
