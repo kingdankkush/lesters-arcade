@@ -1,0 +1,76 @@
+{
+ "farmland": {
+  "noon": [
+   {
+    "prop": "oak",
+    "contrast": 1.9
+   },
+   {
+    "prop": "rock",
+    "contrast": 1.37
+   },
+   {
+    "prop": "crate",
+    "contrast": 1.32
+   },
+   {
+    "prop": "hawk",
+    "contrast": 2.64
+   }
+  ],
+  "golden": [
+   {
+    "prop": "oak",
+    "contrast": 1.47
+   },
+   {
+    "prop": "rock",
+    "contrast": 1.45
+   },
+   {
+    "prop": "crate",
+    "contrast": 1.38
+   },
+   {
+    "prop": "hawk",
+    "contrast": 1.74
+   }
+  ],
+  "night": [
+   {
+    "prop": "oak",
+    "contrast": 1.44
+   },
+   {
+    "prop": "rock",
+    "contrast": 2.51
+   },
+   {
+    "prop": "crate",
+    "contrast": 2.39
+   },
+   {
+    "prop": "hawk",
+    "contrast": 2.1
+   }
+  ],
+  "dawn": [
+   {
+    "prop": "oak",
+    "contrast": 1.79
+   },
+   {
+    "prop": "rock",
+    "contrast": 1.26
+   },
+   {
+    "prop": "crate",
+    "contrast": 1.2
+   },
+   {
+    "prop": "hawk",
+    "contrast": 1.36
+   }
+  ]
+ }
+}
