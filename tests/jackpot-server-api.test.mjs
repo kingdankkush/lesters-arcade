@@ -79,7 +79,8 @@ test('jackpot API shape, cache header and allowlist', async () => {
   assert.ok(Number.isSafeInteger(body.indexedBlock) && body.indexedBlock > 0);
   assert.deepEqual(Object.keys(body.current), ['weekKey', 'weekIndex', 'status', 'startsAt', 'closesAt', 'settleCutoffAt', 'candidateUntil', 'payoutAt', 'rules', 'pot', 'leader']);
   assert.deepEqual([body.current.weekKey, body.current.weekIndex, body.current.status], [weekKeyOfIndex(W + 1), W + 1, 'open']);
-  assert.deepEqual(body.current.rules, { minPaidWei: '100000000000000000', maxSurvivalSeconds: 3599, minFundWei: (100n * TOKEN).toString(), adminClearOnly: false });
+  // minPaidWei is the flat fee of the local record (0.01 zkLTC since 2026-09-26; scripts/lib/local-jackpot.mjs launchRules).
+  assert.deepEqual(body.current.rules, { minPaidWei: '10000000000000000', maxSurvivalSeconds: 3599, minFundWei: (100n * TOKEN).toString(), adminClearOnly: false });
   assert.deepEqual(Object.keys(body.current.pot), ['fundedWei', 'carriedInWei', 'totalWei', 'prizeCapWei', 'prizeWei', 'carryOverWei', 'funded']);
   assert.deepEqual(body.current.pot, { fundedWei: '0', carriedInWei: '0', totalWei: '0', prizeCapWei: null, prizeWei: '0', carryOverWei: '0', funded: false });
   assert.equal(body.current.leader, null);
