@@ -10,7 +10,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
-import { Container, Rectangle, Sprite, Texture, TextureSource, getResolutionOfUrl } from 'pixi.js';
+import { Container, Rectangle, Sprite, Texture, TextureSource, TilingSprite, getResolutionOfUrl } from 'pixi.js';
 import { readImageDimensions } from '../scripts/lib/hmh-perf-analysis.mjs';
 import {
   RUNTIME_PERFORMANCE_PROFILES,
@@ -19,13 +19,15 @@ import {
   selectRuntimePerformanceProfile,
 } from '../apps/hmh-reboot/src/runtime-performance.mjs';
 import { PRODUCTION_HERO_ASSETS } from '../apps/hmh-reboot/src/production-hero-assets.mjs';
-import { heldWeaponMetadataUrl } from '../apps/hmh-reboot/src/held-weapon-atlas.mjs';
+import { createProductionHeroAtlasIndex, createProductionHeroDisplay } from '../apps/hmh-reboot/src/production-hero-atlas.mjs';
+import { createHeroMotionIndex } from '../apps/hmh-reboot/src/hero-motion-atlas.mjs';
+import { HELD_WEAPON_IDS, createHeldWeaponIndex, heldWeaponMetadataUrl } from '../apps/hmh-reboot/src/held-weapon-atlas.mjs';
 import { ENEMY_ROSTER_ACTORS, createEnemyRosterAtlasIndex, createEnemyRosterDisplay, enemyRosterAsset } from '../apps/hmh-reboot/src/enemy-roster-atlas.mjs';
 import { AUTHORED_PROP_ATLAS_IMAGE_URL } from '../apps/hmh-reboot/src/authored-prop-layout.mjs';
 import { TRIPO_PROP_METADATA_URL, createTripoPropAppearance } from '../apps/hmh-reboot/src/tripo-prop-appearance.mjs';
 import { createAuthoredPropAtlasIndex } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import {
-  TERRAIN_MATERIAL_IDS, TERRAIN_OVERLAY_IDS, terrainFringeAsset, terrainOverlayAsset, terrainTileAsset,
+  TERRAIN_MATERIAL_IDS, TERRAIN_OVERLAY_IDS, createTerrainTileRegistry, terrainFringeAsset, terrainManifestUrl, terrainOverlayAsset, terrainTileAsset,
 } from '../apps/hmh-reboot/src/terrain-tile-atlas.mjs';
 
 const PORTAL = new URL('../apps/portal/', import.meta.url);
@@ -205,4 +207,111 @@ test('the child loads every scalable page through the profile texture loader', (
   // still load straight through Pixi.
   const direct = [...main.matchAll(/\bAssets\.load\(([^)]*)\)/gu)].map((match) => match[1]);
   assert.deepEqual(direct, ['MANNEQUIN_ATLAS_IMAGE_URL', 'url', 'url']);
+});
+
+// A TextureSource of the page's logical size at the given resolution: what
+// Pixi builds for `<page>.webp` (1) and for `<page>@0.5x.webp` (0.5).
+const sourceFor = (url, resolution) => {
+  const size = readImageDimensions(readFileSync(fileFor(url)));
+  return new TextureSource({ width: size.width, height: size.height, resolution });
+};
+const spriteGeometry = (sprite) => [
+  sprite.width, sprite.height, sprite.anchor.x, sprite.anchor.y, sprite.scale.x, sprite.scale.y,
+  sprite.texture.frame.x, sprite.texture.frame.y, sprite.texture.frame.width, sprite.texture.frame.height,
+  sprite.texture.uvs.x0, sprite.texture.uvs.y0, sprite.texture.uvs.x2, sprite.texture.uvs.y2,
+];
+
+test('a hero built from half pilot, motion and held-weapon pages validates and draws every layer at the full page geometry', () => {
+  for (const hero of Object.values(PRODUCTION_HERO_ASSETS)) {
+    const pilotMetadata = readJson(fileFor(hero.metadataUrl));
+    const motionMetadata = readJson(fileFor(`/assets/generated/hmh-hero-motion/${hero.actorId}/${hero.actorId}-motion.json`));
+    const heldMetadata = readJson(fileFor(heldWeaponMetadataUrl(hero.actorId)));
+    const build = (resolution) => {
+      const index = createProductionHeroAtlasIndex(pilotMetadata, hero);
+      const display = createProductionHeroDisplay({
+        index, atlasTexture: new Texture({ source: sourceFor(hero.imageUrl, resolution) }),
+        ContainerClass: Container, SpriteClass: Sprite, TextureClass: Texture, RectangleClass: Rectangle,
+      });
+      // The same validators main.mjs runs after Assets.load: logical sizes.
+      const motionIndex = createHeroMotionIndex(index, motionMetadata);
+      display.attachMotionPage({ index: motionIndex, motionTexture: new Texture({ source: sourceFor(`/assets/generated/hmh-hero-motion/${hero.actorId}/${hero.actorId}-motion.webp`, resolution) }) });
+      const heldIndex = createHeldWeaponIndex(heldMetadata, { actorId: hero.actorId });
+      for (const weaponId of HELD_WEAPON_IDS) {
+        const page = heldIndex.pageFor(weaponId);
+        display.attachHeldWeaponPage({ weaponId, index: heldIndex, textures: page.pages.map((image) => new Texture({ source: sourceFor(`/assets/generated/hmh-held-weapons/${hero.actorId}/${image.image.replace(/^\.\//u, '')}`, resolution) })) });
+      }
+      return display;
+    };
+    const full = build(1);
+    const half = build(0.5);
+    assert.equal(half.container.motionStatus, 'ready');
+    const layer = (display, name) => display.container.children.find((child) => child.label === `production-hero-${name}`);
+    let poses = 0;
+    for (const weaponId of ['coin-blaster', ...HELD_WEAPON_IDS]) {
+      for (const action of ['aim', 'pistol-fire', 'melee']) {
+        for (let direction = 0; direction < 8; direction += 1) {
+          for (const [simulationTick, actionTick, reloadProgress] of [[0, 0, undefined], [23, 5, undefined], [40, 0, 0.5]]) {
+            const state = { weaponId, simulationTick, actionTick, locomotion: direction % 2 ? 'run' : 'idle', legDirection: direction, torsoDirection: (direction + 3) % 8, action, ...(reloadProgress === undefined ? {} : { reloadProgress }) };
+            const shownFull = full.applyPose(state);
+            const shownHalf = half.applyPose(state);
+            assert.deepEqual(shownHalf.map((frame) => frame.id), shownFull.map((frame) => frame.id));
+            assert.equal(half.container.frameIds, full.container.frameIds);
+            assert.deepEqual(half.container.heldWeaponMuzzle, full.container.heldWeaponMuzzle);
+            for (const name of full.layerOrder) {
+              const [a, b] = [layer(full, name), layer(half, name)];
+              assert.deepEqual(spriteGeometry(b), spriteGeometry(a), `${hero.actorId} ${name} ${JSON.stringify(state)}`);
+              // The half page really is half: same logical size, half the texels.
+              assert.equal(b.texture.source.width, a.texture.source.width);
+              assert.equal(b.texture.source.pixelWidth * 2, a.texture.source.pixelWidth);
+            }
+            poses += 1;
+          }
+        }
+      }
+    }
+    assert.equal(poses, 8 * 3 * 8 * 3);
+  }
+});
+
+test('terrain tiles, fringes and overlays from half pages tile with the same texture matrix, repeat modes and manifest tile size', () => {
+  const manifest = readJson(fileFor(terrainManifestUrl()));
+  const build = (resolution) => {
+    const registry = createTerrainTileRegistry({ TilingSpriteClass: TilingSprite });
+    registry.setManifest(manifest);
+    for (const id of TERRAIN_MATERIAL_IDS) {
+      registry.register(id, new Texture({ source: sourceFor(terrainTileAsset(id).imageUrl, resolution) }));
+      registry.registerFringe(id, new Texture({ source: sourceFor(terrainFringeAsset(id).imageUrl, resolution) }));
+    }
+    for (const id of TERRAIN_OVERLAY_IDS) registry.registerOverlay(id, new Texture({ source: sourceFor(terrainOverlayAsset(id).imageUrl, resolution) }));
+    return registry;
+  };
+  const full = build(1);
+  const half = build(0.5);
+  assert.deepEqual([half.tileSize, half.fringeHeight, half.overlayHeight], [full.tileSize, full.fringeHeight, full.overlayHeight]);
+  assert.equal(half.tileSize, 512, 'the world scale formula reads the manifest, never the decoded page');
+  const matrix = (texture) => {
+    const tm = texture.textureMatrix;
+    tm.update();
+    const { a, b, c, d, tx, ty } = tm.mapCoord;
+    const texels = texture.source.pixelWidth;
+    // The clamp frame is inset half a texel from each edge whatever the
+    // resolution (Pixi divides its 0.5 px margin by the resolution), so compare
+    // the four insets in texels rather than the raw coordinates.
+    const [x0, y0, x1, y1] = tm.uClampFrame;
+    return { map: [a, b, c, d, tx, ty], clampInsetTexels: [x0 * texels, y0 * texels, texels - x1 * texels, texels - y1 * texels], isSimple: tm.isSimple,
+      address: [texture.source.style.addressModeU, texture.source.style.addressModeV], mipmaps: texture.source.autoGenerateMipmaps };
+  };
+  for (const id of TERRAIN_MATERIAL_IDS) {
+    const [a, b] = [full.createSprite(id, { width: 300, height: 200 }), half.createSprite(id, { width: 300, height: 200 })];
+    assert.ok(b instanceof TilingSprite);
+    assert.deepEqual([b.width, b.height, b.tileScale.x, b.tileScale.y], [a.width, a.height, a.tileScale.x, a.tileScale.y]);
+    assert.deepEqual(matrix(b.texture), matrix(a.texture), id);
+    assert.equal(matrix(b.texture).isSimple, true, 'a whole-page tile keeps the simple (batchable) tiling path');
+    assert.deepEqual(matrix(b.texture).clampInsetTexels, [0.5, 0.5, 0.5, 0.5]);
+    assert.deepEqual(matrix(b.texture).address, ['repeat', 'repeat']);
+    assert.equal(b.texture.source.isPowerOfTwo, true, 'a 256 half tile still wraps as a power-of-two texture');
+    assert.deepEqual(matrix(half.fringeTextureFor(id)), matrix(full.fringeTextureFor(id)), `${id} fringe`);
+    assert.deepEqual(matrix(half.fringeTextureFor(id)).address, ['repeat', 'clamp-to-edge']);
+  }
+  for (const id of TERRAIN_OVERLAY_IDS) assert.deepEqual(matrix(half.overlayTextureFor(id)), matrix(full.overlayTextureFor(id)), `${id} overlay`);
 });
