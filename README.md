@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.4: fairer HMH Ranked, two HMH freezes fixed, faster crowds, simpler STACKED effects, jackpot UI staged
+# Lester's Arcade — 1.8.4 verified live: fairer HMH Ranked, two HMH freezes fixed, faster crowds, simpler STACKED effects, jackpot UI staged
 
 Batch release after 1.8.3. Hard Money Heroes Ranked verification refuses twelve impossible run-summary combinations (grenade kills, detonations and throws beyond what the run could produce, pickups beyond what the sites, vault and events offered, activity in zero-length runs), which closes the 1.8.x path that let a fabricated summary earn five achievements in one paid run; 68 real runs of the 1.8.3 game all still pass. Ranked HMH now ignores the `?evidenceSafe` test switch, so every Ranked run starts at its seeded level entry. Two HMH freezes are fixed (a Burner or Lightning Ledger hit on the not-yet-active Liquidator, and an ammo refill while the Ledger channels). HMH crowds render faster (pooled enemy displays and a ground drawn once instead of every frame; same-seed results unchanged). STACKED's settings become one effects preset (Reduced, Standard, Full) with an automatic scene deck. The Chikun Weekly Jackpot's pages and owner review page are in, hidden behind `JACKPOT_LIVE` (false): nothing player-facing changes for the jackpot yet. Contracts, fees and flags of the live Ranked system are unchanged.
 
-Site/game version `1.8.4`; cache marker `lesters-arcade-v57-fair-play`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_61u26aJuaoPMoEGthLcqp7MTUh6N` (source `4f947386`); site/game version `1.8.4`; cache marker `lesters-arcade-v57-fair-play`. The local and Vercel gates pass 5,168 of 5,219 tests with exactly 51 unchanged retired exceptions; all 160 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260926-1.8.4.json). Rollback: Instant Rollback to `dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK` (1.8.3). Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.8.3 verified live: game version on every score, 237 MB lighter, jackpot server staged
 

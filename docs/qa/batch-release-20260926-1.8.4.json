@@ -1,0 +1,35 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-26",
+  "release": "1.8.4 fair play",
+  "siteVersion": "1.8.4",
+  "cacheMarker": "lesters-arcade-v57-fair-play",
+  "branch": "fable/master-list-20260916",
+  "source": "4f947386",
+  "production": {
+    "deployment": "dpl_61u26aJuaoPMoEGthLcqp7MTUh6N",
+    "immutableUrl": "https://lesters-arcade-4rf395fkr-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-9njp213an-justin-agent-projects.vercel.app (dpl_F9KP7caqmrCb5RiHfvSKfQta17aD)",
+    "previous": "dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK (1.8.3)",
+    "rollback": "Instant Rollback to dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK (1.8.3 accepts the same cabinet build hashes). Rolling back further than 1.8.3 needs Ranked paused first."
+  },
+  "contains": [
+    "HMH verifier v7 (0991befe, branch 76111b25): twelve v6 consistency rejects close the live fake-achievement path (grenade kills vs weapon kills and contacts, detonations vs launches, throws vs supply, pickups vs site/vault/event capacity, zero-length activity, equipped ticks); Ranked HMH ignores ?evidenceSafe (it skipped the seeded level entry); v7 schema and contract ship closed (hmh.mjs requires schema 6). Round-2 adversarial review + 68 real headless runs of the unmodified 1.8.3 child all pass (no new rule fired).",
+    "HMH crash hotfix (847dedcd): the dormant Liquidator no longer joins lightningTargets before its start tick; a refill during a Lightning Ledger channel tops up cells instead of throwing. Both froze the ticker in 1.8.3.",
+    "HMH perf steps 1-2 (6f28c354): pooled enemy/corpse displays, static ground baked once; same-seed digest unchanged, visual:reboot 12/12 unchanged.",
+    "STACKED settings simplification (14ffff8f): one effects preset with the automatic scene deck, reactive-board toggle, additive host validator keys.",
+    "Chikun Weekly Jackpot UI (b7c8307a), hidden behind JACKPOT_LIVE false: no surface requests /api/jackpot; rules page (noindex, legal draft behind LEGAL-REVIEW-PENDING) and owner review/funding page staged."
+  ],
+  "gates": {
+    "local": "PASS 5219 tests, 5168 passed, exactly 51 ledgered failures (first run lost two whole test files to machine contention; both passed alone and the clean rerun passed)",
+    "vercel": "candidate build READY with the same gate",
+    "budgets": "HMH initial + shared 1,047,615 B of 1,048,576; STACKED initial 574,802 B of 607,000"
+  },
+  "verification": {
+    "publicFiles": "160/160 match the certified build",
+    "apiProbes": "attest 410, session nonce 200, leaderboard 200, profile 200, settle GET 405, health 200, jackpot 200 {live:false}, weekly-jackpot cron without secret 401, unknown share 404, profile deep link 200",
+    "health": "healthy, version 1.8.4, degradedParts []; index-chain 326 runs 0 failures; settle-retry 1626 runs 0 failures; weeklyJackpot 99 runs 0 failures (no-op)"
+  },
+  "contractsUnchanged": "Ranked contracts, fees (85/15) and flags unchanged; no jackpot contract deployed"
+}
