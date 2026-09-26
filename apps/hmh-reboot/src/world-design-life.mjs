@@ -3,7 +3,8 @@ import { worldDesignHazardPhase } from './world-design-interactions.mjs';
 import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
 import { buildCoverBreakPresentation } from './cover-break-presentation.mjs';
 import { missionPresentation } from './mission-objectives.mjs';
-import { selectMissionTrack } from './mission-guidance.mjs';
+import { selectMissionTrack, missionClaimableStations } from './mission-guidance.mjs';
+import { OBJECTIVE_REWARDS, objectiveRewardState } from './objective-rewards.mjs';
 import { MISSION_PALETTE } from './mission-palette.mjs';
 
 // Package §3.3 performance caps: rings and beams on screen.
@@ -105,6 +106,27 @@ export function missionChevron({ target, view, band }) {
   const dy = target.y - cy;
   const scale = Math.min(dx ? Math.abs((view.width / 2 - 36) / dx) : Infinity, dy ? Math.abs(((band.bottom - band.top) / 2 - 16) / dy) : Infinity);
   return { x: cx + dx * scale, y: cy + dy * scale, angle: Math.atan2(dy, dx) };
+}
+
+// Priority-4 stations (package §3.3) from the canonical collectible state:
+// a reward whose machine is done, that is available at this tick, and that
+// the hero could take now. canCollect is the collection step's own capacity
+// check, given the same (effect, placement) pair stepCollectibles gives it.
+// Read only; the per-run entry index is cached on the frozen entries list.
+const collectibleIndex = new WeakMap();
+export function missionGuidanceStations(mission, { collectibles = null, canCollect = null } = {}, tick) {
+  if (!collectibles) return [];
+  let entries = collectibleIndex.get(collectibles.entries);
+  if (!entries) collectibleIndex.set(collectibles.entries, entries = new Map(collectibles.entries.map((entry) => [entry.placement.id, entry])));
+  return missionClaimableStations({
+    mission,
+    rewards: OBJECTIVE_REWARDS,
+    rewardState: (id) => objectiveRewardState(collectibles, id, { tick }).state,
+    canClaim: (reward) => {
+      const entry = entries.get(reward.id);
+      return Boolean(entry) && (!canCollect || canCollect(entry.effect, entry.placement));
+    },
+  });
 }
 
 export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) {
@@ -219,7 +241,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
     // The tracker pill: one line, hidden while a boss bar shows; compact
     // landscape keeps only the glyph, the distance and the arrow. A chevron
     // on the edge of the safe band points at the tracked node off screen.
-    const track=guidance?selectMissionTrack(mission,{player:actor,districtId:guidance.districtId,stations:guidance.stations??[],previous:lastTrack,bossBarVisible:guidance.bossBarVisible}):null;
+    const track=guidance?selectMissionTrack(mission,{player:actor,districtId:guidance.districtId,stations:missionGuidanceStations(mission,guidance,tick),previous:lastTrack,bossBarVisible:guidance.bossBarVisible}):null;
     lastTrack=track;
     if(track) {
       const band=missionSafeBand(view),compact=view.height<=520;
