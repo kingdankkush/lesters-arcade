@@ -57,12 +57,17 @@ import {
   dealHmhPrisoners,
 } from '../../../sdk/hmh-run-contract-v7.mjs';
 import {
+  RUN_UPGRADE_CATALOG,
   comboMilestoneXp,
   createRunProgression,
   getRunProgressionSnapshot,
   grantRunSilver,
   grantRunXp,
+  openRunUpgradeOffer,
   recordRunDefeat,
+  rerollRunUpgradeSlot,
+  runProgressionRow,
+  runUpgradeRows,
   selectRunUpgrade,
   unlockRunProgressionWeapon,
 } from '../../../apps/hmh-reboot/src/run-progression.mjs';
@@ -191,6 +196,41 @@ export const HMH_PLANS = Object.freeze({
   }),
 });
 
+// The schema-6 fixtures stand for 1.8.x runs, so they keep the 1.8.1 level-up
+// offer, frozen here like the v6 verifier's literals: two cards, the lowest
+// FNV hashChoice of `<level>:<pendingLevels>:<selectionSequence>:<id>` over the
+// eligible v6 cards, and a pick that only spends the pending level. The child's
+// progression release (a new salt, card 2, re-rolls, twelve more cards) is
+// schema 7's; buildHmhV7Evidence plays it through the child's own offer API.
+function hashChoice181(seed, value) {
+  let hash = (seed ^ 0x811c9dc5) >>> 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash;
+}
+
+function offer181(progression) {
+  if (progression.pendingLevels <= 0) return [];
+  const salt = `${progression.level}:${progression.pendingLevels}:${progression.selectionSequence}`;
+  return HMH_RUN_SUMMARY_CATALOGS_V6.upgrades
+    .map((id) => RUN_UPGRADE_CATALOG[id])
+    .filter((upgrade) => (progression.ranks[upgrade.id] ?? 0) < upgrade.maxRank
+      && (!upgrade.requiresWeaponId || progression.ownedWeaponIds.has(upgrade.requiresWeaponId))
+      && Object.entries(upgrade.requiresRanks ?? {}).every(([id, rank]) => (progression.ranks[id] ?? 0) >= rank))
+    .map((upgrade) => ({ upgrade, order: hashChoice181(progression.seed, `${salt}:${upgrade.id}`) }))
+    .sort((a, b) => a.order - b.order || (a.upgrade.id < b.upgrade.id ? -1 : a.upgrade.id > b.upgrade.id ? 1 : 0))
+    .slice(0, 2)
+    .map(({ upgrade }) => upgrade);
+}
+
+function select181(progression, upgradeId) {
+  progression.ranks[upgradeId] += 1;
+  progression.pendingLevels -= 1;
+  progression.selectionSequence += 1;
+}
+
 function chooseUpgrade(choices, ranksTaken, { upgradeCaps = {}, preferMultipliers = false }) {
   const allowed = choices.filter((choice) => !(choice.id in upgradeCaps) || (ranksTaken[choice.id] ?? 0) < upgradeCaps[choice.id]);
   const multiplier = allowed.find((choice) => choice.id === 'validator-training' || choice.id === 'block-reward');
@@ -225,12 +265,11 @@ export async function buildHmhEvidence({ seed, buildHash, identity, plan = 'vali
 
   const settleLevels = (tick) => {
     for (let guard = 0; guard < 1000; guard += 1) {
-      const snapshot = getRunProgressionSnapshot(progression);
-      if (snapshot.pendingLevels <= 0 || snapshot.pendingChoices.length === 0) return;
-      const offered = snapshot.pendingChoices.map((choice) => choice.id);
-      recordRunUpgradeOffer(accumulator, offered);
-      const pick = chooseUpgrade(snapshot.pendingChoices, ranksTaken, spec);
-      selectRunUpgrade(progression, pick);
+      const choices = offer181(progression);
+      if (choices.length === 0) return;
+      recordRunUpgradeOffer(accumulator, choices.map((choice) => choice.id));
+      const pick = chooseUpgrade(choices, ranksTaken, spec);
+      select181(progression, pick);
       recordRunUpgradeSelection(accumulator, pick);
       ranksTaken[pick] = (ranksTaken[pick] ?? 0) + 1;
       recordSessionEvent(sessionEvidence, { step: tick, type: 'upgrade-selected', payload: { upgradeId: pick } });
@@ -331,11 +370,6 @@ export async function buildHmhEvidence({ seed, buildHash, identity, plan = 'vali
 
 const C6 = HMH_RUN_SUMMARY_CATALOGS_V6;
 const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
-// The v7 gun-branch cards a re-roll of card 2 can show, per owned gun.
-const V7_GUN_BRANCH_CARDS = Object.freeze(Object.fromEntries(['scatter-shotgun', 'auto-miner', 'hash-rail', 'launcher-rig'].map((weaponId) => [
-  weaponId,
-  Object.freeze(C7.upgrades.filter((id) => !C6.upgrades.includes(id) && HMH_V7_UPGRADES[id].requiresWeaponId === weaponId)),
-])));
 const PISTOL_MASTERY = HMH_V7_EVOLUTIONS['settler-rail'].mastery;
 const NO_SILVER_ROLES = Object.freeze(['hodl-revenant']);
 const legs = (...entries) => Object.freeze(entries.map(([fromTick, districtId]) => Object.freeze({ fromTick, districtId })));
@@ -372,11 +406,12 @@ export const HMH_V7_PLANS = Object.freeze({
   // 18 minutes: every objective, all eight prisoners, all four bosses defeated
   // (the Baron initiated at exactly its ready tick, the Liquidator through the
   // Dark Pool), the Pistol mastered (Damage, Movement Speed and Score at rank
-  // 3) and evolved with the Liquidator's Seal, three Seals banked, and the
-  // Golden Parachute used once before the final defeat. Block Reward is offered
-  // only three times at this seed, so mastery takes it early: with the score
-  // multiplier at 1.75 for most of the run the score sits near its ceiling,
-  // which flags (never rejects), as in hmh-level-90.
+  // 3) and evolved with the first Seal found after that (the Foreman's, since
+  // the progression release's re-rolls reach mastery early), three Seals
+  // banked, and the Golden Parachute used once before the final defeat.
+  // Mastery takes Block Reward early: with the score multiplier at 1.75 for
+  // most of the run the score sits near its ceiling, which flags (never
+  // rejects), as in hmh-level-90.
   'four-bosses': Object.freeze({
     heroId: 'lit-commando', endTick: 64_800, firstKillTick: 900, killEvery: (tick) => 2 * getEncounterBand(tick).spawnIntervalTicks,
     roles: ['forkrunner', 'rug-puller', 'liquidator-agent', 'tollkeeper', 'gas-bomber', 'pump-and-dump-bloater', 'validator-cultist', 'money-printer', 'whale-enforcer', 'hodl-revenant', 'bagholder-rusher', 'oracle-marksman'],
@@ -384,6 +419,9 @@ export const HMH_V7_PLANS = Object.freeze({
     caches: [{ tick: 10_200, effectId: 'hash-rail-core' }, { tick: 25_200, effectId: 'bear-market-burner-cache' }, { tick: 40_200, effectId: 'forked-standard-cache' }],
     upgradeCaps: () => ({ 'validator-training': 0 }),
     prefer: () => ['block-reward', 'proof-of-work', 'hot-wallet'],
+    // The player keeps the guns dry, so card 2 is a second general draw and
+    // both re-rolls can find the Pistol's cards.
+    armed: () => [],
     rerollEvery: 4,
     route: legs([0, 'frontier-relay'], [5_400, 'rugpull-ravine'], [10_800, 'liquidity-crossing'], [19_800, 'hashwood'], [26_400, 'mining-camp'], [33_000, 'liquidation-yard']),
     nodes: nodes(
@@ -432,7 +470,8 @@ function extendRunSummaryToV7(summary6, v7) {
     if (weaponId === 'satoshi-frag' || weaponId === 'launcher-rig') summary.grenades.kills += count;
   }
   summary.collectibles.push({ effectId: 'genesis-seal', collected: v7.progression.sealsFound, activeTicks: 0 });
-  summary.upgrades.push(...C7.upgrades.slice(C6.upgrades.length).map((upgradeId) => ({ upgradeId, offered: v7.offered[upgradeId] ?? 0, selected: 0 })));
+  // Run progression counts every card shown (re-rolls included) and picked.
+  summary.upgrades = v7.upgrades.map((row) => ({ ...row }));
   for (const [rows, ids, idKey, flag] of [[summary.milestones.sites, C7.worldSites, 'siteId', 'operated'], [summary.milestones.secrets, C7.secrets, 'secretId', 'found']]) {
     for (const row of rows) {
       const objective = v7.objectives[row[idKey]];
@@ -462,7 +501,6 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
   const v7 = {
     roleKills: {},
     weaponKills: {},
-    offered: {},
     objectives: zeroRows(C7.objectives, ['completed', 'tick', 'levelAtCompletion']),
     prisoners: zeroRows(C7.prisonerSlots, ['rescued', 'tick', 'levelAtRescue']),
     bosses: zeroRows(C7.bosses, ['initiations', 'firstInitiatedTick', 'lastInitiatedTick', 'defeatedTick']),
@@ -482,23 +520,25 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
   let position = { x: 1200, y: 2400 };
   const endTick = spec.endTick;
 
+  // The child's offer (package 8.3): card 2 from the owned guns (every gun is
+  // armed in the plan), one re-roll per card. A plan that prefers cards
+  // re-rolls a card it would not take while nothing it prefers is shown, and
+  // every rerollEvery-th offer re-rolls the card not taken.
   const settleLevels = (tick) => {
     for (let guard = 0; guard < 1000; guard += 1) {
-      const snapshot = getRunProgressionSnapshot(progression);
-      if (snapshot.pendingLevels <= 0 || snapshot.pendingChoices.length === 0) return;
-      recordRunUpgradeOffer(accumulator, snapshot.pendingChoices.map((choice) => choice.id));
-      v7.progression.offersOpened += 1;
-      const pick = chooseV7Upgrade(snapshot.pendingChoices, ranksTaken, spec, tick);
-      if (spec.rerollEvery && v7.progression.offersOpened % spec.rerollEvery === 0) {
-        // The card not taken is re-rolled: card 2 cycles the owned guns' v7
-        // branch cards, or the strip reads "No other upgrades".
-        const cards = Object.entries(V7_GUN_BRANCH_CARDS).filter(([weaponId]) => progression.ownedWeaponIds.has(weaponId)).flatMap(([, ids]) => ids);
-        const card = cards.length ? cards[v7.progression.rerolls % cards.length] : null;
-        v7.progression.rerolls += 1;
-        if (card) v7.offered[card] = (v7.offered[card] ?? 0) + 1;
+      if (!openRunUpgradeOffer(progression, { armedWeaponIds: spec.armed?.(tick) ?? [...progression.ownedWeaponIds] })) return;
+      const shown = () => getRunProgressionSnapshot(progression).pendingChoices;
+      const wanting = spec.prefer(tick).filter((id) => (progression.ranks[id] ?? 0) < HMH_V7_UPGRADES[id].maxRank);
+      for (const slot of wanting.length ? [1, 0] : []) {
+        if (shown().some((choice) => wanting.includes(choice.id))) break;
+        if (shown().some((choice) => choice.slot === slot)) rerollRunUpgradeSlot(progression, slot);
+      }
+      const pick = chooseV7Upgrade(shown(), ranksTaken, spec, tick);
+      if (spec.rerollEvery && progression.offersOpened % spec.rerollEvery === 0) {
+        const other = shown().find((choice) => choice.id !== pick);
+        if (other) rerollRunUpgradeSlot(progression, other.slot);
       }
       selectRunUpgrade(progression, pick);
-      recordRunUpgradeSelection(accumulator, pick);
       ranksTaken[pick] = (ranksTaken[pick] ?? 0) + 1;
       recordSessionEvent(sessionEvidence, { step: tick, type: 'upgrade-selected', payload: { upgradeId: pick } });
     }
@@ -613,6 +653,8 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
   if (nodeQueue.length || cacheQueue.length) throw new Error('every planned node and cache must land inside the run');
   recordRunDamage(accumulator, { targetId: 'player', sourceId: 'enemy-final', weaponId: `enemy-${spec.roles[0]}`, damageApplied: 25, killed: true, equippedWeaponId: activeWeaponId, tick: endTick });
   const snapshot = getRunProgressionSnapshot(progression);
+  v7.upgrades = runUpgradeRows(progression);
+  Object.assign(v7.progression, { offersOpened: runProgressionRow(progression).offersOpened, rerolls: runProgressionRow(progression).rerolls });
   const summary6 = plain(finalizeRunSummary(accumulator, {
     endTick,
     elapsedMs: endTick * FIXED_STEP_MS,

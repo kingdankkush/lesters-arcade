@@ -177,48 +177,48 @@
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "range": "close",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 212,
-      "triggerAccuracy": 0.8123,
-      "damageApplied": 2561,
-      "sustainedDps": 85.37,
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 274,
+      "triggerAccuracy": 0.6732,
+      "damageApplied": 3671,
+      "sustainedDps": 122.37,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 0.1,
-      "reloadDowntimeSeconds": 3.65,
-      "emptySeconds": 16.85,
+      "reloadDowntimeSeconds": 7.3,
+      "emptySeconds": 6.15,
       "reserveRemaining": 0
     },
     {
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "range": "mid",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 101,
-      "triggerAccuracy": 0.387,
-      "damageApplied": 1007,
-      "sustainedDps": 33.57,
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 71,
+      "triggerAccuracy": 0.1744,
+      "damageApplied": 829,
+      "sustainedDps": 27.63,
       "timeToFirstHitSeconds": 0.1,
-      "timeToKillSeconds": 1.667,
-      "reloadDowntimeSeconds": 3.65,
-      "emptySeconds": 16.85,
+      "timeToKillSeconds": 3.667,
+      "reloadDowntimeSeconds": 7.3,
+      "emptySeconds": 6.15,
       "reserveRemaining": 0
     },
     {
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "range": "long",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 37,
-      "triggerAccuracy": 0.1418,
-      "damageApplied": 111,
-      "sustainedDps": 3.7,
-      "timeToFirstHitSeconds": 13.267,
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 15,
+      "triggerAccuracy": 0.0369,
+      "damageApplied": 45,
+      "sustainedDps": 1.5,
+      "timeToFirstHitSeconds": 23.967,
       "timeToKillSeconds": null,
-      "reloadDowntimeSeconds": 3.65,
-      "emptySeconds": 16.85,
+      "reloadDowntimeSeconds": 7.3,
+      "emptySeconds": 6.15,
       "reserveRemaining": 0
     },
     {
@@ -283,7 +283,7 @@
       "timeToKillSeconds": 1.55,
       "reloadDowntimeSeconds": 1.55,
       "emptySeconds": 0,
-      "reserveRemaining": 60
+      "reserveRemaining": 300
     },
     {
       "weaponId": "auto-miner",
@@ -299,7 +299,7 @@
       "timeToKillSeconds": 1.55,
       "reloadDowntimeSeconds": 1.55,
       "emptySeconds": 0,
-      "reserveRemaining": 60
+      "reserveRemaining": 300
     },
     {
       "weaponId": "auto-miner",
@@ -315,7 +315,7 @@
       "timeToKillSeconds": 4.467,
       "reloadDowntimeSeconds": 1.55,
       "emptySeconds": 0,
-      "reserveRemaining": 60
+      "reserveRemaining": 300
     },
     {
       "weaponId": "launcher-rig",
@@ -369,48 +369,48 @@
       "weaponId": "launcher-rig",
       "tier": "maxed",
       "range": "close",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 63,
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 62,
       "triggerAccuracy": 1,
-      "damageApplied": 1359,
-      "sustainedDps": 45.3,
+      "damageApplied": 1980,
+      "sustainedDps": 66,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 1.05,
-      "reloadDowntimeSeconds": 2.83,
-      "emptySeconds": 15.67,
+      "reloadDowntimeSeconds": 4.25,
+      "emptySeconds": 7.6,
       "reserveRemaining": 0
     },
     {
       "weaponId": "launcher-rig",
       "tier": "maxed",
       "range": "mid",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 63,
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 62,
       "triggerAccuracy": 1,
-      "damageApplied": 1359,
-      "sustainedDps": 45.3,
+      "damageApplied": 1980,
+      "sustainedDps": 66,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 1.05,
-      "reloadDowntimeSeconds": 2.83,
-      "emptySeconds": 15.67,
+      "reloadDowntimeSeconds": 4.25,
+      "emptySeconds": 7.6,
       "reserveRemaining": 0
     },
     {
       "weaponId": "launcher-rig",
       "tier": "maxed",
       "range": "long",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 63,
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 62,
       "triggerAccuracy": 1,
-      "damageApplied": 1359,
-      "sustainedDps": 45.3,
+      "damageApplied": 1980,
+      "sustainedDps": 66,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 1.05,
-      "reloadDowntimeSeconds": 2.83,
-      "emptySeconds": 15.67,
+      "reloadDowntimeSeconds": 4.25,
+      "emptySeconds": 7.6,
       "reserveRemaining": 0
     }
   ],
@@ -638,10 +638,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 203,
-      "movingHitRate": 0.7778
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 218,
+      "movingHitRate": 0.5356
     },
     {
       "weaponId": "scatter-shotgun",
@@ -650,10 +650,10 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 242,
-      "movingHitRate": 0.9272
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 288,
+      "movingHitRate": 0.7076
     },
     {
       "weaponId": "scatter-shotgun",
@@ -662,10 +662,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 108,
-      "movingHitRate": 0.4138
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 133,
+      "movingHitRate": 0.3268
     },
     {
       "weaponId": "scatter-shotgun",
@@ -674,10 +674,10 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 138,
-      "movingHitRate": 0.5287
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 127,
+      "movingHitRate": 0.312
     },
     {
       "weaponId": "scatter-shotgun",
@@ -686,10 +686,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 6,
-      "movingHitRate": 0.023
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 3,
+      "movingHitRate": 0.0074
     },
     {
       "weaponId": "scatter-shotgun",
@@ -698,10 +698,10 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 53,
-      "projectilesEmitted": 261,
-      "contacts": 37,
-      "movingHitRate": 0.1418
+      "shotsFired": 43,
+      "projectilesEmitted": 407,
+      "contacts": 15,
+      "movingHitRate": 0.0369
     },
     {
       "weaponId": "auto-miner",
@@ -926,10 +926,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 37,
-      "movingHitRate": 0.5873
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 49,
+      "movingHitRate": 0.7903
     },
     {
       "weaponId": "launcher-rig",
@@ -938,9 +938,9 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 63,
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 62,
       "movingHitRate": 1
     },
     {
@@ -950,10 +950,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 37,
-      "movingHitRate": 0.5873
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 49,
+      "movingHitRate": 0.7903
     },
     {
       "weaponId": "launcher-rig",
@@ -962,9 +962,9 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 63,
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 62,
       "movingHitRate": 1
     },
     {
@@ -974,10 +974,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 37,
-      "movingHitRate": 0.5873
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 49,
+      "movingHitRate": 0.7903
     },
     {
       "weaponId": "launcher-rig",
@@ -986,9 +986,9 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 48,
-      "projectilesEmitted": 63,
-      "contacts": 63,
+      "shotsFired": 39,
+      "projectilesEmitted": 62,
+      "contacts": 62,
       "movingHitRate": 1
     }
   ],
@@ -1094,32 +1094,32 @@
       "tier": "maxed",
       "packSize": 4,
       "range": "mid",
-      "shotsFired": 2,
-      "projectilesEmitted": 22,
+      "shotsFired": 3,
+      "projectilesEmitted": 42,
       "contacts": 20,
-      "contactsPerProjectile": 0.9091,
+      "contactsPerProjectile": 0.4762,
       "damageApplied": 280,
       "overkillDamage": 40,
       "overkillRatio": 0.1429,
       "killed": 4,
-      "timeToFirstKillSeconds": 0.1,
-      "clearSeconds": 0.883
+      "timeToFirstKillSeconds": 0.883,
+      "clearSeconds": 1.667
     },
     {
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "packSize": 8,
       "range": "mid",
-      "shotsFired": 3,
-      "projectilesEmitted": 40,
+      "shotsFired": 9,
+      "projectilesEmitted": 120,
       "contacts": 40,
-      "contactsPerProjectile": 1,
+      "contactsPerProjectile": 0.3333,
       "damageApplied": 560,
       "overkillDamage": 80,
       "overkillRatio": 0.1429,
       "killed": 8,
-      "timeToFirstKillSeconds": 0.1,
-      "clearSeconds": 1.667
+      "timeToFirstKillSeconds": 0.883,
+      "clearSeconds": 7.233
     },
     {
       "weaponId": "auto-miner",
@@ -1238,16 +1238,16 @@
       "tier": "maxed",
       "packSize": 8,
       "range": "mid",
-      "shotsFired": 1,
-      "projectilesEmitted": 2,
+      "shotsFired": 2,
+      "projectilesEmitted": 4,
       "contacts": 16,
-      "contactsPerProjectile": 8,
+      "contactsPerProjectile": 4,
       "damageApplied": 672,
       "overkillDamage": 192,
       "overkillRatio": 0.2857,
       "killed": 8,
       "timeToFirstKillSeconds": 0.1,
-      "clearSeconds": 0.1
+      "clearSeconds": 1.05
     }
   ]
 }

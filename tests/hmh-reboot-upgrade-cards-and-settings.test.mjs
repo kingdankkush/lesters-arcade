@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { RUN_UPGRADE_CATALOG } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CATALOG, runWeaponMastery } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { HMH_WEAPON_DEFINITIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import { AUTHORED_PROP_ASSETS, authoredPropItemUrl } from '../apps/hmh-reboot/src/authored-prop-atlas.mjs';
 import {
   UPGRADE_TIERS,
@@ -35,7 +36,7 @@ const catalog = Object.values(RUN_UPGRADE_CATALOG);
 // U-4 tier resolver: render-side only, derived from the frozen catalog fields.
 // ---------------------------------------------------------------------------
 
-test('every catalog upgrade resolves to exactly one of the four tiers, 3 mastery / 9 core / 9 weapon / 3 capstone', () => {
+test('every catalog upgrade resolves to exactly one of the four tiers, 3 mastery / 9 core / 21 weapon / 3 capstone', () => {
   assert.deepEqual([...UPGRADE_TIERS], ['mastery', 'core', 'weapon', 'capstone']);
   const counts = { mastery: 0, core: 0, weapon: 0, capstone: 0 };
   for (const upgrade of catalog) {
@@ -47,8 +48,9 @@ test('every catalog upgrade resolves to exactly one of the four tiers, 3 mastery
     else if (upgrade.requiresWeaponId) assert.equal(tier, 'weapon', upgrade.id);
     else assert.equal(tier, 'core', upgrade.id);
   }
-  assert.deepEqual(counts, { mastery: 3, core: 9, weapon: 9, capstone: 3 });
-  assert.equal(catalog.length, 24);
+  // Design package 8.2 adds twelve gun-branch cards (weapon tier).
+  assert.deepEqual(counts, { mastery: 3, core: 9, weapon: 21, capstone: 3 });
+  assert.equal(catalog.length, 36);
 });
 
 test('tiers map onto the shared rarity tokens and carry a player-facing label', () => {
@@ -85,7 +87,7 @@ test('resolveUpgradeTier is pure: it never mutates the frozen catalog entry and 
 // icon of the branch is the fallback.
 // ---------------------------------------------------------------------------
 
-test('resolveUpgradeIconAssetId returns an id whose item PNG exists for all 24 catalog upgrades', () => {
+test('resolveUpgradeIconAssetId returns an id whose item PNG exists for all 36 catalog upgrades', () => {
   for (const upgrade of catalog) {
     const assetId = resolveUpgradeIconAssetId(upgrade);
     assert.equal(typeof assetId, 'string', `${upgrade.id} has no icon asset id`);
@@ -310,7 +312,7 @@ test('upgrade cards use the injected native item art without changing choices or
   const icons = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-choice__icon');
   assert.equal(icons[0].style.backgroundImage, 'url("/assets/generated/hmh-reboot-tripo-props/items/tripo-31.webp")');
   assert.equal(icons[1].style.backgroundImage, 'url("/assets/generated/hmh-reboot-tripo-props/items/tripo-24.webp")');
-  assert.equal(elements.get('hmhUpgradeChoices').querySelectorAll('button').length, 2);
+  assert.equal(elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-choice').length, 2);
   ui.destroy();
 });
 
@@ -319,7 +321,7 @@ test('upgrade pointer confirmation is single-shot just like keyboard and gamepad
   const selected = [];
   const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
   ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
-  const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('button');
+  const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-choice');
   buttons[1].dispatch('click');
   buttons[1].dispatch('click');
   buttons[0].dispatch('click');
@@ -362,8 +364,11 @@ test('cards carry a tier band, a real icon, a hotkey chip and aria-keyshortcuts;
   assert.equal(options[1].dataset.tier, 'capstone');
   assert.ok(options[0].classList.contains('hmh-upgrade-option--armed'), 'first option must be armed on open');
   assert.ok(!options[1].classList.contains('hmh-upgrade-option--armed'));
-  const buttons = choices.querySelectorAll('button');
-  assert.equal(buttons.length, 2, 'exactly two <button> elements inside #hmhUpgradeChoices (certification pin)');
+  const buttons = choices.querySelectorAll('.hmh-upgrade-choice');
+  assert.equal(buttons.length, 2, 'exactly two select buttons inside #hmhUpgradeChoices (certification pin)');
+  // Package 8.3: plus one re-roll strip per card, a sibling of the select button.
+  assert.equal(choices.querySelectorAll('button').length, 4);
+  assert.equal(choices.querySelectorAll('.hmh-upgrade-reroll').length, 2);
   assert.equal(choices.querySelectorAll('details').length, 2);
   assert.equal(buttons[0].getAttribute('aria-keyshortcuts'), '1');
   assert.equal(buttons[1].getAttribute('aria-keyshortcuts'), '2');
@@ -391,7 +396,7 @@ test('Digit1 / Digit2 select a card, arrows move the armed ring, Enter confirms,
   const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id) });
   ui.showUpgrade(upgradeSnapshot(['proof-of-work', 'diamond-hands']));
   const options = elements.get('hmhUpgradeChoices').children;
-  const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('button');
+  const buttons = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-choice');
 
   let event = documentRef.dispatch('keydown', { code: 'ArrowRight', key: 'ArrowRight' });
   assert.ok(event.defaultPrevented);
@@ -525,6 +530,103 @@ test('re-showing the panel from inside the selection callback leaves exactly one
 });
 
 // ---------------------------------------------------------------------------
+// Package 8.3 re-roll strip: one per card, a sibling of the select button,
+// keyboard R and gamepad X on release, silent, focus to the new card.
+// ---------------------------------------------------------------------------
+
+const rerollSnapshot = (cards, ranks = {}) => ({
+  pendingLevels: 1,
+  ranks,
+  pendingChoices: cards.map(({ id, rerollState = 'ready', weaponId = null }, slot) => ({
+    ...RUN_UPGRADE_CATALOG[id], nextRank: (ranks[id] ?? 0) + 1, slot, rerollState, weaponId,
+    mastery: weaponId ? runWeaponMastery(ranks, weaponId) : null,
+  })),
+});
+
+test('each card carries a re-roll strip beside, never inside, its select button, 36 px behind an 8 px dead zone', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const ui = createUpgradePanel({ documentRef, weaponName: (weaponId) => HMH_WEAPON_DEFINITIONS[weaponId].displayName });
+  ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'scatter-pump', rerollState: 'used', weaponId: 'scatter-shotgun' }], { 'scatter-pump': 2, 'scatter-shells': 2 }));
+  const options = elements.get('hmhUpgradeChoices').children;
+  for (const option of options) {
+    const [select, strip, details] = option.children;
+    assert.ok(select.classList.contains('hmh-upgrade-choice'));
+    assert.ok(strip.classList.contains('hmh-upgrade-reroll'));
+    assert.equal(strip.tagName, 'BUTTON');
+    assert.equal(strip.type, 'button');
+    assert.equal(details.tagName, 'DETAILS');
+    assert.equal(select.querySelectorAll('button').length, 0, 'the strip is never nested in the select button');
+    assert.equal(strip.style.height, '36px');
+    assert.equal(strip.style.marginTop, '8px');
+  }
+  const strips = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-reroll');
+  assert.deepEqual(strips.map((strip) => [strip.textContent, strip.disabled, strip.dataset.slot]), [['Re-roll', false, '0'], ['Re-roll used', true, '1']]);
+  assert.equal(strips[0].getAttribute('aria-keyshortcuts'), 'R');
+  // Card 2 names its gun: SHOTGUN 4/9.
+  assert.equal(options[1].querySelector('.hmh-upgrade-choice__gun').textContent, 'SHOTGUN 4/9');
+  assert.equal(options[1].querySelector('.hmh-upgrade-choice__gun').tagName, 'SPAN');
+  assert.equal(options[0].querySelector('.hmh-upgrade-choice__gun'), null);
+  ui.showUpgrade(rerollSnapshot([{ id: 'layer-two', rerollState: 'none' }]));
+  assert.equal(elements.get('hmhUpgradeChoices').querySelector('.hmh-upgrade-reroll').textContent, 'No other upgrades');
+  assert.equal(elements.get('hmhUpgradeChoices').querySelector('.hmh-upgrade-reroll').disabled, true);
+  ui.destroy();
+});
+
+test('a strip click and keyboard R re-roll the armed card by slot; a spent strip does nothing; a re-roll never selects', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const selected = [];
+  const rerolled = [];
+  const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id), onRerollUpgrade: (slot) => rerolled.push(slot) });
+  ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'diamond-hands' }]));
+  const strips = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-reroll');
+  strips[1].dispatch('click');
+  assert.deepEqual(rerolled, [1]);
+  const event = documentRef.dispatch('keydown', { code: 'KeyR', key: 'r' });
+  assert.ok(event.defaultPrevented && event.propagationStopped, 'R never reaches the gameplay keys');
+  assert.deepEqual(rerolled, [1, 0], 'R re-rolls the armed (first) card');
+  documentRef.dispatch('keydown', { code: 'KeyR', key: 'r', repeat: true });
+  assert.deepEqual(rerolled, [1, 0], 'auto-repeat is ignored');
+  ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work', rerollState: 'used' }, { id: 'diamond-hands', rerollState: 'none' }]));
+  for (const strip of elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-reroll')) strip.dispatch('click');
+  documentRef.dispatch('keydown', { code: 'KeyR', key: 'r' });
+  assert.deepEqual(rerolled, [1, 0]);
+  assert.deepEqual(selected, [], 'a re-roll never picks a card');
+  ui.destroy();
+});
+
+test('gamepad X re-rolls the armed card on its release edge', () => {
+  let pad = null;
+  const { documentRef, runFrame } = fakeCockpitDocument({ gamepads: () => [pad] });
+  const rerolled = [];
+  const ui = createUpgradePanel({ documentRef, onRerollUpgrade: (slot) => rerolled.push(slot) });
+  ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'diamond-hands' }]));
+  const button = (pressed) => ({ pressed, value: pressed ? 1 : 0 });
+  pad = { buttons: [button(false), button(false), button(true)], axes: [0, 0, 0, 0] };
+  runFrame(16);
+  assert.deepEqual(rerolled, [], 'nothing on the press');
+  pad = { buttons: [button(false), button(false), button(false)], axes: [0, 0, 0, 0] };
+  runFrame(32);
+  assert.deepEqual(rerolled, [0]);
+  ui.destroy();
+});
+
+test('after a re-roll the new card is armed and focused, and a polite live region names it', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const ui = createUpgradePanel({ documentRef });
+  const announcer = elements.get('hmhUpgradePanel').querySelector('.hmh-upgrade-announcer');
+  assert.ok(announcer, 'one live region, created with the panel');
+  assert.equal(announcer.getAttribute('aria-live'), 'polite');
+  ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'diamond-hands' }]));
+  assert.equal(announcer.textContent, '');
+  ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'hot-wallet', rerollState: 'used' }]), { rerolledSlot: 1 });
+  const options = elements.get('hmhUpgradeChoices').children;
+  assert.ok(options[1].classList.contains('hmh-upgrade-option--armed'));
+  assert.equal(documentRef.activeElement, options[1].querySelector('.hmh-upgrade-choice'));
+  assert.equal(announcer.textContent, `Card 2 re-rolled: ${RUN_UPGRADE_CONTENT['hot-wallet'].title}, rank 1 of 3.`);
+  ui.destroy();
+});
+
+// ---------------------------------------------------------------------------
 // U-5 SFX slider: child-owned, numeric, rides the existing settings channel.
 // ---------------------------------------------------------------------------
 
@@ -613,7 +715,7 @@ test('cockpit and panel source: no innerHTML, spans-only chips, rAF poll owned b
   assert.match(cockpit, /onSettingLevel\(/);
   assert.match(upgradePanel, /aria-keyshortcuts/);
   assert.match(upgradePanel, /hmh-upgrade-option--armed/);
-  assert.match(upgradePanel, /option\.append\(button, detail\)/);
+  assert.match(upgradePanel, /option\.append\(button, strip, detail\)/);
   assert.match(upgradePanel, /detail\.append\(summary, description\)/);
   assert.match(upgradePanel, /resolveUpgradeCardPresentation|resolveUpgradeTier/);
   assert.doesNotMatch(cockpit, /Math\.random/);

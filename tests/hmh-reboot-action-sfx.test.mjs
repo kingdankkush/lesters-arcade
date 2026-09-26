@@ -51,7 +51,9 @@ test('hits, reloads, power-ups and reward choices reach distinct authored sample
 test('reload release and final chamber cues correspond to separate authoritative ammo events', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /event\.type === 'weapon:reload-start'[\s\S]{0,160}play\('hmh-weapon-reload'/);
-  assert.match(source, /event\.type === 'weapon:reload-complete'[\s\S]{0,160}play\('reload-complete'/);
+  // Owner audio list (2026-09-25): the reload-complete chime is gone; the
+  // reload itself keeps its gun sound, and the final chamber is visual only.
+  assert.doesNotMatch(source, /play\('reload-complete'/);
   const state = createWeaponLoadout({ weaponIds: ['coin-blaster'], seed: 17 });
   const events = [];
   for (let tick = 1; tick <= 232; tick++) {
@@ -186,8 +188,8 @@ test('the input model carries no trigger edge, so hmh-weapon-empty stays on the 
   assert.equal(weaponAudio.resolveDryFireClick, undefined, 'the initial-JS audio registry carries no click predicate');
 });
 
-test('the reload-complete chamber glow keys off the same authoritative event as the cue and resets with the run', () => {
+test('the reload-complete chamber glow keys off the authoritative event and resets with the run', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /event\.type === 'weapon:reload-complete'[\s\S]{0,160}play\('reload-complete'[\s\S]{0,320}lastReloadComplete = \{ tick, weaponId: event\.weaponId \};/);
+  assert.match(source, /event\.type === 'weapon:reload-complete'[\s\S]{0,400}lastReloadComplete = \{ tick, weaponId: event\.weaponId \};/);
   assert.match(source, /lastWeaponFire = null;\s*lastReloadComplete = null;/);
 });

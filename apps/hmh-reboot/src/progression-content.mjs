@@ -11,7 +11,7 @@ export const RUN_UPGRADE_CONTENT = freezeDeep({
   'proof-of-work': {
     title: 'Damage',
     mechanicalLabel: '+8% damage + Pistol Power',
-    description: 'Gain 8% damage and one Pistol Power tier.',
+    description: 'Gain 8% damage and one Pistol Power tier. Rank 2 adds Ricochet; rank 3 adds Piercing Rounds (replaces Ricochet).',
   },
   'diamond-hands': {
     title: 'Max Health',
@@ -30,8 +30,8 @@ export const RUN_UPGRADE_CONTENT = freezeDeep({
   },
   'block-reward': {
     title: 'Score & Magazine',
-    mechanicalLabel: '+25% score + Pistol Magazine',
-    description: 'Gain 25% score and one Pistol Magazine tier. No wallet value.',
+    mechanicalLabel: '+25% score + Pistol Reload',
+    description: 'Gain 25% score and one Pistol Reload tier. No wallet value.',
   },
   'validator-training': {
     title: 'XP Gain',
@@ -55,8 +55,8 @@ export const RUN_UPGRADE_CONTENT = freezeDeep({
   },
   'hot-wallet': {
     title: 'Movement Speed',
-    mechanicalLabel: '+6% speed + Pistol Velocity',
-    description: 'Gain 6% speed and one Pistol Velocity tier.',
+    mechanicalLabel: '+6% speed + Pistol Fire Rate',
+    description: 'Gain 6% speed and one Pistol Fire Rate tier.',
   },
   'layer-two': {
     title: 'Speed Mastery',
@@ -127,6 +127,67 @@ export const RUN_UPGRADE_CONTENT = freezeDeep({
     title: 'Power Strike',
     mechanicalLabel: 'Every fourth attack gains 25% damage',
     description: 'Deterministically empower every fourth attack without raising target caps.',
+  },
+  // Design package 8.2: the four gun trees. Crypto ids, plain titles.
+  'scatter-pump': {
+    title: 'Pump Speed',
+    mechanicalLabel: 'Shotgun fire rate x1.10 / 1.22 / 1.36',
+    description: 'Pump faster. Rank 3 adds Double Barrel: six more pellets per shot.',
+  },
+  'scatter-dump': {
+    title: 'Shell Damage',
+    mechanicalLabel: '+1 / +3 / +5 damage per pellet',
+    description: 'Heavier pellets. Rank 3 makes the centre pellet explode.',
+  },
+  'scatter-shells': {
+    title: 'Magazine & Salvage',
+    mechanicalLabel: 'Faster reload, more shells, kills refund shells',
+    description: 'Reload faster and carry more reserve. From rank 2 Shotgun kills refund shells to reserve. Rank 3 loads four shells.',
+  },
+  'miner-hashrate': {
+    title: 'Fire Rate',
+    mechanicalLabel: 'Machine Gun fire rate x1.20 / 1.44 / 1.72',
+    description: 'Fire faster with less heat per round. Rank 3 is Overheat Reduction.',
+  },
+  'miner-asic': {
+    title: 'Round Damage',
+    mechanicalLabel: '+0.5 / +1 / +2 damage per round',
+    description: 'Harder rounds. Rank 3 adds tracer rounds that fly faster and further.',
+  },
+  'miner-pool': {
+    title: 'Magazine & Salvage',
+    mechanicalLabel: 'Faster reload, more rounds, kills refund rounds',
+    description: 'Reload faster and carry more reserve. From rank 2 Machine Gun kills refund rounds to reserve. Rank 3 loads a 180-round drum.',
+  },
+  'rail-blocktime': {
+    title: 'Charge Speed',
+    mechanicalLabel: 'Railgun charge 72 to 67 / 62 / 56 ticks',
+    description: 'Charge and fire the Railgun faster. Rank 3 adds faster slugs.',
+  },
+  'rail-proof': {
+    title: 'Rail Damage',
+    mechanicalLabel: '+6 / +12 / +20 slug damage',
+    description: 'Heavier slugs. Rank 3 is Deep Proof: pierce seven and cut boss armor.',
+  },
+  'rail-mempool': {
+    title: 'Magazine & Salvage',
+    mechanicalLabel: 'Faster reload, more slugs, kills refund slugs',
+    description: 'Reload faster and carry more reserve. From rank 2 Railgun kills refund slugs to reserve. Rank 3 is Capacitor Bank: five slugs.',
+  },
+  'launcher-airdrop': {
+    title: 'Launch Rate',
+    mechanicalLabel: 'Launcher fire rate x1.12 / 1.26 / 1.42',
+    description: 'Launch faster. Rank 3 is Twin Tube: two shells, seven degrees apart.',
+  },
+  'launcher-yield': {
+    title: 'Blast Damage',
+    mechanicalLabel: '+2 / +5 / +8 blast damage',
+    description: 'Bigger blasts. Rank 3 is Shaped Charge: blast radius 210.',
+  },
+  'launcher-bandolier': {
+    title: 'Magazine & Salvage',
+    mechanicalLabel: 'Faster reload, more shells, kills refund shells',
+    description: 'Reload faster and carry more reserve. From rank 2 Launcher kills refund shells to reserve. Rank 3 is Bandolier: seven shells.',
   },
 });
 

@@ -259,8 +259,9 @@ test('runtime feeds the chips, sounds expiry from the authoritative event and re
   assert.match(main, /hud\.update\(\{[\s\S]*?powerupHudLabel: powerupPresentation\.hudLabel,\s*powerupChips,/);
   assert.match(main, /collectible:expired[\s\S]{0,200}combatAudio\.play\('powerup-expire'/);
   // Expiry audio lives inside the existing onStep event loop, after the
-  // authoritative step and before the collected branch, never elsewhere.
-  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)[\s\S]{0,700}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
+  // authoritative step and before the collected branch, never elsewhere. (The
+  // window grew when the restock chime left the owner's audio list.)
+  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)[\s\S]{0,900}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
   assert.equal((main.match(/powerup-expire/g) ?? []).length, 1);
   assert.match(audio, /'powerup-expire': '\.\.\/assets\/audio\/sfx\/hmh-[a-z-]+\.wav'/);
   assert.equal(HMH_SFX_CUE_REGISTRY['powerup-expire'].family, 'reward');

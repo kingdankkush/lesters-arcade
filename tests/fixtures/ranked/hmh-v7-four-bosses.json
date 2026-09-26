@@ -46,7 +46,7 @@
     "totals": {
      "survivalTicks": 64800,
      "elapsedMs": 1080000,
-     "score": 234604,
+     "score": 223594,
      "level": 30,
      "xp": 136332,
      "litecoin": 0,
@@ -602,7 +602,7 @@
      },
      {
       "upgradeId": "diamond-hands",
-      "offered": 1,
+      "offered": 6,
       "selected": 0
      },
      {
@@ -612,8 +612,8 @@
      },
      {
       "upgradeId": "cold-storage",
-      "offered": 8,
-      "selected": 2
+      "offered": 5,
+      "selected": 0
      },
      {
       "upgradeId": "block-reward",
@@ -622,38 +622,38 @@
      },
      {
       "upgradeId": "validator-training",
-      "offered": 1,
+      "offered": 10,
       "selected": 0
      },
      {
       "upgradeId": "compound-interest",
-      "offered": 6,
-      "selected": 2
+      "offered": 9,
+      "selected": 6
      },
      {
       "upgradeId": "precision-ledger",
-      "offered": 4,
-      "selected": 2
+      "offered": 5,
+      "selected": 3
      },
      {
       "upgradeId": "hard-fork-rounds",
-      "offered": 5,
+      "offered": 7,
       "selected": 2
      },
      {
       "upgradeId": "hot-wallet",
-      "offered": 4,
+      "offered": 3,
       "selected": 3
      },
      {
       "upgradeId": "layer-two",
-      "offered": 4,
-      "selected": 1
+      "offered": 8,
+      "selected": 3
      },
      {
       "upgradeId": "hardened-wallet",
-      "offered": 6,
-      "selected": 3
+      "offered": 3,
+      "selected": 0
      },
      {
       "upgradeId": "ledger-conductivity",
@@ -678,17 +678,17 @@
      {
       "upgradeId": "burner-liquidity",
       "offered": 1,
-      "selected": 1
+      "selected": 0
      },
      {
       "upgradeId": "burner-volatility",
-      "offered": 5,
-      "selected": 3
+      "offered": 0,
+      "selected": 0
      },
      {
       "upgradeId": "burner-contagion",
-      "offered": 3,
-      "selected": 0
+      "offered": 4,
+      "selected": 1
      },
      {
       "upgradeId": "total-selloff",
@@ -698,12 +698,12 @@
      {
       "upgradeId": "standard-reach",
       "offered": 1,
-      "selected": 1
+      "selected": 0
      },
      {
       "upgradeId": "standard-force",
-      "offered": 1,
-      "selected": 1
+      "offered": 0,
+      "selected": 0
      },
      {
       "upgradeId": "standard-tempo",
@@ -747,18 +747,18 @@
      },
      {
       "upgradeId": "rail-blocktime",
-      "offered": 2,
-      "selected": 0
+      "offered": 4,
+      "selected": 1
      },
      {
       "upgradeId": "rail-proof",
-      "offered": 1,
-      "selected": 0
+      "offered": 5,
+      "selected": 1
      },
      {
       "upgradeId": "rail-mempool",
       "offered": 2,
-      "selected": 0
+      "selected": 1
      },
      {
       "upgradeId": "launcher-airdrop",
@@ -1162,7 +1162,7 @@
     "progression": {
      "offersOpened": 29,
      "evolutionOffersOpened": 1,
-     "rerolls": 7,
+     "rerolls": 23,
      "sealsFound": 4,
      "sealsBanked": 3,
      "evolutionsApplied": 1,
@@ -1185,22 +1185,22 @@
      "sessionKey": "0xe0d640f53ef8b4b9dca784b3c169bef9a815171350b326b103c6c830d4bb013f"
     },
     "inputHash": "0xa33697615b97a0045b848bc55bd85fbf1188e7f5322ab36796956cb080beae38",
-    "eventHash": "0xcf1a30f7e245c5cf9175997b12335b5a086642df02ed22a4cf20b8458ca411c3",
-    "finalStateHash": "0x2026b51b9838ac8dbb5b78a1bfe9cda159fbb46c816d146e0cdde39e8cf256da",
+    "eventHash": "0x4552c5cfb0d9c9eb82248b417b02f8223872b9bfa106a6e94147c97cf6166cc1",
+    "finalStateHash": "0xe3e564d50d04a6c1d9e05a6305ee17c2302377800a4afffb067f62b1fa9e4a81",
     "inputTransitions": 108,
     "gameplayEvents": 263,
     "sessionKey": "0xe0d640f53ef8b4b9dca784b3c169bef9a815171350b326b103c6c830d4bb013f",
-    "envelopeHash": "0xe20c132133723fc9f0d4bba2ab0137e42b0622ecfc9139693282be9b34fa6adb"
+    "envelopeHash": "0x2bf327bc18f9a028f3b13b2f9f241a98c902fbf60580da31e07c1ee520a4bf97"
    }
   },
   "claim": {
-   "score": 234604
+   "score": 223594
   }
  },
  "expected": {
-  "score": 234604,
-  "evidenceDigest": "0x02407f4bc842a0404209c5955c388c896959d5da4803b5c979b1305877ffb984",
-  "evidenceBytes": 16415,
+  "score": 223594,
+  "evidenceDigest": "0x553f7823a07da33240a0655def2ea830d666d57b27f51f5f6702b94fa858d2ce",
+  "evidenceBytes": 16417,
   "seed": 831222087,
   "plausibility": {
    "verdict": "flagged",
@@ -1208,7 +1208,7 @@
     {
      "id": "score-near-ceiling",
      "severity": "flag",
-     "value": 234604,
+     "value": 223594,
      "limit": 237389
     }
    ]

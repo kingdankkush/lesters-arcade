@@ -42,12 +42,14 @@ test('run progression is deterministic, bounded, and exposes two concrete upgrad
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
-test('skill tree has twenty-one core upgrades plus repeatable mastery picks and applies only offered choices', () => {
+test('skill tree has thirty-three core upgrades plus repeatable mastery picks and applies only offered choices', () => {
   const core = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable !== true);
   const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
   // Nine shared core upgrades plus three branches and a prerequisite-gated
-  // single-rank capstone for Lightning Ledger, Burner, and Forked Standard.
-  assert.equal(core.length, 21);
+  // single-rank capstone for Lightning Ledger, Burner, and Forked Standard,
+  // and (design package 8.2) three branch cards each for the Shotgun, the
+  // Machine Gun, the Railgun and the Grenade Launcher.
+  assert.equal(core.length, 33);
   assert.equal(repeatable.length, 3);
   assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set([
     'power',
@@ -60,6 +62,10 @@ test('skill tree has twenty-one core upgrades plus repeatable mastery picks and 
     'bear-market-burner-capstone',
     'forked-standard',
     'forked-standard-capstone',
+    'scatter-shotgun',
+    'auto-miner',
+    'hash-rail',
+    'launcher-rig',
   ]));
   assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => RUN_UPGRADE_CONTENT[upgrade.id].title && RUN_UPGRADE_CONTENT[upgrade.id].mechanicalLabel && upgrade.maxRank >= 1));
   assert.ok(core.filter((upgrade) => !['proof-of-network', 'total-selloff', 'canonical-fork'].includes(upgrade.id)).every((upgrade) => upgrade.maxRank >= 2));
@@ -140,7 +146,8 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(cockpit, /SAFE_DYNAMIC_TAGS/);
   assert.match(cockpit, /element\.textContent = String\(text\)/);
   assert.match(upgradePanel, /import \{ createSafeTextElement \} from '\.\/cockpit-ui\.mjs';/);
-  assert.match(upgradePanel, /option\.append\(button, detail\)/);
+  // Package 8.3: the re-roll strip sits between the select button and the details.
+  assert.match(upgradePanel, /option\.append\(button, strip, detail\)/);
   assert.match(upgradePanel, /detail\.append\(summary, description\)/);
   assert.match(upgradePanel, /summary\.setAttribute\('aria-expanded'/);
   assert.match(cockpit, /RUN_UPGRADE_CATALOG/);

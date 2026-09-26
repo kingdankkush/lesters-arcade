@@ -597,7 +597,7 @@
     "upgrades": [
      {
       "upgradeId": "proof-of-work",
-      "offered": 3,
+      "offered": 4,
       "selected": 3
      },
      {
@@ -607,38 +607,38 @@
      },
      {
       "upgradeId": "gas-optimization",
-      "offered": 2,
-      "selected": 2
-     },
-     {
-      "upgradeId": "cold-storage",
-      "offered": 5,
-      "selected": 3
-     },
-     {
-      "upgradeId": "block-reward",
-      "offered": 6,
-      "selected": 0
-     },
-     {
-      "upgradeId": "validator-training",
       "offered": 0,
       "selected": 0
      },
      {
-      "upgradeId": "compound-interest",
+      "upgradeId": "cold-storage",
+      "offered": 1,
+      "selected": 0
+     },
+     {
+      "upgradeId": "block-reward",
       "offered": 4,
+      "selected": 0
+     },
+     {
+      "upgradeId": "validator-training",
+      "offered": 3,
+      "selected": 0
+     },
+     {
+      "upgradeId": "compound-interest",
+      "offered": 1,
       "selected": 1
      },
      {
       "upgradeId": "precision-ledger",
-      "offered": 4,
-      "selected": 1
+      "offered": 3,
+      "selected": 2
      },
      {
       "upgradeId": "hard-fork-rounds",
       "offered": 2,
-      "selected": 0
+      "selected": 2
      },
      {
       "upgradeId": "hot-wallet",
@@ -647,28 +647,28 @@
      },
      {
       "upgradeId": "layer-two",
-      "offered": 7,
-      "selected": 5
+      "offered": 3,
+      "selected": 3
      },
      {
       "upgradeId": "hardened-wallet",
-      "offered": 1,
-      "selected": 1
+      "offered": 6,
+      "selected": 5
      },
      {
       "upgradeId": "ledger-conductivity",
-      "offered": 2,
-      "selected": 0
+      "offered": 5,
+      "selected": 2
      },
      {
       "upgradeId": "ledger-voltage",
-      "offered": 1,
+      "offered": 2,
       "selected": 0
      },
      {
       "upgradeId": "ledger-reconciliation",
-      "offered": 2,
-      "selected": 2
+      "offered": 4,
+      "selected": 0
      },
      {
       "upgradeId": "proof-of-network",
@@ -752,7 +752,7 @@
      },
      {
       "upgradeId": "rail-proof",
-      "offered": 1,
+      "offered": 4,
       "selected": 0
      },
      {
@@ -1185,12 +1185,12 @@
      "sessionKey": "0x00ce1841650a2a8d1d3efbd87caa05498e644bcc870b20a743a69fd7a92b6a98"
     },
     "inputHash": "0x7fa9fb50b49ba3660e0e516718bb0d2c1a4abe75a6bf831260d0f1f5697b2c0c",
-    "eventHash": "0x1fc0baac9f6f577db6a91cc1140fbcd7a5169540c9b832bf5725a3c6a4f0f7a5",
+    "eventHash": "0x8af3ee19ce5b8950ee1b1bff1fd0cfa137dff629db7f9418bc68df5c3532d4ff",
     "finalStateHash": "0x5f6d90e0ec6789e15add327f9574f0702287f436e51198a4ac97155c9bf95d0b",
     "inputTransitions": 90,
     "gameplayEvents": 253,
     "sessionKey": "0x00ce1841650a2a8d1d3efbd87caa05498e644bcc870b20a743a69fd7a92b6a98",
-    "envelopeHash": "0x3bfba33c0ac40fdec8c3af7228b4903acb241e7d8f29195f9571150300620ede"
+    "envelopeHash": "0xb6d5bb3291efa0042ce70a75d2fc679f40683e2b25cbad72fc59986e8a0ad676"
    }
   },
   "claim": {
@@ -1199,7 +1199,7 @@
  },
  "expected": {
   "score": 69510,
-  "evidenceDigest": "0xdd24f10468bc8164752341cc699b0af407a779a66c2c68d44cdb5a69bf28d945",
+  "evidenceDigest": "0x708adf7f8fe37d2a96526bda21f7070a2f19d6a3916f19fce4d71eaa34a508d7",
   "evidenceBytes": 16370,
   "seed": 455822019,
   "plausibility": {

@@ -13,6 +13,7 @@ import { FIXED_STEP_MS, DeterministicSimulation } from '../apps/hmh-reboot/src/s
 import {
   createRunProgression,
   getRunProgressionSnapshot,
+  openRunUpgradeOffer,
   recordRunDefeat,
   selectRunUpgrade,
   unlockRunProgressionWeapon,
@@ -25,7 +26,9 @@ import {
   progressionByWeapon,
   stepWeaponLoadout,
   switchWeapon,
+  weaponIdsWithAmmo,
 } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
 import { seededUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
 import {
   createRunSummaryAccumulator,
@@ -58,6 +61,7 @@ const RUN_TICKS = 1_800;
 
 function headlessRun({ seed, partition, observer = null }) {
   const simulation = new DeterministicSimulation({ seed, maxFrameDeltaMs: 100 });
+  const loadout = createWeaponLoadout({ weaponIds: HMH_WEAPON_ORDER, activeWeaponId: HMH_WEAPON_ORDER[0], seed });
   const context = vm.createContext({
     upgradePending: false,
     pendingUpgradeOfferPaint: null,
@@ -66,13 +70,17 @@ function headlessRun({ seed, partition, observer = null }) {
     runProgression: createRunProgression({ seed }),
     runSummaryAccumulator: createRunSummaryAccumulator({ seed, buildHash: 'site-1.9.0:game-1.9.0', mode: 'ranked', heroId: 'lit-commando', startPosition: { x: 0, y: 0 } }),
     getRunProgressionSnapshot,
+    openRunUpgradeOffer,
+    weaponIdsWithAmmo,
+    weaponLoadout: loadout,
+    V6_UPGRADE_IDS: new Set(HMH_RUN_SUMMARY_CATALOGS.upgrades),
     recordRunUpgradeOffer,
     combatAudio: { pause() {}, play() {} },
     upgradePanel: { showUpgrade() {} },
   });
+  for (const name of ['recordV6UpgradeOffer', 'openLevelOffer']) context[name] = vm.runInContext(`(${declaratorInit(name)})`, context);
   const openPendingUpgradeOffer = vm.runInContext(`(${declaratorInit('openPendingUpgradeOffer')})`, context);
   const presentUpgradeOffer = vm.runInContext(`(${declaratorInit('presentUpgradeOffer')})`, context);
-  const loadout = createWeaponLoadout({ weaponIds: HMH_WEAPON_ORDER, activeWeaponId: HMH_WEAPON_ORDER[0], seed });
   const offerTicks = [];
   let kills = 0;
   simulation.onStep(({ tick }) => {
@@ -117,12 +125,9 @@ function headlessRun({ seed, partition, observer = null }) {
       const { pendingChoices } = getRunProgressionSnapshot(context.runProgression);
       const pick = pendingChoices[Math.floor(seededUnit(seed, `pick:${simulation.tick}:${context.runProgression.selectionSequence}`) * pendingChoices.length)];
       const selection = selectRunUpgrade(context.runProgression, pick.id);
-      recordRunUpgradeSelection(context.runSummaryAccumulator, pick.id);
-      if (selection.snapshot.pendingLevels > 0 && selection.snapshot.pendingChoices.length > 0) {
-        recordRunUpgradeOffer(context.runSummaryAccumulator, selection.snapshot.pendingChoices.map((choice) => choice.id));
-      } else {
-        simulation.leaveUpgrade();
-      }
+      // As main's applySelectedUpgrade: the v6 summary names the v6 cards only.
+      if (context.V6_UPGRADE_IDS.has(pick.id)) recordRunUpgradeSelection(context.runSummaryAccumulator, pick.id);
+      if (!(selection.snapshot.pendingLevels > 0 && context.openLevelOffer())) simulation.leaveUpgrade();
     }
   };
   let frameIndex = 0;
