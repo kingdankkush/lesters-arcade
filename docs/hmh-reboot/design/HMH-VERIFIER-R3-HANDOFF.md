@@ -22,7 +22,7 @@ A rule that needs honest coverage the corpora lack (melee-only play, Forked Stan
 
 ### The 1.8.4 sample
 
-Pending in this note until the twelve-run sample of this checkout's child (`batch.mjs run --sample`: one run per style, every entry, both heroes, identity `site-1.8.4:game-1.8.4:cabinet-0.5.0`) has been verified and committed as `real-child-1.8.4.json`.
+`batch.mjs run --sample --concurrency=4` on this checkout (child source `4f947386`, release 1.8.4, identity `site-1.8.4:game-1.8.4:cabinet-0.5.0`) played the twelve sample rows in about a minute of wall time (5 to 33 s each; the 1.8.3 batch took 40 to 230 s a run before the 1.8.4 simulation speed-ups): one run per style, every level entry, both heroes, 143,190 ticks (5,918 to 20,123; median 12,804), nine deaths and three surrenders, zero child errors, every bridge message valid. All twelve verify `ok` through `verifyRankedRun` and plausibility with no flag; the closest approaches are the brawler r09 at 79 kills of a capacity of 95 and the grenadier r13 with eight grenades thrown of a supply of eight. They are committed as `real-child-1.8.4.json` (digest `c4bdc7c9…be3f`), so the real corpus holds 80 runs and 1,177,063 ticks of two child releases. Neither crash-hotfix error of the 1.8.3 batch recurred.
 
 ### What the real corpus does and does not cover
 
