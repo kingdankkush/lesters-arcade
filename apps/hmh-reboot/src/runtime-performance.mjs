@@ -65,6 +65,29 @@ export function selectRuntimePerformanceProfile({ width, devicePixelRatio, coars
   });
 }
 
+// Perf step 6: the mobile profile loads half-size texture pages. `@0.5x` is
+// Pixi's own resolution suffix: the half page decodes with source.resolution
+// 0.5, so its logical size is the full page size, and every frame, anchor and
+// pivot in the full-size metadata (so every on-screen size) is unchanged.
+// scripts/build-hmh-mobile-half-res.py writes the files and their manifest.
+const HALF_RES_PAGE = /^((?:\.\.)?\/assets\/generated\/hmh-(?:native-roster|reboot-enemy-roster\/bagholder-rusher|reboot-production-heroes|hero-motion|held-weapons|reboot-authored-props|reboot-tripo-props|terrain-tiles)\/[\w/-]+)\.(?:png|webp)(\?[^#]*)?$/;
+
+export function profileTextureUrl(url, profile) {
+  return profile?.id === 'mobile' ? String(url).replace(HALF_RES_PAGE, '$1@0.5x.webp$2') : url;
+}
+
+// Desktop keeps Pixi's Assets. A variant that fails to load falls back to the
+// full page, so a phone never loses art to a missing half page.
+export function createProfileTextureLoader(Assets, profile) {
+  if (profile?.id !== 'mobile') return Assets;
+  return Object.freeze({
+    load(url) {
+      const variant = profileTextureUrl(url, profile);
+      return variant === url ? Assets.load(url) : Assets.load(variant).catch(() => Assets.load(url));
+    },
+  });
+}
+
 export function isScreenPointVisible(point, view, margin = 0) {
   const x = Number(point?.x);
   const y = Number(point?.y);
