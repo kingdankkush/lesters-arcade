@@ -276,7 +276,18 @@ function childInstrumentation(config) {
   const bench = globalThis.__hmhBench = {
     recording: false, frames: [], frameTicks: [], silverVisible: [], activeMs: 0, longTasks: [], upgradePicks: 0,
     census: [], textures: null, lastCensusTick: -1,
+    // SFX voices actually started, whichever engine the build uses: media
+    // element plays (<= 1.8.1) or Web Audio buffer sources (perf step 5/8).
+    // Counting wrappers only; both engines pay the same tiny cost.
+    audio: { mediaPlays: 0, sourceStarts: 0 },
   };
+  const countCalls = (proto, name, key) => {
+    const original = proto?.[name];
+    if (typeof original !== 'function') return;
+    proto[name] = function counted(...args) { bench.audio[key] += 1; return original.apply(this, args); };
+  };
+  countCalls(window.HTMLMediaElement?.prototype, 'play', 'mediaPlays');
+  countCalls(window.AudioBufferSourceNode?.prototype, 'start', 'sourceStarts');
   if (config.virtualClock) {
     // Fixed virtual clock: every rendered frame advances exactly N fixed steps,
     // so the tick partition (and therefore upgrade timing) is reproducible.
@@ -570,11 +581,14 @@ async function runPass({ mode, profileId, cpu = 1 }) {
     const responseUrls = new Set();
     context.on('response', (response) => responseUrls.add(response.url()));
     const pending = new Map();
-    context.on('request', (request) => pending.set(request, Date.now()));
+    context.on('request', (request) => {
+      pending.set(request, Date.now());
+      if (request.url().includes('/audio/sfx/')) network.sfxRequests += 1;
+    });
     context.on('requestfinished', (request) => pending.delete(request));
     // ERR_ABORTED is the SFX voice allocator stopping or stealing an
     // HTMLAudioElement mid-load (counted, not an error); anything else is.
-    const network = { aborted: 0 };
+    const network = { aborted: 0, sfxRequests: 0 };
     context.on('requestfailed', (request) => {
       pending.delete(request);
       const reason = request.failure()?.errorText ?? '';
@@ -750,8 +764,9 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       bench.frames.length = 0; bench.frameTicks.length = 0; bench.silverVisible.length = 0; bench.longTasks.length = 0; bench.activeMs = 0;
       bench.recording = true;
       const data = document.querySelector('#hmhRebootStage').dataset;
-      return { tick: Number(data.simulationStepsTotal), droppedMs: Number(data.simulationDroppedMs), catchUp: Number(data.simulationCatchUpSaturationFrames), wall: performance.now() };
+      return { tick: Number(data.simulationStepsTotal), droppedMs: Number(data.simulationDroppedMs), catchUp: Number(data.simulationCatchUpSaturationFrames), wall: performance.now(), audio: { ...bench.audio } };
     });
+    const sfxRequestsBefore = network.sfxRequests;
     const windowMs = windowSeconds * 1000;
     const deadline = Date.now() + Math.max(120_000, windowMs * 6);
     let walkLeg = -1;
@@ -780,6 +795,7 @@ async function runPass({ mode, profileId, cpu = 1 }) {
         upgradePicks: bench.upgradePicks, performanceProfile: data.performanceProfile,
         renderResolution: Number(data.renderResolution), adaptiveResolution: data.adaptiveResolution ?? null,
         catchUpSaturationFrames: Number(data.simulationCatchUpSaturationFrames),
+        audio: { ...bench.audio },
         canvas: (() => { const canvas = document.querySelector('#hmhRebootStage canvas'); return canvas ? { width: canvas.width, height: canvas.height } : null; })(),
       };
     });
@@ -835,6 +851,13 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       activeMs: after.activeMs,
       upgradePicks: after.upgradePicks,
       silverCoinsOnScreen: after.silverVisible,
+      // SFX work inside the window: voices started and sample requests made.
+      audio: {
+        mediaPlays: after.audio.mediaPlays - before.audio.mediaPlays,
+        sourceStarts: after.audio.sourceStarts - before.audio.sourceStarts,
+        sfxRequests: network.sfxRequests - sfxRequestsBefore,
+        sfxRequestsBeforeWindow: sfxRequestsBefore,
+      },
       frames: summary,
       longTasks: { count: after.longTasks.length, over100: after.longTasks.filter((value) => value > 100).length, maxMs: Math.max(0, ...after.longTasks) },
       heap: { beforeUsed: heapBefore.usedSize, afterUsed: heapAfter.usedSize },
