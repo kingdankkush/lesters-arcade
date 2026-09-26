@@ -13,6 +13,7 @@ import { collectHealth, HEALTH_CACHE_CONTROL, HEALTH_PARTS, SETTLE_GAS_ESTIMATE 
 import { createPgliteClient, seedVerifiedSession } from './helpers/pglite-client.mjs';
 import { invoke } from './helpers/fake-http.mjs';
 import { fixtureEnv, SETTLE_CRON_VALUE, SETTLE_SESSION_VALUE } from './helpers/settle-fixtures.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 
 /**
  * ops-health AC1: GET /api/health answers one public JSON report built only
@@ -39,7 +40,7 @@ const DEPLOYED = Object.freeze({
 const RPC_WITH_KEY = 'https://liteforge.rpc.example/v1/rk9-health-secret-key';
 const NEON_PASSWORD = `npg_health_${'Zq7'.repeat(3)}`;
 const registryIface = new ethers.Interface(SCORE_REGISTRY_ABI);
-const BODY_KEYS = ['ok', 'healthy', 'version', 'checkedAt', 'settlementReady', 'paused', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei', 'jackpot'];
+const BODY_KEYS = ['ok', 'healthy', 'version', 'checkedAt', 'settlementReady', 'paused', 'settleMinPaidWei', 'degraded', 'degradedParts', 'relayer', 'queue', 'index', 'crons', 'baseFeeGwei', 'jackpot'];
 const NO_JACKPOT = Object.freeze({ configured: false, keeperAddress: null, keeperBalanceWei: null, paused: { env: false, onChain: null }, uiHidden: false, awaitingAdmin: 0, awaitingAdminOldestHours: null, claimPending: 0, failed: 0 });
 const ONE_ZKLTC = 10n ** 18n;
 const BASE_FEE = 1_500_000_000n; // 1.5 gwei
@@ -120,6 +121,7 @@ test('health reports the relayer, queue, index lag, crons and base fee as aggreg
     checkedAt: '2026-09-24T18:00:00.000Z',
     settlementReady: true,
     paused: false,
+    settleMinPaidWei: DEFAULT_MIN_PAID_WEI,
     degraded: false,
     degradedParts: [],
     relayer: { address: RELAYER, balanceWei: ONE_ZKLTC.toString(), allowed: true, estimatedSettlesLeft: expectedLeft },
@@ -155,6 +157,13 @@ test('the report never carries a secret, an env name or the missing list', async
   assert.equal(legacy.body.healthy, false, 'unconfigured settlement is not healthy');
   const paused = await invoke(handlerFor({ db, env: { ...env, SETTLEMENT_PAUSED: 'true' } }), { url: '/api/health' });
   assert.deepEqual([paused.body.settlementReady, paused.body.paused, paused.body.healthy], [true, true, false]);
+  // The settle floor is a public setting (the J17 check compares it with the chain quote): the configured
+  // value, the default when unset or malformed, never the env name.
+  const floor = await invoke(handlerFor({ db, env: { ...env, RANKED_MIN_PAID_WEI: '100000000000000000' } }), { url: '/api/health' });
+  assert.equal(floor.body.settleMinPaidWei, '100000000000000000');
+  const malformed = await invoke(handlerFor({ db, env: { ...env, RANKED_MIN_PAID_WEI: '0.1' } }), { url: '/api/health' });
+  assert.equal(malformed.body.settleMinPaidWei, DEFAULT_MIN_PAID_WEI);
+  assert.doesNotMatch(JSON.stringify(floor.body), /RANKED_MIN_PAID_WEI/);
 }));
 
 test('the first request migrates an unmigrated or a version-1 database (A34)', async () => {

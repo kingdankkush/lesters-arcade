@@ -4,7 +4,8 @@
 // settlement is configured (a boolean, never the list of missing variables),
 // the relayer's public address, balance and allowance, an estimate of how many
 // settles that balance still pays for, the settle queue by status, the chain
-// index lag, the last outcome of each cron, and the latest base fee.
+// index lag, the last outcome of each cron, the latest base fee and the
+// settle floor (the smallest entry payment /api/settle accepts).
 //
 // Every read has a short deadline. A part that cannot be read (no database
 // configured, a Neon or RPC failure, a timeout, a head block with no base fee)
@@ -284,6 +285,12 @@ export async function collectHealth(deps, { dbTimeoutMs = HEALTH_DB_TIMEOUT_MS, 
     checkedAt: new Date(nowMs).toISOString(),
     settlementReady,
     paused,
+    // The settle floor (RANKED_MIN_PAID_WEI, a public setting, not a secret):
+    // /api/settle refuses an entry paid below it with 402 entry-underpaid.
+    // The jackpot's J17 weekly check compares it with the chain's entry quote
+    // (scripts/jackpot-live-dry-run.mjs j17-settle-floor), so a reserve cut
+    // that leaves the floor above the quote is caught before players pay.
+    settleMinPaidWei: /^[0-9]{1,78}$/.test(String(config.minPaidWei ?? '')) ? String(config.minPaidWei) : null,
     degraded: ordered.length > 0,
     degradedParts: ordered,
     relayer: {
