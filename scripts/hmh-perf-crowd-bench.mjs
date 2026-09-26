@@ -16,6 +16,9 @@
 //             telemetry. This is the number to compare.
 //   profile - the same window with a CDP CPU profile (sampling overhead makes
 //             its frame times slightly worse; they are reported, not compared).
+//   alloc   - the same window with the CDP sampling heap profiler on, counting
+//             collected objects too: allocation rate and the top allocating
+//             functions (its frame times carry the sampler's overhead).
 //   census  - telemetry=1 plus a fixed virtual clock (N sim ticks per frame) so
 //             the scene content per tick is recorded quickly and reproducibly,
 //             plus WebGL texture accounting. Its trace digest is a real-runtime
@@ -49,6 +52,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
   aggregateCpuProfile,
+  aggregateHeapProfile,
   createSourceMapLookup,
   readImageDimensions,
   summarizeCensus,
@@ -487,6 +491,29 @@ async function resolveHotspots(profile) {
   });
 }
 
+// Sampled allocation bytes per function across the window, resolved through
+// the dist source maps like the CPU hotspots.
+async function resolveAllocations(heapProfile) {
+  const lookupFor = await resolverForDist();
+  const lookups = new Map();
+  const pending = [heapProfile.head];
+  while (pending.length > 0) {
+    const node = pending.pop();
+    const { url } = node.callFrame;
+    if (url && !lookups.has(url)) {
+      const lookup = lookupFor(url, 0, 0);
+      lookups.set(url, lookup ? await lookup : null);
+    }
+    pending.push(...(node.children ?? []));
+  }
+  return aggregateHeapProfile(heapProfile, {
+    resolve: (url, line, column) => {
+      const hit = lookups.get(url)?.(line, column) ?? null;
+      return hit ? { ...hit, source: hit.source.replace(/^.*?node_modules\//, 'node_modules/') } : null;
+    },
+  });
+}
+
 async function imageInventory(urls) {
   const rows = [];
   const seen = new Set();
@@ -712,6 +739,10 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       await cdp.send('Profiler.setSamplingInterval', { interval: 1000 });
       await cdp.send('Profiler.start');
     }
+    if (mode === 'alloc') {
+      await cdp.send('HeapProfiler.enable');
+      await cdp.send('HeapProfiler.startSampling', { samplingInterval: 8192, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+    }
     const hostStart = cpuTimes();
     const processStart = await browserProcesses(browser);
     const before = await frame.evaluate(() => {
@@ -759,6 +790,14 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       profilePath = path.join(outDir, `profile-${profileId}-${cpu}x.cpuprofile`);
       await writeFile(profilePath, JSON.stringify(cpuProfile));
       hotspots = await resolveHotspots(cpuProfile);
+    }
+    let allocations = null;
+    let heapProfilePath = null;
+    if (mode === 'alloc') {
+      const { profile: heapProfile } = await cdp.send('HeapProfiler.stopSampling');
+      heapProfilePath = path.join(outDir, `alloc-${profileId}-${cpu}x.heapprofile`);
+      await writeFile(heapProfilePath, JSON.stringify(heapProfile));
+      allocations = await resolveAllocations(heapProfile);
     }
     const heapAfter = await cdp.send('Runtime.getHeapUsage');
     const shot = path.join(outDir, `${mode}-${profileId}-${cpu}x.png`);
@@ -808,6 +847,16 @@ async function runPass({ mode, profileId, cpu = 1 }) {
           .map(({ functionName, originalName, source, selfMs, selfPct, totalMs, totalPct }) => ({ functionName, originalName, source, selfMs, selfPct, totalMs, totalPct })),
       } : null,
       cpuProfile: profilePath ? path.relative(ROOT, profilePath).replaceAll('\\', '/') : null,
+      // Sampled (8 KiB interval) bytes allocated inside the window, garbage included.
+      allocations: allocations ? {
+        totalBytes: allocations.totalBytes,
+        bytesPerSecond: allocations.totalBytes / (wallMs / 1000),
+        bytesPerFrame: allocations.totalBytes / Math.max(1, frames.length),
+        top: allocations.functions.slice(0, 40).map(({ functionName, originalName, source, selfBytes, selfPct, totalBytes, totalPct }) => ({
+          functionName, originalName, source, selfBytes, selfPct, totalBytes, totalPct,
+        })),
+      } : null,
+      heapProfile: heapProfilePath ? path.relative(ROOT, heapProfilePath).replaceAll('\\', '/') : null,
       frameTimes: frames,
       errors,
       screenshot: path.relative(ROOT, shot).replaceAll('\\', '/'),
@@ -929,7 +978,7 @@ async function mainWithOrigin() {
     return;
   }
   const mode = String(options.mode ?? 'timing');
-  assert.ok(['timing', 'profile', 'census'].includes(mode), 'mode must be timing, profile or census');
+  assert.ok(['timing', 'profile', 'alloc', 'census'].includes(mode), 'mode must be timing, profile, alloc or census');
   const profileId = String(options.profile ?? 'mobile');
   const cpu = Number(options.cpu ?? (profileId === 'mobile' ? 4 : 1));
   assert.ok(Number.isFinite(cpu) && cpu >= 1 && cpu <= 20, 'cpu throttle must be 1-20');

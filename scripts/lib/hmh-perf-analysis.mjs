@@ -94,6 +94,52 @@ export function aggregateCpuProfile(profile, { resolve = null } = {}) {
   return { totalMs, idleMs, busyMs, functions };
 }
 
+/**
+ * Aggregates a CDP HeapProfiler sampling profile into sampled allocation bytes
+ * per function: self (allocated in that frame) and total (allocated beneath
+ * it, counted once per stack so recursion never inflates it). Record it with
+ * includeObjectsCollectedByMajorGC/MinorGC so garbage counts, or it only
+ * reports what was still alive at the end.
+ */
+export function aggregateHeapProfile(profile, { resolve = null } = {}) {
+  const stats = new Map();
+  let totalBytes = 0;
+  const entryFor = (callFrame) => {
+    const key = frameKey(callFrame);
+    let entry = stats.get(key);
+    if (!entry) {
+      entry = { functionName: callFrame.functionName || '(anonymous)', url: callFrame.url, lineNumber: callFrame.lineNumber, columnNumber: callFrame.columnNumber, selfBytes: 0, totalBytes: 0 };
+      stats.set(key, entry);
+    }
+    return entry;
+  };
+  // Iterative walk: each node carries the keys of its ancestors' frames.
+  const pending = [[profile.head, []]];
+  while (pending.length > 0) {
+    const [node, above] = pending.pop();
+    const { callFrame } = node;
+    const excluded = EXCLUDED_FRAMES.has(callFrame.functionName);
+    const key = excluded ? null : frameKey(callFrame);
+    const stack = key === null || above.includes(key) ? above : [...above, key];
+    const bytes = node.selfSize ?? 0;
+    totalBytes += bytes;
+    if (!excluded) entryFor(callFrame).selfBytes += bytes;
+    for (const ancestorKey of stack) stats.get(ancestorKey).totalBytes += bytes;
+    for (const child of node.children ?? []) pending.push([child, stack]);
+  }
+  const functions = [...stats.values()].map((entry) => {
+    const resolved = resolve && entry.url && entry.lineNumber >= 0 ? resolve(entry.url, entry.lineNumber, entry.columnNumber) : null;
+    return {
+      ...entry,
+      selfPct: totalBytes > 0 ? (entry.selfBytes / totalBytes) * 100 : 0,
+      totalPct: totalBytes > 0 ? (entry.totalBytes / totalBytes) * 100 : 0,
+      source: resolved ? `${resolved.source}:${resolved.line}` : entry.url ? `${entry.url}:${entry.lineNumber + 1}:${entry.columnNumber + 1}` : '',
+      originalName: resolved?.name ?? null,
+    };
+  }).sort((a, b) => b.selfBytes - a.selfBytes || b.totalBytes - a.totalBytes);
+  return { totalBytes, functions };
+}
+
 const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const BASE64_VALUE = new Map([...BASE64].map((character, index) => [character, index]));
 
