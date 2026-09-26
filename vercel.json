@@ -52,6 +52,14 @@
       "memory": 1024,
       "includeFiles": "apps/portal/assets/share-cards/**"
     },
+    "api/free-share-page.mjs": {
+      "maxDuration": 10
+    },
+    "api/free-card.mjs": {
+      "maxDuration": 20,
+      "memory": 1024,
+      "includeFiles": "apps/portal/assets/share-cards/**"
+    },
     "api/ranked-seed.mjs": {
       "maxDuration": 10
     },
@@ -283,6 +291,14 @@
     {
       "source": "/api/share-card/:id([0-9a-fA-F]{64}).png",
       "destination": "/api/share-card?id=:id"
+    },
+    {
+      "source": "/f/:game(hard-money-heroes|chikun|stacked)/:token([0-9a-z]{30,40})",
+      "destination": "/api/free-share-page?game=:game&token=:token"
+    },
+    {
+      "source": "/api/free-card/:game(hard-money-heroes|chikun|stacked)/:token([0-9a-z]{30,40}).png",
+      "destination": "/api/free-card?game=:game&token=:token"
     },
     {
       "source": "/api/jackpot/replay",
