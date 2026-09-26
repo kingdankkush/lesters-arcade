@@ -8,6 +8,7 @@ import {
   WEAPON_ORDER,
   runSimDigestScenario,
 } from '../scripts/hmh-sim-digest.mjs';
+import { HMH_WEAPON_ORDER } from '../apps/hmh-reboot/src/weapon-system.mjs';
 
 const mainSource = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
 
@@ -18,8 +19,12 @@ test('the digest mirror pins the module-private tick constants of main.mjs', () 
     assert.equal(MAIN_CONSTANTS[name], Number(match[1].replaceAll('_', '')), name);
   }
   assert.match(mainSource, new RegExp(`endurancePressurePilotEnabled \\? ${MAIN_CONSTANTS.ENDURANCE_TICK_OFFSET.toLocaleString('en-US').replace(',', '_')} : 0`));
-  const order = /^const WEAPON_ORDER = Object\.freeze\((\[[^\]]+\])\);/m.exec(mainSource);
-  assert.deepEqual(JSON.parse(order[1].replaceAll("'", '"')), [...WEAPON_ORDER]);
+  // Level 1 build, slice 1: the weapon order moved into the simulation.
+  // main.mjs imports HMH_WEAPON_ORDER as WEAPON_ORDER (the same list, derived
+  // from the run-summary weapon catalogue), and the mirror pins that export.
+  assert.match(mainSource, /^\s*HMH_WEAPON_ORDER as WEAPON_ORDER,$/m);
+  assert.doesNotMatch(mainSource, /^const WEAPON_ORDER = /m);
+  assert.deepEqual([...HMH_WEAPON_ORDER], [...WEAPON_ORDER]);
   const knockback = /const WEAPON_KNOCKBACK = Object\.freeze\(\{([^}]+)\}\);/m.exec(mainSource)[1];
   for (const [weaponId, value] of Object.entries(WEAPON_KNOCKBACK)) {
     assert.match(knockback, new RegExp(`'?${weaponId}'?: ${value},`), weaponId);

@@ -59,7 +59,7 @@ import {
   seededUnit,
 } from '../sdk/hmh-run-contract-v7.mjs';
 import { seededUnit as childSeededUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
-import { HMH_WEAPON_DEFINITIONS, HMH_WEAPON_EVOLUTIONS } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import { HMH_WEAPON_DEFINITIONS, HMH_WEAPON_EVOLUTIONS, HMH_WEAPON_ORDER } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import {
   RUN_UPGRADE_CATALOG,
   SILVER_SCORE_PER_COIN,
@@ -595,8 +595,13 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
   assert.deepEqual([...new Set(objectiveRewardPlacements().map((placement) => placement.requiredObjective))].sort(), [...C6.worldSites, V6C.vaultObjective].sort());
   // A site unlocks its rewards in the step that records its milestone; the
   // vault unlocks only in the Liquidator kill's branch; nothing else unlocks.
-  assert.match(MAIN_SOURCE, /recordRunMilestone\(runSummaryAccumulator,\{type:'site-operated',id:event\.siteId,tick\}\);\s*collectibleState\.unlockedObjectives\.add\(event\.siteId\);/);
-  assert.match(MAIN_SOURCE, /if \(scoreEvent\.enemyId === liquidatorBoss\.id\) \{\s*if\(liquidatorBoss\.health<=0\)\{collectibleState\.unlockedObjectives\.add\('liquidator-defeated'\);[^\n]*\n\s*recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: 'liquidator',\s*weaponId: scoreEvent\.weaponId,\s*boss: true,/);
+  // Level 1 build: the mission core (slice 4) records the site through its
+  // mission event (objectiveId, one node at a time), and the boss kit (slice 5)
+  // unlocks the vault through the slot's defeat rewards, whose objective is the
+  // same 'liquidator-defeated'. The facts the v6 rules rest on are unchanged.
+  assert.match(MAIN_SOURCE, /recordRunMilestone\(runSummaryAccumulator, \{ type: 'site-operated', id: event\.objectiveId, tick \}\);\s*collectibleState\.unlockedObjectives\.add\(event\.objectiveId\);/);
+  assert.match(MAIN_SOURCE, /const rewards = defeatBossSlot\(bossSlots, \{ bossId: 'liquidator', tick \}\);\s*refreshBossLockNavigation\(rewards\.opened\);\s*collectibleState\.unlockedObjectives\.add\(rewards\.unlockObjective\);[\s\S]{0,700}?recordRunKill\(runSummaryAccumulator, \{ enemyRoleId: 'liquidator', weaponId: damageEvent\.weaponId, boss: true \}\);/);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/boss-slots.mjs', import.meta.url), 'utf8'), /unlockObjective: 'liquidator-defeated',/);
   assert.equal(MAIN_SOURCE.match(/unlockedObjectives\.add\(/g).length, 2);
   // stepCollectibles never collects before the simulation's first tick.
   assert.equal(V6C.firstTick, 1);
@@ -612,7 +617,12 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
   assert.ok(LEVEL_ONE_WORLD.districts.every(({ area }) => area.minY === LEVEL_ONE_WORLD.bounds.minY && area.maxY === LEVEL_ONE_WORLD.bounds.maxY));
   assert.deepEqual(V6C.districtStrips.map(([id]) => id), [...C6.districts]);
   assert.equal(getLevelOneDistrictAt(1_800, 2_400).id, 'frontier-relay', 'a seam belongs to the strip west of it');
-  assert.deepEqual(V6C.levelEntries, LEVEL_ONE_ENTRIES.map(({ id, x, y }) => [id, x, y]));
+  // The v6 table is the 1.8.x one. The boss kit (Level 1 build, slice 5) moved
+  // only the Yard start, at least 920 from the Liquidator's anchor; the ids and
+  // the seed hash are unchanged, so every seed still names the same entry.
+  const entries181 = LEVEL_ONE_ENTRIES.map(({ id, x, y }) => (id === 'yard' ? [id, 10_400, 2_450] : [id, x, y]));
+  assert.deepEqual(V6C.levelEntries, entries181);
+  assert.deepEqual(LEVEL_ONE_ENTRIES.find(({ id }) => id === 'yard'), { id: 'yard', name: 'Yard Approach', x: 10_060, y: 2_505 });
   for (let index = 0; index < 20_000; index += 1) {
     const seed = (index * 2_654_435_761) >>> 0;
     assert.equal(hmhV6LevelEntry(seed).id, selectLevelEntry(seed).id, `seed ${seed}`);
@@ -642,9 +652,13 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
   const runTick = LEVEL_ONE_WORLD.player.maxSpeed * moveRanks * COLLECTIBLE_EFFECTS['time-dilation'].speedMultiplier * downhill / 60;
   assert.match(MAIN_SOURCE, /magnitude: 70,/);
   assert.match(MAIN_SOURCE, /knockback: event\.role === 'bruiser' \? 32 : 12,/);
-  assert.match(MAIN_SOURCE, /knockback: event\.attackId\.includes\('super'\) \? 36 : 20,/);
+  // Level 1 build, slice 5: the reworked Liquidator's strikes carry their own
+  // knockback (liquidator-boss.mjs; 1.8.x: 36 for a super, else 20). The v6
+  // travel literal keeps the 1.8.x 36; a v7 travel bound must read the new table.
+  assert.match(MAIN_SOURCE, /knockback: event\.knockback,/);
+  const bossKnockback181 = 36;
   const heightBonus = resolveHeightAdvantage({ sourceZ: 1_000, targetZ: 0, baseRange: 1, baseKnockback: 1 }).knockback;
-  const impulse = Math.max(...Object.values(HMH_WEAPON_DEFINITIONS).map((weapon) => weapon.recoil ?? 0), 70, 36 * heightBonus, HMH_GRENADE_DEFINITION.knockback);
+  const impulse = Math.max(...Object.values(HMH_WEAPON_DEFINITIONS).map((weapon) => weapon.recoil ?? 0), 70, bossKnockback181 * heightBonus, HMH_GRENADE_DEFINITION.knockback);
   assert.equal(impulse, 74);
   const recoilTick = impulse * createPlayerMotionState().recoilDecayTime;
   const conveyorTick = WORLD_HAZARD_RULES['moving-hazard'].push / 60;
@@ -685,7 +699,11 @@ test('the second-round consistency literals and the accumulator facts they rest 
   assert.equal(damaged.weapons.reduce((sum, row) => sum + row.damage, 0), 78);
   assert.match(accumulatorSource, /if \(event\.sourceId !== 'player'\) return;\s*state\.totals\[0\] \+= amount;\s*const row = state\.weapons\[index\(C\.weapons, event\.weaponId, 'weapon'\)\];\s*row\[10\] \+= amount;/);
   assert.match(readFileSync(new URL('../apps/hmh-reboot/src/combat-events.mjs', import.meta.url), 'utf8'), /damageApplied = Math\.max\(1, Math\.round\(rawDamage \/ armorDivisor\)\);/);
-  assert.equal(MAIN_SOURCE.match(/recordRunDamage\(runSummaryAccumulator/g).length, 1);
+  // Level 1 build, slice 5: the boss's hits go through applyLiquidatorDamage
+  // and the summary records what he actually lost, so main.mjs records damage
+  // in two places, both to the same accumulator (1.8.x had one).
+  assert.equal(MAIN_SOURCE.match(/recordRunDamage\(runSummaryAccumulator/g).length, 2);
+  assert.match(MAIN_SOURCE, /if \(bossDamage\.damageApplied > 0\) recordRunDamage\(runSummaryAccumulator, \{ \.\.\.damageEvent, damageApplied: bossDamage\.damageApplied, healthBefore \}\);/);
 
   // Grenades: a detonation records one contact per non-player hit; a launcher
   // shot is a trigger; thrown is recorded only for a spawned hand grenade.
@@ -695,11 +713,15 @@ test('the second-round consistency literals and the accumulator facts they rest 
   const blasted = finish(blasts, 1);
   assert.deepEqual([blasted.grenades.detonated, blasted.grenades.contacts, rowOf(blasted.weapons, 'weaponId', 'launcher-rig').triggers], [1, 2, 1]);
   assert.equal(MAIN_SOURCE.match(/throwGrenade\(grenadeSystem/g).length, 2);
-  assert.match(MAIN_SOURCE, /if \(event\.weaponId === 'launcher-rig'\) \{\s*const launch = throwGrenade\(grenadeSystem, \{\s*tick,\s*mode: 'launcher',[\s\S]{0,600}?\}\);\s*recordRunWeaponFire\(runSummaryAccumulator, \{ weaponId: event\.weaponId, emitted: launch\.spawned \? 1 : 0, attackId: event\.attackId \}\);/);
+  // Level 1 build, slice 6 (package 8.2): a launcher trigger fires one shell per
+  // event.shots (Twin Tube two) and records how many spawned (1.8.x: one shell,
+  // emitted 1 or 0). The v6 detonation identity is a 1.8.x fact.
+  assert.match(MAIN_SOURCE, /if \(event\.weaponId === 'launcher-rig'\) \{[\s\S]{0,200}?let emitted = 0;\s*for \(const shot of event\.shots\) \{\s*const launch = throwGrenade\(grenadeSystem, \{\s*tick,\s*mode: 'launcher',[\s\S]{0,600}?\}\);\s*if \(launch\.spawned\) emitted \+= 1;[\s\S]{0,200}?recordRunWeaponFire\(runSummaryAccumulator, \{ weaponId: event\.weaponId, emitted, attackId: event\.attackId \}\);/);
   assert.match(MAIN_SOURCE, /const grenadeSpawn = throwGrenade\(grenadeSystem, \{\s*tick,\s*mode: 'hand',[\s\S]{0,600}?\}\);\s*if \(grenadeSpawn\.spawned\) \{\s*recordRunGrenade\(runSummaryAccumulator, \{ type: 'thrown' \}\);/);
   assert.equal(MAIN_SOURCE.match(/type: 'thrown'/g).length, 1);
   assert.match(MAIN_SOURCE, /for \(const detonation of grenadeFrame\.detonations\) \{\s*recordRunGrenadeDetonation\(runSummaryAccumulator, detonation\);/);
-  assert.match(MAIN_SOURCE, /for \(const hit of detonation\.hits\) combatHitIntents\.push\(\{ \.\.\.hit, tick \}\);/);
+  // Slice 6 (package 8.6): a launcher blast crits like the held weapon; the hit's weapon id is untouched.
+  assert.match(MAIN_SOURCE, /for \(const hit of detonation\.hits\) combatHitIntents\.push\(hit\.targetId === 'player' \? \{ \.\.\.hit, tick \} : \{ \.\.\.hit, tick, \.\.\.heldCritical\(hit\.weaponId\) \}\);/);
   // Only a blast hit carries a grenade weapon's id: grenades.mjs names each
   // blast hit by its grenade's mode, and main.mjs names neither weapon in a hit.
   assert.equal(HMH_GRENADE_DEFINITION.id, V6C.handGrenades.weaponId);
@@ -713,9 +735,14 @@ test('the second-round consistency literals and the accumulator facts they rest 
   assert.ok(MAIN_SOURCE.includes(`grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: ${V6C.handGrenades.startCharges} });`));
   const grenadeUpgrades = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.effect === 'bonusGrenadeCharges');
   assert.deepEqual(grenadeUpgrades.map(({ id, amount, maxRank }) => [id, amount, maxRank]), [[V6C.handGrenades.rankUpgradeId, V6C.handGrenades.chargesPerRank, V6C.handGrenades.maxRanks]]);
-  assert.equal(MAIN_SOURCE.match(/handCharges \+=/g).length, 1);
-  assert.ok(MAIN_SOURCE.includes('if (grenadeSystem && grenadeGain > 0) grenadeSystem.handCharges += grenadeGain;'));
-  assert.equal(MAIN_SOURCE.match(/rechargeHandGrenades\(grenadeSystem/g).length, 2);
+  // Level 1 build, slice 6 (package 8.6): an Extra Grenade rank raises the
+  // maximum through raiseHandGrenadeMaximum instead of adding to the charges
+  // (1.8.x: grenadeSystem.handCharges += grenadeGain); slice 5: a boss defeat
+  // refills the grenades to that maximum, the third recharge site.
+  assert.equal(MAIN_SOURCE.match(/handCharges \+=/g), null);
+  assert.ok(MAIN_SOURCE.includes('if (grenadeSystem && grenadeGain > 0) raiseHandGrenadeMaximum(grenadeSystem, { amount: grenadeGain });'));
+  assert.equal(MAIN_SOURCE.match(/rechargeHandGrenades\(grenadeSystem/g).length, 3);
+  assert.ok(MAIN_SOURCE.includes('rechargeHandGrenades(grenadeSystem, { tick, amount: grenadeSystem.maxHandCharges });'));
   assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'grenade-supply'\) \{\s*rechargeHandGrenades\(grenadeSystem,\{tick,amount:1\}\);\s*\} else if \(event\.kind === 'nuke'\) \{\s*rechargeHandGrenades\(grenadeSystem, \{ tick, amount: 1 \}\);/);
   const rechargingEffects = new Set([
     ...Object.values(COLLECTIBLE_EFFECTS).filter((effect) => ['nuke', 'grenade-supply'].includes(effect.kind)).map((effect) => effect.effectId),
@@ -723,13 +750,17 @@ test('the second-round consistency literals and the accumulator facts they rest 
   ]);
   assert.deepEqual([...rechargingEffects], [V6C.handGrenades.refillEffectId]);
   assert.deepEqual(V6C.nuke, { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' });
-  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'nuke'\) \{[\s\S]{0,400}?weaponId: 'nuke-liquidation',/);
+  // Slices 4 and 6: the nuke skips breakables and stops at event.radius, so its branch is longer.
+  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'nuke'\) \{[\s\S]{0,700}?weaponId: 'nuke-liquidation',/);
   assert.equal(MAIN_SOURCE.match(/'nuke-liquidation'/g).length, 1, 'only the nuke event hits with the nuke');
 
   // Weapons: WEAPON_ORDER is the loadout, its first weapon the only one owned
-  // at the start, and a weapon is owned only through grantWeaponPickup.
-  const order = JSON.parse(/const WEAPON_ORDER = Object\.freeze\((\[[^\]]*\])\);/.exec(MAIN_SOURCE)[1].replaceAll("'", '"'));
-  assert.deepEqual(order, V6C.activeWeapons);
+  // at the start, and a weapon is owned only through grantWeaponPickup. Level 1
+  // build, slice 1: main.mjs imports the order from the simulation
+  // (HMH_WEAPON_ORDER as WEAPON_ORDER), the same eight ids in the same order.
+  assert.match(MAIN_SOURCE, /^\s*HMH_WEAPON_ORDER as WEAPON_ORDER,$/m);
+  assert.doesNotMatch(MAIN_SOURCE, /^const WEAPON_ORDER = /m);
+  assert.deepEqual([...HMH_WEAPON_ORDER], V6C.activeWeapons);
   assert.ok(MAIN_SOURCE.includes('weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });'));
   assert.ok(MAIN_SOURCE.includes('activeWeaponId: weaponLoadout.activeWeaponId,'));
   const newLoadout = () => createWeaponLoadout({ weaponIds: V6C.activeWeapons, activeWeaponId: V6C.activeWeapons[0], seed: 1 });
@@ -753,7 +784,8 @@ test('the second-round consistency literals and the accumulator facts they rest 
     "recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.bonusWeaponId });",
   ]);
   assert.match(MAIN_SOURCE, /if \(weaponPilotEnabled\) \{\s*for \(const weaponId of WEAPON_ORDER\) \{\s*if \(weaponId !== weaponLoadout\.activeWeaponId\) \{\s*grantWeaponPickup\(weaponLoadout, \{ tick: 0, weaponId, select: false \}\);/);
-  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'weapon-cache'\) \{[\s\S]{0,300}?grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: true, progressionByWeapon \}\);/);
+  // Slice 6 (package 8.6): a cache selects its gun only when newly owned (1.8.x: select: true).
+  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'weapon-cache'\) \{[\s\S]{0,300}?grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: 'if-new', progressionByWeapon \}\);/);
 
   // The combo: +1 per recorded kill (awardComboXp follows each recordRunKill
   // of a defeat), reset to 0 on a hit, and the best combo is what finalize gets.
@@ -2003,7 +2035,13 @@ test('v7 soft flags: each sub-condition flags on its own and never rejects', () 
 
 // The v7 path's results over a mutation corpus of both v7 fixtures, hashed
 // like the v6 corpus: a change to any v7 rule or formula moves the digest.
-const V7_CORPUS_DIGEST = '0b1e66b431662f446ab301a512daf12d78040f7dcef52bf72a0d975438d44fa1';
+// Re-pinned on the Level 1 build (fable/hmh-gameplay): its slice 6 regenerated
+// the v7 fixtures through the child's new offer API, so the four-bosses run's
+// score sits further from its ceiling and the five "four-bosses +60 <role>"
+// probes read ok instead of flagged score-near-ceiling. The other 167 cases are
+// unchanged (verdict and flag ids compared case by case against 9f20cda0's
+// fixtures).
+const V7_CORPUS_DIGEST = '3f774e8a1c92c8b721add3f91318d57c379d8e62eef9f3c84a7f9df19dd57546';
 function v7Corpus() {
   const cases = [];
   const add = (name, base, mutate = () => {}) => cases.push([name, clone(base, mutate)]);

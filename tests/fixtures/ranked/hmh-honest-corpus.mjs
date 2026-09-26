@@ -3,8 +3,13 @@
 // Every run is a schema-6 summary from the real 1.8.x accumulator
 // (sdk/hmh-run-summary.mjs), with its level, XP and score from the child's own
 // run-progression, played by a scripted pilot through the child's own world
-// modules:
-//   - the seeded level entry (level-entry selectLevelEntry) and the district
+// modules. The corpus stands for 1.8.2 runs (HMH_HONEST_CORPUS_BUILD_HASH) and
+// its digest is pinned, so where the Level 1 build (fable/hmh-gameplay) changed
+// the child it keeps the 1.8.2 rule as a frozen copy, like the v6 verifier's
+// literals: the level entries (the verifier's hmhV6LevelEntry), the two-card
+// level-up offer (build-fixtures.mjs offer181/select181) and the machinery
+// sites (WORLD_DESIGN_SITES_182, stepWorldDesign182 below):
+//   - the seeded level entry (the 1.8.x table, hmhV6LevelEntry) and the district
 //     strips (level-one-world getLevelOneDistrictAt), recorded every tick;
 //   - movement (movement stepPlayerMovement) and dash (dash beginDash and
 //     stepDash) at the run's real multipliers: movement ranks, dash tier and
@@ -14,8 +19,9 @@
 //     interest with main.mjs's re-arm rule, the three seeded weapon events and
 //     the eight objective rewards) through the real stepCollectibles, with
 //     every pickup accepted (a real run refuses a heal at full health);
-//   - the machinery sites through the real stepWorldDesign, which unlock their
-//     objective rewards;
+//   - the machinery sites through the 1.8.2 stepWorldDesign (touch within 82,
+//     then the machine finishes on its own after holdTicks), which unlock
+//     their objective rewards;
 //   - kills scheduled on the encounter director's own insertion schedule
 //     (one insertion per band interval from tick 600, as the director runs),
 //     with the archetype the director would pick for the district and band.
@@ -55,10 +61,9 @@ import {
   grantRunSilver,
   grantRunXp,
   recordRunDefeat,
-  selectRunUpgrade,
   unlockRunProgressionWeapon,
 } from '../../../apps/hmh-reboot/src/run-progression.mjs';
-import { selectLevelEntry } from '../../../apps/hmh-reboot/src/level-entry.mjs';
+import { offer181, select181 } from './build-fixtures.mjs';
 import { LEVEL_ONE_WORLD, createLevelOneGroundQuery, getLevelOneDistrictAt } from '../../../apps/hmh-reboot/src/level-one-world.mjs';
 import { createPlayerMotionState, stepPlayerMovement } from '../../../apps/hmh-reboot/src/movement.mjs';
 import { beginDash, createDashState, stepDash } from '../../../apps/hmh-reboot/src/dash.mjs';
@@ -68,14 +73,60 @@ import { buildAuthoredPointOfInterestPlacements } from '../../../apps/hmh-reboot
 import { createLightningLedgerRareEvent } from '../../../apps/hmh-reboot/src/lightning-ledger-event.mjs';
 import { createBearMarketBurnerEvent } from '../../../apps/hmh-reboot/src/bear-market-burner-event.mjs';
 import { createForkedStandardEvent } from '../../../apps/hmh-reboot/src/forked-standard-event.mjs';
-import { createWorldDesignState, stepWorldDesign } from '../../../apps/hmh-reboot/src/world-design-interactions.mjs';
-import { WORLD_DESIGN_SITES } from '../../../apps/hmh-reboot/src/world-design-encounters.mjs';
 import { getEncounterBand, selectEncounterArchetype } from '../../../apps/hmh-reboot/src/encounter-director.mjs';
 import { ENEMY_ARCHETYPES } from '../../../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { FIXED_STEP_MS } from '../../../apps/hmh-reboot/src/simulation.mjs';
-import { HMH_BOSS_START_TICK, LIQUIDATOR_THREAT_COST, SILVER_PER_BOSS_KILL, SILVER_PER_ENEMY_KILL } from '../../../server/verify/hmh-plausibility.mjs';
+import { HMH_BOSS_START_TICK, LIQUIDATOR_THREAT_COST, SILVER_PER_BOSS_KILL, SILVER_PER_ENEMY_KILL, hmhV6LevelEntry } from '../../../server/verify/hmh-plausibility.mjs';
 
 export const HMH_HONEST_CORPUS_BUILD_HASH = 'site-1.8.2:game-1.8.2';
+
+// The 1.8.2 machinery sites and their step (world-design-encounters.mjs and
+// world-design-interactions.mjs at 4f947386), frozen: the mission core v2
+// (Level 1 build, slice 4) moved the operate spots beside their footpaths,
+// changed the hold ticks and made cranks fill only while the hero stands still,
+// none of which a 1.8.2 run did. Only the fields the corpus reads are kept.
+export const WORLD_DESIGN_SITES_182 = Object.freeze([
+  { id: 'relay-power', x: 340, y: 3540, holdTicks: 90, reward: 'heal', gateId: 'relay-supply-gate' },
+  { id: 'ravine-winch', x: 2990, y: 2810, holdTicks: 120, gateId: 'ravine-salvage-gate' },
+  { id: 'crossing-pump', x: 5800, y: 4280, holdTicks: 150, reward: 'ammo', gateId: 'crossing-haven-gate' },
+  { id: 'hashwood-shrine', x: 7380, y: 3450, holdTicks: 120, reward: 'heal', gateId: 'hashwood-sanctuary-gate' },
+  { id: 'mining-valve', x: 9210, y: 3030, holdTicks: 90, gateId: 'mining-trap-gate' },
+  { id: 'yard-warehouse', x: 10490, y: 3910, holdTicks: 180, reward: 'ammo', gateId: 'yard-service-gate' },
+].map((site) => Object.freeze(site)));
+
+function createWorldDesignState182() {
+  return { completed: new Map(), activating: new Map(), openGates: new Set(), targetId: null, progress: 0, lastTick: -1 };
+}
+
+function stepWorldDesign182(state, { tick, player, queryGround, lineBlocked }) {
+  if (!Number.isInteger(tick) || tick < 0 || tick <= state.lastTick) throw new TypeError('world interaction ticks must be monotonic');
+  if (![player?.x, player?.y].every(Number.isFinite)) throw new TypeError('finite player position required');
+  state.lastTick = tick;
+  // Enter reach once; the machinery then finishes without holding position.
+  for (const site of WORLD_DESIGN_SITES_182) {
+    if (state.completed.has(site.id) || state.activating.has(site.id)) continue;
+    if (Math.hypot(player.x - site.x, player.y - site.y) > 82
+      || Math.abs((player.groundZ ?? 0) - queryGround(site.x, site.y).groundZ) > 8
+      || lineBlocked(player, site)) continue;
+    state.activating.set(site.id, tick);
+  }
+  const events = [];
+  state.targetId = null; state.progress = 0;
+  for (const site of WORLD_DESIGN_SITES_182) {
+    const started = state.activating.get(site.id);
+    if (started === undefined) continue;
+    const progress = tick - started + 1;
+    if (progress < site.holdTicks) {
+      if (state.targetId === null) { state.targetId = site.id; state.progress = progress; }
+      continue;
+    }
+    state.activating.delete(site.id);
+    state.completed.set(site.id, tick);
+    if (site.gateId) state.openGates.add(site.gateId);
+    events.push({ id: `world:${site.id}`, type: 'world:operated', tick, siteId: site.id, gateId: site.gateId ?? null, reward: site.reward ?? null });
+  }
+  return { events };
+}
 const DT = 1 / 60;
 const WORLD = LEVEL_ONE_WORLD.bounds;
 const PLAYER_RADIUS = LEVEL_ONE_WORLD.player.radius;
@@ -140,7 +191,7 @@ export function hmhHonestCorpusSeeds(perEntry) {
   const buckets = new Map();
   while ([...buckets.values()].reduce((sum, list) => sum + list.length, 0) < perEntry * 5) {
     const seed = Math.floor(random() * 0x1_0000_0000);
-    const { id } = selectLevelEntry(seed);
+    const { id } = hmhV6LevelEntry(seed);
     const list = buckets.get(id) ?? [];
     if (list.length < perEntry) list.push(seed);
     buckets.set(id, list);
@@ -153,13 +204,13 @@ export function simulateHmhHonestRun({ seed, pilot: pilotId }) {
   if (!pilot) throw new Error(`unknown pilot ${pilotId}`);
   const random = mulberry32(seed ^ createHash('sha256').update(pilotId).digest().readUInt32BE(0));
   const endTick = pilot.ticks[0] + Math.floor(random() * (pilot.ticks[1] - pilot.ticks[0]));
-  const entry = selectLevelEntry(seed);
+  const entry = hmhV6LevelEntry(seed);
   const accumulator = createRunSummaryAccumulator({ seed, buildHash: HMH_HONEST_CORPUS_BUILD_HASH, mode: 'ranked', heroId: 'lit-commando', startTick: 0, startPosition: { x: entry.x, y: entry.y } });
   const progression = createRunProgression({ seed });
   const motion = createPlayerMotionState({ x: entry.x, y: entry.y, maxSpeed: LEVEL_ONE_WORLD.player.maxSpeed });
   const dash = createDashState({ cooldownTier: 0 });
   const collectibles = hmhChildCollectibleState(seed);
-  const sites = createWorldDesignState();
+  const sites = createWorldDesignState182();
   const placements = collectibles.entries.map((entryRow) => entryRow.placement);
 
   let effects = getRunProgressionSnapshot(progression).effects;
@@ -189,12 +240,16 @@ export function simulateHmhHonestRun({ seed, pilot: pilotId }) {
       const snapshot = getRunProgressionSnapshot(progression);
       level = snapshot.level;
       effects = snapshot.effects;
-      if (snapshot.pendingLevels <= 0 || snapshot.pendingChoices.length === 0) return;
-      const offered = snapshot.pendingChoices.map((choice) => choice.id);
+      // The 1.8.2 two-card offer (frozen in build-fixtures.mjs), not the
+      // child's live offer, which the progression release changed.
+      const choices = offer181(progression);
+      if (snapshot.pendingLevels <= 0 || choices.length === 0) return;
+      const offered = choices.map((choice) => choice.id);
       recordRunUpgradeOffer(accumulator, offered);
       const pick = pilot.prefer.find((id) => offered.includes(id)) ?? offered[Math.floor(random() * offered.length)];
       const before = effects.bonusGrenadeCharges;
-      const selection = selectRunUpgrade(progression, pick);
+      select181(progression, pick);
+      const selection = getRunProgressionSnapshot(progression);
       recordRunUpgradeSelection(accumulator, pick);
       handCharges += selection.effects.bonusGrenadeCharges - before;
       dash.cooldownTier = selection.effects.dashCooldownTier;
@@ -230,7 +285,7 @@ export function simulateHmhHonestRun({ seed, pilot: pilotId }) {
       return !best || distance < best.distance ? { x: point.x, y: point.y, distance } : best;
     }, null);
     const available = () => placements.filter((placement) => collectibleIsAvailable(collectibles, placement, tick));
-    const lockedSites = () => WORLD_DESIGN_SITES.filter((site) => !sites.completed.has(site.id) && !sites.activating.has(site.id));
+    const lockedSites = () => WORLD_DESIGN_SITES_182.filter((site) => !sites.completed.has(site.id) && !sites.activating.has(site.id));
     if (pilot.move === 'ends') {
       const west = { x: 40 + random() * 200, y: 400 + random() * 4_000 };
       const east = { x: WORLD.maxX - 40 - random() * 200, y: 400 + random() * 4_000 };
@@ -277,8 +332,8 @@ export function simulateHmhHonestRun({ seed, pilot: pilotId }) {
     const districtId = getLevelOneDistrictAt(position.x, position.y)?.id ?? 'frontier-relay';
 
     // Machinery sites unlock their objective rewards.
-    if (sites.activating.size > 0 || WORLD_DESIGN_SITES.some((site) => !sites.completed.has(site.id) && near(site, position, SITE_REACH))) {
-      const frame = stepWorldDesign(sites, { tick, player: { ...position, groundZ: queryGround(position.x, position.y).groundZ }, queryGround, lineBlocked: () => false });
+    if (sites.activating.size > 0 || WORLD_DESIGN_SITES_182.some((site) => !sites.completed.has(site.id) && near(site, position, SITE_REACH))) {
+      const frame = stepWorldDesign182(sites, { tick, player: { ...position, groundZ: queryGround(position.x, position.y).groundZ }, queryGround, lineBlocked: () => false });
       for (const event of frame.events) {
         recordRunMilestone(accumulator, { type: 'site-operated', id: event.siteId, tick });
         collectibles.unlockedObjectives.add(event.siteId);

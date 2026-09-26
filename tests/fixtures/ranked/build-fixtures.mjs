@@ -202,6 +202,8 @@ export const HMH_PLANS = Object.freeze({
 // eligible v6 cards, and a pick that only spends the pending level. The child's
 // progression release (a new salt, card 2, re-rolls, twelve more cards) is
 // schema 7's; buildHmhV7Evidence plays it through the child's own offer API.
+// Exported for the honest-run corpus (hmh-honest-corpus.mjs), which stands for
+// 1.8.2 runs and plays the same frozen offer.
 function hashChoice181(seed, value) {
   let hash = (seed ^ 0x811c9dc5) >>> 0;
   for (let index = 0; index < value.length; index += 1) {
@@ -211,7 +213,7 @@ function hashChoice181(seed, value) {
   return hash;
 }
 
-function offer181(progression) {
+export function offer181(progression) {
   if (progression.pendingLevels <= 0) return [];
   const salt = `${progression.level}:${progression.pendingLevels}:${progression.selectionSequence}`;
   return HMH_RUN_SUMMARY_CATALOGS_V6.upgrades
@@ -225,7 +227,7 @@ function offer181(progression) {
     .map(({ upgrade }) => upgrade);
 }
 
-function select181(progression, upgradeId) {
+export function select181(progression, upgradeId) {
   progression.ranks[upgradeId] += 1;
   progression.pendingLevels -= 1;
   progression.selectionSequence += 1;

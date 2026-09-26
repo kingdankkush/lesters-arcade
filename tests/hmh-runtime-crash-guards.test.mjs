@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from 'acorn';
 import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
-import { createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { LIQUIDATOR_BELL_INTRO_TICKS, createLiquidatorBoss, isLiquidatorTargetable } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import {
   createWeaponLoadout,
   grantWeaponPickup,
@@ -44,13 +44,24 @@ const bossCombatTargetStatement = (() => {
 })();
 
 // The actual main.mjs expressions, evaluated against real module state.
+// Since the boss kit (S1.5) the Liquidator has no start timer: he is null until
+// the player starts him, and every weapon, hazard and resolver list reads one
+// liveness gate, main.mjs's `bossTargetable`, which is the real
+// isLiquidatorTargetable (active, alive, and past the Closing Bell intro).
+// The gate is evaluated from main.mjs's own declarator, never re-typed here.
+assert.equal(declaratorInit('bossTargetable'), 'isLiquidatorTargetable(liquidatorBoss, tick)');
+function mainBossTargetable({ liquidatorBoss, tick }) {
+  return vm.runInNewContext(declaratorInit('bossTargetable'), { isLiquidatorTargetable, liquidatorBoss, tick });
+}
 function mainLightningTargets({ grayboxEnemies, liquidatorBoss, tick }) {
-  return vm.runInNewContext(declaratorInit('lightningTargets'), { grayboxEnemies, liquidatorBoss, tick });
+  const bossTargetable = mainBossTargetable({ liquidatorBoss, tick });
+  return vm.runInNewContext(declaratorInit('lightningTargets'), { grayboxEnemies, liquidatorBoss, tick, bossTargetable });
 }
 function mainCombatTargets({ grayboxEnemies, liquidatorBoss, tick }) {
   const combatTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0)
     .map(({ id, health, maxHealth }) => ({ id, health, maxHealth, armor: 1, shieldCharges: 0, knockbackResistance: 1 }));
-  vm.runInNewContext(bossCombatTargetStatement, { combatTargets, liquidatorBoss, tick });
+  const bossTargetable = mainBossTargetable({ liquidatorBoss, tick });
+  vm.runInNewContext(bossCombatTargetStatement, { combatTargets, liquidatorBoss, tick, bossTargetable });
   combatTargets.push({ id: 'player', health: 100, maxHealth: 100, armor: 1, shieldCharges: 0, knockbackResistance: 1 });
   return combatTargets;
 }
@@ -60,15 +71,20 @@ const hitIntent = (hit, tick, weaponId) => ({
   direction: { x: 1, y: 0 }, knockback: 0, point: { ...hit.point },
 });
 
+// The 1.8.4 shape of the crash: a boss object that exists before it is live. On
+// this branch that is a Closing Bell start inside its untargetable intro (the
+// bell rings at the contract's 36,000 at the earliest; the constructor takes any
+// start tick), and "engaged" means past that intro.
 const BOSS_START_TICK = 72_000;
+const BOSS_MAX_HEALTH = 4_640;
 const DORMANT_TICK = 8_300;
-const ENGAGED_TICK = BOSS_START_TICK + 60;
+const ENGAGED_TICK = BOSS_START_TICK + LIQUIDATOR_BELL_INTRO_TICKS + 60;
 
 // Fire a channel weapon for `ticks` fixed steps with manual aim (the path the
 // hunter pilot took), feeding the main.mjs target list, then resolve every
 // hit the way main.mjs does: against the main.mjs combat target set.
 function fireChannelAtBoss({ weaponId, startTick, ticks, enemyX, bossX }) {
-  const liquidatorBoss = createLiquidatorBoss({ id: 'boss-liquidator', x: bossX, y: 0, groundZ: 0, startTick: BOSS_START_TICK });
+  const liquidatorBoss = createLiquidatorBoss({ id: 'boss-liquidator', x: bossX, y: 0, groundZ: 0, startTick: BOSS_START_TICK, maxHealth: BOSS_MAX_HEALTH, entry: 'bell' });
   const grayboxEnemies = [{ id: 'enemy-0001', x: enemyX, y: 0, groundZ: 0, active: true, health: 5_000, maxHealth: 5_000 }];
   const loadout = createWeaponLoadout({ weaponIds: ['coin-blaster', weaponId], activeWeaponId: weaponId, seed: 0x484d4808 });
   const hits = [];
@@ -128,19 +144,31 @@ test('an engaged Liquidator is still a Burner and Ledger target and takes the da
 test('every list the Liquidator joins in main.mjs waits for its start tick', () => {
   const bossId = (node) => node?.type === 'ObjectExpression'
     && node.properties.some((property) => property.key?.name === 'id' && text(property.value) === 'liquidatorBoss.id');
+  // The pressure (body separation) list carries him as a body object, not a
+  // target: { id: liquidatorBoss.id, kind: 'boss', ... } inside its array.
+  const bossBody = (node) => bossId(node) && node.properties.some((property) => property.key?.name === 'kind' && text(property.value) === "'boss'");
   const entries = nodes.filter((node) =>
-    (node.type === 'ArrayExpression' && node.elements.some((element) => element?.type === 'Identifier' && element.name === 'liquidatorBoss'))
+    (node.type === 'ArrayExpression' && node.elements.some((element) => (element?.type === 'Identifier' && element.name === 'liquidatorBoss') || bossBody(element)))
     || (node.type === 'CallExpression' && node.callee.type === 'MemberExpression' && node.callee.property.name === 'push'
       && node.arguments.some((argument) => text(argument) === 'liquidatorBoss.id' || bossId(argument)
         || (argument.type === 'CallExpression' && argument.arguments.some(bossId)))));
+  // A body list may follow an active boss (he pushes the hero during the bell
+  // intro, when he is present but not yet a target); every weapon, hazard and
+  // resolver list must read main.mjs's liveness gate: bossTargetable, or the
+  // real isLiquidatorTargetable it is declared from (the aim list resolves
+  // before the declarator and calls it directly).
+  const gateFor = (node) => (node.type === 'ArrayExpression' && node.elements.some(bossBody)
+    ? /\bliquidatorBoss\?\.active\b/
+    : /\bbossTargetable\b|\bisLiquidatorTargetable\(liquidatorBoss, tick\)/);
   const gated = (node) => {
+    const gate = gateFor(node);
     for (let child = node, parent = parents.get(node); parent; child = parent, parent = parents.get(parent)) {
       if (/Function/.test(parent.type)) return false;
       const guard = parent.type === 'ConditionalExpression' && child === parent.consequent ? parent.test
         : parent.type === 'IfStatement' && child === parent.consequent ? parent.test
           : parent.type === 'LogicalExpression' && parent.operator === '&&' && child === parent.right ? parent.left
             : null;
-      if (guard && /\btick >= liquidatorBoss\.startTick\b/.test(text(guard))) return true;
+      if (guard && gate.test(text(guard))) return true;
     }
     return false;
   };
@@ -148,6 +176,18 @@ test('every list the Liquidator joins in main.mjs waits for its start tick', () 
   assert.ok(entries.length >= 8, `found ${entries.length} boss list entries`);
   const ungated = entries.filter((entry) => !gated(entry)).map((entry) => `${source.slice(0, entry.start).split('\n').length}: ${text(entry).slice(0, 80)}`);
   assert.deepEqual(ungated, [], 'a dormant boss must not be offered to any weapon, hazard or resolver list');
+});
+
+test('before the player starts him there is no boss object, and no list offers one', () => {
+  // S1.5: liquidatorBoss is null until the Closing Bell or the Dark Pool starts
+  // him; the same main.mjs expressions must stay safe on null.
+  const grayboxEnemies = [{ id: 'enemy-0001', x: 120, y: 0, groundZ: 0, active: true, health: 5_000, maxHealth: 5_000 }];
+  for (const tick of [0, DORMANT_TICK, ENGAGED_TICK]) {
+    assert.equal(mainBossTargetable({ liquidatorBoss: null, tick }), false);
+    // Array.from: the list is built inside the vm realm, and deepEqual compares prototypes.
+    assert.deepEqual(Array.from(mainLightningTargets({ grayboxEnemies, liquidatorBoss: null, tick }), (target) => target.id), ['enemy-0001']);
+    assert.deepEqual(Array.from(mainCombatTargets({ grayboxEnemies, liquidatorBoss: null, tick }), (target) => target.id), ['enemy-0001', 'player']);
+  }
 });
 
 // --- Bug 2: an ammo reward landing mid-channel -----------------------------

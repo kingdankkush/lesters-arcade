@@ -844,14 +844,13 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   weapon.owned = true;
   // The pickup includes a loaded weapon plus an authored reserve. Repeat
   // pickups add reserve, bounded at twice the authored grant so hoarding
-  // cannot trivialize the finite-ammo economy.
-  // As in refillWeaponLoadout, a live channel keeps its cells.
-  if (!weapon.channelState?.active) {
-    weapon.ammoInClip = progression.clipSize;
-    if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
-    weapon.reloadStartedTick = null;
-    weapon.reloadCompleteTick = null;
-  }
+  // cannot trivialize the finite-ammo economy. A live Arc Rifle channel is
+  // topped up in place (1.8.4 hotfix b300740a): refillLightningLedgerCells
+  // keeps the channel's start, drain clock and overheat cap.
+  weapon.ammoInClip = progression.clipSize;
+  if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
+  weapon.reloadStartedTick = null;
+  weapon.reloadCompleteTick = null;
   if (authored !== null) {
     weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
   }
@@ -927,10 +926,11 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     if (authored !== null) {
       weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
     }
-    // A live Arc Rifle channel keeps its cells (the ledger cannot be refilled
-    // mid-channel); the grant still tops up the reserve, and the clip refills
-    // on the next reload. 1.8.1 threw here inside the fixed step.
-    if (weapon.channelState?.active) continue;
+    // A refill may land while an Arc Rifle channel is live (an ammo reward
+    // taken with the beam held). 1.8.1 threw here inside the fixed step; since
+    // the 1.8.4 hotfix (b300740a) refillLightningLedgerCells tops the cells up
+    // without touching the channel's start, drain clock or overheat cap, so the
+    // clip and cells refill in place and the beam keeps running.
     weapon.ammoInClip = progression.clipSize;
     if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
     if (weapon.burnerState) {
