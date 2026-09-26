@@ -18,6 +18,7 @@ export function createSceneBus() {
     rig: null,             // computeLightRig() result for this frame
     transition: null,      // see parallax.mjs transitionState()
     art: null,             // art loader
+    mode: 'free',          // 'ranked' hides debug overlays
     stormInView: false,
     grounded: false,
     contactFamily: '',

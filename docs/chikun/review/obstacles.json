@@ -1,0 +1,1208 @@
+{
+ "farmland": {
+  "noon": {
+   "hurdle": {
+    "body": 1.79,
+    "edge": 1.09
+   },
+   "log": {
+    "body": 1.67,
+    "edge": 2.07
+   },
+   "crate": {
+    "body": 1.32,
+    "edge": 1.35
+   },
+   "oak": {
+    "body": 2.84,
+    "edge": 3.74
+   },
+   "willow": {
+    "body": 2.02,
+    "edge": 3.02
+   },
+   "shiba": {
+    "body": 2.03,
+    "edge": 1.17
+   },
+   "pit": {
+    "body": 2.01,
+    "edge": 1.73
+   },
+   "cherry": {
+    "body": 1.51,
+    "edge": 2.66
+   },
+   "storm": {
+    "body": 2.71,
+    "edge": 1.59
+   },
+   "hawk": {
+    "body": 2.82,
+    "edge": 3.55
+   },
+   "drone": {
+    "body": 1.06,
+    "edge": 2.18
+   },
+   "pelican": {
+    "body": 1.65,
+    "edge": 1.28
+   }
+  },
+  "golden": {
+   "hurdle": {
+    "body": 1.66,
+    "edge": 1.07
+   },
+   "log": {
+    "body": 1.49,
+    "edge": 1.84
+   },
+   "crate": {
+    "body": 1.27,
+    "edge": 1.27
+   },
+   "oak": {
+    "body": 1.98,
+    "edge": 2.51
+   },
+   "willow": {
+    "body": 1.49,
+    "edge": 2.08
+   },
+   "shiba": {
+    "body": 1.81,
+    "edge": 1.13
+   },
+   "pit": {
+    "body": 1.77,
+    "edge": 1.58
+   },
+   "cherry": {
+    "body": 1.2,
+    "edge": 1.93
+   },
+   "storm": {
+    "body": 1.79,
+    "edge": 1.24
+   },
+   "hawk": {
+    "body": 1.84,
+    "edge": 2.26
+   },
+   "drone": {
+    "body": 1.23,
+    "edge": 1.54
+   },
+   "pelican": {
+    "body": 1.82,
+    "edge": 1.06
+   }
+  },
+  "night": {
+   "hurdle": {
+    "body": 1.75,
+    "edge": 1.09
+   },
+   "log": {
+    "body": 1.23,
+    "edge": 1.51
+   },
+   "crate": {
+    "body": 1.38,
+    "edge": 1.06
+   },
+   "oak": {
+    "body": 1.17,
+    "edge": 1.43
+   },
+   "willow": {
+    "body": 1.12,
+    "edge": 1.18
+   },
+   "shiba": {
+    "body": 1.84,
+    "edge": 1.26
+   },
+   "pit": {
+    "body": 1.32,
+    "edge": 1.62
+   },
+   "cherry": {
+    "body": 1.31,
+    "edge": 1.14
+   },
+   "storm": {
+    "body": 1.07,
+    "edge": 1.23
+   },
+   "hawk": {
+    "body": 1.03,
+    "edge": 1.16
+   },
+   "drone": {
+    "body": 2.27,
+    "edge": 1.25
+   },
+   "pelican": {
+    "body": 2.24,
+    "edge": 1.26
+   }
+  },
+  "dawn": {
+   "hurdle": {
+    "body": 1.58,
+    "edge": 1.11
+   },
+   "log": {
+    "body": 1.53,
+    "edge": 1.88
+   },
+   "crate": {
+    "body": 1.22,
+    "edge": 1.31
+   },
+   "oak": {
+    "body": 2.19,
+    "edge": 2.74
+   },
+   "willow": {
+    "body": 1.52,
+    "edge": 2.14
+   },
+   "shiba": {
+    "body": 1.72,
+    "edge": 1.09
+   },
+   "pit": {
+    "body": 1.84,
+    "edge": 1.51
+   },
+   "cherry": {
+    "body": 1.25,
+    "edge": 2.01
+   },
+   "storm": {
+    "body": 1.62,
+    "edge": 1.19
+   },
+   "hawk": {
+    "body": 2.14,
+    "edge": 2.59
+   },
+   "drone": {
+    "body": 1.14,
+    "edge": 1.63
+   },
+   "pelican": {
+    "body": 1.61,
+    "edge": 1.18
+   }
+  }
+ },
+ "forest": {
+  "noon": {
+   "rock": {
+    "body": 2.07,
+    "edge": 1.38
+   },
+   "log": {
+    "body": 1.05,
+    "edge": 1.3
+   },
+   "thorn": {
+    "body": 1.29,
+    "edge": 1.01
+   },
+   "forest": {
+    "body": 2.35,
+    "edge": 2.05
+   },
+   "cherry": {
+    "body": 1.4,
+    "edge": 1.25
+   },
+   "willow": {
+    "body": 1.28,
+    "edge": 1.97
+   },
+   "waterfall": {
+    "body": 2.27,
+    "edge": 1.11
+   },
+   "pit": {
+    "body": 1.41,
+    "edge": 1.58
+   },
+   "maple": {
+    "body": 1.24,
+    "edge": 1.67
+   },
+   "oak": {
+    "body": 1.81,
+    "edge": 2.55
+   },
+   "canopy": {
+    "body": 1.73,
+    "edge": 3.15
+   },
+   "storm": {
+    "body": 2.08,
+    "edge": 1.3
+   },
+   "hawk": {
+    "body": 1.39,
+    "edge": 1.83
+   },
+   "eagle": {
+    "body": 1.22,
+    "edge": 1.3
+   }
+  },
+  "golden": {
+   "rock": {
+    "body": 1.74,
+    "edge": 1.24
+   },
+   "log": {
+    "body": 1.01,
+    "edge": 1.29
+   },
+   "thorn": {
+    "body": 1.18,
+    "edge": 1.05
+   },
+   "forest": {
+    "body": 1.57,
+    "edge": 1.44
+   },
+   "cherry": {
+    "body": 1.47,
+    "edge": 1.1
+   },
+   "willow": {
+    "body": 1.03,
+    "edge": 1.47
+   },
+   "waterfall": {
+    "body": 2.12,
+    "edge": 1.02
+   },
+   "pit": {
+    "body": 1.39,
+    "edge": 1.41
+   },
+   "maple": {
+    "body": 1.05,
+    "edge": 1.36
+   },
+   "oak": {
+    "body": 1.36,
+    "edge": 1.8
+   },
+   "canopy": {
+    "body": 1.27,
+    "edge": 2.09
+   },
+   "storm": {
+    "body": 1.41,
+    "edge": 1.03
+   },
+   "hawk": {
+    "body": 1.12,
+    "edge": 1.41
+   },
+   "eagle": {
+    "body": 1.04,
+    "edge": 1.09
+   }
+  },
+  "night": {
+   "rock": {
+    "body": 1.66,
+    "edge": 1.27
+   },
+   "log": {
+    "body": 1.07,
+    "edge": 1.15
+   },
+   "thorn": {
+    "body": 1.22,
+    "edge": 1.03
+   },
+   "forest": {
+    "body": 1.05,
+    "edge": 1.07
+   },
+   "cherry": {
+    "body": 1.74,
+    "edge": 1.17
+   },
+   "willow": {
+    "body": 1.49,
+    "edge": 1.11
+   },
+   "waterfall": {
+    "body": 2.31,
+    "edge": 1.18
+   },
+   "pit": {
+    "body": 1.15,
+    "edge": 1.4
+   },
+   "maple": {
+    "body": 1.21,
+    "edge": 1.04
+   },
+   "oak": {
+    "body": 1.17,
+    "edge": 1.06
+   },
+   "canopy": {
+    "body": 1.32,
+    "edge": 1.12
+   },
+   "storm": {
+    "body": 1.29,
+    "edge": 1.43
+   },
+   "hawk": {
+    "body": 1.17,
+    "edge": 1.01
+   },
+   "eagle": {
+    "body": 1.32,
+    "edge": 1.25
+   }
+  },
+  "dawn": {
+   "rock": {
+    "body": 1.67,
+    "edge": 1.19
+   },
+   "log": {
+    "body": 1.03,
+    "edge": 1.33
+   },
+   "thorn": {
+    "body": 1.13,
+    "edge": 1.09
+   },
+   "forest": {
+    "body": 1.71,
+    "edge": 1.6
+   },
+   "cherry": {
+    "body": 1.27,
+    "edge": 1.25
+   },
+   "willow": {
+    "body": 1.03,
+    "edge": 1.49
+   },
+   "waterfall": {
+    "body": 1.83,
+    "edge": 1.15
+   },
+   "pit": {
+    "body": 1.46,
+    "edge": 1.36
+   },
+   "maple": {
+    "body": 1.19,
+    "edge": 1.53
+   },
+   "oak": {
+    "body": 1.39,
+    "edge": 1.85
+   },
+   "canopy": {
+    "body": 1.14,
+    "edge": 1.91
+   },
+   "storm": {
+    "body": 1.24,
+    "edge": 1.04
+   },
+   "hawk": {
+    "body": 1.27,
+    "edge": 1.6
+   },
+   "eagle": {
+    "body": 1.19,
+    "edge": 1.26
+   }
+  }
+ },
+ "town": {
+  "noon": {
+   "town": {
+    "body": 1.18,
+    "edge": 2.86
+   },
+   "hurdle": {
+    "body": 1.55,
+    "edge": 1.98
+   },
+   "crate": {
+    "body": 1.07,
+    "edge": 1.85
+   },
+   "storm": {
+    "body": 2.65,
+    "edge": 1.54
+   },
+   "drone": {
+    "body": 1.31,
+    "edge": 1.57
+   },
+   "hawk": {
+    "body": 1.13,
+    "edge": 1.27
+   }
+  },
+  "golden": {
+   "town": {
+    "body": 1.13,
+    "edge": 2.41
+   },
+   "hurdle": {
+    "body": 1.39,
+    "edge": 1.72
+   },
+   "crate": {
+    "body": 1.08,
+    "edge": 1.62
+   },
+   "storm": {
+    "body": 1.82,
+    "edge": 1.24
+   },
+   "drone": {
+    "body": 1.56,
+    "edge": 1.2
+   },
+   "hawk": {
+    "body": 1.03,
+    "edge": 1.13
+   }
+  },
+  "night": {
+   "town": {
+    "body": 2.14,
+    "edge": 1.25
+   },
+   "hurdle": {
+    "body": 1.12,
+    "edge": 1.31
+   },
+   "crate": {
+    "body": 1.23,
+    "edge": 1.27
+   },
+   "storm": {
+    "body": 1.09,
+    "edge": 1.1
+   },
+   "drone": {
+    "body": 3.5,
+    "edge": 1.94
+   },
+   "hawk": {
+    "body": 1.23,
+    "edge": 1.04
+   }
+  },
+  "dawn": {
+   "town": {
+    "body": 1.12,
+    "edge": 2.0
+   },
+   "hurdle": {
+    "body": 1.44,
+    "edge": 1.76
+   },
+   "crate": {
+    "body": 1.04,
+    "edge": 1.66
+   },
+   "storm": {
+    "body": 1.63,
+    "edge": 1.17
+   },
+   "drone": {
+    "body": 2.19,
+    "edge": 1.16
+   },
+   "hawk": {
+    "body": 1.04,
+    "edge": 1.14
+   }
+  }
+ },
+ "city": {
+  "noon": {
+   "city": {
+    "body": 1.31,
+    "edge": 2.27
+   },
+   "pipe": {
+    "body": 1.63,
+    "edge": 2.02
+   },
+   "crate": {
+    "body": 1.74,
+    "edge": 3.1
+   },
+   "hurdle": {
+    "body": 1.82,
+    "edge": 1.28
+   },
+   "storm": {
+    "body": 2.36,
+    "edge": 1.41
+   },
+   "canopy": {
+    "body": 1.86,
+    "edge": 2.69
+   },
+   "drone": {
+    "body": 1.82,
+    "edge": 1.24
+   },
+   "plane": {
+    "body": 2.19,
+    "edge": 1.01
+   },
+   "hawk": {
+    "body": 1.19,
+    "edge": 1.18
+   }
+  },
+  "golden": {
+   "city": {
+    "body": 1.06,
+    "edge": 1.86
+   },
+   "pipe": {
+    "body": 1.46,
+    "edge": 1.73
+   },
+   "crate": {
+    "body": 1.54,
+    "edge": 2.42
+   },
+   "hurdle": {
+    "body": 1.62,
+    "edge": 1.24
+   },
+   "storm": {
+    "body": 1.62,
+    "edge": 1.12
+   },
+   "canopy": {
+    "body": 1.39,
+    "edge": 1.87
+   },
+   "drone": {
+    "body": 1.92,
+    "edge": 1.05
+   },
+   "plane": {
+    "body": 2.33,
+    "edge": 1.18
+   },
+   "hawk": {
+    "body": 1.17,
+    "edge": 1.15
+   }
+  },
+  "night": {
+   "city": {
+    "body": 1.81,
+    "edge": 1.47
+   },
+   "pipe": {
+    "body": 1.48,
+    "edge": 1.64
+   },
+   "crate": {
+    "body": 1.19,
+    "edge": 1.68
+   },
+   "hurdle": {
+    "body": 1.65,
+    "edge": 1.05
+   },
+   "storm": {
+    "body": 1.0,
+    "edge": 1.27
+   },
+   "canopy": {
+    "body": 1.01,
+    "edge": 1.31
+   },
+   "drone": {
+    "body": 2.08,
+    "edge": 1.14
+   },
+   "plane": {
+    "body": 2.82,
+    "edge": 1.62
+   },
+   "hawk": {
+    "body": 1.1,
+    "edge": 1.12
+   }
+  },
+  "dawn": {
+   "city": {
+    "body": 1.13,
+    "edge": 2.04
+   },
+   "pipe": {
+    "body": 1.6,
+    "edge": 1.87
+   },
+   "crate": {
+    "body": 1.59,
+    "edge": 2.47
+   },
+   "hurdle": {
+    "body": 1.54,
+    "edge": 1.29
+   },
+   "storm": {
+    "body": 1.48,
+    "edge": 1.07
+   },
+   "canopy": {
+    "body": 1.31,
+    "edge": 1.79
+   },
+   "drone": {
+    "body": 1.69,
+    "edge": 1.2
+   },
+   "plane": {
+    "body": 2.95,
+    "edge": 1.5
+   },
+   "hawk": {
+    "body": 1.16,
+    "edge": 1.15
+   }
+  }
+ },
+ "industrial": {
+  "noon": {
+   "pipe": {
+    "body": 1.89,
+    "edge": 2.34
+   },
+   "crate": {
+    "body": 2.59,
+    "edge": 4.33
+   },
+   "hurdle": {
+    "body": 1.53,
+    "edge": 1.42
+   },
+   "log": {
+    "body": 1.29,
+    "edge": 1.2
+   },
+   "pit": {
+    "body": 1.67,
+    "edge": 1.67
+   },
+   "storm": {
+    "body": 2.86,
+    "edge": 1.64
+   },
+   "canopy": {
+    "body": 2.42,
+    "edge": 4.2
+   },
+   "drone": {
+    "body": 1.2,
+    "edge": 2.71
+   },
+   "plane": {
+    "body": 2.96,
+    "edge": 1.41
+   }
+  },
+  "golden": {
+   "pipe": {
+    "body": 1.6,
+    "edge": 1.89
+   },
+   "crate": {
+    "body": 2.12,
+    "edge": 3.16
+   },
+   "hurdle": {
+    "body": 1.47,
+    "edge": 1.31
+   },
+   "log": {
+    "body": 1.28,
+    "edge": 1.13
+   },
+   "pit": {
+    "body": 1.51,
+    "edge": 1.53
+   },
+   "storm": {
+    "body": 1.87,
+    "edge": 1.28
+   },
+   "canopy": {
+    "body": 1.69,
+    "edge": 2.68
+   },
+   "drone": {
+    "body": 1.11,
+    "edge": 1.8
+   },
+   "plane": {
+    "body": 2.61,
+    "edge": 1.39
+   }
+  },
+  "night": {
+   "pipe": {
+    "body": 1.19,
+    "edge": 1.35
+   },
+   "crate": {
+    "body": 1.49,
+    "edge": 2.03
+   },
+   "hurdle": {
+    "body": 1.65,
+    "edge": 1.06
+   },
+   "log": {
+    "body": 1.42,
+    "edge": 1.04
+   },
+   "pit": {
+    "body": 1.15,
+    "edge": 1.66
+   },
+   "storm": {
+    "body": 1.06,
+    "edge": 1.25
+   },
+   "canopy": {
+    "body": 1.12,
+    "edge": 1.25
+   },
+   "drone": {
+    "body": 1.9,
+    "edge": 1.05
+   },
+   "plane": {
+    "body": 2.41,
+    "edge": 1.45
+   }
+  },
+  "dawn": {
+   "pipe": {
+    "body": 1.69,
+    "edge": 1.98
+   },
+   "crate": {
+    "body": 2.15,
+    "edge": 3.2
+   },
+   "hurdle": {
+    "body": 1.41,
+    "edge": 1.34
+   },
+   "log": {
+    "body": 1.23,
+    "edge": 1.16
+   },
+   "pit": {
+    "body": 1.56,
+    "edge": 1.45
+   },
+   "storm": {
+    "body": 1.64,
+    "edge": 1.18
+   },
+   "canopy": {
+    "body": 1.51,
+    "edge": 2.39
+   },
+   "drone": {
+    "body": 1.1,
+    "edge": 1.89
+   },
+   "plane": {
+    "body": 2.74,
+    "edge": 1.48
+   }
+  }
+ },
+ "suburbs": {
+  "noon": {
+   "suburb": {
+    "body": 1.1,
+    "edge": 1.66
+   },
+   "hurdle": {
+    "body": 1.85,
+    "edge": 2.69
+   },
+   "log": {
+    "body": 3.08,
+    "edge": 4.24
+   },
+   "crate": {
+    "body": 1.09,
+    "edge": 1.75
+   },
+   "shiba": {
+    "body": 1.34,
+    "edge": 1.23
+   },
+   "oak": {
+    "body": 2.94,
+    "edge": 3.9
+   },
+   "maple": {
+    "body": 2.54,
+    "edge": 3.62
+   },
+   "cherry": {
+    "body": 1.45,
+    "edge": 2.54
+   },
+   "storm": {
+    "body": 2.77,
+    "edge": 1.62
+   },
+   "drone": {
+    "body": 1.21,
+    "edge": 2.46
+   },
+   "hawk": {
+    "body": 2.87,
+    "edge": 3.6
+   }
+  },
+  "golden": {
+   "suburb": {
+    "body": 1.12,
+    "edge": 1.51
+   },
+   "hurdle": {
+    "body": 1.59,
+    "edge": 2.15
+   },
+   "log": {
+    "body": 2.38,
+    "edge": 3.11
+   },
+   "crate": {
+    "body": 1.13,
+    "edge": 1.52
+   },
+   "shiba": {
+    "body": 1.31,
+    "edge": 1.16
+   },
+   "oak": {
+    "body": 2.17,
+    "edge": 2.73
+   },
+   "maple": {
+    "body": 1.86,
+    "edge": 2.49
+   },
+   "cherry": {
+    "body": 1.25,
+    "edge": 2.01
+   },
+   "storm": {
+    "body": 1.87,
+    "edge": 1.3
+   },
+   "drone": {
+    "body": 1.16,
+    "edge": 1.63
+   },
+   "hawk": {
+    "body": 1.95,
+    "edge": 2.37
+   }
+  },
+  "night": {
+   "suburb": {
+    "body": 2.29,
+    "edge": 1.13
+   },
+   "hurdle": {
+    "body": 1.23,
+    "edge": 1.57
+   },
+   "log": {
+    "body": 1.7,
+    "edge": 2.07
+   },
+   "crate": {
+    "body": 1.31,
+    "edge": 1.21
+   },
+   "shiba": {
+    "body": 1.46,
+    "edge": 1.03
+   },
+   "oak": {
+    "body": 1.32,
+    "edge": 1.56
+   },
+   "maple": {
+    "body": 1.1,
+    "edge": 1.4
+   },
+   "cherry": {
+    "body": 1.06,
+    "edge": 1.39
+   },
+   "storm": {
+    "body": 1.01,
+    "edge": 1.15
+   },
+   "drone": {
+    "body": 2.01,
+    "edge": 1.12
+   },
+   "hawk": {
+    "body": 1.01,
+    "edge": 1.2
+   }
+  },
+  "dawn": {
+   "suburb": {
+    "body": 1.29,
+    "edge": 1.36
+   },
+   "hurdle": {
+    "body": 1.63,
+    "edge": 2.18
+   },
+   "log": {
+    "body": 2.4,
+    "edge": 3.14
+   },
+   "crate": {
+    "body": 1.09,
+    "edge": 1.55
+   },
+   "shiba": {
+    "body": 1.26,
+    "edge": 1.2
+   },
+   "oak": {
+    "body": 2.17,
+    "edge": 2.74
+   },
+   "maple": {
+    "body": 1.81,
+    "edge": 2.43
+   },
+   "cherry": {
+    "body": 1.34,
+    "edge": 2.11
+   },
+   "storm": {
+    "body": 1.62,
+    "edge": 1.19
+   },
+   "drone": {
+    "body": 1.2,
+    "edge": 1.55
+   },
+   "hawk": {
+    "body": 2.05,
+    "edge": 2.53
+   }
+  }
+ },
+ "coast": {
+  "noon": {
+   "rock": {
+    "body": 4.02,
+    "edge": 4.24
+   },
+   "log": {
+    "body": 1.49,
+    "edge": 2.64
+   },
+   "waterfall": {
+    "body": 1.58,
+    "edge": 3.33
+   },
+   "pit": {
+    "body": 3.46,
+    "edge": 1.21
+   },
+   "willow": {
+    "body": 2.49,
+    "edge": 3.53
+   },
+   "crate": {
+    "body": 2.06,
+    "edge": 3.58
+   },
+   "storm": {
+    "body": 3.0,
+    "edge": 1.7
+   },
+   "pelican": {
+    "body": 1.05,
+    "edge": 1.91
+   },
+   "plane": {
+    "body": 1.75,
+    "edge": 1.14
+   },
+   "hawk": {
+    "body": 2.59,
+    "edge": 3.34
+   }
+  },
+  "golden": {
+   "rock": {
+    "body": 2.94,
+    "edge": 3.15
+   },
+   "log": {
+    "body": 1.32,
+    "edge": 2.15
+   },
+   "waterfall": {
+    "body": 1.37,
+    "edge": 2.53
+   },
+   "pit": {
+    "body": 2.73,
+    "edge": 1.26
+   },
+   "willow": {
+    "body": 1.91,
+    "edge": 2.54
+   },
+   "crate": {
+    "body": 1.71,
+    "edge": 2.68
+   },
+   "storm": {
+    "body": 2.0,
+    "edge": 1.34
+   },
+   "pelican": {
+    "body": 1.19,
+    "edge": 1.54
+   },
+   "plane": {
+    "body": 2.19,
+    "edge": 1.19
+   },
+   "hawk": {
+    "body": 1.93,
+    "edge": 2.4
+   }
+  },
+  "night": {
+   "rock": {
+    "body": 1.9,
+    "edge": 2.04
+   },
+   "log": {
+    "body": 1.0,
+    "edge": 1.5
+   },
+   "waterfall": {
+    "body": 1.47,
+    "edge": 1.23
+   },
+   "pit": {
+    "body": 1.75,
+    "edge": 1.56
+   },
+   "willow": {
+    "body": 1.03,
+    "edge": 1.33
+   },
+   "crate": {
+    "body": 1.27,
+    "edge": 1.81
+   },
+   "storm": {
+    "body": 1.13,
+    "edge": 1.31
+   },
+   "pelican": {
+    "body": 3.27,
+    "edge": 1.83
+   },
+   "plane": {
+    "body": 3.65,
+    "edge": 2.21
+   },
+   "hawk": {
+    "body": 1.44,
+    "edge": 1.22
+   }
+  },
+  "dawn": {
+   "rock": {
+    "body": 2.94,
+    "edge": 3.15
+   },
+   "log": {
+    "body": 1.34,
+    "edge": 2.16
+   },
+   "waterfall": {
+    "body": 1.28,
+    "edge": 2.37
+   },
+   "pit": {
+    "body": 2.77,
+    "edge": 1.22
+   },
+   "willow": {
+    "body": 1.82,
+    "edge": 2.42
+   },
+   "crate": {
+    "body": 1.74,
+    "edge": 2.69
+   },
+   "storm": {
+    "body": 1.62,
+    "edge": 1.16
+   },
+   "pelican": {
+    "body": 1.48,
+    "edge": 1.24
+   },
+   "plane": {
+    "body": 3.22,
+    "edge": 1.87
+   },
+   "hawk": {
+    "body": 1.52,
+    "edge": 1.89
+   }
+  }
+ }
+}
