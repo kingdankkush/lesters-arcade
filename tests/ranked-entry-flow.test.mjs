@@ -36,12 +36,12 @@ test('each wallet error kind maps to one message and one action', () => {
   const table = [
     [{ code: 4001, message: 'User rejected the request.' }, 'user-cancelled', 'You cancelled in your wallet. Nothing was charged.', ['Try again']],
     [new Error('Wrong network: wallet is on chain 1, expected 4441'), 'wrong-network', 'Your wallet is on another network.', ['Switch to LiteForge']],
-    [{ code: 'INSUFFICIENT_FUNDS', shortMessage: 'insufficient funds for intrinsic transaction cost' }, 'insufficient-funds', 'You need about 0.1025 zkLTC. Balance 0.0100 zkLTC.', ['Get free zkLTC (0.05 per request)', 'Re-check']],
+    [{ code: 'INSUFFICIENT_FUNDS', shortMessage: 'insufficient funds for intrinsic transaction cost' }, 'insufficient-funds', 'You need about 0.0125 zkLTC. Balance 0.0100 zkLTC.', ['Get free zkLTC (0.05 per request)', 'Re-check']],
     [new Error('A connected wallet is required to pay the Ranked entry.'), 'missing-wallet', null, ['Sign in']],
     [{ shortMessage: 'could not coalesce error', message: 'could not coalesce error (error={ "code": -32603 }, payload=…, code=UNKNOWN_ERROR, version=6.13.4)' }, 'wallet-error', 'could not coalesce error', ['Try again']],
   ];
   for (const [error, kind, message, labels] of table) {
-    const action = walletErrorAction(classifyWalletError(error), { totalZkLtc: '0.1025', balanceZkLtc: '0.0100 zkLTC' });
+    const action = walletErrorAction(classifyWalletError(error), { totalZkLtc: '0.0125', balanceZkLtc: '0.0100 zkLTC' });
     assert.equal(action.kind, kind);
     assert.equal(action.message, message, kind);
     assert.deepEqual(action.actions.map((entry) => entry.label), labels, kind);
@@ -160,9 +160,9 @@ test('the entry chip goes pending, then confirmed or failed', async () => {
     const session = { sessionId: 'game-session-1', canonicalContext: { gameId: 'chikun' } };
     let release;
     const confirmation = new Promise((resolve) => { release = resolve; });
-    recordEntryBroadcast(session, { txHash: '0xabc', sessionId32: `0x${'cd'.repeat(32)}`, amountWei: 102_000_000_000_000_000n, wait: () => confirmation }, { eventTarget: target });
+    recordEntryBroadcast(session, { txHash: '0xabc', sessionId32: `0x${'cd'.repeat(32)}`, amountWei: 12_000_000_000_000_000n, wait: () => confirmation }, { eventTarget: target });
     const chip = mountEntryChip({ documentRef: doc, eventTarget: target, sessionId: 'game-session-1', status: 'broadcast' });
-    assert.deepEqual(session.entryReceipt, { txHash: '0xabc', sessionId32: `0x${'cd'.repeat(32)}`, amountWei: '102000000000000000', status: 'pending' });
+    assert.deepEqual(session.entryReceipt, { txHash: '0xabc', sessionId32: `0x${'cd'.repeat(32)}`, amountWei: '12000000000000000', status: 'pending' });
     assert.deepEqual(events, [{ sessionId: 'game-session-1', gameId: 'chikun', status: 'broadcast', txHash: '0xabc' }]);
     assert.equal(chip.element.dataset.state, 'pending');
     assert.equal(chip.element.children[0].textContent, 'Entry confirming…');
@@ -215,7 +215,7 @@ function pendingRankedSession() {
   const uuid = '3f2b8c1e-9d4a-4b7e-8c21-5a6f7e8d9c0b';
   const sessionId = `game-session-${uuid}`;
   return {
-    sessionId, sessionNonce: uuid, seasonId: 'hmh-season-1-2026', seed: 12345, entryFeeWei: '100000000000000000',
+    sessionId, sessionNonce: uuid, seasonId: 'hmh-season-1-2026', seed: 12345, entryFeeWei: '10000000000000000',
     canonicalContext: Object.freeze({ sessionId, wallet: WALLET, gameId: 'lester-blaster', buildHash: 'site-1.7.0:game-1.7.0', seasonId: 'hmh-season-1-2026', seed: 12345 }),
   };
 }
@@ -223,8 +223,8 @@ function pendingRankedSession() {
 const TICKET = Object.freeze({ v: 'lesters-ranked-seed-v1', salt: 'ab'.repeat(16), issuedAt: 1_790_000_000, mac: 'cd'.repeat(32) });
 
 const FUNDED = Object.freeze({
-  ok: true, onChain: true, chainId: 4441, hasFunds: true, balanceWei: 10n ** 18n, balanceEth: '1', needWei: 102_500_000_000_000_000n, error: null,
-  contractGate: Object.freeze({ ok: true, entryFeeWei: 100_000_000_000_000_000n, settlementGasReserveWei: 2_000_000_000_000_000n, entryTotalWei: 102_000_000_000_000_000n, rankedEntryAddress: '0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190' }),
+  ok: true, onChain: true, chainId: 4441, hasFunds: true, balanceWei: 10n ** 18n, balanceEth: '1', needWei: 12_500_000_000_000_000n, error: null,
+  contractGate: Object.freeze({ ok: true, entryFeeWei: 10_000_000_000_000_000n, settlementGasReserveWei: 2_000_000_000_000_000n, entryTotalWei: 12_000_000_000_000_000n, rankedEntryAddress: '0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190' }),
 });
 const FAUCET = 'https://liteforge.hub.caldera.xyz';
 
@@ -261,7 +261,7 @@ function liveModal({ seedResponses = [], session = pendingRankedSession(), signI
       return typeof next === 'function' ? next() : next;
     },
     playSfxCue() {}, requestLiteForgeNetwork: async (walletProvider) => { switches.push(walletProvider); return context.switchResult ?? true; },
-    RANKED_ENTRY_FEE_ZKLTC: '0.1', formatZkLtcWei: (wei) => `${Number(BigInt(wei) / 1_000_000_000_000_000n) / 1000} zkLTC`,
+    RANKED_ENTRY_FEE_ZKLTC: '0.01', formatZkLtcWei: (wei) => `${Number(BigInt(wei) / 1_000_000_000_000_000n) / 1000} zkLTC`,
     RANKED_SETTLEMENT_GAS_RESERVE_WEI: '2000000000000000', rankedEntryTotalWei: (fee) => (BigInt(fee) + 2_000_000_000_000_000n).toString(),
     ensureWalletStylesheet() {}, peekRankedPreflight: () => peek,
     formatZkLtc4, walletErrorAction, classifyWalletError, RANKED_PAUSED_MESSAGE, RANKED_CLOSED_MESSAGE, isRankedPaused, seedTicketUsable,
@@ -285,7 +285,7 @@ function liveModal({ seedResponses = [], session = pendingRankedSession(), signI
       order.push('send');
       context.sentWith = options;
       if (send) return send(options);
-      return { txHash: '0xfeed', sessionId32: options.sessionKey, amountWei: 102_000_000_000_000_000n, paid: true, wait: () => confirmation };
+      return { txHash: '0xfeed', sessionId32: options.sessionKey, amountWei: 12_000_000_000_000_000n, paid: true, wait: () => confirmation };
     },
     recordEntryBroadcast, showEntryChip: (pending) => order.push(`chip:${pending.entryReceipt.status}`), refreshWalletBalanceChip() {},
     startOfficialMode: async (mode) => { starts.push(mode); }, signInFromPicker: async (options) => { pickers.push(options); return null; },
@@ -310,7 +310,7 @@ test('live entry fetches and applies a seed ticket before computing the key', as
   await until(() => !modal.dom.rankedEntryApprove.disabled, 'the live check');
   assert.equal(modal.dom.rankedEntryApprove.disabled, false, 'the live check passed');
   assert.deepEqual(modal.order, ['seed:token-1:true'], 'the ticket is prefetched when the modal opens, with the Bearer token');
-  assert.equal(modal.dom.rankedEntryTotal.textContent, '0.102 zkLTC');
+  assert.equal(modal.dom.rankedEntryTotal.textContent, '0.012 zkLTC');
   modal.dom.rankedEntryApprove.click();
   let resolved = null;
   modal.promise.then((value) => { resolved = value; });
@@ -322,13 +322,13 @@ test('live entry fetches and applies a seed ticket before computing the key', as
   assert.deepEqual({ ...modal.session.seedTicket }, { ...TICKET });
   const expectedKey = await rankedIdentity.rankedSessionKey(rankedIdentity.rankedIdentityFor(modal.session, { scoreRegistryAddress: REGISTRY }));
   assert.equal(modal.context.sentWith.sessionKey, expectedKey, 'the paid key binds the ticket seed');
-  assert.equal(modal.context.sentWith.preflight.entryTotalWei, 102_000_000_000_000_000n, 'the fresh quote goes with the entry');
+  assert.equal(modal.context.sentWith.preflight.entryTotalWei, 12_000_000_000_000_000n, 'the fresh quote goes with the entry');
   assert.equal(modal.context.sentWith.expectedWallet, WALLET, 'the entry may only be paid by the wallet the key binds');
   assert.deepEqual(modal.tokenWallets, [WALLET], 'the Bearer token of the bound wallet');
   // The run starts on broadcast, before the confirmation.
   assert.equal(resolved, true);
   assert.equal(modal.dom.rankedEntryModal.hidden, true);
-  assert.deepEqual(modal.session.entryReceipt, { txHash: '0xfeed', sessionId32: expectedKey, amountWei: '102000000000000000', status: 'pending' });
+  assert.deepEqual(modal.session.entryReceipt, { txHash: '0xfeed', sessionId32: expectedKey, amountWei: '12000000000000000', status: 'pending' });
   assert.deepEqual(modal.events.map((detail) => detail.status), ['broadcast']);
   modal.confirm({ status: 'confirmed', blockNumber: 3 });
   assert.equal(await modal.session.entryConfirmed, 'confirmed');
@@ -482,21 +482,21 @@ test('a paused answer to the prefetch stops an approval already in progress', as
 
 test('a funds error at send shows the balance and total the check read, rounded honestly', async () => {
   const insufficient = () => { throw Object.assign(new Error('insufficient funds for intrinsic transaction cost'), { code: 'INSUFFICIENT_FUNDS' }); };
-  const modal = liveModal({ seedResponses: [freshTicket()], readiness: { ...FUNDED, balanceWei: 500_000_000_000_000_000n, needWei: 102_500_000_000_000_001n }, send: insufficient });
+  const modal = liveModal({ seedResponses: [freshTicket()], readiness: { ...FUNDED, balanceWei: 500_000_000_000_000_000n, needWei: 12_500_000_000_000_001n }, send: insufficient });
   await until(() => approveEnabled(modal), 'the live check');
   assert.equal(modal.dom.rankedEntryBalance.textContent, '0.5000 zkLTC');
   modal.dom.rankedEntryApprove.click();
   await until(() => !modal.dom.rankedEntryChainGuard.hidden, 'the funds guard');
-  assert.equal(modal.dom.rankedEntryChainGuard.children[0].textContent, 'You need about 0.1026 zkLTC. Balance 0.5000 zkLTC.', 'not "Balance unknown"');
+  assert.equal(modal.dom.rankedEntryChainGuard.children[0].textContent, 'You need about 0.0126 zkLTC. Balance 0.5000 zkLTC.', 'not "Balance unknown"');
 
   // Unfunded at the check: the balance rounds down and the amount owed up, so
   // a small shortfall never reads as enough. The faucet link names the amount
   // per request (ranked-onboarding) and Re-check reads again.
-  const short = liveModal({ readiness: [{ ...FUNDED, ok: false, hasFunds: false, errorKind: 'insufficient-funds', balanceWei: 102_499_999_999_999_999n, needWei: 102_500_000_000_000_000n }, FUNDED] });
+  const short = liveModal({ readiness: [{ ...FUNDED, ok: false, hasFunds: false, errorKind: 'insufficient-funds', balanceWei: 12_499_999_999_999_999n, needWei: 12_500_000_000_000_000n }, FUNDED] });
   await until(() => !short.dom.rankedEntryChainGuard.hidden, 'the unfunded guard');
   const [message, actions] = short.dom.rankedEntryChainGuard.children;
-  assert.equal(message.textContent, 'You need about 0.1025 zkLTC. Balance 0.1024 zkLTC.');
-  assert.equal(short.dom.rankedEntryBalance.textContent, '0.1024 zkLTC');
+  assert.equal(message.textContent, 'You need about 0.0125 zkLTC. Balance 0.0124 zkLTC.');
+  assert.equal(short.dom.rankedEntryBalance.textContent, '0.0124 zkLTC');
   const [faucet, recheck] = actions.children;
   assert.deepEqual([faucet.tag, faucet.textContent, faucet.href, faucet.target, faucet.rel], ['a', FAUCET_LINK_TEXT, FAUCET, '_blank', 'noopener noreferrer']);
   assert.equal(FAUCET_LINK_TEXT, 'Get free zkLTC (0.05 per request)');
@@ -596,7 +596,7 @@ test('the cached pre-flight quote shows at once, then the fresh check replaces i
   await until(() => typeof release === 'function', 'the fresh check');
   release(FUNDED);
   await until(() => approveEnabled(modal), 'the fresh check result');
-  assert.deepEqual([modal.dom.rankedEntryTotal.textContent, modal.dom.rankedEntryBalance.textContent], ['0.102 zkLTC', '1.0000 zkLTC']);
+  assert.deepEqual([modal.dom.rankedEntryTotal.textContent, modal.dom.rankedEntryBalance.textContent], ['0.012 zkLTC', '1.0000 zkLTC']);
   modal.dom.rankedEntryCancel.click();
   assert.equal(await modal.promise, false);
 });
@@ -659,25 +659,26 @@ test('the "Free Mode is always free" link closes the modal and starts Free', asy
 });
 
 // ranked-onboarding (2026-09-26): the cost breakdown is the entry contract's
-// quote. When the operator retunes the fee (0.1 -> 0.01 zkLTC), the Entry row
-// follows the quote, not the client constant the pending session carries.
+// quote. Between this release (client constant 0.01 zkLTC) and the on-chain
+// setEntryFee, the chain still quotes 0.1 + 0.002: the Entry row follows the
+// quote like the Publishing and Total rows, never the client constant.
 test('the Entry, Publishing and Total rows show the quote, not the client constant', async () => {
-  const quote = { ...FUNDED.contractGate, entryFeeWei: 10_000_000_000_000_000n, entryTotalWei: 12_000_000_000_000_000n };
+  const quote = { ...FUNDED.contractGate, entryFeeWei: 100_000_000_000_000_000n, entryTotalWei: 102_000_000_000_000_000n };
   const modal = liveModal({
     seedResponses: [freshTicket()],
-    readiness: { ...FUNDED, needWei: 12_500_000_000_000_000n, contractGate: quote },
-    peek: { entryFeeWei: 10_000_000_000_000_000n, entryTotalWei: 12_000_000_000_000_000n, settlementGasReserveWei: 2_000_000_000_000_000n, balanceWei: 10n ** 18n },
+    readiness: { ...FUNDED, needWei: 102_500_000_000_000_000n, contractGate: quote },
+    peek: { entryFeeWei: 100_000_000_000_000_000n, entryTotalWei: 102_000_000_000_000_000n, settlementGasReserveWei: 2_000_000_000_000_000n, balanceWei: 10n ** 18n },
   });
   // The cached pre-flight answers synchronously; the client constant never shows once a quote exists.
-  assert.deepEqual([modal.dom.rankedEntryFee.textContent, modal.dom.rankedEntryReserve.textContent, modal.dom.rankedEntryTotal.textContent], ['0.01 zkLTC', '0.002 zkLTC', '0.012 zkLTC']);
+  assert.deepEqual([modal.dom.rankedEntryFee.textContent, modal.dom.rankedEntryReserve.textContent, modal.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.002 zkLTC', '0.102 zkLTC']);
   await until(() => approveEnabled(modal), 'the fresh check');
-  assert.deepEqual([modal.dom.rankedEntryFee.textContent, modal.dom.rankedEntryReserve.textContent, modal.dom.rankedEntryTotal.textContent], ['0.01 zkLTC', '0.002 zkLTC', '0.012 zkLTC']);
+  assert.deepEqual([modal.dom.rankedEntryFee.textContent, modal.dom.rankedEntryReserve.textContent, modal.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.002 zkLTC', '0.102 zkLTC']);
   modal.dom.rankedEntryCancel.click();
   assert.equal(await modal.promise, false);
 
   // Without a quote yet, the rows show the pending session's fee plus the client reserve.
   const unquoted = liveModal({ seedResponses: [freshTicket()], readiness: () => new Promise(() => {}) });
-  assert.deepEqual([unquoted.dom.rankedEntryFee.textContent, unquoted.dom.rankedEntryTotal.textContent], ['0.1 zkLTC', '0.102 zkLTC']);
+  assert.deepEqual([unquoted.dom.rankedEntryFee.textContent, unquoted.dom.rankedEntryReserve.textContent, unquoted.dom.rankedEntryTotal.textContent], ['0.01 zkLTC', '0.002 zkLTC', '0.012 zkLTC']);
   unquoted.dom.rankedEntryCancel.click();
   assert.equal(await unquoted.promise, false);
 });

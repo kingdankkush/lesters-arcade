@@ -89,14 +89,14 @@ test('the preview cards promise no publishing and the launch cards state the fee
     const now = renderModeSelect({ gameId, portalCopy: preview });
     const text = [now.mode, now.ranked, ...now.tooltip].join(' ');
     assert.match(now.ranked, /nothing is published on chain yet/);
-    assert.doesNotMatch(text, /Publish your score|zkLTC|LiteForge|0\.102|replayed/i, `${gameId} preview`);
+    assert.doesNotMatch(text, /Publish your score|zkLTC|LiteForge|0\.012|0\.102|replayed/i, `${gameId} preview`);
   }
   const hmh = renderModeSelect({ gameId: 'lester-blaster', portalCopy: launch });
-  assert.match(hmh.ranked, /^0\.102 testnet zkLTC per run\. The arcade server plausibility-checks your run \(it is not replayed\) and publishes it on LitVM\.$/);
+  assert.match(hmh.ranked, /^0\.012 testnet zkLTC per run\. The arcade server plausibility-checks your run \(it is not replayed\) and publishes it on LitVM\.$/);
   const chikun = renderModeSelect({ gameId: 'chikun', portalCopy: launch });
-  assert.match(chikun.ranked, /^0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.$/);
+  assert.match(chikun.ranked, /^0\.012 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.$/);
   const stacked = renderModeSelect({ gameId: 'stacked', portalCopy: launch });
-  assert.match(stacked.ranked, /^0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.$/);
+  assert.match(stacked.ranked, /^0\.012 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.$/);
   assert.match(stacked.mode, /Ranked starts at level 1 with no undo/);
   for (const view of [hmh, chikun, stacked]) {
     const text = [view.mode, view.ranked, ...view.tooltip].join(' ');
@@ -160,7 +160,7 @@ test('the prerendered mode-select blocks match what the SPA shows', () => {
       }
     }
     assert.equal(block(readFileSync(join(dir, 'index.html'), 'utf8'), 'mode-ranked'), escapeHtml(launch.modeSelect['lester-blaster'].ranked));
-    assert.match(readFileSync(join(dir, `discover/${slugOf('stacked')}.html`), 'utf8'), /<!-- copy:mode-ranked:start -->0\.102 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.<!-- copy:mode-ranked:end -->/);
+    assert.match(readFileSync(join(dir, `discover/${slugOf('stacked')}.html`), 'utf8'), /<!-- copy:mode-ranked:start -->0\.012 testnet zkLTC per run\. The arcade server replays your run from its inputs and publishes it on LitVM\.<!-- copy:mode-ranked:end -->/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

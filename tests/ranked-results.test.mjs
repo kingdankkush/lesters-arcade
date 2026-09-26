@@ -835,7 +835,7 @@ for (const gameId of ['chikun', 'stacked']) {
       hmhChallengeUi: { requestFor: () => null },
       beginTrackedSession: () => {
         const sessionId = `game-session-next-${minted.length + 1}`;
-        const session = { sessionId, entryFeeWei: '100000000000000000', canonicalContext: { sessionId, wallet: WALLET } };
+        const session = { sessionId, entryFeeWei: '10000000000000000', canonicalContext: { sessionId, wallet: WALLET } };
         minted.push(session);
         return session;
       },
@@ -847,7 +847,7 @@ for (const gameId of ['chikun', 'stacked']) {
       showRankedTooltip: (title) => { throw new Error(`no tooltip expected: ${title}`); },
       ensureWalletStylesheet() {}, detectEthereumProvider: () => null,
       formatZkLtcWei: (wei) => `${wei} wei`, rankedEntryTotalWei: (fee) => String(BigInt(fee) + 2_000_000_000_000_000n),
-      RANKED_SETTLEMENT_GAS_RESERVE_WEI: '2000000000000000', RANKED_ENTRY_FEE_ZKLTC: '0.1',
+      RANKED_SETTLEMENT_GAS_RESERVE_WEI: '2000000000000000', RANKED_ENTRY_FEE_ZKLTC: '0.01',
       LITVM_LITEFORGE_NETWORK: { name: 'Fixture LiteForge', chainId: 4441 },
     });
     vm.runInContext(`${portalFunctionSource('startOfficialMode')}\n${portalFunctionSource('requestRankedEntry')}`, page);
@@ -889,7 +889,7 @@ for (const gameId of ['chikun', 'stacked']) {
     // A second request while the modal is open is refused: one set of listeners.
     assert.equal(approveListeners(), 1);
     await settled(page.startOfficialMode('ranked'), 'a second Ranked start');
-    assert.equal(await settled(page.requestRankedEntry({ sessionId: 'game-session-stray', entryFeeWei: '100000000000000000', canonicalContext: { wallet: WALLET } }), 'a second entry request'), false);
+    assert.equal(await settled(page.requestRankedEntry({ sessionId: 'game-session-stray', entryFeeWei: '10000000000000000', canonicalContext: { wallet: WALLET } }), 'a second entry request'), false);
     assert.equal(approveListeners(), 1, 'no second set of approve listeners');
     assert.equal(minted.length, 1, 'no second pending session was minted');
 
@@ -1028,7 +1028,7 @@ test('the real Ranked glue hands the screen a run it matches by session id, foll
   const windowRef = fakeWindow();
   const entryTx = `0x${'ab'.repeat(32)}`;
   let confirm;
-  recordEntryBroadcast(session, { txHash: entryTx, sessionId32: STACKED.body.sessionId32, amountWei: '102000000000000000', wait: () => new Promise((resolve) => { confirm = resolve; }) }, {
+  recordEntryBroadcast(session, { txHash: entryTx, sessionId32: STACKED.body.sessionId32, amountWei: '12000000000000000', wait: () => new Promise((resolve) => { confirm = resolve; }) }, {
     eventTarget: { dispatchEvent: (event) => { windowRef.emit(event.type, event.detail); return true; } },
     gameId: 'stacked',
   });

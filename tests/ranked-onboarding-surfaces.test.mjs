@@ -113,7 +113,11 @@ test('each game page has a Ranked section: price, faucet, what is checked, board
 test('the Ranked modal rows and What happens next come from the facts and follow the flags', () => {
   const modal = (html) => html.match(/<div id="rankedEntryModal"[\s\S]*?(?=<nav\b)/)[0];
   const livePage = modal(live['index.html']);
-  assert.deepEqual(['entry-fee', 'entry-reserve', 'entry-total'].map((key) => block(livePage, key)), ['0.01 zkLTC', '0.002 zkLTC', '0.012 zkLTC']);
+  // The Entry, Publishing and Total rows are static fallbacks that the quote replaces
+  // (tests/ranked-fee-source-of-truth.test.mjs ties them to arcade-core.mjs).
+  const row = (id) => livePage.match(new RegExp(`<strong id="${id}">([^<]*)</strong>`))?.[1];
+  assert.deepEqual(['rankedEntryFee', 'rankedEntryReserve', 'rankedEntryTotal'].map(row), [RANKED_FACTS.entryZkLtc, RANKED_FACTS.publishZkLtc, RANKED_FACTS.totalZkLtc].map((amount) => `${amount} zkLTC`));
+  assert.match(livePage, /<span>Publishing<small class="ranked-entry-row-note">pays the arcade's relayer to publish your score on LitVM<\/small><\/span>/);
   assert.equal(decode(block(livePage, 'entry-split')), "85% to the game's developer · 15% to the arcade");
   const next = rankedSurfaceCopy({ settlementLive: true }).entryNext;
   assert.equal(next.length, 3);

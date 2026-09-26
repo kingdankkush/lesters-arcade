@@ -45,6 +45,7 @@ const NODE_CHECK_FILES = [
   'tests/ranked-guide-page.test.mjs',
   'tests/ranked-onboarding-surfaces.test.mjs',
   'tests/portal-copy.test.mjs',
+  'tests/ranked-fee-source-of-truth.test.mjs',
   'tests/portal-pages-build.test.mjs',
   'tests/portal-mode-select-copy.test.mjs',
   'scripts/portal-discovery-browser-smoke.mjs',

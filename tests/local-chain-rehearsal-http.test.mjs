@@ -148,9 +148,9 @@ test('the live CLI plays one Ranked session per game over HTTP and JSON-RPC: pla
     // --games (a retry of what failed) plans only those; without a second wallet the copy check is announced as skipped.
     const oneLogs = [];
     assert.equal(await runRehearsalCli({ argv: [...base, '--games', 'chikun', '--cron-secret-file', cronFile], env: {}, log: (line) => oneLogs.push(line) }), 0);
-    assert.match(oneLogs.join('\n'), /entry chikun: 0\.102 zkLTC/);
+    assert.match(oneLogs.join('\n'), /entry chikun: 0\.012 zkLTC/);
     assert.doesNotMatch(oneLogs.join('\n'), /entry (stacked|lester-blaster)/);
-    assert.match(oneLogs.join('\n'), /total 0\.102 zkLTC in entries/);
+    assert.match(oneLogs.join('\n'), /total 0\.012 zkLTC in entries/);
     assert.match(oneLogs.join('\n'), /the evidence-copy check is skipped, as it needs a second funded wallet/);
     // A wallet that cannot pay is refused after the plan, before anything is signed.
     const brokeFile = join(state.dir, 'broke.key');

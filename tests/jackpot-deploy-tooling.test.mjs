@@ -137,7 +137,7 @@ test('deploy dry run prints a manifest and sends nothing', async () => {
   ]);
   // --rules launch: design §A.5.
   assert.deepEqual(args.rules, {
-    fromWeek: current + 1, maxSurvivalSeconds: 3599, adminClearOnly: true, minPaidWei: '100000000000000000', maxPrizeWei: '0',
+    fromWeek: current + 1, maxSurvivalSeconds: 3599, adminClearOnly: true, minPaidWei: '10000000000000000', maxPrizeWei: '0',
     minFundWei: '100000000000000000000', maxScore: '0', seasonId: ethers.id('chikun-season-preview-1'), altSeasonId: ethers.ZeroHash,
   });
   assert.equal(manifest.confirm, DEPLOY_JACKPOT_CONFIRM);

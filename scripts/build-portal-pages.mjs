@@ -55,13 +55,11 @@ function withMeta(html,path,copy){
   html=html.replace(/\s*<script id="portalStructuredData"[\s\S]*?<\/script>/,'');
   return html.replace('  </head>','    <script id="portalStructuredData" type="application/ld+json">'+portalSchema(path,copy)+'</script>\n  </head>');
 }
-// The Ranked entry modal's static rows and "What happens next" (index.html; main.js replaces the
-// amounts with the entry contract's quote when the modal opens). Numbers from RANKED_FACTS.
+// The Ranked entry modal's split row and "What happens next" (index.html). The Entry, Publishing and
+// Total rows are plain static fallbacks that main.js replaces with the entry contract's quote;
+// tests/ranked-fee-source-of-truth.test.mjs ties them to the arcade-core.mjs fee constants.
 function renderEntryModal(html,surface){
-  for(const [key,text] of [
-    ['entry-fee',RANKED_FACTS.entryZkLtc+' zkLTC'],['entry-reserve',RANKED_FACTS.publishZkLtc+' zkLTC'],['entry-total',RANKED_FACTS.totalZkLtc+' zkLTC'],
-    ['entry-split',RANKED_FACTS.developerPercent+"% to the game's developer · "+RANKED_FACTS.arcadePercent+'% to the arcade'],
-  ]) html=renderCopyBlock(html,key,escapeHtml(text),'index.html');
+  html=renderCopyBlock(html,'entry-split',escapeHtml(RANKED_FACTS.developerPercent+"% to the game's developer · "+RANKED_FACTS.arcadePercent+'% to the arcade'),'index.html');
   return renderCopyBlock(html,'entry-next','<ol class="ranked-entry-next-list">'+surface.entryNext.map(text=>'<li>'+escapeHtml(text)+'</li>').join('')+'</ol>','index.html');
 }
 function renderHome(html,copy,surface){

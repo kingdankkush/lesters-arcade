@@ -18,7 +18,7 @@
 //    EIP-6963, Hardhat account player1; it answers the site's top frame only and signs no transaction
 //    but ArcadeRankedEntry.openSession for at most the quoted total): Sign in (server nonce, one
 //    signature), open Ranked (the 'Ranked · Entry' modal, its 'Publishing' row and the
-//    0.1 + 0.002 = 0.102 zkLTC quote), confirm the entry after exactly one seed ticket
+//    0.01 + 0.002 = 0.012 zkLTC quote), confirm the entry after exactly one seed ticket
 //    (POST /api/ranked/seed, A25), play a short run (Chikun: start and let it fall; STACKED: hard drops
 //    to a top-out; HMH: the evidence-safe terminal pilot), then assert:
 //      - the entry's sessionId32 on chain equals the sessionId32 the settle request used;
@@ -56,6 +56,8 @@ import { ethers } from 'ethers';
 
 import { flagValue, hasFlag, readSecret, SecretSourceError } from './lib/key-source.mjs';
 import { installFixtureWallet, READ_METHODS } from './lib/fixture-wallet.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 
@@ -68,7 +70,8 @@ export const GAME_TITLES = Object.freeze({ chikun: "Chikun's Escape", stacked: '
 export const SHARE_ORIGIN = 'https://lestersarcade.io';
 export const EXPLORER_TX_PREFIX = 'https://liteforge.explorer.caldera.xyz/tx/';
 export const LITEFORGE_PUBLIC_RPC = 'https://liteforge.rpc.caldera.xyz/http';
-export const MIN_PAID_WEI = 102_000_000_000_000_000n;
+// The server's settle floor (fee + reserve): the entry must pay at least this much to settle.
+export const MIN_PAID_WEI = BigInt(DEFAULT_MIN_PAID_WEI);
 // Live: gas headroom on top of the entries (LiteForge base fees near 1.5 gwei).
 export const LIVE_GAS_MARGIN_WEI = 5_000_000_000_000_000n;
 // The fixture look the Chikun run unlocks: `chikun-first-flight` gates the Arcade Cap (unlockables.mjs).
@@ -766,10 +769,12 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     out.modal = modal;
     expect('entry-modal-eyebrow', modal.eyebrow === 'Ranked · Entry', { eyebrow: modal.eyebrow });
     expect('entry-modal-reserve-label', modal.reserveLabel === 'Publishing', { reserveLabel: modal.reserveLabel });
-    expect('entry-modal-quote', /0\.102/.test(modal.total ?? '') && /0\.1\b/.test(modal.fee ?? '') && /0\.002/.test(modal.reserve ?? ''), { fee: modal.fee, reserve: modal.reserve, total: modal.total });
+    // The live quote must match the client constants (0.01 + 0.002 = 0.012 zkLTC): a mismatch means the on-chain
+    // setEntryFee has not landed yet (or the client constants are stale), so the check fails until they agree.
+    expect('entry-modal-quote', String(modal.total ?? '').includes(RANKED_ENTRY_TOTAL_ZKLTC) && String(modal.fee ?? '').includes(RANKED_ENTRY_FEE_ZKLTC) && String(modal.reserve ?? '').includes(RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC), { fee: modal.fee, reserve: modal.reserve, total: modal.total });
     // The launch copy (contract A33): the landing meta and FAQ, the mode select and the entry modal.
     const copyText = [landing.description, landing.faq, modal.rankedTitle, modal.rankedCopy, modal.copy, modal.footnote].join(' \n ');
-    expect('launch-copy', /0\.102 testnet zkLTC per run/.test(landing.description ?? '') && /0\.102/.test(landing.faq) && !PREVIEW_ONLY_COPY.test(copyText), { description: landing.description, rankedTitle: modal.rankedTitle, rankedCopy: modal.rankedCopy, previewHit: PREVIEW_ONLY_COPY.exec(copyText)?.[0] ?? null });
+    expect('launch-copy', String(landing.description ?? '').includes(`${RANKED_ENTRY_TOTAL_ZKLTC} testnet zkLTC per run`) && String(landing.faq ?? '').includes(RANKED_ENTRY_TOTAL_ZKLTC) && !PREVIEW_ONLY_COPY.test(copyText), { description: landing.description, rankedTitle: modal.rankedTitle, rankedCopy: modal.rankedCopy, previewHit: PREVIEW_ONLY_COPY.exec(copyText)?.[0] ?? null });
     const { seeds } = await confirmEntry(page, { timeoutMs: timeouts.stepMs, recorder, apiFrom: apiBeforeEntry });
     out.seedTickets = seeds;
     expect('seed-ticket', seeds.length === 1 && seeds[0] === SEED_TICKET_OK, { seeds });

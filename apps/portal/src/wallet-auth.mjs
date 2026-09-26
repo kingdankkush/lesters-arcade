@@ -10,7 +10,8 @@
 // everything here is pure so it can be unit-tested in Node and reused by both
 // the runtime and any future third-party adapter.
 
-import { FAUCET_LINK_TEXT, RANKED_FACTS } from './ranked-facts.mjs';
+import { RANKED_ENTRY_TOTAL_ZKLTC } from './arcade-core.mjs';
+import { FAUCET_LINK_TEXT } from './ranked-facts.mjs';
 
 // Shared by the browser and the server (contract A13): the server rebuilds the
 // message byte for byte, so both sides must use this exact constant.
@@ -221,9 +222,9 @@ export function walletErrorAction(classified, { totalZkLtc = null, balanceZkLtc 
     case 'insufficient-funds':
       return Object.freeze({
         kind,
-        // The fallback is the static price (ranked-facts.mjs); the modal passes the quoted amount.
+        // The fallback is the static total (arcade-core.mjs); the modal passes the quoted amount.
         // The faucet label names the amount per request (ranked-onboarding, 2026-09-26).
-        message: `You need about ${totalZkLtc ?? RANKED_FACTS.totalZkLtc} zkLTC. Balance ${balanceZkLtc ?? 'unknown'}.`,
+        message: `You need about ${totalZkLtc ?? RANKED_ENTRY_TOTAL_ZKLTC} zkLTC. Balance ${balanceZkLtc ?? 'unknown'}.`,
         actions: Object.freeze([Object.freeze({ id: 'faucet', label: FAUCET_LINK_TEXT }), Object.freeze({ id: 'recheck', label: 'Re-check' })]),
       });
     case 'missing-wallet':

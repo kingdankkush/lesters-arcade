@@ -75,24 +75,36 @@ export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL
 
 export const DEFAULT_ENTRY_FEE_MICRO_USDC = 0; // legacy USDC field, never charged; kept for old save records
 
-// Owner direction 2026-09-16: Ranked Mode charges 0.1 zkLTC (the LitVM native
-// token) at entry. That fee funds settlement of the score and session data on
-// LitVM. Stored as a decimal wei string so it survives JSON persistence. It is
-// only collected on chain once SETTLEMENT_LIVE is true and the hardened
-// ArcadeRankedEntry contract is deployed; the preview discloses it, nothing more.
-export const RANKED_ENTRY_FEE_WEI = '100000000000000000';
-export const RANKED_ENTRY_FEE_ZKLTC = '0.1';
+// Owner directions 2026-09-16 (fee model) and 2026-09-26 (amount): Ranked Mode
+// charges a flat 0.01 zkLTC (the LitVM native token) at entry, lowered from
+// 0.1 zkLTC because the LiteForge faucet gives 0.05 zkLTC per request. Stored
+// as a decimal wei string so it survives JSON persistence. On chain the fee is
+// GameRegistry.games[gameId].entryFeeWei (operator-only setEntryFee); this
+// constant is the client's static fallback and the single source of every
+// displayed fee string: RANKED_ENTRY_FEE_ZKLTC and RANKED_ENTRY_TOTAL_ZKLTC
+// below feed portal-content.mjs (RANKED_LAUNCH_TERMS), the index.html static
+// rows and contracts/deploy-config.testnet.json agree with it, and the server's
+// settle floor (server/config.mjs DEFAULT_MIN_PAID_WEI) equals fee plus reserve
+// (tests/ranked-fee-source-of-truth.test.mjs). The live quote from
+// ArcadeRankedEntry.quoteEntry replaces the reserve and total rows at runtime,
+// so the price path stays quote-driven.
+export const RANKED_ENTRY_FEE_WEI = '10000000000000000';
 export const RANKED_PAYMENT_TOKEN = 'zkLTC';
 
-export function formatZkLtcWei(wei) {
+// Decimal zkLTC amount of a wei string ('0.012'), trailing zeros trimmed.
+export function formatZkLtcAmount(wei) {
   const value = BigInt(String(wei ?? '0').replace(/[^0-9]/g, '') || '0');
   const whole = value / 1_000_000_000_000_000_000n;
   const fraction = (value % 1_000_000_000_000_000_000n).toString().padStart(18, '0').replace(/0+$/, '');
-  return `${whole}${fraction ? `.${fraction}` : ''} ${RANKED_PAYMENT_TOKEN}`;
+  return `${whole}${fraction ? `.${fraction}` : ''}`;
+}
+
+export function formatZkLtcWei(wei) {
+  return `${formatZkLtcAmount(wei)} ${RANKED_PAYMENT_TOKEN}`;
 }
 
 // Ranked fee split (owner decision 2026-09-16): every game sends 15% of the
-// flat 0.1 zkLTC entry to the Lester's Arcade treasury and the remaining 85%
+// flat 0.01 zkLTC entry to the Lester's Arcade treasury and the remaining 85%
 // to the game's developer. Settlement gas is NOT part of this split: the
 // player pays the flat fee plus a separate settlement gas reserve that funds
 // the relayer (see RANKED_SETTLEMENT_GAS_RESERVE_WEI), so the fee can be
@@ -103,14 +115,23 @@ export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
 });
 
 // Settlement gas reserve paid with the entry and forwarded to the relayer
-// vault so the relayer can submit the verified score for the player. A
-// placeholder estimate (0.02 zkLTC) the operator tunes on chain; the live
-// quote comes from ArcadeRankedEntry.quoteEntry, never from this constant.
+// vault so the relayer can submit the verified score for the player: 0.002
+// zkLTC (owner decision 2026-09-23, about 475k gas at 1.5 gwei) that the
+// operator tunes on chain; the live quote comes from
+// ArcadeRankedEntry.quoteEntry, never from this constant.
 export const RANKED_SETTLEMENT_GAS_RESERVE_WEI = '2000000000000000';
 
 export function rankedEntryTotalWei(entryFeeWei = RANKED_ENTRY_FEE_WEI, reserveWei = RANKED_SETTLEMENT_GAS_RESERVE_WEI) {
   return (BigInt(String(entryFeeWei)) + BigInt(String(reserveWei))).toString();
 }
+
+// Derived display strings: the one place the fee, the reserve and the total are
+// spelled out as zkLTC ('0.01', '0.002', '0.012'). Every public surface reads
+// these, so a fee change is this file plus the on-chain setEntryFee.
+export const RANKED_ENTRY_TOTAL_WEI = rankedEntryTotalWei();
+export const RANKED_ENTRY_FEE_ZKLTC = formatZkLtcAmount(RANKED_ENTRY_FEE_WEI);
+export const RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC = formatZkLtcAmount(RANKED_SETTLEMENT_GAS_RESERVE_WEI);
+export const RANKED_ENTRY_TOTAL_ZKLTC = formatZkLtcAmount(RANKED_ENTRY_TOTAL_WEI);
 
 // Dev wallet that receives the dev share + unused settlement-gas remainder.
 // Confirmed by the owner on 2026-09-16 as the zkLTC recipient for everything
