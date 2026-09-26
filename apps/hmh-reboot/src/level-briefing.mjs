@@ -51,14 +51,13 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
       ],
     },
     yard: {
-      objective: 'The Liquidator’s arena lies just east. Arm up, then hold your ground.',
-      watch: 'The arena east is the Liquidator’s. Start the warehouse control to the south for a Flamethrower. Defeat the boss to release an Arc Rifle vault.',
-      supply: 'The Grenade Launcher sits at the extraction console to the south; a medkit cache lies south-east.',
+      objective: 'Arm up, then ring the Closing Bell on the Margin Floor east when you are ready.',
+      watch: 'The Margin Floor east is the Liquidator’s; its bell calls him from 10:00. The warehouse lever to the south opens a Flamethrower court.',
+      supply: 'The Grenade Launcher sits at the extraction console to the south-east. Beat the Liquidator to open the Arc Rifle vault.',
       features: [
         { kind: 'arena', id: 'liquidator-arena', bearing: 'east' },
         { kind: 'site', id: 'yard-warehouse', bearing: 'south' },
-        { kind: 'poi', id: 'yard-extraction-console', bearing: 'south', asset: 'launcher-rig', weapon: 'Grenade Launcher' },
-        { kind: 'poi', id: 'yard-medbay-cache', bearing: 'south-east', asset: 'bonus-life' },
+        { kind: 'poi', id: 'yard-extraction-console', bearing: 'south-east', asset: 'launcher-rig', weapon: 'Grenade Launcher' },
       ],
     },
   },

@@ -104,7 +104,9 @@ export function createEncounterDirector({ nextSpawnTick = 0, seed = 0 } = {}) {
   };
 }
 
-export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, seed = 0, requestedRole = null } = {}) {
+// `leanRole` doubles one eligible role's weight (slice S1.5: the Yard leans
+// to Agents while the Liquidator lives). Off by default.
+export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, seed = 0, requestedRole = null, leanRole = null } = {}) {
   const districtRoles = DISTRICT_ROLE_GATES[districtId];
   if (!districtRoles) throw new TypeError('districtId must identify an authored district');
   const band = ENCOUNTER_BANDS.find((entry) => entry.id === bandId);
@@ -114,7 +116,7 @@ export function selectEncounterArchetype({ districtId, bandId, spawnOrdinal, see
   const eligibleRoles = districtRoles.filter((role) => band.allowedRoles.includes(role) && ROLE_ARCHETYPES[role]?.length > 0);
   const roles = eligibleRoles.length > 0 ? eligibleRoles : districtRoles.filter((role) => ROLE_ARCHETYPES[role]?.length > 0);
   if (roles.length === 0) throw new Error(`district ${districtId} has no eligible enemy roles`);
-  const weightedRoles = roles.flatMap((role) => Array.from({ length: band.roleWeights[role] ?? 1 }, () => role));
+  const weightedRoles = roles.flatMap((role) => Array.from({ length: (band.roleWeights[role] ?? 1) * (role === leanRole && eligibleRoles.includes(role) ? 2 : 1) }, () => role));
   const requestedIsEligible = requestedRole === null || eligibleRoles.includes(requestedRole);
   const selectedRole = requestedRole !== null && requestedIsEligible
     ? requestedRole
@@ -184,6 +186,7 @@ export function stepEncounterDirector({
   isBlocked,
   isRouteReachable,
   visualMode = 'normal',
+  leanRole = null,
 } = {}) {
   if (!state?.schedule || !population?.active || !(population.seenIds instanceof Set)) throw new TypeError('director state and enemy population are required');
   nonNegativeInteger(tick, 'tick');
@@ -196,7 +199,7 @@ export function stepEncounterDirector({
   if (nearRewardPoi && isEncounterRestWindow(tick)) return reject(state, tick, band, 'reward-rest-window');
   if (population.active.length >= snapshot.ordinaryBodyCap) return reject(state, tick, band, 'reserved-body-cap');
 
-  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed });
+  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole });
   const selectedRole = getEnemyArchetype(selection.archetypeId).role;
   const rangedCount = population.active.reduce((count, enemy) => count + (RANGED_ROLES.has(getEnemyArchetype(enemy.archetypeId).role) ? 1 : 0), 0);
   if (RANGED_ROLES.has(selectedRole) && rangedCount >= band.budgets.rangedCap) {

@@ -28,7 +28,8 @@ test('hidden supplies require destruction, reachable same-height contact and lin
  assert.equal(createMissionState(1).completed.size,0);
 });
 test('all secrets sit on dry authored ground and have legal navigation from the main route after their gates open',()=>{
- const blockers=world.collisionBlockers.filter(b=>!['relay-supply-gate','yard-service-gate','farmstead-cache-seal'].includes(b.id));
+ // The logbook lies in the Dark Pool, behind its cracked container (S1.5).
+ const blockers=world.collisionBlockers.filter(b=>!['relay-supply-gate','yard-service-gate','farmstead-cache-seal','dark-pool-container'].includes(b.id));
  const grid=createEnemyNavGrid({world:{...world,collisionBlockers:blockers},queryGround});
  for(const s of WORLD_DESIGN_SECRETS){assert.equal(queryGround(s.x,s.y).walkable,true,s.id);assert.equal(queryGround(s.x,s.y).groundZ,s.groundZ,s.id);
   const field=computeEnemyFlowField({grid,targetX:s.x,targetY:s.y});assert.ok(field.distance[grid.cellAt(world.player.spawn.x,world.player.spawn.y)]>0,s.id);

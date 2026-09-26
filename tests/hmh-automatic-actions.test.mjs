@@ -47,3 +47,16 @@ test('automatic close combat uses the real arc, walls, height and cooldown witho
   const upper=createMeleeTarget({id:'upper',previousGround:{...at,z:80},currentGround:{...at,z:80},radius:20});
   assert.equal(stepMeleeState(state,{...args,tick:23,targets:[upper]}).attacked,false);
 });
+
+// Slice S1.5 (package 4.1): the automatic dodge is fed boss geometry. A boss
+// strike due within 6 ticks is a danger predicate on the dodge body; the dodge
+// fires only out of it, never into it.
+test('automatic dodge reads imminent boss strikes as danger shapes',()=>{
+  const args={...options(),enemies:[]};
+  const lane={contains:p=>Math.abs(p.y-400)<=27+24&&p.x>=0&&p.x<=1000,resolveTick:14};
+  assert.equal(automaticDodgeIntent({...args,move:{x:0,y:1},bossDangers:[lane]}).y,1,'out of the lane');
+  assert.equal(automaticDodgeIntent({...args,move:{x:1,y:0},bossDangers:[lane]}),null,'never along it into more danger');
+  assert.equal(automaticDodgeIntent({...args,move:{x:0,y:1},bossDangers:[{...lane,resolveTick:17}]}),null,'not during early warning');
+  assert.equal(automaticDodgeIntent({...args,move:{x:0,y:1},bossDangers:[{...lane,resolveTick:9}]}),null,'not after it resolved');
+  assert.equal(automaticDodgeIntent({...args,move:{x:0,y:1}}),null,'no enemies and no boss: no dodge');
+});

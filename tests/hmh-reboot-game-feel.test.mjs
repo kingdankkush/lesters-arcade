@@ -340,13 +340,14 @@ test('the runtime writes the framing zoom immediately before the pinned camera f
   assert.match(source, /camera\.zoom = resolveReadableGameplayZoom\(\{\s*viewportHeight: viewport\(\)\.height,\s*bodyHeight: productionHeroDisplay\?\.minimumBodyHeight \?\? prototypeMinimumBodyHeight,\s*framingZoom: framing\.zoom,\s*mobile: touchUiEnabled,\s*\}\);\s*followCameraTarget\(camera, \{\s*\.\.\.renderActor,/);
   assert.match(source, /dataset\.cameraZoom\s*=/);
   assert.match(source, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0,\r?\n\s*\}\);\r?\n\s*camera\.zoom = resolveReadableGameplayZoom\(/);
-  const directorBlock = source.slice(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled'), source.indexOf('lastBossStep = liquidatorBoss.active'));
+  const directorBlock = source.slice(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled'), source.indexOf('lastBossStep = liquidatorBoss?.active'));
   assert.ok(directorBlock.length > 0);
   assert.doesNotMatch(directorBlock, /framing|camera\.zoom/);
   // The framing state is per session, like every other feel state.
   assert.match(source, /framingState = createEncounterFramingState\(\)/);
   // The boss dip lives in the resolver; main.mjs keeps the pinned sprite beat untouched.
-  assert.match(source, /const bossPhaseTick = lastBossStep\?\.elapsedTick \?\? 45/);
+  // S1.5: the beat plays on each Trading Halt's first 45 ticks.
+  assert.match(source, /bossPhaseTick: liquidatorBoss\?\.active && liquidatorBoss\.haltFrom >= 0 && simulation\.tick - liquidatorBoss\.haltFrom < 45 \? simulation\.tick - liquidatorBoss\.haltFrom : null,/);
 });
 
 test('the runtime emits a dash-land visual from the existing dash stop and renders it through the pooled puff', async () => {

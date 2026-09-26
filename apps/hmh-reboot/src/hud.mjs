@@ -126,8 +126,11 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
     dashReady: null, dashProgress: null, dashRawReady: null, dashActive: null, readyFlash: null,
     kills: null, powerupLabel: null,
     hero: null, visible: null,
-    bossActive: null, bossRatio: null, bossPhase: null,
+    bossActive: null, bossRatio: null, bossPhase: null, bossName: null, bossId: null, bossMarkers: null,
   };
+  // The cockpit markup names the Liquidator in the bar's <strong>; S1.5 names
+  // whichever boss is live there (package 4.1 "Audio and HUD").
+  const bossTitle = elements.bossBar.querySelector?.('strong') ?? null;
   // Timed modes whose total duration is not exported (channel cooldown, weapon
   // switch, melee recovery) are anchored on the longest remaining value seen in
   // the current episode, so the ring still sweeps once and only once.
@@ -382,13 +385,26 @@ export function createHud({ documentRef = document, weaponOrder = [] } = {}) {
       elements.hero.dataset.hero = id;
       elements.hero.textContent = HERO_CRESTS[id] ?? 'HMH';
     },
-    setBoss(active, ratio, phaseId) {
+    setBoss(active, ratio, phaseId, { bossId = null, name = null, markers = null } = {}) {
       const isActive = Boolean(active);
       if (last.bossActive !== isActive) {
         last.bossActive = isActive;
         elements.bossBar.hidden = !isActive;
       }
       if (!isActive) return;
+      if (name && bossTitle && last.bossName !== name) {
+        last.bossName = name;
+        bossTitle.textContent = name;
+      }
+      if (bossId && last.bossId !== bossId) {
+        last.bossId = bossId;
+        elements.bossBar.dataset.bossId = bossId;
+      }
+      const markerText = Array.isArray(markers) ? markers.join(',') : null;
+      if (markerText && last.bossMarkers !== markerText) {
+        last.bossMarkers = markerText;
+        markers.forEach((marker, index) => elements.bossBar.style.setProperty(`--boss-marker-${index + 1}`, String(marker)));
+      }
       const ratioText = clamp01(ratio).toFixed(3);
       if (last.bossRatio !== ratioText) {
         last.bossRatio = ratioText;

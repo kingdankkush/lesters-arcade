@@ -263,6 +263,29 @@ test('the boss bar is DOM, hidden until the fight, and carries the phase name', 
   assert.equal(bar.hidden, true);
 });
 
+// Slice S1.5 (package 4.1 "Audio and HUD"): setBoss takes the boss's name
+// and its phase markers; the cockpit markup's <strong> is renamed in place.
+test('the boss bar names the live boss and carries its phase markers', () => {
+  const { documentRef, elements } = fakeDocument();
+  const bar = elements.get('hmhBossBar');
+  const title = new FakeElement(documentRef, 'title');
+  title.textContent = 'The Liquidator';
+  bar.querySelector = (selector) => (selector === 'strong' ? title : null);
+  const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });
+  hud.setBoss(true, 1, 'market-open', { bossId: 'rug-pull-baron', name: 'The Rug Pull Baron', markers: [0.6, 0.25] });
+  assert.equal(title.textContent, 'The Rug Pull Baron');
+  assert.equal(bar.dataset.bossId, 'rug-pull-baron');
+  assert.equal(bar.style.getPropertyValue('--boss-marker-1'), '0.6');
+  assert.equal(bar.style.getPropertyValue('--boss-marker-2'), '0.25');
+  writes = 0;
+  hud.setBoss(true, 1, 'market-open', { bossId: 'rug-pull-baron', name: 'The Rug Pull Baron', markers: [0.6, 0.25] });
+  assert.equal(writes, 0, 'a repeated frame writes nothing');
+  // Without the markup's title (older cockpit), the call still works.
+  const plain = fakeDocument();
+  createHud({ documentRef: plain.documentRef, weaponOrder: WEAPON_ORDER }).setBoss(true, 0.5, 'margin-call', { name: 'The Liquidator', markers: [0.66, 0.33] });
+  assert.equal(plain.elements.get('hmhBossBar').hidden, false);
+});
+
 test('hero identity, visibility and teardown stay idempotent and allocation-free on repeat', () => {
   const { documentRef, elements } = fakeDocument();
   const hud = createHud({ documentRef, weaponOrder: WEAPON_ORDER });

@@ -265,8 +265,12 @@ import {
 // no session can start before boot() reaches the bridge or the standalone
 // session, so the fixed-step simulation only ever calls resident code: it
 // stays synchronous and deterministic. The bindings keep their imported names.
-let applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorPunishWindow,
-  getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss;
+let applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorVulnerability,
+  getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena;
+// Boss kit (design package S1.5): the registry and lifecycle, the arenas and
+// their locks, and the geometry kit's dodge predicate.
+let createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, bossAddAllowance, defeatBossSlot,
+  consumeGoldenParachute, bossHudState, forceBossStart, BOSS_LOCK_BLOCKERS = Object.freeze([]), insideBossArena, bossShapeDodgeDanger;
 let creatureAnimationTick, liquidatorPose, renderLiquidatorTelegraph;
 let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
 // Mission core v2 (design package S1.4): the objective simulation.
@@ -288,9 +292,16 @@ function loadLazyRuntimeModules() {
     import('./upgrade-panel.mjs'),
     import('./progression-content.mjs'),
     import('./mission-objectives.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission]) => {
-    ({ applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorPunishWindow,
-      getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss } = boss);
+    import('./boss-slots.mjs'),
+    import('./boss-arenas.mjs'),
+    import('./boss-geometry.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry]) => {
+    ({ applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorVulnerability,
+      getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
+    ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, bossAddAllowance, defeatBossSlot,
+      consumeGoldenParachute, bossHudState, forceBossStart } = slots);
+    ({ BOSS_LOCK_BLOCKERS, insideBossArena } = arenas);
+    ({ bossShapeDodgeDanger } = geometry);
     ({ creatureAnimationTick, liquidatorPose } = creature);
     ({ renderLiquidatorTelegraph } = telegraph);
     ({ refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } = interactions);
@@ -309,8 +320,11 @@ function loadLazyRuntimeModules() {
 const RUNTIME_VERSION = '0.5.0';
 const MAX_ACTIVE_PROJECTILES = RUNTIME_MAX_ACTIVE_PROJECTILES;
 // The archetype table tops out at threat 6; the Liquidator is the run's
-// capstone kill and gets its own authored score/XP weight.
+// capstone kill and gets its own authored score/XP weight (v7 contract: 48).
 const LIQUIDATOR_THREAT_COST = 48;
+// The Liquidation Yard grid goes quiet once the Liquidator falls (S1.5).
+const YARD_GRID_HAZARD_ID = 'yard-liquidation-grid';
+const PACIFIED_HAZARDS = Object.freeze(LEVEL_ONE_WORLD.interactions.hazards.filter((hazard) => hazard.id !== YARD_GRID_HAZARD_ID));
 // Bullets fly at chest height above whatever ground is beneath them, so firing
 // from an authored ledge still connects with targets on the level below.
 const PROJECTILE_FLIGHT_HEIGHT = 34;
@@ -372,11 +386,13 @@ let enemyFlowFieldTick = -1;
 // cover. Every player weapon and the knife hit them; the nuke, world hazards
 // and enemy strikes never do, and fuel drums chain only through each other.
 const FUEL_DRUM_IDS = new Set(WORLD_FUEL_DRUMS.map((drum) => drum.id));
-// Objective rings inside the Liquidator's arena hide while he is live.
-const LIQUIDATOR_ARENA = (() => {
-  const arena = LEVEL_ONE_WORLD.encounterArenas.find((candidate) => candidate.id === 'liquidator-arena');
-  return arena ? Object.freeze({ x: arena.anchor.x, y: arena.anchor.y, radius: arena.radius }) : null;
-})();
+// Objective rings inside a live boss's floor hide during the fight: the
+// floor as a circle over its half diagonal.
+const bossFloorCircle = (arena) => arena ? Object.freeze({
+  x: (arena.bounds.minX + arena.bounds.maxX) / 2,
+  y: (arena.bounds.minY + arena.bounds.maxY) / 2,
+  radius: Math.hypot(arena.bounds.maxX - arena.bounds.minX, arena.bounds.maxY - arena.bounds.minY) / 2,
+}) : null;
 const isBreakableTargetId = (targetId) => targetId === WORLD_DESIGN_SECRET_SEAL.id || worldDestructibleHurtProfile(targetId) !== null;
 // Mission line of sight excludes the node's own prop. The filtered list is
 // frozen and cached per WORLD_BLOCKERS generation, so traces keep the index.
@@ -1453,6 +1469,9 @@ async function boot() {
   let encounterDirector = null;
   let lastDirectorStep = null;
   let liquidatorBoss = null;
+  // S1.5 boss registry and lifecycle (boss-slots.mjs); liquidatorBoss is its
+  // Liquidator once a trigger has started him.
+  let bossSlots = null;
   let bossHitVisualUntilTick = -1;
   let bossDeathVisualUntilTick = -1;
   let lastBossStep = null;
@@ -1537,13 +1556,34 @@ async function boot() {
   const breakableAimTargets = () => [...missionSealTargets(missionState), ...worldDestructibleTargets(worldDestructibleState).filter((target) => !FUEL_DRUM_IDS.has(target.id))];
   // Opens one authored blocker for the rest of the run (a court gate, a seal
   // or broken cover): collision drops it and the navgrid is patched locally.
+  // A live boss floor's closed locks join the world's blockers (S1.5).
+  const bossLockBlockers = () => {
+    const closed = bossSlots?.slots.liquidator.closedWalls;
+    return closed?.length ? BOSS_LOCK_BLOCKERS.filter((wall) => closed.includes(wall.id)) : [];
+  };
+  const rebuildWorldBlockers = () => {
+    const base = missionActiveBlockers(missionState, LEVEL_ONE_WORLD.collisionBlockers);
+    const locks = bossLockBlockers();
+    WORLD_BLOCKERS = locks.length ? Object.freeze([...base, ...locks]) : base;
+  };
   const openWorldBlocker = (blockerId) => {
     missionState.openGates.add(blockerId);
-    WORLD_BLOCKERS = missionActiveBlockers(missionState, LEVEL_ONE_WORLD.collisionBlockers);
+    rebuildWorldBlockers();
     refreshWorldDesignGateNavigation(ENEMY_NAV_GRID, LEVEL_ONE_WORLD, queryGround, blockerId, WORLD_BLOCKERS);
     enemyFlowFieldTick = -1;
     enemyFlowField = null;
   };
+  // Package 4.1 "Lock": the navigation patch closes a lock as well as opening
+  // it, one capsule at a time.
+  const BOSS_LOCK_WORLD = Object.freeze({ get collisionBlockers() { return BOSS_LOCK_BLOCKERS; } });
+  const refreshBossLockNavigation = (wallIds) => {
+    rebuildWorldBlockers();
+    for (const wallId of wallIds) refreshWorldDesignGateNavigation(ENEMY_NAV_GRID, BOSS_LOCK_WORLD, queryGround, wallId, WORLD_BLOCKERS);
+    enemyFlowFieldTick = -1;
+    enemyFlowField = null;
+  };
+  // The Yard's liquidation grid goes quiet once the Liquidator falls.
+  const activeWorldHazards = () => (bossSlots?.slots.liquidator.status === 'defeated' ? PACIFIED_HAZARDS : LEVEL_ONE_WORLD.interactions.hazards);
   let worldDestructibleState=createWorldDestructibleState();
   let worldPacingState=createWorldDesignPacing();
   let collectibleSnapshot = null;
@@ -1741,11 +1781,11 @@ async function boot() {
       // S1.4 guidance (projection only): the tracker pill reads the district
       // the hero stands in and the stations it could claim now; a live boss
       // hides the pill and the rings inside its arena.
-      const bossLive = Boolean(liquidatorBoss?.active && liquidatorBoss.health > 0 && authoredPropTick >= liquidatorBoss.startTick);
-      const worldLifeReport = worldLife.render({mission:missionState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus,
+      const bossLive = Boolean(liquidatorBoss?.active && liquidatorBoss.health > 0);
+      const worldLifeReport = worldLife.render({mission:missionState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:activeWorldHazards(),announce:setAccessibleCombatStatus,
         guidance:{districtId:getLevelOneDistrictAt(renderState.x,renderState.y)?.id??'frontier-relay',collectibles:collectibleState,bossBarVisible:bossLive,
           canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon:buildProgressionByWeapon(runProgression.ranks)})},
-        bossArena:bossLive?LIQUIDATOR_ARENA:null,mobile:performanceProfile.id!=='desktop'});
+        bossArena:bossLive?bossFloorCircle(liquidatorBoss.arena):null,mobile:performanceProfile.id!=='desktop'});
       if(releaseTelemetryEnabled) {
         dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
         dataset.worldInteractionCompleted=JSON.stringify([...missionState.completed.keys()].filter(id=>missionState.rowsById.get(id).objectiveClass==='switch'));
@@ -1972,10 +2012,25 @@ async function boot() {
         dataset.enemyCorpseCount = String(enemyDeathMarkers.size);
       }
       const bossVisualTick = simulation?.tick ?? 0;
-      if (bossVisualTick >= liquidatorBoss?.startTick - 600) requestEnemyRosterAtlas('the-liquidator');
-    if (bossVisualTick >= liquidatorBoss?.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
+      // Package 4.1 "Art": the boss atlas preloads once he is live, or from 600
+      // ticks before his trigger is ready while the hero is within 1,500 of
+      // either floor (2,300 of the plaza's centre covers the Dark Pool, about
+      // 800 beyond it). Projection only.
+      const liquidatorSlot = bossSlots?.slots.liquidator;
+      if (liquidatorBoss || (liquidatorSlot && liquidatorSlot.status !== 'defeated' && bossVisualTick >= liquidatorSlot.readyAt - 600
+        && Math.hypot(actor.x - 11_000, actor.y - 2_400) <= 2_300)) requestEnemyRosterAtlas('the-liquidator');
+      // The closed locks: LED shutters along the floor's edge (projection).
+      for (const wall of bossLockBlockers()) {
+        const a = worldToScreen({ x: wall.shape.a.x, y: wall.shape.a.y, z: 0 }, camera, view);
+        const b = worldToScreen({ x: wall.shape.b.x, y: wall.shape.b.y, z: 0 }, camera, view);
+        bossTelegraphs.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0x1a1016, width: wall.shape.radius * 2 * camera.zoom, alpha: 0.9, cap: 'round' })
+          .moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0xff496c, width: 3, alpha: 0.85 });
+        bossTelegraphPrimitiveCount += 1;
+      }
+    if (liquidatorBoss && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
-        const bossPhaseTick = lastBossStep?.elapsedTick ?? 45;
+        // A Trading Halt swells him for 45 ticks (projection only).
+        const bossHaltBeat = liquidatorBoss.haltFrom >= 0 ? Math.max(0, 45 - (bossVisualTick - liquidatorBoss.haltFrom)) / 250 : 0;
         const bossPose = bossVisual.applyPose({
           ...liquidatorPose({boss: liquidatorBoss, player: actor, tick: bossVisualTick,
             lastAttack: lastBossResolvedAttack, hitUntil: bossHitVisualUntilTick, deathUntil: bossDeathVisualUntilTick}),
@@ -1983,9 +2038,12 @@ async function boot() {
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
         bossVisual.zIndex = worldDepthKey(liquidatorBoss.y);
-        bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + (bossPhaseTick < 2_445 && Math.max(0, 45 - (bossPhaseTick % 1_200)) / 250)));
-        // Boss health reads from the dedicated bar, never from transparency.
-        bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
+        bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + bossHaltBeat));
+        // Boss health reads from the dedicated bar, never from transparency;
+        // the bell intro fades him in as the freight lift brings him down.
+        const bossIntroTicks = liquidatorBoss.startTick + liquidatorBoss.introTicks - bossVisualTick;
+        bossVisual.alpha = !liquidatorBoss.active ? Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45)
+          : bossIntroTicks > 0 ? Math.max(0.2, 1 - bossIntroTicks / liquidatorBoss.introTicks) : 1;
         if (bossVisual.contactShadowFootprint) {
           contactShadowPool?.place({
             x: bossScreen.x,
@@ -2002,6 +2060,9 @@ async function boot() {
             groundZ: liquidatorBoss.groundZ,
             cameraZoom: camera.zoom,
             worldToScreen: projectBossTelegraph,
+            tick: bossVisualTick,
+            phaseIndex: liquidatorBoss.phaseIndex,
+            floor: liquidatorBoss.arena.bounds,
           });
           bossTelegraphPrimitiveCount += telegraphReport.primitiveCount;
         }
@@ -2816,17 +2877,23 @@ async function boot() {
       // phase label are kept for the debug overlay only -- their construction
       // and phase string stay source-pinned by the liquidator phase test --
       // so the fight never draws two bars at once.
-      const bossEngaged = Boolean(liquidatorBoss?.active) && (simulation?.tick ?? 0) >= (liquidatorBoss?.startTick ?? 0);
-      const bossHealthRatio = bossEngaged
-        ? Math.max(0, Math.min(1, liquidatorBoss.health / liquidatorBoss.maxHealth))
-        : 0;
-      hud?.setBoss(bossEngaged, bossHealthRatio, liquidatorBoss?.phaseId ?? '');
+      // S1.5: the bar names the live boss and carries its phase markers.
+      const bossHud = bossSlots ? bossHudState(bossSlots, simulation?.tick ?? 0) : null;
+      const bossEngaged = Boolean(bossHud?.active);
+      const bossHealthRatio = bossEngaged ? bossHud.ratio : 0;
+      hud?.setBoss(bossEngaged, bossHealthRatio, bossHud?.phaseId ?? '', { bossId: bossHud?.bossId, name: bossHud?.name, markers: bossHud?.markers });
+      // The Golden Parachute (a Dark Pool win): a gold pip until it is spent.
+      if (bossSlots?.parachute.held && !bossSlots.parachute.used) {
+        const pipY = view.width < 560 ? 318 : 150;
+        overlayVisuals.circle(view.width / 2, pipY, 9).fill({ color: 0x3a2a06, alpha: 0.85 }).stroke({ color: 0xffc857, width: 3, alpha: 0.95 });
+        overlayVisuals.circle(view.width / 2, pipY, 3.5).fill({ color: 0xffc857, alpha: 0.95 });
+      }
       if (bossEngaged) {
         const barWidth = Math.min(420, view.width * 0.52);
         const barX = view.width / 2 - barWidth / 2;
         const bossBarY = view.width < 560 ? 292 : 124;
         const ratio = bossHealthRatio;
-        bossLabel.text = `THE LIQUIDATOR // ${liquidatorBoss.phaseId.replaceAll('-', ' ').toUpperCase()}`;
+        bossLabel.text = `${bossHud.name.toUpperCase()} // ${bossHud.phaseId.replaceAll('-', ' ').toUpperCase()}`;
         bossLabel.position.set(view.width / 2, bossBarY - 5);
         bossLabel.visible = debugHudEnabled;
         if (debugHudEnabled) {
@@ -2834,7 +2901,7 @@ async function boot() {
           overlayVisuals.roundRect(barX, bossBarY, barWidth, 10, 5).fill({ color: 0x1b2733, alpha: 0.95 });
           overlayVisuals.roundRect(barX, bossBarY, barWidth * ratio, 10, 5).fill({ color: 0xff496c, alpha: 0.98 });
           // Phase boundaries so the player can read fight progress.
-          for (const marker of [1 / 3, 2 / 3]) {
+          for (const marker of bossHud.markers) {
             overlayVisuals.rect(barX + barWidth * marker, bossBarY, 2, 10).fill({ color: 0x05090d, alpha: 0.9 });
           }
         }
@@ -3112,8 +3179,11 @@ async function boot() {
     if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
     dataset.startupArt = 'loading';
     for(const gateId of missionState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
+    // A restart reopens the previous run's boss locks in the navgrid (S1.5).
+    for(const wallId of bossSlots?.slots.liquidator.closedWalls??[]) refreshWorldDesignGateNavigation(navGrid,BOSS_LOCK_WORLD,queryGround,wallId,LEVEL_ONE_WORLD.collisionBlockers);
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
     missionState=createMissionState(payload.session.seed);
+    bossSlots=createBossSlots({ seed: payload.session.seed });
     worldDestructibleState=createWorldDestructibleState();
     worldPacingState=createWorldDesignPacing();
     // The flow field is per-run simulation state: a restart resets the tick
@@ -3237,14 +3307,12 @@ async function boot() {
       nextSpawnTick: endurancePressurePilotEnabled ? Number.MAX_SAFE_INTEGER : normalNextSpawnTick,
       seed: payload.session.seed,
     });
-    const bossSpawn = bossDebugEnabled ? { x: 1380, y: 2400 } : LEVEL_ONE_WORLD.encounterArenas.at(-1).anchor;
-    liquidatorBoss = createLiquidatorBoss({
-      id: 'boss-liquidator',
-      x: bossSpawn.x,
-      y: bossSpawn.y,
-      groundZ: queryGround(bossSpawn.x, bossSpawn.y).groundZ,
-      startTick: bossDebugEnabled ? 1 : 72_000,
-    });
+    // S1.5: no timer. The Liquidator is dormant until the player rings the
+    // Closing Bell or enters the Dark Pool (boss-slots.mjs). ?boss=1 starts him
+    // on an open floor beside the spawn on the first tick, for presentation.
+    liquidatorBoss = bossDebugEnabled
+      ? forceBossStart(bossSlots, { bossId: 'liquidator', tick: 1, arena: liquidatorOpenArena({ x: runtimePlayerSpawn.x + 580, y: runtimePlayerSpawn.y }), level: 21 })
+      : null;
     resetEnemyMarkers(grayboxEnemies);
     playerBody = createCollisionBody({ id: 'player', kind: 'player', radius: LEVEL_ONE_WORLD.player.radius, minZ: 0, maxZ: 56 });
     previousGrenade = false;
@@ -3421,11 +3489,15 @@ async function boot() {
         enemy.previousY = enemy.y;
         enemy.previousGroundZ = enemy.groundZ;
       }
+      if (liquidatorBoss) {
+        liquidatorBoss.previousX = liquidatorBoss.x;
+        liquidatorBoss.previousY = liquidatorBoss.y;
+      }
       aimIntent = resolveAimIntent(aimState, {
         tick,
         actor: motion,
         input: tickInput,
-        targets: liquidatorBoss?.active && liquidatorBoss.health > 0 && tick >= liquidatorBoss.startTick
+        targets: isLiquidatorTargetable(liquidatorBoss, tick)
           ? [...grayboxEnemies, liquidatorBoss]
           : grayboxEnemies,
         device: tickInput.aimDevice ?? (tickInput.aimAssist ? 'gamepad' : 'pointer'),
@@ -3462,9 +3534,14 @@ async function boot() {
       const dodgePressed = tickInput.dash === true && !previousDash;
       previousDash = tickInput.dash === true;
       lastTickManualDodge = tickInput.manualDodge === true;
+      // Package 4.1: the automatic dodge is fed the boss's locked strikes.
+      const bossDangers = liquidatorBoss?.active
+        ? liquidatorBoss.pendingAttacks.filter((pending) => pending.geometry && pending.damage > 0)
+          .map((pending) => ({ contains: bossShapeDodgeDanger(pending.geometry, playerBody.radius), resolveTick: pending.resolveTick }))
+        : [];
       const dodge = !rosterPreviewEnabled ? resolveDodgeIntent({
         tick, input: { ...tickInput, dash: dodgePressed }, actor, state: dashState, body: playerBody, bounds: WORLD_BOUNDS,
-        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, lastMove: lastMoveDirection, aim: aimIntent.direction,
+        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, bossDangers, lastMove: lastMoveDirection, aim: aimIntent.direction,
       }) : null;
       // Under 48 safe units a manual dodge is refused: no cooldown, a flash.
       if (dodge?.blocked) pushCombatVisualEvent({ type: 'dash-blocked', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 } });
@@ -3556,8 +3633,11 @@ async function boot() {
           motion.locomotion = 'moving';
           motion.legDirection = quantizeDirection(missionGlide, 8);
         }
-        const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
-          ? [...grayboxEnemies, liquidatorBoss]
+        // The boss pushes the hero out to his separation radius (84 between
+        // centres), at most 4 units a tick; the swept collision below keeps
+        // the push wall-safe (package 4.3 "Body").
+        const pressureEnemies = liquidatorBoss?.active
+          ? [...grayboxEnemies, { id: liquidatorBoss.id, kind: 'boss', x: liquidatorBoss.x, y: liquidatorBoss.y, radius: liquidatorBoss.body.playerSeparationRadius - 24 }]
           : grayboxEnemies;
         const pressure = resolveEnemyPressure({
           x: motion.x,
@@ -3565,8 +3645,10 @@ async function boot() {
           radius: 24,
           velocity: { x: motion.vx, y: motion.vy },
         }, pressureEnemies);
-        motion.x += pressure.playerDelta.x;
-        motion.y += pressure.playerDelta.y;
+        const pushLength = Math.hypot(pressure.playerDelta.x, pressure.playerDelta.y);
+        const pushScale = liquidatorBoss?.active && pushLength > liquidatorBoss.body.maxPressureStep ? liquidatorBoss.body.maxPressureStep / pushLength : 1;
+        motion.x += pressure.playerDelta.x * pushScale;
+        motion.y += pressure.playerDelta.y * pushScale;
         const pressureSpeed = Math.hypot(motion.vx, motion.vy);
         motion.vx = pressure.allowedVelocity.x * pressureSpeed;
         motion.vy = pressure.allowedVelocity.y * pressureSpeed;
@@ -3638,7 +3720,11 @@ async function boot() {
       // S1.4 mission step (package §3.2, order within a tick): after movement,
       // before the grants, gate changes and navgrid patches it returns, and
       // before the director, the boss, enemies and combat. It reads the
-      // previous tick's hit and the logical view of the simulated actor.
+      // previous tick's hit and the logical view of the simulated actor. The
+      // boss slots arm the boss zones (the Closing Bell, a retreat ring) first.
+      const bossArming = bossZoneArming(bossSlots, tick);
+      missionState.bossZoneArmed = bossArming.armed;
+      missionState.bossZoneStatus = bossArming.status;
       const missionFrame = stepMissionObjectives(missionState, {
         tick,
         player: actor,
@@ -3656,6 +3742,8 @@ async function boot() {
         logicalView: directorViewBounds({ x: actor.x, y: actor.y }),
       });
       for (const event of missionFrame.events) {
+        // Boss zones grant nothing; the boss slots read them below.
+        if (event.type === 'boss-zone') continue;
         const row = missionState.rowsById.get(event.objectiveId);
         if (event.type === 'seal-opened') {
           openWorldBlocker(event.sealId);
@@ -3710,18 +3798,51 @@ async function boot() {
       }
       if (tick % 6 === 0 && revealLevelOneAt(revealState, actor) > 0) revealSnapshot = getLevelOneRevealSnapshot(revealState);
 
+      // S1.5 boss slots (package 4.1): after the mission step, which records
+      // the Dark Pool's logbook first, and before the director and the boss.
+      // A trigger starts the boss; locks close as their footprints clear.
+      const bossFrame = stepBossSlots(bossSlots, {
+        tick,
+        player: { x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
+        missionEvents: missionFrame.events,
+        mission: missionState,
+        level: runProgression.level,
+        enemies: grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0),
+      });
+      liquidatorBoss = bossSlots.slots.liquidator.boss;
+      if (bossFrame.closed.length || bossFrame.opened.length) refreshBossLockNavigation([...bossFrame.closed, ...bossFrame.opened]);
+      let bossRecycled = false;
+      for (const enemyId of bossFrame.recycle) bossRecycled = retireEnemyFromPopulation(enemyPopulation, enemyId, { tick, reason: 'boss-lock' }).retired || bossRecycled;
+      if (bossRecycled) resetEnemyMarkers(grayboxEnemies);
+      for (const event of bossFrame.events) {
+        // Owner audio ruling: boss starts, locks and tells are silent.
+        if (event.type === 'boss-initiated') {
+          requestEnemyRosterAtlas('the-liquidator');
+          setAccessibleCombatStatus(event.trigger === 'dark-pool' ? 'The Liquidator looks up from his ledgers. The door seals behind you.' : 'The Closing Bell rings. The Liquidator is coming down.');
+        } else if (event.type === 'boss-withdrawn') {
+          setAccessibleCombatStatus(event.reason === 'retreat' ? 'You slip out. The Liquidator withdraws to recover.' : 'You left the floor. The Liquidator withdraws.');
+        }
+      }
+
       const worldPacing=stepWorldDesignPacing(worldPacingState,{tick,player:actor,enemies:grayboxEnemies,arenas:LEVEL_ONE_WORLD.encounterArenas});
       if(releaseTelemetryEnabled) dataset.worldEncounterPhase=worldPacing.phase;
+      const bossOverlay = bossDirectorOverlay(bossSlots, tick);
+      const directorDistrictId = getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay';
       lastDirectorStep = endurancePressurePilotEnabled
         ? Object.freeze({ inserted: false, reason: 'endurance-pressure-pilot', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
         : rosterPreviewEnabled
           ? Object.freeze({ inserted: false, reason: 'roster-preview', tick, bandId: runtimeEncounterSnapshot(tick).bandId })
           : stepEncounterDirector({
           state: encounterDirector,
-          worldRecovery: worldPacing.recovery,
+          // Package 4.1 "Director": no spawns while a boss lives or during its
+          // grace, and none that would overdraw the capacity bank boss adds
+          // share with the director (contract 5.3).
+          worldRecovery: worldPacing.recovery || bossOverlay.suppressed || directorBankFull(bossSlots, { tick, directorInserted: encounterDirector.insertedCount }),
           population: enemyPopulation,
           tick,
-          districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',
+          districtId: directorDistrictId,
+          // The Yard leans to the Liquidator's Agents while he lives (4.3).
+          leanRole: directorDistrictId === 'liquidation-yard' ? bossOverlay.leanRole : null,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
           // K-1: a fixed logical view centred on the SIMULATED actor. Spawn
           // exclusion must not depend on render zoom, viewport size, DPR, or the
@@ -3736,18 +3857,23 @@ async function boot() {
         });
       if (lastDirectorStep.inserted) resetEnemyMarkers(grayboxEnemies);
 
-      lastBossStep = liquidatorBoss.active && tick >= liquidatorBoss.startTick
-        ? stepLiquidatorBoss({ boss: liquidatorBoss, tick, player: { x: actor.x, y: actor.y, groundZ: actor.groundZ } })
+      // Enemies inside his floor count as adds (package 4.1 "Director").
+      const bossAddsAlive = liquidatorBoss?.active
+        ? grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0 && insideBossArena(liquidatorBoss.arena, enemy)).length
+        : 0;
+      lastBossStep = liquidatorBoss?.active
+        ? stepLiquidatorBoss({
+          boss: liquidatorBoss,
+          tick,
+          player: { x: actor.x, y: actor.y, groundZ: actor.groundZ, vx: actor.vx, vy: actor.vy },
+          blockers: bossLockBlockers(),
+          addsAlive: bossAddsAlive,
+        })
         : null;
       const resolvedBossAttack = lastBossStep?.events.find((event) => event.type === 'attack') ?? null;
       if (resolvedBossAttack) lastBossResolvedAttack = { attackId: resolvedBossAttack.attackId, tick };
-      lastBossPunishWindow = lastBossResolvedAttack
-        ? getLiquidatorPunishWindow({
-          phaseId: liquidatorBoss.phaseId,
-          attackId: lastBossResolvedAttack.attackId,
-          ticksSinceResolve: tick - lastBossResolvedAttack.tick,
-        })
-        : null;
+      // Kneel, stagger and Insider Trading (telemetry; the boss applies them).
+      lastBossPunishWindow = liquidatorBoss ? getLiquidatorVulnerability(liquidatorBoss, tick) : null;
 
       const openingMovementAllowed = !rosterPreviewEnabled && openingEnemyMovementEnabled(tick);
       if (endurancePressurePilotEnabled || openingMovementAllowed) {
@@ -3800,23 +3926,27 @@ async function boot() {
           maxZ: profile.maxZ,
         }));
       }
-      if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) hurtTargets.push(createHurtTarget({
+      // He is untargetable during the bell intro (package 4.1); his body and
+      // hurt shapes come from boss state (collision r56, hurt r48, z 4-96).
+      const bossTargetable = isLiquidatorTargetable(liquidatorBoss, tick);
+      const bossPreviousGround = { x: liquidatorBoss?.previousX ?? liquidatorBoss?.x, y: liquidatorBoss?.previousY ?? liquidatorBoss?.y, z: liquidatorBoss?.groundZ };
+      if (bossTargetable) hurtTargets.push(createHurtTarget({
         id: liquidatorBoss.id,
         bodyShape: { type: 'circle', radius: liquidatorBoss.body.radius },
-        hurtShape: { type: 'circle', radius: 48 },
-        previousGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
+        hurtShape: { type: 'circle', radius: liquidatorBoss.hurtRadius },
+        previousGround: bossPreviousGround,
         currentGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
-        minZ: 4,
-        maxZ: 92,
+        minZ: liquidatorBoss.minZ,
+        maxZ: liquidatorBoss.maxZ,
         health: liquidatorBoss.health,
       }));
-      if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) meleeTargets.push(createMeleeTarget({
+      if (bossTargetable) meleeTargets.push(createMeleeTarget({
         id: liquidatorBoss.id,
-        previousGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
+        previousGround: bossPreviousGround,
         currentGround: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ },
-        radius: 48,
-        minZ: 4,
-        maxZ: 92,
+        radius: liquidatorBoss.hurtRadius,
+        minZ: liquidatorBoss.minZ,
+        maxZ: liquidatorBoss.maxZ,
       }));
       const combatHitIntents = [];
       // Hoisted ahead of the hazard hooks: evidence tours spawn the hero on
@@ -3826,14 +3956,14 @@ async function boot() {
       const hazardTargets = [
         ...(playerInvulnerable ? [] : [{ ...actor, id: 'player' }]),
         ...grayboxEnemies,
-        ...(liquidatorBoss.active && tick >= liquidatorBoss.startTick ? [liquidatorBoss] : []),
+        ...(bossTargetable ? [liquidatorBoss] : []),
       ];
       // The boss can be worn down by steam, rock and the grid but never retired
       // by them: a boss defeat must reach the run summary through the weapon
       // catalog, and no world-* id may join that catalog.
-      const bossHazardCap = { targetId: liquidatorBoss.id, health: liquidatorBoss.health };
+      const bossHazardCap = { targetId: liquidatorBoss?.id ?? 'boss-liquidator', health: liquidatorBoss?.health ?? 0 };
       combatHitIntents.push(...withholdLethalHazardHits(buildWorldDesignHazardHits(missionState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}), bossHazardCap));
-      combatHitIntents.push(...withholdLethalHazardHits(buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }), bossHazardCap));
+      combatHitIntents.push(...withholdLethalHazardHits(buildWorldHazardHits(activeWorldHazards(), { tick, targets: hazardTargets, queryGround }), bossHazardCap));
       const fuelBlasts=stepWorldExplosions(worldDestructibleState,{tick,targets:[...hazardTargets,...worldDestructibleTargets(worldDestructibleState).filter(target=>FUEL_DRUM_IDS.has(target.id))],queryGround,blockers:WORLD_BLOCKERS});
       combatHitIntents.push(...withholdLethalHazardHits(fuelBlasts.hits,bossHazardCap));
       for(const blast of fuelBlasts.events){
@@ -4089,10 +4219,10 @@ async function boot() {
 
       const currentAutomaticTargetIds = grayboxEnemies.filter(enemy => enemy.active && enemy.health > 0
         && (enemy.disposition !== 'ambient' || enemy.provoked === true || enemy.eventHostile === true)).map(enemy => enemy.id).sort();
-      if (liquidatorBoss.active && liquidatorBoss.health > 0 && tick >= liquidatorBoss.startTick) currentAutomaticTargetIds.push(liquidatorBoss.id);
+      if (bossTargetable) currentAutomaticTargetIds.push(liquidatorBoss.id);
       const lightningTargets = [
         ...grayboxEnemies.filter((enemy) => enemy.active),
-        ...(liquidatorBoss.active && liquidatorBoss.health > 0 ? [liquidatorBoss] : []),
+        ...(bossTargetable ? [liquidatorBoss] : []),
       ];
 
       // Owner direction 2026-09-16: SWAP cycles the carried weapons and a
@@ -4513,33 +4643,34 @@ async function boot() {
         });
       }
       for (const event of lastBossStep?.events ?? []) {
-        if (event.type === 'arena-change') { combatAudio.play('boss-phase', { volume: 0.14 });
-          if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: Liquidator phase changing.');
-        }
-        if (event.type === 'tell') {
-          combatAudio.play('boss-phase', { volume: event.attackId.includes('super') ? 0.14 : 0.09 });
+        // Owner audio ruling (package 4.1): tells, halts and kneels are
+        // silent; the caption setting still names them.
+        if (event.type === 'tell' || event.type === 'halt') {
           if (settings.captionCriticalAudio) {
-            const warning = event.attackId.includes('super') ? 'super attack' : event.attackId.replaceAll('-', ' ');
-            setAccessibleCombatStatus(`Critical audio: Liquidator warning, ${warning}.`);
+            const warning = event.type === 'halt' ? `trading halt, ${event.phaseId.replaceAll('-', ' ')}` : event.tier === 'super' ? 'super attack' : event.attackId.replaceAll('-', ' ');
+            setAccessibleCombatStatus(`Liquidator: ${warning}.`);
           }
           continue;
         }
         if (event.type === 'add-wave') {
           const schedule = { nextSpawnTick: tick, intervalTicks: 1, burstRemaining: 1 };
           let inserted = false;
-          const activeLiquidatorAddIds = grayboxEnemies
-            .filter((enemy) => enemy.active && enemy.id.includes(':bad-debt-summon:'))
-            .map((enemy) => enemy.id);
-          for (const candidate of createLiquidatorAddCandidates({ event, activeAddIds: activeLiquidatorAddIds })) {
+          for (const candidate of createLiquidatorAddCandidates({ event, alive: bossAddsAlive })) {
             const ground = queryGround(candidate.x, candidate.y);
+            if (ground.kind === 'deep-water' || spawnPointBlocked(candidate)) continue;
+            // A slot's first four adds are free once per run; every further
+            // add draws from the director's capacity bank (contract 5.3).
+            if (!bossAddAllowance(bossSlots, { bossId: 'liquidator', tick, directorInserted: encounterDirector.insertedCount })) break;
             const result = attemptScheduledEnemyInsertion({
               population: enemyPopulation,
               schedule,
               candidate: { ...candidate, groundZ: ground.groundZ },
               tick,
-              placementAllowed: ground.kind !== 'deep-water' && !spawnPointBlocked(candidate),
+              placementAllowed: true,
               visualMode: 'normal',
-              threatRemaining: runtimeEncounterSnapshot(tick).threatCap - enemyPopulation.activeThreat,
+              // The live boss reserves its adds' bodies and threat apart from
+              // the band caps; the population capacity (192) still holds.
+              threatRemaining: null,
             });
             if (result.inserted) {
               inserted = true;
@@ -4570,7 +4701,7 @@ async function boot() {
           criticalMultiplier: 1,
           armorPiercing: false,
           direction: { x: (actor.x - event.origin.x) / directionMagnitude, y: (actor.y - event.origin.y) / directionMagnitude },
-          knockback: event.attackId.includes('super') ? 36 : 20,
+          knockback: event.knockback,
           point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 },
         });
       }
@@ -4608,7 +4739,8 @@ async function boot() {
         // Same engaged predicate as the boss step above; the summary only needs
         // the first tick it held.
         level: runProgression.level,
-        bossEngaged: liquidatorBoss.active && tick >= liquidatorBoss.startTick,
+        // v7 S7: the Liquidator's first initiation, the tick his trigger fires.
+        bossEngaged: Boolean(liquidatorBoss?.active),
       });
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
@@ -4626,13 +4758,13 @@ async function boot() {
         }));
         combatTargets.push(...missionSealTargets(missionState));
         combatTargets.push(...worldDestructibleTargets(worldDestructibleState));
-        if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) combatTargets.push({
+        if (bossTargetable) combatTargets.push({
           id: liquidatorBoss.id,
           health: liquidatorBoss.health,
           maxHealth: liquidatorBoss.maxHealth,
-          armor: 1,
+          armor: liquidatorBoss.armor,
           shieldCharges: 0,
-          knockbackResistance: 0.92,
+          knockbackResistance: liquidatorBoss.knockbackResistance,
         });
         if (playerHealth > 0) combatTargets.push({
           id: 'player',
@@ -4644,13 +4776,13 @@ async function boot() {
         });
         const roleChecksByHitId = new Map();
         const roleCheckedCombatHitIntents = authoritativeCombatHitIntents.map((hit) => {
-          const targetKind = hit.targetId === liquidatorBoss.id
+          const targetKind = liquidatorBoss && hit.targetId === liquidatorBoss.id
             ? 'boss'
-            : String(hit.targetId).includes(':bad-debt-summon:')
+            : String(hit.targetId).startsWith('boss:')
               ? 'add'
               : null;
-          // Role checks and punish windows scale player weapons only; a
-          // capped hazard hit must land exactly as capped.
+          // Role checks scale player weapons only; a capped hazard hit must
+          // land exactly as capped.
           if (!targetKind || WORLD_ENVIRONMENT_WEAPON_IDS.has(hit.weaponId)) return hit;
           const roleCheck = getLiquidatorRoleCheck({
             weaponId: hit.weaponId,
@@ -4662,12 +4794,12 @@ async function boot() {
               && bearMarketBurnerHazardCostAt(activeBurnerHazards, { x: liquidatorBoss.x, y: liquidatorBoss.y }) > 0,
             targetKind,
           });
-          const punishMultiplier = targetKind === 'boss' && lastBossPunishWindow?.active
-            ? lastBossPunishWindow.multiplier
-            : 1;
-          if (!roleCheck.applied && punishMultiplier === 1) return hit;
-          if (roleCheck.applied) roleChecksByHitId.set(hit.id, roleCheck);
-          return { ...hit, damage: hit.damage * roleCheck.multiplier * punishMultiplier };
+          if (!roleCheck.applied) return hit;
+          roleChecksByHitId.set(hit.id, roleCheck);
+          // The boss applies his own role and window multipliers, capped
+          // inside applyLiquidatorDamage (package 4.3); an add takes the Arc
+          // Rifle's chain bonus directly.
+          return targetKind === 'boss' ? hit : { ...hit, damage: hit.damage * roleCheck.multiplier };
         });
         lastCombatResolution = resolveCombatHits({
           sessionSeed: payload.session.seed,
@@ -4701,15 +4833,38 @@ async function boot() {
         } else if (playerHealth > maxPlayerHealth * 0.35) {
           lowHealthWarned = false;
         }
+        // A held Golden Parachute absorbs the killing hit: it is not a defeat
+        // (the revive follows the loop).
+        const parachuteReady = Boolean(bossSlots.parachute.held && !bossSlots.parachute.used);
         for (const damageEvent of lastCombatResolution.damageEvents) {
           if (damageEvent.damageApplied <= 0 || damageEvent.targetId === WORLD_DESIGN_SECRET_SEAL.id || worldDestructibleState.health.has(damageEvent.targetId)) continue;
-          recordRunDamage(runSummaryAccumulator, damageEvent.targetId === 'player'
-            ? { ...damageEvent, equippedWeaponId: weaponLoadout.activeWeaponId }
-            : damageEvent);
+          // S1.5: every boss hit goes through the boss's own authority, which
+          // refuses the intro and the halts, clamps at thresholds and caps the
+          // role x window multiplier; the summary records what he lost.
+          const bossHit = Boolean(liquidatorBoss) && damageEvent.targetId === liquidatorBoss.id;
+          let bossDamage = null;
+          if (bossHit) {
+            const healthBefore = liquidatorBoss.health;
+            const roleCheck = roleChecksByHitId.get(damageEvent.hitId) ?? Object.freeze({ roleId: null, multiplier: 1, applied: false });
+            bossDamage = applyLiquidatorDamage({
+              boss: liquidatorBoss,
+              amount: damageEvent.damageApplied,
+              tick,
+              roleMultiplier: roleCheck.multiplier,
+              environmental: WORLD_ENVIRONMENT_WEAPON_IDS.has(damageEvent.weaponId),
+            });
+            if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
+            if (bossDamage.damageApplied > 0) recordRunDamage(runSummaryAccumulator, { ...damageEvent, damageApplied: bossDamage.damageApplied, healthBefore });
+          } else {
+            recordRunDamage(runSummaryAccumulator, damageEvent.targetId === 'player'
+              ? { ...damageEvent, equippedWeaponId: weaponLoadout.activeWeaponId, ...(parachuteReady && damageEvent.killed ? { killed: false } : {}) }
+              : damageEvent);
+          }
           if (damageEvent.targetId === 'player' && damageEvent.weaponId === 'satoshi-frag') {
             recordRunGrenade(runSummaryAccumulator, { type: 'self-damage', amount: damageEvent.damageApplied });
           }
-          combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : damageEvent.targetId === liquidatorBoss.id ? 'boss-hit' : 'enemy-hit', {
+          // Boss hits use the enemy hit sound (owner audio ruling).
+          combatAudio.play(damageEvent.targetId === 'player' ? 'player-hit' : 'enemy-hit', {
             volume: damageEvent.critical ? 0.14 : 0.09,
           });
           pushImpactVisual({
@@ -4741,24 +4896,41 @@ async function boot() {
             });
             continue;
           }
-          if (damageEvent.targetId === liquidatorBoss.id) {
-            const roleCheck = roleChecksByHitId.get(damageEvent.hitId) ?? Object.freeze({ roleId: null, multiplier: 1, applied: false });
-            // Second gate behind withholdLethalHazardHits: a same-tick player
-            // hit ordered ahead of the hazard can push the resolution past the
-            // intent cap, and environmental damage still stops at 1 HP.
-            const bossHitAmount = WORLD_ENVIRONMENT_WEAPON_IDS.has(damageEvent.weaponId)
-              ? Math.min(damageEvent.damageApplied, Math.max(0, liquidatorBoss.health - 1))
-              : damageEvent.damageApplied;
-            const bossDamage = applyLiquidatorDamage({ boss: liquidatorBoss, amount: bossHitAmount, tick });
-            if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
-            if (bossDamage.runEvent) {
-              combatAudio.play('boss-death', {volume:.18});
-              pushCombatVisualEvent({type:'kill',tick,point:{x:liquidatorBoss.x,y:liquidatorBoss.y,z:liquidatorBoss.groundZ+24},color:0xff6b5c});
-              bossDeathVisualUntilTick = tick + 45;
-              triggerCameraShake(tick, 12);
+          if (bossHit) {
+            if (!bossDamage.runEvent) {
+              if (bossDamage.damageApplied > 0) bossHitVisualUntilTick = tick + 6;
+              continue;
             }
-            else bossHitVisualUntilTick = tick + 6;
-            if (bossDamage.runEvent && bridge?.initialized) {
+            // A real defeat (package 4.3 rewards): the gates open, the Vault
+            // unlocks, a full heal and grenades to max, the silver burst in
+            // place of the 1.8.1 ten coins, 1,040 XP through the kill, the
+            // Yard pacified with a grace, and the Golden Parachute for a Dark
+            // Pool win. kills.boss counts the Liquidator only.
+            const rewards = defeatBossSlot(bossSlots, { bossId: 'liquidator', tick });
+            refreshBossLockNavigation(rewards.opened);
+            collectibleState.unlockedObjectives.add(rewards.unlockObjective);
+            addSilverDrop(silverDropState, { sequence: runKills + 1, tick, x: liquidatorBoss.x, y: liquidatorBoss.y, value: rewards.silverBurst });
+            if (playerHealth > 0) {
+              const healedFrom = playerHealth;
+              playerHealth = maxPlayerHealth;
+              recordRunHealing(runSummaryAccumulator, playerHealth - healedFrom);
+            }
+            rechargeHandGrenades(grenadeSystem, { tick, amount: grenadeSystem.maxHandCharges });
+            recordRunKill(runSummaryAccumulator, { enemyRoleId: 'liquidator', weaponId: damageEvent.weaponId, boss: true });
+            runKills += 1;
+            const bossSnapshot = awardComboXp(recordRunDefeat(runProgression, {
+              enemyId: liquidatorBoss.id,
+              threatCost: LIQUIDATOR_THREAT_COST,
+              tick,
+            }), tick, { bossDefeated: true });
+            cockpit?.updateRun(bossSnapshot);
+            if (bossSnapshot.pendingLevels > 0) upgradePending = true;
+            combatAudio.play('enemy-death', { volume: 0.18 });
+            pushCombatVisualEvent({ type: 'kill', tick, point: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ + 24 }, color: 0xff6b5c });
+            bossDeathVisualUntilTick = tick + 45;
+            triggerCameraShake(tick, 12);
+            setAccessibleCombatStatus(rewards.goldenParachute ? 'The Liquidator is liquidated. A Golden Parachute is yours.' : 'The Liquidator is liquidated. His vault is open.');
+            if (bridge?.initialized) {
               bridge.send('game:run-event', {
                 tick,
                 sequence: runEventSequence,
@@ -4818,23 +4990,8 @@ async function boot() {
             }
             continue;
           }
-          if (scoreEvent.enemyId === liquidatorBoss.id) {
-            if(liquidatorBoss.health<=0){collectibleState.unlockedObjectives.add('liquidator-defeated');addSilverDrop(silverDropState,{sequence:runKills+1,tick,x:liquidatorBoss.x,y:liquidatorBoss.y,value:10});}
-            recordRunKill(runSummaryAccumulator, {
-              enemyRoleId: 'liquidator',
-              weaponId: scoreEvent.weaponId,
-              boss: true,
-            });
-            runKills += 1;
-            const bossSnapshot = awardComboXp(recordRunDefeat(runProgression, {
-              enemyId: scoreEvent.enemyId,
-              threatCost: LIQUIDATOR_THREAT_COST,
-              tick,
-            }), tick, { bossDefeated: true });
-            cockpit?.updateRun(bossSnapshot);
-            if (bossSnapshot.pendingLevels > 0) upgradePending = true;
-            continue;
-          }
+          // The boss's defeat is his own authority's, handled above.
+          if (liquidatorBoss && scoreEvent.enemyId === liquidatorBoss.id) continue;
           const defeatedEnemy = grayboxEnemies.find((enemy) => enemy.id === scoreEvent.enemyId);
           if (!defeatedEnemy) continue;
           if (scoreEvent.weaponId === 'bear-market-burner') {
@@ -4878,6 +5035,13 @@ async function boot() {
           retiredEnemies = retireEnemyFromPopulation(enemyPopulation, scoreEvent.enemyId, { tick, reason: 'defeated' }).retired || retiredEnemies;
         }
         if (retiredEnemies) resetEnemyMarkers(grayboxEnemies);
+        // The Golden Parachute (package 4.3, a Dark Pool win): one revive at
+        // 50% HP instead of the defeat.
+        if (playerHealth <= 0 && parachuteReady && consumeGoldenParachute(bossSlots, tick)) {
+          playerHealth = Math.round(maxPlayerHealth * 0.5);
+          pushCombatVisualEvent({ type: 'pickup', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 }, color: 0xffc857 });
+          setAccessibleCombatStatus('Golden Parachute. You are back on your feet.');
+        }
         const defeatTransition = playerDefeatController.resolve({
           health: playerHealth,
           kills: runKills,
@@ -5314,7 +5478,8 @@ async function boot() {
       tick: simulation.tick,
       enemies: grayboxEnemies,
       player: renderActor,
-      bossPhaseTick: liquidatorBoss.active && simulation.tick >= liquidatorBoss.startTick ? lastBossStep?.elapsedTick ?? null : null,
+      // The beat plays on each Trading Halt's first 45 ticks (S1.5 phases).
+      bossPhaseTick: liquidatorBoss?.active && liquidatorBoss.haltFrom >= 0 && simulation.tick - liquidatorBoss.haltFrom < 45 ? simulation.tick - liquidatorBoss.haltFrom : null,
       reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
     });
     camera.zoom = resolveReadableGameplayZoom({
@@ -5327,7 +5492,7 @@ async function boot() {
       ...renderActor,
       aimX: aimIntent?.direction.x ?? snapshot.actions.aim.x,
       aimY: aimIntent?.direction.y ?? snapshot.actions.aim.y,
-      ...(liquidatorBoss.active && simulation.tick >= liquidatorBoss.startTick ? {
+      ...(liquidatorBoss?.active ? {
         focusX: liquidatorBoss.x,
         focusY: liquidatorBoss.y,
         focusWeight: 0.18,

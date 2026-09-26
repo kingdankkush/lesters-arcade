@@ -62,13 +62,6 @@ import {
 } from '../apps/hmh-reboot/src/run-progression.mjs';
 import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { HMH_OPENING_ENEMY_ARCHETYPE_IDS } from '../apps/hmh-reboot/src/opening-balance.mjs';
-import {
-  LIQUIDATOR_ATTACK_PLAN,
-  LIQUIDATOR_ENDLESS_CYCLE,
-  LIQUIDATOR_ENDLESS_CYCLE_TICKS,
-  LIQUIDATOR_ENDLESS_LOOP_START_TICK,
-  LIQUIDATOR_READABILITY_BUDGET,
-} from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { ENCOUNTER_BANDS, createEncounterDirector, directorViewBounds, stepEncounterDirector } from '../apps/hmh-reboot/src/encounter-director.mjs';
 import { createEnemyPopulation, retireEnemyFromPopulation } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { COLLECTIBLE_EFFECTS, createCollectibleState } from '../apps/hmh-reboot/src/collectible-system.mjs';
@@ -101,11 +94,16 @@ const shiftedStart = (summary, span) => clone(summary, (s) => {
 
 test('constants copied from the reboot main module match its source', () => {
   assert.match(MAIN_SOURCE, new RegExp(`const LIQUIDATOR_THREAT_COST = ${LIQUIDATOR_THREAT_COST};`));
-  assert.match(MAIN_SOURCE, /startTick: bossDebugEnabled \? 1 : 72_000,/);
+  // S1.5 removed the child's 72,000-tick Liquidator timer (players start him;
+  // v7 bounds that per boss). The v6 path keeps the 1.8.1 start (contract D3):
+  // the encounter band still begins there.
+  assert.doesNotMatch(MAIN_SOURCE, /72_000/);
   assert.equal(HMH_BOSS_START_TICK, 72_000);
   assert.equal(ENCOUNTER_BANDS.find((band) => band.id === 'boss').minTick, HMH_BOSS_START_TICK);
-  // Boss kill: a 10-coin drop. Enemy kill: addSilverDrop's default value.
-  assert.match(MAIN_SOURCE, new RegExp(`addSilverDrop\\(silverDropState,\\{sequence:runKills\\+1,tick,x:liquidatorBoss\\.x,y:liquidatorBoss\\.y,value:${SILVER_PER_BOSS_KILL}\\}\\)`));
+  // Boss kill: 1.8.1 dropped 10 coins (v6, frozen); S1.5 drops the v7 silver
+  // burst instead, never both (contract 3.3). Enemy kill: the default value.
+  assert.equal(SILVER_PER_BOSS_KILL, 10);
+  assert.match(MAIN_SOURCE, /addSilverDrop\(silverDropState, \{ sequence: runKills \+ 1, tick, x: liquidatorBoss\.x, y: liquidatorBoss\.y, value: rewards\.silverBurst \}\)/);
   assert.match(MAIN_SOURCE, /addSilverDrop\(silverDropState,\{sequence:runKills,tick,x:defeatedEnemy\.x,y:defeatedEnemy\.y\}\)/);
   const drops = createSilverDropState();
   addSilverDrop(drops, { sequence: 1, tick: 0, x: 0, y: 0 });
@@ -183,15 +181,17 @@ test('the frozen v6 literals equal the 1.8.1 child modules', () => {
   assert.equal(HMH_V6_RULES.silverScorePerCoin, SILVER_SCORE_PER_COIN);
   assert.equal(OBJECTIVE_REWARD_XP, Math.max(0, ...objectiveRewardPlacements().map((placement) => placement.xpGain ?? 0)));
   assert.equal(OBJECTIVE_REWARD_SCORE, 0);
-  const isSummon = (entry) => entry.attackId === 'bad-debt-summon';
+  // The 1.8.1 Liquidator's bad-debt summons (liquidator-boss.mjs at 6c3779dd:
+  // plan ticks 1,800 and 2,820, the endless loop from 3,600 on a 1,440-tick
+  // cycle with a summon at offset 1,020, six adds each). S1.5 reworked the
+  // child's boss (v7), so the v6 literals are pinned to those values here.
   assert.deepEqual(HMH_V6_RULES.liquidatorAdds, {
-    summonTicks: LIQUIDATOR_ATTACK_PLAN.filter(isSummon).map((entry) => entry.startTick),
-    endlessLoopStartTick: LIQUIDATOR_ENDLESS_LOOP_START_TICK,
-    endlessCycleTicks: LIQUIDATOR_ENDLESS_CYCLE_TICKS,
-    endlessCycleSummonOffsets: LIQUIDATOR_ENDLESS_CYCLE.filter(isSummon).map((entry) => entry.offset),
-    addsPerSummon: LIQUIDATOR_READABILITY_BUDGET.activeAdds,
+    summonTicks: [1_800, 2_820],
+    endlessLoopStartTick: 3_600,
+    endlessCycleTicks: 1_440,
+    endlessCycleSummonOffsets: [1_020],
+    addsPerSummon: 6,
   });
-  assert.ok(LIQUIDATOR_ATTACK_PLAN.every((entry) => entry.startTick < LIQUIDATOR_ENDLESS_LOOP_START_TICK), 'the authored plan ends before the loop');
 });
 
 // The 1.8.1 verifier measured its gains by running the reboot's own

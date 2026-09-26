@@ -287,13 +287,15 @@ export function writeRuntimeTelemetry({
   dataset.directorLastReason = lastDirectorStep?.reason ?? '';
   dataset.directorBodyCap = String(encounterSnapshot.bodyCap);
   dataset.directorThreatCap = String(encounterSnapshot.threatCap);
-  dataset.bossActive = String(liquidatorBoss?.active === true && (simulation?.tick ?? 0) >= liquidatorBoss.startTick);
+  // S1.5: live from his trigger (no timer); untargetable during the bell intro.
+  dataset.bossActive = String(liquidatorBoss?.active === true);
+  dataset.bossEntry = liquidatorBoss?.entry ?? '';
   dataset.bossPhase = liquidatorBoss?.phaseId ?? '';
   dataset.bossHealth = String(liquidatorBoss?.health ?? 0);
   dataset.bossPendingTells = String(liquidatorBoss?.pendingAttacks.length ?? 0);
   dataset.bossPendingAttackIds = liquidatorBoss?.pendingAttacks.map((pending) => pending.attackId).join(',') ?? '';
-  const pendingSafeSector = liquidatorBoss?.pendingAttacks.find((pending) => pending.geometry?.sectorId);
-  dataset.bossSafeSector = pendingSafeSector?.geometry.sectorId ?? '';
+  const pendingSafeSector = liquidatorBoss?.pendingAttacks.find((pending) => pending.sectorId);
+  dataset.bossSafeSector = pendingSafeSector?.sectorId ?? '';
   dataset.bossSafeZoneCount = String(pendingSafeSector?.geometry.zones.length ?? 0);
   dataset.bossTelegraphPrimitives = String(bossTelegraphPrimitiveCount);
   dataset.bossAttackDrops = String(liquidatorBoss?.droppedEvents ?? 0);

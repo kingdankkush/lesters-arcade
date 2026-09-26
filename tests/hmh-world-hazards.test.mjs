@@ -227,10 +227,12 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   const hoisted = source.indexOf('const playerInvulnerable = evidenceSafeEnabled');
   const targets = source.indexOf('const hazardTargets = [');
   const steam = source.indexOf('buildWorldDesignHazardHits(missionState,{tick,targets:hazardTargets,');
-  const hazards = source.indexOf('buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround })');
+  // S1.5: the Yard grid drops out of the list once the Liquidator falls.
+  const hazards = source.indexOf('buildWorldHazardHits(activeWorldHazards(), { tick, targets: hazardTargets, queryGround })');
   const hurt = source.indexOf('const playerHurtTarget = playerHealth > 0 && !playerInvulnerable');
   assert.ok(hoisted > 0 && hoisted < targets && targets < steam && steam < hazards && hazards < hurt);
-  assert.match(source, /const hazardTargets = \[\s*\.\.\.\(playerInvulnerable \? \[\] : \[\{ \.\.\.actor, id: 'player' \}\]\),\s*\.\.\.grayboxEnemies,\s*\.\.\.\(liquidatorBoss\.active && tick >= liquidatorBoss\.startTick \? \[liquidatorBoss\] : \[\]\),\s*\];/);
+  assert.match(source, /const hazardTargets = \[\s*\.\.\.\(playerInvulnerable \? \[\] : \[\{ \.\.\.actor, id: 'player' \}\]\),\s*\.\.\.grayboxEnemies,\s*\.\.\.\(bossTargetable \? \[liquidatorBoss\] : \[\]\),\s*\];/);
+  assert.match(source, /const activeWorldHazards = \(\) => \(bossSlots\?\.slots\.liquidator\.status === 'defeated' \? PACIFIED_HAZARDS : LEVEL_ONE_WORLD\.interactions\.hazards\);/);
   assert.match(source, /if\(WORLD_ENVIRONMENT_WEAPON_IDS\.has\(scoreEvent\.weaponId\)\) \{/);
   assert.ok(!source.includes("scoreEvent.weaponId==='world-steam'"));
   // Movement: the slow multiplies after the run effects, the drift lands before the swept collision.
@@ -241,11 +243,13 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   assert.match(source, /fieldAt: \(x, y, ground\) => worldHazardField\(LEVEL_ONE_WORLD\.interactions\.hazards, \{ x, y, groundZ: ground\.groundZ \}\),/);
   // Boss non-lethality: both hazard hooks pass through the cap, hazard hits skip
   // the role-check/punish scaling, and the apply step clamps again at 1 HP.
-  assert.match(source, /const bossHazardCap = \{ targetId: liquidatorBoss\.id, health: liquidatorBoss\.health \};/);
+  assert.match(source, /const bossHazardCap = \{ targetId: liquidatorBoss\?\.id \?\? 'boss-liquidator', health: liquidatorBoss\?\.health \?\? 0 \};/);
   assert.equal(source.match(/withholdLethalHazardHits\(buildWorld(?:Design)?HazardHits\(/g).length, 2);
   assert.ok(source.indexOf('const bossHazardCap = ') < steam);
   assert.match(source, /if \(!targetKind \|\| WORLD_ENVIRONMENT_WEAPON_IDS\.has\(hit\.weaponId\)\) return hit;/);
-  assert.match(source, /const bossHitAmount = WORLD_ENVIRONMENT_WEAPON_IDS\.has\(damageEvent\.weaponId\)\s*\? Math\.min\(damageEvent\.damageApplied, Math\.max\(0, liquidatorBoss\.health - 1\)\)\s*: damageEvent\.damageApplied;\s*const bossDamage = applyLiquidatorDamage\(\{ boss: liquidatorBoss, amount: bossHitAmount, tick \}\);/);
+  // S1.5: the second gate lives in the boss's own authority now:
+  // applyLiquidatorDamage never lets environmental damage below 1 HP.
+  assert.match(source, /bossDamage = applyLiquidatorDamage\(\{\s*boss: liquidatorBoss,\s*amount: damageEvent\.damageApplied,\s*tick,\s*roleMultiplier: roleCheck\.multiplier,\s*environmental: WORLD_ENVIRONMENT_WEAPON_IDS\.has\(damageEvent\.weaponId\),\s*\}\);/);
   // The telegraph renderer receives the reduceFlash setting alongside reduceMotion.
   assert.match(source, /worldLife\.render\(\{[^\n]*reduceMotion:settings\.reduceMotion,reduceFlash:settings\.reduceFlash,/);
 });

@@ -19,7 +19,8 @@
 import { freezeDeep } from './value-guards.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_COURT_BLOCKERS } from './world-design-encounters.mjs';
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL } from './world-design-secrets.mjs';
-import { HMH_V7_OBJECTIVES, HMH_V7_RUN_RULES } from '../../../sdk/hmh-run-contract-v7.mjs';
+import { LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR } from './boss-arenas.mjs';
+import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_OBJECTIVES, HMH_V7_RUN_RULES } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
 
 export const MISSION_RULES = freezeDeep({
@@ -137,6 +138,26 @@ export const MISSION_OBJECTIVES = freezeDeep([
   itemRow,
 ].sort(byId));
 
+// Boss zones (slice S1.5): the Closing Bell (a seal ring: the package's
+// "button 90" as a stand-in-the-ring hold with drain, owner decision) and a
+// retreat ring on each floor (package 4.1, channel 120). The boss slots arm
+// them each tick (state.bossZoneArmed); filling one emits a boss-zone event
+// and re-arms it from empty. They grant nothing, are never objectives and are
+// not in the v7 rows. The Dark Pool has no ring: it is entered.
+const bossZoneRow = ({ id, kind, arena, point, mode, clip, fillTicks, readyTick, name, task }) => ({
+  id, objectiveClass: kind === 'trigger' ? 'boss-trigger' : 'boss-retreat', districtId: arena.districtId, name, task, kind: 'boss-zone',
+  mode, clip, fillTicks, ringRadius: MISSION_RULES[mode].ringRadius, readyTick,
+  anchor: { x: point.x, y: point.y }, operate: { x: point.x, y: point.y, facing: point.facing },
+  propBlockerId: null, requires: null, xpPerLevel: 0, effects: [],
+  bossZone: kind === 'trigger' ? { bossId: 'liquidator', kind, trigger: arena.trigger } : { bossId: 'liquidator', kind, arena: arena.id },
+});
+export const MISSION_BOSS_ZONES = freezeDeep([
+  bossZoneRow({ id: 'liquidator-closing-bell', kind: 'trigger', arena: LIQUIDATOR_MARGIN_FLOOR, point: LIQUIDATOR_MARGIN_FLOOR.bell, mode: 'seal', clip: 'press',
+    fillTicks: 90, readyTick: HMH_V7_BOSSES.liquidator.readyTick, name: 'The Closing Bell', task: 'Ring the Closing Bell' }),
+  ...[LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR].map((arena) => bossZoneRow({ id: `liquidator-retreat-${arena.id}`, kind: 'retreat', arena, point: arena.retreat,
+    mode: 'channel', clip: 'crank', fillTicks: HMH_V7_BOSS_RULES.BOSS_RETREAT_CHANNEL_TICKS, readyTick: 0, name: 'Retreat', task: 'Hold to retreat' })),
+].sort(byId));
+
 // Zones are what a hero can stand in: machine rings and seal pry spots.
 function buildZones(objectives) {
   const zones = [];
@@ -146,6 +167,7 @@ function buildZones(objectives) {
         id: row.id, objectiveId: row.id, kind: 'machine', mode: row.mode, clip: row.clip, fillTicks: row.fillTicks,
         ringRadius: row.ringRadius, x: row.operate.x, y: row.operate.y, facing: row.operate.facing,
         blockerId: row.propBlockerId ?? null, requires: row.requires ?? null, readyTick: row.readyTick ?? 0, sealId: null,
+        bossZone: row.bossZone ?? null,
       });
     }
     if (row.seal?.pry) {
@@ -153,7 +175,7 @@ function buildZones(objectives) {
       zones.push({
         id: `${row.id}:pry`, objectiveId: row.id, kind: 'pry', mode: 'channel', clip: 'kneel', fillTicks: pry.fillTicks,
         ringRadius: MISSION_RULES.channel.ringRadius, x: pry.x, y: pry.y, facing: pry.facing,
-        blockerId: row.seal.id, requires: null, readyTick: 0, sealId: row.seal.id,
+        blockerId: row.seal.id, requires: null, readyTick: 0, sealId: row.seal.id, bossZone: null,
       });
     }
   }
@@ -165,14 +187,18 @@ const freshZone = () => ({
   stillTicks: 0, operatingSince: null, pausedUntil: -1, leftTick: null,
 });
 
-export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES } = {}) {
+export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, bossZones = MISSION_BOSS_ZONES } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError('mission seed must be an integer');
-  const zones = buildZones(objectives);
+  const zones = buildZones([...objectives, ...bossZones]);
   return {
     seed: seed >>> 0,
     objectives,
-    rowsById: new Map(objectives.map((row) => [row.id, row])),
+    rowsById: new Map([...objectives, ...bossZones].map((row) => [row.id, row])),
     zones,
+    // Boss zone ids the boss slots arm for this tick, and their status for
+    // the lamps and the tracker (projection reads only).
+    bossZoneArmed: new Set(),
+    bossZoneStatus: new Map(),
     lastTick: -1,
     // objectiveId -> completion tick; the steam hazard reads the valve here.
     completed: new Map(),
@@ -199,6 +225,7 @@ function zoneLocked(state, zone) {
 }
 
 function zoneEligible(state, zone, tick) {
+  if (zone.bossZone && !state.bossZoneArmed.has(zone.id)) return false;
   return !zoneDone(state, zone) && !zoneLocked(state, zone) && tick >= zone.readyTick;
 }
 
@@ -285,6 +312,12 @@ export function stepMissionObjectives(state, {
   for (const zone of state.zones) {
     if (zoneDone(state, zone)) continue;
     const z = state.zoneState.get(zone.id);
+    // A disarmed boss zone (a live fight, a cooldown, a settled trigger)
+    // holds nothing.
+    if (zone.bossZone && !state.bossZoneArmed.has(zone.id)) {
+      if (z.progress > 0 || z.operatingSince !== null) state.zoneState.set(zone.id, freshZone());
+      continue;
+    }
     const isActive = zone === active;
     if (zone.mode === 'quick') {
       if (!z.committed) {
@@ -330,7 +363,10 @@ export function stepMissionObjectives(state, {
   }
 
   for (const zone of filled) {
-    if (zone.kind === 'pry') openSeal(state, zone.sealId, tick, 'pry', events);
+    if (zone.bossZone) {
+      state.zoneState.set(zone.id, freshZone());
+      events.push(freezeDeep({ type: 'boss-zone', zoneId: zone.id, ...zone.bossZone, zoneKind: zone.bossZone.kind, tick }));
+    } else if (zone.kind === 'pry') openSeal(state, zone.sealId, tick, 'pry', events);
     else completeObjective(state, state.rowsById.get(zone.objectiveId), tick, events);
     if (operating?.zone === zone) operating = null;
   }
@@ -434,11 +470,13 @@ export function missionPresentation(state) {
     const locked = !done && zoneLocked(state, zone);
     const filling = state.operating?.zoneId === zone.id || (zone.mode === 'quick' && z.committed && !done);
     const phase = done ? 'done' : locked ? 'locked' : filling ? 'filling' : z.progress > 0 ? 'held' : 'ready';
+    const boss = zone.bossZone ? state.bossZoneStatus.get(zone.id) ?? { status: 'waiting', readyAt: zone.readyTick } : null;
     return Object.freeze({
       zoneId: zone.id, objectiveId: zone.objectiveId, kind: zone.kind, mode: zone.mode, clip: zone.clip,
       x: zone.x, y: zone.y, facing: zone.facing, ringRadius: zone.ringRadius, requires: zone.requires,
-      progress: done ? 1 : z.progress / zone.fillTicks, state: phase,
+      progress: done ? 1 : z.progress / zone.fillTicks, state: boss && !state.bossZoneArmed.has(zone.id) ? boss.status : phase,
       paused: phase === 'filling' && state.lastTick < z.pausedUntil,
+      bossZone: zone.bossZone, readyAt: boss?.readyAt ?? null,
     });
   });
   return Object.freeze({

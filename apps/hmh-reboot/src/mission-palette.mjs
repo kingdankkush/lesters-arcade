@@ -5,7 +5,7 @@ import { freezeDeep } from './value-guards.mjs';
 
 // The combat telegraph colours an objective must never reuse (§3.3): enemy
 // tells, pickups and the heal flash.
-export const MISSION_TELEGRAPH_COLORS = Object.freeze([0xff496c, 0xfff06a, 0x83f28f]);
+export const MISSION_TELEGRAPH_COLORS = Object.freeze([0xff496c, 0xfff06a, 0x83f28f, 0xffc857, 0xe26dff]);
 
 export const MISSION_PALETTE = freezeDeep({
   // Machines, gates and items: ivory with a dark outline, a dashed ring with

@@ -67,25 +67,27 @@ test('ordinary pistol remains viable and precision-ledger is a bounded crit upli
   assert.equal(upgraded.criticalMultiplier, BASE_CRITICAL_MULTIPLIER);
   assert.ok(upgraded.criticalChance < CRITICAL_CHANCE_CAP);
 
+  // S1.5: a Dark Pool start at the Level 21 HP (4,635), halts included.
   assert.equal(ordinary.defeated, true);
   assert.equal(upgraded.defeated, true);
   assert.equal(ordinary.remainingHealth, 0);
   assert.equal(upgraded.remainingHealth, 0);
-  assert.equal(ordinary.defeatTick, 2_837);
-  assert.equal(upgraded.defeatTick, 2_721);
-  assert.equal(ordinary.criticalHits, 217);
-  assert.equal(upgraded.criticalHits, 371);
-  assert.equal(ordinary.punishContacts, 60);
-  assert.equal(upgraded.punishContacts, 60);
+  assert.equal(ordinary.defeatTick, 1_163);
+  assert.equal(upgraded.defeatTick, 1_120);
+  assert.equal(ordinary.criticalHits, 99);
+  assert.equal(upgraded.criticalHits, 164);
+  // Insider Trading, then the kneels after each Total Liquidation super.
+  assert.equal(ordinary.punishContacts, 413);
+  assert.equal(upgraded.punishContacts, 401);
   assert.ok(upgraded.defeatTick < ordinary.defeatTick, 'one Precision Ledger rank must pull TTK forward');
   assert.ok(upgraded.criticalHits > ordinary.criticalHits);
   assert.ok(upgraded.criticalHits < upgraded.ordinaryHits, 'crits stay a spike, not the baseline');
   assert.equal(ordinary.roleMultiplier, 1);
   assert.equal(upgraded.roleMultiplier, 1);
-  assert.equal(ordinary.bossX, 0);
-  assert.equal(ordinary.bossY, 0);
-  assert.equal(upgraded.bossX, ordinary.bossX);
-  assert.equal(upgraded.bossY, ordinary.bossY);
+  // He walks his floor now; both fights stay on it.
+  for (const report of [ordinary, upgraded]) {
+    assert.ok(Math.abs(report.bossX) <= 525 - 56 && Math.abs(report.bossY) <= 230 - 56, `${report.bossX},${report.bossY}`);
+  }
 });
 
 test('same seed is equal and one-step matches four-catch-up', () => {

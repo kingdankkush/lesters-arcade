@@ -50,6 +50,34 @@ const courts = [
   ['mining-trap', 'mining-camp', 9300, 2790, 'south'],
   ['yard-service', 'liquidation-yard', 10490, 3680, 'south'],
 ];
+// The Dark Pool (design package 4.3, shipped-map fallback, slice S1.5): a
+// walled z0 court in the east back alley. The world perimeter is its east
+// side; the hero comes in from the north through a cracked container (a
+// breakable, world-destructibles.mjs), whose gap is the door. Entering finds
+// the Warehouse logbook (a secret), and once the Liquidator is ready and no
+// other trigger owns him, crossing 48 units past the threshold starts his fight
+// here with no intro. The door then seals (a boss lock, boss-arenas.mjs).
+export const WORLD_DESIGN_DARK_POOL = freezeDeep({
+  id: 'dark-pool', districtId: 'liquidation-yard',
+  // Where bodies may stand (the walls' inner faces and the perimeter).
+  bounds: { minX: 11592, minY: 1916, maxX: 11976, maxY: 2684 },
+  threshold: { y: 1900, enterDepth: 48 },
+  // The door is wide enough for the 60-unit navgrid (18 clearance) once open.
+  door: { a: { x: 11720, y: 1900 }, b: { x: 11860, y: 1900 } },
+  container: { id: 'dark-pool-container', x: 11790, y: 1900, radius: 56 },
+  wallRadius: 16,
+});
+export const WORLD_DESIGN_DARK_POOL_BLOCKERS = freezeDeep([
+  ['west', 11576, 1900, 11576, 2700],
+  ['south', 11576, 2700, 11976, 2700],
+  ['north-west', 11576, 1900, 11720, 1900],
+  ['north-east', 11860, 1900, 11976, 1900],
+].map(([side, ax, ay, bx, by]) => ({
+  id: `dark-pool-wall-${side}`, districtId: 'liquidation-yard', anchor: { x: (ax+bx)/2, y: (ay+by)/2 },
+  visualKind: 'fence', shape: { type: 'capsule', a: {x:ax,y:ay}, b: {x:bx,y:by}, radius: 16 },
+  maxZ: 96, combatCover: true,
+})));
+
 export const WORLD_DESIGN_COURTS = freezeDeep(courts.map(([id, districtId, x, y, gateSide]) => ({id, districtId, x, y, gateSide, gateId: `${id}-gate`})));
 export const WORLD_DESIGN_GATE_IDS = freezeDeep(courts.map(([id]) => `${id}-gate`));
 export const WORLD_DESIGN_COURT_BLOCKERS = freezeDeep(courts.flatMap(([id, districtId, x, y, gateSide]) => [

@@ -17,7 +17,9 @@ import {
   missionHiddenSecretProps,
   missionObjectiveRows,
   missionPresentation,
+  MISSION_BOSS_ZONES,
 } from '../apps/hmh-reboot/src/mission-objectives.mjs';
+import { LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR } from '../apps/hmh-reboot/src/boss-arenas.mjs';
 import { HMH_V7_OBJECTIVES, HMH_V7_RUN_RULES } from '../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
@@ -319,4 +321,61 @@ test('the same inputs give the same events and state, and a fresh state holds no
   const fresh = createMissionState(11);
   assert.equal(fresh.completed.size + fresh.openGates.size + fresh.discovered.size, 0);
   assert.equal(fresh.stowed, false);
+});
+
+// Slice S1.5: boss zones. The Closing Bell is a seal ring (the package's
+// "button 90" as a stand-in-the-ring hold with drain, owner decision) and each
+// floor has a retreat ring (channel 120). They re-arm, grant nothing and are
+// never contract objectives; the boss slots arm them.
+test('the Closing Bell fills only while its boss slot arms it, then re-arms instead of completing', () => {
+  const bell = MISSION_BOSS_ZONES.find((zone) => zone.id === 'liquidator-closing-bell');
+  assert.deepEqual([bell.mode, bell.fillTicks, bell.readyTick, bell.ringRadius, bell.objectiveClass], ['seal', 90, 36_000, MISSION_RULES.seal.ringRadius, 'boss-trigger']);
+  assert.deepEqual(bell.operate, { x: LIQUIDATOR_MARGIN_FLOOR.bell.x, y: LIQUIDATOR_MARGIN_FLOOR.bell.y, facing: 'east' });
+  assert.deepEqual(bell.bossZone, { bossId: 'liquidator', kind: 'trigger', trigger: 'bell' });
+  const state = createMissionState(1);
+  const spot = at(bell.operate);
+  state.lastTick = 35_900;
+  state.bossZoneArmed.add(bell.id);
+  run(state, 99, { player: spot });
+  assert.equal(state.zoneState.get(bell.id).progress, 0, 'a ring never fills before its readyTick');
+  state.bossZoneArmed.clear();
+  run(state, 30, { player: spot });
+  assert.equal(state.zoneState.get(bell.id).progress, 0, 'nor while its slot is disarmed');
+  state.bossZoneArmed.add(bell.id);
+  const events = run(state, 90, { player: spot });
+  assert.deepEqual(events.map((event) => [event.type, event.zoneId, event.bossId, event.zoneKind, event.trigger]), [['boss-zone', bell.id, 'liquidator', 'trigger', 'bell']]);
+  assert.equal(events[0].tick, state.lastTick);
+  assert.equal(state.completed.has(bell.id), false, 'a boss zone is never an objective');
+  assert.equal(state.zoneState.get(bell.id).progress, 0, 'it re-arms from empty');
+  assert.deepEqual(missionObjectiveRows(state).filter((entry) => entry.completed), []);
+  // While it is armed the hero docks and stows the weapon, like any channel.
+  run(state, 7, { player: spot });
+  assert.equal(state.stowed, true);
+  // Leaving drains it at 4 a tick, and disarming empties it.
+  run(state, 1, { player: at(bell.operate, 200, 0) });
+  assert.equal(state.zoneState.get(bell.id).progress, 7 - MISSION_RULES.seal.drainPerTick);
+  run(state, 3, { player: spot });
+  state.bossZoneArmed.clear();
+  run(state, 1, { player: spot });
+  assert.equal(state.zoneState.get(bell.id).progress, 0);
+});
+
+test('each floor has a retreat ring that fills in 120 still ticks only while armed', () => {
+  const retreats = MISSION_BOSS_ZONES.filter((zone) => zone.bossZone.kind === 'retreat');
+  assert.deepEqual(retreats.map((zone) => [zone.id, zone.mode, zone.fillTicks, zone.bossZone.arena]), [
+    ['liquidator-retreat-dark-pool', 'channel', 120, 'dark-pool'],
+    ['liquidator-retreat-margin-floor', 'channel', 120, 'margin-floor'],
+  ]);
+  assert.deepEqual(retreats.map((zone) => [zone.operate.x, zone.operate.y]), [
+    [LIQUIDATOR_DARK_POOL.retreat.x, LIQUIDATOR_DARK_POOL.retreat.y], [LIQUIDATOR_MARGIN_FLOOR.retreat.x, LIQUIDATOR_MARGIN_FLOOR.retreat.y],
+  ]);
+  const zone = retreats[1];
+  const state = createMissionState(2);
+  run(state, 150, { player: at(zone.operate) });
+  assert.equal(state.zoneState.get(zone.id).progress, 0);
+  state.bossZoneArmed.add(zone.id);
+  assert.deepEqual(run(state, 119, { player: at(zone.operate) }), []);
+  const [event] = run(state, 1, { player: at(zone.operate) });
+  assert.deepEqual([event.type, event.zoneKind, event.arena], ['boss-zone', 'retreat', 'margin-floor']);
+  assert.equal(MISSION_BOSS_ZONES.every((entry) => entry.xpPerLevel === 0 && entry.effects.length === 0), true);
 });

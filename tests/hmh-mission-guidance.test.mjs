@@ -88,5 +88,27 @@ test('the field map lists discovered nodes by state, names what a locked node ne
   state.completed.set('warehouse-logbook', 5);
   const logbook = missionFieldMapNodes(state).find((node) => node.id === 'warehouse-logbook');
   assert.equal(logbook.state, 'done');
-  assert.match(logbook.lore, /pump crew/);
+  assert.match(logbook.lore, /real books/);
+});
+
+// Slice S1.5: priority 2 is the Closing Bell while its slot arms it, and the
+// Liquidator Vault becomes a claimable station once he falls.
+test('a ready, armed Closing Bell is tracked at priority 2 in the Yard, and only while armed', () => {
+  const state = createMissionState(1);
+  const player = { x: 10_600, y: 2_900 };
+  const before = selectMissionTrack(state, { player, districtId: 'liquidation-yard' });
+  assert.equal(before.id, 'yard-warehouse', 'a disarmed bell is not tracked');
+  state.bossZoneArmed.add('liquidator-closing-bell');
+  const track = selectMissionTrack(state, { player, districtId: 'liquidation-yard' });
+  assert.deepEqual([track.id, track.priority, track.glyph], ['liquidator-closing-bell', 2, 'boss']);
+  assert.match(track.text, /^Ring the Closing Bell · \d+ m .$/);
+  assert.equal(selectMissionTrack(state, { player, districtId: 'mining-camp' })?.id === 'liquidator-closing-bell', false, 'only in its own district');
+});
+
+test('the Liquidator Vault is claimable once the boss unlock is recorded, like a finished machine', () => {
+  const state = createMissionState(1);
+  const vault = OBJECTIVE_REWARDS.find((reward) => reward.objectiveId === 'liquidator-defeated');
+  const claim = (unlocked) => missionClaimableStations({ mission: state, rewards: OBJECTIVE_REWARDS, rewardState: () => 'reward-available', unlocked });
+  assert.equal(claim(new Set()).some((station) => station.id === vault.id), false);
+  assert.equal(claim(new Set(['liquidator-defeated'])).some((station) => station.id === vault.id), true);
 });

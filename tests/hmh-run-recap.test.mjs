@@ -101,7 +101,14 @@ test('recap labels boss attacks, hazards, self-kills, and survivals distinctly',
 
 test('recap label maps cover every catalog id the child can emit', () => {
   assert.deepEqual(Object.keys(ENEMY_LABELS).sort(), [...C.enemyRoles].sort());
-  assert.deepEqual(Object.keys(BOSS_ATTACK_LABELS).sort(), Object.keys(LIQUIDATOR_ATTACK_DEFINITIONS).sort());
+  // S1.5 reworked the Liquidator's kit (design package 4.3): the Gavel Stamp,
+  // the Candle Chart and the Enforcement Order are new ids and the Short
+  // Squeeze Burst is retired. The portal's copied labels are a parent request
+  // (docs/hmh-reboot/design/LEVEL-1-BUILD-LEDGER.md); until it lands the
+  // recap title-cases an unlabelled id, which reads as the package name.
+  const childAttacks = Object.keys(LIQUIDATOR_ATTACK_DEFINITIONS);
+  assert.deepEqual(childAttacks.filter((id) => !Object.hasOwn(BOSS_ATTACK_LABELS, id)).sort(), ['candle-chart', 'enforcement-order', 'gavel-stamp']);
+  assert.deepEqual(Object.keys(BOSS_ATTACK_LABELS).filter((id) => !childAttacks.includes(id)).sort(), ['bad-debt-summon', 'liquidation-zone', 'short-squeeze-burst']);
   assert.deepEqual(Object.keys(SITE_LABELS).sort(), [...C.worldSites].sort());
   assert.deepEqual(Object.keys(SECRET_LABELS).sort(), [...C.secrets].sort());
   for (const site of WORLD_DESIGN_SITES) assert.equal(SITE_LABELS[site.id], site.name);
