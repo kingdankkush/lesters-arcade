@@ -352,7 +352,7 @@ test('runtime director bounds never read camera.zoom, the viewport, or the rende
   assert.match(source, /directorViewBounds/);
   assert.match(source, /camera: directorViewBounds\(\{ x: actor\.x, y: actor\.y \}\)/);
   const start = source.indexOf('lastDirectorStep = endurancePressurePilotEnabled');
-  const end = source.indexOf('lastBossStep = liquidatorBoss.active');
+  const end = source.indexOf('lastBossStep = liquidatorBoss?.active');
   assert.ok(start > 0 && end > start);
   const block = source.slice(start, end);
   assert.doesNotMatch(block, /camera\.zoom/);
@@ -362,3 +362,23 @@ test('runtime director bounds never read camera.zoom, the viewport, or the rende
 });
 
 test('early populations are bounded before late encounter complexity ramps up',()=>{assert.equal(getEncounterSnapshot(0).bodyCap,20);assert.equal(getEncounterBand(0).spawnIntervalTicks,150);assert.equal(getEncounterSnapshot(3600).bodyCap,48);assert.ok(getEncounterSnapshot(18000).bodyCap>48);});
+
+// Slice S1.5 (package 4.3 "Purpose"): while the Liquidator lives, Yard spawns
+// lean toward his Agents; the lean doubles the suppressor weight and changes
+// nothing else, and it is off by default.
+test('a lean role doubles its weight in the cycle, and no lean leaves the authored mix unchanged', () => {
+  const countRoles = (leanRole) => {
+    const counts = {};
+    for (let spawnOrdinal = 0; spawnOrdinal < 23; spawnOrdinal += 1) {
+      const selected = selectEncounterArchetype({ districtId: 'liquidation-yard', bandId: 'elite', spawnOrdinal, seed: 0, leanRole });
+      const role = ENEMY_ARCHETYPES[selected.archetypeId].role;
+      counts[role] = (counts[role] ?? 0) + 1;
+    }
+    return counts;
+  };
+  assert.deepEqual(countRoles(null), countRoles(undefined));
+  assert.deepEqual(countRoles('suppressor'), { rusher: 5, flanker: 4, suppressor: 6, bruiser: 3, demolition: 3, support: 2 });
+  // A lean the district or band does not allow is ignored.
+  const opening = (leanRole) => Array.from({ length: 20 }, (_, spawnOrdinal) => selectEncounterArchetype({ districtId: 'liquidation-yard', bandId: 'opening', spawnOrdinal, seed: 3, leanRole }).archetypeId);
+  assert.deepEqual(opening('suppressor'), opening(null));
+});

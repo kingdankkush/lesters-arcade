@@ -1,7 +1,7 @@
 import { WORLD_DESIGN_SECRET_SEAL } from './world-design-secrets.mjs';
 import { WORLD_DESTRUCTIBLES, WORLD_DESTRUCTIBLE_BLOCKERS, WORLD_EXPLOSIVE_ZONES } from './world-destructibles.mjs';
 import { WORLD_DESIGN_NEW_LOTS } from './world-design-layout.mjs';
-import { WORLD_DESIGN_COURT_BLOCKERS, WORLD_DESIGN_PROP_BLOCKERS, buildWorldDesignPerimeter } from './world-design-encounters.mjs';
+import { WORLD_DESIGN_COURT_BLOCKERS, WORLD_DESIGN_DARK_POOL_BLOCKERS, WORLD_DESIGN_PROP_BLOCKERS, buildWorldDesignPerimeter } from './world-design-encounters.mjs';
 import { freezeDeep } from './value-guards.mjs';
 import { auditCollisionWorld, createStaticBlocker } from './collision.mjs';
 import { createAuthoredGroundQuery, createElevationSurface } from './elevation.mjs';
@@ -158,6 +158,7 @@ const block = (id, districtId, x, y, width, depth, maxZ, visualKind = 'building'
 const BLOCKER_FEATURES = [
   ...buildWorldDesignPerimeter(BOUNDS),
   ...WORLD_DESIGN_COURT_BLOCKERS,
+  ...WORLD_DESIGN_DARK_POOL_BLOCKERS,
   WORLD_DESIGN_SECRET_SEAL,
   ...WORLD_DESTRUCTIBLE_BLOCKERS,
   ...WORLD_DESIGN_PROP_BLOCKERS,

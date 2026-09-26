@@ -24,7 +24,9 @@ export function firstUnsafeDodgeSample({start,direction,distance,radius,groundZ,
 }
 
 // Simulation only: no camera, wall clock, random draws or animation state.
-export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers,queryGround,enemies}) {
+// bossDangers (S1.5, package 4.1): boss strikes as {contains(p), resolveTick}
+// from the boss geometry kit, read like an enemy tell due within 6 ticks.
+export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers,queryGround,enemies,bossDangers=[]}) {
   if(state.active || tick<state.cooldownReadyTick || Math.hypot(move.x,move.y)<.5) return null;
   const magnitude=Math.hypot(move.x,move.y),direction={x:move.x/magnitude,y:move.y/magnitude};
   const start={x:actor.x,y:actor.y,z:actor.groundZ};
@@ -47,6 +49,7 @@ export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers
     if(distanceToSegment(enemy,start,end)<body.radius+(enemy.radius??20)
       && (enemy.x-start.x)*direction.x+(enemy.y-start.y)*direction.y>0) return null;
   }
+  for(const strike of bossDangers) if(strike.resolveTick>=tick && strike.resolveTick-tick<=6) danger.push(strike.contains);
   if(!danger.some(contains=>contains(start)) || danger.some(contains=>contains(end))) return null;
   const sweep=resolveSweptCircleMotion({body,start,delta:{x:end.x-start.x,y:end.y-start.y},blockers,bounds,stopOnFirstContact:true});
   if(sweep.contacts.length || sweep.depenetrations.length || Math.hypot(sweep.position.x-end.x,sweep.position.y-end.y)>.1) return null;

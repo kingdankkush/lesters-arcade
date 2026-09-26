@@ -120,6 +120,8 @@ export function missionGuidanceStations(mission, { collectibles = null, canColle
   if (!entries) collectibleIndex.set(collectibles.entries, entries = new Map(collectibles.entries.map((entry) => [entry.placement.id, entry])));
   return missionClaimableStations({
     mission,
+    // The Liquidator Vault's owner is the boss unlock, not a mission row.
+    unlocked: collectibles.unlockedObjectives ?? null,
     rewards: OBJECTIVE_REWARDS,
     rewardState: (id) => objectiveRewardState(collectibles, id, { tick }).state,
     canClaim: (reward) => {
@@ -134,13 +136,14 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
   const prompt=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:13,fontWeight:'700',fill:0xeef6e9,stroke:{color:0x12211e,width:4},align:'center'}});
   const tracker=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:13,fontWeight:'700',fill:MISSION_PALETTE.mechanism.ring,align:'center'}});
   const needs=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:12,fontWeight:'700',fill:0xeef6e9,stroke:{color:0x12211e,width:4},align:'center'}});
-  prompt.anchor.set(.5,1); tracker.anchor.set(.5,.5); needs.anchor.set(.5,0);
-  overlay.addChild(effects,pill,prompt,tracker,needs);
+  const bossNote=new TextClass({text:'',style:{fontFamily:'system-ui',fontSize:12,fontWeight:'800',fill:MISSION_PALETTE.boss.spikes,stroke:{color:MISSION_PALETTE.boss.band,width:4},align:'center',letterSpacing:1}});
+  prompt.anchor.set(.5,1); tracker.anchor.set(.5,.5); needs.anchor.set(.5,0); bossNote.anchor.set(.5,0);
+  overlay.addChild(effects,pill,prompt,tracker,needs,bossNote);
   ground.label='world-interaction-ground'; overlay.label='world-interaction-prompts';
-  let lastPrompt='', lastTracker='', lastNeeds='', lastTrack=null;
+  let lastPrompt='', lastTracker='', lastNeeds='', lastTrack=null, lastBossNote='';
   const lastWarned=new Map();
   const render=({mission,destructibleState,actor,camera,view,worldToScreen,queryGround,tick,reduceMotion=false,reduceFlash=false,particleBudget=10,campfirePlacements=[],hazards=[],announce=null,guidance=null,bossArena=null,mobile=false})=>{
-    ground.clear(); effects.clear(); pill.clear(); prompt.visible=false; tracker.visible=false; needs.visible=false;
+    ground.clear(); effects.clear(); pill.clear(); prompt.visible=false; tracker.visible=false; needs.visible=false; bossNote.visible=false;
     if(!mission||!actor) return {visibleSites:0,particles:0,hazardTelegraphs:[],beams:0,trackedId:null,trackerText:''};
     const project=(x,y,z=0)=>worldToScreen({x,y,z},camera,view);
     const z=camera.zoom;
@@ -153,16 +156,39 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
     const presentation=missionPresentation(mission);
     // Machine rings, nearest first, at most six on screen. A secret's pry spot
     // shows nothing until the hero kneels there.
+    // Boss zones (S1.5): the Closing Bell shows from the start (a red lamp and
+    // "Opens at M:SS" until it is ready, "SETTLED" once the Dark Pool owns the
+    // fight) and hides while a fight is live; a retreat ring shows only while
+    // it is armed, inside the sealed floor.
+    const bossZoneShown=zone=>zone.bossZone.kind==='trigger'?['waiting','settled','ready','held','filling'].includes(zone.state):['ready','held','filling'].includes(zone.state);
     const rings=presentation.zones
-      .filter(zone=>zone.state!=='done'&&(zone.kind!=='pry'||zone.state==='filling')&&!hidden(zone.x,zone.y))
+      .filter(zone=>zone.state!=='done'&&(zone.kind!=='pry'||zone.state==='filling')&&(zone.bossZone?bossZoneShown(zone):!hidden(zone.x,zone.y)))
       .map(zone=>({zone,p:project(zone.x,zone.y,queryGround(zone.x,zone.y).groundZ),d:Math.hypot(actor.x-zone.x,actor.y-zone.y)}))
       .filter(entry=>onScreen(entry.p))
       .sort((a,b)=>a.d-b.d||(a.zone.zoneId<b.zone.zoneId?-1:1))
       .slice(0,MISSION_RING_CAP);
-    let nearestLocked=null;
+    let nearestLocked=null,bossNoteAt=null;
     for(const {zone,p,d} of rings) {
       visibleSites++;
       const r=zone.ringRadius*z;
+      if(zone.bossZone?.kind==='trigger') {
+        // A dark band with bone-white spikes (never red or pink), a lamp, and
+        // one line under the ring.
+        const {band,spikes}=MISSION_PALETTE.boss;
+        const settled=zone.state==='settled';
+        ground.circle(p.x,p.y,r).stroke({color:band,width:9*z,alpha:settled?.45:.85}).stroke({color:spikes,width:1.5*z,alpha:settled?.4:.9});
+        for(let spike=0;spike<12;spike++){const a=spike*Math.PI/6,tx=-Math.sin(a),ty=Math.cos(a),bx=p.x+Math.cos(a)*r,by=p.y+Math.sin(a)*r;
+          ground.moveTo(bx+tx*4*z,by+ty*4*z).lineTo(bx+Math.cos(a)*9*z,by+Math.sin(a)*9*z).lineTo(bx-tx*4*z,by-ty*4*z).stroke({color:spikes,width:1.5*z,alpha:settled?.35:.85});}
+        if(zone.progress>0) arcPath(ground,p.x,p.y,r+5*z,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,zone.progress),32).stroke({color:spikes,width:4*z,alpha:1});
+        // A bell glyph.
+        effects.moveTo(p.x-6*z,p.y+4*z).lineTo(p.x-4*z,p.y-4*z).lineTo(p.x+4*z,p.y-4*z).lineTo(p.x+6*z,p.y+4*z).lineTo(p.x-6*z,p.y+4*z).stroke({color:spikes,width:2*z});
+        effects.circle(p.x,p.y+6*z,1.6*z).fill({color:spikes});
+        if(!settled) drawLamp(effects,p.x+r*.72,p.y-r*.72,z,zone.state==='waiting'?'missing':'ready');
+        const readyAt=Math.max(0,zone.readyAt??0),minutes=Math.floor(readyAt/3600),seconds=Math.floor(readyAt/60)%60;
+        const text=settled?'SETTLED':zone.state==='waiting'?`Opens at ${minutes}:${String(seconds).padStart(2,'0')}`:'';
+        if(text&&(!bossNoteAt||d<bossNoteAt.d)) bossNoteAt={text,p,r,d};
+        continue;
+      }
       if(zone.state==='locked') {
         // Grey ring, padlock, red X; the label names the missing item.
         ground.circle(p.x,p.y,r).stroke({color:outline,width:5*z,alpha:.5}).stroke({color:MISSION_PALETTE.locked.ring,width:2.5*z,alpha:.85});
@@ -189,6 +215,10 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
         for(let spoke=0;spoke<6;spoke++){const a=spoke*Math.PI/3;effects.moveTo(p.x+Math.cos(a)*5*z,p.y+Math.sin(a)*5*z).lineTo(p.x+Math.cos(a)*8*z,p.y+Math.sin(a)*8*z).stroke({color:ivory,width:2*z});}
       }
       drawLamp(effects,p.x+r*.72,p.y-r*.72,z,'ready');
+    }
+    if(bossNoteAt&&bossNoteAt.d<700) {
+      if(lastBossNote!==bossNoteAt.text){bossNote.text=bossNoteAt.text;lastBossNote=bossNoteAt.text;}
+      bossNote.position.set(bossNoteAt.p.x,bossNoteAt.p.y+bossNoteAt.r+10*z);bossNote.visible=true;
     }
     if(nearestLocked&&nearestLocked.d<400) {
       const text=`Needs ${mission.rowsById.get(nearestLocked.zone.requires)?.name??'an item'}`;

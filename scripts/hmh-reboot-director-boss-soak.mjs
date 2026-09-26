@@ -12,8 +12,9 @@ import {
   retireEnemyFromPopulation,
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import {
+  LIQUIDATOR_BENCHMARK_MAX_HEALTH,
   LIQUIDATOR_TARGET_FIGHT_TICKS,
-  createLiquidatorBoss,
+  createLiquidatorBenchmarkBoss,
   simulateLiquidatorDps,
   stepLiquidatorBoss,
 } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
@@ -79,7 +80,9 @@ function runDirector() {
 }
 
 function runBoss(partition) {
-  const boss = createLiquidatorBoss({ id: 'liquidator-soak', x: 0, y: 0, startTick: 0 });
+  // S1.5: the reworked Liquidator on the 150 s target, untouched (so the
+  // stall guard's loop runs too).
+  const boss = createLiquidatorBenchmarkBoss({ id: 'liquidator-soak', startTick: 0 });
   const events = [];
   let accumulator = 0;
   while (boss.elapsedTick < LIQUIDATOR_TARGET_FIGHT_TICKS) {
@@ -119,6 +122,6 @@ if (bossElapsedMs > 1_000) throw new Error(`boss soak exceeded 1000ms: ${bossEla
 console.log(JSON.stringify({
   director: { hash: directorA.hash, insertedCount: directorA.insertedCount, retiredCount: directorA.retiredCount, activeCount: directorA.activeCount, seenIds: directorA.seenIds, maxBodies: directorA.maxBodies, elapsedMsTwoRuns: Number(directorElapsedMs.toFixed(3)) },
   boss: { hash: boss60.hash, events: boss60.events.length, droppedEvents: boss60.droppedEvents, elapsedMsThreePartitions: Number(bossElapsedMs.toFixed(3)) },
-  dps: { noHit: simulateLiquidatorDps({ damagePerTick: 0 }), normal: simulateLiquidatorDps({ damagePerTick: 4 }), high: simulateLiquidatorDps({ damagePerTick: 20 }), low: simulateLiquidatorDps({ damagePerTick: 2 }) },
+  dps: Object.fromEntries([['noHit', 0], ['normal', 4], ['high', 20], ['low', 2]].map(([name, damagePerTick]) => [name, simulateLiquidatorDps({ damagePerTick, maxHealth: LIQUIDATOR_BENCHMARK_MAX_HEALTH })])),
   heapDelta: heapAfter - heapBefore,
 }, null, 2));

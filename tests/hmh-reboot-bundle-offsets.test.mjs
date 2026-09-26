@@ -30,6 +30,11 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   // Mission core v2 (S1.4): the objective simulation and, through it, the v7
   // contract; guidance and the palette travel with the lazy world life.
   'mission-objectives.mjs',
+  // Boss kit (S1.5): the registry and lifecycle, the arenas and their locks,
+  // and the geometry kit.
+  'boss-slots.mjs',
+  'boss-arenas.mjs',
+  'boss-geometry.mjs',
 ]);
 
 function walk(node, visit) {
@@ -109,7 +114,10 @@ test('boot awaits the lazy runtime modules before any lazily bound code runs or 
   // Every call to a lazily bound function in boot comes after the await.
   const lazyNames = ['createWorldDesignLife', 'createMissionState', 'createWorldDesignPacing', 'createUpgradePanel', 'loadWorldDesignAppearance',
     'createLiquidatorBoss', 'stepLiquidatorBoss', 'stepMissionObjectives', 'resolveLevelBriefing', 'applyLevelBriefing', 'liquidatorPose', 'creatureAnimationTick',
-    'renderLiquidatorTelegraph', 'prepareWorldDesignEnemyPose', 'stepWorldDesignPacing'];
+    'renderLiquidatorTelegraph', 'prepareWorldDesignEnemyPose', 'stepWorldDesignPacing',
+    'createBossSlots', 'stepBossSlots', 'bossZoneArming', 'bossDirectorOverlay', 'directorBankFull', 'bossAddAllowance', 'defeatBossSlot',
+    'consumeGoldenParachute', 'bossHudState', 'forceBossStart', 'isLiquidatorTargetable', 'getLiquidatorVulnerability', 'liquidatorOpenArena',
+    'insideBossArena', 'bossShapeDodgeDanger'];
   const bootAst = parse(`(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)})`, { ecmaVersion: 'latest' });
   const awaitInWrapped = `(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)}`.indexOf('await lazyRuntimeModules;');
   walk(bootAst, (node) => {

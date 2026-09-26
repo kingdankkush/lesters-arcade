@@ -327,7 +327,9 @@ test('screen nuke retires ordinary targets but cannot delete a healthy Liquidato
     createEnemyState({ archetypeId: 'bagholder-rusher', id: 'nuke-rusher', x: 10, y: 0 }),
     createEnemyState({ archetypeId: 'forkrunner', id: 'nuke-forkrunner', x: 20, y: 0 }),
   ];
-  const boss = createLiquidatorBoss({ id: 'boss-liquidator', x: 30, y: 0 });
+  // S1.5: HP is frozen at the trigger (12,000 here). A bell start whose intro
+  // is over takes the nuke's hit at face value (no vulnerability window).
+  const boss = createLiquidatorBoss({ id: 'boss-liquidator', x: 30, y: 0, maxHealth: 12_000, entry: 'bell', startTick: 0 });
   const targets = [
     ...enemies.map((enemy) => ({
       id: enemy.id,
@@ -356,7 +358,7 @@ test('screen nuke retires ordinary targets but cannot delete a healthy Liquidato
   }));
   const resolved = resolveCombatHits({ sessionSeed: 66, hits, targets });
   const bossDamageEvent = resolved.damageEvents.find((damage) => damage.targetId === boss.id);
-  const bossDamage = applyLiquidatorDamage({ boss, amount: bossDamageEvent.damageApplied, tick: 1 });
+  const bossDamage = applyLiquidatorDamage({ boss, amount: bossDamageEvent.damageApplied, tick: 200 });
   const grenades = createGrenadeSystem({ handCharges: 3 });
   const recharge = rechargeHandGrenades(grenades, { tick: 1, amount: 1 });
 
@@ -369,6 +371,10 @@ test('screen nuke retires ordinary targets but cannot delete a healthy Liquidato
   assert.equal(boss.active, true);
   assert.equal(boss.defeated, false);
   assert.equal(bossDamage.runEvent, null);
+  // During a Closing Bell intro the nuke (like every source) does nothing.
+  const intro = createLiquidatorBoss({ id: 'boss-liquidator', x: 30, y: 0, maxHealth: 12_000, entry: 'bell', startTick: 1 });
+  assert.equal(applyLiquidatorDamage({ boss: intro, amount: bossDamageEvent.damageApplied, tick: 1 }).damageApplied, 0);
+  assert.equal(intro.health, 12_000);
   assert.deepEqual(recharge, { type: 'grenade:pickup-refill', tick: 1, amount: 1, handCharges: 4 });
 });
 

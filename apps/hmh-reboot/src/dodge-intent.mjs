@@ -68,6 +68,7 @@ export function resolveDodgeIntent({
   blockers = [],
   queryGround,
   enemies = [],
+  bossDangers = [],
   lastMove = null,
   aim = null,
 }) {
@@ -80,6 +81,6 @@ export function resolveDodgeIntent({
       ? { mode: 'manual', direction, distance: plan.distance }
       : { mode: 'manual', blocked: true, direction, distance: plan.distance });
   }
-  const direction = automaticDodgeIntent({ tick, actor, move: input.move, state, body, bounds, blockers, queryGround, enemies });
+  const direction = automaticDodgeIntent({ tick, actor, move: input.move, state, body, bounds, blockers, queryGround, enemies, bossDangers });
   return direction ? freezeDeep({ mode: 'automatic', direction: { ...direction }, distance: state.distance }) : null;
 }

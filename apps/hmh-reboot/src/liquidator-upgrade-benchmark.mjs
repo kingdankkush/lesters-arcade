@@ -2,9 +2,9 @@ import { resolveCombatHits } from './combat-events.mjs';
 import {
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
-  createLiquidatorBoss,
-  getLiquidatorPunishWindow,
+  createLiquidatorBenchmarkBoss,
   getLiquidatorRoleCheck,
+  getLiquidatorVulnerability,
   LIQUIDATOR_TARGET_FIGHT_TICKS,
   stepLiquidatorBoss,
 } from './liquidator-boss.mjs';
@@ -86,7 +86,7 @@ export function runLiquidatorUpgradeBenchmark({
   }
 
   const { criticalChance, criticalMultiplier } = resolveCriticalStats(effects);
-  const boss = createLiquidatorBoss({ id: 'upgrade-benchmark-liquidator', x: 0, y: 0, startTick });
+  const boss = createLiquidatorBenchmarkBoss({ id: 'upgrade-benchmark-liquidator', startTick, seed });
   const player = { x: ORDINARY_PISTOL_DISTANCE, y: 0, groundZ: 0 };
   const phases = [];
   const perPhaseDamage = {
@@ -95,7 +95,6 @@ export function runLiquidatorUpgradeBenchmark({
     'total-liquidation': 0,
   };
   let currentPhaseId = null;
-  let lastResolvedAttack = null;
   let punishContacts = 0;
   let addCount = 0;
   let criticalHits = 0;
@@ -122,9 +121,6 @@ export function runLiquidatorUpgradeBenchmark({
       }
 
       for (const event of report.events) {
-        if (event.type === 'attack' || event.type === 'add-wave') {
-          lastResolvedAttack = { attackId: event.attackId, tick };
-        }
         if (event.type === 'add-wave') {
           const candidates = createLiquidatorAddCandidates({ event, activeAddIds });
           for (const candidate of candidates) activeAddIds.push(candidate.id);
@@ -132,13 +128,8 @@ export function runLiquidatorUpgradeBenchmark({
         }
       }
 
-      const punish = lastResolvedAttack
-        ? getLiquidatorPunishWindow({
-          phaseId: boss.phaseId,
-          attackId: lastResolvedAttack.attackId,
-          ticksSinceResolve: tick - lastResolvedAttack.tick,
-        })
-        : { active: false, multiplier: 1, windowId: null };
+      // Kneel, stagger and Insider Trading: the boss applies them himself.
+      const punish = getLiquidatorVulnerability(boss, tick);
 
       const roleCheck = getLiquidatorRoleCheck({
         weaponId: 'coin-blaster',
@@ -148,7 +139,7 @@ export function runLiquidatorUpgradeBenchmark({
         targetKind: 'boss',
       });
 
-      const hitDamage = ORDINARY_PISTOL_DAMAGE * roleCheck.multiplier * punish.multiplier;
+      const hitDamage = ORDINARY_PISTOL_DAMAGE;
       const resolution = resolveCombatHits({
         sessionSeed: seed,
         hits: [{
@@ -169,16 +160,16 @@ export function runLiquidatorUpgradeBenchmark({
           id: boss.id,
           health: boss.health,
           maxHealth: boss.maxHealth,
-          armor: 1,
+          armor: boss.armor,
           shieldCharges: 0,
-          knockbackResistance: 0.92,
+          knockbackResistance: boss.knockbackResistance,
         }],
       });
       const damageEvent = resolution.damageEvents[0];
       if (damageEvent) {
         if (damageEvent.critical) criticalHits += 1;
         else ordinaryHits += 1;
-        const result = applyLiquidatorDamage({ boss, amount: damageEvent.damageApplied, tick });
+        const result = applyLiquidatorDamage({ boss, amount: damageEvent.damageApplied, tick, roleMultiplier: roleCheck.multiplier });
         perPhaseDamage[currentPhaseId] = Math.round((perPhaseDamage[currentPhaseId] + result.damageApplied) * 1_000_000) / 1_000_000;
         if (punish.active && result.damageApplied > 0) punishContacts += 1;
       }

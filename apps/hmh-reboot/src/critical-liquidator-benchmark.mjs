@@ -3,9 +3,9 @@ import {
   LIQUIDATOR_TARGET_FIGHT_TICKS,
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
-  createLiquidatorBoss,
-  getLiquidatorPunishWindow,
+  createLiquidatorBenchmarkBoss,
   getLiquidatorRoleCheck,
+  getLiquidatorVulnerability,
   stepLiquidatorBoss,
 } from './liquidator-boss.mjs';
 import {
@@ -66,8 +66,9 @@ function closePhase(phases, phaseId, exitTick, damage) {
 /**
  * Read-only certification seam. It composes the canonical first-level draft,
  * weapon cadence/reload state, combat critical resolver, Liquidator role and
- * punish multipliers, and boss damage authority without becoming a runtime
- * import or a second combat engine.
+ * vulnerability multipliers (applied and capped inside the boss), and boss
+ * damage authority without becoming a runtime import or a second combat
+ * engine.
  */
 export function runCriticalLiquidatorBenchmark({
   buildId,
@@ -90,7 +91,7 @@ export function runCriticalLiquidatorBenchmark({
     BASE_CRITICAL_CHANCE + progression.effects.criticalChanceBonus,
   );
   const criticalMultiplier = BASE_CRITICAL_MULTIPLIER + progression.effects.criticalDamageBonus;
-  const boss = createLiquidatorBoss({ id: 'critical-benchmark-liquidator', x: 0, y: 0 });
+  const boss = createLiquidatorBenchmarkBoss({ id: 'critical-benchmark-liquidator', seed });
   const loadout = createWeaponLoadout({ weaponIds: ['coin-blaster'], seed });
   const activeAddIds = [];
   const phases = [];
@@ -103,7 +104,6 @@ export function runCriticalLiquidatorBenchmark({
   let accumulator = 0;
   let tick = 0;
   let currentPhaseId = null;
-  let lastBossResolvedAttack = null;
   let shotsFired = 0;
   let contactHits = 0;
   let criticalHits = 0;
@@ -125,20 +125,14 @@ export function runCriticalLiquidatorBenchmark({
         phases.push({ id: currentPhaseId, entryTick: tick, exitTick: null, damage: 0 });
       }
       for (const event of bossFrame.events) {
-        if (event.type === 'attack') lastBossResolvedAttack = { attackId: event.attackId, tick };
         if (event.type === 'add-wave') {
           const candidates = createLiquidatorAddCandidates({ event, activeAddIds });
           for (const candidate of candidates) activeAddIds.push(candidate.id);
           addCount += candidates.length;
         }
       }
-      const punish = lastBossResolvedAttack
-        ? getLiquidatorPunishWindow({
-          phaseId: boss.phaseId,
-          attackId: lastBossResolvedAttack.attackId,
-          ticksSinceResolve: tick - lastBossResolvedAttack.tick,
-        })
-        : freezeDeep({ active: false, multiplier: 1, windowId: null });
+      // Kneel, stagger and Insider Trading: the boss applies them himself.
+      const punish = getLiquidatorVulnerability(boss, tick);
       const roleCheck = getLiquidatorRoleCheck({
         weaponId: 'coin-blaster',
         distance: Math.hypot(PLAYER.x - boss.x, PLAYER.y - boss.y),
@@ -164,7 +158,7 @@ export function runCriticalLiquidatorBenchmark({
           weaponId: shot.weaponId,
           tick,
           time: 0,
-          damage: shot.damage * roleCheck.multiplier * punish.multiplier,
+          damage: shot.damage,
           criticalChance,
           criticalMultiplier,
           direction: shot.direction,
@@ -186,7 +180,7 @@ export function runCriticalLiquidatorBenchmark({
         for (const damageEvent of resolved.damageEvents) {
           contactHits += 1;
           if (damageEvent.critical) criticalHits += 1;
-          const applied = applyLiquidatorDamage({ boss, amount: damageEvent.damageApplied, tick });
+          const applied = applyLiquidatorDamage({ boss, amount: damageEvent.damageApplied, tick, roleMultiplier: roleCheck.multiplier });
           totalDamage += applied.damageApplied;
           perPhaseDamage[currentPhaseId] += applied.damageApplied;
           if (punish.active && applied.damageApplied > 0) {

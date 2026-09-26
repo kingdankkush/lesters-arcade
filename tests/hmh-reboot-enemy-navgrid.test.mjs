@@ -23,6 +23,7 @@ import {
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { WORLD_DESTRUCTIBLE_BLOCKERS } from '../apps/hmh-reboot/src/world-destructibles.mjs';
+import { WORLD_DESIGN_DARK_POOL_BLOCKERS } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 
 // Owner playtest 2026-07-31: "Enemy AI behaviors and pathing is terrible not
 // knowing how to move around walls." These tests encode MAP-REDO slice 3: a
@@ -581,13 +582,15 @@ test('nav broad-phase retains the established full-world walkability and directe
   // Both witnesses were re-pinned on 2026-09-16 when the crossing, hashwood and
   // mining supply courts added their rails to the authored world, and again
   // for S1.4 (2026-09-25) when each machine's control prop moved beside its
-  // operate spot, off the footpaths (tests/hmh-mission-placement.test.mjs).
-  const addedIds = new Set(WORLD_DESTRUCTIBLE_BLOCKERS.map(blocker => blocker.id));
+  // operate spot, off the footpaths (tests/hmh-mission-placement.test.mjs),
+  // and for S1.5 when the Dark Pool court (its walls and cracked container)
+  // joined the Liquidation Yard. The pre-feature witness leaves the court out.
+  const addedIds = new Set([...WORLD_DESTRUCTIBLE_BLOCKERS, ...WORLD_DESIGN_DARK_POOL_BLOCKERS].map(blocker => blocker.id));
   const originalWorld = {...LEVEL_ONE_WORLD, collisionBlockers: LEVEL_ONE_WORLD.collisionBlockers.filter(blocker => !addedIds.has(blocker.id))};
   const grid = createEnemyNavGrid({world:originalWorld,queryGround:createLevelOneGroundQuery()});
   assert.equal(createHash('sha256').update(grid.walkable).update(grid.edges).digest('hex'),'ec30a3fee62f2c3eebbe8e3a383d7cf8b0ab7120649cc7ed908772766c19a73a');
   const current = buildGrid();
-  assert.equal(createHash('sha256').update(current.walkable).update(current.edges).digest('hex'),'d33aacff848e0c474cec62ca225baa2c31a7d63f4685d12897ceaf9d0dff8d3a');
+  assert.equal(createHash('sha256').update(current.walkable).update(current.edges).digest('hex'),'403a19d27a20a6deca79d9ec9db8bf43ea91de57048961bfa1e6122f62491cb2');
 });
 
 test('broad-phase includes tangent circle, capsule and polygon contacts', () => {

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Script, createContext } from 'node:vm';
 import { createAimState, resolveAimIntent } from '../apps/hmh-reboot/src/aim.mjs';
-import { createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { createLiquidatorBoss, isLiquidatorTargetable } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { traceHeightAwareLineOfSight } from '../apps/hmh-reboot/src/elevation.mjs';
 
 // Execute the runtime's actual aim call with the real aim and cover modules.
@@ -16,13 +16,17 @@ const resolveRuntimeAim = context => runtimeAimScript.runInContext(createContext
 const projectileHeight = Number(source.match(/const PROJECTILE_FLIGHT_HEIGHT = (\d+);/)?.[1]);
 assert.ok(Number.isFinite(projectileHeight), 'use the runtime projectile height for cover checks');
 
+// S1.5: a Closing Bell start at tick 40,000 has a 150-tick intro during which
+// he is untargetable; he arrives (targetable) at 40,150.
+const ARRIVAL = 40_150;
 function boss(overrides = {}) {
-  return Object.assign(createLiquidatorBoss({ id: 'boss-liquidator', x: 100, y: 0, startTick: 72_000 }), overrides);
+  return Object.assign(createLiquidatorBoss({ id: 'boss-liquidator', x: 100, y: 0, startTick: 40_000, maxHealth: 4_635 }), overrides);
 }
 
-function aim({ tick = 72_000, liquidatorBoss = boss(), grayboxEnemies = [], blockers = [], input = {} } = {}) {
+function aim({ tick = ARRIVAL, liquidatorBoss = boss(), grayboxEnemies = [], blockers = [], input = {} } = {}) {
   return resolveRuntimeAim({
     resolveAimIntent,
+    isLiquidatorTargetable,
     aimState: createAimState(),
     tick,
     motion: { x: 0, y: 0 },
@@ -47,13 +51,13 @@ test('runtime autofire acquires the Liquidator alone on its arrival tick', () =>
 });
 
 test('runtime autofire reacquires the boss after its nearby adds are cleared', () => {
-  const result = aim({ tick: 72_500, grayboxEnemies: [{ id: 'defeated-add', active: false, x: 20, y: 0, groundZ: 0 }] });
+  const result = aim({ tick: ARRIVAL + 500, grayboxEnemies: [{ id: 'defeated-add', active: false, x: 20, y: 0, groundZ: 0 }] });
   assert.equal(result.targetId, 'boss-liquidator');
   assert.equal(result.fire, true);
 });
 
 for (const [name, options] of [
-  ['before arrival', { tick: 71_999 }],
+  ['during the bell intro', { tick: ARRIVAL - 1 }],
   ['inactive', { liquidatorBoss: boss({ active: false }) }],
   ['dead even before the active flag is cleared', { liquidatorBoss: boss({ health: 0 }) }],
   ['not created', { liquidatorBoss: null }],

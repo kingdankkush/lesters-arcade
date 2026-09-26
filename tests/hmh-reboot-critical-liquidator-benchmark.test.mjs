@@ -50,11 +50,12 @@ test('Precision Ledger gives a bounded real-cadence uplift through combat and Li
   assert.ok(control.totalDamage > 0, 'ordinary pistol must remain non-vacuously viable');
   assert.equal(control.defeated, false);
   assert.equal(critical.defeated, false);
-  assert.equal(control.totalDamage, 12_000 - control.remainingHealth);
-  assert.equal(critical.totalDamage, 12_000 - critical.remainingHealth);
+  // S1.5: the benchmark boss has the Level 21 HP (4,635).
+  assert.equal(control.totalDamage, 4_635 - control.remainingHealth);
+  assert.equal(critical.totalDamage, 4_635 - critical.remainingHealth);
   assert.equal(control.roleMultiplier, 1);
   assert.equal(critical.roleMultiplier, 1);
-  assert.ok(control.punishContacts > 0, 'the final-phase recovery window must be exercised');
+  assert.ok(control.punishContacts > 0, 'the Insider Trading window must be exercised');
   assert.equal(critical.punishContacts, control.punishContacts);
   assert.ok(control.punishDamage > 0);
   assert.equal(control.addCount, critical.addCount);
@@ -95,7 +96,8 @@ test('benchmark source composes canonical progression, weapon, combat, punish, a
   assert.match(source, /stepWeaponLoadout/);
   assert.match(source, /resolveCombatHits/);
   assert.match(source, /getLiquidatorRoleCheck/);
-  assert.match(source, /getLiquidatorPunishWindow/);
+  assert.match(source, /getLiquidatorVulnerability/);
+  assert.match(source, /roleMultiplier: roleCheck\.multiplier/);
   assert.match(source, /applyLiquidatorDamage/);
   assert.doesNotMatch(source, /from '\.\/main\.mjs'/);
   assert.doesNotMatch(main, /critical-liquidator-benchmark/);

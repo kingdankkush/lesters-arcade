@@ -26,7 +26,11 @@ export const WORLD_FUEL_DRUMS=freezeDeep(WORLD_EXPLOSIVE_ZONES.flatMap(zone=>[[-
   id:`${zone.id}:drum-${i}`,zoneId:zone.id,districtId:zone.districtId,anchor:{x:zone.anchor.x+dx,y:zone.anchor.y+dy},
   hitPoints:25,radius:16,maxZ:40,assetId:'fuel-drum',blastRadius:zone.radius,fuseTicks:36,
 }))));
-const ordered=[...WORLD_DESTRUCTIBLES,...WORLD_FUEL_DRUMS].sort((a,b)=>a.id.localeCompare(b.id));
+// The Dark Pool's cracked container (design package 4.3, slice S1.5): cover
+// with no supplies behind it. Breaking it opens the court's door.
+export const WORLD_DARK_POOL_CONTAINER=freezeDeep({id:'dark-pool-container',districtId:'liquidation-yard',anchor:{x:11790,y:1900},
+  hitPoints:80,visualKind:'destructible-cover',radius:56,maxZ:48,assetId:'scrap-barricade',door:true});
+const ordered=[...WORLD_DESTRUCTIBLES,...WORLD_FUEL_DRUMS,WORLD_DARK_POOL_CONTAINER].sort((a,b)=>a.id.localeCompare(b.id));
 const byId=new Map(ordered.map(d=>[d.id,d]));
 export const WORLD_DESTRUCTIBLE_BLOCKERS=freezeDeep(ordered.map(d=>({
   id:d.id,districtId:d.districtId,anchor:d.anchor,visualKind:'containers',
@@ -64,6 +68,7 @@ export function worldDestructibleHiddenProps(state){
   const hidden=new Set();
   for(const d of ordered){
     if(d.blastRadius){if(state.exploded.has(d.id))hidden.add(`destructible-prop:${d.id}`);continue;}
+    if(!d.supply){if(state.health.get(d.id)<=0)hidden.add(`destructible-prop:${d.id}`);continue;}
     if(state.health.get(d.id)>0)hidden.add(`destructible-supply:${d.id}`);
     else hidden.add(`destructible-prop:${d.id}`);
     if(state.collected.has(d.id))hidden.add(`destructible-supply:${d.id}`);

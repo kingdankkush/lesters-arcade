@@ -152,3 +152,39 @@ test('a haven is tracked with the effect the collection step checks, hides while
   assert.equal(render({ mission, actor, guidance, tick: readyTick - 1 }).tracker.visible, false, 'no pill while the haven restocks');
   assert.equal(render({ mission, actor, guidance, tick: readyTick }).report.trackedId, haven.id);
 });
+
+// Slice S1.5: the Closing Bell's ring carries the boss palette, a red lamp
+// with "Opens at M:SS" before it is ready, "SETTLED" once the Dark Pool owns
+// the fight, and hides while a fight is live; a retreat ring shows only while
+// armed, even inside the sealed floor.
+test('the Closing Bell shows its readiness, its settlement, and hides during a fight; retreat rings show only when armed', () => {
+  const mission = createMissionState(1);
+  const bell = mission.zones.find((zone) => zone.id === 'liquidator-closing-bell');
+  const actor = { x: bell.x - 150, y: bell.y, groundZ: 0 };
+  const note = (life) => life.overlay.children[5];
+  const waiting = render({ mission, actor });
+  assert.equal(note(waiting.life).visible, true);
+  assert.equal(note(waiting.life).text, 'Opens at 10:00');
+  mission.bossZoneStatus.set(bell.id, { status: 'waiting', readyAt: 40_000 });
+  assert.equal(note(render({ mission, actor }).life).text, 'Opens at 11:06');
+  mission.bossZoneStatus.set(bell.id, { status: 'settled', readyAt: null });
+  assert.equal(note(render({ mission, actor }).life).text, 'SETTLED');
+  mission.bossZoneStatus.set(bell.id, { status: 'live', readyAt: null });
+  const live = render({ mission, actor });
+  assert.equal(note(live.life).visible, false);
+  const bellDrawn = (life) => life.ground.commands.some((command) => command[0] === 'circle' && command[1] === desktop.width / 2 + 150 && command[3] === bell.ringRadius);
+  assert.equal(bellDrawn(live.life), false);
+  mission.bossZoneStatus.delete(bell.id);
+  mission.bossZoneArmed.add(bell.id);
+  const armed = render({ mission, actor });
+  assert.equal(bellDrawn(armed.life), true);
+  assert.equal(note(armed.life).visible, false, 'an armed bell needs no note');
+  const retreat = mission.zones.find((zone) => zone.id === 'liquidator-retreat-margin-floor');
+  const inside = { x: retreat.x + 100, y: retreat.y, groundZ: 0 };
+  const arena = { x: 11_000, y: 2_400, radius: 700 };
+  mission.bossZoneStatus.set(retreat.id, { status: 'hidden', readyAt: null });
+  const retreatDrawn = (life) => life.ground.commands.some((command) => command[0] === 'circle' && command[1] === desktop.width / 2 - 100 && command[3] === retreat.ringRadius);
+  assert.equal(retreatDrawn(render({ mission, actor: inside, bossArena: arena }).life), false);
+  mission.bossZoneArmed.add(retreat.id);
+  assert.equal(retreatDrawn(render({ mission, actor: inside, bossArena: arena }).life), true);
+});

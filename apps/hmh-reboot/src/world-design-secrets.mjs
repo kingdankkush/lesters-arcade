@@ -3,7 +3,9 @@ import { freezeDeep } from './value-guards.mjs';
 export const WORLD_DESIGN_SECRETS = freezeDeep([
   {id:'farmstead-hidden-supplies',name:'Boarded supply chest',x:370,y:3270,groundZ:0,sealId:'farmstead-cache-seal',reward:'ammo',assetId:'stacked-crates',lore:'The relay keepers left supplies behind the farmstead gate.'},
   {id:'ravine-surveyor-cache',name:'Surveyor’s ledge cache',x:3150,y:1460,groundZ:64,reward:'heal',assetId:'bonus-life',lore:'The surveyors marked the safe descent on the south edge of this overlook.'},
-  {id:'warehouse-logbook',name:'Warehouse logbook',x:10530,y:3760,groundZ:0,assetId:'faction-banner',lore:'The river swallowed the old road. The pump crew kept the eastern passage open.'},
+  // S1.5: the logbook lies in the Dark Pool, 100 past its threshold, so the
+  // hidden volume (enter within 45) is always past the 48-unit start line.
+  {id:'warehouse-logbook',name:'Warehouse logbook',x:11790,y:2000,groundZ:0,assetId:'faction-banner',lore:'The Liquidator keeps his real books here, away from the trading floor.'},
 ]);
 export const WORLD_DESIGN_SECRET_SEAL = freezeDeep({id:'farmstead-cache-seal',districtId:'frontier-relay',anchor:{x:370,y:3270},visualKind:'containers',shape:{type:'capsule',a:{x:370,y:3270},b:{x:370,y:3270},radius:20},maxZ:40,combatCover:true});
 export function worldDesignSecretCoverHit({resolution,shot,tick}) {

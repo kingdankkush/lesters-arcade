@@ -40,8 +40,10 @@ function trackCandidates(mission, { districtId, stations }) {
     const row = rows.get(operating.objectiveId);
     if (row.objectiveClass !== 'secret') return [trackOf(1, row.id, operating.x, operating.y, row.task, row.objectiveClass)];
   }
-  const ready = mission.zones.filter((zone) => zone.mode === 'seal' && rows.get(zone.objectiveId)?.districtId === districtId
-    && !mission.completed.has(zone.objectiveId) && mission.lastTick >= zone.readyTick);
+  // A boss trigger counts only while its slot arms it (ready, unsettled, no
+  // fight live); the armed set already folds in its readyTick.
+  const ready = mission.zones.filter((zone) => zone.mode === 'seal' && zone.bossZone?.kind === 'trigger' && mission.bossZoneArmed?.has(zone.id)
+    && rows.get(zone.objectiveId)?.districtId === districtId);
   if (ready.length) return ready.map((zone) => trackOf(2, zone.objectiveId, zone.x, zone.y, rows.get(zone.objectiveId).task, 'boss'));
   const next = missionDistrictChain(mission.objectives, districtId).find((row) => !mission.completed.has(row.id));
   if (next) {
@@ -74,12 +76,13 @@ export function selectMissionTrack(mission, { player, districtId, stations = [],
   });
 }
 
-// Havens and first-clear caches whose machine is discovered or done and whose
-// reward can be taken now (package §3.3 priority 4).
-export function missionClaimableStations({ mission, rewards, rewardState, canClaim = () => true }) {
+// Havens and first-clear caches whose machine is done (or, for the Liquidator
+// Vault, whose owner the collectible state has unlocked) and whose reward can
+// be taken now (package §3.3 priority 4).
+export function missionClaimableStations({ mission, rewards, rewardState, canClaim = () => true, unlocked = null }) {
   const stations = [];
   for (const reward of rewards) {
-    if (!mission.completed.has(reward.objectiveId)) continue;
+    if (!mission.completed.has(reward.objectiveId) && !unlocked?.has(reward.objectiveId)) continue;
     if (rewardState(reward.id) !== 'reward-available' || !canClaim(reward)) continue;
     stations.push({ id: reward.id, x: reward.x, y: reward.y, task: `${reward.name} · ${reward.rewardName}` });
   }

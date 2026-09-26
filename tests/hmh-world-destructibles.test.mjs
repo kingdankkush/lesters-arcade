@@ -68,7 +68,8 @@ test('same-seed damage breaks cover once, opens navigation and resets in a new r
     refreshWorldDesignGateNavigation(grid,world,queryGround,d.id,blockers);
     assert.ok(!blockers.some(b=>b.id===d.id));
   }
-  assert.equal(cover.worldDestructibleTargets(cover.createWorldDestructibleState()).length,8+cover.WORLD_FUEL_DRUMS.length);
+  // Eight caches, the fuel drums and the Dark Pool's cracked container (S1.5).
+  assert.equal(cover.worldDestructibleTargets(cover.createWorldDestructibleState()).length,8+cover.WORLD_FUEL_DRUMS.length+1);
   assert.equal(missionActiveBlockers(createMissionState(1),world.collisionBlockers).length,world.collisionBlockers.length);
 });
 
