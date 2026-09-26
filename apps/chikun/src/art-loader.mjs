@@ -55,6 +55,10 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
     for (const [name, layer] of Object.entries(desc.layers)) {
       const t = layer.tiers[tier] ?? layer.tiers.t1;
       out.push({ key: name, src: t.src, logical: [layer.width, layer.height], scale: TIER_SCALE[layer.tiers[tier] ? tier : 't1'], kind: 'strip' });
+      for (const sp of layer.sprites ?? []) {
+        const st = sp.tiers[tier] ?? sp.tiers.t1;
+        out.push({ key: name + ':sprite:' + sp.id, src: st.src, logical: [sp.w, sp.h], scale: TIER_SCALE[sp.tiers[tier] ? tier : 't1'], kind: 'strip' });
+      }
       if (layer.emit) {
         const et = layer.emit.tiers[tier] ?? layer.emit.tiers.t1;
         out.push({ key: name + '-emit', src: et.src, kind: 'emit', layer: name, scale: TIER_SCALE[layer.emit.tiers[tier] ? tier : 't1'], w: et.w, h: et.h });
@@ -228,6 +232,7 @@ export function createArtLoader({ catalog = SCENERY_CATALOG, loadImage = default
     has: id => Boolean(describe(id)),
     tier: tierFor,
     layer(id, name) { return regions.get(id)?.prepared[name] ?? null; },
+    sprite(id, layer, spriteId) { return regions.get(id)?.prepared[layer + ':sprite:' + spriteId] ?? null; },
     emit(id, name) { return regions.get(id)?.prepared[name + '-emit'] ?? null; },
     ground(id) { return regions.get(id)?.prepared.ground ?? null; },
     failed(id, key) { return regions.get(id)?.failed.has(key) ?? false; },

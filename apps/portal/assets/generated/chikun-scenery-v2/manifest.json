@@ -32,15 +32,15 @@
        "src": "farmland/t1/mid.webp",
        "w": 1280,
        "h": 260,
-       "bytes": 25754,
-       "sha256": "95f4d10305cb5fcc366b6ae1d6f0beff0e5f4950d8cb00f256923dec863d8b6a"
+       "bytes": 24964,
+       "sha256": "32e5121527f878e65105327152c3d0600eceecb495f06b5bed0d2093389b0833"
       },
       "t2": {
        "src": "farmland/t2/mid.webp",
        "w": 2560,
        "h": 520,
-       "bytes": 51822,
-       "sha256": "c78b92457799ceeed8debe667e1c5d4b60cff42dd84cce6f89fa62aa72e5c618"
+       "bytes": 50404,
+       "sha256": "9b59f145a95545d4e41584340fa30f6df2551523e27d9cb6df6ee8d955902cb0"
       }
      },
      "emit": {
@@ -71,7 +71,36 @@
         "sha256": "3a40eaa6f9587b561f38d20019cd1225c2de667e449d89c82f901377635d0b0a"
        }
       }
-     }
+     },
+     "sprites": [
+      {
+       "id": "windmill",
+       "motion": "spin",
+       "speed": 0.25,
+       "u": 880.0,
+       "y": 135.557,
+       "px": 42.0,
+       "py": 40.557,
+       "w": 84,
+       "h": 80,
+       "tiers": {
+        "t1": {
+         "src": "farmland/t1/mid-sprite-windmill.webp",
+         "w": 84,
+         "h": 80,
+         "bytes": 1888,
+         "sha256": "36d00dc4203186d8094fecb1a57eb5974aee395c5b71931ceebadf7e053fd408"
+        },
+        "t2": {
+         "src": "farmland/t2/mid-sprite-windmill.webp",
+         "w": 168,
+         "h": 160,
+         "bytes": 2886,
+         "sha256": "ae068f28e0686898ac4dba05207aab0be9e1cecd0bcca448ab078cbad8f34811"
+        }
+       }
+      }
+     ]
     },
     "near": {
      "rate": 0.3,
@@ -523,10 +552,10 @@
     }
    },
    "bytes": {
-    "t1": 106452,
-    "t2": 197718
+    "t1": 107550,
+    "t2": 199186
    },
-   "logicalPx": 1191418,
+   "logicalPx": 1198138,
    "emitPx": 25600
   },
   "forest": {
@@ -5329,15 +5358,15 @@
        "src": "coast/t1/mid.webp",
        "w": 1280,
        "h": 260,
-       "bytes": 11618,
-       "sha256": "8a1df5b2023eb29f1128b6e513f0e39b25bc72d9b08b51c0ae0ef6424670fa5e"
+       "bytes": 11606,
+       "sha256": "7f90a01f3791f51847798f82b2989567f5f57149654be7c8b17af3f0f1004314"
       },
       "t2": {
        "src": "coast/t2/mid.webp",
        "w": 2560,
        "h": 520,
-       "bytes": 21922,
-       "sha256": "0e7229bf48a3cf187a72c35902a0d9cce4ccec8644a2b4e90d9c98d46b24e6b4"
+       "bytes": 21936,
+       "sha256": "25cbd6aa5d0d833c67d66a56b69f251d67d1bdc647247f069ad0ee2710f238b3"
       }
      },
      "emit": {
@@ -5392,7 +5421,15 @@
         "sha256": "b80a34d4c185013547fbce0672dac2b8ab0d86fc2c3be9ae52583bc847462504"
        }
       }
-     }
+     },
+     "anchors": [
+      {
+       "id": "lighthouse",
+       "kind": "beam",
+       "u": 1010.0,
+       "y": 88.595
+      }
+     ]
     },
     "near": {
      "rate": 0.3,
@@ -5886,11 +5923,35 @@
        ]
       ]
      }
-    }
+    },
+    "drift": [
+     -7.0,
+     -7.0,
+     -7.0,
+     -7.0,
+     -7.0,
+     -7.0,
+     -7.0,
+     -7.0,
+     -7.0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
    },
    "bytes": {
-    "t1": 45236,
-    "t2": 73562
+    "t1": 45224,
+    "t2": 73576
    },
    "logicalPx": 1191418,
    "emitPx": 57344
@@ -5906,9 +5967,9 @@
    },
    "values": {
     "lBefore": [
-     63.0,
-     70.6,
-     99.6
+     63.017,
+     70.559,
+     99.637
     ],
     "lAfter": [
      64.8,
@@ -5916,7 +5977,7 @@
      92.0
     ],
     "chroma": 0.7,
-    "scale": 0.765
+    "scale": 0.76461
    },
    "render": {
     "blender": "5.1.2",
@@ -5942,30 +6003,33 @@
    },
    "values": {
     "lBefore": [
-     35.5,
-     62.4,
-     84.3
+     35.48,
+     62.443,
+     83.633
     ],
     "lAfter": [
-     43.7,
+     43.4,
      62.4,
-     77.7
+     77.4
     ],
     "chroma": 0.85,
-    "scale": 0.697
+    "scale": 0.70609
    },
    "render": {
     "blender": "5.1.2",
     "samples": 64,
-    "seconds": 4.68,
+    "seconds": 2.92,
     "scripts": {
-     "scripts/chikun-blender/build-chikun-scenery.py": "a09806ec29ebdd9608e75ab41aa6e2198bde9a6799f81ca5c881f27f094298f3",
-     "scripts/chikun-blender/chikun_lib/core.py": "472c14614799a5314c24607cb0761515cdb5f11fcf1ac594546ae65a9f417c1e",
+     "scripts/chikun-blender/build-chikun-scenery.py": "07038109b85b3886f6d19c7b39240cc7ea8457a259e79a97ac52bbacbcee5884",
+     "scripts/chikun-blender/chikun_lib/core.py": "b35b7c0418fe2c660f0d13c4e135406cbabb5a4f236634c95fbcca47503690dc",
      "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
-     "scripts/chikun-blender/chikun_lib/kit.py": "df6f9e3bea4260d48fcd24b7a91104b586068e0341e88da8b2c75467a9dd9d61",
+     "scripts/chikun-blender/chikun_lib/kit.py": "efdf133a0182cf7042347b4c93bdfd212b4909f314aa7a4affec3a88a6a208a1",
      "scripts/chikun-blender/chikun_lib/periodic.py": "c6a8ad7819ed94ff7d37d4879acd778b69583a98358182715f6a4fce85f6d6eb",
-     "scripts/chikun-blender/regions/farmland.py": "23b1ff10eaf887ad156132c4ebbe88f1146a50a622505949adaef4dbdf702947",
-     "scripts/chikun-blender/scenery-spec.json": "0c9e8e2e82fd602b4214c4c6813e8ead45550386552935e94b84b7edb15d8a21"
+     "scripts/chikun-blender/regions/farmland.py": "ca24af7af8f756d629bacea85b0d0029c6b34ed32c3438faf8896e418d553f37",
+     "scripts/chikun-blender/regions/common.py": "8293997d1f999d89679ad28d948a6cec7edef0e8fb03d3af94c69e4f48ba7c9d",
+     "scripts/chikun-blender/regions/groundkit.py": "d7d3f06abd737628197883d27f0dcb54b196a15ce11c9d8ea65d9babe4ca1573",
+     "scripts/chikun-blender/regions/urbankit.py": "3c139b37cfd27353672389c6f31bafa9de199529a4b3c66d26d584d09999a63c",
+     "scripts/chikun-blender/scenery-spec.json": "e7fd8d7bba6b4e6d99b136785dda63343dbbc9456befbea2a927d223066df84a"
     }
    }
   },
@@ -5978,9 +6042,9 @@
    },
    "values": {
     "lBefore": [
-     28.7,
-     55.7,
-     84.9
+     28.677,
+     55.652,
+     84.946
     ],
     "lAfter": [
      35.5,
@@ -5988,7 +6052,7 @@
      77.5
     ],
     "chroma": 0.95,
-    "scale": 0.746
+    "scale": 0.74641
    },
    "render": {
     "blender": "5.1.2",
@@ -6014,9 +6078,9 @@
    },
    "values": {
     "lBefore": [
-     14.8,
-     22.2,
-     63.3
+     14.772,
+     22.23,
+     63.312
     ],
     "lAfter": [
      14.8,
@@ -6866,9 +6930,9 @@
    },
    "values": {
     "lBefore": [
-     56.5,
-     72.5,
-     75.8
+     56.533,
+     72.543,
+     75.846
     ],
     "lAfter": [
      56.5,
@@ -6901,8 +6965,8 @@
    },
    "values": {
     "lBefore": [
-     27.4,
-     49.8,
+     27.418,
+     49.822,
      100.0
     ],
     "lAfter": [
@@ -6911,7 +6975,7 @@
      78.9
     ],
     "chroma": 0.95,
-    "scale": 0.579
+    "scale": 0.57865
    },
    "render": {
     "blender": "5.1.2",
@@ -6937,9 +7001,9 @@
    },
    "values": {
     "lBefore": [
-     48.6,
-     61.4,
-     72.6
+     48.571,
+     61.41,
+     72.643
     ],
     "lAfter": [
      48.6,
@@ -6988,8 +7052,8 @@
    },
    "values": {
     "lBefore": [
-     40.3,
-     60.7,
+     40.255,
+     60.732,
      100.0
     ],
     "lAfter": [
@@ -6998,27 +7062,30 @@
      83.1
     ],
     "chroma": 0.85,
-    "scale": 0.569
+    "scale": 0.56909
    },
    "render": {
     "blender": "5.1.2",
     "samples": 64,
-    "seconds": 1.75,
+    "seconds": 1.6,
     "scripts": {
-     "scripts/chikun-blender/build-chikun-scenery.py": "a09806ec29ebdd9608e75ab41aa6e2198bde9a6799f81ca5c881f27f094298f3",
+     "scripts/chikun-blender/build-chikun-scenery.py": "313f0a1b8c952eed0ecea86a5db5503a9091f6b204140000138f94c8ebe9e66c",
      "scripts/chikun-blender/chikun_lib/core.py": "b35b7c0418fe2c660f0d13c4e135406cbabb5a4f236634c95fbcca47503690dc",
      "scripts/chikun-blender/chikun_lib/shading.py": "6237fcc4677f9c202ac6e90566a2c62c5d88c2da5e45521dce9db2bc58fbb5d0",
      "scripts/chikun-blender/chikun_lib/kit.py": "efdf133a0182cf7042347b4c93bdfd212b4909f314aa7a4affec3a88a6a208a1",
      "scripts/chikun-blender/chikun_lib/periodic.py": "c6a8ad7819ed94ff7d37d4879acd778b69583a98358182715f6a4fce85f6d6eb",
-     "scripts/chikun-blender/regions/coast.py": "e388f6716628a31fd6cf4fde061a3edff2574e4250ab7f1cf84b4f134bf36cbc",
-     "scripts/chikun-blender/scenery-spec.json": "82a3842b2f5f2cfddb56662d4c158017ecc2989549284bebdd6daf9153a4ba41"
+     "scripts/chikun-blender/regions/coast.py": "4d55573a670bfb25b5d76b1ebe5f7a9b7f292ca76205708eae1e11b7d546bdd6",
+     "scripts/chikun-blender/regions/common.py": "8293997d1f999d89679ad28d948a6cec7edef0e8fb03d3af94c69e4f48ba7c9d",
+     "scripts/chikun-blender/regions/groundkit.py": "d7d3f06abd737628197883d27f0dcb54b196a15ce11c9d8ea65d9babe4ca1573",
+     "scripts/chikun-blender/regions/urbankit.py": "3c139b37cfd27353672389c6f31bafa9de199529a4b3c66d26d584d09999a63c",
+     "scripts/chikun-blender/scenery-spec.json": "e7fd8d7bba6b4e6d99b136785dda63343dbbc9456befbea2a927d223066df84a"
     }
    }
   }
  },
  "tool": {
   "script": "scripts/build-chikun-art-pack.py",
-  "sha256": "b9819ac7640b57892b857f423f1e9cb4b4249cb89da2afdc17ee8b4290a6ca47",
+  "sha256": "53309bfde44c71bd58d8776e59d99cd8e7c2f76137174581dcd1ff0d29e5a756",
   "pillow": "12.2.0",
   "numpy": "2.5.1"
  }

@@ -43,9 +43,14 @@ scene.eevee.taa_render_samples = args.samples
 
 ctx = dict(scene=scene, spec=spec, tier=args.tier, layer=layer, region=args.region)
 built = region_mod.build(layer, ctx) or {}
-meta.update({k: v for k, v in built.items() if k != 'emissive'})
+meta.update({k: v for k, v in built.items() if k not in ('emissive', 'sprites', 'anchors')})
 
 t = time.time()
+# Animated landmark parts (e.g. the windmill sails) render as separate sprites.
+sprites = built.get('sprites', [])
+sprite_names = {n for sp in sprites for n in sp['objects']}
+for o in scene.objects:
+    if o.name in sprite_names: o.hide_render = True
 shading.set_emit_only(False)
 core.render(scene, out_dir / f'{layer}.png')
 if built.get('emissive'):
@@ -59,8 +64,33 @@ if built.get('emissive'):
     core.render(scene, out_dir / f'{layer}-emit.png')
     for o in hidden: o.hide_render = False
     world.node_tree.nodes['Background'].inputs['Strength'].default_value = strength
+    shading.set_emit_only(False)
+    scene.eevee.use_raytracing = core.os.environ.get('CHIKUN_RT', '1') == '1'
     meta['emissive'] = True
+if sprites:
+    from bpy_extras.object_utils import world_to_camera_view
+    from mathutils import Vector
+    saved = {o.name: o.hide_render for o in scene.objects}
+    meta['sprites'] = []
+    for sp in sprites:
+        for o in scene.objects:
+            if o.type in ('LIGHT', 'CAMERA'): continue
+            o.hide_render = o.name not in sp['objects']
+        core.render(scene, out_dir / f"{layer}-sprite-{sp['id']}.png")
+        uv = world_to_camera_view(scene, scene.camera, Vector(sp['pivot']))
+        rx, ry = scene.render.resolution_x, scene.render.resolution_y
+        meta['sprites'].append(dict(id=sp['id'], pivotPx=[uv.x * rx, (1 - uv.y) * ry], motion=sp.get('motion', 'spin'), speed=sp.get('speed', 0.25)))
+    for o in scene.objects: o.hide_render = saved[o.name]
+if built.get('anchors'):
+    # Screen positions of runtime effects (the lighthouse beam) in render pixels.
+    from bpy_extras.object_utils import world_to_camera_view
+    from mathutils import Vector
+    rx, ry = scene.render.resolution_x, scene.render.resolution_y
+    meta['anchors'] = []
+    for an in built['anchors']:
+        uv = world_to_camera_view(scene, scene.camera, Vector(an['at']))
+        meta['anchors'].append(dict(id=an['id'], kind=an.get('kind', an['id']), pivotPx=[uv.x * rx, (1 - uv.y) * ry]))
 meta['renderSeconds'] = round(time.time() - t, 2)
-meta['scripts'] = core.script_hashes(Path(__file__), HERE / 'chikun_lib/core.py', HERE / 'chikun_lib/shading.py', HERE / 'chikun_lib/kit.py', HERE / 'chikun_lib/periodic.py', HERE / f'regions/{args.region}.py', core.SPEC_PATH)
+meta['scripts'] = core.script_hashes(Path(__file__), HERE / 'chikun_lib/core.py', HERE / 'chikun_lib/shading.py', HERE / 'chikun_lib/kit.py', HERE / 'chikun_lib/periodic.py', HERE / f'regions/{args.region}.py', HERE / 'regions/common.py', HERE / 'regions/groundkit.py', HERE / 'regions/urbankit.py', core.SPEC_PATH)
 core.write_json(out_dir / f'{layer}.json', meta)
 print('SCENERY_DONE', args.region, layer, meta['renderSeconds'], flush=True)

@@ -1,6 +1,6 @@
 {
   "schema": "chikun-scenery-spec-v1",
-  "notes": "Single source of truth for the scenery layer geometry. Blender scripts frame their cameras from it, the packer cuts and validates against it, and it is copied into apps/chikun/src/scenery-catalog.mjs for the runtime. Units are logical canvas pixels (the 720-tall play space).",
+  "notes": "Single source of truth for the scenery layer geometry. Blender scripts frame their cameras from it, the packer cuts and validates against it, and it is copied into apps/chikun/src/scenery-catalog.mjs for the runtime. Units are logical canvas pixels (the 720-tall play space). Ground `drift` entries [y0, y1, px/s] add a slow tick-driven sideways motion to those bands (the sea).",
   "horizonY": 560,
   "runY": 690,
   "canvasHeight": 720,
@@ -135,6 +135,15 @@
       },
       "near": {
         "pitch": 6
+      },
+      "ground": {
+        "drift": [
+          [
+            560,
+            606,
+            -7.0
+          ]
+        ]
       }
     }
   }

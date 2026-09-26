@@ -104,7 +104,7 @@ export function createChikunWorld({ loader = null, makeCanvas = defaultMakeCanva
       // Parallax follows the canonical distance so the scenery speeds up with the run.
       const distance = reduced ? 0 : (snapshot?.distancePixels ?? tick * 2.4) + (tick === 0 ? idleTime * 40 : 0);
       bus.frame++;
-      bus.view = view; bus.tick = tick; bus.distance = distance; bus.reduced = reduced; bus.region = state; bus.art = art;
+      bus.view = view; bus.tick = tick; bus.time = time; bus.distance = distance; bus.reduced = reduced; bus.region = state; bus.art = art;
       readDeviceFrame(ctx, view, bus);
       if (reduced) { bus.shakeX = 0; bus.shakeY = 0; }
       bus.tier = art.tier(bus.density);
