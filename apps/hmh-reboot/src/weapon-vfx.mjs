@@ -315,12 +315,12 @@ function falloff(peak, power, rings) {
  * core, a hazy puff and a casing. Per-sprite tint colours them. The vendor
  * export has no gradient fill, so concentric rings are the available way.
  */
-export function createWeaponVfxTextures({ renderer, GraphicsClass } = {}) {
+export function createWeaponVfxTextures({ renderer, GraphicsClass, antialias = true } = {}) {
   if (typeof renderer?.generateTexture !== 'function') throw new TypeError('renderer.generateTexture required');
   if (typeof GraphicsClass !== 'function') throw new TypeError('GraphicsClass required');
   const bake = (draw) => {
     const graphic = draw(new GraphicsClass());
-    const texture = renderer.generateTexture({ target: graphic, resolution: 2, antialias: true });
+    const texture = renderer.generateTexture({ target: graphic, resolution: 2, antialias });
     graphic.destroy();
     return texture;
   };

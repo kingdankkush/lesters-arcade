@@ -142,7 +142,9 @@ export function resolveMote({ districtId, spec, col, row, index, tick } = {}) {
  */
 export function resolveAtmosphereBudget(profile) {
   const tier = int(profile?.particlesPerHazard, 0);
-  return F({ fog: Math.min(tier, 16), motes: Math.min(tier * 3, MAX_ATMOSPHERE_SPRITES - 16) });
+  // Perf step 6: the mobile profile draws half of each bank.
+  const scale = profile.id === 'mobile' ? 0.5 : 1;
+  return F({ fog: Math.floor(Math.min(tier, 16) * scale), motes: Math.floor(Math.min(tier * 3, MAX_ATMOSPHERE_SPRITES - 16) * scale) });
 }
 
 /**
@@ -174,13 +176,13 @@ export function resolveAtmosphereTint({ districts, x } = {}) {
  * as a speck. Per-sprite tint colours them. The vendor export has no gradient
  * fill, so concentric rings are the available way.
  */
-export function createAtmosphereTextures({ renderer, GraphicsClass } = {}) {
+export function createAtmosphereTextures({ renderer, GraphicsClass, antialias = true } = {}) {
   if (typeof renderer?.generateTexture !== 'function') throw new TypeError('renderer required');
   if (typeof GraphicsClass !== 'function') throw new TypeError('GraphicsClass required');
   const bake = (rings, draw) => {
     const graphic = new GraphicsClass();
     for (let ring = 0; ring < rings; ring += 1) draw(graphic, 1 - ring / rings, ring === rings - 1);
-    const texture = renderer.generateTexture({ target: graphic, resolution: 2, antialias: true });
+    const texture = renderer.generateTexture({ target: graphic, resolution: 2, antialias });
     graphic.destroy();
     return texture;
   };

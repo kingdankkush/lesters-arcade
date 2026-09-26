@@ -546,7 +546,7 @@ async function boot() {
     contactShadowPool = createContactShadowPool({
       ContainerClass: Container,
       SpriteClass: Sprite,
-      textures: createContactShadowTextures({ renderer: app.renderer, GraphicsClass: Graphics }),
+      textures: createContactShadowTextures({ renderer: app.renderer, GraphicsClass: Graphics, antialias: performanceProfile.antialias }),
     });
   } catch (error) {
     contactShadowPool = null;
@@ -561,7 +561,7 @@ async function boot() {
     weaponVfxPool = createWeaponVfxPool({
       ContainerClass: Container,
       SpriteClass: Sprite,
-      textures: createWeaponVfxTextures({ renderer: app.renderer, GraphicsClass: Graphics }),
+      textures: createWeaponVfxTextures({ renderer: app.renderer, GraphicsClass: Graphics, antialias: performanceProfile.antialias }),
     });
   } catch (error) {
     weaponVfxPool = null;
@@ -576,7 +576,7 @@ async function boot() {
     atmospherePool = createAtmospherePool({
       ContainerClass: Container,
       SpriteClass: Sprite,
-      textures: createAtmosphereTextures({ renderer: app.renderer, GraphicsClass: Graphics }),
+      textures: createAtmosphereTextures({ renderer: app.renderer, GraphicsClass: Graphics, antialias: performanceProfile.antialias }),
     });
   } catch (error) {
     atmospherePool = null;
@@ -1605,7 +1605,7 @@ async function boot() {
     heldWeaponLayer.tint = projectileTrails.tint = settings.cosmetics?.weaponTint ?? 0xffffff;
     if (gorePresentation && camera) {
       const goreDrawn = gorePresentation.render({ground:goreGround,air:goreAir,tick:simulation?.tick ?? 0,
-        settings,particleScale,camera,view,project:worldToScreen,projectInto:worldToScreenInto});
+        settings,particleScale,camera,view,project:worldToScreen,projectInto:worldToScreenInto,maxMarks: performanceProfile.maxGoreMarks});
       if (releaseTelemetryEnabled) { dataset.goreMarks = String(goreDrawn.marks); dataset.goreFragments = String(goreDrawn.fragments); }
     }
     if (debugOverlay && camera) {
