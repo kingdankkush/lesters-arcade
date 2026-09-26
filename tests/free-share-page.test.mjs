@@ -4,8 +4,8 @@ import test from 'node:test';
 import * as freePageApi from '../api/free-share-page.mjs';
 import { FREE_CARD_CACHE, FREE_CARD_INVALID_CACHE } from '../api/free-card.mjs';
 import { decodeFreeRun } from '../server/share/free-run.mjs';
-import { renderFreeSharePage } from '../server/share/render-free-page.mjs';
-import { escapeHtml } from '../server/share/render-page.mjs';
+import { FREE_PAGE_STYLE, renderFreeSharePage } from '../server/share/render-free-page.mjs';
+import { SHARE_PAGE_STYLE, escapeHtml } from '../server/share/render-page.mjs';
 import { encodeFreeShareToken } from '../apps/portal/src/free-share-token.mjs';
 import { fakeRequest, fakeResponse } from './helpers/fake-http.mjs';
 
@@ -70,7 +70,8 @@ test('the Free page carries full OG and Twitter tags pointing at the Free card, 
   assert.match(html, /<p class="eyebrow free">Free Play · Hard Money Heroes<\/p>/);
   assert.match(html, /<h1 id="run-title">48,210 <small>PTS<\/small><\/h1>/);
   assert.match(html, /<p class="status free">Free Play · self-reported<\/p>/);
-  assert.match(html, /reported by the player&#39;s browser and is not verified/);
+  assert.match(html, /reported by the player&#39;s browser; the arcade server has not checked it\./);
+  assert.doesNotMatch(html, /verif/i, 'a Free page never says verified, not even in its stylesheet');
   assert.match(html, /<dt>Hero<\/dt><dd>Lit Valkyrie<\/dd>/);
   assert.match(html, /<dt>Level<\/dt><dd>9<\/dd>/);
   assert.match(html, /<dt>Kills<\/dt><dd>312<\/dd>/);
@@ -121,6 +122,8 @@ test('extra query keys on a valid pair redirect to the canonical /f/ URL; on a b
     `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&utm_source=x&utm_medium=social`,
     `/api/free-share-page?fbclid=1&game=chikun&token=${CHIKUN_TOKEN}`,
     `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${CHIKUN_TOKEN}&v=1`,
+    `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${CHIKUN_TOKEN}`,
+    `/api/free-share-page?game=chikun&game=chikun&token=${CHIKUN_TOKEN}`,
   ]) {
     for (const method of ['GET', 'HEAD']) {
       const response = await page(url, { method });
@@ -134,18 +137,34 @@ test('extra query keys on a valid pair redirect to the canonical /f/ URL; on a b
   // Vercel passes the merged query as req.query too.
   const merged = await page(`/f/chikun/${CHIKUN_TOKEN}?fbclid=x`, { query: { game: 'chikun', token: CHIKUN_TOKEN, fbclid: 'x' } });
   assert.deepEqual([merged.status, merged.headers.location], [302, `/f/chikun/${CHIKUN_TOKEN}`]);
-  // A conflicting pair, or a bad token, with an extra key: the 400 page, never a redirect.
+  // A bad token with an extra key: the cacheable 400 page, never a redirect.
   for (const url of [
     `/api/free-share-page?game=chikun&token=${STACKED_TOKEN}&fbclid=abc`,
     `/api/free-share-page?game=pinball&token=${CHIKUN_TOKEN}&fbclid=abc`,
-    `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${STACKED_TOKEN}&fbclid=abc`,
-    `/api/free-share-page?game=chikun&game=stacked&token=${CHIKUN_TOKEN}&fbclid=abc`,
     '/api/free-share-page?fbclid=abc',
   ]) {
     const response = await page(url);
     assert.equal(response.status, 400, url);
     assert.equal(response.headers.location, undefined, url);
+    assert.equal(response.headers['cache-control'], FREE_CARD_INVALID_CACHE, url);
     assert.equal(meta(response.html, 'twitter:site'), '@LestersArcade', url);
+    assert.doesNotMatch(response.html, /verif/i, url);
+  }
+  // A conflicting pair is the card's invalid-query: the 400 page, no-store.
+  for (const url of [
+    `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${STACKED_TOKEN}&fbclid=abc`,
+    `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${STACKED_TOKEN}`,
+    `/api/free-share-page?game=chikun&game=stacked&token=${CHIKUN_TOKEN}&fbclid=abc`,
+  ]) {
+    for (const method of ['GET', 'HEAD']) {
+      const response = await page(url, { method });
+      assert.equal(response.status, 400, `${method} ${url}`);
+      assert.equal(response.headers.location, undefined, url);
+      assert.equal(response.headers['cache-control'], 'no-store', `${method} ${url}`);
+      assert.equal(response.headers['x-robots-tag'], 'noindex', url);
+      if (method === 'GET') assert.equal(meta(response.html, 'twitter:site'), '@LestersArcade', url);
+      else assert.equal(response.html, '', 'HEAD has no body');
+    }
   }
 });
 
@@ -172,7 +191,7 @@ test('a missing or invalid pair is a cacheable 400 page with generic tags; other
     assert.match(response.html, /<meta name="robots" content="noindex">/, url);
     assert.match(response.html, /That is not a run link/, url);
     assert.match(response.html, /Free share links look like lestersarcade\.io\/f\/&lt;game&gt;\/&lt;code&gt;\./, url);
-    assert.doesNotMatch(response.html, /Verified on LitVM/, url);
+    assert.doesNotMatch(response.html, /verif/i, url);
     assert.doesNotMatch(response.html, new RegExp(CHIKUN_TOKEN), `${url}: the token is not echoed`);
   }
   const post = await page(`/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}`, { method: 'POST' });
@@ -193,6 +212,7 @@ test('a missing or invalid pair is a cacheable 400 page with generic tags; other
     assert.equal(res.headers['cache-control'], 'no-store');
     assert.equal(meta(res.text, 'og:image'), GENERIC_IMAGE);
     assert.doesNotMatch(res.text, /hunter2|postgres:\/\/|NeonDbError/);
+    assert.doesNotMatch(res.text, /verif/i);
     assert.deepEqual(logged, [['[free-share-page] internal-error', { name: 'NeonDbError', code: '57P01', sqlstate: '57P01' }]]);
   } finally {
     console.error = original;
@@ -218,9 +238,15 @@ test('all interpolations are escaped even though every value is a number or a ta
   assert.match(html, /&quot;&gt;&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.equal(escapeHtml('<a href="x">&`'), '&lt;a href=&quot;x&quot;&gt;&amp;&#96;');
   // The generic pages take no input at all.
-  for (const code of [400, 405, 500]) {
+  for (const code of [400, 405, 500, 503]) {
     const generic = renderFreeSharePage({ run: null, status: code });
     assert.match(generic.html, /<meta name="twitter:site" content="@LestersArcade">/);
     assert.doesNotMatch(generic.html, /<script/i);
+    assert.doesNotMatch(generic.html, /verif/i, String(code));
   }
+  // The Free stylesheet is the Ranked one minus its status pills plus the
+  // magenta accents; the Ranked page keeps its own (share-ranked-byte-identity).
+  assert.doesNotMatch(FREE_PAGE_STYLE, /verif|pending|--green/i);
+  assert.match(FREE_PAGE_STYLE, /\.status\.free\{border:2px solid var\(--magenta\)/);
+  assert.ok(SHARE_PAGE_STYLE.includes('.status.verified{') && !SHARE_PAGE_STYLE.includes('free'));
 });

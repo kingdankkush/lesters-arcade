@@ -77,8 +77,11 @@ const VERIFICATION_NOTE = Object.freeze({
   'chain-index': 'Found on LitVM by the arcade indexer.',
 });
 
-const STYLE = `
-:root{color-scheme:dark;--cyan:#19f7ff;--gold:#ffe84d;--green:#45ff8a;--amber:#ffb347;--magenta:#ff3df2;--ink:#f9f7ff;--muted:#b4aed4;--panel:rgba(4,11,26,.92);--edge:rgba(25,247,255,.28)}
+// The page stylesheet. The Free page (render-free-page.mjs) derives its own
+// from it; this string is the Ranked page's and stays byte-identical
+// (tests/share-ranked-byte-identity.test.mjs).
+export const SHARE_PAGE_STYLE = `
+:root{color-scheme:dark;--cyan:#19f7ff;--gold:#ffe84d;--green:#45ff8a;--amber:#ffb347;--ink:#f9f7ff;--muted:#b4aed4;--panel:rgba(4,11,26,.92);--edge:rgba(25,247,255,.28)}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,rgba(255,61,242,.16),transparent 30rem),#070512;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45;overflow-x:hidden}
 main{width:min(880px,100%);margin:0 auto;padding:clamp(16px,4vw,32px) 16px 48px;display:grid;gap:18px}
@@ -98,8 +101,6 @@ h1 small{font-size:.34em;color:var(--cyan);letter-spacing:.14em}
 .status{justify-self:start;margin:0;padding:8px 16px;border-radius:999px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .status.verified{border:2px solid var(--green);color:var(--green);background:rgba(6,40,24,.8)}
 .status.pending{border:2px solid var(--amber);color:var(--amber);background:rgba(48,30,4,.8)}
-.eyebrow.free{color:var(--magenta)}
-.status.free{border:2px solid var(--magenta);color:var(--magenta);background:rgba(44,4,40,.8)}
 .note{margin:0;color:var(--muted);font-size:.92rem}
 dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(120px,100%),1fr));gap:8px}
 dl div{padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(7,17,36,.8)}
@@ -144,7 +145,7 @@ export function metaTags({ title, description, url, image, imageAlt, noindex }) 
   return tags.join('\n');
 }
 
-export function documentHtml(head, body) {
+export function documentHtml(head, body, style = SHARE_PAGE_STYLE) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -152,7 +153,7 @@ export function documentHtml(head, body) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${head}
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<style>${STYLE}</style>
+<style>${style}</style>
 </head>
 <body>
 <main>
@@ -171,9 +172,9 @@ const GENERIC = Object.freeze({
   400: { title: "Lester's Arcade", heading: 'That is not a run link', copy: 'Share links look like lestersarcade.io/s/ followed by 64 letters and digits.' },
 });
 
-// A page with generic tags and no run. The Free page passes its own copy and
-// cache policy; the Ranked defaults are unchanged.
-export function genericPage(status, { copy = GENERIC[status] ?? GENERIC[503], cacheControl = status === 404 ? MISSING_PAGE_CACHE : 'no-store' } = {}) {
+// A page with generic tags and no run. The Free page passes its own copy,
+// cache policy and stylesheet; the Ranked defaults are unchanged.
+export function genericPage(status, { copy = GENERIC[status] ?? GENERIC[503], cacheControl = status === 404 ? MISSING_PAGE_CACHE : 'no-store', style = SHARE_PAGE_STYLE } = {}) {
   const head = metaTags({
     title: copy.title,
     description: 'Retro arcade cabinets on LitVM: play free, or play Ranked for on-chain leaderboards.',
@@ -195,7 +196,7 @@ export function genericPage(status, { copy = GENERIC[status] ?? GENERIC[503], ca
       'Cache-Control': cacheControl,
       'X-Robots-Tag': 'noindex',
     },
-    html: documentHtml(head, body),
+    html: documentHtml(head, body, style),
   };
 }
 
