@@ -26,11 +26,13 @@ import { fakeDocument, flush, visibleText } from './helpers/jackpot-fake-dom.mjs
  * rewritten), every field of the jackpot-ui fixture for that stage (tests/fixtures/jackpot/*.json, the
  * shapes the surfaces were built on) is present in the real answer, and the surfaces that read it (the
  * Scores header, the Chikun child tease, the profile wins) render from it. The REAL GET /api/jackpot/review
- * renders through jackpot-review-model.mjs's timeline geometry.
+ * carries every field of the owner page's fixture (tests/fixtures/jackpot/review-api-with-timeline.json)
+ * the owner page reads, and renders through jackpot-review-model.mjs's timeline geometry.
  * Keys: the public Hardhat test mnemonic only; offline.
  */
 
 const fixture = (name) => JSON.parse(readFileSync(new URL(`./fixtures/jackpot/${name}.json`, import.meta.url), 'utf8'));
+const REVIEW_MODEL_SOURCE = readFileSync(new URL('../apps/portal/owner/jackpot-review-model.mjs', import.meta.url), 'utf8');
 const tokens = (count) => BigInt(count) * TOKEN;
 
 let js;
@@ -76,12 +78,21 @@ function emptyPaths(value, prefix = '', out = new Set()) {
   if (value && typeof value === 'object') for (const [key, child] of Object.entries(value)) emptyPaths(child, prefix ? `${prefix}.${key}` : key, out);
   return out;
 }
-function missingFields(realBody, fixtureBody) {
+function missingFields(realBody, fixtureBody, optional = OPTIONAL) {
   const real = keyPaths(realBody);
   const empty = emptyPaths(realBody);
   const below = (path) => [...empty].some((prefix) => path.startsWith(`${prefix}.`) || path.startsWith(`${prefix}[]`));
-  return [...keyPaths(fixtureBody)].filter((path) => !OPTIONAL.has(path) && !real.has(path) && !below(path));
+  return [...keyPaths(fixtureBody)].filter((path) => !optional.has(path) && !real.has(path) && !below(path));
 }
+
+// Fields the owner page's review fixture carries that the server does not send. The server folds the
+// replay and the stock-client (maxTicks) checks into integrity.ok and integrity.code ('replay-mismatch',
+// 'non-stock-client'), and the owner page reads only ok, code and detail (integrityText); the guard in
+// reviewGeometry fails the day the page starts reading one of them, so the server must then send it.
+const REVIEW_FIXTURE_ONLY = new Map([
+  ['candidates[].integrity.replay', /integrity\??\.replay\b/],
+  ['candidates[].integrity.maxTicks', /integrity\??\.maxTicks\b/],
+]);
 
 function inProcessFetch(api) {
   return async (url) => {
@@ -122,6 +133,10 @@ async function stage(name, { fixtureName = null, api = js.api, check = () => {} 
 // Every candidate of a real review payload survives normalizeReview and draws through timelineGeometry,
 // marking exactly the server's look-ahead verdicts; `held` names a candidate the screen held.
 function reviewGeometry(body, { held = null } = {}) {
+  // Every field of the owner page's fixture is in the real payload, except the fixture-only ones above,
+  // which the owner model never reads.
+  assert.deepEqual(missingFields(body, fixture('review-api-with-timeline'), new Set([...OPTIONAL, ...REVIEW_FIXTURE_ONLY.keys()])), [], 'fields of tests/fixtures/jackpot/review-api-with-timeline.json missing from the real review API');
+  for (const [path, reader] of REVIEW_FIXTURE_ONLY) assert.doesNotMatch(REVIEW_MODEL_SOURCE, reader, `the owner model now reads ${path}: the review API must send it`);
   const model = normalizeReview(body);
   assert.ok(model && model.candidates.length === body.candidates.length && body.candidates.length > 0, 'no candidate dropped');
   for (const row of body.candidates) {
@@ -222,7 +237,7 @@ test('open weeks: unfunded, funded with a provisional score-only leader, then cl
   // Closed: selecting, then review (both public 'review'); the leader is held and flagged.
   await js.advanceTo(js.at(W1, 'close', 2 * HOUR + MINUTE));
   await js.runJackpotCron(3, {});
-  await stage('closed-review', { check: (api) => {
+  await stage('closed-review', { fixtureName: 'review-with-candidates', check: (api) => {
     assert.equal(api.previous.weekKey, js.weekKey(W1));
     assert.equal(api.previous.status, 'review');
     assert.equal(api.previous.winner, null);
@@ -370,12 +385,15 @@ test('rolled over, then a two-token history and claim-pending across an instance
   assert.equal(chain.unclaimed, tokens(500));
 });
 
-test("the real review API renders through the owner model's timeline geometry", async () => {
+test("the real review API carries the owner fixture's fields and renders through the timeline geometry", async () => {
   // The active instance's claim-pending week (the pilot week was checked while it awaited the admin).
   const review = await js.reviewApi(W6);
   assert.equal(review.status, 200, JSON.stringify(review.body));
   reviewGeometry(review.body);
   covered.set('review-api', { live: true });
+});
+
+test('the UI parser accepts the real API at every lifecycle stage', () => {
   assert.deepEqual([...covered.keys()], [
     'undeployed', 'ui-hidden', 'live-before-index', 'open-unfunded', 'open-funded', 'closed-review', 'awaiting-admin', 'paid', 'open-funded-capped',
     'open-below-min-fund', 'unfunded', 'rolled', 'claim-pending', 'two-token-history', 'review-api',
