@@ -135,3 +135,17 @@ test('the sky costs a bounded amount of memory at density 2', async () => {
   assert.equal(view.density, 2);
   assert.ok(bytes <= 12 * 1024 * 1024, `sky sprites use ${(bytes / 1048576).toFixed(1)} MB`);
 });
+
+test('after a rotation the previous prescale keeps drawing (scaled) until the new one lands', async () => {
+  const loader = artLoader();
+  const world = await warmWorld(VIEWS.portrait, loader, 1500);
+  const rotated = buildChikunViewport(1280, 720, 1.5);
+  assert.equal(loader.tier(rotated.density), loader.tier(VIEWS.portrait.density), 'same tier: a re-prescale, not a reload');
+  const { offscreen, main } = frame(world, rotated, 1500);
+  const fills = offscreen.filter(e => e.op === 'fillRect' && e.fill?.kind === 'pattern');
+  assert.ok(fills.length >= 20, `${fills.length} ground bands still drawn`);
+  assert.ok(drawImageCalls(main).some(c => c.image.label === undefined && c.dw !== c.sw), 'the cut face draws the old prescale scaled');
+  await flush(); loader.pump(1e9); await flush(); loader.pump(1e9);
+  assert.ok(Math.abs(loader.layer('farmland', 'mid').density - rotated.density) < 1e-9, 'the replacement lands');
+  world.dispose();
+});

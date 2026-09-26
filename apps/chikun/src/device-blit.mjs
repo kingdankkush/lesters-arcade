@@ -40,12 +40,14 @@ export function blitPeriodic(ctx, img, period, scroll, y, x0, x1, round = true) 
 }
 
 // Fill a periodic band with a repeat-x pattern: one fillRect for any width.
-export function fillPeriodicBand(ctx, pattern, period, scroll, y, h, x0, x1) {
+// `scale` is 1 except for a few frames after a rotation, while a band made for
+// the previous density is still being replaced.
+export function fillPeriodicBand(ctx, pattern, period, scroll, y, h, x0, x1, scale = 1) {
   if (!pattern || x1 <= x0 || h <= 0) return 0;
-  const tx = Math.round(-mod(scroll, period));
-  ctx.setTransform(1, 0, 0, 1, tx, y);
+  const tx = Math.round(-mod(scroll, period * scale));
+  ctx.setTransform(scale, 0, 0, scale, tx, y);
   ctx.fillStyle = pattern;
-  ctx.fillRect(x0 - tx, 0, x1 - x0, h);
+  ctx.fillRect((x0 - tx) / scale, 0, (x1 - x0) / scale, h / scale);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   return 1;
 }
