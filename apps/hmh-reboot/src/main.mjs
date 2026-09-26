@@ -1537,7 +1537,23 @@ async function boot() {
   const viewport = () => ({ width: app.screen.width, height: app.screen.height });
 
   let worldArtReport = null;
+  // Decals draw with the bake, into their own layer beneath every prop and
+  // actor, culled to the bake view, and move with the baked ground.
+  const drawBakedDecals = (bakeCamera, bakeView) => {
+    worldDecalLayer.clear();
+    dataset.worldDecalsVisible = String(drawWorldDecals({ target: worldDecalLayer, decals: worldDecals, camera: bakeCamera, view: bakeView, project: worldToScreen }));
+  };
+  // The blocker ids the static art leaves to native props, rebuilt only when
+  // they change: the prop load replaces worldDesignBlockerIds, a run replaces
+  // worldDesignState, and a run's gates only ever open. The joined key lets
+  // the bake compare them without re-joining every frame.
+  let nativeBlockers = null;
   const renderAuthoredTerrain = (view) => {
+    const gates = worldDesignState.openGates;
+    if (nativeBlockers?.ids !== worldDesignBlockerIds || nativeBlockers.gates !== gates || nativeBlockers.size !== gates.size) {
+      const set = new Set([...worldDesignBlockerIds, ...gates]);
+      nativeBlockers = { ids: worldDesignBlockerIds, gates, size: gates.size, set, key: [...set].join(',') };
+    }
     worldArtReport = worldBake.render({
       worldProduction,
       world: LEVEL_ONE_WORLD,
@@ -1548,13 +1564,9 @@ async function boot() {
       tick: simulation?.tick ?? 0,
       performanceProfile,
       terrainTiles,
-      nativeBlockerIds: new Set([...worldDesignBlockerIds, ...worldDesignState.openGates]),
-    // Decals draw with the bake, into their own layer beneath every prop and
-    // actor, culled to the bake view, and move with the baked ground.
-    }, (bakeCamera, bakeView) => {
-      worldDecalLayer.clear();
-      dataset.worldDecalsVisible = String(drawWorldDecals({ target: worldDecalLayer, decals: worldDecals, camera: bakeCamera, view: bakeView, project: worldToScreen }));
-    }, worldDecals);
+      nativeBlockerIds: nativeBlockers.set,
+      nativeBlockerKey: nativeBlockers.key,
+    }, drawBakedDecals, worldDecals);
   };
 
   const renderAuthoredCollision = (view) => {
@@ -1566,6 +1578,24 @@ async function boot() {
   };
 
 
+
+  // Screen points of the hero and the active enemies within 350 units, chest
+  // high: props drawn over them fade. Refilled every frame into reused points.
+  const focusPoints = [], focusPool = [], focusWorld = { x: 0, y: 0, z: 0 };
+  const collectFocusPoints = (renderState, view) => {
+    let count = 0;
+    const add = (point) => {
+      focusWorld.x = point.x;
+      focusWorld.y = point.y;
+      focusWorld.z = (point.groundZ ?? 0) + 32;
+      focusPoints[count] = worldToScreenInto(focusPool[count] ??= { x: 0, y: 0 }, focusWorld, camera, view);
+      count += 1;
+    };
+    add(renderState);
+    for (const enemy of grayboxEnemies) if (enemy.active && Math.hypot(enemy.x - renderState.x, enemy.y - renderState.y) < 350) add(enemy);
+    focusPoints.length = count;
+    return focusPoints;
+  };
 
   // Clearing an already empty Graphics still marks it dirty, which rebuilds
   // its GPU data and the stage's instruction set for nothing. Every path drawn
@@ -1583,9 +1613,9 @@ async function boot() {
     // Unlockable weapon skin (contract §7.9): a projection-only tint.
     heldWeaponLayer.tint = projectileTrails.tint = settings.cosmetics?.weaponTint ?? 0xffffff;
     if (gorePresentation && camera) {
-      const goreFrame = gorePresentation.render({ground:goreGround,air:goreAir,tick:simulation?.tick ?? 0,
-        settings,particleScale,camera,view,project:worldToScreen});
-      if (releaseTelemetryEnabled) { dataset.goreMarks = String(goreFrame.marks.length); dataset.goreFragments = String(goreFrame.fragments.length); }
+      const goreDrawn = gorePresentation.render({ground:goreGround,air:goreAir,tick:simulation?.tick ?? 0,
+        settings,particleScale,camera,view,project:worldToScreen,projectInto:worldToScreenInto});
+      if (releaseTelemetryEnabled) { dataset.goreMarks = String(goreDrawn.marks); dataset.goreFragments = String(goreDrawn.fragments); }
     }
     if (debugOverlay && camera) {
       for (const line of debugOverlay.lines) {
@@ -1661,8 +1691,7 @@ async function boot() {
         hiddenPlacementIds: hiddenAuthoredPropIds,
         reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
         contactShadows: contactShadowPool,
-        focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
-          .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
+        focusPoints: collectFocusPoints(renderState, view),
       });
       const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,destructibleState:worldDestructibleState,collectibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
       if(releaseTelemetryEnabled) {
@@ -2466,7 +2495,9 @@ async function boot() {
       const narrowDebug = debugGridEnabled && combatStatusLayout.multiline;
       label.style.fontSize = combatStatusLayout.fontSize;
       label.style.align = 'center';
-      const activeProgressionByWeapon = runProgression ? buildProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {};
+      // The ranks straight from the run, as the fixed tick reads them: a full
+      // deep-frozen progression snapshot every frame only to read its ranks.
+      const activeProgressionByWeapon = runProgression ? buildProgressionByWeapon(runProgression.ranks) : {};
       const weaponStatus = weaponLoadout
         ? getWeaponReadabilityStatus(weaponLoadout, {
           tick: simulation?.tick ?? 0,
@@ -2477,8 +2508,12 @@ async function boot() {
       const dashStatus = dashState && simulation ? getDashStatus(dashState, simulation.tick) : null;
       const dashHud = dashStatus?.active ? 'DODGING' : dashStatus?.ready ? 'AUTO DODGE' : `DODGE ${dashStatus?.cooldownSecondsRemaining ?? 10}s`;
       const dashAccessible = dashStatus?.active ? 'Automatic dodge active' : dashStatus?.ready ? 'Automatic dodge ready' : `Automatic dodge ${dashStatus?.cooldownSecondsRemaining ?? 10} seconds`;
-      const activeEnemyCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).length;
-      const enemyTellCount = grayboxEnemies.filter((enemy) => enemy.active && enemy.attackPhase === 'tell').length;
+      let activeEnemyCount = 0;
+      let enemyTellCount = 0;
+      for (const enemy of grayboxEnemies) {
+        if (enemy.active && enemy.health > 0) activeEnemyCount += 1;
+        if (enemy.active && enemy.attackPhase === 'tell') enemyTellCount += 1;
+      }
       const powerupPresentation = buildTimedEffectPresentation(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
       const powerupChips = buildTimedEffectChips(collectibleSnapshot ?? { tick: simulation?.tick ?? 0, activeEffects: [] });
       const activePowerupLabels = powerupPresentation.active ? [powerupPresentation.hudLabel] : [];

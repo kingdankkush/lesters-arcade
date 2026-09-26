@@ -902,6 +902,8 @@ const NODE_CHECK_FILES = [
   "tests/fixtures/hmh-render-reference/enemy-body-pass.mjs",
   "tests/fixtures/hmh-render-reference/render-helpers.mjs",
   "tests/fixtures/hmh-render-reference/enemy-roster-atlas.mjs",
+  "tests/fixtures/hmh-render-reference/gore-presentation.mjs",
+  "tests/fixtures/hmh-render-reference/contact-shadows.mjs",
   "apps/hmh-reboot/src/authored-prop-atlas.mjs",
   "apps/hmh-reboot/src/tripo-prop-appearance.mjs",
   "apps/hmh-reboot/src/contact-shadows.mjs",
