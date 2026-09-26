@@ -61,7 +61,14 @@ function drawFrontArt(ctx,bus,face,frame,distance,x0,x1,alpha){
  for(let i=0;i<=gapCount;i++){
   const g0=i<gapCount?(gaps[i*2]-frame.viewLeft+frame.shakeX)*d:x1,g1=i<gapCount?(gaps[i*2+1]-frame.viewLeft+frame.shakeX)*d:x1;
   const to=Math.min(x1,g0);
-  if(to>from)blitPeriodic(ctx,face.canvas,face.w,scroll,y,Math.floor(from),Math.ceil(to),true);
+  if(to>from){
+   if(Math.abs(face.density-d)<1e-3)blitPeriodic(ctx,face.canvas,face.w,scroll,y,Math.floor(from),Math.ceil(to),true);
+   else{
+    // Briefly after a rotation: the previous prescale, drawn scaled and clipped.
+    const k=d/face.density,period=face.w*k;ctx.save();ctx.beginPath();ctx.rect(from,0,to-from,frame.canvasHeight);ctx.clip();
+    for(let x=-(((scroll%period)+period)%period);x<to;x+=period)ctx.drawImage(face.canvas,x,y,period,face.h*k);ctx.restore();
+   }
+  }
   from=Math.max(from,g1);
  }
  ctx.globalAlpha=1;
@@ -72,7 +79,7 @@ export function drawGround(ctx,snapshot,{reduced=false,view=null}={}){
  const frame=readDeviceFrame(ctx,v,frameScratch);frame.viewLeft=v.left;
  const sameFrame=Boolean(bus.tick===tick&&bus.region&&bus.transition&&bus.view===v);
  const t=sameFrame?bus.transition:null,loader=sameFrame?bus.art:null;
- const faceOf=index=>{const f=loader?.layer(CHIKUN_REGIONS[index].id,'front');return f&&Math.abs(f.density-frame.density)<1e-3?f:null;};
+ const faceOf=index=>loader?.layer(CHIKUN_REGIONS[index].id,'front')??null;
  // Segments of the running line by region: previous | current | next, split at the seams.
  const segs=[];
  if(t&&t.seams&&!reduced){

@@ -173,7 +173,8 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
     const d = bus.density, cw = bus.canvasWidth;
     for (const sp of g.sprites) {
       const img = loader.sprite(id, name, sp.id);
-      if (!img || Math.abs(img.density - d) > 1e-3) continue;
+      if (!img) continue;
+      const k = d / img.density; // 1 except briefly after a rotation
       const angle = sp.motion === 'spin' && !bus.reduced ? (bus.time * sp.speed * Math.PI * 2) % (Math.PI * 2) : 0;
       const r = Math.hypot(Math.max(sp.px, sp.w - sp.px), Math.max(sp.py, sp.h - sp.py)) * d;
       let x = Math.round(sp.u * d) - (((scroll % period) + period) % period);
@@ -182,7 +183,8 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       for (; x - r < cw; x += period) {
         ctx.save();
         ctx.translate(x, y + sp.y * d); ctx.rotate(angle);
-        ctx.drawImage(img.canvas, -sp.px * d, -sp.py * d);
+        if (k === 1) ctx.drawImage(img.canvas, -sp.px * d, -sp.py * d);
+        else ctx.drawImage(img.canvas, -sp.px * d, -sp.py * d, img.w * k, img.h * k);
         ctx.restore();
         stats.blits++;
       }
@@ -260,8 +262,9 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       // Sea bands also drift slowly with the tick clock (frozen under reduced motion).
       const scroll = (bus.distance * b.rate + bus.view.left - bus.shakeX * kk - (drift ? drift[i] * bus.time * b.rate : 0)) * d;
       const y = Math.round((b.y0 - BACKDROP_TOP + bus.shakeY * kk) * d), y2 = Math.round((b.y1 - BACKDROP_TOP + bus.shakeY * kk) * d);
-      if (Math.abs(ground.density - d) > 1e-3) continue; // re-prescaling after a rotation
-      stats.bandFills += fillPeriodicBand(ctx, bandPattern(ctx, b), b.w, scroll, y, y2 - y, Math.max(0, Math.floor(x0)), Math.min(bus.canvasWidth, Math.ceil(x1)));
+      // After a rotation the old bands draw scaled until the re-prescale lands (never a hole).
+      const s = Math.abs(ground.density - d) > 1e-3 ? d / ground.density : 1;
+      stats.bandFills += fillPeriodicBand(ctx, bandPattern(ctx, b), b.w, scroll, y, y2 - y, Math.max(0, Math.floor(x0)), Math.min(bus.canvasWidth, Math.ceil(x1)), s);
     }
     ctx.globalAlpha = 1;
   }
