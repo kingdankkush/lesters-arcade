@@ -259,7 +259,8 @@ test('the card tree follows Satori rules and can never be mistaken for the Ranke
     let ribbons = 0;
     walk(element, (node) => {
       const children = node.props?.children;
-      if (Array.isArray(children) && children.length > 1) assert.equal(node.props.style?.display, 'flex', `${gameId}: every multi-child node is flex`);
+      // The flex rule is Satori's for HTML elements; an inline svg holds its paths.
+      if (node.type !== 'svg' && Array.isArray(children) && children.length > 1) assert.equal(node.props.style?.display, 'flex', `${gameId}: every multi-child node is flex`);
       if (node.type === 'img') images.push(node.props.src);
       if (node.type === 'svg') svgs += 1;
       if (Array.isArray(children) ? children.includes(FREE_CARD_RIBBON) : children === FREE_CARD_RIBBON) ribbons += 1;
