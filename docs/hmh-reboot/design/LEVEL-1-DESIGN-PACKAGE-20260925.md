@@ -751,6 +751,7 @@ Both are picked up and used automatically.
   - `objectives {objectiveIndex, tick, levelAtCompletion}`;
   - `prisoners {slotIndex, tick}` (the verifier derives the type);
   - `bosses {bossIndex, firstInitiatedTick, lastInitiatedTick, initiations, defeatedTick}`.
+- **Implementation on the shipped map (S1.4):** `LEVEL-1-BUILD-LEDGER.md`, "Mission core v2 (slice 4)".
 
 ---
 
