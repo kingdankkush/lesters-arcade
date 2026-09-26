@@ -7,7 +7,8 @@
     "55f3786b Tighten the purely visual HMH caps on the mobile profile",
     "9df58d41 Add a SwiftShader GPU option to the HMH crowd bench",
     "3d905967 Document the mobile profile row for perf step 6",
-    "dcf0a23e Pin the hero and terrain half-page paths in the half-res texture tests"
+    "dcf0a23e Pin the hero and terrain half-page paths in the half-res texture tests",
+    "68369276 Record step-6 mobile asset evidence: half-page census, captures and caps"
   ],
   "base": "c34d2a31 (fable/hmh-perf-part2 head = release 1.8.4 4f947386 + perf steps 3-5)",
   "branch": "fable/hmh-perf-part3",
@@ -581,7 +582,7 @@
       "Sharpness drops 1.8% over the whole frame and about 9-10% in the actor-dense centre band; terrain (lossless half tiles), HUD and the touch controls are indistinguishable. The difference map is confined to actor edges and the rims of the baked shadow blobs (the un-multisampled bakes).",
       "Actors read slightly softer at the canvas resolution of 1 on a 414 px wide canvas, where a 256 px logical frame is drawn at roughly 50-100 px; the half page still supplies more than one texel per canvas pixel. At the adaptive step-up to 1.5 the margin narrows but stays above one texel per pixel for every roster frame.",
       "Desktop base/head captures differ by at most 3 levels on 0.67% of pixels (sub-visible atmosphere shimmer) with identical sharpness in every region; the pre-rebase pair differed on 50 pixels of 1.3 M. Desktop keeps the full pages.",
-      "npm run visual:reboot on the pre-rebase step-6 build: 12/12 scenes unchanged, no baseline update; frontier-relay-mobile meanDelta 0.424 (tolerance 2.5), enemy crops unchanged (bagholder-rusher and forkrunner meanLumaDelta 0.01)."
+      "npm run visual:reboot on the rebased head build (2026-09-26) and on the pre-rebase step-6 build (2026-09-25): 12/12 scenes unchanged both times, no baseline update; frontier-relay-mobile meanDelta 0.424 (tolerance 2.5), enemy crops unchanged (bagholder-rusher and forkrunner meanLumaDelta 0.01); desktop scenes 0.01-0.231."
     ]
   },
   "measurements": {
@@ -2520,9 +2521,1261 @@
           "screenshot": ".tmp/step6/bench/census-head-desktop/census-desktop.png"
         }
       ],
-      "timingPairs": "pending: the shared heavy lock was held (ownerless directory since 00:48) for the whole pass; re-run .tmp/step6/job-census.sh, job-timing.sh and npm run visual:reboot on the rebased builds when it frees",
-      "timingRows": "pending: the shared heavy lock was held (ownerless directory since 00:48) for the whole pass; re-run .tmp/step6/job-census.sh, job-timing.sh and npm run visual:reboot on the rebased builds when it frees",
-      "summary": "pending: the shared heavy lock was held (ownerless directory since 00:48) for the whole pass; re-run .tmp/step6/job-census.sh, job-timing.sh and npm run visual:reboot on the rebased builds when it frees"
+      "timingVerdict": "Twelve pairs on the rebased builds (2026-09-26 01:33-01:56: 4x reps 1-5, 6x reps 1-5, SwiftShader 1x reps 1-2) were all disturbed by other sessions, which kept the host at 19-76% other load and pushed 15 of the 24 windows over the 30% contention flag of the bench; by the strict rule (both windows uncontended and within 3 points) none is load-matched. The pairs whose windows sit within 5 points say what the 2026-09-25 matched pairs said: 4x rep 3 (21.7 / 26.2%) 17.25 -> 18.31 ms, p95 27.7 / 27.8, p99 34.6 / 34.8; 4x rep 5 (35.1 / 38.1%, both flagged) 21.72 -> 21.35 ms, p95 34.7 / 34.7; 6x rep 2 (25.8 / 21.2%) 38.07 -> 37.91 ms, p95 55.6 / 55.6, p99 69.4 / 69.4. Every other pair moves with the load difference (4x rep 1 +14% at +7.8 points, 6x rep 1 +55% at +15.7 points, 6x rep 4 -9.6% at -6.3 points, 6x rep 5 +11.9% at +7.6 points; 4x rep 4 and 6x rep 3 ran at 46-76% and are noise), and the SwiftShader pairs at 37-50% load alternate sign (-12.7%, +8.1%). Verdict: no measurable CPU frame-time change from this step on the host proxy, which is what the GPU-bound nature of the change predicts; the gains of the step are the 72% GPU-texture, 79% fetched-byte and about 100 MB renderer-memory reductions.",
+      "timingPairs": [
+        {
+          "cpu": 1,
+          "rep": 1,
+          "variant": "-ss",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 65.83,
+            "p95Ms": 76.4,
+            "p99Ms": 118.1,
+            "over33Pct": 100,
+            "simSpeed": 0.9,
+            "hostOtherBusyPct": 50.3
+          },
+          "head": {
+            "meanMs": 57.49,
+            "p95Ms": 69.4,
+            "p99Ms": 69.6,
+            "over33Pct": 100,
+            "simSpeed": 0.969,
+            "hostOtherBusyPct": 49.7
+          },
+          "meanDeltaPct": -12.7
+        },
+        {
+          "cpu": 1,
+          "rep": 2,
+          "variant": "-ss",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 49.34,
+            "p95Ms": 55.6,
+            "p99Ms": 62.5,
+            "over33Pct": 100,
+            "simSpeed": 0.99,
+            "hostOtherBusyPct": 37.1
+          },
+          "head": {
+            "meanMs": 53.32,
+            "p95Ms": 62.5,
+            "p99Ms": 62.6,
+            "over33Pct": 100,
+            "simSpeed": 0.987,
+            "hostOtherBusyPct": 41.7
+          },
+          "meanDeltaPct": 8.1
+        },
+        {
+          "cpu": 4,
+          "rep": 1,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 20.55,
+            "p95Ms": 27.9,
+            "p99Ms": 34.9,
+            "over33Pct": 3.9,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 29.1
+          },
+          "head": {
+            "meanMs": 23.42,
+            "p95Ms": 34.8,
+            "p99Ms": 48.6,
+            "over33Pct": 13,
+            "simSpeed": 0.993,
+            "hostOtherBusyPct": 36.9
+          },
+          "meanDeltaPct": 14
+        },
+        {
+          "cpu": 4,
+          "rep": 2,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 20.31,
+            "p95Ms": 34.5,
+            "p99Ms": 41.7,
+            "over33Pct": 5.5,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 31.2
+          },
+          "head": {
+            "meanMs": 21.84,
+            "p95Ms": 34.8,
+            "p99Ms": 48.6,
+            "over33Pct": 8.4,
+            "simSpeed": 0.994,
+            "hostOtherBusyPct": 34.9
+          },
+          "meanDeltaPct": 7.5
+        },
+        {
+          "cpu": 4,
+          "rep": 3,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 17.25,
+            "p95Ms": 27.7,
+            "p99Ms": 34.6,
+            "over33Pct": 1.1,
+            "simSpeed": 0.996,
+            "hostOtherBusyPct": 21.7
+          },
+          "head": {
+            "meanMs": 18.31,
+            "p95Ms": 27.8,
+            "p99Ms": 34.8,
+            "over33Pct": 2,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 26.2
+          },
+          "meanDeltaPct": 6.1
+        },
+        {
+          "cpu": 4,
+          "rep": 4,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 42.11,
+            "p95Ms": 97.1,
+            "p99Ms": 110.9,
+            "over33Pct": 53.2,
+            "simSpeed": 0.898,
+            "hostOtherBusyPct": 54.3
+          },
+          "head": {
+            "meanMs": 24.94,
+            "p95Ms": 41.7,
+            "p99Ms": 55.6,
+            "over33Pct": 15.2,
+            "simSpeed": 0.991,
+            "hostOtherBusyPct": 45.9
+          },
+          "meanDeltaPct": -40.8
+        },
+        {
+          "cpu": 4,
+          "rep": 5,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 21.72,
+            "p95Ms": 34.7,
+            "p99Ms": 41.8,
+            "over33Pct": 7.4,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 35.1
+          },
+          "head": {
+            "meanMs": 21.35,
+            "p95Ms": 34.7,
+            "p99Ms": 48.6,
+            "over33Pct": 5.7,
+            "simSpeed": 0.992,
+            "hostOtherBusyPct": 38.1
+          },
+          "meanDeltaPct": -1.7
+        },
+        {
+          "cpu": 6,
+          "rep": 1,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 35.89,
+            "p95Ms": 48.7,
+            "p99Ms": 62.6,
+            "over33Pct": 71.3,
+            "simSpeed": 0.989,
+            "hostOtherBusyPct": 22.3
+          },
+          "head": {
+            "meanMs": 55.64,
+            "p95Ms": 97.1,
+            "p99Ms": 118.9,
+            "over33Pct": 96.7,
+            "simSpeed": 0.901,
+            "hostOtherBusyPct": 38
+          },
+          "meanDeltaPct": 55
+        },
+        {
+          "cpu": 6,
+          "rep": 2,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 38.07,
+            "p95Ms": 55.6,
+            "p99Ms": 69.4,
+            "over33Pct": 81.2,
+            "simSpeed": 0.983,
+            "hostOtherBusyPct": 25.8
+          },
+          "head": {
+            "meanMs": 37.91,
+            "p95Ms": 55.6,
+            "p99Ms": 69.4,
+            "over33Pct": 80.9,
+            "simSpeed": 0.984,
+            "hostOtherBusyPct": 21.2
+          },
+          "meanDeltaPct": -0.4
+        },
+        {
+          "cpu": 6,
+          "rep": 3,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 43.63,
+            "p95Ms": 62.7,
+            "p99Ms": 83.4,
+            "over33Pct": 93.3,
+            "simSpeed": 0.966,
+            "hostOtherBusyPct": 33.2
+          },
+          "head": {
+            "meanMs": 191.72,
+            "p95Ms": 257.1,
+            "p99Ms": 291.7,
+            "over33Pct": 100,
+            "simSpeed": 0.337,
+            "hostOtherBusyPct": 76
+          },
+          "meanDeltaPct": 339.4
+        },
+        {
+          "cpu": 6,
+          "rep": 4,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 47.17,
+            "p95Ms": 83.4,
+            "p99Ms": 104.3,
+            "over33Pct": 91.1,
+            "simSpeed": 0.924,
+            "hostOtherBusyPct": 37.1
+          },
+          "head": {
+            "meanMs": 42.63,
+            "p95Ms": 69.6,
+            "p99Ms": 97.4,
+            "over33Pct": 83.4,
+            "simSpeed": 0.957,
+            "hostOtherBusyPct": 30.8
+          },
+          "meanDeltaPct": -9.6
+        },
+        {
+          "cpu": 6,
+          "rep": 5,
+          "variant": "",
+          "loadMatched": false,
+          "base": {
+            "meanMs": 35.59,
+            "p95Ms": 48.7,
+            "p99Ms": 62.6,
+            "over33Pct": 69.2,
+            "simSpeed": 0.988,
+            "hostOtherBusyPct": 19
+          },
+          "head": {
+            "meanMs": 39.84,
+            "p95Ms": 55.6,
+            "p99Ms": 69.5,
+            "over33Pct": 84.1,
+            "simSpeed": 0.981,
+            "hostOtherBusyPct": 26.6
+          },
+          "meanDeltaPct": 11.9
+        }
+      ],
+      "timingRows": [
+        {
+          "run": "base-1x-1-ss",
+          "build": "base",
+          "cpu": 1,
+          "rep": 1,
+          "variant": "-ss",
+          "profile": "mobile",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "meanMs": 65.83,
+          "p50Ms": 62.5,
+          "p95Ms": 76.4,
+          "p99Ms": 118.1,
+          "worstMs": 416.7,
+          "over33Pct": 100,
+          "fps": null,
+          "frames": 305,
+          "ticks": {
+            "from": 381,
+            "to": 1509,
+            "advanced": 1128
+          },
+          "simSpeed": 0.9,
+          "hostOtherBusyPct": 50.3,
+          "hostBenchChromePct": 48.6,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 334,
+            "sfxRequests": 7,
+            "sfxRequestsBeforeWindow": 28
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-1x-1-ss",
+          "build": "head",
+          "cpu": 1,
+          "rep": 1,
+          "variant": "-ss",
+          "profile": "mobile",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "meanMs": 57.49,
+          "p50Ms": 55.6,
+          "p95Ms": 69.4,
+          "p99Ms": 69.6,
+          "worstMs": 83.4,
+          "over33Pct": 100,
+          "fps": null,
+          "frames": 350,
+          "ticks": {
+            "from": 3374,
+            "to": 4547,
+            "advanced": 1173
+          },
+          "simSpeed": 0.969,
+          "hostOtherBusyPct": 49.7,
+          "hostBenchChromePct": 50.2,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 284,
+            "sfxRequests": 17,
+            "sfxRequestsBeforeWindow": 18
+          },
+          "abortedRequests": 11,
+          "errors": []
+        },
+        {
+          "run": "base-1x-2-ss",
+          "build": "base",
+          "cpu": 1,
+          "rep": 2,
+          "variant": "-ss",
+          "profile": "mobile",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "meanMs": 49.34,
+          "p50Ms": 48.6,
+          "p95Ms": 55.6,
+          "p99Ms": 62.5,
+          "worstMs": 83.4,
+          "over33Pct": 100,
+          "fps": null,
+          "frames": 405,
+          "ticks": {
+            "from": 4338,
+            "to": 5529,
+            "advanced": 1191
+          },
+          "simSpeed": 0.99,
+          "hostOtherBusyPct": 37.1,
+          "hostBenchChromePct": 58.7,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 295,
+            "sfxRequests": 3,
+            "sfxRequestsBeforeWindow": 32
+          },
+          "abortedRequests": 10,
+          "errors": []
+        },
+        {
+          "run": "head-1x-2-ss",
+          "build": "head",
+          "cpu": 1,
+          "rep": 2,
+          "variant": "-ss",
+          "profile": "mobile",
+          "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "meanMs": 53.32,
+          "p50Ms": 55.5,
+          "p95Ms": 62.5,
+          "p99Ms": 62.6,
+          "worstMs": 69.5,
+          "over33Pct": 100,
+          "fps": null,
+          "frames": 375,
+          "ticks": {
+            "from": 3702,
+            "to": 4891,
+            "advanced": 1189
+          },
+          "simSpeed": 0.987,
+          "hostOtherBusyPct": 41.7,
+          "hostBenchChromePct": 54.7,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 294,
+            "sfxRequests": 7,
+            "sfxRequestsBeforeWindow": 28
+          },
+          "abortedRequests": 10,
+          "errors": []
+        },
+        {
+          "run": "base-4x-1",
+          "build": "base",
+          "cpu": 4,
+          "rep": 1,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 20.55,
+          "p50Ms": 20.8,
+          "p95Ms": 27.9,
+          "p99Ms": 34.9,
+          "worstMs": 55.6,
+          "over33Pct": 3.9,
+          "fps": null,
+          "frames": 980,
+          "ticks": {
+            "from": 246,
+            "to": 1483,
+            "advanced": 1237
+          },
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 29.1,
+          "hostBenchChromePct": 7,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 357,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-4x-1",
+          "build": "head",
+          "cpu": 4,
+          "rep": 1,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 23.42,
+          "p50Ms": 20.9,
+          "p95Ms": 34.8,
+          "p99Ms": 48.6,
+          "worstMs": 110.9,
+          "over33Pct": 13,
+          "fps": null,
+          "frames": 856,
+          "ticks": {
+            "from": 290,
+            "to": 1524,
+            "advanced": 1234
+          },
+          "simSpeed": 0.993,
+          "hostOtherBusyPct": 36.9,
+          "hostBenchChromePct": 7,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 362,
+            "sfxRequests": 23,
+            "sfxRequestsBeforeWindow": 12
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-4x-2",
+          "build": "base",
+          "cpu": 4,
+          "rep": 2,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 20.31,
+          "p50Ms": 20.8,
+          "p95Ms": 34.5,
+          "p99Ms": 41.7,
+          "worstMs": 62.6,
+          "over33Pct": 5.5,
+          "fps": null,
+          "frames": 989,
+          "ticks": {
+            "from": 243,
+            "to": 1477,
+            "advanced": 1234
+          },
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 31.2,
+          "hostBenchChromePct": 7,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 354,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-4x-2",
+          "build": "head",
+          "cpu": 4,
+          "rep": 2,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 21.84,
+          "p50Ms": 20.8,
+          "p95Ms": 34.8,
+          "p99Ms": 48.6,
+          "worstMs": 75.9,
+          "over33Pct": 8.4,
+          "fps": null,
+          "frames": 917,
+          "ticks": {
+            "from": 244,
+            "to": 1474,
+            "advanced": 1230
+          },
+          "simSpeed": 0.994,
+          "hostOtherBusyPct": 34.9,
+          "hostBenchChromePct": 7,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 359,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-4x-3",
+          "build": "base",
+          "cpu": 4,
+          "rep": 3,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 17.25,
+          "p50Ms": 14,
+          "p95Ms": 27.7,
+          "p99Ms": 34.6,
+          "worstMs": 69.5,
+          "over33Pct": 1.1,
+          "fps": null,
+          "frames": 1165,
+          "ticks": {
+            "from": 246,
+            "to": 1475,
+            "advanced": 1229
+          },
+          "simSpeed": 0.996,
+          "hostOtherBusyPct": 21.7,
+          "hostBenchChromePct": 7,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 352,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-4x-3",
+          "build": "head",
+          "cpu": 4,
+          "rep": 3,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 18.31,
+          "p50Ms": 20.8,
+          "p95Ms": 27.8,
+          "p99Ms": 34.8,
+          "worstMs": 55.6,
+          "over33Pct": 2,
+          "fps": null,
+          "frames": 1093,
+          "ticks": {
+            "from": 242,
+            "to": 1468,
+            "advanced": 1226
+          },
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 26.2,
+          "hostBenchChromePct": 7,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 353,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-4x-4",
+          "build": "base",
+          "cpu": 4,
+          "rep": 4,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 42.11,
+          "p50Ms": 34.7,
+          "p95Ms": 97.1,
+          "p99Ms": 110.9,
+          "worstMs": 125.1,
+          "over33Pct": 53.2,
+          "fps": null,
+          "frames": 476,
+          "ticks": {
+            "from": 248,
+            "to": 1382,
+            "advanced": 1134
+          },
+          "simSpeed": 0.898,
+          "hostOtherBusyPct": 54.3,
+          "hostBenchChromePct": 7.1,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 331,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-4x-4",
+          "build": "head",
+          "cpu": 4,
+          "rep": 4,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 24.94,
+          "p50Ms": 20.9,
+          "p95Ms": 41.7,
+          "p99Ms": 55.6,
+          "worstMs": 104.2,
+          "over33Pct": 15.2,
+          "fps": null,
+          "frames": 804,
+          "ticks": {
+            "from": 244,
+            "to": 1478,
+            "advanced": 1234
+          },
+          "simSpeed": 0.991,
+          "hostOtherBusyPct": 45.9,
+          "hostBenchChromePct": 7.1,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 356,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-4x-5",
+          "build": "base",
+          "cpu": 4,
+          "rep": 5,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 21.72,
+          "p50Ms": 20.8,
+          "p95Ms": 34.7,
+          "p99Ms": 41.8,
+          "worstMs": 76,
+          "over33Pct": 7.4,
+          "fps": null,
+          "frames": 924,
+          "ticks": {
+            "from": 249,
+            "to": 1483,
+            "advanced": 1234
+          },
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 35.1,
+          "hostBenchChromePct": 7,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 356,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-4x-5",
+          "build": "head",
+          "cpu": 4,
+          "rep": 5,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 21.35,
+          "p50Ms": 20.8,
+          "p95Ms": 34.7,
+          "p99Ms": 48.6,
+          "worstMs": 69.4,
+          "over33Pct": 5.7,
+          "fps": null,
+          "frames": 941,
+          "ticks": {
+            "from": 242,
+            "to": 1479,
+            "advanced": 1237
+          },
+          "simSpeed": 0.992,
+          "hostOtherBusyPct": 38.1,
+          "hostBenchChromePct": 7.1,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 355,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-6x-1",
+          "build": "base",
+          "cpu": 6,
+          "rep": 1,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 35.89,
+          "p50Ms": 34.7,
+          "p95Ms": 48.7,
+          "p99Ms": 62.6,
+          "worstMs": 104.1,
+          "over33Pct": 71.3,
+          "fps": null,
+          "frames": 561,
+          "ticks": {
+            "from": 249,
+            "to": 1493,
+            "advanced": 1244
+          },
+          "simSpeed": 0.989,
+          "hostOtherBusyPct": 22.3,
+          "hostBenchChromePct": 6.2,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 363,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-6x-1",
+          "build": "head",
+          "cpu": 6,
+          "rep": 1,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 55.64,
+          "p50Ms": 48.7,
+          "p95Ms": 97.1,
+          "p99Ms": 118.9,
+          "worstMs": 160,
+          "over33Pct": 96.7,
+          "fps": null,
+          "frames": 360,
+          "ticks": {
+            "from": 252,
+            "to": 1386,
+            "advanced": 1134
+          },
+          "simSpeed": 0.901,
+          "hostOtherBusyPct": 38,
+          "hostBenchChromePct": 6.2,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 337,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-6x-2",
+          "build": "base",
+          "cpu": 6,
+          "rep": 2,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 38.07,
+          "p50Ms": 34.8,
+          "p95Ms": 55.6,
+          "p99Ms": 69.4,
+          "worstMs": 90.4,
+          "over33Pct": 81.2,
+          "fps": null,
+          "frames": 527,
+          "ticks": {
+            "from": 250,
+            "to": 1488,
+            "advanced": 1238
+          },
+          "simSpeed": 0.983,
+          "hostOtherBusyPct": 25.8,
+          "hostBenchChromePct": 6.2,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 363,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-6x-2",
+          "build": "head",
+          "cpu": 6,
+          "rep": 2,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 37.91,
+          "p50Ms": 34.8,
+          "p95Ms": 55.6,
+          "p99Ms": 69.4,
+          "worstMs": 83.4,
+          "over33Pct": 80.9,
+          "fps": null,
+          "frames": 533,
+          "ticks": {
+            "from": 246,
+            "to": 1496,
+            "advanced": 1250
+          },
+          "simSpeed": 0.984,
+          "hostOtherBusyPct": 21.2,
+          "hostBenchChromePct": 6.1,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 361,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-6x-3",
+          "build": "base",
+          "cpu": 6,
+          "rep": 3,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 43.63,
+          "p50Ms": 41.7,
+          "p95Ms": 62.7,
+          "p99Ms": 83.4,
+          "worstMs": 104.3,
+          "over33Pct": 93.3,
+          "fps": null,
+          "frames": 464,
+          "ticks": {
+            "from": 244,
+            "to": 1481,
+            "advanced": 1237
+          },
+          "simSpeed": 0.966,
+          "hostOtherBusyPct": 33.2,
+          "hostBenchChromePct": 6.5,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 363,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-6x-3",
+          "build": "head",
+          "cpu": 6,
+          "rep": 3,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 191.72,
+          "p50Ms": 187.6,
+          "p95Ms": 257.1,
+          "p99Ms": 291.7,
+          "worstMs": 507.3,
+          "over33Pct": 100,
+          "fps": null,
+          "frames": 106,
+          "ticks": {
+            "from": 250,
+            "to": 694,
+            "advanced": 444
+          },
+          "simSpeed": 0.337,
+          "hostOtherBusyPct": 76,
+          "hostBenchChromePct": 6.6,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 175,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-6x-4",
+          "build": "base",
+          "cpu": 6,
+          "rep": 4,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 47.17,
+          "p50Ms": 41.7,
+          "p95Ms": 83.4,
+          "p99Ms": 104.3,
+          "worstMs": 145.8,
+          "over33Pct": 91.1,
+          "fps": null,
+          "frames": 426,
+          "ticks": {
+            "from": 247,
+            "to": 1421,
+            "advanced": 1174
+          },
+          "simSpeed": 0.924,
+          "hostOtherBusyPct": 37.1,
+          "hostBenchChromePct": 6.3,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 347,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-6x-4",
+          "build": "head",
+          "cpu": 6,
+          "rep": 4,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 42.63,
+          "p50Ms": 34.8,
+          "p95Ms": 69.6,
+          "p99Ms": 97.4,
+          "worstMs": 132.1,
+          "over33Pct": 83.4,
+          "fps": null,
+          "frames": 471,
+          "ticks": {
+            "from": 251,
+            "to": 1461,
+            "advanced": 1210
+          },
+          "simSpeed": 0.957,
+          "hostOtherBusyPct": 30.8,
+          "hostBenchChromePct": 6.2,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 354,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "base-6x-5",
+          "build": "base",
+          "cpu": 6,
+          "rep": 5,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 35.59,
+          "p50Ms": 34.7,
+          "p95Ms": 48.7,
+          "p99Ms": 62.6,
+          "worstMs": 104.3,
+          "over33Pct": 69.2,
+          "fps": null,
+          "frames": 562,
+          "ticks": {
+            "from": 248,
+            "to": 1486,
+            "advanced": 1238
+          },
+          "simSpeed": 0.988,
+          "hostOtherBusyPct": 19,
+          "hostBenchChromePct": 6.1,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 364,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          },
+          "abortedRequests": 0,
+          "errors": []
+        },
+        {
+          "run": "head-6x-5",
+          "build": "head",
+          "cpu": 6,
+          "rep": 5,
+          "variant": "",
+          "profile": "mobile",
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "meanMs": 39.84,
+          "p50Ms": 34.8,
+          "p95Ms": 55.6,
+          "p99Ms": 69.5,
+          "worstMs": 97.2,
+          "over33Pct": 84.1,
+          "fps": null,
+          "frames": 503,
+          "ticks": {
+            "from": 249,
+            "to": 1483,
+            "advanced": 1234
+          },
+          "simSpeed": 0.981,
+          "hostOtherBusyPct": 26.6,
+          "hostBenchChromePct": 6.2,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 361,
+            "sfxRequests": 7,
+            "sfxRequestsBeforeWindow": 28
+          },
+          "abortedRequests": 0,
+          "errors": []
+        }
+      ],
+      "strictLoadMatchedSummary": {},
+      "visualGate": {
+        "command": "npm run visual:reboot (head build, 2026-09-26 01:47)",
+        "passed": true,
+        "tolerance": 2.5,
+        "baselineUpdated": false,
+        "scenes": [
+          {
+            "sceneId": "frontier-relay-desktop",
+            "observedTick": 90,
+            "status": "unchanged",
+            "meanDelta": 0.128,
+            "maxDelta": 7,
+            "changedCells": 5,
+            "enemyCrops": [
+              [
+                "bagholder-rusher",
+                0.04,
+                "unchanged"
+              ]
+            ],
+            "errors": []
+          },
+          {
+            "sceneId": "frontier-relay-mobile",
+            "observedTick": 240,
+            "status": "unchanged",
+            "meanDelta": 0.424,
+            "maxDelta": 19,
+            "changedCells": 18,
+            "enemyCrops": [
+              [
+                "bagholder-rusher",
+                0.01,
+                "unchanged"
+              ],
+              [
+                "forkrunner",
+                0.01,
+                "unchanged"
+              ]
+            ],
+            "errors": []
+          },
+          {
+            "sceneId": "combat-engaged-desktop",
+            "observedTick": 420,
+            "status": "unchanged",
+            "meanDelta": 0.068,
+            "maxDelta": 5,
+            "changedCells": 2,
+            "enemyCrops": [
+              [
+                "bagholder-rusher",
+                0,
+                "unchanged"
+              ]
+            ],
+            "errors": []
+          },
+          {
+            "sceneId": "ravine-overlook-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.073,
+            "maxDelta": 4,
+            "changedCells": 3,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "mining-camp-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.194,
+            "maxDelta": 5,
+            "changedCells": 14,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "liquidity-bridge-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.101,
+            "maxDelta": 9,
+            "changedCells": 9,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "hashwood-foliage-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.075,
+            "maxDelta": 6,
+            "changedCells": 2,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "liquidation-yard-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.231,
+            "maxDelta": 7,
+            "changedCells": 14,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "liquidation-market-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.101,
+            "maxDelta": 4,
+            "changedCells": 6,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "liquidation-residential-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.066,
+            "maxDelta": 5,
+            "changedCells": 4,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "hashwood-camp-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.01,
+            "maxDelta": 2,
+            "changedCells": 0,
+            "enemyCrops": null,
+            "errors": []
+          },
+          {
+            "sceneId": "crossing-water-desktop",
+            "observedTick": 180,
+            "status": "unchanged",
+            "meanDelta": 0.059,
+            "maxDelta": 6,
+            "changedCells": 6,
+            "enemyCrops": null,
+            "errors": []
+          }
+        ],
+        "reducedMotionEvidence": {
+          "sceneId": "frontier-relay-desktop",
+          "landmarkVisible": 7,
+          "animatedSignals": 0,
+          "atmosphereSprites": 0
+        }
+      }
     }
   },
   "deferred": [
