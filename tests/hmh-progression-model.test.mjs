@@ -68,9 +68,14 @@ test('every offer is the real two-card offer, and every pick is one of its cards
     const run = runProgressionModel(modules, { seed, policy, horizonTicks: 24_000 });
     assert.ok(run.offers.length >= 3, `${policy} sees several offers`);
     for (const offer of run.offers) {
-      assert.equal(offer.offered.length, 2, 'two cards per offer (1.8.1)');
+      assert.equal(offer.offered.length, 2, 'two cards per offer');
       assert.ok(offer.offered.includes(offer.picked), `${offer.picked} was offered`);
-      assert.equal(offer.rerolls, 0, '1.8.1 has no re-roll');
+      // The progression release: one re-roll per card, by the frozen rule
+      // (the seeded policy never re-rolls); every card shown is counted once.
+      assert.ok(offer.rerolls <= 2 && (policy !== 'seeded' || offer.rerolls === 0), `${policy} re-rolls ${offer.rerolls}`);
+      assert.equal(offer.shown.length, 2 + offer.rerolls);
+      assert.equal(new Set(offer.shown).size, offer.shown.length, 'a shown card never returns in its offer');
+      assert.ok(offer.offered.every((id) => offer.shown.includes(id)));
     }
     assert.equal(run.offers.length, run.level - 1, 'one pick per level gained');
   }
