@@ -33,6 +33,8 @@ function aim({ tick = 72_000, liquidatorBoss = boss(), grayboxEnemies = [], bloc
     traceHeightAwareLineOfSight,
     PROJECTILE_FLIGHT_HEIGHT: projectileHeight,
     WORLD_BLOCKERS: blockers,
+    // S1.4 breakables are the aim's last resort; none stand near these fixtures.
+    breakableAimTargets: () => [],
   });
 }
 

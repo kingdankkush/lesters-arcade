@@ -22,7 +22,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     },
     ravine: {
       objective: 'Salvage the ravine, then follow it east to the Proof-of-Work bridge.',
-      watch: 'The ambush bowl south-east funnels the horde. Start the quarry winch beyond it to open a Railgun salvage court.',
+      watch: 'The ambush bowl south-east funnels the horde. Find the Winch Handle, then crank the quarry winch beyond it for a Railgun court.',
       supply: 'The Shotgun waits to the south, below the road.',
       features: [
         { kind: 'arena', id: 'ravine-ambush-bowl', bearing: 'south-east' },
@@ -66,7 +66,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     'Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest.',
     'Throw grenades into the thickest pack, not at the nearest enemy.',
     'Close combat triggers on its own. Left Shift dodges on a keyboard; touch and gamepads dodge for you.',
-    'Approach machinery once to start it. Keep moving while it opens gates and unlocks supplies.',
+    'Stand still in a machine’s ring to crank it; buttons and levers start as you pass. Progress is never lost.',
     'Level-ups offer a choice of upgrades. Pick the one that changes how you fight.',
     'The pause menu holds the field map: routes, machinery and every cache you have found.',
   ],

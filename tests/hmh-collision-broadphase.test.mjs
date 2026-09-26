@@ -6,7 +6,9 @@ import {createCollisionBody,createStaticBlocker,resolveSweptCircleMotion} from '
 import {traceHeightAwareLineOfSight} from '../apps/hmh-reboot/src/elevation.mjs';
 
 // The digest is a witness of the authored world: re-pinned when Level 1 gains
-// colliders (three more supply courts on 2026-09-16), never for a broad-phase change alone.
+// or moves colliders (three more supply courts on 2026-09-16; the six machine
+// control props beside their operate spots for S1.4 on 2026-09-25), never for
+// a broad-phase change alone.
 test('movement and sight retain the full pre-optimization world collision digest',()=>{
   const hash=createHash('sha256'),blockers=LEVEL_ONE_WORLD.collisionBlockers;
   let seed=0x48130926;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
@@ -21,7 +23,7 @@ test('movement and sight retain the full pre-optimization world collision digest
     const sight=traceHeightAwareLineOfSight({from:{...start,z:start.z+34},to:{x:start.x+delta.x*6,y:start.y+delta.y*6,z:start.z+34},radius:i%3,blockers});
     hash.update(JSON.stringify({motion,sight}));
   }
-  assert.equal(hash.digest('hex'),'0b6f50cee8751ea9261c6f962d0b6af485688ca75ff75f3c74094d519894373c');
+  assert.equal(hash.digest('hex'),'cfe7635d5f89d63aa40c8e29d6c7206d053205c21e16093055c5f7f708989244');
 });
 
 test('immutable scenery is indexed locally and a new gate list gets a fresh index',async()=>{

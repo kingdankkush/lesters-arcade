@@ -1,43 +1,9 @@
 import { WORLD_DESIGN_SITES } from './world-design-encounters.mjs';
 import { createEnemyNavGrid } from './enemy-navgrid.mjs';
 
-export function createWorldDesignState() {
-  return { completed: new Map(), activating: new Map(), openGates: new Set(), targetId: null, progress: 0, lastTick: -1 };
-}
-
-export function stepWorldDesign(state, { tick, player, queryGround, lineBlocked }) {
-  if (!Number.isInteger(tick) || tick < 0 || tick <= state.lastTick) throw new TypeError('world interaction ticks must be monotonic');
-  if (![player?.x,player?.y].every(Number.isFinite)) throw new TypeError('finite player position required');
-  state.lastTick = tick;
-  // Enter reach once; the machinery then finishes without holding position.
-  for (const site of WORLD_DESIGN_SITES) {
-    if (state.completed.has(site.id) || state.activating.has(site.id)) continue;
-    if (Math.hypot(player.x-site.x,player.y-site.y)>82
-      || Math.abs((player.groundZ??0)-queryGround(site.x,site.y).groundZ)>8
-      || lineBlocked(player,site)) continue;
-    state.activating.set(site.id,tick);
-  }
-  const events=[];
-  state.targetId=null;state.progress=0;
-  for (const site of WORLD_DESIGN_SITES) {
-    const started=state.activating.get(site.id);
-    if (started===undefined) continue;
-    const progress=tick-started+1;
-    if (progress<site.holdTicks) {
-      if (state.targetId===null) {state.targetId=site.id;state.progress=progress;}
-      continue;
-    }
-    state.activating.delete(site.id);
-    state.completed.set(site.id,tick);
-    if(site.gateId) state.openGates.add(site.gateId);
-    events.push({id:`world:${site.id}`,type:'world:operated',tick,siteId:site.id,gateId:site.gateId??null,reward:site.reward??null});
-  }
-  return {events};
-}
-
-export function worldDesignActiveBlockers(state, blockers) {
-  return Object.freeze(blockers.filter(b => !state.openGates.has(b.id)));
-}
+// Mission core v2 (design package S1.4) moved the objective machinery into
+// mission-objectives.mjs. What stays here reads its state: the valve's steam
+// trap (`state.completed`) and the local navgrid patch for opened gates.
 
 export function worldDesignHazardPhase(state, site, tick) {
   const completedTick=state.completed.get(site.id);

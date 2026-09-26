@@ -1,8 +1,8 @@
 import { createSilverDropState, addSilverDrop, stepSilverDrops, silverDropAccounting } from './silver-drops.mjs';
 import { OBJECTIVE_REWARDS, objectiveRewardPlacements, collectibleIsAvailable, hiddenCollectibleIds } from './objective-rewards.mjs';
 import { canAcceptCollectible } from './collectible-capacity.mjs';
-import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, createWorldDesignSecretState, worldDesignSecretTargets, worldDesignHiddenSecretProps, stepWorldDesignSecrets, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
-import { WORLD_DESTRUCTIBLE_PROPS, createWorldDestructibleState, worldDestructibleTargets, worldDestructibleHurtProfile, worldDestructibleCoverHit, applyWorldDestructibleDamage, worldDestructibleHiddenProps, stepWorldDestructibleSupplies } from './world-destructibles.mjs';
+import { WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
+import { WORLD_DESTRUCTIBLE_PROPS, WORLD_FUEL_DRUMS, createWorldDestructibleState, worldDestructibleTargets, worldDestructibleHurtProfile, worldDestructibleCoverHit, applyWorldDestructibleDamage, worldDestructibleHiddenProps, stepWorldDestructibleSupplies } from './world-destructibles.mjs';
 import { resolveDodgeIntent } from './dodge-intent.mjs';
 import { createDeathCamera } from './death-camera.mjs';
 import { loadRuntimeTelemetry } from './runtime-telemetry-loader.mjs';
@@ -11,7 +11,7 @@ import { createStartupArtGate } from './startup-art.mjs';
 import { selectLevelEntry } from './level-entry.mjs';
 import { Application, Assets, Container, Graphics, Rectangle, RenderLayer, Sprite, Text, Texture, TilingSprite } from 'pixi.js';
 import { deterministicUnit } from './deterministic-hash.mjs';
-import { WORLD_DESIGN_SITES, WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
+import { WORLD_DESIGN_SITE_PROPS, WORLD_DESIGN_ORCHARD } from './world-design-encounters.mjs';
 import { WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardField, buildWorldHazardHits, withholdLethalHazardHits } from './world-hazards.mjs';
 import { createCorpseClock, corpsePresentation, pruneCorpseCapacity } from './corpse-presentation.mjs';
 import { createAimState, resolveAimIntent } from './aim.mjs';
@@ -268,7 +268,10 @@ import {
 let applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorPunishWindow,
   getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss;
 let creatureAnimationTick, liquidatorPose, renderLiquidatorTelegraph;
-let createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
+let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
+// Mission core v2 (design package S1.4): the objective simulation.
+let createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
+  applyMissionSealDamage, missionHiddenSecretProps;
 let createWorldDesignLife, prepareWorldDesignEnemyPose, createWorldDesignPacing, stepWorldDesignPacing, loadWorldDesignAppearance;
 let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT;
 let lazyRuntimeModulesLoad = null;
@@ -284,12 +287,15 @@ function loadLazyRuntimeModules() {
     import('./level-briefing.mjs'),
     import('./upgrade-panel.mjs'),
     import('./progression-content.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content]) => {
+    import('./mission-objectives.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission]) => {
     ({ applyLiquidatorDamage, createLiquidatorAddCandidates, createLiquidatorBoss, getLiquidatorPunishWindow,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss } = boss);
     ({ creatureAnimationTick, liquidatorPose } = creature);
     ({ renderLiquidatorTelegraph } = telegraph);
-    ({ createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } = interactions);
+    ({ refreshWorldDesignGateNavigation, buildWorldDesignHazardHits } = interactions);
+    ({ createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
+      applyMissionSealDamage, missionHiddenSecretProps } = mission);
     ({ createWorldDesignLife, prepareWorldDesignEnemyPose } = life);
     ({ createWorldDesignPacing, stepWorldDesignPacing } = pacing);
     ({ loadWorldDesignAppearance } = nativeAssets);
@@ -362,6 +368,27 @@ const navGridAuthority = createNavGridAuthority();
 const ENEMY_FLOW_REFRESH_TICKS = 30;
 let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
+// Breakables (design package §3.3): the secret seal and the destructible
+// cover. Every player weapon and the knife hit them; the nuke, world hazards
+// and enemy strikes never do, and fuel drums chain only through each other.
+const FUEL_DRUM_IDS = new Set(WORLD_FUEL_DRUMS.map((drum) => drum.id));
+// Objective rings inside the Liquidator's arena hide while he is live.
+const LIQUIDATOR_ARENA = (() => {
+  const arena = LEVEL_ONE_WORLD.encounterArenas.find((candidate) => candidate.id === 'liquidator-arena');
+  return arena ? Object.freeze({ x: arena.anchor.x, y: arena.anchor.y, radius: arena.radius }) : null;
+})();
+const isBreakableTargetId = (targetId) => targetId === WORLD_DESIGN_SECRET_SEAL.id || worldDestructibleHurtProfile(targetId) !== null;
+// Mission line of sight excludes the node's own prop. The filtered list is
+// frozen and cached per WORLD_BLOCKERS generation, so traces keep the index.
+const blockersWithoutCache = new Map();
+function blockersWithout(blockerId) {
+  if (!blockerId) return WORLD_BLOCKERS;
+  const cached = blockersWithoutCache.get(blockerId);
+  if (cached?.source === WORLD_BLOCKERS) return cached.list;
+  const list = Object.freeze(WORLD_BLOCKERS.filter((blocker) => blocker.id !== blockerId));
+  blockersWithoutCache.set(blockerId, { source: WORLD_BLOCKERS, list });
+  return list;
+}
 let enemyFlowReplanRequestedTick = -1;
 let activeBurnerHazards = [];
 // Keep POI discovery for run-summary bookkeeping even while the minimap display
@@ -1514,10 +1541,21 @@ async function boot() {
   let playerHealth = 100;
   let silverDropState=createSilverDropState(),silverPresentation=null,silverRequested=false;
   let collectibleState = null;
-  let worldDesignState = createWorldDesignState();
-  let worldSecretState=createWorldDesignSecretState();
+  // Objectives, gates and secrets (design package S1.4); rebuilt per session.
+  let missionState = createMissionState(0);
+  // Breakables the auto-aim may fall back to: seals and supply cover, never
+  // a fuel drum.
+  const breakableAimTargets = () => [...missionSealTargets(missionState), ...worldDestructibleTargets(worldDestructibleState).filter((target) => !FUEL_DRUM_IDS.has(target.id))];
+  // Opens one authored blocker for the rest of the run (a court gate, a seal
+  // or broken cover): collision drops it and the navgrid is patched locally.
+  const openWorldBlocker = (blockerId) => {
+    missionState.openGates.add(blockerId);
+    WORLD_BLOCKERS = missionActiveBlockers(missionState, LEVEL_ONE_WORLD.collisionBlockers);
+    refreshWorldDesignGateNavigation(ENEMY_NAV_GRID, LEVEL_ONE_WORLD, queryGround, blockerId, WORLD_BLOCKERS);
+    enemyFlowFieldTick = -1;
+    enemyFlowField = null;
+  };
   let worldDestructibleState=createWorldDestructibleState();
-  let worldDesignFrame = { events: [] };
   let worldPacingState=createWorldDesignPacing();
   let collectibleSnapshot = null;
   let lastCollectibleEvent = null;
@@ -1588,7 +1626,7 @@ async function boot() {
       tick: simulation?.tick ?? 0,
       performanceProfile,
       terrainTiles,
-      nativeBlockerIds: new Set([...worldDesignBlockerIds, ...worldDesignState.openGates]),
+      nativeBlockerIds: new Set([...worldDesignBlockerIds, ...missionState.openGates]),
     // Decals draw with the bake, into their own layer beneath every prop and
     // actor, culled to the bake view, and move with the baked ground.
     }, (bakeCamera, bakeView) => {
@@ -1686,8 +1724,8 @@ async function boot() {
         pickupPresentation.drawPickupIndicators(pickupSignals,pickupMarkers,camera.zoom);
         dataset.pickupMarkers = String(pickupMarkers.length);
       }
-      const hiddenAuthoredPropIds = new Set([...hiddenCollectibleIds(collectibleState,authoredPropTick), ...worldDesignHiddenSecretProps(worldSecretState), ...worldDestructibleHiddenProps(worldDestructibleState)]);
-      for(const id of nativeBarrierModule?.hiddenNativeBarriers(nativeBarrierPlacements,worldDesignState.openGates)??[])hiddenAuthoredPropIds.add(id);
+      const hiddenAuthoredPropIds = new Set([...hiddenCollectibleIds(collectibleState,authoredPropTick), ...missionHiddenSecretProps(missionState), ...worldDestructibleHiddenProps(worldDestructibleState)]);
+      for(const id of nativeBarrierModule?.hiddenNativeBarriers(nativeBarrierPlacements,missionState.openGates)??[])hiddenAuthoredPropIds.add(id);
       if (lightningLedgerEventPlacement && authoredPropTick < lightningLedgerEventPlacement.availableTick) hiddenAuthoredPropIds.add(lightningLedgerEventPlacement.id);
       if (bearMarketBurnerEventPlacement && authoredPropTick < bearMarketBurnerEventPlacement.availableTick) hiddenAuthoredPropIds.add(bearMarketBurnerEventPlacement.id);
       if (forkedStandardEventPlacement && authoredPropTick < forkedStandardEventPlacement.availableTick) hiddenAuthoredPropIds.add(forkedStandardEventPlacement.id);
@@ -1704,20 +1742,31 @@ async function boot() {
         focusPoints: [renderState,...grayboxEnemies.filter(e=>e.active && Math.hypot(e.x-renderState.x,e.y-renderState.y)<350)]
           .map(p=>worldToScreen({x:p.x,y:p.y,z:(p.groundZ??0)+32},camera,view)),
       });
-      const worldLifeReport = worldLife.render({state:worldDesignState,secretState:worldSecretState,destructibleState:worldDestructibleState,collectibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus});
+      // S1.4 guidance (projection only): the tracker pill reads the district
+      // the hero stands in and the stations it could claim now; a live boss
+      // hides the pill and the rings inside its arena.
+      const bossLive = Boolean(liquidatorBoss?.active && liquidatorBoss.health > 0 && authoredPropTick >= liquidatorBoss.startTick);
+      const worldLifeReport = worldLife.render({mission:missionState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:LEVEL_ONE_WORLD.interactions.hazards,announce:setAccessibleCombatStatus,
+        guidance:{districtId:getLevelOneDistrictAt(renderState.x,renderState.y)?.id??'frontier-relay',collectibles:collectibleState,bossBarVisible:bossLive,
+          canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon:buildProgressionByWeapon(runProgression.ranks)})},
+        bossArena:bossLive?LIQUIDATOR_ARENA:null,mobile:performanceProfile.id!=='desktop'});
       if(releaseTelemetryEnabled) {
         dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
-        dataset.worldInteractionCompleted=JSON.stringify([...worldDesignState.completed.keys()]);
-        dataset.worldInteractionTarget=worldDesignState.targetId??'';
-        dataset.worldInteractionProgress=String(worldDesignState.progress);
+        dataset.worldInteractionCompleted=JSON.stringify([...missionState.completed.keys()].filter(id=>missionState.rowsById.get(id).objectiveClass==='switch'));
+        dataset.worldInteractionTarget=missionState.activeZoneId??'';
+        dataset.worldInteractionProgress=String(missionState.activeZoneId?missionState.zoneState.get(missionState.activeZoneId).progress:0);
+        dataset.missionCompleted=JSON.stringify([...missionState.completed.keys()]);
+        dataset.missionStowed=String(missionState.stowed);
+        dataset.missionDocking=String(Boolean(missionState.dock));
+        dataset.missionTracked=worldLifeReport.trackedId??'';
         dataset.worldInteractionVisible=String(worldLifeReport.visibleSites);
         dataset.worldLifeParticles=String(worldLifeReport.particles);
         dataset.worldCampfireLights=String(worldLifeReport.campfireLights);
         dataset.worldCampfireEmbers=String(worldLifeReport.campfireEmbers);
-        dataset.worldOpenGates=JSON.stringify([...worldDesignState.openGates]);
+        dataset.worldOpenGates=JSON.stringify([...missionState.openGates]);
         dataset.objectiveRewards=JSON.stringify([...collectibleState?.collectionCounts??[]].filter(([id])=>id.startsWith('reward:')));
-        dataset.worldSecrets=JSON.stringify([...worldSecretState.collected]);
-        dataset.worldSecretSealHealth=String(worldSecretState.sealHealth);
+        dataset.worldSecrets=JSON.stringify([...missionState.completed.keys()].filter(id=>missionState.rowsById.get(id).objectiveClass==='secret'));
+        dataset.worldSecretSealHealth=String(missionState.seals.get(WORLD_DESIGN_SECRET_SEAL.id));
         dataset.worldDestructiblesBroken=JSON.stringify([...worldDestructibleState.brokenTick.keys()]);
         dataset.worldSuppliesCollected=JSON.stringify([...worldDestructibleState.collected]);
         dataset.worldFuelExploded=JSON.stringify([...worldDestructibleState.exploded.keys()]);
@@ -2490,12 +2539,13 @@ async function boot() {
         const meleeAge = lastMeleeAttack ? visualTick - lastMeleeAttack.tick : Number.POSITIVE_INFINITY;
         const grenadeAge = lastGrenadeThrow ? visualTick - lastGrenadeThrow.tick : Number.POSITIVE_INFINITY;
         const dashing = actor.locomotion === 'dash';
-        const interactionSite = !aimIntent?.fire && aimIntent?.source !== 'manual'
-          ? WORLD_DESIGN_SITES.find(site => {
-            const started=worldDesignState?.activating.get(site.id);
-            return started!==undefined && visualTick-started<18 && Math.hypot(actor.x-site.x,actor.y-site.y)<90;
-          }) : null;
-        const interactionAge=interactionSite ? visualTick-worldDesignState.activating.get(interactionSite.id) : 0;
+        // S1.4: the mission clip plays while the simulation operates a node
+        // (placeholder gesture: the grenade reach until the interact clips land).
+        // A channel holds the reach; a quick press or lever plays it once. A
+        // heavy hit outranks it; a light hit is additive and never ends it.
+        const missionClip = missionState?.operating ?? null;
+        const interactionAge = missionClip ? Math.max(0, visualTick - missionClip.sinceTick) : 0;
+        const hurtActive = playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS;
         // Full-body actions are authored and selected by actual simulation
         // events. Death is terminal; melee and grenade windups outrank fire,
         // and dash uses its own compact silhouette instead of fake run legs.
@@ -2509,7 +2559,7 @@ async function boot() {
                 ? 'dash'
                 : pistolFireAge >= 0 && pistolFireAge < 12
                   ? 'pistol-fire'
-                  : playerHitAge >= 0 && playerHitAge < PLAYER_HURT_POSE_TICKS ? 'hurt' : interactionSite ? 'interact' : 'aim';
+                  : missionClip && !(hurtActive && lastPlayerHit?.heavy) ? 'interact' : hurtActive ? 'hurt' : 'aim';
         // The death clip runs on the death camera's presentation ticks: the
         // simulation is frozen on the defeat tick (package 7.2 #1).
         const productionActionTick = productionAction === 'death'
@@ -2522,7 +2572,8 @@ async function boot() {
                 ? Math.max(0, dashState?.activeUntilTick ? 18 - Math.max(0, dashState.activeUntilTick - visualTick) : 0)
                 : productionAction === 'pistol-fire'
                   ? pistolFireAge
-                  : productionAction === 'hurt' ? playerHitAge : productionAction === 'interact' ? interactionAge : visualTick;
+                  : productionAction === 'hurt' ? playerHitAge
+                    : productionAction === 'interact' ? (missionClip.mode === 'quick' ? interactionAge : Math.min(interactionAge, 9)) : visualTick;
         const activeWeaponId = weaponLoadout ? getActiveWeaponState(weaponLoadout).id : null;
         productionHeroDisplay.container.heldWeapons?.request(activeWeaponId);
         productionHeroDisplay.applyPose({
@@ -2531,7 +2582,7 @@ async function boot() {
           actionTick: productionActionTick,
           locomotion: dashing ? 'moving' : motion.locomotion,
           legDirection: dashing && lastDashDirection ? quantizeDirection(lastDashDirection, 8) : motion.legDirection,
-          torsoDirection: productionAction === 'interact' ? quantizeDirection({x:interactionSite.x-actor.x,y:interactionSite.y-actor.y},8) : motion.torsoDirection,
+          torsoDirection: productionAction === 'interact' ? quantizeDirection({ x: missionClip.facing === 'east' ? 1 : -1, y: 0 }, 8) : motion.torsoDirection,
           action: productionAction,
           reloadProgress: heldReloadProgress,
           idleAllowed: !aimIntent?.fire,
@@ -3061,13 +3112,11 @@ async function boot() {
     if (startupContinue) { startupContinue.hidden = true; startupContinue.disabled = false; }
     if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
     dataset.startupArt = 'loading';
-    for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
+    for(const gateId of missionState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
-    worldDesignState=createWorldDesignState();
-    worldSecretState=createWorldDesignSecretState();
+    missionState=createMissionState(payload.session.seed);
     worldDestructibleState=createWorldDestructibleState();
     worldPacingState=createWorldDesignPacing();
-    worldDesignFrame={events:[]};
     // The flow field is per-run simulation state: a restart resets the tick
     // counter, so carrying the previous run's field would steer blocked
     // pursuit with stale data and break same-seed determinism.
@@ -3389,6 +3438,17 @@ async function boot() {
           to: { x: candidate.x, y: candidate.y, z: candidate.groundZ + PROJECTILE_FLIGHT_HEIGHT },
           blockers: WORLD_BLOCKERS,
         }).clear,
+        // S1.4: with no enemy in reach, a breakable within 200 is the last
+        // automatic target. It is its own blocker, so hitting it first is sight.
+        fallbackTargets: breakableAimTargets(),
+        fallbackLineOfSight: (candidate) => {
+          const line = traceHeightAwareLineOfSight({
+            from: { x: motion.x, y: motion.y, z: actor.groundZ + PROJECTILE_FLIGHT_HEIGHT },
+            to: { x: candidate.x, y: candidate.y, z: candidate.groundZ + PROJECTILE_FLIGHT_HEIGHT },
+            blockers: WORLD_BLOCKERS,
+          });
+          return line.clear || line.blockerId === candidate.id;
+        },
       });
       const movementStart = { x: motion.x, y: motion.y, z: actor.groundZ };
       // Resolved before movement: the mobility upgrades feed the movement step,
@@ -3483,6 +3543,20 @@ async function boot() {
             * runEffects.moveSpeedMultiplier
             * playerHazardField.speed,
         });
+        // S1.4 docking: after 6 still ticks in a channel ring the hero glides
+        // onto the operate spot at 4 units a tick; the swept collision below
+        // keeps it wall-safe, and any move input cancels it.
+        const missionGlide = missionDockStep(missionState, { player: movementStart, move: tickInput.move });
+        if (missionGlide) {
+          motion.x = movementStart.x + missionGlide.x;
+          motion.y = movementStart.y + missionGlide.y;
+          motion.vx = 0;
+          motion.vy = 0;
+          motion.recoilVx = 0;
+          motion.recoilVy = 0;
+          motion.locomotion = 'moving';
+          motion.legDirection = quantizeDirection(missionGlide, 8);
+        }
         const pressureEnemies = liquidatorBoss.active && tick >= liquidatorBoss.startTick
           ? [...grayboxEnemies, liquidatorBoss]
           : grayboxEnemies;
@@ -3562,34 +3636,72 @@ async function boot() {
       actor.heading = Math.atan2(aimIntent.direction.y, aimIntent.direction.x);
       actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;
       actor.combat = aimIntent.fire ? 'firing' : 'ready';
-      worldDesignFrame=stepWorldDesign(worldDesignState,{tick,player:actor,queryGround,lineBlocked:(a,b)=>{
-        const sweep=resolveSweptCircleMotion({body:playerBody,start:{x:a.x,y:a.y,z:a.groundZ},delta:{x:b.x-a.x,y:b.y-a.y},blockers:WORLD_BLOCKERS,bounds:WORLD_BOUNDS});
-        return sweep.contacts.length>0 || sweep.depenetrations.length>0;
-      }});
-      for(const event of worldDesignFrame.events) {
-        recordRunMilestone(runSummaryAccumulator,{type:'site-operated',id:event.siteId,tick});
-        collectibleState.unlockedObjectives.add(event.siteId);
-        if(event.gateId) {
-          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
-          refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
-          enemyFlowFieldTick=-1; enemyFlowField=null;
+      // S1.4 mission step (package §3.2, order within a tick): after movement,
+      // before the grants, gate changes and navgrid patches it returns, and
+      // before the director, the boss, enemies and combat. It reads the
+      // previous tick's hit and the logical view of the simulated actor.
+      const missionFrame = stepMissionObjectives(missionState, {
+        tick,
+        player: actor,
+        move: tickInput.move,
+        dashing: dashFrame.active,
+        lastPlayerHitTick: lastPlayerHit?.tick ?? -1,
+        queryGround,
+        // From the hero at z+24 to the operate spot at z+24, excluding the
+        // node's own prop.
+        lineClear: (from, to, excludeBlockerId) => traceHeightAwareLineOfSight({
+          from: { x: from.x, y: from.y, z: from.groundZ + 24 },
+          to: { x: to.x, y: to.y, z: to.groundZ + 24 },
+          blockers: blockersWithout(excludeBlockerId),
+        }).clear,
+        logicalView: directorViewBounds({ x: actor.x, y: actor.y }),
+      });
+      for (const event of missionFrame.events) {
+        const row = missionState.rowsById.get(event.objectiveId);
+        if (event.type === 'seal-opened') {
+          openWorldBlocker(event.sealId);
+          setAccessibleCombatStatus(`${row.name}: the seal gives way.`);
+          continue;
         }
-        if(event.reward==='heal') {
-          const before=playerHealth; playerHealth=Math.min(maxPlayerHealth,playerHealth+30);
-          recordRunHealing(runSummaryAccumulator,playerHealth-before);
+        // One node at a time: the level recorded is the one just before this
+        // node's own grant, after every earlier grant of the tick (v7 §4).
+        const { baseXp } = settleMissionObjective(missionState, event.objectiveId, runProgression.level);
+        const xpSnapshot = grantRunXp(runProgression, baseXp, tick);
+        cockpit?.updateRun(xpSnapshot);
+        if (xpSnapshot.pendingLevels > 0) upgradePending = true;
+        if (event.objectiveClass === 'switch') {
+          recordRunMilestone(runSummaryAccumulator, { type: 'site-operated', id: event.objectiveId, tick });
+          collectibleState.unlockedObjectives.add(event.objectiveId);
+        } else if (event.objectiveClass === 'secret') {
+          recordRunMilestone(runSummaryAccumulator, { type: 'secret-found', id: event.objectiveId, tick });
         }
-        if(event.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
-        combatAudio.play('objective-complete',{volume:.16});
-        setAccessibleCombatStatus(`${WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name} activated. ${OBJECTIVE_REWARDS.find(r=>r.objectiveId===event.siteId)?.rewardName ?? 'Reward'} ready nearby.`);
-        announcePickupEvent({ type: 'world:activated', name: WORLD_DESIGN_SITES.find(s=>s.id===event.siteId).name, rewardName: OBJECTIVE_REWARDS.find(r=>r.objectiveId===event.siteId)?.rewardName ?? null }, {}, tick);
-      }
-      for(const secret of stepWorldDesignSecrets(worldSecretState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
-        recordRunMilestone(runSummaryAccumulator,{type:'secret-found',id:secret.id,tick});
-        if(secret.reward==='heal') {const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
-        if(secret.reward==='ammo') refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
-        combatAudio.play('pickup',{volume:.11});
-        setAccessibleCombatStatus(`${secret.name}. ${secret.lore}`);
-        announcePickupEvent({ type: 'world:secret', name: secret.name }, {}, tick);
+        for (const effect of event.effects) {
+          if (effect.type === 'open-gate') openWorldBlocker(effect.gateId);
+          else if (effect.grant === 'heal') {
+            const before = playerHealth;
+            playerHealth = Math.min(maxPlayerHealth, playerHealth + effect.amount);
+            recordRunHealing(runSummaryAccumulator, playerHealth - before);
+          } else if (effect.grant === 'ammo') refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
+          else if (effect.grant === 'silver') {
+            cockpit?.updateRun(grantRunSilver(runProgression, effect.coins, tick));
+            const counter = document.getElementById('hmhSilverCount');
+            if (counter) counter.textContent = String(runProgression.silverCollected);
+          }
+        }
+        // Owner audio ruling: machinery, gates and seals are silent; a secret's
+        // supplies are a pickup.
+        if (event.objectiveClass === 'secret') {
+          combatAudio.play('pickup', { volume: 0.11 });
+          setAccessibleCombatStatus(`${row.name}. ${row.lore}`);
+          announcePickupEvent({ type: 'world:secret', name: row.name }, {}, tick);
+        } else if (event.objectiveClass === 'item') {
+          setAccessibleCombatStatus(`${row.name} picked up.`);
+          announcePickupEvent({ type: 'world:item', name: row.name }, {}, tick);
+        } else if (event.objectiveClass === 'switch') {
+          const rewardName = OBJECTIVE_REWARDS.find((reward) => reward.objectiveId === event.objectiveId)?.rewardName ?? null;
+          setAccessibleCombatStatus(`${row.name} activated. ${rewardName ?? 'Reward'} ready nearby.`);
+          announcePickupEvent({ type: 'world:activated', name: row.name, rewardName }, {}, tick);
+        }
       }
       for(const supply of stepWorldDestructibleSupplies(worldDestructibleState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
         if(supply.reward==='heal'){const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
@@ -3665,7 +3777,7 @@ async function boot() {
 
       const hurtTargets = [];
       const meleeTargets = [];
-      for (const enemy of [...grayboxEnemies,...worldDesignSecretTargets(worldSecretState),...worldDestructibleTargets(worldDestructibleState)]) {
+      for (const enemy of [...grayboxEnemies,...missionSealTargets(missionState),...worldDestructibleTargets(worldDestructibleState)]) {
         if (!enemy.active || enemy.health <= 0) continue;
         const profile = worldDestructibleHurtProfile(enemy.id) ?? (enemy.id===WORLD_DESIGN_SECRET_SEAL.id
           ? {bodyShape:{type:'circle',radius:20},projectileShape:{type:'circle',radius:20},meleeRadius:20,minZ:0,maxZ:40}
@@ -3721,9 +3833,9 @@ async function boot() {
       // by them: a boss defeat must reach the run summary through the weapon
       // catalog, and no world-* id may join that catalog.
       const bossHazardCap = { targetId: liquidatorBoss.id, health: liquidatorBoss.health };
-      combatHitIntents.push(...withholdLethalHazardHits(buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}), bossHazardCap));
+      combatHitIntents.push(...withholdLethalHazardHits(buildWorldDesignHazardHits(missionState,{tick,targets:hazardTargets,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from,to,blockers:WORLD_BLOCKERS}).clear}), bossHazardCap));
       combatHitIntents.push(...withholdLethalHazardHits(buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround }), bossHazardCap));
-      const fuelBlasts=stepWorldExplosions(worldDestructibleState,{tick,targets:[...hazardTargets,...worldDestructibleTargets(worldDestructibleState)],queryGround,blockers:WORLD_BLOCKERS});
+      const fuelBlasts=stepWorldExplosions(worldDestructibleState,{tick,targets:[...hazardTargets,...worldDestructibleTargets(worldDestructibleState).filter(target=>FUEL_DRUM_IDS.has(target.id))],queryGround,blockers:WORLD_BLOCKERS});
       combatHitIntents.push(...withholdLethalHazardHits(fuelBlasts.hits,bossHazardCap));
       for(const blast of fuelBlasts.events){
         pushCombatVisualEvent({type:'blast',...blast,mode:'launcher'});
@@ -3732,9 +3844,10 @@ async function boot() {
       const silverCollected=stepSilverDrops(silverDropState,{tick,player:actor,canReach:p=>Math.abs(queryGround(p.x,p.y).groundZ-actor.groundZ)<=8 && traceHeightAwareLineOfSight({from:{x:actor.x,y:actor.y,z:actor.groundZ+8},to:{x:p.x,y:p.y,z:queryGround(p.x,p.y).groundZ+8},blockers:WORLD_BLOCKERS}).clear});
       if(silverCollected>0){
         combatAudio.play('silver-collect',{volume:.10});
-        const counter=document.getElementById('hmhSilverCount');if(counter)counter.textContent=String(silverDropState.collected);
         // Owner decision 2026-09-16: silver coins count toward the run score.
         if(runProgression)cockpit?.updateRun(grantRunSilver(runProgression,silverCollected,tick));
+        // The counter shows every coin granted, secrets' included (S1.4).
+        const counter=document.getElementById('hmhSilverCount');if(counter)counter.textContent=String(runProgression?.silverCollected??silverDropState.collected);
       }
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor,
         canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon}),
@@ -3786,6 +3899,7 @@ async function boot() {
         } else if (event.kind === 'nuke') {
           rechargeHandGrenades(grenadeSystem, { tick, amount: 1 });
           for (const target of hurtTargets) {
+            if (isBreakableTargetId(target.id)) continue;
             combatHitIntents.push({
               id: `${event.id}:${target.id}`,
               tick,
@@ -4005,6 +4119,7 @@ async function boot() {
       const weaponFrame = stepWeaponLoadout(weaponLoadout, {
           tick,
           fire: aimIntent.fire,
+          stowed: missionState.stowed,
           releaseCharged: aimState.autoFireEnabled,
           direction: aimIntent.direction,
           progressionByWeapon,
@@ -4276,7 +4391,7 @@ async function boot() {
 
       const meleeFrame = stepMeleeState(meleeState, {
         tick,
-        automatic: !rosterPreviewEnabled && !dashFrame.active && weaponLoadout.activeWeaponId !== 'forked-standard',
+        automatic: !rosterPreviewEnabled && !dashFrame.active && !missionState.stowed && weaponLoadout.activeWeaponId !== 'forked-standard',
         origin: { x: actor.x, y: actor.y },
         direction: aimIntent.direction,
         sourceGroundZ: actor.groundZ,
@@ -4513,7 +4628,7 @@ async function boot() {
           shieldCharges: enemy.shieldCharges,
           knockbackResistance: enemy.knockbackResistance,
         }));
-        combatTargets.push(...worldDesignSecretTargets(worldSecretState));
+        combatTargets.push(...missionSealTargets(missionState));
         combatTargets.push(...worldDestructibleTargets(worldDestructibleState));
         if (liquidatorBoss.active && tick >= liquidatorBoss.startTick) combatTargets.push({
           id: liquidatorBoss.id,
@@ -4564,20 +4679,11 @@ async function boot() {
           targets: combatTargets,
         });
         const sealDamage=lastCombatResolution.targets[WORLD_DESIGN_SECRET_SEAL.id];
-        if(sealDamage && worldSecretState.sealHealth>0) {
-          worldSecretState.sealHealth=sealDamage.health;
-          if(sealDamage.health<=0) {
-            worldDesignState.openGates.add(WORLD_DESIGN_SECRET_SEAL.id);
-            WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
-            refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,WORLD_DESIGN_SECRET_SEAL.id,WORLD_BLOCKERS);
-            enemyFlowFieldTick=-1; enemyFlowField=null;
-          }
+        if(sealDamage) {
+          for(const opened of applyMissionSealDamage(missionState,{sealId:WORLD_DESIGN_SECRET_SEAL.id,health:sealDamage.health,tick})) openWorldBlocker(opened.sealId);
         }
         for(const broken of applyWorldDestructibleDamage(worldDestructibleState,{targets:lastCombatResolution.targets,tick})) {
-          worldDesignState.openGates.add(broken.id);
-          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
-          refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,broken.id,WORLD_BLOCKERS);
-          enemyFlowFieldTick=-1;enemyFlowField=null;
+          openWorldBlocker(broken.id);
           combatAudio.play('land',{volume:.14});
           setAccessibleCombatStatus(broken.blastRadius?'Fuel barrel leaking. Move clear.':'Cover destroyed. Supplies exposed.');
         }
@@ -4627,7 +4733,9 @@ async function boot() {
           });
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
-            lastPlayerHit = { tick, sourceId: damageEvent.sourceId, knockback: damageEvent.knockback };
+            // `heavy` is presentation only: a heavy hit ends the mission clip.
+            lastPlayerHit = { tick, sourceId: damageEvent.sourceId, knockback: damageEvent.knockback,
+              heavy: damageEvent.damageApplied >= 20 || String(damageEvent.weaponId).startsWith('boss-') || damageEvent.weaponId === 'world-fuel' || damageEvent.weaponId === 'satoshi-frag' };
             updateRunCombo(0);
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
@@ -4955,7 +5063,7 @@ async function boot() {
     // The map is used only in the pause menu; gameplay never waits for it.
     void import('./world-design-field-map.mjs').then(({ buildWorldDesignFieldMap, renderWorldDesignFieldMap }) => {
       if (simulation?.state !== 'paused') return;
-      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, completed: worldDesignState.completed, activating: worldDesignState.activating, collectibles: collectibleState, tick: simulation.tick, secrets: [...worldSecretState.collected] }));
+      renderWorldDesignFieldMap(fieldMapMount, buildWorldDesignFieldMap({ world: LEVEL_ONE_WORLD, player: actor, reveal: revealSnapshot, mission: missionState, collectibles: collectibleState, tick: simulation.tick }));
     }).catch(() => {
       if (simulation?.state === 'paused' && fieldMapMount) fieldMapMount.textContent = 'Field map unavailable. You can still resume your run.';
     });
