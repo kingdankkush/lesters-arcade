@@ -1,0 +1,1250 @@
+{
+  "schema": "hmh-perf-step-evidence-v1",
+  "step": "audio-webaudio (5/8)",
+  "generatedAt": "2026-09-25",
+  "commits": [
+    "8a2795a2 Play HMH SFX through Web Audio buffers and retire footstep cues",
+    "17728eb0 Count SFX voices in the HMH crowd bench and unlock audio in the leak probe"
+  ],
+  "base": "839358b6 (step 4 evidence; runtime code identical to c85b2d89)",
+  "deviceAcceptance": false,
+  "note": "Chrome CPU-throttle proxy for an iPhone XS Max (414x896 @3, mobile profile); GPU work is not throttled and no iOS hardware was used. Other sessions kept the host 25-60% busy, so the step-4 build (.tmp/step5/dist-step4, a --sourcemap build of HEAD, byte-identical to .tmp/step4/dist-final) and this build (.tmp/step5/dist-final) were alternated in two rounds with the same bench script. Rows with loadMatched:false drew host-load windows more than ~3 points apart or above 33% other load; they are reported but left out of the summary. Both builds play the same cue stream: 344-366 cue voices started per 20 s window.",
+  "change": [
+    "apps/hmh-reboot/src/combat-audio.mjs: every SFX cue used to be a new HTMLAudioElement(url). Now one AudioContext is created in the first gesture; each sample a cue can reach in the mode is fetched and decoded once (4 at a time) into an AudioBuffer; a cue is AudioBufferSourceNode -> per-voice GainNode (cue plan volume x boss duck) -> SFX or UI bus GainNode (slider level x dynamic range) -> destination. Registry gate, cooldowns, the 16-voice cap, priority stealing, 4 s reaping, the 600 ms boss duck (x0.7; boss, damage and ui exempt), the pause allow-list and reduce-motion attenuation are unchanged. Standalone music is still a media element; embedded music stays with the parent player.",
+    "Gestures: pointerdown, pointerup, touchend and keydown (capture, passive) stay attached. The first unlocks: resume() and a one-sample buffer inside the gesture, as iOS requires (a touch pointerdown is not an activation there). Later ones resume a context iOS interrupted. visibilitychange suspends the context when hidden and resumes it when visible. destroy() closes the context and removes every listener. main.mjs passes gestureTarget: window and visibilityTarget: document and drops its once-only pointerdown/keydown unlock.",
+    "Cues are dropped, not played late, while the context is locked or suspended or while a sample is still decoding; a requested sample jumps the decode queue. A failed fetch or decode makes that cue silent (sample-unavailable) without leaking a voice.",
+    "Owner decision: no footsteps and no voice lines. footstep-dirt and footstep-road are refused in every mode (cue-retired) and never fetched; the unused worldDesignFootstep selector is removed. No voice-line cue exists in the child.",
+    "Telemetry adds audioContext, audioSamplesReady and audioSamplesFailed. The crowd bench counts media-element plays, buffer-source starts and SFX requests in each window. The leak probe gives each mounted child one trusted key press. The weapon SFX smoke presses Shift and asserts a running context and zero failed samples."
+  ],
+  "determinism": {
+    "headlessDigest": {
+      "command": "node scripts/hmh-sim-digest.mjs",
+      "combined": "2488a609eb1ceadd27edb83a91d5ffed3423dac198d19badbc667c25eb4f92f2",
+      "crowd": "50f3f6127b5e92fa237aa415d1e8188a2f6e2816c53801ad2e055f4ee1f67367",
+      "director": "7f38bb3e763081b2a195c118bf0f84dee4d5486f50242806bc8e597bede5af70",
+      "enduranceSoak": "2e38a09a",
+      "matchesBaseline": true
+    },
+    "browserCensusTraceDigest": {
+      "tick": 1800,
+      "value": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+      "runs": [
+        "desktop",
+        "mobile"
+      ],
+      "matchesBaseline": true
+    }
+  },
+  "exactness": {
+    "gainParity": "scripts/hmh-action-audio-audit.mjs run through the 1.8.1-era engine (HTMLAudioElement probe) and through this engine (fake Web Audio graph): the routed gain of all 35 live manifest cues is bit-identical, and the synthetic 154-event dense combat mix WAV and the audition WAV are byte-identical. The two footstep cues are now listed as retiredFromPlayback.",
+    "unitTests": "tests/hmh-reboot-combat-audio-webaudio.test.mjs has 17 tests; 16 were red before the change. It covers: no per-cue media element; nothing fetched before a gesture, then each sample exactly once; footsteps retired in every mode; cues dropped while decoding; live SFX/UI bus gain (the iOS volume fix); the 16-voice cap; the boss duck window; visibility suspend/resume; interruption recovery on the next touch; pointerup/touchend/keydown unlock; ended-voice release; failed fetch/decode; no Web Audio; destroy; the pause-menu preview; every weapon cue. The four suites that drove an HTMLAudioElement fake (combat-audio, combat-audio-routing, action-sfx, objective-audio) now drive tests/helpers/fake-web-audio.mjs with the same assertions on source buffers and graph gain.",
+    "realBrowser": {
+      "smoke": "scripts/hmh-weapon-sfx-browser-smoke.mjs against python http.server on 8861 (plain build)",
+      "status": "PASS",
+      "fired": {
+        "coin-blaster": {
+          "weaponId": "coin-blaster",
+          "lastWeaponFire": "coin-blaster",
+          "audioVoices": 1,
+          "audioUnknownCues": "0",
+          "audioContext": "running",
+          "audioSamplesFailed": "0"
+        },
+        "scatter-shotgun": {
+          "weaponId": "scatter-shotgun",
+          "lastWeaponFire": "scatter-shotgun",
+          "audioVoices": 1,
+          "audioUnknownCues": "0",
+          "audioContext": "running",
+          "audioSamplesFailed": "0"
+        },
+        "launcher-rig": {
+          "weaponId": "launcher-rig",
+          "lastWeaponFire": "launcher-rig",
+          "audioVoices": 0,
+          "audioUnknownCues": "0",
+          "audioContext": "running",
+          "audioSamplesFailed": "0"
+        },
+        "auto-miner": {
+          "weaponId": "auto-miner",
+          "lastWeaponFire": "auto-miner",
+          "audioVoices": 1,
+          "audioUnknownCues": "0",
+          "audioContext": "running",
+          "audioSamplesFailed": "0"
+        }
+      },
+      "voiceWindow": {
+        "frames": 45,
+        "maxVoices": 2,
+        "unknownCues": "0"
+      },
+      "errors": []
+    }
+  },
+  "initialJs": {
+    "cap": 1048576,
+    "step4": 1044848,
+    "final": 1044564,
+    "deltaVsStep4": -284,
+    "headroom": 4012,
+    "lazyChunks": {
+      "combat-audio (sourcemap build bytes)": {
+        "step4": 5691,
+        "final": 7595
+      }
+    }
+  },
+  "summary": {
+    "mobile4xTiming": {
+      "pairs": "rep 3-5, host 26-27% other load",
+      "step4MeanMs": 23.59,
+      "finalMeanMs": 20.69,
+      "deltaPct": -12.3,
+      "step4P95Ms": [
+        41.7,
+        34.7,
+        34.7
+      ],
+      "finalP95Ms": [
+        27.9,
+        27.8,
+        27.9
+      ],
+      "step4P99Ms": [
+        62.5,
+        41.7,
+        41.7
+      ],
+      "finalP99Ms": [
+        41.7,
+        34.7,
+        34.8
+      ],
+      "step4Over33Pct": [
+        13.3,
+        5.4,
+        6.9
+      ],
+      "finalOver33Pct": [
+        4.7,
+        1.7,
+        3.1
+      ]
+    },
+    "mobile6xTiming": {
+      "pairs": "rep 2-3 (step 4 at 26.1%, this build at 28.4% and 29.5% other load)",
+      "step4MeanMs": 57.65,
+      "finalMeanMs": 48.49,
+      "deltaPct": -15.9,
+      "step4P99Ms": [
+        118.1,
+        125.1
+      ],
+      "finalP99Ms": [
+        90.4,
+        90.3
+      ],
+      "step4SimSpeed": [
+        0.917,
+        0.91
+      ],
+      "finalSimSpeed": [
+        0.961,
+        0.948
+      ]
+    },
+    "mobile6xProfile": {
+      "pair": "rep 2 (24.9% vs 26.0% other load)",
+      "meanMs": [
+        52.97,
+        45.43
+      ],
+      "busyMsPerFrame": [
+        58.31,
+        49.6
+      ],
+      "programMsPerFrame": [
+        16.92,
+        8.53
+      ]
+    },
+    "mobile4xProfile": {
+      "pairs": "rep 1-2 (26.7-30.6% other load)",
+      "busyMsPerFrame": {
+        "step4": [
+          28.99,
+          27.93
+        ],
+        "final": [
+          26.75,
+          24.31
+        ]
+      },
+      "programMsPerFrame": {
+        "step4": [
+          7.72,
+          7.53
+        ],
+        "final": [
+          4.98,
+          4.49
+        ]
+      },
+      "gcMsPerFrame": {
+        "step4": [
+          0.54,
+          0.49
+        ],
+        "final": [
+          0.42,
+          0.39
+        ]
+      }
+    },
+    "desktop1x": {
+      "step4MeanMs": 7.03,
+      "finalMeanMs": 6.99,
+      "note": "vsync-bound"
+    },
+    "where": "The saving is native main-thread work, the (program) bucket: about 2.9 ms per frame at 4x and 8.4 ms at 6x, which accounts for the whole drop in busy time. The JS side of play() costs about the same in both engines (0.24 ms/frame at 4x and 0.64 ms/frame at 6x here).",
+    "network": "Step 4 made about 2 SFX requests per window on top of one media pipeline per cue. This build fetches 35 samples once at unlock and makes none inside the window."
+  },
+  "timingAB": [
+    {
+      "run": "final-profile-mobile-4-1",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 25.21,
+      "p50Ms": 27.69999999999709,
+      "p95Ms": 34.79999999999927,
+      "p99Ms": 41.70000000000073,
+      "worstMs": 55.5,
+      "over33Pct": 11.8,
+      "fps": 39.7,
+      "frames": 779,
+      "ticks": 1217,
+      "simSpeed": 0.999,
+      "hostOtherBusyPct": 30.6,
+      "busyMsPerFrame": 26.75,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 352,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 4.98,
+      "programPctOfBusy": 18.63,
+      "gcMsPerFrame": 0.42,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "final-profile-mobile-4-2",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 23.1,
+      "p50Ms": 20.899999999999636,
+      "p95Ms": 34.79999999999927,
+      "p99Ms": 48.69999999999891,
+      "worstMs": 90.30000000000109,
+      "over33Pct": 8.9,
+      "fps": 43.3,
+      "frames": 853,
+      "ticks": 1212,
+      "simSpeed": 0.996,
+      "hostOtherBusyPct": 28.6,
+      "busyMsPerFrame": 24.31,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 351,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 4.49,
+      "programPctOfBusy": 18.46,
+      "gcMsPerFrame": 0.39,
+      "combatAudioJsMsPerFrame": 0.24,
+      "loadMatched": true
+    },
+    {
+      "run": "final-profile-mobile-6-1",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 45.33,
+      "p50Ms": 41.599999999998545,
+      "p95Ms": 90.29999999999927,
+      "p99Ms": 132,
+      "worstMs": 187.5,
+      "over33Pct": 86,
+      "fps": 22.1,
+      "frames": 421,
+      "ticks": 1094,
+      "simSpeed": 0.915,
+      "hostOtherBusyPct": 26.5,
+      "busyMsPerFrame": 49.51,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 323,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 8.95,
+      "programPctOfBusy": 18.08,
+      "gcMsPerFrame": 0.63,
+      "combatAudioJsMsPerFrame": 0.68,
+      "loadMatched": false
+    },
+    {
+      "run": "final-profile-mobile-6-2",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 45.43,
+      "p50Ms": 41.70000000000073,
+      "p95Ms": 62.5,
+      "p99Ms": 76.39999999999964,
+      "worstMs": 97.30000000000109,
+      "over33Pct": 99.3,
+      "fps": 22,
+      "frames": 425,
+      "ticks": 1195,
+      "simSpeed": 0.98,
+      "hostOtherBusyPct": 26,
+      "busyMsPerFrame": 49.6,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 349,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 8.53,
+      "programPctOfBusy": 17.2,
+      "gcMsPerFrame": 0.59,
+      "combatAudioJsMsPerFrame": 0.64,
+      "loadMatched": true
+    },
+    {
+      "run": "final-timing-desktop-1-1",
+      "build": "final",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 6.99,
+      "p50Ms": 6.900000000001455,
+      "p95Ms": 7,
+      "p99Ms": 7.100000000002183,
+      "worstMs": 62.5,
+      "over33Pct": 0,
+      "fps": 143.1,
+      "frames": 2890,
+      "ticks": 1217,
+      "simSpeed": 1,
+      "hostOtherBusyPct": 28.7,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 341,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "final-timing-mobile-4-1",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 25.13,
+      "p50Ms": 20.900000000001455,
+      "p95Ms": 34.899999999999636,
+      "p99Ms": 48.60000000000218,
+      "worstMs": 90.39999999999964,
+      "over33Pct": 12.4,
+      "fps": 39.8,
+      "frames": 799,
+      "ticks": 1239,
+      "simSpeed": 0.993,
+      "hostOtherBusyPct": 33.2,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 355,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": false
+    },
+    {
+      "run": "final-timing-mobile-4-2",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 22.03,
+      "p50Ms": 20.899999999997817,
+      "p95Ms": 34.69999999999891,
+      "p99Ms": 48.5,
+      "worstMs": 62.600000000000364,
+      "over33Pct": 5.6,
+      "fps": 45.4,
+      "frames": 910,
+      "ticks": 1231,
+      "simSpeed": 0.996,
+      "hostOtherBusyPct": 25.6,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 348,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": false
+    },
+    {
+      "run": "final-timing-mobile-4-3",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 21.11,
+      "p50Ms": 20.80000000000109,
+      "p95Ms": 27.900000000001455,
+      "p99Ms": 41.69999999999891,
+      "worstMs": 62.599999999998545,
+      "over33Pct": 4.7,
+      "fps": 47.4,
+      "frames": 954,
+      "ticks": 1239,
+      "simSpeed": 0.998,
+      "hostOtherBusyPct": 26,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 353,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "final-timing-mobile-4-4",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 4,
+      "walk": false,
+      "meanMs": 20.33,
+      "p50Ms": 20.80000000000109,
+      "p95Ms": 27.80000000000109,
+      "p99Ms": 34.70000000000073,
+      "worstMs": 48.69999999999891,
+      "over33Pct": 1.7,
+      "fps": 49.2,
+      "frames": 989,
+      "ticks": 1233,
+      "simSpeed": 0.997,
+      "hostOtherBusyPct": 26.8,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 353,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "final-timing-mobile-4-5",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 5,
+      "walk": false,
+      "meanMs": 20.64,
+      "p50Ms": 20.80000000000109,
+      "p95Ms": 27.899999999997817,
+      "p99Ms": 34.80000000000109,
+      "worstMs": 62.600000000000364,
+      "over33Pct": 3.1,
+      "fps": 48.5,
+      "frames": 978,
+      "ticks": 1238,
+      "simSpeed": 0.997,
+      "hostOtherBusyPct": 26.2,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 358,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "final-timing-mobile-6-1",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 56.13,
+      "p50Ms": 55.5,
+      "p95Ms": 83.20000000000073,
+      "p99Ms": 104.20000000000073,
+      "worstMs": 132.10000000000036,
+      "over33Pct": 99.7,
+      "fps": 17.8,
+      "frames": 357,
+      "ticks": 1189,
+      "simSpeed": 0.932,
+      "hostOtherBusyPct": 33.4,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 352,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": false
+    },
+    {
+      "run": "final-timing-mobile-6-2",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 47.18,
+      "p50Ms": 41.79999999999927,
+      "p95Ms": 69.5,
+      "p99Ms": 90.39999999999964,
+      "worstMs": 111.30000000000109,
+      "over33Pct": 97,
+      "fps": 21.2,
+      "frames": 429,
+      "ticks": 1229,
+      "simSpeed": 0.961,
+      "hostOtherBusyPct": 28.4,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 366,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "final-timing-mobile-6-3",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 49.79,
+      "p50Ms": 48.600000000000364,
+      "p95Ms": 76.30000000000291,
+      "p99Ms": 90.30000000000291,
+      "worstMs": 125.10000000000036,
+      "over33Pct": 99,
+      "fps": 20.1,
+      "frames": 404,
+      "ticks": 1210,
+      "simSpeed": 0.948,
+      "hostOtherBusyPct": 29.5,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 0,
+        "sourceStarts": 355,
+        "sfxRequests": 0,
+        "sfxRequestsBeforeWindow": 35
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-profile-mobile-4-1",
+      "build": "step4",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 27.47,
+      "p50Ms": 27.799999999999272,
+      "p95Ms": 41.69999999999891,
+      "p99Ms": 55.5,
+      "worstMs": 145.89999999999782,
+      "over33Pct": 21.8,
+      "fps": 36.4,
+      "frames": 708,
+      "ticks": 1197,
+      "simSpeed": 0.99,
+      "hostOtherBusyPct": 30.4,
+      "busyMsPerFrame": 28.99,
+      "audio": {
+        "mediaPlays": 344,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 13
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 7.72,
+      "programPctOfBusy": 26.63,
+      "gcMsPerFrame": 0.54,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-profile-mobile-4-2",
+      "build": "step4",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 26.44,
+      "p50Ms": 27.700000000000728,
+      "p95Ms": 34.80000000000109,
+      "p99Ms": 55.599999999998545,
+      "worstMs": 125,
+      "over33Pct": 15.5,
+      "fps": 37.8,
+      "frames": 741,
+      "ticks": 1203,
+      "simSpeed": 0.99,
+      "hostOtherBusyPct": 26.7,
+      "busyMsPerFrame": 27.93,
+      "audio": {
+        "mediaPlays": 351,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 13
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 7.53,
+      "programPctOfBusy": 26.98,
+      "gcMsPerFrame": 0.49,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-profile-mobile-6-1",
+      "build": "step4",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 120.31,
+      "p50Ms": 83.5,
+      "p95Ms": 229.29999999999927,
+      "p99Ms": 347.3000000000029,
+      "worstMs": 382.2999999999993,
+      "over33Pct": 100,
+      "fps": 8.3,
+      "frames": 161,
+      "ticks": 637,
+      "simSpeed": 0.512,
+      "hostOtherBusyPct": 43.5,
+      "busyMsPerFrame": 132.51,
+      "audio": {
+        "mediaPlays": 221,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 8
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 40.88,
+      "programPctOfBusy": 30.85,
+      "gcMsPerFrame": 1.24,
+      "combatAudioJsMsPerFrame": 1.56,
+      "loadMatched": false
+    },
+    {
+      "run": "step4-profile-mobile-6-2",
+      "build": "step4",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 52.97,
+      "p50Ms": 48.70000000000073,
+      "p95Ms": 76.30000000000291,
+      "p99Ms": 90.29999999999927,
+      "worstMs": 145.89999999999964,
+      "over33Pct": 99.2,
+      "fps": 18.9,
+      "frames": 365,
+      "ticks": 1168,
+      "simSpeed": 0.944,
+      "hostOtherBusyPct": 24.9,
+      "busyMsPerFrame": 58.31,
+      "audio": {
+        "mediaPlays": 344,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 11
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": 16.92,
+      "programPctOfBusy": 29.01,
+      "gcMsPerFrame": 0.7,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-timing-desktop-1-1",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 7.03,
+      "p50Ms": 6.900000000001455,
+      "p95Ms": 7,
+      "p99Ms": 7.399999999997817,
+      "worstMs": 62.5,
+      "over33Pct": 0,
+      "fps": 142.3,
+      "frames": 2871,
+      "ticks": 1216,
+      "simSpeed": 0.999,
+      "hostOtherBusyPct": 29.6,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 340,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 12
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-timing-mobile-4-1",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 91.33,
+      "p50Ms": 90.29999999999927,
+      "p95Ms": 159.8000000000011,
+      "p99Ms": 208.29999999999927,
+      "worstMs": 347.3999999999978,
+      "over33Pct": 93.2,
+      "fps": 10.9,
+      "frames": 221,
+      "ticks": 817,
+      "simSpeed": 0.634,
+      "hostOtherBusyPct": 60.2,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 261,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 15
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": false
+    },
+    {
+      "run": "step4-timing-mobile-4-2",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 34.2,
+      "p50Ms": 34.69999999999709,
+      "p95Ms": 48.70000000000073,
+      "p99Ms": 90.29999999999927,
+      "worstMs": 131.90000000000146,
+      "over33Pct": 54.3,
+      "fps": 29.2,
+      "frames": 589,
+      "ticks": 1228,
+      "simSpeed": 0.969,
+      "hostOtherBusyPct": 36.8,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 360,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 15
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": false
+    },
+    {
+      "run": "step4-timing-mobile-4-3",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 24.41,
+      "p50Ms": 20.899999999999636,
+      "p95Ms": 41.70000000000073,
+      "p99Ms": 62.5,
+      "worstMs": 139,
+      "over33Pct": 13.3,
+      "fps": 41,
+      "frames": 829,
+      "ticks": 1238,
+      "simSpeed": 0.987,
+      "hostOtherBusyPct": 27.4,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 360,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 15
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-timing-mobile-4-4",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 4,
+      "walk": false,
+      "meanMs": 23.06,
+      "p50Ms": 20.899999999999636,
+      "p95Ms": 34.69999999999891,
+      "p99Ms": 41.70000000000073,
+      "worstMs": 111.20000000000073,
+      "over33Pct": 5.4,
+      "fps": 43.4,
+      "frames": 871,
+      "ticks": 1228,
+      "simSpeed": 0.992,
+      "hostOtherBusyPct": 26.9,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 356,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 15
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-timing-mobile-4-5",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 5,
+      "walk": false,
+      "meanMs": 23.29,
+      "p50Ms": 20.899999999999636,
+      "p95Ms": 34.70000000000073,
+      "p99Ms": 41.70000000000073,
+      "worstMs": 104.20000000000073,
+      "over33Pct": 6.9,
+      "fps": 42.9,
+      "frames": 865,
+      "ticks": 1234,
+      "simSpeed": 0.992,
+      "hostOtherBusyPct": 26.7,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 360,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 13
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-timing-mobile-6-1",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 83.83,
+      "p50Ms": 76.5,
+      "p95Ms": 118.09999999999854,
+      "p99Ms": 152.90000000000146,
+      "worstMs": 271,
+      "over33Pct": 100,
+      "fps": 11.9,
+      "frames": 243,
+      "ticks": 997,
+      "simSpeed": 0.757,
+      "hostOtherBusyPct": 36.8,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 299,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 8
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": false
+    },
+    {
+      "run": "step4-timing-mobile-6-2",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 55.87,
+      "p50Ms": 48.79999999999927,
+      "p95Ms": 83.39999999999964,
+      "p99Ms": 118.10000000000036,
+      "worstMs": 201.5,
+      "over33Pct": 98.6,
+      "fps": 17.9,
+      "frames": 363,
+      "ticks": 1181,
+      "simSpeed": 0.917,
+      "hostOtherBusyPct": 26.1,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 351,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 15
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    },
+    {
+      "run": "step4-timing-mobile-6-3",
+      "build": "step4",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 59.43,
+      "p50Ms": 55.600000000000364,
+      "p95Ms": 83.40000000000146,
+      "p99Ms": 125.10000000000218,
+      "worstMs": 180.8000000000011,
+      "over33Pct": 99.7,
+      "fps": 16.8,
+      "frames": 338,
+      "ticks": 1162,
+      "simSpeed": 0.91,
+      "hostOtherBusyPct": 26.1,
+      "busyMsPerFrame": null,
+      "audio": {
+        "mediaPlays": 349,
+        "sourceStarts": 0,
+        "sfxRequests": 2,
+        "sfxRequestsBeforeWindow": 9
+      },
+      "abortedRequests": 0,
+      "programMsPerFrame": null,
+      "programPctOfBusy": null,
+      "gcMsPerFrame": null,
+      "combatAudioJsMsPerFrame": null,
+      "loadMatched": true
+    }
+  ],
+  "leakProbeLong": {
+    "command": "node scripts/hmh-restart-leak-probe.mjs --long=1 --rounds=6 --ticks=3600 --query=evidenceSafe=1&telemetry=1 (one trusted key press after mount)",
+    "step4": [
+      {
+        "tick": 3640,
+        "heapMB": 16,
+        "nodes": 750,
+        "listeners": 107,
+        "rendererMB": 371.8,
+        "gpuMB": 390.7,
+        "audio": {
+          "voices": 1,
+          "context": null,
+          "samplesReady": null
+        }
+      },
+      {
+        "tick": 7228,
+        "heapMB": 16.99,
+        "nodes": 780,
+        "listeners": 112,
+        "rendererMB": 382.2,
+        "gpuMB": 445.6,
+        "audio": {
+          "voices": 6,
+          "context": null,
+          "samplesReady": null
+        }
+      },
+      {
+        "tick": 10833,
+        "heapMB": 17.31,
+        "nodes": 775,
+        "listeners": 107,
+        "rendererMB": 388.1,
+        "gpuMB": 446.4,
+        "audio": {
+          "voices": 1,
+          "context": null,
+          "samplesReady": null
+        }
+      },
+      {
+        "tick": 14425,
+        "heapMB": 17.05,
+        "nodes": 777,
+        "listeners": 108,
+        "rendererMB": 390.2,
+        "gpuMB": 401.7,
+        "audio": {
+          "voices": 2,
+          "context": null,
+          "samplesReady": null
+        }
+      },
+      {
+        "tick": 18031,
+        "heapMB": 17.66,
+        "nodes": 796,
+        "listeners": 114,
+        "rendererMB": 433.1,
+        "gpuMB": 416.5,
+        "audio": {
+          "voices": 7,
+          "context": null,
+          "samplesReady": null
+        }
+      },
+      {
+        "tick": 21628,
+        "heapMB": 17.69,
+        "nodes": 788,
+        "listeners": 111,
+        "rendererMB": 435.6,
+        "gpuMB": 451.4,
+        "audio": {
+          "voices": 5,
+          "context": null,
+          "samplesReady": null
+        }
+      }
+    ],
+    "final": [
+      {
+        "tick": 3631,
+        "heapMB": 16.17,
+        "nodes": 750,
+        "listeners": 112,
+        "rendererMB": 367,
+        "gpuMB": 475.8,
+        "audio": {
+          "voices": 1,
+          "context": "running",
+          "samplesReady": "35"
+        }
+      },
+      {
+        "tick": 7230,
+        "heapMB": 17.06,
+        "nodes": 866,
+        "listeners": 120,
+        "rendererMB": 376.2,
+        "gpuMB": 422,
+        "audio": {
+          "voices": 0,
+          "context": "running",
+          "samplesReady": "35"
+        }
+      },
+      {
+        "tick": 10833,
+        "heapMB": 17.31,
+        "nodes": 773,
+        "listeners": 112,
+        "rendererMB": 389.5,
+        "gpuMB": 449.1,
+        "audio": {
+          "voices": 1,
+          "context": "running",
+          "samplesReady": "35"
+        }
+      },
+      {
+        "tick": 14425,
+        "heapMB": 17.39,
+        "nodes": 773,
+        "listeners": 113,
+        "rendererMB": 386,
+        "gpuMB": 431.6,
+        "audio": {
+          "voices": 2,
+          "context": "running",
+          "samplesReady": "35"
+        }
+      },
+      {
+        "tick": 18024,
+        "heapMB": 17.77,
+        "nodes": 778,
+        "listeners": 115,
+        "rendererMB": 421.8,
+        "gpuMB": 350.1,
+        "audio": {
+          "voices": 4,
+          "context": "running",
+          "samplesReady": "35"
+        }
+      },
+      {
+        "tick": 21638,
+        "heapMB": 17.92,
+        "nodes": 778,
+        "listeners": 116,
+        "rendererMB": 432.8,
+        "gpuMB": 403.9,
+        "audio": {
+          "voices": 5,
+          "context": "running",
+          "samplesReady": "35"
+        }
+      }
+    ],
+    "finding": "Renderer private memory grows about the same with either engine over 21,600 ticks (step 4: 371.8 -> 435.6 MB, +63.8 MB; this build: 367.0 -> 432.8 MB, +65.8 MB) while the retained JS heap stays at 16-18 MB. Per-cue HTMLAudioElements were one of the two candidates step 4 named for that growth; they are not the cause. The decoded SFX buffers are about 3.5 MB (35 mono samples, about 18 s of audio at 48 kHz float)."
+  },
+  "cleanupList": [
+    "apps/portal/assets/audio/sfx/hmh-footstep-dirt.wav and hmh-footstep-road.wav are unreachable from playback. They stay because the portal-owned apps/portal/assets/audio/sfx/hmh-weapon-sfx-manifest.json still lists them, and tests/hmh-reboot-action-sfx.test.mjs checks every manifest file on disk.",
+    "apps/portal/src/hmh-audio-system.mjs still registers footstep-dirt and footstep-road (portal-owned).",
+    "scripts/build-hmh-weapon-sfx.py still synthesises hmh-footstep-dirt and hmh-footstep-road; change it together with the manifest.",
+    "docs/qa/hmh-action-audio-20260911.json, docs/qa/hmh-frontier-action-audio-20260911.json and docs/audio/hard-money-heroes-audio-*.json mention the footstep cues as history.",
+    "weapon-fire (weapon-fire.ogg) is registered and preloaded in gameplay mode, but main.mjs never plays it (each weapon has its own hmh-fire-* cue)."
+  ],
+  "deferred": [
+    "No iOS hardware test: unlock on the Enter tap, resume after a call or Siri interruption, and the ring/silent switch. With navigator.audioSession left at its default, WebKit may treat Web Audio SFX as ambient and mute them with the silent switch while the parent music keeps playing. Setting navigator.audioSession.type = \"playback\" would make SFX ignore the switch; that is an owner call.",
+    "Renderer private memory growth (+64-66 MB over 21,600 ticks) remains; decoded images and GPU-side resources are the remaining candidates.",
+    "Owner target: at 4x this build averages about 48 fps (20.3-21.1 ms, 1.7-4.7% of frames over 33.3 ms); at 6x it is about 20-21 fps (47-50 ms), still below 30."
+  ]
+}
