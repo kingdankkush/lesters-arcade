@@ -220,8 +220,9 @@ test('the warning caption fires once per cycle and only for a hero close enough 
 
 test('the runtime feeds one invulnerability-aware target list to both hazard hooks and retires every environmental kill', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.equal(source.match(/const playerInvulnerable = evidenceSafeEnabled \|\| isDashInvulnerable\(dashState, tick\);/g).length, 1);
-  const hoisted = source.indexOf('const playerInvulnerable = evidenceSafeEnabled');
+  // evidenceSafe's invulnerability applies outside Ranked only (1.8.4).
+  assert.equal(source.match(/const playerInvulnerable = evidenceGameplayEnabled \|\| isDashInvulnerable\(dashState, tick\);/g).length, 1);
+  const hoisted = source.indexOf('const playerInvulnerable = evidenceGameplayEnabled');
   const targets = source.indexOf('const hazardTargets = [');
   const steam = source.indexOf('buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,');
   const hazards = source.indexOf('buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround })');

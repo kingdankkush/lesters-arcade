@@ -16,9 +16,12 @@ import {
   HMH_V6_CONSISTENCY_REJECTS,
   HMH_V6_CONSISTENCY_RULES,
   hmhV6DistrictTravel,
+  hmhV6HandGrenadeSupply,
   hmhV6LevelEntry,
   hmhV6MinTicksForTravel,
+  hmhV6ObjectiveUnlocks,
   hmhV6PickupCapacity,
+  hmhV6WeaponsWithoutSource,
   validateRebootRunPlausibility,
 } from '../server/verify/hmh-plausibility.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V6, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
@@ -35,7 +38,7 @@ const V6C = HMH_V6_CONSISTENCY_RULES;
 const row = (rows, key, id) => rows.find((entry) => entry[key] === id);
 const grenadeWeaponKills = (summary) => V6C.grenadeWeapons.reduce((sum, weaponId) => sum + row(summary.kills.byWeapon, 'weaponId', weaponId).count, 0);
 const pickups = (summary) => summary.collectibles.reduce((sum, entry) => sum + entry.collected, 0);
-const pickupCapacity = (ticks) => HMH_RUN_SUMMARY_CATALOGS_V6.collectibles.reduce((sum, effectId) => sum + hmhV6PickupCapacity(effectId, ticks), 0);
+const pickupCapacity = (ticks, unlocks) => HMH_RUN_SUMMARY_CATALOGS_V6.collectibles.reduce((sum, effectId) => sum + hmhV6PickupCapacity(effectId, ticks, unlocks), 0);
 const bits = (mask) => mask.toString(2).replaceAll('0', '').length;
 
 test('the honest corpus is pinned, covers every pilot and entry, and every run is a valid schema-6 summary', () => {
@@ -76,18 +79,58 @@ test('grenade kills: every honest run has exactly its grenade weapons\' kills, a
 test('pickups: no honest run passes an effect\'s capacity, and the hoarder collects most of what the run can give', (t) => {
   let fullest = 0;
   let atCapacity = 0;
+  let gatedAtCapacity = 0;
+  let sitesOperated = 0;
+  let vaults = 0;
   for (const { name, runSummary } of corpus) {
     const ticks = runSummary.totals.survivalTicks;
+    // The capacity counts only the objective rewards the run's own milestones
+    // and Liquidator kill unlock, from their ticks (the second 1.8.4 round).
+    const unlocks = hmhV6ObjectiveUnlocks(runSummary);
+    sitesOperated += runSummary.milestones.sites.filter((entry) => entry.operated === 1).length;
+    if (Object.hasOwn(unlocks, V6C.vaultObjective)) vaults += 1;
     for (const entry of runSummary.collectibles) {
-      const capacity = hmhV6PickupCapacity(entry.effectId, ticks);
+      const capacity = hmhV6PickupCapacity(entry.effectId, ticks, unlocks);
       assert.ok(entry.collected <= capacity, `${name}: ${entry.effectId} ${entry.collected} > ${capacity}`);
-      if (entry.collected > 0 && entry.collected === capacity) atCapacity += 1;
+      if (entry.collected > 0 && entry.collected === capacity) {
+        atCapacity += 1;
+        if (V6C.pickupPlacements[entry.effectId].some(([, unlock]) => typeof unlock === 'string')) gatedAtCapacity += 1;
+      }
     }
-    fullest = Math.max(fullest, pickups(runSummary) / pickupCapacity(ticks));
+    fullest = Math.max(fullest, pickups(runSummary) / pickupCapacity(ticks, unlocks));
   }
   assert.ok(fullest >= 0.85, `the fullest run collected ${fullest} of its capacity`);
   assert.ok(atCapacity >= 20, `effects collected up to their exact capacity: ${atCapacity}`);
-  t.diagnostic(`fullest run: ${(fullest * 100).toFixed(1)}% of the pickup capacity; effect rows at capacity: ${atCapacity}`);
+  assert.ok(gatedAtCapacity >= 20, `effects with a site reward collected up to their exact capacity: ${gatedAtCapacity}`);
+  assert.ok(sitesOperated >= 100 && vaults >= 5, `sites operated ${sitesOperated}, vaults unlocked ${vaults}`);
+  t.diagnostic(`fullest run: ${(fullest * 100).toFixed(1)}% of the pickup capacity; effect rows at capacity: ${atCapacity} (${gatedAtCapacity} with a site reward); sites operated: ${sitesOperated}; vaults: ${vaults}`);
+});
+
+test('ticks, weapons, grenade trail, damage and combo: every honest run meets each second-round rule, most at its bound', (t) => {
+  let thrownAtSupply = 0;
+  let comboAtKills = 0;
+  let mostWeapons = 0;
+  for (const { name, runSummary } of corpus) {
+    const { totals, kills, weapons, grenades } = runSummary;
+    // The pilots record every tick, as the child does.
+    assert.equal(weapons.reduce((sum, entry) => sum + entry.equippedTicks, 0), totals.survivalTicks, name);
+    assert.deepEqual(hmhV6WeaponsWithoutSource(runSummary), [], name);
+    mostWeapons = Math.max(mostWeapons, weapons.filter((entry) => entry.equippedTicks > 0).length);
+    // The pilot blasts like the child: one contact per victim and one
+    // detonation per throw or launcher shot, so both hold with equality.
+    assert.equal(grenades.kills, grenades.contacts, name);
+    assert.equal(grenades.detonated, grenades.thrown + row(weapons, 'weaponId', V6C.launcherWeapon).triggers, name);
+    const supply = hmhV6HandGrenadeSupply(runSummary);
+    assert.ok(grenades.thrown <= supply, `${name}: ${grenades.thrown} > ${supply}`);
+    if (grenades.thrown === supply) thrownAtSupply += 1;
+    assert.equal(totals.damageDealt, weapons.reduce((sum, entry) => sum + entry.damage, 0), name);
+    assert.ok(totals.maxCombo <= kills.total, name);
+    if (totals.maxCombo === kills.total && kills.total > 0) comboAtKills += 1;
+  }
+  assert.ok(thrownAtSupply >= 5, `runs that threw every hand grenade they had: ${thrownAtSupply}`);
+  assert.ok(comboAtKills >= 1, 'some run never broke its combo');
+  assert.ok(mostWeapons >= 5, `the most weapons equipped in one run: ${mostWeapons}`);
+  t.diagnostic(`runs at the hand-grenade supply: ${thrownAtSupply}; runs whose best combo is every kill: ${comboAtKills}; most weapons in one run: ${mostWeapons}`);
 });
 
 test('districts: every honest run visits one run of strips around its entry, within the travel budget', (t) => {

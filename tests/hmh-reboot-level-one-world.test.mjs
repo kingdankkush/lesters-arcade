@@ -218,7 +218,8 @@ test('runtime imports the world contract instead of retaining an inline parallel
   assert.doesNotMatch(source, /buildLevelOneMinimapGeometry|drawMinimap/);
   assert.match(source, /revealLevelOneAt/);
   assert.match(source, /runtimeParams\.get\('evidenceSafe'\) === '1'/);
-  assert.match(source, /evidenceSafeEnabled \|\| isDashInvulnerable/);
+  // evidenceSafe's invulnerability applies outside Ranked only (1.8.4).
+  assert.match(source, /evidenceGameplayEnabled \|\| isDashInvulnerable/);
   assert.doesNotMatch(source, /const GRAYBOX_SURFACES/);
   assert.doesNotMatch(source, /const GRAYBOX_BLOCKERS/);
   assert.doesNotMatch(source, /Math\.random|Date\.now/);

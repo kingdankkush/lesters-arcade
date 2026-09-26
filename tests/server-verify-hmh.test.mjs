@@ -11,7 +11,10 @@ import { FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
 import { canonicalSessionJson } from '../apps/portal/src/session-integrity.mjs';
 import { rankedEnvelopeHash } from '../apps/portal/src/ranked-identity.mjs';
 import { validateRunPlausibility } from '../apps/portal/src/hmh-run-integrity.mjs';
-import { FIXTURE_VERIFY_AT_MS, buildFixture, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { FIXTURE_VERIFY_AT_MS, buildFixture, buildFixtureBody, fixtureSalt, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunTick } from '../sdk/hmh-run-summary.mjs';
+import { LEVEL_ONE_WORLD, createLevelOneRevealState, getLevelOneDistrictAt, getLevelOneRevealSnapshot, revealLevelOneAt } from '../apps/hmh-reboot/src/level-one-world.mjs';
+import { LEVEL_ONE_ENTRIES, selectLevelEntry } from '../apps/hmh-reboot/src/level-entry.mjs';
 
 const HMH_STATS_KEYS = ['score', 'kills', 'bossKills', 'eliteKills', 'maxCombo', 'level', 'xp', 'survivalTicks', 'elapsedMs', 'survivalSeconds',
   'damageTaken', 'damageDealt', 'healing', 'litecoin', 'grenadeKills', 'meleeKills', 'weaponsUsed', 'uniqueWeaponCount', 'powerUpsCollected',
@@ -136,7 +139,7 @@ test('grenade kills and pickups no 1.8.x run can produce are a 422, before any a
   assert.equal(run.ok, false);
   assert.equal(run.status, 422);
   assert.equal(run.error, 'implausible-run');
-  assert.deepEqual(run.flags.map((flag) => [flag.id, flag.severity]), [['grenade-kills-above-weapon-kills', 'reject'], ['pickups-above-capacity', 'reject']]);
+  assert.deepEqual(run.flags.map((flag) => [flag.id, flag.severity]), [['grenade-kills-above-weapon-kills', 'reject'], ['pickups-above-capacity', 'reject'], ['grenade-kills-above-contacts', 'reject']]);
   assert.equal(run.stats, undefined);
   // A district mask that skips a strip, or leaves out the seed's entry strip.
   for (const mask of [0b000101, 0b111110]) {
@@ -269,4 +272,94 @@ test('the committed HMH fixtures rebuild from build-fixtures.mjs', async () => {
   assert.deepEqual(await buildFixture('hmh-valid'), valid);
   assert.deepEqual(await buildFixture('hmh-realistic'), realistic);
   assert.deepEqual(await buildFixture('hmh-level-90'), level90);
+});
+
+// The Ranked e2e (scripts/ranked-live-browser-e2e.mjs, runbook step 9) certifies
+// HMH settlement by loading the portal at ?evidenceSafe=1&terminalPilot=1: the
+// terminal pilot kills the hero on tick 2, so the run records ticks 1 and 2 at
+// its spawn and nothing else. The 1.8.0-1.8.3 child kept the Frontier Relay
+// spawn under evidenceSafe for every seed (and made the hero invulnerable, in
+// Ranked too); from 1.8.4 a Ranked session spawns at the seed's level entry and
+// is vulnerable whatever the URL says (main.mjs initializeSession, pinned in
+// tests/server-verify-hmh-plausibility.test.mjs), so the e2e's run is an
+// ordinary two-tick Ranked run and district-path-invalid holds for it.
+function terminalPilotSummary({ seed, buildHash, heroId, spawn }) {
+  const actor = { x: spawn.x, y: spawn.y };
+  const accumulator = createRunSummaryAccumulator({ seed, buildHash, mode: 'ranked', heroId, startTick: 0, startPosition: actor });
+  const reveal = createLevelOneRevealState();
+  revealLevelOneAt(reveal, actor);
+  for (const tick of [1, 2]) {
+    recordRunTick(accumulator, { tick, position: actor, activeWeaponId: 'coin-blaster', districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay', level: 1, bossEngaged: false });
+  }
+  recordRunDamage(accumulator, { targetId: 'player', sourceId: 'evidence-terminal-pilot', weaponId: 'enemy-bagholder-rusher', damageApplied: 101, killed: true, equippedWeaponId: 'coin-blaster', tick: 2 });
+  const snapshot = getLevelOneRevealSnapshot(reveal);
+  return JSON.parse(JSON.stringify(finalizeRunSummary(accumulator, {
+    endTick: 2, elapsedMs: 2 * FIXED_STEP_MS, terminalReason: 'defeated', score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0,
+    revealedCells: snapshot.revealedCellIds.length, totalCells: snapshot.totalCells,
+  })));
+}
+
+test('the evidence-safe terminal-pilot Ranked run (the Ranked e2e) verifies at every level entry', async () => {
+  const seen = new Map();
+  for (let index = 0; seen.size < LEVEL_ONE_ENTRIES.length; index += 1) {
+    assert.ok(index < 200, 'a seed for every level entry');
+    const { body, seed } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt(`terminal-pilot:${index}`), evidence: { plan: 'valid' } });
+    const entry = selectLevelEntry(seed);
+    if (seen.has(entry.id)) continue;
+    seen.set(entry.id, seed);
+    const heroId = body.evidence.runSummary.identity.heroId;
+    body.claim.score = 0;
+    body.evidence.runSummary = terminalPilotSummary({ seed, buildHash: body.identity.buildHash, heroId, spawn: entry });
+    assert.equal(validateRunSummaryPayload(body.evidence.runSummary), '');
+    const run = await verify(body);
+    assert.equal(run.ok, true, `${entry.id}: ${JSON.stringify(run)}`);
+    assert.deepEqual(run.plausibility, { verdict: 'ok', flags: [] }, entry.id);
+    assert.equal(run.stats.districtsVisited, 1);
+
+    // The same run spawned at the Frontier Relay, as the 1.8.0-1.8.3 child did
+    // under evidenceSafe, cannot come from a Ranked 1.8.4 session away from the
+    // Relay entry: it rejects there (the invulnerable evidence-safe hero,
+    // contract §16.6).
+    body.evidence.runSummary = terminalPilotSummary({ seed, buildHash: body.identity.buildHash, heroId, spawn: LEVEL_ONE_WORLD.player.spawn });
+    const relaySpawn = await verify(body);
+    if (entry.id === 'relay') assert.equal(relaySpawn.ok, true, entry.id);
+    else assert.deepEqual([relaySpawn.status, relaySpawn.flags.map((flag) => flag.id)], [422, ['district-path-invalid']], entry.id);
+  }
+  assert.deepEqual([...seen.keys()].sort(), LEVEL_ONE_ENTRIES.map(({ id }) => id).sort());
+});
+
+// Red team of a9663a09 (contract §16.6), end to end: a zero-tick run claiming
+// every placement, two districts, 20,000 damage and three weapons verified ok
+// in the first 1.8.4 round and earned seven achievements; 250 kills credited to
+// the Launcher Rig with nothing launched earned grenade-demolitionist.
+test('the round-2 red-team payloads are a 422 before any achievement stats', async () => {
+  const grabBag = bodyWith(valid, (summary) => {
+    Object.assign(summary.identity, { endTick: 0 });
+    Object.assign(summary.totals, { survivalTicks: 0, elapsedMs: 0, score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, damageDealt: 20_000 });
+    Object.assign(summary.kills, { total: 0, elite: 0, boss: 0 });
+    for (const entry of [...summary.kills.byEnemyRole, ...summary.kills.byWeapon]) entry.count = 0;
+    for (const weapon of summary.weapons) Object.assign(weapon, { kills: 0, damage: 0, equippedTicks: ['hash-rail', 'scatter-shotgun', 'auto-miner'].includes(weapon.weaponId) ? 1 : 0 });
+    for (const upgrade of summary.upgrades) Object.assign(upgrade, { offered: 0, selected: 0 });
+    Object.assign(summary.milestones, { levelUps: 0, firstLevelUpTick: 0, lastLevelUpTick: 0 });
+    summary.defeat.tick = 0;
+    for (const entry of summary.collectibles) if (entry.effectId !== 'litecoin-token') entry.collected = 1;
+    summary.exploration.visitedDistrictMask = 0b11;
+  });
+  const reaper = bodyWith(valid, (summary) => {
+    const rows = [summary.kills.byWeapon, summary.weapons];
+    row(rows[0], 'weaponId', 'launcher-rig').count += summary.kills.total;
+    row(rows[1], 'weaponId', 'launcher-rig').kills += summary.kills.total;
+    for (const weaponId of ['coin-blaster']) { row(rows[0], 'weaponId', weaponId).count = 0; row(rows[1], 'weaponId', weaponId).kills = 0; }
+    summary.grenades.kills = summary.kills.total;
+  });
+  for (const [name, body, expected] of [
+    ['grab bag', grabBag, ['pickups-above-capacity', 'districts-before-travel-time', 'activity-without-time', 'equipped-ticks-above-run', 'weapon-without-source', 'damage-dealt-mismatch']],
+    ['launcher reaper', reaper, ['weapon-without-source', 'grenade-kills-above-contacts']],
+  ]) {
+    assert.equal(validateRunSummaryPayload(body.evidence.runSummary), '', `${name}: the schema accepts the payload`);
+    const run = await verify(body);
+    assert.deepEqual([run.ok, run.status, run.error], [false, 422, 'implausible-run'], name);
+    assert.deepEqual(run.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id), expected, name);
+    assert.equal(run.stats, undefined, name);
+  }
 });

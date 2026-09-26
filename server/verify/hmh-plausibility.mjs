@@ -36,7 +36,11 @@
 //                                    silver coins and objective rewards at the
 //                                    maximum score multiplier
 //           grenade-kills-above-weapon-kills, pickups-above-capacity,
-//           district-path-invalid, districts-before-travel-time
+//           district-path-invalid, districts-before-travel-time,
+//           activity-without-time, equipped-ticks-above-run,
+//           weapon-without-source, grenade-kills-above-contacts,
+//           grenade-detonations-above-launches, grenades-thrown-above-supply,
+//           damage-dealt-mismatch, combo-above-kills
 //                                    the 1.8.4 consistency rules for the fields
 //                                    the achievement stats read directly (see
 //                                    HMH_V6_CONSISTENCY_RULES)
@@ -346,15 +350,19 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
 }
 
 // ---------------------------------------------------------------------------
-// v6 consistency rules (added for 1.8.4). Three summary fields reach the
-// achievement stats directly (statsFromHmhRunSummary: grenadeKills,
-// powerUpsCollected, districtsVisited), and no v6 ceiling bounded them: a paid
-// 1.8.2 run of 36 kills verified with 250 grenade kills, 250 bonus lives and
-// all six districts. Each rule is a hard impossibility for the 1.8.x child
-// (apps/hmh-reboot/src and sdk/hmh-run-summary.mjs are identical from 1.8.0 to
-// 1.8.3), states why every honest run meets it, and carries its margin.
-// tests/server-verify-hmh-plausibility.test.mjs pins each literal against the
-// child and runs the honest pilot corpus (tests/fixtures/ranked/
+// v6 consistency rules (added for 1.8.4). Summary fields reach the achievement
+// stats directly (statsFromHmhRunSummary: grenadeKills, powerUpsCollected,
+// districtsVisited, weaponsUsed, damageDealt, maxCombo), and no v6 ceiling
+// bounded them: a paid 1.8.2 run of 36 kills verified with 250 grenade kills,
+// 250 bonus lives and all six districts, and a second red team (against
+// a9663a09) earned the same achievements from zero-tick runs, locked pickups,
+// weapons never picked up, grenade kills with nothing thrown or launched, one
+// damage field and a combo above the kills. Each rule is a hard impossibility
+// for the 1.8.x child (apps/hmh-reboot/src and sdk/hmh-run-summary.mjs are
+// identical from 1.8.0 to 1.8.3; 1.8.4 leaves the accumulator alone and only
+// makes a Ranked session ignore evidenceSafe's spawn and invulnerability),
+// states why every honest run meets it, and carries its margin. tests/server-verify-hmh-plausibility.test.mjs pins each literal
+// against the child and runs the honest pilot corpus (tests/fixtures/ranked/
 // hmh-honest-corpus.mjs) through them.
 //
 //   reject  grenade-kills-above-weapon-kills  grenades.kills above the kills of
@@ -369,11 +377,18 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
 //                                    (value and limit: the offending effects'
 //                                    pickups and their capacity). A pickup is
 //                                    only a collectible:collected event of
-//                                    stepCollectibles, which gives a placement
-//                                    once, or again only after its re-arm ticks.
-//                                    Margin: every placement counts as available
-//                                    from tick 0, unlocked, and re-armed at the
-//                                    first possible tick, with no travel between.
+//                                    stepCollectibles, from tick 1, which gives a
+//                                    placement once it is available and unlocked,
+//                                    and again only after its re-arm ticks. An
+//                                    objective reward unlocks in the step that
+//                                    records its site's milestone (the site's
+//                                    operated tick), the Liquidator vault with
+//                                    the Liquidator kill (never before the boss
+//                                    band), and a seeded event is available no
+//                                    sooner than its minimum tick. Margin: every
+//                                    placement counts from its earliest tick and
+//                                    re-arms at the first possible tick, with no
+//                                    travel between.
 //           district-path-invalid    the visited districts are not one
 //                                    contiguous run of strips that contains the
 //                                    seed's entry strip (value: the mask; limit:
@@ -384,7 +399,9 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
 //                                    the first recorded tick is in the entry
 //                                    strip and each later strip is entered from
 //                                    a neighbour. A mask of 0 (no tick recorded)
-//                                    passes.
+//                                    passes. From 1.8.4 a Ranked session spawns
+//                                    at the seed's entry even under evidenceSafe
+//                                    (main.mjs initializeSession).
 //           districts-before-travel-time  fewer ticks than the travel from the
 //                                    entry to the far ends of the visited strips
 //                                    needs at travel.maxStepPx a tick after a
@@ -399,30 +416,89 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
 //                                    8.9 px in all) and the one conveyor
 //                                    (150 px/s along 320 px) keep a running tick
 //                                    under 20 px.
+//           activity-without-time    a run of zero ticks that visited a district
+//                                    or dealt damage (value: how many of the two;
+//                                    limit 0). The simulation's first tick is 1:
+//                                    recordRunTick sets the district bit and
+//                                    recordRunDamage runs inside a step, so a run
+//                                    that never stepped records neither.
+//           equipped-ticks-above-run the weapons' equippedTicks add up to more
+//                                    than the run's ticks. recordRunTick adds one
+//                                    to the active weapon's row on each recorded
+//                                    tick, and recorded ticks rise strictly from
+//                                    tick 1 to at most the end tick.
+//           weapon-without-source    weapon rows used without their source
+//                                    (value: how many rows; limit 0): equipped
+//                                    though never an active weapon (only the
+//                                    eight of main.mjs WEAPON_ORDER can be);
+//                                    equipped or credited a kill without a pickup
+//                                    (every active weapon but the starting Coin
+//                                    Blaster is owned only through a weapon-cache
+//                                    pickup); more pickups than its cache effect's
+//                                    collections, or any pickup of a weapon with
+//                                    no cache; Satoshi Frag kills with no hand
+//                                    grenade thrown; Nuke Liquidation kills with
+//                                    no nuke collected.
+//           grenade-kills-above-contacts  grenades.kills above grenades.contacts.
+//                                    A grenade weapon's kill comes only from a
+//                                    blast hit, and every non-player blast hit is
+//                                    one contact, so kills never pass contacts.
+//           grenade-detonations-above-launches  grenades.detonated above the hand
+//                                    grenades thrown plus the Launcher Rig's
+//                                    triggers. A grenade exists only through
+//                                    throwGrenade: a hand throw records thrown
+//                                    when it spawns, and every launcher shot
+//                                    records a trigger, spawned or not.
+//           grenades-thrown-above-supply  more hand grenades thrown than the run
+//                                    had: three at the start, one per Extra
+//                                    Grenade rank (at most three) and one per
+//                                    nuke-liquidation collection (the Nuke and
+//                                    the Scrypt Cache recharge one each). Margin:
+//                                    the charge cap is ignored.
+//           damage-dealt-mismatch    totals.damageDealt is not the sum of the
+//                                    weapons' damage. recordRunDamage adds the
+//                                    same whole amount (combat-events rounds it)
+//                                    to both, so an honest summary has equality.
+//           combo-above-kills        totals.maxCombo above kills.total. The combo
+//                                    rises by exactly one per recorded kill
+//                                    (awardComboXp follows each recordRunKill),
+//                                    so the best combo never passes the kills.
+//                                    The 1.8.1 flag combo-exceeds-kills stays as
+//                                    it was, beside this reject.
 // Every rule reads only the summary and the literals below, never a clock.
 export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
   grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
-  // Per collectible effect, one entry per placement that gives it: 0 for a
-  // one-shot placement, else its re-arm ticks. The 21 placements are the ten
-  // authored points of interest (authored-prop-layout
+  // The simulation's first tick (DeterministicSimulation steps from tick 1).
+  firstTick: 1,
+  // Per collectible effect, one [rearmTicks, unlock] per placement that gives
+  // it: rearmTicks is 0 for a one-shot placement; unlock is the placement's
+  // earliest available tick (0 for an authored point of interest, the minimum
+  // tick of a seeded event), or the objective that unlocks it (a machinery
+  // site, or the Liquidator vault's 'liquidator-defeated'). The 21 placements
+  // are the ten authored points of interest (authored-prop-layout
   // POINT_OF_INTEREST_ASSET_BY_ID; main.mjs re-arms six of their assets every
-  // 10,800 ticks), the three seeded weapon events (one-shot) and the eight
-  // objective rewards (objective-rewards OBJECTIVE_REWARDS).
+  // 10,800 ticks), the three seeded weapon events (one-shot; lightning-ledger-
+  // event MIN_EVENT_TICK, BEAR_MARKET_BURNER_EVENT_BOUNDS.minTick and
+  // FORKED_STANDARD_CONFIG.eventMinTick) and the eight objective rewards
+  // (objective-rewards OBJECTIVE_REWARDS).
   pickupPlacements: {
-    'bonus-life': [0, 0, 7_200],
-    'coin-blaster-cache': [7_200, 10_800],
-    'scatter-shotgun-cache': [0, 10_800],
-    'auto-miner-cache': [10_800],
-    'launcher-rig-cache': [10_800],
+    'bonus-life': [[0, 0], [0, 0], [7_200, 'hashwood-shrine']],
+    'coin-blaster-cache': [[7_200, 'crossing-pump'], [10_800, 0]],
+    'scatter-shotgun-cache': [[0, 'relay-power'], [10_800, 0]],
+    'auto-miner-cache': [[10_800, 0]],
+    'launcher-rig-cache': [[10_800, 0]],
     'litecoin-token': [],
-    'hash-rail-core': [0, 0],
-    'lightning-ledger-cache': [0, 0],
-    'bear-market-burner-cache': [0, 0],
-    'forked-standard-cache': [0],
-    'time-dilation': [10_800],
-    'berserk-candle': [10_800, 10_800],
-    'nuke-liquidation': [0, 7_200],
+    'hash-rail-core': [[0, 'ravine-winch'], [0, 0]],
+    'lightning-ledger-cache': [[0, 'liquidator-defeated'], [0, 3_600]],
+    'bear-market-burner-cache': [[0, 'yard-warehouse'], [0, 7_200]],
+    'forked-standard-cache': [[0, 10_800]],
+    'time-dilation': [[10_800, 0]],
+    'berserk-candle': [[10_800, 'mining-valve'], [10_800, 0]],
+    'nuke-liquidation': [[0, 0], [7_200, 'hashwood-shrine']],
   },
+  // The objective the Liquidator kill unlocks (main.mjs), and the earliest tick
+  // of that kill: the boss band (HMH_V6_RULES.bossStartTick).
+  vaultObjective: 'liquidator-defeated',
   // level-one-world DISTRICTS as [id, minX, maxX], each the full world height;
   // getLevelOneDistrictAt returns the first strip with minX <= x <= maxX.
   districtStrips: [
@@ -442,29 +518,120 @@ export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
     ['yard', 10_400, 2_450],
   ],
   travel: { maxStepPx: 48, allowancePx: 480 },
+  // main.mjs WEAPON_ORDER: the only weapons the loadout can make active (and so
+  // the only rows recordRunTick can give equipped ticks); the first is the
+  // starting weapon, owned from the start.
+  activeWeapons: ['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard'],
+  // collectible-system COLLECTIBLE_EFFECTS: the weapon-cache effect that grants
+  // each active weapon (the only source of a weapon pickup in a run).
+  weaponCaches: {
+    'coin-blaster': 'coin-blaster-cache',
+    'scatter-shotgun': 'scatter-shotgun-cache',
+    'auto-miner': 'auto-miner-cache',
+    'launcher-rig': 'launcher-rig-cache',
+    'hash-rail': 'hash-rail-core',
+    'lightning-ledger': 'lightning-ledger-cache',
+    'bear-market-burner': 'bear-market-burner-cache',
+    'forked-standard': 'forked-standard-cache',
+  },
+  // Hand grenades (main.mjs createGrenadeSystem handCharges, run-progression
+  // cold-storage, and the two rechargeHandGrenades calls of the nuke-liquidation
+  // effect's 'nuke' and 'grenade-supply' kinds).
+  handGrenades: { weaponId: 'satoshi-frag', startCharges: 3, rankUpgradeId: 'cold-storage', chargesPerRank: 1, maxRanks: 3, refillEffectId: 'nuke-liquidation' },
+  launcherWeapon: 'launcher-rig',
+  nuke: { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' },
 });
 const V6C = HMH_V6_CONSISTENCY_RULES;
 
-export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze(['grenade-kills-above-weapon-kills', 'pickups-above-capacity', 'district-path-invalid', 'districts-before-travel-time']);
+export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze([
+  'grenade-kills-above-weapon-kills',
+  'pickups-above-capacity',
+  'district-path-invalid',
+  'districts-before-travel-time',
+  'activity-without-time',
+  'equipped-ticks-above-run',
+  'weapon-without-source',
+  'grenade-kills-above-contacts',
+  'grenade-detonations-above-launches',
+  'grenades-thrown-above-supply',
+  'damage-dealt-mismatch',
+  'combo-above-kills',
+]);
 
-// A placement gives one pickup, plus one per full re-arm period of the run.
-export function hmhV6PickupCapacity(effectId, runTicks) {
+// The tick each objective reward's objective unlocked at, read from the
+// summary; a missing key is still locked. A machinery site unlocks at its
+// operated tick (main.mjs unlocks the reward in the step that records the
+// milestone); the Liquidator vault at the boss band once the run claims a
+// Liquidator kill (the kill unlocks it, and boss-before-band rejects one
+// before the band).
+export function hmhV6ObjectiveUnlocks(summary) {
+  const unlocks = {};
+  for (const row of summary?.milestones?.sites ?? []) if (row?.operated === 1) unlocks[row.siteId] = row.tick;
+  const liquidatorKills = rowCounts(summary?.kills?.byEnemyRole, 'enemyRoleId', 'count')[HMH_BOSS_ROLE_ID] ?? 0;
+  if (Math.max(summary?.kills?.boss ?? 0, liquidatorKills) > 0) unlocks[V6C.vaultObjective] = HMH_BOSS_START_TICK;
+  return unlocks;
+}
+
+// A placement gives nothing before its first tick (its unlock or availability,
+// and never before the simulation's first tick), then one pickup, and one more
+// per full re-arm period of the rest of the run.
+function placementCapacity([rearmTicks, unlock], runTicks, unlocks) {
+  const from = typeof unlock === 'number' ? unlock : (Object.hasOwn(unlocks, unlock) ? unlocks[unlock] : null);
+  if (!Number.isFinite(from)) return 0;
+  const first = Math.max(V6C.firstTick, from);
+  if (runTicks < first) return 0;
+  return 1 + (rearmTicks > 0 ? Math.floor((runTicks - first) / rearmTicks) : 0);
+}
+
+// The most pickups of `effectId` a run of `runTicks` ticks can make, with its
+// objectives unlocked at `unlocks` (hmhV6ObjectiveUnlocks; {} keeps every
+// objective reward locked).
+export function hmhV6PickupCapacity(effectId, runTicks, unlocks = {}) {
   const placements = V6C.pickupPlacements[effectId] ?? [];
-  return placements.reduce((sum, rearmTicks) => sum + 1 + (rearmTicks > 0 ? Math.floor(runTicks / rearmTicks) : 0), 0);
+  return placements.reduce((sum, placement) => sum + placementCapacity(placement, runTicks, unlocks), 0);
 }
 
 // → { value, limit } summed over the effects above their capacity, or null.
-export function hmhV6PickupExcess(collectibles, runTicks) {
+export function hmhV6PickupExcess(collectibles, runTicks, unlocks = {}) {
   let value = 0;
   let limit = 0;
   for (const row of collectibles) {
-    const capacity = hmhV6PickupCapacity(row?.effectId, runTicks);
+    const capacity = hmhV6PickupCapacity(row?.effectId, runTicks, unlocks);
     if (row?.collected > capacity) {
       value += row.collected;
       limit += capacity;
     }
   }
   return value > 0 ? { value, limit } : null;
+}
+
+// The hand grenades a run can have thrown: the starting charges, one per Extra
+// Grenade rank and one per nuke-liquidation collection.
+export function hmhV6HandGrenadeSupply(summary) {
+  const hand = V6C.handGrenades;
+  const ranks = rowCounts(summary.upgrades, 'upgradeId', 'selected')[hand.rankUpgradeId] ?? 0;
+  const refills = rowCounts(summary.collectibles, 'effectId', 'collected')[hand.refillEffectId] ?? 0;
+  return hand.startCharges + hand.chargesPerRank * Math.min(hand.maxRanks, Math.max(0, ranks)) + refills;
+}
+
+// → the weapon rows used without their source (see weapon-without-source).
+export function hmhV6WeaponsWithoutSource(summary) {
+  const collected = rowCounts(summary.collectibles, 'effectId', 'collected');
+  const [startingWeapon] = V6C.activeWeapons;
+  const offending = [];
+  for (const row of summary.weapons) {
+    const weaponId = row?.weaponId;
+    const cache = Object.hasOwn(V6C.weaponCaches, weaponId) ? V6C.weaponCaches[weaponId] : null;
+    const equipped = row.equippedTicks > 0;
+    const killed = row.kills > 0;
+    const unsourced = (equipped && !V6C.activeWeapons.includes(weaponId))
+      || (cache === null ? row.pickups > 0 : row.pickups > (collected[cache] ?? 0))
+      || (cache !== null && weaponId !== startingWeapon && (equipped || killed) && row.pickups === 0)
+      || (weaponId === V6C.handGrenades.weaponId && killed && !(summary.grenades.thrown > 0))
+      || (weaponId === V6C.nuke.weaponId && killed && !((collected[V6C.nuke.effectId] ?? 0) > 0));
+    if (unsourced) offending.push(weaponId);
+  }
+  return offending;
 }
 
 // level-entry selectLevelEntry: FNV-1a over `level-1-entry:${seed}`, and the
@@ -502,18 +669,38 @@ export function hmhV6MinTicksForTravel(travelPx) {
 }
 
 function checkV6Consistency(runSummary, runTicks, reject) {
-  const { identity, kills, grenades, collectibles, exploration } = runSummary;
+  const { identity, totals, kills, weapons, grenades, collectibles, exploration } = runSummary;
   const weaponKills = rowCounts(kills.byWeapon, 'weaponId', 'count');
   const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
   if (grenades.kills > grenadeWeaponKills) reject('grenade-kills-above-weapon-kills', grenades.kills, grenadeWeaponKills);
 
-  const pickups = hmhV6PickupExcess(collectibles, runTicks);
+  const pickups = hmhV6PickupExcess(collectibles, runTicks, hmhV6ObjectiveUnlocks(runSummary));
   if (pickups) reject('pickups-above-capacity', pickups.value, pickups.limit);
 
   const districts = hmhV6DistrictTravel(identity.seed, exploration.visitedDistrictMask);
   const minTicks = hmhV6MinTicksForTravel(districts.travelPx);
   if (!districts.pathValid) reject('district-path-invalid', exploration.visitedDistrictMask, districts.entryBit);
   else if (runTicks < minTicks) reject('districts-before-travel-time', runTicks, minTicks);
+
+  const timeless = runTicks === 0 ? Number(exploration.visitedDistrictMask !== 0) + Number(totals.damageDealt > 0) : 0;
+  if (timeless) reject('activity-without-time', timeless, 0);
+
+  const equippedTicks = weapons.reduce((sum, row) => sum + row.equippedTicks, 0);
+  if (equippedTicks > runTicks) reject('equipped-ticks-above-run', equippedTicks, runTicks);
+
+  const unsourced = hmhV6WeaponsWithoutSource(runSummary);
+  if (unsourced.length) reject('weapon-without-source', unsourced.length, 0);
+
+  if (grenades.kills > grenades.contacts) reject('grenade-kills-above-contacts', grenades.kills, grenades.contacts);
+  const launches = grenades.thrown + (weapons.find((row) => row.weaponId === V6C.launcherWeapon)?.triggers ?? 0);
+  if (grenades.detonated > launches) reject('grenade-detonations-above-launches', grenades.detonated, launches);
+  const supply = hmhV6HandGrenadeSupply(runSummary);
+  if (grenades.thrown > supply) reject('grenades-thrown-above-supply', grenades.thrown, supply);
+
+  const weaponDamage = weapons.reduce((sum, row) => sum + row.damage, 0);
+  if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
+
+  if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
 }
 
 // → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
@@ -522,7 +709,8 @@ export function validateV6RunPlausibility(runSummary) {
   const { reject, flag, done } = verdictCollector();
   const { identity, totals, kills, milestones, upgrades } = runSummary ?? {};
   if (!identity || !totals || !kills || !Array.isArray(kills.byEnemyRole) || !milestones || !Array.isArray(upgrades)
-    || !Array.isArray(kills.byWeapon) || !runSummary.grenades || !Array.isArray(runSummary.collectibles) || !runSummary.exploration) {
+    || !Array.isArray(kills.byWeapon) || !runSummary.grenades || !Array.isArray(runSummary.collectibles) || !runSummary.exploration
+    || !Array.isArray(runSummary.weapons)) {
     reject('summary-unreadable', null, null);
     return done();
   }

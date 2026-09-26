@@ -33,8 +33,11 @@ import {
   hmhV6DistrictTravel,
   hmhV6LevelEntry,
   hmhV6MinTicksForTravel,
+  hmhV6HandGrenadeSupply,
+  hmhV6ObjectiveUnlocks,
   hmhV6PickupCapacity,
   hmhV6PickupExcess,
+  hmhV6WeaponsWithoutSource,
 } from '../server/verify/hmh-plausibility.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import {
@@ -81,8 +84,12 @@ import { createEnemyPopulation, retireEnemyFromPopulation } from '../apps/hmh-re
 import { COLLECTIBLE_EFFECTS, createCollectibleState, stepCollectibles } from '../apps/hmh-reboot/src/collectible-system.mjs';
 import { objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import { addSilverDrop, createSilverDropState } from '../apps/hmh-reboot/src/silver-drops.mjs';
-import { FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
-import { HMH_V7_FIXTURE_BUILD_HASH, HMH_V7_PLANS, buildFixtureBody, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
+import { BEAR_MARKET_BURNER_EVENT_BOUNDS } from '../apps/hmh-reboot/src/bear-market-burner-event.mjs';
+import { FORKED_STANDARD_CONFIG } from '../apps/hmh-reboot/src/forked-standard.mjs';
+import { createWeaponLoadout, grantWeaponPickup, selectWeapon, switchWeapon } from '../apps/hmh-reboot/src/weapon-system.mjs';
+import { resolveComboFeedback } from '../apps/hmh-reboot/src/combo-feedback.mjs';
+import { HMH_PLANS, HMH_V7_FIXTURE_BUILD_HASH, HMH_V7_PLANS, buildFixtureBody, buildHmhEvidence, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 import { HMH_CHILD_REARMED_ASSETS, HMH_CHILD_REARM_TICKS, hmhChildCollectibleState } from './fixtures/ranked/hmh-honest-corpus.mjs';
 import { LEVEL_ONE_WORLD, getLevelOneDistrictAt } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { LEVEL_ONE_ENTRIES, selectLevelEntry } from '../apps/hmh-reboot/src/level-entry.mjs';
@@ -91,9 +98,11 @@ import { createPlayerMotionState } from '../apps/hmh-reboot/src/movement.mjs';
 import { movementSpeedMultiplierForTransition, resolveHeightAdvantage } from '../apps/hmh-reboot/src/elevation.mjs';
 import { WORLD_HAZARD_RULES } from '../apps/hmh-reboot/src/world-hazards.mjs';
 import { HMH_GRENADE_DEFINITION } from '../apps/hmh-reboot/src/grenades.mjs';
-import { createRunSummaryAccumulator, finalizeRunSummary, recordRunGrenade, recordRunKill } from '../sdk/hmh-run-summary.mjs';
+import { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunGrenade, recordRunGrenadeDetonation, recordRunKill, recordRunTick, recordRunWeaponFire } from '../sdk/hmh-run-summary.mjs';
 
 const MAIN_SOURCE = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+// lightning-ledger-event.mjs keeps its minimum tick module-private.
+const LIGHTNING_EVENT_MIN_TICK = Number(/const MIN_EVENT_TICK = ([0-9_]+);/.exec(readFileSync(new URL('../apps/hmh-reboot/src/lightning-ledger-event.mjs', import.meta.url), 'utf8'))[1].replaceAll('_', ''));
 const valid = readFixture('hmh-valid').body.evidence.runSummary;
 const realistic = readFixture('hmh-realistic').body.evidence.runSummary;
 const level90 = readFixture('hmh-level-90').body.evidence.runSummary;
@@ -338,12 +347,14 @@ test('a run that does not start at tick 0 is rejected, and every tick bound uses
   // Moving the start without the time: the elapsed time no longer matches the run's ticks.
   assert.deepEqual(rejects(validateRebootRunPlausibility(clone(valid, (s) => { s.identity.startTick = 1; s.totals.survivalTicks -= 1; }))), ['start-tick-invalid', 'elapsed-time-mismatch']);
   // The level-90 boss run squeezed into one second: a far end tick buys neither
-  // the kill capacity nor the boss band (nor, since 1.8.4, the districts).
+  // the kill capacity nor the boss band (nor, since 1.8.4, the districts, the
+  // pickups of a seeded event, or more recorded ticks than the run has).
   const squeezed = validateRebootRunPlausibility(shiftedStart(level90, 60));
-  assert.deepEqual(rejects(squeezed), ['start-tick-invalid', 'boss-before-band', 'kills-above-capacity', 'districts-before-travel-time']);
+  assert.deepEqual(rejects(squeezed), ['start-tick-invalid', 'boss-before-band', 'kills-above-capacity', 'pickups-above-capacity', 'districts-before-travel-time', 'equipped-ticks-above-run']);
   assert.deepEqual(squeezed.flags.find((flag) => flag.id === 'kills-above-capacity').limit, spawnCapacity(60));
-  // The realistic run claimed as 20 seconds.
-  assert.deepEqual(rejects(validateRebootRunPlausibility(shiftedStart(realistic, 1_200))), ['start-tick-invalid', 'kills-above-capacity']);
+  // The realistic run claimed as 20 seconds (and its three seeded weapon events
+  // before any of them is available).
+  assert.deepEqual(rejects(validateRebootRunPlausibility(shiftedStart(realistic, 1_200))), ['start-tick-invalid', 'kills-above-capacity', 'pickups-above-capacity']);
 });
 
 test('soft cross-checks flag without rejecting', () => {
@@ -352,11 +363,16 @@ test('soft cross-checks flag without rejecting', () => {
     assert.equal(result.verdict, 'flagged');
     return result.flags.map((flag) => flag.id);
   };
-  assert.ok(flagIds(clone(valid, (s) => { s.totals.maxCombo = s.kills.total + 5; s.totals.currentCombo = 0; })).includes('combo-exceeds-kills'));
   assert.ok(flagIds(clone(valid, (s) => { s.upgrades[0].offered += 20; s.upgrades[0].selected += 20; })).includes('upgrades-exceed-levels'));
   assert.ok(flagIds(clone(level90, (s) => { s.kills.boss = 0; })).includes('boss-count-mismatch'));
   assert.ok(flagIds(clone(valid, (s) => { s.milestones.bossEngagedTick = 600; })).includes('boss-engaged-before-band'));
   assert.ok(flagIds(clone(realistic, (s) => { s.totals.xp = Math.floor(s.totals.xp * 1.3); s.totals.level = rebootLevelForXp(s.totals.xp); })).includes('xp-above-selected-upgrades'));
+  // The 1.8.1 flag combo-exceeds-kills is unchanged, but since the second 1.8.4
+  // round the same payload also rejects combo-above-kills: the combo rises by
+  // exactly one per recorded kill, and max-combo-30 reads it.
+  const combo = validateRebootRunPlausibility(clone(valid, (s) => { s.totals.maxCombo = s.kills.total + 5; s.totals.currentCombo = 0; }));
+  assert.ok(combo.flags.some((flag) => flag.id === 'combo-exceeds-kills' && flag.severity === 'flag'));
+  assert.deepEqual(rejects(combo), ['combo-above-kills']);
 });
 
 // ---------------------------------------------------------------------------
@@ -365,21 +381,34 @@ test('soft cross-checks flag without rejecting', () => {
 // rules and the literal v6 table existed. The corpus below covers every rule
 // and flag of the v6 path; its results were hashed with the 60ea173a module.
 //
-// 1.8.4 deliberately changes v6 for fabricated inputs only: the four
-// consistency rejects of HMH_V6_CONSISTENCY_RULES. With those flags taken out
-// (and the verdict recomputed) the corpus still hashes to the 60ea173a digest,
-// so no 1.8.1 result moved; with them in, it hashes to V6_CORPUS_DIGEST_1_8_4.
-// Seven results gained a flag (V6_CORPUS_CHANGED_1_8_4) and two of them changed
+// 1.8.4 deliberately changes v6 for fabricated inputs only: the consistency
+// rejects of HMH_V6_CONSISTENCY_RULES (four in the first round, eight more in
+// the second, contract §16.6). With those flags taken out (and the verdict
+// recomputed) the corpus still hashes to the 60ea173a digest, so no 1.8.1
+// result moved; with them in, it hashes to V6_CORPUS_DIGEST_1_8_4. Thirteen
+// results gained a flag (V6_CORPUS_CHANGED_1_8_4) and five of them changed
 // verdict (V6_VERDICTS_CHANGED_1_8_4): tripling every cache pickup claims three
-// Hash Rail Cores (two one-shot placements) and, in the realistic run, three
-// Forked Standard caches (one event). The other five were already rejected (no
-// ticks: progress-without-time; squeezed: start-tick-invalid) and now also
-// reject districts-before-travel-time, since their districts lie farther from
-// the entry than 0 or 60 ticks can cover.
+// Hash Rail Cores (two placements, one of them a locked site reward) and, in
+// the realistic run, three Forked Standard caches (one event); a best combo
+// five above the kills rejects combo-above-kills beside its 1.8.1 flag. The
+// other eight were already rejected (no ticks: progress-without-time;
+// squeezed: start-tick-invalid) and now also reject what their squeezed time
+// cannot hold: districts, recorded ticks, seeded events or dealt damage.
 const V6_CORPUS_DIGEST = 'accf51dd54eb915ac643884ca6ab6886158b53531d67aa11461c6c0246faf439';
-const V6_CORPUS_DIGEST_1_8_4 = 'e5475eb02125f258e285f874244b475c1492534c37cab9eac4dfc8393da93c4c';
-const V6_CORPUS_CHANGED_1_8_4 = Object.freeze(['valid no ticks', 'realistic no ticks', 'realistic squeezed to 60', 'realistic caches x3', 'level-90 no ticks', 'level-90 squeezed to 60', 'level-90 caches x3']);
-const V6_VERDICTS_CHANGED_1_8_4 = Object.freeze(['realistic caches x3', 'level-90 caches x3']);
+const V6_CORPUS_DIGEST_1_8_4 = '46883250eed73f4593bfdd7bd2a4bd0a4229bd6da6b041932a6529751d5ba432';
+const V6_CORPUS_CHANGED_1_8_4 = Object.freeze([
+  'valid no ticks', 'valid combo above kills', 'valid squeezed to 60',
+  'realistic no ticks', 'realistic combo above kills', 'realistic squeezed to 60', 'realistic squeezed to 1200', 'realistic caches x3',
+  'level-90 no ticks', 'level-90 combo above kills', 'level-90 squeezed to 60', 'level-90 squeezed to 1200', 'level-90 caches x3',
+]);
+// Each case whose verdict changed, and the one reject it now carries.
+const V6_VERDICTS_CHANGED_1_8_4 = Object.freeze({
+  'valid combo above kills': 'combo-above-kills',
+  'realistic combo above kills': 'combo-above-kills',
+  'realistic caches x3': 'pickups-above-capacity',
+  'level-90 combo above kills': 'combo-above-kills',
+  'level-90 caches x3': 'pickups-above-capacity',
+});
 function v6Corpus() {
   const cases = [];
   const add = (name, base, mutate = () => {}) => cases.push([name, clone(base, mutate)]);
@@ -444,14 +473,16 @@ test('the v6 path gives every schema-6 summary its 1.8.1 result (frozen), apart 
   const changed = results.filter(([, result], index) => JSON.stringify(result) !== JSON.stringify(asAt181[index][1])).map(([name]) => name);
   assert.deepEqual(changed, V6_CORPUS_CHANGED_1_8_4);
   const verdictChanged = results.filter(([, result], index) => result.verdict !== asAt181[index][1].verdict).map(([name]) => name);
-  assert.deepEqual(verdictChanged, V6_VERDICTS_CHANGED_1_8_4);
+  assert.deepEqual(verdictChanged, Object.keys(V6_VERDICTS_CHANGED_1_8_4));
   for (const [name, result] of results) {
-    if (V6_VERDICTS_CHANGED_1_8_4.includes(name)) assert.deepEqual(result.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id), ['pickups-above-capacity'], name);
+    if (Object.hasOwn(V6_VERDICTS_CHANGED_1_8_4, name)) assert.deepEqual(result.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id), [V6_VERDICTS_CHANGED_1_8_4[name]], name);
   }
 });
 
 // ---------------------------------------------------------------------------
-// The v6 consistency rules (1.8.4): grenade kills, pickups and districts.
+// The v6 consistency rules (1.8.4): grenade kills, pickups and districts, and
+// (second round, contract §16.6) the ticks, weapons, grenade trail, damage and
+// combo that the achievement stats read.
 const C6 = HMH_RUN_SUMMARY_CATALOGS_V6;
 const V6C = HMH_V6_CONSISTENCY_RULES;
 const rowOf = (rows, key, id) => rows.find((entry) => entry[key] === id);
@@ -460,29 +491,54 @@ const consistencyRejects = (result) => rejects(result).filter((id) => HMH_V6_CON
 const ENTRY_SEEDS = Object.freeze(LEVEL_ONE_ENTRIES.map(({ id }) => {
   for (let seed = 1; ; seed += 1) if (selectLevelEntry(seed).id === id) return seed;
 }));
-// A run of `ticks` ticks at `seed` with no progress at all.
+// A run of `ticks` ticks at `seed` with no progress at all: the Coin Blaster
+// held on every tick, no damage dealt.
 function idleRun(ticks, { seed = valid.identity.seed, mask = 0 } = {}) {
   return clone(valid, (s) => {
     s.identity.seed = seed;
     s.identity.endTick = ticks;
-    Object.assign(s.totals, { survivalTicks: ticks, elapsedMs: ticks * FIXED_STEP_MS, score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0 });
+    Object.assign(s.totals, { survivalTicks: ticks, elapsedMs: ticks * FIXED_STEP_MS, score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, damageDealt: 0 });
     s.kills.total = 0;
     s.kills.elite = 0;
     s.kills.boss = 0;
     for (const entry of [...s.kills.byEnemyRole, ...s.kills.byWeapon]) entry.count = 0;
-    for (const weapon of s.weapons) weapon.kills = 0;
+    for (const weapon of s.weapons) Object.assign(weapon, { kills: 0, damage: 0, equippedTicks: weapon.weaponId === 'coin-blaster' ? ticks : 0 });
     for (const upgrade of s.upgrades) { upgrade.offered = 0; upgrade.selected = 0; }
     s.grenades.kills = 0;
     s.exploration.visitedDistrictMask = mask;
     Object.assign(s.milestones, { levelUps: 0, firstLevelUpTick: 0, lastLevelUpTick: 0 });
   });
 }
+const DISTRICT_REJECTS = Object.freeze(['district-path-invalid', 'districts-before-travel-time']);
+const districtFlags = (result) => result.flags.filter((flag) => DISTRICT_REJECTS.includes(flag.id));
 // Moves `count` of the summary's kills from the Coin Blaster to `weaponId`.
 function creditWeapon(summary, weaponId, count) {
   for (const [rows, field] of [[summary.kills.byWeapon, 'count'], [summary.weapons, 'kills']]) {
     rowOf(rows, 'weaponId', 'coin-blaster')[field] -= count;
     rowOf(rows, 'weaponId', weaponId)[field] += count;
   }
+}
+// Gives the summary's grenade-weapon and nuke kills the least trail the child
+// records for them: one hand grenade thrown for Satoshi Frag kills, a Launcher
+// Rig cache picked up and one launcher shot for launcher kills, a detonation
+// per launch, one blast contact per grenade kill, and a nuke collected for
+// Nuke Liquidation kills.
+function withGrenadeTrail(summary) {
+  const kills = (weaponId) => rowOf(summary.kills.byWeapon, 'weaponId', weaponId).count;
+  if (kills('satoshi-frag') > 0) summary.grenades.thrown = Math.max(1, summary.grenades.thrown);
+  const launcher = rowOf(summary.weapons, 'weaponId', 'launcher-rig');
+  if (kills('launcher-rig') > 0) {
+    const cache = rowOf(summary.collectibles, 'effectId', 'launcher-rig-cache');
+    cache.collected = Math.max(1, cache.collected);
+    Object.assign(launcher, { pickups: Math.max(1, launcher.pickups), triggers: Math.max(1, launcher.triggers) });
+  }
+  summary.grenades.detonated = summary.grenades.thrown + launcher.triggers;
+  summary.grenades.contacts = Math.max(summary.grenades.contacts, summary.grenades.kills);
+  if (kills('nuke-liquidation') > 0) {
+    const nuke = rowOf(summary.collectibles, 'effectId', 'nuke-liquidation');
+    nuke.collected = Math.max(1, nuke.collected);
+  }
+  return summary;
 }
 
 test('the v6 consistency literals equal the 1.8.x child', () => {
@@ -510,13 +566,43 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
   assert.ok(MAIN_SOURCE.includes('collectibleState = createCollectibleState({ placements: collectiblePlacements, objectivePlacements: objectiveRewardPlacements() });'));
   assert.equal(MAIN_SOURCE.match(/recordRunCollectible\(runSummaryAccumulator/g).length, 1);
   assert.match(MAIN_SOURCE, /if \(event\.type !== 'collectible:collected'\) continue;\s*recordRunCollectible\(runSummaryAccumulator, \{ effectId: event\.effectId \}\);/);
-  const sorted = (table) => Object.fromEntries(Object.entries(table).map(([id, list]) => [id, [...list].sort((a, b) => a - b)]));
-  for (const seed of [1, 123, 0xdead_beef]) {
+  // Per placement: its re-arm ticks, and its unlock: the objective that gates
+  // it, else its availableTick, which for a seeded event is at least the
+  // event's minimum (the table holds the minimum; the tick is seeded).
+  const eventMinimum = { 'lightning-ledger-cache': LIGHTNING_EVENT_MIN_TICK, 'bear-market-burner-cache': BEAR_MARKET_BURNER_EVENT_BOUNDS.minTick, 'forked-standard-cache': FORKED_STANDARD_CONFIG.eventMinTick };
+  const sorted = (table) => Object.fromEntries(Object.entries(table).map(([id, list]) => [id, list.map((entry) => JSON.stringify(entry)).sort()]));
+  for (const seed of [1, 123, 0xdead_beef, ...ENTRY_SEEDS]) {
     const table = Object.fromEntries(C6.collectibles.map((effectId) => [effectId, []]));
-    for (const { placement, effect } of hmhChildCollectibleState(seed).entries) table[effect.effectId].push(placement.respawnTicks ?? 0);
+    for (const { placement, effect } of hmhChildCollectibleState(seed).entries) {
+      let unlock = placement.requiredObjective ?? placement.availableTick;
+      if (!placement.requiredObjective && placement.availableTick > 0) {
+        assert.ok(placement.availableTick >= eventMinimum[effect.effectId], `seed ${seed}: ${placement.id} at ${placement.availableTick}`);
+        unlock = eventMinimum[effect.effectId];
+      }
+      table[effect.effectId].push([placement.respawnTicks ?? 0, unlock]);
+    }
     assert.deepEqual(sorted(table), sorted(V6C.pickupPlacements), `seed ${seed}`);
   }
   assert.deepEqual(Object.keys(V6C.pickupPlacements), [...C6.collectibles]);
+  // The events' minimum ticks, where each module draws its seeded tick.
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/lightning-ledger-event.mjs', import.meta.url), 'utf8'), /const availableTick = MIN_EVENT_TICK \+ mix\(/);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/bear-market-burner-event.mjs', import.meta.url), 'utf8'), /const availableTick = BEAR_MARKET_BURNER_EVENT_BOUNDS\.minTick\s*\+ mix\(/);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/forked-standard-event.mjs', import.meta.url), 'utf8'), /const availableTick = FORKED_STANDARD_CONFIG\.eventMinTick\s*\+ mix\(/);
+  // Every objective is a machinery site of the summary's catalogue, or the vault.
+  assert.deepEqual([...new Set(objectiveRewardPlacements().map((placement) => placement.requiredObjective))].sort(), [...C6.worldSites, V6C.vaultObjective].sort());
+  // A site unlocks its rewards in the step that records its milestone; the
+  // vault unlocks only in the Liquidator kill's branch; nothing else unlocks.
+  assert.match(MAIN_SOURCE, /recordRunMilestone\(runSummaryAccumulator,\{type:'site-operated',id:event\.siteId,tick\}\);\s*collectibleState\.unlockedObjectives\.add\(event\.siteId\);/);
+  assert.match(MAIN_SOURCE, /if \(scoreEvent\.enemyId === liquidatorBoss\.id\) \{\s*if\(liquidatorBoss\.health<=0\)\{collectibleState\.unlockedObjectives\.add\('liquidator-defeated'\);[^\n]*\n\s*recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: 'liquidator',\s*weaponId: scoreEvent\.weaponId,\s*boss: true,/);
+  assert.equal(MAIN_SOURCE.match(/unlockedObjectives\.add\(/g).length, 2);
+  // stepCollectibles never collects before the simulation's first tick.
+  assert.equal(V6C.firstTick, 1);
+  const simulation = new DeterministicSimulation({ seed: 1 });
+  const steppedTicks = [];
+  simulation.onStep((step) => steppedTicks.push(step.tick));
+  simulation.start();
+  simulation.update(FIXED_STEP_MS * 2 + 0.5);
+  assert.deepEqual(steppedTicks, [1, 2], 'the first step is tick 1');
 
   // Districts and entries.
   assert.deepEqual(V6C.districtStrips, LEVEL_ONE_WORLD.districts.map(({ id, area }) => [id, area.minX, area.maxX]));
@@ -534,7 +620,9 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
     const [, minX, maxX] = V6C.districtStrips.find(([, low, high]) => x >= low && x <= high);
     assert.ok(Math.min(x - minX, maxX - x) >= 250 && Math.min(x - minX, maxX - x) > V6C.travel.maxStepPx);
   }
-  assert.ok(MAIN_SOURCE.includes('if (!evidenceSafeEnabled) runtimePlayerSpawn = selectLevelEntry(payload.session.seed);'));
+  // A Ranked session always starts at the seed's entry (evidenceSafe moves the
+  // spawn only outside Ranked; see the evidenceSafe test below).
+  assert.ok(MAIN_SOURCE.includes('runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);'));
   assert.ok(MAIN_SOURCE.includes('actor = createActorSpatialState({ ...runtimePlayerSpawn, z: 0 });'));
   assert.ok(MAIN_SOURCE.includes("districtId: getLevelOneDistrictAt(actor.x, actor.y)?.id ?? 'frontier-relay',"));
   assert.equal(MAIN_SOURCE.match(/recordRunTick\(/g).length, 1);
@@ -563,35 +651,153 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
   assert.equal(V6C.travel.maxStepPx, 2 * Math.max(dashTick, runTick + recoilTick + conveyorTick));
 });
 
+test('the second-round consistency literals and the accumulator facts they rest on equal the 1.8.x child', () => {
+  const accumulatorSource = readFileSync(new URL('../sdk/hmh-run-summary.mjs', import.meta.url), 'utf8');
+  const fresh = () => createRunSummaryAccumulator({ seed: 1, buildHash: 'site-1.8.2:game-1.8.2', mode: 'ranked', heroId: 'lit-commando', startPosition: { x: 800, y: 2_400 } });
+  const finish = (accumulator, endTick) => finalizeRunSummary(accumulator, { endTick, elapsedMs: endTick * FIXED_STEP_MS, terminalReason: 'defeated', score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 0 });
+
+  // Recorded ticks: one equipped tick for the active weapon and the district
+  // bit on each recordRunTick, ticks strictly rising from after the start, and
+  // the end tick at or after the last one.
+  const ticks = fresh();
+  for (const [tick, weaponId, districtId] of [[1, 'coin-blaster', 'frontier-relay'], [2, 'coin-blaster', 'frontier-relay'], [7, 'hash-rail', 'rugpull-ravine']]) {
+    recordRunTick(ticks, { tick, position: { x: 800 + tick, y: 2_400 }, activeWeaponId: weaponId, districtId, level: 1 });
+  }
+  assert.throws(() => recordRunTick(ticks, { tick: 7, position: { x: 0, y: 0 }, activeWeaponId: 'coin-blaster', districtId: 'frontier-relay' }), /monotonic/);
+  assert.throws(() => finish(ticks, 6), /precedes/);
+  const recorded = finish(ticks, 7);
+  assert.equal(recorded.weapons.reduce((sum, row) => sum + row.equippedTicks, 0), 3);
+  assert.equal(recorded.exploration.visitedDistrictMask, 0b11);
+  assert.throws(() => recordRunTick(fresh(), { tick: 0, position: { x: 0, y: 0 }, activeWeaponId: 'coin-blaster', districtId: 'frontier-relay' }), /monotonic/, 'no tick at or before the start');
+
+  // Damage: the same whole amount to the total and the weapon, for the
+  // player's hits on anything but the player; combat-events rounds it.
+  const damage = fresh();
+  recordRunDamage(damage, { targetId: 'enemy-1', sourceId: 'player', weaponId: 'coin-blaster', damageApplied: 17, healthBefore: 40 });
+  recordRunDamage(damage, { targetId: 'enemy-2', sourceId: 'player', weaponId: 'satoshi-frag', damageApplied: 61, healthBefore: 40 });
+  recordRunDamage(damage, { targetId: 'player', sourceId: 'enemy-3', weaponId: 'enemy-gas-bomber', damageApplied: 9, equippedWeaponId: 'coin-blaster' });
+  recordRunDamage(damage, { targetId: 'enemy-4', sourceId: 'world-fuel', weaponId: 'world-fuel', damageApplied: 50, healthBefore: 40 });
+  const damaged = finish(damage, 1);
+  assert.equal(damaged.totals.damageDealt, 78);
+  assert.equal(damaged.weapons.reduce((sum, row) => sum + row.damage, 0), 78);
+  assert.match(accumulatorSource, /if \(event\.sourceId !== 'player'\) return;\s*state\.totals\[0\] \+= amount;\s*const row = state\.weapons\[index\(C\.weapons, event\.weaponId, 'weapon'\)\];\s*row\[10\] \+= amount;/);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/combat-events.mjs', import.meta.url), 'utf8'), /damageApplied = Math\.max\(1, Math\.round\(rawDamage \/ armorDivisor\)\);/);
+  assert.equal(MAIN_SOURCE.match(/recordRunDamage\(runSummaryAccumulator/g).length, 1);
+
+  // Grenades: a detonation records one contact per non-player hit; a launcher
+  // shot is a trigger; thrown is recorded only for a spawned hand grenade.
+  const blasts = fresh();
+  recordRunGrenadeDetonation(blasts, { grenadeId: 'satoshi-frag:00000000', hits: [{ targetId: 'enemy-1' }, { targetId: 'player' }, { targetId: 'enemy-2' }] });
+  recordRunWeaponFire(blasts, { weaponId: 'launcher-rig', emitted: 0 });
+  const blasted = finish(blasts, 1);
+  assert.deepEqual([blasted.grenades.detonated, blasted.grenades.contacts, rowOf(blasted.weapons, 'weaponId', 'launcher-rig').triggers], [1, 2, 1]);
+  assert.equal(MAIN_SOURCE.match(/throwGrenade\(grenadeSystem/g).length, 2);
+  assert.match(MAIN_SOURCE, /if \(event\.weaponId === 'launcher-rig'\) \{\s*const launch = throwGrenade\(grenadeSystem, \{\s*tick,\s*mode: 'launcher',[\s\S]{0,600}?\}\);\s*recordRunWeaponFire\(runSummaryAccumulator, \{ weaponId: event\.weaponId, emitted: launch\.spawned \? 1 : 0, attackId: event\.attackId \}\);/);
+  assert.match(MAIN_SOURCE, /const grenadeSpawn = throwGrenade\(grenadeSystem, \{\s*tick,\s*mode: 'hand',[\s\S]{0,600}?\}\);\s*if \(grenadeSpawn\.spawned\) \{\s*recordRunGrenade\(runSummaryAccumulator, \{ type: 'thrown' \}\);/);
+  assert.equal(MAIN_SOURCE.match(/type: 'thrown'/g).length, 1);
+  assert.match(MAIN_SOURCE, /for \(const detonation of grenadeFrame\.detonations\) \{\s*recordRunGrenadeDetonation\(runSummaryAccumulator, detonation\);/);
+  assert.match(MAIN_SOURCE, /for \(const hit of detonation\.hits\) combatHitIntents\.push\(\{ \.\.\.hit, tick \}\);/);
+  // Only a blast hit carries a grenade weapon's id: grenades.mjs names each
+  // blast hit by its grenade's mode, and main.mjs names neither weapon in a hit.
+  assert.equal(HMH_GRENADE_DEFINITION.id, V6C.handGrenades.weaponId);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/grenades.mjs', import.meta.url), 'utf8'), /weaponId: grenade\.mode === 'launcher' \? 'launcher-rig' : HMH_GRENADE_DEFINITION\.id,/);
+  assert.doesNotMatch(MAIN_SOURCE, /weaponId: '(satoshi-frag|launcher-rig)'/);
+  assert.equal(V6C.launcherWeapon, 'launcher-rig');
+
+  // Hand grenade supply: three charges, one per Extra Grenade rank (the only
+  // grenade upgrade), and one per recharge; only the nuke-liquidation effect
+  // recharges (the Nuke, and the Scrypt Cache's grenade-supply kind).
+  assert.ok(MAIN_SOURCE.includes(`grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: ${V6C.handGrenades.startCharges} });`));
+  const grenadeUpgrades = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.effect === 'bonusGrenadeCharges');
+  assert.deepEqual(grenadeUpgrades.map(({ id, amount, maxRank }) => [id, amount, maxRank]), [[V6C.handGrenades.rankUpgradeId, V6C.handGrenades.chargesPerRank, V6C.handGrenades.maxRanks]]);
+  assert.equal(MAIN_SOURCE.match(/handCharges \+=/g).length, 1);
+  assert.ok(MAIN_SOURCE.includes('if (grenadeSystem && grenadeGain > 0) grenadeSystem.handCharges += grenadeGain;'));
+  assert.equal(MAIN_SOURCE.match(/rechargeHandGrenades\(grenadeSystem/g).length, 2);
+  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'grenade-supply'\) \{\s*rechargeHandGrenades\(grenadeSystem,\{tick,amount:1\}\);\s*\} else if \(event\.kind === 'nuke'\) \{\s*rechargeHandGrenades\(grenadeSystem, \{ tick, amount: 1 \}\);/);
+  const rechargingEffects = new Set([
+    ...Object.values(COLLECTIBLE_EFFECTS).filter((effect) => ['nuke', 'grenade-supply'].includes(effect.kind)).map((effect) => effect.effectId),
+    ...objectiveRewardPlacements().filter((placement) => ['nuke', 'grenade-supply'].includes(placement.kind)).map((placement) => COLLECTIBLE_EFFECTS[placement.assetId].effectId),
+  ]);
+  assert.deepEqual([...rechargingEffects], [V6C.handGrenades.refillEffectId]);
+  assert.deepEqual(V6C.nuke, { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' });
+  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'nuke'\) \{[\s\S]{0,400}?weaponId: 'nuke-liquidation',/);
+  assert.equal(MAIN_SOURCE.match(/'nuke-liquidation'/g).length, 1, 'only the nuke event hits with the nuke');
+
+  // Weapons: WEAPON_ORDER is the loadout, its first weapon the only one owned
+  // at the start, and a weapon is owned only through grantWeaponPickup.
+  const order = JSON.parse(/const WEAPON_ORDER = Object\.freeze\((\[[^\]]*\])\);/.exec(MAIN_SOURCE)[1].replaceAll("'", '"'));
+  assert.deepEqual(order, V6C.activeWeapons);
+  assert.ok(MAIN_SOURCE.includes('weaponLoadout = createWeaponLoadout({ weaponIds: WEAPON_ORDER, activeWeaponId: WEAPON_ORDER[0], seed: payload.session.seed });'));
+  assert.ok(MAIN_SOURCE.includes('activeWeaponId: weaponLoadout.activeWeaponId,'));
+  const newLoadout = () => createWeaponLoadout({ weaponIds: V6C.activeWeapons, activeWeaponId: V6C.activeWeapons[0], seed: 1 });
+  const loadout = newLoadout();
+  assert.deepEqual(Object.entries(loadout.weapons).filter(([, weapon]) => weapon.owned).map(([id]) => id), [V6C.activeWeapons[0]]);
+  for (const weaponId of V6C.activeWeapons.slice(1)) {
+    assert.throws(() => selectWeapon(newLoadout(), weaponId, { tick: 1 }), /unowned/, weaponId);
+    assert.throws(() => switchWeapon(newLoadout(), weaponId, { tick: 1 }), /unowned/, weaponId);
+  }
+  grantWeaponPickup(loadout, { tick: 1, weaponId: 'hash-rail', select: true });
+  assert.equal(loadout.activeWeaponId, 'hash-rail');
+  const weaponSystemSource = readFileSync(new URL('../apps/hmh-reboot/src/weapon-system.mjs', import.meta.url), 'utf8');
+  assert.equal(weaponSystemSource.match(/weapon\.owned = true;/g).length, 1, 'grantWeaponPickup is the one grant');
+  // Each weapon pickup the summary records comes from a weapon cache of that
+  // weapon (or the evidence-only weaponPilot, which the portal never forwards).
+  assert.deepEqual(Object.fromEntries(Object.values(COLLECTIBLE_EFFECTS).filter((effect) => effect.kind === 'weapon-cache').map((effect) => [effect.weaponId, effect.effectId])), V6C.weaponCaches);
+  assert.ok(Object.values(COLLECTIBLE_EFFECTS).every((effect) => effect.bonusWeaponId === undefined), 'no cache grants a second weapon');
+  assert.deepEqual(MAIN_SOURCE.match(/recordRunWeaponEvent\(runSummaryAccumulator, \{ type: 'pickup', weaponId[^}]*\}\);/g), [
+    "recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId });",
+    "recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.weaponId });",
+    "recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.bonusWeaponId });",
+  ]);
+  assert.match(MAIN_SOURCE, /if \(weaponPilotEnabled\) \{\s*for \(const weaponId of WEAPON_ORDER\) \{\s*if \(weaponId !== weaponLoadout\.activeWeaponId\) \{\s*grantWeaponPickup\(weaponLoadout, \{ tick: 0, weaponId, select: false \}\);/);
+  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'weapon-cache'\) \{[\s\S]{0,300}?grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: true, progressionByWeapon \}\);/);
+
+  // The combo: +1 per recorded kill (awardComboXp follows each recordRunKill
+  // of a defeat), reset to 0 on a hit, and the best combo is what finalize gets.
+  assert.ok(MAIN_SOURCE.includes('const feedback = updateRunCombo(runCombo + 1, { bossDefeated });'));
+  assert.ok(MAIN_SOURCE.includes('const updateRunCombo = (nextCombo, { bossDefeated = false, silent = false } = {}) => {'));
+  assert.deepEqual(MAIN_SOURCE.match(/updateRunCombo\([^)]*\)/g), ['updateRunCombo(runCombo + 1, { bossDefeated })', 'updateRunCombo(0)']);
+  assert.equal(MAIN_SOURCE.match(/awardComboXp\(recordRunDefeat\(/g).length, 2);
+  assert.match(MAIN_SOURCE, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: 'liquidator',[^}]*\}\);\s*runKills \+= 1;\s*const bossSnapshot = awardComboXp\(/);
+  assert.match(MAIN_SOURCE, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: defeatedEnemy\.archetypeId,[^}]*\}\);[\s\S]{0,700}?const progressionSnapshot = awardComboXp\(/);
+  assert.equal(MAIN_SOURCE.match(/maxRunCombo = Math\.max\(/g).length, 1);
+  assert.ok(MAIN_SOURCE.includes('maxCombo: maxRunCombo,'));
+  for (let combo = 0; combo <= 40; combo += 1) assert.equal(resolveComboFeedback({ previous: Math.max(0, combo - 1), current: combo }).current, combo);
+});
+
 test("grenade kills above the grenade weapons' kills reject; equality passes", () => {
   for (const base of [valid, realistic, level90]) {
     for (const weaponId of V6C.grenadeWeapons) {
       const credited = Math.min(20, base.kills.total);
-      const at = clone(base, (s) => { creditWeapon(s, weaponId, credited); s.grenades.kills = credited; });
+      const at = clone(base, (s) => { creditWeapon(s, weaponId, credited); s.grenades.kills = credited; withGrenadeTrail(s); });
       assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(at)), []);
       const above = validateRebootRunPlausibility(clone(at, (s) => { s.grenades.kills += 1; }));
       assert.deepEqual(above.flags.filter((flag) => flag.id === 'grenade-kills-above-weapon-kills'), [{ id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: credited + 1, limit: credited }]);
     }
   }
   // Both grenade weapons count; no other weapon does.
-  const both = clone(realistic, (s) => { creditWeapon(s, 'satoshi-frag', 30); creditWeapon(s, 'launcher-rig', 12); creditWeapon(s, 'nuke-liquidation', 40); s.grenades.kills = 42; });
+  const both = clone(realistic, (s) => { creditWeapon(s, 'satoshi-frag', 30); creditWeapon(s, 'launcher-rig', 12); creditWeapon(s, 'nuke-liquidation', 40); s.grenades.kills = 42; withGrenadeTrail(s); });
   assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(both)), []);
-  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(clone(both, (s) => { s.grenades.kills = 43; }))), ['grenade-kills-above-weapon-kills']);
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(clone(both, (s) => { s.grenades.kills = 43; s.grenades.contacts = 43; }))), ['grenade-kills-above-weapon-kills']);
 });
 
 test('the 1.8.2 grenade, pickup and district payload rejects', () => {
   // From hmh-valid (36 kills, 3 minutes from the Frontier Relay entry), only
-  // these three fields change; the run verified with no flags in 1.8.2.
+  // these three fields change; the run verified with no flags in 1.8.2. The
+  // second 1.8.4 round adds the missing blast contacts.
   const payload = clone(valid, (s) => {
     s.grenades.kills = 250;
     rowOf(s.collectibles, 'effectId', 'bonus-life').collected = 250;
     s.exploration.visitedDistrictMask = 63;
   });
+  // The two authored bonus lives; the Litecoin Sanctuary's is locked (no site operated).
+  assert.equal(hmhV6PickupCapacity('bonus-life', valid.totals.survivalTicks, hmhV6ObjectiveUnlocks(valid)), 2);
   assert.deepEqual(validateRebootRunPlausibility(payload), {
     verdict: 'rejected',
     flags: [
       { id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: 250, limit: 0 },
-      { id: 'pickups-above-capacity', severity: 'reject', value: 250, limit: hmhV6PickupCapacity('bonus-life', valid.totals.survivalTicks) },
+      { id: 'pickups-above-capacity', severity: 'reject', value: 250, limit: 2 },
+      { id: 'grenade-kills-above-contacts', severity: 'reject', value: 250, limit: 0 },
     ],
   });
   // All six districts in 3 minutes from the relay is honest: the 9,200 units
@@ -599,43 +805,88 @@ test('the 1.8.2 grenade, pickup and district payload rejects', () => {
   assert.deepEqual(validateRebootRunPlausibility(clone(valid, (s) => { s.exploration.visitedDistrictMask = 63; })), { verdict: 'ok', flags: [] });
 });
 
-test('pickups above what the placements can give reject, per effect and at each re-arm boundary', () => {
-  assert.equal(hmhV6PickupCapacity('bonus-life', 7_199), 3);
-  assert.equal(hmhV6PickupCapacity('bonus-life', 7_200), 4);
-  assert.equal(hmhV6PickupCapacity('berserk-candle', 10_799), 2);
-  assert.equal(hmhV6PickupCapacity('berserk-candle', 10_800), 4);
-  assert.equal(hmhV6PickupCapacity('litecoin-token', 1_000_000), 0);
+test('the objectives a summary unlocks: operated sites at their tick, the vault with a Liquidator kill', () => {
+  assert.deepEqual(hmhV6ObjectiveUnlocks(valid), {});
+  assert.deepEqual(hmhV6ObjectiveUnlocks(realistic), {});
+  assert.deepEqual(hmhV6ObjectiveUnlocks(level90), { 'liquidator-defeated': HMH_BOSS_START_TICK });
+  const operated = clone(valid, (s) => {
+    Object.assign(rowOf(s.milestones.sites, 'siteId', 'hashwood-shrine'), { operated: 1, tick: 4_000 });
+    Object.assign(rowOf(s.milestones.sites, 'siteId', 'relay-power'), { operated: 1, tick: 90 });
+  });
+  assert.deepEqual(hmhV6ObjectiveUnlocks(operated), { 'relay-power': 90, 'hashwood-shrine': 4_000 });
+  // Either half of a Liquidator kill claims the vault (the mismatch is v6's
+  // boss-count-mismatch flag); boss-before-band holds the kill to the band.
+  assert.deepEqual(hmhV6ObjectiveUnlocks(clone(valid, (s) => { s.kills.boss = 1; })), { 'liquidator-defeated': HMH_BOSS_START_TICK });
+  assert.deepEqual(hmhV6ObjectiveUnlocks(clone(valid, (s) => { setRoleKills(s, 'liquidator', 1); })), { 'liquidator-defeated': HMH_BOSS_START_TICK });
+});
+
+test('pickups above what the unlocked placements can give reject, per effect and at each boundary', () => {
+  const every = Object.fromEntries([...C6.worldSites, V6C.vaultObjective].map((id) => [id, 0]));
+  const total = (ticks, unlocks) => C6.collectibles.reduce((sum, effectId) => sum + hmhV6PickupCapacity(effectId, ticks, unlocks), 0);
+  // Nothing before the simulation's first tick; then each placement once it is
+  // available and unlocked, again a full re-arm period after its first tick.
+  assert.equal(total(0, every), 0);
+  assert.equal(total(1, every), 21 - 3, 'the three seeded events are not yet available');
+  assert.equal(total(10_800, every), 21 + 3, 'the three 7,200-tick re-arms once');
+  assert.equal(total(10_801, every), 21 + 3 + 7, 'and the seven 10,800-tick re-arms once');
+  assert.equal(total(10_800, {}), 10 + 3, 'locked objectives give nothing');
+  assert.equal(hmhV6PickupCapacity('litecoin-token', 1_000_000, every), 0);
+  assert.equal(hmhV6PickupCapacity('forked-standard-cache', 10_799), 0);
+  assert.equal(hmhV6PickupCapacity('forked-standard-cache', 10_800), 1);
   assert.equal(hmhV6PickupCapacity('forked-standard-cache', 1_000_000), 1);
-  const total = (ticks) => C6.collectibles.reduce((sum, effectId) => sum + hmhV6PickupCapacity(effectId, ticks), 0);
-  assert.equal(total(0), 21);
-  assert.equal(total(10_800), 21 + 7 + 3);
-  assert.equal(total(64_800), 21 + 7 * 6 + 3 * 9);
+  assert.equal(hmhV6PickupCapacity('lightning-ledger-cache', 3_599), 0);
+  assert.equal(hmhV6PickupCapacity('lightning-ledger-cache', 3_600), 1);
+  assert.equal(hmhV6PickupCapacity('lightning-ledger-cache', 80_000, { 'liquidator-defeated': HMH_BOSS_START_TICK }), 2);
+  assert.equal(hmhV6PickupCapacity('lightning-ledger-cache', HMH_BOSS_START_TICK - 1, { 'liquidator-defeated': HMH_BOSS_START_TICK }), 1);
+  const shrine = { 'hashwood-shrine': 500 };
+  assert.deepEqual([499, 500, 7_699, 7_700].map((ticks) => hmhV6PickupCapacity('bonus-life', ticks, shrine)), [2, 3, 3, 4]);
+  assert.deepEqual([10_800, 10_801].map((ticks) => hmhV6PickupCapacity('berserk-candle', ticks)), [1, 2]);
+  assert.equal(hmhV6PickupCapacity('bonus-life', 1_000, { 'hashwood-shrine': null }), 2, 'an objective with no tick stays locked');
+
   for (const base of [valid, realistic, level90]) {
     const ticks = base.totals.survivalTicks;
+    const unlocks = hmhV6ObjectiveUnlocks(base);
     const withPickups = (effectId, collected) => clone(base, (s) => {
       rowOf(s.collectibles, 'effectId', effectId).collected = collected;
       if (effectId === 'litecoin-token') s.totals.litecoin = collected;
     });
     for (const effectId of C6.collectibles) {
-      const capacity = hmhV6PickupCapacity(effectId, ticks);
+      const capacity = hmhV6PickupCapacity(effectId, ticks, unlocks);
       assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(withPickups(effectId, capacity))), [], effectId);
       assert.deepEqual(validateRebootRunPlausibility(withPickups(effectId, capacity + 1)).flags.filter((flag) => flag.id === 'pickups-above-capacity'),
         [{ id: 'pickups-above-capacity', severity: 'reject', value: capacity + 1, limit: capacity }], effectId);
     }
     // Every effect at its capacity at once passes.
-    const full = clone(base, (s) => { for (const row of s.collectibles) row.collected = hmhV6PickupCapacity(row.effectId, ticks); });
+    const full = clone(base, (s) => { for (const row of s.collectibles) row.collected = hmhV6PickupCapacity(row.effectId, ticks, unlocks); });
     assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(full)), []);
   }
   // Two effects above capacity: the flag sums both.
   assert.deepEqual(hmhV6PickupExcess(clone(valid, (s) => {
     rowOf(s.collectibles, 'effectId', 'hash-rail-core').collected = 3;
     rowOf(s.collectibles, 'effectId', 'time-dilation').collected = 5;
-  }).collectibles, valid.totals.survivalTicks), { value: 8, limit: 2 + 2 });
-  // A re-arm boundary through the whole verdict: 7,199 ticks allow three bonus lives, 7,200 four.
-  const lives = (ticks, collected) => consistencyRejects(validateRebootRunPlausibility(clone(idleRun(ticks), (s) => { rowOf(s.collectibles, 'effectId', 'bonus-life').collected = collected; })));
-  assert.deepEqual(lives(7_199, 3), []);
-  assert.deepEqual(lives(7_199, 4), ['pickups-above-capacity']);
-  assert.deepEqual(lives(7_200, 4), []);
+  }).collectibles, valid.totals.survivalTicks), { value: 8, limit: 1 + 1 });
+
+  // Through the whole verdict. A site's reward counts from the site's operated
+  // tick: the Quarry Salvage's Hash Rail Core only once the winch runs.
+  const withSite = (run, siteId, tick) => clone(run, (s) => Object.assign(rowOf(s.milestones.sites, 'siteId', siteId), { operated: 1, tick }));
+  const cores = (run, collected) => consistencyRejects(validateRebootRunPlausibility(clone(run, (s) => { rowOf(s.collectibles, 'effectId', 'hash-rail-core').collected = collected; })));
+  assert.deepEqual(cores(idleRun(20_000), 1), []);
+  assert.deepEqual(cores(idleRun(20_000), 2), ['pickups-above-capacity']);
+  assert.deepEqual(cores(withSite(idleRun(20_000), 'ravine-winch', 20_000), 2), []);
+  // A re-arm boundary: the sanctuary operated at 1,000 gives a third bonus life
+  // then and a fourth at 8,200.
+  const lives = (ticks, collected) => consistencyRejects(validateRebootRunPlausibility(clone(withSite(idleRun(ticks), 'hashwood-shrine', 1_000), (s) => { rowOf(s.collectibles, 'effectId', 'bonus-life').collected = collected; })));
+  assert.deepEqual(lives(8_199, 3), []);
+  assert.deepEqual(lives(8_199, 4), ['pickups-above-capacity']);
+  assert.deepEqual(lives(8_200, 4), []);
+  // The Liquidator vault needs the Liquidator kill.
+  const vault = (run) => consistencyRejects(validateRebootRunPlausibility(clone(run, (s) => { rowOf(s.collectibles, 'effectId', 'lightning-ledger-cache').collected = 2; })));
+  assert.deepEqual(vault(idleRun(80_000)), ['pickups-above-capacity']);
+  assert.deepEqual(vault(clone(idleRun(80_000), (s) => { setRoleKills(s, 'liquidator', 1); s.kills.boss = 1; rowOf(s.kills.byWeapon, 'weaponId', 'coin-blaster').count = 1; rowOf(s.weapons, 'weaponId', 'coin-blaster').kills = 1; })), []);
+  // A seeded event from its minimum tick.
+  const standard = (ticks) => consistencyRejects(validateRebootRunPlausibility(clone(idleRun(ticks), (s) => { rowOf(s.collectibles, 'effectId', 'forked-standard-cache').collected = 1; })));
+  assert.deepEqual(standard(10_799), ['pickups-above-capacity']);
+  assert.deepEqual(standard(10_800), []);
 });
 
 test('the fastest collector through the real stepCollectibles reaches the pickup capacity and never passes it', () => {
@@ -644,7 +895,8 @@ test('the fastest collector through the real stepCollectibles reaches the pickup
   // collecting nothing one tick before). Placements do not interact, so the
   // sum per effect is the most any run can collect.
   const lastTick = 60_000;
-  const checkpoints = [1, 3_599, 7_199, 7_200, 10_799, 10_800, 21_600, 36_000, 43_200, lastTick];
+  const checkpoints = [1, 3_599, 3_600, 7_199, 7_200, 7_201, 10_799, 10_800, 10_801, 21_600, 21_601, 36_000, 43_200, lastTick];
+  const every = Object.fromEntries([...C6.worldSites, V6C.vaultObjective].map((id) => [id, 0]));
   for (const seed of [1, 123, 0xdead_beef]) {
     const ticksByEffect = Object.fromEntries(C6.collectibles.map((effectId) => [effectId, []]));
     const entries = hmhChildCollectibleState(seed).entries;
@@ -661,8 +913,10 @@ test('the fastest collector through the real stepCollectibles reaches the pickup
       }
     }
     // The simulation's first tick is 1, so a placement available from tick a
-    // gives 1 + floor((T - a) / r) pickups by tick T; the capacity counts
-    // 1 + floor(T / r) from tick 0 and ignores a.
+    // gives 1 + floor((T - max(1, a)) / r) pickups by tick T. The capacity
+    // counts the same from its table tick, which for a seeded event is the
+    // event's minimum (at or before the seeded tick), so it is exact wherever
+    // every placement of the effect is available from tick 0.
     for (const ticks of checkpoints) {
       for (const effectId of C6.collectibles) {
         const most = ticksByEffect[effectId].filter((tick) => tick <= ticks).length;
@@ -670,10 +924,11 @@ test('the fastest collector through the real stepCollectibles reaches the pickup
           const first = Math.max(1, placement.availableTick);
           return sum + (ticks < first ? 0 : placement.respawnTicks ? 1 + Math.floor((ticks - first) / placement.respawnTicks) : 1);
         }, 0);
+        const capacity = hmhV6PickupCapacity(effectId, ticks, every);
         assert.equal(most, exact, `seed ${seed}, ${effectId} at ${ticks}`);
-        assert.ok(exact <= hmhV6PickupCapacity(effectId, ticks), `seed ${seed}, ${effectId} at ${ticks}`);
-        if (ticks % 7_200 !== 0 && ticks % 10_800 !== 0 && entries.every(({ effect, placement }) => effect.effectId !== effectId || placement.availableTick <= 1)) {
-          assert.equal(exact, hmhV6PickupCapacity(effectId, ticks), `tight: seed ${seed}, ${effectId} at ${ticks}`);
+        assert.ok(exact <= capacity, `seed ${seed}, ${effectId} at ${ticks}`);
+        if (entries.every(({ effect, placement }) => effect.effectId !== effectId || placement.availableTick <= 1)) {
+          assert.equal(exact, capacity, `tight: seed ${seed}, ${effectId} at ${ticks}`);
         }
       }
     }
@@ -716,10 +971,16 @@ test("visited districts farther from the entry than the run's ticks can cover re
       const minTicks = hmhV6MinTicksForTravel(travelPx);
       const covered = (ticks) => ticks * V6C.travel.maxStepPx + V6C.travel.allowancePx >= travelPx;
       assert.ok(covered(minTicks) && (minTicks === 0 || !covered(minTicks - 1)));
-      assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(idleRun(minTicks, { seed, mask }))), [], `seed ${seed} mask ${mask} at ${minTicks}`);
-      if (minTicks === 0) continue;
+      assert.deepEqual(districtFlags(validateRebootRunPlausibility(idleRun(minTicks, { seed, mask }))), [], `seed ${seed} mask ${mask} at ${minTicks}`);
+      // A district needs a recorded tick, so a zero-tick run with one rejects
+      // activity-without-time even where the travel budget covers it.
+      assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(idleRun(Math.max(1, minTicks), { seed, mask }))), [], `seed ${seed} mask ${mask}`);
+      if (minTicks === 0) {
+        assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(idleRun(0, { seed, mask }))), ['activity-without-time'], `seed ${seed} mask ${mask}`);
+        continue;
+      }
       const short = validateRebootRunPlausibility(idleRun(minTicks - 1, { seed, mask }));
-      assert.deepEqual(short.flags.filter((flag) => HMH_V6_CONSISTENCY_REJECTS.includes(flag.id)),
+      assert.deepEqual(districtFlags(short),
         [{ id: 'districts-before-travel-time', severity: 'reject', value: minTicks - 1, limit: minTicks }], `seed ${seed} mask ${mask}`);
     }
   }
@@ -733,6 +994,274 @@ test("the committed v6 fixtures and the fixture builder's walk meet the consiste
   assert.equal(valid.exploration.visitedDistrictMask, 0b11);
   assert.equal(realistic.exploration.visitedDistrictMask, 63);
   assert.equal(level90.exploration.visitedDistrictMask, 63);
+});
+
+// scripts/rehearse-step7-dry-run.mjs and the settle rehearsals build these
+// plans at whatever seed the ticket carries, so each must pass every rule from
+// every level entry, not only at the committed fixtures' seed.
+test('the v6 fixture plans meet every consistency rule from every level entry', async () => {
+  for (const plan of Object.keys(HMH_PLANS)) {
+    for (const seed of [...ENTRY_SEEDS, 0, 0xffff_ffff]) {
+      const identity = { sessionId: `game-session-plan-${seed}`, chainId: 4441, scoreRegistryAddress: `0x${'1'.repeat(40)}`, wallet: `0x${'2'.repeat(40)}`, gameId: 'lester-blaster', seasonId: 1, buildHash: 'site-1.8.3:game-1.8.3', seed, nonce: 'plan' };
+      const { runSummary } = await buildHmhEvidence({ seed, buildHash: identity.buildHash, identity, plan });
+      assert.deepEqual(rejects(validateRebootRunPlausibility(runSummary)), [], `${plan} at seed ${seed}`);
+    }
+  }
+});
+
+// The portal forwards ?evidenceSafe=1 (and terminalPilot) to the child in any
+// mode (hmh-reboot-host.mjs). Until 1.8.4 that made a Ranked hero invulnerable
+// to everything but the Liquidator and spawned it at the Frontier Relay for
+// every seed; the Ranked e2e's terminal-pilot run then broke
+// district-path-invalid for four entries in five. A Ranked session now ignores
+// both: evidenceSafe changes gameplay only outside Ranked (red team of
+// a9663a09, contract §16.6).
+test('evidenceSafe changes neither the spawn nor the hero\'s vulnerability in a Ranked session', () => {
+  assert.deepEqual(MAIN_SOURCE.match(/evidenceGameplayEnabled = [^;]*;/g), ['evidenceGameplayEnabled = false;', "evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';"]);
+  assert.ok(MAIN_SOURCE.includes("evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';"));
+  assert.ok(MAIN_SOURCE.includes('runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);'));
+  assert.ok(MAIN_SOURCE.includes('const playerInvulnerable = evidenceGameplayEnabled || isDashInvulnerable(dashState, tick);'));
+  // The session's gameplay switch is set before the spawn, and nothing else in
+  // the step makes the hero invulnerable or moves the spawn.
+  const init = MAIN_SOURCE.indexOf('const initializeSession = (payload) => {');
+  assert.ok(init > 0 && MAIN_SOURCE.indexOf("evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';") > init);
+  assert.ok(MAIN_SOURCE.indexOf("evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';") < MAIN_SOURCE.indexOf('runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn'));
+  assert.equal(MAIN_SOURCE.match(/playerInvulnerable = /g).length, 1);
+  assert.equal(MAIN_SOURCE.match(/runtimePlayerSpawn = /g).length, 2, 'the boot value and the per-session value');
+  // The terminal pilot still ends an evidence run (Free or Ranked) on tick 2.
+  assert.ok(MAIN_SOURCE.includes("const terminalPilotEnabled = evidenceSafeEnabled && runtimeParams.get('terminalPilot') === '1';"));
+  assert.match(MAIN_SOURCE, /if \(terminalPilotEnabled && tick === 2\) \{/);
+});
+
+// ---------------------------------------------------------------------------
+// Red team of a9663a09 (contract §16.6): fabricated v6 summaries that passed
+// the first four 1.8.4 rules and earned achievements. Every payload starts from
+// a run that records nothing (blankRun: every counter 0, one final hit) at a
+// seed of the named level entry, and changes only the fields listed.
+const ENTRY_SEED = Object.freeze(Object.fromEntries(LEVEL_ONE_ENTRIES.map(({ id }, index) => [id, ENTRY_SEEDS[index]])));
+function blankRun(ticks, { entry = 'relay' } = {}) {
+  return clone(valid, (s) => {
+    s.identity.seed = ENTRY_SEED[entry];
+    s.identity.endTick = ticks;
+    Object.assign(s.totals, { survivalTicks: ticks, elapsedMs: ticks * FIXED_STEP_MS, score: 0, level: 1, xp: 0, litecoin: 0, currentCombo: 0, maxCombo: 0, damageDealt: 0, damageTaken: 25, healing: 0, distanceMilli: 0 });
+    Object.assign(s.kills, { total: 0, elite: 0, boss: 0 });
+    for (const entry of [...s.kills.byEnemyRole, ...s.kills.byWeapon]) entry.count = 0;
+    for (const weapon of s.weapons) for (const key of Object.keys(weapon)) if (key !== 'weaponId') weapon[key] = 0;
+    for (const key of Object.keys(s.grenades)) s.grenades[key] = 0;
+    for (const entry of s.collectibles) Object.assign(entry, { collected: 0, activeTicks: 0 });
+    for (const upgrade of s.upgrades) Object.assign(upgrade, { offered: 0, selected: 0 });
+    for (const key of Object.keys(s.lightningLedger)) if (key !== 'interruptions') s.lightningLedger[key] = 0;
+    for (const key of Object.keys(s.lightningLedger.interruptions)) s.lightningLedger.interruptions[key] = 0;
+    for (const key of Object.keys(s.bearMarketBurner)) s.bearMarketBurner[key] = 0;
+    for (const key of Object.keys(s.forkedStandard)) s.forkedStandard[key] = 0;
+    Object.assign(s.exploration, { visitedDistrictMask: 0, discoveredPoiMask: 0, revealedCells: 0, revealedPermille: 0, distanceMilli: 0 });
+    s.defeat = { kind: 'enemy', causeId: 'enemy-bagholder-rusher', tick: ticks, damage: 25 };
+    Object.assign(s.milestones, { levelUps: 0, firstLevelUpTick: 0, lastLevelUpTick: 0, bossEngagedTick: 0 });
+    for (const row of [...s.milestones.sites, ...s.milestones.secrets]) for (const key of Object.keys(row)) if (!key.endsWith('Id')) row[key] = 0;
+  });
+}
+// Credits `count` kills of `role` to `weaponId`, keeping the kill rows consistent.
+function addWeaponKills(summary, role, count, weaponId) {
+  summary.kills.total += count;
+  rowOf(summary.kills.byEnemyRole, 'enemyRoleId', role).count += count;
+  rowOf(summary.kills.byWeapon, 'weaponId', weaponId).count += count;
+  rowOf(summary.weapons, 'weaponId', weaponId).kills += count;
+}
+// The 1.8.4 (first round) pickup capacity: every placement unlocked and
+// available from tick 0, with no gate.
+const ungatedCapacity = (effectId, ticks) => V6C.pickupPlacements[effectId].reduce((sum, placement) => {
+  const rearm = Array.isArray(placement) ? placement[0] : placement;
+  return sum + 1 + (rearm > 0 ? Math.floor(ticks / rearm) : 0);
+}, 0);
+const withUngatedPickups = (summary) => {
+  for (const entry of summary.collectibles) entry.collected = ungatedCapacity(entry.effectId, summary.totals.survivalTicks);
+  summary.totals.litecoin = rowOf(summary.collectibles, 'effectId', 'litecoin-token').collected;
+};
+const schemaValid = (summary) => {
+  assert.equal(validateRunSummaryPayload(summary), '', 'the schema accepts the payload');
+  return summary;
+};
+const rejectIds = (summary) => rejects(validateRebootRunPlausibility(schemaValid(summary)));
+
+test('red team: zero-tick runs record nothing (P2, P2b, P3)', () => {
+  // P2: a zero-tick "grab bag" from the ravine entry, with every placement once,
+  // two districts, 20,000 damage and three weapons equipped for a tick.
+  const grabBag = clone(blankRun(0, { entry: 'ravine' }), (s) => {
+    withUngatedPickups(s);
+    s.exploration.visitedDistrictMask = 0b11;
+    s.totals.damageDealt = 20_000;
+    for (const weaponId of ['hash-rail', 'scatter-shotgun', 'auto-miner']) rowOf(s.weapons, 'weaponId', weaponId).equippedTicks = 1;
+  });
+  assert.equal(grabBag.collectibles.reduce((sum, entry) => sum + entry.collected, 0), 21);
+  const ids = rejectIds(grabBag);
+  for (const id of ['pickups-above-capacity', 'activity-without-time', 'equipped-ticks-above-run', 'weapon-without-source', 'damage-dealt-mismatch']) assert.ok(ids.includes(id), `${id}: ${ids}`);
+  // P2b: the same with a 30 combo and no kill.
+  assert.ok(rejectIds(clone(grabBag, (s) => { s.totals.maxCombo = 30; })).includes('combo-above-kills'));
+  // P3: the 21 pickups alone, from the relay: nothing is collected before tick 1.
+  assert.deepEqual(rejectIds(clone(blankRun(0), withUngatedPickups)), ['pickups-above-capacity']);
+  // A zero-tick run that records nothing still passes.
+  assert.deepEqual(rejectIds(blankRun(0)), []);
+});
+
+test('red team: pickups from locked placements reject (P7, P3b)', () => {
+  // P7: ten seconds in the relay district, no site operated and no boss kill,
+  // claiming the Liquidator vault, every site reward and the three seeded
+  // events (available no sooner than ticks 3,600, 7,200 and 10,800).
+  const locked = clone(blankRun(600), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 600;
+    for (const [effectId, collected] of [['lightning-ledger-cache', 2], ['bear-market-burner-cache', 2], ['forked-standard-cache', 1], ['hash-rail-core', 2], ['nuke-liquidation', 2], ['berserk-candle', 2], ['scatter-shotgun-cache', 2], ['coin-blaster-cache', 2], ['bonus-life', 3]]) {
+      assert.ok(collected <= ungatedCapacity(effectId, 600), effectId);
+      rowOf(s.collectibles, 'effectId', effectId).collected = collected;
+    }
+  });
+  assert.deepEqual(rejectIds(locked), ['pickups-above-capacity']);
+  // P3b: one 60-minute run at the ungated capacity with no site operated.
+  const hoard = clone(blankRun(216_000), (s) => {
+    withUngatedPickups(s);
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 216_000;
+  });
+  assert.equal(hoard.collectibles.reduce((sum, entry) => sum + entry.collected, 0), 251);
+  assert.ok(rejectIds(hoard).includes('pickups-above-capacity'));
+});
+
+test('red team: grenade kills need a grenade trail (P1\', P11)', () => {
+  for (const weaponId of V6C.grenadeWeapons) {
+    // P1': 250 kills credited to a grenade weapon in 6.5 minutes, with no
+    // launcher pickup, launcher shot, throw, detonation or contact.
+    const reaper = clone(blankRun(23_460), (s) => {
+      addWeaponKills(s, 'bagholder-rusher', 250, weaponId);
+      s.grenades.kills = 250;
+    });
+    const ids = rejectIds(reaper);
+    for (const id of ['weapon-without-source', 'grenade-kills-above-contacts']) assert.ok(ids.includes(id), `${weaponId} ${id}: ${ids}`);
+  }
+  // P11: hard-fork-hero from 20 launcher kills and all six districts in 50 s.
+  const hardFork = clone(blankRun(3_000), (s) => {
+    addWeaponKills(s, 'bagholder-rusher', 20, 'launcher-rig');
+    s.grenades.kills = 20;
+    s.exploration.visitedDistrictMask = 63;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 3_000;
+  });
+  assert.deepEqual(rejectIds(hardFork), ['weapon-without-source', 'grenade-kills-above-contacts']);
+});
+
+test('red team: weapons never picked up, one damage field and a combo above the kills reject (P8, P8b, P9, P10)', () => {
+  // P8: the Hash Rail, Scatter Shotgun and Auto-Miner equipped with no cache collected.
+  const unowned = clone(blankRun(180), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    for (const [weaponId, ticks] of [['coin-blaster', 177], ['hash-rail', 1], ['scatter-shotgun', 1], ['auto-miner', 1]]) rowOf(s.weapons, 'weaponId', weaponId).equippedTicks = ticks;
+  });
+  assert.deepEqual(rejectIds(unowned), ['weapon-without-source']);
+  // P8b: the knife, the hand grenade and the nuke can never be the active weapon.
+  const inactive = clone(blankRun(180), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 177;
+    for (const weaponId of ['litecoin-knife', 'satoshi-frag', 'nuke-liquidation']) rowOf(s.weapons, 'weaponId', weaponId).equippedTicks = 1;
+  });
+  assert.deepEqual(rejectIds(inactive), ['weapon-without-source']);
+  // P9: damage-chain from totals.damageDealt alone.
+  assert.deepEqual(rejectIds(clone(blankRun(60), (s) => { s.totals.damageDealt = 20_000; })), ['damage-dealt-mismatch']);
+  // P10: max-combo-30 from five kills.
+  const combo = clone(blankRun(1_200), (s) => {
+    addWeaponKills(s, 'bagholder-rusher', 5, 'coin-blaster');
+    s.totals.maxCombo = 30;
+  });
+  assert.deepEqual(rejectIds(combo), ['combo-above-kills']);
+});
+
+test('each second-round consistency rule at its boundary', () => {
+  const only = (summary) => consistencyRejects(validateRebootRunPlausibility(schemaValid(summary)));
+  const flagOf = (summary, id) => validateRebootRunPlausibility(summary).flags.filter((flag) => flag.id === id);
+  const idle = (ticks) => clone(blankRun(ticks), (s) => { if (ticks > 0) { s.exploration.visitedDistrictMask = 1; rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = ticks; } });
+
+  // activity-without-time: no district and no damage in a run of zero ticks.
+  assert.deepEqual(only(idle(0)), []);
+  assert.deepEqual(flagOf(clone(idle(0), (s) => { s.exploration.visitedDistrictMask = 1; }), 'activity-without-time'), [{ id: 'activity-without-time', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(flagOf(clone(idle(0), (s) => { s.totals.damageDealt = 1; rowOf(s.weapons, 'weaponId', 'coin-blaster').damage = 1; }), 'activity-without-time'), [{ id: 'activity-without-time', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(only(clone(idle(1), (s) => { s.totals.damageDealt = 1; rowOf(s.weapons, 'weaponId', 'coin-blaster').damage = 1; })), []);
+
+  // equipped-ticks-above-run: one equipped tick per run tick at most.
+  assert.deepEqual(only(idle(600)), []);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => { rowOf(s.weapons, 'weaponId', 'hash-rail').equippedTicks = 1; }), 'equipped-ticks-above-run'), [{ id: 'equipped-ticks-above-run', severity: 'reject', value: 601, limit: 600 }]);
+
+  // weapon-without-source, clause by clause, each with its source restored
+  // (in a run long enough for every cache, the seeded events included).
+  const pickedUp = (s, weaponId, cacheId) => { rowOf(s.weapons, 'weaponId', weaponId).pickups = 1; rowOf(s.collectibles, 'effectId', cacheId).collected = 1; };
+  const equip = (s, weaponId) => { rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks -= 1; rowOf(s.weapons, 'weaponId', weaponId).equippedTicks = 1; };
+  for (const [weaponId, cacheId] of Object.entries(V6C.weaponCaches).slice(1)) {
+    assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => equip(s, weaponId))), [weaponId], `${weaponId} equipped`);
+    assert.deepEqual(only(clone(idle(20_000), (s) => { equip(s, weaponId); pickedUp(s, weaponId, cacheId); })), [], `${weaponId} picked up`);
+    assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => addWeaponKills(s, 'forkrunner', 1, weaponId))), [weaponId], `${weaponId} kill`);
+    // A pickup needs its cache's collection.
+    assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => { rowOf(s.weapons, 'weaponId', weaponId).pickups = 1; })), [weaponId], `${weaponId} pickup`);
+  }
+  // The starting weapon needs no pickup, but its pickups still need its cache.
+  assert.deepEqual(only(clone(idle(20_000), (s) => addWeaponKills(s, 'forkrunner', 1, 'coin-blaster'))), []);
+  assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => { rowOf(s.weapons, 'weaponId', 'coin-blaster').pickups = 1; })), ['coin-blaster']);
+  // The knife, the hand grenade and the nuke are never equipped or picked up.
+  for (const weaponId of ['litecoin-knife', 'satoshi-frag', 'nuke-liquidation']) {
+    assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => equip(s, weaponId))), [weaponId], `${weaponId} equipped`);
+    assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => { rowOf(s.weapons, 'weaponId', weaponId).pickups = 1; })), [weaponId], `${weaponId} pickup`);
+  }
+  assert.deepEqual(only(clone(idle(20_000), (s) => addWeaponKills(s, 'forkrunner', 3, 'litecoin-knife'))), [], 'the knife strikes on its own');
+  // Satoshi Frag kills need a throw; Nuke Liquidation kills need a nuke.
+  const fragKill = (s) => { addWeaponKills(s, 'forkrunner', 1, 'satoshi-frag'); Object.assign(s.grenades, { kills: 1, contacts: 1 }); };
+  assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), fragKill)), ['satoshi-frag']);
+  assert.deepEqual(only(clone(idle(20_000), (s) => { fragKill(s); Object.assign(s.grenades, { thrown: 1, detonated: 1 }); })), []);
+  assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => addWeaponKills(s, 'forkrunner', 2, 'nuke-liquidation'))), ['nuke-liquidation']);
+  assert.deepEqual(only(clone(idle(20_000), (s) => { addWeaponKills(s, 'forkrunner', 2, 'nuke-liquidation'); rowOf(s.collectibles, 'effectId', 'nuke-liquidation').collected = 1; })), []);
+  // The flag counts the offending rows.
+  assert.deepEqual(flagOf(clone(idle(20_000), (s) => { equip(s, 'hash-rail'); equip(s, 'auto-miner'); }), 'weapon-without-source'), [{ id: 'weapon-without-source', severity: 'reject', value: 2, limit: 0 }]);
+
+  // grenade-kills-above-contacts, grenade-detonations-above-launches and
+  // grenades-thrown-above-supply, each at its bound and one above.
+  const trail = (s) => {
+    addWeaponKills(s, 'forkrunner', 4, 'satoshi-frag');
+    Object.assign(s.grenades, { kills: 4, contacts: 4, thrown: 3, detonated: 3 });
+  };
+  assert.deepEqual(only(clone(idle(600), trail)), []);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => { trail(s); s.grenades.contacts = 3; }), 'grenade-kills-above-contacts'), [{ id: 'grenade-kills-above-contacts', severity: 'reject', value: 4, limit: 3 }]);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => { trail(s); s.grenades.detonated = 4; }), 'grenade-detonations-above-launches'), [{ id: 'grenade-detonations-above-launches', severity: 'reject', value: 4, limit: 3 }]);
+  assert.deepEqual(only(clone(idle(600), (s) => { trail(s); s.grenades.detonated = 5; Object.assign(rowOf(s.weapons, 'weaponId', 'launcher-rig'), { triggers: 2, pickups: 1, equippedTicks: 1 }); rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks -= 1; rowOf(s.collectibles, 'effectId', 'launcher-rig-cache').collected = 1; })), [], 'launcher shots launch too');
+  assert.deepEqual(flagOf(clone(idle(600), (s) => { trail(s); Object.assign(s.grenades, { thrown: 4, detonated: 4 }); }), 'grenades-thrown-above-supply'), [{ id: 'grenades-thrown-above-supply', severity: 'reject', value: 4, limit: 3 }]);
+  const supplied = (s) => {
+    trail(s);
+    Object.assign(rowOf(s.upgrades, 'upgradeId', 'cold-storage'), { offered: 5, selected: 5 });
+    rowOf(s.collectibles, 'effectId', 'nuke-liquidation').collected = 1;
+    Object.assign(s.grenades, { thrown: 7, detonated: 7 });
+  };
+  assert.equal(hmhV6HandGrenadeSupply(clone(idle(600), supplied)), 3 + 3 + 1, 'Extra Grenade counts three ranks at most');
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(clone(idle(600), supplied))), []);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => { supplied(s); Object.assign(s.grenades, { thrown: 8, detonated: 8 }); }), 'grenades-thrown-above-supply'), [{ id: 'grenades-thrown-above-supply', severity: 'reject', value: 8, limit: 7 }]);
+
+  // damage-dealt-mismatch: exact equality, either way.
+  const dealt = (total, weapon) => clone(idle(600), (s) => { s.totals.damageDealt = total; rowOf(s.weapons, 'weaponId', 'coin-blaster').damage = weapon; });
+  assert.deepEqual(only(dealt(500, 500)), []);
+  assert.deepEqual(flagOf(dealt(501, 500), 'damage-dealt-mismatch'), [{ id: 'damage-dealt-mismatch', severity: 'reject', value: 501, limit: 500 }]);
+  assert.deepEqual(flagOf(dealt(499, 500), 'damage-dealt-mismatch'), [{ id: 'damage-dealt-mismatch', severity: 'reject', value: 499, limit: 500 }]);
+
+  // combo-above-kills: the best combo is at most the kills.
+  const combo = (best) => clone(idle(600), (s) => { addWeaponKills(s, 'forkrunner', 5, 'coin-blaster'); s.totals.maxCombo = best; });
+  assert.deepEqual(only(combo(5)), []);
+  assert.deepEqual(flagOf(combo(6), 'combo-above-kills'), [{ id: 'combo-above-kills', severity: 'reject', value: 6, limit: 5 }]);
+});
+
+// What the second round leaves open (contract §16.6, residuals): a fabricated
+// summary that fakes a consistent trail still verifies. P11 with a Launcher Rig
+// cache, one launch and one 20-contact blast earns hard-fork-hero in 50 s; the
+// 1.8.x summary has no per-blast record, and a blast has no target cap.
+test('residual: a consistent fabricated grenade trail still verifies', () => {
+  const hardFork = clone(blankRun(3_000), (s) => {
+    addWeaponKills(s, 'bagholder-rusher', 20, 'launcher-rig');
+    s.exploration.visitedDistrictMask = 63;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 2_999;
+    Object.assign(rowOf(s.weapons, 'weaponId', 'launcher-rig'), { equippedTicks: 1, pickups: 1, triggers: 1 });
+    rowOf(s.collectibles, 'effectId', 'launcher-rig-cache').collected = 1;
+    Object.assign(s.grenades, { kills: 20, contacts: 20, detonated: 1 });
+  });
+  assert.notEqual(validateRebootRunPlausibility(schemaValid(hardFork)).verdict, 'rejected');
 });
 
 // ---------------------------------------------------------------------------
