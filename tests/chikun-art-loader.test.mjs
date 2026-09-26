@@ -52,7 +52,7 @@ test('a request loads only that region, two downloads at a time, and prescales o
   h.loader.request(id, d);
   await settle(h);
   assert.ok(h.requested.length > 0);
-  assert.ok(h.requested.every(u => u.startsWith(SCENERY_CATALOG.base + id + '/t2/') || u === SCENERY_CATALOG.base + id + '/t1/far.webp'), 'only this region, only its t2 tier (the hazy far layer ships t1 only)');
+  assert.ok(h.requested.every(u => u.startsWith(SCENERY_CATALOG.base + id + '/t2/') || u === SCENERY_CATALOG.base + id + '/t1/far.webp' || /\/t1\/[a-z]+-emit\.webp$/.test(u)), 'only this region, only its t2 tier (hazy far layer and lights ship t1 only)');
   assert.ok(h.peak() <= 2, 'at most two downloads in flight');
   assert.equal(h.loader.ready(id), true);
   const desc = SCENERY_CATALOG.regions[id];

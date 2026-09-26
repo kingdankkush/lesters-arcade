@@ -21,6 +21,8 @@ export const BACKDROP_TOP = 280;
 export const BACKDROP_BOTTOM = 694;
 export const STRIP_LAYERS = Object.freeze(['far', 'mid', 'near']);
 const PAINTER_DEPTH = { far: 0, mid: 1, near: 2 };
+// Distant lights read smaller and softer; the near street keeps full strength.
+export const EMIT_GAIN = Object.freeze({ far: 0.6, mid: 0.8, near: 1.0 });
 // Transition window, in scenery ticks around the switch (negative = before).
 export const TRANSITION = Object.freeze({ start: -300, end: 60, swapTicks: 30, swap: Object.freeze({ far: -210, mid: -160, near: -110, bands: -70 }), seamRate: 0.6, veil: 0.7 });
 // Signature veils between regions (tint mixed into the horizon colour).
@@ -259,16 +261,17 @@ export function createParallax({ loader, makeCanvas, clock = () => (typeof perfo
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < emitCount; i++) {
         const e = emitQueue[i], em = loader.emit(e.region, e.layer);
-        if (!em || Math.abs(em.density - bus.density) > 1e-3) continue;
+        if (!em) continue;
         const fogLeft = e.layer === 'far' ? 1 - bus.rig.fog.far - bus.rig.fog.mid : e.layer === 'mid' ? 1 - bus.rig.fog.mid - bus.rig.fog.near * 0.5 : 1 - bus.rig.fog.near;
-        ctx.globalAlpha = clamp(on * e.alpha * clamp(fogLeft, 0.2, 1) * (1 - 0.6 * (bus.transition?.veil ?? 0)));
+        ctx.globalAlpha = clamp(on * e.alpha * EMIT_GAIN[e.layer] * clamp(fogLeft, 0.2, 1) * (1 - 0.6 * (bus.transition?.veil ?? 0)));
+        // Lights are kept at their 1x source size and scaled here (see art-loader).
         const d = bus.density;
         for (const c of em.chunks) {
-          const cx = Math.round(c[0] * d), cy = e.y + Math.round(c[1] * d);
+          const cx = Math.round(c[0] * d), cy = e.y + Math.round(c[1] * d), dw = Math.round(c[2] * d), dh = Math.round(c[3] * d);
           let x = cx - (((e.scroll % e.period) + e.period) % e.period);
-          while (x + c[6] > 0) x -= e.period;
+          while (x + dw > 0) x -= e.period;
           x += e.period;
-          for (; x < cw; x += e.period) { ctx.drawImage(em.canvas, c[4], c[5], c[6], c[7], x, cy, c[6], c[7]); calls++; }
+          for (; x < cw; x += e.period) { ctx.drawImage(em.canvas, c[4], c[5], c[6], c[7], x, cy, dw, dh); calls++; }
         }
       }
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';

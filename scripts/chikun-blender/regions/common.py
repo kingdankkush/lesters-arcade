@@ -11,6 +11,7 @@ def tile(ctx, width, haze, copies=(-1, 1), key=None, fill=(0.62, 0.72, 0.9), fil
     """Light rig + haze + the periodic tile collection (instanced at +-width)."""
     scene = ctx['scene']
     shading.HAZE.update(haze)
+    shading.TILE['period'] = float(width)
     k = dict(KEY); k.update(key or {})
     core.sun(scene, **k)
     if rim:

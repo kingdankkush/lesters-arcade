@@ -142,3 +142,51 @@ def front_face(ctx, soil, lip, lip_dark, pebbles, roots, seed=1, grass=True, W=1
         for x in Scatter(seed + 5).slots(W, 3.2, jitter=0.5):
             kit.instance(rng.choice(tufts), coll, (x, rng.uniform(0.5, 6.0), -0.3), scale=rng.uniform(0.8, 1.2), rot_z=rng.uniform(-0.3, 0.3))
     return {}
+
+
+def block_face(ctx, body, joint, cap, seed=1, block=(14.0, 7.0), cap_h=3.5, W=1280.0, grit=None, lip=None):
+    """Urban cut face: a cap course (curb or slab edge) over coursed blocks or
+    poured layers. block = (width, height); None for poured material."""
+    coll = common.tile(ctx, W, dict(color=shading.srgb('#cbd8e0'), y0=0.0, y1=1.0, near=0.0, far=0.0))
+    def build(nb):
+        pos = nb.texcoord().outputs['Object']
+        x, y, z = nb.separate(pos)
+        vec, w = nb.periodic(pos, W)
+        n = nb.noise(vec, scale=0.12, detail=5.0, w=w)
+        c = nb.ramp(n, [(0.3, body[0]), (0.7, body[1])])
+        if block:
+            bw, bh = block
+            bw = W / max(1, round(W / bw))  # whole blocks per period so the face wraps
+            row = nb.math('FLOOR', nb.math('DIVIDE', nb.math('SUBTRACT', 0.0, z), bh))
+            off = nb.math('MULTIPLY', nb.math('FLOORED_MODULO', row, 2.0), bw * 0.5)
+            fx = nb.math('FRACT', nb.math('DIVIDE', nb.math('ADD', x, off), bw))
+            fz = nb.math('FRACT', nb.math('DIVIDE', nb.math('SUBTRACT', 0.0, z), bh))
+            ex = nb.math('MINIMUM', nb.math('MULTIPLY', fx, bw), nb.math('MULTIPLY', nb.math('SUBTRACT', 1.0, fx), bw))
+            ez = nb.math('MINIMUM', nb.math('MULTIPLY', fz, bh), nb.math('MULTIPLY', nb.math('SUBTRACT', 1.0, fz), bh))
+            j = nb.maprange(nb.math('MINIMUM', ex, ez), 0.0, 0.9, 1.0, 0.0, smooth=True)
+            rv = nb.white(nb.combine(nb.math('FLOORED_MODULO', nb.math('FLOOR', nb.math('DIVIDE', nb.math('ADD', x, off), bw)), W / bw), row, float(seed)))[0]
+            c = nb.mix(c, nb.mix(c, (0, 0, 0), 0.25), nb.math('MULTIPLY', rv, 0.6))
+            c = nb.mix(c, joint, j)
+        capm = nb.maprange(z, -cap_h - 0.4, -cap_h + 0.4, 0.0, 1.0, smooth=True)
+        c = nb.mix(c, cap, capm)
+        c = nb.mix(c, (0, 0, 0), nb.maprange(z, -30.0, -12.0, 0.3, 0.0, smooth=True))
+        normal = nb.bump(nb.math('ADD', n, 0.0), strength=0.5, distance=1.0)
+        return dict(color=c, rough=0.9, normal=normal)
+    slab = shading.material('blockface', build, haze=False)
+    kit.box('slab', coll, slab, W / 2, 20.0, -60.0, W, 40.0, 60.0)
+    rng = random.Random(f'blockface:{seed}')
+    if grit:
+        stone = shading.flat('grit', grit, rough=0.9, jitter=0.25)
+        protos = [common.rock_proto(stone, r=0.8 + 0.4 * i, seed=seed * 10 + i) for i in range(3)]
+        for x in Scatter(seed + 11).slots(W, 14.0, jitter=0.5):
+            kit.instance(rng.choice(protos), coll, (x, rng.uniform(1, 8), -0.4), scale=rng.uniform(0.6, 1.1))
+    if lip:
+        lip_mat = shading.flat('lip', lip, rough=0.8, jitter=0.2)
+        tufts = [common.grass_tuft_proto(lip_mat, h=3.0 + i * 0.7, seed=seed * 100 + i, spread=2.4) for i in range(3)]
+        for x in Scatter(seed + 5).slots(W, 5.0, jitter=0.5):
+            kit.instance(rng.choice(tufts), coll, (x, rng.uniform(0.5, 6.0), -0.3), scale=rng.uniform(0.8, 1.2))
+    return {}
+
+
+def cobble_face(ctx, stone, dark, curb, seed=3):
+    return block_face(ctx, [dark, stone], '#3b3730', curb, seed=seed, block=(11.0, 6.0), cap_h=4.0, grit='#9a9282')

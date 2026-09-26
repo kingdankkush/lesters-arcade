@@ -64,7 +64,8 @@ test('download and decoded-memory budgets per region', () => {
     assert.equal(t2, files(region).filter(([tier, t]) => tier === 't2' || (tier === 't1' && !files(region).some(([k, u]) => k === 't2' && u.src.replace('/t2/', '/t1/') === t.src))).reduce((a, [, t]) => a + t.bytes, 0), `${id}: t2 byte total`);
     // Prescaled to the device: memory = logical px * density^2 * 4 B.
     assert.ok(region.logicalPx <= 1.65e6, `${id}: ${region.logicalPx} logical px`);
-    assert.ok(region.logicalPx * 4 * 4 <= 28 * MB, `${id}: decoded at density 2`);
+    // Lights stay at 1x (drawn scaled), so they do not grow with the density.
+    assert.ok(region.logicalPx * 4 * 4 + region.emitPx * 4 <= 28 * MB, `${id}: decoded at density 2`);
   }
 });
 
