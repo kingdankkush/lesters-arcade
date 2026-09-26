@@ -2107,6 +2107,7 @@ Each card has `maxRank: 3` and `requiresWeaponId`, and maps in `progressionByWea
 - **Ordering.** Kills resolved in tick *t* are credited by `creditWeaponKills(loadout, {tick, weaponId, count})` right after kill resolution, and read at the weapon step of *t+1*.
 - **Benchmark.** Add `output60` (damage in 60 s from a full clip and a full reserve cap, in the 8-body pack scenario) and the missing Railgun rows. **Acceptance:** every maxed finite gun reaches at least the maxed Pistol's `output60`.
 - **Card art.** Branch cards reuse the weapon icons.
+- **Built (S1.3, build ledger slice 6).** The twelve cards, Magazine & Salvage (`creditWeaponKills`), Charge Speed, Capacitor Bank, the Machine Gun's heat per rank, the centre-pellet blast (pellet `floor((n − 1) / 2)`) and the Launcher's shells are in `weapon-system.mjs` and `main.mjs`; Twin Tube fires exactly 7° apart (no pellet jitter). The `output60` benchmark column and the Railgun rows (S0.3) are not built yet.
 
 ### 8.3 Level-up panel: two cards and one re-roll per card
 
@@ -2153,6 +2154,7 @@ Each card has `maxRank: 3` and `requiresWeaponId`, and maps in `progressionByWea
 - **Height budget.** +72 px on a portrait phone, +36 px in landscape and on desktop. It must fit **without scrolling** at 390×844, 414×896 and 896×414, checked with tap-geometry assertions in `visual:reboot`.
 - **After use** the strip is disabled and reads "Re-roll used". Focus moves to the new card, a polite live region announces it, and the fade is skipped under reduced motion.
 - **Controls.** Keyboard `R` (unbound today), and gamepad X on release.
+- **Built (S1.3, build ledger slice 6).** Card 2 is drawn before card 1, so "your gun" holds whenever a candidate has a card, and card 1 is a general draw without it. The runtime passes the guns that have ammo on the offer's tick (`weaponIdsWithAmmo`). The strip's geometry is inline until the portal stylesheet owns it; its fit at 390×844, 414×896 and 896×414 is an integration check.
 
 ### 8.4 Evolutions: mastery plus a Genesis Seal
 
