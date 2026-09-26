@@ -27,7 +27,7 @@ const BUILD_HASH = /^site-\d+\.\d+\.\d+:game-(\d+\.\d+\.\d+):cabinet-\d+\.\d+\.\
 // file order. Adding runs to a file re-pins it; nothing else may move it.
 const PINNED = Object.freeze({
   '1.8.3': { runs: 68, digest: 'ecd897f5e48857ecaaa4dcbebc17fa77e686199c5db870b3b24bff3e07d3c697' },
-  '1.8.4': { runs: 12, digest: 'c4bdc7c9cd80de3e45e7fe45ccdf0cea8288d83c4253de2642c77b5740e4be3f' },
+  '1.8.4': { runs: 52, digest: '7a347eb31de448ca210015f5ea588a88911fef8e601a11268b2417635a760bc5' },
 });
 
 // Every flag an honest run in the corpus carries today, by release/label. A
@@ -36,6 +36,7 @@ const PINNED = Object.freeze({
 const EXPECTED_FLAGS = Object.freeze({
   '1.8.3/r08-brawler-relay-3000': ['kills-near-capacity'],
   '1.8.3/r62-grenadier-yard-110000': ['score-near-ceiling'],
+  '1.8.4/r70-knifer-hashwood-110000': ['kills-near-capacity'],
 });
 
 const corpora = readdirSync(CORPUS_DIR)

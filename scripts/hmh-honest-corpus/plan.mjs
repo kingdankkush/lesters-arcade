@@ -64,11 +64,20 @@ export const PLAN = Object.freeze([
   { style: 'camper', entry: 'mining', tickCap: 110_000 },
   // Long-run lottery: the styles that lived longest, on fresh seeds, uncapped.
   ...LOTTERY_STYLES.flatMap((style) => E.slice(0, 4).map((entry, k) => ({ style, entry: E[(k + LOTTERY_STYLES.indexOf(style)) % 5], tickCap: 110_000, lottery: true }))),
+  // Round 3, item 1 (melee trail): knife-heavy play, two runs per entry (the
+  // second pass flips the hero), and Forked Standard play, six per entry (the
+  // seeded Standard cache appears between ticks 10,800 and 25,200, and about
+  // a third of the specialists live to hold it); none of them surrenders.
+  ...E.map((entry) => ({ style: 'knifer', entry, tickCap: 110_000 })),
+  ...E.map((entry) => ({ style: 'knifer', entry, tickCap: 110_000 })),
+  ...[0, 1, 2, 3, 4, 5].flatMap(() => E.map((entry) => ({ style: 'standard', entry, tickCap: 110_000 }))),
 ].map((run, index) => Object.freeze({ ...run, index, heroId: HEROES[index % 2], label: `r${String(index).padStart(2, '0')}-${run.style}-${run.entry}-${run.tickCap}` })));
 
-// The twelve-run sample that proves the harness on a new child: one run per
+// The fourteen-run sample that proves the harness on a new child: one run per
 // pilot style, every level entry, both heroes, two of them long-run lottery rows.
-export const SAMPLE_LABELS = Object.freeze([0, 5, 9, 13, 20, 27, 37, 43, 46, 50, 55, 61].map((index) => PLAN[index].label));
+export const SAMPLE_LABELS = Object.freeze([0, 5, 9, 13, 20, 27, 37, 43, 46, 50, 55, 61, 68, 78].map((index) => PLAN[index].label));
+// The melee-trail rows (round 3, item 1): every knifer and standard run (r68 to r107).
+export const MELEE_LABELS = Object.freeze(PLAN.filter((run) => ['knifer', 'standard'].includes(run.style)).map((run) => run.label));
 
 const hexBytes = (hex) => Uint8Array.from(hex.match(/../g), (pair) => parseInt(pair, 16));
 const plain = (value) => JSON.parse(JSON.stringify(value));

@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { HARNESS_BUILD_HASH, HARNESS_RELEASE, SEASON_ID } from '../scripts/hmh-honest-corpus/identity.mjs';
-import { HEROES, LEVEL_ENTRIES, PLAN, SAMPLE_LABELS, identityFor } from '../scripts/hmh-honest-corpus/plan.mjs';
+import { HEROES, LEVEL_ENTRIES, MELEE_LABELS, PLAN, SAMPLE_LABELS, identityFor } from '../scripts/hmh-honest-corpus/plan.mjs';
 import { STYLE_DEFAULTS } from '../scripts/hmh-honest-corpus/pilot.mjs';
 import { CORPUS_SCHEMA, serializeCorpus } from '../scripts/hmh-honest-corpus/corpus.mjs';
 import { runChild } from '../scripts/hmh-honest-corpus/child-driver.mjs';
@@ -21,14 +21,25 @@ import { HMH_CABINET_VERSION } from '../apps/portal/src/hmh-cabinet-version.mjs'
 
 const CORPUS_1_8_3 = JSON.parse(readFileSync(new URL('./fixtures/hmh-honest-corpus/real-child-1.8.3.json', import.meta.url), 'utf8'));
 
-test('the plan is 68 unique rows over every level entry, both heroes and every pilot style; the sample is twelve of them', () => {
-  assert.equal(PLAN.length, 68);
-  assert.equal(new Set(PLAN.map((run) => run.label)).size, 68);
+test('the plan is 108 unique rows over every level entry, both heroes and every pilot style; the sample is fourteen of them', () => {
+  assert.equal(PLAN.length, 108);
+  assert.equal(new Set(PLAN.map((run) => run.label)).size, 108);
   assert.deepEqual([...new Set(PLAN.map((run) => run.entry))].sort(), [...LEVEL_ENTRIES].sort());
   assert.deepEqual([...new Set(PLAN.map((run) => run.heroId))].sort(), [...HEROES].sort());
   assert.deepEqual([...new Set(PLAN.map((run) => run.style))].sort(), Object.keys(STYLE_DEFAULTS).sort());
   for (const [index, run] of PLAN.entries()) assert.equal(run.label, `r${String(index).padStart(2, '0')}-${run.style}-${run.entry}-${run.tickCap}`);
-  assert.equal(SAMPLE_LABELS.length, 12);
+  // The first 68 rows are the 1.8.3 plan, untouched; rows 68 to 107 are the
+  // round-3 melee-trail rows (ten knifer, thirty standard; every entry and
+  // both heroes in each style).
+  for (const [style, count] of [['knifer', 10], ['standard', 30]]) {
+    const rows = PLAN.filter((run) => run.style === style);
+    assert.equal(rows.length, count, style);
+    assert.deepEqual([...new Set(rows.map((run) => run.entry))].sort(), [...LEVEL_ENTRIES].sort(), style);
+    assert.deepEqual([...new Set(rows.map((run) => run.heroId))].sort(), [...HEROES].sort(), style);
+    assert.ok(rows.every((run) => run.index >= 68 && run.tickCap === 110_000), style);
+  }
+  assert.deepEqual(MELEE_LABELS, PLAN.slice(68).map((run) => run.label));
+  assert.equal(SAMPLE_LABELS.length, 14);
   const sample = PLAN.filter((run) => SAMPLE_LABELS.includes(run.label));
   assert.deepEqual([...new Set(sample.map((run) => run.style))].sort(), Object.keys(STYLE_DEFAULTS).sort(), 'one run per style at least');
   assert.deepEqual([...new Set(sample.map((run) => run.entry))].sort(), [...LEVEL_ENTRIES].sort());

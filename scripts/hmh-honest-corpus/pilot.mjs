@@ -54,6 +54,20 @@ export const STYLE_DEFAULTS = Object.freeze({
   turtle: { kite: 2.2, pickups: true, sites: true, grenades: true, swaps: true, explore: false, boss: true, healAt: 0.7, healRange: 2600, orbit: true, orbitRadius: 700, localRadius: 900, upgrades: ['proof-of-work', 'diamond-hands', 'hot-wallet', 'gas-optimization', 'compound-interest', 'hardened-wallet', 'precision-ledger', 'hard-fork-rounds'] },
   // Score-greedy: multipliers first (pushes XP and score toward the ceilings).
   greedy: { kite: 1.8, pickups: true, sites: true, grenades: true, swaps: true, explore: false, boss: true, healAt: 0.6, healRange: 3200, orbit: true, orbitRadius: 600, localRadius: 1400, upgrades: ['validator-training', 'block-reward', 'proof-of-work', 'diamond-hands', 'compound-interest', 'hot-wallet'] },
+  // Knife-heavy, point-blank play: never kites, walks into blade reach of the
+  // nearest hostile and stays there, breaking off only for a heal when low;
+  // keeps the starting Coin Blaster so the Litecoin Knife lands the finishing
+  // blows. The shipped input model cannot hold fire (auto-fire has no player
+  // setting), so this is the nearest honest play to knife-only.
+  knifer: { melee: true, kite: 0, pickups: true, sites: false, grenades: false, swaps: false, explore: false, boss: false, keepMoving: false, steer: false, tellAvoid: 0.3, hunt: true, healAt: 0.5, healRange: 1500, upgrades: ['diamond-hands', 'proof-of-work', 'hot-wallet', 'hardened-wallet', 'compound-interest'] },
+  // Forked Standard specialist: plays like a hunter until the seeded Standard
+  // cache appears (tick 10,800 or later), treks to it, swaps to the Standard
+  // and keeps it, then fights at thrust reach so its strikes land; takes the
+  // Standard's own upgrades (tempo first, which shortens its cadence).
+  // Until then it plays a kiting pickup hunter (moving between far pickups
+  // keeps the crowd trailing), throws grenades at clusters and heals early;
+  // with the Standard in hand it closes only while its health holds.
+  standard: { melee: 'forked-standard', meleeHealthAt: 0.4, weaponPreference: ['forked-standard', 'auto-miner', 'scatter-shotgun', 'lightning-ledger', 'bear-market-burner', 'coin-blaster', 'launcher-rig', 'hash-rail'], kite: 1.8, pickups: true, sites: false, grenades: true, swaps: true, explore: false, boss: false, pickupFirst: true, favour: ['forked-standard-cache'], favourRange: Infinity, hunt: true, healAt: 0.6, healRange: 3200, upgrades: ['standard-tempo', 'standard-reach', 'standard-force', 'canonical-fork', 'proof-of-work', 'diamond-hands', 'hot-wallet', 'hardened-wallet'] },
 });
 
 export function createPilot({ style, seed, tickCap, entry }) {
@@ -171,7 +185,7 @@ export function createPilot({ style, seed, tickCap, entry }) {
       if (exploreIndex < exploreRoute.length) return exploreRoute[exploreIndex];
     }
     const favoured = pickups.filter((p) => cfg.favour.includes(p.effect.effectId)).sort((a, b) => dist(a) - dist(b))[0];
-    if (favoured && dist(favoured) < 3000) return favoured;
+    if (favoured && dist(favoured) < (cfg.favourRange ?? 3000)) return favoured;
     const local = cfg.localRadius ?? Infinity;
     const reachPickups = pickups.filter((p) => cfg.pickupFirst || (dist(p) < Math.min(1400, local)) || (p.effect.kind === 'weapon-cache' && dist(p) < local));
     const sites = cfg.sites ? siteCandidates(spies).filter((s) => cfg.pickupFirst || dist(s) < Math.min(2200, local * 1.6)) : [];
@@ -185,9 +199,11 @@ export function createPilot({ style, seed, tickCap, entry }) {
       if (!walkableAt(target.x, target.y)) orbitSide = -orbitSide;
       return { ...target, id: `orbit-${Math.floor(tick / 30)}`, kind: 'orbit' };
     }
-    // Nothing to fetch: wander toward a random open point near the current strip.
+    // Nothing to fetch: wander toward a random open point near the current
+    // strip (or, for a style that roams a region, into that region first).
     if (!goal || goal.kind !== 'wander' || dist(goal) < 120) {
-      const strip = Math.max(0, Math.min(11_999, me.x + (random() - 0.5) * 1600));
+      const [minX, maxX] = cfg.wanderX ?? [0, 11_999];
+      const strip = me.x < minX || me.x > maxX ? minX + random() * (maxX - minX) : Math.max(minX, Math.min(maxX, me.x + (random() - 0.5) * 1600));
       return { x: strip, y: 800 + random() * 3200, id: `wander-${tick}`, kind: 'wander' };
     }
     return goal;
@@ -377,9 +393,19 @@ export function createPilot({ style, seed, tickCap, entry }) {
       }
       move = { x: goalDir.x + dx * kite, y: goalDir.y + dy * kite };
       if (!goal && danger < 0.01 && nearest && cfg.hunt) move = flowTowards(me, nearest, tick);
-      if (cfg.steer) move = contextSteer(me, move, enemies, tick, kite, near > 0);
+      // Point-blank play: in melee mode (always for the knifer; with the
+      // Standard active for its specialist, while its health holds) close on
+      // the nearest hostile instead of kiting, unless a needed heal is the goal.
+      const meleeMode = (cfg.melee === true || (typeof cfg.melee === 'string' && spies.loadout?.activeWeaponId === cfg.melee))
+        && health >= maxHealth * (cfg.meleeHealthAt ?? 0);
+      const healing = goal?.effect?.kind === 'heal' && health < maxHealth * cfg.healAt;
+      if (meleeMode && nearest && !healing) {
+        move = flowTowards(me, nearest, tick);
+        stats.chaseTicks = (stats.chaseTicks ?? 0) + 1;
+      }
+      if (cfg.steer && !meleeMode) move = contextSteer(me, move, enemies, tick, kite, near > 0);
       // Never stand still while enemies are near: orbit the crowd instead.
-      else if (cfg.keepMoving && Math.hypot(move.x, move.y) < 0.35 && near > 0) {
+      else if (cfg.keepMoving && !meleeMode && Math.hypot(move.x, move.y) < 0.35 && near > 0) {
         const ox = me.x - cx / near;
         const oy = me.y - cy / near;
         const od = Math.hypot(ox, oy) || 1;
@@ -442,7 +468,9 @@ export function createPilot({ style, seed, tickCap, entry }) {
     const loadout = spies.loadout;
     if (!surrender && cfg.swaps && loadout && tick >= nextSwapTick && tick >= swapHeldUntil + 2) {
       const weapons = loadout.weapons ?? {};
-      const usable = (id) => weapons[id]?.owned && ((weapons[id].ammoInClip ?? 0) > 0 || (weapons[id].reserveAmmo ?? 0) > 0 || weapons[id].reserveAmmo === null || id === 'coin-blaster');
+      // The Coin Blaster never runs dry and the Forked Standard is a melee
+      // weapon with no ammunition; every other gun needs a round somewhere.
+      const usable = (id) => weapons[id]?.owned && ((weapons[id].ammoInClip ?? 0) > 0 || (weapons[id].reserveAmmo ?? 0) > 0 || weapons[id].reserveAmmo === null || id === 'coin-blaster' || id === 'forked-standard');
       const owned = Object.values(weapons).filter((w) => w.owned).length;
       if (cfg.cycleSwaps) {
         if (owned > 1) { swapHeldUntil = tick + 3; stats.swapPresses += 1; }

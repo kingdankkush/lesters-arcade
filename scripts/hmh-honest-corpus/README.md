@@ -21,18 +21,24 @@ here came out of the child's own simulation, accumulator and progression.
   the real module and only remember the state object a factory returns, so a
   pilot can see what a player sees. Nothing writes simulation state.
 - `pilot.mjs` holds the honest pilots (`STYLE_DEFAULTS`): suicide, kamikaze,
-  camper, idle, brawler, grenadier, hunter, explorer, turtle and greedy. A
-  pilot reads visible state (positions, pickups, sites, its own health,
-  charges and weapons) and answers with a gamepad: left stick move, right
-  stick aim, LB grenade, RB weapon-next. Firing, melee and dodges stay
-  automatic, as in the shipped input model.
-- `plan.mjs` is the 68-row plan (style x entry x tick cap) and each row's
+  camper, idle, brawler, grenadier, hunter, explorer, turtle, greedy, and the
+  two melee styles of round 3 item 1: knifer (point-blank play on the
+  starting Coin Blaster, so the Litecoin Knife lands the finishing blows) and
+  standard (a Forked Standard specialist that treks to the seeded Standard
+  cache, keeps the Standard and fights at thrust reach). A pilot reads
+  visible state (positions, pickups, sites, its own health, charges and
+  weapons) and answers with a gamepad: left stick move, right stick aim, LB
+  grenade, RB weapon-next. Firing, melee and dodges stay automatic, as in the
+  shipped input model (auto-fire has no player setting, so no honest style
+  can hold fire: knife-only play means point-blank play).
+- `plan.mjs` is the 108-row plan (style x entry x tick cap) and each row's
   identity: a seed ticket issued with the **public fixture secret** of
   `tests/fixtures/ranked/build-fixtures.mjs`, its salt searched until the seed
   lands on the planned level entry. The seed binds the build hash, so every
   child release plays fresh seeds from the same plan. `SAMPLE_LABELS` is the
-  twelve-run sample (every style, entry and hero) that proves the harness on a
-  new child.
+  fourteen-run sample (every style, entry and hero) that proves the harness
+  on a new child; `MELEE_LABELS` is the forty melee-trail rows (r68 to r107:
+  ten knifer, thirty standard).
 - `identity.mjs` derives the build hash the portal would send for this
   checkout: `site-<SITE_VERSION>:game-<GAME_VERSION>:cabinet-<HMH_CABINET_VERSION>`.
 - `verify.mjs` verifies a run as Ranked would: `verifyRankedRun` on a full
@@ -45,9 +51,10 @@ here came out of the child's own simulation, accumulator and progression.
 
 ```bash
 node scripts/hmh-honest-corpus/batch.mjs plan
-node scripts/hmh-honest-corpus/batch.mjs run --sample --concurrency=4     # the twelve-run sample
+node scripts/hmh-honest-corpus/batch.mjs run --sample --concurrency=4     # the fourteen-run sample
+node scripts/hmh-honest-corpus/batch.mjs run --melee --concurrency=6      # the forty melee-trail rows
 node scripts/hmh-honest-corpus/batch.mjs run --only=r08-brawler-relay-3000
-node scripts/hmh-honest-corpus/batch.mjs run                              # all 68 rows (about 25 min at 6)
+node scripts/hmh-honest-corpus/batch.mjs run                              # all 108 rows (about 40 min at 6)
 node scripts/hmh-honest-corpus/batch.mjs verify                           # runs/results.json; exit 1 on any reject
 node scripts/hmh-honest-corpus/batch.mjs report
 node scripts/hmh-honest-corpus/batch.mjs export --commit=$(git rev-parse --short HEAD) \

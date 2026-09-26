@@ -4,7 +4,7 @@
 // driven by the honest pilots of pilot.mjs one 60 Hz frame at a time.
 //
 //   node scripts/hmh-honest-corpus/batch.mjs plan
-//   node scripts/hmh-honest-corpus/batch.mjs run [--only=label,..|--sample] [--concurrency=4] [--runs=dir]
+//   node scripts/hmh-honest-corpus/batch.mjs run [--only=label,..|--sample|--melee] [--concurrency=4] [--runs=dir]
 //   node scripts/hmh-honest-corpus/batch.mjs verify [--runs=dir] [--out=file]
 //   node scripts/hmh-honest-corpus/batch.mjs report [--results=file]
 //   node scripts/hmh-honest-corpus/batch.mjs export --commit=<sha> --out=file [--runs=dir] [--merge]
@@ -18,7 +18,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { HARNESS_BUILD_HASH, HARNESS_RELEASE, SEASON_ID } from './identity.mjs';
-import { PLAN, SAMPLE_LABELS, identityFor } from './plan.mjs';
+import { MELEE_LABELS, PLAN, SAMPLE_LABELS, identityFor } from './plan.mjs';
 import { verifyAll } from './verify.mjs';
 import { buildCorpus, mergeCorpus, serializeCorpus } from './corpus.mjs';
 import { printReport } from './report.mjs';
@@ -80,7 +80,7 @@ if (command === 'plan') {
   for (const run of PLAN) console.log(run.label.padEnd(34), run.heroId.padEnd(13), SAMPLE_LABELS.includes(run.label) ? 'sample' : '');
   console.log(`${PLAN.length} runs; child ${HARNESS_RELEASE} buildHash ${HARNESS_BUILD_HASH}`);
 } else if (command === 'run') {
-  const only = opts.sample ? [...SAMPLE_LABELS] : opts.only ? String(opts.only).split(',') : null;
+  const only = opts.sample ? [...SAMPLE_LABELS] : opts.melee ? [...MELEE_LABELS] : opts.only ? String(opts.only).split(',') : null;
   const failures = await runAll({ only, concurrency: Math.min(6, Math.max(1, Number(opts.concurrency ?? 4))), runsDir });
   process.exitCode = failures ? 1 : 0;
 } else if (command === 'verify') {
