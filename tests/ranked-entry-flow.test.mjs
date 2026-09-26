@@ -10,6 +10,7 @@ import {
   RANKED_CLOSED_MESSAGE, RANKED_ENTRY_EVENT, RANKED_PAUSED_MESSAGE, SEED_TICKET_MAX_AGE_MS,
 } from '../apps/portal/src/ranked-entry-flow.mjs';
 import { entryChipModel, mountEntryChip, balanceChipModel } from '../apps/portal/src/wallet-chips.mjs';
+import { FAUCET_LINK_TEXT } from '../apps/portal/src/ranked-facts.mjs';
 import * as rankedIdentity from '../apps/portal/src/ranked-identity.mjs';
 
 const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
@@ -35,7 +36,7 @@ test('each wallet error kind maps to one message and one action', () => {
   const table = [
     [{ code: 4001, message: 'User rejected the request.' }, 'user-cancelled', 'You cancelled in your wallet. Nothing was charged.', ['Try again']],
     [new Error('Wrong network: wallet is on chain 1, expected 4441'), 'wrong-network', 'Your wallet is on another network.', ['Switch to LiteForge']],
-    [{ code: 'INSUFFICIENT_FUNDS', shortMessage: 'insufficient funds for intrinsic transaction cost' }, 'insufficient-funds', 'You need about 0.1025 zkLTC. Balance 0.0100 zkLTC.', ['Get zkLTC', 'Re-check']],
+    [{ code: 'INSUFFICIENT_FUNDS', shortMessage: 'insufficient funds for intrinsic transaction cost' }, 'insufficient-funds', 'You need about 0.1025 zkLTC. Balance 0.0100 zkLTC.', ['Get free zkLTC (0.05 per request)', 'Re-check']],
     [new Error('A connected wallet is required to pay the Ranked entry.'), 'missing-wallet', null, ['Sign in']],
     [{ shortMessage: 'could not coalesce error', message: 'could not coalesce error (error={ "code": -32603 }, payload=…, code=UNKNOWN_ERROR, version=6.13.4)' }, 'wallet-error', 'could not coalesce error', ['Try again']],
   ];
@@ -489,15 +490,16 @@ test('a funds error at send shows the balance and total the check read, rounded 
   assert.equal(modal.dom.rankedEntryChainGuard.children[0].textContent, 'You need about 0.1026 zkLTC. Balance 0.5000 zkLTC.', 'not "Balance unknown"');
 
   // Unfunded at the check: the balance rounds down and the amount owed up, so
-  // a small shortfall never reads as enough. Get zkLTC links the faucet and
-  // Re-check reads again.
+  // a small shortfall never reads as enough. The faucet link names the amount
+  // per request (ranked-onboarding) and Re-check reads again.
   const short = liveModal({ readiness: [{ ...FUNDED, ok: false, hasFunds: false, errorKind: 'insufficient-funds', balanceWei: 102_499_999_999_999_999n, needWei: 102_500_000_000_000_000n }, FUNDED] });
   await until(() => !short.dom.rankedEntryChainGuard.hidden, 'the unfunded guard');
   const [message, actions] = short.dom.rankedEntryChainGuard.children;
   assert.equal(message.textContent, 'You need about 0.1025 zkLTC. Balance 0.1024 zkLTC.');
   assert.equal(short.dom.rankedEntryBalance.textContent, '0.1024 zkLTC');
   const [faucet, recheck] = actions.children;
-  assert.deepEqual([faucet.tag, faucet.textContent, faucet.href, faucet.target, faucet.rel], ['a', 'Get zkLTC', FAUCET, '_blank', 'noopener noreferrer']);
+  assert.deepEqual([faucet.tag, faucet.textContent, faucet.href, faucet.target, faucet.rel], ['a', FAUCET_LINK_TEXT, FAUCET, '_blank', 'noopener noreferrer']);
+  assert.equal(FAUCET_LINK_TEXT, 'Get free zkLTC (0.05 per request)');
   assert.equal(recheck.textContent, 'Re-check');
   assert.equal(short.dom.rankedEntryApprove.disabled, true);
   recheck.click();

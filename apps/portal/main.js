@@ -5107,10 +5107,12 @@ function requestRankedEntry(pendingSession = null) {
     const entryFeeWei = String(pendingSession?.entryFeeWei ?? '0');
     if (dom.rankedEntryFee) dom.rankedEntryFee.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(entryFeeWei);
     // Fee + settlement reserve (owner decisions 2026-09-16 and 2026-09-23).
-    // The client constant is shown until the contract's quoteEntry answers.
+    // The client constant is shown until the contract's quoteEntry answers;
+    // then every row, the entry included, is the quote's (display only).
     let entryTotalWei = entryFeeWei === '0' ? '0' : rankedEntryTotalWei(entryFeeWei);
-    const renderEntryTotals = (reserveWei, totalWei) => {
+    const renderEntryTotals = (reserveWei, totalWei, quotedFeeWei = null) => {
       entryTotalWei = String(totalWei);
+      if (dom.rankedEntryFee && entryFeeWei !== '0' && quotedFeeWei !== null && quotedFeeWei !== undefined) dom.rankedEntryFee.textContent = formatZkLtcWei(String(quotedFeeWei));
       if (dom.rankedEntryReserve) dom.rankedEntryReserve.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(String(reserveWei));
       if (dom.rankedEntryTotal) dom.rankedEntryTotal.textContent = entryFeeWei === '0' ? 'None' : formatZkLtcWei(entryTotalWei);
     };
@@ -5376,7 +5378,7 @@ function requestRankedEntry(pendingSession = null) {
 
     // Live: show the cached background pre-flight at once, then refresh.
     const cached = peekRankedPreflight(requestedGameId);
-    if (cached?.entryTotalWei !== null && cached?.entryTotalWei !== undefined) renderEntryTotals(cached.settlementGasReserveWei ?? 0n, cached.entryTotalWei);
+    if (cached?.entryTotalWei !== null && cached?.entryTotalWei !== undefined) renderEntryTotals(cached.settlementGasReserveWei ?? 0n, cached.entryTotalWei, cached.entryFeeWei);
     if (cached && dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = `${formatZkLtc4(cached.balanceWei ?? 0n)} zkLTC`;
     if (needsSignIn) setStatus('', 'Sign in with your wallet to play Ranked. The signature is free and sends no transaction.');
 
@@ -5415,7 +5417,7 @@ function requestRankedEntry(pendingSession = null) {
       }
       // Right chain → the contract's exact quote and the balance (rounded
       // down, like every balance; the amount owed rounds up).
-      if (r.contractGate?.entryTotalWei !== undefined) renderEntryTotals(r.contractGate.settlementGasReserveWei ?? 0n, r.contractGate.entryTotalWei);
+      if (r.contractGate?.entryTotalWei !== undefined) renderEntryTotals(r.contractGate.settlementGasReserveWei ?? 0n, r.contractGate.entryTotalWei, r.contractGate.entryFeeWei);
       const balanceText = `${formatZkLtc4(r.balanceWei ?? 0n)} zkLTC`;
       if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = balanceText;
       lastFundsAmounts = { totalZkLtc: formatZkLtc4(r.needWei ?? entryTotalWei, { roundUp: true }), balanceZkLtc: balanceText };

@@ -164,11 +164,12 @@ test('homepage offers play before decorative marquee media in reading and focus 
   assert.ok(play < media, 'place gameplay entry before optional decorative media, not below the mobile fold');
 });
 
-test('homepage keeps Browse Arcade and wallet entry beside the explicit HMH quick-start', () => {
+test('homepage keeps Play free now and wallet entry beside the explicit HMH quick-start', () => {
   const html = readFileSync(new URL('../apps/portal/index.html', import.meta.url), 'utf8');
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(html, /id="officialHmhFreeQuickplayButton"[^>]*>Play Hard Money Heroes Free</u);
-  assert.match(html, /id="officialGuestEnterButton"[^>]*>Browse Arcade</u);
+  // ranked-onboarding (2026-09-26): the primary action says what it does.
+  assert.match(html, /id="officialGuestEnterButton"[^>]*>Play free now</u);
   assert.match(html, /id="officialConnectButton"[^>]*>Sign in</u);
   assert.match(html, /id="officialGuestQuickplayStatus"[^>]*aria-live="polite"/u);
   assert.match(main, /wireHmhFreeQuickplay/u);

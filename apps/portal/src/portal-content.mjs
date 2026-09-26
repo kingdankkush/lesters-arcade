@@ -4,6 +4,7 @@
 // builder only: server/** and api/** never import it (tests/portal-copy.test.mjs).
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
 import { JACKPOT_LIVE } from './jackpot-config.mjs';
+import { RANKED_FACTS, RANKED_WORDING } from './ranked-facts.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
 export const PORTAL_GAMES = Object.freeze([
@@ -71,6 +72,28 @@ export const JACKPOT_NAME = "Chikun's Escape Weekly Jackpot";
 // JACKPOT_RULES_PATH of jackpot-config.mjs, as a literal: an import would add a shared chunk to the
 // initial bundle (tests/jackpot-ui-rules-page.test.mjs pins the two equal).
 const JACKPOT_RULES_URL_PATH = '/jackpot/chikun';
+
+// The Free card of each game's mode select (ranked-onboarding, 2026-09-26). True in every flag
+// state: Free play never needs a wallet or touches the chain.
+const FREE_MODE_LINES = Object.freeze({
+  'lester-blaster': `${RANKED_WORDING.free} It costs nothing, and runs are not ranked.`,
+  chikun: `${RANKED_WORDING.free} It costs nothing, and runs are not ranked.`,
+  stacked: `${RANKED_WORDING.free} It costs nothing, lets you pick your starting level, and is not ranked.`,
+});
+
+// The "Ranked" rows of each game's details (discover pages and the SPA game view), live only.
+// Every number comes from RANKED_FACTS; the guide link is RANKED_FACTS.guidePath.
+function rankedSectionFor(gameId) {
+  return Object.freeze([
+    Object.freeze(['Price', RANKED_WORDING.price]),
+    Object.freeze(['Free zkLTC', RANKED_WORDING.faucet]),
+    Object.freeze(['What is checked', gameId === 'lester-blaster'
+      ? "The arcade's server plausibility-checks your run against the game's limits; it is not replayed."
+      : "The arcade's server replays your run from its recorded inputs before it is published on LitVM."]),
+    Object.freeze(['Boards', `${RANKED_FACTS.boards.slice(0, -1).join(', ')} and ${RANKED_FACTS.boards[RANKED_FACTS.boards.length - 1]} boards rank the best verified score of each wallet. Weekly boards reset every ${RANKED_FACTS.weeklyReset}.`]),
+    Object.freeze(['Achievements', `${RANKED_FACTS.achievements[gameId]} achievements to earn from verified Ranked runs, shown on your profile.`]),
+  ]);
+}
 
 const joinList = items => items.length < 3 ? items.join(' and ') : items.slice(0, -1).join('; ')+'; and '+items[items.length-1];
 
@@ -198,6 +221,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.`
           : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
+        free: FREE_MODE_LINES['lester-blaster'],
       }),
       chikun: Object.freeze({
         copy: live
@@ -209,6 +233,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play with replay verification. Accepted scores are saved on this device; nothing is published on chain yet.',
+        free: FREE_MODE_LINES.chikun,
       }),
       stacked: Object.freeze({
         copy: live
@@ -220,6 +245,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play from level 1 with no undo, checked by replay. Accepted scores are saved on this device; nothing is published on chain yet.',
+        free: FREE_MODE_LINES.stacked,
       }),
     }),
     // The guest line under the mode-select cards.
@@ -241,6 +267,9 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
     rankedDetail: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live
       ? `Free Mode is open to everyone and needs no wallet. Ranked costs ${total} testnet zkLTC per run; the arcade server ${game.id === 'lester-blaster' ? 'plausibility-checks each run (it is not replayed)' : 'replays each run from your inputs'} before publishing it on LitVM.`
       : 'Free Mode is open to guests. Wallet-connected Ranked is a device-local preview with no fees or prizes.']))),
+    // Game details "Ranked" rows (discover pages and the SPA game view): live only, since a preview has
+    // no price, publishing or achievements to state. Each row is [label, text].
+    rankedSection: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live ? rankedSectionFor(game.id) : null]))),
     // SPA headers of the Scores and Profile pages, and the splash wallet note.
     scoresView: hosted ? 'Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs, best score per wallet.' : 'Browse the device-local Ranked preview records saved in this browser.',
     profileWalletView: live ? 'Your verified Ranked runs, achievements, and on-chain name are tied to this wallet and follow you to any device.'
@@ -425,12 +454,17 @@ export function portalSchema(path = '/', copy = PORTAL_COPY) {
   return JSON.stringify({'@context':'https://schema.org','@graph':graph}).replace(/</g,'\\u003c');
 }
 
+// The player guide link under a game's "Ranked" rows (discover pages and the SPA game view).
+export const RANKED_GUIDE_LINK_TEXT = 'How Ranked works: steps, free zkLTC and fixes →';
+
 export function renderGameDetails(slug, copy = PORTAL_COPY) {
   const game=gameFor(slug);
   if(!game)return '';
+  const ranked=copy.rankedSection?.[game.id];
   return `<section class="game-detail-story" aria-label="About ${escapeHtml(game.title)}">
     <div><p class="portal-kicker">${escapeHtml(game.genre)}</p><h2>${escapeHtml(game.tag)}</h2><p>${escapeHtml(game.description)}</p></div>
-    <dl><div><dt>Your goal</dt><dd>${escapeHtml(game.goal)}</dd></div><div><dt>How to play</dt><dd>${escapeHtml(game.controls)}</dd></div><div><dt>Free or Ranked?</dt><dd>${escapeHtml(copy.rankedDetail[game.id])}</dd></div></dl>
+    <dl><div><dt>Your goal</dt><dd>${escapeHtml(game.goal)}</dd></div><div><dt>How to play</dt><dd>${escapeHtml(game.controls)}</dd></div><div><dt>Free or Ranked?</dt><dd>${escapeHtml(copy.rankedDetail[game.id])}</dd></div></dl>${ranked ? `
+    <section class="game-detail-ranked" aria-labelledby="gameRanked-${game.slug}"><h3 id="gameRanked-${game.slug}">Ranked</h3><dl>${ranked.map(([label,text])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(text)}</dd></div>`).join('')}</dl><a href="${RANKED_FACTS.guidePath}" class="portal-text-link">${escapeHtml(RANKED_GUIDE_LINK_TEXT)}</a></section>` : ''}
     <a href="/games" class="portal-text-link">Explore all games →</a></section>`;
 }
 

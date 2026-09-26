@@ -1,4 +1,5 @@
-import { PORTAL_COPY, portalPageMeta, portalSchema, gameFor } from './portal-content.mjs';
+import { PORTAL_COPY, RANKED_GUIDE_LINK_TEXT, portalPageMeta, portalSchema, gameFor } from './portal-content.mjs';
+import { RANKED_FACTS } from './ranked-facts.mjs';
 
 // Text-only DOM construction keeps even an arbitrary URL slug out of an HTML
 // parser. Game facts resolve through the allowlisted public catalog. The copy
@@ -15,7 +16,18 @@ export function gameDetailsNode(documentRef,slug,copy=PORTAL_COPY) {
     const row=node('div','');row.append(node('dt',label),node('dd',text));list.append(row);
   }
   const link=node('a','Explore all games →','portal-text-link');link.setAttribute('href','/games');
-  section.append(intro,list,link);return section;
+  section.append(intro,list);
+  // The "Ranked" rows, as renderGameDetails prerenders them (live copy only).
+  const rows=copy.rankedSection?.[game.id];
+  if(rows){
+    const ranked=node('section','','game-detail-ranked');ranked.setAttribute('aria-labelledby','gameRanked-'+game.slug);
+    const heading=node('h3','Ranked');heading.setAttribute('id','gameRanked-'+game.slug);
+    const facts=node('dl','');
+    for(const [label,text] of rows){const row=node('div','');row.append(node('dt',label),node('dd',text));facts.append(row);}
+    const guide=node('a',RANKED_GUIDE_LINK_TEXT,'portal-text-link');guide.setAttribute('href',RANKED_FACTS.guidePath);
+    ranked.append(heading,facts,guide);section.append(ranked);
+  }
+  section.append(link);return section;
 }
 
 export function syncDiscoveryMeta(documentRef, pathname, copy=PORTAL_COPY) {

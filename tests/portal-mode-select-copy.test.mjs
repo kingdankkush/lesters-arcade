@@ -67,7 +67,10 @@ test('every game’s mode-select cards show the site copy for every flag state',
       assert.equal(view.mode, copy.modeSelect[gameId].copy, `${name} ${gameId} mode line`);
       assert.equal(view.ranked, copy.modeSelect[gameId].ranked, `${name} ${gameId} Ranked card`);
       assert.deepEqual(view.tooltip, [`${descriptor.ranked.label}: ${copy.modeRankedTooltip}`, copy.modeSelect[gameId].ranked], `${name} ${gameId} Ranked tooltip`);
-      assert.equal(view.free, descriptor.free.copy, 'the Free card keeps its descriptor copy, true in both states');
+      // ranked-onboarding: the Free card states its price (no wallet, no fee), true in every state.
+      assert.equal(view.free, copy.modeSelect[gameId].free, `${name} ${gameId} Free card`);
+      assert.equal(copy.modeSelect[gameId].free, launch.modeSelect[gameId].free, 'the Free line does not depend on the flags');
+      assert.match(view.free, /^Free play needs no wallet and never touches the chain\. It costs nothing/);
     }
   }
 });
@@ -112,7 +115,7 @@ test('the guest line says Sign in once hosted, and STACKED no longer falls back 
   for (const [copy, line] of [[launch, 'Sign in with a wallet when you want to play Ranked.'], [hostedPreview, 'Sign in with a wallet when you want to play Ranked.'], [preview, 'Connect a wallet when you want to play Ranked.']]) {
     const guest = renderModeSelect({ gameId: 'lester-blaster', connectedWallet: null, portalCopy: copy });
     assert.equal(guest.tooltip[0], `${hmh.free.label} is open to guests`);
-    assert.equal(guest.tooltip[1], `${hmh.free.copy} ${line}`);
+    assert.equal(guest.tooltip[1], `${copy.modeSelect['lester-blaster'].free} ${line}`);
   }
   const stacked = buildGameModeSelectModel('stacked');
   for (const copy of [preview, hostedPreview, launch]) {
@@ -120,7 +123,8 @@ test('the guest line says Sign in once hosted, and STACKED no longer falls back 
     assert.notEqual(view.ranked, stacked.ranked.copy);
     assert.equal(view.ranked, copy.modeSelect.stacked.ranked);
     assert.equal(view.tooltip[0], `${stacked.ranked.label}: ${copy.modeRankedTooltip}`);
-    assert.equal(view.free, stacked.free.copy, 'the Free card keeps its descriptor');
+    assert.equal(view.free, copy.modeSelect.stacked.free, 'the Free card shows the site line (ranked-onboarding)');
+    assert.match(view.free, /starting level/, 'STACKED Free still names its starting level');
   }
   assert.ok(PORTAL_COPY.modeSelect.stacked);
 });

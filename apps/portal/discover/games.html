@@ -68,19 +68,20 @@
               <div class="ranked-entry-row"><span>Network</span><strong id="rankedEntryNetwork">LitVM LiteForge · 4441</strong></div>
               <div class="ranked-entry-row"><span>Wallet</span><strong id="rankedEntryWallet">—</strong></div>
               <div class="ranked-entry-row"><span>zkLTC balance</span><strong id="rankedEntryBalance">Checking…</strong></div>
-              <div class="ranked-entry-row"><span>Entry</span><strong id="rankedEntryFee">0.1 zkLTC</strong></div>
-              <div class="ranked-entry-row"><span>Settlement reserve<small class="ranked-entry-row-note">pays the relayer that publishes your score on LitVM</small></span><strong id="rankedEntryReserve">0.002 zkLTC</strong></div>
-              <div class="ranked-entry-row ranked-entry-row-total"><span>Total</span><strong id="rankedEntryTotal">0.102 zkLTC</strong></div>
-              <div class="ranked-entry-row ranked-entry-row-split"><span>Where it goes</span><strong>85% to the game's developer · 15% to the arcade</strong></div>
+              <div class="ranked-entry-row"><span>Entry<small class="ranked-entry-row-note">the game's price</small></span><strong id="rankedEntryFee"><!-- copy:entry-fee:start -->0.01 zkLTC<!-- copy:entry-fee:end --></strong></div>
+              <div class="ranked-entry-row"><span>Publishing<small class="ranked-entry-row-note">pays the arcade's relayer to publish your score on LitVM</small></span><strong id="rankedEntryReserve"><!-- copy:entry-reserve:start -->0.002 zkLTC<!-- copy:entry-reserve:end --></strong></div>
+              <div class="ranked-entry-row ranked-entry-row-total"><span>Total</span><strong id="rankedEntryTotal"><!-- copy:entry-total:start -->0.012 zkLTC<!-- copy:entry-total:end --></strong></div>
+              <div class="ranked-entry-row ranked-entry-row-split"><span>Where the entry goes</span><strong><!-- copy:entry-split:start -->85% to the game&#39;s developer · 15% to the arcade<!-- copy:entry-split:end --></strong></div>
               <div id="rankedEntryJackpot" class="ranked-entry-row ranked-entry-jackpot" hidden></div>
             </div>
+            <div class="ranked-entry-next" role="group" aria-labelledby="rankedEntryNextTitle"><p id="rankedEntryNextTitle" class="ranked-entry-next-title">What happens next</p><!-- copy:entry-next:start --><ol class="ranked-entry-next-list"><li>Your wallet asks you to confirm the total once. Your run starts as soon as it is sent.</li><li>When the run ends, the arcade&#39;s server checks it and publishes your score on LitVM, usually within about a minute.</li><li>Your score then shows on the leaderboards, your profile and your achievements.</li></ol><!-- copy:entry-next:end --></div>
             <div id="rankedEntryChainGuard" class="ranked-entry-chainguard" hidden></div>
             <p id="rankedEntryStatus" class="ranked-entry-status" role="status" aria-live="polite"></p>
             <div class="ranked-entry-actions">
               <button id="rankedEntryCancel" class="back-nav-button" type="button">Cancel</button>
               <button id="rankedEntryApprove" class="primary-button big-action" type="button">Start Ranked Run</button>
             </div>
-            <a id="rankedEntryFreeLink" class="ranked-entry-free-link" href="/games">Free Mode is always free</a>
+            <p class="ranked-entry-links"><a id="rankedEntryFreeLink" class="ranked-entry-free-link" href="/games">Free Mode is always free</a> <a id="rankedEntryGuideLink" class="ranked-entry-guide-link" href="/how-ranked-works" target="_blank" rel="noopener">How Ranked works<span class="visually-hidden"> (opens in a new tab)</span></a></p>
             <p class="tiny-note" id="rankedEntryFootnote"><!-- copy:entry-footnote:start -->The entry contract quotes the exact total. Testnet entries are not refunded.<!-- copy:entry-footnote:end --></p>
           </div>
         </div>
@@ -104,12 +105,13 @@
               <h1>Good games.<br><em>One more run.</em></h1>
               <p class="portal-lead">Welcome to Lester's Arcade. Survive the wasteland, make your escape, or find your rhythm in falling blocks. Pick a cabinet and play Free, right here in your browser.</p>
               <div class="portal-actions">
-                <a id="officialGuestEnterButton" class="portal-button" href="/games">Browse Arcade</a>
+                <a id="officialGuestEnterButton" class="portal-button" href="/games">Play free now</a>
                 <button id="officialConnectButton" class="portal-button portal-button-outline" type="button">Sign in</button>
               </div>
               <p class="portal-entry-note">Free play needs no wallet. No download. Just a browser.</p>
               <button id="officialHmhFreeQuickplayButton" class="portal-text-link" type="button">Play Hard Money Heroes Free</button>
               <p id="officialGuestQuickplayStatus" class="tiny-note" role="status" aria-live="polite" aria-atomic="true" hidden></p>
+              <div class="portal-ranked-path" role="group" aria-labelledby="homeRankedTitle"><!-- copy:home-ranked:start --><p class="portal-kicker" id="homeRankedTitle">Play Ranked</p><p class="portal-ranked-lead">Put your runs on the leaderboards in three steps.</p><ol class="portal-ranked-steps"><li><button type="button" class="portal-ranked-step" data-portal-connect><span class="portal-ranked-step-number" aria-hidden="true">1</span>Connect a wallet</button></li><li><a class="portal-ranked-step" href="https://liteforge.hub.caldera.xyz" target="_blank" rel="noopener noreferrer"><span class="portal-ranked-step-number" aria-hidden="true">2</span>Get free zkLTC<span class="visually-hidden"> (opens in a new tab)</span></a></li><li><a class="portal-ranked-step" href="/games"><span class="portal-ranked-step-number" aria-hidden="true">3</span>Play Ranked, 0.012 zkLTC</a></li></ol><a class="portal-text-link" href="/how-ranked-works">How Ranked works →</a><!-- copy:home-ranked:end --></div>
             </div>
             <figure class="portal-hero-film">
               <div class="portal-film-label"><span>Lester &amp; Lilly welcome you</span><span aria-hidden="true">↗</span></div>
@@ -205,7 +207,7 @@
               <img id="officialFreeModeBanner" class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg" alt="Hard Money Heroes Free Mode key art" loading="lazy" decoding="async" />
               <svg class="arcade-svg-icon arcade-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#infinity"></use></svg>
               <strong id="officialFreeModeTitle">Free Mode</strong>
-              <span id="officialFreeModeCopy">Practice only. No official score, progress, achievements, or chain writes.</span>
+              <span id="officialFreeModeCopy"><!-- copy:mode-free:start -->Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked.<!-- copy:mode-free:end --></span>
             </button>
             <button id="officialRankedModeButton" class="mode-card ranked-card" type="button">
               <img id="officialRankedModeBanner" class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg" alt="Hard Money Heroes Ranked key art" loading="lazy" decoding="async" />
@@ -214,6 +216,7 @@
               <span id="officialRankedModeCopy"><!-- copy:mode-ranked:start -->0.102 testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.<!-- copy:mode-ranked:end --></span>
             </button>
           </div>
+          <p class="mode-guide-note"><a id="officialModeGuideLink" class="portal-text-link" href="/how-ranked-works">How Ranked works: price, free zkLTC and steps →</a></p>
           <fieldset id="hmhChallengePanel" class="hmh-challenge-panel" hidden>
             <legend>Free practice course</legend>
             <label for="hmhChallengeChoice">Choose a seed schedule</label>

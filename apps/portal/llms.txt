@@ -9,6 +9,7 @@ Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Mone
 
 ## Platform
 - [How it works](https://lestersarcade.io/#how-it-works): Free play with no wallet, and wallet sign-in for Ranked runs on the LitVM testnet.
+- [How Ranked works](https://lestersarcade.io/how-ranked-works): How to play Ranked: the steps, the 0.012 zkLTC price, free testnet zkLTC from the faucet, the server checks, the boards and fixes for common problems.
 - [Browse games](https://lestersarcade.io/games)
 - [Support and policies](https://lestersarcade.io/trust.html)
 
@@ -17,3 +18,13 @@ Ranked costs 0.102 zkLTC per run on the LitVM LiteForge testnet: a 0.1 zkLTC ent
 The arcade server checks each Ranked run, then the arcade's relayer publishes it on LitVM. Chikun's Escape and STACKED runs are replayed on the server; Hard Money Heroes runs are plausibility-checked, not replayed.
 Global Weekly, Monthly, and All-time leaderboards rank each wallet's best verified score. Achievements are recorded against the wallet on the arcade server. Display names are set on chain and can be hidden by moderation.
 Failed publishes retry automatically and can be retried from the profile. Testnet entries are not refunded. Testnet zkLTC has no value. Any test prizes are paid in testnet tokens that also have no value.
+
+## How Ranked works
+Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain.
+Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs).
+Free play needs no wallet and never touches the chain.
+Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.
+Steps: play Free; connect a wallet; the site adds the LitVM LiteForge testnet (chain 4441); get free zkLTC from the LiteForge faucet; sign in with one free signature; choose Ranked and confirm 0.012 zkLTC; play while the server checks the run; the relayer publishes it on LitVM, usually within about a minute.
+The 0.01 entry is split 85% to the game's developer and 15% to the arcade; the 0.002 pays the relayer that publishes the score.
+Weekly boards reset every Monday 00:00 UTC; Monthly boards on the 1st of each month, 00:00 UTC. 124 achievements (Hard Money Heroes 44, Chikun's Escape 40, STACKED 40) are earned from verified Ranked runs.
+Testnet zkLTC has no monetary value.

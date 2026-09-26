@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { join,resolve } from 'node:path';
 import { JACKPOT_RULES_SECTIONS, PORTAL_GAMES, PORTAL_FLAGS, escapeHtml, jackpotRulesCopy, portalCopyFor, portalPageMeta, portalSchema, renderCatalog, renderGameDetails } from '../apps/portal/src/portal-content.mjs';
 import { JACKPOT_RULES_PATH } from '../apps/portal/src/jackpot-config.mjs';
+import { RANKED_FACTS } from '../apps/portal/src/ranked-facts.mjs';
+import { RANKED_GUIDE_FILE, RANKED_GUIDE_PATH, rankedGuideCopy, rankedGuideSchema, rankedSurfaceCopy, renderGuideHeader, renderGuideInline, renderGuideMain, renderHomeRanked } from '../apps/portal/src/ranked-guide-content.mjs';
 
 const portal=fileURLToPath(new URL('../apps/portal/',import.meta.url));
 
@@ -53,7 +55,16 @@ function withMeta(html,path,copy){
   html=html.replace(/\s*<script id="portalStructuredData"[\s\S]*?<\/script>/,'');
   return html.replace('  </head>','    <script id="portalStructuredData" type="application/ld+json">'+portalSchema(path,copy)+'</script>\n  </head>');
 }
-function renderHome(html,copy){
+// The Ranked entry modal's static rows and "What happens next" (index.html; main.js replaces the
+// amounts with the entry contract's quote when the modal opens). Numbers from RANKED_FACTS.
+function renderEntryModal(html,surface){
+  for(const [key,text] of [
+    ['entry-fee',RANKED_FACTS.entryZkLtc+' zkLTC'],['entry-reserve',RANKED_FACTS.publishZkLtc+' zkLTC'],['entry-total',RANKED_FACTS.totalZkLtc+' zkLTC'],
+    ['entry-split',RANKED_FACTS.developerPercent+"% to the game's developer · "+RANKED_FACTS.arcadePercent+'% to the arcade'],
+  ]) html=renderCopyBlock(html,key,escapeHtml(text),'index.html');
+  return renderCopyBlock(html,'entry-next','<ol class="ranked-entry-next-list">'+surface.entryNext.map(text=>'<li>'+escapeHtml(text)+'</li>').join('')+'</ol>','index.html');
+}
+function renderHome(html,copy,surface){
   const faq=copy.faq.map(([question,answer])=>'<details><summary>'+escapeHtml(question)+'</summary><p>'+escapeHtml(answer)+'</p></details>').join('\n');
   html=html.replace(/<div id="portalFaqList">[\s\S]*?<\/div>/,'<div id="portalFaqList">'+faq+'</div>');
   for(const [key,text] of [
@@ -63,10 +74,13 @@ function renderHome(html,copy){
     ['mode-copy',copy.modeSelect['lester-blaster'].copy],['mode-ranked',copy.modeSelect['lester-blaster'].ranked],
     // The Ranked entry modal (hidden until opened; main.js sets the same live text at runtime).
     ['entry-copy',copy.rankedEntryCopy],['entry-footnote',copy.rankedEntryFootnote],
+    ['mode-free',copy.modeSelect['lester-blaster'].free],
   ]) html=renderCopyBlock(html,key,escapeHtml(text),'index.html');
-  return withMeta(html,'/',copy);
+  html=renderCopyBlock(html,'home-ranked',renderHomeRanked(surface),'index.html');
+  return withMeta(renderEntryModal(html,surface),'/',copy);
 }
-function renderTrust(html,copy){
+function renderTrust(html,copy,surface){
+  html=renderCopyBlock(html,'ranked-howto','\n      '+surface.trustHowTo.map(text=>'<p>'+renderGuideInline(text)+'</p>').join('\n      ')+'\n      ','trust.html');
   html=renderCopyBlock(html,'ranked-storage','\n      '+paragraphs(copy.trustStorage)+'\n      ','trust.html');
   return renderCopyBlock(html,'ranked-status','\n      '+paragraphs(copy.trustStatus)+'\n      ','trust.html');
 }
@@ -97,6 +111,28 @@ export function renderJackpotRules(html,rules,file=JACKPOT_RULES_FILE){
   return html;
 }
 
+// The "How Ranked works" guide (apps/portal/how-ranked-works.html, served at /how-ranked-works): head
+// metadata, FAQPage and HowTo JSON-LD, and the header and main blocks, all from ranked-guide-content.mjs.
+// Indexable in every flag state (the sitemap does not depend on the flags); without live settlement it
+// says Ranked is not open.
+export function renderRankedGuide(html,guide,file=RANKED_GUIDE_FILE){
+  const title=guide.title+" | Lester's Arcade";
+  html=html.replace(/<title>[\s\S]*?<\/title>/,'<title>'+escapeHtml(title)+'</title>');
+  for(const [attribute,key,value] of [
+    ['name','description',guide.description],['property','og:title',title],['property','og:description',guide.description],
+    ['name','twitter:title',title],['name','twitter:description',guide.description],
+  ]) {
+    const pattern=new RegExp('<meta '+attribute+'="'+key+'" content="[^"]*" />');
+    if(!pattern.test(html))throw new Error(file+' needs <meta '+attribute+'="'+key+'" content="…" />');
+    html=html.replace(pattern,'<meta '+attribute+'="'+key+'" content="'+escapeHtml(value)+'" />');
+  }
+  const schema=/(<script id="guideStructuredData" type="application\/ld\+json">)[\s\S]*?(<\/script>)/;
+  if(!schema.test(html))throw new Error(file+' needs its guideStructuredData script');
+  html=html.replace(schema,(_,open,close)=>open+rankedGuideSchema(guide)+close);
+  html=renderCopyBlock(html,'guide-header',renderGuideHeader(guide),file);
+  return renderCopyBlock(html,'guide-main',renderGuideMain(guide),file);
+}
+
 function renderManifest(text,copy){
   const next=text.replace(/("description":\s*)"(?:[^"\\]|\\.)*"/,(_,prefix)=>prefix+JSON.stringify(copy.manifestDescription));
   if(JSON.parse(next).description!==copy.manifestDescription)throw new Error('manifest.webmanifest needs a "description" field');
@@ -115,9 +151,10 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
   const resolved=resolvePortalFlags(flags);
   const copy=portalCopyFor(resolved);
   const rules=jackpotRulesCopy(resolved);
+  const surface=rankedSurfaceCopy(resolved);
   const pages=new Map();
   const write=(name,text)=>pages.set(name,text);
-  const home=renderHome(readFileSync(resolve(portal,'index.html'),'utf8'),copy);
+  const home=renderHome(readFileSync(resolve(portal,'index.html'),'utf8'),copy,surface);
   write('index.html',home);
   let catalog=home.replace('data-step="wallet-splash"','data-step="cabinet-select"')
     .replace('class="official-view wallet-splash-view portal-home"','class="official-view wallet-splash-view portal-home" hidden')
@@ -136,18 +173,21 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
       .replace(/alt="Hard Money Heroes (Free Mode|Ranked) key art"/g,'alt="'+escapeHtml(game.title)+' key art"')
       .replace('<div id="portalGameDetails"></div>','<div id="portalGameDetails">'+renderGameDetails(game.slug,copy)+'</div>');
     html=renderCopyBlock(html,'mode-ranked',escapeHtml(copy.modeSelect[game.id]?.ranked ?? copy.modeRanked),'discover/'+game.slug+'.html');
+    html=renderCopyBlock(html,'mode-free',escapeHtml(copy.modeSelect[game.id]?.free ?? copy.modeSelect['lester-blaster'].free),'discover/'+game.slug+'.html');
     write('discover/'+game.slug+'.html',withMeta(html,'/games/'+game.slug,copy));
   }
-  write('trust.html',renderTrust(readFileSync(resolve(portal,'trust.html'),'utf8'),copy));
+  write('trust.html',renderTrust(readFileSync(resolve(portal,'trust.html'),'utf8'),copy,surface));
+  write(RANKED_GUIDE_FILE,renderRankedGuide(sources[RANKED_GUIDE_FILE]??readFileSync(resolve(portal,RANKED_GUIDE_FILE),'utf8'),rankedGuideCopy(resolved)));
   write('manifest.webmanifest',renderManifest(readFileSync(resolve(portal,'manifest.webmanifest'),'utf8'),copy));
   write(JACKPOT_RULES_FILE,renderJackpotRules(sources[JACKPOT_RULES_FILE]??readFileSync(resolve(portal,JACKPOT_RULES_FILE),'utf8'),rules));
   // The rules page joins the sitemap and llms.txt only once the jackpot is live (design §D.4).
-  const urls=['/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),'/trust.html',...(rules.live?[JACKPOT_RULES_PATH]:[])];
+  // The Ranked guide is listed in every flag state: without live settlement it says Ranked is not open.
+  const urls=['/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),RANKED_GUIDE_PATH,'/trust.html',...(rules.live?[JACKPOT_RULES_PATH]:[])];
   write('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls.map(path=>'<url><loc>https://lestersarcade.io'+path+'</loc></url>').join('\n')+'\n</urlset>\n');
   // The previous site had no robots file. An empty rule set preserves its access
   // policy; this adds only sitemap discovery, no training/search bot directives.
   write('robots.txt','Sitemap: https://lestersarcade.io/sitemap.xml\n');
-  write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)"+(rules.live?"\n- [Weekly Jackpot rules](https://lestersarcade.io"+JACKPOT_RULES_PATH+"): "+rules.description:'')+"\n\n## Current scope\n"+copy.llmsScope+"\n");
+  write('llms.txt',"# Lester's Arcade\n\n"+copy.description+"\n\n## Games\n"+PORTAL_GAMES.map(game=>'- ['+game.title+'](https://lestersarcade.io/games/'+game.slug+'): '+game.description).join('\n')+"\n\n## Platform\n- [How it works](https://lestersarcade.io/#how-it-works): "+copy.llmsHowItWorks+"\n- [How Ranked works](https://lestersarcade.io"+RANKED_GUIDE_PATH+"): "+surface.llmsGuideLine+"\n- [Browse games](https://lestersarcade.io/games)\n- [Support and policies](https://lestersarcade.io/trust.html)"+(rules.live?"\n- [Weekly Jackpot rules](https://lestersarcade.io"+JACKPOT_RULES_PATH+"): "+rules.description:'')+"\n\n## Current scope\n"+copy.llmsScope+"\n"+(surface.llmsSection?"\n## How Ranked works\n"+surface.llmsSection.join('\n')+"\n":''));
   mkdirSync(resolve(outDir,'discover'),{recursive:true});
   mkdirSync(resolve(outDir,'jackpot'),{recursive:true});
   for(const [name,text] of pages){
@@ -160,7 +200,7 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
 }
 
 // Files written by buildPortalPages, relative to its outDir.
-export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt',JACKPOT_RULES_FILE]);
+export const PORTAL_GENERATED_FILES=Object.freeze(['index.html',...['games',...PORTAL_GAMES.map(game=>game.slug)].map(name=>'discover/'+name+'.html'),'trust.html','manifest.webmanifest','sitemap.xml','robots.txt','llms.txt',JACKPOT_RULES_FILE,RANKED_GUIDE_FILE]);
 
 // Renders into a scratch directory and returns the generated files under outDir
 // that differ from that render. Nothing under outDir is written.
@@ -212,7 +252,7 @@ export function runPortalPagesCli(argv,output=console){
     return 1;
   }
   buildPortalPages(options);
-  output.log('Generated homepage metadata, four discovery pages, trust copy, the Weekly Jackpot rules page, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
+  output.log('Generated homepage metadata, four discovery pages, trust copy, the Weekly Jackpot rules page, the How Ranked works guide, sitemap, and text reference ('+state+' copy'+(options.outDir?', in '+options.outDir:'')+').');
   return 0;
 }
 
