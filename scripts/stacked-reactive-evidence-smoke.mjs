@@ -1,9 +1,9 @@
-// STACKED reactive-visuals evidence (owner direction 2026-09-16). Drives the real
-// cabinet through the portal at desktop and phone widths, screenshots every
-// menu screen (title, settings, scores, pause, results) and every backdrop
-// scene (tunnel, particles, horizon, auto crossfade, off, reduced motion) with
-// the music-reactive board on, and asserts the scene/pulse hooks the renderer
-// publishes on #stackedStage. Usage:
+// STACKED reactive-visuals evidence (owner direction 2026-09-16; settings
+// simplification 2026-09-24). Drives the real cabinet through the portal at
+// desktop and phone widths, screenshots every menu screen (title, settings,
+// scores, pause, results) and every Effects preset (Standard, Full, Calm, Off,
+// reduced motion) with the default reduced-flash board glow, and asserts the
+// scene/pulse hooks the renderer publishes on #stackedStage. Usage:
 //   STACKED_ORIGIN=http://127.0.0.1:8797 node scripts/stacked-reactive-evidence-smoke.mjs
 import assert from 'node:assert/strict';
 import path from 'node:path';
@@ -51,53 +51,73 @@ try {
     await scrollPanelTo('#scoreShelf'); await shot('menu-scores');
     await frame.locator('#scoresTile').click();
     await frame.locator('#settingsTile').click();
-    assert.equal(await frame.evaluate(() => document.activeElement.id), 'ghostToggle', 'the Settings tile lands on the first gameplay control');
+    assert.equal(await frame.evaluate(() => document.activeElement.id), 'effectsStandard', 'the Settings tile lands on the checked effects preset');
+    assert.equal(await frame.locator('#settingsTile').getAttribute('aria-expanded'), 'true');
     await scrollPanelTo('#preferencePanel'); await shot('menu-settings');
-    await scrollPanelTo('#sceneSelect'); await shot('menu-settings-visuals');
-    await scrollPanelTo('#motionToggle'); await shot('menu-settings-accessibility-audio');
-    // Board pulse is gated by the shipped reduced-flash default; turn that off for the evidence.
-    assert.equal(await frame.locator('#boardPulseToggle').isDisabled(), true);
-    await frame.locator('#flashToggle').uncheck();
-    await frame.waitForFunction(() => document.querySelector('#stackedStatus').textContent.includes('Preferences saved'));
-    assert.equal(await frame.locator('#boardPulseToggle').isDisabled(), false);
-    assert.equal(await frame.locator('#boardPulseToggle').isChecked(), true);
+    await scrollPanelTo('#visualizerSelect'); await shot('menu-settings-effects');
+    await scrollPanelTo('#motionToggle'); await shot('menu-settings-accessibility-sound');
+    // The board glow is on by default: Standard effects with Reduced flashes on (gentle mode).
+    assert.equal(await frame.locator('#flashToggle').isChecked(), true, 'reduced flashes stays on by default');
+    assert.equal(await frame.locator('#effectsStandard').isChecked(), true);
     // 44 px targets across every focusable control in the dialog.
     const small = await frame.evaluate(() => [...document.querySelectorAll('#gameOverlay button, #gameOverlay select, #gameOverlay input[type=range], #gameOverlay summary, #gameOverlay label')].filter(node => node.getClientRects().length).map(node => [node.id || node.tagName, node.getBoundingClientRect().height]).filter(([, h]) => h < 43.5));
     assert.deepEqual(small, [], 'every visible dialog control is at least 44 px tall');
     const scenes = {};
-    const setScene = async (value) => {
-      await frame.evaluate(v => { const select = document.querySelector('#sceneSelect'); select.value = v; select.dispatchEvent(new Event('change')); }, value);
-      await frame.waitForFunction(v => document.querySelector('#stackedStage').dataset.visualizerScene === (v === 'auto' ? document.querySelector('#stackedStage').dataset.visualizerScene : v), value);
+    // The Effects preset is the only scene control: Standard and Full run the auto
+    // scene deck and the board glow, Calm and Off hold both off.
+    const setPreset = async (value) => {
+      await frame.evaluate(v => document.querySelector(`input[name=effectsPreset][value="${v}"]`).click(), value);
+      await frame.waitForFunction(v => JSON.parse(localStorage.getItem('stacked-player-settings-v1') ?? 'null')?.video?.effectsPreset === v, value);
     };
-    await setScene('tunnel');
+    const DECK = ['tunnel', 'particles', 'horizon'];
     await frame.locator('#continueButton').click();
     await frame.waitForFunction(() => Number(document.querySelector('#stackedStage').dataset.simulationTick) > 60);
     await frame.waitForFunction(() => document.querySelector('#stackedStage').dataset.audioAvailable === 'true', null, { timeout: 15000 });
-    for (const scene of ['tunnel', 'particles', 'horizon']) {
-      await setScene(scene);
-      await page.waitForTimeout(1700);
-      assert.equal(await stage.getAttribute('data-visualizer-scene'), scene);
-      const pulse = Number(await stage.getAttribute('data-board-pulse'));
-      scenes[scene] = { pulse, transitions: Number(await stage.getAttribute('data-scene-transitions')) };
-      await shot(`scene-${scene}`);
-    }
-    await setScene('auto');
-    await frame.evaluate(() => document.querySelector('#sceneNextButton').click());
-    await page.waitForTimeout(600);
-    await shot('scene-auto-crossfade');
-    const transitions = Number(await stage.getAttribute('data-scene-transitions'));
-    assert.ok(transitions >= 3, `manual cycle and scene changes recorded ${transitions} transitions`);
-    await setScene('off');
-    await page.waitForTimeout(300);
-    assert.equal(await stage.getAttribute('data-visualizer-scene'), 'off');
-    await shot('scene-off');
-    await setScene('tunnel');
     await page.waitForTimeout(1700);
+    const standardScene = await stage.getAttribute('data-visualizer-scene');
+    assert.ok(DECK.includes(standardScene), `Standard runs the scene deck (${standardScene})`);
+    const gentle = Number(await stage.getAttribute('data-board-pulse'));
+    assert.ok(gentle > 0 && gentle <= 0.12, `the default board glow is on and gentle (${gentle})`);
+    scenes.standard = { scene: standardScene, pulse: gentle, transitions: Number(await stage.getAttribute('data-scene-transitions')) };
+    await shot('preset-standard');
+    await frame.locator('#pauseButton').click();
+    await frame.waitForSelector('#gameOverlay:not([hidden])');
+    await frame.evaluate(() => { document.querySelector('#preferencePanel').open = true; });
+    await setPreset('full');
+    await frame.locator('#flashToggle').uncheck();
+    await frame.waitForFunction(() => JSON.parse(localStorage.getItem('stacked-player-settings-v1') ?? 'null')?.accessibility?.reduceFlash === false);
+    await frame.locator('#continueButton').click();
+    await frame.waitForFunction(() => document.querySelector('#gameOverlay').hidden);
+    await page.waitForTimeout(1700);
+    scenes.full = { scene: await stage.getAttribute('data-visualizer-scene'), pulse: Number(await stage.getAttribute('data-board-pulse')), transitions: Number(await stage.getAttribute('data-scene-transitions')) };
+    assert.ok(DECK.includes(scenes.full.scene));
+    await shot('preset-full');
+    for (const preset of ['calm', 'off']) {
+      await frame.locator('#pauseButton').click();
+      await frame.waitForSelector('#gameOverlay:not([hidden])');
+      await setPreset(preset);
+      await frame.locator('#continueButton').click();
+      await frame.waitForFunction(() => document.querySelector('#gameOverlay').hidden);
+      await page.waitForTimeout(600);
+      assert.equal(await stage.getAttribute('data-visualizer-scene'), 'off', `${preset} holds the backdrop scene off`);
+      assert.equal(await stage.getAttribute('data-board-pulse'), '0', `${preset} holds the board still`);
+      scenes[preset] = { scene: 'off', pulse: 0 };
+      await shot(`preset-${preset}`);
+    }
+    await frame.locator('#pauseButton').click();
+    await frame.waitForSelector('#gameOverlay:not([hidden])');
+    await setPreset('standard');
+    await frame.locator('#flashToggle').check();
+    await frame.waitForFunction(() => JSON.parse(localStorage.getItem('stacked-player-settings-v1') ?? 'null')?.accessibility?.reduceFlash === true);
+    await frame.locator('#continueButton').click();
+    await frame.waitForFunction(() => document.querySelector('#gameOverlay').hidden);
+    await page.waitForTimeout(1700);
+    const transitions = Number(await stage.getAttribute('data-scene-transitions'));
     // Reduced motion neutralises the board pulse and freezes the scene.
     await frame.evaluate(() => { const toggle = document.querySelector('#motionToggle'); toggle.checked = true; toggle.dispatchEvent(new Event('change')); });
     await page.waitForTimeout(400);
     assert.equal(await stage.getAttribute('data-board-pulse'), '0', 'reduced motion zeroes the board pulse');
-    await shot('scene-tunnel-reduced-motion');
+    await shot('preset-standard-reduced-motion');
     await frame.evaluate(() => { const toggle = document.querySelector('#motionToggle'); toggle.checked = false; toggle.dispatchEvent(new Event('change')); });
     await frame.locator('#pauseButton').click();
     await frame.waitForSelector('#gameOverlay:not([hidden])');
@@ -113,9 +133,10 @@ try {
     await frame.waitForFunction(() => document.querySelector('#overlayCopy').textContent.includes('Replay verified'), { timeout: 20000 });
     await scrollPanelTo(null); await shot('menu-results');
     await scrollPanelTo('#shareRow'); await shot('menu-results-share');
-    // Child-side preferences persist on this device.
-    const local = await frame.evaluate(() => JSON.parse(localStorage.getItem('stacked-visual-scenes-v1')));
-    assert.equal(local.scene, 'tunnel'); assert.equal(local.reactiveBoard, true);
+    // Scene mode and reactive board persist with the parent player settings; the child keeps no key of its own.
+    const stored = await frame.evaluate(() => JSON.parse(localStorage.getItem('stacked-player-settings-v1')));
+    assert.deepEqual([stored.video.effectsPreset, stored.video.scene, stored.video.reactiveBoard], ['standard', 'auto', true]);
+    assert.equal(await frame.evaluate(() => localStorage.getItem('stacked-visual-scenes-v1')), null);
     const pulses = Object.values(scenes).map(s => s.pulse);
     assert.ok(pulses.every(p => p >= 0 && p <= 0.2), `board pulse stays under its ceiling (${pulses.join(', ')})`);
     reports.push({ name, width, height, scenes, transitions, errors });

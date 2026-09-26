@@ -32,7 +32,8 @@ try {
     await page.locator('#officialFreeModeButton').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await frame.waitForSelector('#stackedStage[data-assets-ready="true"]');
-    if (minimal) await frame.locator('#effectsToggle').check();
+    // The minimal pass now measures the Calm effects preset (settings simplification 2026-09-24).
+    if (minimal) { await frame.locator('#settingsTile').click(); await frame.locator('#effectsCalm').check(); }
     await frame.locator('#continueButton').click();
     await frame.waitForFunction(() => Number(document.querySelector('#stackedStage').dataset.simulationTick) > 120);
     if (process.env.STACKED_PERF_PROFILE) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.start'); }

@@ -8,7 +8,7 @@ import {
 } from './stacked-contracts.mjs';
 import { validateStackedChunkMessage } from './stacked-evidence-transport.mjs';
 import { validateStackedRunSummary } from '../../../sdk/stacked-run-summary-schema.mjs';
-import { STACKED_VISUALIZERS } from './stacked-player-settings.mjs';
+import { STACKED_VISUALIZERS, STACKED_EFFECTS_PRESETS, STACKED_SCENE_MODES } from './stacked-player-settings.mjs';
 
 function exact(value, keys) {
   if (!value || ![Object.prototype, null].includes(Object.getPrototypeOf(value)) || Reflect.ownKeys(value).length !== keys.length) return false;
@@ -32,7 +32,8 @@ const presentationFields = (value, required, optional) => {
   for (const key of Object.keys(optional)) if (Object.hasOwn(value, key)) validators[key] = optional[key];
   return fields(value, validators);
 };
-const visualPreferences = { visualizer:v=>STACKED_VISUALIZERS.includes(v), effectsIntensity:v=>number(v,0,1) };
+const visualPreferences = { visualizer:v=>STACKED_VISUALIZERS.includes(v), effectsIntensity:v=>number(v,0,1),
+  effectsPreset:v=>STACKED_EFFECTS_PRESETS.includes(v), scene:v=>STACKED_SCENE_MODES.includes(v), reactiveBoard:bool };
 const tick = value => integer(value, 0, STACKED_MAX_TICKS);
 const line = value => integer(value, 0, STACKED_MAX_LINES);
 const piece = value => integer(value, 0, STACKED_MAX_PIECES);

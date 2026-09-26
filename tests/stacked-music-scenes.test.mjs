@@ -145,12 +145,15 @@ test('reduced motion renders identical frames regardless of time and audio, and 
 test('the renderer, shell and syntax gate wire the scene deck', () => {
   const renderer = readFileSync(new URL('../apps/stacked/src/render/renderer.mjs', import.meta.url), 'utf8');
   const main = readFileSync(new URL('../apps/stacked/src/main.mjs', import.meta.url), 'utf8');
+  const settings = readFileSync(new URL('../apps/portal/src/stacked-player-settings.mjs', import.meta.url), 'utf8');
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
   assert.match(renderer, /sceneLayer:tree\.layers\.layerBackdrop/);
   assert.match(renderer, /dataset\.visualizerScene = info\.scene/);
-  assert.match(renderer, /nextScene: \(\) => atmosphere\?\.nextScene\(\)/);
-  assert.match(main, /stacked-visual-scenes-v1/);
-  assert.match(main, /renderer\?\.nextScene\(\)/);
+  assert.match(renderer, /nextScene: \(\) => atmosphere\?\.nextScene\(\)/, 'fixed scenes stay reachable for QA');
+  // The scene mode now persists in the parent settings; the legacy child key is only read there for migration.
+  assert.match(settings, /stacked-visual-scenes-v1/);
+  assert.doesNotMatch(main, /stacked-visual-scenes-v1/);
+  assert.match(main, /expandStackedEffectsPreset/);
   assert.match(syntax, /apps\/stacked\/src\/render\/music-scenes\.mjs/);
   assert.match(syntax, /tests\/stacked-music-scenes\.test\.mjs/);
 });

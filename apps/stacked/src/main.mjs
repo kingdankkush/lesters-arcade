@@ -10,6 +10,9 @@ import { STACKED_CAPABILITIES, STACKED_FREE_MEDALS_KEY } from '../../portal/src/
 import { createStackedPauseClock } from './pause-clock.mjs';
 import { manageOverlayFocus } from './overlay-focus.mjs';
 import { createStackedSoundEffects, stackedSoundForStep } from './sound-effects.mjs';
+import { STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset } from '../../portal/src/stacked-player-settings.mjs';
+import { applyMenuAction } from './menu-navigation.mjs';
+import { stackedParentKnowsPresets, stackedPreferencesRequest, withStackedEffectsPreset } from './preferences-bridge.mjs';
 
 const $ = id => document.getElementById(id);
 const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameOverlay');
@@ -18,23 +21,39 @@ let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTi
 const pauseClock = createStackedPauseClock();
 const sfx = createStackedSoundEffects();
 let preview = null;
-// Child-side visual preferences (scene deck, music-reactive board). The parent
-// bridge validates an exact preference key set, so these stay on this device.
-const LOCAL_KEY = 'stacked-visual-scenes-v1', SCENES = ['auto', 'tunnel', 'particles', 'horizon', 'off'];
-const local = { scene: 'auto', reactiveBoard: true };
-try { const saved = JSON.parse(localStorage.getItem(LOCAL_KEY) ?? 'null'); if (SCENES.includes(saved?.scene)) local.scene = saved.scene; if (typeof saved?.reactiveBoard === 'boolean') local.reactiveBoard = saved.reactiveBoard; } catch {}
-const applyLocal = () => { if (settings) { settings.video.scene = local.scene; settings.video.reactiveBoard = local.reactiveBoard; } };
+// Set from the init settings: a pre-preset (1.8.1) host must never be sent the preset keys.
+let parentPresets = false;
+// One settings card (settings simplification 2026-09-24). Every choice is a
+// presentation preference the parent validates, applies and saves under its
+// player-settings key; the Effects preset sets the scene and reactive board too.
+const EFFECT_HINTS = {
+  off: 'Just the board and pieces. No music world, backdrop scenes, bursts or board glow.',
+  calm: 'A slow ambient world with softer bursts. Nothing follows the music, and the board stays still.',
+  standard: 'Recommended. Your music world, backdrop scenes that change with the song, and a board that glows with the music.',
+  full: 'Everything at full strength. Reduced flashes still softens bright moments.',
+};
+const WORLD_HINTS = {journey:'Follow the six zones. Every clear reshapes your world.',living:'Nine ocean creatures swim to your music, scatter on clears, then take a new form.',aurora:'Bass moves the curtains. Clears send a wave through the light.',orbit:'Beats expand the orbits. Combos widen the constellation.',spectrum:'Low and high notes shape the towers. Drops and clears push them outward.'};
+const SAVE_NOTE = 'Changes save automatically on this device. Every setting here is allowed in Ranked.';
+const SAVE_FAILED = 'Couldn’t save on this device. Your changes still apply to this run.';
+const effectRadios = () => [$('effectsOff'), $('effectsCalm'), $('effectsStandard'), $('effectsFull')];
+const effectsPreset = () => STACKED_EFFECTS_PRESETS.includes(settings?.video?.effectsPreset) ? settings.video.effectsPreset : 'standard';
+const mirrorSettingsTile = () => $('settingsTile').setAttribute('aria-expanded', String($('preferencePanel').open));
 let lastFeedback = '';
 let counters = { hardDrops: 0, spinClears: 0, allClearStreakMax: 0 }, allClearStreak = 0;
 const reportError = error => { status.textContent = error.message; $('overlayTitle').textContent = 'Unable to continue'; $('overlayCopy').textContent = error.message; overlay.hidden = false; $('continueButton').hidden = true; };
 const bridge = connectStackedChild(async (message, send) => {
-  if (message.type === 'portal:init') { init = message.payload; settings = structuredClone(init.settings); applyLocal(); await boot(); if (!disposed) send('game:ready', { runtimeVersion: 'stacked-playable-v1', renderer: 'pixi-webgl', capabilities: [...STACKED_CAPABILITIES] }); }
+  if (message.type === 'portal:init') { init = message.payload; parentPresets = stackedParentKnowsPresets(init.settings); settings = withStackedEffectsPreset(structuredClone(init.settings)); await boot(); if (!disposed) send('game:ready', { runtimeVersion: 'stacked-playable-v1', renderer: 'pixi-webgl', capabilities: [...STACKED_CAPABILITIES] }); }
   else if (message.type === 'portal:audio-frame') renderer?.audio(message.payload.audio, performance.now());
   else if (message.type === 'portal:pause') pause();
   else if (message.type === 'portal:resume') resume();
   else if (message.type === 'portal:exit') dispose();
-  else if (message.type === 'portal:settings') { settings = structuredClone(message.payload.settings); applyLocal(); syncPreferences(); }
-  else if (message.type === 'portal:preferences-status') { status.textContent = message.payload.saved ? 'Preferences saved on this device.' : 'Preferences apply to this run; device storage is unavailable.'; }
+  else if (message.type === 'portal:settings') { settings = withStackedEffectsPreset(structuredClone(message.payload.settings)); syncPreferences(); }
+  else if (message.type === 'portal:preferences-status') {
+    // Saves are silent; a failure is announced once and stays in the fine print.
+    const note = $('settingsSaveNote');
+    if (message.payload.saved) note.textContent = SAVE_NOTE;
+    else if (note.textContent !== SAVE_FAILED) { note.textContent = SAVE_FAILED; status.textContent = SAVE_FAILED; }
+  }
   else if (message.type === 'portal:result-status') { $('overlayCopy').textContent = message.payload.message; $('restartButton').disabled = false; }
 }, reportError);
 function state() {
@@ -43,29 +62,27 @@ function state() {
   bridge.send('game:state', { status: s.terminal ? 'terminal' : run.paused ? 'paused' : started ? 'running' : 'ready', score: s.score, linesCleared: s.lines, level: s.level, survivalTicks: s.tick, paused: run.paused });
 }
 function syncPreferences() {
+  const preset = effectsPreset();
+  for (const radio of effectRadios()) radio.checked = radio.value === preset;
+  $('effectsHint').textContent = EFFECT_HINTS[preset] + (settings.accessibility.reduceMotion && preset !== 'off' ? ' Reduced motion is on, so the background holds still.' : '');
   $('motionToggle').checked = settings.accessibility.reduceMotion;
-  $('effectsToggle').checked = settings.video.reducedEffects;
-  $('reactiveToggle').checked = settings.video.audioReactive;
   $('ghostToggle').checked = settings.video.ghostPiece;
   $('gridToggle').checked = settings.video.gridLines;
-  $('soundToggle').checked = settings.audio.sfxEnabled;
   $('pieceMarksToggle').checked = settings.accessibility.colorblindPieces;
   $('flashToggle').checked = settings.accessibility.reduceFlash;
   $('leftHandToggle').checked = settings.controls.touchLeftHanded;
   $('touchControls').dataset.leftHanded=String(settings.controls.touchLeftHanded);
   $('visualizerSelect').value = settings.video.visualizer ?? 'journey';
-  $('sceneSelect').value = local.scene; $('boardPulseToggle').checked = local.reactiveBoard;
-  $('boardPulseToggle').disabled = settings.accessibility.reduceMotion || settings.accessibility.reduceFlash || !settings.video.audioReactive;
-  $('sceneHint').textContent = {auto:'Scenes crossfade when the music changes section, every 64 beats, or on a Halving.',tunnel:'Polygon rings fly out from behind the board; beats twist them, bass stretches the spokes.',particles:'A star field streams outward; energy lengthens the streaks, beats swell the motes.',horizon:'A grid scrolls toward you under a striped sun that breathes with the bass.',off:'No backdrop scene. Your music world still plays.'}[local.scene];
-  $('sceneNextButton').disabled = local.scene === 'off';
-  $('boardPulseNote').textContent = $('boardPulseToggle').disabled ? 'Off while Reduced motion, Reduced flashes or React to music keep the board still.' : 'The frame and falling piece glow gently with the beat.';
   for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.setAttribute('aria-current', String(tile.dataset.mode === init?.mode));
-  $('intensityRange').value = String(Math.round((settings.video.effectsIntensity ?? .7) * 100));
-  $('volumeRange').value = String(Math.round(settings.audio.sfxVolume * 100));
-  $('intensityValue').textContent = $('intensityRange').value + '%';
-  $('volumeValue').textContent = $('volumeRange').value + '%';
-  $('visualizerHint').textContent = {journey:'Follow the six zones. Every clear reshapes your world.',living:'Nine ocean creatures swim to your music, scatter on clears, then take a new form.',aurora:'Bass moves the curtains. Clears send a wave through the light.',orbit:'Beats expand the orbits. Combos widen the constellation.',spectrum:'Low and high notes shape the towers. Drops and clears push them outward.'}[$('visualizerSelect').value];
-  if (!settings.audio.sfxEnabled) sfx.stop();
+  $('volumeRange').value = String(Math.round((settings.audio.sfxVolume ?? 0) * 100));
+  showVolume();
+  $('visualizerHint').textContent = preset === 'off' ? 'Effects are Off, so your music world is hidden. Choose Calm or higher to see it.' : WORLD_HINTS[$('visualizerSelect').value];
+  if (!(settings.audio.sfxVolume > 0)) sfx.stop();
+}
+// One game-sounds slider: 0 reads (and is announced) as Off.
+function showVolume() {
+  const volume = Number($('volumeRange').value), text = volume > 0 ? volume + '%' : 'Off';
+  $('volumeValue').textContent = text; $('volumeRange').setAttribute('aria-valuetext', text);
 }
 function pause() {
   if (!run || run.snapshot.terminal || !started || forfeited) return;
@@ -105,7 +122,7 @@ async function finish() {
   if (submitted) return; submitted = true; input.clear(); state();
   const s = run.snapshot;
   $('overlayTitle').textContent = s.terminalReason === 'tick-ceiling' ? 'Ledger complete' : 'Run complete';
-  $('preferencePanel').open = false;
+  $('preferencePanel').open = false; mirrorSettingsTile();
   $('overlayCopy').textContent = run.assisted ? 'Assisted Free practice. No profile or leaderboard write.' : 'Verifying your recorded run…';
   $('resultScore').textContent = s.score.toLocaleString();
   for (const [id, value] of [['statLines', s.lines], ['statLevel', s.level], ['statTime', Math.floor(s.tick / 3600) + ':' + String(Math.floor(s.tick / 60) % 60).padStart(2, '0')], ['statHalvings', s.quadClears], ['statCombo', s.maxCombo]]) $(id).textContent = String(value);
@@ -180,7 +197,7 @@ function frame(now) {
   if (run && renderer) {
     const info = renderer.frame(run.snapshot, now, settings);
     if ($('epochLabel').textContent !== info.name) $('epochLabel').textContent = info.name;
-    const audioCopy = info.visualizerName.toUpperCase() + (info.scene !== 'off' ? ' · ' + info.sceneName.toUpperCase() : '') + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
+    const audioCopy = effectsPreset() === 'off' ? 'EFFECTS OFF' : info.visualizerName.toUpperCase() + (info.scene !== 'off' ? ' · ' + info.sceneName.toUpperCase() : '') + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
     if ($('audioLabel').textContent !== audioCopy) $('audioLabel').textContent = audioCopy;
     if (!overlay.hidden && $('preferencePanel').open) preview?.draw(now, settings, info);
     if (stage.dataset.feedback && stage.dataset.feedback !== lastFeedback) { lastFeedback = stage.dataset.feedback; status.textContent = lastFeedback; }
@@ -204,7 +221,7 @@ async function boot() {
   input = createStackedInput({ target: window, controls: $('touchControls'), settings, onPause: () => run.paused ? resume() : pause(), onUndo: undo, isMenuOpen: () => !overlay.hidden, onMenuAction: menuAction });
   $('modeLabel').textContent = init.mode === 'ranked' ? 'RANKED' : 'FREE MODE';
   $('undoButton').hidden = init.mode === 'ranked';
-  $('overlayCopy').textContent = 'Fill a row to clear it. The ledger rises from below, so leave room at the top. Clear four rows together for a HALVING. ' + (renderer.mobile ? 'Use the arrow and rotation buttons below. HOLD saves a piece; DROP places it at the landing guide.' : 'Move with ← →, rotate with ↑ / X, and drop with Space. C holds a piece; Z rotates back. Choose your music world below or start right away.');
+  $('overlayCopy').textContent = 'Fill a row to clear it. The ledger rises from below, so leave room at the top. Clear four rows together for a HALVING. ' + (renderer.mobile ? 'Use the arrow and rotation buttons below. HOLD saves a piece; DROP places it at the landing guide.' : 'Move with ← →, rotate with ↑ / X, and drop with Space. C holds a piece; Z rotates back. Start right away, or open Settings to choose effects and a music world.');
   $('continueButton').disabled = false; syncPreferences(); stage.dataset.assetsReady = 'true'; state();
   $('continueButton').focus(); raf = requestAnimationFrame(frame);
 }
@@ -213,16 +230,7 @@ function undo() {
   input.clear(); renderer.resetEffects(); accumulator = 0; status.textContent = 'Placement undone. Assisted Free practice.'; state();
 }
 function menuAction(action) {
-  if (overlay.hidden) return;
-  const controls = [...overlay.querySelectorAll('button:not(:disabled),input,select,summary')].filter(node=>!node.hidden&&node.getClientRects().length);
-  const active = document.activeElement, index = Math.max(0, controls.indexOf(active));
-  if (action === 'next' || action === 'previous') controls[(index + (action === 'next' ? 1 : controls.length - 1)) % controls.length]?.focus();
-  else if (action === 'activate') { if (active?.matches('button,input[type=checkbox],summary')) active.click(); }
-  else if (action === 'increase' || action === 'decrease') {
-    const direction = action === 'increase' ? 1 : -1;
-    if (active?.matches('select')) { active.selectedIndex = Math.max(0,Math.min(active.options.length-1,active.selectedIndex+direction)); active.dispatchEvent(new Event('change')); }
-    if (active?.matches('input[type=range]')) { active.value = String(Math.max(Number(active.min),Math.min(Number(active.max),Number(active.value)+direction*Number(active.step||1)))); active.dispatchEvent(new Event('change')); }
-  }
+  if (!overlay.hidden) applyMenuAction(overlay, action, document.activeElement);
 }
 function dispose() {
   if (disposed) return; disposed = true; releaseOverlayFocus(); cancelAnimationFrame(raf); input?.destroy(); renderer?.destroy(); app?.destroy(true, { children: true }); bridge.destroy(); sfx.destroy();
@@ -235,19 +243,29 @@ for (const id of ['exitButton', 'overlayExitButton']) $(id).addEventListener('cl
 $('restartButton').addEventListener('click', () => bridge.send('game:restart-request', {}));
 function updatePreferences() {
   if (!settings) return;
-  settings.accessibility.reduceMotion = $('motionToggle').checked; settings.video.reducedEffects = $('effectsToggle').checked; settings.video.audioReactive = $('reactiveToggle').checked;
-  settings.video.ghostPiece = $('ghostToggle').checked; settings.video.gridLines = $('gridToggle').checked; settings.audio.sfxEnabled = $('soundToggle').checked;
-  settings.video.visualizer = $('visualizerSelect').value; settings.video.effectsIntensity = Number($('intensityRange').value) / 100;
-  settings.audio.sfxVolume = Number($('volumeRange').value) / 100; settings.accessibility.colorblindPieces = $('pieceMarksToggle').checked;
+  // The preset expands to its renderer fields here and again, authoritatively, in the parent.
+  Object.assign(settings.video, expandStackedEffectsPreset(effectRadios().find(radio => radio.checked)?.value));
+  settings.accessibility.reduceMotion = $('motionToggle').checked;
+  settings.video.ghostPiece = $('ghostToggle').checked; settings.video.gridLines = $('gridToggle').checked;
+  settings.video.visualizer = $('visualizerSelect').value;
+  settings.audio.sfxVolume = Number($('volumeRange').value) / 100; settings.audio.sfxEnabled = settings.audio.sfxVolume > 0;
+  settings.accessibility.colorblindPieces = $('pieceMarksToggle').checked;
   settings.accessibility.reduceFlash=$('flashToggle').checked; settings.controls.touchLeftHanded=$('leftHandToggle').checked;
-  local.scene = SCENES.includes($('sceneSelect').value) ? $('sceneSelect').value : 'auto'; local.reactiveBoard = $('boardPulseToggle').checked; applyLocal();
-  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(local)); } catch {}
   syncPreferences();
-  bridge.send('game:preferences-request', { reduceMotion: settings.accessibility.reduceMotion, reducedEffects: settings.video.reducedEffects, audioReactive: settings.video.audioReactive, ghostPiece: settings.video.ghostPiece, gridLines: settings.video.gridLines, sfxEnabled: settings.audio.sfxEnabled, visualizer:settings.video.visualizer, effectsIntensity:settings.video.effectsIntensity, sfxVolume:settings.audio.sfxVolume, colorblindPieces:settings.accessibility.colorblindPieces, reduceFlash:settings.accessibility.reduceFlash, touchLeftHanded:settings.controls.touchLeftHanded });
+  bridge.send('game:preferences-request', stackedPreferencesRequest(settings, { presets: parentPresets }));
 }
-for (const id of ['motionToggle', 'effectsToggle', 'reactiveToggle', 'ghostToggle', 'gridToggle', 'soundToggle', 'visualizerSelect', 'pieceMarksToggle', 'flashToggle', 'leftHandToggle', 'intensityRange', 'volumeRange', 'sceneSelect', 'boardPulseToggle']) $(id).addEventListener('change', updatePreferences);
-$('sceneNextButton').addEventListener('click', () => { renderer?.nextScene(); status.textContent = 'Next backdrop scene.'; });
-$('settingsTile').addEventListener('click', () => { $('preferencePanel').open = true; $('ghostToggle').focus(); });
+for (const id of ['motionToggle', 'ghostToggle', 'gridToggle', 'visualizerSelect', 'pieceMarksToggle', 'flashToggle', 'leftHandToggle', 'volumeRange', 'effectsOff', 'effectsCalm', 'effectsStandard', 'effectsFull']) $(id).addEventListener('change', updatePreferences);
+$('volumeRange').addEventListener('input', showVolume);
+// The Settings tile opens and closes the card; the tile mirrors it in aria-expanded,
+// including summary clicks and the results screen closing it. The details toggle
+// event is queued, so code that sets `open` itself mirrors the tile in the same task.
+$('settingsTile').addEventListener('click', () => {
+  const panel = $('preferencePanel');
+  panel.open = !panel.open;
+  mirrorSettingsTile();
+  if (panel.open) overlay.querySelector('input[name=effectsPreset]:checked')?.focus();
+});
+$('preferencePanel').addEventListener('toggle', mirrorSettingsTile);
 $('scoresTile').addEventListener('click', () => {
   const shelf = $('scoreShelf'), open = shelf.hidden;
   if (open) {
@@ -259,7 +277,6 @@ $('scoresTile').addEventListener('click', () => {
   shelf.hidden = !open; $('scoresTile').setAttribute('aria-expanded', String(open));
 });
 for (const tile of [$('freeModeTile'), $('rankedModeTile')]) tile.addEventListener('click', () => { if (tile.dataset.mode === init?.mode) status.textContent = tile.dataset.mode === 'ranked' ? 'Ranked is active for this run.' : 'Free Mode is active. Practice medals stay on this device.'; else bridge.send('game:exit-request', {}); });
-for (const [id, output] of [['intensityRange','intensityValue'],['volumeRange','volumeValue']]) $(id).addEventListener('input', () => { $(output).textContent = $(id).value + '%'; });
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('blur', pause);
 window.addEventListener('pagehide', dispose, { once: true });
