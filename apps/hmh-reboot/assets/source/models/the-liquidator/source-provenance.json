@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "stage": "source",
+  "actorId": "the-liquidator",
+  "runtimeAuthority": "projection-only",
+  "rawInput": {
+    "sha256": "d3909ffce9a35472e97d9ffeb24f835d63659c0fe1523399b1c9c4e456d7c999",
+    "bytes": 67067176,
+    "facing": "+X",
+    "vertices": 771758,
+    "faces": 1492864,
+    "bones": 46
+  },
+  "tripo": {
+    "conceptTask": {
+      "id": "dde877c0-2cef-479e-aa3e-ae2aedf7cbb4",
+      "type": "text_to_image",
+      "credits": 5,
+      "imageSha256": "b723992b1b970b3f7d1284dac9286fd46e36d8ba7f8822a346909e6592efd80d"
+    },
+    "imageToModelTask": {
+      "id": "16708afe-1614-4c44-9814-7965ea9301e7",
+      "type": "image_to_model",
+      "modelVersion": "v3.1-20260211",
+      "params": {
+        "texture": true,
+        "pbr": true,
+        "texture_quality": "detailed",
+        "geometry_quality": "standard"
+      },
+      "credits": 40,
+      "primaryGlbSha256": "2dcd93fdbf292229822388c8fca2ef521765bc8ee5aeaf3026b8423f0eab11cb",
+      "primaryGlbBytes": 51617812
+    },
+    "rigCheckTask": {
+      "id": "4661128a-e7cd-4d5b-b2a2-9f5ca9836cb6",
+      "type": "animate_prerigcheck",
+      "credits": 0
+    },
+    "rigTask": {
+      "id": "4a9a82fd-fa03-4129-8285-31809ce9765b",
+      "type": "animate_rig",
+      "spec": "mixamo",
+      "rigModel": "v2.5-20260210",
+      "outFormat": "glb",
+      "credits": 25,
+      "riggedGlbSha256": "d3909ffce9a35472e97d9ffeb24f835d63659c0fe1523399b1c9c4e456d7c999",
+      "riggedGlbBytes": 67067176
+    },
+    "rights": "Tripo Pro subscription credits authorised by the owner (DECISIONS.md, Tripo approval); no additional purchase"
+  },
+  "boneMapping": {
+    "tripo::Root": "root",
+    "tripo::Spine_0": "hips",
+    "bone_1": "pelvis",
+    "tripo::1_Left_Limb_0": "chest",
+    "tripo::Head_0": "head",
+    "bone_3": "neck",
+    "tripo::1_Left_Limb_1": "upper_arm.L",
+    "tripo::1_Left_Limb_2": "forearm.L",
+    "tripo::1_Left_Limb_3": "hand.L",
+    "bone_5": "upper_arm.R",
+    "bone_6": "forearm.R",
+    "bone_7": "hand.R",
+    "tripo::0_Left_Limb_0": "thigh.L",
+    "tripo::0_Left_Limb_1": "shin.L",
+    "tripo::0_Left_Limb_2": "foot.L",
+    "tripo::1_Right_Limb_0": "thigh.R",
+    "tripo::1_Right_Limb_1": "shin.R",
+    "tripo::1_Right_Limb_2": "foot.R"
+  },
+  "targetHeight": 2.4,
+  "rawHeight": 0.9999996721744537,
+  "scale": 2.4000007867815687,
+  "yawDegrees": -90.0,
+  "decimation": {
+    "before": 1492864,
+    "after": 125000,
+    "ratio": 0.08373167281145504
+  },
+  "textures": [
+    {
+      "name": "Color_16708afe-1614-4c44-9814-7965ea9301e7",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    },
+    {
+      "name": "NormalGL_16708afe-1614-4c44-9814-7965ea9301e7",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    },
+    {
+      "name": "ORM_16708afe-1614-4c44-9814-7965ea9301e7",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    }
+  ],
+  "output": {
+    "path": "the-liquidator.glb",
+    "sha256": "864b07255c8675be5c6f29df829bac1aad3c3edd273b2d80806db6b237374434",
+    "bytes": 17094932,
+    "vertices": 82204,
+    "faces": 125000,
+    "bones": 47
+  },
+  "builderSha256": "849bbfe65ee3277a22b0126135822a413c95084c249aeb8e28bcb1e0a787a581",
+  "blenderVersion": "5.1.2"
+}
