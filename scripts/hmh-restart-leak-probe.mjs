@@ -97,6 +97,13 @@ try {
       await page.waitForTimeout(250);
     }
   };
+  // One trusted key press per mounted child, like a player's first input:
+  // the Web Audio SFX engine (perf step 5/8) opens its context on a gesture,
+  // so without it a probe would measure a silent run. Shift is unbound.
+  const activate = async (label) => {
+    await waitTick(1, `${label} boot`);
+    await page.keyboard.press('ShiftLeft');
+  };
   const sample = async (label) => {
     for (let pass = 0; pass < 3; pass += 1) await cdp.send('HeapProfiler.collectGarbage');
     await page.waitForTimeout(300);
@@ -104,7 +111,9 @@ try {
     const heap = await cdp.send('Runtime.getHeapUsage');
     const dom = await cdp.send('Memory.getDOMCounters');
     const stage = await page.evaluate(() => window.__probe.state()).catch(() => ({}));
-    const row = { label, usedMB: +(heap.usedSize / 1048576).toFixed(2), totalMB: +(heap.totalSize / 1048576).toFixed(2), documents: dom.documents, nodes: dom.nodes, listeners: dom.jsEventListeners, tick: Number(stage.simulationStepsTotal ?? 0), displaysCreated: stage.enemyDisplaysCreated ?? null };
+    const row = { label, usedMB: +(heap.usedSize / 1048576).toFixed(2), totalMB: +(heap.totalSize / 1048576).toFixed(2), documents: dom.documents, nodes: dom.nodes, listeners: dom.jsEventListeners, tick: Number(stage.simulationStepsTotal ?? 0), displaysCreated: stage.enemyDisplaysCreated ?? null,
+      // Present only with telemetry=1 in the query; audioContext/samples only on the Web Audio engine.
+      audio: stage.audioVoices === undefined ? null : { voices: Number(stage.audioVoices), context: stage.audioContext ?? null, samplesReady: stage.audioSamplesReady ?? null } };
     console.log(JSON.stringify(row));
     return row;
   };
@@ -124,6 +133,7 @@ try {
   if (args.long) {
     // C) one long run, retained heap every `ticks` ticks
     await page.evaluate((q) => window.__probe.mount('lit-commando', q), String(args.query ?? 'evidenceSafe=1'));
+    await activate('long');
     report.long = [];
     for (let round = 1; round <= rounds; round += 1) {
       await waitTick(ticks * round, `long ${round}`);
@@ -134,6 +144,7 @@ try {
   } else {
   // A) in-child restarts
   await page.evaluate((q) => window.__probe.mount('lit-commando', q), query);
+  await activate('first run');
   await waitTick(ticks, 'first run');
   report.restart.push(await sample('run 0'));
   for (let round = 1; round <= rounds; round += 1) {
@@ -147,6 +158,7 @@ try {
   for (let round = 0; round < rounds; round += 1) {
     const hero = heroes[round % heroes.length];
     await page.evaluate(([h, q]) => window.__probe.mount(h, q), [hero, query]);
+    await activate(`mount ${hero}`);
     await waitTick(ticks, `mount ${hero}`);
     report.remount.push(await sample(`mount ${round + 1} ${hero}`));
   }
