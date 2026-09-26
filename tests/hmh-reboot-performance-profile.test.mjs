@@ -1,4 +1,4 @@
-import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
+import { enemyRenderPassSource, runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -99,7 +99,10 @@ test('runtime routes profile into Pixi and world projection, and owns a browser 
   assert.match(main, /antialias: performanceProfile\.antialias/);
   assert.match(main, /resolution: performanceProfile\.resolution/);
   assert.match(main, /performanceProfile,/);
-  assert.match(main, /selectAnimatedEnemyIds/);
+  // The budget is filled by the enemy render pass with the same order as
+  // selectAnimatedEnemyIds (tests/hmh-enemy-render-pass.test.mjs proves it).
+  assert.match(main, /enemyRenderPass\.render\(\{/);
+  assert.match(enemyRenderPassSource, /markAnimatedRows\(count, enemies, visible, priority, distance, animationBudget, heap, selected\)/);
   assert.match(main, /Math\.min\(performanceProfile\.maxAnimatedEnemies, encounterAnimationCap\)/);
   assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.enemyPoolPressure/);
   assert.match(runtimeTelemetrySource, /(?:stageElement\.dataset|dataset)\.enemyThreatPressure/);

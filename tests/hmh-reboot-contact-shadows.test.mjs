@@ -1,4 +1,4 @@
-import { runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
+import { enemyRenderPassSource, runtimeTelemetrySource } from './helpers/hmh-runtime-source.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -212,14 +212,19 @@ test('the render pass drives the shadow pool and reports it, without touching si
   assert.match(source, /createContactShadowTextures/u);
   assert.match(source, /contactShadowPool\?\.begin\(\)/u);
   assert.match(source, /contactShadowPool\?\.finish\(\)/u);
-  const placeSites = source.match(/contactShadowPool\?\.place\(/gu) ?? [];
+  // Enemy bodies are placed by the lazily loaded body pass, which only calls
+  // the pool once it knows it has one; corpses and the boss stay in main.mjs.
+  const pass = stripComments(enemyRenderPassSource);
+  const placeSites = `${source}\n${pass}`.match(/contactShadowPool\??\.place\(/gu) ?? [];
   assert.ok(placeSites.length >= 3, `enemies, corpses and the boss each need a placement site, found ${placeSites.length}`);
+  assert.match(pass, /if \(enemyMarker\.contactShadowFootprint && contactShadowPool\) \{/u);
   assert.match(source, /contactShadows: contactShadowPool/u, 'authored props must receive the shared pool');
   assert.match(runtimeTelemetrySource, /dataset\.contactShadows/u);
   assert.match(runtimeTelemetrySource, /dataset\.contactShadowsDropped/u);
   // Projection state lives on display containers and the pool, never on the
   // deterministic entities that serialize into replay and evidence.
   assert.doesNotMatch(source, /(?:enemy|actor|liquidatorBoss|death|grenade)\.contactShadow/u);
+  assert.doesNotMatch(pass, /(?:enemy|actor|liquidatorBoss|death|grenade)\.contactShadow/u);
 });
 
 test('actor shadows land on the sprite foot line, not on the authored pivot', async () => {
@@ -229,12 +234,18 @@ test('actor shadows land on the sprite foot line, not on the authored pivot', as
   // roughly at the chest and a shadow drawn there floats above the feet.
   assert.match(source, /const contactShadowFootY = \(display, pose, screenY, zoom\) =>/u);
   assert.match(source, /\(1 - \(pose\?\.anchor\?\.y \?\? 1\)\)/u);
+  // Corpses and the boss place in main.mjs; enemy bodies in the body pass,
+  // which computes the foot line once for the shadow and the elite ring.
+  const pass = stripComments(enemyRenderPassSource);
   const footSites = source.match(/y: contactShadowFootY\(/gu) ?? [];
-  assert.ok(footSites.length >= 3, `enemies, corpses and the boss all need the foot-line offset, found ${footSites.length}`);
+  assert.ok(footSites.length >= 2, `corpses and the boss need the foot-line offset, found ${footSites.length}`);
+  assert.match(pass, /const footY = [^;]*contactShadowFootY\(enemyMarker, enemyPose, enemyScreen\.y, camera\.zoom\)/u);
+  assert.match(pass, /shadow\.y = footY;/u);
   assert.doesNotMatch(source, /y: enemyScreen\.y,\n\s*footprintPx/u, 'an enemy shadow must not sit on the raw pivot');
+  assert.doesNotMatch(pass, /shadow\.y = enemyScreen\.y/u, 'an enemy shadow must not sit on the raw pivot');
   // The pose is read back from the display's own applyPose return, never
   // written onto the enemy the simulation owns.
-  assert.match(source, /const enemyPose = prepareWorldDesignEnemyPose\(enemyMarker, animate, \{/u);
+  assert.match(pass, /const enemyPose = prepareWorldDesignEnemyPose\(enemyMarker, animate, pose\)/u);
   assert.match(source, /const bossPose = bossVisual\.applyPose\(\{/u);
 });
 

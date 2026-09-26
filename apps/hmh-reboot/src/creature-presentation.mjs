@@ -2,9 +2,12 @@ import { feedbackUnit } from './deterministic-hash.mjs';
 import { LIQUIDATOR_ATTACK_DEFINITIONS } from './liquidator-boss.mjs';
 
 // Cosmetic clocks never advance the simulation or consume its random stream.
-export function creatureAnimationTick(id, tick, state, startedAt = tick) {
+// A body's locomotion phase offset is a pure function of its id, so a caller
+// that renders it every frame may pass it in instead of re-hashing the id.
+export const creatureIdPhase = (id) => Math.floor(feedbackUnit(String(id)) * 120);
+export function creatureAnimationTick(id, tick, state, startedAt = tick, idPhase) {
   if (state === 'hit' || state === 'death') return Math.max(0, tick - startedAt);
-  return tick + (state === 'run' || state === 'idle' ? Math.floor(feedbackUnit(String(id)) * 120) : 0);
+  return tick + (state === 'run' || state === 'idle' ? idPhase ?? creatureIdPhase(id) : 0);
 }
 
 export function liquidatorPose({boss, player, tick, lastAttack, hitUntil, deathUntil}) {
