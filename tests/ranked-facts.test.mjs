@@ -1,0 +1,111 @@
+// The static Ranked facts (apps/portal/src/ranked-facts.mjs) against the code
+// that enforces each one (ranked-onboarding brief, acceptance criterion 1).
+// A retuned fee or reserve, a new faucet, another board or a changed
+// achievement catalog fails here until the public copy moves with it.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { FAUCET_CHIP_TEXT, FAUCET_LINK_TEXT, RANKED_FACTS, RANKED_WORDING } from '../apps/portal/src/ranked-facts.mjs';
+import { LITEFORGE_FAUCET_URL } from '../apps/portal/src/wallet-config.mjs';
+import { LITVM_LITEFORGE_NETWORK } from '../apps/portal/src/arcade-core.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
+import { ACHIEVEMENT_GAME_IDS, catalogFor } from '../apps/portal/src/achievements/index.mjs';
+import { DEFAULT_LEADERBOARD_PERIOD, leaderboardPeriodTabs } from '../apps/portal/src/leaderboard-view.mjs';
+import { PORTAL_GAMES } from '../apps/portal/src/portal-content.mjs';
+
+const deployConfig = JSON.parse(readFileSync(new URL('../contracts/deploy-config.testnet.json', import.meta.url), 'utf8'));
+const vercel = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
+const WEI_PER_ZKLTC = 10n ** 18n;
+const toWei = (decimal) => {
+  const [whole, fraction = ''] = decimal.split('.');
+  return BigInt(whole) * WEI_PER_ZKLTC + BigInt((fraction + '0'.repeat(18)).slice(0, 18));
+};
+
+test('every decimal the copy prints is the wei value it stands for', () => {
+  for (const [decimal, wei] of [['entryZkLtc', 'entryWei'], ['publishZkLtc', 'publishWei'], ['totalZkLtc', 'totalWei'], ['faucetZkLtc', 'faucetWei']]) {
+    assert.match(RANKED_FACTS[decimal], /^0\.\d*[1-9]$/, `${decimal} is a plain decimal without trailing zeros`);
+    assert.equal(toWei(RANKED_FACTS[decimal]), BigInt(RANKED_FACTS[wei]), decimal);
+  }
+  assert.equal(BigInt(RANKED_FACTS.entryWei) + BigInt(RANKED_FACTS.publishWei), BigInt(RANKED_FACTS.totalWei), 'entry + publishing = total');
+  assert.equal(BigInt(RANKED_FACTS.faucetWei) / BigInt(RANKED_FACTS.totalWei), BigInt(RANKED_FACTS.faucetRuns), 'whole Ranked runs one faucet request pays for');
+  assert.equal(RANKED_FACTS.developerPercent + RANKED_FACTS.arcadePercent, 100);
+  assert.ok(Object.isFrozen(RANKED_FACTS) && Object.isFrozen(RANKED_WORDING));
+});
+
+test('the owner-approved price: 0.01 entry + 0.002 publishing = 0.012 zkLTC per run', () => {
+  assert.deepEqual([RANKED_FACTS.entryZkLtc, RANKED_FACTS.publishZkLtc, RANKED_FACTS.totalZkLtc], ['0.01', '0.002', '0.012']);
+  assert.equal(RANKED_WORDING.price, 'Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain.');
+});
+
+test('the price matches every game fee, the reserve and the split in the testnet deploy config', () => {
+  assert.equal(BigInt(deployConfig.settlementGasReserveWei), BigInt(RANKED_FACTS.publishWei), 'settlementGasReserveWei');
+  assert.deepEqual(deployConfig.games.map((game) => game.slug).sort(), PORTAL_GAMES.map((game) => game.id).sort());
+  for (const game of deployConfig.games) {
+    assert.equal(BigInt(game.entryFeeWei), BigInt(RANKED_FACTS.entryWei), `${game.slug} entryFeeWei`);
+    assert.deepEqual([game.devBps, game.treasuryBps, game.platformBps, game.liquidityBps], [RANKED_FACTS.developerPercent * 100, RANKED_FACTS.arcadePercent * 100, 0, 0], `${game.slug} split`);
+  }
+});
+
+test('the total is the server settle floor (contract A27, RANKED_MIN_PAID_WEI default)', () => {
+  assert.equal(DEFAULT_MIN_PAID_WEI, RANKED_FACTS.totalWei);
+});
+
+test('the faucet, the chain and the explorer are the ones the wallet code uses', () => {
+  assert.equal(RANKED_FACTS.faucetUrl, LITEFORGE_FAUCET_URL);
+  assert.equal(RANKED_FACTS.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
+  assert.equal(RANKED_FACTS.chainId, LITVM_LITEFORGE_NETWORK.chainId);
+  assert.equal(RANKED_FACTS.token, LITVM_LITEFORGE_NETWORK.nativeCurrency.symbol);
+  assert.equal(RANKED_FACTS.explorerUrl, LITVM_LITEFORGE_NETWORK.explorerUrl);
+  assert.equal(RANKED_FACTS.networkName, `${LITVM_LITEFORGE_NETWORK.name} testnet`);
+  assert.equal(RANKED_WORDING.faucet, 'Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs).');
+  assert.equal(FAUCET_LINK_TEXT, 'Get free zkLTC (0.05 per request)');
+  assert.equal(FAUCET_CHIP_TEXT, 'Get 0.05 free zkLTC');
+});
+
+test('the boards and their resets are the hosted leaderboard tabs', () => {
+  const tabs = leaderboardPeriodTabs();
+  assert.deepEqual([...RANKED_FACTS.boards], tabs.map((tab) => tab.label));
+  assert.equal(DEFAULT_LEADERBOARD_PERIOD, 'weekly');
+  assert.equal(tabs.find((tab) => tab.id === 'weekly').resets, `Resets ${RANKED_FACTS.weeklyReset}`);
+  assert.match(tabs.find((tab) => tab.id === 'monthly').resets, /^Resets on the 1st, 00:00 UTC$/);
+  assert.equal(RANKED_FACTS.monthlyReset, 'the 1st of each month, 00:00 UTC');
+  assert.equal(tabs.find((tab) => tab.id === 'all-time').resets, null, 'All-time never resets');
+});
+
+test('publishing retries every minute, as the settle-retry cron runs', () => {
+  const cron = vercel.crons.find((entry) => entry.path === '/api/cron/settle-retry');
+  assert.equal(cron?.schedule, '* * * * *');
+  assert.equal(RANKED_FACTS.publishRetryMinutes, 1);
+});
+
+test('the achievement counts are the catalog entries a verified run can earn', () => {
+  let total = 0;
+  assert.deepEqual(Object.keys(RANKED_FACTS.achievements).sort(), [...ACHIEVEMENT_GAME_IDS].sort());
+  for (const gameId of ACHIEVEMENT_GAME_IDS) {
+    const available = catalogFor(gameId).filter((entry) => entry.available !== false).length;
+    assert.equal(RANKED_FACTS.achievements[gameId], available, gameId);
+    total += available;
+  }
+  assert.equal(RANKED_FACTS.achievementTotal, total);
+});
+
+test('the guide path is served by a vercel.json rewrite, like /games', () => {
+  assert.equal(RANKED_FACTS.guidePath, '/how-ranked-works');
+  assert.equal(RANKED_FACTS.guideUrl, `https://lestersarcade.io${RANKED_FACTS.guidePath}`);
+  assert.deepEqual(vercel.rewrites.find((rewrite) => rewrite.source === RANKED_FACTS.guidePath), { source: '/how-ranked-works', destination: '/how-ranked-works.html' });
+});
+
+test('the canonical wording is plain: no jackpot, prizes, NFTs, dates or hype', () => {
+  const text = [...Object.values(RANKED_WORDING), FAUCET_LINK_TEXT, FAUCET_CHIP_TEXT].join('\n');
+  assert.doesNotMatch(text, /jackpot|prize|reward|\bNFTs?\b|soulbound|guarantee|earn money|real value|mainnet|20\d\d|!/i);
+  assert.equal(RANKED_WORDING.free, 'Free play needs no wallet and never touches the chain.');
+  assert.equal(RANKED_WORDING.value, 'Testnet zkLTC has no monetary value.');
+  assert.equal(RANKED_WORDING.proof, "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.");
+});
+
+test('the facts module stays a pure leaf the SPA can afford', () => {
+  const source = readFileSync(new URL('../apps/portal/src/ranked-facts.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /^\s*import\b/m, 'no imports');
+  assert.doesNotMatch(source, /\b(?:window|document|process|localStorage|fetch)\b/);
+  assert.ok(Buffer.byteLength(source) < 6_000, 'small enough for the wallet chunks');
+});
