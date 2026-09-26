@@ -6,7 +6,10 @@ which is archived read-only under [`archive/2026-06-legacy/`](archive/2026-06-le
 
 Owner direction (2026-09-16): Ranked Mode charges **0.1 zkLTC in the native token at entry**; that fee funds
 on-chain settlement of the run (score + session data); achievements are **soulbound NFTs** bound to the wallet;
-the June contracts are outdated and must be replaced and redeployed.
+the June contracts are outdated and must be replaced and redeployed. Owner decision 2026-09-26: the fee is
+lowered to **0.01 zkLTC** (0.012 zkLTC per run with the 0.002 reserve). The deployed registry keeps 0.1 until
+the operator sends `setEntryFee` for each game, which happens only after the release that lowers the server
+settle floor (`docs/handoffs/ranked-fee-20260926.md`).
 
 ## What is deployed today vs. not
 
@@ -30,7 +33,7 @@ the June contracts are outdated and must be replaced and redeployed.
 ## Ranked flow
 
 ```
-GameRegistry.getGame(gameId)               -> entryFeeWei = 0.1 zkLTC, playable, devWalletConfirmed
+GameRegistry.getGame(gameId)               -> entryFeeWei = 0.01 zkLTC (0.1 until setEntryFee lands), playable, devWalletConfirmed
 ArcadeRankedEntry.quoteEntry(gameId)       -> (entryFeeWei, settlementGasReserveWei, totalWei)
 ArcadeRankedEntry.openSession{value: total} -> RankedSessionOpened + SettlementReserveForwarded (reserve -> relayerVault)
                                               + RevenueRouted (flat fee split 85/15 instantly)
@@ -45,7 +48,7 @@ ScoreSubmissionRegistry.submitVerifiedSession(run, achievements, signature)
 ## Fee split (testnet config)
 
 All three registered games (owner decision 2026-09-16): `devBps 8500 / platformBps 0 / liquidityBps 0 /
-treasuryBps 1500` (85 % developer, 15 % treasury), `entryFeeWei 100000000000000000` (0.1 zkLTC) plus
+treasuryBps 1500` (85 % developer, 15 % treasury), `entryFeeWei 10000000000000000` (0.01 zkLTC, owner decision 2026-09-26; 0.1 zkLTC before) plus
 `settlementGasReserveWei 2000000000000000` (0.002 zkLTC, owner decision 2026-09-23; the operator retunes it with `setSettlementGasReserve`) forwarded to
 `relayerVault`. Developer wallet and treasury vault are the owner wallet; relayer vault defaults to the
 operator. This is a **testnet epoch**: mainnet is a fresh deployment set.
