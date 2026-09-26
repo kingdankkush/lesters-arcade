@@ -1,11 +1,18 @@
+import { RANKED_FACTS, RANKED_WORDING } from './ranked-facts.mjs';
+
 const freezeArray = (items) => Object.freeze(items.map((item) => Object.freeze(item)));
+
+// The mode-select fallback lines (arcade-core's HMH descriptor; the SPA shows the per-game site copy
+// of portal-content.mjs over them). Numbers come from ranked-facts.mjs (ranked-onboarding, 2026-09-26).
+const FREE_MODE_COPY = `${RANKED_WORDING.free} It costs nothing, and runs are not ranked.`;
+const RANKED_MODE_COPY = `Ranked costs ${RANKED_FACTS.totalZkLtc} testnet zkLTC per run. Get zkLTC free from the ${RANKED_FACTS.faucetName}. The arcade server checks your run and publishes it on LitVM.`;
 
 export const HMH_COPY_STYLE_RULES = Object.freeze({
   maxHeadlineChars: 42,
   maxBodyChars: 190,
   bannedPlayerFacingPatterns: Object.freeze([
     Object.freeze({ id: 'em-dash', pattern: /—/, reason: 'Justin prefers no em dashes in player-facing copy.' }),
-    Object.freeze({ id: 'paid-testnet', pattern: /\bpaid\b/i, reason: 'Ranked is free on testnet; avoid paid-mode language.' }),
+    Object.freeze({ id: 'paid-testnet', pattern: /\bpaid\b/i, reason: 'Ranked costs free testnet zkLTC; name the price instead of paid-mode language.' }),
     Object.freeze({ id: 'prototype-mode', pattern: /\bprototype\b/i, reason: 'Player-facing copy should read as game copy, not implementation status.' }),
   ]),
 });
@@ -25,13 +32,13 @@ export const HMH_COPY_SHEET = Object.freeze({
     free: Object.freeze({
       label: 'Free Mode',
       eyebrow: 'Practice Run',
-      copy: 'Practice locally. No leaderboard write, no achievement write, no wallet transaction.',
+      copy: FREE_MODE_COPY,
       cta: 'Start Free Run',
     }),
     ranked: Object.freeze({
       label: 'Play Ranked',
       eyebrow: 'Official Testnet Run',
-      copy: 'Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet.',
+      copy: RANKED_MODE_COPY,
       cta: 'Start Ranked Run',
     }),
   }),
@@ -57,15 +64,15 @@ export const HMH_COPY_SHEET = Object.freeze({
     bossBeat: 'BOSS BEAT',
   }),
   glossary: freezeArray([
-    { id: 'free-mode', term: 'Free Mode', approved: 'Local practice. No official write.' },
-    { id: 'ranked', term: 'Play Ranked', approved: 'Official testnet run with a LitVM score write.' },
-    { id: 'gas', term: 'zkLTC gas', approved: 'Testnet gas from the faucet, not real funds.' },
+    { id: 'free-mode', term: 'Free Mode', approved: 'Free play. No wallet, never touches the chain, never ranks.' },
+    { id: 'ranked', term: 'Play Ranked', approved: `A testnet run for ${RANKED_FACTS.totalZkLtc} zkLTC, checked by the arcade server and published on LitVM.` },
+    { id: 'gas', term: 'zkLTC', approved: `The LitVM LiteForge testnet token, free from the ${RANKED_FACTS.faucetName}. ${RANKED_WORDING.value}` },
     { id: 'level-one', term: 'Crypto Wasteland', approved: 'Open survival route with boss beats.' },
     { id: 'boss-beat', term: 'Boss beat', approved: 'Scheduled mini-boss or major boss pressure spike.' },
   ]),
   surfaces: freezeArray([
-    { id: 'mode-free', file: 'apps/portal/src/arcade-core.mjs', surface: 'Mode select card', text: 'Practice locally. No leaderboard write, no achievement write, no wallet transaction.' },
-    { id: 'mode-ranked', file: 'apps/portal/src/arcade-core.mjs', surface: 'Mode select card', text: 'Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet.' },
+    { id: 'mode-free', file: 'apps/portal/src/arcade-core.mjs', surface: 'Mode select card', text: FREE_MODE_COPY },
+    { id: 'mode-ranked', file: 'apps/portal/src/arcade-core.mjs', surface: 'Mode select card', text: RANKED_MODE_COPY },
     { id: 'level-intro-goal', file: 'apps/portal/src/arcade-core.mjs', surface: 'Level intro', text: 'Survive the open route, harvest XP, break boss beats, and submit an official score only after game over.' },
     { id: 'ready-hint', file: 'apps/portal/main.js', surface: 'READY overlay', text: 'PRESS SPACE OR CLICK TO START THE RUN' },
     { id: 'combat-live-status', file: 'apps/portal/main.js', surface: 'Combat status', text: 'Run live. Survive the Crypto Wasteland, harvest XP, break boss beats, and chase a higher score.' },

@@ -29,12 +29,15 @@ test('WO-30 copy avoids stale paid/prototype framing and em dashes', () => {
   }
 });
 
-test('WO-30 official testnet mode copy is explicit about gas and faucet cost', () => {
+// ranked-onboarding (2026-09-26): Ranked is no longer free on testnet. The line names the
+// ranked-facts.mjs price and the faucet instead of the old "free, gas only" wording.
+test('WO-30 official testnet mode copy is explicit about the price and the faucet', () => {
   const copy = hmhCopy('modeSelect.ranked.copy');
-  assert.match(copy, /Free on testnet/i);
-  assert.match(copy, /zkLTC gas/i);
-  assert.match(copy, /faucet/i);
+  assert.match(copy, /^Ranked costs 0\.012 testnet zkLTC per run\./);
+  assert.match(copy, /free from the LiteForge faucet/i);
+  assert.doesNotMatch(copy, /Free on testnet|zkLTC gas/i);
   assert.equal(copy.includes('real funds'), false);
+  assert.equal(hmhCopy('modeSelect.free.copy'), 'Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked.');
 });
 
 test('WO-30 source wiring consumes the copy sheet in runtime-visible surfaces', () => {

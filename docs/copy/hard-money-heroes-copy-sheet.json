@@ -19,13 +19,13 @@
       "free": {
         "label": "Free Mode",
         "eyebrow": "Practice Run",
-        "copy": "Practice locally. No leaderboard write, no achievement write, no wallet transaction.",
+        "copy": "Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked.",
         "cta": "Start Free Run"
       },
       "ranked": {
         "label": "Play Ranked",
         "eyebrow": "Official Testnet Run",
-        "copy": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet.",
+        "copy": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM.",
         "cta": "Start Ranked Run"
       }
     },
@@ -54,17 +54,17 @@
       {
         "id": "free-mode",
         "term": "Free Mode",
-        "approved": "Local practice. No official write."
+        "approved": "Free play. No wallet, never touches the chain, never ranks."
       },
       {
         "id": "ranked",
         "term": "Play Ranked",
-        "approved": "Official testnet run with a LitVM score write."
+        "approved": "A testnet run for 0.012 zkLTC, checked by the arcade server and published on LitVM."
       },
       {
         "id": "gas",
-        "term": "zkLTC gas",
-        "approved": "Testnet gas from the faucet, not real funds."
+        "term": "zkLTC",
+        "approved": "The LitVM LiteForge testnet token, free from the LiteForge faucet. Testnet zkLTC has no monetary value."
       },
       {
         "id": "level-one",
@@ -82,13 +82,13 @@
         "id": "mode-free",
         "file": "apps/portal/src/arcade-core.mjs",
         "surface": "Mode select card",
-        "text": "Practice locally. No leaderboard write, no achievement write, no wallet transaction."
+        "text": "Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked."
       },
       {
         "id": "mode-ranked",
         "file": "apps/portal/src/arcade-core.mjs",
         "surface": "Mode select card",
-        "text": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet."
+        "text": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM."
       },
       {
         "id": "level-intro-goal",
@@ -163,7 +163,7 @@
     },
     {
       "path": "modeSelect.free.copy",
-      "text": "Practice locally. No leaderboard write, no achievement write, no wallet transaction."
+      "text": "Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked."
     },
     {
       "path": "modeSelect.free.cta",
@@ -179,7 +179,7 @@
     },
     {
       "path": "modeSelect.ranked.copy",
-      "text": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet."
+      "text": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM."
     },
     {
       "path": "modeSelect.ranked.cta",
@@ -247,7 +247,7 @@
     },
     {
       "path": "glossary.0.approved",
-      "text": "Local practice. No official write."
+      "text": "Free play. No wallet, never touches the chain, never ranks."
     },
     {
       "path": "glossary.1.id",
@@ -259,7 +259,7 @@
     },
     {
       "path": "glossary.1.approved",
-      "text": "Official testnet run with a LitVM score write."
+      "text": "A testnet run for 0.012 zkLTC, checked by the arcade server and published on LitVM."
     },
     {
       "path": "glossary.2.id",
@@ -267,11 +267,11 @@
     },
     {
       "path": "glossary.2.term",
-      "text": "zkLTC gas"
+      "text": "zkLTC"
     },
     {
       "path": "glossary.2.approved",
-      "text": "Testnet gas from the faucet, not real funds."
+      "text": "The LitVM LiteForge testnet token, free from the LiteForge faucet. Testnet zkLTC has no monetary value."
     },
     {
       "path": "glossary.3.id",
@@ -311,7 +311,7 @@
     },
     {
       "path": "surfaces.0.text",
-      "text": "Practice locally. No leaderboard write, no achievement write, no wallet transaction."
+      "text": "Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked."
     },
     {
       "path": "surfaces.1.id",
@@ -327,7 +327,7 @@
     },
     {
       "path": "surfaces.1.text",
-      "text": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet."
+      "text": "Ranked costs 0.012 testnet zkLTC per run. Get zkLTC free from the LiteForge faucet. The arcade server checks your run and publishes it on LitVM."
     },
     {
       "path": "surfaces.2.id",
