@@ -1,17 +1,50 @@
 {
   "schema": "lesters-jackpot-rehearsal-v2",
-  "generatedAt": "2026-09-26T02:31:03.216Z",
-  "head": "805aafdf",
-  "scriptSha256": "0bce3ab06c739a65883520eeb9bf8b2ae0a9bf010c50b785ac6010f9cb568bbb",
+  "generatedAt": "2026-09-26T05:05:11.859Z",
+  "head": "356b1dee",
+  "dirty": false,
+  "scriptSha256": "b122130ed93d7cc03904eb94ee5a7739b05b84abe7953bab3844684849524ecb",
+  "inputs": {
+    "scripts/rehearse-jackpot-week.mjs": "b122130ed93d7cc03904eb94ee5a7739b05b84abe7953bab3844684849524ecb",
+    "scripts/lib/jackpot-rehearsal-driver.mjs": "67f998afd51ed73371b4c0700f888668cca23535d932457bf423d56b17e3877f",
+    "scripts/lib/local-jackpot.mjs": "f9fe7e3bc04759410923f36db656e7cfbe92e03aa04cb467b56addf31c41884c"
+  },
+  "productSha256": "df0a87b7deb5cc07a3caab628897281c7bc730a9155594efd03bdb0517ecec2e",
+  "productFiles": [
+    "contracts/src/WeeklyJackpot.sol",
+    "api/jackpot.mjs",
+    "api/jackpot-review.mjs",
+    "api/jackpot-replay.mjs",
+    "api/cron/weekly-jackpot.mjs",
+    "server/jackpot/api-model.mjs",
+    "server/jackpot/chain.mjs",
+    "server/jackpot/cron.mjs",
+    "server/jackpot/errors.mjs",
+    "server/jackpot/indexer.mjs",
+    "server/jackpot/keeper.mjs",
+    "server/jackpot/plausibility.mjs",
+    "server/jackpot/review-model.mjs",
+    "server/jackpot/screen.mjs",
+    "server/jackpot/select.mjs",
+    "server/jackpot/store.mjs",
+    "server/jackpot/ticket-log.mjs",
+    "server/jackpot/weeks.mjs",
+    "server/ops/health.mjs",
+    "scripts/jackpot-actions.mjs",
+    "scripts/jackpot-ops.mjs",
+    "apps/portal/src/jackpot/jackpot-client.mjs",
+    "apps/portal/owner/jackpot-review-model.mjs"
+  ],
   "command": "node scripts/rehearse-jackpot-week.mjs",
   "note": "Local rehearsal only: Hardhat chain 4441 in process, PGlite for Neon, every api/*.mjs handler in process, public fixture keys. Nothing touched LiteForge, Vercel or production Neon; JACKPOT_LIVE was not flipped.",
   "ok": true,
   "summary": {
-    "scenarios": 22,
-    "passed": 22,
+    "scenarios": 24,
+    "passed": 24,
     "failed": [],
     "expectedMisses": 1,
-    "durationMs": 39402
+    "designFindings": 1,
+    "durationMs": 58264
   },
   "stack": {
     "chainId": 4441,
@@ -30,11 +63,318 @@
   },
   "scenarios": [
     {
+      "id": "R0",
+      "title": "Soft-launch week (adminClearOnly = true, runbook E9): the keeper never clears; awaiting-admin at C + 24 h; the admin clears the top run and it is paid",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W41"
+      ],
+      "checks": [
+        {
+          "id": "first-week",
+          "ok": true,
+          "detail": {
+            "week": "2026-W41",
+            "firstWeek": "2026-W41"
+          }
+        },
+        {
+          "id": "rules-admin-clear-only",
+          "ok": true
+        },
+        {
+          "id": "fund-10000",
+          "ok": true
+        },
+        {
+          "id": "api-soft-launch-week",
+          "ok": true,
+          "detail": {
+            "rules": {
+              "minPaidWei": "100000000000000000",
+              "maxSurvivalSeconds": 3599,
+              "minFundWei": "100000000000000000000",
+              "adminClearOnly": true
+            },
+            "pot": {
+              "fundedWei": "10000000000000000000000",
+              "carriedInWei": "0",
+              "totalWei": "10000000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "10000000000000000000000",
+              "carryOverWei": "0",
+              "funded": true
+            }
+          }
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W41",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "keeper-lists",
+          "ok": true,
+          "detail": [
+            {
+              "sessionId32": "0xb4ff562b884836d4eaa25c3e83ed499bebbb9cfa261079922074da2d23afb37e",
+              "player": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+              "score": 4588,
+              "submittedAt": 1791244872
+            },
+            {
+              "sessionId32": "0x5d4e21fa1c6f744d9efd2e048d28ee32c8b7ed2126c0b0626f7b06b109f9c7b9",
+              "player": "0x08a2de6f3528319123b25935c92888b16db8913e",
+              "score": 2159,
+              "submittedAt": 1791331235
+            }
+          ]
+        },
+        {
+          "id": "keeper-screens-pass",
+          "ok": true,
+          "detail": [
+            [
+              "keeper",
+              "pass",
+              true,
+              "none"
+            ],
+            [
+              "keeper",
+              "pass",
+              true,
+              "none"
+            ]
+          ]
+        },
+        {
+          "id": "keeper-never-clears",
+          "ok": true,
+          "detail": [
+            [
+              "submit",
+              "confirmed",
+              null
+            ],
+            [
+              "submit",
+              "confirmed",
+              null
+            ]
+          ]
+        },
+        {
+          "id": "nothing-cleared-on-chain",
+          "ok": true
+        },
+        {
+          "id": "keeper-clear-reverts-review-locked",
+          "ok": true,
+          "detail": "REVIEW_LOCKED"
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W41",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "awaiting-admin",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "lastError": null
+          }
+        },
+        {
+          "id": "admin-waiting-since",
+          "ok": true
+        },
+        {
+          "id": "finalize-reverts-leader-not-cleared",
+          "ok": true,
+          "detail": {
+            "reason": "LEADER_NOT_CLEARED",
+            "minedStatus": 0,
+            "blockTimestamp": 1791849661,
+            "txHash": "0x9733bb9c9c5e54848db3d54b0849a80c63a54882d97bd00175310dad6b8a207e"
+          }
+        },
+        {
+          "id": "status-page-warns",
+          "ok": true,
+          "detail": {
+            "configured": true,
+            "keeperAddress": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
+            "keeperBalanceWei": "999999209185440886",
+            "paused": {
+              "env": false,
+              "onChain": false
+            },
+            "uiHidden": false,
+            "awaitingAdmin": 1,
+            "awaitingAdminOldestHours": 0,
+            "claimPending": 0,
+            "failed": 0
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-awaiting-admin",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "winner": null
+          }
+        },
+        {
+          "id": "review-api",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "admin-clears-top",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "paid-after-admin-clear",
+          "ok": true,
+          "detail": {
+            "runs": 2
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "prize": "10000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "prize": "10000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "10000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "prizeWei": "10000000000000000000000",
+            "finalizeTx": "0x681c370adbd8b2f8f2954a26b5958c6c796326bf4f011845a552ac3d7cb64354"
+          }
+        },
+        {
+          "id": "other-never-cleared",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 28,
+      "transactions": {
+        "total": 11,
+        "keeper": 3,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 3,
+        "reverted": 1
+      },
+      "keeperGasUsed": "566961",
+      "finalBalances": {
+        "winner R0 player 1": {
+          "address": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "10000000000000000000000"
+        },
+        "funder": {
+          "address": "0x09db0a93b389bef724429898f539aeb7ac2dd55f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "990000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "designFindings": [],
+      "notes": [],
+      "durationMs": 1727
+    },
+    {
       "id": "R1",
       "title": "Happy path: 10,000 tCHIKUN, 3 players, the keeper selects at C + 2 h and clears; anyone finalizes at C + 24 h",
       "status": "passed",
       "weekKeys": [
-        "2026-W42"
+        "2026-W43"
       ],
       "checks": [
         {
@@ -63,7 +403,7 @@
           "id": "api-open-leader",
           "ok": true,
           "detail": {
-            "score": 6759,
+            "score": 6824,
             "provisional": true,
             "screened": false
           }
@@ -76,7 +416,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W42",
+            "week": "2026-W43",
             "open": [],
             "unscreened": 0
           }
@@ -86,22 +426,22 @@
           "ok": true,
           "detail": [
             {
-              "sessionId32": "0x68c6298df1d6c72365cd25092bc90a3a219e2a023c1aed65e64c685ce7b19e58",
-              "player": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
-              "score": 6759,
-              "submittedAt": 1791849700
+              "sessionId32": "0x4a30e1a327b31d5ef06de60af18bd4441891cceec5dddca56031420d499ee778",
+              "player": "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
+              "score": 6824,
+              "submittedAt": 1792454500
             },
             {
-              "sessionId32": "0xa44f7df8f8101826ad07a3f2c818de51e6bc7f0cf93c5abab54c5743142a1f49",
-              "player": "0x08a2de6f3528319123b25935c92888b16db8913e",
-              "score": 4788,
-              "submittedAt": 1791936072
+              "sessionId32": "0xb16b2ea7d3f6aeaa1847e838fe3ff6106c4f692845520c4c4efa94964ad88fd5",
+              "player": "0xc004e69c5c04a223463ff32042dd36dabf63a25a",
+              "score": 4256,
+              "submittedAt": 1792540866
             },
             {
-              "sessionId32": "0x87f414044865ea3e9925b1fd36affae9e4719653db94338a945239575f910f8a",
-              "player": "0xe141c82d99d85098e03e1a1cc1cde676556fdde0",
-              "score": 2285,
-              "submittedAt": 1792022438
+              "sessionId32": "0xdeb231f775540109098075fbdacef8de705c69d65e06bcfacb905abde57d60c1",
+              "player": "0x5eb15c0992734b5e77c888d713b4fc67b3d679a2",
+              "score": 2310,
+              "submittedAt": 1792627238
             }
           ]
         },
@@ -159,7 +499,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W42",
+            "week": "2026-W43",
             "open": [],
             "unscreened": 0
           }
@@ -170,8 +510,8 @@
           "detail": {
             "reason": "PAYOUT_NOT_DUE",
             "minedStatus": 0,
-            "blockTimestamp": 1792454399,
-            "txHash": "0x03fcd999afeaaded470d55f7540c518bf4af7314fb16e107411a3116bac7333e"
+            "blockTimestamp": 1793059199,
+            "txHash": "0x60d06757e9c03d6a13044c051e2690f58be27c1812ae285e098c812ce3338afa"
           }
         },
         {
@@ -180,7 +520,7 @@
           "detail": {
             "ok": true,
             "reason": null,
-            "at": 1792454400
+            "at": 1793059200
           }
         },
         {
@@ -192,7 +532,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "winner": "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
             "prize": "10000000000000000000000"
           }
         },
@@ -201,7 +541,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "winner": "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
             "prize": "10000000000000000000000"
           }
         },
@@ -225,9 +565,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "winner": "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
             "prizeWei": "10000000000000000000000",
-            "finalizeTx": "0x9a4c21ed849e3638aed32e5d69f189d39cba2965c80106049837fb6cd75433b1"
+            "finalizeTx": "0xdac7c6b23780cee4071d95297813676b22721ad1a17c033fc6fe6dd2b7d9adf4"
           }
         },
         {
@@ -246,16 +586,16 @@
           "ok": true,
           "detail": [
             [
-              "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
-              6759
+              "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
+              6824
             ],
             [
-              "0x08a2de6f3528319123b25935c92888b16db8913e",
-              4788
+              "0xc004e69c5c04a223463ff32042dd36dabf63a25a",
+              4256
             ],
             [
-              "0xe141c82d99d85098e03e1a1cc1cde676556fdde0",
-              2285
+              "0x5eb15c0992734b5e77c888d713b4fc67b3d679a2",
+              2310
             ]
           ]
         },
@@ -270,9 +610,9 @@
           "id": "api-previous-paid",
           "ok": true,
           "detail": {
-            "weekKey": "2026-W42",
+            "weekKey": "2026-W43",
             "status": "paid",
-            "payoutAt": "2026-10-20T00:00:00.000Z",
+            "payoutAt": "2026-10-27T00:00:00.000Z",
             "token": {
               "symbol": "tCHIKUN",
               "decimals": 18,
@@ -291,46 +631,46 @@
             "candidates": [
               {
                 "rank": 1,
-                "walletShort": "0x9ef6…f76d",
+                "walletShort": "0x4b23…ea15",
                 "displayName": null,
-                "score": 6759,
+                "score": 6824,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0x68c6298df1d6c72365cd25092bc90a3a219e2a023c1aed65e64c685ce7b19e58"
+                "replay": "/api/jackpot/replay?session=0x4a30e1a327b31d5ef06de60af18bd4441891cceec5dddca56031420d499ee778"
               },
               {
                 "rank": 2,
-                "walletShort": "0x08a2…913e",
+                "walletShort": "0xc004…a25a",
                 "displayName": null,
-                "score": 4788,
+                "score": 4256,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0xa44f7df8f8101826ad07a3f2c818de51e6bc7f0cf93c5abab54c5743142a1f49"
+                "replay": "/api/jackpot/replay?session=0xb16b2ea7d3f6aeaa1847e838fe3ff6106c4f692845520c4c4efa94964ad88fd5"
               },
               {
                 "rank": 3,
-                "walletShort": "0xe141…dde0",
+                "walletShort": "0x5eb1…79a2",
                 "displayName": null,
-                "score": 2285,
+                "score": 2310,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0x87f414044865ea3e9925b1fd36affae9e4719653db94338a945239575f910f8a"
+                "replay": "/api/jackpot/replay?session=0xdeb231f775540109098075fbdacef8de705c69d65e06bcfacb905abde57d60c1"
               }
             ],
             "winner": {
-              "walletShort": "0x9ef6…f76d",
-              "wallet": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+              "walletShort": "0x4b23…ea15",
+              "wallet": "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
               "displayName": null
             },
             "prizeWei": "10000000000000000000000",
             "unclaimedWei": "0",
-            "finalizeTx": "0x9a4c21ed849e3638aed32e5d69f189d39cba2965c80106049837fb6cd75433b1"
+            "finalizeTx": "0xdac7c6b23780cee4071d95297813676b22721ad1a17c033fc6fe6dd2b7d9adf4"
           }
         },
         {
           "id": "profile-win",
           "ok": true,
           "detail": {
-            "weekKey": "2026-W42",
-            "startsAt": "2026-10-12T00:00:00.000Z",
-            "closesAt": "2026-10-19T00:00:00.000Z",
+            "weekKey": "2026-W43",
+            "startsAt": "2026-10-19T00:00:00.000Z",
+            "closesAt": "2026-10-26T00:00:00.000Z",
             "prizeWei": "10000000000000000000000",
             "unclaimedWei": "0",
             "status": "paid",
@@ -340,9 +680,9 @@
               "testnet": true
             },
             "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
-            "score": 6759,
-            "sessionId": "0x68c6298df1d6c72365cd25092bc90a3a219e2a023c1aed65e64c685ce7b19e58",
-            "finalizeTx": "0x9a4c21ed849e3638aed32e5d69f189d39cba2965c80106049837fb6cd75433b1"
+            "score": 6824,
+            "sessionId": "0x4a30e1a327b31d5ef06de60af18bd4441891cceec5dddca56031420d499ee778",
+            "finalizeTx": "0xdac7c6b23780cee4071d95297813676b22721ad1a17c033fc6fe6dd2b7d9adf4"
           }
         },
         {
@@ -350,7 +690,7 @@
           "ok": true,
           "detail": {
             "status": 200,
-            "badge": "Weekly Jackpot Champion · Oct 12 – Oct 18, 2026"
+            "badge": "Weekly Jackpot Champion · Oct 19 – Oct 25, 2026"
           }
         },
         {
@@ -384,14 +724,14 @@
       "keeperGasUsed": "809677",
       "finalBalances": {
         "winner R1 player 1": {
-          "address": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+          "address": "0x4b23d303d9e3719d6cdf8d172ea030f80509ea15",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "10000000000000000000000"
         },
         "funder": {
           "address": "0x09db0a93b389bef724429898f539aeb7ac2dd55f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "990000000000000000000000"
+          "balanceWei": "980000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
@@ -408,15 +748,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1579
+      "durationMs": 2240
     },
     {
       "id": "R2",
       "title": "Challenge: the keeper misses the best session; the player submits it at C + 8 h and is paid",
       "status": "passed",
       "weekKeys": [
-        "2026-W44"
+        "2026-W45"
       ],
       "checks": [
         {
@@ -431,7 +772,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W44",
+            "week": "2026-W45",
             "open": [],
             "unscreened": 0
           }
@@ -447,7 +788,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W44",
+            "week": "2026-W45",
             "open": [],
             "unscreened": 0
           }
@@ -493,7 +834,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+            "winner": "0xd4a1e660c916855229e1712090ccfd8a424a2e33",
             "prize": "5000000000000000000000"
           }
         },
@@ -502,7 +843,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+            "winner": "0xd4a1e660c916855229e1712090ccfd8a424a2e33",
             "prize": "5000000000000000000000"
           }
         },
@@ -526,9 +867,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+            "winner": "0xd4a1e660c916855229e1712090ccfd8a424a2e33",
             "prizeWei": "5000000000000000000000",
-            "finalizeTx": "0x782f54e4b7962b121befc51b0f67393a5a8d6c0635b8f4cc47d3898496ba3365"
+            "finalizeTx": "0xca5f57d5312106de762e22c484b48a970f1cecfec7c0d3dcaa616e69453a1bfc"
           }
         },
         {
@@ -558,7 +899,7 @@
       "keeperGasUsed": "772791",
       "finalBalances": {
         "winner R2 challenger": {
-          "address": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+          "address": "0xd4a1e660c916855229e1712090ccfd8a424a2e33",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "5000000000000000000000"
         },
@@ -577,15 +918,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1430
+      "durationMs": 1928
     },
     {
       "id": "R3a",
       "title": "Flag → admin: a scripted-pilot leader is flagged; the admin disqualifies it and #2 is paid",
       "status": "passed",
       "weekKeys": [
-        "2026-W46"
+        "2026-W47"
       ],
       "checks": [
         {
@@ -596,16 +938,16 @@
           "id": "pilot-leads",
           "ok": true,
           "detail": [
-            10375,
-            6348,
-            3489
+            10400,
+            6649,
+            3474
           ]
         },
         {
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W46",
+            "week": "2026-W47",
             "open": [],
             "unscreened": 0
           }
@@ -640,7 +982,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W46",
+            "week": "2026-W47",
             "open": [],
             "unscreened": 0
           }
@@ -663,8 +1005,8 @@
           "detail": {
             "reason": "LEADER_NOT_CLEARED",
             "minedStatus": 0,
-            "blockTimestamp": 1794873661,
-            "txHash": "0x92c0624216fa3546e3fc1c81f9aff03615fe78bce46c5791bc63ee4c27c24014"
+            "blockTimestamp": 1795478461,
+            "txHash": "0xac0876d60ecd96f737a432cb95be10c1a0eaffddb05fbe9f4e7444f669148b3b"
           }
         },
         {
@@ -673,7 +1015,7 @@
           "detail": {
             "configured": true,
             "keeperAddress": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
-            "keeperBalanceWei": "999999280777840191",
+            "keeperBalanceWei": "999999041488768305",
             "paused": {
               "env": false,
               "onChain": false
@@ -706,7 +1048,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x35304262b9e87c00c430149f28dd154995d01207",
+            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
             "prize": "3000000000000000000000"
           }
         },
@@ -715,7 +1057,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x35304262b9e87c00c430149f28dd154995d01207",
+            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
             "prize": "3000000000000000000000"
           }
         },
@@ -739,9 +1081,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x35304262b9e87c00c430149f28dd154995d01207",
+            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
             "prizeWei": "3000000000000000000000",
-            "finalizeTx": "0xad66303326ab41426feaecaa0207371adb37ebc1e9e9a597fe88862241fa9654"
+            "finalizeTx": "0x14472c4e0524459a5fb2738018b9f43137a8da9080dbdd8a6ec3b014af38905a"
           }
         },
         {
@@ -757,28 +1099,28 @@
           "detail": [
             {
               "rank": 1,
-              "walletShort": "0x3530…1207",
+              "walletShort": "0x145e…8544",
               "displayName": null,
-              "score": 6348,
+              "score": 6649,
               "review": "cleared",
-              "replay": "/api/jackpot/replay?session=0x57c008d23d5768e21d49562750b570af38d64d9befe30187a1d4ba91282b6d99"
+              "replay": "/api/jackpot/replay?session=0x103ccd2c1afe8ec53e27e5794b1991241f1449c8942db5ed7468f465af1cd0b5"
             },
             {
               "rank": 2,
-              "walletShort": "0xd4a1…2e33",
+              "walletShort": "0xd6a0…4a51",
               "displayName": null,
-              "score": 3489,
+              "score": 3474,
               "review": "cleared",
-              "replay": "/api/jackpot/replay?session=0x5a2444194915aec8b74db3692f02ea3d806ed2765e43fb887c471a6ae38f00f1"
+              "replay": "/api/jackpot/replay?session=0x429898c431545a000c90fd5ae4d4f99e376b0f8705155458816137273bf7efb5"
             },
             {
               "rank": null,
-              "walletShort": "0x3c3e…320a",
+              "walletShort": "0xee7f…eeff",
               "displayName": null,
-              "score": 10375,
+              "score": 10400,
               "review": "disqualified",
               "reason": "automation",
-              "replay": "/api/jackpot/replay?session=0x3669cd1b03b39553d75cd94c19d4228c1eb8da44d25d99c3019a26575be3e06a"
+              "replay": "/api/jackpot/replay?session=0x929bf31a7b2bd4eef78e7af6659c04af255438c4f3112015a09d1283f6d6178a"
             }
           ]
         },
@@ -809,7 +1151,7 @@
       "keeperGasUsed": "988176",
       "finalBalances": {
         "winner R3a honest a": {
-          "address": "0x35304262b9e87c00c430149f28dd154995d01207",
+          "address": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "3000000000000000000000"
         },
@@ -828,15 +1170,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1764
+      "durationMs": 2456
     },
     {
       "id": "R3b",
       "title": "Flag → admin (replay variant): the admin clears the flagged leader and it is paid",
       "status": "passed",
       "weekKeys": [
-        "2026-W48"
+        "2026-W49"
       ],
       "checks": [
         {
@@ -847,16 +1190,16 @@
           "id": "pilot-leads",
           "ok": true,
           "detail": [
-            9880,
-            6759,
-            3449
+            9876,
+            6634,
+            3599
           ]
         },
         {
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W48",
+            "week": "2026-W49",
             "open": [],
             "unscreened": 0
           }
@@ -891,7 +1234,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W48",
+            "week": "2026-W49",
             "open": [],
             "unscreened": 0
           }
@@ -914,8 +1257,8 @@
           "detail": {
             "reason": "LEADER_NOT_CLEARED",
             "minedStatus": 0,
-            "blockTimestamp": 1796083261,
-            "txHash": "0x498906589d9dc739f844e87593cc075a4aef2070e2dd624e45e7d4011475a5ac"
+            "blockTimestamp": 1796688061,
+            "txHash": "0x7c02991783821dda6dcfadbd9881c1e19a09afbfbd16641867175a36baff40c5"
           }
         },
         {
@@ -924,7 +1267,7 @@
           "detail": {
             "configured": true,
             "keeperAddress": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
-            "keeperBalanceWei": "999999280724415643",
+            "keeperBalanceWei": "999999041479759140",
             "paused": {
               "env": false,
               "onChain": false
@@ -957,7 +1300,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+            "winner": "0xa0ec9ee47802ceb56eb58ce80f3e41630b771b04",
             "prize": "3000000000000000000000"
           }
         },
@@ -966,7 +1309,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+            "winner": "0xa0ec9ee47802ceb56eb58ce80f3e41630b771b04",
             "prize": "3000000000000000000000"
           }
         },
@@ -990,9 +1333,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+            "winner": "0xa0ec9ee47802ceb56eb58ce80f3e41630b771b04",
             "prizeWei": "3000000000000000000000",
-            "finalizeTx": "0x887f692cf4fb5490e4c0082ccb7d7dee75bfbb1a37deca1960f64f37d6a570ac"
+            "finalizeTx": "0xb6dacb9795471f45ae1d4ee20a665bede5359425b4566596b372ac8169749fc8"
           }
         },
         {
@@ -1022,7 +1365,7 @@
       "keeperGasUsed": "988200",
       "finalBalances": {
         "winner R3b pilot": {
-          "address": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+          "address": "0xa0ec9ee47802ceb56eb58ce80f3e41630b771b04",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "3000000000000000000000"
         },
@@ -1041,15 +1384,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1773
+      "durationMs": 2268
     },
     {
       "id": "R4",
       "title": "Integrity: a record without Neon evidence, submitted publicly, is flagged integrity and never auto-paid",
       "status": "passed",
       "weekKeys": [
-        "2026-W50"
+        "2026-W51"
       ],
       "checks": [
         {
@@ -1060,7 +1404,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W50",
+            "week": "2026-W51",
             "open": [],
             "unscreened": 0
           }
@@ -1078,7 +1422,7 @@
           "id": "keeper-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W50",
+            "week": "2026-W51",
             "open": [],
             "unscreened": 0
           }
@@ -1113,7 +1457,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W50",
+            "week": "2026-W51",
             "open": [],
             "unscreened": 0
           }
@@ -1143,7 +1487,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+            "winner": "0x4779d18931b35540f84b0cd0e9633855b84df7b8",
             "prize": "2000000000000000000000"
           }
         },
@@ -1152,7 +1496,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+            "winner": "0x4779d18931b35540f84b0cd0e9633855b84df7b8",
             "prize": "2000000000000000000000"
           }
         },
@@ -1176,9 +1520,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+            "winner": "0x4779d18931b35540f84b0cd0e9633855b84df7b8",
             "prizeWei": "2000000000000000000000",
-            "finalizeTx": "0x1511eb62ae9ec43eef6544c6cf1907da501b2f4ba745cb07a861ed05540491c9"
+            "finalizeTx": "0xe1daa23c6bdb865cea1af5fce94bd5a3026a5ca7f29f15f9e38818fe4552a65f"
           }
         },
         {
@@ -1208,7 +1552,7 @@
       "keeperGasUsed": "790385",
       "finalBalances": {
         "winner R4 honest a": {
-          "address": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+          "address": "0x4779d18931b35540f84b0cd0e9633855b84df7b8",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "2000000000000000000000"
         },
@@ -1227,16 +1571,17 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1295
+      "durationMs": 1738
     },
     {
       "id": "R5",
       "title": "Rollover: an unwon funded week rolls into the next, whose payout pays both",
       "status": "passed",
       "weekKeys": [
-        "2026-W52",
-        "2026-W53"
+        "2026-W53",
+        "2027-W01"
       ],
       "checks": [
         {
@@ -1247,7 +1592,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W52",
+            "week": "2026-W53",
             "open": [],
             "unscreened": 0
           }
@@ -1267,7 +1612,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W52",
+            "week": "2026-W53",
             "open": [],
             "unscreened": 0
           }
@@ -1284,25 +1629,25 @@
           "id": "keeper-finalized-empty-leader",
           "ok": true,
           "detail": {
-            "id": "chikun:a85233c6:2973:finalize:-",
+            "id": "chikun:a85233c6:2974:finalize:-",
             "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
             "gameId": "chikun",
-            "weekKey": "2026-W52",
+            "weekKey": "2026-W53",
             "kind": "finalize",
             "sessionId32": null,
             "reason": null,
             "status": "confirmed",
             "keeper": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
-            "txHash": "0x70ca1be1295bb683ea3a4aceebf6be3b4ba386aa9ea0c1e35504d60469bc1ffd",
-            "txNonce": 32,
+            "txHash": "0xe493dcf4dc393ea33d535b2d577dee7459545360e0f28658989647a583080c2d",
+            "txNonce": 35,
             "attempts": 0,
             "infraFailures": 0,
             "lastError": null,
             "nextAttemptAt": null,
-            "submittedAt": "2026-12-29T00:01:00.019Z",
-            "confirmedAt": "2026-12-29T00:01:00.023Z",
-            "createdAt": "2026-09-26T02:30:36.128Z",
-            "updatedAt": "2026-09-26T02:30:36.138Z"
+            "submittedAt": "2027-01-05T00:01:00.018Z",
+            "confirmedAt": "2027-01-05T00:01:00.022Z",
+            "createdAt": "2026-09-26T05:04:31.312Z",
+            "updatedAt": "2026-09-26T05:04:31.321Z"
           }
         },
         {
@@ -1315,19 +1660,19 @@
           "detail": {
             "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
             "gameId": "chikun",
-            "weekKey": "2026-W52",
-            "weekIndex": 2973,
+            "weekKey": "2026-W53",
+            "weekIndex": 2974,
             "token": {
               "address": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
               "symbol": "tCHIKUN",
               "decimals": 18,
               "testnet": true
             },
-            "startsAt": "2026-12-21T00:00:00.000Z",
-            "closesAt": "2026-12-28T00:00:00.000Z",
-            "settleCutoffAt": "2026-12-28T06:00:00.000Z",
-            "candidateUntil": "2026-12-28T12:00:00.000Z",
-            "payoutAt": "2026-12-29T00:00:00.000Z",
+            "startsAt": "2026-12-28T00:00:00.000Z",
+            "closesAt": "2027-01-04T00:00:00.000Z",
+            "settleCutoffAt": "2027-01-04T06:00:00.000Z",
+            "candidateUntil": "2027-01-04T12:00:00.000Z",
+            "payoutAt": "2027-01-05T00:00:00.000Z",
             "status": "rolled",
             "fundedWei": "1000000000000000000000",
             "carriedInWei": "0",
@@ -1336,14 +1681,14 @@
             "winner": null,
             "winningSession": null,
             "winningScore": null,
-            "finalizeTxHash": "0x70ca1be1295bb683ea3a4aceebf6be3b4ba386aa9ea0c1e35504d60469bc1ffd",
-            "finalizedAt": "2026-12-29T00:01:01.000Z",
-            "rolledToWeek": "2026-W53",
+            "finalizeTxHash": "0xe493dcf4dc393ea33d535b2d577dee7459545360e0f28658989647a583080c2d",
+            "finalizedAt": "2027-01-05T00:01:01.000Z",
+            "rolledToWeek": "2027-W01",
             "held": false,
             "extensionSeconds": 0,
             "lastError": null,
             "adminWaitingSince": null,
-            "updatedAt": "2026-09-26T02:30:36.145Z"
+            "updatedAt": "2026-09-26T05:04:31.328Z"
           }
         },
         {
@@ -1383,9 +1728,9 @@
           "id": "api-previous-rolled",
           "ok": true,
           "detail": {
-            "weekKey": "2026-W52",
+            "weekKey": "2026-W53",
             "status": "rolled",
-            "payoutAt": "2026-12-29T00:00:00.000Z",
+            "payoutAt": "2027-01-05T00:00:00.000Z",
             "token": {
               "symbol": "tCHIKUN",
               "decimals": 18,
@@ -1405,14 +1750,14 @@
             "winner": null,
             "prizeWei": null,
             "unclaimedWei": "0",
-            "finalizeTx": "0x70ca1be1295bb683ea3a4aceebf6be3b4ba386aa9ea0c1e35504d60469bc1ffd"
+            "finalizeTx": "0xe493dcf4dc393ea33d535b2d577dee7459545360e0f28658989647a583080c2d"
           }
         },
         {
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W53",
+            "week": "2027-W01",
             "open": [],
             "unscreened": 0
           }
@@ -1428,7 +1773,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2026-W53",
+            "week": "2027-W01",
             "open": [],
             "unscreened": 0
           }
@@ -1446,7 +1791,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
             "prize": "1500000000000000000000"
           }
         },
@@ -1455,7 +1800,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
             "prize": "1500000000000000000000"
           }
         },
@@ -1479,9 +1824,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
             "prizeWei": "1500000000000000000000",
-            "finalizeTx": "0x76e82c06fbd33d980f7a66d49b372d53ca9b2f8c7d6d88e58f210be40511a27c"
+            "finalizeTx": "0xaf640b882e363c53991af40b5d85798d0cfdf3ebc4fbd909a3aac26bc340f8eb"
           }
         },
         {
@@ -1508,10 +1853,10 @@
         "players": 2,
         "reverted": 0
       },
-      "keeperGasUsed": "785973",
+      "keeperGasUsed": "785997",
       "finalBalances": {
         "winner R5 player 1": {
-          "address": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+          "address": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1500000000000000000000"
         },
@@ -1530,15 +1875,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1051
+      "durationMs": 1218
     },
     {
       "id": "R6",
       "title": "Late settlement at C + 6 h + 1 s: SETTLED_LATE on chain, excluded by selection, still on the board",
       "status": "passed",
       "weekKeys": [
-        "2027-W02"
+        "2027-W03"
       ],
       "checks": [
         {
@@ -1558,7 +1904,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W02",
+            "week": "2027-W03",
             "open": [],
             "unscreened": 0
           }
@@ -1570,7 +1916,7 @@
             "ok": true,
             "processed": [
               {
-                "sessionId32": "0x6b8abbdf522053bdf4d2af3a89b54f00344829c0d0fc01f67082e90d94ee517d",
+                "sessionId32": "0xc551b88c95ce376ce98028e071b1460798700cc0835ad841cb34ddaaddb18d41",
                 "from": "failed",
                 "to": "confirmed",
                 "code": null
@@ -1582,8 +1928,8 @@
           "id": "published-at-cutoff-plus-1s",
           "ok": true,
           "detail": {
-            "submittedAt": 1800252001,
-            "cutoff": 1800252000
+            "submittedAt": 1800856801,
+            "cutoff": 1800856800
           }
         },
         {
@@ -1591,7 +1937,7 @@
           "ok": true,
           "detail": {
             "ok": false,
-            "week": 2976,
+            "week": 2977,
             "reason": "SETTLED_LATE"
           }
         },
@@ -1614,7 +1960,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W02",
+            "week": "2027-W03",
             "open": [],
             "unscreened": 0
           }
@@ -1635,12 +1981,12 @@
           "ok": true,
           "detail": [
             [
-              "0x73b3074ac649a8dc31c2c90a124469456301a30f",
-              6734
+              "0x64492e25c30031edad55e57cea599cdb1f06dad1",
+              6649
             ],
             [
-              "0xc0543b0b980d8c834cbdf023b2d2a75b5f9d1909",
-              2295
+              "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+              2121
             ]
           ]
         },
@@ -1657,9 +2003,9 @@
           "detail": {
             "status": "review",
             "candidates": [
-              2295
+              2121
             ],
-            "late": 6734
+            "late": 6649
           }
         },
         {
@@ -1703,17 +2049,18 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [
         "Documented divergence (design B.5 item 10): the weekly board ranks the late run first; the jackpot excludes it (SETTLED_LATE)."
       ],
-      "durationMs": 807
+      "durationMs": 822
     },
     {
       "id": "R7",
       "title": "Extension: the admin extends by 12 h; the late run qualifies and is paid at C + 36 h",
       "status": "passed",
       "weekKeys": [
-        "2027-W02"
+        "2027-W03"
       ],
       "checks": [
         {
@@ -1749,20 +2096,20 @@
             },
             "list": [
               {
-                "sessionId32": "0x854c51967b042bd53089f8350bf665f875cf17d1a692704b11dea9ea39a7076b",
-                "player": "0xc0543b0b980d8c834cbdf023b2d2a75b5f9d1909",
-                "score": 2295,
-                "submittedAt": 1799712038
+                "sessionId32": "0x5ac5e8cf76928c73407e59555f4567bd0f3f73b4025007d0bac60987d0c1fa04",
+                "player": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+                "score": 2121,
+                "submittedAt": 1800316835
               }
             ],
             "leader": {
-              "sessionId32": "0x854c51967b042bd53089f8350bf665f875cf17d1a692704b11dea9ea39a7076b",
-              "player": "0xc0543b0b980d8c834cbdf023b2d2a75b5f9d1909",
-              "score": 2295,
+              "sessionId32": "0x5ac5e8cf76928c73407e59555f4567bd0f3f73b4025007d0bac60987d0c1fa04",
+              "player": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+              "score": 2121,
               "review": "cleared"
             },
-            "payoutAt": 1800360000,
-            "settleCutoff": 1800295200
+            "payoutAt": 1800964800,
+            "settleCutoff": 1800900000
           }
         },
         {
@@ -1788,7 +2135,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W02",
+            "week": "2027-W03",
             "open": [],
             "unscreened": 0
           }
@@ -1810,8 +2157,8 @@
           "detail": {
             "reason": "PAYOUT_NOT_DUE",
             "minedStatus": 0,
-            "blockTimestamp": 1800316861,
-            "txHash": "0xdcece7b0678381ecbba4a0ede01beb751ce4de102e3ee5c7dc0f35fe46b08479"
+            "blockTimestamp": 1800921661,
+            "txHash": "0xe395a07c8b601ff271c81fd03412e924138a1476f899ec510ce956a39e4e5cea"
           }
         },
         {
@@ -1825,14 +2172,14 @@
         {
           "id": "paid-at-c-plus-36h",
           "ok": true,
-          "detail": "2027-01-19T12:01:01.000Z"
+          "detail": "2027-01-26T12:01:01.000Z"
         },
         {
           "id": "winner-mirror",
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+            "winner": "0x64492e25c30031edad55e57cea599cdb1f06dad1",
             "prize": "2000000000000000000000"
           }
         },
@@ -1841,7 +2188,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+            "winner": "0x64492e25c30031edad55e57cea599cdb1f06dad1",
             "prize": "2000000000000000000000"
           }
         },
@@ -1865,9 +2212,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+            "winner": "0x64492e25c30031edad55e57cea599cdb1f06dad1",
             "prizeWei": "2000000000000000000000",
-            "finalizeTx": "0xb6f471e96ba801c787f08c182a28119b875372bb2da97597634820e175162017"
+            "finalizeTx": "0x1029c15d59abad1661bc6a1542309b9fa335e9e24bb720c76e1d7b8f5e8453b5"
           }
         },
         {
@@ -1898,10 +2245,10 @@
         "players": 1,
         "reverted": 1
       },
-      "keeperGasUsed": "437600",
+      "keeperGasUsed": "437624",
       "finalBalances": {
         "winner R6 late settler": {
-          "address": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+          "address": "0x64492e25c30031edad55e57cea599cdb1f06dad1",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "2000000000000000000000"
         },
@@ -1920,16 +2267,17 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 309
+      "durationMs": 345
     },
     {
       "id": "R8",
       "title": "Prize cap scheduled the week before: the cap is paid, the excess reaches the current week",
       "status": "passed",
       "weekKeys": [
-        "2027-W04",
-        "2027-W05"
+        "2027-W05",
+        "2027-W06"
       ],
       "checks": [
         {
@@ -1970,7 +2318,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W04",
+            "week": "2027-W05",
             "open": [],
             "unscreened": 0
           }
@@ -1986,7 +2334,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W04",
+            "week": "2027-W05",
             "open": [],
             "unscreened": 0
           }
@@ -2004,7 +2352,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+            "winner": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
             "prize": "1000000000000000000000"
           }
         },
@@ -2013,7 +2361,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+            "winner": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
             "prize": "1000000000000000000000"
           }
         },
@@ -2037,9 +2385,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+            "winner": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
             "prizeWei": "1000000000000000000000",
-            "finalizeTx": "0x444ab3310f583045c2a3e6ecfc11c0020658252a546b1e8896ee2184e7770aa8"
+            "finalizeTx": "0x3ba5a2fb52bebce9f2c4b24a7f9f797dd1c60a9013ea27533951307339c43d62"
           }
         },
         {
@@ -2068,7 +2416,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W05",
+            "week": "2027-W06",
             "open": [],
             "unscreened": 0
           }
@@ -2084,7 +2432,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W05",
+            "week": "2027-W06",
             "open": [],
             "unscreened": 0
           }
@@ -2102,7 +2450,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+            "winner": "0x9394cb5f737bd3acea7dce90ca48dbd42801ee5d",
             "prize": "1500000000000000000000"
           }
         },
@@ -2111,7 +2459,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+            "winner": "0x9394cb5f737bd3acea7dce90ca48dbd42801ee5d",
             "prize": "1500000000000000000000"
           }
         },
@@ -2135,9 +2483,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+            "winner": "0x9394cb5f737bd3acea7dce90ca48dbd42801ee5d",
             "prizeWei": "1500000000000000000000",
-            "finalizeTx": "0xeace5f99a43ea5720507318510bc10fc01ef36653cbf845435b11ade54f076d5"
+            "finalizeTx": "0xa02b49997760ea39cc4d8fc135afed4333e346e841663f778dcb512da5b919f8"
           }
         },
         {
@@ -2167,12 +2515,12 @@
       "keeperGasUsed": "1194111",
       "finalBalances": {
         "winner R8 player 1": {
-          "address": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+          "address": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1000000000000000000000"
         },
         "winner R8 next-week player": {
-          "address": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+          "address": "0x9394cb5f737bd3acea7dce90ca48dbd42801ee5d",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1500000000000000000000"
         },
@@ -2191,15 +2539,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1181
+      "durationMs": 1763
     },
     {
       "id": "R9",
       "title": "Token failure: a blacklisted winner is claim-pending, then claims to another address and is paid",
       "status": "passed",
       "weekKeys": [
-        "2027-W08"
+        "2027-W09"
       ],
       "checks": [
         {
@@ -2222,7 +2571,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W08",
+            "week": "2027-W09",
             "open": [],
             "unscreened": 0
           }
@@ -2238,7 +2587,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W08",
+            "week": "2027-W09",
             "open": [],
             "unscreened": 0
           }
@@ -2258,8 +2607,8 @@
             "status": "paid",
             "held": false,
             "count": 2,
-            "winner": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
-            "winningSession": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
+            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "winningSession": "0x9a9e80e36cdaac3c8438eec2dd647fe3a491fef308c090acc9b57bc59ab336f8",
             "prize": "800000000000000000000",
             "unclaimed": "800000000000000000000",
             "extension": 0,
@@ -2270,26 +2619,26 @@
             },
             "list": [
               {
-                "sessionId32": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
-                "player": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
-                "score": 4186,
-                "submittedAt": 1803340866
+                "sessionId32": "0x9a9e80e36cdaac3c8438eec2dd647fe3a491fef308c090acc9b57bc59ab336f8",
+                "player": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+                "score": 4738,
+                "submittedAt": 1803945672
               },
               {
-                "sessionId32": "0x47690befb350dacf5c95e2b87245841bd86287807412a515ae65e783b6ed2438",
-                "player": "0x63c3686ef31c03a641e2ea8993a91ea351e5891a",
-                "score": 2206,
-                "submittedAt": 1803427235
+                "sessionId32": "0xfe01d0acd5a2245fde7168c1e48ee5f3b08b8173178955a13b37a2e9ad6da355",
+                "player": "0xf23e054d8b4d0becfa22deef5632f27f781f8bf5",
+                "score": 2270,
+                "submittedAt": 1804032038
               }
             ],
             "leader": {
-              "sessionId32": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
-              "player": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
-              "score": 4186,
+              "sessionId32": "0x9a9e80e36cdaac3c8438eec2dd647fe3a491fef308c090acc9b57bc59ab336f8",
+              "player": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+              "score": 4738,
               "review": "cleared"
             },
-            "payoutAt": 1803945600,
-            "settleCutoff": 1803880800
+            "payoutAt": 1804550400,
+            "settleCutoff": 1804485600
           }
         },
         {
@@ -2300,9 +2649,9 @@
           "id": "api-claim-pending",
           "ok": true,
           "detail": {
-            "weekKey": "2027-W08",
+            "weekKey": "2027-W09",
             "status": "claim-pending",
-            "payoutAt": "2027-03-02T00:00:00.000Z",
+            "payoutAt": "2027-03-09T00:00:00.000Z",
             "token": {
               "symbol": "BLKMOCK",
               "decimals": 18,
@@ -2321,38 +2670,38 @@
             "candidates": [
               {
                 "rank": 1,
-                "walletShort": "0xdfd9…d492",
+                "walletShort": "0x344d…3ad9",
                 "displayName": null,
-                "score": 4186,
+                "score": 4738,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21"
+                "replay": "/api/jackpot/replay?session=0x9a9e80e36cdaac3c8438eec2dd647fe3a491fef308c090acc9b57bc59ab336f8"
               },
               {
                 "rank": 2,
-                "walletShort": "0x63c3…891a",
+                "walletShort": "0xf23e…8bf5",
                 "displayName": null,
-                "score": 2206,
+                "score": 2270,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0x47690befb350dacf5c95e2b87245841bd86287807412a515ae65e783b6ed2438"
+                "replay": "/api/jackpot/replay?session=0xfe01d0acd5a2245fde7168c1e48ee5f3b08b8173178955a13b37a2e9ad6da355"
               }
             ],
             "winner": {
-              "walletShort": "0xdfd9…d492",
-              "wallet": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+              "walletShort": "0x344d…3ad9",
+              "wallet": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
               "displayName": null
             },
             "prizeWei": "800000000000000000000",
             "unclaimedWei": "800000000000000000000",
-            "finalizeTx": "0x1b416a966e72b70ad09c83da75dea11eb52069a8a5d619ba6f90a95e09330a76"
+            "finalizeTx": "0xb689dad4f2573deb71b8e56b0aae43bb0c8a6d9263e0719e6e5e99986dadee2d"
           }
         },
         {
           "id": "profile-claim-pending",
           "ok": true,
           "detail": {
-            "weekKey": "2027-W08",
-            "startsAt": "2027-02-22T00:00:00.000Z",
-            "closesAt": "2027-03-01T00:00:00.000Z",
+            "weekKey": "2027-W09",
+            "startsAt": "2027-03-01T00:00:00.000Z",
+            "closesAt": "2027-03-08T00:00:00.000Z",
             "prizeWei": "800000000000000000000",
             "unclaimedWei": "800000000000000000000",
             "status": "claim-pending",
@@ -2362,9 +2711,9 @@
               "testnet": true
             },
             "contract": "0x9e545e3c0baab3e08cdfd552c960a1050f373042",
-            "score": 4186,
-            "sessionId": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
-            "finalizeTx": "0x1b416a966e72b70ad09c83da75dea11eb52069a8a5d619ba6f90a95e09330a76"
+            "score": 4738,
+            "sessionId": "0x9a9e80e36cdaac3c8438eec2dd647fe3a491fef308c090acc9b57bc59ab336f8",
+            "finalizeTx": "0xb689dad4f2573deb71b8e56b0aae43bb0c8a6d9263e0719e6e5e99986dadee2d"
           }
         },
         {
@@ -2398,9 +2747,9 @@
           "id": "api-paid",
           "ok": true,
           "detail": {
-            "weekKey": "2027-W08",
+            "weekKey": "2027-W09",
             "status": "paid",
-            "payoutAt": "2027-03-02T00:00:00.000Z",
+            "payoutAt": "2027-03-09T00:00:00.000Z",
             "token": {
               "symbol": "BLKMOCK",
               "decimals": 18,
@@ -2419,29 +2768,29 @@
             "candidates": [
               {
                 "rank": 1,
-                "walletShort": "0xdfd9…d492",
+                "walletShort": "0x344d…3ad9",
                 "displayName": null,
-                "score": 4186,
+                "score": 4738,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21"
+                "replay": "/api/jackpot/replay?session=0x9a9e80e36cdaac3c8438eec2dd647fe3a491fef308c090acc9b57bc59ab336f8"
               },
               {
                 "rank": 2,
-                "walletShort": "0x63c3…891a",
+                "walletShort": "0xf23e…8bf5",
                 "displayName": null,
-                "score": 2206,
+                "score": 2270,
                 "review": "cleared",
-                "replay": "/api/jackpot/replay?session=0x47690befb350dacf5c95e2b87245841bd86287807412a515ae65e783b6ed2438"
+                "replay": "/api/jackpot/replay?session=0xfe01d0acd5a2245fde7168c1e48ee5f3b08b8173178955a13b37a2e9ad6da355"
               }
             ],
             "winner": {
-              "walletShort": "0xdfd9…d492",
-              "wallet": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+              "walletShort": "0x344d…3ad9",
+              "wallet": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
               "displayName": null
             },
             "prizeWei": "800000000000000000000",
             "unclaimedWei": "0",
-            "finalizeTx": "0x1b416a966e72b70ad09c83da75dea11eb52069a8a5d619ba6f90a95e09330a76"
+            "finalizeTx": "0xb689dad4f2573deb71b8e56b0aae43bb0c8a6d9263e0719e6e5e99986dadee2d"
           }
         },
         {
@@ -2481,7 +2830,7 @@
       "keeperGasUsed": "707905",
       "finalBalances": {
         "claim payee": {
-          "address": "0x9394cb5f737bd3acea7dce90ca48dbd42801ee5d",
+          "address": "0x6d69f301d1da5c7818b5e61eecc745b30179c68b",
           "token": "0xc3e53f4d16ae77db1c982e75a937b9f60fe63690",
           "balanceWei": "800000000000000000000"
         },
@@ -2506,15 +2855,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 898
+      "durationMs": 1270
     },
     {
       "id": "R10",
       "title": "Crash recovery: faults at after-cas, after-broadcast and before-receipt, no duplicate transactions",
       "status": "passed",
       "weekKeys": [
-        "2027-W10"
+        "2027-W11"
       ],
       "checks": [
         {
@@ -2528,10 +2878,10 @@
             "status": 500,
             "fired": {
               "stage": "after-cas",
-              "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+              "id": "chikun:a85233c6:2985:clear:0x127594bda70a504eeb8dbb23e7812e7ed7bf56d49841031286ca05e65d1dfa31",
               "kind": "clear",
-              "txHash": "0x913d0d67a6dfbbcf1cfb82431de8113ec95efc87e1432b8ddb1d135b03a52dd4",
-              "nonce": 56
+              "txHash": "0x6c2439ee9983332931e9720a2ce0d724e7ada20c19a5897c33115cc6d3f18628",
+              "nonce": 59
             }
           }
         },
@@ -2542,10 +2892,10 @@
             "status": 500,
             "fired": {
               "stage": "after-broadcast",
-              "id": "chikun:a85233c6:2984:clear:0xb6df903fe35e6384f9cc62c55411e87112e28556c8e323556995545fd39a55b8",
+              "id": "chikun:a85233c6:2985:clear:0x5668e8be5b4b06a29cd99275ba5f26756e9ac869e9aadf462077240369acfea2",
               "kind": "clear",
-              "txHash": "0x69bf4e25fc9de59311f9e055a274d598c8671eb81b593efdbc885c2dd283d5e9",
-              "nonce": 56
+              "txHash": "0xa9fb5f4197305833220cc9f0979c641db5d1d055317acecda81ec0f47d4fe03a",
+              "nonce": 59
             }
           }
         },
@@ -2556,10 +2906,10 @@
             "status": 500,
             "fired": {
               "stage": "before-receipt",
-              "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+              "id": "chikun:a85233c6:2985:clear:0x127594bda70a504eeb8dbb23e7812e7ed7bf56d49841031286ca05e65d1dfa31",
               "kind": "clear",
-              "txHash": "0xc0e27f53182413b4661de6ba522cde04e19ed5dee7bdb79c4d472b3663d184ac",
-              "nonce": 57
+              "txHash": "0x42875b07f3bc13be969dbfc207e3cb5306c97396ee99575d2af3bee8a534aabc",
+              "nonce": 60
             }
           }
         },
@@ -2568,17 +2918,17 @@
           "ok": true,
           "detail": {
             "stage": "after-cas",
-            "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+            "id": "chikun:a85233c6:2985:clear:0x127594bda70a504eeb8dbb23e7812e7ed7bf56d49841031286ca05e65d1dfa31",
             "kind": "clear",
-            "txHash": "0x913d0d67a6dfbbcf1cfb82431de8113ec95efc87e1432b8ddb1d135b03a52dd4",
-            "nonce": 56
+            "txHash": "0x6c2439ee9983332931e9720a2ce0d724e7ada20c19a5897c33115cc6d3f18628",
+            "nonce": 59
           }
         },
         {
           "id": "keeper-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W10",
+            "week": "2027-W11",
             "open": [],
             "unscreened": 0
           }
@@ -2594,7 +2944,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W10",
+            "week": "2027-W11",
             "open": [],
             "unscreened": 0
           }
@@ -2612,7 +2962,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
             "prize": "1500000000000000000000"
           }
         },
@@ -2621,7 +2971,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
             "prize": "1500000000000000000000"
           }
         },
@@ -2637,9 +2987,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
             "prizeWei": "1500000000000000000000",
-            "finalizeTx": "0xd3f788862a149c12c47b42bdf8c107d5a7530e50f28529aea3cca5d0db922d97"
+            "finalizeTx": "0x1eec0ffa1d49c4a9504fb1a4c981d65a4e83e7a9524e3bb86d165053bedd1cac"
           }
         },
         {
@@ -2656,23 +3006,23 @@
           "ok": true,
           "detail": [
             [
-              56,
-              1
-            ],
-            [
-              57,
-              1
-            ],
-            [
-              58,
-              1
-            ],
-            [
               59,
               1
             ],
             [
               60,
+              1
+            ],
+            [
+              61,
+              1
+            ],
+            [
+              62,
+              1
+            ],
+            [
+              63,
               1
             ]
           ]
@@ -2682,38 +3032,38 @@
           "ok": true,
           "detail": {
             "nonces": [
-              56,
-              57,
-              58,
               59,
-              60
+              60,
+              61,
+              62,
+              63
             ],
-            "unbroadcast": 56
+            "unbroadcast": 59
           }
         },
         {
           "id": "dropped-detected",
           "ok": true,
           "detail": {
-            "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+            "id": "chikun:a85233c6:2985:clear:0x127594bda70a504eeb8dbb23e7812e7ed7bf56d49841031286ca05e65d1dfa31",
             "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
             "gameId": "chikun",
-            "weekKey": "2027-W10",
+            "weekKey": "2027-W11",
             "kind": "clear",
-            "sessionId32": "0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+            "sessionId32": "0x127594bda70a504eeb8dbb23e7812e7ed7bf56d49841031286ca05e65d1dfa31",
             "reason": null,
             "status": "confirmed",
             "keeper": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
-            "txHash": "0xc0e27f53182413b4661de6ba522cde04e19ed5dee7bdb79c4d472b3663d184ac",
-            "txNonce": 57,
+            "txHash": "0x42875b07f3bc13be969dbfc207e3cb5306c97396ee99575d2af3bee8a534aabc",
+            "txNonce": 60,
             "attempts": 0,
             "infraFailures": 1,
             "lastError": null,
             "nextAttemptAt": null,
-            "submittedAt": "2027-03-15T02:11:00.018Z",
-            "confirmedAt": "2027-03-15T02:16:00.016Z",
-            "createdAt": "2026-09-26T02:30:40.637Z",
-            "updatedAt": "2026-09-26T02:30:40.755Z"
+            "submittedAt": "2027-03-22T02:11:00.021Z",
+            "confirmedAt": "2027-03-22T02:16:00.021Z",
+            "createdAt": "2026-09-26T05:04:37.009Z",
+            "updatedAt": "2026-09-26T05:04:37.154Z"
           }
         },
         {
@@ -2743,7 +3093,7 @@
       "keeperGasUsed": "714791",
       "finalBalances": {
         "winner R10 player 1": {
-          "address": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+          "address": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1500000000000000000000"
         },
@@ -2762,17 +3112,18 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [
         "keeper faults: {\"after-cas\":\"clear\",\"after-broadcast\":\"clear\",\"before-receipt\":\"clear\"}; the after-cas action (recorded, never broadcast) is found dropped once the 180 s receipt window passes and re-signed, its unused nonce taken by the next send (no gap); the other two confirm from chain state."
       ],
-      "durationMs": 796
+      "durationMs": 896
     },
     {
       "id": "R11",
       "title": "Pause, hold and staff: pause and hold stop payouts only; staff and blocked wallets are never candidates",
       "status": "passed",
       "weekKeys": [
-        "2027-W12"
+        "2027-W13"
       ],
       "checks": [
         {
@@ -2792,18 +3143,18 @@
           "ok": true,
           "detail": {
             "leader": {
-              "score": 4688,
+              "score": 4186,
               "provisional": true,
               "screened": false
             },
-            "best": 4688,
+            "best": 4186,
             "staff": [
-              6684,
-              6749,
               6674,
-              6734,
-              6584,
-              6609
+              6799,
+              6724,
+              6684,
+              6684,
+              6749
             ]
           }
         },
@@ -2935,8 +3286,8 @@
           "detail": {
             "reason": "PAUSED",
             "minedStatus": 0,
-            "blockTimestamp": 1806365161,
-            "txHash": "0xb337bc526f2f54e9b7e3baf8d1f60b50b91c26951067e0c069fed29367508d7f"
+            "blockTimestamp": 1806969961,
+            "txHash": "0x9bceb92d155560c04f5bc09cce61d5d94f31ee993a1ddb6dfd08d602fa413a3f"
           }
         },
         {
@@ -2975,8 +3326,8 @@
           "detail": {
             "reason": "WEEK_HELD",
             "minedStatus": 0,
-            "blockTimestamp": 1806365766,
-            "txHash": "0xd805205da290a93e66187a54674b3a44a0085eb04dbab05203bd68fc600f1abd"
+            "blockTimestamp": 1806970566,
+            "txHash": "0x131391f582aa0e6f573c0c8ec439a7c859f33311a95ae335e1149f1b7e99abf3"
           }
         },
         {
@@ -3000,7 +3351,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+            "winner": "0x54ccceb38251c29b628ef8b00b3cab97e7cac7d5",
             "prize": "1500000000000000000000"
           }
         },
@@ -3009,7 +3360,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+            "winner": "0x54ccceb38251c29b628ef8b00b3cab97e7cac7d5",
             "prize": "1500000000000000000000"
           }
         },
@@ -3033,9 +3384,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+            "winner": "0x54ccceb38251c29b628ef8b00b3cab97e7cac7d5",
             "prizeWei": "1500000000000000000000",
-            "finalizeTx": "0x5ff5dbf1bc0d8bfd17c18af95d25222329d6fc3af04072bd800458e584272ae5"
+            "finalizeTx": "0x138dcbe3969d3dc4dc80e21d736295580e3852f12d26ad4581b42eb180a1986c"
           }
         },
         {
@@ -3078,10 +3429,10 @@
         "players": 8,
         "reverted": 2
       },
-      "keeperGasUsed": "1171346",
+      "keeperGasUsed": "1171334",
       "finalBalances": {
         "winner R11 honest 1": {
-          "address": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+          "address": "0x54ccceb38251c29b628ef8b00b3cab97e7cac7d5",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1500000000000000000000"
         },
@@ -3100,15 +3451,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 3584
+      "durationMs": 5014
     },
     {
       "id": "R12",
       "title": "Unfunded week: no keeper transaction, no amount in the API or the UI",
       "status": "passed",
       "weekKeys": [
-        "2027-W14"
+        "2027-W15"
       ],
       "checks": [
         {
@@ -3155,9 +3507,9 @@
           "id": "api-previous-unfunded",
           "ok": true,
           "detail": {
-            "weekKey": "2027-W14",
+            "weekKey": "2027-W15",
             "status": "unfunded",
-            "payoutAt": "2027-04-13T00:00:00.000Z",
+            "payoutAt": "2027-04-20T00:00:00.000Z",
             "token": {
               "symbol": "tCHIKUN",
               "decimals": 18,
@@ -3225,15 +3577,221 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 369
+      "durationMs": 617
+    },
+    {
+      "id": "R12d",
+      "title": "Dust week (0 < pot < minFundWei) with an eligible run: unfunded, no keeper transaction, no amount, no champion",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W17",
+        "2027-W18"
+      ],
+      "checks": [
+        {
+          "id": "rules-scheduled",
+          "ok": true
+        },
+        {
+          "id": "week",
+          "ok": true
+        },
+        {
+          "id": "fund-w1-minimum",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W17",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W17",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "w1-rolled",
+          "ok": true,
+          "detail": {
+            "status": "rolled",
+            "lastError": null
+          }
+        },
+        {
+          "id": "dust-pot",
+          "ok": true,
+          "detail": {
+            "pot": {
+              "funded": "0",
+              "carriedIn": "100000000000000000000",
+              "total": "100000000000000000000"
+            },
+            "minFund": "150000000000000000000"
+          }
+        },
+        {
+          "id": "run-eligible-on-chain",
+          "ok": true
+        },
+        {
+          "id": "api-dust-unfunded",
+          "ok": true,
+          "detail": {
+            "pot": {
+              "fundedWei": "0",
+              "carriedInWei": "100000000000000000000",
+              "totalWei": "100000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "100000000000000000000",
+              "carryOverWei": "0",
+              "funded": false
+            },
+            "rules": {
+              "minPaidWei": "100000000000000000",
+              "maxSurvivalSeconds": 3599,
+              "minFundWei": "150000000000000000000",
+              "adminClearOnly": false
+            }
+          }
+        },
+        {
+          "id": "ui-renders-no-amount",
+          "ok": true
+        },
+        {
+          "id": "child-says-no-prize",
+          "ok": true,
+          "detail": {
+            "rewards": "Weekly Jackpot: no prize funded this week",
+            "rewardsDetail": "Top verified Ranked score of the week wins. See the rules."
+          }
+        },
+        {
+          "id": "unfunded",
+          "ok": true
+        },
+        {
+          "id": "zero-keeper-transactions",
+          "ok": true,
+          "detail": {
+            "nonceDelta": 0
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-previous-unfunded",
+          "ok": true,
+          "detail": {
+            "weekKey": "2027-W18",
+            "status": "unfunded",
+            "payoutAt": "2027-05-11T00:00:00.000Z",
+            "token": {
+              "symbol": "tCHIKUN",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "pot": {
+              "fundedWei": "0",
+              "carriedInWei": "100000000000000000000",
+              "totalWei": "100000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "100000000000000000000",
+              "carryOverWei": "0",
+              "funded": false
+            },
+            "candidates": [],
+            "winner": null,
+            "prizeWei": null,
+            "unclaimedWei": "0",
+            "finalizeTx": null
+          }
+        },
+        {
+          "id": "no-champion",
+          "ok": true,
+          "detail": {
+            "wins": [],
+            "share": 200
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 18,
+      "transactions": {
+        "total": 7,
+        "keeper": 1,
+        "relayer": 1,
+        "operator": 2,
+        "admin": 0,
+        "funder": 2,
+        "players": 1,
+        "reverted": 0
+      },
+      "keeperGasUsed": "84366",
+      "finalBalances": {
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "100000000000000000000"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "designFindings": [],
+      "notes": [
+        "The dust stays attributed to its week on chain (a liability): anyone may finalize it later and it carries on; the keeper never spends gas on it."
+      ],
+      "durationMs": 891
     },
     {
       "id": "R13",
       "title": "Sybil eviction: five decoys displace the honest top 5; disqualified; honest rows re-listed; the honest leader is paid",
       "status": "passed",
       "weekKeys": [
-        "2027-W16"
+        "2027-W20"
       ],
       "checks": [
         {
@@ -3244,7 +3802,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W16",
+            "week": "2027-W20",
             "open": [],
             "unscreened": 0
           }
@@ -3264,11 +3822,11 @@
           "id": "decoys-outscore-honest",
           "ok": true,
           "detail": [
-            4463,
-            3887,
-            3887,
-            4447,
-            4463
+            4438,
+            3906,
+            3886,
+            3886,
+            4438
           ]
         },
         {
@@ -3282,7 +3840,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W16",
+            "week": "2027-W20",
             "open": [],
             "unscreened": 0
           }
@@ -3305,30 +3863,30 @@
             "listed": [
               "R13 decoy 1",
               "R13 decoy 5",
-              "R13 decoy 4",
               "R13 decoy 2",
-              "R13 decoy 3"
+              "R13 decoy 3",
+              "R13 decoy 4"
             ],
             "decoys": [
               [
                 "R13 decoy 1",
-                4463
+                4438
               ],
               [
                 "R13 decoy 2",
-                3887
+                3906
               ],
               [
                 "R13 decoy 3",
-                3887
+                3886
               ],
               [
                 "R13 decoy 4",
-                4447
+                3886
               ],
               [
                 "R13 decoy 5",
-                4463
+                4438
               ]
             ],
             "attempts": [
@@ -3430,29 +3988,29 @@
             "honest": [
               [
                 "R13 honest 1",
-                2270
-              ],
-              [
-                "R13 honest 5",
-                2042
+                2210
               ],
               [
                 "R13 honest 2",
-                2040
+                2050
               ],
               [
                 "R13 honest 4",
-                1892
+                2017
+              ],
+              [
+                "R13 honest 5",
+                1992
               ],
               [
                 "R13 honest 3",
-                1837
+                1866
               ]
             ]
           }
         },
         {
-          "id": "decoys-screened-first-and-flagged",
+          "id": "decoys-flagged",
           "ok": true,
           "detail": {
             "runs": 1
@@ -3513,12 +4071,15 @@
           "id": "keeper-relists-honest",
           "ok": true,
           "detail": {
-            "runs": 5
+            "runs": 5,
+            "listed": [
+              "R13 honest 1",
+              "R13 honest 2",
+              "R13 honest 4",
+              "R13 honest 5",
+              "R13 honest 3"
+            ]
           }
-        },
-        {
-          "id": "relists-before-payout-minus-2h",
-          "ok": true
         },
         {
           "id": "relist-actions-confirmed",
@@ -3547,6 +4108,44 @@
           ]
         },
         {
+          "id": "relists-before-payout-minus-2h",
+          "ok": true,
+          "detail": {
+            "relistedAtHoursAfterClose": [
+              11.98,
+              12.07,
+              12.15,
+              12.23,
+              12.32
+            ],
+            "candidateUntilHours": 12,
+            "deadlineHours": 22
+          }
+        },
+        {
+          "id": "relists-after-window-use-was-listed",
+          "ok": true,
+          "detail": {
+            "relistedAtHoursAfterClose": [
+              11.98,
+              12.07,
+              12.15,
+              12.23,
+              12.32
+            ],
+            "candidateUntilHours": 12,
+            "deadlineHours": 22
+          }
+        },
+        {
+          "id": "relist-margin-enforced-by-chain",
+          "ok": true,
+          "detail": {
+            "atDeadlineMinus1s": "ALREADY_CANDIDATE",
+            "atDeadline": "WINDOW_CLOSED"
+          }
+        },
+        {
           "id": "payout",
           "ok": true,
           "detail": {
@@ -3559,7 +4158,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+            "winner": "0x9a50ed082cf2fc003152580dcdb320b834fa379e",
             "prize": "5000000000000000000000"
           }
         },
@@ -3568,7 +4167,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+            "winner": "0x9a50ed082cf2fc003152580dcdb320b834fa379e",
             "prize": "5000000000000000000000"
           }
         },
@@ -3592,9 +4191,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+            "winner": "0x9a50ed082cf2fc003152580dcdb320b834fa379e",
             "prizeWei": "5000000000000000000000",
-            "finalizeTx": "0x2bbe1c9b77d47719cc660cc631abc5c919bbde5cb542b7dcddfb1a1893a01fb6"
+            "finalizeTx": "0x5abddec4b26c7cd17adfa9c6d3255b02397da40888f7c8927fc008bb461bba29"
           }
         },
         {
@@ -3608,14 +4207,14 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
         }
       ],
-      "passedChecks": 27,
+      "passedChecks": 29,
       "transactions": {
         "total": 53,
         "keeper": 26,
@@ -3626,39 +4225,40 @@
         "players": 10,
         "reverted": 0
       },
-      "keeperGasUsed": "3846271",
+      "keeperGasUsed": "3855938",
       "finalBalances": {
         "winner R13 honest 1": {
-          "address": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+          "address": "0x9a50ed082cf2fc003152580dcdb320b834fa379e",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "5000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [
         "Implementation reality: decoys settled before the cutoff are in the keeper's last re-select (cutoff + 10 min), so the keeper lists and flags them itself about 5 h before an attacker could at C + 11 h 59 min; the R13 variant forces the literal C + 11 h 59 min timing."
       ],
-      "durationMs": 3111
+      "durationMs": 4684
     },
     {
       "id": "R13v",
       "title": "Sybil eviction at C + 11 h 59 min, and the never-listed honest #6 added by adminSubmit and paid",
       "status": "passed",
       "weekKeys": [
-        "2027-W18"
+        "2027-W22"
       ],
       "checks": [
         {
@@ -3669,7 +4269,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W18",
+            "week": "2027-W22",
             "open": [],
             "unscreened": 0
           }
@@ -3693,11 +4293,11 @@
           "id": "decoys-outscore-honest",
           "ok": true,
           "detail": [
+            3892,
+            4447,
+            4447,
             3906,
-            4447,
-            4447,
-            4472,
-            4447
+            3918
           ]
         },
         {
@@ -3711,9 +4311,16 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W18",
+            "week": "2027-W22",
             "open": [],
             "unscreened": 0
+          }
+        },
+        {
+          "id": "screening-backlog",
+          "ok": true,
+          "detail": {
+            "rescreened": 5
           }
         },
         {
@@ -3732,16 +4339,16 @@
           "ok": true,
           "detail": {
             "listed": [
-              "R13v decoy 4",
               "R13v decoy 2",
               "R13v decoy 3",
               "R13v decoy 5",
+              "R13v decoy 4",
               "R13v decoy 1"
             ],
             "decoys": [
               [
                 "R13v decoy 1",
-                3906
+                3892
               ],
               [
                 "R13v decoy 2",
@@ -3753,11 +4360,11 @@
               ],
               [
                 "R13v decoy 4",
-                4472
+                3906
               ],
               [
                 "R13v decoy 5",
-                4447
+                3918
               ]
             ],
             "attempts": [
@@ -3772,36 +4379,56 @@
             "honest": [
               [
                 "R13v honest 1",
-                2395
+                2345
               ],
               [
                 "R13v honest 2",
-                2295
-              ],
-              [
-                "R13v honest 6",
-                1992
-              ],
-              [
-                "R13v honest 3",
-                1962
-              ],
-              [
-                "R13v honest 4",
-                1917
+                2014
               ],
               [
                 "R13v honest 5",
+                1982
+              ],
+              [
+                "R13v honest 3",
+                1921
+              ],
+              [
+                "R13v honest 6",
                 1892
+              ],
+              [
+                "R13v honest 4",
+                1865
               ]
             ]
           }
         },
         {
-          "id": "decoys-screened-first-and-flagged",
+          "id": "decoys-screened-before-backlog",
           "ok": true,
           "detail": {
-            "runs": 2
+            "decoys": [
+              "hold",
+              "hold",
+              "hold",
+              "hold",
+              "hold"
+            ],
+            "backlog": [
+              "pending",
+              "pending",
+              "pending",
+              "pending",
+              "pending"
+            ]
+          }
+        },
+        {
+          "id": "decoys-flagged",
+          "ok": true,
+          "detail": {
+            "runs": 1
           }
         },
         {
@@ -3856,6 +4483,76 @@
           "detail": null
         },
         {
+          "id": "keeper-relists-honest",
+          "ok": true,
+          "detail": {
+            "runs": 5,
+            "listed": [
+              "R13v honest 1",
+              "R13v honest 2",
+              "R13v honest 5",
+              "R13v honest 3",
+              "R13v honest 6"
+            ]
+          }
+        },
+        {
+          "id": "relist-actions-confirmed",
+          "ok": true,
+          "detail": [
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ]
+          ]
+        },
+        {
+          "id": "relists-before-payout-minus-2h",
+          "ok": true,
+          "detail": {
+            "relistedAtHoursAfterClose": [
+              11.99,
+              12.07,
+              12.15,
+              12.24,
+              12.32
+            ],
+            "candidateUntilHours": 12,
+            "deadlineHours": 22
+          }
+        },
+        {
+          "id": "relists-after-window-use-was-listed",
+          "ok": true,
+          "detail": {
+            "relistedAtHoursAfterClose": [
+              11.99,
+              12.07,
+              12.15,
+              12.24,
+              12.32
+            ],
+            "candidateUntilHours": 12,
+            "deadlineHours": 22
+          }
+        },
+        {
           "id": "disqualify-honest-R13v honest 1",
           "ok": true,
           "detail": null
@@ -3866,7 +4563,7 @@
           "detail": null
         },
         {
-          "id": "disqualify-honest-R13v honest 6",
+          "id": "disqualify-honest-R13v honest 5",
           "ok": true,
           "detail": null
         },
@@ -3876,7 +4573,7 @@
           "detail": null
         },
         {
-          "id": "disqualify-honest-R13v honest 4",
+          "id": "disqualify-honest-R13v honest 6",
           "ok": true,
           "detail": null
         },
@@ -3918,7 +4615,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+            "winner": "0x225356ff5d64889d7364be2c990f93a66298ee8d",
             "prize": "5000000000000000000000"
           }
         },
@@ -3927,7 +4624,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+            "winner": "0x225356ff5d64889d7364be2c990f93a66298ee8d",
             "prize": "5000000000000000000000"
           }
         },
@@ -3951,9 +4648,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+            "winner": "0x225356ff5d64889d7364be2c990f93a66298ee8d",
             "prizeWei": "5000000000000000000000",
-            "finalizeTx": "0xec621312942dcec9ce09ce6fb9d2347a6ca4799190c5313f1dc0eec10638d552"
+            "finalizeTx": "0xf2c915d0f8e9727750bac71e2dc37055bfb6d507eed0c626b2dfcc63abceaef6"
           }
         },
         {
@@ -3962,14 +4659,14 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
         }
       ],
-      "passedChecks": 34,
+      "passedChecks": 40,
       "transactions": {
         "total": 62,
         "keeper": 22,
@@ -3980,37 +4677,38 @@
         "players": 16,
         "reverted": 0
       },
-      "keeperGasUsed": "2990936",
+      "keeperGasUsed": "3000153",
       "finalBalances": {
-        "winner R13v honest 5": {
-          "address": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+        "winner R13v honest 4": {
+          "address": "0x225356ff5d64889d7364be2c990f93a66298ee8d",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "5000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 3476
+      "durationMs": 5618
     },
     {
       "id": "R14",
       "title": "Banked-session sniping: a Sunday session settled at C + 5 h just above the leader is held by H9",
       "status": "passed",
       "weekKeys": [
-        "2027-W20"
+        "2027-W24"
       ],
       "checks": [
         {
@@ -4021,7 +4719,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W20",
+            "week": "2027-W24",
             "open": [],
             "unscreened": 0
           }
@@ -4036,11 +4734,11 @@
           "detail": [
             {
               "rank": 1,
-              "walletShort": "0xfe0f…9ef9",
+              "walletShort": "0x0e99…4584",
               "displayName": null,
-              "score": 6559,
+              "score": 6684,
               "review": "cleared",
-              "replay": "/api/jackpot/replay?session=0xb63efc88a8a859dbf5d8bd898ed82f31a41f021c7ad81ab908eddf167e0eb28c"
+              "replay": "/api/jackpot/replay?session=0x77d90705f0c2a602be216e8b2050ef48ccdd094b1cf5f450707490b0a2a5eaa3"
             }
           ]
         },
@@ -4048,9 +4746,9 @@
           "id": "just-above",
           "ok": true,
           "detail": {
-            "sniper": 6749,
-            "leader": 6559,
-            "margin": 190
+            "sniper": 8063,
+            "leader": 6684,
+            "margin": 1379
           }
         },
         {
@@ -4064,7 +4762,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W20",
+            "week": "2027-W24",
             "open": [],
             "unscreened": 0
           }
@@ -4076,7 +4774,7 @@
             "codes": [
               "H9"
             ],
-            "delay": 32305
+            "delay": 32289
           }
         },
         {
@@ -4108,7 +4806,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
             "prize": "3000000000000000000000"
           }
         },
@@ -4117,7 +4815,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
             "prize": "3000000000000000000000"
           }
         },
@@ -4141,9 +4839,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
             "prizeWei": "3000000000000000000000",
-            "finalizeTx": "0x3a0a7113d4c3730b2dd47afe6e6e1a154e5c21369e16a8a4dd04549319b680fd"
+            "finalizeTx": "0x51db41917af7cf7e0fff554da6c91bd03886779542286f9e33444a83ed2ef628"
           }
         },
         {
@@ -4152,8 +4850,8 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
@@ -4170,37 +4868,38 @@
         "players": 2,
         "reverted": 0
       },
-      "keeperGasUsed": "742313",
+      "keeperGasUsed": "751889",
       "finalBalances": {
         "winner R14 honest leader": {
-          "address": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+          "address": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "3000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 2700
+      "durationMs": 4052
     },
     {
       "id": "R15",
       "title": "Non-stock client (maxTicks 108,000): never submitted by the keeper, flagged integrity when submitted",
       "status": "passed",
       "weekKeys": [
-        "2027-W22"
+        "2027-W26"
       ],
       "checks": [
         {
@@ -4215,7 +4914,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W22",
+            "week": "2027-W26",
             "open": [],
             "unscreened": 0
           }
@@ -4231,7 +4930,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W22",
+            "week": "2027-W26",
             "open": [],
             "unscreened": 0
           }
@@ -4249,7 +4948,7 @@
           "id": "keeper-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W22",
+            "week": "2027-W26",
             "open": [],
             "unscreened": 0
           }
@@ -4263,13 +4962,13 @@
               "ok": false,
               "code": "non-stock-client",
               "chain": {
-                "week": 2996,
+                "week": 3000,
                 "exists": true,
-                "player": "0x9586a4833970847aef259ad5bfb7aa8901ddf746",
-                "openedAt": 1811894400,
+                "player": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+                "openedAt": 1814313600,
                 "verified": true,
                 "amountWei": "102000000000000000",
-                "submittedAt": 1811894500
+                "submittedAt": 1814313700
               },
               "detail": "108000"
             }
@@ -4300,7 +4999,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+            "winner": "0x9c79357189d6af261691ecf48de9a6bbf30438fc",
             "prize": "1000000000000000000000"
           }
         },
@@ -4309,7 +5008,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+            "winner": "0x9c79357189d6af261691ecf48de9a6bbf30438fc",
             "prize": "1000000000000000000000"
           }
         },
@@ -4333,9 +5032,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+            "winner": "0x9c79357189d6af261691ecf48de9a6bbf30438fc",
             "prizeWei": "1000000000000000000000",
-            "finalizeTx": "0x476166ec73c4ad797572eff8e42bac1061e3dc6185f0ca7beead7c9a8d218529"
+            "finalizeTx": "0x8ebe99e7a06df780af448dc5edefb1effea5d9910119f7c8b39f2594478086a6"
           }
         },
         {
@@ -4344,8 +5043,8 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
@@ -4362,37 +5061,38 @@
         "players": 3,
         "reverted": 0
       },
-      "keeperGasUsed": "534062",
+      "keeperGasUsed": "543674",
       "finalBalances": {
         "winner R15 honest": {
-          "address": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+          "address": "0x9c79357189d6af261691ecf48de9a6bbf30438fc",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 1204
+      "durationMs": 1812
     },
     {
       "id": "R16",
       "title": "Expected miss: an exceptional-model bot passes the screen and is paid (design B.5 residual)",
       "status": "passed",
       "weekKeys": [
-        "2027-W24"
+        "2027-W28"
       ],
       "checks": [
         {
@@ -4403,7 +5103,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W24",
+            "week": "2027-W28",
             "open": [],
             "unscreened": 0
           }
@@ -4427,7 +5127,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W24",
+            "week": "2027-W28",
             "open": [],
             "unscreened": 0
           }
@@ -4445,7 +5145,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
             "prize": "1000000000000000000000"
           }
         },
@@ -4454,7 +5154,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
             "prize": "1000000000000000000000"
           }
         },
@@ -4478,9 +5178,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
             "prizeWei": "1000000000000000000000",
-            "finalizeTx": "0xcce1a48550ccd7ead36c1c8d059ac0df8a4ed0cf31acbac2b504df665184c24d"
+            "finalizeTx": "0x16b0a8b1daf95b722a027c1cf901745f68f430e7282b028a5aed3fac647719c5"
           }
         },
         {
@@ -4489,8 +5189,8 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
@@ -4507,32 +5207,32 @@
         "players": 2,
         "reverted": 0
       },
-      "keeperGasUsed": "714791",
+      "keeperGasUsed": "724391",
       "finalBalances": {
         "winner R16 exceptional bot": {
-          "address": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+          "address": "0x4548774216f19914493d051481feb56246bc13f0",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [
         {
           "population": "exceptional-model bot on a real seed (design B.4 set (b), B.5 item 1)",
-          "sessionId32": "0xe42e3bc641eca0830fa9a1e9e270a76720d11dcbc6e954de70f4cd81abec4430",
-          "score": 22457,
+          "sessionId32": "0x01514bf74a49bb7f57ba27b2c0fe0cbe673c94a24efc59cd241bd4b6422028ce",
+          "score": 22522,
           "survivalSeconds": 303,
           "screen": "pass",
           "holdCodes": [],
@@ -4543,15 +5243,16 @@
           "note": "The documented residual: a careful in-view bot is indistinguishable from an elite human by these features. Not a failure; adminClearOnly, caps and human review are the defence (J16, OJ6)."
         }
       ],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 2515
+      "durationMs": 4059
     },
     {
       "id": "R17",
-      "title": "Stale keeper action: a dropped flag and a rescreen never override the admin clear",
+      "title": "Stale keeper action: a rescreen verdict and a dropped flag, raced by an admin clear mid-run, end review-locked",
       "status": "passed",
       "weekKeys": [
-        "2027-W26"
+        "2027-W30"
       ],
       "checks": [
         {
@@ -4563,10 +5264,10 @@
           "ok": true,
           "detail": {
             "stage": "after-cas",
-            "id": "chikun:a85233c6:3000:flag:0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c",
+            "id": "chikun:a85233c6:3004:flag:0x1118afff5503658074244d9362cd13d169321fa2bea2c2361d5932cb45f0b66c",
             "kind": "flag",
-            "txHash": "0x0449fdc978124c25b29d15a36da2a983a9aae515142ed1a2946cd039757042f6",
-            "nonce": 69
+            "txHash": "0x8d82c32615ed0db3453f72d2906410811e7ac42e450c0e6ab7b6c3468824121d",
+            "nonce": 70
           }
         },
         {
@@ -4577,23 +5278,41 @@
           ]
         },
         {
-          "id": "admin-clears",
-          "ok": true,
-          "detail": null
+          "id": "no-admin-decision-yet",
+          "ok": true
         },
         {
-          "id": "rescreen-applied-on-stale-mirror",
+          "id": "rescreen-applied",
           "ok": true,
           "detail": [
-            "0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c in 2027-W26 0xa85233c6…: screen hold (H9), review none; week selecting.",
+            "0x1118afff5503658074244d9362cd13d169321fa2bea2c2361d5932cb45f0b66c in 2027-W30 0xa85233c6…: screen hold (H9), review none; week selecting.",
             "applied: the screen is pending again."
           ]
+        },
+        {
+          "id": "stale-screen-before-admin-clear",
+          "ok": true,
+          "detail": {
+            "screen": "hold",
+            "screenedAt": "2027-08-02T02:06:00.026Z",
+            "mirrorAdminReviewed": false,
+            "chainReview": "none",
+            "chainAdminReviewed": false
+          }
+        },
+        {
+          "id": "admin-clears-mid-run",
+          "ok": true,
+          "detail": {
+            "ok": true,
+            "reason": null
+          }
         },
         {
           "id": "keeper-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W26",
+            "week": "2027-W30",
             "open": [],
             "unscreened": 0
           }
@@ -4602,15 +5321,15 @@
           "id": "dropped-flag-resigned-then-skipped",
           "ok": true,
           "detail": {
-            "id": "chikun:a85233c6:3000:flag:0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c",
+            "id": "chikun:a85233c6:3004:flag:0x1118afff5503658074244d9362cd13d169321fa2bea2c2361d5932cb45f0b66c",
             "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
             "gameId": "chikun",
-            "weekKey": "2027-W26",
+            "weekKey": "2027-W30",
             "kind": "flag",
-            "sessionId32": "0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c",
+            "sessionId32": "0x1118afff5503658074244d9362cd13d169321fa2bea2c2361d5932cb45f0b66c",
             "reason": "late-evidence",
             "status": "skipped",
-            "keeper": "0x6d69f301d1da5c7818b5e61eecc745b30179c68b",
+            "keeper": "0xd9065f27e9b706e5f7628e067cc00b288dddbf19",
             "txHash": null,
             "txNonce": null,
             "attempts": 0,
@@ -4619,12 +5338,12 @@
             "nextAttemptAt": null,
             "submittedAt": null,
             "confirmedAt": null,
-            "createdAt": "2026-09-26T02:30:58.595Z",
-            "updatedAt": "2026-09-26T02:30:58.901Z"
+            "createdAt": "2026-09-26T05:05:05.264Z",
+            "updatedAt": "2026-09-26T05:05:05.745Z"
           }
         },
         {
-          "id": "rescreen-created-no-review-action",
+          "id": "one-flag-action-no-clear",
           "ok": true,
           "detail": [
             [
@@ -4652,7 +5371,7 @@
           "id": "rescreen-refused-once-mirrored",
           "ok": true,
           "detail": [
-            "0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c in 2027-W26 0xa85233c6…: screen hold (H9), review cleared, reviewed by the admin; week selecting.",
+            "0x1118afff5503658074244d9362cd13d169321fa2bea2c2361d5932cb45f0b66c in 2027-W30 0xa85233c6…: screen hold (H9), review cleared, reviewed by the admin; week selecting.",
             "Refusing: the admin reviewed or disqualified this session. The admin decision is final for the keeper; a rescreen never creates a clear or flag for it."
           ]
         },
@@ -4662,8 +5381,8 @@
           "detail": {
             "reason": "REVIEW_LOCKED",
             "minedStatus": 0,
-            "blockTimestamp": 1814753762,
-            "txHash": "0xc0adb540ca2e9a7d5b58c715ee39d1a4287e60ef7b5a2f9201c40487ddd1e414"
+            "blockTimestamp": 1817172665,
+            "txHash": "0x4399ece150ff20096b37fc338350f96b9033c4ae2063028c7ad31a51aec1283f"
           }
         },
         {
@@ -4681,7 +5400,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W26",
+            "week": "2027-W30",
             "open": [],
             "unscreened": 0
           }
@@ -4699,7 +5418,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+            "winner": "0xeabd5094570298ffd24e93e7af378162884611cb",
             "prize": "1200000000000000000000"
           }
         },
@@ -4708,7 +5427,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+            "winner": "0xeabd5094570298ffd24e93e7af378162884611cb",
             "prize": "1200000000000000000000"
           }
         },
@@ -4732,9 +5451,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+            "winner": "0xeabd5094570298ffd24e93e7af378162884611cb",
             "prizeWei": "1200000000000000000000",
-            "finalizeTx": "0x9a1d4730660fe8b59df8177434bf4818c391f1bc5568c0fd88fb97593cd6747a"
+            "finalizeTx": "0xf0e3eb5ff8171366f8be93d880fd87ddd1efa3cccddc239b723420d9aed03d6f"
           }
         },
         {
@@ -4743,14 +5462,14 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
         }
       ],
-      "passedChecks": 21,
+      "passedChecks": 23,
       "transactions": {
         "total": 12,
         "keeper": 5,
@@ -4761,37 +5480,40 @@
         "players": 2,
         "reverted": 1
       },
-      "keeperGasUsed": "675175",
+      "keeperGasUsed": "684775",
       "finalBalances": {
         "winner R17 leader (paused 25 min)": {
-          "address": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+          "address": "0xeabd5094570298ffd24e93e7af378162884611cb",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1200000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
-      "notes": [],
-      "durationMs": 1187
+      "designFindings": [],
+      "notes": [
+        "Action ids are per week, kind and session (server/jackpot/store.mjs actionId): a rescreen that re-holds a row converges on its existing flag action, so the stale verdict and the dropped transaction are one row, and the pre-send check (adminReviewed on chain) is what stops it."
+      ],
+      "durationMs": 1892
     },
     {
       "id": "R18",
-      "title": "Contested admin: operator pause, force-admin, OPERATOR_LOCK, the review API drops the old admin",
+      "title": "Contested admin: operator pause, force-admin, OPERATOR_LOCK then ONLY_ADMIN, the review API drops the old admin",
       "status": "passed",
       "weekKeys": [
-        "2027-W28"
+        "2027-W32"
       ],
       "checks": [
         {
@@ -4802,7 +5524,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W28",
+            "week": "2027-W32",
             "open": [],
             "unscreened": 0
           }
@@ -4836,8 +5558,8 @@
           "detail": {
             "reason": "OPERATOR_LOCK",
             "minedStatus": 0,
-            "blockTimestamp": 1815963065,
-            "txHash": "0xbde8570c1e65f85cd81757b185df2ee331eb1ab0dcf61340a74eaf93b4429ecb"
+            "blockTimestamp": 1818382265,
+            "txHash": "0x3cb31f1914e8d38a9d1dfce757ac8d8e84a641b988f0169f0a5e54dfeb0ce7a1"
           }
         },
         {
@@ -4846,8 +5568,8 @@
           "detail": {
             "reason": "OPERATOR_LOCK",
             "minedStatus": 0,
-            "blockTimestamp": 1815963066,
-            "txHash": "0x2d4a382351863de463c52895c5f84bcdcb3b148e99a2694bcabc8022937c14cd"
+            "blockTimestamp": 1818382266,
+            "txHash": "0x67994cdc294a05ed2598cedb999f56372a51e4b02c16567708e633164f7a99d4"
           }
         },
         {
@@ -4855,13 +5577,13 @@
           "ok": true
         },
         {
-          "id": "old-admin-transfer-reverts",
+          "id": "old-admin-transfer-reverts-only-admin",
           "ok": true,
           "detail": {
             "reason": "ONLY_ADMIN",
             "minedStatus": 0,
-            "blockTimestamp": 1815963068,
-            "txHash": "0x2f0b9e5bd329ea3c81f10d08253cee5db22215771581d20f4456829809cf8e3d"
+            "blockTimestamp": 1818382268,
+            "txHash": "0xc0ce4f832bb9cd2034f103654b9f7ad07dbf9e4d58cac7a27f585b52d561e7a3"
           }
         },
         {
@@ -4899,7 +5621,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W28",
+            "week": "2027-W32",
             "open": [],
             "unscreened": 0
           }
@@ -4917,7 +5639,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
+            "winner": "0x51953940f874efa94f92eb2d6aed023617a07222",
             "prize": "1000000000000000000000"
           }
         },
@@ -4926,7 +5648,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
+            "winner": "0x51953940f874efa94f92eb2d6aed023617a07222",
             "prize": "1000000000000000000000"
           }
         },
@@ -4950,9 +5672,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
+            "winner": "0x51953940f874efa94f92eb2d6aed023617a07222",
             "prizeWei": "1000000000000000000000",
-            "finalizeTx": "0x46ab1fb492eb2e6b5fd0536771bba83fcc5e31c618326627eafab50115c2c1b0"
+            "finalizeTx": "0x9fafa6a529f7466d7545cce7d838cddffd14e5c5505b3fe4fbddb0cef3c82041"
           }
         },
         {
@@ -4961,8 +5683,8 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
@@ -4979,39 +5701,38 @@
         "players": 3,
         "reverted": 3
       },
-      "keeperGasUsed": "714791",
+      "keeperGasUsed": "724391",
       "finalBalances": {
         "winner R18 honest leader": {
-          "address": "0x4548774216f19914493d051481feb56246bc13f0",
+          "address": "0x51953940f874efa94f92eb2d6aed023617a07222",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
-      "notes": [
-        "After force-admin the old admin's transferAdmin reverts ONLY_ADMIN (the operator pause is still on; the onlyAdmin guard would refuse it next)."
-      ],
-      "durationMs": 938
+      "designFindings": [],
+      "notes": [],
+      "durationMs": 1472
     },
     {
       "id": "R19",
       "title": "Dust and end of life: BELOW_MIN_FUND, scheduleEnd, refunds to funders, residual after 30 days, sweep post-condition",
       "status": "passed",
       "weekKeys": [
-        "2027-W31"
+        "2027-W35"
       ],
       "checks": [
         {
@@ -5020,8 +5741,8 @@
           "detail": {
             "reason": "BELOW_MIN_FUND",
             "minedStatus": 0,
-            "blockTimestamp": 1816041967,
-            "txHash": "0x6cfe06ea5247fb8fc82bce72ced7858bf7e61c1cca3c9444f9e6cc3ad8e0e154"
+            "blockTimestamp": 1818461167,
+            "txHash": "0x253c18cab7e8d83fa52d68bd7666e76517dfb7c12148eada77abae540388c94e"
           }
         },
         {
@@ -5087,21 +5808,21 @@
           "id": "mirror-rolled-to-residue",
           "ok": true,
           "detail": {
-            "contract": "0x99bba657f2bbc93c02d617f8ba121cb8fc104acf",
+            "contract": "0x8f86403a4de0bb5791fa46b8e795c547942fe4cf",
             "gameId": "chikun",
-            "weekKey": "2027-W31",
-            "weekIndex": 3005,
+            "weekKey": "2027-W35",
+            "weekIndex": 3009,
             "token": {
-              "address": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+              "address": "0x0e801d84fa97b50751dbf25036d067dcf18858bf",
               "symbol": "DBLMOCK",
               "decimals": 18,
               "testnet": true
             },
-            "startsAt": "2027-08-02T00:00:00.000Z",
-            "closesAt": "2027-08-09T00:00:00.000Z",
-            "settleCutoffAt": "2027-08-09T06:00:00.000Z",
-            "candidateUntil": "2027-08-09T12:00:00.000Z",
-            "payoutAt": "2027-08-10T00:00:00.000Z",
+            "startsAt": "2027-08-30T00:00:00.000Z",
+            "closesAt": "2027-09-06T00:00:00.000Z",
+            "settleCutoffAt": "2027-09-06T06:00:00.000Z",
+            "candidateUntil": "2027-09-06T12:00:00.000Z",
+            "payoutAt": "2027-09-07T00:00:00.000Z",
             "status": "rolled",
             "fundedWei": "300000000000000000000",
             "carriedInWei": "0",
@@ -5110,14 +5831,14 @@
             "winner": null,
             "winningSession": null,
             "winningScore": null,
-            "finalizeTxHash": "0x80d01238c51d1c0df1d012bcb26f5bc5bd054d941037d689185841cd8ea366ab",
-            "finalizedAt": "2027-08-10T00:01:01.000Z",
+            "finalizeTxHash": "0x3c6082d31dbe310852ca189b52ba99541a750a96a65c09d6ff3c548d50c9dfc1",
+            "finalizedAt": "2027-09-07T00:01:01.000Z",
             "rolledToWeek": null,
             "held": false,
             "extensionSeconds": 0,
             "lastError": null,
             "adminWaitingSince": null,
-            "updatedAt": "2026-09-26T02:31:00.163Z"
+            "updatedAt": "2026-09-26T05:05:07.680Z"
           }
         },
         {
@@ -5127,7 +5848,7 @@
         {
           "id": "cannot-refund-others",
           "ok": true,
-          "detail": "0x51953940f874efa94f92eb2d6aed023617a07222 funded nothing in 2027-W34 (NOTHING_TO_REFUND)"
+          "detail": "0xd4db664b707353422b1ffc94038cdd0a7d074d51 funded nothing in 2027-W38 (NOTHING_TO_REFUND)"
         },
         {
           "id": "louie-refunded",
@@ -5136,7 +5857,7 @@
         {
           "id": "residual-not-before-30-days",
           "ok": true,
-          "detail": "the residue is available from 2027-09-09T00:01:01.000Z (TOO_EARLY)"
+          "detail": "the residue is available from 2027-10-07T00:01:01.000Z (TOO_EARLY)"
         },
         {
           "id": "residual-recovered",
@@ -5156,8 +5877,8 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             },
             {
@@ -5183,31 +5904,31 @@
       "keeperGasUsed": "0",
       "finalBalances": {
         "attacker": {
-          "address": "0x51953940f874efa94f92eb2d6aed023617a07222",
-          "token": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+          "address": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+          "token": "0x0e801d84fa97b50751dbf25036d067dcf18858bf",
           "balanceWei": "10000000000000000000000"
         },
         "louie": {
-          "address": "0x6813ae1fc15e995230c05d4480d50219bb635f15",
-          "token": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+          "address": "0x11ba29fe987addfa480ffecf3d98b26630917a78",
+          "token": "0x0e801d84fa97b50751dbf25036d067dcf18858bf",
           "balanceWei": "10000000000000000000000"
         },
         "residual recipient": {
-          "address": "0xeabd5094570298ffd24e93e7af378162884611cb",
-          "token": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+          "address": "0xbe9086f1a38740f297f6347b531732541289b220",
+          "token": "0x0e801d84fa97b50751dbf25036d067dcf18858bf",
           "balanceWei": "300000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         },
         {
@@ -5218,15 +5939,16 @@
         }
       ],
       "expectedMisses": [],
+      "designFindings": [],
       "notes": [],
-      "durationMs": 258
+      "durationMs": 365
     },
     {
       "id": "R20",
-      "title": "Ranked-setting drift: reserve 0 keeps runs eligible; the live checker flags rankedEntry; the entry row hides fees-off",
+      "title": "Ranked-setting drift: the live checker flags a reserve cut below the settle floor, a repointed rankedEntry and fees off; the entry row hides fees-off",
       "status": "passed",
       "weekKeys": [
-        "2027-W37"
+        "2027-W41"
       ],
       "checks": [
         {
@@ -5242,6 +5964,22 @@
           "id": "quote-is-flat-fee",
           "ok": true,
           "detail": "100000000000000000"
+        },
+        {
+          "id": "live-checker-flags-settle-floor",
+          "ok": true,
+          "detail": {
+            "id": "j17-settle-floor",
+            "ok": false,
+            "detail": {
+              "quoteTotalWei": "100000000000000000",
+              "settleMinPaidWei": "102000000000000000"
+            }
+          }
+        },
+        {
+          "id": "j17-quote-still-green",
+          "ok": true
         },
         {
           "id": "paid-flat-fee",
@@ -5264,16 +6002,9 @@
           "ok": true
         },
         {
-          "id": "live-checker-reserve-zero",
+          "id": "live-checker-green-with-floor-lowered",
           "ok": true,
-          "detail": {
-            "id": "j17-quote",
-            "ok": true,
-            "detail": {
-              "quoteTotalWei": "100000000000000000",
-              "minPaidWei": "100000000000000000"
-            }
-          }
+          "detail": []
         },
         {
           "id": "live-checker-flags-ranked-entry",
@@ -5291,7 +6022,11 @@
         },
         {
           "id": "live-checker-flags-fees-off",
-          "ok": true
+          "ok": true,
+          "detail": [
+            "j17-quote",
+            "j17-settle-floor"
+          ]
         },
         {
           "id": "entry-row-hidden-below-min-paid",
@@ -5311,7 +6046,7 @@
           "id": "selection-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W37",
+            "week": "2027-W41",
             "open": [],
             "unscreened": 0
           }
@@ -5327,7 +6062,7 @@
           "id": "review-drained",
           "ok": true,
           "detail": {
-            "week": "2027-W37",
+            "week": "2027-W41",
             "open": [],
             "unscreened": 0
           }
@@ -5345,7 +6080,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+            "winner": "0x2bac2e5a4f39c32ed16205591ba26e307414ca9e",
             "prize": "1000000000000000000000"
           }
         },
@@ -5354,7 +6089,7 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+            "winner": "0x2bac2e5a4f39c32ed16205591ba26e307414ca9e",
             "prize": "1000000000000000000000"
           }
         },
@@ -5378,9 +6113,9 @@
           "ok": true,
           "detail": {
             "status": "paid",
-            "winner": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+            "winner": "0x2bac2e5a4f39c32ed16205591ba26e307414ca9e",
             "prizeWei": "1000000000000000000000",
-            "finalizeTx": "0x6af9192190e1b241072553120f6421f73296e1f341b22b837c2401d494d31f34"
+            "finalizeTx": "0xd6dea756c4644bf58ca4951c08e38c532be9e7280c0b6889d6284f63a944e6aa"
           }
         },
         {
@@ -5389,14 +6124,14 @@
           "detail": [
             {
               "label": "main",
-              "balanceWei": "0",
-              "liabilitiesWei": "0",
+              "balanceWei": "100000000000000000000",
+              "liabilitiesWei": "100000000000000000000",
               "ok": true
             }
           ]
         }
       ],
-      "passedChecks": 23,
+      "passedChecks": 25,
       "transactions": {
         "total": 13,
         "keeper": 3,
@@ -5407,40 +6142,51 @@
         "players": 1,
         "reverted": 0
       },
-      "keeperGasUsed": "445320",
+      "keeperGasUsed": "454920",
       "finalBalances": {
         "winner R20 player 1": {
-          "address": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+          "address": "0x2bac2e5a4f39c32ed16205591ba26e307414ca9e",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
           "balanceWei": "1000000000000000000000"
         },
         "jackpot": {
           "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
           "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
-          "balanceWei": "0"
+          "balanceWei": "100000000000000000000"
         }
       },
       "invariant": [
         {
           "label": "main",
-          "balanceWei": "0",
-          "liabilitiesWei": "0",
+          "balanceWei": "100000000000000000000",
+          "liabilitiesWei": "100000000000000000000",
           "ok": true
         }
       ],
       "expectedMisses": [],
-      "notes": [
-        "J17 coupling beyond the jackpot: the settle floor RANKED_MIN_PAID_WEI (default 0.102) refuses entries paid after a reserve cut until the same Monday step lowers it (runbook J17 weekly check)."
+      "designFindings": [
+        {
+          "scenario": "R20",
+          "status": "routed",
+          "id": "j17-settle-floor",
+          "finding": "RANKED_MIN_PAID_WEI is part of the J17 coupling. With the settlement reserve cut to 0, ArcadeRankedEntry quotes 0.1 zkLTC while /api/settle still refuses entries paid below the floor (default 0.102) with 402 entry-underpaid; the player paid the quote and cannot settle, and nothing refunds the entry.",
+          "fixedHere": "The J17 weekly check now sees it: /api/health reports settleMinPaidWei and scripts/jackpot-live-dry-run.mjs fails j17-settle-floor when quoteEntry(chikun).totalWei < that floor (R20 shows it red before any player pays).",
+          "routedTo": [
+            "design owner: add RANKED_MIN_PAID_WEI to the §A.5 J17 list and the §E weekly check",
+            "Ranked settle owner (server/settle/settle-core.mjs): consider deriving the floor from the chain quote, or refusing at entry time, so a reserve change cannot strand paid entries"
+          ]
+        }
       ],
-      "durationMs": 2955
+      "notes": [],
+      "durationMs": 4036
     }
   ],
   "expectedMisses": [
     {
       "scenario": "R16",
       "population": "exceptional-model bot on a real seed (design B.4 set (b), B.5 item 1)",
-      "sessionId32": "0xe42e3bc641eca0830fa9a1e9e270a76720d11dcbc6e954de70f4cd81abec4430",
-      "score": 22457,
+      "sessionId32": "0x01514bf74a49bb7f57ba27b2c0fe0cbe673c94a24efc59cd241bd4b6422028ce",
+      "score": 22522,
       "survivalSeconds": 303,
       "screen": "pass",
       "holdCodes": [],
@@ -5452,6 +6198,19 @@
     }
   ],
   "productBugs": [],
+  "designFindings": [
+    {
+      "scenario": "R20",
+      "status": "routed",
+      "id": "j17-settle-floor",
+      "finding": "RANKED_MIN_PAID_WEI is part of the J17 coupling. With the settlement reserve cut to 0, ArcadeRankedEntry quotes 0.1 zkLTC while /api/settle still refuses entries paid below the floor (default 0.102) with 402 entry-underpaid; the player paid the quote and cannot settle, and nothing refunds the entry.",
+      "fixedHere": "The J17 weekly check now sees it: /api/health reports settleMinPaidWei and scripts/jackpot-live-dry-run.mjs fails j17-settle-floor when quoteEntry(chikun).totalWei < that floor (R20 shows it red before any player pays).",
+      "routedTo": [
+        "design owner: add RANKED_MIN_PAID_WEI to the §A.5 J17 list and the §E weekly check",
+        "Ranked settle owner (server/settle/settle-core.mjs): consider deriving the floor from the chain quote, or refusing at entry time, so a reserve change cannot strand paid entries"
+      ]
+    }
+  ],
   "liveDryRunChecks": [
     "rpc-chain",
     "jackpot-deployed",
@@ -5464,12 +6223,14 @@
     "week-key",
     "rules-in-force",
     "j17-quote",
+    "j17-settle-floor",
     "j17-ranked-entry",
     "j17-season",
     "j17-game-id",
     "j17-game-registered",
     "pot-current",
     "pot-previous",
+    "pot-funded",
     "pause",
     "keeper-balance",
     "cron-fresh",
