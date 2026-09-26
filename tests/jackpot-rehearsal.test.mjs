@@ -297,13 +297,17 @@ test('the flag-flip dry run refuses without --confirm-throwaway, and its diff he
   assert.equal(neutraliseAssertion(neutral, 3).split(nl)[2], "  __flipNoop()(ok, 'y');");
   assert.equal(neutraliseAssertion('  expectPinned(value);', 1), null);
   assert.equal(neutraliseAssertion('one line', 5), null);
-  // eslint-disable-next-line no-new-func
-  assert.equal(new Function(`${FLIP_NOOP_SOURCE}; return [__flipNoop().equal(1, 2), __flipNoop()(false), __flipNoop().match('a', /b/)];`)().every((value) => value === undefined), true);
 
-  // The suites' preload keeps every pass and every failure, only shortens the failures on objects (so an
-  // assert.equal of a large fake DOM node fails at once, with its line, instead of exhausting memory).
   const dir = mkdtempSync(join(tmpdir(), 'jackpot-flip-cheap-assert-'));
   try {
+    // The no-op answers every assertion shape with undefined (loaded as a module, as the neutralised test
+    // file loads it: no dynamic code, which the WO-39 security sweep refuses in tests/).
+    writeFileSync(join(dir, 'noop.mjs'), `${FLIP_NOOP_SOURCE}${nl}export const results = [__flipNoop().equal(1, 2), __flipNoop()(false), __flipNoop().match('a', /b/)];${nl}`, 'utf8');
+    const { results: noop } = await import(pathToFileURL(join(dir, 'noop.mjs')).href);
+    assert.deepEqual(noop, [undefined, undefined, undefined]);
+
+    // The suites' preload keeps every pass and every failure, only shortens the failures on objects (so an
+    // assert.equal of a large fake DOM node fails at once, with its line, instead of exhausting memory).
     writeFileSync(join(dir, 'cheap.mjs'), CHEAP_ASSERT_SOURCE, 'utf8');
     writeFileSync(join(dir, 'probe.mjs'), [
       "import assert from 'node:assert/strict';",
