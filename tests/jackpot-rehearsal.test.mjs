@@ -50,6 +50,8 @@ test('the driver helpers: time targets, revert reasons and the chain-bound clock
   assert.equal(pilot.source, 'pilot:route');
   const nonStock = evidenceForSeed({ seed: 99, maxMinutes: 0.2, maxTicks: 108_000 });
   assert.equal(nonStock.flap.maxTicks, 108_000);
+  const evasion = evidenceForSeed({ seed: 424242, pilot: 'humanisedSolver', maxMinutes: 0.2 });
+  assert.deepEqual([evasion.source, evasion.flap.maxTicks, replayChikunRun(evasion.flap).score], ['pilot:humanisedSolver', 216_000, evasion.score], 'an evasion pilot is cut, not truncated');
 });
 
 let js;
@@ -161,5 +163,5 @@ test('a stale keeper action never overrides the admin', async () => {
   for (const id of ['flag-dropped', 'admin-clears', 'rescreen-applied-on-stale-mirror', 'dropped-flag-resigned-then-skipped', 'rescreen-created-no-review-action', 'rescreen-refused-once-mirrored', 'keeper-flag-reverts-review-locked', 'winner-balance']) {
     assert.ok(checkIds(result).includes(id), id);
   }
-  assert.deepEqual([...results.keys()], FAST_SUBSET.filter((id) => results.has(id)), 'the fast subset ran in order');
+  assert.deepEqual([...results.keys()], [...FAST_SUBSET], 'the whole fast subset ran, in order');
 });

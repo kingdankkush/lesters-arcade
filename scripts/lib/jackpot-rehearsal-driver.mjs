@@ -42,7 +42,7 @@ import {
   deployLocalJackpot, derivedFixtureWallet, fastLocalProvider, fixtureKeyAt, jackpotAt, jackpotFixtureWallets, launchRules, reconnectWallets, tokenAt,
 } from './local-jackpot.mjs';
 import { payEntry, rankedContracts, settleUntilConfirmed, signIn, ticketedSession } from './rehearsal-driver.mjs';
-import { playEvasionRun, humanise } from './chikun-evasion-pilots.mjs';
+import { evasionPilotFor, humanise } from './chikun-evasion-pilots.mjs';
 import { routePilot } from '../chikun-course-pilot.mjs';
 import { jackpotModuleValue } from '../generate-litvm-jackpot.mjs';
 import { JACKPOT_ACTIONS as CLI_ACTIONS, runJackpotAction } from '../jackpot-actions.mjs';
@@ -206,7 +206,7 @@ export function evidenceForSeed({ seed, profile = null, pilot = null, evidence =
     let result;
     if (pilot === 'route') result = playPilotRun({ seed, cutTicks, maxTicks });
     else if (pilot === 'route-humanised') result = playPilotRun({ seed, cutTicks, maxTicks, pilot: humanise(routePilot, { seed, label: 'rehearsal' }) });
-    else result = playEvasionRun({ name: pilot, seed, maxTicks: Math.min(maxTicks, cutTicks + 600) });
+    else result = playPilotRun({ seed, cutTicks, maxTicks, pilot: evasionPilotFor(pilot, { seed }) });
     return { flap: plainEvidence(result.evidence), score: result.score, survivalTicks: result.survivalTicks, source: `pilot:${pilot}` };
   }
   const built = buildChikunEvidence({ seed, profile: profile ?? DEFAULT_RUN.profile, maxMinutes, maxTicks });

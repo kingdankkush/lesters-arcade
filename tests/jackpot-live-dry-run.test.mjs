@@ -11,6 +11,7 @@ import { startLocalHttp } from '../scripts/lib/local-http.mjs';
 import { serveJsonRpc } from '../scripts/lib/local-chain.mjs';
 import { writeLocalAddressModule } from '../scripts/lib/local-stack.mjs';
 import { jackpotModuleValue, renderLitvmJackpotModule } from '../scripts/generate-litvm-jackpot.mjs';
+import { JACKPOT_LIVE } from '../apps/portal/src/jackpot-config.mjs';
 import {
   LIVE_CHECK_IDS, LIVE_DRY_RUN_SCHEMA, READ_ONLY_RPC_METHODS, ReadOnlyProvider, parseLiveDryRunArgs, potFromChain, runJackpotLiveDryRun, runLiveDryRunCli,
 } from '../scripts/jackpot-live-dry-run.mjs';
@@ -63,7 +64,7 @@ const recordingFetch = async (url, init = {}) => {
 };
 
 function dryRun(overrides = {}) {
-  return runJackpotLiveDryRun({ site: http.origin, rpc: rpc.url, fetchImpl: recordingFetch, deployment: js.deployment, jackpotModule: js.module, record: js.jackpotRecord, expectLive: false, ...overrides });
+  return runJackpotLiveDryRun({ site: http.origin, rpc: rpc.url, fetchImpl: recordingFetch, deployment: js.deployment, jackpotModule: js.module, record: js.jackpotRecord, expectLive: JACKPOT_LIVE, ...overrides });
 }
 
 const failed = (report) => report.checks.filter((check) => !check.ok).map((check) => check.id);
@@ -85,8 +86,9 @@ test('the live dry run reads only, reports every check and catches Ranked-settin
   const byId = Object.fromEntries(report.checks.map((check) => [check.id, check]));
   assert.equal(byId['pot-previous'].detail.api.prizeWei, (500n * TOKEN).toString(), 'the paid week compared with the chain');
   assert.equal(byId['pot-current'].detail.chain.fundedWei, (300n * TOKEN).toString());
-  assert.equal(byId['jackpot-live-flag'].detail.served, false);
-  assert.equal(byId['jackpot-live-flag'].detail.rulesPageNoindex, true);
+  // The served flag is the committed one (false until runbook E10), and the rules page agrees with it.
+  assert.equal(byId['jackpot-live-flag'].detail.served, JACKPOT_LIVE);
+  assert.equal(byId['jackpot-live-flag'].detail.rulesPageNoindex, !JACKPOT_LIVE);
 
   // J17 drift 1: fees off makes the quote fall below minPaidWei.
   const entry = js.suite.rankedEntry.connect(js.wallets.operator);
@@ -123,7 +125,7 @@ test('it fails on a stale record, a missing block, an unexpected JACKPOT_LIVE an
   stale.instances.chikun.admin = ethers.getAddress(js.wallets.player1.address);
   assert.deepEqual(failed(await dryRun({ record: stale })), ['roles']);
   assert.deepEqual(failed(await dryRun({ record: null })), ['immutables', 'roles']);
-  assert.deepEqual(failed(await dryRun({ expectLive: true })), ['jackpot-live-flag']);
+  assert.deepEqual(failed(await dryRun({ expectLive: !JACKPOT_LIVE })), ['jackpot-live-flag']);
   // E5: the verifier unblocked (and a named funder never blocked).
   const unblocked = await js.admin('unblock', { wallet: js.wallets.verifier.address, reason: 'other' });
   assert.ok(unblocked.ok);
@@ -170,7 +172,7 @@ test('the provider refuses writes, the CLI keeps overrides to a loopback RPC, an
     writeFileSync(recordPath, JSON.stringify(js.jackpotRecord), 'utf8');
     const lines = [];
     const code = await runLiveDryRunCli({
-      argv: ['--site', http.origin, '--rpc', rpc.url, '--deployment', rankedModule, '--jackpot-module', jackpotModulePath, '--record', recordPath, '--json'],
+      argv: ['--site', http.origin, '--rpc', rpc.url, '--deployment', rankedModule, '--jackpot-module', jackpotModulePath, '--record', recordPath, '--expect-live', String(JACKPOT_LIVE), '--json'],
       out: (line) => lines.push(line),
     });
     const printed = JSON.parse(lines.at(-1));
