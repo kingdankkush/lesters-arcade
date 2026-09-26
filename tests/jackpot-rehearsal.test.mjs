@@ -94,8 +94,12 @@ test('the stack: launch rules, the flip-week epoch from the operator CLI, E5 on 
   assert.equal(await js.jackpot.blocked(js.wallets.relayer.address), true);
   assert.equal(await js.jackpot.blocked(js.wallets.funder.address), true);
   assert.equal(js.env.JACKPOT_KEEPER_PRIVATE_KEY, js.keeperWallet.privateKey, 'the keeper env is the fixture keeper');
-  const latest = (await js.provider.getBlock('latest')).timestamp;
-  assert.ok(Math.abs(js.nowMs() - latest * 1000) < 5_000, 'the server clock is chain time');
+  // The server clock is the chain's: a block Hardhat mines now (at its own offset since the last
+  // evm_setNextBlockTimestamp) carries the server's time. (The LATEST block can be any age: blocks come
+  // only with transactions, and a loaded machine may run this test long after the last one.)
+  await js.provider.send('evm_mine', []);
+  const mined = (await js.provider.getBlock('latest')).timestamp;
+  assert.ok(Math.abs(js.nowMs() - mined * 1000) < 3_000, `the server clock is chain time (${js.nowMs() - mined * 1000} ms apart)`);
   const health = await js.health();
   assert.equal(health.jackpot.configured, true, 'the jackpotDeployment seam reaches the server config');
   assert.equal(BigInt(await js.token.balanceOf(js.wallets.funder.address)), 1_000_000n * TOKEN, 'the funder was minted tCHIKUN through jackpot-actions');
