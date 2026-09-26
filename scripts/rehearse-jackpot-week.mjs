@@ -42,6 +42,7 @@ import { showEntryJackpot } from '../apps/portal/src/jackpot/jackpot-entry-line.
 import { normalizeReview, timelineGeometry } from '../apps/portal/owner/jackpot-review-model.mjs';
 import { jackpotWarnings } from '../apps/portal/owner/status.mjs';
 import { buildChikunJackpotTease } from '../apps/chikun/src/presentation.mjs';
+import { JACKPOT_LIVE } from '../apps/portal/src/jackpot-config.mjs';
 import { dateRangeLabel } from '../server/jackpot/weeks.mjs';
 import { fakeDocument, visibleText } from '../tests/helpers/jackpot-fake-dom.mjs';
 import { buildChikunEvidence } from '../tests/fixtures/ranked/build-fixtures.mjs';
@@ -270,13 +271,22 @@ async function expectPaid(ctx, week, winner, prizeWei, { before = null, contract
     ctx.check('winner-balance', after - before === BigInt(prizeWei), { before, after });
   }
   ctx.balance(`winner ${winner.label ?? winner.wallet}`, winner.wallet, token);
+  // GET /api/jackpot through the UI's parser shows the same outcome.
+  const { previous } = await apiPrevious(ctx, week, contract);
+  ctx.check('api-paid', previous?.status === 'paid' && previous.winner?.wallet === winner.wallet && previous.prizeWei === String(prizeWei) && previous.unclaimedWei === '0' && previous.finalizeTx === row.finalizeTxHash, previous && {
+    status: previous.status, winner: previous.winner?.wallet, prizeWei: previous.prizeWei, finalizeTx: previous.finalizeTx,
+  });
   return row;
 }
 
-async function apiPrevious(ctx, week) {
+// GET /api/jackpot through the UI's parseJackpot, and the row of `week` (the previous week, or a history row)
+// of the instance at `contract`.
+async function apiPrevious(ctx, week, contract = ctx.js.address) {
   const answer = await ctx.js.jackpotApi();
   ctx.check('api-parsed', answer.status === 200 && answer.api !== null, { status: answer.status });
-  return { api: answer.api, previous: answer.api.previous && answer.api.previous.weekKey === ctx.js.weekKey(week) ? answer.api.previous : answer.api.history.find((row) => row.weekKey === ctx.js.weekKey(week)) ?? null };
+  const key = ctx.js.weekKey(week);
+  const previous = answer.api.previous?.weekKey === key && (answer.api.previous.contract ?? answer.api.contract) === contract ? answer.api.previous : null;
+  return { api: answer.api, previous: previous ?? answer.api.history.find((row) => row.weekKey === key && row.contract === contract) ?? null };
 }
 
 async function board(ctx, week) {
@@ -551,7 +561,10 @@ async function r6(ctx) {
   ctx.check('board-still-shows-it', lateRow && weekly.rows[0].sessionId32 === played.sessionId32, weekly.rows.slice(0, 3).map((row) => [row.wallet, row.score]));
   ctx.note('Documented divergence (design B.5 item 10): the weekly board ranks the late run first; the jackpot excludes it (SETTLED_LATE).');
   const [session] = await js.db.query('SELECT score::text AS score, round(extract(epoch FROM verified_at))::text AS verified_at FROM verified_sessions WHERE session_id32 = $1', [played.sessionId32]);
-  ctx.shared.r6 = { W, runA, late: { ...played, score: Number(session.score), submittedAt: Number(record.submittedAt), verifiedAt: Number(session.verified_at) } };
+  const lateScore = Number(session.score);
+  const { previous } = await apiPrevious(ctx, W);
+  ctx.check('api-candidates-exclude-late-run', previous?.status === 'review' && previous.candidates.length === 1 && previous.candidates[0].score === runA.score && lateScore > runA.score, previous && { status: previous.status, candidates: previous.candidates.map((row) => row.score), late: lateScore });
+  ctx.shared.r6 = { W, runA, late: { ...played, score: lateScore, submittedAt: Number(record.submittedAt), verifiedAt: Number(session.verified_at) } };
 }
 
 async function r7(ctx) {
@@ -1087,7 +1100,7 @@ async function r17(ctx) {
   // The leader's evidence reaches the server 25 min after the run could have ended (a pause): H9 holds it.
   const leader = await js.playRankedChikunRun({ player: l, openedAt: js.at(W, 'start', 2 * DAY), maxMinutes: 1.5, settleAfterSeconds: 25 * MINUTE });
   const keeper = js.keeperWallet.address;
-  const nonce0 = await js.nonceOf(keeper);
+  const startBlock = await js.blockNumber();
   await js.advanceTo(js.at(W, 'close', 2 * HOUR + MINUTE));
   // The keeper's flag of the leader is signed and recorded, then dropped (never reaches the chain).
   const drop = js.faultOnce({ stage: 'after-cas', kind: 'flag', sessionId32: leader.sessionId32 });
@@ -1106,7 +1119,7 @@ async function r17(ctx) {
   const flag = actions.find((action) => action.kind === 'flag');
   ctx.check('dropped-flag-resigned-then-skipped', flag?.status === 'skipped' && flag.lastError === 'review-locked' && flag.infraFailures >= 1, flag);
   ctx.check('rescreen-created-no-review-action', !actions.some((action) => action.kind === 'clear') && actions.filter((action) => action.kind === 'flag').length === 1, actions.map((action) => [action.kind, action.status, action.lastError]));
-  const keeperTxs = (await js.transactionsBetween(0, await js.blockNumber())).filter((tx) => tx.from === lower(keeper) && tx.nonce >= nonce0);
+  const keeperTxs = (await js.transactionsBetween(startBlock, await js.blockNumber())).filter((tx) => tx.from === lower(keeper));
   const flagSelector = js.jackpot.interface.getFunction('flag').selector;
   ctx.check('no-keeper-flag-on-chain', !keeperTxs.some((tx) => tx.data === flagSelector), keeperTxs.map((tx) => tx.data));
   const again = await js.jackpotOps(['rescreen', '--session', leader.sessionId32, '--apply', '--confirm', 'RESCREEN_JACKPOT']);
@@ -1184,6 +1197,19 @@ async function r19(ctx) {
   const address = lower(deployed.record.instances.chikun.address);
   const jackpot = jackpotContract(address, js.provider);
   ctx.instance('end-of-life instance', address, dblAddress);
+  // The server serves this instance while the scenario runs (the cron indexes it; /api/jackpot reads it).
+  const served = await js.useInstance({ record: deployed.record });
+  try {
+    await endOfLife(ctx, { dbl, dblAddress, secondary, module, address, jackpot });
+  } finally {
+    await js.useInstance(served);
+  }
+  // The main instance simply saw empty weeks meanwhile.
+  ctx.check('main-cron-ok', (await js.runJackpotCron(1))[0].status === 200);
+}
+
+async function endOfLife(ctx, { dbl, dblAddress, secondary, module, address, jackpot }) {
+  const { js } = ctx;
   const [attacker, louie, owner] = [await js.freshWallet('R19 attacker'), await js.freshWallet('R19 Louie'), await js.freshWallet('R19 final-week funder')];
   for (const wallet of [attacker, louie, owner]) {
     // eslint-disable-next-line no-await-in-loop
@@ -1224,6 +1250,10 @@ async function r19(ctx) {
   ctx.check('final-week-finalized', finalized.receipts.length === 1);
   const residual = BigInt(await jackpot.residual());
   ctx.check('unwon-pot-becomes-residual', residual === tokens(300), residual);
+  await js.runJackpotCron(1);
+  const { previous } = await apiPrevious(ctx, lastWeek, address);
+  ctx.check('api-final-week-rolled-to-residue', previous?.status === 'rolled' && previous.winner === null && previous.prizeWei === null && previous.pot.totalWei === tokens(300).toString(), previous && { status: previous.status, pot: previous.pot });
+  ctx.check('mirror-rolled-to-residue', (await js.weekRow(lastWeek, address)).status === 'rolled' && (await js.weekRow(lastWeek, address)).rolledToWeek === null, await js.weekRow(lastWeek, address));
   // Refunds: each funder gets back exactly its own funding of weeks after the end.
   const attackerBefore = BigInt(await dbl.balanceOf(attacker.address));
   const refunded = await js.operatorAction('refund-after-end', { args: [String(current + 8)], module, signer: attacker });
@@ -1253,8 +1283,6 @@ async function r19(ctx) {
   ctx.balance('attacker', attacker.address, dblAddress);
   ctx.balance('louie', louie.address, dblAddress);
   ctx.balance('residual recipient', recipient, dblAddress);
-  // The main instance simply saw empty weeks meanwhile.
-  ctx.check('main-cron-ok', (await js.runJackpotCron(1))[0].status === 200);
 }
 
 async function r20(ctx) {
@@ -1329,7 +1357,7 @@ async function startLiveTarget(js) {
   return {
     methods,
     async check() {
-      return runJackpotLiveDryRun({ site: http.origin, rpc: rpc.url, deployment: js.deployment, jackpotModule: js.module, record: js.jackpotRecord, expectLive: false, log: () => {} });
+      return runJackpotLiveDryRun({ site: http.origin, rpc: rpc.url, deployment: js.deployment, jackpotModule: js.module, record: js.jackpotRecord, expectLive: JACKPOT_LIVE, log: () => {} });
     },
     async close() {
       await http.close();

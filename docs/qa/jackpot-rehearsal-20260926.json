@@ -1,0 +1,5484 @@
+{
+  "schema": "lesters-jackpot-rehearsal-v2",
+  "generatedAt": "2026-09-26T02:31:03.216Z",
+  "head": "805aafdf",
+  "scriptSha256": "0bce3ab06c739a65883520eeb9bf8b2ae0a9bf010c50b785ac6010f9cb568bbb",
+  "command": "node scripts/rehearse-jackpot-week.mjs",
+  "note": "Local rehearsal only: Hardhat chain 4441 in process, PGlite for Neon, every api/*.mjs handler in process, public fixture keys. Nothing touched LiteForge, Vercel or production Neon; JACKPOT_LIVE was not flipped.",
+  "ok": true,
+  "summary": {
+    "scenarios": 22,
+    "passed": 22,
+    "failed": [],
+    "expectedMisses": 1,
+    "durationMs": 39402
+  },
+  "stack": {
+    "chainId": 4441,
+    "jackpot": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+    "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+    "firstWeek": "2026-W41",
+    "scoreRegistry": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+    "rankedEntry": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+    "rules": "design §A.5 launch rules; the first epoch adminClearOnly = true, adminClearOnly = false from the next week (operator schedule-rules)",
+    "e5": [
+      "test wallet 0x8841…ce824 (test-wallet)",
+      "verifier (staff)",
+      "relayer (staff)",
+      "prize funder (funder)"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "R1",
+      "title": "Happy path: 10,000 tCHIKUN, 3 players, the keeper selects at C + 2 h and clears; anyone finalizes at C + 24 h",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W42"
+      ],
+      "checks": [
+        {
+          "id": "fund-10000",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "seed-tickets-logged",
+          "ok": true
+        },
+        {
+          "id": "api-open-week",
+          "ok": true,
+          "detail": {
+            "fundedWei": "10000000000000000000000",
+            "carriedInWei": "0",
+            "totalWei": "10000000000000000000000",
+            "prizeCapWei": null,
+            "prizeWei": "10000000000000000000000",
+            "carryOverWei": "0",
+            "funded": true
+          }
+        },
+        {
+          "id": "api-open-leader",
+          "ok": true,
+          "detail": {
+            "score": 6759,
+            "provisional": true,
+            "screened": false
+          }
+        },
+        {
+          "id": "ui-prize-text",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W42",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "listed-by-keeper",
+          "ok": true,
+          "detail": [
+            {
+              "sessionId32": "0x68c6298df1d6c72365cd25092bc90a3a219e2a023c1aed65e64c685ce7b19e58",
+              "player": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+              "score": 6759,
+              "submittedAt": 1791849700
+            },
+            {
+              "sessionId32": "0xa44f7df8f8101826ad07a3f2c818de51e6bc7f0cf93c5abab54c5743142a1f49",
+              "player": "0x08a2de6f3528319123b25935c92888b16db8913e",
+              "score": 4788,
+              "submittedAt": 1791936072
+            },
+            {
+              "sessionId32": "0x87f414044865ea3e9925b1fd36affae9e4719653db94338a945239575f910f8a",
+              "player": "0xe141c82d99d85098e03e1a1cc1cde676556fdde0",
+              "score": 2285,
+              "submittedAt": 1792022438
+            }
+          ]
+        },
+        {
+          "id": "cleared-R1 player 1",
+          "ok": true
+        },
+        {
+          "id": "cleared-R1 player 2",
+          "ok": true
+        },
+        {
+          "id": "cleared-R1 player 3",
+          "ok": true
+        },
+        {
+          "id": "mirror-candidates",
+          "ok": true,
+          "detail": [
+            [
+              "keeper",
+              "pass",
+              "cleared",
+              true
+            ],
+            [
+              "keeper",
+              "pass",
+              "cleared",
+              true
+            ],
+            [
+              "keeper",
+              "pass",
+              "cleared",
+              true
+            ]
+          ]
+        },
+        {
+          "id": "selection-runs",
+          "ok": true,
+          "detail": {
+            "runs": 2
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W42",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "finalize-early-reverts",
+          "ok": true,
+          "detail": {
+            "reason": "PAYOUT_NOT_DUE",
+            "minedStatus": 0,
+            "blockTimestamp": 1792454399,
+            "txHash": "0x03fcd999afeaaded470d55f7540c518bf4af7314fb16e107411a3116bac7333e"
+          }
+        },
+        {
+          "id": "finalize-by-anyone-at-payout",
+          "ok": true,
+          "detail": {
+            "ok": true,
+            "reason": null,
+            "at": 1792454400
+          }
+        },
+        {
+          "id": "mirror-paid",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "prize": "10000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "prize": "10000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "10000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+            "prizeWei": "10000000000000000000000",
+            "finalizeTx": "0x9a4c21ed849e3638aed32e5d69f189d39cba2965c80106049837fb6cd75433b1"
+          }
+        },
+        {
+          "id": "keeper-finalize-not-sent",
+          "ok": true
+        },
+        {
+          "id": "board-read",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "board-top-is-winner",
+          "ok": true,
+          "detail": [
+            [
+              "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+              6759
+            ],
+            [
+              "0x08a2de6f3528319123b25935c92888b16db8913e",
+              4788
+            ],
+            [
+              "0xe141c82d99d85098e03e1a1cc1cde676556fdde0",
+              2285
+            ]
+          ]
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-previous-paid",
+          "ok": true,
+          "detail": {
+            "weekKey": "2026-W42",
+            "status": "paid",
+            "payoutAt": "2026-10-20T00:00:00.000Z",
+            "token": {
+              "symbol": "tCHIKUN",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "pot": {
+              "fundedWei": "10000000000000000000000",
+              "carriedInWei": "0",
+              "totalWei": "10000000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "10000000000000000000000",
+              "carryOverWei": "0",
+              "funded": true
+            },
+            "candidates": [
+              {
+                "rank": 1,
+                "walletShort": "0x9ef6…f76d",
+                "displayName": null,
+                "score": 6759,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0x68c6298df1d6c72365cd25092bc90a3a219e2a023c1aed65e64c685ce7b19e58"
+              },
+              {
+                "rank": 2,
+                "walletShort": "0x08a2…913e",
+                "displayName": null,
+                "score": 4788,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0xa44f7df8f8101826ad07a3f2c818de51e6bc7f0cf93c5abab54c5743142a1f49"
+              },
+              {
+                "rank": 3,
+                "walletShort": "0xe141…dde0",
+                "displayName": null,
+                "score": 2285,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0x87f414044865ea3e9925b1fd36affae9e4719653db94338a945239575f910f8a"
+              }
+            ],
+            "winner": {
+              "walletShort": "0x9ef6…f76d",
+              "wallet": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+              "displayName": null
+            },
+            "prizeWei": "10000000000000000000000",
+            "unclaimedWei": "0",
+            "finalizeTx": "0x9a4c21ed849e3638aed32e5d69f189d39cba2965c80106049837fb6cd75433b1"
+          }
+        },
+        {
+          "id": "profile-win",
+          "ok": true,
+          "detail": {
+            "weekKey": "2026-W42",
+            "startsAt": "2026-10-12T00:00:00.000Z",
+            "closesAt": "2026-10-19T00:00:00.000Z",
+            "prizeWei": "10000000000000000000000",
+            "unclaimedWei": "0",
+            "status": "paid",
+            "token": {
+              "symbol": "tCHIKUN",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "score": 6759,
+            "sessionId": "0x68c6298df1d6c72365cd25092bc90a3a219e2a023c1aed65e64c685ce7b19e58",
+            "finalizeTx": "0x9a4c21ed849e3638aed32e5d69f189d39cba2965c80106049837fb6cd75433b1"
+          }
+        },
+        {
+          "id": "share-champion-badge",
+          "ok": true,
+          "detail": {
+            "status": 200,
+            "badge": "Weekly Jackpot Champion · Oct 12 – Oct 18, 2026"
+          }
+        },
+        {
+          "id": "share-no-badge-for-others",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 31,
+      "transactions": {
+        "total": 16,
+        "keeper": 6,
+        "relayer": 3,
+        "operator": 0,
+        "admin": 0,
+        "funder": 2,
+        "players": 5,
+        "reverted": 1
+      },
+      "keeperGasUsed": "809677",
+      "finalBalances": {
+        "winner R1 player 1": {
+          "address": "0x9ef6c02fb2ecc446146e05f1ff687a788a8bf76d",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "10000000000000000000000"
+        },
+        "funder": {
+          "address": "0x09db0a93b389bef724429898f539aeb7ac2dd55f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "990000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1579
+    },
+    {
+      "id": "R2",
+      "title": "Challenge: the keeper misses the best session; the player submits it at C + 8 h and is paid",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W44"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "challenger-is-best",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W44",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W44",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "keeper-censored",
+          "ok": true,
+          "detail": {
+            "dropped": 2
+          }
+        },
+        {
+          "id": "challenge-submitted",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "challenger-cleared-within-three-runs",
+          "ok": true,
+          "detail": {
+            "runs": 1
+          }
+        },
+        {
+          "id": "challenger-mirror",
+          "ok": true,
+          "detail": [
+            "public",
+            "pass",
+            "cleared"
+          ]
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+            "prize": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+            "prize": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+            "prizeWei": "5000000000000000000000",
+            "finalizeTx": "0x782f54e4b7962b121befc51b0f67393a5a8d6c0635b8f4cc47d3898496ba3365"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 16,
+      "transactions": {
+        "total": 15,
+        "keeper": 6,
+        "relayer": 3,
+        "operator": 0,
+        "admin": 0,
+        "funder": 2,
+        "players": 4,
+        "reverted": 0
+      },
+      "keeperGasUsed": "772791",
+      "finalBalances": {
+        "winner R2 challenger": {
+          "address": "0x7ebb637fd68c523613be51aad27c35c4db199b9c",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "5000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1430
+    },
+    {
+      "id": "R3a",
+      "title": "Flag → admin: a scripted-pilot leader is flagged; the admin disqualifies it and #2 is paid",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W46"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "pilot-leads",
+          "ok": true,
+          "detail": [
+            10375,
+            6348,
+            3489
+          ]
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W46",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "pilot-held-by-h4-h6",
+          "ok": true,
+          "detail": {
+            "screen": "hold",
+            "codes": [
+              "H4",
+              "H5"
+            ]
+          }
+        },
+        {
+          "id": "pilot-flagged-on-chain",
+          "ok": true
+        },
+        {
+          "id": "honest-cleared",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W46",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "awaiting-admin",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "lastError": null
+          }
+        },
+        {
+          "id": "admin-waiting-since",
+          "ok": true
+        },
+        {
+          "id": "finalize-reverts-leader-not-cleared",
+          "ok": true,
+          "detail": {
+            "reason": "LEADER_NOT_CLEARED",
+            "minedStatus": 0,
+            "blockTimestamp": 1794873661,
+            "txHash": "0x92c0624216fa3546e3fc1c81f9aff03615fe78bce46c5791bc63ee4c27c24014"
+          }
+        },
+        {
+          "id": "status-page-warns",
+          "ok": true,
+          "detail": {
+            "configured": true,
+            "keeperAddress": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
+            "keeperBalanceWei": "999999280777840191",
+            "paused": {
+              "env": false,
+              "onChain": false
+            },
+            "uiHidden": false,
+            "awaitingAdmin": 1,
+            "awaitingAdminOldestHours": 0,
+            "claimPending": 0,
+            "failed": 0
+          }
+        },
+        {
+          "id": "review-api",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "admin-disqualifies",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "paid-after-decision",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x35304262b9e87c00c430149f28dd154995d01207",
+            "prize": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x35304262b9e87c00c430149f28dd154995d01207",
+            "prize": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x35304262b9e87c00c430149f28dd154995d01207",
+            "prizeWei": "3000000000000000000000",
+            "finalizeTx": "0xad66303326ab41426feaecaa0207371adb37ebc1e9e9a597fe88862241fa9654"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-shows-disqualified-reason",
+          "ok": true,
+          "detail": [
+            {
+              "rank": 1,
+              "walletShort": "0x3530…1207",
+              "displayName": null,
+              "score": 6348,
+              "review": "cleared",
+              "replay": "/api/jackpot/replay?session=0x57c008d23d5768e21d49562750b570af38d64d9befe30187a1d4ba91282b6d99"
+            },
+            {
+              "rank": 2,
+              "walletShort": "0xd4a1…2e33",
+              "displayName": null,
+              "score": 3489,
+              "review": "cleared",
+              "replay": "/api/jackpot/replay?session=0x5a2444194915aec8b74db3692f02ea3d806ed2765e43fb887c471a6ae38f00f1"
+            },
+            {
+              "rank": null,
+              "walletShort": "0x3c3e…320a",
+              "displayName": null,
+              "score": 10375,
+              "review": "disqualified",
+              "reason": "automation",
+              "replay": "/api/jackpot/replay?session=0x3669cd1b03b39553d75cd94c19d4228c1eb8da44d25d99c3019a26575be3e06a"
+            }
+          ]
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 23,
+      "transactions": {
+        "total": 17,
+        "keeper": 7,
+        "relayer": 3,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 4,
+        "reverted": 1
+      },
+      "keeperGasUsed": "988176",
+      "finalBalances": {
+        "winner R3a honest a": {
+          "address": "0x35304262b9e87c00c430149f28dd154995d01207",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "3000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1764
+    },
+    {
+      "id": "R3b",
+      "title": "Flag → admin (replay variant): the admin clears the flagged leader and it is paid",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W48"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "pilot-leads",
+          "ok": true,
+          "detail": [
+            9880,
+            6759,
+            3449
+          ]
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W48",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "pilot-held-by-h4-h6",
+          "ok": true,
+          "detail": {
+            "screen": "hold",
+            "codes": [
+              "H4",
+              "H5"
+            ]
+          }
+        },
+        {
+          "id": "pilot-flagged-on-chain",
+          "ok": true
+        },
+        {
+          "id": "honest-cleared",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W48",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "awaiting-admin",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "lastError": null
+          }
+        },
+        {
+          "id": "admin-waiting-since",
+          "ok": true
+        },
+        {
+          "id": "finalize-reverts-leader-not-cleared",
+          "ok": true,
+          "detail": {
+            "reason": "LEADER_NOT_CLEARED",
+            "minedStatus": 0,
+            "blockTimestamp": 1796083261,
+            "txHash": "0x498906589d9dc739f844e87593cc075a4aef2070e2dd624e45e7d4011475a5ac"
+          }
+        },
+        {
+          "id": "status-page-warns",
+          "ok": true,
+          "detail": {
+            "configured": true,
+            "keeperAddress": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
+            "keeperBalanceWei": "999999280724415643",
+            "paused": {
+              "env": false,
+              "onChain": false
+            },
+            "uiHidden": false,
+            "awaitingAdmin": 1,
+            "awaitingAdminOldestHours": 0,
+            "claimPending": 0,
+            "failed": 0
+          }
+        },
+        {
+          "id": "review-api",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "admin-clears",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "paid-after-decision",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+            "prize": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+            "prize": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+            "prizeWei": "3000000000000000000000",
+            "finalizeTx": "0x887f692cf4fb5490e4c0082ccb7d7dee75bfbb1a37deca1960f64f37d6a570ac"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 21,
+      "transactions": {
+        "total": 17,
+        "keeper": 7,
+        "relayer": 3,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 4,
+        "reverted": 1
+      },
+      "keeperGasUsed": "988200",
+      "finalBalances": {
+        "winner R3b pilot": {
+          "address": "0x145e2dc5c8238d1be628f87076a37d4a26a78544",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "3000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1773
+    },
+    {
+      "id": "R4",
+      "title": "Integrity: a record without Neon evidence, submitted publicly, is flagged integrity and never auto-paid",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W50"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W50",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "not-selected-without-evidence",
+          "ok": true
+        },
+        {
+          "id": "submitted-publicly",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "keeper-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W50",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "integrity-fail",
+          "ok": true,
+          "detail": {
+            "screen": "integrity-fail",
+            "codes": [
+              "H7"
+            ],
+            "integrity": {
+              "ok": false,
+              "code": "evidence-missing",
+              "detail": "no-evidence"
+            }
+          }
+        },
+        {
+          "id": "flagged-integrity",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W50",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "never-auto-paid",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "lastError": null
+          }
+        },
+        {
+          "id": "not-paid",
+          "ok": true
+        },
+        {
+          "id": "admin-disqualifies",
+          "ok": true
+        },
+        {
+          "id": "paid-next",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+            "prize": "2000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+            "prize": "2000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "2000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+            "prizeWei": "2000000000000000000000",
+            "finalizeTx": "0x1511eb62ae9ec43eef6544c6cf1907da501b2f4ba745cb07a861ed05540491c9"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 19,
+      "transactions": {
+        "total": 16,
+        "keeper": 6,
+        "relayer": 3,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 4,
+        "reverted": 0
+      },
+      "keeperGasUsed": "790385",
+      "finalBalances": {
+        "winner R4 honest a": {
+          "address": "0xab707cb80e7de7c75d815b1a653433f3eec44c74",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "2000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1295
+    },
+    {
+      "id": "R5",
+      "title": "Rollover: an unwon funded week rolls into the next, whose payout pays both",
+      "status": "passed",
+      "weekKeys": [
+        "2026-W52",
+        "2026-W53"
+      ],
+      "checks": [
+        {
+          "id": "fund-w1",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W52",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "no-candidates",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W52",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "keeper-finalizes-rollover",
+          "ok": true,
+          "detail": {
+            "status": "rolled",
+            "lastError": null
+          }
+        },
+        {
+          "id": "keeper-finalized-empty-leader",
+          "ok": true,
+          "detail": {
+            "id": "chikun:a85233c6:2973:finalize:-",
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "gameId": "chikun",
+            "weekKey": "2026-W52",
+            "kind": "finalize",
+            "sessionId32": null,
+            "reason": null,
+            "status": "confirmed",
+            "keeper": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
+            "txHash": "0x70ca1be1295bb683ea3a4aceebf6be3b4ba386aa9ea0c1e35504d60469bc1ffd",
+            "txNonce": 32,
+            "attempts": 0,
+            "infraFailures": 0,
+            "lastError": null,
+            "nextAttemptAt": null,
+            "submittedAt": "2026-12-29T00:01:00.019Z",
+            "confirmedAt": "2026-12-29T00:01:00.023Z",
+            "createdAt": "2026-09-26T02:30:36.128Z",
+            "updatedAt": "2026-09-26T02:30:36.138Z"
+          }
+        },
+        {
+          "id": "rolled-on-chain",
+          "ok": true
+        },
+        {
+          "id": "rolled-mirror",
+          "ok": true,
+          "detail": {
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "gameId": "chikun",
+            "weekKey": "2026-W52",
+            "weekIndex": 2973,
+            "token": {
+              "address": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+              "symbol": "tCHIKUN",
+              "decimals": 18,
+              "testnet": true
+            },
+            "startsAt": "2026-12-21T00:00:00.000Z",
+            "closesAt": "2026-12-28T00:00:00.000Z",
+            "settleCutoffAt": "2026-12-28T06:00:00.000Z",
+            "candidateUntil": "2026-12-28T12:00:00.000Z",
+            "payoutAt": "2026-12-29T00:00:00.000Z",
+            "status": "rolled",
+            "fundedWei": "1000000000000000000000",
+            "carriedInWei": "0",
+            "prizeWei": "0",
+            "unclaimedWei": "0",
+            "winner": null,
+            "winningSession": null,
+            "winningScore": null,
+            "finalizeTxHash": "0x70ca1be1295bb683ea3a4aceebf6be3b4ba386aa9ea0c1e35504d60469bc1ffd",
+            "finalizedAt": "2026-12-29T00:01:01.000Z",
+            "rolledToWeek": "2026-W53",
+            "held": false,
+            "extensionSeconds": 0,
+            "lastError": null,
+            "adminWaitingSince": null,
+            "updatedAt": "2026-09-26T02:30:36.145Z"
+          }
+        },
+        {
+          "id": "carried-into-next-week",
+          "ok": true,
+          "detail": {
+            "funded": "0",
+            "carriedIn": "1000000000000000000000",
+            "total": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "fund-w2",
+          "ok": true
+        },
+        {
+          "id": "api-next-week-pot",
+          "ok": true,
+          "detail": {
+            "fundedWei": "500000000000000000000",
+            "carriedInWei": "1000000000000000000000",
+            "totalWei": "1500000000000000000000",
+            "prizeCapWei": null,
+            "prizeWei": "1500000000000000000000",
+            "carryOverWei": "0",
+            "funded": true
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-previous-rolled",
+          "ok": true,
+          "detail": {
+            "weekKey": "2026-W52",
+            "status": "rolled",
+            "payoutAt": "2026-12-29T00:00:00.000Z",
+            "token": {
+              "symbol": "tCHIKUN",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "pot": {
+              "fundedWei": "1000000000000000000000",
+              "carriedInWei": "0",
+              "totalWei": "1000000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "1000000000000000000000",
+              "carryOverWei": "0",
+              "funded": true
+            },
+            "candidates": [],
+            "winner": null,
+            "prizeWei": null,
+            "unclaimedWei": "0",
+            "finalizeTx": "0x70ca1be1295bb683ea3a4aceebf6be3b4ba386aa9ea0c1e35504d60469bc1ffd"
+          }
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W53",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2026-W53",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+            "prizeWei": "1500000000000000000000",
+            "finalizeTx": "0x76e82c06fbd33d980f7a66d49b372d53ca9b2f8c7d6d88e58f210be40511a27c"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 24,
+      "transactions": {
+        "total": 16,
+        "keeper": 6,
+        "relayer": 3,
+        "operator": 1,
+        "admin": 0,
+        "funder": 4,
+        "players": 2,
+        "reverted": 0
+      },
+      "keeperGasUsed": "785973",
+      "finalBalances": {
+        "winner R5 player 1": {
+          "address": "0x1c87bb9234aec6adc580eae6c8b59558a4502220",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1500000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1051
+    },
+    {
+      "id": "R6",
+      "title": "Late settlement at C + 6 h + 1 s: SETTLED_LATE on chain, excluded by selection, still on the board",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W02"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "settle-accepted-then-stalls",
+          "ok": true,
+          "detail": {
+            "status": 200,
+            "state": "failed",
+            "error": "relayer-underfunded"
+          }
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W02",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "settle-retry-cron",
+          "ok": true,
+          "detail": {
+            "ok": true,
+            "processed": [
+              {
+                "sessionId32": "0x6b8abbdf522053bdf4d2af3a89b54f00344829c0d0fc01f67082e90d94ee517d",
+                "from": "failed",
+                "to": "confirmed",
+                "code": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "published-at-cutoff-plus-1s",
+          "ok": true,
+          "detail": {
+            "submittedAt": 1800252001,
+            "cutoff": 1800252000
+          }
+        },
+        {
+          "id": "on-chain-settled-late",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "week": 2976,
+            "reason": "SETTLED_LATE"
+          }
+        },
+        {
+          "id": "public-submit-refused",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "SETTLED_LATE"
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W02",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "excluded-by-selection",
+          "ok": true
+        },
+        {
+          "id": "board-read",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "board-still-shows-it",
+          "ok": true,
+          "detail": [
+            [
+              "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+              6734
+            ],
+            [
+              "0xc0543b0b980d8c834cbdf023b2d2a75b5f9d1909",
+              2295
+            ]
+          ]
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-candidates-exclude-late-run",
+          "ok": true,
+          "detail": {
+            "status": "review",
+            "candidates": [
+              2295
+            ],
+            "late": 6734
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "2000000000000000000000",
+              "liabilitiesWei": "2000000000000000000000",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 15,
+      "transactions": {
+        "total": 8,
+        "keeper": 2,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 0,
+        "funder": 2,
+        "players": 2,
+        "reverted": 0
+      },
+      "keeperGasUsed": "276519",
+      "finalBalances": {
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "2000000000000000000000"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "2000000000000000000000",
+          "liabilitiesWei": "2000000000000000000000",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [
+        "Documented divergence (design B.5 item 10): the weekly board ranks the late run first; the jackpot excludes it (SETTLED_LATE)."
+      ],
+      "durationMs": 807
+    },
+    {
+      "id": "R7",
+      "title": "Extension: the admin extends by 12 h; the late run qualifies and is paid at C + 36 h",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W02"
+      ],
+      "checks": [
+        {
+          "id": "r6-state",
+          "ok": true,
+          "detail": "R7 continues the week of R6"
+        },
+        {
+          "id": "week-in-review",
+          "ok": true
+        },
+        {
+          "id": "admin-extends",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "payout-moved",
+          "ok": true,
+          "detail": {
+            "status": "open",
+            "held": false,
+            "count": 1,
+            "winner": "0x0000000000000000000000000000000000000000",
+            "winningSession": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "prize": "0",
+            "unclaimed": "0",
+            "extension": 43200,
+            "pot": {
+              "funded": "2000000000000000000000",
+              "carriedIn": "0",
+              "total": "2000000000000000000000"
+            },
+            "list": [
+              {
+                "sessionId32": "0x854c51967b042bd53089f8350bf665f875cf17d1a692704b11dea9ea39a7076b",
+                "player": "0xc0543b0b980d8c834cbdf023b2d2a75b5f9d1909",
+                "score": 2295,
+                "submittedAt": 1799712038
+              }
+            ],
+            "leader": {
+              "sessionId32": "0x854c51967b042bd53089f8350bf665f875cf17d1a692704b11dea9ea39a7076b",
+              "player": "0xc0543b0b980d8c834cbdf023b2d2a75b5f9d1909",
+              "score": 2295,
+              "review": "cleared"
+            },
+            "payoutAt": 1800360000,
+            "settleCutoff": 1800295200
+          }
+        },
+        {
+          "id": "reselect-row",
+          "ok": true,
+          "detail": {
+            "status": "selecting",
+            "extension": 43200
+          }
+        },
+        {
+          "id": "late-run-now-eligible",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W02",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "late-run-selected",
+          "ok": true,
+          "detail": [
+            "keeper",
+            true,
+            "cleared",
+            "pass",
+            []
+          ]
+        },
+        {
+          "id": "not-due-at-c-plus-24h",
+          "ok": true,
+          "detail": {
+            "reason": "PAYOUT_NOT_DUE",
+            "minedStatus": 0,
+            "blockTimestamp": 1800316861,
+            "txHash": "0xdcece7b0678381ecbba4a0ede01beb751ce4de102e3ee5c7dc0f35fe46b08479"
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "paid-at-c-plus-36h",
+          "ok": true,
+          "detail": "2027-01-19T12:01:01.000Z"
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+            "prize": "2000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+            "prize": "2000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "2000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+            "prizeWei": "2000000000000000000000",
+            "finalizeTx": "0xb6f471e96ba801c787f08c182a28119b875372bb2da97597634820e175162017"
+          }
+        },
+        {
+          "id": "honest-not-paid",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 19,
+      "transactions": {
+        "total": 5,
+        "keeper": 3,
+        "relayer": 0,
+        "operator": 0,
+        "admin": 1,
+        "funder": 0,
+        "players": 1,
+        "reverted": 1
+      },
+      "keeperGasUsed": "437600",
+      "finalBalances": {
+        "winner R6 late settler": {
+          "address": "0x73b3074ac649a8dc31c2c90a124469456301a30f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "2000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 309
+    },
+    {
+      "id": "R8",
+      "title": "Prize cap scheduled the week before: the cap is paid, the excess reaches the current week",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W04",
+        "2027-W05"
+      ],
+      "checks": [
+        {
+          "id": "rules-scheduled",
+          "ok": true
+        },
+        {
+          "id": "week",
+          "ok": true
+        },
+        {
+          "id": "rules-in-force",
+          "ok": true
+        },
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "api-cap",
+          "ok": true,
+          "detail": {
+            "fundedWei": "2500000000000000000000",
+            "carriedInWei": "0",
+            "totalWei": "2500000000000000000000",
+            "prizeCapWei": "1000000000000000000000",
+            "prizeWei": "1000000000000000000000",
+            "carryOverWei": "1500000000000000000000",
+            "funded": true
+          }
+        },
+        {
+          "id": "ui-cap-note",
+          "ok": true,
+          "detail": "up to 1,000 tCHIKUN; the rest rolls over"
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W04",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W04",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+            "prizeWei": "1000000000000000000000",
+            "finalizeTx": "0x444ab3310f583045c2a3e6ecfc11c0020658252a546b1e8896ee2184e7770aa8"
+          }
+        },
+        {
+          "id": "excess-reaches-current-week",
+          "ok": true,
+          "detail": {
+            "funded": "0",
+            "carriedIn": "1500000000000000000000",
+            "total": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "cap-excess-event",
+          "ok": true,
+          "detail": [
+            {
+              "amount_wei": "1500000000000000000000"
+            }
+          ]
+        },
+        {
+          "id": "api-carried",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W05",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W05",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+            "prizeWei": "1500000000000000000000",
+            "finalizeTx": "0xeace5f99a43ea5720507318510bc10fc01ef36653cbf845435b11ade54f076d5"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 28,
+      "transactions": {
+        "total": 18,
+        "keeper": 8,
+        "relayer": 3,
+        "operator": 2,
+        "admin": 0,
+        "funder": 2,
+        "players": 3,
+        "reverted": 0
+      },
+      "keeperGasUsed": "1194111",
+      "finalBalances": {
+        "winner R8 player 1": {
+          "address": "0x924ba5ce9f91dded37b4ebf8c0dc82a40202fc0a",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1000000000000000000000"
+        },
+        "winner R8 next-week player": {
+          "address": "0x262595fa2a3a86adacde208589614d483e3ef1c0",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1500000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1181
+    },
+    {
+      "id": "R9",
+      "title": "Token failure: a blacklisted winner is claim-pending, then claims to another address and is paid",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W08"
+      ],
+      "checks": [
+        {
+          "id": "instance-token",
+          "ok": true
+        },
+        {
+          "id": "rules-indexed",
+          "ok": true
+        },
+        {
+          "id": "first-week",
+          "ok": true
+        },
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W08",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W08",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "claim-pending",
+          "ok": true,
+          "detail": {
+            "status": "claim-pending",
+            "lastError": null
+          }
+        },
+        {
+          "id": "prize-transfer-failed",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "held": false,
+            "count": 2,
+            "winner": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+            "winningSession": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
+            "prize": "800000000000000000000",
+            "unclaimed": "800000000000000000000",
+            "extension": 0,
+            "pot": {
+              "funded": "800000000000000000000",
+              "carriedIn": "0",
+              "total": "800000000000000000000"
+            },
+            "list": [
+              {
+                "sessionId32": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
+                "player": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+                "score": 4186,
+                "submittedAt": 1803340866
+              },
+              {
+                "sessionId32": "0x47690befb350dacf5c95e2b87245841bd86287807412a515ae65e783b6ed2438",
+                "player": "0x63c3686ef31c03a641e2ea8993a91ea351e5891a",
+                "score": 2206,
+                "submittedAt": 1803427235
+              }
+            ],
+            "leader": {
+              "sessionId32": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
+              "player": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+              "score": 4186,
+              "review": "cleared"
+            },
+            "payoutAt": 1803945600,
+            "settleCutoff": 1803880800
+          }
+        },
+        {
+          "id": "prize-transfer-failed-event",
+          "ok": true
+        },
+        {
+          "id": "api-claim-pending",
+          "ok": true,
+          "detail": {
+            "weekKey": "2027-W08",
+            "status": "claim-pending",
+            "payoutAt": "2027-03-02T00:00:00.000Z",
+            "token": {
+              "symbol": "BLKMOCK",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0x9e545e3c0baab3e08cdfd552c960a1050f373042",
+            "pot": {
+              "fundedWei": "800000000000000000000",
+              "carriedInWei": "0",
+              "totalWei": "800000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "800000000000000000000",
+              "carryOverWei": "0",
+              "funded": true
+            },
+            "candidates": [
+              {
+                "rank": 1,
+                "walletShort": "0xdfd9…d492",
+                "displayName": null,
+                "score": 4186,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21"
+              },
+              {
+                "rank": 2,
+                "walletShort": "0x63c3…891a",
+                "displayName": null,
+                "score": 2206,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0x47690befb350dacf5c95e2b87245841bd86287807412a515ae65e783b6ed2438"
+              }
+            ],
+            "winner": {
+              "walletShort": "0xdfd9…d492",
+              "wallet": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+              "displayName": null
+            },
+            "prizeWei": "800000000000000000000",
+            "unclaimedWei": "800000000000000000000",
+            "finalizeTx": "0x1b416a966e72b70ad09c83da75dea11eb52069a8a5d619ba6f90a95e09330a76"
+          }
+        },
+        {
+          "id": "profile-claim-pending",
+          "ok": true,
+          "detail": {
+            "weekKey": "2027-W08",
+            "startsAt": "2027-02-22T00:00:00.000Z",
+            "closesAt": "2027-03-01T00:00:00.000Z",
+            "prizeWei": "800000000000000000000",
+            "unclaimedWei": "800000000000000000000",
+            "status": "claim-pending",
+            "token": {
+              "symbol": "BLKMOCK",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0x9e545e3c0baab3e08cdfd552c960a1050f373042",
+            "score": 4186,
+            "sessionId": "0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21",
+            "finalizeTx": "0x1b416a966e72b70ad09c83da75dea11eb52069a8a5d619ba6f90a95e09330a76"
+          }
+        },
+        {
+          "id": "status-page-warns",
+          "ok": true,
+          "detail": {
+            "configured": true,
+            "keeperAddress": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
+            "keeperBalanceWei": "9999999999999995044665",
+            "paused": {
+              "env": false,
+              "onChain": false
+            },
+            "uiHidden": false,
+            "awaitingAdmin": 0,
+            "awaitingAdminOldestHours": null,
+            "claimPending": 1,
+            "failed": 0
+          }
+        },
+        {
+          "id": "claim-to-another-address",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "mirror-paid",
+          "ok": true
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "weekKey": "2027-W08",
+            "status": "paid",
+            "payoutAt": "2027-03-02T00:00:00.000Z",
+            "token": {
+              "symbol": "BLKMOCK",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0x9e545e3c0baab3e08cdfd552c960a1050f373042",
+            "pot": {
+              "fundedWei": "800000000000000000000",
+              "carriedInWei": "0",
+              "totalWei": "800000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "800000000000000000000",
+              "carryOverWei": "0",
+              "funded": true
+            },
+            "candidates": [
+              {
+                "rank": 1,
+                "walletShort": "0xdfd9…d492",
+                "displayName": null,
+                "score": 4186,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0xdc3685010789359a8c162466c80c8b0b0b63cb8602df7720923bd28bfe3dac21"
+              },
+              {
+                "rank": 2,
+                "walletShort": "0x63c3…891a",
+                "displayName": null,
+                "score": 2206,
+                "review": "cleared",
+                "replay": "/api/jackpot/replay?session=0x47690befb350dacf5c95e2b87245841bd86287807412a515ae65e783b6ed2438"
+              }
+            ],
+            "winner": {
+              "walletShort": "0xdfd9…d492",
+              "wallet": "0xdfd99099fa13541a64aee9aad61c0dbf3d32d492",
+              "displayName": null
+            },
+            "prizeWei": "800000000000000000000",
+            "unclaimedWei": "0",
+            "finalizeTx": "0x1b416a966e72b70ad09c83da75dea11eb52069a8a5d619ba6f90a95e09330a76"
+          }
+        },
+        {
+          "id": "main-instance-back",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            },
+            {
+              "label": "blacklist instance",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 18,
+      "transactions": {
+        "total": 16,
+        "keeper": 5,
+        "relayer": 2,
+        "operator": 4,
+        "admin": 0,
+        "funder": 2,
+        "players": 3,
+        "reverted": 0
+      },
+      "keeperGasUsed": "707905",
+      "finalBalances": {
+        "claim payee": {
+          "address": "0x9394cb5f737bd3acea7dce90ca48dbd42801ee5d",
+          "token": "0xc3e53f4d16ae77db1c982e75a937b9f60fe63690",
+          "balanceWei": "800000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        },
+        {
+          "label": "blacklist instance",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 898
+    },
+    {
+      "id": "R10",
+      "title": "Crash recovery: faults at after-cas, after-broadcast and before-receipt, no duplicate transactions",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W10"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "killed-after-cas",
+          "ok": true,
+          "detail": {
+            "status": 500,
+            "fired": {
+              "stage": "after-cas",
+              "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+              "kind": "clear",
+              "txHash": "0x913d0d67a6dfbbcf1cfb82431de8113ec95efc87e1432b8ddb1d135b03a52dd4",
+              "nonce": 56
+            }
+          }
+        },
+        {
+          "id": "killed-after-broadcast",
+          "ok": true,
+          "detail": {
+            "status": 500,
+            "fired": {
+              "stage": "after-broadcast",
+              "id": "chikun:a85233c6:2984:clear:0xb6df903fe35e6384f9cc62c55411e87112e28556c8e323556995545fd39a55b8",
+              "kind": "clear",
+              "txHash": "0x69bf4e25fc9de59311f9e055a274d598c8671eb81b593efdbc885c2dd283d5e9",
+              "nonce": 56
+            }
+          }
+        },
+        {
+          "id": "killed-before-receipt",
+          "ok": true,
+          "detail": {
+            "status": 500,
+            "fired": {
+              "stage": "before-receipt",
+              "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+              "kind": "clear",
+              "txHash": "0xc0e27f53182413b4661de6ba522cde04e19ed5dee7bdb79c4d472b3663d184ac",
+              "nonce": 57
+            }
+          }
+        },
+        {
+          "id": "cas-without-broadcast",
+          "ok": true,
+          "detail": {
+            "stage": "after-cas",
+            "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+            "kind": "clear",
+            "txHash": "0x913d0d67a6dfbbcf1cfb82431de8113ec95efc87e1432b8ddb1d135b03a52dd4",
+            "nonce": 56
+          }
+        },
+        {
+          "id": "keeper-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W10",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W10",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+            "prizeWei": "1500000000000000000000",
+            "finalizeTx": "0xd3f788862a149c12c47b42bdf8c107d5a7530e50f28529aea3cca5d0db922d97"
+          }
+        },
+        {
+          "id": "nonce-advances-by-distinct-actions",
+          "ok": true,
+          "detail": {
+            "nonceDelta": 5,
+            "actions": 5,
+            "keeperTxs": 5
+          }
+        },
+        {
+          "id": "no-duplicate-transactions",
+          "ok": true,
+          "detail": [
+            [
+              56,
+              1
+            ],
+            [
+              57,
+              1
+            ],
+            [
+              58,
+              1
+            ],
+            [
+              59,
+              1
+            ],
+            [
+              60,
+              1
+            ]
+          ]
+        },
+        {
+          "id": "no-nonce-gap",
+          "ok": true,
+          "detail": {
+            "nonces": [
+              56,
+              57,
+              58,
+              59,
+              60
+            ],
+            "unbroadcast": 56
+          }
+        },
+        {
+          "id": "dropped-detected",
+          "ok": true,
+          "detail": {
+            "id": "chikun:a85233c6:2984:clear:0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "gameId": "chikun",
+            "weekKey": "2027-W10",
+            "kind": "clear",
+            "sessionId32": "0x52731dc5b33950e233d73a03af73ca62cb07a2e30ce706b0cfed074eaa95f80a",
+            "reason": null,
+            "status": "confirmed",
+            "keeper": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f",
+            "txHash": "0xc0e27f53182413b4661de6ba522cde04e19ed5dee7bdb79c4d472b3663d184ac",
+            "txNonce": 57,
+            "attempts": 0,
+            "infraFailures": 1,
+            "lastError": null,
+            "nextAttemptAt": null,
+            "submittedAt": "2027-03-15T02:11:00.018Z",
+            "confirmedAt": "2027-03-15T02:16:00.016Z",
+            "createdAt": "2026-09-26T02:30:40.637Z",
+            "updatedAt": "2026-09-26T02:30:40.755Z"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 18,
+      "transactions": {
+        "total": 11,
+        "keeper": 5,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 0,
+        "funder": 2,
+        "players": 2,
+        "reverted": 0
+      },
+      "keeperGasUsed": "714791",
+      "finalBalances": {
+        "winner R10 player 1": {
+          "address": "0x344dca30f5c5f74f2f13dc1d48ad3a9069d13ad9",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1500000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [
+        "keeper faults: {\"after-cas\":\"clear\",\"after-broadcast\":\"clear\",\"before-receipt\":\"clear\"}; the after-cas action (recorded, never broadcast) is found dropped once the 180 s receipt window passes and re-signed, its unused nonce taken by the next send (no gap); the other two confirm from chain state."
+      ],
+      "durationMs": 796
+    },
+    {
+      "id": "R11",
+      "title": "Pause, hold and staff: pause and hold stop payouts only; staff and blocked wallets are never candidates",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W12"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "keeper-rotated",
+          "ok": true
+        },
+        {
+          "id": "old-keeper-blocked",
+          "ok": true
+        },
+        {
+          "id": "open-leader-is-honest",
+          "ok": true,
+          "detail": {
+            "leader": {
+              "score": 4688,
+              "provisional": true,
+              "screened": false
+            },
+            "best": 4688,
+            "staff": [
+              6684,
+              6749,
+              6674,
+              6734,
+              6584,
+              6609
+            ]
+          }
+        },
+        {
+          "id": "admin-pause",
+          "ok": true
+        },
+        {
+          "id": "funding-while-paused",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "submission-while-paused",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "never-candidate-admin",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "STAFF_WALLET"
+          }
+        },
+        {
+          "id": "never-candidate-operator",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "STAFF_WALLET"
+          }
+        },
+        {
+          "id": "never-candidate-rotated-out-keeper",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "STAFF_WALLET"
+          }
+        },
+        {
+          "id": "never-candidate-current-keeper",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "STAFF_WALLET"
+          }
+        },
+        {
+          "id": "never-candidate-verifier",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "WALLET_BLOCKED"
+          }
+        },
+        {
+          "id": "never-candidate-funder",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "WALLET_BLOCKED"
+          }
+        },
+        {
+          "id": "never-candidate-test-wallet",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "WALLET_BLOCKED"
+          }
+        },
+        {
+          "id": "never-candidate-relayer",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "WALLET_BLOCKED"
+          }
+        },
+        {
+          "id": "keeper-selects-no-staff",
+          "ok": true,
+          "detail": [
+            [
+              "R11 honest 1",
+              "keeper"
+            ],
+            [
+              "R11 honest 2",
+              "keeper"
+            ],
+            [
+              "R11 honest 3",
+              "public"
+            ]
+          ]
+        },
+        {
+          "id": "clears-wait-for-pause",
+          "ok": true,
+          "detail": [
+            [
+              "failed",
+              "jackpot-paused"
+            ],
+            [
+              "failed",
+              "jackpot-paused"
+            ],
+            [
+              "failed",
+              "jackpot-paused"
+            ]
+          ]
+        },
+        {
+          "id": "nothing-cleared-on-chain",
+          "ok": true
+        },
+        {
+          "id": "submits-not-blocked-by-pause",
+          "ok": true
+        },
+        {
+          "id": "finalize-blocked-by-pause",
+          "ok": true,
+          "detail": {
+            "reason": "PAUSED",
+            "minedStatus": 0,
+            "blockTimestamp": 1806365161,
+            "txHash": "0xb337bc526f2f54e9b7e3baf8d1f60b50b91c26951067e0c069fed29367508d7f"
+          }
+        },
+        {
+          "id": "paused-week-waits",
+          "ok": true,
+          "detail": {
+            "status": "selecting"
+          }
+        },
+        {
+          "id": "status-page-shows-pause",
+          "ok": true,
+          "detail": {
+            "env": false,
+            "onChain": true
+          }
+        },
+        {
+          "id": "admin-unpause",
+          "ok": true
+        },
+        {
+          "id": "admin-hold",
+          "ok": true
+        },
+        {
+          "id": "cleared-after-unpause",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin"
+          }
+        },
+        {
+          "id": "finalize-blocked-by-hold",
+          "ok": true,
+          "detail": {
+            "reason": "WEEK_HELD",
+            "minedStatus": 0,
+            "blockTimestamp": 1806365766,
+            "txHash": "0xd805205da290a93e66187a54674b3a44a0085eb04dbab05203bd68fc600f1abd"
+          }
+        },
+        {
+          "id": "held-week-waits",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "held": true
+          }
+        },
+        {
+          "id": "admin-release",
+          "ok": true
+        },
+        {
+          "id": "paid-after-release",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+            "prize": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1500000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+            "prizeWei": "1500000000000000000000",
+            "finalizeTx": "0x5ff5dbf1bc0d8bfd17c18af95d25222329d6fc3af04072bd800458e584272ae5"
+          }
+        },
+        {
+          "id": "staff-ever-0x23618e81",
+          "ok": true
+        },
+        {
+          "id": "staff-ever-R11 new keeper",
+          "ok": true
+        },
+        {
+          "id": "staff-ever-0x90F79bf6",
+          "ok": true
+        },
+        {
+          "id": "staff-ever-0xf39Fd6e5",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 39,
+      "transactions": {
+        "total": 41,
+        "keeper": 8,
+        "relayer": 12,
+        "operator": 2,
+        "admin": 6,
+        "funder": 5,
+        "players": 8,
+        "reverted": 2
+      },
+      "keeperGasUsed": "1171346",
+      "finalBalances": {
+        "winner R11 honest 1": {
+          "address": "0xf0ce7bab13c99ba0565f426508a7cd8f4c247e5a",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1500000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 3584
+    },
+    {
+      "id": "R12",
+      "title": "Unfunded week: no keeper transaction, no amount in the API or the UI",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W14"
+      ],
+      "checks": [
+        {
+          "id": "api-unfunded",
+          "ok": true,
+          "detail": {
+            "fundedWei": "0",
+            "carriedInWei": "0",
+            "totalWei": "0",
+            "prizeCapWei": null,
+            "prizeWei": "0",
+            "carryOverWei": "0",
+            "funded": false
+          }
+        },
+        {
+          "id": "ui-renders-no-amount",
+          "ok": true
+        },
+        {
+          "id": "child-says-no-prize",
+          "ok": true,
+          "detail": {
+            "rewards": "Weekly Jackpot: no prize funded this week",
+            "rewardsDetail": "Top verified Ranked score of the week wins. See the rules."
+          }
+        },
+        {
+          "id": "unfunded",
+          "ok": true
+        },
+        {
+          "id": "zero-keeper-transactions",
+          "ok": true
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-previous-unfunded",
+          "ok": true,
+          "detail": {
+            "weekKey": "2027-W14",
+            "status": "unfunded",
+            "payoutAt": "2027-04-13T00:00:00.000Z",
+            "token": {
+              "symbol": "tCHIKUN",
+              "decimals": 18,
+              "testnet": true
+            },
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "pot": {
+              "fundedWei": "0",
+              "carriedInWei": "0",
+              "totalWei": "0",
+              "prizeCapWei": null,
+              "prizeWei": "0",
+              "carryOverWei": "0",
+              "funded": false
+            },
+            "candidates": [],
+            "winner": null,
+            "prizeWei": null,
+            "unclaimedWei": "0",
+            "finalizeTx": null
+          }
+        },
+        {
+          "id": "stray-swept",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 9,
+      "transactions": {
+        "total": 4,
+        "keeper": 0,
+        "relayer": 1,
+        "operator": 1,
+        "admin": 0,
+        "funder": 1,
+        "players": 1,
+        "reverted": 0
+      },
+      "keeperGasUsed": "0",
+      "finalBalances": {
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 369
+    },
+    {
+      "id": "R13",
+      "title": "Sybil eviction: five decoys displace the honest top 5; disqualified; honest rows re-listed; the honest leader is paid",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W16"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W16",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "honest-hold-top-5",
+          "ok": true,
+          "detail": {
+            "listed": 5
+          }
+        },
+        {
+          "id": "honest-cleared",
+          "ok": true
+        },
+        {
+          "id": "decoys-outscore-honest",
+          "ok": true,
+          "detail": [
+            4463,
+            3887,
+            3887,
+            4447,
+            4463
+          ]
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W16",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "decoys-already-listed-by-keeper",
+          "ok": true,
+          "detail": [
+            "ALREADY_CANDIDATE",
+            "ALREADY_CANDIDATE",
+            "ALREADY_CANDIDATE",
+            "ALREADY_CANDIDATE",
+            "ALREADY_CANDIDATE"
+          ]
+        },
+        {
+          "id": "honest-displaced",
+          "ok": true,
+          "detail": {
+            "listed": [
+              "R13 decoy 1",
+              "R13 decoy 5",
+              "R13 decoy 4",
+              "R13 decoy 2",
+              "R13 decoy 3"
+            ],
+            "decoys": [
+              [
+                "R13 decoy 1",
+                4463
+              ],
+              [
+                "R13 decoy 2",
+                3887
+              ],
+              [
+                "R13 decoy 3",
+                3887
+              ],
+              [
+                "R13 decoy 4",
+                4447
+              ],
+              [
+                "R13 decoy 5",
+                4463
+              ]
+            ],
+            "attempts": [
+              "ALREADY_CANDIDATE",
+              "ALREADY_CANDIDATE",
+              "ALREADY_CANDIDATE",
+              "ALREADY_CANDIDATE",
+              "ALREADY_CANDIDATE"
+            ],
+            "decoyRows": [
+              [
+                "keeper",
+                "hold",
+                true,
+                true,
+                "flagged"
+              ],
+              [
+                "keeper",
+                "hold",
+                true,
+                true,
+                "flagged"
+              ],
+              [
+                "keeper",
+                "hold",
+                true,
+                true,
+                "flagged"
+              ],
+              [
+                "keeper",
+                "hold",
+                true,
+                true,
+                "flagged"
+              ],
+              [
+                "keeper",
+                "hold",
+                true,
+                true,
+                "flagged"
+              ]
+            ],
+            "decoyActions": [
+              [
+                "flag",
+                "confirmed",
+                null
+              ],
+              [
+                "submit",
+                "confirmed",
+                null
+              ],
+              [
+                "flag",
+                "confirmed",
+                null
+              ],
+              [
+                "submit",
+                "confirmed",
+                null
+              ],
+              [
+                "flag",
+                "confirmed",
+                null
+              ],
+              [
+                "submit",
+                "confirmed",
+                null
+              ],
+              [
+                "flag",
+                "confirmed",
+                null
+              ],
+              [
+                "submit",
+                "confirmed",
+                null
+              ],
+              [
+                "flag",
+                "confirmed",
+                null
+              ],
+              [
+                "submit",
+                "confirmed",
+                null
+              ]
+            ],
+            "honest": [
+              [
+                "R13 honest 1",
+                2270
+              ],
+              [
+                "R13 honest 5",
+                2042
+              ],
+              [
+                "R13 honest 2",
+                2040
+              ],
+              [
+                "R13 honest 4",
+                1892
+              ],
+              [
+                "R13 honest 3",
+                1837
+              ]
+            ]
+          }
+        },
+        {
+          "id": "decoys-screened-first-and-flagged",
+          "ok": true,
+          "detail": {
+            "runs": 1
+          }
+        },
+        {
+          "id": "decoys-held",
+          "ok": true,
+          "detail": [
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ]
+          ]
+        },
+        {
+          "id": "disqualify-R13 decoy 1",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13 decoy 2",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13 decoy 3",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13 decoy 4",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13 decoy 5",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "keeper-relists-honest",
+          "ok": true,
+          "detail": {
+            "runs": 5
+          }
+        },
+        {
+          "id": "relists-before-payout-minus-2h",
+          "ok": true
+        },
+        {
+          "id": "relist-actions-confirmed",
+          "ok": true,
+          "detail": [
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ],
+            [
+              "confirmed",
+              null
+            ]
+          ]
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+            "prize": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+            "prize": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+            "prizeWei": "5000000000000000000000",
+            "finalizeTx": "0x2bbe1c9b77d47719cc660cc631abc5c919bbde5cb542b7dcddfb1a1893a01fb6"
+          }
+        },
+        {
+          "id": "decoys-cannot-return",
+          "ok": true,
+          "detail": "WINDOW_CLOSED"
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 27,
+      "transactions": {
+        "total": 53,
+        "keeper": 26,
+        "relayer": 10,
+        "operator": 0,
+        "admin": 5,
+        "funder": 2,
+        "players": 10,
+        "reverted": 0
+      },
+      "keeperGasUsed": "3846271",
+      "finalBalances": {
+        "winner R13 honest 1": {
+          "address": "0xe74cef90b6cf1a77fefad731713e6f53e575c183",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "5000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [
+        "Implementation reality: decoys settled before the cutoff are in the keeper's last re-select (cutoff + 10 min), so the keeper lists and flags them itself about 5 h before an attacker could at C + 11 h 59 min; the R13 variant forces the literal C + 11 h 59 min timing."
+      ],
+      "durationMs": 3111
+    },
+    {
+      "id": "R13v",
+      "title": "Sybil eviction at C + 11 h 59 min, and the never-listed honest #6 added by adminSubmit and paid",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W18"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W18",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "honest-hold-top-5",
+          "ok": true,
+          "detail": {
+            "listed": 5
+          }
+        },
+        {
+          "id": "honest-cleared",
+          "ok": true
+        },
+        {
+          "id": "sixth-never-listed",
+          "ok": true
+        },
+        {
+          "id": "decoys-outscore-honest",
+          "ok": true,
+          "detail": [
+            3906,
+            4447,
+            4447,
+            4472,
+            4447
+          ]
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W18",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "decoys-submitted-at-c-11h59",
+          "ok": true,
+          "detail": [
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "honest-displaced",
+          "ok": true,
+          "detail": {
+            "listed": [
+              "R13v decoy 4",
+              "R13v decoy 2",
+              "R13v decoy 3",
+              "R13v decoy 5",
+              "R13v decoy 1"
+            ],
+            "decoys": [
+              [
+                "R13v decoy 1",
+                3906
+              ],
+              [
+                "R13v decoy 2",
+                4447
+              ],
+              [
+                "R13v decoy 3",
+                4447
+              ],
+              [
+                "R13v decoy 4",
+                4472
+              ],
+              [
+                "R13v decoy 5",
+                4447
+              ]
+            ],
+            "attempts": [
+              "ok",
+              "ok",
+              "ok",
+              "ok",
+              "ok"
+            ],
+            "decoyRows": [],
+            "decoyActions": [],
+            "honest": [
+              [
+                "R13v honest 1",
+                2395
+              ],
+              [
+                "R13v honest 2",
+                2295
+              ],
+              [
+                "R13v honest 6",
+                1992
+              ],
+              [
+                "R13v honest 3",
+                1962
+              ],
+              [
+                "R13v honest 4",
+                1917
+              ],
+              [
+                "R13v honest 5",
+                1892
+              ]
+            ]
+          }
+        },
+        {
+          "id": "decoys-screened-first-and-flagged",
+          "ok": true,
+          "detail": {
+            "runs": 2
+          }
+        },
+        {
+          "id": "decoys-held",
+          "ok": true,
+          "detail": [
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ],
+            [
+              "H5",
+              "H9"
+            ]
+          ]
+        },
+        {
+          "id": "disqualify-R13v decoy 1",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13v decoy 2",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13v decoy 3",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13v decoy 4",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-R13v decoy 5",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-honest-R13v honest 1",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-honest-R13v honest 2",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-honest-R13v honest 6",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-honest-R13v honest 3",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "disqualify-honest-R13v honest 4",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "list-empty",
+          "ok": true
+        },
+        {
+          "id": "sixth-cannot-self-relist",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "reason": "WINDOW_CLOSED"
+          }
+        },
+        {
+          "id": "next-eligible-lists-sixth",
+          "ok": true
+        },
+        {
+          "id": "admin-submits-sixth",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "sixth-screened-and-cleared",
+          "ok": true
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+            "prize": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+            "prize": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "5000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+            "prizeWei": "5000000000000000000000",
+            "finalizeTx": "0xec621312942dcec9ce09ce6fb9d2347a6ca4799190c5313f1dc0eec10638d552"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 34,
+      "transactions": {
+        "total": 62,
+        "keeper": 22,
+        "relayer": 11,
+        "operator": 0,
+        "admin": 11,
+        "funder": 2,
+        "players": 16,
+        "reverted": 0
+      },
+      "keeperGasUsed": "2990936",
+      "finalBalances": {
+        "winner R13v honest 5": {
+          "address": "0x6c8ea11559dfe79ae3dbdd6a67b47f61b929398f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "5000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 3476
+    },
+    {
+      "id": "R14",
+      "title": "Banked-session sniping: a Sunday session settled at C + 5 h just above the leader is held by H9",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W20"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W20",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "leader-listed",
+          "ok": true
+        },
+        {
+          "id": "standings-public",
+          "ok": true,
+          "detail": [
+            {
+              "rank": 1,
+              "walletShort": "0xfe0f…9ef9",
+              "displayName": null,
+              "score": 6559,
+              "review": "cleared",
+              "replay": "/api/jackpot/replay?session=0xb63efc88a8a859dbf5d8bd898ed82f31a41f021c7ad81ab908eddf167e0eb28c"
+            }
+          ]
+        },
+        {
+          "id": "just-above",
+          "ok": true,
+          "detail": {
+            "sniper": 6749,
+            "leader": 6559,
+            "margin": 190
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W20",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "held-by-h9",
+          "ok": true,
+          "detail": {
+            "codes": [
+              "H9"
+            ],
+            "delay": 32305
+          }
+        },
+        {
+          "id": "flagged-late-evidence",
+          "ok": true
+        },
+        {
+          "id": "awaiting-admin",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "lastError": null
+          }
+        },
+        {
+          "id": "not-auto-paid",
+          "ok": true
+        },
+        {
+          "id": "admin-disqualifies",
+          "ok": true
+        },
+        {
+          "id": "paid-honest",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+            "prize": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+            "prize": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "3000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+            "prizeWei": "3000000000000000000000",
+            "finalizeTx": "0x3a0a7113d4c3730b2dd47afe6e6e1a154e5c21369e16a8a4dd04549319b680fd"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 19,
+      "transactions": {
+        "total": 12,
+        "keeper": 5,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 2,
+        "reverted": 0
+      },
+      "keeperGasUsed": "742313",
+      "finalBalances": {
+        "winner R14 honest leader": {
+          "address": "0xfe0f143fcad5b561b1ed2ac960278a2f23559ef9",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "3000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 2700
+    },
+    {
+      "id": "R15",
+      "title": "Non-stock client (maxTicks 108,000): never submitted by the keeper, flagged integrity when submitted",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W22"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "settled-through-verifier",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W22",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W22",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "never-submitted-by-keeper",
+          "ok": true
+        },
+        {
+          "id": "submitted-publicly",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "keeper-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W22",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "flagged-integrity",
+          "ok": true,
+          "detail": {
+            "screen": "integrity-fail",
+            "integrity": {
+              "ok": false,
+              "code": "non-stock-client",
+              "chain": {
+                "week": 2996,
+                "exists": true,
+                "player": "0x9586a4833970847aef259ad5bfb7aa8901ddf746",
+                "openedAt": 1811894400,
+                "verified": true,
+                "amountWei": "102000000000000000",
+                "submittedAt": 1811894500
+              },
+              "detail": "108000"
+            }
+          }
+        },
+        {
+          "id": "no-keeper-submit",
+          "ok": true
+        },
+        {
+          "id": "never-auto-paid",
+          "ok": true,
+          "detail": {
+            "status": "awaiting-admin",
+            "lastError": null
+          }
+        },
+        {
+          "id": "admin-disqualifies",
+          "ok": true
+        },
+        {
+          "id": "paid-honest",
+          "ok": true
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+            "prizeWei": "1000000000000000000000",
+            "finalizeTx": "0x476166ec73c4ad797572eff8e42bac1061e3dc6185f0ca7beead7c9a8d218529"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 19,
+      "transactions": {
+        "total": 12,
+        "keeper": 4,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 3,
+        "reverted": 0
+      },
+      "keeperGasUsed": "534062",
+      "finalBalances": {
+        "winner R15 honest": {
+          "address": "0x8c3229ec621644789d7f61faa82c6d0e5f97d43d",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1204
+    },
+    {
+      "id": "R16",
+      "title": "Expected miss: an exceptional-model bot passes the screen and is paid (design B.5 residual)",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W24"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W24",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "passes-the-screen",
+          "ok": true,
+          "detail": {
+            "screen": "pass",
+            "codes": []
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W24",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+            "prizeWei": "1000000000000000000000",
+            "finalizeTx": "0xcce1a48550ccd7ead36c1c8d059ac0df8a4ed0cf31acbac2b504df665184c24d"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 12,
+      "transactions": {
+        "total": 11,
+        "keeper": 5,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 0,
+        "funder": 2,
+        "players": 2,
+        "reverted": 0
+      },
+      "keeperGasUsed": "714791",
+      "finalBalances": {
+        "winner R16 exceptional bot": {
+          "address": "0x0e9971c0005d91336c1441b8f03c1c4fe5fb4584",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [
+        {
+          "population": "exceptional-model bot on a real seed (design B.4 set (b), B.5 item 1)",
+          "sessionId32": "0xe42e3bc641eca0830fa9a1e9e270a76720d11dcbc6e954de70f4cd81abec4430",
+          "score": 22457,
+          "survivalSeconds": 303,
+          "screen": "pass",
+          "holdCodes": [],
+          "soft": [
+            "S1"
+          ],
+          "outcome": "cleared by the keeper and paid",
+          "note": "The documented residual: a careful in-view bot is indistinguishable from an elite human by these features. Not a failure; adminClearOnly, caps and human review are the defence (J16, OJ6)."
+        }
+      ],
+      "notes": [],
+      "durationMs": 2515
+    },
+    {
+      "id": "R17",
+      "title": "Stale keeper action: a dropped flag and a rescreen never override the admin clear",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W26"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "flag-dropped",
+          "ok": true,
+          "detail": {
+            "stage": "after-cas",
+            "id": "chikun:a85233c6:3000:flag:0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c",
+            "kind": "flag",
+            "txHash": "0x0449fdc978124c25b29d15a36da2a983a9aae515142ed1a2946cd039757042f6",
+            "nonce": 69
+          }
+        },
+        {
+          "id": "held-h9",
+          "ok": true,
+          "detail": [
+            "H9"
+          ]
+        },
+        {
+          "id": "admin-clears",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "rescreen-applied-on-stale-mirror",
+          "ok": true,
+          "detail": [
+            "0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c in 2027-W26 0xa85233c6…: screen hold (H9), review none; week selecting.",
+            "applied: the screen is pending again."
+          ]
+        },
+        {
+          "id": "keeper-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W26",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "dropped-flag-resigned-then-skipped",
+          "ok": true,
+          "detail": {
+            "id": "chikun:a85233c6:3000:flag:0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c",
+            "contract": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+            "gameId": "chikun",
+            "weekKey": "2027-W26",
+            "kind": "flag",
+            "sessionId32": "0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c",
+            "reason": "late-evidence",
+            "status": "skipped",
+            "keeper": "0x6d69f301d1da5c7818b5e61eecc745b30179c68b",
+            "txHash": null,
+            "txNonce": null,
+            "attempts": 0,
+            "infraFailures": 1,
+            "lastError": "review-locked",
+            "nextAttemptAt": null,
+            "submittedAt": null,
+            "confirmedAt": null,
+            "createdAt": "2026-09-26T02:30:58.595Z",
+            "updatedAt": "2026-09-26T02:30:58.901Z"
+          }
+        },
+        {
+          "id": "rescreen-created-no-review-action",
+          "ok": true,
+          "detail": [
+            [
+              "flag",
+              "skipped",
+              "review-locked"
+            ],
+            [
+              "submit",
+              "confirmed",
+              null
+            ]
+          ]
+        },
+        {
+          "id": "no-keeper-flag-on-chain",
+          "ok": true,
+          "detail": [
+            "0x97040a45",
+            "0xa9a195d3",
+            "0xa9a195d3"
+          ]
+        },
+        {
+          "id": "rescreen-refused-once-mirrored",
+          "ok": true,
+          "detail": [
+            "0x9cea16d10a04f57ff4108f7dee58bac1f3f44d5d9b13ef1fde61df8cb280c39c in 2027-W26 0xa85233c6…: screen hold (H9), review cleared, reviewed by the admin; week selecting.",
+            "Refusing: the admin reviewed or disqualified this session. The admin decision is final for the keeper; a rescreen never creates a clear or flag for it."
+          ]
+        },
+        {
+          "id": "keeper-flag-reverts-review-locked",
+          "ok": true,
+          "detail": {
+            "reason": "REVIEW_LOCKED",
+            "minedStatus": 0,
+            "blockTimestamp": 1814753762,
+            "txHash": "0xc0adb540ca2e9a7d5b58c715ee39d1a4287e60ef7b5a2f9201c40487ddd1e414"
+          }
+        },
+        {
+          "id": "still-cleared",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W26",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+            "prize": "1200000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+            "prize": "1200000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1200000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+            "prizeWei": "1200000000000000000000",
+            "finalizeTx": "0x9a1d4730660fe8b59df8177434bf4818c391f1bc5568c0fd88fb97593cd6747a"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 21,
+      "transactions": {
+        "total": 12,
+        "keeper": 5,
+        "relayer": 2,
+        "operator": 0,
+        "admin": 1,
+        "funder": 2,
+        "players": 2,
+        "reverted": 1
+      },
+      "keeperGasUsed": "675175",
+      "finalBalances": {
+        "winner R17 leader (paused 25 min)": {
+          "address": "0xd96eb0f2e106ea7c0a939e9c460a17ace65fecff",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1200000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 1187
+    },
+    {
+      "id": "R18",
+      "title": "Contested admin: operator pause, force-admin, OPERATOR_LOCK, the review API drops the old admin",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W28"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W28",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "compromised-transfer-started",
+          "ok": true
+        },
+        {
+          "id": "compromised-disqualifies-leader",
+          "ok": true
+        },
+        {
+          "id": "old-admin-reviews-before",
+          "ok": true
+        },
+        {
+          "id": "operator-pause",
+          "ok": true
+        },
+        {
+          "id": "admin-unpause-does-not-lift-it",
+          "ok": true,
+          "detail": {
+            "sent": true
+          }
+        },
+        {
+          "id": "transfer-admin-operator-lock",
+          "ok": true,
+          "detail": {
+            "reason": "OPERATOR_LOCK",
+            "minedStatus": 0,
+            "blockTimestamp": 1815963065,
+            "txHash": "0xbde8570c1e65f85cd81757b185df2ee331eb1ab0dcf61340a74eaf93b4429ecb"
+          }
+        },
+        {
+          "id": "accept-admin-operator-lock",
+          "ok": true,
+          "detail": {
+            "reason": "OPERATOR_LOCK",
+            "minedStatus": 0,
+            "blockTimestamp": 1815963066,
+            "txHash": "0x2d4a382351863de463c52895c5f84bcdcb3b148e99a2694bcabc8022937c14cd"
+          }
+        },
+        {
+          "id": "force-admin-one-transaction",
+          "ok": true
+        },
+        {
+          "id": "old-admin-transfer-reverts",
+          "ok": true,
+          "detail": {
+            "reason": "ONLY_ADMIN",
+            "minedStatus": 0,
+            "blockTimestamp": 1815963068,
+            "txHash": "0x2f0b9e5bd329ea3c81f10d08253cee5db22215771581d20f4456829809cf8e3d"
+          }
+        },
+        {
+          "id": "review-api-refuses-old-admin-within-60s",
+          "ok": true,
+          "detail": {
+            "beforeExpiry": 200,
+            "after": 403
+          }
+        },
+        {
+          "id": "review-api-new-admin",
+          "ok": true
+        },
+        {
+          "id": "new-admin-reinstates",
+          "ok": true
+        },
+        {
+          "id": "new-admin-clears",
+          "ok": true
+        },
+        {
+          "id": "operator-unpause",
+          "ok": true
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W28",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0x4548774216f19914493d051481feb56246bc13f0",
+            "prizeWei": "1000000000000000000000",
+            "finalizeTx": "0x46ab1fb492eb2e6b5fd0536771bba83fcc5e31c618326627eafab50115c2c1b0"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 25,
+      "transactions": {
+        "total": 22,
+        "keeper": 5,
+        "relayer": 2,
+        "operator": 3,
+        "admin": 7,
+        "funder": 2,
+        "players": 3,
+        "reverted": 3
+      },
+      "keeperGasUsed": "714791",
+      "finalBalances": {
+        "winner R18 honest leader": {
+          "address": "0x4548774216f19914493d051481feb56246bc13f0",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [
+        "After force-admin the old admin's transferAdmin reverts ONLY_ADMIN (the operator pause is still on; the onlyAdmin guard would refuse it next)."
+      ],
+      "durationMs": 938
+    },
+    {
+      "id": "R19",
+      "title": "Dust and end of life: BELOW_MIN_FUND, scheduleEnd, refunds to funders, residual after 30 days, sweep post-condition",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W31"
+      ],
+      "checks": [
+        {
+          "id": "dust-reverts-below-min-fund",
+          "ok": true,
+          "detail": {
+            "reason": "BELOW_MIN_FUND",
+            "minedStatus": 0,
+            "blockTimestamp": 1816041967,
+            "txHash": "0x6cfe06ea5247fb8fc82bce72ced7858bf7e61c1cca3c9444f9e6cc3ad8e0e154"
+          }
+        },
+        {
+          "id": "min-fund-8-weeks-ahead",
+          "ok": true,
+          "detail": null
+        },
+        {
+          "id": "louie-prefunds",
+          "ok": true
+        },
+        {
+          "id": "final-week-funded",
+          "ok": true
+        },
+        {
+          "id": "sweep-double-entry-reverts",
+          "ok": true,
+          "detail": "LIABILITIES_BREACHED"
+        },
+        {
+          "id": "schedule-end",
+          "ok": true
+        },
+        {
+          "id": "fund-after-end-refused",
+          "ok": true,
+          "detail": "The jackpot ends before that week."
+        },
+        {
+          "id": "final-week-finalized",
+          "ok": true
+        },
+        {
+          "id": "unwon-pot-becomes-residual",
+          "ok": true,
+          "detail": "300000000000000000000"
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-final-week-rolled-to-residue",
+          "ok": true,
+          "detail": {
+            "status": "rolled",
+            "pot": {
+              "fundedWei": "300000000000000000000",
+              "carriedInWei": "0",
+              "totalWei": "300000000000000000000",
+              "prizeCapWei": null,
+              "prizeWei": "300000000000000000000",
+              "carryOverWei": "0",
+              "funded": true
+            }
+          }
+        },
+        {
+          "id": "mirror-rolled-to-residue",
+          "ok": true,
+          "detail": {
+            "contract": "0x99bba657f2bbc93c02d617f8ba121cb8fc104acf",
+            "gameId": "chikun",
+            "weekKey": "2027-W31",
+            "weekIndex": 3005,
+            "token": {
+              "address": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+              "symbol": "DBLMOCK",
+              "decimals": 18,
+              "testnet": true
+            },
+            "startsAt": "2027-08-02T00:00:00.000Z",
+            "closesAt": "2027-08-09T00:00:00.000Z",
+            "settleCutoffAt": "2027-08-09T06:00:00.000Z",
+            "candidateUntil": "2027-08-09T12:00:00.000Z",
+            "payoutAt": "2027-08-10T00:00:00.000Z",
+            "status": "rolled",
+            "fundedWei": "300000000000000000000",
+            "carriedInWei": "0",
+            "prizeWei": "0",
+            "unclaimedWei": "0",
+            "winner": null,
+            "winningSession": null,
+            "winningScore": null,
+            "finalizeTxHash": "0x80d01238c51d1c0df1d012bcb26f5bc5bd054d941037d689185841cd8ea366ab",
+            "finalizedAt": "2027-08-10T00:01:01.000Z",
+            "rolledToWeek": null,
+            "held": false,
+            "extensionSeconds": 0,
+            "lastError": null,
+            "adminWaitingSince": null,
+            "updatedAt": "2026-09-26T02:31:00.163Z"
+          }
+        },
+        {
+          "id": "attacker-refunded-own",
+          "ok": true
+        },
+        {
+          "id": "cannot-refund-others",
+          "ok": true,
+          "detail": "0x51953940f874efa94f92eb2d6aed023617a07222 funded nothing in 2027-W34 (NOTHING_TO_REFUND)"
+        },
+        {
+          "id": "louie-refunded",
+          "ok": true
+        },
+        {
+          "id": "residual-not-before-30-days",
+          "ok": true,
+          "detail": "the residue is available from 2027-09-09T00:01:01.000Z (TOO_EARLY)"
+        },
+        {
+          "id": "residual-recovered",
+          "ok": true
+        },
+        {
+          "id": "nothing-owed",
+          "ok": true
+        },
+        {
+          "id": "main-cron-ok",
+          "ok": true
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            },
+            {
+              "label": "end-of-life instance",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 20,
+      "transactions": {
+        "total": 17,
+        "keeper": 0,
+        "relayer": 0,
+        "operator": 7,
+        "admin": 0,
+        "funder": 0,
+        "players": 10,
+        "reverted": 1
+      },
+      "keeperGasUsed": "0",
+      "finalBalances": {
+        "attacker": {
+          "address": "0x51953940f874efa94f92eb2d6aed023617a07222",
+          "token": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+          "balanceWei": "10000000000000000000000"
+        },
+        "louie": {
+          "address": "0x6813ae1fc15e995230c05d4480d50219bb635f15",
+          "token": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+          "balanceWei": "10000000000000000000000"
+        },
+        "residual recipient": {
+          "address": "0xeabd5094570298ffd24e93e7af378162884611cb",
+          "token": "0x4826533b4897376654bb4d4ad88b7fafd0c98528",
+          "balanceWei": "300000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        },
+        {
+          "label": "end-of-life instance",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [],
+      "durationMs": 258
+    },
+    {
+      "id": "R20",
+      "title": "Ranked-setting drift: reserve 0 keeps runs eligible; the live checker flags rankedEntry; the entry row hides fees-off",
+      "status": "passed",
+      "weekKeys": [
+        "2027-W37"
+      ],
+      "checks": [
+        {
+          "id": "fund",
+          "ok": true
+        },
+        {
+          "id": "live-checker-baseline",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "quote-is-flat-fee",
+          "ok": true,
+          "detail": "100000000000000000"
+        },
+        {
+          "id": "paid-flat-fee",
+          "ok": true
+        },
+        {
+          "id": "server-settle-floor-refuses",
+          "ok": true,
+          "detail": {
+            "ok": false,
+            "error": "entry-underpaid"
+          }
+        },
+        {
+          "id": "settles-with-floor-lowered",
+          "ok": true
+        },
+        {
+          "id": "still-jackpot-eligible",
+          "ok": true
+        },
+        {
+          "id": "live-checker-reserve-zero",
+          "ok": true,
+          "detail": {
+            "id": "j17-quote",
+            "ok": true,
+            "detail": {
+              "quoteTotalWei": "100000000000000000",
+              "minPaidWei": "100000000000000000"
+            }
+          }
+        },
+        {
+          "id": "live-checker-flags-ranked-entry",
+          "ok": true,
+          "detail": {
+            "id": "j17-ranked-entry",
+            "ok": false,
+            "detail": {
+              "registryRankedEntry": "0x14dc79964da2c08b23698b3d3cc7ca32193d9955",
+              "jackpotRankedEntry": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+              "jackpotScoreRegistry": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9",
+              "siteScoreRegistry": "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9"
+            }
+          }
+        },
+        {
+          "id": "live-checker-flags-fees-off",
+          "ok": true
+        },
+        {
+          "id": "entry-row-hidden-below-min-paid",
+          "ok": true
+        },
+        {
+          "id": "entry-row-shown-at-full-quote",
+          "ok": true,
+          "detail": "This week's jackpot1,000 tCHIKUN (testnet token, no value) · Entries don't fund the prize · Rules ↗"
+        },
+        {
+          "id": "live-checker-restored",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "selection-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W37",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "review",
+          "ok": true,
+          "detail": {
+            "status": "review"
+          }
+        },
+        {
+          "id": "review-drained",
+          "ok": true,
+          "detail": {
+            "week": "2027-W37",
+            "open": [],
+            "unscreened": 0
+          }
+        },
+        {
+          "id": "payout",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "lastError": null
+          }
+        },
+        {
+          "id": "winner-mirror",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-chain",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+            "prize": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "winner-balance",
+          "ok": true,
+          "detail": {
+            "before": "0",
+            "after": "1000000000000000000000"
+          }
+        },
+        {
+          "id": "api-parsed",
+          "ok": true,
+          "detail": {
+            "status": 200
+          }
+        },
+        {
+          "id": "api-paid",
+          "ok": true,
+          "detail": {
+            "status": "paid",
+            "winner": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+            "prizeWei": "1000000000000000000000",
+            "finalizeTx": "0x6af9192190e1b241072553120f6421f73296e1f341b22b837c2401d494d31f34"
+          }
+        },
+        {
+          "id": "invariant",
+          "ok": true,
+          "detail": [
+            {
+              "label": "main",
+              "balanceWei": "0",
+              "liabilitiesWei": "0",
+              "ok": true
+            }
+          ]
+        }
+      ],
+      "passedChecks": 23,
+      "transactions": {
+        "total": 13,
+        "keeper": 3,
+        "relayer": 1,
+        "operator": 6,
+        "admin": 0,
+        "funder": 2,
+        "players": 1,
+        "reverted": 0
+      },
+      "keeperGasUsed": "445320",
+      "finalBalances": {
+        "winner R20 player 1": {
+          "address": "0xd4db664b707353422b1ffc94038cdd0a7d074d51",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "1000000000000000000000"
+        },
+        "jackpot": {
+          "address": "0xa85233c63b9ee964add6f2cffe00fd84eb32338f",
+          "token": "0x322813fd9a801c5507c9de605d63cea4f2ce6c44",
+          "balanceWei": "0"
+        }
+      },
+      "invariant": [
+        {
+          "label": "main",
+          "balanceWei": "0",
+          "liabilitiesWei": "0",
+          "ok": true
+        }
+      ],
+      "expectedMisses": [],
+      "notes": [
+        "J17 coupling beyond the jackpot: the settle floor RANKED_MIN_PAID_WEI (default 0.102) refuses entries paid after a reserve cut until the same Monday step lowers it (runbook J17 weekly check)."
+      ],
+      "durationMs": 2955
+    }
+  ],
+  "expectedMisses": [
+    {
+      "scenario": "R16",
+      "population": "exceptional-model bot on a real seed (design B.4 set (b), B.5 item 1)",
+      "sessionId32": "0xe42e3bc641eca0830fa9a1e9e270a76720d11dcbc6e954de70f4cd81abec4430",
+      "score": 22457,
+      "survivalSeconds": 303,
+      "screen": "pass",
+      "holdCodes": [],
+      "soft": [
+        "S1"
+      ],
+      "outcome": "cleared by the keeper and paid",
+      "note": "The documented residual: a careful in-view bot is indistinguishable from an elite human by these features. Not a failure; adminClearOnly, caps and human review are the defence (J16, OJ6)."
+    }
+  ],
+  "productBugs": [],
+  "liveDryRunChecks": [
+    "rpc-chain",
+    "jackpot-deployed",
+    "code-jackpot",
+    "code-token",
+    "code-retired",
+    "immutables",
+    "roles",
+    "api-live",
+    "week-key",
+    "rules-in-force",
+    "j17-quote",
+    "j17-ranked-entry",
+    "j17-season",
+    "j17-game-id",
+    "j17-game-registered",
+    "pot-current",
+    "pot-previous",
+    "pause",
+    "keeper-balance",
+    "cron-fresh",
+    "admin-backlog",
+    "no-failed-weeks",
+    "block-list",
+    "residual-recipient",
+    "staff-ever",
+    "staff-history",
+    "jackpot-live-flag"
+  ]
+}

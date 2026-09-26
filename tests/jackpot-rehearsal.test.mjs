@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readdirSync, readFileSync } from 'node:fs';
 import test, { after, before } from 'node:test';
 import { ethers } from 'ethers';
 
 import {
   DAY, HOUR, TOKEN, createChainClock, evidenceForSeed, parseTimeTarget, revertReasonOf, startJackpotStack,
 } from '../scripts/lib/jackpot-rehearsal-driver.mjs';
-import { FAST_SUBSET, SCENARIOS, runScenario } from '../scripts/rehearse-jackpot-week.mjs';
+import { FAST_SUBSET, REHEARSAL_RECEIPT_SCHEMA, REHEARSAL_SCRIPT_RELATIVE_PATH, SCENARIOS, runScenario } from '../scripts/rehearse-jackpot-week.mjs';
 import { replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 
 /**
@@ -13,7 +15,7 @@ import { replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
  * the cron with the jackpotSelect / keeperFault seams, the owner page's call encoding) and the fast subset
  * of the rehearsal scenarios, R1, R3a, R5, R10, R13, R15 and R17, on ONE stack in this file. Bot runs are
  * capped at 1.5 minutes as E2E_EVIDENCE does, and R13's decoys are 1-minute pilots. The full set, R1-R20,
- * runs from scripts/rehearse-jackpot-week.mjs.
+ * runs from scripts/rehearse-jackpot-week.mjs; its committed receipt is checked at the end.
  * Keys: the public Hardhat test mnemonic only. Offline: in-process chain, PGlite, in-process handlers.
  */
 
@@ -164,4 +166,30 @@ test('a stale keeper action never overrides the admin', async () => {
     assert.ok(checkIds(result).includes(id), id);
   }
   assert.deepEqual([...results.keys()], [...FAST_SUBSET], 'the whole fast subset ran, in order');
+});
+
+test('the committed full rehearsal receipt passes R1-R20 with R16 as the expected miss, from this script', () => {
+  const dir = new URL('../docs/qa/', import.meta.url);
+  const names = readdirSync(dir).filter((name) => /^jackpot-rehearsal-\d{8}\.json$/.test(name)).sort();
+  assert.ok(names.length > 0, 'docs/qa/jackpot-rehearsal-<date>.json is committed');
+  const text = readFileSync(new URL(names.at(-1), dir), 'utf8');
+  const receipt = JSON.parse(text);
+  assert.equal(receipt.schema, REHEARSAL_RECEIPT_SCHEMA);
+  assert.equal(receipt.ok, true);
+  assert.deepEqual(receipt.scenarios.map((entry) => entry.id), SCENARIOS.map((entry) => entry.id), 'every scenario, in order');
+  for (const id of ['R1', 'R2', 'R3a', 'R3b', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'R13', 'R13v', 'R14', 'R15', 'R16', 'R17', 'R18', 'R19', 'R20']) {
+    assert.ok(receipt.scenarios.some((entry) => entry.id === id), id);
+  }
+  for (const entry of receipt.scenarios) {
+    assert.equal(entry.status, 'passed', entry.id);
+    assert.ok(entry.checks.length > 0 && entry.checks.every((check) => check.ok), entry.id);
+    for (const key of ['weekKeys', 'transactions', 'keeperGasUsed', 'finalBalances', 'invariant', 'expectedMisses']) assert.ok(Object.hasOwn(entry, key), `${entry.id}.${key}`);
+    assert.ok(entry.invariant.length > 0 && entry.invariant.every((row) => row.ok && BigInt(row.balanceWei) >= BigInt(row.liabilitiesWei)), `${entry.id}: balanceOf >= liabilities`);
+    assert.ok(entry.checks.some((check) => /^api-/.test(check.id)), `${entry.id} reads /api/jackpot through parseJackpot`);
+  }
+  assert.deepEqual(receipt.expectedMisses.map((miss) => miss.scenario), ['R16'], 'R16 is the one expected miss, and it is not a failure');
+  assert.ok(receipt.productBugs.every((bug) => bug.status === 'fixed'), 'every product bug the rehearsal found is fixed');
+  assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\|\/)|AppData|\/home\/|\/Users\//, 'no local path in the committed receipt');
+  const script = readFileSync(new URL(`../${REHEARSAL_SCRIPT_RELATIVE_PATH}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  assert.equal(receipt.scriptSha256, createHash('sha256').update(script, 'utf8').digest('hex'), 'the receipt was made by this script: re-run node scripts/rehearse-jackpot-week.mjs after editing it');
 });
