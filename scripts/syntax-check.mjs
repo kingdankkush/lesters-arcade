@@ -85,6 +85,7 @@ const NODE_CHECK_FILES = [
   'tests/free-share-token.test.mjs',
   'tests/free-card.test.mjs',
   'tests/free-share-page.test.mjs',
+  'tests/share-ranked-byte-identity.test.mjs',
   'apps/portal/src/ranked-results.mjs',
   'tests/ranked-results.test.mjs',
   'apps/portal/src/ranked-results-model.mjs',

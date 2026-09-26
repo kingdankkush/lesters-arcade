@@ -334,7 +334,9 @@ test('crons and function limits are declared', () => {
 });
 
 test('noindex covers profile, share and owner pages', () => {
-  for (const path of [`/profile/${WALLET}`, '/profile', `/s/${HEX64}`, '/owner/confirm-dev-wallet.html', '/owner/status.html', '/owner/status.mjs', '/play/chikun/ranked', '/leaderboards']) {
+  // /f/ (Free share pages) is noindex in the handler too; this rule also
+  // covers a platform error page served before the function answers.
+  for (const path of [`/profile/${WALLET}`, '/profile', `/s/${HEX64}`, `/f/chikun/ac${'0'.repeat(38)}`, '/f/anything', '/owner/confirm-dev-wallet.html', '/owner/status.html', '/owner/status.mjs', '/play/chikun/ranked', '/leaderboards']) {
     assert.equal(headersFor(path)['X-Robots-Tag'], 'noindex, follow', path);
   }
   assert.equal(headersFor('/owner/confirm-dev-wallet.html')['Cache-Control'], 'no-store');

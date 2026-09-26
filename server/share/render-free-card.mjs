@@ -34,6 +34,9 @@ const MUTED = '#b4c4df';
 const DEEP = '#05070f';
 const MAGENTA_EDGE = 'rgba(255, 61, 242, 0.55)';
 const MAGENTA_GLOW = 'rgba(255, 61, 242, 0.7)';
+// A dark halo under the small text lines keeps them legible over the busy
+// key art when the card is shown at 600 px or less in a feed.
+const LIFT = '0 2px 8px rgba(5, 7, 15, 0.95)';
 const CHIP_COLOURS = Object.freeze({ 'lester-blaster': GOLD, chikun: CYAN, stacked: AMBER });
 const CHIP_FILLS = Object.freeze({ 'lester-blaster': 'rgba(40, 30, 4, 0.85)', chikun: 'rgba(4, 34, 40, 0.85)', stacked: 'rgba(48, 30, 4, 0.85)' });
 
@@ -110,19 +113,19 @@ export function buildFreeCardElement({ run, background = null, heroPortrait = nu
     padding: '44px 56px 40px', border: `4px solid ${MAGENTA_EDGE}`,
   }, [
     flex({ flexDirection: 'column', alignItems: 'flex-start' }, [
-      text({ fontSize: 22, color: FREE_CARD_ACCENT, letterSpacing: 6 }, "LESTER'S ARCADE · FREE PLAY"),
-      text({ fontSize: 44, color: INK, marginTop: 6 }, title),
-      text({ fontSize: 22, color: GOLD, marginTop: 8, letterSpacing: 2 }, 'lestersarcade.io · play free'),
+      text({ fontSize: 22, color: FREE_CARD_ACCENT, letterSpacing: 6, textShadow: LIFT }, "LESTER'S ARCADE · FREE PLAY"),
+      text({ fontSize: 44, color: INK, marginTop: 6, textShadow: LIFT }, title),
+      text({ fontSize: 22, color: GOLD, marginTop: 8, letterSpacing: 2, textShadow: LIFT }, 'lestersarcade.io · play free'),
       ...(chip ? [chipNode(chip, CHIP_COLOURS[gameId] ?? GOLD, CHIP_FILLS[gameId] ?? CHIP_FILLS['lester-blaster'])] : []),
     ]),
     flex({ flexDirection: 'column' }, [
       flex({ alignItems: 'flex-end' }, [
         text({ fontSize: size, color: '#ffffff', lineHeight: 1, textShadow: `0 0 24px ${MAGENTA_GLOW}` }, score),
-        text({ fontSize: Math.max(24, Math.round(size * 0.27)), color: FREE_CARD_ACCENT, marginLeft: 18, marginBottom: Math.round(size * 0.135), letterSpacing: 6 }, 'PTS'),
+        text({ fontSize: Math.max(24, Math.round(size * 0.27)), color: FREE_CARD_ACCENT, marginLeft: 18, marginBottom: Math.round(size * 0.135), letterSpacing: 6, textShadow: LIFT }, 'PTS'),
       ]),
       flex({ alignItems: 'center', marginTop: 10 }, [
         flex({ width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundImage: `linear-gradient(135deg, ${CYAN}, ${FREE_CARD_ACCENT})`, color: DEEP, fontSize: 22 }, 'LA'),
-        text({ fontSize: 32, color: CYAN, marginLeft: 16 }, identity),
+        text({ fontSize: 32, color: CYAN, marginLeft: 16, textShadow: LIFT }, identity),
       ]),
     ]),
     flex({ alignItems: 'flex-end' }, tiles(run).map(tileNode)),

@@ -11,8 +11,9 @@
 //   only from the validated slug and the canonical token, so a human
 //   click-through survives tagging while the CDN key never splits and no
 //   render happens;
-// - a missing, conflicting or undecodable pair → the 400 page with generic
-//   tags, held a minute at the edge (deterministic); 405 and 500 are no-store.
+// - a missing or undecodable pair → the 400 page with generic tags, held a
+//   minute at the edge (the answer depends on nothing but the URL);
+// - a conflicting pair (the card's invalid-query), 405 and 500 → no-store.
 
 import { logInternalError } from '../server/http.mjs';
 import { buildBaseDeps } from '../server/config.mjs';
@@ -38,14 +39,19 @@ function rawQuery(req) {
   return [...url.searchParams];
 }
 
-// The declared pair and whether anything else rode along. A repeated key is
-// tolerated only when every copy carries the same value; a conflict is null.
+// The declared pair and whether the URL is anything but the bare pair. A
+// repeated key is tolerated only when every copy carries the same value (it
+// then counts as extra, so the page redirects to the canonical URL); a
+// conflict is null.
 export function readPair(req) {
   const pair = {};
   let extra = false;
   for (const [key, value] of rawQuery(req)) {
     if (!FREE_PAGE_QUERY.includes(key)) { extra = true; continue; }
-    if (Object.hasOwn(pair, key) && pair[key] !== value) return null;
+    if (Object.hasOwn(pair, key)) {
+      if (pair[key] !== value) return null;
+      extra = true;
+    }
     pair[key] = value;
   }
   return { game: pair.game, token: pair.token, extra };
@@ -95,7 +101,8 @@ export function createHandler(depsFactory) {
       const deps = await depsFactory();
       const pair = readPair(req);
       if (!pair) {
-        const page = renderFreeSharePage({ run: null, status: 400 });
+        // A conflicting pair is the card's invalid-query: no-store, like it.
+        const page = renderFreeSharePage({ run: null, status: 400, cacheable: false });
         sendHtml(res, { status: 400, body: page.html, headers: page.headers }, method);
         return;
       }
