@@ -114,7 +114,7 @@ export function renderJackpotRules(html,rules,file=JACKPOT_RULES_FILE){
 // The "How Ranked works" guide (apps/portal/how-ranked-works.html, served at /how-ranked-works): head
 // metadata, FAQPage and HowTo JSON-LD, and the header and main blocks, all from ranked-guide-content.mjs.
 // Indexable in every flag state (the sitemap does not depend on the flags); without live settlement it
-// says Ranked is not open.
+// says Ranked is in preview.
 export function renderRankedGuide(html,guide,file=RANKED_GUIDE_FILE){
   const title=guide.title+" | Lester's Arcade";
   html=html.replace(/<title>[\s\S]*?<\/title>/,'<title>'+escapeHtml(title)+'</title>');
@@ -181,7 +181,7 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
   write('manifest.webmanifest',renderManifest(readFileSync(resolve(portal,'manifest.webmanifest'),'utf8'),copy));
   write(JACKPOT_RULES_FILE,renderJackpotRules(sources[JACKPOT_RULES_FILE]??readFileSync(resolve(portal,JACKPOT_RULES_FILE),'utf8'),rules));
   // The rules page joins the sitemap and llms.txt only once the jackpot is live (design §D.4).
-  // The Ranked guide is listed in every flag state: without live settlement it says Ranked is not open.
+  // The Ranked guide is listed in every flag state: without live settlement it says Ranked is in preview.
   const urls=['/','/games',...PORTAL_GAMES.map(game=>'/games/'+game.slug),RANKED_GUIDE_PATH,'/trust.html',...(rules.live?[JACKPOT_RULES_PATH]:[])];
   write('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls.map(path=>'<url><loc>https://lestersarcade.io'+path+'</loc></url>').join('\n')+'\n</urlset>\n');
   // The previous site had no robots file. An empty rule set preserves its access

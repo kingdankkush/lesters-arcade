@@ -9,7 +9,7 @@
 //
 // Contract A33: public Ranked statements follow the flags. With live settlement
 // the guide explains the whole path; without it (a rollback), it says Ranked is
-// not open and points to Free play.
+// in preview (nothing charged or published) and points to Free play.
 //
 // A text is plain; the renderer escapes it. `[label](href)` inside a text
 // becomes a link (an http link opens in a new tab); nothing else is markup.
@@ -28,12 +28,12 @@ export function rankedGuideCopy({ settlementLive = false } = {}) {
   const title = 'How Ranked works';
   const description = live
     ? `How to play Ranked on Lester's Arcade: connect a wallet, get free testnet zkLTC from the faucet, and play for ${F.totalZkLtc} zkLTC per run. Steps, price, checks, boards, FAQ and fixes.`
-    : "Ranked on Lester's Arcade is not open right now. Free play needs no wallet and never touches the chain.";
+    : "Ranked on Lester's Arcade is in preview right now: nothing is charged and no run is published on chain. Free play needs no wallet and never touches the chain.";
   if (!live) {
     return Object.freeze({
       live, title, description,
       intro: Object.freeze([
-        'Ranked is not open right now: no Ranked runs are published on LitVM, and no entry is charged.',
+        'Ranked is in preview right now: nothing is charged and no Ranked run is published on LitVM.',
         `${W.free} Every game is open to play Free in your browser.`,
       ]),
       nav: Object.freeze([]),
@@ -70,13 +70,13 @@ export function rankedGuideCopy({ settlementLive = false } = {}) {
     ['What happens to my fee?', `The ${F.entryZkLtc} entry is split when you pay: ${F.developerPercent}% to the game's developer and ${F.arcadePercent}% to the arcade. The ${F.publishZkLtc} goes to the arcade's relayer, which pays the network fee to publish your score.`],
     ['When do the leaderboards reset?', `Weekly boards reset every ${F.weeklyReset}. Monthly boards reset on ${F.monthlyReset}. All-time boards never reset. Each board ranks the best verified score of each wallet.`],
     ['How do achievements work?', `There are ${F.achievementTotal} achievements: ${F.achievements['lester-blaster']} in ${GAMES.hmh}, ${F.achievements.chikun} in ${GAMES.chikun} and ${F.achievements.stacked} in ${GAMES.stacked}. The arcade's server records them from your verified Ranked runs, and they show on your profile. Free play does not earn them.`],
-    ['What is the game version next to a score?', "Each score shows the game version it was played on, such as HMH v0.5 or Chikun v6. Games get updates, and the version tells you which rules a run was played under. The boards do not reset when a game updates."],
+    ['What is the game version next to a score?', "Each score shows the game version it was played on, such as HMH v0.5 or Chikun v7. Games get updates, and the version tells you which rules a run was played under. The boards do not reset when a game updates."],
   ].map(([question, answer]) => Object.freeze([question, answer]));
 
   return Object.freeze({
     live, title, description,
     intro: Object.freeze([
-      `Every game on Lester's Arcade has two modes. ${W.free} Ranked puts your runs on the leaderboards: each run is checked by the arcade's server and published on LitVM, a Litecoin testnet.`,
+      `Every game on Lester's Arcade has two modes. ${W.free} Ranked puts your runs on the leaderboards: each run is checked by the arcade's server and published on the ${F.networkName}.`,
       `${W.price} ${W.value} Here is everything you need, step by step.`,
     ]),
     nav: Object.freeze([['Steps', '#steps'], ['Price', '#price'], ['Free zkLTC', '#faucet'], ['Free vs Ranked', '#free-vs-ranked'], ['Checks', '#checks'], ['Your score', '#where'], ['FAQ', '#faq'], ['Fixes', '#fixes']]),
@@ -235,7 +235,7 @@ export function rankedGuideSchema(guide, origin = 'https://lestersarcade.io') {
       step: guide.steps.map((step, index) => ({ '@type': 'HowToStep', position: index + 1, name: step.name, text: guidePlainText(step.text), url: `${url}#${step.id}` })) });
     graph.push({ '@type': 'FAQPage', '@id': url + '#faq', mainEntity: guide.questions.map(([question, answer]) => ({ '@type': 'Question', name: question, acceptedAnswer: { '@type': 'Answer', text: guidePlainText(answer) } })) });
   }
-  return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\u003c');
+  return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
 }
 
 // --- The other static surfaces (builder only) ---------------------------------
@@ -251,7 +251,7 @@ export function rankedSurfaceCopy({ settlementLive = false } = {}) {
     homeRanked: live
       ? Object.freeze({ title: 'Play Ranked', lead: 'Put your runs on the leaderboards in three steps.',
         steps: Object.freeze([Object.freeze(['Connect a wallet', 'connect']), Object.freeze(['Get free zkLTC', F.faucetUrl]), Object.freeze([`Play Ranked, ${F.totalZkLtc} zkLTC`, '/games'])]) })
-      : Object.freeze({ title: 'Ranked', lead: `Ranked is not open right now. ${W.free}`, steps: Object.freeze([]) }),
+      : Object.freeze({ title: 'Ranked', lead: `Ranked is in preview right now: nothing is charged and no run is published on chain. ${W.free}`, steps: Object.freeze([]) }),
     entryNext: Object.freeze(live ? [
       'Your wallet asks you to confirm the total once. Your run starts as soon as it is sent.',
       "When the run ends, the arcade's server checks it and publishes your score on LitVM, usually within about a minute.",
@@ -265,11 +265,11 @@ export function rankedSurfaceCopy({ settlementLive = false } = {}) {
       faucetSentence,
       guideLine,
     ] : [
-      `Ranked is not open right now. ${W.free} The [player guide](${F.guidePath}) says what changes when Ranked opens.`,
+      `Ranked is in preview right now: nothing is charged and no run is published on chain. ${W.free} The [player guide](${F.guidePath}) says what changes when Ranked opens.`,
     ]),
     llmsGuideLine: live
       ? `How to play Ranked: the steps, the ${F.totalZkLtc} zkLTC price, free testnet zkLTC from the faucet, the server checks, the boards and fixes for common problems.`
-      : 'Ranked is not open right now; Free play needs no wallet and never touches the chain.',
+      : 'Ranked is in preview right now: nothing is charged and no run is published on chain. Free play needs no wallet and never touches the chain.',
     llmsSection: live ? Object.freeze([
       W.price,
       W.faucet,
