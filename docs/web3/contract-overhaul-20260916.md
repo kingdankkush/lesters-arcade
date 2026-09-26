@@ -3,6 +3,8 @@
 Status: **compiled and gated, NOT deployed.** Branch `fable/master-list-20260916`. Nothing in this
 document authorises a deployment or a transaction; see "Owner decisions" below.
 
+> **Amended 2026-09-26 (owner decision):** the flat entry fee is now 0.01 zkLTC (0.012 zkLTC per run with the 0.002 reserve; `RANKED_MIN_PAID_WEI` default `12000000000000000`), applied to the deployed registry with `setEntryFee` after the server with the matching settle floor ships. The 0.1 / 0.102 figures below record the 2026-09-16 decision. See `docs/handoffs/ranked-fee-20260926.md`.
+
 **Epoch policy.** Everything this document deploys is a **testnet epoch** (LitVM LiteForge, chainId 4441).
 It runs until mainnet. At mainnet every contract, score, session, paid entry and soulbound achievement from
 this epoch is wiped: mainnet is a **fresh deployment set** (new addresses, empty registries, re-defined

@@ -1,7 +1,7 @@
 # Pre-deployment interface contract (2026-09-22 guide, Ranked + Web3 launch)
 
 **Status:** binding for every implementation slice of `docs/handoffs/pre-deployment-web3-guide-20260922.md` (the "guide").
-**Revision:** 2 (2026-09-23), with the reserve amendment of 2026-09-23: LiteForge base fees rose from about 0.01 to about 1.5 gwei, so the owner raised the settlement reserve from 0.0001 to **0.002 zkLTC** (entry total 0.102 zkLTC, `RANKED_MIN_PAID_WEI` default `102000000000000000`, client `RANKED_SETTLEMENT_GAS_RESERVE_WEI = '2000000000000000'`). Any 0.0001 / 0.1001 figure left below is superseded. Applies the security, feasibility and completeness reviews. Decisions A25 to A34, the runbook amendments (§13) and the review dispositions (§14) are new in this revision.
+**Revision:** 2 (2026-09-23), with the reserve amendment of 2026-09-23: LiteForge base fees rose from about 0.01 to about 1.5 gwei, so the owner raised the settlement reserve from 0.0001 to **0.002 zkLTC** (entry total 0.102 zkLTC, `RANKED_MIN_PAID_WEI` default `102000000000000000`, client `RANKED_SETTLEMENT_GAS_RESERVE_WEI = '2000000000000000'`). Any 0.0001 / 0.1001 figure left below is superseded. **Amended 2026-09-26 (owner decision):** the entry fee is 0.01 zkLTC (entry total 0.012 zkLTC, `RANKED_MIN_PAID_WEI` default `12000000000000000`, client `RANKED_ENTRY_FEE_WEI = '10000000000000000'`); the server with the lower floor ships before the on-chain `setEntryFee`, never after (guide §1.2 amendment, `docs/handoffs/ranked-fee-20260926.md`). Any 0.1 / 0.102 / `102000000000000000` figure left below is superseded. Applies the security, feasibility and completeness reviews. Decisions A25 to A34, the runbook amendments (§13) and the review dispositions (§14) are new in this revision.
 **Base commit:** `06ebe4ca` on `fable/master-list-20260916` (worktree `C:/Users/just_/lesters-arcade-fable0916`). Every `file:line` below is as of that commit. Line numbers drift after each merge: re-grep by the function or anchor text given next to each number.
 **Vercel plan:** Pro (team `justin-agent-projects`, checked with `npx vercel teams ls` on 2026-09-23). Minute-level crons and `maxDuration` up to 300 s are available. The runbook re-checks the plan before deploying (§13 step 0), because a Hobby plan rejects the every-minute cron at deploy time.
 
@@ -171,7 +171,7 @@ Period keys (day, week, month) come from `openedAt`, the time the run was played
 - `SETTLEMENT_PAUSED=true` in the production env, then a redeploy of the current release. E15, E3 and E13 answer `503 settlement-paused` and leave every row untouched. The browser cannot obtain a seed ticket, so it stops at the Ranked modal before any payment.
 - `GameRegistry.setPlayable(gameId32, false)` per game (`scripts/operator-actions.mjs pause-games`), which blocks `openSession` and `submitVerifiedSession` on chain.
 - `ScoreSubmissionRegistry.setTrustedVerifier(new)` to rotate a leaked verifier key, and `setRelayer(relayer, false)` to stop a leaked relayer key.
-- E3 requires `getPaidSession(...).amountWei ≥ RANKED_MIN_PAID_WEI` (default `102000000000000000`, the 0.1 zkLTC fee plus the 0.002 reserve), else `402 entry-underpaid`. So a free session is never relayed, and turning fees off makes Ranked unusable instead of free.
+- E3 requires `getPaidSession(...).amountWei ≥ RANKED_MIN_PAID_WEI` (default `12000000000000000`, the 0.01 zkLTC fee plus the 0.002 reserve since 2026-09-26; `102000000000000000` before), else `402 entry-underpaid`. So a free session is never relayed, and turning fees off makes Ranked unusable instead of free.
 
 **A28. Server secrets use new names, and config never holds key strings.** The live 1.7.0 `/api/attest` signs any posted score with `VERIFIER_PRIVATE_KEY`, unauthenticated, and `api/settle.mjs` relays with `RELAYER_PRIVATE_KEY`. Any rebuild of pre-1.8.0 code with production env would turn into a public signing oracle if those names ever held keys. So:
 
@@ -1597,7 +1597,7 @@ Event `RankedSessionOpened(bytes32 indexed sessionId, address indexed player, by
 | `RANKED_SCORE_REGISTRY_ADDRESS` | E3, E13, E15, E12 | 503; a mismatch with `LITVM_DEPLOYMENT` gives 503 `address-mismatch` |
 | `VERIFIER_PRIVATE_KEY`, `RELAYER_PRIVATE_KEY`, `SCORE_REGISTRY_ADDRESS` (legacy) | nothing | **must be absent**; if any is present, `settlementReady` is false (A28) |
 | `SETTLEMENT_PAUSED` (`'true'` to pause) | E3, E13, E15 | absent means not paused |
-| `RANKED_MIN_PAID_WEI` (decimal wei) | E3 | default `102000000000000000` |
+| `RANKED_MIN_PAID_WEI` (decimal wei) | E3 | default `12000000000000000` (the 0.01 fee plus the 0.002 reserve since 2026-09-26) |
 | `CRON_SECRET` (≥ 32 characters) | E12, E13 | 401 on every call |
 | `RPC_URL` | all chain I/O | default `https://liteforge.rpc.caldera.xyz/http`. It is never echoed; errors store allowlisted codes only (A31). |
 | `SESSION_ALLOWED_DOMAINS` | E2 | default per §4.3.2 |
