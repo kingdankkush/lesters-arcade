@@ -608,6 +608,8 @@ const NODE_CHECK_FILES = [
   'tests/local-chain-rehearsal.test.mjs',
   'tests/local-chain-rehearsal-http.test.mjs',
   'tests/nft-phase2-rehearsal.test.mjs',
+  'scripts/lib/jackpot-rehearsal-driver.mjs',
+  'tests/jackpot-rehearsal.test.mjs',
   "scripts/verify-generated-assets.mjs",
   "scripts/sprite-qa.mjs",
   "scripts/ground-texture-audit.mjs",
