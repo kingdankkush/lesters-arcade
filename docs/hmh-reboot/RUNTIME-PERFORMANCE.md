@@ -6,13 +6,13 @@
 
 `apps/hmh-reboot/src/runtime-performance.mjs` selects one immutable profile at boot.
 
-| Profile | Trigger | Resolution cap | Antialias | Particles / visible hazard | World margin | Enemy margin | Animated enemy cap |
-|---|---|---:|---|---:|---:|---:|---:|
-| desktop | width > 700 and fine pointer | 2.0 | on | 10 | 192 px | 224 px | 96 |
-| mobile | width ≤ 700 or coarse pointer | 1.25 | off | 6 | 128 px | 160 px | 64 |
-| reduced motion | OS/browser preference | 1.0 | off | 0 | 96 px | 128 px | 48 |
+| Profile | Trigger | Resolution cap | Antialias | Particles / visible hazard | World margin | Enemy margin | Animated enemy cap | Blood marks drawn | Texture pages |
+|---|---|---:|---|---:|---:|---:|---:|---:|---|
+| desktop | width > 700 and fine pointer | 2.0 | on | 10 | 192 px | 224 px | 96 | 48 | full |
+| mobile | width ≤ 700 or coarse pointer | 1.0 (adaptive up to 1.5) | off | 4 | 128 px | 160 px | 24 | 16 | half (`@0.5x`) |
+| reduced motion | OS/browser preference | 1.0 | off | 0 | 96 px | 128 px | 48 | 48 | full |
 
-The profile affects only rendering and effect projection. Fixed-step gameplay continues at 60 Hz with at most four catch-up steps.
+The profile affects only rendering and effect projection. Fixed-step gameplay continues at 60 Hz with at most four catch-up steps. The mobile row's animated-enemy cap, blood-mark cap, halved atmosphere budget, un-multisampled baked textures and half-resolution texture pages come from perf step 6 (below).
 
 ## Culling and allocations
 
