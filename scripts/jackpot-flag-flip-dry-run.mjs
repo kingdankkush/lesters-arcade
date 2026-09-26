@@ -19,8 +19,18 @@
 //      (the §F.1 draft stands in as the fixture legal text; the LEGAL-REVIEW-PENDING comment is removed as
 //      the flip commit removes it), `node scripts/build-portal-pages.mjs` (which refuses a live rules page
 //      with the pending comment or a missing section marker), the curated inventory regenerated; then the
-//      whole suite again. The failures the flip causes (failing now, passing at E4) are exactly the pinned
-//      tests the E10 commit updates; the generated pages' changed lines are exactly the literals it changes.
+//      whole suite again. The failures the flip causes (failing now, passing at E4) are the pinned tests the
+//      E10 commit updates; the generated pages' changed lines are the literals it changes;
+//   3. EVERY pinned assertion of each such test: a test stops at its first failing assertion, so each one is
+//      re-run with the failing assertion neutralised (in the throwaway copy only) until it passes, and every
+//      assertion line it stopped at is listed. The suites run with a preload (CHEAP_ASSERT_SOURCE) that gives
+//      a failing equality assertion on an object with no message of its own a short message instead of
+//      Node's full diff: after the flip, an assert.equal(fakeDomNode, null) otherwise inspects the whole
+//      fake DOM for about 90 s and some 14 GB before it throws "Array buffer allocation failed" with no test
+//      frame left in its stack. The reporter keeps the test file's own stack frame (searched in the whole
+//      stack, --stack-trace-limit=1000), so every failure names its line.
+// The checklist records `head` and `dirty`: the throwaway is made from HEAD, so a checklist to commit is
+// made from a clean committed tree (tests/jackpot-rehearsal.test.mjs refuses a dirty one).
 // Only one file changes in THIS worktree: docs/qa/jackpot-flag-flip-checklist.json (local paths written as
 // <throwaway>, <repo> and ~). The script refuses to run without --confirm-throwaway and inside the
 // repository's main worktree. JACKPOT_LIVE is never flipped in a committed file (contract §11 rule 9).
@@ -66,18 +76,18 @@ export const FLIP_EDITS = Object.freeze([
 
 // Preconditions of the flip (design §E E10, brief AC6), each with the command that proves it.
 export const FLIP_PRECONDITIONS = Object.freeze([
-  Object.freeze({ id: 'funded-current-week', text: 'potOf(currentWeek).total >= rulesFor(currentWeek).minFundWei on chain (J13: never claim an unfunded prize)', proof: 'node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io (checks pot-current and rules-in-force) and node scripts/jackpot-actions.mjs status' }),
+  Object.freeze({ id: 'funded-current-week', text: 'potOf(currentWeek).total >= rulesFor(currentWeek).minFundWei on chain (J13: never claim an unfunded prize)', proof: 'node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io --require-funded (pot-funded fails unless potOf(currentWeek).total >= rulesFor(currentWeek).minFundWei on chain; pot-current and rules-in-force pass) and node scripts/jackpot-actions.mjs status' }),
   Object.freeze({ id: 'legal-text', text: 'no LEGAL-REVIEW-PENDING: the owner confirmed the §F.1 draft or supplied reviewed text for the legal block (OJ3)', proof: `${BUILD_COMMAND} refuses a live rules page that still carries the comment` }),
   Object.freeze({ id: 'rules-sections', text: 'every rules-page section marker is present: <!-- copy:jackpot-rules-<id>:start --> for what, eligible, winner, timeline, verification, disqualification, challenges, rollover, funding, claims, end, published, no-guarantee, testnet, legal, history', proof: `${BUILD_COMMAND} refuses a live rules page with a missing marker; tests/jackpot-ui-rules-page.test.mjs` }),
   Object.freeze({ id: 'oj2-calibration', text: 'the OJ2 calibration receipt (docs/qa/chikun-plausibility-calibration-<date>.json) is present with the gate met: a human set of >= 40 runs from >= 5 people (>= 15 of 8 minutes or more), 0 human holds on H4-H6, 100% of set (a) held, set (b) miss rates recorded', proof: 'node scripts/chikun-plausibility-calibrate.mjs --probe --bots 4 --seed-variance --human-dir tests/fixtures/chikun-human-calibration' }),
-  Object.freeze({ id: 'j17-coupling', text: 'the J17 coupling checks pass: quoteEntry(chikun).totalWei >= minPaidWei, ScoreSubmissionRegistry.rankedEntry() == jackpot.rankedEntry(), the server season in rulesFor(currentWeek), Chikun registered and playable', proof: 'node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io (j17-quote, j17-ranked-entry, j17-season, j17-game-id, j17-game-registered)' }),
+  Object.freeze({ id: 'j17-coupling', text: 'the J17 coupling checks pass: quoteEntry(chikun).totalWei >= minPaidWei and >= the server settle floor (RANKED_MIN_PAID_WEI), ScoreSubmissionRegistry.rankedEntry() == jackpot.rankedEntry(), the server season in rulesFor(currentWeek), Chikun registered and playable', proof: 'node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io (j17-quote, j17-settle-floor, j17-ranked-entry, j17-season, j17-game-id, j17-game-registered)' }),
   Object.freeze({ id: 'open-epoch', text: 'an epoch with adminClearOnly = false is scheduled for the flip week (runbook E4 note), or the owner documents the decision to keep every payout manual', proof: 'node scripts/jackpot-actions.mjs schedule-rules --from-week <flip week> --admin-clear-only false (operator; SCHEDULE_JACKPOT_RULES_4441), then jackpot-actions status' }),
   Object.freeze({ id: 'e4-committed', text: 'runbook E4 is committed: contracts/deployment-record.jackpot.json and the regenerated apps/portal/src/generated/litvm-jackpot.mjs (status deployed); tests/jackpot-ui-client.test.mjs pins JACKPOT_LIVE => SETTLEMENT_LIVE && LITVM_JACKPOT deployed', proof: `${GENERATE_MODULE_COMMAND} --check` }),
 ]);
 
 // The post-release smokes of the D.3 surfaces (design §E E10).
 export const POST_RELEASE_SMOKES = Object.freeze([
-  'node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io --expect-live true (every check, JACKPOT_LIVE served true, the rules page indexable)',
+  'node scripts/jackpot-live-dry-run.mjs --site https://lestersarcade.io --expect-live true --require-funded (every check, JACKPOT_LIVE served true, the rules page indexable, the current week funded on chain, no pause)',
   'https://lestersarcade.io/jackpot/chikun: no robots noindex, no soft-launch banner, all 16 sections, the legal block, the history list from /api/jackpot',
   'sitemap.xml and llms.txt list /jackpot/chikun',
   'Chikun mode select (/games/chikun): the WEEKLY JACKPOT marquee with the funded prize and "(testnet token, no value)", the countdown and the provisional top score',
@@ -100,7 +110,51 @@ function git(args, cwd, { allowFail = false } = {}) {
   return String(result.stdout ?? '').trimEnd();
 }
 
-const childEnv = () => ({ ...process.env, FORCE_COLOR: '0', NO_COLOR: '1', [DRY_RUN_ENV]: '1' });
+// A deep stack, so a failure thrown far inside a library still carries the test file's own frame.
+export const STACK_TRACE_LIMIT_OPTION = '--stack-trace-limit=1000';
+const childEnv = ({ preload = null } = {}) => ({
+  ...process.env, FORCE_COLOR: '0', NO_COLOR: '1', [DRY_RUN_ENV]: '1',
+  NODE_OPTIONS: [process.env.NODE_OPTIONS ?? '', STACK_TRACE_LIMIT_OPTION, preload ? `--import="${pathToFileURL(preload).href}"` : ''].filter(Boolean).join(' '),
+});
+
+// The suites' preload (written next to the reporter in the throwaway's base directory). A strict
+// equality assertion (strictEqual, deepStrictEqual and their negations, which the strict namespace's
+// equal/deepEqual are) on an object is decided here, with the same algorithm (Object.is,
+// util.isDeepStrictEqual), and a failure throws a short AssertionError (inspect depth 1, a few hundred
+// characters, after the test's own message) whose stack starts at the test's call. Node 24 builds a full
+// diff even for a custom message, which is what runs out of memory on a large fake DOM node. Primitive
+// comparisons go to Node untouched. Both suites (E4 and the flip) run with it, so it never changes which
+// tests fail, only how briefly they say so.
+export const CHEAP_ASSERT_SOURCE = `import { createRequire, syncBuiltinESMExports } from 'node:module';
+import { inspect, isDeepStrictEqual } from 'node:util';
+const require = createRequire(import.meta.url);
+const assert = require('node:assert');
+const short = (value) => inspect(value, { depth: 1, maxArrayLength: 5, maxStringLength: 120, breakLength: Infinity }).slice(0, 300);
+const heavy = (value) => value !== null && (typeof value === 'object' || typeof value === 'function');
+const CHECKS = {
+  strictEqual: (a, b) => Object.is(a, b),
+  notStrictEqual: (a, b) => !Object.is(a, b),
+  deepStrictEqual: (a, b) => isDeepStrictEqual(a, b),
+  notDeepStrictEqual: (a, b) => !isDeepStrictEqual(a, b),
+};
+function wrap(target, name, kind) {
+  const original = target[name];
+  if (typeof original !== 'function' || original.flipDryRun) return;
+  const wrapped = function (actual, expected, message, ...rest) {
+    if (!heavy(actual) && !heavy(expected)) return original.call(this, actual, expected, message, ...rest);
+    if (CHECKS[kind](actual, expected)) return undefined;
+    if (message instanceof Error) throw message;
+    const own = message === undefined ? '' : String(message) + ' | ';
+    throw new assert.AssertionError({ message: own + kind + ': ' + short(actual) + ' vs ' + short(expected), operator: kind, stackStartFn: wrapped });
+  };
+  wrapped.flipDryRun = true;
+  target[name] = wrapped;
+}
+const STRICT = { equal: 'strictEqual', strictEqual: 'strictEqual', notEqual: 'notStrictEqual', notStrictEqual: 'notStrictEqual', deepEqual: 'deepStrictEqual', deepStrictEqual: 'deepStrictEqual', notDeepEqual: 'notDeepStrictEqual', notDeepStrictEqual: 'notDeepStrictEqual' };
+for (const [name, kind] of Object.entries(STRICT)) wrap(assert.strict, name, kind);
+for (const name of ['strictEqual', 'notStrictEqual', 'deepStrictEqual', 'notDeepStrictEqual']) wrap(assert, name, name);
+syncBuiltinESMExports();
+`;
 
 function run(command, cwd, { timeoutMs = 45 * 60_000 } = {}) {
   const started = Date.now();
@@ -131,7 +185,8 @@ function removeJunction(path) {
   else unlinkSync(path);
 }
 
-// A reporter that prints every failing test as one JSON line (file, name, message, expected, actual).
+// A reporter that prints every failing test as one JSON line (file, name, message, expected, actual, and
+// the test file's own stack frame, found in the WHOLE stack before it is cut to 4,000 characters).
 const REPORTER_SOURCE = `export default async function* flagFlipReporter(source) {
   const plain = (value) => { try { return JSON.parse(JSON.stringify(value)); } catch { return String(value); } };
   for await (const event of source) {
@@ -140,17 +195,22 @@ const REPORTER_SOURCE = `export default async function* flagFlipReporter(source)
     const data = event.data ?? {};
     const error = data.details?.error;
     const cause = error?.cause ?? error;
-    yield JSON.stringify({ name: data.name, file: data.file, nesting: data.nesting, message: String(cause?.message ?? error?.message ?? '').slice(0, 1500), expected: plain(cause?.expected), actual: plain(cause?.actual), stack: String(cause?.stack ?? '').slice(0, 4000) }) + '\\n';
+    const stack = String(cause?.stack ?? error?.stack ?? '');
+    const base = String(data.file ?? '').split(/[\\\\/]/).pop();
+    const frame = base ? (stack.split('\\n').find((line) => line.includes(base + ':')) ?? null) : null;
+    yield JSON.stringify({ name: data.name, file: data.file, nesting: data.nesting, message: String(cause?.message ?? error?.message ?? '').slice(0, 1500), expected: plain(cause?.expected), actual: plain(cause?.actual), frame, stack: stack.slice(0, 4000) }) + '\\n';
   }
 }
 `;
 
-// The whole suite as the release gate runs it (every tests/*.test.mjs, serially), or only `files`.
+// The whole suite as the release gate runs it (every tests/*.test.mjs, serially), or only `files`, with the
+// cheap-assert preload that sits next to the reporter.
 function runSuite(wt, reporterPath, files = null) {
+  const preload = join(dirname(reporterPath), 'flip-cheap-assert.mjs');
   const testFiles = files ?? readdirSync(join(wt, 'tests')).filter((name) => name.endsWith('.test.mjs')).sort().map((name) => `tests/${name}`);
   rmSync(join(wt, 'apps', 'portal', 'dist'), { recursive: true, force: true });
   const started = Date.now();
-  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', `--test-reporter=${pathToFileURL(reporterPath).href}`, ...testFiles], { cwd: wt, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 60 * 60_000, env: childEnv() });
+  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', `--test-reporter=${pathToFileURL(reporterPath).href}`, ...testFiles], { cwd: wt, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 60 * 60_000, env: childEnv({ preload: existsSync(preload) ? preload : null }) });
   const failures = [];
   let summary = null;
   for (const line of String(result.stdout ?? '').split(/\r?\n/)) {
@@ -162,7 +222,7 @@ function runSuite(wt, reporterPath, files = null) {
       continue;
     }
     const file = relative(wt, event.file ?? '').split(sep).join('/');
-    const lineNumber = testLineFromStack(event.stack, file);
+    const lineNumber = testLineFromStack(event.frame, file) ?? testLineFromStack(event.stack, file);
     let source = null;
     if (lineNumber) {
       try { source = readFileSync(join(wt, file), 'utf8').split(/\r?\n/)[lineNumber - 1]?.trim() ?? null; } catch { source = null; }
@@ -173,6 +233,70 @@ function runSuite(wt, reporterPath, files = null) {
 }
 
 const keyOf = (failure) => `${failure.file} :: ${failure.name}`;
+
+// The test that checks the committed checklist fails in both suites while this run regenerates it (the
+// committed copy is stale by definition): it is neither an E4 update nor a flip update.
+export const SELF_CHECK = Object.freeze({ file: 'tests/jackpot-rehearsal.test.mjs', name: 'the flag-flip dry run: the committed checklist is complete and made by this script' });
+const isSelfCheck = (failure) => failure.file === SELF_CHECK.file && failure.name === SELF_CHECK.name;
+
+// The no-op that stands in for a neutralised assertion (appended to the throwaway copy of a test file; a
+// function declaration, so it is hoisted above every use).
+export const FLIP_NOOP_SOURCE = 'function __flipNoop() { return new Proxy(function flipNoop() {}, { get: () => () => undefined, apply: () => undefined }); }';
+export const MAX_PINNED_ASSERTIONS = 12;
+
+// `assert.x(` or `assert(` at `line` (1-based) of `text` → the same call on the no-op. → the new text, or
+// null when the line holds no assertion call (a failure from a helper: not neutralisable here).
+export function neutraliseAssertion(text, line) {
+  const lines = String(text).split('\n');
+  const at = lines[line - 1];
+  if (at === undefined) return null;
+  const match = /\bassert(\.[A-Za-z]+)?\s*\(/.exec(at);
+  if (!match) return null;
+  lines[line - 1] = `${at.slice(0, match.index)}__flipNoop()${match[1] ?? ''}(${at.slice(match.index + match[0].length)}`;
+  if (!lines.includes(FLIP_NOOP_SOURCE)) lines.push(FLIP_NOOP_SOURCE);
+  return lines.join('\n');
+}
+
+// Every assertion `failure` (a top-level test the flip broke) stops at: re-run its file with each failing
+// assertion neutralised in turn until the test passes. The file is restored afterwards.
+function pinnedAssertions(wt, reporterPath, failure) {
+  const path = join(wt, failure.file);
+  const original = readFileSync(path, 'utf8');
+  const assertions = [];
+  let current = failure;
+  let complete = false;
+  let stoppedBecause = null;
+  try {
+    for (let round = 0; round < MAX_PINNED_ASSERTIONS; round += 1) {
+      assertions.push({ line: current.line, source: current.source, message: current.message, expected: current.expected, actual: current.actual });
+      if (!current.line) {
+        stoppedBecause = 'the failure names no line of the test file';
+        break;
+      }
+      const next = neutraliseAssertion(readFileSync(path, 'utf8'), current.line);
+      if (next === null) {
+        stoppedBecause = `line ${current.line} holds no assert call (a helper failed): update it by hand`;
+        break;
+      }
+      writeFileSync(path, next, 'utf8');
+      const rerun = runSuite(wt, reporterPath, [failure.file]);
+      const again = rerun.failures.find((entry) => entry.name === failure.name && (entry.nesting ?? 0) === (failure.nesting ?? 0));
+      if (!again) {
+        complete = true;
+        break;
+      }
+      if (again.line === current.line) {
+        stoppedBecause = `line ${current.line} still fails once neutralised`;
+        break;
+      }
+      current = again;
+    }
+    if (!complete && !stoppedBecause) stoppedBecause = `more than ${MAX_PINNED_ASSERTIONS} failing assertions`;
+  } finally {
+    writeFileSync(path, original, 'utf8');
+  }
+  return { assertions, complete, ...(stoppedBecause ? { stoppedBecause } : {}) };
+}
 
 // Failures of `after` that are not failures of `before` (the ones the step causes), top-level tests first.
 export function causedFailures(before, after) {
@@ -286,16 +410,20 @@ export async function runFlagFlipDryRun({ argv = process.argv.slice(2), log = co
   const outIndex = argv.indexOf('--out');
   const out = outIndex >= 0 ? argv[outIndex + 1] : FLIP_CHECKLIST_RELATIVE_PATH;
   const head = git(['rev-parse', '--short=8', 'HEAD'], repoRoot);
+  // Tracked changes (the checklist being written aside) are NOT in the throwaway, which is made from HEAD.
+  const dirty = git(['status', '--porcelain', '--untracked-files=no'], repoRoot).split(/\r?\n/).filter(Boolean).some((line) => line.slice(3).trim() !== out);
   const base = mkdtempSync(join(tmpdir(), 'lesters-jackpot-flip-'));
   const wt = join(base, 'wt');
   scrub = pathScrubber([[wt, '<throwaway>'], [base, '<throwaway-base>'], [repoRoot, '<repo>'], [homedir(), '~']]);
   const reporter = join(base, 'flip-reporter.mjs');
   writeFileSync(reporter, REPORTER_SOURCE, 'utf8');
+  writeFileSync(join(base, 'flip-cheap-assert.mjs'), CHEAP_ASSERT_SOURCE, 'utf8');
   const junctions = [];
   const report = {
     schema: FLIP_CHECKLIST_SCHEMA,
     generatedAt: new Date().toISOString(),
     head,
+    dirty,
     scriptSha256: sha256Text(readFileSync(join(repoRoot, FLIP_SCRIPT_RELATIVE_PATH), 'utf8')),
     command: `node ${FLIP_SCRIPT_RELATIVE_PATH} --confirm-throwaway${testsFlag ? ` --tests ${testsFlag}` : ''}`,
     partial: Boolean(testsFlag),
@@ -324,7 +452,8 @@ export async function runFlagFlipDryRun({ argv = process.argv.slice(2), log = co
       commands: e4Commands.map((command) => ({ command: command.command, exitCode: command.exitCode, output: tail(command.output, 3) })),
       files: changedFiles(wt, new Map(), e4Texts).map((entry) => ({ file: entry.file, ...(entry.newFile ? { newFile: true } : {}), removed: entry.lines.removedCount, added: entry.lines.addedCount })),
       suite: { files: e4Suite.files, counts: e4Suite.summary, ms: e4Suite.ms },
-      failuresOutsideLedger: e4Suite.failures.filter((failure) => (failure.nesting ?? 0) === 0 && !ledgerKeys.has(keyOf(failure))).map((failure) => ({ file: failure.file, name: failure.name, line: failure.line, message: failure.message })),
+      failuresOutsideLedger: e4Suite.failures.filter((failure) => (failure.nesting ?? 0) === 0 && !ledgerKeys.has(keyOf(failure)) && !isSelfCheck(failure)).map((failure) => ({ file: failure.file, name: failure.name, line: failure.line, message: failure.message })),
+      selfCheckFailed: e4Suite.failures.some(isSelfCheck),
       note: 'These are the E4 commit\'s own test updates (the E4 session makes them with the record and the module); the flip below is measured against this state.',
     };
 
@@ -342,6 +471,8 @@ export async function runFlagFlipDryRun({ argv = process.argv.slice(2), log = co
     const caused = causedFailures(e4Suite.failures, flipSuite.failures);
     const fixedByFlip = causedFailures(flipSuite.failures, e4Suite.failures);
     const topLevel = caused.filter((failure) => (failure.nesting ?? 0) === 0);
+    log(`3. every pinned assertion of the ${topLevel.length} test(s) the flip breaks (each re-run with the failing assertion neutralised)`);
+    const pinned = topLevel.map((failure) => pinnedAssertions(wt, reporter, failure));
     report.flip = {
       edits,
       buildCommand: BUILD_COMMAND,
@@ -351,14 +482,17 @@ export async function runFlagFlipDryRun({ argv = process.argv.slice(2), log = co
       filesChanged: flipFiles.map((entry) => ({ file: entry.file, removed: entry.lines.removedCount, added: entry.lines.addedCount })),
       literalsChanged: flipFiles.filter((entry) => !entry.file.endsWith('hmh-curated-level-kit-runtime.mjs')).map((entry) => ({ file: entry.file, changes: entry.segments })),
       suite: { files: flipSuite.files, counts: flipSuite.summary, ms: flipSuite.ms },
-      testsToUpdate: topLevel.map((failure) => ({ file: failure.file, name: failure.name, line: failure.line, source: failure.source, message: failure.message, expected: failure.expected, actual: failure.actual })),
+      testsToUpdate: topLevel.map((failure, index) => ({
+        file: failure.file, name: failure.name, line: failure.line, source: failure.source, message: failure.message, expected: failure.expected, actual: failure.actual,
+        assertions: pinned[index].assertions, complete: pinned[index].complete, ...(pinned[index].stoppedBecause ? { stoppedBecause: pinned[index].stoppedBecause } : {}),
+      })),
       subtestFailures: caused.length - topLevel.length,
       passingOnlyAfterFlip: fixedByFlip.filter((failure) => (failure.nesting ?? 0) === 0).map((failure) => ({ file: failure.file, name: failure.name })),
     };
     report.checklist = {
       filesToEdit: [
         ...FLIP_EDITS.map((edit) => ({ file: edit.file, change: edit.replace ? `${edit.find} → ${edit.replace}` : `remove ${edit.find.trim()}`, why: edit.reason })),
-        { file: 'every test listed in flip.testsToUpdate', change: 'update the pinned literal to the live copy (flip.testsToUpdate carries expected and actual)', why: 'contract §11 rule 10: pinned literals change in the same commit' },
+        { file: 'every test listed in flip.testsToUpdate', change: 'update every assertion in its `assertions` (line, source, expected and actual, found by re-running the test with each failing assertion neutralised) to the live copy; a test whose `complete` is false needs a look past its `stoppedBecause`, so treat the list as at least these', why: 'contract §11 rule 10: pinned literals change in the same commit' },
       ],
       regenerate: [BUILD_COMMAND, INVENTORY_COMMAND],
       generatedFiles: report.flip.filesChanged.map((entry) => entry.file).filter((file) => !FLIP_EDITS.some((edit) => edit.file === file)),
