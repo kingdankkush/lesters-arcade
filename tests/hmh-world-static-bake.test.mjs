@@ -493,6 +493,29 @@ test('the camera ground height shifts the baked world but not the tile pattern',
   assertSpritesMatch(direct.terrainSprites, production.terrainSprites, bake.offset, 'lifted terrain');
 });
 
+test('a caller-joined blocker key re-bakes exactly when the blocker set would', () => {
+  // main.mjs keeps its blocker Set and its ','-joined key across frames and
+  // rebuilds both only when the ids change; the bake then compares the key
+  // instead of re-joining the Set every frame.
+  const sets = [new Set(), new Set(['relay-abandoned-farmhouse']), new Set(['relay-abandoned-farmhouse']), new Set(['relay-abandoned-farmhouse', 'gate-a']), new Set(['gate-a', 'relay-abandoned-farmhouse']), new Set(['gate-a'])];
+  const run = (withKey) => {
+    const { production, bake, statics } = bakeFor();
+    const cam = camera(900, 2_400);
+    const counts = [];
+    for (const ids of sets) {
+      const overrides = withKey ? { nativeBlockerIds: ids, nativeBlockerKey: [...ids].join(',') } : { nativeBlockerIds: ids };
+      bake.render(argsFor(production, LEVEL_ONE_WORLD, cam, overrides));
+      bake.render(argsFor(production, LEVEL_ONE_WORLD, cam, overrides));
+      counts.push(statics().length);
+    }
+    return counts;
+  };
+  assert.deepEqual(run(true), run(false));
+  assert.deepEqual(run(false), [1, 2, 2, 3, 4, 5], 'order within the set is part of the key, as before');
+  assert.match(mainSource, /nativeBlockerKey: nativeBlockers\.key,/);
+  assert.match(mainSource, /key: \[\.\.\.set\]\.join\(','\)/, 'the key is the same join the bake would make');
+});
+
 test('the runtime renders the ground through the lazily loaded bake', () => {
   assert.match(mainSource, /import\('\.\/world-static-bake\.mjs'\)/, 'the bake stays out of the initial JS');
   assert.match(mainSource, /createStaticWorldBake\(\{[^}]*render: renderWorldProductionArt/s);

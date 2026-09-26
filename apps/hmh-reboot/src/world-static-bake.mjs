@@ -81,9 +81,17 @@ export function createStaticWorldBake({
   const offset = { x: 0, y: 0 };
   // Everything the static pass reads besides the camera position. The tile
   // registry bumps its version whenever a texture or the manifest arrives.
-  const keyFor = (args, extraKey) => [args.world, args.camera.zoom, args.view.width, args.view.height, args.performanceProfile,
-    worldProduction.groundFallback?.draw, layers.townBlockers.visible, [...(args.nativeBlockerIds ?? [])].join(','), extraKey,
-    args.terrainTiles, args.terrainTiles?.version];
+  // Filled into one reused array every frame; a caller that already holds the
+  // blocker ids joined with ',' passes them as nativeBlockerKey.
+  const frameKey = [];
+  const keyFor = (args, extraKey) => {
+    frameKey.length = 0;
+    frameKey.push(args.world, args.camera.zoom, args.view.width, args.view.height, args.performanceProfile,
+      worldProduction.groundFallback?.draw, layers.townBlockers.visible,
+      args.nativeBlockerKey ?? [...(args.nativeBlockerIds ?? [])].join(','), extraKey,
+      args.terrainTiles, args.terrainTiles?.version);
+    return frameKey;
+  };
   // The camera-anchored tile origin the per-frame placer would use.
   const tileOrigin = (camera, view) => ({ x: view.width / 2 - camera.x * camera.zoom, y: view.height / 2 - camera.y * camera.zoom });
   const locate = ({ camera, view, worldToScreen }) => {
@@ -111,11 +119,12 @@ export function createStaticWorldBake({
     render(args, onBake = null, extraKey = null) {
       const { camera, view } = args;
       const key = keyFor(args, extraKey);
-      const same = bake !== null && key.length === bake.key.length && key.every((value, index) => Object.is(value, bake.key[index]));
+      let same = bake !== null && key.length === bake.key.length;
+      for (let index = 0; same && index < key.length; index += 1) same = Object.is(key[index], bake.key[index]);
       if (!same || !locate(args)) {
         const pad = lastZoom === null || camera.zoom === lastZoom ? margin : 0;
         bake = {
-          key,
+          key: key.slice(),
           margin: pad,
           camera: { ...camera },
           view: { width: view.width + pad * 2, height: view.height + pad * 2 },

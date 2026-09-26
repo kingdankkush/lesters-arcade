@@ -1,4 +1,6 @@
-import { clamp, finite } from './value-guards.mjs';
+// Verbatim copy of the 1.8.1 release (60ea173a) apps/hmh-reboot/src/contact-shadows.mjs, kept as the
+// reference for tests/hmh-render-alloc.test.mjs (shadow geometry and pool placement). Do not edit.
+import { clamp, finite } from '../../../apps/hmh-reboot/src/value-guards.mjs';
 
 // Projection-only ground contact shadows. Actors and props were drawing with
 // nothing between their feet and the terrain, so they read as stickers pasted
@@ -76,23 +78,19 @@ const AO_RINGS = Object.freeze(falloffRings(0.55, 2.6).map((ring) => Object.free
  * frozen output, no engine and no run state.
  */
 export function resolveContactShadow({ footprintPx, lift = 0, zoom = 1, baseAlpha = CONTACT_SHADOW_BASE_ALPHA } = {}) {
-  const { width, height, alpha } = shadowShape({}, footprintPx, lift, zoom, baseAlpha);
-  return Object.freeze({ width, height, alpha, runtimeAuthority: 'projection-only' });
-}
-
-// The same geometry written into `out`: the pool places a shadow per drawn
-// body and prop every frame and keeps nothing of the result.
-function shadowShape(out, footprintPx, lift, zoom, baseAlpha) {
   finite(footprintPx, 'footprintPx');
   finite(lift, 'lift');
   finite(zoom, 'zoom');
   finite(baseAlpha, 'baseAlpha');
   const reach = Math.max(1, Math.abs(footprintPx) * LIFT_REACH);
   const liftRatio = clamp(Math.abs(lift) / reach, 0, 1);
-  out.width = footprintPx * 2 * FOOTPRINT_SPILL * zoom * (1 - liftRatio * LIFT_SHRINK);
-  out.height = out.width * GROUND_ASPECT;
-  out.alpha = clamp(baseAlpha * (1 - liftRatio), MIN_ALPHA, Math.max(MIN_ALPHA, baseAlpha));
-  return out;
+  const width = footprintPx * 2 * FOOTPRINT_SPILL * zoom * (1 - liftRatio * LIFT_SHRINK);
+  return Object.freeze({
+    width,
+    height: width * GROUND_ASPECT,
+    alpha: clamp(baseAlpha * (1 - liftRatio), MIN_ALPHA, Math.max(MIN_ALPHA, baseAlpha)),
+    runtimeAuthority: 'projection-only',
+  });
 }
 
 const drawRings = (graphic, rings) => {
@@ -134,8 +132,6 @@ export function createContactShadowPool({ ContainerClass, SpriteClass, textures,
   let blobCursor = 0;
   let ringCursor = 0;
   let dropped = 0;
-  // resolveContactShadow's geometry, written per placement into one object.
-  const placed = { width: 0, height: 0, alpha: 0 };
 
   const claim = (bank, cursor, texture) => {
     let sprite = bank[cursor];
@@ -162,7 +158,7 @@ export function createContactShadowPool({ ContainerClass, SpriteClass, textures,
       dropped += 1;
       return false;
     }
-    const resolved = shadowShape(placed, footprintPx, lift, zoom, alpha);
+    const resolved = resolveContactShadow({ footprintPx, lift, zoom, baseAlpha: alpha });
     if (resolved.width <= 0) return false;
     if (ao && ringCursor < max) {
       const ring = claim(rings, ringCursor, textures.ao);
