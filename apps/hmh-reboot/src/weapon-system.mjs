@@ -320,6 +320,16 @@ export const pistolProgressionByWeapon = (ranks = {}) => ({
 
 // Package 8.2: each finite gun's three cards are its rate-of-fire, damage and
 // Magazine & Salvage (reloadSpeed) branches.
+const GUN_BRANCH_CARDS = freezeDeep({
+  'scatter-shotgun': ['scatter-pump', 'scatter-dump', 'scatter-shells'],
+  'auto-miner': ['miner-hashrate', 'miner-asic', 'miner-pool'],
+  'hash-rail': ['rail-blocktime', 'rail-proof', 'rail-mempool'],
+  'launcher-rig': ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier'],
+});
+// The gun each of the twelve cards feeds (creditWeaponCardPick).
+export const HMH_GUN_CARD_WEAPON_IDS = freezeDeep(Object.fromEntries(
+  Object.entries(GUN_BRANCH_CARDS).flatMap(([weaponId, cards]) => cards.map((card) => [card, weaponId])),
+));
 const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
   rateOfFire: ranks[rateOfFire] ?? 0,
   damage: ranks[damage] ?? 0,
@@ -328,10 +338,10 @@ const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
 
 export const progressionByWeapon = (ranks = {}) => ({
   ...pistolProgressionByWeapon(ranks),
-  'scatter-shotgun': gunBranches(ranks, ['scatter-pump', 'scatter-dump', 'scatter-shells']),
-  'auto-miner': gunBranches(ranks, ['miner-hashrate', 'miner-asic', 'miner-pool']),
-  'hash-rail': gunBranches(ranks, ['rail-blocktime', 'rail-proof', 'rail-mempool']),
-  'launcher-rig': gunBranches(ranks, ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier']),
+  'scatter-shotgun': gunBranches(ranks, GUN_BRANCH_CARDS['scatter-shotgun']),
+  'auto-miner': gunBranches(ranks, GUN_BRANCH_CARDS['auto-miner']),
+  'hash-rail': gunBranches(ranks, GUN_BRANCH_CARDS['hash-rail']),
+  'launcher-rig': gunBranches(ranks, GUN_BRANCH_CARDS['launcher-rig']),
   'lightning-ledger': {
     branches: {
       conductivity: ranks['ledger-conductivity'] ?? 0,
@@ -397,6 +407,24 @@ const SALVAGE_PERMILLE = freezeDeep({
   'hash-rail': [0, 0, 150, 250],
   'launcher-rig': [0, 0, 150, 250],
 });
+// Balance option (a) (build ledger, slice 6 review; flagged to the owner): a
+// finite gun's ammo sustains its own tree, so a gun card pays for the rest of
+// the run the way a Pistol card does. Both rules move reserve only, never the
+// clip, with no RNG, and neither touches the Pistol.
+//   Card magazine: picking any card of a gun's tree adds
+//   ceil(reserveAmmoGrant x HMH_CARD_MAGAZINE_FRACTION) to that gun's reserve,
+//   up to the cap, on the offer's tick (creditWeaponCardPick).
+//   Trickle: with Magazine & Salvage at rank 3, the reserve gains a quarter of
+//   the grant every 900 ticks up to the cap, inside the weapon step (the
+//   package's evolved-gun rule, 8.5).
+export const HMH_CARD_MAGAZINE_FRACTION = 1;
+// Which cards of a tree carry a magazine: every card, or only the tree's
+// Magazine & Salvage card.
+const CARD_MAGAZINE_ANY_CARD = true;
+export const HMH_RESERVE_TRICKLE_INTERVAL_TICKS = 900;
+// Trickle rounds per interval as a fraction of the grant, by Magazine &
+// Salvage rank (ceil, so a rank that trickles never trickles nothing).
+const RESERVE_TRICKLE_FRACTIONS = Object.freeze([0, 0, 0, 1 / 4]);
 // The Machine Gun's heat per round by Fire Rate rank (package 8.2).
 const MINER_HEAT_MULTIPLIERS = Object.freeze([1, 0.9, 0.8, 0.72]);
 
@@ -592,6 +620,9 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     clipSize,
     reserveAmmoGrant: definition.pickupReserveAmmo === null ? null : Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier]),
     salvagePermille: SALVAGE_PERMILLE[weaponId]?.[reserveTier] ?? 0,
+    reserveTrickleRounds: Object.hasOwn(SALVAGE_PERMILLE, weaponId) && definition.pickupReserveAmmo !== null && RESERVE_TRICKLE_FRACTIONS[reserveTier] > 0
+      ? Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier] * RESERVE_TRICKLE_FRACTIONS[reserveTier])
+      : 0,
     specials,
     pelletCount,
     spreadRadians,
@@ -780,17 +811,28 @@ function assertMonotonic(state, tick) {
   state.lastTick = tick;
 }
 
+// Leaving a weapon cancels its charge and ends a live Arc Rifle channel the
+// way a manual switch always has (stopReason 'switch', the break cooldown).
+// Every switch away goes through here: a manual select or swap, a cache that
+// auto-selects its gun, a refill that selects, and the dry-gun fallback. A
+// channel left flagged live after a cache switch used to overheat or
+// "release" the moment the player came back (build ledger slice 6 review).
+// Returns the channel-break event, or null when no channel was live.
+function leaveWeapon(weapon, tick) {
+  const interrupted = weapon.channelState?.active
+    ? stepLightningLedger(weapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
+    : null;
+  weapon.chargeStartedTick = null;
+  weapon.chargeReadyAnnounced = false;
+  return interrupted;
+}
+
 export function selectWeapon(state, weaponId, { tick } = {}) {
   assertMonotonic(state, tick);
   if (!state.weapons?.[weaponId]) throw new TypeError(`unknown weapon ${String(weaponId)}`);
   if (!state.weapons[weaponId].owned) throw new TypeError(`weapon ${String(weaponId)} is unowned`);
   const previousWeaponId = state.activeWeaponId;
-  const previousWeapon = state.weapons[previousWeaponId];
-  const interrupted = previousWeapon.channelState?.active
-    ? stepLightningLedger(previousWeapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
-    : null;
-  previousWeapon.chargeStartedTick = null;
-  previousWeapon.chargeReadyAnnounced = false;
+  const interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
   state.activeWeaponId = weaponId;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick, interrupted });
@@ -820,12 +862,7 @@ export function switchWeapon(state, weaponId, { tick } = {}) {
   if (!state.weapons[id].owned) throw new TypeError(`weapon ${id} is unowned`);
   if (id === state.activeWeaponId) return null;
   const previousWeaponId = state.activeWeaponId;
-  const previousWeapon = state.weapons[previousWeaponId];
-  const interrupted = previousWeapon.channelState?.active
-    ? stepLightningLedger(previousWeapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
-    : null;
-  previousWeapon.chargeStartedTick = null;
-  previousWeapon.chargeReadyAnnounced = false;
+  const interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
   state.activeWeaponId = id;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId: id, readyTick: state.switchReadyTick, interrupted, manual: true });
@@ -862,9 +899,9 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   const previousWeaponId = state.activeWeaponId;
   // 'if-new' (package 8.6): a cache selects its gun only when it is newly owned.
   const selected = select === 'if-new' ? !alreadyOwned : Boolean(select);
+  // An auto-select is a switch: the weapon left behind ends its channel.
+  const interrupted = selected && previousWeaponId !== id ? leaveWeapon(state.weapons[previousWeaponId], tick) : null;
   if (selected) {
-    state.weapons[previousWeaponId].chargeStartedTick = null;
-    state.weapons[previousWeaponId].chargeReadyAnnounced = false;
     state.activeWeaponId = id;
     state.switchReadyTick = tick + state.switchTicks;
   }
@@ -878,6 +915,7 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     previousWeaponId,
     activeWeaponId: state.activeWeaponId,
     readyTick: selected ? state.switchReadyTick : tick,
+    interrupted,
   });
 }
 
@@ -900,6 +938,43 @@ export function creditWeaponKills(state, { tick, weaponId, count = 1, progressio
   const before = weapon.reserveAmmo;
   weapon.reserveAmmo = Math.min(progression.reserveAmmoGrant * 2, weapon.reserveAmmo + rounds);
   return freezeDeep({ type: 'weapon:salvage', tick, weaponId, rounds: weapon.reserveAmmo - before, reserveAmmo: weapon.reserveAmmo });
+}
+
+// Balance option (a) card magazine. Picking any card of a gun's tree adds a
+// grant (at the gun's Magazine & Salvage rank, times HMH_CARD_MAGAZINE_FRACTION)
+// to that gun's reserve, never the clip, up to the reserve cap. It lands on
+// the offer's tick, after that tick's weapon step like salvage, so the next
+// step reads it. Returns null for a card that feeds no owned finite gun (a
+// general card, a Pistol card, the Arc Rifle's or Flamethrower's cards, an
+// unowned gun).
+export function creditWeaponCardPick(state, { tick, upgradeId, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('weapon card credit tick cannot precede the weapon step');
+  if (typeof upgradeId !== 'string') throw new TypeError('upgradeId must be a string');
+  const weaponId = Object.hasOwn(HMH_GUN_CARD_WEAPON_IDS, upgradeId) ? HMH_GUN_CARD_WEAPON_IDS[upgradeId] : null;
+  const weapon = weaponId ? state.weapons?.[weaponId] : null;
+  if (!weapon?.owned || weapon.reserveAmmo === null) return null;
+  if (!CARD_MAGAZINE_ANY_CARD && GUN_BRANCH_CARDS[weaponId][2] !== upgradeId) return null;
+  const progression = applyWeaponProgression(weaponId, progressionByWeapon?.[weaponId]);
+  const rounds = Math.ceil(progression.reserveAmmoGrant * HMH_CARD_MAGAZINE_FRACTION);
+  const before = weapon.reserveAmmo;
+  weapon.reserveAmmo = Math.min(progression.reserveAmmoGrant * 2, before + rounds);
+  return freezeDeep({ type: 'weapon:card-magazine', tick, weaponId, upgradeId, rounds: weapon.reserveAmmo - before, reserveAmmo: weapon.reserveAmmo });
+}
+
+// Balance option (a) trickle, inside the weapon step: on every 900-tick
+// boundary an owned finite gun with Magazine & Salvage at rank 3 gains a
+// quarter of its grant in reserve, up to the cap. Silent: the HUD reads the
+// reserve, and nothing else needs an event.
+function trickleReserves(state, tick, progressionByWeapon) {
+  if (tick === 0 || tick % HMH_RESERVE_TRICKLE_INTERVAL_TICKS !== 0) return;
+  for (const id of Object.keys(SALVAGE_PERMILLE).sort()) {
+    const weapon = state.weapons[id];
+    if (!weapon?.owned || weapon.reserveAmmo === null) continue;
+    const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
+    if (progression.reserveTrickleRounds <= 0) continue;
+    weapon.reserveAmmo = Math.min(progression.reserveAmmoGrant * 2, weapon.reserveAmmo + progression.reserveTrickleRounds);
+  }
 }
 
 // The guns card 2 may focus (package 8.3): owned, with ammo in the clip or the
@@ -947,12 +1022,15 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     weapon.chargeReadyAnnounced = false;
   }
   const previousWeaponId = state.activeWeaponId;
-  // Selection through a refill honors ownership exactly like selectWeapon.
-  if (select && weaponId !== null && state.weapons[String(weaponId)].owned) {
+  // Selection through a refill honors ownership exactly like selectWeapon,
+  // and like every switch it ends the channel of the weapon left behind.
+  let interrupted = null;
+  if (select && weaponId !== null && state.weapons[String(weaponId)].owned && String(weaponId) !== previousWeaponId) {
+    interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
     state.activeWeaponId = String(weaponId);
     state.switchReadyTick = tick + state.switchTicks;
   }
-  return freezeDeep({ type: 'weapon:pickup-refill', tick, weaponIds, previousWeaponId, activeWeaponId: state.activeWeaponId });
+  return freezeDeep({ type: 'weapon:pickup-refill', tick, weaponIds, previousWeaponId, activeWeaponId: state.activeWeaponId, interrupted });
 }
 
 function completeReloads(state, tick, progressionByWeapon, events) {
@@ -1079,6 +1157,7 @@ export function stepWeaponLoadout(state, {
   if (stowed) fire = false;
   coolWeaponHeat(state, tick, progressionByWeapon, events);
   completeReloads(state, tick, progressionByWeapon, events);
+  trickleReserves(state, tick, progressionByWeapon);
   // Owner playtest 2026-08-02: an exhausted pickup stranded the player
   // weaponless until death. A finite-reserve weapon with no clip, no
   // reserve, and no reload in flight hands control back to the always-owned
@@ -1090,8 +1169,7 @@ export function stepWeaponLoadout(state, {
     && active.reserveAmmo !== null && active.reserveAmmo <= 0
     && active.reloadCompleteTick === null) {
     const previousWeaponId = state.activeWeaponId;
-    active.chargeStartedTick = null;
-    active.chargeReadyAnnounced = false;
+    leaveWeapon(active, tick);
     state.activeWeaponId = 'coin-blaster';
     state.switchReadyTick = tick + state.switchTicks;
     events.push(freezeDeep({ type: 'weapon:auto-fallback', tick, previousWeaponId, weaponId: 'coin-blaster', readyTick: state.switchReadyTick }));

@@ -62,7 +62,8 @@ function closePhase(phases, phaseId, exitTick, damage) {
 
 export function runLiquidatorUpgradeBenchmark({
   mode = 'ordinary',
-  seed = 1337,
+  // Seed 15 draws the canonical first-level offer under the package-8.3 salt.
+  seed = 15,
   partition = 1,
   startTick = 0,
 } = {}) {

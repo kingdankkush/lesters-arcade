@@ -963,6 +963,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-boss-determinism.test.mjs",
   "tests/hmh-progression-release.test.mjs",
   "tests/hmh-gun-branches.test.mjs",
+  "tests/hmh-ledger-channel-switch.test.mjs",
   "tests/hmh-progression-runtime-wiring.test.mjs",
   "tests/hmh-progression-determinism.test.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",

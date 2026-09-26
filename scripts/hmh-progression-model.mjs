@@ -51,8 +51,9 @@
  * The progression release (package S1.3) extended the model without changing
  * what it does on a 1.8.1 tree: every new path is taken only when the source
  * tree provides it (the offer and re-roll API, the focus gun, the grenade
- * maximum, per-shot launcher shells, held-weapon crits, salvage credit and the
- * nuke radius), so a 1.8.1 checkout reproduces the committed baseline bit for
+ * maximum, per-shot launcher shells, held-weapon crits, salvage credit, the
+ * card magazine and the nuke radius; the rank-3 trickle lives inside the real
+ * weapon step), so a 1.8.1 checkout reproduces the committed baseline bit for
  * bit and the working tree is measured with the release's own rules.
  *
  * Outputs: XP income (by minute and source), the offers and picks of three
@@ -505,14 +506,20 @@ export function runProgressionModel(M, {
     P.grantRunXp(progression, amount, tick);
     xpBySource[source] += progression.xp - before;
   };
+  // The reserve cap a rule bounded the gun by: twice its grant at the ranks in
+  // force (the release's Magazine & Salvage moves it; a 1.8.1 tree reads the
+  // authored grant). Recorded whenever a rule raises the reserve.
+  const noteReserveCap = (id, byWeapon = progressionByWeapon) => {
+    const policy = W.applyWeaponProgression(id, byWeapon[id]);
+    const authored = policy.reserveAmmoGrant ?? W.HMH_WEAPON_DEFINITIONS[id].pickupReserveAmmo;
+    ammo[id].reserveCap = Math.max(ammo[id].reserveCap, authored * 2);
+  };
   const noteGrant = (id, before) => {
     const weapon = loadout.weapons[id];
     const ledger = ammo[id];
     if (ledger.granted !== null) {
       ledger.granted += roundsHeld(weapon) - before;
-      const policy = W.applyWeaponProgression(id, progressionByWeapon[id]);
-      const authored = policy.reserveAmmoGrant ?? W.HMH_WEAPON_DEFINITIONS[id].pickupReserveAmmo;
-      ledger.reserveCap = Math.max(ledger.reserveCap, authored * 2);
+      noteReserveCap(id);
       ledger.maxReserve = Math.max(ledger.maxReserve, weapon.reserveAmmo ?? 0);
     }
   };
@@ -747,7 +754,7 @@ export function runProgressionModel(M, {
     for (const id of order) {
       const change = roundsHeld(loadout.weapons[id]) - held[id];
       if (change < 0) ammo[id].fired -= change;
-      else if (change > 0 && ammo[id].granted !== null) ammo[id].granted += change; // a refunded cell
+      else if (change > 0 && ammo[id].granted !== null) { ammo[id].granted += change; noteReserveCap(id); } // a refunded cell, or the release's trickle
       ammo[id].maxReserve = Math.max(ammo[id].maxReserve, loadout.weapons[id].reserveAmmo ?? 0);
     }
     for (const event of frame.events) {
@@ -882,6 +889,7 @@ export function runProgressionModel(M, {
         if (salvage?.rounds > 0) {
           ammo[salvage.weaponId].granted += salvage.rounds;
           ammo[salvage.weaponId].maxReserve = Math.max(ammo[salvage.weaponId].maxReserve, salvage.reserveAmmo);
+          noteReserveCap(salvage.weaponId);
         }
         xpBySource.kills += progression.xp - before;
         killsByArchetype[enemy.archetypeId] = (killsByArchetype[enemy.archetypeId] ?? 0) + 1;
@@ -926,6 +934,15 @@ export function runProgressionModel(M, {
       const index = choosePick(policy, cards, { seed, level: progression.level, selectionSequence: progression.selectionSequence, weaponCardIds: weaponCardIds(cards) });
       const before = snapshot.effects;
       const selection = P.selectRunUpgrade(progression, cards[index].id);
+      // Balance option (a): a gun card comes with a magazine for its gun (reserve
+      // only, on the offer's tick). A 1.8.1 tree has no rule and grants nothing.
+      const pickedByWeapon = W.progressionByWeapon(progression.ranks);
+      const magazine = W.creditWeaponCardPick?.(loadout, { tick, upgradeId: cards[index].id, progressionByWeapon: pickedByWeapon });
+      if (magazine?.rounds > 0) {
+        ammo[magazine.weaponId].granted += magazine.rounds;
+        ammo[magazine.weaponId].maxReserve = Math.max(ammo[magazine.weaponId].maxReserve, magazine.reserveAmmo);
+        noteReserveCap(magazine.weaponId, pickedByWeapon);
+      }
       offers.push({ tick, level: progression.level, offered: cards.map((card) => card.id), picked: cards[index].id, rerolls, ...(P.rerollRunUpgradeSlot ? { shown } : {}) });
       const healthGain = selection.effects.maxHealthBonus - before.maxHealthBonus;
       if (healthGain > 0) {

@@ -17,15 +17,18 @@ import {
   RUN_UPGRADE_CATALOG,
 } from '../apps/hmh-reboot/src/run-progression.mjs';
 
-const CANONICAL_SEED = 1337;
-const SECOND_SEED = 14;
+// Seed 15 draws precision-ledger, gas-optimization under the package-8.3
+// offer salt (1337 did under the 1.8.1 salt and now draws cold-storage,
+// hot-wallet); 48 also offers the crit card and diverges in the fight.
+const CANONICAL_SEED = 15;
+const SECOND_SEED = 48;
 const UNOFFERED_SEED = 0;
 
 function digest(report) {
   return JSON.stringify(report);
 }
 
-test('canonical crit card is precision-ledger and first-level seed 1337 legally offers it', () => {
+test('canonical crit card is precision-ledger and first-level seed 15 legally offers it', () => {
   assert.equal(CANONICAL_CRIT_UPGRADE_ID, 'precision-ledger');
   assert.equal(RUN_UPGRADE_CATALOG['precision-ledger'].effect, 'criticalChanceBonus');
   assert.equal(RUN_UPGRADE_CATALOG['precision-ledger'].amount, 0.06);
@@ -72,13 +75,13 @@ test('ordinary pistol remains viable and precision-ledger is a bounded crit upli
   assert.equal(upgraded.defeated, true);
   assert.equal(ordinary.remainingHealth, 0);
   assert.equal(upgraded.remainingHealth, 0);
-  assert.equal(ordinary.defeatTick, 1_163);
-  assert.equal(upgraded.defeatTick, 1_120);
-  assert.equal(ordinary.criticalHits, 99);
-  assert.equal(upgraded.criticalHits, 164);
+  assert.equal(ordinary.defeatTick, 1_176);
+  assert.equal(upgraded.defeatTick, 1_132);
+  assert.equal(ordinary.criticalHits, 84);
+  assert.equal(upgraded.criticalHits, 149);
   // Insider Trading, then the kneels after each Total Liquidation super.
-  assert.equal(ordinary.punishContacts, 413);
-  assert.equal(upgraded.punishContacts, 401);
+  assert.equal(ordinary.punishContacts, 419);
+  assert.equal(upgraded.punishContacts, 406);
   assert.ok(upgraded.defeatTick < ordinary.defeatTick, 'one Precision Ledger rank must pull TTK forward');
   assert.ok(upgraded.criticalHits > ordinary.criticalHits);
   assert.ok(upgraded.criticalHits < upgraded.ordinaryHits, 'crits stay a spike, not the baseline');
