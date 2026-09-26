@@ -138,9 +138,9 @@ test('the live CLI plays one Ranked session per game over HTTP and JSON-RPC: pla
     const planExit = await runRehearsalCli({ argv: [...base, ...withSecond, '--cron-secret-env', 'REHEARSAL_CRON_SECRET'], env: { REHEARSAL_CRON_SECRET: state.stack.cronSecret() }, log: (line) => planLogs.push(line) });
     assert.equal(planExit, 0);
     const plan = planLogs.join('\n');
-    for (const gameId of DEFAULT_GAMES) assert.match(plan, new RegExp(`entry ${gameId}: 0\\.102 zkLTC \\(fee 0\\.1 \\+ reserve 0\\.002\\)`));
-    assert.match(plan, /total 0\.306 zkLTC in entries/);
-    assert.match(plan, new RegExp(`Second wallet ${second.toLowerCase()}, balance [0-9.]+ zkLTC: one chikun entry of 0\\.102 zkLTC for the evidence-copy check`));
+    for (const gameId of DEFAULT_GAMES) assert.match(plan, new RegExp(`entry ${gameId}: 0\\.012 zkLTC \\(fee 0\\.01 \\+ reserve 0\\.002\\)`));
+    assert.match(plan, /total 0\.036 zkLTC in entries/);
+    assert.match(plan, new RegExp(`Second wallet ${second.toLowerCase()}, balance [0-9.]+ zkLTC: one chikun entry of 0\\.012 zkLTC for the evidence-copy check`));
     assert.doesNotMatch(plan, /WARNING/, 'a fresh wallet has no earlier runs');
     assert.match(plan, /Owner checkpoint O2/);
     assert.match(plan, /PLAN ONLY\. Nothing was signed or sent/);
