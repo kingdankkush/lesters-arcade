@@ -872,6 +872,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-reboot-world-atmosphere.test.mjs",
   "scripts/hmh-reboot-weapon-vfx-browser-smoke.mjs",
   "tests/hmh-reboot-combat-audio-routing.test.mjs",
+  "tests/hmh-reboot-combat-audio-webaudio.test.mjs",
+  "tests/helpers/fake-web-audio.mjs",
   "scripts/hmh-hero-atlas-format-harness.mjs",
   "tests/hmh-hero-atlas-format-harness.test.mjs",
   "apps/hmh-reboot/src/deterministic-hash.mjs",

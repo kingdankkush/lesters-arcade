@@ -4,10 +4,14 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {createCombatAudio} from '../apps/hmh-reboot/src/combat-audio.mjs';
 import {HMH_SFX_CUE_REGISTRY} from '../apps/portal/src/hmh-audio-system.mjs';
-class Sample {constructor(src){this.src=src;this.ended=false;}play(){return Promise.resolve();}pause(){this.paused=true;}}
-for(const cue of ['silver-collect','objective-complete','supply-ready'])test(`${cue} reaches audible sample playback with bounded repetition and pause cleanup`,()=>{
-  const audio=createCombatAudio({AudioCtor:Sample,maxVoices:2});
+import {FakeAudioContext,FakeMusic,effectiveGain,fakeSampleFetch,resetFakeAudio,startedSources} from './helpers/fake-web-audio.mjs';
+for(const cue of ['silver-collect','objective-complete','supply-ready'])test(`${cue} reaches audible sample playback with bounded repetition and pause cleanup`,async()=>{
+  resetFakeAudio();
+  const audio=createCombatAudio({AudioCtor:FakeMusic,AudioContextCtor:FakeAudioContext,fetchSample:fakeSampleFetch().fetchSample,maxVoices:2,gameplayOnly:true});
+  await audio.unlock();
   assert.equal(audio.play(cue,{now:100,volume:.12}).played,true);
+  assert.match(startedSources()[0].buffer.src,new RegExp(`/hmh-${cue}\\.wav$`));
+  assert.ok(effectiveGain(startedSources()[0])>0);
   assert.equal(audio.play(cue,{now:101,volume:.12}).reason,'cooldown');
   assert.equal(HMH_SFX_CUE_REGISTRY[cue].family,'reward');
   audio.pause();assert.equal(audio.status().activeVoices,0);

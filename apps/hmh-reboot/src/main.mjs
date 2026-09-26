@@ -458,8 +458,6 @@ async function boot() {
         } else if (message.type === 'portal:dispose') {
           document.removeEventListener('visibilitychange', handleVisibilityChange);
           window.removeEventListener('keydown', handleExitKey);
-          window.removeEventListener('pointerdown', unlockCombatAudio, true);
-          window.removeEventListener('keydown', unlockCombatAudio, true);
           app.renderer.off('resize', handleResize);
           app.ticker.stop();
           combatAudio.destroy();
@@ -1303,19 +1301,14 @@ async function boot() {
     standalone: window.parent === window,
     musicEnabled: settings.musicEnabled,
     maxVoices: 16,
+    gestureTarget: window,
+    visibilityTarget: document,
   });
   handleBridgeProtocolError = (error) => {
     app.ticker.stop();
     combatAudio.pause();
     setStatus('Bridge protocol error', error.message);
   };
-  const unlockCombatAudio = () => {
-    window.removeEventListener('pointerdown', unlockCombatAudio, true);
-    window.removeEventListener('keydown', unlockCombatAudio, true);
-    void combatAudio.unlock();
-  };
-  window.addEventListener('pointerdown', unlockCombatAudio, { once: true, capture: true });
-  window.addEventListener('keydown', unlockCombatAudio, { once: true, capture: true });
   let elapsedMs = 0;
   let cockpit = null;
   let hud = null;
