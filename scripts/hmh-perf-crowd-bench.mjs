@@ -39,6 +39,8 @@
 //   --walk  (timing/profile only) hold D, S, A, W in turn for 1.5 s each over
 //           the window, so the hero drags the crowd and the camera scrolls.
 //           Key timing is wall-clock, so walked runs are not tick-reproducible.
+//   --gpu=swiftshader  render WebGL on the CPU (ANGLE SwiftShader) so texture
+//           size and fill cost reach the frame time; compare builds only.
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -566,7 +568,12 @@ async function runPass({ mode, profileId, cpu = 1 }) {
   const browser = await chromium.launch({
     executablePath: CHROME,
     headless: true,
-    args: ['--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl', '--enable-precise-memory-info',
+    args: [...(options.gpu === 'swiftshader'
+      // ANGLE's CPU rasterizer: the RTX host GPU never limits a frame, so
+      // texture size and fill only show up when the GPU work is on the CPU.
+      // Absolute times mean nothing here; only an A/B does.
+      ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']
+      : ['--enable-gpu', '--ignore-gpu-blocklist']), '--enable-webgl', '--enable-precise-memory-info',
       // A phone plays SFX after the first tap; without this headless Chrome
       // rejects every HTMLAudioElement.play() and the audio path goes unmeasured.
       '--autoplay-policy=no-user-gesture-required'],
