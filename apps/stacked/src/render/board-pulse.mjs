@@ -60,10 +60,12 @@ export function createBoardPulse({ board, Graphics, geometry }) {
       frame.visible = amplitude.frame > 0;
       if (frame.visible) { frame.position.set(x, 0); frame.tint = mixColor(palette.color ?? 0x35f2ff, palette.accent ?? 0xffffff, amplitude.mix); frame.alpha = amplitude.frame; }
       const piece = snapshot?.active, cells = piece && amplitude.piece > 0 && geometry?.PIECE_CELLS?.[piece.kind] ? geometry.cellsFor(piece.kind, (piece.rotation ?? 0) & 3, piece.x ?? 0, piece.y ?? 0) : null;
+      // The halo rides with the piece's sub-tick travel (board.activeOffset, authored px) so it never peels off.
+      const travelX = board.activeOffset?.x ?? 0, travelY = board.activeOffset?.y ?? 0;
       for (let i = 0; i < halos.length; i++) {
         const halo = halos[i], point = cells?.[i] ? boardCellToAuthored({ x: cells[i][0], y: cells[i][1], frame: board.frame }) : null;
         halo.visible = !!point?.visible; if (!halo.visible) continue;
-        halo.position.set(point.x, point.y); halo.tint = board.colorFor?.(piece.kind) ?? PIECE_COLORS[piece.kind] ?? 0xa8bdca; halo.alpha = amplitude.piece;
+        halo.position.set(point.x + travelX, point.y + travelY); halo.tint = board.colorFor?.(piece.kind) ?? PIECE_COLORS[piece.kind] ?? 0xa8bdca; halo.alpha = amplitude.piece;
       }
       return result;
     },

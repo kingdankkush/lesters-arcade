@@ -151,6 +151,8 @@ const NODE_CHECK_FILES = [
   'tests/stacked-menu-navigation.test.mjs',
   'apps/stacked/src/preferences-bridge.mjs',
   'tests/stacked-preferences-bridge.test.mjs',
+  'apps/stacked/src/render/active-interpolation.mjs',
+  'tests/stacked-active-interpolation.test.mjs',
   'scripts/stacked-reactive-evidence-smoke.mjs',
   'scripts/stacked-settings-gamepad-smoke.mjs',
   'tests/profile-sync-client.test.mjs',

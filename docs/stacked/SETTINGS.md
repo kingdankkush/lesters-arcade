@@ -23,3 +23,6 @@ the gentle-glow maths, see
 - The child keeps no settings storage of its own.
 - The Effects preset also sets the backdrop scene mode (`auto` or `off`) and the
   music-reactive board.
+- Reduced motion also switches off the active piece's sub-tick travel, so it
+  moves in whole 60 Hz steps again
+  ([SUB-TICK-INTERPOLATION-2026-09-26.md](SUB-TICK-INTERPOLATION-2026-09-26.md)).

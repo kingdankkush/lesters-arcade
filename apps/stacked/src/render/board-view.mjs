@@ -42,6 +42,7 @@ function createPool(Graphics) {
     begin() { used=0; },
     acquire(parent) { const visual=all[used] ?? (()=>{const value=new Graphics(); all.push(value); parent.addChild(value); return value;})(); used++; visual.visible=true; return visual; },
     end() { for (let index=used; index<all.length; index++) all[index].visible=false; },
+    each(fn) { for (let index=0; index<used; index++) fn(all[index]); },
     reset() { used=0; for (const visual of all) visual.visible=false; },
     stats() { return { allocated: all.length, free: all.length-used }; },
     destroy() { for (const visual of all) visual.destroy?.(); all.length=0; used=0; },
@@ -75,6 +76,12 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
   let destroyed=false; let layout={ x:0,y:0,scale:1,visible:true }; let last=Object.freeze({ boardIndex:index, activeVisuals:0, poolAllocated:0, poolFree:0, lockedVisible:0, bufferClipped:0, trails:0 });
   let lastModel=null;
   let presentationDirty=true;
+  // Sub-tick travel of the active piece, in authored pixels (projection only).
+  // Applied per active visual on top of its tick cell, so the layer shake in
+  // piece-presentation.mjs and the ghost, stack and effects are untouched. The
+  // object is reused every frame.
+  const activeOffset={ x:0, y:0 };
+  const placeActive = visual => visual.position.set(visual.__baseX+activeOffset.x, visual.__baseY+activeOffset.y);
 
   const normalizePiece = piece => typeof piece === 'string' ? { kind:piece,rotation:0,x:0,y:0 } : piece;
   const pieceCells = piece => {
@@ -84,13 +91,15 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     return geometry.cellsFor(normalized.kind,rotation,normalized.x??0,normalized.y??0);
   };
 
-  const renderPiece = (piece, pool, parent, alpha) => {
+  const renderPiece = (piece, pool, parent, alpha, offset=null) => {
     pool.begin(); let used=0;
     const normalized=normalizePiece(piece);
     for (const [x,y] of pieceCells(normalized)) {
       const point=boardCellToAuthored({ x, y, frame:currentFrame });
       if (!point.visible) continue;
-      drawMino(pool.acquire(parent), { ...point, kind:normalized.kind, alpha, patterned:colorblindPieces, colors }); used++;
+      const visual=pool.acquire(parent);
+      drawMino(visual, { ...point, kind:normalized.kind, alpha, patterned:colorblindPieces, colors }); used++;
+      if (offset) { visual.__baseX=point.x; visual.__baseY=point.y; placeActive(visual); }
     }
     pool.end(); return used;
   };
@@ -114,7 +123,7 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     stackPool.begin();
     let lockedVisible=0, bufferClipped=0;
     for (let position=0; position<model.board.length; position++) { const cell=model.board[position]; if (!cell) continue; const y=Math.floor(position/cells); if (y>=BOARD_VISIBLE_ROWS) { bufferClipped++; continue; } const kind=LOCKED_KIND_BY_ID[Number(cell)]; if(!kind)continue; const point=boardCellToAuthored({x:position%cells,y,frame:currentFrame}); drawMino(stackPool.acquire(layers.stackLayer),{...point,kind,patterned:colorblindPieces,colors}); lockedVisible++; }
-    const activeVisuals=renderPiece(model.active,activePool,layers.activeLayer,1);
+    const activeVisuals=renderPiece(model.active,activePool,layers.activeLayer,1,activeOffset);
     const ghostVisuals=renderPiece(ghostFor(model.board,model.active),ghostPool,layers.ghostLayer,0.24);
     previewPool.begin(); let previews=0;
     if (currentFrame==='wide') { previews+=renderPreview(model.hold,8,80); for (let i=0;i<Math.min(5,model.queue?.length??0);i++) previews+=renderPreview(model.queue[i],416,82+i*92,0.48); }
@@ -138,7 +147,7 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
   const setFrame = nextFrame => { if(!STACKED_FRAME_SIZES[nextFrame])throw new RangeError('unknown board frame'); if(nextFrame===currentFrame)return last; currentFrame=nextFrame; presentationDirty=true; drawWellFrame(); return lastModel?setModel(lastModel):last; };
   const resize = slot => { layout={...slot}; root.visible=slot.visible; root.scale.set(slot.scale,slot.scale); root.position.set(slot.x,slot.y); };
   const applyShake = (dx,dy) => root.position.set(layout.x+dx,layout.y+dy);
-  const reset = () => { lastModel=null; for (const pool of pools) pool.reset(); last=Object.freeze({...last,activeVisuals:0,ghostVisuals:0,previewVisuals:0,lockedVisible:0,bufferClipped:0,trails:0,poolFree:pools.reduce((n,p)=>n+p.stats().free,0)}); };
+  const reset = () => { lastModel=null; activeOffset.x=0; activeOffset.y=0; for (const pool of pools) pool.reset(); last=Object.freeze({...last,activeVisuals:0,ghostVisuals:0,previewVisuals:0,lockedVisible:0,bufferClipped:0,trails:0,poolFree:pools.reduce((n,p)=>n+p.stats().free,0)}); };
   const destroy = () => { if (destroyed) return; destroyed=true; lastModel=null; for(const pool of pools)pool.destroy(); root.destroy?.({children:true}); };
   return Object.freeze({ root, layers:Object.freeze(layers), setFrame, setModel, present, setZone:()=>{}, applyShake, resize, reset, stats:()=>last, destroy,
     setGridLines(value) { if (gridLines !== value) { gridLines = value; drawWellFrame(); } },
@@ -146,6 +155,14 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     setTrails(value) { if(trailsEnabled!==!!value)presentationDirty=true; trailsEnabled=!!value; },
     setPalette(palette) { const next=palette ?? COLORS; if(colors!==next)presentationDirty=true; colors=next; },
     colorFor(kind) { return colors[kind] ?? 0xa8bdca; },
+    // Board-cell offset (+y up the well) the active piece is drawn from this frame; at most four transforms move.
+    setActiveOffset(cellsX, cellsY) {
+      const x=cellsX*CELL_PX+0, y=0-cellsY*CELL_PX;
+      if (x===activeOffset.x && y===activeOffset.y) return;
+      activeOffset.x=x; activeOffset.y=y;
+      activePool.each(placeActive);
+    },
+    get activeOffset() { return activeOffset; },
     get frame() { return currentFrame; },
   });
 }

@@ -9,6 +9,7 @@ import { createBoardParticles, mobilePresentation } from './gameplay-particles.m
 import { createBoardPiecePresentation } from './piece-presentation.mjs';
 import { createBoardPulse } from './board-pulse.mjs';
 import { piecePaletteFor, sceneGradeFor } from './cosmetic-palettes.mjs';
+import { createActiveInterpolation } from './active-interpolation.mjs';
 
 export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
@@ -18,6 +19,8 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
   const feedback = createGameplayFeedback(), accents = createBoardFeedback({board, Graphics, Text});
   // Music-reactive board: frame ring and active-piece halo (owner direction 2026-09-16).
   const pulse = createBoardPulse({ board, Graphics, geometry });
+  // Sub-tick travel of the active piece between the tick snapshots gameplay() sees (projection only).
+  const interpolation = createActiveInterpolation();
   const sharedHud = new Text({ text: 'RENDER-ONLY QA SCENE · AWAITING PARENT RUNTIME', style: { fill:'#9db4c8', fontFamily:'system-ui, sans-serif', fontSize:18, fontWeight:'700' } });
   sharedHud.anchor?.set?.(0.5);
   sharedHud.text='';
@@ -55,12 +58,13 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
   resize();
   return Object.freeze({
     present, resize, destroy, board, tree,
-    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); },
+    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); interpolation.reset(); board.setActiveOffset(0,0); },
     audio: (frame, now) => atmosphere?.audio(frame, now),
     nextScene: () => atmosphere?.nextScene(),
-    gameplay(before, snapshot, now, settings) { feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); },
+    gameplay(before, snapshot, now, settings) { interpolation.step(before, snapshot); feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); },
     get mobile() { return mobile; },
-    frame(snapshot, now, settings) {
+    // alpha = accumulator / TICK_MS from the frame loop (0..1); callers that omit it render the tick state.
+    frame(snapshot, now, settings, alpha = 1) {
       const fit = fitRootToViewport({ widthPx: app.canvas.width / app.renderer.resolution, heightPx: app.canvas.height / app.renderer.resolution });
       const response=feedback.update(snapshot, now, settings.accessibility.reduceMotion);
       const zone=STACKED_EPOCHS[Math.max(0,[0,10800,25200,43200,64800,90000].findLastIndex(tick=>snapshot.tick>=tick))];
@@ -79,6 +83,9 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       tree.layers.layerBackdrop.tint = tree.layers.layerParticleFar.tint = sceneGradeFor(settings);
       board.layers.effectLayer.visible = !settings.accessibility.reduceMotion;
       board.setTrails(false);
+      // Active-piece travel toward this tick's cell; whole-tick steps under reduced motion.
+      const travel = interpolation.offset(snapshot, alpha, !settings.accessibility.reduceMotion);
+      board.setActiveOffset(travel.x, travel.y);
       const sparks=particles.draw(now,settings);
       stageElement.dataset.gameplayParticles=String(sparks.count);
       stageElement.dataset.particleEvent=sparks.lastEvent;

@@ -13,6 +13,7 @@ import { createStackedSoundEffects, stackedSoundForStep } from './sound-effects.
 import { STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset } from '../../portal/src/stacked-player-settings.mjs';
 import { applyMenuAction } from './menu-navigation.mjs';
 import { stackedParentKnowsPresets, stackedPreferencesRequest, withStackedEffectsPreset } from './preferences-bridge.mjs';
+import { TICK_MS } from './render/active-interpolation.mjs';
 
 const $ = id => document.getElementById(id);
 const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameOverlay');
@@ -177,7 +178,7 @@ function frame(now) {
   if (run && started && !run.paused && !run.snapshot.terminal) {
     accumulator = Math.min(1000 / 15, accumulator + elapsed);
     let steps = 0;
-    while (accumulator >= 1000 / 60 && steps++ < 4 && !run.snapshot.terminal) {
+    while (accumulator >= TICK_MS && steps++ < 4 && !run.snapshot.terminal) {
       const before = run.snapshot, mask = forfeited ? 0 : input.sample(before);
       const s = run.step(mask);
       renderer.gameplay(before, s, now, settings);
@@ -189,13 +190,16 @@ function frame(now) {
         allClearStreak = s.perfectClears > before.perfectClears ? allClearStreak + 1 : 0;
         counters.allClearStreakMax = Math.max(counters.allClearStreakMax, Math.min(1000, allClearStreak));
       }
-      accumulator -= 1000 / 60;
+      accumulator -= TICK_MS;
       if (s.tick % 30 === 0) state();
     }
     if (run.snapshot.terminal) void finish();
   }
   if (run && renderer) {
-    const info = renderer.frame(run.snapshot, now, settings);
+    // Sub-tick alpha for the active piece's travel (projection only). Paused, unstarted and
+    // finished frames render the committed tick state; the accumulator is already reset there.
+    const alpha = started && !run.paused && !run.snapshot.terminal ? accumulator / TICK_MS : 1;
+    const info = renderer.frame(run.snapshot, now, settings, alpha);
     if ($('epochLabel').textContent !== info.name) $('epochLabel').textContent = info.name;
     const audioCopy = effectsPreset() === 'off' ? 'EFFECTS OFF' : info.visualizerName.toUpperCase() + (info.scene !== 'off' ? ' · ' + info.sceneName.toUpperCase() : '') + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
     if ($('audioLabel').textContent !== audioCopy) $('audioLabel').textContent = audioCopy;
