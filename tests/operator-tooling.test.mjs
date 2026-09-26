@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 import { SecretSourceError, flagValue, looksLikeSecretValue, readSecret } from '../scripts/lib/key-source.mjs';
 import { FEES_OFF_WARNING, OPERATOR_ACTIONS, isLoopbackRpc, operatorHelp, runOperatorAction, runOperatorCli } from '../scripts/operator-actions.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 import { ENV_LS_ARGS, LEGACY_SECRET_NAMES, VERCEL_APPLY_CONFIRM, VercelListingError, defaultVercelCommand, envNamesFromLsJson, runVercelSecrets } from '../scripts/vercel-secrets.mjs';
 import { cronUrl, runLiveCronCli, summarizeCronResponse } from '../scripts/live-cron.mjs';
 import { DEPLOY_BROADCAST_CONFIRM, runDeployWithKey } from '../scripts/deploy-contracts-with-key.mjs';
@@ -204,7 +205,7 @@ test('activate, pause-games, relayer-off and rotate-verifier change the local ch
     assert.equal(status.relayer.allowed, true);
     assert.equal(status.trustedVerifier, chain.wallets.verifier.address.toLowerCase());
     assert.equal(status.entryFeeEnabled, true);
-    assert.deepEqual(status.games.map((game) => [game.gameId, game.devWalletConfirmed, game.playable, game.quote.totalWei]), record.games.map((game) => [game.slug, true, true, '102000000000000000']));
+    assert.deepEqual(status.games.map((game) => [game.gameId, game.devWalletConfirmed, game.playable, game.quote.totalWei]), record.games.map((game) => [game.slug, true, true, '12000000000000000']));
     assert.equal(status.onChainOperators.gameRegistry, chain.wallets.operator.address.toLowerCase());
 
     await act('pause-games');
@@ -229,6 +230,10 @@ test('activate, pause-games, relayer-off and rotate-verifier change the local ch
     await assert.rejects(feeAct('0', '0'), /positive decimal wei/);
     await assert.rejects(feeAct('0.01', '0'), /positive decimal wei/);
     await assert.rejects(feeAct(String(10n ** 18n + 1n), '0'), /above 1 zkLTC/);
+    // The local suite registers the 0.01 fee of deploy-config.testnet.json; raise it to the old 0.1 first so the
+    // lowering below sends three real setEntryFee calls, as the pre-deploy session will on LiteForge.
+    assert.equal((await feeAct('100000000000000000', '0')).receipts.length, 3);
+    for (const game of record.games) assert.equal((await gameRegistry.getGame(game.gameId)).entryFeeWei, 100_000_000_000_000_000n);
     const lowered = await feeAct('10000000000000000', String(10_000_000_000_000_000n + reserveNow));
     assert.equal(lowered.receipts.length, 3);
     for (const game of record.games) {
@@ -237,6 +242,13 @@ test('activate, pause-games, relayer-off and rotate-verifier change the local ch
       assert.deepEqual([fee, reserveQuoted, total], [10_000_000_000_000_000n, reserveNow, 10_000_000_000_000_000n + reserveNow]);
     }
     assert.equal((await feeAct('10000000000000000', '0')).receipts.length, 0, 'idempotent');
+    // This checkout's default settle floor (DEFAULT_MIN_PAID_WEI) is the 0.01 fee plus the 0.002 reserve, so with
+    // the production reserve restored the 0.01 fee plans without an explicit floor (the 0.102 floor refused it).
+    await act('reserve', ['2000000000000000']);
+    assert.equal(BigInt(DEFAULT_MIN_PAID_WEI), 10_000_000_000_000_000n + 2_000_000_000_000_000n, 'the floor is the 0.01 fee plus the 0.002 reserve');
+    const defaultFloor = await runOperatorAction({ action: 'entry-fee', args: ['10000000000000000'], deployment, provider: chain.provider });
+    assert.deepEqual([defaultFloor.dryRun, defaultFloor.plan.calls.length], [true, 0], 'already 0.01 on the local chain; the default floor admits it');
+    assert.match(defaultFloor.plan.notes.join('\n'), new RegExp(`this checkout's floor is ${DEFAULT_MIN_PAID_WEI}\\)`));
 
     await act('relayer-off');
     assert.equal(await scores.relayers(chain.wallets.relayer.address), false);

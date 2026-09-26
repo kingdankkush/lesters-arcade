@@ -6,7 +6,7 @@
 // its `preview` state (contract §7.3), the child's share row stays hidden for Ranked (§7.4), the run
 // lands on the device-local board and profile (A22), and the portal makes no /api call at all (§9.1).
 //
-// Live (runbook step 10, OPTIONAL, OWNER APPROVAL REQUIRED; spends 0.102 testnet zkLTC):
+// Live (runbook step 10, OPTIONAL, OWNER APPROVAL REQUIRED; spends the quoted entry total, 0.012 testnet zkLTC):
 //   node scripts/chikun-ranked-browser-smoke.mjs --live --site https://lestersarcade.io \
 //     --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> [--player-key-field <field>] \
 //     --confirm-live SPEND_TESTNET_ZKLTC --yes [--out <path>]
@@ -19,6 +19,8 @@ import { createRequire } from 'node:module';
 import { mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
 
 const argv = process.argv.slice(2);
 if (argv.includes('--live')) {
@@ -179,12 +181,13 @@ async function runPreviewSmoke() {
       await page.click('#officialRankedModeButton');
       await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible' });
       entryModal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
-      // The entry modal (signin-entry): eyebrow, the 0.1 + 0.002 = 0.102 zkLTC quote, preview wording.
+      // The entry modal (signin-entry): eyebrow, the fee + reserve = total quote (0.01 + 0.002 = 0.012 zkLTC,
+      // from the arcade-core.mjs constants the static rows derive from), preview wording.
       assert.match(entryModal, /Ranked · Entry/i);
-      assert.match(entryModal, /Entry 0\.1 zkLTC/);
+      assert.ok(entryModal.includes(`Entry ${RANKED_ENTRY_FEE_ZKLTC} zkLTC`), entryModal);
       assert.match(entryModal, /Settlement reserve/);
-      assert.match(entryModal, /0\.002 zkLTC/);
-      assert.match(entryModal, /Total 0\.102 zkLTC/);
+      assert.ok(entryModal.includes(`${RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC} zkLTC`), entryModal);
+      assert.ok(entryModal.includes(`Total ${RANKED_ENTRY_TOTAL_ZKLTC} zkLTC`), entryModal);
       assert.match(entryModal, /no transaction is sent/i);
       assert.equal((await page.locator('#rankedEntryApprove').textContent())?.trim(), 'Start Ranked Run');
       await page.click('#rankedEntryApprove');

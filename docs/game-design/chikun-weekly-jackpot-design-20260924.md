@@ -1452,7 +1452,7 @@ The jackpot-ui slice uses this text for the `copy:jackpot-legal` block. It keeps
 
 > **Weekly Jackpot rules**
 > - **Skill contest.** The eligible wallet with the highest verified Ranked Chikun's Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week's funded prize, paid on chain after a 24-hour review.
-> - **Entry.** Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.
+> - **Entry.** Only Ranked runs count (0.012 testnet zkLTC per run). Free Mode is always free but is not eligible.
 > - **Prizes.** A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.
 > - **Fair play.** Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.
 > - **Eligibility.** You must be 18 or older (or the age of majority where you live). Lester's Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you.

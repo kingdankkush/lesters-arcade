@@ -10,6 +10,8 @@
 // everything here is pure so it can be unit-tested in Node and reused by both
 // the runtime and any future third-party adapter.
 
+import { RANKED_ENTRY_TOTAL_ZKLTC } from './arcade-core.mjs';
+
 // Shared by the browser and the server (contract A13): the server rebuilds the
 // message byte for byte, so both sides must use this exact constant.
 export const SIWE_STATEMENT =
@@ -219,7 +221,7 @@ export function walletErrorAction(classified, { totalZkLtc = null, balanceZkLtc 
     case 'insufficient-funds':
       return Object.freeze({
         kind,
-        message: `You need about ${totalZkLtc ?? '0.102'} zkLTC. Balance ${balanceZkLtc ?? 'unknown'}.`,
+        message: `You need about ${totalZkLtc ?? RANKED_ENTRY_TOTAL_ZKLTC} zkLTC. Balance ${balanceZkLtc ?? 'unknown'}.`,
         actions: Object.freeze([Object.freeze({ id: 'faucet', label: 'Get zkLTC' }), Object.freeze({ id: 'recheck', label: 'Re-check' })]),
       });
     case 'missing-wallet':

@@ -119,7 +119,10 @@ export function weekBoundsOf(index, extensionSeconds = 0) {
 // ---------------------------------------------------------------------------------------------------------
 
 export const RULE_FIELDS = Object.freeze(['fromWeek', 'maxSurvivalSeconds', 'adminClearOnly', 'minPaidWei', 'maxPrizeWei', 'minFundWei', 'maxScore', 'seasonId', 'altSeasonId']);
-export const LAUNCH_MIN_PAID_WEI = 100_000_000_000_000_000n; // the flat 0.1 zkLTC fee alone (J17)
+// The flat fee alone (J17): 0.01 zkLTC since the owner's 2026-09-26 fee decision (contracts/deploy-config.testnet.json
+// entryFeeWei; tests/ranked-fee-source-of-truth.test.mjs pins the two equal). The deployed 2961 epoch was created at
+// the earlier 0.1 zkLTC and keeps it (contracts/deployment-record.jackpot.json), so no 0.012 run qualifies there.
+export const LAUNCH_MIN_PAID_WEI = 10_000_000_000_000_000n;
 export const LAUNCH_MIN_FUND_WEI = 100n * 10n ** 18n; // 100 tCHIKUN
 export const LAUNCH_MAX_SURVIVAL_SECONDS = 3599n; // a run that reached the 60-minute limit is ineligible
 

@@ -5,6 +5,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readHeroSelectorEvidence } from './hmh-reboot-hero-selector-browser-contract.mjs';
+import { RANKED_ENTRY_TOTAL_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
 
 export const PORTAL_E2E_FLOW_SCHEMA = 'hmh-reboot-portal-e2e-flows-v1';
 
@@ -66,7 +67,7 @@ export const PORTAL_E2E_FLOWS = Object.freeze([
     id: 'ranked-preview',
     status: 'implemented',
     covers: Object.freeze(['ranked', 'game-over', 'restart-play-again']),
-    description: 'With the fixture EIP-1193 stub (key 0x11…11) the player signs in, opens the Ranked entry modal (0.102 zkLTC quote, preview approval), and an evidence-gated terminal-pilot run ends in the parent Ranked results screen in its preview state (results-share replaced the game-over recap for Ranked with a "View results" button); Escape closes it, View results reopens it, Play again (Ranked) opens the entry modal again, and nothing calls /api.',
+    description: 'With the fixture EIP-1193 stub (key 0x11…11) the player signs in, opens the Ranked entry modal (0.012 zkLTC quote, preview approval), and an evidence-gated terminal-pilot run ends in the parent Ranked results screen in its preview state (results-share replaced the game-over recap for Ranked with a "View results" button); Escape closes it, View results reopens it, Play again (Ranked) opens the entry modal again, and nothing calls /api.',
   }),
   Object.freeze({
     id: 'wallet-connect-reconnect',
@@ -697,7 +698,7 @@ if (isMain) {
         await page.click('#officialRankedModeButton');
         await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
         const modal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
-        assert.ok(/Ranked · Entry/i.test(modal) && /Total 0\.102 zkLTC/.test(modal) && /no transaction is sent/i.test(modal), `entry modal: ${modal}`);
+        assert.ok(/Ranked · Entry/i.test(modal) && modal.includes(`Total ${RANKED_ENTRY_TOTAL_ZKLTC} zkLTC`) && /no transaction is sent/i.test(modal), `entry modal: ${modal}`);
         await page.click('#rankedEntryApprove');
         await page.waitForSelector('#officialCharacterSelect:not([hidden])', { timeout: 20_000 });
         await page.locator('#officialCharacterRoster .hero-card.active').first().click();

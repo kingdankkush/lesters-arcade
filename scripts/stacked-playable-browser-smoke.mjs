@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { NOT_RUN_EXIT_CODE, startPortalStaticServer, summarizeFlowResults } from './hmh-reboot-portal-e2e.mjs';
 import { PORTAL_COPY } from '../apps/portal/src/portal-content.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const evidenceDir = path.resolve(process.env.STACKED_EVIDENCE_DIR || path.join(root, '.tmp/stacked-playable'));
 await mkdir(evidenceDir, { recursive: true });
@@ -238,7 +239,10 @@ try {
     await page.locator('#officialRankedModeButton').click();
     await page.locator('#rankedEntryModal:not([hidden])').waitFor({ state: 'visible' });
     const entryModal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
-    for (const expected of [/Ranked · Entry/i, /Entry 0\.1 zkLTC/, /Settlement reserve/, /0\.002 zkLTC/, /Total 0\.102 zkLTC/, /no transaction is sent/i]) assert.match(entryModal, expected);
+    // The fee, reserve and total rows come from the arcade-core.mjs constants the static rows derive from (0.01 + 0.002 = 0.012 zkLTC).
+    for (const expected of [/Ranked · Entry/i, `Entry ${RANKED_ENTRY_FEE_ZKLTC} zkLTC`, /Settlement reserve/, `${RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC} zkLTC`, `Total ${RANKED_ENTRY_TOTAL_ZKLTC} zkLTC`, /no transaction is sent/i]) {
+      assert.ok(expected instanceof RegExp ? expected.test(entryModal) : entryModal.includes(expected), `entry modal lacks ${expected}: ${entryModal}`);
+    }
     await page.locator('#rankedEntryApprove').click();
     const frame = await (await page.waitForSelector('iframe.stacked-game-frame')).contentFrame();
     await frame.waitForSelector('#stackedStage[data-assets-ready="true"]', { timeout: 30000 });

@@ -39,7 +39,8 @@ export const GAME_REGISTRY_ABI = [
   'function getGame(bytes32) view returns ((bytes32 gameId,string title,address devWallet,uint16 devBps,uint16 platformBps,uint16 liquidityBps,uint16 treasuryBps,uint256 entryFeeWei,bool devWalletConfirmed,bool playable,bool exists,uint256 registeredAt))',
 ];
 
-// Native 0.1 zkLTC entry (ArcadeRankedEntry). `openSession` is payable; the
+// Native 0.01 zkLTC entry (ArcadeRankedEntry; the amount is read from GameRegistry,
+// never from a client constant). `openSession` is payable; the
 // contract derives the split from GameRegistry and records the paid session.
 export const RANKED_ENTRY_ABI = [
   'function openSession(bytes32 sessionId, bytes32 gameId) external payable',

@@ -1,6 +1,6 @@
 // WeeklyJackpot and TestChikunToken, function by function (Chikun Weekly Jackpot design §A, revision 2).
 // Everything runs on the in-process chain (chainId 4441, offline) against the real 1.8.x Ranked contracts
-// deployed by deployLocalSuite, with entry fees ON (0.1 zkLTC + the 0.002 reserve), and evm_snapshot /
+// deployed by deployLocalSuite, with entry fees ON (0.01 zkLTC + the 0.002 reserve), and evm_snapshot /
 // evm_revert between tests. Chain time only moves through evm_setNextBlockTimestamp (setChainTime).
 import test, { after, afterEach, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
@@ -232,7 +232,7 @@ test('rules can only be scheduled for weeks that have not started', async () => 
   assert.equal(Number(initial.args.fromWeek), W);
   assert.equal(initial.args.seasonId, CHIKUN_SEASON_ID32);
   assert.equal(initial.args.minFundWei, MIN_FUND);
-  assert.equal(initial.args.minPaidWei, ethers.parseEther('0.1'));
+  assert.equal(initial.args.minPaidWei, ethers.parseEther('0.01'));
   assert.equal(initial.args.maxSurvivalSeconds, 3599n);
 
   await at(start(W) + HOUR);
@@ -349,7 +349,7 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   await settleRun(p3, ids.paidByOtherWallet, { score: 5_000n });
   await settleRun(p2, ids.paidForOtherGame, { score: 5_000n });
   assert.equal((await localContracts(suite, provider).rankedEntry.getPaidSession(ids.paidByOtherWallet)).player, p1.address);
-  await mined(gameRegistry.connect(operator).setEntryFee(chikunId, ethers.parseEther('0.1')));
+  await mined(gameRegistry.connect(operator).setEntryFee(chikunId, ethers.parseEther('0.01')));
 
   // Phase B, week W: every run is opened (and, except two, settled) inside the week.
   ids.ok = await playRun(p1, { score: 5_000n, openAt: s + HOUR });
@@ -431,7 +431,7 @@ test('submitCandidate enforces every eligibility check in order', async () => {
   await expectRevert(jackpot.connect(admin).adminSubmit(ids.window), 'WEEK_SETTLED');
   await expectRevert(jackpot.connect(p4).finalize(W), 'WEEK_SETTLED');
 
-  // Week W + 1 (minPaidWei 0.2 zkLTC): a 0.102 zkLTC entry is below the minimum.
+  // Week W + 1 (minPaidWei 0.2 zkLTC): a 0.012 zkLTC entry is below the minimum.
   const belowMinPaid = await playRun(p2, { score: 5_000n });
   assert.equal((await eligibility(belowMinPaid)).week, W + 1);
   await expectSubmit(belowMinPaid, 'BELOW_MIN_PAID');
@@ -492,11 +492,11 @@ test('zero-fee and below-minimum sessions are ineligible', async () => {
   const reserveOnly = await playRun(p2, { score: 9_000n });
   assert.equal((await rankedEntry.getPaidSession(reserveOnly)).amountWei, ethers.parseEther('0.002'));
   const unpaid = await playRun(p3, { score: 9_000n, open: false });
-  await mined(gameRegistry.connect(operator).setEntryFee(chikunId, ethers.parseEther('0.1')));
+  await mined(gameRegistry.connect(operator).setEntryFee(chikunId, ethers.parseEther('0.01')));
   // J17: a reserve change never disqualifies runs, because minPaidWei is the flat fee alone.
   await mined(rankedEntry.connect(operator).setSettlementGasReserve(0n));
   const flatOnly = await playRun(p4, { score: 9_000n });
-  assert.equal((await rankedEntry.getPaidSession(flatOnly)).amountWei, ethers.parseEther('0.1'));
+  assert.equal((await rankedEntry.getPaidSession(flatOnly)).amountWei, ethers.parseEther('0.01'));
   await expectSubmit(free, 'BELOW_MIN_PAID');
   await expectSubmit(reserveOnly, 'BELOW_MIN_PAID');
   await expectSubmit(unpaid, 'NOT_PAID');

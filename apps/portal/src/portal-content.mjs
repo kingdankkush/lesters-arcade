@@ -1,9 +1,11 @@
 // Public, non-personal discovery facts shared by prerendered HTML and SPA views.
-// The flags come from settlement.mjs, which imports arcade-core.mjs and the
-// generated address module, so this module is for the browser and the page
-// builder only: server/** and api/** never import it (tests/portal-copy.test.mjs).
+// The flags come from settlement.mjs and the Ranked fee strings from
+// arcade-core.mjs (which settlement.mjs imports too, with the generated address
+// module), so this module is for the browser and the page builder only:
+// server/** and api/** never import it (tests/portal-copy.test.mjs).
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
 import { JACKPOT_LIVE } from './jackpot-config.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from './arcade-core.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
 export const PORTAL_GAMES = Object.freeze([
@@ -52,13 +54,17 @@ export const PORTAL_FLAGS = Object.freeze({
   chikunJackpotLive: JACKPOT_LIVE === true,
 });
 
-// Launch Ranked terms (guide §3.2). The server refuses a session that paid less
-// than fee + reserve (contract A27, RANKED_MIN_PAID_WEI = 102000000000000000);
-// tests/portal-copy.test.mjs pins these against the code.
+// Launch Ranked terms (guide §3.2, amended 2026-09-26: a 0.01 zkLTC entry plus
+// the 0.002 zkLTC reserve is 0.012 zkLTC per run). The strings derive from the
+// wei pair in arcade-core.mjs, the single source of the fee. The server refuses
+// a session that paid less than fee + reserve (contract A27, RANKED_MIN_PAID_WEI
+// default 12000000000000000); that floor ships before the on-chain setEntryFee,
+// never after. tests/portal-copy.test.mjs and
+// tests/ranked-fee-source-of-truth.test.mjs pin these against the code.
 export const RANKED_LAUNCH_TERMS = Object.freeze({
-  feeZkLtc: '0.1',
-  reserveZkLtc: '0.002',
-  totalZkLtc: '0.102',
+  feeZkLtc: RANKED_ENTRY_FEE_ZKLTC,
+  reserveZkLtc: RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC,
+  totalZkLtc: RANKED_ENTRY_TOTAL_ZKLTC,
   developerPercent: 85,
   arcadePercent: 15,
 });
@@ -304,7 +310,7 @@ export const JACKPOT_LEGAL_DRAFT = /* @__PURE__ */ Object.freeze({
   title: 'Weekly Jackpot rules',
   items: /* @__PURE__ */ Object.freeze([
     /* @__PURE__ */ Object.freeze(['Skill contest.', "The eligible wallet with the highest verified Ranked Chikun's Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week's funded prize, paid on chain after a 24-hour review."]),
-    /* @__PURE__ */ Object.freeze(['Entry.', 'Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.']),
+    /* @__PURE__ */ Object.freeze(['Entry.', `Only Ranked runs count (${RANKED_ENTRY_TOTAL_ZKLTC} testnet zkLTC per run). Free Mode is always free but is not eligible.`]),
     /* @__PURE__ */ Object.freeze(['Prizes.', 'A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.']),
     /* @__PURE__ */ Object.freeze(['Fair play.', 'Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.']),
     /* @__PURE__ */ Object.freeze(['Eligibility.', "You must be 18 or older (or the age of majority where you live). Lester's Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you."]),

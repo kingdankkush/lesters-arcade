@@ -517,7 +517,7 @@ test('paid mode session uses free-entry (testnet) economics and leaderboard elig
   assert.equal(session.leaderboardEligible, true);
   assert.equal(session.lives, 3);
   assert.equal(session.entryFeeMicroUsdc, 0); // legacy USDC field is never charged
-  assert.equal(session.entryFeeWei, '100000000000000000', '0.1 zkLTC native entry (owner direction 2026-09-16)');
+  assert.equal(session.entryFeeWei, '10000000000000000', '0.01 zkLTC native entry (owner directions 2026-09-16 and 2026-09-26)');
   assert.equal(session.paymentToken, 'zkLTC');
 });
 
@@ -534,10 +534,15 @@ test('revenue split sends 15% to the treasury and 85% to the developer (owner de
 });
 
 test('the settlement gas reserve is separate from the flat fee and rides along as one total', async () => {
-  const { RANKED_ENTRY_FEE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei } = await import('../apps/portal/src/arcade-core.mjs');
-  assert.equal(RANKED_ENTRY_FEE_WEI, '100000000000000000');
+  const { RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC, RANKED_ENTRY_TOTAL_WEI, RANKED_ENTRY_TOTAL_ZKLTC, rankedEntryTotalWei, formatZkLtcAmount } = await import('../apps/portal/src/arcade-core.mjs');
+  // Owner decision 2026-09-26: 0.01 zkLTC (from 0.1) plus the unchanged 0.002 zkLTC reserve.
+  assert.equal(RANKED_ENTRY_FEE_WEI, '10000000000000000');
   assert.equal(RANKED_SETTLEMENT_GAS_RESERVE_WEI, '2000000000000000');
-  assert.equal(rankedEntryTotalWei(), '102000000000000000');
+  assert.equal(rankedEntryTotalWei(), '12000000000000000');
+  assert.equal(RANKED_ENTRY_TOTAL_WEI, '12000000000000000');
+  // Every displayed string derives from the wei pair (tests/ranked-fee-source-of-truth.test.mjs pins the pages to these).
+  assert.deepEqual([RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC], ['0.01', '0.002', '0.012']);
+  assert.equal(formatZkLtcAmount(RANKED_ENTRY_TOTAL_WEI), '0.012');
   const legacy = calculateRevenueSplit(250_000, { settlement: 1500, dev: 5500, tournament: 1800, community: 1200 }, { settlementGasMicroUnits: 10_000 });
   assert.equal(legacy.settlement, 10_000, 'legacy bucket sets still resolve their settlement reserve');
   assert.equal(legacy.settlementRemainderToDev, 27_500);

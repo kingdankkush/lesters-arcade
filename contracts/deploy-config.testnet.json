@@ -27,7 +27,7 @@
       "platformBps": 0,
       "liquidityBps": 0,
       "treasuryBps": 1500,
-      "entryFeeWei": "100000000000000000",
+      "entryFeeWei": "10000000000000000",
       "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
       "achievements": {
         "name": "Hard Money Heroes Achievements",
@@ -42,7 +42,7 @@
       "platformBps": 0,
       "liquidityBps": 0,
       "treasuryBps": 1500,
-      "entryFeeWei": "100000000000000000",
+      "entryFeeWei": "10000000000000000",
       "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
       "achievements": {
         "name": "Chikun's Escape Achievements",
@@ -57,7 +57,7 @@
       "platformBps": 0,
       "liquidityBps": 0,
       "treasuryBps": 1500,
-      "entryFeeWei": "100000000000000000",
+      "entryFeeWei": "10000000000000000",
       "devWallet": "0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26",
       "achievements": {
         "name": "STACKED Achievements",
@@ -74,5 +74,5 @@
     "expectedScoreRows": 13,
     "disposition": "archive-read-only; never import as verified"
   },
-  "_recipients": "Owner decisions 2026-09-16: every game splits the flat 0.1 zkLTC entry fee 85% developer / 15% treasury (devBps 8500, treasuryBps 1500, platform/liquidity 0). developerWallet and treasuryVault = the owner wallet 0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26 (the owner is the developer of all three live games; the Chikun creator wallet is not yet supplied). platformVault/liquidityVault are also the owner wallet (unused 0-bps shares). settlementGasReserveWei (0.002 zkLTC, owner decision 2026-09-23 after LiteForge base fees rose from 0.01 to about 1.5 gwei; a settlement uses about 475k gas, so this covers about 1.3M gas at 1.5 gwei) is added on top of the flat fee and forwarded to relayerVault (the relayer service key) to fund relayer-settled scores. deployer/operator = the 2026-09-22 operator service key, verifier and relayer = their own service keys; the private keys live only in the owner's vault and Vercel secrets. See docs/handoffs/pre-deployment-web3-guide-20260922.md section 1."
+  "_recipients": "Owner decisions 2026-09-16 and 2026-09-26: every game splits the flat 0.01 zkLTC entry fee (lowered from 0.1 zkLTC on 2026-09-26 because the LiteForge faucet gives 0.05 zkLTC per request; the operator applies it to the deployed registry with GameRegistry.setEntryFee per game, a redeploy registers 0.01 from this file, a run totals 0.012 zkLTC with the reserve, and the server settle floor DEFAULT_MIN_PAID_WEI equals that total and ships before the setEntryFee transactions) 85% developer / 15% treasury (devBps 8500, treasuryBps 1500, platform/liquidity 0). developerWallet and treasuryVault = the owner wallet 0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26 (the owner is the developer of all three live games; the Chikun creator wallet is not yet supplied). platformVault/liquidityVault are also the owner wallet (unused 0-bps shares). settlementGasReserveWei (0.002 zkLTC, owner decision 2026-09-23 after LiteForge base fees rose from 0.01 to about 1.5 gwei; a settlement uses about 475k gas, so this covers about 1.3M gas at 1.5 gwei) is added on top of the flat fee and forwarded to relayerVault (the relayer service key) to fund relayer-settled scores. deployer/operator = the 2026-09-22 operator service key, verifier and relayer = their own service keys; the private keys live only in the owner's vault and Vercel secrets. See docs/handoffs/pre-deployment-web3-guide-20260922.md section 1."
 }
