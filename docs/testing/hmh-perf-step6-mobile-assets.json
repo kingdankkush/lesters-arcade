@@ -1,0 +1,2534 @@
+{
+  "schema": "hmh-perf-step-evidence-v1",
+  "step": "mobile-assets (6/8): half-resolution texture pages and tighter visual caps on the mobile profile",
+  "generatedAt": "2026-09-26",
+  "commits": [
+    "3820bda2 Load half-resolution HMH texture pages on the mobile profile",
+    "55f3786b Tighten the purely visual HMH caps on the mobile profile",
+    "9df58d41 Add a SwiftShader GPU option to the HMH crowd bench",
+    "3d905967 Document the mobile profile row for perf step 6",
+    "dcf0a23e Pin the hero and terrain half-page paths in the half-res texture tests"
+  ],
+  "base": "c34d2a31 (fable/hmh-perf-part2 head = release 1.8.4 4f947386 + perf steps 3-5)",
+  "branch": "fable/hmh-perf-part3",
+  "deviceAcceptance": false,
+  "note": "Chrome CPU-throttle proxy for an iPhone XS Max (414x896 @3, mobile profile) on an RTX 3080 Ti host through ANGLE D3D11; the GPU is never the limit there, so CPU-throttled frame times cannot show a texture-bandwidth or fill saving. The texture census (WebGL upload accounting), fetched bytes and renderer memory are the primary measurements of this step; --gpu=swiftshader is a second proxy. No iOS hardware was used. The half pages, the caps and the un-multisampled bakes were implemented on the pre-rebase fable/hmh-perf line (89b9c14c, ea432a70, 11ef0f7f) and cherry-picked onto the rebased steps 3-5 without conflicts as 3820bda2, 55f3786b, 9df58d41.",
+  "change": [
+    "apps/hmh-reboot/src/runtime-performance.mjs: profileTextureUrl() rewrites a runtime page URL (native roster, bagholder roster, production hero pilot, hero motion, held weapons, authored props, Tripo props, terrain tiles/fringes/overlays; .png or .webp, optional query) to <page>@0.5x.webp on the mobile profile only. createProfileTextureLoader(Assets, profile) returns Pixi Assets unchanged on desktop and reduced motion; on mobile it loads the variant and falls back to the full page if the variant fails, so a phone never loses art to a missing half page. main.mjs routes every scalable page through it (pilot atlas, motion page, held-weapon pages, authored props, Tripo props, native roster pages, terrain tiles, fringes and overlays); the mannequin pilot, world design and barriers (which have their own mobile tiers) and the silver coin stay on Assets.load.",
+    "@0.5x is Pixi 8's own resolution suffix: loadTextures sets source.resolution = getResolutionOfUrl(url) = 0.5, so the half page keeps the full page's logical size and every frame rectangle, anchor, pivot, trim and UV in the unchanged full-size metadata maps onto it. Nothing changes on-screen size or ground position. tripo-prop-appearance.mjs validates pages against the logical size (source.width) like the hero, motion, held-weapon and roster validators already did.",
+    "scripts/build-hmh-mobile-half-res.py writes the 75 variants (48 atlas pages, 11 repeating tiles, 16 U-wrapped strips) reproducibly: premultiplied float32 Lanczos-3 at exactly 2:1, frame-isolated per atlas frame so the 2 px packing gutters cannot bleed, wrap-aware for tiles and strips; lossy WebP q90 with lossless alpha for atlases, lossless exact WebP for terrain. It refuses overlapping half-res frame footprints. --check verifies source freshness, output bytes and per-frame alpha-centroid alignment. The manifest apps/portal/assets/generated/hmh-mobile-half-res.json records source and output SHA-256, bytes and dimensions per page.",
+    "Purely visual mobile caps (runtime-performance.mjs profile table): maxAnimatedEnemies 32 -> 24, maxGoreMarks 48 -> 16 (gore-presentation.mjs render({maxMarks}) draws only the newest landed marks, still oldest first; the pool keeps 48 and unlanded marks never use the cap up), resolveAtmosphereBudget halves the mobile fog and mote banks (4+12 -> 2+6), and the contact-shadow, weapon-glow and atmosphere bakes take antialias from the profile so phones skip the multisampled render buffers behind the seven bakes (resolution stays 2; the gradients are unchanged). Desktop (96 / 48 / 10+30 / MSAA) and reduced motion (48 / 48 / 0 / MSAA) are unchanged.",
+    "Tooling: scripts/hmh-perf-crowd-bench.mjs --gpu=swiftshader renders WebGL through ANGLE's CPU rasterizer so texture size and fill cost can reach an A/B (absolute times mean nothing there). docs/hmh-reboot/RUNTIME-PERFORMANCE.md profile table gains the blood-mark and texture-page columns."
+  ],
+  "projectionOnly": "No simulation module reads the profile, the loader or a texture. The caps decide only how much art is drawn; the half pages change only which file backs a texture. Evidence: headless digest unchanged, browser census trace digest unchanged and identical on mobile and desktop with full and half pages, determinism/run-summary/evidence suites green.",
+  "determinism": {
+    "headlessDigest": {
+      "command": "node scripts/hmh-sim-digest.mjs",
+      "combined": "2488a609eb1ceadd27edb83a91d5ffed3423dac198d19badbc667c25eb4f92f2",
+      "crowd": "50f3f6127b5e92fa237aa415d1e8188a2f6e2816c53801ad2e055f4ee1f67367",
+      "director": "7f38bb3e763081b2a195c118bf0f84dee4d5486f50242806bc8e597bede5af70",
+      "enduranceSoak": "2e38a09a",
+      "matchesBaseline": true,
+      "runOn": "HEAD (dcf0a23e) 2026-09-26"
+    },
+    "browserCensusTraceDigest": {
+      "tick": 1800,
+      "value": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+      "matchesBaseline": true,
+      "preRebase": "step5 mobile, step6 mobile, step5 desktop, step6 desktop and step6 mobile before the caps commit (2026-09-25)",
+      "rebased": {
+        "base-mobile": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+        "base-desktop": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+        "head-mobile": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+        "head-desktop": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065"
+      }
+    },
+    "suites": "tests/hmh-sim-digest, hmh-reboot-deterministic-hash, hmh-reboot-run-summary, hmh-run-summary-schema-v7, hmh-reboot-runtime-performance, gore-presentation, contact-shadows, weapon-vfx, tripo-prop-appearance, terrain-tile-atlas, hero-motion-atlas, enemy-roster-atlas: 84 tests, 0 failures (2026-09-26, HEAD)."
+  },
+  "exactness": {
+    "halfResCheck": {
+      "command": "python scripts/build-hmh-mobile-half-res.py --check",
+      "runOn": "HEAD 2026-09-26",
+      "pagesChecked": 75,
+      "problems": 0,
+      "worstFrameAlphaCentroidOffsetSourcePx": 0.328,
+      "threshold": 0.5,
+      "toolchain": {
+        "python": "3.14.5",
+        "pillow": "12.2.0",
+        "numpy": "2.5.1"
+      },
+      "totals": {
+        "pages": 75,
+        "sourceBytes": 76536223,
+        "outputBytes": 15719936,
+        "sourceRgbaBytes": 774897664,
+        "outputRgbaBytes": 193724416
+      },
+      "kinds": {
+        "atlas": 48,
+        "tile": 11,
+        "strip": 16
+      },
+      "outputMiB": 14.99,
+      "sourceMiB": 72.99,
+      "decodedRatio": 0.25,
+      "reproducible": "two full generator runs on 2026-09-25 produced identical manifests (every output SHA-256 equal)"
+    },
+    "unitTests": {
+      "tests/hmh-mobile-half-res-textures.test.mjs": "10 tests (8 were red before 89b9c14c; 2 pins added in dcf0a23e): every one of the 75 runtime pages switches to its @0.5x variant on mobile and to nothing on desktop/reduced motion; pages with their own tiers and non-page URLs are never rewritten; Pixi reads the suffix as resolution 0.5 (query strings included); the manifest lists exactly the runtime pages, each fresh (source SHA-256), half size and byte-exact; the mobile loader requests the variant, falls back to the full page when it fails, and desktop/reduced motion get Pixi Assets itself; a roster display from the half page draws every pose (4 states x 8 directions x 3 ticks, forkrunner and bagholder-rusher) at the full size, anchor and UVs; Tripo pages validate against their logical size; main.mjs routes every scalable page through the loader and only the mannequin, world-design and barrier loads stay direct; every hero built from half pilot, motion and held-weapon pages draws 576 poses per hero at the same size, anchor, scale, frame, UVs, frame ids and held muzzle; terrain tiles, fringes and overlays from half pages hand out TilingSprites with the same texture matrix, repeat/clamp modes, simple batchable path, power-of-two wrap and manifest tile size, with the clamp inset half a texel from each edge.",
+      "tests/hmh-mobile-visual-caps.test.mjs": "5 tests (red before ea432a70): the mobile caps (24 / 16) and the unchanged desktop and reduced-motion values; the blood-mark cap keeps the newest landed marks in paint order and unlanded marks never use it up; the halved mobile atmosphere budget; the three bakes skip MSAA only when the profile does and keep resolution 2; main.mjs feeds the profile caps into the gore pass and the bakes.",
+      "tests/hmh-reboot-world-atmosphere.test.mjs, tests/hmh-reboot-held-weapon-atlas.test.mjs": "updated pins for the mobile budget and the profile loader.",
+      "tests/hmh-perf-crowd-bench.test.mjs": "unchanged and green with the --gpu option."
+    },
+    "syntaxCheck": "node scripts/syntax-check.mjs: pass (new test module and Python script registered)."
+  },
+  "initialJs": {
+    "cap": 1048576,
+    "base": 1044585,
+    "final": 1045282,
+    "deltaVsBase": 697,
+    "headroom": 3294,
+    "note": "entry + vendor + statically imported shared chunks (node build.mjs report, both builds made in this pass: .tmp/step6/dist-base from a git archive of c34d2a31, .tmp/step6/dist-head from HEAD). game.js grows 187 B (loader, URL rewrite, profile fields, bake antialias); the rest is the hoisted shared chunk that carries gore-presentation and runtime-performance. The pre-rebase note recorded 1,044,564 -> 1,045,261 B, the same +697 B."
+  },
+  "visual": {
+    "method": "Same-seed crowd census screenshots at tick 1800 (fixed virtual clock, 128-enemy scene) of the full-page and half-page builds, mobile 414x896 @3 (canvas 414x896 at resolution 1) and desktop 1440x900, compared per pixel with .tmp/step6/compare-shots.py: difference statistics, Laplacian-variance sharpness, and the integer shift that best aligns each of nine regions (pivot drift would show as a non-zero shift). Crops at 2x were read by eye.",
+    "captures": "rebased builds 2026-09-26 (base c34d2a31 full pages vs HEAD half pages, .tmp/step6/bench/census-*); the 2026-09-25 pre-rebase captures (step5 vs step6) give the same per-region numbers and are kept as a cross-check",
+    "mobileFullVsHalf": {
+      "size": [
+        1242,
+        2688
+      ],
+      "meanAbsDiff": 2.738,
+      "pixelsDifferingPct": {
+        "0": 67.852,
+        "8": 10.802,
+        "32": 1.988,
+        "96": 0.171
+      },
+      "maxAbsDiff": 230,
+      "identical": false,
+      "sharpnessLaplacianVar": {
+        "basemobile": 191.2,
+        "headmobile": 187
+      },
+      "regions": {
+        "r0c0": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 1.12,
+          "sharpness": {
+            "basemobile": 527,
+            "headmobile": 524.1
+          }
+        },
+        "r0c1": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 3.07,
+          "sharpness": {
+            "basemobile": 268.2,
+            "headmobile": 267.4
+          }
+        },
+        "r0c2": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 1.48,
+          "sharpness": {
+            "basemobile": 339.1,
+            "headmobile": 336
+          }
+        },
+        "r1c0": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 2.54,
+          "sharpness": {
+            "basemobile": 49.8,
+            "headmobile": 42.8
+          }
+        },
+        "r1c1": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 3.51,
+          "sharpness": {
+            "basemobile": 86.3,
+            "headmobile": 78.1
+          }
+        },
+        "r1c2": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 5,
+          "sharpness": {
+            "basemobile": 65.8,
+            "headmobile": 60.1
+          }
+        },
+        "r2c0": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 1.12,
+          "sharpness": {
+            "basemobile": 173.2,
+            "headmobile": 171.3
+          }
+        },
+        "r2c1": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 3.86,
+          "sharpness": {
+            "basemobile": 101.9,
+            "headmobile": 97.3
+          }
+        },
+        "r2c2": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 1.54,
+          "sharpness": {
+            "basemobile": 261.9,
+            "headmobile": 259.6
+          }
+        }
+      }
+    },
+    "desktopBeforeVsAfter": {
+      "size": [
+        1440,
+        900
+      ],
+      "meanAbsDiff": 0.004,
+      "pixelsDifferingPct": {
+        "0": 0.669,
+        "8": 0,
+        "32": 0,
+        "96": 0
+      },
+      "maxAbsDiff": 3,
+      "identical": false,
+      "sharpnessLaplacianVar": {
+        "basedesktop": 384.2,
+        "headdesktop": 384.3
+      },
+      "regions": {
+        "r0c0": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 709.4,
+            "headdesktop": 709.4
+          }
+        },
+        "r0c1": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0.03,
+          "sharpness": {
+            "basedesktop": 615.4,
+            "headdesktop": 615.8
+          }
+        },
+        "r0c2": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0.01,
+          "sharpness": {
+            "basedesktop": 356,
+            "headdesktop": 356.2
+          }
+        },
+        "r1c0": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 137.6,
+            "headdesktop": 137.6
+          }
+        },
+        "r1c1": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 804.4,
+            "headdesktop": 804.4
+          }
+        },
+        "r1c2": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 237.1,
+            "headdesktop": 237.1
+          }
+        },
+        "r2c0": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 66.1,
+            "headdesktop": 66.1
+          }
+        },
+        "r2c1": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 554.7,
+            "headdesktop": 554.7
+          }
+        },
+        "r2c2": {
+          "bestShiftPx": [
+            0,
+            0
+          ],
+          "meanAbsDiff": 0,
+          "sharpness": {
+            "basedesktop": 119.9,
+            "headdesktop": 119.9
+          }
+        }
+      }
+    },
+    "preRebaseCrossCheck": {
+      "mobileFullVsHalf": {
+        "size": [
+          1242,
+          2688
+        ],
+        "meanAbsDiff": 2.678,
+        "pixelsDifferingPct": {
+          "0": 65.83,
+          "8": 10.584,
+          "32": 1.979,
+          "96": 0.168
+        },
+        "maxAbsDiff": 230,
+        "identical": false,
+        "sharpnessLaplacianVar": {
+          "step5full": 231.6,
+          "step6half": 227.4
+        },
+        "regions": {
+          "r0c0": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0.97,
+            "sharpness": {
+              "step5full": 649.5,
+              "step6half": 646.6
+            }
+          },
+          "r0c1": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 2.89,
+            "sharpness": {
+              "step5full": 428.5,
+              "step6half": 427.5
+            }
+          },
+          "r0c2": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 1.32,
+            "sharpness": {
+              "step5full": 424.5,
+              "step6half": 421.6
+            }
+          },
+          "r1c0": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 2.54,
+            "sharpness": {
+              "step5full": 49.8,
+              "step6half": 42.8
+            }
+          },
+          "r1c1": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 3.51,
+            "sharpness": {
+              "step5full": 86.3,
+              "step6half": 78.1
+            }
+          },
+          "r1c2": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 5,
+            "sharpness": {
+              "step5full": 65.8,
+              "step6half": 60.1
+            }
+          },
+          "r2c0": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 1.12,
+            "sharpness": {
+              "step5full": 173.2,
+              "step6half": 171.3
+            }
+          },
+          "r2c1": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 3.86,
+            "sharpness": {
+              "step5full": 101.9,
+              "step6half": 97.3
+            }
+          },
+          "r2c2": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 1.54,
+            "sharpness": {
+              "step5full": 261.9,
+              "step6half": 259.6
+            }
+          }
+        }
+      },
+      "desktopBeforeVsAfter": {
+        "size": [
+          1440,
+          900
+        ],
+        "meanAbsDiff": 0,
+        "pixelsDifferingPct": {
+          "0": 0.004,
+          "8": 0,
+          "32": 0,
+          "96": 0
+        },
+        "maxAbsDiff": 3,
+        "identical": false,
+        "sharpnessLaplacianVar": {
+          "step5desktop": 384.3,
+          "step6desktop": 384.3
+        },
+        "regions": {
+          "r0c0": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 709.4,
+              "step6desktop": 709.4
+            }
+          },
+          "r0c1": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 615.8,
+              "step6desktop": 615.8
+            }
+          },
+          "r0c2": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 356.2,
+              "step6desktop": 356.2
+            }
+          },
+          "r1c0": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 137.6,
+              "step6desktop": 137.6
+            }
+          },
+          "r1c1": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 804.4,
+              "step6desktop": 804.4
+            }
+          },
+          "r1c2": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 237.1,
+              "step6desktop": 237.1
+            }
+          },
+          "r2c0": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 66.1,
+              "step6desktop": 66.1
+            }
+          },
+          "r2c1": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 554.7,
+              "step6desktop": 554.7
+            }
+          },
+          "r2c2": {
+            "bestShiftPx": [
+              0,
+              0
+            ],
+            "meanAbsDiff": 0,
+            "sharpness": {
+              "step5desktop": 119.9,
+              "step6desktop": 119.9
+            }
+          }
+        }
+      }
+    },
+    "reading": [
+      "Every one of the nine regions aligns best at shift [0, 0]: no pivot drift. The hero and every enemy stand at the same size on the same ground line; contact shadows, the target ring and the HUD are unchanged.",
+      "Sharpness drops 1.8% over the whole frame and about 9-10% in the actor-dense centre band; terrain (lossless half tiles), HUD and the touch controls are indistinguishable. The difference map is confined to actor edges and the rims of the baked shadow blobs (the un-multisampled bakes).",
+      "Actors read slightly softer at the canvas resolution of 1 on a 414 px wide canvas, where a 256 px logical frame is drawn at roughly 50-100 px; the half page still supplies more than one texel per canvas pixel. At the adaptive step-up to 1.5 the margin narrows but stays above one texel per pixel for every roster frame.",
+      "Desktop base/head captures differ by at most 3 levels on 0.67% of pixels (sub-visible atmosphere shimmer) with identical sharpness in every region; the pre-rebase pair differed on 50 pixels of 1.3 M. Desktop keeps the full pages.",
+      "npm run visual:reboot on the pre-rebase step-6 build: 12/12 scenes unchanged, no baseline update; frontier-relay-mobile meanDelta 0.424 (tolerance 2.5), enemy crops unchanged (bagholder-rusher and forkrunner meanLumaDelta 0.01)."
+    ]
+  },
+  "measurements": {
+    "preRebase_2026_09_25": {
+      "builds": "step5 = .tmp/step6/dist-step5 (e2ac5251, --sourcemap), step6 = .tmp/step6/dist-step6 (11ef0f7f). The HMH runtime path exercised by the bench (Free session, evidenceSafe crowd pilot, no boss) is the same on the rebased line; the only main.mjs differences on the rebase are the Ranked-only evidence gate and the dormant-boss lightning target guard.",
+      "hostLoad": "other sessions kept the host 38-73% busy; pairs whose host-load windows differ by more than 3 points or exceed 50% are kept but not summarised",
+      "census": {
+        "method": "bench --mode=census: WebGL texImage2D/texStorage2D/renderbuffer accounting at tick 1800 plus every fetched image file",
+        "mobile": {
+          "step5": {
+            "textureBytes": 125794060,
+            "textures": 23,
+            "msaaRenderbufferBytes": 1760256,
+            "fetchedImageFileBytes": 26552371,
+            "decodedImageRgbaBytes": 177520640,
+            "animatedEnemies": 32,
+            "goreMarksDrawn": 31
+          },
+          "step6": {
+            "textureBytes": 35256076,
+            "textures": 23,
+            "msaaRenderbufferBytes": 0,
+            "fetchedImageFileBytes": 5616148,
+            "decodedImageRgbaBytes": 52379648,
+            "animatedEnemies": 24,
+            "goreMarksDrawn": 16,
+            "halfPagesFetched": 38
+          },
+          "change": {
+            "textureBytesPct": -72,
+            "gpuIncludingRenderbuffersMB": [
+              127.6,
+              35.3
+            ],
+            "fetchedBytesPct": -78.8,
+            "decodedPct": -70.5
+          }
+        },
+        "desktop": {
+          "step5": {
+            "textureBytes": 171581884,
+            "textures": 27,
+            "msaaRenderbufferBytes": 1760256,
+            "fetchedImageFileBytes": 28021537,
+            "decodedImageRgbaBytes": 201113600,
+            "animatedEnemies": 64,
+            "goreMarksDrawn": 31
+          },
+          "step6": {
+            "textureBytes": 171581884,
+            "textures": 27,
+            "msaaRenderbufferBytes": 1760256,
+            "fetchedImageFileBytes": 28021537,
+            "decodedImageRgbaBytes": 201113600,
+            "animatedEnemies": 64,
+            "goreMarksDrawn": 31
+          },
+          "change": "identical"
+        },
+        "baselineNote": "docs/testing/hmh-perf-crowd-baseline.json records 125,351,692 B for 1.8.1 mobile; the step-5 census also uploaded the 576x192 silver coin (442,368 B)."
+      },
+      "timingPairs": [
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 23.06,
+            "p95Ms": 34.70000000000073,
+            "p99Ms": 48.600000000000364,
+            "over33Pct": 6.2,
+            "simSpeed": 0.996,
+            "hostOtherBusyPct": 44
+          },
+          "step6": {
+            "meanMs": 19.54,
+            "p95Ms": 27.799999999999272,
+            "p99Ms": 34.70000000000073,
+            "over33Pct": 1.4,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 39.7
+          },
+          "meanDeltaPct": -15.3
+        },
+        {
+          "profile": "mobile",
+          "cpu": 6,
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": true,
+          "step5": {
+            "meanMs": 37.96,
+            "p95Ms": 48.70000000000073,
+            "p99Ms": 55.70000000000073,
+            "over33Pct": 85.1,
+            "simSpeed": 0.99,
+            "hostOtherBusyPct": 39.1
+          },
+          "step6": {
+            "meanMs": 38.45,
+            "p95Ms": 48.79999999999927,
+            "p99Ms": 62.600000000000364,
+            "over33Pct": 85.9,
+            "simSpeed": 0.99,
+            "hostOtherBusyPct": 39.1
+          },
+          "meanDeltaPct": 1.3
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": true,
+          "step5": {
+            "meanMs": 18.33,
+            "p95Ms": 27.69999999999709,
+            "p99Ms": 27.80000000000291,
+            "over33Pct": 0.5,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 38.9
+          },
+          "step6": {
+            "meanMs": 18.58,
+            "p95Ms": 27.700000000000728,
+            "p99Ms": 34.70000000000073,
+            "over33Pct": 1.7,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 41.1
+          },
+          "meanDeltaPct": 1.4
+        },
+        {
+          "profile": "mobile",
+          "cpu": 6,
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": true,
+          "step5": {
+            "meanMs": 37.68,
+            "p95Ms": 48.70000000000073,
+            "p99Ms": 62.5,
+            "over33Pct": 82.9,
+            "simSpeed": 0.987,
+            "hostOtherBusyPct": 38.6
+          },
+          "step6": {
+            "meanMs": 39.16,
+            "p95Ms": 48.69999999999891,
+            "p99Ms": 55.600000000000364,
+            "over33Pct": 72.4,
+            "simSpeed": 0.905,
+            "hostOtherBusyPct": 40
+          },
+          "meanDeltaPct": 3.9
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 3,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 18.77,
+            "p95Ms": 27.799999999999272,
+            "p99Ms": 27.900000000001455,
+            "over33Pct": 0.9,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 39.4
+          },
+          "step6": {
+            "meanMs": 19.72,
+            "p95Ms": 34.70000000000073,
+            "p99Ms": 55.60000000000218,
+            "over33Pct": 5.5,
+            "simSpeed": 0.994,
+            "hostOtherBusyPct": 47
+          },
+          "meanDeltaPct": 5.1
+        },
+        {
+          "profile": "desktop",
+          "cpu": 1,
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 6.99,
+            "p95Ms": 7.099999999998545,
+            "p99Ms": 7.100000000002183,
+            "over33Pct": 0,
+            "simSpeed": 0.999,
+            "hostOtherBusyPct": 48.1
+          },
+          "step6": {
+            "meanMs": 9.01,
+            "p95Ms": 14,
+            "p99Ms": 21,
+            "over33Pct": 0.1,
+            "simSpeed": 0.997,
+            "hostOtherBusyPct": 73.1
+          },
+          "meanDeltaPct": 28.9
+        },
+        {
+          "profile": "desktop",
+          "cpu": 1,
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 6.99,
+            "p95Ms": 7,
+            "p99Ms": 7.100000000002183,
+            "over33Pct": 0,
+            "simSpeed": 0.999,
+            "hostOtherBusyPct": 43.5
+          },
+          "step6": {
+            "meanMs": 7.14,
+            "p95Ms": 7.100000000000364,
+            "p99Ms": 13.899999999999636,
+            "over33Pct": 0,
+            "simSpeed": 0.999,
+            "hostOtherBusyPct": 53.4
+          },
+          "meanDeltaPct": 2.1
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 4,
+          "walk": true,
+          "gpu": "host",
+          "loadMatched": true,
+          "step5": {
+            "meanMs": 27.7,
+            "p95Ms": 41.69999999999891,
+            "p99Ms": 55.400000000001455,
+            "over33Pct": 23,
+            "simSpeed": 0.996,
+            "hostOtherBusyPct": 48.6
+          },
+          "step6": {
+            "meanMs": 21.47,
+            "p95Ms": 27.900000000001455,
+            "p99Ms": 34.79999999999927,
+            "over33Pct": 4.5,
+            "simSpeed": 0.999,
+            "hostOtherBusyPct": 46.5
+          },
+          "meanDeltaPct": -22.5
+        },
+        {
+          "profile": "mobile",
+          "cpu": 6,
+          "rep": 3,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 72.79,
+            "p95Ms": 111.20000000000073,
+            "p99Ms": 132,
+            "over33Pct": 99.6,
+            "simSpeed": 0.82,
+            "hostOtherBusyPct": 52.7
+          },
+          "step6": {
+            "meanMs": 92.73,
+            "p95Ms": 132.10000000000036,
+            "p99Ms": 159.6999999999971,
+            "over33Pct": 100,
+            "simSpeed": 0.691,
+            "hostOtherBusyPct": 56.4
+          },
+          "meanDeltaPct": 27.4
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 5,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 35.89,
+            "p95Ms": 62.600000000000364,
+            "p99Ms": 83.39999999999964,
+            "over33Pct": 52.7,
+            "simSpeed": 0.97,
+            "hostOtherBusyPct": 52
+          },
+          "step6": {
+            "meanMs": 41.08,
+            "p95Ms": 83.29999999999927,
+            "p99Ms": 104.29999999999927,
+            "over33Pct": 59.6,
+            "simSpeed": 0.929,
+            "hostOtherBusyPct": 59.1
+          },
+          "meanDeltaPct": 14.5
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 6,
+          "walk": true,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 33.1,
+            "p95Ms": 55.69999999999709,
+            "p99Ms": 76.40000000000146,
+            "over33Pct": 43.4,
+            "simSpeed": 0.98,
+            "hostOtherBusyPct": 47.4
+          },
+          "step6": {
+            "meanMs": 28.24,
+            "p95Ms": 41.70000000000073,
+            "p99Ms": 48.70000000000073,
+            "over33Pct": 24.1,
+            "simSpeed": 0.998,
+            "hostOtherBusyPct": 40.9
+          },
+          "meanDeltaPct": -14.7
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 7,
+          "walk": true,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 30.99,
+            "p95Ms": 48.599999999998545,
+            "p99Ms": 62.600000000000364,
+            "over33Pct": 26.1,
+            "simSpeed": 0.905,
+            "hostOtherBusyPct": 45.9
+          },
+          "step6": {
+            "meanMs": 33.87,
+            "p95Ms": 69.5,
+            "p99Ms": 97.30000000000109,
+            "over33Pct": 41.3,
+            "simSpeed": 0.963,
+            "hostOtherBusyPct": 50.4
+          },
+          "meanDeltaPct": 9.3
+        },
+        {
+          "profile": "mobile",
+          "cpu": 4,
+          "rep": 8,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": false,
+          "step5": {
+            "meanMs": 28.82,
+            "p95Ms": 55.70000000000073,
+            "p99Ms": 70.10000000000218,
+            "over33Pct": 32.7,
+            "simSpeed": 0.976,
+            "hostOtherBusyPct": 40.9
+          },
+          "step6": {
+            "meanMs": 28.1,
+            "p95Ms": 54.80000000000291,
+            "p99Ms": 69.39999999999964,
+            "over33Pct": 25,
+            "simSpeed": 0.983,
+            "hostOtherBusyPct": 45
+          },
+          "meanDeltaPct": -2.5
+        },
+        {
+          "profile": "mobile",
+          "cpu": 6,
+          "rep": 4,
+          "walk": false,
+          "gpu": "host",
+          "loadMatched": true,
+          "step5": {
+            "meanMs": 71.82,
+            "p95Ms": 111.20000000000073,
+            "p99Ms": 139.09999999999854,
+            "over33Pct": 100,
+            "simSpeed": 0.825,
+            "hostOtherBusyPct": 41.5
+          },
+          "step6": {
+            "meanMs": 83.26,
+            "p95Ms": 125.10000000000218,
+            "p99Ms": 180.79999999999927,
+            "over33Pct": 100,
+            "simSpeed": 0.743,
+            "hostOtherBusyPct": 43.8
+          },
+          "meanDeltaPct": 15.9
+        }
+      ],
+      "timingRows": [
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 23.06,
+          "p50Ms": 20.899999999999636,
+          "p95Ms": 34.70000000000073,
+          "p99Ms": 48.600000000000364,
+          "worstMs": 62.5,
+          "over33Pct": 6.2,
+          "fps": 43.4,
+          "simSpeed": 0.996,
+          "hostOtherBusyPct": 44,
+          "frames": 876,
+          "heapDeltaMB": 75.5,
+          "abortedRequests": 0,
+          "bootMs": 4614
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 19.54,
+          "p50Ms": 20.799999999999272,
+          "p95Ms": 27.799999999999272,
+          "p99Ms": 34.70000000000073,
+          "worstMs": 55.5,
+          "over33Pct": 1.4,
+          "fps": 51.2,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 39.7,
+          "frames": 1027,
+          "heapDeltaMB": -3.3,
+          "abortedRequests": 0,
+          "bootMs": 3477
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 37.96,
+          "p50Ms": 34.79999999999927,
+          "p95Ms": 48.70000000000073,
+          "p99Ms": 55.70000000000073,
+          "worstMs": 83.5,
+          "over33Pct": 85.1,
+          "fps": 26.3,
+          "simSpeed": 0.99,
+          "hostOtherBusyPct": 39.1,
+          "frames": 531,
+          "heapDeltaMB": 46.1,
+          "abortedRequests": 0,
+          "bootMs": 5670
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 38.45,
+          "p50Ms": 34.79999999999927,
+          "p95Ms": 48.79999999999927,
+          "p99Ms": 62.600000000000364,
+          "worstMs": 83.39999999999782,
+          "over33Pct": 85.9,
+          "fps": 26,
+          "simSpeed": 0.99,
+          "hostOtherBusyPct": 39.1,
+          "frames": 526,
+          "heapDeltaMB": 8,
+          "abortedRequests": 0,
+          "bootMs": 5262
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 18.33,
+          "p50Ms": 20.799999999999272,
+          "p95Ms": 27.69999999999709,
+          "p99Ms": 27.80000000000291,
+          "worstMs": 48.600000000000364,
+          "over33Pct": 0.5,
+          "fps": 54.6,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 38.9,
+          "frames": 1097,
+          "heapDeltaMB": 48,
+          "abortedRequests": 0,
+          "bootMs": 3663
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 18.58,
+          "p50Ms": 20.799999999999272,
+          "p95Ms": 27.700000000000728,
+          "p99Ms": 34.70000000000073,
+          "worstMs": 48.70000000000073,
+          "over33Pct": 1.7,
+          "fps": 53.8,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 41.1,
+          "frames": 1090,
+          "heapDeltaMB": 28.4,
+          "abortedRequests": 0,
+          "bootMs": 6830
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 37.68,
+          "p50Ms": 34.79999999999927,
+          "p95Ms": 48.70000000000073,
+          "p99Ms": 62.5,
+          "worstMs": 90.30000000000109,
+          "over33Pct": 82.9,
+          "fps": 26.5,
+          "simSpeed": 0.987,
+          "hostOtherBusyPct": 38.6,
+          "frames": 533,
+          "heapDeltaMB": -8.1,
+          "abortedRequests": 0,
+          "bootMs": 4869
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 39.16,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 48.69999999999891,
+          "p99Ms": 55.600000000000364,
+          "worstMs": 1862.1000000000022,
+          "over33Pct": 72.4,
+          "fps": 25.5,
+          "simSpeed": 0.905,
+          "hostOtherBusyPct": 40,
+          "frames": 515,
+          "heapDeltaMB": 35.6,
+          "abortedRequests": 0,
+          "bootMs": 4700
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 3,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 18.77,
+          "p50Ms": 20.799999999999272,
+          "p95Ms": 27.799999999999272,
+          "p99Ms": 27.900000000001455,
+          "worstMs": 41.69999999999891,
+          "over33Pct": 0.9,
+          "fps": 53.3,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 39.4,
+          "frames": 1078,
+          "heapDeltaMB": -11,
+          "abortedRequests": 0,
+          "bootMs": 5522
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 3,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 19.72,
+          "p50Ms": 20.799999999999272,
+          "p95Ms": 34.70000000000073,
+          "p99Ms": 55.60000000000218,
+          "worstMs": 83.40000000000146,
+          "over33Pct": 5.5,
+          "fps": 50.7,
+          "simSpeed": 0.994,
+          "hostOtherBusyPct": 47,
+          "frames": 1015,
+          "heapDeltaMB": -27.7,
+          "abortedRequests": 0,
+          "bootMs": 4226
+        },
+        {
+          "build": "step5",
+          "mode": "profile",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 23.61,
+          "p50Ms": 20.899999999997817,
+          "p95Ms": 41.70000000000073,
+          "p99Ms": 55.5,
+          "worstMs": 69.5,
+          "over33Pct": 12.5,
+          "fps": 42.4,
+          "simSpeed": 0.996,
+          "hostOtherBusyPct": 51.6,
+          "frames": 825,
+          "heapDeltaMB": 45.2,
+          "abortedRequests": 0,
+          "bootMs": 4963
+        },
+        {
+          "build": "step6",
+          "mode": "profile",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 26.63,
+          "p50Ms": 27.700000000000728,
+          "p95Ms": 41.70000000000073,
+          "p99Ms": 48.69999999999709,
+          "worstMs": 76.29999999999927,
+          "over33Pct": 23.2,
+          "fps": 37.5,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 53.4,
+          "frames": 733,
+          "heapDeltaMB": 69.2,
+          "abortedRequests": 0,
+          "bootMs": 4195
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 1,
+          "profile": "desktop",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 6.99,
+          "p50Ms": 6.900000000001455,
+          "p95Ms": 7.099999999998545,
+          "p99Ms": 7.100000000002183,
+          "worstMs": 69.30000000000109,
+          "over33Pct": 0,
+          "fps": 143.1,
+          "simSpeed": 0.999,
+          "hostOtherBusyPct": 48.1,
+          "frames": 2883,
+          "heapDeltaMB": -42,
+          "abortedRequests": 0,
+          "bootMs": 4153
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 1,
+          "profile": "desktop",
+          "rep": 1,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 9.01,
+          "p50Ms": 7,
+          "p95Ms": 14,
+          "p99Ms": 21,
+          "worstMs": 34.600000000000364,
+          "over33Pct": 0.1,
+          "fps": 111,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 73.1,
+          "frames": 2243,
+          "heapDeltaMB": -21.6,
+          "abortedRequests": 0,
+          "bootMs": 3522
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 1,
+          "profile": "desktop",
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 6.99,
+          "p50Ms": 6.900000000001455,
+          "p95Ms": 7,
+          "p99Ms": 7.100000000002183,
+          "worstMs": 69.60000000000036,
+          "over33Pct": 0,
+          "fps": 143.1,
+          "simSpeed": 0.999,
+          "hostOtherBusyPct": 43.5,
+          "frames": 2884,
+          "heapDeltaMB": -44.1,
+          "abortedRequests": 0,
+          "bootMs": 2992
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 1,
+          "profile": "desktop",
+          "rep": 2,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 7.14,
+          "p50Ms": 7,
+          "p95Ms": 7.100000000000364,
+          "p99Ms": 13.899999999999636,
+          "worstMs": 76.29999999999927,
+          "over33Pct": 0,
+          "fps": 140.1,
+          "simSpeed": 0.999,
+          "hostOtherBusyPct": 53.4,
+          "frames": 2833,
+          "heapDeltaMB": 13.7,
+          "abortedRequests": 0,
+          "bootMs": 2924
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 4,
+          "walk": true,
+          "gpu": "host",
+          "meanMs": 27.7,
+          "p50Ms": 27.799999999999272,
+          "p95Ms": 41.69999999999891,
+          "p99Ms": 55.400000000001455,
+          "worstMs": 90.29999999999927,
+          "over33Pct": 23,
+          "fps": 36.1,
+          "simSpeed": 0.996,
+          "hostOtherBusyPct": 48.6,
+          "frames": 731,
+          "heapDeltaMB": 23.7,
+          "abortedRequests": 0,
+          "bootMs": 4289
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 4,
+          "walk": true,
+          "gpu": "host",
+          "meanMs": 21.47,
+          "p50Ms": 20.80000000000291,
+          "p95Ms": 27.900000000001455,
+          "p99Ms": 34.79999999999927,
+          "worstMs": 55.599999999998545,
+          "over33Pct": 4.5,
+          "fps": 46.6,
+          "simSpeed": 0.999,
+          "hostOtherBusyPct": 46.5,
+          "frames": 939,
+          "heapDeltaMB": 62.8,
+          "abortedRequests": 0,
+          "bootMs": 4056
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 3,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 72.79,
+          "p50Ms": 69.5,
+          "p95Ms": 111.20000000000073,
+          "p99Ms": 132,
+          "worstMs": 270.7999999999993,
+          "over33Pct": 99.6,
+          "fps": 13.7,
+          "simSpeed": 0.82,
+          "hostOtherBusyPct": 52.7,
+          "frames": 279,
+          "heapDeltaMB": 26.1,
+          "abortedRequests": 0,
+          "bootMs": 8287
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 3,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 92.73,
+          "p50Ms": 90.29999999999927,
+          "p95Ms": 132.10000000000036,
+          "p99Ms": 159.6999999999971,
+          "worstMs": 166.6999999999971,
+          "over33Pct": 100,
+          "fps": 10.8,
+          "simSpeed": 0.691,
+          "hostOtherBusyPct": 56.4,
+          "frames": 219,
+          "heapDeltaMB": -12.9,
+          "abortedRequests": 0,
+          "bootMs": 6626
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 5,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 41.08,
+          "p50Ms": 34.70000000000073,
+          "p95Ms": 83.29999999999927,
+          "p99Ms": 104.29999999999927,
+          "worstMs": 125,
+          "over33Pct": 59.6,
+          "fps": 24.3,
+          "simSpeed": 0.929,
+          "hostOtherBusyPct": 59.1,
+          "frames": 493,
+          "heapDeltaMB": 44.6,
+          "abortedRequests": 0,
+          "bootMs": 4500
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 5,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 35.89,
+          "p50Ms": 34.69999999999709,
+          "p95Ms": 62.600000000000364,
+          "p99Ms": 83.39999999999964,
+          "worstMs": 104.20000000000073,
+          "over33Pct": 52.7,
+          "fps": 27.9,
+          "simSpeed": 0.97,
+          "hostOtherBusyPct": 52,
+          "frames": 560,
+          "heapDeltaMB": -1.9,
+          "abortedRequests": 0,
+          "bootMs": 4767
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 6,
+          "walk": true,
+          "gpu": "host",
+          "meanMs": 28.24,
+          "p50Ms": 27.799999999999272,
+          "p95Ms": 41.70000000000073,
+          "p99Ms": 48.70000000000073,
+          "worstMs": 76.40000000000146,
+          "over33Pct": 24.1,
+          "fps": 35.4,
+          "simSpeed": 0.998,
+          "hostOtherBusyPct": 40.9,
+          "frames": 719,
+          "heapDeltaMB": 35,
+          "abortedRequests": 0,
+          "bootMs": 5270
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 6,
+          "walk": true,
+          "gpu": "host",
+          "meanMs": 33.1,
+          "p50Ms": 27.80000000000291,
+          "p95Ms": 55.69999999999709,
+          "p99Ms": 76.40000000000146,
+          "worstMs": 97.29999999999927,
+          "over33Pct": 43.4,
+          "fps": 30.2,
+          "simSpeed": 0.98,
+          "hostOtherBusyPct": 47.4,
+          "frames": 611,
+          "heapDeltaMB": 57.9,
+          "abortedRequests": 0,
+          "bootMs": 6196
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 7,
+          "walk": true,
+          "gpu": "host",
+          "meanMs": 30.99,
+          "p50Ms": 27.799999999999272,
+          "p95Ms": 48.599999999998545,
+          "p99Ms": 62.600000000000364,
+          "worstMs": 1855,
+          "over33Pct": 26.1,
+          "fps": 32.3,
+          "simSpeed": 0.905,
+          "hostOtherBusyPct": 45.9,
+          "frames": 651,
+          "heapDeltaMB": 14.6,
+          "abortedRequests": 0,
+          "bootMs": 5551
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 7,
+          "walk": true,
+          "gpu": "host",
+          "meanMs": 33.87,
+          "p50Ms": 27.80000000000109,
+          "p95Ms": 69.5,
+          "p99Ms": 97.30000000000109,
+          "worstMs": 131.89999999999964,
+          "over33Pct": 41.3,
+          "fps": 29.5,
+          "simSpeed": 0.963,
+          "hostOtherBusyPct": 50.4,
+          "frames": 598,
+          "heapDeltaMB": 48.4,
+          "abortedRequests": 0,
+          "bootMs": 5928
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 8,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 28.1,
+          "p50Ms": 27.69999999999891,
+          "p95Ms": 54.80000000000291,
+          "p99Ms": 69.39999999999964,
+          "worstMs": 111.20000000000073,
+          "over33Pct": 25,
+          "fps": 35.6,
+          "simSpeed": 0.983,
+          "hostOtherBusyPct": 45,
+          "frames": 713,
+          "heapDeltaMB": -2.1,
+          "abortedRequests": 0,
+          "bootMs": 4567
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 4,
+          "profile": "mobile",
+          "rep": 8,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 28.82,
+          "p50Ms": 21,
+          "p95Ms": 55.70000000000073,
+          "p99Ms": 70.10000000000218,
+          "worstMs": 111.20000000000073,
+          "over33Pct": 32.7,
+          "fps": 34.7,
+          "simSpeed": 0.976,
+          "hostOtherBusyPct": 40.9,
+          "frames": 701,
+          "heapDeltaMB": 1.9,
+          "abortedRequests": 0,
+          "bootMs": 4377
+        },
+        {
+          "build": "step5",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 4,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 71.82,
+          "p50Ms": 69.39999999999782,
+          "p95Ms": 111.20000000000073,
+          "p99Ms": 139.09999999999854,
+          "worstMs": 166.60000000000218,
+          "over33Pct": 100,
+          "fps": 13.9,
+          "simSpeed": 0.825,
+          "hostOtherBusyPct": 41.5,
+          "frames": 279,
+          "heapDeltaMB": 14,
+          "abortedRequests": 0,
+          "bootMs": 6708
+        },
+        {
+          "build": "step6",
+          "mode": "timing",
+          "cpu": 6,
+          "profile": "mobile",
+          "rep": 4,
+          "walk": false,
+          "gpu": "host",
+          "meanMs": 83.26,
+          "p50Ms": 76.40000000000146,
+          "p95Ms": 125.10000000000218,
+          "p99Ms": 180.79999999999927,
+          "worstMs": 222,
+          "over33Pct": 100,
+          "fps": 12,
+          "simSpeed": 0.743,
+          "hostOtherBusyPct": 43.8,
+          "frames": 243,
+          "heapDeltaMB": -5.1,
+          "abortedRequests": 0,
+          "bootMs": 9128
+        }
+      ],
+      "summary": {
+        "mobile4xHostGpu": "load-matched pair rep 2 (38.9% vs 41.1%): 18.33 -> 18.58 ms mean, p95 27.7 / 27.7, p99 27.8 / 34.7; rep 1 (44.0% vs 39.7%, not matched) 23.06 -> 19.54; rep 3 (39.4% vs 47.0%, not matched) 18.77 -> 19.72. No measurable CPU frame-time change: the host GPU is not the limit and the caps remove work that was already small (24 vs 32 animated bodies, 16 vs 31 marks).",
+        "mobile6xHostGpu": "load-matched pairs rep 1 (39.1% / 39.1%): 37.96 -> 38.45 ms, p99 55.7 / 62.6; rep 2 (38.6% / 40.0%): 37.68 -> 39.16 (a 1.86 s stall in the step-6 window, sim 0.905). Rep 4 (41.5% / 43.8%) passes the 3-point rule mechanically (71.82 -> 83.26) but the unchanged base build itself ran twice as slow there as in reps 1-2, as did rep 3 (52.7% / 56.4%: 72.79 -> 92.73), so the host state, not the build, set those windows; they are not evidence either way and the rebased-build A/B is the one to read.",
+        "swiftshader1x": "load-matched pairs rep 1: 54.55 -> 54.19 ms; rep 2: 54.47 -> 54.97 ms (p95 62.5-62.6, p99 97.3-97.4 in all four). With rasterisation on the CPU the half pages change nothing measurable either: SwiftShader time is dominated by canvas fill, and texel fetch cost per fragment is the same for a 1024 and a 2048 page.",
+        "walk4x": "camera-scrolling pairs are wall-clock keyed and noisy: rep 4 27.70 -> 21.47, rep 6 33.10 -> 28.24, rep 7 30.99 -> 33.87; no conclusion.",
+        "desktop1x": "vsync-bound: 6.99 -> 7.14 ms (rep 2, matched); rep 1 ran at 48% vs 73% host load.",
+        "leakProbeLong": "scripts/hmh-restart-leak-probe.mjs --long=1 --rounds=6 --ticks=3600: JS heap identical (16.0 -> 18.1 MB step5, 16.0 -> 18.2 MB step6); renderer process private memory 371.7 -> 431.7 MB on step 5 vs 273.4 -> 322.3 MB on step 6 (about 100 MB less at every round), GPU process 430-482 MB vs 275-419 MB."
+      }
+    },
+    "rebased_2026_09_26": {
+      "builds": "base = .tmp/step6/dist-base (git archive of c34d2a31), head = .tmp/step6/dist-head (HEAD); bench serves apps/portal itself, --affinity=0xFFFF --retries=2",
+      "census": [
+        {
+          "build": "base",
+          "profile": "mobile",
+          "performanceProfile": "mobile",
+          "renderResolution": 1,
+          "canvas": {
+            "width": 414,
+            "height": 896
+          },
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "endTick": 1800,
+          "traceDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+          "errors": [],
+          "textureCount": 23,
+          "textureBytes": 125794060,
+          "textureMiB": 119.97,
+          "renderbufferBytes": 1760256,
+          "renderbufferMiB": 1.68,
+          "renderbuffers": [
+            {
+              "width": 244,
+              "height": 122,
+              "samples": 4,
+              "bytes": 476288
+            },
+            {
+              "width": 232,
+              "height": 116,
+              "samples": 4,
+              "bytes": 430592
+            },
+            {
+              "width": 118,
+              "height": 118,
+              "samples": 4,
+              "bytes": 222784
+            },
+            {
+              "width": 118,
+              "height": 118,
+              "samples": 4,
+              "bytes": 222784
+            },
+            {
+              "width": 12,
+              "height": 28,
+              "samples": 4,
+              "bytes": 5376
+            },
+            {
+              "width": 256,
+              "height": 96,
+              "samples": 4,
+              "bytes": 393216
+            },
+            {
+              "width": 24,
+              "height": 24,
+              "samples": 4,
+              "bytes": 9216
+            }
+          ],
+          "largestTextures": [
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 1520,
+              "bytes": 12451840,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 1328,
+              "bytes": 10878976,
+              "mipLevels": 1
+            }
+          ],
+          "texturesBySize": [
+            [
+              "2048x2048",
+              4
+            ],
+            [
+              "2048x1520",
+              1
+            ],
+            [
+              "2048x1328",
+              1
+            ],
+            [
+              "2048x1216",
+              1
+            ],
+            [
+              "2048x1152",
+              1
+            ],
+            [
+              "2048x944",
+              1
+            ],
+            [
+              "1024x1024",
+              1
+            ],
+            [
+              "512x512",
+              2
+            ],
+            [
+              "576x192",
+              1
+            ],
+            [
+              "512x128",
+              1
+            ],
+            [
+              "244x122",
+              1
+            ],
+            [
+              "232x116",
+              1
+            ],
+            [
+              "256x96",
+              1
+            ],
+            [
+              "118x118",
+              2
+            ],
+            [
+              "24x24",
+              1
+            ],
+            [
+              "12x28",
+              1
+            ],
+            [
+              "1x1",
+              2
+            ]
+          ],
+          "imagesFetched": 50,
+          "imageFileBytes": 26552371,
+          "imageFileMiB": 25.32,
+          "imageDecodedRgbaBytes": 177520640,
+          "imageDecodedRgbaMiB": 169.3,
+          "runtimePagesFetched": {
+            "half": 0,
+            "full": 38
+          },
+          "runtimePageFileBytes": {
+            "half": 0,
+            "full": 25532817
+          },
+          "runtimePageDecodedRgbaBytes": {
+            "half": 0,
+            "full": 166854656
+          },
+          "lastSample": {
+            "tick": 1800,
+            "enemies": 81,
+            "projectiles": 0,
+            "score": 7665,
+            "xp": 9560,
+            "level": 8,
+            "playerHealth": 126,
+            "targetHealth": 96,
+            "enemyDecisions": 32,
+            "enemySafetySteps": 81,
+            "enemyCollisionContacts": 6,
+            "enemyRouteReplans": 1,
+            "enemyTells": 13,
+            "enemyAttackTokens": 17,
+            "directorInsertions": 0,
+            "weaponAmmo": "0",
+            "silver": "{\"dropped\":47,\"collected\":19,\"expired\":0,\"active\":28}",
+            "animatedEnemies": 32,
+            "corpses": 1,
+            "goreMarks": 31,
+            "goreFragments": 0,
+            "silverActive": 28,
+            "silverVisible": 28,
+            "killFxShards": 0,
+            "combatEvents": 11,
+            "weaponVfx": 4,
+            "worldParticles": 0,
+            "contactShadows": 65,
+            "atmosphereSprites": 2,
+            "pickupMarkers": 0,
+            "resolution": 1,
+            "displaysCreated": 259,
+            "displaysReused": 684
+          },
+          "screenshot": ".tmp/step6/bench/census-base-mobile/census-mobile.png"
+        },
+        {
+          "build": "base",
+          "profile": "desktop",
+          "performanceProfile": "desktop",
+          "renderResolution": 1,
+          "canvas": {
+            "width": 1440,
+            "height": 900
+          },
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "endTick": 1800,
+          "traceDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+          "errors": [],
+          "textureCount": 27,
+          "textureBytes": 171581884,
+          "textureMiB": 163.63,
+          "renderbufferBytes": 1760256,
+          "renderbufferMiB": 1.68,
+          "renderbuffers": [
+            {
+              "width": 244,
+              "height": 122,
+              "samples": 4,
+              "bytes": 476288
+            },
+            {
+              "width": 232,
+              "height": 116,
+              "samples": 4,
+              "bytes": 430592
+            },
+            {
+              "width": 118,
+              "height": 118,
+              "samples": 4,
+              "bytes": 222784
+            },
+            {
+              "width": 118,
+              "height": 118,
+              "samples": 4,
+              "bytes": 222784
+            },
+            {
+              "width": 12,
+              "height": 28,
+              "samples": 4,
+              "bytes": 5376
+            },
+            {
+              "width": 256,
+              "height": 96,
+              "samples": 4,
+              "bytes": 393216
+            },
+            {
+              "width": 24,
+              "height": 24,
+              "samples": 4,
+              "bytes": 9216
+            }
+          ],
+          "largestTextures": [
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            }
+          ],
+          "texturesBySize": [
+            [
+              "2048x2048",
+              6
+            ],
+            [
+              "1792x2048",
+              1
+            ],
+            [
+              "2048x1520",
+              1
+            ],
+            [
+              "2048x1328",
+              1
+            ],
+            [
+              "2048x1216",
+              1
+            ],
+            [
+              "2048x1152",
+              1
+            ],
+            [
+              "2048x944",
+              1
+            ],
+            [
+              "512x512",
+              3
+            ],
+            [
+              "576x192",
+              1
+            ],
+            [
+              "512x128",
+              2
+            ],
+            [
+              "244x122",
+              1
+            ],
+            [
+              "232x116",
+              1
+            ],
+            [
+              "256x96",
+              1
+            ],
+            [
+              "118x118",
+              2
+            ],
+            [
+              "24x24",
+              1
+            ],
+            [
+              "12x28",
+              1
+            ],
+            [
+              "1x1",
+              2
+            ]
+          ],
+          "imagesFetched": 50,
+          "imageFileBytes": 28021537,
+          "imageFileMiB": 26.72,
+          "imageDecodedRgbaBytes": 201113600,
+          "imageDecodedRgbaMiB": 191.8,
+          "runtimePagesFetched": {
+            "half": 0,
+            "full": 38
+          },
+          "runtimePageFileBytes": {
+            "half": 0,
+            "full": 25532817
+          },
+          "runtimePageDecodedRgbaBytes": {
+            "half": 0,
+            "full": 166854656
+          },
+          "lastSample": {
+            "tick": 1800,
+            "enemies": 81,
+            "projectiles": 0,
+            "score": 7665,
+            "xp": 9560,
+            "level": 8,
+            "playerHealth": 126,
+            "targetHealth": 96,
+            "enemyDecisions": 32,
+            "enemySafetySteps": 81,
+            "enemyCollisionContacts": 6,
+            "enemyRouteReplans": 1,
+            "enemyTells": 13,
+            "enemyAttackTokens": 17,
+            "directorInsertions": 0,
+            "weaponAmmo": "0",
+            "silver": "{\"dropped\":47,\"collected\":19,\"expired\":0,\"active\":28}",
+            "animatedEnemies": 64,
+            "corpses": 1,
+            "goreMarks": 31,
+            "goreFragments": 0,
+            "silverActive": 28,
+            "silverVisible": 28,
+            "killFxShards": 0,
+            "combatEvents": 11,
+            "weaponVfx": 4,
+            "worldParticles": 0,
+            "contactShadows": 94,
+            "atmosphereSprites": 3,
+            "pickupMarkers": 0,
+            "resolution": 1,
+            "displaysCreated": 259,
+            "displaysReused": 684
+          },
+          "screenshot": ".tmp/step6/bench/census-base-desktop/census-desktop.png"
+        },
+        {
+          "build": "head",
+          "profile": "mobile",
+          "performanceProfile": "mobile",
+          "renderResolution": 1,
+          "canvas": {
+            "width": 414,
+            "height": 896
+          },
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "endTick": 1800,
+          "traceDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+          "errors": [],
+          "textureCount": 23,
+          "textureBytes": 35256076,
+          "textureMiB": 33.62,
+          "renderbufferBytes": 0,
+          "renderbufferMiB": 0,
+          "renderbuffers": [],
+          "largestTextures": [
+            {
+              "width": 1024,
+              "height": 1024,
+              "bytes": 4194304,
+              "mipLevels": 1
+            },
+            {
+              "width": 1024,
+              "height": 1024,
+              "bytes": 4194304,
+              "mipLevels": 1
+            },
+            {
+              "width": 1024,
+              "height": 1024,
+              "bytes": 4194304,
+              "mipLevels": 1
+            },
+            {
+              "width": 1024,
+              "height": 1024,
+              "bytes": 4194304,
+              "mipLevels": 1
+            },
+            {
+              "width": 1024,
+              "height": 1024,
+              "bytes": 4194304,
+              "mipLevels": 1
+            },
+            {
+              "width": 1024,
+              "height": 760,
+              "bytes": 3112960,
+              "mipLevels": 1
+            }
+          ],
+          "texturesBySize": [
+            [
+              "1024x1024",
+              5
+            ],
+            [
+              "1024x760",
+              1
+            ],
+            [
+              "1024x664",
+              1
+            ],
+            [
+              "1024x608",
+              1
+            ],
+            [
+              "1024x576",
+              1
+            ],
+            [
+              "1024x472",
+              1
+            ],
+            [
+              "576x192",
+              1
+            ],
+            [
+              "256x256",
+              2
+            ],
+            [
+              "244x122",
+              1
+            ],
+            [
+              "232x116",
+              1
+            ],
+            [
+              "256x96",
+              1
+            ],
+            [
+              "256x64",
+              1
+            ],
+            [
+              "118x118",
+              2
+            ],
+            [
+              "24x24",
+              1
+            ],
+            [
+              "12x28",
+              1
+            ],
+            [
+              "1x1",
+              2
+            ]
+          ],
+          "imagesFetched": 50,
+          "imageFileBytes": 5616148,
+          "imageFileMiB": 5.36,
+          "imageDecodedRgbaBytes": 52379648,
+          "imageDecodedRgbaMiB": 49.95,
+          "runtimePagesFetched": {
+            "half": 38,
+            "full": 0
+          },
+          "runtimePageFileBytes": {
+            "half": 4596594,
+            "full": 0
+          },
+          "runtimePageDecodedRgbaBytes": {
+            "half": 41713664,
+            "full": 0
+          },
+          "fullPagesStillFetchedOnHalfBuild": [],
+          "lastSample": {
+            "tick": 1800,
+            "enemies": 81,
+            "projectiles": 0,
+            "score": 7665,
+            "xp": 9560,
+            "level": 8,
+            "playerHealth": 126,
+            "targetHealth": 96,
+            "enemyDecisions": 32,
+            "enemySafetySteps": 81,
+            "enemyCollisionContacts": 6,
+            "enemyRouteReplans": 1,
+            "enemyTells": 13,
+            "enemyAttackTokens": 17,
+            "directorInsertions": 0,
+            "weaponAmmo": "0",
+            "silver": "{\"dropped\":47,\"collected\":19,\"expired\":0,\"active\":28}",
+            "animatedEnemies": 24,
+            "corpses": 1,
+            "goreMarks": 16,
+            "goreFragments": 0,
+            "silverActive": 28,
+            "silverVisible": 28,
+            "killFxShards": 0,
+            "combatEvents": 11,
+            "weaponVfx": 4,
+            "worldParticles": 0,
+            "contactShadows": 65,
+            "atmosphereSprites": 2,
+            "pickupMarkers": 0,
+            "resolution": 1,
+            "displaysCreated": 259,
+            "displaysReused": 684
+          },
+          "screenshot": ".tmp/step6/bench/census-head-mobile/census-mobile.png"
+        },
+        {
+          "build": "head",
+          "profile": "desktop",
+          "performanceProfile": "desktop",
+          "renderResolution": 1,
+          "canvas": {
+            "width": 1440,
+            "height": 900
+          },
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti (0x00002208) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "endTick": 1800,
+          "traceDigest": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+          "errors": [],
+          "textureCount": 27,
+          "textureBytes": 171581884,
+          "textureMiB": 163.63,
+          "renderbufferBytes": 1760256,
+          "renderbufferMiB": 1.68,
+          "renderbuffers": [
+            {
+              "width": 244,
+              "height": 122,
+              "samples": 4,
+              "bytes": 476288
+            },
+            {
+              "width": 232,
+              "height": 116,
+              "samples": 4,
+              "bytes": 430592
+            },
+            {
+              "width": 118,
+              "height": 118,
+              "samples": 4,
+              "bytes": 222784
+            },
+            {
+              "width": 118,
+              "height": 118,
+              "samples": 4,
+              "bytes": 222784
+            },
+            {
+              "width": 12,
+              "height": 28,
+              "samples": 4,
+              "bytes": 5376
+            },
+            {
+              "width": 256,
+              "height": 96,
+              "samples": 4,
+              "bytes": 393216
+            },
+            {
+              "width": 24,
+              "height": 24,
+              "samples": 4,
+              "bytes": 9216
+            }
+          ],
+          "largestTextures": [
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            },
+            {
+              "width": 2048,
+              "height": 2048,
+              "bytes": 16777216,
+              "mipLevels": 1
+            }
+          ],
+          "texturesBySize": [
+            [
+              "2048x2048",
+              6
+            ],
+            [
+              "1792x2048",
+              1
+            ],
+            [
+              "2048x1520",
+              1
+            ],
+            [
+              "2048x1328",
+              1
+            ],
+            [
+              "2048x1216",
+              1
+            ],
+            [
+              "2048x1152",
+              1
+            ],
+            [
+              "2048x944",
+              1
+            ],
+            [
+              "512x512",
+              3
+            ],
+            [
+              "576x192",
+              1
+            ],
+            [
+              "512x128",
+              2
+            ],
+            [
+              "244x122",
+              1
+            ],
+            [
+              "232x116",
+              1
+            ],
+            [
+              "256x96",
+              1
+            ],
+            [
+              "118x118",
+              2
+            ],
+            [
+              "24x24",
+              1
+            ],
+            [
+              "12x28",
+              1
+            ],
+            [
+              "1x1",
+              2
+            ]
+          ],
+          "imagesFetched": 50,
+          "imageFileBytes": 28021537,
+          "imageFileMiB": 26.72,
+          "imageDecodedRgbaBytes": 201113600,
+          "imageDecodedRgbaMiB": 191.8,
+          "runtimePagesFetched": {
+            "half": 0,
+            "full": 38
+          },
+          "runtimePageFileBytes": {
+            "half": 0,
+            "full": 25532817
+          },
+          "runtimePageDecodedRgbaBytes": {
+            "half": 0,
+            "full": 166854656
+          },
+          "lastSample": {
+            "tick": 1800,
+            "enemies": 81,
+            "projectiles": 0,
+            "score": 7665,
+            "xp": 9560,
+            "level": 8,
+            "playerHealth": 126,
+            "targetHealth": 96,
+            "enemyDecisions": 32,
+            "enemySafetySteps": 81,
+            "enemyCollisionContacts": 6,
+            "enemyRouteReplans": 1,
+            "enemyTells": 13,
+            "enemyAttackTokens": 17,
+            "directorInsertions": 0,
+            "weaponAmmo": "0",
+            "silver": "{\"dropped\":47,\"collected\":19,\"expired\":0,\"active\":28}",
+            "animatedEnemies": 64,
+            "corpses": 1,
+            "goreMarks": 31,
+            "goreFragments": 0,
+            "silverActive": 28,
+            "silverVisible": 28,
+            "killFxShards": 0,
+            "combatEvents": 11,
+            "weaponVfx": 4,
+            "worldParticles": 0,
+            "contactShadows": 94,
+            "atmosphereSprites": 3,
+            "pickupMarkers": 0,
+            "resolution": 1,
+            "displaysCreated": 259,
+            "displaysReused": 684
+          },
+          "screenshot": ".tmp/step6/bench/census-head-desktop/census-desktop.png"
+        }
+      ],
+      "timingPairs": "pending: the shared heavy lock was held (ownerless directory since 00:48) for the whole pass; re-run .tmp/step6/job-census.sh, job-timing.sh and npm run visual:reboot on the rebased builds when it frees",
+      "timingRows": "pending: the shared heavy lock was held (ownerless directory since 00:48) for the whole pass; re-run .tmp/step6/job-census.sh, job-timing.sh and npm run visual:reboot on the rebased builds when it frees",
+      "summary": "pending: the shared heavy lock was held (ownerless directory since 00:48) for the whole pass; re-run .tmp/step6/job-census.sh, job-timing.sh and npm run visual:reboot on the rebased builds when it frees"
+    }
+  },
+  "deferred": [
+    "Owner-device acceptance on an iPhone XS Max: texture memory pressure, thermal throttling and the WebP decode cost of the half pages are unmeasured on hardware; the host-side gains are memory and bytes, not frame time.",
+    "Mipmaps for actor atlases (autoGenerateMipmaps is only on for terrain) and an ASTC/ETC2 compressed path would cut mobile texture memory further; both are separate steps.",
+    "The mannequin pilot atlas (pilot-only), the silver coin page and the world-design/barrier pages (which already carry mobile tiers) were left on Assets.load.",
+    "Per-archetype lazy roster creation, Pixi 8.19 GCSystem texture release (60 s idle), baked decals and contact shadows were audited and left unchanged (see the 2026-09-25 notes in the doc section)."
+  ]
+}
