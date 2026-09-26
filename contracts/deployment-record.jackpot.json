@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "chainId": 4441,
+  "network": "LitVM LiteForge",
+  "deployedAt": "2026-09-26T08:19:17.000Z",
+  "instances": {
+    "chikun": {
+      "game": "chikun",
+      "gameId": "0xe293f354d567ca05ed272162a4f9056216cf9f40e9fe59bbf8b6227c0ce4f385",
+      "address": "0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e",
+      "token": {
+        "address": "0xe4230b5aba9f9431b0f5a718b99544f69330ae9c",
+        "name": "Lester's Arcade Test CHIKUN (no value)",
+        "symbol": "tCHIKUN",
+        "decimals": 18,
+        "testnet": true,
+        "deployTx": "0x3bd41e00ed7ac96de87c491ae645c081bd9089f367618f9fc9552a246ec4d350"
+      },
+      "startBlock": 54800998,
+      "deployTx": "0x76a8e26b45bdb4d213ab1ec36599188cc23b96cc4d92370cbbede8b67c3b6524",
+      "firstWeek": 2961,
+      "firstWeekKey": "2026-W40",
+      "operator": "0x6ac08bed727a6951d755f0674f096e6a8ac06bff",
+      "admin": "0x07cec6fc49caf6528f2f2f796042629cd3f48b26",
+      "keeper": "0x61f2dcaf8603a9cdbfa2f72c694ae87dd82d6ff5",
+      "residualRecipient": "0x07cec6fc49caf6528f2f2f796042629cd3f48b26",
+      "scoreRegistry": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
+      "rankedEntry": "0x10cd09e694e2b2cd70d37f8cdddcda3ef1208190",
+      "rules": {
+        "fromWeek": 2961,
+        "maxSurvivalSeconds": 3599,
+        "adminClearOnly": true,
+        "minPaidWei": "100000000000000000",
+        "maxPrizeWei": "0",
+        "minFundWei": "100000000000000000000",
+        "maxScore": "0",
+        "seasonId": "0xdec4900d7408bc67cb59219f09a8afed684ab088cf7633784e5f97d6cda50e51",
+        "altSeasonId": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "retired": []
+    }
+  }
+}

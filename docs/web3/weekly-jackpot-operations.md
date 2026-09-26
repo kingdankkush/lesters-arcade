@@ -9,6 +9,20 @@ Nothing here is run against LiteForge by an agent. Every ⚠ step of the design'
 
 ## Contracts
 
+### Live on LiteForge (deployed 2026-09-26, owner-approved)
+
+| Item | Value |
+| --- | --- |
+| `WeeklyJackpot` (Chikun) | `0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e` (tx `0x76a8e26b45bdb4d213ab1ec36599188cc23b96cc4d92370cbbede8b67c3b6524`, start block 54,800,998) |
+| `TestChikunToken` (tCHIKUN, no value) | `0xe4230b5aba9f9431b0f5a718b99544f69330ae9c` (tx `0x3bd41e00ed7ac96de87c491ae645c081bd9089f367618f9fc9552a246ec4d350`) |
+| First week | 2026-W40 (week index 2961), from Monday 2026-09-28 00:00 UTC |
+| Admin / residual recipient | owner wallet `0x07cec6fc49caf6528f2f2f796042629cd3f48b26` |
+| Keeper | `0x61f2dcaf8603a9cdbfa2f72c694ae87dd82d6ff5` (key in the vault, `keys/jackpot-keeper.json`; unfunded until the owner approves E2 funding) |
+| Operator (deployer, tCHIKUN minter) | `0x6ac08bed727a6951d755f0674f096e6a8ac06bff` |
+| Launch rules (epoch from 2961) | `adminClearOnly` true, `minPaidWei` 0.1 zkLTC, `minFundWei` 100 tCHIKUN, no prize cap, survival cap 3,599 s |
+
+Record: `contracts/deployment-record.jackpot.json`; generated module `apps/portal/src/generated/litvm-jackpot.mjs` (status `deployed`). Receipt: `docs/qa/jackpot-deploy-20260926.json`. `JACKPOT_LIVE` stays `false`; the server stays unconfigured (and the keeper cron a no-op) until runbook E6 sets `JACKPOT_KEEPER_PRIVATE_KEY` and `JACKPOT_CONTRACT_ADDRESS` in Vercel.
+
 ### What is deployed
 
 | Contract | Source | Size (solc 0.8.35, optimizer 200) |

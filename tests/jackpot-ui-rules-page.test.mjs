@@ -237,7 +237,8 @@ test('the rules module renders local close times and addresses without a request
   const now = Date.parse('2026-10-01T12:00:00.000Z');
   assert.deepEqual(nextCloseOf(now), { closesAt: '2026-10-05T00:00:00.000Z', payoutAt: '2026-10-06T00:00:00.000Z' });
   assert.deepEqual(nextCloseOf(Date.parse('2026-10-05T00:00:00.000Z')), { closesAt: '2026-10-12T00:00:00.000Z', payoutAt: '2026-10-13T00:00:00.000Z' }, 'the close instant starts the next week');
-  await mountJackpotRules({ documentRef, fetchImpl: async (url) => { calls.push(url); throw new Error('no request expected'); }, now: () => now, locale: 'en-US', timeZone: 'America/New_York' });
+  const undeployed = { status: 'undeployed', chainId: 4441, instances: { chikun: { address: null, token: { address: null, symbol: null }, retired: [] } } };
+  await mountJackpotRules({ documentRef, deployment: undeployed, fetchImpl: async (url) => { calls.push(url); throw new Error('no request expected'); }, now: () => now, locale: 'en-US', timeZone: 'America/New_York' });
   assert.deepEqual(calls, [], 'no request to /api/jackpot while JACKPOT_LIVE is false');
   assert.equal(times.hidden, false);
   assert.equal(times.textContent, 'Where you are, this week closes Sun 8:00 PM EDT · Mon 00:00 UTC, and its prize is paid from Mon 8:00 PM EDT · Tue 00:00 UTC (24 hours later, unless the week is extended).');

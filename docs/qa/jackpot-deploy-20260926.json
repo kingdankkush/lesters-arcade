@@ -1,0 +1,34 @@
+{
+  "schema": "lesters-chain-action-receipt-v1",
+  "date": "2026-09-26",
+  "approval": "Owner in chat, 2026-09-26: \"Approved — deploy the jackpot contracts and top up the relayer\"",
+  "chainId": 4441,
+  "actions": [
+    {
+      "action": "relayer top-up",
+      "from": "0x6ac08bed727a6951d755f0674f096e6a8ac06bff (operator)",
+      "to": "0x494af36ea4958c417260faf3efb3b672b343eaf6 (settle relayer)",
+      "amount": "0.05 zkLTC",
+      "tx": "0x7af5c013366574a49a332c7e48e749d698b08f562cdb2719c07a09c779c50594",
+      "block": 54800718,
+      "status": 1,
+      "relayerBalanceAfter": "0.07839393651364 zkLTC",
+      "note": "A first attempt with a fixed 21,000 gas limit was refused by the RPC (intrinsic gas too low on the Orbit chain); nothing was sent and the nonce was unchanged. The retry used the estimate (21,179) x 1.25."
+    },
+    {
+      "action": "jackpot keeper key (runbook E2)",
+      "keeper": "0x61f2dcaf8603a9cdbfa2f72c694ae87dd82d6ff5",
+      "keyFile": "C:/Users/just_/lesters-arcade-vault/keys/jackpot-keeper.json (never printed, never committed)",
+      "funded": false
+    },
+    {
+      "action": "jackpot deployment (runbook E3 dry run, E4 broadcast)",
+      "tCHIKUN": { "address": "0xe4230b5aba9f9431b0f5a718b99544f69330ae9c", "tx": "0x3bd41e00ed7ac96de87c491ae645c081bd9089f367618f9fc9552a246ec4d350" },
+      "WeeklyJackpot": { "address": "0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e", "tx": "0x76a8e26b45bdb4d213ab1ec36599188cc23b96cc4d92370cbbede8b67c3b6524", "startBlock": 54800998 },
+      "dryRun": "creation eth_call ok for both on LiteForge; predicted addresses matched the broadcast; total gas 6,009,679",
+      "readBack": "jackpot-actions status: admin and residual = owner wallet, keeper and operator as configured, both pause flags false, first week 2026-W40, rules adminClearOnly true, minPaidWei 0.1 zkLTC, minFund 100 tCHIKUN, no prize cap, survival cap 3599 s"
+    }
+  ],
+  "unchanged": "JACKPOT_LIVE false; no Vercel secrets set; keeper cron remains a no-op; Ranked contracts, fees and flags unchanged",
+  "nextOwnerSteps": ["E2 fund the keeper with 0.1 zkLTC", "E5 block test/verifier/relayer/funder wallets from /owner/jackpot.html", "E6 Vercel secrets + release", "E8 mint and fund a soft-launch week", "E9 soft launch", "E10 flag flip after calibration and legal confirmation"]
+}

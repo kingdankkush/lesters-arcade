@@ -101,12 +101,15 @@ test('config.jackpot readiness follows the keeper key, the address check and the
   assert.equal(DEFAULT_JACKPOT_MAX_TX_FEE_WEI, '10000000000000000', '0.01 zkLTC');
   assert.equal(Object.isFrozen(ready.jackpot), true);
 
-  // The committed module is undeployed, so without the seam nothing is ready.
-  assert.equal(LITVM_JACKPOT.status, 'undeployed');
+  // An undeployed module makes nothing ready, whatever the environment says.
+  const undeployed = readServerConfig(settlementEnv({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: JACKPOT }), { deployment: DEPLOYED, jackpotDeployment: jackpotDeploymentFixture({ status: 'undeployed' }) });
+  assert.deepEqual([undeployed.jackpot.ready, undeployed.jackpot.readable], [false, false]);
+  assert.ok(undeployed.jackpot.missing.includes('jackpot-not-deployed'));
+  // Without the seam the committed module is the deployment (deployed 2026-09-26), and an
+  // environment address that is not its contract is never ready.
   const committed = readServerConfig(settlementEnv({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: JACKPOT }), { deployment: DEPLOYED });
-  assert.deepEqual([committed.jackpot.ready, committed.jackpot.readable], [false, false]);
-  assert.ok(committed.jackpot.missing.includes('jackpot-not-deployed'));
   assert.equal(committed.jackpot.deployment, LITVM_JACKPOT);
+  assert.deepEqual([committed.jackpot.ready, committed.jackpot.readable], [false, false]);
 
   const mismatch = readServerConfig(settlementEnv({ JACKPOT_KEEPER_PRIVATE_KEY: KEEPER_KEY, JACKPOT_CONTRACT_ADDRESS: `0x${'99'.repeat(20)}` }), { deployment: DEPLOYED, jackpotDeployment: jackpotDeploymentFixture() });
   assert.deepEqual([mismatch.jackpot.ready, mismatch.jackpot.readable, mismatch.jackpot.contract.matchesDeployment], [false, false, false]);
@@ -252,10 +255,9 @@ test('jackpot secrets travel only over stdin', async () => {
   assert.equal(applied.calls.some((call) => call.args.some((arg) => /JACKPOT_(PAUSED|UI_HIDDEN)|JACKPOT_LIVE/.test(arg))), false, 'never flips a flag');
   neverLeaks(applied);
 
-  // The committed module (undeployed today) blocks --apply without the test override.
-  const committed = await run(['--key-file', 'C:/vault/jackpot-keeper.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS'], { allowJackpotOverride: false });
-  assert.deepEqual([committed.code, LITVM_JACKPOT.status], [2, 'undeployed']);
-  assert.match(committed.text, /Apply blocked: the jackpot module is 'undeployed'/);
+  // Without the test override the committed module decides: its keeper is not this fixture key,
+  // so --apply is refused before any env add.
+  await assert.rejects(run(['--key-file', 'C:/vault/jackpot-keeper.json', '--apply', '--confirm', 'SET_JACKPOT_SECRETS'], { allowJackpotOverride: false }), /but the jackpot module's keeper is/);
   const source = readFileSync(new URL('../scripts/jackpot-secrets.mjs', import.meta.url), 'utf8');
   assert.match(source, /from '\.\/vercel-secrets\.mjs'/, 'reuses the vercel-secrets runner and listing parser');
 });
