@@ -1,19 +1,15 @@
+import { validSeed } from './value-guards.mjs';
+
 export const FIXED_STEP_MS = 1000 / 60;
 export const MAX_CATCH_UP_STEPS = 4;
 export const DEFAULT_MAX_FRAME_DELTA_MS = 100;
 
-const UINT32_MAX = 0xffff_ffff;
 const FLOAT_EPSILON = 1e-9;
 const RANDOM_STREAMS = new Set(['encounters', 'drops']);
 
 function positiveFinite(value, name) {
   if (!Number.isFinite(value) || value <= 0) throw new TypeError(`${name} must be a positive finite number`);
   return value;
-}
-
-function validSeed(value) {
-  if (!Number.isInteger(value) || value < 0 || value > UINT32_MAX) throw new TypeError('seed must be an unsigned 32-bit integer');
-  return value >>> 0;
 }
 
 function freezeClone(value, path = 'input') {

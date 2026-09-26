@@ -70,7 +70,8 @@ export function isScreenPointVisible(point, view, margin = 0) {
   const y = Number(point?.y);
   const width = Number(view?.width);
   const height = Number(view?.height);
-  if (![x, y, width, height].every(Number.isFinite)) throw new TypeError('screen point and view must be finite');
+  // Called per body per frame: no array or closure for the finiteness check.
+  if (!(Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(width) && Number.isFinite(height))) throw new TypeError('screen point and view must be finite');
   positiveFinite(width, 'view.width');
   positiveFinite(height, 'view.height');
   nonNegativeFinite(margin, 'margin');

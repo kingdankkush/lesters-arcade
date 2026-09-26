@@ -1,3 +1,5 @@
+import { cellKey } from './value-guards.mjs';
+
 // Conservative rejection only. Narrow-phase geometry and contact order remain
 // authoritative. Cache by immutable shape identity; mutable callers recompute.
 const boundsByShape=new WeakMap();
@@ -29,25 +31,53 @@ const indexes=new WeakMap(),cellSize=256;
 export function immutableBlockerIndex(blockers){
   if(!Object.isFrozen(blockers))return null;
   if(indexes.has(blockers))return indexes.get(blockers);
-  const ordered=[...blockers].sort((a,b)=>a.id.localeCompare(b.id)),cells=new Map();
+  // A stable sort of source positions: ordered[i] === blockers[sourceOf[i]],
+  // the same order [...blockers].sort(byId) produces.
+  const sourceOf=blockers.map((_,i)=>i).sort((a,b)=>blockers[a].id.localeCompare(blockers[b].id));
+  const ordered=sourceOf.map(i=>blockers[i]),cells=new Map();
   for(let i=0;i<ordered.length;i++){
-    const b=ordered[i],box=boundsOf(b.shape);
+    // A blocker without a shape object is left to the caller's own scan.
+    const b=ordered[i],box=typeof b.shape==='object'&&b.shape!==null?boundsOf(b.shape):null;
     if(!Object.isFrozen(b)||!boundsByShape.has(b.shape)||!box){indexes.set(blockers,null);return null;}
     for(let y=Math.floor(box.minY/cellSize);y<=Math.floor(box.maxY/cellSize);y++){
       for(let x=Math.floor(box.minX/cellSize);x<=Math.floor(box.maxX/cellSize);x++){
-        const key=`${x},${y}`;let bucket=cells.get(key);if(!bucket)cells.set(key,bucket=[]);bucket.push(i);
+        const key=cellKey(x,y);let bucket=cells.get(key);if(!bucket)cells.set(key,bucket=[]);bucket.push(i);
       }
     }
   }
-  const index={ordered,query(x,y,dx,dy,radius){
+  // Buckets hold ascending ordered positions. A query merges the buckets it
+  // touches, drops repeats with a per-index stamp and sorts only when more than
+  // one bucket contributed: the same ascending, unique list the Set gave.
+  const seen=new Uint32Array(ordered.length);let stamp=0;
+  function collect(x,y,dx,dy,radius){
     const pad=radius+1e-6+Math.max(Math.abs(dx),Math.abs(dy))*1e-9;
     const left=Math.floor((Math.min(x,x+dx)-pad)/cellSize),right=Math.floor((Math.max(x,x+dx)+pad)/cellSize);
     const top=Math.floor((Math.min(y,y+dy)-pad)/cellSize),bottom=Math.floor((Math.max(y,y+dy)+pad)/cellSize);
     // Very long rays are cheaper as a scan; this is never a truncated query.
-    if((right-left+1)*(bottom-top+1)>256)return ordered;
-    const found=new Set();
-    for(let row=top;row<=bottom;row++)for(let col=left;col<=right;col++)for(const i of cells.get(`${col},${row}`)??[])found.add(i);
-    return [...found].sort((a,b)=>a-b).map(i=>ordered[i]);
+    if((right-left+1)*(bottom-top+1)>256)return null;
+    if(++stamp>=0xffffffff){seen.fill(0);stamp=1;}
+    const found=[];let buckets=0;
+    for(let row=top;row<=bottom;row++)for(let col=left;col<=right;col++){
+      const bucket=cells.get(cellKey(col,row));if(bucket===undefined)continue;
+      buckets++;
+      for(let k=0;k<bucket.length;k++){const i=bucket[k];if(seen[i]!==stamp){seen[i]=stamp;found.push(i);}}
+    }
+    if(buckets>1)found.sort((a,b)=>a-b);
+    return found;
+  }
+  const index={ordered,query(x,y,dx,dy,radius){
+    const found=collect(x,y,dx,dy,radius);if(found===null)return ordered;
+    const result=new Array(found.length);for(let k=0;k<found.length;k++)result[k]=ordered[found[k]];
+    return result;
+  },
+  // The same candidates in the caller's own array order, for resolvers whose
+  // contact ordering depends on the order blockers are visited.
+  querySourceOrder(x,y,dx,dy,radius){
+    const found=collect(x,y,dx,dy,radius);if(found===null)return blockers;
+    for(let k=0;k<found.length;k++)found[k]=sourceOf[found[k]];
+    if(found.length>1)found.sort((a,b)=>a-b);
+    const result=new Array(found.length);for(let k=0;k<found.length;k++)result[k]=blockers[found[k]];
+    return result;
   }};
   indexes.set(blockers,index);return index;
 }

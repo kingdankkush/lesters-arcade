@@ -1,4 +1,4 @@
-import { WORLD_DESIGN_SITES, WORLD_DESIGN_EXPLORATION_PATHS } from './world-design-encounters.mjs';
+import { WORLD_DESIGN_SITES } from './world-design-encounters.mjs';
 import { worldDesignHazardPhase } from './world-design-interactions.mjs';
 import { WORLD_HAZARD_RULES, worldHazardPhase, worldHazardField } from './world-hazards.mjs';
 import { buildCoverBreakPresentation } from './cover-break-presentation.mjs';
@@ -26,7 +26,10 @@ export function buildWorldDesignCampfires({placements,worldToScreen,queryGround,
 export function prepareWorldDesignEnemyPose(marker, animate, pose) {
   const previous=marker.worldDesignPoseInput;
   // Budgeting freezes in-between frames, never attack warnings or a new pose.
-  const changed=!previous || ['state','direction','phase','elite'].some(key=>pose[key]!==previous[key])
+  // Runs per visible body per frame, so the key checks are spelled out. The
+  // memo below is a copy, so a caller may reuse one pose object for every body.
+  const changed=!previous || pose.state!==previous.state || pose.direction!==previous.direction
+    || pose.phase!==previous.phase || pose.elite!==previous.elite
     || (Number.isFinite(pose.phaseTick)&&Number.isFinite(previous.phaseTick)&&pose.phaseTick<previous.phaseTick);
   if(animate || !marker.worldDesignLastPose || changed) {
     marker.worldDesignLastPose=marker.applyPose(pose);
@@ -43,21 +46,6 @@ export function worldDesignPropPresentation({ placement, bounds, focusPoints=[],
   const obscures=foreground && placement.occlusion!=='deck' && focusPoints.some(p=>p.x>bounds.left+8 && p.x<bounds.right-8 && p.y>bounds.top+8 && p.y<bounds.bottom-8);
   const phase=(placement.x*.017+placement.y*.011);
   return {alpha:obscures?.38:1,skewX:organic&&!reduceMotion?Math.sin(tick/87+phase)*.009:0};
-}
-
-export function worldDesignFootstep(world, ground, point) {
-  if(ground.kind==='bridge') return {cue:'footstep-road',rate:.83,volume:.032};
-  if(ground.kind==='ramp'||ground.groundZ>0) return {cue:'footstep-road',rate:1.2,volume:.03};
-  const roads=[...world.routes,...WORLD_DESIGN_EXPLORATION_PATHS];
-  for(const road of roads) {
-    const points=road.points??road.nodeIds.map(id=>world.routeGraph.nodes.find(n=>n.id===id));
-    for(let i=1;i<points.length;i++) {
-      const a=points[i-1],b=points[i],dx=b.x-a.x,dy=b.y-a.y;
-      const t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1)));
-      if(Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy)<road.width/2) return {cue:'footstep-road',rate:1.06,volume:.03};
-    }
-  }
-  return {cue:'footstep-dirt',rate:point.x>=6000&&point.x<8000?.77:.92,volume:.022};
 }
 
 export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) {

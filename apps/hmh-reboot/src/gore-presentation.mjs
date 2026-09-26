@@ -88,19 +88,29 @@ export function createGorePresentation() {
     const t=tick-body.tick;
     return {x:body.x+body.vx*t,y:body.y+body.vy*t,z:Math.max(body.groundZ,body.z+body.vz*t-GRAVITY*t*t)};
   };
+  // Pools are pruned in place: the same survivors in the same order, without
+  // three new arrays every frame.
+  const prune=(tick)=>{
+    let kept=0;
+    for(const mark of marks)if(tick-mark.tick<GORE_LIMITS.markLifeTicks)marks[kept++]=mark;
+    marks.length=kept;kept=0;
+    for(const droplet of droplets)if(tick<droplet.landTick)droplets[kept++]=droplet;
+    droplets.length=kept;kept=0;
+    for(const limb of limbs)if(tick-limb.landTick<GORE_LIMITS.limbLifeTicks)limbs[kept++]=limb;
+    limbs.length=kept;
+  };
+  const fragmentCap=(reduceMotion,particleScale)=>reduceMotion?0:Math.max(0,Math.min(GORE_LIMITS.fragments,Math.floor(GORE_LIMITS.fragments*particleScale/10)));
   const frame=(tick,{enabled=false,reduceMotion=false,particleScale=10}={})=>{
     if(!enabled){clear();return {marks:[],fragments:[],droplets:[],limbs:[]};}
-    marks=marks.filter(mark=>tick-mark.tick<GORE_LIMITS.markLifeTicks);
-    droplets=droplets.filter(d=>tick<d.landTick);
-    limbs=limbs.filter(limb=>tick-limb.landTick<GORE_LIMITS.limbLifeTicks);
+    prune(tick);
     const fragments=[];
-    const cap=reduceMotion?0:Math.max(0,Math.min(GORE_LIMITS.fragments,Math.floor(GORE_LIMITS.fragments*particleScale/10)));
+    const cap=fragmentCap(reduceMotion,particleScale);
     // Recent defeats get first call on the small fragment pool.
     for(const mark of [...marks].reverse()){
       const age=tick-mark.tick;
       if(!mark.kill || age<0 || age>32)continue;
       for(let i=0;i<3 && fragments.length<cap;i++){
-        const unit=feedbackUnit(`${mark.seed}:${i}`), angle=unit*Math.PI*2;
+        const unit=fragmentUnit(mark,i), angle=unit*Math.PI*2;
         const t=age/32, reach=(16+unit*32)*t;
         fragments.push({x:mark.x+Math.cos(angle)*reach,y:mark.y+Math.sin(angle)*reach,
           z:mark.z+Math.max(0,18+72*t-90*t*t),radius:2.2+unit*2,alpha:1-t*.65});
@@ -118,37 +128,85 @@ export function createGorePresentation() {
     });
     return {marks:visibleMarks,fragments,droplets:airDroplets,limbs:limbFrames};
   };
-  const render=({ground,air,tick,settings,particleScale,camera,view,project})=>{
-    ground.clear();air.clear();
-    const result=frame(tick,{enabled:settings.gore,reduceMotion:settings.reduceMotion,particleScale});
+  // The per-frame draw. It walks the pools directly with the same arithmetic
+  // frame() uses, instead of building frame()'s copied mark, droplet, limb and
+  // fragment objects, and projects through one reused point when the caller
+  // passes projectInto. Returns how many marks and fragments frame() would
+  // have listed (telemetry), in one reused object.
+  const drawn={marks:0,fragments:0};
+  const point={x:0,y:0,z:0},screen={x:0,y:0};
+  const render=({ground,air,tick,settings,particleScale,camera,view,project,projectInto=null})=>{
+    // Clearing an empty layer still forces a GPU rebuild for nothing.
+    wipe(ground);wipe(air);
+    drawn.marks=drawn.fragments=0;
+    if(!settings.gore){clear();return drawn;}
+    prune(tick);
+    const reduceMotion=settings.reduceMotion;
+    const at=(x,y,z)=>{point.x=x;point.y=y;point.z=z;return projectInto?projectInto(screen,point,camera,view):project(point,camera,view);};
     const visible=p=>p.x>-80 && p.y>-80 && p.x<view.width+80 && p.y<view.height+80;
-    for(const mark of result.marks){
-      const p=project(mark,camera,view);if(!visible(p))continue;
+    for(const mark of marks){
+      if(tick<mark.tick)continue;
+      drawn.marks++;
+      const alpha=.55*Math.min(1,(GORE_LIMITS.markLifeTicks-(tick-mark.tick))/120);
+      const p=at(mark.x,mark.y,mark.z);if(!visible(p))continue;
       const r=mark.radius*camera.zoom;
-      ground.ellipse(p.x,p.y,r,r*.42).fill({color:0x571822,alpha:mark.alpha});
-      ground.ellipse(p.x+r*.6,p.y-r*.13,r*.55,r*.24).fill({color:0x7b2130,alpha:mark.alpha*.7});
-      ground.circle(p.x-r*.9,p.y+r*.22,Math.max(1,r*.16)).fill({color:0x6b1825,alpha:mark.alpha});
+      ground.ellipse(p.x,p.y,r,r*.42).fill({color:0x571822,alpha});
+      ground.ellipse(p.x+r*.6,p.y-r*.13,r*.55,r*.24).fill({color:0x7b2130,alpha:alpha*.7});
+      ground.circle(p.x-r*.9,p.y+r*.22,Math.max(1,r*.16)).fill({color:0x6b1825,alpha});
     }
-    for(const limb of result.limbs){
-      const layer=limb.landed?ground:air;
-      const p=project(limb,camera,view);if(!visible(p))continue;
-      const l=limb.length*camera.zoom, w=limb.width*camera.zoom, c=Math.cos(limb.rotation), s=Math.sin(limb.rotation);
-      const corner=(dx,dy)=>[p.x+dx*c-dy*s,p.y+dx*s+dy*c];
-      layer.poly([...corner(-l/2,-w/2),...corner(l/2,-w/2),...corner(l/2,w/2),...corner(-l/2,w/2)],true)
-        .fill({color:0x6e1c2a,alpha:limb.alpha}).stroke({color:0x3a1520,width:camera.zoom,alpha:limb.alpha});
-      layer.circle(...corner(l/2,0),Math.max(1,w*.42)).fill({color:0xe9d9c8,alpha:limb.alpha});
+    for(const limb of limbs){
+      if(tick<limb.tick)continue;
+      const landed=reduceMotion||tick>=limb.landTick;
+      const t=(landed?limb.landTick:tick)-limb.tick;
+      const restAge=Math.max(0,tick-limb.landTick);
+      const alpha=landed?.92*Math.min(1,(GORE_LIMITS.limbLifeTicks-restAge)/120):1;
+      const layer=landed?ground:air;
+      const p=at(limb.x+limb.vx*t,limb.y+limb.vy*t,landed?limb.groundZ:Math.max(limb.groundZ,limb.z+limb.vz*t-GRAVITY*t*t));
+      if(!visible(p))continue;
+      const rotation=limb.spin*t;
+      const l=limb.length*camera.zoom, w=limb.width*camera.zoom, c=Math.cos(rotation), s=Math.sin(rotation);
+      layer.poly([turnX(p.x,-l/2,-w/2,c,s),turnY(p.y,-l/2,-w/2,c,s),turnX(p.x,l/2,-w/2,c,s),turnY(p.y,l/2,-w/2,c,s),
+        turnX(p.x,l/2,w/2,c,s),turnY(p.y,l/2,w/2,c,s),turnX(p.x,-l/2,w/2,c,s),turnY(p.y,-l/2,w/2,c,s)],true)
+        .fill({color:0x6e1c2a,alpha}).stroke({color:0x3a1520,width:camera.zoom,alpha});
+      layer.circle(turnX(p.x,l/2,0,c,s),turnY(p.y,l/2,0,c,s),Math.max(1,w*.42)).fill({color:0xe9d9c8,alpha});
     }
-    for(const droplet of result.droplets){
-      const p=project(droplet,camera,view);if(!visible(p))continue;
-      air.circle(p.x,p.y,Math.max(1,droplet.radius*camera.zoom)).fill({color:0xa3243a,alpha:droplet.alpha});
+    if(!reduceMotion)for(const droplet of droplets){
+      if(tick<droplet.tick)continue;
+      const t=tick-droplet.tick;
+      const p=at(droplet.x+droplet.vx*t,droplet.y+droplet.vy*t,Math.max(droplet.groundZ,droplet.z+droplet.vz*t-GRAVITY*t*t));
+      if(!visible(p))continue;
+      air.circle(p.x,p.y,Math.max(1,droplet.radius*camera.zoom)).fill({color:0xa3243a,alpha:.95});
     }
-    for(const fragment of result.fragments){
-      const p=project(fragment,camera,view);if(!visible(p))continue;
-      const r=fragment.radius*camera.zoom;
-      air.poly([p.x-r,p.y,p.x+r*.5,p.y-r,p.x+r,p.y+r,p.x-r*.5,p.y+r*.6],true)
-        .fill({color:0x983142,alpha:fragment.alpha}).stroke({color:0x3a1520,width:camera.zoom,alpha:fragment.alpha});
+    // Recent defeats get first call on the small fragment pool.
+    const cap=fragmentCap(reduceMotion,particleScale);
+    for(let index=marks.length-1;index>=0 && drawn.fragments<cap;index--){
+      const mark=marks[index], age=tick-mark.tick;
+      if(!mark.kill || age<0 || age>32)continue;
+      for(let i=0;i<3 && drawn.fragments<cap;i++){
+        drawn.fragments++;
+        const unit=fragmentUnit(mark,i), angle=unit*Math.PI*2;
+        const t=age/32, reach=(16+unit*32)*t;
+        const p=at(mark.x+Math.cos(angle)*reach,mark.y+Math.sin(angle)*reach,mark.z+Math.max(0,18+72*t-90*t*t));
+        if(!visible(p))continue;
+        const r=(2.2+unit*2)*camera.zoom, alpha=1-t*.65;
+        air.poly([p.x-r,p.y,p.x+r*.5,p.y-r,p.x+r,p.y+r,p.x-r*.5,p.y+r*.6],true)
+          .fill({color:0x983142,alpha}).stroke({color:0x3a1520,width:camera.zoom,alpha});
+      }
     }
-    return result;
+    return drawn;
   };
   return {add,frame,render,clear};
+}
+
+// A limb corner rotated about the limb centre (kept as one expression shape
+// so the vertices match the original corner() bit for bit).
+const turnX=(x,dx,dy,c,s)=>x+dx*c-dy*s;
+const turnY=(y,dx,dy,c,s)=>y+dx*s+dy*c;
+const wipe=(graphics)=>{if(graphics.context?.instructions?.length!==0)graphics.clear();};
+// A kill mark's three fragment seeds are fixed for its life; hash them once.
+const FRAGMENT_UNITS=new WeakMap();
+function fragmentUnit(mark,index){
+  let units=FRAGMENT_UNITS.get(mark);
+  if(!units)FRAGMENT_UNITS.set(mark,units=[0,1,2].map(i=>feedbackUnit(`${mark.seed}:${i}`)));
+  return units[index];
 }

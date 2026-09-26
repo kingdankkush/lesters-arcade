@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, lexical } from './value-guards.mjs';
 
 export const BEAR_MARKET_BURNER_CONFIG = freezeDeep({
   pulseIntervalTicks: 6,
@@ -61,7 +61,6 @@ export function resolveBearMarketBurnerPolicy({ branches = {}, capstoneId = null
 }
 
 const DEFAULT_POLICY = resolveBearMarketBurnerPolicy();
-const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 const finite = (value, label) => {
   const number = Number(value);
   if (!Number.isFinite(number)) throw new TypeError(`${label} must be finite`);

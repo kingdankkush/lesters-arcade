@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, nonNegativeInteger, positiveInteger } from './value-guards.mjs';
 import { resolveSweptCircleMotion } from './collision.mjs';
 import { resolveSweptTraversalPath } from './elevation.mjs';
 import { resolveEnemyPressure } from './movement.mjs';
@@ -12,16 +12,6 @@ export const DASH_INVULNERABILITY_TICKS = 8;
 export const DASH_DISTANCE = 192;
 
 import { finite } from './value-guards.mjs';
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
-
-function positiveInteger(value, name) {
-  if (!Number.isInteger(value) || value <= 0) throw new TypeError(`${name} must be a positive integer`);
-  return value;
-}
 
 function normalize(value, name) {
   const x = finite(value?.x ?? 0, `${name}.x`);

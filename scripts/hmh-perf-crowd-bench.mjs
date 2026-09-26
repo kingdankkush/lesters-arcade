@@ -16,6 +16,9 @@
 //             telemetry. This is the number to compare.
 //   profile - the same window with a CDP CPU profile (sampling overhead makes
 //             its frame times slightly worse; they are reported, not compared).
+//   alloc   - the same window with the CDP sampling heap profiler on, counting
+//             collected objects too: allocation rate and the top allocating
+//             functions (its frame times carry the sampler's overhead).
 //   census  - telemetry=1 plus a fixed virtual clock (N sim ticks per frame) so
 //             the scene content per tick is recorded quickly and reproducibly,
 //             plus WebGL texture accounting. Its trace digest is a real-runtime
@@ -49,6 +52,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
   aggregateCpuProfile,
+  aggregateHeapProfile,
   createSourceMapLookup,
   readImageDimensions,
   summarizeCensus,
@@ -272,7 +276,18 @@ function childInstrumentation(config) {
   const bench = globalThis.__hmhBench = {
     recording: false, frames: [], frameTicks: [], silverVisible: [], activeMs: 0, longTasks: [], upgradePicks: 0,
     census: [], textures: null, lastCensusTick: -1,
+    // SFX voices actually started, whichever engine the build uses: media
+    // element plays (<= 1.8.1) or Web Audio buffer sources (perf step 5/8).
+    // Counting wrappers only; both engines pay the same tiny cost.
+    audio: { mediaPlays: 0, sourceStarts: 0 },
   };
+  const countCalls = (proto, name, key) => {
+    const original = proto?.[name];
+    if (typeof original !== 'function') return;
+    proto[name] = function counted(...args) { bench.audio[key] += 1; return original.apply(this, args); };
+  };
+  countCalls(window.HTMLMediaElement?.prototype, 'play', 'mediaPlays');
+  countCalls(window.AudioBufferSourceNode?.prototype, 'start', 'sourceStarts');
   if (config.virtualClock) {
     // Fixed virtual clock: every rendered frame advances exactly N fixed steps,
     // so the tick partition (and therefore upgrade timing) is reproducible.
@@ -487,6 +502,29 @@ async function resolveHotspots(profile) {
   });
 }
 
+// Sampled allocation bytes per function across the window, resolved through
+// the dist source maps like the CPU hotspots.
+async function resolveAllocations(heapProfile) {
+  const lookupFor = await resolverForDist();
+  const lookups = new Map();
+  const pending = [heapProfile.head];
+  while (pending.length > 0) {
+    const node = pending.pop();
+    const { url } = node.callFrame;
+    if (url && !lookups.has(url)) {
+      const lookup = lookupFor(url, 0, 0);
+      lookups.set(url, lookup ? await lookup : null);
+    }
+    pending.push(...(node.children ?? []));
+  }
+  return aggregateHeapProfile(heapProfile, {
+    resolve: (url, line, column) => {
+      const hit = lookups.get(url)?.(line, column) ?? null;
+      return hit ? { ...hit, source: hit.source.replace(/^.*?node_modules\//, 'node_modules/') } : null;
+    },
+  });
+}
+
 async function imageInventory(urls) {
   const rows = [];
   const seen = new Set();
@@ -543,11 +581,14 @@ async function runPass({ mode, profileId, cpu = 1 }) {
     const responseUrls = new Set();
     context.on('response', (response) => responseUrls.add(response.url()));
     const pending = new Map();
-    context.on('request', (request) => pending.set(request, Date.now()));
+    context.on('request', (request) => {
+      pending.set(request, Date.now());
+      if (request.url().includes('/audio/sfx/')) network.sfxRequests += 1;
+    });
     context.on('requestfinished', (request) => pending.delete(request));
     // ERR_ABORTED is the SFX voice allocator stopping or stealing an
     // HTMLAudioElement mid-load (counted, not an error); anything else is.
-    const network = { aborted: 0 };
+    const network = { aborted: 0, sfxRequests: 0 };
     context.on('requestfailed', (request) => {
       pending.delete(request);
       const reason = request.failure()?.errorText ?? '';
@@ -712,6 +753,10 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       await cdp.send('Profiler.setSamplingInterval', { interval: 1000 });
       await cdp.send('Profiler.start');
     }
+    if (mode === 'alloc') {
+      await cdp.send('HeapProfiler.enable');
+      await cdp.send('HeapProfiler.startSampling', { samplingInterval: 8192, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+    }
     const hostStart = cpuTimes();
     const processStart = await browserProcesses(browser);
     const before = await frame.evaluate(() => {
@@ -719,8 +764,9 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       bench.frames.length = 0; bench.frameTicks.length = 0; bench.silverVisible.length = 0; bench.longTasks.length = 0; bench.activeMs = 0;
       bench.recording = true;
       const data = document.querySelector('#hmhRebootStage').dataset;
-      return { tick: Number(data.simulationStepsTotal), droppedMs: Number(data.simulationDroppedMs), catchUp: Number(data.simulationCatchUpSaturationFrames), wall: performance.now() };
+      return { tick: Number(data.simulationStepsTotal), droppedMs: Number(data.simulationDroppedMs), catchUp: Number(data.simulationCatchUpSaturationFrames), wall: performance.now(), audio: { ...bench.audio } };
     });
+    const sfxRequestsBefore = network.sfxRequests;
     const windowMs = windowSeconds * 1000;
     const deadline = Date.now() + Math.max(120_000, windowMs * 6);
     let walkLeg = -1;
@@ -749,6 +795,7 @@ async function runPass({ mode, profileId, cpu = 1 }) {
         upgradePicks: bench.upgradePicks, performanceProfile: data.performanceProfile,
         renderResolution: Number(data.renderResolution), adaptiveResolution: data.adaptiveResolution ?? null,
         catchUpSaturationFrames: Number(data.simulationCatchUpSaturationFrames),
+        audio: { ...bench.audio },
         canvas: (() => { const canvas = document.querySelector('#hmhRebootStage canvas'); return canvas ? { width: canvas.width, height: canvas.height } : null; })(),
       };
     });
@@ -759,6 +806,14 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       profilePath = path.join(outDir, `profile-${profileId}-${cpu}x.cpuprofile`);
       await writeFile(profilePath, JSON.stringify(cpuProfile));
       hotspots = await resolveHotspots(cpuProfile);
+    }
+    let allocations = null;
+    let heapProfilePath = null;
+    if (mode === 'alloc') {
+      const { profile: heapProfile } = await cdp.send('HeapProfiler.stopSampling');
+      heapProfilePath = path.join(outDir, `alloc-${profileId}-${cpu}x.heapprofile`);
+      await writeFile(heapProfilePath, JSON.stringify(heapProfile));
+      allocations = await resolveAllocations(heapProfile);
     }
     const heapAfter = await cdp.send('Runtime.getHeapUsage');
     const shot = path.join(outDir, `${mode}-${profileId}-${cpu}x.png`);
@@ -796,6 +851,13 @@ async function runPass({ mode, profileId, cpu = 1 }) {
       activeMs: after.activeMs,
       upgradePicks: after.upgradePicks,
       silverCoinsOnScreen: after.silverVisible,
+      // SFX work inside the window: voices started and sample requests made.
+      audio: {
+        mediaPlays: after.audio.mediaPlays - before.audio.mediaPlays,
+        sourceStarts: after.audio.sourceStarts - before.audio.sourceStarts,
+        sfxRequests: network.sfxRequests - sfxRequestsBefore,
+        sfxRequestsBeforeWindow: sfxRequestsBefore,
+      },
       frames: summary,
       longTasks: { count: after.longTasks.length, over100: after.longTasks.filter((value) => value > 100).length, maxMs: Math.max(0, ...after.longTasks) },
       heap: { beforeUsed: heapBefore.usedSize, afterUsed: heapAfter.usedSize },
@@ -808,6 +870,16 @@ async function runPass({ mode, profileId, cpu = 1 }) {
           .map(({ functionName, originalName, source, selfMs, selfPct, totalMs, totalPct }) => ({ functionName, originalName, source, selfMs, selfPct, totalMs, totalPct })),
       } : null,
       cpuProfile: profilePath ? path.relative(ROOT, profilePath).replaceAll('\\', '/') : null,
+      // Sampled (8 KiB interval) bytes allocated inside the window, garbage included.
+      allocations: allocations ? {
+        totalBytes: allocations.totalBytes,
+        bytesPerSecond: allocations.totalBytes / (wallMs / 1000),
+        bytesPerFrame: allocations.totalBytes / Math.max(1, frames.length),
+        top: allocations.functions.slice(0, 40).map(({ functionName, originalName, source, selfBytes, selfPct, totalBytes, totalPct }) => ({
+          functionName, originalName, source, selfBytes, selfPct, totalBytes, totalPct,
+        })),
+      } : null,
+      heapProfile: heapProfilePath ? path.relative(ROOT, heapProfilePath).replaceAll('\\', '/') : null,
       frameTimes: frames,
       errors,
       screenshot: path.relative(ROOT, shot).replaceAll('\\', '/'),
@@ -929,7 +1001,7 @@ async function mainWithOrigin() {
     return;
   }
   const mode = String(options.mode ?? 'timing');
-  assert.ok(['timing', 'profile', 'census'].includes(mode), 'mode must be timing, profile or census');
+  assert.ok(['timing', 'profile', 'alloc', 'census'].includes(mode), 'mode must be timing, profile, alloc or census');
   const profileId = String(options.profile ?? 'mobile');
   const cpu = Number(options.cpu ?? (profileId === 'mobile' ? 4 : 1));
   assert.ok(Number.isFinite(cpu) && cpu >= 1 && cpu <= 20, 'cpu throttle must be 1-20');

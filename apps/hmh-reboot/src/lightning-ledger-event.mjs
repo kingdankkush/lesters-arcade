@@ -1,4 +1,4 @@
-import { freezeDeep } from './value-guards.mjs';
+import { freezeDeep, lexical } from './value-guards.mjs';
 import { mix } from './deterministic-hash.mjs';
 
 const MIN_EVENT_TICK = 3_600;
@@ -12,7 +12,6 @@ const OFFSETS = Object.freeze([
   Object.freeze({ x: 0, y: -180 }),
 ]);
 
-const lexical = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 function unsignedSeed(value) {
   if (!Number.isInteger(value) || value < 0 || value > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');

@@ -1,0 +1,1383 @@
+{
+  "schema": "hmh-perf-step-evidence-v1",
+  "step": "render-alloc (4/8)",
+  "generatedAt": "2026-09-26T01:49:50.619Z",
+  "commits": [
+    "4d5fc4eb Draw the HMH enemy crowd without per-enemy allocations",
+    "c85b2d89 Stop per-frame garbage in HMH gore, shadows, ground bake key and HUD reads",
+    "24c12255 Add an allocation mode to the HMH crowd bench and a restart leak probe"
+  ],
+  "base": "9b2de294 (step 3; code identical to 948bef42)",
+  "deviceAcceptance": false,
+  "note": "Chrome CPU-throttle proxy for an iPhone XS Max (414x896 @3, mobile profile); GPU work is not throttled. Other sessions kept the host 16-58% busy, so the step-3 build (.tmp/step3/dist-step3, --sourcemap) and the final build (--sourcemap of HEAD) were alternated in one round under the same conditions. Frame means at 4x track the host-load window a run lands in; the CPU-profile cost per frame, the sampled allocation per frame and the pinned Node micro-benchmark are the direct measures. Builds labelled step4-pass-only are the first commit alone (4d5fc4eb).",
+  "change": {
+    "enemyRenderPass": "apps/hmh-reboot/src/enemy-render-pass.mjs (lazy chunk, 5,960 B, every dependency injected): the renderWorld enemy loop without per-enemy objects. One projection per enemy into scratch arrays (was two { ...enemy } copies plus a candidate object), a bounded max-heap for the animation budget in the exact (priority, distance, id, row) order of selectAnimatedEnemyIds (was filter/map/full sort/slice/Set), the six-state result computed once and reused, elite flag and locomotion phase cached per display by id, one reused pose and shadow object, pips in typed arrays.",
+    "helpers": "worldToScreenInto (worldToScreen no longer copies the viewport), isScreenPointVisible and the pose memo without per-call arrays and closures, roster clip lookups through a nested phase/state/direction table (was four template-string keys per pose), unchanged body tints skip the sprite setter, selectEnemyRosterPose and creatureAnimationTick accept precomputed inputs.",
+    "leakFix": "enemyVisualFacing gained one entry per enemy ever drawn: defeated enemies retire in the tick that kills them, so the render never saw them inactive. Marker syncs now prune it.",
+    "renderCleanups": "gore render walks its pools directly (no per-frame copies, in-place pruning, one reused projected point, fragment seeds hashed once, empty layers not cleared); contact shadow placements write into one object; the static bake key fills a reused array and compares in place, with main.mjs passing a joined blocker key kept until the ids change; focus points reuse their array and points; the HUD reads run ranks directly instead of a deep-frozen progression snapshot per frame and counts enemies in one loop.",
+    "tooling": "hmh-perf-crowd-bench --mode=alloc (CDP sampling heap profiler incl. collected objects, per-function bytes via source maps; aggregateHeapProfile unit-tested), scripts/hmh-restart-leak-probe.mjs, scripts/hmh-enemy-pass-bench.mjs."
+  },
+  "determinism": {
+    "headlessDigest": {
+      "command": "node scripts/hmh-sim-digest.mjs",
+      "combined": "2488a609eb1ceadd27edb83a91d5ffed3423dac198d19badbc667c25eb4f92f2",
+      "crowd": "50f3f6127b5e92fa237aa415d1e8188a2f6e2816c53801ad2e055f4ee1f67367",
+      "director": "7f38bb3e763081b2a195c118bf0f84dee4d5486f50242806bc8e597bede5af70",
+      "enduranceSoak": "2e38a09a",
+      "runs": "after 4d5fc4eb and after c85b2d89; both match the baseline"
+    },
+    "browserCensusTraceDigest": {
+      "tick": 1800,
+      "value": "449616fb1225777bf6a15f175dbb76bbc717495e2f2204e775191f28d4b69065",
+      "runs": [
+        "desktop at 4d5fc4eb",
+        "desktop at c85b2d89",
+        "mobile at c85b2d89"
+      ]
+    }
+  },
+  "exactness": {
+    "tests/hmh-enemy-render-pass.test.mjs": "seeded mobile, desktop, reduced-motion and no-simulation crowds with spawns, retirements and display reuse, through the pass and a verbatim 1.8.1 loop (tests/fixtures/hmh-render-reference/enemy-body-pass.mjs): identical calls and arguments in order, display state, facing memory, telemetry and pips every frame; 1,500 randomized budget selections against selectAnimatedEnemyIds; facing prune. 16 of 17 deliberate breakages caught; the survivor (reversing the row tie-break) only differs for duplicate enemy ids, which the population rejects.",
+    "tests/hmh-render-alloc.test.mjs": "each rewritten helper against its verbatim 1.8.1 copy: worldToScreen/worldToScreenInto bit-identical incl. errors, isScreenPointVisible, the pose memo with a reused pose object, roster pose selection, cached id phase, roster frame lookups returning the same frame records for every actor/phase/state/direction/index, roster display frame/tint/elite layers through random pose and hit sequences, gore draw calls/pools/counts (12 of 12 deliberate breakages caught), contact shadow geometry and pooled placements.",
+    "tests/hmh-world-static-bake.test.mjs": "a caller-joined blocker key re-bakes exactly when the blocker Set would.",
+    "affectedTestFiles": "104 test files touching changed modules: 1,153/1,153 pass",
+    "visualGate": "npm run visual:reboot: 12/12 scenes unchanged, enemy crops unchanged",
+    "sourcePins": "contact-shadows, enemy-production-art, enemy-roster-atlas, performance-profile, visual-feedback, enemy-hit-feedback (its executed reaction slice now runs the pass source) and enemy-attack-presentation pins read the pass where the loop moved."
+  },
+  "initialJs": {
+    "cap": 1048576,
+    "step3": 1047622,
+    "afterPass": 1044634,
+    "final": 1044848,
+    "deltaVsStep3": -2774,
+    "headroom": 3728,
+    "lazyChunks": {
+      "enemy-render-pass": 5960
+    }
+  },
+  "allocationPerFrame": {
+    "method": "hmh-perf-crowd-bench --mode=alloc, mobile 4x, 8 KiB sampling interval incl. collected objects; bytes split by call-stack subtree",
+    "passOnlyPair": {
+      "step3": {
+        "renderWorldKB": 545.5,
+        "pixiRenderKB": 2285.3,
+        "simulationKBPerTick": 660.3
+      },
+      "afterPass": {
+        "renderWorldKB": 353.2,
+        "pixiRenderKB": 2270.7,
+        "simulationKBPerTick": 653.5
+      }
+    },
+    "finalPair": {
+      "step3": {
+        "totalKB": 4071.3,
+        "renderWorldKB": 532.5,
+        "pixiRenderKB": 2255.4,
+        "simulationKBPerTick": 653.6
+      },
+      "final": {
+        "totalKB": 3689.7,
+        "renderWorldKB": 317.7,
+        "pixiRenderKB": 2253.6,
+        "simulationKBPerTick": 653.4
+      }
+    },
+    "renderWorldChange": "-40% (532.5 -> 317.7 KB per frame)",
+    "remainingTopSites": [
+      {
+        "fn": "buildLine",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:163",
+        "selfPct": 23.71
+      },
+      {
+        "fn": "triangulate",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:167",
+        "selfPct": 13.1
+      },
+      {
+        "fn": "(anonymous)",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:172",
+        "selfPct": 10.06
+      },
+      {
+        "fn": "build",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildCircle.ts:23",
+        "selfPct": 8.3
+      },
+      {
+        "fn": "resolveSweptCircleMotion",
+        "source": "apps/hmh-reboot/src/collision.mjs:296",
+        "selfPct": 3.84
+      },
+      {
+        "fn": "stepEnemyPopulation",
+        "source": "apps/hmh-reboot/src/enemy-simulation.mjs:646",
+        "selfPct": 2.63
+      },
+      {
+        "fn": "(anonymous)",
+        "source": "apps/hmh-reboot/src/main.mjs:3179",
+        "selfPct": 2.57
+      },
+      {
+        "fn": "sampleSurface",
+        "source": "apps/hmh-reboot/src/elevation.mjs:102",
+        "selfPct": 2.32
+      },
+      {
+        "fn": "next",
+        "source": "",
+        "selfPct": 1.68
+      },
+      {
+        "fn": "resolveSweptTraversalPath",
+        "source": "apps/hmh-reboot/src/elevation.mjs:231",
+        "selfPct": 1.64
+      },
+      {
+        "fn": "separateOrderedEnemies",
+        "source": "apps/hmh-reboot/src/enemy-simulation.mjs:525",
+        "selfPct": 1.6
+      },
+      {
+        "fn": "hypot",
+        "source": "",
+        "selfPct": 1.46
+      },
+      {
+        "fn": "buildContextBatches",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/utils/buildContextBatches.ts:44",
+        "selfPct": 1.41
+      },
+      {
+        "fn": "stroke",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/GraphicsContext.ts:384",
+        "selfPct": 1.24
+      },
+      {
+        "fn": "round",
+        "source": "node_modules/pixi.js/src/scene/graphics/shared/buildCommands/buildLine.ts:83",
+        "selfPct": 1.18
+      }
+    ]
+  },
+  "cpuProfilePerFrame": {
+    "method": "CPU-profile subtree totals, mobile, alternated profile passes (1 ms sampling)",
+    "rows": [
+      {
+        "run": "step3 4x #1",
+        "hostOtherPct": 26.1,
+        "renderWorldMs": 4.91,
+        "pixiRenderMs": 7.32,
+        "simulationMsPerTick": 3.86
+      },
+      {
+        "run": "final 4x #1",
+        "hostOtherPct": 25.8,
+        "renderWorldMs": 3.75,
+        "pixiRenderMs": 7.5,
+        "simulationMsPerTick": 3.7
+      },
+      {
+        "run": "final 4x #2",
+        "hostOtherPct": 25.7,
+        "renderWorldMs": 3.87,
+        "pixiRenderMs": 7.53,
+        "simulationMsPerTick": 3.75
+      },
+      {
+        "run": "step3 4x #2",
+        "hostOtherPct": 28.6,
+        "renderWorldMs": 5.73,
+        "pixiRenderMs": 9.17,
+        "simulationMsPerTick": 4.12
+      },
+      {
+        "run": "step3 6x",
+        "hostOtherPct": 24.9,
+        "renderWorldMs": 8.41,
+        "pixiRenderMs": 12.27,
+        "simulationMsPerTick": 5.5
+      },
+      {
+        "run": "final 6x",
+        "hostOtherPct": 27.1,
+        "renderWorldMs": 7.13,
+        "pixiRenderMs": 13.15,
+        "simulationMsPerTick": 5.79
+      }
+    ],
+    "enemyPassMsPerFrame4x": [
+      1.48,
+      1.56
+    ]
+  },
+  "microBenchmark": {
+    "command": "node --expose-gc scripts/hmh-enemy-pass-bench.mjs --frames=4000 --blocks=6 (pinned 0xFFFF, High)",
+    "frames": 4000,
+    "blocks": 6,
+    "population": 128,
+    "cap": 32,
+    "reference": {
+      "msPerFrame": [
+        0.1393,
+        0.1218,
+        0.1603,
+        0.1188,
+        0.1169,
+        0.1328
+      ],
+      "meanMsPerFrame": 0.1316,
+      "gcsPerThousandFrames": 9.21
+    },
+    "pass": {
+      "msPerFrame": [
+        0.0573,
+        0.052,
+        0.0673,
+        0.0559,
+        0.0578,
+        0.0588
+      ],
+      "meanMsPerFrame": 0.0582,
+      "gcsPerThousandFrames": 3.83
+    },
+    "earlierRun": {
+      "referenceMeanMsPerFrame": 0.2338,
+      "passMeanMsPerFrame": 0.0955,
+      "note": "same command before the GC counter fix; host clock differed, same ratio"
+    }
+  },
+  "leakProbe": {
+    "restartAndRemount": {
+      "command": "node scripts/hmh-restart-leak-probe.mjs --rounds=5 --ticks=900",
+      "final": {
+        "ticks": 900,
+        "rounds": 5,
+        "restart": [
+          {
+            "label": "run 0",
+            "usedMB": 25.26,
+            "totalMB": 29.17,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 117,
+            "tick": 937,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 1",
+            "usedMB": 26.29,
+            "totalMB": 30.17,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 2",
+            "usedMB": 25.86,
+            "totalMB": 29.67,
+            "documents": 2,
+            "nodes": 766,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 3",
+            "usedMB": 26.45,
+            "totalMB": 30.67,
+            "documents": 2,
+            "nodes": 766,
+            "listeners": 117,
+            "tick": 937,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 4",
+            "usedMB": 26.08,
+            "totalMB": 30.17,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 118,
+            "tick": 935,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 5",
+            "usedMB": 21.15,
+            "totalMB": 24.92,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          }
+        ],
+        "remount": [
+          {
+            "label": "mount 1 lit-valkyrie",
+            "usedMB": 26.39,
+            "totalMB": 29.92,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 2 lilly",
+            "usedMB": 26.91,
+            "totalMB": 30.67,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 3 lester-original",
+            "usedMB": 26.89,
+            "totalMB": 30.92,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 117,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 4 lit-commando",
+            "usedMB": 26.46,
+            "totalMB": 30.67,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 117,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 5 lit-valkyrie",
+            "usedMB": 26.62,
+            "totalMB": 29.67,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          }
+        ],
+        "errors": []
+      },
+      "passOnly": {
+        "ticks": 900,
+        "rounds": 5,
+        "restart": [
+          {
+            "label": "run 0",
+            "usedMB": 26.48,
+            "totalMB": 29.42,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 937,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 1",
+            "usedMB": 26.77,
+            "totalMB": 30.67,
+            "documents": 2,
+            "nodes": 766,
+            "listeners": 118,
+            "tick": 934,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 2",
+            "usedMB": 27.6,
+            "totalMB": 31.17,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 118,
+            "tick": 934,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 3",
+            "usedMB": 27.63,
+            "totalMB": 31.92,
+            "documents": 2,
+            "nodes": 768,
+            "listeners": 118,
+            "tick": 937,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 4",
+            "usedMB": 27.27,
+            "totalMB": 31.17,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 119,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "restart 5",
+            "usedMB": 21.14,
+            "totalMB": 24.92,
+            "documents": 2,
+            "nodes": 767,
+            "listeners": 118,
+            "tick": 935,
+            "displaysCreated": null
+          }
+        ],
+        "remount": [
+          {
+            "label": "mount 1 lit-valkyrie",
+            "usedMB": 26.83,
+            "totalMB": 30.42,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 2 lilly",
+            "usedMB": 26.39,
+            "totalMB": 30.17,
+            "documents": 2,
+            "nodes": 765,
+            "listeners": 116,
+            "tick": 938,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 3 lester-original",
+            "usedMB": 26.85,
+            "totalMB": 30.92,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 937,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 4 lit-commando",
+            "usedMB": 26.47,
+            "totalMB": 30.67,
+            "documents": 2,
+            "nodes": 769,
+            "listeners": 118,
+            "tick": 936,
+            "displaysCreated": null
+          },
+          {
+            "label": "mount 5 lit-valkyrie",
+            "usedMB": 26.39,
+            "totalMB": 29.67,
+            "documents": 2,
+            "nodes": 765,
+            "listeners": 116,
+            "tick": 938,
+            "displaysCreated": null
+          }
+        ],
+        "errors": []
+      }
+    },
+    "longRun": {
+      "command": "node scripts/hmh-restart-leak-probe.mjs --long=1 --rounds=6 --ticks=3600 (query evidenceSafe=1, director spawning)",
+      "step3": {
+        "ticks": 3600,
+        "rounds": 6,
+        "restart": [],
+        "remount": [],
+        "errors": [],
+        "long": [
+          {
+            "label": "long 1",
+            "usedMB": 15.83,
+            "totalMB": 17.19,
+            "documents": 2,
+            "nodes": 750,
+            "listeners": 109,
+            "tick": 3634,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 362.9,
+              "GPU": 418.8
+            }
+          },
+          {
+            "label": "long 2",
+            "usedMB": 17.29,
+            "totalMB": 18.19,
+            "documents": 2,
+            "nodes": 774,
+            "listeners": 111,
+            "tick": 7225,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 367.9,
+              "GPU": 397.4
+            }
+          },
+          {
+            "label": "long 3",
+            "usedMB": 17.54,
+            "totalMB": 18.44,
+            "documents": 2,
+            "nodes": 775,
+            "listeners": 109,
+            "tick": 10834,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 388.1,
+              "GPU": 359.4
+            }
+          },
+          {
+            "label": "long 4",
+            "usedMB": 17.04,
+            "totalMB": 18.44,
+            "documents": 2,
+            "nodes": 777,
+            "listeners": 110,
+            "tick": 14423,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 382.7,
+              "GPU": 360.6
+            }
+          },
+          {
+            "label": "long 5",
+            "usedMB": 17.31,
+            "totalMB": 19.69,
+            "documents": 2,
+            "nodes": 790,
+            "listeners": 114,
+            "tick": 18028,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 423.8,
+              "GPU": 346.8
+            }
+          },
+          {
+            "label": "long 6",
+            "usedMB": 18.09,
+            "totalMB": 19.44,
+            "documents": 2,
+            "nodes": 784,
+            "listeners": 111,
+            "tick": 21626,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 429,
+              "GPU": 432
+            }
+          }
+        ]
+      },
+      "passOnly": {
+        "ticks": 3600,
+        "rounds": 6,
+        "restart": [],
+        "remount": [],
+        "errors": [],
+        "long": [
+          {
+            "label": "long 1",
+            "usedMB": 15.78,
+            "totalMB": 16.92,
+            "documents": 2,
+            "nodes": 750,
+            "listeners": 109,
+            "tick": 3635,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 384.4,
+              "GPU": 390.3
+            }
+          },
+          {
+            "label": "long 2",
+            "usedMB": 16.81,
+            "totalMB": 18.92,
+            "documents": 2,
+            "nodes": 878,
+            "listeners": 118,
+            "tick": 7230,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 382.9,
+              "GPU": 391.6
+            }
+          },
+          {
+            "label": "long 3",
+            "usedMB": 17.04,
+            "totalMB": 19.17,
+            "documents": 2,
+            "nodes": 775,
+            "listeners": 109,
+            "tick": 10833,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 396.6,
+              "GPU": 359.5
+            }
+          },
+          {
+            "label": "long 4",
+            "usedMB": 17.13,
+            "totalMB": 18.42,
+            "documents": 2,
+            "nodes": 777,
+            "listeners": 110,
+            "tick": 14424,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 390.5,
+              "GPU": 358.5
+            }
+          },
+          {
+            "label": "long 5",
+            "usedMB": 17.39,
+            "totalMB": 19.42,
+            "documents": 2,
+            "nodes": 794,
+            "listeners": 116,
+            "tick": 18032,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 438.5,
+              "GPU": 392.3
+            }
+          },
+          {
+            "label": "long 6",
+            "usedMB": 17.49,
+            "totalMB": 20.42,
+            "documents": 2,
+            "nodes": 790,
+            "listeners": 114,
+            "tick": 21631,
+            "displaysCreated": null,
+            "process": {
+              "renderer": 438.6,
+              "GPU": 401.6
+            }
+          }
+        ]
+      }
+    },
+    "finding": "No per-restart or per-hero-switch retention: retained JS heap after forced GC stays 21-27 MB through 5 portal:restart rounds and 5 re-mounts with a different hero; documents stay at 2 (disposed child documents are collected); DOM nodes and listeners are stable. Over one 21,600-tick run retained heap grows 15.8 -> 18.1 MB (step 3) and 15.8 -> 17.5 MB (this step). Renderer private memory grows about 50-65 MB over that run in both builds while the JS heap grows 2 MB, so it is outside the JS heap (candidates: per-cue HTMLAudioElement media players, decoded images); not addressed here. The 30-min soak figure of 314% is raw heap (garbage plus art loading) measured from 49 MB at boot; its steady-state retained growth was 26.7%."
+  },
+  "timingAB": [
+    {
+      "run": "final-alloc-mobile-4-2",
+      "build": "final",
+      "mode": "alloc",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 27.64,
+      "p50Ms": 27.8,
+      "p95Ms": 34.8,
+      "p99Ms": 48.6,
+      "worstMs": 125.1,
+      "over33Pct": 16.3,
+      "fps": 36.2,
+      "frames": 725,
+      "ticks": 1225,
+      "simSpeed": 0.989,
+      "hostOtherBusyPct": 16.5,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": 3689.7,
+      "allocMBPerSecond": 132.7
+    },
+    {
+      "run": "final-profile-mobile-4-1",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 23.13,
+      "p50Ms": 20.9,
+      "p95Ms": 34.7,
+      "p99Ms": 48.7,
+      "worstMs": 132.1,
+      "over33Pct": 7.9,
+      "fps": 43.2,
+      "frames": 848,
+      "ticks": 1200,
+      "simSpeed": 0.991,
+      "hostOtherBusyPct": 25.8,
+      "busyMsPerFrame": 24.32,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-profile-mobile-4-2",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 23.6,
+      "p50Ms": 20.9,
+      "p95Ms": 34.8,
+      "p99Ms": 55.5,
+      "worstMs": 111.1,
+      "over33Pct": 9.8,
+      "fps": 42.4,
+      "frames": 827,
+      "ticks": 1198,
+      "simSpeed": 0.993,
+      "hostOtherBusyPct": 25.7,
+      "busyMsPerFrame": 24.83,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-profile-mobile-6-1",
+      "build": "final",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 53.96,
+      "p50Ms": 48.7,
+      "p95Ms": 69.5,
+      "p99Ms": 97.2,
+      "worstMs": 264,
+      "over33Pct": 99.7,
+      "fps": 18.5,
+      "frames": 356,
+      "ticks": 1142,
+      "simSpeed": 0.936,
+      "hostOtherBusyPct": 27.1,
+      "busyMsPerFrame": 59.05,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-desktop-1-1",
+      "build": "final",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 6.99,
+      "p50Ms": 6.9,
+      "p95Ms": 7,
+      "p99Ms": 7.1,
+      "worstMs": 62.5,
+      "over33Pct": 0,
+      "fps": 143.1,
+      "frames": 2887,
+      "ticks": 1216,
+      "simSpeed": 1,
+      "hostOtherBusyPct": 26.7,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-desktop-1-2",
+      "build": "final",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 6.98,
+      "p50Ms": 6.9,
+      "p95Ms": 7,
+      "p99Ms": 7.1,
+      "worstMs": 69.4,
+      "over33Pct": 0,
+      "fps": 143.3,
+      "frames": 2890,
+      "ticks": 1214,
+      "simSpeed": 0.999,
+      "hostOtherBusyPct": 18.7,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-4-1",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 34.24,
+      "p50Ms": 34.6,
+      "p95Ms": 55.6,
+      "p99Ms": 76.6,
+      "worstMs": 139,
+      "over33Pct": 52.2,
+      "fps": 29.2,
+      "frames": 590,
+      "ticks": 1228,
+      "simSpeed": 0.972,
+      "hostOtherBusyPct": 51.5,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-4-1-walk",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": true,
+      "meanMs": 21.81,
+      "p50Ms": 20.8,
+      "p95Ms": 41.7,
+      "p99Ms": 55.6,
+      "worstMs": 97.3,
+      "over33Pct": 10.4,
+      "fps": 45.9,
+      "frames": 923,
+      "ticks": 1210,
+      "simSpeed": 0.996,
+      "hostOtherBusyPct": 23.2,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-4-2",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 25.29,
+      "p50Ms": 27.7,
+      "p95Ms": 34.8,
+      "p99Ms": 48.6,
+      "worstMs": 125.1,
+      "over33Pct": 15.9,
+      "fps": 39.5,
+      "frames": 797,
+      "ticks": 1236,
+      "simSpeed": 0.992,
+      "hostOtherBusyPct": 46,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-4-3",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 43.09,
+      "p50Ms": 27.9,
+      "p95Ms": 90.5,
+      "p99Ms": 125.1,
+      "worstMs": 180.6,
+      "over33Pct": 49.6,
+      "fps": 23.2,
+      "frames": 464,
+      "ticks": 1106,
+      "simSpeed": 0.885,
+      "hostOtherBusyPct": 58.3,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-6-1",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 72.47,
+      "p50Ms": 69.5,
+      "p95Ms": 97.4,
+      "p99Ms": 159.8,
+      "worstMs": 187.6,
+      "over33Pct": 100,
+      "fps": 13.8,
+      "frames": 279,
+      "ticks": 1061,
+      "simSpeed": 0.812,
+      "hostOtherBusyPct": 48.7,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-6-2",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 47.35,
+      "p50Ms": 41.8,
+      "p95Ms": 69.6,
+      "p99Ms": 111.1,
+      "worstMs": 152.9,
+      "over33Pct": 95.1,
+      "fps": 21.1,
+      "frames": 426,
+      "ticks": 1211,
+      "simSpeed": 0.954,
+      "hostOtherBusyPct": 24.7,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "final-timing-mobile-6-3",
+      "build": "final",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 48.72,
+      "p50Ms": 48.6,
+      "p95Ms": 69.5,
+      "p99Ms": 97.2,
+      "worstMs": 132,
+      "over33Pct": 96.6,
+      "fps": 20.5,
+      "frames": 412,
+      "ticks": 1215,
+      "simSpeed": 0.95,
+      "hostOtherBusyPct": 19.8,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-alloc-mobile-4-1",
+      "build": "step3",
+      "mode": "alloc",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 39.8,
+      "p50Ms": 34.8,
+      "p95Ms": 55.6,
+      "p99Ms": 76.4,
+      "worstMs": 138.9,
+      "over33Pct": 86.6,
+      "fps": 25.1,
+      "frames": 507,
+      "ticks": 1235,
+      "simSpeed": 0.981,
+      "hostOtherBusyPct": 24.5,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": 4454.9,
+      "allocMBPerSecond": 110.2
+    },
+    {
+      "run": "step3-alloc-mobile-4-2",
+      "build": "step3",
+      "mode": "alloc",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 31.63,
+      "p50Ms": 27.8,
+      "p95Ms": 41.7,
+      "p99Ms": 62.5,
+      "worstMs": 125,
+      "over33Pct": 40.4,
+      "fps": 31.6,
+      "frames": 638,
+      "ticks": 1238,
+      "simSpeed": 0.987,
+      "hostOtherBusyPct": 26.1,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": 4071.3,
+      "allocMBPerSecond": 127.2
+    },
+    {
+      "run": "step3-profile-mobile-4-1",
+      "build": "step3",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 25.44,
+      "p50Ms": 20.9,
+      "p95Ms": 41.7,
+      "p99Ms": 69.3,
+      "worstMs": 153,
+      "over33Pct": 15.1,
+      "fps": 39.3,
+      "frames": 767,
+      "ticks": 1193,
+      "simSpeed": 0.987,
+      "hostOtherBusyPct": 26.1,
+      "busyMsPerFrame": 26.84,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-profile-mobile-4-2",
+      "build": "step3",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 32.58,
+      "p50Ms": 27.9,
+      "p95Ms": 48.7,
+      "p99Ms": 69.5,
+      "worstMs": 131.9,
+      "over33Pct": 47,
+      "fps": 30.7,
+      "frames": 602,
+      "ticks": 1203,
+      "simSpeed": 0.98,
+      "hostOtherBusyPct": 28.6,
+      "busyMsPerFrame": 34.63,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-profile-mobile-6-1",
+      "build": "step3",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 53.21,
+      "p50Ms": 48.7,
+      "p95Ms": 69.6,
+      "p99Ms": 90.4,
+      "worstMs": 145.9,
+      "over33Pct": 99.4,
+      "fps": 18.8,
+      "frames": 363,
+      "ticks": 1164,
+      "simSpeed": 0.953,
+      "hostOtherBusyPct": 24.9,
+      "busyMsPerFrame": 57.6,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-desktop-1-1",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 6.98,
+      "p50Ms": 6.9,
+      "p95Ms": 7,
+      "p99Ms": 7.1,
+      "worstMs": 62.5,
+      "over33Pct": 0,
+      "fps": 143.3,
+      "frames": 2887,
+      "ticks": 1214,
+      "simSpeed": 0.999,
+      "hostOtherBusyPct": 25.9,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-desktop-1-2",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "desktop",
+      "cpu": 1,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 7,
+      "p50Ms": 6.9,
+      "p95Ms": 7,
+      "p99Ms": 7.1,
+      "worstMs": 69.4,
+      "over33Pct": 0,
+      "fps": 142.9,
+      "frames": 2879,
+      "ticks": 1215,
+      "simSpeed": 1,
+      "hostOtherBusyPct": 29.1,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-4-1",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 25.38,
+      "p50Ms": 21,
+      "p95Ms": 34.8,
+      "p99Ms": 55.6,
+      "worstMs": 125,
+      "over33Pct": 12.2,
+      "fps": 39.4,
+      "frames": 797,
+      "ticks": 1246,
+      "simSpeed": 0.991,
+      "hostOtherBusyPct": 43.1,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-4-1-walk",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": true,
+      "meanMs": 20.02,
+      "p50Ms": 20.8,
+      "p95Ms": 27.8,
+      "p99Ms": 34.8,
+      "worstMs": 97.2,
+      "over33Pct": 1.9,
+      "fps": 50,
+      "frames": 1012,
+      "ticks": 1214,
+      "simSpeed": 0.998,
+      "hostOtherBusyPct": 19.5,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-4-2",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 25.26,
+      "p50Ms": 20.9,
+      "p95Ms": 34.8,
+      "p99Ms": 55.7,
+      "worstMs": 125.1,
+      "over33Pct": 12.1,
+      "fps": 39.6,
+      "frames": 800,
+      "ticks": 1232,
+      "simSpeed": 0.986,
+      "hostOtherBusyPct": 45.4,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-4-3",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 27.89,
+      "p50Ms": 27.8,
+      "p95Ms": 41.7,
+      "p99Ms": 62.5,
+      "worstMs": 125,
+      "over33Pct": 24.4,
+      "fps": 35.9,
+      "frames": 724,
+      "ticks": 1236,
+      "simSpeed": 0.984,
+      "hostOtherBusyPct": 48,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-6-1",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 99.96,
+      "p50Ms": 97.2,
+      "p95Ms": 166.6,
+      "p99Ms": 201.4,
+      "worstMs": 222.4,
+      "over33Pct": 100,
+      "fps": 10,
+      "frames": 204,
+      "ticks": 843,
+      "simSpeed": 0.642,
+      "hostOtherBusyPct": 51.4,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-6-2",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 90.73,
+      "p50Ms": 83.4,
+      "p95Ms": 125,
+      "p99Ms": 166.7,
+      "worstMs": 229.5,
+      "over33Pct": 100,
+      "fps": 11,
+      "frames": 222,
+      "ticks": 922,
+      "simSpeed": 0.718,
+      "hostOtherBusyPct": 39.4,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step3-timing-mobile-6-3",
+      "build": "step3",
+      "mode": "timing",
+      "profile": "mobile",
+      "cpu": 6,
+      "rep": 3,
+      "walk": false,
+      "meanMs": 54.73,
+      "p50Ms": 48.7,
+      "p95Ms": 83.3,
+      "p99Ms": 111.1,
+      "worstMs": 194.4,
+      "over33Pct": 97.3,
+      "fps": 18.3,
+      "frames": 366,
+      "ticks": 1177,
+      "simSpeed": 0.922,
+      "hostOtherBusyPct": 25.2,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step4-alloc-mobile-4-1",
+      "build": "step4-pass-only",
+      "mode": "alloc",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 27.81,
+      "p50Ms": 27.8,
+      "p95Ms": 41.6,
+      "p99Ms": 55.6,
+      "worstMs": 118.2,
+      "over33Pct": 19,
+      "fps": 36,
+      "frames": 728,
+      "ticks": 1240,
+      "simSpeed": 0.99,
+      "hostOtherBusyPct": 19.1,
+      "busyMsPerFrame": null,
+      "allocKBPerFrame": 3751.5,
+      "allocMBPerSecond": 134
+    },
+    {
+      "run": "step4-profile-mobile-4-1",
+      "build": "step4-pass-only",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 1,
+      "walk": false,
+      "meanMs": 23.99,
+      "p50Ms": 20.9,
+      "p95Ms": 41.5,
+      "p99Ms": 48.7,
+      "worstMs": 111.2,
+      "over33Pct": 14.7,
+      "fps": 41.7,
+      "frames": 812,
+      "ticks": 1207,
+      "simSpeed": 0.991,
+      "hostOtherBusyPct": 27.4,
+      "busyMsPerFrame": 25.51,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    },
+    {
+      "run": "step4-profile-mobile-4-2",
+      "build": "step4-pass-only",
+      "mode": "profile",
+      "profile": "mobile",
+      "cpu": 4,
+      "rep": 2,
+      "walk": false,
+      "meanMs": 28.07,
+      "p50Ms": 27.8,
+      "p95Ms": 41.8,
+      "p99Ms": 62.6,
+      "worstMs": 132,
+      "over33Pct": 25.5,
+      "fps": 35.6,
+      "frames": 701,
+      "ticks": 1201,
+      "simSpeed": 0.981,
+      "hostOtherBusyPct": 32,
+      "busyMsPerFrame": 29.57,
+      "allocKBPerFrame": null,
+      "allocMBPerSecond": null
+    }
+  ],
+  "deferred": [
+    "Pixi Graphics tessellation is the largest allocator: about 2.25 MB per frame in the mobile crowd (buildLine, circle/roundRect triangulation, buildContextBatches: about half of all sampled bytes) from per-frame immediate-mode layers (health pips, elite rings, tells, gore, combat VFX, world-life, reticle). It needs pooled sprites or retained geometry, not an allocation tweak.",
+    "Renderer process private memory grows outside the JS heap over a long run (see leakProbe).",
+    "The hero atlas still builds string keys and a joined frame-id string per frame (one body); worldLife queries ground for every site each frame.",
+    "Per-frame stage dataset writes (about 10 attribute writes) measured under 0.1% and were left as they are."
+  ]
+}

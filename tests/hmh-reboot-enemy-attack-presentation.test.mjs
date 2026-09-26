@@ -45,8 +45,12 @@ test('browser evidence can exercise normal attacks only behind both evidence-saf
 
 test('browser certification proves the canister draw branch serially', async () => {
   const runtime = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  // Attack tells are drawn by the lazily loaded enemy render pass, which
+  // receives the telemetry dataset only when release telemetry is on.
+  const pass = await readFile(new URL('../apps/hmh-reboot/src/enemy-render-pass.mjs', import.meta.url), 'utf8');
   const smoke = await readFile(new URL('../scripts/hmh-reboot-enemy-boss-presentation-browser-smoke.mjs', import.meta.url), 'utf8');
-  assert.match(runtime, /if \(releaseTelemetryEnabled\) dataset\.gasCanisterProgress = canister\.progress\.toFixed\(3\)/);
+  assert.match(runtime, /dataset: releaseTelemetryEnabled \? dataset : null,/);
+  assert.match(pass, /if \(dataset\) dataset\.gasCanisterProgress = canister\.progress\.toFixed\(3\)/);
   assert.match(smoke, /Number\(stage\.dataset\.gasCanisterProgress\) > 0/);
   assert.doesNotMatch(smoke, /Promise\.all/);
 });

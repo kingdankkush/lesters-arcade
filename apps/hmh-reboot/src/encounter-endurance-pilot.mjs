@@ -1,11 +1,6 @@
-import { finite, freezeDeep } from './value-guards.mjs';
+import { finite, freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 import { ENEMY_CAPACITY } from './enemy-simulation.mjs';
 import { selectEncounterArchetype } from './encounter-director.mjs';
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
-}
 
 // Builds placement-safe candidates for browser/runtime pressure certification.
 // Insertion still goes through attemptScheduledEnemyInsertion, so this helper

@@ -86,6 +86,15 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
 
   const byKey = new Map();
   const clipByKey = new Map();
+  // The same clips, reachable without building a key string: every pose of
+  // every visible body looks its clip up, several times per frame.
+  // phase token -> state -> direction -> { clip, frames by frame index }.
+  const clipTable = new Map();
+  const nested = (map, key, make) => {
+    let value = map.get(key);
+    if (value === undefined) map.set(key, value = make());
+    return value;
+  };
   const phases = metadata.phases?.length ? metadata.phases : [null];
   for (const frame of metadata.frames) {
     const phase = frame.phase ?? null;
@@ -98,7 +107,11 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
     if (!Number.isFinite(frame.fps) || frame.fps <= 0 || clip.fps !== frame.fps) throw new TypeError(`invalid roster cadence ${countKey}`);
     clip.frameCount = Math.max(clip.frameCount, frame.frameIndex + 1);
     clipByKey.set(countKey, clip);
+    const entry = nested(nested(nested(clipTable, String(phaseToken), () => new Map()), String(frame.state), () => new Map()),
+      String(frame.direction), () => ({ clip, frames: [] }));
+    if (Number.isInteger(frame.frameIndex) && frame.frameIndex >= 0) entry.frames[frame.frameIndex] = frame;
   }
+  const clipEntry = (state, direction, phase) => clipTable.get(String(phase ?? 'default'))?.get(String(state))?.get(String(direction));
 
   // Every state the runtime can select must exist for every direction and
   // every authored boss phase, or a pose lookup would fail in the render path.
@@ -126,20 +139,21 @@ export function createEnemyRosterAtlasIndex(metadata, expectedActorId) {
     phases: Object.freeze([...phases]),
     frameCount: metadata.frames.length,
     frameFor(state, direction, frameIndex, phase = phases[0]) {
-      const phaseToken = phase ?? 'default';
-      const clip = clipByKey.get(`${phaseToken}|${state}|${direction}`);
-      if (!clip) return undefined;
-      const wrapped = ((Math.trunc(frameIndex) % clip.frameCount) + clip.frameCount) % clip.frameCount;
-      return byKey.get(`${phaseToken}|${state}|${direction}|${wrapped}`);
+      const entry = clipEntry(state, direction, phase);
+      if (!entry) return undefined;
+      const { frameCount } = entry.clip;
+      const wrapped = ((Math.trunc(frameIndex) % frameCount) + frameCount) % frameCount;
+      // A miss (NaN, a gap) asks the string-keyed map exactly as before.
+      return entry.frames[wrapped] ?? byKey.get(`${phase ?? 'default'}|${state}|${direction}|${wrapped}`);
     },
     clipFor(state, direction, phase = phases[0]) {
-      return clipByKey.get(`${phase ?? 'default'}|${state}|${direction}`);
+      return clipEntry(state, direction, phase)?.clip;
     },
     frameCountFor(state, direction, phase = phases[0]) {
-      return clipByKey.get(`${phase ?? 'default'}|${state}|${direction}`)?.frameCount ?? 1;
+      return clipEntry(state, direction, phase)?.clip.frameCount ?? 1;
     },
     fpsFor(state, direction, phase = phases[0]) {
-      return clipByKey.get(`${phase ?? 'default'}|${state}|${direction}`)?.fps ?? 1;
+      return clipEntry(state, direction, phase)?.clip.fps ?? 1;
     },
   });
 }
@@ -278,6 +292,11 @@ export function createEnemyRosterDisplay({
   container.eliteProjection = false;
   container.visualState = 'idle';
   container.visualPhase = initialPhase;
+  // A tint write normalises the colour even when it is unchanged, and the body
+  // tint is written for every drawn body every frame. Only this closure writes
+  // it, so an unchanged value can skip the sprite.
+  let bodyTint;
+  const tintBody = (color) => { if (color !== bodyTint) sprite.tint = bodyTint = color; };
   container.applyPose = ({ state = 'idle', tick = 0, direction = 0, elite: poseElite = false, phase = initialPhase, phaseTick = null } = {}) => {
     const frame = resolveEnemyRosterPose(index, { state, tick, direction, phase, phaseTick });
     const texture = textureFor(frame);
@@ -285,7 +304,7 @@ export function createEnemyRosterDisplay({
     sprite.anchor.set(frame.anchor.x, frame.anchor.y);
     // Elites keep the brighter body tint the roster has always used, so the
     // silhouette contract is unchanged; the rim and crown are additive.
-    sprite.tint = poseElite ? 0xfff0c0 : 0xffffff;
+    tintBody(poseElite ? 0xfff0c0 : 0xffffff);
     const showElite = eliteCapable && poseElite === true;
     if (rim) {
       rim.texture = texture;
@@ -308,7 +327,7 @@ export function createEnemyRosterDisplay({
   // elite body tint included) so a flash can never leak past its window, and
   // applyPose itself keeps resetting the tint on every frame change.
   container.setTint = (color) => {
-    sprite.tint = color ?? (container.eliteProjection ? 0xfff0c0 : 0xffffff);
+    tintBody(color ?? (container.eliteProjection ? 0xfff0c0 : 0xffffff));
   };
   container.applyPose({ state: 'idle', tick: 0, direction: 0, elite });
   return container;

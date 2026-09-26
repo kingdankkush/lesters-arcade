@@ -1,4 +1,4 @@
-import { finite, freezeDeep } from './value-guards.mjs';
+import { finite, freezeDeep, nonNegativeInteger } from './value-guards.mjs';
 import { getEnemyArchetype } from './enemy-archetypes.mjs';
 import {
   attemptScheduledEnemyInsertion,
@@ -29,11 +29,6 @@ export function directorViewBounds(center) {
     maxX: x + DIRECTOR_VIEW_HALF_EXTENTS.x,
     maxY: y + DIRECTOR_VIEW_HALF_EXTENTS.y,
   });
-}
-
-function nonNegativeInteger(value, name) {
-  if (!Number.isInteger(value) || value < 0) throw new TypeError(`${name} must be a non-negative integer`);
-  return value;
 }
 
 const defineBand = (definition) => freezeDeep(definition);
