@@ -822,6 +822,7 @@ const NODE_CHECK_FILES = [
   "tests/fixtures/hmh-render-reference/gore-presentation.mjs",
   "tests/fixtures/hmh-render-reference/contact-shadows.mjs",
   "scripts/hmh-restart-leak-probe.mjs",
+  "scripts/hmh-enemy-pass-bench.mjs",
   "apps/hmh-reboot/src/authored-prop-atlas.mjs",
   "apps/hmh-reboot/src/tripo-prop-appearance.mjs",
   "apps/hmh-reboot/src/contact-shadows.mjs",
