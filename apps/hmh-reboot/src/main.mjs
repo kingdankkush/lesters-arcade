@@ -198,6 +198,7 @@ import {
   isScreenPointVisible,
   selectRuntimePerformanceProfile,
   createAdaptiveResolution,
+  createProfileTextureLoader,
 } from './runtime-performance.mjs';
 import { createTouchControlAdapter, createTouchOnboardingGate, isTouchUiEnabled } from './touch-controls.mjs';
 import { createPrototypeHumanoidDescriptor, drawPrototypeHumanoid, measureMinimumPrototypeBodyHeight } from './prototype-actor-art.mjs';
@@ -391,6 +392,8 @@ async function boot() {
     coarsePointer,
     reduceMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   });
+  // Perf step 6: phones load half-size (@0.5x) actor, prop and terrain pages.
+  const textureAssets = createProfileTextureLoader(Assets, performanceProfile);
   const touchUiEnabled = isTouchUiEnabled({ coarsePointer, width: window.innerWidth });
   // Owner direction 2026-09-16: desktop mouse wheel zooms +10% / -30% from the
   // readable default; phones keep the default (frame rate first).
@@ -666,7 +669,7 @@ async function boot() {
     const [renderer, metadataResponse, atlasTexture] = await Promise.all([
       loadSelectedHeroRenderer(),
       fetch(selection.metadataUrl, { credentials: 'same-origin' }),
-      Assets.load(selection.imageUrl),
+      textureAssets.load(selection.imageUrl),
     ]);
     if (!metadataResponse.ok) throw new Error(`Production hero metadata failed with ${metadataResponse.status}`);
     const { createProductionHeroAtlasIndex, createProductionHeroDisplay } = renderer;
@@ -684,7 +687,7 @@ async function boot() {
     // selected hero fetches an extra motion page, and a failed upgrade leaves
     // the complete base animation set usable.
     import('./hero-motion-atlas.mjs')
-      .then(({ loadHeroMotionPage }) => loadHeroMotionPage({ selection, baseIndex, Assets }))
+      .then(({ loadHeroMotionPage }) => loadHeroMotionPage({ selection, baseIndex, Assets: textureAssets }))
       .then(page => { if (!display.container.destroyed) display.attachMotionPage(page); })
       .catch(error => {
         display.container.motionStatus = 'fallback';
@@ -692,7 +695,7 @@ async function boot() {
       });
     // HMH-N03: held-weapon pages arrive per weapon on first equip.
     import('./held-weapon-atlas.mjs')
-      .then(({ createHeldWeaponLoader }) => { if (!display.container.destroyed) display.container.heldWeapons = createHeldWeaponLoader({ selection, display, Assets }); })
+      .then(({ createHeldWeaponLoader }) => { if (!display.container.destroyed) display.container.heldWeapons = createHeldWeaponLoader({ selection, display, Assets: textureAssets }); })
       .catch(error => {
         display.container.heldWeaponStatus = 'fallback';
         display.container.heldWeaponError = String(error?.message ?? error);
@@ -790,7 +793,7 @@ async function boot() {
     .catch(() => { worldDecals = []; });
   Promise.all([
     fetch(AUTHORED_PROP_ATLAS_METADATA_URL, { credentials: 'same-origin' }),
-    Assets.load(AUTHORED_PROP_ATLAS_IMAGE_URL),
+    textureAssets.load(AUTHORED_PROP_ATLAS_IMAGE_URL),
     import('./authored-prop-display.mjs'),
   ]).then(async ([metadataResponse, atlasTexture, {createAuthoredHeldWeaponDisplay,createAuthoredPropDisplay}]) => {
     dataset.nativeBarrierStatus = 'loading';
@@ -801,7 +804,7 @@ async function boot() {
     const propIndex = createAuthoredPropAtlasIndex(await metadataResponse.json());
     const candidateAppearance = new Map();
     try {
-      const appearance = await loadTripoPropAppearance(propIndex, (url) => Assets.load(url));
+      const appearance = await loadTripoPropAppearance(propIndex, (url) => textureAssets.load(url));
       if (app.stage.destroyed || !world.parent) return;
       for (const [id, asset] of appearance) candidateAppearance.set(id, asset);
       dataset.nativePropStatus = 'ready';
@@ -966,7 +969,7 @@ async function boot() {
       .then((manifest) => {
         terrainTiles.setManifest(manifest);
         return Promise.all(TERRAIN_MATERIAL_IDS.flatMap((materialId) => [
-          Assets
+          textureAssets
             .load(terrainTileAsset(materialId).imageUrl)
             .then((texture) => terrainTiles.register(materialId, texture))
             .catch((error) => {
@@ -975,11 +978,11 @@ async function boot() {
             }),
           // Fringe strips are optional dressing: a miss leaves the previous
           // hard district edge and never marks the material failed.
-          Assets
+          textureAssets
             .load(terrainFringeAsset(materialId).imageUrl)
             .then((texture) => terrainTiles.registerFringe(materialId, texture))
             .catch(() => {}),
-        ]).concat(TERRAIN_OVERLAY_IDS.map((overlayId) => Assets
+        ]).concat(TERRAIN_OVERLAY_IDS.map((overlayId) => textureAssets
           // Edge strips are dressing too: a miss leaves the surface without a
           // shoulder rather than failing the ground material.
           .load(terrainOverlayAsset(overlayId).imageUrl)
@@ -1013,7 +1016,7 @@ async function boot() {
         if (!response.ok) throw new Error(`roster metadata ${response.status}`);
         return response.json();
       }),
-      Assets.load(asset.imageUrl),
+      textureAssets.load(asset.imageUrl),
     ]).then(([metadata, texture]) => {
       // Validate and build one display before publishing to the shared maps.
       // Publishing first meant a bad atlas threw from inside the marker

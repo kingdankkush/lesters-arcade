@@ -37,7 +37,9 @@ function validatePages(metadata, textures) {
     if (!positive(page.width) || !positive(page.height) || !Number.isInteger(page.width) || !Number.isInteger(page.height) || page.width > 2048 || page.height > 2048) fail('invalid page size');
     if (page.lossless !== true || page.exact !== true || !HASH.test(page.sha256) || !HASH.test(page.decodedRgbaSha256)) fail('page encoding or hash contract missing');
     const source = textures[i]?.source;
-    if (!source || (source.pixelWidth ?? source.width) !== page.width || (source.pixelHeight ?? source.height) !== page.height) fail('decoded texture dimensions do not match page metadata');
+    // Logical size: a phone's half page (@0.5x, resolution 0.5) keeps the
+    // full page's logical size, which is what every frame rectangle uses.
+    if (!source || (source.width ?? source.pixelWidth) !== page.width || (source.height ?? source.pixelHeight) !== page.height) fail('decoded texture dimensions do not match page metadata');
   }
 }
 
