@@ -334,3 +334,23 @@ Evidence: `docs/testing/hmh-perf-step5-audio-webaudio.json`.
 - Long run (21,600 ticks, leak probe `--long`): renderer private memory grows about the same with either engine (+63.8 MB on step 4, +65.8 MB here), and the retained JS heap stays at 16–18 MB. So per-cue media elements were not the source of that growth; decoded images and GPU-side resources remain. The decoded SFX buffers take about 3.5 MB.
 - Not verified on an iPhone: the unlock on the Enter tap, recovery after an interruption, and the ring/silent switch. With `navigator.audioSession` left at its default, WebKit may treat Web Audio as ambient and mute SFX with the silent switch while the parent's music keeps playing. Setting `navigator.audioSession.type = 'playback'` would change that; it is an owner decision.
 - Owner target: at 4x the crowd now averages about 48 fps, with 1.7–4.7% of frames slower than 30 fps. At 6x it is about 20–21 fps.
+
+### Rebased onto 1.8.4 (`4f947386`)
+
+`fable/hmh-perf-part2` (steps 3–5, rebased commits `b981b35d`…`c34d2a31`; the step-5 engine and tooling commits above are now `7683984a` and `cc184766`) sits on the 1.8.4 release commit `4f947386` (`origin/fable/master-list-20260916`, which already carries steps 1–2). Post-rebase checks on `c34d2a31`: the headless digest is unchanged (`combined 2488a609…`), visual regression passed for 12 scenes, and the performance, cockpit, weapon-wheel, held-weapons, collectibles, weapon-SFX and desktop/mobile portal E2E smokes pass.
+
+Alternating A/B crowd bench (`scripts/hmh-perf-crowd-bench.mjs --mode=timing --profile=mobile --affinity=0xFFFF --retries=2`), base = `4f947386` dist, head = this tree, three runs each per throttle in base/head, head/base, base/head order. The host carried 38–44% unrelated load in 11 of 12 runs and the bench flagged those CONTENDED; only base 4x #1 (20.9%) ran clear. The base means are therefore pessimistic and the deltas indicative. The like-for-like comparison is the clear-host base 4x #1 at 26.39 ms against the head's 21.13–21.66 ms under 41% load.
+
+| Mobile crowd, 1.8.4 → this branch | Base `4f947386` | Head `c34d2a31` |
+|---|---:|---:|
+| 4x mean (3 runs) | 37.43 ms (26.39 clear; 45.48, 40.42 CONTENDED) | 22.80 ms (21.66 / 25.60 / 21.13; all CONTENDED) |
+| 4x p95 | 34.8 / 69.4 / 62.5 ms | 27.9 / 34.9 / 28.0 ms |
+| 4x p99 | 41.8 / 90.3 / 83.5 ms | 41.7 / 55.6 / 41.7 ms |
+| 4x sim speed | 0.990 / 0.961 / 0.966 | 0.997 / 0.994 / 0.996 |
+| 4x frames over 33.3 ms | 17.0 / 89.8 / 79.1% | 4.8 / 14.0 / 4.7% |
+| 6x mean (3 runs, all CONTENDED) | 84.42 ms (74.69 / 88.91 / 89.66) | 42.68 ms (40.39 / 42.54 / 45.12) |
+| 6x p95 | 104.2 / 125.1 / 104.3 ms | 55.7 / 62.5 / 62.6 ms |
+| 6x p99 | 132.0 / 159.7 / 173.7 ms | 76.5 / 76.4 / 83.3 ms |
+| 6x sim speed | 0.837 / 0.718 / 0.727 | 0.981 / 0.977 / 0.967 |
+
+Audio in the same windows: the base played 351–361 (4x) and 288–315 (6x) cues through media elements with 2 SFX requests per window; the head started 353–359 (4x) and 358–367 (6x) buffer sources with none. The per-run rows are under `rebase.timingAB.runs` in the evidence file.

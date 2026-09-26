@@ -1246,5 +1246,473 @@
     "No iOS hardware test: unlock on the Enter tap, resume after a call or Siri interruption, and the ring/silent switch. With navigator.audioSession left at its default, WebKit may treat Web Audio SFX as ambient and mute them with the silent switch while the parent music keeps playing. Setting navigator.audioSession.type = \"playback\" would make SFX ignore the switch; that is an owner call.",
     "Renderer private memory growth (+64-66 MB over 21,600 ticks) remains; decoded images and GPU-side resources are the remaining candidates.",
     "Owner target: at 4x this build averages about 48 fps (20.3-21.1 ms, 1.7-4.7% of frames over 33.3 ms); at 6x it is about 20-21 fps (47-50 ms), still below 30."
-  ]
+  ],
+  "rebase": {
+    "onto": "4f947386 (1.8.4 release commit, origin/fable/master-list-20260916; already carries perf steps 1-2)",
+    "branch": "fable/hmh-perf-part2",
+    "head": "c34d2a31",
+    "rebasedCommits": [
+      "b981b35d Share the duplicated HMH argument guards through value-guards",
+      "c8d242d5 Cut HMH simulation per-tick cost without changing a single result",
+      "803fe240 Record step-3 simulation hot-path evidence: digests, per-tick cost and interleaved timing",
+      "52db09af Draw the HMH enemy crowd without per-enemy allocations",
+      "c90abd33 Stop per-frame garbage in HMH gore, shadows, ground bake key and HUD reads",
+      "31954c41 Add an allocation mode to the HMH crowd bench and a restart leak probe",
+      "241713b4 Record step-4 render allocation evidence: allocation split, profiles, leak probe and timing",
+      "7683984a Play HMH SFX through Web Audio buffers and retire footstep cues (was 8a2795a2)",
+      "cc184766 Count SFX voices in the HMH crowd bench and unlock audio in the leak probe (was 17728eb0)",
+      "c34d2a31 Record step-5 Web Audio evidence: gain parity, digests, A/B timing and memory probe"
+    ],
+    "sameSeedDigest": {
+      "command": "node scripts/hmh-sim-digest.mjs",
+      "combined": "2488a609eb1ceadd27edb83a91d5ffed3423dac198d19badbc667c25eb4f92f2",
+      "crowd": "50f3f6127b5e92fa237aa415d1e8188a2f6e2816c53801ad2e055f4ee1f67367",
+      "director": "7f38bb3e763081b2a195c118bf0f84dee4d5486f50242806bc8e597bede5af70",
+      "unchanged": true
+    },
+    "browserChecks": [
+      "npm run visual:reboot: visual regression passed for 12 scenes",
+      "smokes passed one at a time: performance, cockpit, weapon-wheel, held-weapons, collectibles, weapon-sfx, portal e2e desktop, portal e2e mobile (ranked-preview flow not run: served portal has SETTLEMENT_LIVE on)"
+    ],
+    "timingAB": {
+      "command": "node scripts/hmh-perf-crowd-bench.mjs --mode=timing --profile=mobile --cpu=<4|6> --affinity=0xFFFF --retries=2",
+      "base": "4f947386 dist (npm run build of the integration head)",
+      "headBuild": "c34d2a31 dist (this tree)",
+      "order": "per throttle: base, head, head, base, base, head",
+      "hostNote": "The host carried 38-44% unrelated load in 11 of 12 runs and the bench flagged them CONTENDED; only base 4x #1 (20.9%) ran clear. Base means are therefore pessimistic; treat the deltas as indicative. The clear-host base 4x #1 (26.39 ms) against the head runs under 41% load (21.13-21.66 ms) is the like-for-like comparison.",
+      "audio": "Base played 351-361 (4x) and 288-315 (6x) cues per window through media elements with 2 SFX requests each; head started 353-359 (4x) and 358-367 (6x) buffer sources with no SFX requests inside the window.",
+      "summary": {
+        "mobile4x": {
+          "runs": 3,
+          "baseMeanMs": 37.43,
+          "headMeanMs": 22.8,
+          "deltaPct": -39.1,
+          "baseMeanMsPerRun": [
+            26.39,
+            45.48,
+            40.42
+          ],
+          "headMeanMsPerRun": [
+            21.66,
+            25.6,
+            21.13
+          ],
+          "baseP95Ms": [
+            34.8,
+            69.4,
+            62.5
+          ],
+          "headP95Ms": [
+            27.9,
+            34.9,
+            28
+          ],
+          "baseP99Ms": [
+            41.8,
+            90.3,
+            83.5
+          ],
+          "headP99Ms": [
+            41.7,
+            55.6,
+            41.7
+          ],
+          "baseSimSpeed": [
+            0.99,
+            0.961,
+            0.966
+          ],
+          "headSimSpeed": [
+            0.997,
+            0.994,
+            0.996
+          ],
+          "baseOver33Pct": [
+            17,
+            89.8,
+            79.1
+          ],
+          "headOver33Pct": [
+            4.8,
+            14,
+            4.7
+          ],
+          "baseContended": [
+            false,
+            true,
+            true
+          ],
+          "headContended": [
+            true,
+            true,
+            true
+          ],
+          "baseHostOtherBusyPct": [
+            20.9,
+            44.2,
+            43
+          ],
+          "headHostOtherBusyPct": [
+            40.9,
+            40.5,
+            40.8
+          ]
+        },
+        "mobile6x": {
+          "runs": 3,
+          "baseMeanMs": 84.42,
+          "headMeanMs": 42.68,
+          "deltaPct": -49.4,
+          "baseMeanMsPerRun": [
+            74.69,
+            88.91,
+            89.66
+          ],
+          "headMeanMsPerRun": [
+            40.39,
+            42.54,
+            45.12
+          ],
+          "baseP95Ms": [
+            104.2,
+            125.1,
+            104.3
+          ],
+          "headP95Ms": [
+            55.7,
+            62.5,
+            62.6
+          ],
+          "baseP99Ms": [
+            132,
+            159.7,
+            173.7
+          ],
+          "headP99Ms": [
+            76.5,
+            76.4,
+            83.3
+          ],
+          "baseSimSpeed": [
+            0.837,
+            0.718,
+            0.727
+          ],
+          "headSimSpeed": [
+            0.981,
+            0.977,
+            0.967
+          ],
+          "baseOver33Pct": [
+            100,
+            100,
+            100
+          ],
+          "headOver33Pct": [
+            89.3,
+            92.2,
+            98.2
+          ],
+          "baseContended": [
+            true,
+            true,
+            true
+          ],
+          "headContended": [
+            true,
+            true,
+            true
+          ],
+          "baseHostOtherBusyPct": [
+            38.1,
+            43,
+            42.9
+          ],
+          "headHostOtherBusyPct": [
+            39.6,
+            40.5,
+            40.6
+          ]
+        }
+      },
+      "runs": [
+        {
+          "run": "base-timing-mobile-4-1",
+          "build": "base-4f947386",
+          "cpu": 4,
+          "rep": 1,
+          "meanMs": 26.39,
+          "p50Ms": 27.7,
+          "p95Ms": 34.8,
+          "p99Ms": 41.8,
+          "worstMs": 118.1,
+          "over33Pct": 17,
+          "frames": 759,
+          "ticksAdvanced": 1227,
+          "simSpeed": 0.99,
+          "hostOtherBusyPct": 20.9,
+          "contended": false,
+          "audio": {
+            "mediaPlays": 351,
+            "sourceStarts": 0,
+            "sfxRequests": 2,
+            "sfxRequestsBeforeWindow": 20
+          }
+        },
+        {
+          "run": "base-timing-mobile-4-2",
+          "build": "base-4f947386",
+          "cpu": 4,
+          "rep": 2,
+          "meanMs": 45.48,
+          "p50Ms": 41.7,
+          "p95Ms": 69.4,
+          "p99Ms": 90.3,
+          "worstMs": 125,
+          "over33Pct": 89.8,
+          "frames": 441,
+          "ticksAdvanced": 1212,
+          "simSpeed": 0.961,
+          "hostOtherBusyPct": 44.2,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 361,
+            "sourceStarts": 0,
+            "sfxRequests": 2,
+            "sfxRequestsBeforeWindow": 12
+          }
+        },
+        {
+          "run": "base-timing-mobile-4-3",
+          "build": "base-4f947386",
+          "cpu": 4,
+          "rep": 3,
+          "meanMs": 40.42,
+          "p50Ms": 34.8,
+          "p95Ms": 62.5,
+          "p99Ms": 83.5,
+          "worstMs": 152.9,
+          "over33Pct": 79.1,
+          "frames": 498,
+          "ticksAdvanced": 1221,
+          "simSpeed": 0.966,
+          "hostOtherBusyPct": 43,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 358,
+            "sourceStarts": 0,
+            "sfxRequests": 2,
+            "sfxRequestsBeforeWindow": 11
+          }
+        },
+        {
+          "run": "head-timing-mobile-4-1",
+          "build": "head-c34d2a31",
+          "cpu": 4,
+          "rep": 1,
+          "meanMs": 21.66,
+          "p50Ms": 20.8,
+          "p95Ms": 27.9,
+          "p99Ms": 41.7,
+          "worstMs": 55.7,
+          "over33Pct": 4.8,
+          "frames": 930,
+          "ticksAdvanced": 1238,
+          "simSpeed": 0.997,
+          "hostOtherBusyPct": 40.9,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 357,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          }
+        },
+        {
+          "run": "head-timing-mobile-4-2",
+          "build": "head-c34d2a31",
+          "cpu": 4,
+          "rep": 2,
+          "meanMs": 25.6,
+          "p50Ms": 21,
+          "p95Ms": 34.9,
+          "p99Ms": 55.6,
+          "worstMs": 83.3,
+          "over33Pct": 14,
+          "frames": 781,
+          "ticksAdvanced": 1234,
+          "simSpeed": 0.994,
+          "hostOtherBusyPct": 40.5,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 353,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          }
+        },
+        {
+          "run": "head-timing-mobile-4-3",
+          "build": "head-c34d2a31",
+          "cpu": 4,
+          "rep": 3,
+          "meanMs": 21.13,
+          "p50Ms": 20.8,
+          "p95Ms": 28,
+          "p99Ms": 41.7,
+          "worstMs": 76.3,
+          "over33Pct": 4.7,
+          "frames": 955,
+          "ticksAdvanced": 1242,
+          "simSpeed": 0.996,
+          "hostOtherBusyPct": 40.8,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 359,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          }
+        },
+        {
+          "run": "base-timing-mobile-6-1",
+          "build": "base-4f947386",
+          "cpu": 6,
+          "rep": 1,
+          "meanMs": 74.69,
+          "p50Ms": 69.6,
+          "p95Ms": 104.2,
+          "p99Ms": 132,
+          "worstMs": 187.6,
+          "over33Pct": 100,
+          "frames": 269,
+          "ticksAdvanced": 1074,
+          "simSpeed": 0.837,
+          "hostOtherBusyPct": 38.1,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 315,
+            "sourceStarts": 0,
+            "sfxRequests": 2,
+            "sfxRequestsBeforeWindow": 9
+          }
+        },
+        {
+          "run": "base-timing-mobile-6-2",
+          "build": "base-4f947386",
+          "cpu": 6,
+          "rep": 2,
+          "meanMs": 88.91,
+          "p50Ms": 83.4,
+          "p95Ms": 125.1,
+          "p99Ms": 159.7,
+          "worstMs": 222.3,
+          "over33Pct": 100,
+          "frames": 227,
+          "ticksAdvanced": 941,
+          "simSpeed": 0.718,
+          "hostOtherBusyPct": 43,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 294,
+            "sourceStarts": 0,
+            "sfxRequests": 2,
+            "sfxRequestsBeforeWindow": 11
+          }
+        },
+        {
+          "run": "base-timing-mobile-6-3",
+          "build": "base-4f947386",
+          "cpu": 6,
+          "rep": 3,
+          "meanMs": 89.66,
+          "p50Ms": 83.4,
+          "p95Ms": 104.3,
+          "p99Ms": 173.7,
+          "worstMs": 291.8,
+          "over33Pct": 100,
+          "frames": 222,
+          "ticksAdvanced": 926,
+          "simSpeed": 0.727,
+          "hostOtherBusyPct": 42.9,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 288,
+            "sourceStarts": 0,
+            "sfxRequests": 2,
+            "sfxRequestsBeforeWindow": 9
+          }
+        },
+        {
+          "run": "head-timing-mobile-6-1",
+          "build": "head-c34d2a31",
+          "cpu": 6,
+          "rep": 1,
+          "meanMs": 40.39,
+          "p50Ms": 34.8,
+          "p95Ms": 55.7,
+          "p99Ms": 76.5,
+          "worstMs": 111.3,
+          "over33Pct": 89.3,
+          "frames": 495,
+          "ticksAdvanced": 1229,
+          "simSpeed": 0.981,
+          "hostOtherBusyPct": 39.6,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 358,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          }
+        },
+        {
+          "run": "head-timing-mobile-6-2",
+          "build": "head-c34d2a31",
+          "cpu": 6,
+          "rep": 2,
+          "meanMs": 42.54,
+          "p50Ms": 41.7,
+          "p95Ms": 62.5,
+          "p99Ms": 76.4,
+          "worstMs": 111.1,
+          "over33Pct": 92.2,
+          "frames": 472,
+          "ticksAdvanced": 1239,
+          "simSpeed": 0.977,
+          "hostOtherBusyPct": 40.5,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 366,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          }
+        },
+        {
+          "run": "head-timing-mobile-6-3",
+          "build": "head-c34d2a31",
+          "cpu": 6,
+          "rep": 3,
+          "meanMs": 45.12,
+          "p50Ms": 41.7,
+          "p95Ms": 62.6,
+          "p99Ms": 83.3,
+          "worstMs": 97.4,
+          "over33Pct": 98.2,
+          "frames": 447,
+          "ticksAdvanced": 1240,
+          "simSpeed": 0.967,
+          "hostOtherBusyPct": 40.6,
+          "contended": true,
+          "audio": {
+            "mediaPlays": 0,
+            "sourceStarts": 367,
+            "sfxRequests": 0,
+            "sfxRequestsBeforeWindow": 35
+          }
+        }
+      ]
+    }
+  }
 }
