@@ -376,6 +376,15 @@ test('every new endpoint fails closed with no env at all and never throws', asyn
     assert.match(page.headers['content-type'], /^text\/html/);
     assert.equal(page.headers['cache-control'], 'no-store');
     assert.match(page.text, /<meta name="twitter:site" content="@LestersArcade">/);
+    // free-share (E12, E13): the Free page and card need no env at all; the URL is the record.
+    const [freeCardApi, freePageApi, { encodeFreeShareToken }] = await Promise.all([import('../api/free-card.mjs'), import('../api/free-share-page.mjs'), import('../apps/portal/src/free-share-token.mjs')]);
+    const token = encodeFreeShareToken('stacked', { score: 4200, lines: 40, level: 5, quadClears: 1, maxCombo: 3, survivalSeconds: 300 });
+    const freePage = await invokeHtml(bare(freePageApi), { url: `/api/free-share-page?game=stacked&token=${token}` });
+    assert.equal(freePage.status, 200, freePage.text);
+    assert.match(freePage.text, /<meta name="twitter:site" content="@LestersArcade">/);
+    assert.match(freePage.text, /4,200 pts in STACKED · Free Play/);
+    const freeCard = await invokeHtml(bare(freeCardApi), { method: 'HEAD', url: `/api/free-card?game=stacked&token=${token}` });
+    assert.deepEqual([freeCard.status, freeCard.headers['content-type']], [200, 'image/png']);
   } finally {
     console.error = original;
   }

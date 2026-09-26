@@ -133,6 +133,8 @@ test('same-origin API requests stay outside the worker', async () => {
     ['/api/profile?wallet=0x1111111111111111111111111111111111111111&self=1', { cache: 'no-store' }],
     [`/api/session/${'ab'.repeat(32)}`, {}],
     [`/api/share-card/${'ab'.repeat(32)}.png?v=0123456789ab`, { destination: 'image' }],
+    // free-share: the Free card is fetched same-origin for the native file share; never from the worker cache.
+    [`/api/free-card/stacked/as${'0'.repeat(32)}.png`, { destination: 'image' }],
     ['/api/settle/status?sessionId32=0x00', { mode: 'navigate' }],
     ['/api', {}],
   ]) {
