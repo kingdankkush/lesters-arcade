@@ -3858,9 +3858,12 @@ async function boot() {
       const currentAutomaticTargetIds = grayboxEnemies.filter(enemy => enemy.active && enemy.health > 0
         && (enemy.disposition !== 'ambient' || enemy.provoked === true || enemy.eventHostile === true)).map(enemy => enemy.id).sort();
       if (liquidatorBoss.active && liquidatorBoss.health > 0 && tick >= liquidatorBoss.startTick) currentAutomaticTargetIds.push(liquidatorBoss.id);
+      // Same start-tick gate as every other boss list: a dormant Liquidator is
+      // not in the combat resolver, so a Burner or Ledger hit on it threw and
+      // stopped the ticker (real-run r19, tick 8306).
       const lightningTargets = [
         ...grayboxEnemies.filter((enemy) => enemy.active),
-        ...(liquidatorBoss.active && liquidatorBoss.health > 0 ? [liquidatorBoss] : []),
+        ...(liquidatorBoss.active && liquidatorBoss.health > 0 && tick >= liquidatorBoss.startTick ? [liquidatorBoss] : []),
       ];
 
       // Owner direction 2026-09-16: SWAP cycles the carried weapons and a
