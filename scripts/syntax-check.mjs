@@ -377,6 +377,7 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/world-design-spatial.mjs",
   "tests/hmh-automatic-actions.test.mjs",
   "tests/hmh-burner-runtime-causality.test.mjs",
+  "tests/hmh-runtime-crash-guards.test.mjs",
   "tests/hmh-simple-controls.test.mjs",
   "tests/hmh-world-design-exploration.test.mjs",
   "tests/hmh-world-design-field-map.test.mjs",

@@ -98,8 +98,12 @@ export function createLightningLedgerState({ cellsRemaining = LIGHTNING_LEDGER_C
   };
 }
 
+// A refill may land while a channel is live: an ammo reward taken with the beam
+// held, or after a pickup switched weapons mid-beam (that threw and stopped the
+// ticker in real-run r21, tick 16409). It only tops up the cells: the channel
+// keeps its start, drain clock and overheat cap, so a refill can never stretch
+// one channel past overheatTicks.
 export function refillLightningLedgerCells(state, cells = LIGHTNING_LEDGER_CONFIG.cellSegments) {
-  if (state?.active) throw new Error('cannot refill Lightning Ledger while channeling');
   if (!Number.isInteger(cells) || cells < 0 || cells > LIGHTNING_LEDGER_CONFIG.cellSegments) {
     throw new TypeError(`cells must be an integer from zero to ${LIGHTNING_LEDGER_CONFIG.cellSegments}`);
   }
