@@ -21,7 +21,7 @@ let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTi
 const pauseClock = createStackedPauseClock();
 const sfx = createStackedSoundEffects();
 let preview = null;
-// Set from the init settings: a pre-preset (1.8.1) host must never be sent the preset keys.
+// Set from the init settings: a pre-preset (1.8.1-1.8.3) host must never be sent the preset keys.
 let parentPresets = false;
 // One settings card (settings simplification 2026-09-24). Every choice is a
 // presentation preference the parent validates, applies and saves under its
