@@ -3,7 +3,7 @@
 //
 //   node scripts/rehearse-jackpot-week.mjs [--only R1,R13,...] [--out <path>] [--no-write] [--json]
 //
-// Runs scenarios R1-R20 (plus the R3 and R13 variants) on ONE local jackpot stack
+// Runs scenarios R0 (the soft-launch week) and R1-R20 (plus the R3, R12 and R13 variants) on ONE local jackpot stack
 // (scripts/lib/jackpot-rehearsal-driver.mjs): the in-process Hardhat chain, PGlite and every api/*.mjs
 // handler mounted as production mounts it, with the chain and server clocks moved together. Each scenario
 // takes the next unused week(s), plays real Ranked runs through the real endpoints (seed tickets logged,
@@ -16,7 +16,12 @@
 // The receipt, docs/qa/jackpot-rehearsal-<YYYYMMDD>.json (schema lesters-jackpot-rehearsal-v2), records per
 // scenario: every check, the week keys, the transactions by role, the keeper's gas, the final balances,
 // the invariant and `expectedMisses` (runs the screen is known not to catch: design §B.5; R16 is one, and
-// it is not a failure). `productBugs` lists anything a scenario exposed in the product, with its fix.
+// it is not a failure). `productBugs` lists anything a scenario exposed in the product, with its fix;
+// `designFindings` lists couplings the design or another owner must take up (routed, with what was fixed
+// here). Provenance: `head` and `dirty` (the tree the run used), `inputs` (the sha256 of this script, the
+// driver and scripts/lib/local-jackpot.mjs, which tests/jackpot-rehearsal.test.mjs checks, so any change to
+// them needs a re-run) and `productSha256` (the jackpot product files the run proved, recorded only: after
+// a product change, re-run and commit a new receipt).
 //
 // Safety: local only. No LiteForge transaction, no Vercel change, no production Neon, never the vault.
 // JACKPOT_LIVE is not touched.
@@ -29,7 +34,7 @@ import { fileURLToPath } from 'node:url';
 import { ethers } from 'ethers';
 
 import {
-  DAY, DROPPED_AFTER_SECONDS, HOUR, MINUTE, TEST_WALLET, TOKEN, jackpotContract, revertReasonOf, startJackpotStack,
+  DAY, DROPPED_AFTER_SECONDS, HOUR, MINUTE, TEST_WALLET, TOKEN, callRevert, jackpotContract, revertReasonOf, startJackpotStack,
 } from './lib/jackpot-rehearsal-driver.mjs';
 import { attestLocalRun, deployLocalJackpot, deployMockToken, launchRules, openLocalSession } from './lib/local-jackpot.mjs';
 import { startLocalHttp } from './lib/local-http.mjs';
@@ -47,13 +52,25 @@ import { dateRangeLabel } from '../server/jackpot/weeks.mjs';
 import { fakeDocument, visibleText } from '../tests/helpers/jackpot-fake-dom.mjs';
 import { buildChikunEvidence } from '../tests/fixtures/ranked/build-fixtures.mjs';
 import { flapTicksOf, simulateChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../server/config.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 
 export const REHEARSAL_RECEIPT_SCHEMA = 'lesters-jackpot-rehearsal-v2';
 export const REHEARSAL_SCRIPT_RELATIVE_PATH = 'scripts/rehearse-jackpot-week.mjs';
-// The subset tests/jackpot-rehearsal.test.mjs runs inside npm test (brief AC3).
-export const FAST_SUBSET = Object.freeze(['R1', 'R3a', 'R5', 'R10', 'R13', 'R15', 'R17']);
+// The rehearsal's own code: a receipt belongs to exactly these files (tests/jackpot-rehearsal.test.mjs).
+export const REHEARSAL_INPUTS = Object.freeze([REHEARSAL_SCRIPT_RELATIVE_PATH, 'scripts/lib/jackpot-rehearsal-driver.mjs', 'scripts/lib/local-jackpot.mjs']);
+// The jackpot product the rehearsal exercises (recorded in the receipt as one digest, not enforced).
+export const REHEARSAL_PRODUCT_FILES = Object.freeze([
+  'contracts/src/WeeklyJackpot.sol', 'api/jackpot.mjs', 'api/jackpot-review.mjs', 'api/jackpot-replay.mjs', 'api/cron/weekly-jackpot.mjs',
+  'server/jackpot/api-model.mjs', 'server/jackpot/chain.mjs', 'server/jackpot/cron.mjs', 'server/jackpot/errors.mjs', 'server/jackpot/indexer.mjs',
+  'server/jackpot/keeper.mjs', 'server/jackpot/plausibility.mjs', 'server/jackpot/review-model.mjs', 'server/jackpot/screen.mjs', 'server/jackpot/select.mjs',
+  'server/jackpot/store.mjs', 'server/jackpot/ticket-log.mjs', 'server/jackpot/weeks.mjs', 'server/ops/health.mjs', 'scripts/jackpot-actions.mjs', 'scripts/jackpot-ops.mjs',
+  'apps/portal/src/jackpot/jackpot-client.mjs', 'apps/portal/owner/jackpot-review-model.mjs',
+]);
+// The subset tests/jackpot-rehearsal.test.mjs runs inside npm test (brief AC3, plus R0: the soft-launch
+// epoch runbook E9 plays first on LiteForge).
+export const FAST_SUBSET = Object.freeze(['R0', 'R1', 'R3a', 'R5', 'R10', 'R13', 'R15', 'R17']);
 export const receiptPathFor = (yyyymmdd) => `docs/qa/jackpot-rehearsal-${yyyymmdd}.json`;
 
 const lower = (value) => String(value ?? '').toLowerCase();
@@ -95,6 +112,7 @@ function createScenarioContext(js, spec, { log }) {
     checks,
     weeks,
     expectedMisses: [],
+    designFindings: [],
     notes: [],
     balances: [],
     instances: [],
@@ -111,6 +129,10 @@ function createScenarioContext(js, spec, { log }) {
     },
     note(text) {
       ctx.notes.push(text);
+    },
+    // A coupling the design or another owner must take up, routed from here (never a failed check).
+    designFinding(finding) {
+      ctx.designFindings.push({ scenario: spec.id, status: 'routed', ...finding });
     },
     // A token balance reported in the receipt at the end of the scenario.
     balance(label, address, token = js.tokenAddress) {
@@ -186,6 +208,7 @@ export async function runScenario(js, spec, { log = () => {} } = {}) {
     finalBalances,
     invariant: invariants,
     expectedMisses: ctx.expectedMisses,
+    designFindings: ctx.designFindings,
     notes: ctx.notes,
     durationMs: Date.now() - started,
     ...(failed ? { failure: failed } : {}),
@@ -310,7 +333,61 @@ function inProcessFetch(js) {
 }
 
 // ---------------------------------------------------------------------------------------------------
-// Scenarios R1-R12.
+// Scenarios R0-R12.
+
+// R0: the soft-launch week (runbook E9, the first week that will run on LiteForge). The launch rules make
+// the first epoch adminClearOnly = true: the keeper selects, screens and submits but never clears; at
+// C + 24 h the week waits for the admin (finalize reverts LEADER_NOT_CLEARED, a keeper clear reverts
+// REVIEW_LOCKED), the admin clears the top eligible run from the owner page's encoding, and it is paid.
+async function r0(ctx) {
+  const { js } = ctx;
+  const W = ctx.week(await js.beginFirstWeek());
+  ctx.check('first-week', W === js.firstWeek, { week: js.weekKey(W), firstWeek: js.weekKey(js.firstWeek) });
+  ctx.check('rules-admin-clear-only', (await js.jackpot.rulesFor(W)).adminClearOnly === true && (await js.jackpot.rulesFor(W + 1)).adminClearOnly === false);
+  ctx.check('fund-10000', (await js.fund(W, tokens(10_000))).ok);
+  const [a, b] = await js.freshWallets(2, 'R0 player');
+  const runs = [
+    await js.playRankedChikunRun({ player: a, openedAt: js.at(W, 'start', DAY), maxMinutes: 1.0 }),
+    await js.playRankedChikunRun({ player: b, openedAt: js.at(W, 'start', 2 * DAY), maxMinutes: 0.5 }),
+  ];
+  const top = topOf(runs);
+  await js.runJackpotCron(1);
+  const open = await js.jackpotApi();
+  ctx.check('api-soft-launch-week', open.api?.current?.weekKey === js.weekKey(W) && open.api.current.rules.adminClearOnly === true && open.api.current.pot.funded === true, open.body?.current && { rules: open.body.current.rules, pot: open.body.current.pot });
+  // C + 2 h: the keeper selects, screens and submits, and never creates a clear.
+  await toSelection(ctx, W);
+  const chain = await js.chainWeek(W);
+  ctx.check('keeper-lists', chain.list.length === 2 && chain.list[0].sessionId32 === top.sessionId32, chain.list);
+  const rows = await js.candidateRows(W);
+  ctx.check('keeper-screens-pass', rows.length === 2 && rows.every((row) => row.source === 'keeper' && row.screen === 'pass' && row.onChain), rows.map((row) => [row.source, row.screen, row.onChain, row.review]));
+  const actions = await js.actionRows(W);
+  ctx.check('keeper-never-clears', actions.length === 2 && actions.every((action) => action.kind === 'submit' && action.status === 'confirmed'), actions.map((action) => [action.kind, action.status, action.lastError]));
+  ctx.check('nothing-cleared-on-chain', (await Promise.all(runs.map((run) => js.review(run.sessionId32)))).every((review) => review === 'none'));
+  const keeperClear = await callRevert(js.provider, { from: js.keeperWallet.address, ...js.jackpotCall('clear', [top.sessionId32]) });
+  ctx.check('keeper-clear-reverts-review-locked', keeperClear === 'REVIEW_LOCKED', keeperClear);
+  await toReview(ctx, W);
+  const row = await toPayout(ctx, W, { statuses: ['awaiting-admin'], id: 'awaiting-admin' });
+  ctx.check('admin-waiting-since', row.adminWaitingSince !== null);
+  const outsider = await stranger(ctx);
+  const blocked = await js.sendReverting(outsider, js.jackpotCall('finalize', [W]));
+  ctx.check('finalize-reverts-leader-not-cleared', blocked.reason === 'LEADER_NOT_CLEARED' && blocked.minedStatus === 0, blocked);
+  const health = await js.health();
+  ctx.check('status-page-warns', health.jackpot?.awaitingAdmin >= 1 && jackpotWarnings(health.jackpot).some((warning) => warning.id === 'jackpot-awaiting-admin'), health.jackpot);
+  const { previous } = await apiPrevious(ctx, W);
+  ctx.check('api-awaiting-admin', previous?.status === 'awaiting-admin' && previous.winner === null, previous && { status: previous.status, winner: previous.winner });
+  // The admin reviews the week (GET /api/jackpot/review) and clears the top eligible run.
+  const review = await js.reviewApi(W);
+  const model = normalizeReview(review.body);
+  ctx.check('review-api', review.status === 200 && model?.candidates.length === 2 && model.candidates.some((candidate) => candidate.sessionId === top.sessionId32), { status: review.status });
+  const cleared = await js.admin('clear', { sessionId: top.sessionId32 });
+  ctx.check('admin-clears-top', cleared.ok && (await js.jackpot.adminReviewed(top.sessionId32)) === true, cleared.reason);
+  const before = await js.tokenBalance(top.wallet);
+  const paidRuns = await js.cronUntil(async () => (await js.weekRow(W)).status === 'paid', { max: 4 });
+  ctx.check('paid-after-admin-clear', paidRuns !== null && paidRuns <= 3, { runs: paidRuns });
+  await expectPaid(ctx, W, top, tokens(10_000), { before });
+  ctx.check('other-never-cleared', (await js.review(runs.find((run) => run !== top).sessionId32)) === 'none');
+  ctx.balance('funder', js.wallets.funder.address);
+}
 
 async function r1(ctx) {
   const { js } = ctx;
@@ -876,6 +953,52 @@ async function r12(ctx) {
   ctx.check('stray-swept', swept.receipts.length === 1 && (await js.tokenBalance(recipient)) - before === tokens(50));
 }
 
+// R12d: a dust week, 0 < pot < minFundWei (rev. 2 X4: funded means total >= minFundWei, never > 0). An
+// unwon week funded with the minimum rolls 100 tCHIKUN into a week whose rules (scheduled the week before)
+// ask for 150; an eligible run in it wins nothing: unfunded, no keeper transaction, no amount anywhere.
+async function r12d(ctx) {
+  const { js } = ctx;
+  const W1 = Math.max(js.currentWeek() + 1, (js.lastUsedWeek ?? 0) + 1);
+  const W2 = W1 + 1;
+  const raised = await js.operatorAction('schedule-rules', { argv: ['--from-week', String(W2), '--min-fund', '150'] });
+  const restored = await js.operatorAction('schedule-rules', { argv: ['--from-week', String(W2 + 1), '--min-fund', '100'] });
+  ctx.check('rules-scheduled', raised.receipts.length === 1 && restored.receipts.length === 1);
+  ctx.week(await js.beginWeek());
+  ctx.check('week', js.currentWeek() === W1);
+  ctx.check('fund-w1-minimum', (await js.fund(W1, tokens(100))).ok);
+  // Nobody plays W1: the keeper finalizes the empty leader at C + 24 h and the pot rolls into W2.
+  await toSelection(ctx, W1);
+  await toReview(ctx, W1);
+  await toPayout(ctx, W1, { statuses: ['rolled'], id: 'w1-rolled' });
+  ctx.week(W2);
+  const pot = (await js.chainWeek(W2)).pot;
+  const minFund = BigInt((await js.jackpot.rulesFor(W2)).minFundWei);
+  ctx.check('dust-pot', pot.total === tokens(100) && pot.carriedIn === tokens(100) && minFund === tokens(150) && pot.total > 0n && pot.total < minFund, { pot, minFund });
+  const keeper = js.keeperWallet.address;
+  const nonce = await js.nonceOf(keeper);
+  const [player] = await js.freshWallets(1, 'R12d player');
+  const run = await js.playRankedChikunRun({ player, openedAt: js.at(W2, 'start', 2 * DAY), maxMinutes: 1.0 });
+  ctx.check('run-eligible-on-chain', (await js.checkEligibility(run.sessionId32)).ok === true);
+  await js.runJackpotCron(1);
+  const open = await js.jackpotApi();
+  ctx.check('api-dust-unfunded', open.api?.current?.weekKey === js.weekKey(W2) && open.api.current.pot.funded === false && open.api.current.pot.totalWei === tokens(100).toString() && open.api.current.pot.carriedInWei === tokens(100).toString() && open.api.current.rules.minFundWei === tokens(150).toString(), open.body?.current && { pot: open.body.current.pot, rules: open.body.current.rules });
+  ctx.check('ui-renders-no-amount', currentPrize(open.api) === null);
+  const tease = buildChikunJackpotTease(open.api, Date.parse(open.api.serverTime));
+  ctx.check('child-says-no-prize', tease?.rewards === 'Weekly Jackpot: no prize funded this week' && !/\d/.test(tease.rewards), tease);
+  await js.advanceTo(js.at(W2, 'close', 2 * HOUR + MINUTE));
+  await js.runJackpotCron(1);
+  ctx.check('unfunded', (await js.weekRow(W2)).status === 'unfunded');
+  await js.advanceTo(js.at(W2, 'payoutAt', HOUR));
+  await js.runJackpotCron(2);
+  ctx.check('zero-keeper-transactions', (await js.nonceOf(keeper)) === nonce && (await js.actionRows(W2)).length === 0 && (await js.candidateRows(W2)).length === 0, { nonceDelta: (await js.nonceOf(keeper)) - nonce });
+  const { previous } = await apiPrevious(ctx, W2);
+  ctx.check('api-previous-unfunded', previous?.status === 'unfunded' && previous.pot.funded === false && previous.pot.totalWei === tokens(100).toString() && previous.prizeWei === null && previous.winner === null, previous);
+  const profile = await js.profile(run.wallet);
+  const share = await js.api('GET', `/s/${shareIdFor(run.sessionId32)}`);
+  ctx.check('no-champion', (await js.chainWeek(W2)).status === 'open' && (profile?.jackpot?.wins ?? []).length === 0 && share.status === 200 && !String(share.body).includes('Weekly Jackpot Champion'), { wins: profile?.jackpot?.wins ?? null, share: share.status });
+  ctx.note('The dust stays attributed to its week on chain (a liability): anyone may finalize it later and it carries on; the keeper never spends gas on it.');
+}
+
 // ---------------------------------------------------------------------------------------------------
 // Scenarios R13-R20 (the adversarial set).
 
@@ -918,6 +1041,18 @@ async function sybilWeek(ctx, { variant }) {
   }
   await toReview(ctx, W);
   await js.advanceTo(js.at(W, 'close', 11 * HOUR + 59 * MINUTE));
+  // Variant: a screening backlog. The owner re-screens every honest candidate row just before the attack,
+  // so at least five keeper rows wait for a screen when the decoys land (the keeper screens five rows per
+  // week per run). Design §C.4 screens on-chain rows first: the decoys must take all five screens.
+  const backlog = [];
+  if (variant) {
+    for (const row of (await js.candidateRows(W)).filter((candidate) => honest.some((run) => run.sessionId32 === candidate.sessionId32))) {
+      // eslint-disable-next-line no-await-in-loop
+      const out = await js.jackpotOps(['rescreen', '--session', row.sessionId32, '--apply', '--confirm', 'RESCREEN_JACKPOT']);
+      if (out.exitCode === 0) backlog.push(row.sessionId32);
+    }
+    ctx.check('screening-backlog', backlog.length >= 5, { rescreened: backlog.length });
+  }
   const attempts = [];
   for (const run of decoys) {
     // eslint-disable-next-line no-await-in-loop
@@ -940,8 +1075,17 @@ async function sybilWeek(ctx, { variant }) {
     decoyActions: (await js.actionRows(W)).filter((action) => decoyIds.has(action.sessionId32)).map((action) => [action.kind, action.status, action.lastError]),
     honest: ranked.map((run) => [js.label(run.wallet), run.score]),
   });
-  const screened = await js.cronUntil(async () => (await Promise.all(decoys.map((run) => js.review(run.sessionId32)))).every((review) => review === 'flagged'), { max: 4 });
-  ctx.check('decoys-screened-first-and-flagged', screened !== null, { runs: screened });
+  if (variant) {
+    // The first run after the attack: the index lists the decoys on chain and marks the honest rows
+    // displaced; the five screens go to the on-chain decoys, the keeper backlog waits.
+    const [first] = await js.runJackpotCron(1);
+    const rows = await js.candidateRows(W);
+    const decoyScreens = rows.filter((row) => decoyIds.has(row.sessionId32)).map((row) => row.screen);
+    const backlogScreens = rows.filter((row) => backlog.includes(row.sessionId32)).map((row) => row.screen);
+    ctx.check('decoys-screened-before-backlog', first.status === 200 && decoyScreens.length === 5 && decoyScreens.every((screen) => screen === 'hold') && backlogScreens.every((screen) => screen === 'pending'), { decoys: decoyScreens, backlog: backlogScreens });
+  }
+  const flagged = await js.cronUntil(async () => (await Promise.all(decoys.map((run) => js.review(run.sessionId32)))).every((review) => review === 'flagged'), { max: 4 });
+  ctx.check('decoys-flagged', flagged !== null, { runs: flagged });
   const decoyRows = (await js.candidateRows(W)).filter((row) => decoyIds.has(row.sessionId32));
   ctx.check('decoys-held', decoyRows.every((row) => row.screen === 'hold' && row.screenCodes.some((code) => ['H4', 'H5', 'H6'].includes(code))), decoyRows.map((row) => row.screenCodes));
   // The admin disqualifies every decoy wallet for the week (multi-wallet), freeing the slots.
@@ -950,15 +1094,15 @@ async function sybilWeek(ctx, { variant }) {
     const done = await js.admin('disqualify', { sessionId: run.sessionId32, wholeWalletForWeek: true, reason: 'multi-wallet' });
     ctx.check(`disqualify-${js.label(run.wallet)}`, done.ok, done.reason);
   }
+  // The keeper re-lists the displaced honest rows (both variants: in R13v after a public C + 11 h 59 min
+  // displacement), within a bounded number of runs, after the public window and before payout − 2 h.
+  const relisted = await js.cronUntil(async () => {
+    const list = (await js.chainWeek(W)).list.map((row) => row.sessionId32);
+    return list.length === 5 && top5.every((run) => list.includes(run.sessionId32));
+  }, { max: 8 });
+  ctx.check('keeper-relists-honest', relisted !== null, { runs: relisted, listed: (await js.chainWeek(W)).list.map((row) => js.label(row.player)) });
+  await relistTiming(ctx, W, top5, { probeMargin: !variant });
   if (!variant) {
-    const relisted = await js.cronUntil(async () => {
-      const list = (await js.chainWeek(W)).list.map((row) => row.sessionId32);
-      return list.length === 5 && top5.every((run) => list.includes(run.sessionId32));
-    }, { max: 8 });
-    ctx.check('keeper-relists-honest', relisted !== null, { runs: relisted });
-    ctx.check('relists-before-payout-minus-2h', js.now() < js.at(W, 'payoutAt', -2 * HOUR));
-    const relistActions = (await js.actionRows(W)).filter((action) => action.kind === 'submit' && top5.some((run) => run.sessionId32 === action.sessionId32));
-    ctx.check('relist-actions-confirmed', relistActions.every((action) => action.status === 'confirmed'), relistActions.map((action) => [action.status, action.lastError]));
     const leader = top5[0];
     const before = await js.tokenBalance(leader.wallet);
     await toPayout(ctx, W);
@@ -969,7 +1113,6 @@ async function sybilWeek(ctx, { variant }) {
   }
   // Variant: the honest #1-#5 are also disqualified (for the rehearsal: reason 'other'), the list is empty,
   // and the honest #6, never listed, is added by adminSubmit and paid.
-  await js.cronUntil(async () => (await js.chainWeek(W)).list.length === 5, { max: 6 });
   for (const run of top5) {
     // eslint-disable-next-line no-await-in-loop
     const done = await js.admin('disqualify', { sessionId: run.sessionId32, wholeWalletForWeek: true, reason: 'other' });
@@ -987,6 +1130,40 @@ async function sybilWeek(ctx, { variant }) {
   const before = await js.tokenBalance(sixth.wallet);
   await toPayout(ctx, W);
   await expectPaid(ctx, W, sixth, tokens(5_000), { before });
+}
+
+// The keeper's re-list submits land before payout − 2 h, as the design's relist row asks, and those after the
+// public window (C + 12 h) come back through the wasListed exception (only a row listed before may). With
+// `probeMargin`, the chain's own side of the margin: a listed-before row is accepted at payout − 2 h − 1 s
+// (ALREADY_CANDIDATE: past the window check) and refused at payout − 2 h (WINDOW_CLOSED).
+async function relistTiming(ctx, W, rows, { probeMargin = false } = {}) {
+  const { js } = ctx;
+  const actions = (await js.actionRows(W)).filter((action) => action.kind === 'submit' && rows.some((run) => run.sessionId32 === action.sessionId32));
+  const times = [];
+  for (const action of actions) {
+    // eslint-disable-next-line no-await-in-loop
+    const receipt = action.txHash ? await js.provider.getTransactionReceipt(action.txHash) : null;
+    // eslint-disable-next-line no-await-in-loop
+    times.push(receipt ? Number((await js.provider.getBlock(receipt.blockNumber)).timestamp) : null);
+  }
+  const close = js.at(W, 'close');
+  const candidateUntil = js.at(W, 'candidateUntil');
+  const deadline = js.at(W, 'payoutAt', -2 * HOUR);
+  ctx.check('relist-actions-confirmed', actions.length === rows.length && actions.every((action) => action.status === 'confirmed'), actions.map((action) => [action.status, action.lastError]));
+  // Every re-list lands before payout − 2 h; those after C + 12 h (the public window) used the wasListed
+  // exception, which only the keeper's displaced rows have.
+  const detail = {
+    relistedAtHoursAfterClose: times.map((at) => (at === null ? null : Number(((at - close) / HOUR).toFixed(2)))), candidateUntilHours: (candidateUntil - close) / HOUR, deadlineHours: (deadline - close) / HOUR,
+  };
+  ctx.check('relists-before-payout-minus-2h', times.length === rows.length && times.every((at) => at !== null && at < deadline), detail);
+  ctx.check('relists-after-window-use-was-listed', times.some((at) => at !== null && at >= candidateUntil), detail);
+  if (!probeMargin) return;
+  const probe = rows[0];
+  await js.advanceTo(deadline - 1, { mine: false });
+  const open = await callRevert(js.provider, { from: js.keeperWallet.address, ...js.jackpotCall('submitCandidate', [probe.sessionId32]) });
+  await js.advanceTo(deadline, { mine: false });
+  const closed = await callRevert(js.provider, { from: js.keeperWallet.address, ...js.jackpotCall('submitCandidate', [probe.sessionId32]) });
+  ctx.check('relist-margin-enforced-by-chain', open === 'ALREADY_CANDIDATE' && closed === 'WINDOW_CLOSED', { atDeadlineMinus1s: open, atDeadline: closed });
 }
 
 // Evidence just above `leaderScore` on this seed: an expert-bot run truncated after the fewest flaps that
@@ -1091,6 +1268,13 @@ async function r16(ctx) {
   });
 }
 
+// R17: stale keeper actions never override the admin. The keeper's flag of the leader is signed and
+// recorded, then dropped (never broadcast). The owner re-screens the leader before any admin decision. In
+// the next cron run the index sees no admin decision and the screen re-holds the leader; then, mid-run,
+// after the index and the screen, the admin's clear lands (a keeperFault hook at the run's first broadcast
+// sends it, without throwing): exactly the race the pre-send check exists for. Action ids are per week,
+// kind and session, so the re-held flag and the dropped one are one action row: re-signed after the
+// receipt window, it ends skipped/review-locked by the pre-send check and never reaches the chain.
 async function r17(ctx) {
   const { js } = ctx;
   const W = ctx.week(await js.beginWeek());
@@ -1102,23 +1286,34 @@ async function r17(ctx) {
   const keeper = js.keeperWallet.address;
   const startBlock = await js.blockNumber();
   await js.advanceTo(js.at(W, 'close', 2 * HOUR + MINUTE));
-  // The keeper's flag of the leader is signed and recorded, then dropped (never reaches the chain).
+  // Run 1: the keeper's flag of the leader is signed and recorded, then dropped (never reaches the chain).
   const drop = js.faultOnce({ stage: 'after-cas', kind: 'flag', sessionId32: leader.sessionId32 });
   const [killed] = await js.runJackpotCron(1, { fault: drop });
   ctx.check('flag-dropped', killed.status === 500 && drop.state.fired?.kind === 'flag' && (await js.provider.getTransaction(drop.state.fired.txHash)) === null, drop.state.fired);
   const flagRow = (await js.candidateRows(W)).find((row) => row.sessionId32 === leader.sessionId32);
   ctx.check('held-h9', flagRow?.screen === 'hold' && flagRow.screenCodes.includes('H9'), flagRow?.screenCodes);
-  // The admin reviews the flagged leader (a documented pause explains H9) and clears it.
-  const cleared = await js.admin('clear', { sessionId: leader.sessionId32 });
-  ctx.check('admin-clears', cleared.ok && (await js.jackpot.adminReviewed(leader.sessionId32)) === true, cleared.reason);
-  // The owner then re-screens it before the mirror has seen the admin's clear.
+  // The owner re-screens the leader while no admin decision exists (the mirror is current, and right).
+  ctx.check('no-admin-decision-yet', (await js.jackpot.adminReviewed(leader.sessionId32)) === false && (await js.review(leader.sessionId32)) === 'none');
   const rescreen = await js.jackpotOps(['rescreen', '--session', leader.sessionId32, '--apply', '--confirm', 'RESCREEN_JACKPOT']);
-  ctx.check('rescreen-applied-on-stale-mirror', rescreen.exitCode === 0 && rescreen.out.some((line) => line.startsWith('applied')), rescreen.out);
+  ctx.check('rescreen-applied', rescreen.exitCode === 0 && rescreen.out.some((line) => line.startsWith('applied')), rescreen.out);
+  // Run 2, 5 min later: the admin's clear lands after the index and the screen, at the first broadcast.
+  const race = { snapshot: null, clear: null, stage: null };
+  const landAdminClear = async (stage) => {
+    if (race.clear || stage !== 'after-broadcast') return;
+    const row = (await js.candidateRows(W)).find((candidate) => candidate.sessionId32 === leader.sessionId32);
+    race.stage = stage;
+    race.snapshot = { screen: row?.screen ?? null, screenedAt: row?.screenedAt ?? null, mirrorAdminReviewed: row?.adminReviewed ?? null, chainReview: await js.review(leader.sessionId32), chainAdminReviewed: await js.jackpot.adminReviewed(leader.sessionId32) };
+    race.clear = await js.admin('clear', { sessionId: leader.sessionId32 });
+  };
+  await js.advanceBy(5 * MINUTE);
+  const [raced] = await js.runJackpotCron(1, { fault: landAdminClear });
+  ctx.check('stale-screen-before-admin-clear', raced.status === 200 && race.snapshot?.screen === 'hold' && race.snapshot.screenedAt !== null && race.snapshot.mirrorAdminReviewed === false && race.snapshot.chainAdminReviewed === false, race.snapshot);
+  ctx.check('admin-clears-mid-run', race.clear?.ok === true && (await js.jackpot.adminReviewed(leader.sessionId32)) === true && (await js.review(leader.sessionId32)) === 'cleared', race.clear && { ok: race.clear.ok, reason: race.clear.reason });
   await drainKeeper(ctx, W, { max: 6 });
   const actions = (await js.actionRows(W)).filter((action) => action.sessionId32 === leader.sessionId32);
   const flag = actions.find((action) => action.kind === 'flag');
   ctx.check('dropped-flag-resigned-then-skipped', flag?.status === 'skipped' && flag.lastError === 'review-locked' && flag.infraFailures >= 1, flag);
-  ctx.check('rescreen-created-no-review-action', !actions.some((action) => action.kind === 'clear') && actions.filter((action) => action.kind === 'flag').length === 1, actions.map((action) => [action.kind, action.status, action.lastError]));
+  ctx.check('one-flag-action-no-clear', !actions.some((action) => action.kind === 'clear') && actions.filter((action) => action.kind === 'flag').length === 1, actions.map((action) => [action.kind, action.status, action.lastError]));
   const keeperTxs = (await js.transactionsBetween(startBlock, await js.blockNumber())).filter((tx) => tx.from === lower(keeper));
   const flagSelector = js.jackpot.interface.getFunction('flag').selector;
   ctx.check('no-keeper-flag-on-chain', !keeperTxs.some((tx) => tx.data === flagSelector), keeperTxs.map((tx) => tx.data));
@@ -1131,6 +1326,7 @@ async function r17(ctx) {
   const before = await js.tokenBalance(leader.wallet);
   await toPayout(ctx, W);
   await expectPaid(ctx, W, leader, tokens(1_200), { before });
+  ctx.note('Action ids are per week, kind and session (server/jackpot/store.mjs actionId): a rescreen that re-holds a row converges on its existing flag action, so the stale verdict and the dropped transaction are one row, and the pre-send check (adminReviewed on chain) is what stops it.');
 }
 
 async function r18(ctx) {
@@ -1163,13 +1359,16 @@ async function r18(ctx) {
   ctx.check('force-admin-one-transaction', forced.receipts.length === 1 && lower(await js.jackpot.admin()) === lower(newAdmin.address) && (await js.jackpot.pendingAdmin()) === ethers.ZeroAddress && (await js.jackpot.staffEver(newAdmin.address)) === true);
   js.setAdminWallet(newAdmin);
   js.recordRoles({ admin: newAdmin.address });
+  // After force-admin the old key is no longer admin: onlyAdmin refuses it before the operator lock is
+  // reached (OPERATOR_LOCK was proved above, while it was still admin).
   const late = await js.sendReverting(oldAdmin, transferAdmin(thief.address));
-  ctx.check('old-admin-transfer-reverts', late.reason === 'OPERATOR_LOCK' || late.reason === 'ONLY_ADMIN', late);
-  ctx.note(`After force-admin the old admin's transferAdmin reverts ${late.reason} (the operator pause is still on; the onlyAdmin guard would refuse it next).`);
+  ctx.check('old-admin-transfer-reverts-only-admin', late.reason === 'ONLY_ADMIN' && late.minedStatus === 0, late);
+  // The review API caches the admin check for 60 s: the old admin's cached answer is still 200 right after
+  // the change, and it is refused once the cache expires (so within 60 s).
   const cachedAnswer = (await js.reviewApi(W, oldAdmin)).status;
   await js.advanceBy(61);
   const refused = await js.reviewApi(W, oldAdmin);
-  ctx.check('review-api-refuses-old-admin-within-60s', refused.status === 403 && refused.body?.error === 'not-admin', { beforeExpiry: cachedAnswer, after: refused.status });
+  ctx.check('review-api-refuses-old-admin-within-60s', cachedAnswer === 200 && refused.status === 403 && refused.body?.error === 'not-admin', { beforeExpiry: cachedAnswer, after: refused.status });
   ctx.check('review-api-new-admin', (await js.reviewApi(W, newAdmin)).status === 200);
   // The new admin reviews what the old one did: reinstate and clear the honest leader.
   ctx.check('new-admin-reinstates', (await js.admin('reinstate', { sessionId: leader.sessionId32 })).ok);
@@ -1294,40 +1493,48 @@ async function r20(ctx) {
   const scores = js.suite.scores.connect(operator);
   const gameId = ethers.id('chikun');
   const reserve = BigInt(await entry.settlementGasReserveWei());
+  const originalRankedEntry = lower(await scores.rankedEntry());
   const live = await startLiveTarget(js);
   try {
     await js.runJackpotCron(1);
     const baseline = await live.check();
     ctx.check('live-checker-baseline', baseline.ok === true, baseline.failures);
-    // Mid-week, the operator lowers the settlement reserve to 0.
+    // Mid-week, the operator lowers the settlement reserve to 0; nothing else changes yet.
     await (await entry.setSettlementGasReserve(0)).wait();
     const quote = await entry.quoteEntry(gameId);
     ctx.check('quote-is-flat-fee', BigInt(quote.totalWei) === 10n ** 17n, quote.totalWei);
+    // The drifted state as it is: the J17 weekly check is red before any player pays (the settle floor,
+    // RANKED_MIN_PAID_WEI at its 0.102 default, is above the new quote); j17-quote alone stays green.
+    const drifted = await live.check();
+    const floorCheck = drifted.checks.find((check) => check.id === 'j17-settle-floor');
+    ctx.check('live-checker-flags-settle-floor', drifted.ok === false && drifted.failures.join() === 'j17-settle-floor' && floorCheck?.detail?.quoteTotalWei === (10n ** 17n).toString() && floorCheck.detail.settleMinPaidWei === DEFAULT_MIN_PAID_WEI, floorCheck);
+    ctx.check('j17-quote-still-green', drifted.checks.find((check) => check.id === 'j17-quote')?.ok === true);
+    // What the check prevents: a player who pays the quoted 0.1 zkLTC is refused at settle.
     const [a] = await js.freshWallets(1, 'R20 player');
     const played = await js.playRankedChikunRun({ player: a, openedAt: js.at(W, 'start', DAY + HOUR), maxMinutes: 1.0, settle: false });
     ctx.check('paid-flat-fee', played.paidWei === (10n ** 17n).toString());
     await js.advanceTo(played.openedAt + played.survivalSeconds + 5);
     const refused = await js.postSettle(played);
     ctx.check('server-settle-floor-refuses', refused.status === 402 && refused.body?.error === 'entry-underpaid', refused.body);
-    ctx.note('J17 coupling beyond the jackpot: the settle floor RANKED_MIN_PAID_WEI (default 0.102) refuses entries paid after a reserve cut until the same Monday step lowers it (runbook J17 weekly check).');
+    // The same Monday step lowers the floor (runbook J17 weekly check): the run settles and stays eligible
+    // (the jackpot's own minPaidWei is the flat 0.1 fee), and the checker is green again.
     js.env.RANKED_MIN_PAID_WEI = (10n ** 17n).toString();
     const run = await js.settleRun(played);
     ctx.check('settles-with-floor-lowered', run.score > 0 && run.settleTxHash);
     ctx.check('still-jackpot-eligible', (await js.checkEligibility(run.sessionId32)).ok === true);
     await js.runJackpotCron(1);
     const reserveZero = await live.check();
-    ctx.check('live-checker-reserve-zero', reserveZero.checks.find((check) => check.id === 'j17-quote')?.ok === true, reserveZero.checks.find((check) => check.id === 'j17-quote'));
+    ctx.check('live-checker-green-with-floor-lowered', reserveZero.ok === true, reserveZero.failures);
     // Separately, the registry's rankedEntry is repointed.
-    const original = await scores.rankedEntry();
     await (await scores.setRankedEntry(js.wallets.attacker.address)).wait();
     const drift = await live.check();
     const repoint = drift.checks.find((check) => check.id === 'j17-ranked-entry');
     ctx.check('live-checker-flags-ranked-entry', drift.ok === false && repoint?.ok === false, repoint);
-    await (await scores.setRankedEntry(original)).wait();
-    // Fees off: the quote falls below minPaidWei, the checker fails J17 and the entry-modal row hides.
+    await (await scores.setRankedEntry(originalRankedEntry)).wait();
+    // Fees off: the quote falls below minPaidWei (and the floor): the checker fails J17, the entry-modal row hides.
     await (await entry.setEntryFeeEnabled(false)).wait();
     const feesOff = await live.check();
-    ctx.check('live-checker-flags-fees-off', feesOff.checks.find((check) => check.id === 'j17-quote')?.ok === false);
+    ctx.check('live-checker-flags-fees-off', ['j17-quote', 'j17-settle-floor'].every((id) => feesOff.checks.find((check) => check.id === id)?.ok === false), feesOff.failures);
     const hidden = await entryRow(js, '0');
     ctx.check('entry-row-hidden-below-min-paid', hidden.hidden === true);
     await (await entry.setEntryFeeEnabled(true)).wait();
@@ -1344,8 +1551,19 @@ async function r20(ctx) {
     await expectPaid(ctx, W, run, tokens(1_000), { before });
     ctx.shared.liveChecks = restored.checks.map((check) => check.id);
   } finally {
+    // Whatever failed above, the Ranked settings and the server env go back for the scenarios after this.
+    delete js.env.RANKED_MIN_PAID_WEI;
+    if (!(await entry.entryFeeEnabled())) await (await entry.setEntryFeeEnabled(true)).wait();
+    if (BigInt(await entry.settlementGasReserveWei()) !== reserve) await (await entry.setSettlementGasReserve(reserve)).wait();
+    if (lower(await scores.rankedEntry()) !== originalRankedEntry) await (await scores.setRankedEntry(originalRankedEntry)).wait();
     await live.close();
   }
+  ctx.designFinding({
+    id: 'j17-settle-floor',
+    finding: 'RANKED_MIN_PAID_WEI is part of the J17 coupling. With the settlement reserve cut to 0, ArcadeRankedEntry quotes 0.1 zkLTC while /api/settle still refuses entries paid below the floor (default 0.102) with 402 entry-underpaid; the player paid the quote and cannot settle, and nothing refunds the entry.',
+    fixedHere: 'The J17 weekly check now sees it: /api/health reports settleMinPaidWei and scripts/jackpot-live-dry-run.mjs fails j17-settle-floor when quoteEntry(chikun).totalWei < that floor (R20 shows it red before any player pays).',
+    routedTo: ['design owner: add RANKED_MIN_PAID_WEI to the §A.5 J17 list and the §E weekly check', 'Ranked settle owner (server/settle/settle-core.mjs): consider deriving the floor from the chain quote, or refusing at entry time, so a reserve change cannot strand paid entries'],
+  });
 }
 
 // The live dry run pointed at this stack over real HTTP and JSON-RPC (read-only methods recorded).
@@ -1380,6 +1598,7 @@ async function entryRow(js, quoteWei) {
 // The scenario table.
 
 export const SCENARIOS = Object.freeze([
+  { id: 'R0', title: 'Soft-launch week (adminClearOnly = true, runbook E9): the keeper never clears; awaiting-admin at C + 24 h; the admin clears the top run and it is paid', run: r0 },
   { id: 'R1', title: 'Happy path: 10,000 tCHIKUN, 3 players, the keeper selects at C + 2 h and clears; anyone finalizes at C + 24 h', run: r1 },
   { id: 'R2', title: 'Challenge: the keeper misses the best session; the player submits it at C + 8 h and is paid', run: r2 },
   { id: 'R3a', title: 'Flag → admin: a scripted-pilot leader is flagged; the admin disqualifies it and #2 is paid', run: (ctx) => flaggedLeaderWeek(ctx, { decision: 'disqualify' }) },
@@ -1393,15 +1612,16 @@ export const SCENARIOS = Object.freeze([
   { id: 'R10', title: 'Crash recovery: faults at after-cas, after-broadcast and before-receipt, no duplicate transactions', run: r10 },
   { id: 'R11', title: 'Pause, hold and staff: pause and hold stop payouts only; staff and blocked wallets are never candidates', run: r11 },
   { id: 'R12', title: 'Unfunded week: no keeper transaction, no amount in the API or the UI', run: r12 },
+  { id: 'R12d', title: 'Dust week (0 < pot < minFundWei) with an eligible run: unfunded, no keeper transaction, no amount, no champion', run: r12d },
   { id: 'R13', title: 'Sybil eviction: five decoys displace the honest top 5; disqualified; honest rows re-listed; the honest leader is paid', run: (ctx) => sybilWeek(ctx, { variant: false }) },
   { id: 'R13v', title: 'Sybil eviction at C + 11 h 59 min, and the never-listed honest #6 added by adminSubmit and paid', run: (ctx) => sybilWeek(ctx, { variant: true }) },
   { id: 'R14', title: 'Banked-session sniping: a Sunday session settled at C + 5 h just above the leader is held by H9', run: r14 },
   { id: 'R15', title: 'Non-stock client (maxTicks 108,000): never submitted by the keeper, flagged integrity when submitted', run: r15 },
   { id: 'R16', title: 'Expected miss: an exceptional-model bot passes the screen and is paid (design B.5 residual)', run: r16 },
-  { id: 'R17', title: 'Stale keeper action: a dropped flag and a rescreen never override the admin clear', run: r17 },
-  { id: 'R18', title: 'Contested admin: operator pause, force-admin, OPERATOR_LOCK, the review API drops the old admin', run: r18 },
+  { id: 'R17', title: 'Stale keeper action: a rescreen verdict and a dropped flag, raced by an admin clear mid-run, end review-locked', run: r17 },
+  { id: 'R18', title: 'Contested admin: operator pause, force-admin, OPERATOR_LOCK then ONLY_ADMIN, the review API drops the old admin', run: r18 },
   { id: 'R19', title: 'Dust and end of life: BELOW_MIN_FUND, scheduleEnd, refunds to funders, residual after 30 days, sweep post-condition', run: r19 },
-  { id: 'R20', title: 'Ranked-setting drift: reserve 0 keeps runs eligible; the live checker flags rankedEntry; the entry row hides fees-off', run: r20 },
+  { id: 'R20', title: 'Ranked-setting drift: the live checker flags a reserve cut below the settle floor, a repointed rankedEntry and fees off; the entry row hides fees-off', run: r20 },
 ]);
 
 // ---------------------------------------------------------------------------------------------------
@@ -1412,12 +1632,33 @@ function gitHead() {
   return result.status === 0 ? result.stdout.trim() : null;
 }
 
+// True when a tracked file differs from HEAD (the receipt itself aside): the run did not use `head` alone.
+function gitDirty(outRelative) {
+  const result = spawnSync('git', ['status', '--porcelain', '--untracked-files=no'], { cwd: root, encoding: 'utf8' });
+  if (result.status !== 0) return null;
+  return result.stdout.split(/\r?\n/).filter(Boolean).some((line) => line.slice(3).trim() !== outRelative);
+}
+
+// The sha256 of a repository file, line endings normalized (a Windows checkout hashes like a Linux one).
+export function fileSha256(relative) {
+  return createHash('sha256').update(readFileSync(join(root, relative), 'utf8').replace(/\r\n/g, '\n'), 'utf8').digest('hex');
+}
+
+export function inputHashes() {
+  return Object.fromEntries(REHEARSAL_INPUTS.map((relative) => [relative, fileSha256(relative)]));
+}
+
+export function productSha256() {
+  const lines = REHEARSAL_PRODUCT_FILES.map((relative) => `${relative} ${fileSha256(relative)}`).join('\n');
+  return createHash('sha256').update(lines, 'utf8').digest('hex');
+}
+
 function scriptSha256() {
-  return createHash('sha256').update(readFileSync(fileURLToPath(import.meta.url), 'utf8').replace(/\r\n/g, '\n'), 'utf8').digest('hex');
+  return fileSha256(REHEARSAL_SCRIPT_RELATIVE_PATH);
 }
 
 // Runs `ids` (all scenarios by default) on one stack. → the receipt object.
-export async function runJackpotRehearsal({ ids = null, log = console.log, fast = false } = {}) {
+export async function runJackpotRehearsal({ ids = null, log = console.log, fast = false, out = null } = {}) {
   const selected = ids ? SCENARIOS.filter((spec) => ids.includes(spec.id)) : SCENARIOS;
   if (ids) for (const id of ids) if (!SCENARIOS.some((spec) => spec.id === id)) throw new Error(`unknown scenario ${id}`);
   const started = Date.now();
@@ -1433,7 +1674,11 @@ export async function runJackpotRehearsal({ ids = null, log = console.log, fast 
       schema: REHEARSAL_RECEIPT_SCHEMA,
       generatedAt: new Date().toISOString(),
       head: gitHead(),
+      dirty: gitDirty(out),
       scriptSha256: scriptSha256(),
+      inputs: inputHashes(),
+      productSha256: productSha256(),
+      productFiles: REHEARSAL_PRODUCT_FILES,
       command: `node ${REHEARSAL_SCRIPT_RELATIVE_PATH}${ids ? ` --only ${ids.join(',')}` : ''}`,
       note: 'Local rehearsal only: Hardhat chain 4441 in process, PGlite for Neon, every api/*.mjs handler in process, public fixture keys. Nothing touched LiteForge, Vercel or production Neon; JACKPOT_LIVE was not flipped.',
       ok: results.every((result) => result.status === 'passed'),
@@ -1442,6 +1687,7 @@ export async function runJackpotRehearsal({ ids = null, log = console.log, fast 
         passed: results.filter((result) => result.status === 'passed').length,
         failed: results.filter((result) => result.status === 'failed').map((result) => result.id),
         expectedMisses: results.reduce((sum, result) => sum + result.expectedMisses.length, 0),
+        designFindings: results.reduce((sum, result) => sum + result.designFindings.length, 0),
         durationMs: Date.now() - started,
       },
       stack: {
@@ -1457,6 +1703,7 @@ export async function runJackpotRehearsal({ ids = null, log = console.log, fast 
       scenarios: results,
       expectedMisses: results.flatMap((result) => result.expectedMisses.map((miss) => ({ scenario: result.id, ...miss }))),
       productBugs: PRODUCT_BUGS,
+      designFindings: results.flatMap((result) => result.designFindings),
       liveDryRunChecks: shared.liveChecks ?? null,
     };
     return receipt;
@@ -1476,9 +1723,9 @@ function flagValue(argv, name) {
 export async function runRehearsalCli({ argv = process.argv.slice(2), log = console.log } = {}) {
   const only = flagValue(argv, '--only');
   const ids = only ? only.split(',').map((id) => id.trim()).filter(Boolean) : null;
-  const receipt = await runJackpotRehearsal({ ids, log });
   const date = new Date().toISOString().slice(0, 10).replaceAll('-', '');
   const out = flagValue(argv, '--out') ?? receiptPathFor(date);
+  const receipt = await runJackpotRehearsal({ ids, log, out });
   if (!argv.includes('--no-write')) {
     const target = resolve(root, out);
     mkdirSync(dirname(target), { recursive: true });
@@ -1486,7 +1733,7 @@ export async function runRehearsalCli({ argv = process.argv.slice(2), log = cons
     log(`receipt: ${out}`);
   }
   if (argv.includes('--json')) log(JSON.stringify(receipt, null, 2));
-  log(`jackpot rehearsal: ${receipt.summary.passed}/${receipt.summary.scenarios} scenarios passed${receipt.summary.failed.length ? `; failed ${receipt.summary.failed.join(', ')}` : ''}; expected misses ${receipt.summary.expectedMisses}`);
+  log(`jackpot rehearsal: ${receipt.summary.passed}/${receipt.summary.scenarios} scenarios passed${receipt.summary.failed.length ? `; failed ${receipt.summary.failed.join(', ')}` : ''}; expected misses ${receipt.summary.expectedMisses}; design findings routed ${receipt.summary.designFindings}${receipt.dirty ? '; the tree was dirty: commit and re-run before committing this receipt' : ''}`);
   return receipt.ok ? 0 : 1;
 }
 

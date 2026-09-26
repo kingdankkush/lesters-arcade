@@ -396,8 +396,8 @@ function createJackpotHarness({ stack, provider, wallets, clock, deployed, log }
   };
   js.currentWeek = () => weekIndexOf(clock.latestSeconds());
   js.weekKey = (week) => weekKeyOfIndex(week);
-  // The first week after `after` (default: the current one) that no scenario has used: the chain moves to
-  // its Monday + `offset`.
+  // The first week after the current one that no scenario has used, never the instance's first week (the
+  // soft-launch epoch: beginFirstWeek plays that one): the chain moves to its Monday + `offset`.
   js.lastUsedWeek = null;
   js.beginWeek = async ({ offset = HOUR } = {}) => {
     const current = js.currentWeek();
@@ -407,6 +407,15 @@ function createJackpotHarness({ stack, provider, wallets, clock, deployed, log }
     return next;
   };
   js.claimWeek = (week) => { js.lastUsedWeek = Math.max(js.lastUsedWeek ?? 0, week); return week; };
+  // The instance's first week itself (the soft-launch epoch, adminClearOnly = true, runbook E9): the stack
+  // starts on the Tuesday before it, so only a scenario that runs before any other week is used can play it.
+  js.beginFirstWeek = async ({ offset = HOUR } = {}) => {
+    const first = js.firstWeek;
+    if (js.currentWeek() >= first || (js.lastUsedWeek ?? 0) >= first) throw new Error(`the first week ${weekKeyOfIndex(first)} has already started: play it before any other week`);
+    js.lastUsedWeek = first;
+    await js.advanceTo(weekStartOf(first) + offset);
+    return first;
+  };
 
   // --- Wallets. -------------------------------------------------------------------------------------
   js.freshWallet = async (label) => {

@@ -1,16 +1,22 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import test, { after, before } from 'node:test';
 import { ethers } from 'ethers';
 
 import {
   DAY, HOUR, TOKEN, createChainClock, evidenceForSeed, parseTimeTarget, revertReasonOf, startJackpotStack,
 } from '../scripts/lib/jackpot-rehearsal-driver.mjs';
-import { FAST_SUBSET, REHEARSAL_RECEIPT_SCHEMA, REHEARSAL_SCRIPT_RELATIVE_PATH, SCENARIOS, runScenario } from '../scripts/rehearse-jackpot-week.mjs';
 import {
-  BUILD_COMMAND, FLIP_CHECKLIST_RELATIVE_PATH, FLIP_CHECKLIST_SCHEMA, FLIP_EDITS, FLIP_PRECONDITIONS, FLIP_SCRIPT_RELATIVE_PATH, GENERATE_MODULE_COMMAND, INVENTORY_COMMAND,
-  POST_RELEASE_SMOKES, causedFailures, changedSegments, runFlagFlipDryRun,
+  FAST_SUBSET, REHEARSAL_INPUTS, REHEARSAL_PRODUCT_FILES, REHEARSAL_RECEIPT_SCHEMA, REHEARSAL_SCRIPT_RELATIVE_PATH, SCENARIOS, fileSha256, runScenario,
+} from '../scripts/rehearse-jackpot-week.mjs';
+import {
+  BUILD_COMMAND, CHEAP_ASSERT_SOURCE, FLIP_CHECKLIST_RELATIVE_PATH, FLIP_CHECKLIST_SCHEMA, FLIP_EDITS, FLIP_NOOP_SOURCE, FLIP_PRECONDITIONS, FLIP_SCRIPT_RELATIVE_PATH, GENERATE_MODULE_COMMAND,
+  INVENTORY_COMMAND, POST_RELEASE_SMOKES, SELF_CHECK, causedFailures, changedSegments, neutraliseAssertion, runFlagFlipDryRun,
 } from '../scripts/jackpot-flag-flip-dry-run.mjs';
 import { sha256Text } from '../scripts/rehearse-step7-dry-run.mjs';
 import { replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
@@ -18,9 +24,11 @@ import { replayChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 /**
  * jackpot-rehearsal AC1 and AC3: the driver (the local stack + the jackpot, the chain-bound server clock,
  * the cron with the jackpotSelect / keeperFault seams, the owner page's call encoding) and the fast subset
- * of the rehearsal scenarios, R1, R3a, R5, R10, R13, R15 and R17, on ONE stack in this file. Bot runs are
- * capped at 1.5 minutes as E2E_EVIDENCE does, and R13's decoys are 1-minute pilots. The full set, R1-R20,
- * runs from scripts/rehearse-jackpot-week.mjs; its committed receipt is checked at the end.
+ * of the rehearsal scenarios, R0 (the soft-launch week, adminClearOnly = true), R1, R3a, R5, R10, R13, R15
+ * and R17, on ONE stack in this file. Bot runs are capped at 1.5 minutes as E2E_EVIDENCE does, and R13's
+ * decoys are 1-minute pilots. The full set, R0-R20, runs from scripts/rehearse-jackpot-week.mjs; its
+ * committed receipt is checked at the end (made from a clean committed tree, by exactly this script, driver
+ * and local-jackpot library).
  * Keys: the public Hardhat test mnemonic only. Offline: in-process chain, PGlite, in-process handlers.
  */
 
@@ -105,6 +113,16 @@ test('the stack: launch rules, the flip-week epoch from the operator CLI, E5 on 
   assert.equal(BigInt(await js.token.balanceOf(js.wallets.funder.address)), 1_000_000n * TOKEN, 'the funder was minted tCHIKUN through jackpot-actions');
 });
 
+test('the soft-launch week waits for the admin: the keeper never clears under adminClearOnly', async () => {
+  // R0 plays the instance's first week itself, so it runs before any other week is used.
+  const result = await scenario('R0');
+  for (const id of ['first-week', 'rules-admin-clear-only', 'keeper-never-clears', 'nothing-cleared-on-chain', 'keeper-clear-reverts-review-locked', 'awaiting-admin', 'finalize-reverts-leader-not-cleared', 'admin-clears-top', 'paid-after-admin-clear', 'winner-balance']) {
+    assert.ok(checkIds(result).includes(id), id);
+  }
+  assert.equal(result.weekKeys[0], js.weekKey(js.firstWeek));
+  await assert.rejects(js.beginFirstWeek(), /already started/, 'the first week is played once, first');
+});
+
 test('the driver walks one funded week with one Ranked player to paid on the real cron', async () => {
   const week = js.claimWeek(await js.beginWeek());
   assert.ok((await js.fund(week, 150n * TOKEN)).ok, "the owner page's fund plan: exact approve, then fund");
@@ -159,7 +177,7 @@ test('a crashed keeper resumes without duplicate transactions', async () => {
 
 test('five decoys cannot push the honest leader out of the prize', async () => {
   const result = await scenario('R13');
-  for (const id of ['honest-hold-top-5', 'decoys-outscore-honest', 'honest-displaced', 'decoys-screened-first-and-flagged', 'keeper-relists-honest', 'relists-before-payout-minus-2h', 'winner-balance', 'decoys-cannot-return']) {
+  for (const id of ['honest-hold-top-5', 'decoys-outscore-honest', 'honest-displaced', 'decoys-flagged', 'keeper-relists-honest', 'relists-before-payout-minus-2h', 'relists-after-window-use-was-listed', 'relist-margin-enforced-by-chain', 'winner-balance', 'decoys-cannot-return']) {
     assert.ok(checkIds(result).includes(id), id);
   }
 });
@@ -171,13 +189,13 @@ test('a non-stock client is never submitted and is flagged if submitted', async 
 
 test('a stale keeper action never overrides the admin', async () => {
   const result = await scenario('R17');
-  for (const id of ['flag-dropped', 'admin-clears', 'rescreen-applied-on-stale-mirror', 'dropped-flag-resigned-then-skipped', 'rescreen-created-no-review-action', 'rescreen-refused-once-mirrored', 'keeper-flag-reverts-review-locked', 'winner-balance']) {
+  for (const id of ['flag-dropped', 'rescreen-applied', 'stale-screen-before-admin-clear', 'admin-clears-mid-run', 'dropped-flag-resigned-then-skipped', 'one-flag-action-no-clear', 'no-keeper-flag-on-chain', 'rescreen-refused-once-mirrored', 'keeper-flag-reverts-review-locked', 'winner-balance']) {
     assert.ok(checkIds(result).includes(id), id);
   }
   assert.deepEqual([...results.keys()], [...FAST_SUBSET], 'the whole fast subset ran, in order');
 });
 
-test('the committed full rehearsal receipt passes R1-R20 with R16 as the expected miss, from this script', () => {
+test('the committed full rehearsal receipt passes R0-R20 with R16 as the expected miss, from this script, driver and library', () => {
   const dir = new URL('../docs/qa/', import.meta.url);
   const names = readdirSync(dir).filter((name) => /^jackpot-rehearsal-\d{8}\.json$/.test(name)).sort();
   assert.ok(names.length > 0, 'docs/qa/jackpot-rehearsal-<date>.json is committed');
@@ -186,7 +204,7 @@ test('the committed full rehearsal receipt passes R1-R20 with R16 as the expecte
   assert.equal(receipt.schema, REHEARSAL_RECEIPT_SCHEMA);
   assert.equal(receipt.ok, true);
   assert.deepEqual(receipt.scenarios.map((entry) => entry.id), SCENARIOS.map((entry) => entry.id), 'every scenario, in order');
-  for (const id of ['R1', 'R2', 'R3a', 'R3b', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'R13', 'R13v', 'R14', 'R15', 'R16', 'R17', 'R18', 'R19', 'R20']) {
+  for (const id of ['R0', 'R1', 'R2', 'R3a', 'R3b', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9', 'R10', 'R11', 'R12', 'R12d', 'R13', 'R13v', 'R14', 'R15', 'R16', 'R17', 'R18', 'R19', 'R20']) {
     assert.ok(receipt.scenarios.some((entry) => entry.id === id), id);
   }
   for (const entry of receipt.scenarios) {
@@ -198,9 +216,23 @@ test('the committed full rehearsal receipt passes R1-R20 with R16 as the expecte
   }
   assert.deepEqual(receipt.expectedMisses.map((miss) => miss.scenario), ['R16'], 'R16 is the one expected miss, and it is not a failure');
   assert.ok(receipt.productBugs.every((bug) => bug.status === 'fixed'), 'every product bug the rehearsal found is fixed');
+  // Couplings for the design or another owner are routed, each with what was fixed here.
+  assert.ok(Array.isArray(receipt.designFindings) && receipt.designFindings.length === receipt.summary.designFindings);
+  for (const finding of receipt.designFindings) {
+    assert.equal(finding.status, 'routed', finding.id);
+    assert.ok(finding.routedTo.length > 0 && finding.finding && finding.fixedHere, finding.id);
+  }
+  assert.ok(receipt.designFindings.some((finding) => finding.id === 'j17-settle-floor' && finding.scenario === 'R20'), 'the R20 settle-floor coupling is routed');
   assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\|\/)|AppData|\/home\/|\/Users\//, 'no local path in the committed receipt');
+  // Provenance: made from a clean committed tree, by exactly this script, driver and library.
+  assert.equal(receipt.dirty, false, 'the receipt was made from a clean tree: commit, then re-run node scripts/rehearse-jackpot-week.mjs');
+  assert.match(receipt.head, /^[0-9a-f]{8}$/);
   const script = readFileSync(new URL(`../${REHEARSAL_SCRIPT_RELATIVE_PATH}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   assert.equal(receipt.scriptSha256, createHash('sha256').update(script, 'utf8').digest('hex'), 'the receipt was made by this script: re-run node scripts/rehearse-jackpot-week.mjs after editing it');
+  assert.deepEqual(Object.keys(receipt.inputs), [...REHEARSAL_INPUTS]);
+  for (const relative of REHEARSAL_INPUTS) assert.equal(receipt.inputs[relative], fileSha256(relative), `${relative} changed since the receipt: re-run node scripts/rehearse-jackpot-week.mjs`);
+  assert.match(receipt.productSha256, /^[0-9a-f]{64}$/);
+  assert.deepEqual(receipt.productFiles, [...REHEARSAL_PRODUCT_FILES]);
 });
 
 test('the flag-flip dry run: the committed checklist is complete and made by this script', () => {
@@ -208,6 +240,9 @@ test('the flag-flip dry run: the committed checklist is complete and made by thi
   const checklist = JSON.parse(text);
   assert.equal(checklist.schema, FLIP_CHECKLIST_SCHEMA);
   assert.equal(checklist.partial, false, 'a --tests (partial) dry run is never committed');
+  assert.equal(checklist.dirty, false, 'made from a clean committed tree (the throwaway is made from HEAD): commit, then re-run');
+  assert.match(checklist.head, /^[0-9a-f]{8}$/);
+  assert.ok(!checklist.e4.failuresOutsideLedger.some((failure) => failure.file === SELF_CHECK.file && failure.name === SELF_CHECK.name), 'the stale-checklist self-check is not an E4 update');
   assert.equal(checklist.scriptSha256, sha256Text(readFileSync(new URL(`../${FLIP_SCRIPT_RELATIVE_PATH}`, import.meta.url), 'utf8')), 'the dry-run script changed: re-run node scripts/jackpot-flag-flip-dry-run.mjs --confirm-throwaway');
   // No local absolute path (the throwaway, the repo, the home directory) reaches the committed evidence.
   assert.doesNotMatch(text, /(?<![A-Za-z])[A-Za-z]:(\\|\/)|AppData|lesters-jackpot-flip-[A-Za-z0-9]{6}(?![A-Za-z0-9-])|\/home\/|\/Users\//);
@@ -229,7 +264,13 @@ test('the flag-flip dry run: the committed checklist is complete and made by thi
     const source = readFileSync(new URL(`../${entry.file}`, import.meta.url), 'utf8');
     assert.ok(source.includes(JSON.stringify(entry.name).slice(1, -1)) || source.includes(entry.name), `${entry.file} still has "${entry.name}"`);
     assert.ok(entry.message || entry.expected !== null, 'each carries its expected literal or message');
+    // Every assertion the test stops at, each with its line (a failure thrown inside util.inspect included).
+    assert.ok(entry.assertions.length >= 1 && entry.assertions.every((pin) => Number.isInteger(pin.line) && pin.line > 0 && pin.source), `${entry.file} "${entry.name}": ${JSON.stringify(entry.assertions)}`);
+    assert.equal(entry.complete, true, `${entry.file} "${entry.name}" stopped: ${entry.stoppedBecause}`);
   }
+  // The committed literal pin and its source-text twin in the same test are both listed.
+  const flagPin = checklist.flip.testsToUpdate.find((entry) => entry.file === 'tests/jackpot-ui-client.test.mjs');
+  assert.ok(flagPin.assertions.length >= 2 && flagPin.assertions.some((pin) => /JACKPOT_LIVE = false/.test(pin.source)), JSON.stringify(flagPin.assertions));
   assert.deepEqual(checklist.checklist.testsToUpdate, [...new Set(checklist.flip.testsToUpdate.map((entry) => entry.file))]);
   assert.deepEqual(checklist.checklist.preconditions.map((entry) => entry.id), FLIP_PRECONDITIONS.map((entry) => entry.id));
   assert.deepEqual(checklist.checklist.postReleaseSmokes, [...POST_RELEASE_SMOKES]);
@@ -250,4 +291,51 @@ test('the flag-flip dry run refuses without --confirm-throwaway, and its diff he
     { before: '…alue. Any test prizes are paid in testnet tokens.</p>', after: '…alue. The only prize is the Weekly Jackpot.</p>' },
     { before: null, after: '<url>/jackpot/chikun</url>' },
   ]);
+  // The neutraliser: an assert call on the failing line becomes the hoisted no-op; a helper line is left alone.
+  const neutral = neutraliseAssertion(['  assert.equal(JACKPOT_LIVE, false);', "  await assert.rejects(run(), /x/);", "  assert(ok, 'y');"].join(nl), 2);
+  assert.deepEqual(neutral.split(nl), ['  assert.equal(JACKPOT_LIVE, false);', '  await __flipNoop().rejects(run(), /x/);', "  assert(ok, 'y');", FLIP_NOOP_SOURCE]);
+  assert.equal(neutraliseAssertion(neutral, 3).split(nl)[2], "  __flipNoop()(ok, 'y');");
+  assert.equal(neutraliseAssertion('  expectPinned(value);', 1), null);
+  assert.equal(neutraliseAssertion('one line', 5), null);
+  // eslint-disable-next-line no-new-func
+  assert.equal(new Function(`${FLIP_NOOP_SOURCE}; return [__flipNoop().equal(1, 2), __flipNoop()(false), __flipNoop().match('a', /b/)];`)().every((value) => value === undefined), true);
+
+  // The suites' preload keeps every pass and every failure, only shortens the failures on objects (so an
+  // assert.equal of a large fake DOM node fails at once, with its line, instead of exhausting memory).
+  const dir = mkdtempSync(join(tmpdir(), 'jackpot-flip-cheap-assert-'));
+  try {
+    writeFileSync(join(dir, 'cheap.mjs'), CHEAP_ASSERT_SOURCE, 'utf8');
+    writeFileSync(join(dir, 'probe.mjs'), [
+      "import assert from 'node:assert/strict';",
+      "import { strictEqual, deepEqual } from 'node:assert';",
+      'const results = [];',
+      "const run = (fn) => { try { fn(); results.push('pass'); } catch (error) { results.push(`${error.code}:${error.message.split(String.fromCharCode(10))[0].slice(0, 60)}:${/probe\\.mjs:\\d+/.test(error.stack)}`); } };",
+      'const node = { tag: "div" }; node.self = node; node.children = Array.from({ length: 50 }, () => ({ parent: node }));',
+      'run(() => assert.equal(node, null));',
+      'run(() => assert.deepEqual({ a: [1] }, { a: [1] }));',
+      "run(() => assert.deepEqual({ a: [1] }, { a: [2] }, 'own words'));",
+      'run(() => strictEqual([], null));',
+      'run(() => assert.notEqual({}, {}));',
+      'run(() => assert.notDeepEqual({ a: 1 }, { a: 1 }));',
+      'run(() => assert.equal(1, 2));',
+      'run(() => assert.equal(3, 3));',
+      'run(() => deepEqual({ a: 1 }, { a: 1 }));',
+      'console.log(JSON.stringify(results));',
+    ].join(String.fromCharCode(10)), 'utf8');
+    const probe = spawnSync(process.execPath, [`--import=${pathToFileURL(join(dir, 'cheap.mjs')).href}`, join(dir, 'probe.mjs')], { encoding: 'utf8', timeout: 30_000 });
+    assert.equal(probe.status, 0, probe.stderr);
+    assert.deepEqual(JSON.parse(probe.stdout), [
+      'ERR_ASSERTION:strictEqual: <ref *1> { tag: \'div\', self: [Circular *1], chi:true',
+      'pass',
+      'ERR_ASSERTION:own words | deepStrictEqual: { a: [ 1 ] } vs { a: [ 2 ] }:true',
+      'ERR_ASSERTION:strictEqual: [] vs null:true',
+      'pass',
+      'ERR_ASSERTION:notDeepStrictEqual: { a: 1 } vs { a: 1 }:true',
+      'ERR_ASSERTION:Expected values to be strictly equal::true',
+      'pass',
+      'pass',
+    ]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
