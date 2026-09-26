@@ -50,14 +50,14 @@ function renderContracts(documentRef, list, deployment) {
 }
 
 // One past week: its date range, status, winner, prize in its own token, and links.
-function historyItem(documentRef, week, noted) {
+function historyItem(documentRef, week, noted, options) {
   const item = node(documentRef, 'li');
   const startsAt = week.startsAt ?? new Date(weekStartOfKey(week.weekKey)).toISOString();
   const closesAt = week.closesAt ?? new Date(weekStartOfKey(week.weekKey) + WEEK_MS).toISOString();
   // `previous` carries its score and replay on the winner's candidate row.
   const top = week.candidates?.find((row) => row.walletShort === week.winner?.walletShort) ?? null;
   const score = week.score ?? top?.score;
-  const parts = [weekRangeText(startsAt, closesAt, { year: true }), weekStatusText(week.status)];
+  const parts = [weekRangeText(startsAt, closesAt, { ...options, year: true }), weekStatusText(week.status)];
   if (week.winner) parts.push(`${week.winner.displayName ?? week.winner.walletShort}${Number.isSafeInteger(score) ? ` · ${score.toLocaleString('en-US')} pts` : ''}`);
   if (week.prizeWei && week.winner) {
     const first = !noted.has(week.token.symbol);
@@ -102,7 +102,7 @@ export async function mountJackpotRules({
   if (summary && week) {
     const prize = currentPrize(api);
     const open = phaseOf(week, correctedNow) === 'open';
-    const parts = [node(documentRef, 'strong', '', `This week, ${weekRangeText(week.startsAt, week.closesAt)}`)];
+    const parts = [node(documentRef, 'strong', '', `This week, ${weekRangeText(week.startsAt, week.closesAt, options)}`)];
     if (prize) {
       parts.push(node(documentRef, 'strong', 'jackpot-amount', prize.text({ first: true })), prize.capNote);
       noted.add(api.token.symbol);
@@ -117,7 +117,7 @@ export async function mountJackpotRules({
   const history = byId('jackpotRulesHistory');
   if (history) {
     const weeks = [api.previous, ...api.history].filter(Boolean);
-    history.replaceChildren(...weeks.map((row) => historyItem(documentRef, row, noted)));
+    history.replaceChildren(...weeks.map((row) => historyItem(documentRef, row, noted, options)));
     history.hidden = weeks.length === 0;
   }
   return answer;

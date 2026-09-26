@@ -19,7 +19,7 @@ import {
 } from '../scripts/build-portal-pages.mjs';
 import { JACKPOT_LIVE, JACKPOT_RULES_PATH } from '../apps/portal/src/jackpot-config.mjs';
 import { mountJackpotRules, nextCloseOf } from '../apps/portal/jackpot/chikun-rules.mjs';
-import { resetJackpotMemo } from '../apps/portal/src/jackpot/jackpot-client.mjs';
+import { resetJackpotMemo, weekRangeText } from '../apps/portal/src/jackpot/jackpot-client.mjs';
 import { fakeDocument, mountById, visibleText } from './helpers/jackpot-fake-dom.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -276,7 +276,7 @@ test('the live rules module shows the funded prize, the cap note and past weeks 
 
   resetJackpotMemo();
   page = setup();
-  await mountJackpotRules({ documentRef: page.documentRef, live: true, fetchImpl: async () => responseOf(fixture('paid-history-two-tokens')), now });
+  await mountJackpotRules({ documentRef: page.documentRef, live: true, fetchImpl: async () => responseOf(fixture('paid-history-two-tokens')), now, locale: 'en-US' });
   const rows = page.history.querySelectorAll('li').map((row) => visibleText(row));
   assert.equal(rows.length, 3);
   assert.match(rows[0], /^Sep 21 – Sep 27, 2026 · Paid · SkyChikun · 2,500 CHIKUN · Transaction$/, 'the previous week with no published candidate row');
@@ -285,6 +285,22 @@ test('the live rules module shows the funded prize, the cap note and past weeks 
   const watch = page.history.querySelector('a[href]');
   assert.ok(page.history.querySelectorAll('a').some((anchor) => /^\/chikun\/index\.html\?replay=%2Fapi%2Fjackpot%2Freplay%3Fsession%3D0x/.test(anchor.href)));
   assert.match(watch.href, /^https:\/\/liteforge\.explorer\.caldera\.xyz\/tx\/0x/);
+
+  // The page's `locale` reaches this week's range and every past week's range, whatever the host's own.
+  resetJackpotMemo();
+  page = setup();
+  const funded = fixture('open-funded-capped');
+  await mountJackpotRules({ documentRef: page.documentRef, live: true, fetchImpl: async () => responseOf(funded), now, locale: 'de-DE', timeZone: 'UTC' });
+  const germanWeek = weekRangeText(funded.current.startsAt, funded.current.closesAt, { locale: 'de-DE' });
+  assert.notEqual(germanWeek, 'Sep 28 – Oct 4');
+  assert.ok(visibleText(page.summary).startsWith(`ŁThis week, ${germanWeek} · `), visibleText(page.summary));
+  resetJackpotMemo();
+  page = setup();
+  const paid = fixture('paid-history-two-tokens');
+  await mountJackpotRules({ documentRef: page.documentRef, live: true, fetchImpl: async () => responseOf(paid), now, locale: 'de-DE' });
+  const germanRows = page.history.querySelectorAll('li').map((row) => visibleText(row));
+  assert.deepEqual(germanRows.slice(1).map((row) => row.split(' · ')[0]), paid.history.map((week) => weekRangeText(week.startsAt, week.closesAt, { locale: 'de-DE', year: true })));
+  assert.ok(germanRows[0].startsWith(`${weekRangeText('2026-09-21T00:00:00.000Z', '2026-09-28T00:00:00.000Z', { locale: 'de-DE', year: true })} · `), germanRows[0]);
 
   resetJackpotMemo();
   page = setup();
