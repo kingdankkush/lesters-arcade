@@ -202,6 +202,36 @@ test('S-2: the registry gate itself is kept -- routing is the fix, not a wider g
 test('production gameplay audio excludes footsteps, movement and status jingles but keeps combat and pickups',async()=>{
  const audio=fresh({gameplayOnly:true});await audio.unlock();
  for(const cue of ['footstep-dirt','footstep-road','dash','land','level-up','combo-milestone','upgrade-offer','low-health','game-over','menu-click'])assert.equal(audio.play(cue,{now:1000}).reason,'presentation-cue-disabled',cue);
- for(const [i,cue]of ['weapon-fire','reload-complete','enemy-hit','pickup','silver-collect'].entries())assert.equal(audio.play(cue,{now:2000+i*500}).played,true,cue);
+ for(const [i,cue]of ['weapon-fire','enemy-hit','pickup','silver-collect'].entries())assert.equal(audio.play(cue,{now:2000+i*500}).played,true,cue);
  audio.destroy();
+});
+
+// Owner audio decision (2026-09-25, design package decision 13): gameplay plays
+// only gunfire, Litecoin/silver pickups, power-up and weapon pickups (health and
+// ammo pickups count as pickups), grenades, enemy hits and enemy deaths. No
+// voices or footsteps; the level-up, objective, tell, reload-complete and
+// arena-change cues are gone, and so are the other chimes and movement cues.
+test('the game audio mode plays the owner list and nothing else', async () => {
+  const audio = fresh({ gameplayOnly: true });
+  await audio.unlock();
+  const refused = [
+    'upgrade-pick', 'upgrade-offer', 'level-up', 'objective-complete', 'supply-ready', 'reload-complete',
+    'enemy-melee-tell', 'enemy-ranged-tell', 'boss-phase', 'boss-hit', 'boss-death', 'combo-boss-threshold',
+    'dash', 'land', 'footstep-dirt', 'resume', 'pause', 'menu-click', 'powerup-expire', 'low-health', 'game-over',
+  ];
+  for (const cue of refused) assert.equal(audio.play(cue, { now: 1_000 }).reason, 'presentation-cue-disabled', cue);
+  const kept = [
+    ...Object.keys(HMH_WEAPON_SFX), 'weapon-fire', 'melee', 'grenade', 'grenade-boom', 'enemy-hit', 'player-hit', 'enemy-death',
+    'silver-collect', 'pickup', 'health-pickup', 'ammo-pickup', 'time-dilation-activate', 'berserk-activate',
+  ];
+  for (const [index, cue] of kept.entries()) {
+    assert.notEqual(audio.play(cue, { now: 10_000 + index * 5_000 }).reason, 'presentation-cue-disabled', cue);
+  }
+  audio.destroy();
+  // The runtime no longer asks for any refused cue.
+  const main = repoText('apps/hmh-reboot/src/main.mjs');
+  for (const cue of ['upgrade-pick', 'reload-complete', 'enemy-melee-tell', 'enemy-ranged-tell', 'supply-ready', 'objective-complete', 'boss-phase', 'dash']) {
+    assert.doesNotMatch(main, new RegExp(`combatAudio\\.play\\([^)]*'${cue}'`), cue);
+  }
+  assert.doesNotMatch(main, /'enemy-ranged-tell' : 'enemy-melee-tell'/);
 });
