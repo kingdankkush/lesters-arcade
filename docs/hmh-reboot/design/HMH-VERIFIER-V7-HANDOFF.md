@@ -1,6 +1,6 @@
 # HMH verifier v7: hand-off
 
-**Branch:** `fable/hmh-verifier-v7`, written from release `60ea173a` (production 1.8.1), rebased onto integration `da3c0756` (the jackpot-contracts merge) and pushed to `origin`.
+**Branch:** `fable/hmh-verifier-v7`, written from release `60ea173a` (production 1.8.1), rebased onto integration `da3c0756` (the jackpot-contracts merge), then onto integration `b7c8307a` (1.8.3 live, plus HMH perf steps 1–2 and the jackpot-ui slice for 1.8.4), and pushed to `origin`.
 **Contract:** `docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md` (the authority; this note summarises it).
 **Design source:** `docs/hmh-reboot/design/LEVEL-1-DESIGN-PACKAGE-20260925.md`, with two owner overrides: no Ranked season or ruleset boundary, and the v6 path verifies 1.8.x children indefinitely with today's bounds (no clock anywhere in the verifier).
 
@@ -17,25 +17,27 @@
 
 **Commits (oldest first)**
 
-The hashes are the ones after the rebase onto `da3c0756`; the pre-rebase ones (`128f6a8e` … `2e5230f5`) are not ancestors of the branch.
+The hashes are the ones after the second rebase, onto `b7c8307a`. Neither earlier set is an ancestor of the branch: the first-written ones (`128f6a8e` … `2e5230f5`), nor the ones after the rebase onto `da3c0756` (`6e6b477e` … `74a8546f`, in the same order as the table; that rebase's gate record `b56de0e9` was dropped in favour of the release line's). The red teams attacked `ff265ab8` (now `4f5023f4`) and `a9663a09` (now `7668da79`); code comments and contract §16.4 and §16.6 still name those attacked hashes.
 
 | Commit | Change |
 |---|---|
-| `6e6b477e` | The design package and the run summary v7 contract (docs only) |
-| `8e5ed6cb` | Schema 7 in the new `sdk/hmh-run-summary-schema-v7.mjs`, and the shared contract module `sdk/hmh-run-contract-v7.mjs` |
-| `59805173` | The v6 plausibility path frozen to literal 1.8.1 constants (`HMH_V6_RULES`); it no longer imports `apps/**` |
-| `5fecc073` | The v7 plausibility rules and the two v7 fixtures |
-| `d77f287d` | Achievement stats map schema 7; the boss achievements mean the Liquidator |
-| `3003a565` | Contract §16: implementation decisions (the red team attacked it as `ff265ab8`, before the rebase) |
-| `70fc12de` | Red-team fixes: capacity bank model, build gate, per-level node XP, collectible capacity, Dark Pool minimum fight, schema rules S9–S18 (contract §16.4) |
-| `8ad43cf8`, `b56de0e9`, `04532413` | This note, the regenerated release gate record, and the rebase results |
-| `ac99dde4` | The 1.8.4 v6 consistency rejects (contract §16.5), with parity pins, boundary tests and the 1.8.2 payload end to end; the fixture builder walks districts from the seed's entry |
-| `1c990b0a` | The pinned 75-run honest corpus for those rules |
-| `98da603c` | Each half of the v7 S8 comparison refused on its own, and the milestone-only A2-1 K1 variant |
-| `e3e6bd2e` | The v7 ceilings, kill capacity and cache room pinned as literals; a hashed v7 mutation corpus; boss-before-ready at tick 0; each soft-flag sub-condition; `grenade-kills-above-weapon-kills` on the v7 path |
-| `e8837bbf` | The S10 reserved rows with `applied = 1, offered = 0`; S14 and S15 per kind at their boundary |
-| `a9663a09` | The build-gate limits, the §15.1 preconditions and the first-round v6 rules in the contract and this note |
-| `64f72a7e` | The second red-team round (contract §16.6): eight more v6 consistency rejects, the unlock-gated pickup capacity, and a Ranked session that ignores `evidenceSafe`'s spawn and invulnerability (the child's one change) |
+| `4a9f6005` | The design package and the run summary v7 contract (docs only) |
+| `fe9046a0` | Schema 7 in the new `sdk/hmh-run-summary-schema-v7.mjs`, and the shared contract module `sdk/hmh-run-contract-v7.mjs` |
+| `5823c382` | The v6 plausibility path frozen to literal 1.8.1 constants (`HMH_V6_RULES`); it no longer imports `apps/**` |
+| `86a97b00` | The v7 plausibility rules and the two v7 fixtures |
+| `19a233c3` | Achievement stats map schema 7; the boss achievements mean the Liquidator |
+| `4f5023f4` | Contract §16: implementation decisions (the red team attacked it as `ff265ab8`, before the first rebase) |
+| `0bc0a1be` | Red-team fixes: capacity bank model, build gate, per-level node XP, collectible capacity, Dark Pool minimum fight, schema rules S9–S18 (contract §16.4) |
+| `3abece7a`, `a0148ae4` | This note, and the results of the rebase onto `da3c0756` |
+| `0c03df53` | The 1.8.4 v6 consistency rejects (contract §16.5), with parity pins, boundary tests and the 1.8.2 payload end to end; the fixture builder walks districts from the seed's entry |
+| `fe1667a2` | The pinned 75-run honest corpus for those rules |
+| `08a283bd` | Each half of the v7 S8 comparison refused on its own, and the milestone-only A2-1 K1 variant |
+| `0722882c` | The v7 ceilings, kill capacity and cache room pinned as literals; a hashed v7 mutation corpus; boss-before-ready at tick 0; each soft-flag sub-condition; `grenade-kills-above-weapon-kills` on the v7 path |
+| `177bf1c8` | The S10 reserved rows with `applied = 1, offered = 0`; S14 and S15 per kind at their boundary |
+| `7668da79` | The build-gate limits, the §15.1 preconditions and the first-round v6 rules in the contract and this note (attacked as `a9663a09`) |
+| `4b6db050` | The second red-team round (contract §16.6): eight more v6 consistency rejects, the unlock-gated pickup capacity, and a Ranked session that ignores `evidenceSafe`'s spawn and invulnerability (the child's one change) |
+| `7d0ef15d` | The second red-team round in the contract and this note |
+| (this commit and the next) | The rebase onto `b7c8307a`: these hashes, the gate results and the new headroom; then the release gate record regenerated on the rebased branch |
 
 **By file**
 
@@ -119,13 +121,13 @@ The nearest-impossible rejection tests for each rule are listed in contract §8.
 - `node tests/fixtures/ranked/build-fixtures.mjs` with no flags: all nine fixtures are `ok`.
 - `node scripts/docs-link-check.mjs`: passes.
 
-**After the review fixes (`ac99dde4` to `e8837bbf`):**
+**After the review fixes (`0c03df53` to `177bf1c8`):**
 - The 42 verifier, ranked, settle, jackpot, achievement and integration-glue test files: 570 tests, 0 failures. The honest-corpus file takes about 6 s.
 - `node tests/fixtures/ranked/build-fixtures.mjs`: all nine fixtures `ok` (the builder's new district walk leaves every committed byte unchanged).
 - `npm run check` and `node scripts/docs-link-check.mjs`: pass.
 - The release gate was not rerun and its record not regenerated: the integration owner regenerates it once after merging.
 
-**After the second red-team round (`64f72a7e`):**
+**After the second red-team round (`4b6db050`):**
 - The five verifier files (plausibility, honest corpus, `server-verify-hmh`, `server-verify-hmh-v7`, `hmh-run-summary-schema-v7`): 113 tests, 0 failures. Every red-team payload was reproduced first, and each new test failed before its fix.
 - The 118 verifier, ranked, settle, jackpot, achievement, fixture, evidence, integration-glue and HMH world-contract files: 1,195 tests, 1,183 pass. The 12 failures are in `hmh-level-one-curated-world-contract`, `hmh-level-one-ground` and `hmh-level-one-terrain-polish`. They look for generated art under `assets/generated/**`, which this worktree does not have, and none of them reads a changed file.
 - `npm run check` passes. `node tests/fixtures/ranked/build-fixtures.mjs`: all nine fixtures `ok`.
@@ -133,10 +135,18 @@ The nearest-impossible rejection tests for each rule are listed in contract §8.
 
 **Release gate, after the rebase onto `da3c0756`:**
 - `npm run check`: passes.
-- `npm run build`: passes its budgets. HMH initial JS + shared is 1,046,761 of 1,048,576 bytes (1.8 KB headroom); the base schema module adds 48 bytes to the HMH initial path, measured in `8e5ed6cb` (`a0c62030` before the rebase). The portal `main.js` takes the V7 catalogues through `achievements/stats.mjs`; the whole v7 schema module is 8,029 bytes minified with the base module left external.
-- `npm run test:release`: PASS, 4,961 tests, 4,910 pass, exactly the 51 ledgered failures. The regenerated record is committed.
+- `npm run build`: passes its budgets. HMH initial JS + shared is 1,046,761 of 1,048,576 bytes (1.8 KB headroom); the base schema module adds 48 bytes to the HMH initial path, measured in the commit now `fe9046a0` (`a0c62030` as first written). The portal `main.js` takes the V7 catalogues through `achievements/stats.mjs`; the whole v7 schema module is 8,029 bytes minified with the base module left external.
+- `npm run test:release`: PASS, 4,961 tests, 4,910 pass, exactly the 51 ledgered failures. The regenerated record was committed then (`b56de0e9`), and dropped in the rebase onto `b7c8307a`.
 - The verifier, ranked, settle, jackpot and achievement tests (38 files, 524 tests) pass, and the fixture drift check is `ok` for all nine fixtures.
 - `scripts/hmh-reboot-portal-e2e.mjs` (desktop): 7 flows pass, including `game-over-run-summary` with a schema-6 summary; `ranked-preview` is not run because the source has `SETTLEMENT_LIVE` on.
+
+**Release gate, after the rebase onto `b7c8307a`** (2026-09-25; the only conflict was the gate record, where the release line's side was taken and the branch's `b56de0e9` dropped):
+- `npm run check`: passes (1,003 JS modules and 118 Python scripts).
+- `npm run build`: passes its budgets. HMH initial JS is 826,790 bytes (entry 361,044 of 480,000). HMH initial JS + shared is 1,047,679 of 1,048,576 bytes, so 897 bytes of headroom. The same base without this branch measures 1,047,594 (the STACKED settings branch's build on `b7c8307a`, which touches no HMH file): the branch adds 48 bytes in the shared schema chunk and 37 in the child entry (the `evidenceSafe` change).
+- The 59 verifier, ranked, settle, jackpot, achievement, integration-glue and fixture-reading test files: 701 tests, 0 failures.
+- `node tests/fixtures/ranked/build-fixtures.mjs`: all nine fixtures `ok`, no byte changed.
+- `npm run test:release`: PASS, 5,184 tests, 5,133 pass, exactly the 51 ledgered failures. The regenerated record is committed on top.
+- **Not run here:** the browser suites. The child's `evidenceSafe` change still needs the Ranked e2e's HMH leg (`scripts/ranked-live-browser-e2e.mjs`) in the release certification.
 
 ## 5. What the child branch must emit and honour
 
@@ -182,7 +192,7 @@ The child (`apps/hmh-reboot/src/**`, and a versioned `sdk/hmh-run-summary.mjs`) 
 1. **`server/verify/hmh.mjs`.** Import `validateRunSummaryPayload` from `../../sdk/hmh-run-summary-schema-v7.mjs` and accept `schemaVersion` 6 or 7, only once the contract §15.1 preconditions hold: the deploy that serves the 1.9.0 child (or a server-side game-version check), fixtures and an honest corpus from the real v7 accumulator, and the twelve 1.8.4 consistency rules (§16.5, §16.6) mirrored for v7.
    - The test `a Ranked schema-7 body is refused …` in `tests/server-verify-hmh-v7.test.mjs` then fails, as intended, and should be replaced by an end-to-end `verifyRankedRun` of the v7 fixtures.
    - `contract.bossId` needs no change.
-2. **The bridge and the portal** (`sdk/hmh-bridge-protocol.mjs`, `hmh-run-history.mjs`, `hmh-reboot-bridge.mjs`). Switch them to the v7 schema module when the child emits schema 7. The child's HMH initial-JS budget pays for about 8 KB (the v7 module, minified, 8,029 bytes). Only 1,815 bytes of headroom are left, so that needs about 6.2 KB of HMH initial-JS cuts first, or the v7 module loaded lazily.
+2. **The bridge and the portal** (`sdk/hmh-bridge-protocol.mjs`, `hmh-run-history.mjs`, `hmh-reboot-bridge.mjs`). Switch them to the v7 schema module when the child emits schema 7. The child's HMH initial-JS budget pays for about 8 KB (the v7 module, minified, 8,029 bytes). Only 897 bytes of headroom are left on `b7c8307a` (1,815 at `da3c0756`, before 1.8.4's perf steps), so that needs about 7.1 KB of HMH initial-JS cuts first (6.2 KB at `da3c0756`), or the v7 module loaded lazily.
    - The portal `main.js` already carries the V7 catalogues through `achievements/stats.mjs`: +3,030 bytes, measured (the contract's first estimate was about 2.2 KB).
 3. **arcade-core and `tests/achievement-derivation.test.mjs`.** Per-boss achievement inputs, if district bosses should ever count toward the boss achievements.
 4. **Parent consumers of the generic `boss-defeated` event.** Audit them before district bosses ship.
