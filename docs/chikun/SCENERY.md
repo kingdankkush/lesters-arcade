@@ -1,0 +1,172 @@
+# Chikun scenery: Blender parallax backdrops
+
+Slice 1 of the Chikun visual upgrade (owner direction: "make the parallax
+backdrops visually more stunning, better 3D models, better lighting"). Gameplay
+is untouched: `tests/chikun-sim-identity.test.mjs` pins the twelve simulation,
+course, evidence and runtime modules plus `obstacle-shapes.json` to their 1.8.2
+SHA-256.
+
+## What the player sees
+
+Each of the seven regions (farmland, forest, town, city, industrial, suburbs,
+coast) ships Blender-rendered art for every backdrop layer:
+
+| Layer | Screen band | Scroll rate | Content |
+|---|---|---|---|
+| Sky | 0 to 720 | 0 | Gradient per light bucket, stars, sun or moon, procedural clouds (drawn in code) |
+| Far | 330 to 566 (city 300 to 566) | 0.03 (city 0.02, coast 0.015) | Ranges, skylines, islands; heaviest haze |
+| Mid | 320 to 580 (city 290 to 580) | 0.12 | The region's landmark: windmill, two-tier waterfall, clock tower, spire, gantry crane, water tower, lighthouse |
+| Near | 440 to 602 | 0.30 | Hedges and cows, ferns and glowing mushrooms, timber-framed streets, shopfronts with neon, containers, porches, the pier |
+| Ground | 560 to 690 | 0 at the horizon to 1 at the running line | 22 bands cut from one perspective render, each scrolling at its own rate |
+| Cut face | 686 to 720 | 1.0 | Soil, cobbles, asphalt, slabs or sand under the running line (drawn by `ground-world.mjs`) |
+
+A layer with rate `r` stands on `y = 560 + 130 r`, so nothing slides against the
+ground under it. The grade (noon, golden hour, night, dawn) comes from
+`light-rig.mjs`; the art is rendered in neutral daylight with the key light at
+the upper left, where the sun and moon now travel. The two never share the sky:
+the sun has faded out before the moon starts to show and returns only after the
+moon has gone, so dawn and dusk never read as two suns.
+
+Lit windows and lamps belong to their layer's depth: a far light is added
+before the mid and near layers are composited, so nearer buildings, hills and
+the ground cover it (no lights sliding across a nearer facade at the wrong
+parallax speed).
+
+Animated pieces: the windmill rotor (a separate sprite, 0.25 rev/s), the
+lighthouse beam (additive, dusk and night), drifting sea bands on the coast,
+drifting clouds and twinkling stars. All motion is a pure function of the tick
+and the course distance, and reduced motion freezes it.
+
+Region changes: the three-second double exposure is replaced by a short veil
+toward the horizon colour, far, mid and near layers swapped in that order under
+it, and spatial seams on the near ground and the cut face that reach Chikun
+(x = 280) exactly at the switch tick.
+
+## Runtime (apps/chikun/src)
+
+- `world.mjs` orchestrates each frame on main's opaque canvas: sky first, then
+  the backdrop composited from a transparent offscreen canvas (so fog, grade
+  and veil can be `source-atop` fills) in depth groups: a layer with lights
+  closes a group, which takes the fog still to come from the nearer layers, is
+  graded, composited and cleared, and gets its lights (`lighter`, ungraded)
+  straight away; the nearer groups then composite over them. Then light
+  shafts, a top vignette and the region title card. Only the rows a group drew
+  are filled and composited; with no lights on screen there is one group, as
+  before. Everything is drawn at the device resolution with an identity
+  transform.
+- `parallax.mjs`: layers, ground bands, transitions (`transitionState()`),
+  sprites, lights and the lighthouse beam. Region seams follow the canonical
+  course distance (`bus.seamDistance`); the ready screen's idle drift (tick 0)
+  only scrolls the layers, so the menu always shows the first region.
+- `atmosphere.mjs`: sky, sun, moon, stars, clouds, rays, grade, title card.
+- `light-rig.mjs`: the pure light rig (also `chikunSkyState`, unchanged).
+- `art-loader.mjs`: per-region lazy loading, t2 (2x) art above density 1.3,
+  `Image` + `decode()` (cache-first in the service worker), prescale once per
+  density, at most two regions resident. A density change (rotation, window
+  drag, zoom, a mobile address bar) waits until the density has been stable
+  for 200 ms, then re-prescales or switches tier asset by asset, with at most
+  one pending job per asset, each prescaled at the latest density when it
+  lands. Until a replacement lands the old canvas keeps drawing, scaled, so a
+  phone rotation (portrait density 2 on t2, landscape about 1 on t1) never
+  drops back to the painters. Failures: a failed sprite or light only loses
+  that piece; the backdrop switches to art as a unit, so a failed far, mid or
+  near strip or ground keeps the whole region on the painters, and a failed cut
+  face sends only the running line back to the code strip.
+- `painters.mjs`: the old code-drawn layers, kept as the fallback while art
+  loads or if it fails.
+- `scene-bus.mjs`, `device-blit.mjs`: shared frame state and 1:1 blit helpers.
+- `scenery-catalog.mjs`: generated by the packer. Do not edit.
+
+Debug: `?chikunDebug=art` exposes `window.__chikunArtStats` (resident bytes,
+tier, density, failures).
+
+## Rebuilding the art
+
+```bash
+# One layer (EEVEE, ~2-5 s each). Output goes to ../chikun-render-cache (outside the repo).
+"D:/Apps/Blender/blender.exe" -b --factory-startup --python-exit-code 1 \
+  -P scripts/chikun-blender/build-chikun-scenery.py -- --region farmland --layer mid --out ../chikun-render-cache
+# layers: far mid near ground front; regions: farmland forest town city industrial suburbs coast
+
+# Pack every rendered region into WebP tiers, the manifest and the catalog, then the review plates.
+python scripts/build-chikun-art-pack.py [--regions farmland,forest] [--no-plates]
+python scripts/build-chikun-review-plates.py [--regions farmland]
+```
+
+The plates read the runtime light rig through
+`scripts/chikun-blender/chikun-rig-dump.mjs` and composite lights in the same
+depth groups as the runtime.
+
+- `scripts/chikun-blender/scenery-spec.json` is the single source of truth for
+  layer geometry, rates, tiers and the ground band edges.
+- `chikun_lib/`: scene, cameras and lights (`core.py`), periodic noise
+  (`periodic.py`), the shader library with the emission switch and depth haze
+  (`shading.py`), bmesh kitbash (`kit.py`). `regions/`: one builder per region
+  plus shared kits (`common.py`, `groundkit.py`, `urbankit.py`).
+- Colour management matches the character rig: Standard view, Medium High
+  Contrast look.
+- Strips wrap exactly: tile content is instanced at +-W, tile-spanning
+  textures use circle-mapped 4D noise, heightfield normals come from the
+  height function, per-object colour variation uses a deterministic pass
+  index. The packer's seam gate rejects any strip whose wrap column pair looks
+  unlike its interior column pairs.
+- The packer value-compresses backdrops by depth (L* range caps: far 28, mid
+  34, near 42; chroma far 0.7, mid 0.85, near 0.95) so they never compete with
+  the play layer.
+- Lights ship at 1x only, split into merged 32 px column runs, and are drawn
+  scaled with `lighter` (their memory does not grow with the density).
+
+## Budgets (measured)
+
+| Region | t2 download | t1 download | Prescaled px (logical) | Light atlas px | Decoded at density 2 | Decoded at density 1.08 |
+|---|---|---|---|---|---|---|
+| farmland | 199 KB | 108 KB | 1.198 M | 26 K | 18.4 MB | 5.4 MB |
+| forest | 209 KB | 108 KB | 1.191 M | 35 K | 18.3 MB | 5.4 MB |
+| town | 370 KB | 253 KB | 1.191 M | 563 K | 20.3 MB | 7.4 MB |
+| city | 484 KB | 382 KB | 1.268 M | 1.071 M | 23.4 MB | 9.7 MB |
+| industrial | 98 KB | 54 KB | 1.191 M | 59 K | 18.4 MB | 5.5 MB |
+| suburbs | 207 KB | 130 KB | 1.191 M | 208 K | 19.0 MB | 6.1 MB |
+| coast | 74 KB | 45 KB | 1.191 M | 57 K | 18.4 MB | 5.5 MB |
+
+The whole loop is 1.64 MB at t2. Caps enforced by
+`tests/chikun-scenery-catalog.test.mjs`: 1.5 MB per region at t2, 0.5 MB at t1,
+1.65 M prescaled logical px and 28 MB decoded at density 2. Two regions are
+resident at most, plus a 1280 x 414 logical offscreen backdrop canvas (8.5 MB
+at density 2 in a 16:9 landscape) and about 6.5 MB of sky sprites (the star
+tile, sun disc and moon at full density; glows, light shafts and clouds at low
+resolution, drawn scaled). Steady state at density 2 is therefore roughly
+40 MB of region art plus 15 MB for the sky and the offscreen canvas.
+
+Browser-measured frame times, heap and network bytes belong to the Verify
+phase (not run in this slice; one browser at a time on this machine). Measure
+there in particular:
+
+- the full-screen light shafts and glows drawn scaled at golden hour and dawn;
+- frame-time spikes from pump()'s at-least-one-prescale-per-frame rule while
+  the next region loads mid-run, and during the scaled draws after a rotation;
+- the extra depth-group composites when lights are on (up to four in the city
+  at night, each limited to the rows its layers drew);
+- GPU texture limits for the 5120 px near strip on low-end phones in portrait.
+
+## Review
+
+`docs/chikun/review/<region>.webp` are contact sheets (landscape at noon,
+golden hour, night and dawn; portrait strip below), composited without a
+browser from the shipped t1 art and the runtime light rig.
+`docs/chikun/review/plates.json` records each 1.8.2 obstacle sprite's
+luminance contrast against a 12 px ring. Many are below 3:1 today (the old
+obstacle art is mid-grey on mid-value ground); raising them is slice 2's job
+(ink contour, rim light, contact shadows, grading) and must land before Verify
+and any push (review of slice 1: forest oak 1.05, industrial rock 1.02, town
+crate 1.09 at noon).
+
+## Not in this slice
+
+- Gateway pieces at rate 0.55 at each region boundary (the veil, staggered
+  swaps and spatial seams carry the transitions for now).
+- Blender cloud cards, scatter cells, per-window light thresholds, smoke loops,
+  trains, birds and other ambient critters.
+- Browser verification (Verify phase): frame-time p95, heap, network bytes,
+  hitbox overlay, fallback run with scenery requests blocked.
+
+Tripo credits used in this slice: 0 (Blender only). See `TRIPO-SPEND.md`.
