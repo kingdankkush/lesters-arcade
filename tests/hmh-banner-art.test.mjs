@@ -114,3 +114,21 @@ test('the Python builder --check passes and is registered with npm run check', (
     assert.ok(check.includes(`'${file}'`), `${file} is listed in scripts/syntax-check.mjs`);
   }
 });
+
+test('the retired HMH banners are gone and nothing ships a reference to them', () => {
+  const retired = [
+    'generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg',
+    'generated/hmh-banners/hard-money-heroes-ranked-banner.jpg',
+    'generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg',
+    'hmh-banners/hmh-keyart-bg.jpg',
+    'hmh-key-art/hmh-loading-keyart',
+  ];
+  for (const path of retired.slice(0, 3)) assert.equal(existsSync(join(root, 'apps/portal/assets', path)), false, path);
+  const tracked = spawnSync('git', ['ls-files', '--', 'apps/portal', 'api', 'server', 'scripts', 'vercel.json'], { cwd: root, encoding: 'utf8' }).stdout
+    .split('\n').filter((path) => /\.(?:html|m?js|css|txt|xml|json|webmanifest|py)$/.test(path) && !path.startsWith('apps/portal/dist/'));
+  for (const path of tracked) {
+    const text = readFileSync(join(root, path), 'utf8');
+    for (const name of retired) assert.ok(!text.includes(name), `${path} still names ${name}`);
+  }
+  for (const file of ['apps/portal/sw.js', 'apps/portal/sitemap.xml', 'apps/portal/llms.txt']) assert.ok(tracked.includes(file), `${file} was scanned`);
+});

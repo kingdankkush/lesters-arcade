@@ -26,7 +26,6 @@ THRESHOLD = 100_000  # 100KB
 
 # Directories to optimize
 TARGET_DIRS = [
-    ASSETS / "generated" / "hmh-key-art",
     ASSETS / "generated" / "hmh-level-environment",
     ASSETS / "generated" / "hmh-canonical-art",
     ASSETS / "generated" / "hmh-production-art-pass",

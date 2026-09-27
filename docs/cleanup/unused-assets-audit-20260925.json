@@ -1174,11 +1174,7 @@
     },
     {
       "path": "apps/portal/assets/generated/hmh-banners",
-      "reason": "HMH mode-select banners, og:image, leaderboard art and coming-soon key art. (arcade-core.mjs:537 names a missing hmh-keyart-bg.jpg on a dead path.)"
-    },
-    {
-      "path": "apps/portal/assets/generated/hmh-key-art",
-      "reason": "The key-art background is live through CSS and main.js. (main.js:866-869 names 4 missing loading key arts.)"
+      "reason": "Coming-soon key art (LitVM Legends, MWEB Invaders). The HMH banners, og:image, leaderboard art and the generated/hmh-key-art background moved to apps/portal/assets/hmh-art/ on 2026-09-27 (docs/art/HMH-BANNERS-20260926.md); the dead hmh-keyart-bg.jpg and loading key-art paths are gone."
     },
     {
       "path": "apps/portal/assets/generated/hmh-barriers",

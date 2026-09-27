@@ -1,6 +1,6 @@
 # Hard Money Heroes banner art refresh: design plan (2026-09-26)
 
-Status: plan only. No product code, assets or tests change in the commit that adds this file.
+Status: built on `fable/hmh-banners` (section 12 records the decisions taken at build time).
 Branch `fable/hmh-banners`, base `origin/fable/master-list-20260916` at `a93246bd`.
 Rebase onto the newest integration head at Verify (1.8.6 or later).
 
@@ -428,3 +428,27 @@ cabinets), `hard-money-heroes/screens/boot-splash.png` (level editor sprite libr
   unless you would rather keep them off the Level 1 screens.
 - Commercial-use rights for creator art are still an open gate in AGENTS.md; these images are
   owner-made, so they are assumed cleared.
+
+## 12. Decisions and build status (2026-09-27)
+
+- Level name: "The Forked Frontier" on both the portal Level 1 intro ("Level 1: The Forked
+  Frontier", "Begin Level 1: The Forked Frontier") and the loading panel. The level briefing
+  module (`apps/hmh-reboot/src/level-briefing.mjs`) names no level, so its name does not apply.
+- Loading images: every image stays, armoured enemies included, except any that shows a
+  Bitcoin logo. All 18 pool images were read at 1280 px; only `Level-Load-Extra-01` shows one
+  (several flooded-vault zombies wear glowing Bitcoin logos). It is listed under `excluded` in
+  `apps/portal/assets/hmh-art/manifest.json`, ships no derivative, and `--check` fails if it
+  regains one. The pool is 17 images; Lester keeps 6 of his own, Lilly 7, Lit Commando and Lit
+  Valkyrie 5 each.
+- Free share (section 6.2): the Free share URL and the rendered Free card belong to the
+  free-share lane (`fable/free-share`, per-run `/f/` pages), which draws
+  `share-cards/lester-blaster-free.png` (HMH-FreeMode-Share) built here. This branch keeps
+  the `/games/hard-money-heroes` og:image (the 1200x630 JPEG) and leaves the share URLs alone.
+- Host-page module: built as `dist/hmh-reboot/startup-art.js` (entry
+  `apps/portal/src/hmh-startup-art.mjs`) rather than a raw module under `hmh-reboot/`, so it is
+  minified and shares the rotation chunk with the portal intro. It is not in the service-worker
+  precache: offline, the panel shows its designed gradient frame.
+- Retired: `generated/hmh-banners/hard-money-heroes-{free-mode,ranked}-banner.jpg` and
+  `generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg` (no reference left in code, pages,
+  `sw.js`, `sitemap.xml` or `llms.txt`), and the dead `hmh-keyart-bg.jpg` and
+  `hmh-loading-keyart-1..4.jpg` paths.

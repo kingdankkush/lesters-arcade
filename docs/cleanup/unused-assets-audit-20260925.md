@@ -331,7 +331,7 @@ These folders are referenced by runtime code, by passing release-gate tests, or 
 | `apps/portal/assets/reference` | 3 sheets are existence-tested at `arcade-core.test.mjs:2432`. |
 | `apps/portal/assets/hard-money-heroes`, `cabinet`, `cabinet/rotation`, `cabinet/source` | The live HMH rotating cabinet. `assets:verify` requires the manifest, the rotation frames and `source`. |
 | `generated/achievement-badges`, `generated/hmh-achievement-atlas` | Catalog badge art (profile, results, NFT metadata, share cards) and tier/avatar emblems. |
-| `generated/hmh-banners`, `generated/hmh-key-art` | Live mode-select, leaderboard and key-art images. |
+| `generated/hmh-banners` | Coming-soon key art (LitVM Legends, MWEB Invaders). The HMH banners and `generated/hmh-key-art` moved to `hmh-art/` on 2026-09-27 (docs/art/HMH-BANNERS-20260926.md). |
 | `generated/hmh-barriers`, `hmh-silver-coin`, `hmh-world-decals`, `hmh-world-design`, `hmh-terrain-tiles` | Loaded at every HMH boot, and hash-tested. |
 | `generated/hmh-held-weapons` (+4 hero folders) | Weapon pages lazy-load on equip. The gate hashes every file. |
 | `generated/hmh-reboot-production-heroes` (+4 hero folders) | Base hero atlases load on every run and are pinned by tests. |
