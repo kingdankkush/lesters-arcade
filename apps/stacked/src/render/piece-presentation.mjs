@@ -1,20 +1,19 @@
 // Piece presentation layer (owner direction 2026-09-16, ST-N03). Presentation
 // only: it consumes committed snapshots, never feeds the simulation, and it
 // fills the gaps the spark layer leaves: hold/save, level transition, ledger
-// rise, perfect clear, top-out and the danger band, plus a lock "thud" that
-// settles the well's inner layers by a few authored pixels.
+// rise, perfect clear, top-out and the danger band. The lock thud moved to
+// board-motion.mjs (1.9.0): a damped spring on the whole board container.
 //
 // Budget rules (ST-P02): one fixed typed-array ring buffer, one pooled
 // Graphics per slot cloned from a shared context, no allocation per event.
 // Flash rules (visuals §7.2): every band is confined to the well interior,
 // additive alpha <= 0.12 (0.07 with reduceFlash), and the danger pulse runs
-// at ~0.5 Hz so it can never count as a flash. reduceMotion zeroes motion,
-// shake and bands exactly like the spark layer's shipped gate.
+// at ~0.5 Hz so it can never count as a flash. reduceMotion zeroes motion
+// and bands exactly like the spark layer's shipped gate.
 
 export const PIECE_FX_EVENTS = Object.freeze(['hold', 'level', 'ledger', 'perfect', 'terminal', 'lock']);
 const intensityFor = settings => settings.accessibility.reduceMotion ? 0 : Math.max(0, Math.min(1, settings.video.effectsIntensity ?? .7));
 const WELL_W = 320, WELL_H = 640;
-const SHAKE_MS = 160;
 
 export function createPiecePresentation({ mobile = false } = {}) {
   const capacity = mobile ? 192 : 288;
@@ -22,13 +21,12 @@ export function createPiecePresentation({ mobile = false } = {}) {
   const color = new Uint32Array(capacity), alive = new Uint8Array(capacity);
   const state = {
     ...fields, color, alive, capacity, count: 0, emitted: 0, lastEvent: '', lastEventAt: -10000,
-    shakeAmplitude: 0, shakeAt: -10000,
     holdAt: -10000, levelAt: -10000, ledgerAt: -10000, perfectAt: -10000, terminalAt: -10000, danger: 0, level: 1,
   };
   let cursor = 0, lastTick = -1;
   const reset = () => {
     alive.fill(0); state.count = 0; state.lastEvent = ''; state.lastEventAt = -10000;
-    state.shakeAmplitude = 0; state.shakeAt = state.holdAt = state.levelAt = state.ledgerAt = state.perfectAt = state.terminalAt = -10000;
+    state.holdAt = state.levelAt = state.ledgerAt = state.perfectAt = state.terminalAt = -10000;
     lastTick = -1;
   };
   const emit = (x, y, vx, vy, life, size, tint, now, delay = 0) => {
@@ -52,13 +50,7 @@ export function createPiecePresentation({ mobile = false } = {}) {
     const n = value => Math.max(1, Math.ceil(value * scale));
     const mark = (event) => { state.lastEvent = event; state.lastEventAt = now; };
 
-    if (after.piecesLocked > before.piecesLocked) {
-      // Lock thud: hard drops land harder (bounded 4 authored px).
-      const dropped = Math.max(0, (after.hardDropCells ?? 0) - (before.hardDropCells ?? 0));
-      state.shakeAmplitude = Math.min(4, (dropped > 0 ? 1.6 + dropped * .12 : 1)) * strength;
-      state.shakeAt = now;
-      mark('lock');
-    }
+    if (after.piecesLocked > before.piecesLocked) mark('lock');
     if ((after.holdsUsed ?? 0) > (before.holdsUsed ?? 0)) {
       // Save piece: a streak of motes travels from the hold box to the spawn.
       state.holdAt = now;
@@ -112,18 +104,9 @@ export function createPiecePresentation({ mobile = false } = {}) {
       count++;
     }
     state.count = count;
-    if (!strength) { state.shakeAmplitude = 0; }
     return state;
   };
-  // Vertical settle offset for the well's inner layers: a damped half-sine so
-  // the stack dips and returns inside SHAKE_MS. Zero when motion is reduced.
-  const shakeOffset = (now, settings) => {
-    if (!intensityFor(settings) || !state.shakeAmplitude) return 0;
-    const t = (now - state.shakeAt) / SHAKE_MS;
-    if (t < 0 || t >= 1) return 0;
-    return state.shakeAmplitude * Math.sin(t * Math.PI) * (1 - t);
-  };
-  return { state, step, update, reset, shakeOffset };
+  return { state, step, update, reset };
 }
 
 export function createBoardPiecePresentation({ board, Graphics, mobile = false }) {
@@ -133,7 +116,6 @@ export function createBoardPiecePresentation({ board, Graphics, mobile = false }
   const visuals = Array.from({ length: fx.state.capacity }, (_, i) => (i ? mote.clone() : mote));
   const bands = Object.fromEntries(['level', 'ledger', 'danger', 'terminal', 'perfect', 'hold'].map(id => [id, new Graphics().rect(0, 0, 1, 1).fill(0xffffff)]));
   for (const node of [...visuals, ...Object.values(bands)]) { node.visible = false; board.layers.effectLayer.addChild(node); }
-  const shaken = ['stackLayer', 'ghostLayer', 'activeLayer', 'effectLayer'];
   const draw = (now, settings, danger = 0) => {
     const s = fx.update(now, settings, danger), offset = board.frame === 'wide' ? 96 : 0, intensity = intensityFor(settings);
     const flash = settings.accessibility.reduceFlash ? .07 : .12;
@@ -168,15 +150,13 @@ export function createBoardPiecePresentation({ board, Graphics, mobile = false }
     // Danger: a slow pulse (~0.5 Hz) along the top of the well, never a strobe.
     const pulse = .5 + .5 * Math.sin(now / 1000 * 3.1);
     band('danger', s.danger > 0, 0, 0, WELL_W, 64, s.danger * flash * (.5 + .5 * pulse) * intensity, 0xff6a5a);
-    const dy = fx.shakeOffset(now, settings);
-    for (const name of shaken) board.layers[name].position.y = dy;
-    return Object.freeze({ count: s.count, emitted: s.emitted, lastEvent: s.lastEvent, capacity: s.capacity, shake: dy, danger: s.danger });
+    return Object.freeze({ count: s.count, emitted: s.emitted, lastEvent: s.lastEvent, capacity: s.capacity, danger: s.danger });
   };
   return {
     state: fx.state,
     step: fx.step,
-    reset() { fx.reset(); for (const name of shaken) board.layers[name].position.y = 0; },
+    reset() { fx.reset(); },
     draw,
-    destroy() { for (const node of [...visuals, ...Object.values(bands)]) node.destroy(); context.destroy(); fx.reset(); for (const name of shaken) board.layers[name].position.y = 0; },
+    destroy() { for (const node of [...visuals, ...Object.values(bands)]) node.destroy(); context.destroy(); fx.reset(); },
   };
 }

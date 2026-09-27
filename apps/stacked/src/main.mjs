@@ -9,19 +9,21 @@ import { chunkStackedEvidence } from '../../portal/src/stacked-evidence-transpor
 import { STACKED_CAPABILITIES, STACKED_FREE_MEDALS_KEY } from '../../portal/src/stacked-contracts.mjs';
 import { createStackedPauseClock } from './pause-clock.mjs';
 import { manageOverlayFocus } from './overlay-focus.mjs';
-import { createStackedSoundEffects, stackedSoundForStep } from './sound-effects.mjs';
 import { STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset } from '../../portal/src/stacked-player-settings.mjs';
 import { applyMenuAction } from './menu-navigation.mjs';
 import { stackedParentKnowsPresets, stackedPreferencesRequest, withStackedEffectsPreset } from './preferences-bridge.mjs';
+import { TICK_MS } from './render/active-interpolation.mjs';
 
 const $ = id => document.getElementById(id);
 const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameOverlay');
 const releaseOverlayFocus = manageOverlayFocus(overlay, () => stage.querySelector('canvas'));
 let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTime = 0, accumulator = 0, started = false, submitted = false, pauseCount = 0, forfeited = false;
 const pauseClock = createStackedPauseClock();
-const sfx = createStackedSoundEffects();
-let preview = null;
-// Set from the init settings: a pre-preset (1.8.1) host must never be sent the preset keys.
+// Game sounds load lazily with the renderer (entry budget); until then every call is a no-op.
+let sfxImpl = null, soundForStep = () => null;
+const sfx = { play: (cue, prefs, combo) => sfxImpl?.play(cue, prefs, combo), stop: () => sfxImpl?.stop(), destroy: () => sfxImpl?.destroy() };
+let preview = null, haptics = null;
+// Set from the init settings: a pre-preset (1.8.1-1.8.3) host must never be sent the preset keys.
 let parentPresets = false;
 // One settings card (settings simplification 2026-09-24). Every choice is a
 // presentation preference the parent validates, applies and saves under its
@@ -177,11 +179,12 @@ function frame(now) {
   if (run && started && !run.paused && !run.snapshot.terminal) {
     accumulator = Math.min(1000 / 15, accumulator + elapsed);
     let steps = 0;
-    while (accumulator >= 1000 / 60 && steps++ < 4 && !run.snapshot.terminal) {
+    while (accumulator >= TICK_MS && steps++ < 4 && !run.snapshot.terminal) {
       const before = run.snapshot, mask = forfeited ? 0 : input.sample(before);
       const s = run.step(mask);
       renderer.gameplay(before, s, now, settings);
-      sfx.play(stackedSoundForStep(before, s), settings);
+      sfx.play(soundForStep(before, s), settings, s.comboCount);
+      haptics?.step(before, s);
       if (s.piecesLocked > before.piecesLocked) {
         if ((mask & 8) && !(before.prevMask & 8) && s.holdsUsed === before.holdsUsed) counters.hardDrops++;
         const cleared = s.lines - before.lines;
@@ -189,13 +192,16 @@ function frame(now) {
         allClearStreak = s.perfectClears > before.perfectClears ? allClearStreak + 1 : 0;
         counters.allClearStreakMax = Math.max(counters.allClearStreakMax, Math.min(1000, allClearStreak));
       }
-      accumulator -= 1000 / 60;
+      accumulator -= TICK_MS;
       if (s.tick % 30 === 0) state();
     }
     if (run.snapshot.terminal) void finish();
   }
   if (run && renderer) {
-    const info = renderer.frame(run.snapshot, now, settings);
+    // Sub-tick alpha for the active piece's travel (projection only). Paused, unstarted and
+    // finished frames render the committed tick state; the accumulator is already reset there.
+    const alpha = started && !run.paused && !run.snapshot.terminal ? accumulator / TICK_MS : 1;
+    const info = renderer.frame(run.snapshot, now, settings, alpha);
     if ($('epochLabel').textContent !== info.name) $('epochLabel').textContent = info.name;
     const audioCopy = effectsPreset() === 'off' ? 'EFFECTS OFF' : info.visualizerName.toUpperCase() + (info.scene !== 'off' ? ' · ' + info.sceneName.toUpperCase() : '') + ' · ' + (settings.accessibility.reduceMotion ? 'STILL' : info.available ? 'LIVE MUSIC' : 'AMBIENT');
     if ($('audioLabel').textContent !== audioCopy) $('audioLabel').textContent = audioCopy;
@@ -208,9 +214,11 @@ function frame(now) {
   raf = requestAnimationFrame(frame);
 }
 async function boot() {
-  const [{ createStackedRenderer }, { createVisualizerPreview }] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs')]);
+  const [{ createStackedRenderer }, { createVisualizerPreview }, { createStackedHaptics }, sounds] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs'), import('./haptics.mjs'), import('./sound-effects.mjs')]);
   if (disposed) return;
+  sfxImpl = sounds.createStackedSoundEffects(); soundForStep = sounds.stackedSoundForStep;
   preview = createVisualizerPreview($('visualizerPreview'));
+  haptics = createStackedHaptics({ getSettings: () => settings });
   run = createStackedPlaySession({ ...init.session, mode: init.mode, startLevel: settings.startLevel }); run.pause();
   app = new Application();
   await app.init({ resizeTo: stage, backgroundAlpha: 0, resolution: Math.min(1.5, window.devicePixelRatio || 1), antialias: false, autoDensity: true, preference: 'webgl', powerPreference: 'low-power' });

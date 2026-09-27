@@ -9,8 +9,12 @@ import { createBoardParticles, mobilePresentation } from './gameplay-particles.m
 import { createBoardPiecePresentation } from './piece-presentation.mjs';
 import { createBoardPulse } from './board-pulse.mjs';
 import { piecePaletteFor, sceneGradeFor } from './cosmetic-palettes.mjs';
+import { createActiveInterpolation } from './active-interpolation.mjs';
+import { createBoardMotionView } from './board-motion.mjs';
+import { PIECE_COLORS } from './board-view.mjs';
+import { createVisualizerGovernor, deviceStartTier } from './visualizer-governor.mjs';
 
-export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
+export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, startTier = deviceStartTier, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
   let atmosphere=null, particles=null, pieceFx=null, mobile=null;
   const board = createStackedBoardView({ index: 0, cells: 10, rows: 24, frame: 'wide', geometry, Container, Graphics, Text, onFrameReleased });
@@ -18,6 +22,14 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
   const feedback = createGameplayFeedback(), accents = createBoardFeedback({board, Graphics, Text});
   // Music-reactive board: frame ring and active-piece halo (owner direction 2026-09-16).
   const pulse = createBoardPulse({ board, Graphics, geometry });
+  // Sub-tick travel of the active piece between the tick snapshots gameplay() sees (projection only).
+  const interpolation = createActiveInterpolation({ geometry });
+  // Lock-thud spring, trauma shake and cleared-row squash on the board container (projection only).
+  const motion = createBoardMotionView({ board, Graphics, geometry });
+  // FPS watchdog: caps the music-scene tier (full -> standard -> calm) before it touches resolution.
+  const governor = createVisualizerGovernor({ startTier: typeof startTier === 'function' ? startTier() : startTier });
+  const baseResolution = app.renderer.resolution;
+  let renderScale = 1;
   const sharedHud = new Text({ text: 'RENDER-ONLY QA SCENE · AWAITING PARENT RUNTIME', style: { fill:'#9db4c8', fontFamily:'system-ui, sans-serif', fontSize:18, fontWeight:'700' } });
   sharedHud.anchor?.set?.(0.5);
   sharedHud.text='';
@@ -50,21 +62,27 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if (hasPresented) app.render();
   };
   const present = snapshot => { if(disposed)throw new Error('renderer is disposed'); const stats=board.present(snapshot); stageElement.dataset.renderedCells=String(stats.lockedVisible+stats.activeVisuals+stats.ghostVisuals); hasPresented=true; app.render(); return stats; };
-  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere?.destroy(); particles?.destroy(); pieceFx?.destroy(); pulse.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
+  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere?.destroy(); particles?.destroy(); pieceFx?.destroy(); pulse.destroy(); motion.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
   app.renderer.on('resize',resize);
   resize();
   return Object.freeze({
     present, resize, destroy, board, tree,
-    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); },
+    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); motion.reset(); interpolation.reset(); board.setActiveOffset(0,0); },
     audio: (frame, now) => atmosphere?.audio(frame, now),
     nextScene: () => atmosphere?.nextScene(),
-    gameplay(before, snapshot, now, settings) { feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); },
+    gameplay(before, snapshot, now, settings) { interpolation.step(before, snapshot); feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); motion.step(before,snapshot,now,settings); },
     get mobile() { return mobile; },
-    frame(snapshot, now, settings) {
+    // alpha = accumulator / TICK_MS from the frame loop (0..1); callers that omit it render the tick state.
+    frame(snapshot, now, settings, alpha = 1) {
       const fit = fitRootToViewport({ widthPx: app.canvas.width / app.renderer.resolution, heightPx: app.canvas.height / app.renderer.resolution });
       const response=feedback.update(snapshot, now, settings.accessibility.reduceMotion);
+      governor.sample(now);
+      if (governor.resolutionScale !== renderScale) { renderScale = governor.resolutionScale; app.renderer.resolution = baseResolution * renderScale; resize(); }
+      const scene = governor.cap(settings);
+      stageElement.dataset.visualizerTier = governor.tier;
+      stageElement.dataset.renderScale = String(renderScale);
       const zone=STACKED_EPOCHS[Math.max(0,[0,10800,25200,43200,64800,90000].findLastIndex(tick=>snapshot.tick>=tick))];
-      const info = atmosphere ? atmosphere.draw({ now, tick: snapshot.tick, lines: snapshot.lines, width: fit.logicalWidth, height: fit.logicalHeight, settings, feedback:response }) : {...zone,particles:0,available:false,phase:'off',generation:0,mode:'gameplay',visualizerName:'Gameplay effects',organisms:0,scene:'off',sceneName:'Off',sceneTransitions:0,signals:null,palette:null};
+      const info = atmosphere ? atmosphere.draw({ now, tick: snapshot.tick, lines: snapshot.lines, width: fit.logicalWidth, height: fit.logicalHeight, settings: scene, feedback:response }) : {...zone,particles:0,available:false,phase:'off',generation:0,mode:'gameplay',visualizerName:'Gameplay effects',organisms:0,scene:'off',sceneName:'Off',sceneTransitions:0,signals:null,palette:null};
       stageElement.dataset.visualizerPhase = info.phase;
       stageElement.dataset.visualizerGeneration = String(info.generation);
       stageElement.dataset.visualizerMode = info.mode;
@@ -79,6 +97,9 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       tree.layers.layerBackdrop.tint = tree.layers.layerParticleFar.tint = sceneGradeFor(settings);
       board.layers.effectLayer.visible = !settings.accessibility.reduceMotion;
       board.setTrails(false);
+      // Active-piece travel toward this tick's cell; whole-tick steps under reduced motion.
+      const travel = interpolation.offset(snapshot, alpha, !settings.accessibility.reduceMotion);
+      board.setActiveOffset(travel.x, travel.y);
       const sparks=particles.draw(now,settings);
       stageElement.dataset.gameplayParticles=String(sparks.count);
       stageElement.dataset.particleEvent=sparks.lastEvent;
@@ -87,10 +108,13 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       stageElement.dataset.visualizerParticles=String(info.particles);
       stageElement.dataset.visualizerOrganisms=String(info.organisms);
       stageElement.dataset.particlesEmitted=String(sparks.emitted);
-      const fx=pieceFx?pieceFx.draw(now,settings,response.danger):{count:0,lastEvent:'',shake:0};
+      const fx=pieceFx?pieceFx.draw(now,settings,response.danger):{count:0,lastEvent:''};
       stageElement.dataset.pieceFx=String(fx.count);
       stageElement.dataset.pieceFxEvent=fx.lastEvent;
-      stageElement.dataset.pieceFxShake=fx.shake.toFixed(2);
+      const moved=motion.draw(now,settings,piecePaletteFor(settings)??PIECE_COLORS);
+      stageElement.dataset.pieceFxShake=moved.y.toFixed(2);
+      stageElement.dataset.boardTrauma=moved.trauma.toFixed(2);
+      stageElement.dataset.rowSquash=String(moved.squashing);
       accents.draw(response, info.color, settings);
       const beatFrame=pulse.draw({ settings, signals: info.signals ?? undefined, palette: info.palette ?? undefined, snapshot });
       stageElement.dataset.boardPulse=beatFrame.enabled?beatFrame.frame.toFixed(3):'0';

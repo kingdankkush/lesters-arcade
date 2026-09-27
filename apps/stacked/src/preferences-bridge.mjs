@@ -1,6 +1,6 @@
 import { STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset, stackedEffectsPresetFromLegacy } from '../../portal/src/stacked-player-settings.mjs';
 
-// Deploy skew (settings review 2026-09-25). An arcade tab that loaded a 1.8.1/1.8.2
+// Deploy skew (settings review 2026-09-25). An arcade tab that loaded a 1.8.1-1.8.3
 // (pre-preset) host before a deploy keeps its exact-key validator in memory and loads
 // this child. That validator rejects `effectsPreset`, `scene` and
 // `reactiveBoard`, and the rejection happens before the host advances its
@@ -20,7 +20,7 @@ export const stackedParentKnowsPresets = settings => STACKED_EFFECTS_PRESETS.inc
 export function withStackedEffectsPreset(settings) {
   if (!settings?.video || stackedParentKnowsPresets(settings)) return settings;
   Object.assign(settings.video, expandStackedEffectsPreset(stackedEffectsPresetFromLegacy(settings.video)));
-  // One volume, as readStackedSettings reads it: a 1.8.1/1.8.2 host keeps a
+  // One volume, as readStackedSettings reads it: a 1.8.1-1.8.3 host keeps a
   // disabled toggle beside the old volume. Without this the slider shows 35%
   // while muted, and changing any other setting (which derives sfxEnabled from
   // the slider) turns game sound back on.

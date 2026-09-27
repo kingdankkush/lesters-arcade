@@ -84,16 +84,24 @@ export function drawStackedPieces(seed, count) {
   return freeze({ pieces: output, bagRefills, bagDraws: rng.count });
 }
 
+const rotationKicks = (kind, rotation, targetRotation) => {
+  const delta = (targetRotation - rotation + 4) & 3;
+  const table = delta === 2 ? STACKED_KICKS_180 : kind === 'I' ? STACKED_KICKS_I : STACKED_KICKS_JLSTZ;
+  return table[`${rotation}>${targetRotation}`];
+};
+function firstFreeKick(board, kind, targetRotation, x, y, kicks) {
+  for (let index = 0; index < kicks.length; index += 1) {
+    if (!collidesPiece(board, kind, targetRotation, x + kicks[index][0], y + kicks[index][1])) return index;
+  }
+  return -1;
+}
 export function attemptRotation(board, active, targetRotation) {
   if (active.kind === 'O') return freeze({ ...active, lastKickIndex: 0 });
-  const delta = (targetRotation - active.rotation + 4) & 3;
-  const table = delta === 2 ? STACKED_KICKS_180 : active.kind === 'I' ? STACKED_KICKS_I : STACKED_KICKS_JLSTZ;
-  const kicks = table[`${active.rotation}>${targetRotation}`];
-  for (let index=0; index<kicks.length; index+=1) {
-    const [dx,dy]=kicks[index];
-    if (!collidesPiece(board, active.kind, targetRotation, active.x+dx, active.y+dy)) return freeze({ ...active, x:active.x+dx, y:active.y+dy, rotation:targetRotation, lastKickIndex:index });
-  }
-  return null;
+  const kicks = rotationKicks(active.kind, active.rotation, targetRotation);
+  const index = firstFreeKick(board, active.kind, targetRotation, active.x, active.y, kicks);
+  if (index < 0) return null;
+  const [dx, dy] = kicks[index];
+  return freeze({ ...active, x:active.x+dx, y:active.y+dy, rotation:targetRotation, lastKickIndex:index });
 }
 export function detectSpin(board, active) {
   if (active.kind === 'O' || !active.lastActionWasRotation) return 'none';
@@ -182,6 +190,34 @@ export function compactCompletedRows(board) {
   return Object.freeze({ board: compacted, lines: fullRows.length, fullRows: Object.freeze(fullRows), garbageRowsCleared });
 }
 
+// Runtime hot path: the same compaction as compactCompletedRows, applied in place
+// to the runtime's own (already valid) board with no copy, freeze or row list.
+// Returns lines | (garbageRowsCleared << 3); both are at most 4.
+function compactCompletedRowsInPlace(board) {
+  let lines = 0;
+  let garbageRowsCleared = 0;
+  let targetY = 0;
+  for (let sourceY = 0; sourceY < BOARD_ROWS; sourceY += 1) {
+    const start = sourceY * BOARD_WIDTH;
+    let full = true;
+    let hasGarbage = false;
+    for (let x = 0; x < BOARD_WIDTH; x += 1) {
+      const value = board[start + x];
+      if (value === 0) { full = false; break; }
+      if (value === 8) hasGarbage = true;
+    }
+    if (full) {
+      lines += 1;
+      if (hasGarbage) garbageRowsCleared += 1;
+      continue;
+    }
+    if (sourceY !== targetY) board.copyWithin(targetY * BOARD_WIDTH, start, start + BOARD_WIDTH);
+    targetY += 1;
+  }
+  if (lines > 0) board.fill(0, targetY * BOARD_WIDTH);
+  return lines | (garbageRowsCleared << 3);
+}
+
 export function applyGarbageRows(board, holeColumns) {
   validateBoard(board);
   if (!Array.isArray(holeColumns) || holeColumns.some((hole) => !Number.isInteger(hole) || hole < 0 || hole >= BOARD_WIDTH)) {
@@ -200,6 +236,16 @@ export function applyGarbageRows(board, holeColumns) {
   return Object.freeze({ board: next, rowsApplied, terminalReason: null });
 }
 
+// Runtime hot path: one applyGarbageRows(board, [hole]) step in place. Returns
+// false (board untouched) when the top row is occupied, i.e. garbage-out.
+function applyGarbageRowInPlace(board, hole) {
+  const top = (BOARD_ROWS - 1) * BOARD_WIDTH;
+  for (let x = 0; x < BOARD_WIDTH; x += 1) if (board[top + x] !== 0) return false;
+  board.copyWithin(BOARD_WIDTH, 0, top);
+  for (let x = 0; x < BOARD_WIDTH; x += 1) board[x] = x === hole ? 0 : 8;
+  return true;
+}
+
 export function evidenceCeilingReached(encodedBytes) {
   if (!Number.isInteger(encodedBytes) || encodedBytes < 0) throw new RangeError('encodedBytes must be a non-negative integer');
   return encodedBytes >= STACKED_MAX_EVIDENCE_BYTES;
@@ -215,7 +261,11 @@ export function resolveScoringBlock({
   if (typeof chainActive !== 'boolean' || typeof perfectClear !== 'boolean') throw new TypeError('scoring flags must be booleans');
   if (!Number.isInteger(comboCount) || comboCount < -1) throw new RangeError('comboCount out of range');
   if (!Number.isInteger(level) || level < 1 || level > STACKED_LEVEL_CAP) throw new RangeError('level out of range');
+  return freeze(scoreBlock(score, lines, spinKind, chainActive, comboCount, level, perfectClear));
+}
 
+// Unchecked, unfrozen scoring for the runtime, whose inputs are always in range.
+function scoreBlock(score, lines, spinKind, chainActive, comboCount, level, perfectClear) {
   let base = STACKED_CLEAR_SCORES[lines];
   if (lines !== 4 && spinKind === 'full' && STACKED_FULL_SPIN_SCORES[lines] !== undefined) base = STACKED_FULL_SPIN_SCORES[lines];
   if (lines !== 4 && spinKind === 'mini' && STACKED_MINI_SPIN_SCORES[lines] !== undefined) base = STACKED_MINI_SPIN_SCORES[lines];
@@ -233,10 +283,10 @@ export function resolveScoringBlock({
   const hashpowerMinted = lines > 0
     ? HASHPOWER_PER_CLEAR[lines] + (isSpinClear ? 1 : 0) + (chainActive ? 1 : 0)
     : 0;
-  return freeze({
+  return {
     base, clearScore, perfectClearScore, comboScore, scoreDelta, score: score + scoreDelta,
     nextComboCount, nextChainActive, qualifiesChain, hashpowerMinted,
-  });
+  };
 }
 
 export function packStackedBoard(board) {
@@ -530,20 +580,20 @@ function createStackedRuntimeInternal(
         score += 250 * scoringLevel;
         continue;
       }
-      const applied = applyGarbageRows(board, [hole]);
-      if (applied.terminalReason) {
-        terminalReason = applied.terminalReason;
+      if (!applyGarbageRowInPlace(board, hole)) {
+        terminalReason = 'garbage-out';
         break;
       }
-      board.set(applied.board);
-      garbageRowsReceived += applied.rowsApplied;
+      garbageRowsReceived += 1;
     }
   };
   const lock = () => {
-    const cells = cellsFor(active.kind, active.rotation, active.x, active.y);
-    const above = cells.every(([, y]) => y >= BOARD_VISIBLE_ROWS);
+    const points = PIECE_CELLS[active.kind][active.rotation];
+    let above = true;
+    for (let i = 0; i < points.length; i += 1) if (active.y + points[i][1] < BOARD_VISIBLE_ROWS) above = false;
     const spinKind = detectSpin(board, active);
-    for (const [x, y] of cells) board[y * BOARD_WIDTH + x] = 'IJLOSTZ'.indexOf(active.kind) + 1;
+    const pieceId = 'IJLOSTZ'.indexOf(active.kind) + 1;
+    for (let i = 0; i < points.length; i += 1) board[(active.y + points[i][1]) * BOARD_WIDTH + active.x + points[i][0]] = pieceId;
     piecesLocked += 1;
     holdUsed = false;
     if (spinKind === 'mini') spinsMini += 1;
@@ -553,16 +603,14 @@ function createStackedRuntimeInternal(
       terminalReason = 'lock-out';
       return;
     }
-    const compacted = compactCompletedRows(board);
-    board.set(compacted.board);
-    const cleared = compacted.lines;
-    const perfectClear = cleared > 0 && board.every((value) => value === 0);
+    const compacted = compactCompletedRowsInPlace(board);
+    const cleared = compacted & 7;
+    let perfectClear = cleared > 0;
+    for (let index = 0; perfectClear && index < board.length; index += 1) if (board[index] !== 0) perfectClear = false;
     const preClearLevel = level;
-    const lockEvent = {
-      tick, lines: cleared, spinKind, perfectClear,
-      comboCountBefore: comboCount, backToBackActive: chainActive,
-    };
-    const scored = resolveScoringBlock({ score, lines: cleared, spinKind, chainActive, comboCount, level, perfectClear });
+    const comboCountBefore = comboCount;
+    const chainActiveBefore = chainActive;
+    const scored = scoreBlock(score, cleared, spinKind, chainActive, comboCount, level, perfectClear);
     score = scored.score;
     comboCount = scored.nextComboCount;
     maxCombo = Math.max(maxCombo, comboCount);
@@ -579,13 +627,16 @@ function createStackedRuntimeInternal(
       } else backToBackCount = 0;
     }
     chainActive = scored.nextChainActive;
-    garbageRowsCleared += compacted.garbageRowsCleared;
+    garbageRowsCleared += compacted >> 3;
     lines += cleared;
     level = levelForLines(startLevel, lines);
     drainPendingGarbage(preClearLevel);
     let matchGarbageRose = false;
     if (!terminalReason && lockBoundary !== null) {
-      const holes = lockBoundary(freeze(lockEvent));
+      const holes = lockBoundary(freeze({
+        tick, lines: cleared, spinKind, perfectClear,
+        comboCountBefore, backToBackActive: chainActiveBefore,
+      }));
       if (!Array.isArray(holes) || holes.some((hole) => !Number.isInteger(hole) || hole < 0 || hole >= BOARD_WIDTH)) {
         throw new TypeError('match lock boundary must return board-column holes');
       }
@@ -717,15 +768,18 @@ function createStackedRuntimeInternal(
     else if ((rising & 16) !== 0) target = (active.rotation + 1) & 3;
     else if ((rising & 64) !== 0) target = (active.rotation + 2) & 3;
     if (target === null) return;
-    const rotated = attemptRotation(board, active, target);
-    if (!rotated) return;
-    active = {
-      ...rotated,
-      lastActionWasRotation: true,
-      lockTimer: active.lockTimer,
-      lockResetsUsed: active.lockResetsUsed,
-      lowestYReached: active.lowestYReached,
-    };
+    // attemptRotation's rules, applied to the runtime-private active piece in place.
+    if (active.kind === 'O') active.lastKickIndex = 0;
+    else {
+      const kicks = rotationKicks(active.kind, active.rotation, target);
+      const index = firstFreeKick(board, active.kind, target, active.x, active.y, kicks);
+      if (index < 0) return;
+      active.x += kicks[index][0];
+      active.y += kicks[index][1];
+      active.rotation = target;
+      active.lastKickIndex = index;
+    }
+    active.lastActionWasRotation = true;
     if (!establishNewLowestY()) resetForAction();
   };
   const processHorizontal = (mask, oldMask, rising) => {
@@ -777,12 +831,12 @@ function createStackedRuntimeInternal(
     const rising = mask & ~oldMask;
     if (mask !== oldMask) {
       const gap = tick - lastTransitionTick;
-      encodedEvidenceBytes += sic1TransitionByteLength(oldMask, mask, gap);
+      encodedEvidenceBytes += sic1CheckedTransitionByteLength(oldMask, mask, gap);
       transitionCount += 1;
       lastTransitionTick = tick;
     }
     prevMask = mask;
-    if (evidenceCeilingReached(encodedEvidenceBytes)) terminalReason = 'evidence-ceiling';
+    if (encodedEvidenceBytes >= STACKED_MAX_EVIDENCE_BYTES) terminalReason = 'evidence-ceiling';
     if (!terminalReason && tick === GARBAGE_START_TICK) garbageTimerTicks = GARBAGE_INTERVAL_START_TICKS;
     else if (!terminalReason && garbageTimerTicks > 0) {
       garbageTimerTicks -= 1;
@@ -855,6 +909,10 @@ export function sic1TransitionByteLength(previousMask, mask, gap) {
     throw new RangeError('SIC1 transition masks/gap invalid');
   }
   if (previousMask === mask) return 0;
+  return sic1CheckedTransitionByteLength(previousMask, mask, gap);
+}
+// Runtime hot path: masks already differ and gap is a validated tick distance.
+function sic1CheckedTransitionByteLength(previousMask, mask, gap) {
   if (sicSingleBit(previousMask ^ mask) && gap <= 16) return 1;
   return 2 + sicVarintLength(gap - 1);
 }
@@ -913,9 +971,18 @@ export function encodeSic1({ seed, totalTicks, transitions } = {}) {
 }
 
 export function decodeSic1(input) {
+  const { seed, totalTicks, transitionCount, ticks, masks } = decodeSic1Columns(input);
+  const transitions = [];
+  for (let index = 0; index < transitionCount; index += 1) transitions.push({ tick: ticks[index], mask: masks[index] });
+  return freeze({ seed, totalTicks, transitionCount, transitions });
+}
+
+// The one SIC1 parser. It fills two typed columns pre-sized from the validated
+// header count, so a maximal replay allocates no per-transition objects.
+function decodeSic1Columns(input) {
   if (!(input instanceof Uint8Array) || input.length < 26 || input.length > STACKED_MAX_EVIDENCE_BYTES) throw new RangeError('SIC1 byte length invalid');
   // A private byte snapshot also prevents mutable shared input changing mid-parse.
-  const bytes = Uint8Array.from(input);
+  const bytes = new Uint8Array(input);
   const view = new DataView(bytes.buffer);
   if (view.getUint32(0) !== 0x53494331 || bytes[4] !== STACKED_EVIDENCE_CODEC_VERSION || bytes[5] !== 1 || view.getUint16(6) !== STACKED_FIXED_STEP_HZ) throw new Error('SIC1 header invalid');
   const seed = view.getUint32(8);
@@ -939,14 +1006,16 @@ export function decodeSic1(input) {
     }
     throw new Error('SIC1 varint overflow');
   };
-  const transitions = [];
+  const ticks = new Uint32Array(transitionCount);
+  const masks = new Uint8Array(transitionCount);
+  let count = 0;
   let tick = 0;
   let mask = 0;
   while (offset < bytes.length) {
     const lead = bytes[offset++];
     if (lead === 255) {
-      if (readVarint() !== totalTicks || offset !== bytes.length || transitions.length !== transitionCount) throw new Error('SIC1 terminator/count mismatch');
-      return freeze({ seed, totalTicks, transitionCount, transitions });
+      if (readVarint() !== totalTicks || offset !== bytes.length || count !== transitionCount) throw new Error('SIC1 terminator/count mismatch');
+      return { seed, totalTicks, transitionCount, ticks, masks };
     }
     let gap;
     let nextMask;
@@ -960,9 +1029,11 @@ export function decodeSic1(input) {
       if (nextMask === mask || (sicSingleBit(nextMask ^ mask) && gap <= 16)) throw new Error('noncanonical SIC1 transition');
     } else throw new Error('reserved SIC1 lead');
     tick += gap;
-    if (tick > totalTicks || transitions.length >= transitionCount) throw new Error('SIC1 transition out of range');
+    if (tick > totalTicks || count >= transitionCount) throw new Error('SIC1 transition out of range');
     mask = nextMask;
-    transitions.push({ tick, mask });
+    ticks[count] = tick;
+    masks[count] = mask;
+    count += 1;
   }
   throw new Error('SIC1 terminator missing');
 }
@@ -1017,14 +1088,15 @@ export function simulateStackedRun({ seed, inputs, maxTicks = STACKED_MAX_TICKS,
 }
 
 export function replayStackedRun(evidence, { expectedSeed, maxTicks = STACKED_MAX_TICKS, config = {} } = {}) {
-  const decoded = decodeSic1(evidence);
+  const decoded = decodeSic1Columns(evidence);
   if (expectedSeed !== undefined && decoded.seed !== expectedSeed) throw new Error('replay seed mismatch');
   const runtime = createStackedRuntime({ seed: decoded.seed, maxTicks, config });
   const advance = runtimeHeadlessSteps.get(runtime);
+  const { totalTicks, transitionCount, ticks, masks } = decoded;
   let mask = 0;
   let cursor = 0;
-  for (let tick = 1; tick <= decoded.totalTicks; tick += 1) {
-    if (cursor < decoded.transitions.length && decoded.transitions[cursor].tick === tick) mask = decoded.transitions[cursor++].mask;
+  for (let tick = 1; tick <= totalTicks; tick += 1) {
+    if (cursor < transitionCount && ticks[cursor] === tick) mask = masks[cursor++];
     advance(mask);
   }
   if (!runtime.terminal) throw new Error('replay ended before a terminal state');

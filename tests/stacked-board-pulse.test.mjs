@@ -106,6 +106,11 @@ test('the board layer draws a frame ring under the well and four halos under the
   const expected = cellsFor('T', 0, 3, 14).map(([x, y]) => [96 + x * 32, (19 - y) * 32]).sort();
   assert.deepEqual(pulse.halos.map(h => [h.position.x, h.position.y]).sort(), expected);
   for (const halo of pulse.halos) { assert.ok(halo.visible && halo.alpha <= PULSE_CEILINGS.piece + 1e-9); assert.equal(halo.tint, 0xb66cff); }
+  // Sub-tick travel (2026-09-26): the halo rides with the board's authored active offset so it never peels off the piece.
+  view.activeOffset = { x: -8, y: 24 };
+  pulse.draw({ settings: settings({ video: { effectsIntensity: 1 } }), signals: { level: 0.5, beat: 1, high: 0 }, palette, snapshot });
+  assert.deepEqual(pulse.halos.map(h => [h.position.x, h.position.y]).sort(), expected.map(([x, y]) => [x - 8, y + 24]).sort(), 'halos follow the piece between ticks');
+  view.activeOffset = { x: 0, y: 0 };
   pulse.draw({ settings: settings(), signals: { level: 0.5, beat: 1, high: 1 }, palette, snapshot });
   assert.notEqual(pulse.frame.tint, 0x53e9ef, 'highs tint the ring toward the accent');
   // A piece above the rim only shows its visible cells; no piece shows nothing.

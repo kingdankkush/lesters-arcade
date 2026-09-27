@@ -5,19 +5,20 @@ import { stackedParentKnowsPresets, stackedPreferencesRequest, withStackedEffect
 import { STACKED_EFFECTS_PRESETS, defaultStackedSettings, expandStackedEffectsPreset, applyStackedPresentationPreferences } from '../apps/portal/src/stacked-player-settings.mjs';
 import { validateStackedBridgeMessage, validateStackedBridgeSettings } from '../apps/portal/src/stacked-bridge-protocol.mjs';
 
-// Deploy skew (settings review 2026-09-25): an arcade tab that loaded the 1.8.1
-// host keeps its exact-key validator while a relaunch loads the new child. A
-// rejected preferences request stops the host's message sequence, so every
-// later child message, including the Ranked result, fails as out of order.
+// Deploy skew (settings review 2026-09-25): an arcade tab that loaded a 1.8.1-1.8.3
+// (pre-preset) host keeps its exact-key validator while a relaunch loads the new
+// child. A rejected preferences request stops the host's message sequence, so
+// every later child message, including the Ranked result, fails as out of order.
 
-// The 1.8.1 host contract at 60ea173a, copied here because tests cannot read
-// Git history: `game:preferences-request` accepted exactly these required keys
+// The pre-preset host contract at 60ea173a (1.8.1), which 1.8.2 and 1.8.3 (the
+// rollback target) ship unchanged, copied here because tests cannot read Git
+// history: `game:preferences-request` accepted exactly these required keys
 // plus any of the optional ones, and nothing else.
 const V181_REQUIRED = Object.freeze(['reduceMotion', 'reducedEffects', 'audioReactive', 'ghostPiece', 'gridLines', 'sfxEnabled']);
 const V181_OPTIONAL = Object.freeze(['visualizer', 'effectsIntensity', 'sfxVolume', 'colorblindPieces', 'reduceFlash', 'touchLeftHanded']);
 const v181Accepts = payload => V181_REQUIRED.every(key => Object.hasOwn(payload, key))
   && Object.keys(payload).every(key => V181_REQUIRED.includes(key) || V181_OPTIONAL.includes(key));
-// The 1.8.1 settings shape (no preset keys) and the 1.8.1 host's echo of a request.
+// The pre-preset (1.8.1-1.8.3) settings shape and a pre-preset host's echo of a request.
 const v181Settings = video => { const settings = defaultStackedSettings(); settings.video = { qualityTier: 'auto', reducedEffects: false, audioReactive: true, ghostPiece: true, gridLines: true, visualizer: 'journey', effectsIntensity: 0.7, ...video }; return settings; };
 const v181Apply = (settings, p) => ({ ...settings,
   accessibility: { ...settings.accessibility, reduceMotion: p.reduceMotion, reduceFlash: p.reduceFlash ?? settings.accessibility.reduceFlash, colorblindPieces: p.colorblindPieces ?? settings.accessibility.colorblindPieces },
@@ -31,19 +32,19 @@ const withPreset = preset => { const settings = defaultStackedSettings(); Object
 test('only a parent whose init settings carry a valid preset is treated as preset-aware', () => {
   assert.equal(stackedParentKnowsPresets(defaultStackedSettings()), true);
   assert.equal(stackedParentKnowsPresets({ ...defaultStackedSettings(), startLevel: 3 }), true, 'init settings add startLevel');
-  assert.equal(stackedParentKnowsPresets(v181Settings()), false, 'a 1.8.1 host sends no preset');
+  assert.equal(stackedParentKnowsPresets(v181Settings()), false, 'a pre-preset (1.8.1-1.8.3) host sends no preset');
   for (const bad of [undefined, null, {}, { video: null }, { video: { effectsPreset: 'lively' } }, { video: { effectsPreset: 'toString' } }]) assert.equal(stackedParentKnowsPresets(bad), false, JSON.stringify(bad));
 });
 
-test('a 1.8.1 host is sent only keys it accepts, and the current host still reads the same preset from them', () => {
+test('a pre-preset (1.8.1-1.8.3) host is sent only keys it accepts, and the current host still reads the same preset from them', () => {
   for (const preset of STACKED_EFFECTS_PRESETS) {
     const settings = withPreset(preset);
     const legacy = stackedPreferencesRequest(settings, { presets: false });
-    assert.equal(v181Accepts(legacy), true, preset + ': a 1.8.1 host accepts the request, so its message sequence keeps advancing');
+    assert.equal(v181Accepts(legacy), true, preset + ': a pre-preset host accepts the request, so its message sequence keeps advancing');
     assert.equal(validateStackedBridgeMessage(envelope(legacy)).ok, true, preset + ': the current host accepts it too');
     assert.equal(applyStackedPresentationPreferences(defaultStackedSettings(), legacy).video.effectsPreset, preset, preset + ': the legacy fields classify back exactly');
     const full = stackedPreferencesRequest(settings, { presets: true });
-    assert.equal(v181Accepts(full), false, preset + ': the preset keys would stall a 1.8.1 host, which is why they are gated');
+    assert.equal(v181Accepts(full), false, preset + ': the preset keys would stall a pre-preset host, which is why they are gated');
     assert.deepEqual([full.effectsPreset, full.scene, full.reactiveBoard], [preset, settings.video.scene, settings.video.reactiveBoard]);
     assert.equal(validateStackedBridgeMessage(envelope(full)).ok, true);
     assert.equal(applyStackedPresentationPreferences(defaultStackedSettings(), full).video.effectsPreset, preset);
@@ -51,7 +52,7 @@ test('a 1.8.1 host is sent only keys it accepts, and the current host still read
   }
 });
 
-test('settings from a 1.8.1 host gain the nearest preset in the child copy', () => {
+test('settings from a pre-preset (1.8.1-1.8.3) host gain the nearest preset in the child copy', () => {
   for (const [video, preset] of [
     [{}, 'standard'], [{ effectsIntensity: 0 }, 'off'], [{ reducedEffects: true, effectsIntensity: 0.4 }, 'calm'],
     [{ audioReactive: false }, 'calm'], [{ effectsIntensity: 1 }, 'full'], [{ effectsIntensity: 0.9 }, 'full'],
@@ -68,7 +69,7 @@ test('settings from a 1.8.1 host gain the nearest preset in the child copy', () 
   assert.equal(withStackedEffectsPreset(undefined), undefined);
 });
 
-test('sound a 1.8.1/1.8.2 host saved as off stays off in the child and through the next preferences request', () => {
+test('sound a pre-preset (1.8.1-1.8.3) host saved as off stays off in the child and through the next preferences request', () => {
   // A pre-preset host keeps the old toggle beside the volume, so a muted player
   // arrives as sfxEnabled false with the default 35% volume. The child has one
   // volume slider, and its change handler (main.mjs updatePreferences) derives
@@ -92,7 +93,7 @@ test('sound a 1.8.1/1.8.2 host saved as off stays off in the child and through t
   assert.deepEqual(withStackedEffectsPreset(structuredClone(current)), current);
 });
 
-test('every preset survives a round trip through a 1.8.1 host echo', () => {
+test('every preset survives a round trip through a pre-preset (1.8.1-1.8.3) host echo', () => {
   for (const preset of STACKED_EFFECTS_PRESETS) {
     let host = v181Settings();
     const child = withStackedEffectsPreset(structuredClone(host));
