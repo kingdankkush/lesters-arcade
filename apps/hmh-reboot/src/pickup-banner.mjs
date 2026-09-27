@@ -47,6 +47,7 @@ export function pickupBannerText(event, { weaponTitles = {}, effectTitles = {}, 
   if (event.type === 'world:activated') return { kind: KIND_CLASS.world, title: `${upper(siteName ?? event.name ?? 'site')} ACTIVATED`, detail: event.rewardName ? `${event.rewardName} ready nearby` : '' };
   if (event.type === 'world:gate') return { kind: KIND_CLASS.world, title: `${upper(event.name ?? 'GATE')} UNLOCKED`, detail: event.detail ?? '' };
   if (event.type === 'world:secret') return { kind: KIND_CLASS.secret, title: `${upper(event.name ?? 'secret')} FOUND`, detail: event.detail ?? '' };
+  if (event.type === 'world:rescued') return { kind: KIND_CLASS.world, title: `${upper(event.name ?? 'prisoner')} FREED`, detail: event.detail ?? '' };
   if (event.type === 'world:item') return { kind: KIND_CLASS.world, title: `${upper(event.name ?? 'item')} PICKED UP`, detail: event.detail ?? '' };
   // Package 8.4: the first Seal drop, a banked Seal, and the evolution moment.
   if (event.type === 'genesis-seal:dropped') return { kind: KIND_CLASS.evolution, title: 'GENESIS SEAL DROPPED', detail: 'Take it from the pedestal. A Seal evolves a gun you have mastered.' };

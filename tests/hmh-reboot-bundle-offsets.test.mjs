@@ -39,6 +39,8 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   // resolution and evolution panel, and the bomblet pool and vent ring.
   'boss-drops.mjs',
   'evolution-effects.mjs',
+  // Prisoners (S1.6): the cage rows, rescues and stations.
+  'prisoners.mjs',
 ]);
 
 function walk(node, visit) {

@@ -83,7 +83,7 @@ test('the exact runtime restart loop recloses previously opened gate navigation'
   const restart = source.match(/for\(const gateId of missionState\.openGates\)[^\n]+\n(?:\s*\/\/[^\n]*\n)*\s*for\(const wallId of bossSlots[^\n]+\n\s*WORLD_BLOCKERS=[^\n]+\n\s*missionState=[^\n]+;/)?.[0];
   assert.ok(restart, 'inspect the actual runtime reset, not a copied implementation');
   const bossSlots = { slots: { liquidator: { closedWalls: locks.map((wall) => wall.id) } } };
-  const context = { missionState: state, bossSlots, BOSS_LOCK_WORLD: lockWorld, navGrid, LEVEL_ONE_WORLD, queryGround, refreshWorldDesignGateNavigation, createMissionState, payload: { session: { seed: 9 } } };
+  const context = { missionState: state, bossSlots, BOSS_LOCK_WORLD: lockWorld, navGrid, LEVEL_ONE_WORLD, queryGround, refreshWorldDesignGateNavigation, createMissionState, prisonersEnabled: false, prisonerMissionRows: () => { throw new Error('prisoners are dark'); }, payload: { session: { seed: 9 } } };
   runInNewContext(restart, context);
   assert.deepEqual(arrays(navGrid), closed, 'gates and boss locks both reopen');
   assert.equal(context.missionState.openGates.size, 0);

@@ -146,6 +146,7 @@ import {
   runWeaponMastery,
   getRunProgressionSnapshot,
   grantRunXp,
+  grantRunLevelSpan,
   grantRunSilver,
   openRunUpgradeOffer,
   recordRunDefeat,
@@ -292,6 +293,8 @@ let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CO
 // Genesis Seals and wave-1 evolutions (design package 8.4/8.5, S1.7).
 let createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
   selectRunEvolution, evolveBankedSealOnMastery;
+// Prisoners (package 3.5, S1.6).
+let PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMissionRows, rescuePrisoner, stepPrisonerStations, startPrisonerTimedEffect;
 let createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback;
 let lazyRuntimeModulesLoad = null;
 function loadLazyRuntimeModules() {
@@ -312,7 +315,9 @@ function loadLazyRuntimeModules() {
     import('./boss-geometry.mjs'),
     import('./boss-drops.mjs'),
     import('./evolution-effects.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects]) => {
+    import('./prisoners.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners]) => {
+    ({ PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMissionRows, rescuePrisoner, stepPrisonerStations, startPrisonerTimedEffect } = prisoners);
     ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
     ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
@@ -1508,6 +1513,28 @@ async function boot() {
     combatAudio.play('pickup', { volume: 0.18 });
     pushCombatVisualEvent({ type: 'kill', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 30 }, color: 0xffc857 });
     setAccessibleCombatStatus(`${WEAPON_TITLE_BY_ID[weaponId] ?? weaponId} evolved: ${title}.`);
+  };
+  // Prisoners (package 3.5): a rescue's or an open cage's grants, applied on
+  // their tick. None is a collectible pickup; the Pawnbroker's timed effects
+  // count in activeTicks like any active effect.
+  const prisonerNeeds = (progressionByWeapon) => ({ health: playerHealth, maxHealth: maxPlayerHealth, grenades: grenadeSystem.handCharges, maxGrenades: grenadeSystem.maxHandCharges,
+    needsAmmo: canAcceptCollectible({ kind: 'ammo-refill' }, { loadout: weaponLoadout, progressionByWeapon }) });
+  const applyPrisonerGrants = (grants, tick, progressionByWeapon) => {
+    for (const grant of grants) {
+      if (grant.grant === 'heal') {
+        const before = playerHealth;
+        playerHealth = Math.min(maxPlayerHealth, playerHealth + grant.amount);
+        recordRunHealing(runSummaryAccumulator, playerHealth - before);
+      } else if (grant.grant === 'ammo') refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
+      else if (grant.grant === 'grenades') rechargeHandGrenades(grenadeSystem, { tick, amount: grant.amount });
+      else if (grant.grant === 'timed') startPrisonerTimedEffect(collectibleState, { ...grant, tick });
+      else if (grant.grant === 'level-span') {
+        const snapshot = grantRunLevelSpan(runProgression, OG_MINER_XP_PER_LEVEL, tick);
+        cockpit?.updateRun(snapshot);
+        if (snapshot.pendingLevels > 0) upgradePending = true;
+      }
+    }
+    if (grants.length) combatAudio.play(grants.some((grant) => grant.grant === 'heal') ? 'health-pickup' : 'pickup', { volume: 0.14 });
   };
   // A Genesis Seal picked up this tick: it evolves the one mastered gun at
   // once, banks, or asks for the evolution panel at the end of the tick.
@@ -3253,6 +3280,9 @@ async function boot() {
     stopCurrentSession();
     combatAudio.pause();
     evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';
+    // Prisoners stay dark by default (prisoners.mjs); ?prisoners=1 lights them
+    // for review under evidenceSafe, outside Ranked only.
+    const prisonersEnabled = PRISONERS_LIVE_DEFAULT || (evidenceGameplayEnabled && runtimeParams.get('prisoners') === '1');
     runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);
     revealState = createLevelOneRevealState();
     revealLevelOneAt(revealState, runtimePlayerSpawn);
@@ -3272,7 +3302,7 @@ async function boot() {
     // A restart reopens the previous run's boss locks in the navgrid (S1.5).
     for(const wallId of bossSlots?.slots.liquidator.closedWalls??[]) refreshWorldDesignGateNavigation(navGrid,BOSS_LOCK_WORLD,queryGround,wallId,LEVEL_ONE_WORLD.collisionBlockers);
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
-    missionState=createMissionState(payload.session.seed);
+    missionState=createMissionState(payload.session.seed,{prisoners:prisonersEnabled?prisonerMissionRows(payload.session.seed):[]});
     bossSlots=createBossSlots({ seed: payload.session.seed });
     worldDestructibleState=createWorldDestructibleState();
     worldPacingState=createWorldDesignPacing();
@@ -3841,6 +3871,14 @@ async function boot() {
         // Boss zones grant nothing; the boss slots read them below.
         if (event.type === 'boss-zone') continue;
         const row = missionState.rowsById.get(event.objectiveId);
+        if (event.type === 'prisoner-rescued') {
+          // levelAtRescue is the level just before the rescue's own grant.
+          settleMissionObjective(missionState, event.slotId, runProgression.level);
+          applyPrisonerGrants(rescuePrisoner(missionState, row, { tick, ...prisonerNeeds(progressionByWeapon) }), tick, progressionByWeapon);
+          setAccessibleCombatStatus(`${PRISONER_TITLES[event.prisonerKind]} freed.`);
+          announcePickupEvent({ type: 'world:rescued', name: PRISONER_TITLES[event.prisonerKind] }, {}, tick);
+          continue;
+        }
         if (event.type === 'seal-opened') {
           openWorldBlocker(event.sealId);
           setAccessibleCombatStatus(`${row.name}: the seal gives way.`);
@@ -3886,6 +3924,7 @@ async function boot() {
           announcePickupEvent({ type: 'world:activated', name: row.name, rewardName }, {}, tick);
         }
       }
+      if (missionState.prisonerStations.size) applyPrisonerGrants(stepPrisonerStations(missionState, { hero: actor, ...prisonerNeeds(progressionByWeapon) }), tick, progressionByWeapon);
       for(const supply of stepWorldDestructibleSupplies(worldDestructibleState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
         if(supply.reward==='heal'){const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
         if(supply.reward==='ammo')refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});

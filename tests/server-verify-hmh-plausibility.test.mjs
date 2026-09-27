@@ -741,7 +741,11 @@ test('the second-round consistency literals and the accumulator facts they rest 
   // refills the grenades to that maximum, the third recharge site.
   assert.equal(MAIN_SOURCE.match(/handCharges \+=/g), null);
   assert.ok(MAIN_SOURCE.includes('if (grenadeSystem && grenadeGain > 0) raiseHandGrenadeMaximum(grenadeSystem, { amount: grenadeGain });'));
-  assert.equal(MAIN_SOURCE.match(/rechargeHandGrenades\(grenadeSystem/g).length, 3);
+  // Slice 8: a Quartermaster's +3 is the fourth site. Prisoners are dark by
+  // default and a Ranked run never lights them, so a v6 (1.8.x) run has none;
+  // the v7 grenade trail must count them when prisoners go live.
+  assert.equal(MAIN_SOURCE.match(/rechargeHandGrenades\(grenadeSystem/g).length, 4);
+  assert.ok(MAIN_SOURCE.includes("else if (grant.grant === 'grenades') rechargeHandGrenades(grenadeSystem, { tick, amount: grant.amount });"));
   assert.ok(MAIN_SOURCE.includes('rechargeHandGrenades(grenadeSystem, { tick, amount: grenadeSystem.maxHandCharges });'));
   assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'grenade-supply'\) \{\s*rechargeHandGrenades\(grenadeSystem,\{tick,amount:1\}\);\s*\} else if \(event\.kind === 'nuke'\) \{\s*rechargeHandGrenades\(grenadeSystem, \{ tick, amount: 1 \}\);/);
   const rechargingEffects = new Set([

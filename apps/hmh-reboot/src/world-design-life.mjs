@@ -241,6 +241,19 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
         beams++;
       }
     }
+    // Prisoner cages (S1.6 placeholders until the S4.6 art): a south-facing
+    // cage of bars with the kind's lantern (package 3.3 colours); the door
+    // hangs open once the prisoner is free, and an open cage with a remainder
+    // keeps its lantern lit as a station. No prisoner actor is drawn.
+    for(const row of mission.prisoners??[]) {
+      const c=row.anchor,p=project(c.x,c.y,queryGround(c.x,c.y).groundZ);
+      if(!onScreen(p,200)||hidden(c.x,c.y)) continue;
+      const open=mission.rescued?.has(row.id),lantern=MISSION_PALETTE.prisoner[row.prisonerKind]??ivory;
+      ground.roundRect(p.x-18*z,p.y-40*z,36*z,40*z,3*z).fill({color:0x241a14,alpha:open?.35:.6}).stroke({color:0x8a7a62,width:2.5*z,alpha:.95});
+      for(let bar=1;bar<5;bar++){const x=p.x-18*z+bar*7.2*z;if(!open||bar>2)effects.moveTo(x,p.y-40*z).lineTo(x,p.y).stroke({color:0x8a7a62,width:2*z,alpha:.95});}
+      if(open) effects.moveTo(p.x-18*z,p.y).lineTo(p.x-30*z,p.y+8*z).stroke({color:0x8a7a62,width:2.5*z,alpha:.9});
+      if(!open||mission.prisonerStations?.has(row.id)) dot(p.x+(row.operate.facing==='east'?-22:22)*z,p.y-30*z,4*z,lantern,.95);
+    }
     for(const site of WORLD_DESIGN_SITES) {
       const groundZ=queryGround(site.x,site.y).groundZ,p=project(site.x,site.y,groundZ);
       if(!onScreen(p,260)) continue;

@@ -9,7 +9,7 @@ import {readFileSync} from 'node:fs';
 const queryGround=createLevelOneGroundQuery();
 test('the real runtime wires secret targets, damage resolution, collection, reset and hidden native props',()=>{
  const source=readFileSync(new URL('../apps/hmh-reboot/src/main.mjs',import.meta.url),'utf8');
- for(const fragment of ['...missionSealTargets(missionState)','lastCombatResolution.targets[WORLD_DESIGN_SECRET_SEAL.id]','applyMissionSealDamage(missionState,','stepMissionObjectives(missionState,','missionState=createMissionState(payload.session.seed)','missionHiddenSecretProps(missionState)'])assert.ok(source.includes(fragment),fragment);
+ for(const fragment of ['...missionSealTargets(missionState)','lastCombatResolution.targets[WORLD_DESIGN_SECRET_SEAL.id]','applyMissionSealDamage(missionState,','stepMissionObjectives(missionState,','missionState=createMissionState(payload.session.seed,','missionHiddenSecretProps(missionState)'])assert.ok(source.includes(fragment),fragment);
  assert.ok(world.collisionBlockers.some(b=>b.id==='farmstead-cache-seal'));
 });
 test('hidden supplies require destruction, reachable same-height contact and line of sight; each reward is once per run',()=>{

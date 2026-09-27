@@ -534,8 +534,8 @@ export function getRunProgressionSnapshot(state) {
   });
 }
 
-function applyRunXp(state, baseXp) {
-  const xpGain = Math.round(baseXp * resolveEffects(state).xpMultiplier);
+function applyRunXp(state, baseXp, multiplier = resolveEffects(state).xpMultiplier) {
+  const xpGain = Math.round(baseXp * multiplier);
   state.xp += xpGain;
   let levelsGained = 0;
   while (state.level < 1000 && state.xp >= nextLevelThreshold(state.level)) {
@@ -550,6 +550,15 @@ export function grantRunXp(state, baseXp, tick) {
   if (!Number.isInteger(baseXp) || baseXp <= 0 || baseXp > 1_000_000) throw new TypeError('baseXp must be a positive bounded integer');
   const gained = applyRunXp(state, baseXp);
   state.lastEvent = { tick, ...gained };
+  return getRunProgressionSnapshot(state);
+}
+
+// Package 3.5: the OG Miner's one level, spanXpPerLevel (300) x the current
+// level, never multiplied by xpMultiplier, and no score. With rank capacity
+// full the level arrives without a card (applyRunXp's rule).
+export function grantRunLevelSpan(state, spanXpPerLevel, tick) {
+  const gained = applyRunXp(state, spanXpPerLevel * state.level, 1);
+  state.lastEvent = { tick, sourceId: 'level-span', ...gained };
   return getRunProgressionSnapshot(state);
 }
 

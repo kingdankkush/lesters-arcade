@@ -50,7 +50,10 @@ function trackCandidates(mission, { districtId, stations }) {
     const point = next.operate ?? next.anchor;
     return [trackOf(3, next.id, point.x, point.y, next.task, next.objectiveClass)];
   }
-  return stations.map((station) => trackOf(4, station.id, station.x, station.y, station.task, 'station'));
+  // Discovered prisoners still in their cages (S1.6) share priority 4.
+  const prisoners = (mission.prisoners ?? []).filter((row) => mission.discovered.has(row.id) && !mission.rescued?.has(row.id))
+    .map((row) => trackOf(4, row.id, row.operate.x, row.operate.y, row.task, 'prisoner'));
+  return [...prisoners, ...stations.map((station) => trackOf(4, station.id, station.x, station.y, station.task, 'station'))];
 }
 
 // The node the pill tracks this frame, or null (a boss bar hides the pill).

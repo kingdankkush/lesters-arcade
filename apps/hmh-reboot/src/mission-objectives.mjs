@@ -164,7 +164,7 @@ function buildZones(objectives) {
   for (const row of objectives) {
     if (['quick', 'channel', 'seal'].includes(row.mode)) {
       zones.push({
-        id: row.id, objectiveId: row.id, kind: 'machine', mode: row.mode, clip: row.clip, fillTicks: row.fillTicks,
+        id: row.id, objectiveId: row.id, kind: row.kind === 'prisoner' ? 'prisoner' : 'machine', mode: row.mode, clip: row.clip, fillTicks: row.fillTicks,
         ringRadius: row.ringRadius, x: row.operate.x, y: row.operate.y, facing: row.operate.facing,
         blockerId: row.propBlockerId ?? null, requires: row.requires ?? null, readyTick: row.readyTick ?? 0, sealId: null,
         bossZone: row.bossZone ?? null,
@@ -187,13 +187,17 @@ const freshZone = () => ({
   stillTicks: 0, operatingSince: null, pausedUntil: -1, leftTick: null,
 });
 
-export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, bossZones = MISSION_BOSS_ZONES } = {}) {
+// `prisoners` are the run's placed cages (prisoners.mjs prisonerMissionRows):
+// kneel channels whose fill is the rescue (slice S1.6). A run without them
+// (the default while prisoners are dark) steps exactly as before.
+export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, bossZones = MISSION_BOSS_ZONES, prisoners = [] } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError('mission seed must be an integer');
-  const zones = buildZones([...objectives, ...bossZones]);
+  const zones = buildZones([...objectives, ...bossZones, ...prisoners]);
   return {
     seed: seed >>> 0,
     objectives,
-    rowsById: new Map([...objectives, ...bossZones].map((row) => [row.id, row])),
+    prisoners,
+    rowsById: new Map([...objectives, ...bossZones, ...prisoners].map((row) => [row.id, row])),
     zones,
     // Boss zone ids the boss slots arm for this tick, and their status for
     // the lamps and the tracker (projection reads only).
@@ -202,7 +206,11 @@ export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, 
     lastTick: -1,
     // objectiveId -> completion tick; the steam hazard reads the valve here.
     completed: new Map(),
-    // objectiveId -> the level just before that node's own XP grant.
+    // slotId -> rescue tick (the cage-open tick).
+    rescued: new Map(),
+    // slotId -> an open cage's remainder (prisoners.mjs).
+    prisonerStations: new Map(),
+    // objectiveId or slotId -> the level just before that node's own grant.
     levels: new Map(),
     // Opened blocker ids (court gates, seals, and broken cover added by main).
     openGates: new Set(),
@@ -217,6 +225,7 @@ export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, 
 }
 
 function zoneDone(state, zone) {
+  if (zone.kind === 'prisoner') return state.rescued.has(zone.objectiveId);
   return zone.kind === 'pry' ? !(state.seals.get(zone.sealId) > 0) || state.completed.has(zone.objectiveId) : state.completed.has(zone.objectiveId);
 }
 
@@ -275,7 +284,7 @@ export function stepMissionObjectives(state, {
 
   // Discovery reads the logical view of the simulated actor, never the camera.
   if (logicalView) {
-    for (const row of state.objectives) {
+    for (const row of [...state.objectives, ...state.prisoners]) {
       if (row.objectiveClass === 'secret' || state.discovered.has(row.id)) continue;
       const { x, y } = row.anchor;
       if (x >= logicalView.minX && x <= logicalView.maxX && y >= logicalView.minY && y <= logicalView.maxY) state.discovered.add(row.id);
@@ -367,6 +376,11 @@ export function stepMissionObjectives(state, {
       state.zoneState.set(zone.id, freshZone());
       events.push(freezeDeep({ type: 'boss-zone', zoneId: zone.id, ...zone.bossZone, zoneKind: zone.bossZone.kind, tick }));
     } else if (zone.kind === 'pry') openSeal(state, zone.sealId, tick, 'pry', events);
+    else if (zone.kind === 'prisoner') {
+      const row = state.rowsById.get(zone.objectiveId);
+      state.rescued.set(row.id, tick);
+      events.push(freezeDeep({ type: 'prisoner-rescued', objectiveId: row.id, slotId: row.id, prisonerKind: row.prisonerKind, tick }));
+    }
     else completeObjective(state, state.rowsById.get(zone.objectiveId), tick, events);
     if (operating?.zone === zone) operating = null;
   }
@@ -407,7 +421,7 @@ export function missionDockStep(state, { player, move = { x: 0, y: 0 }, dashing 
 // Records the level a node was completed at (the level just before its own XP
 // grant, after every earlier grant of the tick) and returns that grant.
 export function settleMissionObjective(state, objectiveId, level) {
-  if (!state.completed.has(objectiveId)) throw new Error(`objective ${objectiveId} is not completed`);
+  if (!state.completed.has(objectiveId) && !state.rescued.has(objectiveId)) throw new Error(`objective ${objectiveId} is not completed`);
   if (state.levels.has(objectiveId)) throw new Error(`objective ${objectiveId} is already settled`);
   if (!Number.isInteger(level) || level < 1) throw new TypeError('level must be a positive integer');
   state.levels.set(objectiveId, level);

@@ -973,6 +973,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-genesis-seal-determinism.test.mjs",
   "tests/hmh-evolutions-wave1.test.mjs",
   "tests/hmh-evolution-effects.test.mjs",
+  "apps/hmh-reboot/src/prisoners.mjs",
+  "tests/hmh-prisoners.test.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
   "apps/hmh-reboot/src/world-atmosphere.mjs",
