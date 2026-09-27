@@ -1339,7 +1339,9 @@ test('the melee-trail literals equal the 1.8.x child, and the knife swings only 
   const meleeCall = /const meleeFrame = stepMeleeState\(meleeState, \{([\s\S]*?)\}\);/.exec(MAIN_SOURCE);
   assert.ok(meleeCall, 'the knife is stepped once');
   assert.equal(MAIN_SOURCE.match(/stepMeleeState\(/g).length, 1);
-  assert.match(meleeCall[1], /automatic: !rosterPreviewEnabled && !dashFrame\.active && weaponLoadout\.activeWeaponId !== 'forked-standard',/);
+  // The 1.9.0 child also holds the knife while a mission channel stows the
+  // weapon (mission core v2), which only removes swings.
+  assert.match(meleeCall[1], /automatic: !rosterPreviewEnabled && !dashFrame\.active && !missionState\.stowed && weaponLoadout\.activeWeaponId !== 'forked-standard',/);
   assert.doesNotMatch(meleeCall[1], /trigger/);
   assert.match(MAIN_SOURCE, /combatHitIntents\.push\(\.\.\.meleeFrame\.hits\.map\(/);
   assert.match(MAIN_SOURCE, /if \(meleeFrame\.attacked\) \{\s*recordRunWeaponFire\(runSummaryAccumulator, \{ weaponId: 'litecoin-knife', emitted: 1 \}\);\s*if \(meleeFrame\.hits\.length > 0\) \{\s*recordRunWeaponTriggerContact\(runSummaryAccumulator, \{ weaponId: 'litecoin-knife' \}\);\s*recordRunProjectileContacts\(runSummaryAccumulator, \{ weaponId: 'litecoin-knife', count: meleeFrame\.hits\.length \}\);/);

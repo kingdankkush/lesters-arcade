@@ -5,6 +5,9 @@ import './register-hooks.mjs';
 import { installHeadlessEnvironment, makeEvent, PAGE_URL } from './dom-env.mjs';
 import { createBridgeEnvelope, validateChildMessage } from '../../sdk/hmh-bridge-protocol.mjs';
 import { projectHmhRuntimeSettings } from '../../apps/portal/src/hmh-player-settings.mjs';
+// The 1.9.0 child emits run summary schema 7; the portal bridge validates
+// with the v7 schema module (schema 1-7), and so does this parent.
+import { validateRunSummaryPayload as validateRunSummary } from '../../sdk/hmh-run-summary-schema-v7.mjs';
 
 const FRAME_MS = 1000 / 60;
 const tickYield = () => new Promise((resolve) => setImmediate(resolve));
@@ -25,7 +28,7 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
   const port = {
     onmessage: null,
     postMessage(message) {
-      const validation = validateChildMessage(message);
+      const validation = validateChildMessage(message, { validateRunSummary });
       headless.outbox.push({ frame: frames, tick: headless.spies.simulation?.tick ?? 0, message, valid: validation.ok, error: validation.ok ? null : validation.error });
     },
     start() {},
@@ -81,6 +84,7 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
   let summaryMessage = null;
   let stepErrors = 0;
   const upgradeLog = [];
+  const rerolled = new Set();
 
   for (frames = 0; frames < maxFrames; frames += 1) {
     headless.clock.nowMs += FRAME_MS;
@@ -92,10 +96,20 @@ export async function runChild({ seed, buildHash, seasonId, heroId = 'lit-comman
     }
     if (simulation.state === 'upgrade' && spies.upgradeOffer) {
       const offer = spies.upgradeOffer;
-      const choiceId = pilot.chooseUpgrade(offer, spies) ?? offer.pendingChoices[0].id;
-      upgradeLog.push({ tick: simulation.tick, offered: offer.pendingChoices.map((c) => c.id), chosen: choiceId });
-      spies.upgradeOffer = null;
-      spies.cockpitOptions.onSelectUpgrade(choiceId);
+      // A re-roll (package 8.3) at most once per card per offer: the panel
+      // repaints with the new card and the pick waits for the next frame.
+      const rerollSlot = pilot.rerollSlot?.(offer, simulation.tick) ?? null;
+      const rerollKey = `${simulation.tick}:${offer.offerKind}:${offer.offersOpened}:${rerollSlot}`;
+      if (rerollSlot !== null && !rerolled.has(rerollKey)) {
+        rerolled.add(rerollKey);
+        upgradeLog.push({ tick: simulation.tick, kind: offer.offerKind, offered: offer.pendingChoices.map((c) => c.id), rerolledSlot: rerollSlot });
+        spies.upgradePanelOptions.onRerollUpgrade(rerollSlot);
+      } else {
+        const choiceId = pilot.chooseUpgrade(offer, spies) ?? offer.pendingChoices[0].id;
+        upgradeLog.push({ tick: simulation.tick, kind: offer.offerKind, offered: offer.pendingChoices.map((c) => c.id), chosen: choiceId });
+        spies.upgradeOffer = null;
+        spies.upgradePanelOptions.onSelectUpgrade(choiceId);
+      }
     }
     if (simulation.state === 'active') gamepadRef.current = pilot.frame(spies, simulation.tick);
     if (trace && simulation.state === 'active' && simulation.tick % 60 === 0) trace.push(traceRow(spies, simulation.tick, gamepadRef.current));

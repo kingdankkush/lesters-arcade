@@ -10,7 +10,13 @@ import { RANKED_GAMES } from '../../apps/portal/src/ranked-identity.mjs';
 
 export { FIXTURE_CHAIN_ID, FIXTURE_ISSUED_AT, FIXTURE_REGISTRY, FIXTURE_SEED_SECRET, FIXTURE_WALLET } from '../../tests/fixtures/ranked/build-fixtures.mjs';
 export const GAME_ID = 'lester-blaster';
-export const HARNESS_BUILD_HASH = `site-${SITE_VERSION}:game-${GAME_VERSION}:cabinet-${HMH_CABINET_VERSION}`;
-export const HARNESS_RELEASE = GAME_VERSION;
-export const HARNESS_CABINET = HMH_CABINET_VERSION;
+// HMH_HARNESS_RELEASE and HMH_HARNESS_CABINET label a child ahead of this
+// checkout's version files (the integration owner bumps them at release), for
+// instance the 1.9.0 child (cabinet 0.6.0) on its gameplay branch.
+const release = process.env.HMH_HARNESS_RELEASE || GAME_VERSION;
+const site = process.env.HMH_HARNESS_RELEASE || SITE_VERSION;
+const cabinet = process.env.HMH_HARNESS_CABINET || HMH_CABINET_VERSION;
+export const HARNESS_BUILD_HASH = `site-${site}:game-${release}:cabinet-${cabinet}`;
+export const HARNESS_RELEASE = release;
+export const HARNESS_CABINET = cabinet;
 export const SEASON_ID = RANKED_GAMES[GAME_ID].seasonId;

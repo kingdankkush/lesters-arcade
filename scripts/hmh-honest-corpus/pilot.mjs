@@ -5,9 +5,9 @@
 // in the shipped input model. Pilots never write simulation state.
 import { LEVEL_ONE_WORLD, createLevelOneGroundQuery, getLevelOneDistrictAt } from '../../apps/hmh-reboot/src/level-one-world.mjs';
 import { createEnemyNavGrid, computeEnemyFlowField, sampleFlowDirection } from '../../apps/hmh-reboot/src/enemy-navgrid.mjs';
-import { refreshWorldDesignGateNavigation, worldDesignActiveBlockers } from '../../apps/hmh-reboot/src/world-design-interactions.mjs';
-import { WORLD_DESIGN_SITES } from '../../apps/hmh-reboot/src/world-design-encounters.mjs';
-import { WORLD_DESIGN_SECRETS } from '../../apps/hmh-reboot/src/world-design-secrets.mjs';
+import { refreshWorldDesignGateNavigation } from '../../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { MISSION_BOSS_ZONES, MISSION_OBJECTIVES, missionActiveBlockers } from '../../apps/hmh-reboot/src/mission-objectives.mjs';
+import { HMH_V7_BOSSES } from '../../sdk/hmh-run-contract-v7.mjs';
 import { collectibleIsAvailable } from '../../apps/hmh-reboot/src/objective-rewards.mjs';
 import { canAcceptCollectible } from '../../apps/hmh-reboot/src/collectible-capacity.mjs';
 import { progressionByWeapon } from '../../apps/hmh-reboot/src/weapon-system.mjs';
@@ -28,6 +28,24 @@ function rng(seed) {
 
 const THREAT_WEIGHT = { 'bagholder-rusher': 1, forkrunner: 1.1, 'liquidator-agent': 1.2, 'whale-enforcer': 1.8, 'gas-bomber': 1.4, 'validator-cultist': 1.3 };
 const BOSS_ARENA = LEVEL_ONE_WORLD.encounterArenas.at(-1).anchor;
+// Mission core v2 (1.9.0): a machine is operated by standing still inside its
+// ring (quick, channel or seal fill); a secret is entered, the Winch Handle
+// touched. The Liquidator is dormant until his readyTick and starts only when
+// the hero rings the Closing Bell (a seal ring) or enters the Dark Pool.
+const MACHINE_ROWS = MISSION_OBJECTIVES.filter((row) => ['quick', 'channel', 'seal'].includes(row.mode) && row.operate);
+const WALK_ROWS = MISSION_OBJECTIVES.filter((row) => ['enter', 'touch'].includes(row.mode) && !row.seal);
+const BELL = MISSION_BOSS_ZONES.find((row) => row.id === 'liquidator-closing-bell');
+const LIQUIDATOR_READY_TICK = HMH_V7_BOSSES.liquidator.readyTick;
+const missionGoal = (row) => {
+  const point = row.operate ?? row.anchor;
+  const hold = Boolean(row.operate);
+  return { x: point.x, y: point.y, id: row.id, kind: 'site', hold, holdRadius: hold ? Math.min(40, row.ringRadius * 0.5) : 0, holdTicks: (row.fillTicks ?? 0) + 600 };
+};
+// The live Liquidator a player sees (the boss slots own him since S1.5).
+const liveBoss = (spies, tick) => {
+  const boss = spies.bossSlots?.slots?.liquidator?.boss ?? null;
+  return boss?.active && boss.health > 0 && tick >= boss.startTick ? boss : null;
+};
 const MELEE_REACH = { 'bagholder-rusher': 96, forkrunner: 102, 'whale-enforcer': 150 };
 
 export const STYLE_DEFAULTS = Object.freeze({
@@ -89,6 +107,7 @@ export function createPilot({ style, seed, tickCap, entry }) {
   let lastCommand = null;
   let stuckFrames = 0;
   let orbitSide = 1;
+  let holdSince = -1;
   const home = cfg.orbit ? openestPoint(grid, entry, cfg.orbitRadius ?? 650) : { x: entry.x, y: entry.y };
   stats.home = home;
   const exploreRoute = buildExploreRoute(entry, random);
@@ -99,19 +118,19 @@ export function createPilot({ style, seed, tickCap, entry }) {
       if (!enemy.active || enemy.health <= 0) continue;
       list.push(enemy);
     }
-    const boss = spies.boss;
-    if (boss?.active && boss.health > 0 && tick >= boss.startTick) list.push({ ...boss, archetypeId: 'boss', isBoss: true });
+    const boss = liveBoss(spies, tick);
+    if (boss) list.push({ ...boss, archetypeId: 'boss', isBoss: true });
     return list;
   };
 
   const syncGates = (spies) => {
-    const state = spies.worldDesign;
+    const state = spies.mission;
     if (!state) return;
     for (const gateId of state.openGates) {
       if (knownGates.has(gateId)) continue;
       knownGates.add(gateId);
       try {
-        refreshWorldDesignGateNavigation(grid, LEVEL_ONE_WORLD, queryGround, gateId, worldDesignActiveBlockers(state, LEVEL_ONE_WORLD.collisionBlockers));
+        refreshWorldDesignGateNavigation(grid, LEVEL_ONE_WORLD, queryGround, gateId, missionActiveBlockers(state, LEVEL_ONE_WORLD.collisionBlockers));
       } catch { /* non-capsule openings keep the static grid */ }
       fieldCache.key = '';
     }
@@ -148,25 +167,30 @@ export function createPilot({ style, seed, tickCap, entry }) {
     return out;
   };
 
-  const siteCandidates = (spies) => {
-    const state = spies.worldDesign;
+  const siteCandidates = (spies, tick) => {
+    const state = spies.mission;
     if (!state) return [];
-    return WORLD_DESIGN_SITES.filter((site) => !state.completed.has(site.id) && !state.activating.has(site.id) && !(blacklist.get(site.id) > 0))
-      .map((site) => ({ x: site.x, y: site.y, id: site.id, kind: 'site' }));
+    return [...MACHINE_ROWS, ...WALK_ROWS]
+      .filter((row) => !state.completed.has(row.id) && !(row.requires && !state.completed.has(row.requires)) && !(blacklist.get(row.id) > tick))
+      .map(missionGoal);
   };
 
   const chooseGoal = (spies, tick, me, enemies) => {
     const health = spies.health ?? 100;
     const maxHealth = spies.maxHealth ?? 100;
     if (tick >= tickCap) return null;
-    if (cfg.boss && tick >= 70_800) {
-      const boss = spies.boss;
-      if (boss?.active && boss.health > 0 && tick >= boss.startTick) {
+    if (cfg.boss && tick >= LIQUIDATOR_READY_TICK + (cfg.bossDelay ?? 1_200)) {
+      const boss = liveBoss(spies, tick);
+      const slot = spies.bossSlots?.slots?.liquidator;
+      if (boss) {
         stats.bossSeen = true;
         const away = Math.atan2(me.y - boss.y, me.x - boss.x) + 0.35;
         return { x: boss.x + Math.cos(away) * 380, y: boss.y + Math.sin(away) * 380, id: 'boss-orbit', kind: 'boss' };
       }
-      if (!boss?.active || boss.health > 0) return { x: BOSS_ARENA.x - 300, y: BOSS_ARENA.y, id: 'boss-arena', kind: 'boss' };
+      // Ring the Closing Bell: stand still in its ring until he starts.
+      if (slot && slot.status !== 'defeated' && slot.status !== 'live' && !(blacklist.get('boss-bell') > tick)) {
+        return { x: BELL.operate.x, y: BELL.operate.y, id: 'boss-bell', kind: 'boss', hold: true, holdRadius: 40, holdTicks: BELL.fillTicks + 900 };
+      }
     }
     const pickups = cfg.pickups ? pickupCandidates(spies, tick) : [];
     const dist = (p) => Math.hypot(p.x - me.x, p.y - me.y);
@@ -175,8 +199,14 @@ export function createPilot({ style, seed, tickCap, entry }) {
     if (cfg.explore) {
       while (exploreIndex < exploreRoute.length) {
         const step = exploreRoute[exploreIndex];
-        if (step.kind === 'site' && (spies.worldDesign?.completed.has(step.id) || spies.worldDesign?.activating.has(step.id))) { exploreIndex += 1; continue; }
-        if (dist(step) < (step.kind === 'secret' ? 30 : 60) || (blacklist.get(step.id) ?? 0) > tick) { exploreIndex += 1; continue; }
+        if ((step.kind === 'site' || step.kind === 'secret') && spies.mission?.completed.has(step.id)) { exploreIndex += 1; continue; }
+        if (step.hold && dist(step) < step.holdRadius) {
+          // Hold still in the ring until the machine completes, or give up.
+          if (holdSince < 0) holdSince = tick;
+          if (tick - holdSince > step.holdTicks) { exploreIndex += 1; holdSince = -1; continue; }
+          break;
+        }
+        if ((!step.hold && dist(step) < (step.kind === 'secret' ? 30 : 60)) || (blacklist.get(step.id) ?? 0) > tick) { exploreIndex += 1; continue; }
         break;
       }
       // Take a reward or a weapon that is close before resuming the sweep.
@@ -188,7 +218,7 @@ export function createPilot({ style, seed, tickCap, entry }) {
     if (favoured && dist(favoured) < (cfg.favourRange ?? 3000)) return favoured;
     const local = cfg.localRadius ?? Infinity;
     const reachPickups = pickups.filter((p) => cfg.pickupFirst || (dist(p) < Math.min(1400, local)) || (p.effect.kind === 'weapon-cache' && dist(p) < local));
-    const sites = cfg.sites ? siteCandidates(spies).filter((s) => cfg.pickupFirst || dist(s) < Math.min(2200, local * 1.6)) : [];
+    const sites = cfg.sites ? siteCandidates(spies, tick).filter((s) => cfg.pickupFirst || dist(s) < Math.min(2200, local * 1.6)) : [];
     const candidates = [...reachPickups, ...sites].sort((a, b) => dist(a) - dist(b));
     if (candidates.length) return candidates[0];
     if (cfg.orbit) {
@@ -403,7 +433,9 @@ export function createPilot({ style, seed, tickCap, entry }) {
         move = flowTowards(me, nearest, tick);
         stats.chaseTicks = (stats.chaseTicks ?? 0) + 1;
       }
-      if (cfg.steer && !meleeMode) move = contextSteer(me, move, enemies, tick, kite, near > 0);
+      const holdingNow = goal?.hold && Math.hypot(goal.x - me.x, goal.y - me.y) <= goal.holdRadius && danger < 1.2;
+      if (holdingNow) move = { x: 0, y: 0 };
+      else if (cfg.steer && !meleeMode) move = contextSteer(me, move, enemies, tick, kite, near > 0);
       // Never stand still while enemies are near: orbit the crowd instead.
       else if (cfg.keepMoving && !meleeMode && Math.hypot(move.x, move.y) < 0.35 && near > 0) {
         const ox = me.x - cx / near;
@@ -412,6 +444,16 @@ export function createPilot({ style, seed, tickCap, entry }) {
         const side = Math.floor(tick / 600) % 2 === 0 ? 1 : -1;
         move = { x: (-oy / od) * side + (ox / od) * 0.3, y: (ox / od) * side + (oy / od) * 0.3 };
       }
+      // Operating a machine or ringing the bell: stand still inside the ring
+      // (a released stick) unless the crowd is on top of the hero. Holding is
+      // not being stuck; a hold that never completes gives the goal up.
+      const holding = goal?.hold && Math.hypot(goal.x - me.x, goal.y - me.y) <= goal.holdRadius;
+      if (holding) {
+        if (holdSince < 0) holdSince = tick;
+        if (danger < 1.2) move = { x: 0, y: 0 };
+        lastProgressCheck = { tick, x: me.x, y: me.y };
+        if (tick - holdSince > goal.holdTicks) { blacklist.set(goal.id, tick + 3600); goal = null; holdSince = -1; }
+      } else if (!goal?.hold || Math.hypot(goal.x - me.x, goal.y - me.y) > goal.holdRadius * 2) holdSince = -1;
       // Stuck handling: little progress toward the goal for two and a half seconds.
       if (goal && tick - lastProgressCheck.tick >= 150) {
         const progress = Math.hypot(me.x - lastProgressCheck.x, me.y - lastProgressCheck.y);
@@ -456,9 +498,9 @@ export function createPilot({ style, seed, tickCap, entry }) {
         buttons[4] = { pressed: true, value: 1 };
         if (tick >= grenadeState.until) grenadeState = { ...grenadeState, phase: 'idle', lastThrowTick: tick };
       }
-    } else if (!surrender && cfg.boss && spies.boss?.active && spies.boss.health > 0 && tick >= spies.boss.startTick) {
-      const bx = spies.boss.x - me.x;
-      const by = spies.boss.y - me.y;
+    } else if (!surrender && cfg.boss && liveBoss(spies, tick)) {
+      const bx = liveBoss(spies, tick).x - me.x;
+      const by = liveBoss(spies, tick).y - me.y;
       const d = Math.hypot(bx, by);
       if (d < 700 && d > 0 && (tick % 240) < 150) { axes[2] = bx / d; axes[3] = by / d; }
     }
@@ -491,7 +533,17 @@ export function createPilot({ style, seed, tickCap, entry }) {
     return ids[Math.floor(random() * ids.length)];
   };
 
-  return { frame, chooseUpgrade, stats, config: cfg };
+  // Package 8.3: a player re-rolls a card now and then (one per card per
+  // offer; the driver never asks twice for one card of one offer). A card the
+  // style wants is kept.
+  const rerollSlot = (offer) => {
+    const choices = offer.pendingChoices ?? [];
+    if (choices.length === 0 || random() >= (cfg.rerollChance ?? 0.25)) return null;
+    const unwanted = choices.filter((choice) => !cfg.upgrades.includes(choice.id));
+    return unwanted.length ? unwanted[Math.floor(random() * unwanted.length)].slot ?? null : null;
+  };
+
+  return { frame, chooseUpgrade, rerollSlot, stats, config: cfg };
 }
 
 // The most open ground near the entry: the candidate point whose ring of
@@ -532,8 +584,8 @@ function findCluster(me, enemies, minimum) {
 
 function buildExploreRoute(entry, random) {
   const stops = [
-    ...WORLD_DESIGN_SITES.map((site) => ({ x: site.x, y: site.y, id: site.id, kind: 'site' })),
-    ...WORLD_DESIGN_SECRETS.filter((secret) => !secret.sealId).map((secret) => ({ x: secret.x, y: secret.y, id: secret.id, kind: 'secret' })),
+    ...MACHINE_ROWS.map(missionGoal),
+    ...WALK_ROWS.map((row) => ({ ...missionGoal(row), kind: row.objectiveClass === 'secret' ? 'secret' : 'site' })),
     ...LEVEL_ONE_WORLD.pointsOfInterest.map((poi) => ({ x: poi.anchor.x, y: poi.anchor.y, id: `poi:${poi.id}`, kind: 'poi' })),
   ];
   // Sweep toward the nearer world edge first, then across to the far edge.

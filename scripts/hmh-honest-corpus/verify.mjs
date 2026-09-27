@@ -24,7 +24,8 @@ import {
   spawnCapacity,
   validateRebootRunPlausibility,
 } from '../../server/verify/hmh-plausibility.mjs';
-import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema.mjs';
+// Schema 1-7 (the v7 module answers schema 1-6 exactly as the base module).
+import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v7.mjs';
 import { FIXTURE_CHAIN_ID, FIXTURE_ISSUED_AT, FIXTURE_REGISTRY, FIXTURE_SEED_SECRET, FIXTURE_WALLET, GAME_ID } from './identity.mjs';
 
 const rows = (list, key, value) => Object.fromEntries((list ?? []).map((row) => [row[key], row[value]]));

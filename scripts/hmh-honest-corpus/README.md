@@ -62,6 +62,21 @@ node scripts/hmh-honest-corpus/batch.mjs export --commit=$(git rev-parse --short
 node scripts/hmh-honest-corpus/smoke.mjs 600                              # boot only
 ```
 
+`HMH_HARNESS_RELEASE` and `HMH_HARNESS_CABINET` label a child ahead of this
+checkout's version files (the integration owner bumps them at release): the
+1.9.0 child on its gameplay branch runs under
+`HMH_HARNESS_RELEASE=1.9.0 HMH_HARNESS_CABINET=0.6.0`, so its seeds, build
+hash and schema-7 summaries are the 1.9.0 ones.
+
+**The 1.9.0 child (schema 7).** Mission core v2 replaced the world-design
+sites: a machine is operated by standing still in its ring, so the pilots
+hold a released stick inside it (`spies/mission-objectives.mjs`). The
+Liquidator is a boss slot that starts only when the hero rings the Closing
+Bell after his ready tick (`spies/boss-slots.mjs`), and the level-up and
+evolution panel is the lazy upgrade-panel chunk, where a pilot now also
+re-rolls a card now and then (`spies/upgrade-panel.mjs`). The parent side
+validates with the schema-7 module, as the portal bridge does.
+
 Runs are headless Node processes; they need no browser and no heavy lock. Keep
 `--concurrency` at 6 or below (each child process may take up to 3 GB). A run
 takes 40 to 240 s of wall time; the batch folder (`runs/`, ignored by git)
