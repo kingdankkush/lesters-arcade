@@ -13,7 +13,7 @@ import { createStackedBoardView, boardCellToAuthored } from '../apps/stacked/src
 import { createStackedRenderer } from '../apps/stacked/src/render/renderer.mjs';
 import { createStackedPlaySession } from '../apps/stacked/src/play-session.mjs';
 import { PIECE_CELLS, cellsFor, collides, createStackedRuntime, replayStackedRun } from '../apps/portal/src/stacked-sim.mjs';
-import { BOARD_VISIBLE_ROWS, CELL_PX } from '../apps/portal/src/stacked-contracts.mjs';
+import { BOARD_VISIBLE_ROWS, CELL_PX, GRAVITY_LEVEL_CAP, STACKED_GRAVITY_Q16 } from '../apps/portal/src/stacked-contracts.mjs';
 import { createBoardPulse } from '../apps/stacked/src/render/board-pulse.mjs';
 
 const geometry = Object.freeze({ PIECE_CELLS, cellsFor, collides });
@@ -338,4 +338,89 @@ test('the frame loop passes accumulator / TICK_MS as alpha only while the run is
   assert.match(main, /const alpha = started && !run\.paused && !run\.snapshot\.terminal \? accumulator \/ TICK_MS : 1;/u, 'paused, unstarted and finished frames render the tick state');
   assert.match(main, /while \(accumulator >= TICK_MS && steps\+\+ < 4 && !run\.snapshot\.terminal\)/u, 'the fixed step and its four-step catch-up cap are unchanged');
   assert.match(main, /import \{ TICK_MS \} from '\.\/render\/active-interpolation\.mjs';/u);
+});
+
+// Review of the rim fix (6d622b47): the rule must hold for every piece type at
+// every level, not only for the seed 0x51a2 Z at level 1. Each first-piece kind
+// (a seed per kind) is driven from its spawn at start levels 1 to 15 under five
+// input patterns (idle gravity, held soft drop, shifts, rotations, rotations
+// with soft drop), and every piece those runs spawn is checked on every tick:
+// the interpolation steps on every tick exactly as the renderer's gameplay()
+// does, and on every tick that can carry vertical travel (a fall or a spawn)
+// the board view draws the piece at each alpha. No visible active cell may be
+// drawn above the well rim (authored y < 0), which is the same as a cell on
+// row 19 or below never being drawn above row 19. On every other tick the
+// vertical offset must be zero. The halo rides board.activeOffset (the renderer
+// test above), so it follows the same frames. Levels 16 to 20 cannot be started
+// (startLevel caps at 15) and are reached only by clearing lines; gravity
+// indexes STACKED_GRAVITY_Q16 at min(level, GRAVITY_LEVEL_CAP = 15), so a level
+// 16-20 piece falls exactly as a level-15 one, and the level-15 traces are
+// replayed with the snapshot level shown as 16 to 20.
+test('no spawned piece of any type draws above row 19 at any alpha, levels 1 to 20', () => {
+  const SEED_FOR_KIND = Object.freeze({ S: 1, I: 2, T: 4, Z: 5, L: 7, J: 15, O: 30 });
+  const ALPHAS = [0, 0.05, 0.25, 0.5, 0.75, 0.95, 0.999];
+  const PATTERNS = Object.freeze({
+    idle: () => 0,
+    soft: () => 4,
+    shift: tick => (tick % 3 === 0 ? 2 : tick % 7 === 0 ? 1 : 0),
+    rotate: tick => (tick % 4 === 0 ? 16 : 0),
+    'rotate+soft': tick => (tick % 4 === 0 ? 16 : 0) | 4,
+  });
+  const TICKS = 240;
+  for (let level = 16; level <= 20; level++) assert.equal(STACKED_GRAVITY_Q16[Math.min(level, GRAVITY_LEVEL_CAP)], STACKED_GRAVITY_Q16[15], `level ${level} falls as level 15`);
+  const coverage = { frames: 0, spawns: 0, rimFalls: 0, snappedRimFalls: 0, interpolatedFalls: 0, kinds: new Set(), levels: new Set() };
+  const view = createStackedBoardView({ index: 0, rows: 24, cells: 10, frame: 'wide', geometry, ...constructors });
+  for (const [kind, seed] of Object.entries(SEED_FOR_KIND)) {
+    for (let startLevel = 1; startLevel <= 15; startLevel++) {
+      for (const [patternName, pattern] of Object.entries(PATTERNS)) {
+        const runtime = createStackedRuntime({ seed, config: { startLevel } });
+        const trace = [runtime.snapshot()];
+        assert.equal(trace[0].active.kind, kind);
+        for (let t = 0; t < TICKS && !trace.at(-1).terminal; t++) trace.push(runtime.step(pattern(t)));
+        for (const shownLevel of startLevel === 15 ? [15, 16, 17, 18, 19, 20] : [startLevel]) {
+          coverage.levels.add(shownLevel);
+          const shown = snapshot => (snapshot.level >= shownLevel ? snapshot : Object.freeze({ ...snapshot, level: shownLevel }));
+          const interpolation = createActiveInterpolation({ geometry });
+          view.reset();
+          for (let i = 1; i < trace.length; i++) {
+            const before = shown(trace[i - 1]), next = shown(trace[i]);
+            const label = `${kind} level ${shownLevel} ${patternName} tick ${next.tick}`;
+            interpolation.step(before, next);
+            const fell = Boolean(next.active && before.active && next.active.y < before.active.y);
+            const spawned = next.piecesSpawned !== before.piecesSpawned;
+            if (spawned) coverage.spawns++;
+            if (!fell && !spawned) {
+              assert.equal(interpolation.offset(next, 0, true).y, 0, `${label}: vertical travel without a fall`);
+              continue;
+            }
+            if (!next.active) continue;
+            coverage.kinds.add(next.active.kind);
+            const fromRim = fell && cellsFor(before.active.kind, before.active.rotation, before.active.x, before.active.y).some(([, y]) => y >= BOARD_VISIBLE_ROWS);
+            if (fromRim) coverage.rimFalls++;
+            view.present(next);
+            for (const alpha of ALPHAS) {
+              const offset = interpolation.offset(next, alpha, true);
+              if (offset.y !== 0) coverage.interpolatedFalls++;
+              else if (fromRim && alpha === 0) coverage.snappedRimFalls++;
+              view.setActiveOffset(offset.x, offset.y);
+              coverage.frames++;
+              const drawn = footprint(view.layers.activeLayer);
+              for (const [, y] of drawn) assert.ok(y >= 0, `${label} alpha ${alpha}: an active cell was drawn above the rim at authored y ${y}`);
+              // The same statement in rows: a visible cell's drawn row (tick row plus the offset) never passes row 19.
+              for (const [, row] of cellsFor(next.active.kind, next.active.rotation, next.active.x, next.active.y)) {
+                if (row < BOARD_VISIBLE_ROWS) assert.ok(row + offset.y <= BOARD_VISIBLE_ROWS - 1 + 1e-9, `${label} alpha ${alpha}: row ${row} drawn at ${row + offset.y}`);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  view.destroy();
+  assert.deepEqual([...coverage.kinds].sort(), ['I', 'J', 'L', 'O', 'S', 'T', 'Z'], 'every piece type was on the board');
+  assert.deepEqual([...coverage.levels].sort((a, b) => a - b), Array.from({ length: 20 }, (_, i) => i + 1), 'every level 1 to 20');
+  assert.ok(coverage.rimFalls > 300, `falls that start above the rim: ${coverage.rimFalls}`);
+  assert.ok(coverage.snappedRimFalls > 100, `rim falls snapped rather than travelled: ${coverage.snappedRimFalls}`);
+  assert.ok(coverage.interpolatedFalls > 1000, `mid-well travel still interpolates: ${coverage.interpolatedFalls}`);
+  assert.ok(coverage.spawns > 7 * 20 * 5, `later spawns were checked too: ${coverage.spawns}`);
 });
