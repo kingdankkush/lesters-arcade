@@ -2,7 +2,7 @@
 
 **Internal source snapshot. Not a release certificate, launch announcement or current public/chain verification.**
 
-Input snapshot SHA-256: `91562911902cb573e132f21e55672e7c56298928de336a050ae7e3f9b640ebf9`
+Input snapshot SHA-256: `9b2a37e9017210eae2cf0b1cf3991aaf7b54b24fcd21d6f11fdfcf978b1886e5`
 
 ## What the labels mean
 
@@ -118,25 +118,25 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | --- | --- | --- |
 | apps/portal/games/chikun/game.manifest.json | ad3fc63aa65fa8057d36fe6f7836ae01883a5b5215af8d2da5b70902601f19f7 | 592 |
 | apps/portal/games/hard-money-heroes/game.manifest.json | 12f32247d3738e8837f48b5b7fb84c93f73fd64f9e0c8a7fca57e2c6a49748cc | 602 |
-| apps/portal/index.html | 841f96f47c38af9b439ead4b5bea19948dc2f8a7d4e9b6c2e7a60208c45a499c | 38944 |
-| apps/portal/main.js | 39e5df858ff739d0f909386e69b54c54b4127ac49320179a761514bac973a4ba | 444930 |
-| apps/portal/src/arcade-core.mjs | 7cb4f8c841a3e6892fd48c44ddf5fedec2b776f506847ec6c2129372af527fac | 365670 |
+| apps/portal/index.html | bf1b82d53fc036ea3dd30a19556c58cd8e8c1026e7e26b35f315209e91a2d7ca | 41606 |
+| apps/portal/main.js | 33f37c425150fa3369b5f184a4fb29f946c6ca242200cb576098a566200969f4 | 445252 |
+| apps/portal/src/arcade-core.mjs | 05f2ccc5c1da49a24bdf43c84e6dd90de653f565362dfa2ca33d28ed52cfc35e | 365920 |
 | apps/portal/src/hmh-challenge-ui.mjs | 3633ac9368005d1969e2f30d794334857e8fe40fb0eb5c7afb51fe001f3838f2 | 2834 |
 | apps/portal/src/hmh-challenges.mjs | 43422c323ffa44b6e6d0e4e19996daefbc5ea44217bde5984c95f0d00ac273a9 | 4201 |
 | apps/portal/src/routes/official-app-routes.mjs | 5a577ee0b10f2a60267790e4efc8d6d05b5cf2cd1c162c01dfef85da65b91bc8 | 5206 |
 | apps/portal/src/routes/official-profile-route.mjs | c96243efe4a297590d28af215eb567bfd180c55ece93a77a5fba437a007c0eea | 55678 |
-| apps/portal/src/settlement.mjs | 7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea | 14183 |
+| apps/portal/src/settlement.mjs | f47430b587d20710bb1ca6f6af0c4c5d4ef1b257084c8033c852d919d5801545 | 14200 |
 | apps/portal/styles-arcade-polish.css | 7bbcfef2a149bbaa81e490d4544cd51924b4ae7d77f8abb60b68ad107fbe7763 | 98970 |
 | docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json | dd7657003742d2ee10b30f1c7046aabe0b826a233b642d73d702896aa37a4d1d | 71824 |
-| docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md | e32d1a0ce373b5aa2e4b6dcb39c396e596de62d0095fc7794a521bc14beb1251 | 7896 |
+| docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md | 117e2d620c861557b8347d4a75c7105d4c2d23e5a251808aa7681de5f9d577ce | 8006 |
 | docs/qa/hmh-owner-return-checkpoint.json | a6bd89b9ddacf825c880b3dc9a09d3db667a5e0ec9a23bfa7bcd896fbc0e9477 | 8715 |
 | docs/qa/hmh-parent-challenges-checkpoint.json | daa072d9e62c48cacbce18b3658ebbc3910f2858e6f687ed297b2e2d6c343650 | 5589 |
 | docs/qa/hmh-parent-profile-truth-checkpoint.json | 5dcadebb8081e381c56821948661805e24897a8303eac57e02612a7566596126 | 6738 |
 | docs/qa/hmh-upgrade-execution-queue.json | 9a0412c2dae0db940b9b08a1e5c7a1e3bc12f0069230521af0c65434c2aa09d4 | 19028 |
-| README.md | 13c9bd263bdcb676b6b1c281b8d1447b474d170b21789e9ce1b5f86a8bde52d1 | 53398 |
+| README.md | 530fff14c55769ced17576a2575db8289ba2f92a0f8218f7be75711fb294425d | 56321 |
 | scripts/hmh-release-facts.mjs | 4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d | 18212 |
-| scripts/syntax-check.mjs | 427f918eed37c33a09395a8e154e0977fc70058f286e44cf05f3bdf9fee6d97d | 53681 |
-| tests/arcade-core.test.mjs | 3198f3414169a581b8c087315897f4b2ba7c20a82c3752a36c47b766c0e0e5c3 | 193198 |
+| scripts/syntax-check.mjs | a66ed496252d67b115ba44f10b3c26246222e9c05e081bbfd485d06cda2403a2 | 53966 |
+| tests/arcade-core.test.mjs | e2e1949a0bd0400939d98096cd2fdb40f548108d2d1436117eba3097907fb040 | 193825 |
 | tests/hmh-challenge-session.test.mjs | 8b2f83522c70cdce3b6c35b0b7f37100a763ba272033a65f7258d46e780602f4 | 3577 |
 | tests/hmh-challenge-ui.test.mjs | e79be14c8e865b3132fd3129b9a80f92c69cfc83d0651355c3b13b2c0c0140aa | 9171 |
 | tests/hmh-challenges.test.mjs | 4f21f59275a442223c67754f8fb833d8d02bb5faec150591e6cc6268dc0eee54 | 3905 |

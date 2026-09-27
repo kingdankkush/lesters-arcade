@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "91562911902cb573e132f21e55672e7c56298928de336a050ae7e3f9b640ebf9",
+  "sourceSnapshotSha256": "9b2a37e9017210eae2cf0b1cf3991aaf7b54b24fcd21d6f11fdfcf978b1886e5",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -15,18 +15,18 @@
     },
     {
       "path": "apps/portal/index.html",
-      "sha256": "841f96f47c38af9b439ead4b5bea19948dc2f8a7d4e9b6c2e7a60208c45a499c",
-      "bytes": 38944
+      "sha256": "bf1b82d53fc036ea3dd30a19556c58cd8e8c1026e7e26b35f315209e91a2d7ca",
+      "bytes": 41606
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "39e5df858ff739d0f909386e69b54c54b4127ac49320179a761514bac973a4ba",
-      "bytes": 444930
+      "sha256": "33f37c425150fa3369b5f184a4fb29f946c6ca242200cb576098a566200969f4",
+      "bytes": 445252
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
-      "sha256": "7cb4f8c841a3e6892fd48c44ddf5fedec2b776f506847ec6c2129372af527fac",
-      "bytes": 365670
+      "sha256": "05f2ccc5c1da49a24bdf43c84e6dd90de653f565362dfa2ca33d28ed52cfc35e",
+      "bytes": 365920
     },
     {
       "path": "apps/portal/src/hmh-challenge-ui.mjs",
@@ -50,8 +50,8 @@
     },
     {
       "path": "apps/portal/src/settlement.mjs",
-      "sha256": "7ffc5c3f0686c448c082e9ee94cdc15413b3a5a93e7c37d13692345aeeb222ea",
-      "bytes": 14183
+      "sha256": "f47430b587d20710bb1ca6f6af0c4c5d4ef1b257084c8033c852d919d5801545",
+      "bytes": 14200
     },
     {
       "path": "apps/portal/styles-arcade-polish.css",
@@ -65,8 +65,8 @@
     },
     {
       "path": "docs/hmh-reboot/RANKED-DATA-AND-LAUNCH-EPOCH-REQUIREMENTS.md",
-      "sha256": "e32d1a0ce373b5aa2e4b6dcb39c396e596de62d0095fc7794a521bc14beb1251",
-      "bytes": 7896
+      "sha256": "117e2d620c861557b8347d4a75c7105d4c2d23e5a251808aa7681de5f9d577ce",
+      "bytes": 8006
     },
     {
       "path": "docs/qa/hmh-owner-return-checkpoint.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "13c9bd263bdcb676b6b1c281b8d1447b474d170b21789e9ce1b5f86a8bde52d1",
-      "bytes": 53398
+      "sha256": "530fff14c55769ced17576a2575db8289ba2f92a0f8218f7be75711fb294425d",
+      "bytes": 56321
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,13 +100,13 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "427f918eed37c33a09395a8e154e0977fc70058f286e44cf05f3bdf9fee6d97d",
-      "bytes": 53681
+      "sha256": "a66ed496252d67b115ba44f10b3c26246222e9c05e081bbfd485d06cda2403a2",
+      "bytes": 53966
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "3198f3414169a581b8c087315897f4b2ba7c20a82c3752a36c47b766c0e0e5c3",
-      "bytes": 193198
+      "sha256": "e2e1949a0bd0400939d98096cd2fdb40f548108d2d1436117eba3097907fb040",
+      "bytes": 193825
     },
     {
       "path": "tests/hmh-challenge-session.test.mjs",
