@@ -122,8 +122,6 @@ test('extra query keys on a valid pair redirect to the canonical /f/ URL; on a b
     `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&utm_source=x&utm_medium=social`,
     `/api/free-share-page?fbclid=1&game=chikun&token=${CHIKUN_TOKEN}`,
     `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${CHIKUN_TOKEN}&v=1`,
-    `/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${CHIKUN_TOKEN}`,
-    `/api/free-share-page?game=chikun&game=chikun&token=${CHIKUN_TOKEN}`,
   ]) {
     for (const method of ['GET', 'HEAD']) {
       const response = await page(url, { method });
@@ -134,6 +132,19 @@ test('extra query keys on a valid pair redirect to the canonical /f/ URL; on a b
     }
   }
   assert.equal(freePageApi.FREE_PAGE_REDIRECT_CACHE, 'public, s-maxage=3600');
+  // An identical repeat of a declared key is not an undeclared key: it renders
+  // the page, so however Vercel merges a query into the rewrite's own
+  // game/token, the canonical /f/ URL can never redirect to itself.
+  for (const [url, query] of [
+    [`/api/free-share-page?game=chikun&token=${CHIKUN_TOKEN}&token=${CHIKUN_TOKEN}`, undefined],
+    [`/api/free-share-page?game=chikun&game=chikun&token=${CHIKUN_TOKEN}`, undefined],
+    [`/f/chikun/${CHIKUN_TOKEN}`, { game: ['chikun', 'chikun'], token: [CHIKUN_TOKEN, CHIKUN_TOKEN] }],
+  ]) {
+    const response = await page(url, query ? { query } : {});
+    assert.equal(response.status, 200, url);
+    assert.equal(response.headers.location, undefined, url);
+    assert.equal(response.headers['cache-control'], FREE_CARD_CACHE, url);
+  }
   // Vercel passes the merged query as req.query too.
   const merged = await page(`/f/chikun/${CHIKUN_TOKEN}?fbclid=x`, { query: { game: 'chikun', token: CHIKUN_TOKEN, fbclid: 'x' } });
   assert.deepEqual([merged.status, merged.headers.location], [302, `/f/chikun/${CHIKUN_TOKEN}`]);

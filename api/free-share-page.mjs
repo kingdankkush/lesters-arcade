@@ -6,11 +6,14 @@
 // works with no environment at all. Only `game` and `token` are meaningful:
 // - the pair decodes and nothing else is in the query → 200, cached like the
 //   card (the URL fully determines the page);
-// - the pair decodes but other keys ride along (Facebook's fbclid, utm_*, a
-//   repeated identical key) → 302 to the canonical /f/<slug>/<token>, built
-//   only from the validated slug and the canonical token, so a human
-//   click-through survives tagging while the CDN key never splits and no
-//   render happens;
+// - the pair decodes but undeclared keys ride along (Facebook's fbclid,
+//   utm_*) → 302 to the canonical /f/<slug>/<token>, built only from the
+//   validated slug and the canonical token, so a human click-through
+//   survives tagging while the CDN key never splits and no render happens.
+//   Only an undeclared key redirects: the rewrite itself only ever supplies
+//   game and token, so however Vercel merges a request's query into the
+//   rewrite's, the canonical URL can never redirect again (no loop). An
+//   identical repeat of game or token renders like the bare pair;
 // - a missing or undecodable pair → the 400 page with generic tags, held a
 //   minute at the edge (the answer depends on nothing but the URL);
 // - a conflicting pair (the card's invalid-query), 405 and 500 → no-store.
@@ -39,10 +42,11 @@ function rawQuery(req) {
   return [...url.searchParams];
 }
 
-// The declared pair and whether the URL is anything but the bare pair. A
-// repeated key is tolerated only when every copy carries the same value (it
-// then counts as extra, so the page redirects to the canonical URL); a
-// conflict is null.
+// The declared pair and whether the URL carries an undeclared key. A
+// repeated declared key is tolerated only when every copy carries the same
+// value (like queryOf; it is not "extra", so a rewrite that repeated game or
+// token could never make the canonical URL redirect to itself); a conflict
+// is null.
 export function readPair(req) {
   const pair = {};
   let extra = false;
@@ -50,7 +54,6 @@ export function readPair(req) {
     if (!FREE_PAGE_QUERY.includes(key)) { extra = true; continue; }
     if (Object.hasOwn(pair, key)) {
       if (pair[key] !== value) return null;
-      extra = true;
     }
     pair[key] = value;
   }
