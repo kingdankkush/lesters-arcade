@@ -1241,7 +1241,7 @@ async function boot() {
   // Layout v2 greybox (dark pilot): evidence only, and initializeSession
   // refuses a Ranked session while it is mounted.
   const layoutV2 = evidenceSafeEnabled && runtimeParams.get('layoutV2') === '1'
-    ? (await import('./layout-v2-pilot.mjs')).mountLayoutV2Pilot({ GraphicsClass: Graphics, ContainerClass: Container, TextClass: Text, world, hide: [worldProduction.root, worldDecalLayer, worldLife.ground, worldLife.overlay, authoredPropLayer], params: runtimeParams })
+    ? (await import('./layout-v2-pilot.mjs')).mountLayoutV2Pilot({ GraphicsClass: Graphics, ContainerClass: Container, TextClass: Text, world, hide: [worldProduction.root, worldDecalLayer, worldLife.ground, worldLife.overlay, authoredPropLayer, groundShadowLayer], params: runtimeParams })
     : null;
   const baseBlockers = layoutV2?.world.collisionBlockers ?? LEVEL_ONE_WORLD.collisionBlockers;
   if (layoutV2) { queryGround = layoutV2.queryGround; WORLD_BLOCKERS = baseBlockers; dataset.layoutV2 = '1'; }
@@ -1604,6 +1604,7 @@ async function boot() {
   const wipe = (...graphics) => { for (const graphic of graphics) if (graphic.context.instructions.length) graphic.clear(); };
   const renderWorld = (renderState = renderActor ?? actor) => {
     const view = viewport();
+    if (camera) layoutV2?.follow(camera, view);
     const viewKey = `${view.width}x${view.height}`;
     if (backdrop.drawnFor !== viewKey) backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 }).drawnFor = viewKey;
     contactShadowPool?.begin();

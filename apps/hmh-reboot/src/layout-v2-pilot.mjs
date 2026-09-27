@@ -77,9 +77,11 @@ export function drawLayoutV2Greybox({ layout = LAYOUT_V2_MAP, GraphicsClass, Con
   for (const terrace of layout.terraces ?? []) {
     const box = layoutV2PieceBounds(terrace);
     const base = DISTRICT_GROUND[terrace.district] ?? 0x707070;
-    ground.poly(flat(layoutV2Vertices(terrace))).fill({ color: shade(base, 1.18) });
-    ground.rect(box.minX, box.maxY, box.maxX - box.minX, 26).fill({ color: shade(base, 0.62) });
-    ground.poly(flat(layoutV2Vertices(terrace))).stroke({ width: 6, color: shade(base, 1.45), alpha: 0.9 });
+    const lift = terrace.z ?? 24;
+    const top = layoutV2Vertices(terrace).map((vertex) => ({ x: vertex.x, y: vertex.y - lift }));
+    ground.rect(box.minX, box.maxY - lift, box.maxX - box.minX, lift + 4).fill({ color: shade(base, 0.62) });
+    ground.poly(flat(top)).fill({ color: shade(base, 1.18) });
+    ground.poly(flat(top)).stroke({ width: 6, color: shade(base, 1.45), alpha: 0.9 });
     for (const ramp of terrace.ramps ?? []) {
       const [rx0, ry0, rx1, ry1] = ramp.rect;
       ground.rect(rx0, ry0, rx1 - rx0, ry1 - ry0).fill({ color: shade(base, 1.08) });
@@ -211,5 +213,12 @@ export function mountLayoutV2Pilot({ GraphicsClass, ContainerClass, TextClass, w
   for (const layer of hide) if (layer) layer.visible = false;
   const layer = drawLayoutV2Greybox({ GraphicsClass, ContainerClass, TextClass });
   world.addChildAt(layer, Math.min(index, world.children.length));
-  return Object.freeze({ world: built, queryGround: built.queryGround, layer, spawn: resolveLayoutV2Spawn(params, built.queryGround) });
+  // The runtime projects world points itself (world-space.mjs worldToScreen),
+  // so the greybox layer follows the camera with the same ground-plane
+  // transform every frame. Projection only.
+  const follow = (camera, view) => {
+    layer.scale.set(camera.zoom);
+    layer.position.set(-camera.x * camera.zoom + view.width / 2 + (camera.shakeX ?? 0), (-camera.y + (camera.groundZ ?? 0)) * camera.zoom + view.height / 2 + (camera.shakeY ?? 0));
+  };
+  return Object.freeze({ world: built, queryGround: built.queryGround, layer, follow, spawn: resolveLayoutV2Spawn(params, built.queryGround) });
 }

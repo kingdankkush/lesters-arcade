@@ -16,6 +16,7 @@ const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8991';
 const outDir = process.argv[2] ?? join(tmpdir(), 'hmh-layout-v2-pilot');
 await mkdir(outDir, { recursive: true });
 
+const ONLY = process.env.LAYOUT_V2_ONLY;
 const SPOTS = [
   ['spawn-meadow', 800, 2_400],
   ['settler-viaduct', 2_650, 2_360],
@@ -38,18 +39,25 @@ const results = [];
 try {
   for (const view of VIEWPORTS) {
     for (const [spot, x, y] of SPOTS) {
+      if (ONLY && !`${view.name}-${spot}`.includes(ONLY)) continue;
       const page = await browser.newPage({ viewport: view.viewport, deviceScaleFactor: view.deviceScaleFactor, isMobile: view.isMobile, hasTouch: view.isMobile });
       const errors = [];
       page.on('pageerror', (error) => errors.push(`page: ${error.message}`));
       page.on('console', (message) => { if (message.type() === 'error') errors.push(`console: ${message.text()}`); });
       await page.goto(`${origin}/hmh-reboot/?evidenceSafe=1&layoutV2=1&layoutV2At=${x},${y}`, { waitUntil: 'networkidle' });
-      await page.waitForFunction(() => {
-        const stage = document.querySelector('#hmhRebootStage');
-        return stage?.dataset.layoutV2 === '1' && stage.dataset.navGridReady === 'true' && Number(stage.dataset.simulationTick) >= 90;
-      }, null, { timeout: 60_000 });
+      try {
+        await page.waitForFunction(() => {
+          const stage = document.querySelector('#hmhRebootStage');
+          return stage?.dataset.layoutV2 === '1' && stage.dataset.navGridReady === 'true' && stage.dataset.startupArt === 'ready' && Number(stage.dataset.simulationStepsTotal) >= 45;
+        }, null, { timeout: 60_000 });
+      } catch (error) {
+        const dataset = await page.evaluate(() => ({ ...document.querySelector('#hmhRebootStage')?.dataset, status: document.body.innerText.slice(0, 400) }));
+        await page.screenshot({ path: join(outDir, `${view.name}-${spot}-timeout.png`) });
+        throw new Error(`${view.name} ${spot} never became ready: ${JSON.stringify(dataset)} errors ${errors.join('; ')}`, { cause: error });
+      }
       const state = await page.evaluate(() => {
         const stage = document.querySelector('#hmhRebootStage');
-        return { tick: Number(stage.dataset.simulationTick), navGridBootMs: Number(stage.dataset.navGridBootMs) };
+        return { steps: Number(stage.dataset.simulationStepsTotal), navGridBootMs: Number(stage.dataset.navGridBootMs), state: stage.dataset.simulationState };
       });
       const file = join(outDir, `${view.name}-${spot}.png`);
       await page.screenshot({ path: file });

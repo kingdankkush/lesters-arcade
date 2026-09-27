@@ -158,7 +158,7 @@ test('the pilot draws the greybox without Pixi and resolves a walkable evidence 
     stroke() { return this; }
   }
   class FakeContainer {
-    constructor() { this.children = []; }
+    constructor() { this.children = []; this.scale = { set: (value) => { this.scale.value = value; } }; this.position = { set: (x, y) => { this.position.x = x; this.position.y = y; } }; }
     addChild(...children) { this.children.push(...children); }
     addChildAt(child, index) { this.children.splice(index, 0, child); }
   }
@@ -177,4 +177,8 @@ test('the pilot draws the greybox without Pixi and resolves a walkable evidence 
   assert.equal(pilot.world.collisionBlockers.some((blocker) => blocker.id === 'crossing-trestle-lock'), false, 'arena locks start open');
   assert.deepEqual(resolveLayoutV2Spawn(params('layoutV2At=4750,1500'), pilot.queryGround), LAYOUT_V2_MAP.player.spawn, 'deep water falls back to the map spawn');
   assert.deepEqual(resolveLayoutV2Spawn(params(''), pilot.queryGround), LAYOUT_V2_MAP.player.spawn);
+  // The layer follows the runtime's ground-plane projection (worldToScreen).
+  pilot.follow({ x: 1_000, y: 2_000, zoom: 2, shakeX: 0, shakeY: 0, groundZ: 0 }, { width: 800, height: 600 });
+  assert.equal(pilot.layer.scale.value, 2);
+  assert.deepEqual([pilot.layer.position.x + 1_000 * 2, pilot.layer.position.y + 2_000 * 2], [400, 300], 'world (1000, 2000) lands at the screen centre');
 });
