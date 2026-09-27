@@ -191,11 +191,51 @@ export const RUN_UPGRADE_CONTENT = freezeDeep({
   },
 });
 
+// Package 8.5 wave-1 evolutions and the evolution panel's "Bank the Seal"
+// card. The Railgun's evolution id stays crit-candle; its display title is
+// "Moonshot".
+export const RUN_EVOLUTION_CONTENT = freezeDeep({
+  'settler-rail': {
+    title: 'Settler Rail',
+    mechanicalLabel: 'Heavy slugs pierce 8 and ignore armor',
+    description: 'A Pistol sidegrade: no burst, heavier rounds that pierce eight bodies and ignore armor.',
+  },
+  'double-spend': {
+    title: 'Double Spend',
+    mechanicalLabel: 'Every shot fires a free second volley',
+    description: 'Each Shotgun shot fires a free half-damage volley a moment later, along your aim. It costs no ammo.',
+  },
+  'hashstorm-overdrive': {
+    title: 'Hashstorm Overdrive',
+    mechanicalLabel: 'Overheat becomes a vent blast; hot barrels pierce',
+    description: 'Rounds fired hot pierce two bodies. At full heat the Machine Gun vents a blast ring instead of overheating.',
+  },
+  'crypto-bomb-orbit': {
+    title: 'Crypto Bomb Orbit',
+    mechanicalLabel: 'Blasts leave 3 orbiting bomblets',
+    description: 'Every grenade blast leaves three bomblets circling the blast. Each pops on the first enemy it touches.',
+  },
+  'crit-candle': {
+    title: 'Moonshot',
+    mechanicalLabel: 'Crits light the whole rail line',
+    description: '+15% crit chance. When a slug crits its first body, every body it pierces crits. Crit kills speed the next charge.',
+  },
+  'bank-seal': {
+    title: 'Bank the Seal',
+    mechanicalLabel: 'Keep it for the next gun you master',
+    description: 'The Genesis Seal waits. It evolves the next gun you master, the moment you master it.',
+  },
+});
+
+// Card 2's detail line while its gun can still evolve (package 8.4).
+export const EVOLUTION_HINT = 'Master it to evolve with a Genesis Seal.';
+
 const MISSING_CONTENT = freezeDeep({ title: '', mechanicalLabel: '', description: '' });
 
 // The text for one upgrade id. An unknown id reads as its own id rather than
 // throwing, so a card can never break the level-up panel.
 export function runUpgradeContent(id) {
-  const content = Object.hasOwn(RUN_UPGRADE_CONTENT, id) ? RUN_UPGRADE_CONTENT[id] : null;
+  const content = Object.hasOwn(RUN_UPGRADE_CONTENT, id) ? RUN_UPGRADE_CONTENT[id]
+    : Object.hasOwn(RUN_EVOLUTION_CONTENT, id) ? RUN_EVOLUTION_CONTENT[id] : null;
   return content ?? freezeDeep({ ...MISSING_CONTENT, title: String(id ?? '') });
 }

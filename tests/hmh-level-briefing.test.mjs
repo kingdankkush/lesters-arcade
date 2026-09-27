@@ -155,3 +155,9 @@ test('briefings name the havens and the trap that their cited machinery opens', 
     }
   }
 });
+
+// Slice 7 (package 8.4): the briefing names the Genesis Seal.
+test('the briefing tells the player that bosses drop Genesis Seals', () => {
+  assert.ok(LEVEL_ONE_BRIEFING.tips.includes('Bosses drop Genesis Seals. A Seal evolves a gun you have mastered.'));
+  assert.match(LEVEL_ONE_BRIEFING.entries.yard.supply, /Genesis Seal/);
+});

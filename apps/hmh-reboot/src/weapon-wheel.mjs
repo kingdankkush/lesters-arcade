@@ -46,6 +46,22 @@ export function ammoLabel(view) {
   return `${view.ammoInClip}/${view.clipSize} · ${reserve}`;
 }
 
+// Package 8.4: mastery pips (filled per rank invested), a gold ring on an
+// evolved gun, and a Genesis Seal pip with the banked count in the title.
+export function wheelMasteryPips(view) {
+  const total = Number(view?.mastery?.total) || 0;
+  if (!view?.owned || total <= 0) return '';
+  const filled = Math.max(0, Math.min(total, Number(view.mastery.ranks) || 0));
+  return `${'●'.repeat(filled)}${'○'.repeat(total - filled)}`;
+}
+
+export function wheelSealLabel(seals) {
+  const count = Math.max(0, Math.floor(Number(seals) || 0));
+  return count > 0 ? ` · ◆ ${count} Genesis Seal${count === 1 ? '' : 's'}` : '';
+}
+
+const EVOLVED_RING = '0 0 0 2px #ffc857, 0 0 12px rgba(255,200,87,0.55)';
+
 export function createWeaponWheel({ documentRef = document, windowRef = globalThis.window, mount = null, onPick, onClose } = {}) {
   if (typeof onPick !== 'function' || typeof onClose !== 'function') throw new TypeError('weapon wheel needs onPick and onClose');
   const layer = mount ?? required(documentRef, 'hmhWeaponWheel');
@@ -54,6 +70,7 @@ export function createWeaponWheel({ documentRef = document, windowRef = globalTh
   const buttons = new Map();
   let open = false;
   let views = [];
+  let seals = 0;
   let focusedSlot = 0;
   const listeners = [];
   const listen = (source, type, callback, options) => {
@@ -84,7 +101,7 @@ export function createWeaponWheel({ documentRef = document, windowRef = globalTh
         button.className = 'hmh-weapon-wheel-slot';
         button.dataset.slot = String(view.slot);
         const parts = {};
-        for (const [key, tag] of [['code', 'b'], ['name', 'strong'], ['ammo', 'small'], ['key', 'i']]) {
+        for (const [key, tag] of [['code', 'b'], ['name', 'strong'], ['ammo', 'small'], ['pips', 'span'], ['key', 'i']]) {
           const node = documentRef.createElement(tag);
           node.className = `hmh-weapon-wheel-${key}`;
           button.appendChild(node);
@@ -108,9 +125,13 @@ export function createWeaponWheel({ documentRef = document, windowRef = globalTh
       button.parts.name.textContent = view.name;
       button.parts.ammo.textContent = view.active ? 'ARMED' : ammoLabel(view);
       button.parts.key.textContent = String(view.slot);
+      button.parts.pips.textContent = wheelMasteryPips(view);
+      button.parts.pips.setAttribute?.('aria-hidden', 'true');
+      button.dataset.evolved = String(view.evolved === true);
+      button.style.boxShadow = view.evolved === true ? EVOLVED_RING : '';
     }
     const active = views.find((view) => view.active);
-    title.textContent = active ? `${active.name} armed` : 'Choose a weapon';
+    title.textContent = `${active ? `${active.name} armed` : 'Choose a weapon'}${wheelSealLabel(seals)}`;
     layout();
   };
 
@@ -160,9 +181,10 @@ export function createWeaponWheel({ documentRef = document, windowRef = globalTh
 
   return Object.freeze({
     isOpen() { return open; },
-    open(nextViews) {
+    open(nextViews, { seals: banked = 0 } = {}) {
       if (!Array.isArray(nextViews) || nextViews.length === 0) throw new TypeError('weapon wheel needs at least one slot view');
       views = nextViews;
+      seals = banked;
       open = true;
       render();
       layer.hidden = false;

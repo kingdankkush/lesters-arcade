@@ -64,6 +64,8 @@ function headlessRun({ seed, partition, observer = null }) {
   const loadout = createWeaponLoadout({ weaponIds: HMH_WEAPON_ORDER, activeWeaponId: HMH_WEAPON_ORDER[0], seed });
   const context = vm.createContext({
     upgradePending: false,
+    // Package 8.4: no Genesis Seal is picked up in this run.
+    evolutionPending: false,
     pendingUpgradeOfferPaint: null,
     progressionPilotEnabled: false,
     simulation,

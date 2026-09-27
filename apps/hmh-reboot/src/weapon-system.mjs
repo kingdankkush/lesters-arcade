@@ -15,6 +15,7 @@ import {
   stepForkedStandard,
 } from './forked-standard.mjs';
 import { freezeDeep } from './value-guards.mjs';
+import { HMH_EVOLUTION_TUNING } from './evolution-tuning.mjs';
 import {
   LIGHTNING_LEDGER_CONFIG,
   createLightningLedgerState,
@@ -281,6 +282,12 @@ export const HMH_CHILD_EVOLUTIONS = freezeDeep({
   'forked-standard': { id: 'chain-split', evolutionTag: 'chain-split' },
 });
 
+// Wave-1 evolution mechanics (design package 8.5, S1.7): see
+// evolution-tuning.mjs, shared with the lazy evolution-effects.mjs so that the
+// lazy chunk never imports this module (the entry split stays as it was).
+export { HMH_EVOLUTION_TUNING };
+const EVOLVED_TRICKLE_FRACTION = 1 / 4;
+
 const UPGRADE_TREES = freezeDeep({
   'coin-blaster': {
     rateOfFire: [{ multiplier: 1.18, special: 'fast-rounds' }, { multiplier: 1.38, special: 'long-rounds' }, { multiplier: 1.62, special: 'burst-fire' }],
@@ -337,7 +344,18 @@ const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
   reloadSpeed: ranks[reloadSpeed] ?? 0,
 } });
 
-export const progressionByWeapon = (ranks = {}) => ({
+// evolutions maps a weapon id to its applied evolution id (run progression's
+// evolutions, package 8.4); an absent map evolves nothing.
+export const progressionByWeapon = (ranks = {}, evolutions = {}) => withEvolutions(branchProgressionByWeapon(ranks), evolutions);
+
+function withEvolutions(byWeapon, evolutions) {
+  for (const [weaponId, evolutionId] of Object.entries(evolutions ?? {})) {
+    if (byWeapon[weaponId]) byWeapon[weaponId] = { ...byWeapon[weaponId], evolutionId };
+  }
+  return byWeapon;
+}
+
+const branchProgressionByWeapon = (ranks = {}) => ({
   ...pistolProgressionByWeapon(ranks),
   'scatter-shotgun': gunBranches(ranks, GUN_BRANCH_CARDS['scatter-shotgun']),
   'auto-miner': gunBranches(ranks, GUN_BRANCH_CARDS['auto-miner']),
@@ -595,6 +613,12 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (effect.exactSpread) exactSpread = true;
   }
 
+  const evolved = evolutionId === null ? null : HMH_EVOLUTION_TUNING[evolutionId];
+  // Settler Rail turns the burst off (package 8.5).
+  if (evolutionId === 'settler-rail') {
+    burstCount = 1;
+    burstIntervalTicks = 0;
+  }
   const crowdControlCapstone = weaponId === 'coin-blaster'
     && ['rateOfFire', 'damage', 'reloadSpeed'].every((branch) => branches?.[branch] === 3);
   if (crowdControlCapstone) {
@@ -603,12 +627,14 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
 
   // The evolution keeps priority over a capstone policy: it is the rarer award.
   const projectilePolicy = evolutionId === 'settler-rail'
-    ? freezeDeep({ type: 'pierce', maxTargets: 8, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } })
+    ? freezeDeep({ type: 'pierce', maxTargets: evolved.pierceTargets, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } })
     : specialPolicy ?? definition.policy;
   const reserveTier = branches?.reloadSpeed ?? 0;
+  const grant = definition.pickupReserveAmmo === null ? null : definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier];
+  const trickleFraction = Math.max(RESERVE_TRICKLE_FRACTIONS[reserveTier], evolved ? EVOLVED_TRICKLE_FRACTION : 0);
   return freezeDeep({
     weaponId,
-    damage: definition.damage + damageFlatBonus,
+    damage: (definition.damage + damageFlatBonus) * (evolutionId === 'settler-rail' ? evolved.damageScale : 1),
     damageFlatBonus,
     fireRateMultiplier,
     reloadMultiplier,
@@ -619,8 +645,8 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     clipSize,
     reserveAmmoGrant: definition.pickupReserveAmmo === null ? null : Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier]),
     salvagePermille: SALVAGE_PERMILLE[weaponId]?.[reserveTier] ?? 0,
-    reserveTrickleRounds: Object.hasOwn(SALVAGE_PERMILLE, weaponId) && definition.pickupReserveAmmo !== null && RESERVE_TRICKLE_FRACTIONS[reserveTier] > 0
-      ? Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier] * RESERVE_TRICKLE_FRACTIONS[reserveTier])
+    reserveTrickleRounds: Object.hasOwn(SALVAGE_PERMILLE, weaponId) && grant !== null && trickleFraction > 0
+      ? Math.ceil(grant * trickleFraction)
       : 0,
     specials,
     pelletCount,
@@ -637,6 +663,8 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     projectileTag: specialTag,
     evolutionId,
     evolutionTag: evolution?.evolutionTag ?? null,
+    // The evolution's mechanics (HMH_EVOLUTION_TUNING), or null.
+    evolution: evolved,
     projectilePolicy,
     // Settler Rail's heavy slugs ignore armour (package 8.5).
     armorPiercing: evolutionId === 'settler-rail',
@@ -674,6 +702,11 @@ function createPerWeaponState(id, { owned = false } = {}) {
     chargeStartedTick: null,
     chargeReadyAnnounced: false,
     salvagePermille: 0,
+    // Wave-1 evolution state (package 8.5): Double Spend's queued volley,
+    // Hashstorm's vent lock, Crit Candle's crit kills toward the next charge.
+    pendingVolley: null,
+    ventLockUntilTick: 0,
+    candleKills: 0,
     channelState: definition.kind === 'channel' ? createLightningLedgerState({ cellsRemaining: progression.clipSize }) : null,
     burnerState: definition.kind === 'flame-channel'
       ? createBearMarketBurnerState({ fuel: progression.clipSize, reserveFuel: isOwned ? progression.reserveAmmoGrant : 0 })
@@ -823,6 +856,8 @@ function leaveWeapon(weapon, tick) {
     : null;
   weapon.chargeStartedTick = null;
   weapon.chargeReadyAnnounced = false;
+  // Double Spend's free volley is cancelled by a swap or the fallback.
+  weapon.pendingVolley = null;
   return interrupted;
 }
 
@@ -1064,7 +1099,8 @@ function coolWeaponHeat(state, tick, progressionByWeapon, events) {
   for (const id of Object.keys(state.weapons).sort()) {
     const weapon = state.weapons[id];
     const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
-    const elapsedTicks = Math.max(0, tick - weapon.heatUpdatedTick);
+    // Hashstorm Overdrive holds its vented heat through the fire lock.
+    const elapsedTicks = tick < weapon.ventLockUntilTick ? 0 : Math.max(0, tick - Math.max(weapon.heatUpdatedTick, weapon.ventLockUntilTick));
     weapon.heat = Math.max(0, weapon.heat - progression.heatRecoveryPerTick * elapsedTicks);
     weapon.heatUpdatedTick = tick;
     if (weapon.overheated && weapon.heat <= progression.heatResumeThreshold) {
@@ -1104,7 +1140,29 @@ function spreadOffsets(profile, state, attackId) {
   });
 }
 
-function buildShots({ definition, progression, state, direction, attackId }) {
+// Crit Candle's charge after its crit-kill rebate (package 8.5); every other
+// charged gun charges for progression.chargeTicks.
+export function effectiveChargeTicks(weapon, progression) {
+  const candle = progression.evolutionId === 'crit-candle' ? progression.evolution : null;
+  if (!candle || !progression.chargeTicks) return progression.chargeTicks;
+  return Math.max(Math.min(candle.floorTicks, progression.chargeTicks), progression.chargeTicks - candle.rebateTicksPerKill * Math.min(candle.maxKillsPerShot, weapon.candleKills));
+}
+
+// Crit Candle: crit kills credited after kill resolution in tick t shorten the
+// next charge from the weapon step of t+1 (package 8.5). The count resets when
+// a charged slug fires. Returns null unless the Railgun is evolved.
+export function creditCritCandleKills(state, { tick, count = 1, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('crit kill credit tick cannot precede the weapon step');
+  if (!Number.isInteger(count) || count < 1 || count > 4_096) throw new TypeError('crit kill count must be a bounded positive integer');
+  const weapon = state.weapons?.['hash-rail'];
+  const progression = weapon?.owned ? applyWeaponProgression('hash-rail', progressionByWeapon?.['hash-rail']) : null;
+  if (progression?.evolutionId !== 'crit-candle') return null;
+  weapon.candleKills = Math.min(progression.evolution.maxKillsPerShot, weapon.candleKills + count);
+  return freezeDeep({ type: 'weapon:crit-candle', tick, weaponId: 'hash-rail', kills: weapon.candleKills, chargeTicks: effectiveChargeTicks(weapon, progression) });
+}
+
+function buildShots({ definition, progression, state, direction, attackId, policyOverride = null, damageScale = 1 }) {
   const shock = (progression.shock?.[0] ?? 0) > seededUnit(state.seed, `${attackId}:shock`);
   const centrePellet = Math.floor((progression.pelletCount - 1) / 2);
   return Object.freeze(spreadOffsets(progression, state, attackId).map((angleOffset, pelletIndex) => {
@@ -1122,8 +1180,8 @@ function buildShots({ definition, progression, state, direction, attackId }) {
       speed: progression.projectileSpeed,
       range: progression.range,
       radius: definition.projectileRadius,
-      damage: progression.damage,
-      policy: progression.centrePelletPolicy && pelletIndex === centrePellet ? progression.centrePelletPolicy : progression.projectilePolicy,
+      damage: progression.damage * damageScale,
+      policy: policyOverride ?? (progression.centrePelletPolicy && pelletIndex === centrePellet ? progression.centrePelletPolicy : progression.projectilePolicy),
       blastRadius: progression.blastRadius,
       projectileTag: progression.projectileTag,
       evolutionTag: progression.evolutionTag,
@@ -1180,12 +1238,26 @@ export function stepWeaponLoadout(state, {
   const weapon = state.weapons[state.activeWeaponId];
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
+  // Double Spend's free volley: due on its tick whatever the trigger, clip or
+  // reload say; a stow cancels it like a swap.
+  if (weapon.pendingVolley && (stowed || progression.evolutionId !== 'double-spend')) weapon.pendingVolley = null;
+  if (weapon.pendingVolley && tick >= weapon.pendingVolley.fireTick) {
+    const volley = weapon.pendingVolley;
+    weapon.pendingVolley = null;
+    let aim = volley.direction;
+    try { aim = normalize(direction); } catch { /* no aim this tick: keep the shot's */ }
+    const attackId = `${volley.attackId}:volley`;
+    events.push(freezeDeep({
+      type: 'weapon:fire', tick, attackId, weaponId: definition.id, ammoInClip: weapon.ammoInClip, recoil: 0, heat: weapon.heat, volley: true,
+      shots: buildShots({ definition, progression, state, direction: aim, attackId, damageScale: progression.evolution.damageScale }),
+    }));
+  }
   if (stowed && weapon.chargeStartedTick !== null) {
     events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks: tick - weapon.chargeStartedTick }));
     weapon.chargeStartedTick = null;
     weapon.chargeReadyAnnounced = false;
   }
-  if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
+  if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null || tick < weapon.ventLockUntilTick) return freezeDeep({ tick, events });
   if (definition.kind === 'melee-alternating') {
     const standardFrame = stepForkedStandard(weapon.standardState, {
       tick,
@@ -1309,15 +1381,16 @@ export function stepWeaponLoadout(state, {
     return freezeDeep({ tick, events });
   }
   if (tick < weapon.nextFireTick) return freezeDeep({ tick, events });
-  if (progression.chargeTicks) {
+  const chargeTicks = effectiveChargeTicks(weapon, progression);
+  if (chargeTicks) {
     let chargedRelease = false;
     if (fire) {
       if (weapon.chargeStartedTick === null) {
         weapon.chargeStartedTick = tick;
         weapon.chargeReadyAnnounced = false;
-        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + progression.chargeTicks }));
+        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + chargeTicks }));
         return freezeDeep({ tick, events });
-      } else if (tick - weapon.chargeStartedTick >= progression.chargeTicks) {
+      } else if (tick - weapon.chargeStartedTick >= chargeTicks) {
         if (!releaseCharged) {
           if (!weapon.chargeReadyAnnounced) {
             weapon.chargeReadyAnnounced = true;
@@ -1332,19 +1405,27 @@ export function stepWeaponLoadout(state, {
     }
     if (!chargedRelease) {
       if (weapon.chargeStartedTick === null) return freezeDeep({ tick, events });
-      const chargeTicks = tick - weapon.chargeStartedTick;
+      const heldTicks = tick - weapon.chargeStartedTick;
       weapon.chargeStartedTick = null;
       weapon.chargeReadyAnnounced = false;
-      if (chargeTicks < progression.chargeTicks) {
-        events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks }));
+      if (heldTicks < chargeTicks) {
+        events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks: heldTicks }));
         return freezeDeep({ tick, events });
       }
     }
+    // A charged slug fires: Crit Candle's rebate is spent.
+    weapon.candleKills = 0;
   } else if (!fire) return freezeDeep({ tick, events });
   const normalizedDirection = normalize(direction);
   const attackId = `${definition.id}:${String(state.sequence).padStart(8, '0')}`;
   state.sequence += 1;
-  const shots = buildShots({ definition, progression, state, direction: normalizedDirection, attackId });
+  // Hashstorm Overdrive: a round fired hot pierces (stamped at fire).
+  const overdrive = progression.evolutionId === 'hashstorm-overdrive' ? progression.evolution : null;
+  const policyOverride = overdrive && weapon.heat >= overdrive.pierceHeat ? freezeDeep({ type: 'pierce', maxTargets: overdrive.pierceTargets }) : null;
+  const shots = buildShots({ definition, progression, state, direction: normalizedDirection, attackId, policyOverride });
+  if (progression.evolutionId === 'double-spend') {
+    weapon.pendingVolley = { fireTick: tick + progression.evolution.delayTicks, attackId, direction: normalizedDirection };
+  }
   weapon.ammoInClip -= 1;
   if (progression.burstCount > 1) {
     const remaining = weapon.burstRemaining > 0 ? weapon.burstRemaining - 1 : progression.burstCount - 1;
@@ -1372,8 +1453,19 @@ export function stepWeaponLoadout(state, {
     shots,
   }));
   if (progression.maxHeat > 0 && weapon.heat >= progression.maxHeat) {
-    weapon.overheated = true;
-    events.push(freezeDeep({ type: 'weapon:overheat', tick, weaponId: definition.id, heat: weapon.heat }));
+    if (overdrive) {
+      // Hashstorm Overdrive vents instead of overheating.
+      weapon.heat = overdrive.ventHoldHeat;
+      weapon.heatUpdatedTick = tick;
+      weapon.ventLockUntilTick = tick + overdrive.ventLockTicks;
+      events.push(freezeDeep({
+        type: 'weapon:vent', tick, attackId: `${attackId}:vent`, weaponId: definition.id,
+        radius: overdrive.ventRadius, damage: overdrive.ventDamage, knockback: overdrive.ventKnockback, lockUntilTick: weapon.ventLockUntilTick,
+      }));
+    } else {
+      weapon.overheated = true;
+      events.push(freezeDeep({ type: 'weapon:overheat', tick, weaponId: definition.id, heat: weapon.heat }));
+    }
   }
   startReload(weapon, progression, tick, events);
   return freezeDeep({ tick, events });

@@ -196,7 +196,8 @@ test('weapon upgrade branches match the retained upgrade tree and evolution tags
   assert.equal(actual.damageFlatBonus, expected.damageFlatBonus);
   assert.equal(actual.reloadMultiplier, expected.reloadMultiplier);
   assert.deepEqual(actual.specials, expected.specials);
-  assert.equal(actual.damage, 8);
+  // Slice 7 (package 8.5): the Settler Rail's heavier rounds, x1.35.
+  assert.equal(actual.damage, 8 * 1.35);
   assert.equal(actual.clipSize, 8);
   // S0.2: tags are additive. The specials here carry no projectile tag, and
   // the evolution adds its own evolutionTag.

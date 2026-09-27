@@ -6,7 +6,7 @@
 // from the simulation's choices.
 import { authoredPropItemUrl } from './authored-prop-layout.mjs';
 import { createSafeTextElement } from './cockpit-ui.mjs';
-import { runUpgradeContent } from './progression-content.mjs';
+import { EVOLUTION_HINT, runUpgradeContent } from './progression-content.mjs';
 import { resolveUpgradeCardPresentation } from './upgrade-card-presentation.mjs';
 
 // Package 8.3: the re-roll strip under each card. It is a sibling of the
@@ -202,7 +202,9 @@ export function createUpgradePanel({
       elements.pausePanel.hidden = true;
       elements.menu.setAttribute('aria-expanded', 'false');
       elements.upgradePanel.hidden = false;
-      elements.upgradeQueue.textContent = `${snapshot.pendingLevels} pending`;
+      // Package 8.4: the evolution panel reuses the level-up shell.
+      const evolutionPanel = snapshot.offerKind === 'evolution';
+      elements.upgradeQueue.textContent = evolutionPanel ? 'Genesis Seal' : `${snapshot.pendingLevels} pending`;
       elements.upgradeChoices.replaceChildren();
       upgradeCards = [];
       armedIndex = -1;
@@ -227,7 +229,9 @@ export function createUpgradePanel({
         const tier = createSafeTextElement(documentRef, 'small', { className: 'hmh-upgrade-choice__tier', text: card.tierLabel });
         const branch = createSafeTextElement(documentRef, 'span', {
           className: 'hmh-upgrade-choice__branch',
-          text: `${prettyBranch(choice.branch)} · rank ${choice.nextRank}/${choice.maxRank}`,
+          text: choice.kind === 'evolution'
+            ? (choice.weaponId ? `Evolution · ${String(weaponName(choice.weaponId))}` : 'Genesis Seal')
+            : `${prettyBranch(choice.branch)} · rank ${choice.nextRank}/${choice.maxRank}`,
         });
         meta.append(tier, branch);
         // Card 2's gun chip, e.g. SHOTGUN 4/9 (a gun with a capstone counts 10).
@@ -266,7 +270,9 @@ export function createUpgradePanel({
           text: detail.open ? 'Hide details' : 'Upgrade details',
         });
         summary.setAttribute('aria-expanded', String(detail.open));
-        const description = createSafeTextElement(documentRef, 'p', { text: content.description });
+        // Card 2 names the evolution its gun is working toward (package 8.4).
+        const evolutionHint = choice.kind !== 'evolution' && choice.weaponId && !snapshot.evolutions?.[choice.weaponId] ? ` ${EVOLUTION_HINT}` : '';
+        const description = createSafeTextElement(documentRef, 'p', { text: `${content.description}${evolutionHint}` });
         listen(detail, 'toggle', () => {
           summary.setAttribute('aria-expanded', String(detail.open));
           summary.textContent = detail.open ? 'Hide details' : 'Upgrade details';

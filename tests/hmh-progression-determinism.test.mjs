@@ -76,6 +76,8 @@ function headlessRun({ seed, partition }) {
   const painted = [];
   const context = vm.createContext({
     upgradePending: false,
+    // Package 8.4: no Genesis Seal is picked up in this run.
+    evolutionPending: false,
     pendingUpgradeOfferPaint: null,
     progressionPilotEnabled: false,
     simulation,

@@ -375,6 +375,8 @@ export function stepGrenadeSystem(system, {
         surfaceId: impact?.surfaceId ?? null,
         point: freezeDeep({ ...(impact?.point ?? grenade.position) }),
         radius: grenade.blastRadius,
+        // The blast's own damage: Crypto Bomb Orbit's bomblets take 40% of it.
+        damage: grenade.damage,
         hits: blast.hits,
         rejections: blast.rejections,
       }));

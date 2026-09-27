@@ -366,6 +366,9 @@ function offerChoices(state, offer) {
 // The choices of the open offer or, with none open, the offer the runtime
 // would open with every owned gun armed (a pure preview; it opens nothing).
 function resolveChoices(state) {
+  // An evolution panel (package 8.4) carries its own cards, built by the lazy
+  // boss-drops.mjs that opened it.
+  if (state.offer?.kind === 'evolution') return state.offer.choices;
   if (state.offer) return offerChoices(state, state.offer);
   if (state.pendingLevels <= 0) return Object.freeze([]);
   return offerChoices(state, drawOffer(state, null));
@@ -399,6 +402,13 @@ export function createRunProgression({ seed = 0, ownedWeaponIds = ['coin-blaster
     rerolls: 0,
     offered: zeros(),
     selected: zeros(),
+    // Package 8.4 Genesis Seals and evolutions (S1.7). boss-drops.mjs (lazy)
+    // resolves Seals and runs the evolution panel; these are its counters.
+    // evolutions maps a weapon id to its applied evolution id.
+    evolutions: {},
+    sealsFound: 0,
+    evolutionOffersOpened: 0,
+    evolutionOffered: {},
   };
 }
 
@@ -441,6 +451,7 @@ export function openRunUpgradeOffer(state, { armedWeaponIds = null } = {}) {
 export function rerollRunUpgradeSlot(state, slot) {
   const offer = state?.offer;
   if (!offer) throw new Error('no upgrade offer is open');
+  if (offer.kind !== 'level') throw new Error('an evolution panel re-rolls through boss-drops.mjs');
   if (!Number.isInteger(slot) || slot < 0 || slot >= OFFER_SLOTS) throw new TypeError('slot must be 0 or 1');
   const current = offer.slots[slot];
   if (current.id === null || current.rerolled) return null;
@@ -475,17 +486,21 @@ export function runUpgradeRows(state, upgradeIds = Object.keys(RUN_UPGRADE_CATAL
   })));
 }
 
-// The v7 progression row. Evolutions and Genesis Seals arrive with S1.7; the
-// Golden Parachute count comes from the boss slots.
+// Genesis Seals held and not yet spent on an evolution (package 8.4 "Bank").
+export const runSealsBanked = (state) => state.sealsFound - Object.keys(state.evolutions).length;
+
+// The v7 progression row (contract 4 and S11): sealsBanked is the Seals found
+// less the evolutions applied; the Golden Parachute count comes from the boss
+// slots.
 export function runProgressionRow(state, { revivesUsed = 0 } = {}) {
   if (!Number.isInteger(revivesUsed) || revivesUsed < 0 || revivesUsed > 1) throw new TypeError('revivesUsed must be 0 or 1');
   return Object.freeze({
     offersOpened: state.offersOpened,
-    evolutionOffersOpened: 0,
+    evolutionOffersOpened: state.evolutionOffersOpened,
     rerolls: state.rerolls,
-    sealsFound: 0,
-    sealsBanked: 0,
-    evolutionsApplied: 0,
+    sealsFound: state.sealsFound,
+    sealsBanked: runSealsBanked(state),
+    evolutionsApplied: Object.keys(state.evolutions).length,
     revivesUsed,
   });
 }
@@ -507,6 +522,10 @@ export function getRunProgressionSnapshot(state) {
     offersOpened: state.offersOpened,
     rerolls: state.rerolls,
     focusWeaponId: state.focusWeaponId,
+    offerKind: state.offer?.kind ?? null,
+    evolutions: { ...state.evolutions },
+    sealsFound: state.sealsFound,
+    sealsBanked: runSealsBanked(state),
     ranks: { ...state.ranks },
     ownedWeaponIds: [...state.ownedWeaponIds].sort((left, right) => left < right ? -1 : left > right ? 1 : 0),
     effects: resolveEffects(state),
@@ -567,6 +586,7 @@ export function selectRunUpgrade(state, upgradeId) {
   if (typeof upgradeId !== 'string' || !Object.hasOwn(RUN_UPGRADE_CATALOG, upgradeId)) {
     throw new TypeError('upgradeId must identify an authored upgrade');
   }
+  if (state.offer?.kind === 'evolution') throw new Error('an evolution panel is open');
   // A caller that never opened the offer (tests, benchmarks) opens it here,
   // with every owned gun armed, exactly as the preview showed it.
   if (!state.offer) openRunUpgradeOffer(state);
