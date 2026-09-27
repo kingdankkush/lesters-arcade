@@ -60,6 +60,9 @@ import { seededUnit } from '../apps/hmh-reboot/src/deterministic-hash.mjs';
 import {
   createRunSummaryAccumulator,
   finalizeRunSummary,
+  recordRunBombletDetonation,
+  recordRunGrenadeDetonation,
+  recordRunKill,
   recordRunTick,
   recordRunUpgradeOffer,
   recordRunUpgradeSelection,
@@ -161,7 +164,14 @@ function headlessRun({ seed, partition }) {
       for (const shot of event.shots) throwGrenade(grenades, { tick, mode: 'launcher', origin: { x: 0, y: 0, z: 32 }, direction: shot.direction, damage: shot.damage, blastRadius: shot.blastRadius });
     }
     const grenadeFrame = stepGrenadeSystem(grenades, { tick, queryGround: () => FLAT });
-    bombletHits += stepBomblets(bomblets, { tick, targets: ring }).detonations.reduce((sum, row) => sum + row.hits.length, 0);
+    // The summary records blasts and bomblets as main.mjs does; a bomblet that
+    // hits stands in for a kill (credited, like main.mjs, to its hit's weapon).
+    for (const detonation of grenadeFrame.detonations) recordRunGrenadeDetonation(context.runSummaryAccumulator, detonation);
+    for (const detonation of stepBomblets(bomblets, { tick, targets: ring }).detonations) {
+      recordRunBombletDetonation(context.runSummaryAccumulator, detonation);
+      bombletHits += detonation.hits.length;
+      if (detonation.hits.length) recordRunKill(context.runSummaryAccumulator, { enemyRoleId: 'forkrunner', weaponId: detonation.hits[0].weaponId });
+    }
     if (progression.evolutions['launcher-rig']) {
       for (const detonation of grenadeFrame.detonations) spawnBomblets(bomblets, { tick, parentId: detonation.grenadeId, centre: detonation.point, parentDamage: detonation.damage });
     }
@@ -231,7 +241,7 @@ function headlessRun({ seed, partition }) {
     loadout: { active: loadout.activeWeaponId, sequence: loadout.sequence, weapons: loadout.weapons },
     grenades: { sequence: grenades.sequence, active: grenades.active }, bomblets, drops,
   });
-  return { digest: createHash('sha256').update(evidence).digest('hex'), offers, banners, progression, volleys, vents, bombletHits };
+  return { digest: createHash('sha256').update(evidence).digest('hex'), summary, offers, banners, progression, volleys, vents, bombletHits };
 }
 
 test('two runs of one seed give one digest; Seals bank, evolve on mastery and open the panel, and the evolved guns fire', () => {
@@ -248,6 +258,13 @@ test('two runs of one seed give one digest; Seals bank, evolve on mastery and op
   assert.ok(first.offers.some((offer) => offer.includes(':E:')), 'an evolution panel opens');
   assert.ok(first.volleys > 0, `Double Spend fires its volleys (${first.volleys})`);
   assert.ok(first.bombletHits > 0, `bomblets orbit and hit (${first.bombletHits})`);
+  // Bomblet kills are grenade kills, and each has its grenade contact
+  // (grenade-kills-above-contacts on the v6 and v7 verifier paths); bomblets
+  // are never detonations.
+  const { grenades } = first.summary;
+  assert.ok(grenades.kills > 0, JSON.stringify(grenades));
+  assert.ok(grenades.kills <= grenades.contacts, JSON.stringify(grenades));
+  assert.equal(grenades.contacts, first.bombletHits, 'the blasts here hit nothing; every contact is a bomblet hit');
   assert.notEqual(headlessRun({ seed: 40, partition: 1 }).digest, first.digest, 'a different seed changes the evidence');
 });
 

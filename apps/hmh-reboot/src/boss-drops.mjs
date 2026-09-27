@@ -51,11 +51,14 @@ export function createBossDrops() {
 }
 
 // The Seal for a boss's first defeat, at its arena's pedestal; null for a
-// boss that already dropped one.
+// boss that already dropped one, and null (no drop, nothing spent) for an
+// arena with no pedestal: the ?boss=1 debug fight runs on the open floor
+// (liquidator-boss.mjs liquidatorOpenArena, id 'open-floor'), and this runs
+// inside the fixed step, where a throw would halt the run.
 export function dropGenesisSeal(drops, { bossId, tick, arenaId }) {
   if (!BOSS_IDS.has(bossId)) throw new TypeError(`unknown boss ${String(bossId)}`);
-  const pedestal = BOSS_REWARD_PEDESTALS[arenaId];
-  if (!pedestal) throw new TypeError(`no reward pedestal for arena ${String(arenaId)}`);
+  const pedestal = Object.hasOwn(BOSS_REWARD_PEDESTALS, arenaId) ? BOSS_REWARD_PEDESTALS[arenaId] : null;
+  if (!pedestal) return null;
   if (drops.droppedBossIds.includes(bossId) || drops.drops >= GENESIS_SEAL_RULES.bankCap) return null;
   drops.droppedBossIds.push(bossId);
   const seal = { id: `genesis-seal:${bossId}`, bossId, tick, x: pedestal.x, y: pedestal.y, arenaId, first: drops.drops === 0, collectedTick: -1 };

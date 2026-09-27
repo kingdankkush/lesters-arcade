@@ -305,6 +305,20 @@ export function recordRunGrenadeDetonation(state, detonation) {
   }
 }
 
+// A Crypto Bomb Orbit bomblet (evolution-effects.mjs stepBomblets) is left by a
+// blast of the player's grenades (a launcher shell or a hand grenade) already
+// counted as a detonation, and its hits carry weaponId
+// 'launcher-rig', so each of its kills is a grenade kill (recordRunKill). Its
+// non-player hits are grenade contacts and launcher projectile contacts, never
+// a detonation or a trigger: detonated stays within the launches, and
+// grenades.kills stays within grenades.contacts (grenade-kills-above-contacts).
+export function recordRunBombletDetonation(state, detonation) {
+  const contacts = detonation.hits.reduce((sum, hit) => sum + Number(hit.targetId !== 'player'), 0);
+  if (contacts === 0) return;
+  state.grenades[2] += count(contacts, 'bomblet contacts');
+  recordRunProjectileContacts(state, { weaponId: 'launcher-rig', count: contacts });
+}
+
 export function recordRunCollectible(state, { effectId } = {}) {
   state.collectibles[index(state.C.collectibles, effectId, 'collectible effect')][0] += 1;
 }

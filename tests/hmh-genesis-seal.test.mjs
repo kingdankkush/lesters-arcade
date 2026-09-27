@@ -32,7 +32,9 @@ import {
   setRunUpgradeFocus,
   unlockRunProgressionWeapon,
 } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { readFileSync } from 'node:fs';
 import { LIQUIDATOR_ARENAS, bossArenaInterior } from '../apps/hmh-reboot/src/boss-arenas.mjs';
+import { liquidatorOpenArena } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { OBJECTIVE_REWARDS } from '../apps/hmh-reboot/src/objective-rewards.mjs';
 import { LEVEL_ONE_WORLD as world, createLevelOneGroundQuery } from '../apps/hmh-reboot/src/level-one-world.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from '../apps/hmh-reboot/src/collision.mjs';
@@ -76,6 +78,26 @@ test('one Seal per boss id per run, at its arena\'s reward pedestal; contact wit
   assert.equal(GENESIS_SEAL_RULES.pickupRadius, 80);
   assert.equal(GENESIS_SEAL_RULES.bankCap, 4);
   assert.throws(() => dropGenesisSeal(createBossDrops(), { bossId: 'not-a-boss', tick: 1, arenaId: 'margin-floor' }), /boss/);
+});
+
+// Review of ae96301e: ?boss=1 fights the Liquidator on liquidatorOpenArena
+// (id 'open-floor'), which has no pedestal. dropGenesisSeal runs inside the
+// fixed-step callback, where a throw halts the run, so it drops nothing there.
+test('a defeat on the open-floor debug arena drops no Seal, spends nothing and does not throw', () => {
+  const arenaId = liquidatorOpenArena({ x: 1_780, y: 2_400 }).id;
+  assert.equal(arenaId, 'open-floor');
+  assert.equal(Object.hasOwn(BOSS_REWARD_PEDESTALS, arenaId), false);
+  const drops = createBossDrops();
+  assert.doesNotThrow(() => dropGenesisSeal(drops, { bossId: 'liquidator', tick: 900, arenaId }));
+  assert.equal(dropGenesisSeal(drops, { bossId: 'liquidator', tick: 901, arenaId }), null);
+  assert.deepEqual(drops, createBossDrops(), 'no Seal, no boss marked as dropped, no bank slot used');
+  // Inherited keys are not pedestals either.
+  assert.equal(dropGenesisSeal(createBossDrops(), { bossId: 'liquidator', tick: 1, arenaId: 'toString' }), null);
+  // The same boss still drops on a real arena afterwards.
+  assert.equal(dropGenesisSeal(drops, { bossId: 'liquidator', tick: 40_000, arenaId: 'margin-floor' }).first, true);
+  // main.mjs reads the result optionally, so a null drop announces nothing.
+  const main = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(main, /if \(dropGenesisSeal\(bossDrops, \{ bossId: 'liquidator', tick, arenaId: defeatedArenaId \}\)\?\.first\)/);
 });
 
 test('the pedestals: inside the arena, on dry walkable ground clear of every collider, 120 or more from every objective reward', () => {

@@ -872,6 +872,12 @@ const BOSS = HMH_V7_BOSS_RULES;
 //                            two shells per trigger, and every shell that
 //                            spawns is one emitted projectile; bomblets (Crypto
 //                            Bomb Orbit) are never recorded as detonations.
+//   grenade-kills-above-contacts  as on v6. A Crypto Bomb Orbit bomblet hit
+//                            carries weaponId launcher-rig (evolution-effects.mjs),
+//                            so its kill is a grenade kill; the 1.9.0 child
+//                            records each bomblet's non-player hits as grenade
+//                            contacts (recordRunBombletDetonation), so an honest
+//                            evolved launcher keeps kills within contacts.
 //   knife-kills-above-contacts, melee-contacts-without-trigger,
 //   knife-triggers-above-cadence, standard-triggers-above-cadence
 //                            as on v6, with the same literals: the knife and the
@@ -879,12 +885,6 @@ const BOSS = HMH_V7_BOSS_RULES;
 //                            Standard's evolution (chain-split) is wave 2, held
 //                            at applied = 0 by schema rule S10.
 // Not mirrored yet, each for a stated reason:
-//   grenade-kills-above-contacts  a Crypto Bomb Orbit bomblet hit carries
-//                            weaponId launcher-rig (evolution-effects.mjs), so
-//                            its kill counts as a grenade kill with no
-//                            detonation contact: the v6 formula would reject an
-//                            honest evolved launcher. grenade-kills-above-
-//                            weapon-kills (above) still bounds grenadeKills.
 //   pickups-above-capacity, district-path-invalid, districts-before-travel-
 //   time, weapon-without-source, grenades-thrown-above-supply
 //                            need the 1.9.0 child's own tables pinned into
@@ -896,6 +896,7 @@ const BOSS = HMH_V7_BOSS_RULES;
 export const HMH_V7_CONSISTENCY_REJECTS = Object.freeze([
   'activity-without-time',
   'equipped-ticks-above-run',
+  'grenade-kills-above-contacts',
   'grenade-detonations-above-launches',
   'damage-dealt-mismatch',
   'combo-above-kills',
@@ -913,6 +914,7 @@ function checkV7Consistency(runSummary, runTicks, reject) {
   const equippedTicks = weapons.reduce((sum, row) => sum + row.equippedTicks, 0);
   if (equippedTicks > runTicks) reject('equipped-ticks-above-run', equippedTicks, runTicks);
 
+  if (grenades.kills > grenades.contacts) reject('grenade-kills-above-contacts', grenades.kills, grenades.contacts);
   const launches = grenades.thrown + (weapons.find((row) => row.weaponId === V6C.launcherWeapon)?.projectilesEmitted ?? 0);
   if (grenades.detonated > launches) reject('grenade-detonations-above-launches', grenades.detonated, launches);
 

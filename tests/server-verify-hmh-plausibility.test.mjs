@@ -2161,14 +2161,17 @@ test('v7: one more cache pickup adds exactly its grantRunXp at the maximum ranks
 test("v7: grenade kills above the grenade weapons' kills reject; equality passes", () => {
   for (const base of [districts, fourBosses]) {
     for (const weaponId of V6C.grenadeWeapons) {
-      const at = clone(base, (s) => { creditWeapon(s, weaponId, 25); s.grenades.kills = 25; });
+      // Each grenade kill carries its blast contact (grenade-kills-above-contacts
+      // is mirrored on v7, so the contacts are part of an honest trail).
+      const at = clone(base, (s) => { creditWeapon(s, weaponId, 25); s.grenades.kills = 25; s.grenades.contacts = Math.max(s.grenades.contacts, 26); });
       assert.deepEqual(rejects(plausible(at)), []);
       const above = plausible(clone(at, (s) => { s.grenades.kills = 26; }));
       assert.deepEqual(rejectFlags(above), [{ id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: 26, limit: 25 }]);
     }
   }
-  // The review's case: 250 grenade kills claimed with no grenade kill at all.
-  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.grenades.kills = 250; }))), ['grenade-kills-above-weapon-kills']);
+  // The review's case: 250 grenade kills claimed with no grenade kill at all
+  // (and no blast contact for them either).
+  assert.deepEqual(rejects(plausible(clone(districts, (s) => { s.grenades.kills = 250; }))).sort(), ['grenade-kills-above-contacts', 'grenade-kills-above-weapon-kills']);
 });
 
 test('v7: a boss initiated at tick 0 rejects boss-before-ready', () => {
@@ -2229,10 +2232,10 @@ test('v7: each mirrored consistency rule at its boundary', () => {
   assert.deepEqual(only7(districts), []);
   assert.deepEqual([...HMH_V7_CONSISTENCY_REJECTS].sort(), [
     'activity-without-time', 'combo-above-kills', 'damage-dealt-mismatch', 'equipped-ticks-above-run', 'grenade-detonations-above-launches',
-    'knife-kills-above-contacts', 'knife-triggers-above-cadence', 'melee-contacts-without-trigger', 'standard-triggers-above-cadence',
+    'grenade-kills-above-contacts', 'knife-kills-above-contacts', 'knife-triggers-above-cadence', 'melee-contacts-without-trigger', 'standard-triggers-above-cadence',
   ]);
-  // Every mirrored id is a v6 consistency reject; grenade-kills-above-contacts
-  // and the table-bound five are not mirrored (hmh-plausibility.mjs says why).
+  // Every mirrored id is a v6 consistency reject; the table-bound five are not
+  // mirrored (hmh-plausibility.mjs says why).
   assert.ok(HMH_V7_CONSISTENCY_REJECTS.every((id) => HMH_V6_CONSISTENCY_REJECTS.includes(id)));
 
   // activity-without-time: a run of zero ticks that visited a district.
@@ -2253,6 +2256,19 @@ test('v7: each mirrored consistency rule at its boundary', () => {
   });
   assert.deepEqual(only7(blasts(4)), [], 'two throws and one two-shell trigger');
   assert.deepEqual(flagOf(blasts(5), 'grenade-detonations-above-launches'), [{ id: 'grenade-detonations-above-launches', severity: 'reject', value: 5, limit: 4 }]);
+
+  // grenade-kills-above-contacts: one Coin Blaster kill moved to the launcher
+  // is a grenade kill, and it needs a grenade contact (a blast or a bomblet).
+  const launcherKill = (contacts) => clone(districts, (s) => {
+    v7Row(s.kills.byWeapon, 'weaponId', 'coin-blaster').count -= 1;
+    v7Row(s.kills.byWeapon, 'weaponId', 'launcher-rig').count += 1;
+    row(s, 'coin-blaster').kills -= 1;
+    row(s, 'launcher-rig').kills += 1;
+    s.grenades.kills += 1;
+    s.grenades.contacts = s.grenades.kills - 1 + contacts;
+  });
+  assert.deepEqual(only7(launcherKill(1)), []);
+  assert.deepEqual(flagOf(launcherKill(0), 'grenade-kills-above-contacts'), [{ id: 'grenade-kills-above-contacts', severity: 'reject', value: districts.grenades.kills + 1, limit: districts.grenades.kills }]);
 
   // damage-dealt-mismatch: exact equality, either way.
   for (const delta of [1, -1]) {
@@ -2342,16 +2358,18 @@ function v7Corpus() {
   return cases;
 }
 
-// Slice 9 mirrors nine v6 consistency rules onto the v7 path
+// Slice 9 mirrors ten v6 consistency rules onto the v7 path
 // (HMH_V7_CONSISTENCY_REJECTS). With their flags taken out (and the verdict
 // recomputed) the corpus still hashes to V7_CORPUS_DIGEST, so no earlier v7
 // result moved; with them in it hashes to V7_CORPUS_DIGEST_SLICE_9. The cases
-// that gained a flag are the ones whose fabricated time or combo those rules
-// bound: no ticks, a run squeezed to 600 ticks, and a best combo above the kills.
-const V7_CORPUS_DIGEST_SLICE_9 = 'ed323e69b4d37a5e978d9f167462eb513527a438dcca9a3a55d23f011f2d81d3';
+// that gained a flag are the ones whose fabricated time, combo or grenade kills
+// those rules bound: no ticks, a run squeezed to 600 ticks, a best combo above
+// the kills, and grenade kills with no blast contact (grenade-kills-above-
+// contacts, mirrored once the child recorded bomblet contacts).
+const V7_CORPUS_DIGEST_SLICE_9 = '4a73d5c0e2eca7a663c8e5726d9fdf89af84c0f9f80d462071b315429b0e4c7d';
 const V7_CORPUS_CHANGED_SLICE_9 = Object.freeze([
-  'districts no ticks', 'districts squeezed to 600', 'districts combo above kills',
-  'four-bosses no ticks', 'four-bosses squeezed to 600', 'four-bosses combo above kills',
+  'districts no ticks', 'districts squeezed to 600', 'districts grenade kills +1', 'districts 30 satoshi-frag kills', 'districts combo above kills',
+  'four-bosses no ticks', 'four-bosses squeezed to 600', 'four-bosses grenade kills +1', 'four-bosses 30 satoshi-frag kills', 'four-bosses combo above kills',
 ]);
 test('the v7 path gives its mutation corpus the pinned results', () => {
   const results = v7Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
@@ -2364,10 +2382,15 @@ test('the v7 path gives its mutation corpus the pinned results', () => {
   assert.equal(createHash('sha256').update(JSON.stringify(withoutMirror)).digest('hex'), V7_CORPUS_DIGEST, 'without the mirrored rules, every result is the pre-slice-9 result');
   const changed = results.filter(([, result], index) => JSON.stringify(result) !== JSON.stringify(withoutMirror[index][1])).map(([name]) => name);
   assert.deepEqual(changed, V7_CORPUS_CHANGED_SLICE_9);
-  // Only the combo cases change verdict (flagged to rejected); the time cases
-  // were already rejected and now also name what their missing time cannot hold.
+  // Only the combo cases and the 30 Satoshi Frag kills claimed with no blast
+  // contact change verdict (to rejected); the time cases and the grenade kill
+  // above the weapons' kills were already rejected and now also name the
+  // mirrored rule they break.
   const verdictChanged = results.filter(([, result], index) => result.verdict !== withoutMirror[index][1].verdict)
     .map(([name, result]) => [name, result.flags.filter((flag) => HMH_V7_CONSISTENCY_REJECTS.includes(flag.id)).map((flag) => flag.id)]);
-  assert.deepEqual(verdictChanged, [['districts combo above kills', ['combo-above-kills']], ['four-bosses combo above kills', ['combo-above-kills']]]);
+  assert.deepEqual(verdictChanged, [
+    ['districts 30 satoshi-frag kills', ['grenade-kills-above-contacts']], ['districts combo above kills', ['combo-above-kills']],
+    ['four-bosses 30 satoshi-frag kills', ['grenade-kills-above-contacts']], ['four-bosses combo above kills', ['combo-above-kills']],
+  ]);
   assert.equal(digest, V7_CORPUS_DIGEST_SLICE_9, `${results.length} cases`);
 });

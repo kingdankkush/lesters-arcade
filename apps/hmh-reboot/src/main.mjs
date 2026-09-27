@@ -163,6 +163,7 @@ import {
   recordRunCollectible,
   recordRunDamage,
   recordRunGrenade,
+  recordRunBombletDetonation,
   recordRunGrenadeDetonation,
   recordRunHealing,
   recordRunKill,
@@ -4783,6 +4784,7 @@ async function boot() {
       const bombletFrame = stepBomblets(bombletPool, { tick, targets: evolutionTargets() });
       const bombletFx = takeBombletFeedback(bombletFeedback, { tick, count: bombletFrame.detonations.length });
       for (const [index, detonation] of bombletFrame.detonations.entries()) {
+        recordRunBombletDetonation(runSummaryAccumulator, detonation);
         for (const hit of detonation.hits) combatHitIntents.push({ ...hit, ...heldCritical(hit.weaponId) });
         if (index < bombletFx.bursts) pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius, mode: 'bomblet' });
       }
