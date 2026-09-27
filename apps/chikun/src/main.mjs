@@ -20,9 +20,10 @@ import {
   validateChikunChildMessage,
 } from '../../portal/src/chikun-bridge-protocol.mjs';
 import { MAX_CHIKUN_PARTICLES, planChikunVfx } from './vfx.mjs';
-import { buildChikunReplayTimeline, buildChikunShareText, buildChikunModeTease, buildChikunJackpotTease } from './presentation.mjs';
+import { buildChikunReplayTimeline, buildChikunModeTease, buildChikunJackpotTease } from './presentation.mjs';
 import { JACKPOT_LIVE } from '../../portal/src/jackpot-config.mjs';
-import { buildShareLinks, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
+import { buildFreeShareText, buildShareLinks, createShareRow } from '../../portal/src/share-links.mjs';
+import { encodeFreeShareToken, freeShareCardPath, freeSharePageUrl } from '../../portal/src/free-share-token.mjs';
 import { createChikunReplayPlayback, replayPlayheadRatio } from './replay-viewer.mjs';
 import {
   chikunDailyChallengeForSeed,
@@ -883,22 +884,27 @@ document.addEventListener('fullscreenchange', syncFullscreenControl);
 exitButton.addEventListener('click', () => send('game:exit-request', {}));
 resultExitButton.addEventListener('click', () => send('game:exit-request', {}));
 // X / Facebook / Discord targets beside the native Share Run button (owner
-// direction 2026-09-16). Same text as the native share, same public link.
-// Free runs only: the parent results screen owns Ranked sharing (§7.4).
+// direction 2026-09-16). Same text as the native share, same /f/ link (its
+// card is the run's Free card). Free runs only: the parent results screen
+// owns Ranked sharing (§7.4).
 let shareRow = null;
 function renderShareRow(result) {
   const mount = document.querySelector('#shareRow');
   if (!mount) return;
   mount.hidden = shareRunButton.hidden = mode === 'ranked';
   if (mode === 'ranked') return;
+  const values = { region: result.regionReached, laps: result.laps, score: result.score, forksPassed: result.forksPassed, nearMisses: result.nearMisses, coinsCollected: result.coinsCollected, bestCombo: result.bestCombo, survivalSeconds: result.survivalTime, daily: Boolean(dailyChallenge) };
+  const token = encodeFreeShareToken('chikun', values);
   const links = buildShareLinks({
-    text: buildChikunShareText(result, mode, dailyChallenge?.label ?? ''),
-    url: shareUrlFor('chikun'),
+    text: buildFreeShareText('chikun', { score: result.score, stats: { ...values, regionName: result.regionReached, dailyLabel: dailyChallenge?.label ?? '' } }),
+    url: freeSharePageUrl('chikun', token),
+    card: freeShareCardPath('chikun', token),
   });
   if (shareRow) { shareRow.refresh(links); return; }
   shareRow = createShareRow({
     documentRef: document,
-    navigatorRef: { clipboard: navigator.clipboard },
+    navigatorRef: navigator,
+    nativeButton: false,
     title: "Chikun's Escape",
     links,
     className: 'share-row',
@@ -908,11 +914,10 @@ function renderShareRow(result) {
   mount.replaceChildren(shareRow);
 }
 shareRunButton.addEventListener('click', async () => {
-  if (!lastCompletedResult) return;
-  const text = buildChikunShareText(lastCompletedResult, mode, dailyChallenge?.label ?? '');
+  if (!shareRow?.links || mode === 'ranked') return;
   try {
-    if (navigator.share) await navigator.share({ title: "Chikun's Escape", text, url: 'https://lestersarcade.io' });
-    else if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    if (navigator.share) await shareRow.native.share();
+    else if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(shareRow.links.discord);
     else throw new Error('Sharing is unavailable');
     shareRunButton.textContent = navigator.share ? 'Shared' : 'Copied';
     setLive(navigator.share ? 'Run shared.' : 'Run summary copied to clipboard.');

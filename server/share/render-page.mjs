@@ -77,7 +77,10 @@ const VERIFICATION_NOTE = Object.freeze({
   'chain-index': 'Found on LitVM by the arcade indexer.',
 });
 
-const STYLE = `
+// The page stylesheet. The Free page (render-free-page.mjs) derives its own
+// from it; this string is the Ranked page's and stays byte-identical
+// (tests/share-ranked-byte-identity.test.mjs).
+export const SHARE_PAGE_STYLE = `
 :root{color-scheme:dark;--cyan:#19f7ff;--gold:#ffe84d;--green:#45ff8a;--amber:#ffb347;--ink:#f9f7ff;--muted:#b4aed4;--panel:rgba(4,11,26,.92);--edge:rgba(25,247,255,.28)}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,rgba(255,61,242,.16),transparent 30rem),#070512;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45;overflow-x:hidden}
@@ -117,7 +120,9 @@ a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 footer{color:var(--muted);font-size:.85rem;text-align:center}
 `.replace(/\n/g, '');
 
-function metaTags({ title, description, url, image, imageAlt, noindex }) {
+// Shared with the Free page (render-free-page.mjs), so both surfaces emit
+// the same tag set and document frame.
+export function metaTags({ title, description, url, image, imageAlt, noindex }) {
   const tags = [
     `<title>${escapeHtml(title)}</title>`,
     `<meta name="description" content="${escapeHtml(description)}">`,
@@ -140,7 +145,7 @@ function metaTags({ title, description, url, image, imageAlt, noindex }) {
   return tags.join('\n');
 }
 
-function documentHtml(head, body) {
+export function documentHtml(head, body, style = SHARE_PAGE_STYLE) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -148,7 +153,7 @@ function documentHtml(head, body) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${head}
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<style>${STYLE}</style>
+<style>${style}</style>
 </head>
 <body>
 <main>
@@ -167,8 +172,9 @@ const GENERIC = Object.freeze({
   400: { title: "Lester's Arcade", heading: 'That is not a run link', copy: 'Share links look like lestersarcade.io/s/ followed by 64 letters and digits.' },
 });
 
-function genericPage(status) {
-  const copy = GENERIC[status] ?? GENERIC[503];
+// A page with generic tags and no run. The Free page passes its own copy,
+// cache policy and stylesheet; the Ranked defaults are unchanged.
+export function genericPage(status, { copy = GENERIC[status] ?? GENERIC[503], cacheControl = status === 404 ? MISSING_PAGE_CACHE : 'no-store', style = SHARE_PAGE_STYLE } = {}) {
   const head = metaTags({
     title: copy.title,
     description: 'Retro arcade cabinets on LitVM: play free, or play Ranked for on-chain leaderboards.',
@@ -187,10 +193,10 @@ function genericPage(status) {
     status,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': status === 404 ? MISSING_PAGE_CACHE : 'no-store',
+      'Cache-Control': cacheControl,
       'X-Robots-Tag': 'noindex',
     },
-    html: documentHtml(head, body),
+    html: documentHtml(head, body, style),
   };
 }
 

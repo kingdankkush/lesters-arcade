@@ -257,7 +257,9 @@ test('share is enabled only once published', () => {
     } else if (state === 'preview' || state === 'practice') {
       assert.equal(model.share.template, 'free', state);
       assert.equal(model.share.url, 'https://lestersarcade.io', `${state} shares the site root`);
-      assert.match(model.share.text, /Practising on @LestersArcade$/);
+      // The Free template of the free-share plan (§5): the game's call, one mention.
+      assert.match(model.share.text, /^🐔 FREE PLAY · Chikun's Escape\n/);
+      assert.match(model.share.text, /Beat my flight @LestersArcade$/);
       assert.doesNotMatch(model.share.text, /Verified|RANKED/);
     } else {
       assert.equal(model.share, null, state);

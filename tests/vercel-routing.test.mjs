@@ -98,9 +98,9 @@ function vercelAppendedParams(rule) {
 }
 
 // First matching rewrite wins; the original query string is carried through.
-function rewrite(url) {
+function rewrite(url, rules = vercel.rewrites) {
   const [path, query = ''] = url.split('?');
-  for (const rule of vercel.rewrites) {
+  for (const rule of rules) {
     const match = sourcePattern(rule.source).exec(path);
     if (!match) continue;
     let destination = rule.destination.replace(/:([A-Za-z0-9_]+)/g, (_, name) => match.groups?.[name] ?? '');
@@ -122,6 +122,10 @@ function headersFor(path) {
 
 const HEX64 = 'ab'.repeat(32);
 const WALLET = `0x${'Cd'.repeat(20)}`;
+// Free share tokens (free-share, plan §3): lowercase base36, 30 (HMH) / 40 (Chikun) / 34 (STACKED) chars.
+const TOKEN40 = `ac${'0'.repeat(38)}`;
+const TOKEN34 = `as${'0'.repeat(32)}`;
+const TOKEN30 = `ah${'0'.repeat(28)}`;
 
 test('API, share and profile deep links route to their functions', () => {
   const cases = [
@@ -145,20 +149,55 @@ test('API, share and profile deep links route to their functions', () => {
     ['/jackpot/chikun', '/jackpot/chikun.html'],
     // The Ranked player guide (ranked-onboarding 2026-09-26; the in-game menus link this path).
     ['/how-ranked-works', '/how-ranked-works.html'],
+    // free-share (E12, E13): the Free page and card, keyed by route slug and token only.
+    [`/f/chikun/${TOKEN40}`, `/api/free-share-page?game=chikun&token=${TOKEN40}`],
+    [`/f/hard-money-heroes/${TOKEN30}`, `/api/free-share-page?game=hard-money-heroes&token=${TOKEN30}`],
+    [`/f/stacked/${TOKEN34}?fbclid=abc`, `/api/free-share-page?game=stacked&token=${TOKEN34}&fbclid=abc`],
+    [`/api/free-card/stacked/${TOKEN34}.png?x=1`, `/api/free-card?game=stacked&token=${TOKEN34}&x=1`],
+    [`/api/free-card/hard-money-heroes/${TOKEN30}.png`, `/api/free-card?game=hard-money-heroes&token=${TOKEN30}`],
   ];
   for (const [url, destination] of cases) assert.equal(rewrite(url)?.destination, destination, url);
   for (const url of [`/s/${HEX64.slice(2)}`, `/s/${HEX64}0`, '/profile/0x1234', `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, '/api/session']) {
     assert.equal(rewrite(url), null, `${url} matches no rewrite`);
   }
+  // A Free link outside the slug enum or the token alphabet and length falls through to the SPA shell
+  // (or nothing under /api/); the handler is the exact gate for 30/40/34.
+  for (const url of [`/f/pinball/${TOKEN40}`, `/f/chikun/${TOKEN40.slice(0, 29)}`, `/f/chikun/${TOKEN40}0`, `/f/chikun/${TOKEN40.slice(0, 20)}.${TOKEN40.slice(21)}`, `/f/chikun/${TOKEN40.toUpperCase()}`, `/f/chikun/${TOKEN40}/`]) {
+    assert.notEqual(rewrite(url)?.destination?.startsWith('/api/free-share-page'), true, `${url} does not reach the Free page function`);
+  }
+  for (const url of [`/api/free-card/stacked/${TOKEN34}.jpg`, `/api/free-card/stacked/${TOKEN34}xpng`, `/api/free-card/pinball/${TOKEN34}.png`, `/api/free-card/stacked/${TOKEN34.slice(0, 29)}.png`, `/api/free-card/stacked/${TOKEN34}${'0'.repeat(7)}.png`, `/api/free-card/stacked/${TOKEN34.toUpperCase()}.png`]) {
+    assert.equal(rewrite(url), null, `${url} matches no rewrite`);
+  }
   const sources = vercel.rewrites.map((rule) => rule.source);
   assert.ok(sources.indexOf('/api/session/nonce') < sources.indexOf('/api/session/:id((?:0x)?[0-9a-fA-F]{64})'), 'nonce is routed before the share id');
   assert.ok(sources.indexOf('/api/share-card/:id([0-9a-fA-F]{64}).png') < sources.indexOf('/games/:path*'), 'the new rewrites come before /games/:path*');
+  for (const source of ['/f/:game(hard-money-heroes|chikun|stacked)/:token([0-9a-z]{30,40})', '/api/free-card/:game(hard-money-heroes|chikun|stacked)/:token([0-9a-z]{30,40}).png']) {
+    assert.ok(sources.indexOf(source) > sources.indexOf('/api/share-card/:id([0-9a-fA-F]{64}).png') && sources.indexOf(source) < sources.indexOf('/games/:path*'), `${source} sits after the Ranked card and before /games/:path*`);
+  }
   for (const source of ['/api/jackpot/replay', '/api/jackpot/review', '/jackpot/chikun', '/how-ranked-works']) assert.ok(sources.indexOf(source) >= 0 && sources.indexOf(source) < sources.indexOf('/games/:path*'), `${source} comes before /games/:path*`);
   assert.equal(rewrite('/api/jackpot'), null, '/api/jackpot is the function itself');
   assert.equal(vercel.rewrites.find((rule) => rule.source.startsWith('/api/share-card/')).destination, '/api/share-card?id=:id', 'the card rewrite declares only id, so ?v=<rev> reaches the handler from the original query');
   for (const rule of vercel.rewrites.filter((entry) => entry.destination.startsWith('/api/'))) {
     const file = `${rule.destination.split('?')[0].slice(1)}.mjs`;
     assert.ok(existsSync(new URL(`../${file}`, import.meta.url)), `${rule.source} → ${file} exists`);
+  }
+});
+
+// free-share acceptance: the Free rewrites shadow nothing. Vercel serves a
+// static file before any rewrite, so a file under the output directory at
+// /f/ or /api/free-card/ would silently replace the functions; none exists.
+// The Free sources also match no Ranked /s/ or /api/share-card/ URL, so the
+// Ranked routes resolve exactly as before whatever the rule order.
+test('the Free page and card rewrites shadow no static file and no Ranked route', () => {
+  const output = new URL(`../${vercel.outputDirectory}/`, import.meta.url);
+  for (const path of ['f', 'f.html', 'api/free-card', 'api/free-share-page']) {
+    assert.equal(existsSync(new URL(path, output)), false, `${vercel.outputDirectory}/${path} must not exist`);
+  }
+  const freeRules = vercel.rewrites.filter((rule) => /^\/api\/free-(share-page|card)\?/.test(rule.destination));
+  assert.equal(freeRules.length, 2, 'exactly the page and card rewrites reach the Free functions');
+  for (const url of [`/s/${HEX64}`, `/s/${HEX64.toUpperCase()}`, `/api/share-card/${HEX64}.png`, `/api/share-card/${HEX64}.png?v=0123456789ab`]) {
+    assert.match(rewrite(url)?.destination ?? '', /^\/api\/share-(page|card)\?id=/, `${url} still reaches its Ranked function`);
+    for (const rule of freeRules) assert.equal(rewrite(url, [rule]), null, `${rule.source} cannot match ${url}`);
   }
 });
 
@@ -181,6 +220,11 @@ const VERCEL_COMPILED = Object.freeze([
   // jackpot-server: plain paths, so the original query (session, week) is merged as is.
   { source: '/api/jackpot/replay', destination: '/api/jackpot-replay', src: '^/api/jackpot/replay$', dest: '/api/jackpot-replay' },
   { source: '/api/jackpot/review', destination: '/api/jackpot-review', src: '^/api/jackpot/review$', dest: '/api/jackpot-review' },
+  // free-share (E12, E13): derived by analogy with the recorded rows (path-to-regexp 6 wraps each
+  // constrained `:param(...)` as `(?:/(...))`) and checked against scripts/lib/local-stack.mjs
+  // compileVercelSource; the vercel CLI was not reachable from this checkout (2026-09-26).
+  { source: '/f/:game(hard-money-heroes|chikun|stacked)/:token([0-9a-z]{30,40})', destination: '/api/free-share-page?game=:game&token=:token', src: '^/f(?:/(hard-money-heroes|chikun|stacked))(?:/([0-9a-z]{30,40}))$', dest: '/api/free-share-page?game=$1&token=$2' },
+  { source: '/api/free-card/:game(hard-money-heroes|chikun|stacked)/:token([0-9a-z]{30,40}).png', destination: '/api/free-card?game=:game&token=:token', src: '^/api/free-card(?:/(hard-money-heroes|chikun|stacked))(?:/([0-9a-z]{30,40}))\\.png$', dest: '/api/free-card?game=$1&token=$2' },
 ]);
 
 // Routes a URL through the compiled table; Vercel merges the original query
@@ -198,7 +242,7 @@ function vercelRoute(url) {
 
 const queryKeys = (url) => [...new URLSearchParams(url.split('?')[1] ?? '').keys()].sort();
 
-test('rewrites give API functions only the query keys they declare, as Vercel compiles them', () => {
+test('rewrites give API functions only the query keys they declare, as Vercel compiles them', async () => {
   // vercel.json still says what the compiled table was recorded from.
   const bySource = new Map(vercel.rewrites.map((rule) => [rule.source, rule.destination]));
   for (const route of VERCEL_COMPILED) assert.equal(bySource.get(route.source), route.destination, `${route.source} is unchanged since the compiled table was recorded`);
@@ -223,13 +267,24 @@ test('rewrites give API functions only the query keys they declare, as Vercel co
     [`/api/profile/refresh?wallet=${WALLET}`, `/api/profile-refresh?wallet=${WALLET}`],
     [`/api/jackpot/replay?session=0x${HEX64}`, `/api/jackpot-replay?session=0x${HEX64}`],
     ['/api/jackpot/review?week=2026-W40', '/api/jackpot-review?week=2026-W40'],
+    [`/f/chikun/${TOKEN40}`, `/api/free-share-page?game=chikun&token=${TOKEN40}`],
+    [`/f/chikun/${TOKEN40}?fbclid=abc`, `/api/free-share-page?game=chikun&token=${TOKEN40}&fbclid=abc`],
+    [`/api/free-card/stacked/${TOKEN34}.png?x=1`, `/api/free-card?game=stacked&token=${TOKEN34}&x=1`],
   ];
   for (const [url, destination] of cases) {
     assert.equal(vercelRoute(url), destination, `${url} (compiled)`);
     assert.equal(rewrite(url)?.destination, destination, `${url} (model)`);
   }
-  for (const url of [`/s/${HEX64}0`, `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, `/api/share-card/${HEX64}xpng`]) {
+  for (const url of [`/s/${HEX64}0`, `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, `/api/share-card/${HEX64}xpng`, `/f/pinball/${TOKEN40}`, `/f/chikun/${TOKEN40.slice(0, 29)}`, `/f/chikun/${TOKEN40}0`, `/f/chikun/${TOKEN40}/`, `/api/free-card/stacked/${TOKEN34}.jpg`, `/api/free-card/stacked/${TOKEN34}xpng`]) {
     assert.equal(vercelRoute(url), null, `${url} matches no compiled route`);
+  }
+  // The two Free rewrites compile exactly as the local router does (the offline oracle).
+  const { compileVercelSource } = await import('../scripts/lib/local-stack.mjs');
+  for (const route of VERCEL_COMPILED.filter((entry) => entry.source.includes(':game('))) {
+    const local = compileVercelSource(route.source);
+    for (const url of [`/f/chikun/${TOKEN40}`, `/f/hard-money-heroes/${TOKEN30}`, `/api/free-card/stacked/${TOKEN34}.png`, `/f/pinball/${TOKEN40}`, `/api/free-card/stacked/${TOKEN34}.jpg`, `/f/chikun/${TOKEN40}0`]) {
+      assert.equal(new RegExp(route.src).test(url), local.test(url), `${route.source} vs ${url}`);
+    }
   }
 });
 
@@ -275,6 +330,10 @@ test('crons and function limits are declared', () => {
     'api/session-nonce.mjs': { maxDuration: 10 },
     'api/share-page.mjs': { maxDuration: 10 },
     'api/share-card.mjs': { maxDuration: 20, memory: 1024, includeFiles: 'apps/portal/assets/share-cards/**' },
+    // free-share (E12, E13): the Free page reads nothing; the Free card renders with the same
+    // Satori/resvg machinery and reads its backgrounds and hero portraits from share-cards/**.
+    'api/free-share-page.mjs': { maxDuration: 10 },
+    'api/free-card.mjs': { maxDuration: 20, memory: 1024, includeFiles: 'apps/portal/assets/share-cards/**' },
     'api/ranked-seed.mjs': { maxDuration: 10 },
     // ops-health: two short-deadline read parts (Neon, RPC) in parallel.
     'api/health.mjs': { maxDuration: 15 },
@@ -293,7 +352,9 @@ test('crons and function limits are declared', () => {
 });
 
 test('noindex covers profile, share and owner pages', () => {
-  for (const path of [`/profile/${WALLET}`, '/profile', `/s/${HEX64}`, '/owner/confirm-dev-wallet.html', '/owner/status.html', '/owner/status.mjs', '/play/chikun/ranked', '/leaderboards']) {
+  // /f/ (Free share pages) is noindex in the handler too; this rule also
+  // covers a platform error page served before the function answers.
+  for (const path of [`/profile/${WALLET}`, '/profile', `/s/${HEX64}`, `/f/chikun/ac${'0'.repeat(38)}`, '/f/anything', '/owner/confirm-dev-wallet.html', '/owner/status.html', '/owner/status.mjs', '/play/chikun/ranked', '/leaderboards']) {
     assert.equal(headersFor(path)['X-Robots-Tag'], 'noindex, follow', path);
   }
   assert.equal(headersFor('/owner/confirm-dev-wallet.html')['Cache-Control'], 'no-store');

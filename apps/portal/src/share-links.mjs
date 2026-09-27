@@ -9,8 +9,9 @@
 // the account after posting, and there are no hashtags (D13). The URL is not
 // part of the text: X appends it and counts it as 23 weighted characters.
 // This file also ships in the Chikun and STACKED children, so keep it small.
-// The Ranked and Free templates of the parent results screen live here too,
-// as §7.4 specifies; the children never call them.
+// The Ranked and Free templates live here too, as §7.4 specifies; the
+// children call only the Free one (a Free run links to its /f/ page, whose
+// card the token fully determines: free-share-token.mjs).
 
 export const SHARE_ORIGIN = 'https://lestersarcade.io';
 export const X_MENTION = '@LestersArcade';
@@ -98,28 +99,45 @@ function fitWeight(text) {
 }
 
 // Guide §5.12 templates, minus the URL line (X appends the url parameter).
+// `detail`, `stats` and `call` are shared by Ranked and Free; `freeIcon`,
+// `freeDetail` and `freeExtra` are Free-only (plan free-share-20260926 §5).
 const TEMPLATES = Object.freeze({
   'lester-blaster': {
     icon: '🏆',
+    freeIcon: '🧟',
     title: 'Hard Money Heroes',
     detail: () => '',
+    freeDetail: (s) => {
+      const hero = safeShareFragment(s.heroName, 16);
+      return `${hero ? ` · ${hero}` : ''}${number(s.level) >= 1 ? ` · Lv ${count(s.level)}` : ''}`;
+    },
+    freeExtra: (s) => (s.bossDefeated === true || number(s.bossKills) >= 1 ? '💀 Liquidator liquidated' : ''),
     stats: (s) => `☠ ${count(s.kills)} kills · 🔥 ×${count(s.maxCombo)} combo · ⏱ ${shareClock(s.survivalSeconds)}`,
     call: 'Can you beat it?',
   },
   chikun: {
     icon: '🐔',
+    freeIcon: '🐔',
     title: "Chikun's Escape",
     detail: (s) => {
       const region = safeShareFragment(s.regionName ?? s.regionReached ?? '', 12);
       return ` · Lap ${count(number(s.laps) + 1)}${region ? ` · ${region[0].toUpperCase()}${region.slice(1)}` : ''}`;
     },
+    freeDetail: (s) => {
+      const daily = safeShareFragment(s.dailyLabel, 16);
+      return daily ? ` · ${daily}` : '';
+    },
+    freeExtra: (s) => (number(s.survivalSeconds) > 0 ? `⏱ ${shareClock(s.survivalSeconds)} flight · 🔥 ×${count(s.bestCombo)} combo` : ''),
     stats: (s) => `🌾 ${count(s.forksPassed)} forks · ⚡ ${count(s.nearMisses)} near-misses · 🪙 ${count(s.coinsCollected)} coins`,
     call: 'Beat my flight',
   },
   stacked: {
     icon: '🧱',
+    freeIcon: '🧱',
     title: 'STACKED',
     detail: () => '',
+    freeDetail: (s) => `${number(s.survivalSeconds) > 0 ? ` · ⏱ ${shareClock(s.survivalSeconds)}` : ''}${number(s.maxCombo) > 1 ? ` · 🔥 ×${count(s.maxCombo)} combo` : ''}${s.assisted === true ? ' · Assisted' : ''}`,
+    freeExtra: () => '',
     stats: (s) => `📈 ${count(s.lines)} lines · Lv ${count(Math.max(1, number(s.level)))} · ${count(s.quadClears)} ${number(s.quadClears) === 1 ? 'Halving' : 'Halvings'}`,
     call: 'Stack higher',
   },
@@ -144,27 +162,36 @@ export function buildRankedShareText(gameId, { score = 0, standingLabel = '', st
   ].join('\n');
 }
 
-// Free, preview and practice runs: no verification line (guide §5.12).
+// Free, preview and practice runs: the Ranked family with the game's Free
+// icon and "FREE PLAY" on line 1, the Ranked stats line verbatim, the Free
+// detail and extra line, and the Ranked call to action; never a
+// verification line (guide §5.12, amended by plan free-share-20260926 §5).
 export function buildFreeShareText(gameId, { score = 0, stats = {} } = {}) {
   const template = templateFor(gameId);
+  const s = stats ?? {};
+  const extra = template.freeExtra(s);
   return [
-    `🕹 FREE PLAY · ${template.title}`,
-    `${count(score, 999_999_999_999)} pts${template.detail(stats ?? {})}`,
-    template.stats(stats ?? {}),
-    `Practising on ${X_MENTION}`,
+    `${template.freeIcon} FREE PLAY · ${template.title}`,
+    `${count(score, 999_999_999_999)} pts${template.detail(s)}${template.freeDetail(s)}`,
+    template.stats(s),
+    ...(extra ? [extra] : []),
+    `${template.call} ${X_MENTION}`,
   ].join('\n');
 }
 
 // x.com/intent/post carries text, url and related; never hashtags or via.
 // Facebook's sharer takes only the URL. Discord has no intent endpoint, so it
 // is a copy: the text, a newline, then the URL (which unfurls the card).
-export function buildShareLinks({ text, url = SHARE_ORIGIN } = {}) {
+// `card` is the Free card's same-origin path (free-share-token.mjs) for the
+// native file share, or null.
+export function buildShareLinks({ text, url = SHARE_ORIGIN, card = null } = {}) {
   const message = fitWeight(lines(text));
   if (!message) throw new TypeError('share text is required');
   const link = String(url);
   return Object.freeze({
     text: message,
     url: link,
+    card: card == null ? null : String(card),
     x: `${SHARE_TARGETS.x.endpoint}?text=${encodeURIComponent(message)}&url=${encodeURIComponent(link)}&related=${X_RELATED}`,
     facebook: `${SHARE_TARGETS.facebook.endpoint}?u=${encodeURIComponent(link)}`,
     discord: `${message}\n${link}`,
@@ -190,11 +217,65 @@ export function buildStackedShareText({ score = 0, lines: cleared = 0, level = 1
 }
 
 let menuSerial = 0;
+const wait = (ms) => new Promise((resolve) => { setTimeout(() => resolve(null), ms); });
+
+// The Web Share API path: the card image as a file when the browser can share
+// files and the links carry a card, else text + URL. The card is fetched
+// through the lazy share-file chunk ahead of the tap once the results have
+// stayed on screen for idleMs (a quick restart downloads nothing and renders
+// nothing), or at the latest on the tap; share() waits at most 700 ms for it,
+// so the tap keeps its transient activation, and falls back to text on any
+// failure but a cancel. prepare(links) re-arms it for the next run.
+export function createNativeShare({ navigatorRef = globalThis.navigator, title = "Lester's Arcade", links, loadShareFile = () => import('./share-file.mjs'), idleMs = 1_200, stillShown = () => true } = {}) {
+  let current = links;
+  let prepared = null;
+  let timer = null;
+  const fetchCard = () => {
+    const card = current?.card;
+    if (!prepared && card && typeof navigatorRef?.canShare === 'function' && typeof File === 'function') {
+      prepared = Promise.resolve().then(loadShareFile).then((m) => (m.canShareFiles(navigatorRef) ? m.fetchShareCardFile(card) : null)).catch(() => null);
+    }
+    return prepared;
+  };
+  const native = {
+    prepare(next = current) {
+      current = next;
+      prepared = null;
+      clearTimeout(timer);
+      // A row can be built before its panel appears (Chikun shows the
+      // results after the death animation), so an unseen row keeps checking,
+      // for up to 30 checks, until it has been on screen for idleMs.
+      let checks = 30;
+      const arm = () => { timer = setTimeout(() => { if (stillShown()) fetchCard(); else if (--checks) arm(); }, idleMs); };
+      arm();
+    },
+    async share() {
+      clearTimeout(timer);
+      const pending = fetchCard();
+      const file = pending ? await Promise.race([pending, wait(700)]) : null;
+      const payload = { title, text: current.text, url: current.url };
+      if (file && navigatorRef.canShare?.({ files: [file] })) {
+        try {
+          await navigatorRef.share({ ...payload, files: [file] });
+          return 'card';
+        } catch (error) {
+          if (error?.name === 'AbortError') throw error;
+        }
+      }
+      await navigatorRef.share(payload);
+      return 'text';
+    },
+  };
+  native.prepare();
+  return native;
+}
 
 // One row: "Share on X" first, then a "More sharing" disclosure holding Copy
 // for Discord, Facebook and the native share sheet (when the browser has
-// one). `documentRef`/`navigatorRef` are injectable for tests. Returns the row
-// element with a `refresh(links)` method so a panel can reuse it across runs.
+// one, unless `nativeButton` is false because the page has its own).
+// `documentRef`/`navigatorRef`/`loadShareFile` are injectable for tests.
+// Returns the row element with `links`, `native` (createNativeShare) and a
+// `refresh(links)` method so a panel can reuse it across runs.
 export function createShareRow({
   documentRef = globalThis.document,
   navigatorRef = globalThis.navigator,
@@ -203,6 +284,8 @@ export function createShareRow({
   className = 'share-row',
   buttonClassName = 'share-button',
   onStatus = () => {},
+  nativeButton = true,
+  loadShareFile,
 } = {}) {
   if (!documentRef?.createElement) throw new TypeError('share row needs a document');
   if (!links?.x || !links?.facebook) throw new TypeError('share row needs links from buildShareLinks');
@@ -275,12 +358,16 @@ export function createShareRow({
   const facebook = link(SHARE_TARGETS.facebook);
   menu.append(discord, facebook);
 
-  if (typeof navigatorRef?.share === 'function') {
+  row.links = current;
+  // Prefetch the card only while the row is actually on screen.
+  const stillShown = () => row.isConnected !== false && row.offsetParent !== null && documentRef.visibilityState !== 'hidden';
+  row.native = createNativeShare({ navigatorRef, title, links: current, stillShown, ...(loadShareFile ? { loadShareFile } : {}) });
+  if (nativeButton && typeof navigatorRef?.share === 'function') {
     const native = make('button', 'native', 'Share…');
     native.addEventListener('click', async (event) => {
       event.preventDefault();
       try {
-        await navigatorRef.share({ title, text: current.text, url: current.url });
+        await row.native.share();
         status('Run shared.');
       } catch (error) {
         if (error?.name !== 'AbortError') status('Sharing is unavailable in this browser.');
@@ -293,6 +380,8 @@ export function createShareRow({
   row.refresh = (nextLinks) => {
     if (!nextLinks?.x || !nextLinks?.facebook) throw new TypeError('share row refresh needs links');
     current = nextLinks;
+    row.links = current;
+    row.native.prepare(current);
     x.href = current.x;
     facebook.href = current.facebook;
     delete row.dataset.shareStatus;

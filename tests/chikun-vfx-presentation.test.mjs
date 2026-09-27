@@ -5,10 +5,9 @@ import {
   MAX_CHIKUN_PARTICLES,
   planChikunVfx,
 } from '../apps/chikun/src/vfx.mjs';
-import {
-  buildChikunReplayTimeline,
-  buildChikunShareText,
-} from '../apps/chikun/src/presentation.mjs';
+import * as presentation from '../apps/chikun/src/presentation.mjs';
+
+const { buildChikunReplayTimeline } = presentation;
 
 test('Chikun VFX plans bounded deterministic particles without gameplay randomness', () => {
   const a = planChikunVfx({ event: 'near-miss', x: 280, y: 320, tick: 777, reduceMotion: false });
@@ -41,16 +40,9 @@ test('replay timeline bins bounded canonical flap evidence without copying every
   assert.equal(Object.isFrozen(timeline.bins), true);
 });
 
-test('share text reports mode and mastery stats without wallet or session data', () => {
-  const text = buildChikunShareText({ score: 1_234, forksPassed: 12, nearMisses: 4, bestCombo: 3, survivalTime: 42.5 }, 'ranked');
-  assert.match(text, /Chikun's Escape/i);
-  assert.match(text, /1,234 points/i);
-  assert.match(text, /12 obstacles/i);
-  assert.match(text, /4 near misses/i);
-  assert.match(text, /Ranked run on @LestersArcade$/);
-  assert.doesNotMatch(text, /Verified|#/i, 'the child never claims a verification the server has not made');
-  assert.doesNotMatch(text, /0x[a-f0-9]{40}/i);
-  const daily = buildChikunShareText({ score: 88, forksPassed: 2, nearMisses: 1, bestCombo: 2, survivalTime: 8 }, 'free', 'Daily 2026-08-17');
-  assert.match(daily, /Daily 2026-08-17/);
-  assert.doesNotMatch(daily, /Free Practice/);
+test('the Chikun child shares the Free template, not a presentation one-liner', () => {
+  // Free share plan docs/handoffs/free-share-20260926.md J9: the child calls
+  // buildFreeShareText('chikun', ...) from share-links.mjs and links to the
+  // run's /f/ page (tests/share-links.test.mjs drives the real renderShareRow).
+  assert.equal(presentation.buildChikunShareText, undefined);
 });

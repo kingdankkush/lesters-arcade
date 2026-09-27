@@ -23,8 +23,16 @@ from apps/portal/assets/generated/<path>.png to
 apps/portal/assets/share-cards/badges/<path>.png, and copies that no catalog
 uses are removed. tests/share-card.test.mjs fails when the copies drift.
 
+It also crops the four HMH hero portraits the Free share card draws
+(free-share, E12; server/share/render-free-card.mjs, api/free-card.mjs): the
+`south` rest frame (768,0)-(1152,384) of each 1920x384 atlas under
+apps/portal/assets/generated/hmh-hero-portraits/ becomes a 384x384 palette
+PNG that keeps its alpha, under 80 KB, at
+apps/portal/assets/share-cards/heroes/<hero-id>.png. tests/free-card.test.mjs
+pins the four ids, the dimensions and the size cap.
+
 Usage:
-  python scripts/build-share-card-backgrounds.py          # write the PNGs and badge copies
+  python scripts/build-share-card-backgrounds.py          # write the PNGs, badge copies and portraits
   python scripts/build-share-card-backgrounds.py --check  # verify size and bytes only
 """
 
@@ -47,6 +55,16 @@ CATALOG_IMAGE_PREFIX = "/assets/generated/"
 WIDTH, HEIGHT = 1200, 630
 MAX_BYTES = 300_000
 PALETTE_COLORS = 192
+
+# Free card hero portraits: the front rest frame of each portrait atlas
+# (portraits.json atlas.directions[0] == "south" is the frame at x = 768).
+HERO_DIR = OUT_DIR / "heroes"
+PORTRAIT_DIR = GENERATED_DIR / "hmh-hero-portraits"
+HERO_IDS = ("lit-commando", "lit-valkyrie", "lester-original", "lilly")
+PORTRAIT_FRAME = (768, 0, 1152, 384)
+PORTRAIT_SIZE = 384
+PORTRAIT_MAX_BYTES = 80_000
+PORTRAIT_COLORS = 255
 
 SOURCES = {
     # gameId: (source path, horizontal focus 0..1, vertical focus 0..1)
@@ -169,10 +187,61 @@ def sync_badges(write: bool) -> list[str]:
     return problems
 
 
+def build_portrait(hero_id: str) -> Image.Image:
+    """The hero's front rest frame as a 384x384 palette image that keeps its alpha."""
+    with Image.open(PORTRAIT_DIR / f"{hero_id}.webp") as atlas:
+        frame = atlas.convert("RGBA").crop(PORTRAIT_FRAME)
+    return frame.quantize(colors=PORTRAIT_COLORS, method=Image.Quantize.FASTOCTREE)
+
+
+def check_portrait(path: Path) -> list[str]:
+    problems = []
+    if not path.exists():
+        return [f"{path.relative_to(ROOT).as_posix()} is missing"]
+    size = path.stat().st_size
+    if size >= PORTRAIT_MAX_BYTES:
+        problems.append(f"{path.relative_to(ROOT).as_posix()} is {size} bytes (limit {PORTRAIT_MAX_BYTES})")
+    with Image.open(path) as image:
+        if image.size != (PORTRAIT_SIZE, PORTRAIT_SIZE):
+            problems.append(f"{path.relative_to(ROOT).as_posix()} is {image.size[0]}x{image.size[1]}, expected {PORTRAIT_SIZE}x{PORTRAIT_SIZE}")
+        if image.format != "PNG":
+            problems.append(f"{path.relative_to(ROOT).as_posix()} is {image.format}, expected PNG")
+        if image.mode != "RGBA" and "transparency" not in image.info:
+            problems.append(f"{path.relative_to(ROOT).as_posix()} has no alpha channel")
+    return problems
+
+
+def sync_hero_portraits(write: bool) -> list[str]:
+    """Write (or check) the hero portrait crops under share-cards/heroes."""
+    problems = []
+    if write:
+        HERO_DIR.mkdir(parents=True, exist_ok=True)
+    wanted = {f"{hero_id}.png" for hero_id in HERO_IDS}
+    for hero_id in HERO_IDS:
+        source = PORTRAIT_DIR / f"{hero_id}.webp"
+        target = HERO_DIR / f"{hero_id}.png"
+        if not source.exists():
+            problems.append(f"{source.relative_to(ROOT).as_posix()} is missing")
+            continue
+        if write:
+            build_portrait(hero_id).save(target, format="PNG", optimize=True)
+        problems.extend(check_portrait(target))
+    for path in sorted(HERO_DIR.glob("*.png")) if HERO_DIR.exists() else []:
+        if path.name in wanted:
+            continue
+        if write:
+            path.unlink()
+        else:
+            problems.append(f"{path.relative_to(ROOT).as_posix()} is not a hero portrait")
+    total = sum((HERO_DIR / name).stat().st_size for name in wanted if (HERO_DIR / name).exists())
+    print(f"{HERO_DIR.relative_to(ROOT).as_posix()}: {len(HERO_IDS)} portraits, {total} bytes")
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true", help="verify the committed PNGs without rewriting them")
-    parser.add_argument("--badges-only", action="store_true", help="sync the badge copies and leave the backgrounds as they are")
+    parser.add_argument("--badges-only", action="store_true", help="sync the badge copies and hero portraits and leave the backgrounds as they are")
     args = parser.parse_args()
     problems: list[str] = []
     if not args.check:
@@ -185,6 +254,7 @@ def main() -> int:
         if path.exists():
             print(f"{path.relative_to(ROOT).as_posix()}: {path.stat().st_size} bytes")
     problems.extend(sync_badges(write=not args.check))
+    problems.extend(sync_hero_portraits(write=not args.check))
     if problems:
         print("\n".join(problems), file=sys.stderr)
         return 1

@@ -126,9 +126,13 @@ test('the local router applies vercel.json exactly: filesystem functions first, 
     ['/api/ranked/seed', 'api/ranked-seed.mjs', '/api/ranked-seed'],
     [`/s/${HEX64}`, 'api/share-page.mjs', `/api/share-page?id=${HEX64}`],
     [`/api/share-card/${HEX64}.png?v=0123456789ab`, 'api/share-card.mjs', `/api/share-card?id=${HEX64}&v=0123456789ab`],
+    // free-share (E12, E13): slug and token only; the query string is carried (the page redirects fbclid to the canonical URL).
+    [`/f/chikun/ac${'0'.repeat(38)}`, 'api/free-share-page.mjs', `/api/free-share-page?game=chikun&token=ac${'0'.repeat(38)}`],
+    [`/f/hard-money-heroes/ah${'0'.repeat(28)}?fbclid=abc`, 'api/free-share-page.mjs', `/api/free-share-page?game=hard-money-heroes&token=ah${'0'.repeat(28)}&fbclid=abc`],
+    [`/api/free-card/stacked/as${'0'.repeat(32)}.png`, 'api/free-card.mjs', `/api/free-card?game=stacked&token=as${'0'.repeat(32)}`],
   ];
   for (const [url, module, routed] of cases) assert.deepEqual([router.route(url).kind, router.route(url).module, router.route(url).url], ['api', module, routed], url);
-  for (const url of [`/s/${HEX64}0`, `/api/share-card/${HEX64}.jpg`, '/api/nope', `/api/session/${HEX64.slice(1)}`]) assert.equal(router.route(url).kind, 'none', url);
+  for (const url of [`/s/${HEX64}0`, `/api/share-card/${HEX64}.jpg`, '/api/nope', `/api/session/${HEX64.slice(1)}`, `/api/free-card/pinball/as${'0'.repeat(32)}.png`, `/api/free-card/stacked/as${'0'.repeat(32)}.jpg`, `/api/free-card/stacked/as${'0'.repeat(27)}.png`]) assert.equal(router.route(url).kind, 'none', url);
   // Every rewrite into /api/ reaches an existing function, and Vercel appends no undeclared query key.
   const modules = listApiModules();
   for (const rule of compileVercelRewrites().filter((entry) => entry.destination.startsWith('/api/'))) {
