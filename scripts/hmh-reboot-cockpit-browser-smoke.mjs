@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '../benchmarks/hmh-engine-bakeoff/node_modules/playwright/index.mjs';
+import { RUN_UPGRADE_CATALOG } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 
 const origin = process.env.HMH_REBOOT_ORIGIN ?? 'http://127.0.0.1:8791';
 const output = new URL('../.hermes/evidence/hmh-reboot-16-cockpit/', import.meta.url);
@@ -110,10 +112,16 @@ async function inspect(name, viewport) {
   const settingsInputs = page.locator('.hmh-setting-toggle input');
   assert.equal(await settingsInputs.count(), settingIds.length);
   const buildText = (await page.locator('#hmhBuildSummary').innerText()).trim();
-  assert.match(buildText, /Rank 1\/3/);
-  // The picked card's current title (validator-training, gas-optimization and
-  // block-reward were retitled to their mechanical names in a6ac4087).
-  assert.match(buildText, /XP Gain|Dash Recharge|Score & Magazine/);
+  // The pilot's first pick, read from the catalogue rather than pinned: the
+  // 1.9.0 progression release (gun-branch cards, card 2, re-rolls, repeatable
+  // Damage Mastery at 25 ranks) changed the first offer. The summary names the
+  // card by its current title at rank 1 of that card's own maximum.
+  const pickedCard = Object.entries(RUN_UPGRADE_CONTENT)
+    .filter(([, content]) => buildText.includes(content.title))
+    .sort(([, left], [, right]) => right.title.length - left.title.length)[0];
+  assert.ok(pickedCard, `${name} build summary names no catalogue card: ${buildText}`);
+  const rank = /Rank (\d+)\/(\d+)/.exec(buildText);
+  assert.deepEqual(rank && [Number(rank[1]), Number(rank[2])], [1, RUN_UPGRADE_CATALOG[pickedCard[0]].maxRank], `${name} build summary rank: ${buildText}`);
   assert.equal(await page.locator('#hmhSettingMusic').isChecked(), false);
   if (viewport.width <= 900) {
     const settingRows = await page.locator('.hmh-setting-toggle').evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().height));
