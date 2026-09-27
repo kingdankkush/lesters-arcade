@@ -114,3 +114,12 @@ test('the jackpot launch rules couple minPaidWei to the flat fee (J17) for any f
   assert.equal(deployedMinPaid, '100000000000000000', 'the deployed epoch is a record of what is on chain, not a mirror of the fee');
   assert.ok(BigInt(RANKED_ENTRY_TOTAL_WEI) < BigInt(deployedMinPaid), 'a 0.012 run does not qualify on the deployed instance');
 });
+
+test('the fee lives in the import-free leaf ranked-fee.mjs, re-exported unchanged by arcade-core.mjs', async () => {
+  const leaf = await import('../apps/portal/src/ranked-fee.mjs');
+  const core = await import('../apps/portal/src/arcade-core.mjs');
+  for (const [name, value] of Object.entries(leaf)) assert.equal(core[name], value, `arcade-core re-exports ${name}`);
+  assert.doesNotMatch(read('apps/portal/src/ranked-fee.mjs'), /^\s*import\s/m, 'ranked-fee.mjs imports nothing');
+  // owner/jackpot.mjs loads wallet-auth.mjs unbundled; arcade-core.mjs's graph imports JSON a browser cannot load that way.
+  assert.doesNotMatch(read('apps/portal/src/wallet-auth.mjs'), /from '\.\/arcade-core\.mjs'/, 'wallet-auth.mjs reads the fee from the leaf');
+});

@@ -39,6 +39,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/portal-discovery.mjs',
   'apps/portal/src/cabinet-presentation.mjs',
   'scripts/build-portal-pages.mjs',
+  'apps/portal/src/ranked-fee.mjs',
   'tests/portal-copy.test.mjs',
   'tests/ranked-fee-source-of-truth.test.mjs',
   'tests/portal-pages-build.test.mjs',

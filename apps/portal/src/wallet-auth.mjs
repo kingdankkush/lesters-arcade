@@ -10,7 +10,9 @@
 // everything here is pure so it can be unit-tested in Node and reused by both
 // the runtime and any future third-party adapter.
 
-import { RANKED_ENTRY_TOTAL_ZKLTC } from './arcade-core.mjs';
+// Leaf modules only: owner/jackpot.mjs loads this file unbundled, and arcade-core.mjs's graph
+// imports JSON a browser cannot load that way (tests/owner-jackpot-page.test.mjs).
+import { RANKED_ENTRY_TOTAL_ZKLTC } from './ranked-fee.mjs';
 
 // Shared by the browser and the server (contract A13): the server rebuilds the
 // message byte for byte, so both sides must use this exact constant.
