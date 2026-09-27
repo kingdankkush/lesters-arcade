@@ -328,6 +328,18 @@ test('identity, chips and tiles per game; the hero portrait only when the token 
   assert.match(textOf(buildFreeCardElement({ run: stacked })), /ASSISTED/);
 });
 
+test('the three tiles share one value size, so their edges stay in line', () => {
+  const valueSizes = (element) => {
+    const sizes = [];
+    walk(element, (node) => { if (node.type === 'div' && (node.props?.style?.fontSize === 36 || node.props?.style?.fontSize === 40) && node.props?.style?.color === '#f9f7ff' && node.props?.style?.marginTop === 2) sizes.push(node.props.style.fontSize); });
+    return sizes;
+  };
+  // One wide value (9,999,999 near-misses) beside two short ones.
+  const mixed = valueSizes(buildFreeCardElement({ run: run('chikun', { ...CHIKUN, nearMisses: 9_999_999 }) }));
+  assert.deepEqual(mixed, [36, 36, 36]);
+  assert.deepEqual(valueSizes(buildFreeCardElement({ run: run('chikun', CHIKUN) })), [40, 40, 40]);
+});
+
 test('the score steps down its ladder so it never runs into the portrait', () => {
   const cases = [['48,210', 724, 148], ['999,999', 724, 140], ['9,999,999', 724, 120], ['999,999,999', 724, 88], ['999,999,999,999', 724, 60], ['999,999,999,999', 1088, 104], ['0', 724, 148]];
   for (const [text, maxWidth, size] of cases) assert.equal(scoreFontSize(text, maxWidth), size, `${text} @ ${maxWidth}`);

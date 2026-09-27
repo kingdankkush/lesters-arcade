@@ -75,8 +75,10 @@ function chipNode(label, colour, fill) {
   return text({ alignSelf: 'flex-start', marginTop: 12, padding: '6px 16px', borderRadius: 999, border: `3px solid ${colour}`, backgroundColor: fill, color: colour, fontSize: 22, letterSpacing: 2 }, label);
 }
 
-function tileNode({ glyph, label, value }, index) {
-  const wide = [...String(value)].length >= 8;
+// `wide` is decided once for the whole row (any value of 8+ chars), so the
+// three tiles always share one value size and one height: mixed sizes left
+// the tiles' top edges out of line by a few pixels.
+function tileNode({ glyph, label, value }, index, wide) {
   return flex({
     flexDirection: 'column', minWidth: 190, marginLeft: index === 0 ? 0 : 14, padding: '12px 20px', borderRadius: 14,
     border: '2px solid rgba(255, 232, 77, 0.4)', backgroundColor: 'rgba(5, 7, 18, 0.78)',
@@ -98,6 +100,8 @@ export function buildFreeCardElement({ run, background = null, heroPortrait = nu
   const size = scoreFontSize(score, portrait ? 724 : 1088);
   const chip = chipText(run);
   const identity = identityText(run);
+  const tileRow = tiles(run);
+  const wideTiles = tileRow.some((tile) => [...String(tile.value)].length >= 8);
 
   const layers = [];
   if (isDataImage(background)) {
@@ -128,7 +132,7 @@ export function buildFreeCardElement({ run, background = null, heroPortrait = nu
         text({ fontSize: 32, color: CYAN, marginLeft: 16, textShadow: LIFT }, identity),
       ]),
     ]),
-    flex({ alignItems: 'flex-end' }, tiles(run).map(tileNode)),
+    flex({ alignItems: 'flex-end' }, tileRow.map((tile, index) => tileNode(tile, index, wideTiles))),
   ]));
   layers.push(flex({
     position: 'absolute', left: RIBBON_BOX.left, top: RIBBON_BOX.top, width: RIBBON_BOX.width, height: RIBBON_BOX.height,
