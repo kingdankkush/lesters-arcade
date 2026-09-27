@@ -11,7 +11,7 @@
 |---|---|---|
 | Ranked price per run | 0.012 testnet zkLTC = 0.01 entry + 0.002 to publish the score on chain | `contracts/deploy-config.testnet.json` (entryFeeWei, settlementGasReserveWei); runtime price stays quote-driven (`quoteEntry`) |
 | Fee split | 85% to the game's developer, 15% to the arcade | GameRegistry split (live 2026-09-24) |
-| Faucet | https://liteforge.hub.caldera.xyz, 0.05 zkLTC per request (about 4 Ranked runs) | `LITEFORGE_FAUCET_URL` in `apps/portal/src/wallet-config.mjs` |
+| Faucet | https://liteforge.hub.caldera.xyz, 0.05 zkLTC per request (about 3 Ranked runs once the funds check's gas room is counted; see the note under Canonical wording) | `LITEFORGE_FAUCET_URL` in `apps/portal/src/wallet-config.mjs` |
 | Chain | LitVM LiteForge testnet, chain 4441, token zkLTC (testnet, no monetary value) | `LITVM_LITEFORGE_NETWORK` |
 | Wallets | any injected EVM wallet (MetaMask, Rabby, OKX, …) or WalletConnect; the site adds the network | wallet-config / Reown |
 | Sign-in | one free signature, no gas | wallet-auth (SIWE) |
@@ -26,7 +26,8 @@ Never mention the weekly jackpot (on hold until mainnet), never promise NFTs, da
 ## Canonical wording (shared with the game sections session; use verbatim where it fits)
 
 - Price: "Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain."
-- Faucet: "Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs)."
+- Faucet: "Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for about 3 Ranked runs)."
+  - Corrected 2026-09-26 (review fix): the original "enough for 4" was floor(0.05 / 0.012). The Ranked window's funds check also asks for the entry's gas limit (250,000) at its fee cap (10x the base fee, at least 5 gwei), about 0.0158 zkLTC per run at the 1.5 gwei base fee LiteForge showed on 2026-09-23..26, so one request pays for 3 runs (4 only below about 0.6 gwei). `ranked-facts.mjs` computes the count (`rankedRunsFundedBy`); the in-game menus on fable/in-game-ranked-copy do not state a run count.
 - Free: "Free play needs no wallet and never touches the chain."
 - Proof: "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements."
 - Value: "Testnet zkLTC has no monetary value."
@@ -40,3 +41,13 @@ Never mention the weekly jackpot (on hold until mainnet), never promise NFTs, da
 5. **Ranked entry modal and wallet prompts**: a cost breakdown (0.01 entry + 0.002 publishing, from the live quote), "What happens next" (3 short bullets), a "Get free zkLTC" link with the per-request amount whenever the balance is below the total, and a "How Ranked works" link. The low-balance wallet chip text names the faucet amount. No behaviour change to payment, sign-in or settlement.
 6. **Trust page, llms.txt, README, docs**: trust.html states the price, split, verification and faucet accurately; llms.txt gains a Ranked summary and the guide URL; README gains a short "How to play" (Free and Ranked steps, price, faucet, guide link) near the top; `docs/THIRD_PARTY_GAME_ONBOARDING.md` and other docs that state the old 0.1/0.102 numbers are corrected (search the repo for 0.1 zkLTC, 0.102, 102000000000000000 in copy and docs, not in historical receipts).
 7. **Gates:** `npm test`, `npm run check`, `npm run build` (report dist/main.js and first-paint deltas; HMH child and STACKED entry must not grow), `npm run docs:links`, `npm run docs:cabinets`, `npm run test:release` (exactly 51), portal page build `--check` current; browser check of the guide page, homepage, a discover page and the Ranked modal (stubbed wallet/API) at 320, 768 and 1280 px with no console errors and no horizontal scroll.
+
+## Release window for the public copy (review fix, 2026-09-26)
+
+Every static surface this slice writes (the guide, the homepage meta, strip and FAQ, the discover pages, trust.html, llms.txt, the manifest, README) states 0.012 zkLTC per run and "enough for about 3 Ranked runs". The chain keeps charging 0.102 until the operator's three `GameRegistry.setEntryFee(gameId32, 10000000000000000)` transactions land (docs/handoffs/ranked-fee-20260926.md, release order step 2). In that window a new player with one 0.05 faucet request cannot afford a run, and the quote-driven Ranked modal contradicts the pages that sent them there. Keep the window to minutes:
+
+1. Promote the release that carries this copy and the 0.012 settle floor.
+2. Right after promotion, with the owner's approval, the pre-deploy session sends the three `setEntryFee` transactions.
+3. Before announcing the guide or the new price, the post-deploy audit checks that `node scripts/operator-actions.mjs status` shows `quote.totalWei` `12000000000000000` for `lester-blaster`, `chikun` and `stacked`, and that the Ranked modal quotes 0.01 / 0.002 / 0.012.
+
+Until step 3 passes, the public copy is ahead of the chain.

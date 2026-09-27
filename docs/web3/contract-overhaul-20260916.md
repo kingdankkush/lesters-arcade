@@ -786,7 +786,7 @@ found under the old names, so the legacy names `VERIFIER_PRIVATE_KEY`, `RELAYER_
 | `RPC_URL` | optional LiteForge RPC override; never echoed | optional |
 | `SESSION_ALLOWED_DOMAINS` | optional comma list; default lestersarcade.io, www, localhost | optional |
 | `SETTLEMENT_PAUSED` | `true` pauses Ranked (emergency stop 1); **never set at launch** | incident only |
-| `RANKED_MIN_PAID_WEI` | minimum `getPaidSession().amountWei` the settle endpoint accepts; default `102000000000000000` (0.1 fee + 0.002 reserve) | optional |
+| `RANKED_MIN_PAID_WEI` | minimum `getPaidSession().amountWei` the settle endpoint accepts; default `12000000000000000` (0.01 fee + 0.002 reserve, since 2026-09-26; it was `102000000000000000` for the 0.1 fee) | optional |
 
 ## Flipping hosted profile sync (2026-09-16)
 
