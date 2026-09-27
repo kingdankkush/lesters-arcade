@@ -102,7 +102,7 @@ test('the shipped player identity is the production atlas, not the prototype gra
 test('enemy depth sorting and combat VFX draw order are explicit', async () => {
   const source = await readMain();
   assert.match(source, /enemyVisuals\.sortableChildren = true/);
-  assert.match(enemyRenderPassSource, /enemyMarker\.zIndex = worldDepthKey\(enemy\.y\)/);
+  assert.match(enemyRenderPassSource, /enemyMarker\.zIndex = worldDepthKey\(worldY\[row\]\)/);
   assert.match(source, /worldDepthLayer\.attach\(graphic\)/);
   const childOrder = source.slice(source.indexOf('world.addChild('), source.indexOf('app.stage.addChild('));
   assert.ok(
