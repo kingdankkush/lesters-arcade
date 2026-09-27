@@ -131,6 +131,7 @@ const NODE_CHECK_FILES = [
   'tests/ranked-identity.test.mjs',
   'apps/portal/src/hmh-cabinet-version.mjs',
   'tests/hmh-cabinet-version.test.mjs',
+  'tests/hmh-release-version-guard.test.mjs',
   'apps/portal/src/game-version-labels.mjs',
   'tests/game-version-labels.test.mjs',
   'tests/version-column-api.test.mjs',

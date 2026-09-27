@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "7048378381589d25cd1120b4280894859ee641ea8991e6855825196ceb0564d9",
+  "sourceSnapshotSha256": "fb01cac9ed8bba44b66d44f51603ef0b9e14ecf192cf684e0f36bcc7b190a4c8",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -15,18 +15,18 @@
     },
     {
       "path": "apps/portal/index.html",
-      "sha256": "bf1b82d53fc036ea3dd30a19556c58cd8e8c1026e7e26b35f315209e91a2d7ca",
-      "bytes": 41606
+      "sha256": "46fd65f56dd98cb13f006cfbd251c8bfb7732c76de1f1cb24726fc210695bd5a",
+      "bytes": 43507
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "33f37c425150fa3369b5f184a4fb29f946c6ca242200cb576098a566200969f4",
-      "bytes": 445252
+      "sha256": "6621499cf06f85c9ba197e47d1ebcbf0ac22a7b94a913f8fc3537f5282a449c6",
+      "bytes": 450816
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
-      "sha256": "05f2ccc5c1da49a24bdf43c84e6dd90de653f565362dfa2ca33d28ed52cfc35e",
-      "bytes": 365920
+      "sha256": "8ec2fc3f0345f6e2c7230b77ee96117a5d4ba74a2a97ca7a35a5250efed1a517",
+      "bytes": 366522
     },
     {
       "path": "apps/portal/src/hmh-challenge-ui.mjs",
@@ -40,8 +40,8 @@
     },
     {
       "path": "apps/portal/src/routes/official-app-routes.mjs",
-      "sha256": "5a577ee0b10f2a60267790e4efc8d6d05b5cf2cd1c162c01dfef85da65b91bc8",
-      "bytes": 5206
+      "sha256": "0aa06f4c1c9a57322187740ad5af2d1ca3820fbe4ee98db713e6ce08b09f3f99",
+      "bytes": 5379
     },
     {
       "path": "apps/portal/src/routes/official-profile-route.mjs",
@@ -55,8 +55,8 @@
     },
     {
       "path": "apps/portal/styles-arcade-polish.css",
-      "sha256": "7bbcfef2a149bbaa81e490d4544cd51924b4ae7d77f8abb60b68ad107fbe7763",
-      "bytes": 98970
+      "sha256": "84f354af151a3af0fbe798ace33ee3bbb1d80084570a29b91516c0495b158aaf",
+      "bytes": 98965
     },
     {
       "path": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "32fcf3e1fcad05cebcb5ce9d74ee164cd61ad98c10792c482e0cf168f83a6158",
-      "bytes": 57950
+      "sha256": "01022f1f6635924404f4fe5186b3f6ecc1cfcfa463f844bbfd6cfca218cec34d",
+      "bytes": 59713
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,13 +100,13 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "a66ed496252d67b115ba44f10b3c26246222e9c05e081bbfd485d06cda2403a2",
-      "bytes": 53966
+      "sha256": "cd6e5941391061af776fdcd6e2cbad78fc088b9d78643dbc568d05dd4bf2c591",
+      "bytes": 60775
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "76df822458f0951fa3c6a07ce13d3b2ccb4613e530b850088c24560490b876c4",
-      "bytes": 193825
+      "sha256": "9cac978096bd22a38d5a3c930e9cc42305616a35e4881413cd834b23b849ab39",
+      "bytes": 194223
     },
     {
       "path": "tests/hmh-challenge-session.test.mjs",
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v59-ranked-guide",
+  "recordedProductionMarker": "lesters-arcade-v60-hmh-v06",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",
