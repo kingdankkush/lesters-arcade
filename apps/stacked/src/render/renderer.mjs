@@ -10,6 +10,8 @@ import { createBoardPiecePresentation } from './piece-presentation.mjs';
 import { createBoardPulse } from './board-pulse.mjs';
 import { piecePaletteFor, sceneGradeFor } from './cosmetic-palettes.mjs';
 import { createActiveInterpolation } from './active-interpolation.mjs';
+import { createBoardMotionView } from './board-motion.mjs';
+import { PIECE_COLORS } from './board-view.mjs';
 
 export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
@@ -21,6 +23,8 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
   const pulse = createBoardPulse({ board, Graphics, geometry });
   // Sub-tick travel of the active piece between the tick snapshots gameplay() sees (projection only).
   const interpolation = createActiveInterpolation({ geometry });
+  // Lock-thud spring, trauma shake and cleared-row squash on the board container (projection only).
+  const motion = createBoardMotionView({ board, Graphics, geometry });
   const sharedHud = new Text({ text: 'RENDER-ONLY QA SCENE · AWAITING PARENT RUNTIME', style: { fill:'#9db4c8', fontFamily:'system-ui, sans-serif', fontSize:18, fontWeight:'700' } });
   sharedHud.anchor?.set?.(0.5);
   sharedHud.text='';
@@ -53,15 +57,15 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     if (hasPresented) app.render();
   };
   const present = snapshot => { if(disposed)throw new Error('renderer is disposed'); const stats=board.present(snapshot); stageElement.dataset.renderedCells=String(stats.lockedVisible+stats.activeVisuals+stats.ghostVisuals); hasPresented=true; app.render(); return stats; };
-  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere?.destroy(); particles?.destroy(); pieceFx?.destroy(); pulse.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
+  const destroy = () => { if(disposed)return; disposed=true; app.renderer.off('resize',resize); atmosphere?.destroy(); particles?.destroy(); pieceFx?.destroy(); pulse.destroy(); motion.destroy(); board.destroy(); tree.stackedRoot.destroy({children:true}); };
   app.renderer.on('resize',resize);
   resize();
   return Object.freeze({
     present, resize, destroy, board, tree,
-    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); interpolation.reset(); board.setActiveOffset(0,0); },
+    resetEffects:()=>{ particles.reset(); pieceFx?.reset(); motion.reset(); interpolation.reset(); board.setActiveOffset(0,0); },
     audio: (frame, now) => atmosphere?.audio(frame, now),
     nextScene: () => atmosphere?.nextScene(),
-    gameplay(before, snapshot, now, settings) { interpolation.step(before, snapshot); feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); },
+    gameplay(before, snapshot, now, settings) { interpolation.step(before, snapshot); feedback.update(snapshot, now, settings.accessibility.reduceMotion); particles.step(before,snapshot,now,settings); pieceFx?.step(before,snapshot,now,settings); motion.step(before,snapshot,now,settings); },
     get mobile() { return mobile; },
     // alpha = accumulator / TICK_MS from the frame loop (0..1); callers that omit it render the tick state.
     frame(snapshot, now, settings, alpha = 1) {
@@ -94,10 +98,13 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
       stageElement.dataset.visualizerParticles=String(info.particles);
       stageElement.dataset.visualizerOrganisms=String(info.organisms);
       stageElement.dataset.particlesEmitted=String(sparks.emitted);
-      const fx=pieceFx?pieceFx.draw(now,settings,response.danger):{count:0,lastEvent:'',shake:0};
+      const fx=pieceFx?pieceFx.draw(now,settings,response.danger):{count:0,lastEvent:''};
       stageElement.dataset.pieceFx=String(fx.count);
       stageElement.dataset.pieceFxEvent=fx.lastEvent;
-      stageElement.dataset.pieceFxShake=fx.shake.toFixed(2);
+      const moved=motion.draw(now,settings,piecePaletteFor(settings)??PIECE_COLORS);
+      stageElement.dataset.pieceFxShake=moved.y.toFixed(2);
+      stageElement.dataset.boardTrauma=moved.trauma.toFixed(2);
+      stageElement.dataset.rowSquash=String(moved.squashing);
       accents.draw(response, info.color, settings);
       const beatFrame=pulse.draw({ settings, signals: info.signals ?? undefined, palette: info.palette ?? undefined, snapshot });
       stageElement.dataset.boardPulse=beatFrame.enabled?beatFrame.frame.toFixed(3):'0';

@@ -31,8 +31,8 @@ test('every counter transition maps to one named event and never allocates past 
     const emitted = fx.state.emitted;
     fx.step(before, after, now, settings);
     assert.equal(fx.state.lastEvent, event, `${event} must be the last event`);
-    if (event === 'lock') assert.ok(fx.state.shakeAmplitude > 1.6 && fx.state.shakeAmplitude <= 4, 'a hard drop lands harder, bounded to four authored px');
-    else assert.ok(fx.state.emitted > emitted, `${event} emits motes`);
+    // The lock thud is board-motion.mjs's spring now (stacked-board-motion.test.mjs).
+    if (event !== 'lock') assert.ok(fx.state.emitted > emitted, `${event} emits motes`);
     before = after; now += 100;
   }
   assert.deepEqual([...PIECE_FX_EVENTS].sort(), cases.map(([event]) => event).sort());
@@ -69,14 +69,9 @@ test('reduced motion and zero intensity produce no motes, no shake and no danger
     fx.step(before, { ...before, tick: 2, piecesLocked: 1, hardDropCells: 10, holdsUsed: 1, level: 2, terminal: true }, 0, quiet);
     fx.update(5, quiet, 1);
     assert.equal(fx.state.count, 0);
-    assert.equal(fx.shakeOffset(5, quiet), 0);
     assert.equal(fx.state.danger, 0);
   }
   const fx = createPiecePresentation({ mobile: false });
-  const before = fixture();
-  fx.step(before, { ...before, tick: 2, piecesLocked: 1, hardDropCells: 10 }, 0, settings);
-  assert.ok(fx.shakeOffset(40, settings) > 0, 'the thud dips the well briefly');
-  assert.equal(fx.shakeOffset(400, settings), 0, 'and settles within the shake window');
   fx.update(0, settings, .5);
   assert.equal(fx.state.danger, .5);
 });
@@ -101,8 +96,7 @@ test('the board layer draws bounded bands inside the well, settles the inner lay
   const frame = view.draw(1050, settings, .8);
   assert.equal(frame.lastEvent, 'level', 'a level transition outranks the lock it landed on');
   assert.ok(frame.count > 0);
-  assert.ok(frame.shake > 0 && frame.shake <= 4);
-  assert.equal(layers.stackLayer.position.y, frame.shake);
+  assert.equal(layers.stackLayer.position.y, 0, 'the inner layers no longer dip; the board container springs instead');
   const visible = layers.effectLayer.children.filter(node => node.visible);
   for (const node of visible) {
     assert.ok(node.alpha <= .8 + 1e-9, 'no band or mote exceeds the additive ceiling');
