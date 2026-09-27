@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.5: smoother HMH crowds, working iPhone sound, jackpot contracts deployed (idle)
+# Lester's Arcade — 1.8.5 verified live: smoother HMH crowds, working iPhone sound, jackpot contracts deployed (idle)
 
 Batch release after 1.8.4. Hard Money Heroes runs its simulation 34–50% cheaper per tick with every result bit-identical, draws its enemy crowd without per-frame allocations, and plays sound effects through Web Audio, so the effect and interface volume sliders now work on iPhone (footstep sounds are retired, per the owner's cue list). The Chikun Weekly Jackpot and its test token are deployed on LiteForge (`WeeklyJackpot` `0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e`, tCHIKUN `0xe4230b5aba9f9431b0f5a718b99544f69330ae9c`) but idle: the owner put the live jackpot on hold until mainnet and the $CHIKUN launch, so `JACKPOT_LIVE` stays false and nothing player-facing changes. The operator tool gains an `entry-fee` action that refuses a price below the server's settle floor, for the upcoming owner-approved fee change. Contracts, fees and flags of the live Ranked system are unchanged.
 
-Site/game version `1.8.5`; cache marker `lesters-arcade-v58-smooth-crowds`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_gmkp86XSebFfRUxvYQaQDxMq3uRw` (source `a8f81931`); site/game version `1.8.5`; cache marker `lesters-arcade-v58-smooth-crowds`. The local and Vercel gates pass 5,216 of 5,267 tests with exactly 51 unchanged retired exceptions; all 161 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260926-1.8.5.json). Rollback: Instant Rollback to `dpl_61u26aJuaoPMoEGthLcqp7MTUh6N` (1.8.4). Continue on `fable/master-list-20260916`.
 
 > **Pending release (owner decision 2026-09-26):** the Ranked entry fee drops from 0.1 to 0.01 zkLTC, so a run costs 0.012 zkLTC with the 0.002 settlement reserve. The site copy, the modal's static rows, `contracts/deploy-config.testnet.json` and the settle floor (`DEFAULT_MIN_PAID_WEI`) on `fable/ranked-fee-001` already say 0.012; that server ships first, and only then does the operator send `GameRegistry.setEntryFee` for the three games. Details and the release order: `docs/handoffs/ranked-fee-20260926.md`.
 
@@ -139,7 +139,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
 | Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.9.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
-| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
+| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, Free medals and restart. Since the 1.8.0 Ranked launch its Ranked runs are replay-verified by the arcade server and settled on the LitVM LiteForge testnet like the other cabinets; no prizes. Physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---
@@ -290,18 +290,10 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 
 ## Current release status
 
-Cycle 075 is live and verified. Runtime implementation `d53ed420`, deployed source `d70ad060`, production `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`. Earlier mixed Cycle 070/071 metrics are historical.
+The current release is the newest section at the top of this README: it names the site/game version, cache marker, production deployment, rollback and release branch, and links its receipt. Release receipts live under `docs/qa/` (`batch-release-*.json` from 1.8.2 onward, `ranked-launch-release-20260924.json` for the 1.8.0 Ranked launch, `post-launch-release-20260925.json` for 1.8.1). Production is released from `fable/master-list-20260916`.
 
-[Cycle 075](docs/hmh-reboot/cycles/CYCLE-075.md) shipped bounded feedback/UI optimization and source-reference foundations. All 34 checked Preview and public artifacts match the clean build.
+The Cycle 075 release (production `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`, branch `hermes/hmh-cycle-075-reference-heroes`) is historical; its verified identities, evidence and remaining work are recorded in [Cycle 075](docs/hmh-reboot/cycles/CYCLE-075.md) and its [release handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 
-- Release branch: `hermes/hmh-cycle-075-reference-heroes`, based on the verified Cycle 074 handoff `0199035a`.
-- Retained rollback: `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR` at https://lesters-arcade-276x61nsi-justin-agent-projects.vercel.app.
-- Local responsive, touch, performance, visual, cockpit and enemy/boss gates passed. Hosted actual kill feedback and public network checks passed; the full host ledger has 2,512 passed and the same 51 accepted legacy failures.
-- Completed source-reference foundations are not active art replacements. New Commando/grenade source experiments remain unapproved local WIP; all other hero/weapon art gates remain open.
-- Tripo reference upload and use of the owner's existing subscription credits are authorized. No confirmed Tripo job or credit spend is recorded. Additional purchases, contracts, real funds and settlement remain separately gated.
-- Chikun remains `0.5.0`, public playable and Ranked-eligible; its existing rights/dev-wallet/revenue boundaries above are unchanged.
-
-Verified identities, evidence and remaining work are recorded in the [release handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 ---
 
 ## Architecture
@@ -435,7 +427,7 @@ Do not restore retired assets under `apps/portal/assets/generated/hmh-isometric-
 
 ### How Ranked works now
 
-This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-deployment-web3-guide-20260922.md) and its [interface contract](docs/handoffs/pre-deployment-interface-contract-20260922.md)). It runs only with both flags in `apps/portal/src/settlement.mjs` on; until runbook step 7 they are `false`, and Ranked is a device-local preview that makes no `/api` call and sends no transaction.
+This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-deployment-web3-guide-20260922.md) and its [interface contract](docs/handoffs/pre-deployment-interface-contract-20260922.md)). Both flags in `apps/portal/src/settlement.mjs` have been `true` since the 1.8.0 launch on 2026-09-24. With them off (for example in a local build with the flags reverted), Ranked is a device-local preview that makes no `/api` call and sends no transaction.
 
 1. **Sign in.** The player picks a wallet (EIP-6963: MetaMask, Rabby; WalletConnect on lestersarcade.io), gets a server nonce from `/api/session/nonce` and signs one free SIWE message; `/api/session` returns a session token bound to the wallet and the environment.
 2. **Seed ticket.** Approving the Ranked entry first asks `/api/ranked/seed` for a ticket: a random salt MAC'd to the session, wallet, game, season and build. The run's seed comes from it, so nobody can pick an easy seed or replay someone else's run.
@@ -446,11 +438,11 @@ This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-
 
 Evidence before launch: the [local rehearsal](docs/qa/pre-deployment-rehearsal-20260923.json) (server end to end on an in-process chain), the [step-7 dry run](docs/qa/step7-dry-run-20260923.json) (the flag flip in a throwaway worktree), and the [live-flag browser run](docs/qa/ranked-live-browser-e2e-20260923.json) (`node scripts/ranked-live-browser-e2e.mjs`: all three games in a real browser with both flags on, against the local stack). The [release receipt draft](docs/qa/ranked-launch-release-receipt-draft-20260923.json) lists what the deployment session completes.
 
-### Not live end to end
+### Live on testnet, not on mainnet
 
-`SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` remain `false`, and the hardened contracts are not deployed: `apps/portal/src/generated/litvm-addresses.mjs` holds the addresses predicted from the operator's nonces (`status: 'predicted'`). The June legacy contracts contain bytecode, but the hardened score ABI cannot decode the legacy score registry, so chain leaderboard reads fail closed.
+Since 2026-09-24 `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` are `true` and the hardened contracts are deployed on the LitVM LiteForge testnet: `apps/portal/src/generated/litvm-addresses.mjs` holds the deployed addresses (`status: 'deployed'`) from `contracts/deployment-record.hardened.json`. The June legacy contracts are superseded. This is a testnet epoch; mainnet will be a fresh deployment set. The Chikun Weekly Jackpot contracts are deployed but idle (`JACKPOT_LIVE` is `false`; [operations](docs/web3/weekly-jackpot-operations.md)).
 
-Going live follows the deployment runbook (guide §7 as amended by contract §13), with the owner's approval at each ⚠ step: broadcast the contracts, confirm the developer wallet, make the games playable, write the renamed server secrets, flip both flags and regenerate the public copy, deploy, run the production migration, then one real Ranked run per game (`scripts/rehearse-ranked-e2e.mjs --target live`, optionally `scripts/ranked-live-browser-e2e.mjs --live`) and the live smokes.
+The launch followed the deployment runbook (guide §7 as amended by contract §13), with the owner's approval at each ⚠ step: broadcast the contracts, confirm the developer wallet, make the games playable, write the renamed server secrets, flip both flags and regenerate the public copy, deploy, run the production migration, then one real Ranked run per game (`scripts/rehearse-ranked-e2e.mjs --target live`, optionally `scripts/ranked-live-browser-e2e.mjs --live`) and the live smokes.
 
 See:
 

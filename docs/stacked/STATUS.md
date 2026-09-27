@@ -1,10 +1,14 @@
 # STACKED delivery status
 
+## Current status — public and Ranked on LitVM testnet
+
+STACKED `0.2.0` is public playable and Ranked-eligible. Since the 1.8.0 Ranked launch on 2026-09-24, a Ranked STACKED run is paid with one wallet transaction (the 0.102 zkLTC entry shared by every cabinet), replayed from its inputs by the arcade server, and published on chain to `ScoreSubmissionRegistry` on the LitVM LiteForge testnet by the relayer; its scores, profiles and achievements come from the index of those on-chain results. No prizes are offered. See the README release sections, `docs/qa/ranked-launch-release-20260924.json` and `contracts/deployment-record.hardened.json`. Physical-device acceptance and polish remain open. Every section below, including the "device-local Ranked" wording of the September 13 beta, is historical.
+
 ## Combined arcade release — live, September 13, 2026
 
 The tested combined release is live at https://lestersarcade.io, source `dcc22ae442d68e4c2ec73d21c3e8c1079ed52a25`, deployment `dpl_BRuxtwazwPp2LNeSxRyH1scfsQgS`, cache `lesters-arcade-v44-music-controls`. It preserves HMH world polish and adds the completed STACKED cabinet/living visualizers and Chikun open-air/portrait/input/music changes. All 163 public file hashes and public browser/cache flows passed. See `docs/qa/combined-arcade-release-20260913.json` and the three independent `docs/handoffs/*REMAINING-WORK-2026-09-13.md` handoffs. Older release claims below are historical. Physical-device and financial-service acceptance remain open.
 
-## September 13 public beta (current)
+## September 13 public beta (historical)
 
 The owner approved **“Yes, launch the tested public beta”**, superseding the old launch hold and authorizing promotion of the tested release without another prompt. Normal cabinet entry is enabled; Free Mode is playable and Ranked is explicitly device-local. No fees, prizes, online ranking or settlement are enabled. See [launch authorization](DECISIONS.md) and [beta release record](releases/PUBLIC-BETA-2026-09-13.md). Older status sections below are historical.
 

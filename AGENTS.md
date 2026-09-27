@@ -4,17 +4,20 @@
 
 Before changing code, read:
 
-1. `docs/handoffs/hmh-textured-rollout-progress.md` — **current rollout continuation**: owner authority, local candidate truth, native source proofs, remaining gates and active jobs. Its linked complete revamp handoff is the source/evidence map; older checkpoints are historical baselines, not certification of this rollout.
-2. `docs/hmh-reboot/AAA-ROADMAP.md` — standing dependency order, AAA acceptance bars, completed-item reconciliation, and owner gates.
-3. `docs/handoffs/2026-09-07-hmh-open-work-register-and-reprompt.md` — historical requirement register, reconciled by `docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json` and the current checkpoint. Read only the selected slice and its cited source, tests, identity/compatibility contract and evidence before editing.
+1. `README.md` top sections — **current release truth**: the newest release section names the site/game version, cache marker, production deployment, rollback and release branch, and links its receipt under `docs/qa/` (`batch-release-*.json` for 1.8.2 onward, `ranked-launch-release-20260924.json` for the 1.8.0 Ranked launch).
+2. `docs/handoffs/pre-deployment-web3-guide-20260922.md` — Web3 architecture, service roles, ship cycle and the owner's 2026-09-22 decisions. Its section 1 ("where things stand") predates the 2026-09-24 contract deployment; the README and receipts supersede its state tables.
+3. `docs/web3/weekly-jackpot-operations.md` — the Chikun Weekly Jackpot: deployed contracts, roles, operator actions and the go-live runbook whose ⚠ steps need the owner's approval in the moment.
+4. `docs/handoffs/hmh-textured-rollout-progress.md` — HMH rollout checkpoint (last updated for the September 14 releases): owner authority, native source proofs and the linked complete revamp handoff that maps HMH source and evidence. Its release and deployment values are historical baselines.
+5. `docs/hmh-reboot/AAA-ROADMAP.md` — standing HMH dependency order, AAA acceptance bars, completed-item reconciliation, and owner gates.
+6. `docs/handoffs/2026-09-07-hmh-open-work-register-and-reprompt.md` — historical requirement register; `docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json` is its 2026-09-08 snapshot, not current status. Read only the selected slice and its cited source, tests, identity/compatibility contract and evidence before editing.
 
-For the selected slice, consult its owning cycle and `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md` or `docs/hmh-reboot/COMPATIBILITY.json` as applicable. Read `docs/hmh-reboot/MAINNET-READINESS-ROADMAP-2026-09-01.md` only for the separately authorized Web3 scope. The Cycle 036, 049, 067, 070 and 074 handoffs and older cycle ledgers are historical implementation context; consult them only when that history is needed, not as a mandatory restart queue.
+For the selected slice, consult its owning cycle and `docs/hmh-reboot/REFERENCE-CHARACTER-MODELS.md` or `docs/hmh-reboot/COMPATIBILITY.json` as applicable. `docs/hmh-reboot/MAINNET-READINESS-ROADMAP-2026-09-01.md` and `docs/web3/contract-overhaul-20260916.md` (contract design and pause levers) cover the separately authorized Web3 scope. History, consulted only when that history is needed and not as a restart queue: the 2026-08-20 live-release handoff (`docs/handoffs/2026-08-20-lesters-arcade-hmh-chikun-live-release.md`), the Cycle 036, 049, 067, 070 and 074 handoffs, `docs/hmh-reboot/AAA-CONTINUOUS-IMPROVEMENT.md` and the cycle ledgers under `docs/hmh-reboot/cycles/`.
 
 Older June 2026 HMH handoffs describe a superseded Canvas/isometric/procedural direction. They are historical context, not active implementation authority.
 
 ## Current game direction
 
-STACKED 0.2.0 is a public playable beta with Free Mode and wallet-bound, device-local Ranked preview. The owner explicitly approved launching the tested public beta on September 13, 2026, including promotion without another exact-deployment approval prompt. This bounded approval supersedes the earlier STACKED launch hold; physical-device acceptance and remaining polish stay open. It does not authorize funds, fees, prizes, online ranking, contracts or settlement.
+STACKED 0.2.0 is public playable and Ranked-eligible. The owner approved the tested public beta on September 13, 2026; since the 1.8.0 Ranked launch (2026-09-24) its Ranked runs are replay-verified by the arcade server and published on chain like the other two cabinets (see Web3 truth). Physical-device acceptance and remaining polish stay open. Prizes, and any change to its fees or contracts, need separate owner approval.
 
 Hard Money Heroes is a deterministic PixiJS `8.19.0` top-down 2.5D authored roguelike run-and-gun.
 
@@ -41,20 +44,28 @@ Chikun's Escape is public playable and Ranked-eligible as of `54aab311` (2026-08
 
 Publish status is now gated, not just documented. `npm run docs:cabinets` proves what `README.md`, `AGENTS.md`, and `docs/THIRD_PARTY_GAME_ONBOARDING.md` claim about a cabinet against its `game.manifest.json`, and it runs inside `npm test`. If you flip a cabinet's `status`, the docs must move in the same commit or the gate fails the build.
 
-What shipped is the `0.6.0` vertical slice, not the creator's full original game. Do not restore the vaulted React/Supabase source, and do not treat these as settled: written commercial-use, modification, hosting, and redistribution rights for the creator's art are still pending; `devWallet` is `null`; and the revenue split is an unconfigured skeleton with `entryFeeMicroUsdc` resolving to `0`. Enabling paid entry or third-party settlement needs separate explicit approval.
+For Chikun's Escape, what shipped (manifest `0.9.0`) is a vertical slice, not the creator's full original game. Do not restore the vaulted React/Supabase source, and do not treat these as settled: written commercial-use, modification, hosting, and redistribution rights for the creator's art are still pending; the Chikun `devWallet` is `null` in `game.manifest.json` and `game-registry.mjs`, so no revenue reaches the creator. Chikun's Ranked entry is the same 0.1 zkLTC fee plus 0.002 zkLTC settlement reserve as every cabinet, and the deployed on-chain split pays its 85% developer and 15% arcade shares to the owner's wallet (`contracts/deployment-record.hardened.json`); the legacy `entryFeeMicroUsdc` field still resolves to `0` and is never charged. Routing revenue to the creator, or any other third-party settlement, needs separate explicit approval.
 
 ## Git and deployment safety
 
-- Work on `reboot/hmh-aaa-continuous` or a new branch from it.
+- Production is released from `fable/master-list-20260916`. Work on a new branch from it (or from the branch the newest README release section names), not on the retired `reboot/hmh-aaa-continuous` continuation.
 - Do not push ordinary work directly to `main`.
 - Do not rewrite or discard unrelated working-tree changes.
-- The owner's repeated September 13 requests authorize publication of the completed, tested HMH website update, preserving live Chikun and STACKED. The owner also approved the tested STACKED public beta without another prompt. Other publication scopes require their own authorization. Public disclosure of additional source files and editable models is a separate permission from website publication.
-- Do not deploy contracts, send transactions, change authority, or enable real settlement without a separate explicit HALT approval.
-- Do not expose private keys, API credentials, or verifier secrets.
+- Do not promote a Vercel deployment without the owner's explicit approval for that release. The September 13 approvals covered the tested HMH website update and the STACKED public beta only; every other publication scope needs its own authorization. Public disclosure of additional source files and editable models is a separate permission from website publication.
+- Do not deploy or redeploy contracts, send transactions, change contract authority, fees, reserves or flags, change Vercel secrets, or flip `SETTLEMENT_LIVE`, `HOSTED_PROFILE_SYNC` or `JACKPOT_LIVE` without a separate explicit owner approval for that exact action.
+- Do not expose private keys, API credentials, or verifier secrets. Service keys live outside the repository; never print, paste, commit or log them.
 
-Current certified continuation and production baseline at the time of this instruction:
+Release process (README release sections, the ship cycle in `docs/handoffs/pre-deployment-web3-guide-20260922.md` section 1.3, and the `docs/qa/` receipts): bump the site/game version and service-worker cache marker with their pinned tests, pass the local `npm run vercel:build` release gate, upload with `npx vercel deploy --yes`, then, with the owner's approval, `npx vercel promote <candidate> --yes`. Verify the public files against the certified build and `/api/health`, then record the README release section and a receipt. Vercel Git-integration previews of branch pushes fail two HMH LFS hash tests because LFS content is not cloned, so production ships by the local upload (`docs/qa/ranked-launch-release-20260924.json`).
 
-- Continuation branch: `reboot/hmh-aaa-continuous`
+Release baseline at the time of this instruction (2026-09-26):
+
+- Release branch: `fable/master-list-20260916`.
+- Latest verified-live release: `1.8.4`, production deployment `dpl_61u26aJuaoPMoEGthLcqp7MTUh6N` (source `4f947386`) at https://lestersarcade.io, cache marker `lesters-arcade-v57-fair-play`, receipt `docs/qa/batch-release-20260926-1.8.4.json`, rollback `dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK` (1.8.3). Rolling back further than 1.8.3 needs Ranked paused first.
+- In release: `1.8.5` (release commit `a8f81931`, cache marker `lesters-arcade-v58-smooth-crowds`). Its README section records whether it has been verified live.
+- `SETTLEMENT_LIVE=true`, `HOSTED_PROFILE_SYNC=true` (`apps/portal/src/settlement.mjs`); `JACKPOT_LIVE=false` (`apps/portal/src/jackpot-config.mjs`).
+
+Historical Cycle 029-036 anchors, kept for provenance only (continuation branch `reboot/hmh-aaa-continuous`; the Cycle 036 production deployment `dpl_5mUEBJ6dZYaW6PANwSc1SfBnJRWo` ran with `SETTLEMENT_LIVE=false`). The Cycle 029-036 ledgers under `docs/hmh-reboot/cycles/` and their handoffs under `docs/handoffs/` hold the details:
+
 - Cycle 029 Lilly source: `3784080bf0aa79cad7cbe1c7b13a9b6f9c094109`
 - Cycle 029 exact commit patch SHA-256: `9c7d2acbc9f6b5d3e2390f94b5ccc3561a9dab7d959e390d927f5e508e496132`
 - Cycle 030 Lit Commando source: `d5a860d491739184a35e61fe9fd5f88c1c65743b`
@@ -71,10 +82,7 @@ Current certified continuation and production baseline at the time of this instr
 - Cycle 035 exact commit patch SHA-256: `697b72230da401d5ef686cea3145fb643c9ea274ad7116377b9dbdc166aa698f`
 - Cycle 036 source: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
 - Cycle 036 exact commit patch SHA-256: `5fa3e71570a20d1ca5b4166df06c041e244e9a7315645ae74f797752686847d6`
-- Production branch head is the Cycle 036 closeout: `802e6cd18a537c72830224e0655617841241b548`
-- Production runtime implementation boundary is Cycle 036: `15629ebac9e1004f2b41760aedd3e67cc406f5c3`
-- Production deployment is `dpl_5mUEBJ6dZYaW6PANwSc1SfBnJRWo` at https://lestersarcade.io
-- `SETTLEMENT_LIVE=false`
+- Cycle 036 closeout branch head: `802e6cd18a537c72830224e0655617841241b548`
 
 Re-read live Git and deployment state before acting. Do not assume these values remain current in a later session.
 
@@ -115,6 +123,8 @@ For any render-layer change:
 - Keep generated/runtime artifacts and docs consistent.
 - Do not treat a plan, stub, static audit, synthetic wallet, or simulated receipt as a finished feature.
 
+Keep the release byte budgets: HMH initial plus shared JavaScript at most 1,048,576 bytes and STACKED initial JavaScript at most 607,000 bytes (1.8.4 receipt: 1,047,615 B and 574,802 B). New portal or HMH UI loads through dynamic `import()`.
+
 Any runtime, asset, routing, CSP, service-worker, or release-harness change creates a new candidate and requires fresh certification.
 
 ## Working commands
@@ -154,11 +164,11 @@ HMH URL: `http://127.0.0.1:8791/hmh-reboot/index.html`
 
 ## Web3 truth
 
-- `SETTLEMENT_LIVE` is false.
-- Local canonical sessions, profiles, cadence leaderboards, and simulated settlement exist.
-- June legacy contracts contain bytecode but do not match the current hardened score ABI.
-- Hardened predicted contracts are undeployed.
-- The browser consumes a verifier attestation but does not produce a trusted attestation.
-- Real wallet, hardened contract, score readback, profile readback, and leaderboard ingestion remain unproven end to end.
+- Ranked Mode is live on the LitVM LiteForge **testnet** (chain 4441) for all three cabinets since the 1.8.0 release on 2026-09-24 (`docs/qa/ranked-launch-release-20260924.json`). `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` are `true` in `apps/portal/src/settlement.mjs`.
+- The deployed contracts (GameRegistry, PlayerProfileRegistry, ArcadeRankedEntry, ScoreSubmissionRegistry and one achievement collection per cabinet) are recorded in `contracts/deployment-record.hardened.json` and generated into `apps/portal/src/generated/litvm-addresses.mjs` (`status: 'deployed'`). This is a testnet epoch; mainnet is a fresh deployment set and nothing carries over. The June legacy contracts are superseded.
+- A Ranked entry is one player-signed `ArcadeRankedEntry` transaction: a 0.1 zkLTC fee plus a 0.002 zkLTC settlement reserve (0.102 zkLTC), split 85% developer and 15% arcade.
+- Settlement is relayed. The arcade server verifies every Ranked run (Chikun's Escape and STACKED are replayed from their inputs; Hard Money Heroes is plausibility-checked), the verifier signs an EIP-712 attestation inside the server, and the relayer publishes the result to `ScoreSubmissionRegistry`. The browser never produces a trusted attestation or signs a score submission.
+- Profiles, Weekly/Monthly/All-time leaderboards and achievements are read from the Neon index of on-chain events, which a cron fills from the chain; on-chain display names and avatars live in `PlayerProfileRegistry`. Soulbound achievement NFT minting is phase 2.
+- The Chikun Weekly Jackpot (`WeeklyJackpot` and the no-value test token tCHIKUN) was deployed to LiteForge on 2026-09-26 (`contracts/deployment-record.jackpot.json`, `docs/qa/jackpot-deploy-20260926.json`) but is idle: the owner put it on hold until mainnet and the $CHIKUN launch. `JACKPOT_LIVE` is `false`, the jackpot server stays unconfigured and its keeper cron is a no-op (`docs/web3/weekly-jackpot-operations.md`).
 
-Never describe local/simulated or source-only Web3 behavior as live settlement.
+Never describe local/simulated or source-only Web3 behavior as live settlement, testnet activity as mainnet, or the Weekly Jackpot as live.

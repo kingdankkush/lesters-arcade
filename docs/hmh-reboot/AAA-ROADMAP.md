@@ -200,8 +200,10 @@ instructions. §8.4 is the live list of things agents are waiting on you for.
   official completion, settlement. The HMH child never requests wallets or signatures,
   never sends transactions, never writes parent persistence.
 - Free Mode never advances Ranked progress.
-- `SETTLEMENT_LIVE=false`. No contract deployment, transaction, authority change, or
-  settlement activation without a separate explicit HALT approval from the owner.
+- Ranked settlement is live on the LitVM LiteForge testnet since 2026-09-24
+  (`SETTLEMENT_LIVE=true`; README release sections). No further contract deployment,
+  transaction, authority, fee or flag change, or mainnet activation without a separate
+  explicit HALT approval from the owner.
 - Preserve: alias `hmh`, game ID `lester-blaster`, profile `wo71`, save schema `2`,
   bridge `hmh-bridge/v1`, 65,536-byte bridge message cap, PixiJS `8.19.0`.
 - Active actors read as human survivors or zombies. No animals, vehicles, robots, mechs,
@@ -660,6 +662,12 @@ routing/ducking, license-manifest closure, and a measured mix pass.
 
 ### 4.15 Web3 and contracts (HALT-gated; agents prepare, owner decides)
 
+> **Status update (added 2026-09-26):** the hardened contracts were deployed to the LiteForge
+> testnet and Ranked settlement went live on 2026-09-24 (1.8.0,
+> `docs/qa/ranked-launch-release-20260924.json`; addresses in
+> `contracts/deployment-record.hardened.json`). The "Now" paragraph below is the
+> 2026-09-02 state, kept as history.
+
 *Now:* readiness `PARTIAL`, 3/4 gates. Blocked gate: on-chain registry/economy
 (cabinet approval path not live-gated, SplitConfig/economy not production-approved,
 legal/brand/economy approval required). Contracts compile and pass unit tests; slither
@@ -752,7 +760,7 @@ Current override: use `docs/handoffs/hmh-textured-rollout-progress.md` and the i
 5. G-7 withheld pacing defects and G-1/G-6 benchmarks; measured G-3/K-3/K-4/K-5/K-6 control/combat gaps. UI/audio/portal work follows the register; existing functionality is not proof every expanded requirement is complete.
 6. Launch captures, truthful feature/trust documentation and human-device playtests remain distinct gates. W-16 Level 2 remains downstream of Level 1 acceptance.
 
-STACKED stays at accepted S-01–S-03, not publicly playable; no expansion before the gameplay-hero release priority is met. Chain transactions, real funds, settlement and irreversible authority changes require separate exact-action approval. Keep `SETTLEMENT_LIVE=false`.
+STACKED is public and Ranked-eligible: the owner approved its public beta on 2026-09-13 and its Ranked runs settle on the LitVM LiteForge testnet since the 1.8.0 Ranked launch (2026-09-24). Ranked settlement is live on testnet (`SETTLEMENT_LIVE=true`; see the README release sections and `docs/qa/ranked-launch-release-20260924.json`). New chain transactions, contract deployments, fee or flag changes, real funds and irreversible authority changes still require separate exact-action approval.
 
 ---
 

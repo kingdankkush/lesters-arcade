@@ -391,7 +391,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ anchor: 'shootButton', title: 'Shoot', copy: 'Mouse: Left Click. Fire your current gun; pickups can swap blaster, shotgun, auto, rail, or rare super weapon.' }),
     Object.freeze({ anchor: 'grenadeButton', title: 'Grenade', copy: 'Desktop: Right Click or F. Mobile: NADE button. Wide-area Crypto Bomb blast — scarce, replenished by map pickups.' }),
     Object.freeze({ anchor: 'powerUpButton', title: 'Drop power-up', copy: 'Practice helper for testing health, shield, ammo, +1up, score multiplier, and weapon pickups.' }),
-    Object.freeze({ anchor: 'combatCanvas', title: 'Gameplay viewport', copy: 'Isometric roguelite arena with authored POIs, swarms, boss beats, and extraction pressure.' }),
+    Object.freeze({ anchor: 'combatCanvas', title: 'Gameplay viewport', copy: 'Top-down 2.5D run-and-gun arena with authored POIs, swarms, boss beats, and extraction pressure.' }),
     Object.freeze({ anchor: 'leaderboardPanel', title: 'Official board', copy: 'Only Ranked Testnet runs can submit official leaderboard state.' }),
   ]),
   controls: Object.freeze({
@@ -670,7 +670,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       title: 'Hard Money Heroes',
       status: 'playable',
       playable: true,
-      description: 'The first playable Lester arcade cabinet: isometric roguelite score survival on LitVM LiteForge.',
+      description: 'The first playable Lester arcade cabinet: a deterministic top-down 2.5D roguelike run-and-gun on LitVM LiteForge.',
       desktopCabinetSprite: HMH_CABINET_SPRITE_MANIFEST,
     }),
     Object.freeze({
@@ -3910,7 +3910,7 @@ export function buildLesterBlasterDesignCodex() {
 export function buildLesterBlasterControlDisplayModel() {
   const kb = LESTER_BLASTER_CONTROL_SCHEME.keyboard;
   return [
-    { label: 'Move', key: kb.move, hint: 'WASD / arrow keys move your hero across the isometric battlefield (drag on mobile).' },
+    { label: 'Move', key: kb.move, hint: 'WASD / arrow keys move your hero across the battlefield (drag on mobile).' },
     { label: 'Aim & Fire', key: kb.aim, hint: 'Your gun auto-fires toward the mouse cursor on its fire-rate — no clicking needed.' },
     { label: 'Manual Fire', key: kb.fire, hint: 'Left click fires a deliberate shot at the cursor.' },
     { label: 'Grenade', key: kb.grenade, hint: 'Right click or F throws a Crypto Bomb — wide blast, scarce ammo (NADE button on mobile).' },
