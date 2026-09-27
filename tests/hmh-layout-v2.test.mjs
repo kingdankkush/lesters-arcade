@@ -138,11 +138,14 @@ test('the layoutV2 pilot is evidenceSafe-gated and refuses a Ranked session', ()
   assert.ok(init > 0 && refusal > init, 'the refusal lives in initializeSession');
   assert.ok(refusal < MAIN_SOURCE.indexOf('stopCurrentSession();', init), 'it refuses before any session state changes');
   assert.ok(refusal < MAIN_SOURCE.indexOf("evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';"));
-  // Off the pilot every consumer sees exactly the default map.
-  assert.match(MAIN_SOURCE, /const baseBlockers = layoutV2\?\.world\.collisionBlockers \?\? LEVEL_ONE_WORLD\.collisionBlockers;/);
+  // Off the pilot every consumer sees exactly the default map; on it the v2
+  // ground, blockers and navgrid world replace them at boot and again after
+  // each session reset.
   assert.match(MAIN_SOURCE, /createEnemyNavGridChunked\(\{ world: layoutV2\?\.world \?\? LEVEL_ONE_WORLD, queryGround, cellsPerSlice: 512 \}\)/);
-  assert.match(MAIN_SOURCE, /if \(layoutV2\) \{ queryGround = layoutV2\.queryGround; WORLD_BLOCKERS = baseBlockers;/);
-  assert.doesNotMatch(MAIN_SOURCE, /worldDesignActiveBlockers\(worldDesignState,LEVEL_ONE_WORLD\.collisionBlockers\)/);
+  assert.match(MAIN_SOURCE, /if \(layoutV2\) \{ queryGround = layoutV2\.queryGround; WORLD_BLOCKERS = layoutV2\.world\.collisionBlockers;/);
+  const reset = MAIN_SOURCE.indexOf('if (layoutV2) WORLD_BLOCKERS = layoutV2.world.collisionBlockers;', init);
+  assert.ok(reset > MAIN_SOURCE.indexOf('WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;', init), 'the pilot reapplies its blockers after the session reset');
+  assert.equal(MAIN_SOURCE.match(/layoutV2/g).length, 13, 'the pilot touches main.mjs only in these places');
 });
 
 test('the pilot draws the greybox without Pixi and resolves a walkable evidence start', async () => {

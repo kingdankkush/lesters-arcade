@@ -1243,8 +1243,7 @@ async function boot() {
   const layoutV2 = evidenceSafeEnabled && runtimeParams.get('layoutV2') === '1'
     ? (await import('./layout-v2-pilot.mjs')).mountLayoutV2Pilot({ GraphicsClass: Graphics, ContainerClass: Container, TextClass: Text, world, hide: [worldProduction.root, worldDecalLayer, worldLife.ground, worldLife.overlay, authoredPropLayer, groundShadowLayer], params: runtimeParams })
     : null;
-  const baseBlockers = layoutV2?.world.collisionBlockers ?? LEVEL_ONE_WORLD.collisionBlockers;
-  if (layoutV2) { queryGround = layoutV2.queryGround; WORLD_BLOCKERS = baseBlockers; dataset.layoutV2 = '1'; }
+  if (layoutV2) { queryGround = layoutV2.queryGround; WORLD_BLOCKERS = layoutV2.world.collisionBlockers; dataset.layoutV2 = '1'; }
   const endurancePressurePilotEnabled = evidenceSafeEnabled && runtimeParams.get('endurancePressurePilot') === '1';
   const buildEnduranceEncounterCandidates = endurancePressurePilotEnabled
     ? (await import('./encounter-endurance-pilot.mjs')).buildEnduranceEncounterCandidates
@@ -2880,8 +2879,8 @@ async function boot() {
     if (startupContinue) { startupContinue.hidden = true; startupContinue.disabled = false; }
     if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
     dataset.startupArt = 'loading';
-    for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,baseBlockers);
-    WORLD_BLOCKERS=baseBlockers;
+    for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
+    WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
     worldDesignState=createWorldDesignState();
     worldSecretState=createWorldDesignSecretState();
     worldDestructibleState=createWorldDestructibleState();
@@ -2894,6 +2893,7 @@ async function boot() {
     enemyFlowFieldTick = -1;
     enemyFlowReplanRequestedTick = -1;
     activeBurnerHazards = [];
+    if (layoutV2) WORLD_BLOCKERS = layoutV2.world.collisionBlockers;
     minimapDiscovery.discoveredPoiIds.clear();
     // Art selection must never be able to abort a session: this runs inside
     // the bridge onInit handler, and throwing here would skip `game:ready`
@@ -3379,7 +3379,7 @@ async function boot() {
         recordRunMilestone(runSummaryAccumulator,{type:'site-operated',id:event.siteId,tick});
         collectibleState.unlockedObjectives.add(event.siteId);
         if(event.gateId) {
-          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,baseBlockers);
+          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
           enemyFlowFieldTick=-1; enemyFlowField=null;
         }
@@ -4372,14 +4372,14 @@ async function boot() {
           worldSecretState.sealHealth=sealDamage.health;
           if(sealDamage.health<=0) {
             worldDesignState.openGates.add(WORLD_DESIGN_SECRET_SEAL.id);
-            WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,baseBlockers);
+            WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
             refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,WORLD_DESIGN_SECRET_SEAL.id,WORLD_BLOCKERS);
             enemyFlowFieldTick=-1; enemyFlowField=null;
           }
         }
         for(const broken of applyWorldDestructibleDamage(worldDestructibleState,{targets:lastCombatResolution.targets,tick})) {
           worldDesignState.openGates.add(broken.id);
-          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,baseBlockers);
+          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,broken.id,WORLD_BLOCKERS);
           enemyFlowFieldTick=-1;enemyFlowField=null;
           combatAudio.play('land',{volume:.14});
