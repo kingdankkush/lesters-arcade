@@ -72,6 +72,8 @@ const NODE_CHECK_FILES = [
   'tests/share-card.test.mjs',
   'tests/share-page.test.mjs',
   'apps/portal/src/free-share-token.mjs',
+  'apps/portal/src/share-file.mjs',
+  'tests/share-file.test.mjs',
   'server/share/free-run.mjs',
   'server/share/render-free-card.mjs',
   'server/share/render-free-page.mjs',

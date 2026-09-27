@@ -4,7 +4,8 @@ import { createStackedPlaySession } from './play-session.mjs';
 import { createStackedInput } from './input.mjs';
 import { connectStackedChild } from './child-bridge.mjs';
 import { buildStackedRunSummary } from './run-summary.mjs';
-import { buildShareLinks, buildStackedShareText, createShareRow, shareUrlFor } from '../../portal/src/share-links.mjs';
+import { buildFreeShareText, buildShareLinks, createShareRow } from '../../portal/src/share-links.mjs';
+import { encodeFreeShareToken, freeShareCardPath, freeSharePageUrl } from '../../portal/src/free-share-token.mjs';
 import { chunkStackedEvidence } from '../../portal/src/stacked-evidence-transport.mjs';
 import { STACKED_CAPABILITIES, STACKED_FREE_MEDALS_KEY } from '../../portal/src/stacked-contracts.mjs';
 import { createStackedPauseClock } from './pause-clock.mjs';
@@ -110,10 +111,9 @@ function renderShareRow(s) {
   if (!mount) return;
   // Free runs only: the parent results screen owns Ranked sharing (§7.4).
   if ((mount.hidden = init.mode === 'ranked')) return;
-  const links = buildShareLinks({
-    text: buildStackedShareText({ score: s.score, lines: s.lines, level: s.level, tick: s.tick, quadClears: s.quadClears, maxCombo: s.maxCombo, assisted: run.assisted }),
-    url: shareUrlFor('stacked'),
-  });
+  const values = { assisted: run.assisted, score: s.score, lines: s.lines, level: s.level, quadClears: s.quadClears, maxCombo: s.maxCombo, survivalSeconds: s.tick / 60 };
+  const token = encodeFreeShareToken('stacked', values);
+  const links = buildShareLinks({ text: buildFreeShareText('stacked', { score: s.score, stats: values }), url: freeSharePageUrl('stacked', token), card: freeShareCardPath('stacked', token) });
   if (shareRow) { shareRow.refresh(links); return; }
   shareRow = createShareRow({ documentRef: document, title: 'STACKED', links, className: 'share-row', buttonClassName: 'share-button', onStatus: (message) => { $('overlayCopy').textContent = message; } });
   mount.replaceChildren(shareRow); mount.hidden = false;
