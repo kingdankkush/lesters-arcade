@@ -351,6 +351,8 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/generated/hmh-banner-art.mjs',
   'apps/portal/src/generated/hmh-loading-art.mjs',
   'tests/hmh-banner-art.test.mjs',
+  'server/share/card-art.mjs',
+  'tests/share-card-art.test.mjs',
   'tests/hmh-native-portraits.test.mjs',
   'apps/hmh-reboot/src/world-tour-spawns.mjs',
   'apps/hmh-reboot/src/level-entry.mjs',
