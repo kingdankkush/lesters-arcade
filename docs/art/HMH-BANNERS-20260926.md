@@ -452,3 +452,35 @@ cabinets), `hard-money-heroes/screens/boot-splash.png` (level editor sprite libr
   `generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg` (no reference left in code, pages,
   `sw.js`, `sitemap.xml` or `llms.txt`), and the dead `hmh-keyart-bg.jpg` and
   `hmh-loading-keyart-1..4.jpg` paths.
+
+## 13. Verify (2026-09-27, rebased on `c4ededa4`, 1.8.6 plus the README fix)
+
+- Generated pages rebuilt with `scripts/build-portal-pages.mjs`; `--check` passes and the
+  onboarding strings match the integration head (index: "0.012" x10, "about 3 Ranked runs" x2,
+  `/how-ranked-works` x4; HMH discover page 8, 3 and 5).
+- `/games/hard-money-heroes` og:image and twitter:image: the 1200x630 JPEG, with width, height
+  and alt tags. HMH share cards: `SHARE_CARD_ART['lester-blaster']` folds `hmh-art-2026-09-26`
+  into every HMH `cardRev`, so old `?v=` links 302 to the new card; Chikun and STACKED
+  revisions do not move.
+- Old art: nothing in code, pages, `sw.js`, `sitemap.xml` or `llms.txt` references the three
+  retired files; only historical docs name them.
+- Browser review (heavy lock, 390x844 and 1440x900; homepage, mode select, discover page,
+  leaderboard, Level 1 intro, loading panel with two heroes and two rotations each, Ranked and
+  Free cards, og image). Fixed from it: the mode-card banners rendered as tall portrait crops
+  (the new `height="900"` attribute beat `aspect-ratio`; `height:auto` added), the og title ran
+  into Lilly's rifle (lockup reduced so every line ends left of x = 520), the loading art
+  `sizes` picked the 480w file for a 515 px frame (now 520px), and the phone rotate chip
+  overlapped the loading art (frame moved down 14 px). The only console error is the
+  `/api/leaderboard` 404 of the static server.
+- Cold local static server, median of 3 (base `c4ededa4` -> this branch):
+
+| Page | Viewport | FCP ms | Transfer B | Image B | Startup ready ms |
+|---|---|---|---|---|---|
+| Homepage | 390x844 | 172 -> 112 | 3,856,597 -> 2,987,378 | 1,257,550 -> 376,833 | |
+| Homepage | 1440x900 | 188 -> 132 | 9,059,018 -> 8,331,956 | 3,522,569 -> 2,784,009 | |
+| HMH route | 390x844 | 128 -> 84 | 2,550,324 -> 2,602,621 | 0 -> 33,226 | 1,043 -> 880 |
+| HMH route | 1440x900 | 124 -> 76 | 2,550,324 -> 2,679,385 | 0 -> 109,990 | 1,154 -> 828 |
+
+  The HMH route gains `startup-art.js` (1,697 B) and one hero image before the level is ready.
+  HMH initial JS + shared is unchanged at 1,044,585 B; portal `dist/main.js` grows 1,869 B
+  (1,168,143 -> 1,170,012) for the generated banner data.
