@@ -82,12 +82,17 @@ test('the mode select states Free and Ranked prices and links the guide on every
       assert.match(copy.modeSelect[game.id].free, /^Free play needs no wallet and never touches the chain\. It costs nothing/, `${game.id} Free line`);
     }
   }
-  for (const game of PORTAL_GAMES) assert.match(launch.modeSelect[game.id].ranked, /^\d+\.\d+ testnet zkLTC per run\. The arcade server/, `${game.id} Ranked line`);
+  const rankedLine = new RegExp(`^${RANKED_FACTS.totalZkLtc.replaceAll('.', '[.]')} testnet zkLTC per run[.] The arcade server`);
+  for (const game of PORTAL_GAMES) assert.match(launch.modeSelect[game.id].ranked, rankedLine, `${game.id} Ranked line`);
   for (const [name, gameId] of [['index.html', 'lester-blaster'], ['discover/games.html', 'lester-blaster'], ...PORTAL_GAMES.map((game) => [`discover/${game.slug}.html`, game.id])]) {
     const page = live[name];
     assert.equal(decode(block(page, 'mode-free')), launch.modeSelect[gameId].free, name);
-    assert.match(page, /<p class="mode-guide-note"><a id="officialModeGuideLink" class="portal-text-link" href="\/how-ranked-works">How Ranked works: price, free zkLTC and steps →<\/a><\/p>/, name);
+    assert.match(page, /<p class="mode-guide-note"><a id="officialModeGuideLink" class="portal-text-link" href="\/how-ranked-works"><!-- copy:mode-guide:start -->How Ranked works: price, free zkLTC and steps →<!-- copy:mode-guide:end --><\/a><\/p>/, name);
+    // Contract A33: without live settlement the guide has no price, faucet or steps, so the link promises none.
+    assert.equal(decode(block(previewPages[name], 'mode-guide')), 'How Ranked works →', `${name} preview`);
   }
+  assert.equal(rankedSurfaceCopy({ settlementLive: true }).modeGuide, 'How Ranked works: price, free zkLTC and steps →');
+  assert.equal(rankedSurfaceCopy({ settlementLive: false }).modeGuide, 'How Ranked works →');
   const routes = read('apps/portal/src/routes/official-play-routes.mjs');
   assert.match(routes, /const free = siteCopy\?\.free \? \{ \.\.\.modeSelect\.free, copy: siteCopy\.free \} : modeSelect\.free;/);
   assert.match(routes, /textContent: FAUCET_LINK_TEXT, href: ranked\.faucetUrl, target: '_blank', rel: 'noopener noreferrer'/);
@@ -179,7 +184,7 @@ test('the README opens with How to play: Free and Ranked steps, price, faucet an
   const section = readme.slice(start, readme.indexOf('\n# ', start));
   assert.match(section, /\*\*Free:\*\* open \[lestersarcade\.io\/games\]\(https:\/\/lestersarcade\.io\/games\)/);
   assert.equal((section.match(/^\d\. /gm) ?? []).length, 5, 'five Ranked steps');
-  assert.ok(section.includes('[LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for 4 Ranked runs)'));
+  assert.ok(section.includes('[LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for about 3 Ranked runs)'));
   assert.ok(section.includes(RANKED_WORDING.price));
   assert.ok(section.includes("85% to the game's developer and 15% to the arcade"));
   assert.ok(section.includes('[lestersarcade.io/how-ranked-works](https://lestersarcade.io/how-ranked-works)'));
@@ -191,7 +196,7 @@ test('the developer docs state the new price, the split, the faucet and the guid
   const section = onboarding.slice(onboarding.indexOf('### How Ranked works for players'), onboarding.indexOf('## 2. SDK Contract'));
   assert.ok(section.includes('0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish the score on chain'));
   assert.ok(section.includes("85% to the game's developer wallet and 15% to the arcade"));
-  assert.ok(section.includes('(https://liteforge.hub.caldera.xyz) (0.05 per request, enough for 4 Ranked runs)'));
+  assert.ok(section.includes('(https://liteforge.hub.caldera.xyz) (0.05 per request, enough for about 3 Ranked runs)'));
   assert.ok(section.includes('https://lestersarcade.io/how-ranked-works'));
   assert.doesNotMatch(onboarding, /device-local replay previews/, 'STACKED Ranked is published like every Ranked run');
   const contracts = read('contracts/README.md');

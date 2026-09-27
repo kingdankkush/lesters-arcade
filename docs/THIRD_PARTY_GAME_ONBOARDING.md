@@ -27,7 +27,7 @@ Your players see the same Ranked path for every cabinet, and the parent owns all
 - **Free Mode** needs no wallet and never touches the chain. It never ranks.
 - **Ranked** costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish the score on chain. The player confirms it once in their wallet; the parent shows the entry contract's live quote.
 - **Your share:** the 0.01 entry is split when the player pays, 85% to the game's developer wallet and 15% to the arcade. The 0.002 pays the arcade's relayer, which publishes the verified score on LitVM (LiteForge testnet, chain 4441).
-- **Free testnet zkLTC** comes from the [LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for 4 Ranked runs). Testnet zkLTC has no monetary value.
+- **Free testnet zkLTC** comes from the [LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for about 3 Ranked runs). Testnet zkLTC has no monetary value.
 - **Checks:** the arcade server checks every Ranked run before it is published. A game whose runs can be replayed from recorded inputs (Chikun's Escape, STACKED) is replayed; Hard Money Heroes runs are plausibility-checked. A new cabinet needs a server verifier before it can be Ranked.
 - **Where scores show up:** Weekly (reset Monday 00:00 UTC), Monthly and All-time boards per game, the player's public profile, their achievements and a share card for each published run.
 

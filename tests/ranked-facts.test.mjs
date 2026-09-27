@@ -5,7 +5,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { FAUCET_CHIP_TEXT, FAUCET_LINK_TEXT, RANKED_FACTS, RANKED_WORDING } from '../apps/portal/src/ranked-facts.mjs';
+import {
+  FAUCET_BUDGET_BASE_FEE_WEI, FAUCET_CHIP_TEXT, FAUCET_LINK_TEXT, RANKED_ENTRY_GAS_LIMIT, RANKED_FACTS, RANKED_WORDING, entryFeeCapWei, faucetRunsClause, rankedRunsFundedBy,
+} from '../apps/portal/src/ranked-facts.mjs';
+import { liteForgeMaxFeePerGas } from '../apps/portal/src/liteforge-fees.mjs';
+import { checkRankedReadiness, loadEthers, GAME_REGISTRY_ABI, RANKED_ENTRY_ABI, RANKED_ENTRY_GAS_UNITS, SCORE_REGISTRY_ABI } from '../apps/portal/src/litvm-chain-client.mjs';
+import { LITVM_CONTRACT_ADDRESSES } from '../apps/portal/src/settlement.mjs';
 import * as fee from '../apps/portal/src/ranked-fee.mjs';
 import * as core from '../apps/portal/src/arcade-core.mjs';
 import { LITEFORGE_FAUCET_URL } from '../apps/portal/src/wallet-config.mjs';
@@ -32,7 +37,9 @@ test('every decimal the copy prints is the wei value it stands for', () => {
     assert.equal(toWei(RANKED_FACTS[decimal]), BigInt(RANKED_FACTS[wei]), decimal);
   }
   assert.equal(BigInt(RANKED_FACTS.entryWei) + BigInt(RANKED_FACTS.publishWei), BigInt(RANKED_FACTS.totalWei), 'entry + publishing = total');
-  assert.equal(BigInt(RANKED_FACTS.faucetWei) / BigInt(RANKED_FACTS.totalWei), BigInt(RANKED_FACTS.faucetRuns), 'whole Ranked runs one faucet request pays for');
+  assert.equal(RANKED_FACTS.faucetRuns, rankedRunsFundedBy(RANKED_FACTS.faucetWei), 'whole Ranked runs one faucet request pays for, gas room included');
+  // A retuned fee that leaves one request short of two runs must force a copy review.
+  assert.ok(RANKED_FACTS.faucetRuns >= 2, 'one faucet request pays for at least two Ranked runs');
   assert.equal(RANKED_FACTS.developerPercent + RANKED_FACTS.arcadePercent, 100);
   assert.ok(Object.isFrozen(RANKED_FACTS) && Object.isFrozen(RANKED_WORDING));
 });
@@ -62,7 +69,7 @@ test('the faucet, the chain and the explorer are the ones the wallet code uses',
   assert.equal(RANKED_FACTS.token, LITVM_LITEFORGE_NETWORK.nativeCurrency.symbol);
   assert.equal(RANKED_FACTS.explorerUrl, LITVM_LITEFORGE_NETWORK.explorerUrl);
   assert.equal(RANKED_FACTS.networkName, `${LITVM_LITEFORGE_NETWORK.name} testnet`);
-  assert.equal(RANKED_WORDING.faucet, 'Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs).');
+  assert.equal(RANKED_WORDING.faucet, 'Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for about 3 Ranked runs).');
   assert.equal(FAUCET_LINK_TEXT, 'Get free zkLTC (0.05 per request)');
   assert.equal(FAUCET_CHIP_TEXT, 'Get 0.05 free zkLTC');
 });
@@ -138,4 +145,76 @@ test('wallet-auth, the facts and the fee never reach arcade-core', () => {
   walk('wallet-auth.mjs');
   assert.ok(!seen.has('arcade-core.mjs'), [...seen].join(', '));
   assert.deepEqual([...seen].sort(), ['ranked-facts.mjs', 'ranked-fee.mjs', 'wallet-auth.mjs']);
+});
+
+// The faucet run count models the Ranked window's own funds check
+// (litvm-chain-client.mjs checkRankedReadiness), not floor(faucet / total): the
+// check also asks for the entry's gas limit at the fee cap it is sent with.
+function liteForgeRpc({ balance, baseFee, ethers }) {
+  const gameAbi = new ethers.Interface(GAME_REGISTRY_ABI);
+  const scoreAbi = new ethers.Interface(SCORE_REGISTRY_ABI);
+  const entryAbi = new ethers.Interface(RANKED_ENTRY_ABI);
+  const owner = `0x${'12'.repeat(20)}`;
+  const game = [ethers.id('chikun'), "Chikun's Escape", owner, 8500, 1500, 0, 0, BigInt(RANKED_FACTS.entryWei), true, true, true, 1n];
+  const emptySession = [ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, ethers.ZeroHash, ethers.ZeroHash, 0n, false, false];
+  return {
+    async request({ method, params = [] }) {
+      if (method === 'eth_chainId') return '0x1159';
+      if (method === 'eth_blockNumber') return '0x10';
+      if (method === 'eth_getCode') return '0x6000';
+      if (method === 'eth_getBalance') return ethers.toQuantity(balance);
+      if (method === 'eth_gasPrice') return ethers.toQuantity(baseFee);
+      if (method === 'eth_maxPriorityFeePerGas') return '0x0';
+      if (method === 'eth_getBlockByNumber') return { number: '0x10', hash: `0x${'aa'.repeat(32)}`, parentHash: `0x${'bb'.repeat(32)}`, timestamp: '0x1', nonce: '0x0000000000000000', difficulty: '0x0', gasLimit: '0x1c9c380', gasUsed: '0x0', miner: ethers.ZeroAddress, extraData: '0x', baseFeePerGas: ethers.toQuantity(baseFee), transactions: [] };
+      if (method === 'eth_call') {
+        const to = params[0].to.toLowerCase();
+        if (to === LITVM_CONTRACT_ADDRESSES.gameRegistry) return gameAbi.encodeFunctionResult('getGame', [game]);
+        if (to === LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry) return entryAbi.encodeFunctionResult('quoteEntry', [BigInt(RANKED_FACTS.entryWei), BigInt(RANKED_FACTS.publishWei), BigInt(RANKED_FACTS.totalWei)]);
+        const call = scoreAbi.parseTransaction({ data: params[0].data });
+        if (call.name === 'gameRegistry') return scoreAbi.encodeFunctionResult('gameRegistry', [LITVM_CONTRACT_ADDRESSES.gameRegistry]);
+        if (call.name === 'trustedVerifier') return scoreAbi.encodeFunctionResult('trustedVerifier', [`0x${'34'.repeat(20)}`]);
+        if (call.name === 'getSession') return scoreAbi.encodeFunctionResult('getSession', [emptySession]);
+        if (call.name === 'rankedEntry') return scoreAbi.encodeFunctionResult('rankedEntry', [LITVM_CONTRACT_ADDRESSES.arcadeRankedEntry]);
+      }
+      throw new Error(`LiteForge fixture does not implement ${method}`);
+    },
+  };
+}
+
+test('the faucet run count and the "about 0.016" amount follow the Ranked window funds check', async () => {
+  assert.equal(RANKED_ENTRY_GAS_LIMIT, RANKED_ENTRY_GAS_UNITS, 'the gas limit the funds check budgets');
+  for (const base of [0n, 10_000_000n, 499_999_999n, 500_000_000n, 1_500_000_000n, 1_700_000_000n, 5_000_000_000n]) {
+    assert.equal(entryFeeCapWei(base), liteForgeMaxFeePerGas(base), `fee cap at ${base} wei`);
+  }
+  assert.equal(FAUCET_BUDGET_BASE_FEE_WEI, 1_500_000_000n, 'the copy budgets the 1.5 gwei LiteForge base fee');
+  const need = BigInt(RANKED_FACTS.totalWei) + RANKED_ENTRY_GAS_UNITS * liteForgeMaxFeePerGas(FAUCET_BUDGET_BASE_FEE_WEI);
+  assert.equal(BigInt(RANKED_FACTS.fundsCheckWei), need);
+  assert.equal(RANKED_FACTS.fundsCheckWei, '15750000000000000', '0.012 + 250,000 gas x 15 gwei');
+  assert.equal(RANKED_FACTS.fundsCheckZkLtc, '0.016', 'rounded up to 0.001 zkLTC');
+  assert.ok(toWei(RANKED_FACTS.fundsCheckZkLtc) >= need && toWei(RANKED_FACTS.fundsCheckZkLtc) - need < 10n ** 15n);
+
+  // Drive the real funds check with the balance left after each run (a run
+  // burns the total plus at most the gas limit at the base fee).
+  const ethers = await loadEthers();
+  const spend = BigInt(RANKED_FACTS.totalWei) + RANKED_ENTRY_GAS_UNITS * FAUCET_BUDGET_BASE_FEE_WEI;
+  const wallet = { async request({ method }) { if (method === 'eth_chainId') return '0x1159'; throw new Error(`the wallet must not be asked for ${method}`); } };
+  const check = (balance) => checkRankedReadiness(wallet, { gameId: 'chikun', wallet: `0x${'56'.repeat(20)}`, readProvider: liteForgeRpc({ balance, baseFee: FAUCET_BUDGET_BASE_FEE_WEI, ethers }) });
+  const faucet = BigInt(RANKED_FACTS.faucetWei);
+  const last = await check(faucet - BigInt(RANKED_FACTS.faucetRuns - 1) * spend);
+  assert.equal(last.needWei, need, 'the modal asks for the same amount');
+  assert.equal(last.hasFunds, true, `run ${RANKED_FACTS.faucetRuns} is allowed`);
+  const next = await check(faucet - BigInt(RANKED_FACTS.faucetRuns) * spend);
+  assert.equal(next.hasFunds, false, `run ${RANKED_FACTS.faucetRuns + 1} is refused`);
+  assert.equal(next.errorKind, 'insufficient-funds');
+
+  // At the lowest base fees (the 5 gwei cap floor) a request stretches to one more run, hence "about".
+  assert.equal(rankedRunsFundedBy(RANKED_FACTS.faucetWei, { baseFeeWei: 10_000_000n }), RANKED_FACTS.faucetRuns + 1);
+});
+
+test('the faucet sentence never says "1 Ranked runs" or "0 Ranked runs"', () => {
+  assert.equal(faucetRunsClause(3), ', enough for about 3 Ranked runs');
+  assert.equal(faucetRunsClause(1), ', enough for about 1 Ranked run');
+  assert.equal(faucetRunsClause(0), '');
+  // A fee above the faucet amount funds nothing.
+  assert.equal(rankedRunsFundedBy(RANKED_FACTS.faucetWei, { totalWei: '60000000000000000' }), 0);
 });

@@ -23,10 +23,41 @@
 // load that way (tests/owner-jackpot-page.test.mjs).
 import {
   RANKED_ENTRY_FEE_WEI, RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_WEI, RANKED_ENTRY_TOTAL_ZKLTC,
-  RANKED_SETTLEMENT_GAS_RESERVE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC,
+  RANKED_SETTLEMENT_GAS_RESERVE_WEI, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC, formatZkLtcAmount,
 } from './ranked-fee.mjs';
 
 const FAUCET_WEI = '50000000000000000';
+
+// What the Ranked modal's funds check asks a wallet to hold before each run
+// (litvm-chain-client.mjs checkRankedReadiness): the total plus the entry's gas
+// limit (RANKED_ENTRY_GAS_UNITS, 250,000) at the fee cap the entry is sent with
+// (liteforge-fees.mjs liteForgeMaxFeePerGas: ten times the base fee, at least
+// 5 gwei; restated here to keep this module a leaf). The copy budgets a 1.5 gwei
+// base fee, the level LiteForge sat at on 2026-09-23..26 (deploy-config.testnet.json
+// _recipients; 1.7 gwei at the 2026-09-23 peak). tests/ranked-facts.test.mjs ties
+// the gas limit and the cap to the chain client and drives its real funds check.
+export const RANKED_ENTRY_GAS_LIMIT = 250_000n;
+export const FAUCET_BUDGET_BASE_FEE_WEI = 1_500_000_000n;
+export function entryFeeCapWei(baseFeeWei) {
+  const capped = BigInt(baseFeeWei) * 10n;
+  return capped > 5_000_000_000n ? capped : 5_000_000_000n;
+}
+
+export function rankedRunsFundedBy(balanceWei, { baseFeeWei = FAUCET_BUDGET_BASE_FEE_WEI, totalWei = RANKED_ENTRY_TOTAL_WEI } = {}) {
+  const total = BigInt(totalWei);
+  const need = total + RANKED_ENTRY_GAS_LIMIT * entryFeeCapWei(baseFeeWei);
+  const spend = total + RANKED_ENTRY_GAS_LIMIT * BigInt(baseFeeWei);
+  let balance = BigInt(balanceWei);
+  let runs = 0;
+  while (balance >= need && runs < 1000) { balance -= spend; runs += 1; }
+  return runs;
+}
+
+const FUNDS_CHECK_WEI = BigInt(RANKED_ENTRY_TOTAL_WEI) + RANKED_ENTRY_GAS_LIMIT * entryFeeCapWei(FAUCET_BUDGET_BASE_FEE_WEI);
+// Rounded up to 0.001 zkLTC for the copy ("about 0.016").
+const MILLI_ZKLTC_WEI = 1_000_000_000_000_000n;
+const FUNDS_CHECK_ROUNDED_WEI = ((FUNDS_CHECK_WEI + MILLI_ZKLTC_WEI - 1n) / MILLI_ZKLTC_WEI) * MILLI_ZKLTC_WEI;
+const FAUCET_RUNS = rankedRunsFundedBy(FAUCET_WEI);
 
 // Decimal strings are what the copy prints; the wei strings are what tests
 // compare against the contracts and the server floor (1 zkLTC = 1e18 wei).
@@ -50,8 +81,14 @@ export const RANKED_FACTS = Object.freeze({
   faucetName: 'LiteForge faucet',
   faucetZkLtc: '0.05',
   faucetWei: FAUCET_WEI,
-  // Whole Ranked runs one request pays for: floor(0.05 / 0.012) = 4.
-  faucetRuns: Number(BigInt(FAUCET_WEI) / BigInt(RANKED_ENTRY_TOTAL_WEI)),
+  // Whole Ranked runs one request pays for once the funds check's gas room is
+  // counted: 3 at a 1.5 gwei base fee (and up to about 4.6 gwei), 4 below about
+  // 0.6 gwei, so the copy says "about".
+  faucetRuns: FAUCET_RUNS,
+  // The balance the Ranked modal asks for before a run at that base fee,
+  // rounded up: 0.012 + 250,000 x 15 gwei = 0.01575, shown as "about 0.016".
+  fundsCheckWei: FUNDS_CHECK_WEI.toString(),
+  fundsCheckZkLtc: formatZkLtcAmount(FUNDS_CHECK_ROUNDED_WEI),
   // The chain Ranked pays on and publishes to (arcade-core's
   // LITVM_LITEFORGE_NETWORK, tied by the test).
   networkName: 'LitVM LiteForge testnet',
@@ -74,11 +111,18 @@ export const RANKED_FACTS = Object.freeze({
   guideUrl: 'https://lestersarcade.io/how-ranked-works',
 });
 
+// ", enough for about 3 Ranked runs"; singular for one run, and nothing when a
+// retuned fee leaves a request short of a whole run.
+export function faucetRunsClause(runs) {
+  if (runs < 1) return '';
+  return `, enough for about ${runs} Ranked run${runs === 1 ? '' : 's'}`;
+}
+
 // Canonical sentences shared with the in-game menus (brief, "Canonical
 // wording"). Use them verbatim where they fit.
 export const RANKED_WORDING = Object.freeze({
   price: `Ranked costs ${RANKED_FACTS.totalZkLtc} testnet zkLTC per run: ${RANKED_FACTS.entryZkLtc} entry + ${RANKED_FACTS.publishZkLtc} to publish your score on chain.`,
-  faucet: `Get free testnet zkLTC from the LiteForge faucet (${RANKED_FACTS.faucetZkLtc} per request, enough for ${RANKED_FACTS.faucetRuns} Ranked runs).`,
+  faucet: `Get free testnet zkLTC from the LiteForge faucet (${RANKED_FACTS.faucetZkLtc} per request${faucetRunsClause(RANKED_FACTS.faucetRuns)}).`,
   free: 'Free play needs no wallet and never touches the chain.',
   proof: "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.",
   value: 'Testnet zkLTC has no monetary value.',

@@ -173,7 +173,9 @@ test('the structured data is the visible text: WebPage, HowTo and FAQPage', () =
 test('every number on the guide is a Ranked fact, and it promises nothing it should not', () => {
   const visible = text(committed);
   const amounts = new Set([...visible.matchAll(/\b(\d+\.\d+) (?:testnet )?zkLTC/g)].map((match) => match[1]));
-  assert.deepEqual([...amounts].sort(), [RANKED_FACTS.entryZkLtc, RANKED_FACTS.publishZkLtc, RANKED_FACTS.totalZkLtc].sort());
+  // The price parts, plus the balance the Ranked modal's funds check asks for (price + gas room).
+  assert.deepEqual([...amounts].sort(), [RANKED_FACTS.entryZkLtc, RANKED_FACTS.publishZkLtc, RANKED_FACTS.totalZkLtc, RANKED_FACTS.fundsCheckZkLtc].sort());
+  assert.ok(visible.includes(`about ${RANKED_FACTS.fundsCheckZkLtc} zkLTC in all`), 'the "Not enough zkLTC" fix names the amount the modal asks for');
   assert.ok(visible.includes(`${RANKED_FACTS.faucetZkLtc} per request`));
   assert.doesNotMatch(committed, /0\.102|0\.1 zkLTC|jackpot|prize|reward|\bNFTs?\b|soulbound|mainnet|airdrop|guarantee/i);
   assert.doesNotMatch(visible, /\b20\d\d\b|!/, 'no dates and no exclamation marks');

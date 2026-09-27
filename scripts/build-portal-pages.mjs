@@ -75,6 +75,7 @@ function renderHome(html,copy,surface){
     ['mode-free',copy.modeSelect['lester-blaster'].free],
   ]) html=renderCopyBlock(html,key,escapeHtml(text),'index.html');
   html=renderCopyBlock(html,'home-ranked',renderHomeRanked(surface),'index.html');
+  html=renderCopyBlock(html,'mode-guide',escapeHtml(surface.modeGuide),'index.html');
   return withMeta(renderEntryModal(html,surface),'/',copy);
 }
 function renderTrust(html,copy,surface){

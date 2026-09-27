@@ -93,7 +93,7 @@ export function rankedGuideCopy({ settlementLive = false } = {}) {
             Object.freeze(['Total', `${F.totalZkLtc} zkLTC`, 'Confirmed once in your wallet, for each run.']),
           ]),
         }) }),
-        `Your wallet also shows a small network fee for sending the payment. ${W.value} Testnet entries are not refunded.`,
+        `Your wallet also shows a small network fee for sending the payment, so the Ranked window asks for about ${F.fundsCheckZkLtc} zkLTC in your wallet before each run. ${W.value} Testnet entries are not refunded.`,
         'The Ranked window shows the exact amount from the entry contract before you confirm. Free play stays free.',
       ]) }),
       Object.freeze({ id: 'faucet', title: 'Get free testnet zkLTC', blocks: Object.freeze([
@@ -138,7 +138,7 @@ export function rankedGuideCopy({ settlementLive = false } = {}) {
       Object.freeze({ id: 'fixes', title: 'If something goes wrong', blocks: Object.freeze([
         Object.freeze({ list: Object.freeze([
           Object.freeze(['Wrong network', `Your wallet is on another network. Choose Switch to LiteForge in the Ranked window, or pick ${F.networkName} (chain ${F.chainId}) in your wallet, then try again.`]),
-          Object.freeze(['Not enough zkLTC', `You need ${F.totalZkLtc} zkLTC plus a small network fee. ${faucetSentence} Then choose Re-check in the Ranked window.`]),
+          Object.freeze(['Not enough zkLTC', `Before each run the Ranked window checks that your wallet holds the ${F.totalZkLtc} zkLTC price plus room for the network fee: about ${F.fundsCheckZkLtc} zkLTC in all, and it shows the exact amount. ${faucetSentence} Then choose Re-check in the Ranked window.`]),
           Object.freeze(['The wallet asks for a high fee or refuses', `Do not confirm a fee that looks wrong. Check that the wallet is on the ${F.networkName} (chain ${F.chainId}) and that the amount is ${F.totalZkLtc} zkLTC plus a small network fee. If it still asks too much or refuses to send, cancel, close the Ranked window and try again. Nothing is charged when you cancel.`]),
           Object.freeze(['Payment done, result pending', 'Publishing usually takes about a minute and retries automatically every minute. Keep the results screen open, or check your profile later and retry from there.']),
           Object.freeze(['Run not accepted', "The server could not verify the run, so it is not ranked. This happens when a run breaks the game's rules or its data is incomplete. Testnet entries are not refunded. If you think it is a mistake, [contact support](/trust.html#support) with the time of the run and your wallet address."]),
@@ -247,6 +247,8 @@ export function rankedSurfaceCopy({ settlementLive = false } = {}) {
   const guideLine = `The [player guide](${F.guidePath}) explains every step, the price, the checks and what to do if something goes wrong.`;
   return Object.freeze({
     live,
+    // The guide link under the mode select's Ranked card (index.html and every game page).
+    modeGuide: live ? 'How Ranked works: price, free zkLTC and steps →' : 'How Ranked works →',
     // [label, action]: 'connect' opens the site's wallet sign-in; anything else is a link.
     homeRanked: live
       ? Object.freeze({ title: 'Play Ranked', lead: 'Put your runs on the leaderboards in three steps.',

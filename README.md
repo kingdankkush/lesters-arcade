@@ -15,7 +15,7 @@ Every game at [lestersarcade.io](https://lestersarcade.io) has two modes. Free p
 **Ranked** (LitVM LiteForge testnet, chain 4441):
 
 1. Connect a wallet: MetaMask, Rabby, OKX Wallet or another browser wallet, or WalletConnect on a phone. The site adds the LitVM LiteForge network for you.
-2. Get free testnet zkLTC from the [LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for 4 Ranked runs).
+2. Get free testnet zkLTC from the [LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for about 3 Ranked runs).
 3. Sign in with one free signature. It costs nothing and sends no transaction.
 4. Open a game, choose Play Ranked and confirm the total once in your wallet.
 5. Play. The arcade's server checks your run and its relayer publishes it on LitVM, usually within about a minute. It then shows on the leaderboards, your profile and your achievements.
