@@ -11,6 +11,7 @@ import { resolveHmhChallenge } from './hmh-challenges.mjs';
 import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, flapTicksOf, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
 import { STACKED_CABINET_VERSION } from './stacked-cabinet.mjs';
 import { HMH_CABINET_VERSION } from './hmh-cabinet-version.mjs';
+import { HMH_BANNER_ART, hmhBannerSrc, hmhBannerSrcset } from './generated/hmh-banner-art.mjs';
 import { replayStackedRun } from './stacked-sim.mjs';
 import { compareStackedRows } from './stacked-score-order.mjs';
 import {
@@ -531,6 +532,9 @@ export const LESTER_ARCADE_WORKFLOW_AUTOMATION = Object.freeze({
   backlogTemplate: Object.freeze(['design intent', 'player-facing change', 'model/test contract', 'runtime/CSS work', 'asset/audio need', 'verification evidence']),
 });
 
+// Mode cards are two columns up to the 1280 px page width, one column on phones.
+export const HMH_MODE_BANNER_SIZES = '(min-width: 1344px) 620px, (min-width: 720px) 50vw, 100vw';
+
 export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
   'lester-blaster': Object.freeze({
     gameId: 'lester-blaster',
@@ -538,14 +542,18 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
     eyebrow: 'Selected Cabinet',
     copy: 'Choose Free Mode to play without a wallet, or Play Ranked for a wallet-bound run.',
     artStatus: 'production',
-    backgroundAsset: './assets/generated/hmh-banners/hmh-keyart-bg.jpg',
-    backgroundPosition: 'center center',
+    // 2026-09-26 banner refresh (docs/art/HMH-BANNERS-20260926.md): generated WebP sets.
+    backgroundAsset: hmhBannerSrc(HMH_BANNER_ART.home.id),
+    backgroundPosition: HMH_BANNER_ART.home.position,
     free: Object.freeze({
       label: HMH_COPY_SHEET.modeSelect.free.label,
       official: false,
       icon: 'infinity',
-      bannerAsset: './assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg',
-      bannerAlt: 'Hard Money Heroes Free Mode key art',
+      bannerAsset: hmhBannerSrc(HMH_BANNER_ART.free.id, 960),
+      bannerSrcset: hmhBannerSrcset(HMH_BANNER_ART.free.id),
+      bannerSizes: HMH_MODE_BANNER_SIZES,
+      bannerPosition: HMH_BANNER_ART.free.position,
+      bannerAlt: HMH_BANNER_ART.free.alt,
       copy: HMH_COPY_SHEET.modeSelect.free.copy,
     }),
     ranked: Object.freeze({
@@ -556,8 +564,11 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       chainId: 4441,
       token: 'zkLTC',
       faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
-      bannerAsset: './assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg',
-      bannerAlt: 'Hard Money Heroes Ranked key art',
+      bannerAsset: hmhBannerSrc(HMH_BANNER_ART.ranked.id, 960),
+      bannerSrcset: hmhBannerSrcset(HMH_BANNER_ART.ranked.id),
+      bannerSizes: HMH_MODE_BANNER_SIZES,
+      bannerPosition: HMH_BANNER_ART.ranked.position,
+      bannerAlt: HMH_BANNER_ART.ranked.alt,
       copy: HMH_COPY_SHEET.modeSelect.ranked.copy,
     }),
   }),

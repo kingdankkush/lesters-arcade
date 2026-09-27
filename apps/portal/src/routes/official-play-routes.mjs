@@ -346,6 +346,15 @@ export function createOfficialPlayRoutes({
 
     const syncModeCard = (button, banner, title, copy, model) => {
       button.dataset.artStatus = modeSelect.artStatus;
+      // The static HMH banner carries a srcset; left in place it would win
+      // over another cabinet's src, so it is set or cleared for every model.
+      if (model.bannerSrcset) {
+        banner.setAttribute?.('sizes', model.bannerSizes ?? '100vw');
+        if (banner.getAttribute('srcset') !== model.bannerSrcset) banner.setAttribute?.('srcset', model.bannerSrcset);
+      } else {
+        banner.removeAttribute?.('srcset');
+        banner.removeAttribute?.('sizes');
+      }
       if (banner.getAttribute('src') !== model.bannerAsset) banner.src = model.bannerAsset;
       banner.style.objectPosition = model.bannerPosition ?? 'center';
       banner.alt = model.bannerAlt;
