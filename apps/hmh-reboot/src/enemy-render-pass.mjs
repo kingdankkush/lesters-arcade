@@ -39,10 +39,13 @@ export function animationPriority(state, spawnCue, elite) {
  * row either loses to the root or replaces it. Returns the number selected.
  *
  * With a hysteresis `band` (A6b, 1.8.7), `wasAnimated[row]` is last frame's
- * tier: a row enters the animated tier only at rank <= cap - band and, once
- * in, holds it until rank > cap + band, so crowd edges stop flickering between
- * animated and held. The tier never exceeds `cap`: when more rows qualify, the
- * worst-ranked holders drop first. band 0 is the plain top-`cap` rule.
+ * tier. Rows at rank < cap - band always get a slot, and a row animated last
+ * frame keeps its slot until rank cap + band, ahead of a newcomer at the
+ * boundary, so crowd edges stop flickering between animated and held. Slots
+ * still free then go to the best remaining rows under the cap, so the tier is
+ * always min(cap, visible) as with band 0 and never exceeds `cap`: when more
+ * rows qualify, the worst-ranked holders drop first. band 0 is the plain
+ * top-`cap` rule.
  */
 export function markAnimatedRows(count, enemies, visible, priority, distance, cap, heap, selected, band = 0, wasAnimated = null) {
   if (!Number.isInteger(cap) || cap < 0) throw new TypeError('animation cap must be a non-negative integer');
@@ -94,11 +97,19 @@ export function markAnimatedRows(count, enemies, visible, priority, distance, ca
     heap[end] = heap[0];
     sink(last, 0, end);
   }
+  // Pass 1: sure winners and holders (the heap stops at rank cap + band).
   let picked = 0;
   for (let rank = 0; rank < size && picked < cap; rank += 1) {
     const row = heap[rank];
     if (rank < cap - band || wasAnimated[row] === 1) {
       selected[row] = 1;
+      picked += 1;
+    }
+  }
+  // Pass 2: newcomers under the cap fill whatever the holders left free.
+  for (let rank = 0; rank < size && rank < cap && picked < cap; rank += 1) {
+    if (selected[heap[rank]] === 0) {
+      selected[heap[rank]] = 1;
       picked += 1;
     }
   }

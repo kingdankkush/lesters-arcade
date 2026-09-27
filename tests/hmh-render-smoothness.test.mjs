@@ -2,8 +2,9 @@
 //
 // D1  enemies, the boss and projectiles are drawn between simulation steps by
 //     the same frame alpha the hero uses; spawns and teleports snap.
-// A6b the animation LOD tier has hysteresis: a body enters the animated tier at
-//     rank <= cap - 8 and only leaves it at rank > cap + 8, never over the cap.
+// A6b the animation LOD tier has hysteresis: a body animated last frame keeps
+//     its slot until rank cap + 8 and beats a newcomer at the boundary; free
+//     slots always fill, so the tier is min(cap, visible), never over the cap.
 // D3  run cycles are locked to the distance a body is drawn travelling, so a
 //     slowed or blocked enemy stops moonwalking; tell, attack, hit and death
 //     stay on the tick clock.
@@ -146,6 +147,8 @@ test('D1: enemy bodies draw between steps by the hero alpha and snap without a p
   assert.deepEqual([moving.x, moving.y, moving.previousX, moving.previousY], [400, 300, 380, 290]);
 });
 
+const chosenRows = (selected) => [...selected].map((value, row) => (value ? row : -1)).filter((row) => row >= 0);
+
 function rankedRows(count) {
   const enemies = [];
   const visible = new Uint8Array(count).fill(1);
@@ -158,26 +161,45 @@ function rankedRows(count) {
   return { enemies, visible, priority, distance, heap: new Int32Array(count), selected: new Uint8Array(count) };
 }
 
-test('A6b: a body enters the animated tier at rank <= cap - 8', () => {
-  const rows = rankedRows(40);
-  const was = new Uint8Array(40);
-  const picked = markAnimatedRows(40, rows.enemies, rows.visible, rows.priority, rows.distance, 20, rows.heap, rows.selected, 8, was);
-  assert.equal(picked, 12);
-  assert.deepEqual([...rows.selected].map((value, row) => (value ? row : -1)).filter((row) => row >= 0), [...Array(12).keys()]);
+test('A6b: an uncontended tier fills to min(cap, visible) on the first frame and in steady state', () => {
+  const rows = rankedRows(30);
+  const was = new Uint8Array(30);
+  const picked = markAnimatedRows(30, rows.enemies, rows.visible, rows.priority, rows.distance, 20, rows.heap, rows.selected, 8, was);
+  assert.equal(picked, 20, 'bodies arriving from off screen are not held back by the band');
+  assert.deepEqual(chosenRows(rows.selected), [...Array(20).keys()]);
+  // N <= cap: every visible body animates, frame after frame, like band 0.
+  for (const [count, cap] of [[20, 20], [40, 40], [40, 48], [60, 48], [100, 64]]) {
+    const crowd = rankedRows(count);
+    let last = new Uint8Array(count);
+    let steady = 0;
+    for (let frame = 0; frame < 120; frame += 1) {
+      steady = markAnimatedRows(count, crowd.enemies, crowd.visible, crowd.priority, crowd.distance, cap, crowd.heap, crowd.selected, 8, last);
+      last = Uint8Array.from(crowd.selected);
+    }
+    assert.equal(steady, Math.min(count, cap), `${count} bodies under cap ${cap}`);
+    assert.equal(steady, markAnimatedRows(count, crowd.enemies, crowd.visible, crowd.priority, crowd.distance, cap, crowd.heap, crowd.selected));
+  }
 });
 
-test('A6b: an animated body holds until rank > cap + 8 and the tier never exceeds the cap', () => {
+test('A6b: holders beat newcomers at the boundary and the tier never exceeds the cap', () => {
   const rows = rankedRows(40);
-  // Last frame animated ranks 1-12 and 23-28 (rows 0-11, 22-27): 18 bodies.
+  // Last frame animated rows 0-11 and 22-29 (ranks 22-29): 20 bodies.
   const was = new Uint8Array(40);
   for (let row = 0; row < 12; row += 1) was[row] = 1;
   for (let row = 22; row < 30; row += 1) was[row] = 1;
   const picked = markAnimatedRows(40, rows.enemies, rows.visible, rows.priority, rows.distance, 20, rows.heap, rows.selected, 8, was);
-  const chosen = [...rows.selected].map((value, row) => (value ? row : -1)).filter((row) => row >= 0);
-  // Rows 22-27 (ranks 23-28) hold; rows 28-29 (ranks 29-30) drop out; rows
-  // 12-21 were never animated and sit above cap - 8, so they do not enter.
-  assert.deepEqual(chosen, [...Array(12).keys(), 22, 23, 24, 25, 26, 27]);
-  assert.equal(picked, 18);
+  // Rows 22-27 (ranks < cap + 8) hold; rows 28-29 drop out; the two free
+  // slots go to the best non-holders under the cap, rows 12 and 13.
+  assert.deepEqual(chosenRows(rows.selected), [...Array(14).keys(), 22, 23, 24, 25, 26, 27]);
+  assert.equal(picked, 20);
+  // A holder at rank cap..cap+band-1 keeps its slot over a non-holder at rank cap-1.
+  const edge = rankedRows(40);
+  const held = new Uint8Array(40);
+  for (let row = 0; row < 19; row += 1) held[row] = 1;
+  held[25] = 1;
+  assert.equal(markAnimatedRows(40, edge.enemies, edge.visible, edge.priority, edge.distance, 20, edge.heap, edge.selected, 8, held), 20);
+  assert.equal(edge.selected[25], 1, 'the holder at rank 25 stays');
+  assert.equal(edge.selected[19], 0, 'the newcomer at rank 19 waits');
   // Every body was animated last frame: the best 20 keep the tier, not 28.
   const full = rankedRows(40);
   const all = new Uint8Array(40).fill(1);
@@ -197,7 +219,7 @@ test('A6b: priority still wins, and a band of 0 is the exact 1.8.1 selection', (
 });
 
 test('A6b: the pass remembers the tier per display so an edge body stops flickering', () => {
-  const { add, render } = harness();
+  const { markers, add, render } = harness();
   // 30 idle bodies in a row east of the hero; the budget is 20.
   // Elites outrank plain bodies, so the row uses plain ids only.
   const enemies = [];
@@ -205,19 +227,33 @@ test('A6b: the pass remembers the tier per display so an edge body stops flicker
     const id = `edge-${serial}`;
     if (!isEliteEnemyProjection(id)) enemies.push(add(enemyAt(id, 410 + enemies.length * 5, 300)));
   }
-  assert.equal(render(enemies, { animationBudget: 20, animationHysteresis: 8 }), 12, 'first frame fills to cap - 8');
-  // Now swap the order of ranks 12 and 13 back and forth: neither enters.
-  for (let frame = 0; frame < 6; frame += 1) {
-    const [a, b] = [enemies[12], enemies[13]];
-    [a.x, b.x] = [b.x, a.x];
-    assert.equal(render(enemies, { animationBudget: 20, animationHysteresis: 8 }), 12);
+  const banded = { animationBudget: 20, animationHysteresis: 8 };
+  const animated = () => enemies.map((enemy, index) => (markers.get(enemy.id).renderPassAnimated === 1 ? index : -1)).filter((index) => index >= 0);
+  assert.equal(render(enemies, banded), 20, 'the first frame fills the whole budget');
+  assert.deepEqual(animated(), [...Array(20).keys()]);
+  // Swap ranks 12 and 13, then the boundary ranks 19 and 20, back and forth:
+  // the tier stays full and the same bodies stay animated.
+  for (const [first, second] of [[12, 13], [19, 20]]) {
+    for (let frame = 0; frame < 6; frame += 1) {
+      const [a, b] = [enemies[first], enemies[second]];
+      [a.x, b.x] = [b.x, a.x];
+      assert.equal(render(enemies, banded), 20);
+      assert.deepEqual(animated(), [...Array(20).keys()], `no flicker swapping ranks ${first} and ${second}`);
+    }
   }
-  // Pull body 25 close: it enters; walk it back out to rank 19: it holds.
+  // Pull body 25 close: it enters and the worst holder (body 19) steps out.
   const mover = enemies[25];
   mover.x = 400.5;
-  assert.equal(render(enemies, { animationBudget: 20, animationHysteresis: 8 }), 13);
-  mover.x = 410 + 18 * 5 + 1;
-  assert.equal(render(enemies, { animationBudget: 20, animationHysteresis: 8 }), 13, 'a held body stays animated inside the band');
+  assert.equal(render(enemies, banded), 20);
+  assert.deepEqual(animated(), [...Array(19).keys(), 25]);
+  // Walk it back out to rank 23: it keeps its slot over body 19 at rank 19.
+  mover.x = 410 + 22 * 5 + 1;
+  assert.equal(render(enemies, banded), 20, 'a held body stays animated inside the band');
+  assert.deepEqual(animated(), [...Array(19).keys(), 25]);
+  // Past rank cap + 8 it lets go and body 19 fills the free slot.
+  mover.x = 410 + 29 * 5 + 1;
+  assert.equal(render(enemies, banded), 20);
+  assert.deepEqual(animated(), [...Array(20).keys()]);
   assert.equal(render(enemies, { animationBudget: 20 }), 20, 'no band keeps the plain top-cap rule');
 });
 
