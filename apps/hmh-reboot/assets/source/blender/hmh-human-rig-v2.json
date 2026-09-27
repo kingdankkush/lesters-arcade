@@ -1,0 +1,25 @@
+{
+  "schema": "hmh-human-rig-v2",
+  "template": "HMH_HumanRig_v2",
+  "blenderVersion": "5.1.2",
+  "notes": "Design package 7.3. The v2 template extends a hero's approved v1 deformation rig in place: every v1 bone keeps its rest transform (so the approved bone-heat weights stay valid) and the new bones take their weights by deterministic, rule-based carving from their parent's weights. Built in memory at bake time from the pinned packed source; the source blend is never saved. Controls (IK hands and feet, poles, aim_ctrl, support_ctrl) are authoring-only: the clip library solves them analytically and bakes plain FK bases, so no constraint ever evaluates at render time.",
+  "addedDeformBones": [
+    "neck",
+    "clavicle.L", "clavicle.R",
+    "upper_arm_twist.L", "upper_arm_twist.R",
+    "forearm_twist.L", "forearm_twist.R",
+    "thumb_01.L", "thumb_02.L", "thumb_03.L", "index_01.L", "index_02.L", "index_03.L", "grip_01.L", "grip_02.L", "grip_03.L",
+    "thumb_01.R", "thumb_02.R", "thumb_03.R", "index_01.R", "index_02.R", "index_03.R", "grip_01.R", "grip_02.R", "grip_03.R",
+    "toe.L", "toe.R"
+  ],
+  "addedSocketBones": ["offhand_socket"],
+  "reparent": {"head": "neck", "upper_arm.L": "clavicle.L", "upper_arm.R": "clavicle.R"},
+  "weaponSocket": {"bone": "weapon_socket", "parent": "hand.R", "note": "Package 7.3 moves the weapon socket from forearm.R to hand.R. The approved Commando v1 rig already parents weapon_socket to hand.R, so v2 keeps it there and records the fact."},
+  "fingers": {
+    "mode": "mitten",
+    "note": "Tripo meshes have fused fingers (decision 24: no hero-mesh regeneration). The four fingers share the grip_01-03 mitten curl; thumb and index bones exist for sockets and future meshes but carve no weight on a fused mesh.",
+    "gripSegments": [[0.40, 0.50, 0.60, 0.68], [0.60, 0.68, 0.80, 0.88], [0.80, 0.88, 9.0, 9.0]]
+  },
+  "springChains": {"status": "deferred", "note": "Per-hero baked spring chains need a per-mesh cloth/strap segmentation; none of the Commando's approved layers carries a free strap mesh, so v2 bakes without one."},
+  "limits": {"maxInfluences": 4, "unweightedVertices": 0, "weightQuantum": 256}
+}

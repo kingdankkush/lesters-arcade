@@ -1,0 +1,77 @@
+{
+  "schema": "hmh-hero-anim-v2",
+  "pipelineId": "hmh-reboot-hero-anim-v2",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "notes": "Design package 7.4-7.12 (S4.1). Hero Anim v2 for one hero at a time. The rig is HMH_HumanRig_v2 (hmh-human-rig-v2.json) built in memory from the approved packed source; the clip library (scripts/hmh-blender/hmh_anim_v2_clips.py) is hand-keyed procedural Python solved analytically, so the source of every pose is reviewable code, not a binary action. Frames render through the hero's own camera, lights and colour management at the same pixel density as the v1 atlas, on a wider canvas (coverage) so long guns and deaths never clip.",
+  "heroManifest": "apps/hmh-reboot/assets/source/blender/hmh-production-heroes.json",
+  "rigTemplate": "apps/hmh-reboot/assets/source/blender/hmh-human-rig-v2.json",
+  "heldWeapons": "apps/hmh-reboot/assets/source/blender/hmh-held-weapons.json",
+  "blenderVersion": "5.1.2",
+  "render": {"coverage": 1.375, "alphaThreshold": 8},
+  "tiers": {
+    "desktop": {"scale": 1.0, "note": "F: the v1 atlas pixel density (256 px frame)."},
+    "phone": {"scale": 0.5, "note": "F/2 by a 2x2 premultiplied box filter of the desktop master; pivots on even master pixels land on integers."}
+  },
+  "directions": ["east", "south-east", "south", "south-west", "west", "north-west", "north", "north-east"],
+  "sideFacings": ["east", "west"],
+  "heroes": {
+    "lit-commando": {"landmarks": "apps/hmh-reboot/assets/source/blender/lit-commando-rig-v2-landmarks.json", "weapons": ["coin-blaster", "scatter-shotgun", "auto-miner", "hash-rail", "lightning-ledger", "bear-market-burner", "launcher-rig", "forked-standard"]}
+  },
+  "sets": {
+    "core": {
+      "resident": "run-start",
+      "clips": {
+        "lower/idle": {"frames": 12, "driver": "tick", "fps": 8, "loop": true},
+        "lower/run": {"frames": 16, "driver": "distance", "cycleDistance": 160, "loop": true},
+        "lower/sprint": {"frames": 16, "driver": "distance", "cycleDistance": 240, "loop": true},
+        "lower/strafe-left": {"frames": 16, "driver": "distance", "cycleDistance": 150, "loop": true},
+        "lower/strafe-right": {"frames": 16, "driver": "distance", "cycleDistance": 150, "loop": true},
+        "lower/backpedal": {"frames": 16, "driver": "distance", "cycleDistance": 130, "loop": true},
+        "lower/start": {"frames": 4, "driver": "distance", "cycleDistance": 40, "loop": false},
+        "lower/stop": {"frames": 6, "driver": "tick", "frameTicks": [2, 2, 2, 2, 2, 2], "loop": false},
+        "lower/dash": {"frames": 8, "driver": "tick", "frameTicks": [1, 1, 1, 1, 1, 1, 1, 1], "loop": false},
+        "upper/aim-idle": {"frames": 12, "driver": "tick", "fps": 8, "loop": true, "weapon": null},
+        "upper/aim-run": {"frames": 8, "driver": "legPhase", "loop": true, "weapon": null},
+        "full/death-back": {"frames": 16, "driver": "tick", "frameTicks": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3], "loop": false},
+        "full/death-front": {"frames": 16, "driver": "tick", "frameTicks": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3], "loop": false},
+        "full/interact-press": {"frames": 12, "driver": "progress", "facings": 2, "segments": {"enter": [0, 4], "loop": [4, 8], "exit": [8, 12]}},
+        "full/interact-lever": {"frames": 20, "driver": "progress", "facings": 2, "segments": {"enter": [0, 4], "loop": [4, 10], "heave": [10, 16], "exit": [16, 20]}},
+        "full/interact-crank": {"frames": 20, "driver": "progress", "facings": 2, "segments": {"enter": [0, 4], "loop": [4, 16], "exit": [16, 20]}},
+        "full/interact-kneel": {"frames": 20, "driver": "progress", "facings": 2, "segments": {"enter": [0, 6], "loop": [6, 14], "exit": [14, 20]}},
+        "shadow/idle": {"frames": 1, "driver": "tick", "fps": 1, "loop": true, "facings": 1}
+      }
+    },
+    "weapon:coin-blaster": {
+      "resident": "owned",
+      "weapon": "coin-blaster",
+      "class": "pistol",
+      "clips": {
+        "upper/aim-idle": {"frames": 12, "driver": "tick", "fps": 8, "loop": true},
+        "upper/aim-run": {"frames": 8, "driver": "legPhase", "loop": true},
+        "upper/fire": {"frames": 4, "driver": "shotAge", "frameTicks": [1, 1, 1, 1], "loop": false},
+        "upper/reload": {"frames": 16, "driver": "progress", "loop": false},
+        "upper/equip": {"frames": 10, "driver": "tick", "frameTicks": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2], "loop": false},
+        "upper/draw": {"frames": 4, "driver": "tick", "frameTicks": [2, 1, 1, 2], "loop": false},
+        "upper/dash": {"frames": 12, "driver": "tick", "frameTicks": [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2], "loop": false},
+        "upper/grenade": {"frames": 12, "driver": "tick", "frameTicks": [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3], "loop": false, "events": {"release": 3}},
+        "upper/knife": {"frames": 6, "driver": "tick", "frameTicks": [1, 1, 1, 1, 2, 2], "loop": false},
+        "upper/heavy-hit-front": {"frames": 4, "driver": "tick", "frameTicks": [2, 2, 2, 2], "loop": false},
+        "upper/heavy-hit-back": {"frames": 4, "driver": "tick", "frameTicks": [2, 2, 2, 2], "loop": false}
+      }
+    }
+  },
+  "weaponSetTemplate": {
+    "note": "Every non-pistol weapon set repeats the coin-blaster clip list with its own class geometry, plus the per-weapon extras below (package 7.5). War Fork has no reload and no knife.",
+    "extras": {
+      "scatter-shotgun": {"upper/fire": {"frames": 4, "driver": "shotAge", "frameTicks": [1, 1, 2, 3], "loop": false}, "upper/pump": {"frames": 6, "driver": "shotAge", "start": 12, "frameTicks": [3, 3, 3, 3, 3, 3], "loop": false}},
+      "auto-miner": {"upper/spin-up": {"frames": 4, "driver": "tick", "frameTicks": [2, 2, 2, 2], "loop": false}, "upper/fire": {"frames": 4, "driver": "shotAge", "frameTicks": [1, 1, 1, 1], "loop": false}, "upper/vent": {"frames": 8, "driver": "tick", "fps": 10, "loop": true}},
+      "hash-rail": {"upper/charge": {"frames": 8, "driver": "tick", "fps": 12, "loop": true}, "upper/fire": {"frames": 6, "driver": "shotAge", "frameTicks": [1, 1, 2, 2, 3, 3], "loop": false, "art": "discharge"}},
+      "lightning-ledger": {"upper/fire": {"frames": 6, "driver": "phase", "period": 6, "loop": true}},
+      "bear-market-burner": {"upper/fire": {"frames": 6, "driver": "phase", "period": 6, "loop": true}},
+      "launcher-rig": {"upper/fire": {"frames": 8, "driver": "shotAge", "frameTicks": [1, 1, 2, 2, 3, 3, 4, 4], "loop": false}},
+      "forked-standard": {"upper/fire": {"frames": 8, "driver": "shotAge", "frameTicks": [3, 3, 3, 3, 3, 3, 3, 3], "loop": false, "art": "thrust"}, "upper/sweep": {"frames": 10, "driver": "shotAge", "frameTicks": [3, 3, 3, 3, 3, 3, 3, 3, 2, 2], "loop": false}}
+    },
+    "omit": {"forked-standard": ["upper/reload", "upper/knife"]}
+  }
+}
