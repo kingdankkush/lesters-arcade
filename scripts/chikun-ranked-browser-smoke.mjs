@@ -129,7 +129,8 @@ async function runPreviewSmoke() {
       };
       Object.defineProperty(navigator, 'share', {
         configurable: true,
-        value: async (payload) => { globalThis.__chikunSharedPayload = payload; },
+        // Files (the Free card) are recorded as metadata: a File does not survive evaluate().
+        value: async (payload) => { globalThis.__chikunSharedPayload = { ...payload, files: [...(payload?.files ?? [])].map((file) => ({ name: file.name, type: file.type, size: file.size })) }; },
       });
     });
 
@@ -313,7 +314,7 @@ async function runPreviewSmoke() {
       // Preview shares the Free template to the site root, never a Ranked share page (§7.3, §7.4).
       const intent = new URL(results.shareHref);
       assert.equal(intent.searchParams.get('url'), 'https://lestersarcade.io');
-      assert.match(intent.searchParams.get('text') ?? '', /FREE PLAY · Chikun's Escape[\s\S]*Practising on @LestersArcade/);
+      assert.match(intent.searchParams.get('text') ?? '', /^🐔 FREE PLAY · Chikun's Escape\n[\s\S]*Beat my flight @LestersArcade$/);
       assert.doesNotMatch(intent.searchParams.get('text') ?? '', /0x[a-f0-9]{40}|session-|#/i);
       assert.match(results.shareNote, /Shares a Free Mode post/i);
       await page.screenshot({ path: resolve(dirname(evidencePath), 'chikun-ranked-results.png') });
@@ -381,22 +382,11 @@ async function runPreviewSmoke() {
       assert.match(resultUi.eyebrow, /Ranked flight complete/i);
       assert.match(resultUi.copy, /Ranked run sent to Lester.s Arcade for verification/i);
       assert.equal(await frame.locator('#modeLabel').textContent(), 'Ranked Mode · Verified Flight');
-      // The child's Ranked share label is now 'Ranked run' (it no longer claims 'Replay Verified Ranked'
-      // before the server has verified anything). No player can reach it (the button is hidden), so the
-      // smoke fires the hidden button's own handler to read the text it would share.
+      // The child never shares a Ranked run (the parent results screen does, once it is published):
+      // no player can reach the hidden button, and even its own handler shares nothing for Ranked.
       await frame.locator('#shareRunButton').evaluate((button) => button.click());
-      await frame.locator('body').evaluate(() => new Promise((resolve, reject) => {
-        const deadline = performance.now() + 5_000;
-        const check = () => {
-          if (globalThis.__chikunSharedPayload) resolve(true);
-          else if (performance.now() >= deadline) reject(new Error('the hidden Ranked share handler produced no text'));
-          else setTimeout(check, 50);
-        };
-        check();
-      }));
-      const rankedShare = await frame.locator('body').evaluate(() => globalThis.__chikunSharedPayload);
-      assert.match(rankedShare?.text ?? '', /\. Ranked run on @LestersArcade$/);
-      assert.doesNotMatch(rankedShare?.text ?? '', /Replay Verified|verified|0x[a-f0-9]{40}|session-|#/i);
+      await frame.waitForTimeout(750);
+      assert.equal(await frame.locator('body').evaluate(() => globalThis.__chikunSharedPayload ?? null), null, 'the hidden Ranked share handler shares nothing');
     } else {
       assert.equal(resultUi.shareVisible, true);
       assert.ok(resultUi.shareRight <= resultUi.viewportWidth, `Chikun share control overflows: ${JSON.stringify(resultUi)}`);
@@ -405,12 +395,15 @@ async function runPreviewSmoke() {
       await frame.locator('#shareRunButton').filter({ hasText: 'Shared' }).waitFor({ state: 'visible' });
       sharedPayload = await frame.locator('body').evaluate(() => globalThis.__chikunSharedPayload);
       assert.equal(sharedPayload?.title, "Chikun's Escape");
-      assert.equal(sharedPayload?.url, 'https://lestersarcade.io');
-      // Free mode carries the daily-challenge label when one is active for the session
-      // seed, and falls back to Free Practice only when it is not.
-      assert.match(sharedPayload?.text ?? '', /Free Practice|Daily \d{4}-\d{2}-\d{2}/i);
-      assert.match(sharedPayload?.text ?? '', new RegExp(`${score.toLocaleString('en-US')} points`, 'i'));
-      assert.doesNotMatch(sharedPayload?.text ?? '', /0x[a-f0-9]{40}|session-/i);
+      // Free runs link to their own /f/ page (its card is the run's Free card) and post the
+      // Free template: FREE PLAY, the stats, one @LestersArcade (free-share plan §5).
+      assert.match(sharedPayload?.url ?? '', /^https:\/\/lestersarcade\.io\/f\/chikun\/ac[0-9a-z]{38}$/);
+      assert.match(sharedPayload?.text ?? '', /^🐔 FREE PLAY · Chikun's Escape\n/);
+      assert.match(sharedPayload?.text ?? '', /Beat my flight @LestersArcade$/);
+      assert.match(sharedPayload?.text ?? '', new RegExp(`^${score.toLocaleString('en-US')} pts · Lap \\d`, 'm'));
+      assert.equal((sharedPayload?.text ?? '').split('@LestersArcade').length, 2, 'one mention');
+      assert.doesNotMatch(sharedPayload?.text ?? '', /0x[a-f0-9]{40}|session-|#|Verified|RANKED/i);
+      for (const file of sharedPayload?.files ?? []) assert.equal(file.type, 'image/png', 'a shared card is the PNG');
     }
     await frameNode.screenshot({ path: resolve(dirname(evidencePath), `chikun-${mode}-result.png`) });
     if (ranked) {

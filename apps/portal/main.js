@@ -11,7 +11,8 @@ import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { createHmhRebootHost } from './src/hmh-reboot-host.mjs';
 import { createHmhRebootPortalLifecycle } from './src/hmh-reboot-portal-lifecycle.mjs';
 import { buildHmhRunRecapModel, selectGameOverRecapFields } from './src/hmh-run-recap.mjs';
-import { buildHmhShareText, buildShareLinks, createShareRow, shareUrlFor } from './src/share-links.mjs';
+import { buildFreeShareText, buildShareLinks, createShareRow } from './src/share-links.mjs';
+import { encodeFreeShareToken, freeShareCardPath, freeSharePageUrl } from './src/free-share-token.mjs';
 import { createChikunHost } from './src/chikun-host.mjs';
 import { readStackedSettings } from './src/stacked-player-settings.mjs';
 import { createChikunPortalLifecycle } from './src/chikun-portal-lifecycle.mjs';
@@ -2421,24 +2422,32 @@ function renderGameOverSummary() {
   if (recap) dom.combatGameOverSummary.append(renderHmhRunRecap(recap));
 
   // Share row (owner direction 2026-09-16): Share on X first, then Discord
-  // copy, Facebook and the native share sheet. Built from the same summary
-  // the recap shows; posting is always the player's own click. Free runs
-  // only: a Ranked run is shared from the Ranked results screen once it is
-  // published on LitVM (contract §7.4).
+  // copy, Facebook and the native share sheet (with the card image). Built
+  // from the same summary the recap shows; posting is always the player's
+  // own click. Free runs only: a Ranked run is shared from the Ranked results
+  // screen once it is published on LitVM (contract §7.4). The link is the
+  // run's /f/ page, whose card the token fully determines (free-share plan).
   if (!win && (currentSession?.mode ?? officialSelectedMode ?? 'free') === 'free') {
-    const shareText = buildHmhShareText({
+    // The hero the child actually played (the run summary), else the pick.
+    const heroPick = lastHmhRunSummary?.identity?.heroId ?? combat.characterId;
+    const shareValues = {
+      hero: heroPick === 'lester' ? 'lester-original' : heroPick,
       score: combat.score,
       kills: combat.kills,
-      level: (hmhRebootActive ? combat.runLevel : combat.roguelikeRun?.level) ?? 1,
-      elapsedSeconds: combat.elapsedGameSeconds ?? 0,
       maxCombo: combat.maxCombo ?? 0,
-      killedBy: recap?.defeat?.label ?? combat.killedBy ?? '',
+      survivalSeconds: combat.elapsedGameSeconds ?? 0,
+      level: (hmhRebootActive ? combat.runLevel : combat.roguelikeRun?.level) ?? 1,
       bossDefeated: Boolean(combat.bossDefeated),
-    });
+    };
+    const shareToken = encodeFreeShareToken('lester-blaster', shareValues);
     const shareLabel = el('span', { className: 'share-row-label', textContent: 'Share this run' });
     const shareRow = createShareRow({
       title: 'Hard Money Heroes',
-      links: buildShareLinks({ text: shareText, url: shareUrlFor('hmh-reboot') }),
+      links: buildShareLinks({
+        text: buildFreeShareText('lester-blaster', { score: combat.score, stats: { ...shareValues, heroName: CHARACTER_DISPLAY_NAMES[heroPick] ?? '' } }),
+        url: freeSharePageUrl('lester-blaster', shareToken),
+        card: freeShareCardPath('lester-blaster', shareToken),
+      }),
       className: 'share-row game-over-share-row',
       buttonClassName: 'combat-menu-action share-button',
       onStatus: (message) => { shareLabel.textContent = message; },
