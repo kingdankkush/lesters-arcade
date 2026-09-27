@@ -9,7 +9,6 @@ import { chunkStackedEvidence } from '../../portal/src/stacked-evidence-transpor
 import { STACKED_CAPABILITIES, STACKED_FREE_MEDALS_KEY } from '../../portal/src/stacked-contracts.mjs';
 import { createStackedPauseClock } from './pause-clock.mjs';
 import { manageOverlayFocus } from './overlay-focus.mjs';
-import { createStackedSoundEffects, stackedSoundForStep } from './sound-effects.mjs';
 import { STACKED_EFFECTS_PRESETS, expandStackedEffectsPreset } from '../../portal/src/stacked-player-settings.mjs';
 import { applyMenuAction } from './menu-navigation.mjs';
 import { stackedParentKnowsPresets, stackedPreferencesRequest, withStackedEffectsPreset } from './preferences-bridge.mjs';
@@ -20,7 +19,9 @@ const stage = $('stackedStage'), status = $('stackedStatus'), overlay = $('gameO
 const releaseOverlayFocus = manageOverlayFocus(overlay, () => stage.querySelector('canvas'));
 let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTime = 0, accumulator = 0, started = false, submitted = false, pauseCount = 0, forfeited = false;
 const pauseClock = createStackedPauseClock();
-const sfx = createStackedSoundEffects();
+// Game sounds load lazily with the renderer (entry budget); until then every call is a no-op.
+let sfxImpl = null, soundForStep = () => null;
+const sfx = { play: (cue, prefs, combo) => sfxImpl?.play(cue, prefs, combo), stop: () => sfxImpl?.stop(), destroy: () => sfxImpl?.destroy() };
 let preview = null, haptics = null;
 // Set from the init settings: a pre-preset (1.8.1-1.8.3) host must never be sent the preset keys.
 let parentPresets = false;
@@ -182,7 +183,7 @@ function frame(now) {
       const before = run.snapshot, mask = forfeited ? 0 : input.sample(before);
       const s = run.step(mask);
       renderer.gameplay(before, s, now, settings);
-      sfx.play(stackedSoundForStep(before, s), settings);
+      sfx.play(soundForStep(before, s), settings, s.comboCount);
       haptics?.step(before, s);
       if (s.piecesLocked > before.piecesLocked) {
         if ((mask & 8) && !(before.prevMask & 8) && s.holdsUsed === before.holdsUsed) counters.hardDrops++;
@@ -213,8 +214,9 @@ function frame(now) {
   raf = requestAnimationFrame(frame);
 }
 async function boot() {
-  const [{ createStackedRenderer }, { createVisualizerPreview }, { createStackedHaptics }] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs'), import('./haptics.mjs')]);
+  const [{ createStackedRenderer }, { createVisualizerPreview }, { createStackedHaptics }, sounds] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs'), import('./haptics.mjs'), import('./sound-effects.mjs')]);
   if (disposed) return;
+  sfxImpl = sounds.createStackedSoundEffects(); soundForStep = sounds.stackedSoundForStep;
   preview = createVisualizerPreview($('visualizerPreview'));
   haptics = createStackedHaptics({ getSettings: () => settings });
   run = createStackedPlaySession({ ...init.session, mode: init.mode, startLevel: settings.startLevel }); run.pause();

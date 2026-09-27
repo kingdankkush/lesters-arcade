@@ -71,6 +71,7 @@ const NODE_CHECK_FILES = [
   'apps/portal/src/cabinet-haptics.mjs',
   'tests/stacked-board-motion.test.mjs',
   'tests/stacked-haptics.test.mjs',
+  'tests/stacked-sound-kit.test.mjs',
   'apps/portal/src/share-links.mjs',
   'server/share/render-card.mjs',
   'server/share/render-page.mjs',
