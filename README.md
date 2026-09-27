@@ -288,18 +288,10 @@ See the [reconciled AAA roadmap](docs/hmh-reboot/AAA-ROADMAP.md), [reference-der
 
 ## Current release status
 
-Cycle 075 is live and verified. Runtime implementation `d53ed420`, deployed source `d70ad060`, production `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`. Earlier mixed Cycle 070/071 metrics are historical.
+The current release is the newest section at the top of this README: it names the site/game version, cache marker, production deployment, rollback and release branch, and links its receipt. Release receipts live under `docs/qa/` (`batch-release-*.json` from 1.8.2 onward, `ranked-launch-release-20260924.json` for the 1.8.0 Ranked launch, `post-launch-release-20260925.json` for 1.8.1). Production is released from `fable/master-list-20260916`.
 
-[Cycle 075](docs/hmh-reboot/cycles/CYCLE-075.md) shipped bounded feedback/UI optimization and source-reference foundations. All 34 checked Preview and public artifacts match the clean build.
+The Cycle 075 release (production `dpl_7Ge2KAXfiSTFEzanHt6DLM6diafg`, branch `hermes/hmh-cycle-075-reference-heroes`) is historical; its verified identities, evidence and remaining work are recorded in [Cycle 075](docs/hmh-reboot/cycles/CYCLE-075.md) and its [release handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 
-- Release branch: `hermes/hmh-cycle-075-reference-heroes`, based on the verified Cycle 074 handoff `0199035a`.
-- Retained rollback: `dpl_6eQiyfLKrCT5aLWRjivcTGQuqWbR` at https://lesters-arcade-276x61nsi-justin-agent-projects.vercel.app.
-- Local responsive, touch, performance, visual, cockpit and enemy/boss gates passed. Hosted actual kill feedback and public network checks passed; the full host ledger has 2,512 passed and the same 51 accepted legacy failures.
-- Completed source-reference foundations are not active art replacements. New Commando/grenade source experiments remain unapproved local WIP; all other hero/weapon art gates remain open.
-- Tripo reference upload and use of the owner's existing subscription credits are authorized. No confirmed Tripo job or credit spend is recorded. Additional purchases, contracts, real funds and settlement remain separately gated.
-- Chikun remains `0.5.0`, public playable and Ranked-eligible; its existing rights/dev-wallet/revenue boundaries above are unchanged.
-
-Verified identities, evidence and remaining work are recorded in the [release handoff](docs/handoffs/2026-09-06-hmh-cycle-075-hermes-handoff.md).
 ---
 
 ## Architecture
