@@ -3570,7 +3570,11 @@ async function boot() {
         } else if (event.kind === 'weapon-cache') {
           // A weapon cache grants ownership plus authored finite reserve.
           const previousWeaponId = weaponLoadout.activeWeaponId;
-          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true, progressionByWeapon });
+          const granted = grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: true, progressionByWeapon });
+          // A cache that switches away from a live Ledger ends the channel;
+          // the run summary must see that break or the next channel start
+          // throws "already active" and stops the ticker.
+          if (granted.interrupted) recordRunLightningLedgerEvent(runSummaryAccumulator, granted.interrupted);
           unlockRunProgressionWeapon(runProgression, event.weaponId);
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.weaponId });
           if (event.bonusWeaponId) {
@@ -3794,6 +3798,10 @@ async function boot() {
       if (requestedWeaponId && weaponLoadout.weapons[requestedWeaponId]?.owned && requestedWeaponId !== weaponLoadout.activeWeaponId) {
         const switched = switchWeapon(weaponLoadout, requestedWeaponId, { tick });
         if (switched) {
+          // SWAP and wheel picks away from a live Ledger end the channel in
+          // the weapon system; record that break so the summary does not keep
+          // the Ledger marked channelling (the next start would throw).
+          if (switched.interrupted) recordRunLightningLedgerEvent(runSummaryAccumulator, switched.interrupted);
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
           combatAudio.play('menu-click', { volume: 0.07 });
           setAccessibleCombatStatus(`${HMH_WEAPON_DEFINITIONS[requestedWeaponId].displayName} armed.`);
