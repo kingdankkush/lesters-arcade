@@ -2,7 +2,7 @@
 
 **Internal source snapshot. Not a release certificate, launch announcement or current public/chain verification.**
 
-Input snapshot SHA-256: `ab13c9e0e70c70d6b018e33768b15e959681631536015e404356f38eb4643299`
+Input snapshot SHA-256: `91562911902cb573e132f21e55672e7c56298928de336a050ae7e3f9b640ebf9`
 
 ## What the labels mean
 
@@ -133,7 +133,7 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | docs/qa/hmh-parent-challenges-checkpoint.json | daa072d9e62c48cacbce18b3658ebbc3910f2858e6f687ed297b2e2d6c343650 | 5589 |
 | docs/qa/hmh-parent-profile-truth-checkpoint.json | 5dcadebb8081e381c56821948661805e24897a8303eac57e02612a7566596126 | 6738 |
 | docs/qa/hmh-upgrade-execution-queue.json | 9a0412c2dae0db940b9b08a1e5c7a1e3bc12f0069230521af0c65434c2aa09d4 | 19028 |
-| README.md | 0d445cabc282c7fed287466706b1a9019a9d9b25e46bec7795a0aebf8bb7554a | 53001 |
+| README.md | 13c9bd263bdcb676b6b1c281b8d1447b474d170b21789e9ce1b5f86a8bde52d1 | 53398 |
 | scripts/hmh-release-facts.mjs | 4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d | 18212 |
 | scripts/syntax-check.mjs | 427f918eed37c33a09395a8e154e0977fc70058f286e44cf05f3bdf9fee6d97d | 53681 |
 | tests/arcade-core.test.mjs | 3198f3414169a581b8c087315897f4b2ba7c20a82c3752a36c47b766c0e0e5c3 | 193198 |
