@@ -65,6 +65,10 @@ test('the Auto ladder puts the effects rung above every resolution drop; pinned 
     assert.deepEqual(pinned, { rungs: [{ resolution: 2, effects: 'full' }], start: 0 }, `${quality} is pinned and unbudgeted`);
   }
   assert.throws(() => buildGovernorLadder({ profile: {} }), /profile/);
+  // Evidence runs keep the pre-step-8 policy: no effects rung.
+  const evidencePhone = buildGovernorLadder({ profile: mobile, width: 390, height: 844, devicePixelRatio: 2, options: { effectsRung: false } });
+  assert.deepEqual(evidencePhone, { rungs: [{ resolution: 1, effects: 'full' }, { resolution: 1.5, effects: 'full' }], start: 0 });
+  assert.deepEqual(buildGovernorLadder({ profile: desktop2, width: 1440, height: 900, options: { effectsRung: false } }), { rungs: [{ resolution: 1.8, effects: 'full' }], start: 0 });
 });
 
 test('a fast phone steps up once after many fast readings, never past 1.5, and applies the start rung at creation', () => {

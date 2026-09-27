@@ -30,6 +30,11 @@ export const GOVERNOR_DEFAULTS = Object.freeze({
   pixelBudget: 4_200_000, // backbuffer pixels at the top desktop rung
   resolutionStep: 0.25,
   mobileMaxResolution: 1.5,
+  // Evidence runs (evidenceSafe=1) turn the effects rung off so a slow
+  // capture machine cannot thin the atmosphere or the weapon glows in a
+  // screenshot; the ladder is then the pre-step-8 policy (a phone's 1 -> 1.5
+  // step, a fixed desktop top).
+  effectsRung: true,
 });
 
 // The effects rung: the weapon VFX pool keeps half its 192 sprites and the
@@ -64,7 +69,7 @@ export function buildGovernorLadder({ quality = 'auto', profile, width, height, 
   // Steps land on multiples of resolutionStep at least 0.1 below the top.
   for (let value = Math.floor((top - 0.1) / settings.resolutionStep + 1e-6) * settings.resolutionStep; value > floor + 1e-6; value -= settings.resolutionStep) resolutions.push(round2(value));
   if (resolutions.at(-1) > floor) resolutions.push(floor);
-  const rungs = resolutions.reverse().map((resolution) => Object.freeze({ resolution, effects: 'reduced' }));
+  const rungs = settings.effectsRung ? resolutions.reverse().map((resolution) => Object.freeze({ resolution, effects: 'reduced' })) : [];
   rungs.push(Object.freeze({ resolution: top, effects: 'full' }));
   const start = rungs.length - 1;
   if (profile.id === 'mobile') {

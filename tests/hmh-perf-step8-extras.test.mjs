@@ -245,6 +245,12 @@ test('the extras govern resolution and atmosphere, and pulse haptics only while 
   assert.equal(extrasFixture({ settings: { screenShake: true, reduceMotion: true } }).extras.pulse('hit'), false);
   assert.equal(extrasFixture({ reducedMotionQuery: true }).extras.pulse('hit'), false, 'the OS reduced-motion preference wins too');
   assert.equal(fixture.extras.warm([]), 0);
+  const throwing = installRuntimeExtras({ app: { renderer: { generateTexture() { throw new Error('context lost'); } } }, ContainerClass: FakeContainer, SpriteClass: FakeSprite, windowRef: {}, documentRef: fakeDocument() });
+  assert.equal(throwing.warm([{ id: 'atlas' }]), 0, 'a failed warm-up never throws into the ticker or an atlas load');
+  // An evidence session never takes the effects rung.
+  const evidence = extrasFixture({ embedded: true, search: 'evidenceSafe=1' });
+  const pinned = evidence.extras.govern({ quality: 'auto', profile: { ...RUNTIME_PERFORMANCE_PROFILES.desktop, resolution: 1 } });
+  assert.deepEqual(pinned.ladder.rungs.map((rung) => rung.effects), ['full']);
   assert.ok(Object.isFrozen(fixture.extras));
 });
 

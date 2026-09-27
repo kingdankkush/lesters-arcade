@@ -69,12 +69,16 @@ export function installRuntimeExtras({
   return Object.freeze({
     get governor() { return governor; },
     govern({ quality, profile }) {
-      governor = createGraphicsGovernor({ quality, profile, devicePixelRatio: windowRef?.devicePixelRatio || 1, viewport: () => app.screen, onRung: applyRung });
+      governor = createGraphicsGovernor({ quality, profile, devicePixelRatio: windowRef?.devicePixelRatio || 1, viewport: () => app.screen, options: { effectsRung: !evidence }, onRung: applyRung });
       return governor;
     },
     sample: (deltaMs) => governor?.sample(deltaMs) ?? null,
     atmosphere: (budget) => (governor ? governor.atmosphereBudget(budget) : budget),
-    warm: (textures) => warmRenderer({ renderer: app?.renderer, ContainerClass, SpriteClass, textures }),
+    // Called from the ticker and from an atlas load: a warm-up failure must
+    // never break the frame loop or mark an atlas as failed.
+    warm(textures) {
+      try { return warmRenderer({ renderer: app?.renderer, ContainerClass, SpriteClass, textures }); } catch { return 0; }
+    },
     pulse: (name, intensity) => haptics.pulse(name, intensity),
   });
 }
