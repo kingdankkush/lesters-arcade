@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { join, relative, sep } from 'node:path';
@@ -124,8 +124,21 @@ test('the retired HMH banners are gone and nothing ships a reference to them', (
     'hmh-key-art/hmh-loading-keyart',
   ];
   for (const path of retired.slice(0, 3)) assert.equal(existsSync(join(root, 'apps/portal/assets', path)), false, path);
-  const tracked = spawnSync('git', ['ls-files', '--', 'apps/portal', 'api', 'server', 'scripts', 'vercel.json'], { cwd: root, encoding: 'utf8' }).stdout
-    .split('\n').filter((path) => /\.(?:html|m?js|css|txt|xml|json|webmanifest|py)$/.test(path) && !path.startsWith('apps/portal/dist/'));
+  // git ls-files where the checkout has .git; the Vercel build uploads no .git,
+  // so fall back to walking the same folders on disk.
+  const scanRoots = ['apps/portal', 'api', 'server', 'scripts', 'vercel.json'];
+  const listed = spawnSync('git', ['ls-files', '--', ...scanRoots], { cwd: root, encoding: 'utf8' });
+  let files = listed.status === 0 ? listed.stdout.split('\n').filter(Boolean) : [];
+  if (!files.length) {
+    const walk = (rel) => {
+      const full = join(root, rel);
+      if (!existsSync(full)) return [];
+      if (!statSync(full).isDirectory()) return [rel];
+      return readdirSync(full).flatMap((name) => (name === 'node_modules' || name === '.git' ? [] : walk(`${rel}/${name}`)));
+    };
+    files = scanRoots.flatMap(walk);
+  }
+  const tracked = files.filter((path) => /\.(?:html|m?js|css|txt|xml|json|webmanifest|py)$/.test(path) && !path.startsWith('apps/portal/dist/'));
   for (const path of tracked) {
     const text = readFileSync(join(root, path), 'utf8');
     for (const name of retired) assert.ok(!text.includes(name), `${path} still names ${name}`);
