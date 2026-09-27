@@ -188,8 +188,8 @@ test('repository visual policy points to a dated current HMH cycle handoff and t
   assert.match(agents, /npm run visual:reboot:accept/);
   // A rollout checkpoint now owns the dated source/evidence map. Verify the
   // actual first-entry chain, not a historical cycle filename anywhere in AGENTS.
-  const checkpointPath = agents.match(/^1\. `(docs\/handoffs\/[a-z0-9-]+\.md)`/m)?.[1];
-  assert.ok(checkpointPath, 'read order must identify the current checkpoint');
+  const checkpointPath = agents.match(/^\d+\. `(docs\/handoffs\/hmh-[a-z0-9-]+\.md)`/m)?.[1];
+  assert.ok(checkpointPath, 'read order must identify the HMH rollout checkpoint');
   const checkpointUrl = new URL(`../${checkpointPath}`, import.meta.url);
   const checkpoint = await readFile(checkpointUrl, 'utf8');
   const datedName = checkpoint.match(/^\*\*Full new-session handoff:\*\* \[[^\]]+\]\((\d{4}-\d{2}-\d{2}-hmh-[a-z0-9-]+\.md)\)/m)?.[1];

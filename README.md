@@ -137,7 +137,7 @@ The [preceding release receipt](docs/qa/hmh-roadmap-pass-release-20260911.json) 
 | --- | --- | --- | --- |
 | Hard Money Heroes | `lester-blaster` | Playable release; polish ongoing | Deterministic PixiJS top-down 2.5D roguelike run-and-gun with authored world, four production heroes, enemies, boss, progression, desktop/mobile/controller controls, and parent portal integration |
 | Chikun's Escape | `chikun` | Public playable, Ranked-eligible (`0.9.0`) | Ground and flight gameplay through Cabinet SDK v1, with deterministic parent-seeded replay, a parent-owned daily UTC course, versioned local daily-best comparisons, replay save/open, and bounded impact presentation. Asset rights, `devWallet`, and revenue split remain open — see below |
-| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, replay-verified device-local Ranked preview, Free medals and restart. No fees, prizes or online ranking; physical-device review and polish remain open |
+| STACKED | `stacked` | Public playable beta (`0.2.0`) | Music-reactive falling-block game; Free practice, starting levels, touch/keyboard/controller input, Free medals and restart. Since the 1.8.0 Ranked launch its Ranked runs are replay-verified by the arcade server and settled on the LitVM LiteForge testnet like the other cabinets; no prizes. Physical-device review and polish remain open |
 | Future cabinets | Various | Coming Soon | Portal expansion slots, not production commitments until separately approved |
 
 ---
@@ -433,7 +433,7 @@ Do not restore retired assets under `apps/portal/assets/generated/hmh-isometric-
 
 ### How Ranked works now
 
-This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-deployment-web3-guide-20260922.md) and its [interface contract](docs/handoffs/pre-deployment-interface-contract-20260922.md)). It runs only with both flags in `apps/portal/src/settlement.mjs` on; until runbook step 7 they are `false`, and Ranked is a device-local preview that makes no `/api` call and sends no transaction.
+This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-deployment-web3-guide-20260922.md) and its [interface contract](docs/handoffs/pre-deployment-interface-contract-20260922.md)). Both flags in `apps/portal/src/settlement.mjs` have been `true` since the 1.8.0 launch on 2026-09-24. With them off (for example in a local build with the flags reverted), Ranked is a device-local preview that makes no `/api` call and sends no transaction.
 
 1. **Sign in.** The player picks a wallet (EIP-6963: MetaMask, Rabby; WalletConnect on lestersarcade.io), gets a server nonce from `/api/session/nonce` and signs one free SIWE message; `/api/session` returns a session token bound to the wallet and the environment.
 2. **Seed ticket.** Approving the Ranked entry first asks `/api/ranked/seed` for a ticket: a random salt MAC'd to the session, wallet, game, season and build. The run's seed comes from it, so nobody can pick an easy seed or replay someone else's run.
@@ -444,11 +444,11 @@ This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-
 
 Evidence before launch: the [local rehearsal](docs/qa/pre-deployment-rehearsal-20260923.json) (server end to end on an in-process chain), the [step-7 dry run](docs/qa/step7-dry-run-20260923.json) (the flag flip in a throwaway worktree), and the [live-flag browser run](docs/qa/ranked-live-browser-e2e-20260923.json) (`node scripts/ranked-live-browser-e2e.mjs`: all three games in a real browser with both flags on, against the local stack). The [release receipt draft](docs/qa/ranked-launch-release-receipt-draft-20260923.json) lists what the deployment session completes.
 
-### Not live end to end
+### Live on testnet, not on mainnet
 
-`SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` remain `false`, and the hardened contracts are not deployed: `apps/portal/src/generated/litvm-addresses.mjs` holds the addresses predicted from the operator's nonces (`status: 'predicted'`). The June legacy contracts contain bytecode, but the hardened score ABI cannot decode the legacy score registry, so chain leaderboard reads fail closed.
+Since 2026-09-24 `SETTLEMENT_LIVE` and `HOSTED_PROFILE_SYNC` are `true` and the hardened contracts are deployed on the LitVM LiteForge testnet: `apps/portal/src/generated/litvm-addresses.mjs` holds the deployed addresses (`status: 'deployed'`) from `contracts/deployment-record.hardened.json`. The June legacy contracts are superseded. This is a testnet epoch; mainnet will be a fresh deployment set. The Chikun Weekly Jackpot contracts are deployed but idle (`JACKPOT_LIVE` is `false`; [operations](docs/web3/weekly-jackpot-operations.md)).
 
-Going live follows the deployment runbook (guide §7 as amended by contract §13), with the owner's approval at each ⚠ step: broadcast the contracts, confirm the developer wallet, make the games playable, write the renamed server secrets, flip both flags and regenerate the public copy, deploy, run the production migration, then one real Ranked run per game (`scripts/rehearse-ranked-e2e.mjs --target live`, optionally `scripts/ranked-live-browser-e2e.mjs --live`) and the live smokes.
+The launch followed the deployment runbook (guide §7 as amended by contract §13), with the owner's approval at each ⚠ step: broadcast the contracts, confirm the developer wallet, make the games playable, write the renamed server secrets, flip both flags and regenerate the public copy, deploy, run the production migration, then one real Ranked run per game (`scripts/rehearse-ranked-e2e.mjs --target live`, optionally `scripts/ranked-live-browser-e2e.mjs --live`) and the live smokes.
 
 See:
 
