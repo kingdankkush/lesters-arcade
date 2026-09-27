@@ -22,6 +22,7 @@ import { createHmhChildBridge } from './bridge.mjs';
 import { creatureAnimationTick, creatureIdPhase, liquidatorPose } from './creature-presentation.mjs';
 import { WORLD_DECAL_URL, drawWorldDecals } from './world-decals.mjs';
 import { impactSprayAngles, weaponRecoilShake } from './combat-feedback.mjs';
+import { createFeelRig, withRecoilClimb, withRecoilPullback } from './feel-motion.mjs';
 import { HMH_WEAPON_SFX, weaponFireCueId, weaponFireGain } from './weapon-audio.mjs';
 import { COLLECTIBLE_EFFECTS, createCollectibleState, getCollectibleSnapshot, stepCollectibles } from './collectible-system.mjs';
 import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
@@ -291,9 +292,8 @@ const PLAYER_HURT_POSE_TICKS = 14;
 // low-health vignette starts bleeding in.
 const PLAYER_DAMAGE_FLASH_TICKS = 10;
 const LOW_HEALTH_VIGNETTE_THRESHOLD = 0.35;
-// Camera shake is projection-only: it offsets rendering and the inverse
-// screen-to-ground transform, never simulation state.
-const SHAKE_DECAY_TICKS = 9;
+// Camera shake is projection-only: a trauma accumulator in feel-motion.mjs
+// that offsets the world container, never simulation state or aim.
 const MAX_ACTIVE_GRENADES = 16;
 const MAX_COMBAT_VISUAL_EVENTS = RUNTIME_MAX_COMBAT_VISUAL_EVENTS;
 const PROJECTILE_GRID_THRESHOLD = 64;
@@ -1181,6 +1181,7 @@ async function boot() {
     drawEliteGroundRing,
     placeWeaponGlow,
     projectGasBomberCanister,
+    tellByKind: true,
   });
   // Retired enemies leave with their facing memory, which otherwise grew by
   // one entry per enemy ever drawn for the whole run.
@@ -1449,18 +1450,13 @@ async function boot() {
   // stamped on the resume path. Both are render-side only.
   let framingState = createEncounterFramingState();
   let lastLevelUpBeat = null;
-  let shakeStartTick = -1;
-  let shakeMagnitude = 0;
+  // 1.8.7 feel: trauma shake plus recoil / squash / camera-kick springs, all
+  // advanced on the simulation tick and read by the render pass only.
+  const feel = createFeelRig();
   // Combat sparks and debris inherit the active quality tier, so the
   // reduced-motion profile (0 particles per hazard) emits none.
   const particleScale = performanceProfile.particlesPerHazard;
-  const triggerCameraShake = (tick, magnitude) => {
-    // A stronger impulse overrides a weaker one still decaying.
-    if (tick === shakeStartTick && magnitude <= shakeMagnitude) return;
-    if (tick - shakeStartTick < SHAKE_DECAY_TICKS && magnitude < shakeMagnitude) return;
-    shakeStartTick = tick;
-    shakeMagnitude = magnitude;
-  };
+  const triggerCameraShake = (tick, magnitude) => feel.addTrauma(tick, magnitude);
   let lastMeleeAttack = null;
   let lastGrenadeThrow = null;
   let lastGrenadeDetonation = null;
@@ -2328,6 +2324,8 @@ async function boot() {
         : null;
       const torsoAngle = ((2 - (motion?.torsoDirection ?? 0)) * Math.PI) / 4;
       const heldAim = aimIntent?.direction ?? { x: Math.cos(torsoAngle), y: Math.sin(torsoAngle) };
+      // B1 recoil spring, screen px at zoom 1: pull back against the aim.
+      const recoilPx = settings.reduceMotion ? 0 : feel.springs.recoil.x;
       if (authoredHeldWeaponDisplay && heldWeapon) {
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
@@ -2337,7 +2335,9 @@ async function boot() {
           aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)
             .stroke({ color: 0x8ff3ff, width: 1 + chargeRatio, alpha: 0.18 + chargeRatio * 0.42 });
         }
-        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom, reloadDip: reloadPose });
+        chestScreen.x -= heldAim.x * recoilPx * camera.zoom;
+        chestScreen.y -= heldAim.y * recoilPx * camera.zoom;
+        authoredHeldWeaponDisplay.container.applyWeapon({ weaponId: heldWeapon.id, screen: chestScreen, aimScreen, cameraZoom: camera.zoom, reloadDip: withRecoilClimb(reloadPose, recoilPx) });
       }
       if (!productionHeroDisplay && authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = false;
       if (productionHeroDisplay && motion) {
@@ -2408,9 +2408,9 @@ async function boot() {
         // and the authored full-body clips keep the layer to themselves. The
         // resolver is a lazy chunk; until it is resident (well before the
         // first magazine can run dry) the offset simply stays at zero.
-        productionHeroDisplay.setLayerOffset('weapon', reloadPose && productionHeroDisplay.container.motionAction !== 'reload' && reloadPresentation.resolveReloadHeroAction({ action: productionAction })
+        productionHeroDisplay.setLayerOffset('weapon', withRecoilPullback(reloadPose && productionHeroDisplay.container.motionAction !== 'reload' && reloadPresentation.resolveReloadHeroAction({ action: productionAction })
           ? reloadPresentation.resolveReloadLayerOffset({ pose: reloadPose, facingWest: motion.torsoDirection >= 4 })
-          : undefined);
+          : undefined, heldAim, recoilPx / PRODUCTION_HERO_RUNTIME_SCALE));
         // The visible half of the reload-complete beat: the cue, the HUD ring
         // flash and the snap-back all land on this tick, and so does a six-tick
         // chamber glow at the muzzle. reduceFlash halves it.
@@ -2421,7 +2421,9 @@ async function boot() {
         }
         if(releaseTelemetryEnabled) dataset.heroAutomaticAction=productionAction==='interact'?'interact':productionAction==='dash'?'dodge':productionAction==='melee'?'melee':'';
         if (authoredHeldWeaponDisplay) authoredHeldWeaponDisplay.container.visible = externalWeaponAuthoritative;
-        actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom);
+        // B1 hit squash about the feet (the container sits on the ground point).
+        const squash = settings.reduceMotion ? 0 : feel.springs.squash.x;
+        actorVisual.scale.set(PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom * (1 + squash), PRODUCTION_HERO_RUNTIME_SCALE * camera.zoom * (1 - squash));
         actorVisual.rotation = 0;
         // V-5 hero hit readability: a smear trailing against the retained
         // knockback and a three-tick body tint. Under reduceFlash the smear
@@ -2822,8 +2824,7 @@ async function boot() {
     lastDashDirection = null;
     framingState = createEncounterFramingState();
     lastLevelUpBeat = null;
-    shakeStartTick = -1;
-    shakeMagnitude = 0;
+    feel.reset();
     world.position.set(0, 0);
     overlayVisuals.clear();
     lastMeleeAttack = null;
@@ -3996,6 +3997,7 @@ async function boot() {
         // launcher felt identical. Projection-only, and the existing
         // screenShake/reduceMotion settings still gate whether it is drawn.
         triggerCameraShake(tick, weaponRecoilShake(event.weaponId));
+        feel.kick(tick, 'recoil', weaponRecoilShake(event.weaponId) * 70);
         // A held-weapon page reports where this frame's barrel ends; the
         // native pistol and the overlay keep the fixed chest-height offset.
         const heldMuzzle = productionHeroDisplay?.container.heldWeaponMuzzle;
@@ -4442,6 +4444,11 @@ async function boot() {
             updateRunCombo(0);
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
+            feel.kick(tick, 'squash', 3.6);
+            if (magnitude > 0) {
+              feel.kick(tick, 'kickX', damageEvent.knockback.x / magnitude * 160);
+              feel.kick(tick, 'kickY', damageEvent.knockback.y / magnitude * 160);
+            }
             if (magnitude > 0) applyRecoilImpulse(motion, {
               direction: { x: damageEvent.knockback.x / magnitude, y: damageEvent.knockback.y / magnitude },
               magnitude,
@@ -5034,14 +5041,11 @@ async function boot() {
     // camera would feed a jittered pointer position into aim resolution and
     // let a cosmetic accessibility setting change which shots hit. Offsetting
     // the container keeps the shake strictly in projection.
-    const shakeAge = simulation.tick - shakeStartTick;
-    if (settings.screenShake && !settings.reduceMotion && shakeMagnitude > 0 && shakeAge >= 0 && shakeAge < SHAKE_DECAY_TICKS) {
-      const decay = 1 - shakeAge / SHAKE_DECAY_TICKS;
-      const swing = shakeMagnitude * decay;
-      world.position.set(
-        (deterministicUnit(`shake-x:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
-        (deterministicUnit(`shake-y:${simulation.tick}:${shakeStartTick}`) - 0.5) * 2 * swing,
-      );
+    // The camera kick springs ride the same offset and the same gates.
+    feel.advance(simulation.tick);
+    if (settings.screenShake && !settings.reduceMotion) {
+      const offset = feel.cameraOffset(simulation.tick + renderAlpha);
+      world.position.set(offset.x, offset.y);
     } else if (world.position.x !== 0 || world.position.y !== 0) {
       world.position.set(0, 0);
     }
