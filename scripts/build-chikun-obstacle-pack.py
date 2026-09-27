@@ -6,8 +6,10 @@ runtime catalog and the coverage masks.
 Reads the Blender render cache (scripts/chikun-blender/build-chikun-obstacles.py)
 and, per sprite:
   * adds a 1 px ink contour (2 px at t2) around gameplay silhouettes, coloured
-    from the sprite's own darkened edge colour, so obstacles separate from any
-    backdrop (skipped for the storm, pits, forest wall, water sheets);
+    from the sprite's own edge colour darkened to 20 %, so obstacles separate
+    from any backdrop (skipped for the storm, pits, forest wall, water sheets);
+  * records each sprite's body tone (mean sRGB, mean linear luminance) for the
+    runtime's value separation (apps/chikun/src/obstacle-separation.mjs);
   * trims the union of all frames to the opaque bounds (even t2 pixels, so the
     logical frame stays on whole pixels and t1 halves exactly);
   * lays animation frames side by side with a transparent gap, bleeds colour
@@ -95,9 +97,11 @@ def box_blur(x, r):
     return x
 
 
-def contour(rgba, radius=2, strength=0.9, darken=0.3):
+def contour(rgba, radius=2, strength=1.0, darken=0.2):
     """Ink outline: dilate the silhouette by `radius` px and fill the ring with
-    the sprite's own edge colour, darkened; the sprite is composited on top."""
+    the sprite's own edge colour, darkened; the sprite is composited on top.
+    The obstacle-contrast slice deepened the ink (edge colour x 0.2, fully
+    opaque, from x 0.3 at 90 %) so silhouettes hold against mid-value bands."""
     a = rgba[..., 3]
     ai = Image.fromarray((a * 255).astype(np.uint8), 'L')
     dil = np.asarray(ai.filter(ImageFilter.MaxFilter(radius * 2 + 1)), dtype=np.float64) / 255.0
@@ -122,6 +126,20 @@ def encode(rgba, path, quality=QUALITY, alpha_quality=90):
     data = buf.getvalue()
     path.write_bytes(data)
     return dict(src=path.relative_to(OUT).as_posix(), w=im.width, h=im.height, bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+
+
+def lin(c):
+    return np.where(c <= 0.03928, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
+
+
+def tone(frames):
+    """The body tone the runtime's value separation starts from: mean sRGB
+    colour (0..255) and mean linear (WCAG) luminance x 1000 of every opaque
+    (alpha >= 0.5) pixel of every frame, as shipped (ink contour included)."""
+    px = np.concatenate([f[f[..., 3] >= 0.5][:, :3] for f in frames])
+    if not len(px): return [0, 0, 0, 0]
+    L = (lin(px) * [0.2126, 0.7152, 0.0722]).sum(-1).mean()
+    return [int(round(v)) for v in px.mean(0) * 255] + [int(round(L * 1000))]
 
 
 def mask_bits(alpha_logical):
@@ -186,7 +204,7 @@ def pack_sprite(meta, d):
             ff = f if s == 2 else sharpen(downsample(f, (lw, lh)), 0.25)
             img[:, i * (lw * s + g): i * (lw * s + g) + lw * s] = ff
         strip[tier] = encode(bleed(img), OUT / meta['kit'] / tier / f'{name}.webp', quality=QUALITY_BY.get(name, QUALITY))
-    entry = dict(anchor=meta['anchor'], kind=meta['kind'], x=int(round(lx)), y=int(round(ly)), w=lw, h=lh, frames=n, fps=meta.get('fps', 0), gap=GAP, tiers=strip)
+    entry = dict(anchor=meta['anchor'], kind=meta['kind'], x=int(round(lx)), y=int(round(ly)), w=lw, h=lh, frames=n, fps=meta.get('fps', 0), gap=GAP, tone=tone(frames), tiers=strip)
     if emits:
         lit = [np.clip(e[..., :3].max(-1), 0, 1) for e in emits]
         if max(float(l.max()) for l in lit) > 0.02:
@@ -210,7 +228,7 @@ def pack_sheet(meta, frames, fw, fh):
     for tier, s in (('t2', 2), ('t1', 1)):
         img = f if s == 2 else downsample(f, (int(fw), int(fh)))
         strip[tier] = encode(bleed(img), OUT / meta['kit'] / tier / f'{name}.webp', quality=62, alpha_quality=55)
-    entry = dict(anchor='sheet', kind=meta['kind'], x=0, y=0, w=int(fw), h=int(fh), frames=1, fps=0, gap=GAP, tiers=strip)
+    entry = dict(anchor='sheet', kind=meta['kind'], x=0, y=0, w=int(fw), h=int(fh), frames=1, fps=0, gap=GAP, tone=tone([f]), tiers=strip)
     receipt = dict(blender=meta.get('blender'), samples=meta.get('samples'), device=meta.get('device'), renderSeconds=meta.get('renderSeconds'), scripts=meta.get('scripts'), contour=False, note=meta.get('note', ''))
     return entry, dict(x=0, y=0, w=int(fw), h=int(fh), cols=-(-int(fw) // MASK_CELL), frames=[mask_bits(logical_alpha(f[..., 3]))]), receipt
 

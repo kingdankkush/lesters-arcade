@@ -17,8 +17,14 @@ D sin p + H cos p screen pixels.
 
 Light: a neutral key sun from the upper left front (azimuth -35, elevation 40,
 matching the scenery and Chikun's baked key), so cast light falls onto the
-trailing (right) side; a cool world fill; a cool back rim that separates the
-play layer from the backdrop. Colour: Standard view, Medium High Contrast look,
+trailing (right) side; a cool world fill; a rim matched to the key (the same
+neutral daylight colour, from behind on the key's side: azimuth -150,
+elevation 32) that draws a bright sunlit edge along the upper left of every
+silhouette, the edge that faces the sun in the scenery; and a weaker cool
+counter rim from behind on the right. Every region's scenery is rendered in
+this same neutral key (docs/chikun/SCENERY.md), so one rim matches them all;
+the runtime grade and the value separation's lift colour (the rig's rim
+colour per light key) carry the time of day. Colour: Standard view, Medium High Contrast look,
 identical to the character rig. The runtime grade supplies the time of day.
 """
 import bpy, math, os
@@ -136,11 +142,17 @@ def sun(scene, name, strength, azimuth, elevation, angle=3.0, color=(1.0, 0.975,
     return obj
 
 
-def lights(scene, key=3.6, fill=0.42, rim=1.6, fill_color=(0.58, 0.68, 0.88), bounce=0.35):
-    """Key from the upper left front, cool fill, cool back rim, warm ground bounce."""
-    sun(scene, 'Key', key, -35.0, 40.0, 3.0)
+KEY_COLOR = (1.0, 0.975, 0.94)
+
+
+def lights(scene, key=3.6, fill=0.42, rim=9.0, counter=1.0, fill_color=(0.58, 0.68, 0.88), bounce=0.35):
+    """Key from the upper left front, cool fill, key-matched rim from behind on
+    the key's side, cool counter rim from behind on the right, warm ground bounce."""
+    sun(scene, 'Key', key, -35.0, 40.0, 3.0, KEY_COLOR)
     if rim > 0:
-        sun(scene, 'Rim', rim, 158.0, 24.0, 6.0, (0.80, 0.88, 1.0))
+        sun(scene, 'Rim', rim, -128.0, 26.0, 4.0, KEY_COLOR)
+    if counter > 0:
+        sun(scene, 'Counter', counter, 158.0, 24.0, 6.0, (0.80, 0.88, 1.0))
     if bounce > 0:
         # Light reflected up off the ground (warm, soft), so undersides are not black.
         b = sun(scene, 'Bounce', bounce, 20.0, -35.0, 30.0, (1.0, 0.9, 0.78))

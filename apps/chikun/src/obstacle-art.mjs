@@ -21,18 +21,26 @@
 //   time-of-day grade as fills over those rects (below the roof line); every
 //   other sprite (roofs, props, trees, the forest wall, canopies, storms,
 //   creatures) uses a graded copy rebuilt when the quantised grade changes (at
-//   most two per frame, LRU-capped), so fringes and translucent edges are
+//   most two per frame, six more for sprites just coming into view; LRU-capped), so fringes and translucent edges are
 //   graded too and nothing behind them is. Lit windows, lamps and LEDs are
 //   added with 'lighter' after the grade.
+// * Value separation (obstacle-separation.mjs): after the grade each draw is
+//   deepened or lifted towards the key light so its body reaches the target
+//   contrast against the backdrop band it sits in; the amount is quantised and
+//   is part of the graded copy's key (facades: one more fill over their rects).
 import { OBSTACLE_CATALOG } from './obstacle-catalog.mjs';
+import { backdropLuminance, separationFor, separationKey, partLean, partContrast, SEPARATION } from './obstacle-separation.mjs';
 import { CHIKUN_REGIONS, regionForObstacle, courseRegionState } from '../../portal/src/chikun-course-regions.mjs';
 import { sceneBus } from './scene-bus.mjs';
-import { rgba } from './light-rig.mjs';
+import { rgba, RIG_KEYS, RIG_KEY_NAMES, chikunSkyState } from './light-rig.mjs';
 
 export const T2_DENSITY = 1.3;
 export const SETTLE_MS = 200;
 export const GAMEPLAY_GRADE = 0.72;
 export const GROUND_Y = 690;
+export const GRADED_PER_SPRITE = 4;
+export const REGRADE_PER_FRAME = 2;
+export const FIRST_GRADES_PER_FRAME = 6;
 const TIER_SCALE = { t1: 1, t2: 2 };
 const DEVICE_GAP = 2;
 const tierFor = density => density > T2_DENSITY ? 't2' : 't1';
@@ -178,8 +186,8 @@ export function createObstacleArt({ catalog = OBSTACLE_CATALOG, loadImage = defa
   const queue = [];
   let active = 0;
   const stats = { requested: 0, loaded: 0, failed: 0, prescaled: 0, evicted: 0, regraded: 0, failures: [] };
-  const graded = new Map();     // prepared -> { canvas, key, used, px }
-  let gradedPx = 0, regradeBudget = 2, frameNo = 0;
+  const graded = new Map();     // prepared -> [{ canvas, key, used, px }] (one per grade + separation, at most GRADED_PER_SPRITE)
+  let gradedPx = 0, regradeBudget = REGRADE_PER_FRAME, firstBudget = FIRST_GRADES_PER_FRAME, frameNo = 0;
 
   const kitDesc = id => catalog?.kits?.[id] ?? null;
   function assetsOf(desc, tier) {
@@ -317,43 +325,77 @@ export function createObstacleArt({ catalog = OBSTACLE_CATALOG, loadImage = defa
   }
 
   // Graded copies (sprite obstacles). The grade is quantised so a copy is
-  // rebuilt only every few seconds of the day clock, at most two per frame.
+  // rebuilt only every few seconds of the day clock, at most REGRADE_PER_FRAME
+  // per frame (the previous copy draws meanwhile). A sprite with no copy yet
+  // (it just came into view) has its own budget, FIRST_GRADES_PER_FRAME, so a
+  // multi-part obstacle does not enter the view ungraded and then pop.
+  // Each copy is keyed by the grade and the value separation, and a sprite
+  // keeps up to GRADED_PER_SPRITE of them, so the same sprite drawn at two
+  // separations (two hawks at different heights, two regions at a handover)
+  // never regrades every frame.
   function gradeKey(g, strength) {
     const w = Math.round(g.w * strength * 40), a = Math.round(g.a * strength * 40);
     if (w === 0 && a === 0) return 0;
     const q = c => (c[0] >> 4) * 256 + (c[1] >> 4) * 16 + (c[2] >> 4);
     return 1 + w + 41 * (a + 41 * (q(g.W) + 4096 * q(g.D)));
   }
-  function dropGraded(p) { const g = graded.get(p); if (g) { gradedPx -= g.px; g.canvas.width = 0; g.canvas.height = 0; graded.delete(p); } }
-  function gradedCanvas(p, grade, strength = GAMEPLAY_GRADE) {
-    if (!grade) return p.canvas;
-    const key = gradeKey(grade, strength);
-    if (key === 0) return p.canvas;
-    let g = graded.get(p);
-    if (g && g.key === key) { g.used = frameNo; return g.canvas; }
-    if (regradeBudget <= 0) { if (g) g.used = frameNo; return g ? g.canvas : p.canvas; }
-    regradeBudget--;
-    if (!g) {
+  function dropEntry(list, e) {
+    const i = list.indexOf(e);
+    if (i >= 0) list.splice(i, 1);
+    gradedPx -= e.px; e.canvas.width = 0; e.canvas.height = 0;
+  }
+  function dropGraded(p) { const list = graded.get(p); if (list) { for (const e of [...list]) dropEntry(list, e); graded.delete(p); } }
+  function evictOldest() {
+    let oldest = null, owner = null;
+    for (const [k, list] of graded) for (const e of list) if (!oldest || e.used < oldest.used) { oldest = e; owner = k; }
+    if (!oldest) return false;
+    const list = graded.get(owner);
+    dropEntry(list, oldest);
+    if (!list.length) graded.delete(owner);
+    return true;
+  }
+  function gradedCanvas(p, grade, strength = GAMEPLAY_GRADE, sep = null) {
+    const gk = grade ? gradeKey(grade, strength) : 0, sk = separationKey(sep);
+    if (gk === 0 && sk === 0) return p.canvas;
+    let list = graded.get(p);
+    let hit = null, recent = null;
+    if (list) for (const e of list) { if (e.gk === gk && e.sk === sk) hit = e; if (!recent || e.used > recent.used) recent = e; }
+    if (hit) { hit.used = frameNo; return hit.canvas; }
+    if (recent ? regradeBudget <= 0 : firstBudget <= 0) { if (recent) { recent.used = frameNo; return recent.canvas; } return p.canvas; }
+    if (recent) regradeBudget--; else firstBudget--;
+    let g = null;
+    if (list && list.length >= GRADED_PER_SPRITE) { for (const e of list) if (!g || e.used < g.used) g = e; }
+    else {
       const px = p.canvas.width * p.canvas.height;
-      while (gradedPx + px > gradedCapPx && graded.size) {
-        let oldest = null;
-        for (const [k, v] of graded) if (!oldest || v.used < oldest[1].used) oldest = [k, v];
-        dropGraded(oldest[0]);
-      }
+      while (gradedPx + px > gradedCapPx && evictOldest()) {}
+      list = graded.get(p);
+      if (!list) { list = []; graded.set(p, list); }
       const canvas = makeCanvas(p.canvas.width, p.canvas.height);
-      if (!canvas) return p.canvas;
-      g = { canvas, key: -1, used: frameNo, px };
-      graded.set(p, g); gradedPx += px;
+      if (!canvas) { if (!list.length) graded.delete(p); return p.canvas; }
+      g = { canvas, gk: -1, sk: -1, used: frameNo, px };
+      list.push(g); gradedPx += px;
     }
     const cx = g.canvas.getContext('2d');
     cx.globalCompositeOperation = 'copy'; cx.globalAlpha = 1;
     cx.drawImage(p.canvas, 0, 0);
     cx.globalCompositeOperation = 'source-atop';
-    const w = grade.w * strength, a = grade.a * strength;
-    if (w > 0.002) { cx.fillStyle = rgba(grade.W, w); cx.fillRect(0, 0, g.canvas.width, g.canvas.height); }
-    if (a > 0.002) { cx.fillStyle = rgba(grade.D, a); cx.fillRect(0, 0, g.canvas.width, g.canvas.height); }
+    if (gk !== 0) {
+      const w = grade.w * strength, a = grade.a * strength;
+      if (w > 0.002) { cx.fillStyle = rgba(grade.W, w); cx.fillRect(0, 0, g.canvas.width, g.canvas.height); }
+      if (a > 0.002) { cx.fillStyle = rgba(grade.D, a); cx.fillRect(0, 0, g.canvas.width, g.canvas.height); }
+    }
+    if (sk !== 0) {
+      // deepen: a fill towards the deep colour; lift: the copy added onto itself (exposure), then the key light's wash
+      if (sep.deepen > 0) { cx.fillStyle = rgba(sep.deep, sep.deepen); cx.fillRect(0, 0, g.canvas.width, g.canvas.height); }
+      if (sep.exposure > 0) {
+        cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = sep.exposure;
+        cx.drawImage(g.canvas, 0, 0);
+        cx.globalCompositeOperation = 'source-atop'; cx.globalAlpha = 1;
+      }
+      if (sep.fill > 0) { cx.fillStyle = rgba(sep.colour, sep.fill); cx.fillRect(0, 0, g.canvas.width, g.canvas.height); }
+    }
     cx.globalCompositeOperation = 'source-over';
-    g.key = key; g.used = frameNo; stats.regraded++;
+    g.gk = gk; g.sk = sk; g.used = frameNo; stats.regraded++;
     return g.canvas;
   }
 
@@ -365,7 +407,7 @@ export function createObstacleArt({ catalog = OBSTACLE_CATALOG, loadImage = defa
   return {
     request, pump, retain, evict, prepared, gradedCanvas,
     tier: tierFor,
-    beginFrame() { frameNo++; regradeBudget = 2; },
+    beginFrame() { frameNo++; regradeBudget = REGRADE_PER_FRAME; firstBudget = FIRST_GRADES_PER_FRAME; },
     failed(name) { const kit = SPRITE_KIT.get(name); return Boolean(kit && kits.get(kit)?.failed.has(name)); },
     failedAny() { for (const e of kits.values()) if (e.failed.size) return true; return false; },
     resident() { return [...kits.keys()]; },
@@ -430,6 +472,119 @@ function shadowSprite() {
 }
 
 const layoutScratch = [], rectScratch = [];
+// ---------------------------------------------------------------- value separation
+//
+// Solved per light key (noon, golden hour, night, dawn: each key's own grade,
+// backdrop profile row and night target) and blended by the rig's key
+// weights, so the amounts move smoothly through the day: an obstacle deepened
+// at noon and lifted at golden hour cross-fades between the two over the
+// blend instead of flipping on screen. Each key also fixes one direction for
+// all the parts of a multi-part obstacle (separationDirection).
+// The moments each key is alone in the rig (noon 0 s, golden hour at sunset 45 s,
+// night 90 s, dawn at sunrise 135 s): the backdrop profile rows were measured there
+// (build-chikun-obstacle-separation.py) and the key's night share comes from there.
+export const SEPARATION_KEY_SECONDS = Object.freeze({ noon: 0, golden: 45, night: 90, dawn: 135 });
+const KEY_RIGS = RIG_KEY_NAMES.map((k, index) => Object.freeze({
+  key: k, index, night: chikunSkyState(SEPARATION_KEY_SECONDS[k]).night, rim: RIG_KEYS[k].rim,
+  grade: Object.freeze({ W: RIG_KEYS[k].W, w: RIG_KEYS[k].w, D: RIG_KEYS[k].D, a: RIG_KEYS[k].a }),
+  weights: Object.freeze(Object.fromEntries(RIG_KEY_NAMES.map(n => [n, n === k ? 1 : 0]))),
+}));
+// Key weights are sharpened (cubed; separationOf normalises), so a blend leans on its dominant key
+// and the cross-fade between a deepened and a lifted look is short but still continuous.
+const keyWeight = (rig, k) => rig?.weights ? (rig.weights[k] ?? 0) ** SEPARATION_SHARPEN : k === 'noon' ? 1 : 0;
+export const SEPARATION_SHARPEN = 3;
+// deepen: fill alpha of `deep`; lift: the lift amount; exposure: 'lighter' self-add alpha;
+// fill: the wash alpha of `colour` over it; ratio: modelled contrast (weighted).
+const blankSep = () => ({ mode: 'none', deepen: 0, deep: SEPARATION.deepen, lift: 0, exposure: 0, fill: 0, colour: null, s: 0, ratio: 1 });
+const sepScratch = blankSep(), keyScratch = {};
+const facadeSeps = Array.from({ length: 8 }, blankSep);
+const copySep = (from, to) => { for (const k of Object.keys(from)) to[k] = from[k]; return to; };
+const dirsScratch = [0, 0, 0, 0];
+
+// The waterfall's scrolling water sheet keeps its own light (it rides on the separated curtain).
+const separable = desc => desc?.tone && desc.anchor !== 'sheet';
+// A key's solve depends only on the sprite, its region, the key, the direction
+// and the rows it covers, so it is memoised (per sprite, a numeric key of the
+// rest; the cache is dropped whole past SOLVE_CACHE_MAX entries): a frame then
+// costs lookups, not solves.
+const REGION_INDEX = new Map(CHIKUN_REGIONS.map((r, i) => [r.id, i]));
+const solveCache = new Map();
+let solveEntries = 0;
+const SOLVE_CACHE_MAX = 20000;
+export const separationCacheSize = () => solveEntries;
+function solveKey(p, desc, region, kr, dir, out) {
+  const y0 = p.y + p.sy0 - SEPARATION.ring, y1 = p.y + p.sy1 + SEPARATION.ring;
+  const q0 = Math.max(0, Math.min(2047, Math.round(y0) + 400)), q1 = Math.max(0, Math.min(2047, Math.round(y1) + 400));
+  const id = ((((REGION_INDEX.get(region) ?? 0) * 4 + kr.index) * 3 + (dir + 1)) * 2048 + q0) * 2048 + q1;
+  let bySprite = solveCache.get(p.name);
+  const hit = bySprite?.get(id);
+  if (hit) return hit;
+  const w = kr.weights, Y0 = q0 - 400, Y1 = q1 - 400;
+  const r = separationFor(desc.tone, backdropLuminance(region, w, Y0, Y1), kr, {}, GAMEPLAY_GRADE, p.name.startsWith('pit-'), p.name.startsWith('facade-'),
+    backdropLuminance(region, w, Y0, Y1, 'low'), backdropLuminance(region, w, Y0, Y1, 'high'), dir);
+  if (solveEntries >= SOLVE_CACHE_MAX) { solveCache.clear(); solveEntries = 0; bySprite = null; }
+  if (!bySprite) { bySprite = new Map(); solveCache.set(p.name, bySprite); }
+  bySprite.set(id, r); solveEntries++;
+  if (out) Object.assign(out, r);
+  return r;
+}
+// The value separation of one draw: the sprite's tone against the backdrop
+// rows it covers (plus a ring above and below) in the obstacle's own region.
+// dirs: per key, the obstacle's direction (separationDirection), or null.
+export function separationOf(p, region, rig, out = sepScratch, dirs = null) {
+  const desc = spriteDesc(p.name);
+  out.mode = 'none'; out.deepen = 0; out.lift = 0; out.exposure = 0; out.fill = 0; out.s = 0; out.ratio = 1; out.colour = null;
+  out.deep = p.name.startsWith('pit-') ? SEPARATION.hole : SEPARATION.deepen;
+  if (!separable(desc)) return out;
+  const facade = p.name.startsWith('facade-');
+  let total = 0, deepen = 0, lift = 0, wash = 0, ratio = 0;
+  for (let k = 0; k < KEY_RIGS.length; k++) {
+    const wk = keyWeight(rig, KEY_RIGS[k].key);
+    if (wk <= 0.001) continue;
+    const r = solveKey(p, desc, region, KEY_RIGS[k], dirs ? dirs[k] : 0, keyScratch);
+    if (r.mode === 'deepen') deepen += wk * r.s;
+    else if (r.mode === 'lift') { lift += wk * r.s; wash += wk * r.fill; }
+    ratio += wk * r.ratio; total += wk;
+  }
+  if (total <= 0) return out;
+  const q = v => Math.round(v / total * SEPARATION.steps) / SEPARATION.steps;
+  out.deepen = q(deepen); out.lift = q(lift);
+  out.exposure = facade ? 0 : Math.min(1, SEPARATION.liftGain * out.lift);
+  out.fill = out.lift > 0 ? (facade ? out.lift : Math.round(wash / total * 40) / 40) : 0;
+  out.colour = out.lift > 0 ? rig?.rim ?? [255, 255, 255] : null;
+  out.s = Math.max(out.deepen, out.lift); out.ratio = ratio / total;
+  out.mode = out.deepen > 0 && out.lift > 0 ? 'both' : out.deepen > 0 ? 'deepen' : out.lift > 0 ? 'lift' : 'none';
+  return out;
+}
+// Per key, one direction for all the draws of a multi-part obstacle (0 for a
+// single draw): the parts' natural lean (partLean), unless their natural
+// contrast is weak (below SEPARATION.switchBelow) and the other direction
+// separates them clearly better (area-weighted modelled contrast).
+const dirScratch = {};
+export function separationDirection(ops, region, rig, out = dirsScratch) {
+  for (let k = 0; k < KEY_RIGS.length; k++) {
+    out[k] = 0;
+    const kr = KEY_RIGS[k];
+    if (keyWeight(rig, kr.key) <= 0.001) continue;
+    let lean = 0, parts = 0, area = 0, down = 0, up = 0, own = 0, hole = false;
+    for (const p of ops) {
+      const desc = spriteDesc(p.name);
+      if (!separable(desc)) continue;
+      if (p.name.startsWith('pit-')) { hole = true; break; }
+      const ring = backdropLuminance(region, kr.weights, p.y + p.sy0 - SEPARATION.ring, p.y + p.sy1 + SEPARATION.ring);
+      const px = (p.sx1 - p.sx0) * (p.sy1 - p.sy0);
+      lean += partLean(desc.tone, ring, px, kr, GAMEPLAY_GRADE); parts++; area += px;
+      own += partContrast(desc.tone, ring, kr, GAMEPLAY_GRADE) * px;
+      down += solveKey(p, desc, region, kr, -1, dirScratch).ratio * px;
+      up += solveKey(p, desc, region, kr, 1, dirScratch).ratio * px;
+    }
+    if (hole) { out[k] = -1; continue; }
+    if (parts < 2) continue;
+    const natural = lean > 0 ? 1 : -1, mine = natural > 0 ? up : down, other = natural > 0 ? down : up;
+    out[k] = own < SEPARATION.switchBelow * area && other > mine + 0.25 * area ? -natural : natural;
+  }
+  return out;
+}
 function device(ctx) {
   const t = typeof ctx.getTransform === 'function' ? ctx.getTransform() : null;
   return t && t.a > 0 ? t : { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
@@ -445,6 +600,7 @@ export function drawObstacleArt(ctx, o, tick = 0, reduced = false) {
   const t = device(ctx), d = t.a, ex = t.e, ey = t.f;
   const bus = sceneBus, rig = bus.rig, grade = rig?.grade ?? null;
   const rectTint = RECT_TINT.has(o.kind) || RECT_TINT.has(o.family);
+  const region = rig ? obstacleRegion(o) : null;
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -460,9 +616,14 @@ export function drawObstacleArt(ctx, o, tick = 0, reduced = false) {
     const k = Math.max(0, 1 - (GROUND_Y - o.y) / 420) * shadowK * 0.5;
     if (k > 0.01) { ctx.globalAlpha = k; ctx.drawImage(shadowSprite(), Math.round(d * (o.x + 10) + ex), Math.round(d * (GROUND_Y - 4) + ey), Math.round((o.width - 10) * d), Math.round(9 * d)); ctx.globalAlpha = 1; }
   }
+  let facades = 0;
+  const dirs = rig ? separationDirection(ops, region, rig) : null;
   for (const p of ops) {
     const pr = a.prepared(p.name);
-    const img = rectTint && p.name.startsWith('facade-') ? pr.canvas : a.gradedCanvas(pr, grade);
+    const sep = rig ? separationOf(p, region, rig, sepScratch, dirs) : null;
+    const facade = rectTint && p.name.startsWith('facade-');
+    if (facade && facades < facadeSeps.length) { if (sep) copySep(sep, facadeSeps[facades]); else facadeSeps[facades].mode = 'none'; facades++; }
+    const img = facade ? pr.canvas : a.gradedCanvas(pr, grade, GAMEPLAY_GRADE, sep);
     const k = d / pr.density;
     const top = Math.round(d * p.y + ey), left = Math.round(d * p.x + ex);
     const r0 = Math.round(p.sy0 * pr.density), r1 = Math.min(pr.dh, Math.round(p.sy1 * pr.density));
@@ -472,12 +633,16 @@ export function drawObstacleArt(ctx, o, tick = 0, reduced = false) {
     if (Math.abs(k - 1) < 1e-3) ctx.drawImage(img, sx, r0, c1 - c0, r1 - r0, left + c0, top + r0, c1 - c0, r1 - r0);
     else ctx.drawImage(img, sx, r0, c1 - c0, r1 - r0, left + c0 * k, top + r0 * k, (c1 - c0) * k, (r1 - r0) * k); // briefly after a density change
   }
-  if (rectTint && grade) {
-    const w = grade.w * GAMEPLAY_GRADE, al = grade.a * GAMEPLAY_GRADE;
-    for (const [x, y, rw, rh] of tintRects(o, rectScratch)) {
+  if (rectTint && (grade || facades)) {
+    const w = grade ? grade.w * GAMEPLAY_GRADE : 0, al = grade ? grade.a * GAMEPLAY_GRADE : 0;
+    const rects = tintRects(o, rectScratch);
+    for (let i = 0; i < rects.length; i++) {
+      const [x, y, rw, rh] = rects[i], fs = i < facades ? facadeSeps[i] : null;
       const X = Math.round(d * x + ex), Y = Math.round(d * Math.max(0, y) + ey), W = Math.round(rw * d), H = Math.round((rh - Math.max(0, -y)) * d);
       if (w > 0.002) { ctx.fillStyle = rgba(grade.W, w); ctx.fillRect(X, Y, W, H); }
       if (al > 0.002) { ctx.fillStyle = rgba(grade.D, al); ctx.fillRect(X, Y, W, H); }
+      if (fs && fs.deepen > 0) { ctx.fillStyle = rgba(fs.deep, fs.deepen); ctx.fillRect(X, Y, W, H); }
+      if (fs && fs.fill > 0) { ctx.fillStyle = rgba(fs.colour, fs.fill); ctx.fillRect(X, Y, W, H); }
     }
   }
   // lights after the grade: windows, lamps, LEDs (1x sources, drawn scaled)

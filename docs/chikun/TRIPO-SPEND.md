@@ -8,6 +8,7 @@ balance after, output SHA-256. GLB outputs stay out of the repository.
 |---|---|---|---|---|---|---|
 | 2026-09-25 | 1 (backdrops) | none: all backdrop art is Blender kitbash | - | 0 | not queried | - |
 | 2026-09-25 | 2 (obstacles) | none: shiba, hawk, eagle, pelican and every other obstacle are Blender builds (scripts/chikun-blender/obstacles) | - | 0 | not queried | - |
+| 2026-09-27 | obstacle-contrast | none: the rim light is a Blender light-rig change and the separation is runtime grading | - | 0 | not queried | - |
 
 Running total: 0 credits.
 

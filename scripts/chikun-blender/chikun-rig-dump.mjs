@@ -6,11 +6,16 @@ import { chikunSkyState, computeLightRig } from '../../apps/chikun/src/light-rig
 import { buildChikunViewport } from '../../apps/chikun/src/viewport.mjs';
 
 export const REVIEW_KEYS = Object.freeze({ noon: 8, golden: 39, night: 90, dawn: 136 });
+// --pure: the moments each key is alone in the rig (noon at 0 s, golden hour at
+// sunset, 45 s; night at 90 s; dawn at sunrise, 135 s), for the backdrop
+// profiles of the obstacle value separation (build-chikun-obstacle-separation.py).
+export const PURE_KEYS = Object.freeze({ noon: 0, golden: 45, night: 90, dawn: 135 });
+const KEYS = process.argv.includes('--pure') ? PURE_KEYS : REVIEW_KEYS;
 const views = { landscape: buildChikunViewport(1280, 720, 1), portrait: buildChikunViewport(405, 720, 1) };
 const out = {};
 CHIKUN_REGIONS.forEach((region, index) => {
   out[region.id] = {};
-  for (const [key, seconds] of Object.entries(REVIEW_KEYS)) {
+  for (const [key, seconds] of Object.entries(KEYS)) {
     const state = { index, nextIndex: (index + 1) % 7, region, next: CHIKUN_REGIONS[(index + 1) % 7], blend: 0 };
     const sky = chikunSkyState(seconds);
     out[region.id][key] = {};
