@@ -5,6 +5,34 @@ import { freezeDeep } from './value-guards.mjs';
 import { seededUnit } from './deterministic-hash.mjs';
 import { AUTHORED_PROP_ASSETS, resolveAuthoredLandmarkSignal } from './authored-prop-layout.mjs';
 
+// A2b: a tall prop the hero (or a nearby enemy) stands behind eases to 0.55
+// over six render frames and back, instead of snapping. Projection only: the
+// frame counter lives on the display entry, never on the placement.
+export const PROP_FADE_ALPHA = 0.55;
+export const PROP_FADE_FRAMES = 6;
+export function stepPropFade(frame, obscured) {
+  return obscured ? Math.min(PROP_FADE_FRAMES, frame + 1) : Math.max(0, frame - 1);
+}
+export function propFadeAlpha(frame) {
+  const t = Math.max(0, Math.min(1, frame / PROP_FADE_FRAMES));
+  return 1 - (1 - PROP_FADE_ALPHA) * t * t * (3 - 2 * t);
+}
+// C4: cloth is sampled at 7.5 Hz (every 8th tick), a stepped hand-animated
+// flutter; reduce motion holds it still.
+export function bannerFlutter(placement, tick, reduceMotion = false) {
+  if (reduceMotion || placement.assetId !== 'faction-banner') return 0;
+  const step = Math.floor(tick / 8);
+  return Math.sin(step * 1.3 + seededUnit(0, placement.id) * 6.283) * 0.035;
+}
+// True when a focus point sits inside the painted bounds and its body stands
+// north of the prop's ground anchor, i.e. the prop is drawn in front of it.
+export function propHidesFocus(bounds, anchorY, focusPoints, zoom) {
+  for (const point of focusPoints) {
+    if (point.x > bounds.left + 8 && point.x < bounds.right - 8 && point.y > bounds.top + 8 && point.y < bounds.bottom - 8 && point.y + 32 * zoom < anchorY) return true;
+  }
+  return false;
+}
+
 export function createAuthoredHeldWeaponDisplay({ index, atlasTexture, ContainerClass, SpriteClass, TextureClass, RectangleClass } = {}) {
   if (!index?.frameById || !atlasTexture?.source) throw new TypeError('authored weapon index and texture are required');
   let container = null;
@@ -227,8 +255,9 @@ export function createAuthoredPropDisplay({ index, atlasTexture, renderAssets = 
       const painted = entry.frame.alphaBounds ?? entry.frame.frame;
       entry.sprite.scale.set(projection.scaleX, projection.scaleY);
       const life=worldDesignPropPresentation({placement:entry.placement,bounds,focusPoints,tick,reduceMotion});
-      entry.sprite.alpha = life.alpha;
-      entry.sprite.skew?.set(life.skewX,0);
+      entry.fadeFrame = stepPropFade(entry.fadeFrame ?? 0, life.alpha < 1 && propHidesFocus(bounds, screen.y, focusPoints, camera.zoom));
+      entry.sprite.alpha = propFadeAlpha(entry.fadeFrame);
+      entry.sprite.skew?.set(life.skewX + bannerFlutter(entry.placement, tick, reduceMotion),0);
       entry.sprite.zIndex = entry.placement.y;
       if (contactShadows) {
         // The shadow belongs to the ground point, not the sprite: a bobbing
