@@ -110,7 +110,7 @@ export async function jackpotFixtureWallets(provider, { balanceWei = LOCAL_WALLE
 }
 
 // Design §A.5 recommended launch rules. With a local suite record, minPaidWei is Chikun's flat entry fee
-// from the record (0.1 zkLTC in contracts/deploy-config.testnet.json), never fee + reserve (J17).
+// from the record (0.01 zkLTC in contracts/deploy-config.testnet.json since 2026-09-26), never fee + reserve (J17).
 export function launchRules(record = null, { fromWeek = 0 } = {}) {
   const chikun = record?.games?.find?.((game) => game.slug === 'chikun');
   return launchRulesFor({ fromWeek, minPaidWei: chikun?.entryFeeWei !== undefined ? BigInt(chikun.entryFeeWei) : LAUNCH_MIN_PAID_WEI });

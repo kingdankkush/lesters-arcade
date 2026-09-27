@@ -29,12 +29,17 @@ test('WO-30 copy avoids stale paid/prototype framing and em dashes', () => {
   }
 });
 
-test('WO-30 official testnet mode copy is explicit about gas and faucet cost', () => {
+// ranked-onboarding (2026-09-26): Ranked is no longer free on testnet. The line says Ranked costs
+// testnet zkLTC from the faucet instead of the old "free, gas only" wording. It names no number:
+// arcade-core.mjs imports this sheet, so the sheet cannot read the fee (the site copy states it).
+test('WO-30 official testnet mode copy is explicit about the cost and the faucet', () => {
   const copy = hmhCopy('modeSelect.ranked.copy');
-  assert.match(copy, /Free on testnet/i);
-  assert.match(copy, /zkLTC gas/i);
-  assert.match(copy, /faucet/i);
+  assert.match(copy, /^Ranked runs cost testnet zkLTC, free from the LiteForge faucet\./);
+  assert.doesNotMatch(copy, /\d/, 'no number the fee constants would have to keep current');
+  assert.doesNotMatch(repoText('apps/portal/src/hmh-copy-sheet.mjs'), /^import\b/m, 'the sheet imports nothing (arcade-core imports it)');
+  assert.doesNotMatch(copy, /Free on testnet|zkLTC gas/i);
   assert.equal(copy.includes('real funds'), false);
+  assert.equal(hmhCopy('modeSelect.free.copy'), 'Free play needs no wallet and never touches the chain. It costs nothing, and runs are not ranked.');
 });
 
 test('WO-30 source wiring consumes the copy sheet in runtime-visible surfaces', () => {

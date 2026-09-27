@@ -86,7 +86,7 @@ const CONTRACT_SOURCE_BY_ID = {
   gameRegistry: 'GameRegistry',
 };
 
-const NATIVE_ENTRY_FEE_WEI = '100000000000000000'; // 0.1 zkLTC
+const NATIVE_ENTRY_FEE_WEI = '10000000000000000'; // 0.01 zkLTC (owner decision 2026-09-26)
 
 function samplePlan(overrides = {}) {
   // Exercise all plan branches: profile change + achievements + paid entry fee.

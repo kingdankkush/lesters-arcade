@@ -31,9 +31,9 @@ import {
 
 const NOW = Date.parse('2026-09-23T12:00:00.000Z');
 const REGISTRY = `0x${'33'.repeat(20)}`;
-// The real 0.002 zkLTC reserve and the 0.102 zkLTC entry it implies (0.1 +
+// The real 0.002 zkLTC reserve and the 0.012 zkLTC entry it implies (0.01 +
 // 0.002); these rows never reach a chain, so the values are only realistic.
-const ENTRY_AMOUNT_WEI = 102_000_000_000_000_000n;
+const ENTRY_AMOUNT_WEI = 12_000_000_000_000_000n;
 const DEPLOYMENT = Object.freeze({
   status: 'deployed', chainId: 4441, settlementGasReserveWei: REAL_SETTLEMENT_GAS_RESERVE_WEI,
   addresses: Object.freeze({ scoreSubmissionRegistry: REGISTRY, arcadeRankedEntry: `0x${'44'.repeat(20)}` }),

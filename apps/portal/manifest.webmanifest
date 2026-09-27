@@ -1,7 +1,7 @@
 {
   "name": "Lester's Arcade",
   "short_name": "Lester's Arcade",
-  "description": "Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.102 testnet zkLTC per run, with verified scores published on LitVM.",
+  "description": "Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.012 testnet zkLTC per run, with verified scores published on LitVM.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

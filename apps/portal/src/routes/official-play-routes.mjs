@@ -1,5 +1,6 @@
 import { PORTAL_COPY, gameFor } from '../portal-content.mjs';
 import { JACKPOT_LIVE } from '../jackpot-config.mjs';
+import { FAUCET_LINK_TEXT } from '../ranked-facts.mjs';
 import {
   HERO_SELECT_STAT_MAX,
   activeCarouselIndex,
@@ -329,6 +330,8 @@ export function createOfficialPlayRoutes({
     // preview wording live. A game without an entry keeps its descriptor.
     const siteCopy = portalCopy.modeSelect?.[modeSelect.gameId];
     const ranked = siteCopy ? { ...modeSelect.ranked, copy: siteCopy.ranked } : modeSelect.ranked;
+    // The Free card states the price too: no wallet, no fee, never on chain (ranked-onboarding).
+    const free = siteCopy?.free ? { ...modeSelect.free, copy: siteCopy.free } : modeSelect.free;
     applyGameModeSelectBackground(dom.officialModeSelect, modeSelect);
     dom.officialModeSelect.dataset.gameId = modeSelect.gameId;
     dom.officialModeSelect.dataset.artStatus = modeSelect.artStatus;
@@ -349,7 +352,7 @@ export function createOfficialPlayRoutes({
       title.textContent = model.label;
       copy.textContent = model.copy;
     };
-    syncModeCard(dom.officialFreeModeButton, dom.officialFreeModeBanner, dom.officialFreeModeTitle, dom.officialFreeModeCopy, modeSelect.free);
+    syncModeCard(dom.officialFreeModeButton, dom.officialFreeModeBanner, dom.officialFreeModeTitle, dom.officialFreeModeCopy, free);
     syncModeCard(dom.officialRankedModeButton, dom.officialRankedModeBanner, dom.officialRankedModeTitle, dom.officialRankedModeCopy, ranked);
     // Weekly Jackpot marquee (design §D.3): lazy, Chikun only; the panel hides itself for other games.
     if (jackpotLive) import('../jackpot/chikun-jackpot-panel.mjs').then((panel) => panel.default(dom.officialModeSelect)).catch(() => {});
@@ -360,14 +363,14 @@ export function createOfficialPlayRoutes({
     dom.officialRankedTooltip.replaceChildren();
     dom.officialRankedTooltip.dataset.state = connectedWallet ? '' : 'guest';
     if (!connectedWallet) {
-      appendText(dom.officialRankedTooltip, 'strong', `${modeSelect.free.label} is open to guests`);
-      appendText(dom.officialRankedTooltip, 'span', `${modeSelect.free.copy} ${portalCopy.modeGuestRanked ?? `Connect a wallet when you want ${ranked.label}.`}`);
+      appendText(dom.officialRankedTooltip, 'strong', `${free.label} is open to guests`);
+      appendText(dom.officialRankedTooltip, 'span', `${free.copy} ${portalCopy.modeGuestRanked ?? `Connect a wallet when you want ${ranked.label}.`}`);
     } else {
       appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: ${portalCopy.modeRankedTooltip}`);
       appendText(dom.officialRankedTooltip, 'span', ranked.copy);
     }
     if (SETTLEMENT_LIVE && ranked.requiresZkLtc) {
-      const link = el('a', { className: 'wallet-link', textContent: 'Get zkLTC faucet', href: ranked.faucetUrl, target: '_blank', rel: 'noreferrer' });
+      const link = el('a', { className: 'wallet-link', textContent: FAUCET_LINK_TEXT, href: ranked.faucetUrl, target: '_blank', rel: 'noopener noreferrer' });
       dom.officialRankedTooltip.append(link);
     }
   }

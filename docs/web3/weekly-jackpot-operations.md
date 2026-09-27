@@ -23,6 +23,8 @@ Nothing here is run against LiteForge by an agent. Every ⚠ step of the design'
 
 Record: `contracts/deployment-record.jackpot.json`; generated module `apps/portal/src/generated/litvm-jackpot.mjs` (status `deployed`). Receipt: `docs/qa/jackpot-deploy-20260926.json`. `JACKPOT_LIVE` stays `false`; the server stays unconfigured (and the keeper cron a no-op) until runbook E6 sets `JACKPOT_KEEPER_PRIVATE_KEY` and `JACKPOT_CONTRACT_ADDRESS` in Vercel.
 
+Fee change (owner decision 2026-09-26): the Ranked entry fee drops to 0.01 zkLTC (0.012 zkLTC per run with the reserve) while epoch 2961's `minPaidWei` stays 0.1 zkLTC (rules are immutable per week, J17), so once the operator's `setEntryFee` lands no run qualifies on this instance. Pots are funded only by tCHIKUN deposits, so the fee change moves no money. The jackpot is on hold until mainnet: do not fund the pot or schedule rules for it now. The mainnet instance is deployed with `minPaidWei` equal to the fee in force then (`--rules launch` now derives 0.01 zkLTC from `LAUNCH_MIN_PAID_WEI`, pinned to the fee by `tests/ranked-fee-source-of-truth.test.mjs`), or its rules are rescheduled on a Monday boundary. Hand-over: `docs/handoffs/ranked-fee-20260926.md`.
+
 ### What is deployed
 
 | Contract | Source | Size (solc 0.8.35, optimizer 200) |
@@ -124,7 +126,7 @@ These details go beyond the design's tables. Design §A.9, §A.13, §A.14 and §
 
    The manifest lists the operator's pending nonce, the predicted tCHIKUN and jackpot addresses, the constructor arguments, gas estimates and an `eth_call` of both creation codes. Add `--json` for the raw manifest. `--first-week` takes `next` or a future `YYYY-Www`; `current` and past weeks are refused.
 
-   `--rules launch` is design §A.5: season `chikun-season-preview-1`, `minPaidWei` 0.1 zkLTC (the flat fee alone), `maxSurvivalSeconds` 3599, no score cap, no prize cap, `minFundWei` 100 tCHIKUN and `adminClearOnly` true for the first epoch. `--rules <file.json>` takes the same fields (seasons as names or bytes32).
+   `--rules launch` is design §A.5: season `chikun-season-preview-1`, `minPaidWei` equal to the flat fee alone (0.01 zkLTC since the 2026-09-26 fee decision; the deployed 2961 epoch was created at 0.1 zkLTC), `maxSurvivalSeconds` 3599, no score cap, no prize cap, `minFundWei` 100 tCHIKUN and `adminClearOnly` true for the first epoch. `--rules <file.json>` takes the same fields (seasons as names or bytes32).
 
 3. **E4 ⚠ Broadcast** (the same flags plus):
 

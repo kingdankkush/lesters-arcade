@@ -4,9 +4,11 @@ Solidity contracts for Lester's Arcade Ranked Mode on **LitVM LiteForge testnet*
 token **zkLTC**, 18 decimals, Arbitrum Orbit/Nitro). This set replaces the June 2026 ERC-20/USDC design,
 which is archived read-only under [`archive/2026-06-legacy/`](archive/2026-06-legacy/README.md).
 
-Owner direction (2026-09-16): Ranked Mode charges **0.1 zkLTC in the native token at entry**; that fee funds
+Owner direction (2026-09-16): Ranked Mode charges a flat entry **in the native token at entry**; that fee funds
 on-chain settlement of the run (score + session data); achievements are **soulbound NFTs** bound to the wallet;
-the June contracts are outdated and must be replaced and redeployed.
+the June contracts are outdated and must be replaced and redeployed. The entry launched at 0.1 zkLTC; the owner
+lowered it to **0.01 zkLTC** on 2026-09-26 (0.012 per run with the 0.002 reserve). The operator applies it on
+chain with `setEntryFee` after the release that carries it; players always pay `quoteEntry(gameId).totalWei`.
 
 ## What is deployed today vs. not
 
@@ -30,7 +32,7 @@ the June contracts are outdated and must be replaced and redeployed.
 ## Ranked flow
 
 ```
-GameRegistry.getGame(gameId)               -> entryFeeWei = 0.1 zkLTC, playable, devWalletConfirmed
+GameRegistry.getGame(gameId)               -> entryFeeWei = 0.01 zkLTC, playable, devWalletConfirmed
 ArcadeRankedEntry.quoteEntry(gameId)       -> (entryFeeWei, settlementGasReserveWei, totalWei)
 ArcadeRankedEntry.openSession{value: total} -> RankedSessionOpened + SettlementReserveForwarded (reserve -> relayerVault)
                                               + RevenueRouted (flat fee split 85/15 instantly)
@@ -45,7 +47,8 @@ ScoreSubmissionRegistry.submitVerifiedSession(run, achievements, signature)
 ## Fee split (testnet config)
 
 All three registered games (owner decision 2026-09-16): `devBps 8500 / platformBps 0 / liquidityBps 0 /
-treasuryBps 1500` (85 % developer, 15 % treasury), `entryFeeWei 100000000000000000` (0.1 zkLTC) plus
+treasuryBps 1500` (85 % developer, 15 % treasury), `entryFeeWei 10000000000000000` (0.01 zkLTC, owner decision
+2026-09-26; 0.1 zkLTC before) plus
 `settlementGasReserveWei 2000000000000000` (0.002 zkLTC, owner decision 2026-09-23; the operator retunes it with `setSettlementGasReserve`) forwarded to
 `relayerVault`. Developer wallet and treasury vault are the owner wallet; relayer vault defaults to the
 operator. This is a **testnet epoch**: mainnet is a fresh deployment set.

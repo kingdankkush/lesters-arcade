@@ -106,27 +106,27 @@ test('profile change uses the idempotent setProfile method', () => {
   assert.ok(methods.indexOf('setProfile') < methods.indexOf('submitVerifiedSession'));
 });
 
-test('a native 0.1 zkLTC entry fee produces one payable openSession call with no caller split/token args', () => {
+test('a native 0.01 zkLTC entry fee produces one payable openSession call with no caller split/token args', () => {
   const plan = buildSettlementPlan({
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-paid', score: 10,
-    entryFeeWei: '100000000000000000', paymentToken: 'zkLTC',
+    entryFeeWei: '10000000000000000', paymentToken: 'zkLTC',
   });
   const entry = plan.calls.find((c) => c.contract === 'arcadeRankedEntry');
   assert.ok(entry, 'paid session must include the native entry call');
   assert.equal(entry.method, 'openSession');
   assert.equal(plan.calls[0], entry, 'the entry fee precedes the run and the score submit');
-  assert.equal(entry.valueWei, '102000000000000000', 'flat fee plus the settlement gas reserve');
-  assert.equal(entry.entryFeeWei, '100000000000000000');
+  assert.equal(entry.valueWei, '12000000000000000', 'flat fee plus the settlement gas reserve');
+  assert.equal(entry.entryFeeWei, '10000000000000000');
   assert.equal(entry.settlementGasReserveWei, '2000000000000000');
-  assert.equal(plan.entryTotalWei, '102000000000000000');
+  assert.equal(plan.entryTotalWei, '12000000000000000');
   assert.deepEqual(Object.keys(entry.args).sort(), ['gameId', 'sessionId']);
   assert.equal('paymentToken' in entry.args, false);
   assert.equal('split' in entry.args, false);
   assert.ok(!plan.calls.some((c) => c.contract === 'arcadePaymentRouter' || c.method === 'startPaidSession'), 'the ERC-20 router is retired');
-  assert.equal(plan.entryFeeWei, '100000000000000000');
+  assert.equal(plan.entryFeeWei, '10000000000000000');
   assert.equal(plan.paymentToken, 'zkLTC');
-  assert.equal(plan.revenueSplit.dev, 85_000, '85% of the 100,000 micro-unit preview (0.1 zkLTC)');
-  assert.equal(plan.revenueSplit.treasury, 15_000);
+  assert.equal(plan.revenueSplit.dev, 8_500, '85% of the 10,000 micro-unit preview (0.01 zkLTC)');
+  assert.equal(plan.revenueSplit.treasury, 1_500);
 });
 
 test('zero entry fee emits no entry call', () => {

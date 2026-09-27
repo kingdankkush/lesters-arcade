@@ -257,7 +257,7 @@ test('the local stack starts unmigrated with fixture env, and its first requests
   for (const gameId of DEFAULT_GAMES) {
     const game = await contracts.gameRegistry.getGame(ethers.id(gameId));
     assert.deepEqual([game.exists, game.playable, game.devWalletConfirmed], [true, true, true], gameId);
-    assert.equal((await contracts.rankedEntry.quoteEntry(ethers.id(gameId))).totalWei, 102_000_000_000_000_000n, `${gameId} entry is 0.102 zkLTC`);
+    assert.equal((await contracts.rankedEntry.quoteEntry(ethers.id(gameId))).totalWei, 12_000_000_000_000_000n, `${gameId} entry is 0.012 zkLTC`);
   }
 
   // A board read on the empty database: the handler migrates it first.
@@ -302,7 +302,7 @@ test('the driver plays one Ranked session per game in process, and every negativ
     assert.ok(game.checks.every((check) => check.ok), gameId);
     assert.deepEqual([game.prior.confirmedRuns, game.prior.achievements], [0, []], `${gameId}: a fresh wallet`);
     assert.equal(game.leaderboard.walletBest, true, `${gameId}: a first run is the wallet's best`);
-    assert.equal(game.entry.totalWei, '102000000000000000');
+    assert.equal(game.entry.totalWei, '12000000000000000');
     assert.equal(game.settle.status, 'confirmed');
     assert.equal(game.settle.score, game.run.expectedScore, `${gameId}: the server replayed the same score`);
     assert.ok(game.profile.achievements.length > 0, `${gameId}: a first run earns achievements`);

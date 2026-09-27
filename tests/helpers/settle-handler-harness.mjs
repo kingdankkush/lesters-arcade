@@ -26,6 +26,7 @@ import * as verify from '../../server/verify/index.mjs';
 import { readAchievementHistory } from '../../server/neon/queries.mjs';
 import { periodKeysFor } from '../../server/neon/period-keys.mjs';
 import * as settleApi from '../../api/settle.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../../server/config.mjs';
 import * as statusApi from '../../api/settle-status.mjs';
 import * as seedApi from '../../api/ranked-seed.mjs';
 import * as nonceApi from '../../api/session-nonce.mjs';
@@ -292,7 +293,7 @@ export function createSettleHarness({ ip }) {
     assert.equal(row.envelope_hash, expected.envelopeHash);
     assert.deepEqual([row.runtime_id, row.season_id, row.build_hash, Number(row.seed)], [RANKED_GAMES[gameId].runtimeId, RANKED_GAMES[gameId].seasonId, FIXTURE_BUILD_HASHES[gameId], body.identity.seed]);
     assert.equal(row.entry_amount_wei, paid.amountWei.toString());
-    assert.equal(BigInt(row.entry_amount_wei) >= BigInt('102000000000000000'), true, 'the 0.102 zkLTC entry');
+    assert.equal(BigInt(row.entry_amount_wei) >= BigInt(DEFAULT_MIN_PAID_WEI), true, 'at least the settle floor (fee + reserve)');
     assert.equal(row.opened_at, new Date(paid.openedAt * 1000).toISOString());
     const keys = periodKeysFor(paid.openedAt * 1000);
     assert.deepEqual([row.day_key, row.week_key, row.month_key], [keys.day, keys.week, keys.month]);

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { Readable } from 'node:stream';
 import test from 'node:test';
 import { inspect } from 'node:util';
@@ -295,4 +296,18 @@ test('Neon clients carry a schemaKey without credentials and surface the SQLSTAT
   assert.equal(first.db, second.db, 'the Neon client is cached at module scope');
   assert.equal((await buildBaseDeps({}, { deployment: DEPLOYED })).db, null);
   assert.equal(typeof first.nowMs, 'function');
+});
+
+// Contract A27 (settle floor): the default RANKED_MIN_PAID_WEI is exactly the deploy-config fee plus reserve,
+// 0.01 + 0.002 zkLTC since the owner's 2026-09-26 fee decision (0.1 + 0.002 before). Release order: a server
+// with this floor ships BEFORE the on-chain GameRegistry.setEntryFee, because runs paid at the old 0.102
+// still clear a 0.012 floor, while a 0.012 run would be refused (402 entry-underpaid) by a 0.102 floor.
+test('the default settle floor equals entryFeeWei + settlementGasReserveWei of deploy-config.testnet.json', () => {
+  const config = JSON.parse(readFileSync(new URL('../contracts/deploy-config.testnet.json', import.meta.url), 'utf8'));
+  const fees = new Set(config.games.map((game) => game.entryFeeWei));
+  assert.equal(fees.size, 1, 'every game charges the same flat fee');
+  const [entryFeeWei] = fees;
+  assert.equal(BigInt(DEFAULT_MIN_PAID_WEI), BigInt(entryFeeWei) + BigInt(config.settlementGasReserveWei));
+  assert.equal(DEFAULT_MIN_PAID_WEI, '12000000000000000', '0.012 zkLTC: the 0.01 fee plus the 0.002 reserve');
+  assert.ok(102_000_000_000_000_000n >= BigInt(DEFAULT_MIN_PAID_WEI), 'runs paid at the previous 0.102 zkLTC price still settle');
 });

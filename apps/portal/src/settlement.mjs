@@ -135,7 +135,7 @@ export function buildSettlementPlan({
 
   const calls = [];
 
-  // Native 0.1 zkLTC entry (owner direction 2026-09-16). The fee is paid to
+  // Native 0.01 zkLTC entry (owner directions 2026-09-16 and 2026-09-26). The fee is paid to
   // ArcadeRankedEntry.openSession(sessionId, gameId) with msg.value at Ranked
   // entry, before the run; the contract derives the split from GameRegistry
   // and records the paid session the score contract later requires.

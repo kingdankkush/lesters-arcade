@@ -22,7 +22,11 @@ import { LITVM_JACKPOT } from '../apps/portal/src/generated/litvm-jackpot.mjs';
 import { loadDeployment, UNAVAILABLE_DEPLOYMENT } from './deployment.mjs';
 
 export const DEFAULT_RPC_URL = 'https://liteforge.rpc.caldera.xyz/http';
-export const DEFAULT_MIN_PAID_WEI = '102000000000000000';
+// Settle floor (contract A27): the 0.01 zkLTC entry fee plus the 0.002 zkLTC settlement reserve (owner decision
+// 2026-09-26; 0.102 before). Release order: this floor ships BEFORE the operator's GameRegistry.setEntryFee, because
+// runs paid at the old 0.102 still clear it, while 0.012 runs would fail the old floor (402 entry-underpaid).
+// tests/server-http-config.test.mjs pins it to contracts/deploy-config.testnet.json (fee + reserve).
+export const DEFAULT_MIN_PAID_WEI = '12000000000000000';
 // 0.01 zkLTC per keeper transaction (design §C.1, JACKPOT_MAX_TX_FEE_WEI).
 export const DEFAULT_JACKPOT_MAX_TX_FEE_WEI = '10000000000000000';
 export const JACKPOT_ENV_NAMES = Object.freeze(['JACKPOT_KEEPER_PRIVATE_KEY', 'JACKPOT_CONTRACT_ADDRESS', 'JACKPOT_PAUSED', 'JACKPOT_UI_HIDDEN', 'JACKPOT_MAX_TX_FEE_WEI', 'JACKPOT_ADMIN_WALLET']);

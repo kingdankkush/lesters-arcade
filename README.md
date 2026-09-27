@@ -10,6 +10,26 @@ Batch release after 1.8.3. Hard Money Heroes Ranked verification refuses twelve 
 
 Production deployment `dpl_61u26aJuaoPMoEGthLcqp7MTUh6N` (source `4f947386`); site/game version `1.8.4`; cache marker `lesters-arcade-v57-fair-play`. The local and Vercel gates pass 5,168 of 5,219 tests with exactly 51 unchanged retired exceptions; all 160 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260926-1.8.4.json). Rollback: Instant Rollback to `dpl_BoYxVQ4rW4zyeNUuisJv88eHLFGK` (1.8.3). Continue on `fable/master-list-20260916`.
 
+> **Pending release (owner decision 2026-09-26):** the Ranked entry fee drops from 0.1 to 0.01 zkLTC, so a run costs 0.012 zkLTC with the 0.002 settlement reserve. The site copy, the modal's static rows, `contracts/deploy-config.testnet.json` and the settle floor (`DEFAULT_MIN_PAID_WEI`) on `fable/ranked-fee-001` already say 0.012; that server ships first, and only then does the operator send `GameRegistry.setEntryFee` for the three games. Details and the release order: `docs/handoffs/ranked-fee-20260926.md`.
+
+## How to play
+
+Every game at [lestersarcade.io](https://lestersarcade.io) has two modes. Free play needs no wallet and never touches the chain. Ranked puts your runs on the leaderboards.
+
+**Free:** open [lestersarcade.io/games](https://lestersarcade.io/games), pick a game and choose Free Mode. No wallet, no sign-up, no download.
+
+**Ranked** (LitVM LiteForge testnet, chain 4441):
+
+1. Connect a wallet: MetaMask, Rabby, OKX Wallet or another browser wallet, or WalletConnect on a phone. The site adds the LitVM LiteForge network for you.
+2. Get free testnet zkLTC from the [LiteForge faucet](https://liteforge.hub.caldera.xyz) (0.05 per request, enough for about 3 Ranked runs).
+3. Sign in with one free signature. It costs nothing and sends no transaction.
+4. Open a game, choose Play Ranked and confirm the total once in your wallet.
+5. Play. The arcade's server checks your run and its relayer publishes it on LitVM, usually within about a minute. It then shows on the leaderboards, your profile and your achievements.
+
+Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain. The entry is split 85% to the game's developer and 15% to the arcade. Testnet zkLTC has no monetary value. The player guide at [lestersarcade.io/how-ranked-works](https://lestersarcade.io/how-ranked-works) covers every step, what is checked for each game, the Weekly, Monthly and All-time boards, the FAQ and fixes for common problems.
+
+For maintainers: the fee lives in one place, `RANKED_ENTRY_FEE_WEI` in [`apps/portal/src/ranked-fee.mjs`](apps/portal/src/ranked-fee.mjs), which `arcade-core.mjs` re-exports; `tests/ranked-fee-source-of-truth.test.mjs` ties it to the deploy config and the server settle floor. Every other static Ranked fact on the site (faucet, boards, achievements, the guide URL and the canonical wording) comes from [`apps/portal/src/ranked-facts.mjs`](apps/portal/src/ranked-facts.mjs), which reads the fee from ranked-fee.mjs (`tests/ranked-facts.test.mjs` ties it to the faucet, the boards and the achievement catalogs); the guide page is generated from [`apps/portal/src/ranked-guide-content.mjs`](apps/portal/src/ranked-guide-content.mjs) by `node scripts/build-portal-pages.mjs`.
+
 # Lester's Arcade — 1.8.3 verified live: game version on every score, 237 MB lighter, jackpot server staged
 
 Batch release after 1.8.2. Every verified score now shows the game version it was played on (owner decision: no testnet season resets): a Version column on the Scores boards (a chip on phones), a label per run in profile history and a line on share pages. HMH build hashes gain a cabinet segment (`HMH v0.5`); earlier hashes stay valid. About 237 MB of unreferenced generated art and dead generator scripts are removed (753 files; report `docs/cleanup/unused-assets-audit-20260925.md`). The Chikun Weekly Jackpot server is in (Neon migration 3, a keeper cron that is a recorded no-op until the jackpot contract is deployed, `/api/jackpot` answering not-configured); nothing player-facing changes for the jackpot yet and `JACKPOT_LIVE` stays false. Contracts, fees and flags of the live Ranked system are unchanged.
@@ -429,7 +449,7 @@ This is the launch flow in source (the [pre-deployment guide](docs/handoffs/pre-
 
 1. **Sign in.** The player picks a wallet (EIP-6963: MetaMask, Rabby; WalletConnect on lestersarcade.io), gets a server nonce from `/api/session/nonce` and signs one free SIWE message; `/api/session` returns a session token bound to the wallet and the environment.
 2. **Seed ticket.** Approving the Ranked entry first asks `/api/ranked/seed` for a ticket: a random salt MAC'd to the session, wallet, game, season and build. The run's seed comes from it, so nobody can pick an easy seed or replay someone else's run.
-3. **Entry.** One wallet confirmation calls `ArcadeRankedEntry.openSession` with the session key and the quoted 0.102 zkLTC (0.1 entry plus a 0.002 settlement reserve). The run starts as soon as the transaction is sent.
+3. **Entry.** One wallet confirmation calls `ArcadeRankedEntry.openSession` with the session key and the quoted 0.012 zkLTC (0.01 entry plus a 0.002 settlement reserve; owner decision 2026-09-26, lowered from 0.1 + 0.002 = 0.102, in force on chain once the operator's `setEntryFee` lands after the release that carries the matching settle floor). The run starts as soon as the transaction is sent.
 4. **Relayed publish.** When the run ends, the browser posts the evidence to `/api/settle`. The server replays Chikun and STACKED runs and plausibility-checks HMH runs, checks the paid entry on chain, and its relayer publishes the verified result with `submitVerifiedSession`; a retry queue and a per-minute cron finish anything that stalls. The results screen follows the run from entry to published, with explorer links.
 5. **Index.** Confirmed runs, achievements and on-chain profiles live in Neon (`verified_sessions`, `achievement_unlocks`, `wallet_profiles`), indexed from the chain every five minutes. Scores (`/api/leaderboard`, best run per wallet per period) and profiles (`/api/profile`) read only that index; unlockable looks follow the recorded achievements.
 6. **Share.** A published run shares `https://lestersarcade.io/s/<shareId>`, a server-rendered page with an OG card (`/api/share-card`); the X post names @LestersArcade and carries no wallet address or hashtag. Preview and practice runs share the Free template.

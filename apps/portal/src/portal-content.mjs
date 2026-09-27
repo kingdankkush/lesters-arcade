@@ -1,9 +1,12 @@
 // Public, non-personal discovery facts shared by prerendered HTML and SPA views.
-// The flags come from settlement.mjs, which imports arcade-core.mjs and the
-// generated address module, so this module is for the browser and the page
-// builder only: server/** and api/** never import it (tests/portal-copy.test.mjs).
+// The flags come from settlement.mjs and the Ranked fee strings from
+// arcade-core.mjs (which settlement.mjs imports too, with the generated address
+// module), so this module is for the browser and the page builder only:
+// server/** and api/** never import it (tests/portal-copy.test.mjs).
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
 import { JACKPOT_LIVE } from './jackpot-config.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from './arcade-core.mjs';
+import { RANKED_FACTS, RANKED_WORDING } from './ranked-facts.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
 export const PORTAL_GAMES = Object.freeze([
@@ -52,13 +55,17 @@ export const PORTAL_FLAGS = Object.freeze({
   chikunJackpotLive: JACKPOT_LIVE === true,
 });
 
-// Launch Ranked terms (guide §3.2). The server refuses a session that paid less
-// than fee + reserve (contract A27, RANKED_MIN_PAID_WEI = 102000000000000000);
-// tests/portal-copy.test.mjs pins these against the code.
+// Launch Ranked terms (guide §3.2, amended 2026-09-26: a 0.01 zkLTC entry plus
+// the 0.002 zkLTC reserve is 0.012 zkLTC per run). The strings derive from the
+// wei pair in arcade-core.mjs, the single source of the fee. The server refuses
+// a session that paid less than fee + reserve (contract A27, RANKED_MIN_PAID_WEI
+// default 12000000000000000); that floor ships before the on-chain setEntryFee,
+// never after. tests/portal-copy.test.mjs and
+// tests/ranked-fee-source-of-truth.test.mjs pin these against the code.
 export const RANKED_LAUNCH_TERMS = Object.freeze({
-  feeZkLtc: '0.1',
-  reserveZkLtc: '0.002',
-  totalZkLtc: '0.102',
+  feeZkLtc: RANKED_ENTRY_FEE_ZKLTC,
+  reserveZkLtc: RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC,
+  totalZkLtc: RANKED_ENTRY_TOTAL_ZKLTC,
   developerPercent: 85,
   arcadePercent: 15,
 });
@@ -71,6 +78,29 @@ export const JACKPOT_NAME = "Chikun's Escape Weekly Jackpot";
 // JACKPOT_RULES_PATH of jackpot-config.mjs, as a literal: an import would add a shared chunk to the
 // initial bundle (tests/jackpot-ui-rules-page.test.mjs pins the two equal).
 const JACKPOT_RULES_URL_PATH = '/jackpot/chikun';
+
+// The Free card of each game's mode select (ranked-onboarding, 2026-09-26). True in every flag
+// state: Free play never needs a wallet or touches the chain.
+const FREE_MODE_LINES = Object.freeze({
+  'lester-blaster': `${RANKED_WORDING.free} It costs nothing, and runs are not ranked.`,
+  chikun: `${RANKED_WORDING.free} It costs nothing, and runs are not ranked.`,
+  stacked: `${RANKED_WORDING.free} It costs nothing, lets you pick your starting level, and is not ranked.`,
+});
+
+// The "Ranked" rows of each game's details (discover pages and the SPA game view), live only.
+// Every number comes from RANKED_FACTS; the guide link is RANKED_FACTS.guidePath. A row is
+// [label, text] or [label, text, [link label, external href]] (the link opens in a new tab).
+function rankedSectionFor(gameId) {
+  return Object.freeze([
+    Object.freeze(['Price', RANKED_WORDING.price]),
+    Object.freeze(['Free zkLTC', RANKED_WORDING.faucet, Object.freeze([`Open the ${RANKED_FACTS.faucetName}`, RANKED_FACTS.faucetUrl])]),
+    Object.freeze(['What is checked', gameId === 'lester-blaster'
+      ? "The arcade's server plausibility-checks your run against the game's limits; it is not replayed."
+      : "The arcade's server replays your run from its recorded inputs before it is published on LitVM."]),
+    Object.freeze(['Boards', `${RANKED_FACTS.boards.slice(0, -1).join(', ')} and ${RANKED_FACTS.boards[RANKED_FACTS.boards.length - 1]} boards rank the best verified score of each wallet. Weekly boards reset every ${RANKED_FACTS.weeklyReset}.`]),
+    Object.freeze(['Achievements', `${RANKED_FACTS.achievements[gameId]} achievements to earn from verified Ranked runs, shown on your profile.`]),
+  ]);
+}
 
 const joinList = items => items.length < 3 ? items.join(' and ') : items.slice(0, -1).join('; ')+'; and '+items[items.length-1];
 
@@ -133,6 +163,8 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
       ? `${entryTerms} ${noValue} Testnet entries are not refunded. Free Mode is always free.`
       : "The current Ranked preview requires no entry fee and pays no prizes. No score transaction is sent. Lester's Arcade is developing its wallet features for LitVM LiteForge testnet."],
     ...(jackpot?.faq ? [jackpot.faq] : []),
+    // ranked-onboarding (2026-09-26): where the zkLTC comes from, and the player guide.
+    ...(live ? [['Where do I get zkLTC for Ranked?', `${RANKED_WORDING.faucet} ${RANKED_WORDING.value} The player guide at lestersarcade.io${RANKED_FACTS.guidePath} walks through every step, from connecting a wallet to your first Ranked run.`]] : []),
     ...(live ? [['How are Ranked runs checked and published?', "When a Ranked run ends, the arcade server checks it. Chikun's Escape and STACKED runs are replayed on the server from their recorded inputs. Hard Money Heroes runs are plausibility-checked against the game's limits; they are not replayed. The arcade's relayer then publishes the result on LitVM, and your results screen links to the transaction. "+retries]] : []),
     ['Can I play on my phone?', 'The three active games support on-screen touch controls as well as desktop input. A current browser is required. Performance varies by device; the games include settings for controls, audio, and visual effects.'],
   ];
@@ -159,7 +191,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
       : "Connect a wallet when you're ready to try the local Ranked preview."),
     howConnectTitle: hosted ? 'Sign in with your wallet.' : 'Connect your wallet.',
     howConnect: (hosted ? 'Choose your wallet and sign one message. Signing in costs nothing and sends no transaction. ' : 'Connect a browser wallet and follow its prompts. Your wallet identifies your local player profile. ')
-      +(live ? `Each Ranked run then costs ${total} testnet zkLTC, confirmed once in your wallet.` : 'The current preview needs no entry fee or score transaction.'),
+      +(live ? `Each Ranked run then costs ${total} testnet zkLTC, confirmed once in your wallet. ${RANKED_WORDING.faucet}` : 'The current preview needs no entry fee or score transaction.'),
     howConnectAction: hosted ? 'Sign in with a wallet →' : 'Connect a wallet →',
     howProfile: live
       ? 'Choose a display name and avatar on chain; each change is a small transaction you pay for. Your public profile shows your best scores, verified Ranked runs, and the achievements recorded for your wallet.'
@@ -198,6 +230,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.`
           : 'A wallet-bound Ranked preview run. No entry fee and no prizes; nothing is published on chain yet.',
+        free: FREE_MODE_LINES['lester-blaster'],
       }),
       chikun: Object.freeze({
         copy: live
@@ -209,6 +242,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play with replay verification. Accepted scores are saved on this device; nothing is published on chain yet.',
+        free: FREE_MODE_LINES.chikun,
       }),
       stacked: Object.freeze({
         copy: live
@@ -220,6 +254,7 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
         ranked: live
           ? `${total} testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.`
           : 'Wallet-bound play from level 1 with no undo, checked by replay. Accepted scores are saved on this device; nothing is published on chain yet.',
+        free: FREE_MODE_LINES.stacked,
       }),
     }),
     // The guest line under the mode-select cards.
@@ -241,6 +276,9 @@ function siteCopy(settlementLive, hostedProfileSync, jackpot) {
     rankedDetail: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live
       ? `Free Mode is open to everyone and needs no wallet. Ranked costs ${total} testnet zkLTC per run; the arcade server ${game.id === 'lester-blaster' ? 'plausibility-checks each run (it is not replayed)' : 'replays each run from your inputs'} before publishing it on LitVM.`
       : 'Free Mode is open to guests. Wallet-connected Ranked is a device-local preview with no fees or prizes.']))),
+    // Game details "Ranked" rows (discover pages and the SPA game view): live only, since a preview has
+    // no price, publishing or achievements to state. Each row is [label, text] or [label, text, [link label, href]].
+    rankedSection: Object.freeze(Object.fromEntries(PORTAL_GAMES.map(game => [game.id, live ? rankedSectionFor(game.id) : null]))),
     // SPA headers of the Scores and Profile pages, and the splash wallet note.
     scoresView: hosted ? 'Global Weekly, Monthly, and All-time leaderboards of verified Ranked runs, best score per wallet.' : 'Browse the device-local Ranked preview records saved in this browser.',
     profileWalletView: live ? 'Your verified Ranked runs, achievements, and on-chain name are tied to this wallet and follow you to any device.'
@@ -304,7 +342,7 @@ export const JACKPOT_LEGAL_DRAFT = /* @__PURE__ */ Object.freeze({
   title: 'Weekly Jackpot rules',
   items: /* @__PURE__ */ Object.freeze([
     /* @__PURE__ */ Object.freeze(['Skill contest.', "The eligible wallet with the highest verified Ranked Chikun's Escape score for the week (Monday 00:00 UTC to the next Monday 00:00 UTC) wins that week's funded prize, paid on chain after a 24-hour review."]),
-    /* @__PURE__ */ Object.freeze(['Entry.', 'Only Ranked runs count (0.102 testnet zkLTC per run). Free Mode is always free but is not eligible.']),
+    /* @__PURE__ */ Object.freeze(['Entry.', `Only Ranked runs count (${RANKED_ENTRY_TOTAL_ZKLTC} testnet zkLTC per run). Free Mode is always free but is not eligible.`]),
     /* @__PURE__ */ Object.freeze(['Prizes.', 'A prize exists only when it is funded on chain; the amount shown is the funded amount. If no eligible run qualifies, the prize rolls over to the next week.']),
     /* @__PURE__ */ Object.freeze(['Fair play.', 'Runs are replay-verified by the arcade server. Bots, scripts, exploits, shared or rented accounts, or any attempt to manipulate results lead to disqualification. Review decisions are final.']),
     /* @__PURE__ */ Object.freeze(['Eligibility.', "You must be 18 or older (or the age of majority where you live). Lester's Arcade staff and service wallets are not eligible. Void where prohibited; you are responsible for the laws, age limits and taxes that apply to you."]),
@@ -425,12 +463,17 @@ export function portalSchema(path = '/', copy = PORTAL_COPY) {
   return JSON.stringify({'@context':'https://schema.org','@graph':graph}).replace(/</g,'\\u003c');
 }
 
+// The player guide link under a game's "Ranked" rows (discover pages and the SPA game view).
+export const RANKED_GUIDE_LINK_TEXT = 'How Ranked works: steps, free zkLTC and fixes →';
+
 export function renderGameDetails(slug, copy = PORTAL_COPY) {
   const game=gameFor(slug);
   if(!game)return '';
+  const ranked=copy.rankedSection?.[game.id];
   return `<section class="game-detail-story" aria-label="About ${escapeHtml(game.title)}">
     <div><p class="portal-kicker">${escapeHtml(game.genre)}</p><h2>${escapeHtml(game.tag)}</h2><p>${escapeHtml(game.description)}</p></div>
-    <dl><div><dt>Your goal</dt><dd>${escapeHtml(game.goal)}</dd></div><div><dt>How to play</dt><dd>${escapeHtml(game.controls)}</dd></div><div><dt>Free or Ranked?</dt><dd>${escapeHtml(copy.rankedDetail[game.id])}</dd></div></dl>
+    <dl><div><dt>Your goal</dt><dd>${escapeHtml(game.goal)}</dd></div><div><dt>How to play</dt><dd>${escapeHtml(game.controls)}</dd></div><div><dt>Free or Ranked?</dt><dd>${escapeHtml(copy.rankedDetail[game.id])}</dd></div></dl>${ranked ? `
+    <section class="game-detail-ranked" aria-labelledby="gameRanked-${game.slug}"><h3 id="gameRanked-${game.slug}">Ranked</h3><dl>${ranked.map(([label,text,link])=>`<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(text)}${link ? ` <a href="${escapeHtml(link[1])}" target="_blank" rel="noopener noreferrer">${escapeHtml(link[0])}<span class="visually-hidden"> (opens in a new tab)</span></a>` : ''}</dd></div>`).join('')}</dl><a href="${RANKED_FACTS.guidePath}" class="portal-text-link">${escapeHtml(RANKED_GUIDE_LINK_TEXT)}</a></section>` : ''}
     <a href="/games" class="portal-text-link">Explore all games →</a></section>`;
 }
 

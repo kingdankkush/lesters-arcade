@@ -143,6 +143,8 @@ test('API, share and profile deep links route to their functions', () => {
     [`/api/jackpot/replay?session=0x${HEX64}`, `/api/jackpot-replay?session=0x${HEX64}`],
     ['/api/jackpot/review?week=2026-W40', '/api/jackpot-review?week=2026-W40'],
     ['/jackpot/chikun', '/jackpot/chikun.html'],
+    // The Ranked player guide (ranked-onboarding 2026-09-26; the in-game menus link this path).
+    ['/how-ranked-works', '/how-ranked-works.html'],
   ];
   for (const [url, destination] of cases) assert.equal(rewrite(url)?.destination, destination, url);
   for (const url of [`/s/${HEX64.slice(2)}`, `/s/${HEX64}0`, '/profile/0x1234', `/api/session/${HEX64.slice(1)}`, `/api/share-card/${HEX64}.jpg`, '/api/session']) {
@@ -151,7 +153,7 @@ test('API, share and profile deep links route to their functions', () => {
   const sources = vercel.rewrites.map((rule) => rule.source);
   assert.ok(sources.indexOf('/api/session/nonce') < sources.indexOf('/api/session/:id((?:0x)?[0-9a-fA-F]{64})'), 'nonce is routed before the share id');
   assert.ok(sources.indexOf('/api/share-card/:id([0-9a-fA-F]{64}).png') < sources.indexOf('/games/:path*'), 'the new rewrites come before /games/:path*');
-  for (const source of ['/api/jackpot/replay', '/api/jackpot/review', '/jackpot/chikun']) assert.ok(sources.indexOf(source) >= 0 && sources.indexOf(source) < sources.indexOf('/games/:path*'), `${source} comes before /games/:path*`);
+  for (const source of ['/api/jackpot/replay', '/api/jackpot/review', '/jackpot/chikun', '/how-ranked-works']) assert.ok(sources.indexOf(source) >= 0 && sources.indexOf(source) < sources.indexOf('/games/:path*'), `${source} comes before /games/:path*`);
   assert.equal(rewrite('/api/jackpot'), null, '/api/jackpot is the function itself');
   assert.equal(vercel.rewrites.find((rule) => rule.source.startsWith('/api/share-card/')).destination, '/api/share-card?id=:id', 'the card rewrite declares only id, so ?v=<rev> reaches the handler from the original query');
   for (const rule of vercel.rewrites.filter((entry) => entry.destination.startsWith('/api/'))) {

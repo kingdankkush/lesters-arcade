@@ -156,8 +156,8 @@ test('--live, offline: plan only without --yes, wrong chain and short balance re
   const nonceBefore = await local.chain.provider.getTransactionCount(player.address, 'latest');
   assert.equal(await runCli({ argv: argv(rpc.url, fundedKey), log, loadDeployment, loadBrowser }), 0);
   const plan = lines.join('\n');
-  assert.match(plan, /entry chikun: 0\.102 zkLTC/);
-  assert.match(plan, /entry stacked: 0\.102 zkLTC/);
+  assert.match(plan, /entry chikun: 0\.012 zkLTC/);
+  assert.match(plan, /entry stacked: 0\.012 zkLTC/);
   assert.match(plan, new RegExp(`player ${player.address.toLowerCase()}`));
   assert.match(plan, /PLAN ONLY\. Nothing was signed or sent\./);
   assert.equal(await local.chain.provider.getTransactionCount(player.address, 'latest'), nonceBefore);

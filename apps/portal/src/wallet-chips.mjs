@@ -11,6 +11,7 @@
 
 import { ensureWalletPickerStyles } from './wallet-picker.mjs';
 import { LITEFORGE_FAUCET_URL } from './wallet-config.mjs';
+import { FAUCET_CHIP_TEXT } from './ranked-facts.mjs';
 import { formatZkLtc4, RANKED_ENTRY_EVENT } from './ranked-entry-flow.mjs';
 
 export { RANKED_ENTRY_EVENT };
@@ -109,7 +110,8 @@ export function renderBalanceChip({ documentRef = globalThis.document, container
     faucet.href = model.faucetUrl;
     faucet.target = '_blank';
     faucet.rel = 'noopener noreferrer';
-    faucet.textContent = 'Get zkLTC';
+    // Names the faucet amount per request (ranked-onboarding, 2026-09-26).
+    faucet.textContent = FAUCET_CHIP_TEXT;
     parts.push(faucet);
   }
   chip.replaceChildren(...parts);

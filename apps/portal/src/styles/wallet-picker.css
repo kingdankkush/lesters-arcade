@@ -161,6 +161,13 @@
 .ranked-entry-chainguard .pixel-button,
 .ranked-entry-chainguard a.pixel-button { min-height: 44px; }
 .ranked-entry-guard-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+/* "What happens next" and the guide link (ranked-onboarding, 2026-09-26). */
+.ranked-entry-next { margin: 0 0 12px; }
+.ranked-entry-next-title { margin: 0 0 4px; color: #9fe9ff; font-size: 0.8rem; font-weight: 700; }
+.ranked-entry-next-list { margin: 0; padding-left: 1.2rem; color: rgba(214, 228, 255, 0.85); font-size: 0.78rem; line-height: 1.45; }
+.ranked-entry-next-list li + li { margin-top: 2px; }
+.ranked-entry-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; margin: 4px 0 0; }
+.ranked-entry-guide-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--warning, #ffe84d); font-weight: 700; text-decoration: underline; }
 @media (max-width: 400px) {
   .ranked-entry-overlay { align-items: flex-start; padding: 8px; }
   .ranked-entry-card { width: 100%; padding: 16px; }

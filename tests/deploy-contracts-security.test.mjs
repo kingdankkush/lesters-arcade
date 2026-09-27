@@ -73,14 +73,14 @@ test('contract deploy script applies the 2026-09-16 owner decisions (reserve, re
   assert.equal(deployScript.includes("achievementRegistry: await achievements.getAddress()"), false, 'single achievementRegistry address retired from the record');
 });
 
-test('deploy config describes the native 0.1 zkLTC fee for three games and is not a deployment', () => {
+test('deploy config describes the native 0.01 zkLTC fee for three games and is not a deployment', () => {
   assert.match(deployConfig._note, /explicit approval/);
   assert.equal(deployConfig.chainId, 4441);
   assert.deepEqual(deployConfig.games.map((g) => g.slug), ['lester-blaster', 'chikun', 'stacked']);
   const OWNER_WALLET = '0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26';
   const symbols = new Set();
   for (const game of deployConfig.games) {
-    assert.equal(game.entryFeeWei, '100000000000000000', `${game.slug} charges exactly 0.1 zkLTC flat`);
+    assert.equal(game.entryFeeWei, '10000000000000000', `${game.slug} charges exactly 0.01 zkLTC flat (owner decision 2026-09-26)`);
     assert.equal(game.devBps + game.platformBps + game.liquidityBps + game.treasuryBps, 10_000);
     // Owner decision 2026-09-16: 15% treasury, 85% developer, for every game.
     assert.deepEqual([game.devBps, game.platformBps, game.liquidityBps, game.treasuryBps], [8500, 0, 0, 1500], `${game.slug} splits 85/15`);

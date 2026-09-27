@@ -19,6 +19,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { RANKED_LAUNCH_TERMS } from '../apps/portal/src/portal-content.mjs';
+
 export const DEFAULT_SITE = 'https://lestersarcade.io';
 // The owner-funded launch test wallet: board-excluded, public profile.
 export const AUDIT_WALLET = '0x8841ae6244dba71f620de450e71b0ef7e0cce824';
@@ -257,7 +259,7 @@ async function auditViewport(browser, { site, viewportName, out, blocked, checks
         lead: document.querySelector('#officialModeCopy')?.textContent ?? '',
         guest: document.querySelector('#officialRankedTooltip')?.innerText ?? '',
       }));
-      check(`games/${game.slug}:ranked-terms`, cards.ranked.startsWith('0.102 testnet zkLTC per run.') && /publishes it on LitVM/.test(cards.ranked), cards.ranked);
+      check(`games/${game.slug}:ranked-terms`, cards.ranked.startsWith(`${RANKED_LAUNCH_TERMS.totalZkLtc} testnet zkLTC per run.`) && /publishes it on LitVM/.test(cards.ranked), cards.ranked);
       check(`games/${game.slug}:guest-line-says-sign-in`, !/Connect a wallet/i.test(cards.guest) && /Sign in/.test(cards.guest), cards.guest);
       return cards;
     });

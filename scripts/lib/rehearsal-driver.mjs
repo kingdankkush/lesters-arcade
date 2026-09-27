@@ -42,11 +42,13 @@ import { normalizeHandle } from '../../apps/portal/src/profile-chain.mjs';
 import { moderateName } from '../../apps/portal/src/name-moderation.mjs';
 import { buildChikunEvidence, buildHmhEvidence, buildStackedEvidence } from '../../tests/fixtures/ranked/build-fixtures.mjs';
 import { loadArtifact } from './local-chain.mjs';
+import { DEFAULT_MIN_PAID_WEI } from '../../server/config.mjs';
 
 export const REHEARSAL_REPORT_SCHEMA = 'lesters-ranked-e2e-report-v1';
 export const DEFAULT_GAMES = Object.freeze(['lester-blaster', 'chikun', 'stacked']);
 export const SHARE_ORIGIN = 'https://lestersarcade.io';
-export const MIN_PAID_WEI = 102_000_000_000_000_000n;
+// The server's settle floor (fee + reserve): an entry quote below it would be refused at settle.
+export const MIN_PAID_WEI = BigInt(DEFAULT_MIN_PAID_WEI);
 // The brief's runs: Chikun 1-2 minutes of bot play (v6), STACKED a short terminal SIC1 run topping
 // out at tick 3600, HMH the verify slice's "valid" reboot summary (about 3 minutes).
 export const E2E_EVIDENCE = Object.freeze({

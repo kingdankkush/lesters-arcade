@@ -16,9 +16,9 @@ import { liteForgeFeeOverrides, liteForgeMaxFeePerGas } from '../apps/portal/src
 const ethers = await loadEthers();
 const WALLET = `0x${'12'.repeat(20)}`;
 const GAME = 'lester-blaster';
-const FEE = 100_000_000_000_000_000n;     // 0.1 zkLTC
+const FEE = 10_000_000_000_000_000n;      // 0.01 zkLTC (owner decision 2026-09-26)
 const RESERVE = 2_000_000_000_000_000n;   // 0.002 zkLTC
-const TOTAL = FEE + RESERVE;              // 0.102 zkLTC
+const TOTAL = FEE + RESERVE;              // 0.012 zkLTC
 
 const gameAbi = new ethers.Interface(GAME_REGISTRY_ABI);
 const scoreAbi = new ethers.Interface(SCORE_REGISTRY_ABI);
@@ -26,7 +26,7 @@ const entryAbi = new ethers.Interface(RANKED_ENTRY_ABI);
 const emptySession = [ethers.ZeroHash, ethers.ZeroAddress, ethers.ZeroHash, 0n, 0n, 0n, 0n, ethers.ZeroHash, ethers.ZeroHash, ethers.ZeroHash, 0n, false, false];
 
 // The public LiteForge RPC, as an EIP-1193 fixture: a registered, playable
-// game with the 0.1 zkLTC fee and the 0.002 zkLTC reserve.
+// game with the 0.01 zkLTC fee and the 0.002 zkLTC reserve.
 function publicRpc({ balance = 10n ** 18n, gasPrice = 1_500_000_000n } = {}) {
   const calls = [];
   const game = [ethers.id(GAME), 'Hard Money Heroes', WALLET, 8500, 1500, 0, 0, FEE, true, true, true, 1n];
@@ -125,7 +125,7 @@ test('funds check includes the entry total', async () => {
   const short = await checkRankedReadiness(walletOnlyChain(), { gameId: GAME, wallet: WALLET, minGasWei: explicitGas, readProvider: publicRpc({ balance: TOTAL + explicitGas - 1n }) });
   assert.equal(short.contractGate.ok, true);
   assert.equal(short.entryTotalWei, TOTAL);
-  assert.equal(short.needWei, TOTAL + explicitGas, 'the 0.102 zkLTC entry total plus gas, not gas alone');
+  assert.equal(short.needWei, TOTAL + explicitGas, 'the 0.012 zkLTC entry total plus gas, not gas alone');
   assert.equal(short.hasFunds, false);
   assert.equal(short.ok, false);
   assert.equal(short.errorKind, 'insufficient-funds');

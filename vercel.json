@@ -297,6 +297,10 @@
       "destination": "/jackpot/chikun.html"
     },
     {
+      "source": "/how-ranked-works",
+      "destination": "/how-ranked-works.html"
+    },
+    {
       "source": "/games/:path*",
       "destination": "/index.html"
     },
