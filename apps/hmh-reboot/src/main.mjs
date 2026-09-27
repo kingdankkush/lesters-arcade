@@ -586,6 +586,9 @@ async function boot() {
   const atmosphereTint = new Sprite({ texture: Texture.WHITE });
   atmosphereTint.label = 'world-atmosphere-tint';
   atmosphereTint.visible = false;
+  // 1.9.0 world pass (mood, weather, water, ambient life, micro-life): a lazy
+  // projection-only chunk, requested on the first camera frame.
+  let worldFx = null, worldFxRequested = false;
   const authoredPropLayer = new Container();
   authoredPropLayer.label = 'authored-prop-layer';
   authoredPropLayer.sortableChildren = true;
@@ -1646,6 +1649,13 @@ async function boot() {
       atmosphereTint.width = view.width;
       atmosphereTint.height = view.height;
       atmosphereTint.visible = atmosphereGrade.alpha > 0;
+      if (!worldFxRequested) {
+        worldFxRequested = true;
+        import('./world-fx.mjs').then(({ createWorldFx }) => {
+          worldFx = createWorldFx({ app, world, Container, Graphics, Sprite, Texture, TilingSprite, level: LEVEL_ONE_WORLD, placements: authoredPropPlacements, profile: performanceProfile, atmospherePool, grade: atmosphereTint, hud: document.getElementById('hmhHud'), layers: { water: worldDecalLayer, ground: groundShadowLayer, air: atmosphereLayer } });
+        }).catch((error) => console.warn('[HMH] world fx disabled', error));
+      }
+      worldFx?.render({ camera, view, tick: simulation?.tick ?? 0, worldToScreen, queryGround, reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0, deaths: enemyDeathMarkers, markers: enemyMarkers, dataset: releaseTelemetryEnabled ? dataset : null });
       const authoredPropTick = simulation?.tick ?? 0;
       pickupBanner?.update(authoredPropTick);
       if(!silverRequested && silverDropState.dropped>0){
