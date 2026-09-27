@@ -184,3 +184,60 @@ test('main.mjs hands every switch-induced channel break to the run summary (SWAP
   // Every other select path in the runtime is at tick 0 (debug loadouts) or does not select.
   assert.doesNotMatch(main, /refillWeaponLoadout\([^)]*select: true/);
 });
+
+// Dry fallback. In live play the Ledger's own cell drain ends the channel with
+// reason 'empty' before the clip can read zero, so the fallback normally finds
+// no live beam. The weapon system still owns the invariant that every switch
+// away ends a live channel, so a Ledger that is dry while its beam is flagged
+// live (any future path that empties the clip or reserve out of band) must
+// break the channel inside the fallback tick and hand the break to the frame
+// events that main.mjs feeds to the run summary.
+function recordLedgerEvents(acc, events) {
+  for (const event of events) {
+    if (event?.type?.startsWith('ledger:') || event?.type === 'weapon:channel-pulse') summary.recordRunLightningLedgerEvent(acc, event);
+  }
+}
+
+test('the dry-gun fallback away from a live Ledger ends the channel and puts the break in the frame events', () => {
+  const { loadout, ledger } = channelingLoadout();
+  const acc = summaryAccumulator();
+  summary.recordRunLightningLedgerEvent(acc, { type: 'ledger:channel-start', tick: 0 });
+  ledger.ammoInClip = 0;
+  ledger.reserveAmmo = 0;
+  ledger.reloadCompleteTick = null;
+  const frame = stepChannel(loadout, 41);
+  const types = frame.events.map((event) => event.type);
+  assert.equal(loadout.activeWeaponId, 'coin-blaster', types.join(','));
+  assert.ok(types.includes('weapon:auto-fallback'), types.join(','));
+  assert.equal(ledger.channelState.active, false, 'the fallback ended the beam');
+  const breakEvent = frame.events.find((event) => event.type === 'ledger:channel-break');
+  assert.equal(breakEvent?.reason, 'switch');
+  assert.equal(breakEvent?.tick, 41);
+  assert.ok(types.indexOf('ledger:channel-break') < types.indexOf('weapon:auto-fallback'), 'the break precedes the fallback');
+  recordLedgerEvents(acc, frame.events);
+  // The summary channel is closed: a later start on the refilled Ledger does not throw.
+  assert.doesNotThrow(() => summary.recordRunLightningLedgerEvent(acc, { type: 'ledger:channel-start', tick: 41 + LIGHTNING_LEDGER_CONFIG.breakCooldownTicks + 1 }));
+});
+
+test('a Ledger that runs dry through its own cell drain ends with reason empty, falls back, and the summary finalizes cleanly', () => {
+  const loadout = createWeaponLoadout({ weaponIds: ['coin-blaster', 'lightning-ledger'], activeWeaponId: 'lightning-ledger', seed: 0x4c4544 });
+  const ledger = loadout.weapons['lightning-ledger'];
+  ledger.reserveAmmo = 0;
+  const acc = summaryAccumulator();
+  const seen = [];
+  let tick = 0;
+  for (; tick < 2_000 && loadout.activeWeaponId === 'lightning-ledger'; tick += 1) {
+    const frame = stepChannel(loadout, tick);
+    seen.push(...frame.events.map((event) => `${event.type}${event.reason ? `:${event.reason}` : ''}`));
+    recordLedgerEvents(acc, frame.events);
+  }
+  assert.equal(loadout.activeWeaponId, 'coin-blaster', `no fallback within ${tick} ticks: ${seen.slice(-8).join(',')}`);
+  assert.ok(seen.includes('ledger:channel-break:empty') || seen.includes('ledger:overheat:overheat'), seen.join(','));
+  assert.ok(seen.includes('weapon:auto-fallback'));
+  assert.ok(!seen.includes('ledger:channel-break:switch'), 'the beam had already stopped, so the fallback has nothing to break');
+  assert.equal(ledger.channelState.active, false);
+  const result = summary.finalizeRunSummary(acc, {
+    endTick: tick + 1, elapsedMs: 1000, terminalReason: 'completed', score: 0, level: 1, xp: 0, currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 1,
+  });
+  assert.equal(result.lightningLedger.interruptions.switch, 0);
+});

@@ -957,6 +957,7 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/upgrade-card-presentation.mjs",
   "tests/hmh-reboot-upgrade-cards-and-settings.test.mjs",
   "tests/hmh-ledger-channel-switch.test.mjs",
+  "scripts/hmh-reboot-ledger-swap-browser-smoke.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
   "apps/hmh-reboot/src/world-atmosphere.mjs",
