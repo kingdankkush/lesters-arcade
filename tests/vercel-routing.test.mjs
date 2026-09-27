@@ -98,9 +98,9 @@ function vercelAppendedParams(rule) {
 }
 
 // First matching rewrite wins; the original query string is carried through.
-function rewrite(url) {
+function rewrite(url, rules = vercel.rewrites) {
   const [path, query = ''] = url.split('?');
-  for (const rule of vercel.rewrites) {
+  for (const rule of rules) {
     const match = sourcePattern(rule.source).exec(path);
     if (!match) continue;
     let destination = rule.destination.replace(/:([A-Za-z0-9_]+)/g, (_, name) => match.groups?.[name] ?? '');
@@ -180,6 +180,24 @@ test('API, share and profile deep links route to their functions', () => {
   for (const rule of vercel.rewrites.filter((entry) => entry.destination.startsWith('/api/'))) {
     const file = `${rule.destination.split('?')[0].slice(1)}.mjs`;
     assert.ok(existsSync(new URL(`../${file}`, import.meta.url)), `${rule.source} → ${file} exists`);
+  }
+});
+
+// free-share acceptance: the Free rewrites shadow nothing. Vercel serves a
+// static file before any rewrite, so a file under the output directory at
+// /f/ or /api/free-card/ would silently replace the functions; none exists.
+// The Free sources also match no Ranked /s/ or /api/share-card/ URL, so the
+// Ranked routes resolve exactly as before whatever the rule order.
+test('the Free page and card rewrites shadow no static file and no Ranked route', () => {
+  const output = new URL(`../${vercel.outputDirectory}/`, import.meta.url);
+  for (const path of ['f', 'f.html', 'api/free-card', 'api/free-share-page']) {
+    assert.equal(existsSync(new URL(path, output)), false, `${vercel.outputDirectory}/${path} must not exist`);
+  }
+  const freeRules = vercel.rewrites.filter((rule) => /^\/api\/free-(share-page|card)\?/.test(rule.destination));
+  assert.equal(freeRules.length, 2, 'exactly the page and card rewrites reach the Free functions');
+  for (const url of [`/s/${HEX64}`, `/s/${HEX64.toUpperCase()}`, `/api/share-card/${HEX64}.png`, `/api/share-card/${HEX64}.png?v=0123456789ab`]) {
+    assert.match(rewrite(url)?.destination ?? '', /^\/api\/share-(page|card)\?id=/, `${url} still reaches its Ranked function`);
+    for (const rule of freeRules) assert.equal(rewrite(url, [rule]), null, `${rule.source} cannot match ${url}`);
   }
 });
 
