@@ -2,7 +2,7 @@
 
 ## Current status — public and Ranked on LitVM testnet
 
-STACKED `0.2.0` is public playable and Ranked-eligible. Since the 1.8.0 Ranked launch on 2026-09-24, a Ranked STACKED run is paid with one wallet transaction (the 0.102 zkLTC entry shared by every cabinet), replayed from its inputs by the arcade server, and published on chain to `ScoreSubmissionRegistry` on the LitVM LiteForge testnet by the relayer; its scores, profiles and achievements come from the index of those on-chain results. No prizes are offered. See the README release sections, `docs/qa/ranked-launch-release-20260924.json` and `contracts/deployment-record.hardened.json`. Physical-device acceptance and polish remain open. Every section below, including the "device-local Ranked" wording of the September 13 beta, is historical.
+STACKED `0.2.0` is public playable and Ranked-eligible. Since the 1.8.0 Ranked launch on 2026-09-24, a Ranked STACKED run is paid with one wallet transaction (the entry shared by every cabinet: 0.102 zkLTC on chain until the operator's `setEntryFee` lowers it to 0.012 after the release that carries the 0.012 settle floor), replayed from its inputs by the arcade server, and published on chain to `ScoreSubmissionRegistry` on the LitVM LiteForge testnet by the relayer; its scores, profiles and achievements come from the index of those on-chain results. No prizes are offered. See the README release sections, `docs/qa/ranked-launch-release-20260924.json` and `contracts/deployment-record.hardened.json`. Physical-device acceptance and polish remain open. Every section below, including the "device-local Ranked" wording of the September 13 beta, is historical.
 
 ## Combined arcade release — live, September 13, 2026
 
