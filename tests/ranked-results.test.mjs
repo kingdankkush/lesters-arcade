@@ -842,6 +842,7 @@ for (const gameId of ['chikun', 'stacked']) {
       startMode: async (mode, { session }) => { started.push([mode, session.sessionId]); page.currentSession = session; },
       setOfficialView: (step) => { page.officialAppStep = step; },
       mountChikunSession: () => mounted.push('chikun'), mountStackedSession: async () => { mounted.push('stacked'); },
+      blessArcadeMusicElement: () => false, startArcadeMusicForGame: async () => false,
       state: { profiles: {} },
       connectWallet: async () => { throw new Error('the wallet is already connected'); },
       showRankedTooltip: (title) => { throw new Error(`no tooltip expected: ${title}`); },

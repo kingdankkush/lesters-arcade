@@ -1527,8 +1527,9 @@ async function mountStackedSession() {
   if (generation !== stackedMountGeneration || currentSession !== boundSession) return;
   const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
   const startLevel = boundSession.leaderboardEligible ? 1 : Number(document.querySelector('#stackedStartLevel')?.value ?? 1);
-  // Music follows the run: a random song at mount, retried or kept when the
-  // player starts the run (the child's Start click), fresh after game over.
+  // Music follows the game: the song the Free click started is kept; a paused
+  // player (Ranked, a rejected click start) is started at mount and, if still
+  // paused, once more on the first running (the child's Start click).
   const runMusic = stackedRunMusic = createStackedRunMusic({
     start: () => { void startArcadeMusicForGame('stacked'); },
     adopt: () => adoptArcadeMusicForGame('stacked'),
@@ -5073,9 +5074,17 @@ function showRankedTooltip(title, detail) {
 
 async function startOfficialMode(mode) {
   playSfxCue('menu-click');
-  if (selectedGameId === 'stacked') blessArcadeMusicElement();
   try { hmhChallengeUi.requestFor(selectedGameId, mode); }
   catch { setOfficialView('mode-select'); return; }
+  // STACKED music starts in the player's click turn, before any await (the
+  // host chunk import, the wallet modal), like Hard Money Heroes'
+  // beginOfficialLevel. Free starts a random track now; Ranked may still be
+  // cancelled at the wallet modal, so it only unlocks the element silently and
+  // the mount starts the song. Playback failure never blocks the run.
+  if (selectedGameId === 'stacked') {
+    if (mode === 'ranked') blessArcadeMusicElement();
+    else void startArcadeMusicForGame('stacked');
+  }
   // Ranked is paid/official and wallet-bound. A guest must sign in first.
   if (mode === 'ranked') {
     // One Ranked entry at a time: while its modal is open (a results screen

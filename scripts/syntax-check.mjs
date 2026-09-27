@@ -287,7 +287,7 @@ const NODE_CHECK_FILES = [
   'tests/chikun-music.test.mjs',
   'apps/portal/src/stacked-run-music.mjs',
   'tests/stacked-run-music.test.mjs',
-  'scripts/stacked-music-autoplay-smoke.mjs',
+  'scripts/stacked-music-autoplay-browser-smoke.mjs',
   'apps/portal/src/chikun-obstacles.mjs',
   'tests/chikun-open-air.test.mjs',
   'scripts/hmh-world-campfire-browser-smoke.mjs',
