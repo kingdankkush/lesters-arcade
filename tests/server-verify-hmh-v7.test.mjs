@@ -1,17 +1,18 @@
 // Run summary v7 end to end, as far as this branch goes
 // (docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md §12, §13, §15): the
 // committed v7 fixtures bind to their seed tickets, pass the schema and the v7
-// plausibility rules, travel over hmh-bridge/v1 once the bridge validates with
-// sdk/hmh-run-summary-schema-v7.mjs, and are still refused by the Ranked gate
-// in server/verify/hmh.mjs until the integration owner changes it (§15, §16).
+// plausibility rules, travel over hmh-bridge/v1 when the bridge validates with
+// sdk/hmh-run-summary-schema-v7.mjs, and verify through server/verify/hmh.mjs,
+// which accepts schema 6 or 7 and schema 7 only from game 1.9.0 or later
+// (build ledger slice 9).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { bindRankedIdentity, computeEvidenceDigest, verifyRankedRun } from '../server/verify/index.mjs';
-import { HMH_EVIDENCE_ENCODING } from '../server/verify/hmh.mjs';
+import { HMH_EVIDENCE_ENCODING, hmhRankedSchemaError } from '../server/verify/hmh.mjs';
 import { validateRebootRunPlausibility } from '../server/verify/hmh-plausibility.mjs';
 import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import { HMH_BRIDGE_PROTOCOL, HMH_MAX_MESSAGE_BYTES, createBridgeEnvelope, validateChildMessage } from '../sdk/hmh-bridge-protocol.mjs';
-import { FIXTURE_NAMES, HMH_V7_FIXTURE_NAMES, buildFixture, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { FIXTURE_NAMES, HMH_V7_FIXTURE_NAMES, buildFixture, buildFixtureBody, fixtureSalt, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 import { catalogFor, deriveEarnedAchievements, emptyHistory, historyFieldsFor } from '../apps/portal/src/achievements/index.mjs';
 import { statAt } from '../apps/portal/src/achievements/entry.mjs';
@@ -65,13 +66,32 @@ test('v7 fixtures bind, pass the schema and the v7 rules, and keep the v6 eviden
   assert.deepEqual(fourBosses.evolutions.filter((row) => row.applied).map((row) => row.evolutionId), ['settler-rail']);
 });
 
-test('a Ranked schema-7 body is refused before plausibility until server/verify/hmh.mjs accepts schema 7', async () => {
-  // Fail-closed (contract §15, §16): hmh.mjs validates with the base schema
-  // module, which accepts schema 1-6, and then requires schema 6. Opening the
-  // gate is outside this branch: import validateRunSummaryPayload from
-  // sdk/hmh-run-summary-schema-v7.mjs there and accept schemaVersion 6 or 7.
+test('Ranked verifies a schema-7 body from game 1.9.0 or later, and refuses one from an older build before plausibility', async () => {
   for (const [name, { body }] of Object.entries(fixtures)) {
-    assert.deepEqual(await verifyRankedRun(body, fixtureVerifyOptions()), { ok: false, status: 400, error: 'run-summary-invalid', detail: 'game:run-summary schemaVersion is invalid' }, name);
+    const verified = await verifyRankedRun(body, fixtureVerifyOptions());
+    assert.equal(verified.ok, true, `${name}: ${JSON.stringify(verified)}`);
+    assert.equal(verified.run?.score ?? verified.score ?? body.claim.score, body.claim.score, name);
+  }
+  // Numeric compare: 1.10.0 is after 1.9.x, 1.8.9 is before 1.9.0.
+  for (const [game, ok] of [['1.9.0', true], ['1.9.1', true], ['1.10.0', true], ['1.8.9', false]]) {
+    const buildHash = `site-${game}:game-${game}`;
+    const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt(`hmh-v7-gate:${game}`), buildHash, evidence: { v7Plan: 'districts' } });
+    const verified = await verifyRankedRun(body, fixtureVerifyOptions());
+    if (ok) assert.equal(verified.ok, true, `${game}: ${JSON.stringify(verified)}`);
+    else assert.deepEqual(verified, { ok: false, status: 400, error: 'run-summary-invalid', detail: 'run summary schema 7 requires game 1.9.0 or later' }, game);
+  }
+  const summary = fixtures['hmh-v7-districts'].body.evidence.runSummary;
+  assert.equal(hmhRankedSchemaError(summary), '');
+  assert.equal(hmhRankedSchemaError({ ...summary, identity: { ...summary.identity, buildHash: 'site-1.9.0' } }), 'run summary schema 7 requires game 1.9.0 or later', 'no game version');
+  assert.equal(hmhRankedSchemaError({ ...summary, schemaVersion: 5 }), 'Ranked requires run summary schema 6 or 7');
+});
+
+test('a cached 1.8.x child schema-6 summary still verifies, under a 1.8.x or a 1.9.0 build hash', async () => {
+  for (const buildHash of ['site-1.8.6:game-1.8.6', 'site-1.9.0:game-1.9.0']) {
+    const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt(`hmh-v6-cached:${buildHash}`), buildHash, evidence: { plan: 'valid' } });
+    assert.equal(body.evidence.runSummary.schemaVersion, 6);
+    const verified = await verifyRankedRun(body, fixtureVerifyOptions());
+    assert.equal(verified.ok, true, `${buildHash}: ${JSON.stringify(verified)}`);
   }
 });
 
@@ -81,11 +101,11 @@ test('v7 fixtures fit hmh-bridge/v1 as game:run-summary messages', () => {
     assert.equal(message.protocol, HMH_BRIDGE_PROTOCOL);
     assert.equal(HMH_BRIDGE_PROTOCOL, 'hmh-bridge/v1');
     assert.ok(new TextEncoder().encode(JSON.stringify(message)).byteLength < HMH_MAX_MESSAGE_BYTES / 2, name);
-    // The 1.8.x bridge validates with the base schema module, so it refuses
-    // schema 7 today; its envelope checks pass, and with the v7 module's
-    // validator (what the child branch switches the bridge to) the whole
-    // message validates.
+    // The protocol's default validator is the base schema module (1-6), so it
+    // refuses schema 7; the child and the portal bridge pass the v7 module's
+    // validator, and with it the whole message validates.
     assert.deepEqual(validateChildMessage(message), { ok: false, error: 'game:run-summary schemaVersion is invalid' }, name);
+    assert.equal(validateChildMessage(message, { validateRunSummary: validateRunSummaryPayload }).ok, true, name);
     assert.equal(validateRunSummaryPayload(message.payload), '', name);
     assert.equal(validateChildMessage({ ...message, payload: { ...message.payload, schemaVersion: 6 } }).error, 'game:run-summary payload must contain exact fields', `${name}: only the payload schema stops it`);
   }

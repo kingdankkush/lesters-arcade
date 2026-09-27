@@ -253,7 +253,10 @@ export function validateParentMessage(input) {
   return error ? fail(error) : pass(input);
 }
 
-export function validateChildMessage(input) {
+// `validateRunSummary` validates a game:run-summary payload. The default is the
+// base schema module (schema 1-6); a consumer of schema 7 passes the validator
+// of sdk/hmh-run-summary-schema-v7.mjs, which answers schema 1-6 identically.
+export function validateChildMessage(input, { validateRunSummary = validateRunSummaryPayload } = {}) {
   const base = validateBaseEnvelope(input);
   if (!base.ok) return base;
   let error = '';
@@ -263,7 +266,7 @@ export function validateChildMessage(input) {
   else if (input.type === 'game:pause') error = validateGamePause(input.payload);
   else if (input.type === 'game:exit') error = validateGameExit(input.payload);
   else if (input.type === 'game:run-event') error = validateRunEvent(input.payload);
-  else if (input.type === 'game:run-summary') error = validateRunSummaryPayload(input.payload);
+  else if (input.type === 'game:run-summary') error = validateRunSummary(input.payload);
   else if (input.type === 'game:score-result') error = validateScoreResult(input.payload);
   else if (input.type === 'game:achievement') error = validateAchievement(input.payload);
   else if (input.type === 'game:settings') error = validateSettingsPayload(input.payload);

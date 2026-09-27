@@ -975,6 +975,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-evolution-effects.test.mjs",
   "apps/hmh-reboot/src/prisoners.mjs",
   "tests/hmh-prisoners.test.mjs",
+  "apps/hmh-reboot/src/run-summary-v7.mjs",
+  "tests/hmh-run-summary-v7-emission.test.mjs",
   "apps/hmh-reboot/src/weapon-vfx.mjs",
   "tests/hmh-reboot-weapon-vfx.test.mjs",
   "apps/hmh-reboot/src/world-atmosphere.mjs",

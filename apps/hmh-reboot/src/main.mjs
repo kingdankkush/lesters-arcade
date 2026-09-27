@@ -295,6 +295,8 @@ let createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, o
   selectRunEvolution, evolveBankedSealOnMastery;
 // Prisoners (package 3.5, S1.6).
 let PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMissionRows, rescuePrisoner, stepPrisonerStations, startPrisonerTimedEffect;
+// Run summary schema 7 (contract §11): the V7 catalogues, validator and rows.
+let summaryV7 = null;
 let createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback;
 let lazyRuntimeModulesLoad = null;
 function loadLazyRuntimeModules() {
@@ -316,7 +318,9 @@ function loadLazyRuntimeModules() {
     import('./boss-drops.mjs'),
     import('./evolution-effects.mjs'),
     import('./prisoners.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners]) => {
+    import('./run-summary-v7.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7]) => {
+    summaryV7 = v7;
     ({ PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMissionRows, rescuePrisoner, stepPrisonerStations, startPrisonerTimedEffect } = prisoners);
     ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
@@ -542,6 +546,8 @@ async function boot() {
       expectedParentOrigin: window.location.origin,
       runtimeInfo: { runtimeVersion: RUNTIME_VERSION, renderer: 'pixi.js', capabilities: ['pause', 'settings', 'restart', 'resize', 'exit', 'run-events', 'score-result', 'achievements'] },
       deferInitialization: true,
+      // The outgoing summary is schema 7 (loaded before any session starts).
+      validateRunSummary: (payload) => summaryV7?.validateRunSummaryV7(payload) ?? 'run summary schema 7 is not loaded',
       onInit: (payload) => {
         initializeSession(payload);
         setStatus('Portal session connected', `${payload.mode.toUpperCase()} // ${payload.heroId} // seed ${payload.session.seed}`);
@@ -3344,6 +3350,8 @@ async function boot() {
       heroId: payload.heroId,
       startTick: 0,
       startPosition: actor,
+      schemaVersion: summaryV7.RUN_SUMMARY_SCHEMA_VERSION,
+      catalogs: summaryV7.HMH_RUN_SUMMARY_CATALOGS_V7,
     });
     lastGround = queryGround(actor.x, actor.y);
     actor.groundZ = lastGround.groundZ;
@@ -5233,6 +5241,7 @@ async function boot() {
               maxCombo: maxRunCombo,
               revealedCells: revealSnapshot.revealedCellIds.length,
               totalCells: revealSnapshot.totalCells,
+              v7: summaryV7.runSummaryV7Rows({ mission: missionState, bossSlots, progression: runProgression }),
             });
             const resultMessages = buildRunResultMessages({
               seed: sessionPayload.session.seed,

@@ -697,7 +697,7 @@ test('the second-round consistency literals and the accumulator facts they rest 
   const damaged = finish(damage, 1);
   assert.equal(damaged.totals.damageDealt, 78);
   assert.equal(damaged.weapons.reduce((sum, row) => sum + row.damage, 0), 78);
-  assert.match(accumulatorSource, /if \(event\.sourceId !== 'player'\) return;\s*state\.totals\[0\] \+= amount;\s*const row = state\.weapons\[index\(C\.weapons, event\.weaponId, 'weapon'\)\];\s*row\[10\] \+= amount;/);
+  assert.match(accumulatorSource, /if \(event\.sourceId !== 'player'\) return;\s*state\.totals\[0\] \+= amount;\s*const row = state\.weapons\[index\(state\.C\.weapons, event\.weaponId, 'weapon'\)\];\s*row\[10\] \+= amount;/);
   assert.match(readFileSync(new URL('../apps/hmh-reboot/src/combat-events.mjs', import.meta.url), 'utf8'), /damageApplied = Math\.max\(1, Math\.round\(rawDamage \/ armorDivisor\)\);/);
   // Level 1 build, slice 5: the boss's hits go through applyLiquidatorDamage
   // and the summary records what he actually lost, so main.mjs records damage

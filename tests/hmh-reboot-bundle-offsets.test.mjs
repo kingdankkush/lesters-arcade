@@ -41,6 +41,8 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'evolution-effects.mjs',
   // Prisoners (S1.6): the cage rows, rescues and stations.
   'prisoners.mjs',
+  // Run summary schema 7 (slice 9): the V7 catalogues, validator and rows.
+  'run-summary-v7.mjs',
 ]);
 
 function walk(node, visit) {
