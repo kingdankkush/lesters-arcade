@@ -172,8 +172,47 @@ def classify_bones(rig, facing: str) -> dict:
     right_arms = sorted([c for c in arms if lateral(c) < 0], key=lateral)
     if not left_arms or not right_arms:
         raise ValueError('arm chains missing on one side')
-    limb(left_arms[0], ['upper_arm.L', 'forearm.L', 'hand.L'])
-    limb(right_arms[0], ['upper_arm.R', 'forearm.R', 'hand.R'])
+    floor_z = min(tails[n].z for n in tails)
+    top_z = tails[head].z
+    body = top_z - floor_z
+
+    def arm(start, side):
+        """Anchor the arm on the hand, never on the chest's first lateral child.
+
+        Tripo's rig puts a clavicle between the chest and the upper arm: a
+        short, nearly horizontal link. Mapping upper_arm/forearm/hand from the
+        chest's lateral child therefore lands one link too high (the clavicle
+        becomes the upper arm, the elbow becomes the weapon socket and the
+        poser rotates the collarbone). The hand is the first link along the
+        chain that fans out into finger children; forearm and upper arm are
+        its parent and grandparent, and any link above them is the shoulder.
+        """
+        chain = [start]
+        while children[chain[-1]]:
+            chain.append(max(children[chain[-1]], key=lambda n: (tails[n] - heads[n]).length))
+        hand_index = next((i for i, n in enumerate(chain) if len(children[n]) >= 2), None)
+        if hand_index is None:
+            # Mitten hands: drop a leading clavicle (short, nearly horizontal link).
+            first = chain[0]
+            drop = heads[first].z - tails[first].z
+            hand_index = 3 if len(chain) >= 4 and drop < 0.5 * (tails[first] - heads[first]).length else 2
+        if hand_index < 2:
+            raise ValueError(f'arm chain too short above the hand: {chain}')
+        hand_bone, forearm_bone, upper_bone = chain[hand_index], chain[hand_index - 1], chain[hand_index - 2]
+        mapping[upper_bone] = 'upper_arm.' + side
+        mapping[forearm_bone] = 'forearm.' + side
+        mapping[hand_bone] = 'hand.' + side
+        for extra in chain[:hand_index - 2]:
+            mapping[extra] = 'shoulder.' + side
+        # Anatomy gate: wrist at about 0.46 and elbow at about 0.58 of body height.
+        wrist = (heads[hand_bone].z - floor_z) / body
+        elbow = (heads[forearm_bone].z - floor_z) / body
+        shoulder = (heads[upper_bone].z - floor_z) / body
+        if not (0.38 <= wrist <= 0.56 and 0.50 <= elbow <= 0.68 and 0.66 <= shoulder <= 0.86):
+            raise ValueError(f'arm {side} fails the anatomy gate: shoulder {shoulder:.3f}, elbow {elbow:.3f}, wrist {wrist:.3f}; chain={chain}')
+
+    arm(left_arms[0], 'L')
+    arm(right_arms[0], 'R')
     legs = [c for c in children[hips] if abs(lateral(c)) > 0.03 and chain_length(c) >= 3]
     legs = sorted(legs, key=deepest_tail_z)[:4]
     left_legs = [c for c in legs if lateral(c) > 0]
@@ -208,10 +247,15 @@ def add_weapon_socket(rig, unit: float):
         return
     bpy.context.view_layer.objects.active = rig
     bpy.ops.object.mode_set(mode='EDIT')
-    parent = rig.data.edit_bones['forearm.R']
+    # The socket sits in the fist: between the hand bone's tail (knuckle
+    # base) and the heads of its finger chains, parented to hand.R so the
+    # handle follows the wrist through every clip.
+    parent = rig.data.edit_bones['hand.R']
+    fingers = [child.head for child in parent.children]
+    grip = (parent.tail + sum(fingers, Vector()) / len(fingers)) / 2 if fingers else parent.tail.copy()
     socket = rig.data.edit_bones.new('weapon_socket')
-    socket.head = parent.tail.copy()
-    socket.tail = parent.tail + Vector((0.0, -0.25 * unit, 0.0))  # points forward, like the shipped rigs
+    socket.head = grip
+    socket.tail = grip + Vector((0.0, -0.25 * unit, 0.0))  # points forward, like the shipped rigs
     socket.parent = parent
     socket.use_connect = False
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -374,6 +418,17 @@ def stage_derivative(args):
     for bone in SEMANTIC_BONES + ['weapon_socket']:
         if bone not in rig.data.bones:
             raise ValueError(f'committed source lacks semantic bone {bone}')
+    # Refuse a source mapped one link too high (clavicle as upper arm): the
+    # wrist must sit near 0.46 and the elbow near 0.58 of the crown height,
+    # and the weapon socket must ride the hand, not the upper arm.
+    crown = rig.data.bones['head'].tail_local.z
+    for side in ('L', 'R'):
+        wrist = rig.data.bones['hand.' + side].head_local.z / crown
+        elbow = rig.data.bones['forearm.' + side].head_local.z / crown
+        if not (0.38 <= wrist <= 0.56 and 0.50 <= elbow <= 0.68):
+            raise ValueError(f'committed source arm {side} fails the anatomy gate: elbow {elbow:.3f}, wrist {wrist:.3f}')
+    if rig.data.bones['weapon_socket'].parent.name != 'hand.R':
+        raise ValueError('weapon_socket must be parented to hand.R')
     rig.name = f'{args.actor} Native Rig'
     body.name = f'{args.actor} Skinned Primary Body'
     body.hide_render = False
@@ -458,12 +513,12 @@ def stage_derivative(args):
     grip = props.material(args.actor + '_GavelGrip', '#2b1d1a', roughness=.85)
     grip.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value = linear('#2b1d1a')
     socket = rig.data.bones['weapon_socket']
-    wrist = Vector(socket.head_local)
+    grip_point = Vector(socket.head_local)
     lean = Matrix.Rotation(math.radians(-10.0), 3, 'Y')  # top of the handle leans away from the coat
     up = lean @ Vector((0.0, 0.0, 1.0))
 
     def along(distance):
-        point = wrist + up * (distance * unit)
+        point = grip_point + up * (distance * unit)
         return (point.x, point.y, point.z)
 
     tilt = (0.0, math.radians(-10.0), 0.0)
@@ -473,7 +528,7 @@ def stage_derivative(args):
     attach(props.cylinder(args.actor + '_GavelHead', along(0.50), .072 * unit, .30 * unit, steel, args.actor, rotation=head_rotation, vertices=24), 'weapon_socket')
     across = lean @ Vector((1.0, 0.0, 0.0))
     for sign in (-1, 1):
-        cap = wrist + up * (0.50 * unit) + across * (sign * 0.165 * unit)
+        cap = grip_point + up * (0.50 * unit) + across * (sign * 0.165 * unit)
         attach(props.cylinder(f'{args.actor}_GavelCap{sign}', (cap.x, cap.y, cap.z), .080 * unit, .05 * unit, gold, args.actor, rotation=head_rotation, vertices=24), 'weapon_socket')
     for obj in bpy.data.objects:
         if obj.type == 'MESH' and obj is not body:
@@ -509,13 +564,91 @@ def stage_derivative(args):
                 original = Matrix(poses.BONE_REST[name][2]).transposed()
                 rig.pose.bones[target_name].location = target.inverted() @ original @ Vector(values) * unit
 
+    # Gavel arm overlay. The shared role beats were authored for two empty
+    # hands (the tell spreads both arms, the attack barely moves the right
+    # hand), so on top of them the right arm, the gavel and the pointing left
+    # arm are aimed at authored directions. Directions are (actor right,
+    # actor forward, up) in the chest's posed frame, so the torso lean, bob
+    # and stagger of the shared beat still carry through. Projection-only.
+    chest_rest = rig.data.bones['chest'].matrix_local.to_3x3().normalized()
+    socket_rest = rig.data.bones['weapon_socket'].matrix_local.to_3x3().normalized()
+    gavel_up_local = socket_rest.inverted() @ up
+    gavel_across_local = socket_rest.inverted() @ across
+    carry = {'upper_arm.R': (0.30, 0.35, -0.89), 'forearm.R': (0.05, 0.75, 0.66), 'gavel': (0.05, -0.70, 0.71)}
+    arm_overlay = {
+        'idle': [carry, carry], 'run': [carry] * 24, 'hit': [carry, carry],
+        # tell 0 = anticipation (gavel lifted beside the head, left hand
+        # pointing at the target); tell 1 = the held maximum (gavel high over
+        # the right shoulder, cocked back).
+        'tell': [
+            {'upper_arm.R': (0.55, 0.20, 0.81), 'forearm.R': (0.15, 0.10, 0.98), 'gavel': (0.10, -0.15, 0.98),
+             'upper_arm.L': (-0.30, 0.90, 0.30), 'forearm.L': (-0.15, 0.97, 0.20)},
+            {'upper_arm.R': (0.45, 0.05, 0.89), 'forearm.R': (0.10, -0.25, 0.96), 'gavel': (0.05, -0.55, 0.83),
+             'upper_arm.L': (-0.30, 0.92, 0.25), 'forearm.L': (-0.15, 0.98, 0.15)},
+        ],
+        # attack 0 = the slam (gavel driven down in front), 1 = follow-through
+        # low across the body, 2 = the recovery dragging it back toward the carry.
+        'attack': [
+            {'upper_arm.R': (0.15, 0.85, -0.50), 'forearm.R': (0.00, 0.60, -0.80), 'gavel': (-0.05, 0.55, -0.83),
+             'upper_arm.L': (0.25, -0.45, -0.86), 'forearm.L': (0.10, -0.35, -0.93)},
+            {'upper_arm.R': (0.05, 0.55, -0.83), 'forearm.R': (-0.25, 0.45, -0.86), 'gavel': (-0.45, 0.35, -0.82),
+             'upper_arm.L': (0.25, -0.40, -0.88), 'forearm.L': (0.10, -0.30, -0.95)},
+            {'upper_arm.R': (0.30, 0.45, -0.84), 'forearm.R': (0.10, 0.85, -0.52), 'gavel': (0.00, 0.95, 0.30)},
+        ],
+    }
+    arm_order = ['upper_arm.R', 'forearm.R', 'gavel', 'upper_arm.L', 'forearm.L']
+
+    def actor_vector(values):
+        right, forward, upward = values
+        return Vector((-right, -forward, upward)).normalized()  # rest faces -Y; the actor's right is -X
+
+    def aim_arm(state, sample):
+        table = arm_overlay.get(state)
+        if not table:
+            return
+        targets = table[sample]
+        bpy.context.view_layer.update()
+        chest_now = rig.pose.bones['chest'].matrix.to_3x3().normalized() @ chest_rest.inverted()
+        for key in arm_order:
+            if key not in targets:
+                continue
+            want = chest_now @ actor_vector(targets[key])
+            if key == 'gavel':
+                pb = rig.pose.bones['weapon_socket']
+                posed = pb.matrix.to_3x3().normalized()
+                cur_up = (posed @ gavel_up_local).normalized()
+                cur_across = (posed @ gavel_across_local).normalized()
+                hint = chest_now @ Vector((-1.0, 0.0, 0.0))  # head axis across the body: the "tall T"
+                want_across = (hint - want * hint.dot(want)).normalized()
+                frame_now = Matrix((cur_across, cur_up, cur_across.cross(cur_up))).transposed()
+                frame_want = Matrix((want_across, want, want_across.cross(want))).transposed()
+                turn = frame_want @ frame_now.inverted()
+            else:
+                pb = rig.pose.bones[key]
+                turn = pb.matrix.col[1].xyz.normalized().rotation_difference(want).to_matrix()
+            matrix = pb.matrix.copy()
+            aimed = (turn @ matrix.to_3x3()).to_4x4()
+            aimed.translation = matrix.translation
+            pb.matrix = aimed
+            bpy.context.view_layer.update()
+
     for state, count in source_counts.items():
         action = bpy.data.actions.new('HMH_' + args.actor + '_' + state)
         rig.animation_data_create().action = action
+        previous = {}
         for index in range(count + (1 if state in {'idle', 'run'} else 0)):
             sample = index % count
             frame = 1 + 24 * index / (count if state in {'idle', 'run'} else count - 1)
+            # Pose with no action bound so the depsgraph never re-evaluates
+            # earlier keys over the pose being built.
+            rig.animation_data.action = None
             apply_role(state, sample, count)
+            aim_arm(state, sample)
+            for bone in rig.pose.bones:
+                if bone.name in previous:
+                    bone.rotation_euler = bone.rotation_euler.to_matrix().to_euler('XYZ', previous[bone.name])
+                previous[bone.name] = bone.rotation_euler.copy()
+            rig.animation_data.action = action
             for bone in rig.pose.bones:
                 bone.keyframe_insert('rotation_euler', frame=frame, group=bone.name)
                 bone.keyframe_insert('location', frame=frame, group=bone.name)
