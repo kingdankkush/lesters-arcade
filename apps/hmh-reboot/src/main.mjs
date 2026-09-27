@@ -197,7 +197,6 @@ import {
   compactExpiredEventsInPlace,
   isScreenPointVisible,
   selectRuntimePerformanceProfile,
-  createAdaptiveResolution,
   createProfileTextureLoader,
   normalizeGraphicsQuality,
   resolveGraphicsQualityProfile,
@@ -510,16 +509,15 @@ async function boot() {
     powerPreference: 'high-performance',
   });
   app.ticker.stop();
-  // Adaptive sharpness (2026-09-16): a phone starts at the safe resolution and
-  // earns one step up to 1.5 after ~4 s of fast frames; slow frames step it
-  // back down for the rest of the session. Desktop keeps its profile value.
-  // Perf step 7: only Auto steps up; an explicit tier is a fixed resolution.
-  const createResolutionPolicy = () => createAdaptiveResolution({
-    base: performanceProfile.resolution,
-    max: graphicsQuality === 'auto' && performanceProfile.id === 'mobile' ? Math.min(1.5, Math.max(performanceProfile.resolution, window.devicePixelRatio || 1)) : performanceProfile.resolution,
-  });
-  let adaptiveResolution = createResolutionPolicy();
-  dataset.adaptiveResolution = String(adaptiveResolution.resolution);
+  // Perf step 8: the renderer resolution belongs to the graphics governor in
+  // the lazy runtime extras (runtime-extras.mjs, graphics-governor.mjs). Auto
+  // keeps the phone's earned step to 1.5, adds a desktop pixel budget, drops
+  // effects before resolution and moves with hysteresis; a pinned tier is a
+  // one-rung ladder at its resolution. The extras also carry the warm-up
+  // renders, the haptics, the control tips, the QA frame waiter and ?perf=1.
+  let extras = null;
+  const runtimeExtrasModule = import('./runtime-extras.mjs');
+  dataset.adaptiveResolution = String(performanceProfile.resolution);
   app.canvas.tabIndex = 0;
   app.canvas.setAttribute('aria-label', 'Hard Money Heroes gameplay canvas');
   stageElement.replaceChildren(app.canvas);
@@ -614,6 +612,15 @@ async function boot() {
   }
   const atmosphereLayer = atmospherePool?.container ?? new Container();
   let atmosphereBudget = resolveAtmosphereBudget(performanceProfile);
+  const startGovernor = () => extras?.govern({ quality: graphicsQuality, profile: performanceProfile });
+  runtimeExtrasModule.then(({ installRuntimeExtras }) => {
+    extras = installRuntimeExtras({
+      app, dataset, params: runtimeParams, embedded: Boolean(bridge), ContainerClass: Container, SpriteClass: Sprite, vfxPool: weaponVfxPool,
+      panel: startupPanel, anchor: startupCopy, touch: touchUiEnabled, settings: () => settings,
+      stats: () => ({ enemies: grayboxEnemies.filter((enemy) => enemy.active).length, projectiles: activeProjectiles.length, tier: graphicsQuality, profile: performanceProfile.id, textures: textureAssets === Assets ? 'full' : 'half' }),
+    });
+    startGovernor();
+  }).catch(() => {});
   // The grade is one flat sprite on the stage: it does not shake with the
   // world container and the on-canvas HUD draws over it.
   const atmosphereTint = new Sprite({ texture: Texture.WHITE });
@@ -1063,6 +1070,7 @@ async function boot() {
       }).destroy({ children: true });
       enemyRosterIndexes.set(archetypeId, index);
       enemyRosterTextures.set(archetypeId, texture);
+      extras?.warm([texture]);
       // Rebuild live bodies so the authored art appears without a restart.
       syncEnemyMarkers(grayboxEnemies, true);
       if (archetypeId === 'the-liquidator') {
@@ -1331,6 +1339,10 @@ async function boot() {
     : null;
 
   let settings = { musicEnabled: true, screenShake: true, gore: false, reduceMotion: false, reduceFlash: false, colorblindTags: false };
+  // Perf step 8 QA hook: ?t=<ticks> pre-rolls fixed steps with idle input
+  // before the first gameplay frame, standalone only (no parent, so never a
+  // Ranked run). window.__HMH.waitFrames lives in runtime-extras.mjs.
+  let prerollTicks = bridge ? 0 : Math.min(108_000, Math.max(0, Math.floor(Number(runtimeParams.get('t')) || 0)));
   // The bridge shell is already ready; load the audio player during asset
   // preparation, before accepting a run, instead of delaying the first paint.
   const { createCombatAudio } = await import('./combat-audio.mjs');
@@ -1368,12 +1380,7 @@ async function boot() {
     particleScale = performanceProfile.particlesPerHazard;
     contactShadowPool = performanceProfile.contactShadows === false ? null : bakedContactShadowPool;
     groundShadowLayer.visible = contactShadowPool !== null;
-    adaptiveResolution = createResolutionPolicy();
-    if (app.renderer.resolution !== adaptiveResolution.resolution) {
-      app.renderer.resolution = adaptiveResolution.resolution;
-      app.resize?.();
-    }
-    dataset.adaptiveResolution = String(adaptiveResolution.resolution);
+    startGovernor();
     dataset.graphicsQuality = quality;
   };
   const syncRuntimeSettings = (nextSettings, { notify = false } = {}) => {
@@ -1700,7 +1707,7 @@ async function boot() {
         view,
         tick: simulation?.tick ?? 0,
         worldToScreen,
-        budget: atmosphereBudget,
+        budget: extras ? extras.atmosphere(atmosphereBudget) : atmosphereBudget,
         cullMargin: performanceProfile.worldCullMargin,
         enabled: !(settings.reduceMotion || performanceProfile.particlesPerHazard === 0),
       });
@@ -4210,6 +4217,7 @@ async function boot() {
         recordRunGrenadeDetonation(runSummaryAccumulator, detonation);
         lastGrenadeDetonation = { tick, reason: detonation.reason, grenadeId: detonation.grenadeId };
         combatAudio.play('grenade-boom', { volume: 0.16 });
+        extras?.pulse('big', 0.8);
         const mode = grenadeModeFromId(detonation.grenadeId);
         pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius, mode });
         triggerCameraShake(tick, grenadeBlastShake({ mode, radius: detonation.radius }));
@@ -4261,7 +4269,7 @@ async function boot() {
         });
       }
       for (const event of lastBossStep?.events ?? []) {
-        if (event.type === 'arena-change') { combatAudio.play('boss-phase', { volume: 0.14 });
+        if (event.type === 'arena-change') { combatAudio.play('boss-phase', { volume: 0.14 }); extras?.pulse('big');
           if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: Liquidator phase changing.');
         }
         if (event.type === 'tell') {
@@ -4487,6 +4495,7 @@ async function boot() {
           if (damageEvent.targetId === 'player') {
             if (settings.captionCriticalAudio) setAccessibleCombatStatus('Critical audio: player hit.');
             lastPlayerHit = { tick, sourceId: damageEvent.sourceId, knockback: damageEvent.knockback };
+            extras?.pulse('hit');
             updateRunCombo(0);
             triggerCameraShake(tick, 5);
             const magnitude = Math.hypot(damageEvent.knockback.x, damageEvent.knockback.y);
@@ -4643,6 +4652,7 @@ async function boot() {
           app.ticker.stop();
           combatAudio.setMusicEnabled(false);
           combatAudio.play('game-over', { volume: 0.18 });
+          extras?.pulse('death');
           setStatus('Run ended', 'Defeated // restart from the portal or reload standalone mode');
           if (bridge?.initialized) {
             const runSnapshot = getRunProgressionSnapshot(runProgression);
@@ -4963,7 +4973,7 @@ async function boot() {
         progress?.setAttribute('aria-valuenow', String(percent));
         if (progress?.firstElementChild) progress.firstElementChild.style.width = `${percent}%`;
         startupPanel.setAttribute('aria-busy', String(!ready));
-        if (ready && entryButton.disabled) { renderWorld(); entryButton.focus({preventScroll:true}); }
+        if (ready && entryButton.disabled) { renderWorld(); extras?.warm([...enemyRosterTextures.values(), ...Object.values(weaponVfxPool?.textures ?? {}), ...Object.values(atmospherePool?.textures ?? {})]); entryButton.focus({preventScroll:true}); }
         entryButton.disabled = !ready;
         entryButton.textContent = ready ? 'Enter Level 1' : 'Preparing Level 1…';
         if (ready && startupCopy) startupCopy.textContent = 'Ready when you are. Take a moment to plan your run.';
@@ -4976,6 +4986,10 @@ async function boot() {
       dataset.startupArt = ready ? 'ready' : 'basic-graphics';
       startupGate = null;
       input.reset('artwork-ready', performance.now());
+      for (; prerollTicks > 0 && simulation.state === 'active'; prerollTicks -= 1) {
+        const idle = input.snapshot({ actor, camera, viewport: viewport(), nowMs: performance.now() });
+        simulation.update(simulation.fixedStepMs, idle.actions, idle.heldActions);
+      }
       renderWorld();
       if (startupPanel) startupPanel.hidden = true;
       // Warm the next encounter band without decoding the entire roster on
@@ -5020,12 +5034,7 @@ async function boot() {
     const snapshot = input.snapshot({ actor, camera, viewport: viewport(), nowMs });
     if (debugGridEnabled) dataset.snapshotWeaponSlot = String(snapshot.actions.weaponSlot);
     const frame = simulation.update(ticker.deltaMS, snapshot.actions, snapshot.heldActions);
-    const nextResolution = adaptiveResolution.sample(ticker.deltaMS);
-    if (nextResolution !== null && app.renderer.resolution !== nextResolution) {
-      app.renderer.resolution = nextResolution;
-      app.resize?.();
-      dataset.adaptiveResolution = String(nextResolution);
-    }
+    extras?.sample(ticker.deltaMS);
     if (frame.steps >= simulation.maxCatchUpSteps) catchUpSaturationFrames += 1;
     const simulationLoss = simulation.getLossMetrics();
     dataset.simulationFrameSteps = String(frame.steps);

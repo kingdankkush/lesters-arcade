@@ -71,6 +71,8 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-startup-progress { height:3px; background:#2a443f; margin-top:20px; }
 .hmh-startup-progress span { display:block; height:100%; width:0; background:#a9d8bd; transition:width .2s; }
 #hmhStartupCopy { color:#acc2ba; font-size:12px; }
+/* Perf step 8: one rotating control tip while the atlases decode (startup-tips.mjs). */
+.hmh-startup-rotating-tip { margin:6px 0 0; color:#a9d8bd; font-size:12px; }
 .hmh-startup-enter { background:#c3d5b8; color:#10211d; border-color:#c3d5b8; font-weight:700; }
 .hmh-startup-enter:disabled { opacity:.4; }
 

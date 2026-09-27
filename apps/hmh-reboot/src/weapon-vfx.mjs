@@ -360,11 +360,13 @@ export function createWeaponVfxPool({ ContainerClass, SpriteClass, textures, max
   };
   const banks = [bank('weapon-vfx-solid', 'normal'), bank('weapon-vfx-glow', 'add')];
   let dropped = 0;
+  // Perf step 8: the Auto governor's effects rung lowers the live cap.
+  let limit = max;
 
   const place = ({ texture, x, y, width, height, rotation = 0, tint = HOT_WHITE, alpha = 1, additive = false } = {}) => {
     const source = textures[texture];
     if (!source || !(width > 0) || !(height > 0) || !(alpha > 0)) return false;
-    if (banks[0].cursor + banks[1].cursor >= max) {
+    if (banks[0].cursor + banks[1].cursor >= limit) {
       dropped += 1;
       return false;
     }
@@ -412,5 +414,9 @@ export function createWeaponVfxPool({ ContainerClass, SpriteClass, textures, max
     },
     get placed() { return banks[0].cursor + banks[1].cursor; },
     get dropped() { return dropped; },
+    get limit() { return limit; },
+    set limit(value) { limit = Math.max(0, Math.min(max, Math.floor(value) || 0)); },
+    // Perf step 8: the baked textures, for the pre-reveal render warm-up.
+    textures,
   });
 }

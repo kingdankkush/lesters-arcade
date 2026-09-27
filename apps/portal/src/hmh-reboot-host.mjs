@@ -32,6 +32,10 @@ export function createHmhRebootHost({
   const runtimeParams = new URLSearchParams();
   if (requestedRuntimeParams.get('evidenceSafe') === '1') runtimeParams.set('evidenceSafe', '1');
   if (runtimeParams.has('evidenceSafe') && requestedRuntimeParams.get('terminalPilot') === '1') runtimeParams.set('terminalPilot', '1');
+  // Perf step 8: the ?perf=1 overlay is display-only (fps, frame time, counts),
+  // so a device test can read it inside a real portal session. The QA tier pin
+  // (?q=) and pre-roll (?t=) are never forwarded.
+  if (requestedRuntimeParams.get('perf') === '1') runtimeParams.set('perf', '1');
   const runtimeSuffix = runtimeParams.size > 0 ? `?${runtimeParams}` : '';
   let activeBridge = null;
   let activeFrame = null;

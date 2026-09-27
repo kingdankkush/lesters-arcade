@@ -57,6 +57,8 @@ function runtime({ paused = true } = {}) {
     weaponWheel: null, closeWeaponWheel() { events.push(['wheel-close']); },
     document: { getElementById: () => null }, setStatus() {}, bridge: null,
     loadGroundFallback: async () => events.push(['load-basic-ground']),
+    // Perf step 8: no ?t= pre-roll and no lazy extras loaded yet.
+    prerollTicks: 0, extras: null,
   });
   const execute = node => vm.runInContext(`(${source.slice(node.start, node.end)})`, context,
     { importModuleDynamically: () => Promise.reject(new Error('Map renderer is outside this loading test.')) });

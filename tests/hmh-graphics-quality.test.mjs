@@ -257,7 +257,7 @@ test('the portal host never forwards a ?q= tier pin (or the legacy ?graphics=) i
   const host = createHmhRebootHost({
     mount: { replaceChildren() {} }, expectedOrigin: 'https://arcade.test', documentRef,
     bridgeFactory: () => ({ connect() {}, send() {}, destroy() {} }), setTimeoutRef: () => 1, clearTimeoutRef: () => {},
-    runtimeSearch: '?evidenceSafe=1&graphics=low&q=low',
+    runtimeSearch: '?evidenceSafe=1&graphics=low&q=low&t=600',
   });
   const frame = host.mountSession({
     sessionId: 'graphics-guard', gameId: 'lester-blaster', mode: 'free', heroId: 'lit-commando',
@@ -268,6 +268,20 @@ test('the portal host never forwards a ?q= tier pin (or the legacy ?graphics=) i
   const params = new URL(frame.src).searchParams;
   assert.equal(params.has('graphics'), false, 'the tier reaches a portal session only through settings');
   assert.equal(params.has('q'), false, 'the QA tier pin never reaches a portal session');
+  assert.equal(params.has('t'), false, 'the QA pre-roll never reaches a portal session');
+  assert.equal(params.get('evidenceSafe'), '1');
+  const perfHost = createHmhRebootHost({
+    mount: { replaceChildren() {} }, expectedOrigin: 'https://arcade.test', documentRef,
+    bridgeFactory: () => ({ connect() {}, send() {}, destroy() {} }), setTimeoutRef: () => 1, clearTimeoutRef: () => {},
+    runtimeSearch: '?perf=1&q=high',
+  });
+  const perfFrame = perfHost.mountSession({
+    sessionId: 'perf-overlay', gameId: 'lester-blaster', mode: 'ranked', heroId: 'lit-commando',
+    profile: { displayName: 'Guard', locale: 'en' },
+    session: { seed: 1, buildHash: 'guard', seasonId: 'season-1', rankedEligible: true },
+    settings: baseSettings,
+  });
+  assert.equal(new URL(perfFrame.src).search, '?perf=1', 'only the display-only overlay flag is forwarded');
 });
 
 // ---------------------------------------------------------------------------
@@ -299,8 +313,9 @@ test('main.mjs applies a tier change live to the caps, budgets, contact shadows 
   assert.match(main, /let particleScale = performanceProfile\.particlesPerHazard/u);
   assert.match(main, /const bakedContactShadowPool = contactShadowPool;/u);
   assert.match(main, /if \(performanceProfile\.contactShadows === false\) contactShadowPool = null;/u, 'Low starts without contact shadows');
-  assert.match(main, /let adaptiveResolution = createResolutionPolicy\(\);/u);
-  assert.match(main, /max: graphicsQuality === 'auto' && performanceProfile\.id === 'mobile' \? Math\.min\(1\.5,/u, 'only Auto steps the resolution up');
+  // Perf step 8: resolution belongs to the lazy governor; only Auto moves
+  // (tests/hmh-reboot-adaptive-resolution.test.mjs).
+  assert.match(main, /const startGovernor = \(\) => extras\?\.govern\(\{ quality: graphicsQuality, profile: performanceProfile \}\);/u);
   const apply = main.indexOf('const applyGraphicsQuality = (requested) => {');
   assert.ok(apply > 0);
   const body = main.slice(apply, main.indexOf('\n  };', apply));
@@ -311,8 +326,7 @@ test('main.mjs applies a tier change live to the caps, budgets, contact shadows 
     /particleScale = performanceProfile\.particlesPerHazard/u,
     /contactShadowPool = performanceProfile\.contactShadows === false \? null : bakedContactShadowPool/u,
     /groundShadowLayer\.visible = contactShadowPool !== null/u,
-    /adaptiveResolution = createResolutionPolicy\(\)/u,
-    /app\.renderer\.resolution = adaptiveResolution\.resolution/u,
+    /startGovernor\(\)/u,
     /dataset\.graphicsQuality = quality/u,
   ]) assert.match(body, pin, String(pin));
   assert.match(main, /applyGraphicsQuality\(settings\.graphicsQuality\);/u, 'every settings sync re-reads the tier');

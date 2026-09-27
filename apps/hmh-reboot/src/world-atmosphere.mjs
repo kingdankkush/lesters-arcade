@@ -213,6 +213,7 @@ export function createAtmospherePool({ ContainerClass, SpriteClass, textures, ma
       && pool.place({ texture: airborne ? 'core' : 'puff', x, y, width, height, tint: color, alpha, additive: airborne }),
     get placed() { return pool.placed; },
     get dropped() { return pool.dropped; },
+    textures,
   });
 }
 

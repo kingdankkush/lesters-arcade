@@ -427,7 +427,8 @@ test('main.mjs draws the atmosphere above every body and below every HUD element
     /atmospherePool\?\.finish\(\)/u,
     /renderWorldAtmosphere\(\{/u,
     /resolveAtmosphereTint\(\{ districts: LEVEL_ONE_WORLD\.districts, x: camera\.x \}\)/u,
-    /budget: atmosphereBudget/u,
+    // Perf step 8: the governor's effects rung may halve the budget.
+    /budget: extras \? extras\.atmosphere\(atmosphereBudget\) : atmosphereBudget/u,
     /tick: simulation\?\.tick \?\? 0/u,
     /enabled: !\(settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0\)/u,
     /cullMargin: performanceProfile\.worldCullMargin/u,
