@@ -1,0 +1,32 @@
+{
+  "renderFixture": true,
+  "reports": [
+    {
+      "name": "desktop",
+      "errors": [],
+      "singleClear": true,
+      "quadClear": true,
+      "reform": true,
+      "reducedMotion": true,
+      "destroyedCleanly": true
+    },
+    {
+      "name": "mobile",
+      "errors": [],
+      "singleClear": true,
+      "quadClear": true,
+      "reform": true,
+      "reducedMotion": true,
+      "destroyedCleanly": true
+    },
+    {
+      "name": "small-mobile",
+      "errors": [],
+      "singleClear": true,
+      "quadClear": true,
+      "reform": true,
+      "reducedMotion": true,
+      "destroyedCleanly": true
+    }
+  ]
+}
