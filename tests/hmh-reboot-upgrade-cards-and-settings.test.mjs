@@ -543,7 +543,7 @@ const rerollSnapshot = (cards, ranks = {}) => ({
   })),
 });
 
-test('each card carries a re-roll strip beside, never inside, its select button: 36 px with a 44 px hit area behind an 8 px dead zone', () => {
+test('each card carries a re-roll strip beside, never inside, its select button: its own 44 px box behind an 8 px dead zone, never over the details toggle', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const ui = createUpgradePanel({ documentRef, weaponName: (weaponId) => HMH_WEAPON_DEFINITIONS[weaponId].displayName });
   ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'scatter-pump', rerollState: 'used', weaponId: 'scatter-shotgun' }], { 'scatter-pump': 2, 'scatter-shells': 2 }));
@@ -556,14 +556,23 @@ test('each card carries a re-roll strip beside, never inside, its select button:
     assert.equal(strip.type, 'button');
     assert.equal(details.tagName, 'DETAILS');
     assert.equal(select.querySelectorAll('button').length, 0, 'the strip is never nested in the select button');
-    // Package 8.3 geometry: a 44 px hit area whose bottom 8 px hang below the
-    // 36 px strip without taking card height, an 8 px dead zone above it.
+    // Package 8.3 geometry: a 44 px border-box hit area that takes its own
+    // 44 px of card height, an 8 px dead zone above it. It must not borrow
+    // height from the details block below: on the compact layout that block's
+    // visible top is the "Upgrade details" <summary> toggle, and a tap there
+    // must open the details, never spend the card's one irreversible re-roll.
     assert.equal(strip.style.height, '44px');
     assert.equal(strip.style.boxSizing, 'border-box');
-    assert.equal(strip.style.paddingBottom, '8px');
-    assert.equal(strip.style.marginBottom, '-8px');
     assert.equal(strip.style.marginTop, '8px');
-    assert.equal(strip.style.position, 'relative', 'the overhang paints above the details block so a tap there re-rolls');
+    for (const side of ['margin', 'marginTop', 'marginBottom', 'marginBlockEnd']) {
+      assert.doesNotMatch(String(strip.style[side] ?? ''), /-/, `the strip has no negative ${side}: its box never overlaps the details block`);
+    }
+    assert.ok(!strip.style.paddingBottom || strip.style.paddingBottom === '0' || strip.style.paddingBottom === '0px',
+      'no bottom padding: the label centres in the whole 44 px box rather than a 36 px strip over an overhang');
+    assert.ok(!strip.style.zIndex, 'the strip is never raised over an interactive sibling');
+    assert.ok(!strip.style.position || strip.style.position === 'static', 'the strip is not a positioned layer over the details block');
+    assert.ok(!strip.style.transform && !strip.style.top && !strip.style.bottom, 'the strip is not shifted into the details block');
+    assert.equal(details.style.marginTop ?? '', '', 'the details block is not pulled up under the strip');
   }
   const strips = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-reroll');
   assert.deepEqual(strips.map((strip) => [strip.textContent, strip.disabled, strip.dataset.slot]), [['Re-roll', false, '0'], ['Re-roll used', true, '1']]);
