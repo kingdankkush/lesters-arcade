@@ -10,12 +10,16 @@
 //   and trauma decays linearly. Reduced flashes halve it.
 // - Row squash: cleared rows flatten in place over SQUASH_MS before the
 //   collapsed stack shows through, drawn from the pre-lock board.
-// Reduced motion (or zero effects intensity) zeroes all three.
+// - HALVING cue: static chevrons bracket the four cleared rows for
+//   HALVING_CUE_MS, a shape (not a flash or motion) that also shows under
+//   reduced motion and reduced flashes.
+// Reduced motion (or zero effects intensity) zeroes the three motions.
 import { locateCommittedLock } from './lock-projection.mjs';
 
 export const LOCK_THUD_PX = 2;
 export const SHAKE_MAX_PX = 7;
 export const SQUASH_MS = 150;
+export const HALVING_CUE_MS = 600;
 export const TRAUMA = Object.freeze({ halving: .55, ledger: .18, garbageOut: .85 });
 const OMEGA = 34, ZETA = .42, TRAUMA_DECAY_PER_S = 1.5, SPRING_MS = 420;
 const DAMPED = OMEGA * Math.sqrt(1 - ZETA * ZETA);
@@ -24,7 +28,7 @@ const UNIT_PEAK = Math.exp(-ZETA * OMEGA * Math.atan2(DAMPED, ZETA * OMEGA) / DA
 const intensityFor = settings => settings?.accessibility?.reduceMotion ? 0 : Math.max(0, Math.min(1, settings?.video?.effectsIntensity ?? .7));
 
 export function createBoardMotion() {
-  let y0 = 0, v0 = 0, t0 = -1e9, trauma = 0, traumaAt = 0, squashAt = -1e9, squashRows = 0, lastTick = -1;
+  let y0 = 0, v0 = 0, t0 = -1e9, trauma = 0, traumaAt = 0, squashAt = -1e9, squashRows = 0, lastTick = -1, halvingAt = -1e9, halvingRow = 1.5;
   const rows = new Int8Array(4).fill(-1), cells = new Uint8Array(40);
   const springAt = now => {
     const t = (now - t0) / 1000;
@@ -33,7 +37,7 @@ export function createBoardMotion() {
     return [e * (y0 * c + b * s), e * ((b * DAMPED - ZETA * OMEGA * y0) * c - (y0 * DAMPED + ZETA * OMEGA * b) * s)];
   };
   const traumaAtTime = now => Math.max(0, trauma - TRAUMA_DECAY_PER_S * Math.max(0, now - traumaAt) / 1000);
-  const reset = () => { y0 = v0 = trauma = 0; t0 = squashAt = -1e9; squashRows = 0; rows.fill(-1); lastTick = -1; };
+  const reset = () => { y0 = v0 = trauma = 0; t0 = squashAt = halvingAt = -1e9; squashRows = 0; rows.fill(-1); lastTick = -1; };
   const kick = (now, peakPx) => {
     const [y, v] = springAt(now), dv = peakPx / UNIT_PEAK;
     // Rapid locks re-kick from the live state, but never past one thud's energy.
@@ -45,12 +49,19 @@ export function createBoardMotion() {
     if (after.tick <= lastTick) return;
     lastTick = after.tick;
     const strength = intensityFor(settings);
-    if (!strength) { reset(); lastTick = after.tick; return; }
+    const halving = after.piecesLocked > before.piecesLocked && after.lines - before.lines >= 4;
+    const placement = after.piecesLocked > before.piecesLocked && after.lines > before.lines && geometry ? locateCommittedLock(before, after, geometry) : null;
+    if (!strength) {
+      reset(); lastTick = after.tick;
+      // The HALVING shape cue is not motion: it survives reduced motion.
+      if (halving) { halvingAt = now; halvingRow = placement ? placement.rows.reduce((sum, row) => sum + row, 0) / placement.rows.length : 1.5; }
+      return;
+    }
+    if (halving) { halvingAt = now; halvingRow = placement ? placement.rows.reduce((sum, row) => sum + row, 0) / placement.rows.length : 1.5; }
     if (after.piecesLocked > before.piecesLocked) {
       kick(now, Math.min(LOCK_THUD_PX, (after.hardDropCells > before.hardDropCells ? LOCK_THUD_PX : 1.2) * (.5 + strength * .5)));
       const cleared = Math.min(4, after.lines - before.lines);
       if (cleared > 0 && geometry) {
-        const placement = locateCommittedLock(before, after, geometry);
         if (placement) {
           const id = 'IJLOSTZ'.indexOf(after.holdsUsed > before.holdsUsed ? (before.hold ?? before.queue?.[0]) : before.active?.kind) + 1;
           squashRows = 0;
@@ -86,7 +97,12 @@ export function createBoardMotion() {
     const progress = (now - squashAt) / SQUASH_MS;
     return progress >= 0 && progress < 1 ? { progress, count: squashRows, rows, cells } : { progress: 1, count: 0, rows, cells };
   };
-  return { step, offset, squash, reset, kick, addTrauma, get trauma() { return trauma; } };
+  // HALVING chevrons: 0..1 progress and the centre row, or null.
+  const halvingCue = now => {
+    const progress = (now - halvingAt) / HALVING_CUE_MS;
+    return progress >= 0 && progress < 1 ? { progress, row: halvingRow } : null;
+  };
+  return { step, offset, squash, halvingCue, reset, kick, addTrauma, get trauma() { return trauma; } };
 }
 
 const KIND_BY_ID = Object.freeze([null, 'I', 'J', 'L', 'O', 'S', 'T', 'Z', 'garbage']);
@@ -97,6 +113,8 @@ export function createBoardMotionView({ board, Graphics, geometry }) {
   const context = template.context;
   const nodes = Array.from({ length: 40 }, (_, i) => (i ? template.clone() : template));
   for (const node of nodes) { node.visible = false; board.layers.effectLayer.addChild(node); }
+  // Chevrons pointing into the well; on the HUD layer so reduced motion keeps them.
+  const chevrons = [0, 1].map(() => { const node = new Graphics().poly([0, -1, 1, 0, 0, 1, .45, 0]).fill(0xffffff); node.visible = false; board.layers.hudLayer.addChild(node); return node; });
   const draw = (now, settings, colors) => {
     const move = motion.offset(now, settings);
     board.applyShake(move.x, move.y);
@@ -112,13 +130,23 @@ export function createBoardMotionView({ board, Graphics, geometry }) {
       node.tint = colors?.[KIND_BY_ID[id]] ?? 0xa8bdca;
       node.alpha = (1 - progress * .6) * (settings.accessibility.reduceFlash ? .7 : .95);
     }
-    return { ...move, squashing: on ? count : 0 };
+    const cue = motion.halvingCue(now);
+    for (let side = 0; side < 2; side += 1) {
+      const node = chevrons[side];
+      node.visible = !!cue && cue.row < 20;
+      if (!node.visible) continue;
+      node.position.set(side ? left + 314 : left + 6, (19 - cue.row) * 32 + 16);
+      node.scale.set(side ? -16 : 16, 60);
+      node.tint = 0xfff2b8;
+      node.alpha = .9 * (1 - cue.progress * cue.progress);
+    }
+    return { ...move, squashing: on ? count : 0, halvingCue: !!cue };
   };
   return {
     step: (before, after, now, settings) => motion.step(before, after, now, settings, geometry),
     draw,
-    reset() { motion.reset(); board.applyShake(0, 0); for (const node of nodes) node.visible = false; },
-    destroy() { for (const node of nodes) node.destroy(); context.destroy?.(); board.applyShake(0, 0); },
+    reset() { motion.reset(); board.applyShake(0, 0); for (const node of [...nodes, ...chevrons]) node.visible = false; },
+    destroy() { for (const node of [...nodes, ...chevrons]) node.destroy(); context.destroy?.(); board.applyShake(0, 0); },
     motion,
   };
 }

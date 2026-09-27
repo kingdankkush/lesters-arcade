@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PIECE_CELLS, cellsFor, collides, createStackedRuntime } from '../apps/portal/src/stacked-sim.mjs';
-import { LOCK_THUD_PX, SHAKE_MAX_PX, SQUASH_MS, TRAUMA, createBoardMotion, createBoardMotionView } from '../apps/stacked/src/render/board-motion.mjs';
+import { HALVING_CUE_MS, LOCK_THUD_PX, SHAKE_MAX_PX, SQUASH_MS, TRAUMA, createBoardMotion, createBoardMotionView } from '../apps/stacked/src/render/board-motion.mjs';
+import { cellShade, shadeColor } from '../apps/stacked/src/render/board-view.mjs';
 import { defaultStackedSettings } from '../apps/portal/src/stacked-player-settings.mjs';
 
 /**
@@ -73,7 +74,7 @@ class Node {
 }
 class Graphics extends Node {
   constructor() { super(); this.context = { destroy() {} }; }
-  roundRect() { return this; } fill() { return this; } clone() { return new Graphics(); }
+  roundRect() { return this; } poly() { return this; } fill() { return this; } clone() { return new Graphics(); }
 }
 
 test('a real clear squashes exactly the cleared rows in their locked colours, and the board container carries the motion', () => {
@@ -83,7 +84,7 @@ test('a real clear squashes exactly the cleared rows in their locked colours, an
   const before = blank({ board, active: { kind: 'I', rotation: 1, x: 7, y: 0 } });
   const after = { ...before, tick: 2, piecesLocked: 1, lines: 1, hardDropCells: 16, board: (() => { const next = Array(240).fill(0); next[9] = 1; next[19] = 1; next[29] = 1; return next; })() };
   const root = new Node();
-  const layers = { effectLayer: new Node() };
+  const layers = { effectLayer: new Node(), hudLayer: new Node() };
   const boardView = { frame: 'wide', layers, applyShake: (x, y) => root.position.set(x, y) };
   const view = createBoardMotionView({ board: boardView, Graphics, geometry });
   assert.equal(layers.effectLayer.children.length, 40);
@@ -123,4 +124,49 @@ test('board motion never touches the simulation and is wired into the renderer',
   assert.match(renderer, /motion\.step\(before,snapshot,now,settings\)/);
   assert.match(renderer, /motion\.draw\(now,settings,/);
   assert.match(renderer, /motion\.destroy\(\)/);
+});
+
+test('a HALVING brackets its rows with static chevrons, which stay under reduced motion and reduced flashes', () => {
+  // Four garbage rows, each missing column 9, then a vertical I into column 9.
+  const board = Array(240).fill(0);
+  for (let y = 0; y < 4; y += 1) for (let x = 0; x < 9; x += 1) board[y * 10 + x] = 8;
+  const before = blank({ board, active: { kind: 'I', rotation: 1, x: 7, y: 0 } });
+  const after = { ...before, tick: 2, piecesLocked: 1, lines: 4, hardDropCells: 16, board: Array(240).fill(0) };
+  for (const quiet of [false, true]) {
+    const s = quiet ? { ...full, accessibility: { ...full.accessibility, reduceMotion: true, reduceFlash: true } } : full;
+    const layers = { effectLayer: new Node(), hudLayer: new Node() };
+    const view = createBoardMotionView({ board: { frame: 'tall', layers, applyShake() {} }, Graphics, geometry });
+    view.step(before, after, 0, s);
+    const frame = view.draw(100, s, {});
+    const chevrons = layers.hudLayer.children.filter(node => node.visible);
+    assert.equal(frame.halvingCue, true);
+    assert.equal(chevrons.length, 2, quiet ? 'the cue survives reduced motion' : 'two chevrons');
+    assert.deepEqual(chevrons.map(node => node.position.y), [(19 - 1.5) * 32 + 16, (19 - 1.5) * 32 + 16], 'centred on the four cleared rows');
+    assert.deepEqual(chevrons.map(node => Math.sign(node.scale.x)), [1, -1], 'both point into the well');
+    assert.ok(chevrons.every(node => node.position.x >= 0 && node.position.x <= 320));
+    view.draw(HALVING_CUE_MS + 1, s, {});
+    assert.equal(layers.hudLayer.children.filter(node => node.visible).length, 0);
+  }
+  const single = createBoardMotion();
+  single.step(blank(), blank({ tick: 2, piecesLocked: 1, lines: 3 }), 0, full);
+  assert.equal(single.halvingCue(10), null, 'three lines is not a HALVING');
+});
+
+test('locked cells jitter brightness by an integer hash within eight percent and keep their identity colour', () => {
+  const shades = new Set();
+  for (let position = 0; position < 240; position += 1) {
+    const shade = cellShade(position);
+    assert.ok(shade >= -.08 - 1e-12 && shade <= .08 + 1e-12);
+    assert.equal(cellShade(position), shade, 'stable per cell');
+    shades.add(shade.toFixed(2));
+  }
+  assert.equal(shades.size, 5, 'five steps are all used');
+  assert.equal(shadeColor(0x808080, .08), 0x8a8a8a);
+  assert.equal(shadeColor(0x808080, -.08), 0x767676);
+  assert.equal(shadeColor(0xffffff, .08), 0xffffff, 'channels clamp');
+  assert.equal(shadeColor(0x32d9ff, 0), 0x32d9ff);
+  const view = readFileSync(new URL('../apps/stacked/src/render/board-view.mjs', import.meta.url), 'utf8');
+  assert.match(view, /shade:cellShade\(position\)/, 'only locked stack cells are shaded');
+  assert.match(view, /graphic\.__stackedColor = fill;/, 'identity colour stays the unshaded palette colour');
+  assert.match(view, /kind === 'garbage' && !patterned/, 'ledger rows carry rulings as a shape cue');
 });

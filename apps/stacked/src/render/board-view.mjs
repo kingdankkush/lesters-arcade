@@ -11,14 +11,30 @@ export function boardCellToAuthored({ x, y, frame }) {
   return Object.freeze({ x: WELL_X[frame] + x * CELL_PX, y: (BOARD_VISIBLE_ROWS - 1 - y) * CELL_PX, visible: y >= 0 && y < BOARD_VISIBLE_ROWS && x >= 0 && x < 10 });
 }
 
-function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterned = false, colors = COLORS }) {
+// Locked-cell brightness jitter (1.9.0): an integer hash of the board cell picks
+// one of five steps in -8%..+8%, so a settled stack reads as material rather
+// than flat fill. Presentation only; identity colour (__stackedColor) is unchanged.
+export function cellShade(position) {
+  let h = Math.imul((position | 0) ^ 0x9e3779b9, 0x85ebca6b);
+  h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16;
+  return ((h >>> 0) % 5 - 2) * .04;
+}
+export function shadeColor(color, shade) {
+  if (!shade) return color;
+  const channel = offset => Math.max(0, Math.min(255, Math.round(((color >> offset) & 255) * (1 + shade))));
+  return (channel(16) << 16) | (channel(8) << 8) | channel(0);
+}
+
+function drawMino(graphic, { x, y, kind, alpha = 1, size = CELL_PX - 2, patterned = false, colors = COLORS, shade = 0 }) {
   // Moving a cell only changes its transform. Reuse its geometry until the
   // appearance changes, avoiding hundreds of triangulations per render tick.
-  const fill = colors[kind] ?? 0xa8bdca;
-  const key = `${kind}:${alpha}:${size}:${patterned}:${fill}`;
+  const fill = colors[kind] ?? 0xa8bdca, drawn = shadeColor(fill, shade);
+  const key = `${kind}:${alpha}:${size}:${patterned}:${drawn}`;
   if (graphic.__appearance !== key) {
-    graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: fill, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
+    graphic.clear().roundRect(1, 1, size, size, 5).fill({ color: drawn, alpha }).stroke({ color: 0xffffff, alpha: alpha * 0.32, width: 1 });
     graphic.rect(4, 3, Math.max(2,size-6), 2).fill({color:0xffffff,alpha:alpha*.2});
+    // Ledger rows carry a shape cue, not just a colour: two ledger rulings.
+    if (kind === 'garbage' && !patterned) for (const at of [.42, .66]) graphic.rect(5, Math.round(size*at), Math.max(2,size-8), 2).fill({color:0x071321,alpha:alpha*.5});
     if (patterned) {
       const unit=size/7,start=size/2-unit*1.5;
       const cells=MARKS[kind]??[];
@@ -122,7 +138,7 @@ export function createStackedBoardView({ index, cells = 10, rows = 24, frame, ge
     presentationDirty=false;
     stackPool.begin();
     let lockedVisible=0, bufferClipped=0;
-    for (let position=0; position<model.board.length; position++) { const cell=model.board[position]; if (!cell) continue; const y=Math.floor(position/cells); if (y>=BOARD_VISIBLE_ROWS) { bufferClipped++; continue; } const kind=LOCKED_KIND_BY_ID[Number(cell)]; if(!kind)continue; const point=boardCellToAuthored({x:position%cells,y,frame:currentFrame}); drawMino(stackPool.acquire(layers.stackLayer),{...point,kind,patterned:colorblindPieces,colors}); lockedVisible++; }
+    for (let position=0; position<model.board.length; position++) { const cell=model.board[position]; if (!cell) continue; const y=Math.floor(position/cells); if (y>=BOARD_VISIBLE_ROWS) { bufferClipped++; continue; } const kind=LOCKED_KIND_BY_ID[Number(cell)]; if(!kind)continue; const point=boardCellToAuthored({x:position%cells,y,frame:currentFrame}); drawMino(stackPool.acquire(layers.stackLayer),{...point,kind,patterned:colorblindPieces,colors,shade:cellShade(position)}); lockedVisible++; }
     const activeVisuals=renderPiece(model.active,activePool,layers.activeLayer,1,activeOffset);
     const ghostVisuals=renderPiece(ghostFor(model.board,model.active),ghostPool,layers.ghostLayer,0.24);
     previewPool.begin(); let previews=0;
