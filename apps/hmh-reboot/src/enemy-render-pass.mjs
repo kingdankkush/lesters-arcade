@@ -20,6 +20,23 @@
  * calls, in the same order, with the same arguments, on every frame.
  */
 
+// E2 (1.8.7): ordinary-enemy tells coloured by ATTACK KIND rather than by
+// archetype, so a player reads "what hits me and how far" before "who".
+// Saturated danger hues kept at least 90 RGB units from every pickup marker
+// and banner, interactive site ring and aim reticle colour, and 120 from each
+// other (tests/hmh-feel-motion.test.mjs). The shapes still differ per kind, so
+// colour is never the only cue.
+export const ENEMY_TELL_KIND_COLORS = Object.freeze({
+  melee: 0xff2e2e,
+  ranged: 0xc43cff,
+  area: 0xffa200,
+  support: 0x4f5bff,
+});
+// Reach in world units, mirroring createAttackGeometry in enemy-combat.mjs:
+// the area and support circle radii and the ranged lane's half-width. Melee
+// rings use the archetype's own attack range.
+export const ENEMY_TELL_KIND_REACH = Object.freeze({ area: 96, support: 140, ranged: 18 });
+
 // Animation budget order, identical to selectAnimatedEnemyIds
 // (runtime-performance.mjs): attack warnings, then hit/death, then a fresh
 // spawn, then elites, then everyone else.
@@ -142,6 +159,9 @@ export function createEnemyRenderPass({
   drawEliteGroundRing,
   placeWeaponGlow,
   projectGasBomberCanister,
+  // E2: false keeps the 1.8.1 archetype colours and lane width, which the
+  // reference replay in tests/hmh-enemy-render-pass.test.mjs compares against.
+  tellByKind = false,
 }) {
   // Row scratch, indexed by the enemy's position in this frame's population.
   let capacity = 0;
@@ -343,40 +363,43 @@ export function createEnemyRenderPass({
       // red on liquidation-yard). A dark contour under every stroke
       // guarantees the tell separates from whatever it is drawn over.
       const CONTOUR = { color: 0x080d12, alpha: alpha * 0.72 };
-      if (archetype.attack.tokenFamily === 'area') {
-        enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 96 * camera.zoom)
-          .fill({ color: archetype.visual.color, alpha: 0.08 })
+      const family = archetype.attack.tokenFamily;
+      const tellColor = tellByKind ? ENEMY_TELL_KIND_COLORS[family] ?? archetype.visual.color : archetype.visual.color;
+      if (family === 'area') {
+        enemyTelegraphs.circle(targetScreen.x, targetScreen.y, ENEMY_TELL_KIND_REACH.area * camera.zoom)
+          .fill({ color: tellColor, alpha: 0.08 })
           .stroke({ ...CONTOUR, width: 10 })
-          .stroke({ color: archetype.visual.color, width: 4, alpha });
+          .stroke({ color: tellColor, width: 4, alpha });
         const canister = projectGasBomberCanister({ enemy, tick });
         if (canister) {
           worldToScreenInto(canisterScreen, canister, camera, view);
           const stripeX = Math.cos(canister.rotation) * 6 * camera.zoom;
           const stripeY = Math.sin(canister.rotation) * 6 * camera.zoom;
           enemyTelegraphs.circle(canisterScreen.x, canisterScreen.y, 8 * camera.zoom)
-            .fill({ color: archetype.visual.color, alpha: 0.98 })
+            .fill({ color: tellColor, alpha: 0.98 })
             .stroke({ color: 0x080d12, width: 3 * camera.zoom, alpha: 1 });
           enemyTelegraphs.moveTo(canisterScreen.x - stripeX, canisterScreen.y - stripeY)
             .lineTo(canisterScreen.x + stripeX, canisterScreen.y + stripeY)
             .stroke({ color: 0xfff4c7, width: 2 * camera.zoom, alpha: 0.92 });
           if (dataset) dataset.gasCanisterProgress = canister.progress.toFixed(3);
         }
-      } else if (archetype.attack.tokenFamily === 'support') {
-        enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 140 * camera.zoom)
+      } else if (family === 'support') {
+        enemyTelegraphs.circle(targetScreen.x, targetScreen.y, ENEMY_TELL_KIND_REACH.support * camera.zoom)
           .stroke({ ...CONTOUR, width: 11 })
-          .stroke({ color: archetype.visual.color, width: 5, alpha });
-      } else if (archetype.attack.tokenFamily === 'melee') {
+          .stroke({ color: tellColor, width: 5, alpha });
+      } else if (family === 'melee') {
         enemyTelegraphs.circle(enemyScreen.x, enemyScreen.y, archetype.attack.range * camera.zoom)
           .stroke({ ...CONTOUR, width: 10 })
-          .stroke({ color: archetype.visual.color, width: 4, alpha });
+          .stroke({ color: tellColor, width: 4, alpha });
         enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
           .stroke({ ...CONTOUR, width: 9 })
-          .stroke({ color: archetype.visual.color, width: 3, alpha });
+          .stroke({ color: tellColor, width: 3, alpha });
       } else {
+        // The glow is the lane the shot resolves in: full width, not half.
         enemyTelegraphs.moveTo(enemyScreen.x, enemyScreen.y).lineTo(targetScreen.x, targetScreen.y)
-          .stroke({ color: archetype.visual.color, width: 18 * camera.zoom, alpha: alpha * 0.22, cap: 'round' })
+          .stroke({ color: tellColor, width: (tellByKind ? ENEMY_TELL_KIND_REACH.ranged * 2 : 18) * camera.zoom, alpha: alpha * 0.22, cap: 'round' })
           .stroke({ ...CONTOUR, width: 9, cap: 'round' })
-          .stroke({ color: archetype.visual.color, width: 3, alpha, cap: 'round' });
+          .stroke({ color: tellColor, width: 3, alpha, cap: 'round' });
       }
     }
     return animatedEnemyCount;

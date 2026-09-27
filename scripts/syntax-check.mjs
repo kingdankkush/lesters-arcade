@@ -899,6 +899,8 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/enemy-render-pass.mjs",
   "tests/hmh-enemy-render-pass.test.mjs",
   "tests/hmh-render-smoothness.test.mjs",
+  "apps/hmh-reboot/src/feel-motion.mjs",
+  "tests/hmh-feel-motion.test.mjs",
   "tests/hmh-render-alloc.test.mjs",
   "tests/fixtures/hmh-render-reference/enemy-body-pass.mjs",
   "tests/fixtures/hmh-render-reference/render-helpers.mjs",

@@ -21,7 +21,10 @@ import { feedbackUnit } from './deterministic-hash.mjs';
 export const WEAPON_RECOIL_SHAKE = Object.freeze({
   'coin-blaster': 1.6,
   'scatter-shotgun': 4.2,
-  'auto-miner': 0.9,
+  // 1.8.7 feel: shake is now a trauma accumulator, so kicks stack. At one
+  // shot every five ticks 0.27 holds a sustained stream at about 0.87 px,
+  // under the 0.9 px each shot kicked before stacking existed.
+  'auto-miner': 0.27,
   'launcher-rig': 7.5,
 });
 

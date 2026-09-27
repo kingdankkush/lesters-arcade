@@ -40,7 +40,9 @@ test('camera shake is wired, bounded, and honours accessibility settings', async
   const source = await readMain();
   assert.match(source, /world\.position\.set\(/, 'shake must actually be applied');
   assert.match(source, /settings\.screenShake && !settings\.reduceMotion/, 'shake respects both settings');
-  assert.match(source, /SHAKE_DECAY_TICKS/, 'shake must decay on a bounded window');
+  // 1.8.7: the shake is a trauma accumulator with exponential decay; its
+  // bounded window is proven behaviourally in tests/hmh-feel-motion.test.mjs.
+  assert.match(source, /feel\.addTrauma\(tick, magnitude\)/, 'shake must decay through the trauma rig');
   // Shake must NOT touch camera.shakeX/Y: screenToGround reads those back for
   // pointer aim, so a shaking camera would let a cosmetic accessibility
   // setting change which shots hit. It offsets the render container instead.
@@ -64,7 +66,10 @@ test('shake and spark randomness is deterministic, never Math.random', async () 
   // instead of four); the runtime imports it rather than redefining it.
   assert.match(source, /import \{[^}]*\bdeterministicUnit\b[^}]*\} from '\.\/deterministic-hash\.mjs'/, 'effects use the shared seeded hash');
   assert.doesNotMatch(source, /function deterministicUnit\(/, 'the runtime must not keep a private hash copy');
-  assert.match(source, /deterministicUnit\(`shake-x:/, 'shake offsets are seeded from the tick');
+  // 1.8.7: shake offsets are layered sines phased by the tick (feel-motion).
+  assert.match(source, /feel\.cameraOffset\(simulation\.tick \+ renderAlpha\)/, 'shake offsets are phased by the tick');
+  const feelSource = await readFile(new URL('../apps/hmh-reboot/src/feel-motion.mjs', import.meta.url), 'utf8');
+  assert.ok(!/Math\.random/.test(feelSource), 'the feel rig must contain no Math.random');
 });
 
 test('visual effects respect the active performance profile', async () => {
