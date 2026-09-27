@@ -130,11 +130,19 @@ async function inspect(name, viewport) {
   // the readout follows `input`, and the level survives Restart like the toggles.
   const sfxSlider = page.locator('#hmhSettingSfxVolume');
   assert.equal(await sfxSlider.getAttribute('type'), 'range');
-  const sfxRowBox = await page.locator('.hmh-setting-range').boundingBox();
+  // Perf step 7: the Graphics Quality row shares .hmh-setting-range, so the
+  // SFX row is the one holding the slider.
+  const sfxRowBox = await page.locator('.hmh-setting-range:not(.hmh-setting-choice)').boundingBox();
   const sfxTrackBox = await sfxSlider.boundingBox();
+  const graphicsSelect = page.locator('#hmhSettingGraphicsQuality');
+  assert.deepEqual(await graphicsSelect.locator('option').evaluateAll((nodes) => nodes.map((node) => node.value)), ['auto', 'low', 'medium', 'high']);
+  const graphicsBox = await graphicsSelect.boundingBox();
+  const panelBox = await page.locator('#hmhPausePanel').boundingBox();
+  assert.ok(graphicsBox && panelBox && graphicsBox.x >= panelBox.x - 1 && graphicsBox.x + graphicsBox.width <= panelBox.x + panelBox.width + 1, `${name} Graphics quality select escapes the pause panel`);
   if (viewport.width <= 900) {
     assert.ok(sfxRowBox && sfxRowBox.height >= 44, `${name} SFX slider row is only ${sfxRowBox?.height ?? 0}px tall`);
     assert.ok(sfxTrackBox && sfxTrackBox.height >= 44, `${name} SFX slider track target is only ${sfxTrackBox?.height ?? 0}px tall`);
+    assert.ok(graphicsBox.height >= 44, `${name} Graphics quality select is only ${graphicsBox.height}px tall`);
   }
   await sfxSlider.evaluate((node) => {
     node.value = '0.3';
@@ -166,7 +174,7 @@ async function inspect(name, viewport) {
   });
   assert.deepEqual(errors, []);
   await page.close();
-  return { choices, disclosure, keyboardPick, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, buildText, settings: { beforeRestart: settingsBeforeRestart, afterRestart: settingsAfterRestart, sfxVolume: { row: sfxRowBox?.height, track: sfxTrackBox?.height } }, errors };
+  return { choices, disclosure, keyboardPick, run, profile: profile.replaceAll('\n', ' · '), music: { beforeMusic, afterMusic }, buildText, settings: { beforeRestart: settingsBeforeRestart, afterRestart: settingsAfterRestart, sfxVolume: { row: sfxRowBox?.height, track: sfxTrackBox?.height }, graphicsQuality: { height: graphicsBox?.height, width: graphicsBox?.width } }, errors };
 }
 
 const result = {
