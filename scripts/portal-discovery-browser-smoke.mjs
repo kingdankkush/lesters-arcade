@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath,pathToFileURL } from 'node:url';
 import { PORTAL_GAMES,portalPageMeta } from '../apps/portal/src/portal-content.mjs';
 import { CABINET_FRAMING } from '../apps/portal/src/cabinet-presentation.mjs';
+import { RANKED_FACTS } from '../apps/portal/src/ranked-facts.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url));
 const portal=path.join(root,'apps/portal');
@@ -104,6 +105,31 @@ try {
         await page.goBack();assert.equal(new URL(page.url()).pathname,'/games');await page.waitForFunction(()=>document.title.startsWith('Browse Games'));
       });
     }
+    // The Ranked player guide (ranked-onboarding 2026-09-26): served at its clean path, no horizontal
+    // scroll at any width, and the faucet and games calls to action on screen.
+    await check('ranked-guide-'+width,async()=>{
+      const consoleErrors=[];const onConsole=message=>{if(message.type()==='error')consoleErrors.push(message.text());};
+      page.on('console',onConsole);
+      const response=await page.goto(origin+RANKED_FACTS.guidePath);assert.equal(response.status(),200);
+      await page.evaluate(()=>document.fonts.ready);
+      assert.equal(await page.title(),"How Ranked works | Lester's Arcade");
+      assert.equal(await page.locator('h1:visible').count(),1);
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no horizontal overflow');
+      const overflowing=await page.evaluate(()=>[...document.querySelectorAll('main *')].filter(e=>e.getClientRects().length&&e.getBoundingClientRect().right>innerWidth+.5).map(e=>e.tagName+'.'+e.className).slice(0,5));
+      assert.deepEqual(overflowing,[],'nothing in the guide runs past the viewport');
+      const faucet=page.locator('#faucet a[href="'+RANKED_FACTS.faucetUrl+'"]').first();
+      await faucet.scrollIntoViewIfNeeded();assert.equal(await faucet.isVisible(),true,'the faucet call to action is visible');
+      const games=page.locator('main a[href="/games"]:visible').first();
+      assert.equal(await games.count(),1,'a Browse games link is visible');
+      const schema=JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent());
+      assert.equal(schema['@context'],'https://schema.org');
+      await page.evaluate(()=>scrollTo(0,0));
+      await page.screenshot({path:path.join(output,'ranked-guide-'+width+'.png'),fullPage:true});
+      if([390,1440].includes(width))await accessibility(page,'ranked-guide-'+width);
+      page.off('console',onConsole);
+      assert.deepEqual(consoleErrors,[],'no console errors on the guide');
+      return {scrollWidth:await page.evaluate(()=>document.documentElement.scrollWidth)};
+    });
     await check('clean-browser-'+width,()=>{assert.deepEqual(errors,[]);assert.deepEqual(missing,[]);return {errors,missing};});
     await page.close();
   }
