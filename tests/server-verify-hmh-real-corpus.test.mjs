@@ -35,7 +35,10 @@ const BUILD_HASH = /^site-\d+\.\d+\.\d+:game-(\d+\.\d+\.\d+):cabinet-\d+\.\d+\.\
 const PINNED = Object.freeze({
   '1.8.3': { runs: 68, digest: 'ecd897f5e48857ecaaa4dcbebc17fa77e686199c5db870b3b24bff3e07d3c697' },
   '1.8.4': { runs: 52, digest: '7a347eb31de448ca210015f5ea588a88911fef8e601a11268b2417635a760bc5' },
-  '1.9.0': { runs: 108, digest: 'bf692f8d339709898e2268da3fd62804c436b3e04dfafddfb620e26b19989031' },
+  // 1.9.0: the 128-row plan on the release candidate's child (the first 108
+  // summaries are byte-identical to the 894d8a41 capture; the 20 Liquidator
+  // seekers r108 to r127 are new).
+  '1.9.0': { runs: 128, digest: 'ec0cefa7f379c5eaf7647c3c458769cb0d219b7f1d7c9c55b157c4736de8255d' },
 });
 
 // Every flag an honest run in the corpus carries today, by release/label. A
@@ -215,7 +218,10 @@ test('the 1.9.0 child\'s schema-7 runs: the v7 rows agree with the fields they m
       tally.offers += summary.progression.offersOpened;
     }
   }
-  // The pilots operate machines, enter secrets and re-roll cards.
+  // The pilots operate machines, enter secrets and re-roll cards. No pilot has
+  // yet lived to the Liquidator's ready tick (36,000; the longest run ends at
+  // 29,043, the longest seeker at 22,499), so the boss, Seal and evolution
+  // rows are zero here; the four-bosses fixture carries them.
   assert.ok(tally.runsWithObjectives >= 30, JSON.stringify(tally));
   assert.ok(tally.rerolls >= 50, JSON.stringify(tally));
   t.diagnostic(JSON.stringify(tally));

@@ -36,6 +36,11 @@ const MACHINE_ROWS = MISSION_OBJECTIVES.filter((row) => ['quick', 'channel', 'se
 const WALK_ROWS = MISSION_OBJECTIVES.filter((row) => ['enter', 'touch'].includes(row.mode) && !row.seal);
 const BELL = MISSION_BOSS_ZONES.find((row) => row.id === 'liquidator-closing-bell');
 const LIQUIDATOR_READY_TICK = HMH_V7_BOSSES.liquidator.readyTick;
+// Where the Liquidator seekers wait for his ready tick: west of the Margin
+// Floor, and north of the Dark Pool's door (x 11,720 to 11,860 at y 1,900).
+const BELL_STAGE = { x: 10_300, y: 2_400 };
+const DARK_POOL_STAGE = { x: 11_300, y: 1_500 };
+const DARK_POOL_DOOR = { x: 11_790, y: 1_900 };
 const missionGoal = (row) => {
   const point = row.operate ?? row.anchor;
   const hold = Boolean(row.operate);
@@ -85,6 +90,14 @@ export const STYLE_DEFAULTS = Object.freeze({
   // Until then it plays a kiting pickup hunter (moving between far pickups
   // keeps the crowd trailing), throws grenades at clusters and heals early;
   // with the Standard in hand it closes only while its health holds.
+  // Liquidator seekers (1.9.0): explorers that pick maximum health first and
+  // heal early (sweeping the districts keeps the crowd trailing and the
+  // objectives' XP flowing), then trek to the Liquidation Yard before his ready
+  // tick (36,000), wait near the trigger, then start him: 'bell' rings the
+  // Closing Bell on the Margin Floor, 'darkpool' walks through the warehouse
+  // logbook into the Dark Pool (the start without an intro).
+  bell: { bossTrigger: 'bell', kite: 1.4, pickups: true, sites: true, grenades: true, swaps: true, explore: true, boss: true, bossLead: 3_600, healAt: 0.7, healRange: 2600, rerollChance: 0.4, upgrades: ['diamond-hands', 'hardened-wallet', 'proof-of-work', 'hot-wallet', 'compound-interest', 'gas-optimization', 'precision-ledger'] },
+  darkpool: { bossTrigger: 'dark-pool', kite: 1.4, pickups: true, sites: true, grenades: true, swaps: true, explore: true, boss: true, bossLead: 3_600, healAt: 0.7, healRange: 2600, rerollChance: 0.4, upgrades: ['diamond-hands', 'hardened-wallet', 'proof-of-work', 'hot-wallet', 'compound-interest', 'gas-optimization', 'precision-ledger'] },
   standard: { melee: 'forked-standard', meleeHealthAt: 0.4, weaponPreference: ['forked-standard', 'auto-miner', 'scatter-shotgun', 'lightning-ledger', 'bear-market-burner', 'coin-blaster', 'launcher-rig', 'hash-rail'], kite: 1.8, pickups: true, sites: false, grenades: true, swaps: true, explore: false, boss: false, pickupFirst: true, favour: ['forked-standard-cache'], favourRange: Infinity, hunt: true, healAt: 0.6, healRange: 3200, upgrades: ['standard-tempo', 'standard-reach', 'standard-force', 'canonical-fork', 'proof-of-work', 'diamond-hands', 'hot-wallet', 'hardened-wallet'] },
 });
 
@@ -179,7 +192,39 @@ export function createPilot({ style, seed, tickCap, entry }) {
     const health = spies.health ?? 100;
     const maxHealth = spies.maxHealth ?? 100;
     if (tick >= tickCap) return null;
-    if (cfg.boss && tick >= LIQUIDATOR_READY_TICK + (cfg.bossDelay ?? 1_200)) {
+    if (cfg.bossTrigger && tick >= LIQUIDATOR_READY_TICK - cfg.bossLead) {
+      const boss = liveBoss(spies, tick);
+      const slot = spies.bossSlots?.slots?.liquidator;
+      if (boss) {
+        stats.bossSeen = true;
+        const away = Math.atan2(me.y - boss.y, me.x - boss.x) + 0.35;
+        const radius = cfg.bossTrigger === 'dark-pool' ? 160 : 300;
+        return { x: boss.x + Math.cos(away) * radius, y: boss.y + Math.sin(away) * radius, id: 'boss-orbit', kind: 'boss' };
+      }
+      if (slot && slot.status !== 'defeated' && slot.status !== 'live') {
+        const heal = (spies.health ?? 100) < (spies.maxHealth ?? 100) * cfg.healAt
+          ? pickupCandidates(spies, tick).filter((p) => p.effect.kind === 'heal' && Math.hypot(p.x - me.x, p.y - me.y) < 1600).sort((a, b) => Math.hypot(a.x - me.x, a.y - me.y) - Math.hypot(b.x - me.x, b.y - me.y))[0]
+          : null;
+        if (heal) return heal;
+        if (tick < LIQUIDATOR_READY_TICK) {
+          // Wait near the trigger, lapping a staging point the crowd trails.
+          const stage = cfg.bossTrigger === 'dark-pool' ? DARK_POOL_STAGE : BELL_STAGE;
+          const angle = Math.atan2(me.y - stage.y, me.x - stage.x) + orbitSide * 0.7;
+          const target = { x: stage.x + Math.cos(angle) * 420, y: stage.y + Math.sin(angle) * 420 };
+          if (!walkableAt(target.x, target.y)) orbitSide = -orbitSide;
+          return Math.hypot(me.x - stage.x, me.y - stage.y) > 900 ? { ...stage, id: 'boss-stage', kind: 'boss' } : { ...target, id: `stage-${Math.floor(tick / 30)}`, kind: 'boss' };
+        }
+        stats.bossTriggerAttempts = (stats.bossTriggerAttempts ?? 0) + (goal?.id === 'boss-trigger' ? 0 : 1);
+        if (cfg.bossTrigger === 'dark-pool') {
+          // Through the door, past the logbook (the secret completes on the
+          // way in), to the middle of the court.
+          const inside = me.y > DARK_POOL_DOOR.y + 20 && me.x > 11_592 && me.x < 11_976;
+          return inside ? { x: 11_784, y: 2_300, id: 'boss-trigger', kind: 'boss', hold: true, holdRadius: 60, holdTicks: 900 } : { ...DARK_POOL_DOOR, y: DARK_POOL_DOOR.y - 60, id: 'boss-door', kind: 'boss' };
+        }
+        return { x: BELL.operate.x, y: BELL.operate.y, id: 'boss-trigger', kind: 'boss', hold: true, holdRadius: 40, holdTicks: BELL.fillTicks + 900 };
+      }
+    }
+    if (cfg.boss && !cfg.bossTrigger && tick >= LIQUIDATOR_READY_TICK + (cfg.bossDelay ?? 1_200)) {
       const boss = liveBoss(spies, tick);
       const slot = spies.bossSlots?.slots?.liquidator;
       if (boss) {
