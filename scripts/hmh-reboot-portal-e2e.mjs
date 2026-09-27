@@ -602,10 +602,12 @@ if (isMain) {
       assert.equal(record.score, record.runSummary.totals.score);
       assert.equal(record.kills, record.runSummary.kills.total);
       assert.equal(record.elapsedSeconds, Math.round(record.runSummary.totals.elapsedMs / 1000));
-      // Schema 6: the terminal pilot hit is stamped enemy-bagholder-rusher, so
-      // the child must attribute the defeat to an enemy and the parent must
-      // render it from the payload (never from legacy in-portal combat state).
-      assert.equal(record.runSummary.schemaVersion, 6, 'child must emit schema 6');
+      // Schema 7 since 1.9.0 (the child's v7 accumulator; the defeat block is
+      // unchanged from schema 6): the terminal pilot hit is stamped
+      // enemy-bagholder-rusher, so the child must attribute the defeat to an
+      // enemy and the parent must render it from the payload (never from
+      // legacy in-portal combat state).
+      assert.equal(record.runSummary.schemaVersion, 7, 'child must emit schema 7');
       assert.equal(record.runSummary.defeat.kind, 'enemy');
       assert.equal(record.runSummary.defeat.causeId, 'enemy-bagholder-rusher');
       assert.equal(record.killedBy, 'Bagholder Rusher', 'free record killedBy must come from the recap');
