@@ -7,8 +7,12 @@ import {
   runCriticalLiquidatorBenchmark,
 } from '../apps/hmh-reboot/src/critical-liquidator-benchmark.mjs';
 
-const CANONICAL_SEED = 1337;
-const SECOND_LEGAL_SEED = 10;
+// Seed 15 draws the canonical first-level offer (precision-ledger,
+// gas-optimization) under the package-8.3 salt; 1337 drew it under the 1.8.1
+// salt and now draws cold-storage, hot-wallet, which never exercises the crit
+// build. Seed 48 draws the same two cards and diverges in the fight.
+const CANONICAL_SEED = 15;
+const SECOND_LEGAL_SEED = 48;
 
 function comparable(report) {
   const { partition: _partition, ...rest } = report;

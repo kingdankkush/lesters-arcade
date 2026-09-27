@@ -72,7 +72,8 @@ function closePhase(phases, phaseId, exitTick, damage) {
  */
 export function runCriticalLiquidatorBenchmark({
   buildId,
-  seed = 1337,
+  // Seed 15 draws the canonical first-level offer under the package-8.3 salt.
+  seed = 15,
   partition = 1,
   durationTicks = LIQUIDATOR_TARGET_FIGHT_TICKS,
 } = {}) {
