@@ -78,14 +78,20 @@
 //           grenade-kills-above-weapon-kills  as on the v6 path: grenades.kills
 //                                    above the grenade weapons' kills (contract
 //                                    §15.1; the v7 child keeps the v6 count)
-//           activity-without-time, equipped-ticks-above-run,
-//           grenade-detonations-above-launches, damage-dealt-mismatch,
+//           pickups-above-capacity, district-path-invalid,
+//           districts-before-travel-time, activity-without-time,
+//           equipped-ticks-above-run, weapon-without-source,
+//           grenade-kills-above-contacts, grenade-detonations-above-launches,
+//           grenades-thrown-above-supply, damage-dealt-mismatch,
 //           combo-above-kills, knife-kills-above-contacts,
 //           melee-contacts-without-trigger, knife-triggers-above-cadence,
 //           standard-triggers-above-cadence
-//                                    the v6 consistency rules the 1.9.0 child
-//                                    keeps (HMH_V7_CONSISTENCY_REJECTS, slice
-//                                    9); the launcher counts emitted shells
+//                                    every other v6 consistency rule,
+//                                    mirrored with the 1.9.0 child's tables
+//                                    (HMH_V7_CONSISTENCY_REJECTS, contract
+//                                    16.8 and 16.9); the launcher counts
+//                                    emitted shells, and the grenade supply
+//                                    counts boss refills and Quartermasters
 //   flag    near-ceiling and claimed-rank checks as in v6, plus
 //           upgrade-rank-above-max, evolution-without-mastery,
 //           node-level-inconsistent, objective-prerequisite-missing and
@@ -101,6 +107,7 @@ import {
   HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION,
   HMH_V7_BOSSES,
   HMH_V7_BOSS_RULES,
+  HMH_V7_CONSISTENCY_RULES,
   HMH_V7_EVOLUTIONS,
   HMH_V7_OBJECTIVES,
   HMH_V7_PRISONER_SLOTS,
@@ -857,12 +864,15 @@ const V7 = HMH_V7_RUN_RULES;
 const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
 const BOSS = HMH_V7_BOSS_RULES;
 
-// The 1.8.4 and round-3 consistency rules the v7 path mirrors (contract 15.1
-// item 4, in part; build ledger slice 9). The 1.9.0 child records these fields
-// with the same accumulator, so each rule below is an identity of that
-// accumulator or a child rule the 1.9.0 child keeps, and the real-child
-// corpus of the 1.9.0 child (tests/fixtures/hmh-honest-corpus/
-// real-child-1.9.0.json, 108 runs) holds none of them broken:
+// The 1.8.4 and round-3 consistency rules the v7 path mirrors: all sixteen of
+// HMH_V6_CONSISTENCY_REJECTS (contract 15.1 item 4; 16.8 and 16.9). The 1.9.0
+// child records these fields with the same accumulator, so each rule below is
+// an identity of that accumulator or a child rule the 1.9.0 child keeps, read
+// from its own tables (sdk/hmh-run-contract-v7.mjs HMH_V7_CONSISTENCY_RULES,
+// pinned against the child by the parity tests), and the real-child corpus of
+// the 1.9.0 child (tests/fixtures/hmh-honest-corpus/real-child-1.9.0.json)
+// holds none of them broken:
+//   grenade-kills-above-weapon-kills (checked in validateV7RunPlausibility),
 //   activity-without-time, equipped-ticks-above-run, damage-dealt-mismatch,
 //   combo-above-kills        as on v6 (recordRunTick, recordRunDamage, and a
 //                            combo step only on a recorded kill)
@@ -884,20 +894,44 @@ const BOSS = HMH_V7_BOSS_RULES;
 //                            Forked Standard are unchanged in 1.9.0, and the
 //                            Standard's evolution (chain-split) is wave 2, held
 //                            at applied = 0 by schema rule S10.
-// Not mirrored yet, each for a stated reason:
-//   pickups-above-capacity, district-path-invalid, districts-before-travel-
-//   time, weapon-without-source, grenades-thrown-above-supply
-//                            need the 1.9.0 child's own tables pinned into
-//                            sdk/hmh-run-contract-v7.mjs first (placements and
-//                            unlocks, the moved yard entry, weapon sources such
-//                            as secret and prisoner rewards, and grenade refills
-//                            from boss defeats and prisoner grants); the v6
-//                            tables would reject honest 1.9.0 play.
+//   pickups-above-capacity   as on v6, per effect over the same 21 placements
+//                            (genesis-seal excluded: its pickups are the Seals
+//                            of S11/S12). An objective reward unlocks at its
+//                            switch objective's completion tick (the objectives
+//                            row; main.mjs unlocks it in the step that records
+//                            the objective), and the Liquidator vault at the
+//                            Liquidator's defeatedTick (the bosses row), where
+//                            v6 used the boss band. Prisoner, strongbox,
+//                            secret and haven grants are not pickups (§11).
+//                            collectibles-above-capacity (§7.1) stays beside it.
+//   district-path-invalid, districts-before-travel-time
+//                            as on v6, with the 1.9.0 entry table (the Yard
+//                            start moved to 10,060, still 60 units inside its
+//                            strip, more than two dash ticks) and the same
+//                            48 px a tick: the 1.9.0 additions (the boss push
+//                            and the mission glide, at most 4 a tick each)
+//                            keep a running tick under a dash tick (24).
+//   weapon-without-source    as on v6: in 1.9.0 a gun is still owned only
+//                            through its weapon cache (a recordRunWeaponEvent
+//                            pickup follows only a cache collection), and an
+//                            evolution's hits carry the base gun's id.
+//   grenades-thrown-above-supply  CHANGED supply: three at the start, one per
+//                            Extra Grenade rank (three at most), one per
+//                            nuke-liquidation collection, the maximum (five
+//                            plus the ranks) for each defeated boss (a defeat
+//                            refills to the maximum), and three per rescued
+//                            Quartermaster (dealt from the seed). Margin: the
+//                            charge cap is ignored.
 export const HMH_V7_CONSISTENCY_REJECTS = Object.freeze([
+  'pickups-above-capacity',
+  'district-path-invalid',
+  'districts-before-travel-time',
   'activity-without-time',
   'equipped-ticks-above-run',
+  'weapon-without-source',
   'grenade-kills-above-contacts',
   'grenade-detonations-above-launches',
+  'grenades-thrown-above-supply',
   'damage-dealt-mismatch',
   'combo-above-kills',
   'knife-kills-above-contacts',
@@ -905,32 +939,152 @@ export const HMH_V7_CONSISTENCY_REJECTS = Object.freeze([
   'knife-triggers-above-cadence',
   'standard-triggers-above-cadence',
 ]);
+const C7R = HMH_V7_CONSISTENCY_RULES;
+
+// The tick each objective reward's objective unlocked at on the v7 path: a
+// completed objective at its completion tick, the Liquidator vault at the
+// Liquidator's defeat. A missing key is still locked.
+export function hmhV7ObjectiveUnlocks(summary) {
+  const unlocks = {};
+  for (const row of summary?.objectives ?? []) if (row?.completed === 1) unlocks[row.objectiveId] = row.tick;
+  const vault = (summary?.bosses ?? []).find((row) => row?.bossId === C7R.vault.bossId);
+  if (vault?.defeatedTick > 0) unlocks[C7R.vault.objective] = vault.defeatedTick;
+  return unlocks;
+}
+
+function v7PlacementCapacity([rearmTicks, unlock], runTicks, unlocks) {
+  const from = typeof unlock === 'number' ? unlock : (Object.hasOwn(unlocks, unlock) ? unlocks[unlock] : null);
+  if (!Number.isFinite(from)) return 0;
+  const first = Math.max(C7R.firstTick, from);
+  if (runTicks < first) return 0;
+  return 1 + (rearmTicks > 0 ? Math.floor((runTicks - first) / rearmTicks) : 0);
+}
+
+// The most pickups of `effectId` a 1.9.0 run of `runTicks` ticks can make, with
+// its objectives unlocked at `unlocks` (hmhV7ObjectiveUnlocks).
+export function hmhV7PickupCapacity(effectId, runTicks, unlocks = {}) {
+  const placements = Object.hasOwn(C7R.pickupPlacements, effectId) ? C7R.pickupPlacements[effectId] : [];
+  return placements.reduce((sum, placement) => sum + v7PlacementCapacity(placement, runTicks, unlocks), 0);
+}
+
+// → { value, limit } summed over the effects above their capacity, or null.
+// genesis-seal is not a placement pickup (schema S11/S12 bound it).
+export function hmhV7PickupExcess(collectibles, runTicks, unlocks = {}) {
+  let value = 0;
+  let limit = 0;
+  for (const row of collectibles) {
+    if (row?.effectId === 'genesis-seal') continue;
+    const capacity = hmhV7PickupCapacity(row?.effectId, runTicks, unlocks);
+    if (row?.collected > capacity) {
+      value += row.collected;
+      limit += capacity;
+    }
+  }
+  return value > 0 ? { value, limit } : null;
+}
+
+// The hand grenades a 1.9.0 run can have thrown (see grenades-thrown-above-supply).
+export function hmhV7HandGrenadeSupply(summary) {
+  const hand = C7R.handGrenades;
+  const ranks = Math.min(hand.maxRanks, Math.max(0, rowCounts(summary.upgrades, 'upgradeId', 'selected')[hand.rankUpgradeId] ?? 0));
+  const refills = rowCounts(summary.collectibles, 'effectId', 'collected')[hand.refillEffectId] ?? 0;
+  const defeats = (summary.bosses ?? []).filter((row) => row?.defeatedTick > 0).length;
+  const deal = dealHmhPrisoners(summary.identity.seed);
+  const quartermasters = (summary.prisoners ?? []).filter((row) => row?.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === hand.prisonerKind).length;
+  return hand.startCharges + hand.chargesPerRank * ranks + refills
+    + defeats * (hand.startMaxCharges + hand.chargesPerRank * ranks) + quartermasters * hand.prisonerCharges;
+}
+
+// → the weapon rows used without their source (see weapon-without-source).
+export function hmhV7WeaponsWithoutSource(summary) {
+  const collected = rowCounts(summary.collectibles, 'effectId', 'collected');
+  const [startingWeapon] = C7R.activeWeapons;
+  const offending = [];
+  for (const row of summary.weapons) {
+    const weaponId = row?.weaponId;
+    const cache = Object.hasOwn(C7R.weaponCaches, weaponId) ? C7R.weaponCaches[weaponId] : null;
+    const equipped = row.equippedTicks > 0;
+    const killed = row.kills > 0;
+    const unsourced = (equipped && !C7R.activeWeapons.includes(weaponId))
+      || (cache === null ? row.pickups > 0 : row.pickups > (collected[cache] ?? 0))
+      || (cache !== null && weaponId !== startingWeapon && (equipped || killed) && row.pickups === 0)
+      || (weaponId === C7R.handGrenades.weaponId && killed && !(summary.grenades.thrown > 0))
+      || (weaponId === C7R.nuke.weaponId && killed && !((collected[C7R.nuke.effectId] ?? 0) > 0));
+    if (unsourced) offending.push(weaponId);
+  }
+  return offending;
+}
+
+// level-entry selectLevelEntry of the 1.9.0 child: FNV-1a over
+// `level-1-entry:${seed}`, and the strip the entry lies in.
+export function hmhV7LevelEntry(seed) {
+  let hash = 2166136261;
+  for (const character of `level-1-entry:${seed}`) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619) >>> 0;
+  const [id, x, y] = C7R.levelEntries[hash % C7R.levelEntries.length];
+  return Object.freeze({ id, x, y, strip: C7R.districtStrips.findIndex(([, minX, maxX]) => x >= minX && x <= maxX) });
+}
+
+// The visited mask against the seed's 1.9.0 entry → { pathValid, entryBit,
+// travelPx }, as hmhV6DistrictTravel.
+export function hmhV7DistrictTravel(seed, visitedDistrictMask) {
+  const entry = hmhV7LevelEntry(seed);
+  const entryBit = 2 ** entry.strip;
+  if (visitedDistrictMask === 0) return { pathValid: true, entryBit, travelPx: 0 };
+  const strips = C7R.districtStrips;
+  const visited = strips.map((_, index) => Math.floor(visitedDistrictMask / 2 ** index) % 2 === 1);
+  const first = visited.indexOf(true);
+  const last = visited.lastIndexOf(true);
+  const contiguous = Number.isSafeInteger(visitedDistrictMask) && visitedDistrictMask > 0 && visitedDistrictMask < 2 ** strips.length
+    && visited.slice(first, last + 1).every(Boolean);
+  if (!contiguous || first > entry.strip || last < entry.strip) return { pathValid: false, entryBit, travelPx: 0 };
+  const left = first < entry.strip ? entry.x - strips[first][2] : 0;
+  const right = last > entry.strip ? strips[last][1] - entry.x : 0;
+  return { pathValid: true, entryBit, travelPx: left + right + Math.min(left, right) };
+}
+
+// The fewest ticks in which the 1.9.0 travel budget covers `travelPx`.
+export function hmhV7MinTicksForTravel(travelPx) {
+  return Math.max(0, Math.ceil((travelPx - C7R.travel.allowancePx) / C7R.travel.maxStepPx));
+}
 
 function checkV7Consistency(runSummary, runTicks, reject) {
-  const { totals, kills, weapons, grenades, exploration } = runSummary;
+  const { identity, totals, kills, weapons, grenades, collectibles, exploration } = runSummary;
+  const pickups = hmhV7PickupExcess(collectibles, runTicks, hmhV7ObjectiveUnlocks(runSummary));
+  if (pickups) reject('pickups-above-capacity', pickups.value, pickups.limit);
+
+  const districts = hmhV7DistrictTravel(identity.seed, exploration.visitedDistrictMask);
+  const minTicks = hmhV7MinTicksForTravel(districts.travelPx);
+  if (!districts.pathValid) reject('district-path-invalid', exploration.visitedDistrictMask, districts.entryBit);
+  else if (runTicks < minTicks) reject('districts-before-travel-time', runTicks, minTicks);
+
   const timeless = runTicks === 0 ? Number(exploration.visitedDistrictMask !== 0) + Number(totals.damageDealt > 0) : 0;
   if (timeless) reject('activity-without-time', timeless, 0);
 
   const equippedTicks = weapons.reduce((sum, row) => sum + row.equippedTicks, 0);
   if (equippedTicks > runTicks) reject('equipped-ticks-above-run', equippedTicks, runTicks);
 
+  const unsourced = hmhV7WeaponsWithoutSource(runSummary);
+  if (unsourced.length) reject('weapon-without-source', unsourced.length, 0);
+
   if (grenades.kills > grenades.contacts) reject('grenade-kills-above-contacts', grenades.kills, grenades.contacts);
-  const launches = grenades.thrown + (weapons.find((row) => row.weaponId === V6C.launcherWeapon)?.projectilesEmitted ?? 0);
+  const launches = grenades.thrown + (weapons.find((row) => row.weaponId === C7R.launcherWeapon)?.projectilesEmitted ?? 0);
   if (grenades.detonated > launches) reject('grenade-detonations-above-launches', grenades.detonated, launches);
+  const supply = hmhV7HandGrenadeSupply(runSummary);
+  if (grenades.thrown > supply) reject('grenades-thrown-above-supply', grenades.thrown, supply);
 
   const weaponDamage = weapons.reduce((sum, row) => sum + row.damage, 0);
   if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
 
   if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
 
-  const knife = weapons.find((row) => row.weaponId === V6C.melee.knifeWeapon);
-  const standard = weapons.find((row) => row.weaponId === V6C.melee.standardWeapon);
+  const knife = weapons.find((row) => row.weaponId === C7R.melee.knifeWeapon);
+  const standard = weapons.find((row) => row.weaponId === C7R.melee.standardWeapon);
   if (knife.kills > knife.projectileContacts) reject('knife-kills-above-contacts', knife.kills, knife.projectileContacts);
   const contactsWithoutTrigger = [knife, standard].filter((row) => row.projectileContacts > 0 && row.triggerContacts === 0).length;
   if (contactsWithoutTrigger) reject('melee-contacts-without-trigger', contactsWithoutTrigger, 0);
-  const knifeSwings = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.knifeCooldownTicks);
+  const knifeSwings = hmhV6MeleeCadenceLimit(runTicks, C7R.melee.knifeCooldownTicks);
   if (knife.triggers > knifeSwings) reject('knife-triggers-above-cadence', knife.triggers, knifeSwings);
-  const standardStrikes = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.standardCooldownTicks);
+  const standardStrikes = hmhV6MeleeCadenceLimit(runTicks, C7R.melee.standardCooldownTicks);
   const standardClaimed = Math.max(standard.triggers, runSummary.forkedStandard?.attacks ?? 0);
   if (standardClaimed > standardStrikes) reject('standard-triggers-above-cadence', standardClaimed, standardStrikes);
 }
@@ -1141,9 +1295,9 @@ export function validateV7RunPlausibility(runSummary) {
   else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
 
   // A grenade kill is a kill of a grenade weapon (the v6 accumulator's rule,
-  // which the v7 child keeps; HMH_V6_CONSISTENCY_RULES.grenadeWeapons).
+  // which the v7 child keeps; HMH_V7_CONSISTENCY_RULES.grenadeWeapons).
   const weaponKills = rowCounts(kills.byWeapon, 'weaponId', 'count');
-  const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
+  const grenadeWeaponKills = C7R.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
   if (runSummary.grenades.kills > grenadeWeaponKills) reject('grenade-kills-above-weapon-kills', runSummary.grenades.kills, grenadeWeaponKills);
 
   // The v6 consistency rules the v7 child keeps (HMH_V7_CONSISTENCY_REJECTS).

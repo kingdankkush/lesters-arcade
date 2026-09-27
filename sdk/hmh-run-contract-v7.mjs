@@ -116,6 +116,110 @@ export function hmhV7CollectibleCapacity(runTicks) {
   return rules.MAX_PLACEMENTS * (1 + Math.floor(runTicks / rules.MIN_REARM_TICKS));
 }
 
+// The 1.9.0 child's tables for the v7 mirrors of the 1.8.4 consistency rules
+// (contract 16.9; server/verify/hmh-plausibility.mjs HMH_V7_CONSISTENCY_REJECTS).
+// The same shape as the verifier's HMH_V6_CONSISTENCY_RULES, read from the
+// 1.9.0 child; tests/server-verify-hmh-plausibility.test.mjs pins every row
+// against it. What moved from the v6 literals:
+//   levelEntries    the Yard start moved to (10,060, 2,505), at least 920 from
+//                   the Liquidator's anchor (boss kit, slice 5); the seed hash
+//                   and the entry ids are unchanged
+//   pickupPlacements  the same 21 placements; the Liquidator vault unlocks at
+//                   the Liquidator's defeatedTick (the v7 bosses row), in place
+//                   of the v6 boss band
+//   handGrenades    Extra Grenade raises the maximum (5 at the start) and fills
+//                   the new slot; a boss defeat refills to the maximum; a
+//                   rescued Quartermaster hands over three once
+//   melee           unchanged (the knife and the Forked Standard are the 1.8.4
+//                   ones; the Standard's evolution is wave 2, held at 0)
+export const HMH_V7_CONSISTENCY_RULES = freezeDeep({
+  grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
+  // The simulation's first tick (DeterministicSimulation steps from tick 1).
+  firstTick: 1,
+  // Per collectible effect but genesis-seal, one [rearmTicks, unlock] per
+  // placement: rearmTicks is 0 for a one-shot placement; unlock is the
+  // placement's earliest available tick, or the objective that unlocks it (a
+  // switch objective, at its completion tick, or the Liquidator vault).
+  pickupPlacements: covering({
+    'bonus-life': [[0, 0], [0, 0], [7_200, 'hashwood-shrine']],
+    'coin-blaster-cache': [[7_200, 'crossing-pump'], [10_800, 0]],
+    'scatter-shotgun-cache': [[0, 'relay-power'], [10_800, 0]],
+    'auto-miner-cache': [[10_800, 0]],
+    'launcher-rig-cache': [[10_800, 0]],
+    'litecoin-token': [],
+    'hash-rail-core': [[0, 'ravine-winch'], [0, 0]],
+    'lightning-ledger-cache': [[0, 'liquidator-defeated'], [0, 3_600]],
+    'bear-market-burner-cache': [[0, 'yard-warehouse'], [0, 7_200]],
+    'forked-standard-cache': [[0, 10_800]],
+    'time-dilation': [[10_800, 0]],
+    'berserk-candle': [[10_800, 'mining-valve'], [10_800, 0]],
+    'nuke-liquidation': [[0, 0], [7_200, 'hashwood-shrine']],
+  }, C7.collectibles.filter((id) => id !== 'genesis-seal'), 'HMH_V7_CONSISTENCY_RULES.pickupPlacements'),
+  // The Liquidator's defeat unlocks his vault (boss-slots unlockObjective).
+  vault: { objective: 'liquidator-defeated', bossId: 'liquidator' },
+  // level-one-world DISTRICTS as [id, minX, maxX], each the full world height.
+  districtStrips: [
+    ['frontier-relay', 0, 1_800],
+    ['rugpull-ravine', 1_800, 3_800],
+    ['liquidity-crossing', 3_800, 6_000],
+    ['hashwood', 6_000, 8_000],
+    ['mining-camp', 8_000, 10_000],
+    ['liquidation-yard', 10_000, 12_000],
+  ],
+  // level-entry LEVEL_ONE_ENTRIES as [id, x, y]; selectLevelEntry(seed) picks one.
+  levelEntries: [
+    ['relay', 800, 2_400],
+    ['ravine', 2_100, 2_300],
+    ['hashwood', 6_900, 2_250],
+    ['mining', 8_250, 2_350],
+    ['yard', 10_060, 2_505],
+  ],
+  // Twice the fastest tick (a dash tick, 24), as on v6; the 1.9.0 boss push
+  // (4 a tick) and the mission glide (4 a tick, in place of the step) keep a
+  // running tick under 24 (parity test).
+  travel: { maxStepPx: 48, allowancePx: 480 },
+  // weapon-system HMH_WEAPON_ORDER: the only weapons the loadout can make
+  // active; the first is the starting weapon, owned from the start.
+  activeWeapons: ['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard'],
+  // The weapon-cache effect that grants each active weapon: in 1.9.0 still the
+  // only source of a weapon (secrets grant silver, heal and ammo; prisoners
+  // heal, refill, grenades, timed effects and XP; a boss defeat none).
+  weaponCaches: {
+    'coin-blaster': 'coin-blaster-cache',
+    'scatter-shotgun': 'scatter-shotgun-cache',
+    'auto-miner': 'auto-miner-cache',
+    'launcher-rig': 'launcher-rig-cache',
+    'hash-rail': 'hash-rail-core',
+    'lightning-ledger': 'lightning-ledger-cache',
+    'bear-market-burner': 'bear-market-burner-cache',
+    'forked-standard': 'forked-standard-cache',
+  },
+  // Hand grenades: createGrenadeSystem (3 charges, maximum 5), Extra Grenade
+  // (cold-storage, three ranks, each raising the maximum by one and filling
+  // it), one per nuke-liquidation collection (the Nuke and the Scrypt Cache),
+  // a boss defeat's refill to the maximum, and a Quartermaster's three.
+  handGrenades: {
+    weaponId: 'satoshi-frag',
+    startCharges: 3,
+    startMaxCharges: 5,
+    rankUpgradeId: 'cold-storage',
+    chargesPerRank: 1,
+    maxRanks: 3,
+    refillEffectId: 'nuke-liquidation',
+    prisonerKind: 'quartermaster',
+    prisonerCharges: 3,
+  },
+  launcherWeapon: 'launcher-rig',
+  nuke: { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' },
+  melee: {
+    weapons: ['litecoin-knife', 'forked-standard'],
+    knifeWeapon: 'litecoin-knife',
+    knifeCooldownTicks: 20,
+    standardWeapon: 'forked-standard',
+    standardCooldownTicks: 18,
+  },
+});
+
 // XP that completes level L; levels run to MAX_LEVEL.
 export function hmhV7LevelThreshold(level) {
   return 150 * level * (level + 1);

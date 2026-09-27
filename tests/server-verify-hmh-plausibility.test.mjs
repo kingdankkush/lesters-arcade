@@ -40,6 +40,13 @@ import {
   hmhV6PickupExcess,
   hmhV6WeaponsWithoutSource,
   hmhV6MeleeCadenceLimit,
+  hmhV7DistrictTravel,
+  hmhV7HandGrenadeSupply,
+  hmhV7LevelEntry,
+  hmhV7MinTicksForTravel,
+  hmhV7ObjectiveUnlocks,
+  hmhV7PickupCapacity,
+  hmhV7WeaponsWithoutSource,
 } from '../server/verify/hmh-plausibility.mjs';
 import { statsFromHmhRunSummary } from '../apps/portal/src/achievements/stats.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
@@ -49,6 +56,7 @@ import {
   HMH_V7_BOSSES,
   HMH_V7_BOSS_RULES,
   HMH_V7_COLLECTIBLE_RULES,
+  HMH_V7_CONSISTENCY_RULES,
   HMH_V7_EVOLUTIONS,
   HMH_V7_OBJECTIVES,
   HMH_V7_PRISONER_SLOTS,
@@ -94,7 +102,10 @@ import { DASH_DISTANCE, DASH_DURATION_TICKS } from '../apps/hmh-reboot/src/dash.
 import { createPlayerMotionState } from '../apps/hmh-reboot/src/movement.mjs';
 import { movementSpeedMultiplierForTransition, resolveHeightAdvantage } from '../apps/hmh-reboot/src/elevation.mjs';
 import { WORLD_HAZARD_RULES } from '../apps/hmh-reboot/src/world-hazards.mjs';
-import { HMH_GRENADE_DEFINITION } from '../apps/hmh-reboot/src/grenades.mjs';
+import { HMH_GRENADE_DEFINITION, createGrenadeSystem } from '../apps/hmh-reboot/src/grenades.mjs';
+import { LIQUIDATOR_ATTACK_DEFINITIONS, LIQUIDATOR_BODY } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { PRISONER_RULES } from '../apps/hmh-reboot/src/prisoners.mjs';
+import { BOSS_DEFINITIONS } from '../apps/hmh-reboot/src/boss-slots.mjs';
 import { createRunSummaryAccumulator, finalizeRunSummary, recordRunDamage, recordRunGrenade, recordRunGrenadeDetonation, recordRunKill, recordRunTick, recordRunWeaponFire } from '../sdk/hmh-run-summary.mjs';
 
 const MAIN_SOURCE = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
@@ -2038,9 +2049,20 @@ test('v7: more collectible pickups than the placements can give reject', () => {
   assert.equal(capacity, 21 * 10);
   const pickups = (s) => s.collectibles.reduce((sum, row) => sum + (row.effectId === 'genesis-seal' ? 0 : row.collected), 0);
   const withCandles = (count) => clone(fourBosses, (s) => { v7Row(s.collectibles, 'effectId', 'berserk-candle').collected += count; });
+  // Since the v6 mirror pickups-above-capacity (slice 9, contract 16.9) each
+  // effect is bounded by its own placements, so the Candle's two (one of them
+  // behind the Mining valve, done at 27,000) give at most 6 + 4 = 10 in
+  // 64,800 ticks ...
+  const candles = hmhV7PickupCapacity('berserk-candle', T, hmhV7ObjectiveUnlocks(fourBosses));
+  assert.equal(candles, 10);
+  assert.deepEqual(rejects(plausible(withCandles(candles))), []);
+  assert.deepEqual(rejectFlags(plausible(withCandles(candles + 1))), [{ id: 'pickups-above-capacity', severity: 'reject', value: candles + 1, limit: candles }]);
+  // ... and the total bound stays beside it: past the total, both reject.
   const room = capacity - pickups(fourBosses);
-  assert.deepEqual(rejects(plausible(withCandles(room))), []);
-  assert.deepEqual(rejectFlags(plausible(withCandles(room + 1))), [{ id: 'collectibles-above-capacity', severity: 'reject', value: capacity + 1, limit: capacity }]);
+  assert.deepEqual(rejectFlags(plausible(withCandles(room + 1))), [
+    { id: 'pickups-above-capacity', severity: 'reject', value: room + 1, limit: candles },
+    { id: 'collectibles-above-capacity', severity: 'reject', value: capacity + 1, limit: capacity },
+  ]);
   // The red-team payloads: 250 Berserk Candles, and a million Railgun cores funding level 1,000.
   assert.ok(rejects(plausible(withCandles(250))).includes('collectibles-above-capacity'));
   const cores = plausible(clone(fourBosses, (s) => {
@@ -2111,8 +2133,11 @@ test('v7 soft flags flag and never reject', () => {
   }), 'evolution-without-mastery', 1);
   soft(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'relay-power').levelAtCompletion = s.totals.level; }), 'node-level-inconsistent');
   soft(clone(districts, (s) => { v7Row(s.objectives, 'objectiveId', 'ravine-winch-handle').tick = v7Row(s.objectives, 'objectiveId', 'ravine-winch').tick + 60; }), 'objective-prerequisite-missing', 1);
-  const hashwood = C7.objectives.filter((id) => HMH_V7_OBJECTIVES[id].district === 'hashwood').length + 1; // and the logging-camp prisoner
-  soft(clone(districts, (s) => { s.exploration.visitedDistrictMask -= 2 ** C7.districts.indexOf('hashwood'); }), 'node-in-unvisited-district', hashwood);
+  // An end strip (the districts run enters at the Relay, so the Yard is the far
+  // end): a hole in the middle would break district-path-invalid, a reject.
+  const yard = districts.objectives.filter((row) => row.completed === 1 && HMH_V7_OBJECTIVES[row.objectiveId].district === 'liquidation-yard').length + 1; // and the warehouse-compound prisoner
+  assert.equal(yard, 5);
+  soft(clone(districts, (s) => { s.exploration.visitedDistrictMask -= 2 ** C7.districts.indexOf('liquidation-yard'); }), 'node-in-unvisited-district', yard);
   soft(clone(districts, (s) => setV7Xp(s, Math.floor(s.totals.xp * 1.3))), 'xp-above-selected-upgrades');
   soft(clone(districts, (s) => { s.totals.score = Math.floor(s.totals.score * 1.3); }), 'score-above-selected-upgrades');
   // combo-exceeds-kills stays a soft flag; since slice 9 the mirrored reject
@@ -2163,7 +2188,18 @@ test("v7: grenade kills above the grenade weapons' kills reject; equality passes
     for (const weaponId of V6C.grenadeWeapons) {
       // Each grenade kill carries its blast contact (grenade-kills-above-contacts
       // is mirrored on v7, so the contacts are part of an honest trail).
-      const at = clone(base, (s) => { creditWeapon(s, weaponId, 25); s.grenades.kills = 25; s.grenades.contacts = Math.max(s.grenades.contacts, 26); });
+      // And its source (weapon-without-source is mirrored too): a hand grenade
+      // thrown, or the Launcher Rig picked up from its cache.
+      const at = clone(base, (s) => {
+        creditWeapon(s, weaponId, 25);
+        s.grenades.kills = 25;
+        s.grenades.contacts = Math.max(s.grenades.contacts, 26);
+        if (weaponId === 'satoshi-frag') s.grenades.thrown = Math.max(1, s.grenades.thrown);
+        else {
+          v7Row(s.weapons, 'weaponId', 'launcher-rig').pickups = 1;
+          v7Row(s.collectibles, 'effectId', 'launcher-rig-cache').collected = 1;
+        }
+      });
       assert.deepEqual(rejects(plausible(at)), []);
       const above = plausible(clone(at, (s) => { s.grenades.kills = 26; }));
       assert.deepEqual(rejectFlags(above), [{ id: 'grenade-kills-above-weapon-kills', severity: 'reject', value: 26, limit: 25 }]);
@@ -2207,18 +2243,23 @@ test('v7 soft flags: each sub-condition flags on its own and never rejects', () 
   only(clone(districts, (s) => { v7Row(s.prisoners, 'slotId', 'p6-yard-warehouse-compound').tick = 52_500; }), 'node-level-inconsistent', 1);
   // objective-prerequisite-missing: the prerequisite never completed (the other sub-condition, completed later, is in the test above).
   only(clone(districts, (s) => uncomplete(s, 'ravine-winch-handle')), 'objective-prerequisite-missing', 1);
-  // node-in-unvisited-district, per kind of node: Hashwood's seven objectives alone ...
-  only(clone(districts, (s) => { unrescue(s, 'p4-hashwood-logging-camp'); s.exploration.visitedDistrictMask -= districtBit('hashwood'); }), 'node-in-unvisited-district', 7);
+  // node-in-unvisited-district, per kind of node, on an end strip (a hole in
+  // the middle of the visited strips rejects district-path-invalid since slice
+  // 9): the Yard's four objectives alone (the districts run enters at the Relay) ...
+  only(clone(districts, (s) => { unrescue(s, 'p6-yard-warehouse-compound'); s.exploration.visitedDistrictMask -= districtBit('liquidation-yard'); }), 'node-in-unvisited-district', 4);
   // ... its prisoner alone ...
   only(clone(districts, (s) => {
-    for (const id of C7.objectives.filter((objectiveId) => HMH_V7_OBJECTIVES[objectiveId].district === 'hashwood')) uncomplete(s, id);
-    s.exploration.visitedDistrictMask -= districtBit('hashwood');
+    for (const id of C7.objectives.filter((objectiveId) => HMH_V7_OBJECTIVES[objectiveId].district === 'liquidation-yard')) uncomplete(s, id);
+    s.exploration.visitedDistrictMask -= districtBit('liquidation-yard');
   }), 'node-in-unvisited-district', 1);
-  // ... and a boss alone (the Baron's ravine, with no ravine objective or prisoner).
+  // ... and a boss alone (the Baron's ravine, with no ravine objective or
+  // prisoner; the four-bosses run enters at the Yard, so the Relay goes too).
   only(clone(fourBosses, (s) => {
-    for (const id of C7.objectives.filter((objectiveId) => HMH_V7_OBJECTIVES[objectiveId].district === 'rugpull-ravine')) uncomplete(s, id);
-    for (const slotId of C7.prisonerSlots.filter((id) => HMH_V7_PRISONER_SLOTS[id].district === 'rugpull-ravine')) unrescue(s, slotId);
-    s.exploration.visitedDistrictMask -= districtBit('rugpull-ravine');
+    for (const district of ['frontier-relay', 'rugpull-ravine']) {
+      for (const id of C7.objectives.filter((objectiveId) => HMH_V7_OBJECTIVES[objectiveId].district === district)) uncomplete(s, id);
+      for (const slotId of C7.prisonerSlots.filter((id) => HMH_V7_PRISONER_SLOTS[id].district === district)) unrescue(s, slotId);
+      s.exploration.visitedDistrictMask -= districtBit(district);
+    }
   }), 'node-in-unvisited-district', 1);
 });
 
@@ -2230,13 +2271,9 @@ test('v7: each mirrored consistency rule at its boundary', () => {
   const T = districts.totals.survivalTicks;
   const row = (s, weaponId) => v7Row(s.weapons, 'weaponId', weaponId);
   assert.deepEqual(only7(districts), []);
-  assert.deepEqual([...HMH_V7_CONSISTENCY_REJECTS].sort(), [
-    'activity-without-time', 'combo-above-kills', 'damage-dealt-mismatch', 'equipped-ticks-above-run', 'grenade-detonations-above-launches',
-    'grenade-kills-above-contacts', 'knife-kills-above-contacts', 'knife-triggers-above-cadence', 'melee-contacts-without-trigger', 'standard-triggers-above-cadence',
-  ]);
-  // Every mirrored id is a v6 consistency reject; the table-bound five are not
-  // mirrored (hmh-plausibility.mjs says why).
-  assert.ok(HMH_V7_CONSISTENCY_REJECTS.every((id) => HMH_V6_CONSISTENCY_REJECTS.includes(id)));
+  // Every v6 consistency reject is mirrored: the fifteen here, and
+  // grenade-kills-above-weapon-kills, which the v7 path checks beside them.
+  assert.deepEqual([...HMH_V7_CONSISTENCY_REJECTS, 'grenade-kills-above-weapon-kills'].sort(), [...HMH_V6_CONSISTENCY_REJECTS].sort());
 
   // activity-without-time: a run of zero ticks that visited a district.
   const timeless = validateRebootRunPlausibility(clone(districts, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; }));
@@ -2264,6 +2301,9 @@ test('v7: each mirrored consistency rule at its boundary', () => {
     v7Row(s.kills.byWeapon, 'weaponId', 'launcher-rig').count += 1;
     row(s, 'coin-blaster').kills -= 1;
     row(s, 'launcher-rig').kills += 1;
+    // The launcher's source (weapon-without-source): its cache, picked up.
+    row(s, 'launcher-rig').pickups = 1;
+    v7Row(s.collectibles, 'effectId', 'launcher-rig-cache').collected = 1;
     s.grenades.kills += 1;
     s.grenades.contacts = s.grenades.kills - 1 + contacts;
   });
@@ -2303,6 +2343,167 @@ test('v7: each mirrored consistency rule at its boundary', () => {
   const standard = (triggers) => clone(districts, (s) => Object.assign(row(s, 'forked-standard'), { triggers, projectilesEmitted: triggers }));
   assert.deepEqual(only7(standard(strikes)), []);
   assert.deepEqual(flagOf(standard(strikes + 1), 'standard-triggers-above-cadence'), [{ id: 'standard-triggers-above-cadence', severity: 'reject', value: strikes + 1, limit: strikes }]);
+
+  // pickups-above-capacity: the Railgun core's two placements (one behind the
+  // winch, done at 7,080) are one-shot, so two at most ...
+  const cores = (collected) => clone(districts, (s) => { v7Row(s.collectibles, 'effectId', 'hash-rail-core').collected = collected; });
+  assert.deepEqual(only7(cores(2)), []);
+  assert.deepEqual(flagOf(cores(3), 'pickups-above-capacity'), [{ id: 'pickups-above-capacity', severity: 'reject', value: 3, limit: 2 }]);
+  // ... and an objective reward counts only once its objective completed: the
+  // winch undone leaves one core.
+  const noWinch = (collected) => clone(cores(collected), (s) => {
+    Object.assign(v7Row(s.objectives, 'objectiveId', 'ravine-winch'), { completed: 0, tick: 0, levelAtCompletion: 0 });
+    Object.assign(v7Row(s.milestones.sites, 'siteId', 'ravine-winch'), { operated: 0, tick: 0 });
+  });
+  assert.deepEqual(flagOf(noWinch(2), 'pickups-above-capacity'), [{ id: 'pickups-above-capacity', severity: 'reject', value: 2, limit: 1 }]);
+  // The Liquidator vault opens with his defeat (the bosses row), not a band:
+  // undefeated in the districts run, it gives no Arc Rifle cache.
+  const arc = (base, collected) => clone(base, (s) => { v7Row(s.collectibles, 'effectId', 'lightning-ledger-cache').collected = collected; });
+  assert.deepEqual(flagOf(arc(districts, 2), 'pickups-above-capacity'), [{ id: 'pickups-above-capacity', severity: 'reject', value: 2, limit: 1 }]);
+  assert.deepEqual(flagOf(arc(fourBosses, 2), 'pickups-above-capacity'), [], 'the four-bosses run defeats the Liquidator at 56,400');
+  assert.deepEqual(hmhV7ObjectiveUnlocks(fourBosses)['liquidator-defeated'], 56_400);
+
+  // district-path-invalid: a hole in the visited strips, or strips that miss
+  // the entry's (the four-bosses run enters at the Yard).
+  const hole = clone(districts, (s) => { s.exploration.visitedDistrictMask -= 2 ** C7.districts.indexOf('hashwood'); });
+  assert.deepEqual(flagOf(hole, 'district-path-invalid'), [{ id: 'district-path-invalid', severity: 'reject', value: 0b110111, limit: 1 }]);
+  const noYard = clone(fourBosses, (s) => { s.exploration.visitedDistrictMask = 0b011111; });
+  assert.deepEqual(flagOf(noYard, 'district-path-invalid'), [{ id: 'district-path-invalid', severity: 'reject', value: 0b011111, limit: 0b100000 }]);
+
+  // districts-before-travel-time: Relay (800) to the Yard (10,000) is 9,200
+  // units, 182 ticks at 48 a tick after the 480 allowance.
+  const squeezed = (ticks) => clone(districts, (s) => { s.identity.endTick = ticks; s.totals.survivalTicks = ticks; s.totals.elapsedMs = ticks * FIXED_STEP_MS; });
+  assert.equal(hmhV7MinTicksForTravel(hmhV7DistrictTravel(districts.identity.seed, 0b111111).travelPx), 182);
+  // (A run this short is not schema-valid, so the rule is read without the schema.)
+  const travelFlags = (summary) => validateRebootRunPlausibility(summary).flags.filter((flag) => flag.id === 'districts-before-travel-time');
+  assert.deepEqual(travelFlags(squeezed(182)), []);
+  assert.deepEqual(travelFlags(squeezed(181)), [{ id: 'districts-before-travel-time', severity: 'reject', value: 181, limit: 182 }]);
+  // The 1.9.0 Yard start (10,060): the four-bosses run's walk west to the
+  // Crossing's east edge (6,000) is 4,060 units, 340 fewer than from 1.8.x's.
+  assert.equal(hmhV7DistrictTravel(fourBosses.identity.seed, 0b111100).travelPx, 4_060);
+  assert.equal(hmhV6DistrictTravel(fourBosses.identity.seed, 0b111100).travelPx, 4_400);
+
+  // weapon-without-source: a gun equipped or credited with no cache pickup, a
+  // pickup with no cache collected, the knife equipped (never active).
+  const unsourced = (mutate) => flagOf(clone(districts, mutate), 'weapon-without-source');
+  assert.deepEqual(unsourced(() => {}), []);
+  assert.deepEqual(unsourced((s) => { row(s, 'bear-market-burner').equippedTicks = 1; row(s, 'coin-blaster').equippedTicks -= 1; }), [{ id: 'weapon-without-source', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(unsourced((s) => { row(s, 'launcher-rig').pickups = 1; }), [{ id: 'weapon-without-source', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(unsourced((s) => { row(s, 'launcher-rig').pickups = 1; v7Row(s.collectibles, 'effectId', 'launcher-rig-cache').collected = 1; }), []);
+  assert.deepEqual(unsourced((s) => { row(s, 'litecoin-knife').equippedTicks = 1; row(s, 'coin-blaster').equippedTicks -= 1; }), [{ id: 'weapon-without-source', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(unsourced((s) => { creditWeapon(s, 'nuke-liquidation', 1); }), [{ id: 'weapon-without-source', severity: 'reject', value: 1, limit: 0 }]);
+
+  // grenades-thrown-above-supply (CHANGED supply): three at the start, and the
+  // districts run's two boss defeats (the Baron, the Lockkeeper) refill to the
+  // maximum of five, and its two Quartermasters (the seed's deal) hand over
+  // three each: 3 + 2 x 5 + 2 x 3 = 19. The v6 formula would allow 3.
+  const deal = dealHmhPrisoners(districts.identity.seed);
+  assert.equal(districts.prisoners.filter((entry) => entry.rescued === 1 && deal[C7.prisonerSlots.indexOf(entry.slotId)] === 'quartermaster').length, 2);
+  assert.equal(hmhV7HandGrenadeSupply(districts), 19);
+  assert.equal(hmhV6HandGrenadeSupply(districts), 3);
+  const thrown = (count) => clone(districts, (s) => { s.grenades.thrown = count; });
+  assert.deepEqual(flagOf(thrown(19), 'grenades-thrown-above-supply'), []);
+  assert.deepEqual(flagOf(thrown(20), 'grenades-thrown-above-supply'), [{ id: 'grenades-thrown-above-supply', severity: 'reject', value: 20, limit: 19 }]);
+  // Each Extra Grenade rank adds one charge and one to every boss refill; a
+  // nuke-liquidation collection adds one.
+  const ranked = clone(districts, (s) => { const upgrade = v7Row(s.upgrades, 'upgradeId', 'cold-storage'); upgrade.selected = 3; upgrade.offered = Math.max(upgrade.offered, 3); v7Row(s.collectibles, 'effectId', 'nuke-liquidation').collected = 1; });
+  assert.equal(hmhV7HandGrenadeSupply(ranked), 19 + 3 + 2 * 3 + 1);
+  // A rescue in a slot the deal gives another kind hands over no grenades.
+  const notQuartermaster = C7.prisonerSlots.find((slotId, index) => deal[index] !== 'quartermaster' && v7Row(districts.prisoners, 'slotId', slotId).rescued === 1);
+  assert.ok(notQuartermaster);
+  assert.equal(hmhV7HandGrenadeSupply(clone(districts, (s) => { Object.assign(v7Row(s.prisoners, 'slotId', notQuartermaster), { rescued: 0, tick: 0, levelAtRescue: 0 }); })), 19);
+});
+
+// Slice 9 (contract 16.9): the tables of the five table-bound mirrors are the
+// 1.9.0 child's. Each row is read back from the child modules; the rest of the
+// table (melee, grenade weapons, launcher, nuke) equals the v6 literals.
+test('the v7 consistency tables equal the 1.9.0 child', () => {
+  const C7R = HMH_V7_CONSISTENCY_RULES;
+  for (const key of ['grenadeWeapons', 'firstTick', 'districtStrips', 'activeWeapons', 'weaponCaches', 'launcherWeapon', 'nuke', 'melee', 'travel']) {
+    assert.deepEqual(C7R[key], V6C[key], key);
+  }
+  // Pickups: the same 21 placements per effect as the v6 table, read from the
+  // child's collectible state for several seeds; genesis-seal has none (its
+  // pickups are the Seals).
+  const eventMinimum = { 'lightning-ledger-cache': LIGHTNING_EVENT_MIN_TICK, 'bear-market-burner-cache': BEAR_MARKET_BURNER_EVENT_BOUNDS.minTick, 'forked-standard-cache': FORKED_STANDARD_CONFIG.eventMinTick };
+  const sorted = (table) => Object.fromEntries(Object.entries(table).map(([id, list]) => [id, list.map((entry) => JSON.stringify(entry)).sort()]));
+  for (const seed of [1, 123, 0xdead_beef, districts.identity.seed, fourBosses.identity.seed]) {
+    const table = Object.fromEntries(Object.keys(C7R.pickupPlacements).map((effectId) => [effectId, []]));
+    for (const { placement, effect } of hmhChildCollectibleState(seed).entries) {
+      let unlock = placement.requiredObjective ?? placement.availableTick;
+      if (!placement.requiredObjective && placement.availableTick > 0) unlock = eventMinimum[effect.effectId];
+      table[effect.effectId].push([placement.respawnTicks ?? 0, unlock]);
+    }
+    assert.deepEqual(sorted(table), sorted(C7R.pickupPlacements), `seed ${seed}`);
+  }
+  assert.deepEqual(Object.keys(C7R.pickupPlacements), C7.collectibles.filter((id) => id !== 'genesis-seal'));
+  // Every objective reward is behind a switch objective of the v7 catalogue
+  // (whose completion tick is its objectives row), or the Liquidator's vault.
+  for (const objective of new Set(objectiveRewardPlacements().map((placement) => placement.requiredObjective))) {
+    if (objective === C7R.vault.objective) continue;
+    assert.equal(HMH_V7_OBJECTIVES[objective]?.class, 'switch', objective);
+  }
+  assert.deepEqual(C7R.vault, { objective: BOSS_DEFINITIONS.liquidator.unlockObjective, bossId: BOSS_DEFINITIONS.liquidator.bossId });
+  // A switch unlocks its rewards in the step that records it; the vault in the
+  // Liquidator's defeat branch; nothing else unlocks.
+  assert.match(MAIN_SOURCE, /recordRunMilestone\(runSummaryAccumulator, \{ type: 'site-operated', id: event\.objectiveId, tick \}\);\s*collectibleState\.unlockedObjectives\.add\(event\.objectiveId\);/);
+  assert.equal(MAIN_SOURCE.match(/unlockedObjectives\.add\(/g).length, 2);
+
+  // Entries: the 1.9.0 table (the Yard start moved), the same seed hash.
+  assert.deepEqual(C7R.levelEntries, LEVEL_ONE_ENTRIES.map(({ id, x, y }) => [id, x, y]));
+  for (let index = 0; index < 20_000; index += 1) {
+    const seed = (index * 2_654_435_761) >>> 0;
+    const entry = selectLevelEntry(seed);
+    assert.deepEqual([hmhV7LevelEntry(seed).id, hmhV7LevelEntry(seed).x], [entry.id, entry.x], `seed ${seed}`);
+  }
+  for (const [, x] of C7R.levelEntries) {
+    const [, minX, maxX] = C7R.districtStrips.find(([, low, high]) => x >= low && x <= high);
+    assert.ok(Math.min(x - minX, maxX - x) > C7R.travel.maxStepPx, `entry at ${x}`);
+  }
+  // Travel: as on v6, twice a dash tick, and a running tick of the 1.9.0 child
+  // stays under a dash tick with its new pushes: the Liquidator's strikes
+  // (up to 48 knockback) and his body push (4 a tick). The mission glide (4 a
+  // tick) replaces the step, so it adds nothing.
+  const moveRanks = 1 + Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.effect === 'moveSpeedMultiplier').reduce((sum, upgrade) => sum + upgrade.amount * upgrade.maxRank, 0);
+  const downhill = Math.max(...[0.01, 0.5, 1, 10, 1_000].map((drop) => movementSpeedMultiplierForTransition({ groundZ: drop, kind: 'ground' }, { groundZ: 0, kind: 'ground' }, 1)));
+  const runTick = LEVEL_ONE_WORLD.player.maxSpeed * moveRanks * COLLECTIBLE_EFFECTS['time-dilation'].speedMultiplier * downhill / 60;
+  const bossKnockback = Math.max(...Object.values(LIQUIDATOR_ATTACK_DEFINITIONS).map((attack) => attack.knockback ?? 0));
+  assert.equal(bossKnockback, 48);
+  const heightBonus = resolveHeightAdvantage({ sourceZ: 1_000, targetZ: 0, baseRange: 1, baseKnockback: 1 }).knockback;
+  const impulse = Math.max(...Object.values(HMH_WEAPON_DEFINITIONS).map((weapon) => weapon.recoil ?? 0), 70, bossKnockback * heightBonus, HMH_GRENADE_DEFINITION.knockback);
+  const recoilTick = impulse * createPlayerMotionState().recoilDecayTime;
+  const conveyorTick = WORLD_HAZARD_RULES['moving-hazard'].push / 60;
+  assert.equal(LIQUIDATOR_BODY.maxPressureStep, 4);
+  assert.match(MAIN_SOURCE, /at 4 units a tick/);
+  const dashTick = DASH_DISTANCE / DASH_DURATION_TICKS;
+  assert.ok(runTick + recoilTick + conveyorTick + LIQUIDATOR_BODY.maxPressureStep < dashTick, `a running tick moves at most ${runTick + recoilTick + conveyorTick + LIQUIDATOR_BODY.maxPressureStep}`);
+  assert.equal(C7R.travel.maxStepPx, 2 * dashTick);
+
+  // Weapons: owned only through a cache. The only weapon-pickup records are
+  // the cache branch (and its unused bonus) and the evidence-only weapon pilot;
+  // no collectible effect carries a bonus weapon.
+  assert.deepEqual(C7R.activeWeapons, [...HMH_WEAPON_ORDER]);
+  assert.deepEqual(C7R.weaponCaches, Object.fromEntries(Object.values(COLLECTIBLE_EFFECTS).filter((effect) => effect.kind === 'weapon-cache').map((effect) => [effect.weaponId, effect.effectId])));
+  assert.equal(Object.values(COLLECTIBLE_EFFECTS).some((effect) => 'bonusWeaponId' in effect), false);
+  assert.equal(MAIN_SOURCE.match(/recordRunWeaponEvent\(runSummaryAccumulator, \{ type: 'pickup'/g).length, 3);
+  assert.equal(MAIN_SOURCE.match(/grantWeaponPickup\(/g).length, 3);
+
+  // Hand grenades: 3 of a maximum of 5, Extra Grenade raises the maximum by
+  // one per rank (three ranks), and the four refills: a nuke-liquidation
+  // collection (the Nuke and the Scrypt Cache: one each), a Quartermaster's
+  // three, and the Liquidator's defeat, to the maximum.
+  const hand = C7R.handGrenades;
+  assert.ok(MAIN_SOURCE.includes('grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });'));
+  const system = createGrenadeSystem({ handCharges: hand.startCharges });
+  assert.deepEqual([system.handCharges, system.maxHandCharges], [hand.startCharges, hand.startMaxCharges]);
+  assert.deepEqual(RUN_UPGRADE_CATALOG[hand.rankUpgradeId], { ...RUN_UPGRADE_CATALOG[hand.rankUpgradeId], maxRank: hand.maxRanks, effect: 'bonusGrenadeCharges', amount: hand.chargesPerRank });
+  assert.equal(PRISONER_RULES.quartermasterGrenades, hand.prisonerCharges);
+  assert.equal(MAIN_SOURCE.match(/rechargeHandGrenades\(/g).length, 4);
+  assert.equal(MAIN_SOURCE.match(/raiseHandGrenadeMaximum\(/g).length, 1);
+  assert.ok(MAIN_SOURCE.includes("else if (grant.grant === 'grenades') rechargeHandGrenades(grenadeSystem, { tick, amount: grant.amount });"));
+  assert.ok(MAIN_SOURCE.includes('rechargeHandGrenades(grenadeSystem, { tick, amount: grenadeSystem.maxHandCharges });'));
+  assert.equal(COLLECTIBLE_EFFECTS[hand.refillEffectId].kind, 'nuke');
+  assert.ok(objectiveRewardPlacements().some((placement) => placement.kind === 'grenade-supply' && placement.assetId === hand.refillEffectId));
 });
 
 // The v7 path's results over a mutation corpus of both v7 fixtures, hashed
@@ -2358,18 +2559,21 @@ function v7Corpus() {
   return cases;
 }
 
-// Slice 9 mirrors ten v6 consistency rules onto the v7 path
+// Slice 9 mirrors the v6 consistency rules onto the v7 path
 // (HMH_V7_CONSISTENCY_REJECTS). With their flags taken out (and the verdict
 // recomputed) the corpus still hashes to V7_CORPUS_DIGEST, so no earlier v7
 // result moved; with them in it hashes to V7_CORPUS_DIGEST_SLICE_9. The cases
-// that gained a flag are the ones whose fabricated time, combo or grenade kills
-// those rules bound: no ticks, a run squeezed to 600 ticks, a best combo above
-// the kills, and grenade kills with no blast contact (grenade-kills-above-
-// contacts, mirrored once the child recorded bomblet contacts).
-const V7_CORPUS_DIGEST_SLICE_9 = '4a73d5c0e2eca7a663c8e5726d9fdf89af84c0f9f80d462071b315429b0e4c7d';
+// that gained a flag are the ones whose fabricated time, combo, pickups or
+// grenade kills those rules bound: no ticks, a run squeezed to 600 ticks, a
+// best combo above the kills, grenade kills with no blast contact
+// (grenade-kills-above-contacts, mirrored once the child recorded bomblet
+// contacts), Satoshi Frag kills with no throw (weapon-without-source), and
+// pickups above their placements (pickups-above-capacity: caches x3, which the
+// total bound let through, and +21 of every pickup, which it already rejected).
+const V7_CORPUS_DIGEST_SLICE_9 = '5dcf11b83cd759e39d3e497b3b7aed4e14f5fbd7bbc923c0365eaf380e16530f';
 const V7_CORPUS_CHANGED_SLICE_9 = Object.freeze([
-  'districts no ticks', 'districts squeezed to 600', 'districts grenade kills +1', 'districts 30 satoshi-frag kills', 'districts combo above kills',
-  'four-bosses no ticks', 'four-bosses squeezed to 600', 'four-bosses grenade kills +1', 'four-bosses 30 satoshi-frag kills', 'four-bosses combo above kills',
+  'districts no ticks', 'districts squeezed to 600', 'districts caches x3', 'districts +21 of every pickup', 'districts grenade kills +1', 'districts 30 satoshi-frag kills', 'districts combo above kills',
+  'four-bosses no ticks', 'four-bosses squeezed to 600', 'four-bosses caches x3', 'four-bosses +21 of every pickup', 'four-bosses grenade kills +1', 'four-bosses 30 satoshi-frag kills', 'four-bosses combo above kills',
 ]);
 test('the v7 path gives its mutation corpus the pinned results', () => {
   const results = v7Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
@@ -2382,15 +2586,15 @@ test('the v7 path gives its mutation corpus the pinned results', () => {
   assert.equal(createHash('sha256').update(JSON.stringify(withoutMirror)).digest('hex'), V7_CORPUS_DIGEST, 'without the mirrored rules, every result is the pre-slice-9 result');
   const changed = results.filter(([, result], index) => JSON.stringify(result) !== JSON.stringify(withoutMirror[index][1])).map(([name]) => name);
   assert.deepEqual(changed, V7_CORPUS_CHANGED_SLICE_9);
-  // Only the combo cases and the 30 Satoshi Frag kills claimed with no blast
-  // contact change verdict (to rejected); the time cases and the grenade kill
-  // above the weapons' kills were already rejected and now also name the
-  // mirrored rule they break.
+  // Only the combo cases, the 30 Satoshi Frag kills claimed with no throw and
+  // no blast contact, and the tripled caches change verdict (to rejected); the
+  // time cases, +21 of every pickup and the grenade kill above the weapons'
+  // kills were already rejected and now also name the mirrored rules they break.
   const verdictChanged = results.filter(([, result], index) => result.verdict !== withoutMirror[index][1].verdict)
     .map(([name, result]) => [name, result.flags.filter((flag) => HMH_V7_CONSISTENCY_REJECTS.includes(flag.id)).map((flag) => flag.id)]);
   assert.deepEqual(verdictChanged, [
-    ['districts 30 satoshi-frag kills', ['grenade-kills-above-contacts']], ['districts combo above kills', ['combo-above-kills']],
-    ['four-bosses 30 satoshi-frag kills', ['grenade-kills-above-contacts']], ['four-bosses combo above kills', ['combo-above-kills']],
+    ['districts caches x3', ['pickups-above-capacity']], ['districts 30 satoshi-frag kills', ['weapon-without-source', 'grenade-kills-above-contacts']], ['districts combo above kills', ['combo-above-kills']],
+    ['four-bosses caches x3', ['pickups-above-capacity']], ['four-bosses 30 satoshi-frag kills', ['weapon-without-source', 'grenade-kills-above-contacts']], ['four-bosses combo above kills', ['combo-above-kills']],
   ]);
   assert.equal(digest, V7_CORPUS_DIGEST_SLICE_9, `${results.length} cases`);
 });
