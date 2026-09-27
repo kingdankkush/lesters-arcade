@@ -12,7 +12,7 @@
 ## Canonical strings (verbatim on all three host pages)
 
 - Price: "Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain."
-- Faucet: "Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs):" followed by the faucet URL (a link on Chikun and STACKED, plain text on HMH).
+- Faucet: "Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for about 3 Ranked runs):" followed by the faucet URL (a link on Chikun and STACKED, plain text on HMH).
 - Free: "Free play needs no wallet and never touches the chain."
 - Proof: "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements."
 - Value: "Testnet zkLTC has no monetary value."

@@ -16,7 +16,7 @@ const read = (relative) => readFileSync(new URL(`../${relative}`, import.meta.ur
 
 export const RANKED_COPY = Object.freeze({
   price: 'Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain.',
-  faucet: 'Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for 4 Ranked runs)',
+  faucet: 'Get free testnet zkLTC from the LiteForge faucet (0.05 per request, enough for about 3 Ranked runs)',
   faucetUrl: 'https://liteforge.hub.caldera.xyz',
   free: 'Free play needs no wallet and never touches the chain.',
   proof: "Ranked runs are checked by the arcade's server and published on LitVM, then appear on the leaderboards, your profile and your achievements.",
