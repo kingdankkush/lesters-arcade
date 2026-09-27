@@ -780,17 +780,28 @@ function assertMonotonic(state, tick) {
   state.lastTick = tick;
 }
 
+// Leaving a weapon cancels its charge and ends a live Arc Rifle channel the
+// way a manual switch always has (stopReason 'switch', the break cooldown).
+// Every switch away goes through here: a manual select or swap, a cache that
+// auto-selects its gun, a refill that selects, and the dry-gun fallback. A
+// channel left flagged live after a cache switch used to overheat or
+// "release" the moment the player came back (build ledger slice 6 review).
+// Returns the channel-break event, or null when no channel was live.
+function leaveWeapon(weapon, tick) {
+  const interrupted = weapon.channelState?.active
+    ? stepLightningLedger(weapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
+    : null;
+  weapon.chargeStartedTick = null;
+  weapon.chargeReadyAnnounced = false;
+  return interrupted;
+}
+
 export function selectWeapon(state, weaponId, { tick } = {}) {
   assertMonotonic(state, tick);
   if (!state.weapons?.[weaponId]) throw new TypeError(`unknown weapon ${String(weaponId)}`);
   if (!state.weapons[weaponId].owned) throw new TypeError(`weapon ${String(weaponId)} is unowned`);
   const previousWeaponId = state.activeWeaponId;
-  const previousWeapon = state.weapons[previousWeaponId];
-  const interrupted = previousWeapon.channelState?.active
-    ? stepLightningLedger(previousWeapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
-    : null;
-  previousWeapon.chargeStartedTick = null;
-  previousWeapon.chargeReadyAnnounced = false;
+  const interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
   state.activeWeaponId = weaponId;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId, readyTick: state.switchReadyTick, interrupted });
@@ -820,12 +831,7 @@ export function switchWeapon(state, weaponId, { tick } = {}) {
   if (!state.weapons[id].owned) throw new TypeError(`weapon ${id} is unowned`);
   if (id === state.activeWeaponId) return null;
   const previousWeaponId = state.activeWeaponId;
-  const previousWeapon = state.weapons[previousWeaponId];
-  const interrupted = previousWeapon.channelState?.active
-    ? stepLightningLedger(previousWeapon.channelState, { tick, fire: true, stopReason: 'switch' }).events.at(-1)
-    : null;
-  previousWeapon.chargeStartedTick = null;
-  previousWeapon.chargeReadyAnnounced = false;
+  const interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
   state.activeWeaponId = id;
   state.switchReadyTick = tick + state.switchTicks;
   return freezeDeep({ type: 'weapon:switch', tick, previousWeaponId, weaponId: id, readyTick: state.switchReadyTick, interrupted, manual: true });
@@ -862,9 +868,9 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   const previousWeaponId = state.activeWeaponId;
   // 'if-new' (package 8.6): a cache selects its gun only when it is newly owned.
   const selected = select === 'if-new' ? !alreadyOwned : Boolean(select);
+  // An auto-select is a switch: the weapon left behind ends its channel.
+  const interrupted = selected && previousWeaponId !== id ? leaveWeapon(state.weapons[previousWeaponId], tick) : null;
   if (selected) {
-    state.weapons[previousWeaponId].chargeStartedTick = null;
-    state.weapons[previousWeaponId].chargeReadyAnnounced = false;
     state.activeWeaponId = id;
     state.switchReadyTick = tick + state.switchTicks;
   }
@@ -878,6 +884,7 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     previousWeaponId,
     activeWeaponId: state.activeWeaponId,
     readyTick: selected ? state.switchReadyTick : tick,
+    interrupted,
   });
 }
 
@@ -947,12 +954,15 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     weapon.chargeReadyAnnounced = false;
   }
   const previousWeaponId = state.activeWeaponId;
-  // Selection through a refill honors ownership exactly like selectWeapon.
-  if (select && weaponId !== null && state.weapons[String(weaponId)].owned) {
+  // Selection through a refill honors ownership exactly like selectWeapon,
+  // and like every switch it ends the channel of the weapon left behind.
+  let interrupted = null;
+  if (select && weaponId !== null && state.weapons[String(weaponId)].owned && String(weaponId) !== previousWeaponId) {
+    interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
     state.activeWeaponId = String(weaponId);
     state.switchReadyTick = tick + state.switchTicks;
   }
-  return freezeDeep({ type: 'weapon:pickup-refill', tick, weaponIds, previousWeaponId, activeWeaponId: state.activeWeaponId });
+  return freezeDeep({ type: 'weapon:pickup-refill', tick, weaponIds, previousWeaponId, activeWeaponId: state.activeWeaponId, interrupted });
 }
 
 function completeReloads(state, tick, progressionByWeapon, events) {
@@ -1090,8 +1100,7 @@ export function stepWeaponLoadout(state, {
     && active.reserveAmmo !== null && active.reserveAmmo <= 0
     && active.reloadCompleteTick === null) {
     const previousWeaponId = state.activeWeaponId;
-    active.chargeStartedTick = null;
-    active.chargeReadyAnnounced = false;
+    leaveWeapon(active, tick);
     state.activeWeaponId = 'coin-blaster';
     state.switchReadyTick = tick + state.switchTicks;
     events.push(freezeDeep({ type: 'weapon:auto-fallback', tick, previousWeaponId, weaponId: 'coin-blaster', readyTick: state.switchReadyTick }));
