@@ -24,6 +24,8 @@ export function createOfficialAppRoutes({
   renderModeSelect,
   renderCharacterSelect,
   renderGameplay,
+  // Starts or stops the Level 1 intro art rotation (docs/art/HMH-BANNERS-20260926.md 5.4).
+  renderLevelIntro = () => {},
 } = {}) {
   function showPanel(activePanel) {
     for (const panel of [
@@ -118,6 +120,7 @@ export function createOfficialAppRoutes({
     } else {
       showPanel(dom.officialWalletSplash);
     }
+    renderLevelIntro(step === 'level-one-intro');
   }
 
   return Object.freeze({ renderApp, renderArcadeFloor, showPanel });

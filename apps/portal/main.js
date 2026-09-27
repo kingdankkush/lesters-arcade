@@ -441,13 +441,10 @@ function productionCabinetSprite() {
 // Every post-connect screen (and the splash) uses the SAME clean Hard Money
 // Heroes key art as a true full-bleed `cover` background — no menu panels or
 // buttons baked into the image (menus are real DOM controls layered on top).
-const HMH_KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
-const HMH_LOADING_KEYARTS = Object.freeze([
-  './assets/generated/hmh-key-art/hmh-loading-keyart-1.jpg',
-  './assets/generated/hmh-key-art/hmh-loading-keyart-2.jpg',
-  './assets/generated/hmh-key-art/hmh-loading-keyart-3.jpg',
-  './assets/generated/hmh-key-art/hmh-loading-keyart-4.jpg',
-]);
+// 2026-09-26 banner refresh: the whole-cast HMH-Extra4 art (docs/art/HMH-BANNERS-20260926.md).
+const HMH_KEY_ART_BG = '/assets/hmh-art/banners/hmh-extra4-1600.webp';
+// Legacy campaign loader only (Level 1 mounts the reboot child and never reaches it).
+const HMH_LOADING_KEYARTS = Object.freeze(['lester', 'lilly', 'litcommando', 'litvalkyrie'].map((hero) => `/assets/hmh-art/loading/level-load-${hero}-800.webp`));
 
 // Lazy-loaded HMH game payload. Populated by ensureHMHLoaded() when the user
 // picks the Hard Money Heroes cabinet. All gameplay references to the heavy
@@ -494,7 +491,7 @@ function hardMoneyHeroScreenBackgroundProfile(screenId) {
   // the art steady while content scrolls (disabled on mobile via CSS).
   const keyArt = {
     backgroundSize: 'cover, cover',
-    backgroundPosition: 'center, center center',
+    backgroundPosition: 'center, 72% 35%',
     backgroundRepeat: 'no-repeat, no-repeat',
     backgroundColor: '#030617',
   };
@@ -1276,6 +1273,8 @@ const dom = {
   officialCharacterRoster: document.querySelector('#officialCharacterRoster'),
   officialCharacterBackButton: document.querySelector('#officialCharacterBackButton'),
   officialLevelIntro: document.querySelector('#officialLevelIntro'),
+  officialLevelIntroArt: document.querySelector('#officialLevelIntroArt'),
+  officialLevelIntroCaption: document.querySelector('#officialLevelIntroCaption'),
   officialBeginLevelButton: document.querySelector('#officialBeginLevelButton'),
   officialLevelBackButton: document.querySelector('#officialLevelBackButton'),
   officialGameplay: document.querySelector('#officialGameplay'),
@@ -5040,8 +5039,35 @@ const officialAppRoutes = createOfficialAppRoutes({
   renderModeSelect: renderOfficialModeSelect,
   renderCharacterSelect: renderOfficialCharacterSelect,
   renderGameplay: renderOfficialGameplay,
+  renderLevelIntro: renderLevelIntroArt,
 });
 const renderOfficialApp = officialAppRoutes.renderApp;
+
+// Level 1 intro art (docs/art/HMH-BANNERS-20260926.md 5.4-5.6). The rotation is a lazy chunk,
+// loaded only while the intro shows, so it adds nothing to the portal's initial JS.
+let levelIntroArt = null;
+let levelIntroArtHero = null;
+let levelIntroArtLoading = false;
+function renderLevelIntroArt(active) {
+  const heroId = hmhRebootHeroId();
+  if (levelIntroArt && (!active || levelIntroArtHero !== heroId)) { levelIntroArt.stop(); levelIntroArt = null; }
+  if (!active || levelIntroArt || levelIntroArtLoading || !dom.officialLevelIntroArt) return;
+  levelIntroArtLoading = true;
+  import('./src/hmh-banner-stage.mjs').then(({ mountBannerStage }) => {
+    levelIntroArtLoading = false;
+    if (officialAppStep !== 'level-one-intro' || levelIntroArt) return;
+    levelIntroArtHero = hmhRebootHeroId();
+    levelIntroArt = mountBannerStage({
+      frame: dom.officialLevelIntroArt,
+      backdropHost: dom.officialLevelIntro,
+      caption: dom.officialLevelIntroCaption,
+      heroId: levelIntroArtHero,
+      reduceMotion: Boolean(gameSettings.reduceMotion) || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true,
+      sizes: '(min-width: 1024px) 56vw, (max-height: 500px) and (orientation: landscape) 34vw, 100vw',
+      source: 'intro',
+    });
+  }).catch(() => { levelIntroArtLoading = false; });
+}
 
 async function connectOfficialWallet() {
   if (!connectedWallet) {

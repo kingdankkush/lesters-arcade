@@ -164,6 +164,9 @@ async function run() {
       // The game's static imports and their full transitive byte cost remain
       // in sumStaticChunkBytes and the aggregate initial-JS gate below.
       'hmh-reboot/world-art': hmhWorldArtEntry,
+      // Host-page Level 1 loading art (docs/art/HMH-BANNERS-20260926.md 5.5): its own
+      // <script type="module"> in hmh-reboot/index.html, never imported by game.js.
+      'hmh-reboot/startup-art': resolve(__dirname, 'apps/portal/src/hmh-startup-art.mjs'),
       'chikun/game': chikunEntry,
       'stacked/game': stackedEntry,
       // Independently cacheable visual math; the static shared chunk remains

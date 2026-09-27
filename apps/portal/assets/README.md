@@ -25,6 +25,24 @@ This folder contains hand-authored SVG graphics used by the local Lester's Arcad
 
 These are local prototype graphics only, not final production artwork or official Litecoin mascot art.
 
+### Hard Money Heroes banner art (owner art, 2026-09-26)
+
+`hmh-art/` holds the WebP derivatives of the owner's 23 HMH banner PNGs, built by
+`python scripts/build-hmh-banner-art.py` (`--check` runs in `npm test`) and recorded in
+`hmh-art/manifest.json`. The source PNGs stay in the vault
+(`C:/Users/just_/lesters-arcade-vault/hmh-art/banners-2026-09-26/`), never in the repository.
+
+- `hmh-art/banners/` — homepage feature banner and portal backdrop (HMH-Extra4), Free Mode
+  (HMH-FreeMode2) and Ranked Mode / leaderboard (HMH-RankedMode), 1600/960/640 px.
+- `hmh-art/share/` — Free and Ranked share covers at 1600 px, the sources of the og image and
+  `share-cards/lester-blaster.png` / `lester-blaster-free.png`.
+- `hmh-art/loading/` — the Level 1 intro and loading rotation pool (17 images at 1280/800/480 px).
+  Level-Load-Extra-01 is excluded: its zombies wear Bitcoin logos.
+- `hmh-art/og/hmh-free-share-1200x630.jpg` — og:image of `/games/hard-money-heroes`.
+
+The old `generated/hmh-banners/hard-money-heroes-*-banner.jpg` and
+`generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg` were retired with this refresh.
+
 ### Generated Hard Money Heroes image drafts
 
 Stored under `generated/` and created as local prototype concept assets. These are **not** final launch artwork; they need human cleanup, sprite slicing, animation timing, compression, and brand/legal review before production use.

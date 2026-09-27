@@ -80,6 +80,25 @@ html:not([data-ingame="true"]) #officialApp #arcadeMusicPlayer:not([hidden]) { p
 #officialApp .portal-preview-caption h3 { margin:10px 0 12px; font:800 23px/1.25 var(--font-display); letter-spacing:-.025em; }
 #officialApp .portal-preview-caption h3 span { float:right; font-weight:400; color:var(--portal-gold); }
 #officialApp .portal-preview-caption p { margin:0; font-size:15px; max-width:34ch; }
+/* HMH feature banner (docs/art/HMH-BANNERS-20260926.md 5.1): the whole cast on the right, the title and calls to action in the dark forest on the left. */
+#officialApp .portal-game-previews:has(.portal-game-feature) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+#officialApp .portal-game-feature { grid-column:1 / -1; position:relative; overflow:hidden; border:1px solid var(--portal-rule); border-bottom:4px solid var(--portal-gold); background:linear-gradient(120deg,#0b1a2e,#05070f 55%,#10233a); }
+#officialApp .portal-feature-art { aspect-ratio:16/7; overflow:hidden; }
+#officialApp .portal-feature-art img { display:block; width:100%; height:100%; object-fit:cover; object-position:72% 35%; transition:transform .4s; }
+#officialApp .portal-game-feature:hover .portal-feature-art img { transform:scale(1.02); }
+#officialApp .portal-feature-art::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(5,7,15,.94) 0%,rgba(5,7,15,.86) 30%,rgba(5,7,15,.45) 52%,rgba(5,7,15,0) 66%); pointer-events:none; }
+#officialApp .portal-feature-copy { position:absolute; inset:0 auto 0 0; z-index:1; width:min(46%,520px); padding:40px 0 40px 48px; display:flex; flex-direction:column; justify-content:center; }
+#officialApp .portal-feature-copy .portal-kicker { margin:0 0 12px; }
+#officialApp .portal-feature-copy h3 { margin:0 0 12px; font:900 clamp(32px,3.6vw,52px)/1.02 var(--font-display); letter-spacing:-.04em; color:var(--portal-paper); }
+#officialApp .portal-feature-copy h3 a { color:inherit; text-decoration:none; }
+#officialApp .portal-feature-copy h3 a:hover { color:var(--portal-gold); }
+#officialApp .portal-feature-copy > p { margin:0 0 14px; font-size:17px; line-height:1.55; color:#e6e9ee; }
+#officialApp .portal-feature-facts { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; padding:0; list-style:none; }
+#officialApp .portal-feature-facts li { padding:4px 10px; border:1px solid rgba(248,214,90,.45); border-radius:999px; background:rgba(5,7,15,.7); color:var(--portal-paper); font:600 12px/1.5 var(--font-mono); letter-spacing:.04em; }
+#officialApp .portal-feature-copy .portal-button-outline { background:rgba(5,7,15,.72); border-color:rgba(246,243,233,.55); }
+#officialApp .portal-feature-copy .portal-button-outline:hover { background:var(--portal-paper); }
+#officialApp .portal-feature-copy .portal-feature-note { margin:14px 0 0; font-size:13px; line-height:1.55; color:#c8ced6; max-width:44ch; }
+#officialApp .mode-card-banner { background:linear-gradient(120deg,#0b1a2e,#05070f 55%,#10233a); }
 #officialApp .portal-how { display:grid; grid-template-columns:1fr 1fr; gap:80px; }
 #officialApp .portal-how-intro { max-width:520px; }
 #officialApp .portal-how-intro img { display:block; width:100%; height:auto; margin-top:24px; }
@@ -227,6 +246,18 @@ html:not([data-ingame="true"]) #officialApp #arcadeMusicPlayer:not([hidden]) { p
   #officialApp .portal-button { padding-inline:12px; }
   #officialApp #officialCabinetGrid .normalized-cabinet { width:225px; height:225px; }
 }
+@media(max-width:1099px) and (min-width:720px) {
+  #officialApp .portal-feature-art { aspect-ratio:16/9; }
+  #officialApp .portal-feature-copy { width:min(58%,480px); padding:28px 0 28px 32px; }
+}
+@media(max-width:719px) {
+  #officialApp .portal-game-previews:has(.portal-game-feature) { grid-template-columns:1fr; }
+  #officialApp .portal-feature-art { aspect-ratio:16/9; }
+  #officialApp .portal-feature-art img { object-position:75% 35%; }
+  #officialApp .portal-feature-art::after { display:none; }
+  #officialApp .portal-feature-copy { position:static; width:auto; padding:20px 20px 24px; background:var(--portal-panel); }
+  #officialApp .mode-card-banner { aspect-ratio:16/9; }
+}
 @media(prefers-reduced-motion:reduce) {
-  #officialApp .portal-game-preview img, #officialApp .portal-button { transition:none; transform:none; }
+  #officialApp .portal-game-preview img, #officialApp .portal-feature-art img, #officialApp .portal-game-feature:hover .portal-feature-art img, #officialApp .portal-button { transition:none; transform:none; }
 }

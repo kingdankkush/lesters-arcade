@@ -116,7 +116,7 @@ export const LEADERBOARD_GAME_BANNERS = Object.freeze({
     title: 'Hard Money Heroes',
     kicker: 'Cabinet 01',
     tagline: 'Top-down roguelike run-and-gun',
-    art: './assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg',
+    art: './assets/hmh-art/banners/hmh-rankedmode-640.webp',
     cabinet: './assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png?v=hmh-cabinet-white-bg-v1',
     accent: '#ffe84d',
     scoreLabel: 'points',

@@ -1,0 +1,870 @@
+{
+  "schema": 1,
+  "generator": "scripts/build-hmh-banner-art.py",
+  "plan": "docs/art/HMH-BANNERS-20260926.md",
+  "vault": "C:/Users/just_/lesters-arcade-vault/hmh-art/banners-2026-09-26/",
+  "encoder": {
+    "pillow": "12.2.0",
+    "libwebp": "1.6.0",
+    "webpQuality": 80,
+    "webpMethod": 6,
+    "ogQuality": 85,
+    "font": "@vercel/og Geist-Regular.ttf",
+    "fontSha256": "bde046ddd9f20be35b0bd56cc79eb752b967fb6661a3fe76cb067bb09f871d76"
+  },
+  "publicBase": "/assets/hmh-art",
+  "heroLoading": {
+    "lit-commando": "level-load-litcommando",
+    "lit-valkyrie": "level-load-litvalkyrie",
+    "lester-original": "level-load-lester",
+    "lilly": "level-load-lilly"
+  },
+  "bannerSurfaces": {
+    "home": "hmh-extra4",
+    "free": "hmh-freemode2",
+    "ranked": "hmh-rankedmode"
+  },
+  "images": [
+    {
+      "id": "hmh-extra4",
+      "source": "HMH-Extra4.png",
+      "sourceSha256": "592aeae1a5984d1a80554767c55663068f2145a2479077c22496979adc17e3d1",
+      "role": "banner",
+      "heroes": [
+        "lit-commando",
+        "lit-valkyrie",
+        "lester-original",
+        "lilly"
+      ],
+      "caption": "All four heroes",
+      "focal": [
+        0.72,
+        0.35
+      ],
+      "alt": "Lit Commando, Lit Valkyrie, Lester and Lilly hold a moonlit forest against the horde",
+      "outputs": [
+        {
+          "path": "banners/hmh-extra4-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 196742,
+          "sha256": "b5d2a7b76bf6bdcb02298b841520faad2a9ba29a045304e807fddd20b6d6a59a"
+        },
+        {
+          "path": "banners/hmh-extra4-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 94412,
+          "sha256": "3eb527847764e390a9bdbc88ef017eef527f4f1a6273e45142369d4484b0538c"
+        },
+        {
+          "path": "banners/hmh-extra4-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 47694,
+          "sha256": "39d7a943c9f71d9c8a18c23ad9bf0bc2578ed2939f18058d6a525569a4498532"
+        }
+      ]
+    },
+    {
+      "id": "hmh-freemode2",
+      "source": "HMH-FreeMode2.png",
+      "sourceSha256": "81305cd9b23ade1ef1a6ca6d2d921f7f556e5747f4d2be5f2a9853e4dc6eee2c",
+      "role": "banner",
+      "heroes": [
+        "lit-commando",
+        "lit-valkyrie"
+      ],
+      "caption": "Lit Commando & Lit Valkyrie",
+      "focal": [
+        0.71,
+        0.22
+      ],
+      "alt": "Lit Commando and Lit Valkyrie advance along a moonlit forest trail with zombies behind them",
+      "outputs": [
+        {
+          "path": "banners/hmh-freemode2-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 177808,
+          "sha256": "71e8f55b7727e44714252e7e0c045804d4c1c51b3c116d465efbbef938c990d9"
+        },
+        {
+          "path": "banners/hmh-freemode2-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 84628,
+          "sha256": "bea4685197c503d70f7e56ac99e11f8e498dcc149450e9b0836658a472a90589"
+        },
+        {
+          "path": "banners/hmh-freemode2-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 42090,
+          "sha256": "a3da593aee2b681a8d900853122802f4366ef52373416c5dba4b9ee6c114f83d"
+        }
+      ]
+    },
+    {
+      "id": "hmh-rankedmode",
+      "source": "HMH-RankedMode.png",
+      "sourceSha256": "51373c880ea826f4ef5a27413720d68c1864006969d254161f06f68d2933719d",
+      "role": "banner",
+      "heroes": [
+        "lester-original",
+        "lilly"
+      ],
+      "caption": "Lester & Lilly",
+      "focal": [
+        0.68,
+        0.3
+      ],
+      "alt": "Lester and Lilly fire on the horde in front of a burning fortress",
+      "outputs": [
+        {
+          "path": "banners/hmh-rankedmode-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 259638,
+          "sha256": "f620b911908e771d7f29aa2c6b4c8b03d2b2b656a2df8f285fa0d5315dda9ca0"
+        },
+        {
+          "path": "banners/hmh-rankedmode-960.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 120728,
+          "sha256": "f9442af26c3548920c8b97fd05a56d00414d9473987b355101af22e8630241b7"
+        },
+        {
+          "path": "banners/hmh-rankedmode-640.webp",
+          "width": 640,
+          "height": 360,
+          "bytes": 60486,
+          "sha256": "69a2491402eb8e8f860988c2316c8afcd123d51c6f4801abf6a67253db28f1ed"
+        }
+      ]
+    },
+    {
+      "id": "hmh-freemode-share",
+      "source": "HMH-FreeMode-Share.png",
+      "sourceSha256": "d5d44e49588516e7fc96bd3f8a0bc81e1a6555dda7fe1b0b08cb87f93de2aba9",
+      "role": "share",
+      "heroes": [
+        "lit-commando",
+        "lit-valkyrie",
+        "lester-original",
+        "lilly"
+      ],
+      "caption": "All four heroes",
+      "focal": [
+        0.73,
+        0.3
+      ],
+      "alt": "The four Hard Money Heroes crouch by a dark forest stream",
+      "outputs": [
+        {
+          "path": "share/hmh-freemode-share-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 199886,
+          "sha256": "1dc00a6f4693325eb0bdbee214bf869e00e9cbe24d3424e53b7fb38efa54187a"
+        }
+      ]
+    },
+    {
+      "id": "hmh-rankedmode-share",
+      "source": "HMH-RankedMode-Share.png",
+      "sourceSha256": "802f91850d55e8268cac108fd27d69ed5cc1ae2868781d78d42a150d04fc141a",
+      "role": "share",
+      "heroes": [
+        "lit-commando",
+        "lit-valkyrie",
+        "lester-original",
+        "lilly"
+      ],
+      "caption": "All four heroes",
+      "focal": [
+        0.74,
+        0.3
+      ],
+      "alt": "The four Hard Money Heroes fight the horde in a burning city",
+      "outputs": [
+        {
+          "path": "share/hmh-rankedmode-share-1600.webp",
+          "width": 1600,
+          "height": 900,
+          "bytes": 197098,
+          "sha256": "30e659de0ce1802957a025c4dcaf644afaa6b7e2588153b5345cdaf9d515283f"
+        }
+      ]
+    },
+    {
+      "id": "level-load-lester",
+      "source": "Level-Load-Lester.png",
+      "sourceSha256": "4563acf9a93552a33f0e83aaf26bc3805886ca421a9925c95a751167cd9427c7",
+      "role": "loading",
+      "heroes": [
+        "lester-original"
+      ],
+      "caption": "Lester",
+      "focal": [
+        0.32,
+        0.3
+      ],
+      "alt": "Lester at a rainy harbour below a lighthouse",
+      "outputs": [
+        {
+          "path": "loading/level-load-lester-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 250142,
+          "sha256": "8e0f87b8c0dc360c4a0194496bc2c0d8e4e94681decce8727ab8a9c5a5ae80a3"
+        },
+        {
+          "path": "loading/level-load-lester-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 116954,
+          "sha256": "3cc969e26ef3442bee48c469b1fab99170183ff7edc76421b2222c68af3c1f6b"
+        },
+        {
+          "path": "loading/level-load-lester-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 47040,
+          "sha256": "e22b90dee85f74478b1e1fc08a471c009059825c85a05dee1da901bc16583f32"
+        }
+      ]
+    },
+    {
+      "id": "level-load-lilly",
+      "source": "Level-Load-Lilly.png",
+      "sourceSha256": "62251740086029a787c0a5d759024daf66e86a68437639344267ded21b5195cf",
+      "role": "loading",
+      "heroes": [
+        "lilly"
+      ],
+      "caption": "Lilly",
+      "focal": [
+        0.28,
+        0.25
+      ],
+      "alt": "Lilly on the container docks under the cranes",
+      "outputs": [
+        {
+          "path": "loading/level-load-lilly-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 179592,
+          "sha256": "6eb4cf55a501667b7cd407f0d20d62c95c2825c18d9679f4a64e89571b659cf7"
+        },
+        {
+          "path": "loading/level-load-lilly-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 83988,
+          "sha256": "6268167fe5997526d92af30b22201a9ddf1907038dbb6c6cedefc1b1a36426b1"
+        },
+        {
+          "path": "loading/level-load-lilly-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 33722,
+          "sha256": "b32396be4a3fc5c304eedc46dc58b2a53e21277fa70522017cf45700060cf9d0"
+        }
+      ]
+    },
+    {
+      "id": "level-load-litcommando",
+      "source": "Level-Load-LitCommando.png",
+      "sourceSha256": "8bb87743856bb5ed31ada4c038a188d016f7d2fd57ab11a40a8c9abd0f1e2e10",
+      "role": "loading",
+      "heroes": [
+        "lit-commando"
+      ],
+      "caption": "Lit Commando",
+      "focal": [
+        0.64,
+        0.25
+      ],
+      "alt": "Lit Commando on a burning town street beside a pickup truck",
+      "outputs": [
+        {
+          "path": "loading/level-load-litcommando-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 153534,
+          "sha256": "35500bce91cdde51270928b130d35a7a842eb2d0fe891e06d3b2b0fbd745732e"
+        },
+        {
+          "path": "loading/level-load-litcommando-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 76464,
+          "sha256": "e4358ca42debf0835c2ba33c1e55bb4a72bfac9dc8490901646e34434bfd64a4"
+        },
+        {
+          "path": "loading/level-load-litcommando-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 32926,
+          "sha256": "fe3b93fb260177df68d9af67335e556e77a2f14644d9ad2db53646ba854d2656"
+        }
+      ]
+    },
+    {
+      "id": "level-load-litvalkyrie",
+      "source": "Level-Load-LitValkyrie.png",
+      "sourceSha256": "47f8b36b8ccfdb7e70adfe5e207ce60271546299d4a783d953449d1123541b9e",
+      "role": "loading",
+      "heroes": [
+        "lit-valkyrie"
+      ],
+      "caption": "Lit Valkyrie",
+      "focal": [
+        0.6,
+        0.25
+      ],
+      "alt": "Lit Valkyrie on an industrial catwalk lit by lanterns",
+      "outputs": [
+        {
+          "path": "loading/level-load-litvalkyrie-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 160020,
+          "sha256": "397d2184002b4458c544ad8f7f56ca9064b0c99f18ee0f722fbc812c9540133c"
+        },
+        {
+          "path": "loading/level-load-litvalkyrie-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 80114,
+          "sha256": "c9287578f33b18c318d70949fcaea1caaa7e8123614fd7754da897f15c552bd0"
+        },
+        {
+          "path": "loading/level-load-litvalkyrie-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 34760,
+          "sha256": "82fe6a08bad1649cb0b27f4b1b00c03368e4c377ca93080caf89a19572b581c7"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-02",
+      "source": "Level-Load-Extra-02.png",
+      "sourceSha256": "d71d9e9ce8441a143e7dc148c82d146d63f8ce3e6e6ba30b7b6f60c2f6c581ac",
+      "role": "loading",
+      "heroes": [
+        "lilly"
+      ],
+      "caption": "Lilly",
+      "focal": [
+        0.3,
+        0.25
+      ],
+      "alt": "Lilly in a sunlit forest ravine as zombies close in",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-02-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 218240,
+          "sha256": "eafa46302b24846f04b1bcd1fa840f337f26984a9ddea02f62065169549b298a"
+        },
+        {
+          "path": "loading/level-load-extra-02-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 108730,
+          "sha256": "374bdc4895901dda899e66e10ade7c8e97403e2e31d2021c89d9bb2754ac07bd"
+        },
+        {
+          "path": "loading/level-load-extra-02-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 45154,
+          "sha256": "c3b68c56b072afa7fb62196e760be6d9fbbca20c91527177b18eec47b993496f"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-03",
+      "source": "Level-Load-Extra-03.png",
+      "sourceSha256": "6adca366573f06d113f7412b586b08527f479bf160ba5e07aa8e0a8157b8bea3",
+      "role": "loading",
+      "heroes": [
+        "lit-commando"
+      ],
+      "caption": "Lit Commando",
+      "focal": [
+        0.62,
+        0.25
+      ],
+      "alt": "Lit Commando on a stormy boardwalk by a ferris wheel",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-03-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 159664,
+          "sha256": "0b2d87db0fe053ad9a049bb7e9e311a246393be35942a20a3da37b86cf9d0c9c"
+        },
+        {
+          "path": "loading/level-load-extra-03-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 81122,
+          "sha256": "51142d7cdd46a417b90076a5af1eef4c6b5868dbedffbb8346e16e4f3c9cee40"
+        },
+        {
+          "path": "loading/level-load-extra-03-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 35668,
+          "sha256": "5cd776b9a9951aac1885d1e26497ae66667000f175406f30d2ca37ceffecc21a"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-04",
+      "source": "Level-Load-Extra-04.png",
+      "sourceSha256": "53470aa8b6c5e114fd543beb80b8fe37c678d1fe87200b6e7219bc28ae7a926b",
+      "role": "loading",
+      "heroes": [
+        "lit-valkyrie"
+      ],
+      "caption": "Lit Valkyrie",
+      "focal": [
+        0.32,
+        0.25
+      ],
+      "alt": "Lit Valkyrie on a snowy convoy road",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-04-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 237648,
+          "sha256": "926ef9ea47b883eacde36efdda1d45b885da0dcbdb5c95650b6be62ee5d0e261"
+        },
+        {
+          "path": "loading/level-load-extra-04-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 117316,
+          "sha256": "3033ea47ca5e16285a6a786bd14ce809b62dd8d3b76890dff7296450b292ae63"
+        },
+        {
+          "path": "loading/level-load-extra-04-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 48426,
+          "sha256": "99ea28efb73cbffc21bd4eb586a44a0443fb3225a28985df8508a851978e2c3b"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-05",
+      "source": "Level-Load-Extra-05.png",
+      "sourceSha256": "a70a4376d558df162adff9f055b4f9af24501667d70e1e034bc005c72dd2b5fb",
+      "role": "loading",
+      "heroes": [
+        "lester-original"
+      ],
+      "caption": "Lester",
+      "focal": [
+        0.3,
+        0.3
+      ],
+      "alt": "Lester in a rail yard under a burning skyline",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-05-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 206496,
+          "sha256": "67c33203d4edebb88812bce1b66c21b72516a7a6ef22a6b8b6555088ec91ce36"
+        },
+        {
+          "path": "loading/level-load-extra-05-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 97026,
+          "sha256": "7404dbe8754ea36ae64c04ffeeda4259b69e48cfacead213c39930a97eafb1a7"
+        },
+        {
+          "path": "loading/level-load-extra-05-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 39504,
+          "sha256": "19d7abc21623a02a61b3a623cb13cd73079eec4fcbd1e10e3ffe0401d58c70f3"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-07",
+      "source": "Level-Load-Extra-07.png",
+      "sourceSha256": "ef565a364c3bb7ec78b2a79ba189278f4d8bbad7b053cc8b48fa6b6189e3b6d0",
+      "role": "loading",
+      "heroes": [
+        "lester-original"
+      ],
+      "caption": "Lester",
+      "focal": [
+        0.32,
+        0.25
+      ],
+      "alt": "Lester at a logging camp at sunset",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-07-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 213142,
+          "sha256": "50862684a1710172c42ee9269368ed392835b531ad54a740e2c44b6d6b265214"
+        },
+        {
+          "path": "loading/level-load-extra-07-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 106354,
+          "sha256": "caafe2f8998082c0f2c4c0ae53994132c8b5f2a6c15e16c3143771bae94d92ba"
+        },
+        {
+          "path": "loading/level-load-extra-07-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 44614,
+          "sha256": "89fabd33a9d961be264edca0caa9c5762d477b5044cac4d3f605ab2e0f770afa"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-08",
+      "source": "Level-Load-Extra-08.png",
+      "sourceSha256": "86c3cb1f36b82290443313a865cb41106851c8f81015dc3e7fbef9838b9dc921",
+      "role": "loading",
+      "heroes": [
+        "lilly"
+      ],
+      "caption": "Lilly",
+      "focal": [
+        0.25,
+        0.25
+      ],
+      "alt": "Lilly on a flooded subway platform",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-08-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 181690,
+          "sha256": "c6fe014367cd2379c05a0008627a41d42556ba2ce36c41ddd2e1cee3a923e5b4"
+        },
+        {
+          "path": "loading/level-load-extra-08-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 89534,
+          "sha256": "ad2bc5835a0f6d5f6e0bd7116377cdfd3ebe928a6b629094c3a8620d2ccfdfff"
+        },
+        {
+          "path": "loading/level-load-extra-08-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 37908,
+          "sha256": "23fef1892cde470aad2242c6f310994fd2a21058eef567d6ba222a581f692f48"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-09",
+      "source": "Level-Load-Extra-09.png",
+      "sourceSha256": "e7232794271d8087373f15a7ef0a23b998f959e5746b9a16d1faf4854dd89386",
+      "role": "loading",
+      "heroes": [
+        "lit-commando"
+      ],
+      "caption": "Lit Commando",
+      "focal": [
+        0.3,
+        0.2
+      ],
+      "alt": "Lit Commando at a rainy forest checkpoint",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-09-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 211836,
+          "sha256": "88a062ec1b3b1c1483f6ab140fe53c289c4a275f61daf4b2ff790b7ec3875eeb"
+        },
+        {
+          "path": "loading/level-load-extra-09-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 97650,
+          "sha256": "64bd7159fe0e1a972da91d127ff9d84d8350a68e9dc6d69a68704695aec354a1"
+        },
+        {
+          "path": "loading/level-load-extra-09-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 37838,
+          "sha256": "f5594b00d644fa536bf32a12f94fe69ae33761487e5cbb6282c6dd608a3d6fc6"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-10",
+      "source": "Level-Load-Extra-10.png",
+      "sourceSha256": "bbaa490e1d8de51f79350c6969045264805cc18cf0049fd4499ff0bddbd6782c",
+      "role": "loading",
+      "heroes": [
+        "lit-commando",
+        "lit-valkyrie",
+        "lester-original",
+        "lilly"
+      ],
+      "caption": "All four heroes",
+      "focal": [
+        0.68,
+        0.35
+      ],
+      "alt": "All four heroes charge through city ruins",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-10-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 192980,
+          "sha256": "fde62d49ab9bcb462a5a825e6ae8bab408efaf3dcf9c6a2ca1c5174c30b2c45f"
+        },
+        {
+          "path": "loading/level-load-extra-10-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 90486,
+          "sha256": "4e654fa913b28277e1786399efd3a49762d1c1072d35be0293292c6ce9cc6fbe"
+        },
+        {
+          "path": "loading/level-load-extra-10-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 37440,
+          "sha256": "035964c338f5a33fefe061eef6428ec659e92086fe55beb078112c94981602fe"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-11",
+      "source": "Level-Load-Extra-11.png",
+      "sourceSha256": "d12266e4f17251f282e28f469ad99ea273fe96c5ad627856d69b9b9ae0011292",
+      "role": "loading",
+      "heroes": [
+        "lilly"
+      ],
+      "caption": "Lilly",
+      "focal": [
+        0.3,
+        0.2
+      ],
+      "alt": "Lilly on overgrown rooftops above the skyline",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-11-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 243472,
+          "sha256": "e834a26167e8e72aad016ee2d92b61b879d5e10475787accbc3513b03393aa90"
+        },
+        {
+          "path": "loading/level-load-extra-11-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 113912,
+          "sha256": "1861e1ead674cb0c9647fe2d2c3c7f78c925b4547658806b3c8a2470dba76751"
+        },
+        {
+          "path": "loading/level-load-extra-11-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 46248,
+          "sha256": "957d854c289923c1a5d1476a6d6754e4dfbb1242f165cb23c1044ab201f95eaa"
+        }
+      ]
+    },
+    {
+      "id": "level-load-extra-12",
+      "source": "Level-Load-Extra-12.png",
+      "sourceSha256": "59cef782f0f5b9d5b78737ead2e1db71a21d33eb104a05eca0b5426fb64f633d",
+      "role": "loading",
+      "heroes": [
+        "lit-valkyrie"
+      ],
+      "caption": "Lit Valkyrie",
+      "focal": [
+        0.65,
+        0.3
+      ],
+      "alt": "Lit Valkyrie on an overpass among wrecked cars",
+      "outputs": [
+        {
+          "path": "loading/level-load-extra-12-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 173398,
+          "sha256": "3a611cf769ce5749f25fd0ce5f81daf38138a1fc5e76a7eaa765a9899c89fd6a"
+        },
+        {
+          "path": "loading/level-load-extra-12-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 88042,
+          "sha256": "8e4e5cd11d11c044d27840345d6c2aacc2cd81ef709de9aa5dc30cb02a9663ae"
+        },
+        {
+          "path": "loading/level-load-extra-12-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 39104,
+          "sha256": "b7c70d2b7058c08cf032743ce0fa3207b31fb0dfbd4367db9bba1b6e20202581"
+        }
+      ]
+    },
+    {
+      "id": "hmh-extra",
+      "source": "HMH-Extra.png",
+      "sourceSha256": "ce5684e982b0d125a809802bf4578f93c9a222891a5d69405908ac8a604bfd86",
+      "role": "loading",
+      "heroes": [
+        "lilly",
+        "lester-original"
+      ],
+      "caption": "Lilly & Lester",
+      "focal": [
+        0.7,
+        0.25
+      ],
+      "alt": "Lilly and Lester in a moonlit forest",
+      "outputs": [
+        {
+          "path": "loading/hmh-extra-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 127706,
+          "sha256": "73923be768d3dea553e9d7253b3d2d8933d2ba04c1611bc9e0e5da6553e9eaf3"
+        },
+        {
+          "path": "loading/hmh-extra-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 61648,
+          "sha256": "68009703d20138d88dca74c569192326a8e161f05eea4d6ae5e9e67a20869ed1"
+        },
+        {
+          "path": "loading/hmh-extra-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 25692,
+          "sha256": "12930b52de87b051ac67f4c6d4aa821c995f77de50b9dd11a5a9a391e9bd4bc2"
+        }
+      ]
+    },
+    {
+      "id": "hmh-extra2",
+      "source": "HMH-Extra2.png",
+      "sourceSha256": "2b9fe2af42693713b0c5bdfd9ef155362adc50693469ed4a8b34e50149489824",
+      "role": "loading",
+      "heroes": [
+        "lit-commando",
+        "lit-valkyrie"
+      ],
+      "caption": "Lit Commando & Lit Valkyrie",
+      "focal": [
+        0.71,
+        0.22
+      ],
+      "alt": "Lit Commando and Lit Valkyrie in a moonlit forest with the horde behind them",
+      "outputs": [
+        {
+          "path": "loading/hmh-extra2-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 136992,
+          "sha256": "634c771c52b77b4fdc2a303929b9f753c40616e6f22415f123fb00ffbda81cf0"
+        },
+        {
+          "path": "loading/hmh-extra2-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 62854,
+          "sha256": "8de07b8664594ec37996986b49b3760f51640d754363a2d63332c483bd5113cd"
+        },
+        {
+          "path": "loading/hmh-extra2-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 24616,
+          "sha256": "a8894bd12497a3f3b70a882e62595829e1effce73dafe36a7c5f6e764a2c9c13"
+        }
+      ]
+    },
+    {
+      "id": "hmh-extra3",
+      "source": "HMH-Extra3.png",
+      "sourceSha256": "dd5154cec28e46b77f4bbf767683782aea509062ac378e90b4ca84e23d0a5634",
+      "role": "loading",
+      "heroes": [
+        "lester-original",
+        "lilly"
+      ],
+      "caption": "Lester & Lilly",
+      "focal": [
+        0.71,
+        0.28
+      ],
+      "alt": "Lester and Lilly in a forest hung with Litecoin banners",
+      "outputs": [
+        {
+          "path": "loading/hmh-extra3-1280.webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 137200,
+          "sha256": "c43c76ab7fa9c4d73a5260e30421d6d1598f758775c4287ff2db34164d358c42"
+        },
+        {
+          "path": "loading/hmh-extra3-800.webp",
+          "width": 800,
+          "height": 450,
+          "bytes": 65814,
+          "sha256": "6757066d7b76f64d4294d72fe05d239526c77ec4306dcea740b4e15e24e5fafd"
+        },
+        {
+          "path": "loading/hmh-extra3-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 26224,
+          "sha256": "4272a6dcc1324691c03aad71df19aadcf25356b8d8fa4bef9d6fea7ab003b900"
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "source": "Level-Load-Extra-01.png",
+      "reason": "zombies wear glowing Bitcoin logos (owner rule: no Bitcoin logo in the rotation)"
+    }
+  ],
+  "og": {
+    "id": "hmh-free-share-og",
+    "source": "hmh-freemode-share",
+    "path": "og/hmh-free-share-1200x630.jpg",
+    "alt": "Hard Money Heroes: the four heroes in a dark forest. Play free at Lester's Arcade.",
+    "width": 1200,
+    "height": 630,
+    "bytes": 185485,
+    "sha256": "5e5b9d27fc8b4bbadcb35eeb21b8641a90448466c567351376b2f28d0cba0d9d"
+  }
+}
