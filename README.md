@@ -1,3 +1,9 @@
+# Lester's Arcade — 1.8.6: Ranked for 0.012 zkLTC, a How Ranked works guide, docs that match the live arcade
+
+Batch release after 1.8.5. Ranked now costs 0.012 testnet zkLTC per run (0.01 entry + 0.002 to publish the score on chain; owner decision 2026-09-26): the server's settle floor is 0.012 in this release and the three on-chain entry fees follow right after it is live. A new player guide at [/how-ranked-works](https://lestersarcade.io/how-ranked-works) walks through every step (play free, connect a wallet, get free zkLTC from the LiteForge faucet, sign in, pay, play, see your score published), with the price, what is checked for each game, an FAQ and troubleshooting. The homepage, every game page and mode select, the Ranked entry window (cost breakdown, faucet link), the trust page, llms.txt and the developer docs now carry the same facts from one source. HMH is described as the top-down 2.5D run-and-gun it is, and the agent docs match the live testnet state.
+
+Site/game version `1.8.6`; cache marker `lesters-arcade-v59-ranked-guide`. Continue on `fable/master-list-20260916`.
+
 # Lester's Arcade — 1.8.5 verified live: smoother HMH crowds, working iPhone sound, jackpot contracts deployed (idle)
 
 Batch release after 1.8.4. Hard Money Heroes runs its simulation 34–50% cheaper per tick with every result bit-identical, draws its enemy crowd without per-frame allocations, and plays sound effects through Web Audio, so the effect and interface volume sliders now work on iPhone (footstep sounds are retired, per the owner's cue list). The Chikun Weekly Jackpot and its test token are deployed on LiteForge (`WeeklyJackpot` `0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e`, tCHIKUN `0xe4230b5aba9f9431b0f5a718b99544f69330ae9c`) but idle: the owner put the live jackpot on hold until mainnet and the $CHIKUN launch, so `JACKPOT_LIVE` stays false and nothing player-facing changes. The operator tool gains an `entry-fee` action that refuses a price below the server's settle floor, for the upcoming owner-approved fee change. Contracts, fees and flags of the live Ranked system are unchanged.
@@ -88,7 +94,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v58-smooth-crowds`
+**Production cache marker:** `lesters-arcade-v59-ranked-guide`
 
 # Lester's Arcade
 

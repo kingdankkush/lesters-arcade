@@ -2,7 +2,7 @@
 
 **Internal source snapshot. Not a release certificate, launch announcement or current public/chain verification.**
 
-Input snapshot SHA-256: `9b2a37e9017210eae2cf0b1cf3991aaf7b54b24fcd21d6f11fdfcf978b1886e5`
+Input snapshot SHA-256: `766b8003c6fb43a3381f52b788acae8f541d8775ba045377f964873d5d6b40dd`
 
 ## What the labels mean
 
@@ -23,7 +23,7 @@ Manifest eligibility is not proof of wallet connection, paid-entry charging, tru
 
 ## Release and settlement boundary
 
-- README-recorded production marker: lesters-arcade-v58-smooth-crowds. Not fetched by this offline generator.
+- README-recorded production marker: lesters-arcade-v59-ranked-guide. Not fetched by this offline generator.
 - Last recorded combined run: **BLOCKED**, 2026-09-09T20:12:22.799359+00:00; 8/9 gates passed. This is historical, not a check of the current candidate.
 - Recorded source HEAD: `9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef`.
 - Current candidate certified by this report: **No**. Promotion authorized: **No**.
@@ -133,10 +133,10 @@ These hashes bind local input bytes, not execution, deployment or human approval
 | docs/qa/hmh-parent-challenges-checkpoint.json | daa072d9e62c48cacbce18b3658ebbc3910f2858e6f687ed297b2e2d6c343650 | 5589 |
 | docs/qa/hmh-parent-profile-truth-checkpoint.json | 5dcadebb8081e381c56821948661805e24897a8303eac57e02612a7566596126 | 6738 |
 | docs/qa/hmh-upgrade-execution-queue.json | 9a0412c2dae0db940b9b08a1e5c7a1e3bc12f0069230521af0c65434c2aa09d4 | 19028 |
-| README.md | 530fff14c55769ced17576a2575db8289ba2f92a0f8218f7be75711fb294425d | 56321 |
+| README.md | 404db8654d765446ec98ff0d48a0e1ade699848f06013378431ce02bbfcb057c | 57420 |
 | scripts/hmh-release-facts.mjs | 4999d5ccc1497c85e4438a149cedf78d6471dfcfd6c758f7419d10eed0c3d06d | 18212 |
 | scripts/syntax-check.mjs | a66ed496252d67b115ba44f10b3c26246222e9c05e081bbfd485d06cda2403a2 | 53966 |
-| tests/arcade-core.test.mjs | e2e1949a0bd0400939d98096cd2fdb40f548108d2d1436117eba3097907fb040 | 193825 |
+| tests/arcade-core.test.mjs | 76df822458f0951fa3c6a07ce13d3b2ccb4613e530b850088c24560490b876c4 | 193825 |
 | tests/hmh-challenge-session.test.mjs | 8b2f83522c70cdce3b6c35b0b7f37100a763ba272033a65f7258d46e780602f4 | 3577 |
 | tests/hmh-challenge-ui.test.mjs | e79be14c8e865b3132fd3129b9a80f92c69cfc83d0651355c3b13b2c0c0140aa | 9171 |
 | tests/hmh-challenges.test.mjs | 4f21f59275a442223c67754f8fb833d8d02bb5faec150591e6cc6268dc0eee54 | 3905 |
