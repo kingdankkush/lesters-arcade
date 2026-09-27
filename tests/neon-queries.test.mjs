@@ -428,10 +428,11 @@ test('the card revision follows §7.5 and changes when a run is published', asyn
   await seedWalletProfile(db, { wallet, displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester' });
   const run = await seedVerifiedSession(db, { wallet, gameId: 'lester-blaster', score: 48210, status: 'submitted' });
   const submitted = await readPublicSession(db, run.sessionId32);
-  assert.equal(submitted.cardRev, expectedCardRev({ status: 'submitted', displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, verification: 'plausibility' }));
+  // An HMH card also folds in its background art revision (server/share/card-art.mjs, 2026-09-26 art).
+  assert.equal(submitted.cardRev, expectedCardRev({ status: 'submitted', displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, verification: 'plausibility', art: 'hmh-art-2026-09-26' }));
   await db.query("UPDATE verified_sessions SET status = 'confirmed', confirmed_at = now() WHERE session_id32 = $1", [run.sessionId32]);
   const confirmed = await readPublicSession(db, run.sessionId32);
-  assert.equal(confirmed.cardRev, expectedCardRev({ status: 'confirmed', displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, verification: 'plausibility' }));
+  assert.equal(confirmed.cardRev, expectedCardRev({ status: 'confirmed', displayName: 'Ace Pilot', avatarUri: 'lestersarcade:avatar/lester', hidden: false, verification: 'plausibility', art: 'hmh-art-2026-09-26' }));
   assert.notEqual(confirmed.cardRev, submitted.cardRev, 'publishing the run gives the card a new revision');
 }));
 

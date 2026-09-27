@@ -8,6 +8,7 @@
 
 import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
 import { dateRangeLabel } from '../jackpot/weeks.mjs';
+import { shareCardArtRevision } from '../share/card-art.mjs';
 import { periodKeysFor } from './period-keys.mjs';
 import {
   ALL_BEST_HEADLINE_KEYS, ALL_NUMERIC_HEADLINE_KEYS, BEST_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
@@ -338,10 +339,11 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
 }
 
 // §7.5: a new card image URL whenever anything visible on it changes. The
-// jackpot champion badge (design §C.7) joins the digest only when present, so
-// every card without one keeps its revision.
-export async function cardRevision({ status, displayName, avatarUri, hidden, verification, champion = null }) {
-  const digest = await sha256Hex(canonicalSessionJson({ status, displayName, avatarUri, hidden, verification, ...(champion ? { champion } : {}) }));
+// jackpot champion badge (design §C.7) and the background art revision
+// (server/share/card-art.mjs) join the digest only when present, so every card
+// without them keeps its revision.
+export async function cardRevision({ status, displayName, avatarUri, hidden, verification, champion = null, art = null }) {
+  const digest = await sha256Hex(canonicalSessionJson({ status, displayName, avatarUri, hidden, verification, ...(champion ? { champion } : {}), ...(art ? { art } : {}) }));
   return digest.slice(2, 14);
 }
 
@@ -421,7 +423,7 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
     standing,
     verification,
     jackpotChampion,
-    cardRev: await cardRevision({ status: row.status, displayName: display.displayName, avatarUri: display.avatarUri, hidden: display.hidden, verification, champion: jackpotChampion?.label ?? null }),
+    cardRev: await cardRevision({ status: row.status, displayName: display.displayName, avatarUri: display.avatarUri, hidden: display.hidden, verification, champion: jackpotChampion?.label ?? null, art: shareCardArtRevision(row.game_id) }),
   };
 }
 
