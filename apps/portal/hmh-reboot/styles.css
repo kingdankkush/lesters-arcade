@@ -983,7 +983,7 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 }
 @media(max-width:600px) {
   .hmh-startup { padding-bottom:0; }
-  .hmh-startup-visual { margin:0 -4px 14px; }
+  .hmh-startup-visual { margin:14px -4px 14px; }
   .hmh-startup-card h1 { margin:10px 0; }
   .hmh-startup-actions { position:sticky; bottom:0; z-index:3; display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin:0 -20px; padding:10px 20px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid #35534a; background:rgba(7,18,27,.95); }
   .hmh-startup-actions .hmh-startup-progress, .hmh-startup-actions #hmhStartupCopy { flex:1 1 100%; margin:0; }

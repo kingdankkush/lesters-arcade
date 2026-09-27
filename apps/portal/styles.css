@@ -3476,6 +3476,9 @@ body.suggest-landscape:has(#levelUpOverlay:not([hidden]))::after {
 .mode-card-banner {
   display: block;
   width: 100%;
+  /* The banner img carries width/height attributes (1600x900) to reserve space;
+     height:auto lets aspect-ratio win over the 900px presentational height. */
+  height: auto;
   aspect-ratio: 16 / 7;
   object-fit: cover;
   border-radius: 6px;

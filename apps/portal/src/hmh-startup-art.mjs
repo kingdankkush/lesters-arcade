@@ -49,7 +49,7 @@ export function startStartupArt({ documentRef = globalThis.document, windowRef =
       reduceMotion: media('(prefers-reduced-motion: reduce)') || stage.dataset.settingReduceMotion === 'true',
       // No second image until the level's own assets are in, or 4 s have passed.
       gate: () => panel.getAttribute('aria-busy') === 'false' || now() - mountedAt >= HMH_ROTATION_TIMING.gateMs,
-      sizes: '(min-width: 1024px) and (min-height: 700px) 440px, (max-height: 600px) and (min-width: 601px) 38vw, 100vw',
+      sizes: '(min-width: 1024px) and (min-height: 700px) 520px, (max-height: 600px) and (min-width: 601px) 38vw, 100vw',
       source: 'loading',
       resumeFrom: 'intro',
       windowRef,

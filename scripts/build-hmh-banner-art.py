@@ -199,13 +199,14 @@ def build_og(share_art: Image.Image, focus: tuple[float, float]) -> bytes:
         return ImageFont.truetype(str(FONT), size)
 
     x = 64
-    draw.text((x, 70), "LESTER'S ARCADE \u00b7 FREE MODE", font=font(26), fill=(25, 247, 255))
-    draw.text((x, 118), "Hard Money", font=font(88), fill=(255, 255, 255), stroke_width=2, stroke_fill=(255, 255, 255))
-    draw.text((x, 214), "Heroes", font=font(88), fill=(255, 255, 255), stroke_width=2, stroke_fill=(255, 255, 255))
-    draw.rectangle((x, 336, x + 96, 341), fill=(25, 247, 255))
-    draw.text((x, 372), "Top-down roguelike run-and-gun.", font=font(32), fill=(228, 228, 231))
-    draw.text((x, 416), "Pick a hero. Hold off the horde.", font=font(32), fill=(228, 228, 231))
-    draw.text((x, 460), "Play free in your browser.", font=font(32), fill=(228, 228, 231))
+    # Sizes keep every line left of x = 520, where Lilly's rifle enters the frame.
+    draw.text((x, 70), "LESTER'S ARCADE · FREE MODE", font=font(26), fill=(25, 247, 255))
+    draw.text((x, 120), "Hard Money", font=font(78), fill=(255, 255, 255), stroke_width=2, stroke_fill=(255, 255, 255))
+    draw.text((x, 206), "Heroes", font=font(78), fill=(255, 255, 255), stroke_width=2, stroke_fill=(255, 255, 255))
+    draw.rectangle((x, 322, x + 96, 327), fill=(25, 247, 255))
+    draw.text((x, 356), "Top-down roguelike run-and-gun.", font=font(29), fill=(228, 228, 231))
+    draw.text((x, 398), "Pick a hero. Hold off the horde.", font=font(29), fill=(228, 228, 231))
+    draw.text((x, 440), "Play free in your browser.", font=font(29), fill=(228, 228, 231))
     draw.text((x, 548), "lestersarcade.io", font=font(26), fill=(161, 161, 170))
     buffer = io.BytesIO()
     card.save(buffer, format="JPEG", quality=OG_QUALITY, optimize=True, progressive=True, subsampling="4:2:0")
