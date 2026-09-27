@@ -603,6 +603,26 @@ test('the card is prefetched only once the results stay on screen, and re-armed 
   assert.deepEqual(quick, ['/api/free-card/stacked/as2.png']);
 });
 
+test('a row built before its panel appears prefetches once the panel shows (Chikun death animation)', async () => {
+  const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
+  const links = buildShareLinks({ text: 'a @LestersArcade', url: 'https://lestersarcade.io/f/chikun/ac1', card: '/api/free-card/chikun/ac1.png' });
+  const fetched = [];
+  const loadShareFile = async () => ({ canShareFiles: () => true, fetchShareCardFile: async (path) => { fetched.push(path); return fakeFile(); } });
+  let shown = false;
+  createNativeShare({ navigatorRef: { canShare: () => true, share: async () => {} }, links, loadShareFile, idleMs: 15, stillShown: () => shown });
+  await sleep(70);
+  assert.deepEqual(fetched, [], 'nothing while the results are still hidden');
+  shown = true;
+  await sleep(60);
+  assert.deepEqual(fetched, ['/api/free-card/chikun/ac1.png'], 'fetched once the results are on screen');
+  // The checks are bounded: a row that never shows stops checking.
+  let calls = 0;
+  createNativeShare({ navigatorRef: { canShare: () => true, share: async () => {} }, links, loadShareFile, idleMs: 1, stillShown: () => { calls += 1; return false; } });
+  for (let waited = 0; calls < 30 && waited < 3_000; waited += 50) await sleep(50);
+  await sleep(100);
+  assert.equal(calls, 30);
+});
+
 test('the share row wires its native button, refresh and nativeButton: false through the same native share', async () => {
   const documentRef = fakeDocument();
   const shared = [];

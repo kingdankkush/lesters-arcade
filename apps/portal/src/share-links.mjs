@@ -242,7 +242,12 @@ export function createNativeShare({ navigatorRef = globalThis.navigator, title =
       current = next;
       prepared = null;
       clearTimeout(timer);
-      timer = setTimeout(() => { if (stillShown()) fetchCard(); }, idleMs);
+      // A row can be built before its panel appears (Chikun shows the
+      // results after the death animation), so an unseen row keeps checking,
+      // for up to 30 checks, until it has been on screen for idleMs.
+      let checks = 30;
+      const arm = () => { timer = setTimeout(() => { if (stillShown()) fetchCard(); else if (--checks) arm(); }, idleMs); };
+      arm();
     },
     async share() {
       clearTimeout(timer);
