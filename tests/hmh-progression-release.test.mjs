@@ -240,7 +240,7 @@ test('runWeaponMastery counts a gun branch chip: 9 ranks for a finite gun, 10 wi
 });
 
 test('the v7 upgrade and progression rows satisfy schema rules S13-S15 and S18 on a real payload', () => {
-  const fixture = JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-districts.json', import.meta.url), 'utf8')).body.evidence.runSummary;
+  const fixture = JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-future-districts.json', import.meta.url), 'utf8')).body.evidence.runSummary;
   const state = createRunProgression({ seed: fixture.identity.seed });
   // The fixture's run owns the Railgun and the Arc Rifle.
   unlockRunProgressionWeapon(state, 'hash-rail');

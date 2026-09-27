@@ -72,3 +72,13 @@ Not started in this note's first version. The verdict, verbatim from the pre-dep
 9. Docs: `seed.mjs:48` citation, §15 numbering, the §13 table.
 
 Owner decision to surface: combo achievements (`big-combo`, `max-combo-30`) cannot be bounded from the v6 summary (`maxCombo ≤ kills` only): residual, or withhold.
+
+## Round 4 (deferred from the 1.9.0 review)
+
+The 1.9.0 cheating-lens review accepted three v7 residuals for this release and deferred them here (contract 16.9, "v7 residuals"). Each needs its honest coverage in the real-child corpus before a reject lands, as round 3 did for the melee trail.
+
+1. **One hand grenade carrying any number of kills.** `grenade-kills-above-contacts` binds grenade kills to blast contacts, but one detonation may carry any number of contacts: a fabricated 7,108-tick run credits 20 Satoshi Frag kills to one throw (review probe p5; `first-grenade-kill`, `hard-fork-hero` unlock). Honest play tops out near 5.25 contacts per detonation. A sound bound needs a blast target cap in the child first (a maximum number of targets one blast resolves), then `grenades.contacts ≤ cap × (grenades.detonated + bomblets)` on the v7 path, with a parity test on the cap.
+2. **Secret silver score.** Every secret claimed found adds 20 coins to the silver term of the score ceiling (at most 6 × 20 × 18 = 2,160 score at the maximum score multiplier; probe p4 4a). Bounded, but claimable: a per-secret earliest tick (the walk from the seed's entry to the secret) would tie it to the run.
+3. **Claimable objective ticks.** A switch objective's completion tick unlocks its reward placement and is bounded only by the run's end, its prerequisite (a flag) and its district (a reject since 1.9.0): a fabricated run claims every switch at tick 1 and every placement at capacity (18 power-up pickups in a 7,108-tick run; `first-powerup`, `powerup-collector`, `foundry-clear`; probe p4 4a). The bound is the same walk: an objective cannot complete before the hero can reach it from the entry (`hmhV7MinTicksForTravel` over the straight-line distance, as `districts-before-travel-time` does for strips).
+
+Also still open from round 3: the knife's one-swing trail (one hitting swing may carry every knife contact and kill; honest runs top out at 1.72 contacts and 1.00 kills per hitting swing; probe p4 4c).

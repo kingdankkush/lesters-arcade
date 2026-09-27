@@ -17,7 +17,7 @@
 // not drawn as an actor. It is loaded by the awaited lazy-module import before
 // any session starts (main.mjs loadLazyRuntimeModules).
 import { freezeDeep } from './value-guards.mjs';
-import { HMH_V7_PRISONER_SLOTS, HMH_V7_RUN_RULES, dealHmhPrisoners } from '../../../sdk/hmh-run-contract-v7.mjs';
+import { HMH_V7_PRISONER_SLOTS, HMH_V7_RANKED_PRISONERS_LIVE, HMH_V7_RUN_RULES, dealHmhPrisoners } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
 
 // Owner decision 9 (package §10): the roster is approved, and prisoners wait
@@ -25,8 +25,10 @@ import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema
 // human survivors held captive (AGENTS.md: active actors must read as humans;
 // no abstract proxies), so the flag defaults to dark. `?prisoners=1` turns them
 // on under evidenceSafe outside Ranked for review; a Ranked run always uses
-// this default.
-export const PRISONERS_LIVE_DEFAULT = false;
+// this default. It is the verifier's shared HMH_V7_RANKED_PRISONERS_LIVE
+// (sdk/hmh-run-contract-v7.mjs), so lighting the prisoners also relaxes the
+// v7 path's prisoner-rescued-while-dark reject, in the same change.
+export const PRISONERS_LIVE_DEFAULT = HMH_V7_RANKED_PRISONERS_LIVE;
 
 export const PRISONER_RULES = freezeDeep({
   kneelTicks: 90,

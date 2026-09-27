@@ -1,10 +1,12 @@
 // Run summary v7 end to end, as far as this branch goes
 // (docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md §12, §13, §15): the
-// committed v7 fixtures bind to their seed tickets, pass the schema and the v7
-// plausibility rules, travel over hmh-bridge/v1 when the bridge validates with
-// sdk/hmh-run-summary-schema-v7.mjs, and verify through server/verify/hmh.mjs,
-// which accepts schema 6 or 7 and schema 7 only from game 1.9.0 or later
-// (build ledger slice 9).
+// committed v7 fixtures bind to their seed tickets, pass the schema, travel
+// over hmh-bridge/v1 when the bridge validates with
+// sdk/hmh-run-summary-schema-v7.mjs, and reach server/verify/hmh.mjs, which
+// accepts schema 6 or 7 and schema 7 only from game 1.9.0 or later (build
+// ledger slice 9). hmh-v7-liquidator is what a 1.9.0 Ranked run can hold and
+// verifies; the two future fixtures hold content that is dark in 1.9.0 and the
+// v7 path rejects them on that content alone (contract 7.7).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { bindRankedIdentity, computeEvidenceDigest, verifyRankedRun } from '../server/verify/index.mjs';
@@ -12,7 +14,7 @@ import { HMH_EVIDENCE_ENCODING, hmhRankedSchemaError } from '../server/verify/hm
 import { validateRebootRunPlausibility } from '../server/verify/hmh-plausibility.mjs';
 import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import { HMH_BRIDGE_PROTOCOL, HMH_MAX_MESSAGE_BYTES, createBridgeEnvelope, validateChildMessage } from '../sdk/hmh-bridge-protocol.mjs';
-import { FIXTURE_NAMES, HMH_V7_FIXTURE_NAMES, buildFixture, buildFixtureBody, fixtureSalt, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
+import { FIXTURE_NAMES, HMH_V7_DARK_CONTENT_REJECTS, HMH_V7_FIXTURE_NAMES, HMH_V7_FIXTURE_SPECS, buildFixture, buildFixtureBody, fixtureSalt, fixtureVerifyOptions, readFixture } from './fixtures/ranked/build-fixtures.mjs';
 import { createInitialArcadeState, recordScore, startPlaySession } from '../apps/portal/src/arcade-core.mjs';
 import { catalogFor, deriveEarnedAchievements, emptyHistory, historyFieldsFor } from '../apps/portal/src/achievements/index.mjs';
 import { statAt } from '../apps/portal/src/achievements/entry.mjs';
@@ -20,8 +22,12 @@ import { hmhRecordScoreInputsFromRunSummary, hmhResolverInputsFromRunSummary, st
 
 const fixtures = Object.fromEntries(HMH_V7_FIXTURE_NAMES.map((name) => [name, readFixture(name)]));
 
+const rejectIds = (result) => result.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id);
+const expectedRejects = (fixture) => rejectIds(fixture.expected.plausibility);
+
 test('the v7 fixtures are listed apart from the end-to-end fixtures', () => {
-  assert.deepEqual(HMH_V7_FIXTURE_NAMES, ['hmh-v7-districts', 'hmh-v7-four-bosses']);
+  assert.deepEqual(HMH_V7_FIXTURE_NAMES, ['hmh-v7-liquidator', 'hmh-v7-future-districts', 'hmh-v7-future-four-bosses']);
+  assert.deepEqual(HMH_V7_FIXTURE_NAMES.filter((name) => HMH_V7_FIXTURE_SPECS[name].future), ['hmh-v7-future-districts', 'hmh-v7-future-four-bosses']);
   assert.deepEqual(FIXTURE_NAMES, ['chikun-valid', 'chikun-10min', 'stacked-valid', 'stacked-15min', 'hmh-valid', 'hmh-realistic', 'hmh-level-90']);
 });
 
@@ -29,7 +35,7 @@ test('the committed v7 fixtures rebuild from build-fixtures.mjs', async () => {
   for (const name of HMH_V7_FIXTURE_NAMES) assert.deepEqual(await buildFixture(name), fixtures[name], name);
 });
 
-test('v7 fixtures bind, pass the schema and the v7 rules, and keep the v6 evidence encoding', async () => {
+test('v7 fixtures bind, pass the schema, meet the v7 rules (the future ones reject on dark content only), and keep the v6 evidence encoding', async () => {
   for (const [name, fixture] of Object.entries(fixtures)) {
     const { body, expected } = fixture;
     const summary = body.evidence.runSummary;
@@ -40,7 +46,12 @@ test('v7 fixtures bind, pass the schema and the v7 rules, and keep the v6 eviden
     assert.deepEqual([summary.schemaVersion, summary.identity.mode, summary.identity.terminalReason, summary.identity.startTick], [7, 'ranked', 'defeated', 0], name);
     assert.equal(validateRunSummaryPayload(summary), '', name);
     assert.deepEqual(validateRebootRunPlausibility(summary), expected.plausibility, name);
-    assert.notEqual(expected.plausibility.verdict, 'rejected', name);
+    if (HMH_V7_FIXTURE_SPECS[name].future) {
+      assert.equal(expected.plausibility.verdict, 'rejected', name);
+      assert.ok(rejectIds(expected.plausibility).every((id) => HMH_V7_DARK_CONTENT_REJECTS.includes(id)), `${name}: dark content only`);
+    } else {
+      assert.notEqual(expected.plausibility.verdict, 'rejected', name);
+    }
     assert.equal(expected.score, summary.totals.score);
     assert.equal(body.claim.score, summary.totals.score);
     // The encoding, and so the runtimeId and the Neon constraint, is unchanged: the payload's schemaVersion selects the rules.
@@ -49,9 +60,18 @@ test('v7 fixtures bind, pass the schema and the v7 rules, and keep the v6 eviden
     const digest = await computeEvidenceDigest(body);
     assert.deepEqual([digest.ok, digest.digest, digest.bytes], [true, expected.evidenceDigest, expected.evidenceBytes], name);
   }
-  const districts = fixtures['hmh-v7-districts'].body.evidence.runSummary;
-  const fourBosses = fixtures['hmh-v7-four-bosses'].body.evidence.runSummary;
+  const districts = fixtures['hmh-v7-future-districts'].body.evidence.runSummary;
+  const fourBosses = fixtures['hmh-v7-future-four-bosses'].body.evidence.runSummary;
+  const liquidator = fixtures['hmh-v7-liquidator'].body.evidence.runSummary;
   // What each fixture exercises.
+  assert.deepEqual(liquidator.bosses.map((row) => [row.bossId, row.initiations, row.defeatedTick > 0]), [['rug-pull-baron', 0, false], ['lockkeeper', 0, false], ['fifty-one-percent-foreman', 0, false], ['liquidator', 1, true]]);
+  assert.equal(liquidator.bosses[3].defeatedTick - liquidator.bosses[3].lastInitiatedTick >= 300, true, 'a Closing Bell fight');
+  assert.deepEqual([liquidator.kills.boss, liquidator.prisoners.filter((row) => row.rescued).length, liquidator.progression.sealsBanked], [1, 0, 1]);
+  assert.deepEqual(expectedRejects(fixtures['hmh-v7-future-districts']), ['prisoner-rescued-while-dark', 'boss-not-in-build', 'enemy-role-not-in-build', 'objective-not-in-build']);
+  assert.deepEqual(expectedRejects(fixtures['hmh-v7-future-four-bosses']), ['prisoner-rescued-while-dark', 'boss-not-in-build', 'enemy-role-not-in-build', 'objective-not-in-build']);
+  // The future four-bosses run's Forked Standard kills carry a real strike trail.
+  const standard = fourBosses.weapons.find((row) => row.weaponId === 'forked-standard');
+  assert.ok(standard.kills > 250 && standard.kills <= standard.projectileContacts && standard.kills <= fourBosses.forkedStandard.contacts && standard.triggerContacts > 0);
   assert.deepEqual(districts.bosses.map((row) => [row.bossId, row.initiations, row.defeatedTick > 0]), [['rug-pull-baron', 1, true], ['lockkeeper', 2, true], ['fifty-one-percent-foreman', 0, false], ['liquidator', 0, false]]);
   assert.equal(districts.kills.boss, 0, 'district bosses are not the boss');
   assert.equal(districts.objectives.filter((row) => row.completed).length, 24);
@@ -67,27 +87,35 @@ test('v7 fixtures bind, pass the schema and the v7 rules, and keep the v6 eviden
 });
 
 test('Ranked verifies a schema-7 body from game 1.9.0 or later, and refuses one from an older build before plausibility', async () => {
-  for (const [name, { body }] of Object.entries(fixtures)) {
+  for (const [name, { body, expected }] of Object.entries(fixtures)) {
     const verified = await verifyRankedRun(body, fixtureVerifyOptions());
+    if (HMH_V7_FIXTURE_SPECS[name].future) {
+      // Dark in 1.9.0: refused as implausible, on its dark content.
+      assert.deepEqual([verified.ok, verified.status, verified.error], [false, 422, 'implausible-run'], name);
+      assert.deepEqual(verified.flags, expected.plausibility.flags, name);
+      continue;
+    }
     assert.equal(verified.ok, true, `${name}: ${JSON.stringify(verified)}`);
     assert.equal(verified.run?.score ?? verified.score ?? body.claim.score, body.claim.score, name);
   }
   // Numeric compare: 1.10.0 is after 1.9.x, 1.8.9 is before 1.9.0.
   for (const [game, ok] of [['1.9.0', true], ['1.9.1', true], ['1.10.0', true], ['1.8.9', false]]) {
     const buildHash = `site-${game}:game-${game}`;
-    const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt(`hmh-v7-gate:${game}`), buildHash, evidence: { v7Plan: 'districts' } });
+    const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt(`hmh-v7-gate:${game}`), buildHash, evidence: { v7Plan: 'liquidator' } });
     const verified = await verifyRankedRun(body, fixtureVerifyOptions());
     if (ok) assert.equal(verified.ok, true, `${game}: ${JSON.stringify(verified)}`);
     else assert.deepEqual(verified, { ok: false, status: 400, error: 'run-summary-invalid', detail: 'run summary schema 7 requires game 1.9.0 or later' }, game);
   }
-  const summary = fixtures['hmh-v7-districts'].body.evidence.runSummary;
+  const summary = fixtures['hmh-v7-liquidator'].body.evidence.runSummary;
   assert.equal(hmhRankedSchemaError(summary), '');
   assert.equal(hmhRankedSchemaError({ ...summary, identity: { ...summary.identity, buildHash: 'site-1.9.0' } }), 'run summary schema 7 requires game 1.9.0 or later', 'no game version');
   assert.equal(hmhRankedSchemaError({ ...summary, schemaVersion: 5 }), 'Ranked requires run summary schema 6 or 7');
 });
 
 test('a cached 1.8.x child schema-6 summary still verifies, under a 1.8.x or a 1.9.0 build hash', async () => {
-  for (const buildHash of ['site-1.8.6:game-1.8.6', 'site-1.9.0:game-1.9.0']) {
+  // The last is the exact 1.9.0 portal build hash (site, game and cabinet): a
+  // tab on the 1.9.0 portal whose service worker still serves a 1.8.x child.
+  for (const buildHash of ['site-1.8.6:game-1.8.6', 'site-1.9.0:game-1.9.0', 'site-1.9.0:game-1.9.0:cabinet-0.6.0']) {
     const { body } = await buildFixtureBody({ gameId: 'lester-blaster', salt: fixtureSalt(`hmh-v6-cached:${buildHash}`), buildHash, evidence: { plan: 'valid' } });
     assert.equal(body.evidence.runSummary.schemaVersion, 6);
     const verified = await verifyRankedRun(body, fixtureVerifyOptions());
@@ -120,8 +148,9 @@ const HMH_STATS_KEYS = ['score', 'kills', 'bossKills', 'eliteKills', 'maxCombo',
   'damageTaken', 'damageDealt', 'healing', 'litecoin', 'grenadeKills', 'meleeKills', 'weaponsUsed', 'uniqueWeaponCount', 'powerUpsCollected',
   'uniquePowerUps', 'districtsVisited', 'poisDiscovered', 'revealedPermille', 'killsByRole', 'familyKills', 'noDamage', 'perfectBossKill',
   'bossEngaged', 'heroId', 'terminalReason'];
-const districts = fixtures['hmh-v7-districts'].body.evidence.runSummary;
-const fourBosses = fixtures['hmh-v7-four-bosses'].body.evidence.runSummary;
+const districts = fixtures['hmh-v7-future-districts'].body.evidence.runSummary;
+const fourBosses = fixtures['hmh-v7-future-four-bosses'].body.evidence.runSummary;
+const liquidatorRun = fixtures['hmh-v7-liquidator'].body.evidence.runSummary;
 const row = (rows, key, id) => rows.find((entry) => entry[key] === id);
 // The districts run without the Lockkeeper: the Baron is its only boss kill.
 const baronOnly = structuredClone(districts);
@@ -162,7 +191,7 @@ function serverProfile() {
 
 test('schema-7 stats: the contract keys, 16 roles, the Liquidator as the boss, no Genesis Seal power-up', () => {
   assert.equal(validateRunSummaryPayload(baronOnly), '', 'the Baron-only run is a valid schema-7 summary');
-  for (const [name, summary] of [['districts', districts], ['four bosses', fourBosses], ['baron only', baronOnly]]) {
+  for (const [name, summary] of [['liquidator', liquidatorRun], ['districts', districts], ['four bosses', fourBosses], ['baron only', baronOnly]]) {
     const stats = statsFromHmhRunSummary(summary);
     assert.deepEqual(Object.keys(stats), HMH_STATS_KEYS, name);
     assert.equal(Object.keys(stats.killsByRole).length, 16, name);
@@ -184,7 +213,7 @@ test('schema-7 stats: the contract keys, 16 roles, the Liquidator as the boss, n
 });
 
 test('schema 7: district bosses unlock no boss achievement, on the device or the server; the Liquidator unlocks them on both', () => {
-  for (const [name, summary, expected] of [['baron only', baronOnly, false], ['districts', districts, false], ['four bosses', fourBosses, true]]) {
+  for (const [name, summary, expected] of [['baron only', baronOnly, false], ['districts', districts, false], ['four bosses', fourBosses, true], ['liquidator', liquidatorRun, true]]) {
     const local = browserProfile()(summary);
     const remote = serverProfile()(summary);
     assert.deepEqual(comparable(local), comparable(remote), `${name}: the same ids`);
@@ -196,7 +225,7 @@ test('schema 7: district bosses unlock no boss achievement, on the device or the
   // All six districts visited without the Liquidator is not a Getaway Clear.
   assert.equal(statsFromHmhRunSummary(districts).districtsVisited, 6);
   // Run by run, district bosses never add to Boss Rush Ten; ten Liquidator runs do, on both sides.
-  for (const [summary, unlocksAt] of [[districts, null], [baronOnly, null], [fourBosses, 9]]) {
+  for (const [summary, unlocksAt] of [[districts, null], [baronOnly, null], [fourBosses, 9], [liquidatorRun, 9]]) {
     const browser = browserProfile();
     const server = serverProfile();
     for (let run = 0; run < 10; run += 1) {

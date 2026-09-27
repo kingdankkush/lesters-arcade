@@ -32,7 +32,7 @@ import { HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/h
 
 // The committed v7 fixture with a Dark Pool Liquidator (read as JSON: the
 // fixture builder pulls in the other cabinets).
-const fourBossesSummary = () => JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-four-bosses.json', import.meta.url), 'utf8')).body.evidence.runSummary;
+const liquidatorSummary = () => JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-liquidator.json', import.meta.url), 'utf8')).body.evidence.runSummary;
 
 const BELL = 'liquidator-closing-bell';
 const inPlaza = { x: 11_300, y: 2_400, groundZ: 0, radius: 24 };
@@ -182,13 +182,14 @@ test('a Dark Pool retreat filled on its first armed tick still spaces the re-ini
   const row = bossRunRows(slots).find((entry) => entry.bossId === 'liquidator');
   assert.equal(row.initiations, 2);
   assert.ok(row.lastInitiatedTick - row.firstInitiatedTick >= BOSS_REINITIATION_MIN_TICKS);
-  // The verifier's boss rules on these rows: the committed fixture's Dark Pool
-  // Liquidator replaced by this pair of engagements and an honest kill.
-  const summary = fourBossesSummary();
+  // The verifier's boss rules on these rows: the committed 1.9.0-shaped
+  // fixture's Liquidator replaced by this pair of Dark Pool engagements (the
+  // logbook found first, so the pool owns the fight) and an honest kill.
+  const summary = liquidatorSummary();
   Object.assign(summary.bosses.find((entry) => entry.bossId === 'liquidator'), { ...row, defeatedTick: row.lastInitiatedTick + 183 });
   summary.milestones.bossEngagedTick = row.firstInitiatedTick;
-  summary.objectives.find((entry) => entry.objectiveId === 'warehouse-logbook').tick = 35_990;
-  summary.milestones.secrets.find((entry) => entry.secretId === 'warehouse-logbook').tick = 35_990;
+  Object.assign(summary.objectives.find((entry) => entry.objectiveId === 'warehouse-logbook'), { completed: 1, tick: 35_990, levelAtCompletion: 15 });
+  Object.assign(summary.milestones.secrets.find((entry) => entry.secretId === 'warehouse-logbook'), { found: 1, tick: 35_990 });
   assert.equal(validateRunSummaryPayload(summary), '');
   assert.deepEqual(validateV7RunPlausibility(summary).flags.filter((flag) => flag.severity === 'reject'), []);
 });

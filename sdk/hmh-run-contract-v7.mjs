@@ -397,6 +397,16 @@ export const HMH_V7_PRISONER_SLOTS = covering({
   'p6-yard-warehouse-compound': { district: 'liquidation-yard', heldBy: null },
 }, C7.prisonerSlots, 'HMH_V7_PRISONER_SLOTS');
 
+// §3.4a Whether a Ranked run of the shipped child can rescue a prisoner. The
+// child's PRISONERS_LIVE_DEFAULT (apps/hmh-reboot/src/prisoners.mjs) is this
+// value, and a Ranked run always uses that default (?prisoners=1 is
+// evidenceSafe-only), so lighting the prisoners flips the child and the
+// verifier together. While it is false, the v7 path rejects every rescued row
+// and counts no Quartermaster grenades and no OG Miner XP. Setting it true
+// relaxes that reject, so it may ship only with an honest real-child corpus
+// that rescues prisoners and verifies with zero rejections.
+export const HMH_V7_RANKED_PRISONERS_LIVE = false;
+
 export const HMH_PRISONER_KINDS = Object.freeze(['field-medic', 'quartermaster', 'pawnbroker', 'og-miner']);
 const PRISONER_DEAL_BASE = Object.freeze(['field-medic', 'field-medic', 'quartermaster', 'quartermaster', 'pawnbroker', 'pawnbroker', 'og-miner', 'og-miner']);
 // The districts holding two slots (rugpull-ravine: 0 and 3; mining-camp: 1 and
@@ -515,3 +525,46 @@ for (const id of C7.upgrades) {
 }
 
 export const HMH_V7_UPGRADE_MAX_RANKS = Object.freeze(Object.fromEntries(C7.upgrades.map((id) => [id, HMH_V7_UPGRADES[id].maxRank])));
+
+// ---------------------------------------------------------------------------
+// §3.6 Dark content: catalogue rows the shipped child cannot produce in a
+// Ranked run. Schema 7 is claimable by any client (the build hash is only
+// format-checked), so the v7 path rejects a non-zero row here (contract 7.7).
+// Each list shrinks in the release that ships its content, together with the
+// child change and an honest real-child corpus that exercises it; the
+// prisoners are HMH_V7_RANKED_PRISONERS_LIVE above.
+//   bosses       only the Liquidator is registered (apps/hmh-reboot/src/
+//                boss-slots.mjs BOSS_DEFINITIONS): the Baron, the Lockkeeper
+//                and the Foreman cannot be initiated, so none can be killed
+//   enemyRoles   the child spawns the six v6 roles (enemy-archetypes.mjs) and
+//                the Liquidator: the six new ordinary roles and the three
+//                district bosses are never killed
+//   objectives   mission core v2 places 13 of the 25 objectives
+//                (mission-objectives.mjs MISSION_OBJECTIVES): the other 12
+//                never complete
+// Rows the schema already holds at zero are not repeated here: the wave-2
+// evolutions (S10, HMH_V7_RESERVED_EVOLUTIONS), the Settler Rail without the
+// evolution panel that offered it (S10, HMH_V7_PANEL_ONLY_EVOLUTIONS) and the
+// held prisoners without their boss (S9). Parity tests pin each list against
+// the child.
+export const HMH_V7_DARK_CONTENT = freezeDeep({
+  bosses: ['rug-pull-baron', 'lockkeeper', 'fifty-one-percent-foreman'],
+  enemyRoles: ['rug-puller', 'pump-and-dump-bloater', 'tollkeeper', 'hodl-revenant', 'money-printer', 'oracle-marksman', 'rug-pull-baron', 'lockkeeper', 'fifty-one-percent-foreman'],
+  objectives: [
+    'crossing-behind-the-falls',
+    'hashwood-beacon',
+    'hashwood-hollow-grove',
+    'hashwood-lamp-oil',
+    'hashwood-log-chute',
+    'hashwood-log-pile',
+    'hashwood-lookout',
+    'mining-collapsed-adit',
+    'ravine-rope-bridge',
+    'relay-uplink',
+    'yard-bascule-lever',
+    'yard-port-bascule',
+  ],
+});
+for (const [field, catalogue] of [['bosses', C7.bosses], ['enemyRoles', C7.enemyRoles], ['objectives', C7.objectives]]) {
+  if (!HMH_V7_DARK_CONTENT[field].every((id) => catalogue.includes(id))) throw new Error(`HMH_V7_DARK_CONTENT.${field} must name catalogue ids`);
+}

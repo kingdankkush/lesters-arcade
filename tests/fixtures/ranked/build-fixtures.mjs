@@ -39,11 +39,15 @@ import {
   finalizeRunSummary,
   recordRunCollectible,
   recordRunDamage,
+  recordRunForkedStandardEvent,
   recordRunKill,
+  recordRunProjectileContacts,
   recordRunTick,
   recordRunUpgradeOffer,
   recordRunUpgradeSelection,
   recordRunWeaponEvent,
+  recordRunWeaponFire,
+  recordRunWeaponTriggerContact,
 } from '../../../sdk/hmh-run-summary.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
 import {
@@ -380,6 +384,35 @@ const legs = (...entries) => Object.freeze(entries.map(([fromTick, districtId]) 
 const nodes = (...entries) => Object.freeze(entries.map(([tick, kind, id]) => Object.freeze({ tick, kind, id })));
 
 export const HMH_V7_PLANS = Object.freeze({
+  // What a 1.9.0 Ranked run can hold: 12 minutes west to east through all six
+  // districts on the six shipped roles, the 12 objectives mission core v2
+  // places away from the Dark Pool, no prisoner (they are dark in Ranked), and
+  // the Liquidator, the only registered boss, started at the Closing Bell after
+  // his ready tick and defeated with his first adds; his Seal is banked.
+  // Nothing in it is dark content (contract 7.7).
+  liquidator: Object.freeze({
+    heroId: 'lit-valkyrie', endTick: 43_200, firstKillTick: 900, killEvery: (tick) => 3 * getEncounterBand(tick).spawnIntervalTicks,
+    roles: ['bagholder-rusher', 'forkrunner', 'liquidator-agent', 'gas-bomber', 'validator-cultist', 'whale-enforcer'],
+    hitAfterKills: [16, 9, 23, 12, 19],
+    caches: [{ tick: 9_000, effectId: 'hash-rail-core' }, { tick: 21_600, effectId: 'auto-miner-cache' }],
+    upgradeCaps: () => ({ 'validator-training': 0, 'block-reward': 1 }), prefer: () => [], rerollEvery: 3,
+    route: legs([0, 'frontier-relay'], [5_400, 'rugpull-ravine'], [12_600, 'liquidity-crossing'], [19_800, 'hashwood'], [27_000, 'mining-camp'], [33_000, 'liquidation-yard']),
+    nodes: nodes(
+      [1_800, 'objective', 'relay-power'], [2_400, 'objective', 'relay-barn-doors'], [3_000, 'objective', 'farmstead-hidden-supplies'],
+      [6_000, 'objective', 'ravine-winch-handle'], [6_600, 'objective', 'ravine-winch'], [8_400, 'objective', 'ravine-surveyor-cache'],
+      [13_200, 'objective', 'crossing-pump'], [13_200, 'objective', 'crossing-mill-storeroom'],
+      [21_000, 'objective', 'hashwood-shrine'],
+      [28_200, 'objective', 'mining-valve'],
+      [33_600, 'objective', 'yard-warehouse'], [33_600, 'objective', 'yard-warehouse-gate'],
+    ),
+    bosses: [
+      { bossId: 'liquidator', initiations: [36_600], defeatedTick: 38_400, adds: ['liquidator-agent', 'liquidator-agent', 'liquidator-agent', 'gas-bomber'] },
+    ],
+    reviveTick: null,
+  }),
+  // The future plans below hold content that is dark in 1.9.0 (contract 7.7):
+  // the v7 path rejects them on that content alone, and they keep the rules
+  // for it covered until it ships.
   // 15 minutes west to east through all six districts: 24 of the 25
   // objectives (no Dark Pool), 7 prisoners (the Foreman's cage stays shut), the
   // Baron and the Lockkeeper (after one retreat) defeated, their two Seals
@@ -415,7 +448,9 @@ export const HMH_V7_PLANS = Object.freeze({
   // banked, and the Golden Parachute used once before the final defeat.
   // Mastery takes Block Reward early: with the score multiplier at 1.75 for
   // most of the run the score sits near its ceiling, which flags (never
-  // rejects), as in hmh-level-90.
+  // rejects), as in hmh-level-90. From the Forked Standard cache on, every
+  // kill is a landed Standard strike with its trail (a trigger, its contact
+  // and the forkedStandard row), as the child records one.
   'four-bosses': Object.freeze({
     heroId: 'lit-commando', endTick: 64_800, firstKillTick: 900, killEvery: (tick) => 2 * getEncounterBand(tick).spawnIntervalTicks,
     roles: ['forkrunner', 'rug-puller', 'liquidator-agent', 'tollkeeper', 'gas-bomber', 'pump-and-dump-bloater', 'validator-cultist', 'money-printer', 'whale-enforcer', 'hodl-revenant', 'bagholder-rusher', 'oracle-marksman'],
@@ -514,6 +549,14 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
   };
   const defeat = (tick, role, bossId = null) => {
     enemySequence += 1;
+    if (activeWeaponId === 'forked-standard') {
+      // A Standard kill is a landed strike: its trigger, the trigger's
+      // contact, the hit and the strike's forkedStandard row.
+      recordRunWeaponFire(accumulator, { weaponId: 'forked-standard', emitted: 0 });
+      recordRunWeaponTriggerContact(accumulator, { weaponId: 'forked-standard' });
+      recordRunProjectileContacts(accumulator, { weaponId: 'forked-standard', count: 1 });
+      recordRunForkedStandardEvent(accumulator, { type: 'weapon:melee-strike', tick, hits: [{ targetId: bossId ? `boss-${bossId}` : `enemy-${enemySequence}` }], form: enemySequence % 3 === 0 ? 'sweep' : 'thrust', whiff: false, capstone: false });
+    }
     recordRunDamage(accumulator, { targetId: bossId ? `boss-${bossId}` : `enemy-${enemySequence}`, sourceId: 'player', weaponId: activeWeaponId, damageApplied: 40, healthBefore: 40, critical: enemySequence % 7 === 0, tick });
     // The plan's elites are among the v6 roles only.
     recordRunKill(accumulator, { enemyRoleId: role, weaponId: activeWeaponId, elite: C6.enemyRoles.includes(role) && !bossId && enemySequence % 25 === 0, boss: role === 'liquidator' });
@@ -727,10 +770,16 @@ export const FIXTURE_NAMES = Object.freeze(Object.keys(FIXTURE_SPECS));
 // server/verify/hmh.mjs until that gate accepts schema 7 (contract §15). A
 // schema-7 run comes from a build at or after the first v7 child (1.9.0).
 export const HMH_V7_FIXTURE_BUILD_HASH = 'site-1.9.0:game-1.9.0';
+// `future` marks a fixture whose content is dark in 1.9.0 (contract 7.7): the
+// v7 path rejects it, and only with the dark-content rejects
+// (HMH_V7_DARK_CONTENT_REJECTS), which the builder checks. Their salts keep
+// the seeds they had as hmh-v7-districts and hmh-v7-four-bosses.
+export const HMH_V7_DARK_CONTENT_REJECTS = Object.freeze(['prisoner-rescued-while-dark', 'boss-not-in-build', 'enemy-role-not-in-build', 'objective-not-in-build']);
 export const HMH_V7_FIXTURE_SPECS = Object.freeze({
-  'hmh-v7-districts': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, note: 'Run summary v7: 15 minutes through all six districts, 24 objectives, 7 prisoners, the Baron and the Lockkeeper (after one retreat) defeated and their Seals banked, no Liquidator.', evidence: { v7Plan: 'districts' } }),
+  'hmh-v7-liquidator': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, note: 'Run summary v7 as a 1.9.0 Ranked run can hold it: 12 minutes through all six districts on the shipped roles, 12 placed objectives, no prisoner, and the Liquidator started at the Closing Bell and defeated, his Seal banked.', evidence: { v7Plan: 'liquidator' } }),
+  'hmh-v7-future-districts': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, future: true, salt: fixtureSalt('hmh-v7-districts'), note: 'FUTURE (dark in 1.9.0, rejected): run summary v7 over 15 minutes through all six districts, 24 objectives, 7 prisoners, the Baron and the Lockkeeper (after one retreat) defeated and their Seals banked, no Liquidator.', evidence: { v7Plan: 'districts' } }),
   // Salted for a seed whose offers master the Pistol before the last boss falls.
-  'hmh-v7-four-bosses': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, salt: fixtureSalt('hmh-v7-four-bosses:1'), note: 'Run summary v7: 18 minutes, every objective and prisoner, all four bosses defeated (the Liquidator through the Dark Pool), the Pistol evolved with a Genesis Seal, three Seals banked and one Golden Parachute revive.', evidence: { v7Plan: 'four-bosses' } }),
+  'hmh-v7-future-four-bosses': Object.freeze({ gameId: 'lester-blaster', buildHash: HMH_V7_FIXTURE_BUILD_HASH, future: true, salt: fixtureSalt('hmh-v7-four-bosses:1'), note: 'FUTURE (dark in 1.9.0, rejected): run summary v7 over 18 minutes, every objective and prisoner, all four bosses defeated (the Liquidator through the Dark Pool), the Pistol evolved with a Genesis Seal, three Seals banked, one Golden Parachute revive, and Forked Standard kills with their strike trail.', evidence: { v7Plan: 'four-bosses' } }),
 });
 export const HMH_V7_FIXTURE_NAMES = Object.freeze(Object.keys(HMH_V7_FIXTURE_SPECS));
 
@@ -774,8 +823,9 @@ export async function fastestVerifyCpuMs(verifyOnce, { budgetMs, attempts = 5 } 
 }
 
 // A schema-7 fixture: the body binds to its identity and seed ticket, and its
-// run summary passes the schema and the v7 plausibility rules. The expected
-// block records those, plus the evidence digest, instead of a VerifiedRun.
+// run summary passes the schema and the v7 plausibility rules (a future
+// fixture is rejected, on dark content only). The expected block records
+// those, plus the evidence digest, instead of a VerifiedRun.
 async function buildHmhV7Fixture(name) {
   const spec = HMH_V7_FIXTURE_SPECS[name];
   const salt = spec.salt ?? fixtureSalt(name);
@@ -786,7 +836,10 @@ async function buildHmhV7Fixture(name) {
   const schemaError = validateRunSummaryPayload(runSummary);
   if (schemaError) throw new Error(`fixture ${name} run summary is invalid: ${schemaError}`);
   const plausibility = validateRebootRunPlausibility(runSummary);
-  if (plausibility.verdict === 'rejected') throw new Error(`fixture ${name} is implausible: ${JSON.stringify(plausibility.flags)}`);
+  const rejectIds = plausibility.flags.filter((flag) => flag.severity === 'reject').map((flag) => flag.id);
+  if (spec.future) {
+    if (!rejectIds.length || rejectIds.some((id) => !HMH_V7_DARK_CONTENT_REJECTS.includes(id))) throw new Error(`future fixture ${name} must reject on dark content only: ${JSON.stringify(plausibility.flags)}`);
+  } else if (plausibility.verdict === 'rejected') throw new Error(`fixture ${name} is implausible: ${JSON.stringify(plausibility.flags)}`);
   const digest = await computeEvidenceDigest(body);
   if (!digest.ok) throw new Error(`fixture ${name} has no evidence digest: ${JSON.stringify(digest)}`);
   return {

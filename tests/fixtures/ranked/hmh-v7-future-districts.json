@@ -1,6 +1,6 @@
 {
- "fixture": "hmh-v7-districts",
- "note": "Run summary v7: 15 minutes through all six districts, 24 objectives, 7 prisoners, the Baron and the Lockkeeper (after one retreat) defeated and their Seals banked, no Liquidator.",
+ "fixture": "hmh-v7-future-districts",
+ "note": "FUTURE (dark in 1.9.0, rejected): run summary v7 over 15 minutes through all six districts, 24 objectives, 7 prisoners, the Baron and the Lockkeeper (after one retreat) defeated and their Seals banked, no Liquidator.",
  "gameId": "lester-blaster",
  "wallet": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
  "registry": "0xc5c5949a02fac9a4115df182672c0f8ceb0eaf55",
@@ -1203,8 +1203,39 @@
   "evidenceBytes": 16370,
   "seed": 455822019,
   "plausibility": {
-   "verdict": "ok",
-   "flags": []
+   "verdict": "rejected",
+   "flags": [
+    {
+     "id": "prisoner-rescued-while-dark",
+     "severity": "reject",
+     "value": 7,
+     "limit": 0
+    },
+    {
+     "id": "boss-not-in-build",
+     "severity": "reject",
+     "value": 3,
+     "limit": 0
+    },
+    {
+     "id": "enemy-role-not-in-build",
+     "severity": "reject",
+     "value": 148,
+     "limit": 0
+    },
+    {
+     "id": "objective-not-in-build",
+     "severity": "reject",
+     "value": 12,
+     "limit": 0
+    },
+    {
+     "id": "xp-above-selected-upgrades",
+     "severity": "flag",
+     "value": 78272,
+     "limit": 78268
+    }
+   ]
   }
  }
 }

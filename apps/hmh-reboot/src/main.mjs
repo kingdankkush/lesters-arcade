@@ -1590,6 +1590,12 @@ async function boot() {
   let encounterDirector = null;
   let lastDirectorStep = null;
   let liquidatorBoss = null;
+  // The run summary's whole units of boss damage (1.9.0 corpus finding): a
+  // boss hit is scaled by his vulnerability and role multipliers to a
+  // fraction (applyLiquidatorDamage), while the summary's damage totals are
+  // integers, so it records the whole units his health has lost so far.
+  // Summary only: the fight itself keeps the exact amounts.
+  let bossSummaryDamage = { boss: null, lost: 0, recorded: 0 };
   // S1.5 boss registry and lifecycle (boss-slots.mjs); liquidatorBoss is its
   // Liquidator once a trigger has started him.
   let bossSlots = null;
@@ -5030,7 +5036,13 @@ async function boot() {
               environmental: WORLD_ENVIRONMENT_WEAPON_IDS.has(damageEvent.weaponId),
             });
             if (roleCheck.applied) lastBossRoleCheck = { tick, ...roleCheck };
-            if (bossDamage.damageApplied > 0) recordRunDamage(runSummaryAccumulator, { ...damageEvent, damageApplied: bossDamage.damageApplied, healthBefore });
+            if (bossDamage.damageApplied > 0) {
+              if (bossSummaryDamage.boss !== liquidatorBoss) bossSummaryDamage = { boss: liquidatorBoss, lost: 0, recorded: 0 };
+              bossSummaryDamage.lost += bossDamage.damageApplied;
+              const whole = Math.floor(bossSummaryDamage.lost + 1e-6) - bossSummaryDamage.recorded;
+              bossSummaryDamage.recorded += whole;
+              recordRunDamage(runSummaryAccumulator, { ...damageEvent, damageApplied: whole, healthBefore: Math.floor(healthBefore) });
+            }
           } else {
             recordRunDamage(runSummaryAccumulator, damageEvent.targetId === 'player'
               ? { ...damageEvent, equippedWeaponId: weaponLoadout.activeWeaponId, ...(parachuteReady && damageEvent.killed ? { killed: false } : {}) }

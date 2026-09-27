@@ -100,7 +100,7 @@ test('a bomblet kill after a blast that missed: its contact is a grenade contact
 test('an honest bomblet kill passes the v6 and the v7 verifier; without the recorder both reject it', () => {
   const fixed = bombletRun({ recordBomblets: true });
   const broken = bombletRun({ recordBomblets: false });
-  for (const [name, validate] of [['hmh-realistic', validateV6RunPlausibility], ['hmh-valid', validateV6RunPlausibility], ['hmh-v7-districts', validateV7RunPlausibility], ['hmh-v7-four-bosses', validateV7RunPlausibility]]) {
+  for (const [name, validate] of [['hmh-realistic', validateV6RunPlausibility], ['hmh-valid', validateV6RunPlausibility], ['hmh-v7-liquidator', validateV7RunPlausibility]]) {
     const base = readSummary(name);
     assert.deepEqual(rejects(validateRebootRunPlausibility(base)), [], `${name} as pinned`);
     const honest = splice(base, fixed);

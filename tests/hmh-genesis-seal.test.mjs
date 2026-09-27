@@ -212,9 +212,9 @@ test('evolving never uses a level-up pick', () => {
 test('the Seal path emits v7 evolutions and progression rows the shared schema accepts (S10-S12, S14-S15, S18)', async () => {
   const { readFileSync } = await import('node:fs');
   const { validateRunSummaryPayload } = await import('../sdk/hmh-run-summary-schema-v7.mjs');
-  // hmh-v7-four-bosses: four bosses defeated, the Pistol mastered before the
+  // hmh-v7-future-four-bosses: four bosses defeated, the Pistol mastered before the
   // third, and the Settler Rail taken from a panel.
-  const fixture = JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-four-bosses.json', import.meta.url), 'utf8')).body.evidence.runSummary;
+  const fixture = JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-future-four-bosses.json', import.meta.url), 'utf8')).body.evidence.runSummary;
   const progression = progressionWith();
   const outcomes = [];
   outcomes.push(resolveGenesisSeal(progression, { tick: 7_560 }).outcome);

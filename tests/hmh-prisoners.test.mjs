@@ -217,7 +217,7 @@ test('the v7 prisoners rows: dense, catalogue order, rescue tick and levelAtResc
   assert.deepEqual(emitted.map((row) => row.slotId), SLOTS);
   assert.deepEqual(emitted.find((row) => row.slotId === 'p1-relay-barn-yard'), { slotId: 'p1-relay-barn-yard', rescued: 1, tick: 90, levelAtRescue: 1 });
   assert.equal(emitted.filter((row) => row.rescued).length, 1);
-  const fixture = JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-districts.json', import.meta.url), 'utf8')).body.evidence.runSummary;
+  const fixture = JSON.parse(readFileSync(new URL('./fixtures/ranked/hmh-v7-future-districts.json', import.meta.url), 'utf8')).body.evidence.runSummary;
   assert.equal(validateRunSummaryPayload({ ...fixture, prisoners: emitted }), '');
   assert.match(validateRunSummaryPayload({ ...fixture, prisoners: emitted.map((row) => (row.rescued ? { ...row, levelAtRescue: 0 } : row)) }), /prisoner/i);
   assert.deepEqual(prisonerRows(createMissionState(0)).map((row) => row.rescued), SLOTS.map(() => 0));
