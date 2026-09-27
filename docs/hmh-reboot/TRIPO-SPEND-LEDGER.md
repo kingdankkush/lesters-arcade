@@ -23,8 +23,14 @@ Only the adopted source model is committed (Git LFS).
 | after the T-pose body composition | 5,900 | 0 | 5 credits, image rejected (see row 4) |
 | after the Liquidator image-to-model + rig-check + rig | 5,835 | 0 | 40 + 0 + 25 credits |
 | 2026-09-26 `liquidator-pilot` resume (`tripo balance --json`) | 5,835 | 0 | no Tripo task fired during the Blender, atlas, QA and adoption steps; the gavel is authored Blender primitives, not a prop generation |
+| 2026-09-26 22:56 `liquidator-pilot` closeout (`tripo balance --json` at 20:55, before the browser review) | 5,835 | 0 | the closeout (browser review, harness fix, docs) fired no Tripo task; no regeneration and no re-render |
+| 2026-09-26 ~23:00 re-read at the pilot commit (`tripo balance --json`) | 5,195 | 0 | **640 credits left the account between 20:55 and 23:00 from tasks this step did not fire** (this session ran no `tripo` command other than `balance`). Most likely concurrent art-wave roster steps; they must log their own rows here. If they are wave steps, the wave total is at least 725 of the 2,000 cap |
 
 Wave running total: **85 credits** of the 2,000-credit cap (5,920 to 5,835).
+The Liquidator pilot is closed at 85 credits: 20 in text-to-image (3 heads + 1
+rejected T-pose body), 40 in image-to-model, 25 in rig. 1,915 credits of the
+cap remained for the roster steps at the pilot's close; see the 23:00 checkpoint for
+spend that other steps have made since.
 
 ## Art wave 1 (branch `fable/hmh-art-wave1`)
 

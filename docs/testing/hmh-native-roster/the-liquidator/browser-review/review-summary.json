@@ -1,0 +1,1142 @@
+{
+  "origin": "http://127.0.0.1:8913",
+  "reviewTicks": 3000,
+  "sampleEveryMs": 2500,
+  "results": [
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 1,
+      "errors": [],
+      "evasions": [
+        {
+          "tick": 305,
+          "attackIds": [
+            "debt-collection"
+          ],
+          "target": {
+            "x": 1190,
+            "y": 2540
+          }
+        },
+        {
+          "tick": 331,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 541,
+          "attackIds": [
+            "liquidation-zone"
+          ],
+          "target": {
+            "x": 1340,
+            "y": 2590
+          }
+        },
+        {
+          "tick": 629,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 811,
+          "attackIds": [
+            "short-squeeze-burst"
+          ],
+          "target": {
+            "x": 1190,
+            "y": 2540
+          }
+        },
+        {
+          "tick": 831,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 1023,
+          "attackIds": [
+            "crash-lane"
+          ],
+          "target": {
+            "x": 1340,
+            "y": 2590
+          }
+        },
+        {
+          "tick": 1068,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 1261,
+          "attackIds": [
+            "circuit-breaker"
+          ],
+          "target": {
+            "x": 1230,
+            "y": 2400
+          }
+        },
+        {
+          "tick": 1382,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 1562,
+          "attackIds": [
+            "margin-call-dash"
+          ],
+          "target": {
+            "x": 1340,
+            "y": 2590
+          }
+        },
+        {
+          "tick": 1604,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 1847,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 2045,
+          "attackIds": [
+            "circuit-breaker"
+          ],
+          "target": {
+            "x": 1380,
+            "y": 2550
+          }
+        },
+        {
+          "tick": 2163,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 2309,
+          "attackIds": [
+            "crash-lane"
+          ],
+          "target": {
+            "x": 1340,
+            "y": 2590
+          }
+        },
+        {
+          "tick": 2353,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 2490,
+          "attackIds": [
+            "total-liquidation-super"
+          ],
+          "target": {
+            "x": 1380,
+            "y": 2570
+          }
+        },
+        {
+          "tick": 2612,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        },
+        {
+          "tick": 2878,
+          "attackIds": [],
+          "target": {
+            "x": 1220,
+            "y": 2490
+          }
+        }
+      ],
+      "samples": [
+        {
+          "tick": 164,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1223.319,
+          "actorY": 2487.03,
+          "actorScreenX": 684.471638147934,
+          "actorScreenY": 483.9399304146147,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-00-t164-market-open-idle.png"
+        },
+        {
+          "tick": 353,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "attack",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1214.39,
+          "actorY": 2491.348,
+          "actorScreenX": 682.265841134483,
+          "actorScreenY": 493.7241562650813,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-01-t353-market-open-attack.png"
+        },
+        {
+          "tick": 587,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "liquidation-zone",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1336.419,
+          "actorY": 2584.093,
+          "actorScreenX": 721.1228485848827,
+          "actorScreenY": 526.5133616089971,
+          "cameraZoom": 1.6910589666901243,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-02-t587-market-open-tell.png"
+        },
+        {
+          "tick": 776,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1229.704,
+          "actorY": 2495.36,
+          "actorScreenX": 654.3482245742811,
+          "actorScreenY": 496.57056128531514,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-03-t776-market-open-idle.png"
+        },
+        {
+          "tick": 960,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1214.622,
+          "actorY": 2491.307,
+          "actorScreenX": 668.7289278751317,
+          "actorScreenY": 501.03446586737635,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-04-t960-market-open-idle.png"
+        },
+        {
+          "tick": 1142,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1226.226,
+          "actorY": 2493.01,
+          "actorScreenX": 646.574248876606,
+          "actorScreenY": 494.01345624370987,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-05-t1142-market-open-idle.png"
+        },
+        {
+          "tick": 1324,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "circuit-breaker",
+          "bossSafeSector": "east-west",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1226.226,
+          "actorY": 2407.344,
+          "actorScreenX": 646.574248876606,
+          "actorScreenY": 477.9232405822188,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-06-t1324-margin-call-tell.png"
+        },
+        {
+          "tick": 1510,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1226.226,
+          "actorY": 2493.01,
+          "actorScreenX": 646.574248876606,
+          "actorScreenY": 461.39837980834943,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-07-t1510-margin-call-idle.png"
+        },
+        {
+          "tick": 1693,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1226.219,
+          "actorY": 2502.04,
+          "actorScreenX": 646.894368420931,
+          "actorScreenY": 497.43482132338397,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-08-t1693-margin-call-idle.png"
+        },
+        {
+          "tick": 1875,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1226.219,
+          "actorY": 2502.04,
+          "actorScreenX": 646.894368420931,
+          "actorScreenY": 497.43482132338397,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-09-t1875-margin-call-idle.png"
+        },
+        {
+          "tick": 2089,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "circuit-breaker",
+          "bossSafeSector": "north-south",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1373.87,
+          "actorY": 2539.861,
+          "actorScreenX": 731.7955354727227,
+          "actorScreenY": 513.5936530802263,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-10-t2089-margin-call-tell.png"
+        },
+        {
+          "tick": 2271,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1222.219,
+          "actorY": 2502.04,
+          "actorScreenX": 656.6969919275642,
+          "actorScreenY": 493.6702395257036,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-11-t2271-margin-call-idle.png"
+        },
+        {
+          "tick": 2455,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1224.562,
+          "actorY": 2496.383,
+          "actorScreenX": 649.2665766122831,
+          "actorScreenY": 491.82695651113426,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-12-t2455-total-liquidation-idle.png"
+        },
+        {
+          "tick": 2662,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1229.504,
+          "actorY": 2496.383,
+          "actorScreenX": 659.5749071676861,
+          "actorScreenY": 491.3866774566208,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-13-t2662-total-liquidation-idle.png"
+        },
+        {
+          "tick": 2843,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "bad-debt-summon",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1220.562,
+          "actorY": 2496.383,
+          "actorScreenX": 655.8663349199416,
+          "actorScreenY": 491.3866774566208,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-14-t2843-total-liquidation-tell.png"
+        },
+        {
+          "tick": 3024,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1220.562,
+          "actorY": 2496.383,
+          "actorScreenX": 655.8663349199416,
+          "actorScreenY": 491.3866774566208,
+          "cameraZoom": 1.688951442646024,
+          "scrollWidth": 1440,
+          "viewportWidth": 1440,
+          "file": "desktop-15-t3024-total-liquidation-idle.png"
+        }
+      ]
+    },
+    {
+      "profile": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "errors": [],
+      "evasions": [
+        {
+          "tick": 302,
+          "attackIds": [
+            "debt-collection"
+          ],
+          "target": {
+            "x": 1250,
+            "y": 2560
+          }
+        },
+        {
+          "tick": 331,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 542,
+          "attackIds": [
+            "liquidation-zone"
+          ],
+          "target": {
+            "x": 1400,
+            "y": 2580
+          }
+        },
+        {
+          "tick": 603,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 783,
+          "attackIds": [
+            "short-squeeze-burst"
+          ],
+          "target": {
+            "x": 1250,
+            "y": 2560
+          }
+        },
+        {
+          "tick": 830,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 1028,
+          "attackIds": [
+            "crash-lane"
+          ],
+          "target": {
+            "x": 1400,
+            "y": 2580
+          }
+        },
+        {
+          "tick": 1070,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 1261,
+          "attackIds": [
+            "circuit-breaker"
+          ],
+          "target": {
+            "x": 1230,
+            "y": 2400
+          }
+        },
+        {
+          "tick": 1382,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 1561,
+          "attackIds": [
+            "margin-call-dash"
+          ],
+          "target": {
+            "x": 1400,
+            "y": 2580
+          }
+        },
+        {
+          "tick": 1606,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 1846,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 2042,
+          "attackIds": [
+            "circuit-breaker"
+          ],
+          "target": {
+            "x": 1380,
+            "y": 2550
+          }
+        },
+        {
+          "tick": 2167,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 2283,
+          "attackIds": [
+            "crash-lane"
+          ],
+          "target": {
+            "x": 1400,
+            "y": 2580
+          }
+        },
+        {
+          "tick": 2336,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 2462,
+          "attackIds": [
+            "total-liquidation-super"
+          ],
+          "target": {
+            "x": 1380,
+            "y": 2570
+          }
+        },
+        {
+          "tick": 2611,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 2868,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        },
+        {
+          "tick": 3034,
+          "attackIds": [
+            "margin-call-dash"
+          ],
+          "target": {
+            "x": 1400,
+            "y": 2580
+          }
+        },
+        {
+          "tick": 3074,
+          "attackIds": [],
+          "target": {
+            "x": 1280,
+            "y": 2500
+          }
+        }
+      ],
+      "samples": [
+        {
+          "tick": 172,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1272.575,
+          "actorY": 2491.561,
+          "actorScreenX": 146.12922401301847,
+          "actorScreenY": 459.1166791936387,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-00-t172-market-open-idle.png"
+        },
+        {
+          "tick": 351,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "attack",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1273.688,
+          "actorY": 2506.856,
+          "actorScreenX": 173.04804271737993,
+          "actorScreenY": 442.7730061484333,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-01-t351-market-open-attack.png"
+        },
+        {
+          "tick": 514,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1273.688,
+          "actorY": 2499.515,
+          "actorScreenX": 173.04369000858458,
+          "actorScreenY": 444.02935619994025,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-02-t514-market-open-idle.png"
+        },
+        {
+          "tick": 680,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1282.569,
+          "actorY": 2506.297,
+          "actorScreenX": 191.68016558458544,
+          "actorScreenY": 450.42870465451244,
+          "cameraZoom": 1.4078765605859203,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-03-t680-market-open-idle.png"
+        },
+        {
+          "tick": 847,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "attack",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1271.255,
+          "actorY": 2515.024,
+          "actorScreenX": 175.73012628431962,
+          "actorScreenY": 442.05029688106777,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-04-t847-market-open-attack.png"
+        },
+        {
+          "tick": 1009,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1271.255,
+          "actorY": 2509.61,
+          "actorScreenX": 175.69366085880105,
+          "actorScreenY": 444.0098615980317,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-05-t1009-market-open-idle.png"
+        },
+        {
+          "tick": 1178,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "market-open",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1283.255,
+          "actorY": 2509.61,
+          "actorScreenX": 192.0698496156503,
+          "actorScreenY": 450.5076212875475,
+          "cameraZoom": 1.4078765605859203,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-06-t1178-market-open-idle.png"
+        },
+        {
+          "tick": 1342,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "circuit-breaker",
+          "bossSafeSector": "east-west",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1236.949,
+          "actorY": 2403.125,
+          "actorScreenX": 174.28258771538694,
+          "actorScreenY": 432.04557288694383,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-07-t1342-margin-call-tell.png"
+        },
+        {
+          "tick": 1504,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1274.77,
+          "actorY": 2493.125,
+          "actorScreenX": 143.5980980202762,
+          "actorScreenY": 438.42994646530957,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-08-t1504-margin-call-idle.png"
+        },
+        {
+          "tick": 1664,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1282.084,
+          "actorY": 2504.439,
+          "actorScreenX": 192.27129115717463,
+          "actorScreenY": 450.9674258757723,
+          "cameraZoom": 1.4078765605859203,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-09-t1664-margin-call-idle.png"
+        },
+        {
+          "tick": 1824,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "bad-debt-summon",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1282.084,
+          "actorY": 2504.439,
+          "actorScreenX": 191.44580985443915,
+          "actorScreenY": 450.9674258757723,
+          "cameraZoom": 1.4078765605859203,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-10-t1824-margin-call-tell.png"
+        },
+        {
+          "tick": 1988,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1282.084,
+          "actorY": 2504.439,
+          "actorScreenX": 191.80122886899466,
+          "actorScreenY": 448.070683288195,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-11-t1988-margin-call-idle.png"
+        },
+        {
+          "tick": 2150,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "circuit-breaker",
+          "bossSafeSector": "north-south",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1380.084,
+          "actorY": 2542.26,
+          "actorScreenX": 164.6429080133633,
+          "actorScreenY": 474.42230749805515,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-12-t2150-margin-call-tell.png"
+        },
+        {
+          "tick": 2323,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "margin-call",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "crash-lane",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1389.339,
+          "actorY": 2570.544,
+          "actorScreenX": 166.7936496590962,
+          "actorScreenY": 476.95413828595014,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-13-t2323-margin-call-tell.png"
+        },
+        {
+          "tick": 2493,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "tell",
+          "bossPendingAttackIds": "total-liquidation-super",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1373.035,
+          "actorY": 2564.887,
+          "actorScreenX": 164.12766555942375,
+          "actorScreenY": 477.2022819028581,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-14-t2493-total-liquidation-tell.png"
+        },
+        {
+          "tick": 2654,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1284.912,
+          "actorY": 2507.267,
+          "actorScreenX": 195.21605610500797,
+          "actorScreenY": 444.7975733300141,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-15-t2654-total-liquidation-idle.png"
+        },
+        {
+          "tick": 2816,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1284.912,
+          "actorY": 2507.267,
+          "actorScreenX": 192.7994714855369,
+          "actorScreenY": 444.7975733300141,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-16-t2816-total-liquidation-idle.png"
+        },
+        {
+          "tick": 2978,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1284.912,
+          "actorY": 2507.267,
+          "actorScreenX": 192.79947148553634,
+          "actorScreenY": 444.7975733300141,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-17-t2978-total-liquidation-idle.png"
+        },
+        {
+          "tick": 3141,
+          "bossArt": "production-roster-atlas-v1",
+          "bossActive": "true",
+          "bossPhase": "total-liquidation",
+          "bossHealth": 12000,
+          "bossVisualState": "idle",
+          "bossPendingAttackIds": "",
+          "bossSafeSector": "",
+          "enemyRosterLoaded": "bagholder-rusher,forkrunner,gas-bomber,liquidator-agent,the-liquidator,validator-cultist,whale-enforcer",
+          "enemyRosterError": "",
+          "playerHealth": 100,
+          "actorX": 1278.569,
+          "actorY": 2512.924,
+          "actorScreenX": 192.67870286867725,
+          "actorScreenY": 446.0265841812865,
+          "cameraZoom": 1.2670889045273281,
+          "scrollWidth": 390,
+          "viewportWidth": 390,
+          "file": "mobile-18-t3141-total-liquidation-idle.png"
+        }
+      ]
+    }
+  ]
+}
