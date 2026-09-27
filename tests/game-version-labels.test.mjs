@@ -197,13 +197,14 @@ test('unexpected inputs fall back to "<Game> v?" and never throw', () => {
 // Review finding (version-column fixer, round 2): the relayed agreement reads
 // "rows without a cabinet segment also HMH v0.5". A chain-index row (the
 // indexer mirrors a published run whose Neon row was lost, contract
-// §4.3.10) stores no build hash at all. HMH and STACKED have each shipped one
-// cabinet so far, so every ranked run of them was played on it.
+// §4.3.10) stores no build hash at all. STACKED has shipped one cabinet so
+// far, so every ranked run of it was played on it; HMH has shipped two (0.5,
+// and 0.6 from 1.9.0), so such an HMH row reads 'HMH v?'.
 test('a row with no build hash reads the only cabinet its game has shipped, else "<Game> v?"', () => {
-  assert.equal(SHIPPED_CABINETS['lester-blaster'].first, SHIPPED_CABINETS['lester-blaster'].current, 'HMH has shipped one cabinet');
+  assert.deepEqual({ ...SHIPPED_CABINETS['lester-blaster'] }, { first: '0.5', current: '0.6' }, 'HMH has shipped two cabinets');
   assert.equal(SHIPPED_CABINETS.stacked.first, SHIPPED_CABINETS.stacked.current, 'STACKED has shipped one cabinet');
   for (const source of [{ buildHash: null }, { buildHash: undefined }, {}, { buildHash: null, runtimeId: RANKED_GAMES['lester-blaster'].runtimeId }, { runtimeId: '0x7a49' }]) {
-    assert.equal(versionLabelFor('lester-blaster', source), 'HMH v0.5', JSON.stringify(source));
+    assert.equal(versionLabelFor('lester-blaster', source), 'HMH v?', JSON.stringify(source));
     assert.equal(versionLabelFor('stacked', source), 'STACKED v0.2', JSON.stringify(source));
   }
   // Chikun reads its runtime id, never a cabinet.
