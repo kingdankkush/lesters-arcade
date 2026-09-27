@@ -26,6 +26,8 @@ const NODE_CHECK_FILES = [
   'scripts/hmh-sim-digest.mjs',
   'tests/hmh-sim-digest.test.mjs',
   'apps/hmh-reboot/src/road-presentation.mjs',
+  'apps/hmh-reboot/src/boss-roster-atlas.mjs',
+  'tests/hmh-boss-roster-atlas.test.mjs',
   'apps/portal/src/chikun-ground-v3-course.mjs',
   'apps/portal/src/chikun-ground-v3-runtime.mjs',
   'apps/stacked/src/render/aquatic-forms.mjs',
@@ -1040,6 +1042,11 @@ const NODE_CHECK_FILES = [
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
   'tests/hmh-pipeline-lock.test.py',
+  'scripts/build-hmh-boss-roster.py',
+  'scripts/hmh-tripo-input-hygiene.py',
+  'scripts/hmh-blender/hmh_boss_clips.py',
+  'scripts/hmh-blender/build-hmh-boss-derivative.py',
+  'scripts/hmh-blender/export-hmh-boss-roster.py',
   'scripts/build-chikun-ground-audio.py',
   'scripts/build-chikun-ground-motion.py',
   'scripts/generate-game-achievement-badges.py',

@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "pipelineId": "hmh-reboot-boss-roster-v1",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "status": "dark",
+  "notes": [
+    "Dark district bosses (art wave 2b). Each entry is keyed by its v7 boss role id (sdk/hmh-run-summary-schema-v7.mjs bosses catalogue) so the boss simulation can bind art by role id. Nothing here is loaded by the shipped runtime; apps/hmh-reboot/src/boss-roster-atlas.mjs gates every entry behind a flag that is off by default and unreachable in Ranked.",
+    "Clip tables live in scripts/hmh-blender/hmh_boss_clips.py: a full phase-1 kit, reduced re-baked phase-2/3 subsets and south-only intro, transition and death clips (LEVEL-1-DESIGN-PACKAGE 4.1). Collision, damage, AI, spawning, RNG and results never read this file.",
+    "Rendered on the 35 degree hero camera with the shared hero light rig (4.1). 256 px desktop source frames; the @0.5x pages are the 128 px mobile tier."
+  ],
+  "bosses": [
+    {
+      "roleId": "lockkeeper",
+      "actorId": "lockkeeper",
+      "name": "The Lockkeeper",
+      "identityForm": "human",
+      "casting": "A (docs/hmh-reboot/design/CASTING-DECISIONS-20260926.md 2.8)",
+      "targetHeight": 2.3,
+      "legScale": 0.9,
+      "designWorldHeightPx": 88,
+      "phaseVisuals": {
+        "lock-open": {
+          "accent": "#ff476f",
+          "emission": 0.9
+        },
+        "lock-flood": {
+          "accent": "#ff476f",
+          "emission": 1.2,
+          "wetBelowChest": true
+        },
+        "spillway": {
+          "accent": "#ff476f",
+          "emission": 2.0,
+          "wetBelowChest": true
+        }
+      },
+      "renderContract": {
+        "cameraPitchDegrees": 35,
+        "cameraOrthoScale": 5.2,
+        "cameraTargetZ": 1.0,
+        "frameSize": 256,
+        "lightRigFamily": "hero"
+      },
+      "nativeSource": "apps/hmh-reboot/assets/source/models/lockkeeper/lockkeeper.glb"
+    },
+    {
+      "roleId": "fifty-one-percent-foreman",
+      "actorId": "fifty-one-percent-foreman",
+      "name": "The 51% Foreman",
+      "identityForm": "zombie",
+      "casting": "A, phase-3 dressing from B (docs/hmh-reboot/design/CASTING-DECISIONS-20260926.md 2.7)",
+      "targetHeight": 2.6,
+      "legScale": 1.0,
+      "designWorldHeightPx": 100,
+      "phaseVisuals": {
+        "day-shift": {
+          "accent": "#f0ae4c",
+          "emission": 1.0
+        },
+        "hashrate-surge": {
+          "accent": "#f0ae4c",
+          "emission": 1.4
+        },
+        "majority-rule": {
+          "accent": "#ff476f",
+          "emission": 1.8
+        }
+      },
+      "renderContract": {
+        "cameraPitchDegrees": 35,
+        "cameraOrthoScale": 5.2,
+        "cameraTargetZ": 1.1,
+        "frameSize": 256,
+        "lightRigFamily": "hero"
+      },
+      "nativeSource": "apps/hmh-reboot/assets/source/models/fifty-one-percent-foreman/fifty-one-percent-foreman.glb"
+    }
+  ]
+}
