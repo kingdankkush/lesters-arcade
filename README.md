@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.5: smoother HMH crowds, working iPhone sound, jackpot contracts deployed (idle)
+# Lester's Arcade — 1.8.5 verified live: smoother HMH crowds, working iPhone sound, jackpot contracts deployed (idle)
 
 Batch release after 1.8.4. Hard Money Heroes runs its simulation 34–50% cheaper per tick with every result bit-identical, draws its enemy crowd without per-frame allocations, and plays sound effects through Web Audio, so the effect and interface volume sliders now work on iPhone (footstep sounds are retired, per the owner's cue list). The Chikun Weekly Jackpot and its test token are deployed on LiteForge (`WeeklyJackpot` `0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e`, tCHIKUN `0xe4230b5aba9f9431b0f5a718b99544f69330ae9c`) but idle: the owner put the live jackpot on hold until mainnet and the $CHIKUN launch, so `JACKPOT_LIVE` stays false and nothing player-facing changes. The operator tool gains an `entry-fee` action that refuses a price below the server's settle floor, for the upcoming owner-approved fee change. Contracts, fees and flags of the live Ranked system are unchanged.
 
-Site/game version `1.8.5`; cache marker `lesters-arcade-v58-smooth-crowds`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_gmkp86XSebFfRUxvYQaQDxMq3uRw` (source `a8f81931`); site/game version `1.8.5`; cache marker `lesters-arcade-v58-smooth-crowds`. The local and Vercel gates pass 5,216 of 5,267 tests with exactly 51 unchanged retired exceptions; all 161 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260926-1.8.5.json). Rollback: Instant Rollback to `dpl_61u26aJuaoPMoEGthLcqp7MTUh6N` (1.8.4). Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.8.4 verified live: fairer HMH Ranked, two HMH freezes fixed, faster crowds, simpler STACKED effects, jackpot UI staged
 

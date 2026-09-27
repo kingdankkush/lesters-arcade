@@ -1,0 +1,33 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-26",
+  "release": "1.8.5 smooth crowds",
+  "siteVersion": "1.8.5",
+  "cacheMarker": "lesters-arcade-v58-smooth-crowds",
+  "branch": "fable/master-list-20260916",
+  "source": "a8f81931",
+  "production": {
+    "deployment": "dpl_gmkp86XSebFfRUxvYQaQDxMq3uRw",
+    "immutableUrl": "https://lesters-arcade-p99itqdmu-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-24qo0e0dq-justin-agent-projects.vercel.app",
+    "previous": "dpl_61u26aJuaoPMoEGthLcqp7MTUh6N (1.8.4)",
+    "rollback": "Instant Rollback to dpl_61u26aJuaoPMoEGthLcqp7MTUh6N (1.8.4)"
+  },
+  "contains": [
+    "HMH perf steps 3-5 (2efb1bd9): simulation hot path (same-seed digest 2488a609 unchanged), per-frame render allocations removed, sound effects on Web Audio buffers (volume sliders work on iPhone; footstep cues retired)",
+    "Chikun Weekly Jackpot deployment record (397c405a): WeeklyJackpot 0xb5c0b776a851a15f2db49dd4301f616aeee8fa0e and tCHIKUN 0xe4230b5aba9f9431b0f5a718b99544f69330ae9c deployed on LiteForge 2026-09-26, idle and on hold until mainnet (owner decision); JACKPOT_LIVE false, server unconfigured",
+    "operator entry-fee action with a settle-floor guard (6f1544f3)"
+  ],
+  "gates": {
+    "local": "PASS 5267 tests, 5216 passed, exactly 51 ledgered failures",
+    "vercel": "candidate build READY with the same gate",
+    "budgets": "HMH initial + shared 1,044,585 B of 1,048,576"
+  },
+  "verification": {
+    "publicFiles": "161/161 match the certified build",
+    "apiProbes": "attest 410, session nonce 200, leaderboards 200, profile 200, settle GET 405, health 200, jackpot 200 {live:false}, weekly-jackpot cron without secret 401, unknown share 404, profile deep link 200",
+    "health": "healthy, version 1.8.5, degradedParts []; index-chain 576 runs 0 failures; settle-retry 2879 runs 0 failures; weeklyJackpot 349 runs 0 failures (no-op)"
+  },
+  "contractsUnchanged": "Ranked contracts, fees (still 0.1 + 0.002) and flags unchanged"
+}
