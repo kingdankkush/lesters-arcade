@@ -1236,6 +1236,8 @@ const dom = {
   officialCharacterRoster: document.querySelector('#officialCharacterRoster'),
   officialCharacterBackButton: document.querySelector('#officialCharacterBackButton'),
   officialLevelIntro: document.querySelector('#officialLevelIntro'),
+  officialLevelIntroArt: document.querySelector('#officialLevelIntroArt'),
+  officialLevelIntroCaption: document.querySelector('#officialLevelIntroCaption'),
   officialBeginLevelButton: document.querySelector('#officialBeginLevelButton'),
   officialLevelBackButton: document.querySelector('#officialLevelBackButton'),
   officialGameplay: document.querySelector('#officialGameplay'),
@@ -4982,8 +4984,35 @@ const officialAppRoutes = createOfficialAppRoutes({
   renderModeSelect: renderOfficialModeSelect,
   renderCharacterSelect: renderOfficialCharacterSelect,
   renderGameplay: renderOfficialGameplay,
+  renderLevelIntro: renderLevelIntroArt,
 });
 const renderOfficialApp = officialAppRoutes.renderApp;
+
+// Level 1 intro art (docs/art/HMH-BANNERS-20260926.md 5.4-5.6). The rotation is a lazy chunk,
+// loaded only while the intro shows, so it adds nothing to the portal's initial JS.
+let levelIntroArt = null;
+let levelIntroArtHero = null;
+let levelIntroArtLoading = false;
+function renderLevelIntroArt(active) {
+  const heroId = hmhRebootHeroId();
+  if (levelIntroArt && (!active || levelIntroArtHero !== heroId)) { levelIntroArt.stop(); levelIntroArt = null; }
+  if (!active || levelIntroArt || levelIntroArtLoading || !dom.officialLevelIntroArt) return;
+  levelIntroArtLoading = true;
+  import('./src/hmh-banner-stage.mjs').then(({ mountBannerStage }) => {
+    levelIntroArtLoading = false;
+    if (officialAppStep !== 'level-one-intro' || levelIntroArt) return;
+    levelIntroArtHero = hmhRebootHeroId();
+    levelIntroArt = mountBannerStage({
+      frame: dom.officialLevelIntroArt,
+      backdropHost: dom.officialLevelIntro,
+      caption: dom.officialLevelIntroCaption,
+      heroId: levelIntroArtHero,
+      reduceMotion: Boolean(gameSettings.reduceMotion) || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true,
+      sizes: '(min-width: 1024px) 56vw, (max-height: 500px) and (orientation: landscape) 34vw, 100vw',
+      source: 'intro',
+    });
+  }).catch(() => { levelIntroArtLoading = false; });
+}
 
 async function connectOfficialWallet() {
   if (!connectedWallet) {

@@ -15,6 +15,13 @@
       <div id="hmhRebootStage" class="hmh-reboot-stage" role="img" aria-label="Hard Money Heroes top-down reboot renderer"></div>
       <section id="hmhStartup" class="hmh-startup" aria-label="Level 1 briefing" aria-busy="true" data-level="1">
         <div class="hmh-startup-card">
+          <div class="hmh-startup-visual">
+            <figure class="hmh-startup-art hmh-art-frame" data-art-state="idle">
+              <figcaption class="hmh-startup-art-caption hmh-art-caption"></figcaption>
+            </figure>
+            <p class="hmh-startup-ticker" aria-live="off"></p>
+          </div>
+          <div class="hmh-startup-intro">
           <p class="hmh-panel-kicker">HARD MONEY HEROES <span> / LEVEL 01</span></p>
           <h1>The Forked Frontier</h1>
           <p class="hmh-startup-story">The relay has gone quiet. The roads belong to the horde.<br>Find a way through. Make every round count.</p>
@@ -26,16 +33,19 @@
             <div><dt>Nearby supply</dt><dd data-briefing-supply>Glowing markers show weapons, health and power-ups.</dd></div>
             <div><dt>Field tip</dt><dd data-briefing-tip>Keep moving. Your hero fires, dodges and interacts automatically.</dd></div>
           </dl>
+          </div>
           <div class="hmh-startup-tips">
             <article><span class="hmh-startup-number">01</span><h2>Stay moving</h2><p><b data-briefing-move>W / A / S / D</b> move. Aim with the mouse. Your hero fires, dodges and handles nearby interactions automatically.</p><p class="hmh-startup-touch">On touch: move with the left stick. Use AIM to focus fire; release it to return to automatic targeting.</p></article>
             <article><span class="hmh-startup-number">02</span><h2>Follow the glow</h2><p><b>Cyan marks weapons.</b> Green marks health. Gold marks power-ups. Walk close to collect them.</p><p>Time Dilation boosts movement. Berserk doubles damage for a short time. Grab the same candle again to restart its timer.</p></article>
             <article><span class="hmh-startup-number">03</span><h2>Build your arsenal</h2><p>Find the <b>shotgun</b> for crowds and the <b>Auto-Miner</b> for sustained fire. Throw a grenade with <b data-briefing-grenade>F</b>, right click or the touch button.</p><p>Swap weapons with <b>Q</b> or the SWAP button; press <b>Tab</b> or tap the armed weapon to open the wheel and save a rare gun for the boss.</p><p>Pause for the field map and your controls. Routes, machinery and hidden caches reward exploration.</p></article>
           </div>
+          <div class="hmh-startup-actions">
           <div class="hmh-startup-progress" role="progressbar" aria-label="Loading level assets" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
           <p id="hmhStartupCopy" role="status">Loading your hero and the Frontier…</p>
           <button id="hmhStartupEnter" class="hmh-command-button hmh-startup-enter" type="button" disabled>Preparing Level 1…</button>
           <button id="hmhStartupContinue" class="hmh-command-button" type="button" hidden>Play with basic graphics</button>
           <button id="hmhStartupExit" class="hmh-command-button" type="button">Back to game menu</button>
+          </div>
         </div>
       </section>
 
@@ -243,5 +253,6 @@
       <output id="hmhRebootCombatStatus" class="hmh-sr-only" role="status" aria-live="polite" aria-atomic="true">Combat ready</output>
     </main>
     <script type="module" src="../dist/hmh-reboot/game.js"></script>
+    <script type="module" src="../dist/hmh-reboot/startup-art.js"></script>
   </body>
 </html>

@@ -841,6 +841,131 @@ svg.arcade-icon {
   text-transform: uppercase;
 }
 
+/* Level 1 intro art (docs/art/HMH-BANNERS-20260926.md 5.4): an uncropped 16:9 frame the lazy
+   rotation module fills, and a blurred, darkened copy of the current image behind the view. */
+.level-intro-view {
+  position: relative;
+  overflow: hidden;
+}
+
+.level-intro-view::before {
+  content: '';
+  position: absolute;
+  inset: -48px;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--hmh-art-backdrop, none) 50% 30% / cover no-repeat;
+  filter: blur(28px) brightness(0.35);
+}
+
+.level-intro-layout {
+  position: relative;
+  z-index: 1;
+  max-width: 940px;
+  margin: 4vh auto 0;
+}
+
+.level-intro-layout .level-intro-card { margin: 18px 0 0; max-width: none; }
+
+.hmh-art-frame {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid rgba(25, 247, 255, 0.22);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0b1f33 0%, #10353a 55%, #123f3b 100%);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+
+.hmh-art-layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--hmh-art-focal, 50% 30%);
+  transform-origin: var(--hmh-art-focal, 50% 30%);
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.hmh-art-layer[data-active="true"] { opacity: 1; animation: hmh-art-drift 8s ease-out both; }
+.hmh-art-frame[data-art-motion="reduced"] .hmh-art-layer { transition: none; animation: none; }
+
+.hmh-art-caption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  padding: 4px 11px;
+  border-radius: 999px;
+  color: #fff8d6;
+  background: rgba(4, 11, 26, 0.84);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hmh-art-caption:empty { display: none; }
+
+@keyframes hmh-art-drift {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+@media (min-width: 1024px) {
+  .level-intro-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+    gap: 28px;
+    align-items: start;
+    max-width: 1320px;
+  }
+
+  .level-intro-layout .level-intro-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(22px, 2.4vw, 34px);
+  }
+
+  .level-intro-layout .level-intro-card > * { order: 5; }
+  .level-intro-layout .level-intro-card > #officialLevelBackButton { order: 0; align-self: flex-start; }
+  .level-intro-layout .level-intro-card > .eyebrow { order: 1; }
+  .level-intro-layout .level-intro-card > h2 { order: 2; margin-bottom: 4px; }
+  .level-intro-layout .level-intro-card > #officialBeginLevelButton { order: 3; width: 100%; margin: 14px 0 16px; }
+
+  .level-intro-layout .level-control-strip {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .level-intro-layout .level-control-strip span { border-radius: 12px; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .level-intro-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 34fr) minmax(0, 66fr);
+    gap: 14px;
+    align-items: start;
+    max-width: none;
+    margin-top: 0;
+  }
+
+  .level-intro-layout .level-intro-art { position: sticky; top: 8px; }
+  .level-intro-layout .level-intro-card { margin: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hmh-art-layer { transition: none; animation: none; }
+}
+
+:root[data-reduce-motion="true"] .hmh-art-layer { transition: none; animation: none; }
+
 .gameplay-view {
   position: relative;
   display: grid;

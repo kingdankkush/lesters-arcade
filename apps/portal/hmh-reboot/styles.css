@@ -955,6 +955,55 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 @media(max-height:600px) and (min-width:601px) { .hmh-startup { padding:16px 24px; align-items:start; } .hmh-startup-brief { margin-top:8px; gap:4px 24px; } .hmh-startup-card h1 { font-size:30px; margin:8px 0; } .hmh-startup-story { display:none; } .hmh-startup-tips { margin:14px 0; padding-top:12px; } }
 @media(prefers-reduced-motion:reduce) { .hmh-startup-progress span { transition:none; } }
 
+/* Level 1 loading art (docs/art/HMH-BANNERS-20260926.md 5.5): an uncropped 16:9 frame
+   that dist/hmh-reboot/startup-art.js fills with the rotating hero art, a blurred copy
+   of the current image behind the card, and a sticky action bar on phones. The module
+   sets only classes, data attributes, src/srcset and CSSOM custom properties (CSP). */
+.hmh-startup::before { content:''; position:fixed; inset:-48px; z-index:0; pointer-events:none; background:var(--hmh-art-backdrop, none) 50% 30%/cover no-repeat; filter:blur(28px) brightness(.35) saturate(1.1); opacity:.9; transition:background-image .9s; }
+.hmh-startup { align-items:start; }
+.hmh-startup-card { position:relative; z-index:1; margin-block:auto; }
+.hmh-startup-visual { margin:0 0 18px; }
+.hmh-art-frame { position:relative; margin:0; aspect-ratio:16 / 9; overflow:hidden; border-radius:14px; border:1px solid rgba(169,216,189,.22); background:linear-gradient(135deg,#0b1f33 0%,#10353a 55%,#123f3b 100%); box-shadow:0 18px 48px rgba(0,0,0,.45); }
+.hmh-art-layer { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; object-position:var(--hmh-art-focal, 50% 30%); transform-origin:var(--hmh-art-focal, 50% 30%); opacity:0; transition:opacity .9s ease; }
+.hmh-art-layer[data-active="true"] { opacity:1; animation:hmh-art-drift 8s ease-out both; }
+.hmh-art-frame[data-art-motion="reduced"] .hmh-art-layer { transition:none; animation:none; }
+.hmh-art-caption { position:absolute; left:12px; bottom:12px; z-index:2; padding:4px 11px; border-radius:999px; background:rgba(5,12,18,.82); color:#f2eee0; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.hmh-art-caption:empty { display:none; }
+.hmh-startup-ticker { min-height:3.2em; margin:10px 2px 0; color:#b7cac5; font-size:13px; line-height:1.6; }
+.hmh-startup-ticker:empty { visibility:hidden; }
+@keyframes hmh-art-drift { from { transform:scale(1); } to { transform:scale(1.05); } }
+@media(min-width:1024px) {
+  .hmh-startup-card { width:min(1180px,100%); display:grid; grid-template-columns:minmax(0,45fr) minmax(0,55fr); grid-template-areas:"visual intro" "tips tips" "actions actions"; column-gap:36px; align-items:start; }
+  .hmh-startup-visual { grid-area:visual; margin:6px 0 0; }
+  .hmh-startup-intro { grid-area:intro; }
+  .hmh-startup-tips { grid-area:tips; margin:22px 0 12px; }
+  .hmh-startup-actions { grid-area:actions; }
+  .hmh-startup-card h1 { font-size:clamp(32px,4.2vw,56px); margin:12px 0; }
+  .hmh-startup-route { margin:18px 0 10px; }
+}
+@media(max-width:600px) {
+  .hmh-startup { padding-bottom:0; }
+  .hmh-startup-visual { margin:0 -4px 14px; }
+  .hmh-startup-card h1 { margin:10px 0; }
+  .hmh-startup-actions { position:sticky; bottom:0; z-index:3; display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; margin:0 -20px; padding:10px 20px calc(10px + env(safe-area-inset-bottom)); border-top:1px solid #35534a; background:rgba(7,18,27,.95); }
+  .hmh-startup-actions .hmh-startup-progress, .hmh-startup-actions #hmhStartupCopy { flex:1 1 100%; margin:0; }
+  .hmh-startup-actions #hmhStartupCopy { line-height:1.4; }
+  .hmh-startup-card .hmh-startup-actions button { flex:1 1 auto; margin:2px 0; }
+  .hmh-startup-card .hmh-startup-actions .hmh-startup-enter { flex:2 1 60%; }
+}
+@media(max-height:600px) and (min-width:601px) {
+  .hmh-startup { padding-bottom:0; }
+  .hmh-startup-card { width:100%; display:grid; grid-template-columns:minmax(0,38fr) minmax(0,62fr); grid-template-areas:"visual intro" "visual tips" "actions actions"; column-gap:24px; align-items:start; }
+  .hmh-startup-visual { grid-area:visual; position:sticky; top:0; margin:0; }
+  .hmh-startup-intro { grid-area:intro; }
+  .hmh-startup-tips { grid-area:tips; grid-template-columns:1fr; gap:10px; }
+  .hmh-startup-actions { grid-area:actions; position:sticky; bottom:0; z-index:3; display:flex; flex-wrap:wrap; align-items:center; gap:0 10px; margin:0 -24px; padding:6px 24px calc(6px + env(safe-area-inset-bottom)); border-top:1px solid #35534a; background:rgba(7,18,27,.95); }
+  .hmh-startup-actions .hmh-startup-progress { flex:1 1 100%; margin:0 0 4px; }
+  .hmh-startup-actions #hmhStartupCopy { flex:1 1 auto; margin:0; }
+  .hmh-startup-card .hmh-startup-actions button { margin:2px 0; min-height:40px; }
+}
+@media(prefers-reduced-motion:reduce) { .hmh-art-layer { transition:none; animation:none; } .hmh-startup::before { transition:none; } }
+
 /* Pickup / interaction banner (owner direction 2026-09-16): one bold line that
    names what the player just got or did, holds ~1.2 s, then fades. */
 .hmh-pickup-banner {
