@@ -39,7 +39,7 @@ index e1c552f5..c5bdca08 100644
    else if (input.type === 'game:achievement') error = validateAchievement(input.payload);
    else if (input.type === 'game:settings') error = validateSettingsPayload(input.payload);
 diff --git a/sdk/hmh-run-contract-v7.mjs b/sdk/hmh-run-contract-v7.mjs
-index 4ead0cbf..d9bd0c60 100644
+index 4ead0cbf..335e4bd8 100644
 --- a/sdk/hmh-run-contract-v7.mjs
 +++ b/sdk/hmh-run-contract-v7.mjs
 @@ -116,6 +116,110 @@ export function hmhV7CollectibleCapacity(runTicks) {
@@ -153,6 +153,70 @@ index 4ead0cbf..d9bd0c60 100644
  // XP that completes level L; levels run to MAX_LEVEL.
  export function hmhV7LevelThreshold(level) {
    return 150 * level * (level + 1);
+@@ -293,6 +397,16 @@ export const HMH_V7_PRISONER_SLOTS = covering({
+   'p6-yard-warehouse-compound': { district: 'liquidation-yard', heldBy: null },
+ }, C7.prisonerSlots, 'HMH_V7_PRISONER_SLOTS');
+ 
++// §3.4a Whether a Ranked run of the shipped child can rescue a prisoner. The
++// child's PRISONERS_LIVE_DEFAULT (apps/hmh-reboot/src/prisoners.mjs) is this
++// value, and a Ranked run always uses that default (?prisoners=1 is
++// evidenceSafe-only), so lighting the prisoners flips the child and the
++// verifier together. While it is false, the v7 path rejects every rescued row
++// and counts no Quartermaster grenades and no OG Miner XP. Setting it true
++// relaxes that reject, so it may ship only with an honest real-child corpus
++// that rescues prisoners and verifies with zero rejections.
++export const HMH_V7_RANKED_PRISONERS_LIVE = false;
++
+ export const HMH_PRISONER_KINDS = Object.freeze(['field-medic', 'quartermaster', 'pawnbroker', 'og-miner']);
+ const PRISONER_DEAL_BASE = Object.freeze(['field-medic', 'field-medic', 'quartermaster', 'quartermaster', 'pawnbroker', 'pawnbroker', 'og-miner', 'og-miner']);
+ // The districts holding two slots (rugpull-ravine: 0 and 3; mining-camp: 1 and
+@@ -411,3 +525,46 @@ for (const id of C7.upgrades) {
+ }
+ 
+ export const HMH_V7_UPGRADE_MAX_RANKS = Object.freeze(Object.fromEntries(C7.upgrades.map((id) => [id, HMH_V7_UPGRADES[id].maxRank])));
++
++// ---------------------------------------------------------------------------
++// §3.6 Dark content: catalogue rows the shipped child cannot produce in a
++// Ranked run. Schema 7 is claimable by any client (the build hash is only
++// format-checked), so the v7 path rejects a non-zero row here (contract 7.7).
++// Each list shrinks in the release that ships its content, together with the
++// child change and an honest real-child corpus that exercises it; the
++// prisoners are HMH_V7_RANKED_PRISONERS_LIVE above.
++//   bosses       only the Liquidator is registered (apps/hmh-reboot/src/
++//                boss-slots.mjs BOSS_DEFINITIONS): the Baron, the Lockkeeper
++//                and the Foreman cannot be initiated, so none can be killed
++//   enemyRoles   the child spawns the six v6 roles (enemy-archetypes.mjs) and
++//                the Liquidator: the six new ordinary roles and the three
++//                district bosses are never killed
++//   objectives   mission core v2 places 13 of the 25 objectives
++//                (mission-objectives.mjs MISSION_OBJECTIVES): the other 12
++//                never complete
++// Rows the schema already holds at zero are not repeated here: the wave-2
++// evolutions (S10, HMH_V7_RESERVED_EVOLUTIONS), the Settler Rail without the
++// evolution panel that offered it (S10, HMH_V7_PANEL_ONLY_EVOLUTIONS) and the
++// held prisoners without their boss (S9). Parity tests pin each list against
++// the child.
++export const HMH_V7_DARK_CONTENT = freezeDeep({
++  bosses: ['rug-pull-baron', 'lockkeeper', 'fifty-one-percent-foreman'],
++  enemyRoles: ['rug-puller', 'pump-and-dump-bloater', 'tollkeeper', 'hodl-revenant', 'money-printer', 'oracle-marksman', 'rug-pull-baron', 'lockkeeper', 'fifty-one-percent-foreman'],
++  objectives: [
++    'crossing-behind-the-falls',
++    'hashwood-beacon',
++    'hashwood-hollow-grove',
++    'hashwood-lamp-oil',
++    'hashwood-log-chute',
++    'hashwood-log-pile',
++    'hashwood-lookout',
++    'mining-collapsed-adit',
++    'ravine-rope-bridge',
++    'relay-uplink',
++    'yard-bascule-lever',
++    'yard-port-bascule',
++  ],
++});
++for (const [field, catalogue] of [['bosses', C7.bosses], ['enemyRoles', C7.enemyRoles], ['objectives', C7.objectives]]) {
++  if (!HMH_V7_DARK_CONTENT[field].every((id) => catalogue.includes(id))) throw new Error(`HMH_V7_DARK_CONTENT.${field} must name catalogue ids`);
++}
 diff --git a/sdk/hmh-run-summary.mjs b/sdk/hmh-run-summary.mjs
 index 899b7d1a..0772f790 100644
 --- a/sdk/hmh-run-summary.mjs
@@ -405,7 +469,7 @@ index 899b7d1a..0772f790 100644
    return summary?.identity?.terminalReason === 'defeated'
      && summary?.totals?.score === result?.score
 diff --git a/server/verify/hmh-plausibility.mjs b/server/verify/hmh-plausibility.mjs
-index 5edadd01..38c02206 100644
+index 5edadd01..3c27a9e5 100644
 --- a/server/verify/hmh-plausibility.mjs
 +++ b/server/verify/hmh-plausibility.mjs
 @@ -43,7 +43,14 @@
@@ -424,7 +488,41 @@ index 5edadd01..38c02206 100644
  //   flag    anything within 10% of a ceiling, and cross-field inconsistencies
  //           an honest client never produces but that do not raise a ceiling.
  //
-@@ -71,6 +78,20 @@
+@@ -56,8 +63,10 @@
+ //           boss-fight-too-short     a defeat sooner after the boss's last
+ //                                    initiation than its minimum fight (300
+ //                                    ticks: the invulnerable intro and two
+-//                                    phase halts; 180 for the Liquidator, whose
+-//                                    Dark Pool start has no intro)
++//                                    phase halts; 180 for a Liquidator fight
++//                                    the Dark Pool owns, which has no intro:
++//                                    the warehouse logbook found at or before
++//                                    his first initiation, as in schema S16)
+ //           boss-reinitiation-too-soon  initiations of one boss less than
+ //                                    2,520 ticks apart on average (retreat)
+ //           boss-fights-overlap      two bosses live at once: two initiated on
+@@ -68,17 +77,48 @@
+ //           node-xp-above-level      node XP claimed at a level that the level
+ //                                    cannot hold (the level's own 300 x L, or
+ //                                    the XP gained at the final level)
++//           node-in-unvisited-district  a boss initiation, objective completion
++//                                    or prisoner rescue in a district the run
++//                                    never visited (one entry; the value is
++//                                    the number of such rows)
++//           prisoner-rescued-while-dark, boss-not-in-build,
++//           enemy-role-not-in-build, objective-not-in-build
++//                                    a row the shipped child cannot produce in
++//                                    a Ranked run (contract 7.7): a rescued
++//                                    prisoner while HMH_V7_RANKED_PRISONERS_LIVE
++//                                    is false (their Quartermaster grenades and
++//                                    OG Miner XP are then not counted either),
++//                                    an initiation of a boss, a kill of a role
++//                                    or a completion of an objective in
++//                                    HMH_V7_DARK_CONTENT
++//           standard-kills-above-contacts  v7 only: Forked Standard kills above
++//                                    its contacts (the larger of the weapon
++//                                    row's projectileContacts and
++//                                    forkedStandard.contacts)
  //           grenade-kills-above-weapon-kills  as on the v6 path: grenades.kills
  //                                    above the grenade weapons' kills (contract
  //                                    §15.1; the v7 child keeps the v6 count)
@@ -444,16 +542,34 @@ index 5edadd01..38c02206 100644
 +//                                    counts boss refills and Quartermasters
  //   flag    near-ceiling and claimed-rank checks as in v6, plus
  //           upgrade-rank-above-max, evolution-without-mastery,
- //           node-level-inconsistent, objective-prerequisite-missing and
-@@ -86,6 +107,7 @@ import {
+-//           node-level-inconsistent, objective-prerequisite-missing and
+-//           node-in-unvisited-district. Those five cannot raise a ceiling (the
+-//           hard ceilings use maximum ranks, node-xp-above-level bounds the
+-//           node levels, and districts and prerequisites are free to claim);
+-//           each is one entry whose value is the number of offending rows and
+-//           whose limit is 0.
++//           node-level-inconsistent and objective-prerequisite-missing. Those
++//           four cannot raise a ceiling (the hard ceilings use maximum ranks,
++//           node-xp-above-level bounds the node levels, and prerequisites are
++//           free to claim); each is one entry whose value is the number of
++//           offending rows and whose limit is 0.
+ // Flags have the shape { id, severity, value, limit } on both paths.
+ import { HMH_RUN_SUMMARY_CATALOGS_V6 } from '../../sdk/hmh-run-summary-schema.mjs';
+ import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../sdk/hmh-run-summary-schema-v7.mjs';
+@@ -86,9 +126,12 @@ import {
    HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION,
    HMH_V7_BOSSES,
    HMH_V7_BOSS_RULES,
 +  HMH_V7_CONSISTENCY_RULES,
++  HMH_V7_DARK_CONTENT,
    HMH_V7_EVOLUTIONS,
    HMH_V7_OBJECTIVES,
    HMH_V7_PRISONER_SLOTS,
-@@ -465,6 +487,56 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
++  HMH_V7_RANKED_PRISONERS_LIVE,
+   HMH_V7_ROLE_THREAT,
+   HMH_V7_RUN_RULES,
+   HMH_V7_UPGRADE_MAX_RANKS,
+@@ -465,6 +508,56 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
  //                                    so the best combo never passes the kills.
  //                                    The 1.8.1 flag combo-exceeds-kills stays as
  //                                    it was, beside this reject.
@@ -510,7 +626,7 @@ index 5edadd01..38c02206 100644
  // Every rule reads only the summary and the literals below, never a clock.
  export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
    grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
-@@ -540,6 +612,16 @@ export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
+@@ -540,6 +633,16 @@ export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
    handGrenades: { weaponId: 'satoshi-frag', startCharges: 3, rankUpgradeId: 'cold-storage', chargesPerRank: 1, maxRanks: 3, refillEffectId: 'nuke-liquidation' },
    launcherWeapon: 'launcher-rig',
    nuke: { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' },
@@ -527,7 +643,7 @@ index 5edadd01..38c02206 100644
  });
  const V6C = HMH_V6_CONSISTENCY_RULES;
  
-@@ -556,8 +638,21 @@ export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze([
+@@ -556,8 +659,21 @@ export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze([
    'grenades-thrown-above-supply',
    'damage-dealt-mismatch',
    'combo-above-kills',
@@ -549,7 +665,7 @@ index 5edadd01..38c02206 100644
  // The tick each objective reward's objective unlocked at, read from the
  // summary; a missing key is still locked. A machinery site unlocks at its
  // operated tick (main.mjs unlocks the reward in the step that records the
-@@ -701,6 +796,18 @@ function checkV6Consistency(runSummary, runTicks, reject) {
+@@ -701,6 +817,18 @@ function checkV6Consistency(runSummary, runTicks, reject) {
    if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
  
    if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
@@ -568,12 +684,14 @@ index 5edadd01..38c02206 100644
  }
  
  // → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
-@@ -757,6 +864,231 @@ const V7 = HMH_V7_RUN_RULES;
+@@ -757,6 +885,237 @@ const V7 = HMH_V7_RUN_RULES;
  const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
  const BOSS = HMH_V7_BOSS_RULES;
  
 +// The 1.8.4 and round-3 consistency rules the v7 path mirrors: all sixteen of
-+// HMH_V6_CONSISTENCY_REJECTS (contract 15.1 item 4; 16.8 and 16.9). The 1.9.0
++// HMH_V6_CONSISTENCY_REJECTS (contract 15.1 item 4; 16.8 and 16.9), fifteen of
++// them in checkV7Consistency (HMH_V7_CONSISTENCY_REJECTS below) and
++// grenade-kills-above-weapon-kills in validateV7RunPlausibility. The 1.9.0
 +// child records these fields with the same accumulator, so each rule below is
 +// an identity of that accumulator or a child rule the 1.9.0 child keeps, read
 +// from its own tables (sdk/hmh-run-contract-v7.mjs HMH_V7_CONSISTENCY_RULES,
@@ -697,8 +815,12 @@ index 5edadd01..38c02206 100644
 +  const ranks = Math.min(hand.maxRanks, Math.max(0, rowCounts(summary.upgrades, 'upgradeId', 'selected')[hand.rankUpgradeId] ?? 0));
 +  const refills = rowCounts(summary.collectibles, 'effectId', 'collected')[hand.refillEffectId] ?? 0;
 +  const defeats = (summary.bosses ?? []).filter((row) => row?.defeatedTick > 0).length;
++  // No Quartermaster hands anything over while the prisoners are dark
++  // (prisoner-rescued-while-dark rejects the row itself).
 +  const deal = dealHmhPrisoners(summary.identity.seed);
-+  const quartermasters = (summary.prisoners ?? []).filter((row) => row?.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === hand.prisonerKind).length;
++  const quartermasters = HMH_V7_RANKED_PRISONERS_LIVE
++    ? (summary.prisoners ?? []).filter((row) => row?.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === hand.prisonerKind).length
++    : 0;
 +  return hand.startCharges + hand.chargesPerRank * ranks + refills
 +    + defeats * (hand.startMaxCharges + hand.chargesPerRank * ranks) + quartermasters * hand.prisonerCharges;
 +}
@@ -800,7 +922,94 @@ index 5edadd01..38c02206 100644
  // Per-event gains at the given claimed ranks. `xm` also multiplies objective
  // XP, which depends on the node's level and is computed per row.
  function measureV7Gains(ranks) {
-@@ -963,11 +1295,14 @@ export function validateV7RunPlausibility(runSummary) {
+@@ -840,7 +1199,8 @@ const levelSpan = (level) => hmhV7LevelThreshold(level) - hmhV7LevelThreshold(le
+ // objective grants its class's XP per level x that level through grantRunXp,
+ // so it is multiplied by xm; an OG Miner grants exactly 300 x level, never
+ // multiplied. The deal comes from the seed, never from the summary, so a rescue
+-// in a slot the deal gives another kind grants nothing.
++// in a slot the deal gives another kind grants nothing, and no rescue grants
++// anything while the prisoners are dark (HMH_V7_RANKED_PRISONERS_LIVE).
+ function nodeGrantsByLevel(summary, xm) {
+   const deal = dealHmhPrisoners(summary.identity.seed);
+   const byLevel = new Map();
+@@ -854,7 +1214,7 @@ function nodeGrantsByLevel(summary, xm) {
+     const node = HMH_V7_OBJECTIVES[row.objectiveId];
+     if (row.completed === 1 && node) add(row.levelAtCompletion, Math.round(V7.OBJECTIVE_XP_PER_LEVEL[node.class] * row.levelAtCompletion * xm));
+   }
+-  for (const row of summary.prisoners) {
++  for (const row of HMH_V7_RANKED_PRISONERS_LIVE ? summary.prisoners : []) {
+     if (row.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === 'og-miner') add(row.levelAtRescue, V7.OG_MINER_XP_PER_LEVEL * row.levelAtRescue);
+   }
+   return byLevel;
+@@ -917,6 +1277,58 @@ export function hmhV7Ceilings(summary, gains) {
+ 
+ const bitSet = (mask, bit) => bit >= 0 && Math.floor(mask / 2 ** bit) % 2 === 1;
+ 
++// The objective whose entry is the Dark Pool (HMH_V7_OBJECTIVES: entering it
++// can also initiate the Liquidator).
++const DARK_POOL_OBJECTIVE = 'warehouse-logbook';
++
++// The shortest honest defeat of boss row `row` after its last initiation
++// (contract §5.3). Every start but the Dark Pool has the invulnerable intro:
++// BOSS_MIN_FIGHT_TICKS (300). The Liquidator's row allows the Dark Pool's 180
++// only when the Dark Pool owns his fight, which is schema S16's condition: the
++// trigger that first initiates him owns every later initiation, and the
++// mission step records the logbook before the tick's boss starts, so the
++// logbook was found at or before his first initiation.
++export function hmhV7MinFightTicks(row, summary) {
++  const boss = Object.hasOwn(HMH_V7_BOSSES, row?.bossId) ? HMH_V7_BOSSES[row.bossId] : null;
++  if (!boss) return Infinity;
++  if (boss.minFightTicks >= BOSS.BOSS_MIN_FIGHT_TICKS) return boss.minFightTicks;
++  const logbook = (summary?.milestones?.secrets ?? []).find((entry) => entry?.secretId === DARK_POOL_OBJECTIVE);
++  const darkPool = logbook?.found === 1 && logbook.tick <= row.firstInitiatedTick;
++  return darkPool ? boss.minFightTicks : BOSS.BOSS_MIN_FIGHT_TICKS;
++}
++
++// The rows a Ranked run of the shipped child cannot produce (contract 7.7;
++// sdk/hmh-run-contract-v7.mjs HMH_V7_DARK_CONTENT and
++// HMH_V7_RANKED_PRISONERS_LIVE) → the offending amount per kind: rescued
++// prisoner rows, initiations of dark bosses, kills of dark roles and completed
++// dark objectives.
++export function hmhV7DarkContent(summary) {
++  const sumOf = (rows, key, ids, field) => (rows ?? []).reduce((sum, row) => sum + (ids.includes(row?.[key]) ? row[field] : 0), 0);
++  return {
++    prisoners: HMH_V7_RANKED_PRISONERS_LIVE ? 0 : (summary?.prisoners ?? []).filter((row) => row?.rescued === 1).length,
++    bosses: sumOf(summary?.bosses, 'bossId', HMH_V7_DARK_CONTENT.bosses, 'initiations'),
++    enemyRoles: sumOf(summary?.kills?.byEnemyRole, 'enemyRoleId', HMH_V7_DARK_CONTENT.enemyRoles, 'count'),
++    objectives: sumOf(summary?.objectives, 'objectiveId', HMH_V7_DARK_CONTENT.objectives, 'completed'),
++  };
++}
++
++// Rejects on the v7 path only, beyond the mirrors of the v6 rules.
++export const HMH_V7_ONLY_REJECTS = Object.freeze([
++  'build-predates-schema-7',
++  'boss-before-ready',
++  'boss-fight-too-short',
++  'boss-reinitiation-too-soon',
++  'boss-fights-overlap',
++  'collectibles-above-capacity',
++  'node-xp-above-level',
++  'node-in-unvisited-district',
++  'prisoner-rescued-while-dark',
++  'boss-not-in-build',
++  'enemy-role-not-in-build',
++  'objective-not-in-build',
++  'standard-kills-above-contacts',
++]);
++
+ // → the same verdict shape as the v6 path. Expects a summary that already
+ // passed validateRunSummaryPayload (schema 7).
+ export function validateV7RunPlausibility(runSummary) {
+@@ -947,7 +1359,7 @@ export function validateV7RunPlausibility(runSummary) {
+   }
+   for (const row of bosses) {
+     const fight = row.defeatedTick - row.lastInitiatedTick;
+-    const minimum = HMH_V7_BOSSES[row.bossId]?.minFightTicks ?? Infinity;
++    const minimum = hmhV7MinFightTicks(row, runSummary);
+     if (row.defeatedTick > 0 && fight < minimum) reject('boss-fight-too-short', fight, minimum);
+   }
+   for (const row of bosses) {
+@@ -963,11 +1375,30 @@ export function validateV7RunPlausibility(runSummary) {
    else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
  
    // A grenade kill is a kill of a grenade weapon (the v6 accumulator's rule,
@@ -814,9 +1023,54 @@ index 5edadd01..38c02206 100644
 +  // The v6 consistency rules the v7 child keeps (HMH_V7_CONSISTENCY_REJECTS).
 +  checkV7Consistency(runSummary, runTicks, reject);
 +
++  // v7 only: a Forked Standard kill is a strike's contact (the 1.9.0 child
++  // records each landed strike as a contact of the weapon row and of the
++  // forkedStandard block, and a kill only from a landed strike), so kills
++  // stay within the larger of the two counts. Every honest 1.9.0 run holds it
++  // (the real-child corpus's most is 11 kills on 19 contacts).
++  const standard = runSummary.weapons.find((row) => row.weaponId === C7R.melee.standardWeapon);
++  const standardContacts = Math.max(standard.projectileContacts, runSummary.forkedStandard?.contacts ?? 0);
++  if (standard.kills > standardContacts) reject('standard-kills-above-contacts', standard.kills, standardContacts);
++
++  // Content the shipped child cannot produce in a Ranked run (contract 7.7).
++  const dark = hmhV7DarkContent(runSummary);
++  if (dark.prisoners) reject('prisoner-rescued-while-dark', dark.prisoners, 0);
++  if (dark.bosses) reject('boss-not-in-build', dark.bosses, 0);
++  if (dark.enemyRoles) reject('enemy-role-not-in-build', dark.enemyRoles, 0);
++  if (dark.objectives) reject('objective-not-in-build', dark.objectives, 0);
++
    // Pickups come from at most 21 authored placements, re-armed no sooner than
    // every 7,200 ticks; the Genesis Seal's pickups are the Seals (schema S12).
    const pickups = collectibles.reduce((sum, row) => sum + (row.effectId === 'genesis-seal' ? 0 : row.collected), 0);
+@@ -977,6 +1408,16 @@ export function validateV7RunPlausibility(runSummary) {
+   const excess = hmhV7NodeLevelExcess(runSummary);
+   if (excess) reject('node-xp-above-level', excess.value, excess.limit);
+ 
++  // A boss is initiated, an objective completed and a prisoner freed only by a
++  // hero standing in its district, and the child marks a district visited on
++  // the tick the hero stands in it (recordRunTick), so each such row needs its
++  // district's bit. No honest 1.9.0 completion lacks it.
++  const visited = (district) => bitSet(exploration.visitedDistrictMask, C7.districts.indexOf(district));
++  const unvisited = objectives.filter((row) => row.completed === 1 && !visited(HMH_V7_OBJECTIVES[row.objectiveId]?.district)).length
++    + prisoners.filter((row) => row.rescued === 1 && !visited(HMH_V7_PRISONER_SLOTS[row.slotId]?.district)).length
++    + bosses.filter((row) => row.initiations > 0 && !visited(HMH_V7_BOSSES[row.bossId]?.district)).length;
++  if (unvisited) reject('node-in-unvisited-district', unvisited, 0);
++
+   const hard = hmhV7Ceilings(runSummary, V7_MAX_GAINS);
+   if (totals.xp > hard.xp) reject('xp-above-ceiling', totals.xp, hard.xp);
+   else if (totals.xp > NEAR_CEILING_FRACTION * hard.xp) flag('xp-near-ceiling', totals.xp, hard.xp);
+@@ -1030,11 +1471,6 @@ export function validateV7RunPlausibility(runSummary) {
+   }).length;
+   if (prerequisiteMissing) flag('objective-prerequisite-missing', prerequisiteMissing, 0);
+ 
+-  const visited = (district) => bitSet(exploration.visitedDistrictMask, C7.districts.indexOf(district));
+-  const unvisited = objectives.filter((row) => row.completed === 1 && !visited(HMH_V7_OBJECTIVES[row.objectiveId]?.district)).length
+-    + prisoners.filter((row) => row.rescued === 1 && !visited(HMH_V7_PRISONER_SLOTS[row.slotId]?.district)).length
+-    + bosses.filter((row) => row.initiations > 0 && !visited(HMH_V7_BOSSES[row.bossId]?.district)).length;
+-  if (unvisited) flag('node-in-unvisited-district', unvisited, 0);
+   return done();
+ }
+ 
 diff --git a/server/verify/hmh.mjs b/server/verify/hmh.mjs
 index eefd7687..4c8be063 100644
 --- a/server/verify/hmh.mjs
