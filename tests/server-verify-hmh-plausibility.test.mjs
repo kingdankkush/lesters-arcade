@@ -1419,25 +1419,88 @@ test('residual: a consistent fabricated grenade trail still verifies', () => {
   assert.notEqual(validateRebootRunPlausibility(schemaValid(hardFork)).verdict, 'rejected');
 });
 
-// Round 3, item 1 leaves the same residual for melee: a summary that fakes a
-// consistent knife trail (one hitting swing per claimed kill, inside the
-// cadence) still verifies. The cadence alone would allow blade-samurai (250)
-// from 5,000 ticks; it is the kill capacity (250 bodies from 21,780 ticks; 287
-// at 24,000) that makes it a six-minute run. The v6 summary has no per-swing
-// record, and a swing has no target cap.
-test('residual: a consistent fabricated knife trail still verifies', () => {
-  const samurai = clone(blankRun(24_000), (s) => {
+// R0-1 and R0-4 are PARTIAL (contract §16.6; round 3, item 2). The zero-tick
+// run is closed (activity-without-time), and a weapon now needs a cache pickup
+// (weapon-without-source), but the placement capacity has no district gate and
+// a defeated run has no minimum end tick. So a one-tick run at the relay still
+// claims every placement that is open from tick 1 anywhere on the map,
+// including weapon caches, and earns weapon and pickup stats from them; the
+// pickup achievements are cumulative, so P3's twelve runs work at T = 1.
+test('residual: a one-tick run keeps tick-1 placements anywhere on the map, weapon caches included (R0-1, R0-4 partial)', () => {
+  const tiny = clone(blankRun(1), (s) => {
     s.exploration.visitedDistrictMask = 0b1;
-    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 24_000;
-    addWeaponKills(s, 'bagholder-rusher', 250, 'litecoin-knife');
-    Object.assign(rowOf(s.weapons, 'weaponId', 'litecoin-knife'), { triggers: 250, triggerContacts: 250, projectilesEmitted: 250, projectileContacts: 250 });
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 0;
+    for (const [effectId, collected] of [['bonus-life', 2], ['coin-blaster-cache', 1], ['auto-miner-cache', 1], ['launcher-rig-cache', 1], ['hash-rail-core', 1], ['time-dilation', 1], ['berserk-candle', 1], ['nuke-liquidation', 1]]) {
+      rowOf(s.collectibles, 'effectId', effectId).collected = collected;
+    }
+    Object.assign(rowOf(s.weapons, 'weaponId', 'auto-miner'), { pickups: 1, equippedTicks: 1 });
+    Object.assign(rowOf(s.weapons, 'weaponId', 'launcher-rig'), { pickups: 1 });
+    Object.assign(rowOf(s.weapons, 'weaponId', 'hash-rail'), { pickups: 1 });
   });
-  assert.equal(hmhV6MeleeCadenceLimit(5_000, V6C.melee.knifeCooldownTicks), 250);
-  assert.equal(spawnCapacity(21_779), 249);
-  assert.equal(spawnCapacity(21_780), 250);
-  assert.equal(spawnCapacity(24_000), 287);
-  assert.notEqual(validateRebootRunPlausibility(schemaValid(samurai)).verdict, 'rejected');
-  assert.equal(statsFromHmhRunSummary(samurai).meleeKills, 250);
+  assert.deepEqual(rejectIds(tiny), []);
+  const stats = statsFromHmhRunSummary(tiny);
+  assert.equal(stats.powerUpsCollected, 9);
+  assert.deepEqual(stats.weaponsUsed, ['auto-miner'], 'a cache weapon used in a one-tick run');
+  // What round 2 did close: the same claims at T = 0, and a weapon with no cache.
+  assert.ok(rejectIds(clone(tiny, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; s.defeat.tick = 0; s.exploration.visitedDistrictMask = 0; })).includes('pickups-above-capacity'));
+  assert.ok(rejectIds(clone(tiny, (s) => { rowOf(s.collectibles, 'effectId', 'auto-miner-cache').collected = 0; })).includes('weapon-without-source'));
+});
+
+// Round 3, item 1 is PARTIAL (contract §16.7). A summary that fakes a
+// consistent knife trail still verifies, and the cheapest one is a single
+// swing: one trigger, one trigger contact, and projectileContacts equal to the
+// claimed kills (the v6 summary has no per-swing record and a 1.8.x swing has
+// no target cap), so the cadence bound never binds. Only the run's kill
+// capacity caps a run's melee kills. blade-master (100) and blade-samurai (250)
+// are cumulative over Ranked runs (total('meleeKills', n) in
+// apps/portal/src/achievements/hmh.mjs), so no single run needs 21,780 ticks:
+// one 10,170-tick run (capacity 100) earns blade-master, and short runs add up
+// to blade-samurai within each run's own capacity.
+test('residual: a one-swing fabricated knife trail still verifies, and melee kills add up across runs', () => {
+  const oneSwing = (ticks, kills) => clone(blankRun(ticks), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = ticks;
+    addWeaponKills(s, 'bagholder-rusher', kills, 'litecoin-knife');
+    Object.assign(rowOf(s.weapons, 'weaponId', 'litecoin-knife'), { triggers: 1, triggerContacts: 1, projectilesEmitted: 1, projectileContacts: kills });
+  });
+  assert.equal(spawnCapacity(10_169), 99);
+  assert.equal(spawnCapacity(10_170), 100);
+  const master = oneSwing(10_170, 100);
+  assert.notEqual(validateRebootRunPlausibility(schemaValid(master)).verdict, 'rejected');
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(master)), []);
+  assert.equal(statsFromHmhRunSummary(master).meleeKills, 100, 'blade-master from one run and one swing');
+  // blade-samurai: 250 cumulative melee kills from three one-swing runs, none
+  // of them longer than blade-master's.
+  const runs = [oneSwing(10_170, 100), oneSwing(10_170, 100), oneSwing(6_000, Math.min(50, spawnCapacity(6_000)))];
+  for (const run of runs) assert.notEqual(validateRebootRunPlausibility(schemaValid(run)).verdict, 'rejected');
+  assert.equal(runs.reduce((sum, run) => sum + statsFromHmhRunSummary(run).meleeKills, 0), 250);
+  // What still rejects: kills above the one swing's contacts, and swings above the cadence.
+  assert.deepEqual(rejectIds(clone(master, (s) => { rowOf(s.weapons, 'weaponId', 'litecoin-knife').projectileContacts = 99; })), ['knife-kills-above-contacts']);
+});
+
+// The other half of the PARTIAL: Forked Standard kills need no strike at all.
+// standard-kills-above-contacts is not landed (contract §16.7 residual; the
+// hmh-realistic fixture and the scripted model credit Standard kills with no
+// trail), so a Standard cache picked up after its seeded minimum and kills with
+// zero triggers, zero contacts and zero attacks verify. Only the kill capacity
+// and weapon-without-source (a pickup and its cache collection) bound them.
+test('residual: Forked Standard kills with zero strikes still verify (standard-kills-above-contacts waits)', () => {
+  const ticks = 12_000;
+  const phantomStandard = clone(blankRun(ticks), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = ticks - 1;
+    Object.assign(rowOf(s.weapons, 'weaponId', 'forked-standard'), { equippedTicks: 1, pickups: 1 });
+    rowOf(s.collectibles, 'effectId', 'forked-standard-cache').collected = 1;
+    addWeaponKills(s, 'bagholder-rusher', 100, 'forked-standard');
+  });
+  const fork = rowOf(phantomStandard.weapons, 'weaponId', 'forked-standard');
+  assert.deepEqual([fork.triggers, fork.triggerContacts, fork.projectileContacts, phantomStandard.forkedStandard.attacks], [0, 0, 0, 0]);
+  assert.ok(spawnCapacity(ticks) >= 100);
+  assert.notEqual(validateRebootRunPlausibility(schemaValid(phantomStandard)).verdict, 'rejected');
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(phantomStandard)), []);
+  assert.equal(statsFromHmhRunSummary(phantomStandard).meleeKills, 100, 'blade-master with no strike');
+  // Without the pickup trail it rejects (weapon-without-source), as in 16.6.
+  assert.ok(rejectIds(clone(phantomStandard, (s) => { rowOf(s.weapons, 'weaponId', 'forked-standard').pickups = 0; })).includes('weapon-without-source'));
 });
 
 // ---------------------------------------------------------------------------

@@ -30,6 +30,8 @@ It covers the play the ten pilots produce: gun play with every weapon, grenades 
 
 ## Item 1: the melee trail
 
+**Status: PARTIAL.** The four rules below landed and close phantom knife kills, but `blade-master` (100) and `blade-samurai` (250) are still forgeable two ways: **Forked Standard kills with zero strikes** (`standard-kills-above-contacts` has not landed; see "What did not land") and **ONE knife swing claiming contacts = kills** (one trigger, one trigger contact, `projectileContacts` equal to the kills: a 1.8.x knife swing has no target cap, so the cadence never binds). Both achievements are **cumulative** over Ranked runs (`total('meleeKills', n)` in `apps/portal/src/achievements/hmh.mjs`), so each forged run needs only the kill capacity for its share. Both paths are pinned by residual tests in `tests/server-verify-hmh-plausibility.test.mjs`. Contract §16.7 and the achievement catalog note say the same.
+
 ### The hole
 
 `statsFromHmhRunSummary` reads `meleeKills` from `kills.byWeapon` for `litecoin-knife` and `forked-standard`; `blade-master` (100) and `blade-samurai` (250) read it. The verifier's stats-field inventory (`server/verify/hmh-plausibility.mjs`, header and `HMH_V6_CONSISTENCY_RULES`) named grenadeKills, powerUpsCollected, districtsVisited, weaponsUsed, damageDealt and maxCombo and bounded each; it never named meleeKills, and no rule read the knife's or the Standard's trail. Against `4f947386`, `hmh-valid` with 100 knife kills added (no swing, no contact) in a 20,000-tick run verified `ok` (`tests/server-verify-hmh-plausibility.test.mjs`, "red team: blade-master from 100 knife kills without a swing"). The inventory now names meleeKills.
@@ -55,14 +57,15 @@ What every one of the 120 summaries shows, and what the child's source says (pin
 ### What did not land, and why
 
 - **Forked Standard kills against its contacts** is the same impossibility as the knife's and every real run supports it, but it stays a documented residual this round: the committed `hmh-realistic` fixture credits 91 Standard kills with 0 attacks and 0 contacts, and the scripted model (21 runs) credits Standard kills through `credit(tick, role, activeWeaponId)` with no trail; the fixture bytes and the model are outside this branch's scope. To land it: (1) in `tests/fixtures/ranked/hmh-honest-corpus.mjs`, have `credit` record one `weapon:melee-strike` trail per Standard kill (`recordRunWeaponFire` + `recordRunWeaponTriggerContact` + `recordRunProjectileContacts(1)` + `recordRunForkedStandardEvent({ type: 'weapon:melee-strike', form, hits: [hit], whiff: false, capstone: false })`) and re-pin the scripted digest; (2) regenerate `hmh-realistic` through `build-fixtures.mjs` with the same trail and re-pin the fixture and the frozen-result digests (`V6_CORPUS_DIGEST_1_8_4` moves for every `realistic` case); (3) add `standard-kills-above-contacts` beside the knife rule with the boundary and red-team tests. The real corpus already covers it.
-- **Residual, like the grenade trail:** a fabricated but consistent knife trail (one hitting swing per claimed kill, inside the cadence) still verifies ("residual: a consistent fabricated knife trail still verifies"). The cadence alone allows blade-samurai's 250 from 5,000 ticks; the kill capacity makes it a 21,780-tick run. The v6 summary has no per-swing record and a swing has no target cap.
+- **Residual, like the grenade trail:** a fabricated but consistent knife trail still verifies, and the cheapest is ONE swing whose `projectileContacts` equal the claimed kills ("residual: a one-swing fabricated knife trail still verifies, and melee kills add up across runs"). The v6 summary has no per-swing record and a knife swing has no target cap (`melee.mjs` resolves every body in the 80-degree arc; only the Standard caps a strike, at 3 or 6 contacts). Only the kill capacity caps a forged run's melee kills: 100 bodies from 10,170 ticks. Because the melee achievements are cumulative, `blade-master` takes one 10,170-tick run and `blade-samurai` three runs no longer than that. The first version of this note called `blade-samurai` "a 21,780-tick run" (the capacity for 250 bodies in one run); that was wrong, the 250 add up across runs.
+- **Residual: Forked Standard kills with zero strikes** ("residual: Forked Standard kills with zero strikes still verify (standard-kills-above-contacts waits)"). A Standard cache collected after its seeded minimum (tick 10,800) plus its pickup satisfy `weapon-without-source`; kills up to the capacity then need no trigger, contact or attack. The three steps above close it.
 - **Harness changes** (in scope, `scripts/hmh-honest-corpus/`): the two styles, a `melee` chase mode (with a health floor), `favourRange`, `wanderX`, the Standard counted as usable when owned; plan rows r68 to r107 and `MELEE_LABELS` (`batch.mjs run --melee`); the sample grows to fourteen (one run per style); `verify.mjs` margins and the report gain the four melee rules.
 
 ## Items 2 to 7, 9 and the owner decision
 
 Not started in this note's first version. The verdict, verbatim from the pre-deploy session, is the authority:
 
-1. Melee trail (done above): knife kills need knife contacts/triggers (triggers ≤ ceil(T/20)); Forked Standard kills vs contacts only after the corpus models melee and Standard contacts. Add `meleeKills` to the stats-field inventory.
+1. Melee trail (landed above, **partial**: see the status line and ROUND 4 item 1): knife kills need knife contacts/triggers (triggers ≤ ceil(T/20)); Forked Standard kills vs contacts only after the corpus models melee and Standard contacts. Add `meleeKills` to the stats-field inventory.
 2. Tiny runs: district gate for placement capacity and a minimum end tick for non-empty defeated runs, keeping the empty 2-tick terminal-pilot run legal. Correct contract §16.6 "Fixed" to partial for R0-1, R0-4, P3.
 3. Per-role kill capacity by band (`ENCOUNTER_BANDS.allowedRoles`, `DISTRICT_ROLE_GATES`) with a parity test.
 4. XP and score lower bounds per kill.
@@ -72,3 +75,24 @@ Not started in this note's first version. The verdict, verbatim from the pre-dep
 9. Docs: `seed.mjs:48` citation, §15 numbering, the §13 table.
 
 Owner decision to surface: combo achievements (`big-combo`, `max-combo-30`) cannot be bounded from the v6 summary (`maxCombo ≤ kills` only): residual, or withhold.
+
+## ROUND 4
+
+The next round's list, in order. Items 2 to 7 and 9 of the round-3 verdict were not started on this branch; they carry over unchanged in substance, with item 1's two open paths first because they are the live achievement forgeries. Every new reject keeps the standing rule at the top of this note (a faked-summary rejection test, zero rejections across both corpora with every flag listed, and a commit message that says why every honest run passes).
+
+1. **Close item 1 (PARTIAL).**
+   a. `standard-kills-above-contacts`: the three steps under "What did not land" (scripted model trail, `hmh-realistic` regenerated with the Standard trail and the digests re-pinned, then the rule beside the knife's). The real corpus already supports it (24 kills of 38 contacts at most).
+   b. The one-swing knife trail: decide whether a per-swing hit bound can be stated from the 1.8.x child at all (the knife resolves every body in its 80-degree arc; there is no `maxContacts`). If a sound bound exists (for example contacts per swing from arc, reach and the densest honest crowd, measured on the real corpus), land `knife-contacts-above-swing-capacity`; if not, record it as a permanent v6 residual and move the fix to the v7 child (a per-swing contact cap in the knife, summarized in the v7 payload).
+   c. Switch both melee achievements' evidence to what the verifier can bound, or surface them to the owner with the grenade and combo achievements as "cumulative, forgeable by consistent trails".
+2. **Tiny runs (item 2).** A district gate on the placement capacity (a placement counts only if its district is in `visitedDistrictMask`) and a minimum end tick for a non-empty defeated run, keeping the empty 2-tick terminal-pilot run legal. This closes the tiny-run halves of R0-1, R0-4 and P3 (contract §16.6 now says **Partial** for R0-1 and R0-4; the residual test "a one-tick run keeps tick-1 placements anywhere on the map, weapon caches included" flips to a rejection test when it lands). Needs a tiny-run pilot style and plan rows first.
+3. **Per-role kill capacity by band (item 3):** `ENCOUNTER_BANDS.allowedRoles` and `DISTRICT_ROLE_GATES`, with a parity test.
+4. **XP and score lower bounds per kill (item 4).**
+5. **Grenade contacts need `detonated > 0`; launcher-rig kills need launcher triggers (item 5).**
+6. **`directorSpawnCapacity` starts at tick 600 (item 6, with item 2).**
+7. **`reverifyStoredRun` (item 7):** a failure only on rules newer than the row's `verified_at` is wait/owner-review, not a deterministic rejection; the patch and its test for the pre-deploy session if the code is outside scope.
+8. **Schema 7 mirrors all of it.** Contract §15.1 item 4 now lists the four 16.7 melee rejects and the future `standard-kills-above-contacts` beside the 16.5 and 16.6 rules; the v7 path must take each new round-4 rule in the same change, and schema 7 opens only with an honest v7 corpus from the real 1.9.0 child with zero rejections.
+9. **Docs (item 9):** the `seed.mjs:48` citation and the §15 numbering. (The contract's §13 table and the v7 hand-off's test table now list the honest-corpus, real-corpus and harness tests with the 108-row plan and the r70 flag.)
+10. **Liquidator-kill and tiny-run coverage in the real corpus** before items 2 to 6 land (neither exists yet).
+11. **Child crash seen in the corpus:** `r88-standard-relay-110000` logged `Lightning Ledger channel is already active` at tick 24,215. That is the SWAP/wheel/cache switch-away bug fixed on `fable/hmh-ledger-swap-hotfix` (1.8.x hotfix); once it ships, re-run r88 to confirm the error is gone.
+
+**Owner decisions to surface:** combo achievements (`big-combo`, `max-combo-30`) cannot be bounded from the v6 summary (`maxCombo ≤ kills` only): residual, or withhold. Whether flagged runs withhold achievements (16.6, R0-6). Whether cumulative achievements forgeable by consistent trails (grenade, melee) stay on Ranked until v7 bounds them.
