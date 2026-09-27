@@ -36,7 +36,10 @@ const RANGES = Object.freeze({ close: 140, mid: 420, long: 760 });
 const TARGET_HEALTH = 120;
 const SEED = 0x484d4843;
 
-const WEAPON_IDS = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig']);
+// Package 8.2 (S0.3): the Railgun rows. Its charge releases as soon as it is
+// ready while the trigger is held (releaseCharged, the runtime's autofire).
+const WEAPON_IDS = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail']);
+const RELEASE_CHARGED = true;
 const TIERS = Object.freeze({
   base: {},
   maxed: { branches: { rateOfFire: 3, damage: 3, reloadSpeed: 3 } },
@@ -80,7 +83,7 @@ function benchmarkCase(weaponId, tierId, rangeId) {
     const weapon = state.weapons[weaponId];
     if (weapon.reloadCompleteTick !== null) reloadTicks += 1;
     if (weapon.ammoInClip <= 0 && weapon.reloadCompleteTick === null && (weapon.reserveAmmo ?? 1) <= 0) emptyTicks += 1;
-    const frame = stepWeaponLoadout(state, { tick, fire: true, direction: { x: 1, y: 0 }, progressionByWeapon });
+    const frame = stepWeaponLoadout(state, { tick, fire: true, releaseCharged: RELEASE_CHARGED, direction: { x: 1, y: 0 }, progressionByWeapon });
     for (const event of frame.events) {
       if (event.type !== 'weapon:fire') continue;
       shotsFired += 1;
@@ -179,7 +182,7 @@ function benchmarkMovingCase(weaponId, tierId, rangeId, strafeId) {
     const aim = { x: distance - 28, y: aimY - 0 };
     const aimLength = Math.hypot(aim.x, aim.y) || 1;
     const direction = { x: aim.x / aimLength, y: aim.y / aimLength };
-    const frame = stepWeaponLoadout(state, { tick, fire: true, direction, progressionByWeapon });
+    const frame = stepWeaponLoadout(state, { tick, fire: true, releaseCharged: RELEASE_CHARGED, direction, progressionByWeapon });
     for (const event of frame.events) {
       if (event.type !== 'weapon:fire') continue;
       shotsFired += 1;
@@ -291,7 +294,7 @@ function benchmarkSwarmCase(weaponId, tierId, packSize) {
   for (let tick = 1; tick <= WINDOW_TICKS && clearTick === null; tick += 1) {
     const aim = aimAtNearest();
     if (!aim) break;
-    const frame = stepWeaponLoadout(state, { tick, fire: true, direction: aim, progressionByWeapon });
+    const frame = stepWeaponLoadout(state, { tick, fire: true, releaseCharged: RELEASE_CHARGED, direction: aim, progressionByWeapon });
     for (const event of frame.events) {
       if (event.type !== 'weapon:fire') continue;
       shotsFired += 1;
@@ -375,6 +378,143 @@ export function runSwarmBenchmark() {
   return rows;
 }
 
+// --- Package 8.2 output60 ---------------------------------------------------
+// The ammo economy question the DPS rows cannot answer: how much damage a gun
+// puts out in 60 s from a full clip and a full reserve cap (two cache grants)
+// against the 8-body pack, which is replaced by a fresh pack the tick after it
+// is cleared. output60 is the damage that landed on living bodies; overkill is
+// reported beside it. Reserve, salvage-free reload, cadence and the release's
+// rank-3 trickle come from the live weapon step. The package's acceptance:
+// every maxed finite gun reaches at least the maxed Pistol's output60.
+const OUTPUT60_WINDOW_TICKS = 60 * TICKS_PER_SECOND;
+const OUTPUT60_PACK_SIZE = 8;
+
+function benchmarkOutput60Case(weaponId, tierId) {
+  const progressionByWeapon = { [weaponId]: TIERS[tierId] };
+  const state = createWeaponLoadout({ weaponIds: [...WEAPON_IDS], activeWeaponId: 'coin-blaster', seed: SEED });
+  if (weaponId !== 'coin-blaster') {
+    // Two grants: a full clip and the full reserve cap (twice the grant).
+    grantWeaponPickup(state, { tick: 0, weaponId, select: true, progressionByWeapon });
+    grantWeaponPickup(state, { tick: 0, weaponId, select: true, progressionByWeapon });
+  }
+  const MUZZLE = { x: 28, y: 0, z: 22 };
+  let pack = [];
+  let packOrdinal = 0;
+  const spawnPack = () => {
+    pack = [];
+    for (let index = 0; index < OUTPUT60_PACK_SIZE; index += 1) {
+      const offset = (index - (OUTPUT60_PACK_SIZE - 1) / 2) * SWARM_SPACING;
+      pack.push({ id: `pack-${packOrdinal}-${index}`, y: offset, health: SWARM_ENEMY_HEALTH, dead: false });
+    }
+    packOrdinal += 1;
+  };
+  spawnPack();
+  const aimAtNearest = () => {
+    let best = null;
+    let bestDistance = Infinity;
+    for (const member of pack) {
+      if (member.dead) continue;
+      const dx = SWARM_DISTANCE - MUZZLE.x;
+      const dy = member.y - MUZZLE.y;
+      const distance = Math.hypot(dx, dy);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = { x: dx / distance, y: dy / distance };
+      }
+    }
+    return best;
+  };
+
+  let shotsFired = 0;
+  let projectilesEmitted = 0;
+  let contacts = 0;
+  let damageApplied = 0;
+  let overkillDamage = 0;
+  let killed = 0;
+  let packsCleared = 0;
+  let emptyTicks = 0;
+  for (let tick = 1; tick <= OUTPUT60_WINDOW_TICKS; tick += 1) {
+    if (pack.every((member) => member.dead)) spawnPack();
+    const weapon = state.weapons[weaponId];
+    if (weapon.ammoInClip <= 0 && weapon.reloadCompleteTick === null && (weapon.reserveAmmo ?? 1) <= 0) emptyTicks += 1;
+    const aim = aimAtNearest();
+    const frame = stepWeaponLoadout(state, { tick, fire: true, releaseCharged: RELEASE_CHARGED, direction: aim, progressionByWeapon });
+    for (const event of frame.events) {
+      if (event.type !== 'weapon:fire') continue;
+      shotsFired += 1;
+      for (const shot of event.shots) {
+        projectilesEmitted += 1;
+        const reach = Math.min(shot.range, SWARM_DISTANCE + 120);
+        const projectile = createProjectileState({
+          id: shot.id,
+          ownerId: 'bench',
+          previous: { ...MUZZLE },
+          current: { x: MUZZLE.x + shot.direction.x * reach, y: MUZZLE.y + shot.direction.y * reach, z: MUZZLE.z },
+          radius: shot.radius,
+          damage: shot.damage,
+          policy: shot.policy,
+        });
+        const living = pack.filter((member) => !member.dead);
+        if (living.length === 0) break;
+        const targets = living.map((member) => createHurtTarget({
+          id: member.id,
+          bodyShape: { type: 'circle', x: 0, y: 0, radius: 16 },
+          hurtShape: { type: 'circle', x: 0, y: 0, radius: 16 },
+          previousGround: { x: SWARM_DISTANCE, y: member.y, z: 0 },
+          currentGround: { x: SWARM_DISTANCE, y: member.y, z: 0 },
+          minZ: 0,
+          maxZ: 44,
+          health: 999999,
+        }));
+        const resolved = resolveProjectilePath({ projectile, targets });
+        for (const hit of resolved.hits) {
+          contacts += 1;
+          const damage = finiteOrThrow(hit.damage ?? shot.damage, 'output60 hit damage');
+          damageApplied += damage;
+          const member = pack.find((candidate) => candidate.id === hit.targetId);
+          if (!member || member.dead) {
+            overkillDamage += damage;
+            continue;
+          }
+          const absorbed = Math.min(member.health, damage);
+          overkillDamage += damage - absorbed;
+          member.health -= absorbed;
+          if (member.health <= 0) {
+            member.dead = true;
+            killed += 1;
+            if (pack.every((candidate) => candidate.dead)) packsCleared += 1;
+          }
+        }
+      }
+    }
+  }
+  return {
+    weaponId,
+    tier: tierId,
+    packSize: OUTPUT60_PACK_SIZE,
+    range: 'mid',
+    windowSeconds: OUTPUT60_WINDOW_TICKS / TICKS_PER_SECOND,
+    shotsFired,
+    projectilesEmitted,
+    contacts,
+    damageApplied: Number(damageApplied.toFixed(2)),
+    overkillDamage: Number(overkillDamage.toFixed(2)),
+    output60: Number((damageApplied - overkillDamage).toFixed(2)),
+    killed,
+    packsCleared,
+    emptySeconds: Number((emptyTicks / TICKS_PER_SECOND).toFixed(2)),
+    reserveRemaining: state.weapons[weaponId].reserveAmmo,
+  };
+}
+
+export function runOutput60Benchmark() {
+  const rows = [];
+  for (const weaponId of WEAPON_IDS) {
+    for (const tierId of Object.keys(TIERS)) rows.push(benchmarkOutput60Case(weaponId, tierId));
+  }
+  return rows;
+}
+
 export function runBenchmark() {
   const rows = [];
   for (const weaponId of WEAPON_IDS) {
@@ -396,6 +536,9 @@ assert.deepEqual(movingFirst, movingSecond, 'moving benchmark drifted across ide
 const swarmFirst = runSwarmBenchmark();
 const swarmSecond = runSwarmBenchmark();
 assert.deepEqual(swarmFirst, swarmSecond, 'swarm benchmark drifted across identical same-seed runs');
+const output60First = runOutput60Benchmark();
+const output60Second = runOutput60Benchmark();
+assert.deepEqual(output60First, output60Second, 'output60 benchmark drifted across identical same-seed runs');
 
 const report = {
   schemaVersion: 3,
@@ -408,7 +551,7 @@ const report = {
   strafeSpeeds: STRAFE_SPEEDS,
   reactionLagTicks: REACTION_LAG_TICKS,
   hurtboxPolicyId: ORDINARY_ENEMY_HURTBOX_POLICY.id,
-  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 10-tick reaction lag. Swarm rows: a line of enemies at fixed spacing across the firing lane, with overkill tracked explicitly. Reserve economics, cadence, reload, burst, spread and policies come from the live deterministic modules.',
+  note: 'Static rows: flight resolved through resolveProjectilePath against a static reference target on flat ground. Moving rows: strafing target carrying the real ordinary-enemy hurtbox profile, tracked with a fixed 10-tick reaction lag. Swarm rows: a line of enemies at fixed spacing across the firing lane, with overkill tracked explicitly. Output60 rows: 60 s from a full clip and a full reserve cap against the 8-body pack, replaced the tick after it is cleared; output60 is the damage that landed on living bodies. Reserve economics, cadence, reload, burst, spread, charge and policies come from the live deterministic modules; the trigger is held and a charged shot releases as soon as it is ready.',
   swarm: {
     packSizes: SWARM_PACK_SIZES,
     enemyHealth: SWARM_ENEMY_HEALTH,
@@ -417,15 +560,22 @@ const report = {
     deterministic: true,
     note: 'A pack is a line across the lane, which is the arrangement spread and blast can exploit and single-target fire cannot. Overkill counts damage landed on an already-dead body: it is how a weapon looks strong on a DPS row while clearing slowly. clearSeconds is null when the pack survived the window, which is a finding rather than a missing value.',
   },
+  output60: {
+    windowSeconds: OUTPUT60_WINDOW_TICKS / TICKS_PER_SECOND,
+    packSize: OUTPUT60_PACK_SIZE,
+    acceptance: 'every maxed finite gun reaches at least the maxed Pistol output60 (package 8.2)',
+    deterministic: true,
+  },
   rows: first,
   movingRows: movingFirst,
   swarmRows: swarmFirst,
+  output60Rows: output60First,
 };
 
 const out = fileURLToPath(new URL('../docs/qa/hmh-weapon-benchmark.json', import.meta.url));
 await mkdir(fileURLToPath(new URL('../docs/qa/', import.meta.url)), { recursive: true });
 await writeFile(out, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(JSON.stringify({ status: 'pass', rows: first.length, movingRows: movingFirst.length, swarmRows: swarmFirst.length, out: 'docs/qa/hmh-weapon-benchmark.json' }));
+console.log(JSON.stringify({ status: 'pass', rows: first.length, movingRows: movingFirst.length, swarmRows: swarmFirst.length, output60Rows: output60First.length, out: 'docs/qa/hmh-weapon-benchmark.json' }));
 for (const row of first.filter((entry) => entry.range === 'mid')) {
   console.log(`${row.weaponId} ${row.tier} @mid: dps=${row.sustainedDps} ttk=${row.timeToKillSeconds}s reload=${row.reloadDowntimeSeconds}s empty=${row.emptySeconds}s`);
 }
@@ -434,4 +584,7 @@ for (const row of movingFirst.filter((entry) => entry.range === 'mid' && entry.t
 }
 for (const row of swarmFirst.filter((entry) => entry.tier === 'base')) {
   console.log(`${row.weaponId} base swarm x${row.packSize}: killed=${row.killed}/${row.packSize} clear=${row.clearSeconds === null ? 'never' : `${row.clearSeconds}s`} overkill=${row.overkillRatio} contacts/proj=${row.contactsPerProjectile}`);
+}
+for (const row of output60First) {
+  console.log(`${row.weaponId} ${row.tier} output60: ${row.output60} (applied ${row.damageApplied}, overkill ${row.overkillDamage}, packs ${row.packsCleared}, empty ${row.emptySeconds}s, reserve left ${row.reserveRemaining})`);
 }
