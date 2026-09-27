@@ -1230,7 +1230,10 @@ export function stepWeaponLoadout(state, {
     && active.reserveAmmo !== null && active.reserveAmmo <= 0
     && active.reloadCompleteTick === null) {
     const previousWeaponId = state.activeWeaponId;
-    leaveWeapon(active, tick);
+    // A channel the fallback ends is a break the frame reports (the summary
+    // records it like the step's own).
+    const interrupted = leaveWeapon(active, tick);
+    if (interrupted) events.push(interrupted);
     state.activeWeaponId = 'coin-blaster';
     state.switchReadyTick = tick + state.switchTicks;
     events.push(freezeDeep({ type: 'weapon:auto-fallback', tick, previousWeaponId, weaponId: 'coin-blaster', readyTick: state.switchReadyTick }));

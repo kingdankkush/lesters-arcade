@@ -1520,6 +1520,15 @@ async function boot() {
     pushCombatVisualEvent({ type: 'kill', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 30 }, color: 0xffc857 });
     setAccessibleCombatStatus(`${WEAPON_TITLE_BY_ID[weaponId] ?? weaponId} evolved: ${title}.`);
   };
+  // A switch away from a live Arc Rifle channel ends it inside the tick
+  // (weapon-system leaveWeapon: a manual swap, a cache or refill that selects).
+  // The summary records that break like any other; left unrecorded, the next
+  // channel start threw "channel is already active" and stopped the tick
+  // (real-child run r25 of the 1.9.0 corpus, tick 16,368).
+  const recordWeaponInterruption = (result) => {
+    if (result?.interrupted) recordRunLightningLedgerEvent(runSummaryAccumulator, result.interrupted);
+    return result;
+  };
   // Prisoners (package 3.5): a rescue's or an open cage's grants, applied on
   // their tick. None is a collectible pickup; the Pawnbroker's timed effects
   // count in activeTicks like any active effect.
@@ -1531,7 +1540,7 @@ async function boot() {
         const before = playerHealth;
         playerHealth = Math.min(maxPlayerHealth, playerHealth + grant.amount);
         recordRunHealing(runSummaryAccumulator, playerHealth - before);
-      } else if (grant.grant === 'ammo') refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
+      } else if (grant.grant === 'ammo') recordWeaponInterruption(refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon }));
       else if (grant.grant === 'grenades') rechargeHandGrenades(grenadeSystem, { tick, amount: grant.amount });
       else if (grant.grant === 'timed') startPrisonerTimedEffect(collectibleState, { ...grant, tick });
       else if (grant.grant === 'level-span') {
@@ -3910,7 +3919,7 @@ async function boot() {
             const before = playerHealth;
             playerHealth = Math.min(maxPlayerHealth, playerHealth + effect.amount);
             recordRunHealing(runSummaryAccumulator, playerHealth - before);
-          } else if (effect.grant === 'ammo') refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
+          } else if (effect.grant === 'ammo') recordWeaponInterruption(refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon }));
           else if (effect.grant === 'silver') {
             cockpit?.updateRun(grantRunSilver(runProgression, effect.coins, tick));
             const counter = document.getElementById('hmhSilverCount');
@@ -3935,7 +3944,7 @@ async function boot() {
       if (missionState.prisonerStations.size) applyPrisonerGrants(stepPrisonerStations(missionState, { hero: actor, ...prisonerNeeds(progressionByWeapon) }), tick, progressionByWeapon);
       for(const supply of stepWorldDestructibleSupplies(worldDestructibleState,{tick,player:actor,queryGround,lineClear:(from,to)=>traceHeightAwareLineOfSight({from:{...from,z:from.groundZ+20},to:{...to,z:to.groundZ+20},blockers:WORLD_BLOCKERS}).clear})) {
         if(supply.reward==='heal'){const before=playerHealth;playerHealth=Math.min(maxPlayerHealth,playerHealth+30);recordRunHealing(runSummaryAccumulator,playerHealth-before);}
-        if(supply.reward==='ammo')refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon});
+        if(supply.reward==='ammo')recordWeaponInterruption(refillWeaponLoadout(weaponLoadout,{tick,progressionByWeapon}));
         combatAudio.play(supply.reward==='heal'?'health-pickup':'pickup',{volume:.11});
         setAccessibleCombatStatus(`${supply.name}. ${supply.lore}`);
       }
@@ -4156,17 +4165,17 @@ async function boot() {
         } else if (event.kind === 'weapon-cache') {
           // A weapon cache grants ownership plus authored finite reserve.
           const previousWeaponId = weaponLoadout.activeWeaponId;
-          grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: 'if-new', progressionByWeapon });
+          recordWeaponInterruption(grantWeaponPickup(weaponLoadout, { tick, weaponId: event.weaponId, select: 'if-new', progressionByWeapon }));
           unlockRunProgressionWeapon(runProgression, event.weaponId);
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.weaponId });
           if (event.bonusWeaponId) {
-            grantWeaponPickup(weaponLoadout, { tick, weaponId: event.bonusWeaponId, select: false, progressionByWeapon });
+            recordWeaponInterruption(grantWeaponPickup(weaponLoadout, { tick, weaponId: event.bonusWeaponId, select: false, progressionByWeapon }));
             unlockRunProgressionWeapon(runProgression, event.bonusWeaponId);
             recordRunWeaponEvent(runSummaryAccumulator, { type: 'pickup', weaponId: event.bonusWeaponId });
           }
           if (weaponLoadout.activeWeaponId !== previousWeaponId) recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: event.weaponId });
         } else if (event.kind === 'ammo-refill') {
-          refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon });
+          recordWeaponInterruption(refillWeaponLoadout(weaponLoadout, { tick, progressionByWeapon }));
         } else if (event.kind === 'grenade-supply') {
           rechargeHandGrenades(grenadeSystem,{tick,amount:1});
         } else if (event.kind === 'nuke') {
@@ -4391,7 +4400,7 @@ async function boot() {
         ? (WEAPON_ORDER[requestedSlot - 1] ?? null)
         : tickInput.weaponNext === true ? nextOwnedWeaponId(weaponLoadout, WEAPON_ORDER) : null;
       if (requestedWeaponId && weaponLoadout.weapons[requestedWeaponId]?.owned && requestedWeaponId !== weaponLoadout.activeWeaponId) {
-        const switched = switchWeapon(weaponLoadout, requestedWeaponId, { tick });
+        const switched = recordWeaponInterruption(switchWeapon(weaponLoadout, requestedWeaponId, { tick }));
         if (switched) {
           recordRunWeaponEvent(runSummaryAccumulator, { type: 'swap', weaponId: requestedWeaponId });
           setRunUpgradeFocus(runProgression, requestedWeaponId);
