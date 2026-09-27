@@ -1603,13 +1603,13 @@ async function boot() {
   const wipe = (...graphics) => { for (const graphic of graphics) if (graphic.context.instructions.length) graphic.clear(); };
   const renderWorld = (renderState = renderActor ?? actor) => {
     const view = viewport();
-    if (camera) layoutV2?.follow(camera, view);
     const viewKey = `${view.width}x${view.height}`;
     if (backdrop.drawnFor !== viewKey) backdrop.clear().rect(0, 0, view.width, view.height).fill({ color: 0x071522 }).drawnFor = viewKey;
     contactShadowPool?.begin();
     weaponVfxPool?.begin();
     atmospherePool?.begin();
     wipe(grid, collisionDebug, projectileTrails, projectileImpacts, grenadeVisuals, combatVisuals);
+    if (camera) layoutV2?.follow(camera, view);
     // Unlockable weapon skin (contract §7.9): a projection-only tint.
     heldWeaponLayer.tint = projectileTrails.tint = settings.cosmetics?.weaponTint ?? 0xffffff;
     if (gorePresentation && camera) {
