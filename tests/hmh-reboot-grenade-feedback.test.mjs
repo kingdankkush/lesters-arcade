@@ -33,10 +33,12 @@ const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//gu, '').repla
 // 1. Class table and per-class shake
 // ---------------------------------------------------------------------------
 
-test('the grenade feedback class table is frozen, two-class, and keeps the hand blast as the shake ceiling', () => {
+test('the grenade feedback class table is frozen, three-class, and keeps the hand blast as the shake ceiling', () => {
   assert.equal(GRENADE_FEEDBACK_ART_ID, 'projection-grenade-feedback-v1');
   assert.ok(Object.isFrozen(GRENADE_FEEDBACK_CLASSES));
-  assert.deepEqual(Object.keys(GRENADE_FEEDBACK_CLASSES).sort(), ['hand', 'launcher']);
+  // Slice 7 (package 8.5): Crypto Bomb Orbit's bomblets get their own class.
+  assert.deepEqual(Object.keys(GRENADE_FEEDBACK_CLASSES).sort(), ['bomblet', 'hand', 'launcher']);
+  assert.ok(GRENADE_FEEDBACK_CLASSES.bomblet.shake < GRENADE_FEEDBACK_CLASSES.launcher.shake, 'a bomblet is lighter than a shell');
   for (const [mode, entry] of Object.entries(GRENADE_FEEDBACK_CLASSES)) {
     assert.ok(Object.isFrozen(entry), `${mode} class must be frozen`);
     for (const key of ['shake', 'fragments', 'puffFootprint', 'shadowFootprint', 'ringWidth', 'coreFlashTicks']) {

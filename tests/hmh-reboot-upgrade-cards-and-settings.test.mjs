@@ -756,3 +756,42 @@ test('a numeric sfxVolume round-trips the existing channel without a schema chan
   assert.equal(merged.version, HMH_PLAYER_SETTINGS_DEFAULTS.version);
   assert.deepEqual(Object.keys(merged), Object.keys(HMH_PLAYER_SETTINGS_DEFAULTS), 'no new persisted domain');
 });
+
+// Slice 7 (package 8.4): the evolution panel reuses the level-up shell, and
+// card 2 names the evolution its gun is working toward.
+test('the evolution panel shows Genesis Seal cards in the level-up shell, and card 2 carries the evolution hint', async () => {
+  const { createRunProgression, getRunProgressionSnapshot, unlockRunProgressionWeapon } = await import('../apps/hmh-reboot/src/run-progression.mjs');
+  const { openRunEvolutionOffer, resolveGenesisSeal } = await import('../apps/hmh-reboot/src/boss-drops.mjs');
+  const { documentRef, elements } = fakeCockpitDocument();
+  const selected = [];
+  const ui = createUpgradePanel({ documentRef, onSelectUpgrade: (id) => selected.push(id), weaponName: (id) => ({ 'coin-blaster': 'Pistol', 'scatter-shotgun': 'Shotgun' })[id] ?? id });
+  const progression = createRunProgression({ seed: 4 });
+  unlockRunProgressionWeapon(progression, 'scatter-shotgun');
+  Object.assign(progression.ranks, { 'proof-of-work': 3, 'hot-wallet': 3, 'block-reward': 3, 'scatter-pump': 3, 'scatter-dump': 3, 'scatter-shells': 3 });
+  assert.equal(resolveGenesisSeal(progression, { tick: 9 }).outcome, 'panel');
+  openRunEvolutionOffer(progression);
+  ui.showUpgrade(getRunProgressionSnapshot(progression));
+  assert.equal(elements.get('hmhUpgradeQueue').textContent, 'Genesis Seal');
+  const choices = elements.get('hmhUpgradeChoices');
+  assert.deepEqual(choices.querySelectorAll('.hmh-upgrade-choice').map((button) => button.dataset.upgradeId), ['double-spend', 'settler-rail']);
+  assert.deepEqual(choices.querySelectorAll('strong').map((node) => node.textContent), ['Double Spend', 'Settler Rail']);
+  assert.deepEqual(choices.querySelectorAll('.hmh-upgrade-choice__branch').map((node) => node.textContent), ['Evolution · Shotgun', 'Evolution · Pistol']);
+  choices.querySelectorAll('.hmh-upgrade-choice')[0].dispatch('click');
+  assert.deepEqual(selected, ['double-spend']);
+  // A level offer's card 2 names the Seal while its gun can still evolve.
+  ui.showUpgrade({
+    pendingLevels: 1,
+    evolutions: {},
+    pendingChoices: [{ ...RUN_UPGRADE_CATALOG['proof-of-work'], nextRank: 1, slot: 0 }, { ...RUN_UPGRADE_CATALOG['scatter-pump'], nextRank: 2, slot: 1, weaponId: 'scatter-shotgun', mastery: { ranks: 4, total: 9 } }],
+  });
+  const descriptions = elements.get('hmhUpgradeChoices').querySelectorAll('p').map((node) => node.textContent);
+  assert.doesNotMatch(descriptions[0], /Genesis Seal/);
+  assert.match(descriptions[1], /Master it to evolve with a Genesis Seal\.$/);
+  ui.showUpgrade({
+    pendingLevels: 1,
+    evolutions: { 'scatter-shotgun': 'double-spend' },
+    pendingChoices: [{ ...RUN_UPGRADE_CATALOG['scatter-pump'], nextRank: 3, slot: 1, weaponId: 'scatter-shotgun', mastery: { ranks: 8, total: 9 } }],
+  });
+  assert.doesNotMatch(elements.get('hmhUpgradeChoices').querySelectorAll('p')[0].textContent, /Genesis Seal/, 'an evolved gun has nothing left to evolve');
+  ui.destroy();
+});

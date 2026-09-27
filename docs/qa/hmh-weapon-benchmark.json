@@ -1731,5 +1731,358 @@
       "emptySeconds": 0,
       "reserveRemaining": 60
     }
+  ],
+  "evolved": {
+    "note": "Package 8.5 wave-1 evolutions against the same gun maxed, crits included (base 8% x1.75, Crit Candle +15% under the 45% cap, the resolver's seeded roll). singleTargetDps: 30 s at the static mid target, expected crit per hit. output60: the output60 pack with seeded crits, Crit Candle's first-body carry and charge rebate, and Crypto Bomb Orbit's bomblets. Targets: evolved single target <= 1.2x the maxed Pistol; evolved output60 >= 1.25x the same gun maxed; Settler Rail 0.80-0.95x the maxed Pistol single target and 30% more kills in 60 s. Hashstorm's vent ring reaches only bodies within 140 of the hero, so the mid-range pack never sees it.",
+    "pistolSingleTargetDps": 49.75,
+    "acceptance": {
+      "coin-blaster": {
+        "singleRatio": 0.867,
+        "singleTarget": true,
+        "clearRatio": {
+          "line": 0.813,
+          "column": 2.349
+        },
+        "packClear": {
+          "line": false,
+          "column": true
+        }
+      },
+      "scatter-shotgun": {
+        "singleRatio": 1.014,
+        "singleTarget": true,
+        "maxedSingleRatio": 0.676,
+        "packRatio": {
+          "line": 1.514,
+          "column": 1
+        },
+        "pack": {
+          "line": true,
+          "column": false
+        }
+      },
+      "auto-miner": {
+        "singleRatio": 0.753,
+        "singleTarget": true,
+        "maxedSingleRatio": 0.653,
+        "packRatio": {
+          "line": 1.184,
+          "column": 2.163
+        },
+        "pack": {
+          "line": false,
+          "column": true
+        }
+      },
+      "launcher-rig": {
+        "singleRatio": 1.79,
+        "singleTarget": false,
+        "maxedSingleRatio": 1.79,
+        "packRatio": {
+          "line": 1.031,
+          "column": 1
+        },
+        "pack": {
+          "line": false,
+          "column": false
+        }
+      },
+      "hash-rail": {
+        "singleRatio": 0.814,
+        "singleTarget": true,
+        "maxedSingleRatio": 0.736,
+        "packRatio": {
+          "line": 1,
+          "column": 1.071
+        },
+        "pack": {
+          "line": false,
+          "column": false
+        }
+      }
+    },
+    "deterministic": true
+  },
+  "evolvedRows": [
+    {
+      "weaponId": "coin-blaster",
+      "tier": "maxed",
+      "arrangement": "line",
+      "evolutionId": null,
+      "singleTargetDps": 49.75,
+      "output60": 2880,
+      "killed": 48,
+      "packsCleared": 6,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "coin-blaster",
+      "tier": "maxed",
+      "arrangement": "column",
+      "evolutionId": null,
+      "singleTargetDps": 49.75,
+      "output60": 7666,
+      "killed": 126,
+      "packsCleared": 15,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "coin-blaster",
+      "tier": "evolved",
+      "arrangement": "line",
+      "evolutionId": "settler-rail",
+      "singleTargetDps": 43.12,
+      "output60": 2361.6,
+      "killed": 39,
+      "packsCleared": 4,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "coin-blaster",
+      "tier": "evolved",
+      "arrangement": "column",
+      "evolutionId": "settler-rail",
+      "singleTargetDps": 43.12,
+      "output60": 17949,
+      "killed": 296,
+      "packsCleared": 37,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "scatter-shotgun",
+      "tier": "maxed",
+      "arrangement": "line",
+      "evolutionId": null,
+      "singleTargetDps": 33.64,
+      "output60": 4316,
+      "killed": 71,
+      "packsCleared": 8,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "scatter-shotgun",
+      "tier": "maxed",
+      "arrangement": "column",
+      "evolutionId": null,
+      "singleTargetDps": 33.64,
+      "output60": 240,
+      "killed": 4,
+      "packsCleared": 0,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "scatter-shotgun",
+      "tier": "evolved",
+      "arrangement": "line",
+      "evolutionId": "double-spend",
+      "singleTargetDps": 50.46,
+      "output60": 6536,
+      "killed": 108,
+      "packsCleared": 13,
+      "critKills": 0,
+      "volleys": 68,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "scatter-shotgun",
+      "tier": "evolved",
+      "arrangement": "column",
+      "evolutionId": "double-spend",
+      "singleTargetDps": 50.46,
+      "output60": 240,
+      "killed": 4,
+      "packsCleared": 0,
+      "critKills": 0,
+      "volleys": 68,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "auto-miner",
+      "tier": "maxed",
+      "arrangement": "line",
+      "evolutionId": null,
+      "singleTargetDps": 32.51,
+      "output60": 1764,
+      "killed": 29,
+      "packsCleared": 3,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "auto-miner",
+      "tier": "maxed",
+      "arrangement": "column",
+      "evolutionId": null,
+      "singleTargetDps": 32.51,
+      "output60": 1572,
+      "killed": 26,
+      "packsCleared": 3,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "auto-miner",
+      "tier": "evolved",
+      "arrangement": "line",
+      "evolutionId": "hashstorm-overdrive",
+      "singleTargetDps": 37.45,
+      "output60": 2088,
+      "killed": 34,
+      "packsCleared": 4,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "auto-miner",
+      "tier": "evolved",
+      "arrangement": "column",
+      "evolutionId": "hashstorm-overdrive",
+      "singleTargetDps": 37.45,
+      "output60": 3400,
+      "killed": 56,
+      "packsCleared": 7,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "launcher-rig",
+      "tier": "maxed",
+      "arrangement": "line",
+      "evolutionId": null,
+      "singleTargetDps": 89.04,
+      "output60": 14400,
+      "killed": 240,
+      "packsCleared": 30,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "launcher-rig",
+      "tier": "maxed",
+      "arrangement": "column",
+      "evolutionId": null,
+      "singleTargetDps": 89.04,
+      "output60": 420,
+      "killed": 7,
+      "packsCleared": 0,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "launcher-rig",
+      "tier": "evolved",
+      "arrangement": "line",
+      "evolutionId": "crypto-bomb-orbit",
+      "singleTargetDps": 89.04,
+      "output60": 14844,
+      "killed": 246,
+      "packsCleared": 30,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 102,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "launcher-rig",
+      "tier": "evolved",
+      "arrangement": "column",
+      "evolutionId": "crypto-bomb-orbit",
+      "singleTargetDps": 89.04,
+      "output60": 420,
+      "killed": 7,
+      "packsCleared": 0,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "hash-rail",
+      "tier": "maxed",
+      "arrangement": "line",
+      "evolutionId": null,
+      "singleTargetDps": 36.61,
+      "output60": 1680,
+      "killed": 28,
+      "packsCleared": 3,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "hash-rail",
+      "tier": "maxed",
+      "arrangement": "column",
+      "evolutionId": null,
+      "singleTargetDps": 36.61,
+      "output60": 6720,
+      "killed": 112,
+      "packsCleared": 14,
+      "critKills": 0,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "hash-rail",
+      "tier": "evolved",
+      "arrangement": "line",
+      "evolutionId": "crit-candle",
+      "singleTargetDps": 40.49,
+      "output60": 1680,
+      "killed": 28,
+      "packsCleared": 3,
+      "critKills": 5,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    },
+    {
+      "weaponId": "hash-rail",
+      "tier": "evolved",
+      "arrangement": "column",
+      "evolutionId": "crit-candle",
+      "singleTargetDps": 40.49,
+      "output60": 7200,
+      "killed": 120,
+      "packsCleared": 15,
+      "critKills": 39,
+      "volleys": 0,
+      "bombletDamage": 0,
+      "bombletOverflow": 0
+    }
   ]
 }

@@ -13,6 +13,7 @@ export const PICKUP_BANNER_COALESCE_TICKS = 30;
 
 const KIND_CLASS = Object.freeze({
   weapon: 'weapon', ammo: 'ammo', grenade: 'grenade', heal: 'heal', power: 'power', nuke: 'nuke', objective: 'objective', world: 'world', secret: 'secret',
+  evolution: 'evolution',
 });
 
 const upper = (text) => String(text ?? '').trim().toUpperCase();
@@ -47,6 +48,10 @@ export function pickupBannerText(event, { weaponTitles = {}, effectTitles = {}, 
   if (event.type === 'world:gate') return { kind: KIND_CLASS.world, title: `${upper(event.name ?? 'GATE')} UNLOCKED`, detail: event.detail ?? '' };
   if (event.type === 'world:secret') return { kind: KIND_CLASS.secret, title: `${upper(event.name ?? 'secret')} FOUND`, detail: event.detail ?? '' };
   if (event.type === 'world:item') return { kind: KIND_CLASS.world, title: `${upper(event.name ?? 'item')} PICKED UP`, detail: event.detail ?? '' };
+  // Package 8.4: the first Seal drop, a banked Seal, and the evolution moment.
+  if (event.type === 'genesis-seal:dropped') return { kind: KIND_CLASS.evolution, title: 'GENESIS SEAL DROPPED', detail: 'Take it from the pedestal. A Seal evolves a gun you have mastered.' };
+  if (event.type === 'genesis-seal:banked') return { kind: KIND_CLASS.evolution, title: 'GENESIS SEAL BANKED', detail: 'Evolves the next gun you master' };
+  if (event.type === 'evolution:applied') return { kind: KIND_CLASS.evolution, title: `EVOLVED // ${upper(event.title)}`, detail: event.weaponName ?? '' };
   if (event.type === 'weapon:swap') return null;
   return null;
 }

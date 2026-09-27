@@ -53,7 +53,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     yard: {
       objective: 'Arm up, then ring the Closing Bell on the Margin Floor east when you are ready.',
       watch: 'The Margin Floor east is the Liquidator’s; its bell calls him from 10:00. The warehouse lever to the south opens a Flamethrower court.',
-      supply: 'The Grenade Launcher sits at the extraction console to the south-east. Beat the Liquidator to open the Arc Rifle vault.',
+      supply: 'The Grenade Launcher sits at the extraction console to the south-east. Beat the Liquidator for the Arc Rifle vault and a Genesis Seal.',
       features: [
         { kind: 'arena', id: 'liquidator-arena', bearing: 'east' },
         { kind: 'site', id: 'yard-warehouse', bearing: 'south' },
@@ -67,6 +67,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     'Close combat triggers on its own. Left Shift dodges on a keyboard; touch and gamepads dodge for you.',
     'Stand still in a machine’s ring to crank it; buttons and levers start as you pass. Progress is never lost.',
     'Level-ups offer a choice of upgrades. Pick the one that changes how you fight.',
+    'Bosses drop Genesis Seals. A Seal evolves a gun you have mastered.',
     'The pause menu holds the field map: routes, machinery and every cache you have found.',
   ],
 });

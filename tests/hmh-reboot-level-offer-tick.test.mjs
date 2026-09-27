@@ -139,6 +139,8 @@ function offerHarness({ progressionPilotEnabled = false } = {}) {
   const calls = [];
   const context = {
     upgradePending: false,
+    // Package 8.4: no Genesis Seal is picked up in this run.
+    evolutionPending: false,
     pendingUpgradeOfferPaint: null,
     progressionPilotEnabled,
     simulation: activeSimulation({ seed: 7, maxFrameDeltaMs: 100 }),

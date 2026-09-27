@@ -86,3 +86,40 @@ test('output60 is deterministic and reports the package acceptance per maxed fin
   assert.ok(miner.reserveRemaining > 0 && miner.emptySeconds === 0, 'the Machine Gun never runs dry');
   assert.ok(rail.reserveRemaining > 0 && rail.emptySeconds === 0, 'the Railgun never runs dry');
 });
+
+// Package 8.5 evolved rows (build ledger slice 7): each wave-1 evolution
+// against the same gun maxed, crits included, on a line pack (across the
+// lane, where spread and blasts work) and a column pack (queued along it,
+// where a pierce lane works).
+test('the evolved rows are deterministic and record the package 8.5 tuning targets per evolution', async () => {
+  const { runEvolvedBenchmark } = await import('../scripts/hmh-reboot-weapon-benchmark.mjs');
+  const report = runEvolvedBenchmark();
+  assert.deepEqual(report, runEvolvedBenchmark(), 'same-seed evolved rows');
+  assert.equal(report.rows.length, 5 * 2 * 2);
+  const { acceptance } = report;
+  // Settler Rail: 0.80-0.95x the maxed Pistol single target, and a lane that
+  // clears a queued pack at least 30% faster.
+  assert.equal(acceptance['coin-blaster'].singleTarget, true, JSON.stringify(acceptance['coin-blaster']));
+  assert.equal(acceptance['coin-blaster'].packClear.column, true);
+  // Double Spend: the package's ~50.4 single target, within 1.2x the Pistol;
+  // the free volley lifts the line pack well past 1.25x.
+  assert.equal(acceptance['scatter-shotgun'].singleTarget, true);
+  assert.equal(acceptance['scatter-shotgun'].pack.line, true);
+  // Hashstorm Overdrive: no damage bonus, ~36 single target; hot rounds
+  // pierce two, so a queued pack falls more than 1.25x faster.
+  assert.equal(acceptance['auto-miner'].singleTarget, true);
+  assert.equal(acceptance['auto-miner'].pack.column, true);
+  // Findings the package's fixed numbers do not meet (build ledger slice 7):
+  // Moonshot's +15% and charge rebate stay under 1.25x on either pack, and the
+  // maxed Launcher already one-shots the 60-HP pack and sits above the Pistol
+  // cap before it evolves, so Crypto Bomb Orbit adds no single-target damage
+  // and little pack output here.
+  assert.equal(acceptance['hash-rail'].singleTarget, true);
+  assert.equal(acceptance['hash-rail'].pack.line || acceptance['hash-rail'].pack.column, false);
+  assert.equal(acceptance['launcher-rig'].singleRatio, acceptance['launcher-rig'].maxedSingleRatio);
+  assert.equal(acceptance['launcher-rig'].pack.line, false);
+  const orbit = report.rows.find((row) => row.evolutionId === 'crypto-bomb-orbit' && row.arrangement === 'line');
+  assert.ok(orbit.bombletDamage > 0, 'bomblets land on the pack');
+  const candle = report.rows.find((row) => row.evolutionId === 'crit-candle' && row.arrangement === 'column');
+  assert.ok(candle.critKills > 0, 'crit kills feed the charge rebate');
+});

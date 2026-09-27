@@ -35,6 +35,10 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'boss-slots.mjs',
   'boss-arenas.mjs',
   'boss-geometry.mjs',
+  // Genesis Seals and wave-1 evolutions (S1.7): the drops, the Seal
+  // resolution and evolution panel, and the bomblet pool and vent ring.
+  'boss-drops.mjs',
+  'evolution-effects.mjs',
 ]);
 
 function walk(node, visit) {

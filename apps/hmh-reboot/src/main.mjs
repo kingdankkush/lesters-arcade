@@ -143,6 +143,7 @@ import { createStandaloneInitPayload } from './standalone-session.mjs';
 import {
   comboMilestoneXp,
   createRunProgression,
+  runWeaponMastery,
   getRunProgressionSnapshot,
   grantRunXp,
   grantRunSilver,
@@ -244,6 +245,8 @@ import {
   createWeaponLoadout,
   creditWeaponCardPick,
   creditWeaponKills,
+  creditCritCandleKills,
+  effectiveChargeTicks,
   getActiveWeaponState,
   getWeaponReadabilityStatus,
   grantWeaponPickup,
@@ -285,7 +288,11 @@ let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
 let createMissionState, stepMissionObjectives, settleMissionObjective, missionDockStep, missionActiveBlockers, missionSealTargets,
   applyMissionSealDamage, missionHiddenSecretProps;
 let createWorldDesignLife, prepareWorldDesignEnemyPose, createWorldDesignPacing, stepWorldDesignPacing, loadWorldDesignAppearance;
-let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT;
+let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT, runUpgradeContent;
+// Genesis Seals and wave-1 evolutions (design package 8.4/8.5, S1.7).
+let createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
+  selectRunEvolution, evolveBankedSealOnMastery;
+let createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback;
 let lazyRuntimeModulesLoad = null;
 function loadLazyRuntimeModules() {
   lazyRuntimeModulesLoad ??= Promise.all([
@@ -303,7 +310,9 @@ function loadLazyRuntimeModules() {
     import('./boss-slots.mjs'),
     import('./boss-arenas.mjs'),
     import('./boss-geometry.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry]) => {
+    import('./boss-drops.mjs'),
+    import('./evolution-effects.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects]) => {
     ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
     ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
@@ -320,7 +329,10 @@ function loadLazyRuntimeModules() {
     ({ loadWorldDesignAppearance } = nativeAssets);
     ({ resolveLevelBriefing, applyLevelBriefing } = briefing);
     ({ createUpgradePanel } = panel);
-    ({ RUN_UPGRADE_CONTENT } = content);
+    ({ RUN_UPGRADE_CONTENT, runUpgradeContent } = content);
+    ({ createBossDrops, dropGenesisSeal, collectGenesisSeals, resolveGenesisSeal, openRunEvolutionOffer, rerollRunEvolutionSlot,
+      selectRunEvolution, evolveBankedSealOnMastery } = drops);
+    ({ createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback } = effects);
   });
   return lazyRuntimeModulesLoad;
 }
@@ -1453,6 +1465,12 @@ async function boot() {
   // only paints the offer (presentUpgradeOffer). The upgrade-offer cue is gone
   // (owner audio list).
   let pendingUpgradeOfferPaint = null;
+  // Package 8.4: a Genesis Seal that resolved to the evolution panel opens it at
+  // the end of its tick, before any level offer of the same tick.
+  let evolutionPending = false;
+  let bossDrops = null;
+  let bombletPool = null;
+  let bombletFeedback = null;
   // Package 8.3: each pending level is its own offer, opened once, with card 2
   // drawn from the guns that have ammo on the offer's tick. The v6 summary
   // cannot name the twelve v7 gun cards, so it records the v6 ids only; the
@@ -1463,15 +1481,45 @@ async function boot() {
     if (choices) recordV6UpgradeOffer(choices.map((choice) => choice.id));
     return choices;
   };
+  const openEvolutionPanel = () => openRunEvolutionOffer(runProgression);
   const openPendingUpgradeOffer = (tick) => {
-    if (!upgradePending || simulation?.state !== 'active') return false;
+    if ((!upgradePending && !evolutionPending) || simulation?.state !== 'active') return false;
     // The evidence progression pilot grants its level before tick 1 and offers it on tick 2.
     if (progressionPilotEnabled && tick < 2) return false;
-    upgradePending = false;
-    if (!openLevelOffer()) return false;
+    // Package 8.4 "Same tick": a Seal's evolution panel opens first; the level
+    // offers chain after it (applySelectedEvolution).
+    const evolution = evolutionPending ? openEvolutionPanel() : null;
+    evolutionPending = false;
+    if (!evolution) {
+      if (!upgradePending) return false;
+      upgradePending = false;
+      if (!openLevelOffer()) return false;
+    }
     simulation.enterUpgrade();
     pendingUpgradeOfferPaint = getRunProgressionSnapshot(runProgression);
     return true;
+  };
+  // The evolution moment (package 8.4): the banner "EVOLVED // <NAME>", the
+  // weapon-pickup sound and a gold burst standing in for the surge clip.
+  // Projection only: the evolution itself is already in run progression.
+  const announceEvolution = ({ weaponId, evolutionId }, tick) => {
+    const title = runUpgradeContent(evolutionId).title;
+    announcePickupEvent({ type: 'evolution:applied', title, weaponName: WEAPON_TITLE_BY_ID[weaponId] ?? weaponId }, {}, tick);
+    combatAudio.play('pickup', { volume: 0.18 });
+    pushCombatVisualEvent({ type: 'kill', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 30 }, color: 0xffc857 });
+    setAccessibleCombatStatus(`${WEAPON_TITLE_BY_ID[weaponId] ?? weaponId} evolved: ${title}.`);
+  };
+  // A Genesis Seal picked up this tick: it evolves the one mastered gun at
+  // once, banks, or asks for the evolution panel at the end of the tick.
+  const applyGenesisSealPickup = (seal, tick) => {
+    const result = resolveGenesisSeal(runProgression, { tick });
+    combatAudio.play('pickup', { volume: 0.16 });
+    if (result.outcome === 'evolved') announceEvolution(result, tick);
+    else if (result.outcome === 'banked') {
+      announcePickupEvent({ type: 'genesis-seal:banked' }, {}, tick);
+      setAccessibleCombatStatus('Genesis Seal banked. It evolves the next gun you master.');
+    } else evolutionPending = true;
+    return result;
   };
   const presentUpgradeOffer = () => {
     if (!pendingUpgradeOfferPaint || simulation?.state !== 'upgrade') return;
@@ -1807,7 +1855,7 @@ async function boot() {
       const bossLive = Boolean(liquidatorBoss?.active && liquidatorBoss.health > 0);
       const worldLifeReport = worldLife.render({mission:missionState,destructibleState:worldDestructibleState,actor:renderState,camera,view,worldToScreen,queryGround,tick:authoredPropTick,reduceMotion:settings.reduceMotion,reduceFlash:settings.reduceFlash,particleBudget:performanceProfile.particlesPerHazard,campfirePlacements:authoredPropPlacements,hazards:activeWorldHazards(),announce:setAccessibleCombatStatus,
         guidance:{districtId:getLevelOneDistrictAt(renderState.x,renderState.y)?.id??'frontier-relay',collectibles:collectibleState,bossBarVisible:bossLive,
-          canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon:buildProgressionByWeapon(runProgression.ranks)})},
+          canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon:buildProgressionByWeapon(runProgression.ranks,runProgression.evolutions)})},
         bossArena:bossLive?bossFloorCircle(liquidatorBoss.arena):null,mobile:performanceProfile.id!=='desktop'});
       if(releaseTelemetryEnabled) {
         dataset.worldHazardTelegraphs=JSON.stringify(worldLifeReport.hazardTelegraphs);
@@ -2179,6 +2227,23 @@ async function boot() {
           grenadeVisuals.circle(grenadeScreen.x, grenadeScreen.y, bodyRadius + 7 + fuse.intensity * 5)
             .stroke({ color: 0xff5c7a, width: 2.5, alpha: fuse.intensity });
         }
+      }
+      // Package 8.4/8.5 placeholders until the relic and glint art land: a
+      // Genesis Seal on its pedestal (a brass disc with a cyan-glowing rim and a
+      // pale relief ring) and Crypto Bomb Orbit's bomblets (gold beads).
+      for (const seal of bossDrops?.seals ?? []) {
+        if (seal.collectedTick >= 0) continue;
+        const centre = worldToScreen({ x: seal.x, y: seal.y, z: queryGround(seal.x, seal.y).groundZ + 14 }, camera, view);
+        if (!isScreenPointVisible(centre, view, 64)) continue;
+        grenadeVisuals.circle(centre.x, centre.y, 15).stroke({ color: 0x49ddff, width: 3, alpha: 0.8 });
+        grenadeVisuals.circle(centre.x, centre.y, 11).fill({ color: 0xb8862b, alpha: 0.98 }).stroke({ color: 0x5a3d0c, width: 2, alpha: 0.9 });
+        grenadeVisuals.circle(centre.x, centre.y, 5).stroke({ color: 0xffe3a3, width: 2, alpha: 0.9 });
+      }
+      for (const bomblet of bombletPool?.active ?? []) {
+        const point = bombletPosition(bomblet, Math.max(bomblet.spawnTick, simulation?.tick ?? bomblet.spawnTick));
+        const screen = worldToScreen({ ...point, z: point.z + 6 }, camera, view);
+        if (!isScreenPointVisible(screen, view, 32)) continue;
+        grenadeVisuals.circle(screen.x, screen.y, 4.5).fill({ color: 0xffc857, alpha: 0.95 }).stroke({ color: 0x3a2a06, width: 1.5, alpha: 0.9 });
       }
       // grenade feedback (V-3): bounce dust puffs from the simulation's own
       // bounce reports, drawn with the other combat feedback and retired on
@@ -2605,7 +2670,7 @@ async function boot() {
         const chestScreen = worldToScreen({ x: renderState.x, y: renderState.y, z: renderState.z + 44 }, camera, view);
         const aimScreen = worldToScreen({ x: renderState.x + heldAim.x * 96, y: renderState.y + heldAim.y * 96, z: renderState.z + 44 }, camera, view);
         if (playerHealth > 0 && heldWeapon.id === 'hash-rail' && heldWeapon.chargeStartedTick !== null) {
-          const chargeTicks = applyWeaponProgression('hash-rail', runProgression ? buildProgressionByWeapon(runProgression.ranks)['hash-rail'] : undefined).chargeTicks;
+          const chargeTicks = effectiveChargeTicks(weaponLoadout.weapons['hash-rail'], applyWeaponProgression('hash-rail', runProgression ? buildProgressionByWeapon(runProgression.ranks, runProgression.evolutions)['hash-rail'] : undefined));
           const chargeRatio = Math.min(1, ((simulation?.tick ?? 0) - heldWeapon.chargeStartedTick) / chargeTicks);
           const chargeEnd = worldToScreen({ x: renderState.x + heldAim.x * 900, y: renderState.y + heldAim.y * 900, z: renderState.z + 44 }, camera, view);
           aimLine.moveTo(chestScreen.x, chestScreen.y).lineTo(chargeEnd.x, chargeEnd.y)
@@ -2782,7 +2847,7 @@ async function boot() {
       const narrowDebug = debugGridEnabled && combatStatusLayout.multiline;
       label.style.fontSize = combatStatusLayout.fontSize;
       label.style.align = 'center';
-      const activeProgressionByWeapon = runProgression ? buildProgressionByWeapon(getRunProgressionSnapshot(runProgression).ranks) : {};
+      const activeProgressionByWeapon = runProgression ? buildProgressionByWeapon(runProgression.ranks, runProgression.evolutions) : {};
       const weaponStatus = weaponLoadout
         ? getWeaponReadabilityStatus(weaponLoadout, {
           tick: simulation?.tick ?? 0,
@@ -3149,6 +3214,10 @@ async function boot() {
     playerDefeatController = null;
     playerHealth = 100;
     silverDropState=createSilverDropState();
+    bossDrops = createBossDrops();
+    bombletPool = createBombletPool();
+    bombletFeedback = createBombletFeedbackBudget();
+    evolutionPending = false;
     pickupBanner?.clear();
     userZoom.reset();
     const silverCounter=document.getElementById('hmhSilverCount');if(silverCounter)silverCounter.textContent='0';
@@ -3546,7 +3615,7 @@ async function boot() {
       // Resolved before movement: the mobility upgrades feed the movement step,
       // and this was previously declared further down the same tick.
       const runEffects = getRunProgressionSnapshot(runProgression).effects;
-      const progressionByWeapon = buildProgressionByWeapon(runProgression.ranks);
+      const progressionByWeapon = buildProgressionByWeapon(runProgression.ranks, runProgression.evolutions);
       // The run's critical hit, for projectiles and (package 8.6) the held
       // weapons' direct hits; the knife, hand grenades and burn ticks keep theirs.
       const playerCritical = {
@@ -4005,6 +4074,8 @@ async function boot() {
         // The counter shows every coin granted, secrets' included (S1.4).
         const counter=document.getElementById('hmhSilverCount');if(counter)counter.textContent=String(runProgression?.silverCollected??silverDropState.collected);
       }
+      // Package 8.4: a Genesis Seal on its pedestal is collected by contact.
+      for (const seal of collectGenesisSeals(bossDrops, { tick, hero: actor })) applyGenesisSealPickup(seal, tick);
       const collectibleFrame = stepCollectibles(collectibleState, { tick, player: actor,
         canCollect:effect=>canAcceptCollectible(effect,{health:playerHealth,maxHealth:maxPlayerHealth,grenades:grenadeSystem.handCharges,maxGrenades:grenadeSystem.maxHandCharges,loadout:weaponLoadout,progressionByWeapon}),
         canReach:p=>{
@@ -4167,6 +4238,9 @@ async function boot() {
               weaponId: shot.weaponId,
               damage: hit.damage,
               ...playerCritical,
+              // Crit Candle (package 8.5): +15% under the cap, and a first-body
+              // crit carries through every body the slug pierces.
+              ...(shot.evolutionTag === 'gold-crit' ? critCandleHitChance({ chance: playerCritical.criticalChance, cap: CRITICAL_CHANCE_CAP, shot, seed: payload.session.seed, hitId: `${shot.id}:${hit.targetId}:${hit.kind}`, targetId: hit.targetId }) : {}),
               // Package 8.5 policy flags: Settler Rail ignores armour, and
               // Deep Proof's boss penetration applies to any boss target.
               armorPiercing: shot.armorPiercing === true,
@@ -4250,6 +4324,12 @@ async function boot() {
       // boss that is not live is not in the combat resolver, so a Burner or
       // Ledger hit on it threw and stopped the ticker (1.8.4 hotfix b300740a,
       // real-run r19, tick 8306).
+      // Enemy bodies for the evolution effects (the vent ring, bomblets): the
+      // live horde and a targetable boss, never the player or world props.
+      const evolutionTargets = () => [
+        ...grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => ({ id: enemy.id, x: enemy.x, y: enemy.y, radius: enemy.radius })),
+        ...(bossTargetable ? [{ id: liquidatorBoss.id, x: liquidatorBoss.x, y: liquidatorBoss.y, radius: 48 }] : []),
+      ];
       const lightningTargets = [
         ...grayboxEnemies.filter((enemy) => enemy.active),
         ...(bossTargetable ? [liquidatorBoss] : []),
@@ -4310,7 +4390,11 @@ async function boot() {
         if (event.type.startsWith('standard:') || event.type === 'weapon:melee-strike') {
           recordRunForkedStandardEvent(runSummaryAccumulator, event);
         }
-        if (event.type === 'weapon:charge-start') {
+        if (event.type === 'weapon:vent') {
+          // Hashstorm Overdrive's vent ring (package 8.5), never the player.
+          combatHitIntents.push(...ventRingHits(event, { origin: { x: actor.x, y: actor.y, z: actor.groundZ }, targets: evolutionTargets() }));
+          pushCombatVisualEvent({ type: 'blast', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 12 }, radius: event.radius, mode: 'bomblet' });
+        } else if (event.type === 'weapon:charge-start') {
           combatAudio.play('hmh-hash-rail-charge', { volume: HMH_WEAPON_SFX['hmh-hash-rail-charge'].gain });
         } else if (event.type === 'weapon:reload-start') {
           combatAudio.play('hmh-weapon-reload', { volume: HMH_WEAPON_SFX['hmh-weapon-reload'].gain });
@@ -4475,7 +4559,8 @@ async function boot() {
         // V-1: brass, shotshell or launcher casing, ejected to the shooter's
         // right; the rail gun and the channel weapons eject nothing.
         const shellKind = WEAPON_VFX[event.weaponId]?.shell.kind;
-        if (shellKind && shellKind !== 'none') {
+        // Double Spend's free volley spends no shell.
+        if (shellKind && shellKind !== 'none' && !event.volley) {
           pushCombatVisualEvent({
             type: 'shell',
             tick,
@@ -4636,6 +4721,20 @@ async function boot() {
         // Launcher blasts crit like the held weapon they are; hand grenades and
         // a blast's own self-damage do not.
         for (const hit of detonation.hits) combatHitIntents.push(hit.targetId === 'player' ? { ...hit, tick } : { ...hit, tick, ...heldCritical(hit.weaponId) });
+      }
+      // Crypto Bomb Orbit (package 8.5): the orbiting bomblets step first, then
+      // every blast of the player's grenades this tick leaves three more.
+      const bombletFrame = stepBomblets(bombletPool, { tick, targets: evolutionTargets() });
+      const bombletFx = takeBombletFeedback(bombletFeedback, { tick, count: bombletFrame.detonations.length });
+      for (const [index, detonation] of bombletFrame.detonations.entries()) {
+        for (const hit of detonation.hits) combatHitIntents.push({ ...hit, ...heldCritical(hit.weaponId) });
+        if (index < bombletFx.bursts) pushCombatVisualEvent({ type: 'blast', tick, point: detonation.point, radius: detonation.radius, mode: 'bomblet' });
+      }
+      if (bombletFx.cues) combatAudio.play('grenade-boom', { volume: 0.08 });
+      if (runProgression.evolutions['launcher-rig'] === 'crypto-bomb-orbit') {
+        for (const detonation of grenadeFrame.detonations) {
+          spawnBomblets(bombletPool, { tick, parentId: detonation.grenadeId, centre: detonation.point, parentDamage: detonation.damage });
+        }
       }
 
       const openingAttacksAllowed = (!rosterPreviewEnabled || rosterCombatEnabled) && openingEnemyAttacksEnabled(tick);
@@ -4925,6 +5024,7 @@ async function boot() {
             // place of the 1.8.1 ten coins, 1,040 XP through the kill, the
             // Yard pacified with a grace, and the Golden Parachute for a Dark
             // Pool win. kills.boss counts the Liquidator only.
+            const defeatedArenaId = bossSlots.slots.liquidator.arena?.id ?? 'margin-floor';
             const rewards = defeatBossSlot(bossSlots, { bossId: 'liquidator', tick });
             refreshBossLockNavigation(rewards.opened);
             collectibleState.unlockedObjectives.add(rewards.unlockObjective);
@@ -4944,6 +5044,9 @@ async function boot() {
             }), tick, { bossDefeated: true });
             cockpit?.updateRun(bossSnapshot);
             if (bossSnapshot.pendingLevels > 0) upgradePending = true;
+            // Package 8.4: his first defeat drops a Genesis Seal on the arena's
+            // reward pedestal (never an objective-reward placement).
+            if (dropGenesisSeal(bossDrops, { bossId: 'liquidator', tick, arenaId: defeatedArenaId })?.first) announcePickupEvent({ type: 'genesis-seal:dropped' }, {}, tick);
             combatAudio.play('enemy-death', { volume: 0.18 });
             pushCombatVisualEvent({ type: 'kill', tick, point: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ + 24 }, color: 0xff6b5c });
             bossDeathVisualUntilTick = tick + 45;
@@ -5044,6 +5147,8 @@ async function boot() {
           }), tick);
           cockpit?.updateRun(progressionSnapshot);
           if (progressionSnapshot.pendingLevels > 0) upgradePending = true;
+          // Crit Candle (8.5): a crit kill shortens the next charge from t+1.
+          if (scoreEvent.critical && scoreEvent.weaponId === 'hash-rail') creditCritCandleKills(weaponLoadout, { tick, count: 1, progressionByWeapon });
           if (bridge?.initialized) {
             bridge.send('game:run-event', {
               tick,
@@ -5168,7 +5273,12 @@ async function boot() {
   let weaponWheelLoading = null;
   const weaponWheelViews = () => {
     const ranks = runProgression ? getRunProgressionSnapshot(runProgression).ranks : null;
-    const progressionByWeapon = ranks ? buildProgressionByWeapon(ranks) : {};
+    const progressionByWeapon = ranks ? buildProgressionByWeapon(ranks, runProgression.evolutions) : {};
+    // Package 8.4 wheel: mastery pips (the Pistol's three mastery cards), a
+    // gold ring on an evolved gun.
+    const masteryOf = (weaponId) => (weaponId === 'coin-blaster'
+      ? { ranks: ['proof-of-work', 'hot-wallet', 'block-reward'].reduce((sum, id) => sum + Math.min(3, ranks?.[id] ?? 0), 0), total: 9 }
+      : runWeaponMastery(ranks ?? {}, weaponId));
     return WEAPON_ORDER.map((weaponId, index) => {
       const weapon = weaponLoadout?.weapons?.[weaponId];
       return {
@@ -5181,6 +5291,8 @@ async function boot() {
         ammoInClip: weapon?.ammoInClip ?? 0,
         clipSize: applyWeaponProgression(weaponId, progressionByWeapon[weaponId]).clipSize,
         reserveAmmo: weapon ? weapon.reserveAmmo : 0,
+        mastery: masteryOf(weaponId),
+        evolved: Boolean(runProgression?.evolutions?.[weaponId]),
       };
     });
   };
@@ -5207,7 +5319,7 @@ async function boot() {
     }
     if (weaponWheel.isOpen()) return;
     simulation.enterMenu();
-    weaponWheel.open(weaponWheelViews());
+    weaponWheel.open(weaponWheelViews(), { seals: runProgression ? runProgression.sealsFound - Object.keys(runProgression.evolutions).length : 0 });
     combatAudio.play('menu-click', { volume: 0.06 });
     dataset.weaponWheel = 'open';
   };
@@ -5269,14 +5381,35 @@ async function boot() {
     }
   };
 
+  // Package 8.4: a pick in the evolution panel (an evolution, or "Bank the
+  // Seal"). It never uses a level-up pick; the tick's level offers chain after.
+  const applySelectedEvolution = (cardId) => {
+    if (simulation?.state !== 'upgrade' || runProgression?.offer?.kind !== 'evolution') return;
+    const result = selectRunEvolution(runProgression, cardId);
+    if (input) input.reset('upgrade-select', performance.now());
+    if (result.outcome === 'evolved') announceEvolution(result, simulation.tick);
+    else announcePickupEvent({ type: 'genesis-seal:banked' }, {}, simulation.tick);
+    upgradePending = false;
+    if (runProgression.pendingLevels > 0 && openLevelOffer()) {
+      upgradePanel?.showUpgrade(getRunProgressionSnapshot(runProgression));
+      return;
+    }
+    closeUpgradeShell();
+  };
   const applySelectedUpgrade = (upgradeId) => {
+    if (runProgression?.offer?.kind === 'evolution') return applySelectedEvolution(upgradeId);
     if (simulation?.state !== 'upgrade' || !runProgression) return;
     const before = getRunProgressionSnapshot(runProgression);
     const selection = selectRunUpgrade(runProgression, upgradeId);
     // Balance option (a): a gun's Magazine & Salvage card comes with a magazine
     // for that gun (reserve only, at the new rank), on the offer's tick (the
     // kernel is frozen on it), so the next weapon step reads it like salvage.
+    // (An evolution never changes a gun's grant, so the ranks alone decide it.)
     if (weaponLoadout) creditWeaponCardPick(weaponLoadout, { tick: simulation.tick, upgradeId, progressionByWeapon: buildProgressionByWeapon(runProgression.ranks) });
+    // Package 8.4: a banked Genesis Seal evolves a non-Pistol gun the moment
+    // this pick completes its mastery (never the Pistol).
+    const bankedEvolution = evolveBankedSealOnMastery(runProgression, upgradeId);
+    if (bankedEvolution) announceEvolution(bankedEvolution, simulation.tick);
     // Cycle 073 (U-4): Digit1/Digit2 and gamepad A are also gameplay keys. A key
     // still held from the pick must not sit in the input state when the ticker
     // restarts, or the first resumed tick would swap weapons or dash.
@@ -5297,6 +5430,11 @@ async function boot() {
       upgradePanel?.showUpgrade(getRunProgressionSnapshot(runProgression));
       return;
     }
+    closeUpgradeShell();
+  };
+  // Leaves the level-up shell once no offer is left (shared by level and
+  // evolution picks).
+  const closeUpgradeShell = () => {
     upgradePanel?.hideUpgrade();
     simulation.leaveUpgrade();
     // V-4 level-up beat: stamped on resume because the tick is frozen while
@@ -5311,9 +5449,10 @@ async function boot() {
   // panel or advances a tick, and it is silent.
   const applyUpgradeReroll = (slot) => {
     if (simulation?.state !== 'upgrade' || !runProgression?.offer) return;
-    const choice = rerollRunUpgradeSlot(runProgression, slot);
+    const evolution = runProgression.offer.kind === 'evolution';
+    const choice = evolution ? rerollRunEvolutionSlot(runProgression, slot) : rerollRunUpgradeSlot(runProgression, slot);
     if (!choice) return;
-    recordV6UpgradeOffer([choice.id]);
+    if (!evolution) recordV6UpgradeOffer([choice.id]);
     upgradePanel?.showUpgrade(getRunProgressionSnapshot(runProgression), { rerolledSlot: slot });
   };
 

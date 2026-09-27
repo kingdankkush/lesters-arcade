@@ -244,3 +244,19 @@ test('the wheel renders eight slots, disables unowned ones, and reports picks an
   wheel.destroy();
   assert.equal(ring.children.length, 0);
 });
+
+// Slice 7 (package 8.4): the wheel shows mastery pips, a gold ring on an
+// evolved gun and the banked Genesis Seals.
+test('the weapon wheel draws mastery pips, the evolved ring and the Seal count', async () => {
+  const { wheelMasteryPips, wheelSealLabel } = await import('../apps/hmh-reboot/src/weapon-wheel.mjs');
+  assert.equal(wheelMasteryPips({ owned: true, mastery: { ranks: 4, total: 9 } }), '●●●●○○○○○');
+  assert.equal(wheelMasteryPips({ owned: true, mastery: { ranks: 12, total: 10 } }), '●'.repeat(10));
+  assert.equal(wheelMasteryPips({ owned: false, mastery: { ranks: 0, total: 9 } }), '');
+  assert.equal(wheelMasteryPips({ owned: true, mastery: { ranks: 0, total: 0 } }), '');
+  assert.equal(wheelSealLabel(0), '');
+  assert.equal(wheelSealLabel(1), ' · ◆ 1 Genesis Seal');
+  assert.equal(wheelSealLabel(3), ' · ◆ 3 Genesis Seals');
+  const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  assert.match(main, /evolved: Boolean\(runProgression\?\.evolutions\?\.\[weaponId\]\)/);
+  assert.match(main, /weaponWheel\.open\(weaponWheelViews\(\), \{ seals: /);
+});
