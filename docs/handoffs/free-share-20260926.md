@@ -534,3 +534,69 @@ Integration-owner acceptance, checked on the rebased head:
 - Text: the worst-case Free and Ranked templates pass weighted length + 24 <= 280, exactly one `@LestersArcade`, no `#`, no wallet, no session handle (`tests/share-links.test.mjs`).
 - HMH Free background: `origin/fable/hmh-banners` does not exist on origin (only the backup `wip/hmh-banners-20260927`, which carries an uncommitted-work `lester-blaster-free.png`). By the acceptance rule the HMH Free card keeps `share-cards/lester-blaster.png`. Adopting the Free background later is a one-line change to `BACKGROUNDS` in `api/free-card.mjs` plus the file; `includeFiles` already covers `share-cards/**`.
 - Budgets (`npm run build`, rebased): STACKED entry 27,923 B (cap 29,000); STACKED initial 577,708 B; HMH initial JS + shared 1,044,585 B, unchanged, and none of the 40 chunks `hmh-reboot/game.js` imports contains Free share code.
+
+## 19. Independent acceptance pass on the rebased head (2026-09-27)
+
+Re-verified item by item on `0d3a2e06` plus one fix (`d3f6001e`), with a scratch probe
+(`.tmp/free-share/acceptance-probe.mjs`, gitignored; 25/25 checks) and the repo suites.
+
+- **Validator before render.** 6,000 seeded mutations of valid tokens (1-3 substituted
+  characters, half with a forged valid checksum, 5% with a hostile slug such as
+  `__proto__`): 5,347 rejected with 400, 653 decoded, and every decoded one re-encodes to
+  itself. Each reject was served by `freeCardRequest` with a database whose every property
+  access throws; none touched it (slowest reject 5.7 ms), while a valid token did reach the
+  limiter (control).
+- **Cache.** Measured through the real handlers (`db: null`): card and page 200 GET/HEAD
+  `public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800`; deliberate
+  URL-determined 400s (`invalid-game`, `invalid-token`, page bad pair)
+  `public, max-age=0, s-maxage=60`; card `invalid-query`, page conflicting pair, 405,
+  429 and 500 `no-store`; page 302 `public, s-maxage=3600`. The long cache appears on no
+  non-200 row.
+- **Shadowing.** `outputDirectory` is `apps/portal`; no `f`, `f.html`, `f/index.html` or
+  `api/` exists there, and none of its 1,770 files matches either Free rewrite source.
+  `/s/<64 hex>` (either case) and `/api/share-card/<64>.png` still resolve first to
+  `/api/share-page` and `/api/share-card`.
+- **noindex and "verified".** 600 random run pages plus the 400/405/503 generic pages all
+  carry the robots meta and `X-Robots-Tag: noindex` and never match `/verif/i`;
+  `vercel.json` adds `noindex, follow` on `/f/(.*)`.
+- **Ranked /s/ bytes.** The pinned digests were re-derived by running
+  `tests/share-ranked-byte-identity.test.mjs` against a `git archive` of the 1.8.6 release
+  (`cd242264`) renderers: 3/3 pass there and on this branch (page for every status and
+  game, card tree, card PNG with `@vercel/og` 0.11.1). `server/share/render-card.mjs`,
+  `api/share-card.mjs` and `api/share-page.mjs` are unchanged since 1.8.6.
+- **Text.** 3,000 Free texts across the three games, half with realistic labels and
+  maximal numbers and half with hostile ASCII hero/daily/region fragments (`@`, `#`,
+  fullwidth forms, wallet addresses, spliced `session-`): worst weight 224 (+24 <= 280),
+  exactly one `@LestersArcade`, no `#`, wallet, session handle, `Verified` or `RANKED`.
+  Two notes, neither reachable from real input: the fragments are pass-through for words,
+  so a literal `Verified` hero name would print (every call site feeds enum labels or
+  `Daily YYYY-MM-DD`); and emoji-only fragments at their cut length could push Chikun past
+  256, where `fitWeight` would truncate the mention.
+- **Bytes** (`npm run build`): STACKED entry 27,923 B (cap 29,000); STACKED initial
+  577,708 B (cap 607,000); HMH initial JS + shared 1,044,585 B (cap 1,048,576), equal to
+  the 1.8.5/1.8.6 record, and none of the 18 files in the static import graph of
+  `hmh-reboot/game.js` contains share code.
+- **Fix `d3f6001e`.** The Free page counted an identical repeat of `game` or `token` as an
+  extra key and 302'd it to the canonical `/f/` path. If Vercel ever delivered the rewrite's
+  own pair twice, the canonical URL would redirect to itself forever. Now only an undeclared
+  key (`fbclid`, `utm_*`) redirects. The rewrite never supplies one, so the redirect target
+  cannot redirect again. The RED test (identical repeats and a doubled `req.query` render
+  200) failed on the old handler. Post-deploy check for the integration owner:
+  `curl -sI https://lestersarcade.io/f/<slug>/<token>` must answer 200, and the same URL
+  with `?fbclid=x` must answer 302 to the bare path.
+- **Unit suites.** 163 share/route/API tests plus 86 router/shell/header tests pass.
+  `npm run check` passes.
+- **Images and smokes (heavy lock).** Cards rendered through the real E12 handler
+  (`db: null`) for HMH (Lit Valkyrie with the boss chip, and the worst case: Lester,
+  999,999,999,999, 99:59:59, ×9,999,999), Chikun (daily, Lap 3 · Coast) and STACKED
+  (assisted). Each one is 200 `image/png` 1200×630 with `Content-Length`, and each was read
+  at full size. The ribbon stays clear of the title, score and portrait; the tiles sit inside
+  the frame; the worst-case score fits beside the portrait; nothing is green or says
+  verified. `npm run smoke:portal:e2e`: PASS, 7 flows. `scripts/stacked-playable-browser-smoke.mjs`:
+  PASS, 6 profiles. In both, `ranked-preview` was NOT RUN because the 1.8.6 source serves
+  `SETTLEMENT_LIVE = true`. The ad-hoc Free share smokes (`.tmp/free-share-smoke.mjs` on the
+  scratch dev server with the real handlers) passed for HMH, Chikun and STACKED on desktop
+  and phone. Each checked the X intent, the `/f/` token decoding to the score in the text,
+  the page (noindex, `summary_large_image`, no "verified"), the card and the `fbclid` 302.
+  On phones the native share carried `lesters-arcade-free-run.png` (`image/png`,
+  410-696 KB). No console errors.
