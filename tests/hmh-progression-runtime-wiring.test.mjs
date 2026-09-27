@@ -170,4 +170,7 @@ test('salvage, the focus gun and the grenade maximum are wired where the package
   assert.match(declarator('openLevelOffer'), /openRunUpgradeOffer\(runProgression, \{ armedWeaponIds: weaponIdsWithAmmo\(weaponLoadout\) \}\)/);
   // The rail's charge line reads the upgraded charge.
   assert.doesNotMatch(mainSource, /HMH_WEAPON_DEFINITIONS\['hash-rail'\]\.chargeTicks/);
+  // Balance option (a): the pick credits its gun's card magazine on the offer's
+  // tick, at the ranks the pick produced, before anything else reads the loadout.
+  assert.match(declarator('applySelectedUpgrade'), /const selection = selectRunUpgrade\(runProgression, upgradeId\);\s*(\/\/[^\n]*\n\s*)*if \(weaponLoadout\) creditWeaponCardPick\(weaponLoadout, \{ tick: simulation\.tick, upgradeId, progressionByWeapon: buildProgressionByWeapon\(runProgression\.ranks\) \}\);/);
 });

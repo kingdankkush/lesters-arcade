@@ -320,6 +320,17 @@ export const pistolProgressionByWeapon = (ranks = {}) => ({
 
 // Package 8.2: each finite gun's three cards are its rate-of-fire, damage and
 // Magazine & Salvage (reloadSpeed) branches.
+const GUN_BRANCH_CARDS = freezeDeep({
+  'scatter-shotgun': ['scatter-pump', 'scatter-dump', 'scatter-shells'],
+  'auto-miner': ['miner-hashrate', 'miner-asic', 'miner-pool'],
+  'hash-rail': ['rail-blocktime', 'rail-proof', 'rail-mempool'],
+  'launcher-rig': ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier'],
+});
+// Each gun's Magazine & Salvage card (the third of its tree) and the gun it
+// feeds: the cards that carry a magazine (creditWeaponCardPick).
+export const HMH_MAGAZINE_CARD_WEAPON_IDS = freezeDeep(Object.fromEntries(
+  Object.entries(GUN_BRANCH_CARDS).map(([weaponId, cards]) => [cards[2], weaponId]),
+));
 const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
   rateOfFire: ranks[rateOfFire] ?? 0,
   damage: ranks[damage] ?? 0,
@@ -328,10 +339,10 @@ const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
 
 export const progressionByWeapon = (ranks = {}) => ({
   ...pistolProgressionByWeapon(ranks),
-  'scatter-shotgun': gunBranches(ranks, ['scatter-pump', 'scatter-dump', 'scatter-shells']),
-  'auto-miner': gunBranches(ranks, ['miner-hashrate', 'miner-asic', 'miner-pool']),
-  'hash-rail': gunBranches(ranks, ['rail-blocktime', 'rail-proof', 'rail-mempool']),
-  'launcher-rig': gunBranches(ranks, ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier']),
+  'scatter-shotgun': gunBranches(ranks, GUN_BRANCH_CARDS['scatter-shotgun']),
+  'auto-miner': gunBranches(ranks, GUN_BRANCH_CARDS['auto-miner']),
+  'hash-rail': gunBranches(ranks, GUN_BRANCH_CARDS['hash-rail']),
+  'launcher-rig': gunBranches(ranks, GUN_BRANCH_CARDS['launcher-rig']),
   'lightning-ledger': {
     branches: {
       conductivity: ranks['ledger-conductivity'] ?? 0,
@@ -397,6 +408,22 @@ const SALVAGE_PERMILLE = freezeDeep({
   'hash-rail': [0, 0, 150, 250],
   'launcher-rig': [0, 0, 150, 250],
 });
+// Balance option (a) (build ledger, "Balance option (a)"; flagged to the
+// owner): a finite gun's ammo sustains its own tree. Both rules move reserve
+// only, never the clip, read no RNG, stop at the reserve cap and never touch
+// the Pistol.
+//   Card magazine: picking a gun's Magazine & Salvage card adds one reserve
+//   grant at the new rank, on the offer's tick (creditWeaponCardPick). Only
+//   that card: a magazine on every gun card keeps card 2 on the guns (it draws
+//   from guns with ammo) and cost the harness's gun-first policy more picks
+//   than it gave back.
+//   Trickle: from Magazine & Salvage rank 2, the reserve gains a quarter of the
+//   grant every 900 ticks (half at rank 3), inside the weapon step. The
+//   package's evolved-gun rule (8.5) is a quarter every 900 at the capstone.
+export const HMH_RESERVE_TRICKLE_INTERVAL_TICKS = 900;
+// Trickle rounds per interval as a fraction of the grant, by Magazine &
+// Salvage rank (ceil, so a rank that trickles never trickles nothing).
+const RESERVE_TRICKLE_FRACTIONS = Object.freeze([0, 0, 1 / 4, 1 / 2]);
 // The Machine Gun's heat per round by Fire Rate rank (package 8.2).
 const MINER_HEAT_MULTIPLIERS = Object.freeze([1, 0.9, 0.8, 0.72]);
 
@@ -592,6 +619,9 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     clipSize,
     reserveAmmoGrant: definition.pickupReserveAmmo === null ? null : Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier]),
     salvagePermille: SALVAGE_PERMILLE[weaponId]?.[reserveTier] ?? 0,
+    reserveTrickleRounds: Object.hasOwn(SALVAGE_PERMILLE, weaponId) && definition.pickupReserveAmmo !== null && RESERVE_TRICKLE_FRACTIONS[reserveTier] > 0
+      ? Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier] * RESERVE_TRICKLE_FRACTIONS[reserveTier])
+      : 0,
     specials,
     pelletCount,
     spreadRadians,
@@ -909,6 +939,47 @@ export function creditWeaponKills(state, { tick, weaponId, count = 1, progressio
   return freezeDeep({ type: 'weapon:salvage', tick, weaponId, rounds: weapon.reserveAmmo - before, reserveAmmo: weapon.reserveAmmo });
 }
 
+// Reserve only, up to the cap (twice the grant); a reserve already above the
+// cap is never cut.
+function addCappedReserve(weapon, rounds, grant) {
+  const before = weapon.reserveAmmo;
+  weapon.reserveAmmo = Math.max(before, Math.min(grant * 2, before + rounds));
+  return weapon.reserveAmmo - before;
+}
+
+// Balance option (a) card magazine. Picking a gun's Magazine & Salvage card
+// adds one reserve grant at the new rank (progressionByWeapon is read after
+// the pick) to that gun's reserve, never the clip, up to the reserve cap. It
+// lands on the offer's tick, after that tick's weapon step like salvage, so
+// the next step reads it. Returns null for any other card (the gun's other two
+// cards, a general or Pistol card, the Arc Rifle's or Flamethrower's cards) and
+// for an unowned gun.
+export function creditWeaponCardPick(state, { tick, upgradeId, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('weapon card credit tick cannot precede the weapon step');
+  if (typeof upgradeId !== 'string') throw new TypeError('upgradeId must be a string');
+  const weaponId = Object.hasOwn(HMH_MAGAZINE_CARD_WEAPON_IDS, upgradeId) ? HMH_MAGAZINE_CARD_WEAPON_IDS[upgradeId] : null;
+  const weapon = weaponId ? state.weapons?.[weaponId] : null;
+  if (!weapon?.owned || weapon.reserveAmmo === null) return null;
+  const { reserveAmmoGrant } = applyWeaponProgression(weaponId, progressionByWeapon?.[weaponId]);
+  const rounds = addCappedReserve(weapon, reserveAmmoGrant, reserveAmmoGrant);
+  return freezeDeep({ type: 'weapon:card-magazine', tick, weaponId, upgradeId, rounds, reserveAmmo: weapon.reserveAmmo });
+}
+
+// Balance option (a) trickle, inside the weapon step: on every 900-tick
+// boundary an owned finite gun with Magazine & Salvage at rank 2 or 3 gains a
+// quarter or a half of its grant in reserve, up to the cap. Silent: the HUD
+// reads the reserve, and nothing else needs an event.
+function trickleReserves(state, tick, progressionByWeapon) {
+  if (tick === 0 || tick % HMH_RESERVE_TRICKLE_INTERVAL_TICKS !== 0) return;
+  for (const id of Object.keys(SALVAGE_PERMILLE).sort()) {
+    const weapon = state.weapons[id];
+    if (!weapon?.owned || weapon.reserveAmmo === null) continue;
+    const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
+    if (progression.reserveTrickleRounds > 0) addCappedReserve(weapon, progression.reserveTrickleRounds, progression.reserveAmmoGrant);
+  }
+}
+
 // The guns card 2 may focus (package 8.3): owned, with ammo in the clip or the
 // reserve. The War Fork needs none; the Flamethrower counts while it has fuel.
 export function weaponIdsWithAmmo(state) {
@@ -1089,6 +1160,7 @@ export function stepWeaponLoadout(state, {
   if (stowed) fire = false;
   coolWeaponHeat(state, tick, progressionByWeapon, events);
   completeReloads(state, tick, progressionByWeapon, events);
+  trickleReserves(state, tick, progressionByWeapon);
   // Owner playtest 2026-08-02: an exhausted pickup stranded the player
   // weaponless until death. A finite-reserve weapon with no clip, no
   // reserve, and no reload in flight hands control back to the always-owned

@@ -242,6 +242,7 @@ import {
   HMH_WEAPON_DEFINITIONS,
   applyWeaponProgression,
   createWeaponLoadout,
+  creditWeaponCardPick,
   creditWeaponKills,
   getActiveWeaponState,
   getWeaponReadabilityStatus,
@@ -5272,6 +5273,10 @@ async function boot() {
     if (simulation?.state !== 'upgrade' || !runProgression) return;
     const before = getRunProgressionSnapshot(runProgression);
     const selection = selectRunUpgrade(runProgression, upgradeId);
+    // Balance option (a): a gun's Magazine & Salvage card comes with a magazine
+    // for that gun (reserve only, at the new rank), on the offer's tick (the
+    // kernel is frozen on it), so the next weapon step reads it like salvage.
+    if (weaponLoadout) creditWeaponCardPick(weaponLoadout, { tick: simulation.tick, upgradeId, progressionByWeapon: buildProgressionByWeapon(runProgression.ranks) });
     // Cycle 073 (U-4): Digit1/Digit2 and gamepad A are also gameplay keys. A key
     // still held from the pick must not sit in the input state when the ticker
     // restarts, or the first resumed tick would swap weapons or dash.

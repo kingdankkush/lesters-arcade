@@ -8,9 +8,12 @@ import assert from 'node:assert/strict';
 
 import {
   HMH_CRITICAL_HELD_WEAPON_IDS,
+  HMH_MAGAZINE_CARD_WEAPON_IDS,
+  HMH_RESERVE_TRICKLE_INTERVAL_TICKS,
   HMH_WEAPON_DEFINITIONS,
   applyWeaponProgression,
   createWeaponLoadout,
+  creditWeaponCardPick,
   creditWeaponKills,
   grantWeaponPickup,
   stepWeaponLoadout,
@@ -199,4 +202,92 @@ test('every Arc Damage rank adds contact damage and every other Burn Damage rank
 test('the nuke reaches about 1,100 around the hero', () => {
   assert.equal(COLLECTIBLE_EFFECTS['nuke-liquidation'].radius, 1_100);
   assert.equal(COLLECTIBLE_EFFECTS['nuke-liquidation'].damage, 999);
+});
+
+
+// Balance option (a) (build ledger, "Balance option (a)"): the finite guns'
+// ammo sustains their own trees. Both rules are reserve-only, RNG-free,
+// tick-exact and capped, and neither touches the Pistol.
+test('Card magazine: a gun\'s Magazine & Salvage card adds one grant at the new rank to that gun\'s reserve, never the clip, up to the cap, on the offer tick', () => {
+  assert.deepEqual(HMH_MAGAZINE_CARD_WEAPON_IDS, {
+    'scatter-shells': 'scatter-shotgun', 'miner-pool': 'auto-miner', 'rail-mempool': 'hash-rail', 'launcher-bandolier': 'launcher-rig',
+  });
+  const loadout = createWeaponLoadout({ weaponIds: ['coin-blaster', 'scatter-shotgun', 'hash-rail'], seed: 21 });
+  grantWeaponPickup(loadout, { tick: 1, weaponId: 'scatter-shotgun', select: true });
+  const shotgun = loadout.weapons['scatter-shotgun'];
+  for (let tick = 2; tick <= 200; tick += 1) stepWeaponLoadout(loadout, { tick, fire: true, direction: { x: 1, y: 0 } });
+  const clip = shotgun.ammoInClip;
+  const reserve = shotgun.reserveAmmo;
+  assert.ok(reserve < 12, `some shells were fired and reloaded (${reserve} left)`);
+  // The gun's other two cards carry no magazine.
+  const rankOneFire = { 'scatter-shotgun': { branches: { rateOfFire: 1 } } };
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'scatter-pump', progressionByWeapon: rankOneFire }), null);
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'scatter-dump', progressionByWeapon: rankOneFire }), null);
+  assert.equal(shotgun.reserveAmmo, reserve);
+  // The offer opens at the end of tick 200, after its weapon step: the pick lands on that tick,
+  // read at the rank the pick produced (Magazine & Salvage 1: grant 15, cap 30).
+  const rankOne = { 'scatter-shotgun': { branches: { reloadSpeed: 1 } } };
+  const magazine = creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'scatter-shells', progressionByWeapon: rankOne });
+  assert.deepEqual(magazine, { type: 'weapon:card-magazine', tick: 200, weaponId: 'scatter-shotgun', upgradeId: 'scatter-shells', rounds: 15, reserveAmmo: reserve + 15 });
+  assert.equal(shotgun.reserveAmmo, reserve + 15);
+  assert.equal(shotgun.ammoInClip, clip, 'never the clip');
+  assert.throws(() => creditWeaponCardPick(loadout, { tick: 199, upgradeId: 'scatter-shells', progressionByWeapon: rankOne }), /tick/);
+  // The cap is the gun's reserve cap at the new rank (twice the grant), so picks cannot hoard.
+  const rankTwo = { 'scatter-shotgun': { branches: { reloadSpeed: 2 } } };
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'scatter-shells', progressionByWeapon: rankTwo }).rounds, Math.min(18, 36 - (reserve + 15)));
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'scatter-shells', progressionByWeapon: rankTwo }).rounds, 36 - Math.min(36, reserve + 33));
+  assert.equal(shotgun.reserveAmmo, 36);
+  // A reserve already above the cap is never cut.
+  shotgun.reserveAmmo = 50;
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'scatter-shells', progressionByWeapon: rankTwo }).rounds, 0);
+  assert.equal(shotgun.reserveAmmo, 50);
+  // A card of an unowned gun, a Pistol card, a general card and the Ledger's cards credit nothing.
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'rail-mempool' }), null, 'unowned Railgun');
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'proof-of-work' }), null, 'the Pistol is untouched');
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'diamond-hands' }), null, 'a general card');
+  assert.equal(creditWeaponCardPick(loadout, { tick: 200, upgradeId: 'ledger-voltage' }), null, 'not a Magazine & Salvage gun');
+  assert.throws(() => creditWeaponCardPick(loadout, { tick: 200, upgradeId: 42 }), /upgradeId/);
+});
+
+test('Trickle: Magazine & Salvage ranks 2 and 3 add a quarter and a half of the grant to the reserve every 900 ticks, up to the cap; lower ranks and the Pistol trickle nothing', () => {
+  assert.equal(HMH_RESERVE_TRICKLE_INTERVAL_TICKS, 900);
+  assert.deepEqual(['scatter-shotgun', 'auto-miner', 'hash-rail', 'launcher-rig'].map((id) => [0, 1, 2, 3].map((tier) => reserveTier(id, tier).reserveTrickleRounds)), [
+    [0, 0, 5, 12], [0, 0, 90, 240], [0, 0, 6, 15], [0, 0, 3, 8],
+  ]);
+  assert.equal(applyWeaponProgression('coin-blaster', { branches: { reloadSpeed: 3 } }).reserveTrickleRounds, 0);
+  const loadout = createWeaponLoadout({ weaponIds: ['coin-blaster', 'scatter-shotgun', 'hash-rail'], seed: 8 });
+  const tierThree = { 'scatter-shotgun': { branches: { reloadSpeed: 3 } }, 'hash-rail': { branches: { reloadSpeed: 3 } } };
+  grantWeaponPickup(loadout, { tick: 1, weaponId: 'scatter-shotgun', select: false, progressionByWeapon: tierThree });
+  const shotgun = loadout.weapons['scatter-shotgun'];
+  const rail = loadout.weapons['hash-rail'];
+  shotgun.reserveAmmo = 10;
+  // The Pistol is drawn and idle: only the clock moves the reserve, and only on the 900-tick boundary.
+  for (let tick = 2; tick < 900; tick += 1) stepWeaponLoadout(loadout, { tick, fire: false, direction: { x: 1, y: 0 }, progressionByWeapon: tierThree });
+  assert.equal(shotgun.reserveAmmo, 10);
+  stepWeaponLoadout(loadout, { tick: 900, fire: false, direction: { x: 1, y: 0 }, progressionByWeapon: tierThree });
+  assert.equal(shotgun.reserveAmmo, 22, 'half the rank-3 grant (24) at tick 900');
+  assert.equal(rail.reserveAmmo, 0, 'an unowned gun gets nothing');
+  assert.equal(shotgun.ammoInClip, applyWeaponProgression('scatter-shotgun', tierThree['scatter-shotgun']).clipSize, 'never the clip');
+  for (let tick = 901; tick <= 1_800; tick += 1) stepWeaponLoadout(loadout, { tick, fire: false, direction: { x: 1, y: 0 }, progressionByWeapon: tierThree });
+  assert.equal(shotgun.reserveAmmo, 34);
+  shotgun.reserveAmmo = 47;
+  stepWeaponLoadout(loadout, { tick: 2_700, fire: false, direction: { x: 1, y: 0 }, progressionByWeapon: tierThree });
+  assert.equal(shotgun.reserveAmmo, 48, 'capped at twice the grant');
+  // Rank 2 trickles a quarter of its grant (18), rank 1 nothing.
+  const tierTwo = { 'scatter-shotgun': { branches: { reloadSpeed: 2 } } };
+  shotgun.reserveAmmo = 10;
+  stepWeaponLoadout(loadout, { tick: 3_600, fire: false, direction: { x: 1, y: 0 }, progressionByWeapon: tierTwo });
+  assert.equal(shotgun.reserveAmmo, 15);
+  const tierOne = { 'scatter-shotgun': { branches: { reloadSpeed: 1 } } };
+  stepWeaponLoadout(loadout, { tick: 4_500, fire: false, direction: { x: 1, y: 0 }, progressionByWeapon: tierOne });
+  assert.equal(shotgun.reserveAmmo, 15);
+  // A dry gun that trickles a round reloads instead of falling back on that tick.
+  const dry = createWeaponLoadout({ weaponIds: ['coin-blaster', 'scatter-shotgun'], seed: 8 });
+  grantWeaponPickup(dry, { tick: 1, weaponId: 'scatter-shotgun', select: true, progressionByWeapon: tierThree });
+  dry.weapons['scatter-shotgun'].ammoInClip = 0;
+  dry.weapons['scatter-shotgun'].reserveAmmo = 0;
+  const frame = stepWeaponLoadout(dry, { tick: 900, fire: true, direction: { x: 1, y: 0 }, progressionByWeapon: tierThree });
+  assert.equal(dry.activeWeaponId, 'scatter-shotgun');
+  assert.ok(!frame.events.some((event) => event.type === 'weapon:auto-fallback'));
+  assert.ok(frame.events.some((event) => event.type === 'weapon:reload-start'), frame.events.map((event) => event.type).join(','));
 });

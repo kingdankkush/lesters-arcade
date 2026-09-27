@@ -183,49 +183,49 @@
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "range": "close",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 274,
-      "triggerAccuracy": 0.6732,
-      "damageApplied": 3671,
-      "sustainedDps": 122.37,
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 313,
+      "triggerAccuracy": 0.6576,
+      "damageApplied": 4382,
+      "sustainedDps": 146.07,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 0.1,
-      "reloadDowntimeSeconds": 7.3,
-      "emptySeconds": 6.15,
-      "reserveRemaining": 0
+      "reloadDowntimeSeconds": 9.73,
+      "emptySeconds": 0,
+      "reserveRemaining": 16
     },
     {
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "range": "mid",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 71,
-      "triggerAccuracy": 0.1744,
-      "damageApplied": 829,
-      "sustainedDps": 27.63,
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 68,
+      "triggerAccuracy": 0.1429,
+      "damageApplied": 952,
+      "sustainedDps": 31.73,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 3.667,
-      "reloadDowntimeSeconds": 7.3,
-      "emptySeconds": 6.15,
-      "reserveRemaining": 0
+      "reloadDowntimeSeconds": 9.73,
+      "emptySeconds": 0,
+      "reserveRemaining": 16
     },
     {
       "weaponId": "scatter-shotgun",
       "tier": "maxed",
       "range": "long",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 15,
-      "triggerAccuracy": 0.0369,
-      "damageApplied": 45,
-      "sustainedDps": 1.5,
-      "timeToFirstHitSeconds": 23.967,
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 0,
+      "triggerAccuracy": 0,
+      "damageApplied": 0,
+      "sustainedDps": 0,
+      "timeToFirstHitSeconds": null,
       "timeToKillSeconds": null,
-      "reloadDowntimeSeconds": 7.3,
-      "emptySeconds": 6.15,
-      "reserveRemaining": 0
+      "reloadDowntimeSeconds": 9.73,
+      "emptySeconds": 0,
+      "reserveRemaining": 16
     },
     {
       "weaponId": "auto-miner",
@@ -289,7 +289,7 @@
       "timeToKillSeconds": 1.55,
       "reloadDowntimeSeconds": 1.55,
       "emptySeconds": 0,
-      "reserveRemaining": 300
+      "reserveRemaining": 780
     },
     {
       "weaponId": "auto-miner",
@@ -305,7 +305,7 @@
       "timeToKillSeconds": 1.55,
       "reloadDowntimeSeconds": 1.55,
       "emptySeconds": 0,
-      "reserveRemaining": 300
+      "reserveRemaining": 780
     },
     {
       "weaponId": "auto-miner",
@@ -321,7 +321,7 @@
       "timeToKillSeconds": 4.467,
       "reloadDowntimeSeconds": 1.55,
       "emptySeconds": 0,
-      "reserveRemaining": 300
+      "reserveRemaining": 780
     },
     {
       "weaponId": "launcher-rig",
@@ -375,49 +375,49 @@
       "weaponId": "launcher-rig",
       "tier": "maxed",
       "range": "close",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 62,
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
       "triggerAccuracy": 1,
-      "damageApplied": 1980,
-      "sustainedDps": 66,
+      "damageApplied": 2520,
+      "sustainedDps": 84,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 1.05,
-      "reloadDowntimeSeconds": 4.25,
-      "emptySeconds": 7.6,
-      "reserveRemaining": 0
+      "reloadDowntimeSeconds": 5.67,
+      "emptySeconds": 0,
+      "reserveRemaining": 8
     },
     {
       "weaponId": "launcher-rig",
       "tier": "maxed",
       "range": "mid",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 62,
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
       "triggerAccuracy": 1,
-      "damageApplied": 1980,
-      "sustainedDps": 66,
+      "damageApplied": 2520,
+      "sustainedDps": 84,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 1.05,
-      "reloadDowntimeSeconds": 4.25,
-      "emptySeconds": 7.6,
-      "reserveRemaining": 0
+      "reloadDowntimeSeconds": 5.67,
+      "emptySeconds": 0,
+      "reserveRemaining": 8
     },
     {
       "weaponId": "launcher-rig",
       "tier": "maxed",
       "range": "long",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 62,
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
       "triggerAccuracy": 1,
-      "damageApplied": 1980,
-      "sustainedDps": 66,
+      "damageApplied": 2520,
+      "sustainedDps": 84,
       "timeToFirstHitSeconds": 0.1,
       "timeToKillSeconds": 1.05,
-      "reloadDowntimeSeconds": 4.25,
-      "emptySeconds": 7.6,
-      "reserveRemaining": 0
+      "reloadDowntimeSeconds": 5.67,
+      "emptySeconds": 0,
+      "reserveRemaining": 8
     },
     {
       "weaponId": "hash-rail",
@@ -481,7 +481,7 @@
       "timeToKillSeconds": 3.067,
       "reloadDowntimeSeconds": 3.6,
       "emptySeconds": 0,
-      "reserveRemaining": 20
+      "reserveRemaining": 50
     },
     {
       "weaponId": "hash-rail",
@@ -497,7 +497,7 @@
       "timeToKillSeconds": 3.067,
       "reloadDowntimeSeconds": 3.6,
       "emptySeconds": 0,
-      "reserveRemaining": 20
+      "reserveRemaining": 50
     },
     {
       "weaponId": "hash-rail",
@@ -513,7 +513,7 @@
       "timeToKillSeconds": 3.067,
       "reloadDowntimeSeconds": 3.6,
       "emptySeconds": 0,
-      "reserveRemaining": 20
+      "reserveRemaining": 50
     }
   ],
   "movingRows": [
@@ -740,10 +740,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 218,
-      "movingHitRate": 0.5356
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 257,
+      "movingHitRate": 0.5399
     },
     {
       "weaponId": "scatter-shotgun",
@@ -752,10 +752,10 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 288,
-      "movingHitRate": 0.7076
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 330,
+      "movingHitRate": 0.6933
     },
     {
       "weaponId": "scatter-shotgun",
@@ -764,10 +764,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 133,
-      "movingHitRate": 0.3268
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 159,
+      "movingHitRate": 0.334
     },
     {
       "weaponId": "scatter-shotgun",
@@ -776,10 +776,10 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 127,
-      "movingHitRate": 0.312
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 136,
+      "movingHitRate": 0.2857
     },
     {
       "weaponId": "scatter-shotgun",
@@ -788,10 +788,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 3,
-      "movingHitRate": 0.0074
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 0,
+      "movingHitRate": 0
     },
     {
       "weaponId": "scatter-shotgun",
@@ -800,10 +800,10 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 43,
-      "projectilesEmitted": 407,
-      "contacts": 15,
-      "movingHitRate": 0.0369
+      "shotsFired": 34,
+      "projectilesEmitted": 476,
+      "contacts": 0,
+      "movingHitRate": 0
     },
     {
       "weaponId": "auto-miner",
@@ -1028,10 +1028,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 49,
-      "movingHitRate": 0.7903
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
+      "movingHitRate": 1
     },
     {
       "weaponId": "launcher-rig",
@@ -1040,9 +1040,9 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 62,
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
       "movingHitRate": 1
     },
     {
@@ -1052,10 +1052,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 49,
-      "movingHitRate": 0.7903
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
+      "movingHitRate": 1
     },
     {
       "weaponId": "launcher-rig",
@@ -1064,9 +1064,9 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 62,
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
       "movingHitRate": 1
     },
     {
@@ -1076,10 +1076,10 @@
       "strafe": "rusher",
       "strafeSpeed": 220,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 49,
-      "movingHitRate": 0.7903
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
+      "movingHitRate": 1
     },
     {
       "weaponId": "launcher-rig",
@@ -1088,9 +1088,9 @@
       "strafe": "walker",
       "strafeSpeed": 116,
       "hurtboxPolicyId": "cycle-045-swarm-forgiving-ordinary-enemy-hurtbox-v2",
-      "shotsFired": 39,
-      "projectilesEmitted": 62,
-      "contacts": 62,
+      "shotsFired": 30,
+      "projectilesEmitted": 60,
+      "contacts": 60,
       "movingHitRate": 1
     },
     {
@@ -1618,16 +1618,16 @@
       "packSize": 8,
       "range": "mid",
       "windowSeconds": 60,
-      "shotsFired": 84,
-      "projectilesEmitted": 730,
-      "contacts": 269,
-      "damageApplied": 3414,
-      "overkillDamage": 471,
-      "output60": 2943,
-      "killed": 49,
-      "packsCleared": 6,
-      "emptySeconds": 14.75,
-      "reserveRemaining": 0
+      "shotsFired": 68,
+      "projectilesEmitted": 910,
+      "contacts": 314,
+      "damageApplied": 4396,
+      "overkillDamage": 620,
+      "output60": 3776,
+      "killed": 62,
+      "packsCleared": 7,
+      "emptySeconds": 0,
+      "reserveRemaining": 32
     },
     {
       "weaponId": "auto-miner",
@@ -1661,7 +1661,7 @@
       "killed": 29,
       "packsCleared": 3,
       "emptySeconds": 0,
-      "reserveRemaining": 600
+      "reserveRemaining": 960
     },
     {
       "weaponId": "launcher-rig",
@@ -1686,16 +1686,16 @@
       "packSize": 8,
       "range": "mid",
       "windowSeconds": 60,
-      "shotsFired": 86,
-      "projectilesEmitted": 125,
-      "contacts": 365,
-      "damageApplied": 13497,
-      "overkillDamage": 3792,
-      "output60": 9705,
-      "killed": 161,
-      "packsCleared": 20,
-      "emptySeconds": 21.47,
-      "reserveRemaining": 0
+      "shotsFired": 60,
+      "projectilesEmitted": 120,
+      "contacts": 480,
+      "damageApplied": 20160,
+      "overkillDamage": 5760,
+      "output60": 14400,
+      "killed": 240,
+      "packsCleared": 30,
+      "emptySeconds": 0,
+      "reserveRemaining": 8
     },
     {
       "weaponId": "hash-rail",
@@ -1729,7 +1729,7 @@
       "killed": 28,
       "packsCleared": 3,
       "emptySeconds": 0,
-      "reserveRemaining": 35
+      "reserveRemaining": 60
     }
   ]
 }

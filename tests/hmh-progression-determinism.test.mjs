@@ -29,6 +29,7 @@ import {
 import {
   HMH_WEAPON_ORDER,
   createWeaponLoadout,
+  creditWeaponCardPick,
   creditWeaponKills,
   grantWeaponPickup,
   progressionByWeapon,
@@ -96,6 +97,7 @@ function headlessRun({ seed, partition }) {
   const offers = [];
   let kills = 0;
   let salvagedRounds = 0;
+  let magazineRounds = 0;
   simulation.onStep(({ tick }) => {
     const progression = context.runProgression;
     const byWeapon = progressionByWeapon(progression.ranks);
@@ -144,6 +146,8 @@ function headlessRun({ seed, partition }) {
       offers.push(`${simulation.tick}:${pendingChoices.map((choice) => `${choice.id}@${choice.weaponId ?? '-'}`).join('|')}`);
       const pick = pendingChoices[Math.floor(seededUnit(seed, `pick:${progression.selectionSequence}`) * pendingChoices.length)];
       const selection = selectRunUpgrade(progression, pick.id);
+      // As main.mjs's applySelectedUpgrade: the card magazine, on the offer's tick.
+      magazineRounds += creditWeaponCardPick(loadout, { tick: simulation.tick, upgradeId: pick.id, progressionByWeapon: progressionByWeapon(progression.ranks) })?.rounds ?? 0;
       if (context.V6_UPGRADE_IDS.has(pick.id)) recordRunUpgradeSelection(context.runSummaryAccumulator, pick.id);
       if (!(selection.snapshot.pendingLevels > 0 && context.openLevelOffer())) simulation.leaveUpgrade();
     }
@@ -162,12 +166,12 @@ function headlessRun({ seed, partition }) {
     score: snapshot.score, level: snapshot.level, xp: snapshot.xp, currentCombo: 0, maxCombo: 0, revealedCells: 0, totalCells: 1,
   });
   const evidence = JSON.stringify({
-    summary, offers, painted, salvagedRounds,
+    summary, offers, painted, salvagedRounds, magazineRounds,
     upgrades: runUpgradeRows(progression), progression: runProgressionRow(progression), ranks: progression.ranks, focus: progression.focusWeaponId,
     loadout: { active: loadout.activeWeaponId, sequence: loadout.sequence, weapons: loadout.weapons },
     grenades: { sequence: grenades.sequence, active: grenades.active },
   });
-  return { digest: createHash('sha256').update(evidence).digest('hex'), offers, progression, loadout, salvagedRounds };
+  return { digest: createHash('sha256').update(evidence).digest('hex'), offers, progression, loadout, salvagedRounds, magazineRounds };
 }
 
 test('two runs of one seed give one digest, and the run really re-rolls, focuses guns and salvages', () => {
@@ -177,6 +181,7 @@ test('two runs of one seed give one digest, and the run really re-rolls, focuses
   assert.ok(first.progression.rerolls >= 5, `re-rolls happen (${first.progression.rerolls})`);
   assert.ok(first.offers.some((offer) => /@scatter-shotgun/.test(offer)) && first.offers.some((offer) => /@hash-rail/.test(offer)), 'card 2 follows the guns');
   assert.ok(first.salvagedRounds > 0, `salvage refunds rounds (${first.salvagedRounds})`);
+  assert.ok(first.magazineRounds > 0, `a Magazine & Salvage pick refills its gun (${first.magazineRounds})`);
   assert.notEqual(headlessRun({ seed: 0x5eee, partition: 1 }).digest, first.digest, 'a different seed changes the evidence');
 });
 
