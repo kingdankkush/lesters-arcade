@@ -1,21 +1,17 @@
 {
   "schemaVersion": 1,
   "gate": "hmh-reboot-test-retirement",
-  "status": "FAIL",
+  "status": "PASS",
   "counts": {
-    "tests": 5757,
-    "failed": 54,
-    "passed": 5703,
+    "tests": 5759,
+    "failed": 51,
+    "passed": 5708,
     "cancelled": 0,
     "skipped": 0,
     "todo": 0,
-    "topLevel": 5690,
+    "topLevel": 5692,
     "suites": 8
   },
   "expectedFailureCount": 51,
-  "errors": [
-    "unexpected failure: tests/local-chain-rehearsal-http.test.mjs :: the live CLI plays one Ranked session per game over HTTP and JSON-RPC: plan first, --yes to spend, no secret printed\n    [\"lester-blaster:seed-ticket\"]\n    \n    1 !== 0",
-    "unexpected failure: tests/local-chain-rehearsal.test.mjs :: the driver plays one Ranked session per game in process, and every negative check holds\n    [\"lester-blaster:seed-ticket\"]\n    \n    false !== true",
-    "unexpected failure: tests/nft-phase2-rehearsal.test.mjs :: phase 2 on the local stack: define the approved subset, setMinter(relayer), backfill, index, E6, tokenURI, no second mint\n    [{\"id\":\"settled-run\",\"ok\":false,\"sessionId32\":null,\"earned\":[]}]\n    \n    false !== true"
-  ]
+  "errors": []
 }
