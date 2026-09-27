@@ -25,6 +25,9 @@ const PIPELINES = [
   // standalone, and it reads the rim colour for the look-dev group. It is the
   // newest place a fifth light rig could be pasted in.
   'import-hmh-external-model.py',
+  // The world-kit bridge pipeline (S4.9) lights whole crossings with sun
+  // lights; it still takes every colour and energy from the rig.
+  'create-hmh-bridge-kit.py',
 ];
 
 const readPipeline = (name) =>
@@ -44,7 +47,7 @@ test('the shared rig is well formed and projection-only', async () => {
   // Energy is per family on purpose — see the rig's `contract` field. Colour is
   // the shared part; imposing one key/fill ratio on every family washed the
   // contrast out of the props.
-  for (const family of ['hero', 'enemy', 'prop']) {
+  for (const family of ['hero', 'enemy', 'prop', 'world-kit']) {
     for (const channel of ['key', 'fill', 'rim']) {
       assert.ok(rig.energy[family][channel] > 0, `${family} ${channel} needs an energy`);
     }

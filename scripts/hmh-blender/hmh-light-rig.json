@@ -40,6 +40,12 @@
       "key": 428,
       "fill": 164,
       "rim": 226
+    },
+    "world-kit": {
+      "key": 3.4,
+      "fill": 0.95,
+      "rim": 1.9
     }
-  }
+  },
+  "worldKitNote": "world-kit energies are SUN strengths (W/m2), not area-light watts: the bridge kit lights whole 500-unit crossings, where area lights at prop distance would fall off across the span. Colours stay the shared contract."
 }

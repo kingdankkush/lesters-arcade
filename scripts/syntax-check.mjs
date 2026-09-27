@@ -20,6 +20,8 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'apps/hmh-reboot/src/bridge-kit.mjs',
+  'tests/hmh-bridge-kit.test.mjs',
   'scripts/hmh-perf-crowd-bench.mjs',
   'scripts/lib/hmh-perf-analysis.mjs',
   'tests/hmh-perf-crowd-bench.test.mjs',
@@ -1165,6 +1167,8 @@ const PY_COMPILE_FILES = [
   "scripts/hmh-blender/create-hmh-authored-props.py",
   "scripts/hmh-blender/export-hmh-authored-props.py",
   "scripts/run-hmh-authored-props-pipeline.py",
+  "scripts/hmh-blender/create-hmh-bridge-kit.py",
+  "scripts/run-hmh-bridge-kit-pipeline.py",
   "scripts/hmh-blender/create-hmh-held-weapons.py",
   "scripts/hmh-blender/export-hmh-held-weapons.py",
   "scripts/run-hmh-held-weapons-pipeline.py",
