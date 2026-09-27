@@ -321,7 +321,7 @@ let WORLD_BLOCKERS = LEVEL_ONE_WORLD.collisionBlockers;
 // V-2: authored blocker id -> visualKind, so a shot stopping on cover can be
 // classed as rock, metal or splintering wood from frozen world data alone.
 const BLOCKER_VISUAL_KIND = new Map(LEVEL_ONE_WORLD.blockers.map((blocker) => [blocker.collisionBlockerId, blocker.visualKind]));
-const queryGround = createLevelOneGroundQuery();
+let queryGround = createLevelOneGroundQuery();
 // Deterministic navgrid bakes after the first interactive frame; the flow field
 // refreshes on a fixed tick cadence inside the simulation step. The authority
 // (K-7) is the only path a session may take to the grid: `require()` throws
@@ -1238,6 +1238,13 @@ async function boot() {
   const directorDebugEnabled = runtimeParams.get('director') === '1';
   const bossDebugEnabled = runtimeParams.get('boss') === '1';
   const evidenceSafeEnabled = runtimeParams.get('evidenceSafe') === '1';
+  // Layout v2 greybox (dark pilot): evidence only, and initializeSession
+  // refuses a Ranked session while it is mounted.
+  const layoutV2 = evidenceSafeEnabled && runtimeParams.get('layoutV2') === '1'
+    ? (await import('./layout-v2-pilot.mjs')).mountLayoutV2Pilot({ GraphicsClass: Graphics, ContainerClass: Container, TextClass: Text, world, hide: [worldProduction.root, worldDecalLayer, worldLife.ground, worldLife.overlay, authoredPropLayer] })
+    : null;
+  const baseBlockers = layoutV2?.world.collisionBlockers ?? LEVEL_ONE_WORLD.collisionBlockers;
+  if (layoutV2) { queryGround = layoutV2.queryGround; WORLD_BLOCKERS = baseBlockers; dataset.layoutV2 = '1'; }
   const endurancePressurePilotEnabled = evidenceSafeEnabled && runtimeParams.get('endurancePressurePilot') === '1';
   const buildEnduranceEncounterCandidates = endurancePressurePilotEnabled
     ? (await import('./encounter-endurance-pilot.mjs')).buildEnduranceEncounterCandidates
@@ -2852,6 +2859,7 @@ async function boot() {
     // K-7: fail loud, never on a partial grid. Boot order guarantees the
     // authority holds the completed grid before bridge.activate() or the
     // standalone payload can reach here; this is the invariant, not a wait.
+    if (layoutV2 && payload.mode === 'ranked') throw new Error('The layoutV2 pilot never runs Ranked');
     const navGrid = navGridAuthority.require();
     stopCurrentSession();
     combatAudio.pause();
@@ -2871,8 +2879,8 @@ async function boot() {
     if (startupContinue) { startupContinue.hidden = true; startupContinue.disabled = false; }
     if (startupCopy) startupCopy.textContent = 'Loading your hero and the Frontier…';
     dataset.startupArt = 'loading';
-    for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
-    WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
+    for(const gateId of worldDesignState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,baseBlockers);
+    WORLD_BLOCKERS=baseBlockers;
     worldDesignState=createWorldDesignState();
     worldSecretState=createWorldDesignSecretState();
     worldDestructibleState=createWorldDestructibleState();
@@ -3370,7 +3378,7 @@ async function boot() {
         recordRunMilestone(runSummaryAccumulator,{type:'site-operated',id:event.siteId,tick});
         collectibleState.unlockedObjectives.add(event.siteId);
         if(event.gateId) {
-          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
+          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,baseBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,event.gateId,WORLD_BLOCKERS);
           enemyFlowFieldTick=-1; enemyFlowField=null;
         }
@@ -4363,14 +4371,14 @@ async function boot() {
           worldSecretState.sealHealth=sealDamage.health;
           if(sealDamage.health<=0) {
             worldDesignState.openGates.add(WORLD_DESIGN_SECRET_SEAL.id);
-            WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
+            WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,baseBlockers);
             refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,WORLD_DESIGN_SECRET_SEAL.id,WORLD_BLOCKERS);
             enemyFlowFieldTick=-1; enemyFlowField=null;
           }
         }
         for(const broken of applyWorldDestructibleDamage(worldDestructibleState,{targets:lastCombatResolution.targets,tick})) {
           worldDesignState.openGates.add(broken.id);
-          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,LEVEL_ONE_WORLD.collisionBlockers);
+          WORLD_BLOCKERS=worldDesignActiveBlockers(worldDesignState,baseBlockers);
           refreshWorldDesignGateNavigation(ENEMY_NAV_GRID,LEVEL_ONE_WORLD,queryGround,broken.id,WORLD_BLOCKERS);
           enemyFlowFieldTick=-1;enemyFlowField=null;
           combatAudio.play('land',{volume:.14});
@@ -5070,7 +5078,7 @@ async function boot() {
   await firstInteractiveFrame();
   dataset.bootFirstFrame = 'true';
   const navGridStartedAt = performance.now();
-  ENEMY_NAV_GRID = await createEnemyNavGridChunked({ world: LEVEL_ONE_WORLD, queryGround, cellsPerSlice: 512 });
+  ENEMY_NAV_GRID = await createEnemyNavGridChunked({ world: layoutV2?.world ?? LEVEL_ONE_WORLD, queryGround, cellsPerSlice: 512 });
   navGridAuthority.adopt(ENEMY_NAV_GRID);
   dataset.navGridBootMs = (performance.now() - navGridStartedAt).toFixed(1);
   dataset.navGridReady = 'true';

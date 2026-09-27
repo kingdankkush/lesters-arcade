@@ -81,7 +81,7 @@ test('the exact runtime restart loop recloses previously opened gate navigation'
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs',import.meta.url),'utf8');
   const restart = source.match(/for\(const gateId of worldDesignState\.openGates\)[^\n]+\n\s*WORLD_BLOCKERS=[^\n]+\n\s*worldDesignState=[^\n]+;/)?.[0];
   assert.ok(restart,'inspect the actual runtime reset, not a copied implementation');
-  const context = {worldDesignState:state,navGrid,LEVEL_ONE_WORLD,queryGround,refreshWorldDesignGateNavigation,createWorldDesignState};
+  const context = {worldDesignState:state,navGrid,LEVEL_ONE_WORLD,baseBlockers:LEVEL_ONE_WORLD.collisionBlockers,queryGround,refreshWorldDesignGateNavigation,createWorldDesignState};
   runInNewContext(restart,context);
   assert.deepEqual(arrays(navGrid),closed);
   assert.equal(context.worldDesignState.openGates.size,0);
