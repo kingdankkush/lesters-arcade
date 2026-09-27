@@ -67,6 +67,22 @@ Heroes and Chikun music paths are unchanged.
   Heroes Free level and requires its music playing on the HMH queue. Report:
   `.tmp/stacked-music-autoplay/report.json`.
 
+## Recorded run (2026-09-27, on the 1.8.6 head c4ededa4)
+
+Built with `npm run build` (HMH initial JS + shared 1,044,585 B of 1,048,576 B),
+then under the heavy lock:
+
+- `npm run smoke:stacked:music` passed. Default policy: run 1
+  `hard-money-heroes-16-bit-arcade-music-alt`, run 2
+  `speedster-16-bit-arcade-music-track-2`. `user-gesture-required`: run 1
+  `lit-country-16-bit-arcade-music-track-2`, run 2
+  `midnight-lit-16-bit-arcade-music`; the HMH level played
+  `lit-fantasy-16-bit-arcade-music-track-1`. Four runs, four starting tracks.
+- `node scripts/stacked-playable-browser-smoke.mjs`: 6 Free flows passed;
+  `ranked-preview` NOT RUN because the served portal has `SETTLEMENT_LIVE` on.
+- `npm run smoke:portal:e2e`: 7 flows passed; `ranked-preview` NOT RUN for the
+  same reason.
+
 ## Known follow-ups
 
 - Pausing STACKED does not pause the arcade music (HMH does). Unchanged here.
