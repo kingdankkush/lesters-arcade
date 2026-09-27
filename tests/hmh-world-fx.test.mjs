@@ -13,7 +13,7 @@ import {
 } from '../apps/hmh-reboot/src/world-mood.mjs';
 import {
   DEEP_UNITS, FOAM_BANDS, SHALLOWS_UNITS, buildShoreField, buildShoreSegments, createWaterFx, exposedShoreEdges, fieldRects,
-  resolveFoamBand, waterContains, waterCoverRects, waterSparkleAnchors,
+  foamSpan, resolveFoamBand, waterContains, waterCoverRects, waterSparkleAnchors,
 } from '../apps/hmh-reboot/src/world-water-fx.mjs';
 import {
   AMBIENT_STEP_TICKS, SCORCH_FULL_KILLS, buildAmbientSources, buildScorchMarks, createAmbientFx, createKillTracker, createSpritePool,
@@ -137,7 +137,7 @@ test('the grade is a multiply quad under the cap and the cockpit mirror is --hmh
   assert.ok(grade.alpha <= MOOD_TINT_MAX_ALPHA);
   const css = moodCssProperties(night);
   assert.deepEqual(css.map(([name]) => name), ['--hmh-mood-tint', '--hmh-mood-tint-alpha', '--hmh-mood-vignette', '--hmh-mood-glow', '--hmh-mood-rain', '--hmh-mood-ash', '--hmh-mood-night']);
-  assert.equal(css[0][1], '#7040a4');
+  assert.equal(css[0][1], '#6a28c8');
   assert.equal(css[6][1], '1.00');
 });
 
@@ -289,6 +289,10 @@ test('foam bands crawl to the shore, fade before they wrap and hold still under 
   }
   assert.ok(resolveFoamBand(0, 0).alpha < 0.02 && resolveFoamBand(0, 149).alpha < 0.02, 'a band is invisible at its wrap');
   assert.deepEqual(resolveFoamBand(1, 10, true), resolveFoamBand(1, 999, true));
+  // Foam dashes are only generated for the stretch of a bank inside the view.
+  assert.deepEqual(foamSpan(0, 0, 0, 1, 0, 4_800, -10, 10, 1_000, 1_500), [1_000, 1_500]);
+  assert.equal(foamSpan(0, 0, 0, 1, 0, 4_800, 20, 30, 1_000, 1_500), null, 'a bank beside the view draws nothing');
+  assert.deepEqual(foamSpan(100, 0, -1, 0, 5, 95, 0, 50, -1, 1), [50, 95]);
 });
 
 test('the water container is one world-space transform with a deep tint, masked caustics and foam', () => {

@@ -71,10 +71,12 @@ export function exposedShoreEdges(surfaces) {
 export const WATER_FX_ART_ID = 'projection-water-fx-v1';
 export const SHORE_FIELD_CELL = 16;
 export const SHALLOWS_UNITS = 104;
-export const DEEP_UNITS = 150;
+export const DEEP_UNITS = 130;
+export const DEEP_BANDS = Object.freeze([[DEEP_UNITS, 0.06], [DEEP_UNITS + 40, 0.06], [DEEP_UNITS + 80, 0.07]]);
 export const FOAM_REACH_UNITS = 58;
 export const FOAM_BANDS = 3;
 export const FOAM_PERIOD_TICKS = 150;
+export const FOAM_DASH_UNITS = 26;
 
 const F = Object.freeze;
 
@@ -231,6 +233,17 @@ export function resolveFoamBand(band, tick, reduceMotion = false) {
   return F({ offset, alpha });
 }
 
+// Clip the stretch [lo, hi] of a bank (origin + u * along) to a rectangle.
+export function foamSpan(ax, ay, ux, uy, lo, hi, minX, maxX, minY, maxY) {
+  for (const [p, d, min, max] of [[ax, ux, minX, maxX], [ay, uy, minY, maxY]]) {
+    if (Math.abs(d) < 1e-9) { if (p < min || p > max) return null; continue; }
+    const t1 = (min - p) / d, t2 = (max - p) / d;
+    lo = Math.max(lo, Math.min(t1, t2));
+    hi = Math.min(hi, Math.max(t1, t2));
+  }
+  return lo < hi ? [lo, hi] : null;
+}
+
 export function createWaterFx({ ContainerClass, GraphicsClass, TilingSpriteClass, causticTexture, world, profile } = {}) {
   const segments = buildShoreSegments({ surfaces: world.surfaces, bounds: world.bounds });
   const field = buildShoreField({ surfaces: world.surfaces, segments });
@@ -240,8 +253,12 @@ export function createWaterFx({ ContainerClass, GraphicsClass, TilingSpriteClass
   container.label = 'world-water-fx';
   const deep = new GraphicsClass();
   deep.label = 'world-water-deep';
-  for (const rect of fieldRects(field, (value) => value > DEEP_UNITS)) deep.rect(rect.x, rect.y, rect.width, rect.height);
-  deep.fill({ color: 0x04202e, alpha: 0.24 });
+  // Three stacked bands instead of one hard edge: the channel darkens by
+  // steps of ~0.06 as it deepens, so no rectangle outline reads.
+  for (const [from, alpha] of DEEP_BANDS) {
+    for (const rect of fieldRects(field, (value) => value > from)) deep.rect(rect.x, rect.y, rect.width, rect.height);
+    deep.fill({ color: 0x04202e, alpha });
+  }
   const shallowMask = new GraphicsClass();
   shallowMask.label = 'world-water-shallows-mask';
   for (const rect of fieldRects(field, (value) => value <= SHALLOWS_UNITS)) shallowMask.rect(rect.x, rect.y, rect.width, rect.height);
@@ -297,15 +314,27 @@ export function createWaterFx({ ContainerClass, GraphicsClass, TilingSpriteClass
       for (let band = 0; band < FOAM_BANDS; band += 1) {
         const { offset, alpha } = resolveFoamBand(band, still, reduceMotion);
         if (alpha <= 0.01) continue;
-        for (const segment of segments) {
-          if (Math.max(segment.ax, segment.bx) < camera.x - halfW - offset || Math.min(segment.ax, segment.bx) > camera.x + halfW + offset
-            || Math.max(segment.ay, segment.by) < camera.y - halfH - offset || Math.min(segment.ay, segment.by) > camera.y + halfH + offset) continue;
+        for (let index = 0; index < segments.length; index += 1) {
+          const segment = segments[index];
+          // Broken foam: hashed dashes along the bank, each lapping in and out
+          // on its own phase, so the band reads as surf and not as a ruled line.
           const length = Math.hypot(segment.bx - segment.ax, segment.by - segment.ay);
-          const inset = Math.min(offset, length * 0.3) / length;
-          const ox = segment.nx * offset, oy = segment.ny * offset;
-          foam.moveTo(segment.ax + (segment.bx - segment.ax) * inset + ox, segment.ay + (segment.by - segment.ay) * inset + oy)
-            .lineTo(segment.bx - (segment.bx - segment.ax) * inset + ox, segment.by - (segment.by - segment.ay) * inset + oy);
-          report.foamSegments += 1;
+          const ux = (segment.bx - segment.ax) / length, uy = (segment.by - segment.ay) / length;
+          const span = foamSpan(segment.ax, segment.ay, ux, uy, Math.min(offset, length * 0.3), length - Math.min(offset, length * 0.3),
+            camera.x - halfW - FOAM_DASH_UNITS, camera.x + halfW + FOAM_DASH_UNITS, camera.y - halfH - FOAM_DASH_UNITS, camera.y + halfH + FOAM_DASH_UNITS);
+          if (!span) continue;
+          for (let cell = Math.floor(span[0] / FOAM_DASH_UNITS); cell * FOAM_DASH_UNITS < span[1]; cell += 1) {
+            const along = Math.max(span[0], cell * FOAM_DASH_UNITS);
+            let h = Math.imul(cell ^ Math.imul(band + 1, 0x9e3779b1) ^ Math.imul(index + 7, 0x85ebca6b), 0x27d4eb2d);
+            h = ((h ^ (h >>> 15)) >>> 0) / 0x1_0000_0000;
+            if (h < 0.28) continue;
+            const lap = offset + Math.sin(along * 0.045 + still * 0.05 + h * 6.283) * 4;
+            const dash = Math.min(FOAM_DASH_UNITS * (0.45 + 0.45 * h), span[1] - along);
+            if (dash <= 2) continue;
+            const x = segment.ax + ux * along + segment.nx * lap, y = segment.ay + uy * along + segment.ny * lap;
+            foam.moveTo(x, y).lineTo(x + ux * dash, y + uy * dash);
+            report.foamSegments += 1;
+          }
         }
         foam.stroke({ color: 0xe6fbff, width: band === 0 ? 3.2 : 2.2, alpha, cap: 'round' });
       }

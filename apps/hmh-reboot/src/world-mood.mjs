@@ -33,8 +33,8 @@ export const DISTRICT_MOOD = F({
   'rugpull-ravine': mood({ tint: 0xe4b484, tintAlpha: 0.1, vignette: 0.26, glow: 0.25, bright: 1 }),
   'liquidity-crossing': mood({ tint: 0x94bce4, tintAlpha: 0.08, vignette: 0.22, glow: 0.35, bright: 1 }),
   hashwood: mood({ tint: 0x74ac8c, tintAlpha: 0.12, vignette: 0.32, glow: 0.5, rain: 0.55, bright: 0.25 }),
-  'mining-camp': mood({ tint: 0x5058bc, tintAlpha: 0.17, vignette: 0.44, glow: 0.9, ash: 0.85, bright: 0, night: 1 }),
-  'liquidation-yard': mood({ tint: 0x7040a4, tintAlpha: 0.18, vignette: 0.48, glow: 1, rain: 1, bright: 0, night: 1 }),
+  'mining-camp': mood({ tint: 0x3050e0, tintAlpha: 0.17, vignette: 0.44, glow: 0.9, ash: 0.85, bright: 0, night: 1 }),
+  'liquidation-yard': mood({ tint: 0x6a28c8, tintAlpha: 0.18, vignette: 0.48, glow: 1, rain: 1, bright: 0, night: 1 }),
 });
 
 const channel = (color, shift) => (color >> shift) & 0xff;
@@ -140,7 +140,7 @@ const frac = (value) => value - Math.floor(value);
 // to the ground. ash: slow flecks drifting down with a two-sine sway whose
 // periods are incommensurate (ratio sqrt 2), so the path never visibly loops.
 export const WEATHER = F({
-  rain: F({ cell: 96, perCell: 1, period: 26, fall: 170, length: 13, width: 1.7, color: 0xb4ccff, alpha: 0.34 }),
+  rain: F({ cell: 96, perCell: 1, period: 26, fall: 170, length: 19, width: 2.2, color: 0xc8dcff, alpha: 0.55 }),
   ash: F({ cell: 150, perCell: 1, period: 720, fall: 150, vx: 0.05, swayA: 11, swayB: 6, periodA: 173, size: 2.2, color: 0xcfc6bc, color2: 0xff9a70, alpha: 0.5 }),
 });
 

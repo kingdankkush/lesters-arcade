@@ -260,7 +260,7 @@ export function createAmbientFx({ ContainerClass, SpriteClass, textures, world, 
       else if (!reduceMotion && microLifeBlink(lamp.id, tick)) { level = 0.45; report.blinks += 1; }
       const screen = project(worldToScreen, camera, view, lamp.x, lamp.y, queryGround(lamp.x, lamp.y).groundZ + lamp.lift);
       const radius = lamp.radius * (0.7 + 0.5 * glow) * zoom;
-      if (!air.place(textures.glow, screen.x, screen.y, radius * 2, radius * 2, 0, lamp.color, (0.16 + 0.5 * glow) * level, true)) break;
+      if (!air.place(textures.glow, screen.x, screen.y, radius * 2, radius * 2, 0, lamp.color, (0.04 + 0.5 * glow * glow) * level, true)) break;
       report.glows += 1;
     }
     // Smoke, stepped at 7.5 Hz.
