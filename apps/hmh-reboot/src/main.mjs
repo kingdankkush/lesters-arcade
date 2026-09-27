@@ -1241,7 +1241,7 @@ async function boot() {
   // Layout v2 greybox (dark pilot): evidence only, and initializeSession
   // refuses a Ranked session while it is mounted.
   const layoutV2 = evidenceSafeEnabled && runtimeParams.get('layoutV2') === '1'
-    ? (await import('./layout-v2-pilot.mjs')).mountLayoutV2Pilot({ GraphicsClass: Graphics, ContainerClass: Container, TextClass: Text, world, hide: [worldProduction.root, worldDecalLayer, worldLife.ground, worldLife.overlay, authoredPropLayer] })
+    ? (await import('./layout-v2-pilot.mjs')).mountLayoutV2Pilot({ GraphicsClass: Graphics, ContainerClass: Container, TextClass: Text, world, hide: [worldProduction.root, worldDecalLayer, worldLife.ground, worldLife.overlay, authoredPropLayer], params: runtimeParams })
     : null;
   const baseBlockers = layoutV2?.world.collisionBlockers ?? LEVEL_ONE_WORLD.collisionBlockers;
   if (layoutV2) { queryGround = layoutV2.queryGround; WORLD_BLOCKERS = baseBlockers; dataset.layoutV2 = '1'; }
@@ -1273,9 +1273,9 @@ async function boot() {
   const worldTourId = runtimeParams.get('worldTour');
   const tourModule = evidenceSafeEnabled ? await import('./world-tour-spawns.mjs') : null;
   const worldTourSpawns = tourModule?.createWorldTourSpawns(authoredPointOfInterestPlacements) ?? {};
-  const evidencePlayerSpawn = evidenceSafeEnabled && worldTourSpawns[worldTourId]
+  const evidencePlayerSpawn = layoutV2?.spawn ?? (evidenceSafeEnabled && worldTourSpawns[worldTourId]
     ? worldTourSpawns[worldTourId]
-    : LEVEL_ONE_WORLD.player.spawn;
+    : LEVEL_ONE_WORLD.player.spawn);
   let runtimePlayerSpawn = evidencePlayerSpawn;
   // The portal forwards evidenceSafe in any mode, so its gameplay effects (the
   // evidence spawn and an invulnerable hero) apply only outside Ranked: a

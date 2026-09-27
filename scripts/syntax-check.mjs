@@ -395,6 +395,7 @@ const NODE_CHECK_FILES = [
   "apps/hmh-reboot/src/layout-v2-checker.mjs",
   "apps/hmh-reboot/src/layout-v2-pilot.mjs",
   "scripts/hmh-layout-v2-check.mjs",
+  "scripts/hmh-layout-v2-pilot-browser-smoke.mjs",
   "tests/hmh-layout-v2.test.mjs",
   "scripts/hmh-world-design-production-asset-qa.mjs",
   "scripts/reconcile-world-design-adoption.mjs",

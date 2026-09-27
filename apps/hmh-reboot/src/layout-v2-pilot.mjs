@@ -196,12 +196,20 @@ export function drawLayoutV2Greybox({ layout = LAYOUT_V2_MAP, GraphicsClass, Con
   return root;
 }
 
+// Evidence start point: ?layoutV2At=x,y when it is walkable v2 ground,
+// otherwise the map spawn.
+export function resolveLayoutV2Spawn(params, queryGround) {
+  const [x, y] = String(params?.get?.('layoutV2At') ?? '').split(',').map(Number);
+  if (Number.isFinite(x) && Number.isFinite(y) && queryGround(x, y).walkable) return Object.freeze({ x, y });
+  return LAYOUT_V2_MAP.player.spawn;
+}
+
 // Adopts the v2 world at its start state: arena locks open, every chain,
 // secret and vault gate shut.
-export function mountLayoutV2Pilot({ GraphicsClass, ContainerClass, TextClass, world, hide = [], at = 1 }) {
+export function mountLayoutV2Pilot({ GraphicsClass, ContainerClass, TextClass, world, hide = [], index = 1, params = null }) {
   const built = buildLayoutV2World(LAYOUT_V2_MAP, { gates: (gate) => gate.role === 'arena-lock' });
   for (const layer of hide) if (layer) layer.visible = false;
   const layer = drawLayoutV2Greybox({ GraphicsClass, ContainerClass, TextClass });
-  world.addChildAt(layer, Math.min(at, world.children.length));
-  return Object.freeze({ world: built, queryGround: built.queryGround, layer });
+  world.addChildAt(layer, Math.min(index, world.children.length));
+  return Object.freeze({ world: built, queryGround: built.queryGround, layer, spawn: resolveLayoutV2Spawn(params, built.queryGround) });
 }

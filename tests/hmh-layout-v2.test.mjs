@@ -144,3 +144,37 @@ test('the layoutV2 pilot is evidenceSafe-gated and refuses a Ranked session', ()
   assert.match(MAIN_SOURCE, /if \(layoutV2\) \{ queryGround = layoutV2\.queryGround; WORLD_BLOCKERS = baseBlockers;/);
   assert.doesNotMatch(MAIN_SOURCE, /worldDesignActiveBlockers\(worldDesignState,LEVEL_ONE_WORLD\.collisionBlockers\)/);
 });
+
+test('the pilot draws the greybox without Pixi and resolves a walkable evidence start', async () => {
+  const { drawLayoutV2Greybox, mountLayoutV2Pilot, resolveLayoutV2Spawn } = await import('../apps/hmh-reboot/src/layout-v2-pilot.mjs');
+  class FakeGraphics {
+    constructor() { this.calls = 0; }
+    rect() { this.calls += 1; return this; }
+    poly() { this.calls += 1; return this; }
+    circle() { this.calls += 1; return this; }
+    moveTo() { return this; }
+    lineTo() { return this; }
+    fill() { return this; }
+    stroke() { return this; }
+  }
+  class FakeContainer {
+    constructor() { this.children = []; }
+    addChild(...children) { this.children.push(...children); }
+    addChildAt(child, index) { this.children.splice(index, 0, child); }
+  }
+  const root = drawLayoutV2Greybox({ GraphicsClass: FakeGraphics, ContainerClass: FakeContainer });
+  assert.equal(root.label, 'layout-v2-greybox');
+  assert.ok(root.children.every((child) => child.calls > 50), 'ground, pieces and marks are drawn');
+  const params = (value) => new URLSearchParams(value);
+  const world = new FakeContainer();
+  world.children.push('backdrop', 'production');
+  const production = { visible: true };
+  const pilot = mountLayoutV2Pilot({ GraphicsClass: FakeGraphics, ContainerClass: FakeContainer, world, hide: [production], params: params('layoutV2At=4750,2400') });
+  assert.equal(world.children[1], pilot.layer, 'the greybox sits directly above the backdrop');
+  assert.equal(production.visible, false, 'the default world art is hidden under the pilot');
+  assert.deepEqual(pilot.spawn, { x: 4_750, y: 2_400 }, 'the Proof-of-Work deck is a walkable start');
+  assert.equal(pilot.world.collisionBlockers.some((blocker) => blocker.id === 'relay-barn-doors'), true, 'chain gates start shut');
+  assert.equal(pilot.world.collisionBlockers.some((blocker) => blocker.id === 'crossing-trestle-lock'), false, 'arena locks start open');
+  assert.deepEqual(resolveLayoutV2Spawn(params('layoutV2At=4750,1500'), pilot.queryGround), LAYOUT_V2_MAP.player.spawn, 'deep water falls back to the map spawn');
+  assert.deepEqual(resolveLayoutV2Spawn(params(''), pilot.queryGround), LAYOUT_V2_MAP.player.spawn);
+});
