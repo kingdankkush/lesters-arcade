@@ -3583,7 +3583,7 @@ function syncCombatOverlay() {
     dom.combatMenuCopy.textContent = combat.gameOver
       ? `${gameOverReasonCopy(combat.gameOverReason)} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again starts a fresh ${currentSession?.isPaid ? (SETTLEMENT_LIVE ? 'verified Ranked session' : 'local Ranked preview') : 'Free practice run'}.`
       : combat.levelUpPaused
-        ? 'The isometric roguelike run is paused. Pick one of two guided augments: continue your build or start a new tree. Reroll refreshes both slots.'
+        ? 'The run is paused. Pick one of two guided augments: continue your build or start a new tree. Reroll refreshes both slots.'
         : menu.copy;
   }
   renderCombatHudOverlay();

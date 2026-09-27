@@ -16,5 +16,5 @@
     "sameOriginAccess": false
   },
   "devWallet": null,
-  "description": "Isometric roguelite score survival on LitVM LiteForge. The first playable Lester's Arcade cabinet."
+  "description": "Deterministic top-down 2.5D roguelike run-and-gun on LitVM LiteForge. The first playable Lester's Arcade cabinet."
 }
