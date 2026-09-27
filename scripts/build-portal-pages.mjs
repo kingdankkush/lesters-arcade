@@ -48,10 +48,19 @@ function withMeta(html,path,copy){
     ['name','description',meta.description],['name','robots',meta.robots],
     ['property','og:title',meta.title],['property','og:description',meta.description],['property','og:url',meta.canonical],['property','og:image',meta.image],
     ['name','twitter:title',meta.title],['name','twitter:description',meta.description],['name','twitter:url',meta.canonical],['name','twitter:image',meta.image],
+    ['property','og:image:width',meta.imageWidth],['property','og:image:height',meta.imageHeight],['property','og:image:alt',meta.imageAlt],['name','twitter:image:alt',meta.imageAlt],
   ]) html=html.replace(new RegExp('<meta '+attribute+'="'+key+'"[^>]*>'),'<meta '+attribute+'="'+key+'" content="'+escapeHtml(value)+'" />');
   html=html.replace(/<link rel="canonical"[^>]*>/,'<link rel="canonical" href="'+meta.canonical+'" />');
   html=html.replace(/\s*<script id="portalStructuredData"[\s\S]*?<\/script>/,'');
   return html.replace('  </head>','    <script id="portalStructuredData" type="application/ld+json">'+portalSchema(path,copy)+'</script>\n  </head>');
+}
+// A discover page's mode banner: the game's own Free or Ranked art (with its srcset), or its key
+// art. The landing page's static banners are the HMH ones, so every other game drops their srcset
+// and sizes, which would otherwise win over its src (docs/art/HMH-BANNERS-20260926.md 5.2).
+function modeBanner(tag,art,game){
+  const src=art?.src ?? game.art, alt=art?.alt ?? game.title+' key art';
+  tag=tag.replace(/ src="[^"]*"/,' src="'+escapeHtml(src)+'"').replace(/ alt="[^"]*"/,' alt="'+escapeHtml(alt)+'"');
+  return art?.srcset ? tag.replace(/ srcset="[^"]*"/,' srcset="'+escapeHtml(art.srcset)+'"') : tag.replace(/ (?:srcset|sizes)="[^"]*"/g,'');
 }
 function renderHome(html,copy){
   const faq=copy.faq.map(([question,answer])=>'<details><summary>'+escapeHtml(question)+'</summary><p>'+escapeHtml(answer)+'</p></details>').join('\n');
@@ -131,9 +140,8 @@ export function buildPortalPages({flags,outDir=portal,sources={}}={}){
       .replace('class="official-view mode-select-view" hidden','class="official-view mode-select-view"')
       .replace(/(<h1 id="officialModeTitle">)[\s\S]*?(<\/h1>)/,'$1'+escapeHtml(game.title)+'$2')
       .replace(/(<p id="officialModeCopy"[^>]*>)[\s\S]*?(<\/p>)/,'$1'+escapeHtml(game.description)+'$2')
-      .replace(/(<img id="officialFreeModeBanner"[^>]*src=")[^"]*/,'$1'+game.art)
-      .replace(/(<img id="officialRankedModeBanner"[^>]*src=")[^"]*/,'$1'+game.art)
-      .replace(/alt="Hard Money Heroes (Free Mode|Ranked) key art"/g,'alt="'+escapeHtml(game.title)+' key art"')
+      .replace(/<img id="officialFreeModeBanner"[^>]*>/,tag=>modeBanner(tag,game.freeArt,game))
+      .replace(/<img id="officialRankedModeBanner"[^>]*>/,tag=>modeBanner(tag,game.rankedArt,game))
       .replace('<div id="portalGameDetails"></div>','<div id="portalGameDetails">'+renderGameDetails(game.slug,copy)+'</div>');
     html=renderCopyBlock(html,'mode-ranked',escapeHtml(copy.modeSelect[game.id]?.ranked ?? copy.modeRanked),'discover/'+game.slug+'.html');
     write('discover/'+game.slug+'.html',withMeta(html,'/games/'+game.slug,copy));

@@ -27,6 +27,8 @@ export function syncDiscoveryMeta(documentRef, pathname, copy=PORTAL_COPY) {
     ['meta[property="og:url"]',meta.canonical], ['meta[property="og:image"]',meta.image],
     ['meta[name="twitter:title"]',meta.title], ['meta[name="twitter:description"]',meta.description],
     ['meta[name="twitter:url"]',meta.canonical], ['meta[name="twitter:image"]',meta.image],
+    ['meta[property="og:image:width"]',meta.imageWidth], ['meta[property="og:image:height"]',meta.imageHeight],
+    ['meta[property="og:image:alt"]',meta.imageAlt], ['meta[name="twitter:image:alt"]',meta.imageAlt],
   ]) documentRef.querySelector(selector)?.setAttribute('content',value);
   documentRef.querySelector('link[rel="canonical"]')?.setAttribute('href',meta.canonical);
   const schema=documentRef.querySelector('#portalStructuredData');

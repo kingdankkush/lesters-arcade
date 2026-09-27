@@ -4,6 +4,7 @@
 // builder only: server/** and api/** never import it (tests/portal-copy.test.mjs).
 import { SETTLEMENT_LIVE, HOSTED_PROFILE_SYNC } from './settlement.mjs';
 import { JACKPOT_LIVE } from './jackpot-config.mjs';
+import { HMH_BANNER_ART, HMH_FREE_SHARE_OG, hmhBannerSrc, hmhBannerSrcset } from './generated/hmh-banner-art.mjs';
 
 export const PORTAL_ORIGIN = 'https://lestersarcade.io';
 export const PORTAL_GAMES = Object.freeze([
@@ -13,7 +14,13 @@ export const PORTAL_GAMES = Object.freeze([
     description: 'Fight through the Crypto Wasteland in a top-down roguelite. Choose a hero, collect weapons, complete field objectives, and hold out against the horde.',
     controls: 'Keyboard and mouse or on-screen touch controls. Move with WASD or arrows; aim with the mouse. On mobile, use MOVE and AIM.',
     goal: 'Survive longer, find stronger weapons, and try a different build on the next run.',
-    art: '/assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg',
+    // 2026-09-26 banner refresh (docs/art/HMH-BANNERS-20260926.md): the whole cast for the
+    // structured data, the owner's Free and Ranked banners for the mode cards, and the
+    // Free share cover (1200x630, title baked in) for og:image and twitter:image.
+    art: hmhBannerSrc(HMH_BANNER_ART.home.id),
+    freeArt: Object.freeze({ src: hmhBannerSrc(HMH_BANNER_ART.free.id, 960), srcset: hmhBannerSrcset(HMH_BANNER_ART.free.id), alt: HMH_BANNER_ART.free.alt }),
+    rankedArt: Object.freeze({ src: hmhBannerSrc(HMH_BANNER_ART.ranked.id, 960), srcset: hmhBannerSrcset(HMH_BANNER_ART.ranked.id), alt: HMH_BANNER_ART.ranked.alt }),
+    ogImage: Object.freeze({ src: HMH_FREE_SHARE_OG.src, width: HMH_FREE_SHARE_OG.width, height: HMH_FREE_SHARE_OG.height, alt: HMH_FREE_SHARE_OG.alt }),
     cabinet: '/assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png',
     sprite: 'hard-money-heroes-arcade-cabinet-rotation',
   }),
@@ -24,6 +31,7 @@ export const PORTAL_GAMES = Object.freeze([
     controls: 'Tap, click, or press Space to jump and flap. Release to descend and land; running resumes on the ground.',
     goal: 'Travel farther, collect coins, and compare your daily best on this device.',
     art: '/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp',
+    ogImage: Object.freeze({ src: '/assets/generated/chikun-mode-select/chikuns-escape-free-mode.webp', width: 1672, height: 941, alt: "Chikun flying through a bright blue sky between green pipes" }),
     cabinet: '/assets/generated/chikun-cabinet/chikun-cabinet-front.png?v=transparent-v2',
     sprite: 'chikun-cabinet',
   }),
@@ -34,6 +42,7 @@ export const PORTAL_GAMES = Object.freeze([
     controls: 'Use keyboard or touch controls to move, rotate, hold, and drop blocks. Review the control guide before your first run.',
     goal: 'Build clean rows, keep the board under control, and improve your score.',
     art: '/assets/stacked-mode-select/stacked-free-v1.png',
+    ogImage: Object.freeze({ src: '/assets/stacked-mode-select/stacked-free-v1.png', width: 1672, height: 941, alt: "Glowing falling blocks in a STACKED music world" }),
     cabinet: '/assets/stacked-cabinet/stacked-cabinet-turnaround-v1.png',
     sprite: 'stacked-cabinet',
   }),
@@ -392,6 +401,9 @@ export const PORTAL_FAQ = PORTAL_COPY.faq;
 export const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 export const gameFor = slug => PORTAL_GAMES.find(game => game.slug === slug || game.id === slug);
 
+// The arcade-wide share image (the homepage and every page without a game).
+const PORTAL_OG_IMAGE = Object.freeze({ src: '/assets/video/arcade-splash-poster.jpg', width: 1280, height: 720, alt: 'Lester and Lilly in a neon-lit arcade' });
+
 export function portalPageMeta(path = '/', copy = PORTAL_COPY) {
   const clean = path.split(/[?#]/)[0].replace(/\/$/, '') || '/';
   const parts = clean.split('/').filter(Boolean);
@@ -400,7 +412,8 @@ export function portalPageMeta(path = '/', copy = PORTAL_COPY) {
   const canonicalPath = game ? '/games/'+game.slug : clean === '/play' ? '/games' : clean;
   const title = game ? game.title+" — Play Free | Lester's Arcade" : canonicalPath === '/games' ? "Browse Games — Lester's Arcade" : privateView ? (parts[0][0].toUpperCase()+parts[0].slice(1))+" — Lester's Arcade" : "Lester's Arcade — Free Browser Games";
   return { title, description: game ? game.description+' Play Free in your browser on Lester’s Arcade.' : copy.description,
-    canonical: PORTAL_ORIGIN+canonicalPath, image: PORTAL_ORIGIN+(game?.art ?? '/assets/video/arcade-splash-poster.jpg'),
+    canonical: PORTAL_ORIGIN+canonicalPath, image: PORTAL_ORIGIN+(game?.ogImage ?? PORTAL_OG_IMAGE).src,
+    imageWidth: (game?.ogImage ?? PORTAL_OG_IMAGE).width, imageHeight: (game?.ogImage ?? PORTAL_OG_IMAGE).height, imageAlt: (game?.ogImage ?? PORTAL_OG_IMAGE).alt,
     robots: privateView ? 'noindex, follow' : 'index, follow' };
 }
 

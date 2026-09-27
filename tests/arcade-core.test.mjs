@@ -1998,8 +1998,14 @@ test('Chikun mode selection uses canonical title, supplied production art, and t
   const hardMoneyHeroes = buildGameModeSelectModel('lester-blaster');
   assert.equal(hardMoneyHeroes.title, 'Hard Money Heroes');
   assert.equal(hardMoneyHeroes.artStatus, 'production');
-  assert.match(hardMoneyHeroes.free.bannerAsset, /hard-money-heroes-free-mode-banner\.jpg$/);
-  assert.match(hardMoneyHeroes.ranked.bannerAsset, /hard-money-heroes-ranked-banner\.jpg$/);
+  // 2026-09-26 banner refresh: the owner's Free and Ranked art, as WebP sets.
+  assert.match(hardMoneyHeroes.free.bannerAsset, /\/assets\/hmh-art\/banners\/hmh-freemode2-960\.webp$/);
+  assert.match(hardMoneyHeroes.ranked.bannerAsset, /\/assets\/hmh-art\/banners\/hmh-rankedmode-960\.webp$/);
+  for (const mode of [hardMoneyHeroes.free, hardMoneyHeroes.ranked]) {
+    assert.equal(mode.bannerSrcset.split(', ').length, 3);
+    assert.ok(mode.bannerSrcset.includes(mode.bannerAsset + ' 960w'));
+    assert.ok(mode.bannerSizes && mode.bannerPosition && mode.bannerAlt.length > 20);
+  }
 
   const chikun = buildGameModeSelectModel('chikun');
   assert.equal(chikun.title, "Chikun's Escape");
