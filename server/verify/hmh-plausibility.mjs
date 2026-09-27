@@ -43,7 +43,14 @@
 //           damage-dealt-mismatch, combo-above-kills
 //                                    the 1.8.4 consistency rules for the fields
 //                                    the achievement stats read directly (see
-//                                    HMH_V6_CONSISTENCY_RULES)
+//                                    HMH_V6_CONSISTENCY_RULES): grenadeKills,
+//                                    powerUpsCollected, districtsVisited,
+//                                    weaponsUsed, damageDealt, maxCombo
+//           knife-kills-above-contacts, melee-contacts-without-trigger,
+//           knife-triggers-above-cadence, standard-triggers-above-cadence
+//                                    the round-3 melee-trail rules for the last
+//                                    such field, meleeKills (kills.byWeapon for
+//                                    litecoin-knife and forked-standard)
 //   flag    anything within 10% of a ceiling, and cross-field inconsistencies
 //           an honest client never produces but that do not raise a ceiling.
 //
@@ -465,6 +472,56 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
 //                                    so the best combo never passes the kills.
 //                                    The 1.8.1 flag combo-exceeds-kills stays as
 //                                    it was, beside this reject.
+//
+// Round 3 (item 1, the melee trail) adds four rules for the last stats field
+// with no bound, meleeKills (kills.byWeapon for litecoin-knife and
+// forked-standard; blade-master and blade-samurai read it). Against 4f947386,
+// 100 knife kills with no swing in a 20,000-tick run verified ok. The knife
+// (main.mjs stepMeleeState, melee.mjs) swings only automatically and only when
+// the swing hits, at most once every HMH_MELEE_DEFINITION.cooldownTicks, and
+// each swing records one trigger and, when it hits, one trigger contact and one
+// projectile contact per hit; a knife kill is a kill by one of those hits
+// (combat-events stamps the kill with the hit's weapon). The Forked Standard
+// (weapon-system melee-alternating, forked-standard.mjs) strikes only while it
+// is the active weapon and only after its cooldown (thrust 24, sweep 28, each
+// less 2 per Attack Speed rank, three ranks at most, so 18 at the least), and
+// each strike records the same trail per hit. The real-child corpus holds ten
+// knife-heavy and twenty Standard runs of the 1.8.4 child for these rules
+// (tests/fixtures/hmh-honest-corpus/real-child-1.8.4.json).
+//
+//   reject  knife-kills-above-contacts  the knife's kills above its
+//                                    projectileContacts. Every knife hit is one
+//                                    contact and a kill needs a hit, so kills
+//                                    never pass contacts (the real corpus: 47
+//                                    kills of 71 contacts at most).
+//           melee-contacts-without-trigger  a melee weapon row (the knife or the
+//                                    Standard) with projectileContacts but no
+//                                    triggerContacts (value: how many of the two
+//                                    rows; limit 0). A swing that hits records
+//                                    its trigger contact in the same statement
+//                                    as its contacts, and the schema already
+//                                    keeps triggerContacts within triggers.
+//           knife-triggers-above-cadence  more knife triggers than ceil(T / 20)
+//                                    for a run of T ticks: the knife is stepped
+//                                    once a tick from tick 1, and a swing sets
+//                                    the next one 20 ticks later. Honest play
+//                                    stays far under it (the real corpus: 12.3% of
+//                                    the bound at most, point-blank play
+//                                    included), since the knife swings only with
+//                                    a target inside 58 px.
+//           standard-triggers-above-cadence  more Standard strikes than
+//                                    ceil(T / 18), read from the weapon row's
+//                                    triggers and the forkedStandard block's
+//                                    attacks (whichever claims more): the
+//                                    Standard is stepped once a tick and a strike
+//                                    sets the next one at least 18 ticks later
+//                                    (plus a whiff penalty). Honest play stays
+//                                    far under it (the real corpus: 12.4% at most,
+//                                    whiffs included).
+//   The Standard's kills against its contacts is the same impossibility as the
+//   knife's, but it stays a documented residual in this round: the committed
+//   hmh-realistic fixture and the scripted model credit Standard kills with no
+//   contacts, and neither may change here (HMH-VERIFIER-R3-HANDOFF.md, item 1).
 // Every rule reads only the summary and the literals below, never a clock.
 export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
   grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
@@ -540,6 +597,16 @@ export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
   handGrenades: { weaponId: 'satoshi-frag', startCharges: 3, rankUpgradeId: 'cold-storage', chargesPerRank: 1, maxRanks: 3, refillEffectId: 'nuke-liquidation' },
   launcherWeapon: 'launcher-rig',
   nuke: { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' },
+  // The melee trail (round 3, item 1): melee.mjs HMH_MELEE_DEFINITION (id,
+  // cooldownTicks) and forked-standard.mjs FORKED_STANDARD_CONFIG (id; the
+  // thrust cooldown of 24 less 2 per standard-tempo rank at its three ranks).
+  melee: {
+    weapons: ['litecoin-knife', 'forked-standard'],
+    knifeWeapon: 'litecoin-knife',
+    knifeCooldownTicks: 20,
+    standardWeapon: 'forked-standard',
+    standardCooldownTicks: 18,
+  },
 });
 const V6C = HMH_V6_CONSISTENCY_RULES;
 
@@ -556,7 +623,20 @@ export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze([
   'grenades-thrown-above-supply',
   'damage-dealt-mismatch',
   'combo-above-kills',
+  // Round 3, item 1: the melee trail.
+  'knife-kills-above-contacts',
+  'melee-contacts-without-trigger',
+  'knife-triggers-above-cadence',
+  'standard-triggers-above-cadence',
 ]);
+
+// The most swings a melee weapon stepped once a tick from tick 1 can make in a
+// run of `runTicks` ticks when each swing sets the next `cooldownTicks` later:
+// ticks 1, 1 + c, 1 + 2c, ... up to runTicks, so ceil(runTicks / c); 0 for a
+// run of no ticks.
+export function hmhV6MeleeCadenceLimit(runTicks, cooldownTicks) {
+  return Math.ceil(Math.max(0, runTicks) / cooldownTicks);
+}
 
 // The tick each objective reward's objective unlocked at, read from the
 // summary; a missing key is still locked. A machinery site unlocks at its
@@ -701,6 +781,18 @@ function checkV6Consistency(runSummary, runTicks, reject) {
   if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
 
   if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
+
+  // The melee trail (round 3, item 1).
+  const knife = weapons.find((row) => row.weaponId === V6C.melee.knifeWeapon);
+  const standard = weapons.find((row) => row.weaponId === V6C.melee.standardWeapon);
+  if (knife.kills > knife.projectileContacts) reject('knife-kills-above-contacts', knife.kills, knife.projectileContacts);
+  const contactsWithoutTrigger = [knife, standard].filter((row) => row.projectileContacts > 0 && row.triggerContacts === 0).length;
+  if (contactsWithoutTrigger) reject('melee-contacts-without-trigger', contactsWithoutTrigger, 0);
+  const knifeSwings = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.knifeCooldownTicks);
+  if (knife.triggers > knifeSwings) reject('knife-triggers-above-cadence', knife.triggers, knifeSwings);
+  const standardStrikes = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.standardCooldownTicks);
+  const standardClaimed = Math.max(standard.triggers, runSummary.forkedStandard?.attacks ?? 0);
+  if (standardClaimed > standardStrikes) reject('standard-triggers-above-cadence', standardClaimed, standardStrikes);
 }
 
 // → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
