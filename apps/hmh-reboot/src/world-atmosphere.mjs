@@ -142,8 +142,9 @@ export function resolveMote({ districtId, spec, col, row, index, tick } = {}) {
  */
 export function resolveAtmosphereBudget(profile) {
   const tier = int(profile?.particlesPerHazard, 0);
-  // Perf step 6: the mobile profile draws half of each bank.
-  const scale = profile.id === 'mobile' ? 0.5 : 1;
+  // Perf step 6: the mobile profile draws half of each bank; perf step 7's Low
+  // tier (2 particles per hazard) halves too, to one fog bank and three motes.
+  const scale = profile.id === 'mobile' || profile.id === 'low' ? 0.5 : 1;
   return F({ fog: Math.floor(Math.min(tier, 16) * scale), motes: Math.floor(Math.min(tier * 3, MAX_ATMOSPHERE_SPRITES - 16) * scale) });
 }
 

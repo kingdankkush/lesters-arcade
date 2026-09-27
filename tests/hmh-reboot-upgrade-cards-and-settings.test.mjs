@@ -224,7 +224,7 @@ const COCKPIT_IDS = [
   'hmhMusicToggle', 'hmhMenuToggle', 'hmhProfileToggle', 'hmhProfilePanel', 'hmhProfileName', 'hmhProfileHero', 'hmhProfileMode',
   'hmhProfileSeason', 'hmhAdapterStatus', 'hmhPausePanel', 'hmhResumeButton', 'hmhRestartButton', 'hmhExitButton',
   'hmhSettingMusic', 'hmhSettingScreenShake', 'hmhSettingReduceMotion', 'hmhSettingReduceFlash',
-  'hmhSettingSfxVolume', 'hmhSettingSfxVolumeValue',
+  'hmhSettingSfxVolume', 'hmhSettingSfxVolumeValue', 'hmhSettingGraphicsQuality',
   'hmhBuildEmpty', 'hmhBuildSummary', 'hmhControlsCard', 'hmhUpgradePanel', 'hmhUpgradeQueue', 'hmhUpgradeChoices',
 ];
 
@@ -623,4 +623,35 @@ test('a numeric sfxVolume round-trips the existing channel without a schema chan
   assert.equal(merged.audio.sfxVolume, 0.35);
   assert.equal(merged.version, HMH_PLAYER_SETTINGS_DEFAULTS.version);
   assert.deepEqual(Object.keys(merged), Object.keys(HMH_PLAYER_SETTINGS_DEFAULTS), 'no new persisted domain');
+});
+
+// ---------------------------------------------------------------------------
+// Perf step 7 Graphics Quality select: child-owned, a string choice on the same
+// settings channel; optional in the shell.
+// ---------------------------------------------------------------------------
+
+test('the Graphics Quality select mirrors the host tier (auto when absent) and notifies the host on change', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  const choices = [];
+  const ui = createCockpitUi({ documentRef, onSettingChoice: (key, value) => choices.push([key, value]) });
+  const select = elements.get('hmhSettingGraphicsQuality');
+  ui.setSettings({ musicEnabled: true });
+  assert.equal(select.value, 'auto', 'a host that never sent the tier means Auto');
+  ui.setSettings({ musicEnabled: true, graphicsQuality: 'low' });
+  assert.equal(select.value, 'low');
+  select.value = 'high';
+  select.dispatch('change');
+  assert.deepEqual(choices, [['graphicsQuality', 'high']]);
+  ui.destroy();
+  select.value = 'medium';
+  select.dispatch('change');
+  assert.deepEqual(choices, [['graphicsQuality', 'high']], 'destroy removes the listener');
+});
+
+test('a shell without the Graphics Quality row still builds the cockpit and accepts settings', () => {
+  const { documentRef, elements } = fakeCockpitDocument();
+  elements.delete('hmhSettingGraphicsQuality');
+  const ui = createCockpitUi({ documentRef });
+  assert.doesNotThrow(() => ui.setSettings({ musicEnabled: false, graphicsQuality: 'low' }));
+  ui.destroy();
 });

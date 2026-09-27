@@ -49,6 +49,12 @@ export const HMH_PLAYER_SETTINGS_DEFAULTS = freeze({
     captions: true,
     hudScale: 1,
   },
+  // Perf step 7: the Graphics Quality tier (auto | low | medium | high). A
+  // projection-only choice the HMH child applies; Auto is the device profile.
+  // Additive with a default, so the schema version stays at 1.
+  graphics: {
+    quality: 'auto',
+  },
 });
 
 export function normalizeHmhPlayerSettings(input = {}) {
@@ -57,6 +63,8 @@ export function normalizeHmhPlayerSettings(input = {}) {
   const gameplay = source.gameplay && typeof source.gameplay === 'object' ? source.gameplay : source;
   const audio = source.audio && typeof source.audio === 'object' ? source.audio : source;
   const accessibility = source.accessibility && typeof source.accessibility === 'object' ? source.accessibility : source;
+  const graphics = source.graphics && typeof source.graphics === 'object' ? source.graphics : source;
+  const graphicsQuality = graphics.quality ?? graphics.graphicsQuality;
   return freeze({
     version: HMH_PLAYER_SETTINGS_VERSION,
     controls: {
@@ -91,6 +99,9 @@ export function normalizeHmhPlayerSettings(input = {}) {
       colorblindTags: bool(accessibility.colorblindTags, false),
       captions: bool(accessibility.captions, true),
       hudScale: clamp(accessibility.hudScale, 0.8, 1.3, 1),
+    },
+    graphics: {
+      quality: ['auto', 'low', 'medium', 'high'].includes(graphicsQuality) ? graphicsQuality : 'auto',
     },
   });
 }
@@ -143,6 +154,10 @@ export function mergeHmhRuntimeSettings(settings, runtime, { rankedActive = fals
       captions: value.captionCriticalAudio ?? current.accessibility.captions,
       hudScale: value.hudScale ?? current.accessibility.hudScale,
     },
+    graphics: {
+      ...current.graphics,
+      quality: value.graphicsQuality ?? current.graphics.quality,
+    },
   });
 }
 
@@ -169,5 +184,6 @@ export function projectHmhRuntimeSettings(settings) {
     dynamicRange: value.audio.dynamicRange,
     hudScale: value.accessibility.hudScale,
     captionCriticalAudio: value.accessibility.captions,
+    graphicsQuality: value.graphics.quality,
   });
 }

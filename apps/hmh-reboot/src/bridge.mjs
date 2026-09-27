@@ -17,6 +17,11 @@ export function createHmhChildBridge({
   runtimeInfo,
   deferInitialization = false,
   onInit = () => {},
+  // Perf step 7: called with the validated portal:init payload the moment it
+  // is parked behind deferInitialization, so boot can read the parent's
+  // settings (the Graphics Quality tier) before the renderer exists. READY
+  // and onInit still wait for activate().
+  onInitPending = () => {},
   onMessage = () => {},
   onProtocolError = () => {},
 }) {
@@ -82,6 +87,7 @@ export function createHmhChildBridge({
       else {
         pendingInit = message;
         state = 'awaiting-activation';
+        onInitPending(message.payload);
       }
       return;
     }

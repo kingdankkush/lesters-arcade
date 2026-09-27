@@ -64,6 +64,7 @@ export function createCockpitUi({
   onMusicToggle = () => {},
   onSettingToggle = () => {},
   onSettingLevel = () => {},
+  onSettingChoice = () => {},
   onBindingChange = () => {},
   onResume = () => {},
   onRestart = () => {},
@@ -98,6 +99,8 @@ export function createCockpitUi({
     settings: Object.fromEntries(Object.entries(PAUSE_SETTING_KEYS).map(([key, id]) => [key, required(documentRef, id)])),
     sfxVolume: required(documentRef, 'hmhSettingSfxVolume'),
     sfxVolumeValue: required(documentRef, 'hmhSettingSfxVolumeValue'),
+    // Perf step 7: optional, so an older shell without the row still boots.
+    graphicsQuality: documentRef.getElementById('hmhSettingGraphicsQuality'),
     buildEmpty: required(documentRef, 'hmhBuildEmpty'),
     buildSummary: required(documentRef, 'hmhBuildSummary'),
     controlsCard: required(documentRef, 'hmhControlsCard'),
@@ -167,6 +170,9 @@ export function createCockpitUi({
     showLevel(level);
     onSettingLevel('sfxVolume', level);
   });
+  // Perf step 7: the Graphics Quality tier, child-owned like the slider and
+  // told to the host on `change`; the host normalizes and echoes it back.
+  if (elements.graphicsQuality) listen(elements.graphicsQuality, 'change', () => onSettingChoice('graphicsQuality', elements.graphicsQuality.value));
 
   // U-4: keyboard and gamepad card selection. The main ticker (and with it the
   // gameplay gamepad poll) is stopped while the simulation sits in 'upgrade',
@@ -383,6 +389,7 @@ export function createCockpitUi({
       for (const [key, input] of Object.entries(elements.settings)) input.checked = Boolean(nextSettings[key]);
       // combat-audio's sfx bus defaults to 1 when the host never sent a level.
       showLevel(nextSettings.sfxVolume ?? 1);
+      if (elements.graphicsQuality) elements.graphicsQuality.value = nextSettings.graphicsQuality ?? 'auto';
       musicEnabled = Boolean(nextSettings.musicEnabled);
       elements.music.textContent = musicEnabled ? 'Music on' : 'Music off';
       elements.music.setAttribute('aria-pressed', String(musicEnabled));
