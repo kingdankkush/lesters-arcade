@@ -68,6 +68,11 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 .hmh-startup-tips h2 { color:#edf1e7; font-size:18px; margin:4px 0 10px; }
 .hmh-startup-tips b { color:#dcdfcf; }
 .hmh-startup-number { font-size:11px; color:#d7b577; letter-spacing:.16em; }
+.hmh-startup-modes { margin:0; border-top:1px solid #35534a; padding-top:16px; font-size:13px; line-height:1.55; color:#acc2ba; }
+.hmh-startup-modes h2 { margin:0 0 8px; color:#edf1e7; font-size:18px; }
+.hmh-startup-modes p { margin:5px 0; max-width:760px; overflow-wrap:anywhere; }
+.hmh-startup-guide { color:#e4ba71; }
+.hmh-startup-guide span { color:#f2eee0; text-decoration:underline; text-underline-offset:3px; }
 .hmh-startup-progress { height:3px; background:#2a443f; margin-top:20px; }
 .hmh-startup-progress span { display:block; height:100%; width:0; background:#a9d8bd; transition:width .2s; }
 #hmhStartupCopy { color:#acc2ba; font-size:12px; }
@@ -953,6 +958,8 @@ html[data-debug-hud="1"] .hmh-controls-hint { display: none !important; }
 
 @media(max-width:600px) { .hmh-startup { padding:24px 20px; align-items:start; } .hmh-startup-brief { grid-template-columns:1fr; gap:6px; margin-top:10px; font-size:12px; } .hmh-startup-brief div { display:block; } .hmh-startup-brief dt { display:inline; margin-right:8px; } .hmh-startup-brief dd { display:inline; } .hmh-startup-tips { grid-template-columns:1fr; gap:12px; margin:18px 0; } .hmh-startup-tips article p { margin:5px 0; } .hmh-startup-tips h2 { display:inline; margin-left:12px; font-size:16px; } .hmh-startup-route { gap:6px; font-size:8px; } }
 @media(max-height:600px) and (min-width:601px) { .hmh-startup { padding:16px 24px; align-items:start; } .hmh-startup-brief { margin-top:8px; gap:4px 24px; } .hmh-startup-card h1 { font-size:30px; margin:8px 0; } .hmh-startup-story { display:none; } .hmh-startup-tips { margin:14px 0; padding-top:12px; } }
+@media(max-width:600px) { .hmh-startup-modes { padding-top:12px; font-size:12px; line-height:1.5; } .hmh-startup-modes h2 { margin-bottom:6px; font-size:16px; } .hmh-startup-modes p { margin:4px 0; } }
+@media(max-height:600px) and (min-width:601px) { .hmh-startup-modes { padding-top:10px; font-size:12px; line-height:1.4; } .hmh-startup-modes h2 { margin-bottom:4px; font-size:15px; } .hmh-startup-modes p { margin:3px 0; } }
 @media(prefers-reduced-motion:reduce) { .hmh-startup-progress span { transition:none; } }
 
 /* Pickup / interaction banner (owner direction 2026-09-16): one bold line that
