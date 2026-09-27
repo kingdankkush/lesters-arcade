@@ -12,8 +12,9 @@ import { piecePaletteFor, sceneGradeFor } from './cosmetic-palettes.mjs';
 import { createActiveInterpolation } from './active-interpolation.mjs';
 import { createBoardMotionView } from './board-motion.mjs';
 import { PIECE_COLORS } from './board-view.mjs';
+import { createVisualizerGovernor, deviceStartTier } from './visualizer-governor.mjs';
 
-export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
+export function createStackedRenderer({ app, stageElement, geometry, Container, Graphics, Text, onFrameReleased = () => {}, startTier = deviceStartTier, isMobile = () => mobilePresentation({width:globalThis.innerWidth,coarsePointer:globalThis.matchMedia?.('(pointer: coarse)').matches}) }) {
   const tree = createLayerStack({ stage: app.stage, Container, Graphics });
   let atmosphere=null, particles=null, pieceFx=null, mobile=null;
   const board = createStackedBoardView({ index: 0, cells: 10, rows: 24, frame: 'wide', geometry, Container, Graphics, Text, onFrameReleased });
@@ -25,6 +26,10 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
   const interpolation = createActiveInterpolation({ geometry });
   // Lock-thud spring, trauma shake and cleared-row squash on the board container (projection only).
   const motion = createBoardMotionView({ board, Graphics, geometry });
+  // FPS watchdog: caps the music-scene tier (full -> standard -> calm) before it touches resolution.
+  const governor = createVisualizerGovernor({ startTier: typeof startTier === 'function' ? startTier() : startTier });
+  const baseResolution = app.renderer.resolution;
+  let renderScale = 1;
   const sharedHud = new Text({ text: 'RENDER-ONLY QA SCENE · AWAITING PARENT RUNTIME', style: { fill:'#9db4c8', fontFamily:'system-ui, sans-serif', fontSize:18, fontWeight:'700' } });
   sharedHud.anchor?.set?.(0.5);
   sharedHud.text='';
@@ -71,8 +76,13 @@ export function createStackedRenderer({ app, stageElement, geometry, Container, 
     frame(snapshot, now, settings, alpha = 1) {
       const fit = fitRootToViewport({ widthPx: app.canvas.width / app.renderer.resolution, heightPx: app.canvas.height / app.renderer.resolution });
       const response=feedback.update(snapshot, now, settings.accessibility.reduceMotion);
+      governor.sample(now);
+      if (governor.resolutionScale !== renderScale) { renderScale = governor.resolutionScale; app.renderer.resolution = baseResolution * renderScale; resize(); }
+      const scene = governor.cap(settings);
+      stageElement.dataset.visualizerTier = governor.tier;
+      stageElement.dataset.renderScale = String(renderScale);
       const zone=STACKED_EPOCHS[Math.max(0,[0,10800,25200,43200,64800,90000].findLastIndex(tick=>snapshot.tick>=tick))];
-      const info = atmosphere ? atmosphere.draw({ now, tick: snapshot.tick, lines: snapshot.lines, width: fit.logicalWidth, height: fit.logicalHeight, settings, feedback:response }) : {...zone,particles:0,available:false,phase:'off',generation:0,mode:'gameplay',visualizerName:'Gameplay effects',organisms:0,scene:'off',sceneName:'Off',sceneTransitions:0,signals:null,palette:null};
+      const info = atmosphere ? atmosphere.draw({ now, tick: snapshot.tick, lines: snapshot.lines, width: fit.logicalWidth, height: fit.logicalHeight, settings: scene, feedback:response }) : {...zone,particles:0,available:false,phase:'off',generation:0,mode:'gameplay',visualizerName:'Gameplay effects',organisms:0,scene:'off',sceneName:'Off',sceneTransitions:0,signals:null,palette:null};
       stageElement.dataset.visualizerPhase = info.phase;
       stageElement.dataset.visualizerGeneration = String(info.generation);
       stageElement.dataset.visualizerMode = info.mode;

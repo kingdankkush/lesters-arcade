@@ -72,6 +72,8 @@ const NODE_CHECK_FILES = [
   'tests/stacked-board-motion.test.mjs',
   'tests/stacked-haptics.test.mjs',
   'tests/stacked-sound-kit.test.mjs',
+  'apps/stacked/src/render/visualizer-governor.mjs',
+  'tests/stacked-visualizer-governor.test.mjs',
   'apps/portal/src/share-links.mjs',
   'server/share/render-card.mjs',
   'server/share/render-page.mjs',
