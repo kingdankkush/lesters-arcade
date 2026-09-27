@@ -187,6 +187,11 @@ export function stepEncounterDirector({
   isRouteReachable,
   visualMode = 'normal',
   leanRole = null,
+  // S1.2 (package 2.7 and 5.9): the lazy enemy AI kit and its context
+  // ({ pathDistanceAt, crossings, enabledRoles }). Without it this is the
+  // 1.8.x director (round-robin roles, first valid spawn point by id).
+  kit = null,
+  kitContext = null,
 } = {}) {
   if (!state?.schedule || !population?.active || !(population.seenIds instanceof Set)) throw new TypeError('director state and enemy population are required');
   nonNegativeInteger(tick, 'tick');
@@ -194,15 +199,25 @@ export function stepEncounterDirector({
   if (typeof nearRewardPoi !== 'boolean') throw new TypeError('nearRewardPoi must be boolean');
   const band = getEncounterBand(tick);
   const snapshot = getEncounterSnapshot(tick);
+  // The one-front memory follows the hero every tick, so the side it entered
+  // a chokepoint from is read on its first tick inside the zone.
+  const front = kit ? kit.stepOneFront(state, player, kitContext?.crossings ?? []) : null;
   if (tick < state.schedule.nextSpawnTick) return freezeDeep({ inserted: false, reason: 'not-due', tick, bandId: band.id });
   if (worldRecovery === true) return reject(state, tick, band, 'world-recovery-window');
   if (nearRewardPoi && isEncounterRestWindow(tick)) return reject(state, tick, band, 'reward-rest-window');
   if (population.active.length >= snapshot.ordinaryBodyCap) return reject(state, tick, band, 'reserved-body-cap');
 
-  const selection = selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole });
+  const selection = kit
+    ? kit.selectDirectorArchetype({ districtId, band, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole, enabledRoles: kitContext?.enabledRoles ?? null })
+    : selectEncounterArchetype({ districtId, bandId: band.id, spawnOrdinal: state.spawnOrdinal, seed: state.seed, leanRole });
   const selectedRole = getEnemyArchetype(selection.archetypeId).role;
-  const rangedCount = population.active.reduce((count, enemy) => count + (RANGED_ROLES.has(getEnemyArchetype(enemy.archetypeId).role) ? 1 : 0), 0);
-  if (RANGED_ROLES.has(selectedRole) && rangedCount >= band.budgets.rangedCap) {
+  const rangedRoles = kit ? new Set(kit.KIT_RANGED_ROLES) : RANGED_ROLES;
+  const rangedCount = population.active.reduce((count, enemy) => count + (rangedRoles.has(getEnemyArchetype(enemy.archetypeId).role) ? 1 : 0), 0);
+  if (kit && kit.atArchetypeCap(selection.archetypeId, population.active)) {
+    state.spawnOrdinal += 1;
+    return reject(state, tick, band, 'archetype-cap');
+  }
+  if (rangedRoles.has(selectedRole) && rangedCount >= band.budgets.rangedCap) {
     // Selection is a pure function of spawnOrdinal, so leaving the ordinal in
     // place would re-pick the same capped role forever and stall every spawn,
     // melee included. Advance past the capped pick; placement-class rejections
@@ -211,15 +226,37 @@ export function stepEncounterDirector({
     return reject(state, tick, band, 'ranged-cap');
   }
 
-  const orderedPoints = [...spawnPoints].sort((a, b) => String(a.regionId).localeCompare(String(b.regionId)) || String(a.id).localeCompare(String(b.id)));
   let selectedPoint = null;
   let selectedGroundZ = 0;
-  for (const point of orderedPoints) {
-    const validation = validateEncounterSpawn({ point, districtId, player, camera, queryGround, isBlocked, isRouteReachable });
-    if (!validation.allowed) continue;
-    selectedPoint = point;
-    selectedGroundZ = validation.groundZ;
-    break;
+  if (kit) {
+    // Seeded lairs: valid lairs in this and the neighbouring districts,
+    // 900-2,400 path units preferred, the one-front rule on a chokepoint.
+    const lair = kit.chooseDirectorLair({
+      points: spawnPoints,
+      districtId,
+      player,
+      camera,
+      validate: (point) => validateEncounterSpawn({ point, districtId: point.districtId, player, camera, queryGround, isBlocked, isRouteReachable }),
+      pathDistanceAt: kitContext?.pathDistanceAt ?? null,
+      seed: state.seed,
+      spawnOrdinal: state.spawnOrdinal,
+      front,
+      crossings: kitContext?.crossings ?? [],
+      ...(kitContext?.lairRules ? { rules: kitContext.lairRules } : {}),
+    });
+    if (lair) {
+      selectedPoint = lair.point;
+      selectedGroundZ = lair.groundZ;
+    }
+  } else {
+    const orderedPoints = [...spawnPoints].sort((a, b) => String(a.regionId).localeCompare(String(b.regionId)) || String(a.id).localeCompare(String(b.id)));
+    for (const point of orderedPoints) {
+      const validation = validateEncounterSpawn({ point, districtId, player, camera, queryGround, isBlocked, isRouteReachable });
+      if (!validation.allowed) continue;
+      selectedPoint = point;
+      selectedGroundZ = validation.groundZ;
+      break;
+    }
   }
   if (!selectedPoint) return reject(state, tick, band, 'no-valid-spawn');
 

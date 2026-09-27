@@ -56,6 +56,7 @@ export function writeRuntimeTelemetry({
   lastDirectorStep,
   lastEnemyAttack,
   lastEnemyStep,
+  enemyKitTelemetry = null,
   lastEnemyStrike,
   lastForkedStandardStrike,
   lastGrenadeDetonation,
@@ -261,6 +262,11 @@ export function writeRuntimeTelemetry({
   dataset.enemyChokepointHolding = String(lastEnemyStep?.chokepointHolding ?? 0);
   dataset.enemyFlankLaneSeeking = String(lastEnemyStep?.flankLaneSeeking ?? 0);
   dataset.enemyFormationAdjusted = String(lastEnemyStep?.formationAdjusted ?? 0);
+  // S1.2 enemy AI kit: recycles, poise interrupts, perfect dodges and hit-stop.
+  dataset.enemyRecycled = String(enemyKitTelemetry?.recycled ?? 0);
+  dataset.enemyInterrupted = String(enemyKitTelemetry?.interrupted ?? 0);
+  dataset.perfectDodges = String(enemyKitTelemetry?.perfectDodges ?? 0);
+  dataset.enemyHitStopTicks = String(enemyKitTelemetry?.hitStopTicks ?? 0);
   dataset.enemyPoolPressure = `${lastEnemyStep?.activeCount ?? 0}/${enemyPopulation?.capacity ?? 0}`;
   dataset.enemyThreatPressure = `${enemyPopulation?.activeThreat ?? 0}/${enemyPopulation?.threatCapacity ?? 0}`;
   dataset.projectilePoolPressure = `${activeProjectiles.length}/${MAX_ACTIVE_PROJECTILES}`;

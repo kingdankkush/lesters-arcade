@@ -45,6 +45,7 @@ import { ENEMY_ARCHETYPES } from '../apps/hmh-reboot/src/enemy-archetypes.mjs';
 import { resolveEnemyAttackAgainstPlayer, stepEnemyAttacks } from '../apps/hmh-reboot/src/enemy-combat.mjs';
 import { createOrdinaryEnemyHurtboxProfile } from '../apps/hmh-reboot/src/enemy-hurtboxes.mjs';
 import {
+  clearanceLayerForRadius,
   computeEnemyFlowField,
   createEnemyNavGrid,
   navLineBlocked,
@@ -61,6 +62,7 @@ import {
   stepEnemyPopulation,
 } from '../apps/hmh-reboot/src/enemy-simulation.mjs';
 import { createEncounterDirector, directorViewBounds, getEncounterSnapshot, stepEncounterDirector } from '../apps/hmh-reboot/src/encounter-director.mjs';
+import * as enemyAiKitModule from '../apps/hmh-reboot/src/enemy-ai-kit.mjs';
 import { buildEnduranceEncounterCandidates } from '../apps/hmh-reboot/src/encounter-endurance-pilot.mjs';
 import {
   LEVEL_ONE_WORLD,
@@ -218,7 +220,11 @@ const EMPTY_INPUT = Object.freeze({
   fire: false, melee: false, grenade: false, dash: false, pause: false, weaponSlot: 0, weaponNext: false,
 });
 
-export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks = 36_000, checkpointEvery = 6_000 } = {}) {
+// `enemyKit` (default true) mirrors main.mjs's S1.2 enemy AI kit wiring; false
+// runs the pre-kit enemy steps for comparison.
+export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks = 36_000, checkpointEvery = 6_000, enemyKit = true } = {}) {
+  const kit = enemyKit ? enemyAiKitModule : null;
+  const hitStop = kit ? kit.createHitStopState() : null;
   assert.ok(['crowd', 'director'].includes(scenario), 'scenario must be crowd or director');
   assert.ok(Number.isInteger(ticks) && ticks > 0, 'ticks must be a positive integer');
   const crowd = scenario === 'crowd';
@@ -287,6 +293,7 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
   let activeProjectiles = [];
   let zeroDisplacementFrames = 0;
   let enemyFlowField = null;
+  let enemyFlowFieldsByLayer = new Map();
   let enemyFlowFieldTick = -1;
   let enemyFlowReplanRequestedTick = -1;
   let runKills = 0;
@@ -304,7 +311,9 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
     requestReplan: (_enemyId, tick) => {
       if (Number.isInteger(tick) && tick >= 0) enemyFlowReplanRequestedTick = Math.max(enemyFlowReplanRequestedTick, tick);
     },
-    flowDirectionAt: (x, y) => sampleFlowDirection(grid, enemyFlowField, x, y),
+    flowDirectionAt: (x, y, radius = 0) => (radius > 0 && enemyFlowField
+      ? sampleFlowDirection(grid, enemyFlowFieldsByLayer.get(clearanceLayerForRadius(radius)) ?? null, x, y) : null)
+      ?? sampleFlowDirection(grid, enemyFlowField, x, y),
   });
   const awardComboXp = (snapshot, tick) => {
     const feedback = resolveComboFeedback({ previous: runCombo, current: runCombo + 1 });
@@ -333,7 +342,7 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
   const stream = new BitHasher();
   const idHash = new Map();
   const checkpoints = [];
-  const counters = { kills: 0, environmentalKills: 0, enemyAttackEvents: 0, projectilesSpawned: 0, directorInsertions: 0, maxEnemies: enemies.length, minEnemies: enemies.length, maxProjectiles: 0 };
+  const counters = { kills: 0, environmentalKills: 0, enemyAttackEvents: 0, projectilesSpawned: 0, directorInsertions: 0, maxEnemies: enemies.length, minEnemies: enemies.length, maxProjectiles: 0, hitStopTicks: 0, recycled: 0, interrupted: 0 };
 
   const snapshotState = (tick) => ({
     tick,
@@ -399,7 +408,9 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
     motion.vy = pressure.allowedVelocity.y * pressureSpeed;
     for (const enemy of enemies) {
       const delta = pressure.enemyDeltas.get(enemy.id);
-      if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+      if (!delta) continue;
+      if (kit) kit.shoveEnemy(enemy, delta, { blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS, queryGround });
+      else { enemy.x += delta.x; enemy.y += delta.y; }
     }
     motion.x += playerHazardField.drift.x * dtSeconds;
     motion.y += playerHazardField.drift.y * dtSeconds;
@@ -448,14 +459,25 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
         isBlocked: spawnPointBlocked,
         isRouteReachable: (point) => point.routeValid === true,
         visualMode: 'normal',
+        ...(kit ? {
+          kit,
+          kitContext: { pathDistanceAt: (point) => kit.flowPathDistance(grid, enemyFlowField, point.x, point.y), crossings: LEVEL_ONE_WORLD.crossings, enabledRoles: null, lairRules: kit.LAIR_RULES_SHIPPED_MAP },
+        } : {}),
       });
       if (step.inserted) counters.directorInsertions += 1;
     }
 
     // ---- enemy movement ----
-    if (crowd || openingEnemyMovementEnabled(tick)) {
+    const enemiesFrozen = kit ? kit.consumeHitStop(hitStop, enemies) : false;
+    if (enemiesFrozen) counters.hitStopTicks += 1;
+    else if (crowd || openingEnemyMovementEnabled(tick)) {
       if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS || enemyFlowReplanRequestedTick > enemyFlowFieldTick) {
         enemyFlowField = computeEnemyFlowField({ grid, targetX: actor.x, targetY: actor.y });
+        enemyFlowFieldsByLayer = new Map();
+        if (kit) for (const enemy of enemies) {
+          const layer = clearanceLayerForRadius(ENEMY_ARCHETYPES[enemy.archetypeId].behavior?.clearanceRadius ?? 0);
+          if (layer > 0 && enemy.active && !enemyFlowFieldsByLayer.has(layer)) enemyFlowFieldsByLayer.set(layer, computeEnemyFlowField({ grid, targetX: actor.x, targetY: actor.y, minClearance: layer }));
+        }
         enemyFlowFieldTick = tick;
         enemyFlowReplanRequestedTick = -1;
       }
@@ -471,7 +493,13 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
         navigation,
         fullAiCap: encounterSnapshot(tick).fullAiCap,
         fieldAt: (x, y, ground) => worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ }),
+        ...(kit ? { kit, kitContext: { seed, crossings: LEVEL_ONE_WORLD.crossings } } : {}),
       });
+      if (kit) {
+        for (const recycle of kit.stepEnemyLeash({ enemies, tick, view: directorViewBounds({ x: actor.x, y: actor.y }), pathDistanceAt: (enemy) => kit.flowPathDistance(grid, enemyFlowField, enemy.x, enemy.y) })) {
+          if (retireEnemyFromPopulation(enemyPopulation, recycle.enemyId, { tick, reason: 'recycled' }).retired) counters.recycled += 1;
+        }
+      }
     }
 
     // ---- hurt targets ----
@@ -638,12 +666,22 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
     }
 
     // ---- enemy attacks (resolved against the invulnerable hero) ----
-    if (crowd || openingEnemyAttacksEnabled(tick)) {
+    if (!enemiesFrozen && (crowd || openingEnemyAttacksEnabled(tick))) {
       const attack = stepEnemyAttacks({
         enemies,
         player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
         tick,
         budgets: encounterSnapshot(tick).attackTokens,
+        ...(kit ? {
+          kit,
+          kitContext: {
+            lineOfSight: (enemy, target) => traceHeightAwareLineOfSight({ from: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 24 }, to: { x: target.x, y: target.y, z: (target.groundZ ?? 0) + 24 }, radius: 2, blockers: WORLD_BLOCKERS }).clear,
+            probeLane: (enemy, direction, length) => {
+              const sweep = resolveSweptCircleMotion({ body: enemy.collisionBody, start: { x: enemy.x, y: enemy.y, z: enemy.groundZ }, delta: { x: direction.x * length, y: direction.y * length }, blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS, stopOnFirstContact: true });
+              return Math.hypot(sweep.position.x - enemy.x, sweep.position.y - enemy.y);
+            },
+          },
+        } : {}),
       });
       counters.enemyAttackEvents += attack.events.length;
       for (const event of attack.events) {
@@ -651,6 +689,7 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
           invulnerable: true,
           blockers: WORLD_BLOCKERS,
+          ...(kit ? { kit } : {}),
         });
         if (resolved.hit) throw new Error('an invulnerable evidence hero was hit');
       }
@@ -679,6 +718,18 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
       }));
       combatTargets.push({ id: 'player', health: playerHealth, maxHealth: maxPlayerHealth, armor: 1, shieldCharges: 0, knockbackResistance: 1 });
       const resolution = resolveCombatHits({ sessionSeed: seed, hits: authoritative, targets: combatTargets });
+      if (kit) {
+        // B4: kills and crits on ordinary enemies set the next ticks' hit-stop.
+        let kills = 0;
+        let crits = 0;
+        let critKills = 0;
+        for (const damageEvent of resolution.damageEvents) {
+          if (damageEvent.targetId === 'player' || damageEvent.damageApplied <= 0 || !enemies.some((enemy) => enemy.id === damageEvent.targetId)) continue;
+          if (damageEvent.critical) crits += 1;
+          if (damageEvent.killed) { kills += 1; if (damageEvent.critical) critKills += 1; }
+        }
+        kit.triggerHitStop(hitStop, tick, kit.hitStopTicks({ kills, crits, critKills }));
+      }
       for (const enemy of enemies) {
         const state = resolution.targets[enemy.id];
         if (!state) continue;
@@ -694,6 +745,7 @@ export function runSimDigestScenario({ scenario, seed = STANDALONE_SEED, ticks =
         const enemy = enemies.find((candidate) => candidate.id === damageEvent.targetId);
         if (!enemy) continue;
         enemy.hitUntilTick = tick + 6;
+        if (kit && enemy.active && kit.applyEnemyPoiseDamage(enemy, damageEvent.damageApplied, tick)) counters.interrupted += 1;
         const knockbackCollision = resolveSweptCircleMotion({
           body: enemy.collisionBody, start: { x: enemy.x, y: enemy.y, z: enemy.groundZ },
           delta: damageEvent.knockback, blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS,

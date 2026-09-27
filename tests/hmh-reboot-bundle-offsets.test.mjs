@@ -35,6 +35,10 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'boss-slots.mjs',
   'boss-arenas.mjs',
   'boss-geometry.mjs',
+  // Enemy AI kit (S1.2): the kit the static enemy steps take as `kit`, and
+  // its telegraph renderer.
+  'enemy-ai-kit.mjs',
+  'enemy-tell-renderer.mjs',
 ]);
 
 function walk(node, visit) {

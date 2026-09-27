@@ -409,8 +409,9 @@ test('main.mjs routes every enemy and corpse display through the pool', async ()
   assert.equal(count(/createEnemyDisplayPool\(\{\s*create: createRosterOrVectorDisplay,/g), 1, 'the pool builds with the existing roster/vector factory');
   assert.equal(count(/createRosterOrVectorDisplay\(/g), 0, 'nothing builds an enemy display outside the pool');
   // Level 1 build, slice 5 (boss kit): a boss lock that recycles ordinary
-  // enemies standing in a wall line is a fifth incremental sync.
-  assert.equal(count(/syncEnemyMarkers\(grayboxEnemies\);/g), 5, 'boot, director, boss-add, boss-lock recycle and retirement syncs are incremental');
+  // enemies standing in a wall line is a fifth incremental sync; S1.2's leash
+  // recycle is the sixth.
+  assert.equal(count(/syncEnemyMarkers\(grayboxEnemies\);/g), 6, 'boot, director, boss-add, boss-lock recycle, leash recycle and retirement syncs are incremental');
   assert.equal(count(/syncEnemyMarkers\(grayboxEnemies, true\);/g), 1, 'a finished roster atlas rebuilds every live body, as before');
   assert.equal(count(/syncEnemyMarkers\(\[\]\);/g), 1, 'the run reset releases every marker');
   assert.equal(count(/(?:death|oldest)\.graphic\.destroy\(/g), 0, 'corpses return to the pool instead of being destroyed');

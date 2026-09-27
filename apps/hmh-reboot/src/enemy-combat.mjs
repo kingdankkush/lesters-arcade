@@ -59,6 +59,9 @@ function createAttackGeometry(enemy, archetype, target) {
 
 function createAttackEvent(enemy, archetype, tick) {
   const target = point(enemy.telegraphTarget, 'telegraphTarget');
+  // S1.2: a kit tell locked its geometry at the tell's start, and the strike
+  // resolves against exactly what the telegraph drew.
+  const geometry = enemy.tellGeometry ?? createAttackGeometry(enemy, archetype, target);
   return freezeDeep({
     type: 'enemy:attack',
     attackId: `${enemy.id}:${enemy.attackTellStartedTick}:${tick}`,
@@ -71,13 +74,14 @@ function createAttackEvent(enemy, archetype, tick) {
     origin: point(enemy, 'enemy'),
     target,
     damage: archetype.attack.damage,
-    geometry: createAttackGeometry(enemy, archetype, target),
+    geometry,
   });
 }
 
 function clearTelegraph(enemy) {
   enemy.telegraphTarget = null;
   enemy.attackTellStartedTick = null;
+  if (enemy.tellGeometry) enemy.tellGeometry = null;
 }
 
 function expireSupportArmor(enemy, tick) {
@@ -115,26 +119,46 @@ function applySupportArmorPulse(event, enemies, tick) {
   });
 }
 
+// `kit` (the lazy enemy-ai-kit module) and `kitContext` ({ lineOfSight,
+// probeLane }) are optional; without them this is the 1.8.x attack step.
 export function stepEnemyAttacks({
   enemies,
   player,
   tick,
   budgets = DEFAULT_ATTACK_TOKEN_BUDGET,
+  kit = null,
+  kitContext = null,
 } = {}) {
   if (!Array.isArray(enemies)) throw new TypeError('enemies must be an array');
   nonNegativeInteger(tick, 'tick');
   const playerPoint = point(player, 'player');
   const ordered = enemies.filter((enemy) => enemy?.active && enemy.health > 0).sort((a, b) => a.id.localeCompare(b.id));
   for (const enemy of ordered) expireSupportArmor(enemy, tick);
-  const tokenMap = allocateAttackTokens({ enemies: ordered, player: playerPoint, budgets });
+  const tokenMap = allocateAttackTokens({ enemies: ordered, player: playerPoint, budgets, tick });
   const events = [];
   let droppedEvents = 0;
   let tellsStartedThisTick = 0;
+  const pushEvent = (event) => {
+    if (events.length < MAX_ENEMY_ATTACK_EVENTS) events.push(event);
+    else droppedEvents += 1;
+  };
+  let tellsByArchetype = null;
+  if (kit) {
+    tellsByArchetype = new Map();
+    for (const enemy of ordered) if (enemy.attackPhase === 'tell') tellsByArchetype.set(enemy.archetypeId, (tellsByArchetype.get(enemy.archetypeId) ?? 0) + 1);
+  }
 
   for (const enemy of ordered) {
     const archetype = getEnemyArchetype(enemy.archetypeId);
     const hasToken = tokenMap.get(enemy.id) === archetype.attack.tokenFamily;
     const distance = Math.hypot(enemy.x - playerPoint.x, enemy.y - playerPoint.y);
+
+    // A kit poise break: the stagger runs out, then the body is ready again.
+    if (enemy.attackPhase === 'stagger') {
+      if (tick < enemy.attackPhaseUntilTick) continue;
+      enemy.attackPhase = 'ready';
+      enemy.attackPhaseUntilTick = tick;
+    }
 
     if (enemy.attackPhase === 'tell' && !hasToken) {
       enemy.attackPhase = 'ready';
@@ -147,6 +171,7 @@ export function stepEnemyAttacks({
     // authored recovery even if it loses its token — dashing out of its
     // reserve range is exactly how the player earns that punish window.
     if (enemy.attackPhase === 'attack' && !hasToken) {
+      if (enemy.volley) enemy.volley = null;
       enemy.attackPhase = 'recovery';
       enemy.attackPhaseUntilTick = enemy.attackRecoveryUntilTick ?? tick;
       clearTelegraph(enemy);
@@ -154,23 +179,36 @@ export function stepEnemyAttacks({
     }
 
     if (enemy.attackPhase === 'tell') {
-      if (tick < enemy.attackPhaseUntilTick) continue;
+      if (tick < enemy.attackPhaseUntilTick) {
+        kit?.trackEnemyTell(enemy, playerPoint, tick);
+        continue;
+      }
       const baseEvent = createAttackEvent(enemy, archetype, tick);
       const event = archetype.attack.tokenFamily === 'support'
         ? applySupportArmorPulse(baseEvent, ordered, tick)
         : baseEvent;
-      if (events.length < MAX_ENEMY_ATTACK_EVENTS) events.push(event);
-      else droppedEvents += 1;
       const strikeTicks = Math.min(ENEMY_STRIKE_TICKS, archetype.attack.recoveryTicks);
       enemy.attackPhase = 'attack';
       enemy.attackPhaseUntilTick = tick + strikeTicks;
       enemy.attackRecoveryUntilTick = tick + archetype.attack.recoveryTicks;
+      if (kit) {
+        enemy.lastStrike = event;
+        for (const strike of kit.strikeEnemyTell(enemy, archetype, event, tick, strikeTicks)) pushEvent(strike);
+      } else {
+        pushEvent(event);
+      }
       clearTelegraph(enemy);
       continue;
     }
 
     if (enemy.attackPhase === 'attack') {
+      // A kit volley fires its later rounds inside the strike.
+      if (kit && enemy.volley) for (const round of kit.followUpEnemyStrike(enemy, enemy.lastStrike, tick)) pushEvent(round);
       if (tick < enemy.attackPhaseUntilTick) continue;
+      if (kit) {
+        enemy.volley = null;
+        enemy.lastStrike = null;
+      }
       enemy.attackPhase = 'recovery';
       enemy.attackPhaseUntilTick = enemy.attackRecoveryUntilTick ?? tick;
     }
@@ -183,10 +221,18 @@ export function stepEnemyAttacks({
     }
 
     if (enemy.attackPhase !== 'ready' || !hasToken || distance > archetype.attack.range) continue;
+    let plan = null;
+    if (kit) {
+      plan = kit.planEnemyTell({ enemy, archetype, player: playerPoint, tick, allies: ordered, context: kitContext, tellsByArchetype });
+      if (!plan) continue;
+      tellsByArchetype.set(archetype.id, (tellsByArchetype.get(archetype.id) ?? 0) + 1);
+      enemy.poiseDamage = 0;
+    }
     enemy.attackPhase = 'tell';
     enemy.attackTellStartedTick = tick;
     enemy.attackPhaseUntilTick = tick + archetype.attack.tellTicks + tellsStartedThisTick * ENEMY_TELL_STAGGER_TICKS;
-    enemy.telegraphTarget = Object.freeze({ ...(archetype.attack.tokenFamily === 'support' ? supportTargetFor(enemy, ordered, playerPoint) : playerPoint) });
+    enemy.telegraphTarget = plan ? plan.target : Object.freeze({ ...(archetype.attack.tokenFamily === 'support' ? supportTargetFor(enemy, ordered, playerPoint) : playerPoint) });
+    if (plan) enemy.tellGeometry = plan.geometry;
     tellsStartedThisTick += 1;
   }
 
@@ -198,7 +244,7 @@ export function stepEnemyAttacks({
   });
 }
 
-export function resolveEnemyAttackAgainstPlayer(event, { player, invulnerable = false, blockers = [] } = {}) {
+export function resolveEnemyAttackAgainstPlayer(event, { player, invulnerable = false, blockers = [], kit = null } = {}) {
   if (!event || typeof event !== 'object') throw new TypeError('enemy attack event is required');
   if (!event.geometry || typeof event.geometry.type !== 'string') throw new TypeError('enemy attack event geometry is required');
   if (typeof invulnerable !== 'boolean') throw new TypeError('invulnerable must be boolean');
@@ -212,7 +258,7 @@ export function resolveEnemyAttackAgainstPlayer(event, { player, invulnerable = 
   if (event.geometry.type === 'support-ring' || damage === 0) {
     return freezeDeep({ hit: false, damage: 0, reason: 'non-damaging', enemyId: event.enemyId ?? null, attackId: event.attackId ?? null });
   }
-  if (event.geometry.type === 'lane' && blockers.length > 0) {
+  if ((event.geometry.type === 'lane' || (kit && kit.ENEMY_PROJECTILE_LANES.includes(event.geometry.type))) && blockers.length > 0) {
     const from = point(event.geometry.from, 'geometry.from');
     const to = point(event.geometry.to, 'geometry.to');
     const lineOfSight = traceHeightAwareLineOfSight({
@@ -227,7 +273,11 @@ export function resolveEnemyAttackAgainstPlayer(event, { player, invulnerable = 
   }
 
   let hit = false;
-  if (event.geometry.type === 'melee-circle' || event.geometry.type === 'area-circle') {
+  let pull = null;
+  if (kit) {
+    // The kit's geometry set covers the core shapes and the new ones.
+    ({ hit, pull } = kit.resolveEnemyGeometryHit(event.geometry, position, radius));
+  } else if (event.geometry.type === 'melee-circle' || event.geometry.type === 'area-circle') {
     const center = point(event.geometry.center, 'geometry.center');
     const reach = finite(event.geometry.radius, 'geometry.radius') + radius;
     hit = Math.hypot(position.x - center.x, position.y - center.y) <= reach + EPSILON;
@@ -245,5 +295,6 @@ export function resolveEnemyAttackAgainstPlayer(event, { player, invulnerable = 
     reason: hit ? 'hit' : 'evaded',
     enemyId: event.enemyId ?? null,
     attackId: event.attackId ?? null,
+    ...(pull ? { pull } : {}),
   });
 }

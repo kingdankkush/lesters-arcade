@@ -158,6 +158,9 @@ export async function loadProgressionModules(root = REPO_ROOT) {
   const sourceRoot = resolve(root, 'apps/hmh-reboot/src');
   const entries = await Promise.all(Object.entries(MODULE_FILES).map(async ([key, file]) => [key, await import(pathToFileURL(join(sourceRoot, file)).href)]));
   const modules = Object.fromEntries(entries);
+  // The enemy AI kit (S1.2) exists only on trees that ship it; a 1.8.1 or
+  // pre-kit tree runs the static enemy steps exactly as before.
+  modules.enemyKit = await import(pathToFileURL(join(sourceRoot, 'enemy-ai-kit.mjs')).href).catch(() => null);
   modules.root = resolve(root);
   return Object.freeze(modules);
 }
@@ -417,6 +420,17 @@ export function runProgressionModel(M, {
     combat: CB, projectiles: PR, hurtboxes: HB, grenades: G, melee: ML, dash: DS, aim: AM,
     capacity: CAP, combo: CO, world: WORLD,
   } = M;
+  // S1.2: the model plays the kit where its proxy reaches it (the seeded
+  // director, locked tell shapes, the Agent's burst and the Whale's rush lane,
+  // the Validator's ally rule, poise interrupts, hit-stop and the perfect
+  // dodge). Line of sight is always clear on the model's open plane; lairs,
+  // leash, clearance, approach slots and swept shoves need the real map.
+  const K = M.enemyKit ?? null;
+  const hitStop = K ? K.createHitStopState() : null;
+  let perfectDodgeUntilTick = -1;
+  let perfectDodges = 0;
+  let interrupts = 0;
+  const volleyConnects = new Map();
 
   const progression = P.createRunProgression({ seed });
   const order = weaponOrder(M);
@@ -698,12 +712,15 @@ export function runProgressionModel(M, {
       isBlocked: () => false,
       isRouteReachable: () => true,
       visualMode: 'normal',
+      ...(K ? { kit: K, kitContext: { pathDistanceAt: null, crossings: [], enabledRoles: null, lairRules: K.LAIR_RULES_SHIPPED_MAP } } : {}),
     });
     if (step.inserted) addBody(population.active.find((enemy) => enemy.id === step.enemyId), bearing);
     maxAlive = Math.max(maxAlive, bodies.length);
 
+    // B4: a hit-stop tick freezes the horde's movement and attack clocks.
+    const enemiesFrozen = K ? K.consumeHitStop(hitStop, population.active) : false;
     // Enemy movement: straight in, queued by lane, locked while striking.
-    if (O.openingEnemyMovementEnabled(tick)) {
+    if (!enemiesFrozen && O.openingEnemyMovementEnabled(tick)) {
       const rank = new Map();
       for (const enemy of bodies) {
         const archetype = A.ENEMY_ARCHETYPES[enemy.archetypeId];
@@ -711,7 +728,7 @@ export function runProgressionModel(M, {
         const key = laneById.get(enemy.id) * 2 + (melee ? 0 : 1);
         const position = rank.get(key) ?? 0;
         rank.set(key, position + 1);
-        if (enemy.attackPhase === 'tell' || enemy.attackPhase === 'attack') continue;
+        if (enemy.attackPhase === 'tell' || enemy.attackPhase === 'attack' || enemy.attackPhase === 'stagger') continue;
         const stop = (melee
           ? Math.max(archetype.radius + MAIN_MIRROR.playerRadius, archetype.attack.range - C.meleeStopInset)
           : archetype.preferredDistance) + position * (2 * archetype.radius + C.queueGap);
@@ -830,13 +847,27 @@ export function runProgressionModel(M, {
 
     // Enemy attacks: real tokens, tells and strikes; the model decides whether
     // a strike connects (evasion proxy) and spends the automatic dodge on it.
-    if (O.openingEnemyAttacksEnabled(tick)) {
+    if (!enemiesFrozen && O.openingEnemyAttacksEnabled(tick)) {
       const band = D.getEncounterBand(tick);
       if (bandTokens?.id !== band.id) bandTokens = { id: band.id, budgets: D.getEncounterSnapshot(tick).attackTokens };
-      const attacks = EC.stepEnemyAttacks({ enemies: population.active, player: { id: 'player', x: 0, y: 0, groundZ: 0, radius: MAIN_MIRROR.playerRadius }, tick, budgets: bandTokens.budgets });
+      const attacks = EC.stepEnemyAttacks({
+        enemies: population.active, player: { id: 'player', x: 0, y: 0, groundZ: 0, radius: MAIN_MIRROR.playerRadius }, tick, budgets: bandTokens.budgets,
+        ...(K ? { kit: K, kitContext: { lineOfSight: () => true, probeLane: (_enemy, _direction, length) => length } } : {}),
+      });
       const connectChance = Math.min(1, C.strikeConnectChance / (effects.moveSpeedMultiplier * timedSpeed));
       for (const event of attacks.events) {
         if (event.damage <= 0 || event.tokenFamily === 'support') continue;
+        // A kit volley (the Agent's burst) is one strike for the evasion
+        // proxy: its first round rolls, and the later rounds land only when
+        // the first did (a dodge's i-frames cover them as in the game).
+        if (event.round > 0) {
+          const first = volleyConnects.get(event.enemyId);
+          if (!first || first.tell !== event.tellStartedTick) continue;
+          if (tick <= invulnerableUntilTick) continue;
+          hits.push({ id: event.attackId, tick, time: 1, targetId: 'player', sourceId: event.enemyId, weaponId: `enemy-${event.archetypeId}`, damage: event.damage, criticalChance: 0, criticalMultiplier: 1, armorPiercing: false, direction: { x: 1, y: 0 }, knockback: 0 });
+          continue;
+        }
+        if (event.round === 0) volleyConnects.delete(event.enemyId);
         strikes += 1;
         connectMass += connectChance;
         if (connectMass < 1) { evaded += 1; continue; }
@@ -846,8 +877,15 @@ export function runProgressionModel(M, {
           dashReadyTick = tick + DS.DASH_COOLDOWN_TICKS_BY_TIER[dashTier];
           invulnerableUntilTick = tick + DS.DASH_INVULNERABILITY_TICKS - 1;
           dodges += 1;
+          // E2: the automatic dodge fires 6 or fewer ticks before the strike,
+          // inside the perfect window, so every model dodge is perfect.
+          if (K) {
+            perfectDodgeUntilTick = tick + K.PERFECT_DODGE.bonusTicks;
+            perfectDodges += 1;
+          }
           continue;
         }
+        if (event.round === 0) volleyConnects.set(event.enemyId, { tell: event.tellStartedTick });
         hits.push({ id: event.attackId, tick, time: 1, targetId: 'player', sourceId: event.enemyId, weaponId: `enemy-${event.archetypeId}`, damage: event.damage, criticalChance: 0, criticalMultiplier: 1, armorPiercing: false, direction: { x: 1, y: 0 }, knockback: 0 });
       }
     }
@@ -860,7 +898,7 @@ export function runProgressionModel(M, {
       for (const hit of hits) {
         if (hit.targetId !== 'player' && !alive.has(hit.targetId)) continue;
         involved.add(hit.targetId);
-        intents.push(hit.sourceId === 'player' ? { ...hit, damage: hit.damage * effects.outgoingDamageMultiplier } : hit);
+        intents.push(hit.sourceId === 'player' ? { ...hit, damage: hit.damage * effects.outgoingDamageMultiplier * (K && tick <= perfectDodgeUntilTick ? K.PERFECT_DODGE.damageMultiplier : 1) } : hit);
       }
       const targets = [...involved].filter((id) => id !== 'player').map((id) => {
         const enemy = alive.get(id);
@@ -868,15 +906,25 @@ export function runProgressionModel(M, {
       });
       if (involved.has('player')) targets.push({ id: 'player', health, maxHealth, armor: 1, shieldCharges: 0, knockbackResistance: 1 });
       const result = CB.resolveCombatHits({ sessionSeed: seed, hits: intents, targets });
+      let stopKills = 0;
+      let stopCrits = 0;
+      let stopCritKills = 0;
       for (const event of result.damageEvents) {
         if (event.targetId === 'player') {
           hitsTaken += 1;
           damageTaken += event.damageApplied;
           combo = 0;
         } else {
-          alive.get(event.targetId).health = event.healthAfter;
+          const enemy = alive.get(event.targetId);
+          enemy.health = event.healthAfter;
+          if (K && event.damageApplied > 0) {
+            if (enemy.health > 0 && K.applyEnemyPoiseDamage(enemy, event.damageApplied, tick)) interrupts += 1;
+            if (event.critical) stopCrits += 1;
+            if (event.killed) { stopKills += 1; if (event.critical) stopCritKills += 1; }
+          }
         }
       }
+      if (K) K.triggerHitStop(hitStop, tick, K.hitStopTicks({ kills: stopKills, crits: stopCrits, critKills: stopCritKills }));
       if (involved.has('player')) health = result.targets.player.health;
       for (const death of result.deathEvents) {
         if (death.enemyId === 'player') continue;
@@ -1004,6 +1052,8 @@ export function runProgressionModel(M, {
     ammo,
     collected,
     referenceByLevel,
+    // Present only on a kit tree, so a pre-kit tree's evidence is unchanged.
+    ...(K ? { enemyKit: { perfectDodges, interrupts, hitStopTicks: hitStop.frozenTicks } } : {}),
   };
   return Object.freeze({ ...evidence, digest: sha256(JSON.stringify(evidence)) });
 }

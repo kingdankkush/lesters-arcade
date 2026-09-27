@@ -44,7 +44,7 @@ import {
   resolveEnemyRuntimeVisualState,
 } from './enemy-production-art.mjs';
 import { attemptScheduledEnemyInsertion, createEnemyPopulation, createEnemyState, retireEnemyFromPopulation, stepEnemyPopulation } from './enemy-simulation.mjs';
-import { computeEnemyFlowField, createEnemyNavGridChunked, createNavGridAuthority, navLineBlocked, sampleChokepointDirection, sampleCoverDirection, sampleFlankLaneDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
+import { clearanceLayerForRadius, computeEnemyFlowField, createEnemyNavGridChunked, createNavGridAuthority, navLineBlocked, sampleChokepointDirection, sampleCoverDirection, sampleFlankLaneDirection, sampleFlowDirection, sampleHazardAwareDirection } from './enemy-navgrid.mjs';
 import { createMinimapDiscoveryState, discoverMinimapPointsOfInterest } from './minimap-model.mjs';
 import {
   TERRAIN_MATERIAL_IDS,
@@ -286,6 +286,10 @@ let createMissionState, stepMissionObjectives, settleMissionObjective, missionDo
   applyMissionSealDamage, missionHiddenSecretProps;
 let createWorldDesignLife, prepareWorldDesignEnemyPose, createWorldDesignPacing, stepWorldDesignPacing, loadWorldDesignAppearance;
 let resolveLevelBriefing, applyLevelBriefing, createUpgradePanel, RUN_UPGRADE_CONTENT;
+// Enemy AI kit (design package S1.2): the whole module is handed to the
+// static enemy steps as their optional `kit`; its telegraph renderer is
+// projection.
+let enemyAiKit = null, drawEnemyTellGeometry = null;
 let lazyRuntimeModulesLoad = null;
 function loadLazyRuntimeModules() {
   lazyRuntimeModulesLoad ??= Promise.all([
@@ -303,7 +307,11 @@ function loadLazyRuntimeModules() {
     import('./boss-slots.mjs'),
     import('./boss-arenas.mjs'),
     import('./boss-geometry.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry]) => {
+    import('./enemy-ai-kit.mjs'),
+    import('./enemy-tell-renderer.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, aiKit, tellRenderer]) => {
+    enemyAiKit = aiKit;
+    ({ drawEnemyTellGeometry } = tellRenderer);
     ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
     ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
@@ -393,6 +401,9 @@ const navGridAuthority = createNavGridAuthority();
 const ENEMY_FLOW_REFRESH_TICKS = 30;
 let enemyFlowField = null;
 let enemyFlowFieldTick = -1;
+// Per-clearance-layer fields for the large bodies alive at each refresh
+// (read only while enemyFlowField is set, so every reset clears them too).
+let enemyFlowFieldsByLayer = new Map();
 // Breakables (design package §3.3): the secret seal and the destructible
 // cover. Every player weapon and the knife hit them; the nuke, world hazards
 // and enemy strikes never do, and fuel drums chain only through each other.
@@ -448,7 +459,11 @@ const enemyNavigation = Object.freeze({
   requestReplan: (_enemyId, tick) => {
     if (Number.isInteger(tick) && tick >= 0) enemyFlowReplanRequestedTick = Math.max(enemyFlowReplanRequestedTick, tick);
   },
-  flowDirectionAt: (x, y) => sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y),
+  // S1.2 (5.2d): a large body reads its clearance layer's field, falling
+  // back to the base field where that layer has no route.
+  flowDirectionAt: (x, y, radius = 0) => (radius > 0 && enemyFlowField
+    ? sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowFieldsByLayer.get(clearanceLayerForRadius(radius)) ?? null, x, y) : null)
+    ?? sampleFlowDirection(ENEMY_NAV_GRID, enemyFlowField, x, y),
 });
 const stageElement = document.querySelector('#hmhRebootStage');
 const statusElement = document.querySelector('#hmhRebootStatus');
@@ -1337,6 +1352,10 @@ async function boot() {
   // evidence spawn and an invulnerable hero) apply only outside Ranked: a
   // Ranked run is a real run whatever the URL says. Set per session.
   let evidenceGameplayEnabled = false;
+  // S1.2: new enemy roles are built dark. They are drawn by the director only
+  // under ?evidenceSafe=1&newEnemies=1 outside Ranked; the core-six kit is live.
+  const newEnemiesRequested = evidenceSafeEnabled && runtimeParams.get('newEnemies') === '1';
+  let newEnemyRoles = null;
   const authoredSpawnPoints = LEVEL_ONE_WORLD.spawnPoints;
   const spawnPointBlocked = (point) => WORLD_BLOCKERS.some((blocker) => {
     const shape = blocker.shape;
@@ -1504,6 +1523,12 @@ async function boot() {
   let bossSlots = null;
   let bossHitVisualUntilTick = -1;
   let bossDeathVisualUntilTick = -1;
+  // S1.2 enemy AI kit per-run state: B4 hit-stop, E2 perfect dodge, and the
+  // telemetry counters for recycles and poise interrupts.
+  let enemyHitStop = null;
+  let perfectDodgeUntilTick = -1;
+  let enemyKitCounters = { recycled: 0, interrupted: 0, perfectDodges: 0 };
+  let pendingPlayerPull = null;
   let lastBossStep = null;
   let lastEnemyStep = null;
   let catchUpSaturationFrames = 0;
@@ -1963,8 +1988,20 @@ async function boot() {
         // red on liquidation-yard). A dark contour under every stroke
         // guarantees the tell separates from whatever it is drawn over.
         const CONTOUR = { color: 0x080d12, alpha: alpha * 0.72 };
+        // S1.2: a kit tell draws its locked geometry, the exact shape the
+        // strike resolves against (a lane at its full width, the Whale's rush
+        // lane, the Agent's volley). The Gas Bomber's canister is drawn below.
+        if (enemy.tellGeometry && drawEnemyTellGeometry) {
+          drawEnemyTellGeometry(enemyTelegraphs, enemy.tellGeometry, {
+            toScreen: (point) => worldToScreen(point, camera, view),
+            zoom: camera.zoom,
+            color: archetype.visual.color,
+            progress: 1 - tellRatio,
+          });
+          if (archetype.attack.tokenFamily !== 'area') continue;
+        }
         if (archetype.attack.tokenFamily === 'area') {
-          enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 96 * camera.zoom)
+          if (!enemy.tellGeometry) enemyTelegraphs.circle(targetScreen.x, targetScreen.y, 96 * camera.zoom)
             .fill({ color: archetype.visual.color, alpha: 0.08 })
             .stroke({ ...CONTOUR, width: 10 })
             .stroke({ color: archetype.visual.color, width: 4, alpha });
@@ -2539,6 +2576,12 @@ async function boot() {
           } else if (event.type === 'dash-ready') {
             combatVisuals.circle(center.x, center.y, 34 + age * 2.6)
               .stroke({ color: 0x8ff3ff, width: 4, alpha: alpha * 0.8 });
+          } else if (event.type === 'perfect-dodge') {
+            // E2: a gold double ring on the hero for the perfect dodge.
+            combatVisuals.circle(center.x, center.y, 30 + age * 3.2)
+              .stroke({ color: 0xffd166, width: 5, alpha: alpha * 0.9 })
+              .circle(center.x, center.y, 18 + age * 2)
+              .stroke({ color: 0xfff4c7, width: 2, alpha: alpha * 0.7 });
           } else if (event.type === 'dash-blocked') {
             // A refused manual dodge: a short red cross on the hero.
             const arm = 12 * camera.zoom;
@@ -2998,6 +3041,7 @@ async function boot() {
           lastEnemyAttack,
           lastEnemyStep,
           lastEnemyStrike,
+          enemyKitTelemetry: { ...enemyKitCounters, hitStopTicks: enemyHitStop?.frozenTicks ?? 0 },
           lastForkedStandardStrike,
           lastGrenadeDetonation,
           lastGround,
@@ -3089,6 +3133,10 @@ async function boot() {
     lastDirectorStep = null;
     liquidatorBoss = null;
     bossHitVisualUntilTick = -1;
+    enemyHitStop = enemyAiKit ? enemyAiKit.createHitStopState() : null;
+    perfectDodgeUntilTick = -1;
+    enemyKitCounters = { recycled: 0, interrupted: 0, perfectDodges: 0 };
+    pendingPlayerPull = null;
     bossDeathVisualUntilTick = -1;
     lastBossStep = null;
     lastEnemyStep = null;
@@ -3184,6 +3232,8 @@ async function boot() {
     stopCurrentSession();
     combatAudio.pause();
     evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';
+    // Never in Ranked, whatever the URL says.
+    newEnemyRoles = newEnemiesRequested && payload.mode !== 'ranked' ? new Set(enemyAiKit.NEW_ENEMY_ROLES) : null;
     runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);
     revealState = createLevelOneRevealState();
     revealLevelOneAt(revealState, runtimePlayerSpawn);
@@ -3569,11 +3619,21 @@ async function boot() {
         : [];
       const dodge = !rosterPreviewEnabled ? resolveDodgeIntent({
         tick, input: { ...tickInput, dash: dodgePressed }, actor, state: dashState, body: playerBody, bounds: WORLD_BOUNDS,
-        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, bossDangers, lastMove: lastMoveDirection, aim: aimIntent.direction,
+        blockers: WORLD_BLOCKERS, queryGround, enemies: grayboxEnemies, bossDangers, tellDanger: enemyAiKit.enemyTellDanger, lastMove: lastMoveDirection, aim: aimIntent.direction,
       }) : null;
       // Under 48 safe units a manual dodge is refused: no cooldown, a flash.
       if (dodge?.blocked) pushCombatVisualEvent({ type: 'dash-blocked', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 } });
       const dashStart = dodge && !dodge.blocked ? beginDash(dashState, { tick, direction: dodge.direction, distance: dodge.distance }) : null;
+      // E2: a dodge started in the last 8 ticks of a tell that holds the hero
+      // earns a short damage bonus.
+      if (dashStart?.started && enemyAiKit.isPerfectDodge({
+        tick, actor, bodyRadius: playerBody.radius, enemies: grayboxEnemies, bossDangers,
+        lineOfSight: (enemy, target) => traceHeightAwareLineOfSight({ from: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 32 }, to: { x: target.x, y: target.y, z: (target.groundZ ?? 0) + 32 }, blockers: WORLD_BLOCKERS }).clear,
+      })) {
+        perfectDodgeUntilTick = tick + enemyAiKit.PERFECT_DODGE.bonusTicks;
+        enemyKitCounters.perfectDodges += 1;
+        pushCombatVisualEvent({ type: 'perfect-dodge', tick, point: { x: actor.x, y: actor.y, z: actor.groundZ + 24 } });
+      }
       if (dashStart?.started) {
         motion.vx = 0;
         motion.vy = 0;
@@ -3600,9 +3660,12 @@ async function boot() {
         lastTraversal = dashWorld.traversal;
         lastGround = dashWorld.ground;
         zeroDisplacementFrames = lastCollision.telemetry.zeroDisplacementFrames;
+        // A dash escapes a pending rug pull.
+        pendingPlayerPull = null;
+        // S1.2 (5.2e): the plough is a swept, traversal-checked shove.
         for (const enemy of grayboxEnemies) {
           const delta = dashWorld.enemyDeltas.get(enemy.id);
-          if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+          if (delta) enemyAiKit.shoveEnemy(enemy, delta, { blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS, queryGround });
         }
         const dashStopped = dashFrame.completed || dashWorld.stopReason !== null;
         motion.vx = dashStopped ? 0 : (motion.x - movementStart.x) / dtSeconds;
@@ -3681,7 +3744,14 @@ async function boot() {
         motion.vy = pressure.allowedVelocity.y * pressureSpeed;
         for (const enemy of grayboxEnemies) {
           const delta = pressure.enemyDeltas.get(enemy.id);
-          if (delta) { enemy.x += delta.x; enemy.y += delta.y; }
+          if (delta) enemyAiKit.shoveEnemy(enemy, delta, { blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS, queryGround });
+        }
+        // A rug pull resolved last tick (forced motion, 5.2e) folds into the
+        // swept delta below like the conveyor drift.
+        if (pendingPlayerPull) {
+          motion.x += pendingPlayerPull.x;
+          motion.y += pendingPlayerPull.y;
+          pendingPlayerPull = null;
         }
         // Conveyor drift folds into the swept delta below, so the push stays
         // wall-safe and the traversal pass still refuses deep water.
@@ -3881,6 +3951,14 @@ async function boot() {
           isBlocked: spawnPointBlocked,
           isRouteReachable: (point) => point.routeValid === true,
           visualMode: 'normal',
+          kit: enemyAiKit,
+          kitContext: {
+            pathDistanceAt: (point) => enemyAiKit.flowPathDistance(ENEMY_NAV_GRID, enemyFlowField, point.x, point.y),
+            crossings: LEVEL_ONE_WORLD.crossings,
+            enabledRoles: newEnemyRoles,
+            // Layout v2 switches to LAIR_RULES_LAYOUT_V2 with its 24 lairs.
+            lairRules: enemyAiKit.LAIR_RULES_SHIPPED_MAP,
+          },
         });
       if (lastDirectorStep.inserted) syncEnemyMarkers(grayboxEnemies);
 
@@ -3903,9 +3981,19 @@ async function boot() {
       lastBossPunishWindow = liquidatorBoss ? getLiquidatorVulnerability(liquidatorBoss, tick) : null;
 
       const openingMovementAllowed = !rosterPreviewEnabled && openingEnemyMovementEnabled(tick);
-      if (endurancePressurePilotEnabled || openingMovementAllowed) {
+      // B4: a hit-stop tick freezes ordinary enemies (movement and attack
+      // clocks); the hero, projectiles and the boss keep running.
+      const enemiesFrozen = enemyAiKit.consumeHitStop(enemyHitStop, grayboxEnemies);
+      if (enemiesFrozen) {
+        lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0, frozen: true });
+      } else if (endurancePressurePilotEnabled || openingMovementAllowed) {
         if (enemyFlowField === null || tick - enemyFlowFieldTick >= ENEMY_FLOW_REFRESH_TICKS || enemyFlowReplanRequestedTick > enemyFlowFieldTick) {
           enemyFlowField = computeEnemyFlowField({ grid: navGrid, targetX: actor.x, targetY: actor.y });
+          enemyFlowFieldsByLayer = new Map();
+          if (enemyAiKit) for (const enemy of grayboxEnemies) {
+            const layer = clearanceLayerForRadius(ENEMY_ARCHETYPES[enemy.archetypeId].behavior?.clearanceRadius ?? 0);
+            if (layer > 0 && enemy.active && !enemyFlowFieldsByLayer.has(layer)) enemyFlowFieldsByLayer.set(layer, computeEnemyFlowField({ grid: navGrid, targetX: actor.x, targetY: actor.y, minClearance: layer }));
+          }
           enemyFlowFieldTick = tick;
           enemyFlowReplanRequestedTick = -1;
         }
@@ -3922,7 +4010,23 @@ async function boot() {
           fullAiCap: runtimeEncounterSnapshot(tick).fullAiCap,
           // Spore beds and conveyors act on enemies through the same field the hero uses.
           fieldAt: (x, y, ground) => worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ }),
+          kit: enemyAiKit,
+          kitContext: { seed: encounterDirector.seed, crossings: LEVEL_ONE_WORLD.crossings },
         });
+        // Leash and recycle (package 2.7): off-view bodies that cannot reach
+        // the hero, or trail far behind, retire without kill credit.
+        let recycledEnemies = false;
+        for (const recycle of enemyAiKit.stepEnemyLeash({
+          enemies: grayboxEnemies,
+          tick,
+          view: directorViewBounds({ x: actor.x, y: actor.y }),
+          pathDistanceAt: (enemy) => enemyAiKit.flowPathDistance(ENEMY_NAV_GRID, enemyFlowField, enemy.x, enemy.y),
+        })) {
+          if (!retireEnemyFromPopulation(enemyPopulation, recycle.enemyId, { tick, reason: 'recycled' }).retired) continue;
+          recycledEnemies = true;
+          enemyKitCounters.recycled += 1;
+        }
+        if (recycledEnemies) syncEnemyMarkers(grayboxEnemies);
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
       }
@@ -4640,11 +4744,21 @@ async function boot() {
 
       const openingAttacksAllowed = (!rosterPreviewEnabled || rosterCombatEnabled) && openingEnemyAttacksEnabled(tick);
       if (endurancePressurePilotEnabled || openingAttacksAllowed) {
-        lastEnemyAttack = stepEnemyAttacks({
+        lastEnemyAttack = enemiesFrozen ? Object.freeze({ tick, tokens: Object.freeze([]), events: Object.freeze([]), droppedEvents: 0 }) : stepEnemyAttacks({
           enemies: grayboxEnemies,
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
           tick,
           budgets: runtimeEncounterSnapshot(tick).attackTokens,
+          kit: enemyAiKit,
+          kitContext: {
+            // 5.2c: height-aware line of sight before a ranged or area tell.
+            lineOfSight: (enemy, target) => traceHeightAwareLineOfSight({ from: { x: enemy.x, y: enemy.y, z: (enemy.groundZ ?? 0) + 24 }, to: { x: target.x, y: target.y, z: (target.groundZ ?? 0) + 24 }, radius: 2, blockers: WORLD_BLOCKERS }).clear,
+            // The Whale's rush lane stops at the first blocker.
+            probeLane: (enemy, direction, length) => {
+              const sweep = resolveSweptCircleMotion({ body: enemy.collisionBody, start: { x: enemy.x, y: enemy.y, z: enemy.groundZ }, delta: { x: direction.x * length, y: direction.y * length }, blockers: WORLD_BLOCKERS, bounds: WORLD_BOUNDS, stopOnFirstContact: true });
+              return Math.hypot(sweep.position.x - enemy.x, sweep.position.y - enemy.y);
+            },
+          },
         });
       } else {
         lastEnemyAttack = Object.freeze({ tick, tokens: Object.freeze([]), events: Object.freeze([]), droppedEvents: 0 });
@@ -4656,8 +4770,10 @@ async function boot() {
           player: { id: 'player', x: actor.x, y: actor.y, groundZ: actor.groundZ, radius: playerBody.radius },
           invulnerable: playerInvulnerable,
           blockers: WORLD_BLOCKERS,
+          kit: enemyAiKit,
         });
         if (!resolved.hit) continue;
+        if (resolved.pull) pendingPlayerPull = resolved.pull;
         const directionMagnitude = Math.hypot(actor.x - event.origin.x, actor.y - event.origin.y) || 1;
         combatHitIntents.push({
           id: event.attackId,
@@ -4764,7 +4880,7 @@ async function boot() {
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
         .map((hit) => hit.sourceId === 'player' && hit.targetId !== 'player'
-          ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier }
+          ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier * (tick <= perfectDodgeUntilTick ? enemyAiKit.PERFECT_DODGE.damageMultiplier : 1) }
           : hit);
       if (authoritativeCombatHitIntents.length > 0) {
         const combatTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => ({
@@ -4825,6 +4941,21 @@ async function boot() {
           hits: roleCheckedCombatHitIntents,
           targets: combatTargets,
         });
+        // B4: kills and crits on ordinary enemies set the next ticks' hit-stop.
+        {
+          let kills = 0;
+          let crits = 0;
+          let critKills = 0;
+          for (const damageEvent of lastCombatResolution.damageEvents) {
+            if (damageEvent.targetId === 'player' || damageEvent.damageApplied <= 0 || !grayboxEnemies.some((enemy) => enemy.id === damageEvent.targetId)) continue;
+            if (damageEvent.critical) crits += 1;
+            if (damageEvent.killed) {
+              kills += 1;
+              if (damageEvent.critical) critKills += 1;
+            }
+          }
+          enemyAiKit.triggerHitStop(enemyHitStop, tick, enemyAiKit.hitStopTicks({ kills, crits, critKills }));
+        }
         const sealDamage=lastCombatResolution.targets[WORLD_DESIGN_SECRET_SEAL.id];
         if(sealDamage) {
           for(const opened of applyMissionSealDamage(missionState,{sealId:WORLD_DESIGN_SECRET_SEAL.id,health:sealDamage.health,tick})) openWorldBlocker(opened.sealId);
@@ -4963,6 +5094,8 @@ async function boot() {
           const enemy = grayboxEnemies.find((candidate) => candidate.id === damageEvent.targetId);
           if (!enemy) continue;
           enemy.hitUntilTick = tick + 6;
+          // 5.2b: damage during a tell breaks its poise and staggers it.
+          if (enemy.active && enemyAiKit.applyEnemyPoiseDamage(enemy, damageEvent.damageApplied, tick)) enemyKitCounters.interrupted += 1;
           // Render-side hit descriptor for the projection reaction. Frozen
           // copies of the authoritative damage fields only; the simulation
           // never reads this Map.

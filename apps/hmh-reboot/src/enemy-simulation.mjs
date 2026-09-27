@@ -1,7 +1,7 @@
 import { freezeDeep } from './value-guards.mjs';
 import { createCollisionBody, resolveSweptCircleMotion } from './collision.mjs';
 import { resolveSweptTraversalPath } from './elevation.mjs';
-import { getEnemyArchetype } from './enemy-archetypes.mjs';
+import { getEnemyArchetype, hasBehaviourFlag } from './enemy-archetypes.mjs';
 
 const EPSILON = 1e-9;
 export const ENEMY_CAPACITY = 192;
@@ -250,7 +250,9 @@ export function retireEnemyFromPopulation(population, id, { tick, reason = 'reti
   return freezeDeep({ retired: true, id: enemy.id, archetypeId: enemy.archetypeId, tick, reason: reason.trim() });
 }
 
-export function planEnemyIntent(enemy, { player, tick, navigation = null, formationBias = 0 } = {}) {
+// `kit` (the lazy enemy-ai-kit module) and `kitContext` ({ seed, crossings })
+// are optional: without them the intent is the 1.8.x intent.
+export function planEnemyIntent(enemy, { player, tick, navigation = null, formationBias = 0, kit = null, kitContext = null } = {}) {
   const archetype = getEnemyArchetype(enemy?.archetypeId);
   nonNegativeInteger(tick, 'tick');
   const dx = finite(player?.x, 'player.x') - finite(enemy?.x, 'enemy.x');
@@ -262,11 +264,18 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
   // When authored structure blocks the straight line, pursue along the world
   // flow field instead of pressing into the wall. The field is deterministic
   // simulation state; role modifiers below still shape the final heading.
+  let directBlocked = false;
   if (navigation && typeof navigation.lineBlocked === 'function'
     && navigation.lineBlocked(enemy.x, enemy.y, player.x, player.y)) {
-    const flow = navigation.flowDirectionAt?.(enemy.x, enemy.y) ?? null;
+    directBlocked = true;
+    // S1.2 (5.2d): a large body reads its own clearance layer's field.
+    const flow = (kit ? navigation.flowDirectionAt?.(enemy.x, enemy.y, archetype.behavior?.clearanceRadius ?? 0) : navigation.flowDirectionAt?.(enemy.x, enemy.y)) ?? null;
     if (flow) direct = normalize(flow.x, flow.y);
   }
+  // E3 approach slots bias open-ground pursuit toward a seeded bearing round
+  // the hero, so a pack arrives from several sides.
+  const slot = kit && !directBlocked && enemy.attackPhase !== 'tell' ? kit.approachSlotBias(enemy, archetype, player, tick, kitContext) : null;
+  if (slot) direct = normalize(direct.x * (1 - kit.APPROACH_SLOT_WEIGHT) + slot.x * kit.APPROACH_SLOT_WEIGHT, direct.y * (1 - kit.APPROACH_SLOT_WEIGHT) + slot.y * kit.APPROACH_SLOT_WEIGHT);
   const tangent = { x: -direct.y * stableSign(enemy.id), y: direct.x * stableSign(enemy.id) };
   const formationTangent = { x: -direct.y, y: direct.x };
   let direction = direct;
@@ -286,12 +295,13 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       hazardAvoiding = true;
     }
   }
-  const coverRoles = ['suppressor', 'demolition', 'support'];
-  const directLineBlocked = coverRoles.includes(archetype.role)
+  // 5.2a: behaviour flags, not role or id checks.
+  const takesCover = hasBehaviourFlag(archetype, 'cover');
+  const directLineBlocked = takesCover
     && enemy.attackPhase !== 'tell'
     && navigation && typeof navigation.lineBlocked === 'function'
     && navigation.lineBlocked(enemy.x, enemy.y, player.x, player.y);
-  if (!hazardAvoiding && coverRoles.includes(archetype.role) && enemy.attackPhase !== 'tell' && !directLineBlocked
+  if (!hazardAvoiding && takesCover && enemy.attackPhase !== 'tell' && !directLineBlocked
     && navigation && typeof navigation.coverDirectionAt === 'function'
     && distance >= archetype.preferredDistance - 70) {
     const cover = navigation.coverDirectionAt(enemy.x, enemy.y, player.x, player.y, { stableSide: stableSign(enemy.id) });
@@ -301,7 +311,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       coverTarget = freezeDeep({ ...cover.target });
     }
   }
-  if (!hazardAvoiding && !coverSeeking && archetype.id === 'whale-enforcer' && enemy.attackPhase !== 'tell'
+  if (!hazardAvoiding && !coverSeeking && hasBehaviourFlag(archetype, 'holdsChokepoint') && enemy.attackPhase !== 'tell'
     && distance > archetype.attack.reserveRange && distance <= 520
     && navigation && typeof navigation.chokepointDirectionAt === 'function') {
     const chokepoint = navigation.chokepointDirectionAt(enemy.x, enemy.y, player.x, player.y);
@@ -312,7 +322,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
       chokepointTarget = freezeDeep({ ...chokepoint.target });
     }
   }
-  if (!hazardAvoiding && !coverSeeking && !chokepointTarget && archetype.role === 'flanker') {
+  if (!hazardAvoiding && !coverSeeking && !chokepointTarget && hasBehaviourFlag(archetype, 'flankLane')) {
     // The flank lane replaces the raw perpendicular with a navgrid-validated
     // one at the same blend ratio. When no legal lane exists the sampler
     // returns null and the original blend is used unchanged.
@@ -326,7 +336,7 @@ export function planEnemyIntent(enemy, { player, tick, navigation = null, format
     } else {
       direction = normalize(direct.x * 0.55 + tangent.x * 0.9, direct.y * 0.55 + tangent.y * 0.9);
     }
-  } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && ['suppressor', 'demolition', 'support'].includes(archetype.role)) {
+  } else if (!hazardAvoiding && !coverSeeking && !chokepointTarget && hasBehaviourFlag(archetype, 'kite')) {
     // Ranged roles had the same unvalidated steering as the flanker, in two
     // places: the near-range backoff drove straight away from the player
     // without checking what was behind it, and the mid-range strafe blended a
@@ -398,6 +408,7 @@ export function allocateAttackTokens({
   enemies,
   player,
   budgets = DEFAULT_ATTACK_TOKEN_BUDGET,
+  tick = 0,
 } = {}) {
   if (!Array.isArray(enemies)) throw new TypeError('enemies must be an array');
   const remaining = {};
@@ -417,6 +428,9 @@ export function allocateAttackTokens({
     // An enemy in recovery cannot act on a token, so holding one starves a
     // ready attacker in range and creates dead air in the encounter.
     .filter(({ enemy }) => enemy.attackPhase !== 'recovery')
+    // S1.2 kit states (never set without the kit): a staggered body cannot
+    // act, and one that lost its line of sight hands its token on.
+    .filter(({ enemy }) => enemy.attackPhase !== 'stagger' && !(enemy.losBlockedUntilTick > tick))
     .sort((a, b) => {
       const aReserved = a.enemy.attackPhase === 'tell' || a.enemy.attackPhase === 'attack' ? 0 : 1;
       const bReserved = b.enemy.attackPhase === 'tell' || b.enemy.attackPhase === 'attack' ? 0 : 1;
@@ -552,6 +566,9 @@ export function stepEnemyPopulation({
   // Optional (x, y, ground) => {speed, drift:{x,y}} movement field from the
   // authored hazards; null leaves every existing position bit-identical.
   fieldAt = null,
+  // S1.2: the lazy enemy AI kit and its context ({ seed, crossings }).
+  kit = null,
+  kitContext = null,
 } = {}) {
   if (!population || !Array.isArray(population.active)) throw new TypeError('population is required');
   nonNegativeInteger(tick, 'tick');
@@ -597,13 +614,15 @@ export function stepEnemyPopulation({
     }
     const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
     const lod = getEnemyLod(distance);
-    const movementLocked = enemy.attackPhase === 'tell';
+    // A kit stagger (poise break) locks movement like a tell.
+    const movementLocked = enemy.attackPhase === 'tell' || enemy.attackPhase === 'stagger';
     if (!movementLocked && decisionIds.has(enemy.id)) {
       enemy.intent = planEnemyIntent(enemy, {
         player,
         tick,
         navigation,
         formationBias: formationBiases.get(enemy.id) ?? 0,
+        ...(kit ? { kit, kitContext } : {}),
       });
       enemy.velocity = { ...enemy.intent.velocity };
       enemy.nextDecisionTick = tick + lod.cadenceTicks;
@@ -620,7 +639,11 @@ export function stepEnemyPopulation({
     const waterMultiplier = currentGround.kind === 'shallow-water' ? archetype.movement.shallowWaterMultiplier : 1;
     const separationDelta = separation.deltas.get(enemy.id) ?? { x: 0, y: 0 };
     const field = fieldAt ? fieldAt(enemy.x, enemy.y, currentGround) : null;
-    const requested = movementLocked ? { x: 0, y: 0 } : {
+    // The Whale's Shoulder Rush moves the body along its locked lane for the
+    // strike ticks; the swept collision below stops it at the first blocker.
+    const rushing = enemy.rush && tick <= enemy.rush.untilTick;
+    if (enemy.rush && !rushing) enemy.rush = null;
+    const requested = rushing ? { x: enemy.rush.x, y: enemy.rush.y } : movementLocked ? { x: 0, y: 0 } : {
       x: enemy.velocity.x * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.x ?? 0) * dtSeconds + separationDelta.x,
       y: enemy.velocity.y * dtSeconds * waterMultiplier * (field?.speed ?? 1) + (field?.drift.y ?? 0) * dtSeconds + separationDelta.y,
     };

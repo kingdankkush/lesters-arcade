@@ -26,7 +26,10 @@ export function firstUnsafeDodgeSample({start,direction,distance,radius,groundZ,
 // Simulation only: no camera, wall clock, random draws or animation state.
 // bossDangers (S1.5, package 4.1): boss strikes as {contains(p), resolveTick}
 // from the boss geometry kit, read like an enemy tell due within 6 ticks.
-export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers,queryGround,enemies,bossDangers=[]}) {
+// tellDanger (S1.2, 5.2f): with the enemy AI kit, a tell's locked geometry
+// is the danger shape, so the dodge reads what the telegraph draws and a
+// lane's own width instead of the fixed 18.
+export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers,queryGround,enemies,bossDangers=[],tellDanger=null}) {
   if(state.active || tick<state.cooldownReadyTick || Math.hypot(move.x,move.y)<.5) return null;
   const magnitude=Math.hypot(move.x,move.y),direction={x:move.x/magnitude,y:move.y/magnitude};
   const start={x:actor.x,y:actor.y,z:actor.groundZ};
@@ -39,7 +42,8 @@ export function automaticDodgeIntent({tick,actor,move,state,body,bounds,blockers
       || Math.abs((enemy.groundZ??0)-actor.groundZ)>8 || attack.tokenFamily==='support') continue;
     if(!traceHeightAwareLineOfSight({from:{...enemy,z:(enemy.groundZ??0)+32},to:{...actor,z:actor.groundZ+32},blockers}).clear) continue;
     const target=enemy.telegraphTarget??actor;
-    const contains=attack.tokenFamily==='melee'
+    const locked=tellDanger&&enemy.tellGeometry?tellDanger(enemy.tellGeometry,body.radius):null;
+    const contains=locked?locked:attack.tokenFamily==='melee'
       ? p=>Math.hypot(p.x-enemy.x,p.y-enemy.y)<attack.range+body.radius
       : attack.tokenFamily==='area'
         ? p=>Math.hypot(p.x-target.x,p.y-target.y)<96+body.radius

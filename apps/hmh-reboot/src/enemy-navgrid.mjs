@@ -28,6 +28,17 @@ const CONSERVATIVE_TRANSITION = Object.freeze({
 // A cell is unwalkable when its centre sits inside a blocker inflated by a
 // typical ordinary-enemy radius, or on untraversable ground (deep water).
 const ENEMY_CLEARANCE_RADIUS = 18;
+// S1.2 (package 2.8 and 5.2d): per-radius clearance layers. `clearance[cell]`
+// is the number of these radii a body can stand at on every sample of the
+// cell (0: the base walkable layer only). A large body routes on its own
+// layer's field, so it keeps off trails it would scrape through.
+export const ENEMY_CLEARANCE_LAYERS = Object.freeze([28, 30, 36]);
+const CLEARANCE_PADDING = ENEMY_CLEARANCE_LAYERS.at(-1);
+export function clearanceLayerForRadius(radius) {
+  let layer = 0;
+  for (let index = 0; index < ENEMY_CLEARANCE_LAYERS.length; index += 1) if (radius >= ENEMY_CLEARANCE_LAYERS[index]) layer = index + 1;
+  return layer;
+}
 
 function pointInsideInflatedShape(shape, x, y, inflate) {
   if (shape.type === 'circle') {
@@ -64,7 +75,7 @@ function pointInsideInflatedShape(shape, x, y, inflate) {
 
 // Per-build conservative broad phase. Unknown/degenerate shapes keep the exact
 // narrow-phase path; this never changes the nine sample points or blocker order.
-function navBlockerBounds(blocker) {
+function navBlockerBounds(blocker, clearance = ENEMY_CLEARANCE_RADIUS) {
   const shape = blocker?.shape;
   const round = shape?.type === 'circle' || shape?.type === 'capsule';
   const points = shape?.type === 'circle' ? [shape] : shape?.type === 'capsule' ? [shape.a, shape.b] : shape?.vertices;
@@ -79,8 +90,30 @@ function navBlockerBounds(blocker) {
     if (!round) { const q = points[(i + 1) % points.length]; area += p.x * q?.y - p.y * q?.x; }
   }
   if (!round && (!Number.isFinite(area) || area === 0)) return { blocker };
-  const padding = radius + ENEMY_CLEARANCE_RADIUS;
+  const padding = radius + clearance;
   return { blocker, minX: minX - padding, minY: minY - padding, maxX: maxX + padding, maxY: maxY + padding };
+}
+
+// The largest clearance layer every sample of a walkable cell satisfies.
+function cellClearanceLayer(entries, minX, minY, column, row, cellSize) {
+  const samples = [0.1, 0.5, 0.9];
+  for (let layer = ENEMY_CLEARANCE_LAYERS.length; layer >= 1; layer -= 1) {
+    const inflate = ENEMY_CLEARANCE_LAYERS[layer - 1];
+    let clear = true;
+    scan: for (const entry of entries) {
+      if (outsideNavSamples(entry, minX, minY, column, row, cellSize)) continue;
+      for (const oy of samples) {
+        for (const ox of samples) {
+          if (pointInsideInflatedShape(entry.blocker.shape, minX + (column + ox) * cellSize, minY + (row + oy) * cellSize, inflate)) {
+            clear = false;
+            break scan;
+          }
+        }
+      }
+    }
+    if (clear) return layer;
+  }
+  return 0;
 }
 
 function outsideNavSamples(b, minX, minY, column, row, cellSize) {
@@ -93,7 +126,7 @@ export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CE
   if (typeof queryGround !== 'function') throw new TypeError('queryGround must be a function');
   if (!Number.isFinite(cellSize) || cellSize <= 0) throw new TypeError('cellSize must be positive');
   const { minX, minY, maxX, maxY } = world.bounds;
-  const blockerBounds = world.collisionBlockers.map(navBlockerBounds);
+  const blockerBounds = world.collisionBlockers.map((blocker) => navBlockerBounds(blocker));
   const columns = Math.ceil((maxX - minX) / cellSize);
   const rows = Math.ceil((maxY - minY) / cellSize);
   const walkable = new Uint8Array(columns * rows);
@@ -158,6 +191,14 @@ export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CE
     }
   }
 
+  const clearanceBounds = world.collisionBlockers.map((blocker) => navBlockerBounds(blocker, CLEARANCE_PADDING));
+  const clearance = new Uint8Array(columns * rows);
+  for (let cell = 0; cell < columns * rows; cell += 1) {
+    if (!walkable[cell]) continue;
+    const column = cell % columns;
+    clearance[cell] = cellClearanceLayer(clearanceBounds, minX, minY, column, (cell - column) / columns, cellSize);
+  }
+
   const cellAt = (x, y) => {
     const column = Math.floor((x - minX) / cellSize);
     const row = Math.floor((y - minY) / cellSize);
@@ -173,6 +214,7 @@ export function createEnemyNavGrid({ world, queryGround, cellSize = ENEMY_NAV_CE
     minY,
     walkable,
     edges,
+    clearance,
     neighbours: NEIGHBOURS,
     cellAt,
     centreX,
@@ -233,7 +275,7 @@ export async function createEnemyNavGridChunked({
   if (typeof now !== 'function') throw new TypeError('now must be a function');
   if (typeof scheduleYield !== 'function') throw new TypeError('scheduleYield must be a function');
   const { minX, minY, maxX, maxY } = world.bounds;
-  const blockerBounds = world.collisionBlockers.map(navBlockerBounds);
+  const blockerBounds = world.collisionBlockers.map((blocker) => navBlockerBounds(blocker));
   const columns = Math.ceil((maxX - minX) / cellSize);
   const rows = Math.ceil((maxY - minY) / cellSize);
   const total = columns * rows;
@@ -305,6 +347,14 @@ export async function createEnemyNavGridChunked({
     edges[from] = mask;
   });
 
+  const clearanceBounds = world.collisionBlockers.map((blocker) => navBlockerBounds(blocker, CLEARANCE_PADDING));
+  const clearance = new Uint8Array(total);
+  await runSliced((cell) => {
+    if (!walkable[cell]) return;
+    const column = cell % columns;
+    clearance[cell] = cellClearanceLayer(clearanceBounds, minX, minY, column, (cell - column) / columns, cellSize);
+  });
+
   const cellAt = (x, y) => {
     const column = Math.floor((x - minX) / cellSize);
     const row = Math.floor((y - minY) / cellSize);
@@ -312,7 +362,7 @@ export async function createEnemyNavGridChunked({
     return row * columns + column;
   };
   return Object.freeze({
-    columns, rows, cellSize, minX, minY, walkable, edges, neighbours, cellAt, centreX, centreY,
+    columns, rows, cellSize, minX, minY, walkable, edges, clearance, neighbours, cellAt, centreX, centreY,
     isWalkableCell(column, row) {
       if (column < 0 || row < 0 || column >= columns || row >= rows) return false;
       return walkable[row * columns + column] === 1;
@@ -353,20 +403,25 @@ export function createNavGridAuthority() {
 // step toward B), so one-way drops propagate correctly. Neighbour order is
 // fixed, costs are integers, and ties resolve to the earliest neighbour, so
 // the field is fully deterministic.
-export function computeEnemyFlowField({ grid, targetX, targetY } = {}) {
+// `minClearance` (S1.2): route only through cells whose clearance layer is at
+// least this (0, the default, is the base walkable field).
+export function computeEnemyFlowField({ grid, targetX, targetY, minClearance = 0 } = {}) {
   if (!grid?.walkable) throw new TypeError('grid is required');
   if (!Number.isFinite(targetX) || !Number.isFinite(targetY)) throw new TypeError('target must be finite');
+  if (!Number.isInteger(minClearance) || minClearance < 0 || minClearance > ENEMY_CLEARANCE_LAYERS.length) throw new TypeError('minClearance must be a clearance layer index');
+  if (minClearance > 0 && !grid.clearance) throw new TypeError('grid has no clearance layers');
   const { columns, rows, neighbours, edges } = grid;
   const total = columns * rows;
+  const open = minClearance === 0 ? (cell) => grid.walkable[cell] === 1 : (cell) => grid.walkable[cell] === 1 && grid.clearance[cell] >= minClearance;
   const distance = new Int32Array(total).fill(-1);
   const directions = new Int8Array(total).fill(-1);
   let target = grid.cellAt(targetX, targetY);
-  if (target < 0 || grid.walkable[target] !== 1) {
+  if (target < 0 || !open(target)) {
     // Clamp to the nearest walkable cell in deterministic scan order.
     let best = -1;
     let bestMetric = Infinity;
     for (let cell = 0; cell < total; cell += 1) {
-      if (grid.walkable[cell] !== 1) continue;
+      if (!open(cell)) continue;
       const column = cell % columns;
       const row = (cell - column) / columns;
       const dx = grid.centreX(column) - targetX;
@@ -398,7 +453,7 @@ export function computeEnemyFlowField({ grid, targetX, targetY } = {}) {
       const nr = row + neighbours[k][1];
       if (nc < 0 || nr < 0 || nc >= columns || nr >= rows) continue;
       const next = nr * columns + nc;
-      if (distance[next] !== -1 || grid.walkable[next] !== 1) continue;
+      if (distance[next] !== -1 || !open(next)) continue;
       // The neighbour must be able to step from itself toward `cell`.
       if (!(edges[next] & (1 << REVERSE[k]))) continue;
       distance[next] = distance[cell] + 1;

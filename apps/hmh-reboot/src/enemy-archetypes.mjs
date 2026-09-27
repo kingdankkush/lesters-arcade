@@ -1,5 +1,11 @@
 import { freezeDeep } from './value-guards.mjs';
 export const REQUIRED_ENEMY_VISUAL_STATES = Object.freeze(['idle', 'run', 'tell', 'attack', 'hit', 'death']);
+// Design package 5.2a: data-driven behaviour flags replace the role and id
+// checks in the enemy intent. `poise` is the damage a tell absorbs before it
+// is interrupted (5.2b, read only by the lazy enemy AI kit); `maxAlive` and
+// `maxConcurrentTells` cap an archetype when set (none of the core six sets
+// them). `clearanceRadius` picks a navgrid clearance layer (5.2d).
+export const ENEMY_BEHAVIOUR_FLAGS = Object.freeze(['flankLane', 'cover', 'kite', 'holdsChokepoint', 'waddle', 'stalk', 'perch', 'escort']);
 
 
 function defineArchetype(definition) {
@@ -33,6 +39,7 @@ export const ENEMY_ARCHETYPES = freezeDeep({
     movement: { maxCurbHeight: 8, maxDropHeight: 20, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.65 },
     telegraph: 'Raises both arms and flashes a red chest wedge before lunging.',
     counterplay: 'Sidestep the straight lunge, Dash through the tell, or stagger the exposed recovery.',
+    behavior: { flags: [], poise: 26, staggerTicks: 24, attackVariants: 2 },
     visual: { silhouette: 'wedge', color: 0xff5c7a },
   }),
   forkrunner: defineArchetype({
@@ -52,6 +59,7 @@ export const ENEMY_ARCHETYPES = freezeDeep({
     movement: { maxCurbHeight: 10, maxDropHeight: 32, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.82 },
     telegraph: 'Plants the outside foot and paints a curved cyan entry line before slashing.',
     counterplay: 'Cut across the arc, use cover to break the route, or punish the short post-slash stop.',
+    behavior: { flags: ['flankLane'], poise: 20, staggerTicks: 20 },
     visual: { silhouette: 'diamond', color: 0x49ddff },
   }),
   'liquidator-agent': defineArchetype({
@@ -71,6 +79,7 @@ export const ENEMY_ARCHETYPES = freezeDeep({
     movement: { maxCurbHeight: 8, maxDropHeight: 16, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.65 },
     telegraph: 'Projects a narrow magenta burst lane before firing a three-shot suppression burst.',
     counterplay: 'Leave the marked lane, force a divider between you, or close during burst recovery.',
+    behavior: { flags: ['cover', 'kite', 'escort'], poise: 30, staggerTicks: 30 },
     visual: { silhouette: 'square', color: 0xe26dff },
   }),
   'whale-enforcer': defineArchetype({
@@ -90,6 +99,7 @@ export const ENEMY_ARCHETYPES = freezeDeep({
     movement: { maxCurbHeight: 8, maxDropHeight: 12, maxAuthoredAscent: 48, shallowWaterMultiplier: 0.5 },
     telegraph: 'Squares a broad gold shoulder and stamps a visible shove cone before charging.',
     counterplay: 'Rotate around the shoulder, lead the charge into cover, and punish the long recovery.',
+    behavior: { flags: ['holdsChokepoint'], poise: 90, staggerTicks: 36, clearanceRadius: 36 },
     visual: { silhouette: 'hexagon', color: 0xffc857 },
   }),
   'gas-bomber': defineArchetype({
@@ -109,6 +119,7 @@ export const ENEMY_ARCHETYPES = freezeDeep({
     movement: { maxCurbHeight: 8, maxDropHeight: 16, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.62 },
     telegraph: 'Raises a glowing charge and paints its delayed orange landing circle before release.',
     counterplay: 'Leave the landing circle, redirect the pack through it, or interrupt the raised charge.',
+    behavior: { flags: ['cover', 'kite'], poise: 30, staggerTicks: 30 },
     visual: { silhouette: 'orb', color: 0xff8c5a },
   }),
   'validator-cultist': defineArchetype({
@@ -128,6 +139,7 @@ export const ENEMY_ARCHETYPES = freezeDeep({
     movement: { maxCurbHeight: 8, maxDropHeight: 16, maxAuthoredAscent: 64, shallowWaterMultiplier: 0.7 },
     telegraph: 'Builds a violet validation ring around the chosen ally before the pulse resolves.',
     counterplay: 'Break line of sight, eliminate the marked support, or burst the ally before the pulse.',
+    behavior: { flags: ['cover', 'kite'], poise: 36, staggerTicks: 36 },
     visual: { silhouette: 'star', color: 0xb786ff },
   }),
 });
@@ -139,4 +151,8 @@ export function getEnemyArchetype(id) {
     throw new TypeError(`Unknown enemy archetype: ${String(id)}`);
   }
   return ENEMY_ARCHETYPES[id];
+}
+
+export function hasBehaviourFlag(archetype, flag) {
+  return archetype?.behavior?.flags?.includes(flag) === true;
 }
