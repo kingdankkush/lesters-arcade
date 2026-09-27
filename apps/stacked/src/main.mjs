@@ -21,7 +21,7 @@ const releaseOverlayFocus = manageOverlayFocus(overlay, () => stage.querySelecto
 let app, renderer, run, input, init, settings, raf = 0, disposed = false, lastTime = 0, accumulator = 0, started = false, submitted = false, pauseCount = 0, forfeited = false;
 const pauseClock = createStackedPauseClock();
 const sfx = createStackedSoundEffects();
-let preview = null;
+let preview = null, haptics = null;
 // Set from the init settings: a pre-preset (1.8.1-1.8.3) host must never be sent the preset keys.
 let parentPresets = false;
 // One settings card (settings simplification 2026-09-24). Every choice is a
@@ -183,6 +183,7 @@ function frame(now) {
       const s = run.step(mask);
       renderer.gameplay(before, s, now, settings);
       sfx.play(stackedSoundForStep(before, s), settings);
+      haptics?.step(before, s);
       if (s.piecesLocked > before.piecesLocked) {
         if ((mask & 8) && !(before.prevMask & 8) && s.holdsUsed === before.holdsUsed) counters.hardDrops++;
         const cleared = s.lines - before.lines;
@@ -212,9 +213,10 @@ function frame(now) {
   raf = requestAnimationFrame(frame);
 }
 async function boot() {
-  const [{ createStackedRenderer }, { createVisualizerPreview }] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs')]);
+  const [{ createStackedRenderer }, { createVisualizerPreview }, { createStackedHaptics }] = await Promise.all([import('./render/renderer.mjs'), import('./render/visualizer-preview.mjs'), import('./haptics.mjs')]);
   if (disposed) return;
   preview = createVisualizerPreview($('visualizerPreview'));
+  haptics = createStackedHaptics({ getSettings: () => settings });
   run = createStackedPlaySession({ ...init.session, mode: init.mode, startLevel: settings.startLevel }); run.pause();
   app = new Application();
   await app.init({ resizeTo: stage, backgroundAlpha: 0, resolution: Math.min(1.5, window.devicePixelRatio || 1), antialias: false, autoDensity: true, preference: 'webgl', powerPreference: 'low-power' });
