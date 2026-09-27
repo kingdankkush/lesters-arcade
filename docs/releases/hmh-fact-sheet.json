@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "65e8c99b62498ac1eae77c468cfb3157d45a5ec7fb199f37e84c2fa559da0139",
+  "sourceSnapshotSha256": "7048378381589d25cd1120b4280894859ee641ea8991e6855825196ceb0564d9",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "5267c2fe5b01c4eddd2bb2e76cae421f6cf3b48ed6bdfe50c4c82c8978045978",
-      "bytes": 57420
+      "sha256": "32fcf3e1fcad05cebcb5ce9d74ee164cd61ad98c10792c482e0cf168f83a6158",
+      "bytes": 57950
     },
     {
       "path": "scripts/hmh-release-facts.mjs",

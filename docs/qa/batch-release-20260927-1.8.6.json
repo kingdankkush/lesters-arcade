@@ -1,0 +1,41 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-27",
+  "release": "1.8.6 ranked guide and 0.012 zkLTC Ranked",
+  "siteVersion": "1.8.6",
+  "cacheMarker": "lesters-arcade-v59-ranked-guide",
+  "branch": "fable/master-list-20260916",
+  "source": "a6b7cfb3",
+  "production": {
+    "deployment": "dpl_Hb744XdpVmBmakPcZHFHiP86RU1B",
+    "immutableUrl": "https://lesters-arcade-ihz79vo8x-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-3euqwgh6k-justin-agent-projects.vercel.app",
+    "previous": "dpl_gmkp86XSebFfRUxvYQaQDxMq3uRw (1.8.5)",
+    "rollback": "Instant Rollback to dpl_gmkp86XSebFfRUxvYQaQDxMq3uRw (1.8.5) is NOT safe while the on-chain fee is 0.01: 1.8.5's settle floor is 0.102, so every 0.012 run would be refused at settle. To roll back, first set the fees back with `node scripts/operator-actions.mjs entry-fee 100000000000000000 ...` or pause Ranked."
+  },
+  "contains": [
+    "Entry fee 0.1 -> 0.01 zkLTC (owner decision 2026-09-26; fable/ranked-fee-001): server settle floor DEFAULT_MIN_PAID_WEI 0.012, one source of truth for the fee",
+    "Ranked onboarding (fable/pd-ranked-onboarding): How Ranked works guide at /how-ranked-works, homepage Ranked strip, Ranked section and guide link on every game page and mode select, modal cost breakdown and faucet link, trust page, llms.txt, README How to play, developer docs",
+    "Docs reconciliation (fable/pd-docs-reconcile): HMH described as a top-down 2.5D run-and-gun in served copy; AGENTS.md, README status and STACKED status match the live testnet state; HMH fact sheet regenerated"
+  ],
+  "chainActions": {
+    "approval": "Owner in chat, 2026-09-26: approved the 0.01 zkLTC entry fee for all three games",
+    "order": "sent only after 1.8.6 (settle floor 0.012) was verified live",
+    "setEntryFee": {
+      "lester-blaster": "0x57f822b0863aec983035fc915fddf14b6f52e969f75c407fbaf8e17ef5025878",
+      "chikun": "0x73e26fe1a2ff162ca041303e7077487e61d754a9614e6c5ed132adf08f2a6882",
+      "stacked": "0xf338ec619931e097f49309a531b5b51207f4bff36c28425d068c324466988b70"
+    },
+    "readBack": "quoteEntry 12000000000000000 wei (0.012 zkLTC) for all three games"
+  },
+  "gates": {
+    "local": "PASS 5315 tests, 5264 passed, exactly 51 ledgered failures (first run caught the README section order; fixed in c4ededa4)",
+    "vercel": "candidate build READY with the same gate"
+  },
+  "verification": {
+    "publicFiles": "163/163 match the certified build",
+    "apiProbes": "attest 410, session nonce 200, leaderboards 200, profile 200, settle GET 405, health 200, jackpot 200 {live:false}, weekly-jackpot cron without secret 401, unknown share 404, profile deep link 200, /how-ranked-works 200",
+    "health": "healthy, version 1.8.6, degradedParts []; index-chain 744 runs 0 failures; settle-retry 3721 runs 0 failures"
+  }
+}

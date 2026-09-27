@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.8.6: Ranked for 0.012 zkLTC, a How Ranked works guide, docs that match the live arcade
+# Lester's Arcade — 1.8.6 verified live: Ranked for 0.012 zkLTC, a How Ranked works guide, docs that match the live arcade
 
 Batch release after 1.8.5. Ranked now costs 0.012 testnet zkLTC per run (0.01 entry + 0.002 to publish the score on chain; owner decision 2026-09-26): the server's settle floor is 0.012 in this release and the three on-chain entry fees follow right after it is live. A new player guide at [/how-ranked-works](https://lestersarcade.io/how-ranked-works) walks through every step (play free, connect a wallet, get free zkLTC from the LiteForge faucet, sign in, pay, play, see your score published), with the price, what is checked for each game, an FAQ and troubleshooting. The homepage, every game page and mode select, the Ranked entry window (cost breakdown, faucet link), the trust page, llms.txt and the developer docs now carry the same facts from one source. HMH is described as the top-down 2.5D run-and-gun it is, and the agent docs match the live testnet state.
 
-Site/game version `1.8.6`; cache marker `lesters-arcade-v59-ranked-guide`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_Hb744XdpVmBmakPcZHFHiP86RU1B` (source `a6b7cfb3`); site/game version `1.8.6`; cache marker `lesters-arcade-v59-ranked-guide`. The three on-chain entry fees were set to 0.01 zkLTC after the release was live; `quoteEntry` reads 0.012 per run for every game. The local and Vercel gates pass 5,264 of 5,315 tests with exactly 51 unchanged retired exceptions; all 163 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260927-1.8.6.json). Rollback to 1.8.5 needs the fees restored first (its settle floor is 0.102). Continue on `fable/master-list-20260916`.
 
 ## How to play
 
