@@ -1,0 +1,861 @@
+diff --git a/sdk/hmh-bridge-protocol.mjs b/sdk/hmh-bridge-protocol.mjs
+index e1c552f5..c5bdca08 100644
+--- a/sdk/hmh-bridge-protocol.mjs
++++ b/sdk/hmh-bridge-protocol.mjs
+@@ -75,8 +75,12 @@ function validateSettings(value) {
+     for (const key in cosmetics) if (cosmetics[key] !== null && !integerInRange(cosmetics[key], 0, 0xffffff)) return 'settings.cosmetics is invalid';
+   }
+   if (Object.hasOwn(value, 'keyboardBindings')) {
+-    const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
+-    const bindingError = exactKeys(value.keyboardBindings, actionIds, 'settings.keyboardBindings');
++    const requiredActionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
++    // The keyboard dodge (HMH design package S1.1) is optional so a seven-key
++    // map from an older parent stays valid; the child fills its default.
++    const bindings = value.keyboardBindings;
++    const actionIds = isPlainRecord(bindings) && Object.hasOwn(bindings, 'dodge') ? [...requiredActionIds, 'dodge'] : requiredActionIds;
++    const bindingError = exactKeys(bindings, actionIds, 'settings.keyboardBindings');
+     if (bindingError) return bindingError;
+     const unique = new Set();
+     for (const actionId of actionIds) {
+@@ -249,7 +253,10 @@ export function validateParentMessage(input) {
+   return error ? fail(error) : pass(input);
+ }
+ 
+-export function validateChildMessage(input) {
++// `validateRunSummary` validates a game:run-summary payload. The default is the
++// base schema module (schema 1-6); a consumer of schema 7 passes the validator
++// of sdk/hmh-run-summary-schema-v7.mjs, which answers schema 1-6 identically.
++export function validateChildMessage(input, { validateRunSummary = validateRunSummaryPayload } = {}) {
+   const base = validateBaseEnvelope(input);
+   if (!base.ok) return base;
+   let error = '';
+@@ -259,7 +266,7 @@ export function validateChildMessage(input) {
+   else if (input.type === 'game:pause') error = validateGamePause(input.payload);
+   else if (input.type === 'game:exit') error = validateGameExit(input.payload);
+   else if (input.type === 'game:run-event') error = validateRunEvent(input.payload);
+-  else if (input.type === 'game:run-summary') error = validateRunSummaryPayload(input.payload);
++  else if (input.type === 'game:run-summary') error = validateRunSummary(input.payload);
+   else if (input.type === 'game:score-result') error = validateScoreResult(input.payload);
+   else if (input.type === 'game:achievement') error = validateAchievement(input.payload);
+   else if (input.type === 'game:settings') error = validateSettingsPayload(input.payload);
+diff --git a/sdk/hmh-run-contract-v7.mjs b/sdk/hmh-run-contract-v7.mjs
+index 4ead0cbf..d9bd0c60 100644
+--- a/sdk/hmh-run-contract-v7.mjs
++++ b/sdk/hmh-run-contract-v7.mjs
+@@ -116,6 +116,110 @@ export function hmhV7CollectibleCapacity(runTicks) {
+   return rules.MAX_PLACEMENTS * (1 + Math.floor(runTicks / rules.MIN_REARM_TICKS));
+ }
+ 
++// The 1.9.0 child's tables for the v7 mirrors of the 1.8.4 consistency rules
++// (contract 16.9; server/verify/hmh-plausibility.mjs HMH_V7_CONSISTENCY_REJECTS).
++// The same shape as the verifier's HMH_V6_CONSISTENCY_RULES, read from the
++// 1.9.0 child; tests/server-verify-hmh-plausibility.test.mjs pins every row
++// against it. What moved from the v6 literals:
++//   levelEntries    the Yard start moved to (10,060, 2,505), at least 920 from
++//                   the Liquidator's anchor (boss kit, slice 5); the seed hash
++//                   and the entry ids are unchanged
++//   pickupPlacements  the same 21 placements; the Liquidator vault unlocks at
++//                   the Liquidator's defeatedTick (the v7 bosses row), in place
++//                   of the v6 boss band
++//   handGrenades    Extra Grenade raises the maximum (5 at the start) and fills
++//                   the new slot; a boss defeat refills to the maximum; a
++//                   rescued Quartermaster hands over three once
++//   melee           unchanged (the knife and the Forked Standard are the 1.8.4
++//                   ones; the Standard's evolution is wave 2, held at 0)
++export const HMH_V7_CONSISTENCY_RULES = freezeDeep({
++  grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
++  // The simulation's first tick (DeterministicSimulation steps from tick 1).
++  firstTick: 1,
++  // Per collectible effect but genesis-seal, one [rearmTicks, unlock] per
++  // placement: rearmTicks is 0 for a one-shot placement; unlock is the
++  // placement's earliest available tick, or the objective that unlocks it (a
++  // switch objective, at its completion tick, or the Liquidator vault).
++  pickupPlacements: covering({
++    'bonus-life': [[0, 0], [0, 0], [7_200, 'hashwood-shrine']],
++    'coin-blaster-cache': [[7_200, 'crossing-pump'], [10_800, 0]],
++    'scatter-shotgun-cache': [[0, 'relay-power'], [10_800, 0]],
++    'auto-miner-cache': [[10_800, 0]],
++    'launcher-rig-cache': [[10_800, 0]],
++    'litecoin-token': [],
++    'hash-rail-core': [[0, 'ravine-winch'], [0, 0]],
++    'lightning-ledger-cache': [[0, 'liquidator-defeated'], [0, 3_600]],
++    'bear-market-burner-cache': [[0, 'yard-warehouse'], [0, 7_200]],
++    'forked-standard-cache': [[0, 10_800]],
++    'time-dilation': [[10_800, 0]],
++    'berserk-candle': [[10_800, 'mining-valve'], [10_800, 0]],
++    'nuke-liquidation': [[0, 0], [7_200, 'hashwood-shrine']],
++  }, C7.collectibles.filter((id) => id !== 'genesis-seal'), 'HMH_V7_CONSISTENCY_RULES.pickupPlacements'),
++  // The Liquidator's defeat unlocks his vault (boss-slots unlockObjective).
++  vault: { objective: 'liquidator-defeated', bossId: 'liquidator' },
++  // level-one-world DISTRICTS as [id, minX, maxX], each the full world height.
++  districtStrips: [
++    ['frontier-relay', 0, 1_800],
++    ['rugpull-ravine', 1_800, 3_800],
++    ['liquidity-crossing', 3_800, 6_000],
++    ['hashwood', 6_000, 8_000],
++    ['mining-camp', 8_000, 10_000],
++    ['liquidation-yard', 10_000, 12_000],
++  ],
++  // level-entry LEVEL_ONE_ENTRIES as [id, x, y]; selectLevelEntry(seed) picks one.
++  levelEntries: [
++    ['relay', 800, 2_400],
++    ['ravine', 2_100, 2_300],
++    ['hashwood', 6_900, 2_250],
++    ['mining', 8_250, 2_350],
++    ['yard', 10_060, 2_505],
++  ],
++  // Twice the fastest tick (a dash tick, 24), as on v6; the 1.9.0 boss push
++  // (4 a tick) and the mission glide (4 a tick, in place of the step) keep a
++  // running tick under 24 (parity test).
++  travel: { maxStepPx: 48, allowancePx: 480 },
++  // weapon-system HMH_WEAPON_ORDER: the only weapons the loadout can make
++  // active; the first is the starting weapon, owned from the start.
++  activeWeapons: ['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard'],
++  // The weapon-cache effect that grants each active weapon: in 1.9.0 still the
++  // only source of a weapon (secrets grant silver, heal and ammo; prisoners
++  // heal, refill, grenades, timed effects and XP; a boss defeat none).
++  weaponCaches: {
++    'coin-blaster': 'coin-blaster-cache',
++    'scatter-shotgun': 'scatter-shotgun-cache',
++    'auto-miner': 'auto-miner-cache',
++    'launcher-rig': 'launcher-rig-cache',
++    'hash-rail': 'hash-rail-core',
++    'lightning-ledger': 'lightning-ledger-cache',
++    'bear-market-burner': 'bear-market-burner-cache',
++    'forked-standard': 'forked-standard-cache',
++  },
++  // Hand grenades: createGrenadeSystem (3 charges, maximum 5), Extra Grenade
++  // (cold-storage, three ranks, each raising the maximum by one and filling
++  // it), one per nuke-liquidation collection (the Nuke and the Scrypt Cache),
++  // a boss defeat's refill to the maximum, and a Quartermaster's three.
++  handGrenades: {
++    weaponId: 'satoshi-frag',
++    startCharges: 3,
++    startMaxCharges: 5,
++    rankUpgradeId: 'cold-storage',
++    chargesPerRank: 1,
++    maxRanks: 3,
++    refillEffectId: 'nuke-liquidation',
++    prisonerKind: 'quartermaster',
++    prisonerCharges: 3,
++  },
++  launcherWeapon: 'launcher-rig',
++  nuke: { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' },
++  melee: {
++    weapons: ['litecoin-knife', 'forked-standard'],
++    knifeWeapon: 'litecoin-knife',
++    knifeCooldownTicks: 20,
++    standardWeapon: 'forked-standard',
++    standardCooldownTicks: 18,
++  },
++});
++
+ // XP that completes level L; levels run to MAX_LEVEL.
+ export function hmhV7LevelThreshold(level) {
+   return 150 * level * (level + 1);
+diff --git a/sdk/hmh-run-summary.mjs b/sdk/hmh-run-summary.mjs
+index 899b7d1a..0772f790 100644
+--- a/sdk/hmh-run-summary.mjs
++++ b/sdk/hmh-run-summary.mjs
+@@ -1,4 +1,4 @@
+-import { HMH_RUN_SUMMARY_CATALOGS as C, HMH_RUN_SUMMARY_ID_PATTERN } from './hmh-run-summary-schema.mjs';
++import { HMH_RUN_SUMMARY_CATALOGS as C6, HMH_RUN_SUMMARY_ID_PATTERN } from './hmh-run-summary-schema.mjs';
+ 
+ const freezeDeep = (value) => {
+   for (const child of Object.values(value)) if (child && typeof child === 'object') freezeDeep(child);
+@@ -24,13 +24,20 @@ const point = (value, label) => {
+ };
+ const rows = (values, length) => values.map(() => Array(length).fill(0));
+ 
+-export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, startTick = 0, startPosition } = {}) {
++// Schema 7 (contract §11): the child passes the V7 catalogues (the v7 schema
++// module is off its initial path) and, at finalize, the v7 rows its own
++// simulation holds; the accumulator shapes them. Schema 6 is unchanged.
++export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, startTick = 0, startPosition, schemaVersion = 6, catalogs = C6 } = {}) {
++  if (schemaVersion !== 6 && !(schemaVersion === 7 && catalogs !== C6 && catalogs?.objectives)) throw new TypeError('schema 6, or schema 7 with the V7 catalogues');
++  const C = catalogs;
+   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
+   if (typeof buildHash !== 'string' || buildHash.length < 1 || buildHash.length > 128) throw new TypeError('buildHash must be bounded');
+   if (!['free', 'ranked'].includes(mode)) throw new TypeError('mode must be free or ranked');
+   if (typeof heroId !== 'string' || heroId.length < 2 || heroId.length > 64) throw new TypeError('heroId must be bounded');
+   count(startTick, 'startTick');
+   return {
++    C,
++    schemaVersion,
+     identity: { seed, buildHash, mode, heroId, startTick },
+     totals: [0, 0, 0], // damage dealt, damage taken, healing
+     enemyKills: Array(C.enemyRoles.length).fill(0),
+@@ -77,10 +84,10 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
+   state.exploration[2] += Math.hypot(next.x - state.lastPosition.x, next.y - state.lastPosition.y);
+   state.lastPosition = next;
+   state.lastTick = tick;
+-  state.weapons[index(C.weapons, activeWeaponId, 'weapon')][9] += 1;
+-  state.exploration[0] |= 1 << index(C.districts, districtId, 'district');
+-  for (const id of discoveredPoiIds) state.exploration[1] |= 1 << index(C.pointsOfInterest, id, 'point of interest');
+-  for (const id of activeEffectIds) state.collectibles[index(C.collectibles, id, 'collectible effect')][1] += 1;
++  state.weapons[index(state.C.weapons, activeWeaponId, 'weapon')][9] += 1;
++  state.exploration[0] |= 1 << index(state.C.districts, districtId, 'district');
++  for (const id of discoveredPoiIds) state.exploration[1] |= 1 << index(state.C.pointsOfInterest, id, 'point of interest');
++  for (const id of activeEffectIds) state.collectibles[index(state.C.collectibles, id, 'collectible effect')][1] += 1;
+   if (level !== undefined) recordLevel(state, count(level, 'level'), tick);
+   if (bossEngaged) state.milestones[2] ||= tick;
+ }
+@@ -91,13 +98,13 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
+ export function recordRunMilestone(state, { type, id, tick } = {}) {
+   const catalog = { 'site-operated': 'worldSites', 'secret-found': 'secrets' }[type];
+   if (!catalog) throw new TypeError(`unknown milestone ${type}`);
+-  const row = state[catalog][index(C[catalog], id, type)];
++  const row = state[catalog][index(state.C[catalog], id, type)];
+   count(tick, 'tick');
+   if (!row[0]) { row[0] = 1; row[1] = tick; }
+ }
+ 
+ export function recordRunWeaponFire(state, { weaponId, emitted, attackId } = {}) {
+-  const weaponIndex = index(C.weapons, weaponId, 'weapon');
++  const weaponIndex = index(state.C.weapons, weaponId, 'weapon');
+   const row = state.weapons[weaponIndex];
+   row[2] += 1;
+   row[4] += count(emitted, 'emitted projectiles');
+@@ -108,11 +115,11 @@ export function recordRunWeaponFire(state, { weaponId, emitted, attackId } = {})
+ }
+ 
+ export function recordRunWeaponTriggerContact(state, { weaponId } = {}) {
+-  state.weapons[index(C.weapons, weaponId, 'weapon')][3] += 1;
++  state.weapons[index(state.C.weapons, weaponId, 'weapon')][3] += 1;
+ }
+ 
+ export function recordRunProjectileContacts(state, { weaponId, count: contacts = 1 } = {}) {
+-  state.weapons[index(C.weapons, weaponId, 'weapon')][5] += count(contacts, 'projectile contacts');
++  state.weapons[index(state.C.weapons, weaponId, 'weapon')][5] += count(contacts, 'projectile contacts');
+ }
+ 
+ export function recordRunProjectileResolution(state, shot, hits) {
+@@ -129,7 +136,7 @@ export function recordRunProjectileResolution(state, shot, hits) {
+ }
+ 
+ export function recordRunWeaponEvent(state, { type, weaponId } = {}) {
+-  const row = state.weapons[index(C.weapons, weaponId, 'weapon')];
++  const row = state.weapons[index(state.C.weapons, weaponId, 'weapon')];
+   const metric = { pickup: 0, swap: 1, 'reload-start': 6, 'reload-complete': 7, empty: 8 }[type];
+   if (metric === undefined) throw new TypeError(`unknown weapon event ${String(type)}`);
+   row[metric] += 1;
+@@ -141,9 +148,9 @@ export function recordRunWeaponLifecycleEvent(state, event) {
+   else if (event.type === 'weapon:auto-fallback') {
+     recordRunWeaponEvent(state, { type: 'empty', weaponId: event.previousWeaponId });
+     recordRunWeaponEvent(state, { type: 'swap', weaponId: event.weaponId });
+-  } else if (event.type === 'weapon:charge-start') state.weapons[index(C.weapons, event.weaponId, 'weapon')][14] += 1;
++  } else if (event.type === 'weapon:charge-start') state.weapons[index(state.C.weapons, event.weaponId, 'weapon')][14] += 1;
+   else if (event.type === 'weapon:charge-cancel') {
+-    const row = state.weapons[index(C.weapons, event.weaponId, 'weapon')];
++    const row = state.weapons[index(state.C.weapons, event.weaponId, 'weapon')];
+     row[15] += 1;
+     row[17] += count(event.chargeTicks, 'cancelled charge ticks');
+   }
+@@ -253,7 +260,7 @@ export function recordRunDamage(state, event = {}) {
+   const amount = finite(event.damageApplied, 'damageApplied');
+   if (event.targetId === 'player') {
+     state.totals[1] += amount;
+-    if (event.equippedWeaponId) state.weapons[index(C.weapons, event.equippedWeaponId, 'equipped weapon')][23] += amount;
++    if (event.equippedWeaponId) state.weapons[index(state.C.weapons, event.equippedWeaponId, 'equipped weapon')][23] += amount;
+     // First killing hit wins: stableHitOrder makes it deterministic and the
+     // defeat controller announces once, so later killed events are echoes.
+     if (event.killed === true && !state.defeat) state.defeat = { ...classifyDefeat(event), tick: count(event.tick, 'defeat tick'), damage: amount };
+@@ -261,7 +268,7 @@ export function recordRunDamage(state, event = {}) {
+   }
+   if (event.sourceId !== 'player') return;
+   state.totals[0] += amount;
+-  const row = state.weapons[index(C.weapons, event.weaponId, 'weapon')];
++  const row = state.weapons[index(state.C.weapons, event.weaponId, 'weapon')];
+   row[10] += amount;
+   if (event.critical) row[12] += 1;
+   row[13] += Math.max(0, amount - finite(event.healthBefore, 'healthBefore'));
+@@ -272,8 +279,8 @@ export function recordRunHealing(state, amount) {
+ }
+ 
+ export function recordRunKill(state, { enemyRoleId, weaponId, elite = false, boss = false } = {}) {
+-  state.enemyKills[index(C.enemyRoles, enemyRoleId, 'enemy role')] += 1;
+-  state.weapons[index(C.weapons, weaponId, 'weapon')][11] += 1;
++  state.enemyKills[index(state.C.enemyRoles, enemyRoleId, 'enemy role')] += 1;
++  state.weapons[index(state.C.weapons, weaponId, 'weapon')][11] += 1;
+   if (elite) state.eliteKills = (state.eliteKills ?? 0) + 1;
+   if (boss) state.bossKills = (state.bossKills ?? 0) + 1;
+   if (weaponId === 'satoshi-frag' || weaponId === 'launcher-rig') state.grenades[3] += 1;
+@@ -298,17 +305,31 @@ export function recordRunGrenadeDetonation(state, detonation) {
+   }
+ }
+ 
++// A Crypto Bomb Orbit bomblet (evolution-effects.mjs stepBomblets) is left by a
++// blast of the player's grenades (a launcher shell or a hand grenade) already
++// counted as a detonation, and its hits carry weaponId
++// 'launcher-rig', so each of its kills is a grenade kill (recordRunKill). Its
++// non-player hits are grenade contacts and launcher projectile contacts, never
++// a detonation or a trigger: detonated stays within the launches, and
++// grenades.kills stays within grenades.contacts (grenade-kills-above-contacts).
++export function recordRunBombletDetonation(state, detonation) {
++  const contacts = detonation.hits.reduce((sum, hit) => sum + Number(hit.targetId !== 'player'), 0);
++  if (contacts === 0) return;
++  state.grenades[2] += count(contacts, 'bomblet contacts');
++  recordRunProjectileContacts(state, { weaponId: 'launcher-rig', count: contacts });
++}
++
+ export function recordRunCollectible(state, { effectId } = {}) {
+-  state.collectibles[index(C.collectibles, effectId, 'collectible effect')][0] += 1;
++  state.collectibles[index(state.C.collectibles, effectId, 'collectible effect')][0] += 1;
+ }
+ 
+ export function recordRunUpgradeOffer(state, upgradeIds) {
+-  if (!Array.isArray(upgradeIds) || upgradeIds.length > C.upgrades.length) throw new TypeError('upgrade offer must be a bounded array');
+-  for (const id of upgradeIds) state.upgrades[index(C.upgrades, id, 'upgrade')][0] += 1;
++  if (!Array.isArray(upgradeIds) || upgradeIds.length > state.C.upgrades.length) throw new TypeError('upgrade offer must be a bounded array');
++  for (const id of upgradeIds) state.upgrades[index(state.C.upgrades, id, 'upgrade')][0] += 1;
+ }
+ 
+ export function recordRunUpgradeSelection(state, upgradeId) {
+-  state.upgrades[index(C.upgrades, upgradeId, 'upgrade')][1] += 1;
++  state.upgrades[index(state.C.upgrades, upgradeId, 'upgrade')][1] += 1;
+ }
+ 
+ export function finalizeRunSummary(state, {
+@@ -322,6 +343,7 @@ export function finalizeRunSummary(state, {
+   maxCombo,
+   revealedCells,
+   totalCells,
++  v7,
+ } = {}) {
+   if (state.finalized) throw new Error('run summary is already finalized');
+   count(endTick, 'endTick');
+@@ -345,10 +367,10 @@ export function finalizeRunSummary(state, {
+     row[22] += attack.bossHits;
+   }
+   const distanceMilli = Math.round(state.exploration[2] * 1000);
+-  const byEnemyRole = C.enemyRoles.map((enemyRoleId, i) => ({ enemyRoleId, count: state.enemyKills[i] }));
+-  const byWeapon = C.weapons.map((weaponId, i) => ({ weaponId, count: state.weapons[i][11] }));
++  const byEnemyRole = state.C.enemyRoles.map((enemyRoleId, i) => ({ enemyRoleId, count: state.enemyKills[i] }));
++  const byWeapon = state.C.weapons.map((weaponId, i) => ({ weaponId, count: state.weapons[i][11] }));
+   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
+-  const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
++  const weapons = state.C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
+   const defeated = terminalReason === 'defeated';
+   const summary = {
+     schemaVersion: 6,
+@@ -359,7 +381,7 @@ export function finalizeRunSummary(state, {
+       score,
+       level,
+       xp,
+-      litecoin: state.collectibles[index(C.collectibles, 'litecoin-token', 'collectible effect')][0],
++      litecoin: state.collectibles[index(state.C.collectibles, 'litecoin-token', 'collectible effect')][0],
+       currentCombo,
+       maxCombo,
+       damageDealt: state.totals[0],
+@@ -409,8 +431,8 @@ export function finalizeRunSummary(state, {
+       droppedContacts: state.forkedStandard[6],
+     },
+     grenades: Object.fromEntries(['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'].map((field, i) => [field, state.grenades[i]])),
+-    collectibles: C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),
+-    upgrades: C.upgrades.map((upgradeId, i) => ({ upgradeId, offered: state.upgrades[i][0], selected: state.upgrades[i][1] })),
++    collectibles: state.C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),
++    upgrades: state.C.upgrades.map((upgradeId, i) => ({ upgradeId, offered: state.upgrades[i][0], selected: state.upgrades[i][1] })),
+     exploration: {
+       visitedDistrictMask: state.exploration[0],
+       discoveredPoiMask: state.exploration[1],
+@@ -427,13 +449,43 @@ export function finalizeRunSummary(state, {
+       firstLevelUpTick: state.milestones[0],
+       lastLevelUpTick: state.milestones[1],
+       bossEngagedTick: state.milestones[2],
+-      sites: state.worldSites.map(([operated, tick], i) => ({ siteId: C.worldSites[i], operated, tick })),
+-      secrets: state.secrets.map(([found, tick], i) => ({ secretId: C.secrets[i], found, tick })),
++      sites: state.worldSites.map(([operated, tick], i) => ({ siteId: state.C.worldSites[i], operated, tick })),
++      secrets: state.secrets.map(([found, tick], i) => ({ secretId: state.C.secrets[i], found, tick })),
+     },
+   };
++  if (state.schemaVersion === 7) finalizeV7(state, summary, v7);
+   return freezeDeep(summary);
+ }
+ 
++// The v7 rows, dense and in catalogue order, from the child's simulation:
++// objectives and prisoners (the mission core), bosses (the boss slots),
++// evolutions, upgrades and progression (run progression). The milestones that
++// mirror objectives are read from them (S8), the Liquidator's kill and first
++// initiation fill kills.boss and bossEngagedTick (S5-S7), and the Seals found
++// are the genesis-seal pickups (S12).
++function finalizeV7(state, summary, { objectives, prisoners, bosses, evolutions, upgrades, progression } = {}) {
++  const C = state.C;
++  const exact = (list, catalog, key) => {
++    if (!Array.isArray(list) || list.length !== catalog.length || list.some((row, i) => row?.[key] !== catalog[i])) throw new TypeError(`v7 ${key} rows must follow the catalogue`);
++    return list.map((row) => ({ ...row }));
++  };
++  const rowsOf = {
++    objectives: exact(objectives, C.objectives, 'objectiveId'),
++    prisoners: exact(prisoners, C.prisonerSlots, 'slotId'),
++    bosses: exact(bosses, C.bosses, 'bossId'),
++    evolutions: exact(evolutions, C.evolutions, 'evolutionId'),
++  };
++  const objective = (id) => rowsOf.objectives[C.objectives.indexOf(id)];
++  summary.schemaVersion = 7;
++  summary.upgrades = exact(upgrades, C.upgrades, 'upgradeId').map(({ upgradeId, offered, selected }) => ({ upgradeId, offered: count(offered, 'offered'), selected: count(selected, 'selected') }));
++  summary.kills.boss = state.enemyKills[index(C.enemyRoles, 'liquidator', 'enemy role')];
++  summary.milestones.bossEngagedTick = rowsOf.bosses[C.bosses.indexOf('liquidator')].firstInitiatedTick;
++  summary.milestones.sites = C.worldSites.map((siteId) => ({ siteId, operated: objective(siteId).completed, tick: objective(siteId).tick }));
++  summary.milestones.secrets = C.secrets.map((secretId) => ({ secretId, found: objective(secretId).completed, tick: objective(secretId).tick }));
++  summary.collectibles[index(C.collectibles, 'genesis-seal', 'collectible effect')].collected = count(progression?.sealsFound, 'sealsFound');
++  Object.assign(summary, rowsOf, { progression: { ...progression } });
++}
++
+ export function runSummaryMatchesResult(summary, result) {
+   return summary?.identity?.terminalReason === 'defeated'
+     && summary?.totals?.score === result?.score
+diff --git a/server/verify/hmh-plausibility.mjs b/server/verify/hmh-plausibility.mjs
+index 5edadd01..38c02206 100644
+--- a/server/verify/hmh-plausibility.mjs
++++ b/server/verify/hmh-plausibility.mjs
+@@ -43,7 +43,14 @@
+ //           damage-dealt-mismatch, combo-above-kills
+ //                                    the 1.8.4 consistency rules for the fields
+ //                                    the achievement stats read directly (see
+-//                                    HMH_V6_CONSISTENCY_RULES)
++//                                    HMH_V6_CONSISTENCY_RULES): grenadeKills,
++//                                    powerUpsCollected, districtsVisited,
++//                                    weaponsUsed, damageDealt, maxCombo
++//           knife-kills-above-contacts, melee-contacts-without-trigger,
++//           knife-triggers-above-cadence, standard-triggers-above-cadence
++//                                    the round-3 melee-trail rules for the last
++//                                    such field, meleeKills (kills.byWeapon for
++//                                    litecoin-knife and forked-standard)
+ //   flag    anything within 10% of a ceiling, and cross-field inconsistencies
+ //           an honest client never produces but that do not raise a ceiling.
+ //
+@@ -71,6 +78,20 @@
+ //           grenade-kills-above-weapon-kills  as on the v6 path: grenades.kills
+ //                                    above the grenade weapons' kills (contract
+ //                                    §15.1; the v7 child keeps the v6 count)
++//           pickups-above-capacity, district-path-invalid,
++//           districts-before-travel-time, activity-without-time,
++//           equipped-ticks-above-run, weapon-without-source,
++//           grenade-kills-above-contacts, grenade-detonations-above-launches,
++//           grenades-thrown-above-supply, damage-dealt-mismatch,
++//           combo-above-kills, knife-kills-above-contacts,
++//           melee-contacts-without-trigger, knife-triggers-above-cadence,
++//           standard-triggers-above-cadence
++//                                    every other v6 consistency rule,
++//                                    mirrored with the 1.9.0 child's tables
++//                                    (HMH_V7_CONSISTENCY_REJECTS, contract
++//                                    16.8 and 16.9); the launcher counts
++//                                    emitted shells, and the grenade supply
++//                                    counts boss refills and Quartermasters
+ //   flag    near-ceiling and claimed-rank checks as in v6, plus
+ //           upgrade-rank-above-max, evolution-without-mastery,
+ //           node-level-inconsistent, objective-prerequisite-missing and
+@@ -86,6 +107,7 @@ import {
+   HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION,
+   HMH_V7_BOSSES,
+   HMH_V7_BOSS_RULES,
++  HMH_V7_CONSISTENCY_RULES,
+   HMH_V7_EVOLUTIONS,
+   HMH_V7_OBJECTIVES,
+   HMH_V7_PRISONER_SLOTS,
+@@ -465,6 +487,56 @@ function checkRunTime(identity, totals, kills, fixedStepMs, reject) {
+ //                                    so the best combo never passes the kills.
+ //                                    The 1.8.1 flag combo-exceeds-kills stays as
+ //                                    it was, beside this reject.
++//
++// Round 3 (item 1, the melee trail) adds four rules for the last stats field
++// with no bound, meleeKills (kills.byWeapon for litecoin-knife and
++// forked-standard; blade-master and blade-samurai read it). Against 4f947386,
++// 100 knife kills with no swing in a 20,000-tick run verified ok. The knife
++// (main.mjs stepMeleeState, melee.mjs) swings only automatically and only when
++// the swing hits, at most once every HMH_MELEE_DEFINITION.cooldownTicks, and
++// each swing records one trigger and, when it hits, one trigger contact and one
++// projectile contact per hit; a knife kill is a kill by one of those hits
++// (combat-events stamps the kill with the hit's weapon). The Forked Standard
++// (weapon-system melee-alternating, forked-standard.mjs) strikes only while it
++// is the active weapon and only after its cooldown (thrust 24, sweep 28, each
++// less 2 per Attack Speed rank, three ranks at most, so 18 at the least), and
++// each strike records the same trail per hit. The real-child corpus holds ten
++// knife-heavy and twenty Standard runs of the 1.8.4 child for these rules
++// (tests/fixtures/hmh-honest-corpus/real-child-1.8.4.json).
++//
++//   reject  knife-kills-above-contacts  the knife's kills above its
++//                                    projectileContacts. Every knife hit is one
++//                                    contact and a kill needs a hit, so kills
++//                                    never pass contacts (the real corpus: 47
++//                                    kills of 71 contacts at most).
++//           melee-contacts-without-trigger  a melee weapon row (the knife or the
++//                                    Standard) with projectileContacts but no
++//                                    triggerContacts (value: how many of the two
++//                                    rows; limit 0). A swing that hits records
++//                                    its trigger contact in the same statement
++//                                    as its contacts, and the schema already
++//                                    keeps triggerContacts within triggers.
++//           knife-triggers-above-cadence  more knife triggers than ceil(T / 20)
++//                                    for a run of T ticks: the knife is stepped
++//                                    once a tick from tick 1, and a swing sets
++//                                    the next one 20 ticks later. Honest play
++//                                    stays far under it (the real corpus: 12.3% of
++//                                    the bound at most, point-blank play
++//                                    included), since the knife swings only with
++//                                    a target inside 58 px.
++//           standard-triggers-above-cadence  more Standard strikes than
++//                                    ceil(T / 18), read from the weapon row's
++//                                    triggers and the forkedStandard block's
++//                                    attacks (whichever claims more): the
++//                                    Standard is stepped once a tick and a strike
++//                                    sets the next one at least 18 ticks later
++//                                    (plus a whiff penalty). Honest play stays
++//                                    far under it (the real corpus: 12.4% at most,
++//                                    whiffs included).
++//   The Standard's kills against its contacts is the same impossibility as the
++//   knife's, but it stays a documented residual in this round: the committed
++//   hmh-realistic fixture and the scripted model credit Standard kills with no
++//   contacts, and neither may change here (HMH-VERIFIER-R3-HANDOFF.md, item 1).
+ // Every rule reads only the summary and the literals below, never a clock.
+ export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
+   grenadeWeapons: ['satoshi-frag', 'launcher-rig'],
+@@ -540,6 +612,16 @@ export const HMH_V6_CONSISTENCY_RULES = freezeDeep({
+   handGrenades: { weaponId: 'satoshi-frag', startCharges: 3, rankUpgradeId: 'cold-storage', chargesPerRank: 1, maxRanks: 3, refillEffectId: 'nuke-liquidation' },
+   launcherWeapon: 'launcher-rig',
+   nuke: { weaponId: 'nuke-liquidation', effectId: 'nuke-liquidation' },
++  // The melee trail (round 3, item 1): melee.mjs HMH_MELEE_DEFINITION (id,
++  // cooldownTicks) and forked-standard.mjs FORKED_STANDARD_CONFIG (id; the
++  // thrust cooldown of 24 less 2 per standard-tempo rank at its three ranks).
++  melee: {
++    weapons: ['litecoin-knife', 'forked-standard'],
++    knifeWeapon: 'litecoin-knife',
++    knifeCooldownTicks: 20,
++    standardWeapon: 'forked-standard',
++    standardCooldownTicks: 18,
++  },
+ });
+ const V6C = HMH_V6_CONSISTENCY_RULES;
+ 
+@@ -556,8 +638,21 @@ export const HMH_V6_CONSISTENCY_REJECTS = Object.freeze([
+   'grenades-thrown-above-supply',
+   'damage-dealt-mismatch',
+   'combo-above-kills',
++  // Round 3, item 1: the melee trail.
++  'knife-kills-above-contacts',
++  'melee-contacts-without-trigger',
++  'knife-triggers-above-cadence',
++  'standard-triggers-above-cadence',
+ ]);
+ 
++// The most swings a melee weapon stepped once a tick from tick 1 can make in a
++// run of `runTicks` ticks when each swing sets the next `cooldownTicks` later:
++// ticks 1, 1 + c, 1 + 2c, ... up to runTicks, so ceil(runTicks / c); 0 for a
++// run of no ticks.
++export function hmhV6MeleeCadenceLimit(runTicks, cooldownTicks) {
++  return Math.ceil(Math.max(0, runTicks) / cooldownTicks);
++}
++
+ // The tick each objective reward's objective unlocked at, read from the
+ // summary; a missing key is still locked. A machinery site unlocks at its
+ // operated tick (main.mjs unlocks the reward in the step that records the
+@@ -701,6 +796,18 @@ function checkV6Consistency(runSummary, runTicks, reject) {
+   if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
+ 
+   if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
++
++  // The melee trail (round 3, item 1).
++  const knife = weapons.find((row) => row.weaponId === V6C.melee.knifeWeapon);
++  const standard = weapons.find((row) => row.weaponId === V6C.melee.standardWeapon);
++  if (knife.kills > knife.projectileContacts) reject('knife-kills-above-contacts', knife.kills, knife.projectileContacts);
++  const contactsWithoutTrigger = [knife, standard].filter((row) => row.projectileContacts > 0 && row.triggerContacts === 0).length;
++  if (contactsWithoutTrigger) reject('melee-contacts-without-trigger', contactsWithoutTrigger, 0);
++  const knifeSwings = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.knifeCooldownTicks);
++  if (knife.triggers > knifeSwings) reject('knife-triggers-above-cadence', knife.triggers, knifeSwings);
++  const standardStrikes = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.standardCooldownTicks);
++  const standardClaimed = Math.max(standard.triggers, runSummary.forkedStandard?.attacks ?? 0);
++  if (standardClaimed > standardStrikes) reject('standard-triggers-above-cadence', standardClaimed, standardStrikes);
+ }
+ 
+ // → { verdict: 'ok'|'flagged'|'rejected', flags: [{ id, severity: 'reject'|'flag', value, limit }] }
+@@ -757,6 +864,231 @@ const V7 = HMH_V7_RUN_RULES;
+ const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
+ const BOSS = HMH_V7_BOSS_RULES;
+ 
++// The 1.8.4 and round-3 consistency rules the v7 path mirrors: all sixteen of
++// HMH_V6_CONSISTENCY_REJECTS (contract 15.1 item 4; 16.8 and 16.9). The 1.9.0
++// child records these fields with the same accumulator, so each rule below is
++// an identity of that accumulator or a child rule the 1.9.0 child keeps, read
++// from its own tables (sdk/hmh-run-contract-v7.mjs HMH_V7_CONSISTENCY_RULES,
++// pinned against the child by the parity tests), and the real-child corpus of
++// the 1.9.0 child (tests/fixtures/hmh-honest-corpus/real-child-1.9.0.json)
++// holds none of them broken:
++//   grenade-kills-above-weapon-kills (checked in validateV7RunPlausibility),
++//   activity-without-time, equipped-ticks-above-run, damage-dealt-mismatch,
++//   combo-above-kills        as on v6 (recordRunTick, recordRunDamage, and a
++//                            combo step only on a recorded kill)
++//   grenade-detonations-above-launches  CHANGED formula: detonations above
++//                            hand throws plus the launcher's projectilesEmitted
++//                            (v6: its triggers). Package 8.2's Twin Tube fires
++//                            two shells per trigger, and every shell that
++//                            spawns is one emitted projectile; bomblets (Crypto
++//                            Bomb Orbit) are never recorded as detonations.
++//   grenade-kills-above-contacts  as on v6. A Crypto Bomb Orbit bomblet hit
++//                            carries weaponId launcher-rig (evolution-effects.mjs),
++//                            so its kill is a grenade kill; the 1.9.0 child
++//                            records each bomblet's non-player hits as grenade
++//                            contacts (recordRunBombletDetonation), so an honest
++//                            evolved launcher keeps kills within contacts.
++//   knife-kills-above-contacts, melee-contacts-without-trigger,
++//   knife-triggers-above-cadence, standard-triggers-above-cadence
++//                            as on v6, with the same literals: the knife and the
++//                            Forked Standard are unchanged in 1.9.0, and the
++//                            Standard's evolution (chain-split) is wave 2, held
++//                            at applied = 0 by schema rule S10.
++//   pickups-above-capacity   as on v6, per effect over the same 21 placements
++//                            (genesis-seal excluded: its pickups are the Seals
++//                            of S11/S12). An objective reward unlocks at its
++//                            switch objective's completion tick (the objectives
++//                            row; main.mjs unlocks it in the step that records
++//                            the objective), and the Liquidator vault at the
++//                            Liquidator's defeatedTick (the bosses row), where
++//                            v6 used the boss band. Prisoner, strongbox,
++//                            secret and haven grants are not pickups (§11).
++//                            collectibles-above-capacity (§7.1) stays beside it.
++//   district-path-invalid, districts-before-travel-time
++//                            as on v6, with the 1.9.0 entry table (the Yard
++//                            start moved to 10,060, still 60 units inside its
++//                            strip, more than two dash ticks) and the same
++//                            48 px a tick: the 1.9.0 additions (the boss push
++//                            and the mission glide, at most 4 a tick each)
++//                            keep a running tick under a dash tick (24).
++//   weapon-without-source    as on v6: in 1.9.0 a gun is still owned only
++//                            through its weapon cache (a recordRunWeaponEvent
++//                            pickup follows only a cache collection), and an
++//                            evolution's hits carry the base gun's id.
++//   grenades-thrown-above-supply  CHANGED supply: three at the start, one per
++//                            Extra Grenade rank (three at most), one per
++//                            nuke-liquidation collection, the maximum (five
++//                            plus the ranks) for each defeated boss (a defeat
++//                            refills to the maximum), and three per rescued
++//                            Quartermaster (dealt from the seed). Margin: the
++//                            charge cap is ignored.
++export const HMH_V7_CONSISTENCY_REJECTS = Object.freeze([
++  'pickups-above-capacity',
++  'district-path-invalid',
++  'districts-before-travel-time',
++  'activity-without-time',
++  'equipped-ticks-above-run',
++  'weapon-without-source',
++  'grenade-kills-above-contacts',
++  'grenade-detonations-above-launches',
++  'grenades-thrown-above-supply',
++  'damage-dealt-mismatch',
++  'combo-above-kills',
++  'knife-kills-above-contacts',
++  'melee-contacts-without-trigger',
++  'knife-triggers-above-cadence',
++  'standard-triggers-above-cadence',
++]);
++const C7R = HMH_V7_CONSISTENCY_RULES;
++
++// The tick each objective reward's objective unlocked at on the v7 path: a
++// completed objective at its completion tick, the Liquidator vault at the
++// Liquidator's defeat. A missing key is still locked.
++export function hmhV7ObjectiveUnlocks(summary) {
++  const unlocks = {};
++  for (const row of summary?.objectives ?? []) if (row?.completed === 1) unlocks[row.objectiveId] = row.tick;
++  const vault = (summary?.bosses ?? []).find((row) => row?.bossId === C7R.vault.bossId);
++  if (vault?.defeatedTick > 0) unlocks[C7R.vault.objective] = vault.defeatedTick;
++  return unlocks;
++}
++
++function v7PlacementCapacity([rearmTicks, unlock], runTicks, unlocks) {
++  const from = typeof unlock === 'number' ? unlock : (Object.hasOwn(unlocks, unlock) ? unlocks[unlock] : null);
++  if (!Number.isFinite(from)) return 0;
++  const first = Math.max(C7R.firstTick, from);
++  if (runTicks < first) return 0;
++  return 1 + (rearmTicks > 0 ? Math.floor((runTicks - first) / rearmTicks) : 0);
++}
++
++// The most pickups of `effectId` a 1.9.0 run of `runTicks` ticks can make, with
++// its objectives unlocked at `unlocks` (hmhV7ObjectiveUnlocks).
++export function hmhV7PickupCapacity(effectId, runTicks, unlocks = {}) {
++  const placements = Object.hasOwn(C7R.pickupPlacements, effectId) ? C7R.pickupPlacements[effectId] : [];
++  return placements.reduce((sum, placement) => sum + v7PlacementCapacity(placement, runTicks, unlocks), 0);
++}
++
++// → { value, limit } summed over the effects above their capacity, or null.
++// genesis-seal is not a placement pickup (schema S11/S12 bound it).
++export function hmhV7PickupExcess(collectibles, runTicks, unlocks = {}) {
++  let value = 0;
++  let limit = 0;
++  for (const row of collectibles) {
++    if (row?.effectId === 'genesis-seal') continue;
++    const capacity = hmhV7PickupCapacity(row?.effectId, runTicks, unlocks);
++    if (row?.collected > capacity) {
++      value += row.collected;
++      limit += capacity;
++    }
++  }
++  return value > 0 ? { value, limit } : null;
++}
++
++// The hand grenades a 1.9.0 run can have thrown (see grenades-thrown-above-supply).
++export function hmhV7HandGrenadeSupply(summary) {
++  const hand = C7R.handGrenades;
++  const ranks = Math.min(hand.maxRanks, Math.max(0, rowCounts(summary.upgrades, 'upgradeId', 'selected')[hand.rankUpgradeId] ?? 0));
++  const refills = rowCounts(summary.collectibles, 'effectId', 'collected')[hand.refillEffectId] ?? 0;
++  const defeats = (summary.bosses ?? []).filter((row) => row?.defeatedTick > 0).length;
++  const deal = dealHmhPrisoners(summary.identity.seed);
++  const quartermasters = (summary.prisoners ?? []).filter((row) => row?.rescued === 1 && deal[C7.prisonerSlots.indexOf(row.slotId)] === hand.prisonerKind).length;
++  return hand.startCharges + hand.chargesPerRank * ranks + refills
++    + defeats * (hand.startMaxCharges + hand.chargesPerRank * ranks) + quartermasters * hand.prisonerCharges;
++}
++
++// → the weapon rows used without their source (see weapon-without-source).
++export function hmhV7WeaponsWithoutSource(summary) {
++  const collected = rowCounts(summary.collectibles, 'effectId', 'collected');
++  const [startingWeapon] = C7R.activeWeapons;
++  const offending = [];
++  for (const row of summary.weapons) {
++    const weaponId = row?.weaponId;
++    const cache = Object.hasOwn(C7R.weaponCaches, weaponId) ? C7R.weaponCaches[weaponId] : null;
++    const equipped = row.equippedTicks > 0;
++    const killed = row.kills > 0;
++    const unsourced = (equipped && !C7R.activeWeapons.includes(weaponId))
++      || (cache === null ? row.pickups > 0 : row.pickups > (collected[cache] ?? 0))
++      || (cache !== null && weaponId !== startingWeapon && (equipped || killed) && row.pickups === 0)
++      || (weaponId === C7R.handGrenades.weaponId && killed && !(summary.grenades.thrown > 0))
++      || (weaponId === C7R.nuke.weaponId && killed && !((collected[C7R.nuke.effectId] ?? 0) > 0));
++    if (unsourced) offending.push(weaponId);
++  }
++  return offending;
++}
++
++// level-entry selectLevelEntry of the 1.9.0 child: FNV-1a over
++// `level-1-entry:${seed}`, and the strip the entry lies in.
++export function hmhV7LevelEntry(seed) {
++  let hash = 2166136261;
++  for (const character of `level-1-entry:${seed}`) hash = Math.imul(hash ^ character.charCodeAt(0), 16777619) >>> 0;
++  const [id, x, y] = C7R.levelEntries[hash % C7R.levelEntries.length];
++  return Object.freeze({ id, x, y, strip: C7R.districtStrips.findIndex(([, minX, maxX]) => x >= minX && x <= maxX) });
++}
++
++// The visited mask against the seed's 1.9.0 entry → { pathValid, entryBit,
++// travelPx }, as hmhV6DistrictTravel.
++export function hmhV7DistrictTravel(seed, visitedDistrictMask) {
++  const entry = hmhV7LevelEntry(seed);
++  const entryBit = 2 ** entry.strip;
++  if (visitedDistrictMask === 0) return { pathValid: true, entryBit, travelPx: 0 };
++  const strips = C7R.districtStrips;
++  const visited = strips.map((_, index) => Math.floor(visitedDistrictMask / 2 ** index) % 2 === 1);
++  const first = visited.indexOf(true);
++  const last = visited.lastIndexOf(true);
++  const contiguous = Number.isSafeInteger(visitedDistrictMask) && visitedDistrictMask > 0 && visitedDistrictMask < 2 ** strips.length
++    && visited.slice(first, last + 1).every(Boolean);
++  if (!contiguous || first > entry.strip || last < entry.strip) return { pathValid: false, entryBit, travelPx: 0 };
++  const left = first < entry.strip ? entry.x - strips[first][2] : 0;
++  const right = last > entry.strip ? strips[last][1] - entry.x : 0;
++  return { pathValid: true, entryBit, travelPx: left + right + Math.min(left, right) };
++}
++
++// The fewest ticks in which the 1.9.0 travel budget covers `travelPx`.
++export function hmhV7MinTicksForTravel(travelPx) {
++  return Math.max(0, Math.ceil((travelPx - C7R.travel.allowancePx) / C7R.travel.maxStepPx));
++}
++
++function checkV7Consistency(runSummary, runTicks, reject) {
++  const { identity, totals, kills, weapons, grenades, collectibles, exploration } = runSummary;
++  const pickups = hmhV7PickupExcess(collectibles, runTicks, hmhV7ObjectiveUnlocks(runSummary));
++  if (pickups) reject('pickups-above-capacity', pickups.value, pickups.limit);
++
++  const districts = hmhV7DistrictTravel(identity.seed, exploration.visitedDistrictMask);
++  const minTicks = hmhV7MinTicksForTravel(districts.travelPx);
++  if (!districts.pathValid) reject('district-path-invalid', exploration.visitedDistrictMask, districts.entryBit);
++  else if (runTicks < minTicks) reject('districts-before-travel-time', runTicks, minTicks);
++
++  const timeless = runTicks === 0 ? Number(exploration.visitedDistrictMask !== 0) + Number(totals.damageDealt > 0) : 0;
++  if (timeless) reject('activity-without-time', timeless, 0);
++
++  const equippedTicks = weapons.reduce((sum, row) => sum + row.equippedTicks, 0);
++  if (equippedTicks > runTicks) reject('equipped-ticks-above-run', equippedTicks, runTicks);
++
++  const unsourced = hmhV7WeaponsWithoutSource(runSummary);
++  if (unsourced.length) reject('weapon-without-source', unsourced.length, 0);
++
++  if (grenades.kills > grenades.contacts) reject('grenade-kills-above-contacts', grenades.kills, grenades.contacts);
++  const launches = grenades.thrown + (weapons.find((row) => row.weaponId === C7R.launcherWeapon)?.projectilesEmitted ?? 0);
++  if (grenades.detonated > launches) reject('grenade-detonations-above-launches', grenades.detonated, launches);
++  const supply = hmhV7HandGrenadeSupply(runSummary);
++  if (grenades.thrown > supply) reject('grenades-thrown-above-supply', grenades.thrown, supply);
++
++  const weaponDamage = weapons.reduce((sum, row) => sum + row.damage, 0);
++  if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
++
++  if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
++
++  const knife = weapons.find((row) => row.weaponId === C7R.melee.knifeWeapon);
++  const standard = weapons.find((row) => row.weaponId === C7R.melee.standardWeapon);
++  if (knife.kills > knife.projectileContacts) reject('knife-kills-above-contacts', knife.kills, knife.projectileContacts);
++  const contactsWithoutTrigger = [knife, standard].filter((row) => row.projectileContacts > 0 && row.triggerContacts === 0).length;
++  if (contactsWithoutTrigger) reject('melee-contacts-without-trigger', contactsWithoutTrigger, 0);
++  const knifeSwings = hmhV6MeleeCadenceLimit(runTicks, C7R.melee.knifeCooldownTicks);
++  if (knife.triggers > knifeSwings) reject('knife-triggers-above-cadence', knife.triggers, knifeSwings);
++  const standardStrikes = hmhV6MeleeCadenceLimit(runTicks, C7R.melee.standardCooldownTicks);
++  const standardClaimed = Math.max(standard.triggers, runSummary.forkedStandard?.attacks ?? 0);
++  if (standardClaimed > standardStrikes) reject('standard-triggers-above-cadence', standardClaimed, standardStrikes);
++}
++
+ // Per-event gains at the given claimed ranks. `xm` also multiplies objective
+ // XP, which depends on the node's level and is computed per row.
+ function measureV7Gains(ranks) {
+@@ -963,11 +1295,14 @@ export function validateV7RunPlausibility(runSummary) {
+   else if (kills.total > NEAR_CEILING_FRACTION * capacity) flag('kills-near-capacity', kills.total, capacity);
+ 
+   // A grenade kill is a kill of a grenade weapon (the v6 accumulator's rule,
+-  // which the v7 child keeps; HMH_V6_CONSISTENCY_RULES.grenadeWeapons).
++  // which the v7 child keeps; HMH_V7_CONSISTENCY_RULES.grenadeWeapons).
+   const weaponKills = rowCounts(kills.byWeapon, 'weaponId', 'count');
+-  const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
++  const grenadeWeaponKills = C7R.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
+   if (runSummary.grenades.kills > grenadeWeaponKills) reject('grenade-kills-above-weapon-kills', runSummary.grenades.kills, grenadeWeaponKills);
+ 
++  // The v6 consistency rules the v7 child keeps (HMH_V7_CONSISTENCY_REJECTS).
++  checkV7Consistency(runSummary, runTicks, reject);
++
+   // Pickups come from at most 21 authored placements, re-armed no sooner than
+   // every 7,200 ticks; the Genesis Seal's pickups are the Seals (schema S12).
+   const pickups = collectibles.reduce((sum, row) => sum + (row.effectId === 'genesis-seal' ? 0 : row.collected), 0);
+diff --git a/server/verify/hmh.mjs b/server/verify/hmh.mjs
+index eefd7687..4c8be063 100644
+--- a/server/verify/hmh.mjs
++++ b/server/verify/hmh.mjs
+@@ -4,7 +4,8 @@
+ // schema, bind to the session identity and the session envelope, and pass the
+ // reboot-calibrated validator of hmh-plausibility.mjs. This module never
+ // imports arcade-core.mjs or hmh-run-integrity.mjs.
+-import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema.mjs';
++import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v7.mjs';
++import { isHmhV7Build } from '../../sdk/hmh-run-contract-v7.mjs';
+ import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
+ import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../../apps/portal/src/hmh-character-config.mjs';
+ import { validateRebootRunPlausibility } from './hmh-plausibility.mjs';
+@@ -13,6 +14,17 @@ import { buildVerifiedRun, invalid, isPlainObject, rejected, scoreOutOfBounds }
+ export const HMH_GAME_ID = 'lester-blaster';
+ export const HMH_EVIDENCE_ENCODING = 'hmh-run-summary-v6+json';
+ export const HMH_RUN_SUMMARY_SCHEMA_VERSION = 6;
++// Ranked accepts schema 6 (the 1.8.x child, including one cached by the service
++// worker) and schema 7, the latter only from a build whose game version is
++// 1.9.0 or later (numeric compare, contract §2 and §15.1). The evidence
++// encoding keeps its v6 label (the Neon constraint); the payload's
++// schemaVersion selects the rules.
++export const HMH_RANKED_SCHEMA_VERSIONS = Object.freeze([6, 7]);
++export function hmhRankedSchemaError(runSummary) {
++  if (!HMH_RANKED_SCHEMA_VERSIONS.includes(runSummary.schemaVersion)) return 'Ranked requires run summary schema 6 or 7';
++  if (runSummary.schemaVersion === 7 && !isHmhV7Build(runSummary.identity.buildHash)) return 'run summary schema 7 requires game 1.9.0 or later';
++  return '';
++}
+ export const HMH_RUN_SUMMARY_MAX_JSON = 262_144;
+ export const HMH_SESSION_ENVELOPE_MAX_JSON = 8_192;
+ export const HMH_SESSION_ENVELOPE_VERSION = 'lesters-session-envelope-v1';
+@@ -64,7 +76,8 @@ export async function verifyHmhRun({ identity, evidence, nowMs }) {
+ 
+   const schemaError = validateRunSummaryPayload(runSummary);
+   if (schemaError) return invalid('run-summary-invalid', schemaError.slice(0, 240));
+-  if (runSummary.schemaVersion !== HMH_RUN_SUMMARY_SCHEMA_VERSION) return invalid('run-summary-invalid', 'Ranked requires run summary schema 6');
++  const gateError = hmhRankedSchemaError(runSummary);
++  if (gateError) return invalid('run-summary-invalid', gateError);
+   const summaryIdentity = runSummary.identity;
+   if (summaryIdentity.seed !== identity.seed || summaryIdentity.buildHash !== identity.buildHash || summaryIdentity.mode !== 'ranked') {
+     return invalid('run-summary-identity-mismatch');
