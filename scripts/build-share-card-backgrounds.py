@@ -121,6 +121,28 @@ def drop_below_status_pill(art: Image.Image) -> Image.Image:
     return Image.composite(blurred_top, base, edge)
 
 
+# The Free card (fable/free-share, server/share/render-free-card.mjs) stands the player's hero
+# portrait in PORTRAIT_BOX (x 738-1180, y 188-630) under a ribbon across the top right. The
+# painted heroes of the Free cover sit in the same place, so the Free background blurs and
+# darkens that zone: the painted cast recedes into the forest and the portrait reads first.
+FREE_PORTRAIT_ZONE_X = (720, 820)  # the recess ramps in over this span
+FREE_PORTRAIT_RECESS = 0.62        # navy strength inside the zone
+
+
+def recess_portrait_zone(art: Image.Image) -> Image.Image:
+    soft = art.filter(ImageFilter.GaussianBlur(7))
+    navy = Image.new("RGB", (WIDTH, HEIGHT), (5, 7, 18))
+    receded = Image.blend(soft, navy, FREE_PORTRAIT_RECESS)
+    mask = Image.new("L", (WIDTH, HEIGHT), 0)
+    pixels = mask.load()
+    start, end = FREE_PORTRAIT_ZONE_X
+    for x in range(WIDTH):
+        value = 0 if x <= start else 255 if x >= end else round(255 * (x - start) / (end - start))
+        for y in range(HEIGHT):
+            pixels[x, y] = value
+    return Image.composite(receded, art, mask)
+
+
 def build_background(game_id: str) -> Image.Image:
     source, focus_x, focus_y, pixel_doubled = SOURCES[game_id]
     with Image.open(ROOT / source) as raw:
@@ -129,6 +151,8 @@ def build_background(game_id: str) -> Image.Image:
         art = art.resize((WIDTH // 2, HEIGHT // 2), Image.Resampling.LANCZOS).resize((WIDTH, HEIGHT), Image.Resampling.NEAREST)
     else:
         art = drop_below_status_pill(art)
+    if game_id == "lester-blaster-free":
+        art = recess_portrait_zone(art)
     navy = Image.new("RGB", (WIDTH, HEIGHT), (5, 7, 18))
     darkened = Image.composite(navy, art, legibility_mask())
     lined = scanlines(darkened).convert("RGB")
