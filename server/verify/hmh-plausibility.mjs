@@ -78,6 +78,14 @@
 //           grenade-kills-above-weapon-kills  as on the v6 path: grenades.kills
 //                                    above the grenade weapons' kills (contract
 //                                    §15.1; the v7 child keeps the v6 count)
+//           activity-without-time, equipped-ticks-above-run,
+//           grenade-detonations-above-launches, damage-dealt-mismatch,
+//           combo-above-kills, knife-kills-above-contacts,
+//           melee-contacts-without-trigger, knife-triggers-above-cadence,
+//           standard-triggers-above-cadence
+//                                    the v6 consistency rules the 1.9.0 child
+//                                    keeps (HMH_V7_CONSISTENCY_REJECTS, slice
+//                                    9); the launcher counts emitted shells
 //   flag    near-ceiling and claimed-rank checks as in v6, plus
 //           upgrade-rank-above-max, evolution-without-mastery,
 //           node-level-inconsistent, objective-prerequisite-missing and
@@ -849,6 +857,82 @@ const V7 = HMH_V7_RUN_RULES;
 const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
 const BOSS = HMH_V7_BOSS_RULES;
 
+// The 1.8.4 and round-3 consistency rules the v7 path mirrors (contract 15.1
+// item 4, in part; build ledger slice 9). The 1.9.0 child records these fields
+// with the same accumulator, so each rule below is an identity of that
+// accumulator or a child rule the 1.9.0 child keeps, and the real-child
+// corpus of the 1.9.0 child (tests/fixtures/hmh-honest-corpus/
+// real-child-1.9.0.json, 108 runs) holds none of them broken:
+//   activity-without-time, equipped-ticks-above-run, damage-dealt-mismatch,
+//   combo-above-kills        as on v6 (recordRunTick, recordRunDamage, and a
+//                            combo step only on a recorded kill)
+//   grenade-detonations-above-launches  CHANGED formula: detonations above
+//                            hand throws plus the launcher's projectilesEmitted
+//                            (v6: its triggers). Package 8.2's Twin Tube fires
+//                            two shells per trigger, and every shell that
+//                            spawns is one emitted projectile; bomblets (Crypto
+//                            Bomb Orbit) are never recorded as detonations.
+//   knife-kills-above-contacts, melee-contacts-without-trigger,
+//   knife-triggers-above-cadence, standard-triggers-above-cadence
+//                            as on v6, with the same literals: the knife and the
+//                            Forked Standard are unchanged in 1.9.0, and the
+//                            Standard's evolution (chain-split) is wave 2, held
+//                            at applied = 0 by schema rule S10.
+// Not mirrored yet, each for a stated reason:
+//   grenade-kills-above-contacts  a Crypto Bomb Orbit bomblet hit carries
+//                            weaponId launcher-rig (evolution-effects.mjs), so
+//                            its kill counts as a grenade kill with no
+//                            detonation contact: the v6 formula would reject an
+//                            honest evolved launcher. grenade-kills-above-
+//                            weapon-kills (above) still bounds grenadeKills.
+//   pickups-above-capacity, district-path-invalid, districts-before-travel-
+//   time, weapon-without-source, grenades-thrown-above-supply
+//                            need the 1.9.0 child's own tables pinned into
+//                            sdk/hmh-run-contract-v7.mjs first (placements and
+//                            unlocks, the moved yard entry, weapon sources such
+//                            as secret and prisoner rewards, and grenade refills
+//                            from boss defeats and prisoner grants); the v6
+//                            tables would reject honest 1.9.0 play.
+export const HMH_V7_CONSISTENCY_REJECTS = Object.freeze([
+  'activity-without-time',
+  'equipped-ticks-above-run',
+  'grenade-detonations-above-launches',
+  'damage-dealt-mismatch',
+  'combo-above-kills',
+  'knife-kills-above-contacts',
+  'melee-contacts-without-trigger',
+  'knife-triggers-above-cadence',
+  'standard-triggers-above-cadence',
+]);
+
+function checkV7Consistency(runSummary, runTicks, reject) {
+  const { totals, kills, weapons, grenades, exploration } = runSummary;
+  const timeless = runTicks === 0 ? Number(exploration.visitedDistrictMask !== 0) + Number(totals.damageDealt > 0) : 0;
+  if (timeless) reject('activity-without-time', timeless, 0);
+
+  const equippedTicks = weapons.reduce((sum, row) => sum + row.equippedTicks, 0);
+  if (equippedTicks > runTicks) reject('equipped-ticks-above-run', equippedTicks, runTicks);
+
+  const launches = grenades.thrown + (weapons.find((row) => row.weaponId === V6C.launcherWeapon)?.projectilesEmitted ?? 0);
+  if (grenades.detonated > launches) reject('grenade-detonations-above-launches', grenades.detonated, launches);
+
+  const weaponDamage = weapons.reduce((sum, row) => sum + row.damage, 0);
+  if (totals.damageDealt !== weaponDamage) reject('damage-dealt-mismatch', totals.damageDealt, weaponDamage);
+
+  if (totals.maxCombo > kills.total) reject('combo-above-kills', totals.maxCombo, kills.total);
+
+  const knife = weapons.find((row) => row.weaponId === V6C.melee.knifeWeapon);
+  const standard = weapons.find((row) => row.weaponId === V6C.melee.standardWeapon);
+  if (knife.kills > knife.projectileContacts) reject('knife-kills-above-contacts', knife.kills, knife.projectileContacts);
+  const contactsWithoutTrigger = [knife, standard].filter((row) => row.projectileContacts > 0 && row.triggerContacts === 0).length;
+  if (contactsWithoutTrigger) reject('melee-contacts-without-trigger', contactsWithoutTrigger, 0);
+  const knifeSwings = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.knifeCooldownTicks);
+  if (knife.triggers > knifeSwings) reject('knife-triggers-above-cadence', knife.triggers, knifeSwings);
+  const standardStrikes = hmhV6MeleeCadenceLimit(runTicks, V6C.melee.standardCooldownTicks);
+  const standardClaimed = Math.max(standard.triggers, runSummary.forkedStandard?.attacks ?? 0);
+  if (standardClaimed > standardStrikes) reject('standard-triggers-above-cadence', standardClaimed, standardStrikes);
+}
+
 // Per-event gains at the given claimed ranks. `xm` also multiplies objective
 // XP, which depends on the node's level and is computed per row.
 function measureV7Gains(ranks) {
@@ -1059,6 +1143,9 @@ export function validateV7RunPlausibility(runSummary) {
   const weaponKills = rowCounts(kills.byWeapon, 'weaponId', 'count');
   const grenadeWeaponKills = V6C.grenadeWeapons.reduce((sum, weaponId) => sum + (weaponKills[weaponId] ?? 0), 0);
   if (runSummary.grenades.kills > grenadeWeaponKills) reject('grenade-kills-above-weapon-kills', runSummary.grenades.kills, grenadeWeaponKills);
+
+  // The v6 consistency rules the v7 child keeps (HMH_V7_CONSISTENCY_REJECTS).
+  checkV7Consistency(runSummary, runTicks, reject);
 
   // Pickups come from at most 21 authored placements, re-armed no sooner than
   // every 7,200 ticks; the Genesis Seal's pickups are the Seals (schema S12).

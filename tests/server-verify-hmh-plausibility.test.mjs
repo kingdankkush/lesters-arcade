@@ -29,6 +29,7 @@ import {
   validateRebootRunPlausibility,
   validateV6RunPlausibility,
   HMH_V6_CONSISTENCY_REJECTS,
+  HMH_V7_CONSISTENCY_REJECTS,
   HMH_V6_CONSISTENCY_RULES,
   hmhV6DistrictTravel,
   hmhV6LevelEntry,
@@ -792,7 +793,7 @@ test('the second-round consistency literals and the accumulator facts they rest 
   ]);
   assert.match(MAIN_SOURCE, /if \(weaponPilotEnabled\) \{\s*for \(const weaponId of WEAPON_ORDER\) \{\s*if \(weaponId !== weaponLoadout\.activeWeaponId\) \{\s*grantWeaponPickup\(weaponLoadout, \{ tick: 0, weaponId, select: false \}\);/);
   // Slice 6 (package 8.6): a cache selects its gun only when newly owned (1.8.x: select: true).
-  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'weapon-cache'\) \{[\s\S]{0,300}?grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: 'if-new', progressionByWeapon \}\);/);
+  assert.match(MAIN_SOURCE, /\} else if \(event\.kind === 'weapon-cache'\) \{[\s\S]{0,300}?recordWeaponInterruption\(grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: 'if-new', progressionByWeapon \}\)\);/);
 
   // The combo: +1 per recorded kill (awardComboXp follows each recordRunKill
   // of a defeat), reset to 0 on a hit, and the best combo is what finalize gets.
@@ -2114,7 +2115,10 @@ test('v7 soft flags flag and never reject', () => {
   soft(clone(districts, (s) => { s.exploration.visitedDistrictMask -= 2 ** C7.districts.indexOf('hashwood'); }), 'node-in-unvisited-district', hashwood);
   soft(clone(districts, (s) => setV7Xp(s, Math.floor(s.totals.xp * 1.3))), 'xp-above-selected-upgrades');
   soft(clone(districts, (s) => { s.totals.score = Math.floor(s.totals.score * 1.3); }), 'score-above-selected-upgrades');
-  soft(clone(districts, (s) => { s.totals.maxCombo = s.kills.total + 1; s.totals.currentCombo = 0; }), 'combo-exceeds-kills');
+  // combo-exceeds-kills stays a soft flag; since slice 9 the mirrored reject
+  // combo-above-kills rides with it, as on v6 (HMH_V7_CONSISTENCY_REJECTS).
+  const combo = plausible(clone(districts, (s) => { s.totals.maxCombo = s.kills.total + 1; s.totals.currentCombo = 0; }));
+  assert.deepEqual(combo.flags.map((flag) => [flag.id, flag.severity]), [['combo-above-kills', 'reject'], ['combo-exceeds-kills', 'flag']]);
 });
 
 // ---------------------------------------------------------------------------
@@ -2215,6 +2219,76 @@ test('v7 soft flags: each sub-condition flags on its own and never rejects', () 
   }), 'node-in-unvisited-district', 1);
 });
 
+// Slice 9: the v6 consistency rules the v7 path mirrors, each at its bound and
+// one past it on the districts fixture (schema-valid at every step).
+test('v7: each mirrored consistency rule at its boundary', () => {
+  const only7 = (summary) => rejects(plausible(summary)).filter((id) => HMH_V7_CONSISTENCY_REJECTS.includes(id));
+  const flagOf = (summary, id) => plausible(summary).flags.filter((flag) => flag.id === id);
+  const T = districts.totals.survivalTicks;
+  const row = (s, weaponId) => v7Row(s.weapons, 'weaponId', weaponId);
+  assert.deepEqual(only7(districts), []);
+  assert.deepEqual([...HMH_V7_CONSISTENCY_REJECTS].sort(), [
+    'activity-without-time', 'combo-above-kills', 'damage-dealt-mismatch', 'equipped-ticks-above-run', 'grenade-detonations-above-launches',
+    'knife-kills-above-contacts', 'knife-triggers-above-cadence', 'melee-contacts-without-trigger', 'standard-triggers-above-cadence',
+  ]);
+  // Every mirrored id is a v6 consistency reject; grenade-kills-above-contacts
+  // and the table-bound five are not mirrored (hmh-plausibility.mjs says why).
+  assert.ok(HMH_V7_CONSISTENCY_REJECTS.every((id) => HMH_V6_CONSISTENCY_REJECTS.includes(id)));
+
+  // activity-without-time: a run of zero ticks that visited a district.
+  const timeless = validateRebootRunPlausibility(clone(districts, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; }));
+  assert.ok(rejects(timeless).includes('activity-without-time'), JSON.stringify(timeless.flags));
+
+  // equipped-ticks-above-run: one equipped tick per run tick at most.
+  const equipped = (extra) => clone(districts, (s) => { row(s, 'coin-blaster').equippedTicks += T - s.weapons.reduce((sum, entry) => sum + entry.equippedTicks, 0) + extra; });
+  assert.deepEqual(only7(equipped(0)), []);
+  assert.deepEqual(flagOf(equipped(1), 'equipped-ticks-above-run'), [{ id: 'equipped-ticks-above-run', severity: 'reject', value: T + 1, limit: T }]);
+
+  // grenade-detonations-above-launches (CHANGED formula): hand throws plus the
+  // launcher's emitted shells, so a Twin Tube trigger that fires two shells
+  // may detonate twice.
+  const blasts = (detonated) => clone(districts, (s) => {
+    Object.assign(s.grenades, { thrown: 2, detonated });
+    Object.assign(row(s, 'launcher-rig'), { triggers: 1, projectilesEmitted: 2 });
+  });
+  assert.deepEqual(only7(blasts(4)), [], 'two throws and one two-shell trigger');
+  assert.deepEqual(flagOf(blasts(5), 'grenade-detonations-above-launches'), [{ id: 'grenade-detonations-above-launches', severity: 'reject', value: 5, limit: 4 }]);
+
+  // damage-dealt-mismatch: exact equality, either way.
+  for (const delta of [1, -1]) {
+    const dealt = clone(districts, (s) => { s.totals.damageDealt += delta; });
+    assert.deepEqual(flagOf(dealt, 'damage-dealt-mismatch').map((flag) => [flag.value - flag.limit]), [[delta]]);
+  }
+
+  // combo-above-kills: the best combo is at most the kills.
+  const combo = (best) => clone(districts, (s) => { s.totals.maxCombo = best; s.totals.currentCombo = 0; });
+  assert.deepEqual(only7(combo(districts.kills.total)), []);
+  assert.deepEqual(flagOf(combo(districts.kills.total + 1), 'combo-above-kills'), [{ id: 'combo-above-kills', severity: 'reject', value: districts.kills.total + 1, limit: districts.kills.total }]);
+
+  // The knife: swings at its cadence, one contact per hit, and a kill is a hit.
+  const knifeSwings = hmhV6MeleeCadenceLimit(T, V6C.melee.knifeCooldownTicks);
+  const knife = (trail) => clone(districts, (s) => Object.assign(row(s, 'litecoin-knife'), trail));
+  assert.deepEqual(only7(knife({ triggers: knifeSwings, triggerContacts: knifeSwings, projectilesEmitted: knifeSwings, projectileContacts: knifeSwings })), []);
+  assert.deepEqual(flagOf(knife({ triggers: knifeSwings + 1, triggerContacts: knifeSwings + 1, projectilesEmitted: knifeSwings + 1, projectileContacts: knifeSwings + 1 }), 'knife-triggers-above-cadence'),
+    [{ id: 'knife-triggers-above-cadence', severity: 'reject', value: knifeSwings + 1, limit: knifeSwings }]);
+  assert.deepEqual(flagOf(knife({ triggers: 1, projectilesEmitted: 1, projectileContacts: 1 }), 'melee-contacts-without-trigger'), [{ id: 'melee-contacts-without-trigger', severity: 'reject', value: 1, limit: 0 }]);
+  // One Coin Blaster kill moved to the knife: it needs a knife contact.
+  const knifeKill = (contacts) => clone(districts, (s) => {
+    v7Row(s.kills.byWeapon, 'weaponId', 'coin-blaster').count -= 1;
+    v7Row(s.kills.byWeapon, 'weaponId', 'litecoin-knife').count += 1;
+    row(s, 'coin-blaster').kills -= 1;
+    Object.assign(row(s, 'litecoin-knife'), { kills: 1, triggers: 1, triggerContacts: Math.min(1, contacts), projectilesEmitted: 1, projectileContacts: contacts });
+  });
+  assert.deepEqual(only7(knifeKill(1)), []);
+  assert.deepEqual(flagOf(knifeKill(0), 'knife-kills-above-contacts'), [{ id: 'knife-kills-above-contacts', severity: 'reject', value: 1, limit: 0 }]);
+
+  // The Standard: strikes at its fastest cadence (tempo rank 3, 18 ticks).
+  const strikes = hmhV6MeleeCadenceLimit(T, V6C.melee.standardCooldownTicks);
+  const standard = (triggers) => clone(districts, (s) => Object.assign(row(s, 'forked-standard'), { triggers, projectilesEmitted: triggers }));
+  assert.deepEqual(only7(standard(strikes)), []);
+  assert.deepEqual(flagOf(standard(strikes + 1), 'standard-triggers-above-cadence'), [{ id: 'standard-triggers-above-cadence', severity: 'reject', value: strikes + 1, limit: strikes }]);
+});
+
 // The v7 path's results over a mutation corpus of both v7 fixtures, hashed
 // like the v6 corpus: a change to any v7 rule or formula moves the digest.
 // Re-pinned on the Level 1 build (fable/hmh-gameplay): its slice 6 regenerated
@@ -2268,9 +2342,32 @@ function v7Corpus() {
   return cases;
 }
 
+// Slice 9 mirrors nine v6 consistency rules onto the v7 path
+// (HMH_V7_CONSISTENCY_REJECTS). With their flags taken out (and the verdict
+// recomputed) the corpus still hashes to V7_CORPUS_DIGEST, so no earlier v7
+// result moved; with them in it hashes to V7_CORPUS_DIGEST_SLICE_9. The cases
+// that gained a flag are the ones whose fabricated time or combo those rules
+// bound: no ticks, a run squeezed to 600 ticks, and a best combo above the kills.
+const V7_CORPUS_DIGEST_SLICE_9 = 'ed323e69b4d37a5e978d9f167462eb513527a438dcca9a3a55d23f011f2d81d3';
+const V7_CORPUS_CHANGED_SLICE_9 = Object.freeze([
+  'districts no ticks', 'districts squeezed to 600', 'districts combo above kills',
+  'four-bosses no ticks', 'four-bosses squeezed to 600', 'four-bosses combo above kills',
+]);
 test('the v7 path gives its mutation corpus the pinned results', () => {
   const results = v7Corpus().map(([name, summary]) => [name, validateRebootRunPlausibility(summary)]);
   assert.equal(results.length, 172);
   const digest = createHash('sha256').update(JSON.stringify(results)).digest('hex');
-  assert.equal(digest, V7_CORPUS_DIGEST, `${results.length} cases`);
+  const withoutMirror = results.map(([name, result]) => {
+    const flags = result.flags.filter((flag) => !HMH_V7_CONSISTENCY_REJECTS.includes(flag.id));
+    return [name, { verdict: flags.some((flag) => flag.severity === 'reject') ? 'rejected' : flags.length ? 'flagged' : 'ok', flags }];
+  });
+  assert.equal(createHash('sha256').update(JSON.stringify(withoutMirror)).digest('hex'), V7_CORPUS_DIGEST, 'without the mirrored rules, every result is the pre-slice-9 result');
+  const changed = results.filter(([, result], index) => JSON.stringify(result) !== JSON.stringify(withoutMirror[index][1])).map(([name]) => name);
+  assert.deepEqual(changed, V7_CORPUS_CHANGED_SLICE_9);
+  // Only the combo cases change verdict (flagged to rejected); the time cases
+  // were already rejected and now also name what their missing time cannot hold.
+  const verdictChanged = results.filter(([, result], index) => result.verdict !== withoutMirror[index][1].verdict)
+    .map(([name, result]) => [name, result.flags.filter((flag) => HMH_V7_CONSISTENCY_REJECTS.includes(flag.id)).map((flag) => flag.id)]);
+  assert.deepEqual(verdictChanged, [['districts combo above kills', ['combo-above-kills']], ['four-bosses combo above kills', ['combo-above-kills']]]);
+  assert.equal(digest, V7_CORPUS_DIGEST_SLICE_9, `${results.length} cases`);
 });

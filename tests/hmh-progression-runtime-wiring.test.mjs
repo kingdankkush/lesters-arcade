@@ -161,7 +161,7 @@ test('salvage, the focus gun and the grenade maximum are wired where the package
   // made it, so the weapon step of the next tick reads it.
   assert.match(mainSource, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: defeatedEnemy\.archetypeId,[\s\S]{0,200}\}\);\s*\/\/[^\n]*\n\s*creditWeaponKills\(weaponLoadout, \{ tick, weaponId: scoreEvent\.weaponId, count: 1, progressionByWeapon \}\);/);
   // The focus gun follows a manual switch (and a new pickup, inside run progression).
-  assert.match(mainSource, /const switched = switchWeapon\(weaponLoadout, requestedWeaponId, \{ tick \}\);\s*if \(switched\) \{[\s\S]{0,200}setRunUpgradeFocus\(runProgression, requestedWeaponId\);/);
+  assert.match(mainSource, /const switched = recordWeaponInterruption\(switchWeapon\(weaponLoadout, requestedWeaponId, \{ tick \}\)\);\s*if \(switched\) \{[\s\S]{0,200}setRunUpgradeFocus\(runProgression, requestedWeaponId\);/);
   // Extra Grenade raises the maximum instead of overflowing it.
   assert.match(mainSource, /raiseHandGrenadeMaximum\(grenadeSystem, \{ amount: grenadeGain \}\)/);
   assert.doesNotMatch(mainSource, /handCharges \+= grenadeGain/);
