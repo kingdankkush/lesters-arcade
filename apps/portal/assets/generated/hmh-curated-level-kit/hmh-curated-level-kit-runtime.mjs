@@ -30,6 +30,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/authored-world-layout.mjs",
     "apps/portal/src/biome-model.mjs",
     "apps/portal/src/boss-phase-controller.mjs",
+    "apps/portal/src/cabinet-haptics.mjs",
     "apps/portal/src/cabinet-motion.mjs",
     "apps/portal/src/cabinet-presentation.mjs",
     "apps/portal/src/canonical-actor-routing.mjs",
