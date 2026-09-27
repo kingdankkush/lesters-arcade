@@ -1,5 +1,12 @@
 {
   "schema": "hmh-open-work-current-status-v1",
+  "historical": true,
+  "historicalNote": "HISTORICAL SNAPSHOT (proofAt 2026-09-08). Despite the file name this is not current status and was not refreshed after 2026-09-08; item statuses predate the 2026-09-13 STACKED public beta (the STACKED items still read accepted_not_publicly_playable, but STACKED is public and Ranked-eligible) and the 2026-09-24 Ranked launch on LitVM LiteForge testnet (SETTLEMENT_LIVE=true). Do not use it to decide what is shipped or open.",
+  "currentAuthority": [
+    "README.md top release sections (version, deployment, rollback, release branch)",
+    "docs/qa/batch-release-*.json and docs/qa/ranked-launch-release-20260924.json release receipts",
+    "AGENTS.md read order"
+  ],
   "guideCommit": "ab114a64c96a3e56aec7c55a6597c6b118b70cef",
   "implementationHead": "9ce7372021a1b14a5b6910bcd0fa1d7d328d8bef",
   "proofAt": "2026-09-08T11:44:12.951406+00:00",

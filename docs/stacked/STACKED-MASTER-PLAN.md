@@ -7,9 +7,9 @@ House style: `docs/hmh-reboot/AAA-ROADMAP.md`
 
 ---
 
-## STATUS: S-01–S-03 accepted; not publicly playable
+## STATUS: public and Ranked-eligible (plan is historical)
 
-`docs/stacked/STATUS.md` is the current implementation authority. Accepted S-01 through S-03 source/security integration exists; S-04 is separately policy-blocked. S-06 and S-11/S-12 are isolated prepared candidates, not public gameplay. Hold STACKED at this accepted boundary while the textured HMH gameplay heroes ship. Do not restart accepted core work or retry policy-denied operations.
+STACKED has been public playable since the owner-approved public beta of 2026-09-13, and Ranked-eligible with server replay verification and LitVM LiteForge testnet settlement since the 1.8.0 Ranked launch of 2026-09-24. The README release sections and `docs/qa/` receipts are the current truth. This plan's own status line, written while S-01–S-03 were accepted and STACKED was held back, is historical: S-04 was then policy-blocked and S-06 and S-11/S-12 were isolated prepared candidates. Do not restart accepted core work or retry policy-denied operations.
 
 ### Historical planning baseline only
 
