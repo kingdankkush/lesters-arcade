@@ -233,7 +233,9 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   const hurt = source.indexOf('const playerHurtTarget = playerHealth > 0 && !playerInvulnerable');
   assert.ok(hoisted > 0 && hoisted < targets && targets < steam && steam < hazards && hazards < hurt);
   assert.match(source, /const hazardTargets = \[\s*\.\.\.\(playerInvulnerable \? \[\] : \[\{ \.\.\.actor, id: 'player' \}\]\),\s*\.\.\.grayboxEnemies,\s*\.\.\.\(bossTargetable \? \[liquidatorBoss\] : \[\]\),\s*\];/);
-  assert.match(source, /const activeWorldHazards = \(\) => \(bossSlots\?\.slots\.liquidator\.status === 'defeated' \? PACIFIED_HAZARDS : LEVEL_ONE_WORLD\.interactions\.hazards\);/);
+  // S3.1 keeps the Yard's pacified list and adds the Baron's rigged rockfall
+  // (bossesV2 only; no Baron slot exists otherwise).
+  assert.match(source, /const hazards = bossSlots\?\.slots\.liquidator\.status === 'defeated' \? PACIFIED_HAZARDS : LEVEL_ONE_WORLD\.interactions\.hazards;\s*const baron = bossSlots\?\.slots\['rug-pull-baron'\];\s*return baron && baron\.status !== 'defeated' \? baronRiggedHazards\(hazards\) : hazards;/);
   assert.match(source, /if\(WORLD_ENVIRONMENT_WEAPON_IDS\.has\(scoreEvent\.weaponId\)\) \{/);
   assert.ok(!source.includes("scoreEvent.weaponId==='world-steam'"));
   // Movement: the slow multiplies after the run effects, the drift lands before the swept collision.
@@ -241,7 +243,8 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   const drift = source.indexOf('motion.x += playerHazardField.drift.x * dtSeconds;');
   const sweep = source.indexOf('lastCollision = resolveSweptCircleMotion({\n          body: playerBody,\n          start: movementStart,');
   assert.ok(drift > 0 && drift < sweep);
-  assert.match(source, /fieldAt: \(x, y, ground\) => worldHazardField\(LEVEL_ONE_WORLD\.interactions\.hazards, \{ x, y, groundZ: ground\.groundZ \}\),/);
+  // S3.1 adds a live boss's drift (the Baron's Rug Yank; null otherwise).
+  assert.match(source, /fieldAt: \(x, y, ground\) => \{\s*const field = worldHazardField\(LEVEL_ONE_WORLD\.interactions\.hazards, \{ x, y, groundZ: ground\.groundZ \}\);[\s\S]{0,300}?const drift = bossDriftAt\(liquidatorBoss, \{ x, y \}, tick\);\s*return drift \? [^\n]+ : field;/);
   // Boss non-lethality: both hazard hooks pass through the cap, hazard hits skip
   // the role-check/punish scaling, and the apply step clamps again at 1 HP.
   assert.match(source, /const bossHazardCap = \{ targetId: liquidatorBoss\?\.id \?\? 'boss-liquidator', health: liquidatorBoss\?\.health \?\? 0 \};/);
@@ -249,8 +252,9 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   assert.ok(source.indexOf('const bossHazardCap = ') < steam);
   assert.match(source, /if \(!targetKind \|\| WORLD_ENVIRONMENT_WEAPON_IDS\.has\(hit\.weaponId\)\) return hit;/);
   // S1.5: the second gate lives in the boss's own authority now:
-  // applyLiquidatorDamage never lets environmental damage below 1 HP.
-  assert.match(source, /bossDamage = applyLiquidatorDamage\(\{\s*boss: liquidatorBoss,\s*amount: damageEvent\.damageApplied,\s*tick,\s*roleMultiplier: roleCheck\.multiplier,\s*environmental: WORLD_ENVIRONMENT_WEAPON_IDS\.has\(damageEvent\.weaponId\),\s*\}\);/);
+  // The boss's own damage authority (applyLiquidatorDamage, or the Baron's
+  // under bossesV2) never lets environmental damage below 1 HP.
+  assert.match(source, /bossDamage = applyBossDamage\(\{\s*boss: liquidatorBoss,\s*amount: damageEvent\.damageApplied,\s*tick,\s*roleMultiplier: roleCheck\.multiplier,\s*environmental: WORLD_ENVIRONMENT_WEAPON_IDS\.has\(damageEvent\.weaponId\),\s*\}\);/);
   // The telegraph renderer receives the reduceFlash setting alongside reduceMotion.
   assert.match(source, /worldLife\.render\(\{[^\n]*reduceMotion:settings\.reduceMotion,reduceFlash:settings\.reduceFlash,/);
 });

@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Script, createContext } from 'node:vm';
 import { createAimState, resolveAimIntent } from '../apps/hmh-reboot/src/aim.mjs';
-import { createLiquidatorBoss, isLiquidatorTargetable } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+// S3.1: main's aim list reads the registry's gate for whichever boss is live;
+// for the Liquidator it is his own isLiquidatorTargetable.
+import { isBossTargetable } from '../apps/hmh-reboot/src/boss-slots.mjs';
 import { traceHeightAwareLineOfSight } from '../apps/hmh-reboot/src/elevation.mjs';
 
 // Execute the runtime's actual aim call with the real aim and cover modules.
@@ -26,7 +29,7 @@ function boss(overrides = {}) {
 function aim({ tick = ARRIVAL, liquidatorBoss = boss(), grayboxEnemies = [], blockers = [], input = {} } = {}) {
   return resolveRuntimeAim({
     resolveAimIntent,
-    isLiquidatorTargetable,
+    isBossTargetable,
     aimState: createAimState(),
     tick,
     motion: { x: 0, y: 0 },

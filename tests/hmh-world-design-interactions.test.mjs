@@ -9,6 +9,7 @@ import { LEVEL_ONE_WORLD, createLevelOneGroundQuery } from '../apps/hmh-reboot/s
 import { createEnemyNavGrid } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
 import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
 import { BOSS_LOCK_BLOCKERS, LIQUIDATOR_MARGIN_FLOOR } from '../apps/hmh-reboot/src/boss-arenas.mjs';
+import { bossClosedWallIds } from '../apps/hmh-reboot/src/boss-slots.mjs';
 
 // Mission core v2 (S1.4) owns the machinery; these checks keep the world side:
 // the valve's steam trap, gate colliders and the navgrid patch and reset.
@@ -80,10 +81,11 @@ test('the exact runtime restart loop recloses previously opened gate navigation'
   const locks = LIQUIDATOR_MARGIN_FLOOR.walls;
   const lockWorld = { collisionBlockers: BOSS_LOCK_BLOCKERS };
   for (const wall of locks) refreshWorldDesignGateNavigation(navGrid, lockWorld, queryGround, wall.id, [...active, ...locks]);
-  const restart = source.match(/for\(const gateId of missionState\.openGates\)[^\n]+\n(?:\s*\/\/[^\n]*\n)*\s*for\(const wallId of bossSlots[^\n]+\n\s*WORLD_BLOCKERS=[^\n]+\n\s*missionState=[^\n]+;/)?.[0];
+  const restart = source.match(/for\(const gateId of missionState\.openGates\)[^\n]+\n(?:\s*\/\/[^\n]*\n)*\s*for\(const wallId of bossClosedWallIds\(bossSlots\)\)[^\n]+\n\s*WORLD_BLOCKERS=[^\n]+\n\s*missionState=[^\n]+;/)?.[0];
   assert.ok(restart, 'inspect the actual runtime reset, not a copied implementation');
   const bossSlots = { slots: { liquidator: { closedWalls: locks.map((wall) => wall.id) } } };
-  const context = { missionState: state, bossSlots, BOSS_LOCK_WORLD: lockWorld, navGrid, LEVEL_ONE_WORLD, queryGround, refreshWorldDesignGateNavigation, createMissionState, payload: { session: { seed: 9 } } };
+  // S3.1: every slot's closed locks and props reopen (bossClosedWallIds).
+  const context = { missionState: state, bossSlots, bossClosedWallIds, bossesV2Enabled: false, BOSS_LOCK_WORLD: lockWorld, navGrid, LEVEL_ONE_WORLD, queryGround, refreshWorldDesignGateNavigation, createMissionState, payload: { session: { seed: 9 } } };
   runInNewContext(restart, context);
   assert.deepEqual(arrays(navGrid), closed, 'gates and boss locks both reopen');
   assert.equal(context.missionState.openGates.size, 0);

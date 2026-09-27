@@ -11,20 +11,44 @@
 // for a grace after; the first four adds of a slot are free once per run and
 // every further add draws from the director's capacity bank (contract 5.3).
 //
-// Only the Liquidator is registered: the Rug Pull Baron, the Lockkeeper and
-// the 51% Foreman stay dark until their slices, and their v7 rows stay zero.
+// The Liquidator is always registered. The Rug Pull Baron (slice S3.1) is
+// built dark: createBossSlots registers him only with bossesV2, which main
+// never sets in Ranked. The Lockkeeper and the 51% Foreman stay dark until
+// their slices. Unregistered bosses keep zero v7 rows. Each boss's own module
+// (its kit) is reached through BOSS_KITS by the boss's bossId.
 // Pure simulation, loaded lazily with the boss modules.
 import { freezeDeep } from './value-guards.mjs';
 import { directorViewBounds } from './encounter-director.mjs';
 import {
   LIQUIDATOR_DARK_POOL,
   LIQUIDATOR_MARGIN_FLOOR,
+  RUG_PULL_BARON_QUARRY,
   bodyOverlapsLock,
   insideBossArena,
   pastDarkPoolThreshold,
 } from './boss-arenas.mjs';
 import { referenceDps } from './boss-reference-dps.mjs';
-import { LIQUIDATOR_TARGET_ID, createLiquidatorAddCandidates, createLiquidatorBoss } from './liquidator-boss.mjs';
+import {
+  LIQUIDATOR_TARGET_ID,
+  applyLiquidatorDamage,
+  createLiquidatorAddCandidates,
+  createLiquidatorBoss,
+  getLiquidatorVulnerability,
+  isLiquidatorTargetable,
+  resolveLiquidatorAttack,
+  stepLiquidatorBoss,
+} from './liquidator-boss.mjs';
+import {
+  BARON_TARGET_ID,
+  applyRugPullBaronDamage,
+  createRugPullBaronAddCandidates,
+  createRugPullBaronBoss,
+  getRugPullBaronVulnerability,
+  isRugPullBaronTargetable,
+  resolveRugPullBaronAttack,
+  rugPullBaronDriftAt,
+  stepRugPullBaronBoss,
+} from './rug-pull-baron-boss.mjs';
 import { attemptScheduledEnemyInsertion } from './enemy-simulation.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_RUN_RULES, hmhV7BossHp } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
@@ -48,12 +72,77 @@ export const BOSS_DEFINITIONS = freezeDeep({
     threat: HMH_V7_BOSSES.liquidator.threat,
     markers: HMH_V7_BOSSES.liquidator.phaseThresholds,
     arenas: { bell: LIQUIDATOR_MARGIN_FLOOR, 'dark-pool': LIQUIDATOR_DARK_POOL },
+    trigger: 'bell',
     triggerZone: 'liquidator-closing-bell',
     retreatZones: { 'margin-floor': 'liquidator-retreat-margin-floor', 'dark-pool': 'liquidator-retreat-dark-pool' },
     darkPoolObjective: 'warehouse-logbook',
     unlockObjective: 'liquidator-defeated',
+    // 4.3 rewards: a full heal and grenades to max. His Genesis Seal arrives
+    // with S1.7.
+    rewards: { fullHeal: true, grenadesToMax: true, perk: null, genesisSeal: false },
+    dark: false,
+  },
+  'rug-pull-baron': {
+    bossId: 'rug-pull-baron',
+    targetId: BARON_TARGET_ID,
+    roleId: 'rug-pull-baron',
+    name: 'The Rug Pull Baron',
+    districtId: HMH_V7_BOSSES['rug-pull-baron'].district,
+    readyTick: HMH_V7_BOSSES['rug-pull-baron'].readyTick,
+    targetSeconds: HMH_V7_BOSSES['rug-pull-baron'].targetSeconds,
+    silverBurst: HMH_V7_BOSSES['rug-pull-baron'].silverBurst,
+    threat: HMH_V7_BOSSES['rug-pull-baron'].threat,
+    markers: HMH_V7_BOSSES['rug-pull-baron'].phaseThresholds,
+    arenas: { 'welcome-mat': RUG_PULL_BARON_QUARRY },
+    trigger: 'welcome-mat',
+    triggerZone: 'rug-pull-baron-welcome-mat',
+    retreatZones: { 'quarry-pocket': 'rug-pull-baron-retreat-quarry-pocket' },
+    darkPoolObjective: null,
+    unlockObjective: null,
+    // 4.4 rewards: a Genesis Seal and Baron's Signet (silver magnet); no heal.
+    rewards: { fullHeal: false, grenadesToMax: false, perk: 'barons-signet', genesisSeal: true },
+    dark: true,
   },
 });
+
+// Each boss's module behind one interface (package 4.7 item 1: the singleton
+// becomes the active boss plus the definitions).
+export const BOSS_KITS = Object.freeze({
+  liquidator: Object.freeze({
+    create: createLiquidatorBoss,
+    step: stepLiquidatorBoss,
+    applyDamage: applyLiquidatorDamage,
+    targetable: isLiquidatorTargetable,
+    vulnerability: getLiquidatorVulnerability,
+    resolve: resolveLiquidatorAttack,
+    addCandidates: createLiquidatorAddCandidates,
+    driftAt: () => null,
+  }),
+  'rug-pull-baron': Object.freeze({
+    create: createRugPullBaronBoss,
+    step: stepRugPullBaronBoss,
+    applyDamage: applyRugPullBaronDamage,
+    targetable: isRugPullBaronTargetable,
+    vulnerability: getRugPullBaronVulnerability,
+    resolve: resolveRugPullBaronAttack,
+    addCandidates: createRugPullBaronAddCandidates,
+    driftAt: rugPullBaronDriftAt,
+  }),
+});
+const kitOf = (boss) => {
+  const kit = BOSS_KITS[boss?.bossId];
+  if (!kit) throw new TypeError(`unknown boss ${String(boss?.bossId)}`);
+  return kit;
+};
+// The runtime's boss calls, for whichever boss is live.
+export const stepBoss = (options) => kitOf(options.boss).step(options);
+export const applyBossDamage = (options) => kitOf(options.boss).applyDamage(options);
+export const isBossTargetable = (boss, tick) => Boolean(boss) && kitOf(boss).targetable(boss, tick);
+export const bossVulnerability = (boss, tick) => kitOf(boss).vulnerability(boss, tick);
+export const resolveBossAttack = (options) => kitOf(options.boss).resolve(options);
+// The drift a live boss's field puts on a point this tick (units a tick), or null.
+export const bossDriftAt = (boss, point, tick) => (boss?.active ? kitOf(boss).driftAt(boss, point, tick) : null);
+export const bossDefinition = (bossId) => BOSS_DEFINITIONS[bossId] ?? null;
 
 // Director insertions the capacity bank allows by `tick` (the verifier's
 // directorSpawnCapacity over the v7 band schedule; a parity test pins it).
@@ -67,12 +156,18 @@ export function directorSpawnCapacityV7(tick) {
   return total;
 }
 
-export function createBossSlots({ seed = 0 } = {}) {
+export function createBossSlots({ seed = 0, bossesV2 = false } = {}) {
+  if (typeof bossesV2 !== 'boolean') throw new TypeError('bossesV2 must be boolean');
+  const registered = Object.values(BOSS_DEFINITIONS).filter((definition) => !definition.dark || bossesV2);
   return {
     seed: Number(seed) >>> 0,
     lastTick: -1,
     rows: new Map(HMH_RUN_SUMMARY_CATALOGS_V7.bosses.map((bossId) => [bossId, { initiations: 0, first: 0, last: 0, defeatedTick: 0 }])),
-    slots: Object.fromEntries(Object.values(BOSS_DEFINITIONS).map((definition) => [definition.bossId, {
+    bossesV2,
+    // The slot whose boss the runtime shows: the one live, or the last one
+    // started (his fallen body plays its death clip).
+    currentBossId: null,
+    slots: Object.fromEntries(registered.map((definition) => [definition.bossId, {
       bossId: definition.bossId,
       status: 'dormant',
       readyAt: definition.readyTick,
@@ -92,7 +187,25 @@ export function createBossSlots({ seed = 0 } = {}) {
     graceUntil: -1,
     parachute: { held: false, used: false },
     revivesUsed: 0,
+    // Boss perks won this run (Baron's Signet) and Genesis Seals found (one
+    // per boss id, a real defeat only; banked until S1.7's evolution panel).
+    perks: new Set(),
+    sealsFound: 0,
   };
+}
+
+// The boss the runtime steps, targets and draws: the live one, else the last
+// one started (null before any trigger, and after a retreat or a call-off).
+export function activeBoss(slots) {
+  return slots?.currentBossId ? slots.slots[slots.currentBossId]?.boss ?? null : null;
+}
+
+// The ids of every closed lock and prop, across the slots.
+export function bossClosedWallIds(slots) {
+  if (!slots) return [];
+  const ids = [];
+  for (const slot of Object.values(slots.slots)) ids.push(...slot.closedWalls);
+  return ids;
 }
 
 const liveSlot = (slots) => Object.values(slots.slots).find((slot) => slot.status === 'live') ?? null;
@@ -111,7 +224,9 @@ export function bossZoneArming(slots, tick) {
     const bell = definition.triggerZone;
     // Once the Dark Pool owns him, the bell shows SETTLED for the rest of the
     // run; a bell fight hides it while live and after the defeat.
-    if (triggerArmed(slots, slot, 'bell', tick)) armed.add(bell);
+    // The zone's own trigger (the Closing Bell, the Welcome Mat): once a
+    // trigger owns a boss, only that trigger re-arms.
+    if (triggerArmed(slots, slot, definition.trigger, tick)) armed.add(bell);
     else if (slot.owner === 'dark-pool') status.set(bell, { status: 'settled', readyAt: null });
     else if (slot.status === 'live') status.set(bell, { status: 'live', readyAt: null });
     else if (slot.status === 'defeated') status.set(bell, { status: 'defeated', readyAt: null });
@@ -139,7 +254,8 @@ function initiate(slots, slot, { trigger, tick, level, events }) {
   slot.initiatedTick = tick;
   slot.closedWalls = [];
   slot.locked = false;
-  slot.boss = createLiquidatorBoss({
+  slots.currentBossId = slot.bossId;
+  slot.boss = BOSS_KITS[slot.bossId].create({
     arena,
     entry: trigger,
     startTick: tick,
@@ -174,26 +290,8 @@ function distanceToWall(wall, point) {
   return Math.hypot(point.x - (a.x + dx * t), point.y - (a.y + dy * t));
 }
 
-// One fixed step, after the mission step (which records the logbook first,
-// package 3.2) and before the director, the boss step, enemies and combat.
-export function stepBossSlots(slots, {
-  tick,
-  player,
-  missionEvents = [],
-  mission,
-  level = 1,
-  enemies = [],
-} = {}) {
-  if (!Number.isInteger(tick) || tick < 0 || tick <= slots.lastTick) throw new TypeError('boss slot ticks must be monotonic');
-  if (![player?.x, player?.y].every(Number.isFinite)) throw new TypeError('finite player position required');
-  slots.lastTick = tick;
-  const events = [];
-  const closed = [];
-  const opened = [];
-  const recycle = new Set();
-  const slot = slots.slots.liquidator;
-  const definition = BOSS_DEFINITIONS.liquidator;
-
+function stepSlot(slots, slot, { tick, player, missionEvents, mission, level, enemies, events, closed, opened, recycle }) {
+  const definition = BOSS_DEFINITIONS[slot.bossId];
   for (const event of missionEvents) {
     if (event?.type !== 'boss-zone' || event.bossId !== slot.bossId) continue;
     if (event.zoneKind === 'trigger' && triggerArmed(slots, slot, event.trigger, tick)) initiate(slots, slot, { trigger: event.trigger, tick, level, events });
@@ -211,7 +309,7 @@ export function stepBossSlots(slots, {
   }
   // The Dark Pool: the logbook found (this tick or earlier) and the hero 48
   // past the threshold.
-  if (mission?.completed?.has(definition.darkPoolObjective) && pastDarkPoolThreshold(player) && triggerArmed(slots, slot, 'dark-pool', tick)) {
+  if (definition.darkPoolObjective && mission?.completed?.has(definition.darkPoolObjective) && pastDarkPoolThreshold(player) && triggerArmed(slots, slot, 'dark-pool', tick)) {
     initiate(slots, slot, { trigger: 'dark-pool', tick, level, events });
   }
 
@@ -243,7 +341,7 @@ export function stepBossSlots(slots, {
           events.push({ type: 'lock-closed', bossId: slot.bossId, wallId: wall.id, tick, forced: true });
         }
       }
-      if (slot.closedWalls.length === arena.walls.length) {
+      if (arena.walls.every((wall) => slot.closedWalls.includes(wall.id))) {
         slot.locked = true;
         // Off-view ordinary enemies outside the floor are recycled without
         // credit at lock (package 4.1 "Director").
@@ -256,6 +354,40 @@ export function stepBossSlots(slots, {
       }
     }
   }
+  // Arena props (the Baron's crates) roll in once their footprint is clear of
+  // every body, and are never forced onto one.
+  if (slot.status === 'live' && slot.arena.props?.length) {
+    const bodies = [{ x: player.x, y: player.y, radius: player.radius ?? 24 }, ...enemies, { x: slot.boss.x, y: slot.boss.y, radius: slot.boss.radius }];
+    for (const prop of slot.arena.props) {
+      if (slot.closedWalls.includes(prop.id) || bodies.some((body) => bodyOverlapsLock(prop, body))) continue;
+      slot.closedWalls.push(prop.id);
+      closed.push(prop.id);
+      events.push({ type: 'prop-placed', bossId: slot.bossId, wallId: prop.id, tick });
+    }
+  }
+}
+
+// One fixed step, after the mission step (which records the logbook first,
+// package 3.2) and before the director, the boss step, enemies and combat.
+export function stepBossSlots(slots, {
+  tick,
+  player,
+  missionEvents = [],
+  mission,
+  level = 1,
+  enemies = [],
+} = {}) {
+  if (!Number.isInteger(tick) || tick < 0 || tick <= slots.lastTick) throw new TypeError('boss slot ticks must be monotonic');
+  if (![player?.x, player?.y].every(Number.isFinite)) throw new TypeError('finite player position required');
+  slots.lastTick = tick;
+  const events = [];
+  const closed = [];
+  const opened = [];
+  const recycle = new Set();
+  // Slots step in registry order (the catalogue's west-to-east order puts the
+  // Liquidator first, as he was before the registry grew), so of two triggers
+  // on one tick the first registered wins and the other stays armed.
+  for (const slot of Object.values(slots.slots)) stepSlot(slots, slot, { tick, player, missionEvents, mission, level, enemies, events, closed, opened, recycle });
   return freezeDeep({ tick, events, closed, opened, recycle: [...recycle].sort() });
 }
 
@@ -264,9 +396,10 @@ export function stepBossSlots(slots, {
 export function forceBossStart(slots, { bossId, tick, arena, level = 1 }) {
   const slot = slots.slots[bossId];
   const events = [];
-  initiate(slots, slot, { trigger: 'bell', tick, level, events });
+  const trigger = Object.keys(BOSS_DEFINITIONS[bossId].arenas)[0];
+  initiate(slots, slot, { trigger, tick, level, events });
   slot.arena = arena;
-  slot.boss = createLiquidatorBoss({ arena, entry: 'bell', startTick: tick, seed: slots.seed, maxHealth: slot.boss.maxHealth, wave: slot.addWaves });
+  slot.boss = BOSS_KITS[bossId].create({ arena, entry: trigger, startTick: tick, seed: slots.seed, maxHealth: slot.boss.maxHealth, wave: slot.addWaves });
   slot.locked = true;
   return slot.boss;
 }
@@ -287,12 +420,21 @@ export function defeatBossSlot(slots, { bossId, tick }) {
   slots.graceUntil = Math.max(slots.graceUntil, tick + BOSS_DEFEAT_GRACE_TICKS);
   const goldenParachute = slot.owner === 'dark-pool';
   if (goldenParachute) slots.parachute.held = true;
+  const { fullHeal, grenadesToMax, perk, genesisSeal } = definition.rewards;
+  if (perk) slots.perks.add(perk);
+  // One Genesis Seal per boss id per run, from a real defeat only (contract
+  // 5.3); a slot is defeated once, so it drops once.
+  if (genesisSeal) slots.sealsFound += 1;
   return freezeDeep({
     bossId,
     silverBurst: definition.silverBurst,
     unlockObjective: definition.unlockObjective,
-    fullHeal: true,
-    grenadesToMax: true,
+    fullHeal,
+    grenadesToMax,
+    perk,
+    genesisSeal,
+    threat: definition.threat,
+    roleId: definition.roleId,
     goldenParachute,
     graceTicks: BOSS_DEFEAT_GRACE_TICKS,
     opened,
@@ -343,7 +485,7 @@ function refundBossAddAllowance(slots, { bossId, allowance }) {
 export function insertBossAdds(slots, { bossId, event, tick, population, alive, directorInserted, place }) {
   const inserted = [];
   const rejected = [];
-  for (const candidate of createLiquidatorAddCandidates({ event, alive })) {
+  for (const candidate of BOSS_KITS[bossId].addCandidates({ event, alive })) {
     const groundZ = place(candidate);
     if (groundZ === null) continue;
     const allowance = bossAddAllowance(slots, { bossId, tick, directorInserted });
@@ -369,7 +511,7 @@ export function insertBossAdds(slots, { bossId, event, tick, population, alive, 
 // The director's view of the bosses: suppressed while one lives and during a
 // grace; the Yard leans to Agents until the Liquidator falls (4.3 "Purpose").
 export function bossDirectorOverlay(slots, tick) {
-  const pacified = slots.slots.liquidator.status === 'defeated';
+  const pacified = slots.slots.liquidator?.status === 'defeated';
   return freezeDeep({
     suppressed: Boolean(liveSlot(slots)) || tick < slots.graceUntil,
     leanRole: pacified ? null : 'suppressor',

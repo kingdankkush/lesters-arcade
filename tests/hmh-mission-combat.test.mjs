@@ -95,7 +95,7 @@ test('the mission step runs after movement and before the director, and completi
   const step = source.indexOf('stepMissionObjectives(missionState,');
   assert.ok(step > source.indexOf("actor.locomotion = dashFrame.active ? 'dash' : motion.locomotion;"));
   assert.ok(step < source.indexOf('stepEncounterDirector({'));
-  assert.ok(step < source.indexOf('stepLiquidatorBoss({'));
+  assert.ok(step < source.indexOf('stepBoss({'));
   assert.equal(source.includes("combatAudio.play('objective-complete'"), false);
   assert.match(source, /lastPlayerHitTick: lastPlayerHit\?\.tick \?\? -1,/);
   assert.match(source, /logicalView: directorViewBounds\(\{ x: actor\.x, y: actor\.y \}\),/);

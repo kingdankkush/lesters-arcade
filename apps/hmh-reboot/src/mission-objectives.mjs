@@ -19,7 +19,7 @@
 import { freezeDeep } from './value-guards.mjs';
 import { WORLD_DESIGN_SITES, WORLD_DESIGN_COURT_BLOCKERS } from './world-design-encounters.mjs';
 import { WORLD_DESIGN_SECRETS, WORLD_DESIGN_SECRET_SEAL } from './world-design-secrets.mjs';
-import { LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR } from './boss-arenas.mjs';
+import { LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR, RUG_PULL_BARON_QUARRY } from './boss-arenas.mjs';
 import { HMH_V7_BOSSES, HMH_V7_BOSS_RULES, HMH_V7_OBJECTIVES, HMH_V7_RUN_RULES } from '../../../sdk/hmh-run-contract-v7.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V7 } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
 
@@ -144,18 +144,33 @@ export const MISSION_OBJECTIVES = freezeDeep([
 // them each tick (state.bossZoneArmed); filling one emits a boss-zone event
 // and re-arms it from empty. They grant nothing, are never objectives and are
 // not in the v7 rows. The Dark Pool has no ring: it is entered.
-const bossZoneRow = ({ id, kind, arena, point, mode, clip, fillTicks, readyTick, name, task }) => ({
+const bossZoneRow = ({ id, bossId = 'liquidator', kind, arena, point, mode, clip, fillTicks, readyTick, name, task, ringRadius = MISSION_RULES[mode].ringRadius, enterFill = false }) => ({
   id, objectiveClass: kind === 'trigger' ? 'boss-trigger' : 'boss-retreat', districtId: arena.districtId, name, task, kind: 'boss-zone',
-  mode, clip, fillTicks, ringRadius: MISSION_RULES[mode].ringRadius, readyTick,
+  mode, clip, fillTicks, ringRadius, readyTick,
   anchor: { x: point.x, y: point.y }, operate: { x: point.x, y: point.y, facing: point.facing },
   propBlockerId: null, requires: null, xpPerLevel: 0, effects: [],
-  bossZone: kind === 'trigger' ? { bossId: 'liquidator', kind, trigger: arena.trigger } : { bossId: 'liquidator', kind, arena: arena.id },
+  bossZone: kind === 'trigger' ? { bossId, kind, trigger: arena.trigger } : { bossId, kind, arena: arena.id },
+  ...(enterFill ? { enterFill: true } : {}),
 });
 export const MISSION_BOSS_ZONES = freezeDeep([
   bossZoneRow({ id: 'liquidator-closing-bell', kind: 'trigger', arena: LIQUIDATOR_MARGIN_FLOOR, point: LIQUIDATOR_MARGIN_FLOOR.bell, mode: 'seal', clip: 'press',
     fillTicks: 90, readyTick: HMH_V7_BOSSES.liquidator.readyTick, name: 'The Closing Bell', task: 'Ring the Closing Bell' }),
   ...[LIQUIDATOR_DARK_POOL, LIQUIDATOR_MARGIN_FLOOR].map((arena) => bossZoneRow({ id: `liquidator-retreat-${arena.id}`, kind: 'retreat', arena, point: arena.retreat,
     mode: 'channel', clip: 'crank', fillTicks: HMH_V7_BOSS_RULES.BOSS_RETREAT_CHANNEL_TICKS, readyTick: 0, name: 'Retreat', task: 'Hold to retreat' })),
+].sort(byId));
+
+// The Rug Pull Baron's zones (slice S3.1, dark: main adds them to the
+// mission only with bossesV2). The Welcome Mat is package 4.1's "enter-rect
+// with a confirm ring": standing on it fills the ring in 30 ticks, moving or
+// not, with no clip, dock or weapon stow; stepping off empties it. Its ring
+// (r40) is small enough that walking across it (at most 20 ticks) never
+// fills it. His retreat ring is the shared channel 120.
+export const MISSION_BOSS_ZONES_V2 = freezeDeep([
+  bossZoneRow({ id: 'rug-pull-baron-welcome-mat', bossId: 'rug-pull-baron', kind: 'trigger', arena: RUG_PULL_BARON_QUARRY, point: RUG_PULL_BARON_QUARRY.mat,
+    mode: 'seal', clip: null, fillTicks: 30, readyTick: HMH_V7_BOSSES['rug-pull-baron'].readyTick, name: 'The Welcome Mat', task: 'Stand on the Welcome Mat',
+    ringRadius: RUG_PULL_BARON_QUARRY.mat.radius, enterFill: true }),
+  bossZoneRow({ id: `rug-pull-baron-retreat-${RUG_PULL_BARON_QUARRY.id}`, bossId: 'rug-pull-baron', kind: 'retreat', arena: RUG_PULL_BARON_QUARRY, point: RUG_PULL_BARON_QUARRY.retreat,
+    mode: 'channel', clip: 'crank', fillTicks: HMH_V7_BOSS_RULES.BOSS_RETREAT_CHANNEL_TICKS, readyTick: 0, name: 'Retreat', task: 'Hold to retreat' }),
 ].sort(byId));
 
 // Zones are what a hero can stand in: machine rings and seal pry spots.
@@ -168,6 +183,7 @@ function buildZones(objectives) {
         ringRadius: row.ringRadius, x: row.operate.x, y: row.operate.y, facing: row.operate.facing,
         blockerId: row.propBlockerId ?? null, requires: row.requires ?? null, readyTick: row.readyTick ?? 0, sealId: null,
         bossZone: row.bossZone ?? null,
+        ...(row.enterFill ? { enterFill: true } : {}),
       });
     }
     if (row.seal?.pry) {
@@ -187,7 +203,7 @@ const freshZone = () => ({
   stillTicks: 0, operatingSince: null, pausedUntil: -1, leftTick: null,
 });
 
-export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, bossZones = MISSION_BOSS_ZONES } = {}) {
+export function createMissionState(seed = 0, { objectives = MISSION_OBJECTIVES, bossesV2 = false, bossZones = bossesV2 ? [...MISSION_BOSS_ZONES, ...MISSION_BOSS_ZONES_V2].sort(byId) : MISSION_BOSS_ZONES } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError('mission seed must be an integer');
   const zones = buildZones([...objectives, ...bossZones]);
   return {
@@ -335,6 +351,10 @@ export function stepMissionObjectives(state, {
         if (!(isActive && still)) z.commitStill = false;
         if (z.commitStill) operating = { zone, since: z.commitTick };
       }
+    } else if (zone.enterFill) {
+      // Stand on it to fill it, moving or not; stepping off empties it. No
+      // clip plays, so the hero never docks or stows.
+      z.progress = isActive ? z.progress + 1 : 0;
     } else if (isActive) {
       if (hit) z.pausedUntil = Math.max(z.pausedUntil, tick + rules.hitPauseTicks);
       z.leftTick = null;

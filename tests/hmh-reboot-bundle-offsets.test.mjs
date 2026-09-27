@@ -35,6 +35,10 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'boss-slots.mjs',
   'boss-arenas.mjs',
   'boss-geometry.mjs',
+  // S3.1 (dark, bossesV2): the Rug Pull Baron's simulation and his greybox
+  // proxy presentation.
+  'rug-pull-baron-boss.mjs',
+  'baron-proxy-presentation.mjs',
 ]);
 
 function walk(node, visit) {
@@ -117,7 +121,9 @@ test('boot awaits the lazy runtime modules before any lazily bound code runs or 
     'renderLiquidatorTelegraph', 'prepareWorldDesignEnemyPose', 'stepWorldDesignPacing',
     'createBossSlots', 'stepBossSlots', 'bossZoneArming', 'bossDirectorOverlay', 'directorBankFull', 'insertBossAdds', 'defeatBossSlot',
     'consumeGoldenParachute', 'bossHudState', 'forceBossStart', 'isLiquidatorTargetable', 'getLiquidatorVulnerability', 'liquidatorOpenArena',
-    'insideBossArena', 'bossShapeDodgeDanger'];
+    'insideBossArena', 'bossShapeDodgeDanger',
+    'activeBoss', 'bossClosedWallIds', 'stepBoss', 'applyBossDamage', 'isBossTargetable', 'bossVulnerability', 'resolveBossAttack', 'bossDriftAt',
+    'bossDefinition', 'knockDownEnemy', 'baronKnockDownTargets', 'renderBaronProxy'];
   const bootAst = parse(`(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)})`, { ecmaVersion: 'latest' });
   const awaitInWrapped = `(async function(){${bootSource.slice(bootSource.indexOf('{') + 1)}`.indexOf('await lazyRuntimeModules;');
   walk(bootAst, (node) => {

@@ -302,7 +302,7 @@ export function createWorldDesignLife({ContainerClass,GraphicsClass,TextClass}) 
       // the ground the hit test covers (worldToScreen is a plain top-down projection).
       const plate=(scale=1)=>ground.circle(hp.x,hp.y,r*scale);
       if(rule.periodTicks) {
-        const ph=worldHazardPhase(hazard,tick),since=tick%rule.periodTicks,flash=tick>=rule.periodTicks&&since<8?1-since/8:0;
+        const period=hazard.periodTicks??rule.periodTicks,ph=worldHazardPhase(hazard,tick),since=tick%period,flash=tick>=period&&since<8?1-since/8:0;
         if(ph.phase==='warning') {
           hazardTelegraphs.push(hazard.id);
           // One caption per cycle, and only when the hero is close enough to be under it.

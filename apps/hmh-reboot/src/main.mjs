@@ -1,4 +1,4 @@
-import { createSilverDropState, addSilverDrop, stepSilverDrops, silverDropAccounting } from './silver-drops.mjs';
+import { createSilverDropState, addSilverDrop, stepSilverDrops, silverDropAccounting, BARONS_SIGNET_SILVER } from './silver-drops.mjs';
 import { OBJECTIVE_REWARDS, objectiveRewardPlacements, collectibleIsAvailable, hiddenCollectibleIds } from './objective-rewards.mjs';
 import { canAcceptCollectible } from './collectible-capacity.mjs';
 import { WORLD_DESIGN_SECRET_SEAL, WORLD_DESIGN_SECRET_PROPS, worldDesignSecretCoverHit } from './world-design-secrets.mjs';
@@ -273,12 +273,15 @@ import {
 // no session can start before boot() reaches the bridge or the standalone
 // session, so the fixed-step simulation only ever calls resident code: it
 // stays synchronous and deterministic. The bindings keep their imported names.
-let applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
-  getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena;
+let getLiquidatorRoleCheck, liquidatorOpenArena;
 // Boss kit (design package S1.5): the registry and lifecycle, the arenas and
 // their locks, and the geometry kit's dodge predicate.
 let createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
   consumeGoldenParachute, bossHudState, forceBossStart, BOSS_LOCK_BLOCKERS = Object.freeze([]), insideBossArena, bossShapeDodgeDanger;
+// S3.1 (dark, bossesV2): the registry's kit calls for whichever boss is live,
+// the Baron's drift and knock-down, his zones and his greybox proxy.
+let activeBoss, bossClosedWallIds, stepBoss, applyBossDamage, isBossTargetable, bossVulnerability, resolveBossAttack, bossDriftAt, bossDefinition,
+  knockDownEnemy, baronKnockDownTargets, renderBaronProxy;
 let creatureAnimationTick, liquidatorPose, renderLiquidatorTelegraph;
 let refreshWorldDesignGateNavigation, buildWorldDesignHazardHits;
 // Mission core v2 (design package S1.4): the objective simulation.
@@ -303,11 +306,15 @@ function loadLazyRuntimeModules() {
     import('./boss-slots.mjs'),
     import('./boss-arenas.mjs'),
     import('./boss-geometry.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry]) => {
-    ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
-      getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
+    import('./rug-pull-baron-boss.mjs'),
+    import('./baron-proxy-presentation.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, baron, baronProxy]) => {
+    ({ getLiquidatorRoleCheck, liquidatorOpenArena } = boss);
     ({ createBossSlots, stepBossSlots, bossZoneArming, bossDirectorOverlay, directorBankFull, insertBossAdds, defeatBossSlot,
       consumeGoldenParachute, bossHudState, forceBossStart } = slots);
+    ({ activeBoss, bossClosedWallIds, stepBoss, applyBossDamage, isBossTargetable, bossVulnerability, resolveBossAttack, bossDriftAt, bossDefinition } = slots);
+    ({ knockDownEnemy, baronKnockDownTargets } = baron);
+    ({ renderBaronProxy } = baronProxy);
     ({ BOSS_LOCK_BLOCKERS, insideBossArena } = arenas);
     ({ bossShapeDodgeDanger } = geometry);
     ({ creatureAnimationTick, liquidatorPose } = creature);
@@ -333,6 +340,11 @@ const LIQUIDATOR_THREAT_COST = 48;
 // The Liquidation Yard grid goes quiet once the Liquidator falls (S1.5).
 const YARD_GRID_HAZARD_ID = 'yard-liquidation-grid';
 const PACIFIED_HAZARDS = Object.freeze(LEVEL_ONE_WORLD.interactions.hazards.filter((hazard) => hazard.id !== YARD_GRID_HAZARD_ID));
+const baronRiggedCache = new Map();
+const baronRiggedHazards = (hazards) => {
+  if (!baronRiggedCache.has(hazards)) baronRiggedCache.set(hazards, Object.freeze(hazards.map((hazard) => (hazard.id === 'ravine-rockfall' ? Object.freeze({ ...hazard, periodTicks: 240 }) : hazard))));
+  return baronRiggedCache.get(hazards);
+};
 // Bullets fly at chest height above whatever ground is beneath them, so firing
 // from an authored ledge still connects with targets on the level below.
 const PROJECTILE_FLIGHT_HEIGHT = 34;
@@ -737,6 +749,9 @@ async function boot() {
   const eliteGroundLayer = new Graphics();
   let bossVisual = createLiquidatorProductionDisplay({ ContainerClass: Container, GraphicsClass: Graphics });
   bossVisual.visible = false;
+  // S3.1: the Rug Pull Baron's greybox proxy body (baron-proxy-presentation).
+  const baronProxyVisual = new Graphics();
+  baronProxyVisual.visible = false;
   const prototypeDescriptor = createPrototypeHumanoidDescriptor({
     radius: 24,
     bodyColor: 0x49ddff,
@@ -823,7 +838,7 @@ async function boot() {
   bossLabel.visible = false;
   // Combat VFX draw above the actor: muzzle flashes spawn 28 units along the
   // aim vector, which lands on top of the sprite when aiming north.
-  world.addChild(backdrop, worldProduction.root, worldDecalLayer, worldLife.ground, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, worldDepthLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, worldLife.overlay, collisionDebug, label);
+  world.addChild(backdrop, worldProduction.root, worldDecalLayer, worldLife.ground, groundShadowLayer, authoredPropLayer, grid, debugLabels, shadow, enemyTelegraphs, bossTelegraphs, eliteGroundLayer, enemyVisuals, enemyDeathVisuals, bossVisual, baronProxyVisual, aimLine, projectileTrails, grenadeVisuals, actorVisual, heldWeaponLayer, worldDepthLayer, combatVisuals, weaponVfxLayer, projectileImpacts, atmosphereLayer, worldLife.overlay, collisionDebug, label);
   world.addChildAt(pickupSignals, world.children.indexOf(authoredPropLayer));
   const goreGround = new Graphics(), goreAir = new Graphics();
   world.addChildAt(goreGround, world.children.indexOf(groundShadowLayer));
@@ -1337,6 +1352,11 @@ async function boot() {
   // evidence spawn and an invulnerable hero) apply only outside Ranked: a
   // Ranked run is a real run whatever the URL says. Set per session.
   let evidenceGameplayEnabled = false;
+  // S3.1 dark content (the Rug Pull Baron; later bosses join it): requested
+  // like the other evidenceSafe pilots, and never live in Ranked whatever the
+  // URL says. Set per session.
+  const bossesV2Requested = evidenceSafeEnabled && runtimeParams.get('bossesV2') === '1';
+  let bossesV2Enabled = false;
   const authoredSpawnPoints = LEVEL_ONE_WORLD.spawnPoints;
   const spawnPointBlocked = (point) => WORLD_BLOCKERS.some((blocker) => {
     const shape = blocker.shape;
@@ -1499,12 +1519,15 @@ async function boot() {
   let encounterDirector = null;
   let lastDirectorStep = null;
   let liquidatorBoss = null;
-  // S1.5 boss registry and lifecycle (boss-slots.mjs); liquidatorBoss is its
-  // Liquidator once a trigger has started him.
+  // S1.5 boss registry and lifecycle (boss-slots.mjs); liquidatorBoss is the
+  // boss a trigger started (activeBoss): the Liquidator, or with bossesV2 the
+  // Rug Pull Baron. Its bossId picks the kit (stepBoss, applyBossDamage ...).
   let bossSlots = null;
   let bossHitVisualUntilTick = -1;
   let bossDeathVisualUntilTick = -1;
   let lastBossStep = null;
+  // S3.1: this tick's hero slide (a Rug Yank) was stopped by a wall or crate.
+  let playerDriftBlocked = false;
   let lastEnemyStep = null;
   let catchUpSaturationFrames = 0;
   let lastBossRoleCheck = null;
@@ -1588,8 +1611,8 @@ async function boot() {
   // or broken cover): collision drops it and the navgrid is patched locally.
   // A live boss floor's closed locks join the world's blockers (S1.5).
   const bossLockBlockers = () => {
-    const closed = bossSlots?.slots.liquidator.closedWalls;
-    return closed?.length ? BOSS_LOCK_BLOCKERS.filter((wall) => closed.includes(wall.id)) : [];
+    const closed = bossClosedWallIds(bossSlots);
+    return closed.length ? BOSS_LOCK_BLOCKERS.filter((wall) => closed.includes(wall.id)) : [];
   };
   const rebuildWorldBlockers = () => {
     const base = missionActiveBlockers(missionState, LEVEL_ONE_WORLD.collisionBlockers);
@@ -1613,7 +1636,13 @@ async function boot() {
     enemyFlowField = null;
   };
   // The Yard's liquidation grid goes quiet once the Liquidator falls.
-  const activeWorldHazards = () => (bossSlots?.slots.liquidator.status === 'defeated' ? PACIFIED_HAZARDS : LEVEL_ONE_WORLD.interactions.hazards);
+  // S3.1: while the Baron lives his rigged charges drop the Ravine rockfall
+  // every 240 ticks instead of 300 (bossesV2 only).
+  const activeWorldHazards = () => {
+    const hazards = bossSlots?.slots.liquidator.status === 'defeated' ? PACIFIED_HAZARDS : LEVEL_ONE_WORLD.interactions.hazards;
+    const baron = bossSlots?.slots['rug-pull-baron'];
+    return baron && baron.status !== 'defeated' ? baronRiggedHazards(hazards) : hazards;
+  };
   let worldDestructibleState=createWorldDestructibleState();
   let worldPacingState=createWorldDesignPacing();
   let collectibleSnapshot = null;
@@ -2035,7 +2064,7 @@ async function boot() {
       // either floor (2,300 of the plaza's centre covers the Dark Pool, about
       // 800 beyond it). Projection only.
       const liquidatorSlot = bossSlots?.slots.liquidator;
-      if (liquidatorBoss || (liquidatorSlot && liquidatorSlot.status !== 'defeated' && bossVisualTick >= liquidatorSlot.readyAt - 600
+      if (liquidatorBoss?.bossId === 'liquidator' || (liquidatorSlot && liquidatorSlot.status !== 'defeated' && bossVisualTick >= liquidatorSlot.readyAt - 600
         && Math.hypot(actor.x - 11_000, actor.y - 2_400) <= 2_300)) requestEnemyRosterAtlas('the-liquidator');
       // The closed locks: LED shutters along the floor's edge (projection).
       for (const wall of bossLockBlockers()) {
@@ -2045,7 +2074,18 @@ async function boot() {
           .moveTo(a.x, a.y).lineTo(b.x, b.y).stroke({ color: 0xff496c, width: 3, alpha: 0.85 });
         bossTelegraphPrimitiveCount += 1;
       }
+      // S3.1 (bossesV2): the Baron's carpet, pegs, mat and chevrons on the
+      // ground, and his greybox body, while the hero is near his floor.
+      const baronSlot = bossSlots?.slots['rug-pull-baron'];
+      const quarry = baronSlot ? baronSlot.arena ?? bossDefinition('rug-pull-baron').arenas['welcome-mat'] : null;
+      if (quarry && Math.hypot(actor.x - quarry.centre.x, actor.y - quarry.centre.y) <= 1_500) {
+        const report = renderBaronProxy({ ground: bossTelegraphs, body: baronProxyVisual, slot: baronSlot, arena: quarry, mat: quarry.mat,
+          tick: bossVisualTick, camera, view, worldToScreen, deathUntil: bossDeathVisualUntilTick });
+        if (report.bodyVisible) baronProxyVisual.zIndex = worldDepthKey(baronSlot.boss.y);
+        bossTelegraphPrimitiveCount += report.primitives;
+      } else baronProxyVisual.visible = false;
     if (liquidatorBoss && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
+      if (liquidatorBoss.bossId === 'liquidator') {
         const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
         // A Trading Halt swells him for 45 ticks (projection only).
         const bossHaltBeat = liquidatorBoss.haltFrom >= 0 ? Math.max(0, 45 - (bossVisualTick - liquidatorBoss.haltFrom)) / 250 : 0;
@@ -2070,6 +2110,7 @@ async function boot() {
             alpha: CONTACT_SHADOW_BASE_ALPHA * bossVisual.alpha,
           });
         }
+      }
         const projectBossTelegraph = (point) => worldToScreen(point, camera, view);
         for (const pending of liquidatorBoss.pendingAttacks) {
           const telegraphReport = renderLiquidatorTelegraph({
@@ -3184,6 +3225,8 @@ async function boot() {
     stopCurrentSession();
     combatAudio.pause();
     evidenceGameplayEnabled = evidenceSafeEnabled && payload.mode !== 'ranked';
+    bossesV2Enabled = bossesV2Requested && payload.mode !== 'ranked';
+    dataset.bossesV2 = bossesV2Enabled ? '1' : '0';
     runtimePlayerSpawn = evidenceGameplayEnabled ? evidencePlayerSpawn : selectLevelEntry(payload.session.seed);
     revealState = createLevelOneRevealState();
     revealLevelOneAt(revealState, runtimePlayerSpawn);
@@ -3201,10 +3244,10 @@ async function boot() {
     dataset.startupArt = 'loading';
     for(const gateId of missionState.openGates) refreshWorldDesignGateNavigation(navGrid,LEVEL_ONE_WORLD,queryGround,gateId,LEVEL_ONE_WORLD.collisionBlockers);
     // A restart reopens the previous run's boss locks in the navgrid (S1.5).
-    for(const wallId of bossSlots?.slots.liquidator.closedWalls??[]) refreshWorldDesignGateNavigation(navGrid,BOSS_LOCK_WORLD,queryGround,wallId,LEVEL_ONE_WORLD.collisionBlockers);
+    for(const wallId of bossClosedWallIds(bossSlots)) refreshWorldDesignGateNavigation(navGrid,BOSS_LOCK_WORLD,queryGround,wallId,LEVEL_ONE_WORLD.collisionBlockers);
     WORLD_BLOCKERS=LEVEL_ONE_WORLD.collisionBlockers;
-    missionState=createMissionState(payload.session.seed);
-    bossSlots=createBossSlots({ seed: payload.session.seed });
+    missionState=createMissionState(payload.session.seed, { bossesV2: bossesV2Enabled });
+    bossSlots=createBossSlots({ seed: payload.session.seed, bossesV2: bossesV2Enabled });
     worldDestructibleState=createWorldDestructibleState();
     worldPacingState=createWorldDesignPacing();
     // The flow field is per-run simulation state: a restart resets the tick
@@ -3503,6 +3546,7 @@ async function boot() {
       },
     });
     simulation.onStep(({ tick, dtSeconds, input: tickInput }) => {
+      playerDriftBlocked = false;
       lastInputWeaponSlot = tickInput.weaponSlot;
       previousActor = createActorSpatialState({ ...actor });
       for (const enemy of grayboxEnemies) {
@@ -3518,7 +3562,7 @@ async function boot() {
         tick,
         actor: motion,
         input: tickInput,
-        targets: isLiquidatorTargetable(liquidatorBoss, tick)
+        targets: isBossTargetable(liquidatorBoss, tick)
           ? [...grayboxEnemies, liquidatorBoss]
           : grayboxEnemies,
         device: tickInput.aimDevice ?? (tickInput.aimAssist ? 'gamepad' : 'pointer'),
@@ -3663,7 +3707,7 @@ async function boot() {
         // The boss pushes the hero out to his separation radius (84 between
         // centres), at most 4 units a tick; the swept collision below keeps
         // the push wall-safe (package 4.3 "Body").
-        const pressureEnemies = liquidatorBoss?.active
+        const pressureEnemies = liquidatorBoss?.active && !liquidatorBoss.vanished
           ? [...grayboxEnemies, { id: liquidatorBoss.id, kind: 'boss', x: liquidatorBoss.x, y: liquidatorBoss.y, radius: liquidatorBoss.body.playerSeparationRadius - 24 }]
           : grayboxEnemies;
         const pressure = resolveEnemyPressure({
@@ -3673,7 +3717,7 @@ async function boot() {
           velocity: { x: motion.vx, y: motion.vy },
         }, pressureEnemies);
         const pushLength = Math.hypot(pressure.playerDelta.x, pressure.playerDelta.y);
-        const pushScale = liquidatorBoss?.active && pushLength > liquidatorBoss.body.maxPressureStep ? liquidatorBoss.body.maxPressureStep / pushLength : 1;
+        const pushScale = liquidatorBoss?.active && !liquidatorBoss.vanished && pushLength > liquidatorBoss.body.maxPressureStep ? liquidatorBoss.body.maxPressureStep / pushLength : 1;
         motion.x += pressure.playerDelta.x * pushScale;
         motion.y += pressure.playerDelta.y * pushScale;
         const pressureSpeed = Math.hypot(motion.vx, motion.vy);
@@ -3687,6 +3731,14 @@ async function boot() {
         // wall-safe and the traversal pass still refuses deep water.
         motion.x += playerHazardField.drift.x * dtSeconds;
         motion.y += playerHazardField.drift.y * dtSeconds;
+        // S3.1: a Rug Yank's drift (units a tick) folds in the same way, so a
+        // slide stays wall-safe; a slide stopped by a wall, a lock or a crate
+        // is the Baron's rug burn (his step reads it this tick).
+        const bossDrift = bossDriftAt(liquidatorBoss, movementStart, tick);
+        if (bossDrift) {
+          motion.x += bossDrift.x;
+          motion.y += bossDrift.y;
+        }
         lastCollision = resolveSweptCircleMotion({
           body: playerBody,
           start: movementStart,
@@ -3695,6 +3747,7 @@ async function boot() {
           bounds: WORLD_BOUNDS,
           priorZeroDisplacementFrames: zeroDisplacementFrames,
         });
+        playerDriftBlocked = Boolean(bossDrift) && Math.hypot(lastCollision.position.x - motion.x, lastCollision.position.y - motion.y) > 1;
         motion.x = lastCollision.position.x;
         motion.y = lastCollision.position.y;
         lastTraversal = resolveSweptTraversalPath({
@@ -3836,18 +3889,21 @@ async function boot() {
         level: runProgression.level,
         enemies: grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0),
       });
-      liquidatorBoss = bossSlots.slots.liquidator.boss;
+      liquidatorBoss = activeBoss(bossSlots);
       if (bossFrame.closed.length || bossFrame.opened.length) refreshBossLockNavigation([...bossFrame.closed, ...bossFrame.opened]);
       let bossRecycled = false;
       for (const enemyId of bossFrame.recycle) bossRecycled = retireEnemyFromPopulation(enemyPopulation, enemyId, { tick, reason: 'boss-lock' }).retired || bossRecycled;
       if (bossRecycled) syncEnemyMarkers(grayboxEnemies);
       for (const event of bossFrame.events) {
         // Owner audio ruling: boss starts, locks and tells are silent.
-        if (event.type === 'boss-initiated') {
+        const bossName = bossDefinition(event.bossId)?.name ?? 'The boss';
+        if (event.type === 'boss-initiated' && event.bossId === 'rug-pull-baron') {
+          setAccessibleCombatStatus('Boulders roll across the mouths. The Rug Pull Baron climbs out from under his carpet.');
+        } else if (event.type === 'boss-initiated') {
           requestEnemyRosterAtlas('the-liquidator');
           setAccessibleCombatStatus(event.trigger === 'dark-pool' ? 'The Liquidator looks up from his ledgers. The door seals behind you.' : 'The Closing Bell rings. The Liquidator is coming down.');
         } else if (event.type === 'boss-withdrawn') {
-          setAccessibleCombatStatus(event.reason === 'retreat' ? 'You slip out. The Liquidator withdraws to recover.' : 'You left the floor. The Liquidator withdraws.');
+          setAccessibleCombatStatus(event.reason === 'retreat' ? `You slip out. ${bossName} withdraws to recover.` : `You left the floor. ${bossName} withdraws.`);
         }
       }
 
@@ -3889,18 +3945,19 @@ async function boot() {
         ? grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0 && insideBossArena(liquidatorBoss.arena, enemy)).length
         : 0;
       lastBossStep = liquidatorBoss?.active
-        ? stepLiquidatorBoss({
+        ? stepBoss({
           boss: liquidatorBoss,
           tick,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ, vx: actor.vx, vy: actor.vy },
           blockers: bossLockBlockers(),
           addsAlive: bossAddsAlive,
+          playerDriftBlocked,
         })
         : null;
       const resolvedBossAttack = lastBossStep?.events.find((event) => event.type === 'attack') ?? null;
       if (resolvedBossAttack) lastBossResolvedAttack = { attackId: resolvedBossAttack.attackId, tick };
       // Kneel, stagger and Insider Trading (telemetry; the boss applies them).
-      lastBossPunishWindow = liquidatorBoss ? getLiquidatorVulnerability(liquidatorBoss, tick) : null;
+      lastBossPunishWindow = liquidatorBoss ? bossVulnerability(liquidatorBoss, tick) : null;
 
       const openingMovementAllowed = !rosterPreviewEnabled && openingEnemyMovementEnabled(tick);
       if (endurancePressurePilotEnabled || openingMovementAllowed) {
@@ -3921,7 +3978,13 @@ async function boot() {
           navigation: enemyNavigation,
           fullAiCap: runtimeEncounterSnapshot(tick).fullAiCap,
           // Spore beds and conveyors act on enemies through the same field the hero uses.
-          fieldAt: (x, y, ground) => worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ }),
+          fieldAt: (x, y, ground) => {
+            const field = worldHazardField(LEVEL_ONE_WORLD.interactions.hazards, { x, y, groundZ: ground.groundZ });
+            // S3.1: a Rug Yank carries everything on the carpet (units a tick
+            // into the field's units a second).
+            const drift = bossDriftAt(liquidatorBoss, { x, y }, tick);
+            return drift ? { speed: field.speed, drift: { x: field.drift.x + drift.x / dtSeconds, y: field.drift.y + drift.y / dtSeconds } } : field;
+          },
         });
       } else {
         lastEnemyStep = Object.freeze({ decisions: 0, safetySteps: 0, routeReplans: 0, stuckRecoveries: 0, hazardAvoiding: 0, formationAdjusted: 0 });
@@ -3955,7 +4018,7 @@ async function boot() {
       }
       // He is untargetable during the bell intro (package 4.1); his body and
       // hurt shapes come from boss state (collision r56, hurt r48, z 4-96).
-      const bossTargetable = isLiquidatorTargetable(liquidatorBoss, tick);
+      const bossTargetable = isBossTargetable(liquidatorBoss, tick);
       const bossPreviousGround = { x: liquidatorBoss?.previousX ?? liquidatorBoss?.x, y: liquidatorBoss?.previousY ?? liquidatorBoss?.y, z: liquidatorBoss?.groundZ };
       if (bossTargetable) hurtTargets.push(createHurtTarget({
         id: liquidatorBoss.id,
@@ -3997,7 +4060,7 @@ async function boot() {
         pushCombatVisualEvent({type:'blast',...blast,mode:'launcher'});
         if(Math.hypot(actor.x-blast.point.x,actor.y-blast.point.y)<700){combatAudio.play('grenade-boom',{volume:.14});triggerCameraShake(tick,5);}
       }
-      const silverCollected=stepSilverDrops(silverDropState,{tick,player:actor,canReach:p=>Math.abs(queryGround(p.x,p.y).groundZ-actor.groundZ)<=8 && traceHeightAwareLineOfSight({from:{x:actor.x,y:actor.y,z:actor.groundZ+8},to:{x:p.x,y:p.y,z:queryGround(p.x,p.y).groundZ+8},blockers:WORLD_BLOCKERS}).clear});
+      const silverCollected=stepSilverDrops(silverDropState,{tick,player:actor,canReach:p=>Math.abs(queryGround(p.x,p.y).groundZ-actor.groundZ)<=8 && traceHeightAwareLineOfSight({from:{x:actor.x,y:actor.y,z:actor.groundZ+8},to:{x:p.x,y:p.y,z:queryGround(p.x,p.y).groundZ+8},blockers:WORLD_BLOCKERS}).clear,...(bossSlots.perks.has('barons-signet')?BARONS_SIGNET_SILVER:{})});
       if(silverCollected>0){
         combatAudio.play('silver-collect',{volume:.10});
         // Owner decision 2026-09-16: silver coins count toward the run score.
@@ -4680,9 +4743,21 @@ async function boot() {
         // silent; the caption setting still names them.
         if (event.type === 'tell' || event.type === 'halt') {
           if (settings.captionCriticalAudio) {
-            const warning = event.type === 'halt' ? `trading halt, ${event.phaseId.replaceAll('-', ' ')}` : event.tier === 'super' ? 'super attack' : event.attackId.replaceAll('-', ' ');
-            setAccessibleCombatStatus(`Liquidator: ${warning}.`);
+            const baron = liquidatorBoss.bossId === 'rug-pull-baron';
+            const halt = baron ? `the carpet changes, ${event.phaseId.replaceAll('-', ' ')}` : `trading halt, ${event.phaseId.replaceAll('-', ' ')}`;
+            const warning = event.type === 'halt' ? halt : event.tier === 'super' ? 'super attack' : event.attackId.replaceAll('-', ' ');
+            setAccessibleCombatStatus(`${baron ? 'Baron' : 'Liquidator'}: ${warning}.`);
           }
+          continue;
+        }
+        // S3.1: a Rug Yank knocks down the adds on the carpet for 60 ticks
+        // (its drift is read from the boss by the movement steps).
+        if (event.type === 'knockdown') {
+          for (const enemy of baronKnockDownTargets(event, grayboxEnemies)) knockDownEnemy(enemy, { tick, ticks: event.untilTick - tick });
+          continue;
+        }
+        if (event.type === 'coin' && settings.captionCriticalAudio) {
+          setAccessibleCombatStatus(event.face === 'red' ? 'Baron: red coin, double pull.' : 'Baron: green coin, he fumbles.');
           continue;
         }
         if (event.type === 'add-wave') {
@@ -4690,7 +4765,7 @@ async function boot() {
           // draws from the director's capacity bank (contract 5.3). An add the
           // population refuses returns its allowance.
           const adds = insertBossAdds(bossSlots, {
-            bossId: 'liquidator', event, tick, population: enemyPopulation, alive: bossAddsAlive,
+            bossId: liquidatorBoss.bossId, event, tick, population: enemyPopulation, alive: bossAddsAlive,
             directorInserted: encounterDirector.insertedCount,
             place: (candidate) => {
               const ground = queryGround(candidate.x, candidate.y);
@@ -4701,7 +4776,8 @@ async function boot() {
           continue;
         }
         if (event.type !== 'attack') continue;
-        const resolved = resolveLiquidatorAttack({
+        const resolved = resolveBossAttack({
+          boss: liquidatorBoss,
           event,
           player: { x: actor.x, y: actor.y, groundZ: actor.groundZ },
           blockers: WORLD_BLOCKERS,
@@ -4759,7 +4835,7 @@ async function boot() {
         // the first tick it held.
         level: runProgression.level,
         // v7 S7: the Liquidator's first initiation, the tick his trigger fires.
-        bossEngaged: Boolean(liquidatorBoss?.active),
+        bossEngaged: Boolean(liquidatorBoss?.active) && liquidatorBoss.bossId === 'liquidator',
       });
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
@@ -4801,8 +4877,10 @@ async function boot() {
               ? 'add'
               : null;
           // Role checks scale player weapons only; a capped hazard hit must
-          // land exactly as capped.
+          // land exactly as capped. They are the Liquidator's weak points; the
+          // Baron takes none (his adds keep the Arc Rifle's chain bonus).
           if (!targetKind || WORLD_ENVIRONMENT_WEAPON_IDS.has(hit.weaponId)) return hit;
+          if (targetKind === 'boss' && liquidatorBoss.bossId !== 'liquidator') return hit;
           const roleCheck = getLiquidatorRoleCheck({
             weaponId: hit.weaponId,
             distance: targetKind === 'boss' ? Math.hypot(actor.x - liquidatorBoss.x, actor.y - liquidatorBoss.y) : 0,
@@ -4865,7 +4943,7 @@ async function boot() {
           if (bossHit) {
             const healthBefore = liquidatorBoss.health;
             const roleCheck = roleChecksByHitId.get(damageEvent.hitId) ?? Object.freeze({ roleId: null, multiplier: 1, applied: false });
-            bossDamage = applyLiquidatorDamage({
+            bossDamage = applyBossDamage({
               boss: liquidatorBoss,
               amount: damageEvent.damageApplied,
               tick,
@@ -4925,21 +5003,30 @@ async function boot() {
             // place of the 1.8.1 ten coins, 1,040 XP through the kill, the
             // Yard pacified with a grace, and the Golden Parachute for a Dark
             // Pool win. kills.boss counts the Liquidator only.
-            const rewards = defeatBossSlot(bossSlots, { bossId: 'liquidator', tick });
+            const rewards = defeatBossSlot(bossSlots, { bossId: liquidatorBoss.bossId, tick });
             refreshBossLockNavigation(rewards.opened);
-            collectibleState.unlockedObjectives.add(rewards.unlockObjective);
-            addSilverDrop(silverDropState, { sequence: runKills + 1, tick, x: liquidatorBoss.x, y: liquidatorBoss.y, value: rewards.silverBurst });
-            if (playerHealth > 0) {
+            if (rewards.unlockObjective) collectibleState.unlockedObjectives.add(rewards.unlockObjective);
+            // Drop sequences stay strictly increasing: the Baron's burst is not
+            // a summary kill (below), so the next kill's drop numbers past it.
+            addSilverDrop(silverDropState, { sequence: Math.max(runKills + 1, silverDropState.lastSequence + 1), tick, x: liquidatorBoss.x, y: liquidatorBoss.y, value: rewards.silverBurst });
+            if (rewards.fullHeal && playerHealth > 0) {
               const healedFrom = playerHealth;
               playerHealth = maxPlayerHealth;
               recordRunHealing(runSummaryAccumulator, playerHealth - healedFrom);
             }
-            rechargeHandGrenades(grenadeSystem, { tick, amount: grenadeSystem.maxHandCharges });
-            recordRunKill(runSummaryAccumulator, { enemyRoleId: 'liquidator', weaponId: damageEvent.weaponId, boss: true });
-            runKills += 1;
+            if (rewards.grenadesToMax) rechargeHandGrenades(grenadeSystem, { tick, amount: grenadeSystem.maxHandCharges });
+            // kills.boss counts the Liquidator only (contract D2). A district
+            // boss's kill has no role in the schema-6 summary this child still
+            // emits, so the dark Baron's kill is counted by the v7 emission
+            // slice (his bosses row already holds it); runKills stays equal
+            // to the summary's kills.
+            if (rewards.roleId === 'liquidator') {
+              recordRunKill(runSummaryAccumulator, { enemyRoleId: 'liquidator', weaponId: damageEvent.weaponId, boss: true });
+              runKills += 1;
+            }
             const bossSnapshot = awardComboXp(recordRunDefeat(runProgression, {
               enemyId: liquidatorBoss.id,
-              threatCost: LIQUIDATOR_THREAT_COST,
+              threatCost: rewards.roleId === 'liquidator' ? LIQUIDATOR_THREAT_COST : rewards.threat,
               tick,
             }), tick, { bossDefeated: true });
             cockpit?.updateRun(bossSnapshot);
@@ -4948,7 +5035,8 @@ async function boot() {
             pushCombatVisualEvent({ type: 'kill', tick, point: { x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ + 24 }, color: 0xff6b5c });
             bossDeathVisualUntilTick = tick + 45;
             triggerCameraShake(tick, 12);
-            setAccessibleCombatStatus(rewards.goldenParachute ? 'The Liquidator is liquidated. A Golden Parachute is yours.' : 'The Liquidator is liquidated. His vault is open.');
+            setAccessibleCombatStatus(rewards.roleId === 'rug-pull-baron' ? "The Baron is rolled up in his own carpet. Baron's Signet and a Genesis Seal are yours."
+              : rewards.goldenParachute ? 'The Liquidator is liquidated. A Golden Parachute is yours.' : 'The Liquidator is liquidated. His vault is open.');
             if (bridge?.initialized) {
               bridge.send('game:run-event', {
                 tick,
@@ -5036,7 +5124,7 @@ async function boot() {
           creditWeaponKills(weaponLoadout, { tick, weaponId: scoreEvent.weaponId, count: 1, progressionByWeapon });
           queueEnemyDeathVisual(defeatedEnemy, tick, { dismember: killDismembers(scoreEvent.weaponId), direction: { x: defeatedEnemy.x - actor.x, y: defeatedEnemy.y - actor.y } });
           runKills += 1;
-          addSilverDrop(silverDropState,{sequence:runKills,tick,x:defeatedEnemy.x,y:defeatedEnemy.y});
+          addSilverDrop(silverDropState,{sequence:Math.max(runKills,silverDropState.lastSequence+1),tick,x:defeatedEnemy.x,y:defeatedEnemy.y});
           const progressionSnapshot = awardComboXp(recordRunDefeat(runProgression, {
             enemyId: defeatedEnemy.id,
             threatCost: ENEMY_ARCHETYPES[defeatedEnemy.archetypeId].costs.threat,

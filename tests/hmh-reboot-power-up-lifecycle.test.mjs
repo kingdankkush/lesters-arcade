@@ -400,6 +400,7 @@ test('runtime keeps collectibles inside fixed-tick authority and routes nuke hit
   const main = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(main, /simulation\.onStep[\s\S]*stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)/);
   assert.match(main, /event\.kind === 'nuke'[\s\S]*combatHitIntents\.push/);
-  assert.match(main, /resolveCombatHits\([\s\S]*applyLiquidatorDamage/);
+  // S3.1: boss damage goes through the live boss's kit (applyBossDamage).
+  assert.match(main, /resolveCombatHits\([\s\S]*applyBossDamage/);
   assert.doesNotMatch(main, /event\.kind === 'nuke'[\s\S]{0,900}liquidatorBoss\.health\s*=/);
 });

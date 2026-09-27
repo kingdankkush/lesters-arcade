@@ -408,10 +408,13 @@ test('every tell renders visible primitives: filled danger, green safe circles, 
 
 test('runtime routes boss starts, strikes and damage through the kit and canonical combat', () => {
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /createLiquidatorBoss/);
-  assert.match(source, /stepLiquidatorBoss\(\{/);
-  assert.match(source, /resolveLiquidatorAttack\(\{[\s\S]*?blockers:\s*WORLD_BLOCKERS/);
-  assert.match(source, /applyLiquidatorDamage\(\{[\s\S]*?roleMultiplier/);
+  // S3.1: main reaches the live boss's kit through the registry (stepBoss,
+  // resolveBossAttack, applyBossDamage); the Liquidator's kit is his own.
+  const slotsSource = readFileSync(new URL('../apps/hmh-reboot/src/boss-slots.mjs', import.meta.url), 'utf8');
+  assert.match(slotsSource, /liquidator: Object\.freeze\(\{\s*create: createLiquidatorBoss,\s*step: stepLiquidatorBoss,\s*applyDamage: applyLiquidatorDamage,\s*targetable: isLiquidatorTargetable,\s*vulnerability: getLiquidatorVulnerability,\s*resolve: resolveLiquidatorAttack,/);
+  assert.match(source, /stepBoss\(\{/);
+  assert.match(source, /resolveBossAttack\(\{[\s\S]*?blockers:\s*WORLD_BLOCKERS/);
+  assert.match(source, /applyBossDamage\(\{[\s\S]*?roleMultiplier/);
   assert.match(source, /getLiquidatorRoleCheck/);
   assert.match(source, /roleChecksByHitId/);
   // Boss hits reach his authority unscaled (he applies and caps role x window
@@ -419,7 +422,7 @@ test('runtime routes boss starts, strikes and damage through the kit and canonic
   assert.match(source, /return targetKind === 'boss' \? hit : \{ \.\.\.hit, damage: hit\.damage \* roleCheck\.multiplier \};/);
   assert.doesNotMatch(source, /punishMultiplier/);
   assert.doesNotMatch(source, /72_000/, 'the 72,000-tick timer is gone');
-  assert.ok(source.indexOf('lastCombatResolution = resolveCombatHits') < source.indexOf('bossDamage = applyLiquidatorDamage('));
+  assert.ok(source.indexOf('lastCombatResolution = resolveCombatHits') < source.indexOf('bossDamage = applyBossDamage('));
   assert.ok(source.indexOf('stepMissionObjectives(missionState') < source.indexOf('stepBossSlots(bossSlots'), 'the mission step records the logbook before a boss starts');
   assert.ok(source.indexOf('stepBossSlots(bossSlots') < source.indexOf('lastBossStep = liquidatorBoss'));
   assert.match(source, /eventType:\s*'boss-defeated'/);

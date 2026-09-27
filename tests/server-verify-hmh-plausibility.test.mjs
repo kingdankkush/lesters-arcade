@@ -128,13 +128,19 @@ test('constants copied from the reboot main module match its source', () => {
   // Boss kill: 1.8.1 dropped 10 coins (v6, frozen); S1.5 drops the v7 silver
   // burst instead, never both (contract 3.3). Enemy kill: the default value.
   assert.equal(SILVER_PER_BOSS_KILL, 10);
-  assert.match(MAIN_SOURCE, /addSilverDrop\(silverDropState, \{ sequence: runKills \+ 1, tick, x: liquidatorBoss\.x, y: liquidatorBoss\.y, value: rewards\.silverBurst \}\)/);
-  assert.match(MAIN_SOURCE, /addSilverDrop\(silverDropState,\{sequence:runKills,tick,x:defeatedEnemy\.x,y:defeatedEnemy\.y\}\)/);
+  // S3.1 (bossesV2): the dark Baron's burst is not a summary kill, so drop
+  // sequences take the larger of the kill count and the last sequence + 1.
+  // With no Baron the two are equal (every drop is a kill's), so the 1.8.x
+  // sequences are unchanged.
+  assert.match(MAIN_SOURCE, /addSilverDrop\(silverDropState, \{ sequence: Math\.max\(runKills \+ 1, silverDropState\.lastSequence \+ 1\), tick, x: liquidatorBoss\.x, y: liquidatorBoss\.y, value: rewards\.silverBurst \}\)/);
+  assert.match(MAIN_SOURCE, /addSilverDrop\(silverDropState,\{sequence:Math\.max\(runKills,silverDropState\.lastSequence\+1\),tick,x:defeatedEnemy\.x,y:defeatedEnemy\.y\}\)/);
   const drops = createSilverDropState();
   addSilverDrop(drops, { sequence: 1, tick: 0, x: 0, y: 0 });
   assert.equal(drops.dropped, SILVER_PER_ENEMY_KILL);
   // Kill XP and score go through recordRunDefeat with the archetype (or boss) threat.
-  assert.match(MAIN_SOURCE, /threatCost: LIQUIDATOR_THREAT_COST,/);
+  // S3.1: the Liquidator's threat stays the literal 48; the dark Baron's is
+  // his definition's (24).
+  assert.match(MAIN_SOURCE, /threatCost: rewards\.roleId === 'liquidator' \? LIQUIDATOR_THREAT_COST : rewards\.threat,/);
   assert.match(MAIN_SOURCE, /threatCost: ENEMY_ARCHETYPES\[defeatedEnemy\.archetypeId\]\.costs\.threat,/);
   // The summary's elapsedMs is the fixed-step simulation time of its end tick.
   assert.match(MAIN_SOURCE, /endTick: simulation\.tick,\s*elapsedMs: simulation\.timeMs,/);
@@ -600,7 +606,11 @@ test('the v6 consistency literals equal the 1.8.x child', () => {
   // unlocks the vault through the slot's defeat rewards, whose objective is the
   // same 'liquidator-defeated'. The facts the v6 rules rest on are unchanged.
   assert.match(MAIN_SOURCE, /recordRunMilestone\(runSummaryAccumulator, \{ type: 'site-operated', id: event\.objectiveId, tick \}\);\s*collectibleState\.unlockedObjectives\.add\(event\.objectiveId\);/);
-  assert.match(MAIN_SOURCE, /const rewards = defeatBossSlot\(bossSlots, \{ bossId: 'liquidator', tick \}\);\s*refreshBossLockNavigation\(rewards\.opened\);\s*collectibleState\.unlockedObjectives\.add\(rewards\.unlockObjective\);[\s\S]{0,700}?recordRunKill\(runSummaryAccumulator, \{ enemyRoleId: 'liquidator', weaponId: damageEvent\.weaponId, boss: true \}\);/);
+  // S3.1: the defeat branch serves the live boss (bossesV2 adds the Baron,
+  // whose definition unlocks nothing); the Liquidator's defeat still unlocks
+  // 'liquidator-defeated' and records his kill.
+  assert.match(MAIN_SOURCE, /const rewards = defeatBossSlot\(bossSlots, \{ bossId: liquidatorBoss\.bossId, tick \}\);\s*refreshBossLockNavigation\(rewards\.opened\);\s*if \(rewards\.unlockObjective\) collectibleState\.unlockedObjectives\.add\(rewards\.unlockObjective\);[\s\S]{0,1400}?if \(rewards\.roleId === 'liquidator'\) \{\s*recordRunKill\(runSummaryAccumulator, \{ enemyRoleId: 'liquidator', weaponId: damageEvent\.weaponId, boss: true \}\);/);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/boss-slots.mjs', import.meta.url), 'utf8'), /unlockObjective: null,\s*\/\/ 4\.4 rewards/);
   assert.match(readFileSync(new URL('../apps/hmh-reboot/src/boss-slots.mjs', import.meta.url), 'utf8'), /unlockObjective: 'liquidator-defeated',/);
   assert.equal(MAIN_SOURCE.match(/unlockedObjectives\.add\(/g).length, 2);
   // stepCollectibles never collects before the simulation's first tick.
@@ -793,7 +803,7 @@ test('the second-round consistency literals and the accumulator facts they rest 
   assert.ok(MAIN_SOURCE.includes('const updateRunCombo = (nextCombo, { bossDefeated = false, silent = false } = {}) => {'));
   assert.deepEqual(MAIN_SOURCE.match(/updateRunCombo\([^)]*\)/g), ['updateRunCombo(runCombo + 1, { bossDefeated })', 'updateRunCombo(0)']);
   assert.equal(MAIN_SOURCE.match(/awardComboXp\(recordRunDefeat\(/g).length, 2);
-  assert.match(MAIN_SOURCE, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: 'liquidator',[^}]*\}\);\s*runKills \+= 1;\s*const bossSnapshot = awardComboXp\(/);
+  assert.match(MAIN_SOURCE, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: 'liquidator',[^}]*\}\);\s*runKills \+= 1;\s*\}\s*const bossSnapshot = awardComboXp\(/);
   assert.match(MAIN_SOURCE, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: defeatedEnemy\.archetypeId,[^}]*\}\);[\s\S]{0,700}?const progressionSnapshot = awardComboXp\(/);
   assert.equal(MAIN_SOURCE.match(/maxRunCombo = Math\.max\(/g).length, 1);
   assert.ok(MAIN_SOURCE.includes('maxCombo: maxRunCombo,'));

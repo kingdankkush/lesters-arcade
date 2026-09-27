@@ -475,16 +475,18 @@ export function runUpgradeRows(state, upgradeIds = Object.keys(RUN_UPGRADE_CATAL
   })));
 }
 
-// The v7 progression row. Evolutions and Genesis Seals arrive with S1.7; the
-// Golden Parachute count comes from the boss slots.
-export function runProgressionRow(state, { revivesUsed = 0 } = {}) {
+// The v7 progression row. Evolutions arrive with S1.7; the Golden Parachute
+// count and the Genesis Seals found (one per defeated boss that drops one,
+// banked until the evolution panel exists) come from the boss slots.
+export function runProgressionRow(state, { revivesUsed = 0, sealsFound = 0 } = {}) {
   if (!Number.isInteger(revivesUsed) || revivesUsed < 0 || revivesUsed > 1) throw new TypeError('revivesUsed must be 0 or 1');
+  if (!Number.isInteger(sealsFound) || sealsFound < 0 || sealsFound > 4) throw new TypeError('sealsFound must be 0 to 4');
   return Object.freeze({
     offersOpened: state.offersOpened,
     evolutionOffersOpened: 0,
     rerolls: state.rerolls,
-    sealsFound: 0,
-    sealsBanked: 0,
+    sealsFound,
+    sealsBanked: sealsFound,
     evolutionsApplied: 0,
     revivesUsed,
   });

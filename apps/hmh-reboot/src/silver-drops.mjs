@@ -16,14 +16,18 @@ export function addSilverDrop(state,{sequence,tick,x,y,value=1}) {
   return true;
 }
 
-export function stepSilverDrops(state,{tick,player,canReach=()=>true}) {
+// Baron's Signet (package 4.4, S3.1 dark): pickup radius 62 -> 150 and coin
+// life 1,800 -> 3,600 for the rest of the run.
+export const SILVER_PICKUP_RADIUS=62;
+export const BARONS_SIGNET_SILVER=Object.freeze({pickupRadius:150,lifetimeTicks:3600});
+export function stepSilverDrops(state,{tick,player,canReach=()=>true,pickupRadius=SILVER_PICKUP_RADIUS,lifetimeTicks=SILVER_LIFETIME_TICKS}) {
   if(!Number.isSafeInteger(tick)||tick<0||tick<=state.lastTick)throw new TypeError('silver tick must be monotonic');
   if(![player?.x,player?.y].every(Number.isFinite))throw new TypeError('finite player required');
   state.lastTick=tick;let collected=0;
   for(const d of state.drops){
     if(!d.active)continue;
-    if(tick-d.tick>=SILVER_LIFETIME_TICKS){state.expired+=d.value;d.active=false;continue;}
-    if(Math.hypot(player.x-d.x,player.y-d.y)>62||!canReach(d))continue;
+    if(tick-d.tick>=lifetimeTicks){state.expired+=d.value;d.active=false;continue;}
+    if(Math.hypot(player.x-d.x,player.y-d.y)>pickupRadius||!canReach(d))continue;
     collected+=d.value;d.active=false;
   }
   state.collected+=collected;return collected;

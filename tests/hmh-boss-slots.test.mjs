@@ -41,7 +41,12 @@ const bellEvent = (tick) => ({ type: 'boss-zone', zoneId: BELL, bossId: 'liquida
 const step = (slots, tick, extra = {}) => stepBossSlots(slots, { tick, player: inPlaza, missionEvents: [], mission: mission(), level: 21, enemies: [], ...extra });
 
 test('the registry holds the Liquidator on the v7 contract; the three district bosses stay dark', () => {
-  assert.deepEqual(Object.keys(BOSS_DEFINITIONS), ['liquidator']);
+  // S3.1 adds the Rug Pull Baron to the definitions, dark: a slot for him
+  // exists only with bossesV2 (tests/hmh-baron-slots.test.mjs).
+  assert.deepEqual(Object.keys(BOSS_DEFINITIONS), ['liquidator', 'rug-pull-baron']);
+  assert.equal(BOSS_DEFINITIONS.liquidator.dark, false);
+  assert.equal(BOSS_DEFINITIONS['rug-pull-baron'].dark, true);
+  assert.deepEqual(Object.keys(createBossSlots({ seed: 5 }).slots), ['liquidator']);
   const liquidator = BOSS_DEFINITIONS.liquidator;
   assert.equal(liquidator.targetId, 'boss-liquidator');
   assert.equal(liquidator.roleId, 'liquidator');
@@ -294,7 +299,10 @@ test('before 10:00 the Dark Pool keeps only its secret; after a plaza win it kee
   assert.equal(boss.defeated, true);
   const rewards = defeatBossSlot(slots, { bossId: 'liquidator', tick: 36_832 });
   const { opened, ...grants } = rewards;
-  assert.deepEqual(grants, { bossId: 'liquidator', silverBurst: 25, unlockObjective: 'liquidator-defeated', fullHeal: true, grenadesToMax: true, goldenParachute: false, graceTicks: 1_800 });
+  assert.deepEqual(grants, {
+    bossId: 'liquidator', silverBurst: 25, unlockObjective: 'liquidator-defeated', fullHeal: true, grenadesToMax: true,
+    perk: null, genesisSeal: false, threat: 48, roleId: 'liquidator', goldenParachute: false, graceTicks: 1_800,
+  });
   assert.deepEqual(new Set(opened), new Set(LIQUIDATOR_MARGIN_FLOOR.walls.map((wall) => wall.id)), 'the gates open');
   assert.deepEqual(step(slots, 40_000, { player: deep, mission: mission(['warehouse-logbook']) }).events.filter((event) => event.type === 'boss-initiated'), []);
   assert.equal(bossZoneArming(slots, 40_000).status.get(BELL).status, 'defeated');

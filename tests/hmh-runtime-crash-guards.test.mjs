@@ -9,7 +9,10 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from 'acorn';
 import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
-import { LIQUIDATOR_BELL_INTRO_TICKS, createLiquidatorBoss, isLiquidatorTargetable } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+import { LIQUIDATOR_BELL_INTRO_TICKS, createLiquidatorBoss } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
+// S3.1: the gate main reads is the registry's isBossTargetable, which for the
+// Liquidator is his own isLiquidatorTargetable (boss-slots.mjs BOSS_KITS).
+import { isBossTargetable } from '../apps/hmh-reboot/src/boss-slots.mjs';
 import {
   createWeaponLoadout,
   grantWeaponPickup,
@@ -49,9 +52,9 @@ const bossCombatTargetStatement = (() => {
 // liveness gate, main.mjs's `bossTargetable`, which is the real
 // isLiquidatorTargetable (active, alive, and past the Closing Bell intro).
 // The gate is evaluated from main.mjs's own declarator, never re-typed here.
-assert.equal(declaratorInit('bossTargetable'), 'isLiquidatorTargetable(liquidatorBoss, tick)');
+assert.equal(declaratorInit('bossTargetable'), 'isBossTargetable(liquidatorBoss, tick)');
 function mainBossTargetable({ liquidatorBoss, tick }) {
-  return vm.runInNewContext(declaratorInit('bossTargetable'), { isLiquidatorTargetable, liquidatorBoss, tick });
+  return vm.runInNewContext(declaratorInit('bossTargetable'), { isBossTargetable, liquidatorBoss, tick });
 }
 function mainLightningTargets({ grayboxEnemies, liquidatorBoss, tick }) {
   const bossTargetable = mainBossTargetable({ liquidatorBoss, tick });
@@ -155,11 +158,11 @@ test('every list the Liquidator joins in main.mjs waits for its start tick', () 
   // A body list may follow an active boss (he pushes the hero during the bell
   // intro, when he is present but not yet a target); every weapon, hazard and
   // resolver list must read main.mjs's liveness gate: bossTargetable, or the
-  // real isLiquidatorTargetable it is declared from (the aim list resolves
+  // real isBossTargetable it is declared from (the aim list resolves
   // before the declarator and calls it directly).
   const gateFor = (node) => (node.type === 'ArrayExpression' && node.elements.some(bossBody)
     ? /\bliquidatorBoss\?\.active\b/
-    : /\bbossTargetable\b|\bisLiquidatorTargetable\(liquidatorBoss, tick\)/);
+    : /\bbossTargetable\b|\bisBossTargetable\(liquidatorBoss, tick\)/);
   const gated = (node) => {
     const gate = gateFor(node);
     for (let child = node, parent = parents.get(node); parent; child = parent, parent = parents.get(parent)) {

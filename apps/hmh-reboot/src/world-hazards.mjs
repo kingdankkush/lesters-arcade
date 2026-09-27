@@ -20,13 +20,16 @@ export const WORLD_ENVIRONMENT_WEAPON_IDS = new Set(['world-steam', 'world-rockf
 
 const HEIGHT_BAND = 8;
 
+// A hazard row may carry its own periodTicks (S3.1: the Ravine rockfall runs
+// at 240 while the Rug Pull Baron lives); the rule's period otherwise.
 export function worldHazardPhase(hazard, tick) {
   const rule = WORLD_HAZARD_RULES[hazard.kind];
   if (!rule?.periodTicks) return { phase: 'idle', progress: 0, cycle: 0 };
-  const cycle = Math.floor(tick / rule.periodTicks), phaseTick = tick % rule.periodTicks;
+  const periodTicks = hazard.periodTicks ?? rule.periodTicks;
+  const cycle = Math.floor(tick / periodTicks), phaseTick = tick % periodTicks;
   // Impact lands on the period boundary, never on the spawn tick itself.
-  if (phaseTick === 0 && tick >= rule.periodTicks) return { phase: 'impact', progress: 1, cycle };
-  const warnStart = rule.periodTicks - rule.warningTicks;
+  if (phaseTick === 0 && tick >= periodTicks) return { phase: 'impact', progress: 1, cycle };
+  const warnStart = periodTicks - rule.warningTicks;
   if (phaseTick >= warnStart) return { phase: 'warning', progress: (phaseTick - warnStart) / rule.warningTicks, cycle };
   return { phase: 'idle', progress: 0, cycle };
 }
