@@ -57,7 +57,11 @@ test('every manifest output exists with its recorded size, dimensions and hash',
 
 test('the pool covers every hero, uses 16:9 outputs and records no source PNG in the repository', () => {
   const pool = manifest.images.filter((image) => image.role === 'loading');
-  assert.equal(pool.length, 18, '15 Level-Load images plus HMH-Extra, HMH-Extra2 and HMH-Extra3');
+  assert.equal(pool.length, 17, '15 Level-Load images plus HMH-Extra, HMH-Extra2 and HMH-Extra3, less Level-Load-Extra-01');
+  // Owner rule (2026-09-27): no image that shows a Bitcoin logo joins the rotation. Level-Load-Extra-01's
+  // zombies wear glowing Bitcoin logos; every other pool image was read and shows none.
+  assert.deepEqual(manifest.excluded.map((entry) => entry.source), ['Level-Load-Extra-01.png']);
+  assert.ok(!manifest.images.some((image) => image.source === 'Level-Load-Extra-01.png'), 'the excluded source ships no derivative');
   for (const hero of HEROES) {
     const own = manifest.heroLoading[hero];
     assert.ok(pool.some((image) => image.id === own && image.heroes.length === 1 && image.heroes[0] === hero), hero);

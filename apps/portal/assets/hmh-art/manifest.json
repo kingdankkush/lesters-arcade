@@ -351,44 +351,6 @@
       ]
     },
     {
-      "id": "level-load-extra-01",
-      "source": "Level-Load-Extra-01.png",
-      "sourceSha256": "4e28b7646d0576b7e3b8ae86f62f915ff0745097403ab40a2b60e258ab71a795",
-      "role": "loading",
-      "heroes": [
-        "lester-original"
-      ],
-      "caption": "Lester",
-      "focal": [
-        0.28,
-        0.3
-      ],
-      "alt": "Lester in flooded vault ruins beside a Litecoin vault door",
-      "outputs": [
-        {
-          "path": "loading/level-load-extra-01-1280.webp",
-          "width": 1280,
-          "height": 720,
-          "bytes": 230900,
-          "sha256": "c2cf06a2e82f5574b06be07a71c9ac9598012b3a30cc4a1e2e1220bc0914e65a"
-        },
-        {
-          "path": "loading/level-load-extra-01-800.webp",
-          "width": 800,
-          "height": 450,
-          "bytes": 105886,
-          "sha256": "738766b98670b83d6726fde4b7bd1913b5172a93f3659a1b9a36cf82a543abcc"
-        },
-        {
-          "path": "loading/level-load-extra-01-480.webp",
-          "width": 480,
-          "height": 270,
-          "bytes": 42370,
-          "sha256": "3266f1607d841b18edb7b370c306bd2ede7ba91c8f251960969f584b2c607ca8"
-        }
-      ]
-    },
-    {
       "id": "level-load-extra-02",
       "source": "Level-Load-Extra-02.png",
       "sourceSha256": "d71d9e9ce8441a143e7dc148c82d146d63f8ce3e6e6ba30b7b6f60c2f6c581ac",
@@ -887,6 +849,12 @@
           "sha256": "4272a6dcc1324691c03aad71df19aadcf25356b8d8fa4bef9d6fea7ab003b900"
         }
       ]
+    }
+  ],
+  "excluded": [
+    {
+      "source": "Level-Load-Extra-01.png",
+      "reason": "zombies wear glowing Bitcoin logos (owner rule: no Bitcoin logo in the rotation)"
     }
   ],
   "og": {

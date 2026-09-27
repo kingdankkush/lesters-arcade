@@ -9,7 +9,7 @@ asset hygiene); this script writes only derivatives:
   apps/portal/assets/hmh-art/banners/<id>-{1600,960,640}.webp   homepage, backdrop, Free and Ranked banners
   apps/portal/assets/hmh-art/share/<id>-1600.webp               Free and Ranked share covers (sources of the
                                                                  og image and the E11/E12 card backgrounds)
-  apps/portal/assets/hmh-art/loading/<id>-{1280,800,480}.webp   Level 1 intro and loading rotation pool (18)
+  apps/portal/assets/hmh-art/loading/<id>-{1280,800,480}.webp   Level 1 intro and loading rotation pool (17)
   apps/portal/assets/hmh-art/og/hmh-free-share-1200x630.jpg     og:image and twitter:image of /games/hard-money-heroes
   apps/portal/assets/hmh-art/manifest.json                      per output: size, bytes, SHA-256; per source: SHA-256
   apps/portal/src/generated/hmh-banner-art.mjs                  the small banner table the portal bundle imports
@@ -86,8 +86,6 @@ IMAGES = (
      "Lit Commando on a burning town street beside a pickup truck"),
     ("Level-Load-LitValkyrie.png", "level-load-litvalkyrie", "loading", ("lit-valkyrie",), 0.60, 0.25,
      "Lit Valkyrie on an industrial catwalk lit by lanterns"),
-    ("Level-Load-Extra-01.png", "level-load-extra-01", "loading", ("lester-original",), 0.28, 0.30,
-     "Lester in flooded vault ruins beside a Litecoin vault door"),
     ("Level-Load-Extra-02.png", "level-load-extra-02", "loading", ("lilly",), 0.30, 0.25,
      "Lilly in a sunlit forest ravine as zombies close in"),
     ("Level-Load-Extra-03.png", "level-load-extra-03", "loading", ("lit-commando",), 0.62, 0.25,
@@ -115,6 +113,12 @@ IMAGES = (
     ("HMH-Extra3.png", "hmh-extra3", "loading", ("lester-original", "lilly"), 0.71, 0.28,
      "Lester and Lilly in a forest hung with Litecoin banners"),
 )
+
+# Owner decision 2026-09-27: no image that shows a Bitcoin logo joins the Level 1 rotation.
+# These sources stay in the vault (and the blog may use them) but ship no derivative.
+EXCLUDED = {
+    "Level-Load-Extra-01.png": "zombies wear glowing Bitcoin logos (owner rule: no Bitcoin logo in the rotation)",
+}
 
 # The selected hero's own loading image opens every rotation.
 HERO_LOADING = {
@@ -261,6 +265,7 @@ def build(source_dir: Path, accept_new_sources: bool = False) -> dict:
         "heroLoading": HERO_LOADING,
         "bannerSurfaces": BANNER_SURFACES,
         "images": manifest_images,
+        "excluded": [{"source": name, "reason": reason} for name, reason in EXCLUDED.items()],
         "og": {**OG, **output_entry(OG["path"], og_data, OG_SIZE)},
     }
     return {"manifest": manifest, "files": files}
@@ -362,6 +367,12 @@ def check() -> list[str]:
         if not module.exists() or module.read_text(encoding="utf-8") != text:
             problems.append(f"{module.relative_to(ROOT).as_posix()} does not match the manifest; rerun the builder")
     loading_ids = {image["id"] for image in manifest["images"] if image["role"] == "loading"}
+    excluded = {entry["source"] for entry in manifest.get("excluded", [])}
+    if excluded != set(EXCLUDED):
+        problems.append("the manifest's excluded sources differ from EXCLUDED; rerun the builder")
+    for image in manifest["images"]:
+        if image["source"] in EXCLUDED:
+            problems.append(f"{image['source']} is excluded from the rotation but has derivatives")
     for hero in HEROES:
         if manifest["heroLoading"].get(hero) not in loading_ids:
             problems.append(f"hero {hero} has no loading image")
