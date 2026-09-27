@@ -16,11 +16,11 @@
 //   - HMH: a run summary v6 from the real accumulator (sdk/hmh-run-summary.mjs),
 //     with level, XP and score from the reboot's own run-progression functions,
 //     plus a lesters-session-envelope-v1 from finalizeSessionEvidence.
-//   - HMH schema 7 (HMH_V7_FIXTURE_NAMES, kept apart from FIXTURE_NAMES): the
-//     same, extended to run summary schema 7 (see buildHmhV7Evidence). Until
-//     server/verify/hmh.mjs accepts schema 7 a Ranked v7 body is refused before
-//     plausibility, so these fixtures record the identity binding, the schema,
-//     the plausibility verdict and the evidence digest instead of a VerifiedRun.
+//   - HMH schema 7 (HMH_V7_FIXTURE_NAMES, kept apart from FIXTURE_NAMES): a
+//     run summary v7 from the same accumulator in the child's schema-7 mode
+//     (the V7 catalogues and the v7 rows at finalize; see buildHmhV7Evidence).
+//     These fixtures record the identity binding, the schema, the plausibility
+//     verdict and the evidence digest.
 // Nothing here reads a real key: the fixture key is a public test value.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -40,7 +40,6 @@ import {
   recordRunCollectible,
   recordRunDamage,
   recordRunKill,
-  recordRunMilestone,
   recordRunTick,
   recordRunUpgradeOffer,
   recordRunUpgradeSelection,
@@ -359,11 +358,14 @@ export async function buildHmhEvidence({ seed, buildHash, identity, plan = 'vali
 
 // ---------------------------------------------------------------------------
 // HMH: a run summary v7 (docs/hmh-reboot/design/HMH-RUN-SUMMARY-V7-CONTRACT.md
-// §4, §11 and §13). sdk/hmh-run-summary.mjs stays schema 6 in this branch (the
-// child branch versions it), so the real 1.8.1 accumulator records the run
-// wherever its catalogues reach, and extendRunSummaryToV7 adds what they cannot
-// hold: kills of the nine v7 roles, the appended catalogue rows, and the
-// objectives, prisoners, bosses, evolutions and progression rows. XP, level and
+// §4, §11 and §13) from the accumulator the 1.9.0 child uses: schema 7 with the
+// V7 catalogues, every kill (the nine v7 roles included) recorded through
+// recordRunKill, and the objectives, prisoners, bosses, evolutions, upgrades
+// and progression rows handed to finalizeRunSummary, which mirrors sites and
+// secrets from the objectives, kills.boss from the Liquidator, bossEngagedTick
+// from his first initiation and the genesis-seal pickups from the Seals found.
+// Before slice 9 these rows were the 1.8.1 accumulator's schema-6 summary
+// extended to schema 7; the committed bytes did not move. XP, level and
 // score come from the real run-progression functions, granted as the child
 // obligations say: node XP through grantRunXp at the level before the grant,
 // OG Miner spans of 300 x level while validator-training is rank 0 (so they are
@@ -458,51 +460,16 @@ function chooseV7Upgrade(choices, ranksTaken, spec, tick) {
   return (choices.find((choice) => choice.id !== 'validator-training') ?? choices[0]).id;
 }
 
-// The schema-6 summary of the 1.8.1 accumulator plus the v7-only record → schema 7.
-function extendRunSummaryToV7(summary6, v7) {
-  const summary = structuredClone(summary6);
-  const byId = (rows, key) => Object.fromEntries(rows.map((row) => [row[key], row]));
-  summary.schemaVersion = 7;
-  const v6Kills = byId(summary.kills.byEnemyRole, 'enemyRoleId');
-  summary.kills.byEnemyRole = C7.enemyRoles.map((enemyRoleId) => ({ enemyRoleId, count: (v6Kills[enemyRoleId]?.count ?? 0) + (v7.roleKills[enemyRoleId] ?? 0) }));
-  for (const [weaponId, count] of Object.entries(v7.weaponKills)) {
-    summary.kills.total += count;
-    byId(summary.kills.byWeapon, 'weaponId')[weaponId].count += count;
-    byId(summary.weapons, 'weaponId')[weaponId].kills += count;
-    if (weaponId === 'satoshi-frag' || weaponId === 'launcher-rig') summary.grenades.kills += count;
-  }
-  summary.collectibles.push({ effectId: 'genesis-seal', collected: v7.progression.sealsFound, activeTicks: 0 });
-  // Run progression counts every card shown (re-rolls included) and picked.
-  summary.upgrades = v7.upgrades.map((row) => ({ ...row }));
-  for (const [rows, ids, idKey, flag] of [[summary.milestones.sites, C7.worldSites, 'siteId', 'operated'], [summary.milestones.secrets, C7.secrets, 'secretId', 'found']]) {
-    for (const row of rows) {
-      const objective = v7.objectives[row[idKey]];
-      if (row[flag] !== objective.completed || row.tick !== objective.tick) throw new Error(`${row[idKey]}: the accumulator milestone and the objective disagree`);
-    }
-    for (const id of ids.slice(rows.length)) rows.push({ [idKey]: id, [flag]: v7.objectives[id].completed, tick: v7.objectives[id].tick });
-  }
-  if (summary.milestones.bossEngagedTick !== v7.bosses.liquidator.firstInitiatedTick) throw new Error('bossEngagedTick must be the Liquidator initiation');
-  if (summary.kills.boss !== byId(summary.kills.byEnemyRole, 'enemyRoleId').liquidator.count) throw new Error('kills.boss must count the Liquidator only');
-  summary.objectives = C7.objectives.map((objectiveId) => ({ objectiveId, ...v7.objectives[objectiveId] }));
-  summary.prisoners = C7.prisonerSlots.map((slotId) => ({ slotId, ...v7.prisoners[slotId] }));
-  summary.bosses = C7.bosses.map((bossId) => ({ bossId, ...v7.bosses[bossId] }));
-  summary.evolutions = C7.evolutions.map((evolutionId) => ({ evolutionId, ...v7.evolutions[evolutionId] }));
-  summary.progression = { ...v7.progression, sealsBanked: v7.progression.sealsFound - v7.progression.evolutionsApplied };
-  return summary;
-}
-
 export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {}) {
   const spec = typeof plan === 'string' ? HMH_V7_PLANS[plan] : plan;
   if (!spec) throw new Error(`unknown HMH v7 fixture plan ${String(plan)}`);
   if (seed !== identity.seed || buildHash !== identity.buildHash) throw new Error('HMH evidence must be built at the identity seed and build');
-  const accumulator = createRunSummaryAccumulator({ seed, buildHash, mode: 'ranked', heroId: spec.heroId, startTick: 0, startPosition: { x: 1200, y: 2400 } });
+  const accumulator = createRunSummaryAccumulator({ seed, buildHash, mode: 'ranked', heroId: spec.heroId, startTick: 0, startPosition: { x: 1200, y: 2400 }, schemaVersion: 7, catalogs: C7 });
   const progression = createRunProgression({ seed });
   const sessionEvidence = createSessionEvidenceState({ sessionId: identity.sessionId });
   const deal = dealHmhPrisoners(seed);
   const zeroRows = (ids, fields) => Object.fromEntries(ids.map((id) => [id, Object.fromEntries(fields.map((field) => [field, 0]))]));
   const v7 = {
-    roleKills: {},
-    weaponKills: {},
     objectives: zeroRows(C7.objectives, ['completed', 'tick', 'levelAtCompletion']),
     prisoners: zeroRows(C7.prisonerSlots, ['rescued', 'tick', 'levelAtRescue']),
     bosses: zeroRows(C7.bosses, ['initiations', 'firstInitiatedTick', 'lastInitiatedTick', 'defeatedTick']),
@@ -548,12 +515,8 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
   const defeat = (tick, role, bossId = null) => {
     enemySequence += 1;
     recordRunDamage(accumulator, { targetId: bossId ? `boss-${bossId}` : `enemy-${enemySequence}`, sourceId: 'player', weaponId: activeWeaponId, damageApplied: 40, healthBefore: 40, critical: enemySequence % 7 === 0, tick });
-    if (C6.enemyRoles.includes(role)) {
-      recordRunKill(accumulator, { enemyRoleId: role, weaponId: activeWeaponId, elite: !bossId && enemySequence % 25 === 0, boss: role === 'liquidator' });
-    } else {
-      v7.roleKills[role] = (v7.roleKills[role] ?? 0) + 1;
-      v7.weaponKills[activeWeaponId] = (v7.weaponKills[activeWeaponId] ?? 0) + 1;
-    }
+    // The plan's elites are among the v6 roles only.
+    recordRunKill(accumulator, { enemyRoleId: role, weaponId: activeWeaponId, elite: C6.enemyRoles.includes(role) && !bossId && enemySequence % 25 === 0, boss: role === 'liquidator' });
     recordRunDefeat(progression, { enemyId: bossId ? `boss-${bossId}` : `encounter-${String(enemySequence).padStart(6, '0')}`, threatCost: HMH_V7_ROLE_THREAT[role], tick });
     combo += 1;
     maxCombo = Math.max(maxCombo, combo);
@@ -570,9 +533,8 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
     const level = getRunProgressionSnapshot(progression).level;
     if (kind === 'objective') {
       const node = HMH_V7_OBJECTIVES[id];
+      // Sites and secrets are mirrored from these rows at finalize (S8).
       Object.assign(v7.objectives[id], { completed: 1, tick, levelAtCompletion: level });
-      if (C6.worldSites.includes(id)) recordRunMilestone(accumulator, { type: 'site-operated', id, tick });
-      if (C6.secrets.includes(id)) recordRunMilestone(accumulator, { type: 'secret-found', id, tick });
       grantRunXp(progression, HMH_V7_RUN_RULES.OBJECTIVE_XP_PER_LEVEL[node.class] * level, tick);
       if (node.class === 'secret') grantRunSilver(progression, HMH_V7_RUN_RULES.SILVER_PER_SECRET, tick);
     } else {
@@ -657,7 +619,8 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
   const snapshot = getRunProgressionSnapshot(progression);
   v7.upgrades = runUpgradeRows(progression);
   Object.assign(v7.progression, { offersOpened: runProgressionRow(progression).offersOpened, rerolls: runProgressionRow(progression).rerolls });
-  const summary6 = plain(finalizeRunSummary(accumulator, {
+  const rowsOf = (ids, key, table) => ids.map((id) => ({ [key]: id, ...table[id] }));
+  const runSummary = plain(finalizeRunSummary(accumulator, {
     endTick,
     elapsedMs: endTick * FIXED_STEP_MS,
     terminalReason: 'defeated',
@@ -668,8 +631,15 @@ export async function buildHmhV7Evidence({ seed, buildHash, identity, plan } = {
     maxCombo,
     revealedCells: Math.min(4096, Math.floor(endTick / 40)),
     totalCells: 4096,
+    v7: {
+      objectives: rowsOf(C7.objectives, 'objectiveId', v7.objectives),
+      prisoners: rowsOf(C7.prisonerSlots, 'slotId', v7.prisoners),
+      bosses: rowsOf(C7.bosses, 'bossId', v7.bosses),
+      evolutions: rowsOf(C7.evolutions, 'evolutionId', v7.evolutions),
+      upgrades: v7.upgrades,
+      progression: { ...v7.progression, sealsBanked: v7.progression.sealsFound - v7.progression.evolutionsApplied },
+    },
   }));
-  const runSummary = extendRunSummaryToV7(summary6, v7);
   const schemaError = validateRunSummaryPayload(runSummary);
   if (schemaError) throw new Error(`fixture run summary v7 is invalid: ${schemaError}`);
   const sessionEnvelope = plain(await finalizeSessionEvidence({
