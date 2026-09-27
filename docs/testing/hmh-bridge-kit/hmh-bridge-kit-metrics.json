@@ -1,0 +1,177 @@
+{
+  "schema": "hmh-bridge-kit-metrics-v1",
+  "status": "pass",
+  "blenderVersion": "5.1.2",
+  "pillowVersion": "12.2.0",
+  "frameCount": 40,
+  "uniqueFrames": 40,
+  "sharedMeshCount": 190,
+  "worstProbeErrorPx": 0.0064,
+  "gates": {
+    "deckCoverageMin": 0.985,
+    "railCoverageMin": 0.9,
+    "probeErrorMaxPx": 0.5
+  },
+  "alignment": {
+    "settler-viaduct": {
+      "deckCoverage": 1.0,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    },
+    "rugpull-rope-bridge": {
+      "deckCoverage": 0.7488,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    },
+    "old-mill-bridge": {
+      "deckCoverage": 1.0,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    },
+    "proof-of-work-bridge": {
+      "deckCoverage": 1.0,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    },
+    "fork-trestle": {
+      "deckCoverage": 1.0,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    },
+    "lock-gate-walkway": {
+      "deckCoverage": 1.0,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    },
+    "hashwood-run-bridge": {
+      "deckCoverage": 0.9838,
+      "deckSamples": 800
+    },
+    "canal-bascule": {
+      "deckCoverage": 1.0,
+      "deckSamples": 800,
+      "railCoverage": 1.0,
+      "railSamples": 60
+    }
+  },
+  "pages": [
+    {
+      "id": "ravine-0",
+      "width": 1984,
+      "height": 1984,
+      "bytes": 426916,
+      "mobileBytes": 184276,
+      "decodedBytes": 15745024,
+      "mobileDecodedBytes": 3936256
+    },
+    {
+      "id": "ravine-1",
+      "width": 1856,
+      "height": 1984,
+      "bytes": 514298,
+      "mobileBytes": 306446,
+      "decodedBytes": 14729216,
+      "mobileDecodedBytes": 3682304
+    },
+    {
+      "id": "ravine-2",
+      "width": 1856,
+      "height": 1600,
+      "bytes": 225964,
+      "mobileBytes": 130266,
+      "decodedBytes": 11878400,
+      "mobileDecodedBytes": 2969600
+    },
+    {
+      "id": "crossing-0",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 427024,
+      "mobileBytes": 183562,
+      "decodedBytes": 16777216,
+      "mobileDecodedBytes": 4194304
+    },
+    {
+      "id": "crossing-1",
+      "width": 1536,
+      "height": 1920,
+      "bytes": 218850,
+      "mobileBytes": 91970,
+      "decodedBytes": 11796480,
+      "mobileDecodedBytes": 2949120
+    },
+    {
+      "id": "crossing-2",
+      "width": 1280,
+      "height": 1216,
+      "bytes": 111868,
+      "mobileBytes": 39676,
+      "decodedBytes": 6225920,
+      "mobileDecodedBytes": 1556480
+    },
+    {
+      "id": "east-0",
+      "width": 1664,
+      "height": 2048,
+      "bytes": 200470,
+      "mobileBytes": 87854,
+      "decodedBytes": 13631488,
+      "mobileDecodedBytes": 3407872
+    }
+  ],
+  "totalBytes": 2125390,
+  "totalMobileBytes": 1024050,
+  "reproducibility": null,
+  "manifestSha256": "58de04fab0d6ebeed31e9bb15068424e674eab9017710c6e31a02ac161fe8aa7",
+  "blenderScriptSha256": "f0200fae0739ffe6b2323dbeceb2ae04b68755215da5a75cc1512054daad7b96",
+  "sourceBlendSha256": "5a5263d969b35a9c2c100b98f7c500ae4cb6c9546bf46078fe1777d872cd886e",
+  "atlasSha256": "b6736252ba0892841dae5dad70138a014298e360c0003d9027f98897677b1035",
+  "frameSha256": {
+    "canal-bascule.deck.static#0": "8c970d8e13caf8e3eaae7f9e71c48428c1d4f4058f05f8df325f4dd52821d7df",
+    "canal-bascule.deck.static#1": "8c8c96aa389c012969d1cf5d8ff247bd602135d48096b2daeed51b62358ee2f7",
+    "canal-bascule.moving.lowered": "f87d78fed3bbc02e674479a95b7c8cda5b347702c10405a1c5bbe6eac8fe13d7",
+    "canal-bascule.moving.lowering-1": "de8ed5bedc7dba1101227582a59a24a2cded4482e273958425f267e9a0100d08",
+    "canal-bascule.moving.lowering-2": "a8e8243ba2ef6396dbabbb19859a2ebe25a3b5822cb0ca768195c6c06cd06921",
+    "canal-bascule.moving.raised": "71b1dfe6e10d6bc6834dd2c7e245cd538b360ca2175691d535420a90a72daeaf",
+    "canal-bascule.near.static#0": "379dbeb50588008508fb0a3244a23bc9547411269a82e2c50f06cfa619bc3d9b",
+    "canal-bascule.near.static#1": "0e1d5e883cb640a425d3888e719ba2dbf0c3753e07a1c8353dac88edd1625a41",
+    "fork-trestle.deck.static": "2591a42ed87ecf4fc0b63fb8c62ede0baf740b4583e72cb3889fca972724b98d",
+    "fork-trestle.near.static": "f505b8a9d3fb008b577a51501c314cc033cb1c493bab29ee126918122e666b0c",
+    "hashwood-run-bridge.deck.static": "40a59c92d10e4eb585cec67950045688f468b790acf4c1303326cf17a2d57ea6",
+    "lock-gate-walkway.deck.static": "a5f5c71c7f238b8a1a4169faad1595ac021f34804752f5c49a2a5882e26d68a4",
+    "lock-gate-walkway.moving.chained": "6fb1cd71c3476a8ba3074e0f25652c83fbf59a9236df144a1d1da9c99c05b286",
+    "lock-gate-walkway.moving.open-north": "a1cbc8800a671528395f5fff585aa5ecadbfd1be93207177f10327a18844c97b",
+    "lock-gate-walkway.moving.open-south": "6d0bce9c3e5f6aaf9c30c421084f0346fc446d01163cbcf96e29ca058d6f7d70",
+    "lock-gate-walkway.near.static": "e9ce97865b5ffd990754834c6eabaf7a3a09ac15487774879bf176780c13ac73",
+    "old-mill-bridge.deck.static": "c76df59d7b9090d5058524280644138d3be4195b67bcc1c994f2d464c457d8d1",
+    "old-mill-bridge.near.static": "bdb2182d554448c0f01e9c10aac8aee0db3503f5f72a13c7e2099cbd21789f49",
+    "proof-of-work-bridge.deck.static": "7d67ef870576a74d332c5a297204811e08d9ffbc975aba23d556c6caae4015c8",
+    "proof-of-work-bridge.near.static": "1b10735b4530c38ceb50760e53dad75bd1cd140cfe74d052a7e8f1be3a608274",
+    "proof-of-work-bridge.overhead.static": "b81a24639550bd9579d67032d9183792e0e5d6cffa3287eb2d81ee606804ae4f",
+    "rugpull-rope-bridge.deck.static#0": "a6fdb4712fd8bba845ff9c0ab18744c3ec500c31da351599e47940418c385065",
+    "rugpull-rope-bridge.deck.static#1": "cdf0a392ec037af59efdb463a38f760ed0a9dbe0840be8df39575e7c72128c01",
+    "rugpull-rope-bridge.deck.sway-0": "178e3a3fecbbefcd553fc8e2b24f479b2ff13657ae2b38769572f04ae6144a4f",
+    "rugpull-rope-bridge.deck.sway-1": "53669a10ea71731f12e36655f0f105b12c10c350cdcd852b4d98a0c4feafbbb8",
+    "rugpull-rope-bridge.deck.sway-2": "a11bea00f6e176282cca7e5b1aab14dd6a6bbe1f5b9f6aebee93f6c9d2293474",
+    "rugpull-rope-bridge.deck.sway-3": "468d5f1911654c56ff78dccde18fd8e00f3b3bb194cf3b7a24048554e601d98a",
+    "rugpull-rope-bridge.deck.sway-4": "a3f9804170d090805525399cabdc1f6188d9171a6fa4b780e31332703f07374c",
+    "rugpull-rope-bridge.deck.sway-5": "71a79eea62e07e6a641d7d7ce0a979ac993c1c35360c49496e0f4d166451e549",
+    "rugpull-rope-bridge.moving.raised": "8bfff38c65fd71d6ecc6b64c17521afd101a99028b213d72cdb8d996fcf485a0",
+    "rugpull-rope-bridge.near.static#0": "c847685817816df10473319e9d9e4dbdd3698d4e1b546fb56c392356b176bdf3",
+    "rugpull-rope-bridge.near.static#1": "2bd0c47516edcfea845542116e5ba8570f35391c1bffb9f7aa20109c42d99c65",
+    "rugpull-rope-bridge.near.sway-0": "ec88b508175ee392049285de5d11ee71be9d76cf1ec56e203309941b19a06eeb",
+    "rugpull-rope-bridge.near.sway-1": "a55b9fb9958cbe1bda2c3ab0e5b586ed7f87edba7432e8c223a7a0a9102d997c",
+    "rugpull-rope-bridge.near.sway-2": "a2b829934a3d042835025a3388b0e6dd2149877c9a9ba8ca92d1c74b780f7cfb",
+    "rugpull-rope-bridge.near.sway-3": "8b5a266e1fe347f07112be9a715557d277154c8084c9f974e6683f1ff43fd55c",
+    "rugpull-rope-bridge.near.sway-4": "4c1007714f6a7704be683ddb7d37ef175eea67e1a16b190db25161db4241a4a0",
+    "rugpull-rope-bridge.near.sway-5": "60e04e91d25c26c9792d9f04b7efb85498a4ee79f6a48c43df627d0fec09fd06",
+    "settler-viaduct.deck.static": "e8f8e654dede687770416827f8e6413c4ec91c4bb6e68726200f29d24cbaecb4",
+    "settler-viaduct.near.static": "fb7f37eaadeca0ff910a38e9fc91dac2508a82751da7af69ac3b525c624c2600"
+  }
+}

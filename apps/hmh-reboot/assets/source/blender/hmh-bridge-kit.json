@@ -1,0 +1,132 @@
+{
+  "schema": "hmh-bridge-kit-v1",
+  "pipelineId": "hmh-bridge-kit-v1",
+  "classification": "production-art",
+  "runtimeAuthority": "projection-only",
+  "status": "dark",
+  "notes": "Level 1 design package 2.4 and slice S4.9. Eight layout v2 crossings in seven styles, assembled from modular Blender pieces sized to the greybox decks (apps/hmh-reboot/src/layout-v2-map.mjs DECKS on fable/hmh-layout-v2 f4289a33). Registered, not placed: the layout lane places them. Rails and gates stay the layout's capsules; the art only shows them.",
+  "layoutSource": {
+    "branch": "fable/hmh-layout-v2",
+    "commit": "f4289a33",
+    "module": "apps/hmh-reboot/src/layout-v2-map.mjs",
+    "export": "LAYOUT_V2_MAP.decks",
+    "railOffset": 30,
+    "railInset": 20,
+    "railRadius": 14,
+    "railMaxZ": 72,
+    "rampLength": 100
+  },
+  "render": {
+    "engine": "CYCLES",
+    "samples": 40,
+    "denoise": true,
+    "threads": 16,
+    "exposure": -0.2,
+    "worldStrength": 0.32,
+    "cameraElevationDegrees": 35,
+    "pixelDensity": 2,
+    "alphaThreshold": 8,
+    "lightFamily": "world-kit",
+    "lightDirections": {
+      "key": [0.55, 0.6, -1.0],
+      "fill": [-1.0, 0.45, -0.42],
+      "rim": [-0.25, -1.0, -0.62]
+    },
+    "sunAngleDegrees": { "key": 4, "fill": 12, "rim": 6 }
+  },
+  "sway": {
+    "styles": ["plank-suspension"],
+    "frames": 6,
+    "fps": 7,
+    "lateralAmplitude": 5,
+    "verticalAmplitude": 2,
+    "note": "Projection-only stop-motion loop: frame = floor(presentationTick * fps / 60) mod frames. It never moves the deck surface, rails or gates."
+  },
+  "scene": {
+    "sourceBlend": "apps/hmh-reboot/assets/source/models/world-kits/bridge-kit/hmh-bridge-kit.blend",
+    "rawOutputDirectory": ".tmp/hmh-bridge-kit-raw"
+  },
+  "atlas": {
+    "outputDirectory": "apps/portal/assets/generated/hmh-bridge-kit",
+    "evidenceDirectory": "docs/testing/hmh-bridge-kit",
+    "maxPageSize": 2048,
+    "padding": 4,
+    "maxPageBytes": 1048576,
+    "webp": { "quality": 90, "alpha_quality": 100, "method": 6 },
+    "pageGroups": {
+      "ravine": ["settler-viaduct", "rugpull-rope-bridge"],
+      "crossing": ["old-mill-bridge", "proof-of-work-bridge", "fork-trestle", "lock-gate-walkway"],
+      "east": ["hashwood-run-bridge", "canal-bascule"]
+    }
+  },
+  "crossings": [
+    {
+      "id": "settler-viaduct", "district": "rugpull-ravine", "rect": [2430, 2240, 2870, 2480], "span": "x", "z": 0, "clear": 240,
+      "style": "stone-arch-viaduct", "under": "chasm", "packageName": "Settler Viaduct"
+    },
+    {
+      "id": "rugpull-rope-bridge", "district": "rugpull-ravine", "rect": [2430, 1020, 2870, 1180], "span": "x", "z": 0, "clear": 160,
+      "style": "plank-suspension", "under": "chasm", "packageName": "Rugpull Rope Bridge",
+      "deckCoverageMin": 0.72, "deckCoverageNote": "Plank gaps and the sway sag are the look; the gorge shows through by design.",
+      "defaultState": "raised",
+      "movingParts": {
+        "gateId": "ravine-rope-bridge-raised",
+        "note": "Raised until the winch is cranked (gate ravine-rope-bridge-raised, opensBy ravine-winch). Lowered shows the sway loop.",
+        "states": {
+          "raised": { "band": "actors", "sortY": 1210 }
+        }
+      }
+    },
+    {
+      "id": "old-mill-bridge", "district": "liquidity-crossing", "rect": [4500, 845, 5000, 1105], "span": "x", "z": 16, "clear": 260,
+      "rampLength": 100, "style": "stone-arch", "surfaceId": "crossing-shallows", "under": "deep", "packageName": "Old Mill Bridge"
+    },
+    {
+      "id": "proof-of-work-bridge", "district": "liquidity-crossing", "rect": [4500, 2290, 5000, 2510], "span": "x", "z": 16, "clear": 220,
+      "rampLength": 100, "style": "steel-through-truss", "surfaceId": "proof-of-work-bridge", "under": "deep", "packageName": "Proof-of-Work Bridge",
+      "nearFade": 0.55, "overheadFade": 0.22
+    },
+    {
+      "id": "fork-trestle", "district": "liquidity-crossing", "rect": [4180, 3150, 4470, 3350], "span": "x", "z": 0, "clear": 200,
+      "style": "timber-trestle", "under": "deep", "packageName": "Fork Trestle"
+    },
+    {
+      "id": "lock-gate-walkway", "district": "liquidity-crossing", "rect": [5230, 3450, 5520, 3700], "span": "x", "z": 0, "clear": 220,
+      "style": "steel-lock-gate", "under": "deep", "packageName": "Lock Gate walkway",
+      "defaultState": "chained",
+      "movingParts": {
+        "gateId": "crossing-lock-gate-chain",
+        "gateX": 5512,
+        "note": "Chained shut until the Lockkeeper is defeated (opensBy boss:lockkeeper); open shows both leaves swung onto the east approach.",
+        "states": {
+          "chained": { "band": "actors", "sortY": 3730 },
+          "open-north": { "band": "actors", "sortY": 3420 },
+          "open-south": { "band": "actors", "sortY": 3730 }
+        },
+        "stateSets": { "chained": ["chained"], "open": ["open-north", "open-south"] }
+      }
+    },
+    {
+      "id": "hashwood-run-bridge", "district": "hashwood", "rect": [6930, 2250, 7130, 2600], "span": "x", "z": 0, "clear": 350,
+      "style": "log-and-plank", "rails": false, "under": "shallow", "packageName": "Hashwood Run Bridge",
+      "deckCoverageMin": 0.97, "deckCoverageNote": "Split planks leave hairline gaps over the log stringers."
+    },
+    {
+      "id": "canal-bascule", "district": "liquidation-yard", "rect": [10700, 1280, 10920, 1500], "span": "y", "z": 0, "clear": 220,
+      "style": "steel-bascule", "under": "deep", "packageName": "Canal Bascule",
+      "defaultState": "raised",
+      "movingParts": {
+        "gateId": "yard-bascule-leaf",
+        "note": "The yard-bascule-lever lowers the leaf: raised -> lowering-1 -> lowering-2 -> lowered, one step per sequenceTicks.",
+        "sequence": ["raised", "lowering-1", "lowering-2", "lowered"],
+        "sequenceTicks": 12,
+        "states": {
+          "raised": { "angleDegrees": 78, "band": "actors", "sortY": 1506 },
+          "lowering-1": { "angleDegrees": 52, "band": "actors", "sortY": 1506 },
+          "lowering-2": { "angleDegrees": 26, "band": "actors", "sortY": 1506 },
+          "lowered": { "angleDegrees": 0, "band": "ground", "sortY": null }
+        }
+      }
+    }
+  ]
+}

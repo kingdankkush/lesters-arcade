@@ -1,0 +1,1652 @@
+{
+  "schema": "hmh-bridge-kit-atlas-v1",
+  "pipelineId": "hmh-bridge-kit-v1",
+  "status": "dark",
+  "runtimeAuthority": "projection-only",
+  "flag": "bridgeKit",
+  "cameraElevationDegrees": 35,
+  "pixelDensity": 2,
+  "runtimeScale": 0.5,
+  "projection": "A frame's top-left texel sits at world screen origin (x, y - z); draw at runtimeScale with anchor (0, 0).",
+  "sway": {
+    "frames": 6,
+    "fps": 7,
+    "styles": [
+      "plank-suspension"
+    ]
+  },
+  "layoutSource": {
+    "branch": "fable/hmh-layout-v2",
+    "commit": "f4289a33",
+    "module": "apps/hmh-reboot/src/layout-v2-map.mjs",
+    "export": "LAYOUT_V2_MAP.decks",
+    "railOffset": 30,
+    "railInset": 20,
+    "railRadius": 14,
+    "railMaxZ": 72,
+    "rampLength": 100
+  },
+  "pages": [
+    {
+      "id": "ravine-0",
+      "group": "ravine",
+      "image": "./hmh-bridge-kit-ravine-0.webp",
+      "mobileImage": "./hmh-bridge-kit-ravine-0@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 1984,
+      "height": 1984,
+      "bytes": 426916,
+      "mobileBytes": 184276,
+      "decodedBytes": 15745024,
+      "mobileDecodedBytes": 3936256,
+      "sha256": "a585873b5b7637d0fe867afd647cf6bd900af484fc33716588bfe655e007115c",
+      "mobileSha256": "e5e7327a5d90790c239126c61474687e93ac68cc6bd3cc2638af41637ef7b9f8",
+      "frameCount": 7
+    },
+    {
+      "id": "ravine-1",
+      "group": "ravine",
+      "image": "./hmh-bridge-kit-ravine-1.webp",
+      "mobileImage": "./hmh-bridge-kit-ravine-1@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 1856,
+      "height": 1984,
+      "bytes": 514298,
+      "mobileBytes": 306446,
+      "decodedBytes": 14729216,
+      "mobileDecodedBytes": 3682304,
+      "sha256": "8bf08fb9993ebb977c68a733b194a4b78f1bcd70a4a935041120e204ef54d452",
+      "mobileSha256": "410e9807a610b0ee9f1b85a75ac083260ed9b1f6359be60d3c56e240b31f249b",
+      "frameCount": 8
+    },
+    {
+      "id": "ravine-2",
+      "group": "ravine",
+      "image": "./hmh-bridge-kit-ravine-2.webp",
+      "mobileImage": "./hmh-bridge-kit-ravine-2@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 1856,
+      "height": 1600,
+      "bytes": 225964,
+      "mobileBytes": 130266,
+      "decodedBytes": 11878400,
+      "mobileDecodedBytes": 2969600,
+      "sha256": "c778ef15de4bfdebda9604d889b4b8af22b38e4c909ffa52ece139d7a7088e0c",
+      "mobileSha256": "72261e73ce3ae9fba20cc22f0139ccd16ac7398e77cbe3da2a1081aadd776bf3",
+      "frameCount": 4
+    },
+    {
+      "id": "crossing-0",
+      "group": "crossing",
+      "image": "./hmh-bridge-kit-crossing-0.webp",
+      "mobileImage": "./hmh-bridge-kit-crossing-0@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 2048,
+      "height": 2048,
+      "bytes": 427024,
+      "mobileBytes": 183562,
+      "decodedBytes": 16777216,
+      "mobileDecodedBytes": 4194304,
+      "sha256": "4e158d0efc5cfedcb3d2e6d85bb97a5468b249407205f8ee2982621b78f7340b",
+      "mobileSha256": "3f5d53257976d1cb9e264b8c1eb5ea3c1baa38e8462f8cee9a4076ce48f02509",
+      "frameCount": 9
+    },
+    {
+      "id": "crossing-1",
+      "group": "crossing",
+      "image": "./hmh-bridge-kit-crossing-1.webp",
+      "mobileImage": "./hmh-bridge-kit-crossing-1@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 1536,
+      "height": 1920,
+      "bytes": 218850,
+      "mobileBytes": 91970,
+      "decodedBytes": 11796480,
+      "mobileDecodedBytes": 2949120,
+      "sha256": "71e2cd08442aba6553588f1a9888ef0eb94856e9ae89e8d530d1c37ccf63e451",
+      "mobileSha256": "dcb43eedfb2c8454265a70513f51514fc663665befc5594e22373d14c25df845",
+      "frameCount": 2
+    },
+    {
+      "id": "crossing-2",
+      "group": "crossing",
+      "image": "./hmh-bridge-kit-crossing-2.webp",
+      "mobileImage": "./hmh-bridge-kit-crossing-2@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 1280,
+      "height": 1216,
+      "bytes": 111868,
+      "mobileBytes": 39676,
+      "decodedBytes": 6225920,
+      "mobileDecodedBytes": 1556480,
+      "sha256": "99c2bd3b160a48f16a3de3eabf1e9ff85a9ea6f90ecd3989744ca0dd752f305e",
+      "mobileSha256": "f8b0006cfe2a021be38686a4cf439bae9b93f2fc75a83d92501196a52b6c7779",
+      "frameCount": 1
+    },
+    {
+      "id": "east-0",
+      "group": "east",
+      "image": "./hmh-bridge-kit-east-0.webp",
+      "mobileImage": "./hmh-bridge-kit-east-0@0.5x.webp",
+      "mobileResolution": 0.5,
+      "width": 1664,
+      "height": 2048,
+      "bytes": 200470,
+      "mobileBytes": 87854,
+      "decodedBytes": 13631488,
+      "mobileDecodedBytes": 3407872,
+      "sha256": "d02b2948e14d23c9b65f55cd43f5552388caad778eb4cff0806747bac93d2047",
+      "mobileSha256": "1f722193c70283fede8d256defd08320501a14e757d8e3dd21779528c61cfce0",
+      "frameCount": 9
+    }
+  ],
+  "crossings": {
+    "settler-viaduct": {
+      "id": "settler-viaduct",
+      "packageName": "Settler Viaduct",
+      "district": "rugpull-ravine",
+      "style": "stone-arch-viaduct",
+      "rect": [
+        2430,
+        2240,
+        2870,
+        2480
+      ],
+      "span": "x",
+      "z": 0,
+      "clear": 240,
+      "rampLength": 0,
+      "rails": true,
+      "under": "chasm",
+      "staticFrames": [
+        "settler-viaduct.deck.static",
+        "settler-viaduct.near.static"
+      ],
+      "swayFrames": {},
+      "defaultState": null,
+      "movingParts": null,
+      "alignment": {
+        "deckCoverage": 1.0,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "viaduct-abutment": 2,
+        "viaduct-apron": 2,
+        "viaduct-arch-span": 3,
+        "viaduct-arch-span-keystone": 3,
+        "viaduct-arch-span-voussoirs": 3,
+        "viaduct-cornice": 1,
+        "viaduct-end-pillar": 4,
+        "viaduct-end-pillar-cap": 4,
+        "viaduct-kerb": 2,
+        "viaduct-parapet": 24,
+        "viaduct-parapet-coping": 24,
+        "viaduct-pier": 2,
+        "viaduct-road": 1,
+        "viaduct-slab": 1,
+        "viaduct-string-course": 2
+      }
+    },
+    "rugpull-rope-bridge": {
+      "id": "rugpull-rope-bridge",
+      "packageName": "Rugpull Rope Bridge",
+      "district": "rugpull-ravine",
+      "style": "plank-suspension",
+      "rect": [
+        2430,
+        1020,
+        2870,
+        1180
+      ],
+      "span": "x",
+      "z": 0,
+      "clear": 160,
+      "rampLength": 0,
+      "rails": true,
+      "under": "chasm",
+      "staticFrames": [
+        "rugpull-rope-bridge.deck.static",
+        "rugpull-rope-bridge.near.static"
+      ],
+      "swayFrames": {
+        "deck": [
+          "rugpull-rope-bridge.deck.sway-0",
+          "rugpull-rope-bridge.deck.sway-1",
+          "rugpull-rope-bridge.deck.sway-2",
+          "rugpull-rope-bridge.deck.sway-3",
+          "rugpull-rope-bridge.deck.sway-4",
+          "rugpull-rope-bridge.deck.sway-5"
+        ],
+        "near": [
+          "rugpull-rope-bridge.near.sway-0",
+          "rugpull-rope-bridge.near.sway-1",
+          "rugpull-rope-bridge.near.sway-2",
+          "rugpull-rope-bridge.near.sway-3",
+          "rugpull-rope-bridge.near.sway-4",
+          "rugpull-rope-bridge.near.sway-5"
+        ]
+      },
+      "defaultState": "raised",
+      "movingParts": {
+        "gateId": "ravine-rope-bridge-raised",
+        "states": {
+          "raised": [
+            "rugpull-rope-bridge.moving.raised"
+          ]
+        },
+        "stateSets": {},
+        "sequence": null,
+        "sequenceTicks": null
+      },
+      "alignment": {
+        "deckCoverage": 0.7488,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "rope-anchor-line": 4,
+        "rope-anchor-stake": 4,
+        "rope-anchor-stone": 4,
+        "rope-hand-line": 14,
+        "rope-haul-line": 4,
+        "rope-landing": 2,
+        "rope-main-cable": 14,
+        "rope-plank": 286,
+        "rope-stringer": 16,
+        "rope-suspender": 228,
+        "rope-tower-brace": 4,
+        "rope-tower-cap": 4,
+        "rope-tower-crossbeam": 2,
+        "rope-tower-footing": 4,
+        "rope-tower-knee": 4,
+        "rope-tower-post": 4
+      }
+    },
+    "old-mill-bridge": {
+      "id": "old-mill-bridge",
+      "packageName": "Old Mill Bridge",
+      "district": "liquidity-crossing",
+      "style": "stone-arch",
+      "rect": [
+        4500,
+        845,
+        5000,
+        1105
+      ],
+      "span": "x",
+      "z": 16,
+      "clear": 260,
+      "rampLength": 100,
+      "rails": true,
+      "under": "deep",
+      "staticFrames": [
+        "old-mill-bridge.deck.static",
+        "old-mill-bridge.near.static"
+      ],
+      "swayFrames": {},
+      "defaultState": null,
+      "movingParts": null,
+      "alignment": {
+        "deckCoverage": 1.0,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "catcher-water": 1,
+        "mill-abutment": 2,
+        "mill-arch-span": 4,
+        "mill-arch-span-keystone": 4,
+        "mill-arch-span-voussoirs": 4,
+        "mill-cutwater": 3,
+        "mill-cutwater-cap": 3,
+        "mill-foam": 6,
+        "mill-kerb": 2,
+        "mill-newel": 4,
+        "mill-newel-cap": 4,
+        "mill-parapet": 30,
+        "mill-parapet-coping": 30,
+        "mill-pier": 3,
+        "mill-pilaster": 3,
+        "mill-ramp": 2,
+        "mill-ramp-parapet": 4,
+        "mill-ramp-parapet-coping": 4,
+        "mill-ramp-surface": 2,
+        "mill-road": 1,
+        "mill-slab": 1,
+        "mill-waterline": 1
+      }
+    },
+    "proof-of-work-bridge": {
+      "id": "proof-of-work-bridge",
+      "packageName": "Proof-of-Work Bridge",
+      "district": "liquidity-crossing",
+      "style": "steel-through-truss",
+      "rect": [
+        4500,
+        2290,
+        5000,
+        2510
+      ],
+      "span": "x",
+      "z": 16,
+      "clear": 220,
+      "rampLength": 100,
+      "rails": true,
+      "under": "deep",
+      "staticFrames": [
+        "proof-of-work-bridge.deck.static",
+        "proof-of-work-bridge.near.static",
+        "proof-of-work-bridge.overhead.static"
+      ],
+      "swayFrames": {},
+      "defaultState": null,
+      "movingParts": null,
+      "alignment": {
+        "deckCoverage": 1.0,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "catcher-water": 1,
+        "truss-abutment": 2,
+        "truss-bearing": 4,
+        "truss-deck": 1,
+        "truss-far-bottom-chord": 1,
+        "truss-far-diagonal": 8,
+        "truss-far-end-post": 2,
+        "truss-far-gusset": 18,
+        "truss-far-top-chord": 1,
+        "truss-far-vertical": 9,
+        "truss-fascia": 1,
+        "truss-floor-beam": 11,
+        "truss-foam": 2,
+        "truss-kerb": 2,
+        "truss-lateral-strut": 9,
+        "truss-name-mark-foot": 1,
+        "truss-name-mark-slash": 1,
+        "truss-name-mark-stem": 1,
+        "truss-name-plate": 1,
+        "truss-near-bottom-chord": 1,
+        "truss-near-diagonal": 8,
+        "truss-near-end-post": 2,
+        "truss-near-gusset": 18,
+        "truss-near-top-chord": 1,
+        "truss-near-vertical": 9,
+        "truss-portal-knee": 4,
+        "truss-portal-strut": 2,
+        "truss-ramp": 2,
+        "truss-ramp-kerb": 4,
+        "truss-ramp-surface": 2,
+        "truss-top-bracing": 16
+      }
+    },
+    "fork-trestle": {
+      "id": "fork-trestle",
+      "packageName": "Fork Trestle",
+      "district": "liquidity-crossing",
+      "style": "timber-trestle",
+      "rect": [
+        4180,
+        3150,
+        4470,
+        3350
+      ],
+      "span": "x",
+      "z": 0,
+      "clear": 200,
+      "rampLength": 0,
+      "rails": true,
+      "under": "deep",
+      "staticFrames": [
+        "fork-trestle.deck.static",
+        "fork-trestle.near.static"
+      ],
+      "swayFrames": {},
+      "defaultState": null,
+      "movingParts": null,
+      "alignment": {
+        "deckCoverage": 1.0,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "catcher-water": 1,
+        "trestle-batter-pile": 10,
+        "trestle-cap": 5,
+        "trestle-foam": 30,
+        "trestle-girt": 5,
+        "trestle-knee": 9,
+        "trestle-pile": 20,
+        "trestle-plank": 23,
+        "trestle-rail-mid-rail": 2,
+        "trestle-rail-post": 18,
+        "trestle-rail-top-rail": 2,
+        "trestle-sill": 2,
+        "trestle-stringer": 7
+      }
+    },
+    "lock-gate-walkway": {
+      "id": "lock-gate-walkway",
+      "packageName": "Lock Gate walkway",
+      "district": "liquidity-crossing",
+      "style": "steel-lock-gate",
+      "rect": [
+        5230,
+        3450,
+        5520,
+        3700
+      ],
+      "span": "x",
+      "z": 0,
+      "clear": 220,
+      "rampLength": 0,
+      "rails": true,
+      "under": "deep",
+      "staticFrames": [
+        "lock-gate-walkway.deck.static",
+        "lock-gate-walkway.near.static"
+      ],
+      "swayFrames": {},
+      "defaultState": "chained",
+      "movingParts": {
+        "gateId": "crossing-lock-gate-chain",
+        "states": {
+          "chained": [
+            "lock-gate-walkway.moving.chained"
+          ],
+          "open-north": [
+            "lock-gate-walkway.moving.open-north"
+          ],
+          "open-south": [
+            "lock-gate-walkway.moving.open-south"
+          ]
+        },
+        "stateSets": {
+          "chained": [
+            "chained"
+          ],
+          "open": [
+            "open-north",
+            "open-south"
+          ]
+        },
+        "sequence": null,
+        "sequenceTicks": null
+      },
+      "alignment": {
+        "deckCoverage": 1.0,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "catcher-water": 1,
+        "lock-balance-beam": 4,
+        "lock-beam-strap": 4,
+        "lock-bollard": 4,
+        "lock-chain-hanging": 2,
+        "lock-chain-wrap": 4,
+        "lock-foam": 1,
+        "lock-gate-leaf": 2,
+        "lock-gate-leaf-bar": 44,
+        "lock-gate-leaf-bottom-rail": 4,
+        "lock-gate-leaf-brace": 4,
+        "lock-gate-leaf-stile": 4,
+        "lock-gate-leaf-top-rail": 48,
+        "lock-gate-post": 2,
+        "lock-gate-post-cap": 2,
+        "lock-gate-rib": 10,
+        "lock-gate-wet": 1,
+        "lock-handrail-mid-rail": 2,
+        "lock-handrail-post": 22,
+        "lock-handrail-top-rail": 2,
+        "lock-lamp-base": 4,
+        "lock-lamp-cap": 4,
+        "lock-lamp-lantern": 4,
+        "lock-lamp-pole": 4,
+        "lock-paddle-rod": 2,
+        "lock-paddle-wheel": 2,
+        "lock-padlock": 1,
+        "lock-padlock-shackle": 1,
+        "lock-walkway": 1,
+        "lock-walkway-edge": 2,
+        "lock-wall": 2,
+        "lock-wall-coping": 2,
+        "lock-wall-waterline": 2
+      }
+    },
+    "hashwood-run-bridge": {
+      "id": "hashwood-run-bridge",
+      "packageName": "Hashwood Run Bridge",
+      "district": "hashwood",
+      "style": "log-and-plank",
+      "rect": [
+        6930,
+        2250,
+        7130,
+        2600
+      ],
+      "span": "x",
+      "z": 0,
+      "clear": 350,
+      "rampLength": 0,
+      "rails": false,
+      "under": "shallow",
+      "staticFrames": [
+        "hashwood-run-bridge.deck.static"
+      ],
+      "swayFrames": {},
+      "defaultState": null,
+      "movingParts": null,
+      "alignment": {
+        "deckCoverage": 0.9838,
+        "deckSamples": 800
+      },
+      "moduleInventory": {
+        "catcher-land": 2,
+        "catcher-water": 1,
+        "log-bank-stone": 4,
+        "log-end": 16,
+        "log-plank": 15,
+        "log-ripple": 2,
+        "log-sill": 2,
+        "log-stringer": 8
+      }
+    },
+    "canal-bascule": {
+      "id": "canal-bascule",
+      "packageName": "Canal Bascule",
+      "district": "liquidation-yard",
+      "style": "steel-bascule",
+      "rect": [
+        10700,
+        1280,
+        10920,
+        1500
+      ],
+      "span": "y",
+      "z": 0,
+      "clear": 220,
+      "rampLength": 0,
+      "rails": true,
+      "under": "deep",
+      "staticFrames": [
+        "canal-bascule.deck.static",
+        "canal-bascule.near.static"
+      ],
+      "swayFrames": {},
+      "defaultState": "raised",
+      "movingParts": {
+        "gateId": "yard-bascule-leaf",
+        "states": {
+          "raised": [
+            "canal-bascule.moving.raised"
+          ],
+          "lowering-1": [
+            "canal-bascule.moving.lowering-1"
+          ],
+          "lowering-2": [
+            "canal-bascule.moving.lowering-2"
+          ],
+          "lowered": [
+            "canal-bascule.moving.lowered"
+          ]
+        },
+        "stateSets": {},
+        "sequence": [
+          "raised",
+          "lowering-1",
+          "lowering-2",
+          "lowered"
+        ],
+        "sequenceTicks": 12
+      },
+      "alignment": {
+        "deckCoverage": 1.0,
+        "deckSamples": 800,
+        "railCoverage": 1.0,
+        "railSamples": 60
+      },
+      "moduleInventory": {
+        "bascule-bollard": 4,
+        "bascule-cabin-door": 1,
+        "bascule-cabin-hazard": 6,
+        "bascule-cabin-roof": 1,
+        "bascule-cabin-walls": 1,
+        "bascule-cabin-window": 3,
+        "bascule-fender": 10,
+        "bascule-foam": 1,
+        "bascule-hinge-pier": 1,
+        "bascule-lamp-base": 2,
+        "bascule-lamp-cap": 2,
+        "bascule-lamp-lantern": 2,
+        "bascule-lamp-pole": 2,
+        "bascule-leaf-floor-beam": 28,
+        "bascule-leaf-girder": 8,
+        "bascule-leaf-plate": 4,
+        "bascule-leaf-seat": 1,
+        "bascule-leaf-tip-stripe": 48,
+        "bascule-pier-plate": 1,
+        "bascule-rail-mid": 8,
+        "bascule-rail-post": 64,
+        "bascule-rail-top": 8,
+        "bascule-rest-pier": 1,
+        "bascule-trunnion": 2,
+        "bascule-trunnion-housing": 2,
+        "bascule-waterline": 1,
+        "catcher-land": 2,
+        "catcher-water": 1
+      }
+    }
+  },
+  "frames": {
+    "canal-bascule.deck.static": {
+      "id": "canal-bascule.deck.static",
+      "crossing": "canal-bascule",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "canal-bascule.deck.static#0",
+          "page": "east-0",
+          "frame": {
+            "x": 4,
+            "y": 452,
+            "w": 1008,
+            "h": 170
+          },
+          "origin": {
+            "x": 10543.0,
+            "y": 1236.0
+          },
+          "sourcePixelSha256": "8c970d8e13caf8e3eaae7f9e71c48428c1d4f4058f05f8df325f4dd52821d7df"
+        },
+        {
+          "id": "canal-bascule.deck.static#1",
+          "page": "east-0",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 1106,
+            "h": 444
+          },
+          "origin": {
+            "x": 10547.0,
+            "y": 1462.0
+          },
+          "sourcePixelSha256": "8c8c96aa389c012969d1cf5d8ff247bd602135d48096b2daeed51b62358ee2f7"
+        }
+      ]
+    },
+    "canal-bascule.moving.lowered": {
+      "id": "canal-bascule.moving.lowered",
+      "crossing": "canal-bascule",
+      "layer": "moving",
+      "state": "lowered",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "canal-bascule.moving.lowered",
+          "page": "east-0",
+          "frame": {
+            "x": 628,
+            "y": 1504,
+            "w": 620,
+            "h": 494
+          },
+          "origin": {
+            "x": 10655.0,
+            "y": 1261.0
+          },
+          "sourcePixelSha256": "f87d78fed3bbc02e674479a95b7c8cda5b347702c10405a1c5bbe6eac8fe13d7"
+        }
+      ]
+    },
+    "canal-bascule.moving.lowering-1": {
+      "id": "canal-bascule.moving.lowering-1",
+      "crossing": "canal-bascule",
+      "layer": "moving",
+      "state": "lowering-1",
+      "band": "actors",
+      "sortY": 1506,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "canal-bascule.moving.lowering-1",
+          "page": "east-0",
+          "frame": {
+            "x": 4,
+            "y": 626,
+            "w": 620,
+            "h": 622
+          },
+          "origin": {
+            "x": 10655.0,
+            "y": 1190.0
+          },
+          "sourcePixelSha256": "de8ed5bedc7dba1101227582a59a24a2cded4482e273958425f267e9a0100d08"
+        }
+      ]
+    },
+    "canal-bascule.moving.lowering-2": {
+      "id": "canal-bascule.moving.lowering-2",
+      "crossing": "canal-bascule",
+      "layer": "moving",
+      "state": "lowering-2",
+      "band": "actors",
+      "sortY": 1506,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "canal-bascule.moving.lowering-2",
+          "page": "east-0",
+          "frame": {
+            "x": 4,
+            "y": 1252,
+            "w": 620,
+            "h": 588
+          },
+          "origin": {
+            "x": 10655.0,
+            "y": 1208.0
+          },
+          "sourcePixelSha256": "a8e8243ba2ef6396dbabbb19859a2ebe25a3b5822cb0ca768195c6c06cd06921"
+        }
+      ]
+    },
+    "canal-bascule.moving.raised": {
+      "id": "canal-bascule.moving.raised",
+      "crossing": "canal-bascule",
+      "layer": "moving",
+      "state": "raised",
+      "band": "actors",
+      "sortY": 1506,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "canal-bascule.moving.raised",
+          "page": "east-0",
+          "frame": {
+            "x": 628,
+            "y": 930,
+            "w": 620,
+            "h": 570
+          },
+          "origin": {
+            "x": 10655.0,
+            "y": 1224.0
+          },
+          "sourcePixelSha256": "71b1dfe6e10d6bc6834dd2c7e245cd538b360ca2175691d535420a90a72daeaf"
+        }
+      ]
+    },
+    "canal-bascule.near.static": {
+      "id": "canal-bascule.near.static",
+      "crossing": "canal-bascule",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 1586,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "canal-bascule.near.static#0",
+          "page": "east-0",
+          "frame": {
+            "x": 864,
+            "y": 626,
+            "w": 36,
+            "h": 242
+          },
+          "origin": {
+            "x": 10615.0,
+            "y": 1455.0
+          },
+          "sourcePixelSha256": "379dbeb50588008508fb0a3244a23bc9547411269a82e2c50f06cfa619bc3d9b"
+        },
+        {
+          "id": "canal-bascule.near.static#1",
+          "page": "east-0",
+          "frame": {
+            "x": 628,
+            "y": 626,
+            "w": 232,
+            "h": 282
+          },
+          "origin": {
+            "x": 10987.0,
+            "y": 1445.0
+          },
+          "sourcePixelSha256": "0e1d5e883cb640a425d3888e719ba2dbf0c3753e07a1c8353dac88edd1625a41"
+        }
+      ]
+    },
+    "fork-trestle.deck.static": {
+      "id": "fork-trestle.deck.static",
+      "crossing": "fork-trestle",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "fork-trestle.deck.static",
+          "page": "crossing-1",
+          "frame": {
+            "x": 4,
+            "y": 1060,
+            "w": 782,
+            "h": 816
+          },
+          "origin": {
+            "x": 4113.0,
+            "y": 3077.0
+          },
+          "sourcePixelSha256": "2591a42ed87ecf4fc0b63fb8c62ede0baf740b4583e72cb3889fca972724b98d"
+        }
+      ]
+    },
+    "fork-trestle.near.static": {
+      "id": "fork-trestle.near.static",
+      "crossing": "fork-trestle",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 3380,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "fork-trestle.near.static",
+          "page": "crossing-0",
+          "frame": {
+            "x": 1436,
+            "y": 1008,
+            "w": 608,
+            "h": 116
+          },
+          "origin": {
+            "x": 4173.0,
+            "y": 3338.0
+          },
+          "sourcePixelSha256": "f505b8a9d3fb008b577a51501c314cc033cb1c493bab29ee126918122e666b0c"
+        }
+      ]
+    },
+    "hashwood-run-bridge.deck.static": {
+      "id": "hashwood-run-bridge.deck.static",
+      "crossing": "hashwood-run-bridge",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "hashwood-run-bridge.deck.static",
+          "page": "east-0",
+          "frame": {
+            "x": 1114,
+            "y": 4,
+            "w": 512,
+            "h": 922
+          },
+          "origin": {
+            "x": 6896.0,
+            "y": 2199.0
+          },
+          "sourcePixelSha256": "40a59c92d10e4eb585cec67950045688f468b790acf4c1303326cf17a2d57ea6"
+        }
+      ]
+    },
+    "lock-gate-walkway.deck.static": {
+      "id": "lock-gate-walkway.deck.static",
+      "crossing": "lock-gate-walkway",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "lock-gate-walkway.deck.static",
+          "page": "crossing-2",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 1226,
+            "h": 1178
+          },
+          "origin": {
+            "x": 5051.0,
+            "y": 3307.0
+          },
+          "sourcePixelSha256": "a5f5c71c7f238b8a1a4169faad1595ac021f34804752f5c49a2a5882e26d68a4"
+        }
+      ]
+    },
+    "lock-gate-walkway.moving.chained": {
+      "id": "lock-gate-walkway.moving.chained",
+      "crossing": "lock-gate-walkway",
+      "layer": "moving",
+      "state": "chained",
+      "band": "actors",
+      "sortY": 3730,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "lock-gate-walkway.moving.chained",
+          "page": "crossing-0",
+          "frame": {
+            "x": 1848,
+            "y": 4,
+            "w": 44,
+            "h": 686
+          },
+          "origin": {
+            "x": 5501.0,
+            "y": 3376.0
+          },
+          "sourcePixelSha256": "6fb1cd71c3476a8ba3074e0f25652c83fbf59a9236df144a1d1da9c99c05b286"
+        }
+      ]
+    },
+    "lock-gate-walkway.moving.open-north": {
+      "id": "lock-gate-walkway.moving.open-north",
+      "crossing": "lock-gate-walkway",
+      "layer": "moving",
+      "state": "open-north",
+      "band": "actors",
+      "sortY": 3420,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "lock-gate-walkway.moving.open-north",
+          "page": "crossing-0",
+          "frame": {
+            "x": 590,
+            "y": 1406,
+            "w": 332,
+            "h": 124
+          },
+          "origin": {
+            "x": 5501.0,
+            "y": 3363.0
+          },
+          "sourcePixelSha256": "a1cbc8800a671528395f5fff585aa5ecadbfd1be93207177f10327a18844c97b"
+        }
+      ]
+    },
+    "lock-gate-walkway.moving.open-south": {
+      "id": "lock-gate-walkway.moving.open-south",
+      "crossing": "lock-gate-walkway",
+      "layer": "moving",
+      "state": "open-south",
+      "band": "actors",
+      "sortY": 3730,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "lock-gate-walkway.moving.open-south",
+          "page": "crossing-0",
+          "frame": {
+            "x": 590,
+            "y": 1534,
+            "w": 332,
+            "h": 118
+          },
+          "origin": {
+            "x": 5501.0,
+            "y": 3673.0
+          },
+          "sourcePixelSha256": "6d0bce9c3e5f6aaf9c30c421084f0346fc446d01163cbcf96e29ca058d6f7d70"
+        }
+      ]
+    },
+    "lock-gate-walkway.near.static": {
+      "id": "lock-gate-walkway.near.static",
+      "crossing": "lock-gate-walkway",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 3730,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "lock-gate-walkway.near.static",
+          "page": "crossing-0",
+          "frame": {
+            "x": 4,
+            "y": 1808,
+            "w": 582,
+            "h": 230
+          },
+          "origin": {
+            "x": 5231.0,
+            "y": 3625.0
+          },
+          "sourcePixelSha256": "e9ce97865b5ffd990754834c6eabaf7a3a09ac15487774879bf176780c13ac73"
+        }
+      ]
+    },
+    "old-mill-bridge.deck.static": {
+      "id": "old-mill-bridge.deck.static",
+      "crossing": "old-mill-bridge",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "old-mill-bridge.deck.static",
+          "page": "crossing-0",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 1600,
+            "h": 1000
+          },
+          "origin": {
+            "x": 4341.0,
+            "y": 751.0
+          },
+          "sourcePixelSha256": "c76df59d7b9090d5058524280644138d3be4195b67bcc1c994f2d464c457d8d1"
+        }
+      ]
+    },
+    "old-mill-bridge.near.static": {
+      "id": "old-mill-bridge.near.static",
+      "crossing": "old-mill-bridge",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 1135,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "old-mill-bridge.near.static",
+          "page": "crossing-0",
+          "frame": {
+            "x": 4,
+            "y": 1008,
+            "w": 1428,
+            "h": 152
+          },
+          "origin": {
+            "x": 4393.0,
+            "y": 1071.0
+          },
+          "sourcePixelSha256": "bdb2182d554448c0f01e9c10aac8aee0db3503f5f72a13c7e2099cbd21789f49"
+        }
+      ]
+    },
+    "proof-of-work-bridge.deck.static": {
+      "id": "proof-of-work-bridge.deck.static",
+      "crossing": "proof-of-work-bridge",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "proof-of-work-bridge.deck.static",
+          "page": "crossing-1",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 1512,
+            "h": 1052
+          },
+          "origin": {
+            "x": 4347.0,
+            "y": 2134.0
+          },
+          "sourcePixelSha256": "7d67ef870576a74d332c5a297204811e08d9ffbc975aba23d556c6caae4015c8"
+        }
+      ]
+    },
+    "proof-of-work-bridge.near.static": {
+      "id": "proof-of-work-bridge.near.static",
+      "crossing": "proof-of-work-bridge",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 2540,
+      "fadeWhenHeroOnDeck": 0.55,
+      "parts": [
+        {
+          "id": "proof-of-work-bridge.near.static",
+          "page": "crossing-0",
+          "frame": {
+            "x": 4,
+            "y": 1164,
+            "w": 1008,
+            "h": 238
+          },
+          "origin": {
+            "x": 4498.0,
+            "y": 2414.0
+          },
+          "sourcePixelSha256": "1b10735b4530c38ceb50760e53dad75bd1cd140cfe74d052a7e8f1be3a608274"
+        }
+      ]
+    },
+    "proof-of-work-bridge.overhead.static": {
+      "id": "proof-of-work-bridge.overhead.static",
+      "crossing": "proof-of-work-bridge",
+      "layer": "overhead",
+      "state": "static",
+      "band": "overhead",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 0.22,
+      "parts": [
+        {
+          "id": "proof-of-work-bridge.overhead.static",
+          "page": "crossing-0",
+          "frame": {
+            "x": 1016,
+            "y": 1164,
+            "w": 828,
+            "h": 640
+          },
+          "origin": {
+            "x": 4543.0,
+            "y": 2146.0
+          },
+          "sourcePixelSha256": "b81a24639550bd9579d67032d9183792e0e5d6cffa3287eb2d81ee606804ae4f"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.static": {
+      "id": "rugpull-rope-bridge.deck.static",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.static#0",
+          "page": "ravine-0",
+          "frame": {
+            "x": 1256,
+            "y": 4,
+            "w": 350,
+            "h": 874
+          },
+          "origin": {
+            "x": 2266.0,
+            "y": 848.0
+          },
+          "sourcePixelSha256": "a6fdb4712fd8bba845ff9c0ab18744c3ec500c31da351599e47940418c385065"
+        },
+        {
+          "id": "rugpull-rope-bridge.deck.static#1",
+          "page": "ravine-0",
+          "frame": {
+            "x": 1610,
+            "y": 4,
+            "w": 268,
+            "h": 868
+          },
+          "origin": {
+            "x": 2859.0,
+            "y": 848.0
+          },
+          "sourcePixelSha256": "cdf0a392ec037af59efdb463a38f760ed0a9dbe0840be8df39575e7c72128c01"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.sway-0": {
+      "id": "rugpull-rope-bridge.deck.sway-0",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "sway-0",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.sway-0",
+          "page": "ravine-1",
+          "frame": {
+            "x": 4,
+            "y": 726,
+            "w": 922,
+            "h": 710
+          },
+          "origin": {
+            "x": 2419.0,
+            "y": 864.0
+          },
+          "sourcePixelSha256": "178e3a3fecbbefcd553fc8e2b24f479b2ff13657ae2b38769572f04ae6144a4f"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.sway-1": {
+      "id": "rugpull-rope-bridge.deck.sway-1",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "sway-1",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.sway-1",
+          "page": "ravine-1",
+          "frame": {
+            "x": 930,
+            "y": 4,
+            "w": 922,
+            "h": 714
+          },
+          "origin": {
+            "x": 2419.0,
+            "y": 864.0
+          },
+          "sourcePixelSha256": "53669a10ea71731f12e36655f0f105b12c10c350cdcd852b4d98a0c4feafbbb8"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.sway-2": {
+      "id": "rugpull-rope-bridge.deck.sway-2",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "sway-2",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.sway-2",
+          "page": "ravine-0",
+          "frame": {
+            "x": 1012,
+            "y": 1204,
+            "w": 922,
+            "h": 718
+          },
+          "origin": {
+            "x": 2419.0,
+            "y": 864.0
+          },
+          "sourcePixelSha256": "a11bea00f6e176282cca7e5b1aab14dd6a6bbe1f5b9f6aebee93f6c9d2293474"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.sway-3": {
+      "id": "rugpull-rope-bridge.deck.sway-3",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "sway-3",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.sway-3",
+          "page": "ravine-1",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 922,
+            "h": 718
+          },
+          "origin": {
+            "x": 2419.0,
+            "y": 864.0
+          },
+          "sourcePixelSha256": "468d5f1911654c56ff78dccde18fd8e00f3b3bb194cf3b7a24048554e601d98a"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.sway-4": {
+      "id": "rugpull-rope-bridge.deck.sway-4",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "sway-4",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.sway-4",
+          "page": "ravine-1",
+          "frame": {
+            "x": 930,
+            "y": 722,
+            "w": 922,
+            "h": 714
+          },
+          "origin": {
+            "x": 2419.0,
+            "y": 864.0
+          },
+          "sourcePixelSha256": "a3f9804170d090805525399cabdc1f6188d9171a6fa4b780e31332703f07374c"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.deck.sway-5": {
+      "id": "rugpull-rope-bridge.deck.sway-5",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "deck",
+      "state": "sway-5",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.deck.sway-5",
+          "page": "ravine-2",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 922,
+            "h": 710
+          },
+          "origin": {
+            "x": 2419.0,
+            "y": 864.0
+          },
+          "sourcePixelSha256": "71a79eea62e07e6a641d7d7ce0a979ac993c1c35360c49496e0f4d166451e549"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.moving.raised": {
+      "id": "rugpull-rope-bridge.moving.raised",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "moving",
+      "state": "raised",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.moving.raised",
+          "page": "ravine-2",
+          "frame": {
+            "x": 930,
+            "y": 4,
+            "w": 912,
+            "h": 766
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 858.0
+          },
+          "sourcePixelSha256": "8bfff38c65fd71d6ecc6b64c17521afd101a99028b213d72cdb8d996fcf485a0"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.static": {
+      "id": "rugpull-rope-bridge.near.static",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.static#0",
+          "page": "ravine-2",
+          "frame": {
+            "x": 4,
+            "y": 774,
+            "w": 244,
+            "h": 776
+          },
+          "origin": {
+            "x": 2319.0,
+            "y": 858.0
+          },
+          "sourcePixelSha256": "c847685817816df10473319e9d9e4dbdd3698d4e1b546fb56c392356b176bdf3"
+        },
+        {
+          "id": "rugpull-rope-bridge.near.static#1",
+          "page": "ravine-2",
+          "frame": {
+            "x": 252,
+            "y": 718,
+            "w": 244,
+            "h": 774
+          },
+          "origin": {
+            "x": 2859.0,
+            "y": 858.0
+          },
+          "sourcePixelSha256": "2bd0c47516edcfea845542116e5ba8570f35391c1bffb9f7aa20109c42d99c65"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.sway-0": {
+      "id": "rugpull-rope-bridge.near.sway-0",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "sway-0",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.sway-0",
+          "page": "ravine-1",
+          "frame": {
+            "x": 4,
+            "y": 1714,
+            "w": 912,
+            "h": 262
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 1084.0
+          },
+          "sourcePixelSha256": "ec88b508175ee392049285de5d11ee71be9d76cf1ec56e203309941b19a06eeb"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.sway-1": {
+      "id": "rugpull-rope-bridge.near.sway-1",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "sway-1",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.sway-1",
+          "page": "ravine-0",
+          "frame": {
+            "x": 4,
+            "y": 1666,
+            "w": 912,
+            "h": 272
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 1084.0
+          },
+          "sourcePixelSha256": "a55b9fb9958cbe1bda2c3ab0e5b586ed7f87edba7432e8c223a7a0a9102d997c"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.sway-2": {
+      "id": "rugpull-rope-bridge.near.sway-2",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "sway-2",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.sway-2",
+          "page": "ravine-0",
+          "frame": {
+            "x": 4,
+            "y": 1386,
+            "w": 912,
+            "h": 276
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 1084.0
+          },
+          "sourcePixelSha256": "a2b829934a3d042835025a3388b0e6dd2149877c9a9ba8ca92d1c74b780f7cfb"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.sway-3": {
+      "id": "rugpull-rope-bridge.near.sway-3",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "sway-3",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.sway-3",
+          "page": "ravine-1",
+          "frame": {
+            "x": 4,
+            "y": 1440,
+            "w": 912,
+            "h": 270
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 1084.0
+          },
+          "sourcePixelSha256": "8b5a266e1fe347f07112be9a715557d277154c8084c9f974e6683f1ff43fd55c"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.sway-4": {
+      "id": "rugpull-rope-bridge.near.sway-4",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "sway-4",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.sway-4",
+          "page": "ravine-1",
+          "frame": {
+            "x": 920,
+            "y": 1440,
+            "w": 912,
+            "h": 258
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 1084.0
+          },
+          "sourcePixelSha256": "4c1007714f6a7704be683ddb7d37ef175eea67e1a16b190db25161db4241a4a0"
+        }
+      ]
+    },
+    "rugpull-rope-bridge.near.sway-5": {
+      "id": "rugpull-rope-bridge.near.sway-5",
+      "crossing": "rugpull-rope-bridge",
+      "layer": "near",
+      "state": "sway-5",
+      "band": "actors",
+      "sortY": 1210,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "rugpull-rope-bridge.near.sway-5",
+          "page": "ravine-1",
+          "frame": {
+            "x": 920,
+            "y": 1702,
+            "w": 912,
+            "h": 256
+          },
+          "origin": {
+            "x": 2422.0,
+            "y": 1084.0
+          },
+          "sourcePixelSha256": "60e04e91d25c26c9792d9f04b7efb85498a4ee79f6a48c43df627d0fec09fd06"
+        }
+      ]
+    },
+    "settler-viaduct.deck.static": {
+      "id": "settler-viaduct.deck.static",
+      "crossing": "settler-viaduct",
+      "layer": "deck",
+      "state": "static",
+      "band": "ground",
+      "sortY": null,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "settler-viaduct.deck.static",
+          "page": "ravine-0",
+          "frame": {
+            "x": 4,
+            "y": 4,
+            "w": 1248,
+            "h": 1196
+          },
+          "origin": {
+            "x": 2316.0,
+            "y": 2136.0
+          },
+          "sourcePixelSha256": "e8f8e654dede687770416827f8e6413c4ec91c4bb6e68726200f29d24cbaecb4"
+        }
+      ]
+    },
+    "settler-viaduct.near.static": {
+      "id": "settler-viaduct.near.static",
+      "crossing": "settler-viaduct",
+      "layer": "near",
+      "state": "static",
+      "band": "actors",
+      "sortY": 2510,
+      "fadeWhenHeroOnDeck": 1.0,
+      "parts": [
+        {
+          "id": "settler-viaduct.near.static",
+          "page": "ravine-0",
+          "frame": {
+            "x": 4,
+            "y": 1204,
+            "w": 1004,
+            "h": 178
+          },
+          "origin": {
+            "x": 2399.0,
+            "y": 2436.0
+          },
+          "sourcePixelSha256": "fb7f37eaadeca0ff910a38e9fc91dac2508a82751da7af69ac3b525c624c2600"
+        }
+      ]
+    }
+  }
+}
