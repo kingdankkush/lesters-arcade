@@ -767,6 +767,8 @@ async function runGame({ browser, gameId, origin, allowedOrigins = [], wallet, c
     const apiBeforeEntry = recorder.api.length;
     const modal = await openRankedModal(page, gameId, { timeoutMs: timeouts.stepMs });
     out.modal = modal;
+    // Visual evidence of the quoted price rows (0.01 / 0.002 / 0.012 zkLTC) when a --shots folder is given.
+    if (shotsDir) await page.screenshot({ path: join(shotsDir, `${gameId}-entry-modal.png`), fullPage: false }).catch(() => {});
     expect('entry-modal-eyebrow', modal.eyebrow === 'Ranked · Entry', { eyebrow: modal.eyebrow });
     expect('entry-modal-reserve-label', modal.reserveLabel === 'Settlement reserve', { reserveLabel: modal.reserveLabel });
     // The live quote must match the client constants (0.01 + 0.002 = 0.012 zkLTC): a mismatch means the on-chain

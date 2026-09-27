@@ -5,7 +5,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readHeroSelectorEvidence } from './hmh-reboot-hero-selector-browser-contract.mjs';
-import { RANKED_ENTRY_TOTAL_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
+import { RANKED_ENTRY_FEE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC } from '../apps/portal/src/arcade-core.mjs';
 
 export const PORTAL_E2E_FLOW_SCHEMA = 'hmh-reboot-portal-e2e-flows-v1';
 
@@ -699,6 +699,10 @@ if (isMain) {
         await page.waitForSelector('#rankedEntryModal:not([hidden])', { timeout: 10_000 });
         const modal = (await page.locator('#rankedEntryModal').innerText()).replace(/\s+/g, ' ');
         assert.ok(/Ranked · Entry/i.test(modal) && modal.includes(`Total ${RANKED_ENTRY_TOTAL_ZKLTC} zkLTC`) && /no transaction is sent/i.test(modal), `entry modal: ${modal}`);
+        // Every price row of the modal follows the one fee source (arcade-core): 0.01 / 0.002 / 0.012 zkLTC.
+        const priceRows = await page.evaluate(() => ['rankedEntryFee', 'rankedEntryReserve', 'rankedEntryTotal'].map((id) => document.getElementById(id)?.textContent.trim() ?? ''));
+        assert.deepEqual(priceRows, [RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_ZKLTC, RANKED_ENTRY_TOTAL_ZKLTC].map((amount) => `${amount} zkLTC`), `entry modal price rows: ${priceRows}`);
+        await page.screenshot({ path: evidencePath('06b-ranked-entry-modal'), fullPage: false });
         await page.click('#rankedEntryApprove');
         await page.waitForSelector('#officialCharacterSelect:not([hidden])', { timeout: 20_000 });
         await page.locator('#officialCharacterRoster .hero-card.active').first().click();
