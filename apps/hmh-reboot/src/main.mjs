@@ -269,6 +269,7 @@ import {
   followCameraTarget,
   getGroundContact,
   interpolateSpatialState,
+  interpolateStep,
   worldToScreen,
   worldToScreenInto,
 } from './world-space.mjs';
@@ -1421,6 +1422,10 @@ async function boot() {
   let lastInputWeaponSlot = 0;
   let previousActor = null;
   let renderActor = null;
+  // 1.8.7: the hero's frame alpha, shared by enemies, the boss and tracers
+  // (projection only), with the boss's last-step position.
+  let renderAlpha = 1;
+  let bossPreviousX; let bossPreviousY;
   let camera = null;
   let input = new InputState();
   let inputController = null;
@@ -1741,6 +1746,9 @@ async function boot() {
         reduceMotion: settings.reduceMotion || performanceProfile.particlesPerHazard === 0,
         reduceFlash: settings.reduceFlash,
         dataset: releaseTelemetryEnabled ? dataset : null,
+        alpha: renderAlpha,
+        animationHysteresis: 8,
+        distanceLockedWalk: true,
       });
       let bossTelegraphPrimitiveCount = 0;
       const corpseNowMs = performance.now();
@@ -1776,7 +1784,8 @@ async function boot() {
       const bossVisualTick = simulation?.tick ?? 0;
       if (bossVisualTick >= liquidatorBoss?.startTick - 600) requestEnemyRosterAtlas('the-liquidator');
     if (bossVisualTick >= liquidatorBoss?.startTick && (liquidatorBoss.active || bossVisualTick < bossDeathVisualUntilTick)) {
-        const bossScreen = worldToScreen({ x: liquidatorBoss.x, y: liquidatorBoss.y, z: liquidatorBoss.groundZ }, camera, view);
+        const bossY = interpolateStep(bossPreviousY, liquidatorBoss.y, renderAlpha);
+        const bossScreen = worldToScreen({ x: interpolateStep(bossPreviousX, liquidatorBoss.x, renderAlpha), y: bossY, z: liquidatorBoss.groundZ }, camera, view);
         const bossPhaseTick = lastBossStep?.elapsedTick ?? 45;
         const bossPose = bossVisual.applyPose({
           ...liquidatorPose({boss: liquidatorBoss, player: actor, tick: bossVisualTick,
@@ -1784,7 +1793,7 @@ async function boot() {
         });
         bossVisual.visible = true;
         bossVisual.position.set(bossScreen.x, bossScreen.y);
-        bossVisual.zIndex = worldDepthKey(liquidatorBoss.y);
+        bossVisual.zIndex = worldDepthKey(bossY);
         bossVisual.scale.set((bossVisual.rosterScale ?? 1) * camera.zoom * (1 + (bossPhaseTick < 2_445 && Math.max(0, 45 - (bossPhaseTick % 1_200)) / 250)));
         // Boss health reads from the dedicated bar, never from transparency.
         bossVisual.alpha = liquidatorBoss.active ? 1 : Math.max(0.15, 1 - (bossVisualTick - (bossDeathVisualUntilTick - 45)) / 45);
@@ -1822,6 +1831,11 @@ async function boot() {
         if (tracer.style === 'none') continue;
         const dx = to.x - from.x;
         const dy = to.y - from.y;
+        // The head draws back along its last step by the frame alpha, as the
+        // hero does; the tail keeps the full-step length behind it.
+        const lag = 1 - renderAlpha;
+        to.x -= dx * lag;
+        to.y -= dy * lag;
         const coreTail = Math.min(1, tracer.tailScale);
         if (tracer.afterImage) {
           projectileTrails.moveTo(to.x - dx * (tracer.tailScale + 0.8), to.y - dy * (tracer.tailScale + 0.8)).lineTo(to.x, to.y)
@@ -3181,6 +3195,8 @@ async function boot() {
     simulation.onStep(({ tick, dtSeconds, input: tickInput }) => {
       lastInputWeaponSlot = tickInput.weaponSlot;
       previousActor = createActorSpatialState({ ...actor });
+      bossPreviousX = liquidatorBoss?.x;
+      bossPreviousY = liquidatorBoss?.y;
       for (const enemy of grayboxEnemies) {
         enemy.previousX = enemy.x;
         enemy.previousY = enemy.y;
@@ -4993,6 +5009,7 @@ async function boot() {
     }
     elapsedMs = simulation.timeMs;
     renderActor = interpolateSpatialState(previousActor ?? actor, actor, frame.alpha);
+    renderAlpha = frame.alpha;
     // V-6 encounter framing and boss-phase beat. Render zoom only: the
     // director frames spawns on a fixed logical view (K-1) and pointer aim is
     // a normalised direction, so this cannot touch simulation or input.

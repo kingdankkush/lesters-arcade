@@ -37,8 +37,17 @@ export function animationPriority(state, spawnCue, elite) {
  * compete, and the `cap` smallest by (priority, distance, id, row) win. The
  * heap holds the current winners with the last of them at the root, so a new
  * row either loses to the root or replaces it. Returns the number selected.
+ *
+ * With a hysteresis `band` (A6b, 1.8.7), `wasAnimated[row]` is last frame's
+ * tier. Rows at rank < cap - band always get a slot, and a row animated last
+ * frame keeps its slot until rank cap + band, ahead of a newcomer at the
+ * boundary, so crowd edges stop flickering between animated and held. Slots
+ * still free then go to the best remaining rows under the cap, so the tier is
+ * always min(cap, visible) as with band 0 and never exceeds `cap`: when more
+ * rows qualify, the worst-ranked holders drop first. band 0 is the plain
+ * top-`cap` rule.
  */
-export function markAnimatedRows(count, enemies, visible, priority, distance, cap, heap, selected) {
+export function markAnimatedRows(count, enemies, visible, priority, distance, cap, heap, selected, band = 0, wasAnimated = null) {
   if (!Number.isInteger(cap) || cap < 0) throw new TypeError('animation cap must be a non-negative integer');
   // > 0 when row a comes after row b in selection order.
   const after = (a, b) => {
@@ -46,15 +55,28 @@ export function markAnimatedRows(count, enemies, visible, priority, distance, ca
     const right = enemies[b].id;
     return priority[a] - priority[b] || distance[a] - distance[b] || (left < right ? -1 : left > right ? 1 : a - b);
   };
+  // Settles `row` into the max-heap of `size` from slot `at` downwards.
+  const sink = (row, at, size) => {
+    for (;;) {
+      let child = at * 2 + 1;
+      if (child >= size) break;
+      if (child + 1 < size && after(heap[child + 1], heap[child]) > 0) child += 1;
+      if (after(heap[child], row) < 0) break;
+      heap[at] = heap[child];
+      at = child;
+    }
+    heap[at] = row;
+  };
+  const hold = band > 0 && cap > 0 && wasAnimated !== null;
+  const limit = hold ? cap + band : cap;
   let size = 0;
   for (let row = 0; row < count; row += 1) {
     selected[row] = 0;
     const id = enemies[row].id;
     if (visible[row] !== 1 || typeof id !== 'string' || id.length === 0) continue;
     if (!Number.isFinite(distance[row]) || distance[row] < 0) throw new TypeError(`${id}.distance must be non-negative and finite`);
-    let at;
-    if (size < cap) {
-      at = size;
+    if (size < limit) {
+      let at = size;
       size += 1;
       while (at > 0) {
         const parent = (at - 1) >> 1;
@@ -62,22 +84,43 @@ export function markAnimatedRows(count, enemies, visible, priority, distance, ca
         heap[at] = heap[parent];
         at = parent;
       }
-    } else if (size > 0 && after(row, heap[0]) < 0) {
-      at = 0;
-      for (;;) {
-        let child = at * 2 + 1;
-        if (child >= size) break;
-        if (child + 1 < size && after(heap[child + 1], heap[child]) > 0) child += 1;
-        if (after(heap[child], row) < 0) break;
-        heap[at] = heap[child];
-        at = child;
-      }
-    } else continue;
-    heap[at] = row;
+      heap[at] = row;
+    } else if (size > 0 && after(row, heap[0]) < 0) sink(row, 0, size);
   }
-  for (let index = 0; index < size; index += 1) selected[heap[index]] = 1;
-  return size;
+  if (!hold) {
+    for (let index = 0; index < size; index += 1) selected[heap[index]] = 1;
+    return size;
+  }
+  // Heapsort the (at most cap + band) winners into rank order, best first.
+  for (let end = size - 1; end > 0; end -= 1) {
+    const last = heap[end];
+    heap[end] = heap[0];
+    sink(last, 0, end);
+  }
+  // Pass 1: sure winners and holders (the heap stops at rank cap + band).
+  let picked = 0;
+  for (let rank = 0; rank < size && picked < cap; rank += 1) {
+    const row = heap[rank];
+    if (rank < cap - band || wasAnimated[row] === 1) {
+      selected[row] = 1;
+      picked += 1;
+    }
+  }
+  // Pass 2: newcomers under the cap fill whatever the holders left free.
+  for (let rank = 0; rank < size && rank < cap && picked < cap; rank += 1) {
+    if (selected[heap[rank]] === 0) {
+      selected[heap[rank]] = 1;
+      picked += 1;
+    }
+  }
+  return picked;
 }
+
+// Projection only: a coordinate drawn between its last two simulation steps by
+// the frame alpha, as world-space.mjs interpolateStep (this chunk imports
+// nothing). alpha 1 is `current` exactly; a spawn or teleport snaps.
+const between = (previous, current, alpha) =>
+  Number.isFinite(previous) && Math.abs(current - previous) <= 96 ? current - (current - previous) * (1 - alpha) : current;
 
 export function createEnemyRenderPass({
   markers,
@@ -102,7 +145,7 @@ export function createEnemyRenderPass({
 }) {
   // Row scratch, indexed by the enemy's position in this frame's population.
   let capacity = 0;
-  let screenX; let screenY; let distance; let visible; let priority; let selected; let heap;
+  let screenX; let screenY; let distance; let visible; let priority; let selected; let heap; let worldX; let worldY; let was;
   const states = [];
   // Health pips collected by render() and drawn by drawHealthPips().
   let pipCount = 0;
@@ -113,6 +156,7 @@ export function createEnemyRenderPass({
     screenX = new Float64Array(capacity); screenY = new Float64Array(capacity); distance = new Float64Array(capacity);
     visible = new Uint8Array(capacity); priority = new Uint8Array(capacity); selected = new Uint8Array(capacity);
     heap = new Int32Array(capacity);
+    worldX = new Float64Array(capacity); worldY = new Float64Array(capacity); was = new Uint8Array(capacity);
     pipX = new Float64Array(capacity); pipY = new Float64Array(capacity); pipRatio = new Float64Array(capacity);
     pipRadius = new Float64Array(capacity); pipColor = new Float64Array(capacity);
   };
@@ -129,25 +173,38 @@ export function createEnemyRenderPass({
   const shadow = { x: 0, y: 0, footprintPx: 0 };
   // A display serves one enemy id at a time (the pool hands it to a new id on
   // reuse), so its id hashes are cached on it and recomputed on a new id.
+  // The animation tier and walk distance (1.8.7) are per body, so they reset
+  // with the id too.
   const remember = (marker, id) => {
     if (marker.renderPassId === id) return;
     marker.renderPassId = id;
     marker.renderPassElite = isEliteEnemyProjection(id);
     marker.renderPassPhase = creatureIdPhase(id);
+    marker.renderPassAnimated = 0;
+    marker.renderPassWalk = 0;
+    marker.renderPassWalkX = marker.renderPassWalkY = NaN;
   };
 
-  /** One frame. Returns how many visible bodies animated. */
+  /**
+   * One frame. Returns how many visible bodies animated.
+   *
+   * 1.8.7 smoothness, all projection: `alpha` is the hero's frame alpha, and
+   * bodies draw between their last two steps by it (D1); 1 draws the simulated
+   * position. `animationHysteresis` is the LOD band (A6b). `distanceLockedWalk`
+   * plays the run cycle by ground drawn at the archetype's nominal speed (D3).
+   */
   const render = ({
     enemies, camera, view, tick, heroScreen, cullMargin, animationBudget, simulationActive,
     contactShadowPool, hitFeedback, particleScale, reduceMotion, reduceFlash, dataset = null,
+    alpha = 1, animationHysteresis = 0, distanceLockedWalk = false,
   }) => {
     const count = enemies.length;
     grow(count);
     for (let row = 0; row < count; row += 1) {
       const enemy = enemies[row];
-      point.x = enemy.x;
-      point.y = enemy.y;
-      point.z = enemy.groundZ ?? 0;
+      point.x = worldX[row] = alpha === 1 ? enemy.x : between(enemy.previousX, enemy.x, alpha);
+      point.y = worldY[row] = alpha === 1 ? enemy.y : between(enemy.previousY, enemy.y, alpha);
+      point.z = alpha === 1 ? enemy.groundZ ?? 0 : between(enemy.previousGroundZ, enemy.groundZ ?? 0, alpha);
       point.visualLiftZ = enemy.visualLiftZ;
       worldToScreenInto(enemyScreen, point, camera, view);
       screenX[row] = enemyScreen.x;
@@ -158,13 +215,14 @@ export function createEnemyRenderPass({
       distance[row] = Math.hypot(enemyScreen.x - heroScreen.x, enemyScreen.y - heroScreen.y);
       const marker = markers.get(enemy.id);
       if (marker) remember(marker, enemy.id);
+      was[row] = marker ? marker.renderPassAnimated : 0;
       priority[row] = animationPriority(
         state,
         Number.isInteger(enemy.spawnedTick) && tick - enemy.spawnedTick <= 30,
         marker ? marker.renderPassElite : isEliteEnemyProjection(enemy.id),
       );
     }
-    markAnimatedRows(count, enemies, visible, priority, distance, animationBudget, heap, selected);
+    markAnimatedRows(count, enemies, visible, priority, distance, animationBudget, heap, selected, animationHysteresis, was);
 
     let animatedEnemyCount = 0;
     pipCount = 0;
@@ -172,6 +230,7 @@ export function createEnemyRenderPass({
       const enemy = enemies[row];
       const enemyMarker = markers.get(enemy.id);
       if (!enemyMarker) continue;
+      enemyMarker.renderPassAnimated = selected[row];
       if (!enemy.active) {
         enemyMarker.visible = false;
         facing.delete(enemy.id);
@@ -193,6 +252,15 @@ export function createEnemyRenderPass({
         // windows (Cycle 074); the vector fallback keeps the six-state map.
         pose.state = enemyMarker.phaseRelativePoses ? selection.state : states[row];
         pose.tick = creatureAnimationTick(enemy.id, tick, selection.state, (enemy.hitUntilTick ?? 6) - 6, enemyMarker.renderPassPhase);
+        if (distanceLockedWalk) {
+          // D3: ground drawn this frame, in ticks of nominal-speed travel. A
+          // body back from off screen or a teleport adds nothing.
+          const stride = Math.hypot(worldX[row] - enemyMarker.renderPassWalkX, worldY[row] - enemyMarker.renderPassWalkY);
+          if (stride <= 96 && archetype.speed > 0) enemyMarker.renderPassWalk += stride * 60 / archetype.speed;
+          enemyMarker.renderPassWalkX = worldX[row];
+          enemyMarker.renderPassWalkY = worldY[row];
+          if (pose.state === 'run') pose.tick = Math.floor(enemyMarker.renderPassWalk + 1e-6) + enemyMarker.renderPassPhase;
+        }
         pose.direction = enemyDirection;
         pose.elite = enemyMarker.renderPassElite;
         pose.phaseTick = enemyMarker.phaseRelativePoses ? selection.phaseTick : null;
@@ -236,7 +304,7 @@ export function createEnemyRenderPass({
         // made the highest-priority target the hardest one to see.
         enemyMarker.alpha = 1;
         // Depth: an enemy standing further south must draw in front.
-        enemyMarker.zIndex = worldDepthKey(enemy.y);
+        enemyMarker.zIndex = worldDepthKey(worldY[row]);
         // Ground contact, on the sprite's foot line rather than its pivot.
         // Placed only for drawn bodies, so the shadow count can never exceed
         // the bodies actually drawn.

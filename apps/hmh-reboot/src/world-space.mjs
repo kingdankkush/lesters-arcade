@@ -110,6 +110,12 @@ export function interpolateSpatialState(previous, current, alpha) {
   });
 }
 
+// Projection only: a coordinate drawn between its last two simulation steps by
+// the frame alpha. alpha 1 is `current` exactly; no previous sample (a spawn)
+// or a jump past `snap` (a teleport) draws `current` instead of streaking.
+export const interpolateStep = (previous, current, alpha, snap = 96) =>
+  Number.isFinite(previous) && Math.abs(current - previous) <= snap ? current - (current - previous) * (1 - alpha) : current;
+
 export function createFlatGroundQuery({ groundZ = 0, surfaceId = 'ground', walkable = true } = {}) {
   finite(groundZ, 'groundZ');
   if (typeof surfaceId !== 'string' || !surfaceId) throw new TypeError('surfaceId must be a non-empty string');
