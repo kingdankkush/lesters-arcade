@@ -10,12 +10,18 @@ import { runUpgradeContent } from './progression-content.mjs';
 import { resolveUpgradeCardPresentation } from './upgrade-card-presentation.mjs';
 
 // Package 8.3: the re-roll strip under each card. It is a sibling of the
-// select button, never nested in it, 36 px tall behind an 8 px dead zone.
-// The portal stylesheet owns the look; these inline values keep the geometry
-// when it has no rule for the strip yet.
+// select button, never nested in it: a 36 px strip behind an 8 px dead zone,
+// with a 44 px hit area. The extra 8 px of hit area hang below the strip as
+// padding inside a 44 px box, pulled back with a negative bottom margin so the
+// card's height budget stays +36 px, and raised above the details block so a
+// tap there reaches the strip. It never extends up into the dead zone, which
+// protects the select button from a low tap. The portal stylesheet owns the
+// look; these inline values keep the geometry when it has no rule for the
+// strip yet.
 const REROLL_LABELS = Object.freeze({ ready: 'Re-roll', used: 'Re-roll used', none: 'No other upgrades' });
 const REROLL_STRIP_STYLE = Object.freeze({
-  display: 'block', width: '100%', height: '36px', marginTop: '8px', padding: '0 15px',
+  display: 'block', position: 'relative', zIndex: '1', width: '100%', boxSizing: 'border-box',
+  height: '44px', marginTop: '8px', marginBottom: '-8px', padding: '0 15px', paddingBottom: '8px',
   border: '0', borderTop: '1px solid rgba(143,243,255,0.13)', background: 'transparent',
   color: 'var(--cyan)', font: 'inherit', fontSize: '0.68rem', fontWeight: '900',
   letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer',

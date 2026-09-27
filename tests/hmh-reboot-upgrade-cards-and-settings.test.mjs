@@ -543,7 +543,7 @@ const rerollSnapshot = (cards, ranks = {}) => ({
   })),
 });
 
-test('each card carries a re-roll strip beside, never inside, its select button, 36 px behind an 8 px dead zone', () => {
+test('each card carries a re-roll strip beside, never inside, its select button: 36 px with a 44 px hit area behind an 8 px dead zone', () => {
   const { documentRef, elements } = fakeCockpitDocument();
   const ui = createUpgradePanel({ documentRef, weaponName: (weaponId) => HMH_WEAPON_DEFINITIONS[weaponId].displayName });
   ui.showUpgrade(rerollSnapshot([{ id: 'proof-of-work' }, { id: 'scatter-pump', rerollState: 'used', weaponId: 'scatter-shotgun' }], { 'scatter-pump': 2, 'scatter-shells': 2 }));
@@ -556,8 +556,14 @@ test('each card carries a re-roll strip beside, never inside, its select button,
     assert.equal(strip.type, 'button');
     assert.equal(details.tagName, 'DETAILS');
     assert.equal(select.querySelectorAll('button').length, 0, 'the strip is never nested in the select button');
-    assert.equal(strip.style.height, '36px');
+    // Package 8.3 geometry: a 44 px hit area whose bottom 8 px hang below the
+    // 36 px strip without taking card height, an 8 px dead zone above it.
+    assert.equal(strip.style.height, '44px');
+    assert.equal(strip.style.boxSizing, 'border-box');
+    assert.equal(strip.style.paddingBottom, '8px');
+    assert.equal(strip.style.marginBottom, '-8px');
     assert.equal(strip.style.marginTop, '8px');
+    assert.equal(strip.style.position, 'relative', 'the overhang paints above the details block so a tap there re-rolls');
   }
   const strips = elements.get('hmhUpgradeChoices').querySelectorAll('.hmh-upgrade-reroll');
   assert.deepEqual(strips.map((strip) => [strip.textContent, strip.disabled, strip.dataset.slot]), [['Re-roll', false, '0'], ['Re-roll used', true, '1']]);
