@@ -15,6 +15,9 @@ import { localContracts, localWalletKeys } from '../scripts/lib/local-chain.mjs'
 import * as settleApi from '../api/settle.mjs';
 import * as statusApi from '../api/settle-status.mjs';
 import * as seedApi from '../api/ranked-seed.mjs';
+import { CLIENT_OUTDATED_HINT, HMH_DEPLOYED_CHILD_SCHEMA_VERSION, HMH_RANKED_SEED_MIN_GAME_VERSION, hmhRankedSeedMinGameVersion, hmhSeedClientOutdated } from '../server/settle/seed.mjs';
+import { RUN_SUMMARY_SCHEMA_VERSION } from '../apps/hmh-reboot/src/run-summary-v7.mjs';
+import { HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION } from '../sdk/hmh-run-contract-v7.mjs';
 import * as attestApi from '../api/attest.mjs';
 import * as nonceApi from '../api/session-nonce.mjs';
 import * as sessionApi from '../api/session.mjs';
@@ -789,7 +792,7 @@ test('a paused or unready service answers 503 before the body is read', async ()
 test('the seed endpoint stops before payment whenever E3 could not settle the run', async () => scenario(async (ctx) => {
   const uuid = '33333333-3333-4333-8333-333333333333';
   const chikun = { gameId: 'chikun', sessionId: `game-session-${uuid}`, seasonId: 'chikun-season-preview-1', buildHash: 'site-1.7.0:game-1.7.0:cabinet-0.9.0' };
-  const hmh = { gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.7.0:game-1.7.0' };
+  const hmh = { gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.9.0:game-1.9.0' };
   const call = (handler, body) => invoke(handler, { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(local.chain.wallets.player1.address), 'x-forwarded-for': IP }, body });
   for (const [wrap, detail] of [
     [(deps) => ({ ...deps, verify: null }), 'verify-unavailable'],
@@ -805,6 +808,44 @@ test('the seed endpoint stops before payment whenever E3 could not settle the ru
   assert.deepEqual((await call(noGates, hmh)).body, { ok: false, error: 'settlement-not-configured', detail: 'hero-gates-unavailable' }, 'an HMH ticket needs the hero gates');
   assert.equal((await call(noGates, chikun)).status, 200, 'other games do not');
   assert.equal((await call(seedHandler(ctx), hmh)).status, 200);
+}));
+
+// 1.9.0 review M1 (stale tab): a portal tab opened before the 1.9.0 deploy
+// loads the new child (unversioned, network-first) with its 1.8.6 bridge, so
+// its run could never verify. E15 refuses the HMH ticket before any payment,
+// 409 client-outdated with a reload hint; Chikun and STACKED are unaffected.
+test('the seed endpoint refuses an HMH ticket to a portal older than the deployed child, before payment', async () => scenario(async (ctx) => {
+  // The minimum is the deployed child's schema's: schema 7 needs game 1.9.0.
+  assert.equal(HMH_DEPLOYED_CHILD_SCHEMA_VERSION, RUN_SUMMARY_SCHEMA_VERSION, 'the child emits the schema E15 guards');
+  assert.equal(HMH_RANKED_SEED_MIN_GAME_VERSION, hmhRankedSeedMinGameVersion(RUN_SUMMARY_SCHEMA_VERSION));
+  assert.equal(HMH_RANKED_SEED_MIN_GAME_VERSION, HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION);
+  assert.equal(hmhRankedSeedMinGameVersion(6), null, 'a schema-6 child needs no minimum');
+  // Numeric compare, on the game segment.
+  for (const [buildHash, outdated] of [['site-1.8.6:game-1.8.6', true], ['site-1.8.9:game-1.8.9:cabinet-0.5.0', true], ['site-1.9.0:game-1.8.6', true],
+    ['site-1.9.0:game-1.9.0', false], ['site-1.9.0:game-1.9.0:cabinet-0.6.0', false], ['site-1.9.1:game-1.9.1', false], ['site-1.10.0:game-1.10.0', false]]) {
+    assert.equal(hmhSeedClientOutdated(buildHash), outdated, buildHash);
+  }
+  const handler = seedHandler(ctx);
+  const player = local.chain.wallets.player1;
+  const uuid = '44444444-4444-4444-8444-444444444444';
+  const call = (body) => invoke(handler, { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(player.address), 'x-forwarded-for': IP }, body });
+  const hmh = (buildHash) => ({ gameId: 'lester-blaster', sessionId: `game-session-${uuid}`, seasonId: 'hmh-season-1-2026', buildHash });
+  for (const buildHash of ['site-1.8.6:game-1.8.6', 'site-1.8.6:game-1.8.6:cabinet-0.5.0']) {
+    const refused = await call(hmh(buildHash));
+    assert.deepEqual([refused.status, refused.body], [409, { ok: false, error: 'client-outdated', minGameVersion: '1.9.0', reload: true, hint: CLIENT_OUTDATED_HINT }], buildHash);
+    assert.equal(refused.headers['Cache-Control'] ?? refused.headers['cache-control'], 'no-store');
+  }
+  assert.equal(CLIENT_OUTDATED_HINT, 'A new version of the arcade is live. Reload to play Ranked.');
+  for (const buildHash of ['site-1.9.0:game-1.9.0:cabinet-0.6.0', 'site-1.10.0:game-1.10.0:cabinet-0.6.0']) {
+    const issued = await call(hmh(buildHash));
+    assert.equal(issued.status, 200, `${buildHash}: ${JSON.stringify(issued.body)}`);
+    assert.equal(issued.body.ok, true);
+  }
+  // Chikun and STACKED keep issuing on older builds.
+  const chikun = await call({ gameId: 'chikun', sessionId: `game-session-${uuid}`, seasonId: 'chikun-season-preview-1', buildHash: 'site-1.8.6:game-1.8.6:cabinet-0.9.0' });
+  assert.equal(chikun.status, 200, JSON.stringify(chikun.body));
+  const stacked = await call({ gameId: 'stacked', sessionId: `game-session-${uuid}`, seasonId: 'stacked-season-preview-1', buildHash: 'site-1.8.6:game-1.8.6:cabinet-0.2.0' });
+  assert.equal(stacked.status, 200, JSON.stringify(stacked.body));
 }));
 
 test('paused settlement answers 503 and touches nothing', async () => scenario(async (ctx) => {
@@ -849,10 +890,10 @@ test('the seed endpoint issues tickets only to signed-in wallets and stops when 
     // eslint-disable-next-line no-await-in-loop
     assert.deepEqual((await call(bad)).body, { ok: false, error: 'invalid-body' }, JSON.stringify(bad));
   }
-  const hmh = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.7.0:game-1.7.0' });
+  const hmh = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.9.0:game-1.9.0' });
   assert.equal(hmh.status, 200);
   // The HMH cabinet segment is optional (version-column, 2026-09-25).
-  const hmhCabinet = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.8.2:game-1.8.2:cabinet-0.5.0' });
+  const hmhCabinet = await call({ gameId: 'lester-blaster', sessionId: request.sessionId, seasonId: 'hmh-season-1-2026', buildHash: 'site-1.9.0:game-1.9.0:cabinet-0.6.0' });
   assert.equal(hmhCabinet.status, 200);
   assert.deepEqual((await call({ ...request, pad: 'x'.repeat(2100) })).body, { ok: false, error: 'body-too-large' });
   const unavailable = await invoke(seedHandler(ctx, { issue: null }), { method: 'POST', url: '/api/ranked-seed', headers: { authorization: bearer(player.address) }, body: request });

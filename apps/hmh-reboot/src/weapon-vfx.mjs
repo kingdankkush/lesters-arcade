@@ -158,12 +158,16 @@ const RAIL_SAFE = F({ ...WEAPON_VFX['hash-rail'].tracer, afterImage: false });
 
 /**
  * Tracer style for one live projectile. Shared frozen records, so the
- * per-projectile render loop allocates nothing; never throws.
+ * per-projectile render loop allocates nothing; never throws. Reads both
+ * tags (design package 8.5): until the evolution glint overlay lands, an
+ * evolved round reads as upgraded like the capstone tracer round, and a lane
+ * weapon keeps its lance.
  */
-export function resolveTracer({ weaponId, policyType, projectileTag, reduceFlash = false } = {}) {
+export function resolveTracer({ weaponId, policyType, projectileTag, evolutionTag = null, reduceFlash = false } = {}) {
   if (projectileTag === 'tracer-round') return TRACER_ROUND;
   const own = WEAPON_VFX[weaponId]?.tracer;
   if (policyType === 'pierce' && own?.style !== 'lance') return PIERCE_LANCE;
+  if (evolutionTag && policyType !== 'pierce') return TRACER_ROUND;
   if (!own) return DEFAULT_TRACER;
   return own.style === 'lance' && reduceFlash ? RAIL_SAFE : own;
 }

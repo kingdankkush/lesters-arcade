@@ -22,7 +22,7 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
     },
     ravine: {
       objective: 'Salvage the ravine, then follow it east to the Proof-of-Work bridge.',
-      watch: 'The ambush bowl south-east funnels the horde. Start the quarry winch beyond it to open a Railgun salvage court.',
+      watch: 'The ambush bowl south-east funnels the horde. Find the Winch Handle, then crank the quarry winch beyond it for a Railgun court.',
       supply: 'The Shotgun waits to the south, below the road.',
       features: [
         { kind: 'arena', id: 'ravine-ambush-bowl', bearing: 'south-east' },
@@ -51,23 +51,23 @@ export const LEVEL_ONE_BRIEFING = freezeDeep({
       ],
     },
     yard: {
-      objective: 'The Liquidator’s arena lies just east. Arm up, then hold your ground.',
-      watch: 'The arena east is the Liquidator’s. Start the warehouse control to the south for a Flamethrower. Defeat the boss to release an Arc Rifle vault.',
-      supply: 'The Grenade Launcher sits at the extraction console to the south; a medkit cache lies south-east.',
+      objective: 'Arm up, then ring the Closing Bell on the Margin Floor east when you are ready.',
+      watch: 'The Margin Floor east is the Liquidator’s; its bell calls him from 10:00. The warehouse lever to the south opens a Flamethrower court.',
+      supply: 'The Grenade Launcher sits at the extraction console to the south-east. Beat the Liquidator for the Arc Rifle vault and a Genesis Seal.',
       features: [
         { kind: 'arena', id: 'liquidator-arena', bearing: 'east' },
         { kind: 'site', id: 'yard-warehouse', bearing: 'south' },
-        { kind: 'poi', id: 'yard-extraction-console', bearing: 'south', asset: 'launcher-rig', weapon: 'Grenade Launcher' },
-        { kind: 'poi', id: 'yard-medbay-cache', bearing: 'south-east', asset: 'bonus-life' },
+        { kind: 'poi', id: 'yard-extraction-console', bearing: 'south-east', asset: 'launcher-rig', weapon: 'Grenade Launcher' },
       ],
     },
   },
   tips: [
     'Your weapon fires on its own. Spend your attention on footwork and on where the crowd is thickest.',
     'Throw grenades into the thickest pack, not at the nearest enemy.',
-    'Dodges and close combat trigger on their own. Keep moving so they have room to work.',
-    'Approach machinery once to start it. Keep moving while it opens gates and unlocks supplies.',
+    'Close combat triggers on its own. Left Shift dodges on a keyboard; touch and gamepads dodge for you.',
+    'Stand still in a machine’s ring to crank it; buttons and levers start as you pass. Progress is never lost.',
     'Level-ups offer a choice of upgrades. Pick the one that changes how you fight.',
+    'Bosses drop Genesis Seals. A Seal evolves a gun you have mastered.',
     'The pause menu holds the field map: routes, machinery and every cache you have found.',
   ],
 });

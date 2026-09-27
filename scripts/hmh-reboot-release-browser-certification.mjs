@@ -142,13 +142,16 @@ async function assertResponsiveGeometry(page, profile) {
       innerWidth,
       innerHeight,
       bounds,
-      choiceCount: document.querySelectorAll('#hmhUpgradeChoices button').length,
+      choiceCount: document.querySelectorAll('#hmhUpgradeChoices button.hmh-upgrade-choice').length,
+      rerollCount: document.querySelectorAll('#hmhUpgradeChoices button.hmh-upgrade-reroll').length,
       canvasCount: document.querySelectorAll('#hmhRebootStage canvas').length,
     };
   });
   assert.ok(result.rootScrollWidth <= result.innerWidth + 1, `${profile.name} horizontal overflow ${result.rootScrollWidth}/${result.innerWidth}`);
   assert.ok(result.rootScrollHeight <= result.innerHeight + 1, `${profile.name} vertical overflow ${result.rootScrollHeight}/${result.innerHeight}`);
   assert.equal(result.choiceCount, 2, `${profile.name} upgrade choice count`);
+  // Package 8.3: one re-roll strip per card, inside the no-scroll check above.
+  assert.equal(result.rerollCount, 2, `${profile.name} upgrade re-roll strip count`);
   assert.equal(result.canvasCount, 1, `${profile.name} canvas count`);
   for (const bound of result.bounds) {
     assert.equal(bound.exists, true, `${profile.name} missing ${bound.selector}`);

@@ -6,7 +6,8 @@ import { WORLD_HAZARD_RULES, WORLD_ENVIRONMENT_WEAPON_IDS, worldHazardPhase, wor
 import { resolveCombatHits } from '../apps/hmh-reboot/src/combat-events.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS } from '../sdk/hmh-run-summary-schema.mjs';
 import { createWorldDesignLife } from '../apps/hmh-reboot/src/world-design-life.mjs';
-import { createWorldDesignState } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { createMissionState } from '../apps/hmh-reboot/src/mission-objectives.mjs';
+import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 
 const HAZARDS = LEVEL_ONE_WORLD.interactions.hazards;
 const byKind = (kind) => HAZARDS.find((h) => h.kind === kind);
@@ -104,9 +105,10 @@ test('the movement field slows inside the spore bed, drifts inside the conveyor 
   const inside = worldHazardField(stacked, { x: spore.anchor.x, y: spore.anchor.y, groundZ: 0 });
   assert.ok(Math.abs(inside.speed - 0.55 * 0.55) < 1e-12);
   assert.deepEqual(inside.drift, { x: 150, y: 0 });
-  // The hashwood shrine stays outside the bed so resting there is never slowed.
+  // The hashwood shrine's operate spot stays outside the bed so cranking it is never slowed.
   const query = createLevelOneGroundQuery();
-  assert.equal(worldHazardField(HAZARDS, { x: 7380, y: 3450, groundZ: query(7380, 3450).groundZ }).speed, 1);
+  const shrine = WORLD_DESIGN_SITES.find((site) => site.id === 'hashwood-shrine');
+  assert.equal(worldHazardField(HAZARDS, { x: shrine.x, y: shrine.y, groundZ: query(shrine.x, shrine.y).groundZ }).speed, 1);
   assert.deepEqual([...WORLD_ENVIRONMENT_WEAPON_IDS], ['world-steam', 'world-rockfall', 'world-grid', 'world-fuel']);
   for (const id of WORLD_ENVIRONMENT_WEAPON_IDS) assert.ok(!(id in HMH_RUN_SUMMARY_CATALOGS.weapons) && !Object.values(HMH_RUN_SUMMARY_CATALOGS.weapons).includes(id), `${id} must stay off the run-summary weapon catalog`);
 });
@@ -120,7 +122,8 @@ class FakeContainer { constructor() { this.children = []; } addChild(...c) { thi
 class FakeText { constructor() { this.anchor = { set() {} }; this.position = { set() {} }; this.style = {}; this.text = ''; this.visible = false; } }
 
 function renderAt({ tick, actor, hazards = HAZARDS, announce = null, life = createWorldDesignLife({ ContainerClass: FakeContainer, GraphicsClass: FakeGraphics, TextClass: FakeText }), particleBudget = 10, reduceMotion = false, reduceFlash = false }) {
-  const report = life.render({ state: createWorldDesignState(), actor, camera: { zoom: 1 }, view: { width: 20_000, height: 20_000 }, worldToScreen: (p) => ({ x: p.x, y: p.y - p.z }), queryGround: flat, tick, particleBudget, reduceMotion, reduceFlash, hazards, announce });
+  // A mission with no objectives isolates the hazard layers from rings and lamps.
+  const report = life.render({ mission: createMissionState(0, { objectives: Object.freeze([]) }), actor, camera: { zoom: 1 }, view: { width: 20_000, height: 20_000 }, worldToScreen: (p) => ({ x: p.x, y: p.y - p.z }), queryGround: flat, tick, particleBudget, reduceMotion, reduceFlash, hazards, announce });
   return { report, ground: JSON.stringify(life.ground.commands), commands: life.ground.commands, effects: JSON.stringify(life.overlay.children[0].commands), life };
 }
 
@@ -224,11 +227,13 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   assert.equal(source.match(/const playerInvulnerable = evidenceGameplayEnabled \|\| isDashInvulnerable\(dashState, tick\);/g).length, 1);
   const hoisted = source.indexOf('const playerInvulnerable = evidenceGameplayEnabled');
   const targets = source.indexOf('const hazardTargets = [');
-  const steam = source.indexOf('buildWorldDesignHazardHits(worldDesignState,{tick,targets:hazardTargets,');
-  const hazards = source.indexOf('buildWorldHazardHits(LEVEL_ONE_WORLD.interactions.hazards, { tick, targets: hazardTargets, queryGround })');
+  const steam = source.indexOf('buildWorldDesignHazardHits(missionState,{tick,targets:hazardTargets,');
+  // S1.5: the Yard grid drops out of the list once the Liquidator falls.
+  const hazards = source.indexOf('buildWorldHazardHits(activeWorldHazards(), { tick, targets: hazardTargets, queryGround })');
   const hurt = source.indexOf('const playerHurtTarget = playerHealth > 0 && !playerInvulnerable');
   assert.ok(hoisted > 0 && hoisted < targets && targets < steam && steam < hazards && hazards < hurt);
-  assert.match(source, /const hazardTargets = \[\s*\.\.\.\(playerInvulnerable \? \[\] : \[\{ \.\.\.actor, id: 'player' \}\]\),\s*\.\.\.grayboxEnemies,\s*\.\.\.\(liquidatorBoss\.active && tick >= liquidatorBoss\.startTick \? \[liquidatorBoss\] : \[\]\),\s*\];/);
+  assert.match(source, /const hazardTargets = \[\s*\.\.\.\(playerInvulnerable \? \[\] : \[\{ \.\.\.actor, id: 'player' \}\]\),\s*\.\.\.grayboxEnemies,\s*\.\.\.\(bossTargetable \? \[liquidatorBoss\] : \[\]\),\s*\];/);
+  assert.match(source, /const activeWorldHazards = \(\) => \(bossSlots\?\.slots\.liquidator\.status === 'defeated' \? PACIFIED_HAZARDS : LEVEL_ONE_WORLD\.interactions\.hazards\);/);
   assert.match(source, /if\(WORLD_ENVIRONMENT_WEAPON_IDS\.has\(scoreEvent\.weaponId\)\) \{/);
   assert.ok(!source.includes("scoreEvent.weaponId==='world-steam'"));
   // Movement: the slow multiplies after the run effects, the drift lands before the swept collision.
@@ -239,11 +244,13 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   assert.match(source, /fieldAt: \(x, y, ground\) => worldHazardField\(LEVEL_ONE_WORLD\.interactions\.hazards, \{ x, y, groundZ: ground\.groundZ \}\),/);
   // Boss non-lethality: both hazard hooks pass through the cap, hazard hits skip
   // the role-check/punish scaling, and the apply step clamps again at 1 HP.
-  assert.match(source, /const bossHazardCap = \{ targetId: liquidatorBoss\.id, health: liquidatorBoss\.health \};/);
+  assert.match(source, /const bossHazardCap = \{ targetId: liquidatorBoss\?\.id \?\? 'boss-liquidator', health: liquidatorBoss\?\.health \?\? 0 \};/);
   assert.equal(source.match(/withholdLethalHazardHits\(buildWorld(?:Design)?HazardHits\(/g).length, 2);
   assert.ok(source.indexOf('const bossHazardCap = ') < steam);
   assert.match(source, /if \(!targetKind \|\| WORLD_ENVIRONMENT_WEAPON_IDS\.has\(hit\.weaponId\)\) return hit;/);
-  assert.match(source, /const bossHitAmount = WORLD_ENVIRONMENT_WEAPON_IDS\.has\(damageEvent\.weaponId\)\s*\? Math\.min\(damageEvent\.damageApplied, Math\.max\(0, liquidatorBoss\.health - 1\)\)\s*: damageEvent\.damageApplied;\s*const bossDamage = applyLiquidatorDamage\(\{ boss: liquidatorBoss, amount: bossHitAmount, tick \}\);/);
+  // S1.5: the second gate lives in the boss's own authority now:
+  // applyLiquidatorDamage never lets environmental damage below 1 HP.
+  assert.match(source, /bossDamage = applyLiquidatorDamage\(\{\s*boss: liquidatorBoss,\s*amount: damageEvent\.damageApplied,\s*tick,\s*roleMultiplier: roleCheck\.multiplier,\s*environmental: WORLD_ENVIRONMENT_WEAPON_IDS\.has\(damageEvent\.weaponId\),\s*\}\);/);
   // The telegraph renderer receives the reduceFlash setting alongside reduceMotion.
   assert.match(source, /worldLife\.render\(\{[^\n]*reduceMotion:settings\.reduceMotion,reduceFlash:settings\.reduceFlash,/);
 });

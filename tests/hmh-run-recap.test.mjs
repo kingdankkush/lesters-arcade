@@ -24,7 +24,7 @@ import {
   formatRunClock,
   selectGameOverRecapFields,
 } from '../apps/portal/src/hmh-run-recap.mjs';
-import { RUN_UPGRADE_CATALOG } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 import { LIQUIDATOR_ATTACK_DEFINITIONS } from '../apps/hmh-reboot/src/liquidator-boss.mjs';
 import { WORLD_DESIGN_SITES } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
 import { WORLD_DESIGN_SECRETS } from '../apps/hmh-reboot/src/world-design-secrets.mjs';
@@ -101,14 +101,21 @@ test('recap labels boss attacks, hazards, self-kills, and survivals distinctly',
 
 test('recap label maps cover every catalog id the child can emit', () => {
   assert.deepEqual(Object.keys(ENEMY_LABELS).sort(), [...C.enemyRoles].sort());
-  assert.deepEqual(Object.keys(BOSS_ATTACK_LABELS).sort(), Object.keys(LIQUIDATOR_ATTACK_DEFINITIONS).sort());
+  // S1.5 reworked the Liquidator's kit (design package 4.3): the Gavel Stamp,
+  // the Candle Chart and the Enforcement Order are new ids and the Short
+  // Squeeze Burst is retired. The portal's copied labels are a parent request
+  // (docs/hmh-reboot/design/LEVEL-1-BUILD-LEDGER.md); until it lands the
+  // recap title-cases an unlabelled id, which reads as the package name.
+  const childAttacks = Object.keys(LIQUIDATOR_ATTACK_DEFINITIONS);
+  assert.deepEqual(childAttacks.filter((id) => !Object.hasOwn(BOSS_ATTACK_LABELS, id)).sort(), ['candle-chart', 'enforcement-order', 'gavel-stamp']);
+  assert.deepEqual(Object.keys(BOSS_ATTACK_LABELS).filter((id) => !childAttacks.includes(id)).sort(), ['bad-debt-summon', 'liquidation-zone', 'short-squeeze-burst']);
   assert.deepEqual(Object.keys(SITE_LABELS).sort(), [...C.worldSites].sort());
   assert.deepEqual(Object.keys(SECRET_LABELS).sort(), [...C.secrets].sort());
   for (const site of WORLD_DESIGN_SITES) assert.equal(SITE_LABELS[site.id], site.name);
   for (const secret of WORLD_DESIGN_SECRETS) assert.equal(SECRET_LABELS[secret.id], secret.name);
   // The portal copies upgrade titles instead of importing the child module
   // (bundle cap); this pin is what keeps the copy honest.
-  assert.deepEqual(UPGRADE_LABELS, Object.fromEntries(C.upgrades.map((upgradeId) => [upgradeId, RUN_UPGRADE_CATALOG[upgradeId].title])));
+  assert.deepEqual(UPGRADE_LABELS, Object.fromEntries(C.upgrades.map((upgradeId) => [upgradeId, RUN_UPGRADE_CONTENT[upgradeId].title])));
   assert.equal(formatRunClock(61 * 3600 + 5 * 60), '61:05');
   assert.equal(formatRunClock(-4), '0:00');
 });

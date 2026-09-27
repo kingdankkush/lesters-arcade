@@ -1,4 +1,5 @@
-// The real-child honest corpus against the v6 plausibility path: run summaries
+// The real-child honest corpus against the plausibility paths (v6 for the
+// 1.8.x children, v7 for the 1.9.0 child and later): run summaries
 // the unmodified HMH child emitted over hmh-bridge/v1 while the headless
 // harness (scripts/hmh-honest-corpus) drove it with honest gamepad pilots.
 // Unlike tests/fixtures/ranked/hmh-honest-corpus.mjs, which is a scripted MODEL
@@ -13,12 +14,16 @@ import { readdirSync, readFileSync } from 'node:fs';
 import {
   HMH_V6_CONSISTENCY_REJECTS,
   HMH_V6_CONSISTENCY_RULES,
+  HMH_V7_CONSISTENCY_REJECTS,
   hmhV6LevelEntry,
   hmhV6MeleeCadenceLimit,
   validateRebootRunPlausibility,
 } from '../server/verify/hmh-plausibility.mjs';
 import { HMH_RUN_SUMMARY_SCHEMA_VERSION } from '../server/verify/hmh.mjs';
-import { validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema.mjs';
+// Schema 1-7: the v7 module answers schema 1-6 exactly as the base module.
+import { HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
+import { isHmhV7Build } from '../sdk/hmh-run-contract-v7.mjs';
+import { selectLevelEntry } from '../apps/hmh-reboot/src/level-entry.mjs';
 import { statsFromHmhRunSummary } from '../apps/portal/src/achievements/stats.mjs';
 
 const CORPUS_DIR = new URL('./fixtures/hmh-honest-corpus/', import.meta.url);
@@ -30,6 +35,10 @@ const BUILD_HASH = /^site-\d+\.\d+\.\d+:game-(\d+\.\d+\.\d+):cabinet-\d+\.\d+\.\
 const PINNED = Object.freeze({
   '1.8.3': { runs: 68, digest: 'ecd897f5e48857ecaaa4dcbebc17fa77e686199c5db870b3b24bff3e07d3c697' },
   '1.8.4': { runs: 52, digest: '7a347eb31de448ca210015f5ea588a88911fef8e601a11268b2417635a760bc5' },
+  // 1.9.0: the 128-row plan on the release candidate's child (the first 108
+  // summaries are byte-identical to the 894d8a41 capture; the 20 Liquidator
+  // seekers r108 to r127 are new).
+  '1.9.0': { runs: 128, digest: 'ec0cefa7f379c5eaf7647c3c458769cb0d219b7f1d7c9c55b157c4736de8255d' },
 });
 
 // Every flag an honest run in the corpus carries today, by release/label. A
@@ -39,6 +48,11 @@ const EXPECTED_FLAGS = Object.freeze({
   '1.8.3/r08-brawler-relay-3000': ['kills-near-capacity'],
   '1.8.3/r62-grenadier-yard-110000': ['score-near-ceiling'],
   '1.8.4/r70-knifer-hashwood-110000': ['kills-near-capacity'],
+  '1.9.0/r01-suicide-ravine-0': ['kills-near-capacity'],
+  '1.9.0/r06-idle-hashwood-90000': ['kills-near-capacity'],
+  '1.9.0/r08-brawler-relay-3000': ['kills-near-capacity'],
+  '1.9.0/r68-knifer-relay-110000': ['kills-near-capacity'],
+  '1.9.0/r70-knifer-hashwood-110000': ['kills-near-capacity'],
 });
 
 const V6C = HMH_V6_CONSISTENCY_RULES;
@@ -48,7 +62,12 @@ const corpora = readdirSync(CORPUS_DIR)
   .map((name) => ({ name, ...JSON.parse(readFileSync(new URL(name, CORPUS_DIR), 'utf8')) }));
 const digestOf = (runs) => createHash('sha256').update(JSON.stringify(runs.map((run) => run.runSummary))).digest('hex');
 
-test('the real-child corpus holds one pinned file per child release, each run a valid schema-6 summary of that child', () => {
+// A 1.8.x child emits schema 6 and enters by the frozen v6 table; the 1.9.0
+// child emits schema 7 and enters by its own table (S1.5 moved the yard entry).
+const schemaOf = (corpus) => (isHmhV7Build(corpus.child.buildHash) ? 7 : HMH_RUN_SUMMARY_SCHEMA_VERSION);
+const entryOf = (corpus, seed) => (schemaOf(corpus) === 7 ? selectLevelEntry(seed) : hmhV6LevelEntry(seed)).id;
+
+test('the real-child corpus holds one pinned file per child release, each run a valid summary of that child (schema 6 before 1.9.0, schema 7 from it)', () => {
   assert.deepEqual(corpora.map((corpus) => corpus.child.release), Object.keys(PINNED));
   for (const corpus of corpora) {
     assert.equal(corpus.schema, CORPUS_SCHEMA, corpus.name);
@@ -61,7 +80,7 @@ test('the real-child corpus holds one pinned file per child release, each run a 
       const { runSummary: summary } = run;
       const name = `${corpus.child.release}/${run.label}`;
       assert.equal(validateRunSummaryPayload(summary), '', name);
-      assert.equal(summary.schemaVersion, HMH_RUN_SUMMARY_SCHEMA_VERSION, name);
+      assert.equal(summary.schemaVersion, schemaOf(corpus), name);
       // The child stamped the identity the harness gave it, as the portal would.
       assert.equal(summary.identity.buildHash, corpus.child.buildHash, name);
       assert.equal(summary.identity.mode, 'ranked', name);
@@ -70,7 +89,7 @@ test('the real-child corpus holds one pinned file per child release, each run a 
       assert.equal(summary.identity.heroId, run.heroId, name);
       assert.equal(summary.identity.endTick, run.finalTick, name);
       assert.equal(summary.totals.survivalTicks, run.finalTick, name);
-      assert.equal(hmhV6LevelEntry(run.seed).id, run.entry, name);
+      assert.equal(entryOf(corpus, run.seed), run.entry, name);
       assert.doesNotThrow(() => statsFromHmhRunSummary(summary), name);
     }
   }
@@ -160,4 +179,50 @@ test('the corpus covers every level entry, both heroes and every pilot style, an
   const ticks = runs.reduce((sum, run) => sum + run.finalTick, 0);
   assert.ok(ticks >= 1_000_000, `ticks in the corpus: ${ticks}`);
   t.diagnostic(`${runs.length} runs, ${ticks} ticks, styles ${[...styles].sort().join(' ')}`);
+});
+
+// Slice 9: the 1.9.0 child emits schema 7. Its real runs carry the v7 rows
+// the contract asks for, consistent with the v6 fields they mirror, verify on
+// the v7 path with no reject (the mirrored consistency rules included), and
+// derive achievement stats over the 16 v7 roles.
+test('the 1.9.0 child\'s schema-7 runs: the v7 rows agree with the fields they mirror, stats derive, and the v7 path rejects none', (t) => {
+  const v7Corpora = corpora.filter((corpus) => schemaOf(corpus) === 7);
+  assert.ok(v7Corpora.length >= 1, 'a schema-7 corpus is committed');
+  const C7 = HMH_RUN_SUMMARY_CATALOGS_V7;
+  const tally = { runs: 0, objectives: 0, runsWithObjectives: 0, rerolls: 0, offers: 0 };
+  for (const corpus of v7Corpora) {
+    assert.ok(isHmhV7Build(corpus.child.buildHash), corpus.child.buildHash);
+    for (const run of corpus.runs) {
+      const name = `${corpus.child.release}/${run.label}`;
+      const summary = run.runSummary;
+      const liquidator = summary.bosses.find((row) => row.bossId === 'liquidator');
+      assert.deepEqual(summary.objectives.map((row) => row.objectiveId), C7.objectives, name);
+      assert.equal(summary.kills.boss, summary.kills.byEnemyRole.find((row) => row.enemyRoleId === 'liquidator').count, name);
+      assert.equal(summary.milestones.bossEngagedTick, liquidator.firstInitiatedTick, name);
+      for (const site of summary.milestones.sites) {
+        const objective = summary.objectives.find((row) => row.objectiveId === site.siteId);
+        assert.deepEqual([site.operated, site.tick], [objective.completed, objective.tick], `${name}: ${site.siteId}`);
+      }
+      assert.equal(summary.collectibles.find((row) => row.effectId === 'genesis-seal').collected, summary.progression.sealsFound, name);
+      assert.ok(summary.upgrades.reduce((sum, row) => sum + row.selected, 0) <= summary.progression.offersOpened, name);
+      const result = validateRebootRunPlausibility(summary);
+      assert.notEqual(result.verdict, 'rejected', `${name}: ${JSON.stringify(result.flags)}`);
+      assert.deepEqual(result.flags.filter((flag) => HMH_V7_CONSISTENCY_REJECTS.includes(flag.id)), [], name);
+      const stats = statsFromHmhRunSummary(summary);
+      assert.equal(Object.keys(stats.killsByRole).length, C7.enemyRoles.length, name);
+      const completed = summary.objectives.filter((row) => row.completed).length;
+      tally.runs += 1;
+      tally.objectives += completed;
+      tally.runsWithObjectives += Number(completed > 0);
+      tally.rerolls += summary.progression.rerolls;
+      tally.offers += summary.progression.offersOpened;
+    }
+  }
+  // The pilots operate machines, enter secrets and re-roll cards. No pilot has
+  // yet lived to the Liquidator's ready tick (36,000; the longest run ends at
+  // 29,043, the longest seeker at 22,499), so the boss, Seal and evolution
+  // rows are zero here; the four-bosses fixture carries them.
+  assert.ok(tally.runsWithObjectives >= 30, JSON.stringify(tally));
+  assert.ok(tally.rerolls >= 50, JSON.stringify(tally));
+  t.diagnostic(JSON.stringify(tally));
 });

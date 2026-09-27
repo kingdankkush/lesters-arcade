@@ -51,10 +51,12 @@ const unshipped = (cabinet) => { const [major, minor] = cabinet.split('.').map(N
 const HMH_ROWS = Object.freeze([
   { wallet: W(1), score: 9000, buildHash: 'site-1.8.1:game-1.8.1', label: 'HMH v0.5' },
   { wallet: W(2), score: 8000, buildHash: 'site-1.8.2:game-1.8.2:cabinet-0.5.0', label: 'HMH v0.5' },
+  { wallet: W(9), score: 7500, buildHash: 'site-1.9.0:game-1.9.0:cabinet-0.6.0', label: 'HMH v0.6' },
   { wallet: W(3), score: 7000, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(HMH_CABINET_VERSION)}`, label: 'HMH v?', claimed: true },
   { wallet: W(7), score: 6500, buildHash: 'site-1.8.1:game-1.8.1:cabinet-999999.999999.0', label: 'HMH v?', claimed: true },
-  // A chain-index row stores no build hash: HMH has shipped one cabinet, so it is 0.5.
-  { wallet: W(4), score: 6000, buildHash: null, source: 'chain-index', label: 'HMH v0.5' },
+  // A chain-index row stores no build hash. HMH has shipped two cabinets
+  // (0.5, and 0.6 from 1.9.0), so it can no longer be dated.
+  { wallet: W(4), score: 6000, buildHash: null, source: 'chain-index', label: 'HMH v?' },
 ]);
 const CHIKUN_ROWS = Object.freeze([
   { wallet: W(1), score: 5000, runtimeId: 'chikun:canvas-runtime-v7', label: 'Chikun v7' },
@@ -129,7 +131,7 @@ test('the row mappers label every game from the stored build hash and runtime id
   }
   assert.equal(rowVersionLabel('chikun', {}), 'Chikun v?');
   assert.equal(rowVersionLabel('lester-blaster', null), 'HMH v?', 'no row at all');
-  assert.equal(rowVersionLabel('lester-blaster', { build_hash: null }), 'HMH v0.5', 'a row without a build hash');
+  assert.equal(rowVersionLabel('lester-blaster', { build_hash: null }), 'HMH v?', 'a row without a build hash, once HMH has shipped a second cabinet');
   assert.equal(rowVersionLabel('stacked', { build_hash: null, runtime_id: INDEX_GAMES.stacked.runtimeId }), 'STACKED v0.2');
 });
 
@@ -152,7 +154,7 @@ test('E5 rows carry the label of the run that ranks, never the raw build hash', 
   await seedVerifiedSession(db, { gameId: 'lester-blaster', wallet: W(1), score: 9500, buildHash: `site-1.9.0:game-1.9.0:cabinet-${unshipped(HMH_CABINET_VERSION)}` });
   const board = await readLeaderboard(db, { gameId: 'lester-blaster', seasonId: INDEX_GAMES['lester-blaster'].seasonId, period: 'all-time' });
   assert.deepEqual([board.rows[0].wallet, board.rows[0].score, board.rows[0].versionLabel], [W(1), 9500, 'HMH v?']);
-  for (const row of board.rows) assert.match(row.versionLabel, /^HMH v(?:0\.5|\?)$/, 'only shipped HMH versions are shown');
+  for (const row of board.rows) assert.match(row.versionLabel, /^HMH v(?:0\.5|0\.6|\?)$/, 'only shipped HMH versions are shown');
 }));
 
 test('E6 recent sessions carry a label per run in the public and self views', async () => withDb(async (db) => {
@@ -291,7 +293,7 @@ test('chain-index rows the indexer creates carry the right label in E5, E6, E9 a
     { gameId: 'chikun', wallet: W(11), score: 700, label: 'Chikun v7', runtimeId: INDEX_GAMES.chikun.runtimeId },
     { gameId: 'chikun', wallet: W(12), score: 600, runtimeId32: unknownRuntime, label: 'Chikun v?', runtimeId: unknownRuntime },
     { gameId: 'stacked', wallet: W(13), score: 500, label: 'STACKED v0.2', runtimeId: INDEX_GAMES.stacked.runtimeId },
-    { gameId: 'lester-blaster', wallet: W(14), score: 400, label: 'HMH v0.5', runtimeId: INDEX_GAMES['lester-blaster'].runtimeId },
+    { gameId: 'lester-blaster', wallet: W(14), score: 400, label: 'HMH v?', runtimeId: INDEX_GAMES['lester-blaster'].runtimeId },
   ].map((run, index) => ({ ...run, log: indexedScore({ ...run, blockNumber: 10 + index, index }) }));
   const chain = chainOf(runs.map((run) => run.log));
   const counts = await indexChain({ db, deployment: DEPLOYED, getLogs: chain.getLogs, getBlock: chain.getBlock, call: chain.call, nowMs: () => NOW, catalog: { catalogFor: () => [] }, logger: null });

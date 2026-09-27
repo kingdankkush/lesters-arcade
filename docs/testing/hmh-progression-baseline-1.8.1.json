@@ -1,0 +1,4966 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "hmh-progression-model/v1",
+  "constantsFingerprint": "55c867d2f9dadaee7c0a544329677409222681a519a9dd4feb93efe5e6b3d770",
+  "constants": {
+    "horizonTicks": 108000,
+    "routeUnitsPerTick": 0.16666666666666666,
+    "routeLookupY": 2400,
+    "pickupWindowTicks": 7200,
+    "spawnDistance": 1600,
+    "spawnArcRadians": 2.0943951023931953,
+    "lanes": 9,
+    "queueGap": 6,
+    "meleeStopInset": 6,
+    "closingFactor": 0.6,
+    "aimErrorRadians": 0.06981317007977318,
+    "strikeConnectChance": 0.016,
+    "handGrenadeClusterSize": 4,
+    "handGrenadeLandingDistance": 210,
+    "handGrenadeClusterRadius": 150,
+    "handGrenadeCooldownTicks": 120,
+    "meleeTargetRange": 180,
+    "referenceWindowTicks": 1800,
+    "referenceSeed": 1213024323
+  },
+  "mirror": {
+    "projectileFlightHeight": 34,
+    "maxActiveGrenades": 16,
+    "criticalChanceCap": 0.45,
+    "baseCriticalChance": 0.08,
+    "baseCriticalMultiplier": 1.75,
+    "playerMaxHealth": 100,
+    "playerRadius": 24,
+    "openingHandGrenades": 3,
+    "firstDirectorSpawnTick": 600,
+    "populationCapacity": 192,
+    "populationThreatCapacity": 1024,
+    "muzzleOffset": 28,
+    "launcherOriginZ": 32,
+    "handGrenadeOffset": 20,
+    "handGrenadeOriginZ": 24
+  },
+  "config": {
+    "seeds": [
+      924705422,
+      941483041,
+      891150184,
+      907927803,
+      991815898,
+      1008593517,
+      958260660,
+      975038279,
+      790484470,
+      807262089,
+      1745749699,
+      1728972080,
+      1779304937,
+      1762527318,
+      1812860175,
+      1796082556
+    ],
+    "policies": [
+      "seeded",
+      "power",
+      "survival"
+    ],
+    "horizonTicks": 108000
+  },
+  "deterministic": true,
+  "survival": {
+    "unit": "ticks (60 per second)",
+    "pooled": {
+      "n": 48,
+      "median": 60651.5,
+      "p10": 41215.9,
+      "p25": 56995.75,
+      "p75": 64239.25,
+      "p90": 74895.5,
+      "mean": 59508.021,
+      "deaths": 48,
+      "reachedHorizon": 0
+    },
+    "byPolicy": {
+      "seeded": {
+        "n": 16,
+        "median": 58828.5,
+        "p10": 40421.5,
+        "p25": 47167,
+        "p75": 62741.5,
+        "p90": 71795,
+        "mean": 56778.875,
+        "deaths": 16,
+        "reachedHorizon": 0
+      },
+      "power": {
+        "n": 16,
+        "median": 63257.5,
+        "p10": 49996.5,
+        "p25": 58605.25,
+        "p75": 67700,
+        "p90": 74951.5,
+        "mean": 62776.813,
+        "deaths": 16,
+        "reachedHorizon": 0
+      },
+      "survival": {
+        "n": 16,
+        "median": 60651.5,
+        "p10": 41171.5,
+        "p25": 59586.25,
+        "p75": 62383.5,
+        "p90": 65284,
+        "mean": 58968.375,
+        "deaths": 16,
+        "reachedHorizon": 0
+      }
+    }
+  },
+  "xpIncome": {
+    "pooled": {
+      "byMinute": [
+        {
+          "minute": 1,
+          "runs": 48,
+          "xp": 2720,
+          "level": 4,
+          "alive": 4
+        },
+        {
+          "minute": 2,
+          "runs": 48,
+          "xp": 8840,
+          "level": 8,
+          "alive": 7
+        },
+        {
+          "minute": 3,
+          "runs": 48,
+          "xp": 13950,
+          "level": 10,
+          "alive": 8
+        },
+        {
+          "minute": 4,
+          "runs": 48,
+          "xp": 18800,
+          "level": 11,
+          "alive": 11
+        },
+        {
+          "minute": 5,
+          "runs": 48,
+          "xp": 23860,
+          "level": 13,
+          "alive": 14
+        },
+        {
+          "minute": 6,
+          "runs": 48,
+          "xp": 30390,
+          "level": 14,
+          "alive": 23
+        },
+        {
+          "minute": 7,
+          "runs": 48,
+          "xp": 38797.5,
+          "level": 16,
+          "alive": 28
+        },
+        {
+          "minute": 8,
+          "runs": 48,
+          "xp": 48350,
+          "level": 18,
+          "alive": 29
+        },
+        {
+          "minute": 9,
+          "runs": 47,
+          "xp": 63040,
+          "level": 21,
+          "alive": 5
+        },
+        {
+          "minute": 10,
+          "runs": 47,
+          "xp": 67560,
+          "level": 21,
+          "alive": 26
+        },
+        {
+          "minute": 11,
+          "runs": 43,
+          "xp": 86320,
+          "level": 24,
+          "alive": 38
+        },
+        {
+          "minute": 12,
+          "runs": 42,
+          "xp": 98940,
+          "level": 25.5,
+          "alive": 32
+        },
+        {
+          "minute": 13,
+          "runs": 39,
+          "xp": 109560,
+          "level": 27,
+          "alive": 37
+        },
+        {
+          "minute": 14,
+          "runs": 38,
+          "xp": 122947.5,
+          "level": 29,
+          "alive": 42
+        },
+        {
+          "minute": 15,
+          "runs": 38,
+          "xp": 137365,
+          "level": 30.5,
+          "alive": 58
+        },
+        {
+          "minute": 16,
+          "runs": 34,
+          "xp": 146120,
+          "level": 31.5,
+          "alive": 65.5
+        },
+        {
+          "minute": 17,
+          "runs": 23,
+          "xp": 171910,
+          "level": 34,
+          "alive": 75
+        },
+        {
+          "minute": 18,
+          "runs": 12,
+          "xp": 225307.5,
+          "level": 38.5,
+          "alive": 54.5
+        },
+        {
+          "minute": 19,
+          "runs": 7,
+          "xp": 282525,
+          "level": 43,
+          "alive": 62
+        },
+        {
+          "minute": 20,
+          "runs": 6,
+          "xp": 230190,
+          "level": 38.5,
+          "alive": 66
+        },
+        {
+          "minute": 21,
+          "runs": 3,
+          "xp": 152800,
+          "level": 32,
+          "alive": 72
+        },
+        {
+          "minute": 22,
+          "runs": 3,
+          "xp": 164520,
+          "level": 33,
+          "alive": 118
+        },
+        {
+          "minute": 23,
+          "runs": 1,
+          "xp": 175660,
+          "level": 34,
+          "alive": 141
+        },
+        {
+          "minute": 24,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        },
+        {
+          "minute": 25,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        },
+        {
+          "minute": 26,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        },
+        {
+          "minute": 27,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        },
+        {
+          "minute": 28,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        },
+        {
+          "minute": 29,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        },
+        {
+          "minute": 30,
+          "runs": 0,
+          "xp": null,
+          "level": null,
+          "alive": null
+        }
+      ],
+      "levelTicks": [
+        {
+          "level": 2,
+          "runs": 48,
+          "medianTick": 1098.5
+        },
+        {
+          "level": 3,
+          "runs": 48,
+          "medianTick": 1699
+        },
+        {
+          "level": 4,
+          "runs": 48,
+          "medianTick": 2632
+        },
+        {
+          "level": 5,
+          "runs": 48,
+          "medianTick": 3736
+        },
+        {
+          "level": 6,
+          "runs": 48,
+          "medianTick": 4674.5
+        },
+        {
+          "level": 7,
+          "runs": 48,
+          "medianTick": 5314
+        },
+        {
+          "level": 8,
+          "runs": 48,
+          "medianTick": 6895.5
+        },
+        {
+          "level": 9,
+          "runs": 48,
+          "medianTick": 8687
+        },
+        {
+          "level": 10,
+          "runs": 48,
+          "medianTick": 10526
+        },
+        {
+          "level": 11,
+          "runs": 48,
+          "medianTick": 12772.5
+        },
+        {
+          "level": 12,
+          "runs": 48,
+          "medianTick": 15063
+        },
+        {
+          "level": 13,
+          "runs": 48,
+          "medianTick": 17734.5
+        },
+        {
+          "level": 14,
+          "runs": 48,
+          "medianTick": 20007
+        },
+        {
+          "level": 15,
+          "runs": 48,
+          "medianTick": 22055
+        },
+        {
+          "level": 16,
+          "runs": 48,
+          "medianTick": 23973
+        },
+        {
+          "level": 17,
+          "runs": 48,
+          "medianTick": 25860
+        },
+        {
+          "level": 18,
+          "runs": 48,
+          "medianTick": 27831.5
+        },
+        {
+          "level": 19,
+          "runs": 48,
+          "medianTick": 29891
+        },
+        {
+          "level": 20,
+          "runs": 48,
+          "medianTick": 31517
+        },
+        {
+          "level": 21,
+          "runs": 47,
+          "medianTick": 32100
+        },
+        {
+          "level": 22,
+          "runs": 46,
+          "medianTick": 35990
+        },
+        {
+          "level": 23,
+          "runs": 44,
+          "medianTick": 37094
+        },
+        {
+          "level": 24,
+          "runs": 44,
+          "medianTick": 38804
+        },
+        {
+          "level": 25,
+          "runs": 44,
+          "medianTick": 40278
+        },
+        {
+          "level": 26,
+          "runs": 43,
+          "medianTick": 41878
+        },
+        {
+          "level": 27,
+          "runs": 43,
+          "medianTick": 43656
+        },
+        {
+          "level": 28,
+          "runs": 42,
+          "medianTick": 45554
+        },
+        {
+          "level": 29,
+          "runs": 42,
+          "medianTick": 47667
+        },
+        {
+          "level": 30,
+          "runs": 37,
+          "medianTick": 49898
+        },
+        {
+          "level": 31,
+          "runs": 29,
+          "medianTick": 44395
+        },
+        {
+          "level": 32,
+          "runs": 24,
+          "medianTick": 45183.5
+        },
+        {
+          "level": 33,
+          "runs": 22,
+          "medianTick": 46711.5
+        },
+        {
+          "level": 34,
+          "runs": 22,
+          "medianTick": 48023
+        },
+        {
+          "level": 35,
+          "runs": 21,
+          "medianTick": 50281
+        },
+        {
+          "level": 36,
+          "runs": 16,
+          "medianTick": 52675.5
+        },
+        {
+          "level": 37,
+          "runs": 16,
+          "medianTick": 54462
+        },
+        {
+          "level": 38,
+          "runs": 13,
+          "medianTick": 55448
+        },
+        {
+          "level": 39,
+          "runs": 12,
+          "medianTick": 57506.5
+        },
+        {
+          "level": 40,
+          "runs": 10,
+          "medianTick": 61161.5
+        },
+        {
+          "level": 41,
+          "runs": 6,
+          "medianTick": 62290.5
+        },
+        {
+          "level": 42,
+          "runs": 6,
+          "medianTick": 63666
+        },
+        {
+          "level": 43,
+          "runs": 6,
+          "medianTick": 65068.5
+        },
+        {
+          "level": 44,
+          "runs": 3,
+          "medianTick": 65118
+        },
+        {
+          "level": 45,
+          "runs": 3,
+          "medianTick": 66799
+        },
+        {
+          "level": 46,
+          "runs": 3,
+          "medianTick": 68353
+        },
+        {
+          "level": 47,
+          "runs": 2,
+          "medianTick": 71866
+        },
+        {
+          "level": 48,
+          "runs": 2,
+          "medianTick": 74646
+        }
+      ],
+      "sourceShare": {
+        "kills": 0.913,
+        "combos": 0.0827,
+        "caches": 0.0043
+      },
+      "finalLevel": {
+        "n": 48,
+        "median": 31.5,
+        "p10": 26.4,
+        "p25": 30,
+        "p75": 38.25,
+        "p90": 43,
+        "mean": 33.5
+      },
+      "kills": {
+        "n": 48,
+        "median": 927,
+        "p10": 555.3,
+        "p25": 824.25,
+        "p75": 985,
+        "p90": 1213.1,
+        "mean": 898.417
+      }
+    },
+    "byPolicy": {
+      "seeded": {
+        "byMinute": [
+          {
+            "minute": 1,
+            "runs": 16,
+            "xp": 2730,
+            "level": 4,
+            "alive": 4
+          },
+          {
+            "minute": 2,
+            "runs": 16,
+            "xp": 8900,
+            "level": 8,
+            "alive": 7.5
+          },
+          {
+            "minute": 3,
+            "runs": 16,
+            "xp": 14030,
+            "level": 10,
+            "alive": 8
+          },
+          {
+            "minute": 4,
+            "runs": 16,
+            "xp": 19277.5,
+            "level": 11,
+            "alive": 11
+          },
+          {
+            "minute": 5,
+            "runs": 16,
+            "xp": 25577.5,
+            "level": 13,
+            "alive": 14
+          },
+          {
+            "minute": 6,
+            "runs": 16,
+            "xp": 34145,
+            "level": 15,
+            "alive": 23
+          },
+          {
+            "minute": 7,
+            "runs": 16,
+            "xp": 45915,
+            "level": 17.5,
+            "alive": 28
+          },
+          {
+            "minute": 8,
+            "runs": 16,
+            "xp": 61172.5,
+            "level": 20.5,
+            "alive": 25
+          },
+          {
+            "minute": 9,
+            "runs": 15,
+            "xp": 85440,
+            "level": 24,
+            "alive": 5
+          },
+          {
+            "minute": 10,
+            "runs": 15,
+            "xp": 96565,
+            "level": 25,
+            "alive": 26
+          },
+          {
+            "minute": 11,
+            "runs": 14,
+            "xp": 112807.5,
+            "level": 27.5,
+            "alive": 39
+          },
+          {
+            "minute": 12,
+            "runs": 13,
+            "xp": 127050,
+            "level": 29,
+            "alive": 36
+          },
+          {
+            "minute": 13,
+            "runs": 12,
+            "xp": 150205,
+            "level": 31.5,
+            "alive": 36.5
+          },
+          {
+            "minute": 14,
+            "runs": 11,
+            "xp": 173010,
+            "level": 34,
+            "alive": 42
+          },
+          {
+            "minute": 15,
+            "runs": 11,
+            "xp": 189230,
+            "level": 36,
+            "alive": 75
+          },
+          {
+            "minute": 16,
+            "runs": 9,
+            "xp": 208795,
+            "level": 37,
+            "alive": 73
+          },
+          {
+            "minute": 17,
+            "runs": 6,
+            "xp": 229390,
+            "level": 39,
+            "alive": 77.5
+          },
+          {
+            "minute": 18,
+            "runs": 3,
+            "xp": 261770,
+            "level": 42,
+            "alive": 52
+          },
+          {
+            "minute": 19,
+            "runs": 3,
+            "xp": 282525,
+            "level": 43,
+            "alive": 62
+          },
+          {
+            "minute": 20,
+            "runs": 2,
+            "xp": 235230,
+            "level": 39,
+            "alive": 66.5
+          },
+          {
+            "minute": 21,
+            "runs": 1,
+            "xp": 152800,
+            "level": 32,
+            "alive": 72
+          },
+          {
+            "minute": 22,
+            "runs": 1,
+            "xp": 164520,
+            "level": 33,
+            "alive": 118
+          },
+          {
+            "minute": 23,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 24,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 25,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 26,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 27,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 28,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 29,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 30,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          }
+        ],
+        "levelTicks": [
+          {
+            "level": 2,
+            "runs": 16,
+            "medianTick": 1098.5
+          },
+          {
+            "level": 3,
+            "runs": 16,
+            "medianTick": 1664
+          },
+          {
+            "level": 4,
+            "runs": 16,
+            "medianTick": 2632
+          },
+          {
+            "level": 5,
+            "runs": 16,
+            "medianTick": 3736
+          },
+          {
+            "level": 6,
+            "runs": 16,
+            "medianTick": 4623
+          },
+          {
+            "level": 7,
+            "runs": 16,
+            "medianTick": 5291
+          },
+          {
+            "level": 8,
+            "runs": 16,
+            "medianTick": 6891
+          },
+          {
+            "level": 9,
+            "runs": 16,
+            "medianTick": 8653
+          },
+          {
+            "level": 10,
+            "runs": 16,
+            "medianTick": 10406
+          },
+          {
+            "level": 11,
+            "runs": 16,
+            "medianTick": 12607.5
+          },
+          {
+            "level": 12,
+            "runs": 16,
+            "medianTick": 14634
+          },
+          {
+            "level": 13,
+            "runs": 16,
+            "medianTick": 16847
+          },
+          {
+            "level": 14,
+            "runs": 16,
+            "medianTick": 18864.5
+          },
+          {
+            "level": 15,
+            "runs": 16,
+            "medianTick": 20647
+          },
+          {
+            "level": 16,
+            "runs": 16,
+            "medianTick": 22261.5
+          },
+          {
+            "level": 17,
+            "runs": 16,
+            "medianTick": 23708
+          },
+          {
+            "level": 18,
+            "runs": 16,
+            "medianTick": 25152.5
+          },
+          {
+            "level": 19,
+            "runs": 16,
+            "medianTick": 26544.5
+          },
+          {
+            "level": 20,
+            "runs": 16,
+            "medianTick": 28078
+          },
+          {
+            "level": 21,
+            "runs": 15,
+            "medianTick": 28378
+          },
+          {
+            "level": 22,
+            "runs": 15,
+            "medianTick": 29929
+          },
+          {
+            "level": 23,
+            "runs": 15,
+            "medianTick": 31602
+          },
+          {
+            "level": 24,
+            "runs": 15,
+            "medianTick": 32100
+          },
+          {
+            "level": 25,
+            "runs": 15,
+            "medianTick": 34294
+          },
+          {
+            "level": 26,
+            "runs": 15,
+            "medianTick": 36076
+          },
+          {
+            "level": 27,
+            "runs": 15,
+            "medianTick": 37905
+          },
+          {
+            "level": 28,
+            "runs": 15,
+            "medianTick": 39576
+          },
+          {
+            "level": 29,
+            "runs": 15,
+            "medianTick": 40972
+          },
+          {
+            "level": 30,
+            "runs": 12,
+            "medianTick": 42304
+          },
+          {
+            "level": 31,
+            "runs": 10,
+            "medianTick": 42367
+          },
+          {
+            "level": 32,
+            "runs": 8,
+            "medianTick": 44073
+          },
+          {
+            "level": 33,
+            "runs": 8,
+            "medianTick": 45770
+          },
+          {
+            "level": 34,
+            "runs": 8,
+            "medianTick": 47618.5
+          },
+          {
+            "level": 35,
+            "runs": 8,
+            "medianTick": 50331.5
+          },
+          {
+            "level": 36,
+            "runs": 6,
+            "medianTick": 52603
+          },
+          {
+            "level": 37,
+            "runs": 6,
+            "medianTick": 54462
+          },
+          {
+            "level": 38,
+            "runs": 5,
+            "medianTick": 55722
+          },
+          {
+            "level": 39,
+            "runs": 5,
+            "medianTick": 58320
+          },
+          {
+            "level": 40,
+            "runs": 4,
+            "medianTick": 61598
+          },
+          {
+            "level": 41,
+            "runs": 2,
+            "medianTick": 59808
+          },
+          {
+            "level": 42,
+            "runs": 2,
+            "medianTick": 63131
+          },
+          {
+            "level": 43,
+            "runs": 2,
+            "medianTick": 64540.5
+          },
+          {
+            "level": 44,
+            "runs": 1,
+            "medianTick": 63896
+          },
+          {
+            "level": 45,
+            "runs": 1,
+            "medianTick": 66334
+          },
+          {
+            "level": 46,
+            "runs": 1,
+            "medianTick": 67819
+          },
+          {
+            "level": 47,
+            "runs": 1,
+            "medianTick": 71362
+          },
+          {
+            "level": 48,
+            "runs": 1,
+            "medianTick": 74402
+          }
+        ],
+        "sourceShare": {
+          "kills": 0.9096,
+          "combos": 0.086,
+          "caches": 0.0045
+        },
+        "finalLevel": {
+          "n": 16,
+          "median": 33,
+          "p10": 29,
+          "p25": 29.75,
+          "p75": 39.25,
+          "p90": 41.5,
+          "mean": 34.125
+        },
+        "kills": {
+          "n": 16,
+          "median": 851,
+          "p10": 539.5,
+          "p25": 684,
+          "p75": 959.25,
+          "p90": 1183.5,
+          "mean": 843.125
+        }
+      },
+      "power": {
+        "byMinute": [
+          {
+            "minute": 1,
+            "runs": 16,
+            "xp": 2720,
+            "level": 4,
+            "alive": 4
+          },
+          {
+            "minute": 2,
+            "runs": 16,
+            "xp": 9145,
+            "level": 8,
+            "alive": 7
+          },
+          {
+            "minute": 3,
+            "runs": 16,
+            "xp": 15277.5,
+            "level": 10,
+            "alive": 7.5
+          },
+          {
+            "minute": 4,
+            "runs": 16,
+            "xp": 21212.5,
+            "level": 12,
+            "alive": 10.5
+          },
+          {
+            "minute": 5,
+            "runs": 16,
+            "xp": 28207.5,
+            "level": 14,
+            "alive": 11
+          },
+          {
+            "minute": 6,
+            "runs": 16,
+            "xp": 36902.5,
+            "level": 15.5,
+            "alive": 22.5
+          },
+          {
+            "minute": 7,
+            "runs": 16,
+            "xp": 47322.5,
+            "level": 17.5,
+            "alive": 28
+          },
+          {
+            "minute": 8,
+            "runs": 16,
+            "xp": 63337.5,
+            "level": 20.5,
+            "alive": 18.5
+          },
+          {
+            "minute": 9,
+            "runs": 16,
+            "xp": 79245,
+            "level": 23,
+            "alive": 5
+          },
+          {
+            "minute": 10,
+            "runs": 16,
+            "xp": 87260,
+            "level": 24,
+            "alive": 25.5
+          },
+          {
+            "minute": 11,
+            "runs": 15,
+            "xp": 109640,
+            "level": 27,
+            "alive": 36
+          },
+          {
+            "minute": 12,
+            "runs": 15,
+            "xp": 138890,
+            "level": 30,
+            "alive": 36
+          },
+          {
+            "minute": 13,
+            "runs": 14,
+            "xp": 153957.5,
+            "level": 32,
+            "alive": 36.5
+          },
+          {
+            "minute": 14,
+            "runs": 14,
+            "xp": 176392.5,
+            "level": 34.5,
+            "alive": 37
+          },
+          {
+            "minute": 15,
+            "runs": 14,
+            "xp": 192037.5,
+            "level": 36,
+            "alive": 41.5
+          },
+          {
+            "minute": 16,
+            "runs": 12,
+            "xp": 211195,
+            "level": 37.5,
+            "alive": 49
+          },
+          {
+            "minute": 17,
+            "runs": 10,
+            "xp": 230145,
+            "level": 39,
+            "alive": 74
+          },
+          {
+            "minute": 18,
+            "runs": 7,
+            "xp": 253830,
+            "level": 41,
+            "alive": 54
+          },
+          {
+            "minute": 19,
+            "runs": 3,
+            "xp": 296775,
+            "level": 44,
+            "alive": 22
+          },
+          {
+            "minute": 20,
+            "runs": 3,
+            "xp": 312560,
+            "level": 46,
+            "alive": 56
+          },
+          {
+            "minute": 21,
+            "runs": 1,
+            "xp": 157340,
+            "level": 32,
+            "alive": 72
+          },
+          {
+            "minute": 22,
+            "runs": 1,
+            "xp": 170060,
+            "level": 34,
+            "alive": 115
+          },
+          {
+            "minute": 23,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 24,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 25,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 26,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 27,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 28,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 29,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 30,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          }
+        ],
+        "levelTicks": [
+          {
+            "level": 2,
+            "runs": 16,
+            "medianTick": 1098.5
+          },
+          {
+            "level": 3,
+            "runs": 16,
+            "medianTick": 1664
+          },
+          {
+            "level": 4,
+            "runs": 16,
+            "medianTick": 2632
+          },
+          {
+            "level": 5,
+            "runs": 16,
+            "medianTick": 3736
+          },
+          {
+            "level": 6,
+            "runs": 16,
+            "medianTick": 4636
+          },
+          {
+            "level": 7,
+            "runs": 16,
+            "medianTick": 5274.5
+          },
+          {
+            "level": 8,
+            "runs": 16,
+            "medianTick": 6670.5
+          },
+          {
+            "level": 9,
+            "runs": 16,
+            "medianTick": 8259
+          },
+          {
+            "level": 10,
+            "runs": 16,
+            "medianTick": 9882
+          },
+          {
+            "level": 11,
+            "runs": 16,
+            "medianTick": 11720.5
+          },
+          {
+            "level": 12,
+            "runs": 16,
+            "medianTick": 13724.5
+          },
+          {
+            "level": 13,
+            "runs": 16,
+            "medianTick": 15474
+          },
+          {
+            "level": 14,
+            "runs": 16,
+            "medianTick": 17522
+          },
+          {
+            "level": 15,
+            "runs": 16,
+            "medianTick": 19627
+          },
+          {
+            "level": 16,
+            "runs": 16,
+            "medianTick": 21446
+          },
+          {
+            "level": 17,
+            "runs": 16,
+            "medianTick": 23033.5
+          },
+          {
+            "level": 18,
+            "runs": 16,
+            "medianTick": 24690
+          },
+          {
+            "level": 19,
+            "runs": 16,
+            "medianTick": 25831.5
+          },
+          {
+            "level": 20,
+            "runs": 16,
+            "medianTick": 26892.5
+          },
+          {
+            "level": 21,
+            "runs": 16,
+            "medianTick": 28720
+          },
+          {
+            "level": 22,
+            "runs": 16,
+            "medianTick": 30556
+          },
+          {
+            "level": 23,
+            "runs": 15,
+            "medianTick": 31736
+          },
+          {
+            "level": 24,
+            "runs": 15,
+            "medianTick": 32100
+          },
+          {
+            "level": 25,
+            "runs": 15,
+            "medianTick": 35338
+          },
+          {
+            "level": 26,
+            "runs": 15,
+            "medianTick": 37255
+          },
+          {
+            "level": 27,
+            "runs": 15,
+            "medianTick": 38811
+          },
+          {
+            "level": 28,
+            "runs": 14,
+            "medianTick": 40061.5
+          },
+          {
+            "level": 29,
+            "runs": 14,
+            "medianTick": 41323
+          },
+          {
+            "level": 30,
+            "runs": 14,
+            "medianTick": 42193
+          },
+          {
+            "level": 31,
+            "runs": 14,
+            "medianTick": 43397.5
+          },
+          {
+            "level": 32,
+            "runs": 14,
+            "medianTick": 45668
+          },
+          {
+            "level": 33,
+            "runs": 13,
+            "medianTick": 47160
+          },
+          {
+            "level": 34,
+            "runs": 13,
+            "medianTick": 47948
+          },
+          {
+            "level": 35,
+            "runs": 12,
+            "medianTick": 49799.5
+          },
+          {
+            "level": 36,
+            "runs": 10,
+            "medianTick": 52675.5
+          },
+          {
+            "level": 37,
+            "runs": 10,
+            "medianTick": 54318.5
+          },
+          {
+            "level": 38,
+            "runs": 8,
+            "medianTick": 55251.5
+          },
+          {
+            "level": 39,
+            "runs": 7,
+            "medianTick": 57312
+          },
+          {
+            "level": 40,
+            "runs": 6,
+            "medianTick": 60922
+          },
+          {
+            "level": 41,
+            "runs": 4,
+            "medianTick": 62290.5
+          },
+          {
+            "level": 42,
+            "runs": 4,
+            "medianTick": 63666
+          },
+          {
+            "level": 43,
+            "runs": 4,
+            "medianTick": 65068.5
+          },
+          {
+            "level": 44,
+            "runs": 2,
+            "medianTick": 66023.5
+          },
+          {
+            "level": 45,
+            "runs": 2,
+            "medianTick": 67615.5
+          },
+          {
+            "level": 46,
+            "runs": 2,
+            "medianTick": 69582
+          },
+          {
+            "level": 47,
+            "runs": 1,
+            "medianTick": 72370
+          },
+          {
+            "level": 48,
+            "runs": 1,
+            "medianTick": 74890
+          }
+        ],
+        "sourceShare": {
+          "kills": 0.9188,
+          "combos": 0.0771,
+          "caches": 0.0042
+        },
+        "finalLevel": {
+          "n": 16,
+          "median": 37.5,
+          "p10": 29.5,
+          "p25": 34.75,
+          "p75": 40.75,
+          "p90": 44.5,
+          "mean": 37.25
+        },
+        "kills": {
+          "n": 16,
+          "median": 985,
+          "p10": 729.5,
+          "p25": 926.5,
+          "p75": 1121.5,
+          "p90": 1235.5,
+          "mean": 987.625
+        }
+      },
+      "survival": {
+        "byMinute": [
+          {
+            "minute": 1,
+            "runs": 16,
+            "xp": 2720,
+            "level": 4,
+            "alive": 4
+          },
+          {
+            "minute": 2,
+            "runs": 16,
+            "xp": 8720,
+            "level": 8,
+            "alive": 8
+          },
+          {
+            "minute": 3,
+            "runs": 16,
+            "xp": 13810,
+            "level": 10,
+            "alive": 8
+          },
+          {
+            "minute": 4,
+            "runs": 16,
+            "xp": 18550,
+            "level": 11,
+            "alive": 11
+          },
+          {
+            "minute": 5,
+            "runs": 16,
+            "xp": 23230,
+            "level": 12,
+            "alive": 15
+          },
+          {
+            "minute": 6,
+            "runs": 16,
+            "xp": 30030,
+            "level": 14,
+            "alive": 23.5
+          },
+          {
+            "minute": 7,
+            "runs": 16,
+            "xp": 37450,
+            "level": 16,
+            "alive": 27.5
+          },
+          {
+            "minute": 8,
+            "runs": 16,
+            "xp": 44820,
+            "level": 17,
+            "alive": 31.5
+          },
+          {
+            "minute": 9,
+            "runs": 16,
+            "xp": 59220,
+            "level": 20,
+            "alive": 5
+          },
+          {
+            "minute": 10,
+            "runs": 16,
+            "xp": 64150,
+            "level": 21,
+            "alive": 28.5
+          },
+          {
+            "minute": 11,
+            "runs": 14,
+            "xp": 75210,
+            "level": 22,
+            "alive": 38.5
+          },
+          {
+            "minute": 12,
+            "runs": 14,
+            "xp": 88850,
+            "level": 24,
+            "alive": 23.5
+          },
+          {
+            "minute": 13,
+            "runs": 13,
+            "xp": 99680,
+            "level": 26,
+            "alive": 37
+          },
+          {
+            "minute": 14,
+            "runs": 13,
+            "xp": 109500,
+            "level": 27,
+            "alive": 45
+          },
+          {
+            "minute": 15,
+            "runs": 13,
+            "xp": 120560,
+            "level": 28,
+            "alive": 62
+          },
+          {
+            "minute": 16,
+            "runs": 13,
+            "xp": 130360,
+            "level": 29,
+            "alive": 74
+          },
+          {
+            "minute": 17,
+            "runs": 7,
+            "xp": 138480,
+            "level": 30,
+            "alive": 79
+          },
+          {
+            "minute": 18,
+            "runs": 2,
+            "xp": 129230,
+            "level": 29.5,
+            "alive": 64.5
+          },
+          {
+            "minute": 19,
+            "runs": 1,
+            "xp": 140400,
+            "level": 31,
+            "alive": 74
+          },
+          {
+            "minute": 20,
+            "runs": 1,
+            "xp": 141860,
+            "level": 31,
+            "alive": 75
+          },
+          {
+            "minute": 21,
+            "runs": 1,
+            "xp": 149480,
+            "level": 32,
+            "alive": 86
+          },
+          {
+            "minute": 22,
+            "runs": 1,
+            "xp": 161180,
+            "level": 33,
+            "alive": 132
+          },
+          {
+            "minute": 23,
+            "runs": 1,
+            "xp": 175660,
+            "level": 34,
+            "alive": 141
+          },
+          {
+            "minute": 24,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 25,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 26,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 27,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 28,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 29,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          },
+          {
+            "minute": 30,
+            "runs": 0,
+            "xp": null,
+            "level": null,
+            "alive": null
+          }
+        ],
+        "levelTicks": [
+          {
+            "level": 2,
+            "runs": 16,
+            "medianTick": 1098.5
+          },
+          {
+            "level": 3,
+            "runs": 16,
+            "medianTick": 1699
+          },
+          {
+            "level": 4,
+            "runs": 16,
+            "medianTick": 2632
+          },
+          {
+            "level": 5,
+            "runs": 16,
+            "medianTick": 3736
+          },
+          {
+            "level": 6,
+            "runs": 16,
+            "medianTick": 4752
+          },
+          {
+            "level": 7,
+            "runs": 16,
+            "medianTick": 5354
+          },
+          {
+            "level": 8,
+            "runs": 16,
+            "medianTick": 6929.5
+          },
+          {
+            "level": 9,
+            "runs": 16,
+            "medianTick": 8742
+          },
+          {
+            "level": 10,
+            "runs": 16,
+            "medianTick": 10590
+          },
+          {
+            "level": 11,
+            "runs": 16,
+            "medianTick": 12918
+          },
+          {
+            "level": 12,
+            "runs": 16,
+            "medianTick": 15325
+          },
+          {
+            "level": 13,
+            "runs": 16,
+            "medianTick": 18135.5
+          },
+          {
+            "level": 14,
+            "runs": 16,
+            "medianTick": 20314
+          },
+          {
+            "level": 15,
+            "runs": 16,
+            "medianTick": 22288
+          },
+          {
+            "level": 16,
+            "runs": 16,
+            "medianTick": 24498
+          },
+          {
+            "level": 17,
+            "runs": 16,
+            "medianTick": 27006
+          },
+          {
+            "level": 18,
+            "runs": 16,
+            "medianTick": 29153.5
+          },
+          {
+            "level": 19,
+            "runs": 16,
+            "medianTick": 31205.5
+          },
+          {
+            "level": 20,
+            "runs": 16,
+            "medianTick": 32100
+          },
+          {
+            "level": 21,
+            "runs": 16,
+            "medianTick": 35307.5
+          },
+          {
+            "level": 22,
+            "runs": 15,
+            "medianTick": 38088
+          },
+          {
+            "level": 23,
+            "runs": 14,
+            "medianTick": 39734
+          },
+          {
+            "level": 24,
+            "runs": 14,
+            "medianTick": 41717
+          },
+          {
+            "level": 25,
+            "runs": 14,
+            "medianTick": 43512
+          },
+          {
+            "level": 26,
+            "runs": 13,
+            "medianTick": 46228
+          },
+          {
+            "level": 27,
+            "runs": 13,
+            "medianTick": 48504
+          },
+          {
+            "level": 28,
+            "runs": 13,
+            "medianTick": 51427
+          },
+          {
+            "level": 29,
+            "runs": 13,
+            "medianTick": 54406
+          },
+          {
+            "level": 30,
+            "runs": 11,
+            "medianTick": 56426
+          },
+          {
+            "level": 31,
+            "runs": 5,
+            "medianTick": 60851
+          },
+          {
+            "level": 32,
+            "runs": 2,
+            "medianTick": 69450.5
+          },
+          {
+            "level": 33,
+            "runs": 1,
+            "medianTick": 78322
+          },
+          {
+            "level": 34,
+            "runs": 1,
+            "medianTick": 80790
+          },
+          {
+            "level": 35,
+            "runs": 1,
+            "medianTick": 83574
+          }
+        ],
+        "sourceShare": {
+          "kills": 0.9084,
+          "combos": 0.0873,
+          "caches": 0.0043
+        },
+        "finalLevel": {
+          "n": 16,
+          "median": 30,
+          "p10": 23.5,
+          "p25": 29,
+          "p75": 31,
+          "p90": 31.5,
+          "mean": 29.125
+        },
+        "kills": {
+          "n": 16,
+          "median": 915.5,
+          "p10": 552.5,
+          "p25": 869.25,
+          "p75": 944.75,
+          "p90": 975.5,
+          "mean": 864.5
+        }
+      }
+    }
+  },
+  "offers": {
+    "pooled": {
+      "offersOpened": {
+        "n": 48,
+        "median": 30.5,
+        "p10": 25.4,
+        "p25": 29,
+        "p75": 37.25,
+        "p90": 42,
+        "mean": 32.5
+      },
+      "rerolls": 0,
+      "offered": {
+        "block-reward": 199,
+        "burner-contagion": 33,
+        "burner-liquidity": 32,
+        "burner-volatility": 37,
+        "cold-storage": 255,
+        "compound-interest": 298,
+        "diamond-hands": 188,
+        "gas-optimization": 160,
+        "hard-fork-rounds": 212,
+        "hardened-wallet": 330,
+        "hot-wallet": 172,
+        "layer-two": 315,
+        "ledger-conductivity": 73,
+        "ledger-reconciliation": 70,
+        "ledger-voltage": 62,
+        "precision-ledger": 231,
+        "proof-of-work": 178,
+        "standard-force": 26,
+        "standard-reach": 23,
+        "standard-tempo": 16,
+        "total-selloff": 1,
+        "validator-training": 209
+      },
+      "picked": {
+        "block-reward": 116,
+        "burner-contagion": 19,
+        "burner-liquidity": 23,
+        "burner-volatility": 24,
+        "cold-storage": 81,
+        "compound-interest": 137,
+        "diamond-hands": 102,
+        "gas-optimization": 85,
+        "hard-fork-rounds": 92,
+        "hardened-wallet": 168,
+        "hot-wallet": 126,
+        "layer-two": 129,
+        "ledger-conductivity": 47,
+        "ledger-reconciliation": 36,
+        "ledger-voltage": 47,
+        "precision-ledger": 99,
+        "proof-of-work": 113,
+        "standard-force": 21,
+        "standard-reach": 11,
+        "standard-tempo": 14,
+        "total-selloff": 1,
+        "validator-training": 69
+      },
+      "pistolMastery": {
+        "runs": 48,
+        "reached": 18,
+        "levelUps": {
+          "n": 18,
+          "median": 25.5,
+          "p10": 16.7,
+          "p25": 20.25,
+          "p75": 26,
+          "p90": 27.3,
+          "mean": 23.5
+        }
+      }
+    },
+    "byPolicy": {
+      "seeded": {
+        "offersOpened": {
+          "n": 16,
+          "median": 32,
+          "p10": 28,
+          "p25": 28.75,
+          "p75": 38.25,
+          "p90": 40.5,
+          "mean": 33.125
+        },
+        "rerolls": 0,
+        "offered": {
+          "block-reward": 78,
+          "burner-contagion": 13,
+          "burner-liquidity": 10,
+          "burner-volatility": 11,
+          "cold-storage": 78,
+          "compound-interest": 103,
+          "diamond-hands": 68,
+          "gas-optimization": 56,
+          "hard-fork-rounds": 77,
+          "hardened-wallet": 113,
+          "hot-wallet": 74,
+          "layer-two": 100,
+          "ledger-conductivity": 24,
+          "ledger-reconciliation": 24,
+          "ledger-voltage": 16,
+          "precision-ledger": 79,
+          "proof-of-work": 64,
+          "standard-force": 7,
+          "standard-reach": 5,
+          "standard-tempo": 4,
+          "validator-training": 56
+        },
+        "picked": {
+          "block-reward": 37,
+          "burner-contagion": 7,
+          "burner-liquidity": 8,
+          "burner-volatility": 7,
+          "cold-storage": 37,
+          "compound-interest": 53,
+          "diamond-hands": 28,
+          "gas-optimization": 26,
+          "hard-fork-rounds": 31,
+          "hardened-wallet": 71,
+          "hot-wallet": 36,
+          "layer-two": 46,
+          "ledger-conductivity": 10,
+          "ledger-reconciliation": 7,
+          "ledger-voltage": 9,
+          "precision-ledger": 35,
+          "proof-of-work": 36,
+          "standard-force": 5,
+          "standard-reach": 2,
+          "standard-tempo": 4,
+          "validator-training": 35
+        },
+        "pistolMastery": {
+          "runs": 16,
+          "reached": 2,
+          "levelUps": {
+            "n": 2,
+            "median": 30.5,
+            "p10": 27.7,
+            "p25": 28.75,
+            "p75": 32.25,
+            "p90": 33.3,
+            "mean": 30.5
+          }
+        }
+      },
+      "power": {
+        "offersOpened": {
+          "n": 16,
+          "median": 36.5,
+          "p10": 28.5,
+          "p25": 33.75,
+          "p75": 39.75,
+          "p90": 43.5,
+          "mean": 36.25
+        },
+        "rerolls": 0,
+        "offered": {
+          "block-reward": 55,
+          "burner-contagion": 13,
+          "burner-liquidity": 12,
+          "burner-volatility": 19,
+          "cold-storage": 118,
+          "compound-interest": 115,
+          "diamond-hands": 77,
+          "gas-optimization": 71,
+          "hard-fork-rounds": 63,
+          "hardened-wallet": 130,
+          "hot-wallet": 46,
+          "layer-two": 126,
+          "ledger-conductivity": 30,
+          "ledger-reconciliation": 31,
+          "ledger-voltage": 30,
+          "precision-ledger": 67,
+          "proof-of-work": 49,
+          "standard-force": 13,
+          "standard-reach": 11,
+          "standard-tempo": 8,
+          "total-selloff": 1,
+          "validator-training": 75
+        },
+        "picked": {
+          "block-reward": 47,
+          "burner-contagion": 9,
+          "burner-liquidity": 11,
+          "burner-volatility": 13,
+          "compound-interest": 76,
+          "diamond-hands": 31,
+          "gas-optimization": 29,
+          "hard-fork-rounds": 46,
+          "hardened-wallet": 27,
+          "hot-wallet": 46,
+          "layer-two": 16,
+          "ledger-conductivity": 28,
+          "ledger-reconciliation": 21,
+          "ledger-voltage": 27,
+          "precision-ledger": 47,
+          "proof-of-work": 48,
+          "standard-force": 11,
+          "standard-reach": 5,
+          "standard-tempo": 7,
+          "total-selloff": 1,
+          "validator-training": 34
+        },
+        "pistolMastery": {
+          "runs": 16,
+          "reached": 14,
+          "levelUps": {
+            "n": 14,
+            "median": 23.5,
+            "p10": 16.3,
+            "p25": 20.25,
+            "p75": 26,
+            "p90": 26.7,
+            "mean": 22.643
+          }
+        }
+      },
+      "survival": {
+        "offersOpened": {
+          "n": 16,
+          "median": 29,
+          "p10": 22.5,
+          "p25": 28,
+          "p75": 30,
+          "p90": 30.5,
+          "mean": 28.125
+        },
+        "rerolls": 0,
+        "offered": {
+          "block-reward": 66,
+          "burner-contagion": 7,
+          "burner-liquidity": 10,
+          "burner-volatility": 7,
+          "cold-storage": 59,
+          "compound-interest": 80,
+          "diamond-hands": 43,
+          "gas-optimization": 33,
+          "hard-fork-rounds": 72,
+          "hardened-wallet": 87,
+          "hot-wallet": 52,
+          "layer-two": 89,
+          "ledger-conductivity": 19,
+          "ledger-reconciliation": 15,
+          "ledger-voltage": 16,
+          "precision-ledger": 85,
+          "proof-of-work": 65,
+          "standard-force": 6,
+          "standard-reach": 7,
+          "standard-tempo": 4,
+          "validator-training": 78
+        },
+        "picked": {
+          "block-reward": 32,
+          "burner-contagion": 3,
+          "burner-liquidity": 4,
+          "burner-volatility": 4,
+          "cold-storage": 44,
+          "compound-interest": 8,
+          "diamond-hands": 43,
+          "gas-optimization": 30,
+          "hard-fork-rounds": 15,
+          "hardened-wallet": 70,
+          "hot-wallet": 44,
+          "layer-two": 67,
+          "ledger-conductivity": 9,
+          "ledger-reconciliation": 8,
+          "ledger-voltage": 11,
+          "precision-ledger": 17,
+          "proof-of-work": 29,
+          "standard-force": 5,
+          "standard-reach": 4,
+          "standard-tempo": 3
+        },
+        "pistolMastery": {
+          "runs": 16,
+          "reached": 2,
+          "levelUps": {
+            "n": 2,
+            "median": 22.5,
+            "p10": 19.7,
+            "p25": 20.75,
+            "p75": 24.25,
+            "p90": 25.3,
+            "mean": 22.5
+          }
+        }
+      }
+    }
+  },
+  "ammo": {
+    "pooled": {
+      "auto-miner": {
+        "acquiredRuns": 36,
+        "acquiredTick": {
+          "n": 36,
+          "median": 56100,
+          "p10": 56100,
+          "p25": 56100,
+          "p75": 56100,
+          "p90": 56100,
+          "mean": 56100
+        },
+        "shots": {
+          "n": 36,
+          "median": 360,
+          "p10": 0,
+          "p25": 145.5,
+          "p75": 391,
+          "p90": 622,
+          "mean": 332.194
+        },
+        "granted": {
+          "n": 36,
+          "median": 360,
+          "p10": 360,
+          "p25": 360,
+          "p75": 960,
+          "p90": 996,
+          "mean": 603.222
+        },
+        "fired": {
+          "n": 36,
+          "median": 360,
+          "p10": 0,
+          "p25": 145.5,
+          "p75": 391,
+          "p90": 622,
+          "mean": 332.194
+        },
+        "activeShare": {
+          "n": 36,
+          "median": 0.065,
+          "p10": 0,
+          "p25": 0.028,
+          "p75": 0.073,
+          "p90": 0.104,
+          "mean": 0.059
+        },
+        "fallbacks": {
+          "n": 36,
+          "median": 0.5,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 1,
+          "mean": 0.583
+        }
+      },
+      "bear-market-burner": {
+        "acquiredRuns": 26,
+        "acquiredTick": {
+          "n": 26,
+          "median": 56100,
+          "p10": 13500,
+          "p25": 24258,
+          "p75": 63120,
+          "p90": 63120,
+          "mean": 44803.615
+        },
+        "shots": {
+          "n": 26,
+          "median": 201,
+          "p10": 105,
+          "p25": 130,
+          "p75": 342.75,
+          "p90": 547.5,
+          "mean": 294.808
+        },
+        "granted": {
+          "n": 26,
+          "median": 7800,
+          "p10": 3600,
+          "p25": 6000,
+          "p75": 13142,
+          "p90": 16148,
+          "mean": 9909.577
+        },
+        "fired": {
+          "n": 26,
+          "median": 6000,
+          "p10": 3140,
+          "p25": 3900,
+          "p75": 10263.75,
+          "p90": 14134,
+          "mean": 8174.385
+        },
+        "activeShare": {
+          "n": 26,
+          "median": 0.025,
+          "p10": 0.014,
+          "p25": 0.017,
+          "p75": 0.048,
+          "p90": 0.062,
+          "mean": 0.036
+        },
+        "fallbacks": {
+          "n": 26,
+          "median": 1,
+          "p10": 0.5,
+          "p25": 1,
+          "p75": 2,
+          "p90": 2.5,
+          "mean": 1.577
+        }
+      },
+      "coin-blaster": {
+        "acquiredRuns": 48,
+        "acquiredTick": {
+          "n": 48,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "mean": 0
+        },
+        "shots": {
+          "n": 48,
+          "median": 1119.5,
+          "p10": 758.2,
+          "p25": 816,
+          "p75": 1237.5,
+          "p90": 1476.7,
+          "mean": 1103.208
+        },
+        "granted": null,
+        "fired": {
+          "n": 48,
+          "median": 995,
+          "p10": 669.2,
+          "p25": 721.5,
+          "p75": 1111.75,
+          "p90": 1332.2,
+          "mean": 987.063
+        },
+        "activeShare": {
+          "n": 48,
+          "median": 0.396,
+          "p10": 0.302,
+          "p25": 0.343,
+          "p75": 0.418,
+          "p90": 0.463,
+          "mean": 0.387
+        },
+        "fallbacks": {
+          "n": 48,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "mean": 0
+        }
+      },
+      "forked-standard": {
+        "acquiredRuns": 25,
+        "acquiredTick": {
+          "n": 25,
+          "median": 56100,
+          "p10": 39588,
+          "p25": 40200,
+          "p75": 56100,
+          "p90": 63492,
+          "mean": 50385.6
+        },
+        "shots": {
+          "n": 25,
+          "median": 175,
+          "p10": 84.8,
+          "p25": 118,
+          "p75": 531,
+          "p90": 957,
+          "mean": 352.92
+        },
+        "granted": {
+          "n": 25,
+          "median": 1,
+          "p10": 1,
+          "p25": 1,
+          "p75": 1,
+          "p90": 1,
+          "mean": 1
+        },
+        "fired": {
+          "n": 25,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "mean": 0
+        },
+        "activeShare": {
+          "n": 25,
+          "median": 0.082,
+          "p10": 0.035,
+          "p25": 0.058,
+          "p75": 0.235,
+          "p90": 0.304,
+          "mean": 0.131
+        },
+        "fallbacks": {
+          "n": 25,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "mean": 0
+        }
+      },
+      "hash-rail": {
+        "acquiredRuns": 48,
+        "acquiredTick": {
+          "n": 48,
+          "median": 18060,
+          "p10": 18060,
+          "p25": 18060,
+          "p75": 18060,
+          "p90": 18060,
+          "mean": 18060
+        },
+        "shots": {
+          "n": 48,
+          "median": 96,
+          "p10": 70.7,
+          "p25": 78,
+          "p75": 107,
+          "p90": 107,
+          "mean": 91.396
+        },
+        "granted": {
+          "n": 48,
+          "median": 105.5,
+          "p10": 89,
+          "p25": 95,
+          "p75": 108.75,
+          "p90": 133.4,
+          "mean": 105.896
+        },
+        "fired": {
+          "n": 48,
+          "median": 96,
+          "p10": 70.7,
+          "p25": 78,
+          "p75": 107,
+          "p90": 107,
+          "mean": 91.396
+        },
+        "activeShare": {
+          "n": 48,
+          "median": 0.3,
+          "p10": 0.217,
+          "p25": 0.263,
+          "p75": 0.319,
+          "p90": 0.331,
+          "mean": 0.284
+        },
+        "fallbacks": {
+          "n": 48,
+          "median": 3,
+          "p10": 1,
+          "p25": 1,
+          "p75": 3,
+          "p90": 3,
+          "mean": 2.292
+        }
+      },
+      "launcher-rig": {
+        "acquiredRuns": 12,
+        "acquiredTick": {
+          "n": 12,
+          "median": 63900,
+          "p10": 63900,
+          "p25": 63900,
+          "p75": 63900,
+          "p90": 63900,
+          "mean": 63900
+        },
+        "shots": {
+          "n": 12,
+          "median": 12,
+          "p10": 12,
+          "p25": 12,
+          "p75": 12,
+          "p90": 12,
+          "mean": 11
+        },
+        "granted": {
+          "n": 12,
+          "median": 12,
+          "p10": 12,
+          "p25": 12,
+          "p75": 12,
+          "p90": 12,
+          "mean": 12
+        },
+        "fired": {
+          "n": 12,
+          "median": 12,
+          "p10": 12,
+          "p25": 12,
+          "p75": 12,
+          "p90": 12,
+          "mean": 11
+        },
+        "activeShare": {
+          "n": 12,
+          "median": 0.014,
+          "p10": 0.012,
+          "p25": 0.012,
+          "p75": 0.015,
+          "p90": 0.015,
+          "mean": 0.013
+        },
+        "fallbacks": {
+          "n": 12,
+          "median": 1,
+          "p10": 1,
+          "p25": 1,
+          "p75": 1,
+          "p90": 1,
+          "mean": 0.917
+        }
+      },
+      "lightning-ledger": {
+        "acquiredRuns": 39,
+        "acquiredTick": {
+          "n": 39,
+          "median": 33180,
+          "p10": 30720,
+          "p25": 32100,
+          "p75": 55020,
+          "p90": 56316,
+          "mean": 40523.077
+        },
+        "shots": {
+          "n": 39,
+          "median": 301,
+          "p10": 66,
+          "p25": 99,
+          "p75": 357.5,
+          "p90": 377.2,
+          "mean": 250.256
+        },
+        "granted": {
+          "n": 39,
+          "median": 58,
+          "p10": 36,
+          "p25": 46,
+          "p75": 66,
+          "p90": 75,
+          "mean": 56.256
+        },
+        "fired": {
+          "n": 39,
+          "median": 57,
+          "p10": 12,
+          "p25": 18,
+          "p75": 65.5,
+          "p90": 70,
+          "mean": 45.487
+        },
+        "activeShare": {
+          "n": 39,
+          "median": 0.081,
+          "p10": 0.022,
+          "p25": 0.026,
+          "p75": 0.108,
+          "p90": 0.135,
+          "mean": 0.074
+        },
+        "fallbacks": {
+          "n": 39,
+          "median": 2,
+          "p10": 0,
+          "p25": 1,
+          "p75": 2,
+          "p90": 3,
+          "mean": 1.538
+        }
+      },
+      "scatter-shotgun": {
+        "acquiredRuns": 48,
+        "acquiredTick": {
+          "n": 48,
+          "median": 2130,
+          "p10": 2130,
+          "p25": 2130,
+          "p75": 2130,
+          "p90": 2130,
+          "mean": 2130
+        },
+        "shots": {
+          "n": 48,
+          "median": 96,
+          "p10": 70,
+          "p25": 70,
+          "p75": 105,
+          "p90": 110,
+          "mean": 91
+        },
+        "granted": {
+          "n": 48,
+          "median": 96,
+          "p10": 96,
+          "p25": 96,
+          "p75": 110,
+          "p90": 127.3,
+          "mean": 104.625
+        },
+        "fired": {
+          "n": 48,
+          "median": 96,
+          "p10": 70,
+          "p25": 70,
+          "p75": 105,
+          "p90": 110,
+          "mean": 91
+        },
+        "activeShare": {
+          "n": 48,
+          "median": 0.14,
+          "p10": 0.093,
+          "p25": 0.128,
+          "p75": 0.148,
+          "p90": 0.156,
+          "mean": 0.134
+        },
+        "fallbacks": {
+          "n": 48,
+          "median": 5,
+          "p10": 4,
+          "p25": 4,
+          "p75": 5,
+          "p90": 6,
+          "mean": 4.771
+        }
+      }
+    },
+    "byPolicy": {
+      "seeded": {
+        "auto-miner": {
+          "acquiredRuns": 10,
+          "acquiredTick": {
+            "n": 10,
+            "median": 56100,
+            "p10": 56100,
+            "p25": 56100,
+            "p75": 56100,
+            "p90": 56100,
+            "mean": 56100
+          },
+          "shots": {
+            "n": 10,
+            "median": 300,
+            "p10": 0,
+            "p25": 215.25,
+            "p75": 360,
+            "p90": 461.4,
+            "mean": 313.3
+          },
+          "granted": {
+            "n": 10,
+            "median": 360,
+            "p10": 360,
+            "p25": 360,
+            "p75": 900,
+            "p90": 964.6,
+            "mean": 580.6
+          },
+          "fired": {
+            "n": 10,
+            "median": 300,
+            "p10": 0,
+            "p25": 215.25,
+            "p75": 360,
+            "p90": 461.4,
+            "mean": 313.3
+          },
+          "activeShare": {
+            "n": 10,
+            "median": 0.055,
+            "p10": 0,
+            "p25": 0.044,
+            "p75": 0.068,
+            "p90": 0.082,
+            "mean": 0.055
+          },
+          "fallbacks": {
+            "n": 10,
+            "median": 0.5,
+            "p10": 0,
+            "p25": 0,
+            "p75": 1,
+            "p90": 1.1,
+            "mean": 0.6
+          }
+        },
+        "bear-market-burner": {
+          "acquiredRuns": 7,
+          "acquiredTick": {
+            "n": 7,
+            "median": 54840,
+            "p10": 13500,
+            "p25": 18879,
+            "p75": 60240,
+            "p90": 63120,
+            "mean": 41385.429
+          },
+          "shots": {
+            "n": 7,
+            "median": 260,
+            "p10": 49.6,
+            "p25": 140.5,
+            "p75": 417.5,
+            "p90": 737.2,
+            "mean": 350.286
+          },
+          "granted": {
+            "n": 7,
+            "median": 9600,
+            "p10": 5040,
+            "p25": 6000,
+            "p75": 14134,
+            "p90": 19980,
+            "mean": 11495.429
+          },
+          "fired": {
+            "n": 7,
+            "median": 7800,
+            "p10": 1480,
+            "p25": 4200,
+            "p75": 11284,
+            "p90": 18580.8,
+            "mean": 9409.714
+          },
+          "activeShare": {
+            "n": 7,
+            "median": 0.039,
+            "p10": 0.007,
+            "p25": 0.016,
+            "p75": 0.056,
+            "p90": 0.081,
+            "mean": 0.041
+          },
+          "fallbacks": {
+            "n": 7,
+            "median": 2,
+            "p10": 0,
+            "p25": 0.5,
+            "p75": 2,
+            "p90": 3.2,
+            "mean": 1.714
+          }
+        },
+        "coin-blaster": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          },
+          "shots": {
+            "n": 16,
+            "median": 999.5,
+            "p10": 693,
+            "p25": 786.5,
+            "p75": 1169.75,
+            "p90": 1273,
+            "mean": 987.188
+          },
+          "granted": null,
+          "fired": {
+            "n": 16,
+            "median": 905.5,
+            "p10": 618,
+            "p25": 693,
+            "p75": 1057,
+            "p90": 1126,
+            "mean": 880
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.407,
+            "p10": 0.317,
+            "p25": 0.376,
+            "p75": 0.425,
+            "p90": 0.471,
+            "mean": 0.405
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          }
+        },
+        "forked-standard": {
+          "acquiredRuns": 8,
+          "acquiredTick": {
+            "n": 8,
+            "median": 48660,
+            "p10": 39894,
+            "p25": 40200,
+            "p75": 57795,
+            "p90": 64680,
+            "mean": 50595
+          },
+          "shots": {
+            "n": 8,
+            "median": 181,
+            "p10": 95.9,
+            "p25": 117.5,
+            "p75": 241.5,
+            "p90": 529.5,
+            "mean": 284.625
+          },
+          "granted": {
+            "n": 8,
+            "median": 1,
+            "p10": 1,
+            "p25": 1,
+            "p75": 1,
+            "p90": 1,
+            "mean": 1
+          },
+          "fired": {
+            "n": 8,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          },
+          "activeShare": {
+            "n": 8,
+            "median": 0.079,
+            "p10": 0.037,
+            "p25": 0.066,
+            "p75": 0.101,
+            "p90": 0.205,
+            "mean": 0.108
+          },
+          "fallbacks": {
+            "n": 8,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          }
+        },
+        "hash-rail": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 18060,
+            "p10": 18060,
+            "p25": 18060,
+            "p75": 18060,
+            "p90": 18060,
+            "mean": 18060
+          },
+          "shots": {
+            "n": 16,
+            "median": 95,
+            "p10": 70.5,
+            "p25": 76.5,
+            "p75": 107,
+            "p90": 107,
+            "mean": 89.563
+          },
+          "granted": {
+            "n": 16,
+            "median": 102.5,
+            "p10": 89,
+            "p25": 90.5,
+            "p75": 107.25,
+            "p90": 132.5,
+            "mean": 103.25
+          },
+          "fired": {
+            "n": 16,
+            "median": 95,
+            "p10": 70.5,
+            "p25": 76.5,
+            "p75": 107,
+            "p90": 107,
+            "mean": 89.563
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.307,
+            "p10": 0.226,
+            "p25": 0.275,
+            "p75": 0.321,
+            "p90": 0.331,
+            "mean": 0.289
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 3,
+            "p10": 1,
+            "p25": 1,
+            "p75": 3,
+            "p90": 3,
+            "mean": 2.25
+          }
+        },
+        "launcher-rig": {
+          "acquiredRuns": 3,
+          "acquiredTick": {
+            "n": 3,
+            "median": 63900,
+            "p10": 63900,
+            "p25": 63900,
+            "p75": 63900,
+            "p90": 63900,
+            "mean": 63900
+          },
+          "shots": {
+            "n": 3,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "granted": {
+            "n": 3,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "fired": {
+            "n": 3,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "activeShare": {
+            "n": 3,
+            "median": 0.014,
+            "p10": 0.013,
+            "p25": 0.013,
+            "p75": 0.014,
+            "p90": 0.015,
+            "mean": 0.014
+          },
+          "fallbacks": {
+            "n": 3,
+            "median": 1,
+            "p10": 1,
+            "p25": 1,
+            "p75": 1,
+            "p90": 1,
+            "mean": 1
+          }
+        },
+        "lightning-ledger": {
+          "acquiredRuns": 12,
+          "acquiredTick": {
+            "n": 12,
+            "median": 33030,
+            "p10": 30750,
+            "p25": 31830,
+            "p75": 43905,
+            "p90": 55992,
+            "mean": 39195
+          },
+          "shots": {
+            "n": 12,
+            "median": 300,
+            "p10": 68.4,
+            "p25": 120,
+            "p75": 346.25,
+            "p90": 373.4,
+            "mean": 244.75
+          },
+          "granted": {
+            "n": 12,
+            "median": 56.5,
+            "p10": 36.4,
+            "p25": 44.5,
+            "p75": 65,
+            "p90": 65.9,
+            "mean": 53.667
+          },
+          "fired": {
+            "n": 12,
+            "median": 55,
+            "p10": 12.6,
+            "p25": 21.75,
+            "p75": 65,
+            "p90": 65.9,
+            "mean": 44.5
+          },
+          "activeShare": {
+            "n": 12,
+            "median": 0.071,
+            "p10": 0.024,
+            "p25": 0.027,
+            "p75": 0.11,
+            "p90": 0.134,
+            "mean": 0.075
+          },
+          "fallbacks": {
+            "n": 12,
+            "median": 1.5,
+            "p10": 0.1,
+            "p25": 1,
+            "p75": 2,
+            "p90": 2,
+            "mean": 1.417
+          }
+        },
+        "scatter-shotgun": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 2130,
+            "p10": 2130,
+            "p25": 2130,
+            "p75": 2130,
+            "p90": 2130,
+            "mean": 2130
+          },
+          "shots": {
+            "n": 16,
+            "median": 96,
+            "p10": 70,
+            "p25": 70,
+            "p75": 108.25,
+            "p90": 109.5,
+            "mean": 90.625
+          },
+          "granted": {
+            "n": 16,
+            "median": 96,
+            "p10": 95,
+            "p25": 96,
+            "p75": 108.5,
+            "p90": 129.5,
+            "mean": 103.75
+          },
+          "fired": {
+            "n": 16,
+            "median": 96,
+            "p10": 70,
+            "p25": 70,
+            "p75": 108.25,
+            "p90": 109.5,
+            "mean": 90.625
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.141,
+            "p10": 0.124,
+            "p25": 0.136,
+            "p75": 0.152,
+            "p90": 0.157,
+            "mean": 0.14
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 5,
+            "p10": 4,
+            "p25": 4,
+            "p75": 5,
+            "p90": 5.5,
+            "mean": 4.75
+          }
+        }
+      },
+      "power": {
+        "auto-miner": {
+          "acquiredRuns": 13,
+          "acquiredTick": {
+            "n": 13,
+            "median": 56100,
+            "p10": 56100,
+            "p25": 56100,
+            "p75": 56100,
+            "p90": 56100,
+            "mean": 56100
+          },
+          "shots": {
+            "n": 13,
+            "median": 360,
+            "p10": 0,
+            "p25": 120,
+            "p75": 406,
+            "p90": 680.8,
+            "mean": 354
+          },
+          "granted": {
+            "n": 13,
+            "median": 720,
+            "p10": 360,
+            "p25": 360,
+            "p75": 960,
+            "p90": 1002,
+            "mean": 719.846
+          },
+          "fired": {
+            "n": 13,
+            "median": 360,
+            "p10": 0,
+            "p25": 120,
+            "p75": 406,
+            "p90": 680.8,
+            "mean": 354
+          },
+          "activeShare": {
+            "n": 13,
+            "median": 0.071,
+            "p10": 0,
+            "p25": 0.024,
+            "p75": 0.076,
+            "p90": 0.112,
+            "mean": 0.061
+          },
+          "fallbacks": {
+            "n": 13,
+            "median": 1,
+            "p10": 0,
+            "p25": 0,
+            "p75": 1,
+            "p90": 1,
+            "mean": 0.692
+          }
+        },
+        "bear-market-burner": {
+          "acquiredRuns": 10,
+          "acquiredTick": {
+            "n": 10,
+            "median": 56730,
+            "p10": 13500,
+            "p25": 31903.5,
+            "p75": 63120,
+            "p90": 63120,
+            "mean": 47203.8
+          },
+          "shots": {
+            "n": 10,
+            "median": 201,
+            "p10": 117,
+            "p25": 170.25,
+            "p75": 448.25,
+            "p90": 630.1,
+            "mean": 345.7
+          },
+          "granted": {
+            "n": 10,
+            "median": 7800,
+            "p10": 5760,
+            "p25": 6000,
+            "p75": 14100,
+            "p90": 17996.4,
+            "mean": 10699.6
+          },
+          "fired": {
+            "n": 10,
+            "median": 6000,
+            "p10": 3508,
+            "p25": 5100,
+            "p75": 11772,
+            "p90": 16470,
+            "mean": 9407.6
+          },
+          "activeShare": {
+            "n": 10,
+            "median": 0.025,
+            "p10": 0.016,
+            "p25": 0.02,
+            "p75": 0.051,
+            "p90": 0.065,
+            "mean": 0.038
+          },
+          "fallbacks": {
+            "n": 10,
+            "median": 1,
+            "p10": 0.9,
+            "p25": 1,
+            "p75": 2,
+            "p90": 3.2,
+            "mean": 1.7
+          }
+        },
+        "coin-blaster": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          },
+          "shots": {
+            "n": 16,
+            "median": 1200.5,
+            "p10": 813,
+            "p25": 1075,
+            "p75": 1466.75,
+            "p90": 1619.5,
+            "mean": 1241.125
+          },
+          "granted": null,
+          "fired": {
+            "n": 16,
+            "median": 1079,
+            "p10": 728,
+            "p25": 961.25,
+            "p75": 1324.5,
+            "p90": 1458.5,
+            "mean": 1121.375
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.367,
+            "p10": 0.27,
+            "p25": 0.328,
+            "p75": 0.4,
+            "p90": 0.437,
+            "mean": 0.365
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          }
+        },
+        "forked-standard": {
+          "acquiredRuns": 10,
+          "acquiredTick": {
+            "n": 10,
+            "median": 56100,
+            "p10": 40098,
+            "p25": 40455,
+            "p75": 61185,
+            "p90": 64398,
+            "mean": 52476
+          },
+          "shots": {
+            "n": 10,
+            "median": 196.5,
+            "p10": 72.6,
+            "p25": 104.5,
+            "p75": 605,
+            "p90": 777.5,
+            "mean": 366.2
+          },
+          "granted": {
+            "n": 10,
+            "median": 1,
+            "p10": 1,
+            "p25": 1,
+            "p75": 1,
+            "p90": 1,
+            "mean": 1
+          },
+          "fired": {
+            "n": 10,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          },
+          "activeShare": {
+            "n": 10,
+            "median": 0.076,
+            "p10": 0.032,
+            "p25": 0.046,
+            "p75": 0.22,
+            "p90": 0.262,
+            "mean": 0.129
+          },
+          "fallbacks": {
+            "n": 10,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          }
+        },
+        "hash-rail": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 18060,
+            "p10": 18060,
+            "p25": 18060,
+            "p75": 18060,
+            "p90": 18060,
+            "mean": 18060
+          },
+          "shots": {
+            "n": 16,
+            "median": 96,
+            "p10": 72.5,
+            "p25": 81.75,
+            "p75": 106,
+            "p90": 107,
+            "mean": 92.875
+          },
+          "granted": {
+            "n": 16,
+            "median": 106,
+            "p10": 89,
+            "p25": 96.5,
+            "p75": 124.25,
+            "p90": 139.5,
+            "mean": 111.313
+          },
+          "fired": {
+            "n": 16,
+            "median": 96,
+            "p10": 72.5,
+            "p25": 81.75,
+            "p75": 106,
+            "p90": 107,
+            "mean": 92.875
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.285,
+            "p10": 0.203,
+            "p25": 0.251,
+            "p75": 0.31,
+            "p90": 0.342,
+            "mean": 0.276
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 3,
+            "p10": 1,
+            "p25": 1,
+            "p75": 3,
+            "p90": 3,
+            "mean": 2.375
+          }
+        },
+        "launcher-rig": {
+          "acquiredRuns": 7,
+          "acquiredTick": {
+            "n": 7,
+            "median": 63900,
+            "p10": 63900,
+            "p25": 63900,
+            "p75": 63900,
+            "p90": 63900,
+            "mean": 63900
+          },
+          "shots": {
+            "n": 7,
+            "median": 12,
+            "p10": 7.2,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 10.286
+          },
+          "granted": {
+            "n": 7,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "fired": {
+            "n": 7,
+            "median": 12,
+            "p10": 7.2,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 10.286
+          },
+          "activeShare": {
+            "n": 7,
+            "median": 0.014,
+            "p10": 0.007,
+            "p25": 0.013,
+            "p75": 0.015,
+            "p90": 0.015,
+            "mean": 0.012
+          },
+          "fallbacks": {
+            "n": 7,
+            "median": 1,
+            "p10": 0.6,
+            "p25": 1,
+            "p75": 1,
+            "p90": 1,
+            "mean": 0.857
+          }
+        },
+        "lightning-ledger": {
+          "acquiredRuns": 14,
+          "acquiredTick": {
+            "n": 14,
+            "median": 36150,
+            "p10": 30810,
+            "p25": 32100,
+            "p75": 55830,
+            "p90": 56856,
+            "mean": 41764.286
+          },
+          "shots": {
+            "n": 14,
+            "median": 297,
+            "p10": 99,
+            "p25": 145,
+            "p75": 362.5,
+            "p90": 408.5,
+            "mean": 269.643
+          },
+          "granted": {
+            "n": 14,
+            "median": 58,
+            "p10": 46.6,
+            "p25": 49,
+            "p75": 73,
+            "p90": 79.7,
+            "mean": 63.143
+          },
+          "fired": {
+            "n": 14,
+            "median": 54.5,
+            "p10": 18,
+            "p25": 26.25,
+            "p75": 67.5,
+            "p90": 72.8,
+            "mean": 48.429
+          },
+          "activeShare": {
+            "n": 14,
+            "median": 0.073,
+            "p10": 0.023,
+            "p25": 0.032,
+            "p75": 0.121,
+            "p90": 0.144,
+            "mean": 0.083
+          },
+          "fallbacks": {
+            "n": 14,
+            "median": 1.5,
+            "p10": 1,
+            "p25": 1,
+            "p75": 2,
+            "p90": 2,
+            "mean": 1.5
+          }
+        },
+        "scatter-shotgun": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 2130,
+            "p10": 2130,
+            "p25": 2130,
+            "p75": 2130,
+            "p90": 2130,
+            "mean": 2130
+          },
+          "shots": {
+            "n": 16,
+            "median": 96,
+            "p10": 70,
+            "p25": 70,
+            "p75": 103.75,
+            "p90": 109.5,
+            "mean": 91.875
+          },
+          "granted": {
+            "n": 16,
+            "median": 98.5,
+            "p10": 96,
+            "p25": 96,
+            "p75": 121.75,
+            "p90": 135,
+            "mean": 108.25
+          },
+          "fired": {
+            "n": 16,
+            "median": 96,
+            "p10": 70,
+            "p25": 70,
+            "p75": 103.75,
+            "p90": 109.5,
+            "mean": 91.875
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.137,
+            "p10": 0.087,
+            "p25": 0.125,
+            "p75": 0.144,
+            "p90": 0.148,
+            "mean": 0.128
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 5,
+            "p10": 4,
+            "p25": 4,
+            "p75": 5,
+            "p90": 5.5,
+            "mean": 4.813
+          }
+        }
+      },
+      "survival": {
+        "auto-miner": {
+          "acquiredRuns": 13,
+          "acquiredTick": {
+            "n": 13,
+            "median": 56100,
+            "p10": 56100,
+            "p25": 56100,
+            "p75": 56100,
+            "p90": 56100,
+            "mean": 56100
+          },
+          "shots": {
+            "n": 13,
+            "median": 358,
+            "p10": 20,
+            "p25": 154,
+            "p75": 360,
+            "p90": 496.4,
+            "mean": 324.923
+          },
+          "granted": {
+            "n": 13,
+            "median": 360,
+            "p10": 360,
+            "p25": 360,
+            "p75": 360,
+            "p90": 980.8,
+            "mean": 504
+          },
+          "fired": {
+            "n": 13,
+            "median": 358,
+            "p10": 20,
+            "p25": 154,
+            "p75": 360,
+            "p90": 496.4,
+            "mean": 324.923
+          },
+          "activeShare": {
+            "n": 13,
+            "median": 0.07,
+            "p10": 0.003,
+            "p25": 0.03,
+            "p75": 0.072,
+            "p90": 0.087,
+            "mean": 0.059
+          },
+          "fallbacks": {
+            "n": 13,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 1,
+            "p90": 1,
+            "mean": 0.462
+          }
+        },
+        "bear-market-burner": {
+          "acquiredRuns": 9,
+          "acquiredTick": {
+            "n": 9,
+            "median": 56100,
+            "p10": 13500,
+            "p25": 24258,
+            "p75": 57360,
+            "p90": 63120,
+            "mean": 44795.333
+          },
+          "shots": {
+            "n": 9,
+            "median": 201,
+            "p10": 120,
+            "p25": 120,
+            "p75": 240,
+            "p90": 262,
+            "mean": 195.111
+          },
+          "granted": {
+            "n": 9,
+            "median": 6000,
+            "p10": 3600,
+            "p25": 3600,
+            "p75": 10485,
+            "p90": 13380,
+            "mean": 7798.333
+          },
+          "fired": {
+            "n": 9,
+            "median": 6000,
+            "p10": 3600,
+            "p25": 3600,
+            "p75": 7200,
+            "p90": 7857,
+            "mean": 5843.333
+          },
+          "activeShare": {
+            "n": 9,
+            "median": 0.021,
+            "p10": 0.016,
+            "p25": 0.016,
+            "p75": 0.044,
+            "p90": 0.048,
+            "mean": 0.029
+          },
+          "fallbacks": {
+            "n": 9,
+            "median": 1,
+            "p10": 1,
+            "p25": 1,
+            "p75": 2,
+            "p90": 2,
+            "mean": 1.333
+          }
+        },
+        "coin-blaster": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          },
+          "shots": {
+            "n": 16,
+            "median": 1068.5,
+            "p10": 751,
+            "p25": 818.5,
+            "p75": 1196.5,
+            "p90": 1403.5,
+            "mean": 1081.313
+          },
+          "granted": null,
+          "fired": {
+            "n": 16,
+            "median": 943,
+            "p10": 662,
+            "p25": 721,
+            "p75": 1055.5,
+            "p90": 1249,
+            "mean": 959.813
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.393,
+            "p10": 0.325,
+            "p25": 0.364,
+            "p75": 0.417,
+            "p90": 0.46,
+            "mean": 0.39
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          }
+        },
+        "forked-standard": {
+          "acquiredRuns": 7,
+          "acquiredTick": {
+            "n": 7,
+            "median": 41220,
+            "p10": 39792,
+            "p25": 40200,
+            "p75": 56100,
+            "p90": 56508,
+            "mean": 47160
+          },
+          "shots": {
+            "n": 7,
+            "median": 175,
+            "p10": 131.2,
+            "p25": 152.5,
+            "p75": 588.5,
+            "p90": 828.8,
+            "mean": 412
+          },
+          "granted": {
+            "n": 7,
+            "median": 1,
+            "p10": 1,
+            "p25": 1,
+            "p75": 1,
+            "p90": 1,
+            "mean": 1
+          },
+          "fired": {
+            "n": 7,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          },
+          "activeShare": {
+            "n": 7,
+            "median": 0.101,
+            "p10": 0.055,
+            "p25": 0.067,
+            "p75": 0.243,
+            "p90": 0.288,
+            "mean": 0.159
+          },
+          "fallbacks": {
+            "n": 7,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "mean": 0
+          }
+        },
+        "hash-rail": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 18060,
+            "p10": 18060,
+            "p25": 18060,
+            "p75": 18060,
+            "p90": 18060,
+            "mean": 18060
+          },
+          "shots": {
+            "n": 16,
+            "median": 97.5,
+            "p10": 70.5,
+            "p25": 76.75,
+            "p75": 107,
+            "p90": 107,
+            "mean": 91.75
+          },
+          "granted": {
+            "n": 16,
+            "median": 105.5,
+            "p10": 89.5,
+            "p25": 96.5,
+            "p75": 107,
+            "p90": 109,
+            "mean": 103.125
+          },
+          "fired": {
+            "n": 16,
+            "median": 97.5,
+            "p10": 70.5,
+            "p25": 76.75,
+            "p75": 107,
+            "p90": 107,
+            "mean": 91.75
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.308,
+            "p10": 0.244,
+            "p25": 0.271,
+            "p75": 0.315,
+            "p90": 0.322,
+            "mean": 0.288
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 3,
+            "p10": 1,
+            "p25": 1,
+            "p75": 3,
+            "p90": 3,
+            "mean": 2.25
+          }
+        },
+        "launcher-rig": {
+          "acquiredRuns": 2,
+          "acquiredTick": {
+            "n": 2,
+            "median": 63900,
+            "p10": 63900,
+            "p25": 63900,
+            "p75": 63900,
+            "p90": 63900,
+            "mean": 63900
+          },
+          "shots": {
+            "n": 2,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "granted": {
+            "n": 2,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "fired": {
+            "n": 2,
+            "median": 12,
+            "p10": 12,
+            "p25": 12,
+            "p75": 12,
+            "p90": 12,
+            "mean": 12
+          },
+          "activeShare": {
+            "n": 2,
+            "median": 0.014,
+            "p10": 0.012,
+            "p25": 0.013,
+            "p75": 0.014,
+            "p90": 0.015,
+            "mean": 0.014
+          },
+          "fallbacks": {
+            "n": 2,
+            "median": 1,
+            "p10": 1,
+            "p25": 1,
+            "p75": 1,
+            "p90": 1,
+            "mean": 1
+          }
+        },
+        "lightning-ledger": {
+          "acquiredRuns": 13,
+          "acquiredTick": {
+            "n": 13,
+            "median": 33180,
+            "p10": 30780,
+            "p25": 32100,
+            "p75": 55020,
+            "p90": 55884,
+            "mean": 40412.308
+          },
+          "shots": {
+            "n": 13,
+            "median": 301,
+            "p10": 72.6,
+            "p25": 99,
+            "p75": 356,
+            "p90": 365.4,
+            "mean": 234.462
+          },
+          "granted": {
+            "n": 13,
+            "median": 57,
+            "p10": 18,
+            "p25": 38,
+            "p75": 66,
+            "p90": 67.6,
+            "mean": 51.231
+          },
+          "fired": {
+            "n": 13,
+            "median": 57,
+            "p10": 13.2,
+            "p25": 18,
+            "p75": 66,
+            "p90": 67.6,
+            "mean": 43.231
+          },
+          "activeShare": {
+            "n": 13,
+            "median": 0.081,
+            "p10": 0.019,
+            "p25": 0.024,
+            "p75": 0.093,
+            "p90": 0.104,
+            "mean": 0.065
+          },
+          "fallbacks": {
+            "n": 13,
+            "median": 2,
+            "p10": 0.2,
+            "p25": 1,
+            "p75": 2,
+            "p90": 3,
+            "mean": 1.692
+          }
+        },
+        "scatter-shotgun": {
+          "acquiredRuns": 16,
+          "acquiredTick": {
+            "n": 16,
+            "median": 2130,
+            "p10": 2130,
+            "p25": 2130,
+            "p75": 2130,
+            "p90": 2130,
+            "mean": 2130
+          },
+          "shots": {
+            "n": 16,
+            "median": 97.5,
+            "p10": 70,
+            "p25": 70,
+            "p75": 102.5,
+            "p90": 109.5,
+            "mean": 90.5
+          },
+          "granted": {
+            "n": 16,
+            "median": 100,
+            "p10": 96,
+            "p25": 96,
+            "p75": 105.25,
+            "p90": 110,
+            "mean": 101.875
+          },
+          "fired": {
+            "n": 16,
+            "median": 97.5,
+            "p10": 70,
+            "p25": 70,
+            "p75": 102.5,
+            "p90": 109.5,
+            "mean": 90.5
+          },
+          "activeShare": {
+            "n": 16,
+            "median": 0.141,
+            "p10": 0.097,
+            "p25": 0.133,
+            "p75": 0.151,
+            "p90": 0.155,
+            "mean": 0.134
+          },
+          "fallbacks": {
+            "n": 16,
+            "median": 5,
+            "p10": 4,
+            "p25": 4,
+            "p75": 5,
+            "p90": 5.5,
+            "mean": 4.75
+          }
+        }
+      }
+    }
+  },
+  "health": {
+    "damageTaken": {
+      "n": 48,
+      "median": 247,
+      "p10": 157,
+      "p25": 194.5,
+      "p75": 294,
+      "p90": 314.6,
+      "mean": 243.667
+    },
+    "healed": {
+      "n": 48,
+      "median": 78,
+      "p10": 0,
+      "p25": 33,
+      "p75": 120,
+      "p90": 120,
+      "mean": 73.667
+    },
+    "dodges": {
+      "n": 48,
+      "median": 65,
+      "p10": 34.4,
+      "p25": 46,
+      "p75": 79,
+      "p90": 90.9,
+      "mean": 64.479
+    },
+    "strikes": {
+      "n": 48,
+      "median": 6266,
+      "p10": 3743,
+      "p25": 4604.25,
+      "p75": 7209.5,
+      "p90": 8472.2,
+      "mean": 6187.375
+    },
+    "maxAlive": {
+      "n": 48,
+      "median": 80,
+      "p10": 44,
+      "p25": 71.5,
+      "p75": 82,
+      "p90": 83.3,
+      "mean": 75.688
+    }
+  },
+  "referenceDps": {
+    "method": "Pistol sustained DPS against one static armour-1 target over 30 s (the weapon benchmark method), times the outgoing damage multiplier, with the expected critical hit, measured once the picks of each new level are made; the median over every run that reaches the level.",
+    "formula": "referenceDps(L) = levels[min(L, lastLevel) - 1]: the per-level medians of the levels at least half the runs reach, made non-decreasing and rounded to 0.1",
+    "table": [
+      {
+        "level": 1,
+        "runsReached": 48,
+        "median": 6.74,
+        "p25": 6.74,
+        "p75": 6.74
+      },
+      {
+        "level": 2,
+        "runsReached": 48,
+        "median": 6.74,
+        "p25": 6.74,
+        "p75": 7
+      },
+      {
+        "level": 3,
+        "runsReached": 48,
+        "median": 7.135,
+        "p25": 6.74,
+        "p75": 7.58
+      },
+      {
+        "level": 4,
+        "runsReached": 48,
+        "median": 7.58,
+        "p25": 7.265,
+        "p75": 7.87
+      },
+      {
+        "level": 5,
+        "runsReached": 48,
+        "median": 7.87,
+        "p25": 7.58,
+        "p75": 9.783
+      },
+      {
+        "level": 6,
+        "runsReached": 48,
+        "median": 8.1,
+        "p25": 7.68,
+        "p75": 10.56
+      },
+      {
+        "level": 7,
+        "runsReached": 48,
+        "median": 8.64,
+        "p25": 7.68,
+        "p75": 10.94
+      },
+      {
+        "level": 8,
+        "runsReached": 48,
+        "median": 8.935,
+        "p25": 7.893,
+        "p75": 11.88
+      },
+      {
+        "level": 9,
+        "runsReached": 48,
+        "median": 9.39,
+        "p25": 8.21,
+        "p75": 12.15
+      },
+      {
+        "level": 10,
+        "runsReached": 48,
+        "median": 11.09,
+        "p25": 8.54,
+        "p75": 13.895
+      },
+      {
+        "level": 11,
+        "runsReached": 48,
+        "median": 11.23,
+        "p25": 8.99,
+        "p75": 17.28
+      },
+      {
+        "level": 12,
+        "runsReached": 48,
+        "median": 12.32,
+        "p25": 9.31,
+        "p75": 18.88
+      },
+      {
+        "level": 13,
+        "runsReached": 48,
+        "median": 13.465,
+        "p25": 9.343,
+        "p75": 21.398
+      },
+      {
+        "level": 14,
+        "runsReached": 48,
+        "median": 15.265,
+        "p25": 10.023,
+        "p75": 22.143
+      },
+      {
+        "level": 15,
+        "runsReached": 48,
+        "median": 15.83,
+        "p25": 11.198,
+        "p75": 25.285
+      },
+      {
+        "level": 16,
+        "runsReached": 48,
+        "median": 17,
+        "p25": 11.233,
+        "p75": 26.218
+      },
+      {
+        "level": 17,
+        "runsReached": 48,
+        "median": 18.99,
+        "p25": 12.79,
+        "p75": 26.74
+      },
+      {
+        "level": 18,
+        "runsReached": 48,
+        "median": 19.11,
+        "p25": 14.028,
+        "p75": 32.04
+      },
+      {
+        "level": 19,
+        "runsReached": 48,
+        "median": 24.285,
+        "p25": 16.95,
+        "p75": 34.133
+      },
+      {
+        "level": 20,
+        "runsReached": 48,
+        "median": 27.165,
+        "p25": 18.18,
+        "p75": 38.755
+      },
+      {
+        "level": 21,
+        "runsReached": 47,
+        "median": 30.93,
+        "p25": 19.51,
+        "p75": 43.05
+      },
+      {
+        "level": 22,
+        "runsReached": 46,
+        "median": 32.185,
+        "p25": 23.703,
+        "p75": 47.61
+      },
+      {
+        "level": 23,
+        "runsReached": 44,
+        "median": 33.77,
+        "p25": 25.893,
+        "p75": 50.383
+      },
+      {
+        "level": 24,
+        "runsReached": 44,
+        "median": 34.115,
+        "p25": 26.618,
+        "p75": 55.178
+      },
+      {
+        "level": 25,
+        "runsReached": 44,
+        "median": 34.865,
+        "p25": 27.113,
+        "p75": 55.47
+      },
+      {
+        "level": 26,
+        "runsReached": 43,
+        "median": 37.07,
+        "p25": 27.04,
+        "p75": 61.425
+      },
+      {
+        "level": 27,
+        "runsReached": 43,
+        "median": 40.77,
+        "p25": 28.82,
+        "p75": 74.68
+      },
+      {
+        "level": 28,
+        "runsReached": 42,
+        "median": 47.64,
+        "p25": 30.15,
+        "p75": 79.085
+      },
+      {
+        "level": 29,
+        "runsReached": 42,
+        "median": 48.55,
+        "p25": 30.15,
+        "p75": 80.667
+      },
+      {
+        "level": 30,
+        "runsReached": 37,
+        "median": 59.6,
+        "p25": 37.17,
+        "p75": 81.55
+      },
+      {
+        "level": 31,
+        "runsReached": 29,
+        "median": 72.26,
+        "p25": 46.76,
+        "p75": 87.65
+      },
+      {
+        "level": 32,
+        "runsReached": 24,
+        "median": 79.61,
+        "p25": 51.863,
+        "p75": 88.03
+      },
+      {
+        "level": 33,
+        "runsReached": 22,
+        "median": 79.61,
+        "p25": 49.048,
+        "p75": 92.425
+      },
+      {
+        "level": 34,
+        "runsReached": 22,
+        "median": 80.845,
+        "p25": 49.048,
+        "p75": 92.425
+      },
+      {
+        "level": 35,
+        "runsReached": 21,
+        "median": 81.55,
+        "p25": 47.64,
+        "p75": 93.51
+      },
+      {
+        "level": 36,
+        "runsReached": 16,
+        "median": 84.48,
+        "p25": 50.49,
+        "p75": 93.51
+      },
+      {
+        "level": 37,
+        "runsReached": 16,
+        "median": 87.41,
+        "p25": 50.535,
+        "p75": 93.893
+      },
+      {
+        "level": 38,
+        "runsReached": 13,
+        "median": 87.41,
+        "p25": 57.91,
+        "p75": 93.51
+      },
+      {
+        "level": 39,
+        "runsReached": 12,
+        "median": 88.175,
+        "p25": 54.543,
+        "p75": 95.04
+      },
+      {
+        "level": 40,
+        "runsReached": 10,
+        "median": 91.225,
+        "p25": 63.468,
+        "p75": 96.188
+      },
+      {
+        "level": 41,
+        "runsReached": 6,
+        "median": 91.99,
+        "p25": 82.34,
+        "p75": 96.188
+      },
+      {
+        "level": 42,
+        "runsReached": 6,
+        "median": 91.99,
+        "p25": 82.34,
+        "p75": 96.188
+      },
+      {
+        "level": 43,
+        "runsReached": 6,
+        "median": 91.99,
+        "p25": 87.358,
+        "p75": 99.443
+      },
+      {
+        "level": 44,
+        "runsReached": 3,
+        "median": 86.83,
+        "p25": 64.085,
+        "p75": 93.87
+      },
+      {
+        "level": 45,
+        "runsReached": 3,
+        "median": 86.83,
+        "p25": 71.795,
+        "p75": 93.87
+      },
+      {
+        "level": 46,
+        "runsReached": 3,
+        "median": 86.83,
+        "p25": 71.795,
+        "p75": 94.63
+      },
+      {
+        "level": 47,
+        "runsReached": 2,
+        "median": 79.595,
+        "p25": 68.178,
+        "p75": 91.013
+      },
+      {
+        "level": 48,
+        "runsReached": 2,
+        "median": 79.595,
+        "p25": 68.178,
+        "p75": 91.013
+      }
+    ],
+    "calibration": {
+      "levels": [
+        6.7,
+        6.7,
+        7.1,
+        7.6,
+        7.9,
+        8.1,
+        8.6,
+        8.9,
+        9.4,
+        11.1,
+        11.2,
+        12.3,
+        13.5,
+        15.3,
+        15.8,
+        17,
+        19,
+        19.1,
+        24.3,
+        27.2,
+        30.9,
+        32.2,
+        33.8,
+        34.1,
+        34.9,
+        37.1,
+        40.8,
+        47.6,
+        48.6,
+        59.6,
+        72.3,
+        79.6
+      ],
+      "lastLevel": 32,
+      "rmsError": 0.029
+    },
+    "placeholder": {
+      "formula": "min(47, 8 + 2.6 x (L - 1))",
+      "rmsError": 18.823
+    }
+  },
+  "runs": [
+    {
+      "seed": 924705422,
+      "policy": "seeded",
+      "digest": "05acaa9552967321b3805e8ec1ecc711a3ea54500328ae6da1549b09f2e078ed",
+      "survivalTicks": 58563,
+      "died": true,
+      "level": 30,
+      "xp": 131460,
+      "kills": 876
+    },
+    {
+      "seed": 941483041,
+      "policy": "seeded",
+      "digest": "c3ef94fd97219ae26a065d43c1db2260fdcccb0dbe6166ee6f9c6f04c80d35a3",
+      "survivalTicks": 57385,
+      "died": true,
+      "level": 30,
+      "xp": 136410,
+      "kills": 822
+    },
+    {
+      "seed": 891150184,
+      "policy": "seeded",
+      "digest": "aaba9d7124d1e255b797373d6f4e85f57681f349ff012744668741c51c981026",
+      "survivalTicks": 42268,
+      "died": true,
+      "level": 31,
+      "xp": 145820,
+      "kills": 579
+    },
+    {
+      "seed": 907927803,
+      "policy": "seeded",
+      "digest": "d55d8ef5d2d1db9a3de19c640ef197da9b8e5ad7cef8483bbdce7c1038c9d732",
+      "survivalTicks": 59094,
+      "died": true,
+      "level": 35,
+      "xp": 180390,
+      "kills": 803
+    },
+    {
+      "seed": 991815898,
+      "policy": "seeded",
+      "digest": "9feb7a99cb54f1fb836290a38d7563c61b1bffc71d5f76d8673ec1edb0e3dfbb",
+      "survivalTicks": 82590,
+      "died": true,
+      "level": 35,
+      "xp": 180140,
+      "kills": 1237
+    },
+    {
+      "seed": 1008593517,
+      "policy": "seeded",
+      "digest": "8d7fee474c484ee9b97211976fdd504f53932a976ad363e9eb435253f70a81d2",
+      "survivalTicks": 68572,
+      "died": true,
+      "level": 43,
+      "xp": 283645,
+      "kills": 1130
+    },
+    {
+      "seed": 958260660,
+      "policy": "seeded",
+      "digest": "f815c300cd6e3eb3480dbe3ee5ee8cdf522263eda528ca2b71d136c61c54d4e3",
+      "survivalTicks": 62377,
+      "died": true,
+      "level": 31,
+      "xp": 148530,
+      "kills": 951
+    },
+    {
+      "seed": 975038279,
+      "policy": "seeded",
+      "digest": "5ea7f64a3278c595772734b861bc0ffc79780ba4408632d08beb5ec3ab573451",
+      "survivalTicks": 59101,
+      "died": true,
+      "level": 39,
+      "xp": 228265,
+      "kills": 888
+    },
+    {
+      "seed": 790484470,
+      "policy": "seeded",
+      "digest": "76929dda10a2dfd5ab7a31bb0e4418db59fe09980b2877ef792c7ddb4a731083",
+      "survivalTicks": 38575,
+      "died": true,
+      "level": 29,
+      "xp": 126305,
+      "kills": 500
+    },
+    {
+      "seed": 807262089,
+      "policy": "seeded",
+      "digest": "f4a69a12ac38b51f352a74046259cf415548b123070c2d6dd3184894b405d8a5",
+      "survivalTicks": 63835,
+      "died": true,
+      "level": 40,
+      "xp": 242985,
+      "kills": 984
+    },
+    {
+      "seed": 1745749699,
+      "policy": "seeded",
+      "digest": "a537c1bc9d7a81ba12cb0cafa8bb630a4544395e0f49811ed4e0ad5e7fc5fa58",
+      "survivalTicks": 75018,
+      "died": true,
+      "level": 48,
+      "xp": 342300,
+      "kills": 1249
+    },
+    {
+      "seed": 1728972080,
+      "policy": "seeded",
+      "digest": "aed3d73c9c843b2102241baa7ae7ed9348f41be4059a9c712ed93cfaa069cea4",
+      "survivalTicks": 31993,
+      "died": true,
+      "level": 20,
+      "xp": 58880,
+      "kills": 387
+    },
+    {
+      "seed": 1779304937,
+      "policy": "seeded",
+      "digest": "e6b1b72582c83f163614cb4bc02df3b7a4b7722e4d65a2f732d2224daac9ecf9",
+      "survivalTicks": 48376,
+      "died": true,
+      "level": 29,
+      "xp": 124725,
+      "kills": 711
+    },
+    {
+      "seed": 1762527318,
+      "policy": "seeded",
+      "digest": "04046b14c80a8c2f0ccca69a379a1810cad67d2890cbbc9d084f8f86cbdda9bf",
+      "survivalTicks": 61347,
+      "died": true,
+      "level": 40,
+      "xp": 234135,
+      "kills": 944
+    },
+    {
+      "seed": 1812860175,
+      "policy": "seeded",
+      "digest": "ac29c084f959e398c632cc898cb4a0019ce315861b51ce5d6e852ed8d356e0ee",
+      "survivalTicks": 55828,
+      "died": true,
+      "level": 37,
+      "xp": 200115,
+      "kills": 826
+    },
+    {
+      "seed": 1796082556,
+      "policy": "seeded",
+      "digest": "20f69e25218ed9f3f8d9ea3628515a70f511b2fd3075418b9fa11fbe64602cbf",
+      "survivalTicks": 43540,
+      "died": true,
+      "level": 29,
+      "xp": 127260,
+      "kills": 603
+    },
+    {
+      "seed": 924705422,
+      "policy": "power",
+      "digest": "939e7dc7299d8bb747326c58a2d2444a204b15f88536a82f95523c851dc7423c",
+      "survivalTicks": 57460,
+      "died": true,
+      "level": 35,
+      "xp": 183825,
+      "kills": 892
+    },
+    {
+      "seed": 941483041,
+      "policy": "power",
+      "digest": "03aaede0dc0513d719ac0673684b5118b9a3d41bab9b15dbfa7b482b17a7f8a5",
+      "survivalTicks": 58987,
+      "died": true,
+      "level": 32,
+      "xp": 155860,
+      "kills": 938
+    },
+    {
+      "seed": 891150184,
+      "policy": "power",
+      "digest": "0473cf02f1a8e758ce5647956c2f0a795615a0b0fc81da13d27fc293f4eb8588",
+      "survivalTicks": 74843,
+      "died": true,
+      "level": 46,
+      "xp": 316935,
+      "kills": 1208
+    },
+    {
+      "seed": 907927803,
+      "policy": "power",
+      "digest": "012646f00b4f1fedd8b97649d8a58ed66ef22d2596695603df47c95796f8351d",
+      "survivalTicks": 62222,
+      "died": true,
+      "level": 40,
+      "xp": 245430,
+      "kills": 985
+    },
+    {
+      "seed": 991815898,
+      "policy": "power",
+      "digest": "bb30c0dc1b7140b56cc35f24a432c5bd4b2324b0bb53b3685cba3039bafd671f",
+      "survivalTicks": 82748,
+      "died": true,
+      "level": 35,
+      "xp": 186340,
+      "kills": 1274
+    },
+    {
+      "seed": 1008593517,
+      "policy": "power",
+      "digest": "1d51a1b330d6759ed05e221b81343defaeb520f4cee46ff941b92e2ca4263ed9",
+      "survivalTicks": 68342,
+      "died": true,
+      "level": 38,
+      "xp": 214005,
+      "kills": 1132
+    },
+    {
+      "seed": 958260660,
+      "policy": "power",
+      "digest": "91ef97d54aaa86657fcec2991da33c2e780cfdc2c6024260826d90d6e4ac7572",
+      "survivalTicks": 37976,
+      "died": true,
+      "level": 22,
+      "xp": 72040,
+      "kills": 495
+    },
+    {
+      "seed": 975038279,
+      "policy": "power",
+      "digest": "6a43fdd4a3c87a41d813d779d52442b6bd39cfcf58d7abd330760d5f00ec4b5e",
+      "survivalTicks": 63091,
+      "died": true,
+      "level": 40,
+      "xp": 245415,
+      "kills": 980
+    },
+    {
+      "seed": 790484470,
+      "policy": "power",
+      "digest": "936cf9d8d65670d451946ea427e1e630755c123462671842d5c89757c47abc00",
+      "survivalTicks": 55738,
+      "died": true,
+      "level": 37,
+      "xp": 199895,
+      "kills": 838
+    },
+    {
+      "seed": 807262089,
+      "policy": "power",
+      "digest": "9f0f97063469d0fa67579480b7110b959047e714aecbe8cc9280ee6097857d83",
+      "survivalTicks": 65452,
+      "died": true,
+      "level": 43,
+      "xp": 271465,
+      "kills": 1056
+    },
+    {
+      "seed": 1745749699,
+      "policy": "power",
+      "digest": "6997f55440d06ff0177fb7d70e186a946446d03fc3dca54aaf9da84d54a9be3a",
+      "survivalTicks": 75060,
+      "died": true,
+      "level": 48,
+      "xp": 339625,
+      "kills": 1263
+    },
+    {
+      "seed": 1728972080,
+      "policy": "power",
+      "digest": "3880d8ec010793e9ef7db5423f520bac109919222d6ba9140ddbbcb5e25d3923",
+      "survivalTicks": 67486,
+      "died": true,
+      "level": 43,
+      "xp": 275005,
+      "kills": 1118
+    },
+    {
+      "seed": 1779304937,
+      "policy": "power",
+      "digest": "dede2e8c21c9277f15c969d84094c6006c57cb8730e8dbb7655c5ffd660c98b3",
+      "survivalTicks": 44255,
+      "died": true,
+      "level": 27,
+      "xp": 109140,
+      "kills": 621
+    },
+    {
+      "seed": 1762527318,
+      "policy": "power",
+      "digest": "504305b07267050210ec747a70f6e4514e846b8a15355aaaa48ab2ccbd9fb1fd",
+      "survivalTicks": 60235,
+      "died": true,
+      "level": 39,
+      "xp": 227220,
+      "kills": 942
+    },
+    {
+      "seed": 1812860175,
+      "policy": "power",
+      "digest": "929d273b2a298d8cef95dbfe10ed9bf68d081bc357e316ba1a05870e07b6b4e3",
+      "survivalTicks": 67110,
+      "died": true,
+      "level": 37,
+      "xp": 201160,
+      "kills": 1075
+    },
+    {
+      "seed": 1796082556,
+      "policy": "power",
+      "digest": "b18a25808a4eff58c04a12f680511dffbc629deb292582b31f420c2e6bd0e6e6",
+      "survivalTicks": 63424,
+      "died": true,
+      "level": 34,
+      "xp": 176735,
+      "kills": 985
+    },
+    {
+      "seed": 924705422,
+      "policy": "survival",
+      "digest": "067a28fa1a46ec54bba6f11c6ff99a84cc48a46179f83fabf4dc50011eb0b3e7",
+      "survivalTicks": 62343,
+      "died": true,
+      "level": 30,
+      "xp": 133660,
+      "kills": 916
+    },
+    {
+      "seed": 941483041,
+      "policy": "survival",
+      "digest": "92b310a66c03f1d10e0b869e309419bc05fdaf10f1b07d87a41b27a1d947f229",
+      "survivalTicks": 60135,
+      "died": true,
+      "level": 30,
+      "xp": 131840,
+      "kills": 894
+    },
+    {
+      "seed": 891150184,
+      "policy": "survival",
+      "digest": "bff7b5f2f2d80e1251209de46205dcb579b87370ed8ff3a0f2fead3150780520",
+      "survivalTicks": 43582,
+      "died": true,
+      "level": 25,
+      "xp": 91440,
+      "kills": 605
+    },
+    {
+      "seed": 907927803,
+      "policy": "survival",
+      "digest": "b1b202842294ca76b5dd3061a892e169f312038097b86e1a54a9609e0366d31c",
+      "survivalTicks": 67063,
+      "died": true,
+      "level": 29,
+      "xp": 129720,
+      "kills": 884
+    },
+    {
+      "seed": 991815898,
+      "policy": "survival",
+      "digest": "97c41c321d5146e8ff83ee13d37fcb297a04ce96d46e0972bda6f0adb26d3635",
+      "survivalTicks": 83636,
+      "died": true,
+      "level": 35,
+      "xp": 178600,
+      "kills": 1225
+    },
+    {
+      "seed": 1008593517,
+      "policy": "survival",
+      "digest": "677ebce05ecbe228263cca609c986542424b0c9658931ad91ec8e583ff91e100",
+      "survivalTicks": 61736,
+      "died": true,
+      "level": 31,
+      "xp": 141240,
+      "kills": 944
+    },
+    {
+      "seed": 958260660,
+      "policy": "survival",
+      "digest": "e8342f1687c644ac476c65ce75b188f51417964f6a8a27970982abdb0754ef99",
+      "survivalTicks": 60452,
+      "died": true,
+      "level": 30,
+      "xp": 138280,
+      "kills": 915
+    },
+    {
+      "seed": 975038279,
+      "policy": "survival",
+      "digest": "8b692683fa4b46bed74d74b7d993f3d0d2d424b9585418abc0b314db35fe7f90",
+      "survivalTicks": 59843,
+      "died": true,
+      "level": 29,
+      "xp": 123860,
+      "kills": 825
+    },
+    {
+      "seed": 790484470,
+      "policy": "survival",
+      "digest": "aa5cdfb58c895b08fb0bc83fa6c35d69a4915482dc47c602ca5593679a226ee1",
+      "survivalTicks": 60651,
+      "died": true,
+      "level": 30,
+      "xp": 136280,
+      "kills": 916
+    },
+    {
+      "seed": 807262089,
+      "policy": "survival",
+      "digest": "6fea55651c0355a36b8266917e7d0490320aab8b7538a4fa0d9d4d685dc8063e",
+      "survivalTicks": 62505,
+      "died": true,
+      "level": 31,
+      "xp": 145720,
+      "kills": 974
+    },
+    {
+      "seed": 1745749699,
+      "policy": "survival",
+      "digest": "0e79090e5ffbc1144a8dcc1c5d6d6d216461b60bd32dfb9695c2f16c78bae1b1",
+      "survivalTicks": 37493,
+      "died": true,
+      "level": 21,
+      "xp": 68660,
+      "kills": 475
+    },
+    {
+      "seed": 1728972080,
+      "policy": "survival",
+      "digest": "1da9a54c8182307e71199ba72412923925d7cb6942e2ef17b80c076c3e446a91",
+      "survivalTicks": 38761,
+      "died": true,
+      "level": 22,
+      "xp": 75460,
+      "kills": 500
+    },
+    {
+      "seed": 1779304937,
+      "policy": "survival",
+      "digest": "1997a485943fd3d2ad314216de2e086ecd28a0a3de331d49db6d1ff017b3c6de",
+      "survivalTicks": 58816,
+      "died": true,
+      "level": 30,
+      "xp": 137700,
+      "kills": 891
+    },
+    {
+      "seed": 1762527318,
+      "policy": "survival",
+      "digest": "d4aa58f95fc5164f7202167ec04490a04a14de00bc656a30e4927fcb7472ec09",
+      "survivalTicks": 60652,
+      "died": true,
+      "level": 30,
+      "xp": 138960,
+      "kills": 944
+    },
+    {
+      "seed": 1812860175,
+      "policy": "survival",
+      "digest": "199f7a5949ae65f1d879a91e302923d3897fca2cf169bdf23bd661fb55157fad",
+      "survivalTicks": 62321,
+      "died": true,
+      "level": 31,
+      "xp": 145160,
+      "kills": 947
+    },
+    {
+      "seed": 1796082556,
+      "policy": "survival",
+      "digest": "b87b487c96866cc33b94688b8202eecb982d9f90f2db4adcf187c8344fdc4875",
+      "survivalTicks": 63505,
+      "died": true,
+      "level": 32,
+      "xp": 149000,
+      "kills": 977
+    }
+  ],
+  "digest": "a58e6d2cdb1865b178136c66377bee712f60762649d2de8136edd4576e0e8f29",
+  "source": {
+    "label": "1.8.1",
+    "commit": "6c3779dd980d0a2b56665a4fde666a3b6b46ff54"
+  }
+}

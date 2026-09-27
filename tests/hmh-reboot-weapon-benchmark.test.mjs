@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { runBenchmark, runSwarmBenchmark } from '../scripts/hmh-reboot-weapon-benchmark.mjs';
+import { runBenchmark, runOutput60Benchmark, runSwarmBenchmark } from '../scripts/hmh-reboot-weapon-benchmark.mjs';
 
 test('S5 shotgun remains close-range dominant without collapsing at mid-range', () => {
   const rows = runBenchmark();
@@ -37,4 +37,89 @@ test('S4 maxed pistol gains authored long-range and crowd-clear identity', () =>
   assert.ok(maxedLong.sustainedDps > baseLong.sustainedDps);
   assert.equal(swarm.killed, 8);
   assert.notEqual(swarm.clearSeconds, null);
+});
+
+// Package 8.2 (S0.3): the Railgun rows and the output60 column (build ledger
+// slice 6 review). output60 is the damage landed on living bodies in 60 s
+// from a full clip and a full reserve cap against the 8-body pack, replaced
+// the tick after it is cleared; the package's acceptance is that every maxed
+// finite gun reaches at least the maxed Pistol's figure.
+test('the Railgun has static, moving and swarm rows, and a held trigger releases its charge', () => {
+  const rows = runBenchmark().filter((entry) => entry.weaponId === 'hash-rail');
+  assert.deepEqual(rows.map((entry) => [entry.tier, entry.range]), [['base', 'close'], ['base', 'mid'], ['base', 'long'], ['maxed', 'close'], ['maxed', 'mid'], ['maxed', 'long']]);
+  for (const row of rows) {
+    assert.ok(row.shotsFired > 0, `${row.tier} ${row.range} fires`);
+    assert.equal(row.shotsFired, row.projectilesEmitted, 'one slug per shot');
+    assert.ok(row.contacts > 0);
+  }
+  const base = rows.find((entry) => entry.tier === 'base' && entry.range === 'mid');
+  const maxed = rows.find((entry) => entry.tier === 'maxed' && entry.range === 'mid');
+  assert.ok(maxed.shotsFired > base.shotsFired, 'Charge Speed and Capacitor Bank fire more slugs in the window');
+  assert.ok(runSwarmBenchmark().some((entry) => entry.weaponId === 'hash-rail' && entry.tier === 'maxed' && entry.killed === 8));
+});
+
+test('output60 is deterministic and reports the package acceptance per maxed finite gun', () => {
+  const rows = runOutput60Benchmark();
+  assert.deepEqual(rows, runOutput60Benchmark(), 'same-seed output60 rows');
+  assert.deepEqual(rows.map((entry) => `${entry.weaponId}:${entry.tier}`), [
+    'coin-blaster:base', 'coin-blaster:maxed', 'scatter-shotgun:base', 'scatter-shotgun:maxed', 'auto-miner:base', 'auto-miner:maxed',
+    'launcher-rig:base', 'launcher-rig:maxed', 'hash-rail:base', 'hash-rail:maxed',
+  ]);
+  for (const row of rows) {
+    assert.equal(row.windowSeconds, 60);
+    assert.equal(row.packSize, 8);
+    assert.ok(Number.isFinite(row.output60) && row.output60 > 0, `${row.weaponId} ${row.tier} lands damage`);
+    assert.ok(row.output60 <= row.damageApplied, 'overkill never counts');
+    assert.ok(row.output60 + row.overkillDamage - row.damageApplied < 0.01 && row.output60 + row.overkillDamage - row.damageApplied > -0.01);
+    assert.equal(row.killed, row.packsCleared * 8 + (row.killed % 8), 'kills are whole packs plus the open one');
+  }
+  const pistol = rows.find((entry) => entry.weaponId === 'coin-blaster' && entry.tier === 'maxed').output60;
+  const acceptance = Object.fromEntries(rows.filter((entry) => entry.tier === 'maxed' && entry.weaponId !== 'coin-blaster').map((entry) => [entry.weaponId, entry.output60 >= pistol]));
+  // The finding recorded in the build ledger (slice 6 review): the Shotgun and
+  // the Launcher clear the bar; the Machine Gun (heat-bound, 900 rounds left)
+  // and the Railgun (charge-bound, 60 slugs left) fall short with ammo to
+  // spare, so no Magazine & Salvage number can lift them. Their trees are the
+  // package's to retune; this pin makes that decision visible.
+  assert.deepEqual(acceptance, { 'scatter-shotgun': true, 'auto-miner': false, 'launcher-rig': true, 'hash-rail': false });
+  const miner = rows.find((entry) => entry.weaponId === 'auto-miner' && entry.tier === 'maxed');
+  const rail = rows.find((entry) => entry.weaponId === 'hash-rail' && entry.tier === 'maxed');
+  assert.ok(miner.reserveRemaining > 0 && miner.emptySeconds === 0, 'the Machine Gun never runs dry');
+  assert.ok(rail.reserveRemaining > 0 && rail.emptySeconds === 0, 'the Railgun never runs dry');
+});
+
+// Package 8.5 evolved rows (build ledger slice 7): each wave-1 evolution
+// against the same gun maxed, crits included, on a line pack (across the
+// lane, where spread and blasts work) and a column pack (queued along it,
+// where a pierce lane works).
+test('the evolved rows are deterministic and record the package 8.5 tuning targets per evolution', async () => {
+  const { runEvolvedBenchmark } = await import('../scripts/hmh-reboot-weapon-benchmark.mjs');
+  const report = runEvolvedBenchmark();
+  assert.deepEqual(report, runEvolvedBenchmark(), 'same-seed evolved rows');
+  assert.equal(report.rows.length, 5 * 2 * 2);
+  const { acceptance } = report;
+  // Settler Rail: 0.80-0.95x the maxed Pistol single target, and a lane that
+  // clears a queued pack at least 30% faster.
+  assert.equal(acceptance['coin-blaster'].singleTarget, true, JSON.stringify(acceptance['coin-blaster']));
+  assert.equal(acceptance['coin-blaster'].packClear.column, true);
+  // Double Spend: the package's ~50.4 single target, within 1.2x the Pistol;
+  // the free volley lifts the line pack well past 1.25x.
+  assert.equal(acceptance['scatter-shotgun'].singleTarget, true);
+  assert.equal(acceptance['scatter-shotgun'].pack.line, true);
+  // Hashstorm Overdrive: no damage bonus, ~36 single target; hot rounds
+  // pierce two, so a queued pack falls more than 1.25x faster.
+  assert.equal(acceptance['auto-miner'].singleTarget, true);
+  assert.equal(acceptance['auto-miner'].pack.column, true);
+  // Findings the package's fixed numbers do not meet (build ledger slice 7):
+  // Moonshot's +15% and charge rebate stay under 1.25x on either pack, and the
+  // maxed Launcher already one-shots the 60-HP pack and sits above the Pistol
+  // cap before it evolves, so Crypto Bomb Orbit adds no single-target damage
+  // and little pack output here.
+  assert.equal(acceptance['hash-rail'].singleTarget, true);
+  assert.equal(acceptance['hash-rail'].pack.line || acceptance['hash-rail'].pack.column, false);
+  assert.equal(acceptance['launcher-rig'].singleRatio, acceptance['launcher-rig'].maxedSingleRatio);
+  assert.equal(acceptance['launcher-rig'].pack.line, false);
+  const orbit = report.rows.find((row) => row.evolutionId === 'crypto-bomb-orbit' && row.arrangement === 'line');
+  assert.ok(orbit.bombletDamage > 0, 'bomblets land on the pack');
+  const candle = report.rows.find((row) => row.evolutionId === 'crit-candle' && row.arrangement === 'column');
+  assert.ok(candle.critKills > 0, 'crit kills feed the charge rebate');
 });

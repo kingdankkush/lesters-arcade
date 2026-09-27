@@ -1,12 +1,17 @@
 import { freezeDeep, validSeed } from './value-guards.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS } from '../../../sdk/hmh-run-summary-schema.mjs';
 
+function gunBranchCards(weaponId, ids) {
+  return Object.fromEntries(ids.map((id) => [id, { id, branch: weaponId, maxRank: 3, requiresWeaponId: weaponId, effect: 'gunBranchTier', amount: 1 }]));
+}
+
+// Upgrade mechanics only. The card text (title, mechanical label, description)
+// lives in progression-content.mjs, a lazy chunk (design package S0.2), so
+// offers, selections and the run summary carry ids and numbers, never words.
 export const RUN_UPGRADE_CATALOG = freezeDeep({
   'proof-of-work': {
     id: 'proof-of-work',
     branch: 'power',
-    title: 'Damage',
-    mechanicalLabel: '+8% damage + Pistol Power',
-    description: 'Gain 8% damage and one Pistol Power tier.',
     maxRank: 3,
     effect: 'outgoingDamageMultiplier',
     amount: 0.08,
@@ -14,9 +19,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'diamond-hands': {
     id: 'diamond-hands',
     branch: 'survival',
-    title: 'Max Health',
-    mechanicalLabel: '+20 maximum health',
-    description: 'Gain 20 max health and restore the added capacity.',
     maxRank: 3,
     effect: 'maxHealthBonus',
     amount: 20,
@@ -24,9 +26,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'gas-optimization': {
     id: 'gas-optimization',
     branch: 'mobility',
-    title: 'Dash Recharge',
-    mechanicalLabel: 'Faster Dash cooldown',
-    description: 'Shorten Dash cooldown, up to the authored cap.',
     maxRank: 2,
     effect: 'dashCooldownTier',
     amount: 1,
@@ -34,9 +33,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'cold-storage': {
     id: 'cold-storage',
     branch: 'utility',
-    title: 'Extra Grenade',
-    mechanicalLabel: '+1 Grenade',
-    description: 'Add one hand grenade charge for the current run.',
     maxRank: 3,
     effect: 'bonusGrenadeCharges',
     amount: 1,
@@ -44,9 +40,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'block-reward': {
     id: 'block-reward',
     branch: 'power',
-    title: 'Score & Magazine',
-    mechanicalLabel: '+25% score + Pistol Magazine',
-    description: 'Gain 25% score and one Pistol Magazine tier. No wallet value.',
     maxRank: 3,
     effect: 'scoreMultiplier',
     amount: 0.25,
@@ -54,9 +47,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'validator-training': {
     id: 'validator-training',
     branch: 'utility',
-    title: 'XP Gain',
-    mechanicalLabel: '+25% XP gain',
-    description: 'Gain 25% more XP from every source.',
     maxRank: 3,
     effect: 'xpMultiplier',
     amount: 0.25,
@@ -69,9 +59,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'compound-interest': {
     id: 'compound-interest',
     branch: 'power',
-    title: 'Damage Mastery',
-    mechanicalLabel: '+3% outgoing damage',
-    description: 'Repeatable: gain 3% outgoing damage.',
     maxRank: 25,
     repeatable: true,
     effect: 'outgoingDamageMultiplier',
@@ -83,9 +70,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'precision-ledger': {
     id: 'precision-ledger',
     branch: 'power',
-    title: 'Critical Chance',
-    mechanicalLabel: '+6% critical chance',
-    description: 'Add 6% critical chance, up to the authored cap.',
     maxRank: 3,
     effect: 'criticalChanceBonus',
     amount: 0.06,
@@ -93,9 +77,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'hard-fork-rounds': {
     id: 'hard-fork-rounds',
     branch: 'power',
-    title: 'Critical Damage',
-    mechanicalLabel: '+35% critical damage',
-    description: 'Add 35% critical damage for heavier burst hits.',
     maxRank: 3,
     effect: 'criticalDamageBonus',
     amount: 0.35,
@@ -105,9 +86,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'hot-wallet': {
     id: 'hot-wallet',
     branch: 'mobility',
-    title: 'Movement Speed',
-    mechanicalLabel: '+6% speed + Pistol Velocity',
-    description: 'Gain 6% speed and one Pistol Velocity tier.',
     maxRank: 3,
     effect: 'moveSpeedMultiplier',
     amount: 0.06,
@@ -115,9 +93,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'layer-two': {
     id: 'layer-two',
     branch: 'mobility',
-    title: 'Speed Mastery',
-    mechanicalLabel: '+2% movement speed',
-    description: 'Repeatable: gain 2% movement speed.',
     maxRank: 25,
     repeatable: true,
     effect: 'moveSpeedMultiplier',
@@ -126,9 +101,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'hardened-wallet': {
     id: 'hardened-wallet',
     branch: 'survival',
-    title: 'Health Mastery',
-    mechanicalLabel: '+6 maximum health',
-    description: 'Repeatable: gain 6 maximum health.',
     maxRank: 25,
     repeatable: true,
     effect: 'maxHealthBonus',
@@ -137,9 +109,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'ledger-conductivity': {
     id: 'ledger-conductivity',
     branch: 'lightning-ledger',
-    title: 'Arc Range',
-    mechanicalLabel: 'Longer and denser chain mesh',
-    description: 'Extend jump range, add bounded arcs, and preserve late-chain damage.',
     maxRank: 3,
     requiresWeaponId: 'lightning-ledger',
     effect: 'ledgerConductivityTier',
@@ -148,9 +117,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'ledger-voltage': {
     id: 'ledger-voltage',
     branch: 'lightning-ledger',
-    title: 'Arc Damage',
-    mechanicalLabel: 'Harder contact and faster ramp',
-    description: 'Raise contact damage, accelerate ramp, and empower the last arc.',
     maxRank: 3,
     requiresWeaponId: 'lightning-ledger',
     effect: 'ledgerVoltageTier',
@@ -159,9 +125,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'ledger-reconciliation': {
     id: 'ledger-reconciliation',
     branch: 'lightning-ledger',
-    title: 'Energy Reserves',
-    mechanicalLabel: 'Reserve, recovery, and full-chain refund',
-    description: 'Carry more cells, reload faster, and refund one bounded full-chain cell.',
     maxRank: 3,
     requiresWeaponId: 'lightning-ledger',
     effect: 'ledgerReconciliationTier',
@@ -170,9 +133,6 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
   'proof-of-network': {
     id: 'proof-of-network',
     branch: 'lightning-ledger-capstone',
-    title: 'Overcharged Pulse',
-    mechanicalLabel: 'Every fifth pulse gains 25% damage',
-    description: 'Deterministically amplify every fifth pulse without adding targets.',
     maxRank: 1,
     requiresWeaponId: 'lightning-ledger',
     requiresRanks: { 'ledger-conductivity': 3, 'ledger-voltage': 3, 'ledger-reconciliation': 3 },
@@ -180,57 +140,49 @@ export const RUN_UPGRADE_CATALOG = freezeDeep({
     amount: 1,
   },
   'burner-liquidity': {
-    id: 'burner-liquidity', branch: 'bear-market-burner', title: 'Fuel Capacity',
-    mechanicalLabel: 'More fuel and faster canister swaps',
-    description: 'Increase fuel capacity, improve efficiency, and unlock one emergency refill.',
+    id: 'burner-liquidity', branch: 'bear-market-burner',
     maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerLiquidityTier', amount: 1,
   },
   'burner-volatility': {
-    id: 'burner-volatility', branch: 'bear-market-burner', title: 'Burn Damage',
-    mechanicalLabel: 'Harder flame and longer burn pressure',
-    description: 'Raise contact pressure, extend burn duration, and unlock bounded defeat spread.',
+    id: 'burner-volatility', branch: 'bear-market-burner',
     maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerVolatilityTier', amount: 1,
   },
   'burner-contagion': {
-    id: 'burner-contagion', branch: 'bear-market-burner', title: 'Flame Reach',
-    mechanicalLabel: 'Wider cone, longer reach, and scorch hazard',
-    description: 'Expand the cone, preserve edge damage, and add capped deterministic scorch zones.',
+    id: 'burner-contagion', branch: 'bear-market-burner',
     maxRank: 3, requiresWeaponId: 'bear-market-burner', effect: 'burnerContagionTier', amount: 1,
   },
   'total-selloff': {
-    id: 'total-selloff', branch: 'bear-market-burner-capstone', title: 'Flame Surge',
-    mechanicalLabel: 'Sustained fire triggers one bounded pressure pulse',
-    description: 'After a fixed fuel threshold, amplify one pulse and enter a deterministic cooldown.',
+    id: 'total-selloff', branch: 'bear-market-burner-capstone',
     maxRank: 1, requiresWeaponId: 'bear-market-burner',
     requiresRanks: { 'burner-liquidity': 3, 'burner-volatility': 3, 'burner-contagion': 3 },
     effect: 'burnerTotalSelloffTier', amount: 1,
   },
   'standard-reach': {
-    id: 'standard-reach', branch: 'forked-standard', title: 'Melee Reach',
-    mechanicalLabel: 'Longer reach and wider attack arcs',
-    description: 'Extend both attacks while preserving bounded contact caps.',
+    id: 'standard-reach', branch: 'forked-standard',
     maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardReachTier', amount: 1,
   },
   'standard-force': {
-    id: 'standard-force', branch: 'forked-standard', title: 'Melee Damage',
-    mechanicalLabel: 'More damage and knockback',
-    description: 'Increase thrust and sweep pressure without adding contacts.',
+    id: 'standard-force', branch: 'forked-standard',
     maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardForceTier', amount: 1,
   },
   'standard-tempo': {
-    id: 'standard-tempo', branch: 'forked-standard', title: 'Attack Speed',
-    mechanicalLabel: 'Faster cadence and shorter whiff recovery',
-    description: 'Shorten fixed-tick recovery while retaining a finite whiff cost.',
+    id: 'standard-tempo', branch: 'forked-standard',
     maxRank: 3, requiresWeaponId: 'forked-standard', effect: 'standardTempoTier', amount: 1,
   },
   'canonical-fork': {
-    id: 'canonical-fork', branch: 'forked-standard-capstone', title: 'Power Strike',
-    mechanicalLabel: 'Every fourth attack gains 25% damage',
-    description: 'Deterministically empower every fourth attack without raising target caps.',
+    id: 'canonical-fork', branch: 'forked-standard-capstone',
     maxRank: 1, requiresWeaponId: 'forked-standard',
     requiresRanks: { 'standard-reach': 3, 'standard-force': 3, 'standard-tempo': 3 },
     effect: 'standardCanonicalForkTier', amount: 1,
   },
+  // Design package 8.2: the four dead gun trees as twelve rank-3 cards, in the
+  // v7 upgrades catalogue order (rate of fire, damage, Magazine & Salvage per
+  // gun). progressionByWeapon (weapon-system.mjs) turns their ranks into the
+  // guns' branch tiers; none of them touches XP or score (contract 5.6).
+  ...gunBranchCards('scatter-shotgun', ['scatter-pump', 'scatter-dump', 'scatter-shells']),
+  ...gunBranchCards('auto-miner', ['miner-hashrate', 'miner-asic', 'miner-pool']),
+  ...gunBranchCards('hash-rail', ['rail-blocktime', 'rail-proof', 'rail-mempool']),
+  ...gunBranchCards('launcher-rig', ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier']),
 });
 
 const EFFECT_DEFAULTS = Object.freeze({
@@ -255,6 +207,7 @@ const EFFECT_DEFAULTS = Object.freeze({
   standardForceTier: 0,
   standardTempoTier: 0,
   standardCanonicalForkTier: 0,
+  gunBranchTier: 0,
 });
 
 const COMBO_MILESTONE_XP = Object.freeze({ 5: 120, 10: 240, 20: 480, 30: 900 });
@@ -308,31 +261,122 @@ export function getEligibleRunUpgradeIds(state) {
     .sort((left, right) => left < right ? -1 : left > right ? 1 : 0));
 }
 
-function resolveChoices(state) {
-  if (state.pendingLevels <= 0) return Object.freeze([]);
-  const salt = `${state.level}:${state.pendingLevels}:${state.selectionSequence}`;
-  const choices = Object.values(RUN_UPGRADE_CATALOG)
-    .filter((upgrade) => isUpgradeEligible(state, upgrade))
-    .map((upgrade) => ({ upgrade, order: hashChoice(state.seed, `${salt}:${upgrade.id}`) }))
-    .sort((a, b) => a.order - b.order || (a.upgrade.id < b.upgrade.id ? -1 : a.upgrade.id > b.upgrade.id ? 1 : 0))
-    // Cycle 036 handoff, Priority E: every level-up offers exactly TWO
-    // deterministic options. The pair is a pure function of seed, level,
-    // ranks and selection sequence.
-    .slice(0, 2)
-    .map(({ upgrade }) => freezeDeep({
-      ...upgrade,
-      rank: state.ranks[upgrade.id] ?? 0,
-      nextRank: (state.ranks[upgrade.id] ?? 0) + 1,
+// Design package 8.3: the level-up offer. Card 1 (slot 0) is a general draw;
+// card 2 (slot 1) is "your gun": the first candidate gun with a card left,
+// else a second general draw. Each card re-rolls once per offer, and a card
+// shown in an offer never comes back in it. Every draw is the pure FNV
+// hashChoice over the salt below, never the simulation RNG, so opening,
+// re-rolling or picking can never move a drop or a spawn.
+//
+// HMH_CARD_TWO_INTERVAL is the agreed fallback switch: 2 draws card 2 from the
+// focus gun on every second offer only (package 8.3, "the harness gate").
+export const HMH_CARD_TWO_INTERVAL = 1;
+const OFFER_SLOTS = 2;
+const PISTOL_ID = 'coin-blaster';
+// Card 2's gun order after the focus gun: the guns that own cards, in the
+// run-summary weapon catalogue order, which is HMH_WEAPON_ORDER (weapon-system
+// .mjs) without the Pistol; a test pins the two. Read from the catalogue so
+// this module does not pull the weapon tables into its chunk.
+export const CARD_TWO_GUN_ORDER = Object.freeze(HMH_RUN_SUMMARY_CATALOGS.weapons
+  .filter((id) => Object.values(RUN_UPGRADE_CATALOG).some((upgrade) => upgrade.requiresWeaponId === id)));
+
+function eligibleUpgrades(state, shown) {
+  return Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => !shown.has(upgrade.id) && isUpgradeEligible(state, upgrade));
+}
+
+function pickUpgrade(state, key, slot, draw, pool) {
+  let best = null;
+  let bestOrder = 0;
+  for (const upgrade of pool) {
+    const order = hashChoice(state.seed, `offer:${key}:s${slot}:d${draw}:${upgrade.id}`);
+    if (best === null || order < bestOrder || (order === bestOrder && upgrade.id < best.id)) {
+      best = upgrade;
+      bestOrder = order;
+    }
+  }
+  return best?.id ?? null;
+}
+
+// One card for a slot. Card 2 walks its candidate guns in order (the same
+// gun's other cards, then the next gun) before the general pool.
+function drawSlot(state, key, slot, draw, shown, candidates) {
+  const pool = eligibleUpgrades(state, shown);
+  for (const weaponId of slot === 1 ? candidates : []) {
+    const gunPool = pool.filter((upgrade) => upgrade.requiresWeaponId === weaponId);
+    if (gunPool.length > 0) return { id: pickUpgrade(state, key, slot, draw, gunPool), weaponId };
+  }
+  return pool.length > 0 ? { id: pickUpgrade(state, key, slot, draw, pool), weaponId: null } : null;
+}
+
+// Card 2's candidates, captured when the offer opens: the focus gun, then the
+// weapon order; owned non-Pistol guns with ammo (the runtime passes which) and
+// a card left. Never the Pistol.
+function cardTwoCandidates(state, armedWeaponIds) {
+  if (state.offersOpened % state.cardTwoInterval !== 0) return [];
+  const armed = armedWeaponIds === null ? state.ownedWeaponIds : new Set(armedWeaponIds);
+  const candidates = [];
+  for (const weaponId of [state.focusWeaponId, ...CARD_TWO_GUN_ORDER]) {
+    if (!weaponId || weaponId === PISTOL_ID || candidates.includes(weaponId)) continue;
+    if (state.ownedWeaponIds.has(weaponId) && armed.has(weaponId)) candidates.push(weaponId);
+  }
+  return candidates;
+}
+
+function drawOffer(state, armedWeaponIds) {
+  const key = `level:${state.level}:${state.pendingLevels}:${state.selectionSequence}`;
+  const candidates = cardTwoCandidates(state, armedWeaponIds);
+  const shown = new Set();
+  const slots = Array.from({ length: OFFER_SLOTS }, () => ({ id: null, draw: 0, rerolled: false, weaponId: null }));
+  // Card 2 draws first so "your gun" holds whenever a candidate has a card.
+  for (const slot of [1, 0]) {
+    const card = drawSlot(state, key, slot, 0, shown, candidates);
+    if (!card) continue;
+    slots[slot] = { id: card.id, draw: 0, rerolled: false, weaponId: card.weaponId };
+    shown.add(card.id);
+  }
+  return { kind: 'level', key, candidates, slots, shown: [...shown] };
+}
+
+function rerollState(state, offer, slot) {
+  const card = offer.slots[slot];
+  if (card.rerolled) return 'used';
+  return drawSlot(state, offer.key, slot, card.draw + 1, new Set(offer.shown), offer.candidates) ? 'ready' : 'none';
+}
+
+function offerChoices(state, offer) {
+  const choices = [];
+  for (const [slot, card] of offer.slots.entries()) {
+    if (card.id === null) continue;
+    const upgrade = RUN_UPGRADE_CATALOG[card.id];
+    const rank = state.ranks[card.id] ?? 0;
+    choices.push(freezeDeep({
+      ...upgrade, rank, nextRank: rank + 1, slot, weaponId: card.weaponId, rerollState: rerollState(state, offer, slot),
+      // Card 2's gun chip numbers (the panel names the gun).
+      mastery: card.weaponId ? runWeaponMastery(state.ranks, card.weaponId) : null,
     }));
+  }
   return Object.freeze(choices);
 }
 
-export function createRunProgression({ seed = 0, ownedWeaponIds = ['coin-blaster'] } = {}) {
+// The choices of the open offer or, with none open, the offer the runtime
+// would open with every owned gun armed (a pure preview; it opens nothing).
+function resolveChoices(state) {
+  // An evolution panel (package 8.4) carries its own cards, built by the lazy
+  // boss-drops.mjs that opened it.
+  if (state.offer?.kind === 'evolution') return state.offer.choices;
+  if (state.offer) return offerChoices(state, state.offer);
+  if (state.pendingLevels <= 0) return Object.freeze([]);
+  return offerChoices(state, drawOffer(state, null));
+}
+
+export function createRunProgression({ seed = 0, ownedWeaponIds = ['coin-blaster'], cardTwoInterval = HMH_CARD_TWO_INTERVAL } = {}) {
   if (!Array.isArray(ownedWeaponIds) || ownedWeaponIds.length < 1 || ownedWeaponIds.length > 32) throw new TypeError('ownedWeaponIds must be a bounded non-empty array');
+  if (!Number.isInteger(cardTwoInterval) || cardTwoInterval < 1 || cardTwoInterval > 2) throw new TypeError('cardTwoInterval must be 1 or 2');
   const normalizedWeaponIds = ownedWeaponIds.map((id) => {
     if (typeof id !== 'string' || !id || id.length > 64) throw new TypeError('owned weapon ID must be a bounded string');
     return id;
   });
+  const zeros = () => Object.fromEntries(Object.keys(RUN_UPGRADE_CATALOG).map((id) => [id, 0]));
   return {
     seed: validSeed(seed),
     score: 0,
@@ -341,11 +385,34 @@ export function createRunProgression({ seed = 0, ownedWeaponIds = ['coin-blaster
     level: 1,
     pendingLevels: 0,
     selectionSequence: 0,
-    ranks: Object.fromEntries(Object.keys(RUN_UPGRADE_CATALOG).map((id) => [id, 0])),
+    ranks: zeros(),
     ownedWeaponIds: new Set(normalizedWeaponIds),
     recordedEnemyIds: new Set(),
     lastEvent: null,
+    // Package 8.3 offer state and the v7 run-summary counters.
+    cardTwoInterval,
+    focusWeaponId: null,
+    offer: null,
+    offersOpened: 0,
+    rerolls: 0,
+    offered: zeros(),
+    selected: zeros(),
+    // Package 8.4 Genesis Seals and evolutions (S1.7). boss-drops.mjs (lazy)
+    // resolves Seals and runs the evolution panel; these are its counters.
+    // evolutions maps a weapon id to its applied evolution id.
+    evolutions: {},
+    sealsFound: 0,
+    evolutionOffersOpened: 0,
+    evolutionOffered: {},
   };
+}
+
+// The focus gun: the last non-Pistol gun the player selected by hand or newly
+// picked up. The automatic fallback to the Pistol never changes it.
+export function setRunUpgradeFocus(state, weaponId) {
+  if (!state || !(state.ownedWeaponIds instanceof Set)) throw new TypeError('run progression state is required');
+  if (typeof weaponId === 'string' && weaponId !== PISTOL_ID && state.ownedWeaponIds.has(weaponId)) state.focusWeaponId = weaponId;
+  return state.focusWeaponId;
 }
 
 export function unlockRunProgressionWeapon(state, weaponId) {
@@ -353,7 +420,84 @@ export function unlockRunProgressionWeapon(state, weaponId) {
   if (typeof weaponId !== 'string' || !weaponId || weaponId.length > 64) throw new TypeError('weaponId must be a bounded string');
   const alreadyOwned = state.ownedWeaponIds.has(weaponId);
   state.ownedWeaponIds.add(weaponId);
+  if (!alreadyOwned) setRunUpgradeFocus(state, weaponId);
   return freezeDeep({ weaponId, alreadyOwned, eligibleUpgradeIds: getEligibleRunUpgradeIds(state) });
+}
+
+// Opens the offer for the next pending level (once: an open offer is never
+// re-opened, so the counters count one offer per pending level that shows
+// cards). armedWeaponIds are the guns that have ammo on the offer's tick;
+// null arms every owned gun. Returns the choices, or null when nothing opened.
+export function openRunUpgradeOffer(state, { armedWeaponIds = null } = {}) {
+  if (!state || !(state.ownedWeaponIds instanceof Set)) throw new TypeError('run progression state is required');
+  if (armedWeaponIds !== null && (!Array.isArray(armedWeaponIds) || armedWeaponIds.length > 32)) throw new TypeError('armedWeaponIds must be a bounded array');
+  if (state.offer || state.pendingLevels <= 0) return null;
+  const offer = drawOffer(state, armedWeaponIds);
+  if (offer.slots.every((card) => card.id === null)) return null;
+  state.offer = offer;
+  state.offersOpened += 1;
+  for (const id of offer.shown) state.offered[id] += 1;
+  return offerChoices(state, offer);
+}
+
+// One re-roll for a card of the open offer. It never selects, closes the
+// offer or advances a tick. Returns the new card, or null when the card was
+// already re-rolled or nothing is left to show ("No other upgrades").
+export function rerollRunUpgradeSlot(state, slot) {
+  const offer = state?.offer;
+  if (!offer) throw new Error('no upgrade offer is open');
+  if (offer.kind !== 'level') throw new Error('an evolution panel re-rolls through boss-drops.mjs');
+  if (!Number.isInteger(slot) || slot < 0 || slot >= OFFER_SLOTS) throw new TypeError('slot must be 0 or 1');
+  const current = offer.slots[slot];
+  if (current.id === null || current.rerolled) return null;
+  const card = drawSlot(state, offer.key, slot, current.draw + 1, new Set(offer.shown), offer.candidates);
+  if (!card) return null;
+  offer.slots[slot] = { id: card.id, draw: current.draw + 1, rerolled: true, weaponId: card.weaponId };
+  offer.shown.push(card.id);
+  state.rerolls += 1;
+  state.offered[card.id] += 1;
+  return offerChoices(state, offer).find((choice) => choice.slot === slot);
+}
+
+// A gun's branch chip ("SHOTGUN 4/9"; a gun with a capstone counts 10).
+export function runWeaponMastery(ranks, weaponId) {
+  let invested = 0;
+  let total = 0;
+  for (const upgrade of Object.values(RUN_UPGRADE_CATALOG)) {
+    if (upgrade.requiresWeaponId !== weaponId) continue;
+    invested += Math.min(upgrade.maxRank, ranks?.[upgrade.id] ?? 0);
+    total += upgrade.maxRank;
+  }
+  return freezeDeep({ ranks: invested, total });
+}
+
+// The dense v7 upgrades rows (contract 4): times each card was shown,
+// re-rolls included, and times it was picked, in catalogue order.
+export function runUpgradeRows(state, upgradeIds = Object.keys(RUN_UPGRADE_CATALOG)) {
+  return Object.freeze(upgradeIds.map((upgradeId) => Object.freeze({
+    upgradeId,
+    offered: state.offered[upgradeId] ?? 0,
+    selected: state.selected[upgradeId] ?? 0,
+  })));
+}
+
+// Genesis Seals held and not yet spent on an evolution (package 8.4 "Bank").
+export const runSealsBanked = (state) => state.sealsFound - Object.keys(state.evolutions).length;
+
+// The v7 progression row (contract 4 and S11): sealsBanked is the Seals found
+// less the evolutions applied; the Golden Parachute count comes from the boss
+// slots.
+export function runProgressionRow(state, { revivesUsed = 0 } = {}) {
+  if (!Number.isInteger(revivesUsed) || revivesUsed < 0 || revivesUsed > 1) throw new TypeError('revivesUsed must be 0 or 1');
+  return Object.freeze({
+    offersOpened: state.offersOpened,
+    evolutionOffersOpened: state.evolutionOffersOpened,
+    rerolls: state.rerolls,
+    sealsFound: state.sealsFound,
+    sealsBanked: runSealsBanked(state),
+    evolutionsApplied: Object.keys(state.evolutions).length,
+    revivesUsed,
+  });
 }
 
 export function getRunProgressionSnapshot(state) {
@@ -370,6 +514,13 @@ export function getRunProgressionSnapshot(state) {
     xpProgress: Math.max(0, Math.min(1, (state.xp - currentFloor) / (nextThreshold - currentFloor))),
     pendingLevels: state.pendingLevels,
     pendingChoices: resolveChoices(state),
+    offersOpened: state.offersOpened,
+    rerolls: state.rerolls,
+    focusWeaponId: state.focusWeaponId,
+    offerKind: state.offer?.kind ?? null,
+    evolutions: { ...state.evolutions },
+    sealsFound: state.sealsFound,
+    sealsBanked: runSealsBanked(state),
     ranks: { ...state.ranks },
     ownedWeaponIds: [...state.ownedWeaponIds].sort((left, right) => left < right ? -1 : left > right ? 1 : 0),
     effects: resolveEffects(state),
@@ -378,8 +529,8 @@ export function getRunProgressionSnapshot(state) {
   });
 }
 
-function applyRunXp(state, baseXp) {
-  const xpGain = Math.round(baseXp * resolveEffects(state).xpMultiplier);
+function applyRunXp(state, baseXp, multiplier = resolveEffects(state).xpMultiplier) {
+  const xpGain = Math.round(baseXp * multiplier);
   state.xp += xpGain;
   let levelsGained = 0;
   while (state.level < 1000 && state.xp >= nextLevelThreshold(state.level)) {
@@ -394,6 +545,15 @@ export function grantRunXp(state, baseXp, tick) {
   if (!Number.isInteger(baseXp) || baseXp <= 0 || baseXp > 1_000_000) throw new TypeError('baseXp must be a positive bounded integer');
   const gained = applyRunXp(state, baseXp);
   state.lastEvent = { tick, ...gained };
+  return getRunProgressionSnapshot(state);
+}
+
+// Package 3.5: the OG Miner's one level, spanXpPerLevel (300) x the current
+// level, never multiplied by xpMultiplier, and no score. With rank capacity
+// full the level arrives without a card (applyRunXp's rule).
+export function grantRunLevelSpan(state, spanXpPerLevel, tick) {
+  const gained = applyRunXp(state, spanXpPerLevel * state.level, 1);
+  state.lastEvent = { tick, sourceId: 'level-span', ...gained };
   return getRunProgressionSnapshot(state);
 }
 
@@ -430,12 +590,17 @@ export function selectRunUpgrade(state, upgradeId) {
   if (typeof upgradeId !== 'string' || !Object.hasOwn(RUN_UPGRADE_CATALOG, upgradeId)) {
     throw new TypeError('upgradeId must identify an authored upgrade');
   }
-  const choices = resolveChoices(state);
-  const selected = choices.find((choice) => choice.id === upgradeId);
+  if (state.offer?.kind === 'evolution') throw new Error('an evolution panel is open');
+  // A caller that never opened the offer (tests, benchmarks) opens it here,
+  // with every owned gun armed, exactly as the preview showed it.
+  if (!state.offer) openRunUpgradeOffer(state);
+  const selected = state.offer ? offerChoices(state, state.offer).find((choice) => choice.id === upgradeId) : null;
   if (!selected) throw new Error(`upgrade ${String(upgradeId)} is not currently offered`);
   state.ranks[upgradeId] += 1;
+  state.selected[upgradeId] += 1;
   state.pendingLevels -= 1;
   state.selectionSequence += 1;
+  state.offer = null;
   const snapshot = getRunProgressionSnapshot(state);
   return freezeDeep({
     selected: { ...selected, rank: state.ranks[upgradeId] },

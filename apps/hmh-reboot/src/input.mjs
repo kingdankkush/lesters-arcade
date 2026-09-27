@@ -19,7 +19,7 @@ const ACTION_DEFAULTS = Object.freeze({
 
 export const POINTER_AIM_IDLE_MS = 1000;
 export const ACTION_BUFFER_MS = 100;
-const BUFFERED_ACTIONS = Object.freeze(['grenade', 'weaponNext']);
+const BUFFERED_ACTIONS = Object.freeze(['grenade', 'weaponNext', 'dash']);
 // A wheel pick waits for the next admitted tick, not a wall-clock window.
 const WEAPON_SLOT_REQUEST_MAX = 8;
 
@@ -100,6 +100,10 @@ export class InputState {
     this.gamepad = null;
     this.gamepadAt = -1;
     this.lastActiveDevice = 'none';
+    // The device that picks the dodge mode (package S1.1). Unlike the active
+    // device it survives reset(): a level-up pick, a blur or a rebinding must
+    // not open an automatic-dodge window for a keyboard player.
+    this.dodgeDevice = 'none';
     this.lastInputAtMs = 0;
     this.resetReason = null;
     this.sequence = 0;
@@ -140,6 +144,7 @@ export class InputState {
     const at = timestamp(atMs);
     if (at >= this.lastInputAtMs) {
       this.lastActiveDevice = device;
+      this.dodgeDevice = device;
       this.lastInputAtMs = at;
     }
     this.resetReason = null;
@@ -276,7 +281,12 @@ export class InputState {
       fire: false,
       melee: false,
       grenade: buffered.has('grenade') || heldActions.grenade,
-      dash: false,
+      // The keyboard dodge (package S1.1) is an edge: one admitted tick sees
+      // a press and a held key never repeats it. `manualDodge` turns the
+      // automatic dodge off while the keyboard and mouse are the last used
+      // device; touch and gamepad keep it. Both travel in the tick input.
+      dash: buffered.has('dash'),
+      manualDodge: this.dodgeDevice === 'keyboard-mouse',
       pause: sources.some((source) => source.pause),
       // Both weapon controls are edges: one admitted tick sees them, held
       // input never repeats them.

@@ -45,7 +45,8 @@ export function resolveBearMarketBurnerPolicy({ branches = {}, capstoneId = null
     swapTicks: liquidity >= 2 ? 90 : BEAR_MARKET_BURNER_CONFIG.swapTicks,
     emergencyRefill: liquidity >= 3,
     emergencyRefillFuel: liquidity >= 3 ? 300 : 0,
-    directDamage: BEAR_MARKET_BURNER_CONFIG.directDamage + (volatility >= 1 ? 1 : 0),
+    // Package 8.6: Burn Damage adds a direct point at ranks 1 and 3.
+    directDamage: BEAR_MARKET_BURNER_CONFIG.directDamage + (volatility >= 1 ? 1 : 0) + (volatility >= 3 ? 1 : 0),
     burnDamage: BEAR_MARKET_BURNER_CONFIG.burnDamage,
     burnDurationTicks: BEAR_MARKET_BURNER_CONFIG.burnDurationTicks + (volatility >= 2 ? 90 : 0),
     bossBurnDurationTicks: BEAR_MARKET_BURNER_CONFIG.bossBurnDurationTicks,

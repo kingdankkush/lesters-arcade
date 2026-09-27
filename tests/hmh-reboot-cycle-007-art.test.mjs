@@ -164,7 +164,8 @@ test('Cycle 007 Blender pipelines exclusively own their shared generation paths'
 test('Cycle 007 runtime can select all authored hero actions and boss phases', async () => {
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   for (const action of ['dash', 'melee', 'grenade', 'death']) assert.ok(source.includes(`'${action}'`), `${action} is unreachable`);
-  assert.match(source, /phaseId:\s*liquidatorBoss\.phaseId|phase:\s*liquidatorBoss\.phaseId/);
+  // S1.5: the phase reaches the telegraph edges and the halt beat.
+  assert.match(source, /phaseId:\s*liquidatorBoss\.phaseId|phase:\s*liquidatorBoss\.phaseId|phaseIndex:\s*liquidatorBoss\.phaseIndex/);
   assert.match(source, /authored-prop-atlas|AuthoredProp/);
   assert.match(source, /enemyVisualFacing = new Map/);
   assert.doesNotMatch(source, /resolveEnemyVisualDirection\(enemy,/, 'projection must not write facing onto simulation enemies');
@@ -178,7 +179,8 @@ test('Cycle 007 gives one weapon renderer authority at a time', async () => {
   assert.match(runtime, /const externalWeaponAuthoritative = Boolean\(authoredHeldWeaponDisplay\)/);
   assert.match(runtime, /const actionOwnsWeaponLayer = \['melee', 'grenade', 'death', 'interact'\]\.includes\(productionAction\)/);
   assert.match(runtime, /&& !actionOwnsWeaponLayer\s*&& !nativeWeaponOwnsLayer/);
-  assert.match(runtime, /setLayerVisible\('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative\)/);
+  // Design package 7.2 #2 (S1.1): the death clip shows no weapon either.
+  assert.match(runtime, /setLayerVisible\('weapon', productionAction !== 'interact' && productionAction !== 'death' && !externalWeaponAuthoritative\)/);
   assert.match(runtime, /authoredHeldWeaponDisplay\.container\.visible = externalWeaponAuthoritative/);
 });
 

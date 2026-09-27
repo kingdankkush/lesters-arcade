@@ -76,7 +76,11 @@ test('each objective reward has a clear outward and return path through the open
     const site=WORLD_DESIGN_SITES.find(s=>s.id===r.objectiveId);
     if(!site)continue;
     const blockers=world.collisionBlockers.filter(b=>b.id!==site.gateId);
-    for(const [from,to] of [[site,r],[r,site]]) {
+    // S1.4: the machine's operate spot sits beside its footpath, so the walk
+    // starts at the gate mouth, 80 units out from the opened gate.
+    const court=WORLD_DESIGN_COURTS.find(c=>c.gateId===site.gateId);
+    const mouth={south:{x:court.x,y:court.y+185},north:{x:court.x,y:court.y-185},east:{x:court.x+185,y:court.y},west:{x:court.x-185,y:court.y}}[court.gateSide];
+    for(const [from,to] of [[mouth,r],[r,mouth]]) {
       const count=Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)/4);let p=from;
       for(let i=1;i<=count;i++) {
         const next={x:from.x+(to.x-from.x)*i/count,y:from.y+(to.y-from.y)*i/count};
@@ -107,7 +111,8 @@ test('full ammunition, health and grenade inventory preserve pickups until capac
 // court pattern, so the same physical checks cover all six sites.
 import { createEnemyNavGrid, computeEnemyFlowField } from '../apps/hmh-reboot/src/enemy-navgrid.mjs';
 import { WORLD_DESIGN_COURTS } from '../apps/hmh-reboot/src/world-design-encounters.mjs';
-import { createWorldDesignState, stepWorldDesign, worldDesignActiveBlockers, worldDesignHazardPhase } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { worldDesignHazardPhase } from '../apps/hmh-reboot/src/world-design-interactions.mjs';
+import { createMissionState, stepMissionObjectives, missionActiveBlockers } from '../apps/hmh-reboot/src/mission-objectives.mjs';
 
 const gatedRewards = () => OBJECTIVE_REWARDS.map(r=>[r,WORLD_DESIGN_SITES.find(s=>s.id===r.objectiveId)]).filter(([,site])=>site?.gateId);
 
@@ -129,8 +134,8 @@ test('no reward is reachable through a closed gate, and opening only that gate c
     assert.equal(closed.isWalkableAt(r.x,r.y),true,`${r.id} interior is walkable`);
     const closedField=computeEnemyFlowField({grid:closed,targetX:r.x,targetY:r.y});
     assert.ok(closedField.distance[closed.cellAt(site.x,site.y)]<0,`${r.id} must be sealed while ${site.gateId} stands`);
-    const state=createWorldDesignState();state.openGates.add(site.gateId);
-    const open=createEnemyNavGrid({world:{...world,collisionBlockers:worldDesignActiveBlockers(state,world.collisionBlockers)},queryGround});
+    const state=createMissionState(1);state.openGates.add(site.gateId);
+    const open=createEnemyNavGrid({world:{...world,collisionBlockers:missionActiveBlockers(state,world.collisionBlockers)},queryGround});
     const openField=computeEnemyFlowField({grid:open,targetX:r.x,targetY:r.y});
     assert.ok(openField.distance[open.cellAt(site.x,site.y)]>0,`${r.id} opens from ${site.id}`);
   }
@@ -184,9 +189,9 @@ test('the liquidation trap vents across the court mouth after the gate opens, an
   const cache=OBJECTIVE_REWARDS.find(r=>r.objectiveId===site.id);
   assert.ok(Math.hypot(h.x-cache.x,h.y-cache.y)>h.radius+world.player.radius,'the cache is outside the steam');
   assert.equal(court.gateSide,'south');
-  const state=createWorldDesignState();const events=[];
-  for(let tick=0;tick<site.holdTicks;tick++) events.push(...stepWorldDesign(state,{tick,player:{...site,groundZ:0},queryGround:()=>({groundZ:0}),lineBlocked:()=>false}).events);
-  assert.equal(events[0].gateId,site.gateId,'the gate opens when the valve completes');
+  const state=createMissionState(1);const events=[];
+  for(let tick=0;tick<site.holdTicks;tick++) events.push(...stepMissionObjectives(state,{tick,player:{...site,groundZ:0},queryGround:()=>({groundZ:0})}).events);
+  assert.deepEqual(events[0].effects[0],{type:'open-gate',gateId:site.gateId},'the gate opens when the valve completes');
   const done=site.holdTicks-1;
   assert.equal(worldDesignHazardPhase(state,site,done).phase,'warning');
   assert.equal(worldDesignHazardPhase(state,site,done+h.warningTicks+h.durationTicks).phase,'spent');

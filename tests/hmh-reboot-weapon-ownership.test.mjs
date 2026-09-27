@@ -201,7 +201,8 @@ test('the launcher declaration mirrors the authoritative grenade it fires', asyn
 
 test('automatic pickup equip and exhausted fallback cannot trap later weapons behind a removed SWAP control', async () => {
   const source = await (await import('node:fs/promises')).readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: true, progressionByWeapon \}\)/);
+  // Package 8.6: a cache selects its gun only when it is newly owned.
+  assert.match(source, /grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: 'if-new', progressionByWeapon \}\)/);
   assert.match(source, /stepWeaponLoadout\(weaponLoadout, \{\s*tick,\s*fire: aimIntent\.fire/);
   assert.doesNotMatch(source, /rawDirectWeaponId/);
   const loadout = newLoadout();

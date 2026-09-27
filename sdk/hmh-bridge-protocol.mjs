@@ -75,8 +75,12 @@ function validateSettings(value) {
     for (const key in cosmetics) if (cosmetics[key] !== null && !integerInRange(cosmetics[key], 0, 0xffffff)) return 'settings.cosmetics is invalid';
   }
   if (Object.hasOwn(value, 'keyboardBindings')) {
-    const actionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
-    const bindingError = exactKeys(value.keyboardBindings, actionIds, 'settings.keyboardBindings');
+    const requiredActionIds = ['moveUp', 'moveDown', 'moveLeft', 'moveRight', 'grenade', 'weaponNext', 'pause'];
+    // The keyboard dodge (HMH design package S1.1) is optional so a seven-key
+    // map from an older parent stays valid; the child fills its default.
+    const bindings = value.keyboardBindings;
+    const actionIds = isPlainRecord(bindings) && Object.hasOwn(bindings, 'dodge') ? [...requiredActionIds, 'dodge'] : requiredActionIds;
+    const bindingError = exactKeys(bindings, actionIds, 'settings.keyboardBindings');
     if (bindingError) return bindingError;
     const unique = new Set();
     for (const actionId of actionIds) {
@@ -249,7 +253,10 @@ export function validateParentMessage(input) {
   return error ? fail(error) : pass(input);
 }
 
-export function validateChildMessage(input) {
+// `validateRunSummary` validates a game:run-summary payload. The default is the
+// base schema module (schema 1-6); a consumer of schema 7 passes the validator
+// of sdk/hmh-run-summary-schema-v7.mjs, which answers schema 1-6 identically.
+export function validateChildMessage(input, { validateRunSummary = validateRunSummaryPayload } = {}) {
   const base = validateBaseEnvelope(input);
   if (!base.ok) return base;
   let error = '';
@@ -259,7 +266,7 @@ export function validateChildMessage(input) {
   else if (input.type === 'game:pause') error = validateGamePause(input.payload);
   else if (input.type === 'game:exit') error = validateGameExit(input.payload);
   else if (input.type === 'game:run-event') error = validateRunEvent(input.payload);
-  else if (input.type === 'game:run-summary') error = validateRunSummaryPayload(input.payload);
+  else if (input.type === 'game:run-summary') error = validateRunSummary(input.payload);
   else if (input.type === 'game:score-result') error = validateScoreResult(input.payload);
   else if (input.type === 'game:achievement') error = validateAchievement(input.payload);
   else if (input.type === 'game:settings') error = validateSettingsPayload(input.payload);

@@ -19,6 +19,9 @@ export function createHmhChildBridge({
   onInit = () => {},
   onMessage = () => {},
   onProtocolError = () => {},
+  // The run-summary validator for outgoing summaries (the child passes the
+  // schema-7 one); the protocol's own accepts schema 1-6.
+  validateRunSummary,
 }) {
   const parentOrigin = normalizeOrigin(expectedParentOrigin);
   let state = 'idle';
@@ -38,7 +41,7 @@ export function createHmhChildBridge({
       messageId: `game-${++messageSequence}`,
       payload,
     });
-    const validation = validateChildMessage(message);
+    const validation = validateChildMessage(message, { validateRunSummary });
     if (!validation.ok) throw new Error(validation.error);
     port.postMessage(message);
     return message;

@@ -135,7 +135,9 @@ test('the loading panel carries the four briefing slots and the runtime fills th
   for (const slot of BRIEFING_SLOTS) assert.match(html, new RegExp(`<dd data-briefing-${slot}>[^<]{16,}</dd>`), `index.html default copy for ${slot}`);
   assert.match(html, /<dl class="hmh-startup-brief" aria-label="Insertion briefing">/);
   const source = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(source, /import \{ resolveLevelBriefing, applyLevelBriefing \} from '\.\/level-briefing\.mjs';/);
+  // S0.2: the briefing is a lazy runtime module, resident before any session starts.
+  assert.match(source, /import\('\.\/level-briefing\.mjs'\)/);
+  assert.match(source, /\(\{ resolveLevelBriefing, applyLevelBriefing \} = briefing\);/);
   assert.match(source, /applyLevelBriefing\(startupPanel, resolveLevelBriefing\(\{ entryId: runtimePlayerSpawn\.id, seed: payload\.session\.seed \}\)\);/);
   const css = readFileSync(new URL('../apps/portal/hmh-reboot/styles.css', import.meta.url), 'utf8');
   assert.match(css, /\.hmh-startup-brief \{ display:grid;/);
@@ -152,4 +154,10 @@ test('briefings name the havens and the trap that their cited machinery opens', 
       assert.ok(WORLD_DESIGN_SITES.find((site) => site.id === feature.id)?.gateId, `${feature.id} opens a court`);
     }
   }
+});
+
+// Slice 7 (package 8.4): the briefing names the Genesis Seal.
+test('the briefing tells the player that bosses drop Genesis Seals', () => {
+  assert.ok(LEVEL_ONE_BRIEFING.tips.includes('Bosses drop Genesis Seals. A Seal evolves a gun you have mastered.'));
+  assert.match(LEVEL_ONE_BRIEFING.entries.yard.supply, /Genesis Seal/);
 });

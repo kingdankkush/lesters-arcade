@@ -68,3 +68,10 @@ test('the banner shows, holds, fades and hides on ticks, queues in order, coales
   assert.equal(mount.children[0].removed, true);
   assert.throws(() => createPickupBanner({ mount: null, documentRef }), /mount/);
 });
+
+// Slice 7 (package 8.4): the Genesis Seal's banners.
+test('the first Seal drop, a banked Seal and the evolution moment each get one banner line', () => {
+  assert.equal(pickupBannerText({ type: 'genesis-seal:dropped' }).title, 'GENESIS SEAL DROPPED');
+  assert.deepEqual(pickupBannerText({ type: 'genesis-seal:banked' }), { kind: 'evolution', title: 'GENESIS SEAL BANKED', detail: 'Evolves the next gun you master' });
+  assert.deepEqual(pickupBannerText({ type: 'evolution:applied', title: 'Double Spend', weaponName: 'Shotgun' }), { kind: 'evolution', title: 'EVOLVED // DOUBLE SPEND', detail: 'Shotgun' });
+});

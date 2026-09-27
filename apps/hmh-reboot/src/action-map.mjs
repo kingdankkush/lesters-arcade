@@ -8,6 +8,10 @@ const entries = [
   ['grenade', 'Grenade', 'KeyF', 'Left bumper', 'GRENADE', 'Throw a hand grenade.'],
   ['weaponNext', 'Swap weapon', 'KeyQ', 'Right bumper', 'SWAP', 'Cycle to the next weapon you carry.'],
   ['pause', 'Pause', 'Escape', 'Menu', 'Pause button', 'Open or close the run menu.'],
+  // Design package S1.1 (owner decision 20): the desktop keyboard's manual
+  // dodge. Keyboard only: touch and gamepad keep the automatic dodge. Listed
+  // last so bindings saved before it existed keep their keys when normalised.
+  ['dodge', 'Dodge', 'ShiftLeft', '', '', 'Dash out of danger. On touch or a gamepad your hero dodges automatically.'],
 ];
 
 export const HMH_ACTION_MAP = freezeDeep(Object.fromEntries(entries.map(([id, label, keyboard, gamepad, touch, help]) => [
@@ -21,6 +25,7 @@ const DEFAULT_ALTERNATES = freezeDeep({
   moveUp: ['ArrowUp'], moveDown: ['ArrowDown'], moveLeft: ['ArrowLeft'], moveRight: ['ArrowRight'],
   grenade: ['KeyG'],
   weaponNext: ['KeyE'],
+  dodge: ['ShiftRight'],
 });
 
 const ALLOWED_KEY_CODES = new Set([
@@ -40,7 +45,10 @@ export function normalizeKeyboardBindings(input = {}) {
       ? requested[actionId]
       : DEFAULT_KEYBOARD_BINDINGS[actionId];
     const fallback = DEFAULT_KEYBOARD_BINDINGS[actionId];
-    const code = !used.has(candidate) ? candidate : !used.has(fallback) ? fallback : [...ALLOWED_KEY_CODES].find((value) => !used.has(value));
+    // A taken default falls back to the action's own alternate (Right Shift
+    // for dodge) before the first free key.
+    const code = !used.has(candidate) ? candidate : !used.has(fallback) ? fallback
+      : (DEFAULT_ALTERNATES[actionId] ?? []).find((value) => !used.has(value)) ?? [...ALLOWED_KEY_CODES].find((value) => !used.has(value));
     result[actionId] = code;
     used.add(code);
   }
@@ -81,10 +89,12 @@ export function keyboardMovement(keys, bindings) {
 }
 
 export function keyboardActionRecord(keys, bindings) {
-  // Fire, melee and dash stay automatic; the swap edge is the one manual
-  // weapon control (owner direction 2026-09-16).
+  // Fire and melee stay automatic; the swap edge is the one manual weapon
+  // control (owner direction 2026-09-16). The dodge key is the desktop
+  // keyboard's manual dodge (package S1.1); it feeds the sim's `dash` edge.
   return {
-    fire: false, melee: false, dash: false, weaponSlot: 0,
+    fire: false, melee: false, weaponSlot: 0,
+    dash: keyboardActionPressed(keys, bindings, 'dodge'),
     weaponNext: keyboardActionPressed(keys, bindings, 'weaponNext'),
     grenade: keyboardActionPressed(keys, bindings, 'grenade'),
     pause: keyboardActionPressed(keys, bindings, 'pause'),

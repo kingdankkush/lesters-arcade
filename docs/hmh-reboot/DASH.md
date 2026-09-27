@@ -21,6 +21,22 @@ Phase 13 implements a deterministic, fixed-tick Dash for the isolated PixiJS chi
 
 Cooldowns, movement, invulnerability, and readiness use integer simulation ticks. Paused, upgrade, game-over, and exited states do not invoke simulation steps, so Dash cannot consume cooldown or displacement while those states are inactive.
 
+## Manual dodge on a desktop keyboard (design package S1.1, 2026-09-25)
+
+Owner decision 20 brings back a manual dodge, for the desktop keyboard only. The table above still holds for both dodges: they share one dash state, so the 600/480/360-tick cooldown, the eight i-frame ticks and the 192-unit, eight-tick dash are the same.
+
+| Property | Manual dodge (keyboard) | Automatic dodge (touch, gamepad) |
+|---|---|---|
+| Trigger | the `dodge` action: Left Shift, alternate Right Shift, rebindable in the pause panel, locked in Ranked | an imminent visible ordinary-enemy tell while moving (`automatic-actions.mjs`) |
+| When | while the keyboard and mouse are the last-used device (`manualDodge` in the tick input; it survives an input reset such as a level-up pick or a blur) | otherwise; off while the keyboard is the last-used device |
+| Input | a buffered edge in the tick input (`dash`): one tick per press, a held key never repeats | none |
+| Direction | the move input, else the last move, else directly away from the aim | the move input only |
+| Safety | the automatic dodge's footprint rule (no drop, no deep water, no bridge-edge clip) plus the swept collision; the dash is truncated at the last safe 4-unit sample and keeps dash speed; under 48 safe units it is refused, spends no cooldown and flashes a red cross | the whole route must be safe, or no dodge |
+
+`apps/hmh-reboot/src/dodge-intent.mjs` (`resolveDodgeIntent`) picks the dodge for a tick; `beginDash` takes the truncated distance. Mobile and gamepad controls are unchanged; neither has a dodge binding. The bridge's `settings.keyboardBindings` accepts an optional `dodge` key, so a seven-key map from an older parent stays valid and the child fills the default.
+
+Tests: `tests/hmh-reboot-manual-dodge.test.mjs`, `tests/hmh-reboot-dodge-determinism.test.mjs` (same-seed digest and input-stream replay across keyboard, touch and gamepad phases), and the dodge rows in the action-map, input and protocol tests.
+
 ## Collision and enemy-pressure order
 
 `apps/hmh-reboot/src/dash.mjs` owns the deterministic Dash state and world-step policy:

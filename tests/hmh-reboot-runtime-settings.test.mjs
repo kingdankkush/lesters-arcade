@@ -19,8 +19,10 @@ test('U9/X2 projected accessibility and audio settings have real runtime consume
   assert.match(child, /combatAudio\.setBusLevels\(settings\)/);
   assert.match(child, /style\.fontSize = `\$\{\(settings\.hudScale \?\? 1\) \* 100\}%`/);
   assert.match(child, /captionCriticalAudio/);
-  assert.match(child, /event\.type === 'tell'.*boss-phase/s);
-  assert.match(child, /Critical audio: Liquidator warning/);
+  // S1.5 owner audio ruling: boss tells and halts are silent; the caption
+  // setting still names them.
+  assert.match(child, /event\.type === 'tell' \|\| event\.type === 'halt'[\s\S]*?settings\.captionCriticalAudio[\s\S]*?Liquidator: \$\{warning\}/);
+  assert.doesNotMatch(child, /combatAudio\.play\('boss-phase'/);
 });
 
 test('critical audio captions update the live region without crashing the active ticker', () => {

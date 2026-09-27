@@ -5,14 +5,13 @@
 // away from the Ledger now ends the channel inside the tick, the way a manual
 // switch always has (stopReason 'switch', the break cooldown).
 //
-// 1.8.x hotfix (fable/hmh-ledger-swap-hotfix): on the 1.8.x child a cache
-// always selects its gun (select: true), and the manual SWAP and weapon-wheel
-// paths already ended the channel inside the weapon system but main.mjs never
-// handed that break to the run summary. The summary kept the Ledger marked
-// channelling, so the next channel start threw "Lightning Ledger channel is
-// already active" and stopped the ticker mid-run (paid runs lost). The last
-// block pins the switch -> summary contract for SWAP, a wheel pick and a cache.
-import { readFileSync } from 'node:fs';
+// The 1.8.x hotfix (fable/hmh-ledger-swap-hotfix, merged into 1.9.0) found the
+// live symptom on SWAP and wheel picks too: the weapon system ended the
+// channel but the break never reached the run summary, so the next channel
+// start threw "Lightning Ledger channel is already active" and stopped the
+// ticker. Its switch -> summary runs and dry-fallback tests close this file,
+// on the 1.9.0 API (a cache selects 'if-new'; main.mjs records every switch
+// through recordWeaponInterruption, pinned above).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
@@ -23,6 +22,7 @@ import {
   stepWeaponLoadout,
   nextOwnedWeaponId,
   switchWeapon,
+  HMH_WEAPON_ORDER,
 } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import * as summary from '../sdk/hmh-run-summary.mjs';
 import { LIGHTNING_LEDGER_CONFIG } from '../apps/hmh-reboot/src/lightning-ledger.mjs';
@@ -59,7 +59,7 @@ function channelRestartEvents(loadout, switchedTick) {
 
 test('a weapon cache that auto-selects its gun ends a live Ledger channel inside the tick', () => {
   const { loadout, ledger } = channelingLoadout();
-  const granted = grantWeaponPickup(loadout, { tick: 41, weaponId: 'scatter-shotgun', select: true });
+  const granted = grantWeaponPickup(loadout, { tick: 41, weaponId: 'scatter-shotgun', select: 'if-new' });
   assert.equal(loadout.activeWeaponId, 'scatter-shotgun');
   assert.equal(ledger.channelState.active, false, 'the channel ended with the switch');
   assert.equal(ledger.channelState.channelStartTick, null);
@@ -92,7 +92,7 @@ test('a refill that selects another gun ends the channel the same way', () => {
 test('a cache for the drawn Ledger, or one that does not select, keeps the beam running and reports no interruption', () => {
   const { loadout, ledger } = channelingLoadout();
   const cells = ledger.channelState.cellsRemaining;
-  const ownCache = grantWeaponPickup(loadout, { tick: 41, weaponId: 'lightning-ledger', select: true });
+  const ownCache = grantWeaponPickup(loadout, { tick: 41, weaponId: 'lightning-ledger', select: 'if-new' });
   assert.equal(loadout.activeWeaponId, 'lightning-ledger');
   assert.equal(ledger.channelState.active, true);
   assert.equal(ownCache.interrupted, null);
@@ -110,7 +110,7 @@ test('a cache for the drawn Ledger, or one that does not select, keeps the beam 
 test('the same switch resolves identically for the same inputs, and a switch elsewhere touches nothing', () => {
   const run = () => {
     const { loadout, ledger } = channelingLoadout();
-    const granted = grantWeaponPickup(loadout, { tick: 41, weaponId: 'scatter-shotgun', select: true });
+    const granted = grantWeaponPickup(loadout, { tick: 41, weaponId: 'scatter-shotgun', select: 'if-new' });
     return JSON.stringify([granted, ledger.channelState, channelRestartEvents(loadout, 41)]);
   };
   assert.equal(run(), run());
@@ -119,9 +119,55 @@ test('the same switch resolves identically for the same inputs, and a switch els
   assert.equal(granted.interrupted, null, 'no channel weapon in the loadout');
 });
 
-// The runtime's display order (main.mjs WEAPON_ORDER): SWAP cycles it and a
-// wheel pick selects slot N directly.
-const WEAPON_ORDER = Object.freeze(['coin-blaster', 'scatter-shotgun', 'auto-miner', 'launcher-rig', 'hash-rail', 'lightning-ledger', 'bear-market-burner', 'forked-standard']);
+// Real-child run r25 of the 1.9.0 corpus (tick 16,368): a switch away from a
+// live channel ended it in the weapon system, but the break never reached the
+// run summary, so the next channel start threw "Lightning Ledger channel is
+// already active" inside the tick. main.mjs now records every switch's
+// interruption, and the dry-gun fallback reports its break in the frame.
+test('every switch that ends a live channel reaches the run summary, so the next channel start records cleanly', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { createRunSummaryAccumulator, recordRunLightningLedgerEvent } = await import('../sdk/hmh-run-summary.mjs');
+  for (const leave of [
+    (loadout) => grantWeaponPickup(loadout, { tick: 41, weaponId: 'scatter-shotgun', select: 'if-new' }),
+    (loadout) => switchWeapon(loadout, 'coin-blaster', { tick: 41 }),
+  ]) {
+    const accumulator = createRunSummaryAccumulator({ seed: 1, buildHash: 'site-1.9.0:game-1.9.0', mode: 'free', heroId: 'lit-commando', startPosition: { x: 0, y: 0 } });
+    const { loadout } = channelingLoadout();
+    recordRunLightningLedgerEvent(accumulator, { type: 'ledger:channel-start', tick: 0 });
+    const left = leave(loadout);
+    assert.equal(left.interrupted?.type, 'ledger:channel-break');
+    recordRunLightningLedgerEvent(accumulator, left.interrupted);
+    const backTick = 41 + LIGHTNING_LEDGER_CONFIG.breakCooldownTicks + 1;
+    switchWeapon(loadout, 'lightning-ledger', { tick: backTick });
+    const restart = [];
+    for (let tick = backTick; tick <= backTick + loadout.switchTicks + 1; tick += 1) restart.push(...stepChannel(loadout, tick).events);
+    const start = restart.find((event) => event.type === 'ledger:channel-start');
+    assert.ok(start);
+    assert.doesNotThrow(() => recordRunLightningLedgerEvent(accumulator, start));
+  }
+  const main = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
+  // Every in-run switch, cache grant and refill goes through the recorder;
+  // only the tick-0 roster preview grants (no channel yet) do not.
+  assert.equal((main.match(/recordWeaponInterruption\((?:switchWeapon|grantWeaponPickup|refillWeaponLoadout)\(weaponLoadout,/g) ?? []).length, 7);
+  assert.equal((main.match(/(?<!recordWeaponInterruption\()(?:switchWeapon|refillWeaponLoadout)\(weaponLoadout,/g) ?? []).length, 0);
+  assert.equal((main.match(/(?<!recordWeaponInterruption\()grantWeaponPickup\(weaponLoadout, \{ tick: 0,/g) ?? []).length, 1);
+  assert.equal((main.match(/(?<!recordWeaponInterruption\()grantWeaponPickup\(weaponLoadout,/g) ?? []).length, 1);
+});
+
+test('the dry-gun fallback reports a channel it ends as a break in the frame', () => {
+  const { loadout, ledger } = channelingLoadout();
+  // The drawn Ledger reads dry with its beam still live.
+  ledger.ammoInClip = 0;
+  ledger.reserveAmmo = 0;
+  const frame = stepChannel(loadout, 41);
+  assert.equal(loadout.activeWeaponId, 'coin-blaster');
+  assert.equal(ledger.channelState.active, false);
+  assert.deepEqual(frame.events.map((event) => [event.type, event.reason ?? null]), [['ledger:channel-break', 'switch'], ['weapon:auto-fallback', null]]);
+});
+
+// The runtime's display order (main.mjs imports HMH_WEAPON_ORDER as
+// WEAPON_ORDER): SWAP cycles it and a wheel pick selects slot N directly.
+const WEAPON_ORDER = HMH_WEAPON_ORDER;
 
 function summaryAccumulator() {
   return summary.createRunSummaryAccumulator({
@@ -131,9 +177,9 @@ function summaryAccumulator() {
 
 const SWAP = { apply: (loadout, tick) => switchWeapon(loadout, nextOwnedWeaponId(loadout, WEAPON_ORDER), { tick }) };
 const WHEEL_PISTOL = { apply: (loadout, tick) => switchWeapon(loadout, WEAPON_ORDER[1 - 1], { tick }) };
-const CACHE = { apply: (loadout, tick) => grantWeaponPickup(loadout, { tick, weaponId: 'scatter-shotgun', select: true }) };
+const CACHE = { apply: (loadout, tick) => grantWeaponPickup(loadout, { tick, weaponId: 'scatter-shotgun', select: 'if-new' }) };
 
-for (const [label, path] of [['SWAP (next owned weapon)', SWAP], ['a weapon-wheel pick', WHEEL_PISTOL], ['a cache that selects its gun', CACHE]]) {
+for (const [label, path] of [['SWAP (next owned weapon)', SWAP], ['a weapon-wheel pick', WHEEL_PISTOL], ['a cache that selects its new gun', CACHE]]) {
   test(`${label} away from a live Ledger closes the summary channel so a later channel start does not throw`, () => {
     const switchAt = 40;
     const backAt = switchAt + LIGHTNING_LEDGER_CONFIG.breakCooldownTicks + 5;
@@ -175,14 +221,6 @@ test('without the recorded switch break the summary keeps the Ledger channelling
   summary.recordRunLightningLedgerEvent(acc, { type: 'ledger:channel-start', tick: 0 });
   // The weapon system ended the channel on the swap, but the break never reached the summary.
   assert.throws(() => summary.recordRunLightningLedgerEvent(acc, { type: 'ledger:channel-start', tick: 60 }), /already active/);
-});
-
-test('main.mjs hands every switch-induced channel break to the run summary (SWAP, wheel and cache)', () => {
-  const main = readFileSync(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
-  assert.match(main, /const switched = switchWeapon\(weaponLoadout, requestedWeaponId, \{ tick \}\);[\s\S]{0,400}if \(switched\.interrupted\) recordRunLightningLedgerEvent\(runSummaryAccumulator, switched\.interrupted\)/);
-  assert.match(main, /const granted = grantWeaponPickup\(weaponLoadout, \{ tick, weaponId: event\.weaponId, select: true, progressionByWeapon \}\);[\s\S]{0,400}if \(granted\.interrupted\) recordRunLightningLedgerEvent\(runSummaryAccumulator, granted\.interrupted\)/);
-  // Every other select path in the runtime is at tick 0 (debug loadouts) or does not select.
-  assert.doesNotMatch(main, /refillWeaponLoadout\([^)]*select: true/);
 });
 
 // Dry fallback. In live play the Ledger's own cell drain ends the channel with

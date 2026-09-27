@@ -11,6 +11,14 @@
 // achievements registry and, for Hard Money Heroes, the hero gates must load
 // too. Otherwise it answers 503 and the player never pays for a run that E3
 // would refuse to settle.
+//
+// Version skew (1.9.0 review, M1): the HMH child is served unversioned and
+// network-first, so a portal tab opened before a deploy loads the new child
+// while its own bridge still validates the old run summary schema, and its
+// run could never verify. For Hard Money Heroes only, E15 refuses a ticket to
+// a build whose game version is below the one the deployed child needs
+// (HMH_RANKED_SEED_MIN_GAME_VERSION) with 409 client-outdated and a reload
+// hint, before any payment. Chikun and STACKED are unaffected.
 
 import * as nodeCrypto from 'node:crypto';
 import { ipBucket } from '../http.mjs';
@@ -21,6 +29,7 @@ import { hitRateLimit, rateLimitedResult } from '../neon/rate-limit.mjs';
 import { logSeedTicketInBackground } from '../jackpot/ticket-log.mjs';
 import { logSafeError } from './errors.mjs';
 import { heroPolicyFrom, moduleGate, optionalImport, settlementGate } from './settle-core.mjs';
+import { HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION, HMH_RUN_SUMMARY_V7_SCHEMA_VERSION, hmhGameVersionOfBuild } from '../../sdk/hmh-run-contract-v7.mjs';
 
 export const SEED_BODY_MAX_BYTES = 2048;
 export const SEED_LIMITS = Object.freeze({ wallet: 60, ip: 600, windowSeconds: 3600 });
@@ -32,6 +41,32 @@ export const SESSION_HANDLE_PATTERN = RANKED_SESSION_HANDLE_PATTERN;
 // A11: format-checked, not allowlisted.
 export const BUILD_HASH_PATTERNS = Object.freeze(Object.fromEntries(Object.entries(RANKED_GAMES).map(([gameId, game]) => [gameId, game.buildHashPattern])));
 const BODY_KEYS = ['buildHash', 'gameId', 'seasonId', 'sessionId'];
+
+// The run summary schema the deployed HMH child emits. It is the child's
+// RUN_SUMMARY_SCHEMA_VERSION (apps/hmh-reboot/src/run-summary-v7.mjs; a test
+// pins the two together), so a child that moves to a new schema moves the
+// minimum below with it.
+export const HMH_DEPLOYED_CHILD_SCHEMA_VERSION = 7;
+// The oldest portal game version that can carry a summary of `schemaVersion`
+// through its bridge and verify it: 1.9.0 for schema 7 (the first v7 portal),
+// none before.
+export function hmhRankedSeedMinGameVersion(schemaVersion) {
+  return schemaVersion >= HMH_RUN_SUMMARY_V7_SCHEMA_VERSION ? HMH_RUN_SUMMARY_V7_MIN_GAME_VERSION : null;
+}
+export const HMH_RANKED_SEED_MIN_GAME_VERSION = hmhRankedSeedMinGameVersion(HMH_DEPLOYED_CHILD_SCHEMA_VERSION);
+export const CLIENT_OUTDATED_HINT = 'A new version of the arcade is live. Reload to play Ranked.';
+
+// True when an HMH build hash names a game older than the deployed child
+// needs (numeric compare: 1.10.0 is after 1.9.x). A build hash with no game
+// version cannot reach here: validateSeedBody format-checks it first.
+export function hmhSeedClientOutdated(buildHash, minimum = HMH_RANKED_SEED_MIN_GAME_VERSION) {
+  if (!minimum) return false;
+  const version = hmhGameVersionOfBuild(buildHash);
+  if (!version) return true;
+  const floor = minimum.split('.').map(Number);
+  for (let index = 0; index < 3; index += 1) if (version[index] !== floor[index]) return version[index] < floor[index];
+  return false;
+}
 
 const NO_STORE = Object.freeze({ 'Cache-Control': 'no-store' });
 const json = (status, body) => ({ status, body, headers: { ...NO_STORE } });
@@ -84,6 +119,10 @@ export async function seedRequest({ headers = {}, body = null, ip = 'unknown' } 
   if (gate) return gate;
   const { issueSeedTicket } = deps;
   if (!validateSeedBody(body)) return fail(400, 'invalid-body');
+  // Before the rate limits and any ticket: a stale HMH tab reloads instead of paying.
+  if (body.gameId === 'lester-blaster' && hmhSeedClientOutdated(body.buildHash)) {
+    return fail(409, 'client-outdated', { minGameVersion: HMH_RANKED_SEED_MIN_GAME_VERSION, reload: true, hint: CLIENT_OUTDATED_HINT });
+  }
   if (body.gameId === 'lester-blaster' && !(await heroGatesReady(deps))) return fail(503, 'settlement-not-configured', { detail: 'hero-gates-unavailable' });
   const { db, config } = deps;
   const nowMs = typeof deps.nowMs === 'function' ? deps.nowMs() : Date.now();

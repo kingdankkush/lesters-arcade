@@ -196,9 +196,13 @@ test('weapon upgrade branches match the retained upgrade tree and evolution tags
   assert.equal(actual.damageFlatBonus, expected.damageFlatBonus);
   assert.equal(actual.reloadMultiplier, expected.reloadMultiplier);
   assert.deepEqual(actual.specials, expected.specials);
-  assert.equal(actual.damage, 8);
+  // Slice 7 (package 8.5): the Settler Rail's heavier rounds, x1.35.
+  assert.equal(actual.damage, 8 * 1.35);
   assert.equal(actual.clipSize, 8);
-  assert.equal(actual.projectileTag, 'rail-dividend');
+  // S0.2: tags are additive. The specials here carry no projectile tag, and
+  // the evolution adds its own evolutionTag.
+  assert.equal(actual.projectileTag, null);
+  assert.equal(actual.evolutionTag, 'rail-dividend');
   assert.equal('score' in actual, false);
   assert.throws(() => applyWeaponProgression('coin-blaster', { evolutionId: 'hashstorm-overdrive' }), /evolution/i);
 });

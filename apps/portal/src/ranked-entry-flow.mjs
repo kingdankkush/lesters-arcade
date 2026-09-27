@@ -8,6 +8,10 @@ export const RANKED_PAUSED_MESSAGE = 'Ranked is paused right now. Free Mode is o
 // A27: with the entry fee off (a zero quote) Ranked cannot settle, so it is
 // closed rather than free.
 export const RANKED_CLOSED_MESSAGE = 'Ranked entry is closed right now. Free Mode is open.';
+// E15 answers 409 client-outdated when this tab's portal is older than the
+// deployed HMH child (a tab opened before a deploy): its run could never
+// verify, so the entry stops before any payment and asks for a reload.
+export const RANKED_CLIENT_OUTDATED_MESSAGE = 'A new version of the arcade is live. Reload to play Ranked.';
 // E3 rejects a ticket used more than 30 minutes after issue (A26); a ticket
 // fetched when the modal opened is fetched again after 10 minutes.
 export const SEED_TICKET_MAX_AGE_MS = 10 * 60 * 1000;
@@ -63,6 +67,10 @@ export async function fetchSeedTicket({ fetchImpl = globalThis.fetch, token, ses
     return Object.freeze({ ok: true, status: response.status, seed: payload.seed, seedTicket: payload.seedTicket, fetchedAt: now(), sessionId: session.sessionId });
   }
   return Object.freeze({ ok: false, status: response.status, error: payload?.error ?? `http-${response.status}` });
+}
+
+export function isClientOutdated(result) {
+  return result?.error === 'client-outdated';
 }
 
 export function isRankedPaused(result) {

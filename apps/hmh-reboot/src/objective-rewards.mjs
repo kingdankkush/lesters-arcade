@@ -8,7 +8,7 @@ export const SUPPLY_NAMES=Object.freeze({'coin-blaster':'Pistol','scatter-shotgu
 // than one cache, but every cache has exactly one owning objective.
 export const OBJECTIVE_REWARDS = freezeDeep([
   { id:'reward:relay-reserve', objectiveId:'relay-power', name:'Silver Reserve', task:'Start the farmstead generator, then enter the supply court.', rewardName:'Shotgun', assetId:'scatter-shotgun', x:340, y:3310 },
-  { id:'reward:ravine-salvage', objectiveId:'ravine-winch', name:'Quarry Salvage', task:'Start the winch and enter the salvage court.', rewardName:'Railgun', assetId:'hash-rail-core', x:2990, y:2580 },
+  { id:'reward:ravine-salvage', objectiveId:'ravine-winch', name:'Quarry Salvage', task:'Find the Winch Handle, crank the winch, then enter the salvage court.', rewardName:'Railgun', assetId:'hash-rail-core', x:2990, y:2580 },
   { id:'reward:crossing-supply', objectiveId:'crossing-pump', name:'Liquidity Haven', task:'Start the reservoir pump, then enter the haven east of it.', rewardName:'Ammo refill', assetId:'coin-blaster', kind:'ammo-refill', x:6040, y:4285, respawnTicks:7200 },
   { id:'reward:hashwood-sanctuary', objectiveId:'hashwood-shrine', name:'Litecoin Sanctuary', task:'Activate the woodland sanctuary, then enter the haven west of it.', rewardName:'Health +30', assetId:'bonus-life', x:7120, y:3450, respawnTicks:7200 },
   { id:'reward:hashwood-scrypt', objectiveId:'hashwood-shrine', name:'Scrypt Cache', task:'Activate the woodland sanctuary, then enter the haven west of it.', rewardName:'Grenade +1', assetId:'nuke-liquidation', kind:'grenade-supply', x:7180, y:3450, respawnTicks:7200 },

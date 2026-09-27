@@ -25,20 +25,26 @@ here came out of the child's own simulation, accumulator and progression.
   two melee styles of round 3 item 1: knifer (point-blank play on the
   starting Coin Blaster, so the Litecoin Knife lands the finishing blows) and
   standard (a Forked Standard specialist that treks to the seeded Standard
-  cache, keeps the Standard and fights at thrust reach). A pilot reads
+  cache, keeps the Standard and fights at thrust reach), and the two
+  Liquidator seekers of the 1.9.0 child: bell and darkpool (explorers that
+  take maximum health first and heal early, trek to the Liquidation Yard
+  3,600 ticks before his ready tick, wait near the trigger, then ring the
+  Closing Bell or walk through the warehouse logbook into the Dark Pool;
+  in the fight they orbit him). A pilot reads
   visible state (positions, pickups, sites, its own health, charges and
   weapons) and answers with a gamepad: left stick move, right stick aim, LB
   grenade, RB weapon-next. Firing, melee and dodges stay automatic, as in the
   shipped input model (auto-fire has no player setting, so no honest style
   can hold fire: knife-only play means point-blank play).
-- `plan.mjs` is the 108-row plan (style x entry x tick cap) and each row's
+- `plan.mjs` is the 128-row plan (style x entry x tick cap) and each row's
   identity: a seed ticket issued with the **public fixture secret** of
   `tests/fixtures/ranked/build-fixtures.mjs`, its salt searched until the seed
   lands on the planned level entry. The seed binds the build hash, so every
   child release plays fresh seeds from the same plan. `SAMPLE_LABELS` is the
-  fourteen-run sample (every style, entry and hero) that proves the harness
+  sixteen-run sample (every style, entry and hero) that proves the harness
   on a new child; `MELEE_LABELS` is the forty melee-trail rows (r68 to r107:
-  ten knifer, thirty standard).
+  ten knifer, thirty standard); `BOSS_LABELS` is the twenty Liquidator
+  seekers (r108 to r127: ten bell, ten darkpool).
 - `identity.mjs` derives the build hash the portal would send for this
   checkout: `site-<SITE_VERSION>:game-<GAME_VERSION>:cabinet-<HMH_CABINET_VERSION>`.
 - `verify.mjs` verifies a run as Ranked would: `verifyRankedRun` on a full
@@ -51,16 +57,39 @@ here came out of the child's own simulation, accumulator and progression.
 
 ```bash
 node scripts/hmh-honest-corpus/batch.mjs plan
-node scripts/hmh-honest-corpus/batch.mjs run --sample --concurrency=4     # the fourteen-run sample
+node scripts/hmh-honest-corpus/batch.mjs run --sample --concurrency=4     # the sixteen-run sample
 node scripts/hmh-honest-corpus/batch.mjs run --melee --concurrency=6      # the forty melee-trail rows
+node scripts/hmh-honest-corpus/batch.mjs run --boss --concurrency=6       # the twenty Liquidator seekers
 node scripts/hmh-honest-corpus/batch.mjs run --only=r08-brawler-relay-3000
-node scripts/hmh-honest-corpus/batch.mjs run                              # all 108 rows (about 40 min at 6)
+node scripts/hmh-honest-corpus/batch.mjs run                              # all 128 rows
 node scripts/hmh-honest-corpus/batch.mjs verify                           # runs/results.json; exit 1 on any reject
 node scripts/hmh-honest-corpus/batch.mjs report
 node scripts/hmh-honest-corpus/batch.mjs export --commit=$(git rev-parse --short HEAD) \
   --out=tests/fixtures/hmh-honest-corpus/real-child-<release>.json [--merge]
 node scripts/hmh-honest-corpus/smoke.mjs 600                              # boot only
 ```
+
+`HMH_HARNESS_RELEASE` and `HMH_HARNESS_CABINET` label a child ahead of this
+checkout's version files (the integration owner bumps them at release): the
+1.9.0 child on its gameplay branch runs under
+`HMH_HARNESS_RELEASE=1.9.0 HMH_HARNESS_CABINET=0.6.0`, so its seeds, build
+hash and schema-7 summaries are the 1.9.0 ones.
+
+**The 1.9.0 child (schema 7).** Mission core v2 replaced the world-design
+sites: a machine is operated by standing still in its ring, so the pilots
+hold a released stick inside it (`spies/mission-objectives.mjs`). The
+Liquidator is a boss slot that starts only when the hero rings the Closing
+Bell after his ready tick (`spies/boss-slots.mjs`), and the level-up and
+evolution panel is the lazy upgrade-panel chunk, where a pilot now also
+re-rolls a card now and then (`spies/upgrade-panel.mjs`). The parent side
+validates with the schema-7 module, as the portal bridge does.
+
+The first 1.9.0 capture (108 rows, source `894d8a41`) and the release
+candidate's (128 rows, `25adc783`) agree byte for byte on the shared rows. The
+Liquidator seekers (r108 to r127) reach the Yard and wait at the bell or the
+pool door, but none has lived to the ready tick (36,000); the longest honest
+run of the plan ends at 29,043. The prisoners are dark in a Ranked session,
+so no pilot kneels at a cage (`?prisoners=1` is evidenceSafe-only).
 
 Runs are headless Node processes; they need no browser and no heavy lock. Keep
 `--concurrency` at 6 or below (each child process may take up to 3 GB). A run

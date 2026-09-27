@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { parse } from 'acorn';
 import { walletErrorAction } from '../apps/portal/src/wallet-auth.mjs';
-import { formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from '../apps/portal/src/ranked-entry-flow.mjs';
+import { formatZkLtc4, isClientOutdated, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLIENT_OUTDATED_MESSAGE, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from '../apps/portal/src/ranked-entry-flow.mjs';
 
 const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 const ast = parse(main, { ecmaVersion: 'latest', sourceType: 'module' });
@@ -40,6 +40,7 @@ function subject({ status = {}, live = true, missingModal = false, pending = nul
     // pre-flight, and no seed ticket or payment unless a test says otherwise.
     walletAuthenticated: true, connectedAddress: null, ensureWalletStylesheet() {}, peekRankedPreflight: () => null,
     formatZkLtc4, walletErrorAction, RANKED_PAUSED_MESSAGE, RANKED_CLOSED_MESSAGE, isRankedPaused, seedTicketUsable,
+    RANKED_CLIENT_OUTDATED_MESSAGE, isClientOutdated,
     fetchSeedTicket: async () => ({ ok: false, status: 0, error: 'no-seed-in-modal-tests' }),
     walletSession: { token: () => 'fixture-token', invalidate() {} }, loadWalletSession: async () => context.walletSession, authenticateWalletSiwe: async () => false,
     showWalletNotice() {}, signInFromPicker: async () => null,

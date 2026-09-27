@@ -5,6 +5,9 @@ import {
   validateConnectMessage,
   validateParentMessage,
 } from '../../../sdk/hmh-bridge-protocol.mjs';
+// A 1.9.0 child sends schema 7; a cached 1.8.x child still sends schema 6. The
+// v7 module's validator answers schema 1-6 exactly as the base module.
+import { validateRunSummaryPayload as validateRunSummary } from '../../../sdk/hmh-run-summary-schema-v7.mjs';
 
 function normalizeOrigin(value) {
   const url = new URL(value);
@@ -57,7 +60,7 @@ export function createHmhParentBridge({
     channel = channelFactory();
     if (!channel?.port1 || !channel?.port2) throw new Error('MessageChannel factory returned invalid ports');
     channel.port1.onmessage = (event) => {
-      const validation = validateChildMessage(event.data);
+      const validation = validateChildMessage(event.data, { validateRunSummary });
       if (!validation.ok) {
         onProtocolError(new Error(validation.error));
         return;

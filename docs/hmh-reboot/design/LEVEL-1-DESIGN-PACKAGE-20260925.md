@@ -751,6 +751,7 @@ Both are picked up and used automatically.
   - `objectives {objectiveIndex, tick, levelAtCompletion}`;
   - `prisoners {slotIndex, tick}` (the verifier derives the type);
   - `bosses {bossIndex, firstInitiatedTick, lastInitiatedTick, initiations, defeatedTick}`.
+- **Implementation on the shipped map (S1.4):** `LEVEL-1-BUILD-LEDGER.md`, "Mission core v2 (slice 4)".
 
 ---
 
@@ -767,6 +768,7 @@ Both are picked up and used automatically.
 - `HP = round(targetSeconds × referenceDps(level at trigger))`, frozen at trigger.
 - Target seconds: Baron 90, Lockkeeper 105, Foreman 120, Liquidator 150.
 - **Placeholder** `referenceDps(L) = min(47, 8 + 2.6 × (L − 1))`. It is calibrated by the S0.3 progression harness against the benchmark's 6.4–46.9 sustained DPS. For comparison, today's 12,000 HP is a fight of more than 4 minutes even at 46.9 DPS.
+- **Calibrated (S0.3, build ledger slice 2).** The 1.8.1 medians are convex, so no capped line fits them. `referenceDps(L)` is now a per-level table (levels 1–32: 6.7 at level 1, 11.1 at 10, 27.2 at 20, 79.6 at 32, held after 32) in `apps/hmh-reboot/src/boss-reference-dps.mjs`, from `docs/testing/hmh-progression-baseline-1.8.1.json`.
 
 **Lifecycle**
 1. **Readiness.** Before `readyTick` the trigger shows a red lamp and "Opens at M:SS".
@@ -869,6 +871,7 @@ Both are picked up and used automatically.
   - The bell goes at the far edge from the street mouths.
   - The Dark Pool becomes a z0 walled court behind a cracked container in the east back alley (about 11,820, 2,300).
   - The `yard` entry (10,400, 2,450) moves at least 920 from the anchor, for example to (10,250, 1,600).
+  - **Built (S1.5, build ledger slice 5).** The floor is x 10,475–11,525, y 2,170–2,630 (460 tall, so the Candle Chart's three rows fit the walk budget), the bell is at (11,380, 2,400), the Dark Pool is a walled court x 11,592–11,976, y 1,916–2,684 entered from the north through a cracked container, and the `yard` entry is (10,060, 2,505) (on the main route, 946 from the anchor).
 
 **Triggers**
 - **A: the Closing Bell.**
@@ -1801,6 +1804,8 @@ On phone, each enemy's full set fits one 2048² page.
 | 7 | `source.autoGarbageCollect = false` on held-weapon and character atlas sources (the Pixi 8.19 `GCSystem` unloads after 60 s of disuse, which is a mid-fight re-upload hitch today) | performance | GPU upload counter |
 | 8 | **Physical iPhone XS Max** pressure-scene baseline | evidence | required before S4.1 ships |
 
+- **Built (build ledger slice 3).** Row 1 is built child-side: the child builds the result on the defeat tick and holds all four result messages for the 72 presentation ticks, so the parent must not add its own 1.2 s delay. Row 3 follows 7.7; the bridge's `settings.keyboardBindings` gains an optional `dodge` key.
+
 ### 7.3 Rig v2 (`HMH_HumanRig_v2`)
 
 - **Bones.** Adds clavicles, neck, arm and twist bones, 9 bones per hand, toes, per-hero baked spring chains and prop sockets. The weapon socket moves from `forearm.R` to `hand.R`, with `REFERENCE-CHARACTER-MODELS.md:47` updated in the same commit.
@@ -2102,6 +2107,7 @@ Each card has `maxRank: 3` and `requiresWeaponId`, and maps in `progressionByWea
 - **Ordering.** Kills resolved in tick *t* are credited by `creditWeaponKills(loadout, {tick, weaponId, count})` right after kill resolution, and read at the weapon step of *t+1*.
 - **Benchmark.** Add `output60` (damage in 60 s from a full clip and a full reserve cap, in the 8-body pack scenario) and the missing Railgun rows. **Acceptance:** every maxed finite gun reaches at least the maxed Pistol's `output60`.
 - **Card art.** Branch cards reuse the weapon icons.
+- **Built (S1.3, build ledger slice 6).** The twelve cards, Magazine & Salvage (`creditWeaponKills`), Charge Speed, Capacitor Bank, the Machine Gun's heat per rank, the centre-pellet blast (pellet `floor((n − 1) / 2)`) and the Launcher's shells are in `weapon-system.mjs` and `main.mjs`; Twin Tube fires exactly 7° apart (no pellet jitter). The `output60` benchmark column and the Railgun rows (S0.3) are not built yet.
 
 ### 8.3 Level-up panel: two cards and one re-roll per card
 
@@ -2148,6 +2154,7 @@ Each card has `maxRank: 3` and `requiresWeaponId`, and maps in `progressionByWea
 - **Height budget.** +72 px on a portrait phone, +36 px in landscape and on desktop. It must fit **without scrolling** at 390×844, 414×896 and 896×414, checked with tap-geometry assertions in `visual:reboot`.
 - **After use** the strip is disabled and reads "Re-roll used". Focus moves to the new card, a polite live region announces it, and the fade is skipped under reduced motion.
 - **Controls.** Keyboard `R` (unbound today), and gamepad X on release.
+- **Built (S1.3, build ledger slice 6).** Card 2 is drawn before card 1, so "your gun" holds whenever a candidate has a card, and card 1 is a general draw without it. The runtime passes the guns that have ammo on the offer's tick (`weaponIdsWithAmmo`). The strip's geometry is inline until the portal stylesheet owns it; its fit at 390×844, 414×896 and 896×414 is an integration check.
 
 ### 8.4 Evolutions: mastery plus a Genesis Seal
 

@@ -6,8 +6,8 @@ import { parse } from 'acorn';
 
 import { classifyWalletError, walletErrorAction } from '../apps/portal/src/wallet-auth.mjs';
 import {
-  ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable,
-  RANKED_CLOSED_MESSAGE, RANKED_ENTRY_EVENT, RANKED_PAUSED_MESSAGE, SEED_TICKET_MAX_AGE_MS,
+  ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isClientOutdated, isRankedPaused, recordEntryBroadcast, seedTicketUsable,
+  RANKED_CLIENT_OUTDATED_MESSAGE, RANKED_CLOSED_MESSAGE, RANKED_ENTRY_EVENT, RANKED_PAUSED_MESSAGE, SEED_TICKET_MAX_AGE_MS,
 } from '../apps/portal/src/ranked-entry-flow.mjs';
 import { entryChipModel, mountEntryChip, balanceChipModel } from '../apps/portal/src/wallet-chips.mjs';
 import { FAUCET_LINK_TEXT } from '../apps/portal/src/ranked-facts.mjs';
@@ -245,6 +245,8 @@ function liveModal({ seedResponses = [], session = pendingRankedSession(), signI
   const tokenWallets = [];
   const eventTarget = new EventTarget();
   eventTarget.addEventListener(RANKED_ENTRY_EVENT, (event) => events.push(event.detail));
+  // The page reload a client-outdated answer offers.
+  eventTarget.location = { reload: () => order.push('reload') };
   let confirm;
   const confirmation = new Promise((resolve) => { confirm = resolve; });
   const responses = [...seedResponses];
@@ -265,6 +267,7 @@ function liveModal({ seedResponses = [], session = pendingRankedSession(), signI
     RANKED_SETTLEMENT_GAS_RESERVE_WEI: '2000000000000000', rankedEntryTotalWei: (fee) => (BigInt(fee) + 2_000_000_000_000_000n).toString(),
     ensureWalletStylesheet() {}, peekRankedPreflight: () => peek,
     formatZkLtc4, walletErrorAction, classifyWalletError, RANKED_PAUSED_MESSAGE, RANKED_CLOSED_MESSAGE, isRankedPaused, seedTicketUsable,
+    RANKED_CLIENT_OUTDATED_MESSAGE, isClientOutdated,
     fetchSeedTicket: async ({ token, session: pending }) => {
       order.push(`seed:${token}:${pending.sessionId === session.sessionId}`);
       return responses.shift() ?? { ok: false, status: 0, error: 'network' };
@@ -397,6 +400,42 @@ test('a paused seed service stops the entry before any wallet prompt', async () 
   }
   assert.equal(isRankedPaused({ status: 503 }), true);
   assert.equal(isRankedPaused({ status: 401, error: 'invalid-session' }), false);
+});
+
+// 1.9.0 review M1: E15 answers 409 client-outdated to a tab whose portal is
+// older than the deployed HMH child. The entry stops before any key, payment
+// or wallet prompt, says why, and offers a reload.
+test('an outdated portal (E15 409 client-outdated) stops the entry before any wallet prompt and offers a reload', async () => {
+  assert.equal(RANKED_CLIENT_OUTDATED_MESSAGE, 'A new version of the arcade is live. Reload to play Ranked.');
+  const outdated = { ok: false, status: 409, error: 'client-outdated' };
+  assert.equal(isClientOutdated(outdated), true);
+  assert.equal(isRankedPaused(outdated), false, 'not a pause');
+  assert.equal(isClientOutdated({ ok: false, status: 503, error: 'settlement-paused' }), false);
+  // Detected by the prefetch when the modal opens.
+  const early = liveModal({ seedResponses: [outdated] });
+  assert.equal(await early.promise, false);
+  await tick(); await tick(); await new Promise((resolve) => setTimeout(resolve, 5));
+  assert.equal(early.dom.rankedEntryStatus.textContent, RANKED_CLIENT_OUTDATED_MESSAGE);
+  assert.equal(early.dom.rankedEntryApprove.disabled, true, 'the readiness check cannot re-enable it');
+  const reload = early.dom.rankedEntryChainGuard.children[0];
+  assert.deepEqual([early.dom.rankedEntryChainGuard.hidden, reload?.textContent], [false, 'Reload']);
+  reload.click();
+  assert.ok(early.order.includes('reload'), 'the button reloads the page');
+  early.dom.rankedEntryApprove.click();
+  await tick();
+  assert.equal(early.order.includes('send'), false);
+  assert.deepEqual(early.walletCalls, []);
+  // Detected at approval (the prefetch failed on the network).
+  const late = liveModal({ seedResponses: [{ ok: false, status: 0, error: 'network' }, outdated] });
+  await until(() => !late.dom.rankedEntryApprove.disabled, 'the late modal check');
+  late.dom.rankedEntryApprove.click();
+  assert.equal(await late.promise, false);
+  assert.equal(late.dom.rankedEntryStatus.textContent, RANKED_CLIENT_OUTDATED_MESSAGE);
+  assert.deepEqual(late.order, ['seed:token-1:true', 'seed:token-1:true'], 'no key, no send, no wallet prompt');
+  assert.deepEqual(late.walletCalls, []);
+  // fetchSeedTicket carries the code through.
+  const answered = await fetchSeedTicket({ token: 'abc', session: pendingRankedSession(), fetchImpl: async () => new Response(JSON.stringify({ ok: false, error: 'client-outdated', minGameVersion: '1.9.0', reload: true }), { status: 409 }) });
+  assert.deepEqual(answered, { ok: false, status: 409, error: 'client-outdated' });
 });
 
 const OTHER = `0x${'34'.repeat(20)}`;

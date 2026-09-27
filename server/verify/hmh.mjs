@@ -4,7 +4,8 @@
 // schema, bind to the session identity and the session envelope, and pass the
 // reboot-calibrated validator of hmh-plausibility.mjs. This module never
 // imports arcade-core.mjs or hmh-run-integrity.mjs.
-import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema.mjs';
+import { validateRunSummaryPayload } from '../../sdk/hmh-run-summary-schema-v7.mjs';
+import { isHmhV7Build } from '../../sdk/hmh-run-contract-v7.mjs';
 import { canonicalSessionJson, sha256Hex } from '../../apps/portal/src/session-integrity.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../../apps/portal/src/hmh-character-config.mjs';
 import { validateRebootRunPlausibility } from './hmh-plausibility.mjs';
@@ -13,6 +14,17 @@ import { buildVerifiedRun, invalid, isPlainObject, rejected, scoreOutOfBounds } 
 export const HMH_GAME_ID = 'lester-blaster';
 export const HMH_EVIDENCE_ENCODING = 'hmh-run-summary-v6+json';
 export const HMH_RUN_SUMMARY_SCHEMA_VERSION = 6;
+// Ranked accepts schema 6 (the 1.8.x child, including one cached by the service
+// worker) and schema 7, the latter only from a build whose game version is
+// 1.9.0 or later (numeric compare, contract §2 and §15.1). The evidence
+// encoding keeps its v6 label (the Neon constraint); the payload's
+// schemaVersion selects the rules.
+export const HMH_RANKED_SCHEMA_VERSIONS = Object.freeze([6, 7]);
+export function hmhRankedSchemaError(runSummary) {
+  if (!HMH_RANKED_SCHEMA_VERSIONS.includes(runSummary.schemaVersion)) return 'Ranked requires run summary schema 6 or 7';
+  if (runSummary.schemaVersion === 7 && !isHmhV7Build(runSummary.identity.buildHash)) return 'run summary schema 7 requires game 1.9.0 or later';
+  return '';
+}
 export const HMH_RUN_SUMMARY_MAX_JSON = 262_144;
 export const HMH_SESSION_ENVELOPE_MAX_JSON = 8_192;
 export const HMH_SESSION_ENVELOPE_VERSION = 'lesters-session-envelope-v1';
@@ -64,7 +76,8 @@ export async function verifyHmhRun({ identity, evidence, nowMs }) {
 
   const schemaError = validateRunSummaryPayload(runSummary);
   if (schemaError) return invalid('run-summary-invalid', schemaError.slice(0, 240));
-  if (runSummary.schemaVersion !== HMH_RUN_SUMMARY_SCHEMA_VERSION) return invalid('run-summary-invalid', 'Ranked requires run summary schema 6');
+  const gateError = hmhRankedSchemaError(runSummary);
+  if (gateError) return invalid('run-summary-invalid', gateError);
   const summaryIdentity = runSummary.identity;
   if (summaryIdentity.seed !== identity.seed || summaryIdentity.buildHash !== identity.buildHash || summaryIdentity.mode !== 'ranked') {
     return invalid('run-summary-identity-mismatch');

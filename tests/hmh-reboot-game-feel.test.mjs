@@ -340,13 +340,14 @@ test('the runtime writes the framing zoom immediately before the pinned camera f
   assert.match(source, /camera\.zoom = resolveReadableGameplayZoom\(\{\s*viewportHeight: viewport\(\)\.height,\s*bodyHeight: productionHeroDisplay\?\.minimumBodyHeight \?\? prototypeMinimumBodyHeight,\s*framingZoom: framing\.zoom,\s*mobile: touchUiEnabled,\s*\}\);\s*followCameraTarget\(camera, \{\s*\.\.\.renderActor,/);
   assert.match(source, /dataset\.cameraZoom\s*=/);
   assert.match(source, /reduceMotion: settings\.reduceMotion \|\| performanceProfile\.particlesPerHazard === 0,\r?\n\s*\}\);\r?\n\s*camera\.zoom = resolveReadableGameplayZoom\(/);
-  const directorBlock = source.slice(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled'), source.indexOf('lastBossStep = liquidatorBoss.active'));
+  const directorBlock = source.slice(source.indexOf('lastDirectorStep = endurancePressurePilotEnabled'), source.indexOf('lastBossStep = liquidatorBoss?.active'));
   assert.ok(directorBlock.length > 0);
   assert.doesNotMatch(directorBlock, /framing|camera\.zoom/);
   // The framing state is per session, like every other feel state.
   assert.match(source, /framingState = createEncounterFramingState\(\)/);
   // The boss dip lives in the resolver; main.mjs keeps the pinned sprite beat untouched.
-  assert.match(source, /const bossPhaseTick = lastBossStep\?\.elapsedTick \?\? 45/);
+  // S1.5: the beat plays on each Trading Halt's first 45 ticks.
+  assert.match(source, /bossPhaseTick: liquidatorBoss\?\.active && liquidatorBoss\.haltFrom >= 0 && simulation\.tick - liquidatorBoss\.haltFrom < 45 \? simulation\.tick - liquidatorBoss\.haltFrom : null,/);
 });
 
 test('the runtime emits a dash-land visual from the existing dash stop and renders it through the pooled puff', async () => {
@@ -365,7 +366,8 @@ test('the runtime emits a dash-land visual from the existing dash stop and rende
 
 test('the runtime retains the knockback on the player hit and draws the smear plus body tint from it', async () => {
   const source = await readFile(mainUrl, 'utf8');
-  assert.match(source, /lastPlayerHit = \{ tick, sourceId: damageEvent\.sourceId, knockback: damageEvent\.knockback \};/);
+  // S1.4 adds a presentation-only `heavy` flag (a heavy hit ends the mission clip).
+  assert.match(source, /lastPlayerHit = \{ tick, sourceId: damageEvent\.sourceId, knockback: damageEvent\.knockback,\n\s+heavy: /);
   assert.match(source, /resolveHeroHitSmear\(\{/);
   assert.match(source, /productionHeroDisplay\.setTint\(/);
   // Simulation-side recoil stays exactly as it was.
@@ -380,7 +382,10 @@ test('the level-up beat fires on the applied-upgrade resume path, never while th
   const pick = source.slice(source.indexOf('const applySelectedUpgrade = '), source.indexOf('app.ticker.start();', source.indexOf('const applySelectedUpgrade = ')));
   assert.match(pick, /lastLevelUpBeat = \{ tick: simulation\.tick/);
   assert.ok(pick.indexOf('lastLevelUpBeat = {') > pick.indexOf('simulation.leaveUpgrade()'), 'the beat is stamped after the simulation leaves the upgrade state');
-  const offer = source.slice(source.indexOf('if (upgradePending && simulation.state === '), source.indexOf('renderActor = interpolateSpatialState'));
+  // S0.2: the offer opens inside its tick and the frame loop only paints it.
+  const offerStart = source.indexOf('const openPendingUpgradeOffer = ');
+  const offer = source.slice(offerStart, source.indexOf('let actor = null;', offerStart));
+  assert.match(offer, /const presentUpgradeOffer = /);
   assert.doesNotMatch(offer, /lastLevelUpBeat/);
   assert.match(source, /resolveLevelUpBurst\(\{/);
   assert.match(source, /resolvePickupSparkle\(\{/);

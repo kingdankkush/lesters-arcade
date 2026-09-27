@@ -71,13 +71,20 @@ export const PLAN = Object.freeze([
   ...E.map((entry) => ({ style: 'knifer', entry, tickCap: 110_000 })),
   ...E.map((entry) => ({ style: 'knifer', entry, tickCap: 110_000 })),
   ...[0, 1, 2, 3, 4, 5].flatMap(() => E.map((entry) => ({ style: 'standard', entry, tickCap: 110_000 }))),
+  // The 1.9.0 Liquidator seekers: survival-first pilots that wait in the Yard
+  // for his ready tick (36,000) and then ring the Closing Bell or walk into the
+  // Dark Pool, two passes per entry (the second flips the hero); none surrenders.
+  ...[0, 1].flatMap(() => E.map((entry) => ({ style: 'bell', entry, tickCap: 110_000 }))),
+  ...[0, 1].flatMap(() => E.map((entry) => ({ style: 'darkpool', entry, tickCap: 110_000 }))),
 ].map((run, index) => Object.freeze({ ...run, index, heroId: HEROES[index % 2], label: `r${String(index).padStart(2, '0')}-${run.style}-${run.entry}-${run.tickCap}` })));
 
-// The fourteen-run sample that proves the harness on a new child: one run per
+// The sixteen-run sample that proves the harness on a new child: one run per
 // pilot style, every level entry, both heroes, two of them long-run lottery rows.
-export const SAMPLE_LABELS = Object.freeze([0, 5, 9, 13, 20, 27, 37, 43, 46, 50, 55, 61, 68, 78].map((index) => PLAN[index].label));
+export const SAMPLE_LABELS = Object.freeze([0, 5, 9, 13, 20, 27, 37, 43, 46, 50, 55, 61, 68, 78, 108, 123].map((index) => PLAN[index].label));
 // The melee-trail rows (round 3, item 1): every knifer and standard run (r68 to r107).
 export const MELEE_LABELS = Object.freeze(PLAN.filter((run) => ['knifer', 'standard'].includes(run.style)).map((run) => run.label));
+// The Liquidator seekers of the 1.9.0 child (r108 to r127).
+export const BOSS_LABELS = Object.freeze(PLAN.filter((run) => ['bell', 'darkpool'].includes(run.style)).map((run) => run.label));
 
 const hexBytes = (hex) => Uint8Array.from(hex.match(/../g), (pair) => parseInt(pair, 16));
 const plain = (value) => JSON.parse(JSON.stringify(value));

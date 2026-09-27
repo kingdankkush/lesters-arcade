@@ -259,8 +259,9 @@ test('runtime feeds the chips, sounds expiry from the authoritative event and re
   assert.match(main, /hud\.update\(\{[\s\S]*?powerupHudLabel: powerupPresentation\.hudLabel,\s*powerupChips,/);
   assert.match(main, /collectible:expired[\s\S]{0,200}combatAudio\.play\('powerup-expire'/);
   // Expiry audio lives inside the existing onStep event loop, after the
-  // authoritative step and before the collected branch, never elsewhere.
-  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)[\s\S]{0,700}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
+  // authoritative step and before the collected branch, never elsewhere. (The
+  // window grew when the restock chime left the owner's audio list.)
+  assert.match(main, /stepCollectibles\(collectibleState, \{ tick, player: actor,[\s\S]*?\}\)[\s\S]{0,900}combatAudio\.play\('powerup-expire'[\s\S]{0,120}collectible:collected/);
   assert.equal((main.match(/powerup-expire/g) ?? []).length, 1);
   assert.match(audio, /'powerup-expire': '\.\.\/assets\/audio\/sfx\/hmh-[a-z-]+\.wav'/);
   assert.equal(HMH_SFX_CUE_REGISTRY['powerup-expire'].family, 'reward');
@@ -327,7 +328,9 @@ test('screen nuke retires ordinary targets but cannot delete a healthy Liquidato
     createEnemyState({ archetypeId: 'bagholder-rusher', id: 'nuke-rusher', x: 10, y: 0 }),
     createEnemyState({ archetypeId: 'forkrunner', id: 'nuke-forkrunner', x: 20, y: 0 }),
   ];
-  const boss = createLiquidatorBoss({ id: 'boss-liquidator', x: 30, y: 0 });
+  // S1.5: HP is frozen at the trigger (12,000 here). A bell start whose intro
+  // is over takes the nuke's hit at face value (no vulnerability window).
+  const boss = createLiquidatorBoss({ id: 'boss-liquidator', x: 30, y: 0, maxHealth: 12_000, entry: 'bell', startTick: 0 });
   const targets = [
     ...enemies.map((enemy) => ({
       id: enemy.id,
@@ -356,7 +359,7 @@ test('screen nuke retires ordinary targets but cannot delete a healthy Liquidato
   }));
   const resolved = resolveCombatHits({ sessionSeed: 66, hits, targets });
   const bossDamageEvent = resolved.damageEvents.find((damage) => damage.targetId === boss.id);
-  const bossDamage = applyLiquidatorDamage({ boss, amount: bossDamageEvent.damageApplied, tick: 1 });
+  const bossDamage = applyLiquidatorDamage({ boss, amount: bossDamageEvent.damageApplied, tick: 200 });
   const grenades = createGrenadeSystem({ handCharges: 3 });
   const recharge = rechargeHandGrenades(grenades, { tick: 1, amount: 1 });
 
@@ -369,6 +372,10 @@ test('screen nuke retires ordinary targets but cannot delete a healthy Liquidato
   assert.equal(boss.active, true);
   assert.equal(boss.defeated, false);
   assert.equal(bossDamage.runEvent, null);
+  // During a Closing Bell intro the nuke (like every source) does nothing.
+  const intro = createLiquidatorBoss({ id: 'boss-liquidator', x: 30, y: 0, maxHealth: 12_000, entry: 'bell', startTick: 1 });
+  assert.equal(applyLiquidatorDamage({ boss: intro, amount: bossDamageEvent.damageApplied, tick: 1 }).damageApplied, 0);
+  assert.equal(intro.health, 12_000);
   assert.deepEqual(recharge, { type: 'grenade:pickup-refill', tick: 1, amount: 1, handCharges: 4 });
 });
 

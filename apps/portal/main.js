@@ -24,7 +24,7 @@ import { arcadeMusicVolume, musicSeekSeconds, shouldShowArcadeMusicPlayer } from
 import { getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { createProviderRegistry, classifyWalletError, walletErrorAction } from './src/wallet-auth.mjs';
 import { RANKED_ENTRY_FEE_ZKLTC, RANKED_SETTLEMENT_GAS_RESERVE_WEI, rankedEntryTotalWei, formatZkLtcWei } from './src/arcade-core.mjs';
-import { ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from './src/ranked-entry-flow.mjs';
+import { ensureLiteForgeAtSignIn, fetchSeedTicket, formatZkLtc4, isClientOutdated, isRankedPaused, recordEntryBroadcast, seedTicketUsable, RANKED_CLIENT_OUTDATED_MESSAGE, RANKED_CLOSED_MESSAGE, RANKED_PAUSED_MESSAGE } from './src/ranked-entry-flow.mjs';
 import { sendRankedEntry, fetchWalletBalance, RANKED_ENTRY_GAS_UNITS, RANKED_ENTRY_FALLBACK_FEE_PER_GAS_WEI } from './src/litvm-chain-client.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, buildManualGrenadeTarget, buildTouchControlLayout, combatCanvasRenderScale } from './src/device-model.mjs';
@@ -5284,6 +5284,15 @@ function requestRankedEntry(pendingSession = null) {
       resolve(false);
     };
     const showPaused = () => showHalted(RANKED_PAUSED_MESSAGE);
+    // E15 409 client-outdated: this tab predates the deployed child. Stop
+    // before any payment and offer a reload.
+    const showOutdated = () => {
+      showHalted(RANKED_CLIENT_OUTDATED_MESSAGE);
+      const reload = el('button', { className: 'pixel-button', type: 'button', textContent: 'Reload' });
+      reload.addEventListener('click', () => { try { window.location.reload(); } catch { /* no location */ } });
+      guard.hidden = false;
+      guard.replaceChildren(reload);
+    };
     // The wallet switched accounts after the session was created: that key
     // must not be paid from another account. Start again for the new one.
     const restartForSwitchedAccount = () => {
@@ -5417,6 +5426,7 @@ function requestRankedEntry(pendingSession = null) {
       const ticket = await obtainSeedTicket({ reauth: true }).catch(() => ({ ok: false, status: 0, error: 'network' }));
       if (stopped()) return;
       if (!ticket.ok) {
+        if (isClientOutdated(ticket)) { showOutdated(); return; }
         if (isRankedPaused(ticket)) { showPaused(); return; }
         setStatus('error', ticket.status === 401 ? 'Sign in again to play Ranked.' : 'Ranked could not start. Try again.');
         needsSignIn = ticket.status === 401 && !walletAuthenticated;
@@ -5477,7 +5487,8 @@ function requestRankedEntry(pendingSession = null) {
     function prefetchSeedTicket() {
       if (!pendingSession || entryFeeWei === '0' || halted) return;
       const request = obtainSeedTicket({ reauth: false }).then((result) => {
-        if (!closed && !result.ok && isRankedPaused(result)) showPaused();
+        if (!closed && !result.ok && isClientOutdated(result)) showOutdated();
+        else if (!closed && !result.ok && isRankedPaused(result)) showPaused();
         return result;
       }).catch(() => null);
       prefetchInFlight = request;

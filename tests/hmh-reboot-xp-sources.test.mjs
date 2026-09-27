@@ -10,6 +10,7 @@ import {
   getRunProgressionSnapshot,
   grantRunXp,
 } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 
 function awardSchedule(ticks) {
   const state = createRunProgression({ seed: 21 });
@@ -20,8 +21,9 @@ function awardSchedule(ticks) {
 }
 
 test('S2 Hash Rail cache and combo milestones award bounded authored XP', () => {
-  assert.match(RUN_UPGRADE_CATALOG['validator-training'].description, /every source/i);
-  assert.doesNotMatch(RUN_UPGRADE_CATALOG['validator-training'].description, /enemy defeats/i);
+  assert.equal(RUN_UPGRADE_CATALOG['validator-training'].effect, 'xpMultiplier');
+  assert.match(RUN_UPGRADE_CONTENT['validator-training'].description, /every source/i);
+  assert.doesNotMatch(RUN_UPGRADE_CONTENT['validator-training'].description, /enemy defeats/i);
   assert.equal(COLLECTIBLE_EFFECTS['hash-rail-core'].effectId, 'hash-rail-core');
   assert.equal(COLLECTIBLE_EFFECTS['hash-rail-core'].xpGain, 160);
   assert.deepEqual([0, 4, 5, 10, 20, 30, 31].map(comboMilestoneXp), [0, 0, 120, 240, 480, 900, 0]);

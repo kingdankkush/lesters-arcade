@@ -3,9 +3,9 @@ import {
   LIQUIDATOR_TARGET_FIGHT_TICKS,
   applyLiquidatorDamage,
   createLiquidatorAddCandidates,
-  createLiquidatorBoss,
-  getLiquidatorPunishWindow,
+  createLiquidatorBenchmarkBoss,
   getLiquidatorRoleCheck,
+  getLiquidatorVulnerability,
   stepLiquidatorBoss,
 } from './liquidator-boss.mjs';
 
@@ -79,7 +79,7 @@ export function runLiquidatorBuildMatrix({
   if (partition !== 1 && partition !== 4) throw new TypeError('partition must be 1 or 4');
   nonNegativeInteger(startTick, 'startTick');
 
-  const boss = createLiquidatorBoss({ id: 'build-matrix-liquidator', x: 0, y: 0, startTick });
+  const boss = createLiquidatorBenchmarkBoss({ id: 'build-matrix-liquidator', startTick, seed });
   const player = { x: profile.distance, y: 0, groundZ: 0 };
   const phases = [];
   const perPhaseDamage = {
@@ -88,7 +88,6 @@ export function runLiquidatorBuildMatrix({
     'total-liquidation': 0,
   };
   let currentPhaseId = null;
-  let lastResolvedAttack = null;
   let punishContacts = 0;
   let addCount = 0;
   let addRoleContacts = 0;
@@ -114,9 +113,6 @@ export function runLiquidatorBuildMatrix({
       }
 
       for (const event of report.events) {
-        if (event.type === 'attack' || event.type === 'add-wave') {
-          lastResolvedAttack = { attackId: event.attackId, tick };
-        }
         if (event.type === 'add-wave') {
           const candidates = createLiquidatorAddCandidates({ event, activeAddIds });
           for (const candidate of candidates) activeAddIds.push(candidate.id);
@@ -124,13 +120,8 @@ export function runLiquidatorBuildMatrix({
         }
       }
 
-      const punish = lastResolvedAttack
-        ? getLiquidatorPunishWindow({
-          phaseId: boss.phaseId,
-          attackId: lastResolvedAttack.attackId,
-          ticksSinceResolve: tick - lastResolvedAttack.tick,
-        })
-        : { active: false, multiplier: 1, windowId: null };
+      // Kneel, stagger and Insider Trading: the boss applies them himself.
+      const punish = getLiquidatorVulnerability(boss, tick);
 
       const roleCheck = getLiquidatorRoleCheck({
         weaponId: profile.weaponId,
@@ -149,8 +140,7 @@ export function runLiquidatorBuildMatrix({
       if (addRoleCheck.applied) addRoleContacts += 1;
 
       if (profile.damagePerTick > 0) {
-        const amount = Math.round(profile.damagePerTick * roleCheck.multiplier * punish.multiplier * 1_000_000) / 1_000_000;
-        const result = applyLiquidatorDamage({ boss, amount, tick });
+        const result = applyLiquidatorDamage({ boss, amount: profile.damagePerTick, tick, roleMultiplier: roleCheck.multiplier });
         perPhaseDamage[currentPhaseId] = Math.round((perPhaseDamage[currentPhaseId] + result.damageApplied) * 1_000_000) / 1_000_000;
         if (punish.active && result.damageApplied > 0) punishContacts += 1;
       }

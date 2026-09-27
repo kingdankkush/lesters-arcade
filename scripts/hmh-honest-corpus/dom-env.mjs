@@ -194,6 +194,10 @@ export function installHeadlessEnvironment({ gamepadRef }) {
     getComputedStyle() { return { getPropertyValue() { return ''; } }; },
     requestAnimationFrame: (cb) => setTimeout(() => cb(clock.nowMs), 0),
     cancelAnimationFrame: (id) => clearTimeout(id),
+    // The 1.9.0 death camera's backstop timer (presentation only: it releases
+    // the held result if the page draws nothing).
+    setTimeout: (cb, ms) => setTimeout(cb, ms),
+    clearTimeout: (id) => clearTimeout(id),
     navigator: null,
   };
   const navigatorObj = {

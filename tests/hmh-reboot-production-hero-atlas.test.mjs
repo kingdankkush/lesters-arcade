@@ -702,7 +702,8 @@ test('runtime makes native hero equipment and the external overlay mutually excl
   const source = await readFile(new URL('../apps/hmh-reboot/src/main.mjs', import.meta.url), 'utf8');
   assert.match(source, /productionHeroDisplay\.hasNativeWeapon\(activeWeaponId\)/);
   assert.match(source, /productionHeroDisplay\.hasNativeAction\(productionAction\)/);
-  assert.match(source, /setLayerVisible\('weapon', productionAction !== 'interact' && !externalWeaponAuthoritative\)/);
+  // Design package 7.2 #2 (S1.1): the death clip shows no weapon either.
+  assert.match(source, /setLayerVisible\('weapon', productionAction !== 'interact' && productionAction !== 'death' && !externalWeaponAuthoritative\)/);
   assert.match(source, /authoredHeldWeaponDisplay\.container\.visible = externalWeaponAuthoritative/);
   assert.match(source, /ensureProductionHeroAtlas\(sessionHeroSelection\.actorId\)/, 'selected hero must remain session-lazy');
   assert.match(source, /\.catch\(\(error\) => \{[\s\S]*productionHeroLoadError/, 'corrupt or missing art must retain the gameplay fallback');

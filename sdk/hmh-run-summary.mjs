@@ -1,4 +1,4 @@
-import { HMH_RUN_SUMMARY_CATALOGS as C, HMH_RUN_SUMMARY_ID_PATTERN } from './hmh-run-summary-schema.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS as C6, HMH_RUN_SUMMARY_ID_PATTERN } from './hmh-run-summary-schema.mjs';
 
 const freezeDeep = (value) => {
   for (const child of Object.values(value)) if (child && typeof child === 'object') freezeDeep(child);
@@ -24,13 +24,20 @@ const point = (value, label) => {
 };
 const rows = (values, length) => values.map(() => Array(length).fill(0));
 
-export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, startTick = 0, startPosition } = {}) {
+// Schema 7 (contract §11): the child passes the V7 catalogues (the v7 schema
+// module is off its initial path) and, at finalize, the v7 rows its own
+// simulation holds; the accumulator shapes them. Schema 6 is unchanged.
+export function createRunSummaryAccumulator({ seed, buildHash, mode, heroId, startTick = 0, startPosition, schemaVersion = 6, catalogs = C6 } = {}) {
+  if (schemaVersion !== 6 && !(schemaVersion === 7 && catalogs !== C6 && catalogs?.objectives)) throw new TypeError('schema 6, or schema 7 with the V7 catalogues');
+  const C = catalogs;
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffff_ffff) throw new TypeError('seed must be an unsigned 32-bit integer');
   if (typeof buildHash !== 'string' || buildHash.length < 1 || buildHash.length > 128) throw new TypeError('buildHash must be bounded');
   if (!['free', 'ranked'].includes(mode)) throw new TypeError('mode must be free or ranked');
   if (typeof heroId !== 'string' || heroId.length < 2 || heroId.length > 64) throw new TypeError('heroId must be bounded');
   count(startTick, 'startTick');
   return {
+    C,
+    schemaVersion,
     identity: { seed, buildHash, mode, heroId, startTick },
     totals: [0, 0, 0], // damage dealt, damage taken, healing
     enemyKills: Array(C.enemyRoles.length).fill(0),
@@ -77,10 +84,10 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
   state.exploration[2] += Math.hypot(next.x - state.lastPosition.x, next.y - state.lastPosition.y);
   state.lastPosition = next;
   state.lastTick = tick;
-  state.weapons[index(C.weapons, activeWeaponId, 'weapon')][9] += 1;
-  state.exploration[0] |= 1 << index(C.districts, districtId, 'district');
-  for (const id of discoveredPoiIds) state.exploration[1] |= 1 << index(C.pointsOfInterest, id, 'point of interest');
-  for (const id of activeEffectIds) state.collectibles[index(C.collectibles, id, 'collectible effect')][1] += 1;
+  state.weapons[index(state.C.weapons, activeWeaponId, 'weapon')][9] += 1;
+  state.exploration[0] |= 1 << index(state.C.districts, districtId, 'district');
+  for (const id of discoveredPoiIds) state.exploration[1] |= 1 << index(state.C.pointsOfInterest, id, 'point of interest');
+  for (const id of activeEffectIds) state.collectibles[index(state.C.collectibles, id, 'collectible effect')][1] += 1;
   if (level !== undefined) recordLevel(state, count(level, 'level'), tick);
   if (bossEngaged) state.milestones[2] ||= tick;
 }
@@ -91,13 +98,13 @@ export function recordRunTick(state, { tick, position, activeWeaponId, districtI
 export function recordRunMilestone(state, { type, id, tick } = {}) {
   const catalog = { 'site-operated': 'worldSites', 'secret-found': 'secrets' }[type];
   if (!catalog) throw new TypeError(`unknown milestone ${type}`);
-  const row = state[catalog][index(C[catalog], id, type)];
+  const row = state[catalog][index(state.C[catalog], id, type)];
   count(tick, 'tick');
   if (!row[0]) { row[0] = 1; row[1] = tick; }
 }
 
 export function recordRunWeaponFire(state, { weaponId, emitted, attackId } = {}) {
-  const weaponIndex = index(C.weapons, weaponId, 'weapon');
+  const weaponIndex = index(state.C.weapons, weaponId, 'weapon');
   const row = state.weapons[weaponIndex];
   row[2] += 1;
   row[4] += count(emitted, 'emitted projectiles');
@@ -108,11 +115,11 @@ export function recordRunWeaponFire(state, { weaponId, emitted, attackId } = {})
 }
 
 export function recordRunWeaponTriggerContact(state, { weaponId } = {}) {
-  state.weapons[index(C.weapons, weaponId, 'weapon')][3] += 1;
+  state.weapons[index(state.C.weapons, weaponId, 'weapon')][3] += 1;
 }
 
 export function recordRunProjectileContacts(state, { weaponId, count: contacts = 1 } = {}) {
-  state.weapons[index(C.weapons, weaponId, 'weapon')][5] += count(contacts, 'projectile contacts');
+  state.weapons[index(state.C.weapons, weaponId, 'weapon')][5] += count(contacts, 'projectile contacts');
 }
 
 export function recordRunProjectileResolution(state, shot, hits) {
@@ -129,7 +136,7 @@ export function recordRunProjectileResolution(state, shot, hits) {
 }
 
 export function recordRunWeaponEvent(state, { type, weaponId } = {}) {
-  const row = state.weapons[index(C.weapons, weaponId, 'weapon')];
+  const row = state.weapons[index(state.C.weapons, weaponId, 'weapon')];
   const metric = { pickup: 0, swap: 1, 'reload-start': 6, 'reload-complete': 7, empty: 8 }[type];
   if (metric === undefined) throw new TypeError(`unknown weapon event ${String(type)}`);
   row[metric] += 1;
@@ -141,9 +148,9 @@ export function recordRunWeaponLifecycleEvent(state, event) {
   else if (event.type === 'weapon:auto-fallback') {
     recordRunWeaponEvent(state, { type: 'empty', weaponId: event.previousWeaponId });
     recordRunWeaponEvent(state, { type: 'swap', weaponId: event.weaponId });
-  } else if (event.type === 'weapon:charge-start') state.weapons[index(C.weapons, event.weaponId, 'weapon')][14] += 1;
+  } else if (event.type === 'weapon:charge-start') state.weapons[index(state.C.weapons, event.weaponId, 'weapon')][14] += 1;
   else if (event.type === 'weapon:charge-cancel') {
-    const row = state.weapons[index(C.weapons, event.weaponId, 'weapon')];
+    const row = state.weapons[index(state.C.weapons, event.weaponId, 'weapon')];
     row[15] += 1;
     row[17] += count(event.chargeTicks, 'cancelled charge ticks');
   }
@@ -253,7 +260,7 @@ export function recordRunDamage(state, event = {}) {
   const amount = finite(event.damageApplied, 'damageApplied');
   if (event.targetId === 'player') {
     state.totals[1] += amount;
-    if (event.equippedWeaponId) state.weapons[index(C.weapons, event.equippedWeaponId, 'equipped weapon')][23] += amount;
+    if (event.equippedWeaponId) state.weapons[index(state.C.weapons, event.equippedWeaponId, 'equipped weapon')][23] += amount;
     // First killing hit wins: stableHitOrder makes it deterministic and the
     // defeat controller announces once, so later killed events are echoes.
     if (event.killed === true && !state.defeat) state.defeat = { ...classifyDefeat(event), tick: count(event.tick, 'defeat tick'), damage: amount };
@@ -261,7 +268,7 @@ export function recordRunDamage(state, event = {}) {
   }
   if (event.sourceId !== 'player') return;
   state.totals[0] += amount;
-  const row = state.weapons[index(C.weapons, event.weaponId, 'weapon')];
+  const row = state.weapons[index(state.C.weapons, event.weaponId, 'weapon')];
   row[10] += amount;
   if (event.critical) row[12] += 1;
   row[13] += Math.max(0, amount - finite(event.healthBefore, 'healthBefore'));
@@ -272,8 +279,8 @@ export function recordRunHealing(state, amount) {
 }
 
 export function recordRunKill(state, { enemyRoleId, weaponId, elite = false, boss = false } = {}) {
-  state.enemyKills[index(C.enemyRoles, enemyRoleId, 'enemy role')] += 1;
-  state.weapons[index(C.weapons, weaponId, 'weapon')][11] += 1;
+  state.enemyKills[index(state.C.enemyRoles, enemyRoleId, 'enemy role')] += 1;
+  state.weapons[index(state.C.weapons, weaponId, 'weapon')][11] += 1;
   if (elite) state.eliteKills = (state.eliteKills ?? 0) + 1;
   if (boss) state.bossKills = (state.bossKills ?? 0) + 1;
   if (weaponId === 'satoshi-frag' || weaponId === 'launcher-rig') state.grenades[3] += 1;
@@ -298,17 +305,31 @@ export function recordRunGrenadeDetonation(state, detonation) {
   }
 }
 
+// A Crypto Bomb Orbit bomblet (evolution-effects.mjs stepBomblets) is left by a
+// blast of the player's grenades (a launcher shell or a hand grenade) already
+// counted as a detonation, and its hits carry weaponId
+// 'launcher-rig', so each of its kills is a grenade kill (recordRunKill). Its
+// non-player hits are grenade contacts and launcher projectile contacts, never
+// a detonation or a trigger: detonated stays within the launches, and
+// grenades.kills stays within grenades.contacts (grenade-kills-above-contacts).
+export function recordRunBombletDetonation(state, detonation) {
+  const contacts = detonation.hits.reduce((sum, hit) => sum + Number(hit.targetId !== 'player'), 0);
+  if (contacts === 0) return;
+  state.grenades[2] += count(contacts, 'bomblet contacts');
+  recordRunProjectileContacts(state, { weaponId: 'launcher-rig', count: contacts });
+}
+
 export function recordRunCollectible(state, { effectId } = {}) {
-  state.collectibles[index(C.collectibles, effectId, 'collectible effect')][0] += 1;
+  state.collectibles[index(state.C.collectibles, effectId, 'collectible effect')][0] += 1;
 }
 
 export function recordRunUpgradeOffer(state, upgradeIds) {
-  if (!Array.isArray(upgradeIds) || upgradeIds.length > C.upgrades.length) throw new TypeError('upgrade offer must be a bounded array');
-  for (const id of upgradeIds) state.upgrades[index(C.upgrades, id, 'upgrade')][0] += 1;
+  if (!Array.isArray(upgradeIds) || upgradeIds.length > state.C.upgrades.length) throw new TypeError('upgrade offer must be a bounded array');
+  for (const id of upgradeIds) state.upgrades[index(state.C.upgrades, id, 'upgrade')][0] += 1;
 }
 
 export function recordRunUpgradeSelection(state, upgradeId) {
-  state.upgrades[index(C.upgrades, upgradeId, 'upgrade')][1] += 1;
+  state.upgrades[index(state.C.upgrades, upgradeId, 'upgrade')][1] += 1;
 }
 
 export function finalizeRunSummary(state, {
@@ -322,6 +343,7 @@ export function finalizeRunSummary(state, {
   maxCombo,
   revealedCells,
   totalCells,
+  v7,
 } = {}) {
   if (state.finalized) throw new Error('run summary is already finalized');
   count(endTick, 'endTick');
@@ -345,10 +367,10 @@ export function finalizeRunSummary(state, {
     row[22] += attack.bossHits;
   }
   const distanceMilli = Math.round(state.exploration[2] * 1000);
-  const byEnemyRole = C.enemyRoles.map((enemyRoleId, i) => ({ enemyRoleId, count: state.enemyKills[i] }));
-  const byWeapon = C.weapons.map((weaponId, i) => ({ weaponId, count: state.weapons[i][11] }));
+  const byEnemyRole = state.C.enemyRoles.map((enemyRoleId, i) => ({ enemyRoleId, count: state.enemyKills[i] }));
+  const byWeapon = state.C.weapons.map((weaponId, i) => ({ weaponId, count: state.weapons[i][11] }));
   const weaponFields = ['pickups', 'swaps', 'triggers', 'triggerContacts', 'projectilesEmitted', 'projectileContacts', 'reloadStarts', 'reloadCompletes', 'emptyAttempts', 'equippedTicks', 'damage', 'kills', 'criticalHits', 'overkill', 'chargesStarted', 'chargesCancelled', 'chargedShots', 'cancelledChargeTicks', 'zeroHitShots', 'oneHitShots', 'twoHitShots', 'threePlusHitShots', 'bossHits', 'damageTakenWhileEquipped'];
-  const weapons = C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
+  const weapons = state.C.weapons.map((weaponId, i) => Object.fromEntries([['weaponId', weaponId], ...weaponFields.map((field, metric) => [field, state.weapons[i][metric]])]));
   const defeated = terminalReason === 'defeated';
   const summary = {
     schemaVersion: 6,
@@ -359,7 +381,7 @@ export function finalizeRunSummary(state, {
       score,
       level,
       xp,
-      litecoin: state.collectibles[index(C.collectibles, 'litecoin-token', 'collectible effect')][0],
+      litecoin: state.collectibles[index(state.C.collectibles, 'litecoin-token', 'collectible effect')][0],
       currentCombo,
       maxCombo,
       damageDealt: state.totals[0],
@@ -409,8 +431,8 @@ export function finalizeRunSummary(state, {
       droppedContacts: state.forkedStandard[6],
     },
     grenades: Object.fromEntries(['thrown', 'detonated', 'contacts', 'kills', 'selfDamage', 'overflows'].map((field, i) => [field, state.grenades[i]])),
-    collectibles: C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),
-    upgrades: C.upgrades.map((upgradeId, i) => ({ upgradeId, offered: state.upgrades[i][0], selected: state.upgrades[i][1] })),
+    collectibles: state.C.collectibles.map((effectId, i) => ({ effectId, collected: state.collectibles[i][0], activeTicks: state.collectibles[i][1] })),
+    upgrades: state.C.upgrades.map((upgradeId, i) => ({ upgradeId, offered: state.upgrades[i][0], selected: state.upgrades[i][1] })),
     exploration: {
       visitedDistrictMask: state.exploration[0],
       discoveredPoiMask: state.exploration[1],
@@ -427,11 +449,41 @@ export function finalizeRunSummary(state, {
       firstLevelUpTick: state.milestones[0],
       lastLevelUpTick: state.milestones[1],
       bossEngagedTick: state.milestones[2],
-      sites: state.worldSites.map(([operated, tick], i) => ({ siteId: C.worldSites[i], operated, tick })),
-      secrets: state.secrets.map(([found, tick], i) => ({ secretId: C.secrets[i], found, tick })),
+      sites: state.worldSites.map(([operated, tick], i) => ({ siteId: state.C.worldSites[i], operated, tick })),
+      secrets: state.secrets.map(([found, tick], i) => ({ secretId: state.C.secrets[i], found, tick })),
     },
   };
+  if (state.schemaVersion === 7) finalizeV7(state, summary, v7);
   return freezeDeep(summary);
+}
+
+// The v7 rows, dense and in catalogue order, from the child's simulation:
+// objectives and prisoners (the mission core), bosses (the boss slots),
+// evolutions, upgrades and progression (run progression). The milestones that
+// mirror objectives are read from them (S8), the Liquidator's kill and first
+// initiation fill kills.boss and bossEngagedTick (S5-S7), and the Seals found
+// are the genesis-seal pickups (S12).
+function finalizeV7(state, summary, { objectives, prisoners, bosses, evolutions, upgrades, progression } = {}) {
+  const C = state.C;
+  const exact = (list, catalog, key) => {
+    if (!Array.isArray(list) || list.length !== catalog.length || list.some((row, i) => row?.[key] !== catalog[i])) throw new TypeError(`v7 ${key} rows must follow the catalogue`);
+    return list.map((row) => ({ ...row }));
+  };
+  const rowsOf = {
+    objectives: exact(objectives, C.objectives, 'objectiveId'),
+    prisoners: exact(prisoners, C.prisonerSlots, 'slotId'),
+    bosses: exact(bosses, C.bosses, 'bossId'),
+    evolutions: exact(evolutions, C.evolutions, 'evolutionId'),
+  };
+  const objective = (id) => rowsOf.objectives[C.objectives.indexOf(id)];
+  summary.schemaVersion = 7;
+  summary.upgrades = exact(upgrades, C.upgrades, 'upgradeId').map(({ upgradeId, offered, selected }) => ({ upgradeId, offered: count(offered, 'offered'), selected: count(selected, 'selected') }));
+  summary.kills.boss = state.enemyKills[index(C.enemyRoles, 'liquidator', 'enemy role')];
+  summary.milestones.bossEngagedTick = rowsOf.bosses[C.bosses.indexOf('liquidator')].firstInitiatedTick;
+  summary.milestones.sites = C.worldSites.map((siteId) => ({ siteId, operated: objective(siteId).completed, tick: objective(siteId).tick }));
+  summary.milestones.secrets = C.secrets.map((secretId) => ({ secretId, found: objective(secretId).completed, tick: objective(secretId).tick }));
+  summary.collectibles[index(C.collectibles, 'genesis-seal', 'collectible effect')].collected = count(progression?.sealsFound, 'sealsFound');
+  Object.assign(summary, rowsOf, { progression: { ...progression } });
 }
 
 export function runSummaryMatchesResult(summary, result) {

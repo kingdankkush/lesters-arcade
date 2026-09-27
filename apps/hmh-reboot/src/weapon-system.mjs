@@ -6,6 +6,7 @@ import {
   stepBearMarketBurner,
 } from './bear-market-burner.mjs';
 import { seededUnit } from './deterministic-hash.mjs';
+import { HMH_RUN_SUMMARY_CATALOGS } from '../../../sdk/hmh-run-summary-schema.mjs';
 import {
   FORKED_STANDARD_CONFIG,
   createForkedStandardState,
@@ -14,6 +15,7 @@ import {
   stepForkedStandard,
 } from './forked-standard.mjs';
 import { freezeDeep, positive, validSeed } from './value-guards.mjs';
+import { HMH_EVOLUTION_TUNING } from './evolution-tuning.mjs';
 import {
   LIGHTNING_LEDGER_CONFIG,
   createLightningLedgerState,
@@ -233,14 +235,46 @@ export const HMH_WEAPON_DEFINITIONS = freezeDeep({
   },
 });
 
-// The score multipliers are retained compatibility data for the parent portal.
-// The child simulation never applies or settles them.
+// The simulation's weapon order (design package 8.3, moved from main.mjs):
+// the swap cycle, the wheel slots, the HUD and card 2's candidate order. It is
+// the run-summary weapon catalogue's carryable guns, in catalogue order, so the
+// evidence rows and the wheel can never disagree.
+export const HMH_WEAPON_ORDER = Object.freeze(HMH_RUN_SUMMARY_CATALOGS.weapons.filter((id) => Object.hasOwn(HMH_WEAPON_DEFINITIONS, id)));
+
+// LEGACY, fenced (design package 8.1/8.4). Retained byte-identical as parent
+// compatibility data: the portal's legacy upgrade runtime still names these ids
+// with its own score multipliers. The child simulation never reads this map;
+// its evolutions are HMH_CHILD_EVOLUTIONS below, and it never applies or
+// settles a score multiplier.
 export const HMH_WEAPON_EVOLUTIONS = freezeDeep({
   'coin-blaster': { id: 'settler-rail', projectileTag: 'rail-dividend', scoreMultiplier: 1.35 },
   'auto-miner': { id: 'hashstorm-overdrive', projectileTag: 'overdrive-barrage', scoreMultiplier: 1.3 },
   'hash-rail': { id: 'crit-candle', projectileTag: 'gold-crit', scoreMultiplier: 1.4 },
   'crypto-bombs': { id: 'crypto-bomb-orbit', projectileTag: 'orbit-bomb', scoreMultiplier: 1.25 },
 });
+
+// The child's evolutions, keyed by weapon id (design package 8.5). The ids are
+// the run summary v7 evolutions catalogue (sdk/hmh-run-contract-v7.mjs
+// HMH_V7_EVOLUTIONS; tests pin the parity). evolutionTag is the projection
+// identity an evolved shot carries next to its special's projectileTag. The
+// wave-2 guns keep refusing evolutions in their policy resolvers until those
+// policies accept them.
+export const HMH_CHILD_EVOLUTIONS = freezeDeep({
+  'coin-blaster': { id: 'settler-rail', evolutionTag: 'rail-dividend' },
+  'scatter-shotgun': { id: 'double-spend', evolutionTag: 'double-spend' },
+  'auto-miner': { id: 'hashstorm-overdrive', evolutionTag: 'overdrive-barrage' },
+  'launcher-rig': { id: 'crypto-bomb-orbit', evolutionTag: 'orbit-bomb' },
+  'hash-rail': { id: 'crit-candle', evolutionTag: 'gold-crit' },
+  'lightning-ledger': { id: 'lightning-network', evolutionTag: 'lightning-network' },
+  'bear-market-burner': { id: 'burn-address', evolutionTag: 'burn-address' },
+  'forked-standard': { id: 'chain-split', evolutionTag: 'chain-split' },
+});
+
+// Wave-1 evolution mechanics (design package 8.5, S1.7): see
+// evolution-tuning.mjs, shared with the lazy evolution-effects.mjs so that the
+// lazy chunk never imports this module (the entry split stays as it was).
+export { HMH_EVOLUTION_TUNING };
+const EVOLVED_TRICKLE_FRACTION = 1 / 4;
 
 const UPGRADE_TREES = freezeDeep({
   'coin-blaster': {
@@ -261,7 +295,7 @@ const UPGRADE_TREES = freezeDeep({
   'hash-rail': {
     rateOfFire: [{ multiplier: 1.08 }, { multiplier: 1.18 }, { multiplier: 1.3, special: 'fast-rounds' }],
     damage: [{ flatBonus: 6 }, { flatBonus: 12 }, { flatBonus: 20, special: 'deep-proof' }],
-    reloadSpeed: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.45, special: 'extended-mag' }],
+    reloadSpeed: [{ multiplier: 1.12 }, { multiplier: 1.26 }, { multiplier: 1.45, special: 'capacitor-bank' }],
   },
   // The launcher was the only carryable weapon with no upgrade path at all.
   'launcher-rig': {
@@ -279,8 +313,42 @@ export const pistolProgressionByWeapon = (ranks = {}) => ({
   } },
 });
 
-export const progressionByWeapon = (ranks = {}) => ({
+// Package 8.2: each finite gun's three cards are its rate-of-fire, damage and
+// Magazine & Salvage (reloadSpeed) branches.
+const GUN_BRANCH_CARDS = freezeDeep({
+  'scatter-shotgun': ['scatter-pump', 'scatter-dump', 'scatter-shells'],
+  'auto-miner': ['miner-hashrate', 'miner-asic', 'miner-pool'],
+  'hash-rail': ['rail-blocktime', 'rail-proof', 'rail-mempool'],
+  'launcher-rig': ['launcher-airdrop', 'launcher-yield', 'launcher-bandolier'],
+});
+// Each gun's Magazine & Salvage card (the third of its tree) and the gun it
+// feeds: the cards that carry a magazine (creditWeaponCardPick).
+export const HMH_MAGAZINE_CARD_WEAPON_IDS = freezeDeep(Object.fromEntries(
+  Object.entries(GUN_BRANCH_CARDS).map(([weaponId, cards]) => [cards[2], weaponId]),
+));
+const gunBranches = (ranks, [rateOfFire, damage, reloadSpeed]) => ({ branches: {
+  rateOfFire: ranks[rateOfFire] ?? 0,
+  damage: ranks[damage] ?? 0,
+  reloadSpeed: ranks[reloadSpeed] ?? 0,
+} });
+
+// evolutions maps a weapon id to its applied evolution id (run progression's
+// evolutions, package 8.4); an absent map evolves nothing.
+export const progressionByWeapon = (ranks = {}, evolutions = {}) => withEvolutions(branchProgressionByWeapon(ranks), evolutions);
+
+function withEvolutions(byWeapon, evolutions) {
+  for (const [weaponId, evolutionId] of Object.entries(evolutions ?? {})) {
+    if (byWeapon[weaponId]) byWeapon[weaponId] = { ...byWeapon[weaponId], evolutionId };
+  }
+  return byWeapon;
+}
+
+const branchProgressionByWeapon = (ranks = {}) => ({
   ...pistolProgressionByWeapon(ranks),
+  'scatter-shotgun': gunBranches(ranks, GUN_BRANCH_CARDS['scatter-shotgun']),
+  'auto-miner': gunBranches(ranks, GUN_BRANCH_CARDS['auto-miner']),
+  'hash-rail': gunBranches(ranks, GUN_BRANCH_CARDS['hash-rail']),
+  'launcher-rig': gunBranches(ranks, GUN_BRANCH_CARDS['launcher-rig']),
   'lightning-ledger': {
     branches: {
       conductivity: ranks['ledger-conductivity'] ?? 0,
@@ -313,14 +381,16 @@ export const progressionByWeapon = (ranks = {}) => ({
 const SPECIAL_EFFECTS = freezeDeep({
   // Rounds punch through a target and keep going.
   'armor-piercing': { policy: { type: 'pierce', maxTargets: 3 } },
-  'deep-proof': { policy: { type: 'pierce', maxTargets: 7, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } }, projectileTag: 'deep-proof' },
+  // Boss armour penetration is a policy flag: it applies to any boss target.
+  'deep-proof': { policy: { type: 'pierce', maxTargets: 7, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } }, projectileTag: 'deep-proof', bossArmorPenetration: 0.6 },
   ricochet: { policy: { type: 'ricochet', maxBounces: 1 } },
-  // Shells detonate on impact.
-  explosive: { policy: { type: 'splash', radius: 58 } },
+  // Package 8.2: the centre pellet detonates (radius 72); the rest stay pellets.
+  explosive: { centrePelletPolicy: { type: 'splash', radius: 72 } },
   'shaped-charge': { policy: { type: 'splash', radius: 210 } },
   // Both barrels at once: more pellets across the same arc.
   'double-barrel': { pelletCountBonus: 6 },
-  'twin-tube': { pelletCountBonus: 1, spreadRadiansOverride: Math.PI * 7 / 180 },
+  // Two shells exactly 7 degrees apart (no pellet jitter).
+  'twin-tube': { pelletCountBonus: 1, spreadRadiansOverride: Math.PI * 7 / 180, exactSpread: true },
   // Flatter, faster rounds that reach further.
   'tracer-rounds': { projectileSpeedMultiplier: 1.35, rangeMultiplier: 1.25, projectileTag: 'tracer-round' },
   // A fast three-round burst, then the normal cadence gap.
@@ -330,16 +400,49 @@ const SPECIAL_EFFECTS = freezeDeep({
   'shock-rounds': { shock: [0.12, 1.5] },
   'extended-mag': { clipSize: 12, shock: [0.18, 1.75] },
   bandolier: { clipSize: 7 },
+  'capacitor-bank': { clipSize: 5 },
 });
+
+// Package 8.2 Magazine & Salvage (each finite gun's reloadSpeed branch): the
+// reserve grant is ceil(pickupReserveAmmo x multiplier) and the reserve cap is
+// twice the grant; from rank 2, kills credited to the gun add per-mille that
+// turns into whole reserve rounds (creditWeaponKills).
+const RESERVE_GRANT_MULTIPLIERS = Object.freeze([1, 1.25, 1.5, 2]);
+const SALVAGE_PERMILLE = freezeDeep({
+  'scatter-shotgun': [0, 0, 250, 500],
+  'auto-miner': [0, 0, 2_000, 4_000],
+  'hash-rail': [0, 0, 150, 250],
+  'launcher-rig': [0, 0, 150, 250],
+});
+// Balance option (a) (build ledger, "Balance option (a)"; flagged to the
+// owner): a finite gun's ammo sustains its own tree. Both rules move reserve
+// only, never the clip, read no RNG, stop at the reserve cap and never touch
+// the Pistol.
+//   Card magazine: picking a gun's Magazine & Salvage card adds one reserve
+//   grant at the new rank, on the offer's tick (creditWeaponCardPick). Only
+//   that card: a magazine on every gun card keeps card 2 on the guns (it draws
+//   from guns with ammo) and cost the harness's gun-first policy more picks
+//   than it gave back.
+//   Trickle: from Magazine & Salvage rank 2, the reserve gains a quarter of the
+//   grant every 900 ticks (half at rank 3), inside the weapon step. The
+//   package's evolved-gun rule (8.5) is a quarter every 900 at the capstone.
+export const HMH_RESERVE_TRICKLE_INTERVAL_TICKS = 900;
+// Trickle rounds per interval as a fraction of the grant, by Magazine &
+// Salvage rank (ceil, so a rank that trickles never trickles nothing).
+const RESERVE_TRICKLE_FRACTIONS = Object.freeze([0, 0, 1 / 4, 1 / 2]);
+// The Machine Gun's heat per round by Fire Rate rank (package 8.2).
+const MINER_HEAT_MULTIPLIERS = Object.freeze([1, 0.9, 0.8, 0.72]);
+
+// Package 8.6 (owner decision 12): the run's critical chance and damage reach
+// these held weapons' direct hits: Arc Rifle pulses, flame contact, launcher
+// blasts and War Fork strikes. The knife, hand grenades and burn ticks keep
+// their own values.
+export const HMH_CRITICAL_HELD_WEAPON_IDS = Object.freeze(['lightning-ledger', 'bear-market-burner', 'launcher-rig', 'forked-standard']);
 
 function tierNode(tree, branch, value) {
   if (value === undefined || value === null || value === 0) return null;
   if (!Number.isInteger(value) || value < 0 || value > 3) throw new TypeError(`${branch} tier must be an integer from zero to three`);
   return tree?.[branch]?.[value - 1] ?? null;
-}
-
-function evolutionFamilyForWeapon(weaponId) {
-  return weaponId === 'launcher-rig' ? 'crypto-bombs' : weaponId;
 }
 
 export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = null, capstoneId = null } = {}) {
@@ -367,6 +470,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       burstCount: 1,
       burstIntervalTicks: 0,
       projectileTag: null,
+      evolutionId: null,
+      evolutionTag: null,
+      armorPiercing: false,
+      bossArmorPenetration: 0,
       projectilePolicy: definition.policy,
       shock: null,
       heatPerShot: 0,
@@ -397,6 +504,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       burstCount: 1,
       burstIntervalTicks: 0,
       projectileTag: null,
+      evolutionId: null,
+      evolutionTag: null,
+      armorPiercing: false,
+      bossArmorPenetration: 0,
       projectilePolicy: definition.policy,
       shock: null,
       heatPerShot: 0,
@@ -427,6 +538,10 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
       burstCount: 1,
       burstIntervalTicks: 0,
       projectileTag: null,
+      evolutionId: null,
+      evolutionTag: null,
+      armorPiercing: false,
+      bossArmorPenetration: 0,
       projectilePolicy: STOP_POLICY,
       shock: null,
       heatPerShot: 0,
@@ -449,8 +564,7 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (branch === 'reloadSpeed') reloadMultiplier *= node.multiplier ?? 1;
     if (node.special) specials.push(node.special);
   }
-  const family = evolutionFamilyForWeapon(weaponId);
-  const evolution = HMH_WEAPON_EVOLUTIONS[family] ?? null;
+  const evolution = evolutionId === null ? null : HMH_CHILD_EVOLUTIONS[weaponId] ?? null;
   if (evolutionId !== null && evolution?.id !== evolutionId) throw new TypeError(`evolution ${String(evolutionId)} is not valid for ${weaponId}`);
   let clipSize = definition.clipSize;
   if (specials.includes('extended-mag')) clipSize = 12;
@@ -466,6 +580,9 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
   let burstCount = 1;
   let burstIntervalTicks = 0;
   let shock = null;
+  let bossArmorPenetration = 0;
+  let centrePelletPolicy = null;
+  let exactSpread = false;
   for (const special of specials) {
     const effect = SPECIAL_EFFECTS[special];
     if (!effect) continue;
@@ -479,8 +596,17 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     if (effect.burstIntervalTicks) burstIntervalTicks = effect.burstIntervalTicks;
     if (effect.clipSize) clipSize = effect.clipSize;
     if (effect.shock) shock = effect.shock;
+    if (effect.bossArmorPenetration) bossArmorPenetration = effect.bossArmorPenetration;
+    if (effect.centrePelletPolicy) centrePelletPolicy = effect.centrePelletPolicy;
+    if (effect.exactSpread) exactSpread = true;
   }
 
+  const evolved = evolutionId === null ? null : HMH_EVOLUTION_TUNING[evolutionId];
+  // Settler Rail turns the burst off (package 8.5).
+  if (evolutionId === 'settler-rail') {
+    burstCount = 1;
+    burstIntervalTicks = 0;
+  }
   const crowdControlCapstone = weaponId === 'coin-blaster'
     && ['rateOfFire', 'damage', 'reloadSpeed'].every((branch) => branches?.[branch] === 3);
   if (crowdControlCapstone) {
@@ -489,17 +615,27 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
 
   // The evolution keeps priority over a capstone policy: it is the rarer award.
   const projectilePolicy = evolutionId === 'settler-rail'
-    ? freezeDeep({ type: 'pierce', maxTargets: 8, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } })
+    ? freezeDeep({ type: 'pierce', maxTargets: evolved.pierceTargets, falloff: { farScale: RAIL_FAR_DAMAGE_SCALE } })
     : specialPolicy ?? definition.policy;
+  const reserveTier = branches?.reloadSpeed ?? 0;
+  const grant = definition.pickupReserveAmmo === null ? null : definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier];
+  const trickleFraction = Math.max(RESERVE_TRICKLE_FRACTIONS[reserveTier], evolved ? EVOLVED_TRICKLE_FRACTION : 0);
   return freezeDeep({
     weaponId,
-    damage: definition.damage + damageFlatBonus,
+    damage: (definition.damage + damageFlatBonus) * (evolutionId === 'settler-rail' ? evolved.damageScale : 1),
     damageFlatBonus,
     fireRateMultiplier,
     reloadMultiplier,
     cadenceTicks: Math.max(1, Math.ceil(TICKS_PER_SECOND / (definition.fireRatePerSecond * fireRateMultiplier))),
     reloadTicks: Math.max(1, Math.ceil(definition.reloadSeconds * TICKS_PER_SECOND / reloadMultiplier)),
+    // Package 8.2 Charge Speed: the Railgun's charge shortens with its rate.
+    chargeTicks: definition.chargeTicks ? Math.ceil(definition.chargeTicks / fireRateMultiplier) : 0,
     clipSize,
+    reserveAmmoGrant: definition.pickupReserveAmmo === null ? null : Math.ceil(definition.pickupReserveAmmo * RESERVE_GRANT_MULTIPLIERS[reserveTier]),
+    salvagePermille: SALVAGE_PERMILLE[weaponId]?.[reserveTier] ?? 0,
+    reserveTrickleRounds: Object.hasOwn(SALVAGE_PERMILLE, weaponId) && grant !== null && trickleFraction > 0
+      ? Math.ceil(grant * trickleFraction)
+      : 0,
     specials,
     pelletCount,
     spreadRadians,
@@ -507,10 +643,22 @@ export function applyWeaponProgression(weaponId, { branches = {}, evolutionId = 
     range,
     burstCount,
     burstIntervalTicks,
-    projectileTag: evolutionId ? evolution.projectileTag : specialTag,
+    centrePelletPolicy,
+    exactSpread,
+    // The launcher's blast (package 8.2: Shaped Charge widens it to 210).
+    blastRadius: definition.kind === 'grenade-launch' ? projectilePolicy.radius : null,
+    // Tags are additive: the special keeps its tag and an evolution adds its own.
+    projectileTag: specialTag,
+    evolutionId,
+    evolutionTag: evolution?.evolutionTag ?? null,
+    // The evolution's mechanics (HMH_EVOLUTION_TUNING), or null.
+    evolution: evolved,
     projectilePolicy,
+    // Settler Rail's heavy slugs ignore armour (package 8.5).
+    armorPiercing: evolutionId === 'settler-rail',
+    bossArmorPenetration,
     shock,
-    heatPerShot: (definition.heatPerShot ?? 0) * (specials.includes('overheat-reduction') ? 0.72 : 1),
+    heatPerShot: (definition.heatPerShot ?? 0) * MINER_HEAT_MULTIPLIERS[branches?.rateOfFire ?? 0],
     maxHeat: definition.maxHeat ?? 0,
     heatRecoveryPerTick: definition.heatRecoveryPerTick ?? 0,
     heatResumeThreshold: definition.heatResumeThreshold ?? 0,
@@ -541,6 +689,12 @@ function createPerWeaponState(id, { owned = false } = {}) {
     burstRemaining: 0,
     chargeStartedTick: null,
     chargeReadyAnnounced: false,
+    salvagePermille: 0,
+    // Wave-1 evolution state (package 8.5): Double Spend's queued volley,
+    // Hashstorm's vent lock, Crit Candle's crit kills toward the next charge.
+    pendingVolley: null,
+    ventLockUntilTick: 0,
+    candleKills: 0,
     channelState: definition.kind === 'channel' ? createLightningLedgerState({ cellsRemaining: progression.clipSize }) : null,
     burnerState: definition.kind === 'flame-channel'
       ? createBearMarketBurnerState({ fuel: progression.clipSize, reserveFuel: isOwned ? progression.reserveAmmoGrant : 0 })
@@ -690,6 +844,8 @@ function leaveWeapon(weapon, tick) {
     : null;
   weapon.chargeStartedTick = null;
   weapon.chargeReadyAnnounced = false;
+  // Double Spend's free volley is cancelled by a swap or the fallback.
+  weapon.pendingVolley = null;
   return interrupted;
 }
 
@@ -707,7 +863,7 @@ export function selectWeapon(state, weaponId, { tick } = {}) {
 // The next owned weapon after the active one in the runtime's display order,
 // or null when nothing else is carried. Pure: the wheel and the SWAP edge
 // both go through here so they can never disagree.
-export function nextOwnedWeaponId(state, order) {
+export function nextOwnedWeaponId(state, order = HMH_WEAPON_ORDER) {
   if (!Array.isArray(order) || order.length === 0) throw new TypeError('weapon order must be a non-empty array');
   const start = order.indexOf(state.activeWeaponId);
   for (let offset = 1; offset <= order.length; offset += 1) {
@@ -747,7 +903,9 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
   weapon.owned = true;
   // The pickup includes a loaded weapon plus an authored reserve. Repeat
   // pickups add reserve, bounded at twice the authored grant so hoarding
-  // cannot trivialize the finite-ammo economy.
+  // cannot trivialize the finite-ammo economy. A live Arc Rifle channel is
+  // topped up in place (1.8.4 hotfix b300740a): refillLightningLedgerCells
+  // keeps the channel's start, drain clock and overheat cap.
   weapon.ammoInClip = progression.clipSize;
   if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
   weapon.reloadStartedTick = null;
@@ -761,17 +919,11 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     weapon.burnerState = burnerState;
   }
   const previousWeaponId = state.activeWeaponId;
-  let interrupted = null;
-  if (select) {
-    // An auto-select is a switch: the weapon left behind ends its channel. A
-    // cache for the drawn weapon only cancels its charge, so a drawn Ledger
-    // keeps its beam and its topped-up cells (the 1.8.4 hotfix).
-    if (previousWeaponId !== id) {
-      interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
-    } else {
-      state.weapons[previousWeaponId].chargeStartedTick = null;
-      state.weapons[previousWeaponId].chargeReadyAnnounced = false;
-    }
+  // 'if-new' (package 8.6): a cache selects its gun only when it is newly owned.
+  const selected = select === 'if-new' ? !alreadyOwned : Boolean(select);
+  // An auto-select is a switch: the weapon left behind ends its channel.
+  const interrupted = selected && previousWeaponId !== id ? leaveWeapon(state.weapons[previousWeaponId], tick) : null;
+  if (selected) {
     state.activeWeaponId = id;
     state.switchReadyTick = tick + state.switchTicks;
   }
@@ -784,8 +936,80 @@ export function grantWeaponPickup(state, { tick, weaponId, select = false, progr
     reserveAmmo: weapon.reserveAmmo,
     previousWeaponId,
     activeWeaponId: state.activeWeaponId,
-    readyTick: select ? state.switchReadyTick : tick,
+    readyTick: selected ? state.switchReadyTick : tick,
     interrupted,
+  });
+}
+
+// Package 8.2 Salvage. Kills resolved in tick t are credited right after kill
+// resolution (after the weapon step of t) and so are read from the weapon
+// step of t+1. Each whole 1,000 per-mille moves one round into reserve, never
+// the clip, up to the reserve cap; no RNG. Returns null for a weapon with no
+// salvage (the Pistol, the knife, grenades, a gun below rank 2).
+export function creditWeaponKills(state, { tick, weaponId, count = 1, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('weapon kill credit tick cannot precede the weapon step');
+  if (!Number.isInteger(count) || count < 1 || count > 4_096) throw new TypeError('kill count must be a bounded positive integer');
+  const weapon = Object.hasOwn(SALVAGE_PERMILLE, weaponId) ? state.weapons?.[weaponId] : null;
+  if (!weapon?.owned || weapon.reserveAmmo === null) return null;
+  const progression = applyWeaponProgression(weaponId, progressionByWeapon?.[weaponId]);
+  if (progression.salvagePermille <= 0) return null;
+  weapon.salvagePermille += progression.salvagePermille * count;
+  const rounds = Math.floor(weapon.salvagePermille / 1_000);
+  weapon.salvagePermille -= rounds * 1_000;
+  const before = weapon.reserveAmmo;
+  weapon.reserveAmmo = Math.min(progression.reserveAmmoGrant * 2, weapon.reserveAmmo + rounds);
+  return freezeDeep({ type: 'weapon:salvage', tick, weaponId, rounds: weapon.reserveAmmo - before, reserveAmmo: weapon.reserveAmmo });
+}
+
+// Reserve only, up to the cap (twice the grant); a reserve already above the
+// cap is never cut.
+function addCappedReserve(weapon, rounds, grant) {
+  const before = weapon.reserveAmmo;
+  weapon.reserveAmmo = Math.max(before, Math.min(grant * 2, before + rounds));
+  return weapon.reserveAmmo - before;
+}
+
+// Balance option (a) card magazine. Picking a gun's Magazine & Salvage card
+// adds one reserve grant at the new rank (progressionByWeapon is read after
+// the pick) to that gun's reserve, never the clip, up to the reserve cap. It
+// lands on the offer's tick, after that tick's weapon step like salvage, so
+// the next step reads it. Returns null for any other card (the gun's other two
+// cards, a general or Pistol card, the Arc Rifle's or Flamethrower's cards) and
+// for an unowned gun.
+export function creditWeaponCardPick(state, { tick, upgradeId, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('weapon card credit tick cannot precede the weapon step');
+  if (typeof upgradeId !== 'string') throw new TypeError('upgradeId must be a string');
+  const weaponId = Object.hasOwn(HMH_MAGAZINE_CARD_WEAPON_IDS, upgradeId) ? HMH_MAGAZINE_CARD_WEAPON_IDS[upgradeId] : null;
+  const weapon = weaponId ? state.weapons?.[weaponId] : null;
+  if (!weapon?.owned || weapon.reserveAmmo === null) return null;
+  const { reserveAmmoGrant } = applyWeaponProgression(weaponId, progressionByWeapon?.[weaponId]);
+  const rounds = addCappedReserve(weapon, reserveAmmoGrant, reserveAmmoGrant);
+  return freezeDeep({ type: 'weapon:card-magazine', tick, weaponId, upgradeId, rounds, reserveAmmo: weapon.reserveAmmo });
+}
+
+// Balance option (a) trickle, inside the weapon step: on every 900-tick
+// boundary an owned finite gun with Magazine & Salvage at rank 2 or 3 gains a
+// quarter or a half of its grant in reserve, up to the cap. Silent: the HUD
+// reads the reserve, and nothing else needs an event.
+function trickleReserves(state, tick, progressionByWeapon) {
+  if (tick === 0 || tick % HMH_RESERVE_TRICKLE_INTERVAL_TICKS !== 0) return;
+  for (const id of Object.keys(SALVAGE_PERMILLE).sort()) {
+    const weapon = state.weapons[id];
+    if (!weapon?.owned || weapon.reserveAmmo === null) continue;
+    const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
+    if (progression.reserveTrickleRounds > 0) addCappedReserve(weapon, progression.reserveTrickleRounds, progression.reserveAmmoGrant);
+  }
+}
+
+// The guns card 2 may focus (package 8.3): owned, with ammo in the clip or the
+// reserve. The War Fork needs none; the Flamethrower counts while it has fuel.
+export function weaponIdsWithAmmo(state) {
+  return HMH_WEAPON_ORDER.filter((id) => {
+    const weapon = state.weapons?.[id];
+    if (!weapon?.owned) return false;
+    return HMH_WEAPON_DEFINITIONS[id].ammoModel === 'none' || weapon.reserveAmmo === null || weapon.ammoInClip > 0 || weapon.reserveAmmo > 0;
   });
 }
 
@@ -803,6 +1027,11 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
     if (authored !== null) {
       weapon.reserveAmmo = Math.min(authored * 2, (weapon.reserveAmmo ?? 0) + authored);
     }
+    // A refill may land while an Arc Rifle channel is live (an ammo reward
+    // taken with the beam held). 1.8.1 threw here inside the fixed step; since
+    // the 1.8.4 hotfix (b300740a) refillLightningLedgerCells tops the cells up
+    // without touching the channel's start, drain clock or overheat cap, so the
+    // clip and cells refill in place and the beam keeps running.
     weapon.ammoInClip = progression.clipSize;
     if (weapon.channelState) refillLightningLedgerCells(weapon.channelState, progression.clipSize);
     if (weapon.burnerState) {
@@ -822,8 +1051,8 @@ export function refillWeaponLoadout(state, { tick, weaponId = null, select = fal
   // Selection through a refill honors ownership exactly like selectWeapon,
   // and like every switch it ends the channel of the weapon left behind.
   let interrupted = null;
-  if (select && weaponId !== null && state.weapons[String(weaponId)].owned) {
-    if (String(weaponId) !== previousWeaponId) interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
+  if (select && weaponId !== null && state.weapons[String(weaponId)].owned && String(weaponId) !== previousWeaponId) {
+    interrupted = leaveWeapon(state.weapons[previousWeaponId], tick);
     state.activeWeaponId = String(weaponId);
     state.switchReadyTick = tick + state.switchTicks;
   }
@@ -858,7 +1087,8 @@ function coolWeaponHeat(state, tick, progressionByWeapon, events) {
   for (const id of Object.keys(state.weapons).sort()) {
     const weapon = state.weapons[id];
     const progression = applyWeaponProgression(id, progressionByWeapon?.[id]);
-    const elapsedTicks = Math.max(0, tick - weapon.heatUpdatedTick);
+    // Hashstorm Overdrive holds its vented heat through the fire lock.
+    const elapsedTicks = tick < weapon.ventLockUntilTick ? 0 : Math.max(0, tick - Math.max(weapon.heatUpdatedTick, weapon.ventLockUntilTick));
     weapon.heat = Math.max(0, weapon.heat - progression.heatRecoveryPerTick * elapsedTicks);
     weapon.heatUpdatedTick = tick;
     if (weapon.overheated && weapon.heat <= progression.heatResumeThreshold) {
@@ -892,13 +1122,37 @@ function spreadOffsets(profile, state, attackId) {
   const interval = profile.spreadRadians / Math.max(1, count - 1);
   return Array.from({ length: count }, (_, index) => {
     const base = -profile.spreadRadians * 0.5 + interval * index;
+    if (profile.exactSpread) return base;
     const jitter = (seededUnit(state.seed, `${attackId}:pellet:${index}`) - 0.5) * interval * 0.32;
     return base + jitter;
   });
 }
 
-function buildShots({ definition, progression, state, direction, attackId }) {
+// Crit Candle's charge after its crit-kill rebate (package 8.5); every other
+// charged gun charges for progression.chargeTicks.
+export function effectiveChargeTicks(weapon, progression) {
+  const candle = progression.evolutionId === 'crit-candle' ? progression.evolution : null;
+  if (!candle || !progression.chargeTicks) return progression.chargeTicks;
+  return Math.max(Math.min(candle.floorTicks, progression.chargeTicks), progression.chargeTicks - candle.rebateTicksPerKill * Math.min(candle.maxKillsPerShot, weapon.candleKills));
+}
+
+// Crit Candle: crit kills credited after kill resolution in tick t shorten the
+// next charge from the weapon step of t+1 (package 8.5). The count resets when
+// a charged slug fires. Returns null unless the Railgun is evolved.
+export function creditCritCandleKills(state, { tick, count = 1, progressionByWeapon = {} } = {}) {
+  validTick(tick);
+  if (tick < state.lastTick) throw new TypeError('crit kill credit tick cannot precede the weapon step');
+  if (!Number.isInteger(count) || count < 1 || count > 4_096) throw new TypeError('crit kill count must be a bounded positive integer');
+  const weapon = state.weapons?.['hash-rail'];
+  const progression = weapon?.owned ? applyWeaponProgression('hash-rail', progressionByWeapon?.['hash-rail']) : null;
+  if (progression?.evolutionId !== 'crit-candle') return null;
+  weapon.candleKills = Math.min(progression.evolution.maxKillsPerShot, weapon.candleKills + count);
+  return freezeDeep({ type: 'weapon:crit-candle', tick, weaponId: 'hash-rail', kills: weapon.candleKills, chargeTicks: effectiveChargeTicks(weapon, progression) });
+}
+
+function buildShots({ definition, progression, state, direction, attackId, policyOverride = null, damageScale = 1 }) {
   const shock = (progression.shock?.[0] ?? 0) > seededUnit(state.seed, `${attackId}:shock`);
+  const centrePellet = Math.floor((progression.pelletCount - 1) / 2);
   return Object.freeze(spreadOffsets(progression, state, attackId).map((angleOffset, pelletIndex) => {
     const shotDirection = rotate(direction, angleOffset);
     const id = `${attackId}:${String(pelletIndex).padStart(2, '0')}`;
@@ -914,9 +1168,13 @@ function buildShots({ definition, progression, state, direction, attackId }) {
       speed: progression.projectileSpeed,
       range: progression.range,
       radius: definition.projectileRadius,
-      damage: progression.damage,
-      policy: progression.projectilePolicy,
+      damage: progression.damage * damageScale,
+      policy: policyOverride ?? (progression.centrePelletPolicy && pelletIndex === centrePellet ? progression.centrePelletPolicy : progression.projectilePolicy),
+      blastRadius: progression.blastRadius,
       projectileTag: progression.projectileTag,
+      evolutionTag: progression.evolutionTag,
+      armorPiercing: progression.armorPiercing,
+      bossArmorPenetration: progression.bossArmorPenetration,
       shock,
       knockbackMultiplier: shock ? progression.shock[1] : 1,
     });
@@ -939,11 +1197,16 @@ export function stepWeaponLoadout(state, {
   meleeTargets = [],
   meleeBlockers = [],
   meleeDownwardDropDirection = null,
+  // Mission channels stow the weapon (design package §3.2): nothing fires, and
+  // a charge in flight is cancelled rather than released.
+  stowed = false,
 } = {}) {
   assertMonotonic(state, tick);
   const events = [];
+  if (stowed) fire = false;
   coolWeaponHeat(state, tick, progressionByWeapon, events);
   completeReloads(state, tick, progressionByWeapon, events);
+  trickleReserves(state, tick, progressionByWeapon);
   // Owner playtest 2026-08-02: an exhausted pickup stranded the player
   // weaponless until death. A finite-reserve weapon with no clip, no
   // reserve, and no reload in flight hands control back to the always-owned
@@ -955,6 +1218,8 @@ export function stepWeaponLoadout(state, {
     && active.reserveAmmo !== null && active.reserveAmmo <= 0
     && active.reloadCompleteTick === null) {
     const previousWeaponId = state.activeWeaponId;
+    // A channel the fallback ends is a break the frame reports (the summary
+    // records it like the step's own).
     const interrupted = leaveWeapon(active, tick);
     if (interrupted) events.push(interrupted);
     state.activeWeaponId = 'coin-blaster';
@@ -964,7 +1229,26 @@ export function stepWeaponLoadout(state, {
   const weapon = state.weapons[state.activeWeaponId];
   const definition = HMH_WEAPON_DEFINITIONS[state.activeWeaponId];
   const progression = applyWeaponProgression(state.activeWeaponId, progressionByWeapon?.[state.activeWeaponId]);
-  if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null) return freezeDeep({ tick, events });
+  // Double Spend's free volley: due on its tick whatever the trigger, clip or
+  // reload say; a stow cancels it like a swap.
+  if (weapon.pendingVolley && (stowed || progression.evolutionId !== 'double-spend')) weapon.pendingVolley = null;
+  if (weapon.pendingVolley && tick >= weapon.pendingVolley.fireTick) {
+    const volley = weapon.pendingVolley;
+    weapon.pendingVolley = null;
+    let aim = volley.direction;
+    try { aim = normalize(direction); } catch { /* no aim this tick: keep the shot's */ }
+    const attackId = `${volley.attackId}:volley`;
+    events.push(freezeDeep({
+      type: 'weapon:fire', tick, attackId, weaponId: definition.id, ammoInClip: weapon.ammoInClip, recoil: 0, heat: weapon.heat, volley: true,
+      shots: buildShots({ definition, progression, state, direction: aim, attackId, damageScale: progression.evolution.damageScale }),
+    }));
+  }
+  if (stowed && weapon.chargeStartedTick !== null) {
+    events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks: tick - weapon.chargeStartedTick }));
+    weapon.chargeStartedTick = null;
+    weapon.chargeReadyAnnounced = false;
+  }
+  if (tick < state.switchReadyTick || weapon.overheated || weapon.reloadCompleteTick !== null || tick < weapon.ventLockUntilTick) return freezeDeep({ tick, events });
   if (definition.kind === 'melee-alternating') {
     const standardFrame = stepForkedStandard(weapon.standardState, {
       tick,
@@ -1088,15 +1372,16 @@ export function stepWeaponLoadout(state, {
     return freezeDeep({ tick, events });
   }
   if (tick < weapon.nextFireTick) return freezeDeep({ tick, events });
-  if (definition.chargeTicks) {
+  const chargeTicks = effectiveChargeTicks(weapon, progression);
+  if (chargeTicks) {
     let chargedRelease = false;
     if (fire) {
       if (weapon.chargeStartedTick === null) {
         weapon.chargeStartedTick = tick;
         weapon.chargeReadyAnnounced = false;
-        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + definition.chargeTicks }));
+        events.push(freezeDeep({ type: 'weapon:charge-start', tick, weaponId: definition.id, readyTick: tick + chargeTicks }));
         return freezeDeep({ tick, events });
-      } else if (tick - weapon.chargeStartedTick >= definition.chargeTicks) {
+      } else if (tick - weapon.chargeStartedTick >= chargeTicks) {
         if (!releaseCharged) {
           if (!weapon.chargeReadyAnnounced) {
             weapon.chargeReadyAnnounced = true;
@@ -1111,19 +1396,27 @@ export function stepWeaponLoadout(state, {
     }
     if (!chargedRelease) {
       if (weapon.chargeStartedTick === null) return freezeDeep({ tick, events });
-      const chargeTicks = tick - weapon.chargeStartedTick;
+      const heldTicks = tick - weapon.chargeStartedTick;
       weapon.chargeStartedTick = null;
       weapon.chargeReadyAnnounced = false;
-      if (chargeTicks < definition.chargeTicks) {
-        events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks }));
+      if (heldTicks < chargeTicks) {
+        events.push(freezeDeep({ type: 'weapon:charge-cancel', tick, weaponId: definition.id, chargeTicks: heldTicks }));
         return freezeDeep({ tick, events });
       }
     }
+    // A charged slug fires: Crit Candle's rebate is spent.
+    weapon.candleKills = 0;
   } else if (!fire) return freezeDeep({ tick, events });
   const normalizedDirection = normalize(direction);
   const attackId = `${definition.id}:${String(state.sequence).padStart(8, '0')}`;
   state.sequence += 1;
-  const shots = buildShots({ definition, progression, state, direction: normalizedDirection, attackId });
+  // Hashstorm Overdrive: a round fired hot pierces (stamped at fire).
+  const overdrive = progression.evolutionId === 'hashstorm-overdrive' ? progression.evolution : null;
+  const policyOverride = overdrive && weapon.heat >= overdrive.pierceHeat ? freezeDeep({ type: 'pierce', maxTargets: overdrive.pierceTargets }) : null;
+  const shots = buildShots({ definition, progression, state, direction: normalizedDirection, attackId, policyOverride });
+  if (progression.evolutionId === 'double-spend') {
+    weapon.pendingVolley = { fireTick: tick + progression.evolution.delayTicks, attackId, direction: normalizedDirection };
+  }
   weapon.ammoInClip -= 1;
   if (progression.burstCount > 1) {
     const remaining = weapon.burstRemaining > 0 ? weapon.burstRemaining - 1 : progression.burstCount - 1;
@@ -1151,8 +1444,19 @@ export function stepWeaponLoadout(state, {
     shots,
   }));
   if (progression.maxHeat > 0 && weapon.heat >= progression.maxHeat) {
-    weapon.overheated = true;
-    events.push(freezeDeep({ type: 'weapon:overheat', tick, weaponId: definition.id, heat: weapon.heat }));
+    if (overdrive) {
+      // Hashstorm Overdrive vents instead of overheating.
+      weapon.heat = overdrive.ventHoldHeat;
+      weapon.heatUpdatedTick = tick;
+      weapon.ventLockUntilTick = tick + overdrive.ventLockTicks;
+      events.push(freezeDeep({
+        type: 'weapon:vent', tick, attackId: `${attackId}:vent`, weaponId: definition.id,
+        radius: overdrive.ventRadius, damage: overdrive.ventDamage, knockback: overdrive.ventKnockback, lockUntilTick: weapon.ventLockUntilTick,
+      }));
+    } else {
+      weapon.overheated = true;
+      events.push(freezeDeep({ type: 'weapon:overheat', tick, weaponId: definition.id, heat: weapon.heat }));
+    }
   }
   startReload(weapon, progression, tick, events);
   return freezeDeep({ tick, events });

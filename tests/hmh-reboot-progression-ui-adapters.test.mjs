@@ -11,6 +11,7 @@ import {
   recordRunDefeat,
   selectRunUpgrade,
 } from '../apps/hmh-reboot/src/run-progression.mjs';
+import { RUN_UPGRADE_CONTENT } from '../apps/hmh-reboot/src/progression-content.mjs';
 import {
   buildRunResultMessages,
   createRunScoreChecksum,
@@ -41,12 +42,14 @@ test('run progression is deterministic, bounded, and exposes two concrete upgrad
   assert.ok(snapshot.pendingChoices.every((choice) => Object.isFrozen(choice)));
 });
 
-test('skill tree has twenty-one core upgrades plus repeatable mastery picks and applies only offered choices', () => {
+test('skill tree has thirty-three core upgrades plus repeatable mastery picks and applies only offered choices', () => {
   const core = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable !== true);
   const repeatable = Object.values(RUN_UPGRADE_CATALOG).filter((upgrade) => upgrade.repeatable === true);
   // Nine shared core upgrades plus three branches and a prerequisite-gated
-  // single-rank capstone for Lightning Ledger, Burner, and Forked Standard.
-  assert.equal(core.length, 21);
+  // single-rank capstone for Lightning Ledger, Burner, and Forked Standard,
+  // and (design package 8.2) three branch cards each for the Shotgun, the
+  // Machine Gun, the Railgun and the Grenade Launcher.
+  assert.equal(core.length, 33);
   assert.equal(repeatable.length, 3);
   assert.deepEqual(new Set(core.map((upgrade) => upgrade.branch)), new Set([
     'power',
@@ -59,8 +62,12 @@ test('skill tree has twenty-one core upgrades plus repeatable mastery picks and 
     'bear-market-burner-capstone',
     'forked-standard',
     'forked-standard-capstone',
+    'scatter-shotgun',
+    'auto-miner',
+    'hash-rail',
+    'launcher-rig',
   ]));
-  assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => upgrade.title && upgrade.mechanicalLabel && upgrade.maxRank >= 1));
+  assert.ok(Object.values(RUN_UPGRADE_CATALOG).every((upgrade) => RUN_UPGRADE_CONTENT[upgrade.id].title && RUN_UPGRADE_CONTENT[upgrade.id].mechanicalLabel && upgrade.maxRank >= 1));
   assert.ok(core.filter((upgrade) => !['proof-of-network', 'total-selloff', 'canonical-fork'].includes(upgrade.id)).every((upgrade) => upgrade.maxRank >= 2));
   // Mastery ranks must stay individually weaker than the core ranks they echo.
   assert.ok(RUN_UPGRADE_CATALOG['compound-interest'].amount < RUN_UPGRADE_CATALOG['proof-of-work'].amount);
@@ -113,6 +120,9 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   const css = fs.readFileSync(path.join(root, 'apps/portal/hmh-reboot/styles.css'), 'utf8');
   const main = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/main.mjs'), 'utf8');
   const cockpit = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/cockpit-ui.mjs'), 'utf8');
+  // S0.2: the level-up cards live in the lazy upgrade panel and build every
+  // node through the cockpit's safe-element helper.
+  const upgradePanel = fs.readFileSync(path.join(root, 'apps/hmh-reboot/src/upgrade-panel.mjs'), 'utf8');
   for (const id of ['hmhRunScore', 'hmhRunLevel', 'hmhRunXpFill', 'hmhMusicToggle', 'hmhMenuToggle', 'hmhProfileToggle', 'hmhPausePanel', 'hmhUpgradePanel', 'hmhUpgradeChoices', 'hmhAdapterStatus', 'hmhSettingMusic', 'hmhSettingScreenShake', 'hmhSettingReduceMotion', 'hmhSettingReduceFlash', 'hmhBuildEmpty', 'hmhBuildSummary']) {
     assert.match(html, new RegExp(`id="${id}"`));
   }
@@ -135,17 +145,21 @@ test('cockpit markup exposes real run data, accessible controls, and distinct me
   assert.match(main, /progressionPilotEnabled = evidenceSafeEnabled && runtimeParams\.get\('progressionPilot'\) === '1'/);
   assert.match(cockpit, /SAFE_DYNAMIC_TAGS/);
   assert.match(cockpit, /element\.textContent = String\(text\)/);
-  assert.match(cockpit, /option\.append\(button, detail\)/);
-  assert.match(cockpit, /detail\.append\(summary, description\)/);
-  assert.match(cockpit, /summary\.setAttribute\('aria-expanded'/);
+  assert.match(upgradePanel, /import \{ createSafeTextElement \} from '\.\/cockpit-ui\.mjs';/);
+  // Package 8.3: the re-roll strip sits between the select button and the details.
+  assert.match(upgradePanel, /option\.append\(button, strip, detail\)/);
+  assert.match(upgradePanel, /detail\.append\(summary, description\)/);
+  assert.match(upgradePanel, /summary\.setAttribute\('aria-expanded'/);
   assert.match(cockpit, /RUN_UPGRADE_CATALOG/);
+  assert.match(cockpit, /upgradeContent/);
   assert.match(cockpit, /className: 'hmh-build-rank'/);
   assert.match(cockpit, /onSettingToggle\(key, enabled\)/);
   assert.doesNotMatch(html, /hmhSettingGore|hmhSettingColorblind/);
   assert.match(css, /\.hmh-upgrade-details summary[^}]*min-height:\s*44px/);
   assert.doesNotMatch(css, /\.hmh-upgrade-choice p\s*\{[^}]*display:\s*none/);
-  assert.doesNotMatch(cockpit, /button\.append\([^)]*description/);
+  assert.doesNotMatch(upgradePanel, /button\.append\([^)]*description/);
   assert.doesNotMatch(cockpit, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
+  assert.doesNotMatch(upgradePanel, /innerHTML|outerHTML|insertAdjacentHTML|document\.write/);
   assert.doesNotMatch(main, /localStorage|window\.ethereum|eth_requestAccounts/);
 });
 

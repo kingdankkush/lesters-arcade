@@ -28,6 +28,10 @@ export const GRENADE_BLAST_REFERENCE_RADIUS = 150;
 export const GRENADE_FEEDBACK_CLASSES = Object.freeze({
   hand: Object.freeze({ shake: 10, fragments: 14, puffFootprint: 9, shadowFootprint: 13, ringWidth: 6, coreFlashTicks: 3 }),
   launcher: Object.freeze({ shake: 8.5, fragments: 10, puffFootprint: 7, shadowFootprint: 10, ringWidth: 5, coreFlashTicks: 2 }),
+  // Crypto Bomb Orbit's bomblets (package 8.5): small gold pops, at most 4
+  // bursts a tick (evolution-effects.mjs), so 4 x 6 fragments stay well inside
+  // MAX_GRENADE_FX_PARTICLES.
+  bomblet: Object.freeze({ shake: 2, fragments: 6, puffFootprint: 4, shadowFootprint: 5, ringWidth: 3, coreFlashTicks: 1 }),
 });
 
 // Hard ceilings. Sixteen live grenades (MAX_ACTIVE_GRENADES) detonating inside
