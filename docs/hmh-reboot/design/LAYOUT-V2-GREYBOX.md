@@ -16,6 +16,8 @@ Stage 2 of the Level 1 design package (2026-09-25, sections 2.1-2.9 and slices S
 
 `?layoutV2At=x,y` starts the evidence hero on any walkable v2 point.
 
+Pilot limits: only geometry, ground, collision, navgrid and the checker are v2. The shipped map's interaction sites, pickups, hazards and director spawn points still run at their old coordinates, and completing an old world-design site swaps collision back to the shipped blockers until the next session. Mission core v2 and the bosses (fable/hmh-gameplay) bind to v2 in S2.6.
+
 ## District status
 
 | District | Status | Slice |
