@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "stage": "source",
+  "roleId": "lockkeeper",
+  "runtimeAuthority": "projection-only",
+  "rawInput": {
+    "sha256": "4df6efb409979edb28aaa1c877a92b466236478db9e503863c368a9b6eee08aa",
+    "bytes": 66200372,
+    "facing": "+X",
+    "vertices": 759716,
+    "faces": 1467102,
+    "bones": 21
+  },
+  "tripo": {
+    "subject": "the-lockkeeper",
+    "casting": "A",
+    "conceptInput": {
+      "file": "the-lockkeeper-a-input.png",
+      "sha256": "fb9fa9af9e0e05f577c9089172f22f186df8d0d143710cf999f3106e1d4954d1",
+      "from": "the-lockkeeper-a.png (sha256 9c97de1a...), floor shadow matted, padlock lamps retinted to #ff476f"
+    },
+    "imageToModel": {
+      "taskId": "465ddd0f-2c79-416e-a943-83760189e875",
+      "credits": 40,
+      "settings": "tripo make --for game-pc: v3.1-20260211, pbr, texture_quality detailed, geometry_quality standard"
+    },
+    "rigCheck": {
+      "taskId": "890a7427-35cf-44f2-ac46-78dd5b313a5f",
+      "credits": 0,
+      "riggable": false,
+      "rigType": "biped"
+    },
+    "rig": {
+      "taskId": "c11fd52f-2253-4e10-a1cb-746ee44175af",
+      "credits": 25,
+      "settings": "tripo anim rig --rig-type biped --spec mixamo --out-format glb"
+    }
+  },
+  "boneMapping": {
+    "tripo::Root": "root",
+    "tripo::Spine_0": "pelvis",
+    "tripo::1_Left_Limb_1": "chest",
+    "bone_4": "head",
+    "tripo::1_Left_Limb_0": "spine",
+    "bone_5": "shoulder.L",
+    "bone_6": "upper_arm.L",
+    "bone_7": "forearm.L",
+    "bone_8": "hand.L",
+    "tripo::1_Left_Limb_2": "shoulder.R",
+    "tripo::1_Left_Limb_3": "upper_arm.R",
+    "tripo::1_Left_Limb_4": "forearm.R",
+    "tripo::1_Left_Limb_5": "hand.R",
+    "tripo::0_Left_Limb_0": "thigh.L",
+    "tripo::0_Left_Limb_1": "shin.L",
+    "tripo::0_Left_Limb_2": "foot.L",
+    "tripo::0_Right_Limb_0": "thigh.R",
+    "tripo::0_Right_Limb_1": "shin.R",
+    "tripo::0_Right_Limb_2": "foot.R"
+  },
+  "hipsSynthesised": true,
+  "targetHeight": 2.3,
+  "legSquash": {
+    "hipZ": 0.8792017102241516,
+    "scale": 0.9
+  },
+  "yawDegrees": -90.0,
+  "decimation": {
+    "before": 1467102,
+    "after": 125000,
+    "ratio": 0.08520198322952324
+  },
+  "textures": [
+    {
+      "name": "Color_465ddd0f-2c79-416e-a943-83760189e875",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    },
+    {
+      "name": "NormalGL_465ddd0f-2c79-416e-a943-83760189e875",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    },
+    {
+      "name": "ORM_465ddd0f-2c79-416e-a943-83760189e875",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    }
+  ],
+  "bounds": {
+    "min": [
+      -1.0581320524215698,
+      -0.43060600757598877,
+      -1.9269255062681623e-05
+    ],
+    "max": [
+      1.0579344034194946,
+      0.43047165870666504,
+      2.299917697906494
+    ]
+  },
+  "output": {
+    "path": "lockkeeper.glb",
+    "sha256": "14d17cc17b47d887b27e29b258d456b93eb45f71f113e7ed5f00e9fc63426789",
+    "bytes": 16560496,
+    "vertices": 82673,
+    "faces": 125000,
+    "bones": 23
+  },
+  "builderSha256": "7033b325a41931c1c8ab6453c62f8782f841a68cb5fc4efb1cc4d0d2102696f2",
+  "blenderVersion": "5.1.2"
+}

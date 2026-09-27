@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "stage": "source",
+  "roleId": "fifty-one-percent-foreman",
+  "runtimeAuthority": "projection-only",
+  "rawInput": {
+    "sha256": "316e0cacd32bbcc0595fd776b389738f2f59967b3b616e7bc8a833084895ecb4",
+    "bytes": 66450376,
+    "facing": "+X",
+    "vertices": 750108,
+    "faces": 1444998,
+    "bones": 40
+  },
+  "tripo": {
+    "subject": "fifty-one-percent-foreman",
+    "casting": "A (upright A-pose re-run of prompt-a2 per casting 2.7)",
+    "conceptInput": {
+      "file": "foreman-a4-input.png",
+      "sha256": "ac2b5efc94a985ff15576c5eb2703b78ad53627d097a5bd63c3812ae48ba4631",
+      "from": "text_to_image b85f546c-d16f-4f92-92f0-1271389801c2 (sha256 b68687a3...), floor shadow matted"
+    },
+    "imageToModel": {
+      "taskId": "cb65f400-1cb3-4600-844e-b1fd03b69449",
+      "credits": 40,
+      "settings": "tripo make --for game-pc: v3.1-20260211"
+    },
+    "rigCheck": {
+      "taskId": "09af1168-db38-4b73-b874-a754f232368f",
+      "credits": 0,
+      "riggable": true
+    },
+    "rig": {
+      "taskId": "2dcf6a93-29bf-4cbe-80fb-699121e74361",
+      "credits": 25,
+      "settings": "--then rig (spec mixamo, glb)"
+    }
+  },
+  "boneMapping": {
+    "tripo::Root": "root",
+    "tripo::Spine_0": "pelvis",
+    "tripo::Spine_2": "chest",
+    "tripo::Head_0": "head",
+    "tripo::Spine_1": "spine",
+    "bone_6": "shoulder.L",
+    "tripo::0_Right_Limb_0": "upper_arm.L",
+    "tripo::0_Right_Limb_1": "forearm.L",
+    "tripo::0_Right_Limb_2": "hand.L",
+    "tripo::Spine_3": "shoulder.R",
+    "tripo::Spine_4": "upper_arm.R",
+    "tripo::0_Left_Limb_0": "forearm.R",
+    "tripo::0_Left_Limb_1": "hand.R",
+    "tripo::1_Right_Limb_0": "thigh.L",
+    "tripo::1_Right_Limb_1": "shin.L",
+    "tripo::1_Right_Limb_2": "foot.L",
+    "tripo::1_Left_Limb_0": "thigh.R",
+    "tripo::1_Left_Limb_1": "shin.R",
+    "tripo::1_Left_Limb_2": "foot.R"
+  },
+  "hipsSynthesised": true,
+  "targetHeight": 2.6,
+  "legSquash": null,
+  "yawDegrees": -90.0,
+  "decimation": {
+    "before": 1444998,
+    "after": 125000,
+    "ratio": 0.08650531004195161
+  },
+  "textures": [
+    {
+      "name": "Color_cb65f400-1cb3-4600-844e-b1fd03b69449",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    },
+    {
+      "name": "NormalGL_cb65f400-1cb3-4600-844e-b1fd03b69449",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    },
+    {
+      "name": "ORM_cb65f400-1cb3-4600-844e-b1fd03b69449",
+      "from": [
+        4096,
+        4096
+      ],
+      "to": [
+        2048,
+        2048
+      ],
+      "packed": true
+    }
+  ],
+  "bounds": {
+    "min": [
+      -1.0092360973358154,
+      -0.5619078278541565,
+      -0.00017954780196305364
+    ],
+    "max": [
+      1.0093539953231812,
+      0.5625207424163818,
+      2.599888801574707
+    ]
+  },
+  "output": {
+    "path": "fifty-one-percent-foreman.glb",
+    "sha256": "253cbe724bdb0356593d381972ceb493d12c8a1e9c27d7647db329b379731c5a",
+    "bytes": 18582436,
+    "vertices": 83874,
+    "faces": 125000,
+    "bones": 42
+  },
+  "builderSha256": "7033b325a41931c1c8ab6453c62f8782f841a68cb5fc4efb1cc4d0d2102696f2",
+  "blenderVersion": "5.1.2"
+}

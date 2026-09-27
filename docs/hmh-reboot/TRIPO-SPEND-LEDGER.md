@@ -112,3 +112,54 @@ owed because this workflow is non-interactive.
   contract keys every clip to the shared pose table.
 - The `t_pose` text-to-image template strips costumes (row 4). Use the plain
   A-pose STYLE block and let the rig task handle the pose.
+
+## Art wave 2b (branch `fable/hmh-art-wave2b`): the 51% Foreman and the Lockkeeper
+
+Lane cap: 800 credits. Casting: Foreman A with B as the phase-3 dressing
+reference, Lockkeeper A with the coat worn with sleeves
+(`design/CASTING-DECISIONS-20260926.md` 2.7, 2.8). Vault working folders:
+`concepts/fifty-one-foreman/wave2b/` and `concepts/the-lockkeeper/wave2b/`.
+Every image and render below was read with the Read tool before the next
+spend.
+
+| When | Balance | Note |
+|---|---:|---|
+| lane launch (task brief) | 5,415 | other lanes spend from the same account concurrently |
+| after this lane's six tasks (`tripo balance --json`) | 5,275 | 140 credits: 5 + 5 + 40 + 25 + 40 + 25 |
+| lane close read (`tripo balance --json`) | 5,195 | the further 80 are other lanes' spend; this lane fired nothing after the six tasks |
+
+Lane total: **140 credits** of the 800 cap.
+
+### Pre-input hygiene (no credits)
+
+`scripts/hmh-tripo-input-hygiene.py`: the floor
+shadow is flood-matted from the image border below a band line (neutral
+pixels only, stopped at luminance steps over 0.035 so steel toe caps survive,
+unreached shadow islands folded in, 24 px feathered seam); the Lockkeeper's
+magenta padlock lamps are hue-rotated to 348 degrees (#ff476f) inside the
+bandolier box.
+
+| Input | From (SHA-256) | Result (SHA-256) | Edits |
+|---|---|---|---|
+| `the-lockkeeper/wave2b/the-lockkeeper-a-input.png` | `the-lockkeeper-a.png` `9c97de1a2d6fb567d3101e60bda1c00c06dab190a9d30b21892ac63aacdb0edf` | `fb9fa9af9e0e05f577c9089172f22f186df8d0d143710cf999f3106e1d4954d1` | 943,236 shadow px matted, 4,506 lamp px retinted |
+| `fifty-one-foreman/wave2b/foreman-a4-input.png` | task 2 image `b68687a35ec2722c6e9645aacc33345cb4225456fb905b40f38d4df069469e9a` | `ac2b5efc94a985ff15576c5eb2703b78ad53627d097a5bd63c3812ae48ba4631` | 727,419 shadow px matted |
+
+### Tasks
+
+| # | Task id | Type | Input | Settings | Credits | Output SHA-256 | Result |
+|---|---|---|---|---|---:|---|---|
+| 1 | `97f052bf-9f07-4a82-bbab-4957c7d66742` | text_to_image | `fifty-one-foreman/wave2b/prompt-a3.txt` (1,789 chars): prompt-a2 re-run with an upright A-pose, moustache only, short drill bit (casting 2.7 fallback, taken before any model spend because A's right arm is bent forward across the body and it carries a goatee) | seedream_v4 default | 5 | `60f60e88caf3d932f0f45d5bf097d764b1af01480b7ce6d191732a076027ab60` | **rejected**: upright, but still a goatee, and the drill became a hand-held jackhammer with the hose arcing over the head |
+| 2 | `b85f546c-d16f-4f92-92f0-1271389801c2` | text_to_image | `prompt-a4.txt` (1,793 chars): right arm hanging in the A-pose with the gauntlet sheathing the forearm, hose tight down the back of the arm, "clean-shaven bare chin", "holding a jackhammer" and "chin hair" in the negatives | seedream_v4 default | 5 | `b68687a35ec2722c6e9645aacc33345cb4225456fb905b40f38d4df069469e9a` | **pass**: every 4.5 item (dented yellow hat, one amber lamp, goggles on the brim, upright riveted tank with gauge, forearm drill gauntlet with the bit past the fist, one-strap overalls, apron, brass keys, steel toes), thick grey moustache and a bare chin, clouded eyes, amber veins; adopted after the shadow matte |
+| 3 | `465ddd0f-2c79-416e-a943-83760189e875` | image_to_model | Lockkeeper hygiene input `fb9fa9af...` (uploaded as JPEG by the CLI) | `tripo make --for game-pc --then rig-check,rig`: v3.1-20260211, pbr, texture_quality detailed, geometry_quality standard | 40 | `model.glb` `14b59e44e837ac7dfee5754bae77762c9ec950f108a21f66d50ee2013bc5d4e4` (50,999,028 bytes) | **pass** on the turntable preview: peaked cap, bushy beard, open oilskin over the cream cable-knit, six #ff476f padlock lamps on the bandolier, chain coil, waders, rubber boots |
+| 4 | `890a7427-35cf-44f2-ac46-78dd5b313a5f` | animate_prerigcheck | task 3 | chained | 0 | none | `riggable: false, rig_type: biped`; the chain stopped before the rig (no charge) |
+| 5 | `c11fd52f-2253-4e10-a1cb-746ee44175af` | animate_rig | task 3 | `tripo anim rig --rig-type biped --spec mixamo --out-format glb` (forced past the conservative pre-check) | 25 | `4df6efb409979edb28aaa1c877a92b466236478db9e503863c368a9b6eee08aa` (66,200,372 bytes; 21 bones, legs on the root, clavicles, no actions) | **pass**: usable weights through every clip in the 35 degree renders |
+| 6 | `cb65f400-1cb3-4600-844e-b1fd03b69449` | image_to_model | Foreman hygiene input `ac2b5efc...` | `tripo make --for game-pc --then rig-check,rig` | 40 | not downloaded separately (the chain keeps the rig output) | **pass** on the rig preview |
+| 7 | `09af1168-db38-4b73-b874-a754f232368f` | animate_prerigcheck | task 6 | chained | 0 | none | riggable |
+| 8 | `2dcf6a93-29bf-4cbe-80fb-699121e74361` | animate_rig | task 6 | chained `rig` (biped, mixamo spec, glb) | 25 | `316e0cacd32bbcc0595fd776b389738f2f59967b3b616e7bc8a833084895ecb4` (66,450,376 bytes; 40 bones with fingers, legs on the root, clavicles, no actions) | **pass** |
+
+What the forced rig taught: the pre-check refused a riggable barrel-bodied
+biped (probably the chain coil and bandolier), and `anim rig --rig-type biped`
+on the same model id rigged it cleanly for 25 credits. Both rigs put the legs
+straight on the root with no separate hips bone, unlike the Liquidator's
+46-bone rig; `build-hmh-boss-derivative.py` inserts a weightless `hips` bone
+so the pelvis beat still carries the legs, and maps clavicles when present.
