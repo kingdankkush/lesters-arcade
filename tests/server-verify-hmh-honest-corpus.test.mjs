@@ -1,6 +1,11 @@
-// The honest-run corpus against the v6 plausibility path (1.8.4 consistency
-// rules): 75 schema-6 summaries from the real 1.8.x accumulator, played by five
-// pilots from every level entry (tests/fixtures/ranked/hmh-honest-corpus.mjs).
+// The scripted honest corpus against the v6 plausibility path (1.8.4
+// consistency rules): 75 schema-6 summaries from the real 1.8.x accumulator and
+// run-progression, played by five scripted pilots from every level entry
+// (tests/fixtures/ranked/hmh-honest-corpus.mjs). It is a MODEL of honest play:
+// the pilots move through the child's world modules, but combat is scheduled,
+// not simulated, so it reaches each rule's bound on purpose rather than by
+// play. The child's own summaries are the real-child corpus
+// (tests/server-verify-hmh-real-corpus.test.mjs); a rule needs both green.
 // No honest run may be rejected or gain a consistency flag, and the corpus must
 // reach the neighbourhood of each rule, so a rule that starts to bite honest
 // play fails here. The ceilings come from the child's rules

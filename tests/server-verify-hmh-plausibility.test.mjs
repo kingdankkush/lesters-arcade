@@ -38,7 +38,9 @@ import {
   hmhV6PickupCapacity,
   hmhV6PickupExcess,
   hmhV6WeaponsWithoutSource,
+  hmhV6MeleeCadenceLimit,
 } from '../server/verify/hmh-plausibility.mjs';
+import { statsFromHmhRunSummary } from '../apps/portal/src/achievements/stats.mjs';
 import { HMH_RUN_SUMMARY_CATALOGS_V6, HMH_RUN_SUMMARY_CATALOGS_V7, validateRunSummaryPayload } from '../sdk/hmh-run-summary-schema-v7.mjs';
 import {
   HMH_PRISONER_KINDS,
@@ -86,7 +88,8 @@ import { objectiveRewardPlacements } from '../apps/hmh-reboot/src/objective-rewa
 import { addSilverDrop, createSilverDropState } from '../apps/hmh-reboot/src/silver-drops.mjs';
 import { DeterministicSimulation, FIXED_STEP_MS } from '../apps/hmh-reboot/src/simulation.mjs';
 import { BEAR_MARKET_BURNER_EVENT_BOUNDS } from '../apps/hmh-reboot/src/bear-market-burner-event.mjs';
-import { FORKED_STANDARD_CONFIG } from '../apps/hmh-reboot/src/forked-standard.mjs';
+import { FORKED_STANDARD_CONFIG, createForkedStandardState, resolveForkedStandardPolicy, stepForkedStandard } from '../apps/hmh-reboot/src/forked-standard.mjs';
+import { HMH_MELEE_DEFINITION, createMeleeState, createMeleeTarget, stepMeleeState } from '../apps/hmh-reboot/src/melee.mjs';
 import { createWeaponLoadout, grantWeaponPickup, selectWeapon, switchWeapon } from '../apps/hmh-reboot/src/weapon-system.mjs';
 import { resolveComboFeedback } from '../apps/hmh-reboot/src/combo-feedback.mjs';
 import { HMH_PLANS, HMH_V7_FIXTURE_BUILD_HASH, HMH_V7_PLANS, buildFixtureBody, buildHmhEvidence, fixtureSalt, readFixture } from './fixtures/ranked/build-fixtures.mjs';
@@ -1205,7 +1208,10 @@ test('each second-round consistency rule at its boundary', () => {
     assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => equip(s, weaponId))), [weaponId], `${weaponId} equipped`);
     assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => { rowOf(s.weapons, 'weaponId', weaponId).pickups = 1; })), [weaponId], `${weaponId} pickup`);
   }
-  assert.deepEqual(only(clone(idle(20_000), (s) => addWeaponKills(s, 'forkrunner', 3, 'litecoin-knife'))), [], 'the knife strikes on its own');
+  // The knife strikes on its own, so its kills need no pickup; since round 3
+  // (item 1) they do need the swings that landed them (the melee-trail test).
+  assert.deepEqual(only(clone(idle(20_000), (s) => { addWeaponKills(s, 'forkrunner', 3, 'litecoin-knife'); Object.assign(rowOf(s.weapons, 'weaponId', 'litecoin-knife'), { triggers: 3, triggerContacts: 3, projectilesEmitted: 3, projectileContacts: 3 }); })), [], 'the knife strikes on its own');
+  assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), (s) => addWeaponKills(s, 'forkrunner', 3, 'litecoin-knife'))), [], 'a knife kill is never unsourced');
   // Satoshi Frag kills need a throw; Nuke Liquidation kills need a nuke.
   const fragKill = (s) => { addWeaponKills(s, 'forkrunner', 1, 'satoshi-frag'); Object.assign(s.grenades, { kills: 1, contacts: 1 }); };
   assert.deepEqual(hmhV6WeaponsWithoutSource(clone(idle(20_000), fragKill)), ['satoshi-frag']);
@@ -1248,6 +1254,155 @@ test('each second-round consistency rule at its boundary', () => {
   assert.deepEqual(flagOf(combo(6), 'combo-above-kills'), [{ id: 'combo-above-kills', severity: 'reject', value: 6, limit: 5 }]);
 });
 
+// ---------------------------------------------------------------------------
+// Round 3, item 1 (the melee trail). kills.byWeapon for the Litecoin Knife and
+// the Forked Standard reach the achievement stats directly (statsFromHmhRunSummary
+// meleeKills: blade-master at 100, blade-samurai at 250) and no rule bounded
+// them: 100 knife kills with no swing verified. In the 1.8.x child the knife
+// swings only automatically and only when the swing hits (stepMeleeState), at
+// most once every HMH_MELEE_DEFINITION.cooldownTicks from the first tick, and
+// each swing records one trigger and, when it hits, one trigger contact and one
+// projectile contact per hit; a knife kill is one of those hits. The Standard
+// strikes at most once per its shortest cooldown (thrust 24 less 2 per Tempo
+// rank, three ranks) and records the same trail per strike. The real-child
+// corpus (tests/server-verify-hmh-real-corpus.test.mjs) holds knife-heavy and
+// Standard runs of the 1.8.4 child for these rules.
+test('the melee-trail literals equal the 1.8.x child, and the knife swings only with a hit, a cooldown apart', () => {
+  assert.equal(V6C.melee.knifeWeapon, HMH_MELEE_DEFINITION.id);
+  assert.equal(V6C.melee.knifeCooldownTicks, HMH_MELEE_DEFINITION.cooldownTicks);
+  assert.equal(V6C.melee.knifeCooldownTicks, 20);
+  assert.equal(V6C.melee.standardWeapon, FORKED_STANDARD_CONFIG.id);
+  const tempoRanks = MAX_UPGRADE_RANKS['standard-tempo'];
+  const fastest = Math.min(...['thrust', 'sweep'].map((form) => resolveForkedStandardPolicy({ branches: { tempo: tempoRanks } })[form].cooldownTicks));
+  assert.equal(V6C.melee.standardCooldownTicks, fastest);
+  assert.equal(fastest, 18);
+  assert.deepEqual(V6C.melee.weapons, ['litecoin-knife', 'forked-standard']);
+  assert.deepEqual(hmhV6MeleeCadenceLimit(0, 20), 0);
+  assert.deepEqual([1, 20, 21, 40, 41, 600].map((ticks) => hmhV6MeleeCadenceLimit(ticks, 20)), [1, 1, 2, 2, 3, 30]);
+  assert.deepEqual([1, 18, 19, 600].map((ticks) => hmhV6MeleeCadenceLimit(ticks, 18)), [1, 1, 2, 34]);
+
+  // stepMeleeState: an automatic swing with nothing in reach is not an attack;
+  // a swing that hits sets the next attack a cooldown later.
+  const state = createMeleeState();
+  const target = createMeleeTarget({ id: 'enemy-1', previousGround: { x: 40, y: 0, z: 0 }, currentGround: { x: 40, y: 0, z: 0 }, radius: 16 });
+  const swing = (tick, targets) => stepMeleeState(state, { tick, automatic: true, origin: { x: 0, y: 0 }, sourceGroundZ: 0, direction: { x: 1, y: 0 }, targets });
+  assert.equal(swing(1, []).attacked, false, 'no target, no swing');
+  assert.equal(swing(2, [target]).attacked, true);
+  assert.equal(swing(21, [target]).attacked, false, 'inside the cooldown');
+  const second = swing(22, [target]);
+  assert.equal(second.attacked, true);
+  assert.equal(second.hits.length, 1);
+  assert.equal(state.nextAttackTick, 42);
+  // The child steps the knife once a tick, automatically only (no manual
+  // trigger), and records one trigger per swing plus one trigger contact and
+  // one projectile contact per hit; every hit becomes a combat hit intent, and
+  // a kill carries the weapon of the hit that killed (combat-events).
+  const meleeCall = /const meleeFrame = stepMeleeState\(meleeState, \{([\s\S]*?)\}\);/.exec(MAIN_SOURCE);
+  assert.ok(meleeCall, 'the knife is stepped once');
+  assert.equal(MAIN_SOURCE.match(/stepMeleeState\(/g).length, 1);
+  assert.match(meleeCall[1], /automatic: !rosterPreviewEnabled && !dashFrame\.active && weaponLoadout\.activeWeaponId !== 'forked-standard',/);
+  assert.doesNotMatch(meleeCall[1], /trigger/);
+  assert.match(MAIN_SOURCE, /combatHitIntents\.push\(\.\.\.meleeFrame\.hits\.map\(/);
+  assert.match(MAIN_SOURCE, /if \(meleeFrame\.attacked\) \{\s*recordRunWeaponFire\(runSummaryAccumulator, \{ weaponId: 'litecoin-knife', emitted: 1 \}\);\s*if \(meleeFrame\.hits\.length > 0\) \{\s*recordRunWeaponTriggerContact\(runSummaryAccumulator, \{ weaponId: 'litecoin-knife' \}\);\s*recordRunProjectileContacts\(runSummaryAccumulator, \{ weaponId: 'litecoin-knife', count: meleeFrame\.hits\.length \}\);/);
+  assert.equal(MAIN_SOURCE.match(/weaponId: 'litecoin-knife'/g).length, 3, 'the knife is named only in that trail');
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/combat-events.mjs', import.meta.url), 'utf8'), /scoreEvents\.push\(freezeDeep\(\{\s*type: 'enemy:defeated',[\s\S]*?weaponId: hit\.weaponId,/);
+  assert.match(MAIN_SOURCE, /recordRunKill\(runSummaryAccumulator, \{\s*enemyRoleId: defeatedEnemy\.archetypeId,\s*weaponId: scoreEvent\.weaponId,/);
+
+  // The Standard: stepped once a tick at most, a cooldown (plus a whiff
+  // penalty) apart, only while it is the active weapon; every strike is one
+  // weapon:melee-strike event, recorded once as a trigger (with the same
+  // contact trail) and once in the forkedStandard block.
+  const standard = createForkedStandardState();
+  const origin = { x: 0, y: 0, z: 0 };
+  const strike = (tick, targets, policy) => stepForkedStandard(standard, { tick, fire: true, origin, direction: { x: 1, y: 0 }, targets, policy });
+  const fastPolicy = resolveForkedStandardPolicy({ branches: { tempo: tempoRanks } });
+  assert.equal(strike(1, [target], fastPolicy).attacked, true);
+  assert.equal(strike(18, [target], fastPolicy).attacked, false, 'inside the thrust cooldown');
+  assert.equal(strike(19, [target], fastPolicy).attacked, true, 'a sweep, 18 ticks later');
+  assert.equal(standard.nextAttackTick, 19 + fastPolicy.sweep.cooldownTicks);
+  assert.ok(fastPolicy.sweep.cooldownTicks >= fastest);
+  assert.throws(() => resolveForkedStandardPolicy({ branches: { tempo: tempoRanks + 1 } }), /tier/);
+  assert.match(MAIN_SOURCE, /for \(const event of weaponFrame\.events\.filter\(\(candidate\) => candidate\.type === 'weapon:melee-strike'\)\) \{[\s\S]*?recordRunWeaponFire\(runSummaryAccumulator, \{ weaponId: event\.weaponId, emitted: 1, attackId: event\.attackId \}\);\s*if \(event\.hits\.length > 0\) \{\s*recordRunWeaponTriggerContact\(runSummaryAccumulator, \{ weaponId: event\.weaponId \}\);\s*recordRunProjectileContacts\(runSummaryAccumulator, \{ weaponId: event\.weaponId, count: event\.hits\.length \}\);/);
+  assert.match(MAIN_SOURCE, /if \(event\.type\.startsWith\('standard:'\) \|\| event\.type === 'weapon:melee-strike'\) \{\s*recordRunForkedStandardEvent\(runSummaryAccumulator, event\);/);
+  assert.match(readFileSync(new URL('../apps/hmh-reboot/src/weapon-system.mjs', import.meta.url), 'utf8'), /if \(definition\.kind === 'melee-alternating'\) \{\s*const standardFrame = stepForkedStandard\(weapon\.standardState, \{\s*tick,\s*fire,/);
+});
+
+test('melee trail: knife kills need knife contacts, melee contacts need a hitting swing, and swings keep each weapon\'s cadence', () => {
+  const only = (summary) => consistencyRejects(validateRebootRunPlausibility(schemaValid(summary)));
+  const flagOf = (summary, id) => validateRebootRunPlausibility(schemaValid(summary)).flags.filter((flag) => flag.id === id);
+  const idle = (ticks) => clone(blankRun(ticks), (s) => { if (ticks > 0) { s.exploration.visitedDistrictMask = 1; rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = ticks; } });
+  const knife = (s) => rowOf(s.weapons, 'weaponId', 'litecoin-knife');
+  const fork = (s) => rowOf(s.weapons, 'weaponId', 'forked-standard');
+  // n knife kills with the least trail the child records for them: n swings
+  // that each hit once.
+  const knifeKills = (s, n, trail = { triggers: n, triggerContacts: n, projectilesEmitted: n, projectileContacts: n }) => {
+    addWeaponKills(s, 'forkrunner', n, 'litecoin-knife');
+    Object.assign(knife(s), trail);
+  };
+  assert.deepEqual(only(clone(idle(600), (s) => knifeKills(s, 3))), []);
+  assert.deepEqual(only(clone(idle(600), (s) => knifeKills(s, 3, { triggers: 2, triggerContacts: 2, projectilesEmitted: 2, projectileContacts: 3 }))), [], 'one swing may hit two');
+
+  // knife-kills-above-contacts: a kill is a hit, and every hit is a contact.
+  assert.deepEqual(flagOf(clone(idle(600), (s) => knifeKills(s, 3, { triggers: 3, triggerContacts: 3, projectilesEmitted: 3, projectileContacts: 2 })), 'knife-kills-above-contacts'), [{ id: 'knife-kills-above-contacts', severity: 'reject', value: 3, limit: 2 }]);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => knifeKills(s, 1, {})), 'knife-kills-above-contacts'), [{ id: 'knife-kills-above-contacts', severity: 'reject', value: 1, limit: 0 }]);
+
+  // melee-contacts-without-trigger: a contact comes from a swing that hit, which
+  // is one trigger contact (both melee weapons; the value counts the rows).
+  assert.deepEqual(flagOf(clone(idle(600), (s) => Object.assign(knife(s), { triggers: 1, projectilesEmitted: 1, projectileContacts: 1 })), 'melee-contacts-without-trigger'), [{ id: 'melee-contacts-without-trigger', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(only(clone(idle(600), (s) => Object.assign(knife(s), { triggers: 1, triggerContacts: 1, projectilesEmitted: 1, projectileContacts: 1 }))), []);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => Object.assign(fork(s), { triggers: 1, projectilesEmitted: 1, projectileContacts: 1 })), 'melee-contacts-without-trigger'), [{ id: 'melee-contacts-without-trigger', severity: 'reject', value: 1, limit: 0 }]);
+  assert.deepEqual(flagOf(clone(idle(600), (s) => { Object.assign(knife(s), { triggers: 1, projectilesEmitted: 1, projectileContacts: 1 }); Object.assign(fork(s), { triggers: 1, projectilesEmitted: 1, projectileContacts: 2 }); }), 'melee-contacts-without-trigger'), [{ id: 'melee-contacts-without-trigger', severity: 'reject', value: 2, limit: 0 }]);
+  // A gun's contacts are not melee contacts: the Coin Blaster may hit with no
+  // trigger contact recorded (this rule reads the two melee rows only).
+  assert.deepEqual(only(clone(idle(600), (s) => Object.assign(rowOf(s.weapons, 'weaponId', 'coin-blaster'), { triggers: 1, projectilesEmitted: 1, projectileContacts: 1 }))), []);
+
+  // knife-triggers-above-cadence: at most one swing every 20 ticks from tick 1
+  // (ceil(T / 20)); the swings need not have killed.
+  const swings = (n) => clone(idle(600), (s) => Object.assign(knife(s), { triggers: n, triggerContacts: n, projectilesEmitted: n, projectileContacts: n }));
+  assert.deepEqual(only(swings(30)), []);
+  assert.deepEqual(flagOf(swings(31), 'knife-triggers-above-cadence'), [{ id: 'knife-triggers-above-cadence', severity: 'reject', value: 31, limit: 30 }]);
+  assert.deepEqual(flagOf(clone(blankRun(0), (s) => Object.assign(knife(s), { triggers: 1, triggerContacts: 1, projectilesEmitted: 1, projectileContacts: 1 })), 'knife-triggers-above-cadence'), [{ id: 'knife-triggers-above-cadence', severity: 'reject', value: 1, limit: 0 }], 'no swing in a run of no ticks');
+  assert.deepEqual(only(clone(idle(20), (s) => Object.assign(knife(s), { triggers: 1, triggerContacts: 1, projectilesEmitted: 1, projectileContacts: 1 }))), []);
+  assert.deepEqual(flagOf(clone(idle(20), (s) => Object.assign(knife(s), { triggers: 2, triggerContacts: 2, projectilesEmitted: 2, projectileContacts: 2 })), 'knife-triggers-above-cadence'), [{ id: 'knife-triggers-above-cadence', severity: 'reject', value: 2, limit: 1 }]);
+  assert.deepEqual(only(clone(idle(21), (s) => Object.assign(knife(s), { triggers: 2, triggerContacts: 2, projectilesEmitted: 2, projectileContacts: 2 }))), []);
+
+  // standard-triggers-above-cadence: at most one strike every 18 ticks
+  // (ceil(T / 18)), read from the weapon row's triggers and from the
+  // forkedStandard block's attacks, whichever claims more.
+  const strikes = (triggers, attacks = triggers) => clone(idle(600), (s) => {
+    Object.assign(fork(s), { triggers, projectilesEmitted: triggers });
+    Object.assign(s.forkedStandard, { attacks, whiffs: attacks, thrusts: Math.ceil(attacks / 2), sweeps: Math.floor(attacks / 2) });
+  });
+  assert.deepEqual(only(strikes(34)), []);
+  assert.deepEqual(flagOf(strikes(35), 'standard-triggers-above-cadence'), [{ id: 'standard-triggers-above-cadence', severity: 'reject', value: 35, limit: 34 }]);
+  assert.deepEqual(flagOf(strikes(0, 35), 'standard-triggers-above-cadence'), [{ id: 'standard-triggers-above-cadence', severity: 'reject', value: 35, limit: 34 }], 'the block alone');
+  assert.deepEqual(flagOf(strikes(35, 0), 'standard-triggers-above-cadence'), [{ id: 'standard-triggers-above-cadence', severity: 'reject', value: 35, limit: 34 }], 'the row alone');
+  assert.deepEqual(only(clone(idle(18), (s) => Object.assign(fork(s), { triggers: 1, projectilesEmitted: 1 }))), []);
+  assert.deepEqual(flagOf(clone(idle(18), (s) => Object.assign(fork(s), { triggers: 2, projectilesEmitted: 2 })), 'standard-triggers-above-cadence'), [{ id: 'standard-triggers-above-cadence', severity: 'reject', value: 2, limit: 1 }]);
+
+  // The four are consistency rejects: the frozen-result test filters them.
+  for (const id of ['knife-kills-above-contacts', 'melee-contacts-without-trigger', 'knife-triggers-above-cadence', 'standard-triggers-above-cadence']) assert.ok(HMH_V6_CONSISTENCY_REJECTS.includes(id), id);
+});
+
+test('red team: blade-master from 100 knife kills without a swing rejects; with its swings it verifies', () => {
+  // Round 3, item 1: statsFromHmhRunSummary meleeKills reads kills.byWeapon for
+  // the knife and the Standard; blade-master (100) and blade-samurai (250) read
+  // it. Against 4f947386, 100 phantom knife kills in a 20,000-tick run verified
+  // ok: no rule read the knife's trail.
+  const phantom = clone(blankRun(20_000), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 20_000;
+    addWeaponKills(s, 'bagholder-rusher', 100, 'litecoin-knife');
+  });
+  assert.deepEqual(rejectIds(phantom), ['knife-kills-above-contacts']);
+  assert.equal(statsFromHmhRunSummary(phantom).meleeKills, 100);
+  // The same kills from 100 swings that each hit once (5% of the cadence).
+  const swung = clone(phantom, (s) => Object.assign(rowOf(s.weapons, 'weaponId', 'litecoin-knife'), { triggers: 100, triggerContacts: 100, projectilesEmitted: 100, projectileContacts: 100 }));
+  assert.deepEqual(rejectIds(swung), []);
+  // Swings alone cannot fake a longer run: 1,001 swings need 20,001 ticks.
+  assert.deepEqual(rejectIds(clone(swung, (s) => Object.assign(rowOf(s.weapons, 'weaponId', 'litecoin-knife'), { triggers: 1_001, triggerContacts: 1_001, projectilesEmitted: 1_001, projectileContacts: 1_001 }))), ['knife-triggers-above-cadence']);
+});
+
 // What the second round leaves open (contract §16.6, residuals): a fabricated
 // summary that fakes a consistent trail still verifies. P11 with a Launcher Rig
 // cache, one launch and one 20-contact blast earns hard-fork-hero in 50 s; the
@@ -1262,6 +1417,90 @@ test('residual: a consistent fabricated grenade trail still verifies', () => {
     Object.assign(s.grenades, { kills: 20, contacts: 20, detonated: 1 });
   });
   assert.notEqual(validateRebootRunPlausibility(schemaValid(hardFork)).verdict, 'rejected');
+});
+
+// R0-1 and R0-4 are PARTIAL (contract §16.6; round 3, item 2). The zero-tick
+// run is closed (activity-without-time), and a weapon now needs a cache pickup
+// (weapon-without-source), but the placement capacity has no district gate and
+// a defeated run has no minimum end tick. So a one-tick run at the relay still
+// claims every placement that is open from tick 1 anywhere on the map,
+// including weapon caches, and earns weapon and pickup stats from them; the
+// pickup achievements are cumulative, so P3's twelve runs work at T = 1.
+test('residual: a one-tick run keeps tick-1 placements anywhere on the map, weapon caches included (R0-1, R0-4 partial)', () => {
+  const tiny = clone(blankRun(1), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = 0;
+    for (const [effectId, collected] of [['bonus-life', 2], ['coin-blaster-cache', 1], ['auto-miner-cache', 1], ['launcher-rig-cache', 1], ['hash-rail-core', 1], ['time-dilation', 1], ['berserk-candle', 1], ['nuke-liquidation', 1]]) {
+      rowOf(s.collectibles, 'effectId', effectId).collected = collected;
+    }
+    Object.assign(rowOf(s.weapons, 'weaponId', 'auto-miner'), { pickups: 1, equippedTicks: 1 });
+    Object.assign(rowOf(s.weapons, 'weaponId', 'launcher-rig'), { pickups: 1 });
+    Object.assign(rowOf(s.weapons, 'weaponId', 'hash-rail'), { pickups: 1 });
+  });
+  assert.deepEqual(rejectIds(tiny), []);
+  const stats = statsFromHmhRunSummary(tiny);
+  assert.equal(stats.powerUpsCollected, 9);
+  assert.deepEqual(stats.weaponsUsed, ['auto-miner'], 'a cache weapon used in a one-tick run');
+  // What round 2 did close: the same claims at T = 0, and a weapon with no cache.
+  assert.ok(rejectIds(clone(tiny, (s) => { s.identity.endTick = 0; s.totals.survivalTicks = 0; s.totals.elapsedMs = 0; s.defeat.tick = 0; s.exploration.visitedDistrictMask = 0; })).includes('pickups-above-capacity'));
+  assert.ok(rejectIds(clone(tiny, (s) => { rowOf(s.collectibles, 'effectId', 'auto-miner-cache').collected = 0; })).includes('weapon-without-source'));
+});
+
+// Round 3, item 1 is PARTIAL (contract §16.7). A summary that fakes a
+// consistent knife trail still verifies, and the cheapest one is a single
+// swing: one trigger, one trigger contact, and projectileContacts equal to the
+// claimed kills (the v6 summary has no per-swing record and a 1.8.x swing has
+// no target cap), so the cadence bound never binds. Only the run's kill
+// capacity caps a run's melee kills. blade-master (100) and blade-samurai (250)
+// are cumulative over Ranked runs (total('meleeKills', n) in
+// apps/portal/src/achievements/hmh.mjs), so no single run needs 21,780 ticks:
+// one 10,170-tick run (capacity 100) earns blade-master, and short runs add up
+// to blade-samurai within each run's own capacity.
+test('residual: a one-swing fabricated knife trail still verifies, and melee kills add up across runs', () => {
+  const oneSwing = (ticks, kills) => clone(blankRun(ticks), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = ticks;
+    addWeaponKills(s, 'bagholder-rusher', kills, 'litecoin-knife');
+    Object.assign(rowOf(s.weapons, 'weaponId', 'litecoin-knife'), { triggers: 1, triggerContacts: 1, projectilesEmitted: 1, projectileContacts: kills });
+  });
+  assert.equal(spawnCapacity(10_169), 99);
+  assert.equal(spawnCapacity(10_170), 100);
+  const master = oneSwing(10_170, 100);
+  assert.notEqual(validateRebootRunPlausibility(schemaValid(master)).verdict, 'rejected');
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(master)), []);
+  assert.equal(statsFromHmhRunSummary(master).meleeKills, 100, 'blade-master from one run and one swing');
+  // blade-samurai: 250 cumulative melee kills from three one-swing runs, none
+  // of them longer than blade-master's.
+  const runs = [oneSwing(10_170, 100), oneSwing(10_170, 100), oneSwing(6_000, Math.min(50, spawnCapacity(6_000)))];
+  for (const run of runs) assert.notEqual(validateRebootRunPlausibility(schemaValid(run)).verdict, 'rejected');
+  assert.equal(runs.reduce((sum, run) => sum + statsFromHmhRunSummary(run).meleeKills, 0), 250);
+  // What still rejects: kills above the one swing's contacts, and swings above the cadence.
+  assert.deepEqual(rejectIds(clone(master, (s) => { rowOf(s.weapons, 'weaponId', 'litecoin-knife').projectileContacts = 99; })), ['knife-kills-above-contacts']);
+});
+
+// The other half of the PARTIAL: Forked Standard kills need no strike at all.
+// standard-kills-above-contacts is not landed (contract §16.7 residual; the
+// hmh-realistic fixture and the scripted model credit Standard kills with no
+// trail), so a Standard cache picked up after its seeded minimum and kills with
+// zero triggers, zero contacts and zero attacks verify. Only the kill capacity
+// and weapon-without-source (a pickup and its cache collection) bound them.
+test('residual: Forked Standard kills with zero strikes still verify (standard-kills-above-contacts waits)', () => {
+  const ticks = 12_000;
+  const phantomStandard = clone(blankRun(ticks), (s) => {
+    s.exploration.visitedDistrictMask = 0b1;
+    rowOf(s.weapons, 'weaponId', 'coin-blaster').equippedTicks = ticks - 1;
+    Object.assign(rowOf(s.weapons, 'weaponId', 'forked-standard'), { equippedTicks: 1, pickups: 1 });
+    rowOf(s.collectibles, 'effectId', 'forked-standard-cache').collected = 1;
+    addWeaponKills(s, 'bagholder-rusher', 100, 'forked-standard');
+  });
+  const fork = rowOf(phantomStandard.weapons, 'weaponId', 'forked-standard');
+  assert.deepEqual([fork.triggers, fork.triggerContacts, fork.projectileContacts, phantomStandard.forkedStandard.attacks], [0, 0, 0, 0]);
+  assert.ok(spawnCapacity(ticks) >= 100);
+  assert.notEqual(validateRebootRunPlausibility(schemaValid(phantomStandard)).verdict, 'rejected');
+  assert.deepEqual(consistencyRejects(validateRebootRunPlausibility(phantomStandard)), []);
+  assert.equal(statsFromHmhRunSummary(phantomStandard).meleeKills, 100, 'blade-master with no strike');
+  // Without the pickup trail it rejects (weapon-without-source), as in 16.6.
+  assert.ok(rejectIds(clone(phantomStandard, (s) => { rowOf(s.weapons, 'weaponId', 'forked-standard').pickups = 0; })).includes('weapon-without-source'));
 });
 
 // ---------------------------------------------------------------------------
