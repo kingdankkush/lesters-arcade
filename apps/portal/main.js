@@ -1,6 +1,7 @@
 import { cabinetFramePresentation } from './src/cabinet-presentation.mjs';
 import { installPortalDiscovery } from './src/portal-discovery.mjs';
 import { createChikunRunMusic } from './src/chikun-run-music.mjs';
+import { createStackedRunMusic } from './src/stacked-run-music.mjs';
 import { shouldInjectVercelWebAnalytics, injectVercelWebAnalytics } from './src/vercel-analytics.mjs';
 
 if (typeof document !== 'undefined' && shouldInjectVercelWebAnalytics({ hostname: window.location.hostname })) {
@@ -541,6 +542,8 @@ const arcadeMusic = {
   shuffle: false,
   renderQueued: false,
 };
+// The pending silent unlock (blessArcadeMusicElement); any real play claims it.
+let arcadeMusicBlessToken = null;
 
 const combatAudio = {
   sfxEnabled: true,
@@ -740,6 +743,7 @@ function renderArcadeMusicPlayer() {
         renderArcadeMusicPlayer();
         if (audio) {
           arcadeMusic.unlocked = true;
+          arcadeMusicBlessToken = null;
           // If track just changed, wait for canplaythrough before playing
           const justSelected = audio.dataset.trackId === queueTrack.id && audio.readyState >= 3;
           const needsReload = !(audio.dataset.trackId === queueTrack.id && audio.readyState >= 3);
@@ -817,6 +821,7 @@ async function ensureArcadeMusicPlayer(reason = 'menu', autoplay = false) {
     return false;
   }
   arcadeMusic.unlocked = true;
+  arcadeMusicBlessToken = null;
   try {
     await audio.play();
     arcadeMusic.playing = true;
@@ -837,6 +842,37 @@ function setArcadeMusicContext(context = 'arcade', { reset = false } = {}) {
   arcadeMusic.currentTrackIndex = reset || existingIndex < 0 ? 0 : existingIndex;
   loadArcadeMusicTrack();
   renderArcadeMusicPlayer();
+}
+
+// Unlock the shared music element inside a trusted click, before any await.
+// Safari/iOS and strict-autoplay Chromium only honour a later programmatic
+// play() (after a chunk import, a wallet modal or a child menu) on an element
+// that was already played from a user gesture. Silent: the attempt is muted
+// and paused again unless a real start claimed the element meanwhile.
+function blessArcadeMusicElement() {
+  const audio = loadArcadeMusicTrack();
+  if (!audio || !audio.paused || arcadeMusic.muted) return false;
+  const token = {};
+  arcadeMusicBlessToken = token;
+  audio.muted = true;
+  let attempt = null;
+  try { attempt = audio.play(); } catch { attempt = null; }
+  const settle = () => {
+    if (arcadeMusicBlessToken !== token) return;
+    arcadeMusicBlessToken = null;
+    audio.pause();
+    try { audio.currentTime = 0; } catch { /* metadata not loaded yet */ }
+    audio.muted = arcadeMusic.muted;
+  };
+  Promise.resolve(attempt).then(settle, settle);
+  return true;
+}
+
+// Keep the song that is playing and move the player onto a game's queue.
+function adoptArcadeMusicForGame(gameId) {
+  setArcadeMusicContext(gameId);
+  combat.musicEnabled = !arcadeMusic.muted;
+  applyArcadeMusicVolume('gameplay');
 }
 
 async function startArcadeMusicForGame(gameId = 'hard-money-heroes') {
@@ -1481,7 +1517,8 @@ let chikunHost = null;
 let chikunRunMusic = null;
 let stackedHost = null;
 let stackedMountGeneration = 0;
-function destroyStackedSession() { stackedMountGeneration++; stackedHost?.destroy(); stackedHost = null; syncCabinetResultsButton(); }
+let stackedRunMusic = null;
+function destroyStackedSession() { stackedMountGeneration++; stackedRunMusic?.dispose(); stackedRunMusic = null; stackedHost?.destroy(); stackedHost = null; syncCabinetResultsButton(); }
 async function mountStackedSession() {
   if (!currentSession || currentSession.gameId !== 'stacked') return;
   destroyHmhRebootSession(); destroyChikunSession(); destroyStackedSession();
@@ -1490,12 +1527,21 @@ async function mountStackedSession() {
   if (generation !== stackedMountGeneration || currentSession !== boundSession) return;
   const profile = connectedWallet ? state.profiles?.[connectedWallet] : null;
   const startLevel = boundSession.leaderboardEligible ? 1 : Number(document.querySelector('#stackedStartLevel')?.value ?? 1);
+  // Music follows the game: the song the Free click started is kept; a paused
+  // player (Ranked, a rejected click start) is started at mount and, if still
+  // paused, once more on the first running (the child's Start click).
+  const runMusic = stackedRunMusic = createStackedRunMusic({
+    start: () => { void startArcadeMusicForGame('stacked'); },
+    adopt: () => adoptArcadeMusicForGame('stacked'),
+    isPlaying: () => { const audio = arcadeMusicAudio(); return Boolean(audio && !audio.paused && !audio.ended); },
+    musicOn: () => !arcadeMusic.muted,
+  });
   stackedHost = createStackedHost({
     mount: dom.officialCombatMount, session: boundSession, startLevel, settlementLive: SETTLEMENT_LIVE,
     profile: { displayName: profile ? resolveDisplayName(profile, connectedWallet) : 'Guest', locale: document.documentElement.lang || 'en' },
     settings: { ...readStackedSettings(window.localStorage, Boolean(gameSettings.reduceMotion)), ...childCosmetics('stacked') }, music: arcadeMusicAudio(),
     onReady() { combat.active = true; combat.gameOver = false; combat.paused = false; },
-    onState(value) { combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; },
+    onState(value) { runMusic.observe(value); combat.paused = value.paused; combat.active = ['running', 'paused', 'ready'].includes(value.status); combat.gameOver = value.status === 'terminal'; combat.score = value.score; },
     onResult(result) {
       combat.active = false; combat.gameOver = true;
       if (!dom.officialGameStateCopy) return;
@@ -1521,7 +1567,7 @@ async function mountStackedSession() {
     onExit: exitToArcade,
     onError(error) { console.error('[STACKED]', error); if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = error.message; },
   });
-  void startArcadeMusicForGame('stacked');
+  runMusic.mount();
 }
 let chikunLifecycle = null;
 let chikunActive = false;
@@ -5030,6 +5076,15 @@ async function startOfficialMode(mode) {
   playSfxCue('menu-click');
   try { hmhChallengeUi.requestFor(selectedGameId, mode); }
   catch { setOfficialView('mode-select'); return; }
+  // STACKED music starts in the player's click turn, before any await (the
+  // host chunk import, the wallet modal), like Hard Money Heroes'
+  // beginOfficialLevel. Free starts a random track now; Ranked may still be
+  // cancelled at the wallet modal, so it only unlocks the element silently and
+  // the mount starts the song. Playback failure never blocks the run.
+  if (selectedGameId === 'stacked') {
+    if (mode === 'ranked') blessArcadeMusicElement();
+    else void startArcadeMusicForGame('stacked');
+  }
   // Ranked is paid/official and wallet-bound. A guest must sign in first.
   if (mode === 'ranked') {
     // One Ranked entry at a time: while its modal is open (a results screen
