@@ -66,7 +66,13 @@ const CARD_TREE_DIGESTS = Object.freeze({
 });
 // The PNG bytes also depend on @vercel/og (Satori + resvg), so this digest is
 // pinned to the version it was recorded with and skipped on any other.
-const CARD_PNG = Object.freeze({ og: '0.11.1', case: 'confirmed', digest: 'a4bce5655a0aa896c54f4e68f065cd85d5a2ad446f917cd25104052ec129bb8e' });
+// 1.9.0: the confirmed case is a Hard Money Heroes card, and fable/hmh-banners
+// (be0eac56) replaced its background, share-cards/lester-blaster.png, with the
+// owner's new Ranked share cover. With the 1.8.6 background file the renderer
+// still produces the 1.8.4 digest a4bce565... (checked on the 1.9.0 release
+// candidate), so the renderer and the element tree (above) are unchanged and
+// only the background bytes moved.
+const CARD_PNG = Object.freeze({ og: '0.11.1', case: 'confirmed', digest: '37ae617f1df0a88a2c8e78757e11f75c5cd03eda790265f43bde7221322a6cac' });
 
 export function rankedShareDigests() {
   const pages = {};
@@ -89,7 +95,7 @@ test('the Ranked card element tree is byte-identical to 1.8.4', () => {
   assert.deepEqual(trees, { ...CARD_TREE_DIGESTS });
 });
 
-test('the Ranked card PNG is byte-identical to 1.8.4 (same @vercel/og)', async (t) => {
+test('the Ranked card PNG renders as 1.8.4 did, on the 1.9.0 HMH Ranked cover (same @vercel/og)', async (t) => {
   const og = JSON.parse(await readFile(new URL('../node_modules/@vercel/og/package.json', import.meta.url), 'utf8'));
   if (og.version !== CARD_PNG.og) { t.skip(`@vercel/og ${og.version} (digest recorded with ${CARD_PNG.og})`); return; }
   assert.equal(sha256(await renderShareCardPng(CASES[CARD_PNG.case])), CARD_PNG.digest);

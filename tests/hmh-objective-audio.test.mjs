@@ -5,9 +5,22 @@ import {createHash} from 'node:crypto';
 import {createCombatAudio} from '../apps/hmh-reboot/src/combat-audio.mjs';
 import {HMH_SFX_CUE_REGISTRY} from '../apps/portal/src/hmh-audio-system.mjs';
 import {FakeAudioContext,FakeMusic,effectiveGain,fakeSampleFetch,resetFakeAudio,startedSources} from './helpers/fake-web-audio.mjs';
-for(const cue of ['silver-collect','objective-complete','supply-ready'])test(`${cue} reaches audible sample playback with bounded repetition and pause cleanup`,async()=>{
+// Owner audio decision (2026-09-25, design package decision 13): the game's
+// audio mode (gameplayOnly) keeps the silver pickup but no longer plays the
+// objective-complete and supply-ready chimes. Their samples and registry
+// entries stay, so the audible path is still proven outside that mode.
+const GAMEPLAY_MODE_CUES=new Set(['silver-collect']);
+for(const cue of ['objective-complete','supply-ready'])test(`${cue} is refused in the game's audio mode (owner decision 13)`,async()=>{
   resetFakeAudio();
   const audio=createCombatAudio({AudioCtor:FakeMusic,AudioContextCtor:FakeAudioContext,fetchSample:fakeSampleFetch().fetchSample,maxVoices:2,gameplayOnly:true});
+  await audio.unlock();
+  assert.equal(audio.play(cue,{now:100,volume:.12}).reason,'presentation-cue-disabled');
+  assert.equal(startedSources().length,0);
+  audio.destroy();
+});
+for(const cue of ['silver-collect','objective-complete','supply-ready'])test(`${cue} reaches audible sample playback with bounded repetition and pause cleanup`,async()=>{
+  resetFakeAudio();
+  const audio=createCombatAudio({AudioCtor:FakeMusic,AudioContextCtor:FakeAudioContext,fetchSample:fakeSampleFetch().fetchSample,maxVoices:2,gameplayOnly:GAMEPLAY_MODE_CUES.has(cue)});
   await audio.unlock();
   assert.equal(audio.play(cue,{now:100,volume:.12}).played,true);
   assert.match(startedSources()[0].buffer.src,new RegExp(`/hmh-${cue}\\.wav$`));

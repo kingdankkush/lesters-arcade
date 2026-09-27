@@ -75,29 +75,38 @@ try {
     await page.waitForFunction(() => document.querySelector('#hmhRebootStage')?.dataset.simulationState !== 'upgrade', null, { timeout: 5_000 });
     return true;
   };
-  // Waits for a stage condition (a function body over `value`), taking
-  // level-up choices on the way.
+  // Waits for a named stage condition over `value` (no string evaluation in
+  // the page), taking level-up choices on the way.
   const waitFor = async (label, predicate, arg, timeout = 30_000) => {
     const deadline = Date.now() + timeout;
     for (;;) {
       const remaining = deadline - Date.now();
       if (remaining <= 0) return fail(label);
-      const reached = await page.waitForFunction(([source, value]) => {
+      const reached = await page.waitForFunction(([kind, value]) => {
         const stage = document.querySelector('#hmhRebootStage');
         if (stage?.dataset.simulationState === 'upgrade') return 'upgrade';
-        return (new Function('value', source))(value) ? 'ok' : false;
+        const weapon = () => document.querySelector('#hmhHudWeapon')?.dataset.weapon ?? stage?.dataset.weaponId;
+        const wheel = document.querySelector('#hmhWeaponWheel');
+        const holds = {
+          stage: () => stage?.dataset[value.key] === value.value,
+          hud: () => weapon() === value,
+          hudNot: () => weapon() !== value,
+          ticks: () => Number(stage?.dataset.simulationStepsTotal ?? 0) >= value,
+          wheelOpen: () => wheel?.hidden === false,
+          wheelClosed: () => wheel?.hidden === true,
+        }[kind];
+        return holds() ? 'ok' : false;
       }, [predicate, arg ?? null], { timeout: remaining }).then((handle) => handle.jsonValue()).catch(() => null);
       if (reached === 'ok') return undefined;
       if (reached === 'upgrade') { await serviceUpgrade(); continue; }
       return fail(label);
     }
   };
-  const stageIs = (key, value) => `return document.querySelector('#hmhRebootStage')?.dataset.${key} === ${JSON.stringify(value)};`;
-  const hudIs = "return (document.querySelector('#hmhHudWeapon')?.dataset.weapon ?? document.querySelector('#hmhRebootStage')?.dataset.weaponId) === value;";
-  const hudIsNot = "return (document.querySelector('#hmhHudWeapon')?.dataset.weapon ?? document.querySelector('#hmhRebootStage')?.dataset.weaponId) !== value;";
+  const hudIs = 'hud';
+  const hudIsNot = 'hudNot';
   const waitTicks = async (label, count) => {
     const { ticks } = await read();
-    await waitFor(label, "return Number(document.querySelector('#hmhRebootStage')?.dataset.simulationStepsTotal ?? 0) >= value;", ticks + count);
+    await waitFor(label, 'ticks', ticks + count);
   };
   // Waits for the first frame the stage reports a live beam. For SWAP it
   // presses the key in that same frame, so the switch lands mid-channel.
@@ -125,9 +134,9 @@ try {
   }), away);
   const wheelPick = async (label, digit, weaponId) => {
     await page.keyboard.press('Tab');
-    await waitFor(`${label} (wheel open)`, "return document.querySelector('#hmhWeaponWheel')?.hidden === false;");
+    await waitFor(`${label} (wheel open)`, 'wheelOpen');
     await page.keyboard.press(`Digit${digit}`);
-    await waitFor(`${label} (wheel closed)`, "return document.querySelector('#hmhWeaponWheel')?.hidden === true;");
+    await waitFor(`${label} (wheel closed)`, 'wheelClosed');
     await waitFor(label, hudIs, weaponId);
   };
 
@@ -143,10 +152,10 @@ try {
         // The wheel holds the simulation, so the beam read while it is open is
         // the beam the pick switches away from.
         await page.keyboard.press('Tab');
-        await waitFor(`${cycle.label} (wheel open)`, "return document.querySelector('#hmhWeaponWheel')?.hidden === false;");
+        await waitFor(`${cycle.label} (wheel open)`, 'wheelOpen');
         if ((await read()).ledgerActive !== 'true') {
           await page.keyboard.press('Escape');
-          await waitFor(`${cycle.label} (wheel closed)`, "return document.querySelector('#hmhWeaponWheel')?.hidden === true;");
+          await waitFor(`${cycle.label} (wheel closed)`, 'wheelClosed');
           swappedAt = null;
           continue;
         }
@@ -159,7 +168,7 @@ try {
     await waitTicks(`${cycle.label}: break cooldown`, COOLDOWN_TICKS);
     await wheelPick(`${cycle.label}: wheel back to the Ledger`, 6, 'lightning-ledger');
     // The live bug throws at this restart and stops the ticker.
-    await waitFor(`${cycle.label}: fresh beam after the swap`, stageIs('lightningLedgerActive', 'true'));
+    await waitFor(`${cycle.label}: fresh beam after the swap`, 'stage', { key: 'lightningLedgerActive', value: 'true' });
     await waitTicks(`${cycle.label}: ticker keeps running`, 30);
     const after = await read();
     assert.deepEqual(errors, [], `${cycle.label}: runtime errors`);
