@@ -150,7 +150,8 @@ LK_BASE = {"lsp": -18, "rsp": -14, "las": -6, "ras": -14, "rfb": -34, "lfb": -10
 
 def lk_idle(t):
     lean = 1.5 * math.sin(2 * math.pi * t)
-    return _merge(_breath(t, LK_BASE, 1.2), {"tr": lean, "hy": 6 * math.sin(2 * math.pi * t)})
+    # The head turn runs a quarter cycle off the breath so no two samples repeat.
+    return _merge(_breath(t, LK_BASE, 1.2), {"tr": lean, "hy": 6 * math.cos(2 * math.pi * t)})
 
 
 def lk_walk(t):
@@ -439,7 +440,8 @@ def fm_tell_plant(t):
 
 def fm_attack_plant(t):
     # Plant loop: the drill hammers, the body shudders.
-    shudder = math.sin(4 * math.pi * t)
+    # One shudder per loop, phase-shifted so every sample differs.
+    shudder = math.sin(2 * math.pi * t + 0.6)
     return _merge(FM_BASE, {"tp": 48 + 3 * shudder, "hp": 16 - 4 * shudder, "tr": 3 * shudder, "ras": -50, "rsp": 8,
                             "rfb": -4 + 3 * shudder, "las": 18, "lsp": 40 + 6 * shudder, "lfb": -28, "thl": -30,
                             "thr": 26, "shl": 46, "shr": 28, "lift": -0.24 + 0.02 * shudder, "fwd": 0.05})
