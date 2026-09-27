@@ -36,6 +36,13 @@ import { invoke } from './fake-http.mjs';
 import { bootLocalChain, fixtureEnv, openPaidSession, SETTLE_SESSION_VALUE } from './settle-fixtures.mjs';
 import { buildFixtureBody, FIXTURE_BUILD_HASHES } from '../fixtures/ranked/build-fixtures.mjs';
 
+// The builds the harness plays under. E15 refuses a Hard Money Heroes seed
+// ticket to a portal older than the deployed child needs (1.9.0 while the
+// child emits schema 7; server/settle/seed.mjs), so the HMH run plays under
+// the 1.9.0 portal's build hash, carrying a cached child's schema-6 summary
+// (which verifies under any build). Chikun and STACKED keep the fixture builds.
+const HARNESS_BUILD_HASHES = Object.freeze({ ...FIXTURE_BUILD_HASHES, 'lester-blaster': 'site-1.9.0:game-1.9.0:cabinet-0.6.0' });
+
 const DOMAIN = 'lestersarcade.io';
 
 // The evidence each game plays by default: the brief's end-to-end runs.
@@ -137,7 +144,7 @@ export function createSettleHarness({ ip }) {
   // E15: the server seed ticket for a fresh session handle.
   h.seedTicketFor = async (wallet, gameId) => {
     const uuid = randomUUID();
-    const request = { gameId, sessionId: `game-session-${uuid}`, seasonId: RANKED_GAMES[gameId].seasonId, buildHash: FIXTURE_BUILD_HASHES[gameId] };
+    const request = { gameId, sessionId: `game-session-${uuid}`, seasonId: RANKED_GAMES[gameId].seasonId, buildHash: HARNESS_BUILD_HASHES[gameId] };
     const response = await invoke(h.handler('seed'), { method: 'POST', url: '/api/ranked-seed', headers: await h.authHeaders(wallet), body: request });
     assert.equal(response.status, 200, JSON.stringify(response.body));
     assert.equal(response.body.seedTicket.issuedAt, Math.floor(h.clockMs / 1000), 'issuedAt comes from the injected clock');
@@ -152,7 +159,7 @@ export function createSettleHarness({ ip }) {
     const ticket = await h.seedTicketFor(wallet, gameId);
     const built = await buildFixtureBody({
       gameId, wallet: wallet.address, registry: h.registry, secret: SETTLE_SESSION_VALUE, uuid: ticket.uuid,
-      salt: ticket.seedTicket.salt, issuedAt: ticket.seedTicket.issuedAt, evidence,
+      salt: ticket.seedTicket.salt, issuedAt: ticket.seedTicket.issuedAt, evidence, buildHash: HARNESS_BUILD_HASHES[gameId],
     });
     assert.deepEqual(built.body.seedTicket, ticket.seedTicket, 'the body carries the E15 ticket');
     assert.equal(built.seed, ticket.seed, 'evidence is played at the E15 seed');
@@ -166,7 +173,7 @@ export function createSettleHarness({ ip }) {
     const ticket = await h.seedTicketFor(wallet, gameId);
     const identity = {
       sessionId: `game-session-${ticket.uuid}`, chainId: 4441, scoreRegistryAddress: h.registry, wallet: wallet.address.toLowerCase(),
-      gameId, seasonId: RANKED_GAMES[gameId].seasonId, buildHash: FIXTURE_BUILD_HASHES[gameId], seed: ticket.seed, nonce: ticket.uuid,
+      gameId, seasonId: RANKED_GAMES[gameId].seasonId, buildHash: HARNESS_BUILD_HASHES[gameId], seed: ticket.seed, nonce: ticket.uuid,
     };
     return { v: RANKED_SETTLE_VERSION, gameId, sessionId32: await rankedSessionKey(identity), identity, seedTicket: ticket.seedTicket, entryTxHash: null, evidence: structuredClone(evidence) };
   };
@@ -290,7 +297,7 @@ export function createSettleHarness({ ip }) {
     assert.deepEqual([Number(row.kills), Number(row.max_combo), Number(row.survival_seconds), row.boss_id], [expected.contract.kills, expected.contract.maxCombo, expected.contract.survivalSeconds, expected.contract.bossId]);
     assert.deepEqual(JSON.parse(row.stats), JSON.parse(JSON.stringify(expected.stats)));
     assert.equal(row.envelope_hash, expected.envelopeHash);
-    assert.deepEqual([row.runtime_id, row.season_id, row.build_hash, Number(row.seed)], [RANKED_GAMES[gameId].runtimeId, RANKED_GAMES[gameId].seasonId, FIXTURE_BUILD_HASHES[gameId], body.identity.seed]);
+    assert.deepEqual([row.runtime_id, row.season_id, row.build_hash, Number(row.seed)], [RANKED_GAMES[gameId].runtimeId, RANKED_GAMES[gameId].seasonId, HARNESS_BUILD_HASHES[gameId], body.identity.seed]);
     assert.equal(row.entry_amount_wei, paid.amountWei.toString());
     assert.equal(BigInt(row.entry_amount_wei) >= BigInt('102000000000000000'), true, 'the 0.102 zkLTC entry');
     assert.equal(row.opened_at, new Date(paid.openedAt * 1000).toISOString());

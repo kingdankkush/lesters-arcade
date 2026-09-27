@@ -6,7 +6,10 @@
 // settles with (verify, the achievements registry and, for HMH, the hero
 // gates); SETTLEMENT_PAUSED answers 503 settlement-paused. All of it is
 // checked before the body is read. Because the browser cannot compute a live
-// session key without a ticket, these 503s stop players before they pay.
+// session key without a ticket, these 503s stop players before they pay. A
+// Hard Money Heroes body from a portal older than the deployed child needs
+// answers 409 client-outdated with a reload hint (server/settle/seed.mjs
+// hmhSeedClientOutdated), also before any payment.
 // Rate limits: seed:w 60/h and seed:ip 600/h.
 
 import { makeHandler } from '../server/http.mjs';
