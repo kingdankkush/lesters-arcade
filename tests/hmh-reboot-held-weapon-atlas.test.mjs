@@ -281,7 +281,8 @@ test('the loader fetches metadata once per hero, a page once per weapon, and fai
 test('main.mjs routes the active weapon through the held pages and spawns muzzle flashes at the page muzzle', () => {
   const source = readFileSync(repoUrl('apps/hmh-reboot/src/main.mjs'), 'utf8');
   assert.match(source, /import\('\.\/held-weapon-atlas\.mjs'\)/u, 'held pages stay behind dynamic import');
-  assert.match(source, /display\.container\.heldWeapons = createHeldWeaponLoader\(\{ selection, display, Assets \}\)/u);
+  // Perf step 6: through the profile loader, so phones get the @0.5x pages.
+  assert.match(source, /display\.container\.heldWeapons = createHeldWeaponLoader\(\{ selection, display, Assets: textureAssets \}\)/u);
   assert.match(source, /productionHeroDisplay\.container\.heldWeapons\?\.request\(activeWeaponId\)/u, 'a page is requested on equip');
   assert.match(source, /applyPose\(\{\s*weaponId: activeWeaponId,/u, 'the pose carries the active weapon');
   assert.match(source, /productionHeroDisplay\.fireAction\(lastWeaponFire\.weaponId\) === 'pistol-fire'/u, 'every page with a fire action plays the recoil clip');

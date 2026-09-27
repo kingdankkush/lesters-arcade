@@ -135,7 +135,9 @@ export function createGorePresentation() {
   // have listed (telemetry), in one reused object.
   const drawn={marks:0,fragments:0};
   const point={x:0,y:0,z:0},screen={x:0,y:0};
-  const render=({ground,air,tick,settings,particleScale,camera,view,project,projectInto=null})=>{
+  // `maxMarks` (perf step 6, the mobile profile's cap) draws only the newest
+  // landed marks, still oldest first so newer splats paint on top.
+  const render=({ground,air,tick,settings,particleScale,camera,view,project,projectInto=null,maxMarks=GORE_LIMITS.marks})=>{
     // Clearing an empty layer still forces a GPU rebuild for nothing.
     wipe(ground);wipe(air);
     drawn.marks=drawn.fragments=0;
@@ -144,7 +146,10 @@ export function createGorePresentation() {
     const reduceMotion=settings.reduceMotion;
     const at=(x,y,z)=>{point.x=x;point.y=y;point.z=z;return projectInto?projectInto(screen,point,camera,view):project(point,camera,view);};
     const visible=p=>p.x>-80 && p.y>-80 && p.x<view.width+80 && p.y<view.height+80;
-    for(const mark of marks){
+    let first=maxMarks<marks.length?marks.length:0;
+    for(let landed=0;first>0 && landed<maxMarks;)if(tick>=marks[--first].tick)landed++;
+    for(let index=first;index<marks.length;index++){
+      const mark=marks[index];
       if(tick<mark.tick)continue;
       drawn.marks++;
       const alpha=.55*Math.min(1,(GORE_LIMITS.markLifeTicks-(tick-mark.tick))/120);

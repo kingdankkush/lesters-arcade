@@ -106,12 +106,14 @@ const drawRings = (graphic, rings) => {
  * child's engine chunk re-exports a fixed symbol list that has no gradient
  * fill in it, so this is the available way to get a soft blob.
  */
-export function createContactShadowTextures({ renderer, GraphicsClass } = {}) {
+// `antialias` follows the runtime profile: phones skip the multisampled
+// render buffer behind each bake (perf step 6).
+export function createContactShadowTextures({ renderer, GraphicsClass, antialias = true } = {}) {
   if (typeof renderer?.generateTexture !== 'function') throw new TypeError('renderer with generateTexture is required');
   if (typeof GraphicsClass !== 'function') throw new TypeError('GraphicsClass is required');
   const bake = (rings) => {
     const graphic = drawRings(new GraphicsClass(), rings);
-    const texture = renderer.generateTexture({ target: graphic, resolution: 2, antialias: true });
+    const texture = renderer.generateTexture({ target: graphic, resolution: 2, antialias });
     graphic.destroy();
     return texture;
   };
