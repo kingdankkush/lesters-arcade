@@ -143,7 +143,7 @@ test('hidden profiles show the short wallet', async () => {
     const { html } = await page(db, `/api/share-page?id=${shareId}`);
     assert.doesNotMatch(html, /Hidden Pilot/);
     assert.match(html, /0x7d7d…7d7d/);
-    assert.match(html, /<p class="who"><img src="\/assets\/lester-pilot\.svg" alt="" width="44" height="44">0x7d7d…7d7d<\/p>/, 'default avatar');
+    assert.match(html, /<p class="who"><img src="\/assets\/generated\/hmh-avatars\/litecoin-chad-default\.jpg" alt="" width="44" height="44">0x7d7d…7d7d<\/p>/, 'default avatar');
     assert.equal(meta(html, 'og:title'), '0x7d7d…7d7d scored 48,210 in Hard Money Heroes');
     const named = renderSharePage({ session: { ...(await readPublicSession(db, `0x${shareId}`)), displayName: 'Shown', avatarUri: 'lestersarcade:avatar/lilly' }, status: 200, avatarSrc: (uri) => (uri === 'lestersarcade:avatar/lilly' ? '/assets/lilly.png' : null) });
     assert.match(named.html, /<img src="\/assets\/lilly\.png"/, 'a visible profile can use its avatar');
@@ -155,14 +155,18 @@ test('hidden profiles show the short wallet', async () => {
 // integration-glue C13: the real handler resolves the on-chain avatar through
 // arcade-avatars.mjs; hidden and blocked profiles keep the default avatar.
 test('the share page shows the player’s on-chain arcade avatar, and the default for hidden or blocked profiles', async () => {
+  const DEFAULT_AVATAR = '/assets/generated/hmh-avatars/litecoin-chad-default.jpg';
   const who = (html) => /<p class="who"><img src="([^"]*)" alt="" width="44" height="44">([^<]*)<\/p>/.exec(html)?.slice(1) ?? null;
   const cases = [
     [{ displayName: 'Avatar Pilot', avatarUri: 'lestersarcade:avatar/lilly' }, ['/assets/generated/arcade-avatars/lilly.webp', 'Avatar Pilot']],
-    [{ displayName: 'Emblem Pilot', avatarUri: 'lestersarcade:avatar/gold-emblem' }, ['/assets/generated/hmh-achievement-atlas/tier-gold.png', 'Emblem Pilot']],
-    [{ displayName: 'Hidden Pilot', avatarUri: 'lestersarcade:avatar/lilly', hidden: true }, ['/assets/lester-pilot.svg', '0x7d7d…7d7d']],
-    [{ displayName: null, nameBlocked: 'profanity', avatarUri: 'lestersarcade:avatar/lilly' }, ['/assets/lester-pilot.svg', '0x7d7d…7d7d']],
-    [{ displayName: 'Unknown Pilot', avatarUri: 'lestersarcade:avatar/not-shipped' }, ['/assets/lester-pilot.svg', 'Unknown Pilot']],
-    [{ displayName: 'Plain Pilot', avatarUri: null }, ['/assets/lester-pilot.svg', 'Plain Pilot']],
+    [{ displayName: 'Commando Pilot', avatarUri: 'lestersarcade:avatar/lit-commando' }, ['/assets/generated/arcade-avatars/lit-commando.webp', 'Commando Pilot']],
+    // 1.9.3 retired the Lester Pilot and emblem presets: a profile still naming one shows the default.
+    [{ displayName: 'Emblem Pilot', avatarUri: 'lestersarcade:avatar/gold-emblem' }, [DEFAULT_AVATAR, 'Emblem Pilot']],
+    [{ displayName: 'Old Pilot', avatarUri: 'lestersarcade:avatar/lester-pilot' }, [DEFAULT_AVATAR, 'Old Pilot']],
+    [{ displayName: 'Hidden Pilot', avatarUri: 'lestersarcade:avatar/lilly', hidden: true }, [DEFAULT_AVATAR, '0x7d7d…7d7d']],
+    [{ displayName: null, nameBlocked: 'profanity', avatarUri: 'lestersarcade:avatar/lilly' }, [DEFAULT_AVATAR, '0x7d7d…7d7d']],
+    [{ displayName: 'Unknown Pilot', avatarUri: 'lestersarcade:avatar/not-shipped' }, [DEFAULT_AVATAR, 'Unknown Pilot']],
+    [{ displayName: 'Plain Pilot', avatarUri: null }, [DEFAULT_AVATAR, 'Plain Pilot']],
   ];
   for (const [profile, expected] of cases) {
     const db = createPgliteClient();
@@ -217,6 +221,19 @@ test('all interpolations are escaped', async () => {
   } finally {
     await db.close();
   }
+});
+
+// 1.9.3 custom avatars: only the exact same-origin upload path is ever used.
+test('the share page uses only a same-origin custom avatar URL', () => {
+  const shareId = 'ab'.repeat(32);
+  const session = { shareId, gameId: 'chikun', status: 'confirmed', displayName: 'Pic Pilot', walletShort: '0x7d7d…7d7d', avatarUri: 'lestersarcade:avatar/lilly', score: 1, stats: {}, achievements: [] };
+  const who = (html) => /<p class="who"><img src="([^"]*)"/.exec(html)?.[1] ?? null;
+  const good = `/api/avatar?wallet=0x${'7d'.repeat(20)}&v=0123456789ab`;
+  assert.equal(who(renderSharePage({ session: { ...session, avatarUrl: good }, status: 200 }).html), good.replace('&', '&amp;'));
+  for (const avatarUrl of ['https://evil.example/x.png', '//evil.example/api/avatar', `${good}&x=1`, `${good}"><script>`, 'javascript:alert(1)', `/api/avatar?wallet=0x${'7D'.repeat(20)}&v=0123456789ab`]) {
+    assert.equal(who(renderSharePage({ session: { ...session, avatarUrl }, status: 200, avatarSrc: () => '/assets/lilly.webp' }).html), '/assets/lilly.webp', avatarUrl);
+  }
+  assert.equal(who(renderSharePage({ session: { ...session, displayName: null, avatarUrl: good }, status: 200 }).html), '/assets/generated/hmh-avatars/litecoin-chad-default.jpg', 'no public name: the default');
 });
 
 test('unknown ids render a 404 with generic tags', async () => {

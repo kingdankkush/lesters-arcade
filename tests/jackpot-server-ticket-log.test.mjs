@@ -214,7 +214,7 @@ test('jackpot ops: dry runs, confirm phrases, the schema guard and the admin loc
 
     // The schema guard: an unmigrated database is never read or written.
     assert.deepEqual(await ops(['status']), { exitCode: 1, changed: false });
-    assert.match(lines.at(-1), /^schema not migrated \(version 0 of 3\)/);
+    assert.match(lines.at(-1), /^schema not migrated \(version 0 of 4\)/);
     await migrate(db);
 
     // A failed week with a dead finalize, and a review week with two candidates.

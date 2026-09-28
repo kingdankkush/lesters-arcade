@@ -325,6 +325,8 @@ test('crons and function limits are declared', () => {
     'api/leaderboard.mjs': { maxDuration: 10 },
     'api/profile.mjs': { maxDuration: 10 },
     'api/profile-refresh.mjs': { maxDuration: 15 },
+    // 1.9.3 custom avatars: a Neon read (GET) or one validated write (PUT, DELETE).
+    'api/avatar.mjs': { maxDuration: 10 },
     'api/verified-session.mjs': { maxDuration: 10 },
     'api/session.mjs': { maxDuration: 10 },
     'api/session-nonce.mjs': { maxDuration: 10 },
@@ -361,6 +363,16 @@ test('noindex covers profile, share and owner pages', () => {
   assert.equal(headersFor('/owner/status.html')['Cache-Control'], 'no-store', 'the owner status page is never cached');
   assert.equal(headersFor('/games/chikun')['X-Robots-Tag'], undefined, 'discover pages stay indexable');
   assert.equal(headersFor('/')['X-Robots-Tag'], undefined);
+});
+
+// 1.9.3 custom avatars: the image is served at its own path (the query is
+// wallet and v), and nothing marks it noindex: X's card fetcher skips images
+// with an X-Robots-Tag noindex.
+test('the avatar function is served at its own path with no rewrite and no noindex', () => {
+  const url = `/api/avatar?wallet=${WALLET.toLowerCase()}&v=0123456789ab`;
+  assert.equal(rewrite(url), null, '/api/avatar is the function itself');
+  assert.equal(headersFor('/api/avatar')['X-Robots-Tag'], undefined);
+  assert.ok(existsSync(new URL('../api/avatar.mjs', import.meta.url)));
 });
 
 test('the health function is served at its own path with no rewrite', () => {

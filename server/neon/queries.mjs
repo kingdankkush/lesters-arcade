@@ -13,7 +13,7 @@ import { periodKeysFor } from './period-keys.mjs';
 import {
   ALL_BEST_HEADLINE_KEYS, ALL_NUMERIC_HEADLINE_KEYS, BEST_HEADLINE_KEYS, INDEX_GAMES, INDEX_GAME_IDS, NUMERIC_HEADLINE_KEYS,
   explorerUrlFor, headlineStats, leaderboardRow, numberOrNull, parseJsonText, publicDisplay, recentSessionRow,
-  rowVersionLabel, shareIdFor, verificationFor, walletShort,
+  rowVersionLabel, shareIdFor, verificationFor, walletShort, withAvatarUrl,
 } from './rows.mjs';
 
 export const LEADERBOARD_PAGE_SIZE = 25;
@@ -100,8 +100,9 @@ export async function readLeaderboard(db, { gameId, seasonId, period, periodKey,
      ), ranked AS (
        SELECT b.wallet, b.session_id32, b.score, b.stats, b.tx_hash, b.confirmed_at, b.build_hash, b.runtime_id,
               (ROW_NUMBER() OVER (ORDER BY b.score DESC, b.confirmed_at ASC, b.session_id32 ASC))::int AS rank,
-              wp.display_name, wp.avatar_uri, coalesce(wp.hidden, false) AS hidden
+              wp.display_name, wp.avatar_uri, coalesce(wp.hidden, false) AS hidden, au.sha256 AS avatar_sha256
        FROM best b LEFT JOIN wallet_profiles wp ON wp.wallet = b.wallet
+         LEFT JOIN avatar_uploads au ON au.wallet = b.wallet AND NOT au.hidden
      ), matched AS (
        SELECT * FROM ranked
        WHERE ($5::text IS NULL AND $6::text IS NULL)
@@ -113,7 +114,7 @@ export async function readLeaderboard(db, { gameId, seasonId, period, periodKey,
        (SELECT coalesce(json_agg(json_build_object(
            'rank', p.rank, 'wallet', p.wallet, 'session_id32', p.session_id32, 'score', p.score::text,
            'stats', p.stats, 'tx_hash', p.tx_hash, 'confirmed_at', ${isoSql('p.confirmed_at')},
-           'display_name', p.display_name, 'avatar_uri', p.avatar_uri, 'hidden', p.hidden,
+           'display_name', p.display_name, 'avatar_uri', p.avatar_uri, 'hidden', p.hidden, 'avatar_sha256', p.avatar_sha256,
            'build_hash', p.build_hash, 'runtime_id', p.runtime_id) ORDER BY p.rank), '[]'::json)::text
         FROM (SELECT * FROM matched ORDER BY rank LIMIT $7::int OFFSET $8::int) p) AS rows,
        (SELECT json_build_object('rank', y.rank, 'score', y.score::text, 'session_id32', y.session_id32)::text
@@ -233,13 +234,14 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
   const who = requireWallet(wallet);
   const keys = periodKeysFor(nowMs);
   const games = INDEX_GAME_IDS.map((gameId) => ({ gameId, seasonId: INDEX_GAMES[gameId].seasonId }));
-  const [profileRows, aggregateRows, bestRows, standings, recentRows, achievementRows, nftSets, jackpotWinRows] = await Promise.all([
+  const [profileRows, avatarRows, aggregateRows, bestRows, standings, recentRows, achievementRows, nftSets, jackpotWinRows] = await Promise.all([
     db.query(
       `SELECT display_name, avatar_uri, hidden, name_blocked, preferences::text AS preferences,
               ${isoSql('onchain_updated_at')} AS onchain_updated_at, ${isoSql('updated_at')} AS updated_at
        FROM wallet_profiles WHERE wallet = $1`,
       [who],
     ),
+    db.query('SELECT sha256, hidden FROM avatar_uploads WHERE wallet = $1', [who]),
     db.query(
       `SELECT game_id,
               (count(*) FILTER (WHERE status <> 'pending'))::int AS ranked_runs,
@@ -279,14 +281,20 @@ export async function readPublicProfile(db, wallet, { self = false, nowMs = Date
     db.query(`${jackpotWinsSql('winner = $1')} ORDER BY starts_at DESC, contract ASC`, [who]),
   ]);
   const profileRow = profileRows[0] ?? null;
-  const display = publicDisplay({ hidden: profileRow?.hidden === true, displayName: profileRow?.display_name ?? null, avatarUri: profileRow?.avatar_uri ?? null });
-  const profile = {
+  const avatarRow = avatarRows[0] ?? null;
+  const display = publicDisplay({
+    hidden: profileRow?.hidden === true, displayName: profileRow?.display_name ?? null, avatarUri: profileRow?.avatar_uri ?? null,
+    wallet: who, avatarSha256: avatarRow && avatarRow.hidden !== true ? avatarRow.sha256 : null,
+  });
+  const profile = withAvatarUrl({
     displayName: display.displayName,
     avatarUri: display.avatarUri,
     hidden: display.hidden,
     onchainUpdatedAt: profileRow?.onchain_updated_at ?? null,
-  };
+  }, display);
   if (self) profile.nameBlocked = profileRow?.name_blocked ?? null;
+  // The owner's view says when moderation hid their upload (never public).
+  if (self && avatarRow?.hidden === true) profile.customAvatarHidden = true;
   const aggregates = new Map(aggregateRows.map((row) => [row.game_id, row]));
   const bests = new Map(bestRows.map((row) => [row.game_id, row]));
   const gamesOut = {};
@@ -358,8 +366,10 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
             vs.kills::text AS kills, vs.max_combo::text AS max_combo, vs.survival_seconds::text AS survival_seconds,
             vs.boss_id, vs.stats::text AS stats, vs.status, vs.source, vs.tx_hash, vs.block_number::text AS block_number,
             ${isoSql('vs.verified_at')} AS verified_at, ${isoSql('vs.confirmed_at')} AS confirmed_at, vs.week_key, vs.month_key,
-            wp.display_name, wp.avatar_uri, coalesce(wp.hidden, false) AS hidden, coalesce(wp.board_excluded, false) AS board_excluded
+            wp.display_name, wp.avatar_uri, coalesce(wp.hidden, false) AS hidden, coalesce(wp.board_excluded, false) AS board_excluded,
+            au.sha256 AS avatar_sha256
      FROM verified_sessions vs LEFT JOIN wallet_profiles wp ON wp.wallet = vs.wallet
+       LEFT JOIN avatar_uploads au ON au.wallet = vs.wallet AND NOT au.hidden
      WHERE vs.session_id32 = $1 AND vs.status <> 'pending'`,
     [id],
   );
@@ -385,9 +395,10 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
       if (found?.[period]?.sessionId32 === id) standing[period] = found[period].rank;
     }
   }
-  const display = publicDisplay({ hidden: row.hidden === true, displayName: row.display_name, avatarUri: row.avatar_uri });
+  const display = publicDisplay({ hidden: row.hidden === true, displayName: row.display_name, avatarUri: row.avatar_uri, wallet: row.wallet, avatarSha256: row.avatar_sha256 });
   const verification = verificationFor(row.game_id, row.source);
-  return {
+  // avatarUrl (1.9.3) never joins cardRev: the card image shows no avatar.
+  return withAvatarUrl({
     sessionId32: id,
     shareId: shareIdFor(id),
     gameId: row.game_id,
@@ -424,7 +435,7 @@ export async function readPublicSession(db, sessionId32, { catalog } = {}) {
     verification,
     jackpotChampion,
     cardRev: await cardRevision({ status: row.status, displayName: display.displayName, avatarUri: display.avatarUri, hidden: display.hidden, verification, champion: jackpotChampion?.label ?? null, art: shareCardArtRevision(row.game_id) }),
-  };
+  }, display);
 }
 
 function validatedPaths(paths, label) {
@@ -523,4 +534,50 @@ export async function writePreferences(db, wallet, preferences, { maxBytes = 204
   );
   if (!rows[0]) return null;
   return { preferences: parseJsonText(rows[0].preferences, {}), updatedAt: rows[0].updated_at ?? null };
+}
+
+// 1.9.3 custom avatars (api/avatar.mjs, migration 4). The image travels as
+// base64 text in both directions (A15: parameters and columns stay text).
+
+// The servable upload of a wallet: { sha256, contentType, image: Buffer } or
+// null when there is none, it is hidden, or the whole profile is hidden.
+export async function readAvatarUpload(db, wallet) {
+  const who = requireWallet(wallet);
+  const rows = await db.query(
+    `SELECT au.sha256, au.content_type, encode(au.image, 'base64') AS image
+     FROM avatar_uploads au LEFT JOIN wallet_profiles wp ON wp.wallet = au.wallet
+     WHERE au.wallet = $1 AND NOT au.hidden AND NOT coalesce(wp.hidden, false)`,
+    [who],
+  );
+  const row = rows[0];
+  if (!row) return null;
+  return { sha256: row.sha256, contentType: row.content_type, image: Buffer.from(String(row.image ?? '').replace(/\s+/g, ''), 'base64') };
+}
+
+// Stores (or replaces) a wallet's upload. A hidden upload is never replaced:
+// returns { saved: false, hidden: true } and writes nothing.
+export async function writeAvatarUpload(db, { wallet, sha256, contentType, width, height, image } = {}) {
+  const who = requireWallet(wallet);
+  const rows = await db.query(
+    `INSERT INTO avatar_uploads (wallet, sha256, content_type, width, height, image, updated_at)
+     VALUES ($1, $2, $3, $4::int, $5::int, decode($6, 'base64'), now())
+     ON CONFLICT (wallet) DO UPDATE SET sha256 = EXCLUDED.sha256, content_type = EXCLUDED.content_type,
+       width = EXCLUDED.width, height = EXCLUDED.height, image = EXCLUDED.image, updated_at = now()
+       WHERE NOT avatar_uploads.hidden
+     RETURNING sha256`,
+    [who, String(sha256), String(contentType), String(width), String(height), Buffer.from(image).toString('base64')],
+  );
+  return rows[0] ? { saved: true, hidden: false, sha256: rows[0].sha256 } : { saved: false, hidden: true };
+}
+
+// Removes a wallet's upload unless moderation hid it. { removed, hidden }.
+export async function deleteAvatarUpload(db, wallet) {
+  const who = requireWallet(wallet);
+  const rows = await db.query(
+    `WITH gone AS (DELETE FROM avatar_uploads WHERE wallet = $1 AND NOT hidden RETURNING 1)
+     SELECT (SELECT count(*)::int FROM gone) AS removed,
+            coalesce((SELECT hidden FROM avatar_uploads WHERE wallet = $1), false) AS hidden`,
+    [who],
+  );
+  return { removed: Number(rows[0]?.removed ?? 0) > 0, hidden: rows[0]?.hidden === true };
 }

@@ -16,7 +16,7 @@ import {
   prepareProfileChange,
   sendSetProfile,
 } from '../apps/portal/src/profile-chain.mjs';
-import { ARCADE_AVATARS, avatarUriFor } from '../apps/portal/src/arcade-avatars.mjs';
+import { ARCADE_AVATARS, arcadeAvatarForUri, avatarUriFor, defaultArcadeAvatar, resolveAvatar } from '../apps/portal/src/arcade-avatars.mjs';
 import { loadArtifact, startLocalChain } from '../scripts/lib/local-chain.mjs';
 
 // An independent port of the Solidity, written over a byte array the way the
@@ -263,7 +263,7 @@ test('a confirmed change refreshes the index and announces the sanitized profile
 
 test('arcade avatars are existing site art with contract-shaped URIs', async () => {
   const { existsSync, statSync } = await import('node:fs');
-  assert.ok(ARCADE_AVATARS.length >= 8 && ARCADE_AVATARS.length <= 12);
+  assert.ok(ARCADE_AVATARS.length >= 6 && ARCADE_AVATARS.length <= 12);
   const ids = new Set();
   for (const avatar of ARCADE_AVATARS) {
     assert.match(avatar.id, /^[a-z0-9-]{1,32}$/);
@@ -276,8 +276,16 @@ test('arcade avatars are existing site art with contract-shaped URIs', async () 
     assert.ok(statSync(file).size <= 32 * 1024, `${avatar.src} is ${statSync(file).size} B; avatars stay under 32 KB`);
     assert.doesNotMatch(avatar.src, /hmh-hero-portraits\//, 'never the 0.5 MB hero portrait strips');
   }
-  // Stable ids: players store 'lestersarcade:avatar/<id>' on chain.
-  assert.deepEqual(ARCADE_AVATARS.map((avatar) => avatar.id), ['litecoin-chad', 'lester-pilot', 'lit-commando', 'lit-valkyrie', 'lester', 'lilly', 'chikun', 'gold-emblem', 'diamond-emblem', 'mythic-emblem']);
+  // Stable ids: players store 'lestersarcade:avatar/<id>' on chain. 1.9.3
+  // retired lester-pilot and the gold, diamond and mythic emblems (owner
+  // request): they are no longer offered, and a profile that still names one
+  // renders the default avatar.
+  assert.deepEqual(ARCADE_AVATARS.map((avatar) => avatar.id), ['litecoin-chad', 'lit-commando', 'lit-valkyrie', 'lester', 'lilly', 'chikun']);
+  for (const retired of ['lester-pilot', 'gold-emblem', 'diamond-emblem', 'mythic-emblem']) {
+    assert.equal(avatarUriFor(retired), null, `${retired} cannot be chosen`);
+    assert.equal(arcadeAvatarForUri(`lestersarcade:avatar/${retired}`), null, `${retired} resolves to nothing`);
+    assert.equal(resolveAvatar({ avatarUri: `lestersarcade:avatar/${retired}` }).src, defaultArcadeAvatar().src, `${retired} renders the default`);
+  }
   assert.equal(avatarUriFor('nope'), null);
   assert.equal(formatZkLtc('0.000042318'), '0.0000423');
   assert.equal(formatZkLtc('0.000000'), '0');

@@ -13,6 +13,7 @@
 // A confirmed run that won a paid Chikun Weekly Jackpot week shows the
 // champion badge with its date range (design §C.7); a leader never shows.
 import { achievementById } from '../../apps/portal/src/achievements/index.mjs';
+import { customAvatarUrl } from '../../apps/portal/src/arcade-avatars.mjs';
 import { LITVM_DEPLOYMENT } from '../../apps/portal/src/generated/litvm-addresses.mjs';
 import { versionLabelText } from '../../apps/portal/src/game-version-labels.mjs';
 import { INDEX_GAMES } from '../neon/rows.mjs';
@@ -21,7 +22,9 @@ import { cardChampionText, cardHandle, cardStandingText } from './render-card.mj
 export const SHARE_SITE_ORIGIN = 'https://lestersarcade.io';
 export const SHARE_SITE_NAME = "Lester's Arcade";
 export const SHARE_SITE_IMAGE = 'https://lestersarcade.io/assets/brand/lesters-arcade-logo-horizontal.png';
-export const SHARE_DEFAULT_AVATAR = '/assets/lester-pilot.svg';
+// The arcade's default avatar (Litecoin Chad, arcade-avatars.mjs); the Lester
+// Pilot icon was the default until 1.9.3.
+export const SHARE_DEFAULT_AVATAR = '/assets/generated/hmh-avatars/litecoin-chad-default.jpg';
 export const CONFIRMED_PAGE_CACHE = 'public, s-maxage=300, stale-while-revalidate=86400';
 export const UNPUBLISHED_PAGE_CACHE = 'public, s-maxage=15';
 export const MISSING_PAGE_CACHE = 'public, s-maxage=30';
@@ -206,7 +209,8 @@ function tokenHref(gameId, tokenId) {
 }
 
 // avatarSrc(avatarUri) → site-root image path (api/share-page.mjs passes
-// shareAvatarSrc, from arcade-avatars.mjs). A profile without a public name,
+// shareAvatarSrc, from arcade-avatars.mjs). The wallet's own upload
+// (session.avatarUrl, 1.9.3) comes first. A profile without a public name,
 // hidden or blocked, and an unknown avatar use the default one.
 export function renderSharePage({ session = null, status = 200, avatarSrc = () => SHARE_DEFAULT_AVATAR } = {}) {
   if (!session || status !== 200) return genericPage(status === 200 ? 404 : status);
@@ -218,7 +222,9 @@ export function renderSharePage({ session = null, status = 200, avatarSrc = () =
   const confirmed = session.status === 'confirmed';
   const hidden = !session.displayName;
   const handle = hidden ? cardHandle({ walletShort: session.walletShort }) : String(session.displayName);
-  const avatar = hidden ? SHARE_DEFAULT_AVATAR : (avatarSrc(session.avatarUri) || SHARE_DEFAULT_AVATAR);
+  // A 1.9.3 custom upload (E9 avatarUrl): the same-origin path shape only.
+  const custom = customAvatarUrl(session.avatarUrl);
+  const avatar = hidden ? SHARE_DEFAULT_AVATAR : (custom || avatarSrc(session.avatarUri) || SHARE_DEFAULT_AVATAR);
   const score = count(session.score);
   const standing = confirmed ? cardStandingText(session.standing) : '';
   const champion = cardChampionText(session);

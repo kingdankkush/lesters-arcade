@@ -292,10 +292,44 @@ const MIGRATION_JACKPOT = [
   `CREATE INDEX IF NOT EXISTS stl_week ON seed_ticket_log (game_id, week_key, wallet)`,
 ];
 
+// Migration 4 (1.9.3 custom avatars, api/avatar.mjs): one wallet's uploaded
+// avatar. Additive only: one new table, nothing that touches an earlier
+// object. The image is the browser's re-encoded 256×256 WebP/PNG (JPEG is
+// also accepted), checked by magic bytes and header size on the server
+// (server/profile/avatar-image.mjs) and capped at 96 KB here too.
+//
+// `hidden` is the owner's moderation switch (no UI). A hidden upload is never
+// served (GET /api/avatar answers 404) and no read path returns its
+// avatarUrl; the wallet cannot replace or delete it until the owner clears
+// the flag, so hiding also blocks re-uploads. Set it with
+//   node scripts/moderate-profile.mjs --wallet 0x… --hide-avatar --apply --confirm HIDE_AVATAR
+// or directly in SQL:
+//   UPDATE avatar_uploads SET hidden = true, updated_at = now() WHERE wallet = '0x…';
+// (wallet_profiles.hidden, the whole-profile switch, hides the upload too.)
+// The image URL is cached immutably, so purge the CDN cache for an immediate
+// takedown (scripts/moderate-profile.mjs prints how).
+export const AVATAR_MIGRATION_VERSION = 4;
+export const AVATAR_MIGRATION_NAME = `${String(AVATAR_MIGRATION_VERSION).padStart(4, '0')}_avatar_uploads`;
+export const AVATAR_TABLES = Object.freeze(['avatar_uploads']);
+const MIGRATION_AVATARS = [
+  `CREATE TABLE IF NOT EXISTS avatar_uploads (
+  wallet        TEXT PRIMARY KEY CHECK (wallet ~ '^0x[0-9a-f]{40}$'),
+  sha256        TEXT NOT NULL CHECK (sha256 ~ '^[0-9a-f]{64}$'),
+  content_type  TEXT NOT NULL CHECK (content_type IN ('image/webp','image/png','image/jpeg')),
+  width         INTEGER NOT NULL CHECK (width BETWEEN 64 AND 512),
+  height        INTEGER NOT NULL CHECK (height BETWEEN 64 AND 512),
+  image         BYTEA NOT NULL CHECK (octet_length(image) BETWEEN 1 AND 98304),
+  hidden        BOOLEAN NOT NULL DEFAULT false,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+)`,
+];
+
 export const MIGRATIONS = Object.freeze([
   Object.freeze({ version: 1, name: '0001_ranked_index', statements: Object.freeze(MIGRATION_0001) }),
   Object.freeze({ version: 2, name: '0002_cron_runs', statements: Object.freeze(MIGRATION_0002) }),
   Object.freeze({ version: JACKPOT_MIGRATION_VERSION, name: JACKPOT_MIGRATION_NAME, statements: Object.freeze(MIGRATION_JACKPOT) }),
+  Object.freeze({ version: AVATAR_MIGRATION_VERSION, name: AVATAR_MIGRATION_NAME, statements: Object.freeze(MIGRATION_AVATARS) }),
 ]);
 
 export const LATEST_SCHEMA_VERSION = MIGRATIONS.reduce((max, migration) => Math.max(max, migration.version), 0);

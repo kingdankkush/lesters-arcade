@@ -35,6 +35,9 @@
     "api/profile-refresh.mjs": {
       "maxDuration": 15
     },
+    "api/avatar.mjs": {
+      "maxDuration": 10
+    },
     "api/verified-session.mjs": {
       "maxDuration": 10
     },

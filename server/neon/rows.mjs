@@ -4,6 +4,7 @@
 // The game table mirrors RANKED_GAMES (verify slice, ranked-identity.mjs); a
 // test pins the 32-byte ids against ethers.id so the two cannot drift.
 
+import { customAvatarUrlFor } from '../../apps/portal/src/arcade-avatars.mjs';
 import { versionLabelFor } from '../../apps/portal/src/game-version-labels.mjs';
 
 export const EXPLORER_TX_BASE = 'https://liteforge.explorer.caldera.xyz/tx/';
@@ -116,13 +117,25 @@ export function headlineStats(gameId, stats) {
   return out;
 }
 
+// `avatarUrl` (1.9.3 custom avatars) is present only when the wallet has a
+// non-hidden upload (the caller passes its wallet and avatarSha256) and the
+// profile is not hidden; every other shape is exactly as before.
 export function publicDisplay(profile) {
   const hidden = profile?.hidden === true;
-  return {
+  const out = {
     displayName: hidden ? null : (profile?.displayName ?? null),
     avatarUri: hidden ? null : (profile?.avatarUri ?? null),
     hidden,
   };
+  const avatarUrl = hidden ? null : customAvatarUrlFor(profile?.wallet, profile?.avatarSha256);
+  if (avatarUrl) out.avatarUrl = avatarUrl;
+  return out;
+}
+
+// Adds `avatarUrl` to an API object only when there is one.
+export function withAvatarUrl(target, display) {
+  if (display?.avatarUrl) target.avatarUrl = display.avatarUrl;
+  return target;
 }
 
 // A dead letter is a failed row with no next attempt (§3.3, §4.4).
@@ -149,8 +162,8 @@ export function rowVersionLabel(gameId, row) {
 }
 
 export function leaderboardRow(gameId, row) {
-  const display = publicDisplay({ hidden: row.hidden, displayName: row.display_name, avatarUri: row.avatar_uri });
-  return {
+  const display = publicDisplay({ hidden: row.hidden, displayName: row.display_name, avatarUri: row.avatar_uri, wallet: row.wallet, avatarSha256: row.avatar_sha256 });
+  return withAvatarUrl({
     rank: Number(row.rank),
     wallet: row.wallet,
     walletShort: walletShort(row.wallet),
@@ -164,7 +177,7 @@ export function leaderboardRow(gameId, row) {
     txHash: row.tx_hash ?? null,
     explorerUrl: explorerUrlFor(row.tx_hash),
     confirmedAt: row.confirmed_at ?? null,
-  };
+  }, display);
 }
 
 export function recentSessionRow(row, { self = false } = {}) {

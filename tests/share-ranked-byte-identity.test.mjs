@@ -45,11 +45,16 @@ const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 const pageDigest = ({ status, headers, html }) => sha256(JSON.stringify({ status, headers, html }));
 
 // Recorded at 9f20cda0 (server/share/render-page.mjs and render-card.mjs as of 1.8.4).
+// 1.9.3 (deliberate Ranked change): the default avatar of a profile without a
+// public name moved from /assets/lester-pilot.svg to the Litecoin Chad
+// default (SHARE_DEFAULT_AVATAR), so only `hidden` was re-recorded. With that
+// one path swapped back, the 1.9.3 page still hashes to the 1.8.4 digest
+// 308243c8... (checked when re-recording).
 const PAGE_DIGESTS = Object.freeze({
   confirmed: '2625c8e64c329aacc91b8b581702282482b4d19ff8ded58f97d8255c80ee55a0',
   pending: 'dc8dcd128971172ce5bf570b880180d5d00adc895154f216239e05f788e9c272',
   failed: '842a37975f89eaf1b3ba6b54289df529a7b7a7702ea243e4796c75eb583e4d38',
-  hidden: '308243c896add227e77e997f80816c0b8f688bcb09ead579c7303dd09b529b1f',
+  hidden: '5adc6f6e296250a65e205a218847c23f81897d3af2eb6a30a001c1f963ff6589',
   chikun: 'c1a7a538dc597101209282a328d1f728523bc206150b421b9e17115889b3b8c5',
   stacked: '0a67c9f09ad44f6c90306d8cf7aed79f4e7f126e3d2a16c86a6e64876ae917fd',
   generic400: 'efa43da3395f3a77a6f84cf1ff355f4174b4f15ef48dec98c7c5d4683b349e43',

@@ -5,11 +5,16 @@
 //   node scripts/moderate-profile.mjs --wallet 0x… --unhide    [--apply --confirm UNHIDE_PROFILE]
 //   node scripts/moderate-profile.mjs --wallet 0x… --exclude   [--apply --confirm EXCLUDE_WALLET]
 //   node scripts/moderate-profile.mjs --wallet 0x… --include   [--apply --confirm INCLUDE_WALLET]
+//   node scripts/moderate-profile.mjs --wallet 0x… --hide-avatar   [--apply --confirm HIDE_AVATAR]
+//   node scripts/moderate-profile.mjs --wallet 0x… --unhide-avatar [--apply --confirm UNHIDE_AVATAR]
 //
 // --hide / --unhide set wallet_profiles.hidden: the name and avatar disappear
 // from every surface (boards, profile, session API, share page and card),
 // while the wallet keeps its rank. --exclude / --include set board_excluded:
-// the wallet never ranks and has no standing.
+// the wallet never ranks and has no standing. --hide-avatar / --unhide-avatar
+// set avatar_uploads.hidden (1.9.3 custom avatars, migration 4): the upload is
+// no longer served or shown anywhere (the on-chain preset shows instead), and
+// the wallet can neither replace nor delete it until it is unhidden.
 //
 // A dry run by default: it only SELECTs. Writing needs --apply plus the
 // action's confirm phrase (contract §11 rule 13). The script never migrates:
@@ -26,9 +31,19 @@ export const MODERATION_ACTIONS = Object.freeze({
   unhide: Object.freeze({ column: 'hidden', value: false, confirm: 'UNHIDE_PROFILE' }),
   exclude: Object.freeze({ column: 'board_excluded', value: true, confirm: 'EXCLUDE_WALLET' }),
   include: Object.freeze({ column: 'board_excluded', value: false, confirm: 'INCLUDE_WALLET' }),
+  'hide-avatar': Object.freeze({ table: 'avatar_uploads', column: 'hidden', value: true, confirm: 'HIDE_AVATAR' }),
+  'unhide-avatar': Object.freeze({ table: 'avatar_uploads', column: 'hidden', value: false, confirm: 'UNHIDE_AVATAR' }),
 });
+const ACTION_FLAGS = Object.freeze(Object.keys(MODERATION_ACTIONS).map((action) => `--${action}`));
 
-export const USAGE = 'usage: node scripts/moderate-profile.mjs --wallet 0x… (--hide | --unhide | --exclude | --include) [--apply --confirm <PHRASE>]';
+export const USAGE = 'usage: node scripts/moderate-profile.mjs --wallet 0x… (--hide | --unhide | --exclude | --include | --hide-avatar | --unhide-avatar) [--apply --confirm <PHRASE>]';
+
+// A custom avatar's image URL is cached as immutable; reads stop naming it at once.
+export const AVATAR_CACHE_NOTE = [
+  'Boards, profiles and session reads stop returning the avatar within seconds; share pages within 5 minutes.',
+  'The image URL itself (/api/avatar?wallet=…&v=…) is cached as immutable: purge the project\'s CDN cache',
+  'in the Vercel dashboard (project Settings, Caches) or with the Vercel CLI (`vercel cache purge`) to stop serving it at once.',
+];
 
 export const HIDE_CACHE_NOTE = [
   'Cached copies expire on their own: the share card within an hour (s-maxage=3600), the share page and',
@@ -47,10 +62,10 @@ export function parseModerationArgs(argv = []) {
     if (flag === '--wallet') options.wallet = value() ?? null;
     else if (flag === '--confirm') options.confirm = value() ?? null;
     else if (flag === '--apply' && inline === null) options.apply = true;
-    else if (['--hide', '--unhide', '--exclude', '--include'].includes(flag) && inline === null) actions.push(flag.slice(2));
+    else if (ACTION_FLAGS.includes(flag) && inline === null) actions.push(flag.slice(2));
     else return { ok: false, error: `unknown argument ${flag}` };
   }
-  if (actions.length !== 1) return { ok: false, error: 'choose exactly one of --hide, --unhide, --exclude, --include' };
+  if (actions.length !== 1) return { ok: false, error: `choose exactly one of ${ACTION_FLAGS.join(', ')}` };
   if (!/^0x[0-9a-fA-F]{40}$/.test(String(options.wallet ?? ''))) return { ok: false, error: '--wallet must be a 0x address' };
   return { ok: true, wallet: options.wallet.toLowerCase(), action: actions[0], apply: options.apply, confirm: options.confirm };
 }
@@ -87,6 +102,7 @@ export async function runModerateProfile({ argv = process.argv.slice(2), env = p
       out(`schema not migrated (version ${version} of ${LATEST_SCHEMA_VERSION}); run the E12 cron or scripts/neon-migrate.mjs first. Nothing was written.`);
       return { exitCode: 1, changed: false };
     }
+    if (plan.table === 'avatar_uploads') return await moderateAvatar(client, args, plan, out);
     const [current] = await client.query('SELECT hidden, board_excluded, display_name FROM wallet_profiles WHERE wallet = $1', [args.wallet]);
     const [runs] = await client.query("SELECT count(*)::int AS confirmed FROM verified_sessions WHERE wallet = $1 AND status = 'confirmed'", [args.wallet]);
     const before = current ? current[plan.column] === true : false;
@@ -110,6 +126,30 @@ export async function runModerateProfile({ argv = process.argv.slice(2), env = p
     out(`moderation failed (${error?.code ?? error?.name ?? 'error'})`);
     return { exitCode: 1 };
   }
+}
+
+// --hide-avatar / --unhide-avatar: flips avatar_uploads.hidden on an existing
+// upload (a wallet without one has nothing to hide).
+async function moderateAvatar(client, args, plan, out) {
+  const [current] = await client.query('SELECT hidden, content_type, width, height FROM avatar_uploads WHERE wallet = $1', [args.wallet]);
+  if (!current) {
+    out(`${args.wallet}: no custom avatar uploaded; nothing to change.`);
+    return { exitCode: 0, changed: false };
+  }
+  const before = current.hidden === true;
+  out(`${args.wallet}: custom avatar ${current.content_type} ${current.width}x${current.height}, hidden = ${before}.`);
+  if (!args.apply) {
+    out(`dry run: would set avatar hidden = ${plan.value}. Re-run with --apply --confirm ${plan.confirm} to write.`);
+    if (plan.value) for (const line of AVATAR_CACHE_NOTE) out(line);
+    return { exitCode: 0, changed: false };
+  }
+  const [row] = await client.query(
+    'UPDATE avatar_uploads SET hidden = $2::boolean, updated_at = now() WHERE wallet = $1 RETURNING hidden',
+    [args.wallet, plan.value ? 'true' : 'false'],
+  );
+  out(`applied: avatar hidden = ${row?.hidden} for ${args.wallet}.`);
+  if (plan.value) for (const line of AVATAR_CACHE_NOTE) out(line);
+  return { exitCode: 0, changed: before !== plan.value };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
