@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.9.1: Free share images on X, varied Level 1 art
+# Lester's Arcade — 1.9.2: real hero stats and perks in Hard Money Heroes
 
-Hotfix after 1.9.0 (owner-reported). Free Mode share cards now show their image on X: the card PNG no longer carries a noindex robots header, which X's card crawler treated as a refusal (the /f/ share pages themselves stay noindex). X caches cards per link, so a Free link shared before this fix may keep showing no image; new shares work. Hard Money Heroes' Level 1 intro and loading screens now open on a random image each game, avoiding the previous game's opening image.
+Owner-requested hero update. Each Hard Money Heroes hero now plays differently: Power, Speed, Armor and Luck (1 to 5, every hero totals 14) change damage dealt, move speed, damage taken and critical hits, and each hero has one perk (Reserve Plating: +20 max health; Velocity Trigger: faster while shooting; Block Time: shorter dash cooldown; Zero-Knowledge Crits: bigger critical hits). Everyone starts with the Pistol. The hero select has a dark background, shows each hero's own stats (no comparison against Lit Commando), the starting weapon, the perk and a short backstory. Ranked verification is unchanged: the perks move no score, XP, drop or spawn limit, and travel stays within the verifier's bound.
 
-Site/game version `1.9.1`; cache marker `lesters-arcade-v61-share-fix`. Continue on `fable/master-list-20260916`.
+Site/game version `1.9.2`; cache marker `lesters-arcade-v62-hero-stats`. Continue on `fable/master-list-20260916`.
 
 ## How to play
 
@@ -21,6 +21,12 @@ Every game at [lestersarcade.io](https://lestersarcade.io) has two modes. Free p
 Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain. The entry is split 85% to the game's developer and 15% to the arcade. Testnet zkLTC has no monetary value. The player guide at [lestersarcade.io/how-ranked-works](https://lestersarcade.io/how-ranked-works) covers every step, what is checked for each game, the Weekly, Monthly and All-time boards, the FAQ and fixes for common problems.
 
 For maintainers: the fee lives in one place, `RANKED_ENTRY_FEE_WEI` in [`apps/portal/src/ranked-fee.mjs`](apps/portal/src/ranked-fee.mjs), which `arcade-core.mjs` re-exports; `tests/ranked-fee-source-of-truth.test.mjs` ties it to the deploy config and the server settle floor. Every other static Ranked fact on the site (faucet, boards, achievements, the guide URL and the canonical wording) comes from [`apps/portal/src/ranked-facts.mjs`](apps/portal/src/ranked-facts.mjs), which reads the fee from ranked-fee.mjs (`tests/ranked-facts.test.mjs` ties it to the faucet, the boards and the achievement catalogs); the guide page is generated from [`apps/portal/src/ranked-guide-content.mjs`](apps/portal/src/ranked-guide-content.mjs) by `node scripts/build-portal-pages.mjs`.
+
+# Lester's Arcade — 1.9.1: Free share images on X, varied Level 1 art
+
+Hotfix after 1.9.0 (owner-reported). Free Mode share cards now show their image on X: the card PNG no longer carries a noindex robots header, which X's card crawler treated as a refusal (the /f/ share pages themselves stay noindex). X caches cards per link, so a Free link shared before this fix may keep showing no image; new shares work. Hard Money Heroes' Level 1 intro and loading screens now open on a random image each game, avoiding the previous game's opening image.
+
+Site/game version `1.9.1`; cache marker `lesters-arcade-v61-share-fix`. Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.9.0 verified live: Hard Money Heroes v0.6, Free share cards, Chikun backdrops
 
@@ -108,7 +114,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v61-share-fix`
+**Production cache marker:** `lesters-arcade-v62-hero-stats`
 
 # Lester's Arcade
 
