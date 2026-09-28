@@ -1,0 +1,41 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-27",
+  "release": "1.9.0 Hard Money Heroes v0.6",
+  "siteVersion": "1.9.0",
+  "cacheMarker": "lesters-arcade-v60-hmh-v06",
+  "branch": "fable/master-list-20260916",
+  "source": "41e9a533",
+  "candidateBranch": "fable/rc-1.9.0 @ 5367b450 (game sections session), merged fast-forward on the 1.8.6 head c50d4079",
+  "production": {
+    "deployment": "dpl_EkYKp8FpYuPHoQRCgh7kLjd2qYnK",
+    "immutableUrl": "https://lesters-arcade-b2ej0noko-justin-agent-projects.vercel.app",
+    "candidate": "https://lesters-arcade-qtgnnb7zi-justin-agent-projects.vercel.app",
+    "previous": "dpl_Hb744XdpVmBmakPcZHFHiP86RU1B (1.8.6)",
+    "rollback": "Instant Rollback to dpl_Hb744XdpVmBmakPcZHFHiP86RU1B (1.8.6): its verifier refuses schema-7 HMH summaries from the 1.9.0 child, so pause Ranked HMH (or accept failed HMH settles) before rolling back; Chikun and STACKED are unaffected. Fees stay 0.01 either way."
+  },
+  "contains": [
+    "HMH v0.6 (cabinet 0.6.0): mission tracker and objectives, Liquidator started by the Closing Bell or the Dark Pool (no timer), two-card level-ups with re-rolls and per-gun trees, Genesis Seal evolutions, dodge key, death camera, owner audio list; run summary schema 7",
+    "Verifier for schema 7 (reviewed by three adversarial lenses, then must-fixes): every v6 rule mirrored, dark-content rejects (prisoners, district bosses, new roles, unplaced objectives), standard-kills-above-contacts, unvisited-district reject, 300-tick Liquidator minimum unless the Dark Pool logbook condition; E15 refuses HMH seed tickets to portal builds below 1.9.0 (409 client-outdated, reload prompt before any payment)",
+    "Anti-cheat round 3 (melee trail on v6), Lightning Ledger swap fix, HMH perf step 6 and feel, Chikun Blender backdrops, STACKED feel and music autoplay, Free share pages and cards, new HMH banners and Ranked share cover, in-game Ranked copy",
+    "Release guard test: the portal's own build hash must carry the child's schema and receive an HMH seed"
+  ],
+  "gates": {
+    "local": "PASS 5759 tests, 5708 passed, exactly 51 ledgered failures",
+    "vercel": "first candidate (g0i20xqdd) FAILED in the cloud gate: tests/hmh-banner-art.test.mjs used git ls-files and the upload has no .git; fixed in 41e9a533 (walks the folders when git cannot list them); second candidate READY",
+    "budgets": "HMH initial + shared 1,037,072 B of 1,048,576 (smaller than 1.8.6)",
+    "rankedE2eLocal": "scripts/ranked-live-browser-e2e.mjs --target local on the 1.9.0 build: lester-blaster PASS 23/23 (schema 7 through settle and publish), chikun PASS 30/30, stacked PASS 23/23; report docs/qa/ranked-local-browser-e2e-20260927-1.9.0.json"
+  },
+  "verification": {
+    "publicFiles": "212/212 match the certified build",
+    "apiProbes": "attest 410, session nonce 200, leaderboards 200, profile 200, settle GET 405, health 200, jackpot 200 {live:false}, weekly-jackpot cron without secret 401, unknown share 404, profile deep link 200, /how-ranked-works 200, /games/hard-money-heroes 200",
+    "health": "healthy, version 1.9.0, degradedParts []; index-chain 810 runs 0 failures; settle-retry 4046 runs 0 failures"
+  },
+  "knownGaps": [
+    "No real played run has fought the Liquidator under the new rules (owner decision 2026-09-27: skip those runs); the fight rules are covered by code trace and the Liquidator-only fixture. Watch for HMH implausible-run refusals after the deploy.",
+    "The HMH performance smoke uses ?boss=1, which suppresses spawns in 1.9.0 by design; it needs a 1.9.0 scenario. Boot has 3 tasks over 100 ms (gameplay-lane cost).",
+    "Round-4 anti-cheat: a single grenade can be credited with unlimited kills (needs a blast cap in the child), secret silver score, claimable objective ticks."
+  ],
+  "contractsUnchanged": "Ranked contracts unchanged; entry fee 0.01 + 0.002 reserve (set 2026-09-27); jackpot deployed but idle"
+}

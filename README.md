@@ -1,10 +1,10 @@
-# Lester's Arcade — 1.9.0: Hard Money Heroes v0.6, Free share cards, Chikun backdrops
+# Lester's Arcade — 1.9.0 verified live: Hard Money Heroes v0.6, Free share cards, Chikun backdrops
 
 Hard Money Heroes becomes v0.6 (cabinet 0.6.0). Level 1 gains a mission tracker with objectives (switches, a winch, seals and gates). The Liquidator no longer arrives on a timer: from 10:00 you choose when and where to fight him by ringing the Closing Bell or entering the Dark Pool. Level-ups offer two cards with re-rolls and per-gun upgrade trees; a Genesis Seal evolves a mastered gun; there is a dodge key and a death camera. The Lightning Ledger no longer breaks a run after a weapon swap, crowds move more smoothly, phones use about 72% less texture memory, and HMH has new banners, intro art and a Ranked share cover. Ranked HMH runs now send the richer schema-7 run summary, checked by the server with every earlier anti-cheat rule plus new ones (content not in this build, faked Forked Standard kills, unvisited districts, a minimum Liquidator fight); older cached game versions keep working. A browser tab left open from before this release is asked to reload before it can pay for an HMH Ranked run, so no fee is lost to a stale page. Free runs in every game now get shareable pages and stat cards; Chikun's seven regions get Blender-built backdrops; STACKED feels springier and starts its music with the run; each game's menu explains Ranked in plain words.
 
 Known gaps: no real played run has yet fought the Liquidator under the new rules (covered by code review and a test fixture only, owner decision 2026-09-27); the HMH performance smoke needs a 1.9.0 scenario; a single grenade can still be credited with unlimited kills (next anti-cheat round).
 
-Site/game version `1.9.0`; cache marker `lesters-arcade-v60-hmh-v06`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_EkYKp8FpYuPHoQRCgh7kLjd2qYnK` (source `41e9a533`); site/game version `1.9.0`; cache marker `lesters-arcade-v60-hmh-v06`. The local and Vercel gates pass 5,708 of 5,759 tests with exactly 51 unchanged retired exceptions; the local Ranked browser run publishes a schema-7 HMH run, a Chikun run and a STACKED run; all 212 checked public files match and `/api/health` reports healthy. [Release receipt](docs/qa/batch-release-20260927-1.9.0.json). Rollback to `dpl_Hb744XdpVmBmakPcZHFHiP86RU1B` (1.8.6) refuses new HMH run summaries, so pause Ranked HMH first. Continue on `fable/master-list-20260916`.
 
 ## How to play
 

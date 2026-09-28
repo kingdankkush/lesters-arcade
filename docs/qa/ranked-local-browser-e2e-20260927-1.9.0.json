@@ -1,0 +1,1068 @@
+{
+  "schema": "lesters-ranked-live-browser-e2e-v1",
+  "generatedAt": "2026-09-28T00:08:38.572Z",
+  "head": "41e9a533",
+  "dirty": false,
+  "target": "local",
+  "note": "Local only: in-process Hardhat chain 4441, PGlite for Neon, public Hardhat fixture keys, and a throwaway live-flag portal in the OS temp directory served by scripts/lib/local-http.mjs with the vercel.json headers. Nothing touched LiteForge, Vercel or production Neon, and no committed file changed.",
+  "commands": {
+    "local": "PLAYWRIGHT_PACKAGE_PATH=<playwright/index.mjs> node scripts/ranked-live-browser-e2e.mjs --target local",
+    "live": "node scripts/ranked-live-browser-e2e.mjs --live --site https://lestersarcade.io --rpc https://liteforge.rpc.caldera.xyz/http --player-key-file <path> --confirm-live SPEND_TESTNET_ZKLTC --yes"
+  },
+  "walletConnect": "not exercised: localhost is not a Reown-allowed host; checked by hand at runbook step 9",
+  "throwaway": {
+    "flags": {
+      "settlementLive": true,
+      "hostedProfileSync": true
+    },
+    "addressModule": "deployed (local deployment record)",
+    "publicRpc": "loopback proxy (reads only)",
+    "launchCopy": true,
+    "csp": "vercel.json headers, plus the loopback proxy origin in connect-src"
+  },
+  "fixtureWallet": {
+    "frames": "the site origin's top frame only",
+    "transactions": "ArcadeRankedEntry.openSession only, at most the quoted total",
+    "quotesWei": {
+      "chikun": "12000000000000000",
+      "stacked": "12000000000000000",
+      "lester-blaster": "12000000000000000"
+    }
+  },
+  "repoUnchanged": true,
+  "browserRpc": {
+    "calls": 125,
+    "refused": []
+  },
+  "unhandledRejections": [],
+  "ok": true,
+  "durationMs": 124431,
+  "games": {
+    "chikun": {
+      "gameId": "chikun",
+      "ok": true,
+      "checks": [
+        {
+          "id": "signed-out-copy",
+          "ok": true,
+          "detail": {
+            "signIn": "Sign in",
+            "connectWallet": false,
+            "profileTitle": "Sign in to open your verified profile",
+            "profileButton": "Sign in"
+          }
+        },
+        {
+          "id": "sign-in-one-signature",
+          "ok": true,
+          "detail": {
+            "eth_requestAccounts": 1,
+            "eth_chainId": 1,
+            "personal_sign": 1
+          }
+        },
+        {
+          "id": "look-locked-before-run",
+          "ok": true,
+          "detail": {
+            "state": "locked",
+            "notice": "Unlocks follow your wallet to every device, in Free and Ranked. Your picks save to your wallet."
+          }
+        },
+        {
+          "id": "entry-modal-eyebrow",
+          "ok": true,
+          "detail": {
+            "eyebrow": "Ranked · Entry"
+          }
+        },
+        {
+          "id": "entry-modal-reserve-label",
+          "ok": true,
+          "detail": {
+            "reserveLabel": "Publishing"
+          }
+        },
+        {
+          "id": "entry-modal-quote",
+          "ok": true,
+          "detail": {
+            "fee": "0.01 zkLTC",
+            "reserve": "0.002 zkLTC",
+            "total": "0.012 zkLTC"
+          }
+        },
+        {
+          "id": "launch-copy",
+          "ok": true,
+          "detail": {
+            "description": "Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.012 testnet zkLTC per run, with verified scores published on LitVM.",
+            "rankedTitle": "Play Ranked",
+            "rankedCopy": "0.012 testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.",
+            "previewHit": null
+          }
+        },
+        {
+          "id": "seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
+          }
+        },
+        {
+          "id": "ranked-mode-title",
+          "ok": true,
+          "detail": {
+            "modeTitle": "Chikun’s Escape // Ranked Mode"
+          }
+        },
+        {
+          "id": "results-published",
+          "ok": true,
+          "detail": {
+            "state": "published",
+            "banner": ""
+          }
+        },
+        {
+          "id": "settle-request",
+          "ok": true,
+          "detail": {
+            "settleRequests": 1
+          }
+        },
+        {
+          "id": "entry-transaction",
+          "ok": true,
+          "detail": {
+            "to": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+            "value": "12000000000000000"
+          }
+        },
+        {
+          "id": "entry-session-matches-settle",
+          "ok": true,
+          "detail": {
+            "entry": "0x404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183",
+            "settle": "0x404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183"
+          }
+        },
+        {
+          "id": "chain-entry",
+          "ok": true,
+          "detail": {
+            "amountWei": "12000000000000000"
+          }
+        },
+        {
+          "id": "chain-session",
+          "ok": true,
+          "detail": {
+            "exists": true
+          }
+        },
+        {
+          "id": "settle-status-confirmed",
+          "ok": true,
+          "detail": {
+            "status": 200,
+            "state": "confirmed"
+          }
+        },
+        {
+          "id": "explorer-link",
+          "ok": true,
+          "detail": {
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0x84cc61b34afecac583add4159ef0e4d50fb4ae625d68527f79a629015d3691ec"
+          }
+        },
+        {
+          "id": "entry-link",
+          "ok": true,
+          "detail": {
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xf4b5c7253ddb8d2629a5b5a91fd6e21505dfce4a03d69e33404a6df00f6c8c31"
+          }
+        },
+        {
+          "id": "relayed-transaction",
+          "ok": true,
+          "detail": {
+            "status": 1
+          }
+        },
+        {
+          "id": "share-row",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "share-page",
+          "ok": true,
+          "detail": {
+            "page": {
+              "status": 200,
+              "ogUrl": "https://lestersarcade.io/s/404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183",
+              "ogImage": "/api/share-card/404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183.png?v=…",
+              "verified": true,
+              "noindex": false
+            },
+            "card": {
+              "status": 200,
+              "contentType": "image/png",
+              "png": true,
+              "bytes": 378032
+            }
+          }
+        },
+        {
+          "id": "unlock-from-e6",
+          "ok": true,
+          "detail": {
+            "before": "locked",
+            "after": "unlocked"
+          }
+        },
+        {
+          "id": "pick-puts-cosmetics",
+          "ok": true,
+          "detail": {
+            "status": 200,
+            "cosmetics": {
+              "chikun": {
+                "hat": "chikun-hat-cap"
+              }
+            }
+          }
+        },
+        {
+          "id": "look-reaches-free-child",
+          "ok": true,
+          "detail": {
+            "free": {
+              "type": "portal:init",
+              "cosmetics": {
+                "coat": null,
+                "trail": null,
+                "hat": "chikun-hat-cap"
+              }
+            },
+            "error": null
+          }
+        },
+        {
+          "id": "look-reaches-ranked-child",
+          "ok": true,
+          "detail": {
+            "ranked": {
+              "type": "portal:init",
+              "cosmetics": {
+                "coat": null,
+                "trail": null,
+                "hat": "chikun-hat-cap"
+              }
+            },
+            "error": null
+          }
+        },
+        {
+          "id": "second-ranked-seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
+          }
+        },
+        {
+          "id": "second-ranked-published",
+          "ok": true,
+          "detail": {
+            "state": "published",
+            "error": null
+          }
+        },
+        {
+          "id": "clean-console-and-network",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "no-off-origin-requests",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "wallet-top-frame-only",
+          "ok": true,
+          "detail": []
+        }
+      ],
+      "durationMs": 49936,
+      "signedOut": {
+        "signIn": "Sign in",
+        "connectWallet": false,
+        "profileTitle": "Sign in to open your verified profile",
+        "profileButton": "Sign in"
+      },
+      "beforeEntry": {
+        "stateBeforeRun": "locked"
+      },
+      "modal": {
+        "rankedTitle": "Play Ranked",
+        "rankedCopy": "0.012 testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.",
+        "eyebrow": "Ranked · Entry",
+        "fee": "0.01 zkLTC",
+        "reserve": "0.002 zkLTC",
+        "reserveLabel": "Publishing",
+        "total": "0.012 zkLTC",
+        "balance": "10000.0000 zkLTC",
+        "network": "LitVM LiteForge · 4441",
+        "copy": "One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.",
+        "footnote": "The entry contract quotes the exact total. Testnet entries are not refunded.",
+        "approve": "Confirm entry"
+      },
+      "seedTickets": [
+        "POST /api/ranked/seed 200"
+      ],
+      "modeTitle": "Chikun’s Escape // Ranked Mode",
+      "results": {
+        "state": "published",
+        "eyebrow": "Ranked · Chikun's Escape",
+        "score": "460",
+        "standing": "#1 this week · #1 all-time",
+        "banner": "",
+        "timeline": [
+          {
+            "step": "entry",
+            "status": "done"
+          },
+          {
+            "step": "verified",
+            "status": "done"
+          },
+          {
+            "step": "publishing",
+            "status": "done"
+          },
+          {
+            "step": "published",
+            "status": "done"
+          },
+          {
+            "step": "achievements",
+            "status": "done"
+          }
+        ],
+        "achievements": [
+          "chikun-first-flight",
+          "chikun-stack-three"
+        ]
+      },
+      "sessionId32": "0x404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183",
+      "entryTxHash": "0xf4b5c7253ddb8d2629a5b5a91fd6e21505dfce4a03d69e33404a6df00f6c8c31",
+      "settleTxHash": "0x84cc61b34afecac583add4159ef0e4d50fb4ae625d68527f79a629015d3691ec",
+      "share": {
+        "url": "https://lestersarcade.io/s/404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183",
+        "text": "🐔 RANKED · Chikun's Escape\n460 pts · Rank 1 this week · Lap 1 · Farmland\n🌾 0 forks · ⚡ 0 near-misses · 🪙 4 coins\n⛓ Verified on LitVM\nBeat my flight @LestersArcade",
+        "problems": []
+      },
+      "sharePage": {
+        "page": {
+          "status": 200,
+          "ogUrl": "https://lestersarcade.io/s/404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183",
+          "ogImage": "/api/share-card/404663b17d2cc9094b0a16ebe04f7c2d94d672f84d5d289a04c9f09daaba1183.png?v=…",
+          "verified": true,
+          "noindex": false
+        },
+        "card": {
+          "status": 200,
+          "contentType": "image/png",
+          "png": true,
+          "bytes": 378032
+        }
+      },
+      "unlockables": {
+        "steps": [
+          "look locked before the run",
+          "back to the cabinets",
+          "open profile",
+          "look unlocked",
+          "pick look",
+          "free run",
+          "ranked run",
+          "second ranked run publishes"
+        ],
+        "noticeBeforeRun": "Unlocks follow your wallet to every device, in Free and Ranked. Your picks save to your wallet.",
+        "stateBeforeRun": "locked",
+        "stateAfterRun": "unlocked",
+        "namePrompt": true,
+        "put": {
+          "status": 200,
+          "cosmetics": {
+            "chikun": {
+              "hat": "chikun-hat-cap"
+            }
+          }
+        },
+        "free": {
+          "type": "portal:init",
+          "cosmetics": {
+            "coat": null,
+            "trail": null,
+            "hat": "chikun-hat-cap"
+          }
+        },
+        "secondSeedTickets": [
+          "POST /api/ranked/seed 200"
+        ],
+        "ranked": {
+          "type": "portal:init",
+          "cosmetics": {
+            "coat": null,
+            "trail": null,
+            "hat": "chikun-hat-cap"
+          }
+        },
+        "secondRankedState": "published",
+        "putRequests": 3
+      },
+      "walletCalls": {
+        "eth_requestAccounts": 1,
+        "eth_chainId": 10,
+        "personal_sign": 1,
+        "eth_accounts": 4,
+        "eth_blockNumber": 2,
+        "eth_estimateGas": 2,
+        "eth_sendTransaction": 2,
+        "eth_getTransactionByHash": 2
+      },
+      "api": [
+        "GET /api/session/nonce 200",
+        "POST /api/session 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "POST /api/ranked/seed 200",
+        "GET /api/profile?wallet=… 200",
+        "PUT /api/profile 200",
+        "POST /api/settle 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "PUT /api/profile 200",
+        "PUT /api/profile 200",
+        "POST /api/ranked/seed 200",
+        "GET /api/profile?wallet=… 200",
+        "POST /api/settle 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/profile?wallet=…&self=… 200"
+      ],
+      "offOrigin": [],
+      "cancelledStaticLoads": [
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+      ],
+      "issues": [],
+      "walletRefusals": []
+    },
+    "stacked": {
+      "gameId": "stacked",
+      "ok": true,
+      "checks": [
+        {
+          "id": "signed-out-copy",
+          "ok": true,
+          "detail": {
+            "signIn": "Sign in",
+            "connectWallet": false,
+            "profileTitle": "Sign in to open your verified profile",
+            "profileButton": "Sign in"
+          }
+        },
+        {
+          "id": "sign-in-one-signature",
+          "ok": true,
+          "detail": {
+            "eth_requestAccounts": 1,
+            "eth_chainId": 1,
+            "personal_sign": 1
+          }
+        },
+        {
+          "id": "entry-modal-eyebrow",
+          "ok": true,
+          "detail": {
+            "eyebrow": "Ranked · Entry"
+          }
+        },
+        {
+          "id": "entry-modal-reserve-label",
+          "ok": true,
+          "detail": {
+            "reserveLabel": "Publishing"
+          }
+        },
+        {
+          "id": "entry-modal-quote",
+          "ok": true,
+          "detail": {
+            "fee": "0.01 zkLTC",
+            "reserve": "0.002 zkLTC",
+            "total": "0.012 zkLTC"
+          }
+        },
+        {
+          "id": "launch-copy",
+          "ok": true,
+          "detail": {
+            "description": "Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.012 testnet zkLTC per run, with verified scores published on LitVM.",
+            "rankedTitle": "Play Ranked",
+            "rankedCopy": "0.012 testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.",
+            "previewHit": null
+          }
+        },
+        {
+          "id": "seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
+          }
+        },
+        {
+          "id": "ranked-mode-title",
+          "ok": true,
+          "detail": {
+            "modeTitle": "STACKED // Ranked Testnet"
+          }
+        },
+        {
+          "id": "results-published",
+          "ok": true,
+          "detail": {
+            "state": "published",
+            "banner": ""
+          }
+        },
+        {
+          "id": "settle-request",
+          "ok": true,
+          "detail": {
+            "settleRequests": 1
+          }
+        },
+        {
+          "id": "entry-transaction",
+          "ok": true,
+          "detail": {
+            "to": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+            "value": "12000000000000000"
+          }
+        },
+        {
+          "id": "entry-session-matches-settle",
+          "ok": true,
+          "detail": {
+            "entry": "0x1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db",
+            "settle": "0x1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db"
+          }
+        },
+        {
+          "id": "chain-entry",
+          "ok": true,
+          "detail": {
+            "amountWei": "12000000000000000"
+          }
+        },
+        {
+          "id": "chain-session",
+          "ok": true,
+          "detail": {
+            "exists": true
+          }
+        },
+        {
+          "id": "settle-status-confirmed",
+          "ok": true,
+          "detail": {
+            "status": 200,
+            "state": "confirmed"
+          }
+        },
+        {
+          "id": "explorer-link",
+          "ok": true,
+          "detail": {
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xb73ddf7e3c4f0a73e265827727525dfe11b3c2bd030b2dfc702ce11f40c8faac"
+          }
+        },
+        {
+          "id": "entry-link",
+          "ok": true,
+          "detail": {
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xe4408261ff6d4842ad650c209d9463cfe47a6a4d8a78d0a89d65984e3e83b429"
+          }
+        },
+        {
+          "id": "relayed-transaction",
+          "ok": true,
+          "detail": {
+            "status": 1
+          }
+        },
+        {
+          "id": "share-row",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "share-page",
+          "ok": true,
+          "detail": {
+            "page": {
+              "status": 200,
+              "ogUrl": "https://lestersarcade.io/s/1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db",
+              "ogImage": "/api/share-card/1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db.png?v=…",
+              "verified": true,
+              "noindex": false
+            },
+            "card": {
+              "status": 200,
+              "contentType": "image/png",
+              "png": true,
+              "bytes": 403562
+            }
+          }
+        },
+        {
+          "id": "clean-console-and-network",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "no-off-origin-requests",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "wallet-top-frame-only",
+          "ok": true,
+          "detail": []
+        }
+      ],
+      "durationMs": 34897,
+      "signedOut": {
+        "signIn": "Sign in",
+        "connectWallet": false,
+        "profileTitle": "Sign in to open your verified profile",
+        "profileButton": "Sign in"
+      },
+      "modal": {
+        "rankedTitle": "Play Ranked",
+        "rankedCopy": "0.012 testnet zkLTC per run. The arcade server replays your run from its inputs and publishes it on LitVM.",
+        "eyebrow": "Ranked · Entry",
+        "fee": "0.01 zkLTC",
+        "reserve": "0.002 zkLTC",
+        "reserveLabel": "Publishing",
+        "total": "0.012 zkLTC",
+        "balance": "9999.9759 zkLTC",
+        "network": "LitVM LiteForge · 4441",
+        "copy": "One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.",
+        "footnote": "The entry contract quotes the exact total. Testnet entries are not refunded.",
+        "approve": "Confirm entry"
+      },
+      "seedTickets": [
+        "POST /api/ranked/seed 200"
+      ],
+      "modeTitle": "STACKED // Ranked Testnet",
+      "results": {
+        "state": "published",
+        "eyebrow": "Ranked · STACKED",
+        "score": "232",
+        "standing": "",
+        "banner": "",
+        "timeline": [
+          {
+            "step": "entry",
+            "status": "done"
+          },
+          {
+            "step": "verified",
+            "status": "done"
+          },
+          {
+            "step": "publishing",
+            "status": "done"
+          },
+          {
+            "step": "published",
+            "status": "done"
+          },
+          {
+            "step": "achievements",
+            "status": "done"
+          }
+        ],
+        "achievements": []
+      },
+      "sessionId32": "0x1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db",
+      "entryTxHash": "0xe4408261ff6d4842ad650c209d9463cfe47a6a4d8a78d0a89d65984e3e83b429",
+      "settleTxHash": "0xb73ddf7e3c4f0a73e265827727525dfe11b3c2bd030b2dfc702ce11f40c8faac",
+      "share": {
+        "url": "https://lestersarcade.io/s/1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db",
+        "text": "🧱 RANKED · STACKED\n232 pts\n📈 0 lines · Lv 1 · 0 Halvings\n⛓ Verified on LitVM\nStack higher @LestersArcade",
+        "problems": []
+      },
+      "sharePage": {
+        "page": {
+          "status": 200,
+          "ogUrl": "https://lestersarcade.io/s/1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db",
+          "ogImage": "/api/share-card/1489ae9662196b013b0f3c497dbac36d369d1f46e72b84dabed5fbc846f933db.png?v=…",
+          "verified": true,
+          "noindex": false
+        },
+        "card": {
+          "status": 200,
+          "contentType": "image/png",
+          "png": true,
+          "bytes": 403562
+        }
+      },
+      "walletCalls": {
+        "eth_requestAccounts": 1,
+        "eth_chainId": 6,
+        "personal_sign": 1,
+        "eth_accounts": 2,
+        "eth_blockNumber": 1,
+        "eth_estimateGas": 1,
+        "eth_sendTransaction": 1,
+        "eth_getTransactionByHash": 1
+      },
+      "api": [
+        "GET /api/session/nonce 200",
+        "POST /api/session 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "POST /api/ranked/seed 200",
+        "GET /api/profile?wallet=… 200",
+        "PUT /api/profile 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "POST /api/settle 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/profile?wallet=…&self=… 200"
+      ],
+      "offOrigin": [],
+      "cancelledStaticLoads": [
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+      ],
+      "issues": [],
+      "walletRefusals": []
+    },
+    "lester-blaster": {
+      "gameId": "lester-blaster",
+      "ok": true,
+      "checks": [
+        {
+          "id": "signed-out-copy",
+          "ok": true,
+          "detail": {
+            "signIn": "Sign in",
+            "connectWallet": false,
+            "profileTitle": "Sign in to open your verified profile",
+            "profileButton": "Sign in"
+          }
+        },
+        {
+          "id": "sign-in-one-signature",
+          "ok": true,
+          "detail": {
+            "eth_requestAccounts": 1,
+            "eth_chainId": 1,
+            "personal_sign": 1
+          }
+        },
+        {
+          "id": "entry-modal-eyebrow",
+          "ok": true,
+          "detail": {
+            "eyebrow": "Ranked · Entry"
+          }
+        },
+        {
+          "id": "entry-modal-reserve-label",
+          "ok": true,
+          "detail": {
+            "reserveLabel": "Publishing"
+          }
+        },
+        {
+          "id": "entry-modal-quote",
+          "ok": true,
+          "detail": {
+            "fee": "0.01 zkLTC",
+            "reserve": "0.002 zkLTC",
+            "total": "0.012 zkLTC"
+          }
+        },
+        {
+          "id": "launch-copy",
+          "ok": true,
+          "detail": {
+            "description": "Lester's Arcade is a browser arcade inspired by Litecoin culture. Play Hard Money Heroes, Chikun's Escape, and STACKED Free, or play Ranked for 0.012 testnet zkLTC per run, with verified scores published on LitVM.",
+            "rankedTitle": "Play Ranked",
+            "rankedCopy": "0.012 testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.",
+            "previewHit": null
+          }
+        },
+        {
+          "id": "seed-ticket",
+          "ok": true,
+          "detail": {
+            "seeds": [
+              "POST /api/ranked/seed 200"
+            ]
+          }
+        },
+        {
+          "id": "ranked-mode-title",
+          "ok": true,
+          "detail": {
+            "modeTitle": "Hard Money Heroes: Top-Down Reboot // Ranked Testnet"
+          }
+        },
+        {
+          "id": "results-published",
+          "ok": true,
+          "detail": {
+            "state": "published",
+            "banner": ""
+          }
+        },
+        {
+          "id": "settle-request",
+          "ok": true,
+          "detail": {
+            "settleRequests": 1
+          }
+        },
+        {
+          "id": "entry-transaction",
+          "ok": true,
+          "detail": {
+            "to": "0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0",
+            "value": "12000000000000000"
+          }
+        },
+        {
+          "id": "entry-session-matches-settle",
+          "ok": true,
+          "detail": {
+            "entry": "0xe76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae",
+            "settle": "0xe76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae"
+          }
+        },
+        {
+          "id": "chain-entry",
+          "ok": true,
+          "detail": {
+            "amountWei": "12000000000000000"
+          }
+        },
+        {
+          "id": "chain-session",
+          "ok": true,
+          "detail": {
+            "exists": true
+          }
+        },
+        {
+          "id": "settle-status-confirmed",
+          "ok": true,
+          "detail": {
+            "status": 200,
+            "state": "confirmed"
+          }
+        },
+        {
+          "id": "explorer-link",
+          "ok": true,
+          "detail": {
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xbf2fc59c36570aacb1135c9150f486e501e92f4de58b62a0d2d643f149a6d8b9"
+          }
+        },
+        {
+          "id": "entry-link",
+          "ok": true,
+          "detail": {
+            "href": "https://liteforge.explorer.caldera.xyz/tx/0xf6c4707e2a94d25e82790a54c8ae7b6fb1f8e194bf123e0f13957147625d64c4"
+          }
+        },
+        {
+          "id": "relayed-transaction",
+          "ok": true,
+          "detail": {
+            "status": 1
+          }
+        },
+        {
+          "id": "share-row",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "share-page",
+          "ok": true,
+          "detail": {
+            "page": {
+              "status": 200,
+              "ogUrl": "https://lestersarcade.io/s/e76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae",
+              "ogImage": "/api/share-card/e76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae.png?v=…",
+              "verified": true,
+              "noindex": false
+            },
+            "card": {
+              "status": 200,
+              "contentType": "image/png",
+              "png": true,
+              "bytes": 386061
+            }
+          }
+        },
+        {
+          "id": "clean-console-and-network",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "no-off-origin-requests",
+          "ok": true,
+          "detail": []
+        },
+        {
+          "id": "wallet-top-frame-only",
+          "ok": true,
+          "detail": []
+        }
+      ],
+      "durationMs": 35390,
+      "signedOut": {
+        "signIn": "Sign in",
+        "connectWallet": false,
+        "profileTitle": "Sign in to open your verified profile",
+        "profileButton": "Sign in"
+      },
+      "modal": {
+        "rankedTitle": "Play Ranked",
+        "rankedCopy": "0.012 testnet zkLTC per run. The arcade server plausibility-checks your run (it is not replayed) and publishes it on LitVM.",
+        "eyebrow": "Ranked · Entry",
+        "fee": "0.01 zkLTC",
+        "reserve": "0.002 zkLTC",
+        "reserveLabel": "Publishing",
+        "total": "0.012 zkLTC",
+        "balance": "9999.9639 zkLTC",
+        "network": "LitVM LiteForge · 4441",
+        "copy": "One confirmation in your wallet pays the entry. Your run starts as soon as it is sent, and the relayer publishes your score on LitVM.",
+        "footnote": "The entry contract quotes the exact total. Testnet entries are not refunded.",
+        "approve": "Confirm entry"
+      },
+      "seedTickets": [
+        "POST /api/ranked/seed 200"
+      ],
+      "modeTitle": "Hard Money Heroes: Top-Down Reboot // Ranked Testnet",
+      "results": {
+        "state": "published",
+        "eyebrow": "Ranked · Hard Money Heroes",
+        "score": "0",
+        "standing": "#1 this week · #1 all-time",
+        "banner": "",
+        "timeline": [
+          {
+            "step": "entry",
+            "status": "done"
+          },
+          {
+            "step": "verified",
+            "status": "done"
+          },
+          {
+            "step": "publishing",
+            "status": "done"
+          },
+          {
+            "step": "published",
+            "status": "done"
+          },
+          {
+            "step": "achievements",
+            "status": "done"
+          }
+        ],
+        "achievements": [
+          "cabinet-pioneer",
+          "first-paid-run"
+        ]
+      },
+      "sessionId32": "0xe76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae",
+      "entryTxHash": "0xf6c4707e2a94d25e82790a54c8ae7b6fb1f8e194bf123e0f13957147625d64c4",
+      "settleTxHash": "0xbf2fc59c36570aacb1135c9150f486e501e92f4de58b62a0d2d643f149a6d8b9",
+      "share": {
+        "url": "https://lestersarcade.io/s/e76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae",
+        "text": "🏆 RANKED · Hard Money Heroes\n0 pts · Rank 1 this week\n☠ 0 kills · 🔥 ×0 combo · ⏱ 0:00\n⛓ Verified on LitVM\nCan you beat it? @LestersArcade",
+        "problems": []
+      },
+      "sharePage": {
+        "page": {
+          "status": 200,
+          "ogUrl": "https://lestersarcade.io/s/e76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae",
+          "ogImage": "/api/share-card/e76eb6d5c6c2ade9226485a1b9708cd75c3b82c1ad63a650a8343ed784d691ae.png?v=…",
+          "verified": true,
+          "noindex": false
+        },
+        "card": {
+          "status": 200,
+          "contentType": "image/png",
+          "png": true,
+          "bytes": 386061
+        }
+      },
+      "walletCalls": {
+        "eth_requestAccounts": 1,
+        "eth_chainId": 6,
+        "personal_sign": 1,
+        "eth_accounts": 2,
+        "eth_blockNumber": 1,
+        "eth_estimateGas": 1,
+        "eth_sendTransaction": 1,
+        "eth_getTransactionByHash": 1
+      },
+      "api": [
+        "GET /api/session/nonce 200",
+        "POST /api/session 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "POST /api/ranked/seed 200",
+        "GET /api/profile?wallet=… 200",
+        "PUT /api/profile 200",
+        "GET /api/profile?wallet=…&self=… 200",
+        "POST /api/settle 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/leaderboard?game=…&period=…&wallet=… 200",
+        "GET /api/profile?wallet=…&self=… 200"
+      ],
+      "offOrigin": [],
+      "cancelledStaticLoads": [
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
+        "GET /assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3"
+      ],
+      "issues": [],
+      "walletRefusals": []
+    }
+  }
+}
