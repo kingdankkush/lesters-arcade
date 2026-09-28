@@ -28,6 +28,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/arcade-security-review.mjs",
     "apps/portal/src/atlas-frame-ref.mjs",
     "apps/portal/src/authored-world-layout.mjs",
+    "apps/portal/src/avatar-upload.mjs",
     "apps/portal/src/biome-model.mjs",
     "apps/portal/src/boss-phase-controller.mjs",
     "apps/portal/src/cabinet-haptics.mjs",
