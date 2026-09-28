@@ -237,7 +237,7 @@ test('the runtime feeds one invulnerability-aware target list to both hazard hoo
   assert.match(source, /if\(WORLD_ENVIRONMENT_WEAPON_IDS\.has\(scoreEvent\.weaponId\)\) \{/);
   assert.ok(!source.includes("scoreEvent.weaponId==='world-steam'"));
   // Movement: the slow multiplies after the run effects, the drift lands before the swept collision.
-  assert.match(source, /speedMultiplier: terrainSpeedMultiplier[\s\S]{0,160}runEffects\.moveSpeedMultiplier\s*\* playerHazardField\.speed/);
+  assert.match(source, /speedMultiplier: terrainSpeedMultiplier[\s\S]{0,160}runEffects\.moveSpeedMultiplier[\s\S]{0,160}\* playerHazardField\.speed/);
   const drift = source.indexOf('motion.x += playerHazardField.drift.x * dtSeconds;');
   const sweep = source.indexOf('lastCollision = resolveSweptCircleMotion({\n          body: playerBody,\n          start: movementStart,');
   assert.ok(drift > 0 && drift < sweep);

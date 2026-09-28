@@ -91,8 +91,9 @@ test('WO-53 playable character stat identities are data-driven and map to sim mu
   assert.equal(roster.every((entry) => entry.stats.length === 4), true);
   assert.equal(roster.every((entry) => entry.simMultipliers && entry.combatStats && entry.viability.ok === true), true);
 
+  // 1.9.2: the multipliers are derived from the runtime hero loadouts.
   assert.equal(playableCharacterStatIdentityFor('lit-commando').simMultipliers.maxHealth, 1.2);
-  assert.equal(playableCharacterStatIdentityFor('lit-valkyrie').simMultipliers.movementSpeed, 1.15);
+  assert.equal(playableCharacterStatIdentityFor('lit-valkyrie').simMultipliers.movementSpeed, 1.08);
   assert.equal(playableCharacterStatIdentityFor('lester').id, 'lester-original');
   assert.equal(playableCharacterStatIdentityFor('unknown-character'), null);
 });

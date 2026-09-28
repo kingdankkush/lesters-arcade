@@ -33,11 +33,14 @@ export function createDashState({
   distance = DASH_DISTANCE,
   durationTicks = DASH_DURATION_TICKS,
   invulnerabilityTicks = DASH_INVULNERABILITY_TICKS,
+  // Hero perk (hero-loadout.mjs Block Time): scales every tier's cooldown.
+  cooldownScale = 1,
 } = {}) {
   const safeDistance = finite(distance, 'distance');
   if (safeDistance <= 0) throw new TypeError('distance must be positive');
   return {
     cooldownTier: validateTier(cooldownTier),
+    cooldownScale: finite(cooldownScale, 'cooldownScale') > 0 ? cooldownScale : 1,
     distance: safeDistance,
     durationTicks: positiveInteger(durationTicks, 'durationTicks'),
     invulnerabilityTicks: positiveInteger(invulnerabilityTicks, 'invulnerabilityTicks'),
@@ -76,7 +79,7 @@ export function beginDash(state, { tick, direction, fallbackDirection = { x: 0, 
     : Math.max(1, Math.ceil(dashDistance / (state.distance / state.durationTicks) - EPSILON));
   state.remainingTicks = state.activeTicks;
   state.startedTick = tick;
-  state.cooldownReadyTick = tick + DASH_COOLDOWN_TICKS_BY_TIER[state.cooldownTier];
+  state.cooldownReadyTick = tick + Math.round(DASH_COOLDOWN_TICKS_BY_TIER[state.cooldownTier] * (state.cooldownScale ?? 1));
   state.invulnerableUntilTick = tick + state.invulnerabilityTicks - 1;
   state.lastStopReason = null;
   return freezeDeep({ started: true, reason: 'started', direction: resolvedDirection, cooldownReadyTick: state.cooldownReadyTick });

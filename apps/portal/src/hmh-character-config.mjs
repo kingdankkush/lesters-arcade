@@ -1,3 +1,5 @@
+import { HMH_HERO_LOADOUTS, HMH_HERO_STARTING_WEAPON_ID, heroModifiersFor } from '../../hmh-reboot/src/hero-loadout.mjs';
+
 export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
   rosterDecisionStatus: 'resolved-commando-valkyrie-starters-lester-lilly-ranked-unlockables',
   directionMode: '8-direction-backbone',
@@ -38,62 +40,72 @@ export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
   ]),
 });
 
-export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
-  'lit-commando': Object.freeze({
-    id: 'lit-commando',
-    name: 'Lit Commando',
-    tagline: 'Tanky Bruiser',
-    bio: 'Battle-worn commando with a dark mullet, red neckerchief, and olive field shirt with rolled sleeves. More HP, armor, and damage — a touch slower. Walks straight into the panic with hard money on his side.',
-    stats: Object.freeze([Object.freeze(['Power', 5]), Object.freeze(['Speed', 3]), Object.freeze(['Armor', 5]), Object.freeze(['Luck', 3])]),
-    simMultipliers: Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92, incomingDamage: 0.9 }),
-    combatStats: Object.freeze({ maxHealth: 120, speed: 0.92, jump: 1.0, melee: 1.15, luck: 0.95 }),
-    viability: Object.freeze({ ok: true, style: 'durable opener', tradeoff: 'slower movement offsets higher health, damage, and armor' }),
-    startingWeaponId: 'auto-miner',
-    startingWeaponDurationSeconds: 45,
-    passive: Object.freeze({ id: 'reserve-plating', title: 'Reserve Plating', description: 'Takes 10% less incoming damage.' }),
-    signature: Object.freeze({ id: 'boss-reserve', title: 'Boss Reserve', description: 'Major-boss clears restore 15% maximum health.', bossRecoveryFraction: 0.15 }),
-  }),
-  'lit-valkyrie': Object.freeze({
-    id: 'lit-valkyrie',
-    name: 'Lit Valkyrie',
-    tagline: 'Agile Glass-Cannon',
-    bio: 'Battle-ready survivor with long wavy blonde hair, a red headband, and an olive cropped tank. Faster movement, higher fire-rate and crit chance — but more fragile. Darts through the panic and punishes mistakes.',
-    stats: Object.freeze([Object.freeze(['Power', 4]), Object.freeze(['Speed', 5]), Object.freeze(['Armor', 2]), Object.freeze(['Luck', 5])]),
-    simMultipliers: Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88, movingFireRate: 1.12 }),
-    combatStats: Object.freeze({ maxHealth: 88, speed: 1.15, jump: 1.0, melee: 0.95, luck: 1.15 }),
-    viability: Object.freeze({ ok: true, style: 'mobile glass-cannon', tradeoff: 'lower health offsets speed, fire-rate, and crit upside' }),
-    startingWeaponId: 'spread-ltc',
-    startingWeaponDurationSeconds: 45,
-    passive: Object.freeze({ id: 'velocity-trigger', title: 'Velocity Trigger', description: 'Fires 12% faster while moving.' }),
-    signature: Object.freeze({ id: 'momentum-volley', title: 'Momentum Volley', description: 'Movement turns Spread LTC into a faster opening sweep.', movingFireRateMultiplier: 1.12 }),
-  }),
-  'lester-original': Object.freeze({
-    id: 'lester-original',
-    name: 'Lester',
-    tagline: 'Original Commando',
-    bio: 'Cobalt-blue spherical mascot head with Litecoin mark, blue scarf and olive vest. Balanced stats. Unlock after 5 completed Ranked Hard Money Heroes games on this wallet.',
-    stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 3]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 3])]),
-    simMultipliers: Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0, xpGain: 1.12 }),
-    combatStats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
-    viability: Object.freeze({ ok: true, style: 'balanced unlockable', tradeoff: 'no extreme stat; consistency is the reward' }),
-    startingWeaponId: 'coin-blaster',
+// Hero stats, perks and the starting Pistol are the simulation's own table
+// (apps/hmh-reboot/src/hero-loadout.mjs, 1.9.2): the hero select shows the
+// numbers the game plays with. Bios are the heroes' Level 1 backstories.
+const HERO_STAT_LABELS = Object.freeze([['power', 'Power'], ['speed', 'Speed'], ['armor', 'Armor'], ['luck', 'Luck']]);
+
+function heroIdentity(id, { name, tagline, bio, appearance, style, tradeoff }) {
+  const loadout = HMH_HERO_LOADOUTS[id];
+  const mods = heroModifiersFor(id);
+  const round = (value) => Math.round(value * 1000) / 1000;
+  return Object.freeze({
+    id,
+    name,
+    tagline,
+    bio,
+    // The reference look (REFERENCE-CHARACTER-MODELS.md), kept apart from the backstory.
+    appearance,
+    stats: Object.freeze(HERO_STAT_LABELS.map(([key, label]) => Object.freeze([label, loadout.stats[key]]))),
+    simMultipliers: Object.freeze({
+      damage: round(mods.outgoingDamageMultiplier),
+      movementSpeed: round(mods.moveSpeedMultiplier),
+      armor: round(2 - mods.incomingDamageMultiplier),
+      incomingDamage: round(mods.incomingDamageMultiplier),
+      maxHealth: round((100 + mods.maxHealthBonus) / 100),
+      criticalChance: round((0.08 + mods.criticalChanceBonus) / 0.08),
+    }),
+    combatStats: Object.freeze({ maxHealth: 100 + mods.maxHealthBonus, speed: round(mods.moveSpeedMultiplier), jump: 1.0, melee: 1.0, luck: round((0.08 + mods.criticalChanceBonus) / 0.08) }),
+    viability: Object.freeze({ ok: true, style, tradeoff }),
+    startingWeaponId: HMH_HERO_STARTING_WEAPON_ID,
+    startingWeaponTitle: 'The Pistol',
     startingWeaponDurationSeconds: 0,
-    passive: Object.freeze({ id: 'compound-xp', title: 'Compound Experience', description: 'Collects 12% more XP from every source.' }),
-    signature: Object.freeze({ id: 'settled-bounty', title: 'Settled Bounty', description: 'Major-boss score payouts are worth 10% more.', bossScoreMultiplier: 1.1 }),
+    passive: Object.freeze({ id: loadout.perk.id, title: loadout.perk.title, description: loadout.perk.description }),
+  });
+}
+
+export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
+  'lit-commando': heroIdentity('lit-commando', {
+    name: 'Lit Commando',
+    appearance: 'Battle-worn commando with a dark mullet, red neckerchief, and olive field shirt with rolled sleeves.',
+    tagline: 'Tanky Bruiser',
+    bio: "Guarded a basement of ASIC miners with a flashlight and a thermos since 2017. When the Great Liquidation turned bagholders into zombies, he was the only one awake, so he followed the Litecoin flares to the Forked Frontier.",
+    style: 'durable opener',
+    tradeoff: 'the slowest hero, with the most armor and extra health',
   }),
-  lilly: Object.freeze({
-    id: 'lilly',
+  'lit-valkyrie': heroIdentity('lit-valkyrie', {
+    name: 'Lit Valkyrie',
+    appearance: 'Battle-ready survivor with long wavy blonde hair, a red headband, and an olive cropped tank.',
+    tagline: 'Agile Striker',
+    bio: "A former day trader liquidated on 100x leverage who swore never to stand still again. She outran the margin calls the night they came alive and sprinted straight into the Forked Frontier. She calls it cardio. The zombies call it unfair.",
+    style: 'mobile striker',
+    tradeoff: 'the fastest hero, with the least armor',
+  }),
+  'lester-original': heroIdentity('lester-original', {
+    name: 'Lester',
+    appearance: 'Cobalt-blue spherical mascot head with the Litecoin mark, a blue scarf and an olive vest.',
+    tagline: "Litecoin's Original Hero",
+    bio: "The silver to Bitcoin's gold, and he's heard every joke. Lester has found a block every 2.5 minutes since 2011, so when the zombie bear market ate the old chain, he beat everyone to the Forked Frontier. Faster blocks, very round head.",
+    style: 'all-rounder',
+    tradeoff: 'strong power and speed, with no stat at the extremes',
+  }),
+  lilly: heroIdentity('lilly', {
     name: 'Lilly',
-    tagline: 'Ranked Veteran',
-    bio: 'Tactical veteran with wavy teal hair, round tinted glasses, and a long gold-trimmed teal coat. Unlock after 10 completed Ranked Hard Money Heroes games on this wallet.',
-    stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 4]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 4])]),
-    simMultipliers: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96, luck: 1.15 }),
-    combatStats: Object.freeze({ maxHealth: 96, speed: 1.08, jump: 1.0, melee: 1.05, luck: 1.08 }),
-    viability: Object.freeze({ ok: true, style: 'agile veteran', tradeoff: 'moderate HP dip offsets broad mobility/fire-rate/crit lift' }),
-    startingWeaponId: 'scatter-shotgun',
-    startingWeaponDurationSeconds: 45,
-    passive: Object.freeze({ id: 'dividend-luck', title: 'Dividend Luck', description: 'Improves deterministic power-up drop rolls by 15%.' }),
-    signature: Object.freeze({ id: 'closeout-dividend', title: 'Closeout Dividend', description: 'Block Breaker pressure converts close-range clears into richer pickup odds.', dropLuckMultiplier: 1.15 }),
+    appearance: 'Tactical veteran with wavy teal hair, round tinted glasses, and a long gold-trimmed teal coat.',
+    tagline: "LitVM's Crit Specialist",
+    bio: "LitVM's smart-contract wizard, who deployed on Litecoin before it was cool. She came to the Forked Frontier to audit the outbreak, found the rollup was rolling up actual zombies, and decided to settle it herself. Her proofs are zero-knowledge. Her aim is not.",
+    style: 'critical-hit specialist',
+    tradeoff: 'the luckiest hero, with average power, speed and armor',
   }),
 });
 

@@ -41,17 +41,14 @@ test('compareHeroStats reports per-stat deltas against the reference hero and ma
   assert.equal(byId['lit-valkyrie'].isReference, false);
 
   const stat = (heroId, label) => byId[heroId].stats.find((entry) => entry.label === label);
-  assert.deepEqual(stat('lit-commando', 'Power'), { label: 'Power', value: 5, referenceValue: 5, delta: 0, best: true, tie: false });
-  assert.deepEqual(stat('lit-valkyrie', 'Power'), { label: 'Power', value: 4, referenceValue: 5, delta: -1, best: false, tie: false });
-  assert.deepEqual(stat('lit-valkyrie', 'Speed'), { label: 'Speed', value: 5, referenceValue: 3, delta: 2, best: true, tie: false });
-  assert.deepEqual(stat('lester-original', 'Power'), { label: 'Power', value: 3, referenceValue: 5, delta: -2, best: false, tie: false });
-  assert.deepEqual(stat('lilly', 'Luck'), { label: 'Luck', value: 4, referenceValue: 3, delta: 1, best: false, tie: false });
-  assert.equal(stat('lit-valkyrie', 'Luck').best, true);
+  // 1.9.2 roster: Commando 4/2/5/3, Valkyrie 3/5/2/4, Lester 4/4/3/3, Lilly 3/3/3/5.
+  assert.deepEqual(stat('lit-commando', 'Power'), { label: 'Power', value: 4, referenceValue: 4, delta: 0, best: true, tie: true });
+  assert.deepEqual(stat('lit-valkyrie', 'Power'), { label: 'Power', value: 3, referenceValue: 4, delta: -1, best: false, tie: false });
+  assert.deepEqual(stat('lit-valkyrie', 'Speed'), { label: 'Speed', value: 5, referenceValue: 2, delta: 3, best: true, tie: false });
+  assert.deepEqual(stat('lester-original', 'Power'), { label: 'Power', value: 4, referenceValue: 4, delta: 0, best: true, tie: true });
+  assert.deepEqual(stat('lilly', 'Luck'), { label: 'Luck', value: 5, referenceValue: 3, delta: 2, best: true, tie: false });
+  assert.equal(stat('lit-valkyrie', 'Luck').best, false);
   assert.equal(stat('lit-commando', 'Armor').best, true);
-  // Every stat has exactly one best hero in the shipped roster.
-  for (const label of ['Power', 'Speed', 'Armor', 'Luck']) {
-    assert.equal(comparison.filter((hero) => hero.stats.find((entry) => entry.label === label).best).length, 1, label);
-  }
 });
 
 test('compareHeroStats shares best across ties, tolerates missing stats, and falls back when the reference is absent', () => {
@@ -143,7 +140,7 @@ function fakeNode(tag = 'div', props = {}) {
   };
 }
 
-test('character select renders comparison chips, identity attributes, and arrow-key roving focus', () => {
+test('character select renders each hero own stat chips, identity attributes, and arrow-key roving focus', () => {
   const roster = fakeNode('roster');
   const dom = { officialCharacterSelect: fakeNode('section'), officialCharacterRoster: roster };
   const combat = { characterId: 'lit-commando' };
@@ -181,23 +178,19 @@ test('character select renders comparison chips, identity attributes, and arrow-
   assert.deepEqual(cards.map((card) => card.dataset.characterId), ['lit-commando', 'lit-valkyrie', 'lester-original', 'lilly']);
   assert.deepEqual(cards.map((card) => card.attrs['aria-pressed']), ['true', 'false', 'false', 'false']);
   assert.equal(roster.attrs.role, 'group');
-  assert.equal(cards[0].dataset.compareRole, 'reference');
-  assert.equal(cards[1].dataset.compareRole, 'challenger');
+  assert.equal(dom.officialCharacterSelect.style.backgroundImage, 'none', 'the select screen has a plain dark ground');
 
   const chips = rows.flatMap((row) => row.children.filter((child) => child.classList.contains('hero-stat-delta')));
-  assert.equal(chips.length, 16, 'one comparison chip per stat per card');
+  assert.equal(chips.length, 16, 'one stat chip per stat per card');
   assert.ok(rows.every((row) => row.classList.contains('has-delta')));
   const valkyrieSpeed = rows[5];
   const valkyrieSpeedChip = valkyrieSpeed.children.find((child) => child.classList.contains('hero-stat-delta'));
-  assert.equal(valkyrieSpeedChip.textContent, '+2');
-  assert.equal(valkyrieSpeedChip.dataset.trend, 'up');
-  assert.equal(valkyrieSpeedChip.dataset.best, 'true');
+  assert.equal(valkyrieSpeedChip.textContent, '5/5');
   const commandoPowerChip = rows[0].children.find((child) => child.classList.contains('hero-stat-delta'));
-  assert.equal(commandoPowerChip.textContent, '5/5');
-  assert.equal(commandoPowerChip.dataset.best, 'true');
+  assert.equal(commandoPowerChip.textContent, '4/5');
   const lesterPowerChip = rows[8].children.find((child) => child.classList.contains('hero-stat-delta'));
-  assert.equal(lesterPowerChip.textContent, '−2');
-  assert.equal(lesterPowerChip.dataset.trend, 'down');
+  assert.equal(lesterPowerChip.textContent, '4/5');
+  assert.ok(chips.every((chip) => /^[1-5]\/5$/u.test(chip.textContent)), 'every card shows its own value, never a comparison');
 
   // Roving focus: ArrowRight from the first card lands on the second; locked lilly is skipped from lester.
   const keydown = roster.listeners.keydown;

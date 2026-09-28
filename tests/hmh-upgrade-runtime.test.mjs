@@ -34,7 +34,8 @@ test('absolute-value upgrades use count and HP-per-second units', () => {
   run.skills['max-health'] = 3;
   run = applyRoguelikeSkillUpgrade(run, 'revive');
 
-  assert.equal(run.stats.damage, 1.1);
+  // Lester's Power 4 starts damage at 1.05 (hero-loadout.mjs, 1.9.2); Damage Alpha adds 0.1.
+  assert.equal(Math.round(run.stats.damage * 100) / 100, 1.15);
   assert.equal(run.stats.pierce, 1);
   assert.equal(run.stats.healthRegen, 0.35);
   assert.equal(run.stats.revive, 1);

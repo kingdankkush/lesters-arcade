@@ -4,8 +4,6 @@ import { FAUCET_LINK_TEXT } from '../ranked-facts.mjs';
 import {
   HERO_SELECT_STAT_MAX,
   activeCarouselIndex,
-  compareHeroStats,
-  formatStatDelta,
   nextHeroIndex,
   referenceHeroId,
 } from '../hmh-hero-select-ui.mjs';
@@ -128,7 +126,12 @@ export function createOfficialPlayRoutes({
 
   function renderOfficialCharacterSelect() {
     const { connectedWallet, state, combat } = getContext();
-    applyHardMoneyHeroScreenBackground(dom.officialCharacterSelect, 'modeSelect');
+    // A plain dark ground (owner 2026-09-27): the cards stay readable on phones.
+    const selectScreen = dom.officialCharacterSelect;
+    if (selectScreen?.style) {
+      selectScreen.style.backgroundImage = 'none';
+      selectScreen.style.backgroundColor = '#070a14';
+    }
     if (!dom.officialCharacterRoster) return;
     const roster = dom.officialCharacterRoster;
     roster.replaceChildren();
@@ -140,18 +143,14 @@ export function createOfficialPlayRoutes({
     }
     const heroEntries = buildCharacterSelectEntries(HERO_ROSTER_BASE, profile ?? {}, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, unlockOptions);
     const referenceId = referenceHeroId(heroEntries);
-    const referenceName = heroEntries.find((hero) => hero.id === referenceId)?.name ?? '';
-    const comparison = new Map(compareHeroStats(heroEntries, referenceId).map((hero) => [hero.id, hero]));
     let selectedCard = null;
     for (const hero of heroEntries) {
-      const compared = comparison.get(hero.id) ?? { isReference: false, stats: [] };
       const card = el('button', { className: `hero-card ${hero.locked ? 'locked' : 'active'}${hero.selected ? ' selected' : ''}` });
       card.type = 'button';
       card.disabled = hero.locked;
       card.dataset.characterId = hero.id;
-      card.dataset.compareRole = compared.isReference ? 'reference' : 'challenger';
       card.setAttribute('aria-pressed', hero.selected ? 'true' : 'false');
-      if (compared.isReference && !hero.locked) selectedCard = card;
+      if (hero.id === referenceId && !hero.locked) selectedCard = card;
       const stage = el('div', { className: 'hero-card-stage' });
       const sprite = heroRotationSprite(hero.legacyId ?? hero.id);
       if (sprite) {
@@ -166,31 +165,18 @@ export function createOfficialPlayRoutes({
       appendText(info, 'span', hero.tagline, 'hero-tagline');
       appendText(info, 'p', hero.bio, 'hero-bio');
       const loadout = el('div', { className: 'hero-loadout', ariaLabel: `${hero.name} starting loadout` });
-      const starterWeapon = weaponById(hero.startingWeaponId);
-      appendText(loadout, 'span', `STARTER · ${starterWeapon.title.toUpperCase()}`, 'hero-loadout-weapon');
-      appendText(loadout, 'span', `${hero.passive.title}: ${hero.passive.description}`, 'hero-loadout-passive');
+      appendText(loadout, 'span', `STARTING WEAPON · ${String(hero.startingWeaponTitle ?? weaponById(hero.startingWeaponId)?.title ?? 'The Pistol').toUpperCase()}`, 'hero-loadout-weapon');
+      appendText(loadout, 'span', `PERK · ${hero.passive.title}: ${hero.passive.description}`, 'hero-loadout-passive');
       info.append(loadout);
+      // Each hero's own starting stats, out of 5: the numbers the game plays with.
       const statBox = el('div', { className: 'hero-stats' });
-      statBox.append(el('span', {
-        className: 'hero-compare-label',
-        textContent: compared.isReference ? 'BASELINE' : `VS ${String(referenceName).toUpperCase()}`,
-      }));
-      // Side-by-side comparison (U-6): one chip per stat row, driven by the pure
-      // model. The reference card shows its raw value; every other card shows
-      // its signed delta, and the roster best is marked on whichever card holds it.
-      const statByLabel = new Map(compared.stats.map((stat) => [stat.label, stat]));
+      statBox.append(el('span', { className: 'hero-compare-label', textContent: 'STARTING STATS' }));
       renderHeroStatBars(statBox, hero.stats, (row, label, value) => {
-        const stat = statByLabel.get(label);
-        if (!stat) return;
         row.classList.add('has-delta');
         const chip = el('span', { className: 'hero-stat-delta' });
-        chip.textContent = compared.isReference ? `${value}/${HERO_SELECT_STAT_MAX}` : formatStatDelta(stat.delta);
-        chip.dataset.trend = stat.delta > 0 ? 'up' : stat.delta < 0 ? 'down' : 'even';
-        chip.dataset.best = stat.best ? 'true' : 'false';
-        const parts = [`${label} ${value} of ${HERO_SELECT_STAT_MAX}`];
-        if (!compared.isReference) parts.push(`${formatStatDelta(stat.delta)} versus ${referenceName}`);
-        if (stat.best) parts.push(stat.tie ? 'tied best in roster' : 'best in roster');
-        chip.setAttribute('aria-label', parts.join(', '));
+        chip.textContent = `${value}/${HERO_SELECT_STAT_MAX}`;
+        chip.dataset.trend = 'even';
+        chip.setAttribute('aria-label', `${label} ${value} of ${HERO_SELECT_STAT_MAX}`);
         row.append(chip);
       });
       info.append(statBox);

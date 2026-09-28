@@ -82,6 +82,7 @@ import {
   resolveDashWorldStep,
   stepDash,
 } from './dash.mjs';
+import { heroModifiersFor } from './hero-loadout.mjs';
 import {
   createCollisionBody,
   resolveSweptCircleMotion,
@@ -1495,6 +1496,8 @@ async function boot() {
     combatAudio.play('pickup', { volume: 0.12 });
   };
   let maxPlayerHealth = 100;
+  // The session hero's starting stats and perk (hero-loadout.mjs).
+  let heroModifiers = heroModifiersFor(null);
   let upgradePending = false;
   // Design package 8.3 timing fix (S0.2). A level offer, earned or forced,
   // opens at the end of the tick whose XP produced the level, inside that
@@ -3282,7 +3285,8 @@ async function boot() {
     elapsedMs = 0;
     simulation = new DeterministicSimulation({ seed: payload.session.seed });
     runProgression = createRunProgression({ seed: payload.session.seed });
-    maxPlayerHealth = 100;
+    heroModifiers = heroModifiersFor(payload.heroId);
+    maxPlayerHealth = 100 + heroModifiers.maxHealthBonus;
     upgradePending = false;
     cockpit?.setSession(payload, getWeb3AdapterStatus({
       embedded: window.parent !== window,
@@ -3420,7 +3424,7 @@ async function boot() {
     if (collectibleAmmoPilotEnabled) weaponLoadout.weapons['coin-blaster'].ammoInClip = 1;
     meleeState = createMeleeState();
     grenadeSystem = createGrenadeSystem({ capacity: MAX_ACTIVE_GRENADES, handCharges: 3 });
-    dashState = createDashState({ cooldownTier: 0 });
+    dashState = createDashState({ cooldownTier: 0, cooldownScale: heroModifiers.dashCooldownScale });
     let lightningLedgerEvent = createLightningLedgerRareEvent({
       seed: payload.session.seed,
       candidates: authoredPointOfInterestPlacements.filter((placement) => ['liquidity-crossing', 'hashwood', 'mining-camp'].includes(placement.districtId)),
@@ -3609,8 +3613,8 @@ async function boot() {
       // The run's critical hit, for projectiles and (package 8.6) the held
       // weapons' direct hits; the knife, hand grenades and burn ticks keep theirs.
       const playerCritical = {
-        criticalChance: Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus),
-        criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus,
+        criticalChance: Math.max(0, Math.min(CRITICAL_CHANCE_CAP, BASE_CRITICAL_CHANCE + runEffects.criticalChanceBonus + heroModifiers.criticalChanceBonus)),
+        criticalMultiplier: BASE_CRITICAL_MULTIPLIER + runEffects.criticalDamageBonus + heroModifiers.criticalDamageBonus,
       };
       const heldCritical = (weaponId) => (HMH_CRITICAL_HELD_WEAPON_IDS.includes(weaponId) ? playerCritical : NO_CRITICAL);
       // S1.1 / 7.7: the desktop keyboard dodges on its dodge key and has no
@@ -3703,6 +3707,8 @@ async function boot() {
           speedMultiplier: terrainSpeedMultiplier
             * (collectibleSnapshot?.speedMultiplier ?? 1)
             * runEffects.moveSpeedMultiplier
+            * heroModifiers.moveSpeedMultiplier
+            * (aimIntent.fire ? heroModifiers.firingMoveSpeedMultiplier : 1)
             * playerHazardField.speed,
         });
         // S1.4 docking: after 6 still ticks in a channel ring the hero glides
@@ -4863,8 +4869,10 @@ async function boot() {
 
       const authoritativeCombatHitIntents = filterDashInvulnerableHits(dashState, tick, combatHitIntents)
         .map((hit) => hit.sourceId === 'player' && hit.targetId !== 'player'
-          ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier }
-          : hit);
+          ? { ...hit, damage: hit.damage * runEffects.outgoingDamageMultiplier * heroModifiers.outgoingDamageMultiplier }
+          : hit.targetId === 'player'
+            ? { ...hit, damage: hit.damage * heroModifiers.incomingDamageMultiplier }
+            : hit);
       if (authoritativeCombatHitIntents.length > 0) {
         const combatTargets = grayboxEnemies.filter((enemy) => enemy.active && enemy.health > 0).map((enemy) => ({
           id: enemy.id,
