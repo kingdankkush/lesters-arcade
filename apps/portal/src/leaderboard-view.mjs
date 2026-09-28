@@ -92,6 +92,9 @@ export function hostedLeaderboardEntry(row = {}, { connectedWallet = null, gameI
     displayName: row.displayName || walletShort,
     named: Boolean(row.displayName),
     avatarUri: row.avatarUri ?? null,
+    // 1.9.3 custom upload; the view renders it only through resolveAvatar,
+    // which accepts nothing but the same-origin /api/avatar path.
+    avatarUrl: typeof row.avatarUrl === 'string' ? row.avatarUrl : null,
     score: Number(row.score) || 0,
     runStats: row.stats && typeof row.stats === 'object' ? row.stats : {},
     recordedAt: row.confirmedAt ?? null,

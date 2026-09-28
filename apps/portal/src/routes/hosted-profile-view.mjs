@@ -8,7 +8,7 @@
 // renders again.
 
 import { normalizeAchievementUnlockDate } from '../achievement-progress.mjs';
-import { ARCADE_AVATARS, ARCADE_AVATAR_URI_PREFIX, arcadeAvatarForUri } from '../arcade-avatars.mjs';
+import { ARCADE_AVATARS, ARCADE_AVATAR_URI_PREFIX, arcadeAvatarForUri, customAvatarUrl, resolveAvatar } from '../arcade-avatars.mjs';
 import { verifiedExplorerUrl } from '../leaderboard-view.mjs';
 import { versionLabelText, versionLabelTitle } from '../game-version-labels.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
@@ -26,6 +26,30 @@ export const BLOCKED_NAME_COPY = 'That name isn’t allowed here. Choose another
 // when a Ranked run or a published saved run marks it stale (markStale).
 export const HOSTED_PROFILE_TTL_MS = 60_000;
 export const DEAD_LETTER_COPY = 'This run could not be published. Testnet entries are not refunded.';
+// 1.9.3 custom avatar upload (api/avatar.mjs, src/avatar-upload.mjs).
+export const CUSTOM_AVATAR_HIDDEN_COPY = 'A moderator hid your uploaded picture, so the arcade avatar shows instead.';
+const AVATAR_UPLOAD_FAILURE_WORDS = Object.freeze({
+  network: 'Lester’s Arcade could not be reached. Check your connection and try again.',
+  'sign-in-required': 'Sign in with your wallet to change your picture.',
+  'invalid-session': 'Your sign-in expired. Sign in again to change your picture.',
+  'rate-limited': 'Too many picture changes just now. Try again in an hour.',
+  'avatar-hidden': CUSTOM_AVATAR_HIDDEN_COPY,
+  'image-too-large': 'That picture is too large to save. Try another one.',
+  'body-too-large': 'That picture is too large to save. Try another one.',
+  'unsupported-image-type': 'Choose a JPG or PNG picture.',
+  'animated-image': 'Animated pictures are not supported. Choose a still JPG or PNG.',
+  'invalid-image-dimensions': 'That picture could not be cropped square. Try another one.',
+  'invalid-image': 'That file could not be read as a picture. Try another JPG or PNG.',
+});
+
+// Plain words for a refused avatar PUT or DELETE; a raw code is never shown.
+export function avatarUploadFailureWords(answer = {}) {
+  const code = String(answer?.error ?? '');
+  if (Object.hasOwn(AVATAR_UPLOAD_FAILURE_WORDS, code)) return AVATAR_UPLOAD_FAILURE_WORDS[code];
+  if (answer?.status === 401) return AVATAR_UPLOAD_FAILURE_WORDS['invalid-session'];
+  if (answer?.status === 429) return AVATAR_UPLOAD_FAILURE_WORDS['rate-limited'];
+  return 'The picture could not be saved. Try again.';
+}
 
 const HEX_WALLET = /^0x[0-9a-fA-F]{40}$/;
 const walletKey = (value) => (HEX_WALLET.test(String(value ?? '')) ? String(value).toLowerCase() : null);
@@ -203,6 +227,9 @@ export function createHostedProfileView({
   walletProviderForAction = async () => detectEthereumProvider?.() ?? null,
   // Weekly Jackpot wins (jackpot-ui): tests switch them on here, never by editing the flag.
   jackpotLive = JACKPOT_LIVE,
+  // The custom avatar encoder, downloaded only when a picture is picked.
+  loadAvatarUpload = () => import('../avatar-upload.mjs'),
+  revokeObjectUrl = (url) => { try { globalThis.URL?.revokeObjectURL?.(url); } catch { /* nothing to free */ } },
 } = {}) {
   const hostedProfiles = new Map(); // `${wallet}|self|public` -> { status, response, request, error }
   const heldTokens = new Map(); // wallet -> { status, confirmed: Set('<gameId>:<id>') }
@@ -212,6 +239,9 @@ export function createHostedProfileView({
   // D10 Retry buttons, per session: { busy, message, tone, until }.
   const retryStates = new Map();
   const nameEditor = { wallet: null, raw: null, avatarUri: null, prepared: null, busy: false, message: '', tone: '' };
+  // The custom picture being prepared or saved: pending is avatar-upload.mjs's
+  // { base64, previewUrl, type } until it is saved or discarded.
+  const avatarUpload = { wallet: null, pending: null, busy: false, message: '', tone: '' };
 
   // Every render rebuilds the grid; keyboard focus stays on the control that
   // had it (a game tab just pressed, Retry, the avatar picker). When it is
@@ -392,10 +422,17 @@ export function createHostedProfileView({
     await hydrate({ force: true });
   }
 
-  function hostedAvatar(avatarUri, label, sizeClass) {
-    const avatar = arcadeAvatarForUri(avatarUri);
-    if (!avatar) return renderAvatarChip(null, label, sizeClass);
-    return el('img', { className: `avatar-chip-img ${sizeClass}`, src: avatar.src, alt: `${avatar.label} avatar` });
+  // The profile's own upload, else its on-chain arcade avatar, else the
+  // default chip (arcade-avatars.mjs resolveAvatar). An upload that fails to
+  // load falls back to the arcade avatar.
+  function hostedAvatar(profile, label, sizeClass) {
+    const avatar = resolveAvatar(profile);
+    if (avatar.kind === 'default') return renderAvatarChip(null, label, sizeClass);
+    const img = el('img', { className: `avatar-chip-img ${sizeClass}`, src: avatar.src, alt: avatar.alt });
+    if (avatar.kind === 'custom') {
+      img.addEventListener('error', () => { img.src = resolveAvatar({ avatarUri: profile?.avatarUri }).src; }, { once: true });
+    }
+    return img;
   }
 
   function statGrid(className, stats) {
@@ -427,7 +464,7 @@ export function createHostedProfileView({
     const hero = el('article', { className: 'official-info-card profile-hero-card profile-hero-hosted hmh-visual-polish-v12' });
     appendText(hero, 'span', target.own ? 'Your Verified Profile' : 'Player Profile', 'cabinet-status-label');
     const top = el('div', { className: 'profile-hero-topline' });
-    top.append(hostedAvatar(profile.avatarUri, name, 'profile-hero-avatar'));
+    top.append(hostedAvatar(profile, name, 'profile-hero-avatar'));
     const identity = el('div', { className: 'profile-hero-identity' });
     const heroName = appendText(identity, 'strong', name, profile.displayName ? 'profile-hero-name' : 'profile-hero-name profile-hero-name-wallet');
     heroName.setAttribute('tabindex', '-1'); // where focus lands when Try again loads the profile
@@ -694,6 +731,7 @@ export function createHostedProfileView({
       picker.append(option);
     }
     card.append(picker);
+    if (typeof indexApi?.uploadAvatar === 'function') card.append(renderCustomAvatar(target, profile));
 
     const feedback = el('p', { className: 'username-feedback tiny-note profile-onchain-feedback', textContent: nameEditor.message });
     feedback.setAttribute('role', 'status');
@@ -780,6 +818,131 @@ export function createHostedProfileView({
         input.focus?.();
       });
     }
+  }
+
+  // 1.9.3: "Upload your own" for the signed-in wallet (its Bearer session is
+  // what the PUT carries). The picture is prepared in the browser (square
+  // crop, 256 px WebP or JPEG, metadata dropped) by src/avatar-upload.mjs,
+  // downloaded on the first pick; nothing is sent until Save.
+  function renderCustomAvatar(target, profile) {
+    if (avatarUpload.wallet !== target.wallet) {
+      if (avatarUpload.pending?.previewUrl) revokeObjectUrl(avatarUpload.pending.previewUrl);
+      Object.assign(avatarUpload, { wallet: target.wallet, pending: null, busy: false, message: '', tone: '' });
+    }
+    const current = customAvatarUrl(profile.avatarUrl);
+    const section = el('div', { className: 'profile-avatar-upload' });
+    appendText(section, 'strong', 'Your own picture', 'profile-avatar-upload-title');
+    appendText(section, 'small', current
+      ? 'Your uploaded picture shows instead of the arcade avatar on boards, your profile and run pages.'
+      : 'Upload a JPG or PNG (up to 5 MB). It is cropped square and saved at 256 px for this wallet. No transaction, no fee.', 'tiny-note');
+    if (profile.customAvatarHidden) appendText(section, 'p', CUSTOM_AVATAR_HIDDEN_COPY, 'username-feedback profile-avatar-upload-hidden');
+    const row = el('div', { className: 'profile-avatar-upload-row' });
+    const pending = avatarUpload.pending;
+    const previewSrc = pending?.previewUrl ?? current;
+    if (previewSrc) {
+      const preview = el('img', { className: 'avatar-chip-img profile-avatar-upload-preview', src: previewSrc, alt: pending ? 'New picture preview' : 'Your uploaded picture' });
+      preview.width = 56;
+      preview.height = 56;
+      row.append(preview);
+    }
+    const feedback = el('p', { className: 'username-feedback tiny-note profile-avatar-upload-feedback', textContent: avatarUpload.message });
+    feedback.setAttribute('role', 'status');
+    if (avatarUpload.tone) feedback.dataset.state = avatarUpload.tone;
+    const setStatus = (message, tone = '') => {
+      avatarUpload.message = message;
+      avatarUpload.tone = tone;
+      feedback.textContent = message;
+      feedback.dataset.state = tone;
+    };
+    const discardPending = () => {
+      if (avatarUpload.pending?.previewUrl) revokeObjectUrl(avatarUpload.pending.previewUrl);
+      avatarUpload.pending = null;
+    };
+    const afterChange = (message) => {
+      setStatus(message, 'ok');
+      invalidate(target.wallet);
+      void hydrate({ force: true });
+    };
+
+    const input = el('input', { className: 'avatar-file-input profile-avatar-file', type: 'file' });
+    input.accept = 'image/jpeg,image/png';
+    input.setAttribute('aria-label', 'Choose your own avatar picture');
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0] ?? null;
+      try { input.value = ''; } catch { /* some doubles have no value */ }
+      if (!file || avatarUpload.busy) return;
+      avatarUpload.busy = true;
+      setStatus('Preparing your picture…');
+      try {
+        const module = await loadAvatarUpload();
+        const prepared = await module.prepareAvatarUpload(file);
+        if (prepared?.ok) {
+          discardPending();
+          avatarUpload.pending = prepared;
+          setStatus('Preview ready. Save it to show it everywhere.', 'ok');
+        } else {
+          setStatus(prepared?.message ?? 'That file could not be read as a picture. Try another JPG or PNG.', 'error');
+        }
+      } catch {
+        setStatus('The picture tools could not load. Check your connection and try again.', 'error');
+      } finally {
+        avatarUpload.busy = false;
+        renderOfficialProfile();
+      }
+    });
+    const choose = el('button', { className: 'pixel-button profile-avatar-choose', type: 'button', textContent: pending ? 'Choose another' : 'Upload your own' });
+    choose.disabled = avatarUpload.busy;
+    choose.addEventListener('click', () => { playSfxCue('menu-click', 0.05); input.click?.(); });
+    row.append(input, choose);
+
+    if (pending) {
+      const save = el('button', { className: 'pixel-button profile-action-primary profile-avatar-save', type: 'button', textContent: 'Save picture' });
+      save.disabled = avatarUpload.busy;
+      save.addEventListener('click', async () => {
+        if (avatarUpload.busy || !avatarUpload.pending) return;
+        avatarUpload.busy = true;
+        save.disabled = true;
+        playSfxCue('menu-click', 0.05);
+        setStatus('Saving your picture…');
+        let answer;
+        try { answer = await indexApi.uploadAvatar(avatarUpload.pending.base64); } catch { answer = { ok: false, error: 'network' }; }
+        avatarUpload.busy = false;
+        if (answer?.ok) {
+          discardPending();
+          afterChange('✓ Saved. Your picture now shows on boards, your profile and run pages.');
+        } else {
+          setStatus(avatarUploadFailureWords(answer ?? {}), 'error');
+        }
+        renderOfficialProfile();
+      });
+      const cancel = el('button', { className: 'pixel-button profile-avatar-cancel', type: 'button', textContent: 'Cancel' });
+      cancel.disabled = avatarUpload.busy;
+      cancel.addEventListener('click', () => {
+        discardPending();
+        setStatus('');
+        renderOfficialProfile();
+      });
+      row.append(save, cancel);
+    } else if (current) {
+      const remove = el('button', { className: 'pixel-button profile-avatar-remove', type: 'button', textContent: 'Remove custom avatar' });
+      remove.disabled = avatarUpload.busy;
+      remove.addEventListener('click', async () => {
+        if (avatarUpload.busy) return;
+        avatarUpload.busy = true;
+        remove.disabled = true;
+        playSfxCue('menu-click', 0.05);
+        setStatus('Removing your picture…');
+        let answer;
+        try { answer = await indexApi.removeAvatar(); } catch { answer = { ok: false, error: 'network' }; }
+        avatarUpload.busy = false;
+        if (answer?.ok) afterChange('✓ Removed. Your arcade avatar shows again.');
+        else setStatus(avatarUploadFailureWords(answer ?? {}), 'error');
+        renderOfficialProfile();
+      });
+      row.append(remove);
+    }
+    section.append(row, feedback);
+    return section;
   }
 
   function renderHostedProfile() {

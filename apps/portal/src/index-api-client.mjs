@@ -19,6 +19,7 @@ export const INDEX_API_ENDPOINTS = Object.freeze({
   refresh: '/api/profile/refresh',
   session: '/api/session/',
   settle: '/api/settle',
+  avatar: '/api/avatar',
 });
 export const INDEX_LEADERBOARD_PERIODS = Object.freeze(['weekly', 'monthly', 'all-time', 'daily']);
 export const INDEX_LEADERBOARD_MAX_PAGE = 400;
@@ -178,6 +179,32 @@ export function createIndexApiClient({
     }, { bearer });
   }
 
+  // 1.9.3 custom avatar: PUT the prepared image (base64, src/avatar-upload.mjs)
+  // for the signed-in wallet, or DELETE it. The wallet comes from the token.
+  async function uploadAvatar(imageBase64) {
+    if (!live) return OFFLINE;
+    if (typeof imageBase64 !== 'string' || !imageBase64) return { ok: false, error: 'invalid-image' };
+    const bearer = token();
+    if (!bearer) return { ok: false, error: 'sign-in-required' };
+    return send(INDEX_API_ENDPOINTS.avatar, {
+      method: 'PUT',
+      headers: { ...json, 'content-type': 'application/json', authorization: `Bearer ${bearer}` },
+      body: JSON.stringify({ image: imageBase64 }),
+      cache: 'no-store',
+    }, { bearer });
+  }
+
+  async function removeAvatar() {
+    if (!live) return OFFLINE;
+    const bearer = token();
+    if (!bearer) return { ok: false, error: 'sign-in-required' };
+    return send(INDEX_API_ENDPOINTS.avatar, {
+      method: 'DELETE',
+      headers: { ...json, authorization: `Bearer ${bearer}` },
+      cache: 'no-store',
+    }, { bearer });
+  }
+
   // E9.
   async function session(shareId) {
     if (!live) return OFFLINE;
@@ -202,7 +229,7 @@ export function createIndexApiClient({
     }, { bearer });
   }
 
-  return Object.freeze({ hosted: live, leaderboard, profile, refreshProfile, savePreferences, session, retrySettle });
+  return Object.freeze({ hosted: live, leaderboard, profile, refreshProfile, savePreferences, uploadAvatar, removeAvatar, session, retrySettle });
 }
 
 // ---------------------------------------------------------------------------

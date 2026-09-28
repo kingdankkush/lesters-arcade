@@ -6262,9 +6262,17 @@ function sanitizeAvatarImage(rawDataUrl) {
     img.src = rawDataUrl;
   });
 }
+// 1.9.3: the signed-in wallet's own uploaded picture (api/avatar.mjs) once its
+// hosted self profile has been read; only the same-origin /api/avatar path.
+function hostedCustomAvatarUrl(wallet) {
+  if (!HOSTED_PROFILE_SYNC || !wallet) return null;
+  let url = null;
+  try { url = officialProfileRoute.cachedSelfProfile(wallet)?.profile?.avatarUrl ?? null; } catch { url = null; }
+  return /^\/api\/avatar\?wallet=0x[0-9a-f]{40}&v=[0-9a-f]{12}$/.test(String(url ?? '')) ? url : null;
+}
 // Build a small avatar element: the uploaded image, or a colored initial chip.
 function renderAvatarChip(wallet, displayName, sizeClass = '') {
-  const url = playerAvatarDataUrl(wallet);
+  const url = hostedCustomAvatarUrl(wallet) || playerAvatarDataUrl(wallet);
   if (url) {
     const img = el('img', { className: `avatar-chip-img ${sizeClass}`, src: url, alt: 'Player avatar' });
     return img;

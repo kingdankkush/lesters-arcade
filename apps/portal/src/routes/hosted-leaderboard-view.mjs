@@ -6,7 +6,7 @@
 // (contract §11 rule 5). Rendering is synchronous; hydrate() fetches and
 // renders again.
 
-import { arcadeAvatarForUri } from '../arcade-avatars.mjs';
+import { resolveAvatar } from '../arcade-avatars.mjs';
 import { renderKeepingFocus } from '../focus-keeper.mjs';
 import { versionLabelTitle } from '../game-version-labels.mjs';
 import { JACKPOT_LIVE } from '../jackpot-config.mjs';
@@ -218,12 +218,18 @@ export function createHostedLeaderboardView({
     if (isActive()) void hydrate();
   }
 
+  // The row's own upload, else its on-chain arcade avatar, else the default
+  // chip (arcade-avatars.mjs resolveAvatar). An upload that fails to load
+  // (removed or hidden since the board was read) falls back to the default.
   function hostedAvatar(entry, sizeClass) {
-    const avatar = arcadeAvatarForUri(entry.avatarUri);
-    if (!avatar) return renderAvatarChip(null, entry.displayName, sizeClass);
-    const img = el('img', { className: `avatar-chip-img ${sizeClass}`, src: avatar.src, alt: `${avatar.label} avatar` });
+    const avatar = resolveAvatar(entry);
+    if (avatar.kind === 'default') return renderAvatarChip(null, entry.displayName, sizeClass);
+    const img = el('img', { className: `avatar-chip-img ${sizeClass}`, src: avatar.src, alt: avatar.alt });
     img.loading = 'lazy';
     img.decoding = 'async';
+    if (avatar.kind === 'custom') {
+      img.addEventListener('error', () => { img.src = resolveAvatar({ avatarUri: entry.avatarUri }).src; }, { once: true });
+    }
     return img;
   }
 

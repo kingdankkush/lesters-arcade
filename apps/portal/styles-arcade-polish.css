@@ -2638,6 +2638,17 @@ button[class="pixel-button"]:disabled,
 }
 .pixel-button.profile-avatar-option.is-active { border-color: #ffe84d; box-shadow: 0 0 16px rgba(255, 232, 77, 0.4); }
 .pixel-button.profile-avatar-option:focus-visible { outline: 2px solid #ffe84d; outline-offset: 2px; }
+/* 1.9.3 "Upload your own" under the arcade avatar picker. */
+.profile-avatar-upload { display: grid; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(25, 247, 255, 0.2); }
+.profile-avatar-upload-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.profile-avatar-upload-preview { width: 56px; height: 56px; border-radius: 14px; border: 2px solid #ffe84d; object-fit: cover; }
+.pixel-button.profile-avatar-choose:focus-visible,
+.pixel-button.profile-avatar-save:focus-visible,
+.pixel-button.profile-avatar-cancel:focus-visible,
+.pixel-button.profile-avatar-remove:focus-visible { outline: 2px solid #ffe84d; outline-offset: 3px; }
+.pixel-button.profile-avatar-choose:disabled,
+.pixel-button.profile-avatar-save:disabled,
+.pixel-button.profile-avatar-remove:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 /* Show more stays focusable while its page loads (aria-disabled, not disabled). */
 .leaderboard-show-more[aria-disabled="true"] { opacity: 0.7; cursor: progress; }
 /* After the last page loads, focus moves to the row count. */
