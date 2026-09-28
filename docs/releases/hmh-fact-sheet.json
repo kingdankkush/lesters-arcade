@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "5b7c9bd73136b680da67b22327363d5685abb8115c2f3210b23a702a1f92ede3",
+  "sourceSnapshotSha256": "cb3578fb0df7cbb5d4e0583df7c3925456c57931066b4b03ad0c11745aedb6d6",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -20,8 +20,8 @@
     },
     {
       "path": "apps/portal/main.js",
-      "sha256": "6621499cf06f85c9ba197e47d1ebcbf0ac22a7b94a913f8fc3537f5282a449c6",
-      "bytes": 450816
+      "sha256": "d80d0afa473f675176b0c2a06f3d42a59f9859d7f538a24773e307f0a796c163",
+      "bytes": 451336
     },
     {
       "path": "apps/portal/src/arcade-core.mjs",
@@ -55,8 +55,8 @@
     },
     {
       "path": "apps/portal/styles-arcade-polish.css",
-      "sha256": "84f354af151a3af0fbe798ace33ee3bbb1d80084570a29b91516c0495b158aaf",
-      "bytes": 98965
+      "sha256": "5193c346e6d5d652a139e9815633673fc8e53623482c541f8ac143ea2677d69d",
+      "bytes": 99833
     },
     {
       "path": "docs/hmh-reboot/OPEN-WORK-CURRENT-STATUS.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "485720001e2f976c30b010fa1432875406c9b79146bb4ba47bcdf1deaa1ad839",
-      "bytes": 62251
+      "sha256": "db49ca0da8832fae1290131717031b791a3034f0301f36acf3290d81fb27ac51",
+      "bytes": 63251
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -100,12 +100,12 @@
     },
     {
       "path": "scripts/syntax-check.mjs",
-      "sha256": "cd6e5941391061af776fdcd6e2cbad78fc088b9d78643dbc568d05dd4bf2c591",
-      "bytes": 60775
+      "sha256": "be60a8765a89aafe8290c1a4da380dec0a93c308af52f82159d80216e0d4b824",
+      "bytes": 60971
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "5228787775e5711776778f46190ac448f94e6a26cf2d436f7df8356f4f2b16c0",
+      "sha256": "2bd75003e3c96ebea33d5e58fd1caffd1b372ca213888c669d4033696654d794",
       "bytes": 194223
     },
     {
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v62-hero-stats",
+  "recordedProductionMarker": "lesters-arcade-v63-avatars-share",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",

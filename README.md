@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.9.2 verified live: real hero stats and perks in Hard Money Heroes
+# Lester's Arcade — 1.9.3: custom avatars and X share images
 
-Owner-requested hero update. Each Hard Money Heroes hero now plays differently: Power, Speed, Armor and Luck (1 to 5, every hero totals 14) change damage dealt, move speed, damage taken and critical hits, and each hero has one perk (Reserve Plating: +20 max health; Velocity Trigger: faster while shooting; Block Time: shorter dash cooldown; Zero-Knowledge Crits: bigger critical hits). Everyone starts with the Pistol. The hero select has a dark background, shows each hero's own stats (no comparison against Lit Commando), the starting weapon, the perk and a short backstory. Ranked verification is unchanged: the perks move no score, XP, drop or spawn limit, and travel stays within the verifier's bound.
+Owner-requested update. "Share on X" now puts the score page link inside the post text, on its own line after "@LestersArcade 🎮" and a blank line, so X's composer loads the share card image straight away (before, the link travelled as a separate parameter and the image appeared only after pasting the link again). Players signed in with a wallet can upload their own profile picture (JPG or PNG, cropped to a square and re-encoded in the browser); it shows on the boards, the podium, profiles and the score share page, and the owner can hide any upload. The Lester Pilot, Gold Emblem, Diamond Emblem and Mythic Emblem preset pictures are retired; profiles that used them show the default. Adds Neon migration 4 (`avatar_uploads`) and the `/api/avatar` endpoint. No game runtime or Ranked verification change.
 
-Production deployment `dpl_8KAuCxcWGTY4f83Eb9ditCoGVJyq` (source `a830babd`); site/game version `1.9.2`; cache marker `lesters-arcade-v62-hero-stats`. Gate PASS with exactly 51 retired exceptions; verified live. [Release receipt](docs/qa/batch-release-20260927-1.9.1-1.9.2.json). Continue on `fable/master-list-20260916`.
+Site/game version `1.9.3`; cache marker `lesters-arcade-v63-avatars-share`. Continue on `fable/master-list-20260916`.
 
 ## How to play
 
@@ -21,6 +21,12 @@ Every game at [lestersarcade.io](https://lestersarcade.io) has two modes. Free p
 Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your score on chain. The entry is split 85% to the game's developer and 15% to the arcade. Testnet zkLTC has no monetary value. The player guide at [lestersarcade.io/how-ranked-works](https://lestersarcade.io/how-ranked-works) covers every step, what is checked for each game, the Weekly, Monthly and All-time boards, the FAQ and fixes for common problems.
 
 For maintainers: the fee lives in one place, `RANKED_ENTRY_FEE_WEI` in [`apps/portal/src/ranked-fee.mjs`](apps/portal/src/ranked-fee.mjs), which `arcade-core.mjs` re-exports; `tests/ranked-fee-source-of-truth.test.mjs` ties it to the deploy config and the server settle floor. Every other static Ranked fact on the site (faucet, boards, achievements, the guide URL and the canonical wording) comes from [`apps/portal/src/ranked-facts.mjs`](apps/portal/src/ranked-facts.mjs), which reads the fee from ranked-fee.mjs (`tests/ranked-facts.test.mjs` ties it to the faucet, the boards and the achievement catalogs); the guide page is generated from [`apps/portal/src/ranked-guide-content.mjs`](apps/portal/src/ranked-guide-content.mjs) by `node scripts/build-portal-pages.mjs`.
+
+# Lester's Arcade — 1.9.2 verified live: real hero stats and perks in Hard Money Heroes
+
+Owner-requested hero update. Each Hard Money Heroes hero now plays differently: Power, Speed, Armor and Luck (1 to 5, every hero totals 14) change damage dealt, move speed, damage taken and critical hits, and each hero has one perk (Reserve Plating: +20 max health; Velocity Trigger: faster while shooting; Block Time: shorter dash cooldown; Zero-Knowledge Crits: bigger critical hits). Everyone starts with the Pistol. The hero select has a dark background, shows each hero's own stats (no comparison against Lit Commando), the starting weapon, the perk and a short backstory. Ranked verification is unchanged: the perks move no score, XP, drop or spawn limit, and travel stays within the verifier's bound.
+
+Production deployment `dpl_8KAuCxcWGTY4f83Eb9ditCoGVJyq` (source `a830babd`); site/game version `1.9.2`; cache marker `lesters-arcade-v62-hero-stats`. Gate PASS with exactly 51 retired exceptions; verified live. [Release receipt](docs/qa/batch-release-20260927-1.9.1-1.9.2.json). Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.9.1 verified live: Free share images on X, varied Level 1 art
 
@@ -114,7 +120,7 @@ The redesigned [homepage](https://lestersarcade.io) and [cabinet browser](https:
 
 Runtime source `6fe83eb693bda5c36cb77f995b88d244515365f8`; deployment `dpl_6bgHFQsaZ6smUdqFNRzhc7FrsenJ`. The local and cloud release gates pass 3,742 tests with exactly 51 unchanged retirement exceptions. All 107 private/public file and route hashes match. Twenty discovery checks and seven accessibility scans pass in each environment; all three games and the returning-cache transition pass. [Release receipt](docs/qa/arcade-discovery-release-20260914.json) · [Design and verification](docs/qa/arcade-discovery-design-20260914.md). Retained rollback: `dpl_HVFN3wwuWmveoWa4CVk8b1dAnovU`. Continue on `codex/arcade-home-catalog-20260914`.
 
-**Production cache marker:** `lesters-arcade-v62-hero-stats`
+**Production cache marker:** `lesters-arcade-v63-avatars-share`
 
 # Lester's Arcade
 
