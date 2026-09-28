@@ -244,7 +244,7 @@ test('results screen renders timeline, achievements and actions from a snapshot'
   const x = find(shareRow, (node) => node.dataset.share === 'x');
   assert.equal(x.textContent, 'Share on X');
   const intent = new URL(x.href);
-  assert.equal(intent.searchParams.get('url'), `https://lestersarcade.io/s/${SESSION_ID32.slice(2)}`);
+  assert.equal(intent.searchParams.get('text').split('\n').at(-1), `https://lestersarcade.io/s/${SESSION_ID32.slice(2)}`);
   assert.match(intent.searchParams.get('text'), /⛓ Verified on LitVM/);
   assert.equal(intent.searchParams.get('related'), 'LestersArcade');
   assert.deepEqual(findAll(byClass(shareRow, 'share-menu'), (node) => node.dataset.share).map((node) => node.dataset.share), ['discord', 'facebook']);
@@ -493,11 +493,11 @@ test('preview fetches nothing and shares the Free template to the site root', as
     assert.equal(byClass(root, 'rr-banner-text').textContent, 'Ranked preview · not published while online settlement is off');
     const x = find(root, (node) => node.dataset.share === 'x');
     const intent = new URL(x.href);
-    assert.equal(intent.searchParams.get('url'), 'https://lestersarcade.io');
+    assert.equal(intent.searchParams.get('text').split('\n').at(-1), 'https://lestersarcade.io');
     // The results model's preview share is the Free template (free-share plan §5),
     // still linking to the site root: it has no Free token (plan §16 follow-up).
     assert.match(intent.searchParams.get('text'), /^🐔 FREE PLAY · Chikun's Escape\n/);
-    assert.match(intent.searchParams.get('text'), /Beat my flight @LestersArcade$/);
+    assert.match(intent.searchParams.get('text'), /Beat my flight @LestersArcade 🎮\n\nhttps:\/\/lestersarcade\.io$/);
     assert.doesNotMatch(intent.searchParams.get('text'), /Verified|RANKED/);
     view.close();
   }
@@ -968,12 +968,12 @@ test('HMH shows View results in place of its summary for the Ranked run on scree
   assert.equal(free.shareRows[0].title, 'Hard Money Heroes');
   // The Free row links to the run's /f/ page and carries its card path.
   const { links } = free.shareRows[0];
-  const match = /^https:\/\/lestersarcade\.io\/f\/hard-money-heroes\/(ah[0-9a-z]{28})$/.exec(new URL(links.x).searchParams.get('url'));
+  const match = /^https:\/\/lestersarcade\.io\/f\/hard-money-heroes\/(ah[0-9a-z]{28})$/.exec(new URL(links.x).searchParams.get('text').split('\n').at(-1));
   assert.ok(match, links.url);
   assert.equal(links.card, `/api/free-card/hard-money-heroes/${match[1]}.png`);
   const decoded = decodeFreeShareToken('hard-money-heroes', match[1]);
   assert.deepEqual({ ...decoded.values }, { hero: 'lit-valkyrie', score: 48210, kills: 312, maxCombo: 42, survivalSeconds: 724, level: 3, bossDefeated: false });
-  assert.equal(links.text, '🧟 FREE PLAY · Hard Money Heroes\n48,210 pts · Lit Valkyrie · Lv 3\n☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04\nCan you beat it? @LestersArcade');
+  assert.equal(links.text, '🧟 FREE PLAY · Hard Money Heroes\n48,210 pts · Lit Valkyrie · Lv 3\n☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04\nCan you beat it? @LestersArcade 🎮');
   // Without a run summary the pick is used, and the legacy 'lester' id is Lester's portrait.
   const legacy = await hmhSummaryHost({ mode: 'free' });
   legacy.context.lastHmhRunSummary = null;

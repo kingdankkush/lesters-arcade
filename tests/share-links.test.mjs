@@ -40,16 +40,17 @@ function assertShareInvariants(text, label) {
   assert.doesNotMatch(text, /session-/, `${label}: no session handle`);
 }
 
-test('X intent carries text, url and related without hashtags', () => {
+test('X intent carries the text with the link on its own last line, and related, without hashtags', () => {
   const links = buildShareLinks({ text: '  🏆 RANKED ·  Hard Money Heroes \r\n48,210 pts\n\nCan you beat it? @LestersArcade ', url: sharePageUrl(`0x${SHARE_ID}`) });
   assert.equal(links.text, '🏆 RANKED · Hard Money Heroes\n48,210 pts\n\nCan you beat it? @LestersArcade', 'newlines survive, each line trimmed');
   assert.equal(links.url, `${SHARE_ORIGIN}/s/${SHARE_ID}`);
   assert.equal(Object.hasOwn(links, 'hashtags'), false);
   assert.ok(links.x.startsWith('https://x.com/intent/post?text='), links.x);
   const x = new URL(links.x);
-  assert.deepEqual([...x.searchParams.keys()], ['text', 'url', 'related']);
-  assert.equal(x.searchParams.get('text'), links.text);
-  assert.equal(x.searchParams.get('url'), links.url);
+  // 1.9.3: the link sits in the text after a blank line, so X's composer
+  // fetches the card image; the separate url parameter never did.
+  assert.deepEqual([...x.searchParams.keys()], ['text', 'related']);
+  assert.equal(x.searchParams.get('text'), `${links.text}\n\n${links.url}`);
   assert.equal(x.searchParams.get('related'), X_RELATED);
   assert.equal(x.searchParams.has('hashtags'), false);
   assert.equal(x.searchParams.has('via'), false);
@@ -90,21 +91,21 @@ test('ranked templates fit X with one mention and no hashtags or addresses', () 
     stacked: { lines: 186, level: 14, quadClears: 5, perfectClears: 1, maxCombo: 7, survivalSeconds: 1500 },
   };
   assert.equal(buildRankedShareText('lester-blaster', { score: 48210, standingLabel: 'Rank 3 this week', stats: typical['lester-blaster'] }),
-    '🏆 RANKED · Hard Money Heroes\n48,210 pts · Rank 3 this week\n☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04\n⛓ Verified on LitVM\nCan you beat it? @LestersArcade');
+    '🏆 RANKED · Hard Money Heroes\n48,210 pts · Rank 3 this week\n☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04\n⛓ Verified on LitVM\nCan you beat it? @LestersArcade 🎮');
   assert.equal(buildRankedShareText('chikun', { score: 19475, stats: typical.chikun }),
-    "🐔 RANKED · Chikun's Escape\n19,475 pts · Lap 2 · Farmland\n🌾 52 forks · ⚡ 18 near-misses · 🪙 41 coins\n⛓ Verified on LitVM\nBeat my flight @LestersArcade");
+    "🐔 RANKED · Chikun's Escape\n19,475 pts · Lap 2 · Farmland\n🌾 52 forks · ⚡ 18 near-misses · 🪙 41 coins\n⛓ Verified on LitVM\nBeat my flight @LestersArcade 🎮");
   assert.equal(buildRankedShareText('stacked', { score: 412900, standingLabel: 'Rank 1 this week', stats: typical.stacked, personalBest: true }),
-    '🧱 RANKED · STACKED\n412,900 pts · Rank 1 this week\n📈 186 lines · Lv 14 · 5 Halvings\n🔥 New personal best!\n⛓ Verified on LitVM\nStack higher @LestersArcade');
+    '🧱 RANKED · STACKED\n412,900 pts · Rank 1 this week\n📈 186 lines · Lv 14 · 5 Halvings\n🔥 New personal best!\n⛓ Verified on LitVM\nStack higher @LestersArcade 🎮');
   // Free: the Ranked family with the game's own icon, FREE PLAY, the Free
   // detail and extra line, and the Ranked call (plan free-share-20260926 §5).
   assert.equal(buildFreeShareText('lester-blaster', { score: 48210, stats: { heroName: 'Lit Commando', level: 9, kills: 312, maxCombo: 42, survivalSeconds: 724, bossDefeated: true } }),
-    '🧟 FREE PLAY · Hard Money Heroes\n48,210 pts · Lit Commando · Lv 9\n☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04\n💀 Liquidator liquidated\nCan you beat it? @LestersArcade');
+    '🧟 FREE PLAY · Hard Money Heroes\n48,210 pts · Lit Commando · Lv 9\n☠ 312 kills · 🔥 ×42 combo · ⏱ 12:04\n💀 Liquidator liquidated\nCan you beat it? @LestersArcade 🎮');
   assert.equal(buildFreeShareText('chikun', { score: 19475, stats: { laps: 1, regionName: 'farmland', dailyLabel: 'Daily 2026-09-26', forksPassed: 52, nearMisses: 18, coinsCollected: 41, survivalSeconds: 180, bestCombo: 9 } }),
-    "🐔 FREE PLAY · Chikun's Escape\n19,475 pts · Lap 2 · Farmland · Daily 2026-09-26\n🌾 52 forks · ⚡ 18 near-misses · 🪙 41 coins\n⏱ 3:00 flight · 🔥 ×9 combo\nBeat my flight @LestersArcade");
+    "🐔 FREE PLAY · Chikun's Escape\n19,475 pts · Lap 2 · Farmland · Daily 2026-09-26\n🌾 52 forks · ⚡ 18 near-misses · 🪙 41 coins\n⏱ 3:00 flight · 🔥 ×9 combo\nBeat my flight @LestersArcade 🎮");
   assert.equal(buildFreeShareText('stacked', { score: 412900, stats: { survivalSeconds: 1500, maxCombo: 7, lines: 186, level: 14, quadClears: 5 } }),
-    '🧱 FREE PLAY · STACKED\n412,900 pts · ⏱ 25:00 · 🔥 ×7 combo\n📈 186 lines · Lv 14 · 5 Halvings\nStack higher @LestersArcade');
+    '🧱 FREE PLAY · STACKED\n412,900 pts · ⏱ 25:00 · 🔥 ×7 combo\n📈 186 lines · Lv 14 · 5 Halvings\nStack higher @LestersArcade 🎮');
   assert.equal(buildFreeShareText('stacked', { score: 4200, stats: { lines: 40, level: 5, quadClears: 1 } }),
-    '🧱 FREE PLAY · STACKED\n4,200 pts\n📈 40 lines · Lv 5 · 1 Halving\nStack higher @LestersArcade');
+    '🧱 FREE PLAY · STACKED\n4,200 pts\n📈 40 lines · Lv 5 · 1 Halving\nStack higher @LestersArcade 🎮');
   // Optional parts appear only with their stat.
   const bare = buildFreeShareText('lester-blaster', { score: 1, stats: { kills: 1 } });
   assert.equal(bare.split('\n')[1], '1 pts', 'no hero, no level');
@@ -149,14 +150,14 @@ test('ranked templates fit X with one mention and no hashtags or addresses', () 
   // daily label, the clock at its cap, every flag set.
   const C = 9_999_999;
   const worstFree = {
-    'lester-blaster': [197, { heroName: 'x'.repeat(40), level: C, kills: C, maxCombo: C, survivalSeconds: huge, bossDefeated: true }],
-    chikun: [235, { laps: huge, regionName: 'industrial', dailyLabel: 'y'.repeat(40), forksPassed: C, nearMisses: C, coinsCollected: C, survivalSeconds: huge, bestCombo: C }],
-    stacked: [171, { survivalSeconds: huge, maxCombo: C, lines: C, level: C, quadClears: C, assisted: true }],
+    'lester-blaster': [200, { heroName: 'x'.repeat(40), level: C, kills: C, maxCombo: C, survivalSeconds: huge, bossDefeated: true }],
+    chikun: [238, { laps: huge, regionName: 'industrial', dailyLabel: 'y'.repeat(40), forksPassed: C, nearMisses: C, coinsCollected: C, survivalSeconds: huge, bestCombo: C }],
+    stacked: [174, { survivalSeconds: huge, maxCombo: C, lines: C, level: C, quadClears: C, assisted: true }],
   };
   for (const [gameId, [weight, stats]] of Object.entries(worstFree)) {
     const text = buildFreeShareText(gameId, { score: huge, stats });
     assert.equal(xWeightedLength(text), weight, `${gameId} worst Free weight`);
-    assert.ok(weight <= 256, gameId);
+    assert.ok(weight <= 255, gameId);
   }
 });
 
@@ -396,7 +397,7 @@ test('child share rows are hidden for Ranked runs and link Free runs to their /f
   const [chikunMain, stackedMain] = await Promise.all([read('../apps/chikun/src/main.mjs'), read('../apps/stacked/src/main.mjs')]);
   const result = { score: 19475, forksPassed: 100, nearMisses: 18, coinsCollected: 41, bestCombo: 9, survivalTime: 180, regionReached: 'coast', laps: 2 };
   const tokenOf = (href, slug) => {
-    const url = new URL(href).searchParams.get('url');
+    const url = new URL(href).searchParams.get('text').split('\n').at(-1);
     const match = new RegExp(`^https://lestersarcade\\.io/f/${slug}/([0-9a-z]+)$`).exec(url);
     assert.ok(match, url);
     return match[1];
@@ -444,9 +445,10 @@ test('child share rows are hidden for Ranked runs and link Free runs to their /f
     const token = tokenOf(row.children[0].href, 'chikun');
     assert.match(token, /^ac[0-9a-z]{38}$/);
     assert.equal(row.links.card, `/api/free-card/chikun/${token}.png`);
-    const text = x.searchParams.get('text');
+    const [text, link] = x.searchParams.get('text').split('\n\n');
     assert.match(text, /^🐔 FREE PLAY · Chikun's Escape\n19,475 pts · Lap 3 · Coast · Daily 2026-09-26\n/);
-    assert.match(text, /Beat my flight @LestersArcade$/);
+    assert.match(text, /Beat my flight @LestersArcade 🎮$/);
+    assert.equal(link, `https://lestersarcade.io/f/chikun/${token}`);
     assertShareInvariants(text, 'chikun child');
     const decoded = decodeFreeShareToken('chikun', token);
     assert.equal(decoded.ok, true);
@@ -502,8 +504,9 @@ test('child share rows are hidden for Ranked runs and link Free runs to their /f
     const token = tokenOf(row.children[0].href, 'stacked');
     assert.match(token, /^as[0-9a-z]{32}$/);
     assert.equal(row.links.card, `/api/free-card/stacked/${token}.png`);
-    const text = new URL(row.children[0].href).searchParams.get('text');
-    assert.equal(text, '🧱 FREE PLAY · STACKED\n412,900 pts · ⏱ 25:00 · 🔥 ×7 combo · Assisted\n📈 186 lines · Lv 14 · 5 Halvings\nStack higher @LestersArcade');
+    const [text, link] = new URL(row.children[0].href).searchParams.get('text').split('\n\n');
+    assert.equal(link, `https://lestersarcade.io/f/stacked/${token}`);
+    assert.equal(text, '🧱 FREE PLAY · STACKED\n412,900 pts · ⏱ 25:00 · 🔥 ×7 combo · Assisted\n📈 186 lines · Lv 14 · 5 Halvings\nStack higher @LestersArcade 🎮');
     assert.deepEqual({ ...decodeFreeShareToken('stacked', token).values }, { assisted: true, score: 412900, lines: 186, level: 14, quadClears: 5, maxCombo: 7, survivalSeconds: 1500 });
   }
 });

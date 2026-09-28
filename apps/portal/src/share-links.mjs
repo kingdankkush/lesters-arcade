@@ -6,8 +6,11 @@
 // text; nothing is sent anywhere by itself.
 //
 // X is primary: `@LestersArcade` rides in the text once, `related` suggests
-// the account after posting, and there are no hashtags (D13). The URL is not
-// part of the text: X appends it and counts it as 23 weighted characters.
+// the account after posting, and there are no hashtags (D13). The URL goes in
+// the X text itself, on its own line after a blank line (1.9.3): X's composer
+// only fetched the card image when the link was typed or pasted, not for the
+// intent's `url` parameter, which it glued straight onto the mention. X
+// counts the URL as 23 weighted characters.
 // This file also ships in the Chikun and STACKED children, so keep it small.
 // The Ranked and Free templates live here too, as §7.4 specifies; the
 // children call only the Free one (a Free run links to its /f/ page, whose
@@ -23,8 +26,11 @@ export const SHARE_TARGETS = Object.freeze({
   discord: Object.freeze({ id: 'discord', label: 'Copy for Discord' }),
 });
 
-// X counts every URL as 23 and needs one separator before it: text + 24 ≤ 280.
-const MAX_TEXT_WEIGHT = 256;
+// X counts every URL as 23, after a blank-line separator: text + 2 + 23 ≤ 280.
+const MAX_TEXT_WEIGHT = 255;
+// Closes the call-to-action line after the mention, so the mention is never
+// the last thing before the link.
+const CALL_EMOJI = '🎮';
 
 function clean(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -158,7 +164,7 @@ export function buildRankedShareText(gameId, { score = 0, standingLabel = '', st
     template.stats(stats ?? {}),
     ...(personalBest ? ['🔥 New personal best!'] : []),
     '⛓ Verified on LitVM',
-    `${template.call} ${X_MENTION}`,
+    `${template.call} ${X_MENTION} ${CALL_EMOJI}`,
   ].join('\n');
 }
 
@@ -175,11 +181,12 @@ export function buildFreeShareText(gameId, { score = 0, stats = {} } = {}) {
     `${count(score, 999_999_999_999)} pts${template.detail(s)}${template.freeDetail(s)}`,
     template.stats(s),
     ...(extra ? [extra] : []),
-    `${template.call} ${X_MENTION}`,
+    `${template.call} ${X_MENTION} ${CALL_EMOJI}`,
   ].join('\n');
 }
 
-// x.com/intent/post carries text, url and related; never hashtags or via.
+// x.com/intent/post carries the text with the link on its last line, and
+// related; never hashtags or via.
 // Facebook's sharer takes only the URL. Discord has no intent endpoint, so it
 // is a copy: the text, a newline, then the URL (which unfurls the card).
 // `card` is the Free card's same-origin path (free-share-token.mjs) for the
@@ -192,7 +199,7 @@ export function buildShareLinks({ text, url = SHARE_ORIGIN, card = null } = {}) 
     text: message,
     url: link,
     card: card == null ? null : String(card),
-    x: `${SHARE_TARGETS.x.endpoint}?text=${encodeURIComponent(message)}&url=${encodeURIComponent(link)}&related=${X_RELATED}`,
+    x: `${SHARE_TARGETS.x.endpoint}?text=${encodeURIComponent(`${message}\n\n${link}`)}&related=${X_RELATED}`,
     facebook: `${SHARE_TARGETS.facebook.endpoint}?u=${encodeURIComponent(link)}`,
     discord: `${message}\n${link}`,
   });

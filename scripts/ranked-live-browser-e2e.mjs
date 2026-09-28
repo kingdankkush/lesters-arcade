@@ -171,8 +171,12 @@ export function checkShareLink(href, sessionId32) {
   try {
     const intent = new URL(String(href));
     if (intent.origin !== 'https://x.com' || intent.pathname !== '/intent/post') problems.push('not an X post intent');
-    url = intent.searchParams.get('url');
-    text = intent.searchParams.get('text');
+    // 1.9.3: the link is the text's last line, after a blank line.
+    const full = intent.searchParams.get('text') ?? '';
+    const split = full.lastIndexOf('\n\n');
+    url = split >= 0 ? full.slice(split + 2) : null;
+    text = split >= 0 ? full.slice(0, split) : full;
+    if (intent.searchParams.has('url')) problems.push('url parameter present');
     if (intent.searchParams.has('hashtags')) problems.push('hashtags parameter present');
   } catch {
     problems.push('not a URL');

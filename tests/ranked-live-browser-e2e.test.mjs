@@ -40,7 +40,7 @@ import {
 const root = fileURLToPath(new URL('..', import.meta.url));
 const SESSION = `0x${'ab'.repeat(32)}`;
 const SHARE_URL = `https://lestersarcade.io/s/${'ab'.repeat(32)}`;
-const intent = (text, url = SHARE_URL, extra = '') => `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&related=LestersArcade${extra}`;
+const intent = (text, url = SHARE_URL, extra = '') => `https://x.com/intent/post?text=${encodeURIComponent(`${text}\n\n${url}`)}&related=LestersArcade${extra}`;
 
 test('games run in the brief order (Chikun first) and --games takes a subset', () => {
   assert.deepEqual(GAME_ORDER, ['chikun', 'stacked', 'lester-blaster']);
