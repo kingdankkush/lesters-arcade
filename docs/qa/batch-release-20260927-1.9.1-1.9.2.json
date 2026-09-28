@@ -1,0 +1,27 @@
+{
+  "schema": "lesters-release-receipt-v1",
+  "status": "verified-live",
+  "date": "2026-09-27",
+  "releases": [
+    {
+      "release": "1.9.1 share fix", "siteVersion": "1.9.1", "cacheMarker": "lesters-arcade-v61-share-fix", "source": "29c40b88",
+      "deployment": "dpl_Hvu7KjXAmZFwzitUieeyxwiMsS7T",
+      "contains": ["Free share card PNG no longer sends X-Robots-Tag noindex (X skipped the image); /f/ pages stay noindex", "HMH Level 1 intro and loading art open on a random image each game"],
+      "gate": "PASS 5760 tests, exactly 51 ledgered failures"
+    },
+    {
+      "release": "1.9.2 hero stats", "siteVersion": "1.9.2", "cacheMarker": "lesters-arcade-v62-hero-stats", "source": "a830babd",
+      "deployment": "dpl_8KAuCxcWGTY4f83Eb9ditCoGVJyq",
+      "immutableUrl": "https://lesters-arcade-i5yxo1upu-justin-agent-projects.vercel.app",
+      "contains": ["Real per-hero Power/Speed/Armor/Luck and one perk each in the HMH runtime; Pistol start; lore bios; dark hero select (fable/hero-select-192 631f734f)"],
+      "verifierCheck": "No damage ceiling in the verifier (damage-dealt-mismatch is internal consistency); the fastest hero's per-tick step (about 26 px with the dash) stays under travel.maxStepPx 48; score and XP bounds do not depend on damage",
+      "gate": "PASS 5765 tests, exactly 51 ledgered failures"
+    }
+  ],
+  "production": {
+    "deployment": "dpl_8KAuCxcWGTY4f83Eb9ditCoGVJyq",
+    "previous": "dpl_Hvu7KjXAmZFwzitUieeyxwiMsS7T (1.9.1), before it dpl_EkYKp8FpYuPHoQRCgh7kLjd2qYnK (1.9.0)",
+    "rollback": "Instant Rollback to 1.9.1 or 1.9.0 is safe (same verifier and run format; hero stats revert to art-only)"
+  },
+  "verification": "see gates/verify-192 in the session scratchpad: public files match the certified build, API probes as expected, /api/health healthy on 1.9.2"
+}

@@ -1,8 +1,8 @@
-# Lester's Arcade — 1.9.2: real hero stats and perks in Hard Money Heroes
+# Lester's Arcade — 1.9.2 verified live: real hero stats and perks in Hard Money Heroes
 
 Owner-requested hero update. Each Hard Money Heroes hero now plays differently: Power, Speed, Armor and Luck (1 to 5, every hero totals 14) change damage dealt, move speed, damage taken and critical hits, and each hero has one perk (Reserve Plating: +20 max health; Velocity Trigger: faster while shooting; Block Time: shorter dash cooldown; Zero-Knowledge Crits: bigger critical hits). Everyone starts with the Pistol. The hero select has a dark background, shows each hero's own stats (no comparison against Lit Commando), the starting weapon, the perk and a short backstory. Ranked verification is unchanged: the perks move no score, XP, drop or spawn limit, and travel stays within the verifier's bound.
 
-Site/game version `1.9.2`; cache marker `lesters-arcade-v62-hero-stats`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_8KAuCxcWGTY4f83Eb9ditCoGVJyq` (source `a830babd`); site/game version `1.9.2`; cache marker `lesters-arcade-v62-hero-stats`. Gate PASS with exactly 51 retired exceptions; verified live. [Release receipt](docs/qa/batch-release-20260927-1.9.1-1.9.2.json). Continue on `fable/master-list-20260916`.
 
 ## How to play
 
@@ -22,11 +22,11 @@ Ranked costs 0.012 testnet zkLTC per run: 0.01 entry + 0.002 to publish your sco
 
 For maintainers: the fee lives in one place, `RANKED_ENTRY_FEE_WEI` in [`apps/portal/src/ranked-fee.mjs`](apps/portal/src/ranked-fee.mjs), which `arcade-core.mjs` re-exports; `tests/ranked-fee-source-of-truth.test.mjs` ties it to the deploy config and the server settle floor. Every other static Ranked fact on the site (faucet, boards, achievements, the guide URL and the canonical wording) comes from [`apps/portal/src/ranked-facts.mjs`](apps/portal/src/ranked-facts.mjs), which reads the fee from ranked-fee.mjs (`tests/ranked-facts.test.mjs` ties it to the faucet, the boards and the achievement catalogs); the guide page is generated from [`apps/portal/src/ranked-guide-content.mjs`](apps/portal/src/ranked-guide-content.mjs) by `node scripts/build-portal-pages.mjs`.
 
-# Lester's Arcade — 1.9.1: Free share images on X, varied Level 1 art
+# Lester's Arcade — 1.9.1 verified live: Free share images on X, varied Level 1 art
 
 Hotfix after 1.9.0 (owner-reported). Free Mode share cards now show their image on X: the card PNG no longer carries a noindex robots header, which X's card crawler treated as a refusal (the /f/ share pages themselves stay noindex). X caches cards per link, so a Free link shared before this fix may keep showing no image; new shares work. Hard Money Heroes' Level 1 intro and loading screens now open on a random image each game, avoiding the previous game's opening image.
 
-Site/game version `1.9.1`; cache marker `lesters-arcade-v61-share-fix`. Continue on `fable/master-list-20260916`.
+Production deployment `dpl_Hvu7KjXAmZFwzitUieeyxwiMsS7T` (source `29c40b88`); site/game version `1.9.1`; cache marker `lesters-arcade-v61-share-fix`. Gate PASS with exactly 51 retired exceptions; verified live. [Release receipt](docs/qa/batch-release-20260927-1.9.1-1.9.2.json). Continue on `fable/master-list-20260916`.
 
 # Lester's Arcade — 1.9.0 verified live: Hard Money Heroes v0.6, Free share cards, Chikun backdrops
 
