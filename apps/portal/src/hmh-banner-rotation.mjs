@@ -19,16 +19,18 @@ function shuffle(list, random) {
   return out;
 }
 
-// Slot 0 is the selected hero's own loading image (or the resumed image). Every later slot
-// draws from the hero's own images with probability `heroShare` and from the rest of the pool
-// otherwise, each through a shuffle bag, and never repeats the image on screen.
-export function createBannerRotation({ pool, heroLoading, heroId, random = Math.random, heroShare = 0.5, resume = null } = {}) { // cosmetic-rng-ok presentation-only art order
+// Every slot, the first included, draws from the selected hero's own images with probability
+// `heroShare` and from the rest of the pool otherwise, each through a shuffle bag, so a new game
+// opens on a different image each time (owner request 2026-09-27). `avoid` lists images the
+// opening draw skips (the last run's opening image, the intro's image when the loading screen
+// takes over) and no draw repeats the image on screen.
+export function createBannerRotation({ pool, heroLoading, heroId, random = Math.random, heroShare = 0.5, resume = null, avoid = [] } = {}) { // cosmetic-rng-ok presentation-only art order
   const hero = Object.hasOwn(heroLoading ?? {}, heroId) ? heroId : HMH_ROTATION_DEFAULT_HERO;
   const ids = pool.map((entry) => entry.id);
   const own = pool.filter((entry) => entry.heroes.includes(hero)).map((entry) => entry.id);
   const rest = pool.filter((entry) => !entry.heroes.includes(hero)).map((entry) => entry.id);
   const bags = { own: [], rest: [] };
-  let current = resume?.hero === hero && ids.includes(resume.current) ? resume.current : heroLoading[hero];
+  let current = resume?.hero === hero && ids.includes(resume.current) ? resume.current : null;
 
   const draw = (name) => {
     const source = name === 'own' ? own : rest;
@@ -43,12 +45,19 @@ export function createBannerRotation({ pool, heroLoading, heroId, random = Math.
     return id;
   };
 
+  const pick = () => draw(rest.length === 0 || (own.length > 0 && random() < heroShare) ? 'own' : 'rest');
+  // The opening image: a fresh draw that skips `avoid` (and the resumed image) when the pool
+  // allows it, so consecutive games and the intro-to-loading hand-off never repeat.
+  const skip = new Set([...(Array.isArray(avoid) ? avoid : []), ...(current ? [current] : [])].filter((id) => ids.includes(id)));
+  let opening = pick();
+  for (let tries = 0; skip.has(opening) && skip.size < ids.length && tries < ids.length * 2; tries += 1) opening = pick();
+  current = opening;
+
   return Object.freeze({
     hero,
     current: () => current,
     next() {
-      const useOwn = rest.length === 0 || (own.length > 0 && random() < heroShare);
-      current = draw(useOwn ? 'own' : 'rest');
+      current = pick();
       return current;
     },
     state: (source, now = Date.now()) => ({ hero, current, source, at: now }),
@@ -72,4 +81,13 @@ export function writeRotationResume(storage, state) {
 
 export function clearRotationResume(storage) {
   try { storage?.removeItem(HMH_ROTATION_STORAGE_KEY); } catch { /* storage unavailable */ }
+}
+
+// The last run's opening image, kept per device so the next game opens on a different one.
+export const HMH_ROTATION_LAST_KEY = 'hmh-banner-last-opening';
+export function readLastOpening(storage) {
+  try { const value = storage?.getItem(HMH_ROTATION_LAST_KEY); return typeof value === 'string' && value ? value : null; } catch { return null; }
+}
+export function writeLastOpening(storage, id) {
+  try { storage?.setItem(HMH_ROTATION_LAST_KEY, String(id)); } catch { /* storage unavailable */ }
 }

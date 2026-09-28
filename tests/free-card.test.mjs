@@ -122,7 +122,8 @@ test('renders a 1200x630 PNG from the token alone, cached for a day at the edge,
     assert.equal(response.headers['cache-control'], freeCardApi.FREE_CARD_CACHE);
     assert.equal(freeCardApi.FREE_CARD_CACHE, 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
     assert.doesNotMatch(response.headers['cache-control'], /immutable/);
-    assert.equal(response.headers['x-robots-tag'], 'noindex');
+    // The image carries no robots header (like the Ranked card): X's card fetcher skips a noindex image. The /f/ page stays noindex.
+    assert.equal(response.headers['x-robots-tag'], undefined);
     assert.equal(response.headers['x-content-type-options'], 'nosniff');
     assert.deepEqual(attempts, [], 'no network fetch while rendering');
     assert.ok(elapsed < 20_000, `render took ${Math.round(elapsed)} ms`);

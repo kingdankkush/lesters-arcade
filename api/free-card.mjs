@@ -92,7 +92,7 @@ export async function renderFreeCardPng(run) {
 export async function freeCardRequest({ method = 'GET', query = {}, ip = 'unknown' } = {}, deps = {}) {
   const decoded = decodeFreeRun(query.game, query.token);
   if (!decoded.ok) return fail(400, decoded.error, FREE_CARD_INVALID_CACHE);
-  const headers = { 'Content-Type': 'image/png', 'Cache-Control': FREE_CARD_CACHE, 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex' };
+  const headers = { 'Content-Type': 'image/png', 'Cache-Control': FREE_CARD_CACHE, 'X-Content-Type-Options': 'nosniff' };
   if (method === 'HEAD') return { status: 200, body: null, headers };
   if (deps?.db) {
     await ensureSchema(deps.db);

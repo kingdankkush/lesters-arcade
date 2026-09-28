@@ -5,11 +5,15 @@
 // Presentation only: it never touches the canvas, the simulation, the bridge or the startup gate.
 import { HMH_HERO_LOADING, HMH_LOADING_POOL } from './generated/hmh-loading-art.mjs';
 import {
-  HMH_ROTATION_TIMING, clearRotationResume, createBannerRotation, readRotationResume, writeRotationResume,
+  HMH_ROTATION_TIMING, clearRotationResume, createBannerRotation, readLastOpening, readRotationResume, writeLastOpening, writeRotationResume,
 } from './hmh-banner-rotation.mjs';
 
 function sessionStore(windowRef) {
   try { return windowRef?.sessionStorage ?? null; } catch { return null; }
+}
+
+function localStore(windowRef) {
+  try { return windowRef?.localStorage ?? null; } catch { return null; }
 }
 
 // Tip sentences for the ticker, read from the panel's own tip articles so no second copy
@@ -46,7 +50,12 @@ export function mountBannerStage({
   const byId = new Map(HMH_LOADING_POOL.map((entry) => [entry.id, entry]));
   const resume = resumeFrom ? readRotationResume(storage, heroId, { source: resumeFrom }) : null;
   if (resume) clearRotationResume(storage);
-  const rotation = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId, resume, ...(random ? { random } : {}) });
+  const lastRun = localStore(windowRef);
+  // A new game (the intro) skips the previous game's opening image; the loading screen skips
+  // the image the intro was showing, so each screen of each run opens on a new picture.
+  const avoid = resume ? [] : [readLastOpening(lastRun)].filter(Boolean);
+  const rotation = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId, resume, avoid, ...(random ? { random } : {}) });
+  if (!resume) writeLastOpening(lastRun, rotation.current());
   const layers = [0, 1].map(() => {
     const image = documentRef.createElement('img');
     image.className = 'hmh-art-layer';

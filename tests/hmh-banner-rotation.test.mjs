@@ -23,11 +23,11 @@ function seeded(seed) {
   };
 }
 
-test('slot 0 is the selected hero image; no immediate repeat; about half the draws feature the hero', () => {
+test('the opening image is a random draw; no immediate repeat; about half the draws feature the hero', () => {
   const byId = new Map(HMH_LOADING_POOL.map((entry) => [entry.id, entry]));
   for (const [index, hero] of HEROES.entries()) {
     const rotation = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId: hero, random: seeded(17 + index) });
-    assert.equal(rotation.current(), HMH_HERO_LOADING[hero], `${hero} opens on its own loading image`);
+    assert.ok(byId.has(rotation.current()), `${hero} opens on a pool image`);
     let previous = rotation.current();
     let featured = 0;
     const seen = new Set([previous]);
@@ -43,14 +43,27 @@ test('slot 0 is the selected hero image; no immediate repeat; about half the dra
   }
 });
 
-test('an unknown hero falls back to Lit Commando; a matching resume continues the intro image', () => {
+test('an unknown hero falls back to Lit Commando; the loading screen opens on a different image than the intro', () => {
   const unknown = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId: 'nobody' });
   assert.equal(unknown.hero, 'lit-commando');
-  assert.equal(unknown.current(), HMH_HERO_LOADING['lit-commando']);
-  const resumed = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId: 'lilly', resume: { hero: 'lilly', current: 'hmh-extra3' } });
-  assert.equal(resumed.current(), 'hmh-extra3');
-  const otherHero = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId: 'lilly', resume: { hero: 'lester-original', current: 'hmh-extra3' } });
-  assert.equal(otherHero.current(), HMH_HERO_LOADING.lilly);
+  for (let seed = 1; seed <= 40; seed += 1) {
+    const resumed = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId: 'lilly', resume: { hero: 'lilly', current: 'hmh-extra3' }, random: seeded(seed) });
+    assert.notEqual(resumed.current(), 'hmh-extra3', `seed ${seed}: the loading screen repeats the intro image`);
+  }
+});
+
+test('consecutive games open on different images, and openings vary across games (owner request 2026-09-27)', () => {
+  for (const hero of HEROES) {
+    const openings = new Set();
+    let last = null;
+    for (let game = 0; game < 60; game += 1) {
+      const rotation = createBannerRotation({ pool: HMH_LOADING_POOL, heroLoading: HMH_HERO_LOADING, heroId: hero, avoid: last ? [last] : [], random: seeded(1000 + game) });
+      assert.notEqual(rotation.current(), last, `${hero} game ${game} repeats the previous opening`);
+      last = rotation.current();
+      openings.add(last);
+    }
+    assert.ok(openings.size >= 8, `${hero}: only ${openings.size} distinct openings over 60 games`);
+  }
 });
 
 test('the intro-to-loading handoff survives missing, throwing and stale storage', () => {
@@ -84,15 +97,16 @@ function fakeDom() {
   return { documentRef, windowRef, timers, frame: element('figure'), caption: element('figcaption'), host: element('section') };
 }
 
-test('the stage shows the hero image first; reduced motion shows only that image and schedules nothing', async () => {
+test('the stage opens on a pool image with its caption; reduced motion shows only that image and schedules nothing', async () => {
   const dom = fakeDom();
   const stage = mountBannerStage({ frame: dom.frame, caption: dom.caption, backdropHost: dom.host, heroId: 'lit-valkyrie', reduceMotion: true, documentRef: dom.documentRef, windowRef: dom.windowRef });
   await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(dom.frame.dataset.artId, HMH_HERO_LOADING['lit-valkyrie']);
+  const opening = HMH_LOADING_POOL.find((entry) => entry.id === dom.frame.dataset.artId);
+  assert.ok(opening, 'the opening image comes from the pool');
   assert.equal(dom.frame.dataset.artMotion, 'reduced');
   assert.equal(dom.frame.dataset.artState, 'ready');
-  assert.equal(dom.caption.textContent, 'Lit Valkyrie');
-  assert.match(dom.host.style.props.get('--hmh-art-backdrop'), /level-load-litvalkyrie-480\.webp/);
+  assert.equal(dom.caption.textContent, opening.caption);
+  assert.equal(dom.host.style.props.get('--hmh-art-backdrop'), `url("${opening.thumb}")`);
   assert.equal(dom.timers.length, 0, 'no rotation under reduced motion');
   assert.equal(dom.frame.children.filter((child) => child.dataset.active === 'true').length, 1);
   stage.stop();
@@ -106,14 +120,15 @@ test('with motion, the stage rotates to a different image after the hold, and wa
   let open = false;
   mountBannerStage({ frame: dom.frame, heroId: 'lilly', gate: () => open, documentRef: dom.documentRef, windowRef: dom.windowRef, random: seeded(3) });
   await new Promise((resolve) => setImmediate(resolve));
-  assert.equal(dom.frame.dataset.artId, HMH_HERO_LOADING.lilly);
+  const first = dom.frame.dataset.artId;
+  assert.ok(first);
   assert.equal(dom.timers.at(-1).ms, 7000);
   await dom.timers.at(-1).fn();
-  assert.equal(dom.frame.dataset.artId, HMH_HERO_LOADING.lilly, 'a closed gate holds the first image');
+  assert.equal(dom.frame.dataset.artId, first, 'a closed gate holds the first image');
   assert.equal(dom.timers.at(-1).ms, 1000);
   open = true;
   await dom.timers.at(-1).fn();
-  assert.notEqual(dom.frame.dataset.artId, HMH_HERO_LOADING.lilly);
+  assert.notEqual(dom.frame.dataset.artId, first);
 });
 
 test('tips for the ticker come from the panel tip articles, touch lines only on touch screens', () => {
