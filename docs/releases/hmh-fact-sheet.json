@@ -1,7 +1,7 @@
 {
   "schema": "hmh-release-facts/v1",
   "scope": "Offline source snapshot; not a release certificate or public-byte verification",
-  "sourceSnapshotSha256": "a697079cb28f45cad1872bc56fa5fc44bba39ae11eb2560b0a3a0e0084f82330",
+  "sourceSnapshotSha256": "4baba98d37c03e34dcc17abddc2dd214289427221b5068e1f99d54ed84c6a7ca",
   "sourceInputs": [
     {
       "path": "apps/portal/games/chikun/game.manifest.json",
@@ -90,8 +90,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "4ed8a4f9c623572ec9ef59c6adf3d54dd5a77186859758fc0007fb79a528f695",
-      "bytes": 60240
+      "sha256": "c9492f6fd514e61c0d70af0832795773d4f0ba85956394b7fec98abe41ff2bbe",
+      "bytes": 60906
     },
     {
       "path": "scripts/hmh-release-facts.mjs",
@@ -105,7 +105,7 @@
     },
     {
       "path": "tests/arcade-core.test.mjs",
-      "sha256": "9cac978096bd22a38d5a3c930e9cc42305616a35e4881413cd834b23b849ab39",
+      "sha256": "6cc93d758881c55fb1ea91556618cb731d0abe44df426cf3e6d3104aed178b25",
       "bytes": 194223
     },
     {
@@ -140,7 +140,7 @@
     }
   ],
   "productionPromotionAuthorized": false,
-  "recordedProductionMarker": "lesters-arcade-v60-hmh-v06",
+  "recordedProductionMarker": "lesters-arcade-v61-share-fix",
   "cabinets": [
     {
       "manifestId": "hard-money-heroes",
