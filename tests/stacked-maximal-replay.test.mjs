@@ -52,16 +52,17 @@ test('public runtime preserves full canonical state, board, RNG counts and evide
 test('benchmark retains every cold sample and rejects a single replay over the fixed 250 ms bar', async () => {
   const { assessReplaySamples, STACKED_REPLAY_BUDGET_MS } = await import('../scripts/lib/stacked-replay-benchmark.mjs');
   assert.equal(STACKED_REPLAY_BUDGET_MS, 250);
-  const samples = [{ phase: 'replay', wallMs: 20, ok: true }, { phase: 'verify', wallMs: 30, ok: true }];
-  const passing = assessReplaySamples(samples);
+  const samples = Array.from({ length: 7 }, (_, index) => ['decode', 'replay', 'verify'].map(phase => ({ index, phase, wallMs: 20, ok: true }))).flat();
+  const passing = assessReplaySamples(samples, 7);
   assert.equal(passing.passed, true);
   assert.deepEqual(passing.samples, samples);
-  assert.equal(assessReplaySamples([...samples, { phase: 'replay', wallMs: 250, ok: true }]).passed, false);
-  assert.equal(assessReplaySamples([...samples, { phase: 'verify', wallMs: 251, ok: true }]).passed, false);
-  assert.equal(assessReplaySamples([{ phase: 'replay', wallMs: 20, ok: false }, samples[1]]).passed, false);
-  assert.equal(assessReplaySamples([]).passed, false);
-  for (const wallMs of [NaN, Infinity, -1, null]) assert.equal(assessReplaySamples([{ ...samples[0], wallMs }, samples[1]]).passed, false);
-  assert.equal(assessReplaySamples([samples[0]]).passed, false, 'replay alone cannot certify complete per-game verification');
+  const replaceFirst = replacement => [{ ...samples[0], ...replacement }, ...samples.slice(1)];
+  assert.equal(assessReplaySamples(replaceFirst({ wallMs: 250 }), 7).passed, false);
+  assert.equal(assessReplaySamples(replaceFirst({ wallMs: 251 }), 7).passed, false);
+  assert.equal(assessReplaySamples(replaceFirst({ ok: false }), 7).passed, false);
+  assert.equal(assessReplaySamples([], 7).passed, false);
+  for (const wallMs of [NaN, Infinity, -1, null]) assert.equal(assessReplaySamples(replaceFirst({ wallMs }), 7).passed, false);
+  assert.equal(assessReplaySamples(samples.filter(sample => sample.phase === 'replay'), 7).passed, false, 'replay alone cannot certify complete per-game verification');
 });
 
 test('fixture loader rejects checksum and canonical-data corruption', async () => {

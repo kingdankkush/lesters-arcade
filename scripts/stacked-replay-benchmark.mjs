@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
-import { assessReplaySamples, currentSourceHashes, loadMaximalFixture, sourceRoot, STACKED_BENCHMARK_PHASES, withReplayHeavyLock } from './lib/stacked-replay-benchmark.mjs';
+import { assessReplaySamples, parseReplaySample, currentSourceHashes, loadMaximalFixture, sourceRoot, STACKED_BENCHMARK_PHASES, withReplayHeavyLock } from './lib/stacked-replay-benchmark.mjs';
 
 const args = process.argv.slice(2);
 const option = (name, fallback) => {
@@ -19,11 +19,9 @@ const perform = async () => {
   const samples = [];
   for (let index = 0; index < count; index += 1) for (const phase of STACKED_BENCHMARK_PHASES) {
     const child = spawnSync(process.execPath, [fileURLToPath(new URL('./stacked-replay-benchmark-sample.mjs', import.meta.url)), phase], { cwd: sourceRoot, encoding: 'utf8', timeout: 30_000, maxBuffer: 2 * 1024 * 1024 });
-    if (child.error || child.status !== 0) {
-      samples.push({ index, phase, ok: false, wallMs: null, error: String(child.error?.message ?? child.stderr).slice(0, 1600) });
-    } else samples.push({ index, ...JSON.parse(child.stdout) });
+    samples.push(parseReplaySample(child, { index, phase, fixture }));
   }
-  const assessment = assessReplaySamples(samples);
+  const assessment = assessReplaySamples(samples, count);
   const report = { v: 'stacked-replay-benchmark-v1', measuredAt: new Date().toISOString(), policy: 'all fresh-process first-use observations below 250 ms; no retries or hidden fastest samples', samplesPerPhase: count, fixtureEvidenceSha256: fixture.evidence.sha256, sourceHashes: currentSourceHashes(), ...assessment };
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(report, null, 2) + '\n');
