@@ -16,14 +16,14 @@ The [machine-readable receipt](../../qa/hmh-world-w0a-native-20260929.json) cont
 
 ## Native measurements
 
-Host: Windows x64, Node `24.17.0`, Intel i9-12900K, 24 logical CPUs. Timestamp: `2026-09-29T22:53:45.490Z`. Each scenario received one synchronous build/flow warmup; three build samples alternate across scenarios. Each of three targets received 12 flow samples. These are finite samples, not worst-case guarantees.
+Host: Windows x64, Node `24.17.0`, Intel i9-12900K, 24 logical CPUs. Timestamp: `2026-09-29T23:11:03.545Z`. This fresh batch measures the exact current LF source bytes after formatting cleanup; all seven direct source hashes match the candidate files. Each scenario received one synchronous build/flow warmup; three build samples alternate across scenarios. Each of three targets received 12 flow samples. These are finite samples, not worst-case guarantees.
 
 | Scenario | Grid cells | Synchronous build median / max (ms) | Instrumented chunked elapsed median (ms) | Highest observed chunk work (ms) | Highest observed flow refresh (ms) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Current authored | 16,000 | 32.193 / 32.207 | 36.007 | 1.779 | 2.604 |
-| Bounds-only target | 78,156 | 181.550 / 184.602 | 206.696 | 1.805 | 1.128 |
-| Synthetic current | 16,000 | 18.729 / 19.269 | 22.664 | 1.285 | 0.191 |
-| Synthetic target | 78,156 | 98.990 / 112.764 | 112.825 | 1.311 | 0.814 |
+| Current authored | 16,000 | 32.481 / 35.752 | 35.839 | 1.882 | 2.913 |
+| Bounds-only target | 78,156 | 201.881 / 203.807 | 219.845 | 3.051 | 1.516 |
+| Synthetic current | 16,000 | 22.136 / 23.593 | 21.888 | 1.514 | 0.289 |
+| Synthetic target | 78,156 | 108.068 / 110.050 | 117.349 | 2.003 | 1.452 |
 
 Chunking uses the runtime 512-cell and 4 ms limits with diagnostic clock/query hooks and native `setImmediate` yields. Instrumentation adds cost. Reported chunk work spans actual per-cell work within each pass; elapsed includes yields and bookkeeping. This differs from browser idle scheduling and phone frame integration. Current-size builds used 64 work slices / 62 yields; target-size builds used 306 / 304. All three repetitions produced byte-identical synchronous/chunked grids. Ground queries per build were respectively 253,753; 1,547,729; 155,844; 703,896. Both passes processed every cell, twice. The existing fixed 30-tick flow-refresh cadence is untouched.
 
@@ -60,7 +60,7 @@ GREEN under the owned shared heavy lock:
 node --test --test-concurrency=1 tests/hmh-world-size-diagnostics.test.mjs tests/hmh-reboot-boot-responsive.test.mjs tests/hmh-reboot-enemy-navgrid.test.mjs tests/hmh-world-design-interactions.test.mjs
 ```
 
-49 / 49 passed; 0 failed, skipped or todo. Ten new diagnostic tests cover immutable fixture identity, actual allocated buffers, rounding/fallback, guarded perimeter behavior, complete chunked authority readiness, reference byte parity, directed ledge/reverse-flow legality, gate full-rebuild comparisons, deterministic valid fixtures and bounded command arguments. Border tests deliberately assert that the diagnostic exposes the current mismatch; the suite passing does not certify it as acceptable.
+49 / 49 passed again on the exact post-format candidate; 0 failed, skipped or todo (2,449.820 ms suite duration). Ten new diagnostic tests cover immutable fixture identity, actual allocated buffers, rounding/fallback, guarded perimeter behavior, complete chunked authority readiness, reference byte parity, directed ledge/reverse-flow legality, gate full-rebuild comparisons, deterministic valid fixtures and bounded command arguments. Border tests deliberately assert that the diagnostic exposes the current mismatch; the suite passing does not certify it as acceptable.
 
 Fresh native timing command under the same owned lock:
 
@@ -68,7 +68,7 @@ Fresh native timing command under the same owned lock:
 node scripts/hmh-world-size-bench.mjs --repetitions=3 --warmups=1 --flow-repetitions=12 --output=docs/qa/hmh-world-w0a-native-20260929.json
 ```
 
-Completed successfully. Source syntax checks passed. After measurement, two surplus blank lines at the ends of harness sources were removed for the staged whitespace check; the JSON source hashes retain the exact content measured. Executable statements are unchanged. The lock ownership marker was checked before removing only this job's marker and empty lock directory. No other worktree was changed.
+Completed successfully. Source syntax checks passed. The first measured batch at `22:53:45.490Z` preceded EOF/working-copy line-ending cleanup; this receipt supersedes those timings with the fresh `23:11` batch. Executable statements remained unchanged. All seven recorded raw source hashes now match the current candidate and its LF checkout bytes; the older receipt remains in Git history. The fresh observations are reported as measured, including slower samples, without selecting faster runs. The lock ownership marker was checked before removing only this job's marker and empty lock directory. No other worktree was changed.
 
 Skipped: full release gate/build, browser runtime, `visual:reboot`, desktop/phone screenshots, physical-phone timing/soak, asset streaming/texture residency, 30-minute flat memory, local Ranked end-to-end and production probes. There is no render-layer change in this diagnostic slice. The real browser path and device acceptance remain open; none of the native timings prove 30 fps.
 
