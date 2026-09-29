@@ -1,0 +1,41 @@
+// Scratch-only fresh processes; preserve every observation, never retry.
+import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
+const source = new URL('file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/');
+const { assessReplaySamples, parseReplaySample, currentSourceHashes, loadMaximalFixture, STACKED_BENCHMARK_PHASES } = await import(new URL('scripts/lib/stacked-replay-benchmark.mjs', source));
+const options = { samples: 7, fixtureRoot: null, token: null, out: null };
+for (const arg of process.argv.slice(2)) {
+  const match = /^--(samples|fixture-root|owned-lock-token|out)=(.+)$/.exec(arg);
+  if (!match) throw new TypeError(`invalid argument: ${arg}`);
+  const [, key, value] = match;
+  if (key === 'samples') options.samples = Number(value);
+  else if (key === 'fixture-root') options.fixtureRoot = resolve(value);
+  else if (key === 'owned-lock-token') options.token = value;
+  else options.out = resolve(value);
+}
+if (!Number.isInteger(options.samples) || options.samples < 5 || options.samples > 30 || !options.fixtureRoot || !options.token || !options.out) throw new TypeError('require bounded count, fixture root, owned lock and report output');
+const owner = JSON.parse(readFileSync(new URL('../.locks/heavy.lock/owner.json', source), 'utf8'));
+if (owner.token !== options.token) throw new Error('shared heavy lock token mismatch');
+const { fixture } = loadMaximalFixture(options.fixtureRoot);
+if (!fixture.provenance.oldProtocolVerifierAccepted || !fixture.provenance.maximalDurationAccepted) throw new Error('distinct input fixture must already have complete old-protocol acceptance');
+const samples = [];
+for (let index = 0; index < options.samples; index += 1) for (const phase of STACKED_BENCHMARK_PHASES) {
+  const child = spawnSync(process.execPath, [fileURLToPath(new URL('./stacked-multibit-sample.mjs', import.meta.url)), phase, options.fixtureRoot], { encoding: 'utf8', timeout: 30_000, maxBuffer: 2 * 1024 * 1024 });
+  samples.push(parseReplaySample(child, { index, phase, fixture }));
+}
+const assessment = assessReplaySamples(samples, options.samples);
+const hash = value => createHash('sha256').update(value).digest('hex');
+const report = { v: 'stacked-multibit-first-use-diagnostic-v1', measuredAt: new Date().toISOString(),
+  policy: 'All scheduled phases/indices from fresh processes retained, no warmup/retries; complete verifier includes decode/private parse/simulation/digests/result. Scope is this distinct accepted fixture and local environment.',
+  samplesPerPhase: options.samples, fixtureEvidenceSha256: fixture.evidence.sha256, fixtureEvidenceBytes: fixture.evidence.bytes,
+  sourceHashes: { ...currentSourceHashes(),
+    'scripts/lib/stacked-replay-benchmark.mjs': hash(readFileSync(new URL('scripts/lib/stacked-replay-benchmark.mjs', source))),
+    'scratch/stacked-multibit-sample.mjs': hash(readFileSync(new URL('./stacked-multibit-sample.mjs', import.meta.url))),
+    'scratch/stacked-multibit-benchmark.mjs': hash(readFileSync(fileURLToPath(import.meta.url))) },
+  maximumRawEncodingAcceptance: false, browserAcceptance: false, productionServerAcceptance: false, ...assessment };
+writeFileSync(options.out, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
+process.stdout.write(JSON.stringify({ out: options.out, passed: report.passed, budgetMs: report.budgetMs, phases: report.phases }) + '\n');
+if (!report.passed) process.exitCode = 1;

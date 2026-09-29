@@ -1,0 +1,46 @@
+{
+  "v": "stacked-multibit-distinct-run-diagnostic-v1",
+  "generatedAt": "2026-09-29T23:12:46.613Z",
+  "node": "v24.17.0",
+  "method": "Actual existing Free-only pilot reacts to actual unchanged runtime snapshots. SoftDrop is added to pilot HardDrop masks, creating distinct inputs. No resets, reseeds, state edits, skipped ticks, rule/config override or padded encoding.",
+  "unchangedRuntimeMaxTicks": 432000,
+  "requestedTicks": 10800,
+  "consumedTicks": 10800,
+  "continuous": true,
+  "changedInputTicks": 1331,
+  "multiBitTransitionCount": 2662,
+  "maskCounts": {
+    "0": 5400,
+    "1": 1474,
+    "2": 1783,
+    "12": 1331,
+    "16": 503,
+    "32": 167,
+    "64": 142
+  },
+  "sourceHashes": {
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+    "apps/stacked/src/dev/soak-pilot.mjs": "aba5c692371256a34e9eefbe63f3e4772b438829712aa8030cd0b14a88434156",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+    "scratch/stacked-multibit-probe.mjs": "438c0fda7bbac8cdd2c228ee032de53b2a5d6a4648b0d8c8de6df21eed923d27"
+  },
+  "evidenceBytes": 16151,
+  "evidenceSha256": "023f921f0066fac09848308d16af4f2c3860689a78d6b66f86741f9cff1046b0",
+  "actualPublicDecoderAccepted": true,
+  "terminal": false,
+  "replayAccepted": false,
+  "oldProtocolVerifierAccepted": false,
+  "maximalDurationAccepted": false,
+  "elapsedSeconds": 4.331532500000001,
+  "exclusions": [
+    "human run",
+    "production server",
+    "browser/phone acceptance",
+    "maximum raw-encoding headroom",
+    "timing gate"
+  ],
+  "note": "Nonterminal prefix only. Runtime ceiling stayed unchanged. No complete replay or verifier acceptance claimed."
+}

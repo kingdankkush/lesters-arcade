@@ -1,0 +1,828 @@
+{
+  "v": "stacked-multibit-first-use-diagnostic-v1",
+  "measuredAt": "2026-09-29T23:16:19.415Z",
+  "policy": "All scheduled phases/indices from fresh processes retained, no warmup/retries; complete verifier includes decode/private parse/simulation/digests/result. Scope is this distinct accepted fixture and local environment.",
+  "samplesPerPhase": 7,
+  "fixtureEvidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+  "fixtureEvidenceBytes": 643624,
+  "sourceHashes": {
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+    "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84",
+    "scripts/lib/stacked-replay-benchmark.mjs": "02c45fec3fbbd2fa85261317a6876aade3ad41ce6ebd769e9291ec0376f30caa",
+    "scratch/stacked-multibit-sample.mjs": "948c5051581dae841b0f4bbd2af2fc7cc4f83255e2dbcc1293a18e0ca1b1245e",
+    "scratch/stacked-multibit-benchmark.mjs": "729aab0ad324ebb9e3c66a72618b7c97e08510a820e59affe7ac1ee78d99d370"
+  },
+  "maximumRawEncodingAcceptance": false,
+  "browserAcceptance": false,
+  "productionServerAcceptance": false,
+  "budgetMs": 250,
+  "expectedSamplesPerPhase": 7,
+  "complete": true,
+  "passed": true,
+  "phases": {
+    "decode": {
+      "count": 7,
+      "p50Ms": 50.1895,
+      "p95Ms": 52.4263,
+      "p99Ms": 52.4263,
+      "maxMs": 52.4263
+    },
+    "replay": {
+      "count": 7,
+      "p50Ms": 172.7203,
+      "p95Ms": 177.8754,
+      "p99Ms": 177.8754,
+      "maxMs": 177.8754
+    },
+    "verify": {
+      "count": 7,
+      "p50Ms": 225.2065,
+      "p95Ms": 227.41070000000002,
+      "p99Ms": 227.41070000000002,
+      "maxMs": 227.41070000000002
+    }
+  },
+  "samples": [
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 50.78489999999999,
+      "cpuMs": 62,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 35880960,
+        "heapTotal": 37249024,
+        "heapUsed": 19475696,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 0
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 177.8754,
+      "cpuMs": 171,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6623232,
+        "heapTotal": 1572864,
+        "heapUsed": 723848,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 0
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 227.41070000000002,
+      "cpuMs": 218,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 44937216,
+        "heapTotal": 37511168,
+        "heapUsed": 13186104,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 0
+    },
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 52.3874,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 36036608,
+        "heapTotal": 36724736,
+        "heapUsed": 19451728,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 1
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 171.0009,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6705152,
+        "heapTotal": 1310720,
+        "heapUsed": 704088,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 1
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 225.2065,
+      "cpuMs": 219,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 44306432,
+        "heapTotal": 37511168,
+        "heapUsed": 13141968,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 1
+    },
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 52.4263,
+      "cpuMs": 48,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 35975168,
+        "heapTotal": 36724736,
+        "heapUsed": 19510136,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 2
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 172.7203,
+      "cpuMs": 171,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6447104,
+        "heapTotal": 1048576,
+        "heapUsed": 759728,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 2
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 224.41039999999998,
+      "cpuMs": 218,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 45486080,
+        "heapTotal": 37773312,
+        "heapUsed": 13199112,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 2
+    },
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 49.4541,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 35962880,
+        "heapTotal": 36986880,
+        "heapUsed": 19505856,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 3
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 172.74769999999998,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6336512,
+        "heapTotal": 1310720,
+        "heapUsed": 690400,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 3
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 224.76420000000002,
+      "cpuMs": 219,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 44519424,
+        "heapTotal": 38035456,
+        "heapUsed": 13265232,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 3
+    },
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 49.779900000000005,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 35708928,
+        "heapTotal": 37249024,
+        "heapUsed": 19477896,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 4
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 172.2514,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 5918720,
+        "heapTotal": 1310720,
+        "heapUsed": 683472,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 4
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 226.04289999999997,
+      "cpuMs": 218,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 44945408,
+        "heapTotal": 37249024,
+        "heapUsed": 13133184,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 4
+    },
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 49.744499999999995,
+      "cpuMs": 46,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 35942400,
+        "heapTotal": 36724736,
+        "heapUsed": 19508216,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 5
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 172.74890000000002,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6328320,
+        "heapTotal": 786432,
+        "heapUsed": 726552,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 5
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 224.0302,
+      "cpuMs": 203,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 45191168,
+        "heapTotal": 38035456,
+        "heapUsed": 13177656,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 5
+    },
+    {
+      "phase": "decode",
+      "ok": true,
+      "wallMs": 50.1895,
+      "cpuMs": 47,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 35975168,
+        "heapTotal": 37249024,
+        "heapUsed": 19503960,
+        "external": -64485,
+        "arrayBuffers": -64525
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "actual server base64/header decode; private SIC1 parse included in replay",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 6
+    },
+    {
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 172.52700000000002,
+      "cpuMs": 171,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6057984,
+        "heapTotal": 1048576,
+        "heapUsed": 748928,
+        "external": 2112991,
+        "arrayBuffers": 2112951
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 6
+    },
+    {
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 226.2014,
+      "cpuMs": 218,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 44851200,
+        "heapTotal": 37249024,
+        "heapUsed": 13180720,
+        "external": 3623324,
+        "arrayBuffers": 3598575
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 643624,
+      "evidenceSha256": "41faf8d9f9ff38409cf6ebace00bd23a4d41aeb497e3216cf37d89ef8c7e887c",
+      "scope": "complete per-game verifier; authentication, API/network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "assertions",
+        "auth/session-ticket binding",
+        "API/network/settlement",
+        "browser/phone",
+        "maximum raw-encoding guarantee"
+      ],
+      "index": 6
+    }
+  ]
+}
