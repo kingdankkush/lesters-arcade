@@ -1,0 +1,303 @@
+{
+  "schema": 1,
+  "classification": "unapproved-runtime-character-pilot",
+  "activeRuntimeIntegration": false,
+  "cameraDegreesFromVertical": 55,
+  "groundPivot": "existing-world-foot-position",
+  "simulationAuthority": "none",
+  "actors": {
+    "lit-commando": {
+      "file": "lit-commando.glb",
+      "sha256": "6408efa2bc23ad71c8cb237fea761989ce5a88a5f19ee70990dbdaf2266d662c",
+      "sourceSha256": "0c930374daccb2b9458a8600fdf3150dc51f6b5d8b4a47edcd05d92905fc6284",
+      "sourceBytes": 90056914,
+      "sourceTriangles": 1965100,
+      "requiredClips": [
+        "idle",
+        "run",
+        "aim",
+        "pistol-fire",
+        "hurt",
+        "dash",
+        "melee",
+        "grenade",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 8023452,
+        "vertices": 21519,
+        "triangles": 25891,
+        "skinnedMeshes": 6,
+        "joints": 22,
+        "clips": [
+          {
+            "name": "aim",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "dash",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "grenade",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "hurt",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "melee",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "pistol-fire",
+            "durationSeconds": 1,
+            "channels": 66
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 66
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.4823496341705322,
+            0.0006624352536164224,
+            -0.31286925077438354
+          ],
+          "max": [
+            0.45536836981773376,
+            2.100982189178467,
+            0.31268444657325745
+          ]
+        },
+        "embeddedImages": 12,
+        "images": [
+          {
+            "name": "desert+eagle+handgun+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 315694
+          },
+          {
+            "name": "desert+eagle+handgun+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 370923
+          },
+          {
+            "name": "desert+eagle+handgun+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 387271
+          },
+          {
+            "name": "military+action+figure+3d+model_normal",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1026927
+          },
+          {
+            "name": "military+action+figure+3d+model_basecolor",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1497510
+          },
+          {
+            "name": "military+action+figure+3d+model_rm",
+            "format": "png",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 1145286
+          },
+          {
+            "name": "rugged+hunting+knife+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 315427
+          },
+          {
+            "name": "rugged+hunting+knife+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 407601
+          },
+          {
+            "name": "rugged+hunting+knife+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 213764
+          },
+          {
+            "name": "hand+grenade+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 176370
+          },
+          {
+            "name": "hand+grenade+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 303323
+          },
+          {
+            "name": "hand+grenade+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 326641
+          }
+        ],
+        "textureBytesRgba8": 22020096,
+        "textureBytesRgba8Mipmaps": 29360112
+      }
+    },
+    "bagholder-rusher": {
+      "file": "bagholder-rusher.glb",
+      "sha256": "cb5b557b3aff2018af5bb88352219ec86212e35404a3cd442904bc161aa78d33",
+      "sourceSha256": "d71630544fb236ad3a165a3e9d3e3f7aa2f5bbd254311b6d8f9c7a1f92b85856",
+      "sourceBytes": 8599093,
+      "sourceTriangles": 114422,
+      "requiredClips": [
+        "idle",
+        "run",
+        "tell",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "inspection": {
+        "bytes": 1746308,
+        "vertices": 6968,
+        "triangles": 8274,
+        "skinnedMeshes": 2,
+        "joints": 19,
+        "clips": [
+          {
+            "name": "attack",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "death",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "hit",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "idle",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "run",
+            "durationSeconds": 1,
+            "channels": 63
+          },
+          {
+            "name": "tell",
+            "durationSeconds": 1,
+            "channels": 63
+          }
+        ],
+        "bounds": {
+          "min": [
+            -0.441074401140213,
+            0.0013017406454309821,
+            -0.4284604787826538
+          ],
+          "max": [
+            0.4400388300418854,
+            1.7216256856918335,
+            0.42899274826049805
+          ]
+        },
+        "embeddedImages": 7,
+        "images": [
+          {
+            "name": "bagholder-rusher Primary Authored | Authored PBR Bake",
+            "format": "png",
+            "width": 16,
+            "height": 16,
+            "bytes": 274
+          },
+          {
+            "name": "bagholder-rusher Accent Authored | Authored PBR Bake",
+            "format": "png",
+            "width": 16,
+            "height": 16,
+            "bytes": 274
+          },
+          {
+            "name": "bagholder-rusher Metal Authored | Authored PBR Bake",
+            "format": "png",
+            "width": 16,
+            "height": 16,
+            "bytes": 274
+          },
+          {
+            "name": "battered+zombie+warrior+3d+model_normal",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 298826
+          },
+          {
+            "name": "battered+zombie+warrior+3d+model_basecolor",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 474074
+          },
+          {
+            "name": "battered+zombie+warrior+3d+model_rm",
+            "format": "png",
+            "width": 512,
+            "height": 512,
+            "bytes": 368937
+          },
+          {
+            "name": "bagholder-rusher Secondary Authored | Authored PBR Bake",
+            "format": "png",
+            "width": 16,
+            "height": 16,
+            "bytes": 274
+          }
+        ],
+        "textureBytesRgba8": 3149824,
+        "textureBytesRgba8Mipmaps": 4199756
+      }
+    }
+  }
+}

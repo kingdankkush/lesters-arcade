@@ -26,6 +26,13 @@ const NODE_CHECK_FILES = [
   'scripts/lib/stacked-replay-benchmark.mjs',
   'tests/stacked-maximal-replay.test.mjs',
   'tests/stacked-replay-benchmark.test.mjs',
+  'apps/hmh-reboot/src/actor-3d-projection.mjs',
+  'scripts/lib/hmh-actor-glb.mjs',
+  'scripts/inspect-hmh-actor-glb-pilot.mjs',
+  'tests/hmh-actor-3d-projection.test.mjs',
+  'tests/hmh-actor-glb.test.mjs',
+  'tests/hmh-actor-glb-pilot-assets.test.mjs',
+  'tests/hmh-actor-pilot-paths.test.mjs',
   'scripts/hmh-perf-crowd-bench.mjs',
   'scripts/lib/hmh-perf-analysis.mjs',
   'tests/hmh-perf-crowd-bench.test.mjs',
@@ -1213,6 +1220,10 @@ const NODE_CHECK_FILES = [
 
 // Every Python script that must compile (python -m py_compile).
 const PY_COMPILE_FILES = [
+  'scripts/hmh-blender/export-hmh-actor-glb-pilot.py',
+  'scripts/hmh-blender/verify-hmh-actor-glb-pilot.py',
+  'scripts/lib/hmh_actor_pilot_paths.py',
+  'tests/hmh-actor-pilot-paths.test.py',
   'tests/hmh-pipeline-lock.test.py',
   'scripts/build-chikun-ground-audio.py',
   'scripts/build-chikun-ground-motion.py',
