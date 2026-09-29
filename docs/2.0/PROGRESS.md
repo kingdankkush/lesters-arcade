@@ -1,6 +1,6 @@
 # Lester's Arcade 2.0 progress
 
-Updated: 2026-09-29. Stage: takeover and opening audits. No 2.0 runtime slice is complete or accepted.
+Updated: 2026-09-29. Stage: owner reference intake and parallel opening implementations. No 2.0 runtime slice is complete or accepted.
 
 ## Authority and continuation
 
@@ -22,7 +22,7 @@ Public probes at `2026-09-29T22:04:49Z`: cache `lesters-arcade-v64-share-warm`; 
 
 Codex chat “Lester's Arcade pre-deployment tasks”, ID `01a0cdcf-fea7-7213-8224-95ee2ce3c040`, reports notLoaded; newest imported turn completed. Imported history is September 23, so original Claude-session activity is unconfirmed. Owner clarification requested; recheck before shipping and coordinate if active. No message sent to the inactive imported chat.
 
-Three bounded read-only subagent audits completed: character renderer/performance; W0 world/nav/streaming; STACKED replay. No implementation delegated yet; separate branch ownership begins with implementation.
+Three bounded read-only subagent audits completed: character renderer/performance; W0 world/nav/streaming; STACKED replay. Opening implementations now have separate branch/worktree ownership; see the intake slice entry below.
 
 ## Audit findings to carry forward
 
@@ -50,7 +50,7 @@ Three bounded read-only subagent audits completed: character renderer/performanc
 - Agent S0: recover/checksum the longest fixture and add fresh-process <250 ms replay acceptance before other STACKED work.
 - Independent reviewer after every gameplay/verifier change; tests must run without .git. Browser/heavy jobs serialize under `C:\Users\just_\lesters-arcade-wt\.locks\heavy.lock`; never remove another job's lock.
 
-Owner inputs pending: named physical phone/browser and measurement access; latest world-concept location; external pre-deploy session status. Future approval checkpoints: art bible + slice, 3D results, ten-area greybox, gameplay/audio options in the plan and each release. Gore settings and clean share cards are in scope; default Full remains an open handoff decision.
+Confirmed owner inputs: iPhone XS Max with Chrome; both world and enemy/boss reference folders supplied. Pending: iOS version and on-device measurement access; external pre-deploy session status. Future approval checkpoints: art bible + slice, 3D results, ten-area greybox, gameplay/audio options in the plan and each release. Gore settings and clean share cards are in scope; default Full remains an open handoff decision.
 
 Every new track/system must have an explicit switch, with new features disabled initially. Each accepted slice merges into `fable/master-list-20260916` after its gates/review and integration-owner coordination. This kickoff documentation is a local candidate, not an integration merge or release.
 
@@ -59,3 +59,34 @@ Independent kickoff-plan review found and corrected the gore-default authority w
 Before new generations: inspect balance and casting board, reuse first, disclose large spend. No credits spent. Repository-source migration awaits inventory/checksum plan; no source art deleted or moved.
 
 Append one entry per completed slice with candidate SHA, changed behavior, tests/evidence, failures/skips, owner approvals, merge status and next dependency. Do not mark a plan or proxy result as an accepted feature.
+
+
+## A0/A1 reference intake and draft — 2026-09-29
+
+Owner now asks to continue all authorized work toward **one combined final update**. Interim releases are no longer planned. Production deployment still requires explicit approval for the completed release. Art bible + target slice, phone performance and ten-area greybox checkpoints remain open.
+
+Owner answered the batched decision question **Use the recommended prototype package**: tall cover reduces damage by 60%, short by 40%; gore defaults to Full with Off/Reduced settings and clean share cards; enemy grunts/deaths and footsteps with silent heroes; versioned Chikun power-ups, chase moments and fork lanes. Current jukebox remains; progression is measured before any retune. This authorizes separately tested prototypes, not final balance/Ranked acceptance or release. Water remains visual-only unless separately approved. Art, phone-performance, greybox and release approvals remain separate.
+
+Confirmed target device: **iPhone XS Max, Chrome**. iOS version and physical performance capture remain pending; no emulation result substitutes for this phone.
+
+Inspected all 35 world references and 18 enemy/boss references. Enemy/boss subagent inspected all 18 at original resolution. World contact pages cover all 35; lead also inspected L01, L02 and L15 at original resolution. Source totals: world 111,189,381 B; characters 47,728,133 B. All 53 SHA-256 values verified again while building the local board; no source modified, moved or deleted. Intake is a dated snapshot; future folder additions require a new inventory.
+
+- [Draft art direction](../art/ART-DIRECTION-2.0.md) covers style, camera, metre/texel calibration, shared light, ten palettes, shape/material/wear, terrain/water/foliage, readable interactions, density and review criteria. Numerical art targets remain proposed until A2 and measured memory/performance evidence.
+- [Reference index](../art/REFERENCE-INDEX-2.0.json) records metadata, hashes, observations, proposed 24-image curation and tentative character pair mappings. Original references remain external; no image payload added to Git.
+- Local owner output: `hmh-2.0-reference-board.html`, a self-contained board with the proposed 24 world images, all 35-world archive and all 18-character gallery. It is a reference artifact, not an in-game screenshot or production asset.
+- Reference colour conflicts are explicit: red barns, bright water, forge heat and stage stripes must yield to reserved gameplay cues. Rugpull Woods camp-specific study is still missing; reuse/source review precedes any generation.
+- Dedicated new sheets for existing six enemies/Liquidator are absent here; existing approved references/models remain the starting point. Costume/phase studies do not authorize new hitboxes, phases or AI.
+
+Parallel implementations, all created at kickoff commit `2d67acb9` and junctioned to the existing dependency installation:
+
+| Slice | Own worktree / branch | Current task |
+| --- | --- | --- |
+| STACKED S0 | `200-stacked-replay` / `codex/200-stacked-replay-20260929` | Named fixture recovery unsuccessful; reproduce a legal max-length run with existing pilot, add durable expectations and fresh-process measurements. No simulator/rules change. |
+| World W0a | `200-world-w0` / `codex/200-world-w0-20260929` | Actual nav/elevation/flow diagnostic benchmark and boundary/readiness/patch coverage. No active map or runtime change. |
+| Character R0/R1 | `200-character-pilot` / `codex/200-character-pilot-20260929` | Existing Commando + Bagholder optimized GLB export and tested projection contract before a real renderer/depth pilot. No claimed working 3D layer yet. |
+
+Heavy jobs run serially: STACKED fixture generation/timing first, W0 next, character export/build after. Each agent records its slice in `docs/2.0/slices/`; independent review precedes integration. A failed character worktree command against the obsolete base repository created nothing; the assigned checkout was already created correctly and is now used.
+
+Intake checks: all source hashes, board collection/card counts, metadata dimensions, draft relative links and whitespace. No runtime changes in this documentation slice. No browser game run, visual:reboot, physical phone results, full release gate or production-art acceptance. No credits spent, original source migration, version bump, push, integration merge or deployment.
+
+Next art dependency: A2 actual-runtime target patch using legal existing geometry; review bible + patch together. The draft is not a sign-off request on its own.

@@ -50,7 +50,7 @@ Keep separate and owner-gated where applicable: dash input buffering, hit-stop, 
 
 ## Decisions and owner checkpoints
 
-Immediate practical inputs: a named physical midrange phone/browser and a way to capture its performance evidence; folder/link for the newest world concepts; whether the original pre-deployment session is active outside Codex. Existing references and desktop measurements let independent work continue.
+Owner has supplied both reference folders and confirmed **iPhone XS Max with Chrome**. Remaining practical inputs: its iOS version and physical performance capture access; whether the original pre-deployment session is active outside Codex. Existing references and desktop measurements let independent work continue. Draft art direction and proposed 24-image board are now recorded; acceptance waits for the actual-runtime target patch.
 
 | Decision | Recommendation / timing |
 | --- | --- |
@@ -64,7 +64,7 @@ Immediate practical inputs: a named physical midrange phone/browser and a way to
 | HMH music | Choose unchanged jukebox or an added dynamic layer. Recommend keeping the jukebox for this opening phase. |
 | Progression power policy | Historical −14% results predate live hero-stat changes. Rerun the current harness first; then choose accepting the gap, offer weighting/caps, or stronger gun trees. No unsolicited retune. |
 | Tripo casting | Existing models first. Obtain casting picks and inspect authenticated balance before generation; report a large proposed spend before using credits. No purchase/subscription changes. |
-| Release shape | One 2.0 launch; propose completed STACKED/Chikun early only if useful. Every deployment/promotion needs approval for that release. |
+| Release shape | Owner now requests one combined final 2.0 launch. No interim releases planned. Every deployment/promotion needs approval for that completed release. |
 
 ## Working and release contract
 
@@ -73,3 +73,6 @@ Every behavioral slice: audit → failing tests → smallest coherent change →
 Preserve simulation 60 Hz / four catch-up steps, bridge and parent authority, Free/Ranked isolation, old-run verification and source references. Only runtime assets belong in Git LFS; bulk editable source migration is inventoried, copied and checksum-verified before any removal. Do not touch keys, Vercel secrets, `~/.tripo`, contracts, transactions, settlement or jackpot.
 
 After each major slice, update `docs/2.0/PROGRESS.md` with candidate, tests/evidence, failures/skips, owner decisions and next dependency. Keep commit trailer `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. No pushes to main or hook bypasses. Site/game/cache versions change only in a release commit. Approved releases follow handoff §0.3: full gate under the shared heavy lock, exactly the 51 retired exceptions, commit gate record, deploy/promote, verify live markers/health/screens and record the release. Approval is never inferred from older sessions.
+
+
+Owner decision update — September 29: approved the recommended package for separately tested prototypes: tall/short cover 60%/40%, default Full gore with Off/Reduced and clean shares, enemy sounds/footsteps with silent heroes, versioned Chikun power-ups/chases/fork lanes. Keep the current jukebox and measure progression before retuning. This resolves prototype permission; it does not certify final balance, replay or Ranked behavior. Art, performance, greybox and release checkpoints remain separate.
