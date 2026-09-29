@@ -1,0 +1,22 @@
+# HMH 2.0 — preparatory area briefs
+
+Draft September 29, 2026. These are level-design intentions for the owner's ten-area brief, not a built map, layout-check pass or playable-greybox approval. W0 browser/phone streaming evidence and W1’s actual nav checker remain dependencies. W2 must add concrete geometry, measured routes, objective/arena identifiers and playable links, then the owner plays the complete greybox before area art.
+
+Design scales from the brief: areas about 4,000–5,000 units across; open arenas 1,800–2,400; passages 300–600; roads 10–25 seconds at the handoff’s nominal 240 units/second. These are targets, not measured current-hero timings. W1/W2 report actual nav path lengths, spawn distances, sightlines, 45–55% walkability, every area/secret reachable, exact perimeter protection, and border gate/full-rebuild parity. Typical 4–6 area routes are a playtest/pacing objective, not a rule imposed by these pages.
+
+All proposed cover, climb/drop, objective, new enemy/boss and map behavior stays inactive until its own tested versioned slice and independent verifier review. Old runs retain the frozen old map/rules. Shallow-water slowdown and gameplay darkness are open rules choices; atmosphere is visual-only. No new rewards or balance targets are set here.
+
+Palettes/board anchors follow the draft art bible and still await the bible+actual target approval. No production area art is authorised by this draft. Each final area brief accompanies its actual playable greybox and owner decisions.
+
+## Areas
+
+- [MWEB Meadows](01-mweb-meadows.md)
+- [Litecoin City](02-litecoin-city.md)
+- [Halving Farms](03-halving-farms.md)
+- [Silver Coast](04-silver-coast.md)
+- [Scrypt Bayou](05-scrypt-bayou.md)
+- [Hashwood River](06-hashwood-river.md)
+- [Hollow Pines](07-hollow-pines.md)
+- [Ledger Ridge](08-ledger-ridge.md)
+- [Fork Fortress](09-fork-fortress.md)
+- [Rugpull Woods](10-rugpull-woods.md)
