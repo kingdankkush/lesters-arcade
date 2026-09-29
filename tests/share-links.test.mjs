@@ -657,3 +657,29 @@ test('the share row wires its native button, refresh and nativeButton: false thr
   assert.equal(typeof bare.native.share, 'function');
   assert.equal(await bare.native.share(), 'text');
 });
+
+test('a shown results row warms its share page and the og:image that page names, once per link', async () => {
+  const calls = [];
+  const page = `https://lestersarcade.io/s/${'cd'.repeat(32)}`;
+  const card = `https://lestersarcade.io/api/share-card/${'cd'.repeat(32)}.png?v=0123456789ab`;
+  const fetchRef = async (url) => {
+    calls.push(url);
+    return { ok: true, text: async () => `<meta property="og:image" content="${card.replace('&', '&amp;')}">` };
+  };
+  const links = buildShareLinks({ text: 'x', url: page });
+  const native = createNativeShare({ navigatorRef: {}, links, idleMs: 1, fetchRef });
+  await new Promise((resolve) => { setTimeout(resolve, 30); });
+  assert.deepEqual(calls, [page, card], 'the page, then its card');
+  native.prepare(links);
+  await new Promise((resolve) => { setTimeout(resolve, 30); });
+  assert.deepEqual(calls, [page, card], 'the same link is warmed once');
+  // A preview share points at the site root: nothing to warm.
+  const root = createNativeShare({ navigatorRef: {}, links: buildShareLinks({ text: 'x', url: 'https://lestersarcade.io' }), idleMs: 1, fetchRef });
+  await new Promise((resolve) => { setTimeout(resolve, 30); });
+  assert.equal(calls.length, 2);
+  assert.equal(typeof root.share, 'function');
+  // A hidden row never warms.
+  const hidden = createNativeShare({ navigatorRef: {}, links: buildShareLinks({ text: 'x', url: `https://lestersarcade.io/f/stacked/as${'1'.repeat(32)}` }), idleMs: 1, fetchRef, stillShown: () => false });
+  await new Promise((resolve) => { setTimeout(resolve, 30); });
+  assert.equal(calls.length, 2);
+});

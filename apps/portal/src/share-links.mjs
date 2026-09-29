@@ -226,6 +226,25 @@ export function buildStackedShareText({ score = 0, lines: cleared = 0, level = 1
 let menuSerial = 0;
 const wait = (ms) => new Promise((resolve) => { setTimeout(() => resolve(null), ms); });
 
+// 1.9.4: every run's share link is new to X, and X's composer shows the card
+// only once X has fetched it, so a slow first render (about 2 s for a fresh
+// card) leaves the composer blank. Once a results row has been on screen,
+// fetch its share page (what X reads) and the og:image that page names, so
+// the CDN already holds both when X asks. Once per link; errors are ignored.
+const warmedPages = new Set();
+function warmSharePreview(url, fetchRef) {
+  const page = String(url ?? '');
+  if (typeof fetchRef !== 'function' || !/^https:\/\/[^/]+\/(?:s|f)\//.test(page) || warmedPages.has(page)) return;
+  warmedPages.add(page);
+  fetchRef(page, { credentials: 'omit' })
+    .then((response) => (response.ok ? response.text() : ''))
+    .then((html) => {
+      const image = /<meta property="og:image" content="([^"]+)"/.exec(html)?.[1]?.replace(/&amp;/g, '&');
+      return image && image.startsWith('https://') ? fetchRef(image, { credentials: 'omit' }) : null;
+    })
+    .catch(() => {});
+}
+
 // The Web Share API path: the card image as a file when the browser can share
 // files and the links carry a card, else text + URL. The card is fetched
 // through the lazy share-file chunk ahead of the tap once the results have
@@ -233,7 +252,7 @@ const wait = (ms) => new Promise((resolve) => { setTimeout(() => resolve(null), 
 // nothing), or at the latest on the tap; share() waits at most 700 ms for it,
 // so the tap keeps its transient activation, and falls back to text on any
 // failure but a cancel. prepare(links) re-arms it for the next run.
-export function createNativeShare({ navigatorRef = globalThis.navigator, title = "Lester's Arcade", links, loadShareFile = () => import('./share-file.mjs'), idleMs = 1_200, stillShown = () => true } = {}) {
+export function createNativeShare({ navigatorRef = globalThis.navigator, title = "Lester's Arcade", links, loadShareFile = () => import('./share-file.mjs'), idleMs = 1_200, stillShown = () => true, fetchRef = typeof window === 'object' ? globalThis.fetch?.bind(globalThis) : undefined } = {}) {
   let current = links;
   let prepared = null;
   let timer = null;
@@ -253,7 +272,7 @@ export function createNativeShare({ navigatorRef = globalThis.navigator, title =
       // results after the death animation), so an unseen row keeps checking,
       // for up to 30 checks, until it has been on screen for idleMs.
       let checks = 30;
-      const arm = () => { timer = setTimeout(() => { if (stillShown()) fetchCard(); else if (--checks) arm(); }, idleMs); };
+      const arm = () => { timer = setTimeout(() => { if (stillShown()) { fetchCard(); warmSharePreview(current?.url, fetchRef); } else if (--checks) arm(); }, idleMs); };
       arm();
     },
     async share() {
