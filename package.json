@@ -30,6 +30,7 @@
     "assets:hmh:blender-pipeline:verify": "python scripts/run-hmh-blender-pipeline.py --verify-reproducible",
     "assets:hmh:commando-concepts": "python scripts/run-hmh-commando-concepts.py",
     "assets:hmh:production-hero-pilot": "python scripts/run-hmh-production-hero-pilot.py",
+    "bench:stacked:replay": "node scripts/stacked-replay-benchmark.mjs",
     "smoke:stacked:music": "node scripts/stacked-music-autoplay-browser-smoke.mjs",
     "smoke:hmh:blender-pilot": "node scripts/hmh-reboot-blender-pilot-browser-smoke.mjs",
     "smoke:hmh:production-hero": "node scripts/hmh-reboot-production-hero-browser-smoke.mjs",

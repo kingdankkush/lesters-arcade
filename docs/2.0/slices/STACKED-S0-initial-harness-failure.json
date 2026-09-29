@@ -1,0 +1,553 @@
+{
+  "v": "stacked-replay-benchmark-v1",
+  "measuredAt": "2026-09-29T22:51:23.828Z",
+  "policy": "all fresh-process first-use observations below 250 ms; no retries or hidden fastest samples",
+  "samplesPerPhase": 7,
+  "fixtureEvidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+  "sourceHashes": {
+    "apps/portal/src/stacked-sim.mjs": "5b5fe17c237389bd48834b757166c8afc0b58c801246806275d25fa16ae82114",
+    "apps/portal/src/stacked-contracts.mjs": "5ee0d079f2688b02217a60f4695e41944504b0759e87004da6a213e926be9ec6",
+    "apps/portal/src/seeded-rng.mjs": "b6eed9c993e1efd38871c14d50b580ea15133fdcef020e81ffe7051e24b3ebc7",
+    "server/verify/stacked.mjs": "9bcb1aee7ed466e799c83495307c489e7f54201b177c2691ab6d101187418493",
+    "server/verify/verified-run.mjs": "1e5c0079536ab3a94ba867b205f7bde11a0bb0d7e99d7b0ec2963a51dd71bfd8",
+    "apps/portal/src/stacked-evidence-transport.mjs": "059afcbf2801e7d34c946101d41ddd0c6bfc06508743076c57d8704ab9ab2a84"
+  },
+  "budgetMs": 250,
+  "passed": false,
+  "phases": {
+    "decode": {
+      "count": 7,
+      "p50Ms": null,
+      "p95Ms": null,
+      "p99Ms": null,
+      "maxMs": null
+    },
+    "replay": {
+      "count": 7,
+      "p50Ms": 173.1914,
+      "p95Ms": 176.8049,
+      "p99Ms": 176.8049,
+      "maxMs": 176.8049
+    },
+    "verify": {
+      "count": 7,
+      "p50Ms": 207.98479999999998,
+      "p95Ms": 210.88639999999998,
+      "p99Ms": 210.88639999999998,
+      "maxMs": 210.88639999999998
+    }
+  },
+  "samples": [
+    {
+      "index": 0,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 0,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 171.154,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6815744,
+        "heapTotal": 1048576,
+        "heapUsed": 405536,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 0,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 210.0444,
+      "cpuMs": 188,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 27602944,
+        "heapTotal": 19849216,
+        "heapUsed": 14272896,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 1,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 1,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 171.7436,
+      "cpuMs": 157,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6098944,
+        "heapTotal": 1310720,
+        "heapUsed": 424736,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 1,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 207.87359999999998,
+      "cpuMs": 219,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 26202112,
+        "heapTotal": 19849216,
+        "heapUsed": 14221280,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 2,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 2,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 174.16299999999998,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6037504,
+        "heapTotal": 1048576,
+        "heapUsed": 542136,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 2,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 209.55059999999997,
+      "cpuMs": 188,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 27127808,
+        "heapTotal": 20111360,
+        "heapUsed": 14293736,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 3,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 3,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 173.1914,
+      "cpuMs": 156,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6524928,
+        "heapTotal": 786432,
+        "heapUsed": 487592,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 3,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 207.98479999999998,
+      "cpuMs": 188,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 27582464,
+        "heapTotal": 20373504,
+        "heapUsed": 14262528,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 4,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 4,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 176.8049,
+      "cpuMs": 187,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 5877760,
+        "heapTotal": 1310720,
+        "heapUsed": 488760,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 4,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 206.7731,
+      "cpuMs": 219,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 27324416,
+        "heapTotal": 20373504,
+        "heapUsed": 14195200,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 5,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 5,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 174.0842,
+      "cpuMs": 173,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6676480,
+        "heapTotal": 1310720,
+        "heapUsed": 479480,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 5,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 210.88639999999998,
+      "cpuMs": 219,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 25788416,
+        "heapTotal": 20111360,
+        "heapUsed": 14268920,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 6,
+      "phase": "decode",
+      "ok": false,
+      "wallMs": null,
+      "error": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\r\n+ actual - expected\r\n\r\n+ Uint8Array(432028) [\r\n- Buffer(432028) [Uint8Array] [\r\n    83,\r\n    73,\r\n    67,\r\n    49,\r\n    1,\r\n\r\n    at file:///C:/Users/just_/lesters-arcade-wt/200-stacked-replay/scripts/stacked-replay-benchmark-sample.mjs:22:65\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:633:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: Uint8Array(432028) [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r\n     0,  0,   0,   0, 0, 0,   0,   0,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 4, 4,   3,   3,   3,  3,   1,   1,\r\n     1,  1,   6,   6,\r\n    ... 431928 more items\r\n  ],\r\n  expected: Buffer(432028) [Uint8Array] [\r\n    83, 73,  67,  49, 1, 1,   0,  60, 237, 27, 225,  25,\r\n     0,  6, 151, 128, 0, 6, 151, 128, 166,  3,  51, 151,\r\n     1,  1,   1,   1, 1, 1,   1,   1,   3,  3,   1,   1,\r\n     1,  1,   1,   1, 1, 1,   3,   3,   0,  0,   0,   0,\r\n     0,  0,   3,   3, 3, 3,   1,   1,   1,  1,   5,   5,\r\n     3,  3,   0,   0, 0, 0,   0,   0,   3,  3,   4,   4,\r"
+    },
+    {
+      "index": 6,
+      "phase": "replay",
+      "ok": true,
+      "wallMs": 172.5969,
+      "cpuMs": 172,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 6455296,
+        "heapTotal": 1048576,
+        "heapUsed": 565992,
+        "external": 2117239,
+        "arrayBuffers": 2117199
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "SIC1 parse + headless replay + terminal tuple/hash",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    },
+    {
+      "index": 6,
+      "phase": "verify",
+      "ok": true,
+      "wallMs": 207.69510000000002,
+      "cpuMs": 203,
+      "cpuClock": "thread",
+      "memoryDelta": {
+        "rss": 26697728,
+        "heapTotal": 20373504,
+        "heapUsed": 14321952,
+        "external": 3150276,
+        "arrayBuffers": 3125527
+      },
+      "environment": {
+        "node": "v24.17.0",
+        "platform": "win32",
+        "arch": "x64",
+        "cpu": "12th Gen Intel(R) Core(TM) i9-12900K",
+        "logicalCpus": 24,
+        "totalMemoryBytes": 34088464384
+      },
+      "ticks": 432000,
+      "evidenceBytes": 432028,
+      "evidenceSha256": "769d2425938c2eb2659eaa97e0868a4089c633592c262b69a587d078a3d8dab1",
+      "scope": "complete per-game verifier; authentication, paid-entry, API, network and settlement excluded",
+      "exclusions": [
+        "process startup",
+        "module imports",
+        "fixture disk read/decompression",
+        "expected-result assertions"
+      ]
+    }
+  ]
+}

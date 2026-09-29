@@ -20,6 +20,12 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 
 // Every .mjs / .js module that must parse cleanly (node --check).
 const NODE_CHECK_FILES = [
+  'scripts/generate-stacked-maximal-fixture.mjs',
+  'scripts/stacked-replay-benchmark.mjs',
+  'scripts/stacked-replay-benchmark-sample.mjs',
+  'scripts/lib/stacked-replay-benchmark.mjs',
+  'tests/stacked-maximal-replay.test.mjs',
+  'tests/stacked-replay-benchmark.test.mjs',
   'scripts/hmh-perf-crowd-bench.mjs',
   'scripts/lib/hmh-perf-analysis.mjs',
   'tests/hmh-perf-crowd-bench.test.mjs',
