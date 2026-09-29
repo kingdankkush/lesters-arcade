@@ -1,0 +1,1377 @@
+{
+  "schema": "hmh-world-w0a-native-diagnostic-v1",
+  "generatedAt": "2026-09-29T22:53:45.490Z",
+  "runtime": {
+    "node": "v24.17.0",
+    "platform": "win32",
+    "arch": "x64",
+    "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900K",
+    "logicalCpus": 24
+  },
+  "context": {
+    "environment": "native Node on development host",
+    "browserMeasurement": false,
+    "physicalPhoneAcceptance": false,
+    "futureMapAcceptance": false,
+    "performanceGate": false,
+    "texturesMeasured": false,
+    "note": "Only actual returned nav/flow typed-array bytes and native timings are measured. Synthetic rooms are a representative load, NOT the actual future map.",
+    "warmup": "Each scenario gets its own synchronous-build/flow warmup. Build samples alternate across scenarios before the next repetition.",
+    "flowRefresh": "One actual computeEnemyFlowField call per sample. Runtime cadence stays at its existing fixed 30 ticks; no simulation or browser work is timed here.",
+    "instrumentation": "Chunked builds use clock/query counters and Node setImmediate. This adds overhead and differs from browser idle scheduling.",
+    "memory": "No GPU/decoded-texture/process/phone residency, transient BFS queue or GC lifetime is measured.",
+    "sourceIdentity": "Direct source file content hashes plus each complete fixture topology hash; no Git dependency."
+  },
+  "settings": {
+    "repetitions": 3,
+    "warmups": 1,
+    "flowRepetitions": 12,
+    "cellsPerSlice": 512,
+    "sliceBudgetMs": 4,
+    "cellSize": 60
+  },
+  "sourceSha256": {
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/elevation.mjs": "afab7fb53ba657f13f1646d533909ae68544754c1de24ccef786ee156a57c4ea",
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/world-design-interactions.mjs": "88eacdd0afcb5143d3f6a997a846139dd48de458004af4c490afd38b54946220",
+    "./lib/hmh-world-size-fixtures.mjs": "2e9fea125f1dc7b85011418c97384406f0c99b3788fe829bd5f0f85e44cb89b5",
+    "./lib/hmh-world-size-diagnostics.mjs": "baf932abbb4387a91090c39feb2badc64ea4a4a6f8f94ea70a3b6d856eb9fbf5",
+    "./hmh-world-size-bench.mjs": "baabd50824ecac98708dd0a865a0bf7daf99d4e5ac3dd39d5f2d0b9b05fbdd66"
+  },
+  "scenarios": [
+    {
+      "id": "current-authored-12000x4800",
+      "topologyKind": "actual-current-map",
+      "note": "The actual current authored map; no dimension or topology changes.",
+      "topologySha256": "61a99fe5a308333741adb66264928e1ec376948ec9da80f265ba020be9b7d21e",
+      "bounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 12000,
+        "maxY": 4800,
+        "visibleBoundaryId": "forked-frontier-perimeter"
+      },
+      "geometry": {
+        "surfaces": 12,
+        "blockers": 117
+      },
+      "grid": {
+        "columns": 200,
+        "rows": 80,
+        "cells": 16000,
+        "digest": "0b8a73ec0637de6b4c166a0775ca867365ddc8b9f57eb58e3786644dbbb59a32",
+        "synchronousChunkedByteParity": true
+      },
+      "memory": {
+        "navArraysBytes": 32000,
+        "flowArraysBytes": 80000,
+        "measuredArraysBytes": 112000,
+        "arrays": {
+          "walkable": 16000,
+          "directedEdges": 16000,
+          "flowDistance": 64000,
+          "flowDirection": 16000
+        },
+        "method": "byteLength of the actual returned typed arrays; not device/process residency",
+        "excludes": [
+          "temporary BFS queue",
+          "previous flow fields pending GC",
+          "objects/closures/spatial indexes",
+          "textures/decoded images/sprites",
+          "GPU/process/phone memory"
+        ]
+      },
+      "boundary": {
+        "exactBounds": {
+          "minX": 0,
+          "minY": 0,
+          "maxX": 12000,
+          "maxY": 4800,
+          "visibleBoundaryId": "forked-frontier-perimeter"
+        },
+        "roundedExtent": {
+          "maxX": 12000,
+          "maxY": 4800
+        },
+        "centresOutsideExactBounds": 0,
+        "walkableCentresOutsideExactBounds": 0,
+        "walkableCells": 12543,
+        "walkableCellPct": 78.39375,
+        "probes": [
+          {
+            "id": "exact-max-corner",
+            "x": 12000,
+            "y": 4800,
+            "exactBoundsContains": true,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-max-corner",
+            "x": 12001,
+            "y": 4801,
+            "exactBoundsContains": false,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-min-corner",
+            "x": -1,
+            "y": -1,
+            "exactBoundsContains": false,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "last-cell-centre",
+            "x": 11970,
+            "y": 4770,
+            "exactBoundsContains": true,
+            "navCell": 15999,
+            "navWalkable": false,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          }
+        ]
+      },
+      "synchronousBuild": {
+        "samplesMs": [
+          30.65469999999999,
+          32.19270000000006,
+          32.20700000000011
+        ],
+        "medianMs": 32.19270000000006,
+        "minMs": 30.65469999999999,
+        "maxMs": 32.20700000000011
+      },
+      "instrumentedChunkedBuilds": [
+        {
+          "elapsedMs": 44.85509999999999,
+          "yields": 62,
+          "groundQueries": 253753,
+          "processedCells": 32000,
+          "sliceCount": 64,
+          "workMs": 42.90970000000004,
+          "maxSliceWorkMs": 1.7787000000000148,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 16000,
+              "groundQueries": 16000,
+              "slices": 32,
+              "workMs": 10.940100000000086,
+              "maxSliceWorkMs": 1.1456999999999766
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 16000,
+              "groundQueries": 237753,
+              "slices": 32,
+              "workMs": 31.969599999999957,
+              "maxSliceWorkMs": 1.7787000000000148
+            }
+          ]
+        },
+        {
+          "elapsedMs": 36.00740000000019,
+          "yields": 62,
+          "groundQueries": 253753,
+          "processedCells": 32000,
+          "sliceCount": 64,
+          "workMs": 35.08370000000059,
+          "maxSliceWorkMs": 1.2106000000001131,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 16000,
+              "groundQueries": 16000,
+              "slices": 32,
+              "workMs": 6.538400000000365,
+              "maxSliceWorkMs": 0.36390000000005784
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 16000,
+              "groundQueries": 237753,
+              "slices": 32,
+              "workMs": 28.545300000000225,
+              "maxSliceWorkMs": 1.2106000000001131
+            }
+          ]
+        },
+        {
+          "elapsedMs": 35.46460000000002,
+          "yields": 62,
+          "groundQueries": 253753,
+          "processedCells": 32000,
+          "sliceCount": 64,
+          "workMs": 34.61189999999988,
+          "maxSliceWorkMs": 1.1959000000001652,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 16000,
+              "groundQueries": 16000,
+              "slices": 32,
+              "workMs": 6.227900000000091,
+              "maxSliceWorkMs": 0.2555999999999585
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 16000,
+              "groundQueries": 237753,
+              "slices": 32,
+              "workMs": 28.383999999999787,
+              "maxSliceWorkMs": 1.1959000000001652
+            }
+          ]
+        }
+      ],
+      "flowRefresh": [
+        {
+          "target": {
+            "id": "near-corner",
+            "x": 100,
+            "y": 100
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              2.604200000000219,
+              0.2903999999998632,
+              0.29959999999982756,
+              0.26809999999977663,
+              0.28350000000000364,
+              0.26339999999981956,
+              0.22899999999981446,
+              0.2940000000003238,
+              0.27979999999979555,
+              0.2763999999997395,
+              0.28330000000005384,
+              0.2604999999998654
+            ],
+            "medianMs": 0.2815499999999247,
+            "minMs": 0.22899999999981446,
+            "maxMs": 2.604200000000219
+          },
+          "digest": "4e9cc745e96ef2a1375c744798627b575100956ae5a350e3c1fd6ae2ca4dd179"
+        },
+        {
+          "target": {
+            "id": "centre",
+            "x": 6000,
+            "y": 2400
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.25999999999976353,
+              0.24290000000019063,
+              0.23610000000007858,
+              0.2507999999997992,
+              0.2314000000001215,
+              0.2343999999998232,
+              0.2321999999999207,
+              0.23480000000017753,
+              0.23079999999981737,
+              0.23039999999991778,
+              0.22970000000032087,
+              0.23309999999992215
+            ],
+            "medianMs": 0.23374999999987267,
+            "minMs": 0.22970000000032087,
+            "maxMs": 0.25999999999976353
+          },
+          "digest": "487447e9cd0808446cae1aa650cf90e213640549bd5461114418c23275a5fb99"
+        },
+        {
+          "target": {
+            "id": "far-corner",
+            "x": 11900,
+            "y": 4700
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.233600000000024,
+              0.2339999999999236,
+              0.22800000000006548,
+              0.22599999999965803,
+              0.22530000000006112,
+              0.2235000000000582,
+              0.26399999999966894,
+              0.27559999999994034,
+              0.2462999999997919,
+              0.23119999999971697,
+              0.22399999999970532,
+              0.21980000000030486
+            ],
+            "medianMs": 0.22959999999989122,
+            "minMs": 0.21980000000030486,
+            "maxMs": 0.27559999999994034
+          },
+          "digest": "878de4c80640b0dbac6940aa88df7d98db51f2313b2efe7cee6cf45a5a6ff159"
+        }
+      ]
+    },
+    {
+      "id": "bounds-only-20000x14000",
+      "topologyKind": "bounds-only-control",
+      "note": "Larger bounds/base ground only. Old surfaces and old perimeter remain: deliberately NOT a connected future map.",
+      "topologySha256": "2fee59cbcd781b8f0151654ef0103bfcddf7391ebdc677e8509e2b531de1d06e",
+      "bounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 20000,
+        "maxY": 14000
+      },
+      "geometry": {
+        "surfaces": 12,
+        "blockers": 117
+      },
+      "grid": {
+        "columns": 334,
+        "rows": 234,
+        "cells": 78156,
+        "digest": "dac13a5345c6f46b49347289b28903a2862aa8d75722741361f25c6de9725713",
+        "synchronousChunkedByteParity": true
+      },
+      "memory": {
+        "navArraysBytes": 156312,
+        "flowArraysBytes": 390780,
+        "measuredArraysBytes": 547092,
+        "arrays": {
+          "walkable": 78156,
+          "directedEdges": 78156,
+          "flowDistance": 312624,
+          "flowDirection": 78156
+        },
+        "method": "byteLength of the actual returned typed arrays; not device/process residency",
+        "excludes": [
+          "temporary BFS queue",
+          "previous flow fields pending GC",
+          "objects/closures/spatial indexes",
+          "textures/decoded images/sprites",
+          "GPU/process/phone memory"
+        ]
+      },
+      "boundary": {
+        "exactBounds": {
+          "minX": 0,
+          "minY": 0,
+          "maxX": 20000,
+          "maxY": 14000
+        },
+        "roundedExtent": {
+          "maxX": 20040,
+          "maxY": 14040
+        },
+        "centresOutsideExactBounds": 567,
+        "walkableCentresOutsideExactBounds": 567,
+        "walkableCells": 74418,
+        "walkableCellPct": 95.21725779210809,
+        "probes": [
+          {
+            "id": "exact-max-corner",
+            "x": 20000,
+            "y": 14000,
+            "exactBoundsContains": true,
+            "navCell": 78155,
+            "navWalkable": true,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-max-corner",
+            "x": 20001,
+            "y": 14001,
+            "exactBoundsContains": false,
+            "navCell": 78155,
+            "navWalkable": true,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-min-corner",
+            "x": -1,
+            "y": -1,
+            "exactBoundsContains": false,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "last-cell-centre",
+            "x": 20010,
+            "y": 14010,
+            "exactBoundsContains": false,
+            "navCell": 78155,
+            "navWalkable": true,
+            "groundSurfaceId": "forked-frontier-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          }
+        ]
+      },
+      "synchronousBuild": {
+        "samplesMs": [
+          180.10969999999998,
+          181.5503000000001,
+          184.60159999999996
+        ],
+        "medianMs": 181.5503000000001,
+        "minMs": 180.10969999999998,
+        "maxMs": 184.60159999999996
+      },
+      "instrumentedChunkedBuilds": [
+        {
+          "elapsedMs": 214.15030000000002,
+          "yields": 304,
+          "groundQueries": 1547729,
+          "processedCells": 156312,
+          "sliceCount": 306,
+          "workMs": 208.46979999999974,
+          "maxSliceWorkMs": 1.8054999999999382,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 78156,
+              "groundQueries": 78156,
+              "slices": 153,
+              "workMs": 35.12899999999979,
+              "maxSliceWorkMs": 1.277300000000082
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 78156,
+              "groundQueries": 1469573,
+              "slices": 153,
+              "workMs": 173.34079999999994,
+              "maxSliceWorkMs": 1.8054999999999382
+            }
+          ]
+        },
+        {
+          "elapsedMs": 206.69610000000011,
+          "yields": 304,
+          "groundQueries": 1547729,
+          "processedCells": 156312,
+          "sliceCount": 306,
+          "workMs": 201.79770000000076,
+          "maxSliceWorkMs": 1.473600000000033,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 78156,
+              "groundQueries": 78156,
+              "slices": 153,
+              "workMs": 31.10790000000111,
+              "maxSliceWorkMs": 0.44709999999986394
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 78156,
+              "groundQueries": 1469573,
+              "slices": 153,
+              "workMs": 170.68979999999965,
+              "maxSliceWorkMs": 1.473600000000033
+            }
+          ]
+        },
+        {
+          "elapsedMs": 202.9639000000002,
+          "yields": 304,
+          "groundQueries": 1547729,
+          "processedCells": 156312,
+          "sliceCount": 306,
+          "workMs": 198.59140000000025,
+          "maxSliceWorkMs": 1.2592999999997119,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 78156,
+              "groundQueries": 78156,
+              "slices": 153,
+              "workMs": 29.90199999999959,
+              "maxSliceWorkMs": 0.25469999999995707
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 78156,
+              "groundQueries": 1469573,
+              "slices": 153,
+              "workMs": 168.68940000000066,
+              "maxSliceWorkMs": 1.2592999999997119
+            }
+          ]
+        }
+      ],
+      "flowRefresh": [
+        {
+          "target": {
+            "id": "near-corner",
+            "x": 100,
+            "y": 100
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.3829999999998108,
+              0.35359999999991487,
+              0.3526999999999134,
+              0.34400000000005093,
+              0.33989999999994325,
+              0.34600000000000364,
+              0.4373000000000502,
+              0.3265000000001237,
+              0.33039999999982683,
+              0.34440000000040527,
+              0.33730000000014115,
+              0.3485000000000582
+            ],
+            "medianMs": 0.34520000000020445,
+            "minMs": 0.3265000000001237,
+            "maxMs": 0.4373000000000502
+          },
+          "digest": "5b311f852aa5550d7715676d89a714a3c065ac075ec7c2dd8f7176ee14d9740d"
+        },
+        {
+          "target": {
+            "id": "centre",
+            "x": 10000,
+            "y": 7000
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.9956999999999425,
+              0.9784999999997126,
+              1.018999999999778,
+              0.9780000000000655,
+              1.018199999999979,
+              1.0021999999999025,
+              0.9861000000000786,
+              0.9619000000002416,
+              0.9927999999999884,
+              0.9994999999998981,
+              0.9992999999999483,
+              1.128400000000056
+            ],
+            "medianMs": 0.9974999999999454,
+            "minMs": 0.9619000000002416,
+            "maxMs": 1.128400000000056
+          },
+          "digest": "80eeb907e14c63dcc1c34fded60b4ffd4a13aefe7ee1aebcf1867679b78f491b"
+        },
+        {
+          "target": {
+            "id": "far-corner",
+            "x": 19900,
+            "y": 13900
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              1.0883999999996377,
+              0.9973999999997432,
+              0.9798999999998159,
+              0.9836999999997715,
+              1.0553999999997359,
+              1.0250999999998385,
+              0.9797000000003209,
+              0.9467000000004191,
+              0.9582000000000335,
+              0.977100000000064,
+              1.0281999999997424,
+              0.9740000000001601
+            ],
+            "medianMs": 0.9817999999997937,
+            "minMs": 0.9467000000004191,
+            "maxMs": 1.0883999999996377
+          },
+          "digest": "4d109c4e22e7d7f7ae7c6ec40fd3fc5e0e1f830bb4230e0076ff30c7f97d7a61"
+        }
+      ]
+    },
+    {
+      "id": "synthetic-12000x4800",
+      "topologyKind": "representative-synthetic",
+      "note": "Repeated diagnostic rooms at current dimensions; not the current map or a playable greybox.",
+      "topologySha256": "7757fbb7f2cc211a55477e9d14de2fac41c43f63832bbf617c83d5f98bc27290",
+      "bounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 12000,
+        "maxY": 4800
+      },
+      "geometry": {
+        "surfaces": 54,
+        "blockers": 28
+      },
+      "grid": {
+        "columns": 200,
+        "rows": 80,
+        "cells": 16000,
+        "digest": "2209a7d0bfec5d4b2dc7866c0671fece423aef8928c6aca3b75825f02850989c",
+        "synchronousChunkedByteParity": true
+      },
+      "memory": {
+        "navArraysBytes": 32000,
+        "flowArraysBytes": 80000,
+        "measuredArraysBytes": 112000,
+        "arrays": {
+          "walkable": 16000,
+          "directedEdges": 16000,
+          "flowDistance": 64000,
+          "flowDirection": 16000
+        },
+        "method": "byteLength of the actual returned typed arrays; not device/process residency",
+        "excludes": [
+          "temporary BFS queue",
+          "previous flow fields pending GC",
+          "objects/closures/spatial indexes",
+          "textures/decoded images/sprites",
+          "GPU/process/phone memory"
+        ]
+      },
+      "boundary": {
+        "exactBounds": {
+          "minX": 0,
+          "minY": 0,
+          "maxX": 12000,
+          "maxY": 4800
+        },
+        "roundedExtent": {
+          "maxX": 12000,
+          "maxY": 4800
+        },
+        "centresOutsideExactBounds": 0,
+        "walkableCentresOutsideExactBounds": 0,
+        "walkableCells": 7758,
+        "walkableCellPct": 48.4875,
+        "probes": [
+          {
+            "id": "exact-max-corner",
+            "x": 12000,
+            "y": 4800,
+            "exactBoundsContains": true,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-max-corner",
+            "x": 12001,
+            "y": 4801,
+            "exactBoundsContains": false,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-min-corner",
+            "x": -1,
+            "y": -1,
+            "exactBoundsContains": false,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "last-cell-centre",
+            "x": 11970,
+            "y": 4770,
+            "exactBoundsContains": true,
+            "navCell": 15999,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          }
+        ]
+      },
+      "synchronousBuild": {
+        "samplesMs": [
+          19.269300000000044,
+          18.720399999999927,
+          18.72860000000037
+        ],
+        "medianMs": 18.72860000000037,
+        "minMs": 18.720399999999927,
+        "maxMs": 19.269300000000044
+      },
+      "instrumentedChunkedBuilds": [
+        {
+          "elapsedMs": 22.66420000000005,
+          "yields": 62,
+          "groundQueries": 155844,
+          "processedCells": 32000,
+          "sliceCount": 64,
+          "workMs": 21.502399999999625,
+          "maxSliceWorkMs": 1.2853000000000065,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 16000,
+              "groundQueries": 16000,
+              "slices": 32,
+              "workMs": 3.4545000000000528,
+              "maxSliceWorkMs": 0.14849999999989905
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 16000,
+              "groundQueries": 139844,
+              "slices": 32,
+              "workMs": 18.047899999999572,
+              "maxSliceWorkMs": 1.2853000000000065
+            }
+          ]
+        },
+        {
+          "elapsedMs": 21.203599999999824,
+          "yields": 62,
+          "groundQueries": 155844,
+          "processedCells": 32000,
+          "sliceCount": 64,
+          "workMs": 20.497100000001183,
+          "maxSliceWorkMs": 1.2216000000000804,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 16000,
+              "groundQueries": 16000,
+              "slices": 32,
+              "workMs": 2.921500000000833,
+              "maxSliceWorkMs": 0.19029999999997926
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 16000,
+              "groundQueries": 139844,
+              "slices": 32,
+              "workMs": 17.57560000000035,
+              "maxSliceWorkMs": 1.2216000000000804
+            }
+          ]
+        },
+        {
+          "elapsedMs": 23.040800000000218,
+          "yields": 62,
+          "groundQueries": 155844,
+          "processedCells": 32000,
+          "sliceCount": 64,
+          "workMs": 21.297699999999168,
+          "maxSliceWorkMs": 1.225800000000163,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 16000,
+              "groundQueries": 16000,
+              "slices": 32,
+              "workMs": 3.1083999999996195,
+              "maxSliceWorkMs": 0.2051000000001295
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 16000,
+              "groundQueries": 139844,
+              "slices": 32,
+              "workMs": 18.189299999999548,
+              "maxSliceWorkMs": 1.225800000000163
+            }
+          ]
+        }
+      ],
+      "flowRefresh": [
+        {
+          "target": {
+            "id": "near-corner",
+            "x": 100,
+            "y": 100
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.13260000000036598,
+              0.15429999999969368,
+              0.15039999999999054,
+              0.16390000000001237,
+              0.15109999999958745,
+              0.1534999999998945,
+              0.14629999999988286,
+              0.14899999999988722,
+              0.12359999999989668,
+              0.12129999999979191,
+              0.1380999999996675,
+              0.18190000000004147
+            ],
+            "medianMs": 0.14969999999993888,
+            "minMs": 0.12129999999979191,
+            "maxMs": 0.18190000000004147
+          },
+          "digest": "010d5ad807d5b3984e7931ae135fdbda569982c13633b3195256be55598a1687"
+        },
+        {
+          "target": {
+            "id": "centre",
+            "x": 6000,
+            "y": 2400
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.14640000000008513,
+              0.1368000000002212,
+              0.18420000000014625,
+              0.1912000000002081,
+              0.16879999999991924,
+              0.16229999999995925,
+              0.1574000000000524,
+              0.15599999999994907,
+              0.1536999999998443,
+              0.15340000000014697,
+              0.1534999999998945,
+              0.1770000000001346
+            ],
+            "medianMs": 0.15670000000000073,
+            "minMs": 0.1368000000002212,
+            "maxMs": 0.1912000000002081
+          },
+          "digest": "6927e43f58a0cfd089a9ce6dcb147b0370d11a457555c86b022ed9be0bf4ce6f"
+        },
+        {
+          "target": {
+            "id": "far-corner",
+            "x": 11900,
+            "y": 4700
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.16640000000006694,
+              0.1574000000000524,
+              0.17410000000018044,
+              0.1732999999999265,
+              0.1572000000001026,
+              0.15470000000004802,
+              0.16440000000011423,
+              0.15949999999975262,
+              0.15139999999973952,
+              0.15200000000004366,
+              0.1514999999999418,
+              0.16529999999966094
+            ],
+            "medianMs": 0.1584499999999025,
+            "minMs": 0.15139999999973952,
+            "maxMs": 0.17410000000018044
+          },
+          "digest": "c8d32a25672612d29cea282f5bc0ea91dc96a57e0a41ce00530e5781f0bafc87"
+        }
+      ]
+    },
+    {
+      "id": "synthetic-20000x14000",
+      "topologyKind": "representative-synthetic",
+      "note": "The same repeated-room density at target dimensions; NOT the actual future ten-area topology.",
+      "topologySha256": "d24cf75e0f53ed744ce1c340c6252885d106a1d75df9586bd7f76d053b4f3e5d",
+      "bounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 20000,
+        "maxY": 14000
+      },
+      "geometry": {
+        "surfaces": 280,
+        "blockers": 144
+      },
+      "grid": {
+        "columns": 334,
+        "rows": 234,
+        "cells": 78156,
+        "digest": "c207a65bdf56a7292df0f34c225baea4820ccf7698e3147b58027577468aca16",
+        "synchronousChunkedByteParity": true
+      },
+      "memory": {
+        "navArraysBytes": 156312,
+        "flowArraysBytes": 390780,
+        "measuredArraysBytes": 547092,
+        "arrays": {
+          "walkable": 78156,
+          "directedEdges": 78156,
+          "flowDistance": 312624,
+          "flowDirection": 78156
+        },
+        "method": "byteLength of the actual returned typed arrays; not device/process residency",
+        "excludes": [
+          "temporary BFS queue",
+          "previous flow fields pending GC",
+          "objects/closures/spatial indexes",
+          "textures/decoded images/sprites",
+          "GPU/process/phone memory"
+        ]
+      },
+      "boundary": {
+        "exactBounds": {
+          "minX": 0,
+          "minY": 0,
+          "maxX": 20000,
+          "maxY": 14000
+        },
+        "roundedExtent": {
+          "maxX": 20040,
+          "maxY": 14040
+        },
+        "centresOutsideExactBounds": 567,
+        "walkableCentresOutsideExactBounds": 0,
+        "walkableCells": 34819,
+        "walkableCellPct": 44.55064230513332,
+        "probes": [
+          {
+            "id": "exact-max-corner",
+            "x": 20000,
+            "y": 14000,
+            "exactBoundsContains": true,
+            "navCell": 78155,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-max-corner",
+            "x": 20001,
+            "y": 14001,
+            "exactBoundsContains": false,
+            "navCell": 78155,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "past-min-corner",
+            "x": -1,
+            "y": -1,
+            "exactBoundsContains": false,
+            "navCell": -1,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          },
+          {
+            "id": "last-cell-centre",
+            "x": 20010,
+            "y": 14010,
+            "exactBoundsContains": false,
+            "navCell": 78155,
+            "navWalkable": false,
+            "groundSurfaceId": "w0-synthetic-ground",
+            "groundKind": "ground",
+            "groundWalkable": true
+          }
+        ]
+      },
+      "synchronousBuild": {
+        "samplesMs": [
+          98.99029999999993,
+          98.58829999999989,
+          112.76419999999962
+        ],
+        "medianMs": 98.99029999999993,
+        "minMs": 98.58829999999989,
+        "maxMs": 112.76419999999962
+      },
+      "instrumentedChunkedBuilds": [
+        {
+          "elapsedMs": 114.08820000000014,
+          "yields": 304,
+          "groundQueries": 703896,
+          "processedCells": 156312,
+          "sliceCount": 306,
+          "workMs": 110.0022000000024,
+          "maxSliceWorkMs": 1.2860000000000582,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 78156,
+              "groundQueries": 78156,
+              "slices": 153,
+              "workMs": 29.281300000001693,
+              "maxSliceWorkMs": 0.3994000000000142
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 78156,
+              "groundQueries": 625740,
+              "slices": 153,
+              "workMs": 80.72090000000071,
+              "maxSliceWorkMs": 1.2860000000000582
+            }
+          ]
+        },
+        {
+          "elapsedMs": 112.8246999999999,
+          "yields": 304,
+          "groundQueries": 703896,
+          "processedCells": 156312,
+          "sliceCount": 306,
+          "workMs": 109.27150000000006,
+          "maxSliceWorkMs": 1.3106000000000222,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 78156,
+              "groundQueries": 78156,
+              "slices": 153,
+              "workMs": 28.943700000001627,
+              "maxSliceWorkMs": 0.3954000000001088
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 78156,
+              "groundQueries": 625740,
+              "slices": 153,
+              "workMs": 80.32779999999843,
+              "maxSliceWorkMs": 1.3106000000000222
+            }
+          ]
+        },
+        {
+          "elapsedMs": 112.38170000000036,
+          "yields": 304,
+          "groundQueries": 703896,
+          "processedCells": 156312,
+          "sliceCount": 306,
+          "workMs": 109.08320000000049,
+          "maxSliceWorkMs": 1.279399999999896,
+          "passes": [
+            {
+              "pass": "walkability",
+              "cells": 78156,
+              "groundQueries": 78156,
+              "slices": 153,
+              "workMs": 30.06159999999909,
+              "maxSliceWorkMs": 0.4505999999996675
+            },
+            {
+              "pass": "directed-edges",
+              "cells": 78156,
+              "groundQueries": 625740,
+              "slices": 153,
+              "workMs": 79.0216000000014,
+              "maxSliceWorkMs": 1.279399999999896
+            }
+          ]
+        }
+      ],
+      "flowRefresh": [
+        {
+          "target": {
+            "id": "near-corner",
+            "x": 100,
+            "y": 100
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.7065999999999804,
+              0.7059000000003834,
+              0.7244000000000597,
+              0.7434000000002925,
+              0.6894999999999527,
+              0.7154999999997926,
+              0.6820999999999913,
+              0.7948999999998705,
+              0.7040999999999258,
+              0.6731999999997242,
+              0.7372000000000298,
+              0.6721999999999753
+            ],
+            "medianMs": 0.7062500000001819,
+            "minMs": 0.6721999999999753,
+            "maxMs": 0.7948999999998705
+          },
+          "digest": "290ab708b62b7f1f05686db6555060f5c49831db803ccfc7673d5ba6a0714fc3"
+        },
+        {
+          "target": {
+            "id": "centre",
+            "x": 10000,
+            "y": 7000
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.7690000000002328,
+              0.7231999999999061,
+              0.7527000000000044,
+              0.737999999999829,
+              0.7476000000001477,
+              0.7185000000004038,
+              0.8135999999999513,
+              0.7435999999997875,
+              0.7149999999996908,
+              0.7508000000002539,
+              0.7302999999997155,
+              0.7282000000000153
+            ],
+            "medianMs": 0.7407999999998083,
+            "minMs": 0.7149999999996908,
+            "maxMs": 0.8135999999999513
+          },
+          "digest": "969f39c9cb7ab3f55c4edd1470a395b1fca5888a7ff2df6495e6fffaf1eb72e7"
+        },
+        {
+          "target": {
+            "id": "far-corner",
+            "x": 19900,
+            "y": 13900
+          },
+          "targetCellWalkable": true,
+          "timing": {
+            "samplesMs": [
+              0.7663000000002285,
+              0.8072999999999411,
+              0.7436999999999898,
+              0.6855999999997948,
+              0.6966999999999643,
+              0.6431999999999789,
+              0.6406999999999243,
+              0.690599999999904,
+              0.7087000000001353,
+              0.7139000000001943,
+              0.6514000000001943,
+              0.632799999999861
+            ],
+            "medianMs": 0.6936499999999342,
+            "minMs": 0.632799999999861,
+            "maxMs": 0.8072999999999411
+          },
+          "digest": "5eaf60d196dca705f51ed5705566fa62bca904ae926ddfba64cb4bd9caa5d3c1"
+        }
+      ]
+    }
+  ],
+  "gatePatchDifferential": {
+    "note": "Compare ACTUAL local patch with ACTUAL full rebuild. Border cases are diagnostic geometry, not the current map or accepted W1 layouts.",
+    "probes": [
+      {
+        "id": "interior",
+        "patchedCells": 72,
+        "changedByOpening": 36,
+        "open": {
+          "diffCells": 0,
+          "walkableDiffCells": 0,
+          "directedEdgeDiffCells": 0,
+          "firstDifferences": [],
+          "actualDigest": "5614f760c42c4fa741cf9a10bf40a368625e21b4e4cd23b4a333cc6fc942dc91",
+          "expectedDigest": "5614f760c42c4fa741cf9a10bf40a368625e21b4e4cd23b4a333cc6fc942dc91"
+        },
+        "reclosed": {
+          "diffCells": 0,
+          "walkableDiffCells": 0,
+          "directedEdgeDiffCells": 0,
+          "firstDifferences": [],
+          "actualDigest": "1272326ad4f61c0275ba6269ddab36a5f78fc8333a3065e3dbe9b7ed80ae0a83",
+          "expectedDigest": "1272326ad4f61c0275ba6269ddab36a5f78fc8333a3065e3dbe9b7ed80ae0a83"
+        }
+      },
+      {
+        "id": "west-border",
+        "patchedCells": 54,
+        "changedByOpening": 34,
+        "open": {
+          "diffCells": 4,
+          "walkableDiffCells": 2,
+          "directedEdgeDiffCells": 4,
+          "firstDifferences": [
+            {
+              "cell": 48,
+              "column": 0,
+              "row": 3,
+              "actualWalkable": 1,
+              "expectedWalkable": 1,
+              "actualEdges": 9,
+              "expectedEdges": 13
+            },
+            {
+              "cell": 64,
+              "column": 0,
+              "row": 4,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 13
+            },
+            {
+              "cell": 80,
+              "column": 0,
+              "row": 5,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 13
+            },
+            {
+              "cell": 96,
+              "column": 0,
+              "row": 6,
+              "actualWalkable": 1,
+              "expectedWalkable": 1,
+              "actualEdges": 5,
+              "expectedEdges": 13
+            }
+          ],
+          "actualDigest": "fb2b6d7fd1b91e115b61cbe70f055a2fa75f7e7f51e910493c8ae2a87da123cb",
+          "expectedDigest": "5614f760c42c4fa741cf9a10bf40a368625e21b4e4cd23b4a333cc6fc942dc91"
+        },
+        "reclosed": {
+          "diffCells": 0,
+          "walkableDiffCells": 0,
+          "directedEdgeDiffCells": 0,
+          "firstDifferences": [],
+          "actualDigest": "49235752ae8d4504c1765c8bc5e1f8a9c2b392d3333f1088f7297f73a62295d5",
+          "expectedDigest": "49235752ae8d4504c1765c8bc5e1f8a9c2b392d3333f1088f7297f73a62295d5"
+        }
+      },
+      {
+        "id": "north-border",
+        "patchedCells": 24,
+        "changedByOpening": 30,
+        "open": {
+          "diffCells": 12,
+          "walkableDiffCells": 10,
+          "directedEdgeDiffCells": 12,
+          "firstDifferences": [
+            {
+              "cell": 2,
+              "column": 2,
+              "row": 0,
+              "actualWalkable": 1,
+              "expectedWalkable": 1,
+              "actualEdges": 6,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 3,
+              "column": 3,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 4,
+              "column": 4,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 5,
+              "column": 5,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 6,
+              "column": 6,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 7,
+              "column": 7,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 8,
+              "column": 8,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            },
+            {
+              "cell": 9,
+              "column": 9,
+              "row": 0,
+              "actualWalkable": 0,
+              "expectedWalkable": 1,
+              "actualEdges": 0,
+              "expectedEdges": 7
+            }
+          ],
+          "actualDigest": "79c810b71e6aa8e2c4b486df93029195b434037b0a6f2068cc15526974da8cd2",
+          "expectedDigest": "5614f760c42c4fa741cf9a10bf40a368625e21b4e4cd23b4a333cc6fc942dc91"
+        },
+        "reclosed": {
+          "diffCells": 0,
+          "walkableDiffCells": 0,
+          "directedEdgeDiffCells": 0,
+          "firstDifferences": [],
+          "actualDigest": "75c3c1afeaafa3db73484fcc740ad7e4d0a7771b698e4a0db401a666aeada6d8",
+          "expectedDigest": "75c3c1afeaafa3db73484fcc740ad7e4d0a7771b698e4a0db401a666aeada6d8"
+        }
+      }
+    ],
+    "currentMapGate": {
+      "gateId": "relay-supply-gate",
+      "patchedCells": 54,
+      "changedByOpening": 7,
+      "open": {
+        "diffCells": 0,
+        "walkableDiffCells": 0,
+        "directedEdgeDiffCells": 0,
+        "firstDifferences": [],
+        "actualDigest": "4cd46d33192b10566a71004dfdff0ac2e9f5d56841453f34ff5def02f68f8f81",
+        "expectedDigest": "4cd46d33192b10566a71004dfdff0ac2e9f5d56841453f34ff5def02f68f8f81"
+      },
+      "reclosed": {
+        "diffCells": 0,
+        "walkableDiffCells": 0,
+        "directedEdgeDiffCells": 0,
+        "firstDifferences": [],
+        "actualDigest": "0b8a73ec0637de6b4c166a0775ca867365ddc8b9f57eb58e3786644dbbb59a32",
+        "expectedDigest": "0b8a73ec0637de6b4c166a0775ca867365ddc8b9f57eb58e3786644dbbb59a32"
+      }
+    }
+  }
+}
