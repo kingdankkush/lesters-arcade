@@ -26,7 +26,7 @@ Calendar dates are targets. At the second-week checkpoint, report the exact pass
 
 ## Acceptance and risks discovered
 
-**Initial-load budget.** The hard HMH limit is 1,048,576 B for entry + vendor + static shared JavaScript. The handoff's “less than 250 KB added” pilot allowance cannot override it. New renderer/systems must be dynamically loaded, and even bootstrap bytes must fit the aggregate limit. `build.mjs` already uses correct accounting; the old performance smoke's 1,050,000 B single-file check does not. Fresh bundle and tracked-art byte measurements are an opening task; historical receipts disagree on headroom and are not a current baseline. STACKED's initial limit remains 607,000 B.
+**Initial-load budget.** The hard HMH limit is 1,048,576 B for entry + vendor + static shared JavaScript. The handoff's “less than 250 KB added” pilot allowance cannot override it. New renderer/systems must be dynamically loaded, and even bootstrap bytes must fit the aggregate limit. `build.mjs` already uses correct accounting; the old performance smoke's 1,050,000 B single-file check does not. Character-lane baseline/final builds measure 1,039,317 B initial aggregate, leaving 9,259 B; the dormant pilot adds zero initial code. Program25bdb41f has 870,164,584 B tracked against the367,001,600 B cap; source-art archive migration is required. These dated measurements do not certify later active renderer or combined release candidates. STACKED's initial limit remains 607,000 B.
 
 **3D integration.** Existing Blender sources have rigs, but are heavy source assets, not optimized runtime GLBs. A single transparent 3D canvas over the Pixi world would fail actor/prop interleaving. Prove the depth adapter and GPU/context cost before extending it. Existing `cameraPitchDegrees:55` is measured from vertical: it equals the brief's 35° above the ground. Preserve input/collision projection authority.
 
@@ -57,11 +57,11 @@ Owner has supplied both reference folders and confirmed **iPhone XS Max with Chr
 | Art bible + target slice | Review the concrete pair before production art. Warmer painterly frontier is a candidate direction, with noir retained for the city; no style change is considered signed off yet. |
 | 3D performance | Review exact workload/device receipts before scaling character production. |
 | Ten-area greybox | Play the connected greybox with ten one-page briefs before area art. |
-| Cover damage reduction | Propose tall −60% / short −40% in an isolated gameplay/verifier slice; compare with geometric blocking only. Recommend the proposed values as the starting point, subject to playtest approval. |
-| Gore | Off / Reduced / Full and clean share images are in scope. Default Full remains an open handoff decision; recommend it with clearly available Off/Reduced settings. |
-| Voices/footsteps | Choose enemy grunts/deaths + footsteps with silent heroes, or retain the current silence rule. Recommend the former only after approval. |
-| Chikun course v2 | Choose approved power-ups/chases/fork lanes in a new version, or visual-only scope. Recommend the versioned package after the visual pass; water remains visual-only unless separately approved. |
-| HMH music | Choose unchanged jukebox or an added dynamic layer. Recommend keeping the jukebox for this opening phase. |
+| Cover damage reduction | Owner approved tall −60% / short −40% for separately tested prototypes. Final balance and Ranked acceptance follow playtest and independent review. |
+| Gore | Owner approved default Full with Off/Reduced settings and clean share cards. Implement as an isolated presentation/settings slice. |
+| Voices/footsteps | Owner approved enemy grunts/deaths and footsteps with silent heroes for the prototype package. |
+| Chikun course v2 | Owner approved versioned power-ups, chase moments and fork lanes for separately tested prototypes after the visual pass. Preserve replay by version; water remains visual-only. |
+| HMH music | Keep the current jukebox, as agreed in the approved opening package. |
 | Progression power policy | Historical −14% results predate live hero-stat changes. Rerun the current harness first; then choose accepting the gap, offer weighting/caps, or stronger gun trees. No unsolicited retune. |
 | Tripo casting | Existing models first. Obtain casting picks and inspect authenticated balance before generation; report a large proposed spend before using credits. No purchase/subscription changes. |
 | Release shape | Owner now requests one combined final 2.0 launch. No interim releases planned. Every deployment/promotion needs approval for that completed release. |
