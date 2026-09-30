@@ -29,7 +29,7 @@ import {
   unlockState,
 } from '../unlockables.mjs';
 
-export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=locker-20260930';
+export const UNLOCKABLES_PANEL_STYLESHEET = './src/styles/unlockables-panel.css?v=locker-preview-20260930';
 export const UNLOCKABLES_PANEL_ID = 'unlockablesPanel';
 export const UNLOCKABLES_GAME_TITLES = Object.freeze({ 'lester-blaster': 'Hard Money Heroes', chikun: 'Chikun’s Escape', stacked: 'STACKED' });
 export const UNLOCKABLES_SLOT_LABELS = Object.freeze({
@@ -247,6 +247,7 @@ export function renderUnlockablesPanel({
 
 function paint(host, state) {
   const { documentRef, store } = state;
+  state.previewGeneration = (state.previewGeneration ?? 0) + 1;
   const snapshot = store.snapshot();
   if (state.wallet !== snapshot.wallet) { state.wallet = snapshot.wallet; state.status = ''; }
   let heroEntries = null;
@@ -332,6 +333,14 @@ function renderInspection(host, state, game, slot, option) {
     image.loading = 'lazy'; image.decoding = 'async'; figure.append(image);
   } else figure.append(text(documentRef, 'span', '✦', 'unlockables-default-art'));
   figure.append(text(documentRef, 'figcaption', option.preview ? 'Reference art · colour swatch' : 'Original game look'));
+  if ((game.gameId === 'chikun' && ['coat', 'trail', 'hat'].includes(slot.slot)) || (game.gameId === 'stacked' && slot.slot === 'piece-skin')) {
+    const generation = state.previewGeneration;
+    const current = () => state.previewGeneration === generation && figure.isConnected && !host.hidden;
+    void import('./unlockables-preview.mjs').then(({ mountUnlockablePreview }) => {
+      if (!current()) return false;
+      return mountUnlockablePreview(figure, { gameId: game.gameId, slot: slot.slot, id: option.id, title: option.title, canvasFilter: state.canvasFilter, current });
+    }).catch(() => { /* Keep the labelled reference if the image or canvas is unavailable. */ });
+  }
   const copy = documentRef.createElement('div'); copy.className = 'unlockables-inspection-copy';
   copy.append(text(documentRef, 'p', `${game.title} · ${slot.label}`, 'unlockables-inspection-kicker'));
   const title = text(documentRef, 'h3', option.title); title.id = 'locker-inspection-title'; title.tabIndex = -1;

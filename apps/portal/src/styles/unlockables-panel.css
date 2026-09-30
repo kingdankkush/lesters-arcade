@@ -316,3 +316,8 @@
 .unlockables-achievement-link{min-height:44px;display:inline-flex;align-items:center}
 @media(max-width:540px){.unlockables-inspection{grid-template-columns:minmax(0,1fr);gap:16px;padding:16px}.unlockables-preview{min-height:150px}.unlockables-preview img{height:150px}.unlockables-default-art{line-height:130px}.unlockables-games{gap:6px}.unlockables-game-button{padding:9px 6px;font-size:11px}.unlockables-equip{width:100%}}
 @media(forced-colors:active){.unlockables-game-button[aria-pressed="true"],.unlockables-inspection-state{border:2px solid Highlight}.unlockables-inspection{border-color:CanvasText}}
+
+/* Single still render: no animation or GPU context in the Locker. */
+.unlockables-cosmetic-canvas{display:block;width:100%;height:auto;aspect-ratio:8/5}
+.unlockables-preview[data-preview="ready"]{background:#132536!important}
+.unlockables-preview[data-preview="ready"] figcaption{font-size:11px}

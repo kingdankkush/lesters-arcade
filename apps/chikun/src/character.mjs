@@ -57,6 +57,28 @@ export function drawChikunHat(ctx, rects, x, y, unit) {
   for (const [rx, ry, w, h] of rects) ctx.fillRect(x + (rx - 1) * unit, y + (ry - 1) * unit, (w + 2) * unit, (h + 2) * unit);
   for (const [rx, ry, w, h, color] of rects) { ctx.fillStyle = color; ctx.fillRect(x + rx * unit, y + ry * unit, w * unit, h * unit); }
 }
+// Shared static inspection uses the same source-frame crest and hat painter.
+function frameHeadAnchor(img, frame, probe) {
+  let anchor=null;
+    try{
+      probe.width=probe.height=96;
+      const p=probe.getContext('2d',{willReadFrequently:true});
+      p.clearRect(0,0,96,96);p.drawImage(img,(frame%4)*192,Math.floor(frame/4)*192,192,192,0,0,96,96);
+      const data=p.getImageData(0,0,96,96).data;let top=-1,sum=0,n=0;
+      for(let y=0;y<96&&(top<0||y<top+3);y++)for(let x=0;x<96;x++){const i=(y*96+x)*4;if(data[i+3]>150&&data[i]>150&&data[i+1]<90&&data[i+2]<110){if(top<0)top=y;sum+=x;n++;}}
+      if(n)anchor={x:sum/n*2,y:top*2};
+    }catch{anchor=null;}
+  return anchor;
+}
+export function drawChikunStill(ctx, image, { x, y, size, cosmetics = {}, probe }) {
+  ctx.save();
+  ctx.filter = chikunCoatFilter(cosmetics);
+  ctx.drawImage(image, 0, 0, 192, 192, x - size / 2, y - size / 2, size, size);
+  ctx.filter = 'none';
+  const hat = chikunHatRects(cosmetics), head = hat ? frameHeadAnchor(image, 0, probe) : null;
+  if (head) { const scale = size / 192; drawChikunHat(ctx, hat, x - size / 2 + head.x * scale, y - size / 2 + (head.y + HAT_SINK) * scale, 3 * scale); }
+  ctx.restore();
+}
 export const CHIKUN_CHARACTERS = Object.freeze({ 'chikun-original': Object.freeze({id:'chikun-original',name:'Chikun',base:'/assets/generated/chikun-flight-v3/',frameSize:192,columns:4}) });
 // Ground speed multiplier at which the gait changes from a brisk walk to a sprint.
 export const CHIKUN_RUN_SPEED = 1.15;
@@ -189,15 +211,8 @@ export function createChikunCharacter({characterId='chikun-original',onProgress=
   function headAnchor(img,frame) {
     let frames=anchors.get(img);if(!frames)anchors.set(img,frames=new Map());
     if(frames.has(frame))return frames.get(frame);
-    let anchor=null;
-    try{
-      probe??=document.createElement('canvas');probe.width=probe.height=96;
-      const p=probe.getContext('2d',{willReadFrequently:true});
-      p.clearRect(0,0,96,96);p.drawImage(img,(frame%4)*192,Math.floor(frame/4)*192,192,192,0,0,96,96);
-      const data=p.getImageData(0,0,96,96).data;let top=-1,sum=0,n=0;
-      for(let y=0;y<96&&(top<0||y<top+3);y++)for(let x=0;x<96;x++){const i=(y*96+x)*4;if(data[i+3]>150&&data[i]>150&&data[i+1]<90&&data[i+2]<110){if(top<0)top=y;sum+=x;n++;}}
-      if(n)anchor={x:sum/n*2,y:top*2};
-    }catch{anchor=null;}
+    probe??=document.createElement('canvas');
+    const anchor=frameHeadAnchor(img,frame,probe);
     frames.set(frame,anchor);return anchor;
   }
   async function decode(img,url) {

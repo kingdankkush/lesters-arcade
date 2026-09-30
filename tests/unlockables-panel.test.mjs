@@ -443,3 +443,33 @@ test('a late equip response cannot announce another wallet’s saved choice', as
   resolve({ ok: true, saved: 'wallet' }); await new Promise(done => setTimeout(done, 0));
   assert.equal(host.all(n => n.getAttribute('role') === 'status')[0].textContent, '');
 });
+
+
+test('Locker previews use the shipped STACKED colours and canonical piece shapes', async () => {
+  const { stackedPreviewPieces } = await import('../apps/portal/src/routes/unlockables-preview.mjs');
+  const { STACKED_PIECE_PALETTES } = await import('../apps/stacked/src/render/cosmetic-palettes.mjs');
+  const { PIECE_COLORS } = await import('../apps/stacked/src/render/board-view.mjs');
+  const { PIECE_CELLS } = await import('../apps/portal/src/stacked-sim.mjs');
+  for (const id of [null, ...Object.keys(STACKED_PIECE_PALETTES)]) {
+    const pieces = stackedPreviewPieces(id), palette = STACKED_PIECE_PALETTES[id] ?? PIECE_COLORS;
+    assert.equal(pieces.length, 7);
+    for (const piece of pieces) {
+      assert.equal(piece.color, '#' + palette[piece.kind].toString(16).padStart(6, '0'));
+      assert.deepEqual(piece.cells, PIECE_CELLS[piece.kind][0]);
+    }
+  }
+});
+
+test('Locker Chikun still uses the game filter and crest-attached hat without a game session', async () => {
+  const { drawChikunStill, chikunCoatFilter } = await import('../apps/chikun/src/character.mjs');
+  const calls = [], ctx = { filter: 'none', save() {}, restore() {}, drawImage(...args) { calls.push(['sprite', this.filter, ...args]); }, fillRect(...args) { calls.push(['hat', this.fillStyle, ...args]); } };
+  const pixels = new Uint8ClampedArray(96 * 96 * 4);pixels.set([220, 20, 20, 255], (20 * 96 + 50) * 4);
+  const probe = { getContext() { return { clearRect() {}, drawImage() {}, getImageData() { return { data: pixels }; } }; } };
+  const cosmetics = { coat: 'chikun-coat-glacier', hat: 'chikun-hat-crown' }, image = {};
+  drawChikunStill(ctx, image, { x: 96, y: 96, size: 192, cosmetics, probe });
+  assert.equal(calls[0][0], 'sprite');assert.equal(calls[0][1], chikunCoatFilter(cosmetics));
+  assert.equal(calls[0][2], image);assert.deepEqual(calls[0].slice(3), [0, 0, 192, 192, 0, 0, 192, 192]);
+  assert.ok(calls.some(call => call[0] === 'hat' && call[1] === '#ffd23f' && call[2] === 82 && call[3] === 40));
+  calls.length = 0;drawChikunStill(ctx, image, { x: 96, y: 96, size: 192, cosmetics: {}, probe });
+  assert.equal(calls.length, 1);assert.equal(calls[0][1], 'none');
+});
