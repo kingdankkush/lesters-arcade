@@ -24,7 +24,6 @@ import { createBearMarketBurnerEvent } from './bear-market-burner-event.mjs';
 import { bearMarketBurnerHazardCostAt, spreadBearMarketBurnerOnDefeat } from './bear-market-burner.mjs';
 import { createForkedStandardEvent } from './forked-standard-event.mjs';
 import { createLightningLedgerRareEvent } from './lightning-ledger-event.mjs';
-import { createCockpitUi } from './cockpit-ui.mjs';
 import { loadTripoPropAppearance } from './tripo-prop-appearance.mjs';
 import { buildWorldDesignPlacements, extendWorldDesignLandmarks } from './world-design-layout.mjs';
 import { createWorldDepthLayer, worldDepthKey } from './world-depth.mjs';
@@ -302,6 +301,8 @@ let PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMiss
 // Run summary schema 7 (contract §11): the V7 catalogues, validator and rows.
 let summaryV7 = null;
 let createBombletPool, spawnBomblets, stepBomblets, bombletPosition, ventRingHits, critCandleHitChance, createBombletFeedbackBudget, takeBombletFeedback;
+// The unchanged cockpit joins the existing pre-session startup loader.
+let createCockpitUi;
 let lazyRuntimeModulesLoad = null;
 function loadLazyRuntimeModules() {
   lazyRuntimeModulesLoad ??= Promise.all([
@@ -323,8 +324,10 @@ function loadLazyRuntimeModules() {
     import('./evolution-effects.mjs'),
     import('./prisoners.mjs'),
     import('./run-summary-v7.mjs'),
-  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7]) => {
+    import('./cockpit-ui.mjs'),
+  ]).then(([boss, creature, telegraph, interactions, life, pacing, nativeAssets, briefing, panel, content, mission, slots, arenas, geometry, drops, effects, prisoners, v7, cockpitUi]) => {
     summaryV7 = v7;
+    ({ createCockpitUi } = cockpitUi);
     ({ PRISONERS_LIVE_DEFAULT, PRISONER_TITLES, OG_MINER_XP_PER_LEVEL, prisonerMissionRows, rescuePrisoner, stepPrisonerStations, startPrisonerTimedEffect } = prisoners);
     ({ applyLiquidatorDamage, createLiquidatorBoss, getLiquidatorVulnerability,
       getLiquidatorRoleCheck, resolveLiquidatorAttack, stepLiquidatorBoss, isLiquidatorTargetable, liquidatorOpenArena } = boss);
@@ -616,7 +619,18 @@ async function boot() {
   app.ticker.stop();
   // Every lazily bound module is resident from here on, before the renderer
   // builds anything that calls one and long before a session can start.
-  await lazyRuntimeModules;
+  try {
+    await lazyRuntimeModules;
+  } catch (error) {
+    // The renderer and early bridge are already owned, but no world or
+    // session exists yet. Release both and retain the download failure.
+    try {
+      try { bridge?.stop(); } finally { app.destroy(true); }
+    } catch (cleanupError) {
+      console.error('[HMH] Startup cleanup failed', cleanupError);
+    }
+    throw error;
+  }
   // Adaptive sharpness (2026-09-16): a phone starts at the safe resolution and
   // earns one step up to 1.5 after ~4 s of fast frames; slow frames step it
   // back down for the rest of the session. Desktop keeps its profile value.

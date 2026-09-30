@@ -43,6 +43,8 @@ const LAZY_RUNTIME_MODULES = Object.freeze([
   'prisoners.mjs',
   // Run summary schema 7 (slice 9): the V7 catalogues, validator and rows.
   'run-summary-v7.mjs',
+  // 2.0 C1: unchanged cockpit presentation joins the existing startup loader.
+  'cockpit-ui.mjs',
 ]);
 
 function walk(node, visit) {
@@ -89,7 +91,7 @@ test('the HMH initial static graph leaves the panel, card text, boss, objective 
     assert.equal(graph.has(module), false, `${module} stays off the initial path`);
   }
   // The simulation's own modules stay on the initial path.
-  for (const module of ['simulation.mjs', 'run-progression.mjs', 'weapon-system.mjs', 'cockpit-ui.mjs', 'level-one-world.mjs']) {
+  for (const module of ['simulation.mjs', 'run-progression.mjs', 'weapon-system.mjs', 'level-one-world.mjs']) {
     assert.equal(graph.has(`apps/hmh-reboot/src/${module}`), true, `${module} stays static`);
   }
 });
@@ -120,7 +122,7 @@ test('boot awaits the lazy runtime modules before any lazily bound code runs or 
   assert.ok(start >= 0 && awaitAt > start, 'boot starts the loads and awaits them');
   assert.ok(start < bootSource.indexOf('await app.init('), 'the chunks download while the renderer initialises');
   // Every call to a lazily bound function in boot comes after the await.
-  const lazyNames = ['createWorldDesignLife', 'createMissionState', 'createWorldDesignPacing', 'createUpgradePanel', 'loadWorldDesignAppearance',
+  const lazyNames = ['createCockpitUi', 'createWorldDesignLife', 'createMissionState', 'createWorldDesignPacing', 'createUpgradePanel', 'loadWorldDesignAppearance',
     'createLiquidatorBoss', 'stepLiquidatorBoss', 'stepMissionObjectives', 'resolveLevelBriefing', 'applyLevelBriefing', 'liquidatorPose', 'creatureAnimationTick',
     'renderLiquidatorTelegraph', 'prepareWorldDesignEnemyPose', 'stepWorldDesignPacing',
     'createBossSlots', 'stepBossSlots', 'bossZoneArming', 'bossDirectorOverlay', 'directorBankFull', 'insertBossAdds', 'defeatBossSlot',

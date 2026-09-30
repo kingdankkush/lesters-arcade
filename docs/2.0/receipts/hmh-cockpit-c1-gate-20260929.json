@@ -1,0 +1,285 @@
+{
+  "schema": "hmh-cockpit-headroom-gate-v1",
+  "token": "root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36",
+  "physicalPhone": false,
+  "releaseGate": false,
+  "scope": "Existing cockpit moved behind its pre-session join; failure cleanup and local correctness/budget/visual checks.",
+  "beforeInitialJsBytes": 1047444,
+  "phases": [
+    {
+      "name": "focused",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\focused.log",
+      "tests": 95,
+      "pass": 95,
+      "fail": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "name": "syntax",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\syntax.log"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\build.log"
+    },
+    {
+      "name": "lazy-browser",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\lazy-browser.log"
+    },
+    {
+      "name": "existing-cockpit-browser",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\existing-cockpit-browser.log"
+    },
+    {
+      "name": "authority-browser",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\authority-browser.log"
+    },
+    {
+      "name": "text-recovery-browser",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\text-recovery-browser.log"
+    },
+    {
+      "name": "visual-reboot",
+      "exitCode": 0,
+      "log": "C:\\Users\\just_\\Documents\\Codex\\2026-09-29\\you-are-taking-over-as-lead\\work\\root-cockpit-headroom-ede1fe41c6074fa78ea62d72e9540a36\\visual-reboot.log"
+    }
+  ],
+  "sourceSha256": {
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "apps/hmh-reboot/src/cockpit-ui.mjs": "6b2acd2cfdf2cc1891f3db91ad7c3386f0e797a6df0421fd8eef0df669a51800",
+    "apps/hmh-reboot/src/bridge.mjs": "ba9d80e1d27edb9d144b122cefc2954f04cd12574753247ccb7bf985dad03351",
+    "apps/hmh-reboot/src/simulation.mjs": "e7f8d3dde68054c074fadedf19fac004e27e5d53916b524250d86b91417ba8a9",
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/weapon-system.mjs": "64a51d2a02ad5928b2be3a4a576a49ff1a825bec713be69cf1a0bed4f1a0132b",
+    "apps/hmh-reboot/src/run-progression.mjs": "370d5b904773f7b381b38ceb28b43f29b8250aab7c2b63165714a09cb1265364",
+    "tests/hmh-cockpit-lazy-startup.test.mjs": "18e011ee22202661e6d80b1f1b2f797ba77b1cb0f54c10776bcb0ef841be7485",
+    "tests/hmh-reboot-bundle-offsets.test.mjs": "effae59c7ac6323f9938173e0847b86a8237ec0dca5252d7c9d39f82c988d447",
+    "scripts/syntax-check.mjs": "88e31b566e99bf0929ff6569c9225b9bf1b16c68c9a967ea666a056ed321691a"
+  },
+  "initialJs": {
+    "bytes": 1039992,
+    "cap": 1048576,
+    "headroom": 8584,
+    "recovered": 7452
+  },
+  "cockpitAbsentFromInitialStaticGraph": true,
+  "initialStaticOutputs": [
+    {
+      "path": "apps/portal/dist/chunks/chunk-2BH2DUJT.js",
+      "bytes": 28251,
+      "sha256": "b46a980688107505e390484d081e257045cab2db851b020bb3b989ddce936828"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-2GEB7OBA.js",
+      "bytes": 4219,
+      "sha256": "70a65bc4522fc364187cf2e23a1673dad5cc19d199e4c823fecd18f976813d9f"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-2WGYLO4P.js",
+      "bytes": 655,
+      "sha256": "fe5865361e105c752963ffcabdae4f585e39639d8f0a1167a65ce795bfd94776"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-35BRWECB.js",
+      "bytes": 3356,
+      "sha256": "902447d40ec443e1cdfad763ac26008351d9e6b5f949b2a1c887c0a50173ada9"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-54K7V4IX.js",
+      "bytes": 20539,
+      "sha256": "a18ce9bf1ff8c9f06e8b462eea3f0260bbbdfce6d3f6ca102ccd37413eb2b087"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-6DDQFTGU.js",
+      "bytes": 5708,
+      "sha256": "86ee5aaba5bc334fcdef63133cedea9b897a4dc5c73e8896e6f95160c6a1be47"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-74RWV2R2.js",
+      "bytes": 1275,
+      "sha256": "0e58e1f13487f162562313478c6ebcfd099a69049a8bf6ade3ef5c654f757f58"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-74ZJNIIV.js",
+      "bytes": 35584,
+      "sha256": "d6a7ec2d2df9af1c7f3c5f2d3e796a2010ed5b371810208cb07432c2b225845e"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-B2364FTF.js",
+      "bytes": 12061,
+      "sha256": "757de212e9fddbcb84d2423308a3168473d81822d1c52d145cd32354cb9e00cd"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-EKYRYSFG.js",
+      "bytes": 8142,
+      "sha256": "80a236e8f7ba1e0c0a27ce41f3a79030a0dce726377f9a722b77dff47f39dac8"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-ESDQIMBA.js",
+      "bytes": 965,
+      "sha256": "b8b27a8e8a339ff957517d24f55d5e43e19257a3d84afa800dcb6a4a36335ae6"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-FJSVRC2T.js",
+      "bytes": 3368,
+      "sha256": "9db85111ba86baf3c2c56720931ce6de6b09fdc11dfff016afa2da664970923c"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-HRT7TI5W.js",
+      "bytes": 1590,
+      "sha256": "4024f32d830d0a10cab912a25fb48fc25e7e66cce3cb4e6bd4e11bd2047397ee"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-IZH6NDGR.js",
+      "bytes": 8119,
+      "sha256": "717cc54567e4da4278370a10d392edd2f55566d58cf010a0bd909a3addae26d5"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-JW3WZOLP.js",
+      "bytes": 481,
+      "sha256": "1408f3bf522dca3a38a8506c8bed7426ce280669de684ec106feddc04993357b"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-KIEFYNSW.js",
+      "bytes": 1478,
+      "sha256": "6c1187374a3f5b26b4f25f12a9aac90068325e6cf7ef8f3a3154d52b9d90d136"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-MMSI7XOT.js",
+      "bytes": 10801,
+      "sha256": "628c514e29dfeaf75b2d2139eca21c246025185d4bf3cb2222897eaf3a5a2770"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-NSYVAXWR.js",
+      "bytes": 13104,
+      "sha256": "a8ec51079fd382283f7a361f482ce8ea6e36eacc2e97ff38bdff86338779d315"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-OQWCW7H2.js",
+      "bytes": 524,
+      "sha256": "d63df405a33525fdfc80c5840831f92e1a192e401fe482f6a13bb537fb270ee6"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-PBEL7OZC.js",
+      "bytes": 1800,
+      "sha256": "e02b932100995c4ed0eade95ef56e213187ea60f7719bc4db3f3e13b3ef3ef18"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-QYXQOKRI.js",
+      "bytes": 235,
+      "sha256": "a40d7c3ec735b2c20abaa218335ad1b4dce39965152eb352d0a5136f324bd3b2"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-QZQQZ67Q.js",
+      "bytes": 24953,
+      "sha256": "cc5ac6a3fb21aa7a9dc7a24975ccd630c96430beaf305425d477403417de791d"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-TH556TFN.js",
+      "bytes": 4375,
+      "sha256": "b98e4b917d2fa6e05401cab2f934e57b7e7969b6c60d7db59a08a0bbb9463ae5"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-UJHJCWV2.js",
+      "bytes": 4574,
+      "sha256": "5858b9b450a5ba4d382bb385423239c040f7480386c850addd930620265b0332"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-V6Q2KNOM.js",
+      "bytes": 3416,
+      "sha256": "1562970a6389619131513d12c918168ecc54c5acb83b588413019b7ab311a797"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-VDJRWC6L.js",
+      "bytes": 1904,
+      "sha256": "b9e0b429ca20baee726d10c1939d6f4d3ea2cc8ebc571a462521ce1df75792ff"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-WNDYD35G.js",
+      "bytes": 2376,
+      "sha256": "56836055d2a51efe654caf08e95b85e600979fcbf209eefb90415a30d39d0023"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-YKUM7VFD.js",
+      "bytes": 42284,
+      "sha256": "fa12b6d0b7e7346b6515c4b5d64eebffaac4a12cb73535dcce4a63c395278b82"
+    },
+    {
+      "path": "apps/portal/dist/chunks/chunk-ZZUUWCQ6.js",
+      "bytes": 5350,
+      "sha256": "cd49e6283a95a6da18e97138e31d4e95c3050817823a3a87cf748d0ea2795f8f"
+    },
+    {
+      "path": "apps/portal/dist/hmh-reboot/game.js",
+      "bytes": 317647,
+      "sha256": "6034706fd1c3cb54e83405232ae61a466866dc1f098f9575922e2bea6a0795f3"
+    }
+  ],
+  "externalPinnedVendor": {
+    "path": "C:\\Users\\just_\\lesters-arcade-wt\\visual-overhaul-200\\apps\\portal\\dist\\chunks\\hmh-pixi.js",
+    "bytes": 470858,
+    "sha256": "f2fb9550f7afe643b73cc4c21eb0063f8c8f8d239b411cf33e4353e5b4930c66"
+  },
+  "passed": true,
+  "sourceAfterSha256": {
+    "apps/hmh-reboot/src/main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+    "apps/hmh-reboot/src/cockpit-ui.mjs": "6b2acd2cfdf2cc1891f3db91ad7c3386f0e797a6df0421fd8eef0df669a51800",
+    "apps/hmh-reboot/src/bridge.mjs": "ba9d80e1d27edb9d144b122cefc2954f04cd12574753247ccb7bf985dad03351",
+    "apps/hmh-reboot/src/simulation.mjs": "e7f8d3dde68054c074fadedf19fac004e27e5d53916b524250d86b91417ba8a9",
+    "apps/hmh-reboot/src/enemy-navgrid.mjs": "da338be023aeeaadf0d5eb00a7ceef0adbd82e3ab7eb1b833fe7171445f595c3",
+    "apps/hmh-reboot/src/level-one-world.mjs": "173d43a2718919dc93a5c9e2c5b061a1cb1821fc6969d9f9bd7c4f5d435c69a1",
+    "apps/hmh-reboot/src/weapon-system.mjs": "64a51d2a02ad5928b2be3a4a576a49ff1a825bec713be69cf1a0bed4f1a0132b",
+    "apps/hmh-reboot/src/run-progression.mjs": "370d5b904773f7b381b38ceb28b43f29b8250aab7c2b63165714a09cb1265364",
+    "tests/hmh-cockpit-lazy-startup.test.mjs": "18e011ee22202661e6d80b1f1b2f797ba77b1cb0f54c10776bcb0ef841be7485",
+    "tests/hmh-reboot-bundle-offsets.test.mjs": "effae59c7ac6323f9938173e0847b86a8237ec0dca5252d7c9d39f82c988d447",
+    "scripts/syntax-check.mjs": "88e31b566e99bf0929ff6569c9225b9bf1b16c68c9a967ea666a056ed321691a"
+  },
+  "sourceUnchanged": true,
+  "sourceCopyNoGit": {
+    "passed": true,
+    "tests": 6,
+    "skipped": 0,
+    "gitDirectoryAbsent": true,
+    "gitAbsentFromPath": true,
+    "onlyDependency": "Existing declared Acorn parser; copied package.json and dist/acorn.mjs",
+    "sourceSha256": {
+      "tests\\hmh-cockpit-lazy-startup.test.mjs": "18e011ee22202661e6d80b1f1b2f797ba77b1cb0f54c10776bcb0ef841be7485",
+      "apps\\hmh-reboot\\src\\main.mjs": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+      "node_modules\\acorn\\package.json": "5c1ed7259579a7899b303f514b0194adcb9fe474fc7d136a84c6a45f10eefc84",
+      "node_modules\\acorn\\dist\\acorn.mjs": "953573b8fdab71599749ea5f2b33d3e760c2116178f9423ee7458dbe39d59453"
+    }
+  },
+  "redEvidence": [
+    {
+      "phase": "cockpit-headroom-red.log",
+      "sha256": "9a6a2fcda7aa672163fd1b1ca5de097b5f6de323574436ba7a468c620302d083"
+    },
+    {
+      "phase": "cockpit-cleanup-red.log",
+      "sha256": "4fedb8d751789f0d0e0927900c109aba99c452a9242ec714efab82fd6e6dbdeb"
+    }
+  ],
+  "visualSummary": {
+    "scenes": 12,
+    "accepted": false,
+    "maxMeanDelta": 0.019,
+    "maxCellDelta": 4,
+    "maxChangedCells": 3
+  },
+  "limits": [
+    "Local technical slice, no release gate or deployment.",
+    "Windows Chrome phone viewport is not physical iPhone acceptance.",
+    "Authority capture is a fixed-clock optional-pilot correctness fixture, not pre/post-C1 complete Ranked verification or FPS.",
+    "Text recovery covers four owned mission/world texts, not complete graphics recovery.",
+    "The diagnostic joinWaiting flag means the barrier was entered and did not complete successfully on failure; it is not promise-state evidence."
+  ]
+}

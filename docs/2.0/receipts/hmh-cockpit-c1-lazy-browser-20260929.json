@@ -1,0 +1,131 @@
+{
+  "schema": "hmh-cockpit-lazy-browser-v1",
+  "physicalPhone": false,
+  "performanceMeasured": false,
+  "sourceSha256": "389e6f9a85c123eeebd3adcfa9a78542165e68b4446b83d9d89be90df7e658a1",
+  "injectedSourceSha256": "5a640da2319a325afa6bc26c92ef14d4ead3b8312b7145e719f631bb63dc0627",
+  "shippedEntrySha256": "6034706fd1c3cb54e83405232ae61a466866dc1f098f9575922e2bea6a0795f3",
+  "heldName": "chunk-FRSQWCYJ.js",
+  "heldBytesSha256": "74cb23aac789a68acd5296d0f9f435bf62f881f8d23b627c203351cb1698c164",
+  "cases": [
+    {
+      "name": "desktop-delayed",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "delayed": {
+        "calls": [],
+        "rendererPresent": true,
+        "tickerStarted": false,
+        "canvasCount": 0,
+        "bridgePresent": false,
+        "bridgeConnected": false,
+        "bridgeInitialized": false,
+        "joinWaiting": true,
+        "startupArt": null,
+        "cockpitConstructed": false
+      },
+      "final": {
+        "calls": [],
+        "rendererPresent": true,
+        "tickerStarted": false,
+        "canvasCount": 1,
+        "bridgePresent": false,
+        "bridgeConnected": false,
+        "bridgeInitialized": false,
+        "joinWaiting": false,
+        "startupArt": "ready",
+        "cockpitConstructed": true
+      },
+      "heldRequests": 1,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "name": "phone-proxy-delayed",
+      "viewport": {
+        "width": 414,
+        "height": 896
+      },
+      "delayed": {
+        "calls": [],
+        "rendererPresent": true,
+        "tickerStarted": false,
+        "canvasCount": 0,
+        "bridgePresent": false,
+        "bridgeConnected": false,
+        "bridgeInitialized": false,
+        "joinWaiting": true,
+        "startupArt": null,
+        "cockpitConstructed": false
+      },
+      "final": {
+        "calls": [],
+        "rendererPresent": true,
+        "tickerStarted": false,
+        "canvasCount": 1,
+        "bridgePresent": false,
+        "bridgeConnected": false,
+        "bridgeInitialized": false,
+        "joinWaiting": false,
+        "startupArt": "ready",
+        "cockpitConstructed": true
+      },
+      "heldRequests": 1,
+      "pageErrors": [],
+      "consoleErrors": []
+    },
+    {
+      "name": "iframe-failed-download",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "delayed": {
+        "calls": [],
+        "rendererPresent": true,
+        "tickerStarted": false,
+        "canvasCount": 0,
+        "bridgePresent": true,
+        "bridgeConnected": true,
+        "bridgeInitialized": false,
+        "joinWaiting": true,
+        "startupArt": null,
+        "cockpitConstructed": false
+      },
+      "final": {
+        "calls": [
+          {
+            "resource": "bridge"
+          },
+          {
+            "resource": "renderer",
+            "removeCanvas": true
+          }
+        ],
+        "rendererPresent": false,
+        "tickerStarted": false,
+        "canvasCount": 0,
+        "bridgePresent": true,
+        "bridgeConnected": false,
+        "bridgeInitialized": false,
+        "joinWaiting": true,
+        "startupArt": null,
+        "cockpitConstructed": false
+      },
+      "host": {
+        "messages": [],
+        "errors": []
+      },
+      "heldRequests": 1,
+      "pageErrors": [],
+      "expectedNetworkErrors": [
+        "Failed to load resource: net::ERR_FAILED"
+      ]
+    }
+  ],
+  "passed": true,
+  "sourceUnchanged": true,
+  "shippedEntryUnchanged": true
+}
