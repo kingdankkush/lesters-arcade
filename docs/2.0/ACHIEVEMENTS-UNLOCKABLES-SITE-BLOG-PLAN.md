@@ -81,6 +81,18 @@ check is claimed for these items, and no real wallet has earned anything.
   `Early`. The profile collection gains a "Lester's Arcade" section. Badge art
   is a labelled placeholder (the Cabinet Pioneer badge). Tier `gold` is a
   lane judgment pending the badge theme.
+- **Optional gyro tilt, off by default — implemented, source-checked.** The
+  focused badge (`achievements/detail-view.mjs`) offers a "Device tilt" button
+  only where `DeviceOrientationEvent` exists. Off unless the player opts in; the
+  preference is local (`lesters-arcade:achievement-detail:gyro`, guarded reads
+  and writes). Enabling from the button calls
+  `DeviceOrientationEvent.requestPermission()` where it exists (iOS), and
+  anything but `granted` leaves it off silently; a persisted preference
+  attaches on open without a prompt. Orientation maps through `gyroTilt` to the
+  same bounded 35-degree tilt as a drag, baselined on the first sample; input
+  is ignored under reduced motion, during a drag and while the dialog is
+  closed. Five source tests cover the mapping, bounds, default-off, permission
+  outcomes and reduced motion. No browser or physical-phone run is claimed.
 
 ## G4 replacement package — implementation recommendation (September 30)
 

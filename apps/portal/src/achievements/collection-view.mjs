@@ -18,7 +18,7 @@ export function createAchievementCollectionView({el,appendText,renderAchievement
 
  function ensureStyle(){
   if(!documentRef?.head||!documentRef.createElement||documentRef.getElementById?.('achievement-collection-css'))return;
-  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v2';documentRef.head.append(link);
+  const link=documentRef.createElement('link');link.id='achievement-collection-css';link.rel='stylesheet';link.href='/src/styles/achievement-collection.css?v=collection-detail-v3';documentRef.head.append(link);
  }
  function field(label,name,options){
   const wrapper=el('label',{className:'collection-control'});appendText(wrapper,'span',label);
