@@ -10,21 +10,33 @@ export const STACKED_BENCHMARK_PHASES = Object.freeze(['decode', 'replay', 'veri
 export const sourceRoot = fileURLToPath(new URL('../../', import.meta.url));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
-export function validateMaximalFixture(fixture, bytes) {
-  if (fixture?.v !== 'stacked-maximal-fixture-v1' || fixture.expectedTuple?.ticks !== 432_000 || fixture.expectedTuple?.terminalReason !== 'tick-ceiling' || fixture.replayOptions?.maxTicks !== 432_000) throw new Error('fixture must cover the legal maximal ticks');
+// Named durable fixtures the benchmark can measure. Filenames are fixed here and
+// never read from untrusted fixture metadata.
+export const STACKED_BENCHMARK_FIXTURES = Object.freeze({
+  maximal: Object.freeze({ v: 'stacked-maximal-fixture-v1', manifest: 'tests/fixtures/stacked-maximal-run.json', evidence: 'tests/fixtures/stacked-maximal-run.sic1.gz', report: 'docs/2.0/slices/STACKED-S0-baseline.json' }),
+  'longest-legal': Object.freeze({ v: 'stacked-longest-legal-fixture-v1', manifest: 'tests/fixtures/stacked/stacked-longest-legal-run.json', evidence: 'tests/fixtures/stacked/stacked-longest-legal-run.sic1.gz', report: 'docs/2.0/slices/STACKED-S0G-longest-legal-baseline.json' }),
+});
+export const DEFAULT_STACKED_BENCHMARK_FIXTURE = 'maximal';
+export function resolveBenchmarkFixture(name = DEFAULT_STACKED_BENCHMARK_FIXTURE) {
+  if (!Object.hasOwn(STACKED_BENCHMARK_FIXTURES, name)) throw new RangeError(`unknown benchmark fixture: ${String(name)}`);
+  return { name, ...STACKED_BENCHMARK_FIXTURES[name] };
+}
+
+export function validateMaximalFixture(fixture, bytes, { v = STACKED_BENCHMARK_FIXTURES.maximal.v } = {}) {
+  if (fixture?.v !== v || fixture.expectedTuple?.ticks !== 432_000 || fixture.expectedTuple?.terminalReason !== 'tick-ceiling' || fixture.replayOptions?.maxTicks !== 432_000) throw new Error('fixture must cover the legal maximal ticks');
   if (!(bytes instanceof Uint8Array) || bytes.length !== fixture.evidence.bytes || hash(bytes) !== fixture.evidence.sha256) throw new Error('maximal fixture evidence hash mismatch');
   if (fixture.identity?.seed !== fixture.replayOptions.expectedSeed || fixture.expectedTuple.seed !== fixture.identity.seed) throw new Error('fixture seed mismatch');
   if (fixture.checkpoints?.[0]?.tick !== 0 || fixture.checkpoints?.at(-1)?.tick !== 432_000) throw new Error('fixture canonical checkpoints incomplete');
   return fixture;
 }
 
-export function loadMaximalFixture(root = sourceRoot) {
-  const fixture = JSON.parse(readFileSync(join(root, 'tests/fixtures/stacked-maximal-run.json'), 'utf8'));
-  // The filename is fixed, never read from untrusted fixture metadata.
-  const compressed = readFileSync(join(root, 'tests/fixtures/stacked-maximal-run.sic1.gz'));
+export function loadMaximalFixture(root = sourceRoot, name = DEFAULT_STACKED_BENCHMARK_FIXTURE) {
+  const entry = resolveBenchmarkFixture(name);
+  const fixture = JSON.parse(readFileSync(join(root, entry.manifest), 'utf8'));
+  const compressed = readFileSync(join(root, entry.evidence));
   if (compressed.length !== fixture.evidence.compressedBytes || hash(compressed) !== fixture.evidence.compressedSha256) throw new Error('maximal fixture compressed hash mismatch');
   const bytes = gunzipSync(compressed, { maxOutputLength: 1_302_000 });
-  validateMaximalFixture(fixture, bytes);
+  validateMaximalFixture(fixture, bytes, { v: entry.v });
   return { fixture, bytes, evidence: { encoding: 'stacked-sic1+base64', sic1: bytes.toString('base64'), startLevel: 1 } };
 }
 

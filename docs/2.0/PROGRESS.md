@@ -1404,4 +1404,12 @@ passes, normal build resolves with the world as a lazy chunk (HMH initial +
 shared 1,046,146 B, 2,430 B under the cap); full `npm test`: 6431 tests, 6357 pass, 74 fail, and the same 74 asset/LFS/dist and pinned-source failures fail on the untouched base commit 7ddfb0ea5 (6411/6337/74), so this slice adds 20 passing tests and no failure.
 Baron, Lockkeeper and Foreman remain sites without bosses; no browser smoke,
 visual run, release gate, version or deployment happened here. See
-[W4a](slices/WORLD-W4A-RUNTIME-WORLD.md).
+[W4a](slices/WORLD-W4A-RUNTIME-WORLD.md). Browser follow-up the same day: the
+root measured a 127 s nav-grid boot cliff on the ten-area page (idle-sliced
+chunking amplifying a ~300 ms build), a `routeColor` crash from an x-only
+district palette read, and a `nativeBarrierStatus` stuck at loading. The lazy
+chunk now builds the grid once with a bucket index (Node 139 ms, byte-identical
+to `createEnemyNavGrid` on both worlds, legacy digest unchanged) and the runtime
+builder adopts it in under a millisecond; road kits resolve through the borrowed
+material key; native barriers are skipped on an unofficial world. New test 4/4,
+affected suites 124/124; initial + shared JS 1,047,161 B (1,415 B under the cap; the integration head sat at about 1.7 KB, so the two exports, the precomputed-grid adoption guard and the barrier skip cost roughly 300 B of shared code; the index itself lives in the lazy chunk).

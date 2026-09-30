@@ -121,10 +121,59 @@ calls stay byte-identical (the verifier parity pins on `main.mjs` still hold).
 - Run summary, score, achievements, Ranked: none. The verifier map contexts remain schema 6/7 → `forked-frontier` v1 only (`hmh-world-v2-verifier-freeze.test.mjs`).
 - No browser evidence in this slice; owner playtest notes come after the root smokes it.
 
+## Browser follow-up (same day): nav-grid boot cliff, route palette, native barriers
+
+The root's real-child run of the URL above reached "Preparing tactical
+navigation…" and `createEnemyNavGridChunked` took ~127 s (`navGridReady` at
+t≈127,700 ms), then threw `Cannot read properties of undefined (reading
+'routeColor')`, and `nativeBarrierStatus` stayed `loading`.
+
+Node reproduction (`createEnemyNavGrid`, synchronous): legacy 16,000 cells /
+117 blockers / 12 surfaces in ~70–100 ms; ten-area 78,156 cells / 581 blockers /
+84 surfaces in ~230–315 ms, 780,968 `queryGround` calls at ~0.1 µs each (the
+authored ground query already has a 256-unit surface cell index, so it is
+O(local)). The walkable pass spent its time on 45.4 M blocker bounding-box
+checks (every cell × every blocker) that produced only 75,702 narrow-phase
+candidates; the edge pass is ~150 k swept traversals. The compute is not the
+cliff: the chunked builder's idle slices (4 ms budget shortened to the idle
+deadline's remaining time, then a requestIdleCallback wait) amplified ~300 ms of
+work into minutes on a boot thread busy decoding art.
+
+Fix, all inside the lazy ten-area chunk plus two exports and one guard:
+
+- `world-v2-navgrid.mjs` builds the grid with a uniform bucket index (4 × 4
+  cells per bucket) over `navBlockerBounds`; each cell tests only its bucket's
+  blockers with the shared `pointInsideInflatedShape`, the same sample lattice,
+  edge rules (`CONSERVATIVE_TRANSITION`) and cell order. Node: legacy 34 ms,
+  ten-area 139 ms; the whole ten-area context (world + audit + gameplay + grid)
+  loads in ~177 ms at the top of `boot()`.
+- `world-v2-runtime-context.mjs` attaches it as `world.navGrid`;
+  `createEnemyNavGridChunked` adopts a world's precomputed grid when its cell
+  size, dimensions, origin and array lengths match, so the unchanged runtime
+  call returns in under a millisecond with zero idle yields for this world.
+  The legacy world carries no grid and slices exactly as before.
+- `tests/hmh-world-v2-navgrid.test.mjs` pins the indexed walkable/edges arrays
+  byte-identical to `createEnemyNavGrid` on both worlds (legacy digest
+  `403a19d2…` unchanged), the adoption path, the stale-grid rejection, and the
+  legacy slicing.
+- `routeColor`: the road pass looked its kit up by `districtAt(x).id`; it now
+  resolves through `materialKey(districtAt(x, y))` like the other district reads.
+  The new test resolves every district, route start node, surface vertex,
+  blocker, landmark and interaction palette for both worlds and forbids any raw
+  `DISTRICT_PRODUCTION_MATERIALS[...]` read that bypasses the material key.
+- Native barriers are legacy art: an unofficial world sets
+  `nativeBarrierStatus = 'skipped'` and never imports the module.
+
+Expected desktop nav-grid boot for the ten-area world is now the adoption
+cost (~1 ms; `navGridBootMs` measures it), with the ~140–180 ms build having
+moved to the world-context load before the renderer starts. The root re-verifies
+in the browser; no browser run happened here.
+
 ## Checks
 
 - New tests: `hmh-world-v2-runtime-world`, `hmh-world-v2-gameplay`, `hmh-world-context`, `hmh-world-v2-verifier-freeze` — 20/20.
 - Affected existing suites (bundle offsets, shell, prisoners, camp props, enclosures, mission combat, boss slots, director, level-one world, secrets, boss/mission determinism, production art, genesis seal, briefing, entry, mission objectives, verifier plausibility and map context) pass unchanged, except the pre-existing `built child bundle exists` case that needs a build.
 - `node scripts/syntax-check.mjs`: passes with the eight new entries.
 - Full `npm test`: 6431 tests, 6357 pass, 74 fail; the identical 74 failures (missing generated asset/LFS files, dist-dependent vendor checks, pre-existing pinned-source drifts) fail on the untouched base commit 7ddfb0ea5 (6411/6337/74). This slice adds 20 passing tests and no failure.
-- Normal build (`node build.mjs`) resolves; the ten-area world is one lazy chunk (`world-v2-runtime-context-*.js`) imported only dynamically from `game.js`. HMH initial + shared JavaScript 1,046,146 B (2,430 B under the 1,048,576 B cap); STACKED 581,120 B.
+- After the nav follow-up: `hmh-world-v2-navgrid` 4/4; the affected suites (enemy navgrid, boot responsive, world size diagnostics, production art, shell, bundle offsets, hazards, design interactions, terrain strips and the four W4a tests) 124/124; syntax check passes. Build after the follow-up: HMH initial + shared 1,047,161 B (1,415 B under the cap; the integration head sat at about 1.7 KB, so the two exports, the precomputed-grid adoption guard and the barrier skip cost roughly 300 B of shared code; the index itself lives in the lazy chunk).
+- Normal build (`node build.mjs`, before the nav follow-up) resolves; the ten-area world is one lazy chunk (`world-v2-runtime-context-*.js`) imported only dynamically from `game.js`. HMH initial + shared JavaScript 1,046,146 B (2,430 B under the 1,048,576 B cap); STACKED 581,120 B.
