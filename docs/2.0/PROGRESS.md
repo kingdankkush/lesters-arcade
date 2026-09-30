@@ -526,3 +526,27 @@ andporchlabels repeat. Court/widerdistrict sparse; other9areas repetitive.
 This is a local navigation design checkpoint, not owner-approved/final10area
 leveldesign/art, combat/pacing/fullwidth, officialFree/W3Ranked map, streaming,
 physicalphone/performance or fullrelease acceptance. No credits/push/deploy/version.
+
+
+### W2c Halving Farms local-flow checkpoint
+
+Farms now has a barn-front objective marker, open working yard, separate field
+bypass and raised loading platform. Existing roads/endpoints, Meadows, other
+eight areas and seven official authority helpers remain unchanged. Genuine
+RED 3FAIL/1PASS precedes 30/30 focused and the same30/30 exact17-file noGit/noModules/
+emptyPATH copy. Actual nav is37,707/77,589 in-bounds centres (48.5984%), outside
+walkable0, all98sites/14roads reachable/clear; River-Woods warning remains.
+
+One private build and94.655s actual Chrome run pass24desktop+4phone-view native
+legs,12original captures, visible barn contact, loading groundZ24, four denied
+entries and pagehide cleanup. No inspection jump, errors or viewport overflow.
+Build5248/browser51048/Chrome52776 close normally and are observed absent; actual
+HTTP close precedes exact marker release. All recorded source/built/served pins
+match. Exact compressed observations and explicit limits are in receipts/world-
+farms and slices/WORLD-W2C-FARMS.md; the manual local review bundle is separate.
+
+Author inspected all12original images. Actor/control framing works; yard remains
+sparse, landmarks plain and some inspection labels overlap. This is local flow
+staging, not owner-approved final area/art, physical-phone performance, official
+Free/Ranked map/version, world streaming or release certification. No extra full
+syntax/normal-build/default-visual rerun, credits, push, deploy or version bump.

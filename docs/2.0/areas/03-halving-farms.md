@@ -1,6 +1,6 @@
 # Halving Farms — area brief draft
 
-Status: preparatory layout intent; no geometry/nav/playtest/art acceptance yet. Part of the continuous 20,000 × 14,000 world. See [brief index](INDEX.md) for shared scales, authorisation and gates.
+Status: local Farms W2c geometry/nav/native-browser checkpoint passes; owner playtest, full area design and art acceptance remain open. Part of the continuous 20,000 × 14,000 world. See [brief index](INDEX.md) for shared scales, authorisation and gates.
 
 **Story and flow.** Fields, yards and access tracks explain how a working farm was used. Crop rows organise sightlines; machinery and farm buildings stay at practical places rather than scattered across the playable floor.
 
@@ -17,3 +17,10 @@ Status: preparatory layout intent; no geometry/nav/playtest/art acceptance yet. 
 **Art sub-palette.** Olive #85846A, weathered timber #665044, soil #625A47; board L11/L12.
 
 **Greybox acceptance focus.** Rows and ruts guide travel while avoiding high-frequency stripe noise. Barn surfaces use quiet weathered material rather than cue-like glowing red. Check field routes with the actual nav grid and ordinary human-scale actors.
+
+## Local W2c checkpoint
+
+The isolated preview now implements the barn frontage, yard, field bypass and
+raised loading platform. Five routes join the unchanged two entrances and staged
+places. Source checks and desktop/phone-view Chrome navigation pass; sparse space,
+plain landmarks and label overlap remain. See [W2c evidence and limits](../slices/WORLD-W2C-FARMS.md).
